@@ -261,6 +261,7 @@ export const tilesInfo: Record<DatabaseSourceId, TileInfo> = {
   zonesPotentielChaud: {
     source: 'database',
     tiles: 'zone_a_potentiel_chaud_tiles',
+    compressedTiles: true,
     table: '', // useless
     properties: [], // useless
     sourceLayer: '', // useless
@@ -270,6 +271,7 @@ export const tilesInfo: Record<DatabaseSourceId, TileInfo> = {
   zonesPotentielFortChaud: {
     source: 'database',
     tiles: 'zone_a_potentiel_fort_chaud_tiles',
+    compressedTiles: true,
     table: '', // useless
     properties: [], // useless
     sourceLayer: '', // useless

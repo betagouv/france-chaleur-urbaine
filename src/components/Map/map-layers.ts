@@ -455,7 +455,7 @@ export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecifi
       source: {
         type: 'vector',
         tiles: [`${location.origin}/api/map/zonesPotentielChaud/{z}/{x}/{y}`],
-        maxzoom: tileSourcesMaxZoom,
+        maxzoom: 12,
         promoteId: 'id_zone',
       },
       layers: [
@@ -492,7 +492,7 @@ export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecifi
       source: {
         type: 'vector',
         tiles: [`${location.origin}/api/map/zonesPotentielFortChaud/{z}/{x}/{y}`],
-        maxzoom: tileSourcesMaxZoom,
+        maxzoom: 12,
         promoteId: 'id_zone',
       },
       layers: [
