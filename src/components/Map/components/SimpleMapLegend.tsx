@@ -1106,29 +1106,27 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
               }
             >
               <DeactivatableBox disabled={!mapConfiguration.installationsGeothermieSurfaceEchangeursOuverts} mx="1w">
-                <Box display="flex">
+                <Box display="flex" alignItems="center">
                   <Box
                     backgroundColor={installationsGeothermieSurfaceEchangeursOuvertsRealiseeColor}
                     height="10px"
                     width="10px"
                     borderRadius="50%"
-                    mt="1w"
                     mr="1w"
                   />
 
-                  <Text>Installation réalisée</Text>
+                  <Text size="sm">Installation réalisée</Text>
                 </Box>
-                <Box display="flex">
+                <Box display="flex" alignItems="center">
                   <Box
                     backgroundColor={installationsGeothermieSurfaceEchangeursOuvertsDeclareeColor}
                     height="10px"
                     width="10px"
                     borderRadius="50%"
-                    mt="1w"
                     mr="1w"
                   />
 
-                  <Text>Installation déclarée</Text>
+                  <Text size="sm">Installation déclarée</Text>
                 </Box>
               </DeactivatableBox>
             </TrackableCheckableAccordion>
@@ -1154,29 +1152,27 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
               }
             >
               <DeactivatableBox disabled={!mapConfiguration.installationsGeothermieSurfaceEchangeursFermes} mx="1w">
-                <Box display="flex">
+                <Box display="flex" alignItems="center">
                   <Box
                     backgroundColor={installationsGeothermieSurfaceEchangeursFermesRealiseeColor}
                     height="10px"
                     width="10px"
                     borderRadius="50%"
-                    mt="1w"
                     mr="1w"
                   />
 
-                  <Text>Installation réalisée</Text>
+                  <Text size="sm">Installation réalisée</Text>
                 </Box>
-                <Box display="flex">
+                <Box display="flex" alignItems="center">
                   <Box
                     backgroundColor={installationsGeothermieSurfaceEchangeursFermesDeclareeColor}
                     height="10px"
                     width="10px"
                     borderRadius="50%"
-                    mt="1w"
                     mr="1w"
                   />
 
-                  <Text>Installation déclarée</Text>
+                  <Text size="sm">Installation déclarée</Text>
                 </Box>
               </DeactivatableBox>
             </TrackableCheckableAccordion>
