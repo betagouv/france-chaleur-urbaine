@@ -1,12 +1,12 @@
 import type { NextApiRequest } from 'next';
 import { v4 as uuidv4 } from 'uuid';
 
-import { closestNetwork, getConso, getDistanceToNetwork, getNbLogement } from '@core/infrastructure/repository/addresseInformation';
-import { getGestionnaires, getToRelanceDemand } from '@core/infrastructure/repository/manager';
-import { logger } from '@helpers/logger';
-import { BadRequestError, handleRouteErrors, requirePostMethod } from '@helpers/server';
-import base, { AirtableDB } from 'src/db/airtable';
-import { Airtable } from 'src/types/enum/Airtable';
+import base, { AirtableDB } from '@/server/db/airtable';
+import { logger } from '@/server/helpers/logger';
+import { BadRequestError, handleRouteErrors, requirePostMethod } from '@/server/helpers/server';
+import { closestNetwork, getConso, getDistanceToNetwork, getNbLogement } from '@/server/services/addresseInformation';
+import { getGestionnaires, getToRelanceDemand } from '@/server/services/manager';
+import { Airtable } from '@/types/enum/Airtable';
 
 export default handleRouteErrors(async function PostRecords(req: NextApiRequest) {
   requirePostMethod(req);

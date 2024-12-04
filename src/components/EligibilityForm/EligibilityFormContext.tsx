@@ -1,6 +1,6 @@
 import React, { useMemo, useReducer } from 'react';
 
-import { Point } from 'src/types/Point';
+import { Point } from '@/types/Point';
 
 const initialState = {
   address: {},

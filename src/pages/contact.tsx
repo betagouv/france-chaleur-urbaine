@@ -1,7 +1,7 @@
-import ContactForm from '@components/ContactForm';
-import SimplePage from '@components/shared/page/SimplePage';
-import Box from '@components/ui/Box';
-import Heading from '@components/ui/Heading';
+import ContactForm from '@/components/ContactForm';
+import SimplePage from '@/components/shared/page/SimplePage';
+import Box from '@/components/ui/Box';
+import Heading from '@/components/ui/Heading';
 
 function contact() {
   return (

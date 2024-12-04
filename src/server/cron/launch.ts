@@ -1,8 +1,8 @@
 import * as Sentry from '@sentry/node';
 
-import { dailyNewManagerMail, dailyRelanceMail, weeklyOldManagerMail } from 'src/services/manager';
-import { updateUsers } from 'src/services/users';
-import '../../sentry.node.config';
+import { dailyNewManagerMail, dailyRelanceMail, weeklyOldManagerMail } from '@/services/manager';
+import { updateUsers } from '@/services/users';
+import '@root/sentry.node.config';
 
 export const jobs: Record<string, any> = {
   dailyNewManagerMail,

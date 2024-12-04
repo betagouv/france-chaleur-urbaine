@@ -1,11 +1,11 @@
 import Image from 'next/image';
 
-import SimplePage from '@components/shared/page/SimplePage';
-import Box from '@components/ui/Box';
-import Heading from '@components/ui/Heading';
-import { FCUArrowIcon } from '@components/ui/Icon';
-import Link from '@components/ui/Link';
-import Text from '@components/ui/Text';
+import SimplePage from '@/components/shared/page/SimplePage';
+import Box from '@/components/ui/Box';
+import Heading from '@/components/ui/Heading';
+import { FCUArrowIcon } from '@/components/ui/Icon';
+import Link from '@/components/ui/Link';
+import Text from '@/components/ui/Text';
 
 const OutilsPage = () => {
   return (

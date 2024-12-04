@@ -2,8 +2,8 @@ import { DottedName } from '@betagouv/france-chaleur-urbaine-publicodes';
 import { useDebouncedEffect } from '@react-hookz/web';
 import React from 'react';
 
-import useInViewport from '@hooks/useInViewport';
-import { isDefined } from '@utils/core';
+import useInViewport from '@/hooks/useInViewport';
+import { isDefined } from '@/utils/core';
 
 import Label from './Label';
 import DSFRInput from '../dsfr/Input';

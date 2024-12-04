@@ -4,11 +4,11 @@ import Image from 'next/image';
 import { parseAsArrayOf, parseAsString, useQueryState } from 'nuqs';
 import { useMemo } from 'react';
 
-import SimplePage from '@components/shared/page/SimplePage';
-import Box from '@components/ui/Box';
-import Heading from '@components/ui/Heading';
-import Text from '@components/ui/Text';
-import { articles } from '@data/contents';
+import SimplePage from '@/components/shared/page/SimplePage';
+import Box from '@/components/ui/Box';
+import Heading from '@/components/ui/Heading';
+import Text from '@/components/ui/Text';
+import { articles } from '@/data/contents';
 
 const themes = [
   ...articles

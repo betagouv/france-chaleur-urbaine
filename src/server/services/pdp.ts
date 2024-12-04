@@ -1,4 +1,4 @@
-import { db, sql } from 'src/db/kysely';
+import { db, sql } from '@/server/db/kysely';
 
 const isInPDP = async (lat: number, lon: number): Promise<boolean> => {
   const pdp = await db

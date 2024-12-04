@@ -1,6 +1,6 @@
-import { handleRouteErrors } from '@helpers/server';
-import db from 'src/db';
-import { STAT_KEY, STAT_LABEL, STAT_METHOD, STAT_PERIOD } from 'src/types/enum/MatomoStats';
+import db from '@/server/db';
+import { handleRouteErrors } from '@/server/helpers/server';
+import { STAT_KEY, STAT_LABEL, STAT_METHOD, STAT_PERIOD } from '@/types/enum/MatomoStats';
 
 export default handleRouteErrors(async () => {
   return await db('matomo_stats as s')

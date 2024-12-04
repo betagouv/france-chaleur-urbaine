@@ -2,8 +2,8 @@ import { Button } from '@codegouvfr/react-dsfr/Button';
 import { useRouter } from 'next/router';
 import { FormEvent, useEffect, useState } from 'react';
 
-import Input from '@components/form/dsfr/Input';
-import { useServices } from 'src/services';
+import Input from '@/components/form/dsfr/Input';
+import { useServices } from '@/services';
 
 import { Container, PasswordAlert } from './Form.styles';
 

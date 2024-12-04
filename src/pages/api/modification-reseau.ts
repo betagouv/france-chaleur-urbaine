@@ -2,11 +2,11 @@ import formidable from 'formidable';
 import { NextApiRequest } from 'next';
 import { z } from 'zod';
 
-import { fileIOClient } from '@helpers/fileio';
-import { logger } from '@helpers/logger';
-import { handleRouteErrors, requirePostMethod, validateObjectSchema } from '@helpers/server';
-import { clientConfig } from 'src/client-config';
-import { AirtableDB } from 'src/db/airtable';
+import { clientConfig } from '@/client-config';
+import { AirtableDB } from '@/server/db/airtable';
+import { fileIOClient } from '@/server/helpers/fileio';
+import { logger } from '@/server/helpers/logger';
+import { handleRouteErrors, requirePostMethod, validateObjectSchema } from '@/server/helpers/server';
 
 export const config = {
   api: {

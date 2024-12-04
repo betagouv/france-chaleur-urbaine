@@ -1,9 +1,9 @@
 import { z } from 'zod';
 
-import { handleRouteErrors, requirePostMethod, validateObjectSchema } from '@helpers/server';
-import { clientConfig } from 'src/client-config';
-import db from 'src/db';
-import { Network } from 'src/types/Summary/Network';
+import { clientConfig } from '@/client-config';
+import db from '@/server/db';
+import { handleRouteErrors, requirePostMethod, validateObjectSchema } from '@/server/helpers/server';
+import { Network } from '@/types/Summary/Network';
 
 const selectedNetworkFields = [
   'id_fcu',

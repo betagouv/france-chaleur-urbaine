@@ -1,4 +1,4 @@
-import { isDefined } from '@utils/core';
+import { isDefined } from '@/utils/core';
 
 export const getConso = (conso: number) => {
   if (isDefined(conso)) {

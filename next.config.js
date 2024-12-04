@@ -207,8 +207,8 @@ module.exports = withBundleAnalyzer(
 
         // https://github.com/gregberge/svgr/issues/860#issuecomment-1653928947
         // This is done to prevent DSFR Display component to fail with undefined URL for SVG See https://github.com/betagouv/france-chaleur-urbaine/pull/882
-        // In order to load a SVG, you will need tos uffix it with ?icon
-        // example: `import IconPotentiel from '@public/icons/potentiel.svg?icon';`
+        // In order to load a SVG, you will need to suffix it with ?icon
+        // example: `import IconPotentiel from '@/public/icons/potentiel.svg?icon';`
         const nextImageLoaderRule = config.module.rules.find((rule) => rule.test?.test?.('.svg'));
 
         nextImageLoaderRule.resourceQuery = {

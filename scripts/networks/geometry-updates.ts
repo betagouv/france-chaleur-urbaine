@@ -1,8 +1,8 @@
 import { Knex } from 'knex';
 import { createLogger, format, transports } from 'winston';
 
-import db from 'src/db';
-import { AirtableDB, AirtableTable } from 'src/db/airtable';
+import db from '@/server/db';
+import { AirtableDB, AirtableTable } from '@/server/db/airtable';
 
 import { Type, TypeBool, TypeString } from './download-network';
 

@@ -1,6 +1,6 @@
 import { AxiosResponse } from 'axios';
 
-import { HttpClient } from 'src/services/http';
+import { HttpClient } from '@/services/http';
 
 export class PasswordService {
   httpClient: HttpClient;

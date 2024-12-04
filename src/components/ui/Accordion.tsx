@@ -2,7 +2,7 @@ import DsfrAccordion, { type AccordionProps as DsfrAccordionProps } from '@codeg
 import { useQueryState } from 'nuqs';
 import styled, { css } from 'styled-components';
 
-import useArrayQueryState from '@hooks/useArrayQueryState';
+import useArrayQueryState from '@/hooks/useArrayQueryState';
 
 import Icon from './Icon';
 import Infobulle from './Infobulle';

@@ -1,5 +1,5 @@
-import PressJune23 from '@components/Press/June23';
-import SimplePage from '@components/shared/page/SimplePage';
+import PressJune23 from '@/components/Press/June23';
+import SimplePage from '@/components/shared/page/SimplePage';
 
 const CommuniqueDePresseJune23Page = () => {
   return (

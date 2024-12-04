@@ -1,6 +1,6 @@
-import { PageBody, PageTitle } from '@components/HeadSliceForm/HeadSliceForm.style';
-import MarkdownWrapper from '@components/MarkdownWrapper';
-import Slice from '@components/Slice';
+import { PageBody, PageTitle } from '@/components/HeadSliceForm/HeadSliceForm.style';
+import MarkdownWrapper from '@/components/MarkdownWrapper';
+import Slice from '@/components/Slice';
 
 import { Container, HeaderContainer } from './Header.styles';
 

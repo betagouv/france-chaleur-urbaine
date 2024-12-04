@@ -2,10 +2,10 @@ import { Range, RangeProps } from '@codegouvfr/react-dsfr/Range';
 import { useCounter } from '@react-hookz/web';
 import { ReactNode, useCallback, useEffect, useRef } from 'react';
 
-import Box from '@components/ui/Box';
-import Loader from '@components/ui/Loader';
-import Tooltip from '@components/ui/Tooltip';
-import { Interval } from '@utils/interval';
+import Box from '@/components/ui/Box';
+import Loader from '@/components/ui/Loader';
+import Tooltip from '@/components/ui/Tooltip';
+import { Interval } from '@/utils/interval';
 
 export function roundNumberProgressively(v: number): number {
   return v > 2 ? Math.round(v) : v > 1 ? Math.round(v * 10) / 10 : Math.round(v * 100) / 100;

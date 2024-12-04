@@ -1,6 +1,6 @@
-import Box, { ResponsiveRow } from '@components/ui/Box';
-import Heading from '@components/ui/Heading';
-import Link from '@components/ui/Link';
+import Box, { ResponsiveRow } from '@/components/ui/Box';
+import Heading from '@/components/ui/Heading';
+import Link from '@/components/ui/Link';
 
 import { Image } from './City.styles';
 

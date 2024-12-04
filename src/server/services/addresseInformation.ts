@@ -1,8 +1,8 @@
 import XLSX from 'xlsx';
 
-import db from 'src/db';
-import { EXPORT_FORMAT } from 'src/types/enum/ExportFormat';
-import { CityNetwork, HeatNetwork } from 'src/types/HeatNetworksResponse';
+import db from '@/server/db';
+import { EXPORT_FORMAT } from '@/types/enum/ExportFormat';
+import { CityNetwork, HeatNetwork } from '@/types/HeatNetworksResponse';
 
 import isInPDP from './pdp';
 

@@ -4,11 +4,11 @@ import { Checkbox } from '@codegouvfr/react-dsfr/Checkbox';
 import { FormEvent, useState } from 'react';
 import styled from 'styled-components';
 
-import Input from '@components/form/dsfr/Input';
-import MarkdownWrapper from '@components/MarkdownWrapper';
-import { updateAirtable } from '@helpers/airtable';
-import { AddressDataType } from 'src/types/AddressData';
-import { Airtable } from 'src/types/enum/Airtable';
+import Input from '@/components/form/dsfr/Input';
+import MarkdownWrapper from '@/components/MarkdownWrapper';
+import { updateAirtable } from '@/server/helpers/airtable';
+import { AddressDataType } from '@/types/AddressData';
+import { Airtable } from '@/types/enum/Airtable';
 
 import { ContactFormEligibilityResult } from './components';
 

@@ -26,3 +26,7 @@ function useDevMode() {
 }
 
 export default useDevMode;
+
+export function isDevModeEnabled() {
+  return !!window.devModeEnabled;
+}

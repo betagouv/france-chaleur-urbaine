@@ -1,10 +1,10 @@
 import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from 'next';
 
-import City from '@components/Cities/City';
-import { GlobalStyle } from '@components/shared/layout/Global.style';
-import SimplePage from '@components/shared/page/SimplePage';
-import { getNetwork } from '@core/infrastructure/repository/network';
-import citiesData from '@data/villes/villes';
+import City from '@/components/Cities/City';
+import { GlobalStyle } from '@/components/shared/layout/Global.style';
+import SimplePage from '@/components/shared/page/SimplePage';
+import citiesData from '@/data/villes/villes';
+import { getNetwork } from '@/server/services/network';
 
 type ComponentProps = InferGetStaticPropsType<typeof getStaticProps>;
 

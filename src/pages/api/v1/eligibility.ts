@@ -1,9 +1,9 @@
 import type { NextApiRequest } from 'next';
 import z from 'zod';
 
-import { getEligilityStatus } from '@core/infrastructure/repository/addresseInformation';
-import { handleRouteErrors, requireGetMethod, validateObjectSchema } from '@helpers/server';
-import { withCors } from 'src/services/api/cors';
+import { handleRouteErrors, requireGetMethod, validateObjectSchema } from '@/server/helpers/server';
+import { getEligilityStatus } from '@/server/services/addresseInformation';
+import { withCors } from '@/services/api/cors';
 
 export default withCors(
   handleRouteErrors(async (req: NextApiRequest) => {

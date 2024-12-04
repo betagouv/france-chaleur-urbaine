@@ -1,5 +1,5 @@
-import { HttpClient } from 'src/services/http';
-import { SuggestionResponse } from 'src/types/Suggestions';
+import { HttpClient } from '@/services/http';
+import { SuggestionResponse } from '@/types/Suggestions';
 
 import { ServiceError } from './errors';
 

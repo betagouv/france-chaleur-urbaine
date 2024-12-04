@@ -1,6 +1,6 @@
-import { HttpClient } from 'src/services/http';
-import { EligibilityDemand } from 'src/types/EligibilityDemand';
-import { UserResponse } from 'src/types/UserResponse';
+import { HttpClient } from '@/services/http';
+import { EligibilityDemand } from '@/types/EligibilityDemand';
+import { UserResponse } from '@/types/UserResponse';
 
 export class AdminService {
   httpClient: HttpClient;

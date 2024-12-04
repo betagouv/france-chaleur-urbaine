@@ -1,4 +1,4 @@
-import { User } from 'src/types/User';
+import { User } from '@/types/User';
 
 import { ExportColumn } from './ExportColumn';
 import { Demand } from './Summary/Demand';

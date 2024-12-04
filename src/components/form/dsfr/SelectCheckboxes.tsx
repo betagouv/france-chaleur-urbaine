@@ -1,6 +1,6 @@
 import styled, { css } from 'styled-components';
 
-import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/Popover';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover';
 
 import Checkbox, { type CheckboxProps } from './Checkbox';
 import FieldWrapper, { type FieldWrapperProps } from './FieldWrapper';

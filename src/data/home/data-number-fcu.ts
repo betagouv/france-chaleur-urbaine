@@ -1,4 +1,4 @@
-import statistics from '@data/statistics';
+import statistics from '@/data/statistics';
 
 const dataNumberFcu = {
   date: statistics.lastActu,

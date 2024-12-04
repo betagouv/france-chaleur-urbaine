@@ -1,9 +1,9 @@
-import db from 'src/db';
-import { EXPORT_FORMAT } from 'src/types/enum/ExportFormat';
-import { Summary } from 'src/types/Summary';
-import { EnergySummary } from 'src/types/Summary/Energy';
-import { GasSummary } from 'src/types/Summary/Gas';
-import { NetworkSummary } from 'src/types/Summary/Network';
+import db from '@/server/db';
+import { EXPORT_FORMAT } from '@/types/enum/ExportFormat';
+import { Summary } from '@/types/Summary';
+import { EnergySummary } from '@/types/Summary/Energy';
+import { GasSummary } from '@/types/Summary/Gas';
+import { NetworkSummary } from '@/types/Summary/Network';
 
 import { getSpreadSheet, zip } from './export';
 import { consoColumns, fioulColumns, gasColumns } from './export.config';

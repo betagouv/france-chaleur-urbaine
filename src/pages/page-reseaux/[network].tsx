@@ -2,10 +2,10 @@ import { GetStaticProps } from 'next';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
-import NetworkPanel from '@components/Network/Network';
-import SEO from '@components/SEO';
-import { getColdNetwork, getNetwork } from '@core/infrastructure/repository/network';
-import { Network } from 'src/types/Summary/Network';
+import NetworkPanel from '@/components/Network/Network';
+import SEO from '@/components/SEO';
+import { getColdNetwork, getNetwork } from '@/server/services/network';
+import { Network } from '@/types/Summary/Network';
 
 const PageReseau = ({ network }: { network: Network }) => {
   const router = useRouter();

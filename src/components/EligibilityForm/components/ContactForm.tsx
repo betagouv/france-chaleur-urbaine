@@ -4,9 +4,9 @@ import { useRouter } from 'next/router';
 import { ReactNode, useRef } from 'react';
 import * as Yup from 'yup';
 
-import Loader from '@components/Loader';
-import { AnalyticsFormId } from 'src/services/analytics';
-import { ContactFormInfos } from 'src/types/Summary/Demand';
+import Loader from '@/components/Loader';
+import { AnalyticsFormId } from '@/services/analytics';
+import { ContactFormInfos } from '@/types/Summary/Demand';
 
 import ContactConsent, { defaultValuesContactConsent, validationSchemasContactConsent } from './ContactConsent';
 import ContactInformation, { defaultValuesContactInformation, validationSchemasContactInformation } from './ContactInformation';

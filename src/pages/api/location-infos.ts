@@ -2,8 +2,8 @@ import * as Sentry from '@sentry/node';
 import { NextApiRequest } from 'next';
 import { z } from 'zod';
 
-import { handleRouteErrors, requirePostMethod, validateObjectSchema } from '@helpers/server';
-import db from 'src/db';
+import db from '@/server/db';
+import { handleRouteErrors, requirePostMethod, validateObjectSchema } from '@/server/helpers/server';
 
 const zLocationInfos = {
   lon: z.number(),

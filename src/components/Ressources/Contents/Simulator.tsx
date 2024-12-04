@@ -3,8 +3,8 @@ import { Select } from '@codegouvfr/react-dsfr/SelectNext';
 import Link from 'next/link';
 import { ReactNode, useEffect, useState } from 'react';
 
-import { LegacyColor } from '@components/ui/helpers/colors';
-import Text from '@components/ui/Text';
+import { LegacyColor } from '@/components/ui/helpers/colors';
+import Text from '@/components/ui/Text';
 
 import { Container, Disclaimer, Form, Inputs, RedirectionButton, Result, ResultValue, Title } from './Simulator.styles';
 

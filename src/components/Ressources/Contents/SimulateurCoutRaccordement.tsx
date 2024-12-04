@@ -3,13 +3,13 @@ import Input from '@codegouvfr/react-dsfr/Input';
 import Select from '@codegouvfr/react-dsfr/SelectNext';
 import { useMemo, useState } from 'react';
 
-import Box, { ResponsiveRow } from '@components/ui/Box';
-import Heading from '@components/ui/Heading';
-import Icon from '@components/ui/Icon';
-import Link from '@components/ui/Link';
-import Text from '@components/ui/Text';
-import { isDefined } from '@utils/core';
-import { trackEvent } from 'src/services/analytics';
+import Box, { ResponsiveRow } from '@/components/ui/Box';
+import Heading from '@/components/ui/Heading';
+import Icon from '@/components/ui/Icon';
+import Link from '@/components/ui/Link';
+import Text from '@/components/ui/Text';
+import { trackEvent } from '@/services/analytics';
+import { isDefined } from '@/utils/core';
 
 import { prixSpotCEE } from './Simulator';
 

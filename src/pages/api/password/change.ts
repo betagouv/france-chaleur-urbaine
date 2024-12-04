@@ -3,9 +3,9 @@ import jwt from 'jsonwebtoken';
 import { NextApiRequest } from 'next';
 import { z } from 'zod';
 
-import { BadRequestError, handleRouteErrors, requirePostMethod, validateObjectSchema } from '@helpers/server';
-import { zPassword } from '@utils/validation';
-import db from 'src/db';
+import db from '@/server/db';
+import { BadRequestError, handleRouteErrors, requirePostMethod, validateObjectSchema } from '@/server/helpers/server';
+import { zPassword } from '@/utils/validation';
 
 const changePasswordRequest = handleRouteErrors(async (req: NextApiRequest) => {
   requirePostMethod(req);

@@ -1,9 +1,9 @@
-import { CartoImage } from '@components/CollectivitesExploitantsPage.style';
-import IFrameMapIntegrationForm from '@components/IFrame/Map/IFrameMapIntegrationForm';
-import { StyledIFrameLink } from '@components/IFrame/Map/IFrameMapIntegrationForm.styles';
-import Box, { ResponsiveRow } from '@components/ui/Box';
-import Heading from '@components/ui/Heading';
-import Text from '@components/ui/Text';
+import { CartoImage } from '@/components/CollectivitesExploitantsPage.style';
+import IFrameMapIntegrationForm from '@/components/IFrame/Map/IFrameMapIntegrationForm';
+import { StyledIFrameLink } from '@/components/IFrame/Map/IFrameMapIntegrationForm.styles';
+import Box, { ResponsiveRow } from '@/components/ui/Box';
+import Heading from '@/components/ui/Heading';
+import Text from '@/components/ui/Text';
 
 type PageFromType = 'copro' | 'pro';
 

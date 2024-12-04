@@ -1,9 +1,9 @@
 import { useIsMounted } from '@react-hookz/web';
 import { useState } from 'react';
 
-import debounce from '@utils/debounce';
-import { useServices } from 'src/services';
-import { SuggestionItem } from 'src/types/Suggestions';
+import { useServices } from '@/services';
+import { SuggestionItem } from '@/types/Suggestions';
+import debounce from '@/utils/debounce';
 
 enum Status {
   Idle = 'idle',

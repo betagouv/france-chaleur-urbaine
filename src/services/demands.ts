@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { HttpClient } from 'src/services/http';
-import { Demand } from 'src/types/Summary/Demand';
+import { HttpClient } from '@/services/http';
+import { Demand } from '@/types/Summary/Demand';
 
 import { ServiceError } from './errors';
 

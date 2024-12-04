@@ -1,6 +1,6 @@
 import { RadioButtons } from '@codegouvfr/react-dsfr/RadioButtons';
 
-import useInViewport from '@hooks/useInViewport';
+import useInViewport from '@/hooks/useInViewport';
 
 import { usePublicodesFormContext } from './FormProvider';
 import { fixupBooleanEngineValue, getOptions } from './helpers';

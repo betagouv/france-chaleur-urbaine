@@ -1,9 +1,9 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import zod from 'zod';
 
-import { handleRouteErrors, validateObjectSchema } from '@helpers/server';
-import getTile from 'src/services/tiles';
-import { zDatabaseSourceId } from 'src/services/tiles.config';
+import { handleRouteErrors, validateObjectSchema } from '@/server/helpers/server';
+import getTile from '@/services/tiles';
+import { zDatabaseSourceId } from '@/services/tiles.config';
 
 // disable the warning for this route as many tiles are bigger than the default 4MB threshold
 export const config = {

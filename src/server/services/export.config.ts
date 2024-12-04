@@ -1,6 +1,6 @@
-import { ExportColumn } from 'src/types/ExportColumn';
-import { EnergySummary } from 'src/types/Summary/Energy';
-import { GasSummary } from 'src/types/Summary/Gas';
+import { ExportColumn } from '@/types/ExportColumn';
+import { EnergySummary } from '@/types/Summary/Energy';
+import { GasSummary } from '@/types/Summary/Gas';
 
 export const consoColumns: ExportColumn<GasSummary>[] = [
   {

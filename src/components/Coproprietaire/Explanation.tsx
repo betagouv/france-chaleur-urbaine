@@ -1,6 +1,6 @@
-import { Glass, ImageContainer } from '@components/Infographie/index.styles';
-import Icon from '@components/ui/Icon';
-import WrappedText from '@components/WrappedText/WrappedText';
+import { Glass, ImageContainer } from '@/components/Infographie/index.styles';
+import Icon from '@/components/ui/Icon';
+import WrappedText from '@/components/WrappedText/WrappedText';
 
 import CoproGuide from './CoproGuide';
 import { Container, Title } from './Explanation.styles';

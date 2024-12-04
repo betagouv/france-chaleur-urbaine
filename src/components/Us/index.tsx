@@ -1,9 +1,9 @@
-import { List } from '@components/Ressources/Contents/Contents.styles';
-import Slice from '@components/Slice';
-import TextList from '@components/TextList';
-import Heading from '@components/ui/Heading';
-import Link from '@components/ui/Link';
-import { dataNumberFcu } from '@data';
+import { List } from '@/components/Ressources/Contents/Contents.styles';
+import Slice from '@/components/Slice';
+import TextList from '@/components/TextList';
+import Heading from '@/components/ui/Heading';
+import Link from '@/components/ui/Link';
+import dataNumberFcu from '@/data/home/data-number-fcu';
 
 import { Description, Logos, Row, Title } from './index.styles';
 

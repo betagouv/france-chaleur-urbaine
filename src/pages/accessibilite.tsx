@@ -1,4 +1,4 @@
-import SimplePage from '@components/shared/page/SimplePage';
+import SimplePage from '@/components/shared/page/SimplePage';
 
 function Accessibilite() {
   return (

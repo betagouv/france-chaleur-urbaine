@@ -6,12 +6,12 @@ import { useCallback, useMemo } from 'react';
 import EligibilityContactFormModal, {
   modal as eligibilityContactFormModal,
   useIsModalOpen,
-} from '@components/EligibilityForm/EligibilityContactFormModal';
-import Box from '@components/ui/Box';
-import Icon from '@components/ui/Icon';
-import { getReadableDistance } from 'src/services/Map/distance';
-import { Point } from 'src/types/Point';
-import { StoredAddress } from 'src/types/StoredAddress';
+} from '@/components/EligibilityForm/EligibilityContactFormModal';
+import Box from '@/components/ui/Box';
+import Icon from '@/components/ui/Icon';
+import { getReadableDistance } from '@/services/Map/distance';
+import { Point } from '@/types/Point';
+import { StoredAddress } from '@/types/StoredAddress';
 
 import { ContactFormButtonWrapper, ContactFormWrapper, MessageConfirmBox, SearchedAddress } from './CardSearchDetails.style';
 

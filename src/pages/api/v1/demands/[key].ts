@@ -1,9 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-import { getGestionnairesDemands } from '@core/infrastructure/repository/manager';
-import { handleRouteErrors, requireGetMethod } from '@helpers/server';
-import { apiUser } from 'src/services/api/authentication';
-import { withCors } from 'src/services/api/cors';
+import { handleRouteErrors, requireGetMethod } from '@/server/helpers/server';
+import { getGestionnairesDemands } from '@/server/services/manager';
+import { apiUser } from '@/services/api/authentication';
+import { withCors } from '@/services/api/cors';
 
 const demands = handleRouteErrors(async (req: NextApiRequest, res: NextApiResponse) => {
   requireGetMethod(req);

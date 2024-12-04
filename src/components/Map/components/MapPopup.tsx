@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Popup } from 'react-map-gl/maplibre';
 
-import { MapPopupType } from 'src/types/MapComponentsInfos';
-import { Point } from 'src/types/Point';
+import { MapPopupType } from '@/types/MapComponentsInfos';
+import { Point } from '@/types/Point';
 
 import DynamicPopupContent, { isDynamicPopupContent } from './DynamicMapPopupContent';
 import MapPopupContent, { ViasevaPopupContent } from './MapPopupContent';

@@ -3,8 +3,8 @@ import base64 from 'base64-stream';
 import getStream from 'get-stream';
 import XLSX from 'xlsx';
 
-import { EXPORT_FORMAT } from 'src/types/enum/ExportFormat';
-import { ExportColumn } from 'src/types/ExportColumn';
+import { EXPORT_FORMAT } from '@/types/enum/ExportFormat';
+import { ExportColumn } from '@/types/ExportColumn';
 
 const convertToStringArray = (columns: ExportColumn<any>[], data: any[]): string[][] => {
   return [columns.map((column) => column.header)].concat(

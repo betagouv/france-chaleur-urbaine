@@ -1,9 +1,9 @@
 import geojsonvt from 'geojson-vt';
 import vtpbf from 'vt-pbf';
 
-import { tileSourcesMaxZoom } from '@components/Map/map-layers';
-import db from 'src/db';
-import base from 'src/db/airtable';
+import { tileSourcesMaxZoom } from '@/components/Map/map-layers';
+import db from '@/server/db';
+import base from '@/server/db/airtable';
 
 import { AirtableTileInfo, DatabaseSourceId, tilesInfo } from './tiles.config';
 

@@ -2,9 +2,9 @@ import { Readable } from 'stream';
 
 import { z } from 'zod';
 
-import { handleRouteErrors, requireGetMethod, validateObjectSchema } from '@helpers/server';
-import { AirtableDB } from 'src/db/airtable';
-import { NetworkAttachment } from 'src/types/Summary/Network';
+import { AirtableDB } from '@/server/db/airtable';
+import { handleRouteErrors, requireGetMethod, validateObjectSchema } from '@/server/helpers/server';
+import { NetworkAttachment } from '@/types/Summary/Network';
 
 export const config = {
   api: {

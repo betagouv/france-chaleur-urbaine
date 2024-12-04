@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
-import { mapControlZindex } from '@components/Map/Map.style';
-import { fullscreenHeaderHeight, tabHeaderHeight } from '@components/shared/layout/MainLayout.data';
+import { mapControlZindex } from '@/components/Map/Map.style';
+import { fullscreenHeaderHeight, tabHeaderHeight } from '@/components/shared/layout/MainLayout.data';
 
 export const Container = styled.div`
   margin: auto;

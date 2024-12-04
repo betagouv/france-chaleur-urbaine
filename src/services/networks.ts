@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { HttpClient } from 'src/services/http';
-import { NetworkToCompare } from 'src/types/Summary/Network';
+import { HttpClient } from '@/services/http';
+import { NetworkToCompare } from '@/types/Summary/Network';
 
 import { ServiceError } from './errors';
 

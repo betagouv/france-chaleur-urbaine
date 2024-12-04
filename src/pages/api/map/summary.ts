@@ -4,12 +4,12 @@ import turfLength from '@turf/length';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { z } from 'zod';
 
-import { exportPolygonSummary, getLineSummary, getPolygonSummary } from '@core/infrastructure/repository/dataSummary';
-import { handleRouteErrors, invalidRouteError, requireGetMethod, validateObjectSchema } from '@helpers/server';
-import { validatePolygonGeometry } from '@utils/geo';
-import { clientConfig } from 'src/client-config';
-import { withCors } from 'src/services/api/cors';
-import { EXPORT_FORMAT } from 'src/types/enum/ExportFormat';
+import { clientConfig } from '@/client-config';
+import { handleRouteErrors, invalidRouteError, requireGetMethod, validateObjectSchema } from '@/server/helpers/server';
+import { exportPolygonSummary, getLineSummary, getPolygonSummary } from '@/server/services/dataSummary';
+import { withCors } from '@/services/api/cors';
+import { EXPORT_FORMAT } from '@/types/enum/ExportFormat';
+import { validatePolygonGeometry } from '@/utils/geo';
 
 const polygonSummary = async (coordinates: GeoJSON.Position[], req: NextApiRequest, res: NextApiResponse) => {
   const size = turfArea(polygon([coordinates])) / 1_000_000;

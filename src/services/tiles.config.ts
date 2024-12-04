@@ -1,13 +1,13 @@
 import { Knex } from 'knex';
 import { z } from 'zod';
 
-import { buildingsDataExtractionPolygonsSourceId } from '@components/Map/components/tools/BuildingsDataExtractionTool';
+import { buildingsDataExtractionPolygonsSourceId } from '@/components/Map/components/tools/BuildingsDataExtractionTool';
 import {
   distancesMeasurementLabelsSourceId,
   distancesMeasurementLinesSourceId,
-} from '@components/Map/components/tools/DistancesMeasurementTool';
-import { linearHeatDensityLabelsSourceId, linearHeatDensityLinesSourceId } from '@components/Map/components/tools/LinearHeatDensityTool';
-import { Airtable } from 'src/types/enum/Airtable';
+} from '@/components/Map/components/tools/DistancesMeasurementTool';
+import { linearHeatDensityLabelsSourceId, linearHeatDensityLinesSourceId } from '@/components/Map/components/tools/LinearHeatDensityTool';
+import { Airtable } from '@/types/enum/Airtable';
 
 type BasicTileInfo = {
   table: string;

@@ -1,6 +1,6 @@
-import { isDefined } from '@utils/core';
-import db from 'src/db';
-import { NetworkToCompare } from 'src/types/Summary/Network';
+import db from '@/server/db';
+import { NetworkToCompare } from '@/types/Summary/Network';
+import { isDefined } from '@/utils/core';
 
 export const getNetworks = async (): Promise<NetworkToCompare[]> => {
   const networks = await db('reseaux_de_chaleur')

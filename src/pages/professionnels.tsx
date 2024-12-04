@@ -1,24 +1,24 @@
 import Image from 'next/image';
 
-import LastArticles from '@components/Articles/LastArticles';
-import BulkEligibilityForm from '@components/EligibilityForm/BulkEligibilityForm';
-import IframeIntegration from '@components/GenericContent/IframeIntegration';
-import ObligationRaccordement from '@components/GenericContent/ObligationRaccordement';
-import ReduireImpact from '@components/GenericContent/ReduireImpact';
-import HeadSliceForm from '@components/HeadSliceForm';
-import { ArrowPuce } from '@components/MarkdownWrapper/MarkdownWrapper.style';
-import Partners from '@components/Partners/Partners';
-import { issues, understandings } from '@components/Ressources/config';
-import SimulateurCoutRaccordement from '@components/Ressources/Contents/SimulateurCoutRaccordement';
-import Understanding from '@components/Ressources/Understanding';
-import SimplePage from '@components/shared/page/SimplePage';
-import SimulatorCO2 from '@components/SimulatorCO2';
-import { TypeSurf } from '@components/SimulatorCO2/SimulatorCO2.businessRule';
-import Owner from '@components/Tertiaire/Owner';
-import Box, { ResponsiveRow } from '@components/ui/Box';
-import Heading from '@components/ui/Heading';
-import Link from '@components/ui/Link';
-import Text from '@components/ui/Text';
+import LastArticles from '@/components/Articles/LastArticles';
+import BulkEligibilityForm from '@/components/EligibilityForm/BulkEligibilityForm';
+import IframeIntegration from '@/components/GenericContent/IframeIntegration';
+import ObligationRaccordement from '@/components/GenericContent/ObligationRaccordement';
+import ReduireImpact from '@/components/GenericContent/ReduireImpact';
+import HeadSliceForm from '@/components/HeadSliceForm';
+import { ArrowPuce } from '@/components/MarkdownWrapper/MarkdownWrapper.style';
+import Partners from '@/components/Partners/Partners';
+import { issues, understandings } from '@/components/Ressources/config';
+import SimulateurCoutRaccordement from '@/components/Ressources/Contents/SimulateurCoutRaccordement';
+import Understanding from '@/components/Ressources/Understanding';
+import SimplePage from '@/components/shared/page/SimplePage';
+import SimulatorCO2 from '@/components/SimulatorCO2';
+import { TypeSurf } from '@/components/SimulatorCO2/SimulatorCO2.businessRule';
+import Owner from '@/components/Tertiaire/Owner';
+import Box, { ResponsiveRow } from '@/components/ui/Box';
+import Heading from '@/components/ui/Heading';
+import Link from '@/components/ui/Link';
+import Text from '@/components/ui/Text';
 
 const conseillerCards = {
   'energies-vertes': issues['energies-vertes'],

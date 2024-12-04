@@ -7,9 +7,9 @@ import { ReactNode, useState } from 'react';
 import styled from 'styled-components';
 import * as Yup from 'yup';
 
-import Input from '@components/form/formik/input';
-import Box from '@components/ui/Box';
-import Text from '@components/ui/Text';
+import Input from '@/components/form/formik/input';
+import Box from '@/components/ui/Box';
+import Text from '@/components/ui/Text';
 
 const InputWraper = styled(Box)`
   opacity: 1;

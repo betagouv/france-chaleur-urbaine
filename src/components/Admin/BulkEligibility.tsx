@@ -1,13 +1,13 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 
-import Input from '@components/form/dsfr/Input';
-import Box from '@components/ui/Box';
-import Heading from '@components/ui/Heading';
-import Icon from '@components/ui/Icon';
-import { Table, type ColumnDef } from '@components/ui/Table';
-import { useServices } from 'src/services';
-import { EligibilityDemand } from 'src/types/EligibilityDemand';
+import Input from '@/components/form/dsfr/Input';
+import Box from '@/components/ui/Box';
+import Heading from '@/components/ui/Heading';
+import Icon from '@/components/ui/Icon';
+import { Table, type ColumnDef } from '@/components/ui/Table';
+import { useServices } from '@/services';
+import { EligibilityDemand } from '@/types/EligibilityDemand';
 
 import DownloadButton from './DownloadButton';
 import { TableContainer } from './Users.styles';

@@ -1,18 +1,13 @@
 import { v4 as uuidv4 } from 'uuid';
 
-import db from 'src/db';
-import base from 'src/db/airtable';
-import { Airtable } from 'src/types/enum/Airtable';
-import { Demand } from 'src/types/Summary/Demand';
-import { User } from 'src/types/User';
+import db from '@/server/db';
+import base from '@/server/db/airtable';
+import { getAllNewDemands, getAllStaledDemandsSince, getAllToRelanceDemands, getToRelanceDemand } from '@/server/services/manager';
+import { Airtable } from '@/types/enum/Airtable';
+import { Demand } from '@/types/Summary/Demand';
+import { User } from '@/types/User';
 
 import { sendNewDemands, sendOldDemands, sendRelanceMail } from './email';
-import {
-  getAllNewDemands,
-  getAllStaledDemandsSince,
-  getAllToRelanceDemands,
-  getToRelanceDemand,
-} from '../core/infrastructure/repository/manager';
 
 const groupDemands = (demands: Demand[]): Record<string, Demand[]> => {
   const groupedDemands: Record<string, Demand[]> = {};

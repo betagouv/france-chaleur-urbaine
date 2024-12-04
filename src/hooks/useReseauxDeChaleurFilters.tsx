@@ -2,12 +2,12 @@ import { useSearchParams } from 'next/navigation';
 import { parseAsJson, useQueryState } from 'nuqs';
 import { useEffect, useState } from 'react';
 
-import { ReseauxDeChaleurLimits } from '@components/Map/map-layers';
-import { deepMergeObjects, getProperty, setProperty } from '@utils/core';
-import { fetchJSON } from '@utils/network';
-import { deepIntersection } from '@utils/objects';
-import { FlattenKeys } from '@utils/typescript';
-import { defaultInterval, percentageMaxInterval, type FiltreEnergieConfKey } from 'src/services/Map/map-configuration';
+import { ReseauxDeChaleurLimits } from '@/components/Map/map-layers';
+import { defaultInterval, percentageMaxInterval, type FiltreEnergieConfKey } from '@/services/Map/map-configuration';
+import { deepMergeObjects, getProperty, setProperty } from '@/utils/core';
+import { fetchJSON } from '@/utils/network';
+import { deepIntersection } from '@/utils/objects';
+import { FlattenKeys } from '@/utils/typescript';
 
 const countNotArrayLeaves = <T extends Record<string, any>>(obj: T = {} as T): number =>
   obj && typeof obj === 'object' && !Array.isArray(obj) ? Object.values(obj).reduce((acc, v) => acc + countNotArrayLeaves(v), 0) : 1;

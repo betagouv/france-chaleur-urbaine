@@ -3,8 +3,8 @@ import { Popover } from '@mui/material';
 import Colorful from '@uiw/react-color-colorful';
 import { useState } from 'react';
 
-import Box from '@components/ui/Box';
-import { formatDistance } from '@utils/geo';
+import Box from '@/components/ui/Box';
+import { formatDistance } from '@/utils/geo';
 
 import { MeasureFeature } from './measure';
 
