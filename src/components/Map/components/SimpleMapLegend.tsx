@@ -916,6 +916,8 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                   color: 'var(--text-action-high-blue-france)',
                 }}
               />
+              {/* spacer */}
+              <Box width="32px" />
             </Box>
 
             <TrackableCheckableAccordion
@@ -1037,6 +1039,8 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                   color: 'var(--text-action-high-blue-france)',
                 }}
               />
+              {/* spacer */}
+              <Box width="32px" />
             </Box>
           </UrlStateAccordion>
 
@@ -1082,6 +1086,8 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                   color: 'var(--text-action-high-blue-france)',
                 }}
               />
+              {/* spacer */}
+              <Box width="32px" />
             </Box>
 
             <TrackableCheckableAccordion
