@@ -5,7 +5,7 @@ import { InvalidArgumentError, createCommand } from '@commander-js/extra-typings
 import { saveStatsInDB } from '@/server/cron/saveStatsInDB';
 import db from '@/server/db';
 import { logger } from '@/server/helpers/logger';
-import { type DatabaseTileInfo, type DatabaseSourceId, tilesInfo, zDatabaseSourceId } from '@/services/tiles.config';
+import { type DatabaseTileInfo, type DatabaseSourceId, tilesInfo, zDatabaseSourceId } from '@/server/services/tiles.config';
 
 import { type KnownAirtableBase, knownAirtableBases } from './airtable/bases';
 import { createModificationsReseau } from './airtable/create-modifications-reseau';

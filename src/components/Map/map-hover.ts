@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { type MapMouseEvent, type MapRef } from 'react-map-gl/maplibre';
 
 import { isDevModeEnabled } from '@/hooks/useDevMode';
-import { type SourceId } from '@/services/tiles.config';
+import { type SourceId } from '@/server/services/tiles.config';
 import { type MapPopupInfos } from '@/types/MapComponentsInfos';
 
 import { layersWithDynamicContentPopup } from './components/DynamicMapPopupContent';

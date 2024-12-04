@@ -11,6 +11,7 @@ import {
   type StyleSetterOptions,
 } from 'maplibre-gl';
 
+import { type SourceId } from '@/server/services/tiles.config';
 import { gestionnairesFilters } from '@/services';
 import {
   themeDefBuildings,
@@ -24,7 +25,6 @@ import { arrColorFromDefBuildingsDpeEnergy } from '@/services/Map/businessRules/
 import { themeDefSolaireThermiqueFriches, themeDefSolaireThermiqueParkings } from '@/services/Map/businessRules/enrrMobilisables';
 import { themeDefZonePotentielChaud, themeDefZonePotentielFortChaud } from '@/services/Map/businessRules/zonePotentielChaud';
 import { type MapConfiguration, filtresEnergies, percentageMaxInterval } from '@/services/Map/map-configuration';
-import { type SourceId } from '@/services/tiles.config';
 import { ENERGY_TYPE, ENERGY_USED } from '@/types/enum/EnergyType';
 import { type Network } from '@/types/Summary/Network';
 import { isDefined } from '@/utils/core';

@@ -2,7 +2,7 @@ import geojsonvt from 'geojson-vt';
 import vtpbf from 'vt-pbf';
 
 import db from '@/server/db';
-import { type DatabaseTileInfo, type DatabaseSourceId, preTable, tilesInfo } from '@/services/tiles.config';
+import { type DatabaseTileInfo, type DatabaseSourceId, preTable, tilesInfo } from '@/server/services/tiles.config';
 
 const geoJSONQuery = (properties: string[], id: string) =>
   db.raw(

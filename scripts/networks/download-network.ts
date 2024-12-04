@@ -4,7 +4,7 @@ import { type FieldSet } from 'airtable/lib/field_set';
 import db from '@/server/db';
 import base from '@/server/db/airtable';
 import { parentLogger } from '@/server/helpers/logger';
-import { type DatabaseTileInfo, tilesInfo, type DatabaseSourceId } from '@/services/tiles.config';
+import { type DatabaseTileInfo, tilesInfo, type DatabaseSourceId } from '@/server/services/tiles.config';
 
 export const TypeArray: unique symbol = Symbol('array');
 export const TypeBool: unique symbol = Symbol('bool');

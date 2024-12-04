@@ -1,6 +1,5 @@
 import Link from 'next/link';
 
-import { getConso } from '@/services/Map/conso';
 import { type DemandSummary } from '@/types/Summary/Demand';
 import { type EnergySummary } from '@/types/Summary/Energy';
 import { type FuturNetworkSummary } from '@/types/Summary/FuturNetwork';
@@ -245,4 +244,15 @@ export const ViasevaPopupContent = ({ network, futurNetwork }: { network?: Netwo
       )}
     </>
   );
+};
+
+const getConso = (conso: number) => {
+  if (isDefined(conso)) {
+    if (conso > 1000) {
+      return `${(conso / 1000).toFixed(2)} GWh`;
+    }
+
+    return `${conso.toFixed(2)} MWh`;
+  }
+  return 'Non connu';
 };

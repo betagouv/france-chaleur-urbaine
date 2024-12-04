@@ -16,10 +16,10 @@ import { type NetworkEligibilityStatus } from '@/server/services/addresseInforma
 import { useServices } from '@/services';
 import { formatDataToAirtable, submitToAirtable } from '@/services/airtable';
 import { trackEvent } from '@/services/analytics';
-import { getReadableDistance } from '@/services/Map/distance';
 import { Airtable } from '@/types/enum/Airtable';
 import { type SuggestionItem } from '@/types/Suggestions';
 import { type ContactFormInfos, type FormDemandCreation } from '@/types/Summary/Demand';
+import { getReadableDistance } from '@/utils/geo';
 import { workMinimum } from '@/utils/time';
 
 type FormState = 'idle' | 'loadingEligibility' | 'eligibilitySubmissionError' | 'sendingDemand' | 'demandCreated' | 'demandSubmissionError';
