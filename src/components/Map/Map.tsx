@@ -6,7 +6,7 @@ import { LayerSpecification, MapLibreEvent } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useRouter } from 'next/router';
 import { parseAsJson, parseAsString, useQueryStates } from 'nuqs';
-import { MutableRefObject, useCallback, useEffect, useRef, useState } from 'react';
+import { MutableRefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import ReactDOMServer from 'react-dom/server';
 import MapReactGL, {
   AttributionControl,
@@ -216,9 +216,12 @@ export const FullyFeaturedMap = ({
     }
   }, []);
 
-  const markAddressAsContacted = (address: Partial<StoredAddress>) => {
-    setSoughtAddresses(soughtAddresses.map((addr) => (addr.id === address.id ? { ...addr, contacted: true } : addr)));
-  };
+  const markAddressAsContacted = useCallback(
+    (address: Partial<StoredAddress>) => {
+      setSoughtAddresses(soughtAddresses.map((addr) => (addr.id === address.id ? { ...addr, contacted: true } : addr)));
+    },
+    [soughtAddresses]
+  );
 
   const onAddressSelectHandle: HandleAddressSelect = useCallback(
     (address: string, coordinates: Point, addressDetails: AddressDetail) => {
@@ -274,6 +277,15 @@ export const FullyFeaturedMap = ({
       setMarkersList((current) => current.filter((marker) => marker.id !== id));
     },
     [setSoughtAddresses, soughtAddresses, selectedCardIndex]
+  );
+
+  // cache setExpanded functions to avoid rerendering CardSearchDetails
+  const setExpandedFunctions = useMemo(
+    () =>
+      (soughtAddresses ?? []).map((_, index) => (expanded: boolean) => {
+        setSelectedCardIndex(expanded ? index : -1);
+      }),
+    [soughtAddresses?.length]
   );
 
   const onMapLoad = async (e: MapLibreEvent) => {
@@ -726,7 +738,7 @@ export const FullyFeaturedMap = ({
                   expanded={soughtAddressesVisible}
                   onExpandedChange={setSoughtAddressesVisible}
                 >
-                  <Box display="flex" flexDirection="column" gap={'8px'}>
+                  <Box display="flex" flexDirection="column" gap="8px">
                     {soughtAddresses.map((soughtAddress, index) => (
                       <CardSearchDetails
                         key={soughtAddress.id}
@@ -735,7 +747,7 @@ export const FullyFeaturedMap = ({
                         onClickClose={removeSoughtAddresses}
                         onContacted={markAddressAsContacted}
                         expanded={selectedCardIndex === index}
-                        setExpanded={(expanded) => setSelectedCardIndex(expanded ? index : -1)}
+                        setExpanded={setExpandedFunctions[index]}
                       />
                     ))}
                   </Box>
