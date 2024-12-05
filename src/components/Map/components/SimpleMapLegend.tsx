@@ -182,7 +182,6 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                       fontSize="14px"
                       lineHeight="18px"
                       className="fr-col"
-                      fontWeight="bold"
                       cursor="pointer"
                       pt="1v"
                       px="1v"
@@ -206,7 +205,6 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                       fontSize="14px"
                       lineHeight="18px"
                       className="fr-col"
-                      fontWeight="bold"
                       cursor="pointer"
                       pt="1v"
                       px="1v"
@@ -230,7 +228,6 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                       fontSize="14px"
                       lineHeight="18px"
                       className="fr-col"
-                      fontWeight="bold"
                       cursor="pointer"
                       pt="1v"
                       px="1v"
@@ -530,7 +527,6 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                     fontSize="14px"
                     lineHeight="18px"
                     className="fr-col"
-                    fontWeight="bold"
                     cursor="pointer"
                     pt="1v"
                     px="1v"
@@ -559,7 +555,6 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                     fontSize="14px"
                     lineHeight="18px"
                     className="fr-col"
-                    fontWeight="bold"
                     cursor="pointer"
                     pt="1v"
                     px="1v"
@@ -768,7 +763,6 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                     fontSize="14px"
                     lineHeight="18px"
                     className="fr-col"
-                    fontWeight="bold"
                     cursor="pointer"
                     pt="1v"
                     px="1v"
@@ -792,7 +786,6 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                     fontSize="14px"
                     lineHeight="18px"
                     className="fr-col"
-                    fontWeight="bold"
                     cursor="pointer"
                     pt="1v"
                     px="1v"
@@ -816,7 +809,6 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                     fontSize="14px"
                     lineHeight="18px"
                     className="fr-col"
-                    fontWeight="bold"
                     cursor="pointer"
                     pt="1v"
                     px="1v"
@@ -840,7 +832,6 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                     fontSize="14px"
                     lineHeight="18px"
                     className="fr-col"
-                    fontWeight="bold"
                     cursor="pointer"
                     pt="1v"
                     px="1v"
@@ -864,7 +855,6 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                     fontSize="14px"
                     lineHeight="18px"
                     className="fr-col"
-                    fontWeight="bold"
                     cursor="pointer"
                     pt="1v"
                     px="1v"
@@ -957,17 +947,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                     mt="1v"
                   />
 
-                  <Text
-                    as="label"
-                    htmlFor="friches"
-                    fontSize="14px"
-                    lineHeight="18px"
-                    className="fr-col"
-                    fontWeight="bold"
-                    cursor="pointer"
-                    pt="1v"
-                    px="1v"
-                  >
+                  <Text as="label" htmlFor="friches" fontSize="14px" lineHeight="18px" className="fr-col" cursor="pointer" pt="1v" px="1v">
                     Friches
                   </Text>
                 </Box>
@@ -986,17 +966,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                     mt="1v"
                   />
 
-                  <Text
-                    as="label"
-                    htmlFor="parkings"
-                    fontSize="14px"
-                    lineHeight="18px"
-                    className="fr-col"
-                    fontWeight="bold"
-                    cursor="pointer"
-                    pt="1v"
-                    px="1v"
-                  >
+                  <Text as="label" htmlFor="parkings" fontSize="14px" lineHeight="18px" className="fr-col" cursor="pointer" pt="1v" px="1v">
                     Parkings
                   </Text>
                 </Box>

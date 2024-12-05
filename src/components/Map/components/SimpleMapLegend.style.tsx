@@ -106,6 +106,9 @@ const StyledCheckboxInput = styled.input`
 const StyledCheckableAccordion = styled(CheckableAccordion)`
   .fr-accordion__title {
     width: 100%;
+    // tout en noir pour être plus cohérent avec les autres couches
+    font-weight: inherit;
+    color: var(--text-default-grey);
   }
 `;
 
