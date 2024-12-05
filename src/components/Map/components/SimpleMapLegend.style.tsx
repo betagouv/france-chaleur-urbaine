@@ -110,6 +110,11 @@ const StyledCheckableAccordion = styled(CheckableAccordion)`
     font-weight: inherit;
     color: var(--text-default-grey);
   }
+
+  // on garde les icones en bleu dans les accordéons
+  .ri-information-fill {
+    color: var(--text-action-high-blue-france);
+  }
 `;
 
 type UrlTabDef = {
