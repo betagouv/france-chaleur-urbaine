@@ -28,5 +28,5 @@ function useDevMode() {
 export default useDevMode;
 
 export function isDevModeEnabled() {
-  return !!window.devModeEnabled;
+  return typeof window !== 'undefined' && !!window.devModeEnabled;
 }
