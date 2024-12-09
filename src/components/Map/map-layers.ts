@@ -403,21 +403,21 @@ const zoomOpacityTransitionAt10: DataDrivenPropertyValueSpecification<number> = 
   1,
 ];
 
+export type MapLayerSpecification = Omit<LayerSpecification, 'source' | 'source-layer' | 'filter'> & {
+  id: string;
+  'source-layer'?: string;
+  layout?: LayerSpecification['layout'] & {
+    'icon-image'?: LayerSymbolImage;
+  };
+  isVisible: (config: MapConfiguration) => boolean;
+  filter?: (config: MapConfiguration) => FilterSpecification;
+  unselectable?: true; // false by default, allows hover effect + cursor change + click to open a popup
+};
+
 export type MapSourceLayersSpecification = {
   sourceId: SourceId;
   source: SourceSpecification;
-  layers: (Omit<LayerSpecification, 'source' | 'source-layer' | 'filter'> & {
-    id: string;
-    'source-layer'?: string;
-    layout?: LayerSpecification['layout'] & {
-      'icon-image'?: LayerSymbolImage;
-    };
-    isVisible: (config: MapConfiguration) => boolean;
-    filter?: (config: MapConfiguration) => FilterSpecification;
-    hoverable?: boolean; // allows hover effect
-  })[];
-  // click events ?
-  // shortcut to popups ?
+  layers: MapLayerSpecification[];
 };
 
 export const mapLayers = [
@@ -438,6 +438,7 @@ export const mapLayers = [
           'fill-opacity': enrrMobilisablesGeothermieProfondeLayerOpacity,
         },
         isVisible: (config) => config.enrrMobilisablesGeothermieProfonde,
+        unselectable: true,
       },
     ],
   },
@@ -467,6 +468,7 @@ export const mapLayers = [
           'line-width': 2,
         },
         isVisible: (config) => config.zonesOpportunite.show && config.zonesOpportunite.zonesPotentielChaud,
+        unselectable: true,
       },
     ],
   },
@@ -497,6 +499,7 @@ export const mapLayers = [
           'line-width': 2,
         },
         isVisible: (config) => config.zonesOpportunite.show && config.zonesOpportunite.zonesPotentielFortChaud,
+        unselectable: true,
       },
     ],
   },
@@ -532,6 +535,7 @@ export const mapLayers = [
           'line-width': 1,
         },
         isVisible: (config) => config.besoinsEnChaleurIndustrieCommunes,
+        unselectable: true,
       },
     ],
   },
@@ -553,6 +557,7 @@ export const mapLayers = [
           'fill-opacity': themeDefZoneDP.fill.opacity,
         },
         isVisible: (config) => config.zonesDeDeveloppementPrioritaire,
+        unselectable: true,
       },
     ],
   },
@@ -586,7 +591,6 @@ export const mapLayers = [
         },
         filter: (config) => ['all', ['==', ['get', 'is_zone'], false], ...buildFiltreGestionnaire(config.filtreGestionnaire)],
         isVisible: (config) => config.reseauxEnConstruction,
-        hoverable: true,
       },
     ],
   },
@@ -637,6 +641,7 @@ export const mapLayers = [
           'line-opacity': zoomOpacityTransitionAt10,
         },
         isVisible: (config) => config.besoinsEnChaleur || config.besoinsEnFroid,
+        unselectable: true,
       },
     ],
   },
@@ -702,6 +707,7 @@ export const mapLayers = [
           'line-width': 2,
         },
         isVisible: (config) => config.enrrMobilisablesSolaireThermique.show && config.enrrMobilisablesSolaireThermique.showFriches,
+        unselectable: true,
       },
     ],
   },
@@ -732,6 +738,7 @@ export const mapLayers = [
           'line-width': 2,
         },
         isVisible: (config) => config.enrrMobilisablesSolaireThermique.show && config.enrrMobilisablesSolaireThermique.showParkings,
+        unselectable: true,
       },
     ],
   },
@@ -1013,7 +1020,6 @@ export const mapLayers = [
           ...buildFiltreIdentifiantReseau(config.filtreIdentifiantReseau),
         ],
         isVisible: (config) => config.reseauxDeChaleur.show,
-        hoverable: true,
       },
       {
         id: 'reseauxDeChaleur-sans-trace',
@@ -1053,7 +1059,6 @@ export const mapLayers = [
           ...buildFiltreIdentifiantReseau(config.filtreIdentifiantReseau),
         ],
         isVisible: (config) => config.reseauxDeFroid,
-        hoverable: true,
       },
       {
         id: 'reseauxDeFroid-sans-trace',

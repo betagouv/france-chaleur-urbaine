@@ -46,7 +46,7 @@ import { Title } from './components/SimpleMapLegend.style';
 import { useBuildingsDataExtractionLayers } from './components/tools/BuildingsDataExtractionTool';
 import { useDistancesMeasurementLayers } from './components/tools/DistancesMeasurementTool';
 import { useLinearHeatDensityLayers } from './components/tools/LinearHeatDensityTool';
-import { useMapClickHandlers, useMapHoverEffects } from './map-hover';
+import { useMapEvents } from './map-events';
 import { type MapLegendFeature, applyMapConfigurationToLayers, layerSymbolsImagesURLs, loadMapLayers } from './map-layers';
 import {
   CollapseLegend,
@@ -366,8 +366,7 @@ export const FullyFeaturedMap = ({
     setMapLayersLoaded(true);
   };
 
-  useMapHoverEffects({ mapLayersLoaded, isDrawing, mapRef: mapRef.current });
-  const { popupInfos } = useMapClickHandlers({ mapLayersLoaded, isDrawing, mapRef: mapRef.current, noPopup });
+  const { popupInfos } = useMapEvents({ mapLayersLoaded, isDrawing, mapRef: mapRef.current });
 
   // disable the switcher control as it conflicts with map layers and drawing interactions
   useEffect(() => {
