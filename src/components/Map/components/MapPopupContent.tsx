@@ -1,12 +1,11 @@
 import Link from 'next/link';
 
-import { isDefined } from '@utils/core';
-import { getConso } from 'src/services/Map/conso';
-import { DemandSummary } from 'src/types/Summary/Demand';
-import { EnergySummary } from 'src/types/Summary/Energy';
-import { FuturNetworkSummary } from 'src/types/Summary/FuturNetwork';
-import { GasSummary } from 'src/types/Summary/Gas';
-import { NetworkSummary } from 'src/types/Summary/Network';
+import { type DemandSummary } from '@/types/Summary/Demand';
+import { type EnergySummary } from '@/types/Summary/Energy';
+import { type FuturNetworkSummary } from '@/types/Summary/FuturNetwork';
+import { type GasSummary } from '@/types/Summary/Gas';
+import { type NetworkSummary } from '@/types/Summary/Network';
+import { isDefined } from '@/utils/core';
 
 import { objTypeEnergy } from '../map-layers';
 import { PopupTitle } from '../Map.style';
@@ -245,4 +244,15 @@ export const ViasevaPopupContent = ({ network, futurNetwork }: { network?: Netwo
       )}
     </>
   );
+};
+
+const getConso = (conso: number) => {
+  if (isDefined(conso)) {
+    if (conso > 1000) {
+      return `${(conso / 1000).toFixed(2)} GWh`;
+    }
+
+    return `${conso.toFixed(2)} MWh`;
+  }
+  return 'Non connu';
 };

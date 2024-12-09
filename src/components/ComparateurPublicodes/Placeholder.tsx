@@ -3,11 +3,11 @@ import Badge from '@codegouvfr/react-dsfr/Badge';
 import ToggleSwitch from '@codegouvfr/react-dsfr/ToggleSwitch';
 import React from 'react';
 
-import Accordion from '@components/ui/Accordion';
-import Box from '@components/ui/Box';
-import Heading from '@components/ui/Heading';
-import Modal, { createModal } from '@components/ui/Modal';
-import cx from '@utils/cx';
+import Accordion from '@/components/ui/Accordion';
+import Box from '@/components/ui/Box';
+import Heading from '@/components/ui/Heading';
+import Modal, { createModal } from '@/components/ui/Modal';
+import cx from '@/utils/cx';
 
 import { Results, ResultsPlaceholder, Section, Simulator } from './ComparateurPublicodes.style';
 

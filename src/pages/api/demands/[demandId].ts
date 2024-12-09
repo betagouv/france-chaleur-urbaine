@@ -1,9 +1,9 @@
 import type { NextApiRequest } from 'next';
 import { z } from 'zod';
 
-import { updateDemand } from '@core/infrastructure/repository/manager';
-import { handleRouteErrors, requirePutMethod, validateObjectSchema } from '@helpers/server';
-import { DEMANDE_STATUS } from 'src/types/enum/DemandSatus';
+import { handleRouteErrors, requirePutMethod, validateObjectSchema } from '@/server/helpers/server';
+import { updateDemand } from '@/server/services/manager';
+import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 
 const zDemandUpdate = {
   Status: z.nativeEnum(DEMANDE_STATUS).optional(),

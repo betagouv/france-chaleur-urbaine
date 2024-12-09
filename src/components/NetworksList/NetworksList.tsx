@@ -5,21 +5,21 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import XLSX from 'xlsx';
 
-import { reseauxDeChaleurFilters } from '@components/Map/map-layers';
-import ReseauxDeChaleurFilters, { ReseauxDeChaleurFiltersProps } from '@components/ReseauxDeChaleurFilters';
-import Box from '@components/ui/Box';
-import Drawer from '@components/ui/Drawer';
-import Icon from '@components/ui/Icon';
-import Link from '@components/ui/Link';
-import { ColumnDef, Table } from '@components/ui/Table';
-import Text from '@components/ui/Text';
-import useReseauxDeChaleurFilters, { type Filters } from '@hooks/useReseauxDeChaleurFilters';
-import { downloadFile } from '@utils/browser';
-import { isDefined } from '@utils/core';
-import { Interval } from '@utils/interval';
-import { gestionnairesFilters, useServices } from 'src/services';
-import { filtresEnergies } from 'src/services/Map/map-configuration';
-import { NetworkToCompare } from 'src/types/Summary/Network';
+import { reseauxDeChaleurFilters } from '@/components/Map/map-layers';
+import ReseauxDeChaleurFilters, { type ReseauxDeChaleurFiltersProps } from '@/components/ReseauxDeChaleurFilters';
+import Box from '@/components/ui/Box';
+import Drawer from '@/components/ui/Drawer';
+import Icon from '@/components/ui/Icon';
+import Link from '@/components/ui/Link';
+import { type ColumnDef, Table } from '@/components/ui/Table';
+import Text from '@/components/ui/Text';
+import useReseauxDeChaleurFilters, { type Filters } from '@/hooks/useReseauxDeChaleurFilters';
+import { gestionnairesFilters, useServices } from '@/services';
+import { filtresEnergies } from '@/services/Map/map-configuration';
+import { type NetworkToCompare } from '@/types/Summary/Network';
+import { downloadFile } from '@/utils/browser';
+import { isDefined } from '@/utils/core';
+import { type Interval } from '@/utils/interval';
 
 import NetworkName from './NetworkName';
 

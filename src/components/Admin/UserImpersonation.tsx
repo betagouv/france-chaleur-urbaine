@@ -3,12 +3,12 @@ import { Select } from '@codegouvfr/react-dsfr/SelectNext';
 import Tag from '@codegouvfr/react-dsfr/Tag';
 import { useEffect, useMemo, useState } from 'react';
 
-import Box from '@components/ui/Box';
-import Heading from '@components/ui/Heading';
-import Icon from '@components/ui/Icon';
-import Text from '@components/ui/Text';
-import { fetchJSON, postFetchJSON } from '@utils/network';
-import { normalize } from '@utils/strings';
+import Box from '@/components/ui/Box';
+import Heading from '@/components/ui/Heading';
+import Icon from '@/components/ui/Icon';
+import Text from '@/components/ui/Text';
+import { fetchJSON, postFetchJSON } from '@/utils/network';
+import { normalize } from '@/utils/strings';
 
 interface TagOption {
   label: string;

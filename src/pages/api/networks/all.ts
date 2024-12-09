@@ -1,9 +1,9 @@
 import type { NextApiRequest } from 'next';
 
-import { getNetworks } from '@core/infrastructure/repository/networksListToCompare';
-import { handleRouteErrors, requireGetMethod } from '@helpers/server';
+import { handleRouteErrors, requireGetMethod } from '@/server/helpers/server';
+import { listNetworks } from '@/server/services/network';
 
 export default handleRouteErrors(async (req: NextApiRequest) => {
   requireGetMethod(req);
-  return await getNetworks();
+  return await listNetworks();
 });

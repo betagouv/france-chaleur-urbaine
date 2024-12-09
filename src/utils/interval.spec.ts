@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
 
-import { Interval, intervalsEqual } from './interval';
+import { type Interval, intervalsEqual } from './interval';
 
 test('intervalsEqual()', () => {
   const tests: Array<{ a: Interval; b: Interval; expectedResult: boolean }> = [

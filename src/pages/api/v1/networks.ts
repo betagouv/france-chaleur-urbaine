@@ -1,10 +1,10 @@
 import { rateLimit } from 'express-rate-limit';
-import { NextApiResponse } from 'next';
-import { NextApiRequest } from 'next';
+import { type NextApiResponse } from 'next';
+import { type NextApiRequest } from 'next';
 
-import { handleRouteErrors, requireGetMethod } from '@helpers/server';
-import db from 'src/db';
-import { Network } from 'src/types/Summary/Network';
+import db from '@/server/db';
+import { handleRouteErrors, requireGetMethod } from '@/server/helpers/server';
+import { type Network } from '@/types/Summary/Network';
 
 // disable the warning for this route as the result is big > 50MB
 export const config = {

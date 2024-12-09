@@ -1,12 +1,12 @@
 import Image from 'next/image';
 
-import { StyledInfographieItem } from '@components/Ressources/Contents/Contents.styles';
-import SimplePage from '@components/shared/page/SimplePage';
-import Box from '@components/ui/Box';
-import Heading from '@components/ui/Heading';
-import Link from '@components/ui/Link';
-import Text from '@components/ui/Text';
-import { TrackingEvent } from 'src/services/analytics';
+import { StyledInfographieItem } from '@/components/Ressources/Contents/Contents.styles';
+import SimplePage from '@/components/shared/page/SimplePage';
+import Box from '@/components/ui/Box';
+import Heading from '@/components/ui/Heading';
+import Link from '@/components/ui/Link';
+import Text from '@/components/ui/Text';
+import { type TrackingEvent } from '@/services/analytics';
 
 const infographies: InfographieItemProps[] = [
   {

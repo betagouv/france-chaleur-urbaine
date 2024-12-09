@@ -2,15 +2,15 @@ import Link from 'next/link';
 import { useMemo } from 'react';
 import useSWR from 'swr';
 
-import Graph from '@components/Graph';
-import HoverableIcon from '@components/Hoverable/HoverableIcon';
-import Slice from '@components/Slice';
-import Box from '@components/ui/Box';
-import Heading from '@components/ui/Heading';
-import statistics from '@data/statistics';
-import { fetchJSON } from '@utils/network';
-import { MatomoMonthStat } from 'src/services/matomo_types';
-import { STAT_LABEL } from 'src/types/enum/MatomoStats';
+import Graph from '@/components/Graph';
+import HoverableIcon from '@/components/Hoverable/HoverableIcon';
+import Slice from '@/components/Slice';
+import Box from '@/components/ui/Box';
+import Heading from '@/components/ui/Heading';
+import statistics from '@/data/statistics';
+import { type MatomoMonthStat } from '@/server/services/matomo_types';
+import { STAT_LABEL } from '@/types/enum/MatomoStats';
+import { fetchJSON } from '@/utils/network';
 
 import {
   ColumnContainer,

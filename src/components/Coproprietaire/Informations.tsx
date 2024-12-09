@@ -1,4 +1,4 @@
-import { WhiteCheckItem } from '@components/MarkdownWrapper/MarkdownWrapper.style';
+import { WhiteCheckItem } from '@/components/MarkdownWrapper/MarkdownWrapper.style';
 
 import { Container, Image, Information } from './Informations.styles';
 

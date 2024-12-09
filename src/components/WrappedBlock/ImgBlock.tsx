@@ -1,6 +1,6 @@
 import React from 'react';
 
-import MarkdownWrapper from '@components/MarkdownWrapper';
+import MarkdownWrapper from '@/components/MarkdownWrapper';
 
 import { ImageContainer } from './WrappedBlock.style';
 

@@ -1,5 +1,5 @@
-import TrackedVideo from '@components/TrackedVideo/TrackedVideo';
-import Box from '@components/ui/Box';
+import TrackedVideo from '@/components/TrackedVideo/TrackedVideo';
+import Box from '@/components/ui/Box';
 
 import { List, Source, Subtitle } from './Contents.styles';
 

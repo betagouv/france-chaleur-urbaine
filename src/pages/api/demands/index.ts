@@ -1,7 +1,7 @@
 import type { NextApiRequest } from 'next';
 
-import { getDemands } from '@core/infrastructure/repository/manager';
-import { handleRouteErrors, invalidPermissionsError } from '@helpers/server';
+import { handleRouteErrors, invalidPermissionsError } from '@/server/helpers/server';
+import { getDemands } from '@/server/services/manager';
 
 export default handleRouteErrors(
   async (req: NextApiRequest) => {

@@ -1,4 +1,4 @@
-import { AddressDetail } from './HeatNetworksResponse';
+import { type AddressDetail } from './HeatNetworksResponse';
 
 export type StoredAddress = {
   id: string;

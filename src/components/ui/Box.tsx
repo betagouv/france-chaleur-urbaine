@@ -1,10 +1,10 @@
-import { FrIconClassName, RiIconClassName } from '@codegouvfr/react-dsfr';
-import { CSSProperties, HTMLAttributes, PropsWithChildren } from 'react';
+import { type FrIconClassName, type RiIconClassName } from '@codegouvfr/react-dsfr';
+import { type CSSProperties, type HTMLAttributes, type PropsWithChildren } from 'react';
 import styled from 'styled-components';
 
-import { type Breakpoint } from '@components/Theme/theme';
+import { type Breakpoint } from '@/components/Theme/theme';
 
-import { SpacingProperties, spacingsToClasses } from './helpers/spacings';
+import { type SpacingProperties, spacingsToClasses } from './helpers/spacings';
 
 type StyleProps = {
   display?: CSSProperties['display'];

@@ -1,13 +1,13 @@
 import { useToggle } from '@react-hookz/web';
 import styled from 'styled-components';
 
-import Checkbox from '@components/form/dsfr/Checkbox';
-import { besoinsEnChaleurIntervals } from '@components/Map/map-layers';
-import useFCUMap from '@components/Map/MapProvider';
-import Accordion from '@components/ui/Accordion';
-import Box, { BoxProps } from '@components/ui/Box';
-import Text from '@components/ui/Text';
-import { themeDefZonePotentielChaud, themeDefZonePotentielFortChaud } from 'src/services/Map/businessRules/zonePotentielChaud';
+import Checkbox from '@/components/form/dsfr/Checkbox';
+import { besoinsEnChaleurIntervals } from '@/components/Map/map-layers';
+import useFCUMap from '@/components/Map/MapProvider';
+import Accordion from '@/components/ui/Accordion';
+import Box, { type BoxProps } from '@/components/ui/Box';
+import Text from '@/components/ui/Text';
+import { themeDefZonePotentielChaud, themeDefZonePotentielFortChaud } from '@/services/Map/businessRules/zonePotentielChaud';
 
 import IconPolygon from './IconPolygon';
 

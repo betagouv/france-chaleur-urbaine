@@ -1,4 +1,4 @@
-import { css, Interpolation } from 'styled-components';
+import { css, type Interpolation } from 'styled-components';
 
 const breakpoints = {
   xs: 320,

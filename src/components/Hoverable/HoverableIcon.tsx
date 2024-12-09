@@ -1,6 +1,6 @@
-import { ReactNode } from 'react';
+import { type ReactNode } from 'react';
 
-import Icon from '@components/ui/Icon';
+import Icon from '@/components/ui/Icon';
 
 import { Container } from './HoverableIcon.styles';
 

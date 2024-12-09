@@ -1,9 +1,9 @@
 import { Button } from '@codegouvfr/react-dsfr/Button';
 import Link from 'next/link';
 import { signIn } from 'next-auth/react';
-import { FormEvent, useState } from 'react';
+import { type FormEvent, useState } from 'react';
 
-import Input from '@components/form/dsfr/Input';
+import Input from '@/components/form/dsfr/Input';
 
 import { Container, Password, PasswordIcon, PasswordInput } from './Form.styles';
 

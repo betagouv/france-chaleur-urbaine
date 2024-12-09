@@ -4,16 +4,16 @@ import { createParser } from 'nuqs';
 import React from 'react';
 import styled, { css } from 'styled-components';
 
-import Box from '@components/ui/Box';
-import CheckableAccordion, { type CheckableAccordionProps } from '@components/ui/CheckableAccordion';
-import Heading from '@components/ui/Heading';
-import IconEnrr from '@public/icons/enrr.svg?icon';
-import IconOutils from '@public/icons/outils.svg?icon';
-import IconPotentiel from '@public/icons/potentiel.svg?icon';
-import IconReseaux from '@public/icons/reseaux.svg?icon';
-import cx from '@utils/cx';
-import { LegendTrackingEvent, trackEvent } from 'src/services/analytics';
-import { MapConfigurationProperty, type MapConfiguration } from 'src/services/Map/map-configuration';
+import Box from '@/components/ui/Box';
+import CheckableAccordion, { type CheckableAccordionProps } from '@/components/ui/CheckableAccordion';
+import Heading from '@/components/ui/Heading';
+import { type LegendTrackingEvent, trackEvent } from '@/services/analytics';
+import { type MapConfigurationProperty, type MapConfiguration } from '@/services/Map/map-configuration';
+import cx from '@/utils/cx';
+import IconEnrr from '@root/public/icons/enrr.svg?icon';
+import IconOutils from '@root/public/icons/outils.svg?icon';
+import IconPotentiel from '@root/public/icons/potentiel.svg?icon';
+import IconReseaux from '@root/public/icons/reseaux.svg?icon';
 
 import useFCUMap from '../MapProvider';
 

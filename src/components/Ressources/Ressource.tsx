@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 
-import Box from '@components/ui/Box';
+import Box from '@/components/ui/Box';
 
 import { coldNetworks, growths, issues, understandings } from './config';
 import Guide from './Guide';

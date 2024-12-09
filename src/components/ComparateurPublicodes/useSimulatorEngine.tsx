@@ -1,6 +1,6 @@
-import rules, { DottedName } from '@betagouv/france-chaleur-urbaine-publicodes';
+import rules, { type DottedName } from '@betagouv/france-chaleur-urbaine-publicodes';
 
-import usePublicodesEngine from '@helpers/publicodes/usePublicodesEngine';
+import usePublicodesEngine from '@/components/ComparateurPublicodes/usePublicodesEngine';
 
 export type SimulatorEngine = ReturnType<typeof useSimulatorEngine>;
 

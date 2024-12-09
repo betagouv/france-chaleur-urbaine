@@ -1,4 +1,4 @@
-import Document, { DocumentContext, Head, Html, Main, NextScript } from 'next/document';
+import Document, { type DocumentContext, Head, Html, Main, NextScript } from 'next/document';
 import { ServerStyleSheet } from 'styled-components';
 
 import { augmentDocumentWithEmotionCache, dsfrDocumentApi } from './_app';

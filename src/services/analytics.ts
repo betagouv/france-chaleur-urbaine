@@ -4,8 +4,8 @@ import { atom, useAtom, useAtomValue } from 'jotai';
 import { Router } from 'next/router';
 import { useEffect, useState } from 'react';
 
-import { isDevModeEnabled } from '@components/Map/components/DevModeIcon';
-import { clientConfig } from 'src/client-config';
+import { clientConfig } from '@/client-config';
+import { isDevModeEnabled } from '@/hooks/useDevMode';
 
 type ExtractSuffix<T extends string, S extends string> = T extends `${infer Prefix}${S}` ? Prefix : never;
 

@@ -1,6 +1,6 @@
-import { EnergySummary } from './Energy';
-import { GasSummary } from './Gas';
-import { NetworkSummary } from './Network';
+import { type EnergySummary } from './Energy';
+import { type GasSummary } from './Gas';
+import { type NetworkSummary } from './Network';
 
 export interface Summary {
   gas: GasSummary[];

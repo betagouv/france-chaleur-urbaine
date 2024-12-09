@@ -1,6 +1,6 @@
-import { WhiteArrowPuce } from '@components/MarkdownWrapper/MarkdownWrapper.style';
-import Link from '@components/ui/Link';
-import Text from '@components/ui/Text';
+import { WhiteArrowPuce } from '@/components/MarkdownWrapper/MarkdownWrapper.style';
+import Link from '@/components/ui/Link';
+import Text from '@/components/ui/Text';
 
 export type City = 'paris' | 'grenoble' | 'lyon' | 'aix-en-provence' | 'metz' | 'nantes' | 'bordeaux' | 'strasbourg' | 'rennes' | 'dijon';
 

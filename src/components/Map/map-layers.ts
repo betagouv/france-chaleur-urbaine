@@ -1,20 +1,18 @@
 import {
-  CircleLayerSpecification,
-  DataDrivenPropertyValueSpecification,
-  ExpressionInputType,
-  ExpressionSpecification,
-  FilterSpecification,
-  LayerSpecification,
-  LineLayerSpecification,
-  Map,
-  SourceSpecification,
-  StyleSetterOptions,
+  type CircleLayerSpecification,
+  type DataDrivenPropertyValueSpecification,
+  type ExpressionInputType,
+  type ExpressionSpecification,
+  type FilterSpecification,
+  type LayerSpecification,
+  type LineLayerSpecification,
+  type Map,
+  type SourceSpecification,
+  type StyleSetterOptions,
 } from 'maplibre-gl';
 
-import { isDefined } from '@utils/core';
-import { intervalsEqual } from '@utils/interval';
-import { formatMWhString } from '@utils/strings';
-import { gestionnairesFilters } from 'src/services';
+import { type SourceId } from '@/server/services/tiles.config';
+import { gestionnairesFilters } from '@/services';
 import {
   themeDefBuildings,
   themeDefDemands,
@@ -22,14 +20,16 @@ import {
   themeDefHeatNetwork,
   themeDefTypeGas,
   themeDefZoneDP,
-} from 'src/services/Map/businessRules';
-import { arrColorFromDefBuildingsDpeEnergy } from 'src/services/Map/businessRules/buildings';
-import { themeDefSolaireThermiqueFriches, themeDefSolaireThermiqueParkings } from 'src/services/Map/businessRules/enrrMobilisables';
-import { themeDefZonePotentielChaud, themeDefZonePotentielFortChaud } from 'src/services/Map/businessRules/zonePotentielChaud';
-import { MapConfiguration, filtresEnergies, percentageMaxInterval } from 'src/services/Map/map-configuration';
-import { SourceId } from 'src/services/tiles.config';
-import { ENERGY_TYPE, ENERGY_USED } from 'src/types/enum/EnergyType';
-import { Network } from 'src/types/Summary/Network';
+} from '@/services/Map/businessRules';
+import { arrColorFromDefBuildingsDpeEnergy } from '@/services/Map/businessRules/buildings';
+import { themeDefSolaireThermiqueFriches, themeDefSolaireThermiqueParkings } from '@/services/Map/businessRules/enrrMobilisables';
+import { themeDefZonePotentielChaud, themeDefZonePotentielFortChaud } from '@/services/Map/businessRules/zonePotentielChaud';
+import { type MapConfiguration, filtresEnergies, percentageMaxInterval } from '@/services/Map/map-configuration';
+import { ENERGY_TYPE, ENERGY_USED } from '@/types/enum/EnergyType';
+import { type Network } from '@/types/Summary/Network';
+import { isDefined } from '@/utils/core';
+import { intervalsEqual } from '@/utils/interval';
+import { formatMWhString } from '@/utils/strings';
 
 import { buildingsDataExtractionLayers } from './components/tools/BuildingsDataExtractionTool';
 import { distancesMeasurementLayers } from './components/tools/DistancesMeasurementTool';

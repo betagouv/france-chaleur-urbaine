@@ -1,11 +1,11 @@
 import Highlight from '@codegouvfr/react-dsfr/Highlight';
-import { ComponentProps } from 'react';
+import { type ComponentProps } from 'react';
 import Chart from 'react-google-charts';
 
-import Box from '@components/ui/Box';
-import Heading from '@components/ui/Heading';
-import Link from '@components/ui/Link';
-import { deepMergeObjects } from '@utils/core';
+import Box from '@/components/ui/Box';
+import Heading from '@/components/ui/Heading';
+import Link from '@/components/ui/Link';
+import { deepMergeObjects } from '@/utils/core';
 
 import { List } from './Contents.styles';
 import SimulateurCoutRaccordement from './SimulateurCoutRaccordement';

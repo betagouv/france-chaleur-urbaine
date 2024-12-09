@@ -13,7 +13,7 @@ fileignoreconfig:
 - filename: scripts/addUser.ts
   checksum: 0a177922ce629d11306b8137997bbd761a547af145dedacd98d9ecc883d763d8
 - filename: scripts/airtable/dump-schema.ts
-  checksum: 7d66cbc8b1d44a8fd12d27e6e703d5293fb497c35e8a20c35a07c9221d7c4904
+  checksum: a3ea18c599994f5715090b33dc8e576e260181c3263e08e3f7f04133d1b57d03
 - filename: src/components/ComparateurPublicodes/DebugDrawer.tsx
   checksum: 5e675d6da8d48880b27b4f45242dfb2ee0e30c93cf2f59f4f1795ddbef87b83f
 - filename: src/components/Map/Map.tsx
@@ -28,11 +28,15 @@ fileignoreconfig:
   checksum: 2b20c4585ec9f8ae7a457383e7d0e87cd731200d09d4372567ba9cce3ea0628d
 - filename: src/components/Map/map-layers.ts
   checksum: 16e789ab1bc1176ccb8f5b6dae275ec6639232884fda51da6ffd7708908f281a
+- filename: src/components/Press/index.tsx
+  checksum: cf4f0838ad117dc2b1089d6d540887252d6d038acb8e9b3ee2066a162f7b8e82
 - filename: src/environment.d.ts
   checksum: a0c6fb3486317a731796fbb2bffb74762b8428aeaadb37b1c061662e798077b4
   ignore_detectors:
   - filename
   - filesize
+- filename: src/services/password.ts
+  checksum: c5568af3b6c4162bc2ecbc78e8efc9abff9c852b774e8e60830db8a0777766b9
 - filename: src/services/tiles.config.ts
   checksum: 89f40d731f653c30750c61467b1d4727965805280e2d2888dd0cc29e8accf6cf
 scopeconfig:

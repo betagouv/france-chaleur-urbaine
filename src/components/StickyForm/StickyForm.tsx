@@ -1,9 +1,9 @@
-import { EligibilityFormAddress, EligibilityFormContact, EligibilityFormMessageConfirmation } from '@components/EligibilityForm';
-import { FormWarningMessage, Loader, LoaderWrapper, SliceContactFormStyle } from '@components/HeadSliceForm/HeadSliceForm.style';
-import Slice from '@components/Slice';
-import Box from '@components/ui/Box';
-import Icon from '@components/ui/Icon';
-import { useContactFormFCU } from '@hooks';
+import { EligibilityFormAddress, EligibilityFormContact, EligibilityFormMessageConfirmation } from '@/components/EligibilityForm';
+import { FormWarningMessage, Loader, LoaderWrapper, SliceContactFormStyle } from '@/components/HeadSliceForm/HeadSliceForm.style';
+import Slice from '@/components/Slice';
+import Box from '@/components/ui/Box';
+import Icon from '@/components/ui/Icon';
+import useContactFormFCU from '@/hooks/useContactFormFCU';
 
 import { Close, Container, Form, Title } from './StickyForm.styles';
 

@@ -1,3 +1,0 @@
-export { default as dataNumberFcu } from './data-number-fcu';
-export { default as dataNumberRcu } from './data-number-rcu.json';
-export { default as presentationRcu } from './presentation-rcu';

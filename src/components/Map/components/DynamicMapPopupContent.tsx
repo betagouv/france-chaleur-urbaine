@@ -1,32 +1,32 @@
-import { ReactElement } from 'react';
+import { type ReactElement } from 'react';
 import styled from 'styled-components';
 
-import Box from '@components/ui/Box';
-import Link from '@components/ui/Link';
-import Text from '@components/ui/Text';
-import { isDefined } from '@utils/core';
-import { formatMWhAn, prettyFormatNumber } from '@utils/strings';
-import { BatimentRaccordeReseauxChaleurFroid } from 'src/types/layers/BatimentRaccordeReseauxChaleurFroid';
-import { BesoinsEnChaleur, BesoinsEnChaleurIndustrieCommunes } from 'src/types/layers/BesoinsEnChaleur';
+import Box from '@/components/ui/Box';
+import Link from '@/components/ui/Link';
+import Text from '@/components/ui/Text';
+import { type BatimentRaccordeReseauxChaleurFroid } from '@/types/layers/BatimentRaccordeReseauxChaleurFroid';
+import { type BesoinsEnChaleur, type BesoinsEnChaleurIndustrieCommunes } from '@/types/layers/BesoinsEnChaleur';
 import {
-  InstallationGeothermieProfonde,
-  InstallationGeothermieSurfaceEchangeursFermes,
-  InstallationGeothermieSurfaceEchangeursOuverts,
-} from 'src/types/layers/brgm';
-import { CommuneFortPotentielPourCreationReseauxChaleur } from 'src/types/layers/CommuneFortPotentielPourCreationReseauxChaleur';
+  type InstallationGeothermieProfonde,
+  type InstallationGeothermieSurfaceEchangeursFermes,
+  type InstallationGeothermieSurfaceEchangeursOuverts,
+} from '@/types/layers/brgm';
+import { type CommuneFortPotentielPourCreationReseauxChaleur } from '@/types/layers/CommuneFortPotentielPourCreationReseauxChaleur';
 import {
-  Datacenter,
-  Industrie,
-  InstallationElectrogene,
-  SolaireThermiqueFriche,
-  SolaireThermiqueParking,
-  StationDEpuration,
-  Thalassothermie,
-  UniteDIncineration,
-} from 'src/types/layers/enrr_mobilisables';
-import { ZonePotentielChaud } from 'src/types/layers/ZonePotentielChaud';
+  type Datacenter,
+  type Industrie,
+  type InstallationElectrogene,
+  type SolaireThermiqueFriche,
+  type SolaireThermiqueParking,
+  type StationDEpuration,
+  type Thalassothermie,
+  type UniteDIncineration,
+} from '@/types/layers/enrr_mobilisables';
+import { type ZonePotentielChaud } from '@/types/layers/ZonePotentielChaud';
+import { isDefined } from '@/utils/core';
+import { formatMWhAn, prettyFormatNumber } from '@/utils/strings';
 
-import { LayerId } from '../map-layers';
+import { type LayerId } from '../map-layers';
 import { PopupTitle, PopupType } from '../Map.style';
 
 export const layersWithDynamicContentPopup = [

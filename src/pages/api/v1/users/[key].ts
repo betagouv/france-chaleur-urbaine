@@ -1,10 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import z from 'zod';
 
-import { handleRouteErrors, requirePutMethod } from '@helpers/server';
-import { apiUser } from 'src/services/api/authentication';
-import { withCors } from 'src/services/api/cors';
-import { upsertUsersFromApi } from 'src/services/users';
+import { handleRouteErrors, requirePutMethod } from '@/server/helpers/server';
+import { apiUser } from '@/services/api/authentication';
+import { withCors } from '@/services/api/cors';
+import { upsertUsersFromApi } from '@/services/users';
 
 const ApiNetworkValidation = z.object({
   id_sncu: z.string(),

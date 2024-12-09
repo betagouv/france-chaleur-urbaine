@@ -2,12 +2,12 @@ import { readFile } from 'fs/promises';
 
 import { InvalidArgumentError, createCommand } from '@commander-js/extra-typings';
 
-import { logger } from '@helpers/logger';
-import { saveStatsInDB } from 'src/cron_jobs/saveStatsInDB';
-import db from 'src/db';
-import { DatabaseTileInfo, DatabaseSourceId, tilesInfo, zDatabaseSourceId } from 'src/services/tiles.config';
+import { saveStatsInDB } from '@/server/cron/saveStatsInDB';
+import db from '@/server/db';
+import { logger } from '@/server/helpers/logger';
+import { type DatabaseTileInfo, type DatabaseSourceId, tilesInfo, zDatabaseSourceId } from '@/server/services/tiles.config';
 
-import { KnownAirtableBase, knownAirtableBases } from './airtable/bases';
+import { type KnownAirtableBase, knownAirtableBases } from './airtable/bases';
 import { createModificationsReseau } from './airtable/create-modifications-reseau';
 import { fetchBaseSchema } from './airtable/dump-schema';
 import { downloadNetwork, downloadAndUpdateNetwork } from './networks/download-network';

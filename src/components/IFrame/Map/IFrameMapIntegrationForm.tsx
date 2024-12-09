@@ -1,13 +1,12 @@
 import { Checkbox } from '@codegouvfr/react-dsfr/Checkbox';
-import { ReactNode, useState } from 'react';
+import { type ReactNode, useState } from 'react';
 
-import AddressAutocomplete from '@components/addressAutocomplete/AddressAutocomplete';
-import { LegendURLKey, selectableLayers } from '@components/Map/map-layers';
-import { Coords } from 'src/types/Coords';
-import { SuggestionItem } from 'src/types/Suggestions';
+import AddressAutocomplete from '@/components/addressAutocomplete/AddressAutocomplete';
+import { type LegendURLKey, selectableLayers } from '@/components/Map/map-layers';
+import { type Coords } from '@/types/Coords';
+import { type SuggestionItem } from '@/types/Suggestions';
 
-import { DivQuestionCenterMap, StyledIFrameLink } from './IFrameMapIntegrationForm.styles';
-import { AddressContainer } from './IFrameParametrization.styles';
+import { AddressContainer, DivQuestionCenterMap, StyledIFrameLink } from './IFrameMapIntegrationForm.styles';
 
 const IFrameMapIntegrationForm = ({ label }: { label?: ReactNode }) => {
   const [coords, setCoords] = useState<Coords | null>(null);

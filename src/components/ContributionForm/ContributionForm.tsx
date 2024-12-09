@@ -2,9 +2,9 @@ import Alert from '@codegouvfr/react-dsfr/Alert';
 import Button from '@codegouvfr/react-dsfr/Button';
 import Checkbox from '@codegouvfr/react-dsfr/Checkbox';
 import RadioButtons from '@codegouvfr/react-dsfr/RadioButtons';
-import { ChangeEvent, FormEvent, useState } from 'react';
+import { type ChangeEvent, type FormEvent, useState } from 'react';
 
-import Input from '@components/form/dsfr/Input';
+import Input from '@/components/form/dsfr/Input';
 
 const additionWishValuesWithFormat = [
   'Tracé du réseau',

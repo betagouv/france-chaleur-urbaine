@@ -3,8 +3,8 @@ import { usePathname } from 'next/navigation';
 import React from 'react';
 import styled from 'styled-components';
 
-import Link from '@components/ui/Link';
-import NoticeRemovable from '@components/ui/NoticeRemovable';
+import Link from '@/components/ui/Link';
+import NoticeRemovable from '@/components/ui/NoticeRemovable';
 
 const NoticeRemovableSticky = styled(NoticeRemovable)`
   position: sticky;

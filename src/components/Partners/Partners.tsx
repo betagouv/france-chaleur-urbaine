@@ -1,12 +1,12 @@
 import ButtonsGroup from '@codegouvfr/react-dsfr/ButtonsGroup';
 import { useCallback, useEffect, useState } from 'react';
 
-import Box from '@components/ui/Box';
-import Heading from '@components/ui/Heading';
-import Icon from '@components/ui/Icon';
-import Text from '@components/ui/Text';
-import { partenaires } from '@data/partenaires/partnerData';
-import { shuffleArray } from '@utils/array';
+import Box from '@/components/ui/Box';
+import Heading from '@/components/ui/Heading';
+import Icon from '@/components/ui/Icon';
+import Text from '@/components/ui/Text';
+import { partenaires } from '@/data/partenaires/partnerData';
+import { shuffleArray } from '@/utils/array';
 
 import { Arrow, PartnerImage, PartnerImages, PartnerLink } from './Partners.style';
 

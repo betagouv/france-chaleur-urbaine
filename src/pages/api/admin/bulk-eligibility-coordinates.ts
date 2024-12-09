@@ -1,10 +1,10 @@
 import pLimit from 'p-limit';
 import { z } from 'zod';
 
-import { getEligilityStatus } from '@core/infrastructure/repository/addresseInformation';
-import { logger } from '@helpers/logger';
-import { BadRequestError, handleRouteErrors, requirePostMethod } from '@helpers/server';
-import { latitudeColumnNameCandidates, longitudeColumnNameCandidates } from 'src/shared/bulk-eligibility-coordinates';
+import { logger } from '@/server/helpers/logger';
+import { BadRequestError, handleRouteErrors, requirePostMethod } from '@/server/helpers/server';
+import { getEligilityStatus } from '@/server/services/addresseInformation';
+import { latitudeColumnNameCandidates, longitudeColumnNameCandidates } from '@/shared/bulk-eligibility-coordinates';
 
 export const config = {
   api: {

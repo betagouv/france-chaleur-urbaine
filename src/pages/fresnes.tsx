@@ -1,13 +1,13 @@
-import Advantages from '@components/Coproprietaire/Advantages';
-import Interviews from '@components/Coproprietaire/Interviews';
-import HeadSliceForm from '@components/HeadSliceForm';
-import { GlobalStyle } from '@components/shared/layout/Global.style';
-import SimplePage from '@components/shared/page/SimplePage';
-import Slice from '@components/Slice';
-import SliceForm from '@components/SliceForm';
-import WrappedBlock from '@components/WrappedBlock';
-import WrappedText from '@components/WrappedText';
-import { comparatifRcu } from '@data/coproprietaire';
+import Advantages from '@/components/Coproprietaire/Advantages';
+import Interviews from '@/components/Coproprietaire/Interviews';
+import HeadSliceForm from '@/components/HeadSliceForm';
+import { GlobalStyle } from '@/components/shared/layout/Global.style';
+import SimplePage from '@/components/shared/page/SimplePage';
+import Slice from '@/components/Slice';
+import SliceForm from '@/components/SliceForm';
+import WrappedBlock from '@/components/WrappedBlock';
+import WrappedText from '@/components/WrappedText';
+import { comparatifRcu } from '@/data/coproprietaire';
 
 export default function FresnesPage() {
   return (

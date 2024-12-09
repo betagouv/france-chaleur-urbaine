@@ -1,5 +1,5 @@
-import db from '../src/db';
-import { sendInscriptionEmail } from '../src/services/email';
+import db from '@/server/db';
+import { sendInscriptionEmail } from '@/server/email';
 
 const sendWelcomeMails = async () => {
   const users = await db('users').select('email').whereNull('last_connection');

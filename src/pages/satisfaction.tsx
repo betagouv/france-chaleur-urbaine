@@ -1,15 +1,15 @@
 import { Alert } from '@codegouvfr/react-dsfr/Alert';
 import { Button } from '@codegouvfr/react-dsfr/Button';
-import { GetServerSideProps } from 'next';
+import { type GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
-import { FormEvent, useEffect, useState } from 'react';
+import { type FormEvent, useEffect, useState } from 'react';
 
-import Input from '@components/form/dsfr/Input';
-import SimplePage from '@components/shared/page/SimplePage';
-import Slice from '@components/Slice';
-import { submitToAirtable } from '@helpers/airtable';
-import { updateRelanceAnswer } from 'src/services/manager';
-import { Airtable } from 'src/types/enum/Airtable';
+import Input from '@/components/form/dsfr/Input';
+import SimplePage from '@/components/shared/page/SimplePage';
+import Slice from '@/components/Slice';
+import { updateRelanceAnswer } from '@/server/services/manager';
+import { submitToAirtable } from '@/services/airtable';
+import { Airtable } from '@/types/enum/Airtable';
 
 function Satisfaction() {
   const router = useRouter();

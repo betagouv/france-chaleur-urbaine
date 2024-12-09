@@ -2,8 +2,8 @@ import { useDebouncedEffect } from '@react-hookz/web';
 import React, { useId, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
 
-import { Combobox, ComboboxInput, ComboboxList, ComboboxOption, ComboboxOptionText, ComboboxPopover } from '@components/ui/Combobox';
-import Icon from '@components/ui/Icon';
+import { Combobox, ComboboxInput, ComboboxList, ComboboxOption, ComboboxOptionText, ComboboxPopover } from '@/components/ui/Combobox';
+import Icon from '@/components/ui/Icon';
 type DefaultOption = Record<string, any>;
 
 export type AutocompleteProps<Option extends DefaultOption> = Omit<React.ComponentProps<typeof Combobox>, 'children' | 'onSelect'> & {

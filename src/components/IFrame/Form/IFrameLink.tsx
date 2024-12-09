@@ -1,6 +1,6 @@
-import { HTMLAttributes, useState } from 'react';
+import { type HTMLAttributes, useState } from 'react';
 
-import Box from '@components/ui/Box';
+import Box from '@/components/ui/Box';
 
 import { CopyInfo, IFrameBox } from './IFrameLink.styles';
 

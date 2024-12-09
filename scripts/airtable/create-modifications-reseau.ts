@@ -1,5 +1,6 @@
-import { createTable } from 'src/db/airtable';
-import { KnownAirtableBase, knownAirtableBases } from './bases';
+import { createTable } from '@/server/db/airtable';
+
+import { type KnownAirtableBase, knownAirtableBases } from './bases';
 
 /**
  * Create new table 'FCU - Modifications réseau'

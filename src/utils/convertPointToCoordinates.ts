@@ -1,5 +1,5 @@
-import { Coords } from 'src/types/Coords';
-import { Point } from 'src/types/Point';
+import { type Coords } from '@/types/Coords';
+import { type Point } from '@/types/Point';
 
 const convertPointToCoordinates = (point: Point): Coords => ({
   lon: point[0],

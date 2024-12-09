@@ -1,8 +1,8 @@
 import { Select } from '@codegouvfr/react-dsfr/SelectNext';
 import React from 'react';
 
-import { usePublicodesFormContext } from '@components/form/publicodes/FormProvider';
-import Label from '@components/form/publicodes/Label';
+import { usePublicodesFormContext } from '@/components/form/publicodes/FormProvider';
+import Label from '@/components/form/publicodes/Label';
 
 export type SelectProductionECS = Omit<React.ComponentProps<typeof Select>, 'label' | 'options' | 'nativeSelectProps'>;
 

@@ -1,10 +1,10 @@
 import Input from '@codegouvfr/react-dsfr/Input';
 import { Select } from '@codegouvfr/react-dsfr/SelectNext';
 import Link from 'next/link';
-import { ReactNode, useEffect, useState } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
 
-import { LegacyColor } from '@components/ui/helpers/colors';
-import Text from '@components/ui/Text';
+import { type LegacyColor } from '@/components/ui/helpers/colors';
+import Text from '@/components/ui/Text';
 
 import { Container, Disclaimer, Form, Inputs, RedirectionButton, Result, ResultValue, Title } from './Simulator.styles';
 

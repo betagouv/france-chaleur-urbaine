@@ -1,8 +1,15 @@
 import React from 'react';
 
-import MarkdownWrapper from '@components/MarkdownWrapper';
+import MarkdownWrapper from '@/components/MarkdownWrapper';
 
-import { SliceBody, SliceContainer, SliceContainerWrapper, SliceContainerWrapperType, SliceHiddenImg, SliceSection } from './Slice.style';
+import {
+  SliceBody,
+  SliceContainer,
+  SliceContainerWrapper,
+  type SliceContainerWrapperType,
+  SliceHiddenImg,
+  SliceSection,
+} from './Slice.style';
 
 const Slice: React.FC<
   {

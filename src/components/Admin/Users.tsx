@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 
-import Input from '@components/form/dsfr/Input';
-import AsyncButton from '@components/ui/AsyncButton';
-import Box from '@components/ui/Box';
-import Heading from '@components/ui/Heading';
-import { Table, type ColumnDef } from '@components/ui/Table';
-import { useServices } from 'src/services';
-import { type UserResponse } from 'src/types/UserResponse';
+import Input from '@/components/form/dsfr/Input';
+import AsyncButton from '@/components/ui/AsyncButton';
+import Box from '@/components/ui/Box';
+import Heading from '@/components/ui/Heading';
+import { Table, type ColumnDef } from '@/components/ui/Table';
+import { useServices } from '@/services';
+import { type UserResponse } from '@/types/UserResponse';
 
 import { TableContainer } from './Users.styles';
 

@@ -1,5 +1,5 @@
-import { ComboboxList, ComboboxOption } from '@components/ui/Combobox';
-import { SuggestionItem } from 'src/types/Suggestions';
+import { ComboboxList, ComboboxOption } from '@/components/ui/Combobox';
+import { type SuggestionItem } from '@/types/Suggestions';
 
 type SuggestionListProps = {
   suggestions: SuggestionItem[];

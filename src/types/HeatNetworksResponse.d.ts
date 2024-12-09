@@ -1,4 +1,4 @@
-import { SuggestionItem } from './Suggestions';
+import { type SuggestionItem } from './Suggestions';
 
 export type HeatNetwork = {
   isEligible: boolean;

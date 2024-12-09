@@ -2,13 +2,13 @@ import { fr } from '@codegouvfr/react-dsfr';
 import { useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 
-import Box from '@components/ui/Box';
-import { Combobox, ComboboxInput, ComboboxList, ComboboxOption, ComboboxPopover } from '@components/ui/Combobox';
-import { NetworkSearchResult } from '@pages/api/networks/search';
-import debounce from '@utils/debounce';
-import { postFetchJSON } from '@utils/network';
-import { getUuid } from '@utils/random';
-import { clientConfig } from 'src/client-config';
+import { clientConfig } from '@/client-config';
+import Box from '@/components/ui/Box';
+import { Combobox, ComboboxInput, ComboboxList, ComboboxOption, ComboboxPopover } from '@/components/ui/Combobox';
+import { type NetworkSearchResult } from '@/pages/api/networks/search';
+import debounce from '@/utils/debounce';
+import { postFetchJSON } from '@/utils/network';
+import { getUuid } from '@/utils/random';
 
 interface NetworkSearchInputProps {
   label: string | JSX.Element;

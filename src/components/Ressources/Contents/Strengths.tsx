@@ -1,4 +1,4 @@
-import Box from '@components/ui/Box';
+import Box from '@/components/ui/Box';
 
 import { List, Subtitle } from './Contents.styles';
 

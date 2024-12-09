@@ -1,12 +1,12 @@
 import { useMemo } from 'react';
 import useSWR from 'swr';
 
-import Graph from '@components/Graph';
-import Slice from '@components/Slice';
-import TextList from '@components/TextList';
-import { dataNumberFcu } from '@data';
-import { fetchJSON } from '@utils/network';
-import { STAT_LABEL } from 'src/types/enum/MatomoStats';
+import Graph from '@/components/Graph';
+import Slice from '@/components/Slice';
+import TextList from '@/components/TextList';
+import dataNumberFcu from '@/data/home/data-number-fcu';
+import { STAT_LABEL } from '@/types/enum/MatomoStats';
+import { fetchJSON } from '@/utils/network';
 
 import Band from './Band';
 import { Container, GraphsWrapper } from './StatisticsV1.style';

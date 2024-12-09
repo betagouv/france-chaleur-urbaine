@@ -5,22 +5,22 @@ import { useRef, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
 import styled from 'styled-components';
 
-import { ContactForm, SelectEnergy } from '@components/EligibilityForm/components';
-import { energyInputsDefaultLabels } from '@components/EligibilityForm/EligibilityFormAddress';
-import AddressAutocomplete from '@components/form/dsfr/AddressAutocompleteInput';
-import Box from '@components/ui/Box';
-import Heading from '@components/ui/Heading';
-import Link from '@components/ui/Link';
-import Text from '@components/ui/Text';
-import { NetworkEligibilityStatus } from '@core/infrastructure/repository/addresseInformation';
-import { formatDataToAirtable, submitToAirtable } from '@helpers/airtable';
-import { workMinimum } from '@utils/time';
-import { useServices } from 'src/services';
-import { trackEvent } from 'src/services/analytics';
-import { getReadableDistance } from 'src/services/Map/distance';
-import { Airtable } from 'src/types/enum/Airtable';
-import { SuggestionItem } from 'src/types/Suggestions';
-import { ContactFormInfos, FormDemandCreation } from 'src/types/Summary/Demand';
+import { ContactForm, SelectEnergy } from '@/components/EligibilityForm/components';
+import { energyInputsDefaultLabels } from '@/components/EligibilityForm/EligibilityFormAddress';
+import AddressAutocomplete from '@/components/form/dsfr/AddressAutocompleteInput';
+import Box from '@/components/ui/Box';
+import Heading from '@/components/ui/Heading';
+import Link from '@/components/ui/Link';
+import Text from '@/components/ui/Text';
+import { type NetworkEligibilityStatus } from '@/server/services/addresseInformation';
+import { useServices } from '@/services';
+import { formatDataToAirtable, submitToAirtable } from '@/services/airtable';
+import { trackEvent } from '@/services/analytics';
+import { Airtable } from '@/types/enum/Airtable';
+import { type SuggestionItem } from '@/types/Suggestions';
+import { type ContactFormInfos, type FormDemandCreation } from '@/types/Summary/Demand';
+import { getReadableDistance } from '@/utils/geo';
+import { workMinimum } from '@/utils/time';
 
 type FormState = 'idle' | 'loadingEligibility' | 'eligibilitySubmissionError' | 'sendingDemand' | 'demandCreated' | 'demandSubmissionError';
 

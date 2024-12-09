@@ -1,10 +1,10 @@
 import type { NextApiRequest } from 'next';
 import { z } from 'zod';
 
-import { handleRouteErrors, requirePutMethod, validateObjectSchema } from '@helpers/server';
-import { zAirtableRecordId } from '@utils/validation';
-import base from 'src/db/airtable';
-import { Airtable } from 'src/types/enum/Airtable';
+import base from '@/server/db/airtable';
+import { handleRouteErrors, requirePutMethod, validateObjectSchema } from '@/server/helpers/server';
+import { Airtable } from '@/types/enum/Airtable';
+import { zAirtableRecordId } from '@/utils/validation';
 
 export default handleRouteErrors(async (req: NextApiRequest) => {
   requirePutMethod(req);
