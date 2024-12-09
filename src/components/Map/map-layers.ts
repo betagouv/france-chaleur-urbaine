@@ -414,13 +414,13 @@ export type MapSourceLayersSpecification = {
     };
     isVisible: (config: MapConfiguration) => boolean;
     filter?: (config: MapConfiguration) => FilterSpecification;
+    hoverable?: boolean; // allows hover effect
   })[];
   // click events ?
   // shortcut to popups ?
-  // hover effect ?
 };
 
-const mapLayers = [
+export const mapLayers = [
   {
     sourceId: 'enrrMobilisables-zonesGeothermieProfonde',
     source: {
@@ -586,6 +586,7 @@ const mapLayers = [
         },
         filter: (config) => ['all', ['==', ['get', 'is_zone'], false], ...buildFiltreGestionnaire(config.filtreGestionnaire)],
         isVisible: (config) => config.reseauxEnConstruction,
+        hoverable: true,
       },
     ],
   },
@@ -1012,6 +1013,7 @@ const mapLayers = [
           ...buildFiltreIdentifiantReseau(config.filtreIdentifiantReseau),
         ],
         isVisible: (config) => config.reseauxDeChaleur.show,
+        hoverable: true,
       },
       {
         id: 'reseauxDeChaleur-sans-trace',
@@ -1051,6 +1053,7 @@ const mapLayers = [
           ...buildFiltreIdentifiantReseau(config.filtreIdentifiantReseau),
         ],
         isVisible: (config) => config.reseauxDeFroid,
+        hoverable: true,
       },
       {
         id: 'reseauxDeFroid-sans-trace',

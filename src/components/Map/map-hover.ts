@@ -7,33 +7,9 @@ import { type SourceId } from '@/server/services/tiles.config';
 import { type MapPopupInfos } from '@/types/MapComponentsInfos';
 
 import { layersWithDynamicContentPopup } from './components/DynamicMapPopupContent';
-import { type LayerId } from './map-layers';
+import { mapLayers, type LayerId } from './map-layers';
 
 let hoveredStateId: MapGeoJSONFeature['id'] | null = null;
-
-type HoverConfig = {
-  source: SourceId;
-  sourceLayer: string;
-  layer: LayerId;
-};
-
-const hoverConfigs: HoverConfig[] = [
-  {
-    layer: 'reseauxDeChaleur-avec-trace',
-    source: 'network',
-    sourceLayer: 'layer',
-  },
-  {
-    layer: 'reseauxEnConstruction-trace',
-    source: 'futurNetwork',
-    sourceLayer: 'futurOutline',
-  },
-  {
-    layer: 'reseauxDeFroid-avec-trace',
-    source: 'coldNetwork',
-    sourceLayer: 'coldOutline',
-  },
-];
 
 type UseMapHoverConfigProps = {
   mapLayersLoaded: boolean;
@@ -69,35 +45,45 @@ export function useMapHoverEffects({ mapLayersLoaded, isDrawing, mapRef }: UseMa
       }
     };
 
-    const hoverConfigsWithCallbacks = hoverConfigs.map((config) => {
+    const hoverableLayers = mapLayers.flatMap((spec) =>
+      spec.layers
+        .filter((layer) => 'hoverable' in layer && layer.hoverable)
+        .map((layer) => ({
+          sourceId: spec.sourceId,
+          layer,
+        }))
+    );
+
+    const hoverableLayersWithCallbacks = hoverableLayers.map((spec) => {
+      const sourceLayerName = 'source-layer' in spec.layer ? spec.layer['source-layer'] : 'layer';
       return {
-        layer: config.layer,
+        layer: spec.layer,
         onMouseEnter: (
           event: MapMouseEvent & {
             features?: MapGeoJSONFeature[];
           }
         ) => {
           if (event.features && event.features.length > 0) {
-            setFeatureHoveringState(mapRef, false, config.source, config.sourceLayer);
+            setFeatureHoveringState(mapRef, false, spec.sourceId, sourceLayerName);
             hoveredStateId = event.features[0].id;
-            setFeatureHoveringState(mapRef, true, config.source, config.sourceLayer);
+            setFeatureHoveringState(mapRef, true, spec.sourceId, sourceLayerName);
           }
         },
         onMouseLeave: () => {
-          setFeatureHoveringState(mapRef, false, config.source, config.sourceLayer);
+          setFeatureHoveringState(mapRef, false, spec.sourceId, sourceLayerName);
         },
       };
     });
 
-    hoverConfigsWithCallbacks.forEach((config) => {
-      mapRef.on('mouseenter', config.layer, config.onMouseEnter);
-      mapRef.on('mouseleave', config.layer, config.onMouseLeave);
+    hoverableLayersWithCallbacks.forEach((config) => {
+      mapRef.on('mouseenter', config.layer.id, config.onMouseEnter);
+      mapRef.on('mouseleave', config.layer.id, config.onMouseLeave);
     });
 
     return () => {
-      hoverConfigsWithCallbacks.forEach((config) => {
-        mapRef.off('mouseenter', config.layer, config.onMouseEnter);
-        mapRef.off('mouseleave', config.layer, config.onMouseLeave);
+      hoverableLayersWithCallbacks.forEach((config) => {
+        mapRef.off('mouseenter', config.layer.id, config.onMouseEnter);
+        mapRef.off('mouseleave', config.layer.id, config.onMouseLeave);
       });
     };
   }, [mapLayersLoaded, isDrawing]);
