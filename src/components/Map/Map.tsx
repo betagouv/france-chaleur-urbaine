@@ -47,13 +47,7 @@ import { useBuildingsDataExtractionLayers } from './components/tools/BuildingsDa
 import { useDistancesMeasurementLayers } from './components/tools/DistancesMeasurementTool';
 import { useLinearHeatDensityLayers } from './components/tools/LinearHeatDensityTool';
 import { useMapClickHandlers, useMapHoverEffects } from './map-hover';
-import {
-  type MapLegendFeature,
-  applyMapConfigurationToLayers,
-  buildInternalMapLayers,
-  buildMapLayers,
-  layerSymbolsImagesURLs,
-} from './map-layers';
+import { type MapLegendFeature, applyMapConfigurationToLayers, layerSymbolsImagesURLs, loadMapLayers } from './map-layers';
 import {
   CollapseLegend,
   CollapseLegendLabel,
@@ -367,33 +361,7 @@ export const FullyFeaturedMap = ({
       return;
     }
 
-    buildMapLayers(mapConfiguration).forEach((spec) => {
-      if (map.getSource(spec.sourceId)) {
-        return;
-      }
-
-      map.addSource(spec.sourceId, spec.source);
-      spec.layers.forEach((layer) => {
-        if (!layer.layout) {
-          layer.layout = {};
-        }
-        // hide all layers by default to prevent loading them
-        layer.layout.visibility = 'none';
-        map.addLayer(layer);
-      });
-    });
-
-    // other sources: distances measurement, linear heat density, buildings data extraction
-    buildInternalMapLayers().forEach((spec) => {
-      if (map.getSource(spec.sourceId)) {
-        return;
-      }
-
-      map.addSource(spec.sourceId, spec.source);
-      spec.layers.forEach((layer) => {
-        map.addLayer(layer);
-      });
-    });
+    loadMapLayers(map, mapConfiguration);
 
     setMapLayersLoaded(true);
   };

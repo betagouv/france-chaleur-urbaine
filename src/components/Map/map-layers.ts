@@ -11,6 +11,7 @@ import {
   type StyleSetterOptions,
 } from 'maplibre-gl';
 
+import { clientConfig } from '@/client-config';
 import { type SourceId } from '@/server/services/tiles.config';
 import { gestionnairesFilters } from '@/services';
 import {
@@ -26,8 +27,10 @@ import { themeDefSolaireThermiqueFriches, themeDefSolaireThermiqueParkings } fro
 import { themeDefZonePotentielChaud, themeDefZonePotentielFortChaud } from '@/services/Map/businessRules/zonePotentielChaud';
 import { type MapConfiguration, filtresEnergies, percentageMaxInterval } from '@/services/Map/map-configuration';
 import { ENERGY_TYPE, ENERGY_USED } from '@/types/enum/EnergyType';
+import { type EnergySummary } from '@/types/Summary/Energy';
+import { type GasSummary } from '@/types/Summary/Gas';
 import { type Network } from '@/types/Summary/Network';
-import { isDefined } from '@/utils/core';
+import { deepMergeObjects, isDefined } from '@/utils/core';
 import { intervalsEqual } from '@/utils/interval';
 import { formatMWhString } from '@/utils/strings';
 
@@ -53,7 +56,6 @@ import {
 
 export const tileSourcesMaxZoom = 17;
 
-export const tileLayersMinZoom = 0;
 export const intermediateTileLayersMinZoom = 12;
 
 // gas usage & energy
@@ -194,8 +196,8 @@ export const outlineLayerStyle: Pick<LineLayerSpecification, 'type' | 'layout' |
 // -----------------
 // --- Gas Usage ---
 // -----------------
-const CONSO = 'conso_nb';
-const TYPE_GAS = 'code_grand';
+const GAS_PROPERTY_CONSO: keyof GasSummary = 'conso_nb';
+const GAS_PROPERTY_TYPE_GAS: keyof GasSummary = 'code_grand';
 const arrColorFromDefTypeGas = [
   ...Object.entries(themeDefTypeGas).flatMap(([TypeGasName, styleObject]: [string, any]) => [TypeGasName, styleObject.color]),
 ] as [ExpressionInputType, ExpressionInputType, ...ExpressionInputType[]];
@@ -203,8 +205,8 @@ const arrColorFromDefTypeGas = [
 // --------------
 // --- Energy ---
 // --------------
-const NB_LOT = 'nb_logements';
-const TYPE_ENERGY = 'energie_utilisee';
+const ENERGY_PROPERTY_NB_LOT: keyof EnergySummary = 'nb_logements';
+const ENERGY_PROPERTY_TYPE_ENERGY: keyof EnergySummary = 'energie_utilisee';
 export const typeEnergy = {
   [ENERGY_USED.Fioul]: ENERGY_TYPE.Fuel,
   [ENERGY_USED.FioulDomestique]: ENERGY_TYPE.Fuel,
@@ -391,65 +393,6 @@ export const besoinsEnChaleurIndustrieCommunesIntervals: LegendInterval[] = [
   }),
 ];
 
-export type MapSourceLayersSpecification = {
-  sourceId: SourceId;
-  source: SourceSpecification;
-  layers: CustomLayerSpecification[];
-};
-
-type CustomLayerSpecification = LayerSpecification & {
-  id: LayerId;
-  source: SourceId;
-  layout?: LayerSpecification['layout'] & {
-    'icon-image'?: LayerSymbolImage;
-  };
-};
-
-export type LayerId =
-  | 'reseauxDeChaleur-avec-trace'
-  | 'reseauxDeChaleur-sans-trace'
-  | 'reseauxEnConstruction-zone'
-  | 'reseauxEnConstruction-trace'
-  | 'reseauxDeFroid-avec-trace'
-  | 'reseauxDeFroid-sans-trace'
-  | 'zonesDeDeveloppementPrioritaire'
-  | 'demandesEligibilite'
-  | 'energy'
-  | 'consommationsGaz'
-  | 'batimentsRaccordesReseauxChaleur'
-  | 'batimentsRaccordesReseauxFroid'
-  | 'enrrMobilisables-datacenter'
-  | 'enrrMobilisables-industrie'
-  | 'enrrMobilisables-installations-electrogenes'
-  | 'enrrMobilisables-stations-d-epuration'
-  | 'enrrMobilisables-unites-d-incineration'
-  | 'enrrMobilisables-friches'
-  | 'enrrMobilisables-friches-contour'
-  | 'enrrMobilisables-parkings'
-  | 'enrrMobilisables-parkings-contour'
-  | 'enrrMobilisables-thalassothermie'
-  | 'enrrMobilisables-zonesGeothermieProfonde'
-  | 'installationsGeothermieProfonde'
-  | 'installationsGeothermieSurfaceEchangeursFermes'
-  | 'installationsGeothermieSurfaceEchangeursOuverts'
-  | 'zonesPotentielChaud'
-  | 'zonesPotentielChaud-contour'
-  | 'zonesPotentielFortChaud'
-  | 'zonesPotentielFortChaud-contour'
-  | 'besoinsEnChaleur'
-  | 'besoinsEnFroid'
-  | 'besoinsEnChaleurFroid-contour'
-  | 'besoinsEnChaleurIndustrieCommunes'
-  | 'besoinsEnChaleurIndustrieCommunes-contour'
-  | 'communesFortPotentielPourCreationReseauxChaleur'
-  | 'caracteristiquesBatiments'
-  | 'distance-measurements-lines'
-  | 'distance-measurements-labels'
-  | 'linear-heat-density-lines'
-  | 'linear-heat-density-labels'
-  | 'buildings-data-extraction-fill'
-  | 'buildings-data-extraction-outline';
-
 const zoomOpacityTransitionAt10: DataDrivenPropertyValueSpecification<number> = [
   'interpolate',
   ['linear'],
@@ -460,879 +403,870 @@ const zoomOpacityTransitionAt10: DataDrivenPropertyValueSpecification<number> = 
   1,
 ];
 
-// besoin d'une fonction dynamique pour avoir location.origin disponible côté client et aussi
-// pouvoir construire les layers selon les filtres
-export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecification[] {
-  return [
-    {
-      sourceId: 'enrrMobilisables-zonesGeothermieProfonde',
-      source: {
-        type: 'vector',
-        tiles: [`${location.origin}/api/map/enrrMobilisables-zonesGeothermieProfonde/{z}/{x}/{y}`],
-        minzoom: 5,
-        maxzoom: 11,
-      },
-      layers: [
-        {
-          id: 'enrrMobilisables-zonesGeothermieProfonde',
-          source: 'enrrMobilisables-zonesGeothermieProfonde',
-          'source-layer': 'layer',
-          minzoom: tileLayersMinZoom,
-          type: 'fill',
-          paint: {
-            'fill-color': enrrMobilisablesGeothermieProfondeLayerColor,
-            'fill-opacity': enrrMobilisablesGeothermieProfondeLayerOpacity,
-          },
-        },
-      ],
-    },
+export type MapSourceLayersSpecification = {
+  sourceId: SourceId;
+  source: SourceSpecification;
+  layers: (Omit<LayerSpecification, 'source' | 'source-layer' | 'filter'> & {
+    id: string;
+    'source-layer'?: string;
+    layout?: LayerSpecification['layout'] & {
+      'icon-image'?: LayerSymbolImage;
+    };
+    isVisible: (config: MapConfiguration) => boolean;
+    filter?: (config: MapConfiguration) => FilterSpecification;
+  })[];
+  // click events ?
+  // shortcut to popups ?
+  // hover effect ?
+};
 
-    // ---------------------------
-    // --- zonesPotentielChaud ---
-    // ---------------------------
-    {
-      sourceId: 'zonesPotentielChaud',
-      source: {
-        type: 'vector',
-        tiles: [`${location.origin}/api/map/zonesPotentielChaud/{z}/{x}/{y}`],
-        maxzoom: 12,
-        promoteId: 'id_zone',
-      },
-      layers: [
-        {
-          id: 'zonesPotentielChaud',
-          source: 'zonesPotentielChaud',
-          'source-layer': 'layer',
-          minzoom: tileLayersMinZoom,
-          type: 'fill',
-          paint: {
-            'fill-color': themeDefZonePotentielChaud.fill.color,
-            'fill-opacity': themeDefZonePotentielChaud.fill.opacity,
-          },
-        },
-        {
-          id: 'zonesPotentielChaud-contour',
-          source: 'zonesPotentielChaud',
-          'source-layer': 'layer',
-          minzoom: tileLayersMinZoom,
-          type: 'line',
-          paint: {
-            'line-color': themeDefZonePotentielChaud.fill.color,
-            'line-width': 2,
-          },
-        },
-      ],
+const mapLayers = [
+  {
+    sourceId: 'enrrMobilisables-zonesGeothermieProfonde',
+    source: {
+      type: 'vector',
+      tiles: ['/api/map/enrrMobilisables-zonesGeothermieProfonde/{z}/{x}/{y}'],
+      minzoom: 5,
+      maxzoom: 11,
     },
-
-    // -------------------------------
-    // --- zonesPotentielFortChaud ---
-    // -------------------------------
-    {
-      sourceId: 'zonesPotentielFortChaud',
-      source: {
-        type: 'vector',
-        tiles: [`${location.origin}/api/map/zonesPotentielFortChaud/{z}/{x}/{y}`],
-        maxzoom: 12,
-        promoteId: 'id_zone',
+    layers: [
+      {
+        id: 'enrrMobilisables-zonesGeothermieProfonde',
+        type: 'fill',
+        paint: {
+          'fill-color': enrrMobilisablesGeothermieProfondeLayerColor,
+          'fill-opacity': enrrMobilisablesGeothermieProfondeLayerOpacity,
+        },
+        isVisible: (config) => config.enrrMobilisablesGeothermieProfonde,
       },
-      layers: [
-        {
-          id: 'zonesPotentielFortChaud',
-          source: 'zonesPotentielFortChaud',
-          'source-layer': 'layer',
-          minzoom: tileLayersMinZoom,
-          type: 'fill',
-          paint: {
-            'fill-color': themeDefZonePotentielFortChaud.fill.color,
-            'fill-opacity': themeDefZonePotentielFortChaud.fill.opacity,
-          },
-        },
-        {
-          id: 'zonesPotentielFortChaud-contour',
-          source: 'zonesPotentielFortChaud',
-          'source-layer': 'layer',
-          minzoom: tileLayersMinZoom,
-          type: 'line',
-          paint: {
-            'line-color': themeDefZonePotentielFortChaud.fill.color,
-            'line-width': 2,
-          },
-        },
-      ],
+    ],
+  },
+  {
+    sourceId: 'zonesPotentielChaud',
+    source: {
+      type: 'vector',
+      tiles: ['/api/map/zonesPotentielChaud/{z}/{x}/{y}'],
+      maxzoom: 12,
+      promoteId: 'id_zone',
     },
-
-    {
-      sourceId: 'besoinsEnChaleurIndustrieCommunes',
-      source: {
-        type: 'vector',
-        tiles: [`${location.origin}/api/map/besoinsEnChaleurIndustrieCommunes/{z}/{x}/{y}`],
-        minzoom: 5,
-        maxzoom: 11,
+    layers: [
+      {
+        id: 'zonesPotentielChaud',
+        type: 'fill',
+        paint: {
+          'fill-color': themeDefZonePotentielChaud.fill.color,
+          'fill-opacity': themeDefZonePotentielChaud.fill.opacity,
+        },
+        isVisible: (config) => config.zonesOpportunite.show && config.zonesOpportunite.zonesPotentielChaud,
       },
-      layers: [
-        {
-          id: 'besoinsEnChaleurIndustrieCommunes',
-          source: 'besoinsEnChaleurIndustrieCommunes',
-          'source-layer': 'layer',
-          type: 'fill',
-          paint: {
-            'fill-color': [
-              'step',
-              ['coalesce', ['get', 'conso_chal'], 0],
-              besoinsEnChaleurIndustrieCommunesDefaultColor,
-              ...besoinsEnChaleurIndustrieCommunesThresholds.flatMap((v) => [v.value, v.color]),
-            ],
-            'fill-opacity': 0.7,
-          },
+      {
+        id: 'zonesPotentielChaud-contour',
+        type: 'line',
+        paint: {
+          'line-color': themeDefZonePotentielChaud.fill.color,
+          'line-width': 2,
         },
-        {
-          id: 'besoinsEnChaleurIndustrieCommunes-contour',
-          source: 'besoinsEnChaleurIndustrieCommunes',
-          'source-layer': 'layer',
-          type: 'line',
-          paint: {
-            'line-color': '#777777',
-            'line-width': 1,
-          },
-        },
-      ],
+        isVisible: (config) => config.zonesOpportunite.show && config.zonesOpportunite.zonesPotentielChaud,
+      },
+    ],
+  },
+
+  {
+    sourceId: 'zonesPotentielFortChaud',
+    source: {
+      type: 'vector',
+      tiles: ['/api/map/zonesPotentielFortChaud/{z}/{x}/{y}'],
+      maxzoom: 12,
+      promoteId: 'id_zone',
     },
-
-    // ------------------------------------------
-    // --- Zones de développement prioritaire ---
-    // ------------------------------------------
-    {
-      sourceId: 'zoneDP',
-      source: {
-        type: 'vector',
-        tiles: [`${location.origin}/api/map/zoneDP/{z}/{x}/{y}`],
-        maxzoom: 14,
-      },
-      layers: [
-        {
-          id: 'zonesDeDeveloppementPrioritaire',
-          source: 'zoneDP',
-          'source-layer': 'zoneDP',
-          minzoom: tileLayersMinZoom,
-          type: 'fill',
-          paint: {
-            'fill-color': themeDefZoneDP.fill.color,
-            'fill-opacity': themeDefZoneDP.fill.opacity,
-          },
+    layers: [
+      {
+        id: 'zonesPotentielFortChaud',
+        type: 'fill',
+        paint: {
+          'fill-color': themeDefZonePotentielFortChaud.fill.color,
+          'fill-opacity': themeDefZonePotentielFortChaud.fill.opacity,
         },
-      ],
+        isVisible: (config) => config.zonesOpportunite.show && config.zonesOpportunite.zonesPotentielFortChaud,
+      },
+      {
+        id: 'zonesPotentielFortChaud-contour',
+        type: 'line',
+        paint: {
+          'line-color': themeDefZonePotentielFortChaud.fill.color,
+          'line-width': 2,
+        },
+        isVisible: (config) => config.zonesOpportunite.show && config.zonesOpportunite.zonesPotentielFortChaud,
+      },
+    ],
+  },
+
+  {
+    sourceId: 'besoinsEnChaleurIndustrieCommunes',
+    source: {
+      type: 'vector',
+      tiles: ['/api/map/besoinsEnChaleurIndustrieCommunes/{z}/{x}/{y}'],
+      minzoom: 5,
+      maxzoom: 11,
     },
-
-    // ---------------------------
-    // --- Future Heat Network ---
-    // ---------------------------
-    {
-      sourceId: 'futurNetwork',
-      source: {
-        type: 'vector',
-        tiles: [`${location.origin}/api/map/futurNetwork/{z}/{x}/{y}`],
-        maxzoom: 14,
+    layers: [
+      {
+        id: 'besoinsEnChaleurIndustrieCommunes',
+        type: 'fill',
+        paint: {
+          'fill-color': [
+            'step',
+            ['coalesce', ['get', 'conso_chal'], 0],
+            besoinsEnChaleurIndustrieCommunesDefaultColor,
+            ...besoinsEnChaleurIndustrieCommunesThresholds.flatMap((v) => [v.value, v.color]),
+          ],
+          'fill-opacity': 0.7,
+        },
+        isVisible: (config) => config.besoinsEnChaleurIndustrieCommunes,
       },
-      layers: [
-        {
-          id: 'reseauxEnConstruction-zone',
-          source: 'futurNetwork',
-          'source-layer': 'futurOutline',
-          minzoom: tileLayersMinZoom,
-          filter: ['all', ['==', ['get', 'is_zone'], true], ...buildFiltreGestionnaire(config.filtreGestionnaire)],
-          type: 'fill',
-          paint: {
-            'fill-color': themeDefHeatNetwork.futur.color,
-            'fill-opacity': themeDefHeatNetwork.futur.opacity,
-          },
+      {
+        id: 'besoinsEnChaleurIndustrieCommunes-contour',
+        type: 'line',
+        paint: {
+          'line-color': '#777777',
+          'line-width': 1,
         },
-        {
-          id: 'reseauxEnConstruction-trace',
-          source: 'futurNetwork',
-          'source-layer': 'futurOutline',
-          minzoom: tileLayersMinZoom,
-          filter: ['all', ['==', ['get', 'is_zone'], false], ...buildFiltreGestionnaire(config.filtreGestionnaire)],
-          ...outlineLayerStyle,
-          paint: {
-            ...outlineLayerStyle.paint,
-            'line-color': themeDefHeatNetwork.futur.color,
-          },
-        },
-      ],
+        isVisible: (config) => config.besoinsEnChaleurIndustrieCommunes,
+      },
+    ],
+  },
+
+  {
+    sourceId: 'zoneDP',
+    source: {
+      type: 'vector',
+      tiles: ['/api/map/zoneDP/{z}/{x}/{y}'],
+      maxzoom: 14,
     },
-
-    // --------------------------------------------
-    // --- Besoins en chaleur des bâtiments ---
-    // --------------------------------------------
-    {
-      sourceId: 'besoinsEnChaleur',
-      source: {
-        type: 'vector',
-        tiles: [`${location.origin}/api/map/besoinsEnChaleur/{z}/{x}/{y}`],
-        minzoom: 10,
-        maxzoom: 14,
+    layers: [
+      {
+        id: 'zonesDeDeveloppementPrioritaire',
+        'source-layer': 'zoneDP',
+        type: 'fill',
+        paint: {
+          'fill-color': themeDefZoneDP.fill.color,
+          'fill-opacity': themeDefZoneDP.fill.opacity,
+        },
+        isVisible: (config) => config.zonesDeDeveloppementPrioritaire,
       },
-      layers: [
-        {
-          id: 'besoinsEnFroid',
-          source: 'besoinsEnChaleur',
-          'source-layer': 'layer',
-          type: 'fill',
-          paint: {
-            'fill-color': [
-              'step',
-              ['coalesce', ['get', 'FROID_MWH'], 0],
-              besoinsBatimentsDefaultColor,
-              ...besoinsEnFroidColorThresholds.flatMap((v) => [v.value, v.color]),
-            ],
-            'fill-opacity': zoomOpacityTransitionAt10,
-          },
-        },
-        {
-          id: 'besoinsEnChaleur',
-          source: 'besoinsEnChaleur',
-          'source-layer': 'layer',
-          type: 'fill',
-          paint: {
-            'fill-color': [
-              'step',
-              ['coalesce', ['coalesce', ['get', 'CHAUF_MWH'], 0], 0],
-              besoinsBatimentsDefaultColor,
-              ...besoinsEnChaleurColorThresholds.flatMap((v) => [v.value, v.color]),
-            ],
-            'fill-opacity': zoomOpacityTransitionAt10,
-          },
-        },
-        {
-          id: 'besoinsEnChaleurFroid-contour',
-          source: 'besoinsEnChaleur',
-          'source-layer': 'layer',
-          type: 'line',
-          paint: {
-            'line-color': '#777777',
-            'line-width': 0.5,
-            'line-opacity': zoomOpacityTransitionAt10,
-          },
-        },
-      ],
+    ],
+  },
+
+  {
+    sourceId: 'futurNetwork',
+    source: {
+      type: 'vector',
+      tiles: ['/api/map/futurNetwork/{z}/{x}/{y}'],
+      maxzoom: 14,
     },
-
-    // --------------------------------------------
-    // --- Caractéristiques des bâtiments (DPE) ---
-    // --------------------------------------------
-    {
-      sourceId: 'buildings',
-      source: {
-        type: 'vector',
-        tiles: [`${location.origin}/api/map/buildings/{z}/{x}/{y}`],
-        maxzoom: tileSourcesMaxZoom,
+    layers: [
+      {
+        id: 'reseauxEnConstruction-zone',
+        'source-layer': 'futurOutline',
+        type: 'fill',
+        paint: {
+          'fill-color': themeDefHeatNetwork.futur.color,
+          'fill-opacity': themeDefHeatNetwork.futur.opacity,
+        },
+        filter: (config) => ['all', ['==', ['get', 'is_zone'], true], ...buildFiltreGestionnaire(config.filtreGestionnaire)],
+        isVisible: (config) => config.reseauxEnConstruction,
       },
-      layers: [
-        {
-          id: 'caracteristiquesBatiments',
-          source: 'buildings',
-          'source-layer': 'buildings',
-          minzoom: intermediateTileLayersMinZoom,
-          type: 'fill',
-          paint: {
-            'fill-color': [
-              'match',
-              ['downcase', ['coalesce', ['get', 'dpe_energie'], 'N']],
-              ...arrColorFromDefBuildingsDpeEnergy,
-              themeDefBuildings.colors.unknow.color,
-            ],
-            'fill-opacity': [
+      {
+        id: 'reseauxEnConstruction-trace',
+        'source-layer': 'futurOutline',
+        ...outlineLayerStyle,
+        paint: {
+          ...outlineLayerStyle.paint,
+          'line-color': themeDefHeatNetwork.futur.color,
+        },
+        filter: (config) => ['all', ['==', ['get', 'is_zone'], false], ...buildFiltreGestionnaire(config.filtreGestionnaire)],
+        isVisible: (config) => config.reseauxEnConstruction,
+      },
+    ],
+  },
+
+  {
+    sourceId: 'besoinsEnChaleur',
+    source: {
+      type: 'vector',
+      tiles: ['/api/map/besoinsEnChaleur/{z}/{x}/{y}'],
+      minzoom: 10,
+      maxzoom: 14,
+    },
+    layers: [
+      {
+        id: 'besoinsEnFroid',
+        type: 'fill',
+        paint: {
+          'fill-color': [
+            'step',
+            ['coalesce', ['get', 'FROID_MWH'], 0],
+            besoinsBatimentsDefaultColor,
+            ...besoinsEnFroidColorThresholds.flatMap((v) => [v.value, v.color]),
+          ],
+          'fill-opacity': zoomOpacityTransitionAt10,
+        },
+        isVisible: (config) => config.besoinsEnFroid,
+      },
+      {
+        id: 'besoinsEnChaleur',
+        type: 'fill',
+        paint: {
+          'fill-color': [
+            'step',
+            ['coalesce', ['coalesce', ['get', 'CHAUF_MWH'], 0], 0],
+            besoinsBatimentsDefaultColor,
+            ...besoinsEnChaleurColorThresholds.flatMap((v) => [v.value, v.color]),
+          ],
+          'fill-opacity': zoomOpacityTransitionAt10,
+        },
+        isVisible: (config) => config.besoinsEnChaleur,
+      },
+      {
+        id: 'besoinsEnChaleurFroid-contour',
+        type: 'line',
+        paint: {
+          'line-color': '#777777',
+          'line-width': 0.5,
+          'line-opacity': zoomOpacityTransitionAt10,
+        },
+        isVisible: (config) => config.besoinsEnChaleur || config.besoinsEnFroid,
+      },
+    ],
+  },
+
+  {
+    sourceId: 'buildings',
+    source: {
+      type: 'vector',
+      tiles: ['/api/map/buildings/{z}/{x}/{y}'],
+      maxzoom: tileSourcesMaxZoom,
+    },
+    layers: [
+      {
+        id: 'caracteristiquesBatiments',
+        'source-layer': 'buildings',
+        minzoom: intermediateTileLayersMinZoom,
+        type: 'fill',
+        paint: {
+          'fill-color': [
+            'match',
+            ['downcase', ['coalesce', ['get', 'dpe_energie'], 'N']],
+            ...arrColorFromDefBuildingsDpeEnergy,
+            themeDefBuildings.colors.unknow.color,
+          ],
+          'fill-opacity': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            intermediateTileLayersMinZoom + 0.2,
+            0,
+            intermediateTileLayersMinZoom + 0.2 + 1,
+            themeDefBuildings.opacity,
+          ],
+        },
+        isVisible: (config) => config.caracteristiquesBatiments,
+      },
+    ],
+  },
+
+  {
+    sourceId: 'enrrMobilisables-friches',
+    source: {
+      type: 'vector',
+      tiles: ['/api/map/enrrMobilisables-friches/{z}/{x}/{y}'],
+      promoteId: 'GmlID',
+      maxzoom: tileSourcesMaxZoom,
+    },
+    layers: [
+      {
+        id: 'enrrMobilisables-friches',
+        type: 'fill',
+        paint: {
+          'fill-color': themeDefSolaireThermiqueFriches.color,
+          'fill-opacity': themeDefSolaireThermiqueFriches.opacity,
+        },
+        isVisible: (config) => config.enrrMobilisablesSolaireThermique.show && config.enrrMobilisablesSolaireThermique.showFriches,
+      },
+      {
+        id: 'enrrMobilisables-friches-contour',
+        type: 'line',
+        paint: {
+          'line-color': themeDefSolaireThermiqueFriches.color,
+          'line-width': 2,
+        },
+        isVisible: (config) => config.enrrMobilisablesSolaireThermique.show && config.enrrMobilisablesSolaireThermique.showFriches,
+      },
+    ],
+  },
+
+  {
+    sourceId: 'enrrMobilisables-parkings',
+    source: {
+      type: 'vector',
+      tiles: ['/api/map/enrrMobilisables-parkings/{z}/{x}/{y}'],
+      promoteId: 'GmlID',
+      maxzoom: tileSourcesMaxZoom,
+    },
+    layers: [
+      {
+        id: 'enrrMobilisables-parkings',
+        type: 'fill',
+        paint: {
+          'fill-color': themeDefSolaireThermiqueParkings.color,
+          'fill-opacity': themeDefSolaireThermiqueParkings.opacity,
+        },
+        isVisible: (config) => config.enrrMobilisablesSolaireThermique.show && config.enrrMobilisablesSolaireThermique.showParkings,
+      },
+      {
+        id: 'enrrMobilisables-parkings-contour',
+        type: 'line',
+        paint: {
+          'line-color': themeDefSolaireThermiqueParkings.color,
+          'line-width': 2,
+        },
+        isVisible: (config) => config.enrrMobilisablesSolaireThermique.show && config.enrrMobilisablesSolaireThermique.showParkings,
+      },
+    ],
+  },
+
+  {
+    sourceId: 'enrrMobilisables-thalassothermie',
+    source: {
+      type: 'vector',
+      tiles: ['/api/map/enrrMobilisables-thalassothermie/{z}/{x}/{y}'],
+      minzoom: 5,
+      maxzoom: 12,
+    },
+    layers: [
+      {
+        id: 'enrrMobilisables-thalassothermie',
+        type: 'fill',
+        paint: {
+          'fill-color': enrrMobilisablesThalassothermieLayerColor,
+          'fill-opacity': enrrMobilisablesThalassothermieLayerOpacity,
+        },
+        isVisible: (config) => config.enrrMobilisablesThalassothermie,
+      },
+    ],
+  },
+
+  {
+    sourceId: 'batimentsRaccordesReseauxChaleurFroid',
+    source: {
+      type: 'vector',
+      tiles: [`/api/map/batimentsRaccordesReseauxChaleurFroid/{z}/{x}/{y}`],
+      minzoom: 9,
+      maxzoom: 13, // 13 permet de cliquer jusqu'au zoom 20 inclus, sinon maplibre ne considère pas la feature comme cliquable
+    },
+    layers: [
+      {
+        id: 'batimentsRaccordesReseauxChaleur',
+        'source-layer': 'batiments_raccordes_reseaux_chaleur',
+        minzoom: 9,
+        type: 'symbol',
+        layout: {
+          'icon-image': 'square',
+          'icon-overlap': 'always',
+          'icon-size': ['interpolate', ['linear'], ['zoom'], 9, 0.1, 12, 0.5],
+        },
+        paint: {
+          'icon-color': themeDefHeatNetwork.classed.color,
+          'icon-opacity': ['interpolate', ['linear'], ['zoom'], 9.2, 0, 10.5, batimentsRaccordesLayerMaxOpacity],
+        },
+        isVisible: (config) => config.batimentsRaccordesReseauxChaleur,
+      },
+      {
+        id: 'batimentsRaccordesReseauxFroid',
+        'source-layer': 'batiments_raccordes_reseaux_froid',
+        minzoom: 9,
+        type: 'symbol',
+        layout: {
+          'icon-image': 'square',
+          'icon-overlap': 'always',
+          'icon-size': ['interpolate', ['linear'], ['zoom'], 9, 0.1, 12, 0.5],
+        },
+        paint: {
+          'icon-color': themeDefHeatNetwork.cold.color,
+          'icon-opacity': ['interpolate', ['linear'], ['zoom'], 9.2, 0, 10.5, batimentsRaccordesLayerMaxOpacity],
+        },
+        isVisible: (config) => config.batimentsRaccordesReseauxFroid,
+      },
+    ],
+  },
+
+  {
+    sourceId: 'energy',
+    source: {
+      type: 'vector',
+      tiles: [`/api/map/energy/{z}/{x}/{y}`],
+      maxzoom: tileSourcesMaxZoom,
+    },
+    layers: [
+      {
+        id: 'energy',
+        'source-layer': 'energy',
+        minzoom: intermediateTileLayersMinZoom,
+        type: 'symbol',
+        layout: {
+          'icon-image': 'square',
+          'icon-overlap': 'always',
+          'symbol-sort-key': ['-', ['coalesce', ['get', ENERGY_PROPERTY_NB_LOT], 0]],
+          'icon-size': [
+            'case',
+            ['<', ['get', ENERGY_PROPERTY_NB_LOT], LegendDeskData.energy.min],
+            getSymbolRatio(minIconSize),
+            ['<', ['get', ENERGY_PROPERTY_NB_LOT], LegendDeskData.energy.max],
+            [
               'interpolate',
               ['linear'],
-              ['zoom'],
-              intermediateTileLayersMinZoom + 0.2,
-              0,
-              intermediateTileLayersMinZoom + 0.2 + 1,
-              themeDefBuildings.opacity,
-            ],
-          },
-        },
-      ],
-    },
-
-    // --------------------------------------------
-    // ---      Friches solaire thermique       ---
-    // --------------------------------------------
-    {
-      sourceId: 'enrrMobilisables-friches',
-      source: {
-        type: 'vector',
-        tiles: [`${location.origin}/api/map/enrrMobilisables-friches/{z}/{x}/{y}`],
-        promoteId: 'GmlID',
-        maxzoom: tileSourcesMaxZoom,
-      },
-      layers: [
-        {
-          id: 'enrrMobilisables-friches',
-          source: 'enrrMobilisables-friches',
-          'source-layer': 'layer',
-          minzoom: tileLayersMinZoom,
-          type: 'fill',
-          paint: {
-            'fill-color': themeDefSolaireThermiqueFriches.color,
-            'fill-opacity': themeDefSolaireThermiqueFriches.opacity,
-          },
-        },
-        {
-          id: 'enrrMobilisables-friches-contour',
-          source: 'enrrMobilisables-friches',
-          'source-layer': 'layer',
-          minzoom: tileLayersMinZoom,
-          type: 'line',
-          paint: {
-            'line-color': themeDefSolaireThermiqueFriches.color,
-            'line-width': 2,
-          },
-        },
-      ],
-    },
-
-    // --------------------------------------------
-    // ---      Parkings de plus de 500m²       ---
-    // --------------------------------------------
-    {
-      sourceId: 'enrrMobilisables-parkings',
-      source: {
-        type: 'vector',
-        tiles: [`${location.origin}/api/map/enrrMobilisables-parkings/{z}/{x}/{y}`],
-        promoteId: 'GmlID',
-        maxzoom: tileSourcesMaxZoom,
-      },
-      layers: [
-        {
-          id: 'enrrMobilisables-parkings',
-          source: 'enrrMobilisables-parkings',
-          'source-layer': 'layer',
-          minzoom: tileLayersMinZoom,
-          type: 'fill',
-          paint: {
-            'fill-color': themeDefSolaireThermiqueParkings.color,
-            'fill-opacity': themeDefSolaireThermiqueParkings.opacity,
-          },
-        },
-        {
-          id: 'enrrMobilisables-parkings-contour',
-          source: 'enrrMobilisables-parkings',
-          'source-layer': 'layer',
-          minzoom: tileLayersMinZoom,
-          type: 'line',
-          paint: {
-            'line-color': themeDefSolaireThermiqueParkings.color,
-            'line-width': 2,
-          },
-        },
-      ],
-    },
-
-    {
-      sourceId: 'enrrMobilisables-thalassothermie',
-      source: {
-        type: 'vector',
-        tiles: [`${location.origin}/api/map/enrrMobilisables-thalassothermie/{z}/{x}/{y}`],
-        minzoom: 5,
-        maxzoom: 12,
-      },
-      layers: [
-        {
-          id: 'enrrMobilisables-thalassothermie',
-          source: 'enrrMobilisables-thalassothermie',
-          'source-layer': 'layer',
-          minzoom: tileLayersMinZoom,
-          type: 'fill',
-          paint: {
-            'fill-color': enrrMobilisablesThalassothermieLayerColor,
-            'fill-opacity': enrrMobilisablesThalassothermieLayerOpacity,
-          },
-        },
-      ],
-    },
-
-    // ---------------------
-    // --- Raccordements ---
-    // ---------------------
-    {
-      sourceId: 'batimentsRaccordesReseauxChaleurFroid',
-      source: {
-        type: 'vector',
-        tiles: [`${location.origin}/api/map/batimentsRaccordesReseauxChaleurFroid/{z}/{x}/{y}`],
-        minzoom: 9,
-        maxzoom: 13, // 13 permet de cliquer jusqu'au zoom 20 inclus, sinon maplibre ne considère pas la feature comme cliquable
-      },
-      layers: [
-        {
-          id: 'batimentsRaccordesReseauxChaleur',
-          source: 'batimentsRaccordesReseauxChaleurFroid',
-          'source-layer': 'batiments_raccordes_reseaux_chaleur',
-          minzoom: 9,
-          type: 'symbol',
-          layout: {
-            'icon-image': 'square',
-            'icon-overlap': 'always',
-            'icon-size': ['interpolate', ['linear'], ['zoom'], 9, 0.1, 12, 0.5],
-          },
-          paint: {
-            'icon-color': themeDefHeatNetwork.classed.color,
-            'icon-opacity': ['interpolate', ['linear'], ['zoom'], 9.2, 0, 10.5, batimentsRaccordesLayerMaxOpacity],
-          },
-        },
-        {
-          id: 'batimentsRaccordesReseauxFroid',
-          source: 'batimentsRaccordesReseauxChaleurFroid',
-          'source-layer': 'batiments_raccordes_reseaux_froid',
-          minzoom: 9,
-          type: 'symbol',
-          layout: {
-            'icon-image': 'square',
-            'icon-overlap': 'always',
-            'icon-size': ['interpolate', ['linear'], ['zoom'], 9, 0.1, 12, 0.5],
-          },
-          paint: {
-            'icon-color': themeDefHeatNetwork.cold.color,
-            'icon-opacity': ['interpolate', ['linear'], ['zoom'], 9.2, 0, 10.5, batimentsRaccordesLayerMaxOpacity],
-          },
-        },
-      ],
-    },
-
-    // --------------
-    // --- Energy ---
-    // --------------
-    {
-      sourceId: 'energy',
-      source: {
-        type: 'vector',
-        tiles: [`${location.origin}/api/map/energy/{z}/{x}/{y}`],
-        maxzoom: tileSourcesMaxZoom,
-      },
-      layers: [
-        {
-          id: 'energy',
-          source: 'energy',
-          'source-layer': 'energy',
-          minzoom: intermediateTileLayersMinZoom,
-          type: 'symbol',
-          layout: {
-            'icon-image': 'square',
-            'icon-overlap': 'always',
-            'symbol-sort-key': ['-', ['coalesce', ['get', NB_LOT], 0]],
-            'icon-size': [
-              'case',
-              ['<', ['get', NB_LOT], LegendDeskData.energy.min],
+              ['get', ENERGY_PROPERTY_NB_LOT],
+              LegendDeskData.energy.min,
               getSymbolRatio(minIconSize),
-              ['<', ['get', NB_LOT], LegendDeskData.energy.max],
-              [
-                'interpolate',
-                ['linear'],
-                ['get', NB_LOT],
-                LegendDeskData.energy.min,
-                getSymbolRatio(minIconSize),
-                LegendDeskData.energy.max,
-                getSymbolRatio(maxIconSize),
-              ],
+              LegendDeskData.energy.max,
               getSymbolRatio(maxIconSize),
             ],
-          },
-          paint: {
-            'icon-color': ['match', ['get', TYPE_ENERGY], ...arrColorFromDefEnergy, themeDefEnergy.unknow.color],
-            'icon-opacity': [
+            getSymbolRatio(maxIconSize),
+          ],
+        },
+        paint: {
+          'icon-color': ['match', ['get', ENERGY_PROPERTY_TYPE_ENERGY], ...arrColorFromDefEnergy, themeDefEnergy.unknow.color],
+          'icon-opacity': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            intermediateTileLayersMinZoom + 0.2,
+            0,
+            intermediateTileLayersMinZoom + 0.5 + 1,
+            energyLayerMaxOpacity,
+          ],
+        },
+        filter: (config) => {
+          const batimentsFioulCollectifMin =
+            config.batimentsFioulCollectif.interval[0] === LegendDeskData.energy.min
+              ? Number.MIN_SAFE_INTEGER
+              : config.batimentsFioulCollectif.interval[0];
+          const batimentsFioulCollectifMax =
+            config.batimentsFioulCollectif.interval[1] === LegendDeskData.energy.max
+              ? Number.MAX_SAFE_INTEGER
+              : config.batimentsFioulCollectif.interval[1];
+          const batimentsGazCollectifMin =
+            config.batimentsGazCollectif.interval[0] === LegendDeskData.energy.min
+              ? Number.MIN_SAFE_INTEGER
+              : config.batimentsGazCollectif.interval[0];
+          const batimentsGazCollectifMax =
+            config.batimentsGazCollectif.interval[1] === LegendDeskData.energy.max
+              ? Number.MAX_SAFE_INTEGER
+              : config.batimentsGazCollectif.interval[1];
+          return [
+            'any',
+            config.batimentsFioulCollectif.show
+              ? [
+                  'all',
+                  ['==', ['get', ENERGY_PROPERTY_TYPE_ENERGY], 'fioul'],
+                  [
+                    'all',
+                    ['>=', ['get', ENERGY_PROPERTY_NB_LOT], batimentsFioulCollectifMin],
+                    ['<=', ['get', ENERGY_PROPERTY_NB_LOT], batimentsFioulCollectifMax],
+                  ],
+                ]
+              : ['literal', false],
+            config.batimentsGazCollectif.show
+              ? [
+                  'all',
+                  ['==', ['get', ENERGY_PROPERTY_TYPE_ENERGY], 'gaz'],
+                  [
+                    'all',
+                    ['>=', ['get', ENERGY_PROPERTY_NB_LOT], batimentsGazCollectifMin],
+                    ['<=', ['get', ENERGY_PROPERTY_NB_LOT], batimentsGazCollectifMax],
+                  ],
+                ]
+              : ['literal', false],
+          ];
+        },
+        isVisible: (config) => config.batimentsFioulCollectif.show || config.batimentsGazCollectif.show,
+      },
+    ],
+  },
+
+  {
+    sourceId: 'gas',
+    source: {
+      type: 'vector',
+      tiles: [`/api/map/gas/{z}/{x}/{y}`],
+      maxzoom: tileSourcesMaxZoom,
+    },
+    layers: [
+      {
+        id: 'consommationsGaz',
+        'source-layer': 'gasUsage',
+        minzoom: intermediateTileLayersMinZoom,
+        type: 'circle',
+        layout: {
+          'circle-sort-key': ['-', ['coalesce', ['get', GAS_PROPERTY_CONSO], 0]],
+        },
+        paint: {
+          'circle-color': ['match', ['get', GAS_PROPERTY_TYPE_GAS], ...arrColorFromDefTypeGas, themeDefTypeGas.unknow.color],
+          'circle-radius': [
+            'case',
+            ['<', ['get', GAS_PROPERTY_CONSO], LegendDeskData.gasUsage.min],
+            minIconSize / 2,
+            ['<', ['get', GAS_PROPERTY_CONSO], LegendDeskData.gasUsage.max],
+            [
               'interpolate',
               ['linear'],
-              ['zoom'],
-              intermediateTileLayersMinZoom + 0.2,
-              0,
-              intermediateTileLayersMinZoom + 0.5 + 1,
-              energyLayerMaxOpacity,
-            ],
-          },
-        },
-      ],
-    },
-
-    // -----------------
-    // --- Gas Usage ---
-    // -----------------
-    {
-      sourceId: 'gas',
-      source: {
-        type: 'vector',
-        tiles: [`${location.origin}/api/map/gas/{z}/{x}/{y}`],
-        maxzoom: tileSourcesMaxZoom,
-      },
-      layers: [
-        {
-          id: 'consommationsGaz',
-          source: 'gas',
-          'source-layer': 'gasUsage',
-          minzoom: intermediateTileLayersMinZoom,
-          type: 'circle',
-          layout: {
-            'circle-sort-key': ['-', ['coalesce', ['get', CONSO], 0]],
-          },
-          paint: {
-            'circle-color': ['match', ['get', TYPE_GAS], ...arrColorFromDefTypeGas, themeDefTypeGas.unknow.color],
-            'circle-radius': [
-              'case',
-              ['<', ['get', CONSO], LegendDeskData.gasUsage.min],
+              ['get', GAS_PROPERTY_CONSO],
+              LegendDeskData.gasUsage.min,
               minIconSize / 2,
-              ['<', ['get', CONSO], LegendDeskData.gasUsage.max],
-              [
-                'interpolate',
-                ['linear'],
-                ['get', CONSO],
-                LegendDeskData.gasUsage.min,
-                minIconSize / 2,
-                LegendDeskData.gasUsage.max,
-                maxIconSize / 2,
-              ],
+              LegendDeskData.gasUsage.max,
               maxIconSize / 2,
             ],
-            'circle-opacity': [
-              'interpolate',
-              ['linear'],
-              ['zoom'],
-              intermediateTileLayersMinZoom + 0.2,
-              0,
-              intermediateTileLayersMinZoom + 0.2 + 1,
-              consommationsGazLayerMaxOpacity,
+            maxIconSize / 2,
+          ],
+          'circle-opacity': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            intermediateTileLayersMinZoom + 0.2,
+            0,
+            intermediateTileLayersMinZoom + 0.2 + 1,
+            consommationsGazLayerMaxOpacity,
+          ],
+          'circle-stroke-opacity': 0,
+        },
+        filter: (config) => {
+          const consommationsGazIntervalMin =
+            config.consommationsGaz.interval[0] === LegendDeskData.gasUsage.min
+              ? Number.MIN_SAFE_INTEGER
+              : config.consommationsGaz.interval[0];
+          const consommationsGazIntervalMax =
+            config.consommationsGaz.interval[1] === LegendDeskData.gasUsage.max
+              ? Number.MAX_SAFE_INTEGER
+              : config.consommationsGaz.interval[1];
+          return [
+            'all',
+            config.consommationsGaz.interval
+              ? [
+                  'all',
+                  ['>=', ['get', GAS_PROPERTY_CONSO], consommationsGazIntervalMin],
+                  ['<=', ['get', GAS_PROPERTY_CONSO], consommationsGazIntervalMax],
+                ]
+              : true,
+            [
+              'any',
+              config.consommationsGaz.logements && ['==', ['get', GAS_PROPERTY_TYPE_GAS], 'R'],
+              config.consommationsGaz.tertiaire && ['==', ['get', GAS_PROPERTY_TYPE_GAS], 'T'],
+              config.consommationsGaz.industrie && ['==', ['get', GAS_PROPERTY_TYPE_GAS], 'I'],
             ],
-            'circle-stroke-opacity': 0,
-          },
+          ];
         },
-      ],
+        isVisible: (config) => config.consommationsGaz.show,
+      },
+    ],
+  },
+
+  {
+    sourceId: 'demands',
+    source: {
+      type: 'vector',
+      tiles: [`/api/map/demands/{z}/{x}/{y}`],
+      maxzoom: tileSourcesMaxZoom,
+    },
+    layers: [
+      {
+        id: 'demandesEligibilite',
+        'source-layer': 'demands',
+        type: 'circle',
+        paint: {
+          'circle-color': themeDefDemands.fill.color,
+          'circle-stroke-color': themeDefDemands.stroke.color,
+          'circle-radius': themeDefDemands.fill.size,
+          'circle-stroke-width': themeDefDemands.stroke.size,
+        },
+        isVisible: (config) => config.demandesEligibilite,
+      },
+    ],
+  },
+
+  {
+    sourceId: 'network',
+    source: {
+      type: 'vector',
+      tiles: ['/api/map/network/{z}/{x}/{y}'],
+      maxzoom: 14,
+    },
+    layers: [
+      {
+        id: 'reseauxDeChaleur-avec-trace',
+        ...outlineLayerStyle,
+        filter: (config) => [
+          'all',
+          ['==', ['get', 'has_trace'], true],
+          ...buildReseauxDeChaleurFilters(config.reseauxDeChaleur),
+          ...buildFiltreGestionnaire(config.filtreGestionnaire),
+          ...buildFiltreIdentifiantReseau(config.filtreIdentifiantReseau),
+        ],
+        isVisible: (config) => config.reseauxDeChaleur.show,
+      },
+      {
+        id: 'reseauxDeChaleur-sans-trace',
+        ...outlineCenterLayerStyle,
+        filter: (config) => [
+          'all',
+          ['==', ['get', 'has_trace'], false],
+          ...buildReseauxDeChaleurFilters(config.reseauxDeChaleur),
+          ...buildFiltreGestionnaire(config.filtreGestionnaire),
+          ...buildFiltreIdentifiantReseau(config.filtreIdentifiantReseau),
+        ],
+        isVisible: (config) => config.reseauxDeChaleur.show,
+      },
+    ],
+  },
+
+  {
+    sourceId: 'coldNetwork',
+    source: {
+      type: 'vector',
+      tiles: ['/api/map/coldNetwork/{z}/{x}/{y}'],
+      maxzoom: 14,
+    },
+    layers: [
+      {
+        id: 'reseauxDeFroid-avec-trace',
+        'source-layer': 'coldOutline',
+        ...outlineLayerStyle,
+        paint: {
+          ...outlineLayerStyle.paint,
+          'line-color': themeDefHeatNetwork.cold.color,
+        },
+        filter: (config) => [
+          'all',
+          ['==', ['get', 'has_trace'], true],
+          ...buildFiltreGestionnaire(config.filtreGestionnaire),
+          ...buildFiltreIdentifiantReseau(config.filtreIdentifiantReseau),
+        ],
+        isVisible: (config) => config.reseauxDeFroid,
+      },
+      {
+        id: 'reseauxDeFroid-sans-trace',
+        'source-layer': 'coldOutline',
+        ...outlineCenterLayerStyle,
+        paint: {
+          ...outlineCenterLayerStyle.paint,
+          'circle-stroke-color': themeDefHeatNetwork.cold.color,
+        },
+        filter: (config) => [
+          'all',
+          ['==', ['get', 'has_trace'], false],
+          ...buildFiltreGestionnaire(config.filtreGestionnaire),
+          ...buildFiltreIdentifiantReseau(config.filtreIdentifiantReseau),
+        ],
+        isVisible: (config) => config.reseauxDeFroid,
+      },
+    ],
+  },
+
+  {
+    sourceId: 'enrrMobilisables',
+    source: {
+      type: 'vector',
+      tiles: ['/api/map/enrrMobilisables/{z}/{x}/{y}'],
+      maxzoom: tileSourcesMaxZoom,
+      promoteId: 'GmlID',
     },
 
-    // -----------------
-    // --- Demands ---
-    // -----------------
-    {
-      sourceId: 'demands',
-      source: {
-        type: 'vector',
-        tiles: [`${location.origin}/api/map/demands/{z}/{x}/{y}`],
-        maxzoom: tileSourcesMaxZoom,
-      },
-      layers: [
-        {
-          id: 'demandesEligibilite',
-          source: 'demands',
-          'source-layer': 'demands',
-          minzoom: tileLayersMinZoom,
-          type: 'circle',
-          paint: {
-            'circle-color': themeDefDemands.fill.color,
-            'circle-stroke-color': themeDefDemands.stroke.color,
-            'circle-radius': themeDefDemands.fill.size,
-            'circle-stroke-width': themeDefDemands.stroke.size,
-          },
+    // the source contains one layer that contains all features
+    // we know the kind of one feature using the GmlID (e.g. datacenter.1)
+    // we have 5 layers, one for each kind of features to simplify show/hide code
+    layers: [
+      {
+        id: 'enrrMobilisables-stations-d-epuration',
+        type: 'symbol',
+        layout: {
+          'icon-image': 'enrr_mobilisables_stations_epuration',
+          'icon-overlap': 'always',
+          'icon-size': ['interpolate', ['linear'], ['zoom'], 5, 0.6, 10, 1],
         },
-      ],
-    },
 
-    // --------------------
-    // --- Heat Network ---
-    // --------------------
-    {
-      sourceId: 'network',
-      source: {
-        type: 'vector',
-        tiles: [`${location.origin}/api/map/network/{z}/{x}/{y}`],
-        maxzoom: 14,
+        filter: () => ['in', 'stations_d_epuration', ['get', 'GmlID']],
+        isVisible: (config) => config.enrrMobilisablesChaleurFatale.show && config.enrrMobilisablesChaleurFatale.showStationsDEpuration,
       },
-      layers: [
-        {
-          id: 'reseauxDeChaleur-avec-trace',
-          source: 'network',
-          'source-layer': 'layer',
-          minzoom: tileLayersMinZoom,
-          ...outlineLayerStyle,
-          filter: [
-            'all',
-            ['==', ['get', 'has_trace'], true],
-            ...buildReseauxDeChaleurFilters(config.reseauxDeChaleur),
-            ...buildFiltreGestionnaire(config.filtreGestionnaire),
-            ...buildFiltreIdentifiantReseau(config.filtreIdentifiantReseau),
+      {
+        id: 'enrrMobilisables-datacenter',
+        type: 'symbol',
+        layout: {
+          'icon-image': 'enrr_mobilisables_datacenter',
+          'icon-overlap': 'always',
+          'icon-size': ['interpolate', ['linear'], ['zoom'], 5, 0.6, 10, 1],
+        },
+
+        filter: () => ['in', 'datacenter', ['get', 'GmlID']],
+        isVisible: (config) => config.enrrMobilisablesChaleurFatale.show && config.enrrMobilisablesChaleurFatale.showDatacenters,
+      },
+      {
+        id: 'enrrMobilisables-industrie',
+        type: 'symbol',
+        layout: {
+          'icon-image': 'enrr_mobilisables_industrie',
+          'icon-overlap': 'always',
+          'icon-size': ['interpolate', ['linear'], ['zoom'], 5, 0.6, 10, 1],
+        },
+
+        filter: () => ['in', 'industrie', ['get', 'GmlID']],
+        isVisible: (config) => config.enrrMobilisablesChaleurFatale.show && config.enrrMobilisablesChaleurFatale.showIndustrie,
+      },
+      {
+        id: 'enrrMobilisables-installations-electrogenes',
+        type: 'symbol',
+        layout: {
+          'icon-image': 'enrr_mobilisables_installations_electrogenes',
+          'icon-overlap': 'always',
+          'icon-size': ['interpolate', ['linear'], ['zoom'], 5, 0.6, 10, 1],
+        },
+
+        filter: () => ['in', 'installations_electrogenes', ['get', 'GmlID']],
+        isVisible: (config) =>
+          config.enrrMobilisablesChaleurFatale.show && config.enrrMobilisablesChaleurFatale.showInstallationsElectrogenes,
+      },
+      {
+        id: 'enrrMobilisables-unites-d-incineration',
+        type: 'symbol',
+        layout: {
+          'icon-image': 'enrr_mobilisables_unites_incineration',
+          'icon-overlap': 'always',
+          'icon-size': ['interpolate', ['linear'], ['zoom'], 5, 0.6, 10, 1],
+        },
+
+        filter: () => ['in', 'unites_d_incineration', ['get', 'GmlID']],
+        isVisible: (config) => config.enrrMobilisablesChaleurFatale.show && config.enrrMobilisablesChaleurFatale.showUnitesDIncineration,
+      },
+    ],
+  },
+
+  {
+    sourceId: 'installationsGeothermieProfonde',
+    source: {
+      type: 'vector',
+      tiles: ['/api/map/installationsGeothermieProfonde/{z}/{x}/{y}'],
+      minzoom: 5,
+      maxzoom: 6,
+    },
+    layers: [
+      {
+        id: 'installationsGeothermieProfonde',
+        type: 'circle',
+        paint: {
+          'circle-color': installationsGeothermieProfondeLayerColor,
+          'circle-radius': 8,
+          'circle-opacity': installationsGeothermieProfondeLayerOpacity,
+        },
+        isVisible: (config) => config.installationsGeothermieProfonde,
+      },
+    ],
+  },
+  {
+    sourceId: 'installationsGeothermieSurfaceEchangeursFermes',
+    source: {
+      type: 'vector',
+      tiles: ['/api/map/installationsGeothermieSurfaceEchangeursFermes/{z}/{x}/{y}'],
+      minzoom: 5,
+      maxzoom: 10,
+    },
+    layers: [
+      {
+        id: 'installationsGeothermieSurfaceEchangeursFermes',
+        type: 'circle',
+        paint: {
+          'circle-color': [
+            'case',
+            ['==', ['get', 'statut_inst'], 'Déclaré'],
+            installationsGeothermieSurfaceEchangeursFermesDeclareeColor,
+            installationsGeothermieSurfaceEchangeursFermesRealiseeColor,
           ],
+          'circle-radius': 8,
+          'circle-opacity': installationsGeothermieSurfaceEchangeursFermesOpacity,
         },
-        {
-          id: 'reseauxDeChaleur-sans-trace',
-          source: 'network',
-          'source-layer': 'layer',
-          minzoom: tileLayersMinZoom,
-          ...outlineCenterLayerStyle,
-          filter: [
-            'all',
-            ['==', ['get', 'has_trace'], false],
-            ...buildReseauxDeChaleurFilters(config.reseauxDeChaleur),
-            ...buildFiltreGestionnaire(config.filtreGestionnaire),
-            ...buildFiltreIdentifiantReseau(config.filtreIdentifiantReseau),
+        isVisible: (config) => config.installationsGeothermieSurfaceEchangeursFermes,
+      },
+    ],
+  },
+  {
+    sourceId: 'installationsGeothermieSurfaceEchangeursOuverts',
+    source: {
+      type: 'vector',
+      tiles: ['/api/map/installationsGeothermieSurfaceEchangeursOuverts/{z}/{x}/{y}'],
+      minzoom: 5,
+      maxzoom: 10,
+    },
+    layers: [
+      {
+        id: 'installationsGeothermieSurfaceEchangeursOuverts',
+        type: 'circle',
+        paint: {
+          'circle-color': [
+            'case',
+            ['==', ['get', 'statut_inst'], 'Déclaré'],
+            installationsGeothermieSurfaceEchangeursOuvertsDeclareeColor,
+            installationsGeothermieSurfaceEchangeursOuvertsRealiseeColor,
           ],
+          'circle-radius': 8,
+          'circle-opacity': installationsGeothermieSurfaceEchangeursOuvertsOpacity,
         },
-      ],
-    },
-
-    // --------------------
-    // --- Cold Network ---
-    // --------------------
-    {
-      sourceId: 'coldNetwork',
-      source: {
-        type: 'vector',
-        tiles: [`${location.origin}/api/map/coldNetwork/{z}/{x}/{y}`],
-        maxzoom: 14,
+        isVisible: (config) => config.installationsGeothermieSurfaceEchangeursOuverts,
       },
-      layers: [
-        {
-          id: 'reseauxDeFroid-avec-trace',
-          source: 'coldNetwork',
-          'source-layer': 'coldOutline',
-          minzoom: tileLayersMinZoom,
-          ...outlineLayerStyle,
-          paint: {
-            ...outlineLayerStyle.paint,
-            'line-color': themeDefHeatNetwork.cold.color,
-          },
-          filter: [
-            'all',
-            ['==', ['get', 'has_trace'], true],
-            ...buildFiltreGestionnaire(config.filtreGestionnaire),
-            ...buildFiltreIdentifiantReseau(config.filtreIdentifiantReseau),
+    ],
+  },
+
+  {
+    sourceId: 'communesFortPotentielPourCreationReseauxChaleur',
+    source: {
+      type: 'vector',
+      tiles: ['/api/map/communesFortPotentielPourCreationReseauxChaleur/{z}/{x}/{y}'],
+      minzoom: 5,
+      maxzoom: 6,
+    },
+    layers: [
+      {
+        id: 'communesFortPotentielPourCreationReseauxChaleur',
+        type: 'circle',
+        layout: {
+          'circle-sort-key': ['-', ['get', 'population']],
+        },
+        paint: {
+          'circle-color': communesFortPotentielPourCreationReseauxChaleurLayerColor,
+          'circle-radius': [
+            'interpolate',
+            ['linear'],
+            ['+', ['get', 'zones_fort_potentiel_chauf_mwh'], ['get', 'zones_fort_potentiel_ecs_mwh']],
+            0,
+            4,
+            160_000, // ~ max value
+            20,
           ],
+          'circle-opacity': communesFortPotentielPourCreationReseauxChaleurLayerOpacity,
         },
-        {
-          id: 'reseauxDeFroid-sans-trace',
-          source: 'coldNetwork',
-          'source-layer': 'coldOutline',
-          minzoom: tileLayersMinZoom,
-          ...outlineCenterLayerStyle,
-          paint: {
-            ...outlineCenterLayerStyle.paint,
-            'circle-stroke-color': themeDefHeatNetwork.cold.color,
-          },
-          filter: [
-            'all',
-            ['==', ['get', 'has_trace'], false],
-            ...buildFiltreGestionnaire(config.filtreGestionnaire),
-            ...buildFiltreIdentifiantReseau(config.filtreIdentifiantReseau),
-          ],
-        },
-      ],
-    },
-
-    {
-      sourceId: 'enrrMobilisables',
-      source: {
-        type: 'vector',
-        tiles: [`${location.origin}/api/map/enrrMobilisables/{z}/{x}/{y}`],
-        maxzoom: tileSourcesMaxZoom,
-        promoteId: 'GmlID',
+        filter: (config) => [
+          'all',
+          ['>=', ['get', 'population'], config.communesFortPotentielPourCreationReseauxChaleur.population[0]],
+          ['<=', ['get', 'population'], config.communesFortPotentielPourCreationReseauxChaleur.population[1]],
+        ],
+        isVisible: (config) => config.communesFortPotentielPourCreationReseauxChaleur.show,
       },
+    ],
+  },
 
-      // the source contains one layer that contains all features
-      // we know the kind of one feature using the GmlID (e.g. datacenter.1)
-      // we have 5 layers, one for each kind of features to simplify show/hide code
-      layers: [
-        {
-          id: 'enrrMobilisables-stations-d-epuration',
-          source: 'enrrMobilisables',
-          'source-layer': 'layer',
-          minzoom: tileLayersMinZoom,
-          type: 'symbol',
-          layout: {
-            'icon-image': 'enrr_mobilisables_stations_epuration',
-            'icon-overlap': 'always',
-            'icon-size': ['interpolate', ['linear'], ['zoom'], 5, 0.6, 10, 1],
-          },
+  // other sources: distances measurement, linear heat density, buildings data extraction
+  ...distancesMeasurementLayers,
+  ...linearHeatDensityLayers,
+  ...buildingsDataExtractionLayers,
+] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
 
-          filter: ['in', 'stations_d_epuration', ['get', 'GmlID']],
-        },
-        {
-          id: 'enrrMobilisables-datacenter',
-          source: 'enrrMobilisables',
-          'source-layer': 'layer',
-          minzoom: tileLayersMinZoom,
-          type: 'symbol',
-          layout: {
-            'icon-image': 'enrr_mobilisables_datacenter',
-            'icon-overlap': 'always',
-            'icon-size': ['interpolate', ['linear'], ['zoom'], 5, 0.6, 10, 1],
-          },
-
-          filter: ['in', 'datacenter', ['get', 'GmlID']],
-        },
-        {
-          id: 'enrrMobilisables-industrie',
-          source: 'enrrMobilisables',
-          'source-layer': 'layer',
-          minzoom: tileLayersMinZoom,
-          type: 'symbol',
-          layout: {
-            'icon-image': 'enrr_mobilisables_industrie',
-            'icon-overlap': 'always',
-            'icon-size': ['interpolate', ['linear'], ['zoom'], 5, 0.6, 10, 1],
-          },
-
-          filter: ['in', 'industrie', ['get', 'GmlID']],
-        },
-        {
-          id: 'enrrMobilisables-installations-electrogenes',
-          source: 'enrrMobilisables',
-          'source-layer': 'layer',
-          minzoom: tileLayersMinZoom,
-          type: 'symbol',
-          layout: {
-            'icon-image': 'enrr_mobilisables_installations_electrogenes',
-            'icon-overlap': 'always',
-            'icon-size': ['interpolate', ['linear'], ['zoom'], 5, 0.6, 10, 1],
-          },
-
-          filter: ['in', 'installations_electrogenes', ['get', 'GmlID']],
-        },
-        {
-          id: 'enrrMobilisables-unites-d-incineration',
-          source: 'enrrMobilisables',
-          'source-layer': 'layer',
-          minzoom: tileLayersMinZoom,
-          type: 'symbol',
-          layout: {
-            'icon-image': 'enrr_mobilisables_unites_incineration',
-            'icon-overlap': 'always',
-            'icon-size': ['interpolate', ['linear'], ['zoom'], 5, 0.6, 10, 1],
-          },
-
-          filter: ['in', 'unites_d_incineration', ['get', 'GmlID']],
-        },
-      ],
-    },
-
-    {
-      sourceId: 'installationsGeothermieProfonde',
-      source: {
-        type: 'vector',
-        tiles: [`${location.origin}/api/map/installationsGeothermieProfonde/{z}/{x}/{y}`],
-        minzoom: 5,
-        maxzoom: 6,
-      },
-      layers: [
-        {
-          id: 'installationsGeothermieProfonde',
-          source: 'installationsGeothermieProfonde',
-          'source-layer': 'layer',
-          minzoom: tileLayersMinZoom,
-          type: 'circle',
-          paint: {
-            'circle-color': installationsGeothermieProfondeLayerColor,
-            'circle-radius': 8,
-            'circle-opacity': installationsGeothermieProfondeLayerOpacity,
-          },
-        },
-      ],
-    },
-    {
-      sourceId: 'installationsGeothermieSurfaceEchangeursFermes',
-      source: {
-        type: 'vector',
-        tiles: [`${location.origin}/api/map/installationsGeothermieSurfaceEchangeursFermes/{z}/{x}/{y}`],
-        minzoom: 5,
-        maxzoom: 10,
-      },
-      layers: [
-        {
-          id: 'installationsGeothermieSurfaceEchangeursFermes',
-          source: 'installationsGeothermieSurfaceEchangeursFermes',
-          'source-layer': 'layer',
-          minzoom: tileLayersMinZoom,
-          type: 'circle',
-          paint: {
-            'circle-color': [
-              'case',
-              ['==', ['get', 'statut_inst'], 'Déclaré'],
-              installationsGeothermieSurfaceEchangeursFermesDeclareeColor,
-              installationsGeothermieSurfaceEchangeursFermesRealiseeColor,
-            ],
-            'circle-radius': 8,
-            'circle-opacity': installationsGeothermieSurfaceEchangeursFermesOpacity,
-          },
-        },
-      ],
-    },
-    {
-      sourceId: 'installationsGeothermieSurfaceEchangeursOuverts',
-      source: {
-        type: 'vector',
-        tiles: [`${location.origin}/api/map/installationsGeothermieSurfaceEchangeursOuverts/{z}/{x}/{y}`],
-        minzoom: 5,
-        maxzoom: 10,
-      },
-      layers: [
-        {
-          id: 'installationsGeothermieSurfaceEchangeursOuverts',
-          source: 'installationsGeothermieSurfaceEchangeursOuverts',
-          'source-layer': 'layer',
-          minzoom: tileLayersMinZoom,
-          type: 'circle',
-          paint: {
-            'circle-color': [
-              'case',
-              ['==', ['get', 'statut_inst'], 'Déclaré'],
-              installationsGeothermieSurfaceEchangeursOuvertsDeclareeColor,
-              installationsGeothermieSurfaceEchangeursOuvertsRealiseeColor,
-            ],
-            'circle-radius': 8,
-            'circle-opacity': installationsGeothermieSurfaceEchangeursOuvertsOpacity,
-          },
-        },
-      ],
-    },
-
-    {
-      sourceId: 'communesFortPotentielPourCreationReseauxChaleur',
-      source: {
-        type: 'vector',
-        tiles: [`${location.origin}/api/map/communesFortPotentielPourCreationReseauxChaleur/{z}/{x}/{y}`],
-        minzoom: 5,
-        maxzoom: 6,
-      },
-      layers: [
-        {
-          id: 'communesFortPotentielPourCreationReseauxChaleur',
-          source: 'communesFortPotentielPourCreationReseauxChaleur',
-          'source-layer': 'layer',
-          minzoom: tileLayersMinZoom,
-          type: 'circle',
-          layout: {
-            'circle-sort-key': ['-', ['get', 'population']],
-          },
-          paint: {
-            'circle-color': communesFortPotentielPourCreationReseauxChaleurLayerColor,
-            'circle-radius': [
-              'interpolate',
-              ['linear'],
-              ['+', ['get', 'zones_fort_potentiel_chauf_mwh'], ['get', 'zones_fort_potentiel_ecs_mwh']],
-              0,
-              4,
-              160_000, // ~ max value
-              20,
-            ],
-            'circle-opacity': communesFortPotentielPourCreationReseauxChaleurLayerOpacity,
-          },
-          filter: [
-            'all',
-            ['>=', ['get', 'population'], config.communesFortPotentielPourCreationReseauxChaleur.population[0]],
-            ['<=', ['get', 'population'], config.communesFortPotentielPourCreationReseauxChaleur.population[1]],
-          ],
-        },
-      ],
-    },
-  ];
-}
-export function buildInternalMapLayers(): MapSourceLayersSpecification[] {
-  return [...distancesMeasurementLayers, ...linearHeatDensityLayers, ...buildingsDataExtractionLayers];
-}
+export type LayerId = (typeof mapLayers)[number]['layers'][number]['id'];
 
 // extends the Map type to get fully typed layer and source ids
 interface FCUMap extends Map {
@@ -1342,188 +1276,58 @@ interface FCUMap extends Map {
   setFilter(layerId: LayerId, filter?: FilterSpecification | null, options?: StyleSetterOptions): this;
 }
 
+export function loadMapLayers(map: FCUMap, config: MapConfiguration) {
+  mapLayers.forEach((spec) => {
+    if (map.getSource(spec.sourceId)) {
+      return;
+    }
+
+    map.addSource(spec.sourceId, {
+      ...spec.source,
+      // prepend the website origin to the tiles as we need the full url for tiles
+      ...(spec.source.type === 'vector' && isDefined(spec.source.tiles)
+        ? { tiles: spec.source.tiles.map((url) => `${clientConfig.websiteOrigin}${url}`) }
+        : {}),
+    });
+    spec.layers.forEach((layer) => {
+      map.addLayer({
+        source: spec.sourceId,
+        ...(spec.source.type === 'vector'
+          ? {
+              'source-layer': 'layer', // default source layer name
+            }
+          : {}),
+        ...layer,
+        layout: deepMergeObjects((layer as any).layout ?? {}, {
+          visibility: layer.isVisible(config) ? 'visible' : 'none',
+        }),
+        ...(('filter' satisfies keyof MapSourceLayersSpecification['layers'][number]) in layer
+          ? {
+              filter: layer.filter(config),
+            }
+          : {}),
+      } as any);
+    });
+  });
+}
+
 /**
  * Apply the map configuration to the map layers.
  */
 export function applyMapConfigurationToLayers(map: FCUMap, config: MapConfiguration) {
-  function setLayerVisibility(layerId: LayerId, visible: boolean) {
-    if (!map.getLayer(layerId)) {
-      console.warn(`Layer '${layerId}' is not set on map`);
-      return;
-    }
-    map.setLayoutProperty(layerId, 'visibility', visible ? 'visible' : 'none');
-  }
+  mapLayers
+    .flatMap((source) => source.layers as ReadonlyArray<(typeof mapLayers)[number]['layers'][number]>)
+    .forEach((layer) => {
+      if (!map.getLayer(layer.id)) {
+        console.warn(`Layer '${layer.id}' is not set on map`);
+        return;
+      }
 
-  setLayerVisibility('caracteristiquesBatiments', config.caracteristiquesBatiments);
-  setLayerVisibility('besoinsEnChaleur', config.besoinsEnChaleur);
-  setLayerVisibility('besoinsEnFroid', config.besoinsEnFroid);
-  setLayerVisibility('besoinsEnChaleurFroid-contour', config.besoinsEnChaleur || config.besoinsEnFroid);
-  setLayerVisibility('besoinsEnChaleurIndustrieCommunes', config.besoinsEnChaleurIndustrieCommunes);
-  setLayerVisibility('besoinsEnChaleurIndustrieCommunes-contour', config.besoinsEnChaleurIndustrieCommunes);
-  setLayerVisibility('communesFortPotentielPourCreationReseauxChaleur', config.communesFortPotentielPourCreationReseauxChaleur.show);
-  setLayerVisibility('reseauxDeFroid-avec-trace', config.reseauxDeFroid);
-  setLayerVisibility('reseauxDeFroid-sans-trace', config.reseauxDeFroid);
-  setLayerVisibility('demandesEligibilite', config.demandesEligibilite);
-  setLayerVisibility('energy', config.batimentsFioulCollectif.show || config.batimentsGazCollectif.show);
-  setLayerVisibility('reseauxEnConstruction-trace', config.reseauxEnConstruction);
-  setLayerVisibility('reseauxEnConstruction-zone', config.reseauxEnConstruction);
-  setLayerVisibility('consommationsGaz', config.consommationsGaz.show);
-  setLayerVisibility('reseauxDeChaleur-avec-trace', config.reseauxDeChaleur.show);
-  setLayerVisibility('reseauxDeChaleur-sans-trace', config.reseauxDeChaleur.show);
-  setLayerVisibility('batimentsRaccordesReseauxChaleur', config.batimentsRaccordesReseauxChaleur);
-  setLayerVisibility('batimentsRaccordesReseauxFroid', config.batimentsRaccordesReseauxFroid);
-  setLayerVisibility('zonesDeDeveloppementPrioritaire', config.zonesDeDeveloppementPrioritaire);
-  setLayerVisibility(
-    'enrrMobilisables-datacenter',
-    config.enrrMobilisablesChaleurFatale.show && config.enrrMobilisablesChaleurFatale.showDatacenters
-  );
-  setLayerVisibility(
-    'enrrMobilisables-industrie',
-    config.enrrMobilisablesChaleurFatale.show && config.enrrMobilisablesChaleurFatale.showIndustrie
-  );
-  setLayerVisibility(
-    'enrrMobilisables-installations-electrogenes',
-    config.enrrMobilisablesChaleurFatale.show && config.enrrMobilisablesChaleurFatale.showInstallationsElectrogenes
-  );
-  setLayerVisibility(
-    'enrrMobilisables-stations-d-epuration',
-    config.enrrMobilisablesChaleurFatale.show && config.enrrMobilisablesChaleurFatale.showStationsDEpuration
-  );
-  setLayerVisibility(
-    'enrrMobilisables-unites-d-incineration',
-    config.enrrMobilisablesChaleurFatale.show && config.enrrMobilisablesChaleurFatale.showUnitesDIncineration
-  );
-  setLayerVisibility(
-    'enrrMobilisables-friches',
-    config.enrrMobilisablesSolaireThermique.show && config.enrrMobilisablesSolaireThermique.showFriches
-  );
-  setLayerVisibility(
-    'enrrMobilisables-friches-contour',
-    config.enrrMobilisablesSolaireThermique.show && config.enrrMobilisablesSolaireThermique.showFriches
-  );
-  setLayerVisibility(
-    'enrrMobilisables-parkings',
-    config.enrrMobilisablesSolaireThermique.show && config.enrrMobilisablesSolaireThermique.showParkings
-  );
-  setLayerVisibility(
-    'enrrMobilisables-parkings-contour',
-    config.enrrMobilisablesSolaireThermique.show && config.enrrMobilisablesSolaireThermique.showParkings
-  );
-  setLayerVisibility('enrrMobilisables-thalassothermie', config.enrrMobilisablesThalassothermie);
-  setLayerVisibility('enrrMobilisables-zonesGeothermieProfonde', config.enrrMobilisablesGeothermieProfonde);
-  setLayerVisibility('installationsGeothermieProfonde', config.installationsGeothermieProfonde);
-  setLayerVisibility('installationsGeothermieSurfaceEchangeursFermes', config.installationsGeothermieSurfaceEchangeursFermes);
-  setLayerVisibility('installationsGeothermieSurfaceEchangeursOuverts', config.installationsGeothermieSurfaceEchangeursOuverts);
-  setLayerVisibility('zonesPotentielChaud', config.zonesOpportunite.show && config.zonesOpportunite.zonesPotentielChaud);
-  setLayerVisibility('zonesPotentielChaud-contour', config.zonesOpportunite.show && config.zonesOpportunite.zonesPotentielChaud);
-  setLayerVisibility('zonesPotentielFortChaud', config.zonesOpportunite.show && config.zonesOpportunite.zonesPotentielFortChaud);
-  setLayerVisibility('zonesPotentielFortChaud-contour', config.zonesOpportunite.show && config.zonesOpportunite.zonesPotentielFortChaud);
-
-  // custom filters for energy and consommationsGaz
-
-  const TYPE_ENERGY = 'energie_utilisee';
-  const batimentsFioulCollectifMin =
-    config.batimentsFioulCollectif.interval[0] === LegendDeskData.energy.min
-      ? Number.MIN_SAFE_INTEGER
-      : config.batimentsFioulCollectif.interval[0];
-  const batimentsFioulCollectifMax =
-    config.batimentsFioulCollectif.interval[1] === LegendDeskData.energy.max
-      ? Number.MAX_SAFE_INTEGER
-      : config.batimentsFioulCollectif.interval[1];
-  const batimentsGazCollectifMin =
-    config.batimentsGazCollectif.interval[0] === LegendDeskData.energy.min
-      ? Number.MIN_SAFE_INTEGER
-      : config.batimentsGazCollectif.interval[0];
-  const batimentsGazCollectifMax =
-    config.batimentsGazCollectif.interval[1] === LegendDeskData.energy.max
-      ? Number.MAX_SAFE_INTEGER
-      : config.batimentsGazCollectif.interval[1];
-  map.setFilter('energy', [
-    'any',
-    config.batimentsFioulCollectif.show
-      ? [
-          'all',
-          ['==', ['get', TYPE_ENERGY], 'fioul'],
-          ['all', ['>=', ['get', NB_LOT], batimentsFioulCollectifMin], ['<=', ['get', NB_LOT], batimentsFioulCollectifMax]],
-        ]
-      : ['literal', false],
-    config.batimentsGazCollectif.show
-      ? [
-          'all',
-          ['==', ['get', TYPE_ENERGY], 'gaz'],
-          ['all', ['>=', ['get', NB_LOT], batimentsGazCollectifMin], ['<=', ['get', NB_LOT], batimentsGazCollectifMax]],
-        ]
-      : ['literal', false],
-  ]);
-
-  const consommationsGazIntervalMin =
-    config.consommationsGaz.interval[0] === LegendDeskData.gasUsage.min ? Number.MIN_SAFE_INTEGER : config.consommationsGaz.interval[0];
-  const consommationsGazIntervalMax =
-    config.consommationsGaz.interval[1] === LegendDeskData.gasUsage.max ? Number.MAX_SAFE_INTEGER : config.consommationsGaz.interval[1];
-  map.setFilter(
-    'consommationsGaz',
-    config.consommationsGaz.show && [
-      'all',
-      config.consommationsGaz.interval
-        ? ['all', ['>=', ['get', CONSO], consommationsGazIntervalMin], ['<=', ['get', CONSO], consommationsGazIntervalMax]]
-        : true,
-      [
-        'any',
-        config.consommationsGaz.logements && ['==', ['get', TYPE_GAS], 'R'],
-        config.consommationsGaz.tertiaire && ['==', ['get', TYPE_GAS], 'T'],
-        config.consommationsGaz.industrie && ['==', ['get', TYPE_GAS], 'I'],
-      ],
-    ]
-  );
-
-  map.setFilter('reseauxDeChaleur-avec-trace', [
-    'all',
-    ['==', ['get', 'has_trace'], true],
-    ...buildReseauxDeChaleurFilters(config.reseauxDeChaleur),
-    ...buildFiltreGestionnaire(config.filtreGestionnaire),
-    ...buildFiltreIdentifiantReseau(config.filtreIdentifiantReseau),
-  ]);
-  map.setFilter('reseauxDeChaleur-sans-trace', [
-    'all',
-    ['==', ['get', 'has_trace'], false],
-    ...buildReseauxDeChaleurFilters(config.reseauxDeChaleur),
-    ...buildFiltreGestionnaire(config.filtreGestionnaire),
-    ...buildFiltreIdentifiantReseau(config.filtreIdentifiantReseau),
-  ]);
-  map.setFilter('reseauxDeFroid-avec-trace', [
-    'all',
-    ['==', ['get', 'has_trace'], true],
-    ...buildFiltreGestionnaire(config.filtreGestionnaire),
-    ...buildFiltreIdentifiantReseau(config.filtreIdentifiantReseau),
-  ]);
-  map.setFilter('reseauxDeFroid-sans-trace', [
-    'all',
-    ['==', ['get', 'has_trace'], false],
-    ...buildFiltreGestionnaire(config.filtreGestionnaire),
-    ...buildFiltreIdentifiantReseau(config.filtreIdentifiantReseau),
-  ]);
-  map.setFilter('reseauxEnConstruction-zone', [
-    'all',
-    ['==', ['get', 'is_zone'], true],
-    ...buildFiltreGestionnaire(config.filtreGestionnaire),
-  ]);
-  map.setFilter('reseauxEnConstruction-trace', [
-    'all',
-    ['==', ['get', 'is_zone'], false],
-    ...buildFiltreGestionnaire(config.filtreGestionnaire),
-  ]);
-  map.setFilter('communesFortPotentielPourCreationReseauxChaleur', [
-    'all',
-    ['>=', ['get', 'population'], config.communesFortPotentielPourCreationReseauxChaleur.population[0]],
-    ['<=', ['get', 'population'], config.communesFortPotentielPourCreationReseauxChaleur.population[1]],
-  ]);
-
-  setLayerVisibility('distance-measurements-labels', config.mesureDistance);
-  setLayerVisibility('distance-measurements-lines', config.mesureDistance);
-  setLayerVisibility('linear-heat-density-labels', config.densiteThermiqueLineaire);
-  setLayerVisibility('linear-heat-density-lines', config.densiteThermiqueLineaire);
-  setLayerVisibility('buildings-data-extraction-fill', config.extractionDonneesBatiment);
-  setLayerVisibility('buildings-data-extraction-outline', config.extractionDonneesBatiment);
+      map.setLayoutProperty(layer.id, 'visibility', layer.isVisible(config) ? 'visible' : 'none');
+      if (('filter' satisfies keyof MapSourceLayersSpecification['layers'][number]) in layer) {
+        map.setFilter(layer.id, layer.filter(config));
+      }
+    });
 }
 
 type ReseauxDeChaleurFilter = {
