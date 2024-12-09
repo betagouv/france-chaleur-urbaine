@@ -1,4 +1,5 @@
 export const clientConfig = {
+  websiteOrigin: process.env.NEXT_PUBLIC_MAP_ORIGIN,
   tracking: {
     matomoServerURL: process.env.NEXT_PUBLIC_MATOMO_URL,
     matomoSiteId: process.env.NEXT_PUBLIC_MATOMO_SITE_ID,

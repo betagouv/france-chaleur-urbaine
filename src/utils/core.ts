@@ -1,4 +1,4 @@
-import { type FlattenKeys } from './typescript';
+import { ObjectKeys, type FlattenKeys } from './typescript';
 
 export function isDefined<Type>(value: Type | undefined | null): value is Type {
   return value !== undefined && value !== null;
@@ -71,16 +71,16 @@ export function deepMergeObjects<T, U>(obj1: T, obj2: U): T & U {
 /**
  * Deeply clone an object.
  */
-export function cloneDeep(source: any): any {
+export function cloneDeep<Type>(source: Type): Type {
   const objectType = typeof source;
   if (objectType === 'string' || objectType === 'number' || objectType === 'boolean' || source === null || source === undefined) {
     return source;
   } else if (source instanceof Array) {
-    return source.map(cloneDeep);
+    return source.map(cloneDeep) as Type;
   } else if (source instanceof Date) {
-    return new Date(source.getTime());
+    return new Date(source.getTime()) as Type;
   } else if (objectType === 'object') {
-    return Object.keys(source).reduce((clone: any, key) => {
+    return ObjectKeys(source).reduce((clone: any, key) => {
       clone[key] = cloneDeep(source[key]);
       return clone;
     }, {});
