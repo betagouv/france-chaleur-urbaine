@@ -1292,9 +1292,12 @@ export function loadMapLayers(map: FCUMap, config: MapConfiguration) {
 
     map.addSource(spec.sourceId, {
       ...spec.source,
-      // prepend the website origin to the tiles as we need the full url for tiles
-      ...(spec.source.type === 'vector' && isDefined(spec.source.tiles)
-        ? { tiles: spec.source.tiles.map((url) => `${clientConfig.websiteOrigin}${url}`) }
+      ...(spec.source.type === 'vector'
+        ? {
+            // prepend the website origin to the tiles as we need the full url for tiles
+            tiles: spec.source.tiles.map((url) => `${clientConfig.websiteOrigin}${url}`),
+            maxzoom: (spec.source as VectorSourceSpecification).maxzoom ?? tileSourcesMaxZoom,
+          }
         : {}),
     });
     spec.layers.forEach((layer) => {
