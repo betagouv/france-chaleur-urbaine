@@ -2,14 +2,14 @@ import type MapboxDraw from '@mapbox/mapbox-gl-draw';
 import React, { createContext, useContext } from 'react';
 import { type MapRef } from 'react-map-gl/maplibre';
 
-import { isDevModeEnabled } from '@/hooks/useDevMode';
-import useReseauxDeChaleurFilters from '@/hooks/useReseauxDeChaleurFilters';
 import {
   defaultMapConfiguration,
   type MapConfiguration,
   type MapConfigurationProperty,
   type MaybeEmptyMapConfiguration,
-} from '@/services/Map/map-configuration';
+} from '@/components/Map/map-configuration';
+import { isDevModeEnabled } from '@/hooks/useDevMode';
+import useReseauxDeChaleurFilters from '@/hooks/useReseauxDeChaleurFilters';
 import { deepMergeObjects, isDefined, setProperty, toggleBoolean } from '@/utils/core';
 import { type Interval } from '@/utils/interval';
 

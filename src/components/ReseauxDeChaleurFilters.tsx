@@ -6,11 +6,11 @@ import styled from 'styled-components';
 import Checkbox from '@/components/form/dsfr/Checkbox';
 import RangeFilter, { roundNumberProgressively } from '@/components/form/dsfr/RangeFilter';
 import SelectCheckboxes from '@/components/form/dsfr/SelectCheckboxes';
+import { filtresEnergies } from '@/components/Map/map-configuration';
 import { UrlStateAccordion } from '@/components/ui/Accordion';
 import Button from '@/components/ui/Button';
 import useReseauxDeChaleurFilters from '@/hooks/useReseauxDeChaleurFilters';
 import { gestionnairesFilters } from '@/services';
-import { filtresEnergies } from '@/services/Map/map-configuration';
 
 export type ReseauxDeChaleurFiltersProps = React.HTMLAttributes<HTMLDivElement> & {
   regionsList?: { name: string; coord: string }[];

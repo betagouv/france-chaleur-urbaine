@@ -1,7 +1,7 @@
 import { type ExpressionSpecification } from 'maplibre-gl';
 
+import { filtresEnergies, percentageMaxInterval, type MapConfiguration } from '@/components/Map/map-configuration';
 import { gestionnairesFilters } from '@/services';
-import { filtresEnergies, percentageMaxInterval, type MapConfiguration } from '@/services/Map/map-configuration';
 import { type Network } from '@/types/Summary/Network';
 import { isDefined } from '@/utils/core';
 import { intervalsEqual } from '@/utils/interval';

@@ -3,10 +3,10 @@ import Image from 'next/image';
 import { useCallback, useMemo, useState } from 'react';
 
 import Map from '@/components/Map/Map';
+import { createMapConfiguration } from '@/components/Map/map-configuration';
 import MarkdownWrapper from '@/components/MarkdownWrapper';
 import Box from '@/components/ui/Box';
 import Link from '@/components/ui/Link';
-import { createMapConfiguration } from '@/services/Map/map-configuration';
 import { type AddressDataType } from '@/types/AddressData';
 import { type ContactFormInfos } from '@/types/Summary/Demand';
 import { getReadableDistance } from '@/utils/geo';

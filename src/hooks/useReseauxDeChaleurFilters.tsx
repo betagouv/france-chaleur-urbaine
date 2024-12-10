@@ -3,7 +3,7 @@ import { parseAsJson, useQueryState } from 'nuqs';
 import { useEffect, useState } from 'react';
 
 import { type ReseauxDeChaleurLimits } from '@/components/Map/components/layers/filters';
-import { defaultInterval, percentageMaxInterval, type FiltreEnergieConfKey } from '@/services/Map/map-configuration';
+import { defaultInterval, percentageMaxInterval, type FiltreEnergieConfKey } from '@/components/Map/map-configuration';
 import { deepMergeObjects, getProperty, setProperty } from '@/utils/core';
 import { fetchJSON } from '@/utils/network';
 import { deepIntersection } from '@/utils/objects';

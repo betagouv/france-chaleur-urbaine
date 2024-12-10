@@ -1,6 +1,6 @@
 import IframeWrapper from '@/components/IframeWrapper';
 import Map from '@/components/Map/Map';
-import { iframeSimpleMapConfiguration } from '@/services/Map/map-configuration';
+import { iframeSimpleMapConfiguration } from '@/components/Map/map-configuration';
 import { MapPopupType } from '@/types/MapComponentsInfos';
 
 const ViasevaMap = () => {

@@ -2,6 +2,7 @@ import { fr } from '@codegouvfr/react-dsfr';
 import { type ReactElement } from 'react';
 
 import Map from '@/components/Map/Map';
+import { createMapConfiguration } from '@/components/Map/map-configuration';
 import Accordion from '@/components/ui/Accordion';
 import Box, { type BoxProps } from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
@@ -9,7 +10,6 @@ import Icon from '@/components/ui/Icon';
 import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
 import Tooltip from '@/components/ui/Tooltip';
-import { createMapConfiguration } from '@/services/Map/map-configuration';
 import { type Network } from '@/types/Summary/Network';
 import { isDefined } from '@/utils/core';
 import { formatMW, formatMWh, prettyFormatNumber } from '@/utils/strings';

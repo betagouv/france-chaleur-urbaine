@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { useQueryState } from 'nuqs';
 
 import RangeFilter from '@/components/form/dsfr/RangeFilter';
+import { defaultMapConfiguration } from '@/components/Map/map-configuration';
 import { type MapLegendFeature } from '@/components/Map/map-layers';
 import useFCUMap from '@/components/Map/MapProvider';
 import { UrlStateAccordion } from '@/components/ui/Accordion';
@@ -11,7 +12,6 @@ import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
 import Tooltip from '@/components/ui/Tooltip';
 import { trackEvent } from '@/services/analytics';
-import { defaultMapConfiguration } from '@/services/Map/map-configuration';
 
 import IconPolygon from './IconPolygon';
 import { besoinsEnChaleurIntervals, besoinsEnFroidIntervals } from './layers/besoinsEnChaleur';

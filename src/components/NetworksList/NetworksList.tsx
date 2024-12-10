@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import XLSX from 'xlsx';
 
 import { reseauxDeChaleurFilters } from '@/components/Map/components/layers/filters';
+import { filtresEnergies } from '@/components/Map/map-configuration';
 import ReseauxDeChaleurFilters, { type ReseauxDeChaleurFiltersProps } from '@/components/ReseauxDeChaleurFilters';
 import Box from '@/components/ui/Box';
 import Drawer from '@/components/ui/Drawer';
@@ -15,7 +16,6 @@ import { type ColumnDef, Table } from '@/components/ui/Table';
 import Text from '@/components/ui/Text';
 import useReseauxDeChaleurFilters, { type Filters } from '@/hooks/useReseauxDeChaleurFilters';
 import { gestionnairesFilters, useServices } from '@/services';
-import { filtresEnergies } from '@/services/Map/map-configuration';
 import { type NetworkToCompare } from '@/types/Summary/Network';
 import { downloadFile } from '@/utils/browser';
 import { isDefined } from '@/utils/core';

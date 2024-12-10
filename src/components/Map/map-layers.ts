@@ -7,7 +7,7 @@ import {
 } from 'maplibre-gl';
 
 import { clientConfig } from '@/client-config';
-import { type MapConfiguration } from '@/services/Map/map-configuration';
+import { type MapConfiguration } from '@/components/Map/map-configuration';
 import { deepMergeObjects } from '@/utils/core';
 
 import { batimentsRaccordesReseauxChaleurFroidLayersSpec } from './components/layers/batimentsRaccordesReseauxChaleurFroid';

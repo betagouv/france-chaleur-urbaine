@@ -1,10 +1,10 @@
 import styled from 'styled-components';
 
 import Map from '@/components/Map/Map';
+import { type MapConfigurationProperty, createMapConfiguration, defaultMapConfiguration } from '@/components/Map/map-configuration';
 import { fullscreenHeaderHeight, tabHeaderHeight } from '@/components/shared/layout/MainLayout.data';
 import SimplePage from '@/components/shared/page/SimplePage';
 import useInitialSearchParam from '@/hooks/useInitialSearchParam';
-import { type MapConfigurationProperty, createMapConfiguration, defaultMapConfiguration } from '@/services/Map/map-configuration';
 import { setProperty } from '@/utils/core';
 
 const MapWrapper = styled.div`
