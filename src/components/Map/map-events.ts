@@ -1,3 +1,9 @@
+import { booleanPointInPolygon } from '@turf/boolean-point-in-polygon';
+import { explode } from '@turf/explode';
+import { lineString, point } from '@turf/helpers';
+import { nearestPoint } from '@turf/nearest-point';
+import { nearestPointOnLine } from '@turf/nearest-point-on-line';
+import { type GeometryCollection, type Point, type Position, type Geometry, type Feature } from 'geojson';
 import { type MapGeoJSONFeature } from 'maplibre-gl';
 import { useEffect, useRef, useState } from 'react';
 import { type MapMouseEvent, type MapRef } from 'react-map-gl/maplibre';
@@ -66,15 +72,7 @@ export function useMapEvents({ mapLayersLoaded, isDrawing, mapRef }: UseMapEvent
     }
 
     const onMouseMove = (event: MapMouseEvent) => {
-      const hoveredFeatures = mapRef.queryRenderedFeatures(
-        [
-          [event.point.x - selectionBuffer, event.point.y - selectionBuffer],
-          [event.point.x + selectionBuffer, event.point.y + selectionBuffer],
-        ],
-        { layers: selectableLayers.map((spec) => spec.layerId) }
-      );
-
-      const hoveredFeature = hoveredFeatures[0];
+      const hoveredFeature = findHoveredFeature(mapRef, event.point.x, event.point.y);
 
       // update the cursor style
       mapRef.getCanvas().style.cursor = hoveredFeature ? 'pointer' : '';
@@ -111,32 +109,26 @@ export function useMapEvents({ mapLayersLoaded, isDrawing, mapRef }: UseMapEvent
     };
 
     const onMouseClick = (event: MapMouseEvent) => {
-      const hoveredFeatures = mapRef.queryRenderedFeatures(
-        [
-          [event.point.x - selectionBuffer, event.point.y - selectionBuffer],
-          [event.point.x + selectionBuffer, event.point.y + selectionBuffer],
-        ],
-        { layers: selectableLayers.map((spec) => spec.layerId) }
-      );
-
-      const hoveredFeature = hoveredFeatures[0];
-      if (hoveredFeature) {
-        if (isDevModeEnabled()) {
-          console.log('map-click', hoveredFeature); // eslint-disable-line no-console
-        }
-
-        // depending on the feature type, we force the popup type to help building the popup content more easily
-        setPopupInfos({
-          latitude: event.lngLat.lat,
-          longitude: event.lngLat.lng,
-          content: layersWithDynamicContentPopup.includes(hoveredFeature.layer?.id as (typeof layersWithDynamicContentPopup)[number])
-            ? {
-                type: hoveredFeature.layer?.id,
-                properties: hoveredFeature.properties,
-              }
-            : { [legacyPopupConfigs.find((f) => f.layer === hoveredFeature.layer.id)!.key]: hoveredFeature.properties },
-        });
+      const hoveredFeature = findHoveredFeature(mapRef, event.point.x, event.point.y);
+      if (!hoveredFeature) {
+        return;
       }
+
+      if (isDevModeEnabled()) {
+        console.log('map-click', hoveredFeature); // eslint-disable-line no-console
+      }
+
+      // depending on the feature type, we force the popup type to help building the popup content more easily
+      setPopupInfos({
+        latitude: event.lngLat.lat,
+        longitude: event.lngLat.lng,
+        content: layersWithDynamicContentPopup.includes(hoveredFeature.layer?.id as (typeof layersWithDynamicContentPopup)[number])
+          ? {
+              type: hoveredFeature.layer?.id,
+              properties: hoveredFeature.properties,
+            }
+          : { [legacyPopupConfigs.find((f) => f.layer === hoveredFeature.layer.id)!.key]: hoveredFeature.properties },
+      });
     };
 
     mapRef.on('mousemove', onMouseMove);
@@ -154,3 +146,150 @@ export function useMapEvents({ mapLayersLoaded, isDrawing, mapRef }: UseMapEvent
     popupInfos,
   };
 }
+
+function findHoveredFeature(mapRef: MapRef, cursorX: number, cursorY: number): MapGeoJSONFeature | null {
+  const hoveredFeatures = mapRef.queryRenderedFeatures(
+    [
+      [cursorX - selectionBuffer, cursorY - selectionBuffer],
+      [cursorX + selectionBuffer, cursorY + selectionBuffer],
+    ],
+    { layers: selectableLayers.map((spec) => spec.layerId) }
+  );
+
+  if (hoveredFeatures.length === 0) {
+    return null;
+  }
+
+  const cursorPoint = point(mapRef.unproject([cursorX, cursorY]).toArray());
+
+  const { feature } = hoveredFeatures.reduce(
+    (closest, feature) => {
+      const { distance, snapPoint } = getNearestGeometryPoint(feature.geometry as BasicGeometry, cursorPoint);
+      return distance < closest.distance
+        ? {
+            distance,
+            snapPoint,
+            feature,
+          }
+        : closest;
+    },
+    {
+      feature: null as unknown as MapGeoJSONFeature,
+      snapPoint: null as unknown as Position,
+      distance: Infinity,
+    }
+  );
+  return feature;
+}
+
+type BasicGeometry = Exclude<Geometry, GeometryCollection>;
+type GeometryNearestPointHandlers = {
+  [K in BasicGeometry['type']]: (
+    geometry: Extract<BasicGeometry, { type: K }>,
+    point: Feature<Point>
+  ) => {
+    snapPoint: Position;
+    distance: number;
+  };
+};
+
+type ClosestPointResult = {
+  snapPoint: Position;
+  distance: number;
+};
+
+const geometryNearestPointHandlers: GeometryNearestPointHandlers = {
+  Point: (geometry, point) => {
+    return {
+      snapPoint: geometry.coordinates,
+      distance: Math.sqrt(
+        Math.pow(point.geometry.coordinates[0] - geometry.coordinates[0], 2) +
+          Math.pow(point.geometry.coordinates[1] - geometry.coordinates[1], 2)
+      ),
+    };
+  },
+  MultiPoint: (geometry, point) => {
+    const nearest = nearestPoint(point, explode(geometry));
+    return {
+      snapPoint: nearest.geometry.coordinates,
+      distance: nearest.properties.distanceToPoint,
+    };
+  },
+  LineString: (geometry, point) => {
+    const snapPoint = nearestPointOnLine(geometry, point);
+    return {
+      snapPoint: snapPoint.geometry.coordinates,
+      distance: snapPoint.properties.dist,
+    };
+  },
+  MultiLineString: (geometry, point) => {
+    const snapPoint = nearestPointOnLine(geometry, point);
+    return {
+      snapPoint: snapPoint.geometry.coordinates,
+      distance: snapPoint.properties.dist,
+    };
+  },
+  Polygon: (geometry, point) => {
+    if (booleanPointInPolygon(point, geometry)) {
+      return {
+        snapPoint: point.geometry.coordinates,
+        distance: 0,
+      };
+    }
+
+    const closest = geometry.coordinates.reduce<ClosestPointResult>(
+      (closestSoFar, ring) => {
+        const snapPoint = nearestPointOnLine(lineString(ring), point);
+        const distance = snapPoint.properties.dist;
+        return distance < closestSoFar.distance
+          ? {
+              snapPoint: snapPoint.geometry.coordinates,
+              distance,
+            }
+          : closestSoFar;
+      },
+      { snapPoint: [Infinity, Infinity], distance: Infinity }
+    );
+    return closest;
+  },
+  MultiPolygon: (geometry, point) => {
+    if (booleanPointInPolygon(point, geometry)) {
+      return {
+        snapPoint: point.geometry.coordinates,
+        distance: 0,
+      };
+    }
+    const closest = geometry.coordinates.reduce<ClosestPointResult>(
+      (closestSoFar, polygonCoords) => {
+        const closestForPolygon = polygonCoords.reduce<ClosestPointResult>(
+          (closestPolygon, ring) => {
+            const snapPoint = nearestPointOnLine(lineString(ring), point);
+            const distance = snapPoint.properties.dist;
+            return distance < closestPolygon.distance
+              ? {
+                  snapPoint: snapPoint.geometry.coordinates,
+                  distance,
+                }
+              : closestPolygon;
+          },
+          { snapPoint: [Infinity, Infinity], distance: Infinity }
+        );
+
+        return closestForPolygon.distance < closestSoFar.distance ? closestForPolygon : closestSoFar;
+      },
+      { snapPoint: [Infinity, Infinity], distance: Infinity }
+    );
+
+    return closest;
+  },
+};
+
+const getNearestGeometryPoint = (
+  geometry: BasicGeometry,
+  point: Feature<Point>
+): {
+  snapPoint: Position;
+  distance: number;
+} => {
+  return geometryNearestPointHandlers[geometry.type](geometry as any, point);
+};
