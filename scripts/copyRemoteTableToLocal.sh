@@ -1,8 +1,9 @@
 #!/bin/bash -e
 
 usage() {
-  echo "Usage: copyRemoteTableToLocal.sh <dev|prod> <table_name>"
+  echo "Usage: copyRemoteTableToLocal.sh <dev|prod> <table_name> [--data-only]"
   echo "Used to synchronize a remote table with a local table (dropped and recreated each sync)"
+  echo "Use --data-only to perform a zero downtime update (in a transaction)"
   echo "Use the env variable SCALINGO_TUNNEL_ARGS=\"-i $HOME/.ssh/keys/path_to_keys_ed\" if your SSH key is not ~/.ssh/id_rsa"
 }
 
@@ -17,6 +18,10 @@ fi
 if [[ "$table" = "" ]]; then
   usage
   exit 1
+fi
+
+if [[ $options == "--data-only" ]] ; then
+  dataonly=true
 fi
 
 if [[ $env = "prod" ]]; then
@@ -36,12 +41,21 @@ export PGUSER=$(expr $POSTGRESQL_URL : '.*/\([^:]*\):.*')
 export PGPASSWORD=$(expr $POSTGRESQL_URL : '.*:\([^@]*\)@.*')
 
 # export depuis BDD distance
-pg_dump postgres://localhost:10000 --format=c --no-owner -t $table >/tmp/table.dump
+if [[ $dataonly = "true" ]]; then
+  pg_dump postgres://localhost:10000 --data-only -t $table >/tmp/table.dump.sql
+else
+  pg_dump postgres://localhost:10000 --format=c --no-owner -t $table >/tmp/table.dump
+fi
 
 # ferme le tunnel
 kill %1
 
 # import vers BDD locale
-pg_restore --no-owner --clean --if-exists -d postgres://postgres:postgres_fcu@localhost:5432/postgres /tmp/table.dump
+if [[ $dataonly = "true" ]]; then
+  # noter le delete plutôt que truncate pour ne pas locker la table et bloquer les requêtes
+  psql -v ON_ERROR_STOP=1 postgres://postgres:postgres_fcu@localhost:5432/postgres --single-transaction -c "delete from $table;" -f /tmp/table.dump.sql
+else
+  pg_restore --no-owner --clean --if-exists -d postgres://postgres:postgres_fcu@localhost:5432/postgres /tmp/table.dump
+fi
 
 echo "> Synchronisation terminée de $env -> local pour la table '$table'"
