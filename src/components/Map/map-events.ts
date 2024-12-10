@@ -72,7 +72,7 @@ export function useMapEvents({ mapLayersLoaded, isDrawing, mapRef }: UseMapEvent
     }
 
     const onMouseMove = (event: MapMouseEvent) => {
-      const hoveredFeature = findHoveredFeature(mapRef, event.point.x, event.point.y);
+      const { feature: hoveredFeature } = findHoveredFeature(mapRef, event.point.x, event.point.y);
 
       // update the cursor style
       mapRef.getCanvas().style.cursor = hoveredFeature ? 'pointer' : '';
@@ -109,7 +109,7 @@ export function useMapEvents({ mapLayersLoaded, isDrawing, mapRef }: UseMapEvent
     };
 
     const onMouseClick = (event: MapMouseEvent) => {
-      const hoveredFeature = findHoveredFeature(mapRef, event.point.x, event.point.y);
+      const { feature: hoveredFeature, snapPoint } = findHoveredFeature(mapRef, event.point.x, event.point.y);
       if (!hoveredFeature) {
         return;
       }
@@ -120,8 +120,8 @@ export function useMapEvents({ mapLayersLoaded, isDrawing, mapRef }: UseMapEvent
 
       // depending on the feature type, we force the popup type to help building the popup content more easily
       setPopupInfos({
-        latitude: event.lngLat.lat,
-        longitude: event.lngLat.lng,
+        longitude: snapPoint[0],
+        latitude: snapPoint[1],
         content: layersWithDynamicContentPopup.includes(hoveredFeature.layer?.id as (typeof layersWithDynamicContentPopup)[number])
           ? {
               type: hoveredFeature.layer?.id,
@@ -147,7 +147,11 @@ export function useMapEvents({ mapLayersLoaded, isDrawing, mapRef }: UseMapEvent
   };
 }
 
-function findHoveredFeature(mapRef: MapRef, cursorX: number, cursorY: number): MapGeoJSONFeature | null {
+function findHoveredFeature(
+  mapRef: MapRef,
+  cursorX: number,
+  cursorY: number
+): { feature: MapGeoJSONFeature; snapPoint: Position } | { feature: null; snapPoint: null } {
   const hoveredFeatures = mapRef.queryRenderedFeatures(
     [
       [cursorX - selectionBuffer, cursorY - selectionBuffer],
@@ -157,12 +161,12 @@ function findHoveredFeature(mapRef: MapRef, cursorX: number, cursorY: number): M
   );
 
   if (hoveredFeatures.length === 0) {
-    return null;
+    return { feature: null, snapPoint: null };
   }
 
   const cursorPoint = point(mapRef.unproject([cursorX, cursorY]).toArray());
 
-  const { feature } = hoveredFeatures.reduce(
+  const { feature, snapPoint } = hoveredFeatures.reduce(
     (closest, feature) => {
       const { distance, snapPoint } = getNearestGeometryPoint(feature.geometry as BasicGeometry, cursorPoint);
       return distance < closest.distance
@@ -179,7 +183,7 @@ function findHoveredFeature(mapRef: MapRef, cursorX: number, cursorY: number): M
       distance: Infinity,
     }
   );
-  return feature;
+  return { feature, snapPoint };
 }
 
 type BasicGeometry = Exclude<Geometry, GeometryCollection>;
