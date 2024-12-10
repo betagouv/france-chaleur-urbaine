@@ -9,7 +9,7 @@ export default {
   connection: addApplicationName(process.env.DATABASE_URL as string),
   migrations: {
     tableName: 'knex_migrations',
-    directory: './src/db/migrations',
+    directory: './src/server/db/migrations',
   },
   acquireConnectionTimeout: 30000,
   pool: {
