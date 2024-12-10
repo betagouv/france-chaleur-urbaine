@@ -443,7 +443,7 @@ export function useLinearHeatDensityLayers() {
   }, [mapLayersLoaded, features]);
 }
 
-export const linearHeatDensityLayers: MapSourceLayersSpecification[] = [
+export const linearHeatDensityLayers = [
   {
     sourceId: linearHeatDensityLinesSourceId,
     source: {
@@ -455,13 +455,13 @@ export const linearHeatDensityLayers: MapSourceLayersSpecification[] = [
     },
     layers: [
       {
-        source: linearHeatDensityLinesSourceId,
         id: 'linear-heat-density-lines',
         type: 'line',
         paint: {
           'line-color': ['get', 'color'],
           'line-width': 3,
         },
+        isVisible: (config) => config.densiteThermiqueLineaire,
       },
     ],
   },
@@ -476,7 +476,6 @@ export const linearHeatDensityLayers: MapSourceLayersSpecification[] = [
     },
     layers: [
       {
-        source: linearHeatDensityLabelsSourceId,
         id: 'linear-heat-density-labels',
         type: 'symbol',
         layout: {
@@ -493,7 +492,8 @@ export const linearHeatDensityLayers: MapSourceLayersSpecification[] = [
           'text-halo-color': '#ffffff',
           'text-halo-width': 2,
         },
+        isVisible: (config) => config.densiteThermiqueLineaire,
       },
     ],
   },
-];
+] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;

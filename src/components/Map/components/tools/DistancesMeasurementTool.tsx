@@ -284,7 +284,7 @@ export function useDistancesMeasurementLayers() {
   }, [mapLayersLoaded, features]);
 }
 
-export const distancesMeasurementLayers: MapSourceLayersSpecification[] = [
+export const distancesMeasurementLayers = [
   {
     sourceId: distancesMeasurementLinesSourceId,
     source: {
@@ -296,13 +296,13 @@ export const distancesMeasurementLayers: MapSourceLayersSpecification[] = [
     },
     layers: [
       {
-        source: distancesMeasurementLinesSourceId,
         id: 'distance-measurements-lines',
         type: 'line',
         paint: {
           'line-color': ['get', 'color'],
           'line-width': 3,
         },
+        isVisible: (config) => config.mesureDistance,
       },
     ],
   },
@@ -317,7 +317,6 @@ export const distancesMeasurementLayers: MapSourceLayersSpecification[] = [
     },
     layers: [
       {
-        source: distancesMeasurementLabelsSourceId,
         id: 'distance-measurements-labels',
         type: 'symbol',
         layout: {
@@ -334,7 +333,8 @@ export const distancesMeasurementLayers: MapSourceLayersSpecification[] = [
           'text-halo-color': '#ffffff',
           'text-halo-width': 2,
         },
+        isVisible: (config) => config.mesureDistance,
       },
     ],
   },
-];
+] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;

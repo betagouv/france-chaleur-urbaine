@@ -366,7 +366,7 @@ export function useBuildingsDataExtractionLayers() {
   }, [mapLayersLoaded, features]);
 }
 
-export const buildingsDataExtractionLayers: MapSourceLayersSpecification[] = [
+export const buildingsDataExtractionLayers = [
   {
     sourceId: buildingsDataExtractionPolygonsSourceId,
     source: {
@@ -378,22 +378,22 @@ export const buildingsDataExtractionLayers: MapSourceLayersSpecification[] = [
     },
     layers: [
       {
-        source: buildingsDataExtractionPolygonsSourceId,
         id: 'buildings-data-extraction-fill',
         type: 'fill',
         paint: {
           'fill-color': ['case', ['get', 'isValid'], '#0000911A', '#f538381A'],
         },
+        isVisible: (config) => config.extractionDonneesBatiment,
       },
       {
-        source: buildingsDataExtractionPolygonsSourceId,
         id: 'buildings-data-extraction-outline',
         type: 'line',
         paint: {
           'line-color': ['case', ['get', 'isValid'], '#000091', '#f53838'],
           'line-width': 4,
         },
+        isVisible: (config) => config.extractionDonneesBatiment,
       },
     ],
   },
-];
+] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
