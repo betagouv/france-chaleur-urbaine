@@ -22,7 +22,7 @@ type UseMapEventsProps = {
   mapRef: MapRef | null;
 };
 
-const selectionBuffer = 10; // pixels
+const selectionBuffer = 15; // pixels
 
 const selectableLayers = mapLayers.flatMap((spec) =>
   spec.layers
@@ -169,12 +169,14 @@ function findHoveredFeature(
 
   const { feature, snapPoint } = hoveredFeatures.reduce(
     (closest, feature) => {
+      const priority = hoverPriority[(feature.geometry as BasicGeometry).type];
       const { distance, snapPoint } = getNearestGeometryPoint(feature.geometry as BasicGeometry, cursorPoint);
-      return distance < closest.distance
+      return priority < closest.priority || (priority === closest.priority && distance < closest.distance)
         ? {
             distance,
             snapPoint,
             feature,
+            priority,
           }
         : closest;
     },
@@ -182,6 +184,7 @@ function findHoveredFeature(
       feature: null as unknown as MapGeoJSONFeature,
       snapPoint: null as unknown as Position,
       distance: Infinity,
+      priority: Infinity,
     }
   );
   return { feature, snapPoint };
@@ -294,4 +297,13 @@ const getNearestGeometryPoint = (
   distance: number;
 } => {
   return geometryNearestPointHandlers[geometry.type](geometry as any, point);
+};
+
+const hoverPriority: Record<BasicGeometry['type'], number> = {
+  Point: 1,
+  MultiPoint: 1,
+  LineString: 2,
+  MultiLineString: 2,
+  Polygon: 3,
+  MultiPolygon: 3,
 };
