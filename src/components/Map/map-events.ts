@@ -1,4 +1,5 @@
 import { booleanPointInPolygon } from '@turf/boolean-point-in-polygon';
+import { distance } from '@turf/distance';
 import { explode } from '@turf/explode';
 import { lineString, point } from '@turf/helpers';
 import { nearestPoint } from '@turf/nearest-point';
@@ -206,28 +207,25 @@ const geometryNearestPointHandlers: GeometryNearestPointHandlers = {
   Point: (geometry, point) => {
     return {
       snapPoint: geometry.coordinates,
-      distance: Math.sqrt(
-        Math.pow(point.geometry.coordinates[0] - geometry.coordinates[0], 2) +
-          Math.pow(point.geometry.coordinates[1] - geometry.coordinates[1], 2)
-      ),
+      distance: distance(point, geometry, { units: 'meters' }),
     };
   },
   MultiPoint: (geometry, point) => {
-    const nearest = nearestPoint(point, explode(geometry));
+    const nearest = nearestPoint(point, explode(geometry), { units: 'meters' });
     return {
       snapPoint: nearest.geometry.coordinates,
       distance: nearest.properties.distanceToPoint,
     };
   },
   LineString: (geometry, point) => {
-    const snapPoint = nearestPointOnLine(geometry, point);
+    const snapPoint = nearestPointOnLine(geometry, point, { units: 'meters' });
     return {
       snapPoint: snapPoint.geometry.coordinates,
       distance: snapPoint.properties.dist,
     };
   },
   MultiLineString: (geometry, point) => {
-    const snapPoint = nearestPointOnLine(geometry, point);
+    const snapPoint = nearestPointOnLine(geometry, point, { units: 'meters' });
     return {
       snapPoint: snapPoint.geometry.coordinates,
       distance: snapPoint.properties.dist,
@@ -243,7 +241,7 @@ const geometryNearestPointHandlers: GeometryNearestPointHandlers = {
 
     const closest = geometry.coordinates.reduce<ClosestPointResult>(
       (closestSoFar, ring) => {
-        const snapPoint = nearestPointOnLine(lineString(ring), point);
+        const snapPoint = nearestPointOnLine(lineString(ring), point, { units: 'meters' });
         const distance = snapPoint.properties.dist;
         return distance < closestSoFar.distance
           ? {
@@ -267,7 +265,7 @@ const geometryNearestPointHandlers: GeometryNearestPointHandlers = {
       (closestSoFar, polygonCoords) => {
         const closestForPolygon = polygonCoords.reduce<ClosestPointResult>(
           (closestPolygon, ring) => {
-            const snapPoint = nearestPointOnLine(lineString(ring), point);
+            const snapPoint = nearestPointOnLine(lineString(ring), point, { units: 'meters' });
             const distance = snapPoint.properties.dist;
             return distance < closestPolygon.distance
               ? {
