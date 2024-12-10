@@ -9,7 +9,6 @@ import Box from '@/components/ui/Box';
 import Icon from '@/components/ui/Icon';
 import { Table, type ColumnDef } from '@/components/ui/Table';
 import { useServices } from '@/services';
-import { displayModeDeChauffage } from '@/services/Map/businessRules/demands';
 import { createMapConfiguration } from '@/services/Map/map-configuration';
 import { type MapMarkerInfos } from '@/types/MapComponentsInfos';
 import { type Point } from '@/types/Point';
@@ -355,3 +354,17 @@ const Manager = () => {
 };
 
 export default Manager;
+
+const displayModeDeChauffage = (demand: Demand) => {
+  if (
+    demand['Mode de chauffage'] &&
+    (demand['Mode de chauffage'].toLowerCase().trim() === 'gaz' ||
+      demand['Mode de chauffage'].toLowerCase().trim() === 'fioul' ||
+      demand['Mode de chauffage'].toLowerCase() === 'électricité')
+  ) {
+    return `${demand['Mode de chauffage'][0].toUpperCase()}${demand['Mode de chauffage'].slice(1).trim()} ${
+      demand['Type de chauffage'] ? demand['Type de chauffage'].toLowerCase() : ''
+    }`;
+  }
+  return demand['Type de chauffage'];
+};

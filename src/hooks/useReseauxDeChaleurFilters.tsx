@@ -2,7 +2,7 @@ import { useSearchParams } from 'next/navigation';
 import { parseAsJson, useQueryState } from 'nuqs';
 import { useEffect, useState } from 'react';
 
-import { type ReseauxDeChaleurLimits } from '@/components/Map/map-layers';
+import { type ReseauxDeChaleurLimits } from '@/components/Map/components/layers/filters';
 import { defaultInterval, percentageMaxInterval, type FiltreEnergieConfKey } from '@/services/Map/map-configuration';
 import { deepMergeObjects, getProperty, setProperty } from '@/utils/core';
 import { fetchJSON } from '@/utils/network';

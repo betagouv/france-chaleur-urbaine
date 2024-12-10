@@ -9,7 +9,6 @@ import { type GeoJSONSource } from 'maplibre-gl';
 import { useEffect, useRef, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
 
-import { type MapSourceLayersSpecification } from '@/components/Map/map-layers';
 import useFCUMap from '@/components/Map/MapProvider';
 import Box from '@/components/ui/Box';
 import Divider from '@/components/ui/Divider';
@@ -23,6 +22,7 @@ import { formatAsISODate } from '@/utils/date';
 import { formatDistance } from '@/utils/geo';
 
 import { type MeasureFeature, type MeasureLabelFeature } from './measure';
+import { type MapSourceLayersSpecification } from '../layers/common';
 import { Title } from '../SimpleMapLegend.style';
 
 export const linearHeatDensityLinesSourceId = 'linear-heat-density-lines';

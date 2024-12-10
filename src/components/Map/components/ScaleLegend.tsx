@@ -11,7 +11,7 @@ import {
 } from '@/components/Map/components/ScaleLegend.style';
 import Box from '@/components/ui/Box';
 
-import { maxIconSize, minIconSize } from '../map-layers';
+import { maxIconSize, minIconSize } from './layers/typeChauffageBatimentsCollectifs';
 
 interface ScaleLegendProps {
   label: string;

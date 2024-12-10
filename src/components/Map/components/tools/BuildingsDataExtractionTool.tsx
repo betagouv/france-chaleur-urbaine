@@ -9,7 +9,6 @@ import { useEffect, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
 
 import { clientConfig } from '@/client-config';
-import { type MapSourceLayersSpecification } from '@/components/Map/map-layers';
 import useFCUMap from '@/components/Map/MapProvider';
 import Box from '@/components/ui/Box';
 import Text from '@/components/ui/Text';
@@ -19,12 +18,13 @@ import { EXPORT_FORMAT } from '@/types/enum/ExportFormat';
 import { type GasSummary } from '@/types/Summary/Gas';
 import { validatePolygonGeometry } from '@/utils/geo';
 
+import { type MapSourceLayersSpecification } from '../layers/common';
 import { Title } from '../SimpleMapLegend.style';
 
 export const buildingsDataExtractionPolygonsSourceId = 'buildings-data-extraction-polygons';
 const buildingsDataExtractionDrawHotSourceLayerId = 'buildings-data-extraction-first-linestring';
 
-export type AreaSummaryFeature = GeoJSON.Feature<GeoJSON.Polygon> & {
+type AreaSummaryFeature = GeoJSON.Feature<GeoJSON.Polygon> & {
   id: string;
   properties: {
     isValid: boolean;

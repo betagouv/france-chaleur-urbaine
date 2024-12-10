@@ -7,7 +7,7 @@ import { type GasSummary } from '@/types/Summary/Gas';
 import { type NetworkSummary } from '@/types/Summary/Network';
 import { isDefined } from '@/utils/core';
 
-import { objTypeEnergy } from '../map-layers';
+import { objTypeEnergy } from './layers/typeChauffageBatimentsCollectifs';
 import { PopupTitle } from '../Map.style';
 
 const writeTypeConso = (typeConso: string | unknown) => {

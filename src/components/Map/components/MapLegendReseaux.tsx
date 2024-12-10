@@ -1,7 +1,7 @@
 import { Button } from '@codegouvfr/react-dsfr/Button';
 import { useMemo } from 'react';
 
-import { batimentsRaccordesLayerMaxOpacity, type MapLegendFeature, mapLegendFeatures } from '@/components/Map/map-layers';
+import { type MapLegendFeature, mapLegendFeatures } from '@/components/Map/map-layers';
 import useFCUMap from '@/components/Map/MapProvider';
 import ReseauxDeChaleurFilters from '@/components/ReseauxDeChaleurFilters';
 import Box from '@/components/ui/Box';
@@ -10,8 +10,19 @@ import Icon from '@/components/ui/Icon';
 import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
 import Tooltip from '@/components/ui/Tooltip';
-import { themeDefHeatNetwork, themeDefZoneDP } from '@/services/Map/businessRules';
 
+import {
+  batimentsRaccordesReseauxChaleurFroidOpacity,
+  batimentsRaccordesReseauxDeChaleurColor,
+  batimentsRaccordesReseauxDeFroidColor,
+} from './layers/batimentsRaccordesReseauxChaleurFroid';
+import {
+  perimetresDeDeveloppementPrioritaireColor,
+  perimetresDeDeveloppementPrioritaireOpacity,
+} from './layers/perimetresDeDeveloppementPrioritaire';
+import { reseauDeChaleurClasseColor, reseauDeChaleurNonClasseColor } from './layers/reseauxDeChaleur';
+import { reseauxDeFroidColor } from './layers/reseauxDeFroid';
+import { reseauxEnConstructionColor, reseauxEnConstructionOpacity } from './layers/reseauxEnConstruction';
 import { LegendFilters, SingleCheckbox, TabScrollablePart, Title } from './SimpleMapLegend.style';
 
 // TODO thos should be fine tuned to decouple more the map configuration from the legend
@@ -81,7 +92,7 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
 
             <Box flex>
               <Box display="flex">
-                <Box backgroundColor={themeDefHeatNetwork.classed.color} height="8px" minWidth="25px" borderRadius="4px" mt="1w" />
+                <Box backgroundColor={reseauDeChaleurClasseColor} height="8px" minWidth="25px" borderRadius="4px" mt="1w" />
 
                 <Text as="label" htmlFor="reseauxDeChaleur" fontSize="14px" lineHeight="18px" cursor="pointer" pt="1v" px="1v">
                   Réseaux de chaleur classés
@@ -89,7 +100,7 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
               </Box>
 
               <Box display="flex">
-                <Box backgroundColor={themeDefHeatNetwork.outline.color} height="8px" minWidth="25px" borderRadius="4px" mt="1w" />
+                <Box backgroundColor={reseauDeChaleurNonClasseColor} height="8px" minWidth="25px" borderRadius="4px" mt="1w" />
 
                 <Box px="1v">
                   <Text as="label" htmlFor="reseauxDeChaleur" fontSize="14px" lineHeight="18px" cursor="pointer">
@@ -143,7 +154,13 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
             trackingEvent="Carto|Périmètres de développement prioritaire"
           />
 
-          <Box backgroundColor={themeDefZoneDP.fill.color} opacity={themeDefZoneDP.fill.opacity} height="16px" minWidth="25px" mt="1v" />
+          <Box
+            backgroundColor={perimetresDeDeveloppementPrioritaireColor}
+            opacity={perimetresDeDeveloppementPrioritaireOpacity}
+            height="16px"
+            minWidth="25px"
+            mt="1v"
+          />
 
           <Text
             as="label"
@@ -184,11 +201,11 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
           <Box flex>
             <Box display="flex">
               <Box>
-                <Box backgroundColor={themeDefHeatNetwork.futur.color} height="8px" minWidth="25px" borderRadius="4px" mt="1w" />
+                <Box backgroundColor={reseauxEnConstructionColor} height="8px" minWidth="25px" borderRadius="4px" mt="1w" />
 
                 <Box
-                  backgroundColor={themeDefHeatNetwork.futur.color}
-                  opacity={themeDefHeatNetwork.futur.opacity}
+                  backgroundColor={reseauxEnConstructionColor}
+                  opacity={reseauxEnConstructionOpacity}
                   height="16px"
                   minWidth="25px"
                   mt="1w"
@@ -235,8 +252,8 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
             />
 
             <Box
-              backgroundColor={themeDefHeatNetwork.classed.color}
-              opacity={batimentsRaccordesLayerMaxOpacity}
+              backgroundColor={batimentsRaccordesReseauxDeChaleurColor}
+              opacity={batimentsRaccordesReseauxChaleurFroidOpacity}
               height="16px"
               width="16px"
               mt="1v"
@@ -269,7 +286,7 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
               trackingEvent="Carto|Réseaux de froid"
             />
 
-            <Box backgroundColor={themeDefHeatNetwork.cold.color} height="8px" minWidth="25px" borderRadius="4px" mt="1w" />
+            <Box backgroundColor={reseauxDeFroidColor} height="8px" minWidth="25px" borderRadius="4px" mt="1w" />
 
             <Box flex px="1v">
               <Text as="label" htmlFor="reseauxDeFroid" fontSize="14px" lineHeight="18px" cursor="pointer">
@@ -293,8 +310,8 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
             />
 
             <Box
-              backgroundColor={themeDefHeatNetwork.cold.color}
-              opacity={batimentsRaccordesLayerMaxOpacity}
+              backgroundColor={batimentsRaccordesReseauxDeFroidColor}
+              opacity={batimentsRaccordesReseauxChaleurFroidOpacity}
               height="16px"
               width="16px"
               mt="1v"

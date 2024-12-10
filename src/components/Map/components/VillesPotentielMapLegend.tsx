@@ -2,14 +2,14 @@ import { useToggle } from '@react-hookz/web';
 import styled from 'styled-components';
 
 import Checkbox from '@/components/form/dsfr/Checkbox';
-import { besoinsEnChaleurIntervals } from '@/components/Map/map-layers';
 import useFCUMap from '@/components/Map/MapProvider';
 import Accordion from '@/components/ui/Accordion';
 import Box, { type BoxProps } from '@/components/ui/Box';
 import Text from '@/components/ui/Text';
-import { themeDefZonePotentielChaud, themeDefZonePotentielFortChaud } from '@/services/Map/businessRules/zonePotentielChaud';
 
 import IconPolygon from './IconPolygon';
+import { besoinsEnChaleurIntervals } from './layers/besoinsEnChaleur';
+import { zonePotentielChaudColor, zonePotentielChaudOpacity, zonePotentielFortChaudColor } from './layers/zonesPotentielChaud';
 
 const StyledBox = styled(Box)`
   ${({ theme }) => theme.media.lg`
@@ -59,10 +59,7 @@ function VillesPotentielMapLegend(props?: BoxProps) {
             {
               label: (
                 <Box display="flex" gap="4px" alignItems="center">
-                  <IconPolygon
-                    stroke={themeDefZonePotentielFortChaud.fill.color}
-                    fillOpacity={themeDefZonePotentielFortChaud.fill.opacity}
-                  />
+                  <IconPolygon stroke={zonePotentielFortChaudColor} fillOpacity={zonePotentielChaudOpacity} />
 
                   <Text fontSize="14px" lineHeight="18px" className="fr-col" cursor="pointer" pt="1v" px="1v">
                     Zones à fort potentiel
@@ -78,7 +75,7 @@ function VillesPotentielMapLegend(props?: BoxProps) {
             {
               label: (
                 <Box display="flex" gap="4px" alignItems="center">
-                  <IconPolygon stroke={themeDefZonePotentielChaud.fill.color} fillOpacity={themeDefZonePotentielChaud.fill.opacity} />
+                  <IconPolygon stroke={zonePotentielChaudColor} fillOpacity={zonePotentielChaudOpacity} />
                   <Text fontSize="14px" lineHeight="18px" className="fr-col" cursor="pointer" pt="1v" px="1v">
                     Zones à potentiel
                   </Text>
