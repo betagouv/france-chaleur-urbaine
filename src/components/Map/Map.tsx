@@ -273,6 +273,12 @@ export const FullyFeaturedMap = ({
     [setSoughtAddresses, soughtAddresses, selectedCardIndex]
   );
 
+  const resetSoughtAddresses = useCallback(() => {
+    setSelectedCardIndex(-1);
+    setSoughtAddresses([]);
+    setMarkersList([]);
+  }, []);
+
   // cache setExpanded functions to avoid rerendering CardSearchDetails
   const setExpandedFunctions = useMemo(
     () =>
@@ -704,6 +710,7 @@ export const FullyFeaturedMap = ({
                   small
                   expanded={soughtAddressesVisible}
                   onExpandedChange={setSoughtAddressesVisible}
+                  onClose={resetSoughtAddresses}
                 >
                   <Box display="flex" flexDirection="column" gap="8px">
                     {soughtAddresses.map((soughtAddress, index) => (
