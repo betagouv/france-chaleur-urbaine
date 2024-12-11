@@ -49,7 +49,7 @@ import {
   typeChauffageBatimentsCollectifsStyle,
   typeChauffageBatimentsOpacity,
 } from './layers/typeChauffageBatimentsCollectifs';
-import { zonePotentielChaudOpacity, zonePotentielFortChaudColor } from './layers/zonesPotentielChaud';
+import { zonePotentielChaudColor, zonePotentielChaudOpacity, zonePotentielFortChaudColor } from './layers/zonesPotentielChaud';
 import MapLegendReseaux from './MapLegendReseaux';
 import ModalCarteFrance from './ModalCarteFrance';
 import ScaleLegend from './ScaleLegend';
@@ -533,7 +533,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                     trackingEvent="Carto|Zones à potentiel chaud"
                   />
 
-                  <IconPolygon stroke={zonePotentielFortChaudColor} fillOpacity={zonePotentielChaudOpacity} mt="1v" />
+                  <IconPolygon stroke={zonePotentielChaudColor} fillOpacity={zonePotentielChaudOpacity} mt="1v" />
 
                   <Text
                     as="label"
