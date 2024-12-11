@@ -3,7 +3,7 @@ export enum ENERGY_TYPE {
   Gas = 'gas',
   Wood = 'wood',
   Electric = 'electric',
-  Unknown = 'unknow',
+  Unknown = 'unknown',
 }
 
 export enum ENERGY_USED {

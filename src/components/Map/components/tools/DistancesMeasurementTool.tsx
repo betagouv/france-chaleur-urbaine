@@ -8,7 +8,6 @@ import { atom, useAtom } from 'jotai';
 import { type GeoJSONSource } from 'maplibre-gl';
 import { Fragment, useEffect, useRef } from 'react';
 
-import { type MapSourceLayersSpecification } from '@/components/Map/map-layers';
 import useFCUMap from '@/components/Map/MapProvider';
 import Box from '@/components/ui/Box';
 import Divider from '@/components/ui/Divider';
@@ -18,6 +17,7 @@ import { formatDistance } from '@/utils/geo';
 
 import { type MeasureFeature, type MeasureLabelFeature } from './measure';
 import MesureFeatureListItem from './MeasureFeatureListItem';
+import { type MapSourceLayersSpecification } from '../layers/common';
 import { Title } from '../SimpleMapLegend.style';
 
 export const distancesMeasurementLinesSourceId = 'distance-measurements-lines';

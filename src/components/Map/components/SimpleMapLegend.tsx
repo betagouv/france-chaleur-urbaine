@@ -3,28 +3,8 @@ import Image from 'next/image';
 import { useQueryState } from 'nuqs';
 
 import RangeFilter from '@/components/form/dsfr/RangeFilter';
-import {
-  LegendDeskData,
-  type MapLegendFeature,
-  besoinsEnChaleurIndustrieCommunesIntervals,
-  besoinsEnChaleurIntervals,
-  besoinsEnFroidIntervals,
-  energyLayerMaxOpacity,
-} from '@/components/Map/map-layers';
-import {
-  communesFortPotentielPourCreationReseauxChaleurLayerColor,
-  communesFortPotentielPourCreationReseauxChaleurLayerOpacity,
-  enrrMobilisablesGeothermieProfondeLayerColor,
-  enrrMobilisablesGeothermieProfondeLayerOpacity,
-  enrrMobilisablesThalassothermieLayerColor,
-  enrrMobilisablesThalassothermieLayerOpacity,
-  installationsGeothermieProfondeLayerColor,
-  installationsGeothermieProfondeLayerOpacity,
-  installationsGeothermieSurfaceEchangeursFermesDeclareeColor,
-  installationsGeothermieSurfaceEchangeursFermesRealiseeColor,
-  installationsGeothermieSurfaceEchangeursOuvertsDeclareeColor,
-  installationsGeothermieSurfaceEchangeursOuvertsRealiseeColor,
-} from '@/components/Map/map-styles';
+import { defaultMapConfiguration } from '@/components/Map/map-configuration';
+import { type MapLegendFeature } from '@/components/Map/map-layers';
 import useFCUMap from '@/components/Map/MapProvider';
 import { UrlStateAccordion } from '@/components/ui/Accordion';
 import Box from '@/components/ui/Box';
@@ -32,12 +12,44 @@ import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
 import Tooltip from '@/components/ui/Tooltip';
 import { trackEvent } from '@/services/analytics';
-import { themeDefBuildings, themeDefDemands, themeDefEnergy, themeDefTypeGas } from '@/services/Map/businessRules';
-import { themeDefSolaireThermiqueFriches, themeDefSolaireThermiqueParkings } from '@/services/Map/businessRules/enrrMobilisables';
-import { themeDefZonePotentielChaud, themeDefZonePotentielFortChaud } from '@/services/Map/businessRules/zonePotentielChaud';
-import { communesFortPotentielPourCreationReseauxChaleurInterval, defaultMapConfiguration } from '@/services/Map/map-configuration';
 
 import IconPolygon from './IconPolygon';
+import { besoinsEnChaleurIntervals, besoinsEnFroidIntervals } from './layers/besoinsEnChaleur';
+import { besoinsEnChaleurIndustrieCommunesIntervals } from './layers/besoinsEnChaleurIndustrieCommunes';
+import { caracteristiquesBatimentsLayerStyle } from './layers/caracteristiquesBatiments';
+import {
+  communesFortPotentielPourCreationReseauxChaleurInterval,
+  communesFortPotentielPourCreationReseauxChaleurLayerColor,
+  communesFortPotentielPourCreationReseauxChaleurLayerOpacity,
+} from './layers/communesFortPotentielPourCreationReseauxChaleur';
+import { consommationsGazInterval, consommationsGazLayerStyle } from './layers/consommationsGaz';
+import { demandesEligibiliteLayerStyle } from './layers/demandesEligibilite';
+import { enrrMobilisablesFrichesLayerColor, enrrMobilisablesFrichesLayerOpacity } from './layers/enrr-mobilisables/friches';
+import { enrrMobilisablesParkingsLayerColor, enrrMobilisablesParkingsLayerOpacity } from './layers/enrr-mobilisables/parkings';
+import {
+  enrrMobilisablesThalassothermieLayerColor,
+  enrrMobilisablesThalassothermieLayerOpacity,
+} from './layers/enrr-mobilisables/thalassothermie';
+import {
+  enrrMobilisablesZonesGeothermieProfondeLayerColor,
+  enrrMobilisablesZonesGeothermieProfondeLayerOpacity,
+} from './layers/enrr-mobilisables/zonesGeothermieProfonde';
+import {
+  installationsGeothermieProfondeLayerColor,
+  installationsGeothermieProfondeLayerOpacity,
+  installationsGeothermieSurfaceEchangeursFermesDeclareeColor,
+  installationsGeothermieSurfaceEchangeursFermesOpacity,
+  installationsGeothermieSurfaceEchangeursFermesRealiseeColor,
+  installationsGeothermieSurfaceEchangeursOuvertsDeclareeColor,
+  installationsGeothermieSurfaceEchangeursOuvertsOpacity,
+  installationsGeothermieSurfaceEchangeursOuvertsRealiseeColor,
+} from './layers/installationsGeothermie';
+import {
+  energyFilterInterval,
+  typeChauffageBatimentsCollectifsStyle,
+  typeChauffageBatimentsOpacity,
+} from './layers/typeChauffageBatimentsCollectifs';
+import { zonePotentielChaudOpacity, zonePotentielFortChaudColor } from './layers/zonesPotentielChaud';
 import MapLegendReseaux from './MapLegendReseaux';
 import ModalCarteFrance from './ModalCarteFrance';
 import ScaleLegend from './ScaleLegend';
@@ -124,8 +136,8 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
             />
 
             <Box
-              backgroundColor={themeDefDemands.fill.color}
-              border={`2px solid ${themeDefDemands.stroke.color}`}
+              backgroundColor={demandesEligibiliteLayerStyle.fill.color}
+              border={`2px solid ${demandesEligibiliteLayerStyle.stroke.color}`}
               borderRadius="50%"
               minHeight="16px"
               minWidth="16px"
@@ -174,7 +186,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                       onChange={() => toggleLayer('consommationsGaz.logements')}
                     />
 
-                    <Box backgroundColor={themeDefTypeGas.R.color} height="10px" width="10px" borderRadius="50%" mt="2v" />
+                    <Box backgroundColor={consommationsGazLayerStyle.R} height="10px" width="10px" borderRadius="50%" mt="2v" />
 
                     <Text
                       as="label"
@@ -197,7 +209,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                       onChange={() => toggleLayer('consommationsGaz.tertiaire')}
                     />
 
-                    <Box backgroundColor={themeDefTypeGas.T.color} height="10px" width="10px" borderRadius="50%" mt="2v" />
+                    <Box backgroundColor={consommationsGazLayerStyle.T} height="10px" width="10px" borderRadius="50%" mt="2v" />
 
                     <Text
                       as="label"
@@ -220,7 +232,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                       onChange={() => toggleLayer('consommationsGaz.industrie')}
                     />
 
-                    <Box backgroundColor={themeDefTypeGas.I.color} height="10px" width="10px" borderRadius="50%" mt="2v" />
+                    <Box backgroundColor={consommationsGazLayerStyle.I} height="10px" width="10px" borderRadius="50%" mt="2v" />
 
                     <Text
                       as="label"
@@ -243,7 +255,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                   label="Niveau de consommation de gaz (MWh/an)"
                   color={consommationsGazLegendColor}
                   defaultValues={defaultMapConfiguration.consommationsGaz.interval}
-                  domain={[LegendDeskData.gasUsage.min, LegendDeskData.gasUsage.max]}
+                  domain={[consommationsGazInterval.min, consommationsGazInterval.max]}
                   onChange={updateScaleInterval('consommationsGaz.interval')}
                 />
               </DeactivatableBox>
@@ -255,7 +267,13 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
               trackingEvent="Carto|Bâtiments au gaz collectif"
               label={
                 <>
-                  <Box backgroundColor={themeDefEnergy.gas.color} opacity={energyLayerMaxOpacity} height="16px" width="16px" mt="1v" />
+                  <Box
+                    backgroundColor={typeChauffageBatimentsCollectifsStyle.gas}
+                    opacity={typeChauffageBatimentsOpacity}
+                    height="16px"
+                    width="16px"
+                    mt="1v"
+                  />
                   <span>Bâtiments chauffés au gaz collectif</span>
                 </>
               }
@@ -264,8 +282,8 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                 <ScaleLegend
                   className="fr-ml-1w fr-mr-1w"
                   label="Nombre de lots d'habitation"
-                  color={themeDefEnergy.gas.color}
-                  domain={[LegendDeskData.energy.min, LegendDeskData.energy.max]}
+                  color={typeChauffageBatimentsCollectifsStyle.gas}
+                  domain={[energyFilterInterval.min, energyFilterInterval.max]}
                   defaultValues={defaultMapConfiguration.batimentsGazCollectif.interval}
                   onChange={updateScaleInterval('batimentsGazCollectif.interval')}
                 />
@@ -278,7 +296,13 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
               trackingEvent="Carto|Bâtiments au fioul collectif"
               label={
                 <>
-                  <Box backgroundColor={themeDefEnergy.fuelOil.color} opacity={energyLayerMaxOpacity} height="16px" width="16px" mt="1v" />
+                  <Box
+                    backgroundColor={typeChauffageBatimentsCollectifsStyle.fuelOil}
+                    opacity={typeChauffageBatimentsOpacity}
+                    height="16px"
+                    width="16px"
+                    mt="1v"
+                  />
                   <span>Bâtiments chauffés au fioul collectif</span>
                 </>
               }
@@ -287,8 +311,8 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                 <ScaleLegend
                   className="fr-ml-1w fr-mr-1w"
                   label="Nombre de lots d'habitation"
-                  color={themeDefEnergy.fuelOil.color}
-                  domain={[LegendDeskData.energy.min, LegendDeskData.energy.max]}
+                  color={typeChauffageBatimentsCollectifsStyle.fuelOil}
+                  domain={[energyFilterInterval.min, energyFilterInterval.max]}
                   defaultValues={defaultMapConfiguration.batimentsFioulCollectif.interval}
                   onChange={updateScaleInterval('batimentsFioulCollectif.interval')}
                 />
@@ -421,7 +445,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                 label={
                   <>
                     <Box
-                      backgroundColor={themeDefBuildings.colors.c.color}
+                      backgroundColor={caracteristiquesBatimentsLayerStyle.c}
                       height="16px"
                       width="16px"
                       mt="1v"
@@ -450,21 +474,19 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                   </Text>
                   <Text fontSize="13px">Diagnostic de performance énergétique</Text>
                   <Box display="flex" gap="4px">
-                    {Object.entries(themeDefBuildings.colors)
-                      .filter(([letter]) => letter.length === 1)
-                      .map(([letter, { color }]) => (
-                        <Box
-                          width="24px"
-                          height="24px"
-                          fontSize="18px"
-                          key={letter}
-                          backgroundColor={color}
-                          textColor="white"
-                          textAlign="center"
-                        >
-                          {letter.toUpperCase()}
-                        </Box>
-                      ))}
+                    {Object.entries(caracteristiquesBatimentsLayerStyle).map(([letter, color]) => (
+                      <Box
+                        width="24px"
+                        height="24px"
+                        fontSize="18px"
+                        key={letter}
+                        backgroundColor={color}
+                        textColor="white"
+                        textAlign="center"
+                      >
+                        {letter.toUpperCase()}
+                      </Box>
+                    ))}
                   </Box>
                 </DeactivatableBox>
               </TrackableCheckableAccordion>
@@ -483,11 +505,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
               trackingEvent="Carto|Zones d'opportunité"
               label={
                 <>
-                  <IconPolygon
-                    stroke={themeDefZonePotentielFortChaud.fill.color}
-                    fillOpacity={themeDefZonePotentielFortChaud.fill.opacity}
-                    mt="1v"
-                  />
+                  <IconPolygon stroke={zonePotentielFortChaudColor} fillOpacity={zonePotentielChaudOpacity} mt="1v" />
                   <Box flex>Zones d'opportunité pour la création de réseaux de chaleur</Box>
                   <Tooltip
                     title={
@@ -515,11 +533,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                     trackingEvent="Carto|Zones à potentiel chaud"
                   />
 
-                  <IconPolygon
-                    stroke={themeDefZonePotentielChaud.fill.color}
-                    fillOpacity={themeDefZonePotentielChaud.fill.opacity}
-                    mt="1v"
-                  />
+                  <IconPolygon stroke={zonePotentielFortChaudColor} fillOpacity={zonePotentielChaudOpacity} mt="1v" />
 
                   <Text
                     as="label"
@@ -543,11 +557,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                     trackingEvent="Carto|Zones à potentiel fort chaud"
                   />
 
-                  <IconPolygon
-                    stroke={themeDefZonePotentielFortChaud.fill.color}
-                    fillOpacity={themeDefZonePotentielFortChaud.fill.opacity}
-                    mt="1v"
-                  />
+                  <IconPolygon stroke={zonePotentielFortChaudColor} fillOpacity={zonePotentielChaudOpacity} mt="1v" />
 
                   <Text
                     as="label"
@@ -874,8 +884,8 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
               />
 
               <IconPolygon
-                stroke={enrrMobilisablesGeothermieProfondeLayerColor}
-                fillOpacity={enrrMobilisablesGeothermieProfondeLayerOpacity}
+                stroke={enrrMobilisablesZonesGeothermieProfondeLayerColor}
+                fillOpacity={enrrMobilisablesZonesGeothermieProfondeLayerOpacity}
               />
 
               <Text
@@ -941,11 +951,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                     trackingEvent="Carto|Solaire thermique - friches"
                   />
 
-                  <IconPolygon
-                    stroke={themeDefSolaireThermiqueFriches.color}
-                    fillOpacity={themeDefSolaireThermiqueFriches.opacity}
-                    mt="1v"
-                  />
+                  <IconPolygon stroke={enrrMobilisablesFrichesLayerColor} fillOpacity={enrrMobilisablesFrichesLayerOpacity} mt="1v" />
 
                   <Text as="label" htmlFor="friches" fontSize="14px" lineHeight="18px" className="fr-col" cursor="pointer" pt="1v" px="1v">
                     Friches
@@ -960,11 +966,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                     trackingEvent="Carto|Solaire thermique - parkings"
                   />
 
-                  <IconPolygon
-                    stroke={themeDefSolaireThermiqueParkings.color}
-                    fillOpacity={themeDefSolaireThermiqueParkings.opacity}
-                    mt="1v"
-                  />
+                  <IconPolygon stroke={enrrMobilisablesParkingsLayerColor} fillOpacity={enrrMobilisablesParkingsLayerOpacity} mt="1v" />
 
                   <Text as="label" htmlFor="parkings" fontSize="14px" lineHeight="18px" className="fr-col" cursor="pointer" pt="1v" px="1v">
                     Parkings
@@ -1085,6 +1087,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                 <Box display="flex" alignItems="center">
                   <Box
                     backgroundColor={installationsGeothermieSurfaceEchangeursOuvertsRealiseeColor}
+                    opacity={installationsGeothermieSurfaceEchangeursOuvertsOpacity}
                     height="10px"
                     width="10px"
                     borderRadius="50%"
@@ -1096,6 +1099,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                 <Box display="flex" alignItems="center">
                   <Box
                     backgroundColor={installationsGeothermieSurfaceEchangeursOuvertsDeclareeColor}
+                    opacity={installationsGeothermieSurfaceEchangeursOuvertsOpacity}
                     height="10px"
                     width="10px"
                     borderRadius="50%"
@@ -1131,6 +1135,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                 <Box display="flex" alignItems="center">
                   <Box
                     backgroundColor={installationsGeothermieSurfaceEchangeursFermesRealiseeColor}
+                    opacity={installationsGeothermieSurfaceEchangeursFermesOpacity}
                     height="10px"
                     width="10px"
                     borderRadius="50%"
@@ -1142,6 +1147,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                 <Box display="flex" alignItems="center">
                   <Box
                     backgroundColor={installationsGeothermieSurfaceEchangeursFermesDeclareeColor}
+                    opacity={installationsGeothermieSurfaceEchangeursFermesOpacity}
                     height="10px"
                     width="10px"
                     borderRadius="50%"

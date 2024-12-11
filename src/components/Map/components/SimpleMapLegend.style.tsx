@@ -4,11 +4,11 @@ import { createParser } from 'nuqs';
 import React from 'react';
 import styled, { css } from 'styled-components';
 
+import { type MapConfigurationProperty, type MapConfiguration } from '@/components/Map/map-configuration';
 import Box from '@/components/ui/Box';
 import CheckableAccordion, { type CheckableAccordionProps } from '@/components/ui/CheckableAccordion';
 import Heading from '@/components/ui/Heading';
 import { type LegendTrackingEvent, trackEvent } from '@/services/analytics';
-import { type MapConfigurationProperty, type MapConfiguration } from '@/services/Map/map-configuration';
 import cx from '@/utils/cx';
 import IconEnrr from '@root/public/icons/enrr.svg?icon';
 import IconOutils from '@root/public/icons/outils.svg?icon';

@@ -18,6 +18,7 @@ import MapReactGL, {
   ScaleControl,
 } from 'react-map-gl/maplibre';
 
+import { type MapConfiguration, isMapConfigurationInitialized } from '@/components/Map/map-configuration';
 import Accordion from '@/components/ui/Accordion';
 import Box from '@/components/ui/Box';
 import Icon from '@/components/ui/Icon';
@@ -28,7 +29,6 @@ import useDevMode from '@/hooks/useDevMode';
 import useRouterReady from '@/hooks/useRouterReady';
 import { useServices } from '@/services';
 import { trackEvent } from '@/services/analytics';
-import { type MapConfiguration, isMapConfigurationInitialized } from '@/services/Map/map-configuration';
 import { type BoundingBox } from '@/types/Coords';
 import { type AddressDetail, type HandleAddressSelect } from '@/types/HeatNetworksResponse';
 import { type MapMarkerInfos, MapPopupType } from '@/types/MapComponentsInfos';

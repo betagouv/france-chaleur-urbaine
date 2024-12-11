@@ -1,3 +1,4 @@
+import { communesFortPotentielPourCreationReseauxChaleurInterval } from '@/components/Map/components/layers/communesFortPotentielPourCreationReseauxChaleur';
 import { deepMergeObjects } from '@/utils/core';
 import { type Interval } from '@/utils/interval';
 import { type DeepPartial, type FlattenKeys } from '@/utils/typescript';
@@ -145,7 +146,6 @@ export function isMapConfigurationInitialized(conf: MaybeEmptyMapConfiguration):
 
 export const percentageMaxInterval: Interval = [0, 100];
 export const defaultInterval: Interval = [Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER];
-export const communesFortPotentielPourCreationReseauxChaleurInterval: Interval = [0, 100_000];
 
 export const emptyMapConfiguration: EmptyMapConfiguration = {
   filtreIdentifiantReseau: [],
