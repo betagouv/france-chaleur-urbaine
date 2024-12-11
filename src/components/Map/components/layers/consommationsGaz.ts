@@ -3,7 +3,7 @@ import { type ExpressionInputType } from 'maplibre-gl';
 import { type GasSummary } from '@/types/Summary/Gas';
 import { ObjectEntries } from '@/utils/typescript';
 
-import { intermediateTileLayersMinZoom, type MapSourceLayersSpecification } from './common';
+import { ifHoverElse, intermediateTileLayersMinZoom, type MapSourceLayersSpecification } from './common';
 
 export const consommationsGazLayerStyle = {
   T: '#0032E5',
@@ -47,20 +47,24 @@ export const consommationsGazLayersSpec = [
         paint: {
           'circle-color': ['match', ['get', GAS_PROPERTY_TYPE_GAS], ...typeWithColorPairs, consommationsGazLayerStyle.unknown],
           'circle-radius': [
-            'case',
-            ['<', ['get', GAS_PROPERTY_CONSO], consommationsGazInterval.min],
-            minIconSize / 2,
-            ['<', ['get', GAS_PROPERTY_CONSO], consommationsGazInterval.max],
+            '+',
             [
-              'interpolate',
-              ['linear'],
-              ['get', GAS_PROPERTY_CONSO],
-              consommationsGazInterval.min,
+              'case',
+              ['<', ['get', GAS_PROPERTY_CONSO], consommationsGazInterval.min],
               minIconSize / 2,
-              consommationsGazInterval.max,
+              ['<', ['get', GAS_PROPERTY_CONSO], consommationsGazInterval.max],
+              [
+                'interpolate',
+                ['linear'],
+                ['get', GAS_PROPERTY_CONSO],
+                consommationsGazInterval.min,
+                minIconSize / 2,
+                consommationsGazInterval.max,
+                maxIconSize / 2,
+              ],
               maxIconSize / 2,
             ],
-            maxIconSize / 2,
+            ifHoverElse(2, 0),
           ],
           'circle-opacity': [
             'interpolate',

@@ -1,4 +1,4 @@
-import { type MapSourceLayersSpecification } from './common';
+import { ifHoverElse, type MapSourceLayersSpecification } from './common';
 
 export const installationsGeothermieProfondeLayerColor = '#8400a8';
 export const installationsGeothermieProfondeLayerOpacity = 0.8;
@@ -19,6 +19,7 @@ export const installationsGeothermieLayersSpec = [
       tiles: ['/api/map/installationsGeothermieProfonde/{z}/{x}/{y}'],
       minzoom: 5,
       maxzoom: 6,
+      promoteId: 'gid',
     },
     layers: [
       {
@@ -26,7 +27,7 @@ export const installationsGeothermieLayersSpec = [
         type: 'circle',
         paint: {
           'circle-color': installationsGeothermieProfondeLayerColor,
-          'circle-radius': 8,
+          'circle-radius': ifHoverElse(10, 8),
           'circle-opacity': installationsGeothermieProfondeLayerOpacity,
         },
         isVisible: (config) => config.installationsGeothermieProfonde,
@@ -52,7 +53,7 @@ export const installationsGeothermieLayersSpec = [
             installationsGeothermieSurfaceEchangeursFermesDeclareeColor,
             installationsGeothermieSurfaceEchangeursFermesRealiseeColor,
           ],
-          'circle-radius': 8,
+          'circle-radius': ifHoverElse(10, 8),
           'circle-opacity': installationsGeothermieSurfaceEchangeursFermesOpacity,
         },
         isVisible: (config) => config.installationsGeothermieSurfaceEchangeursFermes,
@@ -78,7 +79,7 @@ export const installationsGeothermieLayersSpec = [
             installationsGeothermieSurfaceEchangeursOuvertsDeclareeColor,
             installationsGeothermieSurfaceEchangeursOuvertsRealiseeColor,
           ],
-          'circle-radius': 8,
+          'circle-radius': ifHoverElse(10, 8),
           'circle-opacity': installationsGeothermieSurfaceEchangeursOuvertsOpacity,
         },
         isVisible: (config) => config.installationsGeothermieSurfaceEchangeursOuverts,

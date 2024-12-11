@@ -1,4 +1,4 @@
-import { type MapSourceLayersSpecification } from './common';
+import { ifHoverElse, type MapSourceLayersSpecification } from './common';
 
 export const demandesEligibiliteLayerStyle = {
   fill: { color: '#FFFFFF', size: 4 },
@@ -11,6 +11,7 @@ export const demandesEligibiliteLayersSpec = [
     source: {
       type: 'vector',
       tiles: [`/api/map/demands/{z}/{x}/{y}`],
+      promoteId: 'id',
     },
     layers: [
       {
@@ -20,7 +21,7 @@ export const demandesEligibiliteLayersSpec = [
         paint: {
           'circle-color': demandesEligibiliteLayerStyle.fill.color,
           'circle-stroke-color': demandesEligibiliteLayerStyle.stroke.color,
-          'circle-radius': demandesEligibiliteLayerStyle.fill.size,
+          'circle-radius': ifHoverElse(demandesEligibiliteLayerStyle.fill.size + 2, demandesEligibiliteLayerStyle.fill.size),
           'circle-stroke-width': demandesEligibiliteLayerStyle.stroke.size,
         },
         isVisible: (config) => config.demandesEligibilite,

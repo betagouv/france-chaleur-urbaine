@@ -1,6 +1,7 @@
+import { darken } from '@/utils/color';
 import { formatMWhString } from '@/utils/strings';
 
-import { type LegendInterval, type ColorThreshold, type MapSourceLayersSpecification } from './common';
+import { type LegendInterval, type ColorThreshold, type MapSourceLayersSpecification, ifHoverElse } from './common';
 
 const besoinsEnChaleurIndustrieCommunesDefaultColor = '#fbf2e7';
 const besoinsEnChaleurIndustrieCommunesMaxValue = 1_500_000;
@@ -44,8 +45,8 @@ export const besoinsEnChaleurIndustrieCommunesLayersSpec = [
           'fill-color': [
             'step',
             ['coalesce', ['get', 'conso_chal'], 0],
-            besoinsEnChaleurIndustrieCommunesDefaultColor,
-            ...besoinsEnChaleurIndustrieCommunesThresholds.flatMap((v) => [v.value, v.color]),
+            ifHoverElse(darken(besoinsEnChaleurIndustrieCommunesDefaultColor, 40), besoinsEnChaleurIndustrieCommunesDefaultColor),
+            ...besoinsEnChaleurIndustrieCommunesThresholds.flatMap((v) => [v.value, ifHoverElse(darken(v.color, 40), v.color)]),
           ],
           'fill-opacity': 0.7,
         },
@@ -56,7 +57,7 @@ export const besoinsEnChaleurIndustrieCommunesLayersSpec = [
         type: 'line',
         paint: {
           'line-color': '#777777',
-          'line-width': 1,
+          'line-width': ifHoverElse(3, 1),
         },
         isVisible: (config) => config.besoinsEnChaleurIndustrieCommunes,
         unselectable: true,

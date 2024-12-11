@@ -2,9 +2,11 @@ import { type ExpressionInputType } from 'maplibre-gl';
 
 import { ENERGY_TYPE, ENERGY_USED } from '@/types/enum/EnergyType';
 import { type EnergySummary } from '@/types/Summary/Energy';
+import { deepMergeObjects } from '@/utils/core';
 import { ObjectEntries } from '@/utils/typescript';
 
-import { intermediateTileLayersMinZoom, type MapSourceLayersSpecification } from './common';
+import { ifHoverElse, intermediateTileLayersMinZoom, type MapSourceLayersSpecification } from './common';
+import { type MapLayerSpecification } from '../../map-layers';
 
 export const minIconSize = 12;
 export const maxIconSize = 30;
@@ -66,7 +68,7 @@ export const typeChauffageBatimentsCollectifsLayersSpec = [
       tiles: [`/api/map/energy/{z}/{x}/{y}`],
     },
     layers: [
-      {
+      ...buildLayerAndHoverLayer({
         id: 'energy',
         'source-layer': 'energy',
         minzoom: intermediateTileLayersMinZoom,
@@ -153,7 +155,73 @@ export const typeChauffageBatimentsCollectifsLayersSpec = [
           ];
         },
         isVisible: (config) => config.batimentsFioulCollectif.show || config.batimentsGazCollectif.show,
-      },
+      }),
     ],
   },
 ] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+
+/**
+ * Construit 2 couches identiques, une pour voir les données,
+ * l'autre pour afficher la feature survolée (icone plus grande)
+ */
+function buildLayerAndHoverLayer<LayerId extends string>(
+  layerSpec: MapLayerSpecification<LayerId>
+): readonly [MapLayerSpecification<LayerId>, MapLayerSpecification<`${LayerId}-hover`>] {
+  return [
+    deepMergeObjects(layerSpec, {
+      paint: {
+        // display all features except the hovered one
+        'icon-opacity': [
+          'interpolate',
+          ['linear'],
+          ['zoom'],
+          intermediateTileLayersMinZoom + 0.2,
+          0,
+          intermediateTileLayersMinZoom + 0.5 + 1,
+          ifHoverElse(0, typeChauffageBatimentsOpacity),
+        ],
+      },
+    }),
+    {
+      ...layerSpec,
+      id: `${layerSpec.id}-hover`,
+      layout: {
+        ...layerSpec.layout,
+        'icon-size': [
+          '+',
+          0.3,
+          [
+            'case',
+            ['<', ['get', ENERGY_PROPERTY_NB_LOT], energyFilterInterval.min],
+            getSymbolRatio(minIconSize),
+            ['<', ['get', ENERGY_PROPERTY_NB_LOT], energyFilterInterval.max],
+            [
+              'interpolate',
+              ['linear'],
+              ['get', ENERGY_PROPERTY_NB_LOT],
+              energyFilterInterval.min,
+              getSymbolRatio(minIconSize),
+              energyFilterInterval.max,
+              getSymbolRatio(maxIconSize),
+            ],
+            getSymbolRatio(maxIconSize),
+          ],
+        ],
+      },
+      paint: {
+        ...layerSpec.paint,
+        // display all features except the hovered one
+        'icon-opacity': [
+          'interpolate',
+          ['linear'],
+          ['zoom'],
+          intermediateTileLayersMinZoom + 0.2,
+          0,
+          intermediateTileLayersMinZoom + 0.5 + 1,
+          ifHoverElse(typeChauffageBatimentsOpacity, 0),
+        ],
+      },
+      unselectable: true,
+    },
+  ] as const satisfies ReadonlyArray<MapLayerSpecification>;
+}

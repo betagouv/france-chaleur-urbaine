@@ -39,3 +39,9 @@ export const zoomOpacityTransitionAt10: DataDrivenPropertyValueSpecification<num
 
 export const intermediateTileLayersMinZoom = 12;
 export const tileSourcesMaxZoom = 17;
+
+/**
+ * Helper pour faciliter la définition des styles des couches avec le survol.
+ */
+export const ifHoverElse = <T extends string | number>(valueIfHover: T, valueElse: T) =>
+  ['case', ['boolean', ['feature-state', 'hover'], false], valueIfHover, valueElse] satisfies DataDrivenPropertyValueSpecification<T>;

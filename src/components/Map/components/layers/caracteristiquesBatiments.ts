@@ -2,7 +2,7 @@ import { type ExpressionInputType } from 'maplibre-gl';
 
 import { ObjectEntries } from '@/utils/typescript';
 
-import { type MapSourceLayersSpecification, intermediateTileLayersMinZoom } from './common';
+import { type MapSourceLayersSpecification, ifHoverElse, intermediateTileLayersMinZoom } from './common';
 
 export const caracteristiquesBatimentsLayerStyle = {
   a: '#0D8A61',
@@ -49,7 +49,7 @@ export const caracteristiquesBatimentsLayersSpec = [
             intermediateTileLayersMinZoom + 0.2,
             0,
             intermediateTileLayersMinZoom + 0.2 + 1,
-            opacity,
+            ifHoverElse(1, opacity),
           ],
         },
         isVisible: (config) => config.caracteristiquesBatiments,

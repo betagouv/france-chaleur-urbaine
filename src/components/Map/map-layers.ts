@@ -8,7 +8,7 @@ import {
 
 import { clientConfig } from '@/client-config';
 import { type MapConfiguration } from '@/components/Map/map-configuration';
-import { deepMergeObjects } from '@/utils/core';
+import { deepMergeObjects, isDefined } from '@/utils/core';
 
 import { batimentsRaccordesReseauxChaleurFroidLayersSpec } from './components/layers/batimentsRaccordesReseauxChaleurFroid';
 import { besoinsEnChaleurLayersSpec } from './components/layers/besoinsEnChaleur';
@@ -92,8 +92,8 @@ export const legendURLKeyToLegendFeature: Record<LegendURLKey | string, MapLegen
   raccordementsFroid: 'batimentsRaccordesReseauxFroid',
 };
 
-export type MapLayerSpecification = Omit<LayerSpecification, 'source' | 'source-layer' | 'filter'> & {
-  id: string;
+export type MapLayerSpecification<ILayerId = string> = Omit<LayerSpecification, 'source' | 'source-layer' | 'filter'> & {
+  id: ILayerId;
   'source-layer'?: string;
   layout?: LayerSpecification['layout'] & {
     'icon-image'?: LayerSymbolImage;
@@ -157,6 +157,7 @@ export function loadMapLayers(map: FCUMap, config: MapConfiguration) {
         : {}),
     });
     spec.layers.forEach((layer) => {
+      const filterFunc = (layer as MapLayerSpecification).filter;
       map.addLayer({
         source: spec.sourceId,
         ...(spec.source.type === 'vector'
@@ -168,9 +169,9 @@ export function loadMapLayers(map: FCUMap, config: MapConfiguration) {
         layout: deepMergeObjects((layer as any).layout ?? {}, {
           visibility: layer.isVisible(config) ? 'visible' : 'none',
         }),
-        ...(('filter' satisfies keyof MapSourceLayersSpecification['layers'][number]) in layer
+        ...(isDefined(filterFunc)
           ? {
-              filter: layer.filter(config),
+              filter: filterFunc(config),
             }
           : {}),
       } as any);
@@ -191,8 +192,9 @@ export function applyMapConfigurationToLayers(map: FCUMap, config: MapConfigurat
       }
 
       map.setLayoutProperty(layer.id, 'visibility', layer.isVisible(config) ? 'visible' : 'none');
-      if (('filter' satisfies keyof MapSourceLayersSpecification['layers'][number]) in layer) {
-        map.setFilter(layer.id, layer.filter(config));
+      const filterFunc = (layer as MapLayerSpecification).filter;
+      if (isDefined(filterFunc)) {
+        map.setFilter(layer.id, filterFunc(config));
       }
     });
 }
