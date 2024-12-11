@@ -384,6 +384,7 @@ export const buildingsDataExtractionLayers = [
           'fill-color': ['case', ['get', 'isValid'], '#0000911A', '#f538381A'],
         },
         isVisible: (config) => config.extractionDonneesBatiment,
+        unselectable: true,
       },
       {
         id: 'buildings-data-extraction-outline',
@@ -393,6 +394,7 @@ export const buildingsDataExtractionLayers = [
           'line-width': 4,
         },
         isVisible: (config) => config.extractionDonneesBatiment,
+        unselectable: true,
       },
     ],
   },
