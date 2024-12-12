@@ -24,16 +24,17 @@ type SimplePageProps = {
   children: React.ReactNode;
   mode?: PageMode;
   currentPage?: string;
+  includeFooter?: boolean;
 } & SEOProps;
 
-const SimplePage = ({ mode, currentPage, children, noIndex, ...props }: SimplePageProps) => {
+const SimplePage = ({ mode, currentPage, children, noIndex, includeFooter = true, ...props }: SimplePageProps) => {
   return (
     <>
       <SEO noIndex={mode === 'authenticated' ? true : noIndex} {...props} />
       <PageHeader mode={mode ?? 'public'} currentPage={currentPage} />
 
       {children}
-      <PageFooter />
+      {includeFooter && <PageFooter />}
     </>
   );
 };
