@@ -9,6 +9,7 @@ import { useServices } from '@/services';
 import { Container } from './BulkEligibilityForm.styles';
 
 const allowedMimeTypes = ['text/csv', 'text/plain'] as const;
+const allowedExtensions = ['.csv', '.txt'] as const;
 
 const BulkEligibilityForm = () => {
   const { heatNetworkService } = useServices();
@@ -32,7 +33,7 @@ const BulkEligibilityForm = () => {
       return;
     }
     if (!allowedMimeTypes.includes(file.type as any)) {
-      setError(`Le format du fichier n'est pas supporté (attendus : ${allowedMimeTypes.join(', ')})`);
+      setError(`Le format du fichier n'est pas supporté (attendu : ${allowedExtensions.join(', ')})`);
       return;
     }
 
@@ -75,7 +76,7 @@ const BulkEligibilityForm = () => {
             state={error ? 'error' : 'default'}
             stateRelatedMessage={error}
             nativeInputProps={{
-              accept: '.txt, .csv',
+              accept: allowedExtensions.join(','),
               onChange: readFile,
             }}
           />
