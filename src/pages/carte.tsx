@@ -71,6 +71,7 @@ const Carte = () => {
       title="Carte nationale des réseaux de chaleur et de froid en France"
       mode="public-fullscreen"
       description="Découvrez la carte de référence des réseaux de chaleur et de froid, identifiez les opportunités de raccordement pour votre bâtiment."
+      includeFooter={false}
     >
       <MapWrapper>
         <Map withoutLogo withLegend initialMapConfiguration={initialMapConfiguration} persistViewStateInURL />
