@@ -28,13 +28,16 @@ const getObjectIndexFromAirtable = async (tileInfo: AirtableTileInfo) => {
             type: 'Point',
             coordinates: [longitude, latitude],
           },
-          properties: tileInfo.properties.reduce(function (acc: any, key: string) {
-            const value = record.get(key);
-            if (value) {
-              acc[key] = value;
-            }
-            return acc;
-          }, {}),
+          properties: tileInfo.properties.reduce(
+            function (acc: any, key: string) {
+              const value = record.get(key);
+              if (value) {
+                acc[key] = value;
+              }
+              return acc;
+            },
+            { id: record.id }
+          ),
         };
       });
 

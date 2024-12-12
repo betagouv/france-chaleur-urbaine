@@ -1,4 +1,6 @@
-import { type MapSourceLayersSpecification } from '../common';
+import { darken } from '@/utils/color';
+
+import { ifHoverElse, type MapSourceLayersSpecification } from '../common';
 
 export const enrrMobilisablesParkingsLayerColor = '#d0643e';
 export const enrrMobilisablesParkingsLayerOpacity = 0.7;
@@ -16,7 +18,7 @@ export const enrrMobilisablesParkingsLayersSpec = [
         id: 'enrrMobilisables-parkings',
         type: 'fill',
         paint: {
-          'fill-color': enrrMobilisablesParkingsLayerColor,
+          'fill-color': ifHoverElse(darken(enrrMobilisablesParkingsLayerColor, 30), enrrMobilisablesParkingsLayerColor),
           'fill-opacity': enrrMobilisablesParkingsLayerOpacity,
         },
         isVisible: (config) => config.enrrMobilisablesSolaireThermique.show && config.enrrMobilisablesSolaireThermique.showParkings,
@@ -25,8 +27,8 @@ export const enrrMobilisablesParkingsLayersSpec = [
         id: 'enrrMobilisables-parkings-contour',
         type: 'line',
         paint: {
-          'line-color': enrrMobilisablesParkingsLayerColor,
-          'line-width': 2,
+          'line-color': ifHoverElse(darken(enrrMobilisablesParkingsLayerColor, 30), enrrMobilisablesParkingsLayerColor),
+          'line-width': ifHoverElse(3, 2),
         },
         isVisible: (config) => config.enrrMobilisablesSolaireThermique.show && config.enrrMobilisablesSolaireThermique.showParkings,
         unselectable: true,

@@ -1,4 +1,6 @@
-import { type MapSourceLayersSpecification } from '../common';
+import { darken } from '@/utils/color';
+
+import { ifHoverElse, type MapSourceLayersSpecification } from '../common';
 
 export const enrrMobilisablesThalassothermieLayerColor = '#4c64c9';
 export const enrrMobilisablesThalassothermieLayerOpacity = 0.6;
@@ -17,7 +19,7 @@ export const enrrMobilisablesThalassothermieLayersSpec = [
         id: 'enrrMobilisables-thalassothermie',
         type: 'fill',
         paint: {
-          'fill-color': enrrMobilisablesThalassothermieLayerColor,
+          'fill-color': ifHoverElse(darken(enrrMobilisablesThalassothermieLayerColor, 30), enrrMobilisablesThalassothermieLayerColor),
           'fill-opacity': enrrMobilisablesThalassothermieLayerOpacity,
         },
         isVisible: (config) => config.enrrMobilisablesThalassothermie,

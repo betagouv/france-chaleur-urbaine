@@ -1,4 +1,4 @@
-import { type MapSourceLayersSpecification } from './common';
+import { ifHoverElse, type MapSourceLayersSpecification } from './common';
 import { buildFiltreGestionnaire } from './filters';
 
 export const reseauxEnConstructionColor = '#DA5DD5';
@@ -19,7 +19,7 @@ export const reseauxEnConstructionLayersSpec = [
         type: 'fill',
         paint: {
           'fill-color': reseauxEnConstructionColor,
-          'fill-opacity': reseauxEnConstructionOpacity,
+          'fill-opacity': ifHoverElse(reseauxEnConstructionOpacity + 0.1, reseauxEnConstructionOpacity),
         },
         filter: (config) => ['all', ['==', ['get', 'is_zone'], true], ...buildFiltreGestionnaire(config.filtreGestionnaire)],
         isVisible: (config) => config.reseauxEnConstruction,
@@ -35,7 +35,7 @@ export const reseauxEnConstructionLayersSpec = [
         paint: {
           'line-color': reseauxEnConstructionColor,
           'line-opacity': ['interpolate', ['linear'], ['zoom'], 11, 0.75, 15, 1],
-          'line-width': ['case', ['boolean', ['feature-state', 'hover'], false], 3, 2],
+          'line-width': ifHoverElse(3, 2),
         },
         filter: (config) => ['all', ['==', ['get', 'is_zone'], false], ...buildFiltreGestionnaire(config.filtreGestionnaire)],
         isVisible: (config) => config.reseauxEnConstruction,

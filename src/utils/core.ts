@@ -1,4 +1,4 @@
-import { ObjectKeys, type FlattenKeys } from './typescript';
+import { type FlattenKeys } from './typescript';
 
 export function isDefined<Type>(value: Type | undefined | null): value is Type {
   return value !== undefined && value !== null;
@@ -71,22 +71,45 @@ export function deepMergeObjects<T, U>(obj1: T, obj2: U): T & U {
 /**
  * Deeply clone an object.
  */
-export function cloneDeep<Type>(source: Type): Type {
-  const objectType = typeof source;
-  if (objectType === 'string' || objectType === 'number' || objectType === 'boolean' || source === null || source === undefined) {
-    return source;
-  } else if (source instanceof Array) {
-    return source.map(cloneDeep) as Type;
-  } else if (source instanceof Date) {
-    return new Date(source.getTime()) as Type;
-  } else if (objectType === 'object') {
-    return ObjectKeys(source).reduce((clone: any, key) => {
-      clone[key] = cloneDeep(source[key]);
-      return clone;
-    }, {});
-  } else {
-    throw new Error(`unknown object type: ${objectType}`);
+export function cloneDeep<T>(value: T): T {
+  if (value === null || typeof value !== 'object') {
+    if (typeof value === 'function') {
+      return value.bind(null) as unknown as T;
+    }
+    return value;
   }
+
+  if (Array.isArray(value)) {
+    return value.map((item) => cloneDeep(item)) as unknown as T;
+  }
+
+  if (value instanceof Date) {
+    return new Date(value.getTime()) as unknown as T;
+  }
+
+  if (value instanceof Map) {
+    const mapClone = new Map();
+    value.forEach((v, k) => {
+      mapClone.set(k, cloneDeep(v));
+    });
+    return mapClone as unknown as T;
+  }
+
+  if (value instanceof Set) {
+    const setClone = new Set();
+    value.forEach((v) => {
+      setClone.add(cloneDeep(v));
+    });
+    return setClone as unknown as T;
+  }
+
+  const clone: Record<string, any> = {};
+  for (const key in value) {
+    if (Object.prototype.hasOwnProperty.call(value, key)) {
+      clone[key] = cloneDeep(value[key]);
+    }
+  }
+  return clone as T;
 }
 
 /**

@@ -1,4 +1,4 @@
-import { type MapSourceLayersSpecification } from './common';
+import { ifHoverElse, type MapSourceLayersSpecification } from './common';
 import { buildFiltreGestionnaire, buildFiltreIdentifiantReseau } from './filters';
 
 export const reseauxDeFroidColor = '#0094FF';
@@ -22,7 +22,7 @@ export const reseauxDeFroidLayersSpec = [
         },
         paint: {
           'line-color': reseauxDeFroidColor,
-          'line-width': ['case', ['boolean', ['feature-state', 'hover'], false], 3, 2],
+          'line-width': ifHoverElse(3, 2),
           'line-opacity': ['interpolate', ['linear'], ['zoom'], 11, 0.75, 15, 1],
         },
         filter: (config) => [
@@ -41,7 +41,7 @@ export const reseauxDeFroidLayersSpec = [
           'circle-stroke-color': reseauxDeFroidColor,
           'circle-stroke-width': ['interpolate', ['linear'], ['zoom'], 5, 2, 8, 2, 9, 3, 15, 4],
           'circle-color': '#fff',
-          'circle-radius': ['interpolate', ['linear'], ['zoom'], 5, 0, 8, 0, 9, 4, 15, 10],
+          'circle-radius': ['interpolate', ['linear'], ['zoom'], 8, 0, 9, ifHoverElse(6, 4), 15, ifHoverElse(12, 10)],
         },
         filter: (config) => [
           'all',

@@ -1,9 +1,13 @@
+import { type DataDrivenPropertyValueSpecification } from 'maplibre-gl';
+
+import { darken } from '@/utils/color';
 import { formatMWhString } from '@/utils/strings';
 
-import { type LegendInterval, zoomOpacityTransitionAt10, type ColorThreshold, type MapSourceLayersSpecification } from './common';
+import { type LegendInterval, type ColorThreshold, type MapSourceLayersSpecification, ifHoverElse } from './common';
 
 const besoinsBatimentsDefaultColor = '#ffffff';
 const besoinsEnChaleurMaxValue = 6_000;
+const besoinsEnChaleurOpacity = 0.65;
 const besoinsEnChaleurColorThresholds: ColorThreshold[] = [
   {
     value: 20,
@@ -78,6 +82,16 @@ const besoinsEnFroidColorThresholds: ColorThreshold[] = [
   },
 ];
 
+export const zoomOpacityTransitionAt10: DataDrivenPropertyValueSpecification<number> = [
+  'interpolate',
+  ['linear'],
+  ['zoom'],
+  10 + 0.2,
+  0,
+  10 + 0.2 + 1,
+  besoinsEnChaleurOpacity,
+];
+
 export const besoinsEnChaleurLayersSpec = [
   {
     sourceId: 'besoinsEnChaleur',
@@ -86,6 +100,7 @@ export const besoinsEnChaleurLayersSpec = [
       tiles: ['/api/map/besoinsEnChaleur/{z}/{x}/{y}'],
       minzoom: 10,
       maxzoom: 14,
+      promoteId: 'IDBATIMENT',
     },
     layers: [
       {
@@ -95,8 +110,8 @@ export const besoinsEnChaleurLayersSpec = [
           'fill-color': [
             'step',
             ['coalesce', ['get', 'FROID_MWH'], 0],
-            besoinsBatimentsDefaultColor,
-            ...besoinsEnFroidColorThresholds.flatMap((v) => [v.value, v.color]),
+            ifHoverElse(darken(besoinsBatimentsDefaultColor, 40), besoinsBatimentsDefaultColor),
+            ...besoinsEnFroidColorThresholds.flatMap((v) => [v.value, ifHoverElse(darken(v.color, 40), v.color)]),
           ],
           'fill-opacity': zoomOpacityTransitionAt10,
         },
@@ -109,8 +124,8 @@ export const besoinsEnChaleurLayersSpec = [
           'fill-color': [
             'step',
             ['coalesce', ['coalesce', ['get', 'CHAUF_MWH'], 0], 0],
-            besoinsBatimentsDefaultColor,
-            ...besoinsEnChaleurColorThresholds.flatMap((v) => [v.value, v.color]),
+            ifHoverElse(darken(besoinsBatimentsDefaultColor, 40), besoinsBatimentsDefaultColor),
+            ...besoinsEnChaleurColorThresholds.flatMap((v) => [v.value, ifHoverElse(darken(v.color, 40), v.color)]),
           ],
           'fill-opacity': zoomOpacityTransitionAt10,
         },
@@ -120,8 +135,8 @@ export const besoinsEnChaleurLayersSpec = [
         id: 'besoinsEnChaleurFroid-contour',
         type: 'line',
         paint: {
-          'line-color': '#777777',
-          'line-width': 0.5,
+          'line-color': ifHoverElse('#333', '#777'),
+          'line-width': ifHoverElse(2, 0.5),
           'line-opacity': zoomOpacityTransitionAt10,
         },
         isVisible: (config) => config.besoinsEnChaleur || config.besoinsEnFroid,

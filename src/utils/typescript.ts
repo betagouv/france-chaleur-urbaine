@@ -34,3 +34,11 @@ export function ObjectEntries<Obj extends object>(obj: Obj) {
     [K in keyof Obj]: [K, Obj[K]];
   }[keyof Obj][];
 }
+
+export type RequireProps<T, K extends keyof T> = T & {
+  [P in K]-?: T[P];
+};
+
+export type ExtractKeysOfType<T, Prop> = {
+  [K in keyof T]: T[K] extends Prop ? K : never;
+}[keyof T];

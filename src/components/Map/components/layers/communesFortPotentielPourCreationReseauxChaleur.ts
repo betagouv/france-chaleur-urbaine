@@ -1,6 +1,6 @@
 import { type Interval } from '@/utils/interval';
 
-import { type MapSourceLayersSpecification } from './common';
+import { ifHoverElse, type MapSourceLayersSpecification } from './common';
 
 export const communesFortPotentielPourCreationReseauxChaleurLayerColor = '#FF8329';
 export const communesFortPotentielPourCreationReseauxChaleurLayerOpacity = 0.7;
@@ -30,9 +30,9 @@ export const communesFortPotentielPourCreationReseauxChaleurLayersSpec = [
             ['linear'],
             ['+', ['get', 'zones_fort_potentiel_chauf_mwh'], ['get', 'zones_fort_potentiel_ecs_mwh']],
             0,
-            4,
+            ifHoverElse(6, 4),
             160_000, // ~ max value
-            20,
+            ifHoverElse(24, 20),
           ],
           'circle-opacity': communesFortPotentielPourCreationReseauxChaleurLayerOpacity,
         },

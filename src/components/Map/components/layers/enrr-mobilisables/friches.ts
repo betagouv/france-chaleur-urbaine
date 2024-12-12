@@ -1,4 +1,6 @@
-import { type MapSourceLayersSpecification } from '../common';
+import { darken } from '@/utils/color';
+
+import { ifHoverElse, type MapSourceLayersSpecification } from '../common';
 
 export const enrrMobilisablesFrichesLayerColor = '#dc958e';
 export const enrrMobilisablesFrichesLayerOpacity = 0.7;
@@ -16,7 +18,7 @@ export const enrrMobilisablesFrichesLayersSpec = [
         id: 'enrrMobilisables-friches',
         type: 'fill',
         paint: {
-          'fill-color': enrrMobilisablesFrichesLayerColor,
+          'fill-color': ifHoverElse(darken(enrrMobilisablesFrichesLayerColor, 30), enrrMobilisablesFrichesLayerColor),
           'fill-opacity': enrrMobilisablesFrichesLayerOpacity,
         },
         isVisible: (config) => config.enrrMobilisablesSolaireThermique.show && config.enrrMobilisablesSolaireThermique.showFriches,
@@ -25,8 +27,8 @@ export const enrrMobilisablesFrichesLayersSpec = [
         id: 'enrrMobilisables-friches-contour',
         type: 'line',
         paint: {
-          'line-color': enrrMobilisablesFrichesLayerColor,
-          'line-width': 2,
+          'line-color': ifHoverElse(darken(enrrMobilisablesFrichesLayerColor, 30), enrrMobilisablesFrichesLayerColor),
+          'line-width': ifHoverElse(3, 2),
         },
         isVisible: (config) => config.enrrMobilisablesSolaireThermique.show && config.enrrMobilisablesSolaireThermique.showFriches,
         unselectable: true,

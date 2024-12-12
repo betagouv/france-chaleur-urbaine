@@ -1,4 +1,6 @@
-import { type MapSourceLayersSpecification } from './common';
+import { darken } from '@/utils/color';
+
+import { ifHoverElse, type MapSourceLayersSpecification } from './common';
 
 export const zonePotentielChaudColor = '#b0cc4e';
 export const zonePotentielFortChaudColor = '#448d60';
@@ -18,7 +20,7 @@ export const zonesPotentielChaudLayersSpec = [
         id: 'zonesPotentielChaud',
         type: 'fill',
         paint: {
-          'fill-color': zonePotentielChaudColor,
+          'fill-color': ifHoverElse(darken(zonePotentielChaudColor, 40), zonePotentielChaudColor),
           'fill-opacity': zonePotentielChaudOpacity,
         },
         isVisible: (config) => config.zonesOpportunite.show && config.zonesOpportunite.zonesPotentielChaud,
@@ -28,7 +30,7 @@ export const zonesPotentielChaudLayersSpec = [
         type: 'line',
         paint: {
           'line-color': zonePotentielChaudColor,
-          'line-width': 2,
+          'line-width': ifHoverElse(4, 2),
         },
         isVisible: (config) => config.zonesOpportunite.show && config.zonesOpportunite.zonesPotentielChaud,
         unselectable: true,
@@ -49,7 +51,7 @@ export const zonesPotentielChaudLayersSpec = [
         id: 'zonesPotentielFortChaud',
         type: 'fill',
         paint: {
-          'fill-color': zonePotentielFortChaudColor,
+          'fill-color': ifHoverElse(darken(zonePotentielFortChaudColor, 40), zonePotentielFortChaudColor),
           'fill-opacity': zonePotentielChaudOpacity,
         },
         isVisible: (config) => config.zonesOpportunite.show && config.zonesOpportunite.zonesPotentielFortChaud,
@@ -59,7 +61,7 @@ export const zonesPotentielChaudLayersSpec = [
         type: 'line',
         paint: {
           'line-color': zonePotentielFortChaudColor,
-          'line-width': 2,
+          'line-width': ifHoverElse(4, 2),
         },
         isVisible: (config) => config.zonesOpportunite.show && config.zonesOpportunite.zonesPotentielFortChaud,
         unselectable: true,
