@@ -27,7 +27,6 @@ const BulkEligibilityForm = () => {
       return;
     }
 
-    console.log('file', file);
     if (file.size > 1048576) {
       setError('Le fichier ne doit pas dépasser 1Mb.');
       return;
