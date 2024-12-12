@@ -135,7 +135,7 @@ export const besoinsEnChaleurLayersSpec = [
         id: 'besoinsEnChaleurFroid-contour',
         type: 'line',
         paint: {
-          'line-color': ifHoverElse('#000000', '#777777'),
+          'line-color': ifHoverElse('#333', '#777'),
           'line-width': ifHoverElse(2, 0.5),
           'line-opacity': zoomOpacityTransitionAt10,
         },
