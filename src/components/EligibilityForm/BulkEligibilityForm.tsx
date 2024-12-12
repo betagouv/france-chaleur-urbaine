@@ -8,6 +8,8 @@ import { useServices } from '@/services';
 
 import { Container } from './BulkEligibilityForm.styles';
 
+const allowedMimeTypes = ['text/csv', 'text/plain'] as const;
+
 const BulkEligibilityForm = () => {
   const { heatNetworkService } = useServices();
   const [addresses, setAddresses] = useState<string>();
@@ -18,13 +20,19 @@ const BulkEligibilityForm = () => {
 
   const readFile = (event: ChangeEvent<HTMLInputElement>) => {
     setError('');
-    if (!event.target.files || event.target.files.length === 0) {
+    const file = event.target.files?.[0];
+    if (!file) {
       setAddresses('');
       return;
     }
 
-    if (event.target.files[0].size > 1048576) {
+    console.log('file', file);
+    if (file.size > 1048576) {
       setError('Le fichier ne doit pas dépasser 1Mb.');
+      return;
+    }
+    if (!allowedMimeTypes.includes(file.type as any)) {
+      setError(`Le format du fichier n'est pas supporté (attendus : ${allowedMimeTypes.join(', ')})`);
       return;
     }
 
@@ -35,7 +43,7 @@ const BulkEligibilityForm = () => {
         setAddresses(text);
       }
     };
-    reader.readAsText(event.target.files[0]);
+    reader.readAsText(file);
   };
 
   const checkEligibility = (e: FormEvent<HTMLFormElement>) => {
