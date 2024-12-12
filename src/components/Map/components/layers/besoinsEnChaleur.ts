@@ -1,16 +1,13 @@
+import { type DataDrivenPropertyValueSpecification } from 'maplibre-gl';
+
 import { darken } from '@/utils/color';
 import { formatMWhString } from '@/utils/strings';
 
-import {
-  type LegendInterval,
-  zoomOpacityTransitionAt10,
-  type ColorThreshold,
-  type MapSourceLayersSpecification,
-  ifHoverElse,
-} from './common';
+import { type LegendInterval, type ColorThreshold, type MapSourceLayersSpecification, ifHoverElse } from './common';
 
 const besoinsBatimentsDefaultColor = '#ffffff';
 const besoinsEnChaleurMaxValue = 6_000;
+const besoinsEnChaleurOpacity = 0.65;
 const besoinsEnChaleurColorThresholds: ColorThreshold[] = [
   {
     value: 20,
@@ -83,6 +80,16 @@ const besoinsEnFroidColorThresholds: ColorThreshold[] = [
     value: 300,
     color: '#08306b',
   },
+];
+
+export const zoomOpacityTransitionAt10: DataDrivenPropertyValueSpecification<number> = [
+  'interpolate',
+  ['linear'],
+  ['zoom'],
+  10 + 0.2,
+  0,
+  10 + 0.2 + 1,
+  besoinsEnChaleurOpacity,
 ];
 
 export const besoinsEnChaleurLayersSpec = [

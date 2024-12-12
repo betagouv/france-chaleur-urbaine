@@ -1,5 +1,6 @@
 import { type ExpressionInputType } from 'maplibre-gl';
 
+import { darken } from '@/utils/color';
 import { ObjectEntries } from '@/utils/typescript';
 
 import { type MapSourceLayersSpecification, ifHoverElse, intermediateTileLayersMinZoom } from './common';
@@ -17,9 +18,9 @@ export const caracteristiquesBatimentsLayerStyle = {
 
 const opacity = 0.65;
 
-const dpeWithColorPairs = ObjectEntries(caracteristiquesBatimentsLayerStyle).flatMap(([dpeCode, dpeStyleDef]) => [
+const dpeWithColorPairs = ObjectEntries(caracteristiquesBatimentsLayerStyle).flatMap(([dpeCode, dpeColor]) => [
   dpeCode,
-  dpeStyleDef,
+  ifHoverElse(darken(dpeColor, 40), dpeColor),
 ]) as [ExpressionInputType, ExpressionInputType, ...ExpressionInputType[]];
 
 export const caracteristiquesBatimentsLayersSpec = [
@@ -40,7 +41,7 @@ export const caracteristiquesBatimentsLayersSpec = [
             'match',
             ['downcase', ['coalesce', ['get', 'dpe_energie'], 'N']],
             ...dpeWithColorPairs,
-            caracteristiquesBatimentsLayerStyle.n,
+            ifHoverElse(darken(caracteristiquesBatimentsLayerStyle.n, 40), caracteristiquesBatimentsLayerStyle.n),
           ],
           'fill-opacity': [
             'interpolate',
@@ -49,10 +50,31 @@ export const caracteristiquesBatimentsLayersSpec = [
             intermediateTileLayersMinZoom + 0.2,
             0,
             intermediateTileLayersMinZoom + 0.2 + 1,
-            ifHoverElse(1, opacity),
+            opacity,
           ],
         },
         isVisible: (config) => config.caracteristiquesBatiments,
+      },
+      {
+        id: 'caracteristiquesBatiments-contour',
+        'source-layer': 'buildings',
+        type: 'line',
+        minzoom: intermediateTileLayersMinZoom,
+        paint: {
+          'line-color': ifHoverElse('#000000', '#777777'),
+          'line-width': ifHoverElse(2, 0.5),
+          'line-opacity': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            intermediateTileLayersMinZoom + 0.2,
+            0,
+            intermediateTileLayersMinZoom + 0.2 + 1,
+            opacity,
+          ],
+        },
+        isVisible: (config) => config.caracteristiquesBatiments,
+        unselectable: true,
       },
     ],
   },

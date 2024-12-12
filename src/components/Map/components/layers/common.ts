@@ -27,16 +27,6 @@ export type LegendInterval = {
   color: `#${string}`;
 };
 
-export const zoomOpacityTransitionAt10: DataDrivenPropertyValueSpecification<number> = [
-  'interpolate',
-  ['linear'],
-  ['zoom'],
-  10 + 0.2,
-  0,
-  10 + 0.2 + 1,
-  1,
-];
-
 export const intermediateTileLayersMinZoom = 12;
 export const tileSourcesMaxZoom = 17;
 
