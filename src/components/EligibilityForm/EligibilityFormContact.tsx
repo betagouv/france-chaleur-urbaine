@@ -29,29 +29,23 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit }: Eligibility
       return {};
     }
 
-    const {
-      header,
-      body,
-      eligibility: computedEligibility,
-      text,
-    }: any = getEligibilityResult(addressData.heatingType, addressData.eligibility);
+    const { body, eligibility: computedEligibility, text } = getEligibilityResult(addressData.heatingType, addressData.eligibility);
 
     const addBordeauxLink =
       addressData.geoAddress?.properties.citycode && bordeauxMetropoleCityCodes.includes(addressData.geoAddress?.properties.citycode);
     const computedBody = body
-      ? body(
-          getReadableDistance(addressData.eligibility.distance),
-          addressData.eligibility.inPDP,
-          addressData.eligibility.gestionnaire,
-          addressData.eligibility.tauxENRR,
-          addressData.eligibility.isClasse,
-          addressData.eligibility.hasPDP,
-          addressData.geoAddress?.properties.city
-        )
+      ? body({
+          distance: getReadableDistance(addressData.eligibility.distance),
+          inPDP: addressData.eligibility.inPDP,
+          gestionnaire: addressData.eligibility.gestionnaire,
+          tauxENRR: addressData.eligibility.tauxENRR,
+          isClasse: addressData.eligibility.isClasse,
+          hasPDP: addressData.eligibility.hasPDP,
+          city: addressData.geoAddress?.properties.city,
+        })
       : '';
 
     return {
-      header,
       body: addBordeauxLink
         ? (computedBody as string).replace(
             '[France Rénov’](https://france-renov.gouv.fr/)',

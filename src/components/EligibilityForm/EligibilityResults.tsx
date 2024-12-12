@@ -1,18 +1,24 @@
 import { type AvailableHeating } from '@/types/AddressData';
 import { type HeatNetworksResponse } from '@/types/HeatNetworksResponse';
 
+type EligibilityResult = {
+  eligibility?: boolean;
+  body: (body: {
+    distance: string;
+    inPDP: boolean;
+    gestionnaire: string | null;
+    tauxENRR: number | null;
+    isClasse: boolean | null;
+    hasPDP: boolean | null;
+    city?: string;
+  }) => string;
+  text: string;
+};
+
 // 3 rue du petit bois 78370 Plaisir
-const closeCollectif = {
+const closeCollectif: EligibilityResult = {
   eligibility: true,
-  body: (
-    distance: string,
-    inPDP: boolean,
-    gestionnaire: string | null,
-    tauxENRR: number | null,
-    isClasse: boolean | null,
-    hasPDP: boolean | null,
-    city: string
-  ) => `
+  body: ({ distance, inPDP, gestionnaire, tauxENRR, isClasse, hasPDP, city }) => `
 ### Bonne nouvelle !
 
 ::arrow-item[**Un réseau de chaleur passe à proximité** immédiate de votre adresse ${distance ? `(${distance})` : ''}.]
@@ -40,8 +46,8 @@ ${city === 'Paris' ? '::small[A noter: sur Paris, la puissance souscrite doit ê
 };
 
 // 3 rue du petit bois 78370 Plaisir
-const closeIndividual = {
-  body: (distance: string) => `
+const closeIndividual: EligibilityResult = {
+  body: ({ distance }) => `
 ::arrow-item[**Votre immeuble est situé à proximité** immédiate d’un réseau de chaleur ${distance ? `(${distance})` : ''}.]
 ::arrow-item[Toutefois au vu de votre chauffage actuel, **le raccordement de votre immeuble nécessiterait des travaux conséquents** et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble.]
 ::arrow-item[**L’amélioration de l’isolation thermique de votre immeuble** constitue un autre levier pour réduire votre facture énergétique et limiter votre impact écologique. Pour être accompagné dans vos projets de rénovation énergétique, rendez-vous sur [**France Rénov’**](https://france-renov.gouv.fr/).]
@@ -54,17 +60,9 @@ Votre situation n’est pas favorable **pour un raccordement, mais si vous souha
 };
 
 // 1 rue du berry 78370 Plaisir
-const intermediateCollectif = {
+const intermediateCollectif: EligibilityResult = {
   eligibility: true,
-  body: (
-    distance: string,
-    inPDP: boolean,
-    gestionnaire: string | null,
-    tauxENRR: number | null,
-    isClasse: boolean | null,
-    hasPDP: boolean | null,
-    city: string
-  ) => `
+  body: ({ distance, inPDP, gestionnaire, tauxENRR, isClasse, hasPDP, city }) => `
 ::arrow-item[**Il n’existe pour le moment pas de réseau de chaleur** à proximité immédiate de votre adresse, toutefois, le réseau n’est pas très loin ${
     distance ? `(${distance})` : ''
   }.]
@@ -95,8 +93,8 @@ ${city === 'Paris' ? '::small[A noter: sur Paris, la puissance souscrite doit ê
 };
 
 // 1 rue du berry 78370 Plaisir
-const farIndividual = {
-  body: (distance: string) => `
+const farIndividual: EligibilityResult = {
+  body: ({ distance }) => `
 ::arrow-item[**Votre immeuble n'est pas situé à proximité** immédiate d’un réseau de chaleur ${distance ? `(${distance})` : ''}.]
 ::arrow-item[Au vu de votre chauffage actuel, **le raccordement de votre immeuble nécessiterait des travaux conséquents** et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble.]
 ::arrow-item[**L’amélioration de l’isolation thermique de votre immeuble** constitue un autre levier pour réduire votre facture énergétique et limiter votre impact écologique. Pour être accompagné dans vos projets de rénovation énergétique, rendez-vous sur [**France Rénov’**](https://france-renov.gouv.fr/).]
@@ -109,7 +107,7 @@ Votre situation n’est pas favorable **pour un raccordement, mais si vous souha
 };
 
 // Limours
-const farCollectifOutPDP = {
+const farCollectifOutPDP: EligibilityResult = {
   body: () => `
 ::arrow-item[**Il n’existe pour le moment pas de réseau de chaleur** à proximité de votre adresse. Toutefois les réseaux de chaleur se développent !]
 ::arrow-item[Sans attendre, pour réduire votre facture énergétique et limiter votre impact écologique, **pensez à améliorer l’isolation thermique de votre immeuble**. Pour être accompagné dans vos projets de rénovation énergétique, rendez-vous sur [**France Rénov’**](https://france-renov.gouv.fr/).]
@@ -122,17 +120,9 @@ const farCollectifOutPDP = {
 };
 
 // Rue pablo neruda 76610 Le havre
-const closeFuturCollectif = {
+const closeFuturCollectif: EligibilityResult = {
   eligibility: true,
-  body: (
-    distance: string,
-    inPDP: boolean,
-    gestionnaire: string | null,
-    tauxENRR: number | null,
-    isClasse: boolean | null,
-    hasPDP: boolean | null,
-    city: string
-  ) => `
+  body: ({ distance, inPDP, gestionnaire, tauxENRR, city }) => `
 ### Bonne nouvelle !
 
 
@@ -161,8 +151,8 @@ ${city === 'Paris' ? '::small[A noter: sur Paris, la puissance souscrite doit ê
 };
 
 // 2 rue hardenberg 92220 Bagneux
-const farCollectifInPDP = {
-  body: (distance: string, inPDP: boolean, gestionnaire: string | null, tauxENRR: number | null) => `
+const farCollectifInPDP: EligibilityResult = {
+  body: ({ gestionnaire, tauxENRR }) => `
 ::arrow-item[**Il n’existe pour le moment pas de réseau de chaleur** à proximité de votre adresse.]
 ::arrow-item[Toutefois, les réseaux de chaleur se développent et **vous êtes dans le périmètre de développement prioritaire du réseau** le plus proche. Une obligation de raccordement peut exister (<a href="/ressources/prioritaire#contenu" target="_blank">en savoir plus</a>). Une amende de 300 000€ peut s’appliquer en cas de non-raccordement sans dérogation.]
 ${
@@ -180,17 +170,9 @@ ${
 };
 
 // rue des hirondelles 76610 le havre
-const intermediateFuturCollectif = {
+const intermediateFuturCollectif: EligibilityResult = {
   eligibility: true,
-  body: (
-    distance: string,
-    inPDP: boolean,
-    gestionnaire: string | null,
-    tauxENRR: number | null,
-    isClasse: boolean | null,
-    hasPDP: boolean | null,
-    city: string
-  ) => `
+  body: ({ distance, inPDP, gestionnaire, tauxENRR, city }) => `
 ::arrow-item[**Votre immeuble n’est pas à proximité immédiate d’un réseau de chaleur, toutefois un réseau passera prochainement dans les environs** ${
     distance ? `(${distance})` : ''
   } (réseau prévu ou en construction).]
@@ -216,8 +198,8 @@ ${city === 'Paris' ? '::small[A noter: sur Paris, la puissance souscrite doit ê
 };
 
 // rue des hirondelles 76610 le havre
-const closeFuturIndividual = {
-  body: (distance: string) => `
+const closeFuturIndividual: EligibilityResult = {
+  body: ({ distance }) => `
 ::arrow-item[**Votre immeuble est situé à proximité** immédiate d’un réseau de chaleur en projet ou en construction ${
     distance ? `(${distance})` : ''
   }.]
@@ -231,12 +213,13 @@ Votre situation n’est pas favorable **pour un raccordement, mais si vous souha
   `,
 };
 
-const noTraceCollectif = {
-  body: (gestionnaire: string | null, tauxENRR: number | null, isClasse: boolean | null, city: string) => `
+const noTraceCollectif: EligibilityResult = {
+  body: ({ gestionnaire, tauxENRR, isClasse, city }) => `
 ::arrow-item[Il existe un réseau de chaleur sur cette commune, mais nous ne disposons d’aucune information sur sa localisation.]
 ${
   isClasse
-    ? '::arrow-item[Ce réseau est classé, ce qui signifie qu’une obligation de raccordement peut exister (<a href="/ressources/reseau-classe#contenu" target="_blank">en savoir plus</a>).]'
+    ? JSON.stringify(isClasse) +
+      '::arrow-item[Ce réseau est classé, ce qui signifie qu’une obligation de raccordement peut exister (<a href="/ressources/reseau-classe#contenu" target="_blank">en savoir plus</a>).]'
     : ''
 }
 ::arrow-item[Avec un chauffage collectif, **votre immeuble dispose déjà des équipements nécessaires** : il s’agit du cas le plus favorable pour un raccordement !]
@@ -255,7 +238,7 @@ ${city === 'Paris' ? '::small[A noter: sur Paris, la puissance souscrite doit ê
   `,
 };
 
-const noTraceIndividual = {
+const noTraceIndividual: EligibilityResult = {
   body: () => `
   ::arrow-item[Il existe un réseau de chaleur sur cette commune, mais nous ne disposons d’aucune information sur sa localisation.]
   ::arrow-item[Au vu de votre chauffage actuel, **le raccordement de votre immeuble nécessiterait des travaux conséquents** et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble.]
@@ -318,7 +301,7 @@ export const getEligibilityResultState = (heatingType: AvailableHeating, eligibi
   return 'unknown';
 };
 
-export const getEligibilityResult = (heatingType: AvailableHeating, eligibility?: HeatNetworksResponse) => {
+export const getEligibilityResult = (heatingType: AvailableHeating, eligibility?: HeatNetworksResponse): EligibilityResult => {
   const state = getEligibilityResultState(heatingType, eligibility);
   switch (state) {
     case 'closeFuturCollectif': {
@@ -350,7 +333,7 @@ export const getEligibilityResult = (heatingType: AvailableHeating, eligibility?
       return farCollectifOutPDP;
     }
     case 'unknown': {
-      return {};
+      return {} as any;
     }
     case 'noTraceCollectif': {
       return noTraceCollectif;
