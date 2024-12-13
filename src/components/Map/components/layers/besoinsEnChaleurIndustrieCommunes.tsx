@@ -1,7 +1,7 @@
 import { darken } from '@/utils/color';
-import { formatMWhString } from '@/utils/strings';
+import { formatMWhAn, formatMWhString } from '@/utils/strings';
 
-import { type LegendInterval, type ColorThreshold, type MapSourceLayersSpecification, ifHoverElse } from './common';
+import { type LegendInterval, type ColorThreshold, type MapSourceLayersSpecification, ifHoverElse, type PopupStyleHelpers } from './common';
 
 const besoinsEnChaleurIndustrieCommunesDefaultColor = '#fbf2e7';
 const besoinsEnChaleurIndustrieCommunesMaxValue = 1_500_000;
@@ -51,6 +51,7 @@ export const besoinsEnChaleurIndustrieCommunesLayersSpec = [
           'fill-opacity': 0.7,
         },
         isVisible: (config) => config.besoinsEnChaleurIndustrieCommunes,
+        popup: Popup,
       },
       {
         id: 'besoinsEnChaleurIndustrieCommunes-contour',
@@ -81,3 +82,36 @@ export const besoinsEnChaleurIndustrieCommunesIntervals: LegendInterval[] = [
     };
   }),
 ];
+
+type BesoinsEnChaleurIndustrieCommunes = {
+  conso_autr: number;
+  conso_chal: number;
+  codgeo: string;
+  libgeo: string;
+  conso_proc: number;
+  dep: string;
+  reg: string;
+  conso_tot: number;
+  conso_loca: number;
+};
+
+function Popup(besoinsEnChaleurIndustrieCommunes: BesoinsEnChaleurIndustrieCommunes, { Property, Title }: PopupStyleHelpers) {
+  return (
+    <>
+      <Title>Besoins en chaleur du secteur industriel à {besoinsEnChaleurIndustrieCommunes.libgeo}</Title>
+      <Property
+        label="Besoin en chaleur et froid pour les process"
+        value={besoinsEnChaleurIndustrieCommunes.conso_proc}
+        formatter={formatMWhAn}
+      />
+      <Property
+        label="Besoins en chaleur pour le chauffage des locaux"
+        value={besoinsEnChaleurIndustrieCommunes.conso_loca}
+        formatter={formatMWhAn}
+      />
+      <Property label="Autres besoins" value={besoinsEnChaleurIndustrieCommunes.conso_autr} formatter={formatMWhAn} />
+      <Property label="Besoins totaux = tous usages" value={besoinsEnChaleurIndustrieCommunes.conso_tot} formatter={formatMWhAn} />
+      <Property label="Source" value="Cerema" />
+    </>
+  );
+}

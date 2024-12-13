@@ -7,20 +7,14 @@ import { nearestPointOnLine } from '@turf/nearest-point-on-line';
 import { type GeometryCollection, type Point, type Position, type Geometry, type Feature } from 'geojson';
 import { type MapGeoJSONFeature } from 'maplibre-gl';
 import { useEffect, useRef, useState } from 'react';
-import { type MapMouseEvent, type MapRef } from 'react-map-gl/maplibre';
+import { Popup, type MapMouseEvent, type MapRef } from 'react-map-gl/maplibre';
 
 import { isDevModeEnabled } from '@/hooks/useDevMode';
 import { type SourceId } from '@/server/services/tiles.config';
-import { type MapPopupInfos } from '@/types/MapComponentsInfos';
+import { isDefined } from '@/utils/core';
 
-import { layersWithDynamicContentPopup } from './components/DynamicMapPopupContent';
-import { type LayerId, mapLayers, type MapLayerSpecification } from './map-layers';
-
-type UseMapEventsProps = {
-  mapLayersLoaded: boolean;
-  isDrawing: boolean;
-  mapRef: MapRef | null;
-};
+import { buildPopupStyleHelpers } from './components/layers/common';
+import { mapLayers, type MapLayerSpecification } from './map-layers';
 
 const selectionBuffer = 15; // pixels
 
@@ -34,33 +28,18 @@ const selectableLayers = mapLayers.flatMap((spec) =>
     }))
 );
 
-/**
- * These popups use the same template but with lots of specifics.
- */
-const legacyPopupConfigs: {
-  layer: LayerId;
-  key: string;
-}[] = [
-  { layer: 'reseauxDeChaleur-avec-trace', key: 'network' },
-  { layer: 'reseauxDeChaleur-sans-trace', key: 'network' },
-  { layer: 'reseauxDeFroid-avec-trace', key: 'coldNetwork' },
-  { layer: 'reseauxDeFroid-sans-trace', key: 'coldNetwork' },
-  { layer: 'reseauxEnConstruction-trace', key: 'futurNetwork' },
-  { layer: 'reseauxEnConstruction-zone', key: 'futurNetwork' },
-  {
-    layer: 'demandesEligibilite',
-    key: 'demands',
-  },
-  { layer: 'caracteristiquesBatiments', key: 'buildings' },
-  { layer: 'consommationsGaz', key: 'consommation' },
-  { layer: 'energy', key: 'energy' },
-];
+type UseMapEventsProps = {
+  mapLayersLoaded: boolean;
+  isDrawing: boolean;
+  mapRef: MapRef | null;
+};
 
 /**
  * Register mouse events (move and click).
  */
 export function useMapEvents({ mapLayersLoaded, isDrawing, mapRef }: UseMapEventsProps) {
-  const [popupInfos, setPopupInfos] = useState<MapPopupInfos>();
+  const [popupComponent, setPopupComponent] = useState<(() => JSX.Element) | null>(null);
+
   const lastHoveredFeatureRef = useRef<{
     source: SourceId;
     sourceLayer?: string;
@@ -119,17 +98,32 @@ export function useMapEvents({ mapLayersLoaded, isDrawing, mapRef }: UseMapEvent
         console.log('map-click', hoveredFeature); // eslint-disable-line no-console
       }
 
-      // depending on the feature type, we force the popup type to help building the popup content more easily
-      setPopupInfos({
-        longitude: snapPoint[0],
-        latitude: snapPoint[1],
-        content: layersWithDynamicContentPopup.includes(hoveredFeature.layer?.id as (typeof layersWithDynamicContentPopup)[number])
-          ? {
-              type: hoveredFeature.layer?.id,
-              properties: hoveredFeature.properties,
-            }
-          : { [legacyPopupConfigs.find((f) => f.layer === hoveredFeature.layer.id)!.key]: hoveredFeature.properties },
-      });
+      const layerSpec = mapLayers
+        .flatMap<MapLayerSpecification>((spec) => spec.layers)
+        .find((layerSpec) => layerSpec.id === hoveredFeature.layer.id);
+      // FIXME should not happen
+      // should fix with typescript types
+      if (!layerSpec) {
+        throw new Error(`Layer ${hoveredFeature.layer.id} not found. Strange oO`);
+      }
+      if (!isDefined(layerSpec.popup)) {
+        throw new Error(`Layer.popup ${hoveredFeature.layer.id} not found. Strange oO`);
+      }
+      const popupFunc = layerSpec.popup;
+
+      setPopupComponent(() => (
+        <Popup
+          longitude={snapPoint[0]}
+          latitude={snapPoint[1]}
+          closeButton={false} // manual handling
+          key={Math.random()} // force the popup to resfresh
+        >
+          {popupFunc(
+            hoveredFeature.properties,
+            buildPopupStyleHelpers(() => setPopupComponent(() => null))
+          )}
+        </Popup>
+      ));
     };
 
     mapRef.on('mousemove', onMouseMove);
@@ -144,7 +138,7 @@ export function useMapEvents({ mapLayersLoaded, isDrawing, mapRef }: UseMapEvent
   }, [mapLayersLoaded, isDrawing]);
 
   return {
-    popupInfos,
+    Popup: popupComponent,
   };
 }
 

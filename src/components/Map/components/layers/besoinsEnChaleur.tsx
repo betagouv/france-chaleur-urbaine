@@ -1,9 +1,9 @@
 import { type DataDrivenPropertyValueSpecification } from 'maplibre-gl';
 
 import { darken } from '@/utils/color';
-import { formatMWhString } from '@/utils/strings';
+import { formatMWhAn, formatMWhString } from '@/utils/strings';
 
-import { type LegendInterval, type ColorThreshold, type MapSourceLayersSpecification, ifHoverElse } from './common';
+import { type LegendInterval, type ColorThreshold, type MapSourceLayersSpecification, ifHoverElse, type PopupStyleHelpers } from './common';
 
 const besoinsBatimentsDefaultColor = '#ffffff';
 const besoinsEnChaleurMaxValue = 6_000;
@@ -116,6 +116,7 @@ export const besoinsEnChaleurLayersSpec = [
           'fill-opacity': zoomOpacityTransitionAt10,
         },
         isVisible: (config) => config.besoinsEnFroid,
+        popup: Popup,
       },
       {
         id: 'besoinsEnChaleur',
@@ -130,6 +131,7 @@ export const besoinsEnChaleurLayersSpec = [
           'fill-opacity': zoomOpacityTransitionAt10,
         },
         isVisible: (config) => config.besoinsEnChaleur,
+        popup: Popup,
       },
       {
         id: 'besoinsEnChaleurFroid-contour',
@@ -176,3 +178,28 @@ export const besoinsEnFroidIntervals: LegendInterval[] = [
     };
   }),
 ];
+
+type BesoinsEnChaleur = {
+  CHAUF_MWH: number;
+  COM_INSEE: string;
+  ECS_MWH: number;
+  FROID_MWH: number;
+  IDBATIMENT: string;
+  PART_TER: number;
+  SDP_M2: number;
+};
+
+function Popup(besoinsEnChaleur: BesoinsEnChaleur, { Property, Title }: PopupStyleHelpers) {
+  return (
+    <>
+      <Title>Besoins en chaleur et froid</Title>
+      <Property label="Besoins en chauffage" value={besoinsEnChaleur.CHAUF_MWH} formatter={formatMWhAn} />
+      <Property label="Besoins en eau chaude sanitaire" value={besoinsEnChaleur.ECS_MWH} formatter={formatMWhAn} />
+      <Property label="Besoins en froid" value={besoinsEnChaleur.FROID_MWH} formatter={formatMWhAn} />
+      <Property label="Part tertiaire de la surface des bâtiments" value={besoinsEnChaleur.PART_TER} unit="%" />
+      <Property label="Surface de plancher" value={besoinsEnChaleur.SDP_M2} unit="m²" />
+      <Property label="Identifiant BD TOPO" value={besoinsEnChaleur.IDBATIMENT} />
+      <Property label="Source" value="Cerema" />
+    </>
+  );
+}

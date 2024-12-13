@@ -1,6 +1,6 @@
 import { darken } from '@/utils/color';
 
-import { ifHoverElse, type MapSourceLayersSpecification } from '../common';
+import { ifHoverElse, type PopupStyleHelpers, type MapSourceLayersSpecification } from '../common';
 
 export const enrrMobilisablesThalassothermieLayerColor = '#4c64c9';
 export const enrrMobilisablesThalassothermieLayerOpacity = 0.6;
@@ -23,7 +23,29 @@ export const enrrMobilisablesThalassothermieLayersSpec = [
           'fill-opacity': enrrMobilisablesThalassothermieLayerOpacity,
         },
         isVisible: (config) => config.enrrMobilisablesThalassothermie,
+        popup: Popup,
       },
     ],
   },
 ] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+
+type Thalassothermie = {
+  fid: number;
+  nature: 'Port' | 'Gare maritime';
+  importance: string;
+  toponyme: string;
+  nature_det: 'Port de plaisance' | 'Halte fluviale' | 'Port de commerce' | ' ' | 'Port de pêche' | 'Bassin' | 'Dégrad';
+  SHAPE__Length: number;
+  SHAPE__Area: number;
+};
+
+function Popup(thalassothermie: Thalassothermie, { Property, Title }: PopupStyleHelpers) {
+  return (
+    <>
+      <Title>{thalassothermie.toponyme}</Title>
+      <Property label="Nature" value={thalassothermie.nature} />
+      {thalassothermie.nature_det !== ' ' && <Property label="Nature détaillée" value={thalassothermie.nature_det} />}
+      <Property label="Source" value="Recensement des infrastructures portuaires issues de la BDTOPO" />
+    </>
+  );
+}

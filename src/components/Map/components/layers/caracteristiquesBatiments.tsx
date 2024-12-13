@@ -1,9 +1,10 @@
 import { type ExpressionInputType } from 'maplibre-gl';
 
+import { type EnergySummary } from '@/types/Summary/Energy';
 import { darken } from '@/utils/color';
 import { ObjectEntries } from '@/utils/typescript';
 
-import { type MapSourceLayersSpecification, ifHoverElse, intermediateTileLayersMinZoom } from './common';
+import { type MapSourceLayersSpecification, type PopupStyleHelpers, ifHoverElse, intermediateTileLayersMinZoom } from './common';
 
 export const caracteristiquesBatimentsLayerStyle = {
   a: '#0D8A61',
@@ -54,6 +55,7 @@ export const caracteristiquesBatimentsLayersSpec = [
           ],
         },
         isVisible: (config) => config.caracteristiquesBatiments,
+        popup: Popup,
       },
       {
         id: 'caracteristiquesBatiments-contour',
@@ -79,3 +81,18 @@ export const caracteristiquesBatimentsLayersSpec = [
     ],
   },
 ] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+
+function Popup(caracteristiqueBatiment: EnergySummary, { Property, Title }: PopupStyleHelpers) {
+  return (
+    <>
+      <Title>{caracteristiqueBatiment.addr_label}</Title>
+      <Property label="Année de construction" value={caracteristiqueBatiment.annee_construction} raw />
+      <Property label="Usage" value={caracteristiqueBatiment.type_usage} />
+      <Property label="Nombre de logements" value={caracteristiqueBatiment.nb_logements} />
+      <Property label="Chauffage actuel" value={caracteristiqueBatiment.energie_utilisee} />
+      <Property label="Mode de chauffage" value={caracteristiqueBatiment.type_chauffage} />
+      <Property label="DPE consommations énergétiques" value={caracteristiqueBatiment.dpe_energie} />
+      <Property label="DPE émissions de gaz à effet de serre" value={caracteristiqueBatiment.dpe_ges} />
+    </>
+  );
+}

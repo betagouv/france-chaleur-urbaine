@@ -1,7 +1,6 @@
 import IframeWrapper from '@/components/IframeWrapper';
 import Map from '@/components/Map/Map';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
-import { MapPopupType } from '@/types/MapComponentsInfos';
 
 const IdexMap = () => {
   return (
@@ -20,7 +19,6 @@ const IdexMap = () => {
           src: '/logo-IDEX.jpg',
           alt: 'logo Idex',
         }}
-        popupType={MapPopupType.IDEX}
         withFCUAttribution
       />
     </IframeWrapper>

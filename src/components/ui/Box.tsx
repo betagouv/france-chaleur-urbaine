@@ -26,6 +26,7 @@ type StyleProps = {
   fontStyle?: CSSProperties['fontStyle'];
   textAlign?: CSSProperties['textAlign'];
   textWrap?: CSSProperties['textWrap'];
+  whiteSpace?: CSSProperties['whiteSpace'];
   position?: CSSProperties['position'];
   top?: CSSProperties['top'];
   right?: CSSProperties['right'];
@@ -66,6 +67,7 @@ const StyledBox = styled.div<StyleProps>`
   color: ${({ textColor }) => (textColor ? (textColor.startsWith('#') ? textColor : `var(--${textColor})`) : undefined)};
   text-align: ${({ textAlign }) => textAlign};
   text-wrap: ${({ textWrap }) => textWrap};
+  white-space: ${({ whiteSpace }) => whiteSpace};
   position: ${({ position }) => position};
   top: ${({ top }) => top};
   right: ${({ right }) => right};
@@ -120,6 +122,7 @@ function Box(props: PropsWithChildren<BoxProps>) {
       textColor={props.textColor}
       textAlign={props.textAlign}
       textWrap={props.textWrap}
+      whiteSpace={props.whiteSpace}
       position={props.position}
       top={props.top}
       right={props.right}
