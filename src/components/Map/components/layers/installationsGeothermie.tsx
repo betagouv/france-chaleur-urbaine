@@ -1,4 +1,4 @@
-import Link from '@/components/ui/Link';
+import Button from '@/components/ui/Button';
 
 import { ifHoverElse, type PopupStyleHelpers, type MapSourceLayersSpecification } from './common';
 
@@ -112,13 +112,21 @@ function PopupInstallationGeothermieProfonde(
           label="Nombre d'équivalents logement chauffés"
           value={installationGeothermieProfonde.Nombre_équivalents_logements_chauffés}
         />
-        <div>
-          <Link href={`https://sybase.brgm.fr/fiche-operation/${installationGeothermieProfonde.Id_du_site}`} isExternal>
-            Fiche technique de l'installation
-          </Link>
-        </div>
         <Property label="Source" value="BRGM" />
       </TwoColumns>
+      <Button
+        priority="tertiary"
+        className="fr-mt-1w"
+        full
+        iconId="fr-icon-eye-line"
+        linkProps={{
+          href: `https://sybase.brgm.fr/fiche-operation/${installationGeothermieProfonde.Id_du_site}`,
+          target: '_blank',
+          rel: 'noopener noreferrer',
+        }}
+      >
+        Fiche technique de l'installation
+      </Button>
     </>
   );
 }
