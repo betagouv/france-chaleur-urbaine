@@ -4,6 +4,7 @@ import vtpbf from 'vt-pbf';
 import { tileSourcesMaxZoom } from '@/components/Map/components/layers/common';
 import db from '@/server/db';
 import base from '@/server/db/airtable';
+import { isDefined } from '@/utils/core';
 
 import { type AirtableTileInfo, type DatabaseSourceId, tilesInfo } from './tiles.config';
 
@@ -70,7 +71,9 @@ const cacheAirtableTiles = () => {
   });
 };
 
-cacheAirtableTiles();
+if (!isDefined(process.env.DISABLE_AIRTABLE_TILES_CACHE)) {
+  cacheAirtableTiles();
+}
 
 const getTile = async (type: DatabaseSourceId, x: number, y: number, z: number): Promise<{ data: any; compressed: boolean } | null> => {
   const tileInfo = tilesInfo[type];
