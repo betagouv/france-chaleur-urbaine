@@ -47,8 +47,8 @@ type PopupTitleProps = {
 };
 
 const PopupTitle = ({ subtitle, close, children }: PropsWithChildren<PopupTitleProps>) => (
-  <Box display="flex" alignItems="center" justifyContent="space-between">
-    <Box mr="1v">
+  <Box display="flex" justifyContent="space-between">
+    <Box alignSelf="center" mr="1v">
       <Heading as="h6" mb="0">
         {children}
       </Heading>
