@@ -1,4 +1,4 @@
-import Link from '@/components/ui/Link';
+import Button from '@/components/ui/Button';
 import { formatMWhAn } from '@/utils/strings';
 import { type ExtractKeysOfType } from '@/utils/typescript';
 
@@ -112,8 +112,8 @@ function Popup(
   { Property, Title, TwoColumns }: PopupStyleHelpers
 ) {
   return (
-    <section>
-      {batimentRaccordeReseauxChaleurFroid.adresse && <Title>{batimentRaccordeReseauxChaleurFroid.adresse}</Title>}
+    <>
+      <Title>{batimentRaccordeReseauxChaleurFroid.adresse || 'Batiment raccordé'}</Title>
       <TwoColumns>
         <Property
           label={`Consommation de ${batimentRaccordeReseauxChaleurFroid.filiere === 'C' ? 'chaleur' : 'froid'}`}
@@ -121,13 +121,18 @@ function Popup(
           formatter={formatMWhAn}
         />
         <Property label="Secteur" value={secteurBatimentRaccordeToLabels[batimentRaccordeReseauxChaleurFroid.code_grand_secteur]} />
-        <strong>Identifiant du réseau&nbsp;:</strong>&nbsp;
-        <Link href={`/reseaux/${batimentRaccordeReseauxChaleurFroid.id_reseau}`} isExternal>
-          {batimentRaccordeReseauxChaleurFroid.id_reseau}
-        </Link>
-        <br />
+        <Property label="Identifiant du réseau" value={batimentRaccordeReseauxChaleurFroid.id_reseau} />
         <Property label="Source" value="SDES pour 2023" />
       </TwoColumns>
-    </section>
+      <Button
+        priority="secondary"
+        className="fr-mt-1w"
+        full
+        iconId="fr-icon-eye-line"
+        linkProps={{ href: `/reseaux/${batimentRaccordeReseauxChaleurFroid.id_reseau}`, target: '_blank', rel: 'noopener noreferrer' }}
+      >
+        Voir la fiche du réseau
+      </Button>
+    </>
   );
 }
