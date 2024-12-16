@@ -1,3 +1,4 @@
+import DPE from '@/components/DPE';
 import { formatTypeEnergieChauffage } from '@/utils/format';
 
 import { ifHoverElse, type PopupStyleHelpers, type MapSourceLayersSpecification } from './common';
@@ -47,7 +48,7 @@ function Popup(demandeEligibilite: DemandeEligibilite, { Property, Title }: Popu
       <Title>{demandeEligibilite.Adresse}</Title>
       <Property label="Chauffage actuel" value={demandeEligibilite['Mode de chauffage']} formatter={formatTypeEnergieChauffage} />
       <Property label="Mode de chauffage" value={demandeEligibilite['Type de chauffage']} />
-      <Property label="DPE consommations énergétiques" value={demandeEligibilite.Structure} />
+      <Property label="DPE consommations énergétiques" value={demandeEligibilite.Structure} formatter={(v) => <DPE classe={v} />} />
     </>
   );
 }

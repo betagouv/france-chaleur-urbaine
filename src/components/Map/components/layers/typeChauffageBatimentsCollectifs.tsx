@@ -1,5 +1,6 @@
 import { type ExpressionInputType } from 'maplibre-gl';
 
+import DPE from '@/components/DPE';
 import { ENERGY_TYPE, ENERGY_USED } from '@/types/enum/EnergyType';
 import { type EnergySummary } from '@/types/Summary/Energy';
 import { deepMergeObjects } from '@/utils/core';
@@ -238,8 +239,12 @@ function Popup(caracteristiqueBatiment: EnergySummary, { Property, Title }: Popu
       <Property label="Nombre de logements" value={caracteristiqueBatiment.nb_logements} />
       <Property label="Chauffage actuel" value={caracteristiqueBatiment.energie_utilisee} formatter={formatTypeEnergieChauffage} />
       <Property label="Mode de chauffage" value={caracteristiqueBatiment.type_chauffage} />
-      <Property label="DPE consommations énergétiques" value={caracteristiqueBatiment.dpe_energie} />
-      <Property label="DPE émissions de gaz à effet de serre" value={caracteristiqueBatiment.dpe_ges} />
+      <Property label="DPE consommations énergétiques" value={caracteristiqueBatiment.dpe_energie} formatter={(v) => <DPE classe={v} />} />
+      <Property
+        label="DPE émissions de gaz à effet de serre"
+        value={caracteristiqueBatiment.dpe_ges}
+        formatter={(v) => <DPE classe={v} />}
+      />
     </>
   );
 }

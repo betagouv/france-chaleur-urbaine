@@ -2,6 +2,7 @@ import Button from '@codegouvfr/react-dsfr/Button';
 import Image from 'next/image';
 import { useQueryState } from 'nuqs';
 
+import DPE from '@/components/DPE';
 import RangeFilter from '@/components/form/dsfr/RangeFilter';
 import { defaultMapConfiguration } from '@/components/Map/map-configuration';
 import { type MapLegendFeature } from '@/components/Map/map-layers';
@@ -474,18 +475,8 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                   </Text>
                   <Text fontSize="13px">Diagnostic de performance énergétique</Text>
                   <Box display="flex" gap="4px">
-                    {Object.entries(caracteristiquesBatimentsLayerStyle).map(([letter, color]) => (
-                      <Box
-                        width="24px"
-                        height="24px"
-                        fontSize="18px"
-                        key={letter}
-                        backgroundColor={color}
-                        textColor="white"
-                        textAlign="center"
-                      >
-                        {letter.toUpperCase()}
-                      </Box>
+                    {Object.entries(caracteristiquesBatimentsLayerStyle).map(([letter]) => (
+                      <DPE classe={letter} key={letter} />
                     ))}
                   </Box>
                 </DeactivatableBox>
