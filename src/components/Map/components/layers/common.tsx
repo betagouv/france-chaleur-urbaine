@@ -72,7 +72,7 @@ type PopupPropertyProps<T> = {
 function PopupProperty<T>({ label, value, unit, formatter, ...props }: PopupPropertyProps<T>) {
   return (
     <>
-      <Box whiteSpace="nowrap">{label}</Box>
+      <Box>{label}</Box>
       <Box fontWeight="bold">
         {isDefined(value)
           ? isDefined(formatter)
@@ -86,7 +86,7 @@ function PopupProperty<T>({ label, value, unit, formatter, ...props }: PopupProp
 
 function TwoColumns({ children }: PropsWithChildren) {
   return (
-    <Box display="grid" gridTemplateColumns="auto minmax(auto, 1fr)" gap="4px" columnGap="16px">
+    <Box display="grid" gridTemplateColumns="auto auto" gap="4px" columnGap="16px">
       {children}
     </Box>
   );
