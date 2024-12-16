@@ -114,17 +114,9 @@ export const consommationsGazLayersSpec = [
 function Popup(consommationGaz: GasSummary, { Property, Title }: PopupStyleHelpers) {
   return (
     <>
-      <Title>
+      <Title subtitle={writeTypeConso(consommationGaz.code_grand)}>
         {consommationGaz.adresse} {consommationGaz.nom_commun}
       </Title>
-      {consommationGaz.code_grand && (
-        <>
-          <strong>
-            <u>{writeTypeConso(consommationGaz.code_grand)}</u>
-          </strong>
-          <br />
-        </>
-      )}
       <Property label="Chauffage actuel" value={consommationGaz.conso_nb} formatter={formatMWhAn} />
     </>
   );
