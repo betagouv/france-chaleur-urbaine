@@ -101,8 +101,7 @@ export function useMapEvents({ mapLayersLoaded, isDrawing, mapRef }: UseMapEvent
       const layerSpec = mapLayers
         .flatMap<MapLayerSpecification>((spec) => spec.layers)
         .find((layerSpec) => layerSpec.id === hoveredFeature.layer.id);
-      // FIXME should not happen
-      // should fix with typescript types
+      // should not happen, we could probably improve typing here
       if (!layerSpec) {
         throw new Error(`Layer ${hoveredFeature.layer.id} not found. Strange oO`);
       }

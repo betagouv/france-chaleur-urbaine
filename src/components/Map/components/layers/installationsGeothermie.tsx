@@ -95,45 +95,49 @@ export const installationsGeothermieLayersSpec = [
 
 function PopupInstallationGeothermieProfonde(
   installationGeothermieProfonde: InstallationGeothermieProfonde,
-  { Property, Title }: PopupStyleHelpers
+  { Property, Title, TwoColumns }: PopupStyleHelpers
 ) {
   return (
     <>
       <Title>{installationGeothermieProfonde.Site}</Title>
-      <Property label="Type" value={installationGeothermieProfonde.Type_exploitation} />
-      <Property label="Utilisation" value={installationGeothermieProfonde.Utilisation} />
-      <Property
-        label="Énergie géothermale annuelle produite "
-        value={installationGeothermieProfonde.Energie_géothermale_annuelle_produite}
-        unit="MWh"
-      />
-      <Property
-        label="Nombre d'équivalents logement chauffés"
-        value={installationGeothermieProfonde.Nombre_équivalents_logements_chauffés}
-      />
-      <div>
-        <Link href={`https://sybase.brgm.fr/fiche-operation/${installationGeothermieProfonde.Id_du_site}`} isExternal>
-          Fiche technique de l'installation
-        </Link>
-      </div>
-      <Property label="Source" value="BRGM" />
+      <TwoColumns>
+        <Property label="Type" value={installationGeothermieProfonde.Type_exploitation} />
+        <Property label="Utilisation" value={installationGeothermieProfonde.Utilisation} />
+        <Property
+          label="Énergie géothermale annuelle produite "
+          value={installationGeothermieProfonde.Energie_géothermale_annuelle_produite}
+          unit="MWh"
+        />
+        <Property
+          label="Nombre d'équivalents logement chauffés"
+          value={installationGeothermieProfonde.Nombre_équivalents_logements_chauffés}
+        />
+        <div>
+          <Link href={`https://sybase.brgm.fr/fiche-operation/${installationGeothermieProfonde.Id_du_site}`} isExternal>
+            Fiche technique de l'installation
+          </Link>
+        </div>
+        <Property label="Source" value="BRGM" />
+      </TwoColumns>
     </>
   );
 }
 
 function PopupInstallationGeothermieSurface(
   installationGeothermieSurface: InstallationGeothermieSurfaceEchangeursFermes | InstallationGeothermieSurfaceEchangeursOuverts,
-  { Property, Title }: PopupStyleHelpers
+  { Property, Title, TwoColumns }: PopupStyleHelpers
 ) {
   return (
     <>
       <Title>{installationGeothermieSurface.nom_instal}</Title>
-      <Property label="Catégorie réglementaire" value={installationGeothermieSurface.categ_gth} />
-      <Property label="Usage(s) de l'énergie produite" value={installationGeothermieSurface.usage_gth} />
-      <Property label="Nombre d'ouvrages raccordés" value={installationGeothermieSurface.nombre_ouv} />
-      <Property label="Puissance thermique délivrée" value={installationGeothermieSurface.p_pac} unit="kW" />
-      <Property label="Statut" value={installationGeothermieSurface.statut_inst} />
-      <Property label="Source" value="BRGM" />
+      <TwoColumns>
+        <Property label="Catégorie réglementaire" value={installationGeothermieSurface.categ_gth} />
+        <Property label="Usage(s) de l'énergie produite" value={installationGeothermieSurface.usage_gth} />
+        <Property label="Nombre d'ouvrages raccordés" value={installationGeothermieSurface.nombre_ouv} />
+        <Property label="Puissance thermique délivrée" value={installationGeothermieSurface.p_pac} unit="kW" />
+        <Property label="Statut" value={installationGeothermieSurface.statut_inst} />
+        <Property label="Source" value="BRGM" />
+      </TwoColumns>
     </>
   );
 }

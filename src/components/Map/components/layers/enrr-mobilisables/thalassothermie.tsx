@@ -39,13 +39,15 @@ type Thalassothermie = {
   SHAPE__Area: number;
 };
 
-function Popup(thalassothermie: Thalassothermie, { Property, Title }: PopupStyleHelpers) {
+function Popup(thalassothermie: Thalassothermie, { Property, Title, TwoColumns }: PopupStyleHelpers) {
   return (
     <>
       <Title>{thalassothermie.toponyme}</Title>
-      <Property label="Nature" value={thalassothermie.nature} />
-      {thalassothermie.nature_det !== ' ' && <Property label="Nature détaillée" value={thalassothermie.nature_det} />}
-      <Property label="Source" value="Recensement des infrastructures portuaires issues de la BDTOPO" />
+      <TwoColumns>
+        <Property label="Nature" value={thalassothermie.nature} />
+        {thalassothermie.nature_det !== ' ' && <Property label="Nature détaillée" value={thalassothermie.nature_det} />}
+        <Property label="Source" value="Recensement des infrastructures portuaires issues de la BDTOPO" />
+      </TwoColumns>
     </>
   );
 }

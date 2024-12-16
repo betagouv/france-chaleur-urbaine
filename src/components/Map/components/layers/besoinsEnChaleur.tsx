@@ -189,17 +189,19 @@ type BesoinsEnChaleur = {
   SDP_M2: number;
 };
 
-function Popup(besoinsEnChaleur: BesoinsEnChaleur, { Property, Title }: PopupStyleHelpers) {
+function Popup(besoinsEnChaleur: BesoinsEnChaleur, { Property, Title, TwoColumns }: PopupStyleHelpers) {
   return (
     <>
       <Title>Besoins en chaleur et froid</Title>
-      <Property label="Besoins en chauffage" value={besoinsEnChaleur.CHAUF_MWH} formatter={formatMWhAn} />
-      <Property label="Besoins en eau chaude sanitaire" value={besoinsEnChaleur.ECS_MWH} formatter={formatMWhAn} />
-      <Property label="Besoins en froid" value={besoinsEnChaleur.FROID_MWH} formatter={formatMWhAn} />
-      <Property label="Part tertiaire de la surface des bâtiments" value={besoinsEnChaleur.PART_TER} unit="%" />
-      <Property label="Surface de plancher" value={besoinsEnChaleur.SDP_M2} unit="m²" />
-      <Property label="Identifiant BD TOPO" value={besoinsEnChaleur.IDBATIMENT} />
-      <Property label="Source" value="Cerema" />
+      <TwoColumns>
+        <Property label="Besoins en chauffage" value={besoinsEnChaleur.CHAUF_MWH} formatter={formatMWhAn} />
+        <Property label="Besoins en eau chaude sanitaire" value={besoinsEnChaleur.ECS_MWH} formatter={formatMWhAn} />
+        <Property label="Besoins en froid" value={besoinsEnChaleur.FROID_MWH} formatter={formatMWhAn} />
+        <Property label="Part tertiaire de la surface des bâtiments" value={besoinsEnChaleur.PART_TER} unit="%" />
+        <Property label="Surface de plancher" value={besoinsEnChaleur.SDP_M2} unit="m²" />
+        <Property label="Identifiant BD TOPO" value={besoinsEnChaleur.IDBATIMENT} />
+        <Property label="Source" value="Cerema" />
+      </TwoColumns>
     </>
   );
 }

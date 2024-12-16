@@ -42,13 +42,16 @@ export type DemandeEligibilite = {
   Structure: string;
 };
 
-function Popup(demandeEligibilite: DemandeEligibilite, { Property, Title }: PopupStyleHelpers) {
+function Popup(demandeEligibilite: DemandeEligibilite, { Property, Title, TwoColumns }: PopupStyleHelpers) {
   return (
     <>
       <Title>{demandeEligibilite.Adresse}</Title>
-      <Property label="Chauffage actuel" value={demandeEligibilite['Mode de chauffage']} formatter={formatTypeEnergieChauffage} />
-      <Property label="Mode de chauffage" value={demandeEligibilite['Type de chauffage']} />
-      <Property label="DPE consommations énergétiques" value={demandeEligibilite.Structure} formatter={(v) => <DPE classe={v} />} />
+
+      <TwoColumns>
+        <Property label="Chauffage actuel" value={demandeEligibilite['Mode de chauffage']} formatter={formatTypeEnergieChauffage} />
+        <Property label="Mode de chauffage" value={demandeEligibilite['Type de chauffage']} />
+        <Property label="DPE consommations énergétiques" value={demandeEligibilite.Structure} formatter={(v) => <DPE classe={v} />} />
+      </TwoColumns>
     </>
   );
 }

@@ -157,15 +157,17 @@ const QualiteLabel = ({ value }: { value: string | number }) => (
   <Text fontStyle="italic">{qualiteToLabel[`${value}`[0] as unknown as keyof typeof qualiteToLabel] ?? ''}</Text>
 );
 
-function PopupDatacenter(datacenter: Datacenter, { Property, Title }: PopupStyleHelpers) {
+function PopupDatacenter(datacenter: Datacenter, { Property, Title, TwoColumns }: PopupStyleHelpers) {
   return (
     <>
       <Title subtitle="Datacenter">{datacenter.nom}</Title>
-      <Property label="Catégorie" value={datacenter.categorie} />
-      <Property label="Commune" value={datacenter.com_nom} />
-      <Property label="Identifiant national" value={datacenter.id} />
-      <Property label="Source" value="Cerema" />
-      <QualiteLabel value={datacenter.qualite_xy} />
+      <TwoColumns>
+        <Property label="Catégorie" value={datacenter.categorie} />
+        <Property label="Commune" value={datacenter.com_nom} />
+        <Property label="Identifiant national" value={datacenter.id} />
+        <Property label="Source" value="Cerema" />
+        <QualiteLabel value={datacenter.qualite_xy} />
+      </TwoColumns>
     </>
   );
 }
@@ -187,17 +189,19 @@ export interface Industrie {
   potbas_bt: number;
 }
 
-function PopupIndustrie(industrie: Industrie, { Property, Title }: PopupStyleHelpers) {
+function PopupIndustrie(industrie: Industrie, { Property, Title, TwoColumns }: PopupStyleHelpers) {
   return (
     <>
       <Title subtitle="Industrie">{industrie.nom_etabli}</Title>
-      <Property label="Activité" value={industrie.type_act} />
-      <Property label="Potentiel minimal de chaleur valorisable (BT)" value={industrie.potbas_bt} unit="MWh/an" />
-      <Property label="Potentiel maximale de chaleur valorisable (BT)" value={industrie.pothaut_bt} unit="MWh/an" />
-      <Property label="Potentiel minimal de chaleur valorisable (HT)" value={industrie.potbas_ht} unit="MWh/an" />
-      <Property label="Potentiel maximale de chaleur valorisable (HT)" value={industrie.pothaut_ht} unit="MWh/an" />
-      <Property label="Source" value={industrie.source} />
-      <QualiteLabel value={industrie.quali_xy} />
+      <TwoColumns>
+        <Property label="Activité" value={industrie.type_act} />
+        <Property label="Potentiel minimal de chaleur valorisable (BT)" value={industrie.potbas_bt} unit="MWh/an" />
+        <Property label="Potentiel maximale de chaleur valorisable (BT)" value={industrie.pothaut_bt} unit="MWh/an" />
+        <Property label="Potentiel minimal de chaleur valorisable (HT)" value={industrie.potbas_ht} unit="MWh/an" />
+        <Property label="Potentiel maximale de chaleur valorisable (HT)" value={industrie.pothaut_ht} unit="MWh/an" />
+        <Property label="Source" value={industrie.source} />
+        <QualiteLabel value={industrie.quali_xy} />
+      </TwoColumns>
     </>
   );
 }
@@ -212,14 +216,19 @@ export interface InstallationElectrogene {
   qualite_xy: string;
 }
 
-function PopupInstallationElectrogene(installationElectrogene: InstallationElectrogene, { Property, Title }: PopupStyleHelpers) {
+function PopupInstallationElectrogene(
+  installationElectrogene: InstallationElectrogene,
+  { Property, Title, TwoColumns }: PopupStyleHelpers
+) {
   return (
     <>
       <Title subtitle="Installation électrogène">{installationElectrogene.nom_inst}</Title>
-      <Property label="Type" value={installationElectrogene.type_inst} />
-      <Property label="Commune" value={installationElectrogene.com_nom} />
-      <Property label="Source" value="Cerema" />
-      <QualiteLabel value={installationElectrogene.qualite_xy} />
+      <TwoColumns>
+        <Property label="Type" value={installationElectrogene.type_inst} />
+        <Property label="Commune" value={installationElectrogene.com_nom} />
+        <Property label="Source" value="Cerema" />
+        <QualiteLabel value={installationElectrogene.qualite_xy} />
+      </TwoColumns>
     </>
   );
 }
@@ -236,15 +245,17 @@ export interface StationDEpuration {
   en_mwh_an: number;
 }
 
-function PopupStationsDEpuration(stationDEpuration: StationDEpuration, { Property, Title }: PopupStyleHelpers) {
+function PopupStationsDEpuration(stationDEpuration: StationDEpuration, { Property, Title, TwoColumns }: PopupStyleHelpers) {
   return (
     <>
       <Title subtitle="Station d'épuration">{stationDEpuration.step_nom}</Title>
-      <Property label="Débit entrant" value={stationDEpuration.debit_m3j} unit="m³/j" />
-      <Property label="Capacité" value={stationDEpuration.capa_eh} unit="équivalent-habitants" />
-      <Property label="Exploitant" value={stationDEpuration.exploitant} />
-      <Property label="Commune" value={stationDEpuration.com_nom} />
-      <Property label="Source" value="Cerema" />
+      <TwoColumns>
+        <Property label="Débit entrant" value={stationDEpuration.debit_m3j} unit="m³/j" />
+        <Property label="Capacité" value={stationDEpuration.capa_eh} unit="équivalent-habitants" />
+        <Property label="Exploitant" value={stationDEpuration.exploitant} />
+        <Property label="Commune" value={stationDEpuration.com_nom} />
+        <Property label="Source" value="Cerema" />
+      </TwoColumns>
     </>
   );
 }
@@ -266,15 +277,17 @@ export interface UniteDIncineration {
   info: string;
 }
 
-function PopupUniteDIncineration(uniteDIncineration: UniteDIncineration, { Property, Title }: PopupStyleHelpers) {
+function PopupUniteDIncineration(uniteDIncineration: UniteDIncineration, { Property, Title, TwoColumns }: PopupStyleHelpers) {
   return (
     <>
       <Title subtitle="Unité d'incinération">{uniteDIncineration.nom_inst}</Title>
-      <Property label="Type" value={uniteDIncineration.type_inst} />
-      <Property label="Potentiel minimal de chaleur valorisable" value={uniteDIncineration.min_prd_cr} unit="MWh/an" />
-      <Property label="Potentiel maximal de chaleur valorisable" value={uniteDIncineration.max_prd_cr} unit="MWh/an" />
-      <Property label="Commune" value={uniteDIncineration.nom_comm} />
-      <Property label="Source" value={uniteDIncineration.info} />
+      <TwoColumns>
+        <Property label="Type" value={uniteDIncineration.type_inst} />
+        <Property label="Potentiel minimal de chaleur valorisable" value={uniteDIncineration.min_prd_cr} unit="MWh/an" />
+        <Property label="Potentiel maximal de chaleur valorisable" value={uniteDIncineration.max_prd_cr} unit="MWh/an" />
+        <Property label="Commune" value={uniteDIncineration.nom_comm} />
+        <Property label="Source" value={uniteDIncineration.info} />
+      </TwoColumns>
     </>
   );
 }

@@ -111,13 +111,15 @@ export const consommationsGazLayersSpec = [
   },
 ] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
 
-function Popup(consommationGaz: GasSummary, { Property, Title }: PopupStyleHelpers) {
+function Popup(consommationGaz: GasSummary, { Property, Title, TwoColumns }: PopupStyleHelpers) {
   return (
     <>
       <Title subtitle={writeTypeConso(consommationGaz.code_grand)}>
         {consommationGaz.adresse} {consommationGaz.nom_commun}
       </Title>
-      <Property label="Chauffage actuel" value={consommationGaz.conso_nb} formatter={formatMWhAn} />
+      <TwoColumns>
+        <Property label="Chauffage actuel" value={consommationGaz.conso_nb} formatter={formatMWhAn} />
+      </TwoColumns>
     </>
   );
 }

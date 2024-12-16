@@ -107,22 +107,27 @@ type BatimentRaccordeReseauxChaleurFroid = {
   conso?: number;
 };
 
-function Popup(batimentRaccordeReseauxChaleurFroid: BatimentRaccordeReseauxChaleurFroid, { Property, Title }: PopupStyleHelpers) {
+function Popup(
+  batimentRaccordeReseauxChaleurFroid: BatimentRaccordeReseauxChaleurFroid,
+  { Property, Title, TwoColumns }: PopupStyleHelpers
+) {
   return (
     <section>
       {batimentRaccordeReseauxChaleurFroid.adresse && <Title>{batimentRaccordeReseauxChaleurFroid.adresse}</Title>}
-      <Property
-        label={`Consommation de ${batimentRaccordeReseauxChaleurFroid.filiere === 'C' ? 'chaleur' : 'froid'}`}
-        value={batimentRaccordeReseauxChaleurFroid.conso}
-        formatter={formatMWhAn}
-      />
-      <Property label="Secteur" value={secteurBatimentRaccordeToLabels[batimentRaccordeReseauxChaleurFroid.code_grand_secteur]} />
-      <strong>Identifiant du réseau&nbsp;:</strong>&nbsp;
-      <Link href={`/reseaux/${batimentRaccordeReseauxChaleurFroid.id_reseau}`} isExternal>
-        {batimentRaccordeReseauxChaleurFroid.id_reseau}
-      </Link>
-      <br />
-      <Property label="Source" value="SDES pour 2023" />
+      <TwoColumns>
+        <Property
+          label={`Consommation de ${batimentRaccordeReseauxChaleurFroid.filiere === 'C' ? 'chaleur' : 'froid'}`}
+          value={batimentRaccordeReseauxChaleurFroid.conso}
+          formatter={formatMWhAn}
+        />
+        <Property label="Secteur" value={secteurBatimentRaccordeToLabels[batimentRaccordeReseauxChaleurFroid.code_grand_secteur]} />
+        <strong>Identifiant du réseau&nbsp;:</strong>&nbsp;
+        <Link href={`/reseaux/${batimentRaccordeReseauxChaleurFroid.id_reseau}`} isExternal>
+          {batimentRaccordeReseauxChaleurFroid.id_reseau}
+        </Link>
+        <br />
+        <Property label="Source" value="SDES pour 2023" />
+      </TwoColumns>
     </section>
   );
 }

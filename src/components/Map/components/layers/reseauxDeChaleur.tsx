@@ -68,18 +68,20 @@ export const reseauxDeChaleurLayersSpec = [
   },
 ] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
 
-function Popup(reseauDeChaleur: NetworkSummary, { Property, Title }: PopupStyleHelpers) {
+function Popup(reseauDeChaleur: NetworkSummary, { Property, Title, TwoColumns }: PopupStyleHelpers) {
   return (
     <>
       <Title>{reseauDeChaleur.nom_reseau ?? 'Réseau de chaleur'}</Title>
-      <Property label="Identifiant" value={reseauDeChaleur['Identifiant reseau']} />
-      <Property label="Gestionnaire" value={reseauDeChaleur.Gestionnaire} />
-      <Property label="Taux EnR&R" value={reseauDeChaleur['Taux EnR&R']} unit="%" />
-      <Property
-        label="Contenu CO2 ACV"
-        value={reseauDeChaleur['contenu CO2 ACV']}
-        formatter={(value) => (isDefined(value) ? `${prettyFormatNumber(value * 1000)} g/kWh` : 'Non connu')}
-      />
+      <TwoColumns>
+        <Property label="Identifiant" value={reseauDeChaleur['Identifiant reseau']} />
+        <Property label="Gestionnaire" value={reseauDeChaleur.Gestionnaire} />
+        <Property label="Taux EnR&R" value={reseauDeChaleur['Taux EnR&R']} unit="%" />
+        <Property
+          label="Contenu CO2 ACV"
+          value={reseauDeChaleur['contenu CO2 ACV']}
+          formatter={(value) => (isDefined(value) ? `${prettyFormatNumber(value * 1000)} g/kWh` : 'Non connu')}
+        />
+      </TwoColumns>
       {reseauDeChaleur['Identifiant reseau'] && (
         <Button
           priority="secondary"

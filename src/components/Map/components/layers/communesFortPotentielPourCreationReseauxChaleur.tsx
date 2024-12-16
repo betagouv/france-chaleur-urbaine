@@ -62,23 +62,25 @@ type CommuneFortPotentielPourCreationReseauxChaleur = {
 
 function Popup(
   communeFortPotentielPourCreationReseauxChaleur: CommuneFortPotentielPourCreationReseauxChaleur,
-  { Property, Title }: PopupStyleHelpers
+  { Property, Title, TwoColumns }: PopupStyleHelpers
 ) {
   return (
     <>
       <Title>{communeFortPotentielPourCreationReseauxChaleur.nom}</Title>
-      <Property label="Nombre d'habitants" value={communeFortPotentielPourCreationReseauxChaleur.population} />
-      <Property
-        label="Besoins en chauffage sur les zones à fort potentiel (cumul)"
-        value={communeFortPotentielPourCreationReseauxChaleur.zones_fort_potentiel_chauf_mwh}
-        formatter={formatMWhAn}
-      />
-      <Property
-        label="Besoins en ECS sur les zones à fort potentiel (cumul)"
-        value={communeFortPotentielPourCreationReseauxChaleur.zones_fort_potentiel_ecs_mwh}
-        formatter={formatMWhAn}
-      />
-      <Property label="Source" value="BRGM" />
+      <TwoColumns>
+        <Property label="Nombre d'habitants" value={communeFortPotentielPourCreationReseauxChaleur.population} />
+        <Property
+          label="Besoins en chauffage sur les zones à fort potentiel (cumul)"
+          value={communeFortPotentielPourCreationReseauxChaleur.zones_fort_potentiel_chauf_mwh}
+          formatter={formatMWhAn}
+        />
+        <Property
+          label="Besoins en ECS sur les zones à fort potentiel (cumul)"
+          value={communeFortPotentielPourCreationReseauxChaleur.zones_fort_potentiel_ecs_mwh}
+          formatter={formatMWhAn}
+        />
+        <Property label="Source" value="BRGM" />
+      </TwoColumns>
     </>
   );
 }

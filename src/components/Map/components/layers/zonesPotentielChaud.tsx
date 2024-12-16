@@ -97,18 +97,20 @@ type ZonePotentielChaud = {
 };
 
 function buildPopup(fortChaud?: boolean) {
-  const Popup = (zonePotentielChaud: ZonePotentielChaud, { Property, Title }: PopupStyleHelpers) => (
+  const Popup = (zonePotentielChaud: ZonePotentielChaud, { Property, Title, TwoColumns }: PopupStyleHelpers) => (
     <>
       <Title>Zone à {fortChaud ? ' fort' : ''} potentiel</Title>
-      <Property label="Nombre de bâtiments “intéressants”" value={zonePotentielChaud.bat_imp} />
-      <Property label="Besoins en chauffage" value={zonePotentielChaud.chauf_mwh} formatter={formatMWhAn} />
-      <Property label="Besoins en eau chaude sanitaire" value={zonePotentielChaud.ecs_mwh} formatter={formatMWhAn} />
-      <Property
-        label="Part du secteur tertiaire"
-        value={zonePotentielChaud.part_ter}
-        formatter={(v) => <>{prettyFormatNumber(v * 100, 2)}&nbsp;%</>}
-      />
-      <Property label="Source" value="Cerema" />
+      <TwoColumns>
+        <Property label="Nombre de bâtiments “intéressants”" value={zonePotentielChaud.bat_imp} />
+        <Property label="Besoins en chauffage" value={zonePotentielChaud.chauf_mwh} formatter={formatMWhAn} />
+        <Property label="Besoins en eau chaude sanitaire" value={zonePotentielChaud.ecs_mwh} formatter={formatMWhAn} />
+        <Property
+          label="Part du secteur tertiaire"
+          value={zonePotentielChaud.part_ter}
+          formatter={(v) => <>{prettyFormatNumber(v * 100, 2)}&nbsp;%</>}
+        />
+        <Property label="Source" value="Cerema" />
+      </TwoColumns>
     </>
   );
   return Popup;

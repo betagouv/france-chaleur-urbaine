@@ -84,21 +84,27 @@ export const caracteristiquesBatimentsLayersSpec = [
   },
 ] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
 
-function Popup(caracteristiqueBatiment: EnergySummary, { Property, Title }: PopupStyleHelpers) {
+function Popup(caracteristiqueBatiment: EnergySummary, { Property, Title, TwoColumns }: PopupStyleHelpers) {
   return (
     <>
       <Title>{caracteristiqueBatiment.addr_label}</Title>
-      <Property label="Année de construction" value={caracteristiqueBatiment.annee_construction} raw />
-      <Property label="Usage" value={caracteristiqueBatiment.type_usage} />
-      <Property label="Nombre de logements" value={caracteristiqueBatiment.nb_logements} />
-      <Property label="Chauffage actuel" value={caracteristiqueBatiment.energie_utilisee} formatter={formatTypeEnergieChauffage} />
-      <Property label="Mode de chauffage" value={caracteristiqueBatiment.type_chauffage} />
-      <Property label="DPE consommations énergétiques" value={caracteristiqueBatiment.dpe_energie} formatter={(v) => <DPE classe={v} />} />
-      <Property
-        label="DPE émissions de gaz à effet de serre"
-        value={caracteristiqueBatiment.dpe_ges}
-        formatter={(v) => <DPE classe={v} />}
-      />
+      <TwoColumns>
+        <Property label="Année de construction" value={caracteristiqueBatiment.annee_construction} raw />
+        <Property label="Usage" value={caracteristiqueBatiment.type_usage} />
+        <Property label="Nombre de logements" value={caracteristiqueBatiment.nb_logements} />
+        <Property label="Chauffage actuel" value={caracteristiqueBatiment.energie_utilisee} formatter={formatTypeEnergieChauffage} />
+        <Property label="Mode de chauffage" value={caracteristiqueBatiment.type_chauffage} />
+        <Property
+          label="DPE consommations énergétiques"
+          value={caracteristiqueBatiment.dpe_energie}
+          formatter={(v) => <DPE classe={v} />}
+        />
+        <Property
+          label="DPE émissions de gaz à effet de serre"
+          value={caracteristiqueBatiment.dpe_ges}
+          formatter={(v) => <DPE classe={v} />}
+        />
+      </TwoColumns>
     </>
   );
 }

@@ -95,23 +95,25 @@ type BesoinsEnChaleurIndustrieCommunes = {
   conso_loca: number;
 };
 
-function Popup(besoinsEnChaleurIndustrieCommunes: BesoinsEnChaleurIndustrieCommunes, { Property, Title }: PopupStyleHelpers) {
+function Popup(besoinsEnChaleurIndustrieCommunes: BesoinsEnChaleurIndustrieCommunes, { Property, Title, TwoColumns }: PopupStyleHelpers) {
   return (
     <>
       <Title>Besoins en chaleur du secteur industriel à {besoinsEnChaleurIndustrieCommunes.libgeo}</Title>
-      <Property
-        label="Besoin en chaleur et froid pour les process"
-        value={besoinsEnChaleurIndustrieCommunes.conso_proc}
-        formatter={formatMWhAn}
-      />
-      <Property
-        label="Besoins en chaleur pour le chauffage des locaux"
-        value={besoinsEnChaleurIndustrieCommunes.conso_loca}
-        formatter={formatMWhAn}
-      />
-      <Property label="Autres besoins" value={besoinsEnChaleurIndustrieCommunes.conso_autr} formatter={formatMWhAn} />
-      <Property label="Besoins totaux = tous usages" value={besoinsEnChaleurIndustrieCommunes.conso_tot} formatter={formatMWhAn} />
-      <Property label="Source" value="Cerema" />
+      <TwoColumns>
+        <Property
+          label="Besoin en chaleur et froid pour les process"
+          value={besoinsEnChaleurIndustrieCommunes.conso_proc}
+          formatter={formatMWhAn}
+        />
+        <Property
+          label="Besoins en chaleur pour le chauffage des locaux"
+          value={besoinsEnChaleurIndustrieCommunes.conso_loca}
+          formatter={formatMWhAn}
+        />
+        <Property label="Autres besoins" value={besoinsEnChaleurIndustrieCommunes.conso_autr} formatter={formatMWhAn} />
+        <Property label="Besoins totaux = tous usages" value={besoinsEnChaleurIndustrieCommunes.conso_tot} formatter={formatMWhAn} />
+        <Property label="Source" value="Cerema" />
+      </TwoColumns>
     </>
   );
 }

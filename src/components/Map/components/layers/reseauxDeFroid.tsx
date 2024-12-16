@@ -62,17 +62,19 @@ export const reseauxDeFroidLayersSpec = [
   },
 ] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
 
-function Popup(reseauDeFroid: NetworkSummary, { Property, Title }: PopupStyleHelpers) {
+function Popup(reseauDeFroid: NetworkSummary, { Property, Title, TwoColumns }: PopupStyleHelpers) {
   return (
     <>
       <Title>{reseauDeFroid.nom_reseau ?? 'Réseau de froid'}</Title>
-      <Property label="Identifiant" value={reseauDeFroid['Identifiant reseau']} />
-      <Property label="Gestionnaire" value={reseauDeFroid.Gestionnaire} />
-      <Property
-        label="Contenu CO2 ACV"
-        value={reseauDeFroid['contenu CO2 ACV']}
-        formatter={(value) => (isDefined(value) ? `${prettyFormatNumber(value * 1000)} g/kWh` : 'Non connu')}
-      />
+      <TwoColumns>
+        <Property label="Identifiant" value={reseauDeFroid['Identifiant reseau']} />
+        <Property label="Gestionnaire" value={reseauDeFroid.Gestionnaire} />
+        <Property
+          label="Contenu CO2 ACV"
+          value={reseauDeFroid['contenu CO2 ACV']}
+          formatter={(value) => (isDefined(value) ? `${prettyFormatNumber(value * 1000)} g/kWh` : 'Non connu')}
+        />
+      </TwoColumns>
       {reseauDeFroid['Identifiant reseau'] && (
         <Button
           priority="secondary"

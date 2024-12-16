@@ -47,12 +47,14 @@ type SolaireThermiqueParking = {
   surfm2: number;
 };
 
-function Popup(parking: SolaireThermiqueParking, { Property, Title }: PopupStyleHelpers) {
+function Popup(parking: SolaireThermiqueParking, { Property, Title, TwoColumns }: PopupStyleHelpers) {
   return (
     <>
       <Title>Parking</Title>
-      <Property label="Surface" value={parking.surfm2} unit="m²" />
-      <Property label="Source" value="Cerema" />
+      <TwoColumns>
+        <Property label="Surface" value={parking.surfm2} unit="m²" />
+        <Property label="Source" value="Cerema" />
+      </TwoColumns>
     </>
   );
 }

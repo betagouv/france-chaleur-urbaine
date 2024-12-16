@@ -71,7 +71,7 @@ type PopupPropertyProps<T> = {
 
 function PopupProperty<T>({ label, value, unit, formatter, ...props }: PopupPropertyProps<T>) {
   return (
-    <Box>
+    <>
       <Box whiteSpace="nowrap">{label}</Box>
       <Box fontWeight="bold">
         {isDefined(value)
@@ -80,21 +80,25 @@ function PopupProperty<T>({ label, value, unit, formatter, ...props }: PopupProp
             : `${typeof value === 'number' ? ('raw' in props ? value : prettyFormatNumber(value)) : value} ${unit ?? ''}`
           : 'Non connu'}
       </Box>
+    </>
+  );
+}
+
+function TwoColumns({ children }: PropsWithChildren) {
+  return (
+    <Box display="grid" gridTemplateColumns="auto minmax(auto, 1fr)" gap="4px" columnGap="16px">
+      {children}
     </Box>
   );
 }
 
 /**
- * Contient les composants utilisables par chaque popup pour l'aider à se construire.
+ * Fournit des composants utilisables par chaque popup pour l'aider à se construire.
  */
-export const popupStyleHelpers = {
-  Title: PopupTitle,
-  Property: PopupProperty,
-} as const;
-
 export const buildPopupStyleHelpers = (close: () => void) => ({
   Title: buildPopupTitle(close),
   Property: PopupProperty,
+  TwoColumns: TwoColumns,
   close,
 });
 export const buildPopupTitle = (close: () => void) => {

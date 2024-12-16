@@ -48,12 +48,14 @@ export const reseauxEnConstructionLayersSpec = [
   },
 ] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
 
-function Popup(reseauEnConstruction: FuturNetworkSummary, { Property, Title }: PopupStyleHelpers) {
+function Popup(reseauEnConstruction: FuturNetworkSummary, { Property, Title, TwoColumns }: PopupStyleHelpers) {
   return (
     <>
       <Title>Réseau en construction</Title>
-      <Property label="Gestionnaire" value={reseauEnConstruction.gestionnaire} />
-      <Property label="Mise en service" value={reseauEnConstruction.mise_en_service} />
+      <TwoColumns>
+        <Property label="Gestionnaire" value={reseauEnConstruction.gestionnaire} />
+        <Property label="Mise en service" value={reseauEnConstruction.mise_en_service} />
+      </TwoColumns>
     </>
   );
 }

@@ -51,12 +51,14 @@ export type SolaireThermiqueFriche = {
   urba_zone_: string;
 };
 
-function Popup(friche: SolaireThermiqueFriche, { Property, Title }: PopupStyleHelpers) {
+function Popup(friche: SolaireThermiqueFriche, { Property, Title, TwoColumns }: PopupStyleHelpers) {
   return (
     <>
       <Title subtitle="Friche">{friche.site_nom}</Title>
-      <Property label="Surface" value={friche.surf_site} unit="m²" />
-      <Property label="Source" value={friche.source_nom} />
+      <TwoColumns>
+        <Property label="Surface" value={friche.surf_site} unit="m²" />
+        <Property label="Source" value={friche.source_nom} />
+      </TwoColumns>
     </>
   );
 }
