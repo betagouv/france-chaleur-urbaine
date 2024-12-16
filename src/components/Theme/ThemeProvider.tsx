@@ -128,13 +128,6 @@ const DsfrFixUp: any = createGlobalStyle` /* TODO: Wait Fix from @types/styled-c
     }
   }
 
-  .fr-btn--secondary {
-    background-color: var(--background-default-grey) !important;
-    :hover {
-      background-color: var(--hover-tint) !important;
-    }
-  }
-
   .fr-btn[target=_blank]:after {
     content: "\\ecaf" !important;
   }
