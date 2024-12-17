@@ -11,7 +11,6 @@ import { SWRConfig, type SWRConfiguration } from 'swr';
 import '@/components/Map/StyleSwitcher/styles.css';
 import SEO from '@/components/SEO';
 import ThemeProvider, { augmentDocumentWithEmotionCache, dsfrDocumentApi } from '@/components/Theme/ThemeProvider';
-import { NotifierContainer } from '@/core/notification';
 import { usePreserveScroll } from '@/hooks/usePreserveScroll';
 import { HeatNetworkService, ServicesContext, SuggestionService } from '@/services';
 import { AdminService } from '@/services/admin';
@@ -20,6 +19,7 @@ import { DemandsService } from '@/services/demands';
 import { ExportService } from '@/services/export';
 import { axiosHttpClient } from '@/services/http';
 import { NetworksService } from '@/services/networks';
+import { NotifierContainer } from '@/services/notification';
 import { PasswordService } from '@/services/password';
 
 const ConsentBanner = dynamic(
