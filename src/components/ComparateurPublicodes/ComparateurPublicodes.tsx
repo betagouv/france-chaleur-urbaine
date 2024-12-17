@@ -92,7 +92,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
       if (address) {
         // if address is set, engine will need to compute the result
         // so we wait a bit to make sure the result is ready
-        // FIXME this is a hack, we should use a proper state from the engine
+        // TODO this is a hack, we should use a proper state from the engine
         setTimeout(() => {
           setLoading(false);
         }, 2000);

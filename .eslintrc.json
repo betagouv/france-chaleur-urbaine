@@ -38,6 +38,12 @@
     "no-nested-ternary": 0,
     "react/no-unescaped-entities": 0,
     "no-console": ["warn", { "allow": ["warn", "error", "info"] }],
+    "no-warning-comments": [
+      "error",
+      {
+        "terms": ["FIXME"]
+      }
+    ],
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/ban-types": "warn",

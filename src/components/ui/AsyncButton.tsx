@@ -24,7 +24,7 @@ const AsyncButton = ({ children, onClick, disabled, ...props }: AsyncButtonProps
       disabled={disabled || loading}
       onClick={() => onAsyncClick()}
       {
-        ...(props as any) /* FIXME don't manage to make it work with typescript */
+        ...(props as any) /* TODO don't manage to make it work with typescript */
       }
     >
       {children}

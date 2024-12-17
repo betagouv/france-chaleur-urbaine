@@ -166,7 +166,7 @@ const DsfrFixUp: any = createGlobalStyle` /* TODO: Wait Fix from @types/styled-c
 `;
 // https://styled-components.com/docs/faqs#shouldforwardprop-is-no-longer-provided-by-default
 // This is to keep the same behavior as in styled-components v4
-// FIXME all props in styled-components should be modified to transient ones (with $)
+// TODO all props in styled-components should be modified to transient ones (with $)
 function shouldForwardProp(propName: string, target: any): boolean {
   if (typeof target === 'string') {
     // For HTML elements, forward the prop if it is a valid HTML attribute

@@ -489,7 +489,7 @@ export const FullyFeaturedMap = ({
   useLinearHeatDensityLayers();
   useBuildingsDataExtractionLayers();
 
-  // FIXME pourquoi on doit passer par un setState ici ?
+  // TODO pourquoi on doit passer par un setState ici ?
   useEffect(() => {
     if (pinsList) {
       setMarkersList(pinsList);

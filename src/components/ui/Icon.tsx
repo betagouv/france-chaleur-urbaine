@@ -50,7 +50,7 @@ const Icon = forwardRef(function Icon(
   );
 });
 
-// FIXME moved here for refactor but should be replaced by a common icon
+// TODO moved here for refactor but should be replaced by a common icon
 export const FCUArrowIcon = styled.div`
   width: 24px;
   height: 24px;

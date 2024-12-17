@@ -632,7 +632,7 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
             nativeInputProps={{ min: 1 }}
             help="Durée de vie estimée des équipements de production de chaleur."
           />
-          {/* FIXME vérifier si même durée de vie que PAC eau/eau indiv */}
+          {/* TODO vérifier si même durée de vie que PAC eau/eau indiv */}
           {/* <Input name="ratios . PAC EAU EAU Durée de vie puits géothermiques" label="Durée de vie puits géothermiques" /> */}
 
           <Input name="Installation x PAC eau-eau x Collectif . gamme de puissance existante" label="Gamme de puissance" />
