@@ -1,6 +1,9 @@
 # Table of contents
 
 * [Page vide à laisser (articles à insérer en dessous)](README.md)
+* [Chiffres-clés 2023 des réseaux de froid](chiffres-cles-2023-des-reseaux-de-froid.md)
+* [Classement des réseaux de chaleur](classement-des-reseaux-de-chaleur.md)
+* [Chiffres-clés 2023 des réseaux de chaleur](chiffres-cles-2023-des-reseaux-de-chaleur.md)
 * [Présentation de France Chaleur Urbaine à la ministre déléguée chargée de l'Énergie](<README (36).md>)
 * [2600 communes à fort potentiel pour la création d'un réseau de chaleur : élus, testez la vôtre !](2600-communes-a-fort-potentiel-pour-la-creation-dun-reseau-de-chaleur-elus-testez-la-votre.md)
 * [Retrouvez les données les plus récentes des réseaux de chaleur](retrouvez-les-donnees-les-plus-recentes-des-reseaux-de-chaleur.md)
