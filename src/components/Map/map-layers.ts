@@ -14,7 +14,12 @@ import { batimentsRaccordesReseauxChaleurFroidLayersSpec } from './components/la
 import { besoinsEnChaleurLayersSpec } from './components/layers/besoinsEnChaleur';
 import { besoinsEnChaleurIndustrieCommunesLayersSpec } from './components/layers/besoinsEnChaleurIndustrieCommunes';
 import { caracteristiquesBatimentsLayersSpec } from './components/layers/caracteristiquesBatiments';
-import { tileSourcesMaxZoom, type LayerSymbolSpecification, type MapSourceLayersSpecification } from './components/layers/common';
+import {
+  type PopupStyleHelpers,
+  tileSourcesMaxZoom,
+  type LayerSymbolSpecification,
+  type MapSourceLayersSpecification,
+} from './components/layers/common';
 import { communesFortPotentielPourCreationReseauxChaleurLayersSpec } from './components/layers/communesFortPotentielPourCreationReseauxChaleur';
 import { consommationsGazLayersSpec } from './components/layers/consommationsGaz';
 import { demandesEligibiliteLayersSpec } from './components/layers/demandesEligibilite';
@@ -91,6 +96,7 @@ export const legendURLKeyToLegendFeature: Record<LegendURLKey | string, MapLegen
   raccordementsChaud: 'batimentsRaccordesReseauxChaleur',
   raccordementsFroid: 'batimentsRaccordesReseauxFroid',
 };
+export type PopupHandler<Data = any> = (data: Data, styleHelpers: PopupStyleHelpers) => React.ReactNode;
 
 export type MapLayerSpecification<ILayerId = string> = Omit<LayerSpecification, 'source' | 'source-layer' | 'filter'> & {
   id: ILayerId;
@@ -100,8 +106,16 @@ export type MapLayerSpecification<ILayerId = string> = Omit<LayerSpecification, 
   };
   isVisible: (config: MapConfiguration) => boolean;
   filter?: (config: MapConfiguration) => FilterSpecification;
-  unselectable?: true; // false by default, allows hover effect + cursor change + click to open a popup
-};
+} & (
+    | {
+        unselectable: true;
+        popup?: never;
+      }
+    | {
+        unselectable?: false; // false by default, allows hover effect + cursor change + click to open a popup
+        popup: PopupHandler;
+      }
+  );
 
 export const mapLayers = [
   ...enrrMobilisablesZonesGeothermieProfondeLayersSpec,

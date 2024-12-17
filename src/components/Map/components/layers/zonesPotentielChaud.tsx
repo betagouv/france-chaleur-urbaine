@@ -1,6 +1,7 @@
 import { darken } from '@/utils/color';
+import { formatMWhAn, prettyFormatNumber } from '@/utils/strings';
 
-import { ifHoverElse, type MapSourceLayersSpecification } from './common';
+import { ifHoverElse, type PopupStyleHelpers, type MapSourceLayersSpecification } from './common';
 
 export const zonePotentielChaudColor = '#b0cc4e';
 export const zonePotentielFortChaudColor = '#448d60';
@@ -24,6 +25,7 @@ export const zonesPotentielChaudLayersSpec = [
           'fill-opacity': zonePotentielChaudOpacity,
         },
         isVisible: (config) => config.zonesOpportunite.show && config.zonesOpportunite.zonesPotentielChaud,
+        popup: buildPopup(false),
       },
       {
         id: 'zonesPotentielChaud-contour',
@@ -55,6 +57,7 @@ export const zonesPotentielChaudLayersSpec = [
           'fill-opacity': zonePotentielChaudOpacity,
         },
         isVisible: (config) => config.zonesOpportunite.show && config.zonesOpportunite.zonesPotentielFortChaud,
+        popup: buildPopup(true),
       },
       {
         id: 'zonesPotentielFortChaud-contour',
@@ -69,3 +72,46 @@ export const zonesPotentielChaudLayersSpec = [
     ],
   },
 ] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+
+type ZonePotentielChaud = {
+  fid: number;
+  geothermie: number;
+  surf_sol_8: number;
+  part_ter: number;
+  dep: string;
+  rdt_bt: number;
+  chauf_mwh: number;
+  ecs_mwh: number;
+  surf_sol_1: number;
+  id_zone: string;
+  rdt_ht: number;
+  surf_capt_: number;
+  code_com_i: string;
+  surf_cap_1: number;
+  bat_imp: number;
+  com_arr: string;
+  SHAPE__Length: number;
+  sol_moy: number;
+  part_ecs: number;
+  SHAPE__Area: number;
+};
+
+function buildPopup(fortChaud?: boolean) {
+  const Popup = (zonePotentielChaud: ZonePotentielChaud, { Property, Title, TwoColumns }: PopupStyleHelpers) => (
+    <>
+      <Title>Zone à {fortChaud ? ' fort' : ''} potentiel</Title>
+      <TwoColumns>
+        <Property label="Nombre de bâtiments “intéressants”" value={zonePotentielChaud.bat_imp} />
+        <Property label="Besoins en chauffage" value={zonePotentielChaud.chauf_mwh} formatter={formatMWhAn} />
+        <Property label="Besoins en eau chaude sanitaire" value={zonePotentielChaud.ecs_mwh} formatter={formatMWhAn} />
+        <Property
+          label="Part du secteur tertiaire"
+          value={zonePotentielChaud.part_ter}
+          formatter={(v) => <>{prettyFormatNumber(v * 100, 2)}&nbsp;%</>}
+        />
+        <Property label="Source" value="Cerema" />
+      </TwoColumns>
+    </>
+  );
+  return Popup;
+}

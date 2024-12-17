@@ -1,4 +1,9 @@
-import { ifHoverElse, type MapSourceLayersSpecification } from './common';
+import Button from '@/components/ui/Button';
+import { type NetworkSummary } from '@/types/Summary/Network';
+import { isDefined } from '@/utils/core';
+import { prettyFormatNumber } from '@/utils/strings';
+
+import { ifHoverElse, type PopupStyleHelpers, type MapSourceLayersSpecification } from './common';
 import { buildFiltreGestionnaire, buildFiltreIdentifiantReseau, buildReseauxDeChaleurFilters } from './filters';
 
 export const reseauDeChaleurClasseColor = '#079067';
@@ -33,6 +38,7 @@ export const reseauxDeChaleurLayersSpec = [
           ...buildFiltreIdentifiantReseau(config.filtreIdentifiantReseau),
         ],
         isVisible: (config) => config.reseauxDeChaleur.show,
+        popup: Popup,
       },
       {
         id: 'reseauxDeChaleur-sans-trace',
@@ -56,7 +62,36 @@ export const reseauxDeChaleurLayersSpec = [
           ...buildFiltreIdentifiantReseau(config.filtreIdentifiantReseau),
         ],
         isVisible: (config) => config.reseauxDeChaleur.show,
+        popup: Popup,
       },
     ],
   },
 ] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+
+function Popup(reseauDeChaleur: NetworkSummary, { Property, Title, TwoColumns }: PopupStyleHelpers) {
+  return (
+    <>
+      <Title>{reseauDeChaleur.nom_reseau ?? 'Réseau de chaleur'}</Title>
+      <TwoColumns>
+        <Property label="Identifiant" value={reseauDeChaleur['Identifiant reseau']} />
+        <Property label="Gestionnaire" value={reseauDeChaleur.Gestionnaire} />
+        <Property label="Taux EnR&R" value={reseauDeChaleur['Taux EnR&R']} unit="%" />
+        <Property
+          label="Contenu CO2 ACV"
+          value={reseauDeChaleur['contenu CO2 ACV']}
+          formatter={(value) => (isDefined(value) ? `${prettyFormatNumber(value * 1000)} g/kWh` : 'Non connu')}
+        />
+      </TwoColumns>
+      {reseauDeChaleur['Identifiant reseau'] && (
+        <Button
+          priority="secondary"
+          full
+          iconId="fr-icon-eye-line"
+          linkProps={{ href: `/reseaux/${reseauDeChaleur['Identifiant reseau']}`, target: '_blank', rel: 'noopener noreferrer' }}
+        >
+          Voir la fiche du réseau
+        </Button>
+      )}
+    </>
+  );
+}

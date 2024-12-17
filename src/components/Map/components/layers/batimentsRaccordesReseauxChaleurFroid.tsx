@@ -1,6 +1,8 @@
+import Button from '@/components/ui/Button';
+import { formatMWhAn } from '@/utils/strings';
 import { type ExtractKeysOfType } from '@/utils/typescript';
 
-import { ifHoverElse, type MapSourceLayersSpecification } from './common';
+import { ifHoverElse, type PopupStyleHelpers, type MapSourceLayersSpecification } from './common';
 import { type MapConfiguration } from '../../map-configuration';
 import { type MapLayerSpecification } from '../../map-layers';
 
@@ -67,6 +69,7 @@ function buildLayerAndHoverLayer<LayerId extends string>(
         'icon-opacity': ['interpolate', ['linear'], ['zoom'], 9.2, 0, 10.5, ifHoverElse(0, batimentsRaccordesReseauxChaleurFroidOpacity)],
       },
       isVisible: (config) => config[conf.layerConfKey],
+      popup: Popup,
     },
     {
       id: `${conf.id}-hover`,
@@ -86,4 +89,50 @@ function buildLayerAndHoverLayer<LayerId extends string>(
       unselectable: true,
     },
   ] as const satisfies ReadonlyArray<MapLayerSpecification>;
+}
+
+const secteurBatimentRaccordeToLabels = {
+  A: 'Agriculture',
+  I: 'Industrie',
+  R: 'Résidentiel',
+  T: 'Tertiaire',
+};
+
+type BatimentRaccordeReseauxChaleurFroid = {
+  fid: number;
+  id_reseau: string;
+  filiere: 'C' | 'F';
+  adresse?: string;
+  code_grand_secteur: 'A' | 'I' | 'R' | 'T';
+  conso?: number;
+};
+
+function Popup(
+  batimentRaccordeReseauxChaleurFroid: BatimentRaccordeReseauxChaleurFroid,
+  { Property, Title, TwoColumns }: PopupStyleHelpers
+) {
+  return (
+    <>
+      <Title>{batimentRaccordeReseauxChaleurFroid.adresse || 'Batiment raccordé'}</Title>
+      <TwoColumns>
+        <Property
+          label={`Consommation de ${batimentRaccordeReseauxChaleurFroid.filiere === 'C' ? 'chaleur' : 'froid'}`}
+          value={batimentRaccordeReseauxChaleurFroid.conso}
+          formatter={formatMWhAn}
+        />
+        <Property label="Secteur" value={secteurBatimentRaccordeToLabels[batimentRaccordeReseauxChaleurFroid.code_grand_secteur]} />
+        <Property label="Identifiant du réseau" value={batimentRaccordeReseauxChaleurFroid.id_reseau} />
+        <Property label="Source" value="SDES pour 2023" />
+      </TwoColumns>
+      <Button
+        priority="secondary"
+        className="fr-mt-1w"
+        full
+        iconId="fr-icon-eye-line"
+        linkProps={{ href: `/reseaux/${batimentRaccordeReseauxChaleurFroid.id_reseau}`, target: '_blank', rel: 'noopener noreferrer' }}
+      >
+        Voir la fiche du réseau
+      </Button>
+    </>
+  );
 }

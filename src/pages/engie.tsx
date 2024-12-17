@@ -1,7 +1,6 @@
 import IframeWrapper from '@/components/IframeWrapper';
 import Map from '@/components/Map/Map';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
-import { MapPopupType } from '@/types/MapComponentsInfos';
 
 const EngieMap = () => {
   return (
@@ -20,7 +19,6 @@ const EngieMap = () => {
           src: '/logo-ENGIE.jpg',
           alt: 'logo ENGIE',
         }}
-        popupType={MapPopupType.ENGIE}
         withFCUAttribution
       />
     </IframeWrapper>

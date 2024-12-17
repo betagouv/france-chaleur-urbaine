@@ -1,6 +1,6 @@
 import { darken } from '@/utils/color';
 
-import { ifHoverElse, type MapSourceLayersSpecification } from '../common';
+import { ifHoverElse, type PopupStyleHelpers, type MapSourceLayersSpecification } from '../common';
 
 export const enrrMobilisablesFrichesLayerColor = '#dc958e';
 export const enrrMobilisablesFrichesLayerOpacity = 0.7;
@@ -22,6 +22,7 @@ export const enrrMobilisablesFrichesLayersSpec = [
           'fill-opacity': enrrMobilisablesFrichesLayerOpacity,
         },
         isVisible: (config) => config.enrrMobilisablesSolaireThermique.show && config.enrrMobilisablesSolaireThermique.showFriches,
+        popup: Popup,
       },
       {
         id: 'enrrMobilisables-friches-contour',
@@ -36,3 +37,28 @@ export const enrrMobilisablesFrichesLayersSpec = [
     ],
   },
 ] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+
+export type SolaireThermiqueFriche = {
+  GmlID: string;
+  comm_insee: string;
+  'db_gd5kj.hsu_pnjyu.solaire_thermique_friches_solaire_thermique_friches.fid': number;
+  site_id: string;
+  site_nom: string;
+  source_nom: string;
+  st_area_shape_: number;
+  st_length_shape_: number;
+  surf_site: number;
+  urba_zone_: string;
+};
+
+function Popup(friche: SolaireThermiqueFriche, { Property, Title, TwoColumns }: PopupStyleHelpers) {
+  return (
+    <>
+      <Title subtitle="Friche">{friche.site_nom}</Title>
+      <TwoColumns>
+        <Property label="Surface" value={friche.surf_site} unit="m²" />
+        <Property label="Source" value={friche.source_nom} />
+      </TwoColumns>
+    </>
+  );
+}

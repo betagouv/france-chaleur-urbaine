@@ -41,71 +41,24 @@ export const MapStyle: any = createGlobalStyle<{
         `}
     }
 
-    .popup-map-layer {
+    .maplibregl-popup {
       z-index: ${mapControlZindex + 1};
-      font-size: 14px;
-
-      &.maplibregl-popup-anchor-left  .maplibregl-popup-tip {
-        border-right-color: #4550e5;
-      }
-      &.maplibregl-popup-anchor-right  .maplibregl-popup-tip {
-        border-left-color: #4550e5;
-      }
-      &.maplibregl-popup-anchor-top  .maplibregl-popup-tip {
-        border-bottom-color: #4550e5;
-      }
-      &.maplibregl-popup-anchor-bottom  .maplibregl-popup-tip {
-        border-top-color: #4550e5;
-      }
-
-      .maplibregl-popup-content{
-        border: 2px solid #4550e5;
-        border-radius: 0.3em;
-        overflow: hidden;
-
-        header {
-          padding: 8px;
-          margin: -15px -10px 10px;
-          background-color: #4550e5;
-
-          h6 {
-            color: #fff;
-            font-size: 15px;
-            font-weight: bold;
-            margin: 0;
-          }
-        }
-
-        .maplibregl-popup-close-button {
-          font-size: 1.5em;
-          line-height: 0;
-          font-weight: bold;
-          color: #000;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 1.25em;
-          height: 1.25em;
-          padding: 0 0 2px;
-          margin: 3px;
-          border-radius: 1em;
-          transition-property: color, background-color;
-          transition-duration: 0.25s;
-          transition-timing-function: ease;
-
-          &:hover {
-            color: #4550e5;
-            background-color: #fff;
-          }
-        }
-      }
-    }
-    .popup-map-layer--standard {
-      max-width: 300px !important;
-    }
-    .popup-map-layer--fluid {
       max-width: 500px !important;
     }
+    .maplibregl-popup-content {
+      padding: 12px;
+      filter: drop-shadow(4px 4px 8px #555);
+
+      // contains a wrapper
+      > div {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        font-size: 14px;
+        line-height: 24px;
+      }
+    }
+
     /*HACK : keep the attributions links visible even when the scale legend is zoom at the max*/
     .maplibregl-control-container {
       .maplibregl-ctrl-bottom-right {
@@ -207,19 +160,6 @@ export const LegendLogo = styled.div`
     vertical-align: middle;
   }
   display: inline-block;
-`;
-
-export const PopupTitle = styled.h3`
-  font-size: 1.1rem;
-  line-height: 1.5rem;
-  margin-bottom: 8px;
-`;
-
-export const PopupType = styled.div`
-  color: #78818d;
-  font-size: 0.75rem;
-  font-weight: bold;
-  text-transform: uppercase;
 `;
 
 export const MapSearchInputWrapper = styled(Box)`

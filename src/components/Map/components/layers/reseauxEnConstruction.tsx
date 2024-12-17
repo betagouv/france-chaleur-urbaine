@@ -1,4 +1,6 @@
-import { ifHoverElse, type MapSourceLayersSpecification } from './common';
+import { type FuturNetworkSummary } from '@/types/Summary/FuturNetwork';
+
+import { ifHoverElse, type PopupStyleHelpers, type MapSourceLayersSpecification } from './common';
 import { buildFiltreGestionnaire } from './filters';
 
 export const reseauxEnConstructionColor = '#DA5DD5';
@@ -23,6 +25,7 @@ export const reseauxEnConstructionLayersSpec = [
         },
         filter: (config) => ['all', ['==', ['get', 'is_zone'], true], ...buildFiltreGestionnaire(config.filtreGestionnaire)],
         isVisible: (config) => config.reseauxEnConstruction,
+        popup: Popup,
       },
       {
         id: 'reseauxEnConstruction-trace',
@@ -39,7 +42,20 @@ export const reseauxEnConstructionLayersSpec = [
         },
         filter: (config) => ['all', ['==', ['get', 'is_zone'], false], ...buildFiltreGestionnaire(config.filtreGestionnaire)],
         isVisible: (config) => config.reseauxEnConstruction,
+        popup: Popup,
       },
     ],
   },
 ] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+
+function Popup(reseauEnConstruction: FuturNetworkSummary, { Property, Title, TwoColumns }: PopupStyleHelpers) {
+  return (
+    <>
+      <Title>Réseau en construction</Title>
+      <TwoColumns>
+        <Property label="Gestionnaire" value={reseauEnConstruction.gestionnaire} />
+        <Property label="Mise en service" value={reseauEnConstruction.mise_en_service} />
+      </TwoColumns>
+    </>
+  );
+}

@@ -5,4 +5,5 @@ export interface GasSummary {
   conso_nb: number;
   pdl_nb: number;
   is_close: boolean;
+  rownum: number;
 }

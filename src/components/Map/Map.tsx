@@ -31,7 +31,7 @@ import { useServices } from '@/services';
 import { trackEvent } from '@/services/analytics';
 import { type BoundingBox } from '@/types/Coords';
 import { type AddressDetail, type HandleAddressSelect } from '@/types/HeatNetworksResponse';
-import { type MapMarkerInfos, MapPopupType } from '@/types/MapComponentsInfos';
+import { type MapMarkerInfos } from '@/types/MapComponentsInfos';
 import { type Point } from '@/types/Point';
 import { type StoredAddress } from '@/types/StoredAddress';
 import { type TypeLegendLogo } from '@/types/TypeLegendLogo';
@@ -39,7 +39,6 @@ import cx from '@/utils/cx';
 
 import CardSearchDetails from './components/CardSearchDetails';
 import MapMarker from './components/MapMarker';
-import MapPopup from './components/MapPopup';
 import MapSearchForm from './components/MapSearchForm';
 import SimpleMapLegend from './components/SimpleMapLegend';
 import { Title } from './components/SimpleMapLegend.style';
@@ -105,7 +104,6 @@ type MapProps = {
   legendLogoOpt?: TypeLegendLogo;
   withCenterPin?: boolean;
   noPopup?: boolean;
-  popupType?: MapPopupType;
   pinsList?: MapMarkerInfos[];
   initialCenter?: Point;
   initialZoom?: number;
@@ -135,7 +133,6 @@ export const FullyFeaturedMap = ({
   noPopup,
   withPins = true,
   legendLogoOpt,
-  popupType = MapPopupType.DEFAULT,
   pinsList,
   initialCenter,
   initialZoom,
@@ -372,7 +369,7 @@ export const FullyFeaturedMap = ({
     setMapLayersLoaded(true);
   };
 
-  const { popupInfos } = useMapEvents({ mapLayersLoaded, isDrawing, mapRef: mapRef.current });
+  const { Popup } = useMapEvents({ mapLayersLoaded, isDrawing, mapRef: mapRef.current });
 
   // disable the switcher control as it conflicts with map layers and drawing interactions
   useEffect(() => {
@@ -672,9 +669,7 @@ export const FullyFeaturedMap = ({
             />
             <NavigationControl showZoom={true} visualizePitch={true} position="bottom-right" />
             <ScaleControl maxWidth={100} unit="metric" position="bottom-left" />
-            {popupInfos && (
-              <MapPopup latitude={popupInfos.latitude} longitude={popupInfos.longitude} content={popupInfos.content} type={popupType} />
-            )}
+            {Popup}
             {withPins &&
               markersList.length > 0 &&
               markersList.map((marker: MapMarkerInfos) => (

@@ -1,7 +1,6 @@
 import IframeWrapper from '@/components/IframeWrapper';
 import Map from '@/components/Map/Map';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
-import { MapPopupType } from '@/types/MapComponentsInfos';
 
 const DalkiaMap = () => {
   return (
@@ -20,7 +19,6 @@ const DalkiaMap = () => {
           src: '/logo-DALKIA.png',
           alt: 'logo Dalkia',
         }}
-        popupType={MapPopupType.DALKIA}
         withFCUAttribution
       />
     </IframeWrapper>

@@ -7,7 +7,7 @@ export interface EnergySummary {
   dpe_energie: string;
   dpe_ges: string;
   nb_logements: number;
-  annee_construction?: string;
+  annee_construction?: number;
   is_close: boolean;
   type_usage: string;
   type_chauffage: string;

@@ -12,6 +12,7 @@ type StyleProps = {
   flexWrap?: CSSProperties['flexWrap'];
   flexGrow?: CSSProperties['flexGrow'];
   alignItems?: CSSProperties['alignItems'];
+  alignSelf?: CSSProperties['alignSelf'];
   justifyContent?: CSSProperties['justifyContent'];
   placeContent?: CSSProperties['placeContent'];
   gap?: CSSProperties['gap'];
@@ -26,6 +27,7 @@ type StyleProps = {
   fontStyle?: CSSProperties['fontStyle'];
   textAlign?: CSSProperties['textAlign'];
   textWrap?: CSSProperties['textWrap'];
+  whiteSpace?: CSSProperties['whiteSpace'];
   position?: CSSProperties['position'];
   top?: CSSProperties['top'];
   right?: CSSProperties['right'];
@@ -52,6 +54,7 @@ const StyledBox = styled.div<StyleProps>`
   flex-wrap: ${({ flexWrap }) => flexWrap};
   flex-grow: ${({ flexGrow }) => flexGrow};
   align-items: ${({ alignItems }) => alignItems};
+  align-self: ${({ alignSelf }) => alignSelf};
   justify-content: ${({ justifyContent }) => justifyContent};
   place-content: ${({ placeContent }) => placeContent};
   gap: ${({ gap }) => gap};
@@ -66,6 +69,7 @@ const StyledBox = styled.div<StyleProps>`
   color: ${({ textColor }) => (textColor ? (textColor.startsWith('#') ? textColor : `var(--${textColor})`) : undefined)};
   text-align: ${({ textAlign }) => textAlign};
   text-wrap: ${({ textWrap }) => textWrap};
+  white-space: ${({ whiteSpace }) => whiteSpace};
   position: ${({ position }) => position};
   top: ${({ top }) => top};
   right: ${({ right }) => right};
@@ -107,6 +111,7 @@ function Box(props: PropsWithChildren<BoxProps>) {
       flexWrap={props.flexWrap}
       flexGrow={props.flexGrow}
       alignItems={props.alignItems}
+      alignSelf={props.alignSelf}
       justifyContent={props.justifyContent}
       placeContent={props.placeContent}
       gap={props.gap}
@@ -120,6 +125,7 @@ function Box(props: PropsWithChildren<BoxProps>) {
       textColor={props.textColor}
       textAlign={props.textAlign}
       textWrap={props.textWrap}
+      whiteSpace={props.whiteSpace}
       position={props.position}
       top={props.top}
       right={props.right}

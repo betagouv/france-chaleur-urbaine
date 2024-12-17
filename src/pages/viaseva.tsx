@@ -1,7 +1,6 @@
 import IframeWrapper from '@/components/IframeWrapper';
 import Map from '@/components/Map/Map';
 import { iframeSimpleMapConfiguration } from '@/components/Map/map-configuration';
-import { MapPopupType } from '@/types/MapComponentsInfos';
 
 const ViasevaMap = () => {
   return (
@@ -15,7 +14,6 @@ const ViasevaMap = () => {
           src: '/logo-viaseva.svg',
           alt: 'logo viaseva',
         }}
-        popupType={MapPopupType.VIASEVA}
         withFCUAttribution
       />
     </IframeWrapper>

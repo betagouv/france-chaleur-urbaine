@@ -1,9 +1,10 @@
 import { type ExpressionInputType } from 'maplibre-gl';
 
 import { type GasSummary } from '@/types/Summary/Gas';
+import { formatMWhAn } from '@/utils/strings';
 import { ObjectEntries } from '@/utils/typescript';
 
-import { ifHoverElse, intermediateTileLayersMinZoom, type MapSourceLayersSpecification } from './common';
+import { ifHoverElse, intermediateTileLayersMinZoom, type PopupStyleHelpers, type MapSourceLayersSpecification } from './common';
 
 export const consommationsGazLayerStyle = {
   T: '#0032E5',
@@ -104,7 +105,36 @@ export const consommationsGazLayersSpec = [
           ];
         },
         isVisible: (config) => config.consommationsGaz.show,
+        popup: Popup,
       },
     ],
   },
 ] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+
+function Popup(consommationGaz: GasSummary, { Property, Title, TwoColumns }: PopupStyleHelpers) {
+  return (
+    <>
+      <Title subtitle={writeTypeConso(consommationGaz.code_grand)}>
+        {consommationGaz.adresse} {consommationGaz.nom_commun}
+      </Title>
+      <TwoColumns>
+        <Property label="Conso. gaz" value={consommationGaz.conso_nb} formatter={formatMWhAn} />
+      </TwoColumns>
+    </>
+  );
+}
+
+const writeTypeConso = (typeConso: GasSummary['code_grand'] | unknown) => {
+  switch (typeConso) {
+    case 'R': {
+      return 'Logement';
+    }
+    case 'T': {
+      return 'Établissement tertiaire';
+    }
+    case 'I': {
+      return 'Industrie';
+    }
+  }
+  return '';
+};

@@ -1,4 +1,6 @@
-import { ifHoverElse, type MapSourceLayersSpecification } from './common';
+import { formatTypeEnergieChauffage } from '@/utils/format';
+
+import { ifHoverElse, type PopupStyleHelpers, type MapSourceLayersSpecification } from './common';
 
 export const demandesEligibiliteLayerStyle = {
   fill: { color: '#FFFFFF', size: 4 },
@@ -25,7 +27,30 @@ export const demandesEligibiliteLayersSpec = [
           'circle-stroke-width': demandesEligibiliteLayerStyle.stroke.size,
         },
         isVisible: (config) => config.demandesEligibilite,
+        popup: Popup,
       },
     ],
   },
 ] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+
+export type DemandeEligibilite = {
+  id: string;
+  Adresse: string;
+  'Mode de chauffage': string;
+  'Type de chauffage': string;
+  Structure: string;
+};
+
+function Popup(demandeEligibilite: DemandeEligibilite, { Property, Title, TwoColumns }: PopupStyleHelpers) {
+  return (
+    <>
+      <Title>{demandeEligibilite.Adresse}</Title>
+
+      <TwoColumns>
+        <Property label="Chauffage actuel" value={demandeEligibilite['Mode de chauffage']} formatter={formatTypeEnergieChauffage} />
+        <Property label="Mode de chauffage" value={demandeEligibilite['Type de chauffage']} />
+        <Property label="Structure" value={demandeEligibilite.Structure} />
+      </TwoColumns>
+    </>
+  );
+}
