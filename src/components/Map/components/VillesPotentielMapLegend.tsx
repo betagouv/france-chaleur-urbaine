@@ -8,8 +8,8 @@ import Box, { type BoxProps } from '@/components/ui/Box';
 import Text from '@/components/ui/Text';
 
 import IconPolygon from './IconPolygon';
-import { besoinsEnChaleurIntervals } from './layers/besoinsEnChaleur';
-import { zonePotentielChaudColor, zonePotentielChaudOpacity, zonePotentielFortChaudColor } from './layers/zonesPotentielChaud';
+import { besoinsEnChaleurIntervals } from '../layers/besoinsEnChaleur';
+import { zonePotentielChaudColor, zonePotentielChaudOpacity, zonePotentielFortChaudColor } from '../layers/zonesPotentielChaud';
 
 const StyledBox = styled(Box)`
   ${({ theme }) => theme.media.lg`

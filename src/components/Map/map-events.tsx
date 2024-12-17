@@ -13,7 +13,7 @@ import { isDevModeEnabled } from '@/hooks/useDevMode';
 import { type SourceId } from '@/server/services/tiles.config';
 import { isDefined } from '@/utils/core';
 
-import { buildPopupStyleHelpers } from './components/layers/common';
+import { buildPopupStyleHelpers } from './layers/common';
 import { mapLayers, type MapLayerSpecification } from './map-layers';
 
 const selectionBuffer = 15; // pixels

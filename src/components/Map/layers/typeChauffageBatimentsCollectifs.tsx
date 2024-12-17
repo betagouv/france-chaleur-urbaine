@@ -8,7 +8,7 @@ import { formatTypeEnergieChauffage } from '@/utils/format';
 import { ObjectEntries } from '@/utils/typescript';
 
 import { ifHoverElse, intermediateTileLayersMinZoom, type PopupStyleHelpers, type MapSourceLayersSpecification } from './common';
-import { type MapLayerSpecification } from '../../map-layers';
+import { type MapLayerSpecification } from '../map-layers';
 
 export const minIconSize = 12;
 export const maxIconSize = 30;

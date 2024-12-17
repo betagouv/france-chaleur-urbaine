@@ -17,7 +17,7 @@ import { formatDistance } from '@/utils/geo';
 
 import { type MeasureFeature, type MeasureLabelFeature } from './measure';
 import MesureFeatureListItem from './MeasureFeatureListItem';
-import { type MapSourceLayersSpecification } from '../layers/common';
+import { type MapSourceLayersSpecification } from '../../layers/common';
 import { Title } from '../SimpleMapLegend.style';
 
 export const distancesMeasurementLinesSourceId = 'distance-measurements-lines';

@@ -1,7 +1,7 @@
 import geojsonvt from 'geojson-vt';
 import vtpbf from 'vt-pbf';
 
-import { tileSourcesMaxZoom } from '@/components/Map/components/layers/common';
+import { tileSourcesMaxZoom } from '@/components/Map/layers/common';
 import db from '@/server/db';
 import base from '@/server/db/airtable';
 import { isDefined } from '@/utils/core';

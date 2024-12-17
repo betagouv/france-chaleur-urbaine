@@ -3,8 +3,8 @@ import { formatMWhAn } from '@/utils/strings';
 import { type ExtractKeysOfType } from '@/utils/typescript';
 
 import { ifHoverElse, type PopupStyleHelpers, type MapSourceLayersSpecification } from './common';
-import { type MapConfiguration } from '../../map-configuration';
-import { type MapLayerSpecification } from '../../map-layers';
+import { type MapConfiguration } from '../map-configuration';
+import { type MapLayerSpecification } from '../map-layers';
 
 export const batimentsRaccordesReseauxDeChaleurColor = '#079067';
 export const batimentsRaccordesReseauxDeFroidColor = '#0094FF';

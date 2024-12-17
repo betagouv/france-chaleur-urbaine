@@ -18,7 +18,7 @@ import { EXPORT_FORMAT } from '@/types/enum/ExportFormat';
 import { type GasSummary } from '@/types/Summary/Gas';
 import { validatePolygonGeometry } from '@/utils/geo';
 
-import { type MapSourceLayersSpecification } from '../layers/common';
+import { type MapSourceLayersSpecification } from '../../layers/common';
 import { Title } from '../SimpleMapLegend.style';
 
 export const buildingsDataExtractionPolygonsSourceId = 'buildings-data-extraction-polygons';

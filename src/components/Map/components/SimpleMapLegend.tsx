@@ -15,42 +15,6 @@ import Tooltip from '@/components/ui/Tooltip';
 import { trackEvent } from '@/services/analytics';
 
 import IconPolygon from './IconPolygon';
-import { besoinsEnChaleurIntervals, besoinsEnFroidIntervals } from './layers/besoinsEnChaleur';
-import { besoinsEnChaleurIndustrieCommunesIntervals } from './layers/besoinsEnChaleurIndustrieCommunes';
-import { caracteristiquesBatimentsLayerStyle } from './layers/caracteristiquesBatiments';
-import {
-  communesFortPotentielPourCreationReseauxChaleurInterval,
-  communesFortPotentielPourCreationReseauxChaleurLayerColor,
-  communesFortPotentielPourCreationReseauxChaleurLayerOpacity,
-} from './layers/communesFortPotentielPourCreationReseauxChaleur';
-import { consommationsGazInterval, consommationsGazLayerStyle } from './layers/consommationsGaz';
-import { demandesEligibiliteLayerStyle } from './layers/demandesEligibilite';
-import { enrrMobilisablesFrichesLayerColor, enrrMobilisablesFrichesLayerOpacity } from './layers/enrr-mobilisables/friches';
-import { enrrMobilisablesParkingsLayerColor, enrrMobilisablesParkingsLayerOpacity } from './layers/enrr-mobilisables/parkings';
-import {
-  enrrMobilisablesThalassothermieLayerColor,
-  enrrMobilisablesThalassothermieLayerOpacity,
-} from './layers/enrr-mobilisables/thalassothermie';
-import {
-  enrrMobilisablesZonesGeothermieProfondeLayerColor,
-  enrrMobilisablesZonesGeothermieProfondeLayerOpacity,
-} from './layers/enrr-mobilisables/zonesGeothermieProfonde';
-import {
-  installationsGeothermieProfondeLayerColor,
-  installationsGeothermieProfondeLayerOpacity,
-  installationsGeothermieSurfaceEchangeursFermesDeclareeColor,
-  installationsGeothermieSurfaceEchangeursFermesOpacity,
-  installationsGeothermieSurfaceEchangeursFermesRealiseeColor,
-  installationsGeothermieSurfaceEchangeursOuvertsDeclareeColor,
-  installationsGeothermieSurfaceEchangeursOuvertsOpacity,
-  installationsGeothermieSurfaceEchangeursOuvertsRealiseeColor,
-} from './layers/installationsGeothermie';
-import {
-  energyFilterInterval,
-  typeChauffageBatimentsCollectifsStyle,
-  typeChauffageBatimentsOpacity,
-} from './layers/typeChauffageBatimentsCollectifs';
-import { zonePotentielChaudColor, zonePotentielChaudOpacity, zonePotentielFortChaudColor } from './layers/zonesPotentielChaud';
 import MapLegendReseaux from './MapLegendReseaux';
 import ModalCarteFrance from './ModalCarteFrance';
 import ScaleLegend from './ScaleLegend';
@@ -69,6 +33,42 @@ import {
 import BuildingsDataExtractionTool from './tools/BuildingsDataExtractionTool';
 import DistancesMeasurementTool from './tools/DistancesMeasurementTool';
 import LinearHeatDensityTool from './tools/LinearHeatDensityTool';
+import { besoinsEnChaleurIntervals, besoinsEnFroidIntervals } from '../layers/besoinsEnChaleur';
+import { besoinsEnChaleurIndustrieCommunesIntervals } from '../layers/besoinsEnChaleurIndustrieCommunes';
+import { caracteristiquesBatimentsLayerStyle } from '../layers/caracteristiquesBatiments';
+import {
+  communesFortPotentielPourCreationReseauxChaleurInterval,
+  communesFortPotentielPourCreationReseauxChaleurLayerColor,
+  communesFortPotentielPourCreationReseauxChaleurLayerOpacity,
+} from '../layers/communesFortPotentielPourCreationReseauxChaleur';
+import { consommationsGazInterval, consommationsGazLayerStyle } from '../layers/consommationsGaz';
+import { demandesEligibiliteLayerStyle } from '../layers/demandesEligibilite';
+import { enrrMobilisablesFrichesLayerColor, enrrMobilisablesFrichesLayerOpacity } from '../layers/enrr-mobilisables/friches';
+import { enrrMobilisablesParkingsLayerColor, enrrMobilisablesParkingsLayerOpacity } from '../layers/enrr-mobilisables/parkings';
+import {
+  enrrMobilisablesThalassothermieLayerColor,
+  enrrMobilisablesThalassothermieLayerOpacity,
+} from '../layers/enrr-mobilisables/thalassothermie';
+import {
+  enrrMobilisablesZonesGeothermieProfondeLayerColor,
+  enrrMobilisablesZonesGeothermieProfondeLayerOpacity,
+} from '../layers/enrr-mobilisables/zonesGeothermieProfonde';
+import {
+  installationsGeothermieProfondeLayerColor,
+  installationsGeothermieProfondeLayerOpacity,
+  installationsGeothermieSurfaceEchangeursFermesDeclareeColor,
+  installationsGeothermieSurfaceEchangeursFermesOpacity,
+  installationsGeothermieSurfaceEchangeursFermesRealiseeColor,
+  installationsGeothermieSurfaceEchangeursOuvertsDeclareeColor,
+  installationsGeothermieSurfaceEchangeursOuvertsOpacity,
+  installationsGeothermieSurfaceEchangeursOuvertsRealiseeColor,
+} from '../layers/installationsGeothermie';
+import {
+  energyFilterInterval,
+  typeChauffageBatimentsCollectifsStyle,
+  typeChauffageBatimentsOpacity,
+} from '../layers/typeChauffageBatimentsCollectifs';
+import { zonePotentielChaudColor, zonePotentielChaudOpacity, zonePotentielFortChaudColor } from '../layers/zonesPotentielChaud';
 
 const consommationsGazLegendColor = '#D9D9D9';
 const consommationsGazUsageLegendOpacity = 0.53;

@@ -1,4 +1,4 @@
-import { communesFortPotentielPourCreationReseauxChaleurInterval } from '@/components/Map/components/layers/communesFortPotentielPourCreationReseauxChaleur';
+import { communesFortPotentielPourCreationReseauxChaleurInterval } from '@/components/Map/layers/communesFortPotentielPourCreationReseauxChaleur';
 import { deepMergeObjects } from '@/utils/core';
 import { type Interval } from '@/utils/interval';
 import { type DeepPartial, type FlattenKeys } from '@/utils/typescript';

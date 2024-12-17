@@ -10,37 +10,37 @@ import { clientConfig } from '@/client-config';
 import { type MapConfiguration } from '@/components/Map/map-configuration';
 import { deepMergeObjects, isDefined } from '@/utils/core';
 
-import { batimentsRaccordesReseauxChaleurFroidLayersSpec } from './components/layers/batimentsRaccordesReseauxChaleurFroid';
-import { besoinsEnChaleurLayersSpec } from './components/layers/besoinsEnChaleur';
-import { besoinsEnChaleurIndustrieCommunesLayersSpec } from './components/layers/besoinsEnChaleurIndustrieCommunes';
-import { caracteristiquesBatimentsLayersSpec } from './components/layers/caracteristiquesBatiments';
+import { buildingsDataExtractionLayers } from './components/tools/BuildingsDataExtractionTool';
+import { distancesMeasurementLayers } from './components/tools/DistancesMeasurementTool';
+import { linearHeatDensityLayers } from './components/tools/LinearHeatDensityTool';
+import { batimentsRaccordesReseauxChaleurFroidLayersSpec } from './layers/batimentsRaccordesReseauxChaleurFroid';
+import { besoinsEnChaleurLayersSpec } from './layers/besoinsEnChaleur';
+import { besoinsEnChaleurIndustrieCommunesLayersSpec } from './layers/besoinsEnChaleurIndustrieCommunes';
+import { caracteristiquesBatimentsLayersSpec } from './layers/caracteristiquesBatiments';
 import {
   type PopupStyleHelpers,
   tileSourcesMaxZoom,
   type LayerSymbolSpecification,
   type MapSourceLayersSpecification,
-} from './components/layers/common';
-import { communesFortPotentielPourCreationReseauxChaleurLayersSpec } from './components/layers/communesFortPotentielPourCreationReseauxChaleur';
-import { consommationsGazLayersSpec } from './components/layers/consommationsGaz';
-import { demandesEligibiliteLayersSpec } from './components/layers/demandesEligibilite';
+} from './layers/common';
+import { communesFortPotentielPourCreationReseauxChaleurLayersSpec } from './layers/communesFortPotentielPourCreationReseauxChaleur';
+import { consommationsGazLayersSpec } from './layers/consommationsGaz';
+import { demandesEligibiliteLayersSpec } from './layers/demandesEligibilite';
 import {
   enrrMobilisablesChaleurFataleLayersSpec,
   enrrMobilisablesChaleurFataleLayerSymbols,
-} from './components/layers/enrr-mobilisables/chaleurFatale';
-import { enrrMobilisablesFrichesLayersSpec } from './components/layers/enrr-mobilisables/friches';
-import { enrrMobilisablesParkingsLayersSpec } from './components/layers/enrr-mobilisables/parkings';
-import { enrrMobilisablesThalassothermieLayersSpec } from './components/layers/enrr-mobilisables/thalassothermie';
-import { enrrMobilisablesZonesGeothermieProfondeLayersSpec } from './components/layers/enrr-mobilisables/zonesGeothermieProfonde';
-import { installationsGeothermieLayersSpec } from './components/layers/installationsGeothermie';
-import { perimetresDeDeveloppementPrioritaireLayersSpec } from './components/layers/perimetresDeDeveloppementPrioritaire';
-import { reseauxDeChaleurLayersSpec } from './components/layers/reseauxDeChaleur';
-import { reseauxDeFroidLayersSpec } from './components/layers/reseauxDeFroid';
-import { reseauxEnConstructionLayersSpec } from './components/layers/reseauxEnConstruction';
-import { typeChauffageBatimentsCollectifsLayersSpec } from './components/layers/typeChauffageBatimentsCollectifs';
-import { zonesPotentielChaudLayersSpec } from './components/layers/zonesPotentielChaud';
-import { buildingsDataExtractionLayers } from './components/tools/BuildingsDataExtractionTool';
-import { distancesMeasurementLayers } from './components/tools/DistancesMeasurementTool';
-import { linearHeatDensityLayers } from './components/tools/LinearHeatDensityTool';
+} from './layers/enrr-mobilisables/chaleurFatale';
+import { enrrMobilisablesFrichesLayersSpec } from './layers/enrr-mobilisables/friches';
+import { enrrMobilisablesParkingsLayersSpec } from './layers/enrr-mobilisables/parkings';
+import { enrrMobilisablesThalassothermieLayersSpec } from './layers/enrr-mobilisables/thalassothermie';
+import { enrrMobilisablesZonesGeothermieProfondeLayersSpec } from './layers/enrr-mobilisables/zonesGeothermieProfonde';
+import { installationsGeothermieLayersSpec } from './layers/installationsGeothermie';
+import { perimetresDeDeveloppementPrioritaireLayersSpec } from './layers/perimetresDeDeveloppementPrioritaire';
+import { reseauxDeChaleurLayersSpec } from './layers/reseauxDeChaleur';
+import { reseauxDeFroidLayersSpec } from './layers/reseauxDeFroid';
+import { reseauxEnConstructionLayersSpec } from './layers/reseauxEnConstruction';
+import { typeChauffageBatimentsCollectifsLayersSpec } from './layers/typeChauffageBatimentsCollectifs';
+import { zonesPotentielChaudLayersSpec } from './layers/zonesPotentielChaud';
 
 /**
  * Symbols used by layers and that must be loaded at map initialization.

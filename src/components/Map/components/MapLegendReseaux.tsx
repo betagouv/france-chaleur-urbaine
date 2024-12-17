@@ -11,19 +11,19 @@ import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
 import Tooltip from '@/components/ui/Tooltip';
 
+import { LegendFilters, SingleCheckbox, TabScrollablePart, Title } from './SimpleMapLegend.style';
 import {
   batimentsRaccordesReseauxChaleurFroidOpacity,
   batimentsRaccordesReseauxDeChaleurColor,
   batimentsRaccordesReseauxDeFroidColor,
-} from './layers/batimentsRaccordesReseauxChaleurFroid';
+} from '../layers/batimentsRaccordesReseauxChaleurFroid';
 import {
   perimetresDeDeveloppementPrioritaireColor,
   perimetresDeDeveloppementPrioritaireOpacity,
-} from './layers/perimetresDeDeveloppementPrioritaire';
-import { reseauDeChaleurClasseColor, reseauDeChaleurNonClasseColor } from './layers/reseauxDeChaleur';
-import { reseauxDeFroidColor } from './layers/reseauxDeFroid';
-import { reseauxEnConstructionColor, reseauxEnConstructionOpacity } from './layers/reseauxEnConstruction';
-import { LegendFilters, SingleCheckbox, TabScrollablePart, Title } from './SimpleMapLegend.style';
+} from '../layers/perimetresDeDeveloppementPrioritaire';
+import { reseauDeChaleurClasseColor, reseauDeChaleurNonClasseColor } from '../layers/reseauxDeChaleur';
+import { reseauxDeFroidColor } from '../layers/reseauxDeFroid';
+import { reseauxEnConstructionColor, reseauxEnConstructionOpacity } from '../layers/reseauxEnConstruction';
 
 // TODO thos should be fine tuned to decouple more the map configuration from the legend
 // but for now it's enough

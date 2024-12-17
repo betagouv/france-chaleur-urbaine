@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import XLSX from 'xlsx';
 
-import { reseauxDeChaleurFilters } from '@/components/Map/components/layers/filters';
+import { reseauxDeChaleurFilters } from '@/components/Map/layers/filters';
 import { filtresEnergies } from '@/components/Map/map-configuration';
 import ReseauxDeChaleurFilters, { type ReseauxDeChaleurFiltersProps } from '@/components/ReseauxDeChaleurFilters';
 import Box from '@/components/ui/Box';

@@ -1,4 +1,4 @@
-import { caracteristiquesBatimentsLayerStyle } from '@/components/Map/components/layers/caracteristiquesBatiments';
+import { caracteristiquesBatimentsLayerStyle } from '@/components/Map/layers/caracteristiquesBatiments';
 
 import Box from './ui/Box';
 
