@@ -1,5 +1,5 @@
 import { type GridRowSelectionModel, useGridApiRef } from '@mui/x-data-grid';
-import { type MutableRefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { type RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { type MapRef } from 'react-map-gl/maplibre';
 
 import Hoverable from '@/components//Hoverable';
@@ -32,7 +32,7 @@ type MapCenterLocation = {
 const Manager = () => {
   const { demandsService } = useServices();
   const tableApiRef = useGridApiRef();
-  const mapRef = useRef<MapRef>(null) as MutableRefObject<MapRef>;
+  const mapRef = useRef<MapRef>(null) as RefObject<MapRef>;
 
   const [loading, setLoading] = useState(true);
   const [demands, setDemands] = useState<Demand[]>([]);

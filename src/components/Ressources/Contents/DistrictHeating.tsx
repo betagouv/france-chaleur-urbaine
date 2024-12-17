@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { type MutableRefObject } from 'react';
+import { type RefObject } from 'react';
 
 import Infographie from '@/components/Infographie';
 import TrackedVideo from '@/components/TrackedVideo/TrackedVideo';
@@ -16,13 +16,13 @@ const DistrictHeating = ({
   accompagnementRef,
   aidesRef,
 }: {
-  chauffageUrbainRef: MutableRefObject<HTMLHeadingElement | null>;
-  avantagesRef: MutableRefObject<HTMLHeadingElement | null>;
-  chargeRef: MutableRefObject<HTMLHeadingElement | null>;
-  critereRef: MutableRefObject<HTMLHeadingElement | null>;
-  obligationRef: MutableRefObject<HTMLHeadingElement | null>;
-  accompagnementRef: MutableRefObject<HTMLHeadingElement | null>;
-  aidesRef: MutableRefObject<HTMLHeadingElement | null>;
+  chauffageUrbainRef: RefObject<HTMLHeadingElement | null>;
+  avantagesRef: RefObject<HTMLHeadingElement | null>;
+  chargeRef: RefObject<HTMLHeadingElement | null>;
+  critereRef: RefObject<HTMLHeadingElement | null>;
+  obligationRef: RefObject<HTMLHeadingElement | null>;
+  accompagnementRef: RefObject<HTMLHeadingElement | null>;
+  aidesRef: RefObject<HTMLHeadingElement | null>;
 }) => {
   return (
     <Container>

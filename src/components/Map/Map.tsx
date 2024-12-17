@@ -6,7 +6,7 @@ import { type LayerSpecification, type MapLibreEvent } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useRouter } from 'next/router';
 import { parseAsJson, parseAsString, useQueryStates } from 'nuqs';
-import { type MutableRefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { type RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import ReactDOMServer from 'react-dom/server';
 import MapReactGL, {
   AttributionControl,
@@ -111,7 +111,7 @@ type MapProps = {
   geolocDisabled?: boolean;
   withFCUAttribution?: boolean;
   persistViewStateInURL?: boolean;
-  mapRef?: MutableRefObject<MapRef>;
+  mapRef?: RefObject<MapRef>;
 };
 
 const Map = ({ initialMapConfiguration, ...props }: MapProps) => {

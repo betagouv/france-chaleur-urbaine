@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { type MutableRefObject } from 'react';
+import { type RefObject } from 'react';
 
 import Infographie from '@/components/Infographie';
 import TrackedVideo from '@/components/TrackedVideo/TrackedVideo';
@@ -22,19 +22,19 @@ const HeatNetwork = ({
   aidesRef,
   subventionRef,
 }: {
-  reseauDeChaleurRef: MutableRefObject<HTMLHeadingElement | null>;
-  energiesRef: MutableRefObject<HTMLHeadingElement | null>;
-  developpementRef: MutableRefObject<HTMLHeadingElement | null>;
-  caracteristiquesRef: MutableRefObject<HTMLHeadingElement | null>;
-  loiRef: MutableRefObject<HTMLHeadingElement | null>;
-  avantagesRef: MutableRefObject<HTMLHeadingElement | null>;
-  acteursRef: MutableRefObject<HTMLHeadingElement | null>;
-  raccordablesRef: MutableRefObject<HTMLHeadingElement | null>;
-  obligationsRef: MutableRefObject<HTMLHeadingElement | null>;
-  accompagnementRef: MutableRefObject<HTMLHeadingElement | null>;
-  chaleurRef: MutableRefObject<HTMLHeadingElement | null>;
-  aidesRef: MutableRefObject<HTMLHeadingElement | null>;
-  subventionRef: MutableRefObject<HTMLHeadingElement | null>;
+  reseauDeChaleurRef: RefObject<HTMLHeadingElement | null>;
+  energiesRef: RefObject<HTMLHeadingElement | null>;
+  developpementRef: RefObject<HTMLHeadingElement | null>;
+  caracteristiquesRef: RefObject<HTMLHeadingElement | null>;
+  loiRef: RefObject<HTMLHeadingElement | null>;
+  avantagesRef: RefObject<HTMLHeadingElement | null>;
+  acteursRef: RefObject<HTMLHeadingElement | null>;
+  raccordablesRef: RefObject<HTMLHeadingElement | null>;
+  obligationsRef: RefObject<HTMLHeadingElement | null>;
+  accompagnementRef: RefObject<HTMLHeadingElement | null>;
+  chaleurRef: RefObject<HTMLHeadingElement | null>;
+  aidesRef: RefObject<HTMLHeadingElement | null>;
+  subventionRef: RefObject<HTMLHeadingElement | null>;
 }) => {
   return (
     <Container>
