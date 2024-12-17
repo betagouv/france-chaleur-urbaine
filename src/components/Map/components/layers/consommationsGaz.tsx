@@ -118,7 +118,7 @@ function Popup(consommationGaz: GasSummary, { Property, Title, TwoColumns }: Pop
         {consommationGaz.adresse} {consommationGaz.nom_commun}
       </Title>
       <TwoColumns>
-        <Property label="Chauffage actuel" value={consommationGaz.conso_nb} formatter={formatMWhAn} />
+        <Property label="Conso. gaz" value={consommationGaz.conso_nb} formatter={formatMWhAn} />
       </TwoColumns>
     </>
   );
