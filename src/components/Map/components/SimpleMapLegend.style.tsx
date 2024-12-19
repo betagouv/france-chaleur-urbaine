@@ -351,14 +351,3 @@ export const DeactivatableBox = styled(Box)<{ disabled?: boolean }>`
       }
     `}
 `;
-
-export const FilterResetButtonWrapper = styled.div`
-  position: sticky;
-  bottom: -1rem; /* to prevent scroll to be visible at the very bottom */
-  background: white;
-  z-index: 1;
-  padding: 1rem 0;
-  display: flex;
-  gap: 8px;
-  flex-direction: column;
-`;

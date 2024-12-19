@@ -15,6 +15,7 @@ import { deepMergeObjects, isDefined } from '@/utils/core';
 import { buildingsDataExtractionLayers } from './components/tools/BuildingsDataExtractionTool';
 import { distancesMeasurementLayers } from './components/tools/DistancesMeasurementTool';
 import { linearHeatDensityLayers } from './components/tools/LinearHeatDensityTool';
+import { adressesEligiblesLayersSpec } from './layers/adressesEligibles';
 import { batimentsRaccordesReseauxChaleurFroidLayersSpec } from './layers/batimentsRaccordesReseauxChaleurFroid';
 import { besoinsEnChaleurLayersSpec } from './layers/besoinsEnChaleur';
 import { besoinsEnChaleurIndustrieCommunesLayersSpec } from './layers/besoinsEnChaleurIndustrieCommunes';
@@ -53,6 +54,14 @@ export const layerSymbolsImagesURLs = [
     key: 'square',
     url: '/icons/square.png',
     sdf: true,
+  },
+  {
+    key: 'marker-red',
+    url: '/icons/marker-red.png',
+  },
+  {
+    key: 'marker-green',
+    url: '/icons/marker-green.png',
   },
   ...enrrMobilisablesChaleurFataleLayerSymbols,
 ] as const satisfies ReadonlyArray<LayerSymbolSpecification>;
@@ -143,6 +152,7 @@ export const mapLayers = [
   ...installationsGeothermieLayersSpec,
   ...communesFortPotentielPourCreationReseauxChaleurLayersSpec,
   ...etudesEnCoursLayersSpec,
+  ...adressesEligiblesLayersSpec,
 
   // other sources: distances measurement, linear heat density, buildings data extraction
   ...distancesMeasurementLayers,

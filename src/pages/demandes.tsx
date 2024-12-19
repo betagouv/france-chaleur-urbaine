@@ -14,4 +14,4 @@ export default function Gestionnaire(): JSX.Element {
   );
 }
 
-export const getServerSideProps = withAuthentication();
+export const getServerSideProps = withAuthentication('gestionnaire');

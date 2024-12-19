@@ -41,7 +41,10 @@ export const getServerSession = async ({ req, res }: Pick<ServerSessionContext, 
  *   };
  * };
  */
-type WithServerSessionProps = (ctx: { context: GetServerSidePropsContext; session: Session }) => GetServerSidePropsResult<any>;
+type WithServerSessionProps = (ctx: {
+  context: GetServerSidePropsContext;
+  session: Session;
+}) => GetServerSidePropsResult<any> | Promise<GetServerSidePropsResult<any>>;
 
 /**
  * Add the session to the page props and provide a callback to handle any custom behavior (like redirects).
@@ -77,8 +80,7 @@ export const withAuthentication = (requiredRole?: UserRole): GetServerSideProps<
     if (requiredRole && userSession.user.role !== requiredRole) {
       return {
         redirect: {
-          // on pourra avoir une URL style / ou /tableau-de-bord quand tous les types de comptes seront créés
-          destination: '/gestionnaire',
+          destination: `/tableau-de-bord?notify=error:${encodeURIComponent("Vous n'avez pas les permissions suffisantes pour accéder à cette page")}`,
           permanent: false,
         },
       };

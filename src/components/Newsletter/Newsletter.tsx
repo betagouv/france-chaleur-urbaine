@@ -1,8 +1,7 @@
 import { Alert } from '@codegouvfr/react-dsfr/Alert';
-import { Button } from '@codegouvfr/react-dsfr/Button';
 import { type FormEvent, useState } from 'react';
-import { Oval } from 'react-loader-spinner';
 
+import Button from '@/components/ui/Button';
 import { submitToAirtable } from '@/services/airtable';
 import { Airtable } from '@/types/enum/Airtable';
 
@@ -35,13 +34,9 @@ const Newsletter = () => {
               onChange: (e) => setEmail(e.target.value),
             }}
           />
-          {sending ? (
-            <Oval height={40} width={40} />
-          ) : (
-            <Button type="submit" priority="secondary">
-              S'inscrire
-            </Button>
-          )}
+          <Button type="submit" priority="secondary" loading={sending}>
+            S'inscrire
+          </Button>
         </>
       )}
     </Container>

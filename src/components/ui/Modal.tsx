@@ -13,6 +13,7 @@ type CreateModal = ReturnType<typeof createdDSFRModal>;
 type ModalProps = Omit<React.ComponentProps<CreateModal['Component']>, 'size'> & {
   modal: CreateModal;
   size?: React.ComponentProps<CreateModal['Component']>['size'] | 'custom';
+  lazy?: boolean;
 } & {
   onClose?: NonNullable<Parameters<typeof useIsDSFRModalOpen>[1]>['onDisclose'];
   onOpen?: NonNullable<Parameters<typeof useIsDSFRModalOpen>[1]>['onConceal'];
@@ -43,7 +44,7 @@ export const StyledModal = styled.div<{ customSize?: boolean }>`
 /**
  * Create a modal within a portal that is rendered outside the components tree.
  */
-const Modal = ({ modal, size, onOpen, loading, onClose, open, ...props }: ModalProps) => {
+const Modal = ({ modal, size, onOpen, loading, onClose, open, lazy = false, children, ...props }: ModalProps) => {
   const [isFirstLoad, setIsFirstLoad] = React.useState(true);
   const previousOpen = usePrevious(open);
   const isOpened = useIsModalOpen(modal, {
@@ -80,7 +81,9 @@ const Modal = ({ modal, size, onOpen, loading, onClose, open, ...props }: ModalP
 
   return createPortal(
     <StyledModal customSize={size === 'custom'}>
-      <modal.Component size={size !== 'custom' ? size : undefined} {...props} />
+      <modal.Component size={size !== 'custom' ? size : undefined} {...props}>
+        {(!lazy || isOpened) && children}
+      </modal.Component>
       {loading && <Loader size="lg" />}
     </StyledModal>,
     document.body

@@ -3,15 +3,23 @@ import { useRouter } from 'next/router';
 import styled, { css } from 'styled-components';
 
 import { trackEvent, type TrackingEvent } from '@/services/analytics';
+import cx from '@/utils/cx';
 
 type StyledButtonProps = {
   $loading?: boolean;
   $full?: boolean;
+  variant?: 'destructive';
   eventKey?: TrackingEvent;
   eventPayload?: string;
 };
 
 const StyledButton = styled(DsfrButton)<DsfrButtonProps & StyledButtonProps>`
+  ${({ variant }) =>
+    variant === 'destructive' &&
+    css`
+      box-shadow: inset 0 0 0 1px var(--tw-shadow-color);
+    `}
+
   ${({ $loading, $full }) => css`
     ${$loading &&
     css`
@@ -26,6 +34,14 @@ const StyledButton = styled(DsfrButton)<DsfrButtonProps & StyledButtonProps>`
     `}
   `}
 `;
+
+export const variantClassNames = {
+  destructive: {
+    primary: '!bg-destructive !text-white !hover:bg-destructive/90',
+    secondary: '!border-destructive !text-destructive shadow-destructive',
+    tertiary: '!text-destructive',
+  },
+};
 
 export type ButtonProps = DsfrButtonProps & RemoveDollar<StyledButtonProps> & { href?: string; stopPropagation?: boolean };
 
@@ -50,6 +66,8 @@ const Button: React.FC<ButtonProps> = ({
   eventPayload,
   stopPropagation,
   loading,
+  variant,
+  className,
   ...props
 }) => {
   const router = useRouter();
@@ -83,14 +101,25 @@ const Button: React.FC<ButtonProps> = ({
     onExternalClick?.(e);
   };
 
+  let variantClassName = '';
+
+  if (variant && !variantClassName) {
+    variantClassName = (variantClassNames?.[variant] as any)?.[props?.priority || ''];
+    if (!variantClassName) {
+      console.warn(`Button variant ${variant} is not supported for priority ${props.priority}`);
+    }
+  }
+
   return (
     <StyledButton
       onClick={onClick as any /** FIXME cause incompatibility with DSFR Button */}
       iconId={loading ? 'ri-loader-3-line' : (iconId as any) /** FIXME */}
       $full={full}
       $loading={loading}
+      variant={variant}
       disabled={(disabled || loading) as any /** FIXME cause incompatibility with DSFR Button */}
       type={type as any /** FIXME cause incompatibility with DSFR Button */}
+      className={cx(variantClassName, className)}
       {...props}
     >
       {children}

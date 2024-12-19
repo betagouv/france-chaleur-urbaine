@@ -6,7 +6,7 @@ import { type LayerSpecification, type MapLibreEvent } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useRouter } from 'next/router';
 import { parseAsJson, parseAsString, useQueryStates } from 'nuqs';
-import { useCallback, useEffect, useMemo, useRef, useState, type RefObject } from 'react';
+import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState, type RefObject } from 'react';
 import ReactDOMServer from 'react-dom/server';
 import MapReactGL, {
   AttributionControl,
@@ -16,7 +16,6 @@ import MapReactGL, {
   ScaleControl,
   type MapRef,
   type MapSourceDataEvent,
-  type MapStyle,
 } from 'react-map-gl/maplibre';
 
 import FileDragNDrop from '@/components/Map/components/FileDragNDrop';
@@ -78,8 +77,8 @@ const mapSettings = {
 
 const getAddressId = (LatLng: Point) => `${LatLng.join('--')}`;
 
-const osmConfig: MapStyle = rawOsmConfig as any;
-const satelliteConfig: MapStyle = rawSatelliteConfig as any;
+const osmConfig = rawOsmConfig as any;
+const satelliteConfig = rawSatelliteConfig as any;
 
 const styles: MapboxStyleDefinition[] = [
   {
@@ -96,6 +95,14 @@ type ViewState = {
   longitude: number;
   latitude: number;
   zoom: number;
+};
+
+export type AdresseEligible = {
+  id: string;
+  address: string;
+  isEligible: boolean;
+  longitude: number;
+  latitude: number;
 };
 
 type MapProps = {
@@ -118,6 +125,9 @@ type MapProps = {
   withFCUAttribution?: boolean;
   persistViewStateInURL?: boolean;
   mapRef?: RefObject<MapRef>;
+  adressesEligibles?: AdresseEligible[];
+  adressesEligiblesAutoFit?: boolean;
+  children?: ReactNode;
 };
 
 const Map = ({ initialMapConfiguration, ...props }: MapProps) => {
@@ -148,6 +158,9 @@ export const FullyFeaturedMap = ({
   persistViewStateInURL,
   mapRef: mapRefParam,
   className,
+  adressesEligibles,
+  adressesEligiblesAutoFit = true,
+  children,
   ...props
 }: MapProps & React.HTMLAttributes<HTMLDivElement>) => {
   const { devModeEnabled, toggleDevMode } = useDevMode();
@@ -562,6 +575,76 @@ export const FullyFeaturedMap = ({
     map.flyTo({ center, zoom, essential: true, duration: 1000 });
   }, [JSON.stringify(bounds), mapRef.current]);
 
+  // This effect fits the map on the bounds of the adressesEligibles when they change
+  useEffect(() => {
+    if (!adressesEligiblesAutoFit || !mapRef.current || !adressesEligibles?.length) {
+      return;
+    }
+
+    const bounds = adressesEligibles.reduce(
+      (acc, address) => {
+        acc[0] = Math.min(acc[0], address.longitude);
+        acc[1] = Math.min(acc[1], address.latitude);
+        acc[2] = Math.max(acc[2], address.longitude);
+        acc[3] = Math.max(acc[3], address.latitude);
+        return acc;
+      },
+      [180, 90, -180, -90] as BoundingBox
+    );
+
+    const map = mapRef.current.getMap();
+    const { center, zoom } = geoViewport.viewport(
+      bounds,
+      [map.getCanvas().clientWidth - 2 * mapViewportFitPadding, map.getCanvas().clientHeight - 2 * mapViewportFitPadding],
+      1,
+      20,
+      512,
+      true
+    );
+
+    map.flyTo({ center, zoom, essential: true, duration: 1000 });
+  }, [adressesEligiblesAutoFit, adressesEligibles, mapRef.current]);
+
+  // Update adressesEligibles source when it changes
+  useEffect(() => {
+    if (!mapRef.current || !mapLayersLoaded || !adressesEligibles) return;
+
+    (mapRef.current.getSource('adressesEligibles') as maplibregl.GeoJSONSource)?.setData({
+      type: 'FeatureCollection',
+      features: adressesEligibles.map((address) => ({
+        type: 'Feature',
+        geometry: {
+          type: 'Point',
+          coordinates: [address.longitude, address.latitude],
+        },
+        properties: {
+          id: address.id,
+          address: address.address,
+          isEligible: address.isEligible,
+        },
+      })),
+    });
+  }, [mapRef.current, mapLayersLoaded, adressesEligibles]);
+
+  const mapMarkers = useMemo(() => {
+    if (markersList.length === 0) {
+      return null;
+    }
+
+    return markersList.map((marker: MapMarkerInfos) => (
+      <MapMarker
+        key={marker.id}
+        id={marker.id}
+        longitude={marker.longitude}
+        latitude={marker.latitude}
+        color={marker.color}
+        popup={marker.popup}
+        popupContent={marker.popupContent}
+        onClickAction={marker.onClickAction}
+      />
+    ));
+  }, [markersList]);
+
   const isRouterReady = useRouterReady();
   if (!isRouterReady || !isMapConfigurationInitialized(mapConfiguration)) {
     return null;
@@ -678,19 +761,8 @@ export const FullyFeaturedMap = ({
             <NavigationControl showZoom={true} visualizePitch={true} position="bottom-right" />
             <ScaleControl maxWidth={100} unit="metric" position="bottom-left" />
             {Popup}
-            {markersList.length > 0 &&
-              markersList.map((marker: MapMarkerInfos) => (
-                <MapMarker
-                  key={marker.id}
-                  id={marker.id}
-                  longitude={marker.longitude}
-                  latitude={marker.latitude}
-                  color={marker.color}
-                  popup={marker.popup}
-                  popupContent={marker.popupContent}
-                  onClickAction={marker.onClickAction}
-                />
-              ))}
+            {children}
+            {mapMarkers}
             <FileDragNDrop />
           </MapReactGL>
           {withLegend && (

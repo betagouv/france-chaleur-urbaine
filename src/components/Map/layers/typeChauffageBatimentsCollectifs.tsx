@@ -225,7 +225,7 @@ function buildLayerAndHoverLayer<LayerId extends string>(
         ],
       },
       unselectable: true,
-      popup: undefined, // overwride
+      popup: undefined, // overwrite
     },
   ] as const satisfies ReadonlyArray<MapLayerSpecification>;
 }

@@ -86,6 +86,13 @@ export const AppGlobalStyle = createGlobalStyle`
   .fcu-invisible {
     visibility: hidden;
   }
+
+  .cursor-pointer {
+    cursor: pointer;
+  }
+  .select-none {
+    user-select: none;
+  }
 `;
 
 const DsfrFixUp: any = createGlobalStyle` /* TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738 */

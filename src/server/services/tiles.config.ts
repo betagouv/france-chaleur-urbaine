@@ -71,6 +71,7 @@ export type InternalSourceId =
   | typeof linearHeatDensityLinesSourceId
   | typeof linearHeatDensityLabelsSourceId
   | typeof buildingsDataExtractionPolygonsSourceId
+  | 'adressesEligibles'
   | 'customGeojson';
 export type SourceId = DatabaseSourceId | InternalSourceId;
 

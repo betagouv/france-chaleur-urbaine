@@ -1,30 +1,8 @@
-import bcrypt from 'bcryptjs';
 import nextAuth, { type AuthOptions, type Session } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 
-import db from '@/server/db';
-
-const login = async (email: string, password: string) => {
-  const user = await db('users').select().where('email', email.toLowerCase().trim()).andWhere('active', true).first();
-
-  if (!user) {
-    return null;
-  }
-
-  const passwordMatch = await bcrypt.compare(password, user.password);
-  if (!passwordMatch) {
-    return null;
-  }
-
-  return {
-    id: user.id,
-    gestionnaires: user.gestionnaires,
-    active: user.active,
-    role: user.role,
-    email: user.email,
-    signature: user.signature,
-  };
-};
+import { kdb } from '@/server/db/kysely';
+import { login } from '@/server/services/auth';
 
 export const nextAuthOptions: AuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
@@ -48,9 +26,12 @@ export const nextAuthOptions: AuthOptions = {
     },
     async session({ session, token }) {
       // update the last_connection date and return the latest user data
-      const [user] = await db('users')
-        .where({ email: session.user.email })
-        .update({ last_connection: new Date() })
+      const user = await kdb
+        .updateTable('users')
+        .set({
+          last_connection: new Date(),
+        })
+        .where('id', '=', token.sub as string)
         .returning([
           'id',
           'email',
@@ -61,7 +42,8 @@ export const nextAuthOptions: AuthOptions = {
           'active',
           'created_at',
           'signature',
-        ]);
+        ])
+        .executeTakeFirst();
 
       if (token) {
         return {
@@ -70,7 +52,7 @@ export const nextAuthOptions: AuthOptions = {
             ...user,
 
             // if an impersonated profile exists, override the current profile data (role, gestionnaire)
-            ...(token.impersonatedProfile ?? {}),
+            ...token.impersonatedProfile,
           },
           ...(token.impersonatedProfile ? { impersonating: true } : {}),
         } as Session;
@@ -86,14 +68,7 @@ export const nextAuthOptions: AuthOptions = {
         password: { label: 'Mot de passe', type: 'password' },
       },
       authorize: async (credentials) => {
-        if (credentials) {
-          const user = await login(credentials.email, credentials.password);
-          if (user) {
-            return user;
-          }
-        }
-
-        return null;
+        return credentials ? await login(credentials.email, credentials.password) : null;
       },
     }),
   ],

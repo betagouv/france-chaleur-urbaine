@@ -1,8 +1,18 @@
 /**
- * Make the browser download a stringobject.
+ * Make the browser download an object.
  */
 export function downloadObject(object: any, filename: string, type: string) {
   const blob = new Blob([JSON.stringify(object)], {
+    type,
+  });
+  downloadFile(URL.createObjectURL(blob), filename);
+}
+
+/**
+ * Make the browser download a string content (e.g. CSV).
+ */
+export function downloadString(content: string, filename: string, type: string) {
+  const blob = new Blob([content], {
     type,
   });
   downloadFile(URL.createObjectURL(blob), filename);
