@@ -84,3 +84,5 @@ export function formatMWhString(value: number): string {
 export function upperCaseFirstChar(string: string): string {
   return `${(string[0] ?? '').toUpperCase()}${string.substring(1)}`;
 }
+
+export const frenchCollator = new Intl.Collator('fr', { sensitivity: 'base' });

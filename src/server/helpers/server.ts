@@ -6,7 +6,7 @@ import { type Session, getServerSession } from 'next-auth';
 import { type ZodRawShape, z } from 'zod';
 
 import { nextAuthOptions } from '@/pages/api/auth/[...nextauth]';
-import { type USER_ROLE } from '@/types/enum/UserRole';
+import { type UserRole } from '@/types/enum/UserRole';
 
 import { parentLogger } from './logger';
 
@@ -28,7 +28,7 @@ export async function validateObjectSchema<Shape extends ZodRawShape>(object: an
 
 type RouteOptions = {
   logRequest?: boolean;
-  requireAuthentication?: boolean | `${USER_ROLE}`[];
+  requireAuthentication?: boolean | UserRole[];
 };
 
 const defaultRouteOptions = {
@@ -174,7 +174,7 @@ export function requireDeleteMethod(req: NextApiRequest) {
 export async function requireAuthentication(
   req: NextApiRequest,
   res: NextApiResponse,
-  configOrRoles: boolean | `${USER_ROLE}`[]
+  configOrRoles: boolean | UserRole[]
 ): Promise<Session> {
   const session = await getServerSession(req, res, nextAuthOptions);
   if (!session || !session.user) {

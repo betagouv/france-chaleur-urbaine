@@ -247,6 +247,12 @@ const authenticatedNavigationMenu: MainNavigationProps.Item[] = [
   {
     text: 'Tableau de bord',
     linkProps: {
+      href: '/tableau-de-bord',
+    },
+  },
+  {
+    text: 'Demandes',
+    linkProps: {
       href: '/gestionnaire',
     },
   },
@@ -266,6 +272,12 @@ const adminNavigationMenu: MainNavigationProps.Item[] = [
         text: 'Admin',
         linkProps: {
           href: '/admin',
+        },
+      },
+      {
+        text: 'Gestion des utilisateurs',
+        linkProps: {
+          href: '/admin/users',
         },
       },
       {

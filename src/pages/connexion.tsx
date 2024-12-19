@@ -18,7 +18,7 @@ export const getServerSideProps: GetServerSideProps<LoginFormProps> = async (con
   if (userSession) {
     return {
       redirect: {
-        destination: '/gestionnaire',
+        destination: '/tableau-de-bord',
         permanent: false,
       },
     };
@@ -26,7 +26,7 @@ export const getServerSideProps: GetServerSideProps<LoginFormProps> = async (con
 
   return {
     props: {
-      callbackUrl: (context.query.callbackUrl as string) || '/gestionnaire',
+      callbackUrl: (context.query.callbackUrl as string) || '/tableau-de-bord',
     },
   };
 };
