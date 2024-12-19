@@ -13,6 +13,8 @@ import {
 import { useVirtualizer } from '@tanstack/react-virtual';
 import React from 'react';
 
+import { isDevModeEnabled } from '@/hooks/useDevMode';
+
 export type SimpleTableProps<Data = any> = {
   data: Data[];
   columns: ColumnDef<Data, any>[];
@@ -35,7 +37,7 @@ const SimpleTable = ({ data, columns, initialSortingState }: SimpleTableProps) =
     onGlobalFilterChange: setGlobalFilter,
     getSortedRowModel: getSortedRowModel(),
     onSortingChange: setSortingState,
-    debugTable: true,
+    debugTable: isDevModeEnabled(),
   });
 
   const { rows } = table.getRowModel();

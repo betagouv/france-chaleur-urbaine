@@ -10,6 +10,7 @@ import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
 import Heading from '@/components/ui/Heading';
 import SimpleTable, { tableBooleanFormatter, tableCellFormatter } from '@/components/ui/SimpleTable';
+import Text from '@/components/ui/Text';
 import { withAuthentication } from '@/server/helpers/ssr/withAuthentication';
 import { useServices } from '@/services';
 import { type UserRole } from '@/types/enum/UserRole';
@@ -17,6 +18,7 @@ import { fetchJSON } from '@/utils/network';
 import { frenchCollator } from '@/utils/strings';
 
 import { type AdminManageUserItem } from '../api/admin/users';
+import { type AdminUsersStats } from '../api/admin/users-stats';
 
 const columns: ColumnDef<AdminManageUserItem>[] = [
   {
@@ -46,7 +48,7 @@ const columns: ColumnDef<AdminManageUserItem>[] = [
   },
   {
     accessorKey: 'last_connection',
-    header: 'Dernière authentification',
+    header: 'Dernière activité',
     cell: tableCellFormatter,
     size: 110,
   },
@@ -88,6 +90,10 @@ const initialSortingState: SortingState = [
 export default function ManageUsers() {
   const { exportService } = useServices();
 
+  const { data: usersStats } = useQuery({
+    queryKey: ['admin/users-stats'],
+    queryFn: () => fetchJSON<AdminUsersStats>('/api/admin/users-stats'),
+  });
   const { data: users } = useQuery({ queryKey: ['admin/users'], queryFn: () => fetchJSON<AdminManageUserItem[]>('/api/admin/users') });
 
   return (
@@ -98,6 +104,18 @@ export default function ManageUsers() {
         </Heading>
 
         <Heading as="h2" color="blue-france">
+          Statistiques d'activité
+        </Heading>
+        {usersStats && (
+          <>
+            <Text>Utilisateurs (excepté administrateurs) actifs au cours :</Text>
+            <Box>- des 3 dernières heures : {usersStats.last3h}</Box>
+            <Box>- des 24 dernières heures : {usersStats.last24h}</Box>
+            <Box>- des 7 derniers jours : {usersStats.last7d}</Box>
+          </>
+        )}
+
+        <Heading as="h2" color="blue-france" mt="4w">
           Liste des comptes
         </Heading>
         {users && <SimpleTable columns={columns} data={users} initialSortingState={initialSortingState} />}
