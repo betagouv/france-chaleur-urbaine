@@ -13,7 +13,7 @@ export class ExportService {
   async exportXLSX(exportType: string, params?: any): Promise<any> {
     try {
       const response = await this.httpClient.post(
-        'api/exportData',
+        '/api/exportData',
         { exportType, params },
         {
           responseType: 'blob',

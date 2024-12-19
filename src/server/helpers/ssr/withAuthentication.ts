@@ -1,9 +1,9 @@
 import { type GetServerSideProps } from 'next';
 import { getSession } from 'next-auth/react';
 
-import { type USER_ROLE } from '@/types/enum/UserRole';
+import { type UserRole } from '@/types/enum/UserRole';
 
-export const withAuthentication = (role?: `${USER_ROLE}`): GetServerSideProps => {
+export const withAuthentication = (role?: UserRole): GetServerSideProps => {
   return async (context) => {
     const userSession = await getSession(context);
 
@@ -19,8 +19,7 @@ export const withAuthentication = (role?: `${USER_ROLE}`): GetServerSideProps =>
     if (role && userSession.user.role !== role) {
       return {
         redirect: {
-          // on pourra avoir une URL style / ou /tableau-de-bord quand tous les types de comptes seront créés
-          destination: '/gestionnaire',
+          destination: '/tableau-de-bord',
           permanent: false,
         },
       };

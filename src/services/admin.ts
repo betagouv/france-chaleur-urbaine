@@ -1,6 +1,6 @@
+import { type AdminManageUserItem } from '@/pages/api/admin/users';
 import { type HttpClient } from '@/services/http';
 import { type EligibilityDemand } from '@/types/EligibilityDemand';
-import { type UserResponse } from '@/types/UserResponse';
 
 export class AdminService {
   httpClient: HttpClient;
@@ -8,8 +8,8 @@ export class AdminService {
     this.httpClient = http;
   }
 
-  async getUsers(): Promise<UserResponse[]> {
-    return this.httpClient.get<UserResponse[]>('/api/users');
+  async getUsers() {
+    return this.httpClient.get<AdminManageUserItem[]>('/api/admin/users');
   }
 
   async getEligibilityDemand(): Promise<EligibilityDemand[]> {
