@@ -1,2 +1,2 @@
-clock: tsx src/server/cron/cron.ts
+clock: tsx src/server/clock.ts
 postdeploy: ./scripts/migrate.sh

@@ -1,6 +1,7 @@
 import { existsSync } from 'fs';
 import { readFile, unlink, writeFile } from 'fs/promises';
 
+import { optimisationProfiles, optimizeImage } from '@cli/images/optimize';
 import { createCommand, InvalidArgumentError } from '@commander-js/extra-typings';
 import camelcase from 'camelcase';
 import prompts from 'prompts';
@@ -16,11 +17,11 @@ import {
   syncGestionnairesWithUsers,
   syncLastConnectionFromUsers,
 } from '@/server/services/airtable';
+import { processJobById, processJobsIndefinitely } from '@/server/services/jobs/processor';
 import { type DatabaseSourceId, type DatabaseTileInfo, tilesInfo, zDatabaseSourceId } from '@/server/services/tiles.config';
 import { type ApiAccount } from '@/types/ApiAccount';
 import { sleep } from '@/utils/time';
 import { nonEmptyArray } from '@/utils/typescript';
-import { optimisationProfiles, optimizeImage } from '@cli/images/optimize';
 
 import { type KnownAirtableBase, knownAirtableBases } from './airtable/bases';
 import { createModificationsReseau } from './airtable/create-modifications-reseau';
@@ -413,6 +414,21 @@ program
       process.exit(1);
     }
     await syncLastConnectionFromUsers();
+  });
+
+program
+  .command('jobs:start')
+  .description('Start the jobs worker')
+  .action(async () => {
+    await processJobsIndefinitely();
+  });
+
+program
+  .command('jobs:process')
+  .description('Process a specific job by ID')
+  .argument('<jobId>', 'Job ID to process')
+  .action(async (jobId) => {
+    await processJobById(jobId);
   });
 
 program

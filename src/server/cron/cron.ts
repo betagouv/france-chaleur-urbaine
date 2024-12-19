@@ -3,7 +3,8 @@ import cron from 'cron';
 import { launchJob } from './launch';
 import { saveStatsInDB } from './saveStatsInDB';
 
-function registerCrons() {
+export function registerCrons() {
+  console.log('-- CRON JOB --- Started cron jobs waiting to get ticked...');
   new cron.CronJob({
     cronTime: '00 10 * * 1-5', // du lundi au vendredi à 10:00
     onTick: () => launchJob('dailyNewManagerMail'),
@@ -41,9 +42,4 @@ function registerCrons() {
     start: true,
     timeZone: 'Europe/Paris',
   });
-}
-
-if (require.main === module) {
-  console.log('-- CRON JOB --- Started cron jobs waiting to get ticked...');
-  registerCrons();
 }

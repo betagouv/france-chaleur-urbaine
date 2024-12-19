@@ -106,7 +106,7 @@ export default function TestCoordinatesPage() {
   const estimatedWaitTimeMinutes = Math.max(1, Math.round(((coordinates.length / 1000) * 20) / 60));
 
   return (
-    <SimplePage title="France Chaleur Urbaine - Test de coordonnées géographiques" mode="authenticated">
+    <SimplePage title="Test de coordonnées géographiques" mode="authenticated">
       <Box py="4w" className="fr-container">
         <Heading as="h1" color="blue-france">
           Test de coordonnées géographiques

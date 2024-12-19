@@ -2,11 +2,11 @@ import { captureException } from '@sentry/nextjs';
 import { HttpStatusCode } from 'axios';
 import { errors as formidableErrors } from 'formidable';
 import type { NextApiHandler, NextApiRequest, NextApiResponse } from 'next';
-import { type Session, getServerSession } from 'next-auth';
+import { type User, getServerSession } from 'next-auth';
 import { type ZodRawShape, z } from 'zod';
 
 import { nextAuthOptions } from '@/pages/api/auth/[...nextauth]';
-import { type USER_ROLE } from '@/types/enum/UserRole';
+import { type UserRole } from '@/types/enum/UserRole';
 
 import { parentLogger } from './logger';
 
@@ -28,7 +28,7 @@ export async function validateObjectSchema<Shape extends ZodRawShape>(object: an
 
 type RouteOptions = {
   logRequest?: boolean;
-  requireAuthentication?: boolean | `${USER_ROLE}`[];
+  requireAuthentication?: boolean | UserRole[];
 };
 
 const defaultRouteOptions = {
@@ -48,14 +48,19 @@ export function handleRouteErrors(handler: NextApiHandler, options?: RouteOption
   const routeOptions: RouteOptions = Object.assign({}, defaultRouteOptions, options);
   return async (req: NextApiRequest, res: NextApiResponse) => {
     const startTime = Date.now();
-    const logger = parentLogger.child({
+    let logger = parentLogger.child({
       method: req.method,
       url: req.url,
       ip: process.env.LOG_REQUEST_IP ? (req.headers['x-forwarded-for'] ?? req.socket.remoteAddress) : undefined,
     });
     try {
+      req.session = await getServerSession(req, res, nextAuthOptions);
+      req.user = req.session?.user;
+      logger = logger.child({
+        user: process.env.LOG_REQUEST_USER ? req.user?.id : undefined,
+      });
       if (routeOptions?.requireAuthentication) {
-        await requireAuthentication(req, res, routeOptions.requireAuthentication);
+        requireAuthentication(req.user, routeOptions.requireAuthentication);
       }
       const handlerResult = await handler(req, res);
       if (!res.headersSent) {
@@ -179,21 +184,14 @@ export function requireDeleteMethod(req: NextApiRequest) {
   }
 }
 
-export async function requireAuthentication(
-  req: NextApiRequest,
-  res: NextApiResponse,
-  configOrRoles: boolean | `${USER_ROLE}`[]
-): Promise<Session> {
-  const session = await getServerSession(req, res, nextAuthOptions);
-  if (!session || !session.user) {
+export function requireAuthentication(user: User, configOrRoles: boolean | UserRole[]) {
+  if (!user) {
     throw requiredAuthenticationError;
   }
-  req.user = session.user;
-  if (!req.user.active) {
+  if (!user.active) {
     throw invalidPermissionsError;
   }
-  if (configOrRoles instanceof Array && !configOrRoles.includes(req.user.role)) {
+  if (configOrRoles instanceof Array && !configOrRoles.includes(user.role)) {
     throw invalidPermissionsError;
   }
-  return session;
 }

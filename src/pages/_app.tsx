@@ -1,5 +1,6 @@
 import '@/styles/globals.css';
 import { fr } from '@codegouvfr/react-dsfr';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { AppProps } from 'next/app';
 import dynamic from 'next/dynamic';
 import type Link from 'next/link';
@@ -39,6 +40,17 @@ const swrConfig: SWRConfiguration = {
   revalidateOnFocus: false,
 };
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1, // retry failing requests just once, see https://react-query.tanstack.com/guides/query-retries
+      retryDelay: 3000, // retry failing requests after 3 seconds
+      refetchOnWindowFocus: false, // see https://react-query.tanstack.com/guides/important-defaults
+      refetchOnReconnect: false,
+    },
+  },
+});
+
 function App({
   Component,
   pageProps,
@@ -50,27 +62,29 @@ function App({
 
   return (
     <ThemeProvider>
-      <SEO />
-      <ConsentBanner />
-      <NotifierContainer />
-      <ServicesContext.Provider
-        value={{
-          suggestionService: new SuggestionService(axiosHttpClient),
-          heatNetworkService: new HeatNetworkService(axiosHttpClient),
-          demandsService: new DemandsService(axiosHttpClient),
-          passwordService: new PasswordService(axiosHttpClient),
-          adminService: new AdminService(axiosHttpClient),
-          networksService: new NetworksService(axiosHttpClient),
-          exportService: new ExportService(axiosHttpClient),
-        }}
-      >
-        <SWRConfig value={swrConfig}>
-          <SessionProvider session={pageProps.session}>
-            <ProgressBar height="4px" color={fr.colors.decisions.background.active.blueFrance.default} />
-            <Component {...pageProps} />
-          </SessionProvider>
-        </SWRConfig>
-      </ServicesContext.Provider>
+      <QueryClientProvider client={queryClient}>
+        <SEO />
+        <ConsentBanner />
+        <NotifierContainer />
+        <ServicesContext.Provider
+          value={{
+            suggestionService: new SuggestionService(axiosHttpClient),
+            heatNetworkService: new HeatNetworkService(axiosHttpClient),
+            demandsService: new DemandsService(axiosHttpClient),
+            passwordService: new PasswordService(axiosHttpClient),
+            adminService: new AdminService(axiosHttpClient),
+            networksService: new NetworksService(axiosHttpClient),
+            exportService: new ExportService(axiosHttpClient),
+          }}
+        >
+          <SWRConfig value={swrConfig}>
+            <SessionProvider session={pageProps.session}>
+              <ProgressBar height="4px" color={fr.colors.decisions.background.active.blueFrance.default} />
+              <Component {...pageProps} />
+            </SessionProvider>
+          </SWRConfig>
+        </ServicesContext.Provider>
+      </QueryClientProvider>
     </ThemeProvider>
   );
 }

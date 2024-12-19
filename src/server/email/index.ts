@@ -1,7 +1,5 @@
 import dotenv from 'dotenv';
 import ejs from 'ejs';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-//@ts-ignore: type not official
 import nodemailer from 'nodemailer';
 
 import { type Demand } from '@/types/Summary/Demand';
@@ -16,7 +14,7 @@ type Attachment = {
   encoding: string;
 };
 
-const mailTransport = nodemailer.createTransport({
+export const mailTransport = nodemailer.createTransport({
   host: process.env.MAIL_HOST,
   port: process.env.MAIL_PORT,
   secure: process.env.MAIL_SECURE === 'true',
@@ -24,7 +22,7 @@ const mailTransport = nodemailer.createTransport({
     user: process.env.MAIL_USER,
     pass: process.env.MAIL_PASS,
   },
-});
+} as any); // TODO trouver le bon typage
 
 const send = (
   toEmail: string[],
@@ -34,7 +32,7 @@ const send = (
   bccEmail = [],
   attachments: Attachment[] = [],
   replyTo?: string
-): Promise<void> => {
+): Promise<any> => {
   const mail = {
     to: toEmail.join(','),
     cc: ccEmail && ccEmail.join(','),
@@ -47,9 +45,7 @@ const send = (
     text: html.replace(/<(?:.|\n)*?>/gm, ''),
   };
 
-  return new Promise((resolve, reject) => {
-    mailTransport.sendMail(mail, (error: any, info: any) => (error ? reject(error) : resolve(info)));
-  });
+  return mailTransport.sendMail(mail);
 };
 
 export const sendNewDemands = async (email: string, demands: number): Promise<void> => {

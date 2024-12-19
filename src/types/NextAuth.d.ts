@@ -1,5 +1,5 @@
 import 'next-auth';
-import { type USER_ROLE } from './enum/UserRole';
+import { type UserRole } from './enum/UserRole';
 
 declare module 'next-auth' {
   interface Session {
@@ -8,16 +8,19 @@ declare module 'next-auth' {
   }
 
   interface User {
-    role: USER_ROLE;
-    gestionnaires: string[];
+    id: string;
+    role: UserRole;
     email: string;
-    signature: string;
+    active: boolean;
+    gestionnaires: string[] | null;
+    signature: string | null;
   }
 }
 
 declare module 'next' {
   interface NextApiRequest {
-    user: User;
+    user: User; // authenticated user on if any
+    session: Session; // session containing the authenticated user. Only used directly with impersonation
   }
 }
 

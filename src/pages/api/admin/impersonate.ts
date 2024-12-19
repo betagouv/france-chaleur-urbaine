@@ -8,40 +8,46 @@ import {
   invalidPermissionsError,
   invalidRouteError,
   requireAuthentication,
-  requireDeleteMethod,
   validateObjectSchema,
 } from '@/server/helpers/server';
 
+const DELETE = async (req: NextApiRequest, res: NextApiResponse) => {
+  requireAuthentication(req.user, true);
+  if (!req.session.impersonating) {
+    throw invalidPermissionsError;
+  }
+
+  // remove the impersonation
+  const { impersonatedProfile, ...jwt } = await getSessionJWT(req);
+  await generateSessionJWT(res, jwt);
+  return;
+};
+
+const POST = async (req: NextApiRequest, res: NextApiResponse) => {
+  requireAuthentication(req.user, ['admin']);
+
+  const impersonatedProfile = await validateObjectSchema(req.body, {
+    role: z.literal('gestionnaire'),
+    gestionnaires: z.array(z.string()),
+  });
+
+  logger.info('impersonating', {
+    ...impersonatedProfile,
+  });
+
+  const jwt = await getSessionJWT(req);
+  await generateSessionJWT(res, {
+    ...jwt,
+    impersonatedProfile,
+  });
+  return;
+};
+
 export default handleRouteErrors(async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'DELETE') {
-    requireDeleteMethod(req);
-    const session = await requireAuthentication(req, res, true);
-    if (!session.impersonating) {
-      throw invalidPermissionsError;
-    }
-
-    // remove the impersonation
-    const { impersonatedProfile, ...jwt } = await getSessionJWT(req);
-    await generateSessionJWT(res, jwt);
-    return;
+    return DELETE(req, res);
   } else if (req.method === 'POST') {
-    await requireAuthentication(req, res, ['admin']);
-
-    const impersonatedProfile = await validateObjectSchema(req.body, {
-      role: z.literal('gestionnaire'),
-      gestionnaires: z.array(z.string()),
-    });
-
-    logger.info('impersonating', {
-      ...impersonatedProfile,
-    });
-
-    const jwt = await getSessionJWT(req);
-    await generateSessionJWT(res, {
-      ...jwt,
-      impersonatedProfile,
-    });
-    return;
+    return POST(req, res);
   }
   throw invalidRouteError;
 });
