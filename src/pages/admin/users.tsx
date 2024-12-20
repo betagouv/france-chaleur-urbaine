@@ -82,7 +82,7 @@ const columns: ColumnDef<AdminManageUserItem>[] = [
 
 const initialSortingState: SortingState = [
   {
-    id: 'last_connection',
+    id: 'created_at',
     desc: true,
   },
 ];
@@ -94,10 +94,13 @@ export default function ManageUsers() {
     queryKey: ['admin/users-stats'],
     queryFn: () => fetchJSON<AdminUsersStats>('/api/admin/users-stats'),
   });
-  const { data: users } = useQuery({ queryKey: ['admin/users'], queryFn: () => fetchJSON<AdminManageUserItem[]>('/api/admin/users') });
+  const { data: users } = useQuery({
+    queryKey: ['admin/users'],
+    queryFn: () => fetchJSON<AdminManageUserItem[]>('/api/admin/users'),
+  });
 
   return (
-    <SimplePage title="France Chaleur Urbaine - Gestion des utilisateurs" mode="authenticated">
+    <SimplePage title="Gestion des utilisateurs" mode="authenticated">
       <Box py="4w" className="fr-container">
         <Heading as="h1" color="blue-france">
           Gestion des utilisateurs
