@@ -312,8 +312,15 @@ function markCurrentPageActive(menuItems: MainNavigationProps.Item[], currentUrl
 
 const publicQuickAccessItems: HeaderProps.QuickAccessItem[] = [
   {
-    text: 'Espace gestionnaire',
+    text: 'Créer un compte',
     iconId: 'fr-icon-account-circle-line',
+    linkProps: {
+      href: '/inscription',
+    },
+  },
+  {
+    text: 'Connexion',
+    iconId: 'fr-icon-account-circle-fill',
     linkProps: {
       href: '/connexion',
     },

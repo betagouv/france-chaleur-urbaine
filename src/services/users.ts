@@ -77,7 +77,7 @@ export const upsertUsersFromApi = async (account: ApiAccount, networks: ApiNetwo
           db('users')
             .insert({
               email: user,
-              password: bcrypt.hashSync(Math.random().toString(36).slice(2, 10), salt),
+              password: bcrypt.hashSync(Math.random().toString(36).slice(2, 10), salt), // TODO enlever la partie sync et tester
               gestionnaires: allGestionnaires,
               from_api: account.key,
               receive_new_demands: true,
