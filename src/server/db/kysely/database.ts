@@ -2830,10 +2830,12 @@ export interface IgnCommunes {
 export interface Jobs {
   created_at: Generated<Timestamp>;
   data: Json;
+  entity_id: string;
   id: Generated<string>;
   status: 'pending' | 'processing' | 'finished' | 'error';
-  type: string;
+  type: 'pro_eligibility_test';
   updated_at: Generated<Timestamp>;
+  user_id: string;
 }
 
 export interface KnexMigrations {
@@ -2862,6 +2864,24 @@ export interface NetworkIris {
   code_iris: string | null;
   fid: number;
   geom: string | null;
+}
+
+export interface ProEligibilityTests {
+  created_at: Generated<Timestamp>;
+  id: Generated<string>;
+  name: string;
+  updated_at: Generated<Timestamp>;
+  user_id: string;
+}
+
+export interface ProEligibilityTestsAddresses {
+  banaddress: string;
+  banscore: number;
+  eligible: boolean;
+  geom: string;
+  id: Generated<string>;
+  sourceaddress: string;
+  test_id: string;
 }
 
 export interface RaccordementsTiles {
@@ -3252,6 +3272,8 @@ export interface DB {
   knex_migrations_lock: KnexMigrationsLock;
   matomo_stats: MatomoStats;
   network_iris: NetworkIris;
+  pro_eligibility_tests: ProEligibilityTests;
+  pro_eligibility_tests_addresses: ProEligibilityTestsAddresses;
   raccordements_tiles: RaccordementsTiles;
   regions: Regions;
   registre_copro_r11_220125: RegistreCoproR11220125;

@@ -29,7 +29,7 @@ export const register = async (email: string, password: string, role: UserRole) 
     .executeTakeFirstOrThrow();
 
   logger.info('account register', { user_id: insertedUser.id, role });
-  sendEmail(insertedUser, 'invitation', {
+  sendEmail(insertedUser, 'inscription', {
     activationToken: activationToken,
   });
   return insertedUser.id;
@@ -61,6 +61,7 @@ export const login = async (email: string, password: string) => {
     id: user.id,
     email: user.email,
     role: user.role,
+    active: !!user.active,
     gestionnaires: user.gestionnaires,
     signature: user.signature,
   };

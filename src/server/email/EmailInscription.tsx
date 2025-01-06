@@ -3,7 +3,7 @@ import { Text } from '@react-email/components';
 import { DSFRButton, EmailTemplate, type EmailProps } from './helpers';
 
 type EmailInscriptionProps = EmailProps<{
-  activationToken?: string;
+  activationToken: string;
 }>;
 
 const EmailInscription = (props: EmailInscriptionProps) => {
@@ -15,7 +15,7 @@ const EmailInscription = (props: EmailInscriptionProps) => {
         email.
       </Text>
 
-      <DSFRButton href={`${props.websiteUrl}/connexion?token=${props.activationToken}`}>Confirmer mon email</DSFRButton>
+      <DSFRButton href={`${props.websiteUrl}/connexion?activationToken=${props.activationToken}`}>Confirmer mon email</DSFRButton>
 
       <Text>Bien cordialement,</Text>
       <Text>L'équipe France Chaleur Urbaine</Text>

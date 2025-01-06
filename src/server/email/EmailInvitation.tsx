@@ -3,7 +3,7 @@ import { Text } from '@react-email/components';
 import { DSFRButton, EmailTemplate, type EmailProps } from './helpers';
 
 type EmailInvitationProps = EmailProps<{
-  activationToken?: string;
+  activationToken: string;
 }>;
 
 const EmailInvitation = (props: EmailInvitationProps) => {
@@ -14,7 +14,7 @@ const EmailInvitation = (props: EmailInvitationProps) => {
         Votre espace France Chaleur Urbaine a été créé. Veuillez suivre le lien ci-dessous pour finaliser la création de votre compte.
       </Text>
 
-      <DSFRButton href={`${props.websiteUrl}/connexion?token=${props.activationToken}`}>Définir mon mot de passe</DSFRButton>
+      <DSFRButton href={`${props.websiteUrl}/connexion?activationToken=${props.activationToken}`}>Définir mon mot de passe</DSFRButton>
 
       <Text>Nous vous remercions pour votre collaboration et restons à votre disposition pour toute information complémentaire.</Text>
       <Text>Bien cordialement,</Text>

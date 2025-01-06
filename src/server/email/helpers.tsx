@@ -5,7 +5,7 @@ export const commonEmailsProps = {
   websiteUrl: process.env.NEXT_PUBLIC_MAP_ORIGIN as string,
 };
 
-type CommonEmailProps = typeof commonEmailsProps;
+export type CommonEmailProps = typeof commonEmailsProps;
 
 export type EmailProps<G extends object> = CommonEmailProps & G;
 
