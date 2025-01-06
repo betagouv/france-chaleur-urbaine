@@ -1,5 +1,5 @@
 import { Body, Button, Container, Head, Html, Img, Preview, Section } from '@react-email/components';
-import { type PropsWithChildren, type ComponentProps } from 'react';
+import { type PropsWithChildren, type ComponentProps, type CSSProperties } from 'react';
 
 export const commonEmailsProps = {
   websiteUrl: process.env.NEXT_PUBLIC_MAP_ORIGIN as string,
@@ -35,12 +35,12 @@ export const EmailTemplate = ({ preview, children }: EmailTemplateProps) => (
   </Html>
 );
 
-const main = {
+const main: CSSProperties = {
   backgroundColor: '#f5f5ff',
   padding: '16px 0',
 };
 
-const container = {
+const container: CSSProperties = {
   backgroundColor: '#ffffff',
   border: '1px solid #f0f0f0',
   padding: '45px',
@@ -49,16 +49,16 @@ const container = {
   boxShadow: '0 2px 7px 0 rgb(0 0 0 / 21%)',
 };
 
-const section = {
+const section: CSSProperties = {
   padding: '16px 0',
-  'overflow-wrap': 'break-word',
+  overflowWrap: 'break-word',
 };
 
-const imgHeader = {
+const imgHeader: CSSProperties = {
   height: '200px',
 };
 
-const imgFooter = {
+const imgFooter: CSSProperties = {
   height: '150px',
 };
 
