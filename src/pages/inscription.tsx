@@ -1,6 +1,6 @@
 import { PasswordInput } from '@codegouvfr/react-dsfr/blocks/PasswordInput';
+import Checkbox from '@codegouvfr/react-dsfr/Checkbox';
 import Input from '@codegouvfr/react-dsfr/Input';
-import Select from '@codegouvfr/react-dsfr/SelectNext';
 import { standardSchemaValidator, useForm } from '@tanstack/react-form';
 import { useRouter } from 'next/navigation';
 import { z } from 'zod';
@@ -10,10 +10,10 @@ import SimplePage from '@/components/shared/page/SimplePage';
 import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
 import Heading from '@/components/ui/Heading';
+import Link from '@/components/ui/Link';
 import { toastErrors } from '@/services/notification';
 import { userRolesInscription } from '@/types/enum/UserRole';
 import { postFetchJSON } from '@/utils/network';
-import { upperCaseFirstChar } from '@/utils/strings';
 
 export const zAccountRegisterRequest = z.strictObject({
   email: z.string().email("L'adresse email n'est pas valide").max(100, "L'email ne peut pas dépasser 100 caractères"),
@@ -22,6 +22,9 @@ export const zAccountRegisterRequest = z.strictObject({
     .min(10, 'Le mot de passe doit contenir au minimum 10 caractères')
     .max(100, 'Le mot de passe ne peut pas dépasser 100 caractères'),
   role: z.enum(userRolesInscription),
+  acceptCGU: z.boolean().refine((val) => val === true, {
+    message: "Veuillez accepter les conditions générales d'utilisation",
+  }),
 });
 export type AccountRegisterRequest = z.infer<typeof zAccountRegisterRequest>;
 
@@ -31,6 +34,7 @@ export default function InscriptionPage() {
     defaultValues: {
       email: '',
       password: '',
+      acceptCGU: false,
       role: 'professionnel',
     } as AccountRegisterRequest,
     validatorAdapter: standardSchemaValidator(),
@@ -45,7 +49,7 @@ export default function InscriptionPage() {
 
   return (
     <SimplePage title="Création d'un compte connecté" description="Connectez-vous à votre compte France Chaleur Urbaine.">
-      <CenterLayout>
+      <CenterLayout maxWidth="600px">
         <Heading as="h1" size="h2" color="blue-france">
           Créer votre compte
         </Heading>
@@ -104,7 +108,8 @@ export default function InscriptionPage() {
                 />
               )}
             />
-            <form.Field
+            {/* TODO pas encore géré */}
+            {/* <form.Field
               name="role"
               children={(field) => (
                 <Select
@@ -121,6 +126,32 @@ export default function InscriptionPage() {
                     onChange: (e) => field.handleChange(e.target.value),
                     onBlur: field.handleBlur,
                   }}
+                />
+              )}
+            /> */}
+            <form.Field
+              name="acceptCGU"
+              children={(field) => (
+                <Checkbox
+                  small
+                  options={[
+                    {
+                      label: (
+                        <>
+                          J'atteste avoir lu et accepté les&nbsp;
+                          <Link href="/mentions-legales" isExternal>
+                            conditions générales d'utilisation
+                          </Link>
+                        </>
+                      ),
+                      nativeInputProps: {
+                        name: field.name,
+                        onChange: (e) => field.handleChange(e.target.checked),
+                      },
+                    },
+                  ]}
+                  state={field.state.meta.isTouched && field.state.meta.errors.length ? 'error' : 'default'}
+                  stateRelatedMessage={field.state.meta.errors.join(', ')}
                 />
               )}
             />

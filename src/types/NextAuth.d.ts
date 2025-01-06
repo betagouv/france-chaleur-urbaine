@@ -11,6 +11,7 @@ declare module 'next-auth' {
     id: string;
     role: UserRole;
     email: string;
+    active: boolean;
     gestionnaires: string[] | null;
     signature: string | null;
   }
@@ -18,7 +19,8 @@ declare module 'next-auth' {
 
 declare module 'next' {
   interface NextApiRequest {
-    user: User;
+    user: User; // authenticated user on if any
+    session: Session; // session containing the authenticated user. Only used directly with impersonation
   }
 }
 
