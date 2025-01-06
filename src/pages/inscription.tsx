@@ -16,8 +16,11 @@ import { postFetchJSON } from '@/utils/network';
 import { upperCaseFirstChar } from '@/utils/strings';
 
 export const zAccountRegisterRequest = z.strictObject({
-  email: z.string().email().max(100),
-  password: z.string().min(10).max(100),
+  email: z.string().email("L'adresse email n'est pas valide").max(100, "L'email ne peut pas dépasser 100 caractères"),
+  password: z
+    .string()
+    .min(10, 'Le mot de passe doit contenir au minimum 10 caractères')
+    .max(100, 'Le mot de passe ne peut pas dépasser 100 caractères'),
   role: z.enum(userRolesInscription),
 });
 export type AccountRegisterRequest = z.infer<typeof zAccountRegisterRequest>;
@@ -70,6 +73,8 @@ export default function InscriptionPage() {
                     onChange: (e) => field.handleChange(e.target.value),
                     onBlur: field.handleBlur,
                   }}
+                  state={field.state.meta.isTouched && field.state.meta.errors.length ? 'error' : 'default'}
+                  stateRelatedMessage={field.state.meta.errors.join(', ')}
                 />
               )}
             />
@@ -88,6 +93,14 @@ export default function InscriptionPage() {
                     onChange: (e) => field.handleChange(e.target.value),
                     onBlur: field.handleBlur,
                   }}
+                  messages={
+                    field.state.meta.isTouched
+                      ? field.state.meta.errors.map((e) => ({
+                          message: e,
+                          severity: 'error',
+                        }))
+                      : []
+                  }
                 />
               )}
             />
