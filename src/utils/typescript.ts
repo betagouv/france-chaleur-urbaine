@@ -42,3 +42,9 @@ export type RequireProps<T, K extends keyof T> = T & {
 export type ExtractKeysOfType<T, Prop> = {
   [K in keyof T]: T[K] extends Prop ? K : never;
 }[keyof T];
+
+export type NonEmptyArray<T> = [T, ...T[]];
+
+export function nonEmptyArray<T>(array: T[]) {
+  return array as NonEmptyArray<T>;
+}
