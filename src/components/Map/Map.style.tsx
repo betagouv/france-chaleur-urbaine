@@ -8,7 +8,7 @@ export const mapMediumMedia = '@media (max-width: 1250px)';
 
 export const legendWidth = 350;
 
-export const MapStyle: any = createGlobalStyle<{
+export const MapGlobalStyle: any = createGlobalStyle<{
   $legendCollapsed: boolean;
   isDrawing: boolean;
   withBorder: boolean;

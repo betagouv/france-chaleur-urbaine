@@ -14,6 +14,7 @@ import MapReactGL, {
   MapProvider,
   type MapRef,
   type MapSourceDataEvent,
+  type MapStyle,
   NavigationControl,
   ScaleControl,
 } from 'react-map-gl/maplibre';
@@ -57,11 +58,13 @@ import {
   LegendSideBar,
   MapSearchInputWrapper,
   MapSearchWrapper,
-  MapStyle,
+  MapGlobalStyle,
   legendWidth,
 } from './Map.style';
 import useFCUMap, { FCUMapContextProvider } from './MapProvider';
-import satelliteConfig from './satellite.config.json';
+// https://openmaptiles.geo.data.gouv.fr/styles/osm-bright/style.json
+import rawOsmConfig from './osm.config.json';
+import rawSatelliteConfig from './satellite.config.json';
 import { type MapboxStyleDefinition, MapboxStyleSwitcherControl } from './StyleSwitcher';
 
 const mapSettings = {
@@ -74,15 +77,17 @@ const mapSettings = {
 
 const getAddressId = (LatLng: Point) => `${LatLng.join('--')}`;
 
-const carteConfig = 'https://openmaptiles.geo.data.gouv.fr/styles/osm-bright/style.json';
+const osmConfig: MapStyle = rawOsmConfig as any;
+const satelliteConfig: MapStyle = rawSatelliteConfig as any;
+
 const styles: MapboxStyleDefinition[] = [
   {
     title: 'Carte',
-    uri: carteConfig,
+    uri: osmConfig,
   },
   {
     title: 'Satellite',
-    uri: satelliteConfig as any,
+    uri: satelliteConfig,
   },
 ];
 
@@ -607,7 +612,7 @@ export const FullyFeaturedMap = ({
 
   return (
     <>
-      <MapStyle $legendCollapsed={!withLegend || legendCollapsed} isDrawing={isDrawing} withBorder={withBorder} />
+      <MapGlobalStyle $legendCollapsed={!withLegend || legendCollapsed} isDrawing={isDrawing} withBorder={withBorder} />
       <div className={cx('map-wrap', className)} {...props}>
         {withLegend && (
           <>
@@ -648,7 +653,7 @@ export const FullyFeaturedMap = ({
         <MapProvider>
           <MapReactGL
             initialViewState={initialViewState}
-            mapStyle={carteConfig}
+            mapStyle={osmConfig}
             attributionControl={false}
             maxZoom={mapSettings.maxZoom}
             minZoom={mapSettings.minZoom}
