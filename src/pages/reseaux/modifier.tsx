@@ -223,6 +223,7 @@ function ModifierReseauxPage() {
                 {
                   label: 'Collectivité',
                   nativeInputProps: {
+                    required: true,
                     value: 'collectivite',
                     checked: formState.type === 'collectivite',
                     onChange: () => setFormValue('type', 'collectivite'),
@@ -231,6 +232,7 @@ function ModifierReseauxPage() {
                 {
                   label: 'Exploitant',
                   nativeInputProps: {
+                    required: true,
                     value: 'exploitant',
                     checked: formState.type === 'exploitant',
                     onChange: () => setFormValue('type', 'exploitant'),
