@@ -80,6 +80,7 @@ export function buildReseauxDeChaleurFilters(conf: MapConfiguration['reseauxDeCh
             ['<=', ['coalesce', ['get', fullConfKey], Number.MAX_SAFE_INTEGER], maxValue / 100],
           ] satisfies ExpressionSpecification[]);
     }),
+    ...buildFiltreGestionnaire(conf.gestionnaires),
   ].filter((v) => v !== null);
 }
 
