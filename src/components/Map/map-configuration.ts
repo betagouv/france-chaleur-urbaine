@@ -60,6 +60,7 @@ export type MapConfiguration = {
     prixMoyen: Interval;
     livraisonsAnnuelles: Interval;
     anneeConstruction: Interval;
+    gestionnaires: string[];
     limits: {
       tauxENRR: Interval;
       emissionsCO2: Interval;
@@ -167,6 +168,7 @@ export const emptyMapConfiguration: EmptyMapConfiguration = {
     prixMoyen: defaultInterval,
     livraisonsAnnuelles: defaultInterval,
     anneeConstruction: defaultInterval,
+    gestionnaires: [],
     limits: null, // fetched dynamically from the API
   },
   reseauxDeFroid: false,

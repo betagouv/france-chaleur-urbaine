@@ -51,10 +51,7 @@ export const FCUMapContextProvider: React.FC<React.PropsWithChildren<{ initialMa
   const [originalMapConfiguration, setMapConfiguration] = React.useState<MapConfiguration>(defaultMapConfiguration);
   const reseauxDeChaleurFilters = useReseauxDeChaleurFilters();
 
-  // TODO deepMergeObjects should accept many parameters but I couldn't figure out how to do it with typescript
-  const mapConfiguration = deepMergeObjects(deepMergeObjects(originalMapConfiguration, reseauxDeChaleurFilters?.filters || ({} as any)), {
-    filtreGestionnaire: reseauxDeChaleurFilters.filters.reseauxDeChaleur?.gestionnaires,
-  });
+  const mapConfiguration = deepMergeObjects(originalMapConfiguration, reseauxDeChaleurFilters.filters);
 
   if (isDevModeEnabled()) {
     (window as any).mapConfiguration = mapConfiguration;
