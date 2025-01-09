@@ -3166,7 +3166,7 @@
   dependencies:
     "@tanstack/store" "^0.7.0"
 
-"@tanstack/react-form@^0.41.0":
+"@tanstack/react-form@0.41.0":
   version "0.41.0"
   resolved "https://registry.yarnpkg.com/@tanstack/react-form/-/react-form-0.41.0.tgz#dec276bb6710475b29bf5fac01ce839384ae2555"
   integrity sha512-ijz/GFljdy+dz8JzfHpUO91Q2LBVKnMa7Q2clH1EiuTL5uvOq68MKeoYb9UhzYvFTXPqJZ4GMHhJEqy7cix9LQ==
