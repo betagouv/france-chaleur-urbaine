@@ -364,7 +364,7 @@ function ModifierReseauxPage() {
               aria-hidden
             />
             <div className="fr-grid-row fr-grid-row--top">
-              <Button onClick={() => fileUploadInputRef.current!.click()} priority="secondary">
+              <Button type="button" onClick={() => fileUploadInputRef.current!.click()} priority="secondary">
                 Choisir un fichier
               </Button>
               <Box ml="2w">
