@@ -1,10 +1,11 @@
+import { readFile } from 'node:fs/promises';
+
 import formidable from 'formidable';
 import { type NextApiRequest } from 'next';
 import { z } from 'zod';
 
 import { clientConfig } from '@/client-config';
-import { AirtableDB } from '@/server/db/airtable';
-import { fileIOClient } from '@/server/helpers/fileio';
+import { uploadAttachment, AirtableDB } from '@/server/db/airtable';
 import { logger } from '@/server/helpers/logger';
 import { handleRouteErrors, requirePostMethod, validateObjectSchema } from '@/server/helpers/server';
 
@@ -72,21 +73,25 @@ export default handleRouteErrors(async (req: NextApiRequest) => {
   const record = await AirtableDB('FCU - Modifications réseau').create(
     {
       ...formValues,
-      fichiers: await Promise.all(
-        (files.fichiers ?? []).map(async (fichier, index) => {
-          const externalURL = await fileIOClient.uploadTempFile(fichier.filepath, fichier.originalFilename ?? `Fichier ${index + 1}.pdf`);
-          return {
-            filename: fichier.originalFilename ?? `Fichier ${index + 1}`,
-            url: externalURL,
-          } as any; // bypass wrong typing
-        })
-      ),
+      fichiers: [],
       createdAt: new Date().toISOString(),
     },
     {
       typecast: true,
     }
   );
+
+  // 2nd step to upload attachments directly instead of using a temporary URL
+  await Promise.all(
+    (files.fichiers ?? []).map(async (fichier, index) => {
+      uploadAttachment(record.id, 'fichiers', {
+        contentType: fichier.mimetype ?? 'text/plain',
+        filename: fichier.originalFilename ?? `Fichier ${index + 1}`,
+        file: (await readFile(fichier.filepath)).toString('base64'),
+      });
+    })
+  );
+
   logger.info('create ModificationReseau', {
     id: record.id,
   });

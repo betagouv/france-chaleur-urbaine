@@ -9,7 +9,9 @@ export type { QueryParams } from 'airtable/lib/query_params';
 dotenv.config({ path: '.env.local' });
 dotenv.config();
 
-const base = new Airtable({ apiKey: process.env.AIRTABLE_KEY_API }).base(process.env.AIRTABLE_BASE || '');
+const airtableBase = process.env.AIRTABLE_BASE || '';
+
+const base = new Airtable({ apiKey: process.env.AIRTABLE_KEY_API }).base(airtableBase);
 
 export default base;
 
@@ -102,4 +104,34 @@ export const createTable = async (baseId: string, name: string, fields: Airtable
     }
     throw new Error(`invalid status ${res.status}`);
   }
+};
+
+type AttachementContent = {
+  contentType: string;
+  file: string;
+  filename: string;
+};
+/**
+ * Allows uploading attachments to airtable directly instead of using an external url.
+ * Supports files up to 5MB.
+ * See https://airtable.com/developers/web/api/upload-attachment
+ */
+export const uploadAttachment = async (recordId: string, attachementsFieldName: string, content: AttachementContent) => {
+  const res = await fetch(`https://content.airtable.com/v0/${airtableBase}/${recordId}/${attachementsFieldName}/uploadAttachment`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${process.env.AIRTABLE_KEY_API}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(content),
+  });
+  if (!res.ok) {
+    if (res.headers.get('content-type') === 'application/json') {
+      console.error(await res.json());
+    } else {
+      console.error(await res.text());
+    }
+    throw new Error(`invalid status ${res.status}`);
+  }
+  return;
 };
