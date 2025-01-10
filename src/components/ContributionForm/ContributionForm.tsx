@@ -62,33 +62,39 @@ type FieldConfig = {
   name: string;
   label: string;
   optional?: boolean;
-  schema?: ZodSchema;
+  schema: ZodSchema;
   type?: 'string' | 'file';
 };
+
+const filesSchema = z
+  .array(z.instanceof(File))
+  .refine((files) => files.every((file) => file.size <= 200_000_000), { message: 'Veuillez choisir un fichier moins grand.' });
+
+const stringSchema = z.string({ message: 'Ce champ est obligatoire' });
 
 const typeDemandeFields = {
   'ajout tracé réseau existant': [
     {
       name: 'nomReseau',
       label: 'Nom du réseau :',
-      schema: z.string(),
+      schema: stringSchema,
     },
     {
       name: 'localisation',
       label: 'Localisation :',
-      schema: z.string(),
+      schema: stringSchema,
     },
     {
       name: 'gestionnaire',
       label: 'Gestionnaire :',
-      schema: z.string(),
+      schema: stringSchema,
     },
-    // {
-    //   name: 'fichiers',
-    //   label: 'Téléverser vos fichiers :',
-    //   type: 'file',
-    //   schema: z.array(z.instanceof(File)),
-    // },
+    {
+      name: 'fichiers',
+      label: 'Téléverser vos fichiers :',
+      type: 'file',
+      schema: filesSchema,
+    },
     {
       name: 'emailReferentCommercial',
       label: 'Email du référent commercial à qui transmettre les demandes de raccordement',
@@ -106,29 +112,29 @@ const typeDemandeFields = {
     {
       name: 'nomReseau',
       label: 'Nom du réseau :',
-      schema: z.string(),
+      schema: stringSchema,
     },
     {
       name: 'localisation',
       label: 'Localisation :',
-      schema: z.string(),
+      schema: stringSchema,
     },
     {
       name: 'gestionnaire',
       label: 'Gestionnaire :',
-      schema: z.string(),
+      schema: stringSchema,
     },
     {
       name: 'dateMiseEnServicePrevisionnelle',
       label: 'Date de mise en service prévisionnelle :',
-      schema: z.string(),
+      schema: stringSchema,
     },
-    // {
-    //   name: 'fichiers',
-    //   label: 'Téléverser vos fichiers :',
-    //   type: 'file',
-    //   schema: z.array(z.instanceof(File)),
-    // },
+    {
+      name: 'fichiers',
+      label: 'Téléverser vos fichiers :',
+      type: 'file',
+      schema: filesSchema,
+    },
     {
       name: 'emailReferentCommercial',
       label: 'Email du référent commercial à qui transmettre les demandes de raccordement',
@@ -146,52 +152,52 @@ const typeDemandeFields = {
     {
       name: 'nomReseau',
       label: 'Nom du réseau :',
-      schema: z.string(),
+      schema: stringSchema,
     },
     {
       name: 'localisation',
       label: 'Localisation :',
-      schema: z.string(),
+      schema: stringSchema,
     },
-    // {
-    //   name: 'fichiers',
-    //   label: 'Téléverser vos fichiers :',
-    //   type: 'file',
-    //   schema: z.array(z.instanceof(File)),
-    // },
+    {
+      name: 'fichiers',
+      label: 'Téléverser vos fichiers :',
+      type: 'file',
+      schema: filesSchema,
+    },
   ],
   'ajout schéma directeur': [
     {
       name: 'nomReseau',
       label: 'Nom du réseau ou du territoire concerné :',
-      schema: z.string(),
+      schema: stringSchema,
     },
-    // {
-    //   name: 'fichiers',
-    //   label: 'Téléverser vos fichiers :',
-    //   type: 'file',
-    //   schema: z.array(z.instanceof(File)),
-    // },
+    {
+      name: 'fichiers',
+      label: 'Téléverser vos fichiers :',
+      type: 'file',
+      schema: filesSchema,
+    },
   ],
   'signaler une erreur': [
     {
       name: 'precisions',
       label: 'Précisez :',
-      schema: z.string({ message: 'Ce champ est obligatoire', required_error: 'obligatoire' }),
+      schema: stringSchema,
     },
   ],
   autre: [
     {
       name: 'precisions',
       label: 'Précisez :',
-      schema: z.string(),
+      schema: stringSchema,
     },
   ],
 } as const satisfies Record<TypeDemande, FieldConfig[]>;
 
 export const zCommonFormData = z.object({
   typeUtilisateur: z.enum(nonEmptyArray(typesUtilisateur.map((w) => w.key)), { message: 'Ce choix est obligatoire' }),
-  typeUtilisateurAutre: z.string(),
+  typeUtilisateurAutre: stringSchema,
   email: z.string().email("L'adresse email n'est pas valide"),
   dansCadreDemandeADEME: z.boolean({ message: 'Ce choix est obligatoire' }),
 });
@@ -202,7 +208,7 @@ const zodSchemasByTypeDemande = ObjectKeys(typeDemandeFields).reduce(
     [key]: typeDemandeFields[key].reduce(
       (acc2, field) => ({
         ...acc2,
-        [field.name]: (field as FieldConfig).schema ?? z.string(),
+        [field.name]: (field as FieldConfig).schema,
       }),
       {}
     ),
@@ -259,6 +265,8 @@ const zFormData = z.discriminatedUnion(
     ),
   ]
 );
+
+const allowedExtensions = ['.shp', '.gpkg', '.geojson', '.dxf', '.gdb', '.tab', '.kmz'] as const;
 
 type AddEmptyValues<T> = T extends string ? T | '' : T extends object ? { [K in keyof T]: AddEmptyValues<T[K]> } : T;
 
@@ -460,10 +468,17 @@ const ContributionForm = () => {
                 (option as FieldConfig).type === 'file' ? (
                   <Upload
                     label={option.label}
-                    hint=""
+                    hint={`Taille maximale : 500 Mo. Formats supportés : ${allowedExtensions.join(', ')}. Plusieurs fichiers possibles.`}
+                    multiple
                     nativeInputProps={{
-                      accept: '.csv',
-                      onChange: (e) => field.handleChange(e.target.value),
+                      accept: allowedExtensions.join(','),
+                      onChange: (e) => {
+                        const files = e.target.files;
+                        if (!files || files.length === 0) {
+                          return;
+                        }
+                        field.handleChange([...files]);
+                      },
                       onBlur: field.handleBlur,
                     }}
                     {...getInputErrorStates(field)}
@@ -491,7 +506,7 @@ const ContributionForm = () => {
       <form.Subscribe
         selector={(state) => [state.isValid, state.canSubmit, state.isSubmitting]}
         children={([isValid, canSubmit, isSubmitting]) => (
-          <Button type="submit" disabled={!isValid || !canSubmit || isSubmitting}>
+          <Button className="fr-mt-2w" type="submit" disabled={!isValid || !canSubmit || isSubmitting}>
             Envoyer
           </Button>
         )}
