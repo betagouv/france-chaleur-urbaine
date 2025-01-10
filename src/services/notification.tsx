@@ -41,10 +41,10 @@ export const NotifierContainer = ({ children }: any) => {
  * @returns A function that takes an asynchronous function (`func`), executes it,
  * and shows a toast notification with the error message if an error occurs.
  */
-export const toastErrors = (func: () => Promise<any>) => {
-  return async () => {
+export const toastErrors = <Func extends (...args: any[]) => void | Promise<void>>(func: Func) => {
+  return async (...args: Parameters<Func>): Promise<void> => {
     try {
-      return await func();
+      await func(...args);
     } catch (err: any) {
       notify('error', err?.message || err);
       captureException(err);

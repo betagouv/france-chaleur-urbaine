@@ -13,6 +13,7 @@
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:json/recommended",
     "plugin:@next/next/recommended",
+    "plugin:@tanstack/query/recommended",
     "next/core-web-vitals"
   ],
   "parser": "@typescript-eslint/parser",
@@ -35,6 +36,7 @@
     "no-underscore-dangle": 0,
     "react/no-find-dom-node": 0,
     "react/prop-types": 0,
+    "react/no-children-prop": ["error", { "allowFunctions": true }],
     "no-nested-ternary": 0,
     "react/no-unescaped-entities": 0,
     "no-console": ["warn", { "allow": ["warn", "error", "info"] }],

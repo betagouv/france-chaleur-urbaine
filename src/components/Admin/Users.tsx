@@ -5,12 +5,12 @@ import AsyncButton from '@/components/ui/AsyncButton';
 import Box from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
 import { Table, type ColumnDef } from '@/components/ui/Table';
+import { type AdminManageUserItem } from '@/pages/api/admin/users';
 import { useServices } from '@/services';
-import { type UserResponse } from '@/types/UserResponse';
 
 import { TableContainer } from './Users.styles';
 
-const columns: ColumnDef<UserResponse>[] = [
+const columns: ColumnDef<AdminManageUserItem>[] = [
   {
     field: 'email',
     renderHeader: () => 'Email',
@@ -35,7 +35,7 @@ const columns: ColumnDef<UserResponse>[] = [
 const Users = () => {
   const { adminService, exportService } = useServices();
 
-  const [users, setUsers] = useState<UserResponse[]>([]);
+  const [users, setUsers] = useState<AdminManageUserItem[]>([]);
   const [filter, setFilter] = useState('');
 
   useEffect(() => {
