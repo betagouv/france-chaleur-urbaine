@@ -66,9 +66,16 @@ type FieldConfig = {
   type?: 'string' | 'file';
 };
 
+const fileSizeLimit = 256 * 1024 * 1024;
+const allowedExtensions = ['.shp', '.gpkg', '.geojson', '.dxf', '.gdb', '.tab', '.kmz'] as const;
 const filesSchema = z
   .array(z.instanceof(File))
-  .refine((files) => files.every((file) => file.size <= 200_000_000), { message: 'Veuillez choisir un fichier moins grand.' });
+  .refine((files) => files.every((file) => file.size <= fileSizeLimit), {
+    message: 'Veuillez choisir des fichiers moins grands.',
+  })
+  .refine((files) => files.every((file) => allowedExtensions.some((extension) => file.name.endsWith(extension))), {
+    message: 'Veuillez choisir des fichiers au bon format',
+  });
 
 const stringSchema = z.string({ message: 'Ce champ est obligatoire' });
 
@@ -266,8 +273,6 @@ const zFormData = z.discriminatedUnion(
   ]
 );
 
-const allowedExtensions = ['.shp', '.gpkg', '.geojson', '.dxf', '.gdb', '.tab', '.kmz'] as const;
-
 type AddEmptyValues<T> = T extends string ? T | '' : T extends object ? { [K in keyof T]: AddEmptyValues<T[K]> } : T;
 
 // besoin de valeurs vides juste pour le formulaire et non zod
@@ -291,7 +296,6 @@ const ContributionForm = () => {
     onSubmit: toastErrors(
       async ({ value }: { value: FormData }) => {
         console.log('submit', value);
-        // ca serait mieux que zod ne récupère que ce qui est utile
         console.log('parsed', zFormData.parse(value));
         const airtableData = {
           Utilisateur: value.typeUtilisateur === 'Autre' ? value.typeUtilisateurAutre : value.typeUtilisateur,
@@ -468,7 +472,9 @@ const ContributionForm = () => {
                 (option as FieldConfig).type === 'file' ? (
                   <Upload
                     label={option.label}
-                    hint={`Taille maximale : 500 Mo. Formats supportés : ${allowedExtensions.join(', ')}. Plusieurs fichiers possibles.`}
+                    hint={`Taille maximale : ${Math.round(fileSizeLimit / 1024 / 1024)} Mo. Formats supportés : ${allowedExtensions.join(
+                      ', '
+                    )}. Plusieurs fichiers possibles.`}
                     multiple
                     nativeInputProps={{
                       accept: allowedExtensions.join(','),
