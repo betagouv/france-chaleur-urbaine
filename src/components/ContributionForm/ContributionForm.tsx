@@ -501,6 +501,6 @@ export default ContributionForm;
 function getInputErrorStates(field: FieldApi<any, any, any, any, any>): Pick<RadioButtonsProps, 'state' | 'stateRelatedMessage'> {
   return {
     state: field.state.meta.isTouched && field.state.meta.errors.length ? 'error' : 'default',
-    stateRelatedMessage: field.state.meta.isTouched && field.state.meta.errors.join(', '),
+    stateRelatedMessage: field.state.meta.isTouched && field.state.meta.errors.length ? field.state.meta.errors.join(', ') : undefined,
   };
 }
