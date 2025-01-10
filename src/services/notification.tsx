@@ -1,7 +1,7 @@
 'use client';
 import { captureException } from '@sentry/browser';
 import { useQueryState } from 'nuqs';
-import React from 'react';
+import React, { type ReactNode } from 'react';
 import originalToast, { Toaster } from 'react-hot-toast';
 
 const toast = originalToast;
@@ -41,12 +41,12 @@ export const NotifierContainer = ({ children }: any) => {
  * @returns A function that takes an asynchronous function (`func`), executes it,
  * and shows a toast notification with the error message if an error occurs.
  */
-export const toastErrors = <Func extends (...args: any[]) => void | Promise<void>>(func: Func) => {
+export const toastErrors = <Func extends (...args: any[]) => void | Promise<void>>(func: Func, customError?: (err: Error) => ReactNode) => {
   return async (...args: Parameters<Func>): Promise<void> => {
     try {
       await func(...args);
     } catch (err: any) {
-      notify('error', err?.message || err);
+      notify('error', customError ? customError(err) : err?.message || err);
       captureException(err);
     }
   };
