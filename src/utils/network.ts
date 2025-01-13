@@ -34,6 +34,28 @@ export const postFetchJSON = async <Data = any>(url: string, body: any): Promise
   return await res.json();
 };
 
+export const postFormDataFetchJSON = async <Data = any>(url: string, formState: object): Promise<Data> => {
+  const formData = new FormData();
+  for (const [key, value] of Object.entries(formState)) {
+    if (value instanceof Array) {
+      for (const part of Array.from(value)) {
+        formData.append(key, part);
+      }
+    } else {
+      formData.set(key, value as string);
+    }
+  }
+
+  const res = await fetch(url, {
+    method: 'POST',
+    body: formData,
+  });
+  if (!res.ok) {
+    await handleError(res, url);
+  }
+  return await res.json();
+};
+
 export const deleteFetchJSON = async <Data = any>(url: string): Promise<Data> => {
   const res = await fetch(url, {
     method: 'DELETE',

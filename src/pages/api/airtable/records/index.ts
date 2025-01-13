@@ -1,17 +1,14 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiRequest } from 'next';
 import { v4 as uuidv4 } from 'uuid';
 
 import base, { AirtableDB } from '@/server/db/airtable';
 import { logger } from '@/server/helpers/logger';
-import { createRateLimiter } from '@/server/helpers/rate-limit';
 import { BadRequestError, handleRouteErrors, requirePostMethod } from '@/server/helpers/server';
 import { closestNetwork, getConso, getDistanceToNetwork, getNbLogement } from '@/server/services/addresseInformation';
 import { getGestionnaires, getToRelanceDemand } from '@/server/services/manager';
 import { Airtable } from '@/types/enum/Airtable';
 
-const contributionRateLimiter = createRateLimiter();
-
-export default handleRouteErrors(async function PostRecords(req: NextApiRequest, res: NextApiResponse) {
+export default handleRouteErrors(async function PostRecords(req: NextApiRequest) {
   requirePostMethod(req);
 
   // networkId est présent si test depuis fiche réseau
@@ -77,16 +74,6 @@ export default handleRouteErrors(async function PostRecords(req: NextApiRequest,
         { typecast: true }
       );
       return { id: demandId };
-    }
-
-    case Airtable.CONTRIBUTION: {
-      await contributionRateLimiter(req, res);
-      // bad airtable type
-      const { id }: any = await AirtableDB(Airtable.CONTRIBUTION).create(values);
-      logger.info('create airtable record contribution', {
-        id,
-      });
-      return;
     }
 
     case Airtable.NEWSLETTER: {

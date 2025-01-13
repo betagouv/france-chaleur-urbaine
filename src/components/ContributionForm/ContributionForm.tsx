@@ -7,9 +7,9 @@ import { z, type ZodSchema } from 'zod';
 
 import Input from '@/components/form/dsfr/Input';
 import Button from '@/components/ui/Button';
-import { submitToAirtable } from '@/services/airtable';
 import { toastErrors } from '@/services/notification';
-import { Airtable } from '@/types/enum/Airtable';
+import { postFormDataFetchJSON } from '@/utils/network';
+import { formatFileSize } from '@/utils/strings';
 import { nonEmptyArray, ObjectKeys } from '@/utils/typescript';
 
 const typesUtilisateur = [
@@ -66,12 +66,22 @@ type FieldConfig = {
   type?: 'string' | 'file';
 };
 
-const fileSizeLimit = 256 * 1024 * 1024;
-const allowedExtensions = ['.shp', '.gpkg', '.geojson', '.dxf', '.gdb', '.tab', '.kmz'] as const;
+export const filesLimits = {
+  maxFiles: 10,
+  maxFileSize: 50 * 1024 * 1024,
+  maxTotalFileSize: 250 * 1024 * 1024,
+};
+export const allowedExtensions = ['.shp', '.gpkg', '.geojson', '.dxf', '.gdb', '.tab', '.kmz', '.zip'] as const;
 const filesSchema = z
   .array(z.instanceof(File))
-  .refine((files) => files.every((file) => file.size <= fileSizeLimit), {
-    message: 'Veuillez choisir des fichiers moins grands.',
+  .refine((files) => files.length <= filesLimits.maxFiles, {
+    message: `Vous devez choisir au maximum ${filesLimits.maxFiles} fichiers.`,
+  })
+  .refine((files) => files.every((file) => file.size <= filesLimits.maxFileSize), {
+    message: `Chaque fichier doit être inférieur à ${formatFileSize(filesLimits.maxFileSize)}.`,
+  })
+  .refine((files) => files.reduce((acc, file) => acc + file.size, 0) <= filesLimits.maxTotalFileSize, {
+    message: `Le total des fichier doit être inférieur à ${formatFileSize(filesLimits.maxTotalFileSize)}.`,
   })
   .refine((files) => files.every((file) => allowedExtensions.some((extension) => file.name.endsWith(extension))), {
     message: 'Veuillez choisir des fichiers au bon format',
@@ -230,7 +240,7 @@ const zodSchemasByTypeDemande = ObjectKeys(typeDemandeFields).reduce(
   }
 );
 
-const zFormData = z.discriminatedUnion(
+export const zContributionFormData = z.discriminatedUnion(
   'typeDemande',
   // définition statique plutôt qu'avec un map sinon on perd le typage
   [
@@ -276,7 +286,7 @@ const zFormData = z.discriminatedUnion(
 type AddEmptyValues<T> = T extends string ? T | '' : T extends object ? { [K in keyof T]: AddEmptyValues<T[K]> } : T;
 
 // besoin de valeurs vides juste pour le formulaire et non zod
-type FormData = AddEmptyValues<z.infer<typeof zFormData>>;
+type FormData = AddEmptyValues<z.infer<typeof zContributionFormData>>;
 
 const ContributionForm = () => {
   const [formSuccess, setFormSuccess] = useState<boolean>(false);
@@ -291,26 +301,11 @@ const ContributionForm = () => {
     } satisfies Record<keyof FormData, ''> as unknown as FormData,
     validatorAdapter: standardSchemaValidator(),
     validators: {
-      onChange: zFormData,
+      onChange: zContributionFormData,
     },
     onSubmit: toastErrors(
       async ({ value }: { value: FormData }) => {
-        console.log('submit', value);
-        console.log('parsed', zFormData.parse(value));
-        const airtableData = {
-          Utilisateur: value.typeUtilisateur === 'Autre' ? value.typeUtilisateurAutre : value.typeUtilisateur,
-          Email: value.email,
-          'Cadre subvention ADEME': value.dansCadreDemandeADEME,
-          Souhait: value.typeDemande,
-          'Réseau(x)': (value as any).nomReseau,
-          Localisation: (value as any).localisation,
-          'Nom gestionnaire': (value as any).gestionnaire,
-          'Date mise en service': (value as any).dateMiseEnServicePrevisionnelle,
-          'Référent commercial': (value as any).emailReferentCommercial,
-          Précisions: (value as any).precisions ?? (value as any).commentaire,
-        };
-        console.log('airtableData', airtableData);
-        await submitToAirtable(airtableData, Airtable.CONTRIBUTION);
+        await postFormDataFetchJSON('/api/contribution', zContributionFormData.parse(value));
         setFormSuccess(true);
       },
       () => (
@@ -472,9 +467,9 @@ const ContributionForm = () => {
                 (option as FieldConfig).type === 'file' ? (
                   <Upload
                     label={option.label}
-                    hint={`Taille maximale : ${Math.round(fileSizeLimit / 1024 / 1024)} Mo. Formats supportés : ${allowedExtensions.join(
+                    hint={`Taille maximale : ${formatFileSize(filesLimits.maxFileSize)}. Formats supportés : ${allowedExtensions.join(
                       ', '
-                    )}. Plusieurs fichiers possibles.`}
+                    )}. Maximum ${filesLimits.maxFiles} fichiers.`}
                     multiple
                     nativeInputProps={{
                       accept: allowedExtensions.join(','),
