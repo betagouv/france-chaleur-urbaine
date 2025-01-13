@@ -480,6 +480,7 @@ const ContributionForm = () => {
               children={(field) =>
                 (option as FieldConfig).type === 'file' ? (
                   <Upload
+                    className="fr-mb-2w"
                     label={option.label}
                     hint={`Taille maximale : ${formatFileSize(filesLimits.maxFileSize)}. Formats supportés : ${allowedExtensions.join(
                       ', '
@@ -521,7 +522,7 @@ const ContributionForm = () => {
       <form.Subscribe
         selector={(state) => [state.isValid, state.canSubmit, state.isSubmitting]}
         children={([isValid, canSubmit, isSubmitting]) => (
-          <Button className="fr-mt-2w" type="submit" disabled={!isValid || !canSubmit || isSubmitting}>
+          <Button type="submit" disabled={!isValid || !canSubmit || isSubmitting}>
             Envoyer
           </Button>
         )}
