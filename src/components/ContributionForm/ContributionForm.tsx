@@ -522,7 +522,7 @@ const ContributionForm = () => {
       <form.Subscribe
         selector={(state) => [state.isValid, state.canSubmit, state.isSubmitting]}
         children={([isValid, canSubmit, isSubmitting]) => (
-          <Button type="submit" disabled={!isValid || !canSubmit || isSubmitting}>
+          <Button type="submit" loading={isSubmitting} disabled={!isValid || !canSubmit || isSubmitting}>
             Envoyer
           </Button>
         )}
