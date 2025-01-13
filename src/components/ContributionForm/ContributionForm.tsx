@@ -73,7 +73,7 @@ export const filesLimits = {
 };
 export const allowedExtensions = ['.shp', '.gpkg', '.geojson', '.dxf', '.gdb', '.tab', '.kmz', '.zip'] as const;
 const filesSchema = z
-  .array(z.instanceof(File))
+  .array(z.instanceof(File), { message: 'Veuillez choisir un ou plusieurs fichiers' })
   .refine((files) => files.length <= filesLimits.maxFiles, {
     message: `Vous devez choisir au maximum ${filesLimits.maxFiles} fichiers.`,
   })
