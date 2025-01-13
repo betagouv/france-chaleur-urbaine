@@ -38,7 +38,8 @@ const serverSideFilesSchema = z
   })
   .refine((files) => files.every((file) => allowedExtensions.some((extension) => file.originalFilename.endsWith(extension))), {
     message: 'Veuillez choisir des fichiers au bon format',
-  });
+  })
+  .optional();
 
 // updated schema with new server side files validation
 const zServerContributionFormData = z.discriminatedUnion(

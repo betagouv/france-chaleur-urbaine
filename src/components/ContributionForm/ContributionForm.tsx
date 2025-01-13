@@ -436,6 +436,20 @@ const ContributionForm = () => {
 
       <form.Field
         name="typeDemande"
+        listeners={{
+          onChange: ({ value }) => {
+            if (value === '') {
+              return;
+            }
+            // when changing typeDemande, the form remembers its old fields so we must remove them manually
+            const fieldsToDelete = new Set(ObjectKeys(form.state.fieldMeta))
+              .difference(new Set([...ObjectKeys(zCommonFormData.shape), zContributionFormData.discriminator]))
+              .difference(new Set(typeDemandeFields[value].map((f) => f.name)));
+            fieldsToDelete.forEach((field) => {
+              form.deleteField(field);
+            });
+          },
+        }}
         children={(field) => (
           <RadioButtons
             legend="Vous souhaitez :"
