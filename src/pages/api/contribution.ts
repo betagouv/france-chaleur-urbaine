@@ -3,10 +3,10 @@ import { z } from 'zod';
 
 import { allowedExtensions, filesLimits, zContributionFormData } from '@/components/ContributionForm/ContributionForm';
 import { AirtableDB } from '@/server/db/airtable';
-import { fileIOClient } from '@/server/helpers/fileio';
 import { logger } from '@/server/helpers/logger';
 import { createRateLimiter } from '@/server/helpers/rate-limit';
 import { handleRouteErrors, requirePostMethod } from '@/server/helpers/server';
+import { uploadTempFile } from '@/server/services/upload';
 import { flattenMultipartData } from '@/utils/form-utils';
 import { formatFileSize } from '@/utils/strings';
 import { nonEmptyArray } from '@/utils/typescript';
@@ -76,7 +76,7 @@ export default handleRouteErrors(async (req, res) => {
     Précisions: (formValues as any).precisions ?? (formValues as any).commentaire,
     Fichiers: await Promise.all(
       (files.fichiers ?? []).map(async (fichier, index) => {
-        const externalURL = await fileIOClient.uploadTempFile(fichier.filepath, fichier.originalFilename ?? `Fichier ${index + 1}`);
+        const externalURL = await uploadTempFile(fichier.filepath, fichier.originalFilename ?? `Fichier ${index + 1}`);
         return {
           filename: fichier.originalFilename ?? `Fichier ${index + 1}`,
           url: externalURL,
