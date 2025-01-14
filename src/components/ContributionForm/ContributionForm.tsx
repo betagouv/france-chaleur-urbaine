@@ -133,7 +133,6 @@ const filesSchema = z
   .superRefine((files, ctx) => {
     files.forEach((file) => {
       if (riskyExtensions.some((extension) => file.name.endsWith(extension))) {
-        console.log('non autorisé !');
         ctx.addIssue({
           code: 'custom',
           message: `L'extension du fichier "${file.name}" n'est pas autorisée.`,
@@ -180,6 +179,7 @@ const typeDemandeFields = {
       label: 'Téléverser vos fichiers :',
       type: 'file',
       schema: filesSchema,
+      hint: 'Formats préférentiels : GeoJSON, Shapefile, KML, GeoPackage.',
     },
   ],
   'ajout tracé réseau en construction': [
@@ -220,6 +220,7 @@ const typeDemandeFields = {
       label: 'Téléverser vos fichiers :',
       type: 'file',
       schema: filesSchema,
+      hint: 'Formats préférentiels : GeoJSON, Shapefile, KML, GeoPackage.',
     },
   ],
   'ajout périmètre développement prioritaire': [
@@ -238,6 +239,7 @@ const typeDemandeFields = {
       label: 'Téléverser vos fichiers :',
       type: 'file',
       schema: filesSchema,
+      hint: 'Formats préférentiels : GeoJSON, Shapefile, KML, GeoPackage.',
     },
   ],
   'ajout schéma directeur': [
@@ -251,6 +253,7 @@ const typeDemandeFields = {
       label: 'Téléverser vos fichiers :',
       type: 'file',
       schema: filesSchema,
+      hint: 'Formats préférentiels : PDF, Word.',
     },
   ],
   'signaler une erreur': [
@@ -535,16 +538,15 @@ const ContributionForm = () => {
               name={option.name}
               key={option.name}
               children={(field) =>
-                (option as FieldConfig).type === 'file' ? (
+                'type' in option && (option as FieldConfig).type === 'file' ? (
                   <Upload
                     className="fr-mb-2w"
                     label={option.label}
-                    hint={`Taille maximale : ${formatFileSize(filesLimits.maxFileSize)}. Formats supportés : ${allowedExtensions.join(
-                      ', '
-                    )}. Maximum ${filesLimits.maxFiles} fichiers.`}
+                    hint={`Taille maximale : ${formatFileSize(filesLimits.maxFileSize)}. Maximum ${filesLimits.maxFiles} fichiers. ${
+                      option.hint
+                    }`}
                     multiple
                     nativeInputProps={{
-                      accept: allowedExtensions.join(','),
                       onChange: (e) => {
                         const files = e.target.files;
                         if (!files || files.length === 0) {
