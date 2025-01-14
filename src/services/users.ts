@@ -10,9 +10,9 @@ import { USER_ROLE } from '@/types/enum/UserRole';
 
 export const upsertUsersFromApi = async (account: ApiAccount, networks: ApiNetwork[]) => {
   //Users from tab "GESTIONNAIRES_API" where the new users from outside API are saved
-  const airtableUsersAPI = await base(Airtable.GESTIONNAIRES_API).select().all();
+  const airtableApiGestionnaires = await base(Airtable.GESTIONNAIRES_API).select().all();
   //Users from tab "GESTIONNAIRES" - all the users of the website
-  const airtableUsers = await base(Airtable.GESTIONNAIRES).select().all();
+  const airtableGestionnaires = await base(Airtable.GESTIONNAIRES).select().all();
 
   const warnings: string[] = [];
   const emails = networks.flatMap((user) => user.contacts);
@@ -26,10 +26,10 @@ export const upsertUsersFromApi = async (account: ApiAccount, networks: ApiNetwo
 
   //On ne supprime pas dans le Airtable les users non ré-importés mais on met Réseaux vides
   await Promise.all(
-    airtableUsersAPI
-      .filter((airtableUserAPI) => !emails.includes(airtableUserAPI.get('Email') as string))
-      .map((airtableUserAPI) =>
-        base(Airtable.GESTIONNAIRES_API).update(airtableUserAPI.id, {
+    airtableApiGestionnaires
+      .filter((airtableApiGestionnaire) => !emails.includes(airtableApiGestionnaire.get('Email') as string))
+      .map((airtableApiGestionnaire) =>
+        base(Airtable.GESTIONNAIRES_API).update(airtableApiGestionnaire.id, {
           Réseaux: [],
         })
       )
@@ -60,19 +60,36 @@ export const upsertUsersFromApi = async (account: ApiAccount, networks: ApiNetwo
   //   );
   // }
   warnings.forEach((warning) => console.log(warning));
+
   const salt = await bcrypt.genSalt(10);
+
   await Promise.all(
     Object.keys(users)
       .filter((user) => user && !otherUsers.includes(user))
       .flatMap((user) => {
         //Tag gestionnaire for the "new" user - future column "Réseaux"
-        const userGestionnaires = users[user].map((network) => `${account.name}_${network}`);
-        const airtableUserAPI = airtableUsersAPI.find((airtableUserAPI) => airtableUserAPI.get('Email') === user);
-        const airtableUser = airtableUsers.find((airtableUser) => airtableUser.get('Email') === user);
+        const userGestionnaireTags = users[user].map((network) => `${account.name}_${network}`);
+        const airtableApiGestionnaire = airtableApiGestionnaires.find(
+          (airtableApiGestionnaire) => airtableApiGestionnaire.get('Email') === user
+        );
+        const airtableGestionnaire = airtableGestionnaires.find((airtableGestionnaire) => airtableGestionnaire.get('Email') === user);
         //Tags FCU
-        const fcuTags = airtableUserAPI ? (airtableUserAPI.get('Tags FCU') as string[]) : [];
+        const fcuTags = airtableApiGestionnaire ? (airtableApiGestionnaire.get('Tags FCU') as string[]) : [];
         //Concat tags from API (future column "Réseaux") and column "Tags FCU" if existed
-        const allGestionnaires = airtableUserAPI && fcuTags && fcuTags.length > 0 ? userGestionnaires.concat(fcuTags) : userGestionnaires;
+        const allGestionnaires =
+          airtableApiGestionnaire && fcuTags && fcuTags.length > 0 ? userGestionnaireTags.concat(fcuTags) : userGestionnaireTags;
+
+        const gestionnaireApiData = {
+          Email: user,
+          Réseaux: userGestionnaireTags,
+          Nom: account.name,
+        };
+
+        const gestionnaireData = {
+          Email: user,
+          Gestionnaires: allGestionnaires,
+        };
+
         const promises: Promise<any>[] = [
           db('users')
             .insert({
@@ -85,57 +102,15 @@ export const upsertUsersFromApi = async (account: ApiAccount, networks: ApiNetwo
             })
             .onConflict('email')
             .merge({ gestionnaires: allGestionnaires, active: true }),
+
           //Maj Airtable avec les nouveaux tags Réseaux (ou ajoute le nouveau compte)
-          airtableUserAPI
-            ? base(Airtable.GESTIONNAIRES_API).update(
-                airtableUserAPI.id,
-                {
-                  Email: user,
-                  Réseaux: userGestionnaires,
-                  Nom: account.name,
-                },
-                {
-                  typecast: true,
-                }
-              )
-            : base(Airtable.GESTIONNAIRES_API).create(
-                [
-                  {
-                    fields: {
-                      Email: user,
-                      Réseaux: userGestionnaires,
-                      Nom: account.name,
-                    },
-                  },
-                ],
-                {
-                  typecast: true,
-                }
-              ),
-          airtableUser
-            ? base(Airtable.GESTIONNAIRES).update(
-                airtableUser.id,
-                {
-                  Email: user,
-                  Gestionnaires: allGestionnaires,
-                },
-                {
-                  typecast: true,
-                }
-              )
-            : base(Airtable.GESTIONNAIRES).create(
-                [
-                  {
-                    fields: {
-                      Email: user,
-                      Gestionnaires: allGestionnaires,
-                    },
-                  },
-                ],
-                {
-                  typecast: true,
-                }
-              ),
+          airtableApiGestionnaire
+            ? base(Airtable.GESTIONNAIRES_API).update(airtableApiGestionnaire.id, gestionnaireApiData, { typecast: true })
+            : base(Airtable.GESTIONNAIRES_API).create([{ fields: gestionnaireApiData }], { typecast: true }),
+
+          airtableGestionnaire
+            ? base(Airtable.GESTIONNAIRES).update(airtableGestionnaire.id, gestionnaireData, { typecast: true })
+            : base(Airtable.GESTIONNAIRES).create([{ fields: gestionnaireData }], { typecast: true }),
         ];
 
         if (!existingUsers.some((existingUser) => existingUser.email === user)) {
@@ -155,31 +130,32 @@ export const updateUsers = async () => {
     .flatMap((demand) => demand.get('Gestionnaires') as string[])
     .filter((manager, index, values) => manager && values.findIndex((x) => x === manager) === index);
 
-  const airtableUsers = await base(Airtable.GESTIONNAIRES).select().all();
-  const airtableUsersAPI = await base(Airtable.GESTIONNAIRES_API).select().all();
+  const airtableGestionnaires = await base(Airtable.GESTIONNAIRES).select().all();
+  const airtableApiGestionnaires = await base(Airtable.GESTIONNAIRES_API).select().all();
 
   const users = await db('users').select('email').where('role', USER_ROLE.GESTIONNAIRE);
   const existingEmails = new Set(users.map((user) => user.email));
   const salt = await bcrypt.genSalt(10);
 
-  let existingManager: string[] = [];
+  let existingGestionnaires: string[] = [];
   const emails = ['demo'];
-  for (let i = 0; i < airtableUsers.length; i++) {
-    const user = airtableUsers[i];
-    const rawGestionnaires = user.get('Gestionnaires') as string[];
+
+  for (let i = 0; i < airtableGestionnaires.length; i++) {
+    const airtableGestionnaire = airtableGestionnaires[i];
+    const rawGestionnaires = airtableGestionnaire.get('Gestionnaires') as string[];
     if (!rawGestionnaires || rawGestionnaires.length === 0) {
       continue;
     }
-    const gestionnaires = rawGestionnaires.map((gestionnaire) => {
-      return gestionnaire.trim();
-    });
-    existingManager = existingManager.concat(gestionnaires);
-    let email = user.get('Email') as string;
+    const gestionnaires = rawGestionnaires.map((gestionnaire) => gestionnaire.trim());
+    existingGestionnaires = existingGestionnaires.concat(gestionnaires);
+    let email = airtableGestionnaire.get('Email') as string;
+
     if (email) {
       email = email.toLowerCase().trim();
       emails.push(email);
-      const newDemands = user.get('Nouvelle demande') === true;
-      const oldDemands = user.get('Relance') === true;
+      const newDemands = airtableGestionnaire.get('Nouvelle demande') === true;
+      const oldDemands = airtableGestionnaire.get('Relance') === true;
+
       if (!existingEmails.has(email)) {
         console.log(`Create account for ${email} on ${gestionnaires.join(', ')}.`);
         newEmails.push(email);
@@ -198,32 +174,30 @@ export const updateUsers = async () => {
           gestionnaires,
           active: true,
         });
-        const airtableUserAPI = airtableUsersAPI.find((userAPI) => {
-          let userAPIEmail = userAPI.get('Email') as string;
-          userAPIEmail = userAPIEmail.toLowerCase().trim();
-          if (userAPIEmail === email) {
-            return userAPI;
-          }
-        });
-        if (airtableUserAPI) {
-          const newTagsFCU = gestionnaires;
-          const tagsReseaux = airtableUserAPI.get('Réseaux') as string[];
+
+        const airtableApiGestionnaire = airtableApiGestionnaires.find(
+          (userAPI) => (userAPI.get('Email') as string)?.toLowerCase().trim() === email
+        );
+
+        if (airtableApiGestionnaire) {
+          const newFCUTags = gestionnaires;
+          const tagsReseaux = airtableApiGestionnaire.get('Réseaux') as string[];
+
           if (tagsReseaux) {
             tagsReseaux.forEach((gestionnaire) => {
               const tag = gestionnaire.trim();
-              const index = newTagsFCU.findIndex((t) => t === tag);
+              const index = newFCUTags.findIndex((t) => t === tag);
               if (index !== -1) {
-                newTagsFCU.splice(index, 1);
+                newFCUTags.splice(index, 1);
               }
             });
+
             await base(Airtable.GESTIONNAIRES_API).update(
-              airtableUserAPI.id,
+              airtableApiGestionnaire.id,
               {
-                'Tags FCU': newTagsFCU,
+                'Tags FCU': newFCUTags,
               },
-              {
-                typecast: true,
-              }
+              { typecast: true }
             );
           }
         }
@@ -231,8 +205,8 @@ export const updateUsers = async () => {
     }
   }
 
-  for (let i = 0; i < existingManager.length; i++) {
-    const gestionnaire = existingManager[i];
+  for (let i = 0; i < existingGestionnaires.length; i++) {
+    const gestionnaire = existingGestionnaires[i];
     const gestionnaireFakeMail = `${gestionnaire} - FCU`.toLowerCase();
     emails.push(gestionnaireFakeMail);
     if (!existingEmails.has(gestionnaireFakeMail)) {
@@ -265,7 +239,7 @@ export const updateUsers = async () => {
 
   await Promise.all(
     managers
-      .filter((manager) => !existingManager.includes(manager))
+      .filter((manager) => !existingGestionnaires.includes(manager))
       .map((manager) =>
         base(Airtable.GESTIONNAIRES).create(
           [
@@ -275,9 +249,7 @@ export const updateUsers = async () => {
               },
             },
           ],
-          {
-            typecast: true,
-          }
+          { typecast: true }
         )
       )
   );
