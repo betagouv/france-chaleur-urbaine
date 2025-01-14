@@ -1,7 +1,7 @@
 import formidable from 'formidable';
 import { z } from 'zod';
 
-import { allowedExtensions, filesLimits, zContributionFormData } from '@/components/ContributionForm/ContributionForm';
+import { riskyExtensions, filesLimits, zContributionFormData } from '@/components/ContributionForm/ContributionForm';
 import { AirtableDB } from '@/server/db/airtable';
 import { logger } from '@/server/helpers/logger';
 import { createRateLimiter } from '@/server/helpers/rate-limit';
@@ -36,8 +36,17 @@ const serverSideFilesSchema = z
   .refine((files) => files.reduce((acc, file) => acc + file.size, 0) <= filesLimits.maxTotalFileSize, {
     message: `Le total des fichier doit être inférieur à ${formatFileSize(filesLimits.maxTotalFileSize)}.`,
   })
-  .refine((files) => files.every((file) => allowedExtensions.some((extension) => file.originalFilename.endsWith(extension))), {
-    message: 'Veuillez choisir des fichiers au bon format',
+  .superRefine((files, ctx) => {
+    files.forEach((file) => {
+      if (riskyExtensions.some((extension) => file.originalFilename.endsWith(extension))) {
+        ctx.addIssue({
+          code: 'custom',
+          message: `L'extension du fichier "${file.originalFilename}" n'est pas autorisée.`,
+          fatal: true,
+        });
+        return z.NEVER;
+      }
+    });
   })
   .optional();
 

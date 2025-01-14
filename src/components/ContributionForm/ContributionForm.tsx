@@ -63,15 +63,62 @@ type FieldConfig = {
   label: string;
   optional?: boolean;
   schema: ZodSchema;
-  type?: 'string' | 'file';
-};
+} & (
+  | {
+      type?: 'string';
+    }
+  | {
+      type: 'file';
+      hint: string;
+    }
+);
 
 export const filesLimits = {
   maxFiles: 10,
   maxFileSize: 50 * 1024 * 1024,
   maxTotalFileSize: 250 * 1024 * 1024,
 };
-export const allowedExtensions = ['.shp', '.gpkg', '.geojson', '.dxf', '.gdb', '.tab', '.kmz', '.zip'] as const;
+
+// we don't have an approved list of extensions so we remove risky ones
+export const riskyExtensions = [
+  // Executables
+  '.exe',
+  '.bat',
+  '.cmd',
+  '.sh',
+  '.msi',
+  '.bin',
+  '.com',
+  // Scripts
+  '.js',
+  '.mjs',
+  '.vbs',
+  '.wsf',
+  '.ps1',
+  '.py',
+  '.rb',
+  '.php',
+  '.pl',
+  // Documents with macros
+  '.docm',
+  '.xlsm',
+  '.pptm',
+  // HTML/Flash
+  '.html',
+  '.htm',
+  '.mht',
+  '.xhtml',
+  '.swf',
+  // Other
+  '.jar',
+  '.dll',
+  '.sys',
+  '.scr',
+  '.reg',
+  '.hta',
+  '.cpl',
+];
+
 const filesSchema = z
   .array(z.instanceof(File), { message: 'Veuillez choisir un ou plusieurs fichiers' })
   .refine((files) => files.length <= filesLimits.maxFiles, {
@@ -83,8 +130,18 @@ const filesSchema = z
   .refine((files) => files.reduce((acc, file) => acc + file.size, 0) <= filesLimits.maxTotalFileSize, {
     message: `Le total des fichier doit être inférieur à ${formatFileSize(filesLimits.maxTotalFileSize)}.`,
   })
-  .refine((files) => files.every((file) => allowedExtensions.some((extension) => file.name.endsWith(extension))), {
-    message: 'Veuillez choisir des fichiers au bon format',
+  .superRefine((files, ctx) => {
+    files.forEach((file) => {
+      if (riskyExtensions.some((extension) => file.name.endsWith(extension))) {
+        console.log('non autorisé !');
+        ctx.addIssue({
+          code: 'custom',
+          message: `L'extension du fichier "${file.name}" n'est pas autorisée.`,
+          fatal: true,
+        });
+        return z.NEVER;
+      }
+    });
   });
 
 const stringSchema = z.string({ message: 'Ce champ est obligatoire' });
