@@ -107,12 +107,6 @@ const typeDemandeFields = {
       schema: stringSchema,
     },
     {
-      name: 'fichiers',
-      label: 'Téléverser vos fichiers :',
-      type: 'file',
-      schema: filesSchema,
-    },
-    {
       name: 'emailReferentCommercial',
       label: 'Email du référent commercial à qui transmettre les demandes de raccordement',
       optional: true,
@@ -123,6 +117,12 @@ const typeDemandeFields = {
       label: 'Commentaire :',
       optional: true,
       schema: z.string().optional(),
+    },
+    {
+      name: 'fichiers',
+      label: 'Téléverser vos fichiers :',
+      type: 'file',
+      schema: filesSchema,
     },
   ],
   'ajout tracé réseau en construction': [
@@ -147,12 +147,6 @@ const typeDemandeFields = {
       schema: stringSchema,
     },
     {
-      name: 'fichiers',
-      label: 'Téléverser vos fichiers :',
-      type: 'file',
-      schema: filesSchema,
-    },
-    {
       name: 'emailReferentCommercial',
       label: 'Email du référent commercial à qui transmettre les demandes de raccordement',
       optional: true,
@@ -163,6 +157,12 @@ const typeDemandeFields = {
       label: 'Commentaire :',
       optional: true,
       schema: z.string().optional(),
+    },
+    {
+      name: 'fichiers',
+      label: 'Téléverser vos fichiers :',
+      type: 'file',
+      schema: filesSchema,
     },
   ],
   'ajout périmètre développement prioritaire': [
