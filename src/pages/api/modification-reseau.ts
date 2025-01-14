@@ -1,13 +1,14 @@
 import { readFile } from 'node:fs/promises';
 
 import formidable from 'formidable';
-import { type NextApiRequest } from 'next';
 import { z } from 'zod';
 
 import { clientConfig } from '@/client-config';
 import { uploadAttachment, AirtableDB } from '@/server/db/airtable';
 import { logger } from '@/server/helpers/logger';
+import { createRateLimiter } from '@/server/helpers/rate-limit';
 import { handleRouteErrors, requirePostMethod, validateObjectSchema } from '@/server/helpers/server';
+import { parseValue } from '@/utils/form-utils';
 
 export const config = {
   api: {
@@ -24,16 +25,7 @@ const zModificationReseau = {
   structure: z.preprocess((val: any) => val[0], z.string()),
   fonction: z.preprocess((val: any) => val[0], z.string()),
   email: z.preprocess((val: any) => val[0], z.string().email()),
-  reseauClasse: z.preprocess((val: any) => {
-    switch (val[0]) {
-      case 'false':
-        return false;
-      case 'true':
-        return true;
-      default:
-        return val[0];
-    }
-  }, z.boolean()),
+  reseauClasse: z.preprocess((val: any) => parseValue(val[0]), z.boolean()),
   maitreOuvrage: z.preprocess((val: any) => val[0], z.string()),
   gestionnaire: z.preprocess((val: any) => val[0], z.string()),
   siteInternet: z.preprocess((val: any) => {
@@ -46,6 +38,7 @@ const zModificationReseau = {
   informationsComplementaires: z.preprocess((val: any) => val[0], z.string().max(clientConfig.networkInfoFieldMaxCharacters)),
   fichiers: z.optional(
     z.array(
+      // formidable.File
       z.object({
         filepath: z.string(),
         mimetype: z.literal('application/pdf'),
@@ -57,8 +50,11 @@ const zModificationReseau = {
 
 export type ModificationReseau = z.infer<z.ZodObject<typeof zModificationReseau>>;
 
-export default handleRouteErrors(async (req: NextApiRequest) => {
+const rateLimiter = createRateLimiter();
+
+export default handleRouteErrors(async (req, res) => {
   requirePostMethod(req);
+  rateLimiter(req, res);
 
   const form = formidable({
     maxFiles: 3,

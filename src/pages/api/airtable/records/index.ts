@@ -76,15 +76,6 @@ export default handleRouteErrors(async function PostRecords(req: NextApiRequest)
       return { id: demandId };
     }
 
-    case Airtable.CONTRIBUTION: {
-      // bad airtable type
-      const { id }: any = await AirtableDB(Airtable.CONTRIBUTION).create(values);
-      logger.info('create airtable record contribution', {
-        id,
-      });
-      return;
-    }
-
     case Airtable.NEWSLETTER: {
       // bad airtable type
       const { id }: any = await AirtableDB(Airtable.NEWSLETTER).create(values);

@@ -1,8 +1,5 @@
-import { rateLimit } from 'express-rate-limit';
-import { type NextApiResponse } from 'next';
-import { type NextApiRequest } from 'next';
-
 import db from '@/server/db';
+import { createRateLimiter } from '@/server/helpers/rate-limit';
 import { handleRouteErrors, requireGetMethod } from '@/server/helpers/server';
 import { type Network } from '@/types/Summary/Network';
 
@@ -13,35 +10,11 @@ export const config = {
   },
 };
 
-const rateLimitMiddleware = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 20, // Limit each IP to 20 requests per `window` (here, per 15 minutes)
-  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-  handler: (req, res, next) => {
-    next(new Error('rate limit'));
-  },
-  keyGenerator: (request) =>
-    request.ip || request.headers['x-forwarded-for'] || request.headers['x-real-ip'] || request.connection.remoteAddress,
-});
-
-const expressMiddlewareToNext = (middleware: any) => (request: NextApiRequest, response: NextApiResponse) =>
-  new Promise((resolve, reject) => {
-    middleware(request, response, (result?: Error) => (result instanceof Error ? reject(result) : resolve(result)));
-  });
-
-const rateLimitRequest = expressMiddlewareToNext(rateLimitMiddleware);
+const rateLimiter = createRateLimiter();
 
 export default handleRouteErrors(async (req, res) => {
   requireGetMethod(req);
-  try {
-    await rateLimitRequest(req, res);
-  } catch {
-    return res.status(429).send({
-      message: 'rate limit',
-      error: 'too many requests',
-    });
-  }
+  await rateLimiter(req, res);
 
   const reseaux = await Promise.all([
     db<Network>('reseaux_de_chaleur').select([

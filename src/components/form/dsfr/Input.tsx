@@ -28,8 +28,10 @@ const Input = forwardRef<HTMLDivElement, InputProps>(({ label, size, hideOptiona
       nativeInputProps={{
         ...nativeInputProps,
         onWheel: (e) => {
-          // https://stackoverflow.com/a/38589039
-          (document?.activeElement as HTMLInputElement)?.blur();
+          if ((e.target as HTMLInputElement).type === 'number') {
+            // https://stackoverflow.com/a/38589039
+            (document?.activeElement as HTMLInputElement)?.blur();
+          }
           nativeInputProps?.onWheel?.(e);
         },
       }}

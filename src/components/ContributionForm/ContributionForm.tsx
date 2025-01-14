@@ -1,271 +1,618 @@
 import Alert from '@codegouvfr/react-dsfr/Alert';
-import Button from '@codegouvfr/react-dsfr/Button';
-import Checkbox from '@codegouvfr/react-dsfr/Checkbox';
-import RadioButtons from '@codegouvfr/react-dsfr/RadioButtons';
-import { type ChangeEvent, type FormEvent, useState } from 'react';
+import RadioButtons, { type RadioButtonsProps } from '@codegouvfr/react-dsfr/RadioButtons';
+import { Upload } from '@codegouvfr/react-dsfr/Upload';
+import { type FieldApi, type FormState, standardSchemaValidator, useForm } from '@tanstack/react-form';
+import { useEffect, useState } from 'react';
+import { z, type ZodSchema } from 'zod';
 
 import Input from '@/components/form/dsfr/Input';
+import Box from '@/components/ui/Box';
+import Button from '@/components/ui/Button';
+import { toastErrors } from '@/services/notification';
+import { postFormDataFetchJSON } from '@/utils/network';
+import { formatFileSize } from '@/utils/strings';
+import { nonEmptyArray, ObjectKeys } from '@/utils/typescript';
 
-const additionWishValuesWithFormat = [
-  'Tracé du réseau',
-  'Périmètre de développement prioritaire',
-  "Tracé d'une extension prévue du réseau",
-];
+const typesUtilisateur = [
+  {
+    label: 'une collectivité',
+    key: 'Collectivité',
+  },
+  {
+    label: 'un exploitant',
+    key: 'Exploitant',
+  },
+  {
+    label: 'autre',
+    key: 'Autre',
+  },
+] as const;
 
-const additionWishValues = [...additionWishValuesWithFormat, 'Informations tarifaires', 'autre'];
+type TypeUtilisateur = (typeof typesUtilisateur)[number]['key'];
 
-const additionWishValuesADEME = [
-  'Tracé d’un nouveau réseau',
-  'Tracé d’une extension d’un réseau existant',
-  'Tracé d’un réseau existant',
-  'Périmètre de développement prioritaire',
-];
+const typesDemande = [
+  {
+    label: 'ajouter le tracé d’un réseau existant',
+    key: 'ajout tracé réseau existant',
+  },
+  {
+    label: 'ajouter le tracé d’un réseau en construction (nouveau réseau ou extension)',
+    key: 'ajout tracé réseau en construction',
+  },
+  {
+    label: 'ajouter un périmètre de développement prioritaire',
+    key: 'ajout périmètre développement prioritaire',
+  },
+  {
+    label: 'ajouter un schéma directeur',
+    key: 'ajout schéma directeur',
+  },
+  {
+    label: 'signaler une erreur',
+    key: 'signaler une erreur',
+  },
+  {
+    label: 'autre',
+    key: 'autre',
+  },
+] as const;
 
-const ContributionForm = ({ submit }: { submit: (data: any) => void }) => {
-  const [email, setEmail] = useState('');
-  const [user, setUser] = useState('');
-  const [otherUser, setOtherUser] = useState('');
-  const [network, setNetwork] = useState('');
-  const [wish, setWish] = useState('');
-  const [additionWish, setAdditionWish] = useState<string[]>([]);
-  const [otherAdditionWish, setOtherAdditionWish] = useState('');
-  const [additionWishEmpty, setAdditionWishEmpty] = useState(false);
-  const [otherWish, setOtherWish] = useState('');
-  const [nomGestionnaireWish, setNomGestionnaireWish] = useState('');
-  const [dateWish, setDateWish] = useState('');
+type TypeDemande = (typeof typesDemande)[number]['key'];
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if ((wish === 'Ajout de données' || wish === 'Déposer des éléments') && additionWish.length === 0) {
-      setAdditionWishEmpty(true);
-      return;
+type FieldConfig = {
+  name: string;
+  label: string;
+  optional?: boolean;
+  schema: ZodSchema;
+} & (
+  | {
+      type?: 'string';
     }
-    setAdditionWishEmpty(false);
-    submit({
-      Email: email,
-      Utilisateur: user === 'autre' ? otherUser : user,
-      'Réseau(x)': network,
-      Souhait: wish,
-      'Ajout de': additionWish.map((value) => (value === 'autre' ? `Autre : ${otherAdditionWish}` : value)).join(', '),
-      Précisions: otherWish,
-      'Nom gestionnaire': nomGestionnaireWish,
-      'Date mise en service': dateWish,
+  | {
+      type: 'file';
+      hint: string;
+    }
+);
+
+export const filesLimits = {
+  maxFiles: 10,
+  maxFileSize: 50 * 1024 * 1024,
+  maxTotalFileSize: 250 * 1024 * 1024,
+};
+
+// we don't have an approved list of extensions so we remove risky ones
+export const riskyExtensions = [
+  // Executables
+  '.exe',
+  '.bat',
+  '.cmd',
+  '.sh',
+  '.msi',
+  '.bin',
+  '.com',
+  // Scripts
+  '.js',
+  '.mjs',
+  '.vbs',
+  '.wsf',
+  '.ps1',
+  '.py',
+  '.rb',
+  '.php',
+  '.pl',
+  // Documents with macros
+  '.docm',
+  '.xlsm',
+  '.pptm',
+  // HTML/Flash
+  '.html',
+  '.htm',
+  '.mht',
+  '.xhtml',
+  '.swf',
+  // Other
+  '.jar',
+  '.dll',
+  '.sys',
+  '.scr',
+  '.reg',
+  '.hta',
+  '.cpl',
+];
+
+const filesSchema = z
+  .array(z.instanceof(File), { message: 'Veuillez choisir un ou plusieurs fichiers' })
+  .refine((files) => files.length <= filesLimits.maxFiles, {
+    message: `Vous devez choisir au maximum ${filesLimits.maxFiles} fichiers.`,
+  })
+  .refine((files) => files.every((file) => file.size <= filesLimits.maxFileSize), {
+    message: `Chaque fichier doit être inférieur à ${formatFileSize(filesLimits.maxFileSize)}.`,
+  })
+  .refine((files) => files.reduce((acc, file) => acc + file.size, 0) <= filesLimits.maxTotalFileSize, {
+    message: `Le total des fichier doit être inférieur à ${formatFileSize(filesLimits.maxTotalFileSize)}.`,
+  })
+  .superRefine((files, ctx) => {
+    files.forEach((file) => {
+      if (riskyExtensions.some((extension) => file.name.endsWith(extension))) {
+        ctx.addIssue({
+          code: 'custom',
+          message: `L'extension du fichier "${file.name}" n'est pas autorisée.`,
+          fatal: true,
+        });
+        return z.NEVER;
+      }
     });
-  };
+  });
 
-  const handleClickAdditionWish = (e: ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.checked) {
-      setAdditionWish(additionWish.filter((value) => value !== e.target.name));
-    } else {
-      setAdditionWish(Array.from(new Set([...additionWish, e.target.name])));
-    }
-  };
+const stringSchema = z.string({ message: 'Ce champ est obligatoire' });
 
-  return (
-    <form onSubmit={handleSubmit}>
-      <Input
-        label="Adresse mail"
-        nativeInputProps={{
-          type: 'email',
-          required: true,
-          value: email,
-          onChange: (e) => setEmail(e.target.value),
-        }}
-      />
-      <RadioButtons
-        legend="Vous êtes"
-        name="user"
-        options={[
-          {
-            label: 'une collectivité',
-            nativeInputProps: {
-              checked: user === 'Collectivité',
-              onChange: () => setUser('Collectivité'),
-            },
-          },
-          {
-            label: 'un exploitant',
-            nativeInputProps: {
-              checked: user === 'Exploitant',
-              onChange: () => setUser('Exploitant'),
-            },
-          },
-          {
-            label: 'autre',
-            nativeInputProps: {
-              checked: user === 'autre',
-              onChange: () => setUser('autre'),
-            },
-          },
-        ]}
-      />
+const typeDemandeFields = {
+  'ajout tracé réseau existant': [
+    {
+      name: 'nomReseau',
+      label: 'Nom du réseau :',
+      schema: stringSchema,
+    },
+    {
+      name: 'localisation',
+      label: 'Localisation :',
+      schema: stringSchema,
+    },
+    {
+      name: 'gestionnaire',
+      label: 'Gestionnaire :',
+      schema: stringSchema,
+    },
+    {
+      name: 'emailReferentCommercial',
+      label: 'Email du référent commercial à qui transmettre les demandes de raccordement',
+      optional: true,
+      schema: z.string().email().optional(),
+    },
+    {
+      name: 'commentaire',
+      label: 'Commentaire :',
+      optional: true,
+      schema: z.string().optional(),
+    },
+    {
+      name: 'fichiers',
+      label: 'Téléverser vos fichiers :',
+      type: 'file',
+      schema: filesSchema,
+      hint: 'Formats préférentiels : GeoJSON, Shapefile, KML, GeoPackage.',
+    },
+  ],
+  'ajout tracé réseau en construction': [
+    {
+      name: 'nomReseau',
+      label: 'Nom du réseau :',
+      schema: stringSchema,
+    },
+    {
+      name: 'localisation',
+      label: 'Localisation :',
+      schema: stringSchema,
+    },
+    {
+      name: 'gestionnaire',
+      label: 'Gestionnaire :',
+      schema: stringSchema,
+    },
+    {
+      name: 'dateMiseEnServicePrevisionnelle',
+      label: 'Date de mise en service prévisionnelle :',
+      schema: stringSchema,
+    },
+    {
+      name: 'emailReferentCommercial',
+      label: 'Email du référent commercial à qui transmettre les demandes de raccordement',
+      optional: true,
+      schema: z.string().optional(),
+    },
+    {
+      name: 'commentaire',
+      label: 'Commentaire :',
+      optional: true,
+      schema: z.string().optional(),
+    },
+    {
+      name: 'fichiers',
+      label: 'Téléverser vos fichiers :',
+      type: 'file',
+      schema: filesSchema,
+      hint: 'Formats préférentiels : GeoJSON, Shapefile, KML, GeoPackage.',
+    },
+  ],
+  'ajout périmètre développement prioritaire': [
+    {
+      name: 'nomReseau',
+      label: 'Nom du réseau :',
+      schema: stringSchema,
+    },
+    {
+      name: 'localisation',
+      label: 'Localisation :',
+      schema: stringSchema,
+    },
+    {
+      name: 'fichiers',
+      label: 'Téléverser vos fichiers :',
+      type: 'file',
+      schema: filesSchema,
+      hint: 'Formats préférentiels : GeoJSON, Shapefile, KML, GeoPackage.',
+    },
+  ],
+  'ajout schéma directeur': [
+    {
+      name: 'nomReseau',
+      label: 'Nom du réseau ou du territoire concerné :',
+      schema: stringSchema,
+    },
+    {
+      name: 'fichiers',
+      label: 'Téléverser vos fichiers :',
+      type: 'file',
+      schema: filesSchema,
+      hint: 'Formats préférentiels : PDF, Word.',
+    },
+  ],
+  'signaler une erreur': [
+    {
+      name: 'precisions',
+      label: 'Précisez :',
+      schema: stringSchema,
+    },
+  ],
+  autre: [
+    {
+      name: 'precisions',
+      label: 'Précisez :',
+      schema: stringSchema,
+    },
+  ],
+} as const satisfies Record<TypeDemande, FieldConfig[]>;
 
-      {user === 'autre' && (
-        <Input
-          label="Précisez"
-          nativeInputProps={{
-            name: 'otherUser',
-            required: true,
-            value: otherUser,
-            onChange: (e) => setOtherUser(e.target.value),
-          }}
-        />
-      )}
-      <Input
-        label="Réseau(x) concerné(s)"
-        nativeInputProps={{
-          required: true,
-          value: network,
-          onChange: (e) => setNetwork(e.target.value),
-        }}
-      />
-      <RadioButtons
-        legend="Vous souhaitez"
-        name="wish"
-        options={[
-          {
-            label: 'ajouter des données /informations',
-            nativeInputProps: {
-              checked: wish === 'Ajout de données',
-              onChange: () => setWish('Ajout de données'),
-            },
-          },
-          {
-            label: 'nous signaler une erreur',
-            nativeInputProps: {
-              checked: wish === 'Signaler une erreur',
-              onChange: () => setWish('Signaler une erreur'),
-            },
-          },
-          {
-            label: 'nous suggérer une fonctionnalité à ajouter à la carte',
-            nativeInputProps: {
-              checked: wish === 'Suggérer une fonctionnalité',
-              onChange: () => setWish('Suggérer une fonctionnalité'),
-            },
-          },
-          {
-            label:
-              'nous indiquer le contact commercial à qui transmettre les demandes de raccordement reçues sur France chaleur Urbaine et relatives à votre réseau',
-            nativeInputProps: {
-              checked: wish === 'Indiquer un contact',
-              onChange: () => setWish('Indiquer un contact'),
-            },
-          },
-          {
-            label: 'déposer des éléments dans le cadre d’une demande de subvention ADEME',
-            nativeInputProps: {
-              checked: wish === 'Déposer des éléments',
-              onChange: () => setWish('Déposer des éléments'),
-            },
-          },
-        ]}
-      />
-      {wish === 'Ajout de données' && (
-        <>
-          <Checkbox
-            legend="Vous voulez ajouter"
-            orientation="horizontal"
-            options={additionWishValues.map((value) => {
-              return {
-                label: value,
-                nativeInputProps: {
-                  name: value,
-                  onChange: (e) => handleClickAdditionWish(e),
-                  value,
-                },
-              };
-            })}
-          />
-          {additionWish.includes('autre') && (
-            <Input
-              label="Précisez"
-              nativeInputProps={{
-                required: true,
-                value: otherAdditionWish,
-                onChange: (e) => setOtherAdditionWish(e.target.value),
-              }}
-            />
-          )}
-        </>
-      )}
+export const zCommonFormData = z.object({
+  typeUtilisateur: z.enum(nonEmptyArray(typesUtilisateur.map((w) => w.key)), { message: 'Ce choix est obligatoire' }),
+  typeUtilisateurAutre: stringSchema,
+  email: z.string().email("L'adresse email n'est pas valide"),
+  dansCadreDemandeADEME: z.boolean({ message: 'Ce choix est obligatoire' }),
+});
 
-      {wish && wish !== 'Ajout de données' && wish !== 'Déposer des éléments' && (
-        <Input
-          label="Précisez"
-          nativeInputProps={{
-            required: true,
-            value: otherWish,
-            onChange: (e) => setOtherWish(e.target.value),
-          }}
-        />
-      )}
-      {wish === 'Déposer des éléments' && (
-        <>
-          <Input
-            label="Nom du gestionnaire du réseau"
-            nativeInputProps={{
-              required: true,
-              value: nomGestionnaireWish,
-              onChange: (e) => setNomGestionnaireWish(e.target.value),
-            }}
-          />
-          <Input
-            label="Localisation"
-            nativeInputProps={{
-              required: true,
-              value: otherWish,
-              onChange: (e) => setOtherWish(e.target.value),
-            }}
-          />
-          <Checkbox
-            legend="Vous voulez ajouter"
-            orientation="horizontal"
-            options={additionWishValuesADEME.map((value) => {
-              return {
-                label: value,
-                nativeInputProps: {
-                  name: value,
-                  onChange: handleClickAdditionWish,
-                  value,
-                },
-              };
-            })}
-          />
+const zodSchemasByTypeDemande = ObjectKeys(typeDemandeFields).reduce(
+  (acc, key) => ({
+    ...acc,
+    [key]: typeDemandeFields[key].reduce(
+      (acc2, field) => ({
+        ...acc2,
+        [field.name]: (field as FieldConfig).schema,
+      }),
+      {}
+    ),
+  }),
+  {} as {
+    [TypeDemande in keyof typeof typeDemandeFields]: {
+      [Name in (typeof typeDemandeFields)[TypeDemande][number]['name']]: Extract<
+        (typeof typeDemandeFields)[TypeDemande][number],
+        { name: Name }
+      >['schema'];
+    };
+  }
+);
 
-          {(additionWish.includes('Tracé d’un nouveau réseau') || additionWish.includes('Tracé d’une extension d’un réseau existant')) && (
-            <Input
-              label="Préciser la date de mise en service prévisionnelle"
-              nativeInputProps={{
-                required: true,
-                value: dateWish,
-                onChange: (e) => setDateWish(e.target.value),
-              }}
-            />
-          )}
-        </>
-      )}
-      {additionWishEmpty && (
-        <p>
-          <Alert title={'Merci de sélectionner le type d’ajout.'} severity="error" />
-        </p>
-      )}
-      <Button
-        nativeButtonProps={{
-          type: 'submit',
-        }}
-      >
-        {wish && (wish === 'Ajout de données' || wish === 'Déposer des éléments') ? 'Télécharger mes données' : 'Envoyer'}
-      </Button>
-      {((wish === 'Ajout de données' && additionWishValuesWithFormat.some((x) => additionWish.includes(x))) ||
-        wish === 'Déposer des éléments') && (
-        <span className="fr-hint-text">
-          Formats acceptés : .shp, gpkg (geopackage), .geojson, .dxf, .gdb, .tab, .kmz <br />A défaut, un .dwg peut être transmis, mais il
-          ne pourra être exploité que s'il est géolocalisé
+export const zContributionFormData = z.discriminatedUnion(
+  'typeDemande',
+  // définition statique plutôt qu'avec un map sinon on perd le typage
+  [
+    zCommonFormData.merge(
+      z.object({
+        typeDemande: z.literal('ajout tracé réseau existant'),
+        ...zodSchemasByTypeDemande['ajout tracé réseau existant'],
+      })
+    ),
+    zCommonFormData.merge(
+      z.object({
+        typeDemande: z.literal('ajout tracé réseau en construction'),
+        ...zodSchemasByTypeDemande['ajout tracé réseau en construction'],
+      })
+    ),
+    zCommonFormData.merge(
+      z.object({
+        typeDemande: z.literal('ajout périmètre développement prioritaire'),
+        ...zodSchemasByTypeDemande['ajout périmètre développement prioritaire'],
+      })
+    ),
+    zCommonFormData.merge(
+      z.object({
+        typeDemande: z.literal('ajout schéma directeur'),
+        ...zodSchemasByTypeDemande['ajout schéma directeur'],
+      })
+    ),
+    zCommonFormData.merge(
+      z.object({
+        typeDemande: z.literal('signaler une erreur'),
+        ...zodSchemasByTypeDemande['signaler une erreur'],
+      })
+    ),
+    zCommonFormData.merge(
+      z.object({
+        typeDemande: z.literal('autre'),
+        ...zodSchemasByTypeDemande['autre'],
+      })
+    ),
+  ]
+);
+
+type AddEmptyValues<T> = T extends string ? T | '' : T extends object ? { [K in keyof T]: AddEmptyValues<T[K]> } : T;
+
+// besoin de valeurs vides juste pour le formulaire et non zod
+type FormData = AddEmptyValues<z.infer<typeof zContributionFormData>>;
+
+const ContributionForm = () => {
+  const [formSuccess, setFormSuccess] = useState<boolean>(false);
+
+  const form = useForm({
+    defaultValues: {
+      typeUtilisateur: '',
+      typeUtilisateurAutre: '',
+      email: '',
+      typeDemande: '',
+      dansCadreDemandeADEME: '',
+    } satisfies Record<keyof FormData, ''> as unknown as FormData,
+    validatorAdapter: standardSchemaValidator(),
+    validators: {
+      onChange: zContributionFormData,
+    },
+    onSubmit: toastErrors(
+      async ({ value }: { value: FormData }) => {
+        await postFormDataFetchJSON('/api/contribution', zContributionFormData.parse(value));
+        setFormSuccess(true);
+      },
+      () => (
+        <span>
+          Une erreur est survenue. Veuillez réessayer plus tard, si le problème persiste contactez-nous directement à l'adresse:{' '}
+          <a href="mailto:france-chaleur-urbaine@developpement-durable.gouv.fr">france-chaleur-urbaine@developpement-durable.gouv.fr</a>
         </span>
-      )}
+      )
+    ),
+  });
+
+  // ensure the state is invalid when loaded
+  useEffect(() => {
+    form.validate('submit');
+  }, []);
+
+  return formSuccess ? (
+    <Alert severity="success" title="Nous vous remercions pour votre contribution." />
+  ) : (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        form.handleSubmit();
+      }}
+    >
+      <form.Field
+        name="typeUtilisateur"
+        listeners={{
+          onChange: ({ value }) => {
+            if (value !== 'Autre') {
+              form.setFieldValue('typeUtilisateurAutre', '');
+            }
+          },
+        }}
+        children={(field) => (
+          <RadioButtons
+            legend="Vous êtes :"
+            name={field.name}
+            options={typesUtilisateur.map((option) => ({
+              label: option.label,
+              nativeInputProps: {
+                required: true,
+                checked: field.state.value === option.key,
+                value: option.key,
+                onChange: (e) => field.handleChange(e.target.value as TypeUtilisateur),
+                onBlur: field.handleBlur,
+              },
+            }))}
+            {...getInputErrorStates(field)}
+          />
+        )}
+      />
+
+      <form.Subscribe
+        selector={(state: FormState<FormData>) => state.values.typeUtilisateur}
+        children={(typeUtilisateur) =>
+          typeUtilisateur === 'Autre' && (
+            <form.Field
+              name="typeUtilisateurAutre"
+              children={(field) => (
+                <Input
+                  label="Précisez :"
+                  nativeInputProps={{
+                    required: true,
+                    id: field.name,
+                    name: field.name,
+                    value: field.state.value,
+                    onChange: (e) => field.handleChange(e.target.value),
+                    onBlur: field.handleBlur,
+                  }}
+                  {...getInputErrorStates(field)}
+                />
+              )}
+            />
+          )
+        }
+      />
+
+      <form.Field
+        name="email"
+        children={(field) => (
+          <Input
+            label="Votre adresse email :"
+            nativeInputProps={{
+              required: true,
+              id: field.name,
+              name: field.name,
+              placeholder: 'Saisir votre email',
+              autoComplete: 'email',
+              value: field.state.value,
+              onChange: (e) => field.handleChange(e.target.value),
+              onBlur: field.handleBlur,
+            }}
+            {...getInputErrorStates(field)}
+          />
+        )}
+      />
+
+      <form.Field
+        name="dansCadreDemandeADEME"
+        children={(field) => (
+          <RadioButtons
+            legend="Votre contribution s’inscrit dans le cadre d’une demande de subvention ADEME :"
+            name={field.name}
+            options={[
+              {
+                label: 'oui',
+                nativeInputProps: {
+                  checked: field.state.value === true,
+                  onChange: () => field.handleChange(true),
+                  onBlur: field.handleBlur,
+                },
+              },
+              {
+                label: 'non',
+                nativeInputProps: {
+                  checked: field.state.value === false,
+                  onChange: () => field.handleChange(false),
+                  onBlur: field.handleBlur,
+                },
+              },
+            ]}
+            {...getInputErrorStates(field)}
+          />
+        )}
+      />
+
+      <form.Field
+        name="typeDemande"
+        listeners={{
+          onChange: ({ value }) => {
+            if (value === '') {
+              return;
+            }
+            // when changing typeDemande, the form remembers its old fields so we must remove them manually
+            const fieldsToDelete = new Set(ObjectKeys(form.state.fieldMeta))
+              .difference(new Set([...ObjectKeys(zCommonFormData.shape), zContributionFormData.discriminator]))
+              .difference(new Set(typeDemandeFields[value].map((f) => f.name)));
+            fieldsToDelete.forEach((field) => {
+              form.deleteField(field);
+            });
+          },
+        }}
+        children={(field) => (
+          <RadioButtons
+            legend="Vous souhaitez :"
+            name={field.name}
+            options={typesDemande.map((option) => ({
+              label: option.label,
+              nativeInputProps: {
+                required: true,
+                checked: field.state.value === option.key,
+                value: option.key,
+                onChange: (e) => field.handleChange(e.target.value as TypeDemande),
+                onBlur: field.handleBlur,
+              },
+            }))}
+            {...getInputErrorStates(field)}
+          />
+        )}
+      />
+
+      <form.Subscribe
+        selector={(state: FormState<FormData>) => state.values.typeDemande}
+        children={(typeDemande) =>
+          typeDemande !== '' &&
+          typeDemandeFields[typeDemande].map((option) => (
+            <form.Field
+              name={option.name}
+              key={option.name}
+              children={(field) =>
+                'type' in option && (option as FieldConfig).type === 'file' ? (
+                  <>
+                    <Upload
+                      className="fr-mb-2w"
+                      label={option.label}
+                      hint={
+                        (
+                          <>
+                            Taille maximale : {formatFileSize(filesLimits.maxFileSize)}. Maximum {filesLimits.maxFiles} fichiers.{' '}
+                            {option.hint}
+                            <br />
+                            Pour téléverser plusieurs fichiers, merci de les sélectionner simultanément et non l'un après l'autre.
+                          </>
+                        ) as any // dsfr only allow strings
+                      }
+                      multiple
+                      nativeInputProps={{
+                        onChange: (e) => {
+                          const files = e.target.files;
+                          if (!files || files.length === 0) {
+                            return;
+                          }
+                          field.handleChange([...files]);
+                        },
+                        onBlur: field.handleBlur,
+                      }}
+                      {...getInputErrorStates(field)}
+                    />
+                    {((field.state.value as File[]) ?? []).length > 0 && (
+                      <Box mb="2w">
+                        Fichier(s) sélectionné(s) :{' '}
+                        {((field.state.value as File[]) ?? []).map((file, index) => (
+                          <Box key={index}>- {file.name}</Box>
+                        ))}
+                      </Box>
+                    )}
+                  </>
+                ) : (
+                  <Input
+                    label={option.label}
+                    nativeInputProps={{
+                      required: !(option as FieldConfig).optional,
+                      id: field.name,
+                      name: field.name,
+                      value: field.state.value as string,
+                      onChange: (e) => field.handleChange(e.target.value),
+                      onBlur: field.handleBlur,
+                    }}
+                    {...getInputErrorStates(field)}
+                  />
+                )
+              }
+            />
+          ))
+        }
+      />
+
+      <form.Subscribe
+        selector={(state) => [state.isValid, state.canSubmit, state.isSubmitting]}
+        children={([isValid, canSubmit, isSubmitting]) => (
+          <Button type="submit" loading={isSubmitting} disabled={!isValid || !canSubmit || isSubmitting}>
+            Envoyer
+          </Button>
+        )}
+      />
     </form>
   );
 };
 
 export default ContributionForm;
+
+function getInputErrorStates(field: FieldApi<any, any, any, any, any>): Pick<RadioButtonsProps, 'state' | 'stateRelatedMessage'> {
+  return {
+    state: field.state.meta.isTouched && field.state.meta.errors.length ? 'error' : 'default',
+    stateRelatedMessage: field.state.meta.isTouched && field.state.meta.errors.length ? field.state.meta.errors.join(', ') : undefined,
+  };
+}

@@ -84,3 +84,7 @@ export function formatMWhString(value: number): string {
 export function upperCaseFirstChar(string: string): string {
   return `${(string[0] ?? '').toUpperCase()}${string.substring(1)}`;
 }
+
+export function formatFileSize(size: number): string {
+  return `${Math.round(size / 1024 / 1024)} Mo`;
+}

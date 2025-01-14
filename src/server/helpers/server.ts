@@ -49,6 +49,7 @@ export function handleRouteErrors(handler: NextApiHandler, options?: RouteOption
   return async (req: NextApiRequest, res: NextApiResponse) => {
     const startTime = Date.now();
     const logger = parentLogger.child({
+      method: req.method,
       url: req.url,
       ip: process.env.LOG_REQUEST_IP ? req.headers['x-forwarded-for'] ?? req.socket.remoteAddress : undefined,
     });
@@ -99,6 +100,12 @@ export function handleRouteErrors(handler: NextApiHandler, options?: RouteOption
           message: 'URL inconnue',
         });
       }
+      if (error === rateLimitError) {
+        logger.error('rate limit error');
+        return res.status(429).json({
+          message: error.message,
+        });
+      }
       if (error instanceof Error) {
         if (error.name === 'ZodError') {
           logger.error('validation error', {
@@ -146,6 +153,7 @@ export function handleRouteErrors(handler: NextApiHandler, options?: RouteOption
 export const requiredAuthenticationError = new Error('Authentification requise'); // 401
 export const invalidPermissionsError = new Error('Permissions invalides'); // 403
 export const invalidRouteError = new Error('invalid route'); // 404
+export const rateLimitError = new Error('too many requests'); // 429
 
 export function requireGetMethod(req: NextApiRequest) {
   if (req.method !== 'GET') {
