@@ -415,7 +415,7 @@ const ContributionForm = () => {
               {
                 label: 'oui',
                 nativeInputProps: {
-                  checked: field.state.value,
+                  checked: field.state.value === true,
                   onChange: () => field.handleChange(true),
                   onBlur: field.handleBlur,
                 },
@@ -423,7 +423,7 @@ const ContributionForm = () => {
               {
                 label: 'non',
                 nativeInputProps: {
-                  checked: !field.state.value,
+                  checked: field.state.value === false,
                   onChange: () => field.handleChange(false),
                   onBlur: field.handleBlur,
                 },
