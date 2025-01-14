@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { z, type ZodSchema } from 'zod';
 
 import Input from '@/components/form/dsfr/Input';
+import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
 import { toastErrors } from '@/services/notification';
 import { postFormDataFetchJSON } from '@/utils/network';
@@ -539,25 +540,35 @@ const ContributionForm = () => {
               key={option.name}
               children={(field) =>
                 'type' in option && (option as FieldConfig).type === 'file' ? (
-                  <Upload
-                    className="fr-mb-2w"
-                    label={option.label}
-                    hint={`Taille maximale : ${formatFileSize(filesLimits.maxFileSize)}. Maximum ${filesLimits.maxFiles} fichiers. ${
-                      option.hint
-                    }`}
-                    multiple
-                    nativeInputProps={{
-                      onChange: (e) => {
-                        const files = e.target.files;
-                        if (!files || files.length === 0) {
-                          return;
-                        }
-                        field.handleChange([...files]);
-                      },
-                      onBlur: field.handleBlur,
-                    }}
-                    {...getInputErrorStates(field)}
-                  />
+                  <>
+                    <Upload
+                      className="fr-mb-2w"
+                      label={option.label}
+                      hint={`Taille maximale : ${formatFileSize(filesLimits.maxFileSize)}. Maximum ${filesLimits.maxFiles} fichiers. ${
+                        option.hint
+                      }`}
+                      multiple
+                      nativeInputProps={{
+                        onChange: (e) => {
+                          const files = e.target.files;
+                          if (!files || files.length === 0) {
+                            return;
+                          }
+                          field.handleChange([...files]);
+                        },
+                        onBlur: field.handleBlur,
+                      }}
+                      {...getInputErrorStates(field)}
+                    />
+                    {((field.state.value as File[]) ?? []).length > 0 && (
+                      <Box mb="2w">
+                        Fichier(s) sélectionné(s) :{' '}
+                        {((field.state.value as File[]) ?? []).map((file, index) => (
+                          <Box key={index}>- {file.name}</Box>
+                        ))}
+                      </Box>
+                    )}
+                  </>
                 ) : (
                   <Input
                     label={option.label}
