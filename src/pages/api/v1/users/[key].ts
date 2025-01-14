@@ -13,6 +13,8 @@ const ApiNetworkValidation = z.object({
 const ApiNetworksValidation = z.array(ApiNetworkValidation);
 export type ApiNetwork = z.infer<typeof ApiNetworkValidation>;
 
+// Appelé par ENGIE tous les vendredi à 12h
+// Développeur julien@clic-droit.fr et Responsable Digital Opérationnel chez ENGIE clement.neyrand@engie.com
 const apiUsers = handleRouteErrors(async (req: NextApiRequest, res: NextApiResponse) => {
   requirePutMethod(req);
 
