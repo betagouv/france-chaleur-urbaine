@@ -544,9 +544,16 @@ const ContributionForm = () => {
                     <Upload
                       className="fr-mb-2w"
                       label={option.label}
-                      hint={`Taille maximale : ${formatFileSize(filesLimits.maxFileSize)}. Maximum ${filesLimits.maxFiles} fichiers. ${
-                        option.hint
-                      }`}
+                      hint={
+                        (
+                          <>
+                            Taille maximale : {formatFileSize(filesLimits.maxFileSize)}. Maximum {filesLimits.maxFiles} fichiers.{' '}
+                            {option.hint}
+                            <br />
+                            Pour téléverser plusieurs fichiers, merci de les sélectionner simultanément et non l'un après l'autre.
+                          </>
+                        ) as any // dsfr only allow strings
+                      }
                       multiple
                       nativeInputProps={{
                         onChange: (e) => {
