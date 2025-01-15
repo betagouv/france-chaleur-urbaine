@@ -30,7 +30,7 @@ const OutilsPage = () => {
         </Box>
       </Box>
       <Box py="5w" className="fr-container">
-        <Heading size="h3" color="blue-france" mb="0">
+        <Heading as="h2" size="h3" color="blue-france" mb="0">
           Test d’adresses en masse
         </Heading>
         <Box display="flex" my="2w">
@@ -45,7 +45,7 @@ const OutilsPage = () => {
       </Box>
       <Box backgroundColor="blue-france-975-75">
         <Box py="5w" className="fr-container">
-          <Heading size="h3" color="blue-france" mb="0">
+          <Heading as="h2" size="h3" color="blue-france" mb="0">
             Iframes
           </Heading>
           <Box display="flex" my="2w">
@@ -60,7 +60,7 @@ const OutilsPage = () => {
         </Box>
       </Box>
       <Box py="5w" className="fr-container">
-        <Heading size="h3" color="blue-france" mb="0">
+        <Heading as="h2" size="h3" color="blue-france" mb="0">
           API
         </Heading>
         <Box display="flex" my="2w">
@@ -75,7 +75,7 @@ const OutilsPage = () => {
       </Box>
       <Box backgroundColor="blue-france-975-75">
         <Box py="5w" className="fr-container">
-          <Heading size="h3" color="blue-france" mb="0">
+          <Heading as="h2" size="h3" color="blue-france" mb="0">
             Téléchargement de données
           </Heading>
           <Box display="flex" my="2w">
@@ -90,7 +90,7 @@ const OutilsPage = () => {
         </Box>
       </Box>
       <Box py="5w" className="fr-container">
-        <Heading size="h3" color="blue-france" mb="0">
+        <Heading as="h2" size="h3" color="blue-france" mb="0">
           Simulateur d’aides
         </Heading>
         <Box display="flex" my="2w">
@@ -107,7 +107,7 @@ const OutilsPage = () => {
       {process.env.NEXT_PUBLIC_FLAG_ENABLE_COMPARATEUR === 'true' && (
         <Box backgroundColor="blue-france-975-75">
           <Box py="5w" className="fr-container">
-            <Heading size="h3" color="blue-france" mb="0">
+            <Heading as="h2" size="h3" color="blue-france" mb="0">
               Comparateur de performances
             </Heading>
             <Box display="flex" my="2w">
@@ -123,7 +123,7 @@ const OutilsPage = () => {
         </Box>
       )}
       <Box py="5w" className="fr-container">
-        <Heading size="h3" color="blue-france" mb="0" mt="8w">
+        <Heading as="h2" size="h3" color="blue-france" mb="0" mt="8w">
           Simulateur de CO2
         </Heading>
         <Box display="flex" my="2w">
@@ -138,7 +138,7 @@ const OutilsPage = () => {
       </Box>
       <Box backgroundColor="blue-france-975-75">
         <Box py="5w" className="fr-container">
-          <Heading size="h3" color="blue-france" mb="0">
+          <Heading as="h2" size="h3" color="blue-france" mb="0">
             Fiches par réseau
           </Heading>
           <Box display="flex" my="2w">
@@ -153,7 +153,7 @@ const OutilsPage = () => {
         </Box>
       </Box>
       <Box py="5w" className="fr-container">
-        <Heading size="h3" color="blue-france" mb="0">
+        <Heading as="h2" size="h3" color="blue-france" mb="0">
           Liste des réseaux de chaleur
         </Heading>
         <Box display="flex" my="2w">
