@@ -1,3 +1,4 @@
+import '@/styles/globals.css';
 import { fr } from '@codegouvfr/react-dsfr';
 import type { AppProps } from 'next/app';
 import dynamic from 'next/dynamic';
