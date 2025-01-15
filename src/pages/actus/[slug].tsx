@@ -37,7 +37,7 @@ const ActualitePage: React.FC<{ article: Article }> = ({ article }) => {
   return (
     <SimplePage
       currentPage="/actus"
-      title={title}
+      title={article?.seoTitle || title}
       description={article.abstract}
       microdata={[
         {

@@ -187,6 +187,7 @@ export const articles = (
     {
       image: '/contents/webi.jpg',
       title: 'Informer les gestionnaires de bâtiments tertiaires sur les réseaux de chaleur',
+      seoTitle: 'Informer les gestionnaires de bâtiments sur les réseaux de chaleur',
       slug: 'informer-les-gestionnaires-de-batiments-tertiaires-sur-les-reseaux-de-chaleur',
       content: importFile(informerGestionnairesTertiaires),
       publishedDate: new Date('2024-11-13'),
@@ -851,6 +852,7 @@ export const articles = (
     {
       image: '/contents/24.jpg',
       title: 'Part des énergies renouvelables dans la consommation finale brute d’énergie en France',
+      seoTitle: 'Part des énergies renouvelables dans la consommation énergétique',
       slug: 'part-des-énergies-renouvelables-dans-la-consommation-finale-brute-d-énergie-en-france',
       content: importFile(readme_3_1_1),
       publishedDate: new Date('2023-05-22'),
@@ -963,6 +965,7 @@ export const articles = (
     {
       image: '/contents/11.jpg',
       title: 'Le chauffage urbain pour les bâtiments tertiaires : un contexte on ne peut plus favorable !',
+      seoTitle: 'Chauffage urbain pour les bâtiments tertiaires : contexte favorable',
       slug: 'le-chauffage-urbain-pour-les-bâtiments-tertiaires-un-contexte-on-ne-peut-plus-favorable',
       content: importFile(leChauffageUrbainPourLesBatimentsTertiairesUnContexteOnNePeutPlusFavorable),
       publishedDate: new Date('2023-04-11'),
