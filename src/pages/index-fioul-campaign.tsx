@@ -31,7 +31,7 @@ export default function Home() {
                   height={0}
                   sizes="100vw"
                   style={{ width: 'auto', height: '100%' }}
-                  className="img-object-cover"
+                  className="img-object-cover max-w-none"
                 />
               </Box>
               <Box flex py="3w" pr="8w" className="fr-container">

@@ -37,7 +37,7 @@ export default function Home() {
           <Box backgroundColor="blue-cumulus-950-100">
             <Box className="fr-container" display="flex" alignItems="center" gap="16px">
               <Box flex className="fr-hidden fr-unhidden-lg">
-                <Image src="/img/copro_header.webp" alt="" width={624} height={420} priority />
+                <Image src="/img/copro_header.webp" alt="" width={624} height={420} priority className="max-w-none" />
               </Box>
 
               <Box flex py="3w">

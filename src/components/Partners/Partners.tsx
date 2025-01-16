@@ -48,7 +48,7 @@ const Partners = () => {
           <PartnerImages>
             {logos.map(({ image, title, link }, index) => (
               <PartnerLink show={index >= firstLogo} href={link} target="_blank" rel="noreferrer noopener" key={title}>
-                <PartnerImage src={image} alt={title} loading="lazy" />
+                <PartnerImage src={image} alt={title} loading="lazy" className="max-w-none" />
               </PartnerLink>
             ))}
           </PartnerImages>
