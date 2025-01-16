@@ -1,5 +1,7 @@
 import styled, { createGlobalStyle, css, keyframes } from 'styled-components';
 
+import Heading from '@/components/ui/Heading';
+
 export const SliceContactFormStyle: any = createGlobalStyle` /* TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738 */
 .slice-contact-form-wrapper {
   max-height: 0px;
@@ -51,7 +53,7 @@ export const PageTitlePreTitle = styled.span`
   font-size: 2.06rem;
 `;
 
-export const PageTitle = styled.h1`
+export const PageTitle = styled(Heading)`
   color: #4550e5;
   font-size: 2.815rem;
   line-height: 3rem;

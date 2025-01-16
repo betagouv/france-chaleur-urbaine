@@ -323,7 +323,7 @@ const SupportsPage = () => {
       </Box>
 
       <Box py="10w" className="fr-container" id="infographies">
-        <Heading size="h2" color="blue-france" center mb="8w">
+        <Heading as="h2" size="h2" color="blue-france" center mb="8w">
           Infographies
         </Heading>
         <Box display="flex" alignItems="baseline" gap="16px" flexWrap="wrap">
@@ -335,7 +335,7 @@ const SupportsPage = () => {
 
       <Box backgroundColor="blue-france-975-75" id="reportages">
         <Box py="10w" className="fr-container">
-          <Heading size="h2" color="blue-france" center mb="8w">
+          <Heading as="h2" size="h2" color="blue-france" center mb="8w">
             Reportages
           </Heading>
           <Box display="flex" alignItems="baseline" gap="16px" flexWrap="wrap">
@@ -347,7 +347,7 @@ const SupportsPage = () => {
       </Box>
 
       <Box py="10w" className="fr-container" id="videos">
-        <Heading size="h2" color="blue-france" center mb="8w">
+        <Heading as="h2" size="h2" color="blue-france" center mb="8w">
           Vidéos
         </Heading>
         <Box display="flex" alignItems="baseline" gap="16px" flexWrap="wrap">
@@ -359,7 +359,7 @@ const SupportsPage = () => {
 
       <Box backgroundColor="blue-france-975-75" id="guides">
         <Box py="10w" className="fr-container">
-          <Heading size="h2" color="blue-france" center mb="8w">
+          <Heading as="h2" size="h2" color="blue-france" center mb="8w">
             Guides
           </Heading>
           <Box display="flex" alignItems="baseline" gap="16px" flexWrap="wrap">

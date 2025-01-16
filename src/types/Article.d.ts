@@ -1,6 +1,7 @@
 export interface Article {
   slug: string;
   title: string;
+  seoTitle?: string;
   image: string;
   content: string;
   publishedDate: Date;

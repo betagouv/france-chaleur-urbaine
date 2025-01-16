@@ -128,7 +128,7 @@ export const understandings: Record<string, Document> = {
   },
   'cout-raccordement': {
     title: 'Combien coûte un raccordement ?',
-    seoTitle: 'Des aides financières permettent de réduire significativement les coûts de raccordement au chauffage urbain.',
+    seoTitle: 'Aides financières pour réduire le coût du raccordement au chauffage urbain',
     description: (
       <>
         Le raccordement d’un bâtiment à un réseau de chaleur présente un coût non négligeable. Toutefois, des aides permettent de le réduire

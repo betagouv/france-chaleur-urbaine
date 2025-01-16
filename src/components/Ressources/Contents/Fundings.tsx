@@ -178,7 +178,7 @@ const Fundings = () => {
       <br />
       <br />
       <a
-        href="https://www.ecologie.gouv.fr/sites/default/files/CdP%20R%C3%A9no%20Batiment%20residentiel%20collectif%20-%20Les%20offres%20Coup%20de%20pouce.pdf"
+        href="https://www.ecologie.gouv.fr/sites/default/files/documents/CdP%20Chauffage%20B%C3%A2timents%20r%C3%A9sidentiels%20collectifs%20et%20tertiaires%20-%20Les%20offres%20Coup%20de%20pouce.pdf"
         target="_blank"
         rel="noreferrer"
       >
