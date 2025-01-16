@@ -45,10 +45,10 @@ export const Logos = ({ size, withFCU = true, ...props }: React.ComponentProps<t
   const height = size === 'sm' ? '40px' : '60px';
   return (
     <Box display="flex" gap={size === 'sm' ? '16px' : '32px'} flexDirection="row" alignItems="center" flexWrap="wrap" my="2w" {...props}>
-      <img src="/logo-HEAT_COOL.png" alt="logo life Heat & Cool" height={height} className="fr-mr-2w" />
-      <img src="/logo-amorce.svg" alt="logo amorce" height={height} />
-      <img src="/logo-elcimai.png" alt="logo elcimaï" height={height} className="fr-mr-2w" />
-      {withFCU && <img src="/logo-fcu.png" alt="logo france chaleur urbaine" height={height} />}
+      <img src="/logo-HEAT_COOL.png" alt="logo life Heat & Cool" height={height} className="reset-height fr-mr-2w" />
+      <img src="/logo-amorce.svg" alt="logo amorce" height={height} className="reset-height" />
+      <img src="/logo-elcimai.png" alt="logo elcimaï" height={height} className="reset-height fr-mr-2w" />
+      {withFCU && <img src="/logo-fcu.png" alt="logo france chaleur urbaine" height={height} className="reset-height" />}
     </Box>
   );
 };
