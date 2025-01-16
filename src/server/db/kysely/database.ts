@@ -5,9 +5,8 @@
 
 import type { ColumnType } from 'kysely';
 
-export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
-  ? ColumnType<S, I | undefined, U>
-  : ColumnType<T, T | undefined, T>;
+export type Generated<T> =
+  T extends ColumnType<infer S, infer I, infer U> ? ColumnType<S, I | undefined, U> : ColumnType<T, T | undefined, T>;
 
 export type Int8 = ColumnType<string, bigint | number | string, bigint | number | string>;
 
@@ -3161,8 +3160,10 @@ export interface ZoneAPotentielFortChaudTiles {
 }
 
 export interface ZoneDeDeveloppementPrioritaire {
+  communes: string[] | null;
   geom: string | null;
   id_fcu: Int8;
+  'Identifiant reseau': string | null;
 }
 
 export interface ZoneDeDeveloppementPrioritaireTiles {

@@ -177,7 +177,7 @@ export const tilesInfo: Record<DatabaseSourceId, TileInfo> = {
     tiles: 'zone_de_developpement_prioritaire_tiles',
     id: 'id_fcu',
     extraWhere: (query) => query,
-    properties: ['id_fcu'],
+    properties: ['id_fcu', 'Identifiant reseau'],
     sourceLayer: 'zoneDP',
   },
   buildings: {
