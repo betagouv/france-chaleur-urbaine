@@ -29,7 +29,7 @@ const ChauffageUrbain = () => {
     >
       <Header
         title="Découvrez les réseaux de chaleur"
-        titleAs={'h2'}
+        titleAs="h2"
         description="Toutes les informations dont vous avez besoin sur les réseaux de chaleur"
       />
       <div id="contenu" />

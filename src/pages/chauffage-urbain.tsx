@@ -24,7 +24,7 @@ const ChauffageUrbain = () => {
     >
       <Header
         title="Découvrez le chauffage urbain"
-        titleAs={'h2'}
+        titleAs="h2"
         description="Changez pour un chauffage écologique à prix compétitif déjà adopté par 6 millions de Français !"
       />
       <div id="contenu" />
