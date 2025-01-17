@@ -12,7 +12,7 @@ const Header = ({ city, bannerSrc }: { city: string; bannerSrc: string }) => {
           <PageBody>
             <MarkdownWrapper value={`Vous êtes copropriétaire sur ${city} ?`} />
           </PageBody>
-          <PageTitle className="fr-mb-4w">
+          <PageTitle as="h1" className="fr-mb-4w">
             Le chauffage urbain, une solution <strong>écologique</strong> et <strong>économique</strong> à {city}
           </PageTitle>
         </Container>

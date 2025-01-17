@@ -3,13 +3,13 @@ import { Pagination, type PaginationProps } from '@codegouvfr/react-dsfr/Paginat
 import LinearProgress from '@mui/material/LinearProgress';
 import {
   DataGrid,
-  type GridValidRowModel,
   gridPageCountSelector,
   gridPaginationModelSelector,
   useGridApiContext,
   useGridSelector,
   type DataGridProps,
   type GridColDef,
+  type GridValidRowModel,
 } from '@mui/x-data-grid';
 
 import { ColHeader } from './Table.style';
@@ -77,6 +77,9 @@ export const Table = <T extends GridValidRowModel>({
       sx={{
         '&': {
           gap: '20px',
+        },
+        '& .MuiDataGrid-columnHeaders': {
+          borderStyle: 'none',
         },
         // header
         '& .MuiDataGrid-columnHeader, & .MuiDataGrid-columnHeaders .MuiDataGrid-filler': {

@@ -41,7 +41,7 @@ const Professionnels = () => {
           <Box backgroundColor="blue-cumulus-950-100">
             <Box className="fr-container" display="flex" alignItems="center" gap="16px">
               <Box flex className="fr-hidden fr-unhidden-lg">
-                <Image src="/img/head-slice-bg-professionnels.png" alt="" width={533} height={407} priority />
+                <Image src="/img/head-slice-bg-professionnels.png" alt="" width={533} height={407} priority className="max-w-none" />
               </Box>
 
               <Box flex py="3w">
