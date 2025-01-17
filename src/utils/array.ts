@@ -25,3 +25,25 @@ export function chunk<T>(array: T[], size: number): T[][] {
   }
   return result;
 }
+
+/**
+ * Computes the difference between two arrays.
+ *
+ * This function takes two arrays as input and returns an object with three
+ * properties: added, removed, and unchanged. The added property contains
+ * elements that are in the new array but not in the old array. The removed
+ * property contains elements that are in the old array but not in the new
+ * array. The unchanged property contains elements that are common to both
+ * arrays.
+ *
+ * @param oldArray The original array.
+ * @param newArray The new array.
+ * @returns An object with added, removed, and unchanged properties.
+ */
+export const diff = (oldArray: string[], newArray: string[]) => {
+  const added = newArray.filter((item) => !oldArray.includes(item));
+  const removed = oldArray.filter((item) => !newArray.includes(item));
+  const unchanged = newArray.filter((item) => oldArray.includes(item));
+
+  return { added, removed, unchanged };
+};
