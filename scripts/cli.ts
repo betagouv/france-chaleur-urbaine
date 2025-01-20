@@ -5,12 +5,14 @@ import { InvalidArgumentError, createCommand } from '@commander-js/extra-typings
 import { saveStatsInDB } from '@/server/cron/saveStatsInDB';
 import db from '@/server/db';
 import { logger } from '@/server/helpers/logger';
-import { type DatabaseTileInfo, type DatabaseSourceId, tilesInfo, zDatabaseSourceId } from '@/server/services/tiles.config';
+import { type ApiNetwork, createGestionnairesFromAPI, syncGestionnairesWithUsers } from '@/server/services/airtable';
+import { type DatabaseSourceId, type DatabaseTileInfo, tilesInfo, zDatabaseSourceId } from '@/server/services/tiles.config';
+import { type ApiAccount } from '@/types/ApiAccount';
 
 import { type KnownAirtableBase, knownAirtableBases } from './airtable/bases';
 import { createModificationsReseau } from './airtable/create-modifications-reseau';
 import { fetchBaseSchema } from './airtable/dump-schema';
-import { downloadNetwork, downloadAndUpdateNetwork } from './networks/download-network';
+import { downloadAndUpdateNetwork, downloadNetwork } from './networks/download-network';
 import { generateTilesFromGeoJSON } from './networks/generate-tiles';
 import { applyGeometryUpdates } from './networks/geometry-updates';
 import { importMvtDirectory } from './networks/import-mvt-directory';
@@ -165,6 +167,46 @@ program
   .argument('[end-date]', 'Format : YYYY-MM-DD')
   .action(async (startDate, endDate) => {
     await saveStatsInDB(startDate, endDate);
+  });
+
+program
+  .command('debug:upsert-users-from-api')
+  .description('Update Gestionnaires and Gestionnaires API airtables from file.')
+  .argument('<accountKey>', 'Key of the account in ')
+  .argument('<file>', 'File with data')
+  .action(async (accountKey, file) => {
+    const account: ApiAccount = await db('api_accounts').where('key', accountKey).first();
+    const data: ApiNetwork[] = JSON.parse(await readFile(file, 'utf8'));
+
+    if (!process.env.DRY_RUN) {
+      console.log();
+      console.log('USAGE:');
+      console.log('⚠️ DRY_RUN is not set, use FIRST_TIME_FIX=<true|false> DRY_RUN=<true|false> yarn cli debug:upsert-users-from-api ...');
+      process.exit(0);
+    }
+    await createGestionnairesFromAPI(account, data);
+  });
+
+program
+  .command('sync-users-from-airtable')
+  .description('Sync users created in Airtable in PostGres.')
+  .action(async () => {
+    if (!process.env.DRY_RUN) {
+      console.log();
+      console.log('USAGE:');
+      console.log('⚠️ DRY_RUN is not set, use DRY_RUN=<true|false> yarn cli sync-users-from-airtable');
+      process.exit(0);
+    }
+    if (!process.env.NODE_ENV) {
+      console.log();
+      console.log('USAGE:');
+      console.log(
+        '⚠️ NODE_ENV is not set and data will not be put in DB if NODE_ENV is not production, use DRY_RUN=<true|false> NODE_ENV=production yarn cli sync-users-from-airtable'
+      );
+      process.exit(0);
+    }
+
+    await syncGestionnairesWithUsers();
   });
 
 ['SIGINT', 'SIGTERM', 'SIGQUIT'].forEach((signal) => {

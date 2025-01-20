@@ -1,257 +1,524 @@
 import bcrypt from 'bcryptjs';
 
-import { type ApiNetwork } from '@/pages/api/v1/users/[key]';
 import db from '@/server/db';
 import base from '@/server/db/airtable';
-import { sendInscriptionEmail } from '@/server/email';
+import { parentLogger } from '@/server/helpers/logger';
 import { type ApiAccount } from '@/types/ApiAccount';
 import { Airtable } from '@/types/enum/Airtable';
 import { USER_ROLE } from '@/types/enum/UserRole';
+import { diff } from '@/utils/array';
+import { sanitizeEmail } from '@/utils/validation';
 
-export const upsertUsersFromGestionnaireSheet = async () => {
-  const newEmails: string[] = [];
-  const demands = await base(Airtable.UTILISATEURS).select().all();
-  const managers = demands
-    .flatMap((demand) => demand.get('Gestionnaires') as string[])
-    .filter((manager, index, values) => manager && values.findIndex((x) => x === manager) === index);
+import { sendInscriptionEmail } from '../email';
 
-  const airtableGestionnaires = await base(Airtable.GESTIONNAIRES).select().all();
-  const airtableApiGestionnaires = await base(Airtable.GESTIONNAIRES_API).select().all();
+const DRY_RUN = process.env.DRY_RUN === 'true';
 
-  const users = await db('users').select('email').where('role', USER_ROLE.GESTIONNAIRE);
-  const existingEmails = new Set(users.map((user) => user.email));
+const logger = parentLogger.child({
+  dry_run: DRY_RUN,
+});
+
+const logDry: typeof console.log = (message) => logger.info(`${DRY_RUN ? '[DRY_RUN]' : '[LIVE]'} ${message}`);
+
+export interface ApiNetwork {
+  id_sncu: string;
+  full_url: string;
+  public_name: string;
+  contacts: string[];
+}
+
+export const syncGestionnairesWithUsers = async () => {
+  await sanitizeGestionnairesEmails();
+  logDry(`Sync users from "${Airtable.GESTIONNAIRES}" sheet`);
+  const gestionnaires = await base(Airtable.GESTIONNAIRES).select().all();
+  const users = await db('users')
+    .select('id', 'email', 'active', 'gestionnaires', 'receive_new_demands', 'receive_old_demands')
+    // QUESTION should we update only gestionnaires ?
+    .where('role', USER_ROLE.GESTIONNAIRE);
+  const apiAccounts = await db('api_accounts').select('key', 'name');
+  const apiAccountsMap = Object.fromEntries(apiAccounts.map((account) => [account.name, account.key]));
+
   const salt = await bcrypt.genSalt(10);
 
-  let existingGestionnaires: string[] = [];
-  const emails = ['demo'];
+  const stats = {
+    totalCreated: 0,
+    totalDeactivated: 0,
+    totalUpdated: 0,
+  };
 
-  for (let i = 0; i < airtableGestionnaires.length; i++) {
-    const airtableGestionnaire = airtableGestionnaires[i];
-    const rawGestionnaires = airtableGestionnaire.get('Gestionnaires') as string[];
-    if (!rawGestionnaires || rawGestionnaires.length === 0) {
-      continue;
-    }
-    const gestionnaires = rawGestionnaires.map((gestionnaire) => gestionnaire.trim());
-    existingGestionnaires = existingGestionnaires.concat(gestionnaires);
-    let email = airtableGestionnaire.get('Email') as string;
+  await Promise.all(
+    gestionnaires.map(async (gestionnaire, gestionnaireIndex) => {
+      const email = gestionnaire.get('Email') as string;
+      logger.info(`-> ${gestionnaireIndex + 1}/${gestionnaires.length} Processing ${email}`);
+      const tags = (gestionnaire.get('Réseaux') || []) as string[];
+      const tagsFromAPI = (gestionnaire.get('Réseaux API') || []) as string[];
+      const newDemands = !!gestionnaire.get('Nouvelle demande');
+      const oldDemands = !!gestionnaire.get('Relance');
+      const fromApi = gestionnaire.get("Créé depuis l'API") as string;
+      const active = !!gestionnaire.get('Actif');
+      const allTags = [...new Set([...tags, ...tagsFromAPI])];
+      const user = users.find((user) => user.email.toLowerCase() === email.toLowerCase());
 
-    if (email) {
-      email = email.toLowerCase().trim();
-      emails.push(email);
-      const newDemands = airtableGestionnaire.get('Nouvelle demande') === true;
-      const oldDemands = airtableGestionnaire.get('Relance') === true;
-
-      if (!existingEmails.has(email)) {
-        console.log(`Create account for ${email} on ${gestionnaires.join(', ')}.`);
-        newEmails.push(email);
-        existingEmails.add(email);
-        await db('users').insert({
-          email,
-          password: bcrypt.hashSync(Math.random().toString(36).slice(2, 10), salt),
-          gestionnaires,
+      if (!user) {
+        logDry(`    🆕 Create user for ${email} with ${allTags.join(',')}.`);
+        const data = {
+          email: email.toLowerCase(),
+          password: await bcrypt.hash(Math.random().toString(36).slice(2, 10), salt),
+          gestionnaires: allTags,
           receive_new_demands: newDemands,
           receive_old_demands: oldDemands,
-        });
-      } else {
-        await db('users').where({ email }).update({
-          receive_new_demands: newDemands,
-          receive_old_demands: oldDemands,
-          gestionnaires,
-          active: true,
-        });
+          active,
+          role: USER_ROLE.GESTIONNAIRE,
+          from_api: apiAccountsMap[fromApi],
+        };
 
-        const airtableApiGestionnaire = airtableApiGestionnaires.find(
-          (userAPI) => (userAPI.get('Email') as string)?.toLowerCase().trim() === email
-        );
+        if (!DRY_RUN && process.env.NODE_ENV !== 'production') {
+          logger.error('As creation of users in database will send email to users, you need to set NODE_ENV=production');
+          return;
+        }
 
-        if (airtableApiGestionnaire) {
-          const newFCUTags = gestionnaires;
-          const tagsReseaux = airtableApiGestionnaire.get('Réseaux') as string[];
-
-          if (tagsReseaux) {
-            tagsReseaux.forEach((gestionnaire) => {
-              const tag = gestionnaire.trim();
-              const index = newFCUTags.findIndex((t) => t === tag);
-              if (index !== -1) {
-                newFCUTags.splice(index, 1);
-              }
-            });
-
-            await base(Airtable.GESTIONNAIRES_API).update(
-              airtableApiGestionnaire.id,
+        if (!DRY_RUN && process.env.NODE_ENV === 'production') {
+          try {
+            await db('users').insert(data);
+            await base(Airtable.GESTIONNAIRES).update(
+              gestionnaire.id,
               {
-                'Tags FCU': newFCUTags,
+                'Créé en base': new Date().toISOString(),
               },
               { typecast: true }
             );
+          } catch (e) {
+            logger.error(`Could not create ${email} in database`);
+            logger.error(e);
           }
         }
+
+        logDry(`    📩 Sending inscription email to ${email}`);
+        if (!DRY_RUN && process.env.NODE_ENV === 'production') await sendInscriptionEmail(email);
+        stats.totalCreated++;
+        return;
       }
-    }
-  }
 
-  // TODO remove, should not be used anymore
-  for (let i = 0; i < existingGestionnaires.length; i++) {
-    const gestionnaire = existingGestionnaires[i];
-    const gestionnaireFakeMail = `${gestionnaire} - FCU`.toLowerCase();
-    emails.push(gestionnaireFakeMail);
-    if (!existingEmails.has(gestionnaireFakeMail)) {
-      console.log(`Create account for ${gestionnaire} - FCU on ${gestionnaire}.`);
-      existingEmails.add(gestionnaireFakeMail);
-      await db('users').insert({
-        email: gestionnaireFakeMail,
-        password: bcrypt.hashSync(`${gestionnaire} ${process.env.ACCES_PASSWORD}`, salt),
-        gestionnaires: [gestionnaire],
-        receive_new_demands: false,
-        receive_old_demands: false,
+      if (!active && user.active) {
+        logDry(`    ❌ Deactivate user ${email}`);
+        if (!DRY_RUN) {
+          try {
+            await db('users').update('active', false).where('id', user.id);
+          } catch (e) {
+            logger.error(`Could not create ${email} in database`);
+            logger.error(e);
+          }
+        }
+        stats.totalDeactivated++;
+        return;
+      }
+      const { unchanged } = diff(user.gestionnaires || [], allTags);
+
+      if (
+        unchanged.length === allTags.length &&
+        user.receive_new_demands === newDemands &&
+        user.receive_old_demands === oldDemands &&
+        user.active === active
+      ) {
+        logDry(`    💤 No changes for ${email}`);
+        return;
+      }
+
+      if (!DRY_RUN) {
+        logDry(`    ✅ Update gestionnaires for ${email}`);
+
+        try {
+          await db('users')
+            .update({
+              gestionnaires: allTags,
+              receive_new_demands: newDemands,
+              receive_old_demands: oldDemands,
+              active,
+            })
+            .where('id', user.id);
+        } catch (e) {
+          logger.error(`Could not update gestionnaires for ${email} in database`);
+          logger.error(e);
+        }
+      }
+      stats.totalUpdated++;
+      return;
+    })
+  );
+
+  logger.info(`Total created: ${stats.totalCreated}, updated: ${stats.totalUpdated}, deactivated: ${stats.totalDeactivated}`);
+  logger.info(`========`);
+
+  return stats;
+};
+const populateGestionnaireApi = async (account: ApiAccount, networks: ApiNetwork[]) => {
+  logDry(`Upsert gestionnaires from API`);
+
+  logger.info(`Formatting received data of ${networks.length} networks to process it user per user`);
+  const recordsToSync = networks.reduce(
+    (acc, network) => {
+      network.contacts.forEach((contactEmail) => {
+        const networkTag = `${account.name}_${network.id_sncu}`;
+
+        const object = acc[contactEmail] || {
+          email: contactEmail,
+          tags: new Set([]),
+          warnings: new Set([]),
+        };
+
+        if (!account.networks.includes(network.id_sncu)) {
+          object.warnings.add(networkTag);
+        }
+        object.tags.add(networkTag);
+
+        acc[contactEmail] = object;
       });
-    }
+      return acc;
+    },
+    {} as Record<
+      string,
+      {
+        email: string;
+        tags: Set<string>;
+        warnings: Set<string>;
+      }
+    >
+  );
+
+  const stats = {
+    totalCreated: 0,
+    totalUpdated: 0,
+    totalDeactivated: 0,
+  };
+
+  logger.info(`Reading Data from Airtable ${Airtable.GESTIONNAIRES_API}`);
+  const gestionnairesFromAPIRecords = await base(Airtable.GESTIONNAIRES_API).select().all();
+  const gestionnairesFromAPI = gestionnairesFromAPIRecords.reduce(
+    (acc, gestionnaire) => {
+      const email = gestionnaire.get('Email') as string;
+      acc[email] = gestionnaire;
+      return acc;
+    },
+    {} as Record<string, (typeof gestionnairesFromAPIRecords)[number]>
+  );
+  const activeGestionnairesFromAPIEmails = gestionnairesFromAPIRecords
+    .filter((gestionnairesFromAPI) => !!gestionnairesFromAPI.get('Encore dans le flux'))
+    .map((gestionnairesFromAPI) => gestionnairesFromAPI.get('Email') as string);
+  logger.info(`Retrieved ${gestionnairesFromAPIRecords.length} records`);
+
+  if (activeGestionnairesFromAPIEmails.length === 0) {
+    logger.error(`No emails found in ${Airtable.GESTIONNAIRES_API}`);
+    return;
   }
 
-  const toDeactivate = Array.from(existingEmails).filter((email) => !emails.includes(email));
+  const { added, removed, unchanged } = diff(activeGestionnairesFromAPIEmails, Object.keys(recordsToSync));
+  logger.info(`Analyzed feed emails: ${added.length} added, ${removed.length} removed, ${unchanged.length} unchanged`);
 
-  if (toDeactivate.length > 0) {
-    //Keep the user but deactivate it
-    const result = await db('users').update('active', false).whereIn('email', toDeactivate).whereNull('from_api');
-    console.log(`${result} email(s) deactivated`);
-  } else {
-    console.log('Nothing to deactivate');
-  }
+  logger.info(`Adding: ${added.length} new records to ${Airtable.GESTIONNAIRES_API}`);
+  await Promise.all(
+    added.map(async (email, emailIndex) => {
+      const { tags, warnings } = recordsToSync[email];
+      logger.info(`-> ${emailIndex + 1}/${added.length} 🆕 Adding ${email}`);
+      logDry(`     Add ${email} to ${Airtable.GESTIONNAIRES_API}`);
 
-  if (newEmails.length > 0) {
-    console.log('Sending mails');
-    await Promise.all(newEmails.map((email) => sendInscriptionEmail(email)));
-  }
+      const data = {
+        Email: email,
+        Nom: account.name,
+        Réseaux: Array.from(tags),
+        Erreurs: Array.from(warnings),
+        'Encore dans le flux': true,
+      };
+
+      if (!DRY_RUN) {
+        try {
+          await base(Airtable.GESTIONNAIRES_API).create([{ fields: data }], { typecast: true });
+        } catch (e) {
+          logger.error(`Could not add ${email} to ${Airtable.GESTIONNAIRES_API} with ${JSON.stringify(data)}`);
+          logger.error(e);
+        }
+      }
+      stats.totalCreated++;
+    })
+  );
+
+  logger.info(`Deactivating: ${removed.length} records in ${Airtable.GESTIONNAIRES_API} as they are not in feed anymore`);
+  await Promise.all(
+    removed.map(async (email, emailIndex) => {
+      logger.info(`-> ${emailIndex + 1}/${removed.length} ❌ Deactivating ${email}`);
+
+      logDry(`     Deactivate ${email} in ${Airtable.GESTIONNAIRES_API}`);
+      if (!DRY_RUN) {
+        try {
+          await base(Airtable.GESTIONNAIRES_API).update(
+            gestionnairesFromAPI[email].id,
+            { 'Encore dans le flux': false },
+            { typecast: true }
+          );
+        } catch (e) {
+          logger.error(`Could not deactivate ${email} in ${Airtable.GESTIONNAIRES_API}`);
+          logger.error(e);
+        }
+      }
+      stats.totalDeactivated++;
+    })
+  );
 
   await Promise.all(
-    managers
-      .filter((manager) => !existingGestionnaires.includes(manager))
-      .map((manager) =>
-        base(Airtable.GESTIONNAIRES).create(
-          [
-            {
-              fields: {
-                Gestionnaires: [manager],
-              },
-            },
-          ],
-          { typecast: true }
-        )
-      )
+    unchanged.map(async (email, emailIndex) => {
+      const { tags, warnings } = recordsToSync[email];
+      const gestionnaireFromAPI = gestionnairesFromAPI[email];
+      logger.info(`-> ${emailIndex + 1}/${unchanged.length} Processing contact ${email}`);
+
+      const data = {
+        Nom: account.name,
+        Réseaux: Array.from(tags),
+        Erreurs: Array.from(warnings),
+        'Encore dans le flux': true,
+      };
+
+      const existingData = {
+        Nom: gestionnaireFromAPI.get('Nom'),
+        Réseaux: gestionnaireFromAPI.get('Réseaux') || [],
+        Erreurs: gestionnaireFromAPI.get('Erreurs') || [],
+        'Encore dans le flux': !!gestionnaireFromAPI.get('Encore dans le flux'),
+      };
+
+      if (JSON.stringify(data) === JSON.stringify(existingData)) {
+        logger.info(`   💤 Nothing to update for ${email}`);
+        return;
+      }
+
+      logger.info(`   🔄 Contact ${email} already exists, update it`);
+      logDry(`     Update ${email} with`, JSON.stringify(data));
+
+      if (!DRY_RUN) {
+        try {
+          await base(Airtable.GESTIONNAIRES_API).update(gestionnaireFromAPI.id, data, { typecast: true });
+        } catch (e) {
+          logger.error(`Could not update ${email} to ${Airtable.GESTIONNAIRES_API} with ${JSON.stringify(data)}`);
+          logger.error(e);
+        }
+      }
+      stats.totalUpdated++;
+    })
+  );
+
+  logger.info(`========`);
+  logger.info(`Total created: ${stats.totalCreated}, updated: ${stats.totalUpdated}, deactivated: ${stats.totalDeactivated}`);
+  logger.info(`========`);
+  return stats;
+};
+
+const syncGestionnaireAndGestionnaireApi = async (account: ApiAccount) => {
+  logDry(`Sync gestionnaires and gestionnaires API`);
+
+  logger.info(`Reading Data from Airtable ${Airtable.GESTIONNAIRES_API}`);
+  const gestionnairesFromAPI = await base(Airtable.GESTIONNAIRES_API).select().all();
+  logger.info(`Retrieved ${gestionnairesFromAPI.length} records`);
+
+  logger.info(`Reading Data from Airtable ${Airtable.GESTIONNAIRES}`);
+  const gestionnaires = await base(Airtable.GESTIONNAIRES).select().all();
+  logger.info(`Retrieved ${gestionnaires.length} records`);
+
+  const stats = {
+    totalCreated: 0,
+    totalSkipped: 0,
+    totalUpdated: 0,
+    totalDeactivated: 0,
+  };
+
+  await Promise.all(
+    gestionnairesFromAPI.map(async (gestionnaireFromAPI) => {
+      const email = gestionnaireFromAPI.get('Email') as string;
+      const active = !!gestionnaireFromAPI.get('Encore dans le flux');
+      const tagsFromAPI = (gestionnaireFromAPI.get('Réseaux') as string[]) || [];
+
+      const existingGestionnaire = gestionnaires.find(
+        (gestionnaire) => (gestionnaire.get('Email') as string).toLowerCase() === email.toLowerCase()
+      );
+
+      if (!existingGestionnaire) {
+        const data = {
+          Email: email,
+          "Créé depuis l'API": account.name,
+          Actif: active,
+          'Réseaux API': tagsFromAPI,
+          'Nouvelle demande': true,
+          Relance: true,
+        };
+        logger.info(`   🆕 Contact ${email} does not exist, create it`);
+        logDry(`     Create ${email} with`, JSON.stringify(data));
+        if (!DRY_RUN) {
+          try {
+            await base(Airtable.GESTIONNAIRES).create([{ fields: data }], { typecast: true });
+          } catch (e) {
+            logger.error(`Could not add ${email} to ${Airtable.GESTIONNAIRES} with ${JSON.stringify(data)}`);
+          }
+        }
+        stats.totalCreated++;
+        return;
+      }
+
+      if (!existingGestionnaire.get('Actif')) {
+        logger.info(`   💤 Skipping ${email} as it is not active`);
+        stats.totalSkipped++;
+        return;
+      }
+
+      if (!active) {
+        logger.info(`   ❌ Deactivating ${email} as it is not in feed anymore`);
+        logDry(`     Deactivate ${email}`);
+        if (!DRY_RUN) {
+          try {
+            await base(Airtable.GESTIONNAIRES).update(existingGestionnaire.id, { Actif: false }, { typecast: true });
+          } catch (e) {
+            logger.error(`Could not deactivate ${email} to ${Airtable.GESTIONNAIRES}`);
+          }
+        }
+        stats.totalDeactivated++;
+      }
+
+      const tagsNotFromAPI = diff(tagsFromAPI, (existingGestionnaire.get('Réseaux') as string[]) || []).added;
+
+      const data = {
+        ...(process.env.FIRST_TIME_FIX === 'true' ? { Réseaux: tagsNotFromAPI } : {}),
+        'Réseaux API': tagsFromAPI,
+      };
+      const existingData = {
+        ...(process.env.FIRST_TIME_FIX === 'true' ? { Réseaux: existingGestionnaire.get('Réseaux') || [] } : {}),
+        'Réseaux API': existingGestionnaire.get('Réseaux API') || [],
+      };
+
+      if (JSON.stringify(data) === JSON.stringify(existingData)) {
+        logger.info(`   💤 Nothing to update for ${email}`);
+        return;
+      }
+
+      logDry(`     Update ${email} (${existingGestionnaire.id}) with`, JSON.stringify(data));
+      if (!DRY_RUN) {
+        try {
+          await base(Airtable.GESTIONNAIRES).update(existingGestionnaire.id, data, { typecast: true });
+        } catch (e) {
+          logger.error(`Could not update ${email} to ${Airtable.GESTIONNAIRES} with ${JSON.stringify(data)}`);
+          logger.error(e);
+        }
+      }
+      stats.totalUpdated++;
+    })
+  );
+
+  logger.info(`========`);
+  logger.info(`Total created: ${stats.totalCreated}, updated: ${stats.totalUpdated}, deactivated: ${stats.totalDeactivated}`);
+  logger.info(`========`);
+};
+
+export const cleanGestionnaireTags = async () => {
+  const gestionnaires = await base(Airtable.GESTIONNAIRES).select().all();
+  await Promise.all(
+    gestionnaires.map(async (gestionnaire) => {
+      const tags = (gestionnaire.get('Réseaux') as string[]) || [];
+      const tagsAPI = (gestionnaire.get('Réseaux API') as string[]) || [];
+      const tagsNotFromAPI = diff(tagsAPI, tags).added;
+      await base(Airtable.GESTIONNAIRES).update(gestionnaire.id, { Réseaux: tagsNotFromAPI });
+    })
   );
 };
 
-export const upsertUsersFromApi = async (account: ApiAccount, networks: ApiNetwork[]) => {
-  //Users from tab "GESTIONNAIRES_API" where the new users from outside API are saved
-  const airtableApiGestionnaires = await base(Airtable.GESTIONNAIRES_API).select().all();
-  //Users from tab "GESTIONNAIRES" - all the users of the website
-  const airtableGestionnaires = await base(Airtable.GESTIONNAIRES).select().all();
-
-  const warnings: string[] = [];
-  const emails = networks.flatMap((user) => user.contacts);
-  //On ne désactive pas les comptes supprimés -- vérification manuelle
-  /*await db('users')
-    .update('active', false)
-    .whereNotIn('email', emails)
-    .andWhere('from_api', account.key);*/
-
-  const existingUsers = await db('users').select('email').where('from_api', account.key);
-
-  //On ne supprime pas dans le Airtable les users non ré-importés mais on met Réseaux vides
+/**
+ * To be called only once and then archived
+ */
+export const activateAllGestionnaires = async () => {
+  const gestionnaires = await base(Airtable.GESTIONNAIRES).select().all();
+  const inactiveGestionnaires = gestionnaires.filter((gestionnaire) => !gestionnaire.get('Actif'));
+  logger.info(`Activate ${inactiveGestionnaires.length} gestionnaires`);
   await Promise.all(
-    airtableApiGestionnaires
-      .filter((airtableApiGestionnaire) => !emails.includes(airtableApiGestionnaire.get('Email') as string))
-      .map((airtableApiGestionnaire) =>
-        base(Airtable.GESTIONNAIRES_API).update(airtableApiGestionnaire.id, {
-          Réseaux: [],
-        })
-      )
+    inactiveGestionnaires.map(async (gestionnaire) => {
+      await base(Airtable.GESTIONNAIRES).update(gestionnaire.id, { Actif: true });
+    })
   );
 
-  //Check les droits pour ajouter un gestionnaire sur le réseau
-  const users: Record<string, string[]> = {};
-  networks.forEach((network) => {
-    if (!account.networks.includes(network.id_sncu)) {
-      warnings.push(`Account ${account.key} cannot add user for network ${network.id_sncu}`);
-    } else {
-      network.contacts.forEach((user) => {
-        const contacts = users[user] || [];
-        contacts.push(network.id_sncu);
-        users[user] = contacts;
-      });
-    }
-  });
+  const gestionnairesApi = await base(Airtable.GESTIONNAIRES_API).select().all();
+  const inactiveGestionnairesApi = gestionnairesApi.filter((gestionnaire) => !gestionnaire.get('Encore dans le flux'));
+  logger.info(`Activate ${inactiveGestionnairesApi.length} gestionnaires API`);
+  await Promise.all(
+    inactiveGestionnairesApi.map(async (gestionnaire) => {
+      await base(Airtable.GESTIONNAIRES_API).update(gestionnaire.id, { 'Encore dans le flux': true });
+    })
+  );
+};
 
-  const otherUsers = (await db('users').select('email').whereNull('from_api').whereIn('email', emails)).map((result) => result.email);
+/**
+ * To be called only once and then archived
+ */
+export const updateCreatedTimeInDB = async () => {
+  const gestionnaires = await base(Airtable.GESTIONNAIRES).select().all();
+  const users = await db('users').select('email', 'created_at').where('role', USER_ROLE.GESTIONNAIRE);
 
-  //Don't send this warning message for now
-  // if (otherUsers.length > 0) {
-  //   warnings.push(
-  //     `Some emails are already managed by FCU, please contact us: ${otherUsers.join(
-  //       ', '
-  //     )}`
-  //   );
-  // }
-  warnings.forEach((warning) => console.log(warning));
-
-  const salt = await bcrypt.genSalt(10);
+  const gestionnairesToUpdate = gestionnaires.filter((gestionnaire) => !gestionnaire.get('Créé en base'));
+  logger.info(`Get created time for ${gestionnairesToUpdate.length} gestionnaires`);
 
   await Promise.all(
-    Object.keys(users)
-      .filter((user) => user && !otherUsers.includes(user))
-      .flatMap((user) => {
-        //Tag gestionnaire for the "new" user - future column "Réseaux"
-        const userGestionnaireTags = users[user].map((network) => `${account.name}_${network}`);
-        const airtableApiGestionnaire = airtableApiGestionnaires.find(
-          (airtableApiGestionnaire) => airtableApiGestionnaire.get('Email') === user
-        );
-        const airtableGestionnaire = airtableGestionnaires.find((airtableGestionnaire) => airtableGestionnaire.get('Email') === user);
-        //Tags FCU
-        const fcuTags = airtableApiGestionnaire ? (airtableApiGestionnaire.get('Tags FCU') as string[]) : [];
-        //Concat tags from API (future column "Réseaux") and column "Tags FCU" if existed
-        const allGestionnaires =
-          airtableApiGestionnaire && fcuTags && fcuTags.length > 0 ? userGestionnaireTags.concat(fcuTags) : userGestionnaireTags;
+    gestionnairesToUpdate.map(async (gestionnaire, index) => {
+      logger.info(`${index + 1}/${gestionnairesToUpdate.length} Getting creation date for ${gestionnaire.get('Email')}`);
+      const email = gestionnaire.get('Email') as string;
 
-        const gestionnaireApiData = {
-          Email: user,
-          Réseaux: userGestionnaireTags,
-          Nom: account.name,
-        };
-
-        const gestionnaireData = {
-          Email: user,
-          Gestionnaires: allGestionnaires,
-        };
-
-        const promises: Promise<any>[] = [
-          db('users')
-            .insert({
-              email: user,
-              password: bcrypt.hashSync(Math.random().toString(36).slice(2, 10), salt),
-              gestionnaires: allGestionnaires,
-              from_api: account.key,
-              receive_new_demands: true,
-              receive_old_demands: true,
-            })
-            .onConflict('email')
-            .merge({ gestionnaires: allGestionnaires, active: true }),
-
-          //Maj Airtable avec les nouveaux tags Réseaux (ou ajoute le nouveau compte)
-          airtableApiGestionnaire
-            ? base(Airtable.GESTIONNAIRES_API).update(airtableApiGestionnaire.id, gestionnaireApiData, { typecast: true })
-            : base(Airtable.GESTIONNAIRES_API).create([{ fields: gestionnaireApiData }], { typecast: true }),
-
-          airtableGestionnaire
-            ? base(Airtable.GESTIONNAIRES).update(airtableGestionnaire.id, gestionnaireData, { typecast: true })
-            : base(Airtable.GESTIONNAIRES).create([{ fields: gestionnaireData }], { typecast: true }),
-        ];
-
-        if (!existingUsers.some((existingUser) => existingUser.email === user)) {
-          promises.push(sendInscriptionEmail(user));
+      if (!email) {
+        logger.error(`No email for ${gestionnaire.id}`);
+      } else {
+        logger.info(`Adding creation date in DB for ${email}`);
+        const user = users.find((user) => user.email === email);
+        try {
+          await base(Airtable.GESTIONNAIRES).update(gestionnaire.id, { 'Créé en base': user?.created_at });
+        } catch (e) {
+          logger.error(`Could not update with created at ${gestionnaire.id} from ${Airtable.GESTIONNAIRES}`);
         }
-
-        return promises;
-      })
+      }
+    })
   );
-  return warnings;
+};
+
+export const sanitizeGestionnairesEmails = async () => {
+  const stats = {
+    sanitizedGestionnaireEmails: 0,
+  };
+  const gestionnaires = await base(Airtable.GESTIONNAIRES).select().all();
+  logger.info(`Sanitize ${gestionnaires.length} gestionnaire emails`);
+
+  await Promise.all(
+    gestionnaires.map(async (gestionnaire) => {
+      const email = gestionnaire.get('Email') as string;
+      if (!email) return false;
+      const sanitizedEmail = sanitizeEmail(email);
+      if (sanitizedEmail !== email) {
+        logger.info(`Sanitizing "${email}" for "${sanitizedEmail}"`);
+        if (!DRY_RUN) {
+          await base(Airtable.GESTIONNAIRES).update(gestionnaire.id, { Email: sanitizedEmail });
+        }
+        if (email.toLowerCase() !== sanitizedEmail.toLowerCase()) {
+          stats.sanitizedGestionnaireEmails++;
+        }
+      }
+
+      return;
+    })
+  );
+  logger.info(`========`);
+  logger.info(`Total sanitized: ${stats.sanitizedGestionnaireEmails}`);
+  logger.info(`========`);
+
+  return stats;
+};
+
+export const createGestionnairesFromAPI = async (account: ApiAccount, networks: ApiNetwork[]) => {
+  await sanitizeGestionnairesEmails();
+
+  if (process.env.FIRST_TIME_FIX === 'true') {
+    await activateAllGestionnaires();
+    await updateCreatedTimeInDB();
+  }
+  await populateGestionnaireApi(account, networks);
+  await syncGestionnaireAndGestionnaireApi(account);
+
+  if (process.env.FIRST_TIME_FIX === 'true') {
+    await cleanGestionnaireTags();
+  }
 };

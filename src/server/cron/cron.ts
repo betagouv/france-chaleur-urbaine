@@ -26,7 +26,7 @@ new cron.CronJob({
 
 new cron.CronJob({
   cronTime: '00 * * * *', // toutes les heures
-  onTick: () => launchJob('upsertUsersFromGestionnaireSheet'),
+  onTick: () => launchJob('syncGestionnairesWithUsers'),
   start: true,
   timeZone: 'Europe/Paris',
 });
