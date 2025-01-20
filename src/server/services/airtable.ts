@@ -212,14 +212,15 @@ const populateGestionnaireApi = async (account: ApiAccount, networks: ApiNetwork
         'Encore dans le flux': true,
       };
 
+      stats.totalCreated++;
       if (!DRY_RUN) {
         try {
           await base(Airtable.GESTIONNAIRES_API).create([{ fields: data }], { typecast: true });
         } catch (e) {
+          stats.totalCreated = Math.max(stats.totalCreated - 1, 0);
           logger.error(`Could not add ${email} to ${Airtable.GESTIONNAIRES_API} with ${JSON.stringify(data)}`, { error: e });
         }
       }
-      stats.totalCreated++;
     })
   );
 
@@ -229,6 +230,7 @@ const populateGestionnaireApi = async (account: ApiAccount, networks: ApiNetwork
       logger.info(`-> ${emailIndex + 1}/${removed.length} ❌ Deactivating ${email}`);
 
       logDry(`     Deactivate ${email} in ${Airtable.GESTIONNAIRES_API}`);
+      stats.totalDeactivated++;
       if (!DRY_RUN) {
         try {
           await base(Airtable.GESTIONNAIRES_API).update(
@@ -237,10 +239,10 @@ const populateGestionnaireApi = async (account: ApiAccount, networks: ApiNetwork
             { typecast: true }
           );
         } catch (e) {
+          stats.totalDeactivated = Math.max(stats.totalDeactivated - 1, 0);
           logger.error(`Could not deactivate ${email} in ${Airtable.GESTIONNAIRES_API}`, { error: e });
         }
       }
-      stats.totalDeactivated++;
     })
   );
 
@@ -270,15 +272,16 @@ const populateGestionnaireApi = async (account: ApiAccount, networks: ApiNetwork
 
       logger.info(`   🔄 Contact ${email} already exists, update it`);
       logDry(`     Update ${email} with`, JSON.stringify(data));
+      stats.totalUpdated++;
 
       if (!DRY_RUN) {
         try {
           await base(Airtable.GESTIONNAIRES_API).update(gestionnaireFromAPI.id, data, { typecast: true });
         } catch (e) {
+          stats.totalUpdated = Math.max(stats.totalUpdated - 1, 0);
           logger.error(`Could not update ${email} to ${Airtable.GESTIONNAIRES_API} with ${JSON.stringify(data)}`, { error: e });
         }
       }
-      stats.totalUpdated++;
     })
   );
 
@@ -327,14 +330,15 @@ const syncGestionnaireAndGestionnaireApi = async (account: ApiAccount) => {
         };
         logger.info(`   🆕 Contact ${email} does not exist, create it`);
         logDry(`     Create ${email} with`, JSON.stringify(data));
+        stats.totalCreated++;
         if (!DRY_RUN) {
           try {
             await base(Airtable.GESTIONNAIRES).create([{ fields: data }], { typecast: true });
           } catch (e) {
+            stats.totalCreated = Math.max(stats.totalCreated - 1, 0);
             logger.error(`Could not add ${email} to ${Airtable.GESTIONNAIRES} with ${JSON.stringify(data)}`, { error: e });
           }
         }
-        stats.totalCreated++;
         return;
       }
 
@@ -347,14 +351,15 @@ const syncGestionnaireAndGestionnaireApi = async (account: ApiAccount) => {
       if (!active) {
         logger.info(`   ❌ Deactivating ${email} as it is not in feed anymore`);
         logDry(`     Deactivate ${email}`);
+        stats.totalDeactivated++;
         if (!DRY_RUN) {
           try {
             await base(Airtable.GESTIONNAIRES).update(existingGestionnaire.id, { Actif: false }, { typecast: true });
           } catch (e) {
+            stats.totalDeactivated = Math.max(stats.totalDeactivated - 1, 0);
             logger.error(`Could not deactivate ${email} to ${Airtable.GESTIONNAIRES}`, { error: e });
           }
         }
-        stats.totalDeactivated++;
       }
 
       const tagsNotFromAPI = diff(tagsFromAPI, (existingGestionnaire.get('Réseaux') as string[]) || []).added;
@@ -374,14 +379,15 @@ const syncGestionnaireAndGestionnaireApi = async (account: ApiAccount) => {
       }
 
       logDry(`     Update ${email} (${existingGestionnaire.id}) with`, JSON.stringify(data));
+      stats.totalUpdated++;
       if (!DRY_RUN) {
         try {
           await base(Airtable.GESTIONNAIRES).update(existingGestionnaire.id, data, { typecast: true });
         } catch (e) {
+          stats.totalUpdated = Math.max(stats.totalUpdated - 1, 0);
           logger.error(`Could not update ${email} to ${Airtable.GESTIONNAIRES} with ${JSON.stringify(data)}`, { error: e });
         }
       }
-      stats.totalUpdated++;
     })
   );
 
