@@ -162,26 +162,15 @@ const populateGestionnaireApi = async (account: ApiAccount, networks: ApiNetwork
         const object = acc[contactEmail] || {
           email: contactEmail,
           tags: new Set([]),
-          warnings: new Set([]),
         };
 
-        if (!account.networks.includes(network.id_sncu)) {
-          object.warnings.add(networkTag);
-        }
         object.tags.add(networkTag);
 
         acc[contactEmail] = object;
       });
       return acc;
     },
-    {} as Record<
-      string,
-      {
-        email: string;
-        tags: Set<string>;
-        warnings: Set<string>;
-      }
-    >
+    {} as Record<string, { email: string; tags: Set<string> }>
   );
 
   const stats = {
@@ -216,7 +205,7 @@ const populateGestionnaireApi = async (account: ApiAccount, networks: ApiNetwork
   logger.info(`Adding: ${added.length} new records to ${Airtable.GESTIONNAIRES_API}`);
   await Promise.all(
     added.map(async (email, emailIndex) => {
-      const { tags, warnings } = recordsToSync[email];
+      const { tags } = recordsToSync[email];
       logger.info(`-> ${emailIndex + 1}/${added.length} 🆕 Adding ${email}`);
       logDry(`     Add ${email} to ${Airtable.GESTIONNAIRES_API}`);
 
@@ -224,7 +213,6 @@ const populateGestionnaireApi = async (account: ApiAccount, networks: ApiNetwork
         Email: email,
         Nom: account.name,
         Réseaux: Array.from(tags),
-        Erreurs: Array.from(warnings),
         'Encore dans le flux': true,
       };
 
@@ -264,21 +252,19 @@ const populateGestionnaireApi = async (account: ApiAccount, networks: ApiNetwork
 
   await Promise.all(
     unchanged.map(async (email, emailIndex) => {
-      const { tags, warnings } = recordsToSync[email];
+      const { tags } = recordsToSync[email];
       const gestionnaireFromAPI = gestionnairesFromAPI[email];
       logger.info(`-> ${emailIndex + 1}/${unchanged.length} Processing contact ${email}`);
 
       const data = {
         Nom: account.name,
         Réseaux: Array.from(tags),
-        Erreurs: Array.from(warnings),
         'Encore dans le flux': true,
       };
 
       const existingData = {
         Nom: gestionnaireFromAPI.get('Nom'),
         Réseaux: gestionnaireFromAPI.get('Réseaux') || [],
-        Erreurs: gestionnaireFromAPI.get('Erreurs') || [],
         'Encore dans le flux': !!gestionnaireFromAPI.get('Encore dans le flux'),
       };
 
