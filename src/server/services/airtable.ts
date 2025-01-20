@@ -155,18 +155,15 @@ const populateGestionnaireApi = async (account: ApiAccount, networks: ApiNetwork
       network.contacts.forEach((contactEmail) => {
         const networkTag = `${account.name}_${network.id_sncu}`;
 
-        const object = acc[contactEmail] || {
-          email: contactEmail,
-          tags: new Set([]),
-        };
+        const tagsByEmail = acc[contactEmail] || new Set([]);
 
-        object.tags.add(networkTag);
+        tagsByEmail.add(networkTag);
 
-        acc[contactEmail] = object;
+        acc[contactEmail] = tagsByEmail;
       });
       return acc;
     },
-    {} as Record<string, { email: string; tags: Set<string> }>
+    {} as Record<string, Set<string>>
   );
 
   const stats = {
@@ -201,7 +198,7 @@ const populateGestionnaireApi = async (account: ApiAccount, networks: ApiNetwork
   logger.info(`Adding: ${added.length} new records to ${Airtable.GESTIONNAIRES_API}`);
   await Promise.all(
     added.map(async (email, emailIndex) => {
-      const { tags } = recordsToSync[email];
+      const tags = recordsToSync[email];
       logger.info(`-> ${emailIndex + 1}/${added.length} 🆕 Adding ${email}`);
       logDry(`     Add ${email} to ${Airtable.GESTIONNAIRES_API}`);
 
@@ -249,7 +246,7 @@ const populateGestionnaireApi = async (account: ApiAccount, networks: ApiNetwork
   logger.info(`Updating: ${unchanged.length} records in ${Airtable.GESTIONNAIRES_API}`);
   await Promise.all(
     unchanged.map(async (email, emailIndex) => {
-      const { tags } = recordsToSync[email];
+      const tags = recordsToSync[email];
       const gestionnaireFromAPI = gestionnairesFromAPI[email];
       logger.info(`-> ${emailIndex + 1}/${unchanged.length} Processing contact ${email}`);
 
