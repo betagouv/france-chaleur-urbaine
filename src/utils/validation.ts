@@ -14,3 +14,7 @@ export const zPassword = z.string().refine(
     message: 'Le mot de passe doit contenir au moins 8 caractères, une lettre minuscule, une lettre majuscule et un chiffre.',
   }
 );
+
+export const emailSchema = z.string().trim().toLowerCase().email('Invalid email address');
+
+export const sanitizeEmail = (email: string): string => emailSchema.safeParse(email)?.data ?? email;
