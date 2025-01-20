@@ -172,7 +172,7 @@ program
 program
   .command('debug:upsert-users-from-api')
   .description('Update Gestionnaires and Gestionnaires API airtables from file.')
-  .argument('<accountKey>', 'Key of the account in ')
+  .argument('<accountKey>', 'Key of the account in api_accounts')
   .argument('<file>', 'File with data')
   .action(async (accountKey, file) => {
     const account: ApiAccount = await db('api_accounts').where('key', accountKey).first();
@@ -182,7 +182,7 @@ program
       console.log();
       console.log('USAGE:');
       console.log('⚠️ DRY_RUN is not set, use FIRST_TIME_FIX=<true|false> DRY_RUN=<true|false> yarn cli debug:upsert-users-from-api ...');
-      process.exit(0);
+      process.exit(1);
     }
     await createGestionnairesFromAPI(account, data);
   });
@@ -195,7 +195,7 @@ program
       console.log();
       console.log('USAGE:');
       console.log('⚠️ DRY_RUN is not set, use DRY_RUN=<true|false> yarn cli sync-users-from-airtable');
-      process.exit(0);
+      process.exit(1);
     }
     if (!process.env.NODE_ENV) {
       console.log();
@@ -203,7 +203,7 @@ program
       console.log(
         '⚠️ NODE_ENV is not set and data will not be put in DB if NODE_ENV is not production, use DRY_RUN=<true|false> NODE_ENV=production yarn cli sync-users-from-airtable'
       );
-      process.exit(0);
+      process.exit(1);
     }
 
     await syncGestionnairesWithUsers();

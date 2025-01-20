@@ -146,8 +146,9 @@ export const syncGestionnairesWithUsers = async () => {
 
   return stats;
 };
+
 const populateGestionnaireApi = async (account: ApiAccount, networks: ApiNetwork[]) => {
-  logDry(`Upsert gestionnaires from API`);
+  logDry(`Populate gestionnaires from API`);
 
   logger.info(`Formatting received data of ${networks.length} networks to process it user per user`);
   const recordsToSync = networks.reduce(
@@ -246,6 +247,7 @@ const populateGestionnaireApi = async (account: ApiAccount, networks: ApiNetwork
     })
   );
 
+  logger.info(`Updating: ${unchanged.length} records in ${Airtable.GESTIONNAIRES_API}`);
   await Promise.all(
     unchanged.map(async (email, emailIndex) => {
       const { tags } = recordsToSync[email];
