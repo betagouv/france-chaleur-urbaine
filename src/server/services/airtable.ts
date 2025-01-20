@@ -17,12 +17,12 @@ const logger = parentLogger.child({
   dry_run: DRY_RUN,
 });
 
-const logDry: typeof console.log = (message) => logger.info(`${DRY_RUN ? '[DRY_RUN]' : '[LIVE]'} ${message}`);
+const logDry: typeof logger.info = (message) => logger.info(`${DRY_RUN ? '[DRY_RUN]' : '[LIVE]'} ${message}`);
 
 export interface ApiNetwork {
   id_sncu: string;
-  full_url: string;
-  public_name: string;
+  full_url?: string;
+  public_name?: string;
   contacts: string[];
 }
 
@@ -68,7 +68,9 @@ export const syncGestionnairesWithUsers = async () => {
         };
 
         if (!DRY_RUN && process.env.NODE_ENV !== 'production') {
-          logger.error('As creation of users in database will send email to users, you need to set NODE_ENV=production');
+          logger.error(
+            `User ${email} not created in database as it will send email to users, you need to set NODE_ENV=production to create users`
+          );
           return;
         }
 
@@ -83,8 +85,7 @@ export const syncGestionnairesWithUsers = async () => {
               { typecast: true }
             );
           } catch (e) {
-            logger.error(`Could not create ${email} in database`);
-            logger.error(e);
+            logger.error(`Could not create ${email} in database`, { error: e });
           }
         }
 
@@ -100,8 +101,7 @@ export const syncGestionnairesWithUsers = async () => {
           try {
             await db('users').update('active', false).where('id', user.id);
           } catch (e) {
-            logger.error(`Could not create ${email} in database`);
-            logger.error(e);
+            logger.error(`Could not create ${email} in database`, { error: e });
           }
         }
         stats.totalDeactivated++;
@@ -132,8 +132,7 @@ export const syncGestionnairesWithUsers = async () => {
             })
             .where('id', user.id);
         } catch (e) {
-          logger.error(`Could not update gestionnaires for ${email} in database`);
-          logger.error(e);
+          logger.error(`Could not update gestionnaires for ${email} in database`, { error: e });
         }
       }
       stats.totalUpdated++;
@@ -217,8 +216,7 @@ const populateGestionnaireApi = async (account: ApiAccount, networks: ApiNetwork
         try {
           await base(Airtable.GESTIONNAIRES_API).create([{ fields: data }], { typecast: true });
         } catch (e) {
-          logger.error(`Could not add ${email} to ${Airtable.GESTIONNAIRES_API} with ${JSON.stringify(data)}`);
-          logger.error(e);
+          logger.error(`Could not add ${email} to ${Airtable.GESTIONNAIRES_API} with ${JSON.stringify(data)}`, { error: e });
         }
       }
       stats.totalCreated++;
@@ -239,8 +237,7 @@ const populateGestionnaireApi = async (account: ApiAccount, networks: ApiNetwork
             { typecast: true }
           );
         } catch (e) {
-          logger.error(`Could not deactivate ${email} in ${Airtable.GESTIONNAIRES_API}`);
-          logger.error(e);
+          logger.error(`Could not deactivate ${email} in ${Airtable.GESTIONNAIRES_API}`, { error: e });
         }
       }
       stats.totalDeactivated++;
@@ -278,8 +275,7 @@ const populateGestionnaireApi = async (account: ApiAccount, networks: ApiNetwork
         try {
           await base(Airtable.GESTIONNAIRES_API).update(gestionnaireFromAPI.id, data, { typecast: true });
         } catch (e) {
-          logger.error(`Could not update ${email} to ${Airtable.GESTIONNAIRES_API} with ${JSON.stringify(data)}`);
-          logger.error(e);
+          logger.error(`Could not update ${email} to ${Airtable.GESTIONNAIRES_API} with ${JSON.stringify(data)}`, { error: e });
         }
       }
       stats.totalUpdated++;
@@ -335,7 +331,7 @@ const syncGestionnaireAndGestionnaireApi = async (account: ApiAccount) => {
           try {
             await base(Airtable.GESTIONNAIRES).create([{ fields: data }], { typecast: true });
           } catch (e) {
-            logger.error(`Could not add ${email} to ${Airtable.GESTIONNAIRES} with ${JSON.stringify(data)}`);
+            logger.error(`Could not add ${email} to ${Airtable.GESTIONNAIRES} with ${JSON.stringify(data)}`, { error: e });
           }
         }
         stats.totalCreated++;
@@ -355,7 +351,7 @@ const syncGestionnaireAndGestionnaireApi = async (account: ApiAccount) => {
           try {
             await base(Airtable.GESTIONNAIRES).update(existingGestionnaire.id, { Actif: false }, { typecast: true });
           } catch (e) {
-            logger.error(`Could not deactivate ${email} to ${Airtable.GESTIONNAIRES}`);
+            logger.error(`Could not deactivate ${email} to ${Airtable.GESTIONNAIRES}`, { error: e });
           }
         }
         stats.totalDeactivated++;
@@ -382,8 +378,7 @@ const syncGestionnaireAndGestionnaireApi = async (account: ApiAccount) => {
         try {
           await base(Airtable.GESTIONNAIRES).update(existingGestionnaire.id, data, { typecast: true });
         } catch (e) {
-          logger.error(`Could not update ${email} to ${Airtable.GESTIONNAIRES} with ${JSON.stringify(data)}`);
-          logger.error(e);
+          logger.error(`Could not update ${email} to ${Airtable.GESTIONNAIRES} with ${JSON.stringify(data)}`, { error: e });
         }
       }
       stats.totalUpdated++;
