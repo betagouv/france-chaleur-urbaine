@@ -179,9 +179,9 @@ program
     const data: ApiNetwork[] = JSON.parse(await readFile(file, 'utf8'));
 
     if (!process.env.DRY_RUN) {
-      console.log();
-      console.log('USAGE:');
-      console.log('⚠️ DRY_RUN is not set, use FIRST_TIME_FIX=<true|false> DRY_RUN=<true|false> yarn cli debug:upsert-users-from-api ...');
+      logger.info('');
+      logger.info('USAGE:');
+      logger.info('⚠️ DRY_RUN is not set, use FIRST_TIME_FIX=<true|false> DRY_RUN=<true|false> yarn cli debug:upsert-users-from-api ...');
       process.exit(1);
     }
     await createGestionnairesFromAPI(account, data);
@@ -192,15 +192,15 @@ program
   .description('Sync users created in Airtable in PostGres.')
   .action(async () => {
     if (!process.env.DRY_RUN) {
-      console.log();
-      console.log('USAGE:');
-      console.log('⚠️ DRY_RUN is not set, use DRY_RUN=<true|false> yarn cli sync-users-from-airtable');
+      logger.info('');
+      logger.info('USAGE:');
+      logger.info('⚠️ DRY_RUN is not set, use DRY_RUN=<true|false> yarn cli sync-users-from-airtable');
       process.exit(1);
     }
     if (!process.env.NODE_ENV) {
-      console.log();
-      console.log('USAGE:');
-      console.log(
+      logger.info('');
+      logger.info('USAGE:');
+      logger.info(
         '⚠️ NODE_ENV is not set and data will not be put in DB if NODE_ENV is not production, use DRY_RUN=<true|false> NODE_ENV=production yarn cli sync-users-from-airtable'
       );
       process.exit(1);
