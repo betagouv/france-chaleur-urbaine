@@ -34,8 +34,6 @@ export const syncGestionnairesWithUsers = async () => {
     .select('id', 'email', 'active', 'gestionnaires', 'receive_new_demands', 'receive_old_demands')
     // QUESTION should we update only gestionnaires ?
     .where('role', USER_ROLE.GESTIONNAIRE);
-  const apiAccounts = await db('api_accounts').select('key', 'name');
-  const apiAccountsMap = Object.fromEntries(apiAccounts.map((account) => [account.name, account.key]));
 
   const salt = await bcrypt.genSalt(10);
 
@@ -53,7 +51,6 @@ export const syncGestionnairesWithUsers = async () => {
       const tagsFromAPI = (gestionnaire.get('Réseaux API') || []) as string[];
       const newDemands = !!gestionnaire.get('Nouvelle demande');
       const oldDemands = !!gestionnaire.get('Relance');
-      const fromApi = gestionnaire.get("Créé depuis l'API") as string;
       const active = !!gestionnaire.get('Actif');
       const allTags = [...new Set([...tags, ...tagsFromAPI])];
       const user = users.find((user) => user.email.toLowerCase() === email.toLowerCase());
@@ -68,7 +65,6 @@ export const syncGestionnairesWithUsers = async () => {
           receive_old_demands: oldDemands,
           active,
           role: USER_ROLE.GESTIONNAIRE,
-          from_api: apiAccountsMap[fromApi],
         };
 
         if (!DRY_RUN && process.env.NODE_ENV !== 'production') {
