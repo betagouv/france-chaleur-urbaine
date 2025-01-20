@@ -24,12 +24,13 @@ new cron.CronJob({
   timeZone: 'Europe/Paris',
 });
 
-new cron.CronJob({
-  cronTime: '00 * * * *', // toutes les heures
-  onTick: () => launchJob('updateUsers'),
-  start: true,
-  timeZone: 'Europe/Paris',
-});
+// WIP remove until data is updated and ready to launch in https://github.com/betagouv/france-chaleur-urbaine/pull/977
+// new cron.CronJob({
+//   cronTime: '00 * * * *', // toutes les heures
+//   onTick: () => launchJob('updateUsers'),
+//   start: true,
+//   timeZone: 'Europe/Paris',
+// });
 
 new cron.CronJob({
   cronTime: '15 08 1 * *', // le 1er du mois à 08:15 - TEMP to change
