@@ -1,3 +1,7 @@
+> Note du 21 janvier 2025 : Suite à la réduction de l'équipe, une grande partie de cette documentation n'est plus d'actualité.
+> Les modifications sont faites sur la base locale et Airtable est modifié directement.
+> Le workflow devrait évoluer prochainement.
+
 # Mise à jour des données des tracés FCU
 
 > Améliorations à venir côté sébastien :
