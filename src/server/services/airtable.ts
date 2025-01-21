@@ -119,9 +119,8 @@ export const syncGestionnairesWithUsers = async () => {
         return;
       }
 
+      logDry(`    ✅ Update gestionnaires for ${email}`);
       if (!DRY_RUN) {
-        logDry(`    ✅ Update gestionnaires for ${email}`);
-
         try {
           await db('users')
             .update({
@@ -170,6 +169,7 @@ const populateGestionnaireApi = async (account: ApiAccount, networks: ApiNetwork
     totalCreated: 0,
     totalUpdated: 0,
     totalDeactivated: 0,
+    totalUnchanged: 0,
   };
 
   logger.info(`Reading Data from Airtable ${Airtable.GESTIONNAIRES_API}`);
@@ -264,6 +264,7 @@ const populateGestionnaireApi = async (account: ApiAccount, networks: ApiNetwork
 
       if (JSON.stringify(data) === JSON.stringify(existingData)) {
         logger.info(`   💤 Nothing to update for ${email}`);
+        stats.totalUnchanged++;
         return;
       }
 
@@ -282,8 +283,10 @@ const populateGestionnaireApi = async (account: ApiAccount, networks: ApiNetwork
     })
   );
 
-  logger.info(`========`);
-  logger.info(`Total created: ${stats.totalCreated}, updated: ${stats.totalUpdated}, deactivated: ${stats.totalDeactivated}`);
+  logger.info(`======== Populate Gestionnaire API`);
+  logger.info(
+    `Total created: ${stats.totalCreated}, updated: ${stats.totalUpdated}, deactivated: ${stats.totalDeactivated}, unchanged: ${stats.totalUnchanged}`
+  );
   logger.info(`========`);
   return stats;
 };
@@ -301,7 +304,7 @@ const syncGestionnaireAndGestionnaireApi = async (account: ApiAccount) => {
 
   const stats = {
     totalCreated: 0,
-    totalSkipped: 0,
+    totalUnchanged: 0,
     totalUpdated: 0,
     totalDeactivated: 0,
   };
@@ -341,7 +344,7 @@ const syncGestionnaireAndGestionnaireApi = async (account: ApiAccount) => {
 
       if (!existingGestionnaire.get('Actif')) {
         logger.info(`   💤 Skipping ${email} as it is not active`);
-        stats.totalSkipped++;
+        stats.totalUnchanged++;
         return;
       }
 
@@ -388,7 +391,7 @@ const syncGestionnaireAndGestionnaireApi = async (account: ApiAccount) => {
     })
   );
 
-  logger.info(`========`);
+  logger.info(`======== Sync Gestionnaire and Gestionaire API`);
   logger.info(`Total created: ${stats.totalCreated}, updated: ${stats.totalUpdated}, deactivated: ${stats.totalDeactivated}`);
   logger.info(`========`);
 };
@@ -420,10 +423,10 @@ export const activateAllGestionnaires = async () => {
 
   const gestionnairesApi = await base(Airtable.GESTIONNAIRES_API).select().all();
   const inactiveGestionnairesApi = gestionnairesApi.filter((gestionnaire) => !gestionnaire.get('Encore dans le flux'));
-  logger.info(`Activate ${inactiveGestionnairesApi.length} gestionnaires API`);
+  logger.info(`Put ${inactiveGestionnairesApi.length} gestionnaires API "Encore dans le flux"`);
   await Promise.all(
     inactiveGestionnairesApi.map(async (gestionnaire) => {
-      await base(Airtable.GESTIONNAIRES_API).update(gestionnaire.id, { 'Encore dans le flux': true });
+      await base(Airtable.GESTIONNAIRES_API).update(gestionnaire.id, { 'Encore dans le flux': true }, { typecast: true });
     })
   );
 };
