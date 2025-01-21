@@ -907,21 +907,21 @@ yarn cli fill-tiles zoneDP 0 14
 yarn cli fill-tiles futurNetwork 0 14
 
 # copie en dev
-./scripts/copyLocalTableToRemote.sh dev reseaux_de_chaleur
-./scripts/copyLocalTableToRemote.sh dev reseaux_de_froid
-./scripts/copyLocalTableToRemote.sh dev zone_de_developpement_prioritaire
-./scripts/copyLocalTableToRemote.sh dev zones_et_reseaux_en_construction
+./scripts/copyLocalTableToRemote.sh dev reseaux_de_chaleur --data-only
+./scripts/copyLocalTableToRemote.sh dev reseaux_de_froid --data-only
+./scripts/copyLocalTableToRemote.sh dev zone_de_developpement_prioritaire --data-only
+./scripts/copyLocalTableToRemote.sh dev zones_et_reseaux_en_construction --data-only
 
-./scripts/copyLocalTableToRemote.sh dev reseaux_de_chaleur_tiles
-./scripts/copyLocalTableToRemote.sh dev reseaux_de_froid_tiles
-./scripts/copyLocalTableToRemote.sh dev zone_de_developpement_prioritaire_tiles
-./scripts/copyLocalTableToRemote.sh dev zones_et_reseaux_en_construction_tiles
+./scripts/copyLocalTableToRemote.sh dev reseaux_de_chaleur_tiles --data-only
+./scripts/copyLocalTableToRemote.sh dev reseaux_de_froid_tiles --data-only
+./scripts/copyLocalTableToRemote.sh dev zone_de_developpement_prioritaire_tiles --data-only
+./scripts/copyLocalTableToRemote.sh dev zones_et_reseaux_en_construction_tiles --data-only
 
 # copie en prod
-./scripts/copyLocalTableToRemote.sh prod reseaux_de_chaleur
-./scripts/copyLocalTableToRemote.sh prod reseaux_de_froid
-./scripts/copyLocalTableToRemote.sh prod zone_de_developpement_prioritaire
-./scripts/copyLocalTableToRemote.sh prod zones_et_reseaux_en_construction
+./scripts/copyLocalTableToRemote.sh prod reseaux_de_chaleur --data-only
+./scripts/copyLocalTableToRemote.sh prod reseaux_de_froid --data-only
+./scripts/copyLocalTableToRemote.sh prod zone_de_developpement_prioritaire --data-only
+./scripts/copyLocalTableToRemote.sh prod zones_et_reseaux_en_construction --data-only
 
 ./scripts/copyLocalTableToRemote.sh prod reseaux_de_chaleur_tiles --data-only
 ./scripts/copyLocalTableToRemote.sh prod reseaux_de_froid_tiles --data-only
