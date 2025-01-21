@@ -12,6 +12,7 @@ import { type ApiAccount } from '@/types/ApiAccount';
 import { type KnownAirtableBase, knownAirtableBases } from './airtable/bases';
 import { createModificationsReseau } from './airtable/create-modifications-reseau';
 import { fetchBaseSchema } from './airtable/dump-schema';
+import { runShellScript } from './helpers/shell';
 import { downloadAndUpdateNetwork, downloadNetwork } from './networks/download-network';
 import { generateTilesFromGeoJSON } from './networks/generate-tiles';
 import { applyGeometryUpdates } from './networks/geometry-updates';
@@ -136,6 +137,15 @@ program
     await downloadAndUpdateNetwork(table);
     await db((tilesInfo[table] as DatabaseTileInfo).tiles).delete();
     await fillTiles(table, zoomMin, zoomMax, withIndex);
+  });
+
+program
+  .command('opendata:create-archive')
+  .description(
+    "Cette commande permet de générer l'archive OpenData contenant les données de France Chaleur Urbaine au format Shapefile et GeoJSON. L'archive générée devra être envoyée à Florence en vue d'un dépôt sur la plateforme data.gouv.fr"
+  )
+  .action(async () => {
+    await runShellScript('scripts/opendata/create-opendata-archive.sh');
   });
 
 program

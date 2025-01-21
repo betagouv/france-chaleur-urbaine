@@ -197,7 +197,7 @@ ogr2ogr -f "ESRI Shapefile" -lco ENCODING=UTF-8 "$opendata_dir"/pdp.shp "$pgQuer
 ogr2ogr -f "ESRI Shapefile" -lco ENCODING=UTF-8 "$opendata_dir"/zones_et_reseaux_en_construction.shp "$pgQuery" opendata.zones_et_reseaux_en_construction
 
 # Copie de doc
-cp docs/opendata/nomenclature_shapefile_des_reseaux_de_chaleur_et_froid.xlsx "$opendata_dir/"
+cp scripts/opendata/nomenclature_shapefile_des_reseaux_de_chaleur_et_froid.xlsx "$opendata_dir/"
 
 # Création de l'archive
 archiveName=opendata-fcu-$(date +%d%m%y).zip
