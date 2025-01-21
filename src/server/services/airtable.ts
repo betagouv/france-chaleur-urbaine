@@ -362,14 +362,10 @@ const syncGestionnaireAndGestionnaireApi = async (account: ApiAccount) => {
         }
       }
 
-      const tagsNotFromAPI = diff(tagsFromAPI, (existingGestionnaire.get('Réseaux') as string[]) || []).added;
-
       const data = {
-        ...(process.env.FIRST_TIME_FIX === 'true' ? { Réseaux: tagsNotFromAPI } : {}),
         'Réseaux API': tagsFromAPI,
       };
       const existingData = {
-        ...(process.env.FIRST_TIME_FIX === 'true' ? { Réseaux: existingGestionnaire.get('Réseaux') || [] } : {}),
         'Réseaux API': existingGestionnaire.get('Réseaux API') || [],
       };
 
@@ -394,71 +390,6 @@ const syncGestionnaireAndGestionnaireApi = async (account: ApiAccount) => {
   logger.info(`======== Sync Gestionnaire and Gestionaire API`);
   logger.info(`Total created: ${stats.totalCreated}, updated: ${stats.totalUpdated}, deactivated: ${stats.totalDeactivated}`);
   logger.info(`========`);
-};
-
-export const cleanGestionnaireTags = async () => {
-  const gestionnaires = await base(Airtable.GESTIONNAIRES).select().all();
-  await Promise.all(
-    gestionnaires.map(async (gestionnaire) => {
-      const tags = (gestionnaire.get('Réseaux') as string[]) || [];
-      const tagsAPI = (gestionnaire.get('Réseaux API') as string[]) || [];
-      const tagsNotFromAPI = diff(tagsAPI, tags).added;
-      await base(Airtable.GESTIONNAIRES).update(gestionnaire.id, { Réseaux: tagsNotFromAPI });
-    })
-  );
-};
-
-/**
- * To be called only once and then archived
- */
-export const activateAllGestionnaires = async () => {
-  const gestionnaires = await base(Airtable.GESTIONNAIRES).select().all();
-  const inactiveGestionnaires = gestionnaires.filter((gestionnaire) => !gestionnaire.get('Actif'));
-  logger.info(`Activate ${inactiveGestionnaires.length} gestionnaires`);
-  await Promise.all(
-    inactiveGestionnaires.map(async (gestionnaire) => {
-      await base(Airtable.GESTIONNAIRES).update(gestionnaire.id, { Actif: true });
-    })
-  );
-
-  const gestionnairesApi = await base(Airtable.GESTIONNAIRES_API).select().all();
-  const inactiveGestionnairesApi = gestionnairesApi.filter((gestionnaire) => !gestionnaire.get('Encore dans le flux'));
-  logger.info(`Put ${inactiveGestionnairesApi.length} gestionnaires API "Encore dans le flux"`);
-  await Promise.all(
-    inactiveGestionnairesApi.map(async (gestionnaire) => {
-      await base(Airtable.GESTIONNAIRES_API).update(gestionnaire.id, { 'Encore dans le flux': true }, { typecast: true });
-    })
-  );
-};
-
-/**
- * To be called only once and then archived
- */
-export const updateCreatedTimeInDB = async () => {
-  const gestionnaires = await base(Airtable.GESTIONNAIRES).select().all();
-  const users = await db('users').select('email', 'created_at').where('role', USER_ROLE.GESTIONNAIRE);
-
-  const gestionnairesToUpdate = gestionnaires.filter((gestionnaire) => !gestionnaire.get('Créé en base'));
-  logger.info(`Get created time for ${gestionnairesToUpdate.length} gestionnaires`);
-
-  await Promise.all(
-    gestionnairesToUpdate.map(async (gestionnaire, index) => {
-      logger.info(`${index + 1}/${gestionnairesToUpdate.length} Getting creation date for ${gestionnaire.get('Email')}`);
-      const email = gestionnaire.get('Email') as string;
-
-      if (!email) {
-        logger.error(`No email for ${gestionnaire.id}`);
-      } else {
-        logger.info(`Adding creation date in DB for ${email}`);
-        const user = users.find((user) => user.email === email);
-        try {
-          await base(Airtable.GESTIONNAIRES).update(gestionnaire.id, { 'Créé en base': user?.created_at });
-        } catch (e) {
-          logger.error(`Could not update with created at ${gestionnaire.id} from ${Airtable.GESTIONNAIRES}`);
-        }
-      }
-    })
-  );
 };
 
 export const sanitizeGestionnairesEmails = async () => {
@@ -495,15 +426,6 @@ export const sanitizeGestionnairesEmails = async () => {
 
 export const createGestionnairesFromAPI = async (account: ApiAccount, networks: ApiNetwork[]) => {
   await sanitizeGestionnairesEmails();
-
-  if (process.env.FIRST_TIME_FIX === 'true') {
-    await activateAllGestionnaires();
-    await updateCreatedTimeInDB();
-  }
   await populateGestionnaireApi(account, networks);
   await syncGestionnaireAndGestionnaireApi(account);
-
-  if (process.env.FIRST_TIME_FIX === 'true') {
-    await cleanGestionnaireTags();
-  }
 };
