@@ -48,6 +48,7 @@ program
 
 program
   .command('download-network')
+  .description("Synchronise les données d'une table réseau de Airtable vers la table correspondante dans Postgres.")
   .argument('<network-id>', 'Network id', validateNetworkId)
   .action(async (table) => {
     await downloadNetwork(table);
@@ -62,6 +63,7 @@ program
 
 program
   .command('fill-tiles')
+  .description("Regénère les tuiles d'une table en base")
   .argument('<network-id>', 'Network id', (v) => zDatabaseSourceId.parse(v))
   .argument('[zoomMin]', 'Minimum zoom', (v) => parseInt(v), 0)
   .argument('[zoomMax]', 'Maximum zoom', (v) => parseInt(v), 17)
@@ -73,6 +75,9 @@ program
 
 program
   .command('import-mvt-directory')
+  .description(
+    'Importe en base une arborescence de tuiles vectorielles. A utiliser typiquement après avoir utilisé tippecanoe. Exemple : `yarn cli import-mvt-directory tiles/zone_a_potentiel_fort_chaud zone_a_potentiel_fort_chaud_tiles`'
+  )
   .argument('<mvtDirectory>', 'MVT directory root')
   .argument('<destinationTable>', 'Destination table')
   .action(async (mvtDirectory, destinationTable) => {
@@ -99,6 +104,9 @@ program
 
 program
   .command('generate-tiles-from-file')
+  .description(
+    "Génère des tuiles vectorielles à partir d'un fichier GeoJSON et les enregistre dans postgres. Exemple : `yarn cli generate-tiles-from-file reseaux_de_chaleur.geojson reseaux_de_chaleur_tiles 0 14`"
+  )
   .argument('<fileName>', 'input file (format GeoJSON)')
   .argument('<destinationTable>', 'Destination table')
   .argument('[zoomMin]', 'Minimum zoom', (v) => parseInt(v), 0)
@@ -224,6 +232,7 @@ program
 
 program
   .command('apply-geometry-updates')
+  .description("Applique les changements suite à l'import d'un dump et met à jour postgres et Airtable (obsolète pour le moment)")
   .option('--dry-run', 'Run the command in dry-run mode', false)
   .action(async ({ dryRun }) => {
     await applyGeometryUpdates(dryRun);
@@ -231,6 +240,7 @@ program
 
 program
   .command('sync-postgres-to-airtable')
+  .description('Synchronise les tables postgres FCU vers Airtable pour les champs has_trace, is_zone, communes')
   .option('--dry-run', 'Run the command in dry-run mode', false)
   .action(async ({ dryRun }) => {
     await syncPostgresToAirtable(dryRun);
