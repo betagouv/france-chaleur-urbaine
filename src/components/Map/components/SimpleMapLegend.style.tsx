@@ -4,7 +4,7 @@ import { createParser } from 'nuqs';
 import React from 'react';
 import styled, { css } from 'styled-components';
 
-import { type MapConfigurationProperty, type MapConfiguration } from '@/components/Map/map-configuration';
+import { type MapConfiguration, type MapConfigurationProperty } from '@/components/Map/map-configuration';
 import Box from '@/components/ui/Box';
 import CheckableAccordion, { type CheckableAccordionProps } from '@/components/ui/CheckableAccordion';
 import Heading from '@/components/ui/Heading';
@@ -239,6 +239,10 @@ export const Tabs = styled(DsfrTabs)`
   height: 100%;
   padding: 1rem 0 0;
 
+  .fr-tabs__panel:focus-visible {
+    outline-offset: -4px;
+    outline-color: var(--border-default-blue-france);
+  }
   .fr-tabs__panel {
     padding: 0.5rem 0 0;
     height: calc(100% - ${tabsHeight}px);
