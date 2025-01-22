@@ -78,7 +78,7 @@ const useScreenshot = () => {
     captureNode,
     captureNodeAndDownload,
     screenshot,
-    loading,
+    capturing: loading,
   };
 };
 

@@ -19,6 +19,7 @@ import Text from '@/components/ui/Text';
 import { type LocationInfoResponse } from '@/pages/api/location-infos';
 import cx from '@/utils/cx';
 import { postFetchJSON } from '@/utils/network';
+import { slugify } from '@/utils/strings';
 import { ObjectEntries } from '@/utils/typescript';
 
 import { FloatingButton, Results, Section, Simulator } from './ComparateurPublicodes.style';
@@ -111,7 +112,12 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
 
   const isAddressSelected = engine.getField('code département') !== undefined;
 
-  const results = isAddressSelected && !!modesDeChauffage ? <Graph engine={engine} advancedMode={advancedMode} /> : <ResultsNotAvailable />;
+  const results =
+    isAddressSelected && !!modesDeChauffage ? (
+      <Graph engine={engine} advancedMode={advancedMode} captureImageName={`${new Date().getFullYear()}-${slugify(address)}`} />
+    ) : (
+      <ResultsNotAvailable />
+    );
 
   return (
     <>
@@ -266,7 +272,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
               <Results>
                 {!loading && address && (
                   <Alert
-                    className="fr-mb-2w fr-text--sm"
+                    className="fr-text--sm fr-mb-2w"
                     description={
                       nearestReseauDeChaleur ? (
                         <>
@@ -307,7 +313,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
                 )}
                 {!loading && inclureLaClimatisation && address && (
                   <Alert
-                    className="fr-mb-2w fr-text--sm"
+                    className="fr-text--sm fr-mb-2w"
                     description={
                       nearestReseauDeFroid ? (
                         <>
