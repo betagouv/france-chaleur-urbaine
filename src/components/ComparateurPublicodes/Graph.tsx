@@ -148,7 +148,8 @@ const formatPrecisionRange = (value: number) => {
   return `${lowerBoundStr} - ${upperBoundStr}`;
 };
 
-const formatEmissionsCO2 = (value: number) => `${value.toLocaleString('fr-FR', { maximumFractionDigits: 0 })} kgCO2e`;
+const formatEmissionsCO2 = (value: number) =>
+  `${(Math.round(value / 10) * 10).toLocaleString('fr-FR', { maximumFractionDigits: 0 })} kgCO2e`;
 
 const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, ...props }) => {
   const { has: hasModeDeChauffage } = useArrayQueryState('modes-de-chauffage');
@@ -168,7 +169,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, ...props
     ? [colorP1Abo, colorP1Conso, colorP1ECS, colorP1prime, colorP1Consofroid, colorP2, colorP3, colorP4SansAides, colorP4Aides]
     : [colorP1Abo, colorP1Conso, colorP1prime, colorP4SansAides, colorP4Aides];
 
-  const [graphType, setGraphType] = useQueryState('graph', { defaultValue: 'couts' });
+  const [graphType, setGraphType] = useQueryState('graph', { defaultValue: 'couts-emissions' });
   const [perBuilding, setPerBuilding] = useQueryState('perBuilding', parseAsBoolean.withDefault(false));
   const inclusClimatisation = engine.getField('Inclure la climatisation');
   const typeDeProductionDeFroid = engine.getField('type de production de froid');
@@ -187,10 +188,12 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, ...props
     (modeDeChauffage) => hasModeDeChauffage(modeDeChauffage.label) && (typeDeBatiment === 'tertiaire' ? modeDeChauffage.tertiaire : true)
   );
 
+  const totalCoutsEtEmissions: [string, number, number][] = [];
+
   let maxCoutValue = 3000;
   const coutGraphData = [
     ['Mode de chauffage', { role: 'annotation' }, ...coutGraphColumns, { role: 'annotation' }],
-    ...modesDeChauffageFiltres.flatMap((typeInstallation) => {
+    ...modesDeChauffageFiltres.flatMap((typeInstallation, index) => {
       const amountP1Abo = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P1abo`);
       const amountP1Conso = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P1conso`);
       const amountP1ECS = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P1ECS`);
@@ -280,6 +283,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, ...props
       const totalAmount = totalAmountWithAides - amountAides;
       const precisionRange = formatPrecisionRange(totalAmount);
       maxCoutValue = Math.max(maxCoutValue, totalAmount);
+      totalCoutsEtEmissions[index] = [getLabel(typeInstallation), totalAmount, -1];
       return [
         [' ', getLabel(typeInstallation), ...amounts.map((amount) => (Number.isNaN(+amount) ? '' : 0)), ''],
         [getLabel(typeInstallation), '', ...amounts, precisionRange],
@@ -296,7 +300,11 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, ...props
       minValue: 0,
       maxValue: maxCoutValue,
     },
+    stacked: false,
     colors: coutGraphColors,
+    vAxis: {
+      textPosition: 'right',
+    },
   });
 
   const nbAppartements = perBuilding ? engine.getFieldAsNumber(`nombre de logements dans l'immeuble concerné`) : 1;
@@ -305,7 +313,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, ...props
 
   const emissionsCO2GraphData = [
     ['Mode de chauffage', { role: 'annotation' }, ...emissionsCO2GraphColumns, { type: 'string', role: 'annotation' }],
-    ...modesDeChauffageFiltres.flatMap((typeInstallation) => {
+    ...modesDeChauffageFiltres.flatMap((typeInstallation, index) => {
       const amounts = [
         ...getRow({
           title:
@@ -330,7 +338,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, ...props
 
       const totalAmount = (amounts.filter((amount) => !Number.isNaN(+amount)) as number[]).reduce((acc, amount) => acc + amount, 0);
       maxEmissionsCO2Value = Math.max(maxEmissionsCO2Value, totalAmount);
-
+      totalCoutsEtEmissions[index][2] = totalAmount;
       return [
         ['', `${getLabel(typeInstallation)}`, ...amounts.map((amount) => (Number.isNaN(+amount) ? '' : 0)), ''],
         [getLabel(typeInstallation), '', ...amounts, formatEmissionsCO2(totalAmount)],
@@ -352,14 +360,25 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, ...props
 
   const chartHeight = modesDeChauffageFiltres.length * estimatedRowHeightPx + estimatedBaseGraphHeightPx;
 
+  const maxExistingEmissionsCO2Value = totalCoutsEtEmissions.reduce((acc, [, co2]) => Math.max(acc, co2), 0);
+  const maxExistingCostValue = totalCoutsEtEmissions.reduce((acc, [, , cost]) => Math.max(acc, cost), 0);
+
   return (
     <div className={cx(className)} {...props}>
+      <div style={{ display: 'flex', maxWidth: 900 }}></div>
       <Box textAlign="right" mb="1w">
         <SegmentedControl
           hideLegend
           segments={[
             {
-              label: 'Coûts',
+              label: 'Coût et émissions de CO2',
+              nativeInputProps: {
+                checked: graphType === 'couts-emissions',
+                onChange: () => setGraphType('couts-emissions'),
+              },
+            },
+            {
+              label: 'Détails des coûts',
               nativeInputProps: {
                 checked: graphType === 'couts',
                 onChange: () => setGraphType('couts'),
@@ -376,6 +395,53 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, ...props
         />
       </Box>
 
+      {graphType === 'couts-emissions' && (
+        <div>
+          <Heading as="h6">
+            Coût global annuel chauffage{inclusClimatisation && ' et froid'} (par logement) et Émissions annuelles de CO2 (par{' '}
+            {perBuilding ? 'bâtiment' : 'logement'})
+          </Heading>
+          <div className="relative p-2">
+            <div
+              className="absolute inset-0 -z-10 h-full w-full"
+              style={{
+                backgroundImage: `repeating-linear-gradient(to right,#EEE 0,#EEE 1px,transparent 1px,transparent 10%)`,
+              }}
+            />
+            {totalCoutsEtEmissions.map(([name, co2, cost]) => {
+              const co2Percent = Math.round((co2 / maxExistingEmissionsCO2Value) * 100);
+              const costPercent = Math.round((cost / maxExistingCostValue) * 100);
+              return (
+                <>
+                  <div key={name} className="relative mb-1 mt-2 flex items-center justify-center text-base font-bold">
+                    <span className="bg-white">{name}</span>
+                  </div>
+                  <div className="stretch flex items-center">
+                    <div className="flex flex-1 border-r border-solid border-white bg-gradient-to-l from-[#84CD00] to-red-700">
+                      <div className="bg-white/80" style={{ flex: 100 - co2Percent }}></div>
+                      <div
+                        className="bold whitespace-nowrap px-2 py-0.5 font-extrabold text-white sm:text-xs md:text-sm"
+                        style={{ flex: co2Percent }}
+                      >
+                        {formatEmissionsCO2(co2)}
+                      </div>
+                    </div>
+                    <div className="flex flex-1 border-l border-solid border-white bg-gradient-to-r from-[#84CD00] to-red-700">
+                      <div
+                        className="bold whitespace-nowrap px-2 py-0.5 text-right font-extrabold text-white sm:text-xs md:text-sm"
+                        style={{ flex: costPercent }}
+                      >
+                        {formatPrecisionRange(cost)}
+                      </div>
+                      <div className="bg-white/80" style={{ flex: 100 - costPercent }}></div>
+                    </div>
+                  </div>
+                </>
+              );
+            })}
+          </div>
+        </div>
+      )}
       {graphType === 'couts' && (
         <div ref={coutsRef}>
           <Heading as="h6">Coût global annuel chauffage{inclusClimatisation && ' et froid'} (par logement)</Heading>
