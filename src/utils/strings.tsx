@@ -88,3 +88,16 @@ export function upperCaseFirstChar(string: string): string {
 export function formatFileSize(size: number): string {
   return `${Math.round(size / 1024 / 1024)} Mo`;
 }
+
+export function slugify(text?: string | null) {
+  return text
+    ? text
+        .normalize('NFD') // Normalize to decompose accented characters
+        .replace(/[\u0300-\u036f]/g, '') // Remove diacritical marks (accents)
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9\s-]/g, '') // Remove non-alphanumeric characters
+        .replace(/\s+/g, '-') // Replace spaces with hyphens
+        .replace(/-+/g, '-') // Replace multiple hyphens with a single one
+    : text;
+}
