@@ -1,6 +1,7 @@
 import domtoimage from 'dom-to-image';
-import type React from 'react';
-import { useState } from 'react';
+import React, { useState } from 'react';
+
+import { notify } from '@/services/notification';
 
 const dataUrlToBlob = (dataUrl: string): Blob => {
   const [header, base64] = dataUrl.split(',');
@@ -46,6 +47,7 @@ const useScreenshot = ({ forPrint = false }: { forPrint?: boolean } = {}) => {
       }
       setScreenshot(dataUrl);
       setLoading(false);
+      notify('none', () => <img src={dataUrl} alt="Screenshot" />, { position: 'bottom-right' });
       return { file, filename };
     } catch (error) {
       console.error('Error capturing image:', error);
