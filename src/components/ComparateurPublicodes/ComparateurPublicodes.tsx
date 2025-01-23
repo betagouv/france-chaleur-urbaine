@@ -114,7 +114,12 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
 
   const results =
     isAddressSelected && !!modesDeChauffage ? (
-      <Graph engine={engine} advancedMode={advancedMode} captureImageName={`${new Date().getFullYear()}-${slugify(address)}`} />
+      <Graph
+        engine={engine}
+        advancedMode={advancedMode}
+        reseauDeChaleur={nearestReseauDeChaleur?.nom_reseau || 'Valeur moyenne'}
+        captureImageName={`${new Date().getFullYear()}-${slugify(address)}`}
+      />
     ) : (
       <ResultsNotAvailable />
     );
