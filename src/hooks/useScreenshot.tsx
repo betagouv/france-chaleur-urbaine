@@ -15,11 +15,14 @@ const dataUrlToBlob = (dataUrl: string): Blob => {
   return new Blob([buffer], { type: mime });
 };
 
-const useScreenshot = ({ forPrint = false }: { forPrint?: boolean } = {}) => {
+const useScreenshot = () => {
   const [loading, setLoading] = useState(false);
   const [screenshot, setScreenshot] = useState<string | null>(null);
 
-  const captureNode = async (nodeRef: React.RefObject<null>, filename: string = 'node-capture.png') => {
+  const captureNode = async (
+    nodeRef: React.RefObject<null>,
+    { forPrint = false, padding, filename = 'impression-ecran.png' }: { filename?: string; forPrint?: boolean; padding?: string } = {}
+  ) => {
     setLoading(true);
     setScreenshot(null);
 
@@ -33,18 +36,18 @@ const useScreenshot = ({ forPrint = false }: { forPrint?: boolean } = {}) => {
     }
 
     try {
-      const originalWidth = node.style.width;
-      if (forPrint) {
-        node.style.width = '794px'; // A4 paper width in pixels
-      }
+      const { width: originalWidth, padding: originalPadding } = node.style;
+
+      if (forPrint) node.style.width = '794px'; // A4 paper width in pixels
+      if (padding) node.style.padding = padding;
 
       const dataUrl = await domtoimage.toPng(node, { bgcolor: 'white', filter: (node: any) => node.tagName !== 'BUTTON' });
       const blob = dataUrlToBlob(dataUrl);
       const file = new File([blob], filename, { type: 'image/png' });
 
-      if (forPrint) {
-        node.style.width = originalWidth; // Reset the node width to its original state
-      }
+      if (forPrint) node.style.width = originalWidth;
+      if (padding) node.style.padding = originalPadding;
+
       setScreenshot(dataUrl);
       setLoading(false);
       notify('none', () => <img src={dataUrl} alt="Screenshot" />, { position: 'bottom-right' });
@@ -56,15 +59,12 @@ const useScreenshot = ({ forPrint = false }: { forPrint?: boolean } = {}) => {
     }
   };
 
-  const captureNodeAndDownload = async (
-    nodeRef: Parameters<typeof captureNode>[0],
-    originalFilename?: Parameters<typeof captureNode>[1]
-  ) => {
+  const captureNodeAndDownload = async (nodeRef: Parameters<typeof captureNode>[0], options?: Parameters<typeof captureNode>[1]) => {
     if (!nodeRef.current) {
       return;
     }
 
-    const { file, filename } = (await captureNode(nodeRef, originalFilename)) || {};
+    const { file, filename } = (await captureNode(nodeRef, options)) || {};
     if (!file || !filename) {
       return;
     }

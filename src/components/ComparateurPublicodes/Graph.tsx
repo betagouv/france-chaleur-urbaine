@@ -525,7 +525,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
         <div className="text-center">
           <Button
             priority="secondary"
-            onClick={async () => await captureNodeAndDownload(ref, `${captureImageName}-${graphType}.png`)}
+            onClick={async () => await captureNodeAndDownload(ref, { padding: '20px', filename: `${captureImageName}-${graphType}.png` })}
             loading={capturing}
           >
             Sauvegarder l'image
