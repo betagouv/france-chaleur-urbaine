@@ -413,7 +413,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
                   backgroundImage: `repeating-linear-gradient(to right,#EEE 0,#EEE 1px,transparent 1px,transparent 10%)`,
                 }}
               />
-              {totalCoutsEtEmissions.map(([name, co2, cost]) => {
+              {totalCoutsEtEmissions.map(([name, cost, co2]) => {
                 const co2Percent = Math.round((co2 / maxExistingEmissionsCO2Value) * 100);
                 const costPercent = Math.round((cost / maxExistingCostValue) * 100);
                 return (
@@ -422,7 +422,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
                       <span className="bg-white">{name}</span>
                     </div>
                     <div className="stretch flex items-center">
-                      <div className="to-red-700 flex flex-1 border-r border-solid border-white bg-gradient-to-l from-[#84CD00]">
+                      <div className="flex flex-1 border-r border-solid border-white bg-gradient-to-l from-[#84CD00] to-red">
                         <div className="bg-white/80" style={{ flex: 100 - co2Percent }}></div>
                         <div
                           className="bold whitespace-nowrap px-2 py-0.5 font-extrabold text-white sm:text-xs md:text-sm"
@@ -431,7 +431,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
                           {formatEmissionsCO2(co2)}
                         </div>
                       </div>
-                      <div className="to-red-700 flex flex-1 border-l border-solid border-white bg-gradient-to-r from-[#84CD00]">
+                      <div className="flex flex-1 border-l border-solid border-white bg-gradient-to-r from-[#84CD00] to-red">
                         <div
                           className="bold whitespace-nowrap px-2 py-0.5 text-right font-extrabold text-white sm:text-xs md:text-sm"
                           style={{ flex: costPercent }}
