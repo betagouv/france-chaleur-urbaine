@@ -203,5 +203,5 @@ cp scripts/opendata/nomenclature_shapefile_des_reseaux_de_chaleur_et_froid.xlsx 
 archiveName=opendata-fcu-$(date +%d%m%y).zip
 rm -f "$archiveName"
 zip -j "$archiveName" "$opendata_dir"/*
-echo -e "\nArchive opendata prête => $archiveName"
+echo -e "\nArchive opendata prête pour envoi à Florence sur Mattermost => $archiveName"
 rm -r "$opendata_dir"
