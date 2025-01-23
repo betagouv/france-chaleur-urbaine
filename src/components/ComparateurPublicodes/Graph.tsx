@@ -371,7 +371,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
 
   return (
     <>
-      <Box textAlign="right" m="2w">
+      <Box textAlign="right" my="4w">
         <SegmentedControl
           hideLegend
           segments={[
@@ -422,7 +422,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
                       <span className="bg-white">{name}</span>
                     </div>
                     <div className="stretch flex items-center">
-                      <div className="flex flex-1 border-r border-solid border-white bg-gradient-to-l from-[#84CD00] to-red-700">
+                      <div className="to-red-700 flex flex-1 border-r border-solid border-white bg-gradient-to-l from-[#84CD00]">
                         <div className="bg-white/80" style={{ flex: 100 - co2Percent }}></div>
                         <div
                           className="bold whitespace-nowrap px-2 py-0.5 font-extrabold text-white sm:text-xs md:text-sm"
@@ -431,7 +431,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
                           {formatEmissionsCO2(co2)}
                         </div>
                       </div>
-                      <div className="flex flex-1 border-l border-solid border-white bg-gradient-to-r from-[#84CD00] to-red-700">
+                      <div className="to-red-700 flex flex-1 border-l border-solid border-white bg-gradient-to-r from-[#84CD00]">
                         <div
                           className="bold whitespace-nowrap px-2 py-0.5 text-right font-extrabold text-white sm:text-xs md:text-sm"
                           style={{ flex: costPercent }}
@@ -521,15 +521,21 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
         )}
         <Logos size="sm" justifyContent="end" />
       </div>
-      <div className="my-2 text-right">
-        <Button loading={capturing} onClick={async () => await captureNodeAndDownload(ref, `${captureImageName}-${graphType}.png`)}>
-          Sauvegarder l'image
-        </Button>
+      <div className="mt-12 flex flex-col gap-2 border-2 border-dashed border-info-light p-2">
+        <div className="text-center">
+          <Button
+            priority="secondary"
+            onClick={async () => await captureNodeAndDownload(ref, `${captureImageName}-${graphType}.png`)}
+            loading={capturing}
+          >
+            Sauvegarder l'image
+          </Button>
+        </div>
+        <Notice size="sm">
+          En cas d’utilisation de l’image exportée, une mention du site France Chaleur Urbaine doit obligatoirement être indiquée à
+          proximité de l’image. Merci de respecter les droits associés à ce contenu.
+        </Notice>
       </div>
-      <Notice size="sm">
-        En cas d’utilisation de l’image exportée, une mention du site France Chaleur Urbaine doit obligatoirement être indiquée à proximité
-        de l’image. Merci de respecter les droits associés à ce contenu.
-      </Notice>
     </>
   );
 };
