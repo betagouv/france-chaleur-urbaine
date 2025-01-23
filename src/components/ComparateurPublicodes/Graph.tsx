@@ -156,6 +156,9 @@ const formatPrecisionRange = (value: number) => {
 const formatEmissionsCO2 = (value: number) =>
   `${(Math.round(value / 10) * 10).toLocaleString('fr-FR', { maximumFractionDigits: 0 })} kgCO2e`;
 
+const formatCost = (value: number) =>
+  `${(Math.round(value / 10) * 10).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 })}`;
+
 const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureImageName, reseauDeChaleur, ...props }) => {
   const { has: hasModeDeChauffage } = useArrayQueryState('modes-de-chauffage');
   const coutsRef = useRef<HTMLDivElement>(null);
@@ -370,8 +373,14 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
 
   const chartHeight = modesDeChauffageFiltres.length * estimatedRowHeightPx + estimatedBaseGraphHeightPx;
 
-  const maxExistingEmissionsCO2Value = totalCoutsEtEmissions.reduce((acc, [, co2]) => Math.max(acc, co2), 0);
-  const maxExistingCostValue = totalCoutsEtEmissions.reduce((acc, [, , cost]) => Math.max(acc, cost), 0);
+  const maxExistingEmissionsCO2Value = totalCoutsEtEmissions.reduce((acc, [, , co2]) => Math.max(acc, co2), 0);
+  const maxExistingCostValue = totalCoutsEtEmissions.reduce((acc, [, cost]) => Math.max(acc, cost), 0);
+  const scaleTickEmissionsCO2 = maxExistingEmissionsCO2Value > 10000 ? 10000 : 500;
+  const scaleTickCost = 500;
+  const scaleEmissionsCO2Value = Math.ceil(maxExistingEmissionsCO2Value / scaleTickEmissionsCO2) * scaleTickEmissionsCO2;
+  const scaleCostMaxValue = Math.ceil(maxExistingCostValue / scaleTickCost) * scaleTickCost;
+  const gridValueEmissionsCO2 = (scaleTickEmissionsCO2 / scaleEmissionsCO2Value) * 100;
+  const gridValueCost = (scaleTickCost / scaleCostMaxValue) * 100;
 
   return (
     <>
@@ -410,16 +419,29 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
               Coût global annuel chauffage{inclusClimatisation && ' et froid'} (par logement) et Émissions annuelles de CO2 (par{' '}
               {perBuilding ? 'bâtiment' : 'logement'})
             </Heading>
-            <div className="relative p-2">
-              <div
-                className="absolute inset-0 -z-10 h-full w-full"
-                style={{
-                  backgroundImage: `repeating-linear-gradient(to right,#EEE 0,#EEE 1px,transparent 1px,transparent 10%)`,
-                }}
-              />
+            <div className="relative py-2">
+              <div className="absolute inset-0 -z-10 flex h-full w-full [&>*]:flex-1">
+                <div
+                  style={{
+                    // Goal here is to give a grid that is relevent for a user
+                    // when % is infinite (16.666666% for example), grid might appear inaccurate and we rather display only one understandable line instead
+                    backgroundImage: `repeating-linear-gradient(to right,#EEE 0,#EEE 1px,transparent 1px,transparent ${gridValueEmissionsCO2 % 1 === 0 ? gridValueEmissionsCO2 : '50'}%)`,
+                  }}
+                ></div>
+                <div
+                  style={{
+                    backgroundImage: `repeating-linear-gradient(to right,#EEE 0,#EEE 1px,transparent 1px,transparent ${gridValueCost % 1 === 0 ? gridValueCost : '50'}%)`,
+                  }}
+                ></div>
+              </div>
+              <div className="flex justify-between text-sm font-bold text-faded">
+                <span>{formatEmissionsCO2(scaleEmissionsCO2Value)}</span>
+                <span>{formatCost(scaleCostMaxValue)}</span>
+              </div>
               {totalCoutsEtEmissions.map(([name, cost, co2]) => {
-                const co2Percent = Math.round((co2 / maxExistingEmissionsCO2Value) * 100);
-                const costPercent = Math.round((cost / maxExistingCostValue) * 100);
+                const co2Percent = Math.round((co2 / scaleEmissionsCO2Value) * 100);
+                const maxCostPercent = Math.round(((cost * 1.1) / scaleCostMaxValue) * 100);
+
                 return (
                   <>
                     <div key={name} className="relative mb-1 mt-2 flex items-center justify-center text-base font-bold">
@@ -437,12 +459,13 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
                       </div>
                       <div className="flex flex-1 border-l border-solid border-white bg-gradient-to-r from-[#84CD00] to-red">
                         <div
-                          className="overflow-hidden whitespace-nowrap px-2 py-0.5 text-right font-extrabold text-white hover:overflow-visible sm:text-xs md:text-sm"
-                          style={{ flex: costPercent }}
+                          className="relative overflow-hidden whitespace-nowrap px-2 py-0.5 text-right font-extrabold text-white hover:overflow-visible sm:text-xs md:text-sm"
+                          style={{ flex: maxCostPercent }}
                         >
+                          <div className="absolute right-0 top-0 h-full w-[20%] bg-white/40"></div>
                           {formatPrecisionRange(cost)}
                         </div>
-                        <div className="bg-white/80" style={{ flex: 100 - costPercent }}></div>
+                        <div className="bg-white/80" style={{ flex: 100 - maxCostPercent }}></div>
                       </div>
                     </div>
                   </>
