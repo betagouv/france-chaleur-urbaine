@@ -14,7 +14,7 @@ const dataUrlToBlob = (dataUrl: string): Blob => {
   return new Blob([buffer], { type: mime });
 };
 
-const useScreenshot = () => {
+const useScreenshot = ({ forPrint = false }: { forPrint?: boolean } = {}) => {
   const [loading, setLoading] = useState(false);
   const [screenshot, setScreenshot] = useState<string | null>(null);
 
@@ -33,14 +33,17 @@ const useScreenshot = () => {
 
     try {
       const originalWidth = node.style.width;
-      node.style.width = '794px'; // A4 paper width in pixels
+      if (forPrint) {
+        node.style.width = '794px'; // A4 paper width in pixels
+      }
 
       const dataUrl = await domtoimage.toPng(node, { bgcolor: 'white', filter: (node: any) => node.tagName !== 'BUTTON' });
       const blob = dataUrlToBlob(dataUrl);
       const file = new File([blob], filename, { type: 'image/png' });
 
-      // Reset the node width to its original state
-      node.style.width = originalWidth;
+      if (forPrint) {
+        node.style.width = originalWidth; // Reset the node width to its original state
+      }
       setScreenshot(dataUrl);
       setLoading(false);
       return { file, filename };
