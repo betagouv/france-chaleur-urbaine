@@ -13,7 +13,7 @@ import cx from '@/utils/cx';
 
 import { ChartPlaceholder, GraphTooltip } from './ComparateurPublicodes.style';
 import { modesDeChauffage } from './modes-de-chauffage';
-import { Logos } from './Placeholder';
+import { dataYearDisclaimer, Logos } from './Placeholder';
 import { type SimulatorEngine } from './useSimulatorEngine';
 import Button from '../ui/Button';
 import Notice from '../ui/Notice';
@@ -524,6 +524,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
           </>
         )}
         <Logos size="sm" justifyContent="end" />
+        <div className="text-right text-xs text-faded">{dataYearDisclaimer}</div>
       </div>
       <div className="mt-12 flex flex-col gap-2 border-2 border-dashed border-info-light p-2">
         <div className="text-center">
