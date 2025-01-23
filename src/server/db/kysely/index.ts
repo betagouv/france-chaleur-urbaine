@@ -25,3 +25,8 @@ const dialect = new PostgresDialect({
 export const db = new Kysely<Database>({
   dialect,
 });
+
+/**
+ * Kysely database. Allows better distinction with knex `db` variable.
+ */
+export const kdb = db;
