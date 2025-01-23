@@ -16,6 +16,7 @@ import { modesDeChauffage } from './modes-de-chauffage';
 import { Logos } from './Placeholder';
 import { type SimulatorEngine } from './useSimulatorEngine';
 import Button from '../ui/Button';
+import Notice from '../ui/Notice';
 
 const precisionDisplay = 10 / 100;
 type GraphProps = React.HTMLAttributes<HTMLDivElement> & {
@@ -525,6 +526,10 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
           Sauvegarder l'image
         </Button>
       </div>
+      <Notice size="sm">
+        En cas d’utilisation de l’image exportée, une mention du site France Chaleur Urbaine doit obligatoirement être indiquée à proximité
+        de l’image. Merci de respecter les droits associés à ce contenu.
+      </Notice>
     </>
   );
 };
