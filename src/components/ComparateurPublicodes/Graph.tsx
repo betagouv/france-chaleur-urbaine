@@ -429,7 +429,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
                       <div className="flex flex-1 border-r border-solid border-white bg-gradient-to-l from-[#84CD00] to-red">
                         <div className="bg-white/80" style={{ flex: 100 - co2Percent }}></div>
                         <div
-                          className="overflow-hidden whitespace-nowrap px-2 py-0.5 font-extrabold text-white hover:overflow-visible sm:text-xs md:text-sm"
+                          className="relative overflow-hidden whitespace-nowrap px-2 py-0.5 font-extrabold text-white hover:overflow-visible sm:text-xs md:text-sm"
                           style={{ flex: co2Percent }}
                         >
                           {formatEmissionsCO2(co2)}
