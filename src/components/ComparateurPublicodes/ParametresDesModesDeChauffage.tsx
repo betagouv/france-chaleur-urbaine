@@ -189,8 +189,16 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
         <Input name="Paramètres économiques . Petit entretien P2 . TVA" label="TVA" />
         <Input name="Paramètres économiques . Petit entretien P2 . RCU" label="RCU" placeholderPrecision={3} />
         <Input name="Paramètres économiques . Petit entretien P2 . RFU" label="RFU" placeholderPrecision={3} />
-        <Input name="Paramètres économiques . Petit entretien P2 . Poêle à granulés indiv" label="Poêle à granulés indiv" />
-        <Input name="Paramètres économiques . Petit entretien P2 . Chaudière à granulés coll" label="Chaudière à granulés coll" />
+        <Input
+          name="Paramètres économiques . Petit entretien P2 . Poêle à granulés indiv"
+          label="Poêle à granulés indiv"
+          placeholderPrecision={1}
+        />
+        <Input
+          name="Paramètres économiques . Petit entretien P2 . Chaudière à granulés coll"
+          label="Chaudière à granulés coll"
+          placeholderPrecision={1}
+        />
         <Input
           name="Paramètres économiques . Petit entretien P2 . Gaz indiv avec cond"
           label="Gaz indiv avec cond"
