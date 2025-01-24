@@ -14,8 +14,8 @@ export function normalize(string: string | undefined | null): string {
     ? ''
     : string
         .toLowerCase()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '');
+        .normalize('NFD') // Normalize to decompose accented characters
+        .replace(/[\u0300-\u036f]/g, ''); // Remove diacritical marks (accents)
 }
 
 /**
@@ -91,10 +91,7 @@ export function formatFileSize(size: number): string {
 
 export function slugify(text?: string | null) {
   return text
-    ? text
-        .normalize('NFD') // Normalize to decompose accented characters
-        .replace(/[\u0300-\u036f]/g, '') // Remove diacritical marks (accents)
-        .toLowerCase()
+    ? normalize(text)
         .trim()
         .replace(/[^a-z0-9\s-]/g, '') // Remove non-alphanumeric characters
         .replace(/\s+/g, '-') // Replace spaces with hyphens
