@@ -33,7 +33,7 @@ function registerCrons() {
   });
 
   new cron.CronJob({
-    cronTime: '15 08 1 * *', // le 1er du mois à 08:15 - TEMP to change
+    cronTime: '15 08 1 * *', // le 1er du mois à 08:15
     onTick: () => saveStatsInDB(),
     start: true,
     timeZone: 'Europe/Paris',
