@@ -12,7 +12,7 @@ const classNames: { titles: { [key: string]: string }; root: { [key: string]: st
     md: '',
   },
   root: {
-    sm: '!py-0.5 [&_>div]:px-1.5',
+    sm: '!py-0.5 [&>div]:px-1.5',
     md: '',
   },
 };
