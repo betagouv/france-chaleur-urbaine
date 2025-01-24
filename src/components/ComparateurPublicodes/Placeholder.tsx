@@ -46,7 +46,7 @@ export const Logos = ({ size, withFCU = true, ...props }: React.ComponentProps<t
       <img src="/logo-HEAT_COOL.png" alt="logo life Heat & Cool" height={height} className="reset-height fr-mr-2w" />
       <img src="/logo-amorce.svg" alt="logo amorce" height={height} className="reset-height" />
       <img src="/logo-elcimai.png" alt="logo elcimaï" height={height} className="reset-height fr-mr-2w" />
-      {withFCU && <img src="/logo-fcu.png" alt="logo france chaleur urbaine" height={height} className="reset-height" />}
+      {withFCU && <img src="/logo-fcu-with-typo-tight.webp" alt="logo france chaleur urbaine" height={height} className="reset-height" />}
     </Box>
   );
 };
