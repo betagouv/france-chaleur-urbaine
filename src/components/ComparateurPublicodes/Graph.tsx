@@ -23,7 +23,7 @@ type GraphProps = React.HTMLAttributes<HTMLDivElement> & {
   engine: SimulatorEngine;
   advancedMode?: boolean;
   captureImageName?: string;
-  reseauDeChaleur: string;
+  usedReseauDeChaleurLabel: string;
 };
 
 const estimatedRowHeightPx = 56;
@@ -159,7 +159,7 @@ const formatEmissionsCO2 = (value: number) =>
 const formatCost = (value: number) =>
   `${(Math.round(value / 10) * 10).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 })}`;
 
-const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureImageName, reseauDeChaleur, ...props }) => {
+const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureImageName, usedReseauDeChaleurLabel, ...props }) => {
   const { has: hasModeDeChauffage } = useArrayQueryState('modes-de-chauffage');
   const coutsRef = useRef<HTMLDivElement>(null);
   useFixLegendOpacity(coutsRef);
@@ -191,7 +191,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
       suffix = typeInstallation.reversible ? ' (chauffage + froid)' : ` + ${typeDeProductionDeFroid}`;
     }
     if (typeInstallation.label === 'Réseau de chaleur') {
-      return `Réseau de chaleur (${reseauDeChaleur})`;
+      return `Réseau de chaleur (${usedReseauDeChaleurLabel})`;
     }
 
     return `${typeInstallation.label}${suffix}`;
