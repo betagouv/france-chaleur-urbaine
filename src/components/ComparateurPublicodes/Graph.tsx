@@ -416,8 +416,8 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
         {graphType === 'couts-emissions' && (
           <div>
             <Heading as="h6">
-              Coût global annuel chauffage{inclusClimatisation && ' et froid'} (par logement) et Émissions annuelles de CO2 (par{' '}
-              {perBuilding ? 'bâtiment' : 'logement'})
+              Coût global annuel chauffage{inclusClimatisation && ' et froid'} {typeDeBatiment === 'tertiaire' ? '' : '(par logement) '}et
+              Émissions annuelles de CO2 {typeDeBatiment === 'tertiaire' ? '' : ` (par ${perBuilding ? 'bâtiment' : 'logement'})`}
             </Heading>
             <DisclaimerButton className="!mb-5" />
             <div className="relative py-2">
@@ -477,7 +477,10 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
         )}
         {graphType === 'couts' && (
           <div ref={coutsRef}>
-            <Heading as="h6">Coût global annuel chauffage{inclusClimatisation && ' et froid'} (par logement)</Heading>
+            <Heading as="h6">
+              Coût global annuel chauffage{inclusClimatisation && ' et froid'}
+              {typeDeBatiment === 'tertiaire' ? '' : ' (par logement)'}
+            </Heading>
             <DisclaimerButton className="!mb-5" />
             <Chart
               chartType="BarChart"
