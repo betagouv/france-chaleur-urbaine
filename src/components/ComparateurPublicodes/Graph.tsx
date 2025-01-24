@@ -182,6 +182,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
   const [graphType, setGraphType] = useQueryState('graph', { defaultValue: 'couts-emissions' });
   const [perBuilding, setPerBuilding] = useQueryState('perBuilding', parseAsBoolean.withDefault(false));
   const inclusClimatisation = engine.getField('Inclure la climatisation');
+  const inclusECS = engine.getField('Production eau chaude sanitaire');
   const typeDeProductionDeFroid = engine.getField('type de production de froid');
   const typeDeBatiment = engine.getField('type de bâtiment');
 
@@ -382,6 +383,10 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
   const gridValueEmissionsCO2 = (scaleTickEmissionsCO2 / scaleEmissionsCO2Value) * 100;
   const gridValueCost = (scaleTickCost / scaleCostMaxValue) * 100;
 
+  const titleItems = ['chauffage', inclusClimatisation && 'froid', inclusECS && 'ECS'].filter(Boolean);
+  const titleItemsString =
+    titleItems.length > 1 ? titleItems.slice(0, -1).join(', ') + ' et ' + titleItems[titleItems.length - 1] : titleItems[0] || '';
+
   return (
     <>
       <Box textAlign="right" my="4w">
@@ -416,8 +421,8 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
         {graphType === 'couts-emissions' && (
           <div>
             <Heading as="h6">
-              Coût global annuel chauffage{inclusClimatisation && ' et froid'} {typeDeBatiment === 'tertiaire' ? '' : '(par logement) '}et
-              Émissions annuelles de CO2 {typeDeBatiment === 'tertiaire' ? '' : ` (par ${perBuilding ? 'bâtiment' : 'logement'})`}
+              Coût global et émissions de CO2{typeDeBatiment === 'tertiaire' ? '' : ` (par ${perBuilding ? 'bâtiment' : 'logement'})`} -{' '}
+              {titleItemsString}
             </Heading>
             <DisclaimerButton className="!mb-5" />
             <div className="relative py-2">
@@ -478,7 +483,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
         {graphType === 'couts' && (
           <div ref={coutsRef}>
             <Heading as="h6">
-              Coût global annuel chauffage{inclusClimatisation && ' et froid'}
+              Coût global annuel {titleItemsString}
               {typeDeBatiment === 'tertiaire' ? '' : ' (par logement)'}
             </Heading>
             <DisclaimerButton className="!mb-5" />
