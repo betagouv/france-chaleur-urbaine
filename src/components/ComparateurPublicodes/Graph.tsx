@@ -13,7 +13,7 @@ import cx from '@/utils/cx';
 
 import { ChartPlaceholder, GraphTooltip } from './ComparateurPublicodes.style';
 import { modesDeChauffage } from './modes-de-chauffage';
-import { dataYearDisclaimer, Logos } from './Placeholder';
+import { dataYearDisclaimer, DisclaimerButton, Logos } from './Placeholder';
 import { type SimulatorEngine } from './useSimulatorEngine';
 import Button from '../ui/Button';
 import Notice from '../ui/Notice';
@@ -419,6 +419,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
               Coût global annuel chauffage{inclusClimatisation && ' et froid'} (par logement) et Émissions annuelles de CO2 (par{' '}
               {perBuilding ? 'bâtiment' : 'logement'})
             </Heading>
+            <DisclaimerButton className="!mb-5" />
             <div className="relative py-2">
               <div className="absolute inset-0 -z-10 flex h-full w-full [&>*]:flex-1">
                 <div
@@ -477,6 +478,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
         {graphType === 'couts' && (
           <div ref={coutsRef}>
             <Heading as="h6">Coût global annuel chauffage{inclusClimatisation && ' et froid'} (par logement)</Heading>
+            <DisclaimerButton className="!mb-5" />
             <Chart
               chartType="BarChart"
               height="100%"
@@ -502,6 +504,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
         {graphType === 'emissions' && (
           <>
             <Heading as="h6">Émissions annuelles de CO2 (par {perBuilding ? 'bâtiment' : 'logement'})</Heading>
+            <DisclaimerButton className="!mb-5" />
             {typeDeBatiment === 'résidentiel' && (
               <SegmentedControl
                 hideLegend
@@ -560,8 +563,8 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
           </Button>
         </div>
         <Notice size="sm">
-          En cas d’utilisation de l’image exportée, une mention du site France Chaleur Urbaine doit obligatoirement être indiquée à
-          proximité de l’image. Merci de respecter les droits associés à ce contenu.
+          En cas d’utilisation de l’image exportée, un lien vers le comparateur en ligne doit obligatoirement être apposé à proximité de
+          l’image.
         </Notice>
       </div>
     </>

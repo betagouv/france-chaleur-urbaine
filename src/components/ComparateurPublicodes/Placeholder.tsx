@@ -6,7 +6,9 @@ import React from 'react';
 import Accordion from '@/components/ui/Accordion';
 import Box from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
+import Icon from '@/components/ui/Icon';
 import Modal, { createModal } from '@/components/ui/Modal';
+import Text from '@/components/ui/Text';
 import cx from '@/utils/cx';
 
 import { Results, ResultsPlaceholder, Section, Simulator } from './ComparateurPublicodes.style';
@@ -140,7 +142,7 @@ export const modalDisclaimer = createModal({
   isOpenedByDefault: false,
 });
 
-export const Disclaimer = () => {
+export const DisclaimerModal = () => {
   return (
     <Modal modal={modalDisclaimer} title="Note supplémentaire sur l'outil">
       <p>L'outil ne préjuge pas de la possibilité de remplacer un mode de chauffage par un autre.</p>
@@ -162,6 +164,20 @@ export const Disclaimer = () => {
         et peuvent être à l'origine de nuisances sonores, d'un degré variable selon les modèles.
       </p>
     </Modal>
+  );
+};
+
+export const DisclaimerButton: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({ className }) => {
+  return (
+    <>
+      <DisclaimerModal />
+      <Text size="xs" color="warning" className={className}>
+        <Icon name="fr-icon-info-line" size="xs" /> Tous les modes de chauffage et de refroidissement ne sont pas interchangeables.{' '}
+        <a href="#" onClick={() => modalDisclaimer.open()} className="fr-link fr-text--xs">
+          En savoir plus
+        </a>
+      </Text>
+    </>
   );
 };
 
