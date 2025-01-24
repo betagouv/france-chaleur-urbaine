@@ -58,6 +58,7 @@ SELECT
 
 FROM bdnb_registre_2022 as batiment
 LEFT JOIN departements ON departements.code = batiment.code_departement_insee
+WHERE true
 "
 
 # 2. Test d'existance qu'un batiment est à proximité des réseaux en constuction OU qu'un batiment est dans les zones en constuction
@@ -120,6 +121,7 @@ SELECT
 
 FROM bdnb_registre_2022 as batiment
 LEFT JOIN departements ON departements.code = batiment.code_departement_insee
+WHERE true
 "
 
 # 3. Consos cumulées de batiments à proximité des réseaux en constuction et dans les zones en constuction
@@ -214,6 +216,7 @@ SELECT
 
 FROM \"Donnees_de_conso_et_pdl_gaz_nat_2022\" as batiment
 LEFT JOIN departements ON departements.code = substring(result_citycode, 0, 3)
+WHERE true
 "
 
 # 4. Test d'existance qu'un batiment du parc immobilier de l'état est à proximité des réseaux de chaleur
@@ -304,4 +307,5 @@ SELECT
 
 FROM parc_immobilier_etat_20211231 as batiment
 LEFT JOIN departements ON departements.code = LPAD(batiment.dept, 2, ''0'')
+WHERE true
 "

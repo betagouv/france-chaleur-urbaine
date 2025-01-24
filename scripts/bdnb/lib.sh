@@ -74,10 +74,12 @@ EOF
 EOF
 
   SECONDS=0
+  # besoin d'échapper les apostrophes s'il y en a dans la requête
+  escapedQuery=${query//\'/\'\'}
   local queries=$(
     $sql -F SEPARATOR <<EOF
   SELECT
-    'create unlogged table ${outputTable}_' || row_number() over () || ' as ($query WHERE ${idField} BETWEEN ' || start_id || ' AND ' || end_id || '); select ''${outputTable}_' || row_number() over () || '''; SEPARATOR'
+    'create unlogged table ${outputTable}_' || row_number() over () || ' as ($escapedQuery AND ${idField} BETWEEN ' || start_id || ' AND ' || end_id || '); select ''${outputTable}_' || row_number() over () || '''; SEPARATOR'
   FROM (
     $seriesQueryPart
   ) as sub;
