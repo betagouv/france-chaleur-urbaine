@@ -197,8 +197,8 @@ function ModalCarteFrance() {
                   {(area === 'departemental'
                     ? (selectedData as any)?.departement_nom
                     : area === 'regional'
-                    ? (selectedData as any)?.region_nom
-                    : 'France') ?? 'Cliquer sur la carte'}
+                      ? (selectedData as any)?.region_nom
+                      : 'France') ?? 'Cliquer sur la carte'}
                 </ExtraBigBlueText>
                 <BlackNumbersLine>
                   <div>

@@ -96,8 +96,8 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit }: Eligibility
               {addressData.eligibility?.cityHasNetwork
                 ? 'Un réseau de chaleur passe dans cette ville : renseignez une adresse pour pouvoir être mis en relation avec le gestionnaire du réseau.'
                 : addressData.eligibility?.cityHasFuturNetwork
-                ? 'Un réseau de chaleur passera bientôt dans cette ville : renseignez une adresse pour pouvoir être mis en relation avec le gestionnaire du réseau.'
-                : "Il n'y a pour le moment pas de réseau de chaleur dans cette ville"}
+                  ? 'Un réseau de chaleur passera bientôt dans cette ville : renseignez une adresse pour pouvoir être mis en relation avec le gestionnaire du réseau.'
+                  : "Il n'y a pour le moment pas de réseau de chaleur dans cette ville"}
             </ContactFormResultMessage>
             <ContactMapResult>
               <Map

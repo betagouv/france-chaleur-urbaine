@@ -75,7 +75,10 @@ export const ButtonLink = styled(Link).attrs<ExtraEventType>((props) => {
   const trackEventProps = eventKey
     ? {
         onClick: () => {
-          trackEvent(eventKey, eventPayload?.split(',').map((v) => v.trim()));
+          trackEvent(
+            eventKey,
+            eventPayload?.split(',').map((v) => v.trim())
+          );
         },
       }
     : {};
@@ -91,7 +94,10 @@ export const ExtraLink = styled(Link).attrs<ExtraEventType>((props) => {
   const trackEventProps = eventKey
     ? {
         onClick: () => {
-          trackEvent(eventKey, eventPayload?.split(',').map((v) => v.trim()));
+          trackEvent(
+            eventKey,
+            eventPayload?.split(',').map((v) => v.trim())
+          );
         },
       }
     : {};

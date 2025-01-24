@@ -54,10 +54,10 @@ const SelectProductionECS = ({ ...props }: SelectProductionECS) => {
         value: !inclureProdECS
           ? 'non'
           : typeDeProductionECS === 'Avec équipement chauffage'
-          ? 'equipement-chauffage'
-          : typeDeProductionECS === 'Chauffe-eau électrique'
-          ? 'chauffe-eau-electrique'
-          : 'solaire-thermique',
+            ? 'equipement-chauffage'
+            : typeDeProductionECS === 'Chauffe-eau électrique'
+              ? 'chauffe-eau-electrique'
+              : 'solaire-thermique',
         onChange: (e) => {
           const newValue = e.target.value;
           engine.setField('Production eau chaude sanitaire', newValue === 'non' ? 'non' : 'oui');
@@ -66,8 +66,8 @@ const SelectProductionECS = ({ ...props }: SelectProductionECS) => {
             newValue === 'equipement-chauffage'
               ? 'Avec équipement chauffage'
               : newValue === 'chauffe-eau-electrique'
-              ? 'Chauffe-eau électrique'
-              : 'Solaire thermique'
+                ? 'Chauffe-eau électrique'
+                : 'Solaire thermique'
           );
         },
       }}

@@ -51,7 +51,7 @@ export function handleRouteErrors(handler: NextApiHandler, options?: RouteOption
     const logger = parentLogger.child({
       method: req.method,
       url: req.url,
-      ip: process.env.LOG_REQUEST_IP ? req.headers['x-forwarded-for'] ?? req.socket.remoteAddress : undefined,
+      ip: process.env.LOG_REQUEST_IP ? (req.headers['x-forwarded-for'] ?? req.socket.remoteAddress) : undefined,
     });
     try {
       if (routeOptions?.requireAuthentication) {

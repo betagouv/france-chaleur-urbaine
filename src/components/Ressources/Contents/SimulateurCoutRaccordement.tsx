@@ -58,8 +58,8 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
           ? 12000
           : 77 * value + 2300
         : value <= 7500
-        ? 11000
-        : 1.07 * value + 3000) *
+          ? 11000
+          : 1.07 * value + 3000) *
       0.75 *
       prixSpotCEE
     );
@@ -71,8 +71,8 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
         ? getCoutRaccordementResidentiel(formState.nbLogements)
         : null
       : isDefined(formState.surface) && formState.surface > 0
-      ? getCoutRaccordementTertiaire(formState.surface)
-      : null;
+        ? getCoutRaccordementTertiaire(formState.surface)
+        : null;
   }, [formState]);
 
   const montantCoutsApresAide = useMemo(() => {

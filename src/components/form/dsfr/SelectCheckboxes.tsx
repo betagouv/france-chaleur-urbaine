@@ -50,8 +50,8 @@ const SelectCheckboxes = ({ fieldId, label, hintText, state, stateRelatedMessage
             {nbCheckedCheckboxes === 0
               ? 'Sélectionner une/des option(s)'
               : nbCheckedCheckboxes === 1
-              ? '1 option sélectionnée'
-              : `${nbCheckedCheckboxes} options sélectionnées`}
+                ? '1 option sélectionnée'
+                : `${nbCheckedCheckboxes} options sélectionnées`}
           </StyledButton>
         </PopoverTrigger>
         <PopoverContent

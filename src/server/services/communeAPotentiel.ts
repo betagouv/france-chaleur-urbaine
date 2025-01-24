@@ -83,12 +83,12 @@ export const getCommunePotentiel = async (codeInsee: string) => {
     result.nbReseauxExistants > 0
       ? 'Réseau Existant'
       : result.nbReseauxFuturs > 0
-      ? 'Réseau Futur'
-      : result.zonesAFortPotentiel.nb > 0
-      ? 'Fort Potentiel'
-      : result.zonesAPotentiel.nb > 0
-      ? 'Potentiel'
-      : 'Sans Potentiel';
+        ? 'Réseau Futur'
+        : result.zonesAFortPotentiel.nb > 0
+          ? 'Fort Potentiel'
+          : result.zonesAPotentiel.nb > 0
+            ? 'Potentiel'
+            : 'Sans Potentiel';
 
   return { ...result, type };
 };

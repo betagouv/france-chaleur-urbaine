@@ -287,8 +287,8 @@ function convertEntityFromAirtableToPostgres(type: DatabaseSourceId, airtableNet
     type === 'network'
       ? conversionConfigReseauxDeChaleur
       : type === 'coldNetwork'
-      ? conversionConfigReseauxDeFroid
-      : conversionConfigAutres;
+        ? conversionConfigReseauxDeFroid
+        : conversionConfigAutres;
 
   return Object.entries(conversionConfig).reduce((acc, [key, type]) => {
     acc[key] = convertAirtableValue(airtableNetwork.get(key), type);

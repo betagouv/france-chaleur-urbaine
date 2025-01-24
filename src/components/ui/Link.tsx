@@ -54,7 +54,10 @@ function Link({
       title={title}
       onClick={() => {
         if (eventKey) {
-          trackEvent(eventKey, eventPayload?.split(',').map((v) => v.trim()));
+          trackEvent(
+            eventKey,
+            eventPayload?.split(',').map((v) => v.trim())
+          );
         }
         onClick?.();
       }}

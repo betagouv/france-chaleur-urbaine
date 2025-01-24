@@ -64,7 +64,7 @@ function CarteFrance(props: CarteFranceProps) {
   }
 
   function getAreaColor(areaId: string): string {
-    return props.selectedAreaId === areaId ? '#86eee0' : props.dataByArea[areaId]?.color ?? defaultFillColor;
+    return props.selectedAreaId === areaId ? '#86eee0' : (props.dataByArea[areaId]?.color ?? defaultFillColor);
   }
 
   useEffect(() => {

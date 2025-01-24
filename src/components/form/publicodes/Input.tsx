@@ -90,7 +90,7 @@ const Input = ({ name, placeholderPrecision, textArea, nativeInputProps, label, 
           setValue(newValue);
         },
       }}
-      state={props.state ?? error ? 'error' : 'default'}
+      state={(props.state ?? error) ? 'error' : 'default'}
       stateRelatedMessage={props.stateRelatedMessage ?? (error || 'Sélectionnez une valeur')}
       {...props}
     />

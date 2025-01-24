@@ -56,10 +56,10 @@ function ModifierReseauxPage() {
     return formState.fichiers.length > 3
       ? 'files_count_exceeded'
       : formState.fichiers.some((fichier) => fichier.size > 5 * 1024 * 1024)
-      ? 'file_size_exceeded'
-      : formState.fichiers.some((fichier) => fichier.type !== 'application/pdf')
-      ? 'invalid_file_type'
-      : null;
+        ? 'file_size_exceeded'
+        : formState.fichiers.some((fichier) => fichier.type !== 'application/pdf')
+          ? 'invalid_file_type'
+          : null;
   }, [formState.fichiers]);
 
   async function setFormValue<Key extends keyof FormState>(key: Key, value: FormState[Key]) {
