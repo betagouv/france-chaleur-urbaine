@@ -8,10 +8,11 @@ const toast = originalToast;
 
 type Message = Parameters<typeof toast>['0'];
 type Options = Parameters<typeof toast>['1'];
-type Variant = 'success' | 'error';
+type Variant = 'success' | 'error' | 'none';
 
 export const notify = (variant: Variant, message: Message, options: Options = {}) => {
-  return toast[variant](message, { ...options });
+  const notifyFn = variant === 'none' ? toast : toast[variant];
+  return notifyFn(message, { ...options });
 };
 
 export const NotifierContainer = ({ children }: any) => {
@@ -20,7 +21,7 @@ export const NotifierContainer = ({ children }: any) => {
   React.useEffect(() => {
     if (notifyParam) {
       const [variant, message] = notifyParam.split(':') as [Variant, string];
-      toast[variant](message, { id: message });
+      notify(variant, message, { id: message });
       setNotifyParam(null);
     }
   }, [notifyParam, setNotifyParam]);

@@ -35,17 +35,20 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
         <Input
           name="ratios économiques . Investissement x Pose et mise en place de l'installation"
           label="Pose et mise en place de l'installation"
+          placeholderPrecision={0}
         />
         <Input name="ratios économiques . Investissement x TVA" label="TVA" />
 
         <Input
           name="ratios économiques . Chauffe-eau x électrique à accumulation x coût investissement"
-          label="Chauffe-eau x électrique à accumulation"
+          label="Chauffe-eau électrique à accumulation"
+          placeholderPrecision={0}
         />
         <Input name="ratios économiques . Chauffe-eau x solaire x coût investissement" label="Chauffe-eau x solaire" />
         <Input
           name="ratios économiques . Chauffe-eau x panneaux solaire thermique x coût investissement"
-          label="Chauffe-eau x solaire prix panneaux"
+          label="Chauffe-eau solaire prix panneaux"
+          placeholderPrecision={0}
         />
 
         <Input name="ratios économiques . Amortissement x Taux actualisation" label="Taux actualisation" />
@@ -54,10 +57,15 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
       <Accordion label="Combustibles (P1)">
         {hasModeDeChauffage('Réseau de chaleur') && (
           <Accordion label="Réseau de chaleur">
-            <Input name="Calcul Eco . Coût d'achat du combustible . Chaleur RCU x Part abonnement" label="Tarification R2 (Part fixe)" />
+            <Input
+              name="Calcul Eco . Coût d'achat du combustible . Chaleur RCU x Part abonnement"
+              label="Tarification R2 (Part fixe)"
+              placeholderPrecision={3}
+            />
             <Input
               name="Calcul Eco . Coût d'achat du combustible . Chaleur RCU x Part consommation"
               label="Tarification R1 (Part variable)"
+              placeholderPrecision={3}
             />
             <Input name="Paramètres économiques . Réseaux chaleur . Coût" label="Coût" />
             <Input name="Paramètres économiques . Réseaux chaleur . Part fixe" label="Part fixe" />
@@ -73,32 +81,42 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
             <Input
               name="Paramètres économiques . Gaz x Abonnement x Part Fixe TTC collectif ou tertiaire"
               label="Abonnement x Part Fixe TTC collectif ou tertiaire"
+              placeholderPrecision={0}
             />
             <Input
               name="Paramètres économiques . Gaz x Abonnement x Part Fixe TTC individuel"
               label="Abonnement x Part Fixe TTC individuel"
+              placeholderPrecision={0}
             />
             <Input
               name="Paramètres économiques . Gaz x Abonnement x Part Fixe TTC individuel x Coût distribution HT"
               label="Abonnement x Part Fixe TTC individuel x Coût distribution HT"
+              placeholderPrecision={0}
             />
             <Input
               name="Paramètres économiques . Gaz x Abonnement x Part Fixe TTC individuel x Coût commerciaux hors CEE HT"
               label="Abonnement x Part Fixe TTC individuel x Coût commerciaux hors CEE HT"
+              placeholderPrecision={0}
             />
-            <Input name="Paramètres économiques . Gaz x Consommation x Part Variable TTC" label="Consommation x Part Variable TTC" />
-            <Input name="Paramètres économiques . Gaz x Coût de la molécule HT" label="Coût de la molécule HT" />
-            <Input name="Paramètres économiques . Gaz x Coût de transport HT" label="Coût de transport HT" />
-            <Input name="Paramètres économiques . Gaz x Coût distribution HT" label="Coût distribution HT" />
-            <Input name="Paramètres économiques . Gaz x Coût des CEE HT" label="Coût des CEE HT" />
+            <Input
+              name="Paramètres économiques . Gaz x Consommation x Part Variable TTC"
+              label="Consommation x Part Variable TTC"
+              placeholderPrecision={3}
+            />
+            <Input name="Paramètres économiques . Gaz x Coût de la molécule HT" label="Coût de la molécule HT" placeholderPrecision={3} />
+            <Input name="Paramètres économiques . Gaz x Coût de transport HT" label="Coût de transport HT" placeholderPrecision={3} />
+            <Input name="Paramètres économiques . Gaz x Coût distribution HT" label="Coût distribution HT" placeholderPrecision={3} />
+            <Input name="Paramètres économiques . Gaz x Coût des CEE HT" label="Coût des CEE HT" placeholderPrecision={3} />
             <Input
               name="Paramètres économiques . Gaz x Taxe x Part fixe x Contribution tarifaire d'acheminement CTA"
               label="Taxe x Part fixe x Contribution tarifaire d'acheminement CTA"
+              placeholderPrecision={0}
             />
             <Input name="Paramètres économiques . Gaz x Taxe x Part fixe x TVA" label="Taxe x Part fixe x TVA" />
             <Input
               name="Paramètres économiques . Gaz x Taxe x Part variable x Taxe intérieure de consommation sur le gaz naturel TICGN"
               label="Taxe x Part variable x Taxe intérieure de consommation sur le gaz naturel TICGN"
+              placeholderPrecision={3}
             />
             <Input name="Paramètres économiques . Gaz x Taxe x Part variable x TVA" label="Taxe x Part variable x TVA" />
           </Accordion>
@@ -107,15 +125,25 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
           <Select name="Paramètres économiques . Electricité x Option tarifaire" label="Option tarifaire" />
           <Input name="Paramètres économiques . Electricité x Puissance souscrite indiv" label="Puissance souscrite indiv" />
           <Input name="Paramètres économiques . Electricité x Puissance souscrite coll" label="Puissance souscrite coll" />
-          <Input name="Paramètres économiques . Electricité x Abonnement Part Fixe indiv" label="Abonnement Part Fixe indiv" />
-          <Input name="Paramètres économiques . Electricité x Abonnement Part Fixe coll" label="Abonnement Part Fixe coll" />
+          <Input
+            name="Paramètres économiques . Electricité x Abonnement Part Fixe indiv"
+            label="Abonnement Part Fixe indiv"
+            placeholderPrecision={0}
+          />
+          <Input
+            name="Paramètres économiques . Electricité x Abonnement Part Fixe coll"
+            label="Abonnement Part Fixe coll"
+            placeholderPrecision={0}
+          />
           <Input
             name="Paramètres économiques . Electricité x Consommation Part variable en heure pleine"
             label="Consommation Part variable en heure pleine"
+            placeholderPrecision={3}
           />
           <Input
             name="Paramètres économiques . Electricité x Consommation Part variable en heure creuse"
             label="Consommation Part variable en heure creuse"
+            placeholderPrecision={3}
           />
           <Input
             name="ratios économiques . Coût des combustibles x Electricité . Heure pleine x Heure creuse . Part de la consommation en HP"
@@ -130,6 +158,7 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
           <Input
             name="Paramètres économiques . Electricité x Taxe . Part Variable x Accise sur l'électricité ex TIPCSE CSPE"
             label="Part Variable x Accise sur l'électricité ex TIPCSE CSPE"
+            placeholderPrecision={3}
           />
           <Input name="Paramètres économiques . Electricité x Taxe . Part Variable x TVA" label="Part variable - TVA" />
         </Accordion>
@@ -142,13 +171,13 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
         )}
         {hasFioul && (
           <Accordion label="Fioul">
-            <Input name="Paramètres économiques . Fioul . Prix livraison incluse" label="Prix livraison incluse" />
+            <Input name="Paramètres économiques . Fioul . Prix livraison incluse" label="Prix livraison incluse" placeholderPrecision={3} />
             <Input name="Paramètres économiques . Fioul . TVA" label="TVA" />
-            <Input name="Paramètres économiques . Fioul . TICPE" label="TICPE" />
+            <Input name="Paramètres économiques . Fioul . TICPE" label="TICPE" placeholderPrecision={3} />
           </Accordion>
         )}
         {utiliseReseauDeFroid && (
-          <Accordion label="Réseaux de froid">
+          <Accordion label="Réseau de froid">
             <Input name="Paramètres économiques . Réseaux froid . Coût" label="Coût" />
             <Input name="Paramètres économiques . Réseaux froid . Part fixe" label="Part fixe" />
             <Input name="Paramètres économiques . Réseaux froid . Part variable" label="Part variable" disabled />
@@ -158,48 +187,86 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
 
       <Accordion label="Petit entretien (P2)">
         <Input name="Paramètres économiques . Petit entretien P2 . TVA" label="TVA" />
-        <Input name="Paramètres économiques . Petit entretien P2 . RCU" label="RCU" />
-        <Input name="Paramètres économiques . Petit entretien P2 . RFU" label="RFU" />
+        <Input name="Paramètres économiques . Petit entretien P2 . RCU" label="RCU" placeholderPrecision={3} />
+        <Input name="Paramètres économiques . Petit entretien P2 . RFU" label="RFU" placeholderPrecision={3} />
         <Input name="Paramètres économiques . Petit entretien P2 . Poêle à granulés indiv" label="Poêle à granulés indiv" />
         <Input name="Paramètres économiques . Petit entretien P2 . Chaudière à granulés coll" label="Chaudière à granulés coll" />
-        <Input name="Paramètres économiques . Petit entretien P2 . Gaz indiv avec cond" label="Gaz indiv avec cond" />
-        <Input name="Paramètres économiques . Petit entretien P2 . Gaz indiv sans cond" label="Gaz indiv sans cond" />
+        <Input
+          name="Paramètres économiques . Petit entretien P2 . Gaz indiv avec cond"
+          label="Gaz indiv avec cond"
+          placeholderPrecision={3}
+        />
+        <Input
+          name="Paramètres économiques . Petit entretien P2 . Gaz indiv sans cond"
+          label="Gaz indiv sans cond"
+          placeholderPrecision={3}
+        />
         <Input name="Paramètres économiques . Petit entretien P2 . Gaz coll avec cond" label="Gaz coll avec cond" />
         <Input name="Paramètres économiques . Petit entretien P2 . Gaz coll sans cond" label="Gaz coll sans cond" />
-        <Input name="Paramètres économiques . Petit entretien P2 . Fioul indiv" label="Fioul indiv" />
-        <Input name="Paramètres économiques . Petit entretien P2 . Fioul coll" label="Fioul coll" />
+        <Input name="Paramètres économiques . Petit entretien P2 . Fioul indiv" label="Fioul indiv" placeholderPrecision={3} />
+        <Input name="Paramètres économiques . Petit entretien P2 . Fioul coll" label="Fioul coll" placeholderPrecision={3} />
         <Input name="Paramètres économiques . Petit entretien P2 . PAC air-air" label="PAC air-air" />
         <Input name="Paramètres économiques . Petit entretien P2 . PAC eau-eau" label="PAC eau-eau" />
-        <Input name="Paramètres économiques . Petit entretien P2 . PAC air-eau" label="PAC air-eau" />
+        <Input name="Paramètres économiques . Petit entretien P2 . PAC air-eau" label="PAC air-eau" placeholderPrecision={0} />
         <Input name="Paramètres économiques . Petit entretien P2 . Radiateur électrique" label="Radiateur électrique" />
         <Input
           name="Paramètres économiques . Petit entretien P2 . Chauffe-eau électrique à accumulation"
           label="Chauffe-eau électrique à accumulation"
+          placeholderPrecision={3}
         />
-        <Input name="Paramètres économiques . Petit entretien P2 . Chauffe-eau solaire" label="Chauffe-eau solaire" />
+        <Input
+          name="Paramètres économiques . Petit entretien P2 . Chauffe-eau solaire"
+          label="Chauffe-eau solaire"
+          placeholderPrecision={3}
+        />
       </Accordion>
 
       <Accordion label="Gros entretien (P3)">
         <Input name="Paramètres économiques . Gros entretien P3 . TVA" label="TVA" />
-        <Input name="Paramètres économiques . Gros entretien P3 . RCU" label="RCU" />
-        <Input name="Paramètres économiques . Gros entretien P3 . RFU" label="RFU" />
-        <Input name="Paramètres économiques . Gros entretien P3 . Poêle à granulés indiv" label="Poêle à granulés indiv" />
-        <Input name="Paramètres économiques . Gros entretien P3 . Chaudière à granulés coll" label="Chaudière à granulés coll" />
-        <Input name="Paramètres économiques . Gros entretien P3 . Gaz indiv avec cond" label="Gaz indiv avec cond" />
-        <Input name="Paramètres économiques . Gros entretien P3 . Gaz indiv sans cond" label="Gaz indiv sans cond" />
-        <Input name="Paramètres économiques . Gros entretien P3 . Gaz coll avec cond" label="Gaz coll avec cond" />
-        <Input name="Paramètres économiques . Gros entretien P3 . Gaz coll sans cond" label="Gaz coll sans cond" />
-        <Input name="Paramètres économiques . Gros entretien P3 . Fioul indiv" label="Fioul indiv" />
-        <Input name="Paramètres économiques . Gros entretien P3 . Fioul coll" label="Fioul coll" />
-        <Input name="Paramètres économiques . Gros entretien P3 . PAC air-air" label="PAC air-air" />
-        <Input name="Paramètres économiques . Gros entretien P3 . PAC eau-eau" label="PAC eau-eau" />
-        <Input name="Paramètres économiques . Gros entretien P3 . PAC air-eau" label="PAC air-eau" />
-        <Input name="Paramètres économiques . Gros entretien P3 . Radiateur électrique" label="Radiateur électrique" />
+        <Input name="Paramètres économiques . Gros entretien P3 . RCU" label="RCU" placeholderPrecision={3} />
+        <Input name="Paramètres économiques . Gros entretien P3 . RFU" label="RFU" placeholderPrecision={3} />
+        <Input
+          name="Paramètres économiques . Gros entretien P3 . Poêle à granulés indiv"
+          label="Poêle à granulés indiv"
+          placeholderPrecision={3}
+        />
+        <Input
+          name="Paramètres économiques . Gros entretien P3 . Chaudière à granulés coll"
+          label="Chaudière à granulés coll"
+          placeholderPrecision={3}
+        />
+        <Input
+          name="Paramètres économiques . Gros entretien P3 . Gaz indiv avec cond"
+          label="Gaz indiv avec cond"
+          placeholderPrecision={3}
+        />
+        <Input
+          name="Paramètres économiques . Gros entretien P3 . Gaz indiv sans cond"
+          label="Gaz indiv sans cond"
+          placeholderPrecision={3}
+        />
+        <Input name="Paramètres économiques . Gros entretien P3 . Gaz coll avec cond" label="Gaz coll avec cond" placeholderPrecision={3} />
+        <Input name="Paramètres économiques . Gros entretien P3 . Gaz coll sans cond" label="Gaz coll sans cond" placeholderPrecision={3} />
+        <Input name="Paramètres économiques . Gros entretien P3 . Fioul indiv" label="Fioul indiv" placeholderPrecision={3} />
+        <Input name="Paramètres économiques . Gros entretien P3 . Fioul coll" label="Fioul coll" placeholderPrecision={3} />
+        <Input name="Paramètres économiques . Gros entretien P3 . PAC air-air" label="PAC air-air" placeholderPrecision={0} />
+        <Input name="Paramètres économiques . Gros entretien P3 . PAC eau-eau" label="PAC eau-eau" placeholderPrecision={0} />
+        <Input name="Paramètres économiques . Gros entretien P3 . PAC air-eau" label="PAC air-eau" placeholderPrecision={0} />
+        <Input
+          name="Paramètres économiques . Gros entretien P3 . Radiateur électrique"
+          label="Radiateur électrique"
+          placeholderPrecision={3}
+        />
         <Input
           name="Paramètres économiques . Gros entretien P3 . Chauffe-eau électrique à accumulation"
           label="Chauffe-eau électrique à accumulation"
+          placeholderPrecision={3}
         />
-        <Input name="Paramètres économiques . Gros entretien P3 . Chauffe-eau solaire" label="Chauffe-eau solaire" />
+        <Input
+          name="Paramètres économiques . Gros entretien P3 . Chauffe-eau solaire"
+          label="Chauffe-eau solaire"
+          placeholderPrecision={3}
+        />
       </Accordion>
 
       <Accordion label="Amortissement (P4)">
@@ -292,7 +359,7 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
         </UrlStateAccordion>
       )}
       {utiliseReseauDeFroid && (
-        <UrlStateAccordion label="Réseaux de froid">
+        <UrlStateAccordion label="Réseau de froid">
           <Input name="ratios . RFU Rendement sous station" label="Rendement sous station" nativeInputProps={{ min: 0.001 }} />
           <Input name="ratios . RFU Conso auxiliaire" label="Consommation auxiliaire" help="Consommation des pompes de circulation." />
           <Input

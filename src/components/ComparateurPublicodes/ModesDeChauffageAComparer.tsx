@@ -1,14 +1,12 @@
 import React from 'react';
 
 import Checkbox from '@/components/form/dsfr/Checkbox';
-import Icon from '@/components/ui/Icon';
-import Text from '@/components/ui/Text';
 import useArrayQueryState from '@/hooks/useArrayQueryState';
 import { type LocationInfoResponse } from '@/pages/api/location-infos';
 
 import { Separator, Title } from './ComparateurPublicodes.style';
 import { type ModeDeChauffage, modesDeChauffage } from './modes-de-chauffage';
-import { Disclaimer, modalDisclaimer } from './Placeholder';
+import { DisclaimerButton } from './Placeholder';
 import SelectClimatisation from './SelectClimatisation';
 import SelectProductionECS from './SelectProductionECS';
 import { type SimulatorEngine } from './useSimulatorEngine';
@@ -42,14 +40,8 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
 
   return (
     <div {...props}>
-      <Disclaimer />
       <p className="fr-text--sm">Sélectionnez les modes de chauffage et de refroidissement que vous souhaitez comparer.</p>
-      <Text size="xs" color="warning">
-        <Icon name="fr-icon-info-line" size="xs" /> Tous les modes de chauffage et de refroidissement ne sont pas interchangeables.{' '}
-        <a href="#" onClick={() => modalDisclaimer.open()} className="fr-link fr-text--xs">
-          En savoir plus
-        </a>
-      </Text>
+      <DisclaimerButton />
       {
         // in advanced mode, fields are shown at the previous step to be able to fine tune its info
         !advancedMode && (

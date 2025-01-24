@@ -6,7 +6,9 @@ import React from 'react';
 import Accordion from '@/components/ui/Accordion';
 import Box from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
+import Icon from '@/components/ui/Icon';
 import Modal, { createModal } from '@/components/ui/Modal';
+import Text from '@/components/ui/Text';
 import cx from '@/utils/cx';
 
 import { Results, ResultsPlaceholder, Section, Simulator } from './ComparateurPublicodes.style';
@@ -14,6 +16,8 @@ import { Results, ResultsPlaceholder, Section, Simulator } from './ComparateurPu
 type ComparateurPublicodesPlaceholderProps = React.HTMLAttributes<HTMLDivElement> & {};
 
 export type TabId = 'batiment' | 'modes';
+
+export const dataYearDisclaimer = `Les données utilisées par le comparateur portent sur l'année 2023, sauf pour les prix des réseaux de chaleur où l'année de référence est 2022, dans l'attente de la publication des données 2023. Les valeurs de l'ensemble des paramètres utilisés pour les calculs sont modifiables dans le mode avancé.`;
 export const ComparateurPublicodesTitle = () => {
   return (
     <div>
@@ -31,11 +35,7 @@ export const ComparateurPublicodesTitle = () => {
         <a href="#" onClick={() => modalDescription.open()} className="fr-link fr-text--sm">
           Voir l’explication détaillée
         </a>
-        <p className="fr-text--sm fr-mt-1w">
-          Les données utilisées par le comparateur portent sur l'année 2023, sauf pour les prix des réseaux de chaleur où l'année de
-          référence est 2022, dans l'attente de la publication des données 2023. Les valeurs de l'ensemble des paramètres utilisés pour les
-          calculs sont modifiables dans le mode avancé.
-        </p>
+        <p className="fr-text--sm fr-mt-1w">{dataYearDisclaimer}</p>
       </div>
     </div>
   );
@@ -48,7 +48,7 @@ export const Logos = ({ size, withFCU = true, ...props }: React.ComponentProps<t
       <img src="/logo-HEAT_COOL.png" alt="logo life Heat & Cool" height={height} className="reset-height fr-mr-2w" />
       <img src="/logo-amorce.svg" alt="logo amorce" height={height} className="reset-height" />
       <img src="/logo-elcimai.png" alt="logo elcimaï" height={height} className="reset-height fr-mr-2w" />
-      {withFCU && <img src="/logo-fcu.png" alt="logo france chaleur urbaine" height={height} className="reset-height" />}
+      {withFCU && <img src="/logo-fcu-with-typo-tight.webp" alt="logo france chaleur urbaine" height={height} className="reset-height" />}
     </Box>
   );
 };
@@ -142,7 +142,7 @@ export const modalDisclaimer = createModal({
   isOpenedByDefault: false,
 });
 
-export const Disclaimer = () => {
+export const DisclaimerModal = () => {
   return (
     <Modal modal={modalDisclaimer} title="Note supplémentaire sur l'outil">
       <p>L'outil ne préjuge pas de la possibilité de remplacer un mode de chauffage par un autre.</p>
@@ -164,6 +164,20 @@ export const Disclaimer = () => {
         et peuvent être à l'origine de nuisances sonores, d'un degré variable selon les modèles.
       </p>
     </Modal>
+  );
+};
+
+export const DisclaimerButton: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({ className }) => {
+  return (
+    <>
+      <DisclaimerModal />
+      <Text size="xs" color="warning" className={className}>
+        <Icon name="fr-icon-info-line" size="xs" /> Tous les modes de chauffage et de refroidissement ne sont pas interchangeables.{' '}
+        <a href="#" onClick={() => modalDisclaimer.open()} className="fr-link fr-text--xs">
+          En savoir plus
+        </a>
+      </Text>
+    </>
   );
 };
 

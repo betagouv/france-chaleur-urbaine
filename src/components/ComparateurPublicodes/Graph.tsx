@@ -7,18 +7,23 @@ import Chart from 'react-google-charts';
 import Box from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
 import useArrayQueryState from '@/hooks/useArrayQueryState';
+import useScreenshot from '@/hooks/useScreenshot';
 import { deepMergeObjects } from '@/utils/core';
 import cx from '@/utils/cx';
 
 import { ChartPlaceholder, GraphTooltip } from './ComparateurPublicodes.style';
 import { modesDeChauffage } from './modes-de-chauffage';
-import { Logos } from './Placeholder';
+import { dataYearDisclaimer, DisclaimerButton, Logos } from './Placeholder';
 import { type SimulatorEngine } from './useSimulatorEngine';
+import Button from '../ui/Button';
+import Notice from '../ui/Notice';
 
 const precisionDisplay = 10 / 100;
 type GraphProps = React.HTMLAttributes<HTMLDivElement> & {
   engine: SimulatorEngine;
   advancedMode?: boolean;
+  captureImageName?: string;
+  usedReseauDeChaleurLabel: string;
 };
 
 const estimatedRowHeightPx = 56;
@@ -148,12 +153,18 @@ const formatPrecisionRange = (value: number) => {
   return `${lowerBoundStr} - ${upperBoundStr}`;
 };
 
-const formatEmissionsCO2 = (value: number) => `${value.toLocaleString('fr-FR', { maximumFractionDigits: 0 })} kgCO2e`;
+const formatEmissionsCO2 = (value: number) =>
+  `${(Math.round(value / 10) * 10).toLocaleString('fr-FR', { maximumFractionDigits: 0 })} kgCO2e`;
 
-const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, ...props }) => {
+const formatCost = (value: number) =>
+  `${(Math.round(value / 10) * 10).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 })}`;
+
+const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureImageName, usedReseauDeChaleurLabel, ...props }) => {
   const { has: hasModeDeChauffage } = useArrayQueryState('modes-de-chauffage');
   const coutsRef = useRef<HTMLDivElement>(null);
   useFixLegendOpacity(coutsRef);
+  const ref = useRef(null);
+  const { captureNodeAndDownload, capturing } = useScreenshot();
 
   const tooltipAides =
     'Aides perçues par l’usager (CEE et MPR). Les aides du Fonds chaleur sont incluses dans le R2 et non perceptibles directement par l’usager.';
@@ -168,7 +179,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, ...props
     ? [colorP1Abo, colorP1Conso, colorP1ECS, colorP1prime, colorP1Consofroid, colorP2, colorP3, colorP4SansAides, colorP4Aides]
     : [colorP1Abo, colorP1Conso, colorP1prime, colorP4SansAides, colorP4Aides];
 
-  const [graphType, setGraphType] = useQueryState('graph', { defaultValue: 'couts' });
+  const [graphType, setGraphType] = useQueryState('graph', { defaultValue: 'couts-emissions' });
   const [perBuilding, setPerBuilding] = useQueryState('perBuilding', parseAsBoolean.withDefault(false));
   const inclusClimatisation = engine.getField('Inclure la climatisation');
   const typeDeProductionDeFroid = engine.getField('type de production de froid');
@@ -179,6 +190,9 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, ...props
     if (inclusClimatisation) {
       suffix = typeInstallation.reversible ? ' (chauffage + froid)' : ` + ${typeDeProductionDeFroid}`;
     }
+    if (typeInstallation.label === 'Réseau de chaleur') {
+      return `Réseau de chaleur (${usedReseauDeChaleurLabel})`;
+    }
 
     return `${typeInstallation.label}${suffix}`;
   };
@@ -187,10 +201,12 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, ...props
     (modeDeChauffage) => hasModeDeChauffage(modeDeChauffage.label) && (typeDeBatiment === 'tertiaire' ? modeDeChauffage.tertiaire : true)
   );
 
+  const totalCoutsEtEmissions: [string, number, number][] = [];
+
   let maxCoutValue = 3000;
   const coutGraphData = [
     ['Mode de chauffage', { role: 'annotation' }, ...coutGraphColumns, { role: 'annotation' }],
-    ...modesDeChauffageFiltres.flatMap((typeInstallation) => {
+    ...modesDeChauffageFiltres.flatMap((typeInstallation, index) => {
       const amountP1Abo = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P1abo`);
       const amountP1Conso = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P1conso`);
       const amountP1ECS = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P1ECS`);
@@ -280,6 +296,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, ...props
       const totalAmount = totalAmountWithAides - amountAides;
       const precisionRange = formatPrecisionRange(totalAmount);
       maxCoutValue = Math.max(maxCoutValue, totalAmount);
+      totalCoutsEtEmissions[index] = [getLabel(typeInstallation), totalAmount, -1];
       return [
         [' ', getLabel(typeInstallation), ...amounts.map((amount) => (Number.isNaN(+amount) ? '' : 0)), ''],
         [getLabel(typeInstallation), '', ...amounts, precisionRange],
@@ -296,7 +313,11 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, ...props
       minValue: 0,
       maxValue: maxCoutValue,
     },
+    stacked: false,
     colors: coutGraphColors,
+    vAxis: {
+      textPosition: 'right',
+    },
   });
 
   const nbAppartements = perBuilding ? engine.getFieldAsNumber(`nombre de logements dans l'immeuble concerné`) : 1;
@@ -305,7 +326,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, ...props
 
   const emissionsCO2GraphData = [
     ['Mode de chauffage', { role: 'annotation' }, ...emissionsCO2GraphColumns, { type: 'string', role: 'annotation' }],
-    ...modesDeChauffageFiltres.flatMap((typeInstallation) => {
+    ...modesDeChauffageFiltres.flatMap((typeInstallation, index) => {
       const amounts = [
         ...getRow({
           title:
@@ -330,7 +351,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, ...props
 
       const totalAmount = (amounts.filter((amount) => !Number.isNaN(+amount)) as number[]).reduce((acc, amount) => acc + amount, 0);
       maxEmissionsCO2Value = Math.max(maxEmissionsCO2Value, totalAmount);
-
+      totalCoutsEtEmissions[index][2] = totalAmount;
       return [
         ['', `${getLabel(typeInstallation)}`, ...amounts.map((amount) => (Number.isNaN(+amount) ? '' : 0)), ''],
         [getLabel(typeInstallation), '', ...amounts, formatEmissionsCO2(totalAmount)],
@@ -352,14 +373,30 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, ...props
 
   const chartHeight = modesDeChauffageFiltres.length * estimatedRowHeightPx + estimatedBaseGraphHeightPx;
 
+  const maxExistingEmissionsCO2Value = totalCoutsEtEmissions.reduce((acc, [, , co2]) => Math.max(acc, co2), 0);
+  const maxExistingCostValue = totalCoutsEtEmissions.reduce((acc, [, cost]) => Math.max(acc, cost), 0);
+  const scaleTickEmissionsCO2 = maxExistingEmissionsCO2Value > 10000 ? 10000 : 500;
+  const scaleTickCost = 500;
+  const scaleEmissionsCO2Value = Math.ceil(maxExistingEmissionsCO2Value / scaleTickEmissionsCO2) * scaleTickEmissionsCO2;
+  const scaleCostMaxValue = Math.ceil(maxExistingCostValue / scaleTickCost) * scaleTickCost;
+  const gridValueEmissionsCO2 = (scaleTickEmissionsCO2 / scaleEmissionsCO2Value) * 100;
+  const gridValueCost = (scaleTickCost / scaleCostMaxValue) * 100;
+
   return (
-    <div className={cx(className)} {...props}>
-      <Box textAlign="right" mb="1w">
+    <>
+      <Box textAlign="right" my="4w">
         <SegmentedControl
           hideLegend
           segments={[
             {
-              label: 'Coûts',
+              label: 'Coût et émissions de CO2',
+              nativeInputProps: {
+                checked: graphType === 'couts-emissions',
+                onChange: () => setGraphType('couts-emissions'),
+              },
+            },
+            {
+              label: 'Détails des coûts',
               nativeInputProps: {
                 checked: graphType === 'couts',
                 onChange: () => setGraphType('couts'),
@@ -375,81 +412,165 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, ...props
           ]}
         />
       </Box>
+      <div ref={ref} className={cx(className)} {...props}>
+        {graphType === 'couts-emissions' && (
+          <div>
+            <Heading as="h6">
+              Coût global annuel chauffage{inclusClimatisation && ' et froid'} {typeDeBatiment === 'tertiaire' ? '' : '(par logement) '}et
+              Émissions annuelles de CO2 {typeDeBatiment === 'tertiaire' ? '' : ` (par ${perBuilding ? 'bâtiment' : 'logement'})`}
+            </Heading>
+            <DisclaimerButton className="!mb-5" />
+            <div className="relative py-2">
+              <div className="absolute inset-0 -z-10 flex h-full w-full [&>*]:flex-1">
+                <div
+                  style={{
+                    // Goal here is to give a grid that is relevent for a user
+                    // when % is infinite (16.666666% for example), grid might appear inaccurate and we rather display only one understandable line instead
+                    backgroundImage: `repeating-linear-gradient(to right,#EEE 0,#EEE 1px,transparent 1px,transparent ${gridValueEmissionsCO2 % 1 === 0 ? gridValueEmissionsCO2 : '50'}%)`,
+                  }}
+                ></div>
+                <div
+                  style={{
+                    backgroundImage: `repeating-linear-gradient(to right,#EEE 0,#EEE 1px,transparent 1px,transparent ${gridValueCost % 1 === 0 ? gridValueCost : '50'}%)`,
+                  }}
+                ></div>
+              </div>
+              <div className="flex justify-between text-sm font-bold text-faded">
+                <span>{formatEmissionsCO2(scaleEmissionsCO2Value)}</span>
+                <span>{formatCost(scaleCostMaxValue)}</span>
+              </div>
+              {totalCoutsEtEmissions.map(([name, cost, co2]) => {
+                const co2Percent = Math.round((co2 / scaleEmissionsCO2Value) * 100);
+                const maxCostPercent = Math.round(((cost * 1.1) / scaleCostMaxValue) * 100);
 
-      {graphType === 'couts' && (
-        <div ref={coutsRef}>
-          <Heading as="h6">Coût global annuel chauffage{inclusClimatisation && ' et froid'} (par logement)</Heading>
-          <Chart
-            chartType="BarChart"
-            height="100%"
-            chartLanguage="FR-fr"
-            // désactive le clic sur la légende qui masque les barres + le style sélection
-            chartEvents={[
-              {
-                eventName: 'select',
-                callback: ({ chartWrapper }) => {
-                  (chartWrapper.getChart() as any).setSelection();
-                },
-              },
-            ]}
-            loader={<ChartPlaceholder>Chargement du graphe...</ChartPlaceholder>}
-            data={coutGraphData}
-            options={{
-              ...coutGraphOptions,
-              height: chartHeight, // dynamic height https://github.com/rakannimer/react-google-charts/issues/385
-            }}
-          />
-        </div>
-      )}
-      {graphType === 'emissions' && (
-        <>
-          <Heading as="h6">Émissions annuelles de CO2 (par {perBuilding ? 'bâtiment' : 'logement'})</Heading>
-          {typeDeBatiment === 'résidentiel' && (
-            <SegmentedControl
-              hideLegend
-              small
-              segments={[
+                return (
+                  <>
+                    <div key={name} className="relative mb-1 mt-2 flex items-center justify-center text-base font-bold">
+                      <span className="bg-white">{name}</span>
+                    </div>
+                    <div className="stretch flex items-center">
+                      <div className="flex flex-1 border-r border-solid border-white bg-gradient-to-l from-fcu-green to-fcu-orange">
+                        <div className="bg-white/80" style={{ flex: 100 - co2Percent }}></div>
+                        <div
+                          className="relative overflow-hidden whitespace-nowrap px-2 py-0.5 font-extrabold text-white hover:overflow-visible sm:text-xs md:text-sm"
+                          style={{ flex: co2Percent }}
+                        >
+                          {formatEmissionsCO2(co2)}
+                        </div>
+                      </div>
+                      <div className="flex flex-1 border-l border-solid border-white bg-gradient-to-r from-fcu-blue to-fcu-orange">
+                        <div
+                          className="relative overflow-hidden whitespace-nowrap px-2 py-0.5 text-right font-extrabold text-white hover:overflow-visible sm:text-xs md:text-sm"
+                          style={{ flex: maxCostPercent }}
+                        >
+                          <div className="absolute right-0 top-0 h-full w-[20%] bg-white/40"></div>
+                          {formatPrecisionRange(cost)}
+                        </div>
+                        <div className="bg-white/80" style={{ flex: 100 - maxCostPercent }}></div>
+                      </div>
+                    </div>
+                  </>
+                );
+              })}
+            </div>
+          </div>
+        )}
+        {graphType === 'couts' && (
+          <div ref={coutsRef}>
+            <Heading as="h6">
+              Coût global annuel chauffage{inclusClimatisation && ' et froid'}
+              {typeDeBatiment === 'tertiaire' ? '' : ' (par logement)'}
+            </Heading>
+            <DisclaimerButton className="!mb-5" />
+            <Chart
+              chartType="BarChart"
+              height="100%"
+              chartLanguage="FR-fr"
+              // désactive le clic sur la légende qui masque les barres + le style sélection
+              chartEvents={[
                 {
-                  label: 'Par logement',
-                  nativeInputProps: {
-                    checked: !perBuilding,
-                    onChange: () => setPerBuilding(false),
-                  },
-                },
-                {
-                  label: 'Par bâtiment',
-                  nativeInputProps: {
-                    checked: perBuilding,
-                    onChange: () => setPerBuilding(true),
+                  eventName: 'select',
+                  callback: ({ chartWrapper }) => {
+                    (chartWrapper.getChart() as any).setSelection();
                   },
                 },
               ]}
+              loader={<ChartPlaceholder>Chargement du graphe...</ChartPlaceholder>}
+              data={coutGraphData}
+              options={{
+                ...coutGraphOptions,
+                height: chartHeight, // dynamic height https://github.com/rakannimer/react-google-charts/issues/385
+              }}
             />
-          )}
-          <Chart
-            chartType="BarChart"
-            height="100%"
-            chartLanguage="FR-fr"
-            // désactive le clic sur la légende qui masque les barres + le style sélection
-            chartEvents={[
-              {
-                eventName: 'select',
-                callback: ({ chartWrapper }) => {
-                  (chartWrapper.getChart() as any).setSelection();
+          </div>
+        )}
+        {graphType === 'emissions' && (
+          <>
+            <Heading as="h6">Émissions annuelles de CO2 (par {perBuilding ? 'bâtiment' : 'logement'})</Heading>
+            <DisclaimerButton className="!mb-5" />
+            {typeDeBatiment === 'résidentiel' && (
+              <SegmentedControl
+                hideLegend
+                small
+                segments={[
+                  {
+                    label: 'Par logement',
+                    nativeInputProps: {
+                      checked: !perBuilding,
+                      onChange: () => setPerBuilding(false),
+                    },
+                  },
+                  {
+                    label: 'Par bâtiment',
+                    nativeInputProps: {
+                      checked: perBuilding,
+                      onChange: () => setPerBuilding(true),
+                    },
+                  },
+                ]}
+              />
+            )}
+            <Chart
+              chartType="BarChart"
+              height="100%"
+              chartLanguage="FR-fr"
+              // désactive le clic sur la légende qui masque les barres + le style sélection
+              chartEvents={[
+                {
+                  eventName: 'select',
+                  callback: ({ chartWrapper }) => {
+                    (chartWrapper.getChart() as any).setSelection();
+                  },
                 },
-              },
-            ]}
-            loader={<ChartPlaceholder>Chargement du graphe...</ChartPlaceholder>}
-            data={emissionsCO2GraphData}
-            options={{
-              ...emissionsCO2GraphOptions,
-              height: chartHeight, // dynamic height https://github.com/rakannimer/react-google-charts/issues/385
-            }}
-          />
-        </>
-      )}
-      <Logos size="sm" justifyContent="end" />
-    </div>
+              ]}
+              loader={<ChartPlaceholder>Chargement du graphe...</ChartPlaceholder>}
+              data={emissionsCO2GraphData}
+              options={{
+                ...emissionsCO2GraphOptions,
+                height: chartHeight, // dynamic height https://github.com/rakannimer/react-google-charts/issues/385
+              }}
+            />
+          </>
+        )}
+        <Logos size="sm" justifyContent="end" />
+        <div className="text-right text-xs text-faded">{dataYearDisclaimer}</div>
+      </div>
+      <div className="mt-12 flex flex-col gap-2 border-2 border-dashed border-info-light p-2">
+        <div className="text-center">
+          <Button
+            priority="secondary"
+            onClick={async () => await captureNodeAndDownload(ref, { padding: '20px', filename: `${captureImageName}-${graphType}.png` })}
+            loading={capturing}
+          >
+            Sauvegarder l'image
+          </Button>
+        </div>
+        <Notice size="sm">
+          En cas d’utilisation de l’image exportée, un lien vers le comparateur en ligne doit obligatoirement être apposé à proximité de
+          l’image.
+        </Notice>
+      </div>
+    </>
   );
 };
 

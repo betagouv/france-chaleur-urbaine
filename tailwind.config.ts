@@ -30,8 +30,26 @@ const config = {
       },
       // Use spacing from DSFR through md:my-10w https://www.systeme-de-design.gouv.fr/fondamentaux/couleurs-palette
       spacing: spacingTokenByValue,
-      // Use colors from DSFR through md:text-redMarianne-_975_75-active https://www.systeme-de-design.gouv.fr/fondamentaux/couleurs-palette
-      colors: replaceKeyDeep<typeof fr.color.options>(fr.colors.options, 'default', 'DEFAULT'),
+      colors: {
+        // Use colors from DSFR through md:text-redMarianne-_975_75-active https://www.systeme-de-design.gouv.fr/fondamentaux/couleurs-palette
+        ...replaceKeyDeep<typeof fr.colors.options>(fr.colors.options, 'default', 'DEFAULT'),
+        blue: fr.colors.decisions.background.flat.blueFrance.default,
+        red: fr.colors.decisions.background.flat.redMarianne.default,
+        'info-light': fr.colors.decisions.background.contrast.info.default,
+        info: fr.colors.decisions.text.mention.grey.default,
+        'faded-light': fr.colors.decisions.background.contrast.grey.default,
+        faded: fr.colors.decisions.text.default.grey.default,
+        'success-light': fr.colors.decisions.background.contrast.success.default,
+        success: fr.colors.decisions.text.default.success.default,
+        error: fr.colors.decisions.text.default.error.default,
+        'error-light': fr.colors.decisions.background.contrast.error.default,
+        warning: fr.colors.decisions.text.default.warning.default,
+        'warning-light': fr.colors.decisions.background.contrast.warning.default,
+        'fcu-green': '#009364',
+        'fcu-blue': '#00B1F8',
+        'fcu-yellow': '#F9F21A',
+        'fcu-orange': '#FF692F',
+      },
     },
   },
   plugins: [
