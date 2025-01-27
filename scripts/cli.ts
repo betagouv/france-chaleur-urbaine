@@ -303,6 +303,20 @@ program
     await syncGestionnairesWithUsers();
   });
 
+program
+  .command('bdnd:export')
+  .description('')
+  .action(async () => {
+    console.info('Veuillez regarder les étapes dans scripts/bdnb/README.md');
+  });
+
+program
+  .command('bdnd:export-qpv')
+  .description('')
+  .action(async () => {
+    console.info('Veuillez regarder les étapes dans scripts/bdnb/qpv/README.md');
+  });
+
 ['SIGINT', 'SIGTERM', 'SIGQUIT'].forEach((signal) => {
   process.on(signal, async () => {
     logger.warn('Received stop signal');

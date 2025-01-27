@@ -3,7 +3,7 @@
 # Prépare des métadonnées et métriques pour chaque batiment de la BDNB (bndb_registre_2022).
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-. "$SCRIPT_DIR"/lib.sh
+. "$SCRIPT_DIR"/../lib.sh
 
 # Décommenter pour écrire dans un fichier en plus de la sortie standard
 # exec &> >(tee batiments-summary.log)

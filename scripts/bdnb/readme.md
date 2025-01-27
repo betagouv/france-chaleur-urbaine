@@ -1,5 +1,7 @@
 # Procédure pour exporter les batiments et logements à proximité de réseaux de chaleur
 
+## Étapes
+
 Prérequis :
 - posséder les tables :
   - bdnb_registre_2022 (provenance Sébastien)
@@ -8,8 +10,6 @@ Prérequis :
 - psql (CLI postgresql)
 - [parallel](https://www.gnu.org/software/parallel/) (Pour macOS : `brew install parallel`)
 - probablement avoir tuné la configuration postgresql pour augmenter la taille des buffers
-
-## Étapes
 
 Note : Idéalement, les étapes sont faites avec une grosse configuration postgres.
 
