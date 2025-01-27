@@ -42,7 +42,7 @@ export const ComparateurPublicodesTitle = () => {
 };
 
 export const Logos = ({ size, withFCU = true, ...props }: React.ComponentProps<typeof Box> & { size?: 'sm'; withFCU?: boolean }) => {
-  const height = size === 'sm' ? '40px' : '60px';
+  const height = size === 'sm' ? '32px' : '40px';
   return (
     <Box display="flex" gap={size === 'sm' ? '16px' : '32px'} flexDirection="row" alignItems="center" flexWrap="wrap" my="2w" {...props}>
       <img src="/logo-HEAT_COOL.png" alt="logo life Heat & Cool" height={height} className="reset-height fr-mr-2w" />
@@ -84,7 +84,7 @@ export const ResultsNotAvailable = () => (
 
 export const DescriptionModal = () => {
   return (
-    <Modal modal={modalDescription} title="Description de l'outil">
+    <Modal modal={modalDescription} title="Description de l'outil" size="large">
       <p>
         Cet outil de comparaison permet aux utilisateurs d’évaluer différents systèmes de chauffage et de refroidissement sur trois aspects
         essentiels : technique, économique et environnemental. Grâce à une approche en coût global, l'outil analyse les performances des
@@ -144,7 +144,7 @@ export const modalDisclaimer = createModal({
 
 export const DisclaimerModal = () => {
   return (
-    <Modal modal={modalDisclaimer} title="Note supplémentaire sur l'outil">
+    <Modal modal={modalDisclaimer} title="Note supplémentaire sur l'outil" size="large">
       <p>L'outil ne préjuge pas de la possibilité de remplacer un mode de chauffage par un autre.</p>
       <p>A noter en particulier que :</p>
 
