@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Infobulle from '@/components/ui/Infobulle';
+import Tooltip from '@/components/ui/Tooltip';
 import { upperCaseFirstChar } from '@/utils/strings';
 
 type LabelProps = React.HTMLAttributes<HTMLSpanElement> & {
@@ -26,15 +26,7 @@ const Label: React.FC<LabelProps> = ({ label, unit, help }) => {
           ''
         )}
       </span>
-      {help && (
-        <Infobulle
-          style={{
-            marginTop: '-1px', // icon is not well balanced and has a small margin on top
-          }}
-        >
-          {help}
-        </Infobulle>
-      )}
+      {help && <Tooltip title={help}></Tooltip>}
     </span>
   );
 };

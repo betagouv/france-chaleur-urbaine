@@ -2,10 +2,10 @@ import DsfrAccordion, { type AccordionProps as DsfrAccordionProps } from '@codeg
 import { useQueryState } from 'nuqs';
 import styled, { css } from 'styled-components';
 
+import Tooltip from '@/components/ui/Tooltip';
 import useArrayQueryState from '@/hooks/useArrayQueryState';
 
 import Icon from './Icon';
-import Infobulle from './Infobulle';
 
 const StyledAccordion = styled(DsfrAccordion)<{
   $small?: boolean;
@@ -106,15 +106,7 @@ const Accordion: React.FC<AccordionProps> = ({ children, small, label, help, sim
           {label}
           {(help || onClose) && (
             <AccordionTitleHelp>
-              {help && (
-                <Infobulle
-                  style={{
-                    marginTop: '-0.1rem', // icon is not well balanced and has a small margin on top
-                  }}
-                >
-                  {help}
-                </Infobulle>
-              )}
+              {help && <Tooltip title={help}></Tooltip>}
               {onClose && <Icon name="fr-icon-close-line" size="sm" onClick={onClose} />}
             </AccordionTitleHelp>
           )}
