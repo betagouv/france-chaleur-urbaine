@@ -421,8 +421,8 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
         {graphType === 'couts-emissions' && (
           <div>
             <Heading as="h6">
-              Coût global et émissions de CO2{typeDeBatiment === 'tertiaire' ? '' : ` (par ${perBuilding ? 'bâtiment' : 'logement'})`} -{' '}
-              {titleItemsString}
+              Coût global et émissions de CO2 annuels
+              {typeDeBatiment === 'tertiaire' ? '' : ` (par ${perBuilding ? 'bâtiment' : 'logement'})`} - {titleItemsString}
             </Heading>
             <DisclaimerButton className="!mb-5" />
             <div className="relative py-2">
@@ -483,7 +483,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
         {graphType === 'couts' && (
           <div ref={coutsRef}>
             <Heading as="h6">
-              Coût global annuel {titleItemsString}
+              Coût global annuel - {titleItemsString}
               {typeDeBatiment === 'tertiaire' ? '' : ' (par logement)'}
             </Heading>
             <DisclaimerButton className="!mb-5" />
