@@ -26,6 +26,60 @@ export interface ApiNetwork {
   contacts: string[];
 }
 
+export const syncLastConnectionFromUsers = async (interval?: string) => {
+  logDry(`Sync last connection from "users" table`);
+
+  let query = db('users')
+    .select('id', 'email', 'active', 'last_connection')
+    .where({ active: true })
+    .whereNotNull('last_connection')
+    .whereLike('email', '%@%');
+
+  if (interval) {
+    query = query.where('last_connection', '>', db.raw(`NOW() - INTERVAL '${interval}'`));
+  }
+  const stats = { totalUpdated: 0 };
+
+  const users = await query;
+
+  logger.info(`Found ${users.length} users which last connected ${interval ? `in the last ${interval}` : 'at least once'}`);
+
+  if (users.length === 0) {
+    return stats;
+  }
+  const gestionnaires = await base(Airtable.GESTIONNAIRES).select().all();
+
+  await Promise.all(
+    users.map(async ({ email, last_connection }, index) => {
+      logger.info(`${index + 1}/${users.length} updating last connection for ${email}`);
+
+      const gestionnaire = gestionnaires.find((gestionnaire) => gestionnaire.get('Email') === email);
+      if (!gestionnaire) {
+        logDry(` 💤 No gestionnaire found for ${email}`);
+      }
+
+      if (gestionnaire) {
+        stats.totalUpdated++;
+
+        const data = { 'Dernière connexion': last_connection };
+        logDry(` 🔄 Update ${email} with`, JSON.stringify(data));
+        if (!DRY_RUN) {
+          try {
+            await base(Airtable.GESTIONNAIRES).update(gestionnaire.id, data, { typecast: true });
+          } catch (e) {
+            stats.totalUpdated = Math.max(stats.totalUpdated - 1, 0);
+            logger.error(`Could not update ${email} to ${Airtable.GESTIONNAIRES} with ${JSON.stringify(data)}`, { error: e });
+          }
+        }
+      }
+    })
+  );
+  logger.info(`======== Sync last connection from userds`);
+  logger.info(`Total updated: ${stats.totalUpdated}`);
+  logger.info(`========`);
+  return stats;
+};
+
 export const syncGestionnairesWithUsers = async () => {
   await sanitizeGestionnairesEmails();
   logDry(`Sync users from "${Airtable.GESTIONNAIRES}" sheet`);

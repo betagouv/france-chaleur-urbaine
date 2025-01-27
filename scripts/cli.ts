@@ -6,7 +6,12 @@ import { saveStatsInDB } from '@/server/cron/saveStatsInDB';
 import db from '@/server/db';
 import { kdb, sql } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
-import { type ApiNetwork, createGestionnairesFromAPI, syncGestionnairesWithUsers } from '@/server/services/airtable';
+import {
+  type ApiNetwork,
+  createGestionnairesFromAPI,
+  syncGestionnairesWithUsers,
+  syncLastConnectionFromUsers,
+} from '@/server/services/airtable';
 import { type DatabaseSourceId, type DatabaseTileInfo, tilesInfo, zDatabaseSourceId } from '@/server/services/tiles.config';
 import { type ApiAccount } from '@/types/ApiAccount';
 
@@ -299,8 +304,8 @@ program
       );
       process.exit(1);
     }
-
     await syncGestionnairesWithUsers();
+    await syncLastConnectionFromUsers();
   });
 
 program
