@@ -38,7 +38,7 @@ export const syncLastConnectionFromUsers = async (interval?: string) => {
   if (interval) {
     query = query.where('last_connection', '>', db.raw(`NOW() - INTERVAL '${interval}'`));
   }
-  const stats = { totalUpdated: 0 };
+  const stats = { totalUpdated: 0, totalUnchanged: 0 };
 
   const users = await query;
 
@@ -56,26 +56,31 @@ export const syncLastConnectionFromUsers = async (interval?: string) => {
       const gestionnaire = gestionnaires.find((gestionnaire) => gestionnaire.get('Email') === email);
       if (!gestionnaire) {
         logDry(` 💤 No gestionnaire found for ${email}`);
+        return;
       }
 
-      if (gestionnaire) {
-        stats.totalUpdated++;
+      if (gestionnaire.get('Dernière connexion') === last_connection.toISOString()) {
+        logDry(` 💤 gestionnaire ${email} has same last connexion`);
+        stats.totalUnchanged++;
+        return;
+      }
 
-        const data = { 'Dernière connexion': last_connection };
-        logDry(` 🔄 Update ${email} with`, JSON.stringify(data));
-        if (!DRY_RUN) {
-          try {
-            await base(Airtable.GESTIONNAIRES).update(gestionnaire.id, data, { typecast: true });
-          } catch (e) {
-            stats.totalUpdated = Math.max(stats.totalUpdated - 1, 0);
-            logger.error(`Could not update ${email} to ${Airtable.GESTIONNAIRES} with ${JSON.stringify(data)}`, { error: e });
-          }
+      stats.totalUpdated++;
+
+      const data = { 'Dernière connexion': last_connection };
+      logDry(` 🔄 Update ${email} with`, JSON.stringify(data));
+      if (!DRY_RUN) {
+        try {
+          await base(Airtable.GESTIONNAIRES).update(gestionnaire.id, data, { typecast: true });
+        } catch (e) {
+          stats.totalUpdated = Math.max(stats.totalUpdated - 1, 0);
+          logger.error(`Could not update ${email} to ${Airtable.GESTIONNAIRES} with ${JSON.stringify(data)}`, { error: e });
         }
       }
     })
   );
   logger.info(`======== Sync last connection from userds`);
-  logger.info(`Total updated: ${stats.totalUpdated}`);
+  logger.info(`Total updated: ${stats.totalUpdated}, unchanged: ${stats.totalUnchanged}`);
   logger.info(`========`);
   return stats;
 };
