@@ -12,7 +12,7 @@ import { useQueryState } from 'nuqs';
 import { useState } from 'react';
 import { Oval } from 'react-loader-spinner';
 
-import { NetworkEligibilityStatus } from '@/server/services/addresseInformation';
+import { type NetworkEligibilityStatus } from '@/server/services/addresseInformation';
 import { useServices } from '@/services';
 import { formatDataToAirtable, submitToAirtable } from '@/services/airtable';
 import { trackEvent } from '@/services/analytics';
