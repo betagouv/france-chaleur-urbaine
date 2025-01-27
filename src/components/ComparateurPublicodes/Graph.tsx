@@ -557,7 +557,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
             />
           </>
         )}
-        <Logos size="sm" justifyContent="end" />
+        <Logos className="fr-mt-4w" size="sm" justifyContent="end" />
         <div className="text-right text-xs text-faded">{dataYearDisclaimer}</div>
       </div>
       <div className="mt-12 flex flex-col gap-2 border-2 border-dashed border-info-light p-2">

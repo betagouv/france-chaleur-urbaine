@@ -42,7 +42,7 @@ export const ComparateurPublicodesTitle = () => {
 };
 
 export const Logos = ({ size, withFCU = true, ...props }: React.ComponentProps<typeof Box> & { size?: 'sm'; withFCU?: boolean }) => {
-  const height = size === 'sm' ? '40px' : '60px';
+  const height = size === 'sm' ? '32px' : '40px';
   return (
     <Box display="flex" gap={size === 'sm' ? '16px' : '32px'} flexDirection="row" alignItems="center" flexWrap="wrap" my="2w" {...props}>
       <img src="/logo-HEAT_COOL.png" alt="logo life Heat & Cool" height={height} className="reset-height fr-mr-2w" />
