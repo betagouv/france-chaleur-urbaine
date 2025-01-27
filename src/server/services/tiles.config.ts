@@ -67,7 +67,8 @@ export type InternalSourceId =
   | typeof distancesMeasurementLabelsSourceId
   | typeof linearHeatDensityLinesSourceId
   | typeof linearHeatDensityLabelsSourceId
-  | typeof buildingsDataExtractionPolygonsSourceId;
+  | typeof buildingsDataExtractionPolygonsSourceId
+  | 'customGeojson';
 export type SourceId = DatabaseSourceId | InternalSourceId;
 
 const bnbFields = `

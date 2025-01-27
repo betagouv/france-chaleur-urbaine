@@ -19,6 +19,7 @@ import MapReactGL, {
   ScaleControl,
 } from 'react-map-gl/maplibre';
 
+import FileDragNDrop from '@/components/Map/components/FileDragNDrop';
 import { type MapConfiguration, isMapConfigurationInitialized } from '@/components/Map/map-configuration';
 import Accordion from '@/components/ui/Accordion';
 import Box from '@/components/ui/Box';
@@ -689,6 +690,7 @@ export const FullyFeaturedMap = ({
                   onClickAction={marker.onClickAction}
                 />
               ))}
+            <FileDragNDrop />
           </MapReactGL>
           {withLegend && (
             <MapSearchWrapper $legendCollapsed={legendCollapsed}>
