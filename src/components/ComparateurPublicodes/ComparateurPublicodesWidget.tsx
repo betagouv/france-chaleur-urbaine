@@ -1,15 +1,15 @@
 import { fr } from '@codegouvfr/react-dsfr';
 import React from 'react';
 
-import { FormProvider } from '@components/form/publicodes/FormProvider';
-import Heading from '@components/ui/Heading';
-import { Table, type ColumnDef } from '@components/ui/Table';
-import { LocationInfoResponse } from '@pages/api/location-infos';
-import { postFetchJSON } from '@utils/network';
-import { ObjectEntries } from '@utils/typescript';
+import { FormProvider } from '@/components/form/publicodes/FormProvider';
+import Heading from '@/components/ui/Heading';
+import { Table, type ColumnDef } from '@/components/ui/Table';
+import { type LocationInfoResponse } from '@/pages/api/location-infos';
+import { postFetchJSON } from '@/utils/network';
+import { ObjectEntries } from '@/utils/typescript';
 
 import { addresseToPublicodesRules, modesDeChauffage } from './mappings';
-import { simulatorTabs } from './Placeholder';
+import { type simulatorTabs } from './Placeholder';
 import useSimulatorEngine from './useSimulatorEngine';
 
 type ComparateurPublicodesWidgetProps = React.HTMLAttributes<HTMLDivElement> & {

@@ -1,6 +1,6 @@
-import { DottedName } from '@betagouv/france-chaleur-urbaine-publicodes';
+import { type DottedName } from '@betagouv/france-chaleur-urbaine-publicodes';
 
-import { LocationInfoResponse } from '@/pages/api/location-infos';
+import { type LocationInfoResponse } from '@/pages/api/location-infos';
 
 export const modesDeChauffage = [
   {
