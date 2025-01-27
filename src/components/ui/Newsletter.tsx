@@ -175,7 +175,7 @@ type NewsletterProps = {
   withCheckbox?: boolean;
 };
 
-const Newsletter: React.FC<NewsletterProps> = ({ onSignUp, children, withCheckbox }) => {
+export const Newsletter: React.FC<NewsletterProps> = ({ onSignUp, children, withCheckbox }) => {
   const [email, setEmail] = useState<string>('');
   const [checked, toggleChecked] = useToggle(false);
   const [error, setError] = useState<string | null>(null);

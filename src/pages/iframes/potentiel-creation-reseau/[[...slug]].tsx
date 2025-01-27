@@ -2,12 +2,14 @@ import { type GetStaticPaths } from 'next';
 
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import { FCUMapContextProvider } from '@/components/Map/MapProvider';
+import Newsletter from '@/components/ui/Newsletter';
 import {
   DetailsCommune,
   franceBounds,
   Map,
   type PotentielCreationReseauPageProps,
   SearchCommune,
+  submitDemandeCommuneSansReseau,
 } from '@/pages/collectivites-et-exploitants/potentiel-creation-reseau/[[...slug]]';
 import { getCommunePotentiel } from '@/server/services/communeAPotentiel';
 
@@ -15,9 +17,11 @@ const Page: React.FC<PotentielCreationReseauPageProps> = ({ commune }) => {
   const bounds = commune?.bounds || franceBounds;
   return (
     <div className="fr-grid-row">
-      <div className="fr-col-12 fr-col-lg-4 fr-my-2w fr-px-2v fr-px-lg-0 fr-pr-lg-2w">
-        {commune ? <DetailsCommune commune={commune} /> : <SearchCommune />}
-      </div>
+      <Newsletter onSignUp={(email) => submitDemandeCommuneSansReseau(commune, email)} withCheckbox>
+        <div className="fr-col-12 fr-col-lg-4 fr-my-2w fr-px-2v fr-px-lg-0 fr-pr-lg-2w">
+          {commune ? <DetailsCommune commune={commune} /> : <SearchCommune />}
+        </div>
+      </Newsletter>
       <div className="fr-col-12 fr-col-lg-8">
         <FCUMapContextProvider
           initialMapConfiguration={createMapConfiguration({
