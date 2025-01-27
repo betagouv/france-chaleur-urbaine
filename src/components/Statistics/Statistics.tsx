@@ -276,7 +276,7 @@ const Statistics = () => {
                   <NumberText>(~{statistics.logements} logements)</NumberText>
                   <br />
                   <NumberSubText className="fr-mt-1w">
-                    A titre de comparaison, le nombre total de bâtiments raccordés en France en 2022 s'élève à 2435
+                    A titre de comparaison, le nombre total de bâtiments raccordés en France en 2023 s'élève à 2 685
                   </NumberSubText>
                 </NumberBlock>
                 <NumberBlock className="fr-col-md-6 fr-col-12">
