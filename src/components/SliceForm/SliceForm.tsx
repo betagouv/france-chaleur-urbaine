@@ -1,10 +1,10 @@
-import { EligibilityFormAddress, EligibilityFormContact, EligibilityFormMessageConfirmation } from '@components/EligibilityForm';
-import { FormLabel } from '@components/HeadSliceForm/HeadSliceForm.style';
-import Slice from '@components/Slice';
-import Box from '@components/ui/Box';
-import Loader from '@components/ui/Loader';
-import Modal, { createModal } from '@components/ui/Modal';
-import { useContactFormFCU } from '@hooks';
+import { EligibilityFormAddress, EligibilityFormContact, EligibilityFormMessageConfirmation } from '@/components/EligibilityForm';
+import { FormLabel } from '@/components/HeadSliceForm/HeadSliceForm.style';
+import Slice from '@/components/Slice';
+import Box from '@/components/ui/Box';
+import Loader from '@/components/ui/Loader';
+import Modal, { createModal } from '@/components/ui/Modal';
+import useContactFormFCU from '@/hooks/useContactFormFCU';
 
 import { Container, FormWarningMessage, SliceContactFormStyle } from './SliceForm.style';
 

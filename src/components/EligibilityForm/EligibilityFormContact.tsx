@@ -1,22 +1,22 @@
 import { Alert } from '@codegouvfr/react-dsfr/Alert';
-import Map from '@components/Map/Map';
-import MarkdownWrapper from '@components/MarkdownWrapper';
-import Box from '@components/ui/Box';
-import Heading from '@components/ui/Heading';
-import Link from '@components/ui/Link';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import { useCallback, useMemo, useState } from 'react';
-import { getReadableDistance } from 'src/services/Map/distance';
-import { createMapConfiguration } from 'src/services/Map/map-configuration';
 
+import Map from '@/components/Map/Map';
+import { createMapConfiguration } from '@/components/Map/map-configuration';
+import MarkdownWrapper from '@/components/MarkdownWrapper';
+import Box from '@/components/ui/Box';
+import Heading from '@/components/ui/Heading';
+import Link from '@/components/ui/Link';
 import { type AddressDataType } from '@/types/AddressData';
 import { type ContactFormInfos } from '@/types/Summary/Demand';
+import { getReadableDistance } from '@/utils/geo';
 
 import { ContactForm, ContactFormContentWrapper, ContactFormResultMessage, ContactFormWrapper, ContactMapResult } from './components';
 import { bordeauxMetropoleCityCodes, getEligibilityResult } from './EligibilityResults';
 
-const ComparateurPublicodesWidget = dynamic(() => import('@components/ComparateurPublicodes/ComparateurPublicodesWidget'), {
+const ComparateurPublicodesWidget = dynamic(() => import('@/components/ComparateurPublicodes/ComparateurPublicodesWidget'), {
   ssr: false,
   loading: () => (
     <div className="fr-mt-5w">

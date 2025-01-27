@@ -1,16 +1,16 @@
-import AddressAutocomplete from '@components/addressAutocomplete';
-import { EligibilityFormContact, EligibilityFormMessageConfirmation, type EnergyInputsLabelsType } from '@components/EligibilityForm';
-import { CheckEligibilityFormLabel, SelectEnergy } from '@components/EligibilityForm/components';
-import { energyInputsDefaultLabels } from '@components/EligibilityForm/EligibilityFormAddress';
-import MarkdownWrapper from '@components/MarkdownWrapper';
-import Slice from '@components/Slice';
-import Box from '@components/ui/Box';
-import Button from '@components/ui/Button';
-import Link from '@components/ui/Link';
-import Modal, { createModal } from '@components/ui/Modal';
 import { useRouter } from 'next/router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
+import AddressAutocomplete from '@/components/addressAutocomplete';
+import { EligibilityFormContact, EligibilityFormMessageConfirmation, type EnergyInputsLabelsType } from '@/components/EligibilityForm';
+import { CheckEligibilityFormLabel, SelectEnergy } from '@/components/EligibilityForm/components';
+import { energyInputsDefaultLabels } from '@/components/EligibilityForm/EligibilityFormAddress';
+import MarkdownWrapper from '@/components/MarkdownWrapper';
+import Slice from '@/components/Slice';
+import Box from '@/components/ui/Box';
+import Button from '@/components/ui/Button';
+import Link from '@/components/ui/Link';
+import Modal, { createModal } from '@/components/ui/Modal';
 import useContactFormFCU from '@/hooks/useContactFormFCU';
 import { useServices } from '@/services';
 import { AnalyticsFormId } from '@/services/analytics';
