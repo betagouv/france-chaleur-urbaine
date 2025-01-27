@@ -10,5 +10,5 @@ export const iframedPaths = [
   '/page-reseaux/*',
   '/viaseva',
   // for future iframes, try to add them in the 'iframes' folder
-  '/iframes/potentiel-creation-reseau',
+  '/iframe/potentiel-creation-reseau',
 ];

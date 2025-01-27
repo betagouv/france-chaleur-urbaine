@@ -53,7 +53,7 @@ export const getStaticProps = async ({ params }: { params: { slug?: string } }) 
   if (codeInsee && !commune) {
     return {
       redirect: {
-        destination: `/iframes/potentiel-creation-reseau?notify=error:${encodeURIComponent(
+        destination: `/iframe/potentiel-creation-reseau?notify=error:${encodeURIComponent(
           "Désolé, nous n'avons pas trouvé la commune en question. Réessayez avec une autre"
         )}`,
         permanent: false,
