@@ -12,6 +12,10 @@ import { besoinsEnChaleurIntervals } from '../layers/besoinsEnChaleur';
 import { zonePotentielChaudColor, zonePotentielChaudOpacity, zonePotentielFortChaudColor } from '../layers/zonesPotentielChaud';
 
 const StyledBox = styled(Box)`
+  .fr-fieldset {
+    margin-right: 0 !important; // surcharge le margin négatif inutile du dsfr
+  }
+
   ${({ theme }) => theme.media.lg`
     min-width: 240px;
     margin-left: 0.5rem;
