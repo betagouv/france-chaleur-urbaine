@@ -139,6 +139,7 @@ export const syncGestionnairesWithUsers = async () => {
     })
   );
 
+  logger.info(`======== Sync gestionnaires with users`);
   logger.info(`Total created: ${stats.totalCreated}, updated: ${stats.totalUpdated}, deactivated: ${stats.totalDeactivated}`);
   logger.info(`========`);
 
