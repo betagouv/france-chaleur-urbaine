@@ -189,6 +189,7 @@ module.exports = withBundleAnalyzer(
             '/map',
             '/page-reseaux/:network',
             '/viaseva',
+            '/iframes/potentiel-creation-reseau',
           ].map((source) => ({
             source,
             headers: securityHeadersIFramable,
