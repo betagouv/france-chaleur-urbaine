@@ -16,10 +16,6 @@ const StyledAccordion = styled(DsfrAccordion)<{
 }>`
   ${({ $small, $simple, $bordered, $closeable, $disabled }) => css`
     overflow: visible;
-
-    .fr-collapse--expanded {
-      overflow: visible;
-    }
     ${$disabled &&
     css`
       opacity: 0.5;
