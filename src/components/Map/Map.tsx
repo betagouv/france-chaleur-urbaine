@@ -56,9 +56,9 @@ import {
   LegendLogoLink,
   LegendLogoList,
   LegendSideBar,
+  MapGlobalStyle,
   MapSearchInputWrapper,
   MapSearchWrapper,
-  MapGlobalStyle,
   legendWidth,
 } from './Map.style';
 import useFCUMap, { FCUMapContextProvider } from './MapProvider';
@@ -103,7 +103,7 @@ type MapProps = {
   enabledLegendFeatures?: MapLegendFeature[];
   withLegend?: boolean;
   withBorder?: boolean;
-  withPins?: boolean;
+  withSoughtAddresses?: boolean;
   legendTitle?: string;
   legendCollapsed?: boolean;
   legendLogoOpt?: TypeLegendLogo;
@@ -136,7 +136,7 @@ export const FullyFeaturedMap = ({
   enabledLegendFeatures,
   withCenterPin,
   noPopup,
-  withPins = true,
+  withSoughtAddresses = true,
   legendLogoOpt,
   pinsList,
   initialCenter,
@@ -414,18 +414,20 @@ export const FullyFeaturedMap = ({
   }, [router.query, heatNetworkService]);
 
   useEffect(() => {
-    if (mapRef.current && initialCenter) {
-      if (withCenterPin) {
-        const newMarker = {
-          id: getAddressId(initialCenter),
-          latitude: initialCenter[1],
-          longitude: initialCenter[0],
-        };
-        setMarkersList([newMarker]);
-      }
-      jumpTo({ coordinates: initialCenter, zoom: initialZoom });
+    if (!mapRef.current || !initialCenter) {
+      return;
     }
-  }, [initialCenter, jumpTo, withCenterPin]);
+
+    if (withCenterPin) {
+      const newMarker = {
+        id: getAddressId(initialCenter),
+        latitude: initialCenter[1],
+        longitude: initialCenter[0],
+      };
+      setMarkersList([newMarker]);
+    }
+    jumpTo({ coordinates: initialCenter, zoom: initialZoom });
+  }, [initialCenter, jumpTo, withCenterPin, mapRef.current]);
 
   useEffect(() => {
     if (!router.isReady) {
@@ -453,7 +455,7 @@ export const FullyFeaturedMap = ({
   }, [jumpTo, initialCenter, router, geolocDisabled]);
 
   useEffect(() => {
-    if (pinsList && pinsList?.length > 0) {
+    if ((pinsList && pinsList?.length > 0) || !withSoughtAddresses) {
       //The pin to display are only those on the pinsList
       return;
     }
@@ -675,8 +677,7 @@ export const FullyFeaturedMap = ({
             <NavigationControl showZoom={true} visualizePitch={true} position="bottom-right" />
             <ScaleControl maxWidth={100} unit="metric" position="bottom-left" />
             {Popup}
-            {withPins &&
-              markersList.length > 0 &&
+            {markersList.length > 0 &&
               markersList.map((marker: MapMarkerInfos) => (
                 <MapMarker
                   key={marker.id}
@@ -697,7 +698,7 @@ export const FullyFeaturedMap = ({
                 <MapSearchForm onAddressSelect={onAddressSelectHandle} />
               </MapSearchInputWrapper>
 
-              {soughtAddresses.length > 0 && (
+              {withSoughtAddresses && soughtAddresses.length > 0 && (
                 <Accordion
                   className="fr-mt-1v"
                   label={

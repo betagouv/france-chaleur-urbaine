@@ -1,10 +1,9 @@
-import { Button } from '@codegouvfr/react-dsfr/Button';
 import { Form, Formik } from 'formik';
 import { useRouter } from 'next/router';
 import { type ReactNode, useRef } from 'react';
 import * as Yup from 'yup';
 
-import Loader from '@/components/Loader';
+import Button from '@/components/ui/Button';
 import { AnalyticsFormId } from '@/services/analytics';
 import { type ContactFormInfos } from '@/types/Summary/Demand';
 
@@ -53,13 +52,9 @@ export const ContactForm = ({ onSubmit, isLoading, cardMode, city, heatingTypeIn
           <ContactInformation cardMode={cardMode} city={city} heatingTypeInput={heatingTypeInput} />
           <ContactConsent />
           <ContactFormFooter>
-            {isLoading ? (
-              <Loader color="#4550e5" show />
-            ) : (
-              <Button type="submit" disabled={isLoading}>
-                Envoyer
-              </Button>
-            )}
+            <Button type="submit" loading={isLoading}>
+              Envoyer
+            </Button>
             {formik.isSubmitting && !formik.isValid && (
               <p className="fr-error-text">Veuillez remplir les champs obligatoires(*) avant d'envoyer votre demande</p>
             )}
