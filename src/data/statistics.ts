@@ -2,7 +2,7 @@ const statistics = {
   connection: '1460',
   logements: '43 800',
   CO2Tons: '78 330',
-  networks: '839', // tracés sur site
+  networks: '839', // réseaux avec tracé
   heatPercent: '93',
   connectionPercent: '24',
   iFrameIntegration: '57',
