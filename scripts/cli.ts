@@ -25,6 +25,7 @@ import { createModificationsReseau } from './airtable/create-modifications-resea
 import { fetchBaseSchema } from './airtable/dump-schema';
 import { readFileGeometry } from './helpers/geo';
 import { runShellScript } from './helpers/shell';
+import DataImporter from './import-data';
 import { downloadAndUpdateNetwork, downloadNetwork } from './networks/download-network';
 import { generateTilesFromGeoJSON } from './networks/generate-tiles';
 import { applyGeometryUpdates } from './networks/geometry-updates';
@@ -175,6 +176,26 @@ program
     await downloadAndUpdateNetwork(table);
     await db((tilesInfo[table] as DatabaseTileInfo).tiles).delete();
     await fillTiles(table, zoomMin, zoomMax, withIndex);
+  });
+
+program
+  .command('import-data')
+  .description('Import data based on type')
+  .argument('<type>', 'Type of data you want to import')
+  .option('--file [FILE]', 'Path to the file to import', '')
+  .action(async (type, options) => {
+    if (!DataImporter.adapterNames.includes(type)) {
+      logger.error(`Use a type in ${DataImporter.adapterNames.join(',')}`);
+      process.exit(2);
+    }
+    try {
+      logger.info(`Importing data for ${type}`);
+      const importer = await new DataImporter(type).getInstance();
+      await importer.importData(options.file as string | undefined);
+    } catch (error: any) {
+      console.error(error);
+      process.exit(1);
+    }
   });
 
 program
