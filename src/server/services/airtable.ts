@@ -68,8 +68,6 @@ export const syncLastConnectionFromUsers = async (interval?: string) => {
         return;
       }
 
-      stats.totalUpdated++;
-
       const data = {
         'Dernière connexion': last_connection?.toISOString(),
       };
@@ -78,10 +76,11 @@ export const syncLastConnectionFromUsers = async (interval?: string) => {
         try {
           await base(Airtable.GESTIONNAIRES).update(gestionnaire.id, data, { typecast: true });
         } catch (e) {
-          stats.totalUpdated = Math.max(stats.totalUpdated - 1, 0);
           logger.error(`Could not update ${email} to ${Airtable.GESTIONNAIRES} with ${JSON.stringify(data)}`, { error: e });
+          return;
         }
       }
+      stats.totalUpdated++;
     })
   );
   logger.info(`======== Sync last connection from userds`);
@@ -159,6 +158,7 @@ export const syncGestionnairesWithUsers = async () => {
             await db('users').update('active', false).where('id', user.id);
           } catch (e) {
             logger.error(`Could not create ${email} in database`, { error: e });
+            return;
           }
         }
         stats.totalDeactivated++;
