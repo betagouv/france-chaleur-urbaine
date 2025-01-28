@@ -4,6 +4,11 @@ import { useQueryState } from 'nuqs';
 
 import DPE from '@/components/DPE';
 import RangeFilter from '@/components/form/dsfr/RangeFilter';
+import {
+  quartiersPrioritairesPolitiqueVille2015anruColor,
+  quartiersPrioritairesPolitiqueVille2024Color,
+  quartiersPrioritairesPolitiqueVilleOpacity,
+} from '@/components/Map/layers/quartiersPrioritairesPolitiqueVille';
 import { defaultMapConfiguration } from '@/components/Map/map-configuration';
 import { type MapLegendFeature } from '@/components/Map/map-layers';
 import useFCUMap from '@/components/Map/MapProvider';
@@ -663,9 +668,96 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                 </Box>
               </DeactivatableBox>
             </TrackableCheckableAccordion>
-            <Box textAlign="center" mt="1w">
+            <Box textAlign="center" my="1w">
               <ModalCarteFrance />
             </Box>
+            <TrackableCheckableAccordion
+              name="quartiersPrioritairesPolitiqueVille"
+              checked={mapConfiguration.quartiersPrioritairesPolitiqueVille.show}
+              layerName="quartiersPrioritairesPolitiqueVille.show"
+              trackingEvent="Carto|Quartiers Prioritaires politique Ville"
+              label={
+                <>
+                  <IconPolygon
+                    stroke={quartiersPrioritairesPolitiqueVille2024Color}
+                    fillOpacity={quartiersPrioritairesPolitiqueVilleOpacity}
+                    mt="1v"
+                  />
+                  <Box flex>Quartiers prioritaires de la politique de la ville (QPV)</Box>
+                  <Tooltip
+                    title={
+                      <>
+                        Source :{' '}
+                        <Link
+                          href="https://www.data.gouv.fr/fr/datasets/quartiers-prioritaires-de-la-politique-de-la-ville-qpv/"
+                          isExternal
+                        >
+                          ANCT
+                        </Link>
+                      </>
+                    }
+                  />
+                </>
+              }
+            >
+              <DeactivatableBox display="flex" flexDirection="column" ml="1w" mr="1w">
+                <Box display="flex">
+                  <SingleCheckbox
+                    name="quartiersPrioritairesPolitiqueVille2015anru"
+                    checked={mapConfiguration.quartiersPrioritairesPolitiqueVille.qpv2015anru}
+                    onChange={() => toggleLayer('quartiersPrioritairesPolitiqueVille.qpv2015anru')}
+                    trackingEvent="Carto|Quartiers Prioritaires politique Ville 2015 ANRU"
+                  />
+
+                  <IconPolygon
+                    stroke={quartiersPrioritairesPolitiqueVille2015anruColor}
+                    fillOpacity={quartiersPrioritairesPolitiqueVilleOpacity}
+                    mt="1v"
+                  />
+
+                  <Text
+                    as="label"
+                    htmlFor="quartiersPrioritairesPolitiqueVille2015anru"
+                    fontSize="14px"
+                    lineHeight="18px"
+                    className="fr-col"
+                    cursor="pointer"
+                    pt="1v"
+                    px="1v"
+                  >
+                    QPV 2015 ANRU
+                  </Text>
+                </Box>
+
+                <Box display="flex">
+                  <SingleCheckbox
+                    name="quartiersPrioritairesPolitiqueVille2024"
+                    checked={mapConfiguration.quartiersPrioritairesPolitiqueVille.qpv2024}
+                    onChange={() => toggleLayer('quartiersPrioritairesPolitiqueVille.qpv2024')}
+                    trackingEvent="Carto|Quartiers Prioritaires politique Ville 2024"
+                  />
+
+                  <IconPolygon
+                    stroke={quartiersPrioritairesPolitiqueVille2024Color}
+                    fillOpacity={quartiersPrioritairesPolitiqueVilleOpacity}
+                    mt="1v"
+                  />
+
+                  <Text
+                    as="label"
+                    htmlFor="quartiersPrioritairesPolitiqueVille2024"
+                    fontSize="14px"
+                    lineHeight="18px"
+                    className="fr-col"
+                    cursor="pointer"
+                    pt="1v"
+                    px="1v"
+                  >
+                    QPV 2024
+                  </Text>
+                </Box>
+              </DeactivatableBox>
+            </TrackableCheckableAccordion>
           </UrlStateAccordion>
         </TabScrollablePart>
       )}
