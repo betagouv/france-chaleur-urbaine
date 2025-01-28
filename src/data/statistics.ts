@@ -1,12 +1,12 @@
 const statistics = {
-  connection: '1137',
-  logements: '34 110',
-  CO2Tons: '61 000',
-  networks: '828',
+  connection: '1460',
+  logements: '43 800',
+  CO2Tons: '78 330',
+  networks: '839', // réseaux avec tracé
   heatPercent: '93',
   connectionPercent: '24',
-  iFrameIntegration: '50',
-  lastActu: '17 octobre 2024',
+  iFrameIntegration: '57',
+  lastActu: '27 janvier 2025',
 };
 
 export default statistics;

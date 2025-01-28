@@ -50,17 +50,13 @@ export const NumberHighlight = styled.div`
     display: inline-flex;
     vertical-align: top;
   }
+  [class*='fr-icon'] {
+    margin-left: 0.5rem;
+    color: var(--text-default-grey);
+  }
 `;
 export const LoadingTextHighlight = styled.span`
   font-size: 24px;
-`;
-
-export const NumberHoverableIcon = styled.span`
-  color: var(--text-default-grey);
-  font-size: 1rem;
-  > div {
-    top: 0px;
-  }
 `;
 
 export const NumberItalicText = styled.span`
