@@ -1,6 +1,7 @@
 import { readFile } from 'fs/promises';
 
 import { InvalidArgumentError, createCommand } from '@commander-js/extra-typings';
+import prompts from 'prompts';
 
 import { saveStatsInDB } from '@/server/cron/saveStatsInDB';
 import db from '@/server/db';
@@ -29,6 +30,22 @@ import { upsertFixedSimulateurData } from './simulateur/import';
 import { fillTiles } from './utils/tiles';
 
 const program = createCommand();
+
+async function warnOnProdDatabase(): Promise<void> {
+  if (process.env.DATABASE_URL?.includes('postgres_fcu@localhost')) {
+    return;
+  }
+  const response = await prompts({
+    type: 'confirm',
+    name: 'agree',
+    message: 'Vous allez lancer la commande sur une base non locale, êtes-vous sûr de vouloir continuer ?',
+    initial: true,
+  });
+
+  if (!response.agree) {
+    process.exit(2);
+  }
+}
 
 program
   .name('FCU CLI')
@@ -343,6 +360,8 @@ program
 
 (async () => {
   try {
+    await warnOnProdDatabase();
+
     await program.parseAsync();
   } catch (err) {
     console.error('command error', err);
