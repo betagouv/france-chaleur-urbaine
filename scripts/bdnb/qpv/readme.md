@@ -15,6 +15,8 @@ Prérequis :
   - public.reseaux_de_froid
   - public.zone_de_developpement_prioritaire
   - public.zones_et_reseaux_en_construction
+  - public.zone_a_potentiel_chaud
+  - public.zone_a_potentiel_fort_chaud
   - data.quartiers_prioritaires
 - psql (CLI postgresql)
 - [parallel](https://www.gnu.org/software/parallel/) (Pour macOS : `brew install parallel`)

@@ -8,6 +8,8 @@
 # - ID du réseau ou des réseaux (si ID existant)
 # - présence de réseaux de chaleur en construction (oui/non)
 # - présence d'un périmètre de développement prioritaire dans le QPV (oui/non)
+# - présence d'une zone à fort potentiel pour la création d'un réseau dans le QPV (oui/non)
+# - présence d'une zone à potentiel pour la création d'un réseau dans le QPV (oui/non)
 # - nb bâtiments et nb logements à chauffage collectif gaz à moins de 50 m d'un réseau de chaleur existant ou en construction dans le QPV
 #   - dont en PDP
 # - nb bâtiments et nb logements à chauffage collectif fioul à moins de 50 m d'un réseau de chaleur existant ou en construction dans le QPV
@@ -75,12 +77,26 @@ with
         WHERE ST_Intersects(geom, qp.geom)
       ) as contient_reseaux_de_chaleur_en_construction,
 
-      --  présence d'un périmètre de développement prioritaire dans le QPV
+      -- présence d'un périmètre de développement prioritaire dans le QPV
       (
         SELECT case when count(id_fcu) > 0 then 'oui' else 'non' end
         FROM zone_de_developpement_prioritaire
         WHERE ST_Intersects(geom, qp.geom)
-      ) as contient_perimetre_de_developpement_prioritaire
+      ) as contient_perimetre_de_developpement_prioritaire,
+
+      -- présence d'une zone à fort potentiel pour la création d'un réseau dans le QPV
+      (
+        SELECT case when count(*) > 0 then 'oui' else 'non' end
+        FROM zone_a_potentiel_chaud
+        WHERE ST_Intersects(geom, qp.geom)
+      ) as contient_zone_a_potentiel_chaud,
+
+      -- présence d'une zone à potentiel pour la création d'un réseau dans le QPV
+      (
+        SELECT case when count(*) > 0 then 'oui' else 'non' end
+        FROM zone_a_potentiel_fort_chaud
+        WHERE ST_Intersects(geom, qp.geom)
+      ) as contient_zone_a_potentiel_fort_chaud
 
     from data.quartiers_prioritaires qp
   ),
@@ -278,7 +294,63 @@ with
         and type_installation_chauffage = 'collectif'
         and type_energie_chauffage = 'fioul'
         and "zone_reseau_en_construction - in_zone" is true
-      THEN nb_logements END), 0) as "dans zone réseau construction - nb logements collectif fioul"
+      THEN nb_logements END), 0) as "dans zone réseau construction - nb logements collectif fioul",
+
+      -- nb bâtiments et nb logements à chauffage collectif gaz dans le QPV dans une zone à potentiel
+      coalesce(sum (CASE WHEN
+        "quartier_prioritaire - in_zone" is true
+        and type_installation_chauffage = 'collectif'
+        and type_energie_chauffage = 'gaz'
+        and "zone_a_potentiel_chaud - in_zone" is true
+      THEN 1 END), 0) as "dans zone à potentiel - nb batiments collectif gaz",
+      coalesce(sum (CASE WHEN
+        "quartier_prioritaire - in_zone" is true
+        and type_installation_chauffage = 'collectif'
+        and type_energie_chauffage = 'gaz'
+        and "zone_a_potentiel_chaud - in_zone" is true
+      THEN nb_logements END), 0) as "dans zone à potentiel - nb logements collectif gaz",
+
+      -- nb bâtiments et nb logements à chauffage collectif fioul dans le QPV dans une zone à potentiel
+      coalesce(sum (CASE WHEN
+        "quartier_prioritaire - in_zone" is true
+        and type_installation_chauffage = 'collectif'
+        and type_energie_chauffage = 'fioul'
+        and "zone_a_potentiel_chaud - in_zone" is true
+      THEN 1 END), 0) as "dans zone à potentiel - nb batiments collectif fioul",
+      coalesce(sum (CASE WHEN
+        "quartier_prioritaire - in_zone" is true
+        and type_installation_chauffage = 'collectif'
+        and type_energie_chauffage = 'fioul'
+        and "zone_a_potentiel_chaud - in_zone" is true
+      THEN nb_logements END), 0) as "dans zone à potentiel - nb logements collectif fioul",
+
+      -- nb bâtiments et nb logements à chauffage collectif gaz dans le QPV dans une zone à fort potentiel
+      coalesce(sum (CASE WHEN
+        "quartier_prioritaire - in_zone" is true
+        and type_installation_chauffage = 'collectif'
+        and type_energie_chauffage = 'gaz'
+        and "zone_a_potentiel_fort_chaud - in_zone" is true
+      THEN 1 END), 0) as "dans zone à fort potentiel - nb batiments collectif gaz",
+      coalesce(sum (CASE WHEN
+        "quartier_prioritaire - in_zone" is true
+        and type_installation_chauffage = 'collectif'
+        and type_energie_chauffage = 'gaz'
+        and "zone_a_potentiel_fort_chaud - in_zone" is true
+      THEN nb_logements END), 0) as "dans zone à fort potentiel - nb logements collectif gaz",
+
+      -- nb bâtiments et nb logements à chauffage collectif fioul dans le QPV dans une zone à fort potentiel
+      coalesce(sum (CASE WHEN
+        "quartier_prioritaire - in_zone" is true
+        and type_installation_chauffage = 'collectif'
+        and type_energie_chauffage = 'fioul'
+        and "zone_a_potentiel_fort_chaud - in_zone" is true
+      THEN 1 END), 0) as "dans zone à fort potentiel - nb batiments collectif fioul",
+      coalesce(sum (CASE WHEN
+        "quartier_prioritaire - in_zone" is true
+        and type_installation_chauffage = 'collectif'
+        and type_energie_chauffage = 'fioul'
+        and "zone_a_potentiel_fort_chaud - in_zone" is true
+      THEN nb_logements END), 0) as "dans zone à fort potentiel - nb logements collectif fioul"
 
 
     from data.quartiers_prioritaires qp

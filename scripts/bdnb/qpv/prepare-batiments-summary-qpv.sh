@@ -31,7 +31,11 @@ SELECT
   perimetre_de_developpement_prioritaire.id_sncu as "perimetre_de_developpement_prioritaire - id_sncu",
   coalesce(perimetre_de_developpement_prioritaire.in_zone, false) as "perimetre_de_developpement_prioritaire - in_zone",
   quartier_prioritaire.code_qp as "quartier_prioritaire - code_qp",
-  coalesce(quartier_prioritaire.in_zone, false) as "quartier_prioritaire - in_zone"
+  coalesce(quartier_prioritaire.in_zone, false) as "quartier_prioritaire - in_zone",
+  zone_a_potentiel_chaud.ogc_fid as "zone_a_potentiel_chaud - id",
+  coalesce(zone_a_potentiel_chaud.in_zone, false) as "zone_a_potentiel_chaud - in_zone",
+  zone_a_potentiel_fort_chaud.ogc_fid as "zone_a_potentiel_fort_chaud - id",
+  coalesce(zone_a_potentiel_fort_chaud.in_zone, false) as "zone_a_potentiel_fort_chaud - in_zone"
 
 FROM bdnb_registre_2022 as batiment
 
@@ -104,6 +108,32 @@ left join lateral (
   ) sub
   where in_zone is true
 ) as perimetre_de_developpement_prioritaire on true
+
+left join lateral (
+  select *
+  from (
+      select
+        ogc_fid,
+        st_intersects(zone.geom, batiment.geom) as in_zone
+      from zone_a_potentiel_chaud zone
+      order by zone.geom <-> batiment.geom
+      limit 1
+  ) sub
+  where in_zone is true
+) as zone_a_potentiel_chaud on true
+
+left join lateral (
+  select *
+  from (
+      select
+        ogc_fid,
+        st_intersects(zone.geom, batiment.geom) as in_zone
+      from zone_a_potentiel_fort_chaud zone
+      order by zone.geom <-> batiment.geom
+      limit 1
+  ) sub
+  where in_zone is true
+) as zone_a_potentiel_fort_chaud on true
 
 -- spécifique QPV
 left join lateral (
