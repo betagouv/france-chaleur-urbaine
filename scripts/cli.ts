@@ -287,20 +287,20 @@ program
   });
 
 program
-  .command('user:sync-from-airtable')
+  .command('users:sync-from-airtable')
   .description('Sync users created in Airtable in PostGres.')
   .action(async () => {
     if (!process.env.DRY_RUN) {
       logger.info('');
       logger.info('USAGE:');
-      logger.info('⚠️ DRY_RUN is not set, use DRY_RUN=<true|false> yarn cli user:sync-from-airtable');
+      logger.info('⚠️ DRY_RUN is not set, use DRY_RUN=<true|false> yarn cli users:sync-from-airtable');
       process.exit(1);
     }
     if (!process.env.NODE_ENV) {
       logger.info('');
       logger.info('USAGE:');
       logger.info(
-        '⚠️ NODE_ENV is not set and data will not be put in DB if NODE_ENV is not production, use DRY_RUN=<true|false> NODE_ENV=production yarn cli user:sync-from-airtable'
+        '⚠️ NODE_ENV is not set and data will not be put in DB if NODE_ENV is not production, use DRY_RUN=<true|false> NODE_ENV=production yarn cli users:sync-from-airtable'
       );
       process.exit(1);
     }
@@ -308,13 +308,13 @@ program
   });
 
 program
-  .command('user:sync-to-airtable')
+  .command('users:sync-to-airtable')
   .description('Sync users info from PostGres to Airtable.')
   .action(async () => {
     if (!process.env.DRY_RUN) {
       logger.info('');
       logger.info('USAGE:');
-      logger.info('⚠️ DRY_RUN is not set, use DRY_RUN=<true|false> yarn cli user:sync-to-airtable');
+      logger.info('⚠️ DRY_RUN is not set, use DRY_RUN=<true|false> yarn cli users:sync-to-airtable');
       process.exit(1);
     }
     await syncLastConnectionFromUsers();
@@ -327,14 +327,14 @@ program
     if (!process.env.DRY_RUN) {
       logger.info('');
       logger.info('USAGE:');
-      logger.info('⚠️ DRY_RUN is not set, use DRY_RUN=<true|false> yarn cli user:sync-from-airtable');
+      logger.info('⚠️ DRY_RUN is not set, use DRY_RUN=<true|false> yarn cli users:sync-from-airtable');
       process.exit(1);
     }
     if (!process.env.NODE_ENV) {
       logger.info('');
       logger.info('USAGE:');
       logger.info(
-        '⚠️ NODE_ENV is not set and data will not be put in DB if NODE_ENV is not production, use DRY_RUN=<true|false> NODE_ENV=production yarn cli user:sync-from-airtable'
+        '⚠️ NODE_ENV is not set and data will not be put in DB if NODE_ENV is not production, use DRY_RUN=<true|false> NODE_ENV=production yarn cli users:sync-from-airtable'
       );
       process.exit(1);
     }
