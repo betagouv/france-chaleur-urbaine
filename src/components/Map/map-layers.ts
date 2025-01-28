@@ -7,6 +7,7 @@ import {
 } from 'maplibre-gl';
 
 import { clientConfig } from '@/client-config';
+import { customGeojsonLayersSpec } from '@/components/Map/layers/customGeojson';
 import { type MapConfiguration } from '@/components/Map/map-configuration';
 import { deepMergeObjects, isDefined } from '@/utils/core';
 
@@ -118,6 +119,7 @@ export type MapLayerSpecification<ILayerId = string> = Omit<LayerSpecification, 
   );
 
 export const mapLayers = [
+  ...customGeojsonLayersSpec,
   ...enrrMobilisablesZonesGeothermieProfondeLayersSpec,
   ...zonesPotentielChaudLayersSpec,
   ...caracteristiquesBatimentsLayersSpec,
