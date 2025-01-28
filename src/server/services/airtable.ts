@@ -131,14 +131,7 @@ export const syncGestionnairesWithUsers = async () => {
           role: USER_ROLE.GESTIONNAIRE,
         };
 
-        if (!DRY_RUN && process.env.NODE_ENV !== 'production') {
-          logger.error(
-            `User ${email} not created in database as it will send email to users, you need to set NODE_ENV=production to create users`
-          );
-          return;
-        }
-
-        if (!DRY_RUN && process.env.NODE_ENV === 'production') {
+        if (!DRY_RUN) {
           try {
             await db('users').insert(data);
             await base(Airtable.GESTIONNAIRES).update(
@@ -154,7 +147,7 @@ export const syncGestionnairesWithUsers = async () => {
         }
 
         logDry(`    📩 Sending inscription email to ${email}`);
-        if (!DRY_RUN && process.env.NODE_ENV === 'production') await sendInscriptionEmail(email);
+        if (!DRY_RUN) await sendInscriptionEmail(email);
         stats.totalCreated++;
         return;
       }
