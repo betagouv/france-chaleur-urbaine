@@ -15,6 +15,7 @@ import {
 } from '@/server/services/airtable';
 import { type DatabaseSourceId, type DatabaseTileInfo, tilesInfo, zDatabaseSourceId } from '@/server/services/tiles.config';
 import { type ApiAccount } from '@/types/ApiAccount';
+import { sleep } from '@/utils/time';
 
 import { type KnownAirtableBase, knownAirtableBases } from './airtable/bases';
 import { createModificationsReseau } from './airtable/create-modifications-reseau';
@@ -45,6 +46,8 @@ async function warnOnProdDatabase(): Promise<void> {
   if (!response.agree) {
     process.exit(2);
   }
+
+  await sleep(2000); // Wait 2 seconds in case operator changes his mind
 }
 
 program
