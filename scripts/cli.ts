@@ -1,14 +1,21 @@
 import { readFile } from 'fs/promises';
 
 import { InvalidArgumentError, createCommand } from '@commander-js/extra-typings';
+import prompts from 'prompts';
 
 import { saveStatsInDB } from '@/server/cron/saveStatsInDB';
 import db from '@/server/db';
 import { kdb, sql } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
-import { type ApiNetwork, createGestionnairesFromAPI, syncGestionnairesWithUsers } from '@/server/services/airtable';
+import {
+  type ApiNetwork,
+  createGestionnairesFromAPI,
+  syncGestionnairesWithUsers,
+  syncLastConnectionFromUsers,
+} from '@/server/services/airtable';
 import { type DatabaseSourceId, type DatabaseTileInfo, tilesInfo, zDatabaseSourceId } from '@/server/services/tiles.config';
 import { type ApiAccount } from '@/types/ApiAccount';
+import { sleep } from '@/utils/time';
 
 import { type KnownAirtableBase, knownAirtableBases } from './airtable/bases';
 import { createModificationsReseau } from './airtable/create-modifications-reseau';
@@ -24,6 +31,24 @@ import { upsertFixedSimulateurData } from './simulateur/import';
 import { fillTiles } from './utils/tiles';
 
 const program = createCommand();
+
+async function warnOnProdDatabase(): Promise<void> {
+  if (process.env.DATABASE_URL?.includes('postgres_fcu@localhost')) {
+    return;
+  }
+  const response = await prompts({
+    type: 'confirm',
+    name: 'agree',
+    message: 'Vous allez lancer la commande sur une base non locale, êtes-vous sûr de vouloir continuer ?',
+    initial: true,
+  });
+
+  if (!response.agree) {
+    process.exit(2);
+  }
+
+  await sleep(2000); // Wait 2 seconds in case operator changes his mind
+}
 
 program
   .name('FCU CLI')
@@ -282,25 +307,29 @@ program
   });
 
 program
-  .command('sync-users-from-airtable')
+  .command('users:sync-from-airtable')
   .description('Sync users created in Airtable in PostGres.')
   .action(async () => {
     if (!process.env.DRY_RUN) {
       logger.info('');
       logger.info('USAGE:');
-      logger.info('⚠️ DRY_RUN is not set, use DRY_RUN=<true|false> yarn cli sync-users-from-airtable');
+      logger.info('⚠️ DRY_RUN is not set, use DRY_RUN=<true|false> yarn cli users:sync-from-airtable');
       process.exit(1);
     }
-    if (!process.env.NODE_ENV) {
+    await syncGestionnairesWithUsers();
+  });
+
+program
+  .command('users:sync-last-connection-to-airtable')
+  .description('Sync users last connection from PostGres to Airtable.')
+  .action(async () => {
+    if (!process.env.DRY_RUN) {
       logger.info('');
       logger.info('USAGE:');
-      logger.info(
-        '⚠️ NODE_ENV is not set and data will not be put in DB if NODE_ENV is not production, use DRY_RUN=<true|false> NODE_ENV=production yarn cli sync-users-from-airtable'
-      );
+      logger.info('⚠️ DRY_RUN is not set, use DRY_RUN=<true|false> yarn cli users:sync-last-connection-to-airtable');
       process.exit(1);
     }
-
-    await syncGestionnairesWithUsers();
+    await syncLastConnectionFromUsers();
   });
 
 program
@@ -326,6 +355,8 @@ program
 
 (async () => {
   try {
+    await warnOnProdDatabase();
+
     await program.parseAsync();
   } catch (err) {
     console.error('command error', err);

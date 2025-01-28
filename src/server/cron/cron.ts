@@ -27,7 +27,10 @@ function registerCrons() {
 
   new cron.CronJob({
     cronTime: '00 * * * *', // toutes les heures
-    onTick: () => launchJob('syncGestionnairesWithUsers'),
+    onTick: async () => {
+      launchJob('syncGestionnairesWithUsers');
+      launchJob('syncLastConnectionFromUsers', '1 hour');
+    },
     start: true,
     timeZone: 'Europe/Paris',
   });

@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 
 import db from '@/server/db';
 import base from '@/server/db/airtable';
+import { kdb, sql } from '@/server/db/kysely';
 import { parentLogger } from '@/server/helpers/logger';
 import { type ApiAccount } from '@/types/ApiAccount';
 import { Airtable } from '@/types/enum/Airtable';
@@ -25,6 +26,68 @@ export interface ApiNetwork {
   public_name?: string;
   contacts: string[];
 }
+
+export const syncLastConnectionFromUsers = async (interval?: string) => {
+  logDry(`Sync last connection from "users" table`);
+
+  let query = kdb
+    .selectFrom('users')
+    .select(['id', 'email', 'active', 'last_connection'])
+    .where('last_connection', 'is not', null)
+    .where('active', '=', true)
+    .where('email', 'like', '%@%'); // Filtre les comptés spéciaux qui ne sont pas des emails et donc pas dans Airtable
+
+  if (interval) {
+    query = query.where('last_connection', '>', sql.raw<Date>(`NOW() - INTERVAL '${interval}'`));
+  }
+
+  const users = await query.execute();
+
+  const stats = { totalUpdated: 0, totalUnchanged: 0 };
+
+  logger.info(`Found ${users.length} users which last connected ${interval ? `in the last ${interval}` : 'at least once'}`);
+
+  if (users.length === 0) {
+    return stats;
+  }
+  const gestionnaires = await base(Airtable.GESTIONNAIRES).select().all();
+
+  await Promise.all(
+    users.map(async ({ email, last_connection }, index) => {
+      logger.info(`${index + 1}/${users.length} updating last connection for ${email}`);
+
+      const gestionnaire = gestionnaires.find((gestionnaire) => gestionnaire.get('Email') === email);
+      if (!gestionnaire) {
+        logDry(` 💤 No gestionnaire found for ${email}`);
+        return;
+      }
+
+      if (gestionnaire.get('Dernière connexion') === last_connection?.toISOString()) {
+        logDry(` 💤 gestionnaire ${email} has same last connexion`);
+        stats.totalUnchanged++;
+        return;
+      }
+
+      const data = {
+        'Dernière connexion': last_connection?.toISOString(),
+      };
+      logDry(` 🔄 Update ${email} with`, JSON.stringify(data));
+      if (!DRY_RUN) {
+        try {
+          await base(Airtable.GESTIONNAIRES).update(gestionnaire.id, data, { typecast: true });
+        } catch (e) {
+          logger.error(`Could not update ${email} to ${Airtable.GESTIONNAIRES} with ${JSON.stringify(data)}`, { error: e });
+          return;
+        }
+      }
+      stats.totalUpdated++;
+    })
+  );
+  logger.info(`======== Sync last connection from userds`);
+  logger.info(`Total updated: ${stats.totalUpdated}, unchanged: ${stats.totalUnchanged}`);
+  logger.info(`========`);
+  return stats;
+};
 
 export const syncGestionnairesWithUsers = async () => {
   await sanitizeGestionnairesEmails();
@@ -67,14 +130,7 @@ export const syncGestionnairesWithUsers = async () => {
           role: USER_ROLE.GESTIONNAIRE,
         };
 
-        if (!DRY_RUN && process.env.NODE_ENV !== 'production') {
-          logger.error(
-            `User ${email} not created in database as it will send email to users, you need to set NODE_ENV=production to create users`
-          );
-          return;
-        }
-
-        if (!DRY_RUN && process.env.NODE_ENV === 'production') {
+        if (!DRY_RUN) {
           try {
             await db('users').insert(data);
             await base(Airtable.GESTIONNAIRES).update(
@@ -90,7 +146,7 @@ export const syncGestionnairesWithUsers = async () => {
         }
 
         logDry(`    📩 Sending inscription email to ${email}`);
-        if (!DRY_RUN && process.env.NODE_ENV === 'production') await sendInscriptionEmail(email);
+        if (!DRY_RUN) await sendInscriptionEmail(email);
         stats.totalCreated++;
         return;
       }
@@ -102,6 +158,7 @@ export const syncGestionnairesWithUsers = async () => {
             await db('users').update('active', false).where('id', user.id);
           } catch (e) {
             logger.error(`Could not create ${email} in database`, { error: e });
+            return;
           }
         }
         stats.totalDeactivated++;
@@ -139,6 +196,7 @@ export const syncGestionnairesWithUsers = async () => {
     })
   );
 
+  logger.info(`======== Sync gestionnaires with users`);
   logger.info(`Total created: ${stats.totalCreated}, updated: ${stats.totalUpdated}, deactivated: ${stats.totalDeactivated}`);
   logger.info(`========`);
 
