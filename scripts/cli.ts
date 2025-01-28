@@ -321,28 +321,6 @@ program
   });
 
 program
-  .command('sync-last')
-  .description('Sync users created in Airtable in PostGres.')
-  .action(async () => {
-    if (!process.env.DRY_RUN) {
-      logger.info('');
-      logger.info('USAGE:');
-      logger.info('⚠️ DRY_RUN is not set, use DRY_RUN=<true|false> yarn cli users:sync-from-airtable');
-      process.exit(1);
-    }
-    if (!process.env.NODE_ENV) {
-      logger.info('');
-      logger.info('USAGE:');
-      logger.info(
-        '⚠️ NODE_ENV is not set and data will not be put in DB if NODE_ENV is not production, use DRY_RUN=<true|false> NODE_ENV=production yarn cli users:sync-from-airtable'
-      );
-      process.exit(1);
-    }
-    await syncGestionnairesWithUsers();
-    await syncLastConnectionFromUsers();
-  });
-
-program
   .command('bdnd:export')
   .description('')
   .action(async () => {
