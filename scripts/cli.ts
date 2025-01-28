@@ -320,13 +320,13 @@ program
   });
 
 program
-  .command('users:sync-to-airtable')
-  .description('Sync users info from PostGres to Airtable.')
+  .command('users:sync-last-connection-to-airtable')
+  .description('Sync users last connection from PostGres to Airtable.')
   .action(async () => {
     if (!process.env.DRY_RUN) {
       logger.info('');
       logger.info('USAGE:');
-      logger.info('⚠️ DRY_RUN is not set, use DRY_RUN=<true|false> yarn cli users:sync-to-airtable');
+      logger.info('⚠️ DRY_RUN is not set, use DRY_RUN=<true|false> yarn cli users:sync-last-connection-to-airtable');
       process.exit(1);
     }
     await syncLastConnectionFromUsers();
