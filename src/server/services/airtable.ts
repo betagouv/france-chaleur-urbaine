@@ -33,7 +33,7 @@ export const syncLastConnectionFromUsers = async (interval?: string) => {
     .select('id', 'email', 'active', 'last_connection')
     .where({ active: true })
     .whereNotNull('last_connection')
-    .whereLike('email', '%@%');
+    .whereLike('email', '%@%'); // Filtre les comptés spéciaux qui ne sont pas des emails et donc pas dans Airtable
 
   if (interval) {
     query = query.where('last_connection', '>', db.raw(`NOW() - INTERVAL '${interval}'`));
