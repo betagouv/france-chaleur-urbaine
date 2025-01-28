@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 
 import db from '@/server/db';
 import base from '@/server/db/airtable';
+import { kdb, sql } from '@/server/db/kysely';
 import { parentLogger } from '@/server/helpers/logger';
 import { type ApiAccount } from '@/types/ApiAccount';
 import { Airtable } from '@/types/enum/Airtable';
@@ -29,18 +30,20 @@ export interface ApiNetwork {
 export const syncLastConnectionFromUsers = async (interval?: string) => {
   logDry(`Sync last connection from "users" table`);
 
-  let query = db('users')
-    .select('id', 'email', 'active', 'last_connection')
-    .where({ active: true })
-    .whereNotNull('last_connection')
-    .whereLike('email', '%@%'); // Filtre les comptés spéciaux qui ne sont pas des emails et donc pas dans Airtable
+  let query = kdb
+    .selectFrom('users')
+    .select(['id', 'email', 'active', 'last_connection'])
+    .where('last_connection', 'is not', null)
+    .where('active', '=', true)
+    .where('email', 'like', '%@%'); // Filtre les comptés spéciaux qui ne sont pas des emails et donc pas dans Airtable
 
   if (interval) {
-    query = query.where('last_connection', '>', db.raw(`NOW() - INTERVAL '${interval}'`));
+    query = query.where('last_connection', '>', sql.raw<Date>(`NOW() - INTERVAL '${interval}'`));
   }
-  const stats = { totalUpdated: 0, totalUnchanged: 0 };
 
-  const users = await query;
+  const users = await query.execute();
+
+  const stats = { totalUpdated: 0, totalUnchanged: 0 };
 
   logger.info(`Found ${users.length} users which last connected ${interval ? `in the last ${interval}` : 'at least once'}`);
 
@@ -59,7 +62,7 @@ export const syncLastConnectionFromUsers = async (interval?: string) => {
         return;
       }
 
-      if (gestionnaire.get('Dernière connexion') === last_connection.toISOString()) {
+      if (gestionnaire.get('Dernière connexion') === last_connection?.toISOString()) {
         logDry(` 💤 gestionnaire ${email} has same last connexion`);
         stats.totalUnchanged++;
         return;
@@ -67,7 +70,9 @@ export const syncLastConnectionFromUsers = async (interval?: string) => {
 
       stats.totalUpdated++;
 
-      const data = { 'Dernière connexion': last_connection };
+      const data = {
+        'Dernière connexion': last_connection?.toISOString(),
+      };
       logDry(` 🔄 Update ${email} with`, JSON.stringify(data));
       if (!DRY_RUN) {
         try {
