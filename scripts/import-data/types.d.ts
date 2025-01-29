@@ -1,3 +1,3 @@
 export interface ImportAdapter {
-  importData(filepath?: string): void;
+  importData(filepath?: string): Promise<any>;
 }
