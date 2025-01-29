@@ -21,7 +21,7 @@
 
 4. Si mauvaise mise à jour des tiles : mise à jour de la table *reseaux_de_chaleur_tiles*
     - Vider la table (sans la supprimer)
-    - Lancer le script fillTiles.ts : `npx tsx scripts/fillTiles.ts network 0 17`
+    - Lancer le script tiles:fill : `yarn cli tiles:fill network 0 17`
 <br/><br/>
 
 ## Deuxième étape - en dev
@@ -101,5 +101,5 @@ Script :
 2. Zone de développement prioritaire
     - Tables : *zone_de_developpement_prioritaire* et *zone_de_developpement_prioritaire_tiles*
     - Dans les scripts *network* devient *zoneDP*
-    - Les données ne sont pas présentes dans le AirTable donc il faut sauter cette étape et utiliser le script fillTiles directement
-        - `npx tsx scripts/fillTiles.ts zoneDP 0 17`
+    - Les données ne sont pas présentes dans le AirTable donc il faut sauter cette étape et utiliser le script tiles:fill directement
+        - `yarn cli tiles:fill zoneDP 0 17`
