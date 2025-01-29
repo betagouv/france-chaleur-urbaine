@@ -65,7 +65,7 @@ psql postgres://postgres:postgres_fcu@localhost:5432/postgres -c "COPY (
 ) TO STDOUT" | sed -e 's/\\\\"/\\"/g' > reseaux_de_chaleur.geojson
 
 # générer les tuiles à partir du fichier geojson
-yarn cli generate-tiles-from-file reseaux_de_chaleur.geojson reseaux_de_chaleur_tiles 0 14
+yarn cli tiles:generate-from-file reseaux_de_chaleur.geojson reseaux_de_chaleur_tiles 0 14
 
 # synchronisation avec la BDD de dev ou prod
 ./scripts/copyLocalTableToRemote.sh dev reseaux_de_chaleur_tiles --data-only

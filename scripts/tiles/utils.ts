@@ -1,3 +1,5 @@
+import { readFile } from 'fs/promises';
+
 import geojsonvt from 'geojson-vt';
 import vtpbf from 'vt-pbf';
 
@@ -50,6 +52,32 @@ export const generateTilesFromGeoJSON = async (geojson: GeoJSON.GeoJSON, destina
       duration: Date.now() - startTime,
     });
   }
+};
+
+export const generateFromFile = async (fileName: string, destinationTable: string, zoomMin: number, zoomMax: number) => {
+  const geojson = JSON.parse(await readFile(fileName, 'utf8'));
+
+  logger.info('start importing geojson features', {
+    count: geojson.features?.length,
+  });
+
+  if (!(await db.schema.hasTable(destinationTable))) {
+    logger.info('destination table does not exist, creating it', {
+      table: destinationTable,
+    });
+    await db.schema.createTable(destinationTable, (table) => {
+      table.bigInteger('x').notNullable();
+      table.bigInteger('y').notNullable();
+      table.bigInteger('z').notNullable();
+      table.specificType('tile', 'bytea').notNullable();
+      table.primary(['x', 'y', 'z']);
+    });
+  }
+
+  logger.info('flushing table', { table: destinationTable });
+  await db(destinationTable).delete();
+
+  await generateTilesFromGeoJSON(geojson, destinationTable, zoomMin, zoomMax);
 };
 
 /**

@@ -27,11 +27,11 @@ import { readFileGeometry } from './helpers/geo';
 import { runShellScript } from './helpers/shell';
 import DataImporter, { type AdapterName } from './import-data';
 import { downloadAndUpdateNetwork, downloadNetwork } from './networks/download-network';
-import { generateTilesFromGeoJSON } from './networks/generate-tiles';
 import { applyGeometryUpdates } from './networks/geometry-updates';
 import { importMvtDirectory } from './networks/import-mvt-directory';
 import { syncPostgresToAirtable } from './networks/sync-pg-to-airtable';
 import { upsertFixedSimulateurData } from './simulateur/import';
+import { generateFromFile } from './tiles/utils';
 import { fillTiles } from './utils/tiles';
 
 const program = createCommand();
@@ -132,41 +132,6 @@ program
   });
 
 program
-  .command('generate-tiles-from-file')
-  .description(
-    "Génère des tuiles vectorielles à partir d'un fichier GeoJSON et les enregistre dans postgres. Exemple : `yarn cli generate-tiles-from-file reseaux_de_chaleur.geojson reseaux_de_chaleur_tiles 0 14`"
-  )
-  .argument('<fileName>', 'input file (format GeoJSON)')
-  .argument('<destinationTable>', 'Destination table')
-  .argument('[zoomMin]', 'Minimum zoom', (v) => parseInt(v), 0)
-  .argument('[zoomMax]', 'Maximum zoom', (v) => parseInt(v), 17)
-  .action(async (fileName, destinationTable, zoomMin, zoomMax) => {
-    const geojson = JSON.parse(await readFile(fileName, 'utf8'));
-
-    logger.info('start importing geojson features', {
-      count: geojson.features?.length,
-    });
-
-    if (!(await db.schema.hasTable(destinationTable))) {
-      logger.info('destination table does not exist, creating it', {
-        table: destinationTable,
-      });
-      await db.schema.createTable(destinationTable, (table) => {
-        table.bigInteger('x').notNullable();
-        table.bigInteger('y').notNullable();
-        table.bigInteger('z').notNullable();
-        table.specificType('tile', 'bytea').notNullable();
-        table.primary(['x', 'y', 'z']);
-      });
-    }
-
-    logger.info('flushing table', { table: destinationTable });
-    await db(destinationTable).delete();
-
-    await generateTilesFromGeoJSON(geojson, destinationTable, zoomMin, zoomMax);
-  });
-
-program
   .command('update-networks')
   .argument('<network-id>', 'Network id', (v) => zDatabaseSourceId.parse(v))
   .argument('[zoomMin]', 'Minimum zoom', (v) => parseInt(v), 0)
@@ -192,6 +157,19 @@ program
       console.error(error);
       process.exit(1);
     }
+  });
+
+program
+  .command('tiles:generate-from-file')
+  .description(
+    "Génère des tuiles vectorielles à partir d'un fichier GeoJSON et les enregistre dans postgres. Exemple : `yarn cli tiles:generate-from-file reseaux_de_chaleur.geojson reseaux_de_chaleur_tiles 0 14`"
+  )
+  .argument('<fileName>', 'input file (format GeoJSON)')
+  .argument('<destinationTable>', 'Destination table')
+  .argument('[zoomMin]', 'Minimum zoom', (v) => parseInt(v), 0)
+  .argument('[zoomMax]', 'Maximum zoom', (v) => parseInt(v), 17)
+  .action(async (fileName, destinationTable, zoomMin, zoomMax) => {
+    await generateFromFile(fileName, destinationTable, zoomMin, zoomMax);
   });
 
 program
