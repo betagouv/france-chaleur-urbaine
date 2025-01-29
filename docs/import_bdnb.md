@@ -15,7 +15,7 @@ Pour l'instant tout fonctionne par région. Une table par région.
     - Les appels aux colonnes des tables :
         - Uniquement l'ID :
             - scripts/updateDemands.ts
-            - utils/tiles.ts
+            - tiles/utils.ts
             - pages/api/airtable/records/index.ts
         - Toutes :
             - src/core/infrastructure/repository/
@@ -24,7 +24,7 @@ Pour l'instant tout fonctionne par région. Une table par région.
             - pages/api/dpe/index.ts
             - services/tile.config.ts
     - Mettre à jour l'index max dans le script de calculs des tiles :
-        - utils/tiles.ts : const maxIndex
+        - tiles/utils.ts : const maxIndex
 
 
 3. Mettre à jour manuellement la colonne *bnb_nom* de la table *regions* avec le nom des nouvelles tables

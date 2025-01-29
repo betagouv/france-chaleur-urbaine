@@ -31,8 +31,7 @@ import { applyGeometryUpdates } from './networks/geometry-updates';
 import { importMvtDirectory } from './networks/import-mvt-directory';
 import { syncPostgresToAirtable } from './networks/sync-pg-to-airtable';
 import { upsertFixedSimulateurData } from './simulateur/import';
-import { generateFromFile } from './tiles/utils';
-import { fillTiles } from './utils/tiles';
+import { fillTiles, generateFromFile } from './tiles/utils';
 
 const program = createCommand();
 
@@ -91,7 +90,7 @@ program
   });
 
 program
-  .command('fill-tiles')
+  .command('tiles:fill')
   .description("Regénère les tuiles d'une table en base")
   .argument('<network-id>', 'Network id', (v) => zDatabaseSourceId.parse(v))
   .argument('[zoomMin]', 'Minimum zoom', (v) => parseInt(v), 0)

@@ -1,6 +1,6 @@
 # Génération des tuiles des réseaux de chaleur
 
-Processus légèrement différent du fill-tiles classique étant donné qu'on a besoin de précalculer certaines données.
+Processus légèrement différent du tiles:fill classique étant donné qu'on a besoin de précalculer certaines données.
 
 ```sh
 # générer un fichier geojson depuis la table reseaux_de_chaleur
