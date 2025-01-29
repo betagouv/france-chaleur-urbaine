@@ -1,6 +1,9 @@
+import EtudeEnCoursAdapter from './adapters/etudes-en-cours';
 import { type ImportAdapter } from './types';
 
-const adapters = {};
+const adapters = {
+  'etudes-en-cours': EtudeEnCoursAdapter,
+};
 
 export type AdapterName = keyof typeof adapters;
 
