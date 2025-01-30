@@ -18,3 +18,11 @@ L'intégration du DSFR ne semble pas complète et certaines icônes sont introuv
 mkdir -p public/icons/system
 cp -a node_modules/@gouvfr/dsfr/dist/icons/system/checkbox-circle-line.svg public/icons/system/checkbox-circle-line.svg
 ```
+
+## Utilitaires de manipulation géographique
+
+Afin de pouvoir lancer les commandes de manipulation de fichier géographiques, nous avons besoin de `ogr2ogr` qui est fourni par [GDAL](https://gdal.org/en/stable/download.html)
+
+```sh
+brew install gdal # Installer sur mac
+```
