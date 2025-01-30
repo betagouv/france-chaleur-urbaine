@@ -1,4 +1,4 @@
-import { readFile } from 'fs/promises';
+import { readFile, unlink } from 'fs/promises';
 
 import { InvalidArgumentError, createCommand } from '@commander-js/extra-typings';
 import prompts from 'prompts';
@@ -184,6 +184,45 @@ program
 
       const filepath = await tileManager.generateTilesGeoJSON(options.filepath);
       console.info(`GeoJSON generated in ${filepath}`);
+    } catch (error: any) {
+      console.error(error);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('tiles:generate')
+  .description(
+    "Génère des tuiles vectorielles à partir d'une ressource en passant par un fichier GeoJSON temporaire. Exemple : `yarn cli tiles:generate reseaux_de_chaleur reseaux_de_chaleur_tiles 0 14`"
+  )
+  .argument('<type>', `Type de ressource à générer - ${Object.keys(tilesAdapters).join(', ')}`)
+  .argument('[zoomMin]', 'Zoom minimum', (v) => parseInt(v), 0)
+  .argument('[zoomMax]', 'Zoom maximum', (v) => parseInt(v), 17)
+  .action(async (type, zoomMin, zoomMax) => {
+    try {
+      logger.info(`Génération du fichier GeoJSON pour ${type}`);
+      const tileManager = tilesManager(type as TilesName);
+
+      const filepath = await tileManager.generateTilesGeoJSON();
+
+      if (!filepath) {
+        throw new Error('Le fichier GeoJSON n’a pas été généré.');
+      }
+
+      logger.info(`GeoJSON généré: ${filepath}`);
+
+      const tilesDatabaseName = `${tileManager.databaseName}_tiles`;
+
+      logger.info(`Importation dans la table: ${tilesDatabaseName}`);
+      await importGeoJSONToTileTable(filepath, tilesDatabaseName, zoomMin, zoomMax);
+
+      logger.info(`Suppression du fichier temporaire ${filepath}`);
+      await unlink(filepath);
+
+      logger.info(`La table ${tilesDatabaseName} a été populée avec les données pour ${type}.`);
+      logger.warn(`N’oubliez pas de copier la table sur dev et prod`);
+      logger.warn(`./scripts/copyLocalTableToRemote.sh dev reseaux_de_chaleur_tiles --data-only`);
+      logger.warn(`./scripts/copyLocalTableToRemote.sh prod reseaux_de_chaleur_tiles --data-only`);
     } catch (error: any) {
       console.error(error);
       process.exit(1);
