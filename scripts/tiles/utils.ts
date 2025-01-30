@@ -1,4 +1,4 @@
-import { readdir, readFile, rename, stat } from 'fs/promises';
+import { readdir, readFile, stat } from 'fs/promises';
 import { arch } from 'node:os';
 import { join } from 'path';
 
@@ -10,7 +10,7 @@ import { logger } from '@/server/helpers/logger';
 import { type DatabaseSourceId, type DatabaseTileInfo, preTable, tilesInfo } from '@/server/services/tiles.config';
 import { processInParallel } from '@/types/async';
 
-import { dockerVolumePath, runBash, runDocker } from '../helpers/shell';
+import { dockerVolumePath, moveFile, runBash, runDocker } from '../helpers/shell';
 
 const QUERY_PARALLELISM = 50; // max queries in //
 
@@ -348,7 +348,7 @@ export const generateGeoJSON = async (filepath: string) => {
     `ghcr.io/osgeo/gdal:alpine-normal-latest-${dockerImageArch}`,
     `ogr2ogr -f GeoJSON output.geojson PG:"host=localhost user=postgres dbname=postgres password=postgres_fcu" etudes_en_cours -t_srs EPSG:4326`
   );
-  await rename(`${dockerVolumePath}/output.geojson`, filepath);
+  await moveFile(`${dockerVolumePath}/output.geojson`, filepath);
 
   return filepath;
 };

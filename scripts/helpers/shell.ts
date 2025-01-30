@@ -1,4 +1,6 @@
 import { spawn } from 'node:child_process';
+import { mkdirSync } from 'node:fs';
+import { copyFile, unlink } from 'node:fs/promises';
 
 import { createLogger } from '@/server/helpers/logger';
 
@@ -35,7 +37,28 @@ export function runBash(...args: any[]): Promise<void> {
 
 export const dockerVolumePath = '/tmp/fcu';
 
+// exceptionnellement, un mkdirSync pour créer le répertoire temporaire
+// et éviter les problèmes de droit si root doit le créer
+mkdirSync(dockerVolumePath, { recursive: true });
+
 export function runDocker(image: string, command: string): Promise<void> {
   const cmd = `docker run -it --rm --network host -v ${dockerVolumePath}:/volume -w /volume --user $(id -u):$(id -g) ${image} ${command}`;
   return runBash(cmd);
+}
+
+/**
+ * Moves a file from a source path to a destination.
+ * If the files are on different file systems, it copies the file first and then deletes the source.
+ *
+ * @param {string} src - The source file path.
+ * @param {string} dest - The destination file path.
+ *
+ * @example
+ * ```tsx
+ * moveFile('/tmp/source.txt', '/home/user/destination.txt');
+ * ```
+ */
+export async function moveFile(src: string, dest: string) {
+  await copyFile(src, dest);
+  await unlink(src);
 }
