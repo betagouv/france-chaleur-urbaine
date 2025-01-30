@@ -1,10 +1,8 @@
 import { spawn } from 'node:child_process';
 
-import { parentLogger } from '@/server/helpers/logger';
+import { createLogger } from '@/server/helpers/logger';
 
-const logger = parentLogger.child({
-  name: 'shell',
-});
+const logger = createLogger('shell');
 
 /**
  * Executes a shell script with the provided arguments and streams its output to the terminal.
