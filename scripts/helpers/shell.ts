@@ -5,18 +5,16 @@ import { createLogger } from '@/server/helpers/logger';
 const logger = createLogger('shell');
 
 /**
- * Executes a shell script with the provided arguments and streams its output to the terminal.
+ * Executes a command with the provided arguments and streams its output to the terminal.
  *
- * @param scriptPath - The path to the shell script to execute.
+ * @param executablePath - path to the executable to run.
  * @param args - An array of arguments to pass to the shell script.
- * @returns A promise that resolves when the script completes successfully or rejects with an error if it fails.
- *
- * @throws {Error} If the script fails to execute or exits with a non-zero code.
+ * @returns A promise that resolves if the command executes successfully, or rejects if the program exits with a non-zero code.
  */
-export function runCommand(scriptPath: string, args: any[] = []): Promise<void> {
-  logger.info(`Running command: ${scriptPath} ${args.join(' ')}`);
+export function runCommand(executablePath: string, ...args: any[]): Promise<void> {
+  logger.info(`Running command: ${executablePath} ${args.join(' ')}`);
   return new Promise((resolve, reject) => {
-    const process = spawn(scriptPath, args, { stdio: 'inherit' });
+    const process = spawn(executablePath, args, { stdio: 'inherit' });
     process.on('close', (code) => {
       if (code === 0) {
         resolve();
@@ -32,7 +30,7 @@ export function runCommand(scriptPath: string, args: any[] = []): Promise<void> 
 }
 
 export function runBash(...args: any[]): Promise<void> {
-  return runCommand('bash', ['-c', ...args]);
+  return runCommand('bash', '-c', ...args);
 }
 
 export const dockerVolumePath = '/tmp/fcu';
