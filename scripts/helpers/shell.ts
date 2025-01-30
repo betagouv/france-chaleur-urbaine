@@ -9,7 +9,7 @@ import { spawn } from 'node:child_process';
  *
  * @throws {Error} If the script fails to execute or exits with a non-zero code.
  */
-export function runShellScript(scriptPath: string, args: any[] = []): Promise<void> {
+export function runCommand(scriptPath: string, args: any[] = []): Promise<void> {
   return new Promise((resolve, reject) => {
     const process = spawn(scriptPath, args, { stdio: 'inherit' });
 
@@ -25,4 +25,8 @@ export function runShellScript(scriptPath: string, args: any[] = []): Promise<vo
       reject(err);
     });
   });
+}
+
+export function runBash(...args: any[]): Promise<void> {
+  return runCommand('bash', ['-c', ...args]);
 }
