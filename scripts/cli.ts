@@ -177,7 +177,7 @@ program
 program
   .command('tiles:generate')
   .description(
-    "Génère des tuiles vectorielles à partir d'une ressource en passant par un fichier GeoJSON temporaire. Exemple : `yarn cli tiles:generate reseaux_de_chaleur reseaux_de_chaleur_tiles 0 14`"
+    "Génère des tuiles vectorielles à partir d'une ressource en passant par un fichier GeoJSON temporaire. Exemple : `yarn cli tiles:generate reseaux_de_chaleur`"
   )
   .argument('<type>', `Type de ressource à générer - ${Object.keys(tilesAdapters).join(', ')}`)
   .action(async (type) => {
