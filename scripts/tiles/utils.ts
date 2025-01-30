@@ -377,7 +377,7 @@ export const importTilesDirectoryToTable = async (tilesDirectory: string, destin
 
 export const importGeoJSONWithTipeeCanoe = async (fileName: string, destinationTable: string, zoomMin: number, zoomMax: number) => {
   const tilesDirectory = await generateTilesFromGeoJSON(fileName, destinationTable, zoomMin, zoomMax);
-  await importTilesDirectory(tilesDirectory, destinationTable);
+  await importTilesDirectoryToTable(tilesDirectory, destinationTable);
 };
 
 export const generateTilesFromGeoJSON = async (fileName: string, destinationTable: string, zoomMin: number, zoomMax: number) => {
