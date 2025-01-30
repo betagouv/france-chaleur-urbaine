@@ -687,13 +687,16 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                   <Tooltip
                     title={
                       <>
-                        Source :{' '}
+                        Les périmètres des QPV sont{' '}
                         <Link
                           href="https://www.data.gouv.fr/fr/datasets/quartiers-prioritaires-de-la-politique-de-la-ville-qpv/"
                           isExternal
                         >
-                          ANCT
+                          diffusés par l'ANCT sur data.gouv.fr
                         </Link>
+                        . Les quartiers engagés dans le Nouveau Programme National de Renouvellement Urbain porté par l'ANRU sont basés sur
+                        les périmètres définis en 2015, et non sur ceux de 2024. La liste de ces quartiers a été transmise à France Chaleur
+                        Urbaine par l'ANRU.
                       </>
                     }
                   />
@@ -725,7 +728,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                     pt="1v"
                     px="1v"
                   >
-                    QPV 2015 ANRU
+                    QPV du Nouveau Programme National de Renouvellement Urbain (ANRU)
                   </Text>
                 </Box>
 
