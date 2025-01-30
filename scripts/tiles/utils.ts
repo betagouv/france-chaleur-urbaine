@@ -197,7 +197,7 @@ export const fillTiles = async (table: DatabaseSourceId, zoomMin: number, zoomMa
 /**
  * Generate tiles from GeoJSON data and store them in a postgres table
  */
-export const generateTilesFromGeoJSON = async (geojson: GeoJSON.GeoJSON, destinationTable: string, zoomMin: number, zoomMax: number) => {
+export const saveGeoJSONToTable = async (geojson: GeoJSON.GeoJSON, destinationTable: string, zoomMin: number, zoomMax: number) => {
   const startTime = Date.now();
   logger.info('start generating vector tiles');
   const tiles = geojsonvt(geojson, {
@@ -233,7 +233,7 @@ export const generateTilesFromGeoJSON = async (geojson: GeoJSON.GeoJSON, destina
   }
 };
 
-export const importGeoJSONToTileTable = async (fileName: string, destinationTable: string, zoomMin: number, zoomMax: number) => {
+export const importGeoJSONToTable = async (fileName: string, destinationTable: string, zoomMin: number, zoomMax: number) => {
   const geojson = JSON.parse(await readFile(fileName, 'utf8'));
 
   logger.info('start importing geojson features', {
@@ -256,7 +256,7 @@ export const importGeoJSONToTileTable = async (fileName: string, destinationTabl
   logger.info('flushing table', { table: destinationTable });
   await db(destinationTable).delete();
 
-  await generateTilesFromGeoJSON(geojson, destinationTable, zoomMin, zoomMax);
+  await saveGeoJSONToTable(geojson, destinationTable, zoomMin, zoomMax);
 };
 
 /**

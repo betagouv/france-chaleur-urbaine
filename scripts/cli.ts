@@ -32,7 +32,7 @@ import { importMvtDirectory } from './networks/import-mvt-directory';
 import { syncPostgresToAirtable } from './networks/sync-pg-to-airtable';
 import { upsertFixedSimulateurData } from './simulateur/import';
 import tilesManager, { tilesAdapters, type TilesName } from './tiles';
-import { fillTiles, importGeoJSONToTileTable } from './tiles/utils';
+import { fillTiles, importGeoJSONToTable } from './tiles/utils';
 
 const program = createCommand();
 
@@ -169,7 +169,7 @@ program
   .argument('[zoomMin]', 'Minimum zoom', (v) => parseInt(v), 0)
   .argument('[zoomMax]', 'Maximum zoom', (v) => parseInt(v), 17)
   .action(async (fileName, destinationTable, zoomMin, zoomMax) => {
-    await importGeoJSONToTileTable(fileName, destinationTable, zoomMin, zoomMax);
+    await importGeoJSONToTable(fileName, destinationTable, zoomMin, zoomMax);
   });
 
 program
@@ -214,7 +214,7 @@ program
       const tilesDatabaseName = `${tileManager.databaseName}_tiles`;
 
       logger.info(`Importation dans la table: ${tilesDatabaseName}`);
-      await importGeoJSONToTileTable(filepath, tilesDatabaseName, zoomMin, zoomMax);
+      await importGeoJSONToTable(filepath, tilesDatabaseName, zoomMin, zoomMax);
 
       logger.info(`Suppression du fichier temporaire ${filepath}`);
       await unlink(filepath);
