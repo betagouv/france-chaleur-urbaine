@@ -18,3 +18,15 @@ L'intégration du DSFR ne semble pas complète et certaines icônes sont introuv
 mkdir -p public/icons/system
 cp -a node_modules/@gouvfr/dsfr/dist/icons/system/checkbox-circle-line.svg public/icons/system/checkbox-circle-line.svg
 ```
+
+## Utilitaires de manipulation géographique
+
+Afin de pouvoir lancer les commandes de manipulation de fichier géographiques, nous avons besoin de `ogr2ogr` qui est fourni par [GDAL](https://gdal.org/en/stable/download.html) et de [tippecanoe](https://github.com/mapbox/tippecanoe).
+
+```sh
+docker pull ghcr.io/osgeo/gdal:alpine-normal-latest-amd64
+# ou
+docker pull ghcr.io/osgeo/gdal:alpine-normal-latest-arm64
+
+docker pull naxgrp/tippecanoe
+```

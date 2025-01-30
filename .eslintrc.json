@@ -83,6 +83,7 @@
           "unknown" // <- unknown imports always last
         ],
         "newlines-between": "always",
+        "named": true,
         "alphabetize": {
           "order": "asc",
           "caseInsensitive": true
