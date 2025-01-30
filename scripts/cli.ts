@@ -25,7 +25,7 @@ import { createModificationsReseau } from './airtable/create-modifications-resea
 import { fetchBaseSchema } from './airtable/dump-schema';
 import { readFileGeometry } from './helpers/geo';
 import { runShellScript } from './helpers/shell';
-import DataImporter, { type AdapterName } from './import-data';
+import ImportDataManager, { type ImportDataName } from './import-data';
 import { downloadAndUpdateNetwork, downloadNetwork } from './networks/download-network';
 import { applyGeometryUpdates } from './networks/geometry-updates';
 import { importMvtDirectory } from './networks/import-mvt-directory';
@@ -145,12 +145,12 @@ program
 program
   .command('data:import')
   .description('Import data based on type')
-  .argument('<type>', 'Type of data you want to import')
+  .argument('<type>', `Type of data you want to import - ${ImportDataManager.getAdapterNames().join(', ')}`)
   .option('--file <FILE>', 'Path to the file to import', '')
   .action(async (type, options) => {
     try {
       logger.info(`Importing data for ${type}`);
-      const importer = new DataImporter(type as AdapterName);
+      const importer = new ImportDataManager(type as ImportDataName);
       await importer.importData(options.file);
     } catch (error: any) {
       console.error(error);
