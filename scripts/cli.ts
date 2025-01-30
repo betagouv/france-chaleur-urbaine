@@ -28,11 +28,10 @@ import { readFileGeometry } from './helpers/geo';
 import { runCommand } from './helpers/shell';
 import { downloadAndUpdateNetwork, downloadNetwork } from './networks/download-network';
 import { applyGeometryUpdates } from './networks/geometry-updates';
-import { importMvtDirectory } from './networks/import-mvt-directory';
 import { syncPostgresToAirtable } from './networks/sync-pg-to-airtable';
 import { upsertFixedSimulateurData } from './simulateur/import';
 import tilesManager, { tilesAdapters, type TilesName } from './tiles';
-import { fillTiles, importGeoJSONToTable } from './tiles/utils';
+import { fillTiles, importGeoJSONToTable, importMvtDirectoryToTable } from './tiles/utils';
 
 const program = createCommand();
 
@@ -103,32 +102,14 @@ program
   });
 
 program
-  .command('import-mvt-directory')
+  .command('tiles:import-mvt-directory')
   .description(
-    'Importe en base une arborescence de tuiles vectorielles. A utiliser typiquement après avoir utilisé tippecanoe. Exemple : `yarn cli import-mvt-directory tiles/zone_a_potentiel_fort_chaud zone_a_potentiel_fort_chaud_tiles`'
+    'Importe en base une arborescence de tuiles vectorielles. A utiliser typiquement après avoir utilisé tippecanoe. Exemple : `yarn cli tiles:import-mvt-directory tiles/zone_a_potentiel_fort_chaud zone_a_potentiel_fort_chaud_tiles`'
   )
   .argument('<mvtDirectory>', 'MVT directory root')
   .argument('<destinationTable>', 'Destination table')
   .action(async (mvtDirectory, destinationTable) => {
-    if (await db.schema.hasTable(destinationTable)) {
-      logger.info('flushing destination table', {
-        table: destinationTable,
-      });
-      await db(destinationTable).delete();
-    } else {
-      logger.info('destination table does not exist, creating it', {
-        table: destinationTable,
-      });
-      await db.schema.createTable(destinationTable, (table) => {
-        table.bigInteger('x').notNullable();
-        table.bigInteger('y').notNullable();
-        table.bigInteger('z').notNullable();
-        table.specificType('tile', 'bytea').notNullable();
-        table.primary(['x', 'y', 'z']);
-      });
-    }
-
-    await importMvtDirectory(mvtDirectory, destinationTable);
+    await importMvtDirectoryToTable(mvtDirectory, destinationTable);
   });
 
 program
