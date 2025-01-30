@@ -1,6 +1,6 @@
 import { readFile, unlink } from 'fs/promises';
 
-import { InvalidArgumentError, createCommand } from '@commander-js/extra-typings';
+import { createCommand, InvalidArgumentError } from '@commander-js/extra-typings';
 import prompts from 'prompts';
 import { z } from 'zod';
 
