@@ -85,16 +85,27 @@ function Popup(qpv: QuartierPrioritairePolitiqueVille2024, { Property, Title, Tw
   return (
     <>
       <Title>
-        QPV {qpv.is2015 ? '2015' : '2024'} : {qpv.nom_quartier}
+        QPV {qpv.is2015 ? 'ANRU' : '2024'} : {qpv.nom_quartier}
       </Title>
       <TwoColumns>
         <Property label="Code quartier" value={qpv.code_quartier} />
         <Property
           label="Source"
           value={
-            <Link href="https://www.data.gouv.fr/fr/datasets/quartiers-prioritaires-de-la-politique-de-la-ville-qpv/" isExternal>
-              ANCT
-            </Link>
+            <>
+              <Link href="https://www.data.gouv.fr/fr/datasets/quartiers-prioritaires-de-la-politique-de-la-ville-qpv/" isExternal>
+                ANCT
+              </Link>
+              {qpv.is2015 && (
+                <>
+                  {' '}
+                  -{' '}
+                  <Link href="https://www.anru.fr/" isExternal>
+                    ANRU
+                  </Link>
+                </>
+              )}
+            </>
           }
         />
       </TwoColumns>
