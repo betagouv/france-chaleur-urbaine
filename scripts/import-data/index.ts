@@ -1,17 +1,17 @@
 import EtudeEnCoursAdapter from './adapters/etudes-en-cours';
-import { type ImportAdapter } from './types';
+import { type ImportDataAdapter } from './types';
 
 const adapters = {
   'etudes-en-cours': EtudeEnCoursAdapter,
 };
 
-export type AdapterName = keyof typeof adapters;
+export type ImportDataName = keyof typeof adapters;
 
-export default class AdapterFactory {
+export default class ImportDataManager {
   public name: string;
-  public adapter: ImportAdapter;
+  public adapter: ImportDataAdapter;
 
-  constructor(adapterName: AdapterName) {
+  constructor(adapterName: ImportDataName) {
     this.name = adapterName;
     this.adapter = new adapters[adapterName]();
 
@@ -22,5 +22,9 @@ export default class AdapterFactory {
 
   async importData(filepath?: string) {
     return this.adapter?.importData(filepath);
+  }
+
+  static getAdapterNames() {
+    return Object.keys(adapters) as ImportDataName[];
   }
 }

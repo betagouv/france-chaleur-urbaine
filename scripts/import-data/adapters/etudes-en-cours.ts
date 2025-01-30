@@ -1,7 +1,7 @@
 import { kdb, sql } from '@/server/db/kysely';
 import { parentLogger } from '@/server/helpers/logger';
 
-import { type ImportAdapter } from '../types';
+import { type ImportDataAdapter } from '../types';
 import { loadDataFromFile } from '../utils';
 
 export interface CSVEtudeEnCours {
@@ -37,7 +37,7 @@ const logger = parentLogger.child({
   name: 'etudes-en-cours',
 });
 
-export default class EtudesEnCoursAdapter implements ImportAdapter {
+export default class EtudesEnCoursAdapter implements ImportDataAdapter {
   /**
    *
    * @param filepath must be like in "data/sample.csv", initially taken from a Google Doc named "Extraction de DATA Cartographie - pour FCU_02122024"
