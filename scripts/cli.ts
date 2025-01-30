@@ -23,9 +23,9 @@ import { optimisationProfiles, optimizeImage } from '@cli/images/optimize';
 import { type KnownAirtableBase, knownAirtableBases } from './airtable/bases';
 import { createModificationsReseau } from './airtable/create-modifications-reseau';
 import { fetchBaseSchema } from './airtable/dump-schema';
+import dataImportManager, { dataImportAdapters, type DataImportName } from './data-import';
 import { readFileGeometry } from './helpers/geo';
 import { runShellScript } from './helpers/shell';
-import ImportDataManager, { type ImportDataName } from './import-data';
 import { downloadAndUpdateNetwork, downloadNetwork } from './networks/download-network';
 import { applyGeometryUpdates } from './networks/geometry-updates';
 import { importMvtDirectory } from './networks/import-mvt-directory';
@@ -146,12 +146,12 @@ program
 program
   .command('data:import')
   .description('Import data based on type')
-  .argument('<type>', `Type of data you want to import - ${ImportDataManager.getAdapterNames().join(', ')}`)
+  .argument('<type>', `Type of data you want to import - ${Object.keys(dataImportAdapters).join(', ')}`)
   .option('--file <FILE>', 'Path to the file to import', '')
   .action(async (type, options) => {
     try {
       logger.info(`Importing data for ${type}`);
-      const importer = new ImportDataManager(type as ImportDataName);
+      const importer = dataImportManager(type as DataImportName);
       await importer.importData(options.file);
     } catch (error: any) {
       console.error(error);
