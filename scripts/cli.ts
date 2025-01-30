@@ -25,7 +25,7 @@ import { createModificationsReseau } from './airtable/create-modifications-resea
 import { fetchBaseSchema } from './airtable/dump-schema';
 import dataImportManager, { dataImportAdapters, type DataImportName } from './data-import';
 import { readFileGeometry } from './helpers/geo';
-import { runShellScript } from './helpers/shell';
+import { runCommand } from './helpers/shell';
 import { downloadAndUpdateNetwork, downloadNetwork } from './networks/download-network';
 import { applyGeometryUpdates } from './networks/geometry-updates';
 import { importMvtDirectory } from './networks/import-mvt-directory';
@@ -176,7 +176,7 @@ program
     logger.info(`Generating GeoJSON file for ${type}`);
     const tileManager = tilesManager(type as TilesName);
 
-    const filepath = await tileManager.generateTilesGeoJSON(options.filepath);
+    const filepath = await tileManager.generateGeoJSON(options.filepath);
     console.info(`GeoJSON generated in ${filepath}`);
   });
 
@@ -192,7 +192,7 @@ program
     logger.info(`Génération du fichier GeoJSON pour ${type}`);
     const tileManager = tilesManager(type as TilesName);
 
-    const filepath = await tileManager.generateTilesGeoJSON();
+    const filepath = await tileManager.generateGeoJSON();
 
     if (!filepath) {
       throw new Error('Le fichier GeoJSON n’a pas été généré.');
@@ -210,8 +210,8 @@ program
 
     logger.info(`La table ${tilesDatabaseName} a été populée avec les données pour ${type}.`);
     logger.warn(`N’oubliez pas de copier la table sur dev et prod`);
-    logger.warn(`./scripts/copyLocalTableToRemote.sh dev reseaux_de_chaleur_tiles --data-only`);
-    logger.warn(`./scripts/copyLocalTableToRemote.sh prod reseaux_de_chaleur_tiles --data-only`);
+    logger.warn(`./scripts/copyLocalTableToRemote.sh dev ${tilesDatabaseName} --data-only`);
+    logger.warn(`./scripts/copyLocalTableToRemote.sh prod ${tilesDatabaseName} --data-only`);
   });
 
 program
@@ -220,7 +220,7 @@ program
     "Cette commande permet de générer l'archive OpenData contenant les données de France Chaleur Urbaine au format Shapefile et GeoJSON. L'archive générée devra être envoyée à Florence en vue d'un dépôt sur la plateforme data.gouv.fr"
   )
   .action(async () => {
-    await runShellScript('scripts/opendata/create-opendata-archive.sh');
+    await runCommand('scripts/opendata/create-opendata-archive.sh');
   });
 
 program

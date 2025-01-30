@@ -7,7 +7,7 @@ import { BaseAdapter } from '../base';
 export default class ReseauxDeChaleurAdapter extends BaseAdapter {
   public databaseName = 'reseaux_de_chaleur';
 
-  async generateTilesGeoJSON(filepath?: string) {
+  async generateGeoJSON(filepath?: string) {
     const filepathToExport = filepath || `/tmp/${this.databaseName}.geojson`;
 
     const result = await sql<any>`
