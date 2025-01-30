@@ -5,6 +5,8 @@
 
 import type { ColumnType } from 'kysely';
 
+import { type UserRole } from '@/types/enum/UserRole';
+
 export type Generated<T> =
   T extends ColumnType<infer S, infer I, infer U> ? ColumnType<S, I | undefined, U> : ColumnType<T, T | undefined, T>;
 
@@ -2824,6 +2826,17 @@ export interface IgnCommunes {
   statut: string | null;
 }
 
+export interface Jobs {
+  created_at: Generated<Timestamp>;
+  data: Json;
+  entity_id: string;
+  id: Generated<string>;
+  status: 'pending' | 'processing' | 'finished' | 'error';
+  type: 'pro_eligibility_test';
+  updated_at: Generated<Timestamp>;
+  user_id: string;
+}
+
 export interface KnexMigrations {
   batch: number | null;
   id: Generated<number>;
@@ -2850,6 +2863,24 @@ export interface NetworkIris {
   code_iris: string | null;
   fid: number;
   geom: string | null;
+}
+
+export interface ProEligibilityTests {
+  created_at: Generated<Timestamp>;
+  id: Generated<string>;
+  name: string;
+  updated_at: Generated<Timestamp>;
+  user_id: string;
+}
+
+export interface ProEligibilityTestsAddresses {
+  banaddress: string;
+  banscore: number;
+  eligible: boolean;
+  geom: string;
+  id: Generated<string>;
+  sourceaddress: string;
+  test_id: string;
 }
 
 export interface RaccordementsTiles {
@@ -3086,6 +3117,8 @@ export interface ReseauxDeFroidTiles {
 }
 
 export interface Users {
+  activation_token: string | null;
+  activated_at: Timestamp | null;
   active: Generated<boolean | null>;
   created_at: Generated<Timestamp | null>;
   email: string;
@@ -3097,7 +3130,8 @@ export interface Users {
   receive_new_demands: boolean | null;
   receive_old_demands: boolean | null;
   reset_token: string | null;
-  role: Generated<string>;
+  status: 'pending_email_confirmation' | 'valid';
+  role: UserRole;
   signature: string | null;
 }
 
@@ -3234,10 +3268,13 @@ export interface DB {
   enrr_mobilisables_parkings_tiles: EnrrMobilisablesParkingsTiles;
   enrr_mobilisables_tiles: EnrrMobilisablesTiles;
   ign_communes: IgnCommunes;
+  jobs: Jobs;
   knex_migrations: KnexMigrations;
   knex_migrations_lock: KnexMigrationsLock;
   matomo_stats: MatomoStats;
   network_iris: NetworkIris;
+  pro_eligibility_tests: ProEligibilityTests;
+  pro_eligibility_tests_addresses: ProEligibilityTestsAddresses;
   raccordements_tiles: RaccordementsTiles;
   regions: Regions;
   registre_copro_r11_220125: RegistreCoproR11220125;
