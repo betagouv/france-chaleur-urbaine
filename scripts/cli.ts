@@ -31,6 +31,7 @@ import { applyGeometryUpdates } from './networks/geometry-updates';
 import { importMvtDirectory } from './networks/import-mvt-directory';
 import { syncPostgresToAirtable } from './networks/sync-pg-to-airtable';
 import { upsertFixedSimulateurData } from './simulateur/import';
+import tilesManager, { tilesAdapters, type TilesName } from './tiles';
 import { fillTiles, generateFromFile } from './tiles/utils';
 
 const program = createCommand();
@@ -169,6 +170,24 @@ program
   .argument('[zoomMax]', 'Maximum zoom', (v) => parseInt(v), 17)
   .action(async (fileName, destinationTable, zoomMin, zoomMax) => {
     await generateFromFile(fileName, destinationTable, zoomMin, zoomMax);
+  });
+
+program
+  .command('tiles:generate-geojson')
+  .description('Generate GeoJSON file for a given resource')
+  .argument('<type>', `Type of resource you want to generate for - ${Object.keys(tilesAdapters).join(', ')}`)
+  .option('--filepath <FILE>', 'Path of the file to export to', '')
+  .action(async (type, options) => {
+    try {
+      logger.info(`Generating GeoJSON file for ${type}`);
+      const tileManager = tilesManager(type as TilesName);
+
+      const filepath = await tileManager.generateTilesGeoJSON(options.filepath);
+      console.info(`GeoJSON generated in ${filepath}`);
+    } catch (error: any) {
+      console.error(error);
+      process.exit(1);
+    }
   });
 
 program
