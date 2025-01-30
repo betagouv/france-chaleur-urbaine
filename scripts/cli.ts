@@ -155,19 +155,6 @@ program
   });
 
 program
-  .command('tiles:import-geojson')
-  .description(
-    "Génère des tuiles vectorielles à partir d'un fichier GeoJSON et les enregistre dans postgres. Exemple : `yarn cli tiles:import-geojson reseaux_de_chaleur.geojson reseaux_de_chaleur_tiles 0 14`"
-  )
-  .argument('<fileName>', 'input file (format GeoJSON)')
-  .argument('<destinationTable>', 'Destination table')
-  .argument('[zoomMin]', 'Minimum zoom', (v) => parseInt(v), 0)
-  .argument('[zoomMax]', 'Maximum zoom', (v) => parseInt(v), 17)
-  .action(async (fileName, destinationTable, zoomMin, zoomMax) => {
-    await importGeoJSONToTable(fileName, destinationTable, zoomMin, zoomMax);
-  });
-
-program
   .command('tiles:generate-geojson')
   .description('Generate GeoJSON file for a given resource')
   .argument('<type>', `Type of resource you want to generate for - ${Object.keys(tilesAdapters).join(', ')}`)
@@ -178,6 +165,19 @@ program
 
     const filepath = await tileManager.generateGeoJSON(options.filepath);
     console.info(`GeoJSON generated in ${filepath}`);
+  });
+
+program
+  .command('tiles:import-geojson-legacy')
+  .description(
+    "Génère des tuiles vectorielles à partir d'un fichier GeoJSON et les enregistre dans postgres. Exemple : `yarn cli tiles:import-geojson-legacy reseaux_de_chaleur.geojson reseaux_de_chaleur_tiles 0 14`"
+  )
+  .argument('<fileName>', 'input file (format GeoJSON)')
+  .argument('<destinationTable>', 'Destination table')
+  .argument('[zoomMin]', 'Minimum zoom', (v) => parseInt(v), 0)
+  .argument('[zoomMax]', 'Maximum zoom', (v) => parseInt(v), 17)
+  .action(async (fileName, destinationTable, zoomMin, zoomMax) => {
+    await importGeoJSONToTable(fileName, destinationTable, zoomMin, zoomMax);
   });
 
 program

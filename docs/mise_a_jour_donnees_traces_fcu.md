@@ -901,7 +901,7 @@ yarn cli download-network coldNetwork
 yarn cli download-network futurNetwork
 
 # voir génération custom via geojson pour les réseaux de chaleur via doc !
-yarn cli tiles:import-geojson reseaux_de_chaleur.geojson reseaux_de_chaleur_tiles 0 14
+yarn cli tiles:import-geojson-legacy reseaux_de_chaleur.geojson reseaux_de_chaleur_tiles 0 14
 yarn cli tiles:fill coldNetwork 0 14
 yarn cli tiles:fill zoneDP 0 14
 yarn cli tiles:fill futurNetwork 0 14
