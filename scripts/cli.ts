@@ -149,14 +149,9 @@ program
   .argument('<type>', `Type of data you want to import - ${Object.keys(dataImportAdapters).join(', ')}`)
   .option('--file <FILE>', 'Path to the file to import', '')
   .action(async (type, options) => {
-    try {
-      logger.info(`Importing data for ${type}`);
-      const importer = dataImportManager(type as DataImportName);
-      await importer.importData(options.file);
-    } catch (error: any) {
-      console.error(error);
-      process.exit(1);
-    }
+    logger.info(`Importing data for ${type}`);
+    const importer = dataImportManager(type as DataImportName);
+    await importer.importData(options.file);
   });
 
 program
@@ -178,16 +173,11 @@ program
   .argument('<type>', `Type of resource you want to generate for - ${Object.keys(tilesAdapters).join(', ')}`)
   .option('--filepath <FILE>', 'Path of the file to export to', '')
   .action(async (type, options) => {
-    try {
-      logger.info(`Generating GeoJSON file for ${type}`);
-      const tileManager = tilesManager(type as TilesName);
+    logger.info(`Generating GeoJSON file for ${type}`);
+    const tileManager = tilesManager(type as TilesName);
 
-      const filepath = await tileManager.generateTilesGeoJSON(options.filepath);
-      console.info(`GeoJSON generated in ${filepath}`);
-    } catch (error: any) {
-      console.error(error);
-      process.exit(1);
-    }
+    const filepath = await tileManager.generateTilesGeoJSON(options.filepath);
+    console.info(`GeoJSON generated in ${filepath}`);
   });
 
 program
@@ -199,34 +189,29 @@ program
   .argument('[zoomMin]', 'Zoom minimum', (v) => parseInt(v), 0)
   .argument('[zoomMax]', 'Zoom maximum', (v) => parseInt(v), 17)
   .action(async (type, zoomMin, zoomMax) => {
-    try {
-      logger.info(`Génération du fichier GeoJSON pour ${type}`);
-      const tileManager = tilesManager(type as TilesName);
+    logger.info(`Génération du fichier GeoJSON pour ${type}`);
+    const tileManager = tilesManager(type as TilesName);
 
-      const filepath = await tileManager.generateTilesGeoJSON();
+    const filepath = await tileManager.generateTilesGeoJSON();
 
-      if (!filepath) {
-        throw new Error('Le fichier GeoJSON n’a pas été généré.');
-      }
-
-      logger.info(`GeoJSON généré: ${filepath}`);
-
-      const tilesDatabaseName = `${tileManager.databaseName}_tiles`;
-
-      logger.info(`Importation dans la table: ${tilesDatabaseName}`);
-      await importGeoJSONToTable(filepath, tilesDatabaseName, zoomMin, zoomMax);
-
-      logger.info(`Suppression du fichier temporaire ${filepath}`);
-      await unlink(filepath);
-
-      logger.info(`La table ${tilesDatabaseName} a été populée avec les données pour ${type}.`);
-      logger.warn(`N’oubliez pas de copier la table sur dev et prod`);
-      logger.warn(`./scripts/copyLocalTableToRemote.sh dev reseaux_de_chaleur_tiles --data-only`);
-      logger.warn(`./scripts/copyLocalTableToRemote.sh prod reseaux_de_chaleur_tiles --data-only`);
-    } catch (error: any) {
-      console.error(error);
-      process.exit(1);
+    if (!filepath) {
+      throw new Error('Le fichier GeoJSON n’a pas été généré.');
     }
+
+    logger.info(`GeoJSON généré: ${filepath}`);
+
+    const tilesDatabaseName = `${tileManager.databaseName}_tiles`;
+
+    logger.info(`Importation dans la table: ${tilesDatabaseName}`);
+    await importGeoJSONToTable(filepath, tilesDatabaseName, zoomMin, zoomMax);
+
+    logger.info(`Suppression du fichier temporaire ${filepath}`);
+    await unlink(filepath);
+
+    logger.info(`La table ${tilesDatabaseName} a été populée avec les données pour ${type}.`);
+    logger.warn(`N’oubliez pas de copier la table sur dev et prod`);
+    logger.warn(`./scripts/copyLocalTableToRemote.sh dev reseaux_de_chaleur_tiles --data-only`);
+    logger.warn(`./scripts/copyLocalTableToRemote.sh prod reseaux_de_chaleur_tiles --data-only`);
   });
 
 program
