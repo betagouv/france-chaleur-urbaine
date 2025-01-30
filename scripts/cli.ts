@@ -180,9 +180,7 @@ program
     "Génère des tuiles vectorielles à partir d'une ressource en passant par un fichier GeoJSON temporaire. Exemple : `yarn cli tiles:generate reseaux_de_chaleur reseaux_de_chaleur_tiles 0 14`"
   )
   .argument('<type>', `Type de ressource à générer - ${Object.keys(tilesAdapters).join(', ')}`)
-  .argument('[zoomMin]', 'Zoom minimum', (v) => parseInt(v), 0)
-  .argument('[zoomMax]', 'Zoom maximum', (v) => parseInt(v), 17)
-  .action(async (type, zoomMin, zoomMax) => {
+  .action(async (type) => {
     logger.info(`Génération du fichier GeoJSON pour ${type}`);
     const tileManager = tilesManager(type as TilesName);
 
@@ -197,7 +195,7 @@ program
     const tilesDatabaseName = `${tileManager.databaseName}_tiles`;
 
     logger.info(`Importation dans la table: ${tilesDatabaseName}`);
-    await importGeoJSONToTable(filepath, tilesDatabaseName, zoomMin, zoomMax);
+    await tileManager.importGeoJSON(filepath);
 
     logger.info(`Suppression du fichier temporaire ${filepath}`);
     await unlink(filepath);

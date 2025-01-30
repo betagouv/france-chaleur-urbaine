@@ -1,4 +1,3 @@
-import { generateGeoJSON } from './utils';
 import { generateGeoJSON, importGeoJSONToTable, importGeoJSONWithTipeeCanoe } from './utils';
 
 export abstract class BaseAdapter {
