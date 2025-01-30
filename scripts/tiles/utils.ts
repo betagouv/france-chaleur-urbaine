@@ -1,4 +1,5 @@
 import { readdir, readFile, rename, stat } from 'fs/promises';
+import { arch } from 'node:os';
 import { join } from 'path';
 
 import geojsonvt from 'geojson-vt';
@@ -333,9 +334,18 @@ export const importGeoJSONToTable = async (fileName: string, destinationTable: s
   await saveGeoJSONToTable(geojson, destinationTable, zoomMin, zoomMax);
 };
 
+const dockerImageArch =
+  arch() === 'arm64'
+    ? 'arm64'
+    : arch() === 'x64'
+      ? 'amd64'
+      : (() => {
+          throw new Error(`Unsupported architecture: ${arch()}`);
+        })();
+
 export const generateGeoJSON = async (filepath: string) => {
   await runDocker(
-    'ghcr.io/osgeo/gdal:alpine-normal-latest-arm64',
+    `ghcr.io/osgeo/gdal:alpine-normal-latest-${dockerImageArch}`,
     `ogr2ogr -f GeoJSON output.geojson PG:"host=localhost user=postgres dbname=postgres password=postgres_fcu" etudes_en_cours -t_srs EPSG:4326`
   );
   await rename(`${dockerVolumePath}/output.geojson`, filepath);
