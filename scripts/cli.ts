@@ -437,6 +437,9 @@ program
   } catch (err) {
     console.error('command error', err);
     process.exit(2);
+  } finally {
+    // disconnect from the database
+    await Promise.all([db.destroy(), kdb.destroy()]);
   }
 })();
 
