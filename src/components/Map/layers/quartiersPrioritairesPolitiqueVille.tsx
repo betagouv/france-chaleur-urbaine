@@ -85,7 +85,7 @@ function Popup(qpv: QuartierPrioritairePolitiqueVille2024, { Property, Title, Tw
   return (
     <>
       <Title>
-        QPV {qpv.is2015 ? 'ANRU' : '2024'} : {qpv.nom_quartier}
+        QPV {qpv.is2015 ? 'NPNRU' : '2024'} : {qpv.nom_quartier}
       </Title>
       <TwoColumns>
         <Property label="Code quartier" value={qpv.code_quartier} />
