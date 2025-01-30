@@ -32,7 +32,7 @@ import { importMvtDirectory } from './networks/import-mvt-directory';
 import { syncPostgresToAirtable } from './networks/sync-pg-to-airtable';
 import { upsertFixedSimulateurData } from './simulateur/import';
 import tilesManager, { tilesAdapters, type TilesName } from './tiles';
-import { fillTiles, generateFromFile } from './tiles/utils';
+import { fillTiles, importGeoJSONToTileTable } from './tiles/utils';
 
 const program = createCommand();
 
@@ -160,16 +160,16 @@ program
   });
 
 program
-  .command('tiles:generate-from-file')
+  .command('tiles:import-geojson')
   .description(
-    "Génère des tuiles vectorielles à partir d'un fichier GeoJSON et les enregistre dans postgres. Exemple : `yarn cli tiles:generate-from-file reseaux_de_chaleur.geojson reseaux_de_chaleur_tiles 0 14`"
+    "Génère des tuiles vectorielles à partir d'un fichier GeoJSON et les enregistre dans postgres. Exemple : `yarn cli tiles:import-geojson reseaux_de_chaleur.geojson reseaux_de_chaleur_tiles 0 14`"
   )
   .argument('<fileName>', 'input file (format GeoJSON)')
   .argument('<destinationTable>', 'Destination table')
   .argument('[zoomMin]', 'Minimum zoom', (v) => parseInt(v), 0)
   .argument('[zoomMax]', 'Maximum zoom', (v) => parseInt(v), 17)
   .action(async (fileName, destinationTable, zoomMin, zoomMax) => {
-    await generateFromFile(fileName, destinationTable, zoomMin, zoomMax);
+    await importGeoJSONToTileTable(fileName, destinationTable, zoomMin, zoomMax);
   });
 
 program

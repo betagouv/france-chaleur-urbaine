@@ -233,7 +233,7 @@ export const generateTilesFromGeoJSON = async (geojson: GeoJSON.GeoJSON, destina
   }
 };
 
-export const generateFromFile = async (fileName: string, destinationTable: string, zoomMin: number, zoomMax: number) => {
+export const importGeoJSONToTileTable = async (fileName: string, destinationTable: string, zoomMin: number, zoomMax: number) => {
   const geojson = JSON.parse(await readFile(fileName, 'utf8'));
 
   logger.info('start importing geojson features', {
