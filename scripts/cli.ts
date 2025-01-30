@@ -167,7 +167,7 @@ program
     "Génère des tuiles vectorielles à partir d'un fichier GeoJSON et les enregistre dans postgres. Exemple : `yarn cli tiles:import-geojson etudes-en-cours etude_en_cours.geojson`"
   )
   .argument('<type>', `Type of resource you want to generate for - ${Object.keys(tilesAdapters).join(', ')}`)
-  .argument('<file>', 'Path of the file to export to')
+  .argument('<file>', 'Path of the GeoJSON file')
   .action(async (type, file) => {
     const tileManager = tilesManager(type as TilesName);
     const tilesDatabaseName = await tileManager.importGeoJSON(file);
