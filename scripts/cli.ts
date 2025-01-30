@@ -162,6 +162,19 @@ program
   });
 
 program
+  .command('tiles:import-geojson')
+  .description(
+    "Génère des tuiles vectorielles à partir d'un fichier GeoJSON et les enregistre dans postgres. Exemple : `yarn cli tiles:import-geojson-legacy reseaux_de_chaleur.geojson reseaux_de_chaleur_tiles 0 14`"
+  )
+  .argument('<type>', `Type of resource you want to generate for - ${Object.keys(tilesAdapters).join(', ')}`)
+  .argument('<file>', 'Path of the file to export to')
+  .action(async (type, file) => {
+    const tileManager = tilesManager(type as TilesName);
+    const tilesDatabaseName = await tileManager.importGeoJSON(file);
+    logger.info(`Imported GeoJSON ${file} to ${tilesDatabaseName}`);
+  });
+
+program
   .command('tiles:generate')
   .description(
     "Génère des tuiles vectorielles à partir d'une ressource en passant par un fichier GeoJSON temporaire. Exemple : `yarn cli tiles:generate reseaux_de_chaleur reseaux_de_chaleur_tiles 0 14`"

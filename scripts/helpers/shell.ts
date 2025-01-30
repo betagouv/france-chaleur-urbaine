@@ -36,6 +36,7 @@ export function runBash(...args: any[]): Promise<void> {
 }
 
 export const dockerVolumePath = '/tmp/fcu';
+
 export function runDocker(image: string, command: string): Promise<void> {
   const cmd = `docker run -it --rm --network host -v ${dockerVolumePath}:/volume -w /volume --user $(id -u):$(id -g) ${image} ${command}`;
   return runBash(cmd);

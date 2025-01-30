@@ -9,7 +9,7 @@ import { logger } from '@/server/helpers/logger';
 import { type DatabaseSourceId, type DatabaseTileInfo, preTable, tilesInfo } from '@/server/services/tiles.config';
 import { processInParallel } from '@/types/async';
 
-import { dockerVolumePath, runDocker } from '../helpers/shell';
+import { dockerVolumePath, runBash, runDocker } from '../helpers/shell';
 
 const QUERY_PARALLELISM = 50; // max queries in //
 
@@ -363,6 +363,18 @@ export const importMvtDirectoryToTable = async (mvtDirectory: string, destinatio
   }
 
   await importMvtDirectory(mvtDirectory, destinationTable);
+};
+
+export const importGeoJSONWithTipeeCanoe = async (fileName: string, destinationTable: string, zoomMin: number, zoomMax: number) => {
+  const mvtDirectory = await generateTilesFromGeoJSON(fileName, destinationTable, zoomMin, zoomMax);
+  await importMvtDirectory(mvtDirectory, destinationTable);
+};
+
+export const generateTilesFromGeoJSON = async (fileName: string, destinationTable: string, zoomMin: number, zoomMax: number) => {
+  await runBash(
+    `cat ${fileName} | docker run -i --rm --entrypoint /bin/bash naxgrp/tippecanoe -c "tippecanoe-json-tool" | docker run -i --rm -v ${dockerVolumePath}:/volume -w /volume --user $(id -u):$(id -g) --entrypoint /bin/bash naxgrp/tippecanoe -c "tippecanoe -e ${destinationTable} --read-parallel --layer=layer --force --generate-ids --minimum-zoom=${zoomMin} --maximum-zoom=${zoomMax}"`
+  );
+  return `${dockerVolumePath}/${destinationTable}`;
 };
 
 /**
