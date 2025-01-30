@@ -1,4 +1,4 @@
-import { readFile } from 'fs/promises';
+import { readFile, rename } from 'fs/promises';
 
 import geojsonvt from 'geojson-vt';
 import vtpbf from 'vt-pbf';
@@ -7,6 +7,8 @@ import db from '@/server/db';
 import { logger } from '@/server/helpers/logger';
 import { type DatabaseSourceId, type DatabaseTileInfo, preTable, tilesInfo } from '@/server/services/tiles.config';
 import { processInParallel } from '@/types/async';
+
+import { runBash } from '../helpers/shell';
 
 const QUERY_PARALLELISM = 50; // max queries in //
 
@@ -257,6 +259,15 @@ export const importGeoJSONToTable = async (fileName: string, destinationTable: s
   await db(destinationTable).delete();
 
   await saveGeoJSONToTable(geojson, destinationTable, zoomMin, zoomMax);
+};
+
+export const generateGeoJSON = async (filepath: string) => {
+  await runBash(
+    `docker run -it --rm --network host -v /tmp/fcu:/volume -w /volume --user $(id -u):$(id -g) ghcr.io/osgeo/gdal:alpine-normal-latest-arm64 ogr2ogr -f GeoJSON output.geojson PG:"host=localhost user=postgres dbname=postgres password=postgres_fcu" etudes_en_cours -t_srs EPSG:4326`
+  );
+  await rename('/tmp/fcu/output.geojson', filepath);
+
+  return filepath;
 };
 
 /**
