@@ -31,7 +31,7 @@ import { applyGeometryUpdates } from './networks/geometry-updates';
 import { syncPostgresToAirtable } from './networks/sync-pg-to-airtable';
 import { upsertFixedSimulateurData } from './simulateur/import';
 import tilesManager, { tilesAdapters, type TilesName } from './tiles';
-import { fillTiles, importGeoJSONToTable, importMvtDirectoryToTable } from './tiles/utils';
+import { fillTiles, importGeoJSONToTable, importTilesDirectoryToTable } from './tiles/utils';
 
 const program = createCommand();
 
@@ -102,14 +102,14 @@ program
   });
 
 program
-  .command('tiles:import-mvt-directory')
+  .command('tiles:import-tiles-directory')
   .description(
     'Importe en base une arborescence de tuiles vectorielles. A utiliser typiquement après avoir utilisé tippecanoe. Exemple : `yarn cli tiles:import-mvt-directory tiles/zone_a_potentiel_fort_chaud zone_a_potentiel_fort_chaud_tiles`'
   )
-  .argument('<mvtDirectory>', 'MVT directory root')
+  .argument('<tilesDirectory>', 'Tiles directory root for MVT (Mapbox Vector Tiles)')
   .argument('<destinationTable>', 'Destination table')
-  .action(async (mvtDirectory, destinationTable) => {
-    await importMvtDirectoryToTable(mvtDirectory, destinationTable);
+  .action(async (tilesDirectory, destinationTable) => {
+    await importTilesDirectoryToTable(tilesDirectory, destinationTable);
   });
 
 program

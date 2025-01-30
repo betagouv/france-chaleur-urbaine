@@ -23,7 +23,7 @@ const globalY13Max = 3100;
 /**
  * Generate tiles from GeoJSON data and store them in a postgres table
  */
-export const importMvtDirectory = async (basePath: string, destinationTable: string) => {
+export const importTilesDirectory = async (basePath: string, destinationTable: string) => {
   const startTime = Date.now();
 
   const zoomLevels = await listDirectoryEntries(basePath, 'dir');
@@ -343,7 +343,7 @@ export const generateGeoJSON = async (filepath: string) => {
   return filepath;
 };
 
-export const importMvtDirectoryToTable = async (mvtDirectory: string, destinationTable: string) => {
+export const importTilesDirectoryToTable = async (tilesDirectory: string, destinationTable: string) => {
   if (await db.schema.hasTable(destinationTable)) {
     logger.info('flushing destination table', {
       table: destinationTable,
@@ -362,12 +362,12 @@ export const importMvtDirectoryToTable = async (mvtDirectory: string, destinatio
     });
   }
 
-  await importMvtDirectory(mvtDirectory, destinationTable);
+  await importTilesDirectory(tilesDirectory, destinationTable);
 };
 
 export const importGeoJSONWithTipeeCanoe = async (fileName: string, destinationTable: string, zoomMin: number, zoomMax: number) => {
-  const mvtDirectory = await generateTilesFromGeoJSON(fileName, destinationTable, zoomMin, zoomMax);
-  await importMvtDirectory(mvtDirectory, destinationTable);
+  const tilesDirectory = await generateTilesFromGeoJSON(fileName, destinationTable, zoomMin, zoomMax);
+  await importTilesDirectory(tilesDirectory, destinationTable);
 };
 
 export const generateTilesFromGeoJSON = async (fileName: string, destinationTable: string, zoomMin: number, zoomMax: number) => {
