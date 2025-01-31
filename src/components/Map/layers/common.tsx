@@ -1,5 +1,5 @@
 import { type DataDrivenPropertyValueSpecification, type SourceSpecification } from 'maplibre-gl';
-import { type ComponentProps, type PropsWithChildren } from 'react';
+import { isValidElement, type ComponentProps, type PropsWithChildren } from 'react';
 
 import { type MapLayerSpecification } from '@/components/Map/map-layers';
 import Box from '@/components/ui/Box';
@@ -77,7 +77,9 @@ function PopupProperty<T>({ label, value, unit, formatter, ...props }: PopupProp
         {isDefined(value)
           ? isDefined(formatter)
             ? formatter(value)
-            : `${typeof value === 'number' ? ('raw' in props ? value : prettyFormatNumber(value)) : value} ${unit ?? ''}`
+            : isValidElement(value)
+              ? value
+              : `${typeof value === 'number' ? ('raw' in props ? value : prettyFormatNumber(value)) : value} ${unit ?? ''}`
           : 'Non connu'}
       </Box>
     </>

@@ -4,6 +4,8 @@ fileignoreconfig:
   ignore_detectors:
   - filename
   - filesize
+- filename: docs/import_qpv.md
+  checksum: c1d6b94bb550a972f1d97490a39dc3dc234b03c9ac5c7426cc85b5518a39966d
 - filename: docs/mise_a_jour_donnees_traces_fcu.md
   checksum: d24e895c3159f7016068da8596c8d90141509c4f6b6e2e8f1ab9b8b85f864357
 - filename: next-env.d.ts

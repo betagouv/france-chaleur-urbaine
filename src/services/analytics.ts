@@ -358,6 +358,24 @@ const trackingEvents = {
   'Carto|Installations géothermie surface ouverts|Désactive': {
     matomo: ['Carto', 'Installations géothermie surface ouverts', 'Désactive'],
   },
+  'Carto|Quartiers Prioritaires politique Ville|Active': {
+    matomo: ['Carto', 'Quartiers Prioritaires politique Ville', 'Active'],
+  },
+  'Carto|Quartiers Prioritaires politique Ville|Désactive': {
+    matomo: ['Carto', 'Quartiers Prioritaires politique Ville', 'Désactive'],
+  },
+  'Carto|Quartiers Prioritaires politique Ville 2015 ANRU|Active': {
+    matomo: ['Carto', 'Quartiers Prioritaires politique Ville 2015 ANRU', 'Active'],
+  },
+  'Carto|Quartiers Prioritaires politique Ville 2015 ANRU|Désactive': {
+    matomo: ['Carto', 'Quartiers Prioritaires politique Ville 2015 ANRU', 'Désactive'],
+  },
+  'Carto|Quartiers Prioritaires politique Ville 2024|Active': {
+    matomo: ['Carto', 'Quartiers Prioritaires politique Ville 2024', 'Active'],
+  },
+  'Carto|Quartiers Prioritaires politique Ville 2024|Désactive': {
+    matomo: ['Carto', 'Quartiers Prioritaires politique Ville 2024', 'Désactive'],
+  },
   "Carto|Zones d'opportunité|Active": {
     matomo: ['Carto', "Zones d'opportunité", 'Active'],
   },

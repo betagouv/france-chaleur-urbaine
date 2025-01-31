@@ -122,6 +122,11 @@ export type MapConfiguration = {
     show: boolean;
     population: Interval;
   };
+  quartiersPrioritairesPolitiqueVille: {
+    show: boolean;
+    qpv2015anru: boolean;
+    qpv2024: boolean;
+  };
   densiteThermiqueLineaire: boolean;
   mesureDistance: boolean;
   extractionDonneesBatiment: boolean;
@@ -222,6 +227,11 @@ export const emptyMapConfiguration: EmptyMapConfiguration = {
   communesFortPotentielPourCreationReseauxChaleur: {
     show: false,
     population: communesFortPotentielPourCreationReseauxChaleurInterval,
+  },
+  quartiersPrioritairesPolitiqueVille: {
+    show: false,
+    qpv2015anru: true,
+    qpv2024: true,
   },
   densiteThermiqueLineaire: false,
   mesureDistance: false,

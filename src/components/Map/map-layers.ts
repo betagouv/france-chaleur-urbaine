@@ -7,6 +7,7 @@ import {
 } from 'maplibre-gl';
 
 import { clientConfig } from '@/client-config';
+import { quartiersPrioritairesPolitiqueVilleLayersSpec } from '@/components/Map/layers/quartiersPrioritairesPolitiqueVille';
 import { type MapConfiguration } from '@/components/Map/map-configuration';
 import { deepMergeObjects, isDefined } from '@/utils/core';
 
@@ -122,6 +123,7 @@ export const mapLayers = [
   ...zonesPotentielChaudLayersSpec,
   ...caracteristiquesBatimentsLayersSpec,
   ...besoinsEnChaleurIndustrieCommunesLayersSpec,
+  ...quartiersPrioritairesPolitiqueVilleLayersSpec,
   ...perimetresDeDeveloppementPrioritaireLayersSpec,
   ...reseauxEnConstructionLayersSpec,
   ...besoinsEnChaleurLayersSpec,
