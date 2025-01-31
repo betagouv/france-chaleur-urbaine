@@ -1,6 +1,10 @@
 # Table of contents
 
 * [Page vide à laisser (articles à insérer en dessous)](README.md)
+* [Quel mode de chauffage décarboné pour mon immeuble ?](quel-mode-de-chauffage-decarbone-pour-mon-immeuble.md)
+* [La carte France Chaleur Urbaine continue de s'enrichir !](la-carte-france-chaleur-urbaine-continue-de-senrichir.md)
+* ["On se décarbone" avec les réseaux de chaleur](on-se-decarbone-avec-les-reseaux-de-chaleur.md)
+* [Meilleurs vœux !](meilleurs-voeux.md)
 * [Chiffres-clés 2023 des réseaux de froid](chiffres-cles-2023-des-reseaux-de-froid.md)
 * [Classement des réseaux de chaleur](classement-des-reseaux-de-chaleur.md)
 * [Chiffres-clés 2023 des réseaux de chaleur](chiffres-cles-2023-des-reseaux-de-chaleur.md)
@@ -59,7 +63,7 @@
 * [30% de l'objectif de raccordement 2035 atteignable sur les réseaux existants](30-de-lobjectif-de-raccordement-2035-atteignable-sur-les-reseaux-existants.md)
 * [592 réseaux classés](<README (18).md>)
 * [La géothermie expliquée aux enfants](<README (17).md>)
-* [Meilleurs vœux !](<README (16).md>)
+* [Meilleurs vœux !](meilleurs-voeux-1.md)
 * [Notre campagne sur Fresnes](notre-campagne-sur-fresnes.md)
 * [Potentiels de raccordement par territoire](potentiels-de-raccordement-par-territoire.md)
 * [Notre campagne sur Charleville-Mézières](notre-campagne-sur-charleville-mezieres.md)

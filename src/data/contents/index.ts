@@ -23,6 +23,7 @@ import franceChaleurUrbaineSeConstruitAvecSesUsagers from './france-chaleur-urba
 import identifierZonesImplantationsSolaireThermique from './identifier-des-zones-dimplantation-pour-le-solaire-thermique.md';
 import informerLesCoproprietes from './informer-les-coproprietes-sur-les-reseaux-de-chaleur.md';
 import informerGestionnairesTertiaires from './informer-les-gestionnaires-de-batiments-tertiaires-sur-les-reseaux-de-chaleur.md';
+import carteEnrichit from './la-carte-france-chaleur-urbaine-continue-de-senrichir.md';
 import laCarteFCUSEnrichit from './la-carte-france-chaleur-urbaine-senrichit-1.md';
 import carteFranceEnrichit from './la-carte-france-chaleur-urbaine-senrichit.md';
 import listeDesReseauxDeChaleur from './la-liste-des-reseaux-de-chaleur.md';
@@ -45,14 +46,18 @@ import lesReseauxDeFroidSurNotreCartographie from './les-reseaux-de-froid-sur-no
 import lesReseauxLesPlusEcologiquesSontLesPlusEconomiques from './les-reseaux-les-plus-ecologiques-sont-les-plus-economiques.md';
 import lesSyndicsEtFranceChaleurUrbaine from './les-syndics-et-france-chaleur-urbaine.md';
 import ileDeFranceChampionGeorthermieProfonde from './lile-de-france-championne-de-la-geothermie-profonde.md';
+import meilleursVoeux1 from './meilleurs-voeux-1.md';
+import meilleursVoeux from './meilleurs-voeux.md';
 import notreCampagneCharlevilleMezieres from './notre-campagne-sur-charleville-mezieres.md';
 import notreCampagneFresnes from './notre-campagne-sur-fresnes.md';
 import notreCampagneStrasbourg from './notre-campagne-sur-strasbourg.md';
 import nouveauReseauNationalInitiateurs from './nouveau-reseau-national-des-initiateurs-de-reseaux-de-chaleur-et-de-froid.md';
+import decarboneAvecRDC from './on-se-decarbone-avec-les-reseaux-de-chaleur.md';
 import ouCreerReseauChaleurSurMonTerritoire from './ou-creer-un-reseau-de-chaleur-sur-mon-territoire.md';
 import page_2 from './page-2.md';
 import partENRDansConsommationsChaleur from './part-des-enr-and-r-dans-nos-consommations-de-chaleur.md';
 import potentielsRaccordementTerritoire from './potentiels-de-raccordement-par-territoire.md';
+import quelModeChuaffageDecarbone from './quel-mode-de-chauffage-decarbone-pour-mon-immeuble.md';
 import readme_1_1_1_1 from './README (1) (1) (1) (1).md';
 import readme_1_1_1 from './README (1) (1) (1).md';
 import readme_1_1 from './README (1) (1).md';
@@ -65,7 +70,6 @@ import readme_12 from './README (12).md';
 import readme_13 from './README (13).md';
 import readme_14 from './README (14).md';
 import readme_15 from './README (15).md';
-import readme_16 from './README (16).md';
 import readme_17 from './README (17).md';
 import readme_18 from './README (18).md';
 import readme_19 from './README (19).md';
@@ -136,6 +140,38 @@ function getArticleAbstract(content: string): string {
 
 export const articles = (
   [
+    {
+      image: '/contents/cover_chauffage-decarbone.jpg',
+      title: 'Quel mode de chauffage décarboné pour mon immeuble ?',
+      slug: 'quel-mode-de-chauffage-decarbone-pour-mon-immeuble',
+      content: importFile(quelModeChuaffageDecarbone),
+      publishedDate: new Date('2025-01-29'),
+      themes: ['Réseaux de chaleur', 'ENR&R', 'Infographie'],
+    },
+    {
+      image: '/contents/cover_cartejv25.jpg',
+      title: "La carte France Chaleur Urbaine continue de s'enrichir !",
+      slug: 'la-carte-france-chaleur-urbaine-continue-de-senrichir',
+      content: importFile(carteEnrichit),
+      publishedDate: new Date('2025-01-22'),
+      themes: ['Réseaux de chaleur', 'Cartographie et données'],
+    },
+    {
+      image: '/contents/cover_franceinter.jpg',
+      title: '"On se décarbone" avec les réseaux de chaleur',
+      slug: 'on-se-decarbone-avec-les-reseaux-de-chaleur',
+      content: importFile(decarboneAvecRDC),
+      publishedDate: new Date('2025-01-14'),
+      themes: ['Réseaux de chaleur', 'ENR&R', 'Communication'],
+    },
+    {
+      image: '/contents/cover_voeux.jpg',
+      title: 'Meilleurs vœux !',
+      slug: 'meilleurs-voeux-2025',
+      content: importFile(meilleursVoeux),
+      publishedDate: new Date('2025-01-06'),
+      themes: ['Autre'],
+    },
     {
       image: '/contents/cover_chiffres_RFU.jpg',
       title: 'Chiffres-clés 2023 des réseaux de froid',
@@ -605,7 +641,7 @@ export const articles = (
       image: '/contents/vignette2024.jpg',
       title: 'Meilleurs vœux !',
       slug: 'meilleurs-voeux',
-      content: importFile(readme_16),
+      content: importFile(meilleursVoeux1),
       publishedDate: new Date('2024-01-02'),
       themes: ['Autre'],
     },
