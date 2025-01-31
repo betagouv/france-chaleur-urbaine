@@ -627,6 +627,15 @@ const trackingEvents = {
   'Téléchargement|Supports|Bretagne': {
     matomo: ['Téléchargement', 'Supports', 'Bretagne'],
   },
+  'Téléchargement|Supports|Chiffres-clés des réseaux de chaleur 2023': {
+    matomo: ['Téléchargement', 'Supports', 'Chiffres-clés des réseaux de chaleur 2023'],
+  },
+  'Téléchargement|Supports|Chiffres-clés des réseaux de froid 2023': {
+    matomo: ['Téléchargement', 'Supports', 'Chiffres-clés des réseaux de froid 2023'],
+  },
+  'Téléchargement|Supports|Décarboner le chauffage': {
+    matomo: ['Téléchargement', 'Supports', 'Décarboner le chauffage'],
+  },
   'Téléchargement|Schéma directeur': {
     matomo: ['Téléchargement', 'Schéma directeur'],
   },

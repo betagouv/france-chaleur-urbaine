@@ -171,6 +171,24 @@ const infographies: InfographieItemProps[] = [
     linkUrl: '/img/FCU_Infographie_Centre_Val_Loire.webp',
     eventKey: 'Téléchargement|Supports|Centre-Val de Loire',
   },
+  {
+    label: 'Chiffres-clés des réseaux de chaleur 2023',
+    imgUrl: '/img/FCU_chiffres-cles_reseaux-chaleur.preview.webp',
+    linkUrl: '/img/FCU_chiffres-cles_reseaux-chaleur.webp',
+    eventKey: 'Téléchargement|Supports|Chiffres-clés des réseaux de chaleur 2023',
+  },
+  {
+    label: 'Chiffres-clés des réseaux de froid 2023',
+    imgUrl: '/img/FCU_chiffres-cles_reseaux-froid.preview.webp',
+    linkUrl: '/img/FCU_chiffres-cles_reseaux-froid.webp',
+    eventKey: 'Téléchargement|Supports|Chiffres-clés des réseaux de froid 2023',
+  },
+  {
+    label: 'Décarboner le chauffage',
+    imgUrl: '/img/FCU_modes-chauffage-decarbones.preview.webp',
+    linkUrl: '/img/FCU_modes-chauffage-decarbones.webp',
+    eventKey: 'Téléchargement|Supports|Décarboner le chauffage',
+  },
 ];
 
 const reportages: InfographieItemProps[] = [
