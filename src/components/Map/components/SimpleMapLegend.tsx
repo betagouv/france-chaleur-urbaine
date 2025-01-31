@@ -668,9 +668,6 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                 </Box>
               </DeactivatableBox>
             </TrackableCheckableAccordion>
-            <Box textAlign="center" my="1w">
-              <ModalCarteFrance />
-            </Box>
             <TrackableCheckableAccordion
               name="quartiersPrioritairesPolitiqueVille"
               checked={mapConfiguration.quartiersPrioritairesPolitiqueVille.show}
@@ -761,6 +758,9 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                 </Box>
               </DeactivatableBox>
             </TrackableCheckableAccordion>
+            <Box textAlign="center" mt="2w" mb="1w">
+              <ModalCarteFrance />
+            </Box>
           </UrlStateAccordion>
         </TabScrollablePart>
       )}
