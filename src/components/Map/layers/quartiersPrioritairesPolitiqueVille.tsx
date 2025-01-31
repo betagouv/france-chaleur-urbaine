@@ -4,7 +4,7 @@ import { darken } from '@/utils/color';
 
 import { ifHoverElse, type PopupStyleHelpers, type MapSourceLayersSpecification } from './common';
 
-export const quartiersPrioritairesPolitiqueVille2015anruColor = '#ecad90';
+export const quartiersPrioritairesPolitiqueVille2015anruColor = '#d16d26';
 export const quartiersPrioritairesPolitiqueVille2024Color = '#2f5390';
 export const quartiersPrioritairesPolitiqueVilleOpacity = 0.3;
 
