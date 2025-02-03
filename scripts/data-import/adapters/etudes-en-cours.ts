@@ -40,7 +40,7 @@ const logger = parentLogger.child({
 export default class EtudesEnCoursAdapter extends BaseAdapter {
   /**
    *
-   * @param filepath must be like in "data/sample.csv", initially taken from a Google Doc named "Extraction de DATA Cartographie - pour FCU_02122024"
+   * @param filepath must be like in "data/etudes-en-cours-sample.csv", initially taken from a Google Doc named "Extraction de DATA Cartographie - pour FCU_02122024"
    */
   async importData(filepath?: string) {
     if (!filepath) {

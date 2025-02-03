@@ -1,3 +1,3 @@
 export abstract class BaseAdapter {
-  abstract importData(filepath?: string): Promise<any>;
+  abstract importData(filepath?: string): Promise<void>;
 }

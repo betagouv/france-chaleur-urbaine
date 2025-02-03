@@ -33,8 +33,7 @@ export const loadDataFromFile = async (filepath: string, options: Parameters<typ
   if (ext === '.csv') {
     const data = await loadCsvFile(filepath, options);
     return data;
-  } else {
-    console.error('Format de fichier non pris en charge');
-    throw new Error('Format de fichier non pris en charge');
   }
+
+  throw new Error('Format de fichier non pris en charge');
 };
