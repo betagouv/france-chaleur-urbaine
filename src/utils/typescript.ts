@@ -52,7 +52,7 @@ export function nonEmptyArray<T>(array: T[]) {
 export type RequiredFields<T, K extends keyof T> = Omit<T, K> & Required<Pick<T, K>>;
 
 /**
- * Converts types for frontend when type comes from kysely
+ * Converts types for frontend when types comes from kysely
  */
 export type FrontendType<T> = {
   [K in keyof T]: T[K] extends Timestamp ? string : T[K];
