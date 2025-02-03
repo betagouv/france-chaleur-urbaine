@@ -24,7 +24,7 @@
     "prettier-check": "prettier --write src",
     "prelint": "yarn prettier-check",
     "lint": "next lint",
-    "lint:fix": "prettier --write src && eslint src/ -c .eslintrc.json --ext js,jsx,ts,tsx,json --fix",
+    "lint:fix": "prettier --write src && eslint . -c .eslintrc.json --ext js,jsx,ts,tsx,json --fix",
     "test": "vitest run",
     "test:watch": "vitest dev",
     "cli": "tsx scripts/cli.ts",
