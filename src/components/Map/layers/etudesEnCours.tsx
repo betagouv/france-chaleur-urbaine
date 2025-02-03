@@ -42,7 +42,7 @@ export const etudesEnCoursLayersSpec = [
   },
 ] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
 
-function Popup({ status, maitre_ouvrage, launched_at }: FrontendType<EtudesEnCours>, { Title }: PopupStyleHelpers) {
+function Popup({ status, maitre_ouvrage, launched_at, description }: FrontendType<EtudesEnCours>, { Title }: PopupStyleHelpers) {
   const isOngoing = status === 'ongoing';
   const isDone = status === 'done';
 
@@ -54,8 +54,8 @@ function Popup({ status, maitre_ouvrage, launched_at }: FrontendType<EtudesEnCou
           {isOngoing ? 'Etude en cours' : isDone ? 'Etude terminée' : 'Non renseigné'}
         </Badge>
       )}
-      {typeof launched_at}
-      <div className="italic text-sm text-right">Débutée le {new Date(launched_at).toLocaleDateString()}</div>
+      <div className="min-w-[200px]">{description}</div>
+      <div className="mt-5 italic text-sm text-right">Débutée le {new Date(launched_at).toLocaleDateString()}</div>
     </>
   );
 }

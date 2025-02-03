@@ -76,7 +76,7 @@ export default class EtudesEnCoursAdapter extends BaseAdapter {
 
     const entries = Object.entries(etudesEnCours);
 
-    logger.info('Deleting old database');
+    logger.info('Deleting old collection');
     await kdb.deleteFrom('etudes_en_cours').execute();
 
     await Promise.all(
@@ -106,6 +106,12 @@ export default class EtudesEnCoursAdapter extends BaseAdapter {
         );
         logger.info(`${index}/${entries.length} Inserting ${etudeId}`);
 
+        const communeNames = await kdb
+          .selectFrom('ign_communes')
+          .select(sql`nom`.as('nom'))
+          .where('insee_com', 'in', commune_ids)
+          .execute();
+
         const result = await kdb
           .selectFrom('ign_communes')
           .select([sql`ST_AsGeoJSON(ST_Union(geom))`.as('geom')])
@@ -121,6 +127,7 @@ export default class EtudesEnCoursAdapter extends BaseAdapter {
               status: status || '',
               geom: result?.geom as string,
               commune_ids,
+              description: communeNames.map(({ nom }) => nom).join(', '),
               launched_at: launched_at ? launched_at.toISOString() : '',
             })
             .execute();

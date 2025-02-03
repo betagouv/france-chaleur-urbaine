@@ -2809,6 +2809,7 @@ export interface EnrrMobilisablesTiles {
 
 export interface EtudesEnCours {
   commune_ids: string[];
+  description: string | null;
   geom: string;
   id: number;
   launched_at: Timestamp;
