@@ -1,4 +1,4 @@
-import { readdir, readFile, stat } from 'fs/promises';
+import { readdir, readFile, stat, unlink } from 'fs/promises';
 import { arch } from 'node:os';
 import { join } from 'path';
 
@@ -344,6 +344,7 @@ const dockerImageArch =
         })();
 
 export const generateGeoJSON = async (filepath: string) => {
+  await unlink(`${dockerVolumePath}/output.geojson`);
   await runDocker(
     `ghcr.io/osgeo/gdal:alpine-normal-latest-${dockerImageArch}`,
     `ogr2ogr -f GeoJSON output.geojson PG:"host=localhost user=postgres dbname=postgres password=postgres_fcu" etudes_en_cours -t_srs EPSG:4326`

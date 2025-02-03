@@ -1,4 +1,4 @@
-import { writeFile } from 'fs/promises';
+import { unlink, writeFile } from 'fs/promises';
 
 import { kdb, sql } from '@/server/db/kysely';
 
@@ -9,6 +9,7 @@ export default class ReseauxDeChaleurAdapter extends BaseAdapter {
 
   async generateGeoJSON(filepath?: string) {
     const filepathToExport = filepath || `/tmp/${this.databaseName}.geojson`;
+    await unlink(filepathToExport);
 
     const result = await sql<any>`
 SELECT
