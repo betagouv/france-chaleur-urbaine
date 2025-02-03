@@ -2816,6 +2816,13 @@ export interface EtudesEnCours {
   status: string;
 }
 
+export interface EtudesEnCoursTiles {
+  tile: Buffer;
+  x: Int8;
+  y: Int8;
+  z: Int8;
+}
+
 export interface IgnCommunes {
   geom: string | null;
   id: string | null;
@@ -3240,6 +3247,7 @@ export interface DB {
   enrr_mobilisables_parkings_tiles: EnrrMobilisablesParkingsTiles;
   enrr_mobilisables_tiles: EnrrMobilisablesTiles;
   etudes_en_cours: EtudesEnCours;
+  etudes_en_cours_tiles: EtudesEnCoursTiles;
   ign_communes: IgnCommunes;
   knex_migrations: KnexMigrations;
   knex_migrations_lock: KnexMigrationsLock;

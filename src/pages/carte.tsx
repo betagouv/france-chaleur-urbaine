@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 import Map from '@/components/Map/Map';
-import { type MapConfigurationProperty, createMapConfiguration, defaultMapConfiguration } from '@/components/Map/map-configuration';
+import { createMapConfiguration, defaultMapConfiguration, type MapConfigurationProperty } from '@/components/Map/map-configuration';
 import { fullscreenHeaderHeight, tabHeaderHeight } from '@/components/shared/layout/MainLayout.data';
 import SimplePage from '@/components/shared/page/SimplePage';
 import useInitialSearchParam from '@/hooks/useInitialSearchParam';
@@ -42,6 +42,7 @@ export const layerURLKeysToMapConfigPath = {
   besoinsEnChaleurIndustrieCommunes: 'besoinsEnChaleurIndustrieCommunes',
   communesFortPotentielPourCreationReseauxChaleur: 'communesFortPotentielPourCreationReseauxChaleur.show',
   quartiersPrioritairesPolitiqueVille: 'quartiersPrioritairesPolitiqueVille.show',
+  etudesEnCours: 'etudesEnCours',
 } as const satisfies { [key: string]: MapConfigurationProperty<boolean> };
 
 export type LayerURLKey = keyof typeof layerURLKeysToMapConfigPath;

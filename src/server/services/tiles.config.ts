@@ -59,6 +59,7 @@ export const databaseSourceIds = [
   'quartiersPrioritairesPolitiqueVille2015anru',
   'quartiersPrioritairesPolitiqueVille2024',
   'buildings', // caractéristiques des bâtiments
+  'etudesEnCours',
 ] as const;
 
 export const zDatabaseSourceId = z.enum(databaseSourceIds);
@@ -370,6 +371,16 @@ export const tilesInfo: Record<DatabaseSourceId, TileInfo> = {
   quartiersPrioritairesPolitiqueVille2024: {
     source: 'database',
     tiles: 'quartiers_prioritaires_politique_ville_2024_tiles',
+    compressedTiles: true,
+    table: '', // useless
+    properties: [], // useless
+    sourceLayer: '', // useless
+    id: '', // useless
+    extraWhere: (query) => query, // useless
+  },
+  etudesEnCours: {
+    source: 'database',
+    tiles: 'etudes_en_cours_tiles',
     compressedTiles: true,
     table: '', // useless
     properties: [], // useless

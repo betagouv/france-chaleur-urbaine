@@ -25,19 +25,16 @@ import ModalCarteFrance from './ModalCarteFrance';
 import ScaleLegend from './ScaleLegend';
 import {
   DeactivatableBox,
+  parseURLTabs,
   SingleCheckbox,
   type TabId,
   type TabObject,
-  TabScrollablePart,
   Tabs,
+  tabs,
+  TabScrollablePart,
   Title,
   TrackableCheckableAccordion,
-  parseURLTabs,
-  tabs,
 } from './SimpleMapLegend.style';
-import BuildingsDataExtractionTool from './tools/BuildingsDataExtractionTool';
-import DistancesMeasurementTool from './tools/DistancesMeasurementTool';
-import LinearHeatDensityTool from './tools/LinearHeatDensityTool';
 import { besoinsEnChaleurIntervals, besoinsEnFroidIntervals } from '../layers/besoinsEnChaleur';
 import { besoinsEnChaleurIndustrieCommunesIntervals } from '../layers/besoinsEnChaleurIndustrieCommunes';
 import { caracteristiquesBatimentsLayerStyle } from '../layers/caracteristiquesBatiments';
@@ -58,6 +55,7 @@ import {
   enrrMobilisablesZonesGeothermieProfondeLayerColor,
   enrrMobilisablesZonesGeothermieProfondeLayerOpacity,
 } from '../layers/enrr-mobilisables/zonesGeothermieProfonde';
+import { etudesEnCoursColor, etudesEnCoursOpacity } from '../layers/etudesEnCours';
 import {
   installationsGeothermieProfondeLayerColor,
   installationsGeothermieProfondeLayerOpacity,
@@ -74,6 +72,9 @@ import {
   typeChauffageBatimentsOpacity,
 } from '../layers/typeChauffageBatimentsCollectifs';
 import { zonePotentielChaudColor, zonePotentielChaudOpacity, zonePotentielFortChaudColor } from '../layers/zonesPotentielChaud';
+import BuildingsDataExtractionTool from './tools/BuildingsDataExtractionTool';
+import DistancesMeasurementTool from './tools/DistancesMeasurementTool';
+import LinearHeatDensityTool from './tools/LinearHeatDensityTool';
 
 const consommationsGazLegendColor = '#D9D9D9';
 const consommationsGazUsageLegendOpacity = 0.53;
@@ -161,6 +162,29 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
               style={{ marginTop: '2px' }}
             >
               Demandes de raccordement sur France Chaleur Urbaine
+            </Text>
+          </Box>
+          <Box display="flex" alignItems="start" mb="2w">
+            <SingleCheckbox
+              name="etudesEnCours"
+              checked={mapConfiguration.etudesEnCours}
+              onChange={() => toggleLayer('etudesEnCours')}
+              trackingEvent="Carto|Etudes en cours"
+            />
+
+            <IconPolygon stroke={etudesEnCoursColor} fillOpacity={etudesEnCoursOpacity} mt="1v" />
+
+            <Text
+              as="label"
+              htmlFor="etudesEnCours"
+              fontSize="14px"
+              lineHeight="18px"
+              className="fr-col"
+              cursor="pointer"
+              pl="1w"
+              style={{ marginTop: '2px' }}
+            >
+              Commune couverte par une étude pour la création d’un réseau
             </Text>
           </Box>
           <UrlStateAccordion label="Bâtiments consommateurs gaz et fioul" small>
