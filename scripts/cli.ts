@@ -346,6 +346,31 @@ program
     console.info('Veuillez regarder les étapes dans scripts/bdnb/qpv/README.md');
   });
 
+program
+  .command('gitbook:import')
+  .description('Etapes à suivre pour mettre à jour les actualités depuis GitBook')
+  .action(async () => {
+    console.info(`
+      git fetch
+      git checkout dev
+      git pull --rebase
+      git merge origin/feat/content
+      echo "
+      Etapes à réaliser :
+      1. Vérifier et résoudre les conflits
+      2. Ouvrir le fichier src/data/contents/index.ts, puis pour chaque article du ticket Trello :
+        - Ajouter une section pour l'article
+        - Référencer le contenu de l'article en l'important
+        - Compléter :
+          - l'image de couverture (visible dans le frontmatter de l'article)
+          - titre (titre h1 du contenu),
+          - slug (nom du fichier)
+          - la date de publication (visible dans le ticket Trello)
+          - les thèmes (visibles dans le ticket Trello)
+      3. Supprimer le frontmatter des nouveaux articles avec ./scripts/clean-gitbook-actus.sh
+    `);
+  });
+
 ['SIGINT', 'SIGTERM', 'SIGQUIT'].forEach((signal) => {
   process.on(signal, async () => {
     logger.warn('Received stop signal');
