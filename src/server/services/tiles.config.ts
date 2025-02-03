@@ -56,6 +56,8 @@ export const databaseSourceIds = [
   'besoinsEnChaleur',
   'besoinsEnChaleurIndustrieCommunes',
   'communesFortPotentielPourCreationReseauxChaleur',
+  'quartiersPrioritairesPolitiqueVille2015anru',
+  'quartiersPrioritairesPolitiqueVille2024',
   'buildings', // caractéristiques des bâtiments
 ] as const;
 
@@ -348,6 +350,26 @@ export const tilesInfo: Record<DatabaseSourceId, TileInfo> = {
   communesFortPotentielPourCreationReseauxChaleur: {
     source: 'database',
     tiles: 'communes_fort_potentiel_pour_creation_reseaux_chaleur_tiles',
+    compressedTiles: true,
+    table: '', // useless
+    properties: [], // useless
+    sourceLayer: '', // useless
+    id: '', // useless
+    extraWhere: (query) => query, // useless
+  },
+  quartiersPrioritairesPolitiqueVille2015anru: {
+    source: 'database',
+    tiles: 'quartiers_prioritaires_politique_ville_2015_anru_tiles',
+    compressedTiles: true,
+    table: '', // useless
+    properties: [], // useless
+    sourceLayer: '', // useless
+    id: '', // useless
+    extraWhere: (query) => query, // useless
+  },
+  quartiersPrioritairesPolitiqueVille2024: {
+    source: 'database',
+    tiles: 'quartiers_prioritaires_politique_ville_2024_tiles',
     compressedTiles: true,
     table: '', // useless
     properties: [], // useless
