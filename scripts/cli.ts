@@ -18,7 +18,7 @@ import { type DatabaseSourceId, type DatabaseTileInfo, tilesInfo, zDatabaseSourc
 import { type ApiAccount } from '@/types/ApiAccount';
 import { sleep } from '@/utils/time';
 import { nonEmptyArray } from '@/utils/typescript';
-import { optimisationProfiles, optimizeImage } from '@root/scripts/images/optimize';
+import { optimisationProfiles, optimizeImage } from '@cli/images/optimize';
 
 import { type KnownAirtableBase, knownAirtableBases } from './airtable/bases';
 import { createModificationsReseau } from './airtable/create-modifications-reseau';
