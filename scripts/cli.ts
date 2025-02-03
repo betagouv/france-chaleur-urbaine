@@ -2,6 +2,7 @@ import { readFile } from 'fs/promises';
 
 import { InvalidArgumentError, createCommand } from '@commander-js/extra-typings';
 import prompts from 'prompts';
+import { z } from 'zod';
 
 import { saveStatsInDB } from '@/server/cron/saveStatsInDB';
 import db from '@/server/db';
@@ -16,6 +17,8 @@ import {
 import { type DatabaseSourceId, type DatabaseTileInfo, tilesInfo, zDatabaseSourceId } from '@/server/services/tiles.config';
 import { type ApiAccount } from '@/types/ApiAccount';
 import { sleep } from '@/utils/time';
+import { nonEmptyArray } from '@/utils/typescript';
+import { optimisationProfiles, optimizeImage } from '@cli/images/optimize';
 
 import { type KnownAirtableBase, knownAirtableBases } from './airtable/bases';
 import { createModificationsReseau } from './airtable/create-modifications-reseau';
@@ -344,6 +347,17 @@ program
   .description('')
   .action(async () => {
     console.info('Veuillez regarder les étapes dans scripts/bdnb/qpv/README.md');
+  });
+
+program
+  .command('image:optimize')
+  .description(
+    "Permet d'optimiser les images à introduire dans FCU, comme les infographies. Exemple : `yarn cli image:optimize infographie public/img/FCU_chiffres-cles_reseaux-chaleur.jpg`"
+  )
+  .argument('<profile>', 'optimization profile', (v) => z.enum(nonEmptyArray(optimisationProfiles)).parse(v))
+  .argument('<fileName>', 'input image input file')
+  .action(async (profile, fileName) => {
+    await optimizeImage(fileName, profile);
   });
 
 program
