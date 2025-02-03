@@ -1,6 +1,8 @@
-import { readFile, unlink } from 'fs/promises';
+import { existsSync } from 'fs';
+import { readFile, unlink, writeFile } from 'fs/promises';
 
 import { createCommand, InvalidArgumentError } from '@commander-js/extra-typings';
+import camelcase from 'camelcase';
 import prompts from 'prompts';
 import { z } from 'zod';
 
@@ -204,6 +206,55 @@ program
     logger.warn(`N’oubliez pas de copier la table sur dev et prod`);
     logger.warn(`./scripts/copyLocalTableToRemote.sh dev ${tilesDatabaseName} --data-only`);
     logger.warn(`./scripts/copyLocalTableToRemote.sh prod ${tilesDatabaseName} --data-only`);
+    logger.warn(`Puis de l'ajouter à la carte yarn cli tiles:add-to-map ${type}`);
+  });
+
+program
+  .command('tiles:add-to-map')
+  .description('Quand les tiles sont en BDD, il faut les afficher sur la carte. Voici une description des actions à faire')
+  .argument('<type>', `Type de ressource à générer - ${Object.keys(tilesAdapters).join(', ')}`)
+  .action(async (type) => {
+    logger.info(
+      `Plusieurs actions manuelles à faire pour générer la couche ${type}. Vous pouvez voir https://github.com/betagouv/france-chaleur-urbaine/pull/991/files pour référence`
+    );
+
+    const typeCamelCase = camelcase(type);
+    const layerFilePath = `src/components/Map/layers/${typeCamelCase}.tsx`;
+    const mapConfigurationFilePath = `src/components/Map/map-configuration.ts`;
+    const mapLayersFilePath = `src/components/Map/map-layers.ts`;
+    const mapFilePath = `src/pages/carte.tsx`;
+    const tilesConfigFilePath = `src/server/services/tiles.config.ts`;
+    const analyticsFilePath = `src/services/analytics.ts`;
+    const simpleMapLegendFilePath = `src/components/Map/components/SimpleMapLegend.tsx`;
+    logger.info(`Dans ${mapConfigurationFilePath}`);
+    logger.warn(`  🚧 Ajouter la config au type MapConfiguration -> "${typeCamelCase}: boolean"`);
+    logger.warn(`  🚧 Ajouter la config à emptyMapConfiguration -> "${typeCamelCase}: false"`);
+    logger.info(`Dans ${tilesConfigFilePath}`);
+    logger.warn(`  🚧 Ajouter la config à databaseSourceIds -> "${typeCamelCase}"`);
+    logger.warn(`  🚧 Ajouter la config à tilesInfo`);
+    logger.info(`Dans ${layerFilePath}`);
+    if (!existsSync(layerFilePath)) {
+      await writeFile(
+        layerFilePath,
+        `// Check in other layers for the structure
+    export const ${typeCamelCase}VilleLayersSpec = [];`
+      );
+      logger.info(`✅ Fichier layer créé dans ${layerFilePath}`);
+    }
+    logger.warn(`  🚧 Modifier le fichier layer`);
+    logger.info(`Dans ${mapLayersFilePath}`);
+    logger.warn(`  🚧 Importer dans mapLayers -> "...${typeCamelCase}LayersSpec,"`);
+    logger.info(`Dans ${mapFilePath}`);
+    logger.warn(`  🚧 Ajouter la config à layerURLKeysToMapConfigPath -> "${typeCamelCase}: '${typeCamelCase}.show'"`);
+    logger.info(`Dans ${analyticsFilePath}`);
+    logger.warn(`  🚧 Ajouter les events analytics`);
+    logger.info(`Dans ${simpleMapLegendFilePath}`);
+    logger.warn(`  🚧 Ajouter une nouvelle checkbox`);
+    logger.info('');
+    logger.info('Pour ouvrir tous les fichiers, vous pouvez faire :');
+    logger.info(
+      `code ${[layerFilePath, mapConfigurationFilePath, mapLayersFilePath, mapFilePath, tilesConfigFilePath, analyticsFilePath].join(' ')}`
+    );
   });
 
 program
