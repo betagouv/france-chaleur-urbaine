@@ -5,7 +5,7 @@ import useArrayQueryState from '@/hooks/useArrayQueryState';
 import { type LocationInfoResponse } from '@/pages/api/location-infos';
 
 import { Separator, Title } from './ComparateurPublicodes.style';
-import { type ModeDeChauffage, modesDeChauffage } from './modes-de-chauffage';
+import { type ModeDeChauffage, modesDeChauffage } from './mappings';
 import { DisclaimerButton } from './Placeholder';
 import SelectClimatisation from './SelectClimatisation';
 import SelectProductionECS from './SelectProductionECS';

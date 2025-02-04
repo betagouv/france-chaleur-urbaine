@@ -13,7 +13,7 @@ import Heading from '@/components/ui/Heading';
 import Icon from '@/components/ui/Icon';
 import Link from '@/components/ui/Link';
 
-import { modesDeChauffage } from './modes-de-chauffage';
+import { modesDeChauffage } from './mappings';
 import { type SimulatorEngine } from './useSimulatorEngine';
 
 type DebugDrawerProps = {

@@ -1,9 +1,8 @@
+import { fr } from '@codegouvfr/react-dsfr';
 import Alert from '@codegouvfr/react-dsfr/Alert';
-import Button from '@codegouvfr/react-dsfr/Button';
 import { useQueryState } from 'nuqs';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { Oval } from 'react-loader-spinner';
-import styled from 'styled-components';
 
 import { ContactForm, SelectEnergy } from '@/components/EligibilityForm/components';
 import { energyInputsDefaultLabels } from '@/components/EligibilityForm/EligibilityFormAddress';
@@ -11,6 +10,7 @@ import AddressAutocomplete from '@/components/form/dsfr/AddressAutocompleteInput
 import Box from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
 import Link from '@/components/ui/Link';
+import Modal, { createModal } from '@/components/ui/Modal';
 import Text from '@/components/ui/Text';
 import { type NetworkEligibilityStatus } from '@/server/services/addresseInformation';
 import { useServices } from '@/services';
@@ -28,6 +28,11 @@ interface EligibilityTestBoxProps {
   networkId: string;
 }
 
+const eligibilityTestModal = createModal({
+  id: 'eligibility-test-box-modal',
+  isOpenedByDefault: false,
+});
+
 /**
  * Formulaire simplifié de test d'adresse + création d'une demande pour un réseau de chaleur.
  */
@@ -38,7 +43,6 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
   const [eligibilityStatus, setEligibilityStatus] = useState<NetworkEligibilityStatus>();
   const [heatingType, setHeatingType] = useState('');
   const [formState, setFormState] = useState<FormState>('idle');
-  const resultsBoxRef = useRef<HTMLDivElement | null>(null);
 
   // appelé au clic sur Tester l'adresse, pour récupérer l'éligibilité et les informations du réseau
   const testAddressEligibility = async (geoAddress: SuggestionItem) => {
@@ -54,12 +58,6 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
         `Eligibilité|Formulaire de test - Fiche réseau - Adresse ${eligibilityStatus?.isEligible ? 'É' : 'Iné'}ligible`,
         geoAddress.properties.label
       );
-
-      setTimeout(() => {
-        resultsBoxRef.current?.scrollIntoView({
-          behavior: 'smooth',
-        });
-      });
     } catch (err) {
       setFormState('eligibilitySubmissionError');
     }
@@ -114,12 +112,6 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
         `Eligibilité|Formulaire de contact ${eligibilityStatus?.isEligible ? 'é' : 'iné'}ligible - Fiche réseau - Envoi`,
         selectedGeoAddress?.properties.label
       );
-
-      setTimeout(() => {
-        resultsBoxRef.current?.scrollIntoView({
-          behavior: 'smooth',
-        });
-      });
     } catch (err) {
       setFormState('demandSubmissionError');
     }
@@ -128,9 +120,12 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
   return (
     <>
       <Box p="4w" backgroundColor="blue-france-925-125">
-        <Text size="xl" mb="2w" legacyColor="black">
-          Testez l'éligibilité d'une adresse pour ce réseau.
-        </Text>
+        <Box display="flex" alignItems="center" justifyContent="space-between" mb="2w">
+          <Text size="xl" legacyColor="black">
+            Testez l'éligibilité d'une adresse pour ce réseau.
+          </Text>
+          {formState === 'loadingEligibility' && <Oval height={20} width={20} />}
+        </Box>
         <AddressAutocomplete
           label=""
           nativeInputProps={{ placeholder: 'Tapez ici votre adresse' }}
@@ -141,28 +136,26 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
           onSelect={onAddressSelected}
           excludeCities
         />
-        <Box display="flex" alignItems="center" justifyContent="end">
-          {formState === 'eligibilitySubmissionError' && (
-            <Box textColor="#c00">
-              Une erreur est survenue. Veuillez réessayer ou bien <Link href="/contact">contacter le support</Link>.
-            </Box>
-          )}
-          {formState === 'loadingEligibility' && <Oval height={30} width={30} />}
-          <Button
-            onClick={() => testAddressEligibility(selectedGeoAddress as SuggestionItem)}
-            disabled={!selectedGeoAddress || formState === 'loadingEligibility'}
-            className="fr-ml-2w"
-          >
-            Tester
-          </Button>
-        </Box>
+        {formState === 'eligibilitySubmissionError' && (
+          <div className={fr.cx('fr-text--sm', 'fr-message--error')}>
+            Une erreur est survenue. Veuillez réessayer ou bien <Link href="/contact">contacter le support</Link>.
+          </div>
+        )}
       </Box>
 
-      {selectedGeoAddress && eligibilityStatus && (
-        <>
-          {/* pas réussi à intégrer ref dans le composant Box, fait planter la page principale */}
-          <div ref={resultsBoxRef} />
-          <ResultsBox p="4w" border="1px solid #e7e7e7">
+      <Modal
+        modal={eligibilityTestModal}
+        title=""
+        open={!!selectedGeoAddress && !!eligibilityStatus}
+        size="custom"
+        onClose={() => {
+          setSelectedGeoAddress(undefined);
+          setEligibilityStatus(undefined);
+        }}
+        loading={formState === 'loadingEligibility'}
+      >
+        {!!selectedGeoAddress && !!eligibilityStatus && (
+          <>
             <Box boxShadow={`inset 16px 0 0 0 ${eligibilityStatus.isEligible ? '#3AB54A' : '#FF5655'}`} pl="4w" pt="2w" pb="1w">
               <Box display="flex" gap="16px">
                 <img
@@ -235,7 +228,7 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
                       <SelectEnergy
                         label="Mode de chauffage actuel :"
                         name="heatingType"
-                        className="fr-mt-2w"
+                        className="fr-mt-2w fr-mb-2w"
                         selectOptions={energyInputsDefaultLabels}
                         onChange={setHeatingType}
                         value={heatingType}
@@ -258,27 +251,11 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
                 )}
               </>
             )}
-          </ResultsBox>
-        </>
-      )}
+          </>
+        )}
+      </Modal>
     </>
   );
 };
 
 export default EligibilityTestBox;
-
-export const ResultsBox = styled(Box)`
-  overflow: hidden;
-  animation: scrollDown 0.5s ease-out forwards;
-
-  @keyframes scrollDown {
-    from {
-      max-height: 0;
-      opacity: 0;
-    }
-    to {
-      max-height: 1600px; // needs to be greater than the height of the box
-      opacity: 1;
-    }
-  }
-`;

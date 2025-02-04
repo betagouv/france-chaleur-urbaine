@@ -21,7 +21,13 @@ const Eligibility = () => {
       </Header>
       <Form id={AnalyticsFormId.form_test_adresse}>
         <CheckEligibilityFormLabel>
-          <SelectEnergy name="heatingType" selectOptions={energyInputsDefaultLabels} onChange={setHeatingType} value={heatingType} />
+          <SelectEnergy
+            className="fr-mb-2w"
+            name="heatingType"
+            selectOptions={energyInputsDefaultLabels}
+            onChange={setHeatingType}
+            value={heatingType}
+          />
         </CheckEligibilityFormLabel>
         <AddressAutocomplete
           placeholder="Tapez ici votre adresse"
