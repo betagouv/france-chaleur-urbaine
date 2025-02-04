@@ -9,6 +9,7 @@ import Heading from '@/components/ui/Heading';
 import { type ProEligibilityTests } from '@/server/db/kysely';
 import { toastErrors } from '@/services/notification';
 import { fetchJSON, postFetchJSON } from '@/utils/network';
+import { type FrontendType } from '@/utils/typescript';
 
 const testContent = `20 avenue de Ségur Paris
 11 rue Mirabeau saint-maur-des-fossés
@@ -29,7 +30,7 @@ export type ProEligibilityTestRequest = z.infer<typeof zProEligibilityTestReques
 export default function DashboardProfessionnel() {
   const { data: eligibilityTests, refetch: refetchEligibilityTests } = useQuery({
     queryKey: ['pro-eligibility-tests'],
-    queryFn: () => fetchJSON<Selectable<ProEligibilityTests>[]>('/api/pro-eligibility-tests'),
+    queryFn: () => fetchJSON<FrontendType<Selectable<ProEligibilityTests>>[]>('/api/pro-eligibility-tests'),
   });
 
   const createTest = toastErrors(async () => {

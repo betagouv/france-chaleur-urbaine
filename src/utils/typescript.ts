@@ -55,5 +55,5 @@ export type RequiredFields<T, K extends keyof T> = Omit<T, K> & Required<Pick<T,
  * Converts types for frontend when types comes from kysely
  */
 export type FrontendType<T> = {
-  [K in keyof T]: T[K] extends Timestamp ? string : T[K];
+  [K in keyof T]: T[K] extends Timestamp | Date ? string : T[K];
 };

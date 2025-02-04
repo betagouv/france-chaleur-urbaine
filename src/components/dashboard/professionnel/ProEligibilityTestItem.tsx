@@ -8,9 +8,10 @@ import { type ProEligibilityTestWithAddresses } from '@/pages/api/pro-eligibilit
 import { type ProEligibilityTests } from '@/server/db/kysely';
 import { toastErrors } from '@/services/notification';
 import { deleteFetchJSON, fetchJSON } from '@/utils/network';
+import { type FrontendType } from '@/utils/typescript';
 
 type ProEligibilityTestItemProps = {
-  test: Selectable<ProEligibilityTests>;
+  test: FrontendType<Selectable<ProEligibilityTests>>;
   onDelete: () => any;
 };
 
@@ -32,7 +33,7 @@ export default function ProEligibilityTestItem({ test, onDelete }: ProEligibilit
     <Box>
       <Box>
         <Button onClick={() => setViewDetail(true)}>
-          {test.name} - {test.created_at} {/* FIXME utiliser helper Date -> string */}
+          {test.name} - {test.created_at}
         </Button>
         <Button onClick={() => deleteTest(test.id)}>Supprimer</Button>
       </Box>
