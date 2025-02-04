@@ -164,29 +164,6 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
               Demandes de raccordement sur France Chaleur Urbaine
             </Text>
           </Box>
-          <Box display="flex" alignItems="start" mb="2w">
-            <SingleCheckbox
-              name="etudesEnCours"
-              checked={mapConfiguration.etudesEnCours}
-              onChange={() => toggleLayer('etudesEnCours')}
-              trackingEvent="Carto|Etudes en cours"
-            />
-
-            <IconPolygon stroke={etudesEnCoursColor} fillOpacity={etudesEnCoursOpacity} mt="1v" />
-
-            <Text
-              as="label"
-              htmlFor="etudesEnCours"
-              fontSize="14px"
-              lineHeight="18px"
-              className="fr-col"
-              cursor="pointer"
-              pl="1w"
-              style={{ marginTop: '2px' }}
-            >
-              Commune couverte par une étude pour la création d’un réseau
-            </Text>
-          </Box>
           <UrlStateAccordion label="Bâtiments consommateurs gaz et fioul" small>
             <TrackableCheckableAccordion
               name="consommationsGaz"
@@ -692,6 +669,30 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                 </Box>
               </DeactivatableBox>
             </TrackableCheckableAccordion>
+
+            <Box display="flex" alignItems="start" my="2w">
+              <SingleCheckbox
+                name="etudesEnCours"
+                checked={mapConfiguration.etudesEnCours}
+                onChange={() => toggleLayer('etudesEnCours')}
+                trackingEvent="Carto|Etudes en cours"
+              />
+
+              <IconPolygon stroke={etudesEnCoursColor} fillOpacity={etudesEnCoursOpacity} mt="1v" />
+
+              <Text
+                as="label"
+                htmlFor="etudesEnCours"
+                fontSize="14px"
+                className="fr-col"
+                cursor="pointer"
+                pl="1w"
+                style={{ marginTop: '2px' }}
+              >
+                Commune couverte par une étude pour la création d’un réseau
+              </Text>
+            </Box>
+
             <TrackableCheckableAccordion
               name="quartiersPrioritairesPolitiqueVille"
               checked={mapConfiguration.quartiersPrioritairesPolitiqueVille.show}
