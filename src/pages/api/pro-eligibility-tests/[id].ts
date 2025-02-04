@@ -28,8 +28,8 @@ const DELETE = async (req: NextApiRequest) => {
   ensureValidPermissions(req, testId);
 
   await kdb.transaction().execute(async (trx) => {
-    await trx.selectFrom('pro_eligibility_tests_addresses').where('test_id', '=', testId).selectAll().execute();
-    await trx.deleteFrom('pro_eligibility_tests').where('id', '=', testId).executeTakeFirstOrThrow();
+    await trx.deleteFrom('pro_eligibility_tests_addresses').where('test_id', '=', testId).execute();
+    await trx.deleteFrom('pro_eligibility_tests').where('id', '=', testId).execute();
   });
 };
 
