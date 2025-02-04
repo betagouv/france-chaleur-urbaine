@@ -4,7 +4,7 @@ import { type EtudesEnCours } from '@/server/db/kysely';
 import { darken } from '@/utils/color';
 import { type FrontendType } from '@/utils/typescript';
 
-import { ifHoverElse, type MapSourceLayersSpecification, type PopupStyleHelpers } from './common';
+import { ifHoverElse, type MapSourceLayersSpecification } from './common';
 
 export const etudesEnCoursColor = '#1E6091';
 export const etudesEnCoursOpacity = 0.3;
@@ -42,19 +42,27 @@ export const etudesEnCoursLayersSpec = [
   },
 ] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
 
-function Popup({ status, maitre_ouvrage, launched_at, description }: FrontendType<EtudesEnCours>, { Title }: PopupStyleHelpers) {
+function Popup({ status, maitre_ouvrage, launched_at, communes }: FrontendType<EtudesEnCours>) {
   const isOngoing = status === 'ongoing';
   const isDone = status === 'done';
+  const severalMaitreOuvrage = maitre_ouvrage.split(',').length > 1;
+  const severalCommunes = (communes || '')?.split(',').length > 1;
 
   return (
     <>
-      <Title>{maitre_ouvrage}</Title>
       {!!status && (
-        <Badge severity={isOngoing ? 'info' : isDone ? 'success' : undefined} small>
+        <Badge severity={isOngoing ? 'info' : isDone ? 'success' : undefined} small className="mt-2">
           {isOngoing ? 'Etude en cours' : isDone ? 'Etude terminée' : 'Non renseigné'}
         </Badge>
       )}
-      <div className="min-w-[200px]">{description}</div>
+      <ul>
+        <li>
+          Maitre{severalMaitreOuvrage ? 's' : ''} d’ouvrage{severalMaitreOuvrage ? 's' : ''}: <strong>{maitre_ouvrage}</strong>
+        </li>
+        <li>
+          Commune{severalCommunes ? 's' : ''} couverte{severalCommunes ? 's' : ''}: <strong>{communes}</strong>
+        </li>
+      </ul>
       <div className="mt-5 italic text-sm text-right">Débutée le {new Date(launched_at).toLocaleDateString()}</div>
     </>
   );

@@ -9,6 +9,7 @@ export interface CSVEtudeEnCours {
   EtudeId: number;
   Commune: string;
   "Maître d'ouvrage  "?: string;
+  'Ne Pas Afficher'?: string;
   "Présence d'un RCU ": string;
   'Etudes réalisées': string;
   'Type de date': string;
@@ -50,6 +51,10 @@ export default class EtudesEnCoursAdapter extends BaseAdapter {
 
     const etudesEnCours = data.reduce(
       (acc, row) => {
+        if (row['Ne Pas Afficher'] === 'X') {
+          logger.info(`💤 Skipping ${row.EtudeId}`, { row });
+          return acc;
+        }
         if (!acc[row.EtudeId]) {
           acc[row.EtudeId] = [];
         }
@@ -61,7 +66,7 @@ export default class EtudesEnCoursAdapter extends BaseAdapter {
         }
 
         const [day, month, year] = row['Date lancement du projet / étude pour FCU (mois / année)'].split('/');
-        const formattedDate = new Date(`${month}/${day}/${year}`);
+        const formattedDate = new Date(`${month}/${day}/${year} 12:00:00`); // Use 12 in order to bypass timezone problems as command is launched on local
 
         acc[row.EtudeId].push({
           maitre_ouvrage: row["Maître d'ouvrage  "] || '',
@@ -127,7 +132,7 @@ export default class EtudesEnCoursAdapter extends BaseAdapter {
               status: status || '',
               geom: result?.geom as string,
               commune_ids,
-              description: communeNames.map(({ nom }) => nom).join(', '),
+              communes: communeNames.map(({ nom }) => nom).join(', '),
               launched_at: launched_at ? launched_at.toISOString() : '',
             })
             .execute();
