@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { type Selectable } from 'kysely';
 import { useState } from 'react';
 
+import Accordion from '@/components/ui/Accordion';
 import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
 import { type ProEligibilityTestWithAddresses } from '@/pages/api/pro-eligibility-tests/[id]';
@@ -20,7 +21,20 @@ export default function ProEligibilityTestItem({ test, onDelete }: ProEligibilit
 
   const { data: testDetails } = useQuery({
     queryKey: [`pro-eligibility-tests/${test.id}`],
-    queryFn: () => fetchJSON<ProEligibilityTestWithAddresses>(`/api/pro-eligibility-tests/${test.id}`),
+    queryFn: async () => {
+      const testWithAddresses = await fetchJSON<ProEligibilityTestWithAddresses>(`/api/pro-eligibility-tests/${test.id}`);
+      return {
+        ...testWithAddresses,
+        stats: {
+          adressesCount: testWithAddresses.addresses.length,
+          adressesEligiblesCount: testWithAddresses.addresses.filter((address) => address.eligibility_status.isEligible).length,
+          adressesProches150mReseauCount: testWithAddresses.addresses.filter(
+            (address) => address.eligibility_status.distance && address.eligibility_status.distance <= 150
+          ).length,
+          adressesDansPDPCount: testWithAddresses.addresses.filter((address) => address.eligibility_status.inPDP).length,
+        },
+      };
+    },
     enabled: viewDetail,
   });
 
@@ -31,20 +45,43 @@ export default function ProEligibilityTestItem({ test, onDelete }: ProEligibilit
 
   return (
     <Box>
-      <Box>
-        <Button onClick={() => setViewDetail(true)}>
-          {test.name} - {test.created_at}
-        </Button>
-        <Button onClick={() => deleteTest(test.id)}>Supprimer</Button>
-      </Box>
-
-      {testDetails &&
-        testDetails.addresses.map((address) => (
-          <Box key={address.id}>
-            {address.ban_address} - {address.source_address} - Eligible: {address.eligibility_status.isEligible} - Distance:
-            {address.eligibility_status.distance}
-          </Box>
-        ))}
+      <Accordion label={test.name} onExpandedChange={() => setViewDetail(true)}>
+        <>
+          {testDetails && (
+            <>
+              <div className="flex items-center">
+                <Indicator label="Adresses" value={testDetails.stats.adressesCount} />
+                <Divider />
+                <Indicator label="Adresses raccordables" value={testDetails.stats.adressesEligiblesCount} />
+                <Divider />
+                <Indicator label="Adresses à moins de 150m d’un réseau" value={testDetails.stats.adressesProches150mReseauCount} />
+                <Divider />
+                <Indicator label="Adresses dans un PDP" value={testDetails.stats.adressesDansPDPCount} />
+                <Button onClick={() => deleteTest(test.id)}>Supprimer</Button>
+              </div>
+              {testDetails.addresses.map((address) => (
+                <Box key={address.id}>
+                  {address.ban_address} - {address.source_address} - Eligible: {address.eligibility_status.isEligible} - Distance:
+                  {address.eligibility_status.distance}
+                </Box>
+              ))}
+            </>
+          )}
+        </>
+      </Accordion>
     </Box>
   );
 }
+
+type IndicatorProps = {
+  label: string;
+  value: number;
+};
+
+const Indicator = ({ label, value }: IndicatorProps) => (
+  <div className="fr-p-2w">
+    <div className="font-bold text-xl">{value}</div>
+    <div>{label}</div>
+  </div>
+);
+const Divider = () => <div className="h-12 w-px bg-gray-300" />;
