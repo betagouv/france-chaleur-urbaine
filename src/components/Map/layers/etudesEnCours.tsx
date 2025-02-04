@@ -4,9 +4,9 @@ import { type EtudesEnCours } from '@/server/db/kysely';
 import { darken } from '@/utils/color';
 import { type FrontendType } from '@/utils/typescript';
 
-import { ifHoverElse, type MapSourceLayersSpecification } from './common';
+import { ifHoverElse, type MapSourceLayersSpecification, type PopupStyleHelpers } from './common';
 
-export const etudesEnCoursColor = '#1E6091';
+export const etudesEnCoursColor = '#208ee2';
 export const etudesEnCoursOpacity = 0.3;
 
 export const etudesEnCoursLayersSpec = [
@@ -42,7 +42,10 @@ export const etudesEnCoursLayersSpec = [
   },
 ] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
 
-function Popup({ status, maitre_ouvrage, launched_at, communes }: FrontendType<EtudesEnCours>) {
+function Popup(
+  { status, maitre_ouvrage, launched_at, communes }: FrontendType<EtudesEnCours>,
+  { Property, TwoColumns }: PopupStyleHelpers
+) {
   const isOngoing = status === 'ongoing';
   const isDone = status === 'done';
   const severalMaitreOuvrage = maitre_ouvrage.split(',').length > 1;
@@ -55,15 +58,16 @@ function Popup({ status, maitre_ouvrage, launched_at, communes }: FrontendType<E
           {isOngoing ? 'Etude en cours' : isDone ? 'Etude terminée' : 'Non renseigné'}
         </Badge>
       )}
-      <ul>
-        <li>
-          Maitre{severalMaitreOuvrage ? 's' : ''} d’ouvrage{severalMaitreOuvrage ? 's' : ''}: <strong>{maitre_ouvrage}</strong>
-        </li>
-        <li>
-          Commune{severalCommunes ? 's' : ''} couverte{severalCommunes ? 's' : ''}: <strong>{communes}</strong>
-        </li>
-      </ul>
-      <div className="mt-5 italic text-sm text-right">Débutée le {new Date(launched_at).toLocaleDateString()}</div>
+      <TwoColumns>
+        <Property label={`Maitre${severalMaitreOuvrage ? 's' : ''} d’ouvrage${severalMaitreOuvrage ? 's' : ''}`} value={maitre_ouvrage} />
+        <Property label={`Commune${severalCommunes ? 's' : ''} couverte${severalCommunes ? 's' : ''}`} value={communes} />
+        <Property
+          label="Débutée le"
+          value={new Date(launched_at).toLocaleDateString('fr-FR', {
+            dateStyle: 'long',
+          })}
+        />
+      </TwoColumns>
     </>
   );
 }
