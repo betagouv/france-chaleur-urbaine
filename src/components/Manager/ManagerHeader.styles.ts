@@ -7,6 +7,7 @@ export const Filters = styled.div`
   gap: 16px 24px;
   flex-wrap: wrap;
   margin-bottom: 16px;
+  align-items: flex-end;
 `;
 
 export const Filter = styled.div`
