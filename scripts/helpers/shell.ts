@@ -1,5 +1,5 @@
 import { spawn } from 'node:child_process';
-import { mkdirSync } from 'node:fs';
+import { existsSync, mkdirSync } from 'node:fs';
 import { copyFile, unlink } from 'node:fs/promises';
 
 import { createLogger } from '@/server/helpers/logger';
@@ -61,4 +61,8 @@ export function runDocker(image: string, command: string): Promise<void> {
 export async function moveFile(src: string, dest: string) {
   await copyFile(src, dest);
   await unlink(src);
+}
+
+export async function unlinkFileIfExists(src: string) {
+  if (existsSync(src)) await unlink(src);
 }
