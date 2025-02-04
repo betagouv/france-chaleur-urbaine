@@ -1,8 +1,6 @@
 import Alert from '@codegouvfr/react-dsfr/Alert';
-import Button from '@codegouvfr/react-dsfr/Button';
 import { useQueryState } from 'nuqs';
 import { useRef, useState } from 'react';
-import { Oval } from 'react-loader-spinner';
 import styled from 'styled-components';
 
 import { ContactForm, SelectEnergy } from '@/components/EligibilityForm/components';
@@ -11,6 +9,7 @@ import AddressAutocomplete from '@/components/form/dsfr/AddressAutocompleteInput
 import Box from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
 import Link from '@/components/ui/Link';
+import Loader from '@/components/ui/Loader';
 import Text from '@/components/ui/Text';
 import { type NetworkEligibilityStatus } from '@/server/services/addresseInformation';
 import { useServices } from '@/services';
@@ -128,8 +127,9 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
   return (
     <>
       <Box p="4w" backgroundColor="blue-france-925-125">
-        <Text size="xl" mb="2w" legacyColor="black">
-          Testez l'éligibilité d'une adresse pour ce réseau.
+        <Text as="div" size="xl" mb="2w" legacyColor="black" display="flex" className="justify-between items-center">
+          <span>Testez l'éligibilité d'une adresse pour ce réseau.</span>
+          {formState === 'loadingEligibility' && <Loader size="md" />}
         </Text>
         <AddressAutocomplete
           label=""
@@ -147,14 +147,6 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
               Une erreur est survenue. Veuillez réessayer ou bien <Link href="/contact">contacter le support</Link>.
             </Box>
           )}
-          {formState === 'loadingEligibility' && <Oval height={30} width={30} />}
-          <Button
-            onClick={() => testAddressEligibility(selectedGeoAddress as SuggestionItem)}
-            disabled={!selectedGeoAddress || formState === 'loadingEligibility'}
-            className="fr-ml-2w"
-          >
-            Tester
-          </Button>
         </Box>
       </Box>
 
