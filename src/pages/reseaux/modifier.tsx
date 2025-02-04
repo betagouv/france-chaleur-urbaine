@@ -1,5 +1,4 @@
 import { Alert } from '@codegouvfr/react-dsfr/Alert';
-import { Button } from '@codegouvfr/react-dsfr/Button';
 import { RadioButtons } from '@codegouvfr/react-dsfr/RadioButtons';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -10,9 +9,9 @@ import Input from '@/components/form/dsfr/Input';
 import NetworkSearchInput from '@/components/Network/NetworkSearchInput';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Box from '@/components/ui/Box';
+import Button from '@/components/ui/Button';
 import Heading from '@/components/ui/Heading';
 import Icon from '@/components/ui/Icon';
-import LoadingButton from '@/components/ui/LoadingButton';
 import Text from '@/components/ui/Text';
 import { type ModificationReseau } from '@/pages/api/modification-reseau';
 import { type NetworkSearchResult } from '@/pages/api/networks/search';
@@ -366,7 +365,7 @@ function ModifierReseauxPage() {
               aria-hidden
             />
             <div className="fr-grid-row fr-grid-row--top">
-              <Button type="button" onClick={() => fileUploadInputRef.current!.click()} priority="secondary">
+              <Button onClick={() => fileUploadInputRef.current!.click()} priority="secondary">
                 Choisir un fichier
               </Button>
               <Box ml="2w">
@@ -405,9 +404,9 @@ function ModifierReseauxPage() {
             )}
             <Text mt="6w">Les informations transmises seront validées manuellement par France Chaleur Urbaine avant mise en ligne.</Text>
 
-            <LoadingButton className="fr-mt-2w" submit isLoading={isSubmitting} disabled={fichiersError !== null}>
+            <Button className="fr-mt-2w" type="submit" loading={isSubmitting} disabled={fichiersError !== null}>
               Soumettre la demande de modification
-            </LoadingButton>
+            </Button>
 
             {apiError && (
               <Text color="error" mt="2w">
