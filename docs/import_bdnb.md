@@ -15,7 +15,7 @@ Pour l'instant tout fonctionne par région. Une table par région.
     - Les appels aux colonnes des tables :
         - Uniquement l'ID :
             - scripts/updateDemands.ts
-            - utils/tiles.ts
+            - tiles/utils.ts
             - pages/api/airtable/records/index.ts
         - Toutes :
             - src/core/infrastructure/repository/
@@ -24,7 +24,7 @@ Pour l'instant tout fonctionne par région. Une table par région.
             - pages/api/dpe/index.ts
             - services/tile.config.ts
     - Mettre à jour l'index max dans le script de calculs des tiles :
-        - utils/tiles.ts : const maxIndex
+        - tiles/utils.ts : const maxIndex
 
 
 3. Mettre à jour manuellement la colonne *bnb_nom* de la table *regions* avec le nom des nouvelles tables
@@ -32,8 +32,8 @@ Pour l'instant tout fonctionne par région. Une table par région.
 4. Vider les tables *bnb - adresse_tiles* et *bnb - batiment_tiles*
 
 5. Lancer les calculs des tiles
-    - Pour les adresses : `npx tsx scripts/fillTiles.ts energy 0 17 1`
-    - Pour les bâtiments : `NODE_OPTIONS=--max-old-space-size=8192 npx tsx scripts/fillTiles.ts buildings 0 17 1`
+    - Pour les adresses : `yarn cli tiles:fill energy 0 17 1`
+    - Pour les bâtiments : `NODE_OPTIONS=--max-old-space-size=8192 yarn cli tiles:fill buildings 0 17 1`
 <br/><br/>
 
 ## Deuxième étape - en dev

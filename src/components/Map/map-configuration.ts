@@ -118,6 +118,7 @@ export type MapConfiguration = {
   besoinsEnChaleur: boolean;
   besoinsEnFroid: boolean;
   besoinsEnChaleurIndustrieCommunes: boolean;
+  etudesEnCours: boolean;
   communesFortPotentielPourCreationReseauxChaleur: {
     show: boolean;
     population: Interval;
@@ -236,6 +237,7 @@ export const emptyMapConfiguration: EmptyMapConfiguration = {
   densiteThermiqueLineaire: false,
   mesureDistance: false,
   extractionDonneesBatiment: false,
+  etudesEnCours: false,
 };
 
 export const defaultMapConfiguration = createMapConfiguration({

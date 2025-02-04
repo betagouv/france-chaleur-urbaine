@@ -1,9 +1,9 @@
 import {
-  type VectorSourceSpecification,
   type FilterSpecification,
   type LayerSpecification,
   type Map,
   type StyleSetterOptions,
+  type VectorSourceSpecification,
 } from 'maplibre-gl';
 
 import { clientConfig } from '@/client-config';
@@ -20,10 +20,10 @@ import { besoinsEnChaleurLayersSpec } from './layers/besoinsEnChaleur';
 import { besoinsEnChaleurIndustrieCommunesLayersSpec } from './layers/besoinsEnChaleurIndustrieCommunes';
 import { caracteristiquesBatimentsLayersSpec } from './layers/caracteristiquesBatiments';
 import {
-  type PopupStyleHelpers,
-  tileSourcesMaxZoom,
   type LayerSymbolSpecification,
   type MapSourceLayersSpecification,
+  type PopupStyleHelpers,
+  tileSourcesMaxZoom,
 } from './layers/common';
 import { communesFortPotentielPourCreationReseauxChaleurLayersSpec } from './layers/communesFortPotentielPourCreationReseauxChaleur';
 import { consommationsGazLayersSpec } from './layers/consommationsGaz';
@@ -36,6 +36,7 @@ import { enrrMobilisablesFrichesLayersSpec } from './layers/enrr-mobilisables/fr
 import { enrrMobilisablesParkingsLayersSpec } from './layers/enrr-mobilisables/parkings';
 import { enrrMobilisablesThalassothermieLayersSpec } from './layers/enrr-mobilisables/thalassothermie';
 import { enrrMobilisablesZonesGeothermieProfondeLayersSpec } from './layers/enrr-mobilisables/zonesGeothermieProfonde';
+import { etudesEnCoursLayersSpec } from './layers/etudesEnCours';
 import { installationsGeothermieLayersSpec } from './layers/installationsGeothermie';
 import { perimetresDeDeveloppementPrioritaireLayersSpec } from './layers/perimetresDeDeveloppementPrioritaire';
 import { reseauxDeChaleurLayersSpec } from './layers/reseauxDeChaleur';
@@ -141,6 +142,7 @@ export const mapLayers = [
   ...enrrMobilisablesChaleurFataleLayersSpec,
   ...installationsGeothermieLayersSpec,
   ...communesFortPotentielPourCreationReseauxChaleurLayersSpec,
+  ...etudesEnCoursLayersSpec,
 
   // other sources: distances measurement, linear heat density, buildings data extraction
   ...distancesMeasurementLayers,

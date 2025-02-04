@@ -2728,7 +2728,6 @@ export interface Communes {
   departement_id: string;
   id: string;
   source: string;
-  sous_zones_climatiques: string;
   temperature_ref_altitude_moyenne: Numeric;
 }
 
@@ -2746,7 +2745,7 @@ export interface Departements {
   id: string;
   nom_departement: string;
   source: string | null;
-  sous_zones_climatiques: string | null;
+  sous_zone_climatique: string | null;
   zone_climatique: string | null;
 }
 
@@ -2802,6 +2801,23 @@ export interface EnrrMobilisablesParkingsTiles {
 }
 
 export interface EnrrMobilisablesTiles {
+  tile: Buffer;
+  x: Int8;
+  y: Int8;
+  z: Int8;
+}
+
+export interface EtudesEnCours {
+  commune_ids: string[];
+  communes: string | null;
+  geom: string;
+  id: number;
+  launched_at: Timestamp;
+  maitre_ouvrage: string;
+  status: string;
+}
+
+export interface EtudesEnCoursTiles {
   tile: Buffer;
   x: Int8;
   y: Int8;
@@ -3160,10 +3176,8 @@ export interface ZoneAPotentielFortChaudTiles {
 }
 
 export interface ZoneDeDeveloppementPrioritaire {
-  communes: string[] | null;
   geom: string | null;
   id_fcu: Int8;
-  'Identifiant reseau': string | null;
 }
 
 export interface ZoneDeDeveloppementPrioritaireTiles {
@@ -3233,6 +3247,8 @@ export interface DB {
   enrr_mobilisables_friches_tiles: EnrrMobilisablesFrichesTiles;
   enrr_mobilisables_parkings_tiles: EnrrMobilisablesParkingsTiles;
   enrr_mobilisables_tiles: EnrrMobilisablesTiles;
+  etudes_en_cours: EtudesEnCours;
+  etudes_en_cours_tiles: EtudesEnCoursTiles;
   ign_communes: IgnCommunes;
   knex_migrations: KnexMigrations;
   knex_migrations_lock: KnexMigrationsLock;

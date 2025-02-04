@@ -693,6 +693,12 @@ const trackingEvents = {
   Vidéo: {
     matomo: ['Vidéo'],
   },
+  'Carto|Etudes en cours|Active': {
+    matomo: ['Carto', 'Etudes en cours', 'Active'],
+  },
+  'Carto|Etudes en cours|Désactive': {
+    matomo: ['Carto', 'Etudes en cours', 'Désactive'],
+  },
 
   // used to test Matomo configuration
   'Debug|Event 1': {

@@ -1,6 +1,8 @@
-import { readFile } from 'fs/promises';
+import { existsSync } from 'fs';
+import { readFile, unlink, writeFile } from 'fs/promises';
 
-import { InvalidArgumentError, createCommand } from '@commander-js/extra-typings';
+import { createCommand, InvalidArgumentError } from '@commander-js/extra-typings';
+import camelcase from 'camelcase';
 import prompts from 'prompts';
 import { z } from 'zod';
 
@@ -23,15 +25,15 @@ import { optimisationProfiles, optimizeImage } from '@cli/images/optimize';
 import { type KnownAirtableBase, knownAirtableBases } from './airtable/bases';
 import { createModificationsReseau } from './airtable/create-modifications-reseau';
 import { fetchBaseSchema } from './airtable/dump-schema';
+import dataImportManager, { dataImportAdapters, type DataImportName } from './data-import';
 import { readFileGeometry } from './helpers/geo';
-import { runShellScript } from './helpers/shell';
+import { runCommand } from './helpers/shell';
 import { downloadAndUpdateNetwork, downloadNetwork } from './networks/download-network';
-import { generateTilesFromGeoJSON } from './networks/generate-tiles';
 import { applyGeometryUpdates } from './networks/geometry-updates';
-import { importMvtDirectory } from './networks/import-mvt-directory';
 import { syncPostgresToAirtable } from './networks/sync-pg-to-airtable';
 import { upsertFixedSimulateurData } from './simulateur/import';
-import { fillTiles } from './utils/tiles';
+import tilesManager, { tilesAdapters, type TilesName } from './tiles';
+import { fillTiles, importGeoJSONToTable, importTilesDirectoryToTable } from './tiles/utils';
 
 const program = createCommand();
 
@@ -90,7 +92,7 @@ program
   });
 
 program
-  .command('fill-tiles')
+  .command('tiles:fill')
   .description("Regénère les tuiles d'une table en base")
   .argument('<network-id>', 'Network id', (v) => zDatabaseSourceId.parse(v))
   .argument('[zoomMin]', 'Minimum zoom', (v) => parseInt(v), 0)
@@ -102,67 +104,14 @@ program
   });
 
 program
-  .command('import-mvt-directory')
+  .command('tiles:import-tiles-directory')
   .description(
-    'Importe en base une arborescence de tuiles vectorielles. A utiliser typiquement après avoir utilisé tippecanoe. Exemple : `yarn cli import-mvt-directory tiles/zone_a_potentiel_fort_chaud zone_a_potentiel_fort_chaud_tiles`'
+    'Importe en base une arborescence de tuiles vectorielles. A utiliser typiquement après avoir utilisé tippecanoe. Exemple : `yarn cli tiles:import-mvt-directory tiles/zone_a_potentiel_fort_chaud zone_a_potentiel_fort_chaud_tiles`'
   )
-  .argument('<mvtDirectory>', 'MVT directory root')
+  .argument('<tilesDirectory>', 'Tiles directory root for MVT (Mapbox Vector Tiles)')
   .argument('<destinationTable>', 'Destination table')
-  .action(async (mvtDirectory, destinationTable) => {
-    if (await db.schema.hasTable(destinationTable)) {
-      logger.info('flushing destination table', {
-        table: destinationTable,
-      });
-      await db(destinationTable).delete();
-    } else {
-      logger.info('destination table does not exist, creating it', {
-        table: destinationTable,
-      });
-      await db.schema.createTable(destinationTable, (table) => {
-        table.bigInteger('x').notNullable();
-        table.bigInteger('y').notNullable();
-        table.bigInteger('z').notNullable();
-        table.specificType('tile', 'bytea').notNullable();
-        table.primary(['x', 'y', 'z']);
-      });
-    }
-
-    await importMvtDirectory(mvtDirectory, destinationTable);
-  });
-
-program
-  .command('generate-tiles-from-file')
-  .description(
-    "Génère des tuiles vectorielles à partir d'un fichier GeoJSON et les enregistre dans postgres. Exemple : `yarn cli generate-tiles-from-file reseaux_de_chaleur.geojson reseaux_de_chaleur_tiles 0 14`"
-  )
-  .argument('<fileName>', 'input file (format GeoJSON)')
-  .argument('<destinationTable>', 'Destination table')
-  .argument('[zoomMin]', 'Minimum zoom', (v) => parseInt(v), 0)
-  .argument('[zoomMax]', 'Maximum zoom', (v) => parseInt(v), 17)
-  .action(async (fileName, destinationTable, zoomMin, zoomMax) => {
-    const geojson = JSON.parse(await readFile(fileName, 'utf8'));
-
-    logger.info('start importing geojson features', {
-      count: geojson.features?.length,
-    });
-
-    if (!(await db.schema.hasTable(destinationTable))) {
-      logger.info('destination table does not exist, creating it', {
-        table: destinationTable,
-      });
-      await db.schema.createTable(destinationTable, (table) => {
-        table.bigInteger('x').notNullable();
-        table.bigInteger('y').notNullable();
-        table.bigInteger('z').notNullable();
-        table.specificType('tile', 'bytea').notNullable();
-        table.primary(['x', 'y', 'z']);
-      });
-    }
-
-    logger.info('flushing table', { table: destinationTable });
-    await db(destinationTable).delete();
-
-    await generateTilesFromGeoJSON(geojson, destinationTable, zoomMin, zoomMax);
+  .action(async (tilesDirectory, destinationTable) => {
+    await importTilesDirectoryToTable(tilesDirectory, destinationTable);
   });
 
 program
@@ -178,12 +127,143 @@ program
   });
 
 program
+  .command('data:import')
+  .description('Import data based on type')
+  .argument('<type>', `Type of data you want to import - ${Object.keys(dataImportAdapters).join(', ')}`)
+  .option('--file <FILE>', 'Path to the file to import', '')
+  .action(async (type, options) => {
+    logger.info(`Importing data for ${type}`);
+    const importer = dataImportManager(type as DataImportName);
+    await importer.importData(options.file);
+  });
+
+program
+  .command('tiles:generate-geojson')
+  .description('Generate GeoJSON file for a given resource')
+  .argument('<type>', `Type of resource you want to generate for - ${Object.keys(tilesAdapters).join(', ')}`)
+  .option('--file <file>', 'Path of the file to export to', '')
+  .action(async (type, options) => {
+    logger.info(`Generating GeoJSON file for ${type}`);
+    const tileManager = tilesManager(type as TilesName);
+
+    const filepath = await tileManager.generateGeoJSON(options.file);
+    console.info(`GeoJSON generated in ${filepath}`);
+  });
+
+program
+  .command('tiles:import-geojson-legacy')
+  .description(
+    "Génère des tuiles vectorielles à partir d'un fichier GeoJSON et les enregistre dans postgres. Exemple : `yarn cli tiles:import-geojson-legacy reseaux_de_chaleur.geojson reseaux_de_chaleur_tiles 0 14`"
+  )
+  .argument('<fileName>', 'input file (format GeoJSON)')
+  .argument('<destinationTable>', 'Destination table')
+  .argument('[zoomMin]', 'Minimum zoom', (v) => parseInt(v), 0)
+  .argument('[zoomMax]', 'Maximum zoom', (v) => parseInt(v), 17)
+  .action(async (fileName, destinationTable, zoomMin, zoomMax) => {
+    await importGeoJSONToTable(fileName, destinationTable, zoomMin, zoomMax);
+  });
+
+program
+  .command('tiles:import-geojson')
+  .description(
+    "Génère des tuiles vectorielles à partir d'un fichier GeoJSON et les enregistre dans postgres. Exemple : `yarn cli tiles:import-geojson etudes-en-cours etude_en_cours.geojson`"
+  )
+  .argument('<type>', `Type of resource you want to generate for - ${Object.keys(tilesAdapters).join(', ')}`)
+  .argument('<file>', 'Path of the GeoJSON file')
+  .action(async (type, file) => {
+    const tileManager = tilesManager(type as TilesName);
+    const tilesDatabaseName = await tileManager.importGeoJSON(file);
+    logger.info(`Imported GeoJSON ${file} to ${tilesDatabaseName}`);
+  });
+
+program
+  .command('tiles:generate')
+  .description(
+    "Génère des tuiles vectorielles à partir d'une ressource en passant par un fichier GeoJSON temporaire. Exemple : `yarn cli tiles:generate reseaux_de_chaleur`"
+  )
+  .argument('<type>', `Type de ressource à générer - ${Object.keys(tilesAdapters).join(', ')}`)
+  .action(async (type) => {
+    logger.info(`Génération du fichier GeoJSON pour ${type}`);
+    const tileManager = tilesManager(type as TilesName);
+
+    const filepath = await tileManager.generateGeoJSON();
+
+    if (!filepath) {
+      throw new Error('Le fichier GeoJSON n’a pas été généré.');
+    }
+
+    logger.info(`GeoJSON généré: ${filepath}`);
+
+    const tilesDatabaseName = `${tileManager.databaseName}_tiles`;
+
+    logger.info(`Importation dans la table: ${tilesDatabaseName}`);
+    await tileManager.importGeoJSON(filepath);
+
+    logger.info(`Suppression du fichier temporaire ${filepath}`);
+    await unlink(filepath);
+
+    logger.info(`La table ${tilesDatabaseName} a été populée avec les données pour ${type}.`);
+    logger.warn(`N’oubliez pas de copier la table sur dev et prod`);
+    logger.warn(`./scripts/copyLocalTableToRemote.sh dev ${tilesDatabaseName} --data-only`);
+    logger.warn(`./scripts/copyLocalTableToRemote.sh prod ${tilesDatabaseName} --data-only`);
+    logger.warn(`Puis de l'ajouter à la carte yarn cli tiles:add-to-map ${type}`);
+  });
+
+program
+  .command('tiles:add-to-map')
+  .description('Quand les tiles sont en BDD, il faut les afficher sur la carte. Voici une description des actions à faire')
+  .argument('<type>', `Type de ressource à générer - ${Object.keys(tilesAdapters).join(', ')}`)
+  .action(async (type) => {
+    logger.info(
+      `Plusieurs actions manuelles à faire pour générer la couche ${type}. Vous pouvez voir https://github.com/betagouv/france-chaleur-urbaine/pull/991/files pour référence`
+    );
+
+    const typeCamelCase = camelcase(type);
+    const layerFilePath = `src/components/Map/layers/${typeCamelCase}.tsx`;
+    const mapConfigurationFilePath = `src/components/Map/map-configuration.ts`;
+    const mapLayersFilePath = `src/components/Map/map-layers.ts`;
+    const mapFilePath = `src/pages/carte.tsx`;
+    const tilesConfigFilePath = `src/server/services/tiles.config.ts`;
+    const analyticsFilePath = `src/services/analytics.ts`;
+    const simpleMapLegendFilePath = `src/components/Map/components/SimpleMapLegend.tsx`;
+    logger.info(`Dans ${mapConfigurationFilePath}`);
+    logger.warn(`  🚧 Ajouter la config au type MapConfiguration -> "${typeCamelCase}: boolean"`);
+    logger.warn(`  🚧 Ajouter la config à emptyMapConfiguration -> "${typeCamelCase}: false"`);
+    logger.info(`Dans ${tilesConfigFilePath}`);
+    logger.warn(`  🚧 Ajouter la config à databaseSourceIds -> "${typeCamelCase}"`);
+    logger.warn(`  🚧 Ajouter la config à tilesInfo`);
+    logger.info(`Dans ${layerFilePath}`);
+    if (!existsSync(layerFilePath)) {
+      await writeFile(
+        layerFilePath,
+        `// Check in other layers for the structure
+    export const ${typeCamelCase}VilleLayersSpec = [];`
+      );
+      logger.info(`✅ Fichier layer créé dans ${layerFilePath}`);
+    }
+    logger.warn(`  🚧 Modifier le fichier layer`);
+    logger.info(`Dans ${mapLayersFilePath}`);
+    logger.warn(`  🚧 Importer dans mapLayers -> "...${typeCamelCase}LayersSpec,"`);
+    logger.info(`Dans ${mapFilePath}`);
+    logger.warn(`  🚧 Ajouter la config à layerURLKeysToMapConfigPath -> "${typeCamelCase}: '${typeCamelCase}.show'"`);
+    logger.info(`Dans ${analyticsFilePath}`);
+    logger.warn(`  🚧 Ajouter les events analytics`);
+    logger.info(`Dans ${simpleMapLegendFilePath}`);
+    logger.warn(`  🚧 Ajouter une nouvelle checkbox`);
+    logger.info('');
+    logger.info('Pour ouvrir tous les fichiers, vous pouvez faire :');
+    logger.info(
+      `code ${[layerFilePath, mapConfigurationFilePath, mapLayersFilePath, mapFilePath, tilesConfigFilePath, analyticsFilePath].join(' ')}`
+    );
+  });
+
+program
   .command('opendata:create-archive')
   .description(
     "Cette commande permet de générer l'archive OpenData contenant les données de France Chaleur Urbaine au format Shapefile et GeoJSON. L'archive générée devra être envoyée à Florence en vue d'un dépôt sur la plateforme data.gouv.fr"
   )
   .action(async () => {
-    await runShellScript('scripts/opendata/create-opendata-archive.sh');
+    await runCommand('scripts/opendata/create-opendata-archive.sh');
   });
 
 program
@@ -400,6 +480,9 @@ program
   } catch (err) {
     console.error('command error', err);
     process.exit(2);
+  } finally {
+    // disconnect from the database
+    await Promise.all([db.destroy(), kdb.destroy()]);
   }
 })();
 

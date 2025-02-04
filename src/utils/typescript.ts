@@ -1,3 +1,5 @@
+import { type Timestamp } from '@/server/db/kysely';
+
 /**
  * Get all keys and nested keys of an object separated by dots, filtered by value type.
  */
@@ -48,3 +50,10 @@ export function nonEmptyArray<T>(array: T[]) {
 }
 
 export type RequiredFields<T, K extends keyof T> = Omit<T, K> & Required<Pick<T, K>>;
+
+/**
+ * Converts types for frontend when types comes from kysely
+ */
+export type FrontendType<T> = {
+  [K in keyof T]: T[K] extends Timestamp ? string : T[K];
+};
