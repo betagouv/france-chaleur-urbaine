@@ -96,7 +96,7 @@ export function filterReseauxDeChaleur(reseauxDeChaleur: NetworkToCompare[], fil
         const filter = filters[reseauxDeChaleurFilter.confKey];
         const value = reseau[reseauxDeChaleurFilter?.valueKey];
 
-        if (value < filter[0] || value > filter[1]) {
+        if (typeof value !== 'number' || value < filter[0] || value > filter[1]) {
           showReseau = false;
         }
       });
