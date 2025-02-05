@@ -4,7 +4,8 @@ import { type Logger } from 'winston';
 
 import { kdb, type Jobs } from '@/server/db/kysely';
 import { getEligilityStatus } from '@/server/services/addresseInformation';
-import { getAddressesCoordinates } from '@/server/services/api-adresse';
+import { type APIAdresseResult, getAddressesCoordinates } from '@/server/services/api-adresse';
+import { chunk } from '@/utils/array';
 
 export type ProEligibilityTestJob = Omit<Selectable<Jobs>, 'data'> & {
   type: 'pro_eligibility_test';
@@ -13,12 +14,21 @@ export type ProEligibilityTestJob = Omit<Selectable<Jobs>, 'data'> & {
   };
 };
 
+const chunkSize = 1000;
+
 export async function processProEligibilityTestJob(job: ProEligibilityTestJob, logger: Logger) {
   const startTime = Date.now();
-  const results = await getAddressesCoordinates(job.data.csvContent);
+
+  const lines = job.data.csvContent.split('\n');
+  const addresses: APIAdresseResult[] = [];
+  const chunks = chunk(lines, chunkSize);
+  for (const chunk of chunks.values()) {
+    const chunkResults = await getAddressesCoordinates(chunk.join('\n'));
+    console.log('BAN results', chunkResults);
+    addresses.push(...chunkResults);
+  }
   logger.info('API BAN', { duration: Date.now() - startTime });
 
-  console.log('BAN results', results);
   {
     const startTime = Date.now();
     await kdb.transaction().execute(async (trx) => {
@@ -26,7 +36,7 @@ export async function processProEligibilityTestJob(job: ProEligibilityTestJob, l
       await trx.deleteFrom('pro_eligibility_tests_addresses').where('test_id', '=', job.entity_id).execute();
 
       const processAddress = limitFunction(
-        async (addressItem: (typeof results)[number]) => {
+        async (addressItem: (typeof addresses)[number]) => {
           const eligibilityStatus =
             addressItem.result_status === 'ok' ? await getEligilityStatus(addressItem.latitude, addressItem.longitude) : null;
           await trx
@@ -45,7 +55,7 @@ export async function processProEligibilityTestJob(job: ProEligibilityTestJob, l
         { concurrency: 20 }
       );
 
-      await Promise.all(results.map((addressItem) => processAddress(addressItem)));
+      await Promise.all(addresses.map((addressItem) => processAddress(addressItem)));
     });
     logger.info('test éligibilité', { duration: Date.now() - startTime });
   }

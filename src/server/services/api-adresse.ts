@@ -4,7 +4,7 @@ import { handleError } from '@/utils/network';
 
 const API_ADRESSE_URL = 'https://api-adresse.data.gouv.fr/search/csv/';
 
-type APIAdresseResult = {
+export type APIAdresseResult = {
   address: string;
 } & (
   | {
@@ -16,7 +16,7 @@ type APIAdresseResult = {
       result_city: string;
     }
   | {
-      result_status: 'error';
+      result_status: 'error' | 'not-found';
       latitude: null;
       longitude: null;
       result_label: null;
