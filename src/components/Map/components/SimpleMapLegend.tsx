@@ -55,7 +55,6 @@ import {
   enrrMobilisablesZonesGeothermieProfondeLayerColor,
   enrrMobilisablesZonesGeothermieProfondeLayerOpacity,
 } from '../layers/enrr-mobilisables/zonesGeothermieProfonde';
-import { etudesEnCoursColor, etudesEnCoursOpacity } from '../layers/etudesEnCours';
 import {
   installationsGeothermieProfondeLayerColor,
   installationsGeothermieProfondeLayerOpacity,
@@ -670,7 +669,8 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
               </DeactivatableBox>
             </TrackableCheckableAccordion>
 
-            <Box display="flex" alignItems="start" my="2w">
+            {/* Désactivé en attendant une validation ADEME */}
+            {/* <Box display="flex" alignItems="start" my="2w">
               <SingleCheckbox
                 name="etudesEnCours"
                 checked={mapConfiguration.etudesEnCours}
@@ -703,7 +703,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                   </>
                 }
               />
-            </Box>
+            </Box> */}
 
             <TrackableCheckableAccordion
               name="quartiersPrioritairesPolitiqueVille"
