@@ -1,15 +1,84 @@
 import Badge from '@codegouvfr/react-dsfr/Badge';
 import { useQuery } from '@tanstack/react-query';
+import { type ColumnDef, type SortingState } from '@tanstack/react-table';
 import { useState } from 'react';
 
 import { testContent } from '@/components/dashboard/DashboardProfessionnel';
 import Accordion from '@/components/ui/Accordion';
 import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
+import SimpleTable, { tableBooleanFormatter } from '@/components/ui/SimpleTable';
 import { type ProEligibilityTestListItem } from '@/pages/api/pro-eligibility-tests';
 import { type ProEligibilityTestFileRequest, type ProEligibilityTestWithAddresses } from '@/pages/api/pro-eligibility-tests/[id]';
 import { toastErrors } from '@/services/notification';
 import { deleteFetchJSON, fetchJSON, postFetchJSON } from '@/utils/network';
+import { frenchCollator } from '@/utils/strings';
+
+const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[] = [
+  {
+    header: 'Adresse',
+    accessorKey: 'ban_address',
+    sortingFn: (rowA, rowB) => frenchCollator.compare(rowA.original.ban_address, rowB.original.ban_address),
+    cell: (info) => (
+      <div>
+        <div>
+          <div className="color-blue">{info.row.original.ban_address}</div>
+          {!info.row.original.ban_valid && (
+            <Badge severity="error" small>
+              Adresse invalide
+            </Badge>
+          )}
+        </div>
+        <div className=" text-xs text-gray-600">{info.row.original.source_address}</div>
+      </div>
+    ),
+    size: 400,
+  },
+  {
+    header: 'Indice de fiabilité',
+    accessorKey: 'ban_score',
+    size: 60,
+  },
+  {
+    header: 'Raccordable',
+    accessorKey: 'eligibility_status.isEligible',
+    cell: tableBooleanFormatter,
+    size: 100,
+  },
+  {
+    header: 'Distance au réseau',
+    accessorKey: 'eligibility_status.distance',
+    size: 80,
+  },
+  {
+    header: 'PDP',
+    accessorKey: 'eligibility_status.inPDP',
+    cell: tableBooleanFormatter,
+    size: 60,
+  },
+  {
+    header: 'Taux EnR&R',
+    accessorKey: 'eligibility_status.tauxENRR',
+    size: 60,
+  },
+  {
+    header: 'Contenu CO2 ACV (g/kWh)',
+    accessorKey: 'eligibility_status.co2',
+    size: 80,
+  },
+  {
+    header: 'Identifiant',
+    accessorKey: 'eligibility_status.id',
+    size: 80,
+  },
+];
+
+const initialSortingState: SortingState = [
+  {
+    id: 'created_at',
+    desc: true,
+  },
+];
 
 type ProEligibilityTestItemProps = {
   test: ProEligibilityTestListItem;
@@ -82,24 +151,7 @@ export default function ProEligibilityTestItem({ test, onDelete }: ProEligibilit
                 <Button onClick={() => deleteTest(test.id)}>Supprimer</Button>
                 <Button onClick={createTest}>Nouvelles adresses</Button>
               </div>
-              {testDetails.addresses.map((address) => (
-                <Box key={address.id}>
-                  {address.ban_valid ? (
-                    <>
-                      {address.ban_address} - {address.ban_score} - Eligible: {address.eligibility_status?.isEligible ? 'oui' : 'non'} -
-                      Distance:
-                      {address.eligibility_status?.distance ?? '>1k'}m
-                    </>
-                  ) : (
-                    <>
-                      {address.source_address}{' '}
-                      <Badge severity="error" small>
-                        Adresse invalide
-                      </Badge>
-                    </>
-                  )}
-                </Box>
-              ))}
+              <SimpleTable columns={columns} data={testDetails.addresses} initialSortingState={initialSortingState} />
             </>
           )}
         </>

@@ -20,7 +20,7 @@ const GET = async (req: NextApiRequest) => {
     .selectAll()
     .executeTakeFirstOrThrow();
   const addresses = await kdb.selectFrom('pro_eligibility_tests_addresses').where('test_id', '=', testId).selectAll().execute();
-  return { ...eligibilityTest, addresses };
+  return { ...eligibilityTest, addresses } satisfies ProEligibilityTestWithAddresses;
 };
 
 const DELETE = async (req: NextApiRequest) => {
