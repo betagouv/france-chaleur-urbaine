@@ -158,8 +158,8 @@ export default function InscriptionPage() {
             <form.Subscribe
               selector={(state) => [state.canSubmit, state.isSubmitting]}
               children={([canSubmit, isSubmitting]) => (
-                <Button type="submit" disabled={!canSubmit}>
-                  {isSubmitting ? '...' : "S'inscrire"}
+                <Button type="submit" disabled={!canSubmit} loading={isSubmitting}>
+                  S’inscrire
                 </Button>
               )}
             />
