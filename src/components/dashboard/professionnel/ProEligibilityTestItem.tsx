@@ -1,3 +1,4 @@
+import Badge from '@codegouvfr/react-dsfr/Badge';
 import { useQuery } from '@tanstack/react-query';
 import { type Selectable } from 'kysely';
 import { useState } from 'react';
@@ -49,7 +50,20 @@ export default function ProEligibilityTestItem({ test, onDelete }: ProEligibilit
 
   return (
     <Box>
-      <Accordion label={test.name} onExpandedChange={() => setViewDetail(true)}>
+      <Accordion
+        label={
+          <div className="flex justify-between w-full">
+            <div>{test.name}</div>
+            {/* FIXME réorganiser le typage */}
+            {(test as any).has_pending_jobs && (
+              <Badge severity="info" small className="fr-mr-2w">
+                Mise à jour en attente
+              </Badge>
+            )}
+          </div>
+        }
+        onExpandedChange={() => setViewDetail(true)}
+      >
         <>
           {testDetails && (
             <>

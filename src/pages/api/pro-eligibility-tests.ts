@@ -5,7 +5,22 @@ import { kdb } from '@/server/db/kysely';
 import { handleRouteErrors, invalidRouteError } from '@/server/helpers/server';
 
 const GET = async (req: NextApiRequest) => {
-  const eligibilityTests = await kdb.selectFrom('pro_eligibility_tests').where('user_id', '=', req.user.id).selectAll().execute();
+  const eligibilityTests = await kdb
+    .selectFrom('pro_eligibility_tests')
+    .where('user_id', '=', req.user.id)
+    .selectAll()
+    .select((eb) =>
+      eb
+        .exists(
+          eb
+            .selectFrom('jobs')
+            .whereRef('jobs.entity_id', '=', 'pro_eligibility_tests.id')
+            .where('jobs.status', 'in', ['pending', 'processing'])
+            .select('jobs.id')
+        )
+        .as('has_pending_jobs')
+    )
+    .execute();
   return eligibilityTests;
 };
 
