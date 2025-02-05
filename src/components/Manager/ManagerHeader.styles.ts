@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 import { mapControlZindex } from '@/components/Map/Map.style';
 
@@ -7,11 +7,12 @@ export const Filters = styled.div`
   gap: 16px 24px;
   flex-wrap: wrap;
   margin-bottom: 16px;
-  align-items: flex-end;
 `;
 
-export const Filter = styled.div`
-  width: 250px;
+export const Filter = styled.div<{ width?: string }>`
+  ${({ width }) => css`
+    width: ${width ?? '250px'};
+  `}
   margin-bottom: 0 !important;
   z-index: ${mapControlZindex + 2};
   .fr-label {

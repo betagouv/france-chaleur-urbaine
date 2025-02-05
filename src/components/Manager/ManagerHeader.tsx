@@ -109,12 +109,13 @@ const ManagerHeader = ({ demands, setFilteredDemands }: { demands: Demand[]; set
 
   return (
     <Filters>
-      <Filter>
+      <Filter width="350px">
         <Input
-          label="Rechercher par nom, email, adresse, réseau (ID ou nom):"
+          label="Rechercher:"
           nativeInputProps={{
             type: 'string',
             required: true,
+            placeholder: 'nom, email, adresse, réseau, gestionnaire...',
             value: globalFilter,
             onChange: (e) => setGlobalFilter(e.target.value),
           }}
