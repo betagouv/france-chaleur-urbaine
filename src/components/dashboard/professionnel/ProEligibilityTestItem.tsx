@@ -2,13 +2,14 @@ import Badge from '@codegouvfr/react-dsfr/Badge';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 
+import { testContent } from '@/components/dashboard/DashboardProfessionnel';
 import Accordion from '@/components/ui/Accordion';
 import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
 import { type ProEligibilityTestListItem } from '@/pages/api/pro-eligibility-tests';
-import { type ProEligibilityTestWithAddresses } from '@/pages/api/pro-eligibility-tests/[id]';
+import { type ProEligibilityTestFileRequest, type ProEligibilityTestWithAddresses } from '@/pages/api/pro-eligibility-tests/[id]';
 import { toastErrors } from '@/services/notification';
-import { deleteFetchJSON, fetchJSON } from '@/utils/network';
+import { deleteFetchJSON, fetchJSON, postFetchJSON } from '@/utils/network';
 
 type ProEligibilityTestItemProps = {
   test: ProEligibilityTestListItem;
@@ -46,6 +47,12 @@ export default function ProEligibilityTestItem({ test, onDelete }: ProEligibilit
     onDelete();
   });
 
+  const createTest = toastErrors(async () => {
+    await postFetchJSON(`/api/pro-eligibility-tests/${test.id}`, {
+      csvContent: testContent,
+    } satisfies ProEligibilityTestFileRequest);
+  });
+
   return (
     <Box>
       <Accordion
@@ -73,6 +80,7 @@ export default function ProEligibilityTestItem({ test, onDelete }: ProEligibilit
                 <Divider />
                 <Indicator label="Adresses dans un PDP" value={testDetails.stats.adressesDansPDPCount} />
                 <Button onClick={() => deleteTest(test.id)}>Supprimer</Button>
+                <Button onClick={createTest}>Nouvelles adresses</Button>
               </div>
               {testDetails.addresses.map((address) => (
                 <Box key={address.id}>

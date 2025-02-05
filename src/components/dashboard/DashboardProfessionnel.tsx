@@ -9,7 +9,7 @@ import { type ProEligibilityTestListItem, type ProEligibilityTestRequest } from 
 import { toastErrors } from '@/services/notification';
 import { fetchJSON, postFetchJSON } from '@/utils/network';
 
-const testContent = `20 avenue de Ségur Paris
+export const testContent = `20 avenue de Ségur Paris
 11 rue Mirabeau saint-maur-des-fossés
 "1 avenue des trois frères, Asnières-sur-Seine"
 "75 avenue Ferdinand de Lesseps, Grasse"

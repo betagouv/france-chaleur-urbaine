@@ -33,12 +33,38 @@ const DELETE = async (req: NextApiRequest) => {
   });
 };
 
+export const zProEligibilityTestFileRequest = z.strictObject({
+  csvContent: z.string(),
+});
+export type ProEligibilityTestFileRequest = z.infer<typeof zProEligibilityTestFileRequest>;
+
+const POST = async (req: NextApiRequest) => {
+  const testId = await z.string().parseAsync(req.query.id);
+  ensureValidPermissions(req, testId);
+  const { csvContent } = await zProEligibilityTestFileRequest.parseAsync(req.body);
+
+  await kdb
+    .insertInto('jobs')
+    .values({
+      type: 'pro_eligibility_test',
+      data: { csvContent },
+      status: 'pending',
+      entity_id: testId,
+      user_id: req.user.id,
+    })
+    .returning('id')
+    .executeTakeFirstOrThrow();
+};
+
 const route = async (req: NextApiRequest) => {
   if (req.method === 'GET') {
     return GET(req);
   }
   if (req.method === 'DELETE') {
     return DELETE(req);
+  }
+  if (req.method === 'POST') {
+    return POST(req);
   }
   throw invalidRouteError;
 };
