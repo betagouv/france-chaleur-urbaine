@@ -37,11 +37,14 @@ else
   SCALINGO_APP=france-chaleur-urbaine-dev
 fi
 
+# ferme le tunnel quand le programme s'arrête
+trap 'kill %1' EXIT
+
 echo "> Synchronisation de la table locale '$table' vers l'environnement $env..."
 
 # ouvre un tunnel vers BDD cible
 scalingo -a $SCALINGO_APP db-tunnel $SCALINGO_TUNNEL_ARGS SCALINGO_POSTGRESQL_URL &
-sleep 4
+sleep 2
 
 # import vers BDD cible
 POSTGRESQL_URL=$(scalingo -a $SCALINGO_APP env-get SCALINGO_POSTGRESQL_URL)
