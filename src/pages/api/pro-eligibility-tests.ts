@@ -20,6 +20,7 @@ const GET = async (req: NextApiRequest) => {
         )
         .as('has_pending_jobs')
     )
+    .orderBy('created_at desc')
     .execute();
   return eligibilityTests;
 };
