@@ -691,6 +691,18 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
               >
                 Communes couvertes par une étude pour la création de réseaux
               </Text>
+              <Tooltip
+                color="var(--text-action-high-blue-france)"
+                iconProps={{
+                  className: 'fr-mr-4w',
+                }}
+                title={
+                  <>
+                    Information limitée à l'Île-de-France, transmise par la direction régionale de l'ADEME (les études recensées ont
+                    bénéficié d'une subvention par l'ADEME)
+                  </>
+                }
+              />
             </Box>
 
             <TrackableCheckableAccordion
