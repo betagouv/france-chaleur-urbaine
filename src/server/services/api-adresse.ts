@@ -33,6 +33,7 @@ export async function getAddressesCoordinates(addressesCSV: string) {
   form.append('result_columns', 'result_score');
   form.append('result_columns', 'result_city');
   form.append('result_columns', 'result_label');
+  form.append('result_columns', 'result_status');
 
   const res = await fetch(API_ADRESSE_URL, {
     method: 'post',

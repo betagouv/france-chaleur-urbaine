@@ -79,8 +79,20 @@ export default function ProEligibilityTestItem({ test, onDelete }: ProEligibilit
               </div>
               {testDetails.addresses.map((address) => (
                 <Box key={address.id}>
-                  {address.ban_address} - {address.source_address} - Eligible: {address.eligibility_status?.isEligible} - Distance:
-                  {address.eligibility_status?.distance}
+                  {address.ban_valid ? (
+                    <>
+                      {address.ban_address} - {address.ban_score} - Eligible: {address.eligibility_status?.isEligible ? 'oui' : 'non'} -
+                      Distance:
+                      {address.eligibility_status?.distance ?? '>1k'}m
+                    </>
+                  ) : (
+                    <>
+                      {address.source_address}{' '}
+                      <Badge severity="error" small>
+                        Adresse invalide
+                      </Badge>
+                    </>
+                  )}
                 </Box>
               ))}
             </>
