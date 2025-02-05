@@ -5,3 +5,9 @@
 img.reset-height {
   height: revert-layer !important;
 }
+
+a[target='_blank'].reset-external {
+  &:after {
+    display: none;
+  }
+}
