@@ -109,13 +109,13 @@ const ManagerHeader = ({ demands, setFilteredDemands }: { demands: Demand[]; set
 
   return (
     <Filters>
-      <Filter width="350px">
+      <Filter>
         <Input
           label="Rechercher:"
           nativeInputProps={{
             type: 'string',
             required: true,
-            placeholder: 'nom, email, adresse, réseau, gestionnaire...',
+            placeholder: 'nom, email, adresse, réseau...',
             value: globalFilter,
             onChange: (e) => setGlobalFilter(e.target.value),
           }}
@@ -131,7 +131,7 @@ const ManagerHeader = ({ demands, setFilteredDemands }: { demands: Demand[]; set
           }}
         />
       </Filter>
-      <Filter>
+      <Filter width="150px">
         <Select
           label="Mode de chauffage:"
           options={modeDeChauffageOptions}
@@ -141,7 +141,7 @@ const ManagerHeader = ({ demands, setFilteredDemands }: { demands: Demand[]; set
           }}
         />
       </Filter>
-      <Filter>
+      <Filter width="150px">
         <Select
           label="Type de chauffage:"
           options={typeDeChauffageOptions}
