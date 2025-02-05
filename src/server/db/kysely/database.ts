@@ -2894,7 +2894,8 @@ export interface ProEligibilityTests {
 export interface ProEligibilityTestsAddresses {
   ban_address: string;
   ban_score: number;
-  eligibility_status: HeatNetwork; // pas ouf comme nom
+  ban_valid: boolean;
+  eligibility_status: HeatNetwork | null; // pas ouf comme nom
   geom: string;
   id: Generated<string>;
   source_address: string;

@@ -19,6 +19,7 @@ const testContent = `20 avenue de Ségur Paris
 "10 rue Descartes, Strasbourg"
 "27 Rue Marie De Médicis, Cannes"
 "22 rue de la République, Lyon"
+adressebizarre
 `;
 
 export const zProEligibilityTestRequest = z.strictObject({

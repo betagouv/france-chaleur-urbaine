@@ -27,11 +27,15 @@ export default function ProEligibilityTestItem({ test, onDelete }: ProEligibilit
         ...testWithAddresses,
         stats: {
           adressesCount: testWithAddresses.addresses.length,
-          adressesEligiblesCount: testWithAddresses.addresses.filter((address) => address.eligibility_status.isEligible).length,
-          adressesProches150mReseauCount: testWithAddresses.addresses.filter(
-            (address) => address.eligibility_status.distance && address.eligibility_status.distance <= 150
+          adressesEligiblesCount: testWithAddresses.addresses.filter(
+            (address) => address.eligibility_status && address.eligibility_status.isEligible
           ).length,
-          adressesDansPDPCount: testWithAddresses.addresses.filter((address) => address.eligibility_status.inPDP).length,
+          adressesProches150mReseauCount: testWithAddresses.addresses.filter(
+            (address) => address.eligibility_status?.distance && address.eligibility_status.distance <= 150
+          ).length,
+          adressesDansPDPCount: testWithAddresses.addresses.filter(
+            (address) => address.eligibility_status && address.eligibility_status.inPDP
+          ).length,
         },
       };
     },
@@ -61,8 +65,8 @@ export default function ProEligibilityTestItem({ test, onDelete }: ProEligibilit
               </div>
               {testDetails.addresses.map((address) => (
                 <Box key={address.id}>
-                  {address.ban_address} - {address.source_address} - Eligible: {address.eligibility_status.isEligible} - Distance:
-                  {address.eligibility_status.distance}
+                  {address.ban_address} - {address.source_address} - Eligible: {address.eligibility_status?.isEligible} - Distance:
+                  {address.eligibility_status?.distance}
                 </Box>
               ))}
             </>

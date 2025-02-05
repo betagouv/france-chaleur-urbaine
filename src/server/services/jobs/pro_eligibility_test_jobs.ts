@@ -25,16 +25,18 @@ export async function processProEligibilityTestJob(job: ProEligibilityTestJob, l
       await trx.deleteFrom('pro_eligibility_tests_addresses').where('test_id', '=', job.entity_id).execute();
 
       await processInParallel(results, 20, async (addressItem) => {
-        const eligibilityStatus = await getEligilityStatus(addressItem.latitude, addressItem.longitude);
+        const eligibilityStatus =
+          addressItem.result_status === 'ok' ? await getEligilityStatus(addressItem.latitude, addressItem.longitude) : null;
         await trx
           .insertInto('pro_eligibility_tests_addresses')
           .values({
             test_id: job.entity_id,
-            ban_address: addressItem.result_label,
-            ban_score: Math.round(addressItem.result_score * 100), // 0.9733 => 97
             source_address: addressItem.address,
+            ban_valid: addressItem.result_status === 'ok',
+            ban_address: addressItem.result_label ?? '',
+            ban_score: Math.round((addressItem.result_score ?? 0) * 100), // 0.9733 => 97
             geom: sql`st_transform(st_point(${addressItem.longitude}, ${addressItem.latitude}, 4326), 2154)`,
-            eligibility_status: eligibilityStatus,
+            eligibility_status: eligibilityStatus ?? undefined,
           })
           .executeTakeFirst();
       });

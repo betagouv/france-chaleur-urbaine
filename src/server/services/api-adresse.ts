@@ -6,12 +6,24 @@ const API_ADRESSE_URL = 'https://api-adresse.data.gouv.fr/search/csv/';
 
 type APIAdresseResult = {
   address: string;
-  latitude: number;
-  longitude: number;
-  result_label: string;
-  result_score: number;
-  result_city: string;
-};
+} & (
+  | {
+      result_status: 'ok';
+      latitude: number;
+      longitude: number;
+      result_label: string;
+      result_score: number;
+      result_city: string;
+    }
+  | {
+      result_status: 'error';
+      latitude: null;
+      longitude: null;
+      result_label: null;
+      result_score: null;
+      result_city: null;
+    }
+);
 
 export async function getAddressesCoordinates(addressesCSV: string) {
   const form = new FormData();
