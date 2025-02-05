@@ -51,7 +51,7 @@ const statusOptions = [{ label: 'Tous', value: '' }].concat(
   }))
 );
 
-const searchKeys: (keyof Demand)[] = ['Nom', 'Prénom', 'Mail'];
+const globalSearchKeys: (keyof Demand)[] = ['Nom', 'Prénom', 'Mail', 'Adresse', 'Identifiant réseau', 'Nom réseau'];
 
 const cleanValue = (value: string | undefined): string => {
   return value
@@ -68,8 +68,7 @@ const ManagerHeader = ({ demands, setFilteredDemands }: { demands: Demand[]; set
 
   const [gestionnaireOptions, setGestionnaireOptions] = useState<{ label: string; value: string }[]>([]);
 
-  const [nameFilter, setNameFilter] = useState('');
-  const [addressFilter, setAddressFilter] = useState('');
+  const [globalFilter, setGlobalFilter] = useState('');
   const [filterModeChauffage, setFilterModeChauffage] = useState('');
   const [filterTypeChauffage, setFilterTypeChauffage] = useState('');
   const [statusFilter, setStatusFiler] = useState('');
@@ -93,56 +92,31 @@ const ManagerHeader = ({ demands, setFilteredDemands }: { demands: Demand[]; set
   }, [demands]);
 
   useEffect(() => {
-    let filteredDemands = demands;
-    if (nameFilter) {
-      filteredDemands = filteredDemands.filter((demand) => searchKeys.some((key) => matchFilter(nameFilter, demand[key] as string)));
-    }
-
-    if (addressFilter) {
-      filteredDemands = filteredDemands.filter((demand) => matchFilter(addressFilter, demand.Adresse));
-    }
-    if (statusFilter === 'En attente de prise en charge') {
-      filteredDemands = filteredDemands.filter((demand) => !demand.Status || demand.Status === statusFilter);
-    } else if (statusFilter) {
-      filteredDemands = filteredDemands.filter((demand) => demand.Status === statusFilter);
-    }
-
-    if (filterModeChauffage) {
-      filteredDemands = filteredDemands.filter((demand) => demand['Mode de chauffage']?.toLowerCase() === filterModeChauffage);
-    }
-
-    if (filterTypeChauffage) {
-      filteredDemands = filteredDemands.filter((demand) => demand['Type de chauffage']?.toLowerCase() === filterTypeChauffage);
-    }
-
-    if (gestionnaireFilter) {
-      filteredDemands = filteredDemands.filter((demand) => demand['Affecté à'] === gestionnaireFilter);
-    }
-
+    const filteredDemands = demands
+      .filter((demand) => !globalFilter || globalSearchKeys.some((key) => matchFilter(globalFilter, demand[key] as string)))
+      .filter(
+        (demand) =>
+          !statusFilter ||
+          (statusFilter === 'En attente de prise en charge'
+            ? demand.Status === statusFilter || !demand.Status
+            : demand.Status === statusFilter)
+      )
+      .filter((demand) => !filterModeChauffage || demand['Mode de chauffage']?.toLowerCase() === filterModeChauffage)
+      .filter((demand) => !filterTypeChauffage || demand['Type de chauffage']?.toLowerCase() === filterTypeChauffage)
+      .filter((demand) => !gestionnaireFilter || demand['Affecté à'] === gestionnaireFilter);
     setFilteredDemands(filteredDemands);
-  }, [addressFilter, nameFilter, statusFilter, filterModeChauffage, filterTypeChauffage, gestionnaireFilter, demands, setFilteredDemands]);
+  }, [globalFilter, statusFilter, filterModeChauffage, filterTypeChauffage, gestionnaireFilter, demands, setFilteredDemands]);
 
   return (
     <Filters>
       <Filter>
         <Input
-          label="Rechercher par nom ou par mail:"
+          label="Rechercher par nom, email, adresse, réseau (ID ou nom):"
           nativeInputProps={{
-            type: 'email',
+            type: 'string',
             required: true,
-            value: nameFilter,
-            onChange: (e) => setNameFilter(e.target.value),
-          }}
-        />
-      </Filter>
-      <Filter>
-        <Input
-          label="Rechercher par adresse:"
-          nativeInputProps={{
-            type: 'email',
-            required: true,
-            value: addressFilter,
-            onChange: (e) => setAddressFilter(e.target.value),
+            value: globalFilter,
+            onChange: (e) => setGlobalFilter(e.target.value),
           }}
         />
       </Filter>
