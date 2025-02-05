@@ -689,7 +689,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                 pl="1w"
                 style={{ marginTop: '2px' }}
               >
-                Commune couverte par une étude pour la création d’un réseau
+                Communes couvertes par une étude pour la création de réseaux
               </Text>
             </Box>
 
