@@ -28,6 +28,7 @@ const Button: React.FC<ButtonProps> = ({
   full,
   href,
   type = 'button',
+  disabled,
   onClick: onExternalClick,
   stopPropagation,
   loading,
@@ -51,7 +52,7 @@ const Button: React.FC<ButtonProps> = ({
       e.stopPropagation();
     }
 
-    if (props.disabled) {
+    if (disabled) {
       return;
     }
 
@@ -64,6 +65,7 @@ const Button: React.FC<ButtonProps> = ({
       iconId={loading ? 'ri-loader-3-line' : (iconId as any) /** FIXME */}
       $full={full}
       $loading={loading}
+      disabled={(disabled || loading) as any /** FIXME cause incompatibility with DSFR Button */}
       type={type as any /** FIXME cause incompatibility with DSFR Button */}
       {...props}
     >
