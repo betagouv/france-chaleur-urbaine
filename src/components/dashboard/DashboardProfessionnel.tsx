@@ -1,15 +1,13 @@
 import { faker } from '@faker-js/faker';
 import { useQuery } from '@tanstack/react-query';
-import { type Selectable } from 'kysely';
-import { z } from 'zod';
+import { useEffect, useState } from 'react';
 
 import ProEligibilityTestItem from '@/components/dashboard/professionnel/ProEligibilityTestItem';
 import Button from '@/components/ui/Button';
 import Heading from '@/components/ui/Heading';
-import { type ProEligibilityTests } from '@/server/db/kysely';
+import { type ProEligibilityTestListItem, type ProEligibilityTestRequest } from '@/pages/api/pro-eligibility-tests';
 import { toastErrors } from '@/services/notification';
 import { fetchJSON, postFetchJSON } from '@/utils/network';
-import { type FrontendType } from '@/utils/typescript';
 
 const testContent = `20 avenue de Ségur Paris
 11 rue Mirabeau saint-maur-des-fossés
@@ -22,16 +20,12 @@ const testContent = `20 avenue de Ségur Paris
 adressebizarre
 `;
 
-export const zProEligibilityTestRequest = z.strictObject({
-  name: z.string(),
-  csvContent: z.string(),
-});
-export type ProEligibilityTestRequest = z.infer<typeof zProEligibilityTestRequest>;
-
 export default function DashboardProfessionnel() {
+  const [hasPendingJobs, setHasPendingJobs] = useState(false);
   const { data: eligibilityTests, refetch: refetchEligibilityTests } = useQuery({
     queryKey: ['pro-eligibility-tests'],
-    queryFn: () => fetchJSON<FrontendType<Selectable<ProEligibilityTests>>[]>('/api/pro-eligibility-tests'),
+    queryFn: () => fetchJSON<ProEligibilityTestListItem[]>('/api/pro-eligibility-tests'),
+    refetchInterval: hasPendingJobs ? 5000 : false,
   });
 
   const createTest = toastErrors(async () => {
@@ -41,6 +35,10 @@ export default function DashboardProfessionnel() {
     } satisfies ProEligibilityTestRequest);
     await refetchEligibilityTests();
   });
+
+  useEffect(() => {
+    setHasPendingJobs(eligibilityTests?.some((test) => test.has_pending_jobs) ?? false);
+  }, [eligibilityTests]);
 
   return (
     <>

@@ -1,19 +1,17 @@
 import Badge from '@codegouvfr/react-dsfr/Badge';
 import { useQuery } from '@tanstack/react-query';
-import { type Selectable } from 'kysely';
 import { useState } from 'react';
 
 import Accordion from '@/components/ui/Accordion';
 import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
+import { type ProEligibilityTestListItem } from '@/pages/api/pro-eligibility-tests';
 import { type ProEligibilityTestWithAddresses } from '@/pages/api/pro-eligibility-tests/[id]';
-import { type ProEligibilityTests } from '@/server/db/kysely';
 import { toastErrors } from '@/services/notification';
 import { deleteFetchJSON, fetchJSON } from '@/utils/network';
-import { type FrontendType } from '@/utils/typescript';
 
 type ProEligibilityTestItemProps = {
-  test: FrontendType<Selectable<ProEligibilityTests>>;
+  test: ProEligibilityTestListItem;
   onDelete: () => any;
 };
 
@@ -54,8 +52,7 @@ export default function ProEligibilityTestItem({ test, onDelete }: ProEligibilit
         label={
           <div className="flex justify-between w-full">
             <div>{test.name}</div>
-            {/* FIXME réorganiser le typage */}
-            {(test as any).has_pending_jobs && (
+            {test.has_pending_jobs && (
               <Badge severity="info" small className="fr-mr-2w">
                 Mise à jour en attente
               </Badge>

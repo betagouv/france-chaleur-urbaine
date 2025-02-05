@@ -10,7 +10,7 @@ export async function up(knex: Knex): Promise<void> {
       ban_score integer,
       geom geometry(Point,2154),
       eligibility_status JSONB,
-      test_id UUID NOT NULL REFERENCES pro_eligibility_tests (id)
+      test_id UUID NOT NULL REFERENCES pro_eligibility_tests (id) ON DELETE CASCADE
     );
   `);
 }

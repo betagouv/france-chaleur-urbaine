@@ -1,8 +1,10 @@
+import { type Selectable } from 'kysely';
 import { type NextApiRequest } from 'next';
+import { z } from 'zod';
 
-import { zProEligibilityTestRequest } from '@/components/dashboard/DashboardProfessionnel';
 import { kdb } from '@/server/db/kysely';
 import { handleRouteErrors, invalidRouteError } from '@/server/helpers/server';
+import { type FrontendType } from '@/utils/typescript';
 
 const GET = async (req: NextApiRequest) => {
   const eligibilityTests = await kdb
@@ -24,6 +26,13 @@ const GET = async (req: NextApiRequest) => {
     .execute();
   return eligibilityTests;
 };
+export type ProEligibilityTestListItem = FrontendType<Selectable<Awaited<ReturnType<typeof GET>>[number]>>;
+
+export const zProEligibilityTestRequest = z.strictObject({
+  name: z.string(),
+  csvContent: z.string(),
+});
+export type ProEligibilityTestRequest = z.infer<typeof zProEligibilityTestRequest>;
 
 const POST = async (req: NextApiRequest) => {
   const { name, csvContent } = await zProEligibilityTestRequest.parseAsync(req.body);
