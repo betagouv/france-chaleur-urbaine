@@ -44,7 +44,7 @@ echo "> Synchronisation de la table locale '$table' vers l'environnement $env...
 
 # ouvre un tunnel vers BDD cible
 scalingo -a $SCALINGO_APP db-tunnel $SCALINGO_TUNNEL_ARGS SCALINGO_POSTGRESQL_URL &
-sleep 2
+sleep 4
 
 # import vers BDD cible
 POSTGRESQL_URL=$(scalingo -a $SCALINGO_APP env-get SCALINGO_POSTGRESQL_URL)

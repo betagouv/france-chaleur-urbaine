@@ -37,7 +37,7 @@ echo "> Synchronisation de la table distante '$table' depuis l'environnement $en
 
 # ouvre un tunnel vers BDD distance
 scalingo -a $SCALINGO_APP db-tunnel $SCALINGO_TUNNEL_ARGS SCALINGO_POSTGRESQL_URL &
-sleep 2
+sleep 4
 
 POSTGRESQL_URL=$(scalingo -a $SCALINGO_APP env-get SCALINGO_POSTGRESQL_URL)
 export PGUSER=$(expr $POSTGRESQL_URL : '.*/\([^:]*\):.*')
