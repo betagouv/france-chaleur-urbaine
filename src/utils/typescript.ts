@@ -57,3 +57,8 @@ export type RequiredFields<T, K extends keyof T> = Omit<T, K> & Required<Pick<T,
 export type FrontendType<T> = {
   [K in keyof T]: T[K] extends Timestamp | Date ? string : T[K];
 };
+
+/**
+ * Make fields partial for a type
+ */
+export type Partialize<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;

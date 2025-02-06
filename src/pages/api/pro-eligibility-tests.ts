@@ -28,14 +28,14 @@ const GET = async (req: NextApiRequest) => {
 };
 export type ProEligibilityTestListItem = FrontendType<Selectable<Awaited<ReturnType<typeof GET>>[number]>>;
 
-export const zProEligibilityTestRequest = z.strictObject({
+export const zProEligibilityTestCreateInput = z.strictObject({
   name: z.string(),
   csvContent: z.string(),
 });
-export type ProEligibilityTestRequest = z.infer<typeof zProEligibilityTestRequest>;
+export type ProEligibilityTestCreateInput = z.infer<typeof zProEligibilityTestCreateInput>;
 
 const POST = async (req: NextApiRequest) => {
-  const { name, csvContent } = await zProEligibilityTestRequest.parseAsync(req.body);
+  const { name, csvContent } = await zProEligibilityTestCreateInput.parseAsync(req.body);
 
   const createdEligibilityTestId = await kdb.transaction().execute(async (trx) => {
     const createdEligibilityTest = await trx
@@ -66,6 +66,8 @@ const POST = async (req: NextApiRequest) => {
     id: createdEligibilityTestId,
   };
 };
+
+export type ProEligibilityTestCreateOutput = ReturnType<typeof POST>;
 
 const route = async (req: NextApiRequest) => {
   if (req.method === 'GET') {

@@ -1,13 +1,15 @@
 import { faker } from '@faker-js/faker';
-import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 
 import ProEligibilityTestItem from '@/components/dashboard/professionnel/ProEligibilityTestItem';
 import Button from '@/components/ui/Button';
 import Heading from '@/components/ui/Heading';
-import { type ProEligibilityTestListItem, type ProEligibilityTestRequest } from '@/pages/api/pro-eligibility-tests';
-import { toastErrors } from '@/services/notification';
-import { fetchJSON, postFetchJSON } from '@/utils/network';
+import { useFetch, usePost } from '@/hooks/useApi';
+import {
+  type ProEligibilityTestCreateInput,
+  type ProEligibilityTestCreateOutput,
+  type ProEligibilityTestListItem,
+} from '@/pages/api/pro-eligibility-tests';
 
 export const testContent = `20 avenue de Ségur Paris
 11 rue Mirabeau saint-maur-des-fossés
@@ -22,19 +24,18 @@ adressebizarre
 
 export default function DashboardProfessionnel() {
   const [hasPendingJobs, setHasPendingJobs] = useState(false);
-  const { data: eligibilityTests, refetch: refetchEligibilityTests } = useQuery({
-    queryKey: ['pro-eligibility-tests'],
-    queryFn: () => fetchJSON<ProEligibilityTestListItem[]>('/api/pro-eligibility-tests'),
-    refetchInterval: hasPendingJobs ? 5000 : false,
-  });
 
-  const createTest = toastErrors(async () => {
-    await postFetchJSON('/api/pro-eligibility-tests', {
-      name: 'test ' + faker.company.name(),
-      csvContent: testContent,
-    } satisfies ProEligibilityTestRequest);
-    await refetchEligibilityTests();
-  });
+  const { data: eligibilityTests, refetch: refetchEligibilityTests } = useFetch<ProEligibilityTestListItem[]>(
+    '/api/pro-eligibility-tests',
+    { refetchInterval: hasPendingJobs ? 5000 : false }
+  );
+
+  const { mutateAsync: createTest, isLoading } = usePost<ProEligibilityTestCreateInput, ProEligibilityTestCreateOutput>(
+    '/api/pro-eligibility-tests',
+    {
+      invalidate: ['/api/pro-eligibility-tests'],
+    }
+  );
 
   useEffect(() => {
     setHasPendingJobs(eligibilityTests?.some((test) => test.has_pending_jobs) ?? false);
@@ -49,7 +50,20 @@ export default function DashboardProfessionnel() {
       <Heading as="h2" color="blue-france">
         Historique de mes tests d’adresse
       </Heading>
-      <Button onClick={createTest}>Nouveau test</Button>
+      <div className="flex items-center justify-end">
+        <Button
+          loading={isLoading}
+          className="my-5"
+          onClick={async () =>
+            createTest({
+              name: 'test ' + faker.company.name(),
+              csvContent: testContent,
+            })
+          }
+        >
+          Nouveau test
+        </Button>
+      </div>
       {eligibilityTests?.length === 0 && <>Aucun test</>}
       {eligibilityTests?.map((test) => <ProEligibilityTestItem test={test} key={test.id} onDelete={refetchEligibilityTests} />)}
       {/* TODO formulaire nouveau test */}
