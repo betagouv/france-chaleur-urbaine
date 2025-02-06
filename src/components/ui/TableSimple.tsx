@@ -7,7 +7,7 @@ import {
   getCoreRowModel,
   getFilteredRowModel,
   getSortedRowModel,
-  RowData,
+  type RowData,
   type SortingState,
   useReactTable,
 } from '@tanstack/react-table';
@@ -17,23 +17,27 @@ import React from 'react';
 import { isDevModeEnabled } from '@/hooks/useDevMode';
 
 export type ColumnDef<T, K = any> = ColumnDefOriginal<T, K> & {
+  // accessorKey?: string;
+  // cellType?: TableCellProps<T>['type'];
   align?: 'center' | 'left' | 'right';
   flex?: number;
+  // sortBy?: string[];
+  // href?: TableCellProps<T>['href'];
 };
 
-export type SimpleTableProps<Data = any> = {
+export type TableSimpleProps<Data = any> = {
   data: Data[];
   columns: ColumnDef<Data>[];
   initialSortingState?: SortingState;
   loading?: boolean;
 };
 
-const SimpleTable = <T extends RowData>({ data, columns, initialSortingState, loading }: SimpleTableProps<T>) => {
+const TableSimple = <T extends RowData>({ data, columns, initialSortingState, loading }: TableSimpleProps<T>) => {
   const [globalFilter, setGlobalFilter] = React.useState<any>([]);
   const [sortingState, setSortingState] = React.useState<SortingState>(initialSortingState ?? []);
 
   const columnFormat = ({ align }: ColumnDef<T>) => {
-    let classNames = [];
+    const classNames = [];
 
     if (align === 'left') classNames.push('text-left justify-start');
     if (align === 'right') classNames.push('text-right justify-end');
@@ -209,7 +213,7 @@ const SimpleTable = <T extends RowData>({ data, columns, initialSortingState, lo
   );
 };
 
-export default SimpleTable;
+export default TableSimple;
 
 export const tableCellFormatter = (info: CellContext<any, any>) => {
   if (!info.getValue()) {

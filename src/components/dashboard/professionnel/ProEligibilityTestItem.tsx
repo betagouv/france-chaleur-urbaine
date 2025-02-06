@@ -8,7 +8,7 @@ import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
 import Icon from '@/components/ui/Icon';
 import Loader from '@/components/ui/Loader';
-import SimpleTable, { tableBooleanFormatter, type ColumnDef } from '@/components/ui/SimpleTable';
+import TableSimple, { tableBooleanFormatter, type ColumnDef } from '@/components/ui/TableSimple';
 import { useDelete, useFetch, usePost } from '@/hooks/useApi';
 import { type ProEligibilityTestListItem } from '@/pages/api/pro-eligibility-tests';
 import { type ProEligibilityTestFileRequest, type ProEligibilityTestWithAddresses } from '@/pages/api/pro-eligibility-tests/[id]';
@@ -150,7 +150,7 @@ export default function ProEligibilityTestItem({ test, onDelete }: ProEligibilit
             </Button>
           </div>
         </div>
-        <SimpleTable columns={columns} data={testDetails?.addresses || []} initialSortingState={initialSortingState} />
+        <TableSimple columns={columns} data={testDetails?.addresses || []} initialSortingState={initialSortingState} />
       </UrlStateAccordion>
     </Box>
   );

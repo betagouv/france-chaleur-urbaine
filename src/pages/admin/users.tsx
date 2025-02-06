@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { type SortingState, type ColumnDef } from '@tanstack/react-table';
+import { type ColumnDef, type SortingState } from '@tanstack/react-table';
 import { type GetServerSideProps } from 'next';
 
 import AccountCreationForm from '@/components/Admin/AccountCreationForm';
@@ -9,7 +9,7 @@ import AsyncButton from '@/components/ui/AsyncButton';
 import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
 import Heading from '@/components/ui/Heading';
-import SimpleTable, { tableBooleanFormatter, tableCellFormatter } from '@/components/ui/SimpleTable';
+import TableSimple, { tableBooleanFormatter, tableCellFormatter } from '@/components/ui/TableSimple';
 import Text from '@/components/ui/Text';
 import { withAuthentication } from '@/server/helpers/ssr/withAuthentication';
 import { useServices } from '@/services';
@@ -121,7 +121,7 @@ export default function ManageUsers() {
         <Heading as="h2" color="blue-france" mt="4w">
           Liste des comptes
         </Heading>
-        {users && <SimpleTable columns={columns} data={users} initialSortingState={initialSortingState} />}
+        {users && <TableSimple columns={columns} data={users} initialSortingState={initialSortingState} />}
         <AsyncButton size="small" onClick={async () => exportService.exportXLSX('obsoleteUsers')}>
           Exporter la liste des comptes obsolètes (connexion de plus de 6 mois ou nulle)
         </AsyncButton>
