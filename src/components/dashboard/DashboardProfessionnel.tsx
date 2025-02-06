@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import ProEligibilityTestItem from '@/components/dashboard/professionnel/ProEligibilityTestItem';
 import Button from '@/components/ui/Button';
 import Heading from '@/components/ui/Heading';
+import Loader from '@/components/ui/Loader';
 import { useFetch, usePost } from '@/hooks/useApi';
 import {
   type ProEligibilityTestCreateInput,
@@ -25,12 +26,13 @@ adressebizarre
 export default function DashboardProfessionnel() {
   const [hasPendingJobs, setHasPendingJobs] = useState(false);
 
-  const { data: eligibilityTests, refetch: refetchEligibilityTests } = useFetch<ProEligibilityTestListItem[]>(
-    '/api/pro-eligibility-tests',
-    { refetchInterval: hasPendingJobs ? 5000 : false }
-  );
+  const {
+    data: eligibilityTests,
+    refetch: refetchEligibilityTests,
+    isLoading,
+  } = useFetch<ProEligibilityTestListItem[]>('/api/pro-eligibility-tests', { refetchInterval: hasPendingJobs ? 5000 : false });
 
-  const { mutateAsync: createTest, isLoading } = usePost<ProEligibilityTestCreateInput, ProEligibilityTestCreateOutput>(
+  const { mutateAsync: createTest, isLoading: isCreating } = usePost<ProEligibilityTestCreateInput, ProEligibilityTestCreateOutput>(
     '/api/pro-eligibility-tests',
     {
       invalidate: ['/api/pro-eligibility-tests'],
@@ -47,12 +49,13 @@ export default function DashboardProfessionnel() {
         Tableau de bord
       </Heading>
       {/* TODO raccourcis vers outils */}
-      <Heading as="h2" color="blue-france">
-        Historique de mes tests d’adresse
-      </Heading>
-      <div className="flex items-center justify-end">
+      <div className="flex items-center justify-between mb-5">
+        <Heading as="h2" color="blue-france" mb="0">
+          Historique de mes tests d’adresse
+        </Heading>
+
         <Button
-          loading={isLoading}
+          loading={isCreating}
           className="my-5"
           onClick={async () =>
             createTest({
@@ -64,6 +67,7 @@ export default function DashboardProfessionnel() {
           Nouveau test
         </Button>
       </div>
+      {isLoading && <Loader size="lg" />}
       {eligibilityTests?.length === 0 && <>Aucun test</>}
       {eligibilityTests?.map((test) => <ProEligibilityTestItem test={test} key={test.id} onDelete={refetchEligibilityTests} />)}
       {/* TODO formulaire nouveau test */}

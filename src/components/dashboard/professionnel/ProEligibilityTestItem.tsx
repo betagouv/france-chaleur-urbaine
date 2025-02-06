@@ -3,7 +3,7 @@ import { type SortingState } from '@tanstack/react-table';
 import { useState } from 'react';
 
 import { testContent } from '@/components/dashboard/DashboardProfessionnel';
-import Accordion from '@/components/ui/Accordion';
+import { UrlStateAccordion } from '@/components/ui/Accordion';
 import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
 import Icon from '@/components/ui/Icon';
@@ -104,13 +104,18 @@ export default function ProEligibilityTestItem({ test, onDelete }: ProEligibilit
   };
 
   const handleDelete = async (testId: string) => {
+    if (!confirm('Etes-vous sûr de vouloir supprimer ce test ?')) {
+      return;
+    }
     await deleteTest(testId);
     onDelete();
   };
 
   return (
     <Box>
-      <Accordion
+      <UrlStateAccordion
+        multi={false}
+        id={test.id}
         label={
           <div className="flex justify-between w-full">
             <div>{test.name}</div>
@@ -121,9 +126,13 @@ export default function ProEligibilityTestItem({ test, onDelete }: ProEligibilit
             )}
           </div>
         }
-        onExpandedChange={() => setViewDetail(true)}
+        onClose={async (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          await handleDelete(test.id);
+        }}
+        onExpandedChange={(expanded) => setViewDetail(expanded)}
       >
-      </Accordion>
         <div className="flex items-center">
           <Indicator loading={isLoading} label="Adresses" value={stats.adressesCount} />
           <Divider />
@@ -142,6 +151,7 @@ export default function ProEligibilityTestItem({ test, onDelete }: ProEligibilit
           </div>
         </div>
         <SimpleTable columns={columns} data={testDetails?.addresses || []} initialSortingState={initialSortingState} />
+      </UrlStateAccordion>
     </Box>
   );
 }
