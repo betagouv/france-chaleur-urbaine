@@ -2,11 +2,12 @@ import { fr } from '@codegouvfr/react-dsfr';
 import Input from '@codegouvfr/react-dsfr/Input';
 import {
   type CellContext,
-  type ColumnDef,
+  type ColumnDef as ColumnDefOriginal,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getSortedRowModel,
+  RowData,
   type SortingState,
   useReactTable,
 } from '@tanstack/react-table';
@@ -15,16 +16,31 @@ import React from 'react';
 
 import { isDevModeEnabled } from '@/hooks/useDevMode';
 
-export type SimpleTableProps<Data = any> = {
-  data: Data[];
-  columns: ColumnDef<Data, any>[];
-  initialSortingState?: SortingState;
+export type ColumnDef<T, K = any> = ColumnDefOriginal<T, K> & {
+  align?: 'center' | 'left' | 'right';
+  flex?: number;
 };
 
-const SimpleTable = ({ data, columns, initialSortingState }: SimpleTableProps) => {
+export type SimpleTableProps<Data = any> = {
+  data: Data[];
+  columns: ColumnDef<Data>[];
+  initialSortingState?: SortingState;
+  loading?: boolean;
+};
+
+const SimpleTable = <T extends RowData>({ data, columns, initialSortingState, loading }: SimpleTableProps<T>) => {
   const [globalFilter, setGlobalFilter] = React.useState<any>([]);
   const [sortingState, setSortingState] = React.useState<SortingState>(initialSortingState ?? []);
 
+  const columnFormat = ({ align }: ColumnDef<T>) => {
+    let classNames = [];
+
+    if (align === 'left') classNames.push('text-left justify-start');
+    if (align === 'right') classNames.push('text-right justify-end');
+    if (align === 'center') classNames.push('text-center justify-center');
+
+    return classNames.join(' ');
+  };
   const table = useReactTable({
     data,
     columns,
@@ -94,14 +110,16 @@ const SimpleTable = ({ data, columns, initialSortingState }: SimpleTableProps) =
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id} style={{ display: 'flex', width: '100%' }}>
                 {headerGroup.headers.map((header) => {
+                  const columnDef = header.column.columnDef as ColumnDef<T>;
                   return (
                     <th
                       key={header.id}
                       colSpan={header.colSpan}
                       style={{
                         display: 'flex',
-                        width: header.getSize(),
+                        flex: columnDef.flex || 1,
                       }}
+                      className={columnFormat(columnDef)}
                     >
                       {header.isPlaceholder ? null : (
                         <div
@@ -110,7 +128,7 @@ const SimpleTable = ({ data, columns, initialSortingState }: SimpleTableProps) =
                             onClick: header.column.getToggleSortingHandler(),
                           }}
                         >
-                          {flexRender(header.column.columnDef.header, header.getContext())}
+                          {flexRender(columnDef.header, header.getContext())}
                           {{
                             asc: ' ▲',
                             desc: ' ▼',
@@ -126,41 +144,64 @@ const SimpleTable = ({ data, columns, initialSortingState }: SimpleTableProps) =
           <tbody
             style={{
               display: 'grid',
-              height: `${rowVirtualizer.getTotalSize()}px`, // tells scrollbar how big the table is
+              height: `${rowVirtualizer.getTotalSize() || 5 * 50}px`, // tells scrollbar how big the table is
               position: 'relative', // needed for absolute positioning of rows
             }}
           >
-            {rowVirtualizer.getVirtualItems().map((virtualRow) => {
-              const row = rows[virtualRow.index];
-              return (
-                <tr
-                  data-index={virtualRow.index} // needed for dynamic row height measurement
-                  ref={(node) => rowVirtualizer.measureElement(node)} // measure dynamic row height
-                  key={row.id}
-                  style={{
-                    display: 'flex',
-                    position: 'absolute',
-                    transform: `translateY(${virtualRow.start}px)`, // this should always be a `style` as it changes on scroll
-                    width: '100%',
-                  }}
-                >
-                  {row.getVisibleCells().map((cell) => {
-                    return (
-                      <td
-                        key={cell.id}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          width: cell.column.getSize(),
-                        }}
-                      >
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </td>
-                    );
-                  })}
+            {loading &&
+              [1, 2, 3, 4, 5].map((value) => (
+                <tr key={`loading_${value}`} className="flex">
+                  {columns.map((column, index) => (
+                    <td
+                      key={`loading_${value}_${index}`}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        flex: column.flex || 1,
+                      }}
+                      className={columnFormat(column)}
+                    >
+                      <div role="status" className="animate-pulse text-center w-[90%]">
+                        <div className="mx-auto my-2 h-3.5 rounded-full bg-gray-200"></div>
+                      </div>
+                    </td>
+                  ))}
                 </tr>
-              );
-            })}
+              ))}
+            {!loading &&
+              rowVirtualizer.getVirtualItems().map((virtualRow) => {
+                const row = rows[virtualRow.index];
+                return (
+                  <tr
+                    data-index={virtualRow.index} // needed for dynamic row height measurement
+                    ref={(node) => rowVirtualizer.measureElement(node)} // measure dynamic row height
+                    key={row.id}
+                    style={{
+                      display: 'flex',
+                      position: 'absolute',
+                      transform: `translateY(${virtualRow.start}px)`, // this should always be a `style` as it changes on scroll
+                      width: '100%',
+                    }}
+                  >
+                    {row.getVisibleCells().map((cell) => {
+                      const columnDef = cell.column.columnDef as ColumnDef<T>;
+                      return (
+                        <td
+                          key={cell.id}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            flex: columnDef.flex || 1,
+                          }}
+                          className={columnFormat(columnDef)}
+                        >
+                          {flexRender(columnDef.cell, cell.getContext())}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                );
+              })}
           </tbody>
         </table>
       </div>

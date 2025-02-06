@@ -1,5 +1,5 @@
 import Badge from '@codegouvfr/react-dsfr/Badge';
-import { type ColumnDef, type SortingState } from '@tanstack/react-table';
+import { type SortingState } from '@tanstack/react-table';
 import { useState } from 'react';
 
 import { testContent } from '@/components/dashboard/DashboardProfessionnel';
@@ -7,7 +7,8 @@ import Accordion from '@/components/ui/Accordion';
 import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
 import Icon from '@/components/ui/Icon';
-import SimpleTable, { tableBooleanFormatter } from '@/components/ui/SimpleTable';
+import Loader from '@/components/ui/Loader';
+import SimpleTable, { tableBooleanFormatter, type ColumnDef } from '@/components/ui/SimpleTable';
 import { useDelete, useFetch, usePost } from '@/hooks/useApi';
 import { type ProEligibilityTestListItem } from '@/pages/api/pro-eligibility-tests';
 import { type ProEligibilityTestFileRequest, type ProEligibilityTestWithAddresses } from '@/pages/api/pro-eligibility-tests/[id]';
@@ -31,44 +32,39 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
         <div className=" text-xs text-gray-600">{info.row.original.source_address}</div>
       </div>
     ),
-    size: 400,
+    flex: 2,
   },
   {
     header: 'Indice de fiabilité',
     accessorKey: 'ban_score',
-    size: 60,
+    flex: 1,
   },
   {
     header: 'Raccordable',
     accessorKey: 'eligibility_status.isEligible',
     cell: tableBooleanFormatter,
-    size: 100,
   },
   {
     header: 'Distance au réseau',
     accessorKey: 'eligibility_status.distance',
-    size: 80,
   },
   {
     header: 'PDP',
     accessorKey: 'eligibility_status.inPDP',
     cell: tableBooleanFormatter,
-    size: 60,
   },
   {
     header: 'Taux EnR&R',
     accessorKey: 'eligibility_status.tauxENRR',
-    size: 60,
   },
   {
     header: 'Contenu CO2 ACV (g/kWh)',
     accessorKey: 'eligibility_status.co2',
-    size: 80,
   },
   {
     header: 'Identifiant',
     accessorKey: 'eligibility_status.id',
-    size: 80,
+    align: 'right',
   },
 ];
 
@@ -87,7 +83,7 @@ type ProEligibilityTestItemProps = {
 export default function ProEligibilityTestItem({ test, onDelete }: ProEligibilityTestItemProps) {
   const [viewDetail, setViewDetail] = useState(false);
 
-  const { data: testDetails } = useFetch<ProEligibilityTestWithAddresses>(`/api/pro-eligibility-tests/${test.id}`, {
+  const { data: testDetails, isLoading } = useFetch<ProEligibilityTestWithAddresses>(`/api/pro-eligibility-tests/${test.id}`, {
     enabled: viewDetail,
   });
 
@@ -127,29 +123,25 @@ export default function ProEligibilityTestItem({ test, onDelete }: ProEligibilit
         }
         onExpandedChange={() => setViewDetail(true)}
       >
-        <>
-          {testDetails && (
-            <>
-              <div className="flex items-center">
-                <Indicator label="Adresses" value={stats.adressesCount} />
-                <Divider />
-                <Indicator label="Adresses raccordables" value={stats.adressesEligiblesCount} />
-                <Divider />
-                <Indicator label="Adresses à moins de 150m d’un réseau" value={stats.adressesProches150mReseauCount} />
-                <Divider />
-                <Indicator label="Adresses dans un PDP" value={stats.adressesDansPDPCount} />
-                <Button onClick={() => handleDelete(test.id)} loading={isDeleting} variant="destructive" priority="secondary">
-                  <Icon name="ri-delete-bin-2-line" />
-                </Button>
-                <Button onClick={() => createTest({ csvContent: testContent })} loading={isCreating}>
-                  Nouvelles adresses
-                </Button>
-              </div>
-              <SimpleTable columns={columns} data={testDetails.addresses} initialSortingState={initialSortingState} />
-            </>
-          )}
-        </>
       </Accordion>
+        <div className="flex items-center">
+          <Indicator loading={isLoading} label="Adresses" value={stats.adressesCount} />
+          <Divider />
+          <Indicator loading={isLoading} label="Adresses raccordables" value={stats.adressesEligiblesCount} />
+          <Divider />
+          <Indicator loading={isLoading} label="Adresses à moins de 150m d’un réseau" value={stats.adressesProches150mReseauCount} />
+          <Divider />
+          <Indicator loading={isLoading} label="Adresses dans un PDP" value={stats.adressesDansPDPCount} />
+          <div className="ml-auto flex items-center gap-2">
+            <Button iconId="ri-file-add-fill" size="small" onClick={() => createTest({ csvContent: testContent })} loading={isCreating}>
+              Ajouter des adresses
+            </Button>
+            <Button size="small" onClick={() => handleDelete(test.id)} loading={isDeleting} variant="destructive" priority="secondary">
+              <Icon name="ri-delete-bin-2-line" />
+            </Button>
+          </div>
+        </div>
+        <SimpleTable columns={columns} data={testDetails?.addresses || []} initialSortingState={initialSortingState} />
     </Box>
   );
 }
@@ -157,11 +149,12 @@ export default function ProEligibilityTestItem({ test, onDelete }: ProEligibilit
 type IndicatorProps = {
   label: string;
   value: number;
+  loading?: boolean;
 };
 
-const Indicator = ({ label, value }: IndicatorProps) => (
+const Indicator = ({ label, value, loading }: IndicatorProps) => (
   <div className="fr-p-2w">
-    <div className="font-bold text-xl">{value}</div>
+    <div className="font-bold text-xl">{!loading ? value : <Loader size="sm" className="my-[6px]" />}</div>
     <div>{label}</div>
   </div>
 );
