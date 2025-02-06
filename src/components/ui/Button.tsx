@@ -2,9 +2,13 @@ import DsfrButton, { type ButtonProps as DsfrButtonProps } from '@codegouvfr/rea
 import { useRouter } from 'next/router';
 import styled, { css } from 'styled-components';
 
-type StyledButtonProps = { $loading?: boolean; $full?: boolean };
+import cx from '@/utils/cx';
+
+type StyledButtonProps = { $loading?: boolean; $full?: boolean; variant?: 'destructive' };
 
 const StyledButton = styled(DsfrButton)<DsfrButtonProps & StyledButtonProps>`
+  box-shadow: inset 0 0 0 1px var(--tw-shadow-color);
+
   ${({ $loading, $full }) => css`
     ${$loading &&
     css`
@@ -20,6 +24,13 @@ const StyledButton = styled(DsfrButton)<DsfrButtonProps & StyledButtonProps>`
   `}
 `;
 
+export const variantClassNames = {
+  destructive: {
+    primary: '!bg-destructive !text-white !hover:bg-destructive/90',
+    secondary: '!border-destructive !text-destructive shadow-destructive',
+  },
+};
+
 export type ButtonProps = DsfrButtonProps & RemoveDollar<StyledButtonProps> & { href?: string; stopPropagation?: boolean };
 
 const Button: React.FC<ButtonProps> = ({
@@ -32,6 +43,8 @@ const Button: React.FC<ButtonProps> = ({
   onClick: onExternalClick,
   stopPropagation,
   loading,
+  variant,
+  className,
   ...props
 }) => {
   const router = useRouter();
@@ -59,6 +72,15 @@ const Button: React.FC<ButtonProps> = ({
     onExternalClick?.(e);
   };
 
+  let variantClassName = '';
+
+  if (variant && !variantClassName) {
+    variantClassName = (variantClassNames?.[variant] as any)?.[props?.priority || ''];
+    if (!variantClassName) {
+      console.warn(`Button variant ${variant} is not supported for priority ${props.priority}`);
+    }
+  }
+
   return (
     <StyledButton
       onClick={onClick as any /** FIXME cause incompatibility with DSFR Button */}
@@ -67,6 +89,7 @@ const Button: React.FC<ButtonProps> = ({
       $loading={loading}
       disabled={(disabled || loading) as any /** FIXME cause incompatibility with DSFR Button */}
       type={type as any /** FIXME cause incompatibility with DSFR Button */}
+      className={cx(variantClassName, className)}
       {...props}
     >
       {children}
