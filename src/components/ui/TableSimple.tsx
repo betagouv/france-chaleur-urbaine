@@ -1,7 +1,7 @@
 import { fr } from '@codegouvfr/react-dsfr';
 import Input from '@codegouvfr/react-dsfr/Input';
 import {
-  type CellContext,
+  type Cell,
   type ColumnDef as ColumnDefOriginal,
   flexRender,
   getCoreRowModel,
@@ -16,13 +16,12 @@ import React from 'react';
 
 import { isDevModeEnabled } from '@/hooks/useDevMode';
 
+import TableCell, { type TableCellProps } from './TableCell';
+
 export type ColumnDef<T, K = any> = ColumnDefOriginal<T, K> & {
-  // accessorKey?: string;
-  // cellType?: TableCellProps<T>['type'];
+  cellType?: TableCellProps<T>['type'];
   align?: 'center' | 'left' | 'right';
   flex?: number;
-  // sortBy?: string[];
-  // href?: TableCellProps<T>['href'];
 };
 
 export type TableSimpleProps<Data = any> = {
@@ -45,6 +44,19 @@ const TableSimple = <T extends RowData>({ data, columns, initialSortingState, lo
 
     return classNames.join(' ');
   };
+
+  const cellRender = (cell: Cell<T, unknown>) => {
+    return (
+      <TableCell<T>
+        type={(cell.column.columnDef as ColumnDef<T>).cellType}
+        value={cell.getValue()}
+        default={flexRender(cell.column.columnDef.cell, cell.getContext())}
+        data={cell.row.original}
+        {...(cell.column.columnDef as ColumnDef<T>)}
+      />
+    );
+  };
+
   const table = useReactTable({
     data,
     columns,
@@ -199,7 +211,7 @@ const TableSimple = <T extends RowData>({ data, columns, initialSortingState, lo
                           }}
                           className={columnFormat(columnDef)}
                         >
-                          {flexRender(columnDef.cell, cell.getContext())}
+                          {cellRender(cell)}
                         </td>
                       );
                     })}
@@ -214,13 +226,3 @@ const TableSimple = <T extends RowData>({ data, columns, initialSortingState, lo
 };
 
 export default TableSimple;
-
-export const tableCellFormatter = (info: CellContext<any, any>) => {
-  if (!info.getValue()) {
-    return '';
-  }
-  const date = new Date(info.getValue<string>());
-  return <div title={date.toLocaleString()}>{date.toLocaleDateString()}</div>;
-};
-
-export const tableBooleanFormatter = (info: CellContext<any, any>) => (info.getValue() ? 'Oui' : 'Non');

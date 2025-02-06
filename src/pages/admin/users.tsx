@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { type ColumnDef, type SortingState } from '@tanstack/react-table';
+import { type SortingState } from '@tanstack/react-table';
 import { type GetServerSideProps } from 'next';
 
 import AccountCreationForm from '@/components/Admin/AccountCreationForm';
@@ -9,7 +9,7 @@ import AsyncButton from '@/components/ui/AsyncButton';
 import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
 import Heading from '@/components/ui/Heading';
-import TableSimple, { tableBooleanFormatter, tableCellFormatter } from '@/components/ui/TableSimple';
+import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
 import Text from '@/components/ui/Text';
 import { withAuthentication } from '@/server/helpers/ssr/withAuthentication';
 import { useServices } from '@/services';
@@ -19,13 +19,12 @@ import { frenchCollator } from '@/utils/strings';
 
 import { type AdminManageUserItem } from '../api/admin/users';
 import { type AdminUsersStats } from '../api/admin/users-stats';
-
 const columns: ColumnDef<AdminManageUserItem>[] = [
   {
     accessorKey: 'email',
     header: 'Email',
     sortingFn: (rowA, rowB) => frenchCollator.compare(rowA.original.email, rowB.original.email),
-    size: 250,
+    flex: 2,
   },
   {
     accessorKey: 'role',
@@ -38,31 +37,28 @@ const columns: ColumnDef<AdminManageUserItem>[] = [
     header: 'Tags gestionnaire',
     cell: (info) => info.getValue<string[]>().join(', '),
     sortingFn: (rowA, rowB) => frenchCollator.compare(rowA.original.gestionnaires?.[0] ?? '', rowB.original.gestionnaires?.[0] ?? ''),
-    size: 300,
   },
   {
     accessorKey: 'from_api',
     header: "Reçu de l'API",
-    cell: tableBooleanFormatter,
-    size: 60,
+    cellType: 'Boolean',
+    align: 'center',
   },
   {
     accessorKey: 'last_connection',
     header: 'Dernière activité',
-    cell: tableCellFormatter,
-    size: 110,
+    cellType: 'DateTime',
   },
   {
     accessorKey: 'active',
     header: 'Actif',
-    cell: tableBooleanFormatter,
-    size: 60,
+    cellType: 'Boolean',
+    align: 'center',
   },
   {
     accessorKey: 'created_at',
     header: 'Créé le',
-    cell: tableCellFormatter,
-    size: 110,
+    cellType: 'Date',
   },
   {
     accessorKey: '_id',
@@ -76,7 +72,6 @@ const columns: ColumnDef<AdminManageUserItem>[] = [
         onClick={() => alert(`${info.row.original.id}`)}
       />
     ),
-    size: 64,
   },
 ];
 

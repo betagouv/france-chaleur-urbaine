@@ -8,7 +8,7 @@ import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
 import Icon from '@/components/ui/Icon';
 import Loader from '@/components/ui/Loader';
-import TableSimple, { tableBooleanFormatter, type ColumnDef } from '@/components/ui/TableSimple';
+import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
 import { useDelete, useFetch, usePost } from '@/hooks/useApi';
 import { type ProEligibilityTestListItem } from '@/pages/api/pro-eligibility-tests';
 import { type ProEligibilityTestFileRequest, type ProEligibilityTestWithAddresses } from '@/pages/api/pro-eligibility-tests/[id]';
@@ -42,7 +42,8 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
   {
     header: 'Raccordable',
     accessorKey: 'eligibility_status.isEligible',
-    cell: tableBooleanFormatter,
+    cellType: 'Boolean',
+    align: 'center',
   },
   {
     header: 'Distance au réseau',
@@ -51,7 +52,8 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
   {
     header: 'PDP',
     accessorKey: 'eligibility_status.inPDP',
-    cell: tableBooleanFormatter,
+    cellType: 'Boolean',
+    align: 'center',
   },
   {
     header: 'Taux EnR&R',
