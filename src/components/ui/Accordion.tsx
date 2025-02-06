@@ -4,6 +4,7 @@ import styled, { css } from 'styled-components';
 
 import Tooltip from '@/components/ui/Tooltip';
 import useArrayQueryState from '@/hooks/useArrayQueryState';
+import { type Partialize } from '@/utils/typescript';
 
 import Icon from './Icon';
 
@@ -107,7 +108,17 @@ const Accordion: React.FC<AccordionProps> = ({ children, small, label, help, sim
           {(help || onClose) && (
             <AccordionTitleHelp>
               {help && <Tooltip title={help}></Tooltip>}
-              {onClose && <Icon name="fr-icon-close-line" size="sm" onClick={onClose} />}
+              {onClose && (
+                <Icon
+                  name="fr-icon-close-line"
+                  size="sm"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onClose(e);
+                  }}
+                />
+              )}
             </AccordionTitleHelp>
           )}
         </>
@@ -119,7 +130,7 @@ const Accordion: React.FC<AccordionProps> = ({ children, small, label, help, sim
   );
 };
 
-export type UrlStateAccordionProps = Omit<AccordionProps, 'label' | 'id' | 'onExpandedChange' | 'expanded' | 'defaultExpanded'> &
+export type UrlStateAccordionProps = Partialize<Omit<AccordionProps, 'label' | 'id' | 'expanded' | 'defaultExpanded'>, 'onExpandedChange'> &
   (Pick<AccordionProps, 'label' | 'id'> | { label: React.ReactNode; id: string }) &
   (
     | {
@@ -133,7 +144,7 @@ export type UrlStateAccordionProps = Omit<AccordionProps, 'label' | 'id' | 'onEx
       }
   );
 
-export const UrlStateAccordion = ({ multi = true, queryParamName = 'accordions', ...props }: UrlStateAccordionProps) => {
+export const UrlStateAccordion = ({ multi = true, queryParamName = 'accordions', onExpandedChange, ...props }: UrlStateAccordionProps) => {
   const { add, remove, has } = useArrayQueryState(queryParamName);
   const [value, setValue] = useQueryState(queryParamName);
 
@@ -142,11 +153,20 @@ export const UrlStateAccordion = ({ multi = true, queryParamName = 'accordions',
   const id = isLabelObject || props.id ? (props.id as string) : (props.label as string);
 
   const expanded = multi ? has(id) : value === id;
-  const onExpandedChange = multi
+  const onExpandedChangeUrlState = multi
     ? (expanded: boolean) => (expanded ? add(id) : remove(id))
     : (expanded: boolean) => (expanded ? setValue(id) : setValue(null));
 
-  return <Accordion {...props} expanded={expanded} onExpandedChange={onExpandedChange} />;
+  return (
+    <Accordion
+      {...props}
+      expanded={expanded}
+      onExpandedChange={(expanded, e) => {
+        onExpandedChangeUrlState(expanded);
+        onExpandedChange?.(expanded, e);
+      }}
+    />
+  );
 };
 
 export default Accordion;
