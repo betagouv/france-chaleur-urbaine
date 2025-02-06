@@ -58,6 +58,8 @@ export type FrontendType<T> = {
   [K in keyof T]: T[K] extends Timestamp | Date ? string : T[K];
 };
 
+export type OmitFirst<T extends any[]> = T extends [any, ...infer R] ? R : never;
+
 /**
  * Make fields partial for a type
  */

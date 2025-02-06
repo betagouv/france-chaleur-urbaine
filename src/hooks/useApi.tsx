@@ -1,5 +1,6 @@
 import {
   type InvalidateQueryFilters,
+  type MutationKey,
   type QueryKey,
   useMutation,
   type UseMutationOptions,
@@ -10,8 +11,8 @@ import {
   type UseQueryResult,
 } from '@tanstack/react-query';
 
-import { fetchJSON, postFetchJSON } from '@/utils/network';
-import { type Partialize } from '@/utils/typescript';
+import { deleteFetchJSON, fetchJSON, postFetchJSON } from '@/utils/network';
+import { type OmitFirst, type Partialize } from '@/utils/typescript';
 
 type UseQueryParams = Parameters<typeof useQuery>;
 
@@ -33,7 +34,8 @@ export const useFetch = <TQueryFnData, TError = Error, TData = TQueryFnData, TQu
 /**
  * Typescript values are inversed to facilitate the use of usePost with <Input,Output>
  */
-export const usePost = <TVariables, TOutput = unknown, TError = Error, TContext = unknown>(
+const useAction = <TVariables, TOutput = unknown, TError = Error, TContext = unknown>(
+  methodName: 'POST' | 'DELETE',
   url: string,
   {
     mutationFn,
@@ -48,17 +50,35 @@ export const usePost = <TVariables, TOutput = unknown, TError = Error, TContext 
 ): UseMutationResult<TOutput, TError, TVariables, TContext> & { isLoading?: boolean } => {
   const queryClientDefault = useQueryClient();
   const queryClient = queryClientCustom || queryClientDefault;
+  let method;
+
+  if (methodName === 'POST') {
+    method = postFetchJSON;
+  } else if (methodName === 'DELETE') {
+    method = deleteFetchJSON;
+  } else {
+    throw new Error(`Invalid method name: ${methodName}. Only 'POST' or 'DELETE' are allowed.`);
+  }
 
   const result = useMutation<TOutput, TError, TVariables, TContext>({
+    mutationKey: mutationKey || ([`${methodName.toLowerCase()} ${url}`] as unknown as MutationKey),
     onSuccess: (data, variables, context) => {
       if (invalidate) {
         invalidate.forEach((key) => queryClient.invalidateQueries(key as InvalidateQueryFilters<TOutput, TError, TVariables>));
       }
       onSuccess?.(data, variables, context);
     },
-    mutationFn: mutationFn ? mutationFn : async (value: TVariables) => postFetchJSON<TVariables>(url, value) as TOutput,
+    mutationFn: mutationFn ? mutationFn : async (value: TVariables) => method<TVariables>(url, value) as TOutput,
     ...options,
   });
 
   return { ...result, isLoading: result?.isPending };
 };
+
+export const usePost = <TVariables, TOutput = unknown, TError = Error, TContext = unknown>(
+  ...args: OmitFirst<Parameters<typeof useAction<TVariables, TOutput, TError, TContext>>>
+) => useAction<TVariables, TOutput, TError, TContext>('POST', ...args);
+
+export const useDelete = <TVariables, TOutput = unknown, TError = Error, TContext = unknown>(
+  ...args: OmitFirst<Parameters<typeof useAction<TVariables, TOutput, TError, TContext>>>
+) => useAction<TVariables, TOutput, TError, TContext>('DELETE', ...args);
