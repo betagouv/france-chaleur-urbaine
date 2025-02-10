@@ -39,6 +39,8 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
     header: 'Indice de fiabilité',
     accessorKey: 'ban_score',
     flex: 1,
+    suffix: '%',
+    align: 'right',
   },
   {
     header: 'Raccordable',
@@ -49,6 +51,8 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
   {
     header: 'Distance au réseau',
     accessorKey: 'eligibility_status.distance',
+    suffix: 'm',
+    align: 'right',
   },
   {
     header: 'PDP',
@@ -59,10 +63,13 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
   {
     header: 'Taux EnR&R',
     accessorKey: 'eligibility_status.tauxENRR',
+    suffix: '%',
+    align: 'right',
   },
   {
     header: 'Contenu CO2 ACV (g/kWh)',
     accessorKey: 'eligibility_status.co2',
+    align: 'right',
   },
   {
     header: 'Identifiant',

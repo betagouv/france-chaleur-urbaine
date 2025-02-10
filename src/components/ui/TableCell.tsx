@@ -5,18 +5,28 @@ import React from 'react';
 import Link from '@/components/ui/Link';
 // import ContentEditable from './ContentEditable';
 
-export type TableCellType = 'Array' | 'Date' | 'DateTime' | 'Array' | 'Link' | 'Json' | 'Number' | 'Boolean' | 'Image' | 'NoWrap';
+export type TableCellType =
+  | 'Array'
+  | 'Date'
+  | 'DateTime'
+  | 'Array'
+  | 'Link'
+  | 'Json'
+  | 'Number'
+  | 'Boolean'
+  | 'Image'
+  | 'NoWrap'
+  | 'Percent';
 
 export type TableCellProps<T> = {
   type?: TableCellType;
   value: any;
   default: any;
-  href?: string | ((data: T) => string);
   data: T;
   cellProps?: any;
 } & (TableCellType extends 'Image' ? { cellProps: React.ComponentProps<typeof Image> } : {});
 
-const Cell = <T,>({ value, type, default: defaultValue, href, data, cellProps = {} }: TableCellProps<T>) => {
+const Cell = <T,>({ value, type, default: defaultValue, data, cellProps = {} }: TableCellProps<T>) => {
   if (!value && type !== 'Boolean') {
     return defaultValue;
   }
@@ -49,6 +59,7 @@ const Cell = <T,>({ value, type, default: defaultValue, href, data, cellProps = 
   } else if (type === 'NoWrap') {
     return <span className="whitespace-nowrap">{value}</span>;
   } else if (type === 'Link') {
+    const { href, ...linkCellProps } = cellProps;
     let processedHref = href;
     if (typeof href === 'string') {
       processedHref = href.replace('[id]', (data as any).id);
@@ -66,12 +77,15 @@ const Cell = <T,>({ value, type, default: defaultValue, href, data, cellProps = 
         onClick={(e: any) => {
           e.stopPropagation();
         }}
+        {...linkCellProps}
       >
         {value}
       </Link>
     );
   } else if (type === 'Number') {
     return value;
+  } else if (type === 'Percent') {
+    return (value as number).toLocaleString(undefined, { style: 'percent', minimumFractionDigits: 2, ...cellProps });
   } else if (type === 'Image') {
     const { onClick, alt, ...restCellProps } = cellProps;
     const onImageClick = (imageUrl: string) => (e: any) => {

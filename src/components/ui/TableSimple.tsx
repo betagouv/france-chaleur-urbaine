@@ -15,6 +15,7 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 import React from 'react';
 
 import { isDevModeEnabled } from '@/hooks/useDevMode';
+import cx from '@/utils/cx';
 
 import TableCell, { type TableCellProps } from './TableCell';
 
@@ -22,6 +23,8 @@ export type ColumnDef<T, K = any> = ColumnDefOriginal<T, K> & {
   cellType?: TableCellProps<T>['type'];
   align?: 'center' | 'left' | 'right';
   flex?: number;
+  className?: string;
+  suffix?: React.ReactNode;
 };
 
 export type TableSimpleProps<Data = any> = {
@@ -35,25 +38,32 @@ const TableSimple = <T extends RowData>({ data, columns, initialSortingState, lo
   const [globalFilter, setGlobalFilter] = React.useState<any>([]);
   const [sortingState, setSortingState] = React.useState<SortingState>(initialSortingState ?? []);
 
-  const columnFormat = ({ align }: ColumnDef<T>) => {
+  const columnClassName = ({ align, className }: ColumnDef<T>) => {
     const classNames = [];
 
     if (align === 'left') classNames.push('text-left justify-start');
     if (align === 'right') classNames.push('text-right justify-end');
     if (align === 'center') classNames.push('text-center justify-center');
 
+    if (className) classNames.push(className);
+
     return classNames.join(' ');
   };
 
   const cellRender = (cell: Cell<T, unknown>) => {
+    const { suffix, cellType, ...columnDef } = cell.column.columnDef as ColumnDef<T>;
+    const value = cell.getValue();
     return (
-      <TableCell<T>
-        type={(cell.column.columnDef as ColumnDef<T>).cellType}
-        value={cell.getValue()}
-        default={flexRender(cell.column.columnDef.cell, cell.getContext())}
-        data={cell.row.original}
-        {...(cell.column.columnDef as ColumnDef<T>)}
-      />
+      <>
+        <TableCell<T>
+          type={cellType}
+          value={value}
+          default={flexRender(columnDef.cell, cell.getContext())}
+          data={cell.row.original}
+          {...columnDef}
+        />
+        {value ? suffix : ''}
+      </>
     );
   };
 
@@ -135,12 +145,11 @@ const TableSimple = <T extends RowData>({ data, columns, initialSortingState, lo
                         display: 'flex',
                         flex: columnDef.flex || 1,
                       }}
-                      className={columnFormat(columnDef)}
                     >
                       {header.isPlaceholder ? null : (
                         <div
                           {...{
-                            className: header.column.getCanSort() ? 'cursor-pointer select-none' : '',
+                            className: cx(columnClassName(columnDef), header.column.getCanSort() ? 'cursor-pointer select-none' : ''),
                             onClick: header.column.getToggleSortingHandler(),
                           }}
                         >
@@ -175,7 +184,7 @@ const TableSimple = <T extends RowData>({ data, columns, initialSortingState, lo
                         alignItems: 'center',
                         flex: column.flex || 1,
                       }}
-                      className={columnFormat(column)}
+                      className={columnClassName(column)}
                     >
                       <div role="status" className="animate-pulse text-center w-[90%]">
                         <div className="mx-auto my-2 h-3.5 rounded-full bg-gray-200"></div>
@@ -209,7 +218,7 @@ const TableSimple = <T extends RowData>({ data, columns, initialSortingState, lo
                             alignItems: 'center',
                             flex: columnDef.flex || 1,
                           }}
-                          className={columnFormat(columnDef)}
+                          className={columnClassName(columnDef)}
                         >
                           {cellRender(cell)}
                         </td>
