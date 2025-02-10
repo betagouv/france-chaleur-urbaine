@@ -41,9 +41,9 @@ const TableSimple = <T extends RowData>({ data, columns, initialSortingState, lo
   const columnClassName = ({ align, className }: ColumnDef<T>) => {
     const classNames = [];
 
-    if (align === 'left') classNames.push('text-left justify-start');
-    if (align === 'right') classNames.push('text-right justify-end');
-    if (align === 'center') classNames.push('text-center justify-center');
+    if (align === 'left') classNames.push('!text-left justify-start'); // need the ! to bypass DSFR
+    if (align === 'right') classNames.push('!text-right justify-end');
+    if (align === 'center') classNames.push('!text-center justify-center');
 
     if (className) classNames.push(className);
 
@@ -145,19 +145,17 @@ const TableSimple = <T extends RowData>({ data, columns, initialSortingState, lo
                         display: 'flex',
                         flex: columnDef.flex || 1,
                       }}
-                      {...{
-                        className: cx(columnClassName(columnDef), header.column.getCanSort() ? 'cursor-pointer select-none' : ''),
-                        onClick: header.column.getToggleSortingHandler(),
-                      }}
+                      className={cx(columnClassName(columnDef), header.column.getCanSort() ? 'cursor-pointer select-none' : '')}
+                      onClick={header.column.getToggleSortingHandler()}
                     >
                       {header.isPlaceholder ? null : (
-                        <div>
+                        <>
                           {flexRender(columnDef.header, header.getContext())}
                           {{
                             asc: ' ▲',
                             desc: ' ▼',
                           }[header.column.getIsSorted() as string] ?? null}
-                        </div>
+                        </>
                       )}
                     </th>
                   );
