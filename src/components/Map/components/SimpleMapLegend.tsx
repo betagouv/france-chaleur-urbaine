@@ -55,6 +55,7 @@ import {
   enrrMobilisablesZonesGeothermieProfondeLayerColor,
   enrrMobilisablesZonesGeothermieProfondeLayerOpacity,
 } from '../layers/enrr-mobilisables/zonesGeothermieProfonde';
+import { etudesEnCoursColor, etudesEnCoursOpacity } from '../layers/etudesEnCours';
 import {
   installationsGeothermieProfondeLayerColor,
   installationsGeothermieProfondeLayerOpacity,
@@ -669,8 +670,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
               </DeactivatableBox>
             </TrackableCheckableAccordion>
 
-            {/* Désactivé en attendant une validation ADEME */}
-            {/* <Box display="flex" alignItems="start" my="2w">
+            <Box display="flex" alignItems="start" my="2w">
               <SingleCheckbox
                 name="etudesEnCours"
                 checked={mapConfiguration.etudesEnCours}
@@ -696,14 +696,9 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                 iconProps={{
                   className: 'fr-mr-4w',
                 }}
-                title={
-                  <>
-                    Information limitée à l'Île-de-France, transmise par la direction régionale de l'ADEME (les études recensées ont
-                    bénéficié d'une subvention par l'ADEME)
-                  </>
-                }
+                title={<>Information actuellement limitée à l'Île-de-France. Source : ADEME.</>}
               />
-            </Box> */}
+            </Box>
 
             <TrackableCheckableAccordion
               name="quartiersPrioritairesPolitiqueVille"
