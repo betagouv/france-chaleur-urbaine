@@ -11,6 +11,7 @@ const envSchema = {
   IS_REVIEW_APP: z.boolean().default(false),
   GITHUB_CI: z.boolean().default(false),
   LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
+  API_ADRESSE_URL: z.string().default('https://api-adresse.data.gouv.fr/'),
 };
 
 export const env = parseEnv(process.env, envSchema);

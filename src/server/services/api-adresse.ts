@@ -1,8 +1,7 @@
 import Papa from 'papaparse';
 
+import { env } from '@/environment';
 import { handleError } from '@/utils/network';
-
-const API_ADRESSE_URL = 'https://api-adresse.data.gouv.fr/search/csv/';
 
 export type APIAdresseResult = {
   address: string;
@@ -35,13 +34,13 @@ export async function getAddressesCoordinates(addressesCSV: string) {
   form.append('result_columns', 'result_label');
   form.append('result_columns', 'result_status');
 
-  const res = await fetch(API_ADRESSE_URL, {
+  const res = await fetch(`${env.API_ADRESSE_URL}/search/csv/`, {
     method: 'post',
     body: form,
   });
   if (!res.ok) {
     // TODO gérer statut 503 et retenter plus tard
-    await handleError(res, API_ADRESSE_URL);
+    await handleError(res, `${env.API_ADRESSE_URL}/search/csv/`);
   }
   const responseBody = await res.text();
 

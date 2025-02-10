@@ -38,7 +38,7 @@ fileignoreconfig:
   - filename
   - filesize
 - filename: src/environment.ts
-  checksum: 1dfc408cde9729532cf0b21b8cb318f3717b6b548f46173a06238ff84886954e
+  checksum: bf044f4c0e8da97afc8a2050871b14e2c6081b20181fbc63a1a83cd0c5393c7d
 - filename: src/services/password.ts
   checksum: c5568af3b6c4162bc2ecbc78e8efc9abff9c852b774e8e60830db8a0777766b9
 - filename: src/services/tiles.config.ts
