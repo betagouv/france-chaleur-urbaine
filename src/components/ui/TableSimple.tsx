@@ -145,14 +145,13 @@ const TableSimple = <T extends RowData>({ data, columns, initialSortingState, lo
                         display: 'flex',
                         flex: columnDef.flex || 1,
                       }}
+                      {...{
+                        className: cx(columnClassName(columnDef), header.column.getCanSort() ? 'cursor-pointer select-none' : ''),
+                        onClick: header.column.getToggleSortingHandler(),
+                      }}
                     >
                       {header.isPlaceholder ? null : (
-                        <div
-                          {...{
-                            className: cx(columnClassName(columnDef), header.column.getCanSort() ? 'cursor-pointer select-none' : ''),
-                            onClick: header.column.getToggleSortingHandler(),
-                          }}
-                        >
+                        <div>
                           {flexRender(columnDef.header, header.getContext())}
                           {{
                             asc: ' ▲',

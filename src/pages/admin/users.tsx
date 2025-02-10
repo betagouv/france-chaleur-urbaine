@@ -1,9 +1,9 @@
-import { useQuery } from '@tanstack/react-query';
 import { type SortingState } from '@tanstack/react-table';
 import { type GetServerSideProps } from 'next';
 
 import AccountCreationForm from '@/components/Admin/AccountCreationForm';
 import UserRoleBadge from '@/components/Admin/UserRoleBadge';
+import Tag from '@/components/Manager/Tag';
 import SimplePage from '@/components/shared/page/SimplePage';
 import AsyncButton from '@/components/ui/AsyncButton';
 import Box from '@/components/ui/Box';
@@ -11,10 +11,10 @@ import Button from '@/components/ui/Button';
 import Heading from '@/components/ui/Heading';
 import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
 import Text from '@/components/ui/Text';
+import { useFetch } from '@/hooks/useApi';
 import { withAuthentication } from '@/server/helpers/ssr/withAuthentication';
 import { useServices } from '@/services';
 import { type UserRole } from '@/types/enum/UserRole';
-import { fetchJSON } from '@/utils/network';
 import { frenchCollator } from '@/utils/strings';
 
 import { type AdminManageUserItem } from '../api/admin/users';
@@ -24,18 +24,27 @@ const columns: ColumnDef<AdminManageUserItem>[] = [
     accessorKey: 'email',
     header: 'Email',
     sortingFn: (rowA, rowB) => frenchCollator.compare(rowA.original.email, rowB.original.email),
-    flex: 2,
+    flex: 3,
+    className: 'break-words break-all max-w-[200px]',
   },
   {
     accessorKey: 'role',
     header: 'Role',
+    flex: 2,
     cell: (info) => <UserRoleBadge role={info.getValue<UserRole>()} />,
   },
   {
     accessorKey: 'gestionnaires',
     id: 'gestionnaires',
     header: 'Tags gestionnaire',
-    cell: (info) => info.getValue<string[]>().join(', '),
+    flex: 4,
+    cell: (info) => (
+      <div className="flex flex-wrap gap-1">
+        {info.getValue<string[]>().map((tag) => (
+          <Tag key={tag} text={tag} />
+        ))}
+      </div>
+    ),
     sortingFn: (rowA, rowB) => frenchCollator.compare(rowA.original.gestionnaires?.[0] ?? '', rowB.original.gestionnaires?.[0] ?? ''),
   },
   {
@@ -63,10 +72,12 @@ const columns: ColumnDef<AdminManageUserItem>[] = [
   {
     accessorKey: '_id',
     header: '',
+    align: 'right',
     cell: (info) => (
       <Button
         size="small"
         priority="tertiary"
+        variant="destructive"
         iconId="fr-icon-delete-bin-line"
         title="Supprimer l'utilisateur"
         onClick={() => alert(`${info.row.original.id}`)}
@@ -85,14 +96,8 @@ const initialSortingState: SortingState = [
 export default function ManageUsers() {
   const { exportService } = useServices();
 
-  const { data: usersStats } = useQuery({
-    queryKey: ['admin/users-stats'],
-    queryFn: () => fetchJSON<AdminUsersStats>('/api/admin/users-stats'),
-  });
-  const { data: users } = useQuery({
-    queryKey: ['admin/users'],
-    queryFn: () => fetchJSON<AdminManageUserItem[]>('/api/admin/users'),
-  });
+  const { data: usersStats } = useFetch<AdminUsersStats>('/api/admin/users-stats', {});
+  const { data: users, isLoading: isLoading } = useFetch<AdminUsersStats>('/api/admin/users', {});
 
   return (
     <SimplePage title="Gestion des utilisateurs" mode="authenticated">
@@ -116,7 +121,7 @@ export default function ManageUsers() {
         <Heading as="h2" color="blue-france" mt="4w">
           Liste des comptes
         </Heading>
-        {users && <TableSimple columns={columns} data={users} initialSortingState={initialSortingState} />}
+        <TableSimple columns={columns} data={users || []} initialSortingState={initialSortingState} loading={isLoading} />
         <AsyncButton size="small" onClick={async () => exportService.exportXLSX('obsoleteUsers')}>
           Exporter la liste des comptes obsolètes (connexion de plus de 6 mois ou nulle)
         </AsyncButton>
