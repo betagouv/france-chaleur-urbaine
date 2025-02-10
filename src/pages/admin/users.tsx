@@ -97,7 +97,7 @@ export default function ManageUsers() {
   const { exportService } = useServices();
 
   const { data: usersStats } = useFetch<AdminUsersStats>('/api/admin/users-stats', {});
-  const { data: users, isLoading: isLoading } = useFetch<AdminUsersStats>('/api/admin/users', {});
+  const { data: users, isLoading } = useFetch<AdminManageUserItem[]>('/api/admin/users', {});
 
   return (
     <SimplePage title="Gestion des utilisateurs" mode="authenticated">
