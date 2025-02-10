@@ -191,7 +191,10 @@ export function requireAuthentication(user: User, configOrRoles: boolean | UserR
   if (!user.active) {
     throw invalidPermissionsError;
   }
-  if (configOrRoles instanceof Array && !configOrRoles.includes(user.role)) {
+  if (
+    configOrRoles instanceof Array &&
+    !(configOrRoles.some((routeRole) => user.roles.includes(routeRole)) || user.roles.includes('admin'))
+  ) {
     throw invalidPermissionsError;
   }
 }

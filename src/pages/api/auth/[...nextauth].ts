@@ -17,6 +17,7 @@ export const nextAuthOptions: AuthOptions = {
         return {
           ...token,
           role: user.role,
+          roles: user.roles,
           email: user.email,
           gestionnaires: user.gestionnaires,
           signature: user.signature,
@@ -36,6 +37,7 @@ export const nextAuthOptions: AuthOptions = {
           'id',
           'email',
           'role',
+          'roles',
           'gestionnaires',
           'receive_new_demands',
           'receive_old_demands',

@@ -3152,6 +3152,7 @@ export interface Users {
   status: 'pending_email_confirmation' | 'valid';
   role: UserRole;
   signature: string | null;
+  roles: UserRole[];
 }
 
 export interface ZoneAPotentielChaud {

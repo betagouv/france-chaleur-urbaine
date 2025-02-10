@@ -10,6 +10,7 @@ declare module 'next-auth' {
   interface User {
     id: string;
     role: UserRole;
+    roles: UserRole[];
     email: string;
     active: boolean;
     gestionnaires: string[] | null;

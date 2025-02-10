@@ -49,6 +49,7 @@ const POST = async (req: NextApiRequest) => {
     .values({
       email,
       role,
+      roles: [role],
       status: 'pending_email_confirmation',
       password: '<awaiting_user_definition>',
       gestionnaires: [],
