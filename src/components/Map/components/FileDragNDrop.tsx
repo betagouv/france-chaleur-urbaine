@@ -29,10 +29,10 @@ const FileDragNDrop = () => {
 
       if (file && (file.type === 'application/geo+json' || file.type === 'application/json')) {
         const reader = new FileReader();
-        reader.onload = (e) => {
+        reader.onload = async (e) => {
           try {
             const geoJsonData = JSON.parse(e.target?.result as string);
-            const wgs84GeoJsonData = hasLambert93Projection(geoJsonData) ? convertLambert93GeoJSONToWGS84(geoJsonData) : geoJsonData;
+            const wgs84GeoJsonData = hasLambert93Projection(geoJsonData) ? await convertLambert93GeoJSONToWGS84(geoJsonData) : geoJsonData;
 
             if (!mapRef?.getSource('customGeojson')) {
               throw new Error('Source customGeojson not found');

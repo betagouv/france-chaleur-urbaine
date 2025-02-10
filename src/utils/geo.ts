@@ -1,6 +1,5 @@
 import { round } from '@turf/helpers';
 import kinks from '@turf/kinks';
-import proj4 from 'proj4';
 
 /**
  * Pretty format a distance in meters or kilometers.
@@ -69,30 +68,25 @@ export const hasLambert93Projection = (geojson: any): boolean =>
   geojson.crs?.properties?.name && geojson.crs.properties.name.includes('2154');
 
 /**
- * Convertit des coordonnées entre deux systèmes de projection.
- * @param coords - Les coordonnées à convertir.
- * @param from - Le code EPSG de la projection source.
- * @param to - Le code EPSG de la projection cible.
- * @returns Les coordonnées converties.
- */
-const convertCoordinates = (coords: any, from: string, to: string): any => {
-  if (Array.isArray(coords[0])) {
-    return coords.map((coord: any) => convertCoordinates(coord, from, to));
-  }
-  return proj4(from, to, coords);
-};
-
-/**
  * Convertit un objet GeoJSON de la projection Lambert-93 (EPSG:2154) vers WGS84 (EPSG:4326).
  * @param geojson - L'objet GeoJSON à convertir.
  * @returns Le GeoJSON converti en EPSG:4326.
  */
-export const convertLambert93GeoJSONToWGS84 = (geojson: any): any => {
+export const convertLambert93GeoJSONToWGS84 = async (geojson: any): Promise<any> => {
+  const proj4 = (await import('proj4')).default; // Import dynamique du module
+
   // Définition de la projection Lambert-93 (EPSG:2154)
   proj4.defs(
     'EPSG:2154',
     '+proj=lcc +lat_1=49.000000000 +lat_2=44.000000000 +lat_0=46.500000000 +lon_0=3.000000000 +x_0=700000.000 +y_0=6600000.000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs'
   );
+
+  const convertCoordinates = (coords: any, from: string, to: string): any => {
+    if (Array.isArray(coords[0])) {
+      return coords.map((coord: any) => convertCoordinates(coord, from, to));
+    }
+    return proj4(from, to, coords);
+  };
 
   return {
     ...geojson,
