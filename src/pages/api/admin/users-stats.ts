@@ -6,12 +6,25 @@ import { handleRouteErrors, requireGetMethod } from '@/server/helpers/server';
 const route = async (req: NextApiRequest) => {
   requireGetMethod(req);
 
+  // note that we exclude admins from stats
   const stats = await kdb
     .selectFrom('users')
-    .select([
-      kdb.fn.count<number>('id').filterWhere('last_connection', '>=', sql.raw<Date>("NOW() - INTERVAL '3 HOUR'")).as('last3h'),
-      kdb.fn.count<number>('id').filterWhere('last_connection', '>=', sql.raw<Date>("NOW() - INTERVAL '24 HOUR'")).as('last24h'),
-      kdb.fn.count<number>('id').filterWhere('last_connection', '>=', sql.raw<Date>("NOW() - INTERVAL '7 DAY'")).as('last7d'),
+    .select((eb) => [
+      kdb.fn
+        .count<number>('id')
+        .filterWhere(eb.ref('last_connection'), '>=', sql.raw<Date>("NOW() - INTERVAL '3 HOUR'"))
+        .filterWhere(sql.lit('admin'), '<>', sql.raw<string>('ALL(roles)'))
+        .as('last3h'),
+      kdb.fn
+        .count<number>('id')
+        .filterWhere(eb.ref('last_connection'), '>=', sql.raw<Date>("NOW() - INTERVAL '24 HOUR'"))
+        .filterWhere(sql.lit('admin'), '<>', sql.raw<string>('ALL(roles)'))
+        .as('last24h'),
+      kdb.fn
+        .count<number>('id')
+        .filterWhere(eb.ref('last_connection'), '>=', sql.raw<Date>("NOW() - INTERVAL '7 DAY'"))
+        .filterWhere(sql.lit('admin'), '<>', sql.raw<string>('ALL(roles)'))
+        .as('last7d'),
     ])
     .executeTakeFirstOrThrow();
   return stats;
