@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 
 import useFCUMap from '@/components/Map/MapProvider';
 import Box from '@/components/ui/Box';
+import { convertLambert93GeoJSONToWGS84, hasLambert93Projection } from '@/utils/geo';
 
 const FileDragNDrop = () => {
   const { mapRef } = useFCUMap();
@@ -31,11 +32,13 @@ const FileDragNDrop = () => {
         reader.onload = (e) => {
           try {
             const geoJsonData = JSON.parse(e.target?.result as string);
+            const wgs84GeoJsonData = hasLambert93Projection(geoJsonData) ? convertLambert93GeoJSONToWGS84(geoJsonData) : geoJsonData;
+
             if (!mapRef?.getSource('customGeojson')) {
               throw new Error('Source customGeojson not found');
             }
-            (mapRef.getSource('customGeojson') as maplibregl.GeoJSONSource).setData(geoJsonData);
-            mapRef.fitBounds(bbox(geoJsonData) as [number, number, number, number], { maxZoom: 14 });
+            (mapRef.getSource('customGeojson') as maplibregl.GeoJSONSource).setData(wgs84GeoJsonData);
+            mapRef.fitBounds(bbox(wgs84GeoJsonData) as [number, number, number, number], { maxZoom: 14 });
           } catch (error) {
             console.error('Invalid GeoJSON', error);
           }
