@@ -58,3 +58,45 @@ export const getReadableDistance = (distance?: number | null) => {
   }
   return `${distance}m à vol d'oiseau`;
 };
+
+/**
+ * Vérifie si un GeoJSON utilise la projection Lambert-93 (EPSG:2154).
+ * @param geojson - L'objet GeoJSON à vérifier.
+ * @returns `true` si la projection est Lambert-93, sinon `false`.
+ */
+export const hasLambert93Projection = (geojson: any): boolean =>
+  geojson.crs?.properties?.name && geojson.crs.properties.name.includes('2154');
+
+/**
+ * Convertit un objet GeoJSON de la projection Lambert-93 (EPSG:2154) vers WGS84 (EPSG:4326).
+ * @param geojson - L'objet GeoJSON à convertir.
+ * @returns Le GeoJSON converti en EPSG:4326.
+ */
+export const convertLambert93GeoJSONToWGS84 = async (geojson: any): Promise<any> => {
+  const proj4 = (await import('proj4')).default; // Import dynamique du module
+
+  // Définition de la projection Lambert-93 (EPSG:2154)
+  proj4.defs(
+    'EPSG:2154',
+    '+proj=lcc +lat_1=49.000000000 +lat_2=44.000000000 +lat_0=46.500000000 +lon_0=3.000000000 +x_0=700000.000 +y_0=6600000.000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs'
+  );
+
+  const convertCoordinates = (coords: any, from: string, to: string): any => {
+    if (Array.isArray(coords[0])) {
+      return coords.map((coord: any) => convertCoordinates(coord, from, to));
+    }
+    return proj4(from, to, coords);
+  };
+
+  return {
+    ...geojson,
+    crs: { type: 'name', properties: { name: 'EPSG:4326' } },
+    features: geojson.features.map((feature: any) => ({
+      ...feature,
+      geometry: {
+        ...feature.geometry,
+        coordinates: convertCoordinates(feature.geometry.coordinates, 'EPSG:2154', 'EPSG:4326'),
+      },
+    })),
+  };
+};
