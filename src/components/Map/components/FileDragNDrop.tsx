@@ -38,7 +38,7 @@ const FileDragNDrop = () => {
               throw new Error('Source customGeojson not found');
             }
             (mapRef.getSource('customGeojson') as maplibregl.GeoJSONSource).setData(wgs84GeoJsonData);
-            mapRef.fitBounds(bbox(wgs84GeoJsonData) as [number, number, number, number], { maxZoom: 14 });
+            mapRef.fitBounds(bbox(wgs84GeoJsonData) as [number, number, number, number], { maxZoom: 17 });
           } catch (error) {
             console.error('Invalid GeoJSON', error);
           }
