@@ -16,6 +16,6 @@ export default handleRouteErrors(
     return await getDemands(req.user);
   },
   {
-    requireAuthentication: true,
+    requireAuthentication: ['gestionnaire'],
   }
 );
