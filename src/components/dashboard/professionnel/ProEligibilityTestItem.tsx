@@ -1,5 +1,6 @@
 import Badge from '@codegouvfr/react-dsfr/Badge';
 import { type SortingState } from '@tanstack/react-table';
+import { useQueryState } from 'nuqs';
 import { useState } from 'react';
 
 import { testContent } from '@/components/dashboard/DashboardProfessionnel';
@@ -82,8 +83,11 @@ type ProEligibilityTestItemProps = {
   onDelete: () => any;
 };
 
+const queryParamName = 'test-adresses';
+
 export default function ProEligibilityTestItem({ test, onDelete }: ProEligibilityTestItemProps) {
-  const [viewDetail, setViewDetail] = useState(false);
+  const [value] = useQueryState(queryParamName);
+  const [viewDetail, setViewDetail] = useState(value === test.id);
 
   const { data: testDetails, isLoading } = useFetch<ProEligibilityTestWithAddresses>(`/api/pro-eligibility-tests/${test.id}`, {
     enabled: viewDetail,
@@ -116,6 +120,7 @@ export default function ProEligibilityTestItem({ test, onDelete }: ProEligibilit
   return (
     <Box>
       <UrlStateAccordion
+        queryParamName={queryParamName}
         multi={false}
         id={test.id}
         label={
