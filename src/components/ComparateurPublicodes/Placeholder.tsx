@@ -8,7 +8,6 @@ import Box from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
 import Icon from '@/components/ui/Icon';
 import Modal, { createModal } from '@/components/ui/Modal';
-import Text from '@/components/ui/Text';
 import cx from '@/utils/cx';
 
 import { Results, ResultsPlaceholder, Section, Simulator } from './ComparateurPublicodes.style';
@@ -27,8 +26,8 @@ export const ComparateurPublicodesTitle = () => {
       </Heading>
       <Logos size="sm" withFCU={false} />
       <div className="fr-text--sm fr-mt-2w">
-        Cet outil de comparaison de modes de chauffage et de refroidissement a pour objectif de comparer en quelques minutes des
-        configurations de chauffage et de refroidissement sur les plans techniques, économiques et environnementaux.{' '}
+        Cet outil pour objectif de comparer des configurations de chauffage et de refroidissement sur les plans techniques, économiques et
+        environnementaux.{' '}
         <strong>Il ne remplace en aucun cas une étude de faisabilité technico-économique menée par un bureau d’études</strong> et ne peut
         s'adapter aux situations particulières avec les hypothèses préconfigurées. Ces hypothèses représentent des configurations types,
         elles sont donc sujets à des incertitudes importantes.{' '}
@@ -136,6 +135,10 @@ export const DescriptionModal = () => {
         dans l'objectif de développer les réseaux de chaleur et de froid vertueux. La mise en place de l'interface en ligne est financée sur
         le budget de France Chaleur Urbaine.
       </p>
+      <p>
+        À noter également qu'à ce jour, cet outil ne peut être utilisé pour remplir le quatrième critère de dérogation aux obligations de
+        raccordement dans le cadre du classement (coût manifestement disproportionné). Une méthodologie dédiée est en cours d'élaboration.
+      </p>
       <Logos />
     </Modal>
   );
@@ -154,8 +157,8 @@ export const DisclaimerModal = () => {
 
       <ul>
         <li>
-          le raccordement à un réseau de chaleur est pertinent pour les bâtiments à chauffage collectif (gaz ou fioul), mais nécessite des
-          travaux conséquents et coûteux pour les bâtiments à chauffage individuel.
+          le passage d'un mode de chauffage individuel à collectif n'est possible que moyennant des travaux conséquents et coûteux (non pris
+          en compte dans l'outil)
         </li>
         <li>
           l'installation d'une pompe à chaleur (PAC) requiert qu'un certain nombre de critères soient satisfaits : bâtiment bien isolé avec
@@ -175,12 +178,12 @@ export const DisclaimerButton: React.FC<React.HTMLAttributes<HTMLDivElement>> = 
   return (
     <>
       <DisclaimerModal />
-      <Text size="xs" color="warning" className={className}>
-        <Icon name="fr-icon-info-line" size="xs" /> Tous les modes de chauffage et de refroidissement ne sont pas interchangeables.{' '}
+      <p className={cx('fr-text--xs text-warning', className)}>
+        <Icon name="fr-icon-info-line" size="xs" /> Tous les modes de chauffage ne sont pas interchangeables.{' '}
         <a href="#" onClick={() => modalDisclaimer.open()} className="fr-link fr-text--xs">
           En savoir plus
         </a>
-      </Text>
+      </p>
     </>
   );
 };

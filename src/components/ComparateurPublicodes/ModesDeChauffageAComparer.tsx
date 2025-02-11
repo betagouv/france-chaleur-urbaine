@@ -42,7 +42,6 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
   return (
     <div {...props}>
       <p className="fr-text--sm">Sélectionnez les modes de chauffage et de refroidissement que vous souhaitez comparer.</p>
-      <DisclaimerButton />
       {
         // in advanced mode, fields are shown at the previous step to be able to fine tune its info
         !advancedMode && (
@@ -56,6 +55,7 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
       }
       {/* This is because the Text component has a weird 0 bottom border */}
       <div className="fr-mt-4w" />
+      <DisclaimerButton className="!mb-5" />
       <Heading as="h3" size="h6">
         Chauffage Collectif
       </Heading>
