@@ -1,7 +1,6 @@
 import { existsSync } from 'fs';
 import { readFile, unlink, writeFile } from 'fs/promises';
 
-import { optimisationProfiles, optimizeImage } from '@cli/images/optimize';
 import { createCommand, InvalidArgumentError } from '@commander-js/extra-typings';
 import camelcase from 'camelcase';
 import prompts from 'prompts';
@@ -22,13 +21,14 @@ import { type DatabaseSourceId, type DatabaseTileInfo, tilesInfo, zDatabaseSourc
 import { type ApiAccount } from '@/types/ApiAccount';
 import { sleep } from '@/utils/time';
 import { nonEmptyArray } from '@/utils/typescript';
+import { optimisationProfiles, optimizeImage } from '@cli/images/optimize';
 
 import { type KnownAirtableBase, knownAirtableBases } from './airtable/bases';
 import { createModificationsReseau } from './airtable/create-modifications-reseau';
 import { fetchBaseSchema } from './airtable/dump-schema';
 import dataImportManager, { dataImportAdapters, type DataImportName } from './data-import';
 import { readFileGeometry } from './helpers/geo';
-import { runCommand } from './helpers/shell';
+import { runBash, runCommand } from './helpers/shell';
 import { downloadAndUpdateNetwork, downloadNetwork } from './networks/download-network';
 import { applyGeometryUpdates } from './networks/geometry-updates';
 import { syncPostgresToAirtable } from './networks/sync-pg-to-airtable';
@@ -443,6 +443,18 @@ program
   .description('')
   .action(async () => {
     console.info('Veuillez regarder les étapes dans scripts/bdnb/qpv/README.md');
+  });
+
+program
+  .command('db:sync')
+  .option('--single <table>', 'Print the table schema to stdout', '')
+  .description('Génère les modèles TypeScript depuis la BDD')
+  .action(async ({ single }) => {
+    const patternOptions = single
+      ? `--print --include-pattern="public.${single}"`
+      : '--out-file ./src/server/db/kysely/database.ts --exclude-pattern="(public.spatial_ref_sys|topology.*|tiger.*|public.geography_columns|public.geometry_columns)"';
+    await runBash(`yarn kysely-codegen --numeric-parser number --env-file="./.env.local" --log-level=error ${patternOptions}`);
+    await runBash('yarn prettier --write ./src/server/db/kysely/database.ts');
   });
 
 program
