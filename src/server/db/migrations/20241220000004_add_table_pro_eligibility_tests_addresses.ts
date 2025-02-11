@@ -12,6 +12,8 @@ export async function up(knex: Knex): Promise<void> {
       eligibility_status JSONB,
       test_id UUID NOT NULL REFERENCES pro_eligibility_tests (id) ON DELETE CASCADE
     );
+
+    CREATE INDEX IF NOT EXISTS idx_pro_eligibility_tests_addresses_test_id ON pro_eligibility_tests_addresses USING btree (test_id);
   `);
 }
 
