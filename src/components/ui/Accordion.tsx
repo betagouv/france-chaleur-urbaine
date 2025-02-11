@@ -112,7 +112,7 @@ const Accordion: React.FC<AccordionProps> = ({ children, small, label, help, sim
                 <Icon
                   name="fr-icon-close-line"
                   size="sm"
-                  onClick={(e) => {
+                  onClickCapture={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
                     onClose(e);
