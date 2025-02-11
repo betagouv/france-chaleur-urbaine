@@ -17,18 +17,6 @@ const GET = async (req: NextApiRequest) => {
     .selectAll()
     .executeTakeFirstOrThrow();
 
-  // mark as read when accessing a specific test
-  if (eligibilityTest.has_unseen_results && eligibilityTest.user_id === req.user.id) {
-    await kdb
-      .updateTable('pro_eligibility_tests')
-      .where('id', '=', testId)
-      .set({
-        has_unseen_results: false,
-      })
-      .execute();
-    eligibilityTest.has_unseen_results = false;
-  }
-
   const addresses = await kdb.selectFrom('pro_eligibility_tests_addresses').where('test_id', '=', testId).selectAll().execute();
   return { ...eligibilityTest, addresses };
 };
@@ -83,7 +71,7 @@ export default handleRouteErrors(route, {
   requireAuthentication: ['professionnel'],
 });
 
-async function ensureValidPermissions(req: NextApiRequest, testId: string) {
+export async function ensureValidPermissions(req: NextApiRequest, testId: string) {
   const test = await kdb.selectFrom('pro_eligibility_tests').select('user_id').where('id', '=', testId).executeTakeFirstOrThrow();
   if (test.user_id !== req.user.id) {
     throw new Error('permissions invalides');

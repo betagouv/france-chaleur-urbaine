@@ -13,6 +13,7 @@ import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
 import { useDelete, useFetch, usePost } from '@/hooks/useApi';
 import { type ProEligibilityTestListItem } from '@/pages/api/pro-eligibility-tests';
 import { type ProEligibilityTestFileRequest, type ProEligibilityTestWithAddresses } from '@/pages/api/pro-eligibility-tests/[id]';
+import { queryClient } from '@/services/query';
 import { formatFrenchDate, formatFrenchDateTime } from '@/utils/date';
 import { frenchCollator } from '@/utils/strings';
 
@@ -103,6 +104,13 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
   const { mutateAsync: createTest, isLoading: isCreating } = usePost<ProEligibilityTestFileRequest>(
     `/api/pro-eligibility-tests/${test.id}`
   );
+  const { mutateAsync: markAsSeen } = usePost(`/api/pro-eligibility-tests/${test.id}/mark-as-seen`, {
+    onMutate: () => {
+      queryClient.setQueryData<ProEligibilityTestListItem[]>(['/api/pro-eligibility-tests'], (tests) =>
+        (tests ?? []).map((testItem) => (testItem.id === test.id ? { ...testItem, has_unseen_results: false } : testItem))
+      );
+    },
+  });
   const { mutateAsync: deleteTest, isLoading: isDeleting } = useDelete(`/api/pro-eligibility-tests/${test.id}`, {
     invalidate: ['/api/pro-eligibility-tests'],
   });
@@ -155,7 +163,12 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
           e.stopPropagation();
           await handleDelete(test.id);
         }}
-        onExpandedChange={(expanded) => setViewDetail(expanded)}
+        onExpandedChange={(expanded) => {
+          setViewDetail(expanded);
+          if (expanded && test.has_unseen_results) {
+            markAsSeen({});
+          }
+        }}
       >
         <div className="flex items-center">
           <Indicator loading={isLoading} label="Adresses" value={stats.adressesCount} />

@@ -1,6 +1,6 @@
 import '@/styles/globals.css';
 import { fr } from '@codegouvfr/react-dsfr';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClientProvider } from '@tanstack/react-query';
 import type { AppProps } from 'next/app';
 import dynamic from 'next/dynamic';
 import type Link from 'next/link';
@@ -23,6 +23,7 @@ import { axiosHttpClient } from '@/services/http';
 import { NetworksService } from '@/services/networks';
 import { NotifierContainer } from '@/services/notification';
 import { PasswordService } from '@/services/password';
+import { queryClient } from '@/services/query';
 
 const ConsentBanner = dynamic(
   () => import('@/components/ConsentBanner').then((module) => module.ConsentBanner),
@@ -39,17 +40,6 @@ export { augmentDocumentWithEmotionCache, dsfrDocumentApi };
 const swrConfig: SWRConfiguration = {
   revalidateOnFocus: false,
 };
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 1, // retry failing requests just once, see https://react-query.tanstack.com/guides/query-retries
-      retryDelay: 3000, // retry failing requests after 3 seconds
-      refetchOnWindowFocus: false, // see https://react-query.tanstack.com/guides/important-defaults
-      refetchOnReconnect: false,
-    },
-  },
-});
 
 function App({ Component, pageProps }: AppProps<AuthSSRPageProps>) {
   usePreserveScroll();
