@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useState } from 'react';
 
 import ProEligibilityTestItem from '@/components/dashboard/professionnel/ProEligibilityTestItem';
@@ -64,7 +65,19 @@ export default function DashboardProfessionnel() {
       </div>
       {isLoading && <Loader size="lg" />}
       {eligibilityTests?.length === 0 && <>Aucun test</>}
-      {eligibilityTests?.map((test) => <ProEligibilityTestItem test={test} key={test.id} />)}
+      <AnimatePresence>
+        {eligibilityTests?.map((test) => (
+          <motion.div
+            key={test.id}
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3 }}
+          >
+            <ProEligibilityTestItem test={test} />
+          </motion.div>
+        ))}
+      </AnimatePresence>
       {/* TODO formulaire nouveau test */}
     </>
   );
