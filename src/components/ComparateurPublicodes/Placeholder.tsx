@@ -35,7 +35,11 @@ export const ComparateurPublicodesTitle = () => {
         <a href="#" onClick={() => modalDescription.open()} className="fr-link fr-text--sm">
           Voir l’explication détaillée
         </a>
-        <p className="fr-text--sm fr-mt-1w">{dataYearDisclaimer}</p>
+        <p className="fr-text--sm fr-my-1w">{dataYearDisclaimer}</p>
+        <p className="fr-text--sm font-bold">
+          Pour une étude plus poussée (prix actualisés, prise en compte des spécificités de votre bâtiment), nous vous invitons à vous
+          rapprocher du gestionnaire du réseau de chaleur le plus proche de chez vous ou d'un bureau d'étude.
+        </p>
       </div>
     </div>
   );
