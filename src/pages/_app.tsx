@@ -4,9 +4,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { AppProps } from 'next/app';
 import dynamic from 'next/dynamic';
 import type Link from 'next/link';
-import { type Session } from 'next-auth';
-import { SessionProvider } from 'next-auth/react';
 // use AppProgressBar instead of PagesProgressBar on purpose as it handles better the query params ignoring
+import { SessionProvider } from 'next-auth/react';
 import { AppProgressBar as ProgressBar } from 'next-nprogress-bar';
 import { SWRConfig, type SWRConfiguration } from 'swr';
 
@@ -14,6 +13,7 @@ import '@/components/Map/StyleSwitcher/styles.css';
 import SEO from '@/components/SEO';
 import ThemeProvider, { augmentDocumentWithEmotionCache, dsfrDocumentApi } from '@/components/Theme/ThemeProvider';
 import { usePreserveScroll } from '@/hooks/usePreserveScroll';
+import { type AuthSSRPageProps } from '@/server/helpers/ssr/withAuthentication';
 import { HeatNetworkService, ServicesContext, SuggestionService } from '@/services';
 import { AdminService } from '@/services/admin';
 import { useAnalytics } from '@/services/analytics';
@@ -51,12 +51,7 @@ const queryClient = new QueryClient({
   },
 });
 
-function App({
-  Component,
-  pageProps,
-}: AppProps<{
-  session: Session;
-}>) {
+function App({ Component, pageProps }: AppProps<AuthSSRPageProps>) {
   usePreserveScroll();
   useAnalytics();
 

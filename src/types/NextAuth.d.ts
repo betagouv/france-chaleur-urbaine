@@ -28,7 +28,7 @@ declare module 'next' {
 declare module 'next-auth/jwt' {
   interface JWT {
     impersonatedProfile?: {
-      role: 'gestionnaire';
+      roles: ['gestionnaire'];
       gestionnaires: string[];
     };
   }

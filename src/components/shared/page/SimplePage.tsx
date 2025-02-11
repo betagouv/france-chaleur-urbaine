@@ -12,7 +12,6 @@ import SEO, { type SEOProps } from '@/components/SEO';
 import Box from '@/components/ui/Box';
 import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
-import { USER_ROLE } from '@/types/enum/UserRole';
 import { deleteFetchJSON } from '@/utils/network';
 
 import Banner from './Banner';
@@ -250,10 +249,22 @@ const authenticatedNavigationMenu: MainNavigationProps.Item[] = [
       href: '/tableau-de-bord',
     },
   },
+];
+
+const professionnelNavigationMenu: MainNavigationProps.Item[] = [
+  {
+    text: "Tests d'adresses",
+    linkProps: {
+      href: '/tests-adresses',
+    },
+  },
+];
+
+const gestionnaireNavigationMenu: MainNavigationProps.Item[] = [
   {
     text: 'Demandes',
     linkProps: {
-      href: '/gestionnaire',
+      href: '/demandes',
     },
   },
   {
@@ -278,6 +289,12 @@ const adminNavigationMenu: MainNavigationProps.Item[] = [
         text: 'Gestion des utilisateurs',
         linkProps: {
           href: '/admin/users',
+        },
+      },
+      {
+        text: 'Impostures',
+        linkProps: {
+          href: '/admin/impostures',
         },
       },
       {
@@ -337,7 +354,7 @@ function getAuthenticatedQuickAccessItems(impersonating: boolean): HeaderProps.Q
             buttonProps: {
               onClick: async () => {
                 await deleteFetchJSON('/api/admin/impersonate');
-                location.reload();
+                location.href = '/admin/impostures';
               },
               style: {
                 color: 'white',
@@ -384,7 +401,13 @@ const PageHeader = (props: PageHeaderProps) => {
     props.mode === 'authenticated'
       ? [
           ...authenticatedNavigationMenu,
-          ...(status === 'authenticated' && session.user.role === USER_ROLE.ADMIN ? adminNavigationMenu : []),
+          ...(status === 'authenticated'
+            ? [
+                ...(session.user.roles.includes('professionnel') ? professionnelNavigationMenu : []),
+                ...(session.user.roles.includes('gestionnaire') ? gestionnaireNavigationMenu : []),
+                ...(session.user.roles.includes('admin') ? adminNavigationMenu : []),
+              ]
+            : []),
         ]
       : publicNavigationMenu;
 

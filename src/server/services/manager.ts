@@ -7,7 +7,6 @@ import base from '@/server/db/airtable';
 import { sendNewDemands, sendOldDemands, sendRelanceMail } from '@/server/email';
 import { invalidPermissionsError } from '@/server/helpers/server';
 import { Airtable } from '@/types/enum/Airtable';
-import { USER_ROLE } from '@/types/enum/UserRole';
 import { type Demand } from '@/types/Summary/Demand';
 import { type User as FullUser } from '@/types/User';
 
@@ -133,20 +132,18 @@ export const getDemands = async (user: User): Promise<Demand[]> => {
     })
     .all();
 
-  const filteredRecords =
-    user.role === USER_ROLE.ADMIN
-      ? records
-      : records.filter((record) => {
-          const gestionnaires = record.get('Gestionnaires') as string[];
-          return (
-            gestionnaires &&
-            gestionnaires.some(
-              (gestionnaire) =>
-                (user.role === USER_ROLE.DEMO && gestionnaire === 'Paris') || (user.gestionnaires || []).includes(gestionnaire)
-            )
-          );
-        });
-  return user.role === USER_ROLE.DEMO
+  const filteredRecords = user.roles.includes('admin')
+    ? records
+    : records.filter((record) => {
+        const gestionnaires = record.get('Gestionnaires') as string[];
+        return (
+          gestionnaires &&
+          gestionnaires.some(
+            (gestionnaire) => (user.roles.includes('demo') && gestionnaire === 'Paris') || (user.gestionnaires || []).includes(gestionnaire)
+          )
+        );
+      });
+  return user.roles.includes('demo')
     ? filteredRecords.map(
         (record) =>
           ({
@@ -164,7 +161,12 @@ export const getDemands = async (user: User): Promise<Demand[]> => {
 const getDemand = async (user: User, demandId: string): Promise<Demand> => {
   const record = await base(Airtable.UTILISATEURS).find(demandId);
   const gestionnaires = record.get('Gestionnaires') as string[];
-  if (user.role !== USER_ROLE.ADMIN && !gestionnaires.some((gestionnaire) => (user.gestionnaires || []).includes(gestionnaire))) {
+  if (
+    !(
+      user.roles.includes('admin') ||
+      (user.roles.includes('gestionnaire') && gestionnaires.some((gestionnaire) => (user.gestionnaires || []).includes(gestionnaire)))
+    )
+  ) {
     throw invalidPermissionsError;
   }
   return { id: record.id, ...record.fields } as Demand;

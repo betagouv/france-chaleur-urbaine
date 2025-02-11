@@ -38,7 +38,10 @@ const POST = async (req: NextApiRequest, res: NextApiResponse) => {
   const jwt = await getSessionJWT(req);
   await generateSessionJWT(res, {
     ...jwt,
-    impersonatedProfile,
+    impersonatedProfile: {
+      roles: [impersonatedProfile.role],
+      gestionnaires: impersonatedProfile.gestionnaires,
+    },
   });
   return;
 };

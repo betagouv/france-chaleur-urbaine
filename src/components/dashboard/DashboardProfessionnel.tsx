@@ -45,9 +45,6 @@ export default function DashboardProfessionnel() {
 
   return (
     <>
-      <Heading as="h1" color="blue-france">
-        Tableau de bord
-      </Heading>
       {/* TODO raccourcis vers outils */}
       <div className="flex items-center justify-between mb-5">
         <Heading as="h2" color="blue-france" mb="0">
