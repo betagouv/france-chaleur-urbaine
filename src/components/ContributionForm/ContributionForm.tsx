@@ -167,7 +167,7 @@ const typeDemandeFields = {
       name: 'emailReferentCommercial',
       label: 'Email du référent commercial à qui transmettre les demandes de raccordement',
       optional: true,
-      schema: z.string().email().optional(),
+      schema: z.string().optional(),
     },
     {
       name: 'commentaire',
