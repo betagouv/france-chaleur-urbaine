@@ -1,9 +1,9 @@
 import Badge from '@codegouvfr/react-dsfr/Badge';
+import { faker } from '@faker-js/faker';
 import { type SortingState } from '@tanstack/react-table';
 import { useQueryState } from 'nuqs';
 import { useState } from 'react';
 
-import { testContent } from '@/components/dashboard/DashboardProfessionnel';
 import { UrlStateAccordion } from '@/components/ui/Accordion';
 import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
@@ -166,7 +166,12 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
           <Divider />
           <Indicator loading={isLoading} label="Adresses dans un PDP" value={stats.adressesDansPDPCount} />
           <div className="ml-auto flex items-center gap-2">
-            <Button iconId="ri-file-add-fill" size="small" onClick={() => createTest({ csvContent: testContent })} loading={isCreating}>
+            <Button
+              iconId="ri-file-add-fill"
+              size="small"
+              onClick={() => createTest({ csvContent: Array.from({ length: 200 }, () => faker.location.streetAddress()).join('\n') })}
+              loading={isCreating}
+            >
               Ajouter des adresses
             </Button>
             <Button size="small" onClick={() => handleDelete(test.id)} loading={isDeleting} variant="destructive" priority="secondary">

@@ -13,17 +13,6 @@ import {
   type ProEligibilityTestListItem,
 } from '@/pages/api/pro-eligibility-tests';
 
-export const testContent = `20 avenue de Ségur Paris
-11 rue Mirabeau saint-maur-des-fossés
-"1 avenue des trois frères, Asnières-sur-Seine"
-"75 avenue Ferdinand de Lesseps, Grasse"
-"71 rue Gustave Eiffel, ris-orangis"
-"10 rue Descartes, Strasbourg"
-"27 Rue Marie De Médicis, Cannes"
-"22 rue de la République, Lyon"
-adressebizarre
-`;
-
 export default function DashboardProfessionnel() {
   const [hasPendingJobs, setHasPendingJobs] = useState(false);
 
@@ -56,7 +45,7 @@ export default function DashboardProfessionnel() {
           onClick={async () =>
             createTest({
               name: 'test ' + faker.company.name(),
-              csvContent: testContent,
+              csvContent: Array.from({ length: 300 }, () => faker.location.streetAddress()).join('\n'),
             })
           }
         >

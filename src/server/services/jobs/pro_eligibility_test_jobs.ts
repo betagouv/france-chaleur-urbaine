@@ -25,7 +25,7 @@ export async function processProEligibilityTestJob(job: ProEligibilityTestJob, l
   const chunks = chunk(lines, chunkSize);
   for (const chunk of chunks.values()) {
     const chunkResults = await getAddressesCoordinates(chunk.join('\n'));
-    console.log('BAN results', chunkResults);
+    // console.log('BAN results', chunkResults);
     addresses.push(...chunkResults);
   }
   logger.info('API BAN', { duration: Date.now() - startTime });
