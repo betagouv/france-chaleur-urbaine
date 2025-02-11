@@ -43,6 +43,7 @@ const POST = async (req: NextApiRequest) => {
       .values({
         name: name,
         user_id: req.user.id,
+        has_unseen_results: false,
       })
       .returning('id')
       .executeTakeFirstOrThrow();

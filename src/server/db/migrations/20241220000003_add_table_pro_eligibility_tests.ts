@@ -6,6 +6,7 @@ export async function up(knex: Knex): Promise<void> {
       id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
       name TEXT NOT NULL,
       user_id UUID NOT NULL REFERENCES users (id),
+      has_unseen_results BOOLEAN NOT NULL,
       created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
     );

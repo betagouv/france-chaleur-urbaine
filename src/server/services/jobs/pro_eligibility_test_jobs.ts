@@ -61,6 +61,15 @@ export async function processProEligibilityTestJob(job: ProEligibilityTestJob, l
     logger.info('test éligibilité', { duration: Date.now() - startTime });
   }
 
+  await kdb
+    .updateTable('pro_eligibility_tests')
+    .where('id', '=', job.entity_id)
+    .set({
+      has_unseen_results: true,
+      updated_at: new Date(),
+    })
+    .execute();
+
   return {
     duration: Date.now() - startTime,
   };

@@ -133,8 +133,13 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
         label={
           <div className="flex justify-between w-full">
             <div>{test.name}</div>
-            {test.has_pending_jobs && (
+            {test.has_unseen_results && (
               <Badge severity="info" small className="fr-mr-2w">
+                Nouveaux résultats
+              </Badge>
+            )}
+            {test.has_pending_jobs && (
+              <Badge severity="new" small className="fr-mr-2w">
                 Mise à jour en attente
               </Badge>
             )}

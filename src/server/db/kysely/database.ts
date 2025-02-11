@@ -2885,6 +2885,7 @@ export interface NetworkIris {
 
 export interface ProEligibilityTests {
   created_at: Generated<Timestamp>;
+  has_unseen_results: boolean;
   id: Generated<string>;
   name: string;
   updated_at: Generated<Timestamp>;
