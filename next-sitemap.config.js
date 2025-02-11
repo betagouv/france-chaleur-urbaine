@@ -42,9 +42,13 @@ function getPagePriority(/** @type {string} */ path) {
 // Page that should not be indexed by Google because there is no point
 const excludedPages = [
   // authenticated pages
-  '/admin',
-  '/aide',
+  '/tableau-de-bord',
+  '/tests-adresse',
   '/gestionnaire',
+  '/demandes',
+  '/aide',
+  '/admin',
+  '/admin/users',
 
   // iframes
   '/carte-collectivite',

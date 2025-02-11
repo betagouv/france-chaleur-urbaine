@@ -4,8 +4,6 @@ import Tag from '@codegouvfr/react-dsfr/Tag';
 import { useEffect, useMemo, useState } from 'react';
 
 import Box from '@/components/ui/Box';
-import Heading from '@/components/ui/Heading';
-import Icon from '@/components/ui/Icon';
 import Text from '@/components/ui/Text';
 import { fetchJSON, postFetchJSON } from '@/utils/network';
 import { normalize } from '@/utils/strings';
@@ -52,55 +50,48 @@ const UserImpersonation = () => {
         gestionnaires: selectedTagsGestionnaires,
       });
       // trigger a full reload
-      location.href = '/gestionnaire';
+      location.href = '/demandes';
     } catch (err) {
       console.error('err', err);
     }
   }
 
   return (
-    <Box as="main" className="fr-container fr-grid-row" my="4w">
-      <Box p="2w">
-        <Heading size="h3">
-          <Icon name="ri-spy-line" />
-          Impostures
-        </Heading>
+    <>
+      <Text mb="2w">
+        Cette section permet de vous faire passer pour un profil gestionnaire avec des tags particuliers à des fins de test.
+      </Text>
 
-        <Text mb="2w">
-          Cette section permet de vous faire passer pour un profil gestionnaire avec des tags particuliers à des fins de test.
-        </Text>
+      {selectedTagsGestionnaires.map((tag, index) => (
+        <Tag
+          key={tag}
+          dismissible
+          small
+          className="fr-mr-1v fr-mb-1w"
+          nativeButtonProps={{
+            onClick: () => {
+              selectedTagsGestionnaires.splice(index, 1);
+              setSelectedTagsGestionnaires([...selectedTagsGestionnaires]);
+            },
+          }}
+        >
+          {tag}
+        </Tag>
+      ))}
 
-        {selectedTagsGestionnaires.map((tag, index) => (
-          <Tag
-            key={tag}
-            dismissible
-            small
-            className="fr-mr-1v fr-mb-1w"
-            nativeButtonProps={{
-              onClick: () => {
-                selectedTagsGestionnaires.splice(index, 1);
-                setSelectedTagsGestionnaires([...selectedTagsGestionnaires]);
-              },
-            }}
-          >
-            {tag}
-          </Tag>
-        ))}
-
-        <Box className="fr-col-xl-4 fr-col-md-6">
-          <Select
-            label="Tags gestionnaires"
-            options={selectTagsOptions.map(({ searchValue, ...option }) => option)}
-            nativeSelectProps={{
-              onChange: (e) => setSelectedTagsGestionnaires([...selectedTagsGestionnaires, e.target.value]),
-            }}
-          />
-        </Box>
-        <Button className="fr-mt-2w" onClick={() => startImpersonation()}>
-          Lancer l'imposture
-        </Button>
+      <Box className="fr-col-xl-4 fr-col-md-6">
+        <Select
+          label="Tags gestionnaires"
+          options={selectTagsOptions.map(({ searchValue, ...option }) => option)}
+          nativeSelectProps={{
+            onChange: (e) => setSelectedTagsGestionnaires([...selectedTagsGestionnaires, e.target.value]),
+          }}
+        />
       </Box>
-    </Box>
+      <Button className="fr-mt-2w" onClick={() => startImpersonation()}>
+        Lancer l'imposture
+      </Button>
+    </>
   );
 };
 

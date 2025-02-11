@@ -1,11 +1,11 @@
 import '@/styles/globals.css';
 import { fr } from '@codegouvfr/react-dsfr';
+import { QueryClientProvider } from '@tanstack/react-query';
 import type { AppProps } from 'next/app';
 import dynamic from 'next/dynamic';
 import type Link from 'next/link';
-import { type Session } from 'next-auth';
-import { SessionProvider } from 'next-auth/react';
 // use AppProgressBar instead of PagesProgressBar on purpose as it handles better the query params ignoring
+import { SessionProvider } from 'next-auth/react';
 import { AppProgressBar as ProgressBar } from 'next-nprogress-bar';
 import { SWRConfig, type SWRConfiguration } from 'swr';
 
@@ -13,6 +13,7 @@ import '@/components/Map/StyleSwitcher/styles.css';
 import SEO from '@/components/SEO';
 import ThemeProvider, { augmentDocumentWithEmotionCache, dsfrDocumentApi } from '@/components/Theme/ThemeProvider';
 import { usePreserveScroll } from '@/hooks/usePreserveScroll';
+import { type AuthSSRPageProps } from '@/server/helpers/ssr/withAuthentication';
 import { HeatNetworkService, ServicesContext, SuggestionService } from '@/services';
 import { AdminService } from '@/services/admin';
 import { useAnalytics } from '@/services/analytics';
@@ -22,6 +23,7 @@ import { axiosHttpClient } from '@/services/http';
 import { NetworksService } from '@/services/networks';
 import { NotifierContainer } from '@/services/notification';
 import { PasswordService } from '@/services/password';
+import { queryClient } from '@/services/query';
 
 const ConsentBanner = dynamic(
   () => import('@/components/ConsentBanner').then((module) => module.ConsentBanner),
@@ -39,38 +41,35 @@ const swrConfig: SWRConfiguration = {
   revalidateOnFocus: false,
 };
 
-function App({
-  Component,
-  pageProps,
-}: AppProps<{
-  session: Session;
-}>) {
+function App({ Component, pageProps }: AppProps<AuthSSRPageProps>) {
   usePreserveScroll();
   useAnalytics();
 
   return (
     <ThemeProvider>
-      <SEO />
-      <ConsentBanner />
-      <NotifierContainer />
-      <ServicesContext.Provider
-        value={{
-          suggestionService: new SuggestionService(axiosHttpClient),
-          heatNetworkService: new HeatNetworkService(axiosHttpClient),
-          demandsService: new DemandsService(axiosHttpClient),
-          passwordService: new PasswordService(axiosHttpClient),
-          adminService: new AdminService(axiosHttpClient),
-          networksService: new NetworksService(axiosHttpClient),
-          exportService: new ExportService(axiosHttpClient),
-        }}
-      >
-        <SWRConfig value={swrConfig}>
-          <SessionProvider session={pageProps.session}>
-            <ProgressBar height="4px" color={fr.colors.decisions.background.active.blueFrance.default} />
-            <Component {...pageProps} />
-          </SessionProvider>
-        </SWRConfig>
-      </ServicesContext.Provider>
+      <QueryClientProvider client={queryClient}>
+        <SEO />
+        <ConsentBanner />
+        <NotifierContainer />
+        <ServicesContext.Provider
+          value={{
+            suggestionService: new SuggestionService(axiosHttpClient),
+            heatNetworkService: new HeatNetworkService(axiosHttpClient),
+            demandsService: new DemandsService(axiosHttpClient),
+            passwordService: new PasswordService(axiosHttpClient),
+            adminService: new AdminService(axiosHttpClient),
+            networksService: new NetworksService(axiosHttpClient),
+            exportService: new ExportService(axiosHttpClient),
+          }}
+        >
+          <SWRConfig value={swrConfig}>
+            <SessionProvider session={pageProps.session}>
+              <ProgressBar height="4px" color={fr.colors.decisions.background.active.blueFrance.default} />
+              <Component {...pageProps} />
+            </SessionProvider>
+          </SWRConfig>
+        </ServicesContext.Provider>
+      </QueryClientProvider>
     </ThemeProvider>
   );
 }

@@ -12,6 +12,7 @@
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:json/recommended",
     "plugin:@next/next/recommended",
+    "plugin:@tanstack/query/recommended",
     "next/core-web-vitals",
     "prettier"
   ],

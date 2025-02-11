@@ -1,5 +1,7 @@
 import { createLogger as createWinstonLogger, format, transports } from 'winston';
 
+import { env } from '@/environment';
+
 /**
  * Colorize inside of the message and display objects as stringified JSON.
  */
@@ -46,7 +48,7 @@ const prettyLogsInDev = format((info) => {
 });
 
 export const logger = createWinstonLogger({
-  level: 'info',
+  level: env.LOG_LEVEL,
   format:
     process.env.LOGS_PRETTY === 'true'
       ? format.combine(

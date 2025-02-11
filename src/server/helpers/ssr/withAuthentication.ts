@@ -1,9 +1,10 @@
 import { type GetServerSideProps } from 'next';
+import { type Session, type User } from 'next-auth';
 import { getSession } from 'next-auth/react';
 
-import { type USER_ROLE } from '@/types/enum/UserRole';
+import { type UserRole } from '@/types/enum/UserRole';
 
-export const withAuthentication = (role?: `${USER_ROLE}`): GetServerSideProps => {
+export const withAuthentication = (requiredRole?: UserRole): GetServerSideProps<AuthSSRPageProps> => {
   return async (context) => {
     const userSession = await getSession(context);
 
@@ -16,16 +17,20 @@ export const withAuthentication = (role?: `${USER_ROLE}`): GetServerSideProps =>
       };
     }
 
-    if (role && userSession.user.role !== role) {
+    if (requiredRole && !userSession.user.roles.some((role) => role === requiredRole)) {
       return {
         redirect: {
-          // on pourra avoir une URL style / ou /tableau-de-bord quand tous les types de comptes seront créés
-          destination: '/gestionnaire',
+          destination: `/tableau-de-bord?notify=error:${encodeURIComponent("Vous n'avez pas les permissions suffisantes pour accéder à cette page")}`,
           permanent: false,
         },
       };
     }
 
-    return { props: {} };
+    return { props: { session: userSession, user: userSession.user } };
   };
+};
+
+export type AuthSSRPageProps = {
+  session: Session;
+  user: User;
 };
