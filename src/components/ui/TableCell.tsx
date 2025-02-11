@@ -3,6 +3,7 @@ import Image from 'next/image';
 import React from 'react';
 
 import Link from '@/components/ui/Link';
+import { isDefined } from '@/utils/core';
 // import ContentEditable from './ContentEditable';
 
 export type TableCellType =
@@ -52,9 +53,11 @@ const Cell = <T,>({ value, type, default: defaultValue, data, cellProps = {} }: 
     return <pre className="max-h-24 max-w-60 overflow-auto bg-gray-800 p-1 text-xs text-white">{JSON.stringify(value, null, 2)}</pre>;
   } else if (type === 'Boolean') {
     return (
-      <Badge noIcon severity={value ? 'success' : 'error'} small>
-        {value ? 'Oui' : 'Non'}
-      </Badge>
+      isDefined(value) && (
+        <Badge noIcon severity={value ? 'success' : 'error'} small>
+          {value ? 'Oui' : 'Non'}
+        </Badge>
+      )
     );
   } else if (type === 'NoWrap') {
     return <span className="whitespace-nowrap">{value}</span>;
