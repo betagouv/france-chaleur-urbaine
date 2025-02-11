@@ -27,7 +27,7 @@ const FileDragNDrop = () => {
       const file = event.dataTransfer?.files[0];
       setDragging(false);
 
-      if (file && (file.type === 'application/geo+json' || file.type === 'application/json')) {
+      if (file && file.name.endsWith('json')) {
         const reader = new FileReader();
         reader.onload = async (e) => {
           try {
