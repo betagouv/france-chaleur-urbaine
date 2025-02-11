@@ -2892,11 +2892,11 @@ export interface ProEligibilityTests {
 }
 
 export interface ProEligibilityTestsAddresses {
-  ban_address: string;
-  ban_score: number;
+  ban_address: string | null;
+  ban_score: number | null;
   ban_valid: boolean;
   eligibility_status: HeatNetwork | null; // pas ouf comme nom
-  geom: string;
+  geom: string | null;
   id: Generated<string>;
   source_address: string;
   test_id: string;

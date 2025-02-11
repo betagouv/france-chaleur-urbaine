@@ -19,7 +19,7 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
   {
     header: 'Adresse',
     accessorKey: 'ban_address',
-    sortingFn: (rowA, rowB) => frenchCollator.compare(rowA.original.ban_address, rowB.original.ban_address),
+    sortingFn: (rowA, rowB) => frenchCollator.compare(rowA.original.ban_address ?? '', rowB.original.ban_address ?? ''),
     cell: (info) => (
       <div>
         <div>
@@ -87,12 +87,11 @@ const initialSortingState: SortingState = [
 
 type ProEligibilityTestItemProps = {
   test: ProEligibilityTestListItem;
-  onDelete: () => any;
 };
 
 const queryParamName = 'test-adresses';
 
-export default function ProEligibilityTestItem({ test, onDelete }: ProEligibilityTestItemProps) {
+export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemProps) {
   const [value] = useQueryState(queryParamName);
   const [viewDetail, setViewDetail] = useState(value === test.id);
 
@@ -103,7 +102,9 @@ export default function ProEligibilityTestItem({ test, onDelete }: ProEligibilit
   const { mutateAsync: createTest, isLoading: isCreating } = usePost<ProEligibilityTestFileRequest>(
     `/api/pro-eligibility-tests/${test.id}`
   );
-  const { mutateAsync: deleteTest, isLoading: isDeleting } = useDelete(`/api/pro-eligibility-tests/${test.id}`);
+  const { mutateAsync: deleteTest, isLoading: isDeleting } = useDelete(`/api/pro-eligibility-tests/${test.id}`, {
+    invalidate: ['/api/pro-eligibility-tests'],
+  });
 
   const addresses = testDetails?.addresses ?? [];
 
@@ -121,7 +122,6 @@ export default function ProEligibilityTestItem({ test, onDelete }: ProEligibilit
       return;
     }
     await deleteTest(testId);
-    onDelete();
   };
 
   return (

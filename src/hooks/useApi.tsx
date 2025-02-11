@@ -64,7 +64,11 @@ const useAction = <TVariables, TOutput = unknown, TError = Error, TContext = unk
     mutationKey: mutationKey || ([`${methodName.toLowerCase()} ${url}`] as unknown as MutationKey),
     onSuccess: (data, variables, context) => {
       if (invalidate) {
-        invalidate.forEach((key) => queryClient.invalidateQueries(key as InvalidateQueryFilters<TOutput, TError, TVariables>));
+        invalidate.forEach((key) =>
+          queryClient.invalidateQueries({
+            queryKey: [key],
+          })
+        );
       }
       onSuccess?.(data, variables, context);
     },

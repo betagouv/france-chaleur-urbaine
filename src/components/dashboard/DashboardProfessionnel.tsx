@@ -26,11 +26,9 @@ adressebizarre
 export default function DashboardProfessionnel() {
   const [hasPendingJobs, setHasPendingJobs] = useState(false);
 
-  const {
-    data: eligibilityTests,
-    refetch: refetchEligibilityTests,
-    isLoading,
-  } = useFetch<ProEligibilityTestListItem[]>('/api/pro-eligibility-tests', { refetchInterval: hasPendingJobs ? 5000 : false });
+  const { data: eligibilityTests, isLoading } = useFetch<ProEligibilityTestListItem[]>('/api/pro-eligibility-tests', {
+    refetchInterval: hasPendingJobs ? 5000 : false,
+  });
 
   const { mutateAsync: createTest, isLoading: isCreating } = usePost<ProEligibilityTestCreateInput, ProEligibilityTestCreateOutput>(
     '/api/pro-eligibility-tests',
@@ -66,7 +64,7 @@ export default function DashboardProfessionnel() {
       </div>
       {isLoading && <Loader size="lg" />}
       {eligibilityTests?.length === 0 && <>Aucun test</>}
-      {eligibilityTests?.map((test) => <ProEligibilityTestItem test={test} key={test.id} onDelete={refetchEligibilityTests} />)}
+      {eligibilityTests?.map((test) => <ProEligibilityTestItem test={test} key={test.id} />)}
       {/* TODO formulaire nouveau test */}
     </>
   );

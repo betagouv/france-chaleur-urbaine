@@ -6,6 +6,7 @@ import { kdb, type Jobs } from '@/server/db/kysely';
 import { getEligilityStatus } from '@/server/services/addresseInformation';
 import { type APIAdresseResult, getAddressesCoordinates } from '@/server/services/api-adresse';
 import { chunk } from '@/utils/array';
+import { isDefined } from '@/utils/core';
 
 export type ProEligibilityTestJob = Omit<Selectable<Jobs>, 'data'> & {
   type: 'pro_eligibility_test';
@@ -45,8 +46,8 @@ export async function processProEligibilityTestJob(job: ProEligibilityTestJob, l
               test_id: job.entity_id,
               source_address: addressItem.address,
               ban_valid: addressItem.result_status === 'ok',
-              ban_address: addressItem.result_label ?? '',
-              ban_score: Math.round((addressItem.result_score ?? 0) * 100), // 0.9733 => 97
+              ban_address: addressItem.result_label,
+              ban_score: isDefined(addressItem.result_score) ? Math.round(addressItem.result_score * 100) : null, // 0.9733 => 97
               geom: sql`st_transform(st_point(${addressItem.longitude}, ${addressItem.latitude}, 4326), 2154)`,
               eligibility_status: eligibilityStatus ?? undefined,
             })
