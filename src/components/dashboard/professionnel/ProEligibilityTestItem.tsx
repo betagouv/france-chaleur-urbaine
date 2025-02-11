@@ -13,6 +13,7 @@ import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
 import { useDelete, useFetch, usePost } from '@/hooks/useApi';
 import { type ProEligibilityTestListItem } from '@/pages/api/pro-eligibility-tests';
 import { type ProEligibilityTestFileRequest, type ProEligibilityTestWithAddresses } from '@/pages/api/pro-eligibility-tests/[id]';
+import { formatFrenchDate, formatFrenchDateTime } from '@/utils/date';
 import { frenchCollator } from '@/utils/strings';
 
 const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[] = [
@@ -131,18 +132,21 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
         multi={false}
         id={test.id}
         label={
-          <div className="flex justify-between w-full">
-            <div>{test.name}</div>
+          <div className="flex items-center justify-between w-full">
+            <div className="flex-auto">{test.name}</div>
             {test.has_unseen_results && (
-              <Badge severity="info" small className="fr-mr-2w">
+              <Badge severity="info" small className="fr-mx-1w">
                 Nouveaux résultats
               </Badge>
             )}
             {test.has_pending_jobs && (
-              <Badge severity="new" small className="fr-mr-2w">
+              <Badge severity="new" small className="fr-mx-1w">
                 Mise à jour en attente
               </Badge>
             )}
+            <div className="fr-mx-1w text-xs text-gray-800 font-normal cursor-help" title={formatFrenchDateTime(new Date(test.updated_at))}>
+              Dernière mise à jour&nbsp;: {formatFrenchDate(new Date(test.updated_at))}
+            </div>
           </div>
         }
         onClose={async (e) => {
