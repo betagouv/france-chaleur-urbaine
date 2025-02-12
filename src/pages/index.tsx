@@ -1,21 +1,16 @@
 import Image from 'next/image';
 
 import LastArticles from '@/components/Articles/LastArticles';
-import InterviewsVideos from '@/components/Coproprietaire/InterviewsVideos';
 import AvantagesChauffageUrbain from '@/components/GenericContent/AvantagesChauffageUrbain';
-import CoutsChauffageUrbain from '@/components/GenericContent/CoutsChauffageUrbain';
-import HowToRaccordement from '@/components/GenericContent/HowToRaccordement';
-import ObligationRaccordement from '@/components/GenericContent/ObligationRaccordement';
-import ReduireImpact from '@/components/GenericContent/ReduireImpact';
 import HeadSliceForm from '@/components/HeadSliceForm';
 import Partners from '@/components/Partners/Partners';
 import { issues, understandings } from '@/components/Ressources/config';
 import Understanding from '@/components/Ressources/Understanding';
 import SimplePage from '@/components/shared/page/SimplePage';
-import Box, { ResponsiveRow } from '@/components/ui/Box';
+import Box from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
-import Icon from '@/components/ui/Icon';
 import Link from '@/components/ui/Link';
+import Section, { SectionContent, SectionHeading, SectionSubtitle, SectionTitle, SectionTwoColumns } from '@/components/ui/Section';
 import Text from '@/components/ui/Text';
 
 const coproprietaireCards = {
@@ -54,17 +49,25 @@ export default function Home() {
           </Box>
         )}
       />
-
-      <Box py="10w" id="comprendre-le-chauffage-urbain">
-        <Box className="fr-container">
-          <Heading as="h2" center>
-            Comprendre le chauffage urbain
-          </Heading>
-          <ResponsiveRow mt="10w">
-            <Box display="flex" flexDirection="column" alignItems="center" flex>
-              <Heading as="h3" color="blue-france" mb="4w">
-                Un chauffage écologique à prix compétitif déjà adopté par 6 millions de Français
-              </Heading>
+      <Section>
+        <SectionTitle>Des outils à votre service</SectionTitle>
+        <SectionSubtitle>
+          France Chaleur Urbaine a développé des outils pour vous aider à vous raccorder à un réseau de chaleur
+        </SectionSubtitle>
+        <SectionContent>TODO</SectionContent>
+      </Section>
+      <Section color="light" id="avantages-du-chauffage-urbain">
+        <SectionTitle>Les avantages du chauffage urbain</SectionTitle>
+        <SectionContent>
+          <AvantagesChauffageUrbain />
+        </SectionContent>
+      </Section>
+      <Section id="comprendre-le-chauffage-urbain">
+        <SectionTitle>Comment fonctionne le chauffage urbain</SectionTitle>
+        <SectionContent>
+          <SectionTwoColumns>
+            <div>
+              <SectionHeading as="h3">Un chauffage écologique à prix compétitif déjà adopté par 6 millions de Français</SectionHeading>
               <Text size="lg">
                 Le chauffage urbain consiste à{' '}
                 <strong>distribuer de la chaleur produite de façon centralisée à un ensemble de bâtiments</strong>, via des canalisations
@@ -83,9 +86,8 @@ export default function Home() {
                 <Link href="/ressources/acteurs#contenu">géré en concession</Link> par un exploitant, qui s’occupe notamment des
                 raccordements.
               </Text>
-            </Box>
-
-            <Box flex>
+            </div>
+            <div>
               <Image
                 src="/img/copro_comprendre.webp"
                 alt="Schéma du chauffage urbain"
@@ -98,20 +100,33 @@ export default function Home() {
               <Link variant="primary" href="reseaux-chaleur#contenu">
                 En savoir plus
               </Link>
-            </Box>
-          </ResponsiveRow>
-        </Box>
-      </Box>
+            </div>
+          </SectionTwoColumns>
+        </SectionContent>
+      </Section>
 
-      <Box py="10w" backgroundColor="blue-france-975-75" id="avantages-du-chauffage-urbain">
-        <AvantagesChauffageUrbain />
-      </Box>
+      <Section color="light">
+        <SectionTitle>Nos articles sur le chauffage urbain</SectionTitle>
+        <SectionContent>
+          <div className="fr-grid-row">
+            <Understanding cards={coproprietaireCards} />
+          </div>
+        </SectionContent>
+      </Section>
+      <Section>
+        <SectionTitle>Nos actualités</SectionTitle>
+        <SectionContent>
+          <div className="fr-grid-row">
+            <LastArticles />
+          </div>
+        </SectionContent>
+      </Section>
 
-      <Box py="10w" id="couts-du-chauffage-urbain">
+      {/* <Box py="10w" id="couts-du-chauffage-urbain">
         <CoutsChauffageUrbain />
-      </Box>
+      </Box> */}
 
-      <Box py="10w" backgroundColor="blue-france-975-75">
+      {/* <Box py="10w" backgroundColor="blue-france-975-75">
         <Box className="fr-container">
           <ResponsiveRow>
             <Box flex>
@@ -180,43 +195,21 @@ export default function Home() {
             </Box>
           </ResponsiveRow>
         </Box>
-      </Box>
+      </Box> */}
 
-      <Box py="10w" id="obligations-de-raccordement">
+      {/* <Box py="10w" id="obligations-de-raccordement">
         <ObligationRaccordement />
-      </Box>
+      </Box> */}
 
-      <Box py="10w" backgroundColor="blue-france-main-525" id="comment-se-raccorder">
+      {/* <Box py="10w" backgroundColor="blue-france-main-525" id="comment-se-raccorder">
         <HowToRaccordement />
-      </Box>
-
-      <Box py="10w" backgroundColor="blue-france-975-75" id="articles">
-        <Box className="fr-container">
-          <Heading as="h2" center>
-            Nos articles sur le chauffage urbain
-          </Heading>
-          <Box className="fr-grid-row" mt="10w">
-            <Understanding cards={coproprietaireCards} />
-          </Box>
-        </Box>
-      </Box>
-
-      <Box py="10w" id="actus">
-        <Box className="fr-container">
-          <Heading as="h2" center>
-            Nos actualités
-          </Heading>
-          <Box className="fr-grid-row" mt="10w">
-            <LastArticles />
-          </Box>
-        </Box>
-      </Box>
+      </Box> */}
 
       <Partners />
 
-      <Box py="10w" backgroundColor="blue-france-main-525" textColor="#fff">
+      {/* <Box py="10w" backgroundColor="blue-france-main-525" textColor="#fff">
         <ReduireImpact />
-      </Box>
+      </Box> */}
     </SimplePage>
   );
 }
