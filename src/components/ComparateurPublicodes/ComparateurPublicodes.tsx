@@ -119,17 +119,6 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
 
   const displayResults = isAddressSelected && !!modesDeChauffage;
 
-  const results = displayResults ? (
-    <Graph
-      engine={engine}
-      advancedMode={advancedMode}
-      usedReseauDeChaleurLabel={nearestReseauDeChaleur?.nom_reseau || 'Valeur moyenne'}
-      captureImageName={`${new Date().getFullYear()}-${slugify(address)}`}
-    />
-  ) : (
-    <ResultsNotAvailable />
-  );
-
   const { open: displayContactForm, EligibilityFormModal } = useEligibilityForm({
     id: `eligibility-form-comparateur`,
     address: {
@@ -139,6 +128,117 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
     },
   });
 
+  const results = displayResults ? (
+    <div className="p-2 lg:p-0">
+      {!displayResults && (
+        <Notice variant="info" className="mb-5">
+          {!isAddressSelected
+            ? '1. Commencez par sélectionner une adresse'
+            : !modesDeChauffage
+              ? '2. Maintenant, sélectionnez au moins un mode de chauffage'
+              : ''}
+        </Notice>
+      )}
+
+      {!loading && address && displayResults && (
+        <Alert size="sm" className="mb-5" variant={nearestReseauDeChaleur ? 'info' : 'warning'}>
+          {nearestReseauDeChaleur ? (
+            <>
+              Le réseau de chaleur{' '}
+              <Link
+                href={`/reseaux/${nearestReseauDeChaleur['Identifiant reseau']}?address=${encodeURIComponent(address as string)}`}
+                isExternal
+              >
+                <strong>{nearestReseauDeChaleur.nom_reseau}</strong>
+              </Link>{' '}
+              est à <strong>{nearestReseauDeChaleur.distance}m</strong> de votre adresse.
+              {!nearestReseauDeChaleur?.PM && (
+                <Text color="warning" my="1v" size="xs">
+                  À noter qu’en l'absence de données tarifaires pour ce réseau, les simulations se basent sur le prix de la chaleur moyen
+                  des réseaux français.
+                </Text>
+              )}
+              <p className="text-sm my-5">
+                Vous souhaitez recevoir des informations adaptées à votre bâtiment de la part du gestionnaire du réseau ? Nous assurons
+                votre mise en relation !
+              </p>
+              <div className="flex gap-5 items-center justify-end">
+                {lngLat && (
+                  <Link
+                    isExternal
+                    href={`/carte?coord=${lngLat.join(',')}&zoom=17&address=${encodeURIComponent(address as string)}`}
+                    className="fr-block"
+                  >
+                    <strong>Visualiser sur la carte</strong>
+                  </Link>
+                )}
+                <Button onClick={displayContactForm} size="small">
+                  Etre mis en relation avec le gestionnaire
+                </Button>
+              </div>
+            </>
+          ) : (
+            <>
+              <p className="text-sm">
+                Il n'y a pas de réseau de chaleur à proximité de l'adresse testée.{' '}
+                <strong>Les simulations se basent sur le réseau de chaleur français moyen.</strong>
+              </p>
+              <p className="text-sm my-5">Vous souhaitez faire connaître à la collectivité votre intérêt pour ce mode de chauffage ?</p>
+              <div className="flex gap-5 items-center justify-end">
+                <Button onClick={displayContactForm} size="small">
+                  Laissez vos coordonnées
+                </Button>
+              </div>
+            </>
+          )}
+        </Alert>
+      )}
+      {!loading && inclureLaClimatisation && address && displayResults && (
+        <Alert size="sm" className="mb-5" variant={nearestReseauDeFroid ? 'info' : 'warning'}>
+          {nearestReseauDeFroid ? (
+            <>
+              Le réseau de froid{' '}
+              <Link
+                href={`/reseaux/${nearestReseauDeFroid['Identifiant reseau']}?address=${encodeURIComponent(address as string)}`}
+                isExternal
+              >
+                <strong>{nearestReseauDeFroid.nom_reseau}</strong>
+              </Link>{' '}
+              est à <strong>{nearestReseauDeFroid.distance}m</strong> de votre adresse.
+              <Text color="warning" my="1v" size="xs">
+                À noter qu’en l'absence de données tarifaires pour ce réseau, les simulations se basent sur le prix du froid moyen des
+                réseaux français.
+              </Text>
+              {lngLat && (
+                <div className="fr-text--xs">
+                  <Link
+                    isExternal
+                    href={`/carte?coord=${lngLat.join(',')}&zoom=17&address=${encodeURIComponent(address as string)}`}
+                    className="fr-block"
+                  >
+                    <strong>Visualiser sur la carte</strong>
+                  </Link>
+                </div>
+              )}
+            </>
+          ) : (
+            <>
+              En l'absence d'un <strong>réseau de froid</strong> à proximité, les simulations se basent sur le réseau de froid français
+              moyen
+            </>
+          )}
+        </Alert>
+      )}
+      <Graph
+        engine={engine}
+        advancedMode={advancedMode}
+        usedReseauDeChaleurLabel={nearestReseauDeChaleur?.nom_reseau || 'Valeur moyenne'}
+        captureImageName={`${new Date().getFullYear()}-${slugify(address)}`}
+      />
+    </div>
+  ) : (
+    <ResultsNotAvailable />
+  );
   return (
     <>
       <EligibilityFormModal />
@@ -294,110 +394,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
                   </Accordion>
                 )}
               </Box>
-              <Results>
-                {!displayResults && (
-                  <Notice variant="info" className="mb-5">
-                    {!isAddressSelected
-                      ? '1. Commencez par sélectionner une adresse'
-                      : !modesDeChauffage
-                        ? '2. Maintenant, sélectionnez au moins un mode de chauffage'
-                        : ''}
-                  </Notice>
-                )}
-
-                {!loading && address && displayResults && (
-                  <Alert size="sm" className="mb-5" variant={nearestReseauDeChaleur ? 'info' : 'warning'}>
-                    {nearestReseauDeChaleur ? (
-                      <>
-                        Le réseau de chaleur{' '}
-                        <Link
-                          href={`/reseaux/${nearestReseauDeChaleur['Identifiant reseau']}?address=${encodeURIComponent(address as string)}`}
-                          isExternal
-                        >
-                          <strong>{nearestReseauDeChaleur.nom_reseau}</strong>
-                        </Link>{' '}
-                        est à <strong>{nearestReseauDeChaleur.distance}m</strong> de votre adresse.
-                        {!nearestReseauDeChaleur?.PM && (
-                          <Text color="warning" my="1v" size="xs">
-                            À noter qu’en l'absence de données tarifaires pour ce réseau, les simulations se basent sur le prix de la
-                            chaleur moyen des réseaux français.
-                          </Text>
-                        )}
-                        <p className="text-sm my-5">
-                          Vous souhaitez recevoir des informations adaptées à votre bâtiment de la part du gestionnaire du réseau ? Nous
-                          assurons votre mise en relation !
-                        </p>
-                        <div className="flex gap-5 items-center justify-end">
-                          {lngLat && (
-                            <Link
-                              isExternal
-                              href={`/carte?coord=${lngLat.join(',')}&zoom=17&address=${encodeURIComponent(address as string)}`}
-                              className="fr-block"
-                            >
-                              <strong>Visualiser sur la carte</strong>
-                            </Link>
-                          )}
-                          <Button onClick={displayContactForm} size="small">
-                            Etre mis en relation avec le gestionnaire
-                          </Button>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <p className="text-sm">
-                          Il n'y a pas de réseau de chaleur à proximité de l'adresse testée.{' '}
-                          <strong>Les simulations se basent sur le réseau de chaleur français moyen.</strong>
-                        </p>
-                        <p className="text-sm my-5">
-                          Vous souhaitez faire connaître à la collectivité votre intérêt pour ce mode de chauffage ?
-                        </p>
-                        <div className="flex gap-5 items-center justify-end">
-                          <Button onClick={displayContactForm} size="small">
-                            Laissez vos coordonnées
-                          </Button>
-                        </div>
-                      </>
-                    )}
-                  </Alert>
-                )}
-                {!loading && inclureLaClimatisation && address && displayResults && (
-                  <Alert size="sm" className="mb-5" variant={nearestReseauDeFroid ? 'info' : 'warning'}>
-                    {nearestReseauDeFroid ? (
-                      <>
-                        Le réseau de froid{' '}
-                        <Link
-                          href={`/reseaux/${nearestReseauDeFroid['Identifiant reseau']}?address=${encodeURIComponent(address as string)}`}
-                          isExternal
-                        >
-                          <strong>{nearestReseauDeFroid.nom_reseau}</strong>
-                        </Link>{' '}
-                        est à <strong>{nearestReseauDeFroid.distance}m</strong> de votre adresse.
-                        <Text color="warning" my="1v" size="xs">
-                          À noter qu’en l'absence de données tarifaires pour ce réseau, les simulations se basent sur le prix du froid moyen
-                          des réseaux français.
-                        </Text>
-                        {lngLat && (
-                          <div className="fr-text--xs">
-                            <Link
-                              isExternal
-                              href={`/carte?coord=${lngLat.join(',')}&zoom=17&address=${encodeURIComponent(address as string)}`}
-                              className="fr-block"
-                            >
-                              <strong>Visualiser sur la carte</strong>
-                            </Link>
-                          </div>
-                        )}
-                      </>
-                    ) : (
-                      <>
-                        En l'absence d'un <strong>réseau de froid</strong> à proximité, les simulations se basent sur le réseau de froid
-                        français moyen
-                      </>
-                    )}
-                  </Alert>
-                )}
-                {results}
-              </Results>
+              <Results>{results}</Results>
               <FloatingButton onClick={() => setGraphDrawerOpen(true)} iconId="ri-arrow-up-fill">
                 Voir les résultats
               </FloatingButton>

@@ -57,7 +57,7 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
       <div className="fr-mt-4w" />
       <DisclaimerButton className="!mb-5" />
       <Heading as="h3" size="h6">
-        Chauffage Collectif
+        Chauffage collectif
       </Heading>
       <Checkbox
         small
@@ -89,7 +89,7 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
       {typeDeBatiment === 'résidentiel' && (
         <>
           <Heading as="h3" size="h6">
-            Chauffage Individuel
+            Chauffage individuel
           </Heading>
           <Checkbox
             small

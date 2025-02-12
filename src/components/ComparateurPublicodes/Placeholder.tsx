@@ -26,7 +26,7 @@ export const ComparateurPublicodesTitle = () => {
       </Heading>
       <Logos size="sm" withFCU={false} />
       <div className="fr-text--sm fr-mt-2w">
-        Cet outil pour objectif de comparer des configurations de chauffage et de refroidissement sur les plans techniques, économiques et
+        Cet outil a pour objectif de comparer des configurations de chauffage et de refroidissement sur les plans techniques, économiques et
         environnementaux.{' '}
         <strong>Il ne remplace en aucun cas une étude de faisabilité technico-économique menée par un bureau d’études</strong> et ne peut
         s'adapter aux situations particulières avec les hypothèses préconfigurées. Ces hypothèses représentent des configurations types,
@@ -129,15 +129,15 @@ export const DescriptionModal = () => {
       </p>
 
       <p>
+        À noter que cet outil ne peut être utilisé pour remplir le quatrième critère de dérogation aux obligations de raccordement dans le
+        cadre du classement (coût manifestement disproportionné). Une méthodologie dédiée est en cours d'élaboration.
+      </p>
+      <p>
         Cet outil prend la suite d'RCE33, outil développé par l'association AMORCE. L'association AMORCE pilote le projet, le bureau
         d’études Elcimaï y a apporté son expertise technique et France Chaleur Urbaine a mis en place la version disponible en ligne. Cet
         outil bénéficie d'un financement du programme européen Heat&Cool LIFE, piloté par la Région Sud, qui vise à développer des outils
         dans l'objectif de développer les réseaux de chaleur et de froid vertueux. La mise en place de l'interface en ligne est financée sur
         le budget de France Chaleur Urbaine.
-      </p>
-      <p>
-        À noter également qu'à ce jour, cet outil ne peut être utilisé pour remplir le quatrième critère de dérogation aux obligations de
-        raccordement dans le cadre du classement (coût manifestement disproportionné). Une méthodologie dédiée est en cours d'élaboration.
       </p>
       <Logos />
     </Modal>
