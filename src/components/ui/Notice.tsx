@@ -1,9 +1,10 @@
 import DSFRNotice, { type NoticeProps as DSFRNoticeProps } from '@codegouvfr/react-dsfr/Notice';
 import React from 'react';
 
-export type NoticeProps = Omit<DSFRNoticeProps, 'isClosable' | 'title'> &
+export type NoticeProps = Omit<DSFRNoticeProps, 'isClosable' | 'title' | 'severity'> &
   ({ title: NonNullable<React.ReactNode>; children?: never } | { children: NonNullable<React.ReactNode>; title?: never }) & {
     size?: 'sm';
+    variant?: 'info' | 'warning' | 'alert';
   };
 
 const classNames: { titles: { [key: string]: string }; root: { [key: string]: string } } = {
@@ -17,7 +18,7 @@ const classNames: { titles: { [key: string]: string }; root: { [key: string]: st
   },
 };
 
-const Notice: React.FC<NoticeProps> = ({ children, className, onClose, title, size = 'md', ...props }) => {
+const Notice: React.FC<NoticeProps> = ({ children, className, onClose, variant, title, size = 'md', ...props }) => {
   return (
     <DSFRNotice
       className={className}
@@ -26,6 +27,7 @@ const Notice: React.FC<NoticeProps> = ({ children, className, onClose, title, si
         title: classNames.titles[size],
         root: classNames.root[size],
       }}
+      severity={variant}
       onClose={onClose}
       {...({
         /* Force isCloseable when onClose is defined https://github.com/codegouvfr/react-dsfr/issues/342 */
