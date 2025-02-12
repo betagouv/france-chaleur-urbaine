@@ -520,7 +520,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
                     <div className="group stretch flex items-center">
                       <div className="px-12 flex flex-1 border-r border-solid border-white">
                         <div
-                          className="relative bg-fcu-orange-light/10 whitespace-nowrap py-0.5 tracking-tighter text-left font-extrabold text-fcu-orange-light sm:text-xs md:text-sm flex items-center justify-end"
+                          className="relative bg-fcu-orange-light/10 whitespace-nowrap py-0.5 tracking-tight text-left font-extrabold text-fcu-orange-light sm:text-xs md:text-sm flex items-center justify-end"
                           style={{ flex: 100 - co2UpperPercent }}
                         >
                           <span className="pr-0.5 absolute right-[12px]">{co2UpperBoundString}</span>
@@ -528,7 +528,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
                         </div>
                         <div className="relative bg-fcu-orange-light" style={{ flex: co2Width }}></div>
                         <div
-                          className="relative bg-fcu-orange-light/30 whitespace-nowrap tracking-tighter py-0.5 text-right font-extrabold text-fcu-orange-light sm:text-xs md:text-sm flex items-center justify-start"
+                          className="relative bg-fcu-orange-light/30 whitespace-nowrap tracking-tight py-0.5 text-right font-extrabold text-fcu-orange-light sm:text-xs md:text-sm flex items-center justify-start"
                           style={{ flex: co2LowerPercent }}
                         >
                           <div className="border-solid border-r-fcu-orange-light border-r-[12px] border-y-transparent border-y-[5px] my-1 border-l-0"></div>
@@ -537,7 +537,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
                       </div>
                       <div className="px-12 flex flex-1 border-l border-solid border-white">
                         <div
-                          className="relative bg-fcu-purple/30 whitespace-nowrap tracking-tighter py-0.5 text-right font-extrabold text-fcu-purple sm:text-xs md:text-sm flex items-center justify-end"
+                          className="relative bg-fcu-purple/30 whitespace-nowrap tracking-tight py-0.5 text-right font-extrabold text-fcu-purple sm:text-xs md:text-sm flex items-center justify-end"
                           style={{ flex: costLowerPercent }}
                         >
                           <span className="pr-0.5 absolute right-[12px]">{lowerBoundString}</span>
@@ -545,7 +545,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
                         </div>
                         <div className="relative bg-fcu-purple" style={{ flex: costWidth }}></div>
                         <div
-                          className="relative bg-fcu-purple/10 whitespace-nowrap py-0.5 tracking-tighter text-left font-extrabold text-fcu-purple sm:text-xs md:text-sm flex items-center justify-start"
+                          className="relative bg-fcu-purple/10 whitespace-nowrap py-0.5 tracking-tight text-left font-extrabold text-fcu-purple sm:text-xs md:text-sm flex items-center justify-start"
                           style={{ flex: 100 - costUpperPercent }}
                         >
                           <div className="border-solid border-r-fcu-purple border-r-[12px] border-y-transparent border-y-[5px] my-1 border-l-0"></div>
