@@ -1,3 +1,4 @@
+import { useQueryState } from 'nuqs';
 import { useState } from 'react';
 
 import AddressAutocomplete, { type AddressAutocompleteInputProps } from '@/components/form/dsfr/AddressAutocompleteInput';
@@ -8,11 +9,13 @@ import { type HandleAddressSelect } from '@/types/HeatNetworksResponse';
 const MapSearchForm = ({ onAddressSelect }: { onAddressSelect?: HandleAddressSelect }) => {
   const [eligibilityError, setEligibilityError] = useState(false);
   const { heatNetworkService } = useServices();
+  const [defaultAddress, setDefaultAddress] = useQueryState('address');
 
   const handleAddressSelected: AddressAutocompleteInputProps['onSelect'] = async (geoAddress) => {
     if (!geoAddress) {
       return;
     }
+    setDefaultAddress(null);
     try {
       setEligibilityError(false);
       const network = await heatNetworkService.findByCoords(geoAddress);
@@ -40,7 +43,7 @@ const MapSearchForm = ({ onAddressSelect }: { onAddressSelect?: HandleAddressSel
           </>
         ) : undefined
       }
-      defaultValue={''}
+      defaultValue={defaultAddress || ''}
       onClear={() => {
         setEligibilityError(false);
       }}
