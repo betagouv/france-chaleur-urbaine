@@ -62,136 +62,30 @@ export default SimplePage;
 
 const publicNavigationMenu: MainNavigationProps.Item[] = [
   {
-    text: 'Copropriétaires',
-    menuLinks: [
-      {
-        text: 'Testez votre adresse',
-        linkProps: {
-          href: '/',
-        },
-      },
-      {
-        text: 'Comprendre le chauffage urbain',
-        linkProps: {
-          href: '/#comprendre-le-chauffage-urbain',
-        },
-      },
-      {
-        text: 'Les avantages du chauffage urbain',
-        linkProps: {
-          href: '/#avantages-du-chauffage-urbain',
-        },
-      },
-      {
-        text: 'Les coûts du chauffage urbain',
-        linkProps: {
-          href: '/#couts-du-chauffage-urbain',
-        },
-      },
-      {
-        text: 'Les obligations de raccordement',
-        linkProps: {
-          href: '/#obligations-de-raccordement',
-        },
-      },
-      {
-        text: 'Comment se raccorder ?',
-        linkProps: {
-          href: '/#comment-se-raccorder',
-        },
-      },
-    ],
+    text: 'Accueil',
+    linkProps: {
+      href: '/',
+    },
   },
+  ...(process.env.NEXT_PUBLIC_FLAG_ENABLE_COMPARATEUR === 'true'
+    ? [
+        {
+          text: 'Comparateur de coûts',
+          linkProps: {
+            href: '/outils/comparateur-performances',
+          },
+        },
+      ]
+    : []),
   {
-    text: 'Professionnels',
-    menuLinks: [
-      {
-        text: 'Nos services pour les professionnels',
-        linkProps: {
-          href: '/professionnels',
-        },
-      },
-      {
-        text: 'Les avantages du chauffage urbain',
-        linkProps: {
-          href: '/professionnels#avantages-du-chauffage-urbain',
-        },
-      },
-      {
-        text: 'Testez une liste d’adresses',
-        linkProps: {
-          href: '/professionnels#test-liste',
-        },
-      },
-      {
-        text: 'Les coûts du chauffage urbain',
-        linkProps: {
-          href: '/professionnels#simulateur-aide',
-        },
-      },
-      {
-        text: 'Le décret tertiaire',
-        linkProps: {
-          href: '/professionnels#decrettertiaire',
-        },
-      },
-      {
-        text: 'Les obligations de raccordement',
-        linkProps: {
-          href: '/professionnels#obligations-de-raccordement',
-        },
-      },
-      {
-        text: 'Simulateur d’émissions de CO2',
-        linkProps: {
-          href: '/professionnels#simulateur-co2',
-        },
-      },
-    ],
-  },
-  {
-    text: 'Collectivités, exploitants',
-    menuLinks: [
-      {
-        text: 'France Chaleur Urbaine à votre service',
-        linkProps: {
-          href: '/collectivites-et-exploitants',
-        },
-      },
-      {
-        text: 'Communiquez sur votre réseau',
-        linkProps: {
-          href: '/collectivites-et-exploitants#communiquer',
-        },
-      },
-      {
-        text: 'Trouvez des prospects',
-        linkProps: {
-          href: '/collectivites-et-exploitants#prospecter',
-        },
-      },
-      {
-        text: 'Développez votre réseau grâce aux données',
-        linkProps: {
-          href: '/collectivites-et-exploitants#developper',
-        },
-      },
-      {
-        text: 'Pas encore de réseau ? Testez votre potentiel',
-        linkProps: {
-          href: '/collectivites-et-exploitants/potentiel-creation-reseau',
-        },
-      },
-    ],
-  },
-  {
-    text: 'Carte',
+    text: 'Carte des réseaux',
     linkProps: {
       href: '/carte',
     },
   },
+
   {
-    text: 'Ressources',
+    text: 'Ressources et outils',
     menuLinks: [
       {
         text: 'Liste des réseaux de chaleur',
@@ -231,6 +125,43 @@ const publicNavigationMenu: MainNavigationProps.Item[] = [
       },
     ],
   },
+
+  {
+    text: 'Collectivités, exploitants',
+    menuLinks: [
+      {
+        text: 'France Chaleur Urbaine à votre service',
+        linkProps: {
+          href: '/collectivites-et-exploitants',
+        },
+      },
+      {
+        text: 'Communiquez sur votre réseau',
+        linkProps: {
+          href: '/collectivites-et-exploitants#communiquer',
+        },
+      },
+      {
+        text: 'Trouvez des prospects',
+        linkProps: {
+          href: '/collectivites-et-exploitants#prospecter',
+        },
+      },
+      {
+        text: 'Développez votre réseau grâce aux données',
+        linkProps: {
+          href: '/collectivites-et-exploitants#developper',
+        },
+      },
+      {
+        text: 'Pas encore de réseau ? Testez votre potentiel',
+        linkProps: {
+          href: '/collectivites-et-exploitants/potentiel-creation-reseau',
+        },
+      },
+    ],
+  },
+
   {
     text: 'Notre service',
     menuLinks: [
@@ -254,6 +185,94 @@ const publicNavigationMenu: MainNavigationProps.Item[] = [
       },
     ],
   },
+  // {
+  //   text: 'Professionnels',
+  //   menuLinks: [
+  //     {
+  //       text: 'Nos services pour les professionnels',
+  //       linkProps: {
+  //         href: '/professionnels',
+  //       },
+  //     },
+  //     {
+  //       text: 'Les avantages du chauffage urbain',
+  //       linkProps: {
+  //         href: '/professionnels#avantages-du-chauffage-urbain',
+  //       },
+  //     },
+  //     {
+  //       text: 'Testez une liste d’adresses',
+  //       linkProps: {
+  //         href: '/professionnels#test-liste',
+  //       },
+  //     },
+  //     {
+  //       text: 'Les coûts du chauffage urbain',
+  //       linkProps: {
+  //         href: '/professionnels#simulateur-aide',
+  //       },
+  //     },
+  //     {
+  //       text: 'Le décret tertiaire',
+  //       linkProps: {
+  //         href: '/professionnels#decrettertiaire',
+  //       },
+  //     },
+  //     {
+  //       text: 'Les obligations de raccordement',
+  //       linkProps: {
+  //         href: '/professionnels#obligations-de-raccordement',
+  //       },
+  //     },
+  //     {
+  //       text: 'Simulateur d’émissions de CO2',
+  //       linkProps: {
+  //         href: '/professionnels#simulateur-co2',
+  //       },
+  //     },
+  //   ],
+  // },
+  // {
+  //   text: 'Copropriétaires',
+  //   menuLinks: [
+  //     {
+  //       text: 'Testez votre adresse',
+  //       linkProps: {
+  //         href: '/',
+  //       },
+  //     },
+  //     {
+  //       text: 'Comprendre le chauffage urbain',
+  //       linkProps: {
+  //         href: '/#comprendre-le-chauffage-urbain',
+  //       },
+  //     },
+  //     {
+  //       text: 'Les avantages du chauffage urbain',
+  //       linkProps: {
+  //         href: '/#avantages-du-chauffage-urbain',
+  //       },
+  //     },
+  //     {
+  //       text: 'Les coûts du chauffage urbain',
+  //       linkProps: {
+  //         href: '/#couts-du-chauffage-urbain',
+  //       },
+  //     },
+  //     {
+  //       text: 'Les obligations de raccordement',
+  //       linkProps: {
+  //         href: '/#obligations-de-raccordement',
+  //       },
+  //     },
+  //     {
+  //       text: 'Comment se raccorder ?',
+  //       linkProps: {
+  //         href: '/#comment-se-raccorder',
+  //       },
+  //     },
+  //   ],
+  // },
 ];
 
 const authenticatedNavigationMenu: MainNavigationProps.Item[] = [
