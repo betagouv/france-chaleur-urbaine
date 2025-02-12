@@ -1,10 +1,11 @@
 import { fr } from '@codegouvfr/react-dsfr';
 import { Footer } from '@codegouvfr/react-dsfr/Footer';
-import MainNavigation, { type MainNavigationProps } from '@codegouvfr/react-dsfr/MainNavigation';
+import UnstyledMainNavigation, { type MainNavigationProps } from '@codegouvfr/react-dsfr/MainNavigation';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { signOut, useSession } from 'next-auth/react';
 import React from 'react';
+import styled, { css } from 'styled-components';
 
 import { FooterConsentManagementItem } from '@/components/ConsentBanner';
 import { type HeaderProps, HeaderQuickAccessItem } from '@/components/dsfr/Header';
@@ -38,6 +39,24 @@ const SimplePage = ({ mode, currentPage, children, noIndex, includeFooter = true
     </>
   );
 };
+
+const MainNavigation = styled(UnstyledMainNavigation)<{ $compact?: boolean }>`
+  ${({ $compact, theme }) => theme.media.lg`
+    .fr-nav__link,
+    .fr-nav__btn {
+      display: flex;
+      align-items: center;
+      line-height: 1.25rem;
+      ${
+        $compact && // to have one line
+        css`
+          padding-left: 0.5rem;
+          padding-right: 0.5rem;
+        `
+      }
+    }
+  `}
+`;
 
 export default SimplePage;
 
@@ -404,7 +423,11 @@ const PageHeader = (props: PageHeaderProps) => {
               <Link href="/" className="fcu-navigation-logo" variant="tertiaryNoOutline" title="Revenir à la page d'accueil" p="0" mr="3w">
                 <Image height={50} width={70} src="/logo-fcu.png" alt="logo france chaleur urbaine" priority />
               </Link>
-              <MainNavigation items={markCurrentPageActive(navigationMenuItems, currentPath)} className="fr-col" />
+              <MainNavigation
+                items={markCurrentPageActive(navigationMenuItems, currentPath)}
+                className="fr-col"
+                $compact={currentPath === '/carte'}
+              />
               {isFullScreenMode && (
                 // structure from https://github.com/codegouvfr/react-dsfr/blob/eee67f75124b5c3d011703cb6c5cd88eb41ae54c/src/Header/Header.tsx#L158-L179
                 <Box className={fr.cx('fr-header__tools-links')}>
