@@ -5,7 +5,9 @@ import ReactDOMServer from 'react-dom/server';
 import Chart from 'react-google-charts';
 
 import Box from '@/components/ui/Box';
+import Button from '@/components/ui/Button';
 import Heading from '@/components/ui/Heading';
+import Notice from '@/components/ui/Notice';
 import useArrayQueryState from '@/hooks/useArrayQueryState';
 import useScreenshot from '@/hooks/useScreenshot';
 import { deepMergeObjects } from '@/utils/core';
@@ -15,8 +17,6 @@ import { ChartPlaceholder, GraphTooltip } from './ComparateurPublicodes.style';
 import { modesDeChauffage } from './modes-de-chauffage';
 import { dataYearDisclaimer, DisclaimerButton, Logos } from './Placeholder';
 import { type SimulatorEngine } from './useSimulatorEngine';
-import Button from '../ui/Button';
-import Notice from '../ui/Notice';
 
 const COST_PRECISION = 10;
 const CO2_PRECISION = 5;
@@ -499,7 +499,9 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
                 const costLowerPercent = Math.max(0, Math.round((costLowerBound / scaleCostMaxValue) * 100));
                 const costUpperPercent = Math.min(100, Math.round((costUpperBound / scaleCostMaxValue) * 100));
                 const costWidth = costUpperPercent - costLowerPercent;
-                const graphSectionType: string = name.includes(' individuel') ? 'Chauffage individuel' : 'Chauffage collectif';
+                const graphSectionType: string = name.includes(' individuel') // Check within the name as there is no other easy way to find this information
+                  ? 'Chauffage individuel'
+                  : 'Chauffage collectif';
 
                 let showSectionTitle = false;
                 if (graphSectionTitle !== (graphSectionType as string)) {
