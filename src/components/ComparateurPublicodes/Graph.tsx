@@ -453,7 +453,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
             <div className="relative py-2">
               <div className="absolute inset-0 -z-10 flex h-full w-full [&>*]:flex-1">
                 <div
-                  className="mx-12"
+                  className="ml-12 mr-3"
                   style={{
                     backgroundImage: `repeating-linear-gradient(to right,#EEE 0,#EEE 1px,transparent 1px,transparent ${getGrid(scaleEmissionsCO2maxValue)}%)`,
                     // Goal here is to give a grid that is relevent for a user
@@ -462,7 +462,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
                   }}
                 ></div>
                 <div
-                  className="mx-12"
+                  className="ml-3 mr-12"
                   style={{
                     backgroundImage: `repeating-linear-gradient(to right,#EEE 0,#EEE 1px,transparent 1px,transparent  ${getGrid(scaleCostMaxValue)}%)`,
                     borderRight: '1px solid #EEE',
@@ -470,12 +470,12 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
                 ></div>
               </div>
               <div className="flex justify-between text-sm font-bold text-faded">
-                <div className="flex-1 px-1 mr-12 flex items-center justify-between">
+                <div className="flex-1 px-1 ml-12 mr-3 flex items-center justify-between">
                   <span>{formatEmissionsCO2(scaleEmissionsCO2maxValue)}</span>
-                  <span>{formatEmissionsCO2(0)}</span>
+                  <span>{0}</span>
                 </div>
-                <div className="flex-1 px-1 ml-12 flex items-center justify-between">
-                  <span>{formatCost(0)}</span>
+                <div className="flex-1 px-1 mr-12 ml-3 flex items-center justify-between">
+                  <span>{0}</span>
                   <span>{formatCost(scaleCostMaxValue)}</span>
                 </div>
               </div>
@@ -518,7 +518,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
                       <span className="bg-white">{name}</span>
                     </div>
                     <div className="group stretch flex items-center">
-                      <div className="px-12 flex flex-1 border-r border-solid border-white">
+                      <div className="pl-12 pr-3 flex flex-1 border-r border-solid border-white">
                         <div
                           className="relative bg-fcu-orange-light/10 whitespace-nowrap py-0.5 tracking-tight text-left font-extrabold text-fcu-orange-light sm:text-xs md:text-sm flex items-center justify-end"
                           style={{ flex: 100 - co2UpperPercent }}
@@ -535,7 +535,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
                           <span className="absolute left-[12px] pl-0.5">{co2LowerBoundString}</span>
                         </div>
                       </div>
-                      <div className="px-12 flex flex-1 border-l border-solid border-white">
+                      <div className="pr-12 pl-3 flex flex-1 border-l border-solid border-white">
                         <div
                           className="relative bg-fcu-purple/30 whitespace-nowrap tracking-tight py-0.5 text-right font-extrabold text-fcu-purple sm:text-xs md:text-sm flex items-center justify-end"
                           style={{ flex: costLowerPercent }}
