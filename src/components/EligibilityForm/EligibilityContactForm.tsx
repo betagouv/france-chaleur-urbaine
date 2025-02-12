@@ -7,10 +7,12 @@ import useContactFormFCU from '@/hooks/useContactFormFCU';
 
 import { ContactFormWrapper, EligibilityContactFormStyle } from './EligibilityContactForm.style';
 
-const EligibilityContactForm: React.FC<{
+export type EligibilityContactFormProps = {
   fullAddress: any;
   onSubmit?: (data?: Record<string, any>) => void;
-}> = ({ fullAddress, onSubmit }) => {
+};
+
+const EligibilityContactForm: React.FC<EligibilityContactFormProps> = ({ fullAddress, onSubmit }) => {
   const {
     EligibilityFormContactRef,
     addressData,

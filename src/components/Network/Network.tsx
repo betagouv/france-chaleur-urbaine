@@ -72,7 +72,7 @@ const NetworkPanel = ({
             </Box>
           )}
           <Text mt="1w" size="sm">
-            Vous êtes la collectivité ou l’exploitant de ce réseau et vous souhaitez ajouter ou modifier des informations ?
+            Vous êtes le maître d’ouvrage ou l’exploitant de ce réseau et vous souhaitez ajouter ou modifier des informations ?
             <Link href={`/reseaux/modifier?reseau=${network['Identifiant reseau']}`} className="fr-ml-1w">
               Cliquez ici
             </Link>

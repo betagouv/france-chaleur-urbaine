@@ -1,10 +1,11 @@
 import React from 'react';
 
 import Checkbox from '@/components/form/dsfr/Checkbox';
+import Heading from '@/components/ui/Heading';
 import useArrayQueryState from '@/hooks/useArrayQueryState';
 import { type LocationInfoResponse } from '@/pages/api/location-infos';
 
-import { Separator, Title } from './ComparateurPublicodes.style';
+import { Title } from './ComparateurPublicodes.style';
 import { type ModeDeChauffage, modesDeChauffage } from './modes-de-chauffage';
 import { DisclaimerButton } from './Placeholder';
 import SelectClimatisation from './SelectClimatisation';
@@ -41,7 +42,6 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
   return (
     <div {...props}>
       <p className="fr-text--sm">Sélectionnez les modes de chauffage et de refroidissement que vous souhaitez comparer.</p>
-      <DisclaimerButton />
       {
         // in advanced mode, fields are shown at the previous step to be able to fine tune its info
         !advancedMode && (
@@ -55,10 +55,15 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
       }
       {/* This is because the Text component has a weird 0 bottom border */}
       <div className="fr-mt-4w" />
+      <DisclaimerButton className="!mb-5" />
+      <Heading as="h3" size="h6">
+        Chauffage collectif
+      </Heading>
       <Checkbox
         small
         options={(['Réseau de chaleur'] satisfies ModeDeChauffage[]).map(createOptionProps)}
         state={nearestReseauDeChaleur ? 'success' : 'default'}
+        className="[&_p]:!mb-0"
         stateRelatedMessage={
           nearestReseauDeChaleur ? (
             <span>
@@ -67,52 +72,42 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
           ) : undefined
         }
       />
-      <Separator />
-      <Checkbox
-        small
-        options={(['Poêle à granulés individuel', 'Chaudière à granulés collective'] satisfies ModeDeChauffage[])
-          .filter((modeDeChauffage) => (typeDeBatiment === 'résidentiel' ? true : modeDeChauffage.includes('collective')))
-          .map(createOptionProps)}
-      />
-      <Separator />
       <Checkbox
         small
         options={(
           [
-            'Gaz à condensation individuel',
-            'Gaz sans condensation individuel',
+            'Chaudière à granulés collective',
             'Gaz à condensation collectif',
             'Gaz sans condensation collectif',
-          ] satisfies ModeDeChauffage[]
-        )
-          .filter((modeDeChauffage) => (typeDeBatiment === 'résidentiel' ? true : modeDeChauffage.includes('collectif')))
-          .map(createOptionProps)}
-      />
-      <Separator />
-      <Checkbox
-        small
-        options={(['Fioul individuel', 'Fioul collectif'] satisfies ModeDeChauffage[])
-          .filter((modeDeChauffage) => (typeDeBatiment === 'résidentiel' ? true : modeDeChauffage.includes('collective')))
-          .map(createOptionProps)}
-      />
-      <Separator />
-      <Checkbox
-        small
-        options={(
-          [
-            'PAC air/air individuelle',
+            'Fioul collectif',
             'PAC air/air collective',
-            'PAC eau/eau individuelle',
             'PAC eau/eau collective',
-            'PAC air/eau individuelle',
             'PAC air/eau collective',
           ] satisfies ModeDeChauffage[]
-        )
-          .filter((modeDeChauffage) => (typeDeBatiment === 'résidentiel' ? true : modeDeChauffage.includes('collective')))
-          .map(createOptionProps)}
+        ).map(createOptionProps)}
       />
-      <Separator />
-      <Checkbox small options={(['Radiateur électrique individuel'] satisfies ModeDeChauffage[]).map(createOptionProps)} />
+      {typeDeBatiment === 'résidentiel' && (
+        <>
+          <Heading as="h3" size="h6">
+            Chauffage individuel
+          </Heading>
+          <Checkbox
+            small
+            options={(
+              [
+                'Poêle à granulés individuel',
+                'Gaz à condensation individuel',
+                'Gaz sans condensation individuel',
+                'Fioul individuel',
+                'PAC air/air individuelle',
+                'PAC eau/eau individuelle',
+                'PAC air/eau individuelle',
+                'Radiateur électrique individuel',
+              ] satisfies ModeDeChauffage[]
+            ).map(createOptionProps)}
+          />
+        </>
+      )}
     </div>
   );
 };
