@@ -130,16 +130,6 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
 
   const results = displayResults ? (
     <div className="p-2 lg:p-0">
-      {!displayResults && (
-        <Notice variant="info" className="mb-5">
-          {!isAddressSelected
-            ? '1. Commencez par sélectionner une adresse'
-            : !modesDeChauffage
-              ? '2. Maintenant, sélectionnez au moins un mode de chauffage'
-              : ''}
-        </Notice>
-      )}
-
       {!loading && address && displayResults && (
         <Alert size="sm" className="mb-5" variant={nearestReseauDeChaleur ? 'info' : 'warning'}>
           {nearestReseauDeChaleur ? (
@@ -237,7 +227,16 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
       />
     </div>
   ) : (
-    <ResultsNotAvailable />
+    <>
+      <Notice variant="info" className="mb-5">
+        {!isAddressSelected
+          ? '1. Commencez par sélectionner une adresse'
+          : !modesDeChauffage
+            ? '2. Maintenant, sélectionnez au moins un mode de chauffage'
+            : ''}
+      </Notice>
+      <ResultsNotAvailable />
+    </>
   );
   return (
     <>
