@@ -49,13 +49,13 @@ export async function getAddressesCoordinates(addressesCSV: string) {
       form.append('result_columns', 'result_label');
       form.append('result_columns', 'result_status');
 
-      const res = await fetch(`${env.API_ADRESSE_URL}/search/csv/`, {
+      const res = await fetch(`${env.API_ADRESSE_URL}search/csv/`, {
         method: 'post',
         body: form,
       });
 
       if (!res.ok) {
-        handleError(res, `${env.API_ADRESSE_URL}/search/csv/`);
+        await handleError(res, `${env.API_ADRESSE_URL}search/csv/`);
       }
 
       const responseBody = await res.text();
