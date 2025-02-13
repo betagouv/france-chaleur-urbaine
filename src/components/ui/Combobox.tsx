@@ -4,7 +4,7 @@ export { Combobox, ComboboxInput, ComboboxList, ComboboxOption, ComboboxOptionTe
 
 export const ComboboxPopover = styled(ReachComboboxPopover)`
   &[data-reach-combobox-popover] {
-    z-index: 200;
+    z-index: 1751; /* To be above DSFR modal*/
     background-color: var(--background-default-grey);
   }
 
