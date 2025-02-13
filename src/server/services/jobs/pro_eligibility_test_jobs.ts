@@ -25,7 +25,7 @@ const chunkSize = 1000;
 export async function processProEligibilityTestJob(job: ProEligibilityTestJob, logger: Logger) {
   const startTime = Date.now();
 
-  const lines = job.data.csvContent.split('\n');
+  const lines = job.data.csvContent.split('\n').map((line) => `"${line.replace(/"/g, '""')}"`); // escape double quotes
   const addresses: APIAdresseResult[] = [];
   const chunks = chunk(lines, chunkSize);
   for (const chunk of chunks.values()) {
