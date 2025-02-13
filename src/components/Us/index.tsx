@@ -74,10 +74,10 @@ const Us = () => {
         </p>
         <Logos>
           <Link href="https://www.gouvernement.fr/" isExternal>
-            <img src="/logo-government.svg" alt="Gouvernement" height="80px" />
+            <img className="reset-height" src="/logo-government.svg" alt="Gouvernement" height="80px" />
           </Link>
           <Link href="https://www.ademe.fr" isExternal>
-            <img src="/logo-ADEME.svg" alt="Gouvernement" height="80px" />
+            <img className="reset-height" src="/logo-ADEME.svg" alt="ADEME" height="80px" />
           </Link>
         </Logos>
       </Slice>
