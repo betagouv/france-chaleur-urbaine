@@ -37,6 +37,12 @@ const Autocomplete = <Option extends DefaultOption>({
   const [loading, setLoading] = useState(false);
   const generatedId = useId();
 
+  React.useEffect(() => {
+    if (!inputValue && defaultValue) {
+      setInputValue(`${defaultValue}`);
+    }
+  }, [inputValue, defaultValue]);
+
   useDebouncedEffect(
     () => {
       (async () => {

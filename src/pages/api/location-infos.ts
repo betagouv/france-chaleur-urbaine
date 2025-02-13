@@ -100,9 +100,17 @@ export default handleRouteErrors(async (req: NextApiRequest) => {
       .first(),
     db('communes')
       .select('departement_id', 'temperature_ref_altitude_moyenne')
-      .where('id', cityCode)
-      .orWhere('commune', city.toUpperCase())
-      .orWhere('commune', 'like', `${city.toUpperCase()}-%-ARRONDISSEMENT`)
+      .where(
+        'id',
+        db.raw(
+          `COALESCE(
+            (SELECT id FROM communes WHERE id = ?),
+            (SELECT id FROM communes WHERE commune = ?),
+            (SELECT id FROM communes WHERE commune LIKE ?)
+          )`,
+          [cityCode, city.toUpperCase(), `${city.toUpperCase()}-%-ARRONDISSEMENT`]
+        )
+      )
       .first(),
   ]);
 

@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
-import AddressAutocomplete from '@/components/addressAutocomplete';
+import AddressAutocomplete, { type AddressAutocompleteInputProps } from '@/components/form/dsfr/AddressAutocompleteInput';
 import Box from '@/components/ui/Box';
 import Link from '@/components/ui/Link';
 import { useServices } from '@/services';
@@ -67,8 +67,10 @@ const AddressTestForm: React.FC<CheckEligibilityFormProps> = ({
     }
   }, [router.query]);
 
-  const handleAddressSelected = useCallback(
-    async (address: string, geoAddress?: SuggestionItem): Promise<void> => {
+  const handleAddressSelected: AddressAutocompleteInputProps['onSelect'] = useCallback(
+    async (geoAddress?: SuggestionItem): Promise<void> => {
+      const address = geoAddress?.properties?.label;
+
       if (!geoAddress) {
         return;
       }
@@ -130,7 +132,7 @@ const AddressTestForm: React.FC<CheckEligibilityFormProps> = ({
           {formLabel}
         </SelectEnergy>
       </CheckEligibilityFormLabel>
-      {!coords && <AddressAutocomplete placeholder="Tapez ici votre adresse" onAddressSelected={handleAddressSelected} />}
+      {!coords && <AddressAutocomplete nativeInputProps={{ placeholder: 'Tapez ici votre adresse' }} onSelect={handleAddressSelected} />}
       {status === 'eligibilitySubmissionError' && (
         <Box textColor="#c00" ml="auto">
           Une erreur est survenue. Veuillez réessayer ou bien <Link href="/contact">contacter le support</Link>.

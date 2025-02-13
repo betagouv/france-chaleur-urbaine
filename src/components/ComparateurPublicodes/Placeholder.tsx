@@ -8,7 +8,6 @@ import Box from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
 import Icon from '@/components/ui/Icon';
 import Modal, { createModal } from '@/components/ui/Modal';
-import Text from '@/components/ui/Text';
 import cx from '@/utils/cx';
 
 import { Results, ResultsPlaceholder, Section, Simulator } from './ComparateurPublicodes.style';
@@ -27,15 +26,19 @@ export const ComparateurPublicodesTitle = () => {
       </Heading>
       <Logos size="sm" withFCU={false} />
       <div className="fr-text--sm fr-mt-2w">
-        Cet outil de comparaison de modes de chauffage et de refroidissement a pour objectif de comparer en quelques minutes des
-        configurations de chauffage et de refroidissement sur les plans techniques, économiques et environnementaux.{' '}
+        Cet outil a pour objectif de comparer des configurations de chauffage et de refroidissement sur les plans techniques, économiques et
+        environnementaux.{' '}
         <strong>Il ne remplace en aucun cas une étude de faisabilité technico-économique menée par un bureau d’études</strong> et ne peut
         s'adapter aux situations particulières avec les hypothèses préconfigurées. Ces hypothèses représentent des configurations types,
         elles sont donc sujets à des incertitudes importantes.{' '}
         <a href="#" onClick={() => modalDescription.open()} className="fr-link fr-text--sm">
           Voir l’explication détaillée
         </a>
-        <p className="fr-text--sm fr-mt-1w">{dataYearDisclaimer}</p>
+        <p className="fr-text--sm fr-my-1w">{dataYearDisclaimer}</p>
+        <p className="fr-text--sm font-bold">
+          Pour une étude plus poussée (prix actualisés, prise en compte des spécificités de votre bâtiment), nous vous invitons à vous
+          rapprocher du gestionnaire du réseau de chaleur le plus proche de chez vous ou d'un bureau d'études.
+        </p>
       </div>
     </div>
   );
@@ -126,6 +129,10 @@ export const DescriptionModal = () => {
       </p>
 
       <p>
+        À noter que cet outil ne peut être utilisé pour remplir le quatrième critère de dérogation aux obligations de raccordement dans le
+        cadre du classement (coût manifestement disproportionné). Une méthodologie dédiée est en cours d'élaboration.
+      </p>
+      <p>
         Cet outil prend la suite d'RCE33, outil développé par l'association AMORCE. L'association AMORCE pilote le projet, le bureau
         d’études Elcimaï y a apporté son expertise technique et France Chaleur Urbaine a mis en place la version disponible en ligne. Cet
         outil bénéficie d'un financement du programme européen Heat&Cool LIFE, piloté par la Région Sud, qui vise à développer des outils
@@ -150,8 +157,8 @@ export const DisclaimerModal = () => {
 
       <ul>
         <li>
-          le raccordement à un réseau de chaleur est pertinent pour les bâtiments à chauffage collectif (gaz ou fioul), mais nécessite des
-          travaux conséquents et coûteux pour les bâtiments à chauffage individuel.
+          le passage d'un mode de chauffage individuel à collectif n'est possible que moyennant des travaux conséquents et coûteux (non pris
+          en compte dans l'outil)
         </li>
         <li>
           l'installation d'une pompe à chaleur (PAC) requiert qu'un certain nombre de critères soient satisfaits : bâtiment bien isolé avec
@@ -171,12 +178,12 @@ export const DisclaimerButton: React.FC<React.HTMLAttributes<HTMLDivElement>> = 
   return (
     <>
       <DisclaimerModal />
-      <Text size="xs" color="warning" className={className}>
-        <Icon name="fr-icon-info-line" size="xs" /> Tous les modes de chauffage et de refroidissement ne sont pas interchangeables.{' '}
+      <p className={cx('fr-text--xs text-warning', className)}>
+        <Icon name="fr-icon-info-line" size="xs" /> Tous les modes de chauffage ne sont pas interchangeables.{' '}
         <a href="#" onClick={() => modalDisclaimer.open()} className="fr-link fr-text--xs">
           En savoir plus
         </a>
-      </Text>
+      </p>
     </>
   );
 };

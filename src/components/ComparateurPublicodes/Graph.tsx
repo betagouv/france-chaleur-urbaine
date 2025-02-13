@@ -5,7 +5,9 @@ import ReactDOMServer from 'react-dom/server';
 import Chart from 'react-google-charts';
 
 import Box from '@/components/ui/Box';
+import Button from '@/components/ui/Button';
 import Heading from '@/components/ui/Heading';
+import Notice from '@/components/ui/Notice';
 import useArrayQueryState from '@/hooks/useArrayQueryState';
 import useScreenshot from '@/hooks/useScreenshot';
 import { deepMergeObjects } from '@/utils/core';
@@ -15,10 +17,12 @@ import { ChartPlaceholder, GraphTooltip } from './ComparateurPublicodes.style';
 import { modesDeChauffage } from './modes-de-chauffage';
 import { dataYearDisclaimer, DisclaimerButton, Logos } from './Placeholder';
 import { type SimulatorEngine } from './useSimulatorEngine';
-import Button from '../ui/Button';
-import Notice from '../ui/Notice';
 
-const precisionDisplay = 10 / 100;
+const COST_PRECISION = 10;
+const CO2_PRECISION = 5;
+const costPrecisionPercentage = COST_PRECISION / 100;
+const co2PrecisionPercentage = CO2_PRECISION / 100;
+
 type GraphProps = React.HTMLAttributes<HTMLDivElement> & {
   engine: SimulatorEngine;
   advancedMode?: boolean;
@@ -143,18 +147,31 @@ const useFixLegendOpacity = (coutsRef?: React.RefObject<HTMLDivElement | null>) 
   });
 };
 
-const formatPrecisionRange = (value: number) => {
-  // as calculations are approximations, give a +-10% range
-  const lowerBound = Math.round((value * (1 - precisionDisplay)) / 10) * 10;
-  const upperBound = Math.round((value * (1 + precisionDisplay)) / 10) * 10;
+const getCostPrecisionRange = (value: number) => {
+  const lowerBound = Math.round((value * (1 - costPrecisionPercentage)) / 10) * 10;
+  const upperBound = Math.round((value * (1 + costPrecisionPercentage)) / 10) * 10;
 
-  const lowerBoundStr = lowerBound.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
-  const upperBoundStr = upperBound.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
-  return `${lowerBoundStr} - ${upperBoundStr}`;
+  const lowerBoundString = lowerBound.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+  const upperBoundString = upperBound.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+  return { lowerBound, upperBound, lowerBoundString, upperBoundString };
 };
 
-const formatEmissionsCO2 = (value: number) =>
-  `${(Math.round(value / 10) * 10).toLocaleString('fr-FR', { maximumFractionDigits: 0 })} kgCO2e`;
+const formatCostPrecisionRange = (value: number) => {
+  const { lowerBoundString, upperBoundString } = getCostPrecisionRange(value);
+  return `${lowerBoundString} - ${upperBoundString}`;
+};
+
+const getEmissionsCO2PrecisionRange = (value: number) => {
+  const lowerBound = Math.round((value * (1 - co2PrecisionPercentage)) / 10) * 10;
+  const upperBound = Math.round((value * (1 + co2PrecisionPercentage)) / 10) * 10;
+
+  const lowerBoundString = formatEmissionsCO2(lowerBound, ''); // no suffix as it takes too much space
+  const upperBoundString = formatEmissionsCO2(upperBound, '');
+  return { lowerBound, lowerBoundString, upperBound, upperBoundString };
+};
+
+const formatEmissionsCO2 = (value: number, suffix = 'kgCO2e') =>
+  [`${(Math.round(value / 10) * 10).toLocaleString('fr-FR', { maximumFractionDigits: 0 })}`, suffix].filter(Boolean).join(' ');
 
 const formatCost = (value: number) =>
   `${(Math.round(value / 10) * 10).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 })}`;
@@ -224,36 +241,36 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
               title: `P1 abonnement${typeInstallation.label === 'Réseau de chaleur' ? ' (R2 du réseau de chaleur)' : ''}`,
               amount: amountP1Abo,
               color: colorP1Abo,
-              valueFormatter: formatPrecisionRange,
+              valueFormatter: formatCostPrecisionRange,
             }),
             ...getRow({
               title: `P1 consommation${typeInstallation.label === 'Réseau de chaleur' ? ' (R1 du réseau de chaleur)' : ''}`,
               amount: amountP1Conso,
               color: colorP1Conso,
-              valueFormatter: formatPrecisionRange,
+              valueFormatter: formatCostPrecisionRange,
             }),
-            ...getRow({ title: 'P1 ECS', amount: amountP1ECS, color: colorP1ECS, valueFormatter: formatPrecisionRange }),
-            ...getRow({ title: "P1'", amount: amountP1prime, color: colorP1prime, valueFormatter: formatPrecisionRange }),
+            ...getRow({ title: 'P1 ECS', amount: amountP1ECS, color: colorP1ECS, valueFormatter: formatCostPrecisionRange }),
+            ...getRow({ title: "P1'", amount: amountP1prime, color: colorP1prime, valueFormatter: formatCostPrecisionRange }),
             ...getRow({
               title: 'P1 consommation froid',
               amount: amountP1Consofroid,
               color: colorP1Consofroid,
-              valueFormatter: formatPrecisionRange,
+              valueFormatter: formatCostPrecisionRange,
             }),
-            ...getRow({ title: 'P2', amount: amountP2, color: colorP2, valueFormatter: formatPrecisionRange }),
-            ...getRow({ title: 'P3', amount: amountP3, color: colorP3, valueFormatter: formatPrecisionRange }),
+            ...getRow({ title: 'P2', amount: amountP2, color: colorP2, valueFormatter: formatCostPrecisionRange }),
+            ...getRow({ title: 'P3', amount: amountP3, color: colorP3, valueFormatter: formatCostPrecisionRange }),
             ...getRow({
               title: 'P4 moins aides',
               amount: amountP4SansAides,
               color: colorP4SansAides,
-              valueFormatter: formatPrecisionRange,
+              valueFormatter: formatCostPrecisionRange,
             }),
             ...getRow({
               title: tooltipAides,
               amount: amountAides,
               color: colorP4Aides,
               bordered: true,
-              valueFormatter: formatPrecisionRange,
+              valueFormatter: formatCostPrecisionRange,
             }),
           ]
         : [
@@ -261,32 +278,32 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
               title: `Abonnement${typeInstallation.label === 'Réseau de chaleur' ? ' (R2 du réseau de chaleur)' : ''}`,
               amount: amountP1Abo,
               color: colorP1Abo,
-              valueFormatter: formatPrecisionRange,
+              valueFormatter: formatCostPrecisionRange,
             }),
             ...getRow({
               title: `Consommation${typeInstallation.label === 'Réseau de chaleur' ? ' (R1 du réseau de chaleur)' : ''}`,
               amount: amountP1Conso + amountP1ECS,
               color: colorP1Conso,
-              valueFormatter: formatPrecisionRange,
+              valueFormatter: formatCostPrecisionRange,
             }),
             ...getRow({
               title: 'Maintenance',
               amount: amountP1prime + amountP2 + amountP3,
               color: colorP1prime,
-              valueFormatter: formatPrecisionRange,
+              valueFormatter: formatCostPrecisionRange,
             }),
             ...getRow({
               title: 'Investissement',
               amount: amountP4SansAides,
               color: colorP4SansAides,
-              valueFormatter: formatPrecisionRange,
+              valueFormatter: formatCostPrecisionRange,
             }),
             ...getRow({
               title: tooltipAides,
               amount: amountAides,
               color: colorP4Aides,
               bordered: true,
-              valueFormatter: formatPrecisionRange,
+              valueFormatter: formatCostPrecisionRange,
             }),
           ];
 
@@ -295,7 +312,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
         0
       );
       const totalAmount = totalAmountWithAides - amountAides;
-      const precisionRange = formatPrecisionRange(totalAmount);
+      const precisionRange = formatCostPrecisionRange(totalAmount);
       maxCoutValue = Math.max(maxCoutValue, totalAmount);
       totalCoutsEtEmissions[index] = [getLabel(typeInstallation), totalAmount, -1];
       return [
@@ -374,18 +391,26 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
 
   const chartHeight = modesDeChauffageFiltres.length * estimatedRowHeightPx + estimatedBaseGraphHeightPx;
 
-  const maxExistingEmissionsCO2Value = totalCoutsEtEmissions.reduce((acc, [, , co2]) => Math.max(acc, co2), 0);
-  const maxExistingCostValue = totalCoutsEtEmissions.reduce((acc, [, cost]) => Math.max(acc, cost), 0);
-  const scaleTickEmissionsCO2 = maxExistingEmissionsCO2Value > 10000 ? 10000 : 500;
+  const maxExistingEmissionsCO2Value =
+    totalCoutsEtEmissions.reduce((acc, [, , co2]) => Math.max(acc, co2), 0) * (1 + co2PrecisionPercentage);
+  const maxExistingCostValue = totalCoutsEtEmissions.reduce((acc, [, cost]) => Math.max(acc, cost), 0) * (1 + costPrecisionPercentage);
   const scaleTickCost = 500;
-  const scaleEmissionsCO2Value = Math.ceil(maxExistingEmissionsCO2Value / scaleTickEmissionsCO2) * scaleTickEmissionsCO2;
   const scaleCostMaxValue = Math.ceil(maxExistingCostValue / scaleTickCost) * scaleTickCost;
-  const gridValueEmissionsCO2 = (scaleTickEmissionsCO2 / scaleEmissionsCO2Value) * 100;
-  const gridValueCost = (scaleTickCost / scaleCostMaxValue) * 100;
+  const scaleTickEmissionsCO2 = maxExistingEmissionsCO2Value > 10000 ? 10000 : 500;
+  const scaleEmissionsCO2maxValue = Math.ceil(maxExistingEmissionsCO2Value / scaleTickEmissionsCO2) * scaleTickEmissionsCO2;
+
+  const getGrid = (value: number) => {
+    if (value % 500 === 0 && value <= 3000) return 100 / (value / 500);
+    if (value % 1000 === 0 && value <= 10000) return 100 / (value / 1000);
+    if (value % 10000 === 0 && value > 10000) return 100 / (value / 10000);
+    return 50;
+  };
 
   const titleItems = ['chauffage', inclusClimatisation && 'froid', inclusECS && 'ECS'].filter(Boolean);
   const titleItemsString =
     titleItems.length > 1 ? titleItems.slice(0, -1).join(', ') + ' et ' + titleItems[titleItems.length - 1] : titleItems[0] || '';
+
+  let graphSectionTitle = '';
 
   return (
     <>
@@ -428,55 +453,109 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
             <div className="relative py-2">
               <div className="absolute inset-0 -z-10 flex h-full w-full [&>*]:flex-1">
                 <div
+                  className="ml-12 mr-3"
                   style={{
+                    backgroundImage: `repeating-linear-gradient(to right,#EEE 0,#EEE 1px,transparent 1px,transparent ${getGrid(scaleEmissionsCO2maxValue)}%)`,
                     // Goal here is to give a grid that is relevent for a user
                     // when % is infinite (16.666666% for example), grid might appear inaccurate and we rather display only one understandable line instead
-                    backgroundImage: `repeating-linear-gradient(to right,#EEE 0,#EEE 1px,transparent 1px,transparent ${gridValueEmissionsCO2 % 1 === 0 ? gridValueEmissionsCO2 : '50'}%)`,
+                    borderRight: '1px solid #EEE',
                   }}
                 ></div>
                 <div
+                  className="ml-3 mr-12"
                   style={{
-                    backgroundImage: `repeating-linear-gradient(to right,#EEE 0,#EEE 1px,transparent 1px,transparent ${gridValueCost % 1 === 0 ? gridValueCost : '50'}%)`,
+                    backgroundImage: `repeating-linear-gradient(to right,#EEE 0,#EEE 1px,transparent 1px,transparent  ${getGrid(scaleCostMaxValue)}%)`,
+                    borderRight: '1px solid #EEE',
                   }}
                 ></div>
               </div>
-              <div className="flex justify-between text-sm font-bold text-faded">
-                <span>{formatEmissionsCO2(scaleEmissionsCO2Value)}</span>
-                <span>{formatCost(scaleCostMaxValue)}</span>
-              </div>
               {totalCoutsEtEmissions.map(([name, cost, co2]) => {
-                const co2Percent = Math.round((co2 / scaleEmissionsCO2Value) * 100);
-                const maxCostPercent = Math.round(((cost * 1.1) / scaleCostMaxValue) * 100);
+                const {
+                  lowerBound: co2LowerBound,
+                  upperBound: co2UpperBound,
+                  lowerBoundString: co2LowerBoundString,
+                  upperBoundString: co2UpperBoundString,
+                } = getEmissionsCO2PrecisionRange(co2);
+                const co2LowerPercent = Math.max(0, Math.round((co2LowerBound / scaleEmissionsCO2maxValue) * 100));
+                const co2UpperPercent = Math.min(100, Math.round((co2UpperBound / scaleEmissionsCO2maxValue) * 100));
+                const co2Width = co2UpperPercent - co2LowerPercent;
+
+                const {
+                  lowerBound: costLowerBound,
+                  upperBound: costUpperBound,
+                  lowerBoundString,
+                  upperBoundString,
+                } = getCostPrecisionRange(cost);
+                const costLowerPercent = Math.max(0, Math.round((costLowerBound / scaleCostMaxValue) * 100));
+                const costUpperPercent = Math.min(100, Math.round((costUpperBound / scaleCostMaxValue) * 100));
+                const costWidth = costUpperPercent - costLowerPercent;
+                const graphSectionType: string = name.includes(' individuel') // Check within the name as there is no other easy way to find this information
+                  ? 'Chauffage individuel'
+                  : 'Chauffage collectif';
+
+                let showSectionTitle = false;
+                if (graphSectionTitle !== (graphSectionType as string)) {
+                  showSectionTitle = true;
+                  graphSectionTitle = graphSectionType;
+                }
 
                 return (
                   <>
+                    {showSectionTitle && (
+                      <div className="relative mb-1 mt-8 text-center text-xl font-bold bg-white/50">{graphSectionTitle}</div>
+                    )}
                     <div key={name} className="relative mb-1 mt-2 flex items-center justify-center text-base font-bold">
                       <span className="bg-white">{name}</span>
                     </div>
-                    <div className="stretch flex items-center">
-                      <div className="flex flex-1 border-r border-solid border-white  bg-fcu-orange">
-                        <div className="bg-white/80" style={{ flex: 100 - co2Percent }}></div>
+                    <div className="group stretch flex items-center">
+                      <div className="pl-12 pr-3 flex flex-1 border-r border-solid border-white">
                         <div
-                          className="relative overflow-hidden whitespace-nowrap px-2 py-0.5 font-extrabold text-white hover:overflow-visible sm:text-xs md:text-sm"
-                          style={{ flex: co2Percent }}
+                          className="relative bg-fcu-orange-light/10 whitespace-nowrap py-0.5 tracking-tight text-left font-extrabold text-fcu-orange-light sm:text-xs md:text-sm flex items-center justify-end"
+                          style={{ flex: 100 - co2UpperPercent }}
                         >
-                          {formatEmissionsCO2(co2)}
+                          <span className="pr-0.5 absolute right-[12px]">{co2UpperBoundString}</span>
+                          <div className="border-solid border-l-fcu-orange-light border-l-[12px] border-y-transparent border-y-[5px] my-1 border-r-0"></div>
+                        </div>
+                        <div className="relative bg-fcu-orange-light" style={{ flex: co2Width }}></div>
+                        <div
+                          className="relative bg-fcu-orange-light/30 whitespace-nowrap tracking-tight py-0.5 text-right font-extrabold text-fcu-orange-light sm:text-xs md:text-sm flex items-center justify-start"
+                          style={{ flex: co2LowerPercent }}
+                        >
+                          <div className="border-solid border-r-fcu-orange-light border-r-[12px] border-y-transparent border-y-[5px] my-1 border-l-0"></div>
+                          <span className="absolute left-[12px] pl-0.5">{co2LowerBoundString}</span>
                         </div>
                       </div>
-                      <div className="flex flex-1 border-l border-solid border-white bg-fcu-blue">
+                      <div className="pr-12 pl-3 flex flex-1 border-l border-solid border-white">
                         <div
-                          className="relative overflow-hidden whitespace-nowrap px-2 py-0.5 text-right font-extrabold text-white hover:overflow-visible sm:text-xs md:text-sm"
-                          style={{ flex: maxCostPercent }}
+                          className="relative bg-fcu-purple/30 whitespace-nowrap tracking-tight py-0.5 text-right font-extrabold text-fcu-purple sm:text-xs md:text-sm flex items-center justify-end"
+                          style={{ flex: costLowerPercent }}
                         >
-                          <div className="absolute right-0 top-0 h-full w-[20%] bg-white/40"></div>
-                          {formatPrecisionRange(cost)}
+                          <span className="pr-0.5 absolute right-[12px]">{lowerBoundString}</span>
+                          <div className="border-solid border-l-fcu-purple border-l-[12px] border-y-transparent border-y-[5px] my-1 border-r-0"></div>
                         </div>
-                        <div className="bg-white/80" style={{ flex: 100 - maxCostPercent }}></div>
+                        <div className="relative bg-fcu-purple" style={{ flex: costWidth }}></div>
+                        <div
+                          className="relative bg-fcu-purple/10 whitespace-nowrap py-0.5 tracking-tight text-left font-extrabold text-fcu-purple sm:text-xs md:text-sm flex items-center justify-start"
+                          style={{ flex: 100 - costUpperPercent }}
+                        >
+                          <div className="border-solid border-r-fcu-purple border-r-[12px] border-y-transparent border-y-[5px] my-1 border-l-0"></div>
+                          <span className="pl-0.5 absolute left-[12px]">{upperBoundString}</span>
+                        </div>
                       </div>
                     </div>
                   </>
                 );
               })}
+              <div className="flex justify-between text-sm font-bold text-faded mt-8">
+                <div className="flex-1 px-0.5 ml-12 mr-3 flex items-center justify-between">
+                  <span>{formatEmissionsCO2(scaleEmissionsCO2maxValue)}</span>
+                  <span>{0}</span>
+                </div>
+                <div className="flex-1 px-0.5 mr-12 ml-3 flex items-center justify-between">
+                  <span>{0}</span>
+                  <span>{formatCost(scaleCostMaxValue)}</span>
+                </div>
+              </div>
             </div>
           </div>
         )}
@@ -515,6 +594,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
             <DisclaimerButton className="!mb-5" />
             {typeDeBatiment === 'résidentiel' && (
               <SegmentedControl
+                className="!mt-2"
                 hideLegend
                 small
                 segments={[
