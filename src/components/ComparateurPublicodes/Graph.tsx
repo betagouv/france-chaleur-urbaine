@@ -469,16 +469,6 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
                   }}
                 ></div>
               </div>
-              <div className="flex justify-between text-sm font-bold text-faded">
-                <div className="flex-1 px-1 ml-12 mr-3 flex items-center justify-between">
-                  <span>{formatEmissionsCO2(scaleEmissionsCO2maxValue)}</span>
-                  <span>{0}</span>
-                </div>
-                <div className="flex-1 px-1 mr-12 ml-3 flex items-center justify-between">
-                  <span>{0}</span>
-                  <span>{formatCost(scaleCostMaxValue)}</span>
-                </div>
-              </div>
               {totalCoutsEtEmissions.map(([name, cost, co2]) => {
                 const {
                   lowerBound: co2LowerBound,
@@ -512,7 +502,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
                 return (
                   <>
                     {showSectionTitle && (
-                      <div className="relative mb-1 mt-12 text-center text-xl font-bold bg-white/50">{graphSectionTitle}</div>
+                      <div className="relative mb-1 mt-8 text-center text-xl font-bold bg-white/50">{graphSectionTitle}</div>
                     )}
                     <div key={name} className="relative mb-1 mt-2 flex items-center justify-center text-base font-bold">
                       <span className="bg-white">{name}</span>
@@ -556,6 +546,16 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
                   </>
                 );
               })}
+              <div className="flex justify-between text-sm font-bold text-faded mt-8">
+                <div className="flex-1 px-0.5 ml-12 mr-3 flex items-center justify-between">
+                  <span>{formatEmissionsCO2(scaleEmissionsCO2maxValue)}</span>
+                  <span>{0}</span>
+                </div>
+                <div className="flex-1 px-0.5 mr-12 ml-3 flex items-center justify-between">
+                  <span>{0}</span>
+                  <span>{formatCost(scaleCostMaxValue)}</span>
+                </div>
+              </div>
             </div>
           </div>
         )}
