@@ -156,6 +156,21 @@ module.exports = withBundleAnalyzer(
             destination: '/campagnes2024',
             permanent: true,
           },
+          {
+            source: '/index-fioul-campaign',
+            destination: '/',
+            permanent: true,
+          },
+          {
+            source: '/index-gaz-campaign-1',
+            destination: '/',
+            permanent: true,
+          },
+          {
+            source: '/index-gaz-campaign-2',
+            destination: '/',
+            permanent: true,
+          },
         ];
       },
       async headers() {
