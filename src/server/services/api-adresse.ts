@@ -1,7 +1,13 @@
 import Papa from 'papaparse';
 
 import { env } from '@/environment';
+import { parentLogger } from '@/server/helpers/logger';
 import { handleError } from '@/utils/network';
+import { sleep } from '@/utils/time';
+
+const logger = parentLogger.child({
+  module: 'api-adresse',
+});
 
 export type APIAdresseResult = {
   address: string;
@@ -24,34 +30,65 @@ export type APIAdresseResult = {
     }
 );
 
+const MINIMUM_RETRY_DELAY = 2_000;
+const MAXIMUM_RETRY_DELAY = 30_000;
+const MAX_TOTAL_TIME = 180_000; // 3 minutes
+
 export async function getAddressesCoordinates(addressesCSV: string) {
-  const form = new FormData();
-  form.append('data', new Blob([`address\n${addressesCSV}`]), 'file.csv');
-  form.append('result_columns', 'latitude');
-  form.append('result_columns', 'longitude');
-  form.append('result_columns', 'result_score');
-  form.append('result_columns', 'result_city');
-  form.append('result_columns', 'result_label');
-  form.append('result_columns', 'result_status');
+  const startTime = Date.now();
+  let attempt = 0;
 
-  const res = await fetch(`${env.API_ADRESSE_URL}/search/csv/`, {
-    method: 'post',
-    body: form,
-  });
-  if (!res.ok) {
-    // TODO gérer statut 503 et retenter plus tard
-    await handleError(res, `${env.API_ADRESSE_URL}/search/csv/`);
-  }
-  const responseBody = await res.text();
+  for (;;) {
+    try {
+      const form = new FormData();
+      form.append('data', new Blob([`address\n${addressesCSV}`]), 'file.csv');
+      form.append('result_columns', 'latitude');
+      form.append('result_columns', 'longitude');
+      form.append('result_columns', 'result_score');
+      form.append('result_columns', 'result_city');
+      form.append('result_columns', 'result_label');
+      form.append('result_columns', 'result_status');
 
-  const results = Papa.parse(responseBody, {
-    header: true,
-    dynamicTyping: true,
-    skipEmptyLines: true,
-  });
-  if (results.errors.length > 0) {
-    console.error('parsing errors:', results.errors);
-    throw new Error('parsing errors');
+      const res = await fetch(`${env.API_ADRESSE_URL}/search/csv/`, {
+        method: 'post',
+        body: form,
+      });
+
+      if (!res.ok) {
+        handleError(res, `${env.API_ADRESSE_URL}/search/csv/`);
+      }
+
+      const responseBody = await res.text();
+      const results = Papa.parse(responseBody, {
+        header: true,
+        dynamicTyping: true,
+        skipEmptyLines: true,
+      });
+
+      if (results.errors.length > 0) {
+        throw new Error('CSV parsing errors: ' + JSON.stringify(results.errors));
+      }
+
+      const data = results.data as APIAdresseResult[];
+
+      // TODO vérifier si on peut avoir seulement quelques lignes en error et pas toutes
+      // if (data.some((result) => result.result_status === 'error')) {
+      //   throw new Error('Some addresses returned with error status');
+      // }
+
+      return data;
+    } catch (err: any) {
+      attempt++;
+      const elapsedTime = Date.now() - startTime;
+
+      if (elapsedTime >= MAX_TOTAL_TIME) {
+        throw new Error(`Operation timed out after ${MAX_TOTAL_TIME}ms: ${err.message}`);
+      }
+
+      // Exponential backoff
+      const delay = Math.min(Math.max(MINIMUM_RETRY_DELAY, MINIMUM_RETRY_DELAY * Math.pow(1.5, attempt)), MAXIMUM_RETRY_DELAY);
+      logger.error(`results error retrying in ${delay}ms`, { err: err.message });
+      await sleep(delay);
+    }
   }
-  return results.data as APIAdresseResult[];
 }

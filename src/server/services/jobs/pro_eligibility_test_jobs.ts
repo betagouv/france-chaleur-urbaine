@@ -15,6 +15,11 @@ export type ProEligibilityTestJob = Omit<Selectable<Jobs>, 'data'> & {
   };
 };
 
+type JobStats = {
+  updatedCount: number;
+  insertedCount: number;
+};
+
 const chunkSize = 1000;
 
 export async function processProEligibilityTestJob(job: ProEligibilityTestJob, logger: Logger) {
@@ -25,11 +30,14 @@ export async function processProEligibilityTestJob(job: ProEligibilityTestJob, l
   const chunks = chunk(lines, chunkSize);
   for (const chunk of chunks.values()) {
     const chunkResults = await getAddressesCoordinates(chunk.join('\n'));
-    // console.log('BAN results', chunkResults);
     addresses.push(...chunkResults);
   }
-  logger.info('API BAN', { duration: Date.now() - startTime });
+  logger.info('API Adresse', { duration: Date.now() - startTime });
 
+  const jobStats: JobStats = {
+    updatedCount: 0,
+    insertedCount: 0,
+  };
   {
     const startTime = Date.now();
     await kdb.transaction().execute(async (trx) => {
@@ -60,8 +68,10 @@ export async function processProEligibilityTestJob(job: ProEligibilityTestJob, l
           const existingAddressId = existingAddressesMap.get(addressItem.address);
           if (existingAddressId) {
             await trx.updateTable('pro_eligibility_tests_addresses').set(addressData).where('id', '=', existingAddressId).execute();
+            jobStats.updatedCount++;
           } else {
             await trx.insertInto('pro_eligibility_tests_addresses').values(addressData).execute();
+            jobStats.insertedCount++;
           }
         },
         { concurrency: 20 }
@@ -82,6 +92,6 @@ export async function processProEligibilityTestJob(job: ProEligibilityTestJob, l
     .execute();
 
   return {
-    duration: Date.now() - startTime,
+    stats: jobStats,
   };
 }

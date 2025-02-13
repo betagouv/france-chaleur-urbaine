@@ -22,6 +22,7 @@ export async function processJobById(jobId: string) {
 }
 
 async function processJob(job: Job) {
+  const startTime = Date.now();
   const jobLogger = logger.child({
     jobId: job.id,
   });
@@ -34,12 +35,17 @@ async function processJob(job: Job) {
     }
     const jobResult = await handleFunc(job as any, jobLogger);
 
-    await kdb.updateTable('jobs').set({ status: 'finished', updated_at: new Date(), result: jobResult }).where('id', '=', job.id).execute();
-  } catch (err: any) {
-    jobLogger.error('error processing job', { err: err.message });
     await kdb
       .updateTable('jobs')
-      .set({ status: 'error', result: { error: err.message }, updated_at: new Date() })
+      .set({ status: 'finished', updated_at: new Date(), result: { ...jobResult, duration: Date.now() - startTime } })
+      .where('id', '=', job.id)
+      .execute();
+    jobLogger.info('finished job', { ...jobResult, duration: Date.now() - startTime });
+  } catch (err: any) {
+    jobLogger.error('error processing job', { err: err.message, duration: Date.now() - startTime });
+    await kdb
+      .updateTable('jobs')
+      .set({ status: 'error', result: { error: err.message, duration: Date.now() - startTime }, updated_at: new Date() })
       .where('id', '=', job.id)
       .execute();
   }
