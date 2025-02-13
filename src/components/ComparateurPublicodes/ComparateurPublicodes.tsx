@@ -173,7 +173,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
                   </Link>
                 )}
                 <Button onClick={displayContactForm} size="small">
-                  Etre mis en relation avec le gestionnaire
+                  Être mis en relation avec le gestionnaire
                 </Button>
               </div>
             </>
