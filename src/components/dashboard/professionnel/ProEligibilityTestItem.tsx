@@ -127,7 +127,7 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
   };
 
   const handleDelete = async (testId: string) => {
-    if (!confirm('Etes-vous sûr de vouloir supprimer ce test ?')) {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer ce test ?')) {
       return;
     }
     await deleteTest(testId);
