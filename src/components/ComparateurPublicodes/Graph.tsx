@@ -14,7 +14,7 @@ import { deepMergeObjects } from '@/utils/core';
 import cx from '@/utils/cx';
 
 import { ChartPlaceholder, GraphTooltip } from './ComparateurPublicodes.style';
-import { modesDeChauffage } from './modes-de-chauffage';
+import { modesDeChauffage } from './mappings';
 import { dataYearDisclaimer, DisclaimerButton, Logos } from './Placeholder';
 import { type SimulatorEngine } from './useSimulatorEngine';
 

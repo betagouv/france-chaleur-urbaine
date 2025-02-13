@@ -7,7 +7,7 @@ import { UrlStateAccordion as Accordion, UrlStateAccordion } from '@/components/
 import useArrayQueryState from '@/hooks/useArrayQueryState';
 
 import { Title } from './ComparateurPublicodes.style';
-import { type ModeDeChauffage } from './modes-de-chauffage';
+import { type ModeDeChauffage } from './mappings';
 import { type SimulatorEngine } from './useSimulatorEngine';
 
 type ParametresDesModesDeChauffageFormProps = React.HTMLAttributes<HTMLDivElement> & {

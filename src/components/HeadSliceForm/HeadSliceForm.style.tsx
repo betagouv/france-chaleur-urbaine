@@ -85,7 +85,7 @@ export const FormLabel = styled.div<{ colored?: boolean }>`
   font-weight: 500;
   letter-spacing: -0.05rem;
   font-size: 1.25rem;
-  margin: 32px 0 16px 0;
+  margin: 0 0 16px 0;
 `;
 
 export const FormWarningMessage = styled.div<{ show?: boolean }>`
