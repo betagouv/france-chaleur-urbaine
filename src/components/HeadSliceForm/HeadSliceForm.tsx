@@ -1,10 +1,10 @@
 import { useRouter } from 'next/router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
-import AddressAutocomplete from '@/components/addressAutocomplete';
 import { EligibilityFormContact, EligibilityFormMessageConfirmation, type EnergyInputsLabelsType } from '@/components/EligibilityForm';
 import { CheckEligibilityFormLabel, SelectEnergy } from '@/components/EligibilityForm/components';
 import { energyInputsDefaultLabels } from '@/components/EligibilityForm/EligibilityFormAddress';
+import AddressAutocomplete from '@/components/form/dsfr/AddressAutocompleteInput';
 import MarkdownWrapper from '@/components/MarkdownWrapper';
 import Slice from '@/components/Slice';
 import Box from '@/components/ui/Box';
@@ -167,10 +167,11 @@ const HeadSliceForm = ({
               />
             </CheckEligibilityFormLabel>
             <AddressAutocomplete
-              placeholder="Tapez ici votre adresse"
-              onAddressSelected={(address, suggestionItem) => {
-                setAddress(address);
-                setGeoAddress(suggestionItem);
+              nativeInputProps={{ placeholder: 'Tapez ici votre adresse' }}
+              onSelect={(geoAddress?: SuggestionItem) => {
+                const address = geoAddress?.properties?.label;
+                setAddress(address ?? '');
+                setGeoAddress(geoAddress);
               }}
             />
 

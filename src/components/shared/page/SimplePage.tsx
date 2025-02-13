@@ -1,9 +1,9 @@
 import { fr } from '@codegouvfr/react-dsfr';
 import { Footer } from '@codegouvfr/react-dsfr/Footer';
 import UnstyledMainNavigation, { type MainNavigationProps } from '@codegouvfr/react-dsfr/MainNavigation';
+import { signOut, useSession } from 'next-auth/react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { signOut, useSession } from 'next-auth/react';
 import React from 'react';
 import styled, { css } from 'styled-components';
 
@@ -161,7 +161,53 @@ const publicNavigationMenu: MainNavigationProps.Item[] = [
       },
     ],
   },
-
+  {
+    text: 'Professionnels',
+    menuLinks: [
+      {
+        text: 'Nos services pour les professionnels',
+        linkProps: {
+          href: '/professionnels',
+        },
+      },
+      {
+        text: 'Les avantages du chauffage urbain',
+        linkProps: {
+          href: '/professionnels#avantages-du-chauffage-urbain',
+        },
+      },
+      {
+        text: 'Testez une liste d’adresses',
+        linkProps: {
+          href: '/professionnels#test-liste',
+        },
+      },
+      {
+        text: 'Les coûts du chauffage urbain',
+        linkProps: {
+          href: '/professionnels#simulateur-aide',
+        },
+      },
+      {
+        text: 'Le décret tertiaire',
+        linkProps: {
+          href: '/professionnels#decrettertiaire',
+        },
+      },
+      {
+        text: 'Les obligations de raccordement',
+        linkProps: {
+          href: '/professionnels#obligations-de-raccordement',
+        },
+      },
+      {
+        text: 'Simulateur d’émissions de CO2',
+        linkProps: {
+          href: '/professionnels#simulateur-co2',
+        },
+      },
+    ],
+  },
   {
     text: 'Notre service',
     menuLinks: [
@@ -185,94 +231,6 @@ const publicNavigationMenu: MainNavigationProps.Item[] = [
       },
     ],
   },
-  // {
-  //   text: 'Professionnels',
-  //   menuLinks: [
-  //     {
-  //       text: 'Nos services pour les professionnels',
-  //       linkProps: {
-  //         href: '/professionnels',
-  //       },
-  //     },
-  //     {
-  //       text: 'Les avantages du chauffage urbain',
-  //       linkProps: {
-  //         href: '/professionnels#avantages-du-chauffage-urbain',
-  //       },
-  //     },
-  //     {
-  //       text: 'Testez une liste d’adresses',
-  //       linkProps: {
-  //         href: '/professionnels#test-liste',
-  //       },
-  //     },
-  //     {
-  //       text: 'Les coûts du chauffage urbain',
-  //       linkProps: {
-  //         href: '/professionnels#simulateur-aide',
-  //       },
-  //     },
-  //     {
-  //       text: 'Le décret tertiaire',
-  //       linkProps: {
-  //         href: '/professionnels#decrettertiaire',
-  //       },
-  //     },
-  //     {
-  //       text: 'Les obligations de raccordement',
-  //       linkProps: {
-  //         href: '/professionnels#obligations-de-raccordement',
-  //       },
-  //     },
-  //     {
-  //       text: 'Simulateur d’émissions de CO2',
-  //       linkProps: {
-  //         href: '/professionnels#simulateur-co2',
-  //       },
-  //     },
-  //   ],
-  // },
-  // {
-  //   text: 'Copropriétaires',
-  //   menuLinks: [
-  //     {
-  //       text: 'Testez votre adresse',
-  //       linkProps: {
-  //         href: '/',
-  //       },
-  //     },
-  //     {
-  //       text: 'Comprendre le chauffage urbain',
-  //       linkProps: {
-  //         href: '/#comprendre-le-chauffage-urbain',
-  //       },
-  //     },
-  //     {
-  //       text: 'Les avantages du chauffage urbain',
-  //       linkProps: {
-  //         href: '/#avantages-du-chauffage-urbain',
-  //       },
-  //     },
-  //     {
-  //       text: 'Les coûts du chauffage urbain',
-  //       linkProps: {
-  //         href: '/#couts-du-chauffage-urbain',
-  //       },
-  //     },
-  //     {
-  //       text: 'Les obligations de raccordement',
-  //       linkProps: {
-  //         href: '/#obligations-de-raccordement',
-  //       },
-  //     },
-  //     {
-  //       text: 'Comment se raccorder ?',
-  //       linkProps: {
-  //         href: '/#comment-se-raccorder',
-  //       },
-  //     },
-  //   ],
-  // },
 ];
 
 const authenticatedNavigationMenu: MainNavigationProps.Item[] = [
