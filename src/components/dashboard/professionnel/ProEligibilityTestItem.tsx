@@ -226,7 +226,14 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
             >
               Ajouter des adresses
             </Button>
-            <Button size="small" onClick={() => handleDelete(test.id)} loading={isDeleting} variant="destructive" priority="secondary">
+            <Button
+              size="small"
+              onClick={() => handleDelete(test.id)}
+              loading={isDeleting}
+              variant="destructive"
+              priority="secondary"
+              title="Supprimer le test"
+            >
               <Icon name="ri-delete-bin-2-line" />
             </Button>
           </div>

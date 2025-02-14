@@ -167,6 +167,7 @@ const TableSimple = <T extends RowData>({ data, columns, initialSortingState, co
                                 )[header.column.getIsSorted() as string] ?? undefined
                               }
                               onClick={header.column.getToggleSortingHandler()}
+                              title="Cliquer pour trier"
                             >
                               Trier
                             </button>
