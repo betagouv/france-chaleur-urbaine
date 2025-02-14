@@ -16,7 +16,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const userSession = await getSession(context);
 
   if (userSession) {
-    return { redirect: { destination: '/gestionnaire', permanent: false } };
+    return { redirect: { destination: '/tableau-de-bord', permanent: false } };
   }
 
   return {

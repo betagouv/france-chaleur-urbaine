@@ -43,6 +43,8 @@ const config = {
         success: fr.colors.decisions.text.default.success.default,
         error: fr.colors.decisions.text.default.error.default,
         'error-light': fr.colors.decisions.background.contrast.error.default,
+        destructive: fr.colors.decisions.text.default.error.default,
+        'destructive-light': fr.colors.decisions.background.contrast.error.default,
         warning: fr.colors.decisions.text.default.warning.default,
         'warning-light': fr.colors.decisions.background.contrast.warning.default,
         'fcu-green': '#009364',

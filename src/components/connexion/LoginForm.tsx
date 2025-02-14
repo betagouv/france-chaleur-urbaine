@@ -1,9 +1,9 @@
-import { Button } from '@codegouvfr/react-dsfr/Button';
 import Link from 'next/link';
 import { signIn } from 'next-auth/react';
 import { type FormEvent, useState } from 'react';
 
 import Input from '@/components/form/dsfr/Input';
+import Button from '@/components/ui/Button';
 
 import { Container, Password, PasswordIcon, PasswordInput } from './Form.styles';
 
@@ -14,14 +14,21 @@ export const LoginForm = ({ callbackUrl }: LoginFormProps) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [seePassword, setSeePassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const connect = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    signIn('credentials', {
-      callbackUrl,
-      email,
-      password,
-    });
+    setLoading(true);
+    try {
+      await signIn('credentials', {
+        callbackUrl,
+        email,
+        password,
+      });
+    } catch (err) {
+      console.log(err);
+    }
+    setLoading(false);
   };
 
   return (
@@ -55,7 +62,9 @@ export const LoginForm = ({ callbackUrl }: LoginFormProps) => {
       <Password>
         <Link href="/reset-password">Mot de passe oublié ?</Link>
       </Password>
-      <Button type="submit">Me connecter</Button>
+      <Button type="submit" loading={loading}>
+        Me connecter
+      </Button>
     </Container>
   );
 };

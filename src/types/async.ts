@@ -1,7 +1,8 @@
 import pLimit from 'p-limit';
 
 /**
- * Process an iterable in parallel,
+ * Process an iterable in parallel.
+ * Beware: errors are unhandled.
  */
 export async function processInParallel<T>(
   iterable: Iterable<T>,

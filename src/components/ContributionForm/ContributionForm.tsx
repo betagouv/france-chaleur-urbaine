@@ -1,11 +1,12 @@
 import Alert from '@codegouvfr/react-dsfr/Alert';
-import RadioButtons, { type RadioButtonsProps } from '@codegouvfr/react-dsfr/RadioButtons';
+import RadioButtons from '@codegouvfr/react-dsfr/RadioButtons';
 import { Upload } from '@codegouvfr/react-dsfr/Upload';
-import { type FieldApi, type FormState, standardSchemaValidator, useForm } from '@tanstack/react-form';
+import { type FormState, standardSchemaValidator, useForm } from '@tanstack/react-form';
 import { useEffect, useState } from 'react';
 import { z, type ZodSchema } from 'zod';
 
 import Input from '@/components/form/dsfr/Input';
+import { getInputErrorStates } from '@/components/form/tanstack-form';
 import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
 import { toastErrors } from '@/services/notification';
@@ -609,10 +610,3 @@ const ContributionForm = () => {
 };
 
 export default ContributionForm;
-
-function getInputErrorStates(field: FieldApi<any, any, any, any, any>): Pick<RadioButtonsProps, 'state' | 'stateRelatedMessage'> {
-  return {
-    state: field.state.meta.isTouched && field.state.meta.errors.length ? 'error' : 'default',
-    stateRelatedMessage: field.state.meta.isTouched && field.state.meta.errors.length ? field.state.meta.errors.join(', ') : undefined,
-  };
-}

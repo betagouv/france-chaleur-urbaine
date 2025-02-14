@@ -20,7 +20,7 @@ export const fetchJSON = async <Data = any>(url: string): Promise<Data> => {
   return await res.json();
 };
 
-export const postFetchJSON = async <Data = any>(url: string, body: any): Promise<Data> => {
+export const postFetchJSON = async <Data = any>(url: string, body?: any): Promise<Data> => {
   const res = await fetch(url, {
     method: 'POST',
     headers: {
@@ -69,7 +69,7 @@ export const deleteFetchJSON = async <Data = any>(url: string): Promise<Data> =>
   return await res.json();
 };
 
-async function handleError(res: Response, url: string) {
+export async function handleError(res: Response, url: string) {
   const isJson = res.headers.get('Content-Type')?.includes('application/json');
   const errorData = isJson ? await res.json().catch(() => null) : null;
   const errorMessage =
