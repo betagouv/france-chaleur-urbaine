@@ -145,16 +145,29 @@ const TableSimple = <T extends RowData>({ data, columns, initialSortingState, lo
                         display: 'flex',
                         flex: columnDef.flex || 1,
                       }}
-                      className={cx(columnClassName(columnDef), header.column.getCanSort() ? 'cursor-pointer select-none' : '')}
-                      onClick={header.column.getToggleSortingHandler()}
+                      className={cx(columnClassName(columnDef))}
                     >
                       {header.isPlaceholder ? null : (
                         <>
                           {flexRender(columnDef.header, header.getContext())}
-                          {{
-                            asc: ' ▲',
-                            desc: ' ▼',
-                          }[header.column.getIsSorted() as string] ?? null}
+                          {header.column.getCanSort() && (
+                            /* eslint-disable-next-line jsx-a11y/role-supports-aria-props */
+                            <button
+                              type="button"
+                              className="fr-btn--sort fr-btn fr-btn--sm ml-2"
+                              aria-sort={
+                                (
+                                  {
+                                    asc: 'ascending',
+                                    desc: 'descending',
+                                  } as const
+                                )[header.column.getIsSorted() as string] ?? undefined
+                              }
+                              onClick={header.column.getToggleSortingHandler()}
+                            >
+                              Trier
+                            </button>
+                          )}
                         </>
                       )}
                     </th>
