@@ -189,32 +189,34 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
           }
         }}
       >
-        <div className="flex items-center">
-          <Indicator loading={isLoading} label="Adresses" value={stats.adressesCount} />
-          <Divider />
-          <Indicator
-            loading={isLoading}
-            label="Adresses raccordables"
-            value={stats.adressesEligiblesCount}
-            onClick={() => handleIndicatorClick('eligibility_status.isEligible', true)}
-            active={isIndicatorFilterActive('eligibility_status.isEligible')}
-          />
-          <Divider />
-          <Indicator
-            loading={isLoading}
-            label="Adresses à moins de 150m d'un réseau"
-            value={stats.adressesProches150mReseauCount}
-            onClick={() => handleIndicatorClick('eligibility_status.distance', 150)}
-            active={isIndicatorFilterActive('eligibility_status.distance')}
-          />
-          <Divider />
-          <Indicator
-            loading={isLoading}
-            label="Adresses dans un PDP"
-            value={stats.adressesDansPDPCount}
-            onClick={() => handleIndicatorClick('eligibility_status.inPDP', true)}
-            active={isIndicatorFilterActive('eligibility_status.inPDP')}
-          />
+        <div className="flex flex-wrap mb-4">
+          <div className="flex items-center">
+            <Indicator loading={isLoading} label="Adresses" value={stats.adressesCount} />
+            <Divider />
+            <Indicator
+              loading={isLoading}
+              label="Adresses raccordables"
+              value={stats.adressesEligiblesCount}
+              onClick={() => handleIndicatorClick('eligibility_status.isEligible', true)}
+              active={isIndicatorFilterActive('eligibility_status.isEligible')}
+            />
+            <Divider />
+            <Indicator
+              loading={isLoading}
+              label="Adresses à moins de 150m d'un réseau"
+              value={stats.adressesProches150mReseauCount}
+              onClick={() => handleIndicatorClick('eligibility_status.distance', 150)}
+              active={isIndicatorFilterActive('eligibility_status.distance')}
+            />
+            <Divider />
+            <Indicator
+              loading={isLoading}
+              label="Adresses dans un PDP"
+              value={stats.adressesDansPDPCount}
+              onClick={() => handleIndicatorClick('eligibility_status.inPDP', true)}
+              active={isIndicatorFilterActive('eligibility_status.inPDP')}
+            />
+          </div>
           <div className="ml-auto flex items-center gap-2">
             <Button
               iconId="ri-file-add-fill"
