@@ -221,6 +221,7 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
             <Button
               iconId="ri-file-add-fill"
               size="small"
+              priority="secondary"
               onClick={() => createTest({ csvContent: Array.from({ length: 200 }, () => faker.location.streetAddress()).join('\n') })}
               loading={isCreating}
             >
