@@ -25,10 +25,21 @@ const chunkSize = 1000;
 export async function processProEligibilityTestJob(job: ProEligibilityTestJob, logger: Logger) {
   const startTime = Date.now();
 
-  const lines = job.data.csvContent.split('\n').map((line) => `"${line.replace(/"/g, '""')}"`); // escape double quotes
+  const lines = job.data.csvContent
+    .split('\n')
+    .filter((line) => line) // remove empty lines
+    .map((line) => (line.startsWith('"') ? line : `"${line}"`)); // only add quotes if not already quoted
+  logger.info('infos', { addressesCount: lines.length });
   const addresses: APIAdresseResult[] = [];
   const chunks = chunk(lines, chunkSize);
-  for (const chunk of chunks.values()) {
+  const totalChunks = chunks.length;
+  for (const [index, chunk] of chunks.entries()) {
+    logger.info('processing chunk', {
+      current: index + 1,
+      size: chunk.length,
+      total: totalChunks,
+      progress: `${Math.round(((index + 1) / totalChunks) * 100)}%`,
+    });
     const chunkResults = await getAddressesCoordinates(chunk.join('\n'));
     addresses.push(...chunkResults);
   }
@@ -49,6 +60,9 @@ export async function processProEligibilityTestJob(job: ProEligibilityTestJob, l
         .execute();
 
       const existingAddressesMap = new Map(existingAddresses.map((a) => [a.source_address, a.id]));
+
+      let processedCount = 0;
+      const totalAddresses = addresses.length;
 
       const processAddress = limitFunction(
         async (addressItem: (typeof addresses)[number]) => {
@@ -72,6 +86,15 @@ export async function processProEligibilityTestJob(job: ProEligibilityTestJob, l
           } else {
             await trx.insertInto('pro_eligibility_tests_addresses').values(addressData).execute();
             jobStats.insertedCount++;
+          }
+
+          processedCount++;
+          if (processedCount % 100 === 0) {
+            logger.info('processing addresses', {
+              processed: processedCount,
+              total: totalAddresses,
+              progress: `${Math.round((processedCount / totalAddresses) * 100)}%`,
+            });
           }
         },
         { concurrency: 20 }

@@ -21,7 +21,7 @@ export type APIAdresseResult = {
       result_city: string;
     }
   | {
-      result_status: 'error' | 'not-found';
+      result_status: 'error' | 'not-found' | 'skipped';
       latitude: null;
       longitude: null;
       result_label: null;
@@ -75,6 +75,14 @@ export async function getAddressesCoordinates(addressesCSV: string) {
       // if (data.some((result) => result.result_status === 'error')) {
       //   throw new Error('Some addresses returned with error status');
       // }
+      const stats = data.reduce(
+        (acc, result) => {
+          acc[result.result_status] = (acc[result.result_status] || 0) + 1;
+          return acc;
+        },
+        {} as Record<string, number>
+      );
+      logger.info('address results stats', stats);
 
       return data;
     } catch (err: any) {
