@@ -51,9 +51,11 @@ async function processJob(job: Job) {
   }
 }
 
+let isShuttingDown = false;
+let currentJobId: string | undefined;
+
 export async function processJobsIndefinitely() {
-  // eslint-disable-next-line no-constant-condition
-  while (true) {
+  while (!isShuttingDown) {
     try {
       const job = await getNextJob();
 
@@ -63,12 +65,32 @@ export async function processJobsIndefinitely() {
         continue;
       }
 
+      currentJobId = job.id;
       await processJob(job);
     } catch (err: any) {
       // do not stop the worker
       logger.error('unknown job error', { err: err.message });
+    } finally {
+      currentJobId = undefined;
     }
   }
+}
+
+export async function shutdownProcessor() {
+  isShuttingDown = true;
+  if (!currentJobId) {
+    return;
+  }
+  // Reset current job to pending if there is one
+  await kdb
+    .updateTable('jobs')
+    .set({
+      status: 'pending',
+      updated_at: new Date(),
+      result: null,
+    })
+    .where('id', '=', currentJobId)
+    .execute();
 }
 
 /**

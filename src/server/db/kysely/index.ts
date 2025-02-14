@@ -6,6 +6,7 @@ import '@/server/db'; // permet d'importer les variables d'env correctement
 
 import { env } from '@/environment';
 import { parentLogger } from '@/server/helpers/logger';
+import { sleep } from '@/utils/time';
 
 import { type DB as Database } from './database';
 
@@ -42,6 +43,14 @@ export const db = new Kysely<Database>({
       }
     : undefined,
 });
+
+/**
+ * Try to shut down database connections. (timeout is 2 seconds)
+ */
+export async function shutdownKyselyDatabase() {
+  logger.warn('shutting down database connections');
+  await Promise.race([db.destroy(), sleep(2000)]);
+}
 
 /**
  * Kysely database. Allows better distinction with knex `db` variable.
