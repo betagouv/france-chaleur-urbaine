@@ -1,13 +1,10 @@
 import Papa from 'papaparse';
+import { type Logger } from 'winston';
 
 import { env } from '@/environment';
 import { parentLogger } from '@/server/helpers/logger';
 import { handleError } from '@/utils/network';
 import { sleep } from '@/utils/time';
-
-const logger = parentLogger.child({
-  module: 'api-adresse',
-});
 
 export type APIAdresseResult = {
   address: string;
@@ -34,9 +31,12 @@ const MINIMUM_RETRY_DELAY = 2_000;
 const MAXIMUM_RETRY_DELAY = 30_000;
 const MAX_TOTAL_TIME = 180_000; // 3 minutes
 
-export async function getAddressesCoordinates(addressesCSV: string) {
+export async function getAddressesCoordinates(addressesCSV: string, contextLogger?: Logger) {
   const startTime = Date.now();
   let attempt = 0;
+  const logger = (contextLogger ?? parentLogger).child({
+    module: 'api-adresse',
+  });
 
   for (;;) {
     try {
@@ -82,7 +82,7 @@ export async function getAddressesCoordinates(addressesCSV: string) {
         },
         {} as Record<string, number>
       );
-      logger.info('address results stats', stats);
+      logger.info('results stats', stats);
 
       return data;
     } catch (err: any) {

@@ -24,7 +24,6 @@ const chunkSize = 1000;
 
 export async function processProEligibilityTestJob(job: ProEligibilityTestJob, logger: Logger) {
   const startTime = Date.now();
-
   const lines = job.data.csvContent
     .split('\n')
     .filter((line) => line) // remove empty lines
@@ -40,7 +39,7 @@ export async function processProEligibilityTestJob(job: ProEligibilityTestJob, l
       total: totalChunks,
       progress: `${Math.round(((index + 1) / totalChunks) * 100)}%`,
     });
-    const chunkResults = await getAddressesCoordinates(chunk.join('\n'));
+    const chunkResults = await getAddressesCoordinates(chunk.join('\n'), logger);
     addresses.push(...chunkResults);
   }
   logger.info('API Adresse', { duration: Date.now() - startTime });
