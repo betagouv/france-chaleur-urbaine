@@ -1,6 +1,6 @@
 import Badge from '@codegouvfr/react-dsfr/Badge';
 import { faker } from '@faker-js/faker';
-import { type SortingState } from '@tanstack/react-table';
+import { type SortingState, type ColumnFiltersState } from '@tanstack/react-table';
 import { useQueryState } from 'nuqs';
 import { useState } from 'react';
 
@@ -47,20 +47,29 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
   {
     header: 'Raccordable',
     accessorKey: 'eligibility_status.isEligible',
+    id: 'eligibility_status.isEligible', // used to filter
     cellType: 'Boolean',
     align: 'center',
+    filterFn: 'equals',
   },
   {
     header: 'Distance au réseau',
     accessorKey: 'eligibility_status.distance',
+    id: 'eligibility_status.distance', // used to filter
     suffix: 'm',
     align: 'right',
+    filterFn: (row, columnId, filterValue: number) => {
+      const value = row.getValue<number>(columnId);
+      return value != null && value <= filterValue;
+    },
   },
   {
     header: 'PDP',
     accessorKey: 'eligibility_status.inPDP',
+    id: 'eligibility_status.inPDP', // used to filter
     cellType: 'Boolean',
     align: 'center',
+    filterFn: 'equals',
   },
   {
     header: 'Taux EnR&R',
@@ -96,6 +105,7 @@ const queryParamName = 'test-adresses';
 export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemProps) {
   const [value] = useQueryState(queryParamName);
   const [viewDetail, setViewDetail] = useState(value === test.id);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
   const { data: testDetails, isLoading } = useFetch<ProEligibilityTestWithAddresses>(`/api/pro-eligibility-tests/${test.id}`, {
     enabled: viewDetail,
@@ -132,6 +142,14 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
     }
     await deleteTest(testId);
   };
+
+  const handleIndicatorClick = (filterKey: string, filterValue: boolean | number) => {
+    setColumnFilters((prev) => {
+      // toggle filter or add new filter
+      return prev[0]?.id === filterKey ? [] : [{ id: filterKey, value: filterValue }];
+    });
+  };
+  const isIndicatorFilterActive = (filterKey: string) => columnFilters[0]?.id === filterKey;
 
   return (
     <Box>
@@ -173,11 +191,29 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
         <div className="flex items-center">
           <Indicator loading={isLoading} label="Adresses" value={stats.adressesCount} />
           <Divider />
-          <Indicator loading={isLoading} label="Adresses raccordables" value={stats.adressesEligiblesCount} />
+          <Indicator
+            loading={isLoading}
+            label="Adresses raccordables"
+            value={stats.adressesEligiblesCount}
+            onClick={() => handleIndicatorClick('eligibility_status.isEligible', true)}
+            active={isIndicatorFilterActive('eligibility_status.isEligible')}
+          />
           <Divider />
-          <Indicator loading={isLoading} label="Adresses à moins de 150m d’un réseau" value={stats.adressesProches150mReseauCount} />
+          <Indicator
+            loading={isLoading}
+            label="Adresses à moins de 150m d'un réseau"
+            value={stats.adressesProches150mReseauCount}
+            onClick={() => handleIndicatorClick('eligibility_status.distance', 150)}
+            active={isIndicatorFilterActive('eligibility_status.distance')}
+          />
           <Divider />
-          <Indicator loading={isLoading} label="Adresses dans un PDP" value={stats.adressesDansPDPCount} />
+          <Indicator
+            loading={isLoading}
+            label="Adresses dans un PDP"
+            value={stats.adressesDansPDPCount}
+            onClick={() => handleIndicatorClick('eligibility_status.inPDP', true)}
+            active={isIndicatorFilterActive('eligibility_status.inPDP')}
+          />
           <div className="ml-auto flex items-center gap-2">
             <Button
               iconId="ri-file-add-fill"
@@ -192,22 +228,35 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
             </Button>
           </div>
         </div>
-        <TableSimple columns={columns} data={testDetails?.addresses || []} initialSortingState={initialSortingState} />
+        <TableSimple
+          columns={columns}
+          data={testDetails?.addresses || []}
+          initialSortingState={initialSortingState}
+          columnFilters={columnFilters}
+        />
       </UrlStateAccordion>
     </Box>
   );
 }
-
 type IndicatorProps = {
   label: string;
   value: number;
   loading?: boolean;
+  onClick?: () => void;
+  active?: boolean;
+};
+const Indicator = ({ label, value, loading, onClick, active }: IndicatorProps) => {
+  const Element = onClick ? 'button' : 'div';
+  return (
+    <Element
+      className={`fr-p-2w transition-colors ${active ? 'text-blue' : ''} ${onClick ? 'cursor-pointer hover:bg-gray-100 text-left' : ''}`}
+      onClick={onClick}
+      title={onClick ? 'Cliquer pour filtrer' : undefined}
+    >
+      <div className="font-bold text-xl">{loading ? <Loader size="sm" className="my-[6px]" /> : value}</div>
+      <div>{label}</div>
+    </Element>
+  );
 };
 
-const Indicator = ({ label, value, loading }: IndicatorProps) => (
-  <div className="fr-p-2w">
-    <div className="font-bold text-xl">{!loading ? value : <Loader size="sm" className="my-[6px]" />}</div>
-    <div>{label}</div>
-  </div>
-);
 const Divider = () => <div className="h-12 w-px bg-gray-300" />;

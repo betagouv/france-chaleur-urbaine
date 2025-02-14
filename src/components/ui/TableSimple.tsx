@@ -10,6 +10,7 @@ import {
   type RowData,
   type SortingState,
   useReactTable,
+  type ColumnFiltersState,
 } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import React from 'react';
@@ -27,14 +28,15 @@ export type ColumnDef<T, K = any> = ColumnDefOriginal<T, K> & {
   suffix?: React.ReactNode;
 };
 
-export type TableSimpleProps<Data = any> = {
-  data: Data[];
-  columns: ColumnDef<Data>[];
+export type TableSimpleProps<T> = {
+  columns: ColumnDef<T>[];
+  data: T[];
   initialSortingState?: SortingState;
+  columnFilters?: ColumnFiltersState;
   loading?: boolean;
 };
 
-const TableSimple = <T extends RowData>({ data, columns, initialSortingState, loading }: TableSimpleProps<T>) => {
+const TableSimple = <T extends RowData>({ data, columns, initialSortingState, columnFilters, loading }: TableSimpleProps<T>) => {
   const [globalFilter, setGlobalFilter] = React.useState<any>([]);
   const [sortingState, setSortingState] = React.useState<SortingState>(initialSortingState ?? []);
 
@@ -73,11 +75,12 @@ const TableSimple = <T extends RowData>({ data, columns, initialSortingState, lo
     state: {
       sorting: sortingState,
       globalFilter,
+      columnFilters,
     },
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    onGlobalFilterChange: setGlobalFilter,
     getSortedRowModel: getSortedRowModel(),
+    onGlobalFilterChange: setGlobalFilter,
     onSortingChange: setSortingState,
     debugTable: isDevModeEnabled(),
   });
