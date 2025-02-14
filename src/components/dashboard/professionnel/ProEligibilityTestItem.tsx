@@ -21,6 +21,7 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
   {
     header: 'Adresse',
     accessorKey: 'ban_address',
+    accessorFn: (row) => `${row.ban_address} ${row.source_address}`,
     sortingFn: (rowA, rowB) => frenchCollator.compare(rowA.original.ban_address ?? '', rowB.original.ban_address ?? ''),
     cell: (info) => (
       <div>
