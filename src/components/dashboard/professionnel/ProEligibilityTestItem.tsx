@@ -1,18 +1,19 @@
 import Badge from '@codegouvfr/react-dsfr/Badge';
-import { faker } from '@faker-js/faker';
 import { type SortingState, type ColumnFiltersState } from '@tanstack/react-table';
 import { useQueryState } from 'nuqs';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
+import CompleteEligibilityTestForm from '@/components/dashboard/professionnel/eligibility-test/CompleteEligibilityTestForm';
 import { UrlStateAccordion } from '@/components/ui/Accordion';
 import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
 import Icon from '@/components/ui/Icon';
 import Loader from '@/components/ui/Loader';
+import Modal, { createModal } from '@/components/ui/Modal';
 import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
 import { useDelete, useFetch, usePost } from '@/hooks/useApi';
 import { type ProEligibilityTestListItem } from '@/pages/api/pro-eligibility-tests';
-import { type ProEligibilityTestFileRequest, type ProEligibilityTestWithAddresses } from '@/pages/api/pro-eligibility-tests/[id]';
+import { type ProEligibilityTestWithAddresses } from '@/pages/api/pro-eligibility-tests/[id]';
 import { queryClient } from '@/services/query';
 import { formatFrenchDate, formatFrenchDateTime } from '@/utils/date';
 import { frenchCollator } from '@/utils/strings';
@@ -97,11 +98,11 @@ const initialSortingState: SortingState = [
   },
 ];
 
+const queryParamName = 'test-adresses';
+
 type ProEligibilityTestItemProps = {
   test: ProEligibilityTestListItem;
 };
-
-const queryParamName = 'test-adresses';
 
 export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemProps) {
   const [value] = useQueryState(queryParamName);
@@ -111,10 +112,6 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
   const { data: testDetails, isLoading } = useFetch<ProEligibilityTestWithAddresses>(`/api/pro-eligibility-tests/${test.id}`, {
     enabled: viewDetail,
   });
-
-  const { mutateAsync: createTest, isLoading: isCreating } = usePost<ProEligibilityTestFileRequest>(
-    `/api/pro-eligibility-tests/${test.id}`
-  );
   const { mutateAsync: markAsSeen } = usePost(`/api/pro-eligibility-tests/${test.id}/mark-as-seen`, {
     onMutate: () => {
       queryClient.setQueryData<ProEligibilityTestListItem[]>(['/api/pro-eligibility-tests'], (tests) =>
@@ -151,6 +148,13 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
     });
   };
   const isIndicatorFilterActive = (filterKey: string) => columnFilters[0]?.id === filterKey;
+
+  const modalCompleteEligibilityTest = useMemo(() => {
+    return createModal({
+      id: `complete-eligibility-test-modal-${test.id}`,
+      isOpenedByDefault: false,
+    });
+  }, []);
 
   return (
     <Box>
@@ -218,15 +222,12 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
             />
           </div>
           <div className="ml-auto flex items-center gap-2">
-            <Button
-              iconId="ri-file-add-fill"
-              size="small"
-              priority="secondary"
-              onClick={() => createTest({ csvContent: Array.from({ length: 200 }, () => faker.location.streetAddress()).join('\n') })}
-              loading={isCreating}
-            >
+            <Button iconId="ri-file-add-fill" size="small" priority="secondary" onClick={() => modalCompleteEligibilityTest.open()}>
               Ajouter des adresses
             </Button>
+            <Modal modal={modalCompleteEligibilityTest} title="Ajout d'adresses" size="medium" lazy>
+              <CompleteEligibilityTestForm onClose={() => modalCompleteEligibilityTest.close()} testId={test.id} />
+            </Modal>
             <Button
               size="small"
               onClick={() => handleDelete(test.id)}

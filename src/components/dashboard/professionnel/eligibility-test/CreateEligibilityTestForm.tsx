@@ -8,33 +8,24 @@ import Button from '@/components/ui/Button';
 import { usePost } from '@/hooks/useApi';
 import { type ProEligibilityTestCreateInput, type ProEligibilityTestCreateOutput } from '@/pages/api/pro-eligibility-tests';
 import { toastErrors } from '@/services/notification';
-import { formatFileSize } from '@/utils/strings';
 
-export const filesLimits = {
-  maxFileSize: 50 * 1024 * 1024,
-};
+import { allowedExtensions, FormErrorMessage, zAddressesFile } from './shared';
 
-const allowedExtensions = ['.csv', '.txt'] as const;
-
-export const zCreateEligibilityTestRequest = z.strictObject({
+const zCreateEligibilityTest = z.strictObject({
+  file: zAddressesFile,
   name: z
     .string({ message: 'Le nom du test est obligatoire' })
     .min(1, { message: 'Le nom du test est obligatoire' })
     .max(100, { message: 'Le nom du test ne doit pas dépasser 100 caractères' }),
-  file: z
-    .instanceof(File, { message: 'Veuillez choisir un fichier' })
-    .refine((file) => file.size <= filesLimits.maxFileSize, {
-      message: `La taille du fichier doit être inférieure à ${formatFileSize(filesLimits.maxFileSize)}.`,
-    })
-    .refine((file) => allowedExtensions.some((extension) => file.name.endsWith(extension)), {
-      message: `Le format du fichier n'est pas supporté (attendu : ${allowedExtensions.join(', ')})`,
-    }),
 });
-type CreateEligibilityTestRequest = z.infer<typeof zCreateEligibilityTestRequest>;
-type NewEligibilityTestFormProps = {
+
+type CreateEligibilityTest = z.infer<typeof zCreateEligibilityTest>;
+
+type CreateEligibilityTestFormProps = {
   onClose: () => void;
 };
-const NewEligibilityTestForm = ({ onClose }: NewEligibilityTestFormProps) => {
+
+const CreateEligibilityTestForm = ({ onClose }: CreateEligibilityTestFormProps) => {
   const { mutateAsync: createTest } = usePost<ProEligibilityTestCreateInput, ProEligibilityTestCreateOutput>('/api/pro-eligibility-tests', {
     invalidate: ['/api/pro-eligibility-tests'],
   });
@@ -42,26 +33,18 @@ const NewEligibilityTestForm = ({ onClose }: NewEligibilityTestFormProps) => {
   const form = useForm({
     defaultValues: {
       name: '',
-      file: null as unknown as File,
+      file: undefined as unknown as File,
     },
     validatorAdapter: standardSchemaValidator(),
     validators: {
-      onChange: zCreateEligibilityTestRequest,
+      onChange: zCreateEligibilityTest,
     },
-    onSubmit: toastErrors(
-      async ({ value }: { value: CreateEligibilityTestRequest }) => {
-        await createTest({
-          name: value.name,
-          csvContent: await value.file.text(),
-        });
-      },
-      () => (
-        <span>
-          Une erreur est survenue. Veuillez réessayer plus tard, si le problème persiste contactez-nous directement à l'adresse:{' '}
-          <a href="mailto:france-chaleur-urbaine@developpement-durable.gouv.fr">france-chaleur-urbaine@developpement-durable.gouv.fr</a>
-        </span>
-      )
-    ),
+    onSubmit: toastErrors(async ({ value }: { value: CreateEligibilityTest }) => {
+      await createTest({
+        name: value.name,
+        csvContent: await value.file.text(),
+      });
+    }, FormErrorMessage),
   });
 
   return (
@@ -86,11 +69,10 @@ const NewEligibilityTestForm = ({ onClose }: NewEligibilityTestFormProps) => {
                 name: field.name,
                 accept: allowedExtensions.join(','),
                 onChange: (e) => {
-                  const files = e.target.files;
-                  if (!files || files.length === 0) {
+                  const file = e.target.files?.[0];
+                  if (!file) {
                     return;
                   }
-                  const file = files[0];
                   field.handleChange(file);
 
                   // Initialize test name to the filename without extension by default
@@ -121,11 +103,11 @@ const NewEligibilityTestForm = ({ onClose }: NewEligibilityTestFormProps) => {
                 onChange: (e) => field.handleChange(e.target.value),
                 onBlur: field.handleBlur,
               }}
-              state={field.state.meta.isTouched && field.state.meta.errors.length ? 'error' : 'default'}
-              stateRelatedMessage={field.state.meta.errors.join(', ')}
+              {...getInputErrorStates(field)}
             />
           )}
         />
+
         <form.Subscribe
           selector={(state) => [state.canSubmit, state.isSubmitting]}
           children={([canSubmit, isSubmitting]) => (
@@ -144,4 +126,4 @@ const NewEligibilityTestForm = ({ onClose }: NewEligibilityTestFormProps) => {
   );
 };
 
-export default NewEligibilityTestForm;
+export default CreateEligibilityTestForm;

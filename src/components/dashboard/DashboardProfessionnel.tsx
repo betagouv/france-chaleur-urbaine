@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useState } from 'react';
 
+import CreateEligibilityTestForm from '@/components/dashboard/professionnel/eligibility-test/CreateEligibilityTestForm';
 import ProEligibilityTestItem from '@/components/dashboard/professionnel/ProEligibilityTestItem';
 import Button from '@/components/ui/Button';
 import Heading from '@/components/ui/Heading';
@@ -8,8 +9,6 @@ import Loader from '@/components/ui/Loader';
 import Modal, { createModal } from '@/components/ui/Modal';
 import { useFetch } from '@/hooks/useApi';
 import { type ProEligibilityTestListItem } from '@/pages/api/pro-eligibility-tests';
-
-import NewEligibilityTestForm from './professionnel/NewEligibilityTestForm';
 
 export const modalNewEligibilityTest = createModal({
   id: 'new-eligibility-test-modal',
@@ -37,7 +36,7 @@ export default function DashboardProfessionnel() {
 
         <Button onClick={() => modalNewEligibilityTest.open()}>Nouveau test</Button>
         <Modal modal={modalNewEligibilityTest} title="Création d'un test d'adresses" size="medium">
-          <NewEligibilityTestForm onClose={() => modalNewEligibilityTest.close()} />
+          <CreateEligibilityTestForm onClose={() => modalNewEligibilityTest.close()} />
         </Modal>
       </div>
       {isLoading && <Loader size="lg" />}
