@@ -6,7 +6,7 @@ import { type LayerSpecification, type MapLibreEvent } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useRouter } from 'next/router';
 import { parseAsJson, parseAsString, useQueryStates } from 'nuqs';
-import { type RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { type ReactNode, type RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import ReactDOMServer from 'react-dom/server';
 import MapReactGL, {
   AttributionControl,
@@ -119,6 +119,7 @@ type MapProps = {
   persistViewStateInURL?: boolean;
   mapRef?: RefObject<MapRef>;
   pinsAutoFit?: boolean;
+  children?: ReactNode;
 };
 
 const Map = ({ initialMapConfiguration, ...props }: MapProps) => {
@@ -150,6 +151,7 @@ export const FullyFeaturedMap = ({
   mapRef: mapRefParam,
   className,
   pinsAutoFit,
+  children,
   ...props
 }: MapProps & React.HTMLAttributes<HTMLDivElement>) => {
   const { devModeEnabled, toggleDevMode } = useDevMode();
@@ -708,6 +710,7 @@ export const FullyFeaturedMap = ({
             <NavigationControl showZoom={true} visualizePitch={true} position="bottom-right" />
             <ScaleControl maxWidth={100} unit="metric" position="bottom-left" />
             {Popup}
+            {children}
             {withPins &&
               markersList.length > 0 &&
               markersList.map((marker: MapMarkerInfos) => (

@@ -2,6 +2,7 @@ import Badge from '@codegouvfr/react-dsfr/Badge';
 import { type SortingState, type ColumnFiltersState } from '@tanstack/react-table';
 import { useQueryState } from 'nuqs';
 import { useState, useMemo } from 'react';
+import { Layer, Source } from 'react-map-gl';
 
 import CompleteEligibilityTestForm from '@/components/dashboard/professionnel/eligibility-test/CompleteEligibilityTestForm';
 import Map from '@/components/Map/Map';
@@ -151,19 +152,6 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
   };
   const isIndicatorFilterActive = (filterKey: string) => columnFilters[0]?.id === filterKey;
 
-  const getMapPins = (addresses: ProEligibilityTestWithAddresses['addresses']) => {
-    return addresses
-      .filter((address) => address.ban_valid && address.geom)
-      .map((address) => ({
-        id: address.id,
-        latitude: (address.geom as GeoJSON.Point).coordinates[1],
-        longitude: (address.geom as GeoJSON.Point).coordinates[0],
-        color: address.eligibility_status?.isEligible ? 'green' : 'red',
-        popup: true,
-        popupContent: `${address.ban_address ?? ''} ${address.source_address ?? ''}`,
-      }));
-  };
-
   // Get filtered addresses based on the table filters
   const filteredAddresses = useMemo(() => {
     if (!testDetails?.addresses) return [];
@@ -275,11 +263,12 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
                     zonesDeDeveloppementPrioritaire: true,
                   })}
                   geolocDisabled
+                  withPins={false}
                   withLegend={false}
                   withoutLogo
-                  pinsAutoFit
-                  pinsList={getMapPins(filteredAddresses)}
-                />
+                >
+                  <AddressesLayer addresses={filteredAddresses} />
+                </Map>
               </div>
             </ModalSimple>
 
@@ -339,3 +328,60 @@ const Indicator = ({ label, value, loading, onClick, active }: IndicatorProps) =
 };
 
 const Divider = () => <div className="h-12 w-px bg-gray-300" />;
+
+type PinPopupContent = {
+  id: string;
+  isEligible: boolean;
+  popupContent: string;
+};
+
+type PinsLayerProps = {
+  addresses: ProEligibilityTestWithAddresses['addresses'];
+};
+
+export const AddressesLayer = ({ addresses }: PinsLayerProps) => {
+  const geojsonData = useMemo(
+    () => ({
+      type: 'FeatureCollection',
+      features: addresses
+        .filter((address) => address.ban_valid && address.geom)
+        .map((address) => ({
+          type: 'Feature',
+          geometry: address.geom,
+          properties: {
+            id: address.id,
+            isEligible: address.eligibility_status?.isEligible ?? false,
+            popupContent: `${address.ban_address ?? ''} ${address.source_address ?? ''}`,
+          } satisfies PinPopupContent,
+        })),
+    }),
+    [addresses]
+  ) as GeoJSON.FeatureCollection<GeoJSON.Point, PinPopupContent>;
+
+  return (
+    <Source id="adresses-eligibles" type="geojson" data={geojsonData}>
+      <Layer
+        id="adresses-eligibles"
+        type="circle"
+        filter={['==', 'isEligible', false]}
+        paint={{
+          'circle-radius': 8,
+          'circle-color': '#E1000F',
+          'circle-stroke-width': 2,
+          'circle-stroke-color': '#FFFFFF',
+        }}
+      />
+      <Layer
+        id="adresses-eligible"
+        type="circle"
+        filter={['==', 'isEligible', true]}
+        paint={{
+          'circle-radius': 8,
+          'circle-color': '#00AA91',
+          'circle-stroke-width': 2,
+          'circle-stroke-color': '#FFFFFF',
+        }}
+      />
+    </Source>
+  );
+};
