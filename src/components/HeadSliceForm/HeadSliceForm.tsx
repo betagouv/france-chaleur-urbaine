@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { EligibilityFormContact, EligibilityFormMessageConfirmation } from '@/components/EligibilityForm';
 import { CheckEligibilityFormLabel, SelectEnergy } from '@/components/EligibilityForm/components';
-import { energyInputsDefaultLabels } from '@/components/EligibilityForm/EligibilityFormAddress';
+import { energyInputsDefaultLabels, type EnergyInputsLabelsType } from '@/components/EligibilityForm/EligibilityFormAddress';
 import AddressAutocomplete from '@/components/form/dsfr/AddressAutocompleteInput';
 import MarkdownWrapper from '@/components/MarkdownWrapper';
 import Slice from '@/components/Slice';

@@ -65,6 +65,8 @@ const headingVariants = cva('', {
       normal: '!text-blue',
       light: '!text-black',
       accent: '!text-white',
+      city: '!text-black',
+      transparent: '!text-black',
     },
   },
   defaultVariants: {
@@ -101,6 +103,8 @@ const subtitleVariants = cva('', {
       normal: '!text-gray-900',
       light: '!text-gray-900',
       accent: '!text-gray-100',
+      city: '!text-gray-900',
+      transparent: '!text-gray-900',
     },
   },
   defaultVariants: {
@@ -128,6 +132,8 @@ const metaVariants = cva('uppercase text-sm font-bold tracking-tighter', {
       normal: '!text-gray-700',
       light: '!text-gray-700',
       accent: '!text-gray-100',
+      city: '!text-gray-700',
+      transparent: '!text-gray-700',
     },
   },
   defaultVariants: {

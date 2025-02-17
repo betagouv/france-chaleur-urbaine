@@ -1,17 +1,17 @@
+import { fr } from '@codegouvfr/react-dsfr';
+import { useQueryState } from 'nuqs';
+import { useState } from 'react';
+import { Oval } from 'react-loader-spinner';
+
 import { ContactForm, SelectEnergy } from '@/components/EligibilityForm/components';
 import { energyInputsDefaultLabels } from '@/components/EligibilityForm/EligibilityFormAddress';
 import AddressAutocomplete from '@/components/form/dsfr/AddressAutocompleteInput';
+import Alert from '@/components/ui/Alert';
 import Box from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
 import Link from '@/components/ui/Link';
 import Modal, { createModal } from '@/components/ui/Modal';
 import Text from '@/components/ui/Text';
-import { fr } from '@codegouvfr/react-dsfr';
-import Alert from '@codegouvfr/react-dsfr/Alert';
-import { useQueryState } from 'nuqs';
-import { useState } from 'react';
-import { Oval } from 'react-loader-spinner';
-
 import { type NetworkEligibilityStatus } from '@/server/services/addresseInformation';
 import { useServices } from '@/services';
 import { formatDataToAirtable, submitToAirtable } from '@/services/airtable';
@@ -234,12 +234,10 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
                         value={heatingType}
                       />
                       {heatingType === 'individuel' && (
-                        <Alert
-                          className="fr-mt-2w"
-                          severity="warning"
-                          small
-                          description="Au vu de votre mode de chauffage actuel, le raccordement de votre immeuble nécessiterait des travaux conséquents et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble"
-                        />
+                        <Alert className="fr-mt-2w" variant="warning" size="sm">
+                          Au vu de votre mode de chauffage actuel, le raccordement de votre immeuble nécessiterait des travaux conséquents
+                          et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble
+                        </Alert>
                       )}
                     </>
                   }
