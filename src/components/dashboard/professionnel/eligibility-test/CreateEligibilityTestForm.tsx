@@ -80,6 +80,7 @@ const CreateEligibilityTestForm = ({ onClose }: CreateEligibilityTestFormProps) 
                     const nameWithoutExtension = file.name.replace(/\.[^/.]+$/, '');
                     form.setFieldValue('name', nameWithoutExtension);
                   }
+                  form.validateField('name', 'change');
                 },
                 onBlur: field.handleBlur,
               }}
