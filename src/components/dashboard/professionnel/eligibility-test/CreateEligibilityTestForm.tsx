@@ -5,6 +5,7 @@ import { z } from 'zod';
 
 import { getInputErrorStates } from '@/components/form/tanstack-form';
 import Button from '@/components/ui/Button';
+import { useModal } from '@/components/ui/ModalSimple';
 import { usePost } from '@/hooks/useApi';
 import { type ProEligibilityTestCreateInput, type ProEligibilityTestCreateOutput } from '@/pages/api/pro-eligibility-tests';
 import { toastErrors } from '@/services/notification';
@@ -21,11 +22,8 @@ const zCreateEligibilityTest = z.strictObject({
 
 type CreateEligibilityTest = z.infer<typeof zCreateEligibilityTest>;
 
-type CreateEligibilityTestFormProps = {
-  onClose: () => void;
-};
-
-const CreateEligibilityTestForm = ({ onClose }: CreateEligibilityTestFormProps) => {
+const CreateEligibilityTestForm = () => {
+  const { closeModal } = useModal();
   const { mutateAsync: createTest } = usePost<ProEligibilityTestCreateInput, ProEligibilityTestCreateOutput>('/api/pro-eligibility-tests', {
     invalidate: ['/api/pro-eligibility-tests'],
   });
@@ -44,6 +42,7 @@ const CreateEligibilityTestForm = ({ onClose }: CreateEligibilityTestFormProps) 
         name: value.name,
         csvContent: await value.file.text(),
       });
+      closeModal();
     }, FormErrorMessage),
   });
 
@@ -53,7 +52,6 @@ const CreateEligibilityTestForm = ({ onClose }: CreateEligibilityTestFormProps) 
         e.preventDefault();
         e.stopPropagation();
         void form.handleSubmit();
-        onClose();
       }}
     >
       <div className="flex flex-col gap-4">
@@ -113,7 +111,7 @@ const CreateEligibilityTestForm = ({ onClose }: CreateEligibilityTestFormProps) 
           selector={(state) => [state.canSubmit, state.isSubmitting]}
           children={([canSubmit, isSubmitting]) => (
             <div className="flex justify-end gap-2 mt-4">
-              <Button priority="secondary" onClick={onClose}>
+              <Button priority="secondary" onClick={closeModal}>
                 Annuler
               </Button>
               <Button type="submit" disabled={!canSubmit} loading={isSubmitting}>

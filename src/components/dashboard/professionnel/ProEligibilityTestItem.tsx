@@ -1,7 +1,7 @@
 import Badge from '@codegouvfr/react-dsfr/Badge';
 import { type SortingState, type ColumnFiltersState } from '@tanstack/react-table';
 import { useQueryState } from 'nuqs';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 
 import CompleteEligibilityTestForm from '@/components/dashboard/professionnel/eligibility-test/CompleteEligibilityTestForm';
 import { UrlStateAccordion } from '@/components/ui/Accordion';
@@ -9,7 +9,7 @@ import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
 import Icon from '@/components/ui/Icon';
 import Loader from '@/components/ui/Loader';
-import Modal, { createModal } from '@/components/ui/Modal';
+import ModalSimple from '@/components/ui/ModalSimple';
 import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
 import { useDelete, useFetch, usePost } from '@/hooks/useApi';
 import { type ProEligibilityTestListItem } from '@/pages/api/pro-eligibility-tests';
@@ -149,13 +149,6 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
   };
   const isIndicatorFilterActive = (filterKey: string) => columnFilters[0]?.id === filterKey;
 
-  const modalCompleteEligibilityTest = useMemo(() => {
-    return createModal({
-      id: `complete-eligibility-test-modal-${test.id}`,
-      isOpenedByDefault: false,
-    });
-  }, []);
-
   return (
     <Box>
       <UrlStateAccordion
@@ -227,12 +220,18 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
             />
           </div>
           <div className="ml-auto flex items-center gap-2">
-            <Button iconId="ri-file-add-fill" size="small" priority="secondary" onClick={() => modalCompleteEligibilityTest.open()}>
-              Ajouter des adresses
-            </Button>
-            <Modal modal={modalCompleteEligibilityTest} title="Ajout d'adresses" size="medium" lazy>
-              <CompleteEligibilityTestForm onClose={() => modalCompleteEligibilityTest.close()} testId={test.id} />
-            </Modal>
+            <ModalSimple
+              title="Ajout d'adresses"
+              size="medium"
+              trigger={
+                <Button iconId="ri-file-add-fill" size="small" priority="secondary">
+                  Ajouter des adresses
+                </Button>
+              }
+            >
+              <CompleteEligibilityTestForm testId={test.id} />
+            </ModalSimple>
+
             <Button
               size="small"
               onClick={() => handleDelete(test.id)}

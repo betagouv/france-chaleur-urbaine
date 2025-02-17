@@ -4,6 +4,7 @@ import { z } from 'zod';
 
 import { getInputErrorStates } from '@/components/form/tanstack-form';
 import Button from '@/components/ui/Button';
+import { useModal } from '@/components/ui/ModalSimple';
 import { usePost } from '@/hooks/useApi';
 import { type ProEligibilityTestFileRequest } from '@/pages/api/pro-eligibility-tests/[id]';
 import { toastErrors } from '@/services/notification';
@@ -17,11 +18,11 @@ const zCompleteEligibilityTest = z.strictObject({
 type CompleteEligibilityTest = z.infer<typeof zCompleteEligibilityTest>;
 
 type CompleteEligibilityTestFormProps = {
-  onClose: () => void;
   testId: string;
 };
 
-const CompleteEligibilityTestForm = ({ onClose, testId }: CompleteEligibilityTestFormProps) => {
+const CompleteEligibilityTestForm = ({ testId }: CompleteEligibilityTestFormProps) => {
+  const { closeModal } = useModal();
   const { mutateAsync: completeTest } = usePost<ProEligibilityTestFileRequest>(`/api/pro-eligibility-tests/${testId}`, {
     invalidate: ['/api/pro-eligibility-tests'],
   });
@@ -38,6 +39,7 @@ const CompleteEligibilityTestForm = ({ onClose, testId }: CompleteEligibilityTes
       await completeTest({
         csvContent: await value.file.text(),
       });
+      closeModal();
     }, FormErrorMessage),
   });
 
@@ -47,7 +49,6 @@ const CompleteEligibilityTestForm = ({ onClose, testId }: CompleteEligibilityTes
         e.preventDefault();
         e.stopPropagation();
         void form.handleSubmit();
-        onClose();
       }}
     >
       <div className="flex flex-col gap-4">
@@ -80,7 +81,7 @@ const CompleteEligibilityTestForm = ({ onClose, testId }: CompleteEligibilityTes
           selector={(state) => [state.canSubmit, state.isSubmitting]}
           children={([canSubmit, isSubmitting]) => (
             <div className="flex justify-end gap-2 mt-4">
-              <Button priority="secondary" onClick={onClose}>
+              <Button priority="secondary" onClick={closeModal}>
                 Annuler
               </Button>
               <Button type="submit" disabled={!canSubmit} loading={isSubmitting}>
