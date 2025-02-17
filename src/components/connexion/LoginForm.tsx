@@ -27,8 +27,8 @@ export const LoginForm = ({ callbackUrl }: LoginFormProps) => {
       });
     } catch (err) {
       console.log(err);
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
