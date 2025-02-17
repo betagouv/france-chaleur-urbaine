@@ -1,14 +1,14 @@
 import { fr } from '@codegouvfr/react-dsfr';
 import { Footer } from '@codegouvfr/react-dsfr/Footer';
 import UnstyledMainNavigation, { type MainNavigationProps } from '@codegouvfr/react-dsfr/MainNavigation';
-import { signOut, useSession } from 'next-auth/react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
+import { signOut, useSession } from 'next-auth/react';
 import React from 'react';
 import styled, { css } from 'styled-components';
 
 import { FooterConsentManagementItem } from '@/components/ConsentBanner';
-import { type HeaderProps, HeaderQuickAccessItem } from '@/components/dsfr/Header';
+import { HeaderQuickAccessItem, type HeaderProps } from '@/components/dsfr/Header';
 import SEO, { type SEOProps } from '@/components/SEO';
 import Box from '@/components/ui/Box';
 import Link from '@/components/ui/Link';
@@ -161,53 +161,53 @@ const publicNavigationMenu: MainNavigationProps.Item[] = [
       },
     ],
   },
-  {
-    text: 'Professionnels',
-    menuLinks: [
-      {
-        text: 'Nos services pour les professionnels',
-        linkProps: {
-          href: '/professionnels',
-        },
-      },
-      {
-        text: 'Les avantages du chauffage urbain',
-        linkProps: {
-          href: '/professionnels#avantages-du-chauffage-urbain',
-        },
-      },
-      {
-        text: 'Testez une liste d’adresses',
-        linkProps: {
-          href: '/professionnels#test-liste',
-        },
-      },
-      {
-        text: 'Les coûts du chauffage urbain',
-        linkProps: {
-          href: '/professionnels#simulateur-aide',
-        },
-      },
-      {
-        text: 'Le décret tertiaire',
-        linkProps: {
-          href: '/professionnels#decrettertiaire',
-        },
-      },
-      {
-        text: 'Les obligations de raccordement',
-        linkProps: {
-          href: '/professionnels#obligations-de-raccordement',
-        },
-      },
-      {
-        text: 'Simulateur d’émissions de CO2',
-        linkProps: {
-          href: '/professionnels#simulateur-co2',
-        },
-      },
-    ],
-  },
+  // {
+  //   text: 'Professionnels',
+  //   menuLinks: [
+  //     {
+  //       text: 'Nos services pour les professionnels',
+  //       linkProps: {
+  //         href: '/professionnels',
+  //       },
+  //     },
+  //     {
+  //       text: 'Les avantages du chauffage urbain',
+  //       linkProps: {
+  //         href: '/professionnels#avantages-du-chauffage-urbain',
+  //       },
+  //     },
+  //     {
+  //       text: 'Testez une liste d’adresses',
+  //       linkProps: {
+  //         href: '/professionnels#test-liste',
+  //       },
+  //     },
+  //     {
+  //       text: 'Les coûts du chauffage urbain',
+  //       linkProps: {
+  //         href: '/professionnels#simulateur-aide',
+  //       },
+  //     },
+  //     {
+  //       text: 'Le décret tertiaire',
+  //       linkProps: {
+  //         href: '/professionnels#decrettertiaire',
+  //       },
+  //     },
+  //     {
+  //       text: 'Les obligations de raccordement',
+  //       linkProps: {
+  //         href: '/professionnels#obligations-de-raccordement',
+  //       },
+  //     },
+  //     {
+  //       text: 'Simulateur d’émissions de CO2',
+  //       linkProps: {
+  //         href: '/professionnels#simulateur-co2',
+  //       },
+  //     },
+  //   ],
+  // },
   {
     text: 'Notre service',
     menuLinks: [
