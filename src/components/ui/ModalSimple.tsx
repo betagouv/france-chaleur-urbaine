@@ -3,11 +3,9 @@ import { type PropsWithChildren, useCallback, useMemo, useState, createContext, 
 import Modal, { createModal } from './Modal';
 
 type ModalSimpleProps = PropsWithChildren<{
-  title: string;
   trigger: React.ReactNode;
+  title: string;
   size?: React.ComponentProps<typeof Modal>['size'];
-  onClose?: () => void;
-  onOpen?: () => void;
 }>;
 
 type ModalContextType = {
@@ -29,25 +27,24 @@ export const useModal = () => {
  * This lazy loading approach improves initial page performance by not rendering unused modals.
  * The modal is created when the trigger is clicked and destroyed when closed.
  */
-const ModalSimple = ({ children, trigger, title, size = 'medium', onClose, onOpen }: ModalSimpleProps) => {
-  const [isInitialized, setIsInitialized] = useState(false);
+const ModalSimple = ({ children, trigger, title, size = 'medium' }: ModalSimpleProps) => {
+  const [isOpen, setOpen] = useState(false);
 
   const modal = useMemo(() => {
-    if (!isInitialized) return null;
+    if (!isOpen) return null;
     return createModal({
       id: `modal-${Math.random().toString(36).slice(2)}`,
-      isOpenedByDefault: true,
+      isOpenedByDefault: false,
     });
-  }, [isInitialized]);
+  }, [isOpen]);
 
   const handleTriggerClick = useCallback(() => {
-    setIsInitialized(true);
+    setOpen(true);
   }, []);
 
   const handleClose = useCallback(() => {
-    setIsInitialized(false);
-    onClose?.();
-  }, [onClose]);
+    setOpen(false);
+  }, []);
 
   const contextValue = useMemo(
     () => ({
@@ -60,7 +57,7 @@ const ModalSimple = ({ children, trigger, title, size = 'medium', onClose, onOpe
     <>
       <div onClick={handleTriggerClick}>{trigger}</div>
       {modal && (
-        <Modal modal={modal} title={title} size={size} onClose={handleClose} onOpen={onOpen}>
+        <Modal modal={modal} title={title} size={size} open={isOpen} onClose={handleClose}>
           <ModalContext.Provider value={contextValue}>{children}</ModalContext.Provider>
         </Modal>
       )}

@@ -6,14 +6,9 @@ import ProEligibilityTestItem from '@/components/dashboard/professionnel/ProElig
 import Button from '@/components/ui/Button';
 import Heading from '@/components/ui/Heading';
 import Loader from '@/components/ui/Loader';
-import Modal, { createModal } from '@/components/ui/Modal';
+import ModalSimple from '@/components/ui/ModalSimple';
 import { useFetch } from '@/hooks/useApi';
 import { type ProEligibilityTestListItem } from '@/pages/api/pro-eligibility-tests';
-
-export const modalNewEligibilityTest = createModal({
-  id: 'new-eligibility-test-modal',
-  isOpenedByDefault: false,
-});
 
 export default function DashboardProfessionnel() {
   const [hasPendingJobs, setHasPendingJobs] = useState(false);
@@ -34,10 +29,9 @@ export default function DashboardProfessionnel() {
           Historique de mes tests d'adresse
         </Heading>
 
-        <Button onClick={() => modalNewEligibilityTest.open()}>Nouveau test</Button>
-        <Modal modal={modalNewEligibilityTest} title="Création d'un test d'adresses" size="medium">
-          <CreateEligibilityTestForm onClose={() => modalNewEligibilityTest.close()} />
-        </Modal>
+        <ModalSimple title="Création d'un test d'adresses" size="medium" trigger={<Button>Nouveau test</Button>}>
+          <CreateEligibilityTestForm />
+        </ModalSimple>
       </div>
       {isLoading && <Loader size="lg" />}
       {eligibilityTests?.length === 0 && <>Aucun test</>}
