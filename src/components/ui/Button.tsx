@@ -6,9 +6,12 @@ import cx from '@/utils/cx';
 
 type StyledButtonProps = { $loading?: boolean; $full?: boolean; variant?: 'destructive' };
 
-// FIXME @Martin, cette propriété supprime la bordure classique en secondary
 const StyledButton = styled(DsfrButton)<DsfrButtonProps & StyledButtonProps>`
-  // box-shadow: inset 0 0 0 1px var(--tw-shadow-color);
+  ${({ variant }) =>
+    variant === 'destructive' &&
+    css`
+      box-shadow: inset 0 0 0 1px var(--tw-shadow-color);
+    `}
 
   ${({ $loading, $full }) => css`
     ${$loading &&
@@ -89,6 +92,7 @@ const Button: React.FC<ButtonProps> = ({
       iconId={loading ? 'ri-loader-3-line' : (iconId as any) /** FIXME */}
       $full={full}
       $loading={loading}
+      variant={variant}
       disabled={(disabled || loading) as any /** FIXME cause incompatibility with DSFR Button */}
       type={type as any /** FIXME cause incompatibility with DSFR Button */}
       className={cx(variantClassName, className)}
