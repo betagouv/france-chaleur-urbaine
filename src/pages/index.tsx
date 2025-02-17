@@ -7,10 +7,13 @@ import Partners from '@/components/Partners/Partners';
 import { issues, understandings } from '@/components/Ressources/config';
 import Understanding from '@/components/Ressources/Understanding';
 import SimplePage from '@/components/shared/page/SimplePage';
+import Box, { ResponsiveRow } from '@/components/ui/Box';
+import Heading from '@/components/ui/Heading';
 import Hero, { HeroContent, HeroMeta, HeroSubtitle, HeroTitle } from '@/components/ui/Hero';
 import Link from '@/components/ui/Link';
 import Section, { SectionContent, SectionHeading, SectionSubtitle, SectionTitle, SectionTwoColumns } from '@/components/ui/Section';
 import Text from '@/components/ui/Text';
+import TileList, { type TileListItem } from '@/components/ui/TileList';
 
 const coproprietaireCards = {
   reseau: issues.reseau,
@@ -18,6 +21,72 @@ const coproprietaireCards = {
   'energies-vertes': issues['energies-vertes'],
   faisabilite: understandings.faisabilite,
 };
+
+const tools: TileListItem[] = [
+  {
+    title: 'Carte des réseaux et potentiels',
+    excerpt: 'La cartographie nationale des réseaux de chaleur.',
+    href: '/carte',
+    image: '/img/tools/carte.svg',
+  },
+  ...(process.env.NEXT_PUBLIC_FLAG_ENABLE_COMPARATEUR === 'true'
+    ? [
+        {
+          title: 'Comparateur de coûts et d’émissions de CO2',
+          excerpt: 'Comparez les coûts des modes de chauffage.',
+          href: '/outils/comparateur-performances',
+          image: '/img/tools/comparateur.svg',
+        },
+      ]
+    : []),
+  // {
+  //   title: 'Compatibilité des modes de chauffage',
+  //   excerpt: 'Quels chauffages pour quels bâtiments ?',
+  //   href: '/todo',
+  // image: '/img/tools/compatibilite.svg',
+  // },
+  {
+    title: 'Potentiel des communes sans réseau',
+    excerpt: 'Évaluez le potentiel d’une commune.',
+    href: '/collectivites-et-exploitants/potentiel-creation-reseau',
+    image: '/img/tools/compatibilite.svg',
+  },
+  {
+    title: 'Test d’adresses en masse',
+    excerpt: 'Testez directement une liste d’adresses.',
+    href: '/?bulk=true',
+    image: '/img/tools/carte.svg',
+  },
+  // {
+  //   title: 'Obligations de raccordement',
+  //   excerpt: 'Découvrez si votre bâtiment est concerné par une obligation de raccordement.',
+  //   href: '/todo',
+  // },
+  {
+    title: 'Liste des réseaux de chaleur',
+    excerpt: 'Retrouvez l’ensemble des réseaux et filtrez les.',
+    href: '/reseaux',
+    image: '/img/tools/compatibilite.svg',
+  },
+  {
+    title: 'Coûts de raccordement et aides',
+    excerpt: 'Estimez le coût de votre raccordement.',
+    href: '/ressources/aides',
+    image: '/img/tools/compatibilite.svg',
+  },
+  {
+    title: 'Téléchargement de données et outils',
+    excerpt: 'Intégrez nos données et outils (API, iframe, ...).',
+    href: '/ressources/outils#iframes',
+    image: '/img/tools/compatibilite.svg',
+  },
+  {
+    title: 'Supports pédagogiques',
+    excerpt: 'Découvrez tous nos supports.',
+    href: '/ressources/supports',
+    image: '/img/tools/compatibilite.svg',
+  },
+];
 
 export default function Home() {
   return (
@@ -40,9 +109,11 @@ export default function Home() {
         <SectionSubtitle>
           France Chaleur Urbaine a développé des outils pour vous aider à vous raccorder à un réseau de chaleur
         </SectionSubtitle>
-        <SectionContent>TODO</SectionContent>
+        <SectionContent>
+          <TileList items={tools} queryParamName="tool" />
+        </SectionContent>
       </Section>
-      <Section color="light" id="avantages-du-chauffage-urbain">
+      <Section variant="light" id="avantages-du-chauffage-urbain">
         <SectionTitle>Les avantages du chauffage urbain</SectionTitle>
         <SectionContent>
           <AvantagesChauffageUrbain />
@@ -182,6 +253,53 @@ export default function Home() {
           </ResponsiveRow>
         </Box>
       </Box> */}
+      <Section id="obligation-raccordement" variant="light">
+        <SectionTitle> Les obligations de raccordement</SectionTitle>
+        <SectionContent>
+          <ResponsiveRow mt="10w">
+            <Box flex>
+              <Heading as="h3" size="h4" color="blue-france">
+                Les réseaux classés
+              </Heading>
+              <Text size="lg">
+                Plus de 500 réseaux de chaleur sont désormais <Link href="/ressources/reseau-classe#contenu">“classés”</Link>, ce qui
+                signifie que certains bâtiments ont l'obligation de se raccorder.
+              </Text>
+              <Text size="lg" mt="3w">
+                Cette obligation s’applique dans une certaine zone autour du réseau, définie par la collectivité, qualifiée de périmètre de
+                développement prioritaire.
+              </Text>
+
+              <Box backgroundColor="yellow-moutarde-main-679" borderRadius="12px" p="3w" pt="4w" mt="3w" textColor="#fff" fontWeight="bold">
+                <Text>
+                  <Text as="span" fontSize="32px">
+                    300 000€
+                  </Text>{' '}
+                  d’amende
+                </Text>
+                <Text>en cas de non-raccordement sans dérogation</Text>
+              </Box>
+            </Box>
+
+            <Box flex>
+              <Text size="lg" mt="8w">
+                Sont concernés :
+              </Text>
+              <Text size="lg" mt="2w">
+                Tout bâtiment neuf dont les besoins de chauffage sont supérieurs à 30kW*
+              </Text>
+              <Text size="lg" mt="2w">
+                Tout bâtiment renouvelant son installation de chauffage au-dessus de 30kW*
+              </Text>
+              <Text size="sm">* Ce seuil de puissance peut être relevé par la collectivité</Text>
+
+              <Link variant="primary" href="/carte" mt="6w">
+                Voir les réseaux classés sur la carte
+              </Link>
+            </Box>
+          </ResponsiveRow>
+        </SectionContent>
+      </Section>
 
       {/* <Box py="10w" id="obligations-de-raccordement">
         <ObligationRaccordement />

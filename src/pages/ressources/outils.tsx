@@ -39,11 +39,11 @@ const OutilsPage = () => {
             Repérer sur un parc de bâtiments ceux potentiellement raccordables, et accéder aux caractéristiques des réseaux les plus proches
           </Text>
         </Box>
-        <Link variant="secondary" href="/&bulk">
+        <Link variant="secondary" href="/?bulk=true">
           Accéder
         </Link>
       </Box>
-      <Box backgroundColor="blue-france-975-75">
+      <Box backgroundColor="blue-france-975-75" id="iframes">
         <Box py="5w" className="fr-container">
           <Heading as="h2" size="h3" color="blue-france" mb="0">
             Iframes
