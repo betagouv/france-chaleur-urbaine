@@ -165,6 +165,11 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
         label={
           <div className="flex items-center justify-between w-full">
             <div className="flex-auto">{test.name}</div>
+            {test.last_job_has_error && (
+              <Badge severity="error" small className="fr-mx-1w">
+                Erreur
+              </Badge>
+            )}
             {test.has_pending_jobs ? (
               <Badge severity="new" small className="fr-mx-1w">
                 Mise à jour en attente

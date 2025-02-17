@@ -11,7 +11,7 @@ const GET = async (req: NextApiRequest) => {
     .selectFrom('pro_eligibility_tests')
     .where('user_id', '=', req.user.id)
     .selectAll()
-    .select((eb) =>
+    .select((eb) => [
       eb
         .exists(
           eb
@@ -20,8 +20,15 @@ const GET = async (req: NextApiRequest) => {
             .where('jobs.status', 'in', ['pending', 'processing'])
             .select('jobs.id')
         )
-        .as('has_pending_jobs')
-    )
+        .as('has_pending_jobs'),
+      eb
+        .selectFrom('jobs')
+        .whereRef('jobs.entity_id', '=', 'pro_eligibility_tests.id')
+        .select((eb) => eb.case().when('status', '=', 'error').then(true).else(false).end().as('has_error'))
+        .orderBy('created_at', 'desc')
+        .limit(1)
+        .as('last_job_has_error'),
+    ])
     .orderBy('created_at desc')
     .execute();
   return eligibilityTests;
