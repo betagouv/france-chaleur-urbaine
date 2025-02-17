@@ -1,11 +1,12 @@
 import { cva, type VariantProps } from 'class-variance-authority';
+import Image from 'next/image';
 import React from 'react';
 
 import cx from '@/utils/cx';
 
 import Heading from './Heading';
 
-const heroVariants = cva('', {
+const heroVariants = cva('relative', {
   variants: {
     size: {
       sm: '',
@@ -13,9 +14,9 @@ const heroVariants = cva('', {
       lg: '',
     },
     variant: {
-      normal: 'bg-[#C3E4E1]',
-      light: 'bg-blueFrance-_975_75',
-      accent: 'bg-blueFrance-main525 text-white',
+      normal: 'bg-[#C3E4E1] [&_article]:bg-[#C3E4E1]/90',
+      light: 'bg-blueFrance-_975_75 [&_article]:bg-blueFrance-_975_75/90',
+      accent: 'bg-blueFrance-main525 text-white [&_article]:bg-blueFrance-main525/90',
     },
   },
   defaultVariants: {
@@ -24,17 +25,31 @@ const heroVariants = cva('', {
   },
 });
 
-export type HeroProps = React.HTMLAttributes<HTMLDivElement> & VariantProps<typeof heroVariants>;
+export type HeroProps = React.HTMLAttributes<HTMLDivElement> & VariantProps<typeof heroVariants> & { image?: string };
 
 const HeroContext = React.createContext<VariantProps<typeof heroVariants>>({});
 
-const Hero = ({ children, className, size, variant, ...props }: HeroProps) => {
+const Hero = ({ children, className, image, size, variant, ...props }: HeroProps) => {
   return (
     <HeroContext.Provider value={{ size, variant }}>
       <section className={cx(heroVariants({ size, variant }), className)} {...props}>
-        <div className="fr-container flex">
-          <div className="flex-1">&nbsp;</div>
-          <div className="flex-1 px-2 lg:px-0">{children}</div>
+        {image && (
+          <div className="absolute top-0 left-0 right-0 bottom-0 hidden lg:block">
+            <Image
+              src={image}
+              alt=""
+              height={500}
+              width={400}
+              className="object-contain h-full absolute top-0 left-0 w-auto"
+              sizes="100vw"
+              priority
+              style={{ width: 'auto' }}
+            />
+          </div>
+        )}
+        <div className="fr-container flex relative">
+          <div className="flex-1 hidden lg:block">&nbsp;</div>
+          <article className="flex-1 px-2 py-2w lg:pr-0">{children}</article>
         </div>
       </section>
     </HeroContext.Provider>
@@ -72,8 +87,8 @@ const subtitleVariants = cva('', {
   variants: {
     size: {
       sm: 'text-sm mb-2w',
-      md: 'text-base mb-6w',
-      lg: 'text-lg mb-8w',
+      md: 'text-base mb-3w',
+      lg: 'text-lg mb-4w',
     },
     variant: {
       normal: '!text-gray-900',
@@ -97,9 +112,6 @@ export const HeroSubtitle = ({ children, className, ...props }: React.HTMLAttrib
 };
 
 export const HeroContent = ({ children, ...props }: React.HTMLAttributes<HTMLDivElement>) => {
-  return <div {...props}>{children}</div>;
-};
-export const HeroImage = ({ children, ...props }: React.HTMLAttributes<HTMLDivElement>) => {
   return <div {...props}>{children}</div>;
 };
 

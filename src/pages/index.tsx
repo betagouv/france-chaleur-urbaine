@@ -7,7 +7,7 @@ import Partners from '@/components/Partners/Partners';
 import { issues, understandings } from '@/components/Ressources/config';
 import Understanding from '@/components/Ressources/Understanding';
 import SimplePage from '@/components/shared/page/SimplePage';
-import Hero, { HeroContent, HeroImage, HeroMeta, HeroSubtitle, HeroTitle } from '@/components/ui/Hero';
+import Hero, { HeroContent, HeroMeta, HeroSubtitle, HeroTitle } from '@/components/ui/Hero';
 import Link from '@/components/ui/Link';
 import Section, { SectionContent, SectionHeading, SectionSubtitle, SectionTitle, SectionTwoColumns } from '@/components/ui/Section';
 import Text from '@/components/ui/Text';
@@ -25,7 +25,7 @@ export default function Home() {
       title="Développer le chauffage urbain"
       description="Vérifiez si votre bâtiment est raccordable à un réseau de chaleur, un mode de chauffage écologique à prix maîtrisés."
     >
-      <Hero>
+      <Hero image="/img/banner_chauffage_gaz.png">
         <HeroMeta>Profitez du confort du chauffage urbain de votre ville !</HeroMeta>
         <HeroTitle>Le chauffage urbain&nbsp;: une solution écologique à prix maîtrisé&nbsp;!</HeroTitle>
         <HeroSubtitle>
@@ -34,7 +34,6 @@ export default function Home() {
         <HeroContent>
           <HeadSliceForm checkEligibility withWrapper={(form) => <>{form}</>} withBulkEligibility />
         </HeroContent>
-        <HeroImage src="/images/hero-image.jpg" alt="Femme avec un chat devant un radiateur" />
       </Hero>
       <Section>
         <SectionTitle>Des outils à votre service</SectionTitle>
