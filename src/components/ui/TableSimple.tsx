@@ -157,7 +157,7 @@ const TableSimple = <T extends RowData>({ data, columns, initialSortingState, co
                             /* eslint-disable-next-line jsx-a11y/role-supports-aria-props */
                             <button
                               type="button"
-                              className="fr-btn--sort fr-btn fr-btn--sm ml-2"
+                              className="fr-btn--sort fr-btn fr-btn--sm ml-2 relative"
                               aria-sort={
                                 (
                                   {
@@ -170,6 +170,11 @@ const TableSimple = <T extends RowData>({ data, columns, initialSortingState, co
                               title="Cliquer pour trier"
                             >
                               Trier
+                              {header.column.getIsSorted() && table.getState().sorting.length > 1 && (
+                                <span className="absolute bottom-[2px] right-1 text-xs">
+                                  {table.getState().sorting.findIndex((sort) => sort.id === header.column.id) + 1}
+                                </span>
+                              )}
                             </button>
                           )}
                         </>
