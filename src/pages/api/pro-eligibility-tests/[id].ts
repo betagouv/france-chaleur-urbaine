@@ -1,7 +1,7 @@
 import { type NextApiRequest } from 'next';
 import { z } from 'zod';
 
-import { kdb } from '@/server/db/kysely';
+import { kdb, sql } from '@/server/db/kysely';
 import { handleRouteErrors, invalidRouteError } from '@/server/helpers/server';
 
 export type ProEligibilityTestWithAddresses = Awaited<ReturnType<typeof GET>>;
@@ -17,7 +17,12 @@ const GET = async (req: NextApiRequest) => {
     .selectAll()
     .executeTakeFirstOrThrow();
 
-  const addresses = await kdb.selectFrom('pro_eligibility_tests_addresses').where('test_id', '=', testId).selectAll().execute();
+  const addresses = await kdb
+    .selectFrom('pro_eligibility_tests_addresses')
+    .where('test_id', '=', testId)
+    .selectAll()
+    .select([sql`ST_AsGeoJSON(st_transform(geom, 4326))::json`.as('geom')])
+    .execute();
   return { ...eligibilityTest, addresses };
 };
 
