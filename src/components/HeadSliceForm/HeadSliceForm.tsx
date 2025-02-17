@@ -1,7 +1,8 @@
 import { useRouter } from 'next/router';
+import { parseAsBoolean, useQueryState } from 'nuqs';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { EligibilityFormContact, EligibilityFormMessageConfirmation, type EnergyInputsLabelsType } from '@/components/EligibilityForm';
+import { EligibilityFormContact, EligibilityFormMessageConfirmation } from '@/components/EligibilityForm';
 import { CheckEligibilityFormLabel, SelectEnergy } from '@/components/EligibilityForm/components';
 import { energyInputsDefaultLabels } from '@/components/EligibilityForm/EligibilityFormAddress';
 import AddressAutocomplete from '@/components/form/dsfr/AddressAutocompleteInput';
@@ -11,24 +12,17 @@ import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
 import Link from '@/components/ui/Link';
 import Modal, { createModal } from '@/components/ui/Modal';
+import WrappedText from '@/components/WrappedText/WrappedText';
 import useContactFormFCU from '@/hooks/useContactFormFCU';
 import { useServices } from '@/services';
 import { AnalyticsFormId } from '@/services/analytics';
 import { type AvailableHeating } from '@/types/AddressData';
 import { type SuggestionItem } from '@/types/Suggestions';
+import cx from '@/utils/cx';
 
-import BulkEligibilitySlice from './BulkEligibilitySlice';
-import {
-  Buttons,
-  Container,
-  FormLabel,
-  FormWarningMessage,
-  HeadSliceContainer,
-  PageBody,
-  PageTitle,
-  Separator,
-  SliceContactFormStyle,
-} from './HeadSliceForm.style';
+import { Container, FormLabel, HeadSliceContainer, PageBody, PageTitle, SliceContactFormStyle } from './HeadSliceForm.style';
+import BulkEligibilityForm from '../EligibilityForm/BulkEligibilityForm';
+import Icon from '../ui/Icon';
 
 type HeadBannerType = {
   bg?: string;
@@ -86,8 +80,7 @@ const HeadSliceForm = ({
   const [address, setAddress] = useState('');
   const [autoValidate, setAutoValidate] = useState(false);
   const [eligibilityError, setEligibilityError] = useState(false);
-
-  const [displayBulkEligibility, setDisplayBulkEligibility] = useState(false);
+  const [displayBulkEligibility, setDisplayBulkEligibility] = useQueryState('bulk', parseAsBoolean.withDefault(false));
 
   const child = useMemo(
     () =>
@@ -111,7 +104,7 @@ const HeadSliceForm = ({
       return;
     }
 
-    setDisplayBulkEligibility(false);
+    setDisplayBulkEligibility(null);
     if (handleOnFetchAddress) {
       handleOnFetchAddress({ address });
     }
@@ -159,10 +152,14 @@ const HeadSliceForm = ({
             {formLabel ? <FormLabel>{formLabel}</FormLabel> : undefined}
             <CheckEligibilityFormLabel>
               <SelectEnergy
+                label=""
                 className="fr-mb-2w"
                 name="heatingType"
                 selectOptions={energyInputsDefaultLabels}
-                onChange={setHeatingType}
+                onChange={(val) => {
+                  setHeatingType(val as AvailableHeating);
+                  setAutoValidate(true);
+                }}
                 value={heatingType || ''}
               />
             </CheckEligibilityFormLabel>
@@ -172,10 +169,17 @@ const HeadSliceForm = ({
                 const address = geoAddress?.properties?.label;
                 setAddress(address ?? '');
                 setGeoAddress(geoAddress);
+                setAutoValidate(true);
               }}
             />
-
-            <FormWarningMessage show={!!(address && geoAddress && !heatingType)}>{warningMessage}</FormWarningMessage>
+            <div
+              className={cx(
+                'fr-mb-2w font-bold pl-4 py-1 border-l-4 border-error bg-white/40',
+                address && geoAddress && !heatingType ? 'block' : 'hidden'
+              )}
+            >
+              {warningMessage}
+            </div>
 
             {eligibilityError && (
               <Box textColor="#c00">
@@ -183,33 +187,35 @@ const HeadSliceForm = ({
               </Box>
             )}
 
-            <Buttons>
+            <div className="flex justify-between gap-2 items-center">
               <Button
-                size="large"
+                size="medium"
+                loading={loadingStatus === 'loading'}
                 disabled={!address || !geoAddress || !heatingType || (loadingStatus === 'loading' && !eligibilityError)}
                 onClick={testAddress}
-                loading={loadingStatus === 'loading'}
               >
                 Tester cette adresse
               </Button>
-
               {withBulkEligibility && (
                 <>
-                  <Separator />
-                  <Button
-                    type="button"
-                    size="large"
-                    priority="secondary"
-                    onClick={() => {
-                      setDisplayBulkEligibility(true);
-                      router.push('#test-liste');
-                    }}
-                  >
-                    Ou tester une liste d’adresses
-                  </Button>
+                  <span>ou</span>
+                  <span className="!text-green-700 flex items-center gap-0.5">
+                    <Icon name="ri-file-excel-2-line" />
+                    <Button
+                      type="button"
+                      size="medium"
+                      className="!text-green-700 underline hover:!bg-transparent hover:opacity-80 !shadow-none !pr-0 !pl-0"
+                      priority="tertiary"
+                      onClick={() => {
+                        setDisplayBulkEligibility(true);
+                      }}
+                    >
+                      Tester une liste d’adresses
+                    </Button>
+                  </span>
                 </>
               )}
-            </Buttons>
+            </div>
           </form>
         </>
       ) : (
@@ -246,16 +252,36 @@ const HeadSliceForm = ({
       <Modal
         modal={eligibilityTestModal}
         title=""
-        open={contactReady}
+        open={contactReady || (withBulkEligibility && displayBulkEligibility)}
         size="custom"
-        onClose={handleResetFormContact}
+        onClose={() => {
+          setDisplayBulkEligibility(null);
+          handleResetFormContact();
+        }}
         loading={loadingStatus === 'loading'}
       >
         <div>
           {contactReady && !messageReceived && <EligibilityFormContact addressData={addressData} onSubmit={handleOnSubmitContact} />}
           {messageReceived && <EligibilityFormMessageConfirmation addressData={addressData} />}
         </div>
-        {!externBulkForm && withBulkEligibility && <BulkEligibilitySlice displayBulkEligibility={displayBulkEligibility} />}
+        {!externBulkForm && withBulkEligibility && displayBulkEligibility && (
+          <div className="flex flex-col gap-2 lg:flex-row">
+            <WrappedText
+              className="flex-1"
+              body={`
+### Testez un grand nombre d’adresses pour identifier des bâtiments proches des réseaux de chaleur !
+::count-item[*Téléchargez votre fichier (une ligne par adresse) et renseignez votre email*]{number=1}
+::count-item[*Recevez par mail le résultat de votre test*]{number=2}
+::count-item[*Visualisez les adresses testées sur notre cartographie*]{number=3}
+::count-item[*Vous pourrez ensuite sélectionner dans la liste les adresses celles pour lesquelles vous souhaitez être* **mis en relation par France Chaleur Urbaine avec le(s) gestionnaire(s) des réseaux de chaleur.**]{number=4}
+`}
+            />
+            <div className="flex-1">
+              <BulkEligibilityForm />
+              <img width="100%" src="/img/carto-addresses.png" />
+            </div>
+          </div>
+        )}
       </Modal>
     </>
   );
