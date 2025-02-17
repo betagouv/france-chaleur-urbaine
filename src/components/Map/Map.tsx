@@ -118,6 +118,7 @@ type MapProps = {
   withFCUAttribution?: boolean;
   persistViewStateInURL?: boolean;
   mapRef?: RefObject<MapRef>;
+  pinsAutoFit?: boolean;
 };
 
 const Map = ({ initialMapConfiguration, ...props }: MapProps) => {
@@ -148,6 +149,7 @@ export const FullyFeaturedMap = ({
   persistViewStateInURL,
   mapRef: mapRefParam,
   className,
+  pinsAutoFit,
   ...props
 }: MapProps & React.HTMLAttributes<HTMLDivElement>) => {
   const { devModeEnabled, toggleDevMode } = useDevMode();
@@ -559,6 +561,36 @@ export const FullyFeaturedMap = ({
 
     map.flyTo({ center, zoom, essential: true, duration: 1000 });
   }, [JSON.stringify(bounds), mapRef.current]);
+
+  // Add effect to fit bounds when pins change
+  useEffect(() => {
+    if (!pinsAutoFit || !mapRef.current || !markersList.length) {
+      return;
+    }
+
+    const bounds = markersList.reduce(
+      (acc, marker) => {
+        acc[0] = Math.min(acc[0], marker.longitude);
+        acc[1] = Math.min(acc[1], marker.latitude);
+        acc[2] = Math.max(acc[2], marker.longitude);
+        acc[3] = Math.max(acc[3], marker.latitude);
+        return acc;
+      },
+      [180, 90, -180, -90] as BoundingBox
+    );
+
+    const map = mapRef.current.getMap();
+    const { center, zoom } = geoViewport.viewport(
+      bounds,
+      [map.getCanvas().clientWidth - 2 * mapViewportFitPadding, map.getCanvas().clientHeight - 2 * mapViewportFitPadding],
+      1,
+      20,
+      512,
+      true
+    );
+
+    map.flyTo({ center, zoom, essential: true, duration: 1000 });
+  }, [pinsAutoFit, markersList, mapRef.current]);
 
   const isRouterReady = useRouterReady();
   if (!isRouterReady || !isMapConfigurationInitialized(mapConfiguration)) {

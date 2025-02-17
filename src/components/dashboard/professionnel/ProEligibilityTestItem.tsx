@@ -1,9 +1,11 @@
 import Badge from '@codegouvfr/react-dsfr/Badge';
 import { type SortingState, type ColumnFiltersState } from '@tanstack/react-table';
 import { useQueryState } from 'nuqs';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 
 import CompleteEligibilityTestForm from '@/components/dashboard/professionnel/eligibility-test/CompleteEligibilityTestForm';
+import Map from '@/components/Map/Map';
+import { createMapConfiguration } from '@/components/Map/map-configuration';
 import { UrlStateAccordion } from '@/components/ui/Accordion';
 import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
@@ -149,6 +151,40 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
   };
   const isIndicatorFilterActive = (filterKey: string) => columnFilters[0]?.id === filterKey;
 
+  const getMapPins = (addresses: ProEligibilityTestWithAddresses['addresses']) => {
+    return addresses
+      .filter((address) => address.ban_valid && address.geom)
+      .map((address) => ({
+        id: address.id,
+        latitude: (address.geom as GeoJSON.Point).coordinates[1],
+        longitude: (address.geom as GeoJSON.Point).coordinates[0],
+        color: address.eligibility_status?.isEligible ? 'green' : 'red',
+        popup: true,
+        popupContent: `${address.ban_address ?? ''} ${address.source_address ?? ''}`,
+      }));
+  };
+
+  // Get filtered addresses based on the table filters
+  const filteredAddresses = useMemo(() => {
+    if (!testDetails?.addresses) return [];
+
+    return testDetails.addresses.filter((address) => {
+      if (!columnFilters.length) return true;
+
+      const filter = columnFilters[0];
+      switch (filter.id) {
+        case 'eligibility_status.isEligible':
+          return address.eligibility_status?.isEligible === filter.value;
+        case 'eligibility_status.distance':
+          return address.eligibility_status?.distance != null && address.eligibility_status.distance <= (filter.value as number);
+        case 'eligibility_status.inPDP':
+          return address.eligibility_status?.inPDP === filter.value;
+        default:
+          return true;
+      }
+    });
+  }, [testDetails?.addresses, columnFilters]);
+
   return (
     <Box>
       <UrlStateAccordion
@@ -221,10 +257,37 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
           </div>
           <div className="ml-auto flex items-center gap-2">
             <ModalSimple
+              title={test.name}
+              size="custom"
+              trigger={
+                <Button iconId="fr-icon-map-pin-2-line" size="small" priority="secondary">
+                  Voir sur la carte
+                </Button>
+              }
+            >
+              <div className="min-h-[50vh] aspect-[4/3]">
+                <Map
+                  initialMapConfiguration={createMapConfiguration({
+                    reseauxDeChaleur: {
+                      show: true,
+                    },
+                    reseauxEnConstruction: true,
+                    zonesDeDeveloppementPrioritaire: true,
+                  })}
+                  geolocDisabled
+                  withLegend={false}
+                  withoutLogo
+                  pinsAutoFit
+                  pinsList={getMapPins(filteredAddresses)}
+                />
+              </div>
+            </ModalSimple>
+
+            <ModalSimple
               title="Ajout d'adresses"
               size="medium"
               trigger={
-                <Button iconId="ri-file-add-fill" size="small" priority="secondary">
+                <Button iconId="fr-icon-add-line" size="small" priority="secondary">
                   Ajouter des adresses
                 </Button>
               }
