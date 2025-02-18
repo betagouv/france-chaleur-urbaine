@@ -94,12 +94,6 @@ const publicNavigationMenu: MainNavigationProps.Item[] = [
         },
       },
       {
-        text: 'Coûts du chauffage urbain',
-        linkProps: {
-          href: '/ressources/couts-du-chauffage-urbain',
-        },
-      },
-      {
         text: 'Actualités',
         linkProps: {
           href: '/actus',
