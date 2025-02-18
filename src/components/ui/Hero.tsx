@@ -17,7 +17,7 @@ const heroVariants = cva('relative', {
       normal: 'bg-[#C3E4E1] [&_article]:bg-[#C3E4E1]/90',
       light: 'bg-blueFrance-_975_75 [&_article]:bg-blueFrance-_975_75/90',
       accent: 'bg-blueFrance-main525 text-white [&_article]:bg-blueFrance-main525/90',
-      city: 'bg-[#93C7F5]',
+      city: 'bg-[#B2D6F2]',
       transparent: 'bg-transparent',
     },
   },
@@ -28,11 +28,28 @@ const heroVariants = cva('relative', {
 });
 
 export type HeroProps = React.HTMLAttributes<HTMLDivElement> &
-  VariantProps<typeof heroVariants> & { image?: string; imageObject?: 'cover' | 'contain' };
+  VariantProps<typeof heroVariants> & { image?: string; imageClassName?: string };
 
 const HeroContext = React.createContext<VariantProps<typeof heroVariants>>({});
 
-const Hero = ({ children, className, image, size, imageObject = 'cover', variant, ...props }: HeroProps) => {
+/**
+ * Hero component for creating prominent header sections
+ *
+ * @example
+ * ```tsx
+ * <Hero
+ *   image="/path/to/image.jpg"
+ *   variant="normal"
+ *   size="md"
+ * >
+ *   <HeroMeta>Optional meta text</HeroMeta>
+ *   <HeroTitle>Main Title</HeroTitle>
+ *   <HeroSubtitle>Subtitle</HeroSubtitle>
+ *   <HeroContent>A form, for example</HeroContent>
+ * </Hero>
+ * ```
+ */
+const Hero = ({ children, className, image, size, imageClassName = '', variant, ...props }: HeroProps) => {
   return (
     <HeroContext.Provider value={{ size, variant }}>
       <section className={cx(heroVariants({ size, variant }), className)} {...props}>
@@ -41,12 +58,11 @@ const Hero = ({ children, className, image, size, imageObject = 'cover', variant
             <Image
               src={image}
               alt=""
-              className={cx('h-full absolute top-0 left-0 w-auto', imageObject === 'cover' ? 'object-cover' : 'object-contain')}
+              className={cx('h-full absolute top-0 left-0 w-auto object-cover', imageClassName)}
               sizes="100vw"
               priority
               width={400}
               height={500}
-              style={{ width: 'auto' }}
             />
           </div>
         )}
@@ -76,7 +92,7 @@ const headingVariants = cva('', {
 
 const titleVariants = (props: VariantProps<typeof headingVariants>) =>
   cx(
-    '[&&&_strong]:font-extrabold', // Use &&& to bypass DSFR !important
+    '[&_strong]:font-extrabold', // Use & to bypass DSFR !important
     headingVariants(props)
   );
 

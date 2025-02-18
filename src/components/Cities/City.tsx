@@ -26,10 +26,10 @@ const City = ({ citySlug, network }: { citySlug: keyof typeof citiesData; networ
     <CityContainer>
       {cityData && (
         <>
-          <Hero image={`/img/banner_ville_${citySlug}.jpg`} variant="city" className="py-5w" imageObject="cover">
+          <Hero image={`/img/banner_ville_${citySlug}.jpg`} variant="city" className="py-5w" imageClassName="w-[100vw]">
             <HeroMeta>Vous êtes copropriétaire sur {cityData.name} ?</HeroMeta>
-            <HeroTitle className="[&&&]:!font-normal">
-              {/* Use &&& to bypass DSFR !important */}
+            <HeroTitle className="[&&]:!font-normal">
+              {/* Use && to bypass DSFR !important by adding specificity*/}
               Le chauffage urbain, une solution <strong>écologique</strong> et <strong>économique</strong> à {cityData.name}
             </HeroTitle>
           </Hero>
