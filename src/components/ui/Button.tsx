@@ -2,7 +2,14 @@ import DsfrButton, { type ButtonProps as DsfrButtonProps } from '@codegouvfr/rea
 import { useRouter } from 'next/router';
 import styled, { css } from 'styled-components';
 
-type StyledButtonProps = { $loading?: boolean; $full?: boolean };
+import { trackEvent, type TrackingEvent } from '@/services/analytics';
+
+type StyledButtonProps = {
+  $loading?: boolean;
+  $full?: boolean;
+  eventKey?: TrackingEvent;
+  eventPayload?: string;
+};
 
 const StyledButton = styled(DsfrButton)<DsfrButtonProps & StyledButtonProps>`
   ${({ $loading, $full }) => css`
@@ -22,6 +29,15 @@ const StyledButton = styled(DsfrButton)<DsfrButtonProps & StyledButtonProps>`
 
 export type ButtonProps = DsfrButtonProps & RemoveDollar<StyledButtonProps> & { href?: string; stopPropagation?: boolean };
 
+/**
+ * A DSFR button component with enhanced features:
+ * - Full width support via `full` prop
+ * - Loading state with spinner via `loading` prop
+ * - Automatic external link detection and handling
+ * - Analytics event tracking via `eventKey` and `eventPayload`
+ * - Stop propagation control via `stopPropagation` prop
+ */
+
 const Button: React.FC<ButtonProps> = ({
   children,
   iconId,
@@ -30,6 +46,8 @@ const Button: React.FC<ButtonProps> = ({
   type = 'button',
   disabled,
   onClick: onExternalClick,
+  eventKey,
+  eventPayload,
   stopPropagation,
   loading,
   ...props
@@ -43,6 +61,12 @@ const Button: React.FC<ButtonProps> = ({
       } else {
         router.push(href);
       }
+    }
+    if (eventKey) {
+      trackEvent(
+        eventKey,
+        eventPayload?.split(',').map((v) => v.trim())
+      );
     }
     if (!onExternalClick) {
       return;
