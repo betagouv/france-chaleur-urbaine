@@ -112,6 +112,7 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
   const [value] = useQueryState(queryParamName);
   const [viewDetail, setViewDetail] = useState(value === test.id);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [activeView, setActiveView] = useState<'list' | 'map'>('list');
 
   const { data: testDetails, isLoading } = useFetch<ProEligibilityTestWithAddresses>(`/api/pro-eligibility-tests/${test.id}`, {
     enabled: viewDetail,
@@ -284,33 +285,23 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
               active={isIndicatorFilterActive('eligibility_status.inPDP')}
             />
           </div>
-          <div className="ml-auto flex items-center gap-2">
-            <ModalSimple
-              title={test.name}
-              size="custom"
-              trigger={
-                <Button iconId="fr-icon-map-pin-2-line" priority="secondary" disabled={filteredAddressesMapData.length === 0}>
-                  Voir sur la carte
-                </Button>
-              }
+          <div className="flex items-center gap-2 w-full">
+            <Button
+              iconId="fr-icon-list-unordered"
+              priority={activeView === 'list' ? 'primary' : 'secondary'}
+              onClick={() => setActiveView('list')}
             >
-              <div className="min-h-[50vh] aspect-[4/3]">
-                <Map
-                  initialMapConfiguration={createMapConfiguration({
-                    reseauxDeChaleur: {
-                      show: true,
-                    },
-                    reseauxEnConstruction: true,
-                    zonesDeDeveloppementPrioritaire: true,
-                  })}
-                  geolocDisabled
-                  withPins={false}
-                  withLegend={false}
-                  withoutLogo
-                  adressesEligibles={filteredAddressesMapData}
-                />
-              </div>
-            </ModalSimple>
+              Liste
+            </Button>
+            <Button
+              iconId="fr-icon-map-pin-2-line"
+              priority={activeView === 'map' ? 'primary' : 'secondary'}
+              onClick={() => setActiveView('map')}
+              disabled={filteredAddressesMapData.length === 0}
+            >
+              Carte
+            </Button>
+            <div className="flex-1" />
 
             <Button iconId="fr-icon-download-line" priority="secondary" onClick={downloadCSV} disabled={filteredAddresses.length === 0}>
               Télécharger
@@ -339,12 +330,32 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
             </Button>
           </div>
         </div>
-        <TableSimple
-          columns={columns}
-          data={testDetails?.addresses || []}
-          initialSortingState={initialSortingState}
-          columnFilters={columnFilters}
-        />
+
+        {activeView === 'list' ? (
+          <TableSimple
+            columns={columns}
+            data={testDetails?.addresses || []}
+            initialSortingState={initialSortingState}
+            columnFilters={columnFilters}
+          />
+        ) : (
+          <div className="min-h-[50vh] aspect-[4/3]">
+            <Map
+              initialMapConfiguration={createMapConfiguration({
+                reseauxDeChaleur: {
+                  show: true,
+                },
+                reseauxEnConstruction: true,
+                zonesDeDeveloppementPrioritaire: true,
+              })}
+              geolocDisabled
+              withPins={false}
+              withLegend={false}
+              withoutLogo
+              adressesEligibles={filteredAddressesMapData}
+            />
+          </div>
+        )}
       </UrlStateAccordion>
     </Box>
   );
