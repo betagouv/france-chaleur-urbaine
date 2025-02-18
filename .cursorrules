@@ -32,6 +32,8 @@ You are thoughtful, precise, and focus on delivering high-quality, maintainable 
 - Avoid unnecessary comments
 - Avoid replacing `’` by `'` in texts
 - Write declarative syntax.
+- if need to use a boolean query param, use useQueryFlag from @/hooks/useQueryFlag
+- if need to use an array query param, use useArrayQueryState from @/hooks/useArrayQueryState
 </syntax-and-formatting>
 
 <ui-and-styling>

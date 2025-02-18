@@ -1,5 +1,4 @@
 import { useRouter } from 'next/router';
-import { parseAsBoolean, useQueryState } from 'nuqs';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { EligibilityFormContact, EligibilityFormMessageConfirmation } from '@/components/EligibilityForm';
@@ -14,6 +13,7 @@ import Link from '@/components/ui/Link';
 import Modal, { createModal } from '@/components/ui/Modal';
 import WrappedText from '@/components/WrappedText/WrappedText';
 import useContactFormFCU from '@/hooks/useContactFormFCU';
+import useQueryFlag from '@/hooks/useQueryFlag';
 import { useServices } from '@/services';
 import { AnalyticsFormId } from '@/services/analytics';
 import { type AvailableHeating } from '@/types/AddressData';
@@ -80,7 +80,7 @@ const HeadSliceForm = ({
   const [address, setAddress] = useState('');
   const [autoValidate, setAutoValidate] = useState(false);
   const [eligibilityError, setEligibilityError] = useState(false);
-  const [displayBulkEligibility, setDisplayBulkEligibility] = useQueryState('bulk', parseAsBoolean.withDefault(false));
+  const [displayBulkEligibility, toggleDisplayBulkEligibility] = useQueryFlag('bulk');
 
   const child = useMemo(
     () =>
@@ -104,7 +104,7 @@ const HeadSliceForm = ({
       return;
     }
 
-    setDisplayBulkEligibility(null);
+    toggleDisplayBulkEligibility(false);
     if (handleOnFetchAddress) {
       handleOnFetchAddress({ address });
     }
@@ -152,8 +152,7 @@ const HeadSliceForm = ({
             {formLabel ? <FormLabel>{formLabel}</FormLabel> : undefined}
             <CheckEligibilityFormLabel>
               <SelectEnergy
-                label=""
-                className="fr-mb-2w"
+                label="Votre mode de chauffage actuel"
                 name="heatingType"
                 selectOptions={energyInputsDefaultLabels}
                 onChange={(val) => {
@@ -207,7 +206,7 @@ const HeadSliceForm = ({
                       className="!text-green-700 underline hover:!bg-transparent hover:opacity-80 !shadow-none !pr-0 !pl-0"
                       priority="tertiary"
                       onClick={() => {
-                        setDisplayBulkEligibility(true);
+                        toggleDisplayBulkEligibility(true);
                       }}
                     >
                       Tester une liste d’adresses
@@ -255,7 +254,7 @@ const HeadSliceForm = ({
         open={contactReady || (withBulkEligibility && displayBulkEligibility)}
         size="custom"
         onClose={() => {
-          setDisplayBulkEligibility(null);
+          toggleDisplayBulkEligibility(false);
           handleResetFormContact();
         }}
         loading={loadingStatus === 'loading'}
