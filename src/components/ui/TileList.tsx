@@ -1,4 +1,5 @@
 import { cva } from 'class-variance-authority';
+import { AnimatePresence, motion } from 'framer-motion';
 import React, { useState } from 'react';
 
 import useQueryFlag from '@/hooks/useQueryFlag';
@@ -14,7 +15,7 @@ export type TileListItem = {
   image?: string;
 };
 
-const tileListVariants = cva('grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4');
+const tileListVariants = cva('grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4');
 
 export type TileListProps = {
   items: TileListItem[];
@@ -37,27 +38,37 @@ const TileList: React.FC<TileListProps> = ({ items, initialVisibleCount = 4, siz
   const showAll = queryParamName ? urlShowAll : localShowAll;
   const setShowAll = queryParamName ? setUrlShowAll : setLocalShowAll;
 
-  const visibleItems = showAll ? items : items.slice(0, initialVisibleCount);
-
   return (
     <section>
       <div className={tileListVariants()}>
-        {visibleItems.map((item, index) => (
-          <Tile
-            key={`${item.title}-${index}`}
-            title={item.title}
-            desc={item.excerpt}
-            linkProps={{
-              href: item.href,
-            }}
-            image={item.image}
-            enlargeLinkOrButton
-            imageSvg={false}
-            titleAs="h3"
-            orientation={orientation}
-            size={size}
-          />
-        ))}
+        <AnimatePresence>
+          {items.map((item, index) => (
+            <motion.div
+              key={`${item.title}-${index}`}
+              initial={index >= initialVisibleCount ? { opacity: 0, height: 0 } : { opacity: 1, height: 'auto' }}
+              animate={showAll || index < initialVisibleCount ? { opacity: 1, height: 'auto' } : { opacity: 0, height: 0 }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+              className="overflow-hidden"
+            >
+              <Tile
+                title={item.title}
+                desc={item.excerpt}
+                linkProps={{
+                  href: item.href,
+                  className: 'h-full',
+                }}
+                image={item.image}
+                enlargeLinkOrButton
+                imageSvg={false}
+                titleAs="h3"
+                orientation={orientation}
+                size={size}
+                className="h-full w-full"
+              />
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </div>
       {items.length > initialVisibleCount && (
         <div className="flex justify-center mt-6">

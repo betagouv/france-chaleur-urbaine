@@ -18,7 +18,7 @@ export type TileProps = BaseTileProps & {
 const tileVariants = cva('', {
   variants: {
     size: {
-      sm: '',
+      sm: '!pt-[1rem] !px-[1rem] !pb-[1.25rem]',
       md: '',
       lg: '',
     },
@@ -45,6 +45,19 @@ const imgVariants = cva('', {
   variants: {
     size: {
       sm: '!mr-0',
+      md: '',
+      lg: '',
+    },
+  },
+  defaultVariants: {
+    size: 'md',
+  },
+});
+
+const contentVariants = cva('', {
+  variants: {
+    size: {
+      sm: '!pb-[1.5rem]',
       md: '',
       lg: '',
     },
@@ -83,6 +96,7 @@ const Tile: React.FC<TileProps> = ({ size = 'md', className, image, linkProps, .
       classes={{
         header: headerVariants({ size }),
         img: imgVariants({ size }),
+        content: contentVariants({ size }),
       }}
       className={tileVariants({ size, className })}
       small={size === 'sm'}

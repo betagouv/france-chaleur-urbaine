@@ -109,7 +109,7 @@ export default function Home() {
         <SectionTitle>Des outils à votre service</SectionTitle>
         <SectionSubtitle>Découvrez l'ensemble de nos outils pour les copropriétaires et professionnels</SectionSubtitle>
         <SectionContent>
-          <TileList items={tools} queryParamName="tool" />
+          <TileList items={tools} queryParamName="tool" initialVisibleCount={12} />
         </SectionContent>
       </Section>
 
