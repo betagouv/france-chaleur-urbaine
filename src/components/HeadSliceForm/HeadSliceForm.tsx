@@ -66,6 +66,7 @@ const HeadSliceForm = ({
     messageReceived,
     loadingStatus,
     warningMessage,
+    setLoadingStatus,
     handleOnFetchAddress,
     handleOnSuccessAddress,
     handleOnSubmitContact,
@@ -152,7 +153,7 @@ const HeadSliceForm = ({
             {formLabel ? <FormLabel>{formLabel}</FormLabel> : undefined}
             <CheckEligibilityFormLabel>
               <SelectEnergy
-                label="Votre mode de chauffage actuel"
+                label="Mode de chauffage actuel :"
                 name="heatingType"
                 selectOptions={energyInputsDefaultLabels}
                 onChange={(val) => {
@@ -169,6 +170,9 @@ const HeadSliceForm = ({
                 setAddress(address ?? '');
                 setGeoAddress(geoAddress);
                 setAutoValidate(true);
+              }}
+              onError={() => {
+                setLoadingStatus('idle');
               }}
             />
             <div

@@ -139,6 +139,7 @@ const useContactFormFCU = () => {
     messageReceived,
     loadingStatus,
     warningMessage,
+    setLoadingStatus,
     handleOnChangeAddress,
     handleOnFetchAddress,
     handleOnSuccessAddress,
