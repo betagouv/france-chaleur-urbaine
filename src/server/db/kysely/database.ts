@@ -2897,7 +2897,7 @@ export interface ProEligibilityTestsAddresses {
   ban_score: number | null;
   ban_valid: boolean;
   eligibility_status: HeatNetwork | null; // pas ouf comme nom
-  geom: string | null | GeoJSON.Point;
+  geom: GeoJSON.Point | null;
   id: Generated<string>;
   source_address: string;
   test_id: string;

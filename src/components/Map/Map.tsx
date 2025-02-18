@@ -98,6 +98,14 @@ type ViewState = {
   zoom: number;
 };
 
+export type AdresseEligible = {
+  id: string;
+  address: string;
+  isEligible: boolean;
+  longitude: number;
+  latitude: number;
+};
+
 type MapProps = {
   withoutLogo?: boolean;
   initialMapConfiguration?: MapConfiguration;
@@ -120,6 +128,7 @@ type MapProps = {
   mapRef?: RefObject<MapRef>;
   pinsAutoFit?: boolean;
   children?: ReactNode;
+  adressesEligibles?: AdresseEligible[];
 };
 
 const Map = ({ initialMapConfiguration, ...props }: MapProps) => {
@@ -151,6 +160,7 @@ export const FullyFeaturedMap = ({
   mapRef: mapRefParam,
   className,
   pinsAutoFit,
+  adressesEligibles,
   children,
   ...props
 }: MapProps & React.HTMLAttributes<HTMLDivElement>) => {
@@ -593,6 +603,27 @@ export const FullyFeaturedMap = ({
 
     map.flyTo({ center, zoom, essential: true, duration: 1000 });
   }, [pinsAutoFit, markersList, mapRef.current]);
+
+  // Update adressesEligibles source when it changes
+  useEffect(() => {
+    if (!mapRef.current || !mapLayersLoaded || !adressesEligibles) return;
+
+    (mapRef.current.getSource('adressesEligibles') as maplibregl.GeoJSONSource)?.setData({
+      type: 'FeatureCollection',
+      features: adressesEligibles.map((address) => ({
+        type: 'Feature',
+        geometry: {
+          type: 'Point',
+          coordinates: [address.longitude, address.latitude],
+        },
+        properties: {
+          id: address.id,
+          address: address.address,
+          isEligible: address.isEligible,
+        },
+      })),
+    });
+  }, [mapRef.current, mapLayersLoaded, adressesEligibles]);
 
   const isRouterReady = useRouterReady();
   if (!isRouterReady || !isMapConfigurationInitialized(mapConfiguration)) {

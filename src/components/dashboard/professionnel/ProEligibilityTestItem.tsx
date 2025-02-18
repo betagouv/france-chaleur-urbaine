@@ -2,10 +2,9 @@ import Badge from '@codegouvfr/react-dsfr/Badge';
 import { type SortingState, type ColumnFiltersState } from '@tanstack/react-table';
 import { useQueryState } from 'nuqs';
 import { useState, useMemo } from 'react';
-import { Layer, Source } from 'react-map-gl';
 
 import CompleteEligibilityTestForm from '@/components/dashboard/professionnel/eligibility-test/CompleteEligibilityTestForm';
-import Map from '@/components/Map/Map';
+import Map, { type AdresseEligible } from '@/components/Map/Map';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import { UrlStateAccordion } from '@/components/ui/Accordion';
 import Box from '@/components/ui/Box';
@@ -153,24 +152,36 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
   const isIndicatorFilterActive = (filterKey: string) => columnFilters[0]?.id === filterKey;
 
   // Get filtered addresses based on the table filters
-  const filteredAddresses = useMemo(() => {
+  const filteredAddressesMapData = useMemo(() => {
     if (!testDetails?.addresses) return [];
 
-    return testDetails.addresses.filter((address) => {
-      if (!columnFilters.length) return true;
+    return testDetails.addresses
+      .filter((address) => {
+        if (!columnFilters.length) return true;
 
-      const filter = columnFilters[0];
-      switch (filter.id) {
-        case 'eligibility_status.isEligible':
-          return address.eligibility_status?.isEligible === filter.value;
-        case 'eligibility_status.distance':
-          return address.eligibility_status?.distance != null && address.eligibility_status.distance <= (filter.value as number);
-        case 'eligibility_status.inPDP':
-          return address.eligibility_status?.inPDP === filter.value;
-        default:
-          return true;
-      }
-    });
+        const filter = columnFilters[0];
+        switch (filter.id) {
+          case 'eligibility_status.isEligible':
+            return address.eligibility_status?.isEligible === filter.value;
+          case 'eligibility_status.distance':
+            return address.eligibility_status?.distance != null && address.eligibility_status.distance <= (filter.value as number);
+          case 'eligibility_status.inPDP':
+            return address.eligibility_status?.inPDP === filter.value;
+          default:
+            return true;
+        }
+      })
+      .filter((address) => address.ban_valid && address.geom)
+      .map(
+        (address) =>
+          ({
+            id: address.id,
+            longitude: address.geom!.coordinates[0],
+            latitude: address.geom!.coordinates[1],
+            address: address.ban_address ?? '',
+            isEligible: address.eligibility_status?.isEligible ?? false,
+          }) satisfies AdresseEligible
+      );
   }, [testDetails?.addresses, columnFilters]);
 
   return (
@@ -266,9 +277,8 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
                   withPins={false}
                   withLegend={false}
                   withoutLogo
-                >
-                  <AddressesLayer addresses={filteredAddresses} />
-                </Map>
+                  adressesEligibles={filteredAddressesMapData}
+                />
               </div>
             </ModalSimple>
 
@@ -328,56 +338,3 @@ const Indicator = ({ label, value, loading, onClick, active }: IndicatorProps) =
 };
 
 const Divider = () => <div className="h-12 w-px bg-gray-300" />;
-
-type PinPopupContent = {
-  id: string;
-  isEligible: boolean;
-  popupContent: string;
-};
-
-type PinsLayerProps = {
-  addresses: ProEligibilityTestWithAddresses['addresses'];
-};
-
-export const AddressesLayer = ({ addresses }: PinsLayerProps) => {
-  const geojsonData = useMemo(
-    () => ({
-      type: 'FeatureCollection',
-      features: addresses
-        .filter((address) => address.ban_valid && address.geom)
-        .map((address) => ({
-          type: 'Feature',
-          geometry: address.geom,
-          properties: {
-            id: address.id,
-            isEligible: address.eligibility_status?.isEligible ?? false,
-            popupContent: `${address.ban_address ?? ''} ${address.source_address ?? ''}`,
-          } satisfies PinPopupContent,
-        })),
-    }),
-    [addresses]
-  ) as GeoJSON.FeatureCollection<GeoJSON.Point, PinPopupContent>;
-
-  return (
-    <Source id="adresses-eligibles" type="geojson" data={geojsonData}>
-      <Layer
-        id="adresses-eligibles"
-        type="symbol"
-        filter={['==', 'isEligible', false]}
-        layout={{
-          'icon-image': 'marker-red',
-          'icon-allow-overlap': true,
-        }}
-      />
-      <Layer
-        id="adresses-eligible"
-        type="symbol"
-        filter={['==', 'isEligible', true]}
-        layout={{
-          'icon-image': 'marker-green',
-          'icon-allow-overlap': true,
-        }}
-      />
-    </Source>
-  );
-};

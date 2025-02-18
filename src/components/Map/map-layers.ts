@@ -15,6 +15,7 @@ import { deepMergeObjects, isDefined } from '@/utils/core';
 import { buildingsDataExtractionLayers } from './components/tools/BuildingsDataExtractionTool';
 import { distancesMeasurementLayers } from './components/tools/DistancesMeasurementTool';
 import { linearHeatDensityLayers } from './components/tools/LinearHeatDensityTool';
+import { adressesEligiblesLayersSpec } from './layers/adressesEligibles';
 import { batimentsRaccordesReseauxChaleurFroidLayersSpec } from './layers/batimentsRaccordesReseauxChaleurFroid';
 import { besoinsEnChaleurLayersSpec } from './layers/besoinsEnChaleur';
 import { besoinsEnChaleurIndustrieCommunesLayersSpec } from './layers/besoinsEnChaleurIndustrieCommunes';
@@ -151,6 +152,7 @@ export const mapLayers = [
   ...installationsGeothermieLayersSpec,
   ...communesFortPotentielPourCreationReseauxChaleurLayersSpec,
   ...etudesEnCoursLayersSpec,
+  ...adressesEligiblesLayersSpec,
 
   // other sources: distances measurement, linear heat density, buildings data extraction
   ...distancesMeasurementLayers,
