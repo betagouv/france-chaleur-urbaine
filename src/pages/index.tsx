@@ -8,6 +8,7 @@ import { issues, understandings } from '@/components/Ressources/config';
 import Understanding from '@/components/Ressources/Understanding';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Box, { ResponsiveRow } from '@/components/ui/Box';
+import Button from '@/components/ui/Button';
 import Heading from '@/components/ui/Heading';
 import Hero, { HeroContent, HeroMeta, HeroSubtitle, HeroTitle } from '@/components/ui/Hero';
 import Link from '@/components/ui/Link';
@@ -117,6 +118,11 @@ export default function Home() {
         <SectionTitle>Les avantages du chauffage urbain</SectionTitle>
         <SectionContent>
           <AvantagesChauffageUrbain />
+          <div className="flex items-center justify-center mt-12">
+            <Button href="/documentation/guide-france-chaleur-urbaine.pdf" eventKey="Téléchargement|Guide FCU|coproprietaire">
+              Télécharger le guide de raccordement
+            </Button>
+          </div>
         </SectionContent>
       </Section>
       <Section id="comprendre-le-chauffage-urbain">
@@ -300,14 +306,6 @@ export default function Home() {
           </ResponsiveRow>
         </SectionContent>
       </Section>
-
-      {/* <Box py="10w" id="obligations-de-raccordement">
-        <ObligationRaccordement />
-      </Box> */}
-
-      {/* <Box py="10w" backgroundColor="blue-france-main-525" id="comment-se-raccorder">
-        <HowToRaccordement />
-      </Box> */}
 
       <Partners />
 
