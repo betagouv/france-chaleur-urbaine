@@ -228,7 +228,7 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
                       <SelectEnergy
                         label="Mode de chauffage actuel :"
                         name="heatingType"
-                        className="fr-mt-2w fr-mb-2w"
+                        className="fr-my-2w"
                         selectOptions={energyInputsDefaultLabels}
                         onChange={setHeatingType}
                         value={heatingType}

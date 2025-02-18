@@ -28,6 +28,23 @@ export type SectionProps = React.HTMLAttributes<HTMLDivElement> & VariantProps<t
 
 const SectionContext = React.createContext<VariantProps<typeof sectionVariants>>({});
 
+/**
+ * Section component for creating page sections with consistent styling
+ *
+ * @example
+ * ```tsx
+ * <Section variant="light" size="md">
+ *   <SectionTitle>Main Section Title</SectionTitle>
+ *   <SectionSubtitle>Optional subtitle text</SectionSubtitle>
+ *   <SectionTwoColumns><div>Section 1</div><div>Section 2</div></SectionTwoColumns>
+ *   <SectionContent>
+ *     <SectionHeading as="h3">Section heading</SectionHeading>
+ *      Any content
+ *   </SectionContent>
+ * </Section>
+ * ```
+ */
+
 const Section = ({ children, className, size, variant, ...props }: SectionProps) => {
   return (
     <SectionContext.Provider value={{ size, variant }}>

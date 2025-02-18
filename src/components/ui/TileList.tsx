@@ -1,6 +1,7 @@
 import { cva } from 'class-variance-authority';
-import { useQueryState } from 'nuqs';
 import React, { useState } from 'react';
+
+import useQueryFlag from '@/hooks/useQueryFlag';
 
 import Button from './Button';
 import Icon from './Icon';
@@ -23,12 +24,15 @@ export type TileListProps = {
   queryParamName?: string;
 };
 
+/**
+ * A list of tiles component with enhanced features:
+ * - Initial visible count via `initialVisibleCount` prop
+ * - Orientation variants via `orientation` prop (horizontal, vertical)
+ * - Query param name to store state in URL via `queryParamName` prop
+ */
 const TileList: React.FC<TileListProps> = ({ items, initialVisibleCount = 4, size = 'sm', orientation = 'horizontal', queryParamName }) => {
-  const [localShowAll, setLocalShowAll] = useState<true | null>(null);
-  const [urlShowAll, setUrlShowAll] = useQueryState(queryParamName || '', {
-    defaultValue: false,
-    parse: (value) => value === 'true',
-  });
+  const [localShowAll, setLocalShowAll] = useState<boolean>(false);
+  const [urlShowAll, setUrlShowAll] = useQueryFlag(queryParamName || '');
 
   const showAll = queryParamName ? urlShowAll : localShowAll;
   const setShowAll = queryParamName ? setUrlShowAll : setLocalShowAll;
@@ -57,7 +61,7 @@ const TileList: React.FC<TileListProps> = ({ items, initialVisibleCount = 4, siz
       </div>
       {items.length > initialVisibleCount && (
         <div className="flex justify-center mt-6">
-          <Button onClick={() => setShowAll(showAll ? null : true)} priority="secondary">
+          <Button onClick={() => setShowAll(!showAll)} priority="secondary">
             {showAll ? <Icon name="fr-icon-arrow-up-line" /> : <Icon name="fr-icon-arrow-down-line" />}
           </Button>
         </div>
