@@ -185,10 +185,6 @@ export default function Home() {
         </SectionContent>
       </Section>
 
-      {/* <Box py="10w" id="couts-du-chauffage-urbain">
-        <CoutsChauffageUrbain />
-      </Box> */}
-
       {/* <Box py="10w" backgroundColor="blue-france-975-75">
         <Box className="fr-container">
           <ResponsiveRow>
