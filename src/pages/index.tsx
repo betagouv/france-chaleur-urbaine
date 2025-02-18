@@ -48,7 +48,7 @@ const tools: TileListItem[] = [
   {
     title: 'Coûts de raccordement et aides',
     excerpt: 'Estimez le coût de votre raccordement.',
-    href: '/ressources/aides',
+    href: '/ressources/cout-raccordement',
     image: '/img/tools/compatibilite.svg',
   },
   {
@@ -126,7 +126,7 @@ export default function Home() {
       </Section>
 
       <Section id="comprendre-le-chauffage-urbain">
-        <SectionTitle>Comment fonctionne le chauffage urbain</SectionTitle>
+        <SectionTitle>Comment fonctionne le chauffage urbain&nbsp;?</SectionTitle>
         <SectionContent>
           <SectionTwoColumns>
             <div>
