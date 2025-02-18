@@ -1,4 +1,5 @@
 import Badge from '@codegouvfr/react-dsfr/Badge';
+import Tabs from '@codegouvfr/react-dsfr/Tabs';
 import { type SortingState, type ColumnFiltersState } from '@tanstack/react-table';
 import { useQueryState } from 'nuqs';
 import { unparse } from 'papaparse';
@@ -112,7 +113,6 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
   const [value] = useQueryState(queryParamName);
   const [viewDetail, setViewDetail] = useState(value === test.id);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [activeView, setActiveView] = useState<'list' | 'map'>('list');
 
   const { data: testDetails, isLoading } = useFetch<ProEligibilityTestWithAddresses>(`/api/pro-eligibility-tests/${test.id}`, {
     enabled: viewDetail,
@@ -286,23 +286,7 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
             />
           </div>
           <div className="flex items-center gap-2 w-full">
-            <Button
-              iconId="fr-icon-list-unordered"
-              priority={activeView === 'list' ? 'primary' : 'secondary'}
-              onClick={() => setActiveView('list')}
-            >
-              Liste
-            </Button>
-            <Button
-              iconId="fr-icon-map-pin-2-line"
-              priority={activeView === 'map' ? 'primary' : 'secondary'}
-              onClick={() => setActiveView('map')}
-              disabled={filteredAddressesMapData.length === 0}
-            >
-              Carte
-            </Button>
             <div className="flex-1" />
-
             <Button iconId="fr-icon-download-line" priority="secondary" onClick={downloadCSV} disabled={filteredAddresses.length === 0}>
               Télécharger
             </Button>
@@ -331,30 +315,46 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
           </div>
         </div>
 
-        {activeView === 'list' ? (
-          <TableSimple
-            columns={columns}
-            data={testDetails?.addresses || []}
-            initialSortingState={initialSortingState}
-            columnFilters={columnFilters}
+        {viewDetail && (
+          <Tabs
+            tabs={[
+              {
+                label: 'Liste',
+                iconId: 'fr-icon-list-unordered',
+                content: (
+                  <TableSimple
+                    columns={columns}
+                    data={testDetails?.addresses || []}
+                    initialSortingState={initialSortingState}
+                    columnFilters={columnFilters}
+                  />
+                ),
+                isDefault: true,
+              },
+              {
+                label: 'Carte',
+                iconId: 'fr-icon-map-pin-2-line',
+                content: (
+                  <div className="min-h-[50vh] aspect-[4/3]">
+                    <Map
+                      initialMapConfiguration={createMapConfiguration({
+                        reseauxDeChaleur: {
+                          show: true,
+                        },
+                        reseauxEnConstruction: true,
+                        zonesDeDeveloppementPrioritaire: true,
+                      })}
+                      geolocDisabled
+                      withPins={false}
+                      withLegend={false}
+                      withoutLogo
+                      adressesEligibles={filteredAddressesMapData}
+                    />
+                  </div>
+                ),
+              },
+            ]}
           />
-        ) : (
-          <div className="min-h-[50vh] aspect-[4/3]">
-            <Map
-              initialMapConfiguration={createMapConfiguration({
-                reseauxDeChaleur: {
-                  show: true,
-                },
-                reseauxEnConstruction: true,
-                zonesDeDeveloppementPrioritaire: true,
-              })}
-              geolocDisabled
-              withPins={false}
-              withLegend={false}
-              withoutLogo
-              adressesEligibles={filteredAddressesMapData}
-            />
-          </div>
         )}
       </UrlStateAccordion>
     </Box>
