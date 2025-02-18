@@ -10,7 +10,7 @@ const heroVariants = cva('relative', {
   variants: {
     size: {
       sm: '',
-      md: 'py-4w 2xl:py-8w',
+      md: '',
       lg: '',
     },
     variant: {
@@ -26,9 +26,21 @@ const heroVariants = cva('relative', {
     variant: 'normal',
   },
 });
+const contentVariants = cva('flex-1 ', {
+  variants: {
+    size: {
+      sm: '',
+      md: 'px-2 py-4w 2xl:py-8w',
+      lg: '',
+    },
+  },
+  defaultVariants: {
+    size: 'md',
+  },
+});
 
 export type HeroProps = React.HTMLAttributes<HTMLDivElement> &
-  VariantProps<typeof heroVariants> & { image?: string; imageClassName?: string };
+  VariantProps<typeof heroVariants> & { image?: string; imageClassName?: string; imageType?: 'floating' | 'inline' };
 
 const HeroContext = React.createContext<VariantProps<typeof heroVariants>>({});
 
@@ -49,11 +61,11 @@ const HeroContext = React.createContext<VariantProps<typeof heroVariants>>({});
  * </Hero>
  * ```
  */
-const Hero = ({ children, className, image, size, imageClassName = '', variant, ...props }: HeroProps) => {
+const Hero = ({ children, className, image, size, imageClassName = '', imageType = 'floating', variant, ...props }: HeroProps) => {
   return (
     <HeroContext.Provider value={{ size, variant }}>
       <section className={cx(heroVariants({ size, variant }), className)} {...props}>
-        {image && (
+        {image && imageType === 'floating' && (
           <div className="absolute top-0 left-0 right-0 bottom-0 hidden lg:block">
             <Image
               src={image}
@@ -67,8 +79,14 @@ const Hero = ({ children, className, image, size, imageClassName = '', variant, 
           </div>
         )}
         <div className="fr-container flex relative">
-          <div className="flex-1 hidden lg:block">&nbsp;</div>
-          <article className="flex-1 px-2 py-2w lg:pr-0">{children}</article>
+          <div className="flex-1 hidden lg:block">
+            {image && imageType === 'inline' && (
+              <div className="relative h-full">
+                <Image src={image} alt="" className={cx('w-full h-full object-contain', imageClassName)} priority fill />
+              </div>
+            )}
+          </div>
+          <article className={contentVariants({ size })}>{children}</article>
         </div>
       </section>
     </HeroContext.Provider>
