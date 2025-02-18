@@ -362,24 +362,20 @@ export const AddressesLayer = ({ addresses }: PinsLayerProps) => {
     <Source id="adresses-eligibles" type="geojson" data={geojsonData}>
       <Layer
         id="adresses-eligibles"
-        type="circle"
+        type="symbol"
         filter={['==', 'isEligible', false]}
-        paint={{
-          'circle-radius': 8,
-          'circle-color': '#E1000F',
-          'circle-stroke-width': 2,
-          'circle-stroke-color': '#FFFFFF',
+        layout={{
+          'icon-image': 'marker-red',
+          'icon-allow-overlap': true,
         }}
       />
       <Layer
         id="adresses-eligible"
-        type="circle"
+        type="symbol"
         filter={['==', 'isEligible', true]}
-        paint={{
-          'circle-radius': 8,
-          'circle-color': '#00AA91',
-          'circle-stroke-width': 2,
-          'circle-stroke-color': '#FFFFFF',
+        layout={{
+          'icon-image': 'marker-green',
+          'icon-allow-overlap': true,
         }}
       />
     </Source>

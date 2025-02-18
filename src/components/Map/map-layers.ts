@@ -54,6 +54,14 @@ export const layerSymbolsImagesURLs = [
     url: '/icons/square.png',
     sdf: true,
   },
+  {
+    key: 'marker-red',
+    url: '/icons/marker-red.png',
+  },
+  {
+    key: 'marker-green',
+    url: '/icons/marker-green.png',
+  },
   ...enrrMobilisablesChaleurFataleLayerSymbols,
 ] as const satisfies ReadonlyArray<LayerSymbolSpecification>;
 
