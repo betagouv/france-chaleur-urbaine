@@ -265,7 +265,7 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
               title={test.name}
               size="custom"
               trigger={
-                <Button iconId="fr-icon-map-pin-2-line" size="small" priority="secondary">
+                <Button iconId="fr-icon-map-pin-2-line" size="small" priority="secondary" disabled={filteredAddressesMapData.length === 0}>
                   Voir sur la carte
                 </Button>
               }
