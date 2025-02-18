@@ -9,7 +9,7 @@ export const adressesEligiblesLayersSpec = [
       promoteId: 'id', // obligatoire car maplibre ne semble pas prendre l'id des features, seulement celui des properties
     },
     layers: [
-      // 2 couches pour afficher les adresses éligibles au dessus des autres
+      // 2 couches séparées pour afficher les adresses éligibles au dessus des autres
       {
         id: 'adressesEligibles-non-eligible',
         type: 'symbol',
@@ -17,6 +17,8 @@ export const adressesEligiblesLayersSpec = [
         layout: {
           'icon-image': 'marker-red',
           'icon-overlap': 'always',
+          'icon-anchor': 'bottom',
+          'icon-offset': [0, 5],
         },
         paint: {
           // display all features except the hovered one
@@ -32,6 +34,8 @@ export const adressesEligiblesLayersSpec = [
         layout: {
           'icon-image': 'marker-green',
           'icon-overlap': 'always',
+          'icon-anchor': 'bottom',
+          'icon-offset': [0, 5],
         },
         paint: {
           // display all features except the hovered one
@@ -47,6 +51,8 @@ export const adressesEligiblesLayersSpec = [
           'icon-image': ['case', ['==', ['get', 'isEligible'], true], 'marker-green', 'marker-red'] as any,
           'icon-overlap': 'always',
           'icon-size': 1.2,
+          'icon-anchor': 'bottom',
+          'icon-offset': [0, 5],
         },
         paint: {
           // only display the hovered feature
