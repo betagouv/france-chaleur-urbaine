@@ -85,9 +85,9 @@ export const SectionTitle = ({ children, className, ...props }: React.ComponentP
 const subtitleVariants = cva('text-center max-w-[640px] mx-auto', {
   variants: {
     size: {
-      sm: 'text-sm mb-2w',
-      md: 'text-base mb-6w',
-      lg: 'text-lg mb-8w',
+      sm: 'text-sm',
+      md: 'text-base',
+      lg: 'text-lg',
     },
     variant: {
       normal: '!text-gray-900',
@@ -119,11 +119,33 @@ export const SectionHeading = ({ children, className, ...props }: React.Componen
   );
 };
 
+const contentVariants = cva('', {
+  variants: {
+    size: {
+      sm: 'mt-2w',
+      md: 'mt-6w',
+      lg: 'mt-8w',
+    },
+  },
+  defaultVariants: {
+    size: 'md',
+  },
+});
+
+export const SectionContent = ({ children, className, ...props }: React.HTMLAttributes<HTMLDivElement>) => {
+  const contextVariants = React.useContext(SectionContext);
+  return (
+    <div className={cx(contentVariants(contextVariants), className)} {...props}>
+      {children}
+    </div>
+  );
+};
+
 const twoColumnsVariants = cva('flex flex-col lg:flex-row [&>*]:flex-1', {
   variants: {
     size: {
       sm: '',
-      md: 'my-10w gap-8',
+      md: 'gap-8',
       lg: '',
     },
   },
@@ -135,14 +157,10 @@ const twoColumnsVariants = cva('flex flex-col lg:flex-row [&>*]:flex-1', {
 export const SectionTwoColumns = ({ children, className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) => {
   const contextVariants = React.useContext(SectionContext);
   return (
-    <div className={cx(twoColumnsVariants(contextVariants), className)} {...props}>
+    <div className={cx(contentVariants(contextVariants), twoColumnsVariants(contextVariants), className)} {...props}>
       {children}
     </div>
   );
-};
-
-export const SectionContent = ({ children, ...props }: React.HTMLAttributes<HTMLDivElement>) => {
-  return <div {...props}>{children}</div>;
 };
 
 export default Section;
