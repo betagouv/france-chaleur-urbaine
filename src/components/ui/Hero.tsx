@@ -10,7 +10,7 @@ const heroVariants = cva('relative', {
   variants: {
     size: {
       sm: '',
-      md: 'py-10w',
+      md: 'py-4w 2xl:py-10w',
       lg: '',
     },
     variant: {
