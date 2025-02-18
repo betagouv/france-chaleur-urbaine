@@ -1,6 +1,7 @@
 import Badge from '@codegouvfr/react-dsfr/Badge';
 import { type SortingState, type ColumnFiltersState } from '@tanstack/react-table';
 import { useQueryState } from 'nuqs';
+import { unparse } from 'papaparse';
 import { useState, useMemo } from 'react';
 
 import CompleteEligibilityTestForm from '@/components/dashboard/professionnel/eligibility-test/CompleteEligibilityTestForm';
@@ -17,7 +18,8 @@ import { useDelete, useFetch, usePost } from '@/hooks/useApi';
 import { type ProEligibilityTestListItem } from '@/pages/api/pro-eligibility-tests';
 import { type ProEligibilityTestWithAddresses } from '@/pages/api/pro-eligibility-tests/[id]';
 import { queryClient } from '@/services/query';
-import { formatFrenchDate, formatFrenchDateTime } from '@/utils/date';
+import { downloadString } from '@/utils/browser';
+import { formatAsISODate, formatFrenchDate, formatFrenchDateTime } from '@/utils/date';
 import { frenchCollator } from '@/utils/strings';
 
 const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[] = [
@@ -151,26 +153,28 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
   };
   const isIndicatorFilterActive = (filterKey: string) => columnFilters[0]?.id === filterKey;
 
-  // Get filtered addresses based on the table filters
-  const filteredAddressesMapData = useMemo(() => {
+  const filteredAddresses = useMemo(() => {
     if (!testDetails?.addresses) return [];
 
-    return testDetails.addresses
-      .filter((address) => {
-        if (!columnFilters.length) return true;
+    return testDetails.addresses.filter((address) => {
+      if (!columnFilters.length) return true;
 
-        const filter = columnFilters[0];
-        switch (filter.id) {
-          case 'eligibility_status.isEligible':
-            return address.eligibility_status?.isEligible === filter.value;
-          case 'eligibility_status.distance':
-            return address.eligibility_status?.distance != null && address.eligibility_status.distance <= (filter.value as number);
-          case 'eligibility_status.inPDP':
-            return address.eligibility_status?.inPDP === filter.value;
-          default:
-            return true;
-        }
-      })
+      const filter = columnFilters[0];
+      switch (filter.id) {
+        case 'eligibility_status.isEligible':
+          return address.eligibility_status?.isEligible === filter.value;
+        case 'eligibility_status.distance':
+          return address.eligibility_status?.distance != null && address.eligibility_status.distance <= (filter.value as number);
+        case 'eligibility_status.inPDP':
+          return address.eligibility_status?.inPDP === filter.value;
+        default:
+          return true;
+      }
+    });
+  }, [testDetails?.addresses, columnFilters]);
+
+  const filteredAddressesMapData = useMemo(() => {
+    return filteredAddresses
       .filter((address) => address.ban_valid && address.geom)
       .map(
         (address) =>
@@ -182,7 +186,27 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
             isEligible: address.eligibility_status?.isEligible ?? false,
           }) satisfies AdresseEligible
       );
-  }, [testDetails?.addresses, columnFilters]);
+  }, [filteredAddresses]);
+
+  const downloadCSV = () => {
+    if (!filteredAddresses.length) return;
+
+    const csvData = filteredAddresses.map((address) => ({
+      adresse_source: address.source_address,
+      adresse_ban: address.ban_address,
+      indice_fiabilite: address.ban_score,
+      raccordable: address.eligibility_status?.isEligible ? 'Oui' : 'Non',
+      distance_reseau: address.eligibility_status?.distance,
+      pdp: address.eligibility_status?.inPDP ? 'Oui' : 'Non',
+      taux_enrr: address.eligibility_status?.tauxENRR,
+      co2: address.eligibility_status?.co2,
+      identifiant: address.eligibility_status?.id,
+    }));
+
+    const csv = unparse(csvData);
+
+    downloadString(csv, `fcu-${test.name}-adresses-${formatAsISODate(new Date())}.csv`, 'text/csv;charset=utf-8;');
+  };
 
   return (
     <Box>
@@ -265,7 +289,7 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
               title={test.name}
               size="custom"
               trigger={
-                <Button iconId="fr-icon-map-pin-2-line" size="small" priority="secondary" disabled={filteredAddressesMapData.length === 0}>
+                <Button iconId="fr-icon-map-pin-2-line" priority="secondary" disabled={filteredAddressesMapData.length === 0}>
                   Voir sur la carte
                 </Button>
               }
@@ -288,11 +312,15 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
               </div>
             </ModalSimple>
 
+            <Button iconId="fr-icon-download-line" priority="secondary" onClick={downloadCSV} disabled={filteredAddresses.length === 0}>
+              Télécharger
+            </Button>
+
             <ModalSimple
               title="Ajout d'adresses"
               size="medium"
               trigger={
-                <Button iconId="fr-icon-add-line" size="small" priority="secondary">
+                <Button iconId="fr-icon-add-line" priority="secondary">
                   Ajouter des adresses
                 </Button>
               }
@@ -301,7 +329,6 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
             </ModalSimple>
 
             <Button
-              size="small"
               onClick={() => handleDelete(test.id)}
               loading={isDeleting}
               variant="destructive"
