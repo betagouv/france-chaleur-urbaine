@@ -228,7 +228,13 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
       >
         <div className="flex flex-wrap mb-4">
           <div className="flex items-center">
-            <Indicator loading={isLoading} label="Adresses" value={stats.adressesCount} />
+            <Indicator
+              loading={isLoading}
+              label="Adresses"
+              value={stats.adressesCount}
+              onClick={() => setColumnFilters([])}
+              active={columnFilters.length === 0}
+            />
             <Divider />
             <Indicator
               loading={isLoading}
