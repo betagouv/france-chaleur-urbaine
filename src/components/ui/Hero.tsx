@@ -60,7 +60,7 @@ export type HeroProps = React.HTMLAttributes<HTMLDivElement> &
     imagePosition?: 'left' | 'right';
   };
 
-const HeroContext = React.createContext<VariantProps<typeof heroContainerVariants>>({});
+const HeroContext = React.createContext<VariantProps<typeof heroContainerVariants> & { bigTitle?: boolean }>({});
 
 /**
  * Hero component for creating prominent header sections
@@ -92,8 +92,10 @@ const Hero = ({
   variant,
   ...props
 }: HeroProps) => {
+  const bigTitle = !image || imageType === 'inline';
+
   return (
-    <HeroContext.Provider value={{ size, variant }}>
+    <HeroContext.Provider value={{ size, variant, bigTitle }}>
       <section className={cx(heroContainerVariants({ variant }), className)} {...props}>
         {image && imageType === 'floating' && (
           <div className="absolute top-0 left-0 right-0 bottom-0 hidden lg:block">
@@ -130,9 +132,7 @@ const Hero = ({
               )}
             </div>
           )}
-          <article className={cx(articleVariants({ size }), !image || imageType === 'inline' ? 'flex-[2_1_0%]' : 'flex-1 px-2')}>
-            {children}
-          </article>
+          <article className={cx(articleVariants({ size }), bigTitle ? 'flex-[2_1_0%]' : 'flex-1 px-2')}>{children}</article>
         </div>
       </section>
     </HeroContext.Provider>
@@ -163,10 +163,10 @@ const titleVariants = (props: VariantProps<typeof headingVariants>) =>
 export type HeroTitleProps = React.ComponentProps<typeof Heading> & VariantProps<typeof titleVariants>;
 
 export const HeroTitle = ({ children, className, ...props }: React.ComponentProps<typeof Heading>) => {
-  const contextVariants = React.useContext(HeroContext);
+  const { bigTitle, ...contextVariants } = React.useContext(HeroContext);
 
   return (
-    <Heading as="h1" size="h1" className={cx(titleVariants(contextVariants), className)} {...props}>
+    <Heading as="h1" size={bigTitle ? 'h1' : 'h2'} className={cx(titleVariants(contextVariants), className)} {...props}>
       {children}
     </Heading>
   );
