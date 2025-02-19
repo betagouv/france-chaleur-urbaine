@@ -2,6 +2,7 @@ import { useRouter } from 'next/router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { EligibilityFormContact, EligibilityFormMessageConfirmation } from '@/components/EligibilityForm';
+import BulkEligibilityForm from '@/components/EligibilityForm/BulkEligibilityForm';
 import { CheckEligibilityFormLabel, SelectEnergy } from '@/components/EligibilityForm/components';
 import { energyInputsDefaultLabels, type EnergyInputsLabelsType } from '@/components/EligibilityForm/EligibilityFormAddress';
 import AddressAutocomplete from '@/components/form/dsfr/AddressAutocompleteInput';
@@ -9,9 +10,10 @@ import MarkdownWrapper from '@/components/MarkdownWrapper';
 import Slice from '@/components/Slice';
 import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
+import Heading from '@/components/ui/Heading';
+import Icon from '@/components/ui/Icon';
 import Link from '@/components/ui/Link';
 import Modal, { createModal } from '@/components/ui/Modal';
-import WrappedText from '@/components/WrappedText/WrappedText';
 import useContactFormFCU from '@/hooks/useContactFormFCU';
 import useQueryFlag from '@/hooks/useQueryFlag';
 import { useServices } from '@/services';
@@ -21,8 +23,6 @@ import { type SuggestionItem } from '@/types/Suggestions';
 import cx from '@/utils/cx';
 
 import { Container, FormLabel, HeadSliceContainer, PageBody, PageTitle, SliceContactFormStyle } from './HeadSliceForm.style';
-import BulkEligibilityForm from '../EligibilityForm/BulkEligibilityForm';
-import Icon from '../ui/Icon';
 
 type HeadBannerType = {
   bg?: string;
@@ -268,20 +268,22 @@ const HeadSliceForm = ({
           {messageReceived && <EligibilityFormMessageConfirmation addressData={addressData} />}
         </div>
         {!externBulkForm && withBulkEligibility && displayBulkEligibility && (
-          <div className="flex flex-col gap-2 lg:flex-row">
-            <WrappedText
-              className="flex-1"
-              body={`
-### Testez un grand nombre d’adresses pour identifier des bâtiments proches des réseaux de chaleur !
-::count-item[*Téléchargez votre fichier (une ligne par adresse) et renseignez votre email*]{number=1}
-::count-item[*Recevez par mail le résultat de votre test*]{number=2}
-::count-item[*Visualisez les adresses testées sur notre cartographie*]{number=3}
-::count-item[*Vous pourrez ensuite sélectionner dans la liste les adresses celles pour lesquelles vous souhaitez être* **mis en relation par France Chaleur Urbaine avec le(s) gestionnaire(s) des réseaux de chaleur.**]{number=4}
-`}
-            />
+          <div className="flex flex-col gap-8 lg:flex-row">
+            <div className="flex-1">
+              <Heading as="h3">Testez un grand nombre d’adresses pour identifier des bâtiments proches des réseaux de chaleur !</Heading>
+              <ol>
+                <li>Téléchargez votre fichier (une ligne par adresse) et renseignez votre email</li>
+                <li>Recevez par mail le résultat de votre test</li>
+                <li>Visualisez les adresses testées sur notre cartographie</li>
+                <li>
+                  Vous pourrez ensuite sélectionner dans la liste les adresses celles pour lesquelles vous souhaitez être **mis en relation
+                  par France Chaleur Urbaine avec le(s) gestionnaire(s) des réseaux de chaleur.**
+                </li>
+              </ol>
+            </div>
             <div className="flex-1">
               <BulkEligibilityForm />
-              <img width="100%" src="/img/carto-addresses.png" />
+              <img width="70%" className="mx-auto" src="/img/carto-addresses.png" />
             </div>
           </div>
         )}
