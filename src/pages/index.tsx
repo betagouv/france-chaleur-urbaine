@@ -315,34 +315,34 @@ export default function Home() {
       <Partners />
 
       <Section id="obligation-raccordement" variant="accent">
-        <SectionContent className="!mt-0">
+        <SectionContent className="!mt-0 flex flex-col gap-2">
           <SectionHeading as="h2" size="h5">
             Réduire l'impact écologique et économique de son chauffage
           </SectionHeading>
-          <p className="mt-3w">
+          <p>
             Les réseaux de chaleur urbains, une solution décarboner le chauffage des copropriétés, immeubles de logement social et bâtiments
             tertiaires.
           </p>
-          <p className="mt-3w">
+          <p>
             Le chauffage représente 67 % de la consommation d’énergie des foyers français et près de 20 % des émissions de gaz à effet de
             serre nationales. Près de 40 % des logements sont encore chauffés au gaz, dont les prix ont fortement fluctué ses dernières
             années.
           </p>
-          <p className="mt-3w">
+          <p>
             Pour réduire l’impact écologique du chauffage, la rénovation thermique est le premier réflexe à avoir. Le{' '}
             <Link href="/ressources/avantages#contenu">remplacement d’un chauffage collectif au gaz ou fioul</Link> par un raccordement à un
             réseau de chaleur permet également d’y contribuer. Alimentés majoritairement par des énergies renouvelables et de récupération
             locales, les réseaux de chaleur émettent deux fois moins de gaz à effet de serre qu’un chauffage au gaz et trois fois moins
             qu'un chauffage au fioul. Ils offrent généralement des prix compétitifs et plus stables que ceux des énergies fossiles.
           </p>
-          <p className="mt-6w">
+          <p>
             Des réseaux de chaleur existent dans la plupart des grandes villes, par exemple <Link href="/villes/paris">Paris</Link>,{' '}
             <Link href="/villes/rennes">Rennes</Link>, <Link href="/villes/nantes">Nantes</Link>,{' '}
             <Link href="/villes/bordeaux">Bordeaux</Link>, <Link href="/villes/strasbourg">Strasbourg</Link>,{' '}
             <Link href="/villes/metz">Metz</Link>, <Link href="/villes/grenoble">Grenoble</Link>, <Link href="/villes/lyon">Lyon</Link>,{' '}
             <Link href="/villes/aix-en-provence">Aix-en-Provence</Link>…
           </p>
-          <p className="mt-6w mb-0">
+          <p>
             Vous êtes professionnels (bureau d'étude, bailleur social, gestionnaire de bâtiments tertiaires…) ? Rendez-vous sur notre{' '}
             <Link href="/professionnels">page dédiée</Link>
           </p>
