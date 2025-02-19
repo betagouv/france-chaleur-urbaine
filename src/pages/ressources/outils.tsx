@@ -1,8 +1,7 @@
-import Image from 'next/image';
-
 import SimplePage from '@/components/shared/page/SimplePage';
 import Box from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
+import Hero, { HeroSubtitle, HeroTitle } from '@/components/ui/Hero';
 import { FCUArrowIcon } from '@/components/ui/Icon';
 import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
@@ -14,20 +13,10 @@ const OutilsPage = () => {
       description="Testez en masse l'éligibilité de vos bâtiments aux réseaux de chaleur, estimez le coût du raccordement et les aides disponibles, téléchargez les données…"
     >
       <Box backgroundColor="blue-cumulus-950-100">
-        <Box display="flex" gap="16px" maxWidth="1000px" mx="auto" pt="8w" px="2w">
-          <Box flex>
-            <Heading size="h1" color="blue-france">
-              Nos outils
-            </Heading>
-            <Text size="lg" mb="3w">
-              Accédez aux différents outils mis à disposition par France Chaleur Urbaine.
-            </Text>
-          </Box>
-
-          <Box className="fr-hidden fr-unhidden-lg">
-            <Image src="/img/ressources_header.webp" alt="" width={152} height={180} priority />
-          </Box>
-        </Box>
+        <Hero variant="ressource" image="/img/ressources_header.webp" imagePosition="right" imageType="inline">
+          <HeroTitle>Nos outils</HeroTitle>
+          <HeroSubtitle>Accédez aux différents outils mis à disposition par France Chaleur Urbaine.</HeroSubtitle>
+        </Hero>
       </Box>
       <Box py="5w" className="fr-container">
         <Heading as="h2" size="h3" color="blue-france" mb="0">

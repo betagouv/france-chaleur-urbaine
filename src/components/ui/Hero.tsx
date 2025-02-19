@@ -6,7 +6,7 @@ import cx from '@/utils/cx';
 
 import Heading from './Heading';
 
-const heroVariants = cva('relative', {
+const heroContainerVariants = cva('relative', {
   variants: {
     size: {
       sm: '',
@@ -18,6 +18,7 @@ const heroVariants = cva('relative', {
       light: 'bg-blueFrance-_975_75 [&_article]:bg-blueFrance-_975_75/90',
       accent: 'bg-blueFrance-main525 text-white [&_article]:bg-blueFrance-main525/90',
       city: 'bg-[#B2D6F2]',
+      ressource: 'bg-blueCumulus-_950_100',
       transparent: 'bg-transparent',
     },
   },
@@ -26,12 +27,24 @@ const heroVariants = cva('relative', {
     variant: 'normal',
   },
 });
-const contentVariants = cva('flex-1 ', {
+const heroVariants = cva('relative', {
   variants: {
     size: {
       sm: '',
-      md: 'px-2 py-4w 2xl:py-8w',
+      md: '',
       lg: '',
+    },
+  },
+  defaultVariants: {
+    size: 'md',
+  },
+});
+const articleVariants = cva('flex-1 flex flex-col', {
+  variants: {
+    size: {
+      sm: 'gap-2',
+      md: 'gap-4 py-6w 2xl:py-8w',
+      lg: 'gap-8 py-6w 2xl:py-8w',
     },
   },
   defaultVariants: {
@@ -40,9 +53,14 @@ const contentVariants = cva('flex-1 ', {
 });
 
 export type HeroProps = React.HTMLAttributes<HTMLDivElement> &
-  VariantProps<typeof heroVariants> & { image?: string; imageClassName?: string; imageType?: 'floating' | 'inline' };
+  VariantProps<typeof heroContainerVariants> & {
+    image?: string;
+    imageClassName?: string;
+    imageType?: 'floating' | 'inline';
+    imagePosition?: 'left' | 'right';
+  };
 
-const HeroContext = React.createContext<VariantProps<typeof heroVariants>>({});
+const HeroContext = React.createContext<VariantProps<typeof heroContainerVariants>>({});
 
 /**
  * Hero component for creating prominent header sections
@@ -51,6 +69,8 @@ const HeroContext = React.createContext<VariantProps<typeof heroVariants>>({});
  * ```tsx
  * <Hero
  *   image="/path/to/image.jpg"
+ *   imagePosition="right"
+ *   imageType="inline"
  *   variant="normal"
  *   size="md"
  * >
@@ -61,10 +81,20 @@ const HeroContext = React.createContext<VariantProps<typeof heroVariants>>({});
  * </Hero>
  * ```
  */
-const Hero = ({ children, className, image, size, imageClassName = '', imageType = 'floating', variant, ...props }: HeroProps) => {
+const Hero = ({
+  children,
+  className,
+  image,
+  size,
+  imageClassName = '',
+  imageType = 'floating',
+  imagePosition = 'left',
+  variant,
+  ...props
+}: HeroProps) => {
   return (
     <HeroContext.Provider value={{ size, variant }}>
-      <section className={cx(heroVariants({ size, variant }), className)} {...props}>
+      <section className={cx(heroContainerVariants({ variant }), className)} {...props}>
         {image && imageType === 'floating' && (
           <div className="absolute top-0 left-0 right-0 bottom-0 hidden lg:block">
             <Image
@@ -78,22 +108,38 @@ const Hero = ({ children, className, image, size, imageClassName = '', imageType
             />
           </div>
         )}
-        <div className="fr-container flex relative">
-          <div className="flex-1 hidden lg:block">
-            {image && imageType === 'inline' && (
-              <div className="relative h-full">
-                <Image src={image} alt="" className={cx('w-full h-full object-contain', imageClassName)} priority fill />
-              </div>
-            )}
-          </div>
-          <article className={contentVariants({ size })}>{children}</article>
+        <div
+          className={cx('fr-container flex relative', heroVariants({ size }), imagePosition === 'right' ? 'flex-row-reverse' : 'flex-row')}
+        >
+          {image && (
+            <div className="flex-1 hidden lg:block">
+              {imageType === 'inline' && (
+                <div className={cx('relative h-full')}>
+                  <Image
+                    src={image}
+                    alt=""
+                    className={cx(
+                      'w-full h-full object-contain',
+                      imagePosition === 'right' ? 'object-[right]' : 'object-[left]',
+                      imageClassName
+                    )}
+                    priority
+                    fill
+                  />
+                </div>
+              )}
+            </div>
+          )}
+          <article className={cx(articleVariants({ size }), !image || imageType === 'inline' ? 'flex-[2_1_0%]' : 'flex-1 px-2')}>
+            {children}
+          </article>
         </div>
       </section>
     </HeroContext.Provider>
   );
 };
 
-const headingVariants = cva('', {
+const headingVariants = cva('!my-0', {
   variants: {
     variant: {
       normal: '!text-blue',
@@ -120,24 +166,25 @@ export const HeroTitle = ({ children, className, ...props }: React.ComponentProp
   const contextVariants = React.useContext(HeroContext);
 
   return (
-    <Heading as="h1" size="h2" className={cx(titleVariants(contextVariants), className)} {...props}>
+    <Heading as="h1" size="h1" className={cx(titleVariants(contextVariants), className)} {...props}>
       {children}
     </Heading>
   );
 };
 
-const subtitleVariants = cva('', {
+const subtitleVariants = cva('!my-0', {
   variants: {
     size: {
-      sm: 'text-sm mb-2w',
-      md: 'text-base mb-3w',
-      lg: 'text-lg mb-4w',
+      sm: 'text-sm',
+      md: 'text-base',
+      lg: 'text-lg',
     },
     variant: {
       normal: '!text-gray-900',
       light: '!text-gray-900',
       accent: '!text-gray-100',
       city: '!text-gray-900',
+      ressource: '!text-gray-900',
       transparent: '!text-gray-900',
     },
   },
@@ -156,8 +203,26 @@ export const HeroSubtitle = ({ children, className, ...props }: React.HTMLAttrib
   );
 };
 
-export const HeroContent = ({ children, ...props }: React.HTMLAttributes<HTMLDivElement>) => {
-  return <div {...props}>{children}</div>;
+const contentVariants = cva('', {
+  variants: {
+    size: {
+      sm: '',
+      md: '',
+      lg: '',
+    },
+  },
+  defaultVariants: {
+    size: 'md',
+  },
+});
+
+export const HeroContent = ({ children, className, ...props }: React.HTMLAttributes<HTMLDivElement>) => {
+  const contextVariants = React.useContext(HeroContext);
+  return (
+    <div className={cx(contentVariants(contextVariants), className)} {...props}>
+      {children}
+    </div>
+  );
 };
 
 const metaVariants = cva('uppercase text-sm font-bold tracking-tighter', {
@@ -167,6 +232,7 @@ const metaVariants = cva('uppercase text-sm font-bold tracking-tighter', {
       light: '!text-gray-700',
       accent: '!text-gray-100',
       city: '!text-gray-700',
+      ressource: '!text-gray-700',
       transparent: '!text-gray-700',
     },
   },

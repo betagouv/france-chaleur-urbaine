@@ -1,24 +1,24 @@
 import ContactForm from '@/components/ContactForm';
 import SimplePage from '@/components/shared/page/SimplePage';
-import Box from '@/components/ui/Box';
-import Heading from '@/components/ui/Heading';
+import Hero, { HeroSubtitle, HeroTitle } from '@/components/ui/Hero';
+import Section, { SectionContent } from '@/components/ui/Section';
 
 function contact() {
   return (
     <SimplePage title="Contactez-nous" description="Une question sur les réseaux de chaleur et de froid ? N'hésitez pas à nous contacter.">
-      <Box py="4w" className="fr-container">
-        <Heading as="h1" color="blue-france">
-          Nous contacter
-        </Heading>
-
-        <p>
+      <Hero variant="ressource">
+        <HeroTitle>Nous contacter</HeroTitle>
+        <HeroSubtitle>
           Vous avez une question suite à votre demande sur France Chaleur Urbaine ? Vous souhaitez nous faire part de suggestions pour
           améliorer notre service ? Vous êtes intéressé par un partenariat avec France Chaleur Urbaine ? Pour ces questions ou toute autre,
           n’hésitez pas à nous contacter via le formulaire ci-dessous : nous reviendrons rapidement vers vous.
-        </p>
-
-        <ContactForm />
-      </Box>
+        </HeroSubtitle>
+      </Hero>
+      <Section size="sm">
+        <SectionContent>
+          <ContactForm />
+        </SectionContent>
+      </Section>
     </SimplePage>
   );
 }
