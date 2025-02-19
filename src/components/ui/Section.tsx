@@ -68,7 +68,7 @@ const headingVariants = cva('', {
   },
 });
 
-const titleVariants = (props: VariantProps<typeof headingVariants>) => cx('text-center', headingVariants(props));
+const titleVariants = (props: VariantProps<typeof headingVariants>) => cx('text-center max-w-[640px] !mx-auto', headingVariants(props));
 
 export type SectionTitleProps = React.ComponentProps<typeof Heading> & VariantProps<typeof titleVariants>;
 
