@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { LoginForm, type LoginFormProps } from '@/components/connexion/LoginForm';
 import SimplePage from '@/components/shared/page/SimplePage';
 import { logger } from '@/server/helpers/logger';
-import { activateUser } from '@/server/services/auth';
+import { activateUser } from '@/server/services/account';
 
 export default function ConnectionPage(props: LoginFormProps): JSX.Element {
   return (
