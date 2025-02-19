@@ -1,10 +1,12 @@
+import Image from 'next/image';
+
 import { List } from '@/components/Ressources/Contents/Contents.styles';
 import TextList from '@/components/TextList';
 import Hero, { HeroSubtitle, HeroTitle } from '@/components/ui/Hero';
 import Link from '@/components/ui/Link';
 import Section, { SectionContent, SectionHeading, SectionTitle } from '@/components/ui/Section';
+import { Table } from '@/components/ui/Table';
 import dataNumberFcu from '@/data/home/data-number-fcu';
-
 const Us = () => {
   return (
     <>
@@ -55,7 +57,7 @@ const Us = () => {
             <li>
               <b>BETA.GOUV.FR</b> : France Chaleur Urbaine est une start-up d’Etat du programme Beta.gouv.fr de la Direction
               interministérielle du numérique (DINUM), qui aide les administrations publiques à construire des services numériques utiles,
-              simples et faciles à utiliser. À ce titre, une équipe de 10 freelances (designer, chargés de déploiement, développeurs...)
+              simples et faciles à utiliser. À ce titre, une équipe de freelances (designer, chargés de déploiement, développeurs...)
               accompagne le projet.
               <br />
               En savoir plus :{' '}
@@ -67,20 +69,42 @@ const Us = () => {
         </SectionContent>
       </Section>
       <Section>
-        <SectionTitle>Nos financeurs</SectionTitle>
+        <SectionTitle>Notre budget</SectionTitle>
         <SectionContent>
           <p>
-            France Chaleur Urbaine est financé par la Direction interministérielle du numérique, par la Direction générale de l’énergie et
-            du climat du Ministère de la transition écologique, par l’ADEME et par la DRIEAT.
+            En tant que service public numérique, nous sommes transparents sur les ressources allouées et la manière dont elles sont
+            employées. Les dépenses réalisées dans le cadre de France Chaleur Urbaine sont présentées ci-dessous par source de financement.{' '}
+            <strong>Elles servent à plus de 95 % à financer l’équipe de freelances impliquée sur le projet</strong>. La répartition par
+            poste est également précisée ci-dessous.
           </p>
-          <div className="flex flex-wrap justify-center gap-8">
-            <Link href="https://www.gouvernement.fr/" isExternal className="!bg-none leading-none">
-              <img className="reset-height" src="/logo-government.svg" alt="Gouvernement" height="80px" />
-            </Link>
-            <Link href="https://www.ademe.fr" isExternal className="!bg-none leading-none">
-              <img className="reset-height" src="/logo-ADEME.svg" alt="ADEME" height="80px" />
-            </Link>
+          <div className="flex flex-wrap justify-center gap-8 mb-8">
+            <Image
+              src="/img/qui-sommes-nous/repartition-financements-france-chaleur-urbaine.webp"
+              alt="Budget de France Chaleur Urbaine"
+              width={492}
+              height={400}
+              priority
+              className="mx-auto"
+            />
+            <p>En complément, un ETP est mis à disposition par la DRIEAT (intrapreneuse).</p>
           </div>
+          <SectionHeading as="h3">Répartition par poste</SectionHeading>
+          <Table
+            columns={[
+              { field: 'poste', headerName: 'Poste', flex: 1 },
+              { field: '2023', headerName: '2023', width: 120 },
+              { field: '2024', headerName: '2024', width: 120 },
+            ]}
+            rows={[
+              { id: 1, poste: 'Développement web', '2023': '25%', '2024': '40%' },
+              { id: 2, poste: 'Déploiement et animation', '2023': '33%', '2024': '32%' },
+              { id: 3, poste: 'Coaching et design', '2023': '15%', '2024': '13%' },
+              { id: 4, poste: 'Géomatique', '2023': '13%', '2024': '8%' },
+              { id: 5, poste: 'Référencement (SEO/SEA)', '2023': '5%', '2024': '4%' },
+              { id: 6, poste: 'Frais (publicité, salons…)', '2023': '9%', '2024': '4%' },
+            ]}
+            hideFooter
+          />
         </SectionContent>
       </Section>
       <Section variant="accent">
