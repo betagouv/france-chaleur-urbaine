@@ -625,6 +625,25 @@ export const FullyFeaturedMap = ({
     });
   }, [mapRef.current, mapLayersLoaded, adressesEligibles]);
 
+  const mapMarkers = useMemo(() => {
+    if (!withPins || !markersList.length) {
+      return null;
+    }
+
+    return markersList.map((marker: MapMarkerInfos) => (
+      <MapMarker
+        key={marker.id}
+        id={marker.id}
+        longitude={marker.longitude}
+        latitude={marker.latitude}
+        color={marker.color}
+        popup={marker.popup}
+        popupContent={marker.popupContent}
+        onClickAction={marker.onClickAction}
+      />
+    ));
+  }, [withPins, markersList]);
+
   const isRouterReady = useRouterReady();
   if (!isRouterReady || !isMapConfigurationInitialized(mapConfiguration)) {
     return null;
@@ -742,20 +761,7 @@ export const FullyFeaturedMap = ({
             <ScaleControl maxWidth={100} unit="metric" position="bottom-left" />
             {Popup}
             {children}
-            {withPins &&
-              markersList.length > 0 &&
-              markersList.map((marker: MapMarkerInfos) => (
-                <MapMarker
-                  key={marker.id}
-                  id={marker.id}
-                  longitude={marker.longitude}
-                  latitude={marker.latitude}
-                  color={marker.color}
-                  popup={marker.popup}
-                  popupContent={marker.popupContent}
-                  onClickAction={marker.onClickAction}
-                />
-              ))}
+            {mapMarkers}
             <FileDragNDrop />
           </MapReactGL>
           {withLegend && (
