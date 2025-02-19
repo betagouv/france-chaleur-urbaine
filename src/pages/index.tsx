@@ -28,7 +28,7 @@ const tools: TileListItem[] = [
     title: 'Carte des réseaux et potentiels',
     excerpt: 'Découvrez la cartographie nationale des réseaux de chaleur.',
     href: '/carte',
-    image: '/img/tools/carte.svg',
+    image: '/icons/tools/france.svg',
   },
   ...(process.env.NEXT_PUBLIC_FLAG_ENABLE_COMPARATEUR === 'true'
     ? [
@@ -36,7 +36,7 @@ const tools: TileListItem[] = [
           title: 'Comparateur de coûts et d’émissions de CO2',
           excerpt: 'Comparez les coûts des modes de chauffage.',
           href: '/outils/comparateur-performances',
-          image: '/img/tools/comparateur.svg',
+          image: '/icons/tools/money.svg',
           start: (
             <Badge noIcon severity="success">
               Nouveau
@@ -49,50 +49,56 @@ const tools: TileListItem[] = [
   //   title: 'Compatibilité des modes de chauffage',
   //   excerpt: 'Quels chauffages pour quels bâtiments ?',
   //   href: '/todo',
-  // image: '/img/tools/compatibilite.svg',
+  // image: '/icons/tools/compatibilite.svg',
   // },
   {
     title: 'Coûts de raccordement et aides',
     excerpt: 'Estimez le coût de votre raccordement.',
     href: '/ressources/cout-raccordement',
-    image: '/img/tools/compatibilite.svg',
+    image: '/icons/tools/innovation.svg',
   },
   {
     title: 'Obligations de raccordement',
     excerpt: 'Découvrez si votre bâtiment est concerné par une obligation de raccordement.',
     href: '#obligation-raccordement',
-    image: '/img/tools/compatibilite.svg',
+    image: '/icons/tools/information.svg',
   },
   {
     title: 'Potentiel des communes sans réseau',
     excerpt: 'Évaluez le potentiel de création d’un réseau sur une commune.',
     href: '/collectivites-et-exploitants/potentiel-creation-reseau',
-    image: '/img/tools/compatibilite.svg',
+    image: '/icons/tools/compass.svg',
   },
   {
     title: 'Test d’adresses en masse',
     excerpt: 'Testez directement une liste d’adresses.',
     href: '/?bulk',
-    image: '/img/tools/carte.svg',
+    image: '/icons/tools/map.svg',
   },
   {
     title: 'Liste des réseaux de chaleur',
     excerpt: 'Retrouvez l’ensemble des réseaux et filtrez les.',
     href: '/reseaux',
-    image: '/img/tools/compatibilite.svg',
+    image: '/icons/tools/search.svg',
   },
   {
     title: 'Téléchargement de données et outils',
     excerpt: 'Intégrez nos données et outils (API, iframe, ...).',
     href: '/ressources/outils#iframes',
-    image: '/img/tools/compatibilite.svg',
+    image: '/icons/tools/system.svg',
   },
   {
     title: 'Supports pédagogiques',
     excerpt: 'Découvrez tous nos supports.',
     href: '/ressources/supports',
-    image: '/img/tools/compatibilite.svg',
+    image: '/icons/tools/pictures.svg',
   },
+  // {
+  //   title: 'Décret tertiaire',
+  //   excerpt: 'Valorisez votre raccordement dans le cadre du dispositif éco-énergie tertiaire.',
+  //   href: '/decret-tertiaire',
+  //   image: '/icons/tools/pictures.svg',
+  // },
 ];
 
 export default function Home() {
