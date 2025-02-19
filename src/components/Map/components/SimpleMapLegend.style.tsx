@@ -1,6 +1,5 @@
 import { fr } from '@codegouvfr/react-dsfr';
 import DsfrTabs, { type TabsProps } from '@codegouvfr/react-dsfr/Tabs';
-import { createParser } from 'nuqs';
 import React from 'react';
 import styled, { css } from 'styled-components';
 
@@ -182,32 +181,7 @@ type GenerateTabsObjects<T extends readonly UrlTabDef[]> = {
 export type TabObject = GenerateTabsObjects<typeof tabsDefinition>;
 
 export function parseURLTabs(validValues: readonly UrlTabDef[]) {
-  return createParser({
-    parse: (query: string) => {
-      const [urlTabId, urlSubTabId] = query.split('/');
-
-      const tab = validValues.find((tab) => tab.tabId === urlTabId);
-      if (!tab) {
-        return null;
-      }
-      if (urlSubTabId) {
-        const subTabId = tab.subTabs?.find((subTabId) => subTabId === urlSubTabId);
-        if (!subTabId) {
-          return null;
-        }
-        return {
-          tabId: urlTabId,
-          subTabId: urlSubTabId,
-        } as TabObject;
-      }
-      return {
-        tabId: urlTabId,
-        subTabId: null,
-      } as TabObject;
-    },
-    serialize: ({ tabId, subTabId }: TabObject) => `${tabId}${subTabId ? `/${subTabId}` : ''}` as TabUrlId,
-    eq: (a, b) => a === b || JSON.stringify(a) === JSON.stringify(b),
-  });
+  return {};
 }
 
 export type TabId = (typeof tabsDefinition)[number]['tabId'];

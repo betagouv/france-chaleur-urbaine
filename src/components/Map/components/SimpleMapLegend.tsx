@@ -1,6 +1,5 @@
 import Button from '@codegouvfr/react-dsfr/Button';
 import Image from 'next/image';
-import { useQueryState } from 'nuqs';
 
 import DPE from '@/components/DPE';
 import RangeFilter from '@/components/form/dsfr/RangeFilter';
@@ -17,6 +16,7 @@ import Box from '@/components/ui/Box';
 import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
 import Tooltip from '@/components/ui/Tooltip';
+import { useQueryState } from '@/hooks/useQueryState';
 import { trackEvent } from '@/services/analytics';
 
 import IconPolygon from './IconPolygon';
@@ -86,12 +86,7 @@ interface SimpleMapLegendProps {
 const defaultURL: TabObject = { tabId: 'reseaux', subTabId: null };
 
 function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps) {
-  const [selectedTabId, setSelectedTabId] = useQueryState<TabObject>(
-    'tabId',
-    parseURLTabs(tabs).withDefault(defaultURL).withOptions({
-      history: 'push',
-    })
-  );
+  const [selectedTabId, setSelectedTabId] = useQueryState<TabObject>('tabId');
   const { mapConfiguration, toggleLayer, updateScaleInterval } = useFCUMap();
   const setReseauxFiltersVisible = (visible: boolean) => setSelectedTabId({ tabId: 'reseaux', subTabId: visible ? 'filtres' : null });
 

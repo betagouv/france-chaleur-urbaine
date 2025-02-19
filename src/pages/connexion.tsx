@@ -1,5 +1,5 @@
 import { type GetServerSideProps } from 'next';
-import { getSession } from 'next-auth/react';
+import { getSession } from '@/server/services/session';
 import { z } from 'zod';
 
 import { LoginForm, type LoginFormProps } from '@/components/connexion/LoginForm';

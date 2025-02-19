@@ -1,5 +1,5 @@
 import { SegmentedControl } from '@codegouvfr/react-dsfr/SegmentedControl';
-import { parseAsBoolean, useQueryState } from 'nuqs';
+import { parseAsBoolean, useQueryState } from '@/hooks/useQueryState';
 import React, { useRef } from 'react';
 import ReactDOMServer from 'react-dom/server';
 import Chart from 'react-google-charts';

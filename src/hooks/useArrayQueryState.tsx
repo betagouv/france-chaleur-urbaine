@@ -1,4 +1,4 @@
-import { useQueryState } from 'nuqs';
+import useQueryState from '@/hooks/useQueryState';
 
 const useArrayQueryState = <Type extends string>(name: string) => {
   const [items, setItems] = useQueryState<Type[]>(name, {

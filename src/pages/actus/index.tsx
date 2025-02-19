@@ -1,7 +1,7 @@
 import Card from '@codegouvfr/react-dsfr/Card';
 import Tag from '@codegouvfr/react-dsfr/Tag';
 import Image from 'next/image';
-import { parseAsArrayOf, parseAsString, useQueryState } from 'nuqs';
+import { parseAsArrayOf, parseAsString, useQueryState } from '@/hooks/useQueryState';
 import { useMemo } from 'react';
 
 import SimplePage from '@/components/shared/page/SimplePage';

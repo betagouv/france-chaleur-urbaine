@@ -1,5 +1,5 @@
 import { type GetServerSideProps } from 'next';
-import { getSession } from 'next-auth/react';
+import { getSession } from '@/server/services/session';
 
 import ResetPasswordForm from '@/components/connexion/ResetPasswordForm';
 import SimplePage from '@/components/shared/page/SimplePage';

@@ -2,7 +2,7 @@ import { Button } from '@codegouvfr/react-dsfr/Button';
 import { createModal } from '@codegouvfr/react-dsfr/Modal';
 import { useIsModalOpen } from '@codegouvfr/react-dsfr/Modal/useIsModalOpen';
 import { Select } from '@codegouvfr/react-dsfr/SelectNext';
-import { useSession } from 'next-auth/react';
+import { useSession } from '@/server/services/session';
 import { type FormEvent, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 

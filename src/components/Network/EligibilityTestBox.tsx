@@ -1,5 +1,5 @@
 import Alert from '@codegouvfr/react-dsfr/Alert';
-import { useQueryState } from 'nuqs';
+import { useQueryState } from '@/hooks/useQueryState';
 import { useRef, useState } from 'react';
 import styled from 'styled-components';
 

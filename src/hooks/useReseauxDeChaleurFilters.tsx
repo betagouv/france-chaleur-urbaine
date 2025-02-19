@@ -1,5 +1,5 @@
 import { useSearchParams } from 'next/navigation';
-import { parseAsJson, useQueryState } from 'nuqs';
+import { parseAsJson, useQueryState } from '@/hooks/useQueryState';
 import { useEffect, useState } from 'react';
 
 import { type ReseauxDeChaleurLimits } from '@/components/Map/layers/filters';

@@ -1,6 +1,6 @@
 'use client';
 import { captureException } from '@sentry/browser';
-import { useQueryState } from 'nuqs';
+import { useQueryState } from '@/hooks/useQueryState';
 import React, { type ReactNode } from 'react';
 import originalToast, { Toaster } from 'react-hot-toast';
 

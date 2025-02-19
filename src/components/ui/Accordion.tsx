@@ -1,5 +1,5 @@
 import DsfrAccordion, { type AccordionProps as DsfrAccordionProps } from '@codegouvfr/react-dsfr/Accordion';
-import { useQueryState } from 'nuqs';
+import { useQueryState } from '@/hooks/useQueryState';
 import styled, { css } from 'styled-components';
 
 import Tooltip from '@/components/ui/Tooltip';

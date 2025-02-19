@@ -1,5 +1,5 @@
 import { type GetServerSideProps } from 'next';
-import { signOut, useSession } from 'next-auth/react';
+import { signOut, useSession } from '@/server/services/session';
 import { useEffect } from 'react';
 
 import Manager from '@/components/Manager/Manager';

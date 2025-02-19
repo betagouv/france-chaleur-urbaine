@@ -4,8 +4,8 @@ import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import { useDebouncedEffect, useLocalStorageValue } from '@react-hookz/web';
 import { type LayerSpecification, type MapLibreEvent } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
+import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
-import { parseAsJson, parseAsString, useQueryStates } from 'nuqs';
 import { type ReactNode, type RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import ReactDOMServer from 'react-dom/server';
 import MapReactGL, {
@@ -27,6 +27,7 @@ import Link from '@/components/ui/Link';
 import Tooltip from '@/components/ui/Tooltip';
 import useContactFormFCU from '@/hooks/useContactFormFCU';
 import useDevMode from '@/hooks/useDevMode';
+import useQueryState, { parseAsJson } from '@/hooks/useQueryState';
 import useRouterReady from '@/hooks/useRouterReady';
 import { useServices } from '@/services';
 import { trackEvent } from '@/services/analytics';
@@ -130,13 +131,15 @@ type MapProps = {
   children?: ReactNode;
 };
 
-const Map = ({ initialMapConfiguration, ...props }: MapProps) => {
+const InvalidMap = ({ initialMapConfiguration, ...props }: MapProps) => {
   return (
     <FCUMapContextProvider initialMapConfiguration={initialMapConfiguration}>
       <FullyFeaturedMap {...props} />
     </FCUMapContextProvider>
   );
 };
+
+export const Map = dynamic(() => Promise.resolve(InvalidMap as React.ComponentType<MapProps>), { ssr: false });
 
 export const FullyFeaturedMap = ({
   withoutLogo,
@@ -487,6 +490,7 @@ export const FullyFeaturedMap = ({
       }
       return sAddress;
     });
+    console.log('newMarkersList', newMarkersList, newSoughtAddresses, shouldUpdate);
     if (shouldUpdate) {
       setSoughtAddresses(newSoughtAddresses);
       setMarkersList(newMarkersList);
@@ -527,11 +531,12 @@ export const FullyFeaturedMap = ({
     }
   }, []);
 
-  const [{ bounds: boundsInQuery }, setQuery] = useQueryStates({
-    coord: parseAsString,
-    zoom: parseAsString,
-    bounds: parseAsJson(),
-  });
+  // const [{ bounds: boundsInQuery }, setQuery] = useQueryStates({
+  //   coord: parseAsString,
+  //   zoom: parseAsString,
+  //   bounds: parseAsJson(),
+  // });
+  const [boundsInQuery, setQuery] = useQueryState('bounds');
   const bounds = boundsInQuery || defaultBounds;
   // store the view state in the URL (e.g. /carte?coord=2.3429253,48.7998120&zoom=11.36)
   useDebouncedEffect(
@@ -625,6 +630,7 @@ export const FullyFeaturedMap = ({
   }, [mapRef.current, mapLayersLoaded, adressesEligibles]);
 
   const mapMarkers = useMemo(() => {
+    console.log('markersList', withPins, markersList);
     if (!withPins || !markersList.length) {
       return null;
     }

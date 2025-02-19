@@ -1,7 +1,6 @@
 import Badge from '@codegouvfr/react-dsfr/Badge';
 import Tabs from '@codegouvfr/react-dsfr/Tabs';
 import { type SortingState, type ColumnFiltersState } from '@tanstack/react-table';
-import { useQueryState } from 'nuqs';
 import { unparse } from 'papaparse';
 import { useState, useMemo } from 'react';
 
@@ -16,6 +15,7 @@ import Loader from '@/components/ui/Loader';
 import ModalSimple from '@/components/ui/ModalSimple';
 import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
 import { useDelete, useFetch, usePost } from '@/hooks/useApi';
+import { useQueryState } from '@/hooks/useQueryState';
 import { type ProEligibilityTestListItem } from '@/pages/api/pro-eligibility-tests';
 import { type ProEligibilityTestWithAddresses } from '@/pages/api/pro-eligibility-tests/[id]';
 import { queryClient } from '@/services/query';

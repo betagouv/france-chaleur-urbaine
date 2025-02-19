@@ -1,4 +1,4 @@
-import { useQueryState } from 'nuqs';
+import { useQueryState } from '@/hooks/useQueryState';
 
 const useQueryFlag = (key: string): [boolean, (value?: boolean) => void] => {
   const [flag, setFlag] = useQueryState<boolean>(key, {

@@ -1,6 +1,6 @@
 import { type GetServerSideProps } from 'next';
 import { type Session, type User } from 'next-auth';
-import { getSession } from 'next-auth/react';
+import { getSession } from '@/server/services/session';
 
 import { type UserRole } from '@/types/enum/UserRole';
 

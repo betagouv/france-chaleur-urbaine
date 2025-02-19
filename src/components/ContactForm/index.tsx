@@ -1,7 +1,7 @@
 import { Alert } from '@codegouvfr/react-dsfr/Alert';
 import { Button } from '@codegouvfr/react-dsfr/Button';
 import { Select } from '@codegouvfr/react-dsfr/SelectNext';
-import { useQueryState } from 'nuqs';
+import { useQueryState } from '@/hooks/useQueryState';
 import React, { type FormEvent, useState } from 'react';
 
 import Input from '@/components/form/dsfr/Input';

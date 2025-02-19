@@ -3,7 +3,6 @@ import { fr } from '@codegouvfr/react-dsfr';
 import Alert from '@codegouvfr/react-dsfr/Alert';
 import ToggleSwitch from '@codegouvfr/react-dsfr/ToggleSwitch';
 import Drawer from '@mui/material/Drawer';
-import { parseAsStringLiteral, useQueryState } from 'nuqs';
 import React from 'react';
 
 import AddressAutocomplete from '@/components/form/dsfr/AddressAutocompleteInput';
@@ -16,6 +15,7 @@ import Heading from '@/components/ui/Heading';
 import { FCUArrowIcon } from '@/components/ui/Icon';
 import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
+import { useQueryState } from '@/hooks/useQueryState';
 import { type LocationInfoResponse } from '@/pages/api/location-infos';
 import cx from '@/utils/cx';
 import { postFetchJSON } from '@/utils/network';
@@ -29,7 +29,7 @@ import ModesDeChauffageAComparer from './ModesDeChauffageAComparer';
 import ParametresDesModesDeChauffage from './ParametresDesModesDeChauffage';
 import ParametresDuBatimentGrandPublic from './ParametresDuBatimentGrandPublic';
 import ParametresDuBatimentTechnicien from './ParametresDuBatimentTechnicien';
-import { ComparateurPublicodesTitle, ResultsNotAvailable, simulatorTabs } from './Placeholder';
+import { ComparateurPublicodesTitle, ResultsNotAvailable, type simulatorTabs } from './Placeholder';
 import useSimulatorEngine from './useSimulatorEngine';
 
 type ComparateurPublicodesProps = React.HTMLAttributes<HTMLDivElement> & {
@@ -65,68 +65,66 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
   tabId: defaultTabId,
   ...props
 }) => {
-  const engine = useSimulatorEngine();
+  // const engine = useSimulatorEngine();
   const [loading, setLoading] = React.useState(true);
 
-  const [graphDrawerOpen, setGraphDrawerOpen] = React.useState(false);
-  const engineDisplayMode = engine.getField('mode affichage');
-  const [displayMode, setDisplayMode] = useQueryState('displayMode', {
-    defaultValue: defaultDisplayMode || (engineDisplayMode as string),
-  });
+  // const [graphDrawerOpen, setGraphDrawerOpen] = React.useState(false);
+  // const engineDisplayMode = engine.getField('mode affichage');
+  // const [displayMode, setDisplayMode] = useQueryState('displayMode');
 
-  const [address, setAddress] = useQueryState('address');
-  const [modesDeChauffage] = useQueryState('modes-de-chauffage');
-  const [lngLat, setLngLat] = React.useState<[number, number]>();
-  const [nearestReseauDeChaleur, setNearestReseauDeChaleur] = React.useState<LocationInfoResponse['nearestReseauDeChaleur']>();
-  const [addressError, setAddressError] = React.useState<boolean>(false);
-  const [nearestReseauDeFroid, setNearestReseauDeFroid] = React.useState<LocationInfoResponse['nearestReseauDeFroid']>();
-  const inclureLaClimatisation = engine.getField('Inclure la climatisation');
+  // const [address, setAddress] = useQueryState('address');
+  // const [modesDeChauffage] = useQueryState('modes-de-chauffage');
+  // const [lngLat, setLngLat] = React.useState<[number, number]>();
+  // const [nearestReseauDeChaleur, setNearestReseauDeChaleur] = React.useState<LocationInfoResponse['nearestReseauDeChaleur']>();
+  // const [addressError, setAddressError] = React.useState<boolean>(false);
+  // const [nearestReseauDeFroid, setNearestReseauDeFroid] = React.useState<LocationInfoResponse['nearestReseauDeFroid']>();
+  // const inclureLaClimatisation = engine.getField('Inclure la climatisation');
 
-  const advancedMode = displayMode === 'technicien';
-  const [selectedTabId, setSelectedTabId] = useQueryState(
-    'tabId',
-    parseAsStringLiteral(simulatorTabs.map((tab) => tab.tabId)).withDefault(defaultTabId ?? 'batiment')
-  );
+  // const advancedMode = displayMode === 'technicien';
+  // const [selectedTabId, setSelectedTabId] = useQueryState(
+  //   'tabId'
+  //   // parseAsStringLiteral(simulatorTabs.map((tab) => tab.tabId)).withDefault(defaultTabId ?? 'batiment')
+  // );
 
-  React.useEffect(() => {
-    if (engine.loaded) {
-      if (address) {
-        // if address is set, engine will need to compute the result
-        // so we wait a bit to make sure the result is ready
-        // TODO this is a hack, we should use a proper state from the engine
-        setTimeout(() => {
-          setLoading(false);
-        }, 2000);
-      } else {
-        setLoading(false);
-      }
-    }
-  }, [engine.loaded, address]);
+  // React.useEffect(() => {
+  //   if (engine.loaded) {
+  //     if (address) {
+  //       // if address is set, engine will need to compute the result
+  //       // so we wait a bit to make sure the result is ready
+  //       // TODO this is a hack, we should use a proper state from the engine
+  //       setTimeout(() => {
+  //         setLoading(false);
+  //       }, 2000);
+  //     } else {
+  //       setLoading(false);
+  //     }
+  //   }
+  // }, [engine.loaded, address]);
 
-  React.useEffect(() => {
-    // In case displayMode is set through url query param, we need to update the engine
-    if (displayMode !== engineDisplayMode) {
-      engine.setStringField('mode affichage', displayMode);
-    }
-  }, [displayMode, engineDisplayMode]);
+  // React.useEffect(() => {
+  //   // In case displayMode is set through url query param, we need to update the engine
+  //   if (displayMode !== engineDisplayMode) {
+  //     engine.setStringField('mode affichage', displayMode);
+  //   }
+  // }, [displayMode, engineDisplayMode]);
 
-  const isAddressSelected = engine.getField('code département') !== undefined;
+  // const isAddressSelected = engine.getField('code département') !== undefined;
 
-  const results =
-    isAddressSelected && !!modesDeChauffage ? (
-      <Graph
-        engine={engine}
-        advancedMode={advancedMode}
-        usedReseauDeChaleurLabel={nearestReseauDeChaleur?.nom_reseau || 'Valeur moyenne'}
-        captureImageName={`${new Date().getFullYear()}-${slugify(address)}`}
-      />
-    ) : (
-      <ResultsNotAvailable />
-    );
+  // const results =
+  //   isAddressSelected && !!modesDeChauffage ? (
+  //     <Graph
+  //       engine={engine}
+  //       advancedMode={advancedMode}
+  //       usedReseauDeChaleurLabel={nearestReseauDeChaleur?.nom_reseau || 'Valeur moyenne'}
+  //       captureImageName={`${new Date().getFullYear()}-${slugify(address)}`}
+  //     />
+  //   ) : (
+  //     <ResultsNotAvailable />
+  //   );
 
   return (
     <>
-      <div className={cx(fr.cx('fr-container'), className)} {...props}>
+      {/* <div className={cx(fr.cx('fr-container'), className)} {...props}>
         <FormProvider engine={engine}>
           <Section>
             <header>
@@ -366,24 +364,14 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
             </Simulator>
           </Section>
         </FormProvider>
+      </div> */}
+      <div>
+        <h1>Hello</h1>
       </div>
       {!loading && (
-        <Box backgroundColor="blue-france-975-75">
-          <Box py="5w" className="fr-container">
-            <Heading size="h3" color="blue-france" mb="0">
-              Une suggestion ou une remarque&nbsp;?
-            </Heading>
-            <Box display="flex" my="2w">
-              <FCUArrowIcon />
-              <Text size="lg" ml="1w">
-                Faites nous part de vos retours et suggestions sur ce comparateur
-              </Text>
-            </Box>
-            <Link variant="secondary" href="/contact?reason=comparateur">
-              Nous contacter
-            </Link>
-          </Box>
-        </Box>
+        <div>
+          <h1>loading</h1>
+        </div>
       )}
     </>
   );

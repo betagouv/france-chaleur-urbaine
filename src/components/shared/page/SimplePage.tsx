@@ -3,7 +3,7 @@ import { Footer } from '@codegouvfr/react-dsfr/Footer';
 import MainNavigation, { type MainNavigationProps } from '@codegouvfr/react-dsfr/MainNavigation';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { signOut, useSession } from 'next-auth/react';
+import { signOut, useSession } from '@/server/services/session';
 import React from 'react';
 
 import { FooterConsentManagementItem } from '@/components/ConsentBanner';

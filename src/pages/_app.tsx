@@ -4,8 +4,8 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import type { AppProps } from 'next/app';
 import dynamic from 'next/dynamic';
 import type Link from 'next/link';
+
 // use AppProgressBar instead of PagesProgressBar on purpose as it handles better the query params ignoring
-import { SessionProvider } from 'next-auth/react';
 import { AppProgressBar as ProgressBar } from 'next-nprogress-bar';
 import { SWRConfig, type SWRConfiguration } from 'swr';
 
@@ -14,6 +14,7 @@ import SEO from '@/components/SEO';
 import ThemeProvider, { augmentDocumentWithEmotionCache, dsfrDocumentApi } from '@/components/Theme/ThemeProvider';
 import { usePreserveScroll } from '@/hooks/usePreserveScroll';
 import { type AuthSSRPageProps } from '@/server/helpers/ssr/withAuthentication';
+import { SessionProvider } from '@/server/services/session';
 import { HeatNetworkService, ServicesContext, SuggestionService } from '@/services';
 import { AdminService } from '@/services/admin';
 import { useAnalytics } from '@/services/analytics';

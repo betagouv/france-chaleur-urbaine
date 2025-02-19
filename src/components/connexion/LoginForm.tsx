@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { signIn } from 'next-auth/react';
+import { signIn } from '@/server/services/session';
 import { type FormEvent, useState } from 'react';
 
 import Input from '@/components/form/dsfr/Input';
