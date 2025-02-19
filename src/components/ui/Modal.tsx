@@ -21,6 +21,9 @@ type ModalProps = Omit<React.ComponentProps<CreateModal['Component']>, 'size'> &
 };
 
 export const StyledModal = styled.div<{ customSize?: boolean }>`
+  .fr-modal__title:empty {
+    display: none;
+  }
   ${({ customSize }) =>
     customSize &&
     css`
