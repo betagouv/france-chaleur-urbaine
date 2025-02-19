@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import React, { useState } from 'react';
 
 import useQueryFlag from '@/hooks/useQueryFlag';
+import { trackEvent } from '@/services/analytics';
 
 import Button from './Button';
 import Icon from './Icon';
@@ -14,6 +15,7 @@ export type TileListItem = {
   href: string;
   image?: string;
   start?: TileProps['start'];
+  eventKey?: TileProps['eventKey'];
 };
 
 const tileListVariants = cva('grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4');
@@ -24,6 +26,8 @@ export type TileListProps = {
   size?: TileProps['size'];
   orientation?: TileProps['orientation'];
   queryParamName?: string;
+  eventKeyExpanded?: TileProps['eventKey'];
+  eventKeyCollapsed?: TileProps['eventKey'];
 };
 
 /**
@@ -32,7 +36,15 @@ export type TileListProps = {
  * - Orientation variants via `orientation` prop (horizontal, vertical)
  * - Query param name to store state in URL via `queryParamName` prop
  */
-const TileList: React.FC<TileListProps> = ({ items, initialVisibleCount = 4, size = 'sm', orientation = 'horizontal', queryParamName }) => {
+const TileList: React.FC<TileListProps> = ({
+  items,
+  initialVisibleCount = 4,
+  size = 'sm',
+  orientation = 'horizontal',
+  queryParamName,
+  eventKeyExpanded,
+  eventKeyCollapsed,
+}) => {
   const [localShowAll, setLocalShowAll] = useState<boolean>(false);
   const [urlShowAll, setUrlShowAll] = useQueryFlag(queryParamName || '');
 
@@ -56,6 +68,7 @@ const TileList: React.FC<TileListProps> = ({ items, initialVisibleCount = 4, siz
                 title={item.title}
                 desc={item.excerpt}
                 start={item.start}
+                eventKey={item.eventKey}
                 linkProps={{
                   href: item.href,
                   className: 'h-full',
@@ -74,7 +87,13 @@ const TileList: React.FC<TileListProps> = ({ items, initialVisibleCount = 4, siz
       </div>
       {items.length > initialVisibleCount && (
         <div className="flex justify-center mt-6">
-          <Button onClick={() => setShowAll(!showAll)} priority="secondary">
+          <Button
+            onClick={() => {
+              !showAll ? eventKeyExpanded && trackEvent(eventKeyExpanded) : eventKeyCollapsed && trackEvent(eventKeyCollapsed);
+              setShowAll(!showAll);
+            }}
+            priority="secondary"
+          >
             {showAll ? <Icon name="fr-icon-arrow-up-line" /> : <Icon name="fr-icon-arrow-down-line" />}
           </Button>
         </div>

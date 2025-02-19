@@ -4,10 +4,14 @@ import { cva } from 'class-variance-authority';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 
+import { trackEvent, type TrackingEvent } from '@/services/analytics';
+
 type TileSize = 'sm' | 'md' | 'lg';
 
 type BaseTileProps = Omit<DSFRTileProps, 'small' | 'imageUrl' | 'linkProps'> & {
   linkProps: RegisteredLinkProps;
+  eventKey?: TrackingEvent;
+  eventPayload?: string;
 };
 
 export type TileProps = BaseTileProps & {
@@ -86,7 +90,7 @@ const contentVariants = cva('', {
  * />
  * ```
  */
-const Tile: React.FC<TileProps> = ({ size = 'md', className, image, linkProps, ...props }) => {
+const Tile: React.FC<TileProps> = ({ size = 'md', className, image, linkProps, eventKey, eventPayload, ...props }) => {
   const imageUrl = image && !image.startsWith('http') ? `${process.env.NEXT_PUBLIC_MAP_ORIGIN}${image}` : image;
   const router = useRouter();
   const { href, onClick, ...restLinkProps } = linkProps;
@@ -102,10 +106,18 @@ const Tile: React.FC<TileProps> = ({ size = 'md', className, image, linkProps, .
       small={size === 'sm'}
       imageUrl={imageUrl}
       linkProps={{
-        href, // needed so that Tile works as it's a mandatory field
+        href,
         onClick: (e: React.MouseEvent<HTMLAnchorElement>) => {
-          e.preventDefault(); // override the href behavior as it would navigate to other page and refresh the page
+          e.preventDefault();
           onClick?.(e);
+
+          if (eventKey) {
+            trackEvent(
+              eventKey,
+              eventPayload?.split(',').map((v) => v.trim())
+            );
+          }
+
           if (href) {
             if ((href as string).startsWith('http')) {
               window.open(href as string, '_blank');

@@ -700,6 +700,43 @@ const trackingEvents = {
     matomo: ['Carto', 'Etudes en cours', 'Désactive'],
   },
 
+  'Outil|Carte des réseaux et potentiels': {
+    matomo: ['Outil', 'Carte des réseaux et potentiels'],
+  },
+  "Outil|Comparateur de coûts et d'émissions de CO2": {
+    matomo: ['Outil', "Comparateur de coûts et d'émissions de CO2"],
+  },
+  'Outil|Coûts de raccordement et aides': {
+    matomo: ['Outil', 'Coûts de raccordement et aides'],
+  },
+  'Outil|Compatibilité des modes de chauffage': {
+    matomo: ['Outil', 'Compatibilité des modes de chauffage'],
+  },
+  'Outil|Obligations de raccordement': {
+    matomo: ['Outil', 'Obligations de raccordement'],
+  },
+  'Outil|Potentiel des communes sans réseau': {
+    matomo: ['Outil', 'Potentiel des communes sans réseau'],
+  },
+  "Outil|Test d'adresses en masse": {
+    matomo: ['Outil', 'Test d’adresses en masse'],
+  },
+  'Outil|Liste des réseaux de chaleur': {
+    matomo: ['Outil', 'Liste des réseaux de chaleur'],
+  },
+  'Outil|Téléchargement de données et outils': {
+    matomo: ['Outil', 'Téléchargement de données et outils'],
+  },
+  'Outil|Supports pédagogiques': {
+    matomo: ['Outil', 'Supports pédagogiques'],
+  },
+  'Outil|Liste dépliée': {
+    matomo: ['Outil', 'Liste dépliée'],
+  },
+  'Outil|Liste repliée': {
+    matomo: ['Outil', 'Liste repliée'],
+  },
+
   // used to test Matomo configuration
   'Debug|Event 1': {
     matomo: ['Debug', 'Debug Event 1'],

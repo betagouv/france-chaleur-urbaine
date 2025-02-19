@@ -29,6 +29,7 @@ const tools: TileListItem[] = [
     excerpt: 'Découvrez la cartographie nationale des réseaux de chaleur.',
     href: '/carte',
     image: '/icons/tools/france.svg',
+    eventKey: 'Outil|Carte des réseaux et potentiels',
   },
   ...(process.env.NEXT_PUBLIC_FLAG_ENABLE_COMPARATEUR === 'true'
     ? [
@@ -42,56 +43,65 @@ const tools: TileListItem[] = [
               Nouveau
             </Badge>
           ),
-        },
+          eventKey: "Outil|Comparateur de coûts et d'émissions de CO2",
+        } satisfies TileListItem,
       ]
     : []),
-  // {
-  //   title: 'Compatibilité des modes de chauffage',
-  //   excerpt: 'Quels chauffages pour quels bâtiments ?',
-  //   href: '/todo',
-  // image: '/icons/tools/compatibilite.svg',
-  // },
+  {
+    title: 'Compatibilité des modes de chauffage',
+    excerpt: 'Quels chauffages pour quels bâtiments ?',
+    href: '/todo',
+    image: '/icons/tools/human-cooperation.svg',
+    eventKey: 'Outil|Compatibilité des modes de chauffage',
+  },
   {
     title: 'Coûts de raccordement et aides',
     excerpt: 'Estimez le coût de votre raccordement.',
     href: '/ressources/cout-raccordement',
     image: '/icons/tools/innovation.svg',
+    eventKey: 'Outil|Coûts de raccordement et aides',
   },
   {
     title: 'Obligations de raccordement',
     excerpt: 'Découvrez si votre bâtiment est concerné par une obligation de raccordement.',
     href: '#obligation-raccordement',
     image: '/icons/tools/information.svg',
+    eventKey: 'Outil|Obligations de raccordement',
   },
   {
     title: 'Potentiel des communes sans réseau',
     excerpt: 'Évaluez le potentiel de création d’un réseau sur une commune.',
     href: '/collectivites-et-exploitants/potentiel-creation-reseau',
     image: '/icons/tools/compass.svg',
+    eventKey: 'Outil|Potentiel des communes sans réseau',
   },
   {
-    title: 'Test d’adresses en masse',
+    title: "Test d'adresses en masse",
     excerpt: 'Testez directement une liste d’adresses.',
     href: '/?bulk',
     image: '/icons/tools/map.svg',
+    eventKey: "Outil|Test d'adresses en masse",
   },
   {
     title: 'Liste des réseaux de chaleur',
     excerpt: 'Retrouvez l’ensemble des réseaux et filtrez les.',
     href: '/reseaux',
     image: '/icons/tools/search.svg',
+    eventKey: 'Outil|Liste des réseaux de chaleur',
   },
   {
     title: 'Téléchargement de données et outils',
     excerpt: 'Intégrez nos données et outils (API, iframe, ...).',
     href: '/ressources/outils#iframes',
     image: '/icons/tools/system.svg',
+    eventKey: 'Outil|Téléchargement de données et outils',
   },
   {
     title: 'Supports pédagogiques',
     excerpt: 'Découvrez tous nos supports.',
     href: '/ressources/supports',
     image: '/icons/tools/pictures.svg',
+    eventKey: 'Outil|Supports pédagogiques',
   },
   // {
   //   title: 'Décret tertiaire',
@@ -121,7 +131,13 @@ export default function Home() {
         <SectionTitle>Des outils à votre service</SectionTitle>
         <SectionSubtitle>Découvrez l'ensemble de nos outils pour les copropriétaires et professionnels</SectionSubtitle>
         <SectionContent>
-          <TileList items={tools} queryParamName="tool" initialVisibleCount={4} />
+          <TileList
+            items={tools}
+            queryParamName="tool"
+            initialVisibleCount={4}
+            eventKeyExpanded="Outil|Liste dépliée"
+            eventKeyCollapsed="Outil|Liste repliée"
+          />
         </SectionContent>
       </Section>
 
