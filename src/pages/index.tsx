@@ -1,3 +1,4 @@
+import Badge from '@codegouvfr/react-dsfr/Badge';
 import Image from 'next/image';
 
 import LastArticles from '@/components/Articles/LastArticles';
@@ -36,6 +37,11 @@ const tools: TileListItem[] = [
           excerpt: 'Comparez les coûts des modes de chauffage.',
           href: '/outils/comparateur-performances',
           image: '/img/tools/comparateur.svg',
+          start: (
+            <Badge noIcon severity="success">
+              Nouveau
+            </Badge>
+          ),
         },
       ]
     : []),

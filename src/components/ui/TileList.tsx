@@ -13,6 +13,7 @@ export type TileListItem = {
   excerpt?: string;
   href: string;
   image?: string;
+  start?: TileProps['start'];
 };
 
 const tileListVariants = cva('grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4');
@@ -54,6 +55,7 @@ const TileList: React.FC<TileListProps> = ({ items, initialVisibleCount = 4, siz
               <Tile
                 title={item.title}
                 desc={item.excerpt}
+                start={item.start}
                 linkProps={{
                   href: item.href,
                   className: 'h-full',
