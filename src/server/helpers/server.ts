@@ -5,7 +5,7 @@ import type { NextApiHandler, NextApiRequest, NextApiResponse } from 'next';
 import { type User, getServerSession } from 'next-auth';
 import { type ZodRawShape, z } from 'zod';
 
-import { nextAuthOptions } from '@/pages/api/auth/[...nextauth]';
+// import { nextAuthOptions } from '@/pages/api/auth/[...all]';
 import { type UserRole } from '@/types/enum/UserRole';
 
 import { parentLogger } from './logger';

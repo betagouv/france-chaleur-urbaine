@@ -2,7 +2,6 @@ import { Button } from '@codegouvfr/react-dsfr/Button';
 import { createModal } from '@codegouvfr/react-dsfr/Modal';
 import { useIsModalOpen } from '@codegouvfr/react-dsfr/Modal/useIsModalOpen';
 import { Select } from '@codegouvfr/react-dsfr/SelectNext';
-import { useSession } from 'next-auth/react';
 import { type FormEvent, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
@@ -11,6 +10,7 @@ import Heading from '@/components/ui/Heading';
 import Modal from '@/components/ui/Modal';
 import emailsContentList from '@/data/manager/manager-emails-content';
 import emailsList from '@/data/manager/manager-emails-list';
+import { authClient } from '@/services/auth-client';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import { type Demand } from '@/types/Summary/Demand';
 
@@ -49,7 +49,7 @@ function ModalEmails(props: Props) {
     };
   };
 
-  const { data: session, update } = useSession();
+  const { data: session } = authClient.useSession();
   const [isLoaded, setIsLoaded] = useState(false);
 
   const emailModal = useMemo(() => {
@@ -160,7 +160,8 @@ function ModalEmails(props: Props) {
 
       //Update the current user signature
       if (session && session.user.signature !== emailContent.signature) {
-        update({ signature: emailContent.signature });
+        // FIXME faire une API pour maj la signature, ou bien gérer avec better-auth
+        // update({ signature: emailContent.signature });
       }
 
       setSent(true);

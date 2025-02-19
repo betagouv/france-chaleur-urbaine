@@ -1,9 +1,9 @@
 import Link from 'next/link';
-import { signIn } from 'next-auth/react';
 import { type FormEvent, useState } from 'react';
 
 import Input from '@/components/form/dsfr/Input';
 import Button from '@/components/ui/Button';
+import { authClient } from '@/services/auth-client';
 
 import { Container, Password, PasswordIcon, PasswordInput } from './Form.styles';
 
@@ -20,8 +20,8 @@ export const LoginForm = ({ callbackUrl }: LoginFormProps) => {
     e.preventDefault();
     setLoading(true);
     try {
-      await signIn('credentials', {
-        callbackUrl,
+      await authClient.signIn.email({
+        callbackURL: callbackUrl,
         email,
         password,
       });

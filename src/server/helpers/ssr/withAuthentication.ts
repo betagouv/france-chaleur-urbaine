@@ -1,12 +1,18 @@
 import { type GetServerSideProps } from 'next';
+import { headers } from 'next/headers';
 import { type Session, type User } from 'next-auth';
 import { getSession } from 'next-auth/react';
 
+import { auth } from '@/server/services/auth';
 import { type UserRole } from '@/types/enum/UserRole';
 
 export const withAuthentication = (requiredRole?: UserRole): GetServerSideProps<AuthSSRPageProps> => {
   return async (context) => {
-    const userSession = await getSession(context);
+    // FIXME vérifier que ça fonctionne avec better-auth
+    // const userSession = await getSession(context);
+    const userSession = await auth.api.getSession({
+      headers: await headers(),
+    });
 
     if (!userSession) {
       return {
