@@ -14,7 +14,6 @@ import MapReactGL, {
   MapProvider,
   type MapRef,
   type MapSourceDataEvent,
-  type MapStyle,
   NavigationControl,
   ScaleControl,
 } from 'react-map-gl/maplibre';
@@ -78,8 +77,8 @@ const mapSettings = {
 
 const getAddressId = (LatLng: Point) => `${LatLng.join('--')}`;
 
-const osmConfig: MapStyle = rawOsmConfig as any;
-const satelliteConfig: MapStyle = rawSatelliteConfig as any;
+const osmConfig = rawOsmConfig as any;
+const satelliteConfig = rawSatelliteConfig as any;
 
 const styles: MapboxStyleDefinition[] = [
   {
