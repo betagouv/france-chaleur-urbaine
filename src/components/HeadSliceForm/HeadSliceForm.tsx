@@ -158,18 +158,17 @@ const HeadSliceForm = ({
                 selectOptions={energyInputsDefaultLabels}
                 onChange={(val) => {
                   setHeatingType(val as AvailableHeating);
-                  setAutoValidate(true);
                 }}
                 value={heatingType || ''}
               />
             </CheckEligibilityFormLabel>
             <AddressAutocomplete
+              className="!mb-2"
               nativeInputProps={{ placeholder: 'Tapez ici votre adresse' }}
               onSelect={(geoAddress?: SuggestionItem) => {
                 const address = geoAddress?.properties?.label;
                 setAddress(address ?? '');
                 setGeoAddress(geoAddress);
-                setAutoValidate(true);
               }}
               onError={() => {
                 setLoadingStatus('idle');
@@ -264,7 +263,9 @@ const HeadSliceForm = ({
         loading={loadingStatus === 'loading'}
       >
         <div>
-          {contactReady && !messageReceived && <EligibilityFormContact addressData={addressData} onSubmit={handleOnSubmitContact} />}
+          {contactReady && !messageReceived && (
+            <EligibilityFormContact addressData={addressData} onSubmit={handleOnSubmitContact} className="p-0" />
+          )}
           {messageReceived && <EligibilityFormMessageConfirmation addressData={addressData} />}
         </div>
         {!externBulkForm && withBulkEligibility && displayBulkEligibility && (

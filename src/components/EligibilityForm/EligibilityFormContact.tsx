@@ -34,9 +34,10 @@ type EligibilityFormContactType = {
   addressData: AddressDataType;
   cardMode?: boolean;
   onSubmit?: (...arg: any) => Promise<any>;
+  className?: string;
 };
 
-const EligibilityFormContact = ({ addressData, cardMode, onSubmit }: EligibilityFormContactType) => {
+const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: EligibilityFormContactType) => {
   const [contactFormLoading, setContactFormLoading] = useState(false);
   const [contactFormError, setContactFormError] = useState(false);
 
@@ -104,7 +105,7 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit }: Eligibility
   );
 
   return (
-    <ContactFormWrapper cardMode={cardMode}>
+    <ContactFormWrapper cardMode={cardMode} className={className}>
       {addressData.eligibility?.basedOnCity && !cardMode ? (
         <>
           <ContactFormContentWrapper>
