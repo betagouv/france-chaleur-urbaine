@@ -8,8 +8,8 @@ import Heading from './Heading';
 const sectionVariants = cva('', {
   variants: {
     size: {
-      sm: '',
-      md: 'py-10w',
+      sm: 'py-1w md:py-2w',
+      md: 'py-6w md:py-10w',
       lg: '',
     },
     variant: {
