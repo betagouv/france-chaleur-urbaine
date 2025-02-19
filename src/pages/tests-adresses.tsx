@@ -12,9 +12,9 @@ import Loader from '@/components/ui/Loader';
 import ModalSimple from '@/components/ui/ModalSimple';
 import { useFetch } from '@/hooks/useApi';
 import { type ProEligibilityTestListItem } from '@/pages/api/pro-eligibility-tests';
-import { withAuthentication } from '@/server/helpers/ssr/withAuthentication';
+import { type AuthSSRPageProps, withAuthentication } from '@/server/helpers/ssr/withAuthentication';
 
-export default function TestsAdresses(): JSX.Element {
+export default function TestsAdresses({ session }: AuthSSRPageProps): JSX.Element {
   const [hasPendingJobs, setHasPendingJobs] = useState(false);
 
   const { data: eligibilityTests, isLoading } = useFetch<ProEligibilityTestListItem[]>('/api/pro-eligibility-tests', {
@@ -26,7 +26,12 @@ export default function TestsAdresses(): JSX.Element {
   }, [eligibilityTests]);
 
   return (
-    <SimplePage title="Tests d'adresses" description="Votre tableau de bord pour la gestion de vos tests d'adresses" mode="authenticated">
+    <SimplePage
+      title="Tests d'adresses"
+      description="Votre tableau de bord pour la gestion de vos tests d'adresses"
+      mode="authenticated"
+      session={session}
+    >
       <Box as="main" className="fr-container" my="4w">
         <div className="flex items-center justify-between fr-mb-4w">
           <Heading color="blue-france" className="!mb-0">

@@ -1,12 +1,13 @@
 import { type GetServerSideProps } from 'next';
-import { type Session, type User } from 'next-auth';
-import { getSession } from 'next-auth/react';
+import { getServerSession, type Session } from 'next-auth';
 
+import { nextAuthOptions } from '@/pages/api/auth/[...nextauth]';
 import { type UserRole } from '@/types/enum/UserRole';
+import { deepCloneJSON } from '@/utils/objects';
 
 export const withAuthentication = (requiredRole?: UserRole): GetServerSideProps<AuthSSRPageProps> => {
   return async (context) => {
-    const userSession = await getSession(context);
+    const userSession = await getServerSession(context.req, context.res, nextAuthOptions);
 
     if (!userSession) {
       return {
@@ -26,11 +27,10 @@ export const withAuthentication = (requiredRole?: UserRole): GetServerSideProps<
       };
     }
 
-    return { props: { session: userSession, user: userSession.user } };
+    return { props: { session: deepCloneJSON(userSession) } };
   };
 };
 
 export type AuthSSRPageProps = {
   session: Session;
-  user: User;
 };

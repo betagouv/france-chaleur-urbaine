@@ -5,7 +5,6 @@ import type { AppProps } from 'next/app';
 import dynamic from 'next/dynamic';
 import type Link from 'next/link';
 // use AppProgressBar instead of PagesProgressBar on purpose as it handles better the query params ignoring
-import { SessionProvider } from 'next-auth/react';
 import { AppProgressBar as ProgressBar } from 'next-nprogress-bar';
 import { SWRConfig, type SWRConfiguration } from 'swr';
 
@@ -63,10 +62,8 @@ function App({ Component, pageProps }: AppProps<AuthSSRPageProps>) {
           }}
         >
           <SWRConfig value={swrConfig}>
-            <SessionProvider session={pageProps.session}>
-              <ProgressBar height="4px" color={fr.colors.decisions.background.active.blueFrance.default} />
-              <Component {...pageProps} />
-            </SessionProvider>
+            <ProgressBar height="4px" color={fr.colors.decisions.background.active.blueFrance.default} />
+            <Component {...pageProps} />
           </SWRConfig>
         </ServicesContext.Provider>
       </QueryClientProvider>

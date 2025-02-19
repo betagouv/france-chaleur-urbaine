@@ -3,7 +3,8 @@ import { Footer } from '@codegouvfr/react-dsfr/Footer';
 import MainNavigation, { type MainNavigationProps } from '@codegouvfr/react-dsfr/MainNavigation';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { signOut, useSession } from 'next-auth/react';
+import { type Session } from 'next-auth';
+import { signOut } from 'next-auth/react';
 import React from 'react';
 
 import { FooterConsentManagementItem } from '@/components/ConsentBanner';
@@ -12,6 +13,7 @@ import SEO, { type SEOProps } from '@/components/SEO';
 import Box from '@/components/ui/Box';
 import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
+import { isDefined } from '@/utils/core';
 import { deleteFetchJSON } from '@/utils/network';
 
 import Banner from './Banner';
@@ -24,13 +26,14 @@ type SimplePageProps = {
   mode?: PageMode;
   currentPage?: string;
   includeFooter?: boolean;
+  session?: Session;
 } & SEOProps;
 
-const SimplePage = ({ mode, currentPage, children, noIndex, includeFooter = true, ...props }: SimplePageProps) => {
+const SimplePage = ({ mode, currentPage, children, noIndex, includeFooter = true, session, ...props }: SimplePageProps) => {
   return (
     <>
       <SEO noIndex={mode === 'authenticated' ? true : noIndex} {...props} />
-      <PageHeader mode={mode ?? 'public'} currentPage={currentPage} />
+      <PageHeader mode={mode ?? 'public'} currentPage={currentPage} session={session} />
 
       {children}
       {includeFooter && <PageFooter />}
@@ -390,6 +393,7 @@ function getAuthenticatedQuickAccessItems(impersonating: boolean): HeaderProps.Q
 interface PageHeaderProps {
   mode: PageMode;
   currentPage?: string;
+  session?: Session;
 }
 
 /**
@@ -405,7 +409,6 @@ interface PageHeaderProps {
  */
 const PageHeader = (props: PageHeaderProps) => {
   const router = useRouter();
-  const { data: session, status } = useSession();
 
   const isFullScreenMode = props.mode === 'public-fullscreen' || props.mode === 'authenticated';
 
@@ -413,11 +416,11 @@ const PageHeader = (props: PageHeaderProps) => {
     props.mode === 'authenticated'
       ? [
           ...authenticatedNavigationMenu,
-          ...(status === 'authenticated'
+          ...(isDefined(props.session)
             ? [
-                ...(session.user.roles.includes('professionnel') ? professionnelNavigationMenu : []),
-                ...(session.user.roles.includes('gestionnaire') ? gestionnaireNavigationMenu : []),
-                ...(session.user.roles.includes('admin') ? adminNavigationMenu : []),
+                ...(props.session.user.roles.includes('professionnel') ? professionnelNavigationMenu : []),
+                ...(props.session.user.roles.includes('gestionnaire') ? gestionnaireNavigationMenu : []),
+                ...(props.session.user.roles.includes('admin') ? adminNavigationMenu : []),
               ]
             : []),
         ]
@@ -426,7 +429,7 @@ const PageHeader = (props: PageHeaderProps) => {
   const currentPath = props.currentPage ?? router.pathname;
 
   const quickAccessItems =
-    props.mode === 'authenticated' ? getAuthenticatedQuickAccessItems(!!session?.impersonating) : publicQuickAccessItems;
+    props.mode === 'authenticated' ? getAuthenticatedQuickAccessItems(!!props.session?.impersonating) : publicQuickAccessItems;
 
   return (
     <>

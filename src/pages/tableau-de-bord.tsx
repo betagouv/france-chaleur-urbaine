@@ -8,16 +8,16 @@ import Box from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
 import { type AuthSSRPageProps, withAuthentication } from '@/server/helpers/ssr/withAuthentication';
 
-export default function DashboardPage({ user }: AuthSSRPageProps) {
+export default function DashboardPage({ session }: AuthSSRPageProps) {
   return (
-    <SimplePage title="Tableau de bord" mode="authenticated">
+    <SimplePage title="Tableau de bord" mode="authenticated" session={session}>
       <Box as="main" className="fr-container" my="4w">
         <Heading as="h1" color="blue-france">
           Tableau de bord
         </Heading>
-        {user.roles.includes('admin') && <DashboardAdmin />}
-        {user.roles.includes('gestionnaire') && <DashboardGestionnaire />}
-        {user.roles.includes('professionnel') && <DashboardProfessionnel />}
+        {session.user.roles.includes('admin') && <DashboardAdmin />}
+        {session.user.roles.includes('gestionnaire') && <DashboardGestionnaire />}
+        {session.user.roles.includes('professionnel') && <DashboardProfessionnel />}
       </Box>
     </SimplePage>
   );
