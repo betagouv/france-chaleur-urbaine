@@ -32,7 +32,12 @@ const StickyForm = ({ title }: { title?: string }) => {
       <SliceContactFormStyle />
       <Container>
         <Title className="sticky-form-title">{title || 'Votre bâtiment est-il raccordable à un réseau de chaleur ?'}</Title>
-        <EligibilityFormAddress onChange={handleOnChangeAddress} onFetch={handleOnFetchAddress} onSuccess={handleOnSuccessAddress} />
+        <EligibilityFormAddress
+          onChange={handleOnChangeAddress}
+          onFetch={handleOnFetchAddress}
+          onSuccess={handleOnSuccessAddress}
+          heatingLabel={<>Mode de chauffage actuel&nbsp;:</>}
+        />
         {showWarning && <FormWarningMessage show>{warningMessage}</FormWarningMessage>}
 
         {loadingStatus === 'loading' && <Loader size="md" />}
