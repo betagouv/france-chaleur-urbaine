@@ -13,6 +13,9 @@ const envSchema = {
   LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
   API_ADRESSE_URL: z.string().default('https://api-adresse.data.gouv.fr/'),
   LOG_SQL_QUERIES: z.boolean().default(false),
+  PUBLIC_URL: z.string(),
+  BETTER_AUTH_URL: z.string(),
+  BETTER_AUTH_SECRET: z.string(),
 };
 
 export const env = parseEnv(process.env, envSchema);

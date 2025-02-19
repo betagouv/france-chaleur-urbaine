@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 import type { NextApiRequest } from 'next';
 import { z } from 'zod';
 
+import { env } from '@/environment';
 import db from '@/server/db';
 import { AirtableDB } from '@/server/db/airtable';
 import { sendResetPasswordEmail } from '@/server/email';
@@ -37,7 +38,7 @@ const reset = handleRouteErrors(async (req: NextApiRequest) => {
     exp: Math.round(Date.now() / 1000) + 60 * 60 * 3, // 3 hour expiration
   };
 
-  const token = jwt.sign(payload, process.env.NEXTAUTH_SECRET as string);
+  const token = jwt.sign(payload, env.BETTER_AUTH_SECRET);
   await db('users').update({ reset_token: resetToken }).where('id', user.id);
   await sendResetPasswordEmail(email, token);
 });

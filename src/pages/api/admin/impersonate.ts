@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { type JWT, decode, encode } from 'next-auth/jwt';
 import { z } from 'zod';
 
+import { env } from '@/environment';
 import { logger } from '@/server/helpers/logger';
 import {
   handleRouteErrors,
@@ -59,10 +60,10 @@ export default handleRouteErrors(async (req: NextApiRequest, res: NextApiRespons
  * Retrieve the Next Auth JWT.
  */
 async function getSessionJWT(req: NextApiRequest): Promise<JWT> {
-  const isSecureCookie = (process.env.NEXTAUTH_URL ?? '').startsWith('https');
+  const isSecureCookie = env.BETTER_AUTH_URL.startsWith('https');
   const currentJWT = req.cookies[getCookieName(isSecureCookie)];
   const decodedJWT = await decode({
-    secret: process.env.NEXTAUTH_SECRET as string,
+    secret: env.BETTER_AUTH_SECRET,
     token: currentJWT,
   });
   return decodedJWT as JWT;
@@ -73,16 +74,16 @@ async function getSessionJWT(req: NextApiRequest): Promise<JWT> {
  */
 async function generateSessionJWT(res: NextApiResponse, payload: JWT): Promise<void> {
   const newJWT = await encode({
-    secret: process.env.NEXTAUTH_SECRET as string,
+    secret: env.BETTER_AUTH_SECRET,
     token: payload,
   });
   // decode to retrieve the expiration date of the JWT
   const decodedNewJWT = await decode({
-    secret: process.env.NEXTAUTH_SECRET as string,
+    secret: env.BETTER_AUTH_SECRET,
     token: newJWT,
   });
   const cookieExpirationDate = new Date((decodedNewJWT as any).exp * 1000);
-  const isSecureCookie = (process.env.NEXTAUTH_URL ?? '').startsWith('https');
+  const isSecureCookie = env.BETTER_AUTH_URL.startsWith('https');
   res.setHeader(
     'Set-Cookie',
     `${getCookieName(isSecureCookie)}=${newJWT}; Path=/; Expires=${cookieExpirationDate.toUTCString()}; HttpOnly; ${

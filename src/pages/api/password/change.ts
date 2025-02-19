@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import { type NextApiRequest } from 'next';
 import { z } from 'zod';
 
+import { env } from '@/environment';
 import db from '@/server/db';
 import { BadRequestError, handleRouteErrors, requirePostMethod, validateObjectSchema } from '@/server/helpers/server';
 import { zPassword } from '@/utils/validation';
@@ -14,7 +15,7 @@ const changePasswordRequest = handleRouteErrors(async (req: NextApiRequest) => {
     password: zPassword,
     token: z.string().transform((token, ctx) => {
       try {
-        const decodedToken = jwt.verify(token, process.env.NEXTAUTH_SECRET as string) as { email: string; resetToken: string };
+        const decodedToken = jwt.verify(token, env.BETTER_AUTH_SECRET) as { email: string; resetToken: string };
 
         return decodedToken;
       } catch (err) {

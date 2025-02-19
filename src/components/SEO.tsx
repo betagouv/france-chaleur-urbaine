@@ -3,12 +3,14 @@ import { usePathname } from 'next/navigation';
 import React from 'react';
 import type { Graph, Thing } from 'schema-dts';
 
+import { clientConfig } from '@/client-config';
+
 import { colors } from './ui/helpers/colors';
 
 const maxTitleLength = 60;
 const maxDescriptionLength = 160;
 
-const websiteUrl = process.env.NEXT_PUBLIC_MAP_ORIGIN;
+const websiteUrl = clientConfig.websiteOrigin;
 const websiteName = 'France Chaleur Urbaine';
 const defaultTitle = 'Accélérons les raccordements aux réseaux de chaleur';
 const defaultDescription =

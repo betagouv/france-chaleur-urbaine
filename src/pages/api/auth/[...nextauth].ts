@@ -1,11 +1,12 @@
 import nextAuth, { type AuthOptions, type Session } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 
+import { env } from '@/environment';
 import { kdb } from '@/server/db/kysely';
 import { login } from '@/server/services/account';
 
 export const nextAuthOptions: AuthOptions = {
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: env.BETTER_AUTH_SECRET,
   pages: {
     signIn: '/connexion',
     error: '/connexion',

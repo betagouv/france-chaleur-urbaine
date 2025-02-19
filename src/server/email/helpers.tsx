@@ -1,8 +1,10 @@
 import { Body, Button, Container, Head, Html, Img, Preview, Section } from '@react-email/components';
 import { type PropsWithChildren, type ComponentProps, type CSSProperties } from 'react';
 
+import { env } from '@/environment';
+
 export const commonEmailsProps = {
-  websiteUrl: process.env.NEXT_PUBLIC_MAP_ORIGIN as string,
+  websiteUrl: env.PUBLIC_URL,
 };
 
 export type CommonEmailProps = typeof commonEmailsProps;

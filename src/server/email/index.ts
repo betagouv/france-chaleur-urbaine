@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 import ejs from 'ejs';
 import nodemailer from 'nodemailer';
 
+import { env } from '@/environment';
 import { type Demand } from '@/types/Summary/Demand';
 
 dotenv.config({ path: '.env.local' });
@@ -51,7 +52,7 @@ const send = (
 export const sendNewDemands = async (email: string, demands: number): Promise<void> => {
   const html = await ejs.renderFile('./src/server/email/views/new-demands.ejs', {
     demands,
-    link: `${process.env.NEXTAUTH_URL}/connexion`,
+    link: `${env.PUBLIC_URL}/connexion`,
   });
 
   return send([email], '[France Chaleur Urbaine] Nouvelle(s) demande(s) dans votre espace gestionnaire', html);
@@ -59,7 +60,7 @@ export const sendNewDemands = async (email: string, demands: number): Promise<vo
 
 export const sendOldDemands = async (email: string): Promise<void> => {
   const html = await ejs.renderFile('./src/server/email/views/old-demands.ejs', {
-    link: `${process.env.NEXTAUTH_URL}/connexion`,
+    link: `${env.PUBLIC_URL}/connexion`,
   });
 
   return send([email], '[France Chaleur Urbaine] Vous avez des demandes en attente de prise en charge', html);
@@ -67,7 +68,7 @@ export const sendOldDemands = async (email: string): Promise<void> => {
 
 export const sendInscriptionEmail = async (email: string): Promise<void> => {
   const html = await ejs.renderFile('./src/server/email/views/inscription.ejs', {
-    link: process.env.NEXTAUTH_URL,
+    link: env.PUBLIC_URL,
   });
 
   return send([email], '[France Chaleur Urbaine] Ouverture de votre espace gestionnaire', html);
@@ -75,7 +76,7 @@ export const sendInscriptionEmail = async (email: string): Promise<void> => {
 
 export const sendResetPasswordEmail = async (email: string, token: string): Promise<void> => {
   const html = await ejs.renderFile('./src/server/email/views/password.ejs', {
-    link: `${process.env.NEXTAUTH_URL}/reset-password/${token}`,
+    link: `${env.PUBLIC_URL}/reset-password/${token}`,
   });
 
   return send([email], 'Réinitialisation de votre mot de passe FCU', html);
@@ -83,7 +84,7 @@ export const sendResetPasswordEmail = async (email: string, token: string): Prom
 
 export const sendBulkEligibilityResult = async (id: string, email: string, attachment: Attachment): Promise<void> => {
   const html = await ejs.renderFile('./src/server/email/views/bulk-eligibility.ejs', {
-    link: `${process.env.NEXTAUTH_URL}/carte?id=${id}`,
+    link: `${env.PUBLIC_URL}/carte?id=${id}`,
   });
 
   return send([email], '[France Chaleur Urbaine] Résultat de votre test', html, [], [], [attachment]);
@@ -115,7 +116,7 @@ export const sendRelanceMail = async (demand: Demand, id: string): Promise<void>
       month: 'long',
       day: 'numeric',
     }),
-    link: `${process.env.NEXTAUTH_URL}/satisfaction?id=${id}&satisfaction=`,
+    link: `${env.PUBLIC_URL}/satisfaction?id=${id}&satisfaction=`,
     calendarLink: 'https://cal.com/erwangravez/15min',
   });
 

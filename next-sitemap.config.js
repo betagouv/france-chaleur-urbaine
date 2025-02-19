@@ -70,7 +70,7 @@ const excludedPages = [
 
 /** @type {import('next-sitemap').IConfig} */
 module.exports = {
-  siteUrl: process.env.NEXTAUTH_URL || 'https://example.com',
+  siteUrl: process.env.PUBLIC_URL || 'https://example.com',
   generateRobotsTxt: true, // (optional)
   exclude: excludedPages,
   transform: (config, path) => {
