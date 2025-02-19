@@ -327,6 +327,10 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
                     data={testDetails?.addresses || []}
                     initialSortingState={initialSortingState}
                     columnFilters={columnFilters}
+                    enableRowSelection
+                    onSelectionChange={(selectedRows) => {
+                      console.log('selection', selectedRows);
+                    }}
                   />
                 ),
                 isDefault: true,

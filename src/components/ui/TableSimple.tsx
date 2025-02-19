@@ -34,11 +34,22 @@ export type TableSimpleProps<T> = {
   initialSortingState?: SortingState;
   columnFilters?: ColumnFiltersState;
   loading?: boolean;
+  enableRowSelection?: boolean;
+  onSelectionChange?: (selectedRows: T[]) => void;
 };
 
-const TableSimple = <T extends RowData>({ data, columns, initialSortingState, columnFilters, loading }: TableSimpleProps<T>) => {
+const TableSimple = <T extends RowData>({
+  data,
+  columns,
+  initialSortingState,
+  columnFilters,
+  loading,
+  enableRowSelection,
+  onSelectionChange,
+}: TableSimpleProps<T>) => {
   const [globalFilter, setGlobalFilter] = React.useState<any>([]);
   const [sortingState, setSortingState] = React.useState<SortingState>(initialSortingState ?? []);
+  const [rowSelection, setRowSelection] = React.useState<Record<string, boolean>>({});
 
   const columnClassName = ({ align, className }: ColumnDef<T>) => {
     const classNames = [];
@@ -69,14 +80,54 @@ const TableSimple = <T extends RowData>({ data, columns, initialSortingState, co
     );
   };
 
+  const selectionColumn: ColumnDef<T> = {
+    id: 'selection',
+    header: ({ table }) => (
+      <div className="fr-checkbox-group fr-checkbox-group--sm">
+        <input
+          type="checkbox"
+          id="select-all"
+          checked={table.getIsAllRowsSelected()}
+          onChange={table.getToggleAllRowsSelectedHandler()}
+          title="Tout sélectionner"
+        />
+        <label className="fr-label" htmlFor="select-all" />
+      </div>
+    ),
+    cell: ({ row }) => (
+      <div className="fr-checkbox-group fr-checkbox-group--sm">
+        <input
+          type="checkbox"
+          id={`select-row-${row.id}`}
+          checked={row.getIsSelected()}
+          onChange={row.getToggleSelectedHandler()}
+          data-fr-row-select="true"
+          title="Sélectionner la ligne"
+        />
+        <label className="fr-label" htmlFor={`select-row-${row.id}`} />
+      </div>
+    ),
+    flex: 0,
+  };
+
+  const tableColumns = React.useMemo(() => {
+    if (enableRowSelection) {
+      return [selectionColumn, ...columns];
+    }
+    return columns;
+  }, [columns, enableRowSelection]);
+
   const table = useReactTable({
     data,
-    columns,
+    columns: tableColumns,
     state: {
       sorting: sortingState,
       globalFilter,
       columnFilters,
+      rowSelection,
     },
+    enableRowSelection,
+    onRowSelectionChange: setRowSelection,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -84,6 +135,13 @@ const TableSimple = <T extends RowData>({ data, columns, initialSortingState, co
     onSortingChange: setSortingState,
     debugTable: isDevModeEnabled(),
   });
+
+  React.useEffect(() => {
+    if (onSelectionChange) {
+      const selectedRows = table.getSelectedRowModel().rows.map((row) => row.original);
+      onSelectionChange(selectedRows);
+    }
+  }, [rowSelection, onSelectionChange, table]);
 
   const { rows } = table.getRowModel();
 
@@ -229,18 +287,20 @@ const TableSimple = <T extends RowData>({ data, columns, initialSortingState, co
                   >
                     {row.getVisibleCells().map((cell) => {
                       const columnDef = cell.column.columnDef as ColumnDef<T>;
+                      const CellTag = columnDef.id === 'selection' ? 'th' : 'td';
                       return (
-                        <td
+                        <CellTag
                           key={cell.id}
                           style={{
                             display: 'flex',
                             alignItems: 'center',
-                            flex: columnDef.flex || 1,
+                            flex: columnDef.flex ?? 1,
                           }}
-                          className={columnClassName(columnDef)}
+                          className={cx({ 'fr-cell--fixed': columnDef.id === 'selection' }, columnClassName(columnDef))}
+                          scope={columnDef.id === 'selection' ? 'row' : undefined}
                         >
                           {cellRender(cell)}
-                        </td>
+                        </CellTag>
                       );
                     })}
                   </tr>
