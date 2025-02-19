@@ -43,6 +43,7 @@ You are thoughtful, precise, and focus on delivering high-quality, maintainable 
 - Use class-variance-authority when needed
 - Use framer motion for animations.
 - Implement responsive design with Tailwind CSS using a mobile-first approach.
+- Prefer import of components in components/ui when importing components
 </ui-and-styling>
 
 <performance-optimization>
