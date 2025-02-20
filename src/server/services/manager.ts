@@ -172,7 +172,7 @@ export const getDemands = async (user: User): Promise<Demand[]> => {
 const getDemand = async (user: User, demandId: string): Promise<Demand> => {
   const record = await base(Airtable.UTILISATEURS).find(demandId);
   const gestionnaires = record.get('Gestionnaires') as string[];
-  if (user.role !== USER_ROLE.ADMIN && !gestionnaires.some((gestionnaire) => user.gestionnaires.includes(gestionnaire))) {
+  if (user.role !== USER_ROLE.ADMIN && !gestionnaires.some((gestionnaire) => user.gestionnaires?.includes(gestionnaire))) {
     throw invalidPermissionsError;
   }
   return { id: record.id, ...record.fields } as Demand;

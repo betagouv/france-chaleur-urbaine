@@ -1,8 +1,9 @@
 import { type GetServerSideProps } from 'next';
-import { getSession } from 'next-auth/react';
+import { getServerSession } from 'next-auth';
 
 import ResetPasswordForm from '@/components/connexion/ResetPasswordForm';
 import SimplePage from '@/components/shared/page/SimplePage';
+import { nextAuthOptions } from '@/pages/api/auth/[...nextauth]';
 
 export default function ResetPasswordPage(): JSX.Element {
   return (
@@ -13,7 +14,7 @@ export default function ResetPasswordPage(): JSX.Element {
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const userSession = await getSession(context);
+  const userSession = await getServerSession(context.req, context.res, nextAuthOptions);
 
   if (userSession) {
     return { redirect: { destination: '/gestionnaire', permanent: false } };

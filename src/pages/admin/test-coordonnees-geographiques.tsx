@@ -1,5 +1,4 @@
 import { Upload } from '@codegouvfr/react-dsfr/Upload';
-import { type GetServerSideProps } from 'next';
 import Papa from 'papaparse';
 import { type ChangeEvent, useState } from 'react';
 
@@ -154,4 +153,4 @@ export default function TestCoordinatesPage() {
   );
 }
 
-export const getServerSideProps: GetServerSideProps = withAuthentication('admin');
+export const getServerSideProps = withAuthentication('admin');

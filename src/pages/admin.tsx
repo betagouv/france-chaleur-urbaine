@@ -1,5 +1,3 @@
-import { type GetServerSideProps } from 'next';
-
 import BulkEligibility from '@/components/Admin/BulkEligibility';
 import UserImpersonation from '@/components/Admin/UserImpersonation';
 import Users from '@/components/Admin/Users';
@@ -16,4 +14,4 @@ export default function AdminPage(): JSX.Element {
   );
 }
 
-export const getServerSideProps: GetServerSideProps = withAuthentication('admin');
+export const getServerSideProps = withAuthentication('admin');

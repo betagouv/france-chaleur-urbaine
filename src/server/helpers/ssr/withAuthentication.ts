@@ -1,11 +1,13 @@
 import { type GetServerSideProps } from 'next';
-import { getSession } from 'next-auth/react';
+import { getServerSession, type Session } from 'next-auth';
 
-import { type USER_ROLE } from '@/types/enum/UserRole';
+import { nextAuthOptions } from '@/pages/api/auth/[...nextauth]';
+import { type UserRole } from '@/types/enum/UserRole';
+import { deepCloneJSON } from '@/utils/objects';
 
-export const withAuthentication = (role?: `${USER_ROLE}`): GetServerSideProps => {
+export const withAuthentication = (requiredRole?: UserRole): GetServerSideProps<AuthSSRPageProps> => {
   return async (context) => {
-    const userSession = await getSession(context);
+    const userSession = await getServerSession(context.req, context.res, nextAuthOptions);
 
     if (!userSession) {
       return {
@@ -16,7 +18,7 @@ export const withAuthentication = (role?: `${USER_ROLE}`): GetServerSideProps =>
       };
     }
 
-    if (role && userSession.user.role !== role) {
+    if (requiredRole && userSession.user.role !== requiredRole) {
       return {
         redirect: {
           // on pourra avoir une URL style / ou /tableau-de-bord quand tous les types de comptes seront créés
@@ -26,6 +28,10 @@ export const withAuthentication = (role?: `${USER_ROLE}`): GetServerSideProps =>
       };
     }
 
-    return { props: {} };
+    return { props: { session: deepCloneJSON(userSession) } };
   };
+};
+
+export type AuthSSRPageProps = {
+  session: Session;
 };

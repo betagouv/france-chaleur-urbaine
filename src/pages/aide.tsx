@@ -1,5 +1,4 @@
 import { fr } from '@codegouvfr/react-dsfr';
-import { type GetServerSideProps } from 'next';
 
 import SimplePage from '@/components/shared/page/SimplePage';
 import Accordion from '@/components/ui/Accordion';
@@ -247,4 +246,4 @@ const AidePage = () => {
 
 export default AidePage;
 
-export const getServerSideProps: GetServerSideProps = withAuthentication();
+export const getServerSideProps = withAuthentication();

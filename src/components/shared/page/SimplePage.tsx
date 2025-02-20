@@ -3,7 +3,7 @@ import { Footer } from '@codegouvfr/react-dsfr/Footer';
 import UnstyledMainNavigation, { type MainNavigationProps } from '@codegouvfr/react-dsfr/MainNavigation';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { signOut, useSession } from 'next-auth/react';
+import { signOut } from 'next-auth/react';
 import React from 'react';
 import styled, { css } from 'styled-components';
 
@@ -13,6 +13,7 @@ import SEO, { type SEOProps } from '@/components/SEO';
 import Box from '@/components/ui/Box';
 import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
+import { useAuthentication } from '@/services/authentication';
 import { USER_ROLE } from '@/types/enum/UserRole';
 import { deleteFetchJSON } from '@/utils/network';
 
@@ -353,22 +354,19 @@ interface PageHeaderProps {
  */
 const PageHeader = (props: PageHeaderProps) => {
   const router = useRouter();
-  const { data: session, status } = useSession();
+  const { session, user, isAuthenticated } = useAuthentication();
 
   const isFullScreenMode = props.mode === 'public-fullscreen' || props.mode === 'authenticated';
 
   const navigationMenuItems =
     props.mode === 'authenticated'
-      ? [
-          ...authenticatedNavigationMenu,
-          ...(status === 'authenticated' && session.user.role === USER_ROLE.ADMIN ? adminNavigationMenu : []),
-        ]
+      ? [...authenticatedNavigationMenu, ...(isAuthenticated && user.role === USER_ROLE.ADMIN ? adminNavigationMenu : [])]
       : publicNavigationMenu;
 
   const currentPath = props.currentPage ?? router.pathname;
 
   const quickAccessItems =
-    props.mode === 'authenticated' ? getAuthenticatedQuickAccessItems(!!session?.impersonating) : publicQuickAccessItems;
+    props.mode === 'authenticated' ? getAuthenticatedQuickAccessItems(isAuthenticated && !!session.impersonating) : publicQuickAccessItems;
 
   return (
     <>

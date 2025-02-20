@@ -4,7 +4,6 @@ import type { AppProps } from 'next/app';
 import dynamic from 'next/dynamic';
 import type Link from 'next/link';
 import { type Session } from 'next-auth';
-import { SessionProvider } from 'next-auth/react';
 // use AppProgressBar instead of PagesProgressBar on purpose as it handles better the query params ignoring
 import { AppProgressBar as ProgressBar } from 'next-nprogress-bar';
 import { SWRConfig, type SWRConfiguration } from 'swr';
@@ -16,6 +15,7 @@ import { usePreserveScroll } from '@/hooks/usePreserveScroll';
 import { HeatNetworkService, ServicesContext, SuggestionService } from '@/services';
 import { AdminService } from '@/services/admin';
 import { useAnalytics } from '@/services/analytics';
+import { useHydrateAuthentication } from '@/services/authentication';
 import { DemandsService } from '@/services/demands';
 import { ExportService } from '@/services/export';
 import { axiosHttpClient } from '@/services/http';
@@ -45,6 +45,7 @@ function App({
 }: AppProps<{
   session: Session;
 }>) {
+  useHydrateAuthentication(pageProps.session);
   usePreserveScroll();
   useAnalytics();
 
@@ -65,10 +66,8 @@ function App({
         }}
       >
         <SWRConfig value={swrConfig}>
-          <SessionProvider session={pageProps.session}>
-            <ProgressBar height="4px" color={fr.colors.decisions.background.active.blueFrance.default} />
-            <Component {...pageProps} />
-          </SessionProvider>
+          <ProgressBar height="4px" color={fr.colors.decisions.background.active.blueFrance.default} />
+          <Component {...pageProps} />
         </SWRConfig>
       </ServicesContext.Provider>
     </ThemeProvider>
