@@ -1,14 +1,14 @@
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 
+import StickyForm from '@/components/StickyForm/StickyForm';
 import Box from '@/components/ui/Box';
+import Hero, { HeroSubtitle, HeroTitle } from '@/components/ui/Hero';
 
 import { coldNetworks, growths, issues, understandings } from './config';
 import Guide from './Guide';
-import Header from './Header';
 import { SideMenu, StickyWrapper } from './Ressource.styles';
 import RessourceContent from './RessourceContent';
-import StickyForm from '../StickyForm/StickyForm';
 
 const getContent = (ressourceKey: string) => {
   return issues[ressourceKey] || understandings[ressourceKey] || growths[ressourceKey] || coldNetworks[ressourceKey];
@@ -45,11 +45,10 @@ const Ressource = ({ ressourceKey }: { ressourceKey: string }) => {
 
   return (
     <>
-      <Header
-        title="Découvrez les réseaux de chaleur"
-        titleAs="h2"
-        description="Changez pour un chauffage écologique à prix compétitif déjà adopté par 6 millions de Français !"
-      />
+      <Hero variant="ressource" size="lg" imageType="inline" image="/img/ressources-right.svg" imageClassName="py-5" imagePosition="right">
+        <HeroTitle as="h2">Découvrez les réseaux de chaleur</HeroTitle>
+        <HeroSubtitle>Changez pour un chauffage écologique à prix compétitif déjà adopté par 6 millions de Français !</HeroSubtitle>
+      </Hero>
       <div id="contenu" />
       <StickyForm />
       <StickyWrapper>

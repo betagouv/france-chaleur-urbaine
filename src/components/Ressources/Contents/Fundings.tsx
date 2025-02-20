@@ -2,7 +2,6 @@ import { Highlight } from '@codegouvfr/react-dsfr/Highlight';
 import { useRef } from 'react';
 
 import { List, Source, Subtitle } from './Contents.styles';
-import { Description } from '../RessourceContent.styles';
 
 const Fundings = () => {
   const maPrimeRenovCoproRef = useRef<null | HTMLHeadingElement>(null);
@@ -12,7 +11,7 @@ const Fundings = () => {
   const ecoPretCoproRef = useRef<null | HTMLHeadingElement>(null);
   return (
     <>
-      <Description>
+      <div className="my-8 [&_li]:cursor-pointer">
         <ul>
           <li onClick={() => maPrimeRenovCoproRef.current && maPrimeRenovCoproRef.current.scrollIntoView()}>
             <u>MaPrimeRénov’Copropriétés</u>
@@ -30,7 +29,7 @@ const Fundings = () => {
             <u>L’Éco-prêt à taux zéro "copropriétés"</u>
           </li>
         </ul>
-      </Description>
+      </div>
       <Subtitle ref={maPrimeRenovCoproRef}>MaPrimeRénov’Copropriétés</Subtitle>
       <b>
         MaPrimeRénov’Copropriétés peut être versée aux syndics des copropriétés pour les travaux effectués sur les parties communes, lorsque

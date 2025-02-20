@@ -1,13 +1,14 @@
+import Heading from '@/components/ui/Heading';
+
 import { type Document } from './config';
-import { Container, Description, Title } from './RessourceContent.styles';
 
 const RessourceContent = ({ content }: { content: Document }) => {
   return content ? (
-    <Container>
-      <Title>{content.title}</Title>
-      <Description>{content.description}</Description>
+    <article className="mt-8 md:mt-0">
+      <Heading as="h1">{content.title}</Heading>
+      <div className="my-8 [&_li]:cursor-pointer">{content.description}</div>
       {content.content}
-    </Container>
+    </article>
   ) : null;
 };
 
