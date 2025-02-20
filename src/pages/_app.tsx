@@ -22,7 +22,7 @@ import { axiosHttpClient } from '@/services/http';
 import { NetworksService } from '@/services/networks';
 import { NotifierContainer } from '@/services/notification';
 import { PasswordService } from '@/services/password';
-import { queryClient } from '@/services/query';
+import { useQueryClient } from '@/services/query';
 
 const ConsentBanner = dynamic(
   () => import('@/components/ConsentBanner').then((module) => module.ConsentBanner),
@@ -41,6 +41,7 @@ const swrConfig: SWRConfiguration = {
 };
 
 function App({ Component, pageProps }: AppProps<AuthSSRPageProps>) {
+  const queryClient = useQueryClient();
   usePreserveScroll();
   useAnalytics();
 
