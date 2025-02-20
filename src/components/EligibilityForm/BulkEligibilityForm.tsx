@@ -1,9 +1,9 @@
 import { Alert } from '@codegouvfr/react-dsfr/Alert';
-import { Button } from '@codegouvfr/react-dsfr/Button';
 import { Upload } from '@codegouvfr/react-dsfr/Upload';
-import { type ChangeEvent, type FormEvent, useState } from 'react';
+import { useState, type ChangeEvent, type FormEvent } from 'react';
 
 import Input from '@/components/form/dsfr/Input';
+import Button from '@/components/ui/Button';
 import { useServices } from '@/services';
 
 import { Container } from './BulkEligibilityForm.styles';
@@ -90,7 +90,7 @@ const BulkEligibilityForm = () => {
               onChange: (e) => setEmail(e.target.value),
             }}
           />
-          <Button disabled={isSubmitting || !email || !addresses || !!error} type="submit">
+          <Button loading={isSubmitting} disabled={!email || !addresses || !!error} type="submit">
             Tester le fichier d’adresses
           </Button>
         </form>

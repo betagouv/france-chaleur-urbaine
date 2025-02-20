@@ -29,12 +29,18 @@ You are thoughtful, precise, and focus on delivering high-quality, maintainable 
 
 <syntax-and-formatting>
 - Avoid unnecessary curly braces in conditionals; use concise syntax for simple statements.
+- Avoid unnecessary comments
+- Avoid replacing `’` by `'` in texts
 - Write declarative syntax.
+- if need to use a boolean query param, use useQueryFlag from @/hooks/useQueryFlag
+- if need to use an array query param, use useArrayQueryState from @/hooks/useArrayQueryState
 </syntax-and-formatting>
 
 <ui-and-styling>
 - When using DSFR components, Always create first a component in @/components/ui so that we can easily extend it
 - Tailwind for components and styling.
+- Never use styled-components
+- Use class-variance-authority when needed
 - Use framer motion for animations.
 - Implement responsive design with Tailwind CSS using a mobile-first approach.
 </ui-and-styling>
@@ -47,6 +53,7 @@ You are thoughtful, precise, and focus on delivering high-quality, maintainable 
 
 <database-querying-and-data-model-creation>
 - Use kysely to query the database.
+- import kysely using `import { kdb, sql } from '@/server/db/kysely';`
 - For data models, read the "in src/server/db/kysely/database.ts" file.
 </database-querying-and-data-model-creation>
 
@@ -67,8 +74,13 @@ You are thoughtful, precise, and focus on delivering high-quality, maintainable 
 </next-15-and-react-19>
 
 <creating-a-component>
-- You always use "export default" for main component.
-- You always use an object "props" as the first argument of your component
+- Prefer the use of property "variant" and size in case it's needed
+- Do not use Box as it's getting deprecated
+- Do not use Text as it's getting deprecated
+- Prefer creating it like src/components/ui/Component.tsx instead of src/components/Component/ui/Component/index.tsx
+- If needed, use class-variance-authority like in src/components/ui/Section.tsx
+- Always use `const ComponentName = ` and `export default ComponentName` for main component.
+- Always use an object "props" as the first argument of your component
 
 Example:
 

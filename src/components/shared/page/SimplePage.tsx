@@ -1,13 +1,14 @@
 import { fr } from '@codegouvfr/react-dsfr';
 import { Footer } from '@codegouvfr/react-dsfr/Footer';
-import MainNavigation, { type MainNavigationProps } from '@codegouvfr/react-dsfr/MainNavigation';
+import UnstyledMainNavigation, { type MainNavigationProps } from '@codegouvfr/react-dsfr/MainNavigation';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { signOut, useSession } from 'next-auth/react';
 import React from 'react';
+import styled, { css } from 'styled-components';
 
 import { FooterConsentManagementItem } from '@/components/ConsentBanner';
-import { type HeaderProps, HeaderQuickAccessItem } from '@/components/dsfr/Header';
+import { HeaderQuickAccessItem, type HeaderProps } from '@/components/dsfr/Header';
 import SEO, { type SEOProps } from '@/components/SEO';
 import Box from '@/components/ui/Box';
 import Link from '@/components/ui/Link';
@@ -39,140 +40,52 @@ const SimplePage = ({ mode, currentPage, children, noIndex, includeFooter = true
   );
 };
 
+const MainNavigation = styled(UnstyledMainNavigation)<{ $compact?: boolean }>`
+  ${({ $compact, theme }) => theme.media.lg`
+    .fr-nav__link,
+    .fr-nav__btn {
+      display: flex;
+      align-items: center;
+      line-height: 1.25rem;
+      ${
+        $compact && // to have one line
+        css`
+          padding-left: 0.5rem;
+          padding-right: 0.5rem;
+        `
+      }
+    }
+  `}
+`;
+
 export default SimplePage;
 
 const publicNavigationMenu: MainNavigationProps.Item[] = [
   {
-    text: 'Copropriétaires',
-    menuLinks: [
-      {
-        text: 'Testez votre adresse',
-        linkProps: {
-          href: '/',
-        },
-      },
-      {
-        text: 'Comprendre le chauffage urbain',
-        linkProps: {
-          href: '/#comprendre-le-chauffage-urbain',
-        },
-      },
-      {
-        text: 'Les avantages du chauffage urbain',
-        linkProps: {
-          href: '/#avantages-du-chauffage-urbain',
-        },
-      },
-      {
-        text: 'Les coûts du chauffage urbain',
-        linkProps: {
-          href: '/#couts-du-chauffage-urbain',
-        },
-      },
-      {
-        text: 'Les obligations de raccordement',
-        linkProps: {
-          href: '/#obligations-de-raccordement',
-        },
-      },
-      {
-        text: 'Comment se raccorder ?',
-        linkProps: {
-          href: '/#comment-se-raccorder',
-        },
-      },
-    ],
+    text: 'Accueil',
+    linkProps: {
+      href: '/',
+    },
   },
+  ...(process.env.NEXT_PUBLIC_FLAG_ENABLE_COMPARATEUR === 'true'
+    ? [
+        {
+          text: 'Comparateur de coûts',
+          linkProps: {
+            href: '/outils/comparateur-performances',
+          },
+        },
+      ]
+    : []),
   {
-    text: 'Professionnels',
-    menuLinks: [
-      {
-        text: 'Nos services pour les professionnels',
-        linkProps: {
-          href: '/professionnels',
-        },
-      },
-      {
-        text: 'Les avantages du chauffage urbain',
-        linkProps: {
-          href: '/professionnels#avantages-du-chauffage-urbain',
-        },
-      },
-      {
-        text: 'Testez une liste d’adresses',
-        linkProps: {
-          href: '/professionnels#test-liste',
-        },
-      },
-      {
-        text: 'Les coûts du chauffage urbain',
-        linkProps: {
-          href: '/professionnels#simulateur-aide',
-        },
-      },
-      {
-        text: 'Le décret tertiaire',
-        linkProps: {
-          href: '/professionnels#decrettertiaire',
-        },
-      },
-      {
-        text: 'Les obligations de raccordement',
-        linkProps: {
-          href: '/professionnels#obligations-de-raccordement',
-        },
-      },
-      {
-        text: 'Simulateur d’émissions de CO2',
-        linkProps: {
-          href: '/professionnels#simulateur-co2',
-        },
-      },
-    ],
-  },
-  {
-    text: 'Collectivités, exploitants',
-    menuLinks: [
-      {
-        text: 'France Chaleur Urbaine à votre service',
-        linkProps: {
-          href: '/collectivites-et-exploitants',
-        },
-      },
-      {
-        text: 'Communiquez sur votre réseau',
-        linkProps: {
-          href: '/collectivites-et-exploitants#communiquer',
-        },
-      },
-      {
-        text: 'Trouvez des prospects',
-        linkProps: {
-          href: '/collectivites-et-exploitants#prospecter',
-        },
-      },
-      {
-        text: 'Développez votre réseau grâce aux données',
-        linkProps: {
-          href: '/collectivites-et-exploitants#developper',
-        },
-      },
-      {
-        text: 'Pas encore de réseau ? Testez votre potentiel',
-        linkProps: {
-          href: '/collectivites-et-exploitants/potentiel-creation-reseau',
-        },
-      },
-    ],
-  },
-  {
-    text: 'Carte',
+    text: 'Carte des réseaux',
     linkProps: {
       href: '/carte',
     },
   },
+
   {
-    text: 'Ressources',
+    text: 'Ressources et outils',
     menuLinks: [
       {
         text: 'Liste des réseaux de chaleur',
@@ -212,6 +125,89 @@ const publicNavigationMenu: MainNavigationProps.Item[] = [
       },
     ],
   },
+
+  {
+    text: 'Collectivités, exploitants',
+    menuLinks: [
+      {
+        text: 'France Chaleur Urbaine à votre service',
+        linkProps: {
+          href: '/collectivites-et-exploitants',
+        },
+      },
+      {
+        text: 'Communiquez sur votre réseau',
+        linkProps: {
+          href: '/collectivites-et-exploitants#communiquer',
+        },
+      },
+      {
+        text: 'Trouvez des prospects',
+        linkProps: {
+          href: '/collectivites-et-exploitants#prospecter',
+        },
+      },
+      {
+        text: 'Développez votre réseau grâce aux données',
+        linkProps: {
+          href: '/collectivites-et-exploitants#developper',
+        },
+      },
+      {
+        text: 'Pas encore de réseau ? Testez votre potentiel',
+        linkProps: {
+          href: '/collectivites-et-exploitants/potentiel-creation-reseau',
+        },
+      },
+    ],
+  },
+  // {
+  //   text: 'Professionnels',
+  //   menuLinks: [
+  //     {
+  //       text: 'Nos services pour les professionnels',
+  //       linkProps: {
+  //         href: '/professionnels',
+  //       },
+  //     },
+  //     {
+  //       text: 'Les avantages du chauffage urbain',
+  //       linkProps: {
+  //         href: '/professionnels#avantages-du-chauffage-urbain',
+  //       },
+  //     },
+  //     {
+  //       text: 'Testez une liste d’adresses',
+  //       linkProps: {
+  //         href: '/professionnels#test-liste',
+  //       },
+  //     },
+  //     {
+  //       text: 'Les coûts du chauffage urbain',
+  //       linkProps: {
+  //         href: '/professionnels#simulateur-aide',
+  //       },
+  //     },
+  //     {
+  //       text: 'Le décret tertiaire',
+  //       linkProps: {
+  //         href: '/professionnels#decrettertiaire',
+  //       },
+  //     },
+  //     {
+  //       text: 'Les obligations de raccordement',
+  //       linkProps: {
+  //         href: '/professionnels#obligations-de-raccordement',
+  //       },
+  //     },
+  //     {
+  //       text: 'Simulateur d’émissions de CO2',
+  //       linkProps: {
+  //         href: '/professionnels#simulateur-co2',
+  //       },
+  //     },
+  //   ],
+  // },
   {
     text: 'Notre service',
     menuLinks: [
@@ -404,7 +400,11 @@ const PageHeader = (props: PageHeaderProps) => {
               <Link href="/" className="fcu-navigation-logo" variant="tertiaryNoOutline" title="Revenir à la page d'accueil" p="0" mr="3w">
                 <Image height={50} width={70} src="/logo-fcu.png" alt="logo france chaleur urbaine" priority />
               </Link>
-              <MainNavigation items={markCurrentPageActive(navigationMenuItems, currentPath)} className="fr-col" />
+              <MainNavigation
+                items={markCurrentPageActive(navigationMenuItems, currentPath)}
+                className="fr-col"
+                $compact={currentPath === '/carte'}
+              />
               {isFullScreenMode && (
                 // structure from https://github.com/codegouvfr/react-dsfr/blob/eee67f75124b5c3d011703cb6c5cd88eb41ae54c/src/Header/Header.tsx#L158-L179
                 <Box className={fr.cx('fr-header__tools-links')}>

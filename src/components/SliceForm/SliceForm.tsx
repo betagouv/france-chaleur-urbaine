@@ -1,13 +1,20 @@
 import { EligibilityFormAddress, EligibilityFormContact, EligibilityFormMessageConfirmation } from '@/components/EligibilityForm';
 import { FormLabel } from '@/components/HeadSliceForm/HeadSliceForm.style';
 import Slice from '@/components/Slice';
+import Box from '@/components/ui/Box';
+import Loader from '@/components/ui/Loader';
+import Modal, { createModal } from '@/components/ui/Modal';
 import useContactFormFCU from '@/hooks/useContactFormFCU';
 
-import { Container, FormWarningMessage, Loader, LoaderWrapper, SliceContactFormStyle } from './SliceForm.style';
+import { Container, FormWarningMessage, SliceContactFormStyle } from './SliceForm.style';
 
-const HeadSlice = ({ title, colored }: { title?: string; colored?: boolean }) => {
+const eligibilityTestModal = createModal({
+  id: 'eligibility-test-slice-form-modal',
+  isOpenedByDefault: false,
+});
+
+const SliceForm = ({ title, colored }: { title?: string; colored?: boolean }) => {
   const {
-    EligibilityFormContactRef,
     addressData,
     contactReady,
     showWarning,
@@ -18,10 +25,11 @@ const HeadSlice = ({ title, colored }: { title?: string; colored?: boolean }) =>
     handleOnFetchAddress,
     handleOnSuccessAddress,
     handleOnSubmitContact,
+    handleResetFormContact,
   } = useContactFormFCU();
-
   return (
     <>
+      <SliceContactFormStyle />
       <Slice>
         <Container>
           <EligibilityFormAddress
@@ -32,26 +40,26 @@ const HeadSlice = ({ title, colored }: { title?: string; colored?: boolean }) =>
             onSuccess={handleOnSuccessAddress}
           />
 
-          <FormWarningMessage show={showWarning}>{warningMessage}</FormWarningMessage>
-
-          <LoaderWrapper show={!showWarning && loadingStatus === 'loading'}>
-            <Loader />
-          </LoaderWrapper>
+          {showWarning && <FormWarningMessage show>{warningMessage}</FormWarningMessage>}
+          {loadingStatus === 'loading' && <Loader size="md" />}
         </Container>
       </Slice>
 
-      <SliceContactFormStyle />
-      <div ref={EligibilityFormContactRef}>
-        <Slice padding={5} theme="grey" className={`slice-contact-form-wrapper ${contactReady && !messageReceived ? 'active' : ''}`}>
-          <EligibilityFormContact addressData={addressData} onSubmit={handleOnSubmitContact} />
-        </Slice>
-
-        <Slice padding={5} theme="grey" className={`slice-contact-form-wrapper ${messageReceived ? 'active' : ''}`}>
-          <EligibilityFormMessageConfirmation addressData={addressData} />
-        </Slice>
-      </div>
+      <Modal
+        modal={eligibilityTestModal}
+        title=""
+        open={contactReady}
+        size="custom"
+        onClose={handleResetFormContact}
+        loading={loadingStatus === 'loading'}
+      >
+        <Box position="relative" width="100%">
+          {contactReady && !messageReceived && <EligibilityFormContact addressData={addressData} onSubmit={handleOnSubmitContact} />}
+          {messageReceived && <EligibilityFormMessageConfirmation addressData={addressData} />}
+        </Box>
+      </Modal>
     </>
   );
 };
 
-export default HeadSlice;
+export default SliceForm;

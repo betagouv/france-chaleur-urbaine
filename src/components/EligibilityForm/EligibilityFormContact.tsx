@@ -1,4 +1,5 @@
 import { Alert } from '@codegouvfr/react-dsfr/Alert';
+import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import { useCallback, useMemo, useState } from 'react';
 
@@ -6,6 +7,7 @@ import Map from '@/components/Map/Map';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import MarkdownWrapper from '@/components/MarkdownWrapper';
 import Box from '@/components/ui/Box';
+import Heading from '@/components/ui/Heading';
 import Link from '@/components/ui/Link';
 import { type AddressDataType } from '@/types/AddressData';
 import { type ContactFormInfos } from '@/types/Summary/Demand';
@@ -14,13 +16,28 @@ import { getReadableDistance } from '@/utils/geo';
 import { ContactForm, ContactFormContentWrapper, ContactFormResultMessage, ContactFormWrapper, ContactMapResult } from './components';
 import { bordeauxMetropoleCityCodes, getEligibilityResult } from './EligibilityResults';
 
+const ComparateurPublicodesWidget = dynamic(() => import('@/components/ComparateurPublicodes/ComparateurPublicodesWidget'), {
+  ssr: false,
+  loading: () => (
+    <div className="fr-mt-5w">
+      <Heading as="h2" size="h4">
+        Comparaison des modes de chauffage
+      </Heading>
+      <Box textAlign="center" p="5w" fontSize={'24px'} fontWeight="bold">
+        Chargement en cours...
+      </Box>
+    </div>
+  ),
+});
+
 type EligibilityFormContactType = {
   addressData: AddressDataType;
   cardMode?: boolean;
   onSubmit?: (...arg: any) => Promise<any>;
+  className?: string;
 };
 
-const EligibilityFormContact = ({ addressData, cardMode, onSubmit }: EligibilityFormContactType) => {
+const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: EligibilityFormContactType) => {
   const [contactFormLoading, setContactFormLoading] = useState(false);
   const [contactFormError, setContactFormError] = useState(false);
 
@@ -88,7 +105,7 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit }: Eligibility
   );
 
   return (
-    <ContactFormWrapper cardMode={cardMode}>
+    <ContactFormWrapper cardMode={cardMode} className={className}>
       {addressData.eligibility?.basedOnCity && !cardMode ? (
         <>
           <ContactFormContentWrapper>
@@ -127,6 +144,7 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit }: Eligibility
                   <Map
                     withCenterPin
                     withoutLogo
+                    withSoughtAddresses={false}
                     initialCenter={addressData.geoAddress?.geometry.coordinates}
                     initialMapConfiguration={createMapConfiguration({
                       reseauxDeChaleur: {
@@ -147,6 +165,15 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit }: Eligibility
                   description="Au vu de votre mode de chauffage actuel, le raccordement de votre immeuble nécessiterait des travaux conséquents et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble"
                 />
               )
+            )}
+            {process.env.NEXT_PUBLIC_FLAG_ENABLE_COMPARATEUR === 'true' && addressData.heatingType === 'collectif' && (
+              <ComparateurPublicodesWidget
+                className="fr-mt-5w"
+                coords={[addressData?.coords?.lon, addressData?.coords?.lat]}
+                city={addressData.geoAddress?.properties.city}
+                cityCode={addressData.geoAddress?.properties.citycode}
+                address={addressData.geoAddress?.properties.label}
+              />
             )}
           </ContactFormContentWrapper>
           <ContactFormContentWrapper>

@@ -1,35 +1,28 @@
-import { Button } from '@codegouvfr/react-dsfr/Button';
 import { useRouter } from 'next/router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
-import AddressAutocomplete from '@/components/addressAutocomplete';
-import { EligibilityFormContact, EligibilityFormMessageConfirmation, type EnergyInputsLabelsType } from '@/components/EligibilityForm';
+import { EligibilityFormContact, EligibilityFormMessageConfirmation } from '@/components/EligibilityForm';
+import BulkEligibilityForm from '@/components/EligibilityForm/BulkEligibilityForm';
 import { CheckEligibilityFormLabel, SelectEnergy } from '@/components/EligibilityForm/components';
-import { energyInputsDefaultLabels } from '@/components/EligibilityForm/EligibilityFormAddress';
+import { energyInputsDefaultLabels, type EnergyInputsLabelsType } from '@/components/EligibilityForm/EligibilityFormAddress';
+import AddressAutocomplete from '@/components/form/dsfr/AddressAutocompleteInput';
 import MarkdownWrapper from '@/components/MarkdownWrapper';
 import Slice from '@/components/Slice';
 import Box from '@/components/ui/Box';
+import Button from '@/components/ui/Button';
+import Heading from '@/components/ui/Heading';
+import Icon from '@/components/ui/Icon';
 import Link from '@/components/ui/Link';
+import Modal, { createModal } from '@/components/ui/Modal';
 import useContactFormFCU from '@/hooks/useContactFormFCU';
+import useQueryFlag from '@/hooks/useQueryFlag';
 import { useServices } from '@/services';
 import { AnalyticsFormId } from '@/services/analytics';
 import { type AvailableHeating } from '@/types/AddressData';
 import { type SuggestionItem } from '@/types/Suggestions';
+import cx from '@/utils/cx';
 
-import BulkEligibilitySlice from './BulkEligibilitySlice';
-import {
-  Buttons,
-  Container,
-  FormLabel,
-  FormWarningMessage,
-  HeadSliceContainer,
-  Loader,
-  LoaderWrapper,
-  PageBody,
-  PageTitle,
-  Separator,
-  SliceContactFormStyle,
-} from './HeadSliceForm.style';
+import { Container, FormLabel, HeadSliceContainer, PageBody, PageTitle, SliceContactFormStyle } from './HeadSliceForm.style';
 
 type HeadBannerType = {
   bg?: string;
@@ -48,7 +41,12 @@ type HeadBannerType = {
   withWrapper?: (form: React.ReactElement) => React.ReactElement;
 };
 
-const HeadSlice = ({
+const eligibilityTestModal = createModal({
+  id: 'eligibility-test-modal',
+  isOpenedByDefault: false,
+});
+
+const HeadSliceForm = ({
   bg,
   bgPos,
   checkEligibility,
@@ -62,16 +60,17 @@ const HeadSlice = ({
   withWrapper,
 }: HeadBannerType) => {
   const {
-    EligibilityFormContactRef,
     addressData,
     contactReady,
     showWarning,
     messageReceived,
     loadingStatus,
     warningMessage,
+    setLoadingStatus,
     handleOnFetchAddress,
     handleOnSuccessAddress,
     handleOnSubmitContact,
+    handleResetFormContact,
   } = useContactFormFCU();
 
   const { heatNetworkService } = useServices();
@@ -82,8 +81,7 @@ const HeadSlice = ({
   const [address, setAddress] = useState('');
   const [autoValidate, setAutoValidate] = useState(false);
   const [eligibilityError, setEligibilityError] = useState(false);
-
-  const [displayBulkEligibility, setDisplayBulkEligibility] = useState(false);
+  const [displayBulkEligibility, toggleDisplayBulkEligibility] = useQueryFlag('bulk');
 
   const child = useMemo(
     () =>
@@ -107,7 +105,7 @@ const HeadSlice = ({
       return;
     }
 
-    setDisplayBulkEligibility(false);
+    toggleDisplayBulkEligibility(false);
     if (handleOnFetchAddress) {
       handleOnFetchAddress({ address });
     }
@@ -155,59 +153,71 @@ const HeadSlice = ({
             {formLabel ? <FormLabel>{formLabel}</FormLabel> : undefined}
             <CheckEligibilityFormLabel>
               <SelectEnergy
+                label="Mode de chauffage actuel :"
                 name="heatingType"
                 selectOptions={energyInputsDefaultLabels}
-                onChange={setHeatingType}
+                onChange={(val) => {
+                  setHeatingType(val as AvailableHeating);
+                }}
                 value={heatingType || ''}
               />
             </CheckEligibilityFormLabel>
             <AddressAutocomplete
-              placeholder="Tapez ici votre adresse"
-              onAddressSelected={(address, suggestionItem) => {
-                setAddress(address);
-                setGeoAddress(suggestionItem);
+              className="!mb-2"
+              nativeInputProps={{ placeholder: 'Tapez ici votre adresse' }}
+              onSelect={(geoAddress?: SuggestionItem) => {
+                const address = geoAddress?.properties?.label;
+                setAddress(address ?? '');
+                setGeoAddress(geoAddress);
+              }}
+              onError={() => {
+                setLoadingStatus('idle');
               }}
             />
+            <div
+              className={cx(
+                'fr-mb-2w font-bold pl-4 py-1 border-l-4 border-error bg-white/40',
+                address && geoAddress && !heatingType ? 'block' : 'hidden'
+              )}
+            >
+              {warningMessage}
+            </div>
 
-            <FormWarningMessage show={!!(address && geoAddress && !heatingType)}>{warningMessage}</FormWarningMessage>
-
-            {eligibilityError ? (
+            {eligibilityError && (
               <Box textColor="#c00">
                 Une erreur est survenue. Veuillez réessayer ou bien <Link href="/contact">contacter le support</Link>.
               </Box>
-            ) : (
-              <LoaderWrapper show={!showWarning && loadingStatus === 'loading'}>
-                <Loader color="#fff" />
-              </LoaderWrapper>
             )}
 
-            <Buttons>
+            <div className="flex justify-between gap-2 items-center">
               <Button
-                type="button"
-                size="large"
+                size="medium"
+                loading={loadingStatus === 'loading'}
                 disabled={!address || !geoAddress || !heatingType || (loadingStatus === 'loading' && !eligibilityError)}
                 onClick={testAddress}
               >
                 Tester cette adresse
               </Button>
-
               {withBulkEligibility && (
                 <>
-                  <Separator />
-                  <Button
-                    type="button"
-                    size="large"
-                    priority="secondary"
-                    onClick={() => {
-                      setDisplayBulkEligibility(true);
-                      router.push('#test-liste');
-                    }}
-                  >
-                    Ou tester une liste d’adresses
-                  </Button>
+                  <span>ou</span>
+                  <span className="!text-green-700 flex items-center gap-0.5">
+                    <Icon name="ri-file-excel-2-line" />
+                    <Button
+                      type="button"
+                      size="medium"
+                      className="!text-green-700 underline hover:!bg-transparent hover:opacity-80 !shadow-none !pr-0 !pl-0"
+                      priority="tertiary"
+                      onClick={() => {
+                        toggleDisplayBulkEligibility(true);
+                      }}
+                    >
+                      Tester une liste d’adresses
+                    </Button>
+                  </span>
                 </>
               )}
-            </Buttons>
+            </div>
           </form>
         </>
       ) : (
@@ -231,6 +241,7 @@ const HeadSlice = ({
 
   return (
     <>
+      <SliceContactFormStyle />
       {withWrapper ? (
         withWrapper(WrappedChild)
       ) : (
@@ -240,22 +251,46 @@ const HeadSlice = ({
           </HeadSliceContainer>
         </Slice>
       )}
-
-      <SliceContactFormStyle />
-
-      <div ref={EligibilityFormContactRef}>
-        <Slice padding={5} theme="grey" className={`slice-contact-form-wrapper ${contactReady && !messageReceived ? 'active' : ''}`}>
-          {address && <EligibilityFormContact addressData={addressData} onSubmit={handleOnSubmitContact} />}
-        </Slice>
-
-        <Slice padding={5} theme="grey" className={`slice-contact-form-wrapper ${messageReceived ? 'active' : ''}`}>
-          <EligibilityFormMessageConfirmation addressData={addressData} />
-        </Slice>
-
-        {!externBulkForm && withBulkEligibility && <BulkEligibilitySlice displayBulkEligibility={displayBulkEligibility} />}
-      </div>
+      <Modal
+        modal={eligibilityTestModal}
+        title=""
+        open={contactReady || (withBulkEligibility && displayBulkEligibility)}
+        size="custom"
+        onClose={() => {
+          toggleDisplayBulkEligibility(false);
+          handleResetFormContact();
+        }}
+        loading={loadingStatus === 'loading'}
+      >
+        <div>
+          {contactReady && !messageReceived && (
+            <EligibilityFormContact addressData={addressData} onSubmit={handleOnSubmitContact} className="p-0" />
+          )}
+          {messageReceived && <EligibilityFormMessageConfirmation addressData={addressData} />}
+        </div>
+        {!externBulkForm && withBulkEligibility && displayBulkEligibility && (
+          <div className="flex flex-col gap-8 lg:flex-row">
+            <div className="flex-1">
+              <Heading as="h3">Testez un grand nombre d’adresses pour identifier des bâtiments proches des réseaux de chaleur !</Heading>
+              <ol>
+                <li>Téléchargez votre fichier (une ligne par adresse) et renseignez votre email</li>
+                <li>Recevez par mail le résultat de votre test</li>
+                <li>Visualisez les adresses testées sur notre cartographie</li>
+                <li>
+                  Vous pourrez ensuite sélectionner dans la liste les adresses celles pour lesquelles vous souhaitez être **mis en relation
+                  par France Chaleur Urbaine avec le(s) gestionnaire(s) des réseaux de chaleur.**
+                </li>
+              </ol>
+            </div>
+            <div className="flex-1">
+              <BulkEligibilityForm />
+              <img width="70%" className="mx-auto" src="/img/carto-addresses.png" />
+            </div>
+          </div>
+        )}
+      </Modal>
     </>
   );
 };
 
-export default HeadSlice;
+export default HeadSliceForm;

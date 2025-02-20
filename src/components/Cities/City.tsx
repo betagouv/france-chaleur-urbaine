@@ -6,6 +6,7 @@ import Simulators from '@/components/Coproprietaire/Simulators';
 import StickyForm from '@/components/StickyForm/StickyForm';
 import Box, { ResponsiveRow } from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
+import Hero, { HeroMeta, HeroTitle } from '@/components/ui/Hero';
 import Text from '@/components/ui/Text';
 import WrappedText from '@/components/WrappedText';
 import userExperience from '@/data/villes/user-experience';
@@ -15,7 +16,6 @@ import { type Network } from '@/types/Summary/Network';
 import { CityContainer, VideoGuideColumn } from './City.styles';
 import ClassedNetworks from './ClassedNetworks';
 import Dispositifs, { type DispositifsData } from './Dispositifs';
-import Header from './Header';
 import Networks from './Networks';
 
 const City = ({ citySlug, network }: { citySlug: keyof typeof citiesData; network?: Network }) => {
@@ -26,7 +26,13 @@ const City = ({ citySlug, network }: { citySlug: keyof typeof citiesData; networ
     <CityContainer>
       {cityData && (
         <>
-          <Header city={cityData.name} bannerSrc={`/img/banner_ville_${citySlug}.jpg`} />
+          <Hero image={`/img/banner_ville_${citySlug}.jpg`} variant="city" className="py-5w" imageClassName="w-[100vw]">
+            <HeroMeta>Vous êtes copropriétaire sur {cityData.name} ?</HeroMeta>
+            <HeroTitle className="[&&]:!font-normal">
+              {/* Use && to bypass DSFR !important by adding specificity*/}
+              Le chauffage urbain, une solution <strong>écologique</strong> et <strong>économique</strong> à {cityData.name}
+            </HeroTitle>
+          </Hero>
           <StickyForm title={`Votre bâtiment est-il raccordable au réseau de chaleur de ${cityData.name} ?`} />
           <Box p="4w" className="fr-container">
             <Box color="blue-france">

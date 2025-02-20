@@ -7,7 +7,7 @@ export const Container = styled.div`
   position: sticky;
   margin: -32px auto 0 auto;
   top: 0px;
-  padding: 8px;
+  padding: 16px;
   background-color: var(--background-default-grey);
   display: flex;
   flex-wrap: wrap;
@@ -36,11 +36,6 @@ export const Title = styled.div`
   max-width: 350px;
   font-size: 19px;
   font-weight: 600;
-`;
-
-export const Form = styled.div`
-  position: relative;
-  width: 100%;
 `;
 
 export const Close = styled.div`

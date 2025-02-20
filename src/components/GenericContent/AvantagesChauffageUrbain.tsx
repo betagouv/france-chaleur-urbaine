@@ -7,9 +7,11 @@ import Text from '@/components/ui/Text';
 const AvantagesChauffageUrbain = ({ title }: { title?: string }) => {
   return (
     <Box className="fr-container">
-      <Heading as="h2" center>
-        {title ? title : 'Les avantages du chauffage urbain'}
-      </Heading>
+      {title && (
+        <Heading as="h2" center>
+          {title}
+        </Heading>
+      )}
       <Box className="fr-grid-row fr-grid-row--gutters" mt="10w">
         <Box display="flex" flexDirection="column" alignItems="center" className="fr-col-12 fr-col-lg-6 fr-col-xl-3">
           <Image src="/img/copro_avantages_1.webp" alt="" width={160} height={125} priority className="img-object-contain" />

@@ -14,9 +14,10 @@ const WrappedText: React.FC<{
   imgClassName?: string;
   reverse?: boolean;
   center?: boolean;
-}> = ({ children, title, body, imgSrc, imgAlt = '', textClassName, imgClassName, reverse, center }) => {
+  className?: string;
+}> = ({ children, title, body, imgSrc, imgAlt = '', textClassName, imgClassName, reverse, center, className }) => {
   return (
-    <Container reverse={reverse} center={center}>
+    <Container reverse={reverse} center={center} className={className}>
       <TextContainer reverse={reverse} className={`${textClassName}--container`}>
         {title && <h2>{title}</h2>}
         {<MarkdownWrapper value={body} className={textClassName} />}

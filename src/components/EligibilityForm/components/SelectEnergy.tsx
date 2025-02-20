@@ -17,9 +17,9 @@ const SelectEnergy = ({ children, label, name, cardMode, selectOptions = {}, val
     <>
       {children}
       <RadioButtons
-        legend={label ?? 'Chauffage actuel :'}
+        legend={typeof label === 'string' ? (label ?? 'Chauffage actuel ') : label}
         name={name}
-        className={`fr-mb-2w ${className}`}
+        className={className}
         orientation={cardMode ? 'vertical' : 'horizontal'}
         options={Object.entries(selectOptions).map(([optionValue, label]) => ({
           label: label,
