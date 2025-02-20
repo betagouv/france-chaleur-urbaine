@@ -35,7 +35,7 @@
     "db:sync": "kysely-codegen --numeric-parser number --out-file ./src/server/db/kysely/database.ts --env-file=\"./.env.local\" --log-level=\"error\" --exclude-pattern=\"(public.spatial_ref_sys|topology.*|tiger.*|public.geography_columns|public.geometry_columns)\" && prettier --write ./src/server/db/kysely/database.ts",
     "db:verify": "yarn db:introspect --verify",
     "scalingo-postbuild": "yarn build && next-sitemap",
-    "predev": "only-include-used-icons",
+    "predev": "only-include-used-icons --silent",
     "prebuild": "only-include-used-icons",
     "talisman:add-exception": "node-talisman -i -g pre-commit"
   },
