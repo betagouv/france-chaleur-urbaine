@@ -1,10 +1,8 @@
-import Image from 'next/image';
-
 import { StyledInfographieItem } from '@/components/Ressources/Contents/Contents.styles';
 import SimplePage from '@/components/shared/page/SimplePage';
-import Box from '@/components/ui/Box';
-import Heading from '@/components/ui/Heading';
+import Hero, { HeroSubtitle, HeroTitle } from '@/components/ui/Hero';
 import Link from '@/components/ui/Link';
+import Section, { SectionContent, SectionTitle } from '@/components/ui/Section';
 import Text from '@/components/ui/Text';
 import { type TrackingEvent } from '@/services/analytics';
 
@@ -322,71 +320,57 @@ const SupportsPage = () => {
       title="Nos supports pédagogiques sur les réseaux de chaleur"
       description="Comprendre de façon simple et rapide les réseaux de chaleur, via des supports accessibles à tous : fonctionnement, atouts, état des lieux, enjeux…"
     >
-      <Box backgroundColor="blue-cumulus-950-100">
-        <Box display="flex" gap="16px" maxWidth="1000px" mx="auto" pt="8w" px="2w">
-          <Box flex>
-            <Heading size="h1" color="blue-france">
-              Nos supports pédagogiques
-            </Heading>
-            <Text size="lg" mb="3w">
-              Retrouvez tous nos supports de communication pour comprendre simplement et rapidement les enjeux liés aux réseaux de chaleur
-              ou mieux connaître notre service.
-            </Text>
-          </Box>
+      <Hero variant="ressource" image="/img/ressources_header.webp" imagePosition="right" imageType="inline">
+        <HeroTitle>Nos supports pédagogiques</HeroTitle>
+        <HeroSubtitle>
+          Retrouvez tous nos supports de communication pour comprendre simplement et rapidement les enjeux liés aux réseaux de chaleur ou
+          mieux connaître notre service.
+        </HeroSubtitle>
+      </Hero>
 
-          <Box className="fr-hidden fr-unhidden-lg">
-            <Image src="/img/ressources_header.webp" alt="" width={152} height={180} priority />
-          </Box>
-        </Box>
-      </Box>
+      <Section id="infographies">
+        <SectionTitle>Infographies</SectionTitle>
+        <SectionContent>
+          <div className="flex items-baseline gap-4 flex-wrap">
+            {infographies.map((item, index) => (
+              <InfographieItem {...item} key={index} />
+            ))}
+          </div>
+        </SectionContent>
+      </Section>
 
-      <Box py="10w" className="fr-container" id="infographies">
-        <Heading as="h2" size="h2" color="blue-france" center mb="8w">
-          Infographies
-        </Heading>
-        <Box display="flex" alignItems="baseline" gap="16px" flexWrap="wrap">
-          {infographies.map((item, index) => (
-            <InfographieItem {...item} key={index} />
-          ))}
-        </Box>
-      </Box>
-
-      <Box backgroundColor="blue-france-975-75" id="reportages">
-        <Box py="10w" className="fr-container">
-          <Heading as="h2" size="h2" color="blue-france" center mb="8w">
-            Reportages
-          </Heading>
-          <Box display="flex" alignItems="baseline" gap="16px" flexWrap="wrap">
+      <Section variant="light" id="reportages">
+        <SectionTitle>Reportages</SectionTitle>
+        <SectionContent>
+          <div className="flex items-baseline gap-4 flex-wrap">
             {reportages.map((item, index) => (
               <InfographieItem {...item} key={index} />
             ))}
-          </Box>
-        </Box>
-      </Box>
+          </div>
+        </SectionContent>
+      </Section>
 
-      <Box py="10w" className="fr-container" id="videos">
-        <Heading as="h2" size="h2" color="blue-france" center mb="8w">
-          Vidéos
-        </Heading>
-        <Box display="flex" alignItems="baseline" gap="16px" flexWrap="wrap">
-          {videos.map((item, index) => (
-            <InfographieItem width={230} {...item} key={index} />
-          ))}
-        </Box>
-      </Box>
+      <Section id="videos">
+        <SectionTitle>Vidéos</SectionTitle>
+        <SectionContent>
+          <div className="flex items-baseline gap-4 flex-wrap">
+            {videos.map((item, index) => (
+              <InfographieItem width={230} {...item} key={index} />
+            ))}
+          </div>
+        </SectionContent>
+      </Section>
 
-      <Box backgroundColor="blue-france-975-75" id="guides">
-        <Box py="10w" className="fr-container">
-          <Heading as="h2" size="h2" color="blue-france" center mb="8w">
-            Guides
-          </Heading>
-          <Box display="flex" alignItems="baseline" gap="16px" flexWrap="wrap">
+      <Section variant="light" id="guides">
+        <SectionTitle>Guides</SectionTitle>
+        <SectionContent>
+          <div className="flex items-baseline gap-4 flex-wrap">
             {guides.map((item, index) => (
               <InfographieItem {...item} key={index} />
             ))}
-          </Box>
-        </Box>
-      </Box>
+          </div>
+        </SectionContent>
+      </Section>
     </SimplePage>
   );
 };

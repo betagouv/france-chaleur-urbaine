@@ -5,6 +5,7 @@ import SimplePage from '@/components/shared/page/SimplePage';
 import Slideshow from '@/components/Slideshow';
 import Box from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
+import Hero, { HeroSubtitle, HeroTitle } from '@/components/ui/Hero';
 import Text from '@/components/ui/Text';
 
 const ActionsDeCommunicationPage = () => {
@@ -13,23 +14,13 @@ const ActionsDeCommunicationPage = () => {
       title="Nos actions de communication sur la chaleur urbaine"
       description="France Chaleur Urbaine aide les collectivités à faire connaître et valoriser leurs réseaux de chaleur sur leur territoire."
     >
-      <Box backgroundColor="blue-cumulus-950-100">
-        <Box display="flex" gap="16px" maxWidth="1000px" mx="auto" pt="8w" px="2w">
-          <Box flex>
-            <Heading as="h1" color="blue-france">
-              Nos actions de communication
-            </Heading>
-            <Text size="lg" mb="3w">
-              France Chaleur Urbaine aide les collectivités et les exploitants à faire la promotion du chauffage urbain et à rendre les
-              réseaux plus visibles en ligne et dans les villes sur différents supports.
-            </Text>
-          </Box>
-
-          <Box className="fr-hidden fr-unhidden-lg">
-            <Image src="/img/ressources_header.webp" alt="" width={152} height={180} priority />
-          </Box>
-        </Box>
-      </Box>
+      <Hero variant="ressource" image="/img/ressources_header.webp" imagePosition="right" imageType="inline">
+        <HeroTitle>Nos actions de communication</HeroTitle>
+        <HeroSubtitle>
+          France Chaleur Urbaine aide les collectivités et les exploitants à faire la promotion du chauffage urbain et à rendre les réseaux
+          plus visibles en ligne et dans les villes sur différents supports.
+        </HeroSubtitle>
+      </Hero>
 
       <Box pt="10w" pb="4w" className="fr-container">
         <Heading as="h2" color="blue-france" center>

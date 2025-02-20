@@ -403,7 +403,7 @@ const PageHeader = (props: PageHeaderProps) => {
               <MainNavigation
                 items={markCurrentPageActive(navigationMenuItems, currentPath)}
                 className="fr-col"
-                $compact={currentPath === '/carte'}
+                $compact={isFullScreenMode}
               />
               {isFullScreenMode && (
                 // structure from https://github.com/codegouvfr/react-dsfr/blob/eee67f75124b5c3d011703cb6c5cd88eb41ae54c/src/Header/Header.tsx#L158-L179

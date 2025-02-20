@@ -1,13 +1,12 @@
 import Card from '@codegouvfr/react-dsfr/Card';
 import Tag from '@codegouvfr/react-dsfr/Tag';
-import Image from 'next/image';
 import { parseAsArrayOf, parseAsString, useQueryState } from 'nuqs';
 import { useMemo } from 'react';
 
 import SimplePage from '@/components/shared/page/SimplePage';
 import Box from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
-import Text from '@/components/ui/Text';
+import Hero, { HeroSubtitle, HeroTitle } from '@/components/ui/Hero';
 import { articles } from '@/data/contents';
 
 const themes = [
@@ -39,24 +38,14 @@ const ActualitesPage = () => {
       title="Nos actualités sur le chauffage urbain"
       description="Cartographie et données, Communication, ENR&R, Infographie, Prix, Reportage, Réglementation, Réseaux de chaleur, Réseaux de froid, ..."
     >
-      <Box backgroundColor="blue-cumulus-950-100">
-        <Box display="flex" gap="16px" maxWidth="1000px" mx="auto" pt="8w" px="2w">
-          <Box flex>
-            <Heading size="h1" color="blue-france">
-              Nos actualités
-            </Heading>
-            <Text size="lg" mb="3w">
-              France Chaleur Urbaine est un service en évolution permanente&nbsp;!
-              <br />
-              Retrouvez ici toutes nos actualités.
-            </Text>
-          </Box>
-
-          <Box className="fr-hidden fr-unhidden-lg">
-            <Image src="/img/ressources_header.webp" alt="" width={152} height={180} priority />
-          </Box>
-        </Box>
-      </Box>
+      <Hero variant="ressource" imageType="inline" image="/img/ressources_header.webp" imageClassName="py-5" imagePosition="right">
+        <HeroTitle>Nos actualités</HeroTitle>
+        <HeroSubtitle>
+          France Chaleur Urbaine est un service en évolution permanente&nbsp;!
+          <br />
+          Retrouvez ici toutes nos actualités.
+        </HeroSubtitle>
+      </Hero>
 
       <Box py="10w" className="fr-container">
         <Box className="fr-grid-row fr-grid-row--gutters">

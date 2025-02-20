@@ -4,8 +4,7 @@ import useSWR from 'swr';
 
 import Graph from '@/components/Graph';
 import Slice from '@/components/Slice';
-import Box from '@/components/ui/Box';
-import Heading from '@/components/ui/Heading';
+import Hero, { HeroTitle } from '@/components/ui/Hero';
 import Tooltip from '@/components/ui/Tooltip';
 import statistics from '@/data/statistics';
 import { type MatomoMonthStat } from '@/server/services/matomo_types';
@@ -251,222 +250,222 @@ const Statistics = () => {
   }, [dataActions]);
 
   return (
-    <Container>
-      <Box py="4w" className="fr-container">
-        <Heading as="h1" color="blue-france">
-          Nos statistiques
-        </Heading>
-      </Box>
-      <Slice>
-        <StatisticsSliceContainer className="fr-grid-row fr-grid-row--gutters">
-          <div className="fr-col-md-8 fr-col-12">
-            <ColumnContainer>
-              <LastActuDate>Au {statistics.lastActu} :</LastActuDate>
-              <NumberContainer>
-                <NumberBlock className="fr-col-md-6 fr-col-12">
-                  <NumberHighlight>{statistics.connection}</NumberHighlight>
-                  Raccordements à l'étude ou en cours
-                  <Tooltip title="Par raccordements à l’étude, on désigne ceux pour lesquels une étude de faisabilité technico-économique est en cours au niveau du gestionnaire du réseau, ou a été transmise à la copropriété ou au bâtiment tertiaire. En copropriété, la proposition du gestionnaire de réseau devra ensuite être votée en AG avant que les travaux ne puissent démarrer." />
-                  <br />
-                  <NumberText>(~{statistics.logements} logements)</NumberText>
-                  <br />
-                  <NumberSubText className="fr-mt-1w">
-                    A titre de comparaison, le nombre total de bâtiments raccordés en France en 2023 s'élève à 2 685
-                  </NumberSubText>
-                </NumberBlock>
-                <NumberBlock className="fr-col-md-6 fr-col-12">
-                  <NumberHighlight>~ {statistics.CO2Tons}</NumberHighlight>
-                  Tonnes de CO2 potentiellement économisées par an
-                  <br />
-                  <NumberItalicText>1 tonne = 1 aller-retour Paris-New York en avion</NumberItalicText>
-                </NumberBlock>
-              </NumberContainer>
-            </ColumnContainer>
-          </div>
-          <div className="fr-col-md-4 fr-col-12">
-            <ColumnContainer>
-              <LastActuDate>Au {statistics.lastActu} :</LastActuDate>
-              <NumberContainer>
-                <NumberBlock>
-                  <NumberHighlight>{statistics.networks}</NumberHighlight>
-                  Réseaux recensés représentant
-                </NumberBlock>
-                <NumberBlock className="fr-mt-2w">
-                  <NumberHighlight>{statistics.heatPercent}%</NumberHighlight>
-                  de la chaleur livrée par les réseaux en France
-                </NumberBlock>
-              </NumberContainer>
-            </ColumnContainer>
-          </div>
-        </StatisticsSliceContainer>
-      </Slice>
-      <Slice>
-        <StatisticsSliceContainer className="fr-grid-row fr-grid-row--gutters">
-          <div className="fr-col-md-8 fr-col-12">
-            <ColumnContainer padding="1rem">
-              <GraphsWrapper>
-                <Graph
-                  title="Nombre de demandes de mise en contact avec un gestionnaire"
-                  error={errorCountContact}
-                  data={dataCountContact}
-                  formatedData={formatedDataCountContact}
-                  {...graphOptions}
-                />
-              </GraphsWrapper>
-            </ColumnContainer>
-          </div>
-          <div className="fr-col-md-4 fr-col-12">
-            <ColumnContainer>
-              <NumberContainer>
-                <NumberBlock>
-                  <NumberHighlight>
-                    {totalContactDemands > 0 ? (
-                      totalContactDemands.toLocaleString('fr-FR')
-                    ) : (
-                      <>
-                        <LoadingTextHighlight>Chargement en cours...</LoadingTextHighlight>
-                        <br />
-                      </>
-                    )}
-                  </NumberHighlight>
-                  Total des demandes de mise en contact avec un gestionnaire
-                </NumberBlock>
-                <NumberBlock className="fr-mt-2w">
-                  <NumberHighlight>
-                    <span>{statistics.connectionPercent}%</span>
-                    <Tooltip title="A savoir : une partie des demandes déposées (environ 50%) ne peut aboutir en raison d'une distance trop importante au réseau ou d'un mode de chauffage préexistant individuel." />
-                  </NumberHighlight>
-                  Des mises en contact aboutissent à un raccordement à l’étude
-                </NumberBlock>
-              </NumberContainer>
-            </ColumnContainer>
-          </div>
-        </StatisticsSliceContainer>
-      </Slice>
-      <Slice>
-        <StatisticsSliceContainer className="fr-grid-row fr-grid-row--gutters">
-          <div className="fr-col-md-8 fr-col-12">
-            <ColumnContainer padding="1rem">
-              <GraphsWrapper>
-                <Graph
-                  title="Nombre d’adresses testées"
-                  error={errorDataActions}
-                  data={dataActions}
-                  formatedData={formatedDataEligibilityTest}
-                  {...graphOptions}
-                />
-              </GraphsWrapper>
-            </ColumnContainer>
-          </div>
-          <div className="fr-col-md-4 fr-col-12">
-            <ColumnContainer>
-              <NumberContainer>
-                <NumberBlock>
-                  <NumberHighlight>{totalAddressTests.toLocaleString('fr-FR')}</NumberHighlight>
-                  Total d'adresses testées
-                </NumberBlock>
-                <NumberBlock className="fr-mt-2w">
-                  <NumberHighlight>
-                    <span>{Math.round(percentAddressPossible)}%</span>
-                    <Tooltip
-                      title={`"Potentiellement raccordables" : tests effectués pour des bâtiments situés à moins de 100 m d'un réseau (60 m sur Paris)`}
-                    />
-                  </NumberHighlight>
-                  Des adresses testées sont potentiellement raccordables
-                </NumberBlock>
-              </NumberContainer>
-            </ColumnContainer>
-          </div>
-        </StatisticsSliceContainer>
-      </Slice>
-      <Slice>
-        <StatisticsSliceContainer className="fr-grid-row fr-grid-row--gutters">
-          <div className="fr-col-md-8 fr-col-12">
-            <ColumnContainer padding="1rem">
-              <GraphsWrapper>
-                <Graph
-                  title="Nombre de visiteurs"
-                  error={errorVisits}
-                  data={dataVisits}
-                  formatedData={formatedDataVisits}
-                  {...graphOptions}
-                />
-              </GraphsWrapper>
-            </ColumnContainer>
-          </div>
-          <div className="fr-col-md-4 fr-col-12">
-            <ColumnContainer>
-              <NumberContainer>
-                <NumberBlock>
-                  <NumberHighlight>{Math.round(percentAddressTests)}%</NumberHighlight>
-                  Des visiteurs testent une adresse
-                </NumberBlock>
-              </NumberContainer>
-            </ColumnContainer>
-          </div>
-        </StatisticsSliceContainer>
-      </Slice>
-      <Slice>
-        <StatisticsSliceContainer className="fr-grid-row fr-grid-row--gutters">
-          <div className="fr-col-md-8 fr-col-12">
-            <ColumnContainer padding="1rem">
-              <GraphsWrapper>
-                <Graph
-                  title="Nombre de visiteurs sur la cartographie"
-                  error={errorVisitsMap}
-                  data={dataVisitsMap}
-                  formatedData={formatedDataVisitsMap}
-                  {...graphOptions}
-                />
-              </GraphsWrapper>
-            </ColumnContainer>
-          </div>
-          <div className="fr-col-md-4 fr-col-12">
-            <ColumnContainer>
-              <LastActuDate>Au {statistics.lastActu} :</LastActuDate>
-              <NumberContainer>
-                <NumberBlock>
-                  <NumberHighlight>{statistics.iFrameIntegration}</NumberHighlight>
-                  Intégrations de nos <Link href="/collectivites-et-exploitants#iframe-carte">iframes</Link>
-                </NumberBlock>
-                <HorizontalSeparator />
-                <NumberBlock>
-                  <NumberHighlight>{totalDownload.toLocaleString('fr-FR', { maximumFractionDigits: 0 })}</NumberHighlight>
-                  Téléchargements des tracés sur le site
-                </NumberBlock>
-              </NumberContainer>
-            </ColumnContainer>
-          </div>
-        </StatisticsSliceContainer>
-      </Slice>
-      <Slice>
-        <StatisticsSliceContainer className="fr-grid-row fr-grid-row--gutters">
-          <div className="fr-col-md-8 fr-col-12">
-            <ColumnContainer padding="1rem">
-              <GraphsWrapper>
-                <Graph
-                  title="Nombre d’adresses testées par liste"
-                  error={errorCountBulkContact}
-                  data={dataCountBulkContact}
-                  formatedData={formatedDataCountBulkContact}
-                  {...graphOptions}
-                />
-              </GraphsWrapper>
-            </ColumnContainer>
-          </div>
-          <div className="fr-col-md-4 fr-col-12">
-            <ColumnContainer>
-              <NumberContainer>
-                <NumberBlock>
-                  <NumberHighlight>{totalBulkTests.toLocaleString('fr-FR')}</NumberHighlight>
-                  Total d'adresses testées en liste (tests en masse par des professionnels)
-                </NumberBlock>
-              </NumberContainer>
-            </ColumnContainer>
-          </div>
-        </StatisticsSliceContainer>
-      </Slice>
-    </Container>
+    <>
+      <Hero variant="ressource">
+        <HeroTitle>Nos statistiques</HeroTitle>
+      </Hero>
+      <Container className="mt-8">
+        <Slice>
+          <StatisticsSliceContainer className="fr-grid-row fr-grid-row--gutters">
+            <div className="fr-col-md-8 fr-col-12">
+              <ColumnContainer>
+                <LastActuDate>Au {statistics.lastActu} :</LastActuDate>
+                <NumberContainer>
+                  <NumberBlock className="fr-col-md-6 fr-col-12">
+                    <NumberHighlight>{statistics.connection}</NumberHighlight>
+                    Raccordements à l'étude ou en cours
+                    <Tooltip title="Par raccordements à l’étude, on désigne ceux pour lesquels une étude de faisabilité technico-économique est en cours au niveau du gestionnaire du réseau, ou a été transmise à la copropriété ou au bâtiment tertiaire. En copropriété, la proposition du gestionnaire de réseau devra ensuite être votée en AG avant que les travaux ne puissent démarrer." />
+                    <br />
+                    <NumberText>(~{statistics.logements} logements)</NumberText>
+                    <br />
+                    <NumberSubText className="fr-mt-1w">
+                      A titre de comparaison, le nombre total de bâtiments raccordés en France en 2023 s'élève à 2 685
+                    </NumberSubText>
+                  </NumberBlock>
+                  <NumberBlock className="fr-col-md-6 fr-col-12">
+                    <NumberHighlight>~ {statistics.CO2Tons}</NumberHighlight>
+                    Tonnes de CO2 potentiellement économisées par an
+                    <br />
+                    <NumberItalicText>1 tonne = 1 aller-retour Paris-New York en avion</NumberItalicText>
+                  </NumberBlock>
+                </NumberContainer>
+              </ColumnContainer>
+            </div>
+            <div className="fr-col-md-4 fr-col-12">
+              <ColumnContainer>
+                <LastActuDate>Au {statistics.lastActu} :</LastActuDate>
+                <NumberContainer>
+                  <NumberBlock>
+                    <NumberHighlight>{statistics.networks}</NumberHighlight>
+                    Réseaux recensés représentant
+                  </NumberBlock>
+                  <NumberBlock className="fr-mt-2w">
+                    <NumberHighlight>{statistics.heatPercent}%</NumberHighlight>
+                    de la chaleur livrée par les réseaux en France
+                  </NumberBlock>
+                </NumberContainer>
+              </ColumnContainer>
+            </div>
+          </StatisticsSliceContainer>
+        </Slice>
+        <Slice>
+          <StatisticsSliceContainer className="fr-grid-row fr-grid-row--gutters">
+            <div className="fr-col-md-8 fr-col-12">
+              <ColumnContainer padding="1rem">
+                <GraphsWrapper>
+                  <Graph
+                    title="Nombre de demandes de mise en contact avec un gestionnaire"
+                    error={errorCountContact}
+                    data={dataCountContact}
+                    formatedData={formatedDataCountContact}
+                    {...graphOptions}
+                  />
+                </GraphsWrapper>
+              </ColumnContainer>
+            </div>
+            <div className="fr-col-md-4 fr-col-12">
+              <ColumnContainer>
+                <NumberContainer>
+                  <NumberBlock>
+                    <NumberHighlight>
+                      {totalContactDemands > 0 ? (
+                        totalContactDemands.toLocaleString('fr-FR')
+                      ) : (
+                        <>
+                          <LoadingTextHighlight>Chargement en cours...</LoadingTextHighlight>
+                          <br />
+                        </>
+                      )}
+                    </NumberHighlight>
+                    Total des demandes de mise en contact avec un gestionnaire
+                  </NumberBlock>
+                  <NumberBlock className="fr-mt-2w">
+                    <NumberHighlight>
+                      <span>{statistics.connectionPercent}%</span>
+                      <Tooltip title="A savoir : une partie des demandes déposées (environ 50%) ne peut aboutir en raison d'une distance trop importante au réseau ou d'un mode de chauffage préexistant individuel." />
+                    </NumberHighlight>
+                    Des mises en contact aboutissent à un raccordement à l’étude
+                  </NumberBlock>
+                </NumberContainer>
+              </ColumnContainer>
+            </div>
+          </StatisticsSliceContainer>
+        </Slice>
+        <Slice>
+          <StatisticsSliceContainer className="fr-grid-row fr-grid-row--gutters">
+            <div className="fr-col-md-8 fr-col-12">
+              <ColumnContainer padding="1rem">
+                <GraphsWrapper>
+                  <Graph
+                    title="Nombre d’adresses testées"
+                    error={errorDataActions}
+                    data={dataActions}
+                    formatedData={formatedDataEligibilityTest}
+                    {...graphOptions}
+                  />
+                </GraphsWrapper>
+              </ColumnContainer>
+            </div>
+            <div className="fr-col-md-4 fr-col-12">
+              <ColumnContainer>
+                <NumberContainer>
+                  <NumberBlock>
+                    <NumberHighlight>{totalAddressTests.toLocaleString('fr-FR')}</NumberHighlight>
+                    Total d'adresses testées
+                  </NumberBlock>
+                  <NumberBlock className="fr-mt-2w">
+                    <NumberHighlight>
+                      <span>{Math.round(percentAddressPossible)}%</span>
+                      <Tooltip
+                        title={`"Potentiellement raccordables" : tests effectués pour des bâtiments situés à moins de 100 m d'un réseau (60 m sur Paris)`}
+                      />
+                    </NumberHighlight>
+                    Des adresses testées sont potentiellement raccordables
+                  </NumberBlock>
+                </NumberContainer>
+              </ColumnContainer>
+            </div>
+          </StatisticsSliceContainer>
+        </Slice>
+        <Slice>
+          <StatisticsSliceContainer className="fr-grid-row fr-grid-row--gutters">
+            <div className="fr-col-md-8 fr-col-12">
+              <ColumnContainer padding="1rem">
+                <GraphsWrapper>
+                  <Graph
+                    title="Nombre de visiteurs"
+                    error={errorVisits}
+                    data={dataVisits}
+                    formatedData={formatedDataVisits}
+                    {...graphOptions}
+                  />
+                </GraphsWrapper>
+              </ColumnContainer>
+            </div>
+            <div className="fr-col-md-4 fr-col-12">
+              <ColumnContainer>
+                <NumberContainer>
+                  <NumberBlock>
+                    <NumberHighlight>{Math.round(percentAddressTests)}%</NumberHighlight>
+                    Des visiteurs testent une adresse
+                  </NumberBlock>
+                </NumberContainer>
+              </ColumnContainer>
+            </div>
+          </StatisticsSliceContainer>
+        </Slice>
+        <Slice>
+          <StatisticsSliceContainer className="fr-grid-row fr-grid-row--gutters">
+            <div className="fr-col-md-8 fr-col-12">
+              <ColumnContainer padding="1rem">
+                <GraphsWrapper>
+                  <Graph
+                    title="Nombre de visiteurs sur la cartographie"
+                    error={errorVisitsMap}
+                    data={dataVisitsMap}
+                    formatedData={formatedDataVisitsMap}
+                    {...graphOptions}
+                  />
+                </GraphsWrapper>
+              </ColumnContainer>
+            </div>
+            <div className="fr-col-md-4 fr-col-12">
+              <ColumnContainer>
+                <LastActuDate>Au {statistics.lastActu} :</LastActuDate>
+                <NumberContainer>
+                  <NumberBlock>
+                    <NumberHighlight>{statistics.iFrameIntegration}</NumberHighlight>
+                    Intégrations de nos <Link href="/collectivites-et-exploitants#iframe-carte">iframes</Link>
+                  </NumberBlock>
+                  <HorizontalSeparator />
+                  <NumberBlock>
+                    <NumberHighlight>{totalDownload.toLocaleString('fr-FR', { maximumFractionDigits: 0 })}</NumberHighlight>
+                    Téléchargements des tracés sur le site
+                  </NumberBlock>
+                </NumberContainer>
+              </ColumnContainer>
+            </div>
+          </StatisticsSliceContainer>
+        </Slice>
+        <Slice>
+          <StatisticsSliceContainer className="fr-grid-row fr-grid-row--gutters">
+            <div className="fr-col-md-8 fr-col-12">
+              <ColumnContainer padding="1rem">
+                <GraphsWrapper>
+                  <Graph
+                    title="Nombre d’adresses testées par liste"
+                    error={errorCountBulkContact}
+                    data={dataCountBulkContact}
+                    formatedData={formatedDataCountBulkContact}
+                    {...graphOptions}
+                  />
+                </GraphsWrapper>
+              </ColumnContainer>
+            </div>
+            <div className="fr-col-md-4 fr-col-12">
+              <ColumnContainer>
+                <NumberContainer>
+                  <NumberBlock>
+                    <NumberHighlight>{totalBulkTests.toLocaleString('fr-FR')}</NumberHighlight>
+                    Total d'adresses testées en liste (tests en masse par des professionnels)
+                  </NumberBlock>
+                </NumberContainer>
+              </ColumnContainer>
+            </div>
+          </StatisticsSliceContainer>
+        </Slice>
+      </Container>
+    </>
   );
 };
 

@@ -8,8 +8,8 @@ import Heading from './Heading';
 const sectionVariants = cva('', {
   variants: {
     size: {
-      sm: '',
-      md: 'py-10w',
+      sm: 'py-1w md:py-2w',
+      md: 'py-6w md:py-10w',
       lg: '',
     },
     variant: {
@@ -68,7 +68,7 @@ const headingVariants = cva('', {
   },
 });
 
-const titleVariants = (props: VariantProps<typeof headingVariants>) => cx('text-center', headingVariants(props));
+const titleVariants = (props: VariantProps<typeof headingVariants>) => cx('text-center max-w-[640px] !mx-auto', headingVariants(props));
 
 export type SectionTitleProps = React.ComponentProps<typeof Heading> & VariantProps<typeof titleVariants>;
 

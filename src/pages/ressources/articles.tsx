@@ -1,12 +1,10 @@
 import Card from '@codegouvfr/react-dsfr/Card';
-import Image from 'next/image';
 import { type ReactNode } from 'react';
 
 import { coldNetworks, growths, issues, understandings } from '@/components/Ressources/config';
 import SimplePage from '@/components/shared/page/SimplePage';
-import Box from '@/components/ui/Box';
-import Heading from '@/components/ui/Heading';
-import Text from '@/components/ui/Text';
+import Hero, { HeroSubtitle, HeroTitle } from '@/components/ui/Hero';
+import Section, { SectionContent, SectionTitle } from '@/components/ui/Section';
 
 const articlesEnjeuxReseauxDeChaleur: ArticleItemProps[] = Object.entries(issues).map(([key, article]) => ({
   ...article,
@@ -34,70 +32,54 @@ const ArticlesPage = () => {
       title="Nos articles sur la chaleur urbaine"
       description="Retrouvez les réponses à toutes vos questions sur les réseaux de chaleur et de froid."
     >
-      <Box backgroundColor="blue-cumulus-950-100">
-        <Box display="flex" gap="16px" maxWidth="1000px" mx="auto" pt="8w" px="2w">
-          <Box flex>
-            <Heading size="h1" color="blue-france">
-              Nos articles sur le chauffage urbain
-            </Heading>
-            <Text size="lg" mb="3w">
-              Retrouvez les réponses à toutes vos questions sur les réseaux de chaleur et de froid.
-            </Text>
-          </Box>
+      <Hero variant="ressource" image="/img/ressources_header.webp" imagePosition="right" imageType="inline">
+        <HeroTitle>Nos articles sur le chauffage urbain</HeroTitle>
+        <HeroSubtitle>Retrouvez les réponses à toutes vos questions sur les réseaux de chaleur et de froid.</HeroSubtitle>
+      </Hero>
 
-          <Box className="fr-hidden fr-unhidden-lg">
-            <Image src="/img/ressources_header.webp" alt="" width={152} height={180} priority />
-          </Box>
-        </Box>
-      </Box>
+      <Section>
+        <SectionTitle>Les enjeux de la transition énergétique avec les réseaux de chaleur</SectionTitle>
+        <SectionContent>
+          <div className="fr-grid-row fr-grid-row--gutters">
+            {articlesEnjeuxReseauxDeChaleur.map((article, index) => (
+              <ArticleItem {...article} key={index} />
+            ))}
+          </div>
+        </SectionContent>
+      </Section>
 
-      <Box py="10w" className="fr-container">
-        <Heading as="h2" color="blue-france" mb="6w" center maxWidth="600px" mx="auto">
-          Les enjeux de la transition énergétique avec les réseaux de chaleur
-        </Heading>
-        <Box className="fr-grid-row fr-grid-row--gutters">
-          {articlesEnjeuxReseauxDeChaleur.map((article, index) => (
-            <ArticleItem {...article} key={index} />
-          ))}
-        </Box>
-      </Box>
-
-      <Box backgroundColor="blue-france-975-75">
-        <Box py="10w" className="fr-container">
-          <Heading as="h2" color="blue-france" mb="6w" center maxWidth="600px" mx="auto">
-            Les réseaux de chaleur en pratique&nbsp;: tout comprendre pour se raccorder
-          </Heading>
-          <Box className="fr-grid-row fr-grid-row--gutters">
+      <Section variant="light">
+        <SectionTitle>Les réseaux de chaleur en pratique&nbsp;: tout comprendre pour se raccorder</SectionTitle>
+        <SectionContent>
+          <div className="fr-grid-row fr-grid-row--gutters">
             {articlesComprendreReseauxDeChaleur.map((article, index) => (
               <ArticleItem {...article} key={index} />
             ))}
-          </Box>
-        </Box>
-      </Box>
+          </div>
+        </SectionContent>
+      </Section>
 
-      <Box py="10w" className="fr-container">
-        <Heading as="h2" color="blue-france" mb="6w" center>
-          Une filière en pleine croissance
-        </Heading>
-        <Box className="fr-grid-row fr-grid-row--gutters">
-          {articlesCroissance.map((article, index) => (
-            <ArticleItem {...article} key={index} />
-          ))}
-        </Box>
-      </Box>
+      <Section>
+        <SectionTitle>Une filière en pleine croissance</SectionTitle>
+        <SectionContent>
+          <div className="fr-grid-row fr-grid-row--gutters">
+            {articlesCroissance.map((article, index) => (
+              <ArticleItem {...article} key={index} />
+            ))}
+          </div>
+        </SectionContent>
+      </Section>
 
-      <Box backgroundColor="blue-france-975-75">
-        <Box py="10w" className="fr-container">
-          <Heading as="h2" color="blue-france" mb="6w" center>
-            Les réseaux de froid&nbsp;: un enjeu pour l'avenir
-          </Heading>
-          <Box className="fr-grid-row fr-grid-row--gutters">
+      <Section variant="light">
+        <SectionTitle>Les réseaux de froid&nbsp;: un enjeu pour l'avenir</SectionTitle>
+        <SectionContent>
+          <div className="fr-grid-row fr-grid-row--gutters">
             {articlesReseauxDeFroid.map((article, index) => (
               <ArticleItem {...article} key={index} />
             ))}
-          </Box>
-        </Box>
-      </Box>
+          </div>
+        </SectionContent>
+      </Section>
     </SimplePage>
   );
 };
