@@ -146,6 +146,7 @@ const headingVariants = cva('!my-0', {
       light: '!text-black',
       accent: '!text-white',
       city: '!text-black',
+      ressource: '!text-black',
       transparent: '!text-black',
     },
   },
@@ -166,7 +167,12 @@ export const HeroTitle = ({ children, className, ...props }: React.ComponentProp
   const { bigTitle, ...contextVariants } = React.useContext(HeroContext);
 
   return (
-    <Heading as="h1" size={bigTitle ? 'h1' : 'h2'} className={cx(titleVariants(contextVariants), className)} {...props}>
+    <Heading
+      as="h1"
+      size={bigTitle ? 'h1' : 'h2'}
+      className={cx(titleVariants(contextVariants satisfies VariantProps<typeof headingVariants>), className)}
+      {...props}
+    >
       {children}
     </Heading>
   );
