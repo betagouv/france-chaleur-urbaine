@@ -1,9 +1,10 @@
 import { type GetServerSideProps } from 'next';
-import { getSession } from 'next-auth/react';
+import { getServerSession } from 'next-auth';
 import { z } from 'zod';
 
 import { LoginForm, type LoginFormProps } from '@/components/connexion/LoginForm';
 import SimplePage from '@/components/shared/page/SimplePage';
+import { nextAuthOptions } from '@/pages/api/auth/[...nextauth]';
 import { logger } from '@/server/helpers/logger';
 import { activateUser } from '@/server/services/auth';
 
@@ -50,7 +51,7 @@ export const getServerSideProps: GetServerSideProps<LoginFormProps> = async (con
     }
   }
 
-  const userSession = await getSession(context);
+  const userSession = await getServerSession(context.req, context.res, nextAuthOptions);
   if (userSession) {
     return {
       redirect: {
