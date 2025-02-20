@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import db from '@/server/db';
 import base from '@/server/db/airtable';
 import { sendNewDemands, sendOldDemands, sendRelanceMail } from '@/server/email';
+import { logger } from '@/server/helpers/logger';
 import { invalidPermissionsError } from '@/server/helpers/server';
 import { Airtable } from '@/types/enum/Airtable';
 import { USER_ROLE } from '@/types/enum/UserRole';
@@ -127,26 +128,34 @@ export const getDemands = async (user: User): Promise<Demand[]> => {
     return [];
   }
 
+  const startTime = Date.now();
+
+  // Build filter formula based on user role and gestionnaires
+  let filterFormula = '';
+  if (user.role === USER_ROLE.ADMIN) {
+    filterFormula = '';
+  } else if (user.role === USER_ROLE.DEMO) {
+    filterFormula = `FIND("Paris", {Gestionnaires})`;
+  } else {
+    const gestionnairesFilter = user.gestionnaires.map((g) => `FIND("${g}", {Gestionnaires})`).join(',');
+    filterFormula = `OR(${gestionnairesFilter})`;
+  }
+
   const records = await base(Airtable.UTILISATEURS)
     .select({
+      filterByFormula: filterFormula,
       sort: [{ field: 'Date demandes', direction: 'desc' }],
     })
     .all();
 
-  const filteredRecords =
-    user.role === USER_ROLE.ADMIN
-      ? records
-      : records.filter((record) => {
-          const gestionnaires = record.get('Gestionnaires') as string[];
-          return (
-            gestionnaires &&
-            gestionnaires.some(
-              (gestionnaire) => (user.role === USER_ROLE.DEMO && gestionnaire === 'Paris') || user.gestionnaires.includes(gestionnaire)
-            )
-          );
-        });
+  logger.info('airtable.getDemands', {
+    recordsCount: records.length,
+    tagsCounts: user.gestionnaires.length,
+    duration: Date.now() - startTime,
+  });
+
   return user.role === USER_ROLE.DEMO
-    ? filteredRecords.map(
+    ? records.map(
         (record) =>
           ({
             id: record.id,
@@ -157,7 +166,7 @@ export const getDemands = async (user: User): Promise<Demand[]> => {
             Téléphone: `0${faker.string.numeric(9)}`,
           }) as Demand
       )
-    : filteredRecords.map((record) => ({ id: record.id, ...record.fields }) as Demand);
+    : records.map((record) => ({ id: record.id, ...record.fields }) as Demand);
 };
 
 const getDemand = async (user: User, demandId: string): Promise<Demand> => {
