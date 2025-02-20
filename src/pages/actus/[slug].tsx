@@ -9,6 +9,7 @@ import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
 import { articles, getArticle } from '@/data/contents';
 import { type Article } from '@/types/Article';
+import { deepCloneJSON } from '@/utils/objects';
 
 const ArticleContentWrapper = styled(Box)`
   img {
@@ -108,7 +109,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 
   return {
     props: {
-      article: JSON.parse(JSON.stringify(article)) as typeof article,
+      article: deepCloneJSON(article),
     },
   };
 };

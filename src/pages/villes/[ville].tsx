@@ -5,6 +5,7 @@ import { GlobalStyle } from '@/components/shared/layout/Global.style';
 import SimplePage from '@/components/shared/page/SimplePage';
 import citiesData from '@/data/villes/villes';
 import { getNetwork } from '@/server/services/network';
+import { deepCloneJSON } from '@/utils/objects';
 
 type ComponentProps = InferGetStaticPropsType<typeof getStaticProps>;
 
@@ -43,7 +44,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 
   return {
     props: {
-      cityData: JSON.parse(JSON.stringify(cityData)) as typeof cityData,
+      cityData: deepCloneJSON(cityData),
       network,
     },
   };
