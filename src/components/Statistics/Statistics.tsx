@@ -203,8 +203,9 @@ const Statistics = () => {
   }, [formatedDataCountBulkContact]);
 
   const percentAddressTests = useMemo(() => {
-    const startYear = new Date().getFullYear() - 1;
-    const startMonth = 1;
+    const oneYearAgo = new Date(new Date().setFullYear(today.getFullYear() - 1));
+    const startYear = oneYearAgo.getFullYear();
+    const startMonth = oneYearAgo.getMonth() + 1;
     const nbAdressesTests = getFormattedDataSum(formatedDataEligibilityTest, startYear, startMonth);
     const nbVisits = getFormattedDataSum(formatedDataVisits, startYear, startMonth);
     if (nbVisits && nbAdressesTests) {
