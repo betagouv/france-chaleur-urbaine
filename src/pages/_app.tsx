@@ -1,11 +1,13 @@
 import '@/styles/globals.css';
 import { fr } from '@codegouvfr/react-dsfr';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { AppProps } from 'next/app';
 import dynamic from 'next/dynamic';
 import type Link from 'next/link';
 import { type Session } from 'next-auth';
 // use AppProgressBar instead of PagesProgressBar on purpose as it handles better the query params ignoring
 import { AppProgressBar as ProgressBar } from 'next-nprogress-bar';
+import { useState } from 'react';
 import { SWRConfig, type SWRConfiguration } from 'swr';
 
 import '@/components/Map/StyleSwitcher/styles.css';
@@ -45,32 +47,48 @@ function App({
 }: AppProps<{
   session: Session;
 }>) {
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            retry: 1, // retry failing requests just once, see https://react-query.tanstack.com/guides/query-retries
+            retryDelay: 3000, // retry failing requests after 3 seconds
+            refetchOnWindowFocus: false, // see https://react-query.tanstack.com/guides/important-defaults
+            refetchOnReconnect: false,
+          },
+        },
+      })
+  );
+
   useInitAuthentication(pageProps.session);
   usePreserveScroll();
   useAnalytics();
 
   return (
-    <ThemeProvider>
-      <SEO />
-      <ConsentBanner />
-      <NotifierContainer />
-      <ServicesContext.Provider
-        value={{
-          suggestionService: new SuggestionService(axiosHttpClient),
-          heatNetworkService: new HeatNetworkService(axiosHttpClient),
-          demandsService: new DemandsService(axiosHttpClient),
-          passwordService: new PasswordService(axiosHttpClient),
-          adminService: new AdminService(axiosHttpClient),
-          networksService: new NetworksService(axiosHttpClient),
-          exportService: new ExportService(axiosHttpClient),
-        }}
-      >
-        <SWRConfig value={swrConfig}>
-          <ProgressBar height="4px" color={fr.colors.decisions.background.active.blueFrance.default} />
-          <Component {...pageProps} />
-        </SWRConfig>
-      </ServicesContext.Provider>
-    </ThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
+        <SEO />
+        <ConsentBanner />
+        <NotifierContainer />
+        <ServicesContext.Provider
+          value={{
+            suggestionService: new SuggestionService(axiosHttpClient),
+            heatNetworkService: new HeatNetworkService(axiosHttpClient),
+            demandsService: new DemandsService(axiosHttpClient),
+            passwordService: new PasswordService(axiosHttpClient),
+            adminService: new AdminService(axiosHttpClient),
+            networksService: new NetworksService(axiosHttpClient),
+            exportService: new ExportService(axiosHttpClient),
+          }}
+        >
+          <SWRConfig value={swrConfig}>
+            <ProgressBar height="4px" color={fr.colors.decisions.background.active.blueFrance.default} />
+            <Component {...pageProps} />
+          </SWRConfig>
+        </ServicesContext.Provider>
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 }
 export default App;
