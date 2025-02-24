@@ -396,8 +396,8 @@ const HeatNetwork = ({
       <br />
       <Subtitle ref={obligationsRef}>Certains bâtiments ont-ils l’obligation de se raccorder à un réseau de chaleur ?</Subtitle>
       <b>
-        Les <Link href="/ressources/prioritaire#contenu">bâtiments situés dans le périmètre de développement prioritaire</Link> de réseaux
-        de chaleur classés ont l’obligation de se raccorder au réseau
+        Les <Link href="/ressources/obligations-raccordement#contenu">bâtiments situés dans le périmètre de développement prioritaire</Link>{' '}
+        de réseaux de chaleur classés ont l’obligation de se raccorder au réseau
       </b>{' '}
       dans les cas suivants :
       <ul>

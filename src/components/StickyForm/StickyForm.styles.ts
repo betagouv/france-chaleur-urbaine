@@ -5,7 +5,7 @@ export const Container = styled.div`
   max-height: 100vh;
   overflow: auto;
   position: sticky;
-  margin: -32px auto 0 auto;
+  margin: -24px auto 0 auto;
   top: 0px;
   padding: 16px;
   background-color: var(--background-default-grey);

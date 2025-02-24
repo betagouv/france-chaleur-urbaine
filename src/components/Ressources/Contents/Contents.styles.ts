@@ -1,11 +1,21 @@
 import styled from 'styled-components';
 
+import Heading from '@/components/ui/Heading';
+
 export const Subtitle = styled.h2`
   scroll-margin: 100px;
-  color: #4550e5;
   font-weight: 600;
   font-size: 28px;
   line-height: 34px;
+`;
+export const H2 = styled(Subtitle)`
+  margin-top: 22px;
+`;
+
+export const H3 = styled(Heading).attrs({ as: 'h3' })`
+  font-size: 22px;
+  margin-top: 16px;
+  margin-bottom: 8px;
 `;
 
 export const Source = styled.div`

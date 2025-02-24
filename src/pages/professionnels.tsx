@@ -24,7 +24,7 @@ const conseillerCards = {
   'energies-vertes': issues['energies-vertes'],
   avantages: understandings.avantages,
   aides: understandings.aides,
-  prioritaire: understandings.prioritaire,
+  'obligations-raccordement': understandings['obligations-raccordement'],
 };
 
 const Professionnels = () => {

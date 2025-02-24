@@ -201,7 +201,7 @@ const legend = [
   ['Distance au réseau (m) si < 1000 m', 'Distance au réseau le plus proche, fournie uniquement si elle est de moins de 1000m'],
   [
     'PDP (périmètre de développement prioritaire)',
-    "Positif si l'adresse se situe dans le périmètre de développement prioritaire d'un réseau classé (d'après les données dont nous disposons). Une obligation de raccordement peut alors s'appliquer. En savoir plus : https://france-chaleur-urbaine.beta.gouv.fr/ressources/prioritaire",
+    "Positif si l'adresse se situe dans le périmètre de développement prioritaire d'un réseau classé (d'après les données dont nous disposons). Une obligation de raccordement peut alors s'appliquer. En savoir plus : https://france-chaleur-urbaine.beta.gouv.fr/ressources/obligations-raccordement",
   ],
   [
     'Bâtiment potentiellement raccordable à un réseau en construction',

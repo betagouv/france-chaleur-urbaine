@@ -277,7 +277,7 @@ const DistrictHeating = ({
           <b>Quels sont les bâtiments concernés ?</b>
         </li>
       </ul>
-      Sont <Link href="/ressources/prioritaire#contenu">concernés par l’obligation</Link> de raccordement au chauffage urbain :
+      Sont <Link href="/ressources/obligations-raccordement#contenu">concernés par l’obligation</Link> de raccordement au chauffage urbain :
       <ul>
         <ul>
           <li>
