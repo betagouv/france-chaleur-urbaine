@@ -1,6 +1,6 @@
 import Manager from '@/components/Manager/Manager';
 import SimplePage from '@/components/shared/page/SimplePage';
-import { withAuthentication } from '@/server/helpers/ssr/withAuthentication';
+import { withAuthentication } from '@/server/authentication';
 
 export default function Gestionnaire(): JSX.Element {
   return (

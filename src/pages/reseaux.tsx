@@ -1,7 +1,6 @@
 import NetworksList from '@/components/NetworksList/NetworksList';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Hero, { HeroSubtitle, HeroTitle } from '@/components/ui/Hero';
-import { withServerSession } from '@/server/services/authentication';
 
 function ListeReseaux() {
   return (
@@ -20,5 +19,3 @@ function ListeReseaux() {
 }
 
 export default ListeReseaux;
-
-export const getServerSideProps = withServerSession;

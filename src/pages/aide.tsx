@@ -2,7 +2,7 @@ import { fr } from '@codegouvfr/react-dsfr';
 
 import SimplePage from '@/components/shared/page/SimplePage';
 import Accordion from '@/components/ui/Accordion';
-import { withAuthentication } from '@/server/helpers/ssr/withAuthentication';
+import { withAuthentication } from '@/server/authentication';
 
 type FaqItem = {
   title: string;

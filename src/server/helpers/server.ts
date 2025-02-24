@@ -2,10 +2,10 @@ import { captureException } from '@sentry/nextjs';
 import { HttpStatusCode } from 'axios';
 import { errors as formidableErrors } from 'formidable';
 import type { NextApiHandler, NextApiRequest, NextApiResponse } from 'next';
-import { type User, getServerSession } from 'next-auth';
+import { type User } from 'next-auth';
 import { type ZodRawShape, z } from 'zod';
 
-import { nextAuthOptions } from '@/pages/api/auth/[...nextauth]';
+import { getServerSession } from '@/server/authentication';
 import { type UserRole } from '@/types/enum/UserRole';
 
 import { parentLogger } from './logger';
@@ -54,7 +54,7 @@ export function handleRouteErrors(handler: NextApiHandler, options?: RouteOption
       ip: process.env.LOG_REQUEST_IP ? (req.headers['x-forwarded-for'] ?? req.socket.remoteAddress) : undefined,
     });
     try {
-      req.session = await getServerSession(req, res, nextAuthOptions);
+      req.session = await getServerSession({ req, res });
       req.user = req.session?.user;
       logger = logger.child({
         user: process.env.LOG_REQUEST_USER ? req.user?.id : undefined,

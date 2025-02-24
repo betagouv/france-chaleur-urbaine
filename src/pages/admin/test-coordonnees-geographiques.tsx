@@ -8,7 +8,7 @@ import Box from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
 import { isDevModeEnabled } from '@/hooks/useDevMode';
-import { withAuthentication } from '@/server/helpers/ssr/withAuthentication';
+import { withAuthentication } from '@/server/authentication';
 import { notify, toastErrors } from '@/services/notification';
 import { latitudeColumnNameCandidates, longitudeColumnNameCandidates } from '@/shared/bulk-eligibility-coordinates';
 import { chunk } from '@/utils/array';

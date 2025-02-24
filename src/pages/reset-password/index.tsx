@@ -1,9 +1,6 @@
-import { type GetServerSideProps } from 'next';
-import { getServerSession } from 'next-auth';
-
 import ResetPasswordForm from '@/components/connexion/ResetPasswordForm';
 import SimplePage from '@/components/shared/page/SimplePage';
-import { nextAuthOptions } from '@/pages/api/auth/[...nextauth]';
+import { withServerSession } from '@/server/authentication';
 
 export default function ResetPasswordPage(): JSX.Element {
   return (
@@ -13,14 +10,17 @@ export default function ResetPasswordPage(): JSX.Element {
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const userSession = await getServerSession(context.req, context.res, nextAuthOptions);
-
-  if (userSession) {
-    return { redirect: { destination: '/gestionnaire', permanent: false } };
+export const getServerSideProps = withServerSession(({ session }) => {
+  if (session) {
+    return {
+      redirect: {
+        destination: '/gestionnaire',
+        permanent: false,
+      },
+    };
   }
 
   return {
     props: {},
   };
-};
+});
