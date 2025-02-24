@@ -5,6 +5,7 @@ import { createMapConfiguration, defaultMapConfiguration, type MapConfigurationP
 import { fullscreenHeaderHeight, tabHeaderHeight } from '@/components/shared/layout/MainLayout.data';
 import SimplePage from '@/components/shared/page/SimplePage';
 import useInitialSearchParam from '@/hooks/useInitialSearchParam';
+import { withServerSession } from '@/server/services/authentication';
 import { setProperty } from '@/utils/core';
 
 const MapWrapper = styled.div`
@@ -81,5 +82,7 @@ const Carte = () => {
     </SimplePage>
   );
 };
+
+export const getServerSideProps = withServerSession;
 
 export default Carte;
