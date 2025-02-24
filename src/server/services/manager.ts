@@ -137,7 +137,7 @@ export const getDemands = async (user: User): Promise<Demand[]> => {
   } else if (user.role === USER_ROLE.DEMO) {
     filterFormula = `FIND("Paris", {Gestionnaires})`;
   } else {
-    const gestionnairesFilter = user.gestionnaires.map((g) => `FIND("${g}", {Gestionnaires})`).join(',');
+    const gestionnairesFilter = user.gestionnaires.map((g) => `REGEX_MATCH(ARRAYJOIN({Gestionnaires}, ","), "(^|,)${g}($|,)")`).join(',');
     filterFormula = `OR(${gestionnairesFilter})`;
   }
 
