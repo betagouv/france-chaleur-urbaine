@@ -120,7 +120,8 @@ export default function Home() {
       <Hero image="/img/banner_chauffage_gaz.png">
         <HeroTitle>Le chauffage urbain&nbsp;: une solution écologique à prix maîtrisé&nbsp;!</HeroTitle>
         <HeroSubtitle>
-          Testez votre éligibilité et comparez les coûts <strong>en 2 clics</strong>
+          Testez votre éligibilité{process.env.NEXT_PUBLIC_FLAG_ENABLE_COMPARATEUR === 'true' && ' et comparez les coûts'}{' '}
+          <strong>en 2 clics</strong>
         </HeroSubtitle>
         <HeroContent>
           <HeadSliceForm checkEligibility withWrapper={(form) => <>{form}</>} withBulkEligibility />
