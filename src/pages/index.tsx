@@ -57,14 +57,14 @@ const tools: TileListItem[] = [
   {
     title: 'Coûts de raccordement et aides',
     excerpt: 'Estimez le coût de votre raccordement.',
-    href: '/ressources/cout-raccordement',
+    href: '/ressources/cout-raccordement#contenu',
     image: '/icons/tools/innovation.svg',
     eventKey: 'Outil|Coûts de raccordement et aides',
   },
   {
     title: 'Obligations de raccordement',
     excerpt: 'Découvrez si votre bâtiment est concerné par une obligation de raccordement.',
-    href: '/ressources/obligations-raccordement',
+    href: '/ressources/obligations-raccordement#contenu',
     image: '/icons/tools/information.svg',
     eventKey: 'Outil|Obligations de raccordement',
   },
@@ -92,7 +92,7 @@ const tools: TileListItem[] = [
   {
     title: 'Téléchargement de données et outils',
     excerpt: 'Intégrez nos données et outils (API, iframe, ...).',
-    href: '/ressources/outils#iframes',
+    href: '/ressources/outils',
     image: '/icons/tools/system.svg',
     eventKey: 'Outil|Téléchargement de données et outils',
   },
@@ -106,7 +106,7 @@ const tools: TileListItem[] = [
   {
     title: 'Décret tertiaire',
     excerpt: 'Valorisez votre raccordement dans le cadre du dispositif Éco-Énergie Tertiaire.',
-    href: '/ressources/dispositif-eco-energie-tertiaire',
+    href: '/ressources/dispositif-eco-energie-tertiaire#contenu',
     image: '/icons/tools/compagnie.svg',
   },
 ];
