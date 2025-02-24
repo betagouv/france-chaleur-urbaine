@@ -4,7 +4,7 @@
 \
 Au programme :\
 ✔ Connaître les obligations de raccordement et les aides financières mobilisables\
-✔ Valoriser un raccordement dans le cadre du dispositif éco-énergie tertiaire et sur la plateforme Operat\
+✔ Valoriser un raccordement dans le cadre du dispositif Éco-Énergie Tertiaire et sur la plateforme Operat\
 ✔ Passer à l'action avec France Chaleur Urbaine, le service public de référence pour initier un projet de raccordement.\
 \
 Ce webinaire s'adressait aux propriétaires et gestionnaires de bâtiments tertiaires, ainsi qu'aux bureaux d'études qui les accompagnent.&#x20;

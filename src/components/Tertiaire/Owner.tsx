@@ -16,7 +16,7 @@ const Owner = () => {
               Si vos bâtiments présentent une surface d’activités tertiaires (ou un cumul de surfaces) égale ou supérieure à 1 000 m²
             </Text>
             <Text size="lg" mt="3w">
-              &rarr;&nbsp;vous êtes assujettis au dispositif éco-énergie tertiaire&nbsp;!
+              &rarr;&nbsp;vous êtes assujettis au dispositif Éco-Énergie Tertiaire&nbsp;!
             </Text>
             <Text size="lg" mt="3w">
               Pour atteindre les objectifs du dispositif, vous pouvez optimiser l'exploitation de vos bâtiments, moderniser vos équipements,

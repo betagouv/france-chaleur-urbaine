@@ -72,7 +72,7 @@ const contents = [
         des certificats d’économies d’énergie).
       </>,
       <>
-        <b>Dispositif éco-énergie tertiaire</b> favorable aux réseaux de chaleur : par le jeu des coefficients de conversion, se raccorder à
+        <b>Dispositif Éco-Énergie Tertiaire</b> favorable aux réseaux de chaleur : par le jeu des coefficients de conversion, se raccorder à
         un réseu de chaleur permet de comptabiliser jusqu’à 23% de réduction des consommations d’énergie.
       </>,
     ],

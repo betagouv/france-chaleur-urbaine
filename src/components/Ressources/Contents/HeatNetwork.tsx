@@ -301,7 +301,7 @@ const HeatNetwork = ({
       <br />
       Le raccordement aux réseaux de chaleur est ainsi encouragé par la réglementation (instauration d’une obligation de raccordement autour
       des réseaux classés, réponse aux exigences environnementales de la RE2020, coefficients incitatifs dans le cadre du dispositif
-      éco-énergie tertiaire…).
+      Éco-Énergie Tertiaire…).
       <br />
       <br />
       Ils témoignent :
