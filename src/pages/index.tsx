@@ -64,7 +64,7 @@ const tools: TileListItem[] = [
   {
     title: 'Obligations de raccordement',
     excerpt: 'Découvrez si votre bâtiment est concerné par une obligation de raccordement.',
-    href: '#obligation-raccordement',
+    href: '/ressources/obligations-raccordement',
     image: '/icons/tools/information.svg',
     eventKey: 'Outil|Obligations de raccordement',
   },
@@ -235,10 +235,12 @@ export default function Home() {
               Tout bâtiment renouvelant son installation de chauffage au-dessus de 30kW*
             </Text>
             <Text size="sm">* Ce seuil de puissance peut être relevé par la collectivité</Text>
-
-            <Link variant="primary" href="/carte" mt="6w">
-              Voir les réseaux classés sur la carte
-            </Link>
+            <div className="flex items-center gap-2 lg:gap-5 mt-6w">
+              <Link variant="primary" href="/carte">
+                Voir les réseaux classés sur la carte
+              </Link>
+              <Link href="/ressources/obligations-raccordement">En savoir plus</Link>
+            </div>
           </div>
         </SectionTwoColumns>
       </Section>
