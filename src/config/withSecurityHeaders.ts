@@ -1,13 +1,21 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-const helmet = require('helmet');
+import helmet from 'helmet';
+import type { NextConfig } from 'next';
 
-module.exports =
-  ({ iframes, csp: customCsp } = {}) =>
-  (nextConfig) => {
+type CSPDirectives = Record<string, string[]>;
+
+type SecurityHeadersConfig = {
+  iframes?: string[];
+  csp?: CSPDirectives;
+};
+
+const withSecurityHeaders = (config: SecurityHeadersConfig = {}) => {
+  const { iframes, csp: customCsp } = config;
+
+  return (nextConfig: NextConfig) => {
     const csp = {
       ...helmet.contentSecurityPolicy.getDefaultDirectives(),
       ...customCsp,
-    };
+    } as CSPDirectives;
 
     if (process.env.UNSAFE_EVAL === 'true') {
       csp['script-src'].push("'unsafe-eval'");
@@ -39,7 +47,6 @@ module.exports =
         key: 'X-Frame-Options',
         value: '',
       },
-
       {
         key: 'Content-Security-Policy',
         value: Object.keys(csp)
@@ -68,3 +75,6 @@ module.exports =
       },
     };
   };
+};
+
+export default withSecurityHeaders;

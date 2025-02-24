@@ -1,9 +1,10 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-const withBundleAnalyzer = require('@next/bundle-analyzer');
-const createMDX = require('@next/mdx');
+import withBundleAnalyzer from '@next/bundle-analyzer';
+import createMDX from '@next/mdx';
+import type { NextConfig } from 'next';
 
-const withSecurityHeaders = require('./src/config/withSecurityHeaders.js');
-const withSentry = require('./src/config/withSentry.js');
+import withSecurityHeaders from './src/config/withSecurityHeaders';
+import withSentry from './src/config/withSentry';
+
 const isGithubCI = process.env.NODE_ENV === 'production' && process.env.GITHUB_CI === 'true';
 
 const configFunctions = [
@@ -125,7 +126,7 @@ const configFunctions = [
   }),
 ];
 
-const nextConfig = {
+const nextConfig: NextConfig = {
   compiler: {
     styledComponents: true,
   },
@@ -230,12 +231,14 @@ const nextConfig = {
     // example: `import IconPotentiel from '@/public/icons/potentiel.svg?icon';`
     const nextImageLoaderRule = config.module.rules.find((rule) => rule.test?.test?.('.svg'));
 
-    nextImageLoaderRule.resourceQuery = {
-      not: [...nextImageLoaderRule.resourceQuery.not, /icon/],
-    };
+    if (nextImageLoaderRule) {
+      nextImageLoaderRule.resourceQuery = {
+        not: [...(nextImageLoaderRule.resourceQuery?.not || []), /icon/],
+      };
+    }
 
     config.module.rules.push({
-      issuer: nextImageLoaderRule.issuer,
+      issuer: nextImageLoaderRule?.issuer,
       resourceQuery: /icon/, // *.svg?icon
       use: ['@svgr/webpack'],
     });
@@ -246,8 +249,8 @@ const nextConfig = {
 };
 
 const compose =
-  (...fns) =>
-  (arg) =>
+  <T>(...fns: Array<(arg: T) => T>) =>
+  (arg: T): T =>
     fns.reduceRight((res, fn) => fn(res), arg);
 
-module.exports = compose(...configFunctions)(nextConfig);
+export default compose(...configFunctions)(nextConfig);
