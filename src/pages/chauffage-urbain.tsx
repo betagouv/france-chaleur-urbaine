@@ -3,10 +3,10 @@ import { useRef } from 'react';
 import Heating from '@/components/Ressources/Contents/DistrictHeating';
 import Header from '@/components/Ressources/Header';
 import { StickyWrapper } from '@/components/Ressources/Ressource.styles';
-import { Description, Title } from '@/components/Ressources/RessourceContent.styles';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Slice from '@/components/Slice';
 import StickyForm from '@/components/StickyForm/StickyForm';
+import Heading from '@/components/ui/Heading';
 
 const ChauffageUrbain = () => {
   const chauffageUrbainRef = useRef<null | HTMLHeadingElement>(null);
@@ -31,8 +31,10 @@ const ChauffageUrbain = () => {
       <StickyForm />
       <StickyWrapper>
         <Slice>
-          <Title>Tout savoir sur le chauffage urbain</Title>
-          <Description>
+          <Heading as="h1" className="!mt-12">
+            Tout savoir sur le chauffage urbain
+          </Heading>
+          <div className="my-8 [&_li]:cursor-pointer">
             <ul>
               <li onClick={() => chauffageUrbainRef.current && chauffageUrbainRef.current.scrollIntoView()}>
                 <u>Qu’est-ce que le chauffage urbain ?</u>
@@ -56,7 +58,7 @@ const ChauffageUrbain = () => {
                 <u>Quelles sont les aides financières disponibles ?</u>
               </li>
             </ul>
-          </Description>
+          </div>
           <Heating
             chauffageUrbainRef={chauffageUrbainRef}
             avantagesRef={avantagesRef}
