@@ -203,8 +203,8 @@ const Statistics = () => {
   }, [formatedDataCountBulkContact]);
 
   const percentAddressTests = useMemo(() => {
-    const startYear = 2023;
-    const startMonth = 5;
+    const startYear = new Date().getFullYear() - 1;
+    const startMonth = 1;
     const nbAdressesTests = getFormattedDataSum(formatedDataEligibilityTest, startYear, startMonth);
     const nbVisits = getFormattedDataSum(formatedDataVisits, startYear, startMonth);
     if (nbVisits && nbAdressesTests) {
