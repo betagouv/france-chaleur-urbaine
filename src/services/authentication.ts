@@ -2,6 +2,8 @@ import { atom, useAtom } from 'jotai';
 import { useHydrateAtoms } from 'jotai/utils';
 import { type Session } from 'next-auth';
 
+export { signOut } from 'next-auth/react';
+
 const authenticationAtom = atom<Session | null>(null);
 
 /**

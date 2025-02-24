@@ -3,7 +3,6 @@ import { Footer } from '@codegouvfr/react-dsfr/Footer';
 import UnstyledMainNavigation, { type MainNavigationProps } from '@codegouvfr/react-dsfr/MainNavigation';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { signOut } from 'next-auth/react';
 import React from 'react';
 import styled, { css } from 'styled-components';
 
@@ -13,7 +12,7 @@ import SEO, { type SEOProps } from '@/components/SEO';
 import Box from '@/components/ui/Box';
 import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
-import { useAuthentication } from '@/services/authentication';
+import { signOut, useAuthentication } from '@/services/authentication';
 import { USER_ROLE } from '@/types/enum/UserRole';
 import { deleteFetchJSON } from '@/utils/network';
 
