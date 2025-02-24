@@ -38,7 +38,7 @@ type EmailContent = {
   replyTo: string;
 };
 function ModalEmails(props: Props) {
-  const { isAuthenticated, user } = useAuthentication();
+  const { user } = useAuthentication();
   const getDefaultEmailContent = () => {
     return {
       object: '',
@@ -159,7 +159,7 @@ function ModalEmails(props: Props) {
       await props.updateDemand(props.currentDemand.id, updatedFields);
 
       //Update the current user signature
-      if (isAuthenticated && user.signature !== emailContent.signature) {
+      if (user.signature !== emailContent.signature) {
         // FIXME récupérer le csrf
         void fetch('/api/auth/session', {
           method: 'POST',

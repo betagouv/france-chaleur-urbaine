@@ -12,8 +12,7 @@ import SEO, { type SEOProps } from '@/components/SEO';
 import Box from '@/components/ui/Box';
 import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
-import { signOut, useAuthentication } from '@/services/authentication';
-import { USER_ROLE } from '@/types/enum/UserRole';
+import { useAuthentication } from '@/services/authentication';
 import { deleteFetchJSON } from '@/utils/network';
 
 import Banner from './Banner';
@@ -304,37 +303,6 @@ const publicQuickAccessItems: HeaderProps.QuickAccessItem[] = [
   },
 ];
 
-function getAuthenticatedQuickAccessItems(impersonating: boolean): HeaderProps.QuickAccessItem[] {
-  return [
-    ...(impersonating
-      ? [
-          {
-            text: 'Imposture en cours',
-            iconId: 'fr-icon-logout-box-r-line',
-            buttonProps: {
-              onClick: async () => {
-                await deleteFetchJSON('/api/admin/impersonate');
-                location.reload();
-              },
-              style: {
-                color: 'white',
-                backgroundColor: 'var(--background-flat-error)',
-                borderRadius: '6px',
-              },
-            },
-          } satisfies HeaderProps.QuickAccessItem,
-        ]
-      : []),
-    {
-      text: 'Se déconnecter',
-      iconId: 'fr-icon-logout-box-r-line',
-      buttonProps: {
-        onClick: () => signOut({ callbackUrl: '/' }),
-      },
-    },
-  ];
-}
-
 interface PageHeaderProps {
   mode: PageMode;
   currentPage?: string;
@@ -353,19 +321,48 @@ interface PageHeaderProps {
  */
 const PageHeader = (props: PageHeaderProps) => {
   const router = useRouter();
-  const { session, user, isAuthenticated } = useAuthentication();
+  const { session, hasRole, signOut } = useAuthentication();
 
   const isFullScreenMode = props.mode === 'public-fullscreen' || props.mode === 'authenticated';
 
   const navigationMenuItems =
     props.mode === 'authenticated'
-      ? [...authenticatedNavigationMenu, ...(isAuthenticated && user.role === USER_ROLE.ADMIN ? adminNavigationMenu : [])]
+      ? [...authenticatedNavigationMenu, ...(hasRole('admin') ? adminNavigationMenu : [])]
       : publicNavigationMenu;
 
   const currentPath = props.currentPage ?? router.pathname;
 
   const quickAccessItems =
-    props.mode === 'authenticated' ? getAuthenticatedQuickAccessItems(isAuthenticated && !!session.impersonating) : publicQuickAccessItems;
+    props.mode === 'authenticated'
+      ? ([
+          ...(session?.impersonating
+            ? [
+                {
+                  text: 'Imposture en cours',
+                  iconId: 'fr-icon-logout-box-r-line',
+                  buttonProps: {
+                    onClick: async () => {
+                      await deleteFetchJSON('/api/admin/impersonate');
+                      location.reload();
+                    },
+                    style: {
+                      color: 'white',
+                      backgroundColor: 'var(--background-flat-error)',
+                      borderRadius: '6px',
+                    },
+                  },
+                } satisfies HeaderProps.QuickAccessItem,
+              ]
+            : []),
+          {
+            text: 'Se déconnecter',
+            iconId: 'fr-icon-logout-box-r-line',
+            buttonProps: {
+              onClick: () => signOut({ callbackUrl: '/' }),
+            },
+          },
+        ] satisfies HeaderProps.QuickAccessItem[])
+      : publicQuickAccessItems;
 
   return (
     <>

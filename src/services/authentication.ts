@@ -1,15 +1,16 @@
 import { atom, useAtom } from 'jotai';
 import { useHydrateAtoms } from 'jotai/utils';
 import { type Session } from 'next-auth';
+import { signOut } from 'next-auth/react';
 
-export { signOut } from 'next-auth/react';
+import { type UserRole } from '@/types/enum/UserRole';
 
 const authenticationAtom = atom<Session | null>(null);
 
 /**
  * Hydrates the authentication atom with the session from the server.
  */
-export const useHydrateAuthentication = (session: Session | undefined) => {
+export const useInitAuthentication = (session: Session | undefined) => {
   useHydrateAtoms(new Map([[authenticationAtom, session]]));
 };
 
@@ -18,7 +19,10 @@ export const useHydrateAuthentication = (session: Session | undefined) => {
  */
 export const useAuthentication = () => {
   const [session] = useAtom(authenticationAtom);
-  return session
-    ? ({ isAuthenticated: true, session, user: session.user } as const)
-    : ({ isAuthenticated: false, session: null, user: null } as const);
+  return {
+    session: session ?? null,
+    user: session?.user ?? null,
+    hasRole: (role: UserRole) => session?.user && session?.user.role === role,
+    signOut,
+  };
 };

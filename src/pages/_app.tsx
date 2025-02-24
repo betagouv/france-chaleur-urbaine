@@ -15,7 +15,7 @@ import { usePreserveScroll } from '@/hooks/usePreserveScroll';
 import { HeatNetworkService, ServicesContext, SuggestionService } from '@/services';
 import { AdminService } from '@/services/admin';
 import { useAnalytics } from '@/services/analytics';
-import { useHydrateAuthentication } from '@/services/authentication';
+import { useInitAuthentication } from '@/services/authentication';
 import { DemandsService } from '@/services/demands';
 import { ExportService } from '@/services/export';
 import { axiosHttpClient } from '@/services/http';
@@ -45,7 +45,7 @@ function App({
 }: AppProps<{
   session: Session;
 }>) {
-  useHydrateAuthentication(pageProps.session);
+  useInitAuthentication(pageProps.session);
   usePreserveScroll();
   useAnalytics();
 
