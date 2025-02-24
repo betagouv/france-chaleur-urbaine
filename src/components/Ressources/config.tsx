@@ -6,6 +6,7 @@ import Bill from './Contents/Bill';
 import ClassedNetwork from './Contents/ClassedNetwork';
 import ColdNetwork from './Contents/ColdNetwork';
 import CoutRaccordement from './Contents/CoutRaccordement';
+import DispositifEcoEnergieTertiaire from './Contents/dispositif-eco-energie-tertiaire.mdx';
 import Feasability from './Contents/Feasability';
 import Fundings from './Contents/Fundings';
 import GreenEnergies from './Contents/GreenEnergies';
@@ -190,6 +191,15 @@ export const understandings: Record<string, Document> = {
     seoDescription:
       'Le raccordement est obligatoire sur certains réseaux, pour tout bâtiment neuf ou renouvelant son installation de chauffage au-dessus d’une certaine puissance.',
     content: <ObligationsRaccordement />,
+  },
+  'dispositif-eco-energie-tertiaire': {
+    title: 'Valoriser un raccordement dans le cadre du dispositif Éco Énergie Tertiaire',
+    description:
+      'Se raccorder à un réseau de chaleur, c’est 23 % de réduction de consommations d’énergie comptabilisée dans le cadre du dispositif Éco Énergie Tertiaire.',
+    seoTitle: 'Valoriser un raccordement dans le cadre du dispositif Éco Énergie Tertiaire',
+    seoDescription:
+      'Se raccorder à un réseau de chaleur, c’est 23 % de réduction de consommations d’énergie comptabilisée dans le cadre du dispositif Éco Énergie Tertiaire.',
+    content: <DispositifEcoEnergieTertiaire />,
   },
 };
 

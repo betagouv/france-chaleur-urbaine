@@ -103,12 +103,12 @@ const tools: TileListItem[] = [
     image: '/icons/tools/pictures.svg',
     eventKey: 'Outil|Supports pédagogiques',
   },
-  // {
-  //   title: 'Décret tertiaire',
-  //   excerpt: 'Valorisez votre raccordement dans le cadre du dispositif éco-énergie tertiaire.',
-  //   href: '/decret-tertiaire',
-  //   image: '/icons/tools/pictures.svg',
-  // },
+  {
+    title: 'Décret tertiaire',
+    excerpt: 'Valorisez votre raccordement dans le cadre du dispositif Éco-Énergie Tertiaire.',
+    href: '/ressources/dispositif-eco-energie-tertiaire',
+    image: '/icons/tools/compagnie.svg',
+  },
 ];
 
 export default function Home() {
