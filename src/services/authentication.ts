@@ -3,6 +3,8 @@ import { useHydrateAtoms } from 'jotai/utils';
 import { type Session } from 'next-auth';
 import { signOut } from 'next-auth/react';
 
+import { usePost, useFetch } from '@/hooks/useApi';
+import { type UserPreferencesInput, type UserPreferences } from '@/pages/api/user/preferences';
 import { type UserRole } from '@/types/enum/UserRole';
 
 const authenticationAtom = atom<Session | null>(null);
@@ -19,10 +21,24 @@ export const useInitAuthentication = (session: Session | undefined) => {
  */
 export const useAuthentication = () => {
   const [session] = useAtom(authenticationAtom);
+
   return {
     session: session ?? null,
     user: session?.user ?? null,
+    isAuthenticated: !!session,
     hasRole: (role: UserRole) => session?.user && session?.user.role === role,
     signOut,
   };
+};
+
+/**
+ * Returns the user informations and preferences.
+ */
+export const useUser = () => {
+  const { isAuthenticated } = useAuthentication();
+  const { data: userPreferences } = useFetch<UserPreferences>('/api/user/preferences', { enabled: isAuthenticated });
+  const { mutateAsync: updateUserPreferences } = usePost<UserPreferencesInput>('/api/user/preferences', {
+    invalidate: ['/api/user/preferences'],
+  });
+  return { userPreferences, updateUserPreferences };
 };

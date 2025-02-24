@@ -10,7 +10,7 @@ import Heading from '@/components/ui/Heading';
 import Modal from '@/components/ui/Modal';
 import emailsContentList from '@/data/manager/manager-emails-content';
 import emailsList from '@/data/manager/manager-emails-list';
-import { useAuthentication } from '@/services/authentication';
+import { useUser } from '@/services/authentication';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import { type Demand } from '@/types/Summary/Demand';
 
@@ -38,15 +38,15 @@ type EmailContent = {
   replyTo: string;
 };
 function ModalEmails(props: Props) {
-  const { user } = useAuthentication();
+  const { userPreferences, updateUserPreferences } = useUser();
   const getDefaultEmailContent = () => {
     return {
       object: '',
       to: props.currentDemand.Mail,
       body: '',
-      signature: user?.signature || '',
-      cc: user?.email || '',
-      replyTo: user?.email || '',
+      signature: userPreferences?.signature || '',
+      cc: userPreferences?.email || '',
+      replyTo: userPreferences?.email || '',
     };
   };
 
@@ -159,13 +159,8 @@ function ModalEmails(props: Props) {
       await props.updateDemand(props.currentDemand.id, updatedFields);
 
       //Update the current user signature
-      if (user.signature !== emailContent.signature) {
-        // FIXME récupérer le csrf
-        void fetch('/api/auth/session', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ signature: emailContent.signature }),
-        });
+      if (userPreferences && userPreferences.signature !== emailContent.signature) {
+        void updateUserPreferences({ signature: emailContent.signature });
       }
 
       setSent(true);
