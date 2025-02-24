@@ -19,6 +19,7 @@ const login = async (email: string, password: string) => {
   return {
     id: user.id,
     gestionnaires: user.gestionnaires,
+    active: user.active,
     role: user.role,
     email: user.email,
     signature: user.signature,
