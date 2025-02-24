@@ -7,7 +7,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     // Do not use from react-dsfr as it wraps everything in a p which causes hydration error when a paragraph is in the Highlight
     blockquote: ({ children }: any) => <div className="fr-highlight">{children}</div>,
     a: ({ href, children }: any) => (
-      <Link href={href} isExternal={href.startsWith('http')} className="">
+      <Link href={href} isExternal={href.startsWith('http')}>
         {children}
       </Link>
     ),
