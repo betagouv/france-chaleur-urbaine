@@ -251,6 +251,30 @@ const authenticatedNavigationMenu: MainNavigationProps.Item[] = [
       href: '/aide',
     },
   },
+  {
+    text: 'authentifié 1',
+    linkProps: {
+      href: '/auth-1',
+    },
+  },
+  {
+    text: 'authentifié 2',
+    linkProps: {
+      href: '/auth-2',
+    },
+  },
+  {
+    text: 'NON authentifié 1',
+    linkProps: {
+      href: '/non-auth-1',
+    },
+  },
+  {
+    text: 'NON authentifié 2',
+    linkProps: {
+      href: '/non-auth-2',
+    },
+  },
 ];
 
 const adminNavigationMenu: MainNavigationProps.Item[] = [
