@@ -896,7 +896,7 @@ export const articles = (
     },
     {
       image: '/contents/23.jpg',
-      title: 'Dispositif éco-énergie tertiaire',
+      title: 'Dispositif Éco-Énergie Tertiaire',
       slug: 'dispositif-éco-énergie-tertiaire',
       content: importFile(readme_3_1_1_1),
       publishedDate: new Date('2023-05-10'),

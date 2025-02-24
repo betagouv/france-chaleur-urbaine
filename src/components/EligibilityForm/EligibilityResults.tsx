@@ -29,7 +29,7 @@ ${
 }
 ${
   inPDP
-    ? '::arrow-item[**Vous êtes dans le périmètre de développement prioritaire** du réseau. Une obligation de raccordement peut exister (<a href="/ressources/prioritaire#contenu" target="_blank">en savoir plus</a>). Une amende de 300 000€ peut s’appliquer en cas de non-raccordement sans dérogation.]'
+    ? '::arrow-item[**Vous êtes dans le périmètre de développement prioritaire** du réseau. Une obligation de raccordement peut exister (<a href="/ressources/obligations-raccordement#contenu" target="_blank">en savoir plus</a>). Une amende de 300 000€ peut s’appliquer en cas de non-raccordement sans dérogation.]'
     : ''
 }
 ::arrow-item[Avec un chauffage collectif, **votre immeuble dispose déjà des équipements nécessaires :** il s’agit du cas le plus favorable pour un raccordement !]
@@ -73,7 +73,7 @@ ${
 }
 ${
   inPDP
-    ? '::arrow-item[De plus, **vous êtes dans le périmètre de développement prioritaire** du réseau le plus proche. Une obligation de raccordement peut exister (<a href="/ressources/prioritaire#contenu" target="_blank">en savoir plus</a>). Une amende de 300 000€ peut s’appliquer en cas de non-raccordement sans dérogation.]'
+    ? '::arrow-item[De plus, **vous êtes dans le périmètre de développement prioritaire** du réseau le plus proche. Une obligation de raccordement peut exister (<a href="/ressources/obligations-raccordement#contenu" target="_blank">en savoir plus</a>). Une amende de 300 000€ peut s’appliquer en cas de non-raccordement sans dérogation.]'
     : ''
 }
 ::arrow-item[Avec un chauffage collectif, **votre immeuble dispose déjà des équipements nécessaires** : il s’agit du cas le plus favorable pour un raccordement !]
@@ -131,7 +131,7 @@ const closeFuturCollectif: EligibilityResult = {
   } (réseau prévu ou en construction).]
 ${
   inPDP
-    ? '::arrow-item[**Vous êtes dans le périmètre de développement prioritaire** du réseau. Une obligation de raccordement peut exister (<a href="/ressources/prioritaire#contenu" target="_blank">en savoir plus</a>). Une amende de 300 000€ peut s’appliquer en cas de non-raccordement sans dérogation.]'
+    ? '::arrow-item[**Vous êtes dans le périmètre de développement prioritaire** du réseau. Une obligation de raccordement peut exister (<a href="/ressources/obligations-raccordement#contenu" target="_blank">en savoir plus</a>). Une amende de 300 000€ peut s’appliquer en cas de non-raccordement sans dérogation.]'
     : ''
 }
 ::arrow-item[Avec un chauffage collectif, **votre immeuble dispose déjà des équipements nécessaires :** il s’agit du cas le plus favorable pour un raccordement !]
@@ -154,7 +154,7 @@ ${city === 'Paris' ? '::small[A noter: sur Paris, la puissance souscrite doit ê
 const farCollectifInPDP: EligibilityResult = {
   body: ({ gestionnaire, tauxENRR }) => `
 ::arrow-item[**Il n’existe pour le moment pas de réseau de chaleur** à proximité de votre adresse.]
-::arrow-item[Toutefois, les réseaux de chaleur se développent et **vous êtes dans le périmètre de développement prioritaire du réseau** le plus proche. Une obligation de raccordement peut exister (<a href="/ressources/prioritaire#contenu" target="_blank">en savoir plus</a>). Une amende de 300 000€ peut s’appliquer en cas de non-raccordement sans dérogation.]
+::arrow-item[Toutefois, les réseaux de chaleur se développent et **vous êtes dans le périmètre de développement prioritaire du réseau** le plus proche. Une obligation de raccordement peut exister (<a href="/ressources/obligations-raccordement#contenu" target="_blank">en savoir plus</a>). Une amende de 300 000€ peut s’appliquer en cas de non-raccordement sans dérogation.]
 ${
   gestionnaire
     ? `::arrow-item[Le gestionnaire du réseau le plus proche est **${gestionnaire}**.${
@@ -178,7 +178,7 @@ const intermediateFuturCollectif: EligibilityResult = {
   } (réseau prévu ou en construction).]
 ${
   inPDP
-    ? '::arrow-item[De plus, vous êtes dans le périmètre de développement prioritaire du réseau le plus proche. Une obligation de raccordement peut exister (<a href="/ressources/prioritaire#contenu" target="_blank">en savoir plus</a>). Une amende de 300 000€ peut s’appliquer en cas de non-raccordement sans dérogation.]'
+    ? '::arrow-item[De plus, vous êtes dans le périmètre de développement prioritaire du réseau le plus proche. Une obligation de raccordement peut exister (<a href="/ressources/obligations-raccordement#contenu" target="_blank">en savoir plus</a>). Une amende de 300 000€ peut s’appliquer en cas de non-raccordement sans dérogation.]'
     : ''
 }
 ::arrow-item[Avec un chauffage collectif, **votre immeuble dispose déjà des équipements nécessaires** : il s’agit du cas le plus favorable pour un raccordement !]

@@ -24,7 +24,7 @@ const conseillerCards = {
   'energies-vertes': issues['energies-vertes'],
   avantages: understandings.avantages,
   aides: understandings.aides,
-  prioritaire: understandings.prioritaire,
+  'obligations-raccordement': understandings['obligations-raccordement'],
 };
 
 const Professionnels = () => {
@@ -89,7 +89,7 @@ const Professionnels = () => {
             <Box display="flex" flexDirection="column" alignItems="center" className="fr-col-12 fr-col-lg-6 fr-col-xl-3">
               <Image src="/img/pro_avantages_4.svg" alt="" width={160} height={125} priority className="img-object-contain" />
               <Text size="lg" textAlign="center" mt="2w">
-                Contribue aux objectifs éco-énergie tertiaire (-23% de réduction de consommation comptabilisés)
+                Contribue aux objectifs Éco-Énergie Tertiaire (-23% de réduction de consommation comptabilisés)
               </Text>
             </Box>
           </Box>

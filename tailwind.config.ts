@@ -48,6 +48,7 @@ const config = {
         'fcu-green': '#009364',
         'fcu-blue': '#00B1F8',
         'fcu-purple': '#8585F6',
+        'fcu-purple-dark': '#4550E5',
         'fcu-yellow': '#F9F21A',
         'fcu-orange': '#FF692F',
         'fcu-orange-light': '#F89389',

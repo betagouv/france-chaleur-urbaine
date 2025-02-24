@@ -6,6 +6,7 @@ import Bill from './Contents/Bill';
 import ClassedNetwork from './Contents/ClassedNetwork';
 import ColdNetwork from './Contents/ColdNetwork';
 import CoutRaccordement from './Contents/CoutRaccordement';
+import DispositifEcoEnergieTertiaire from './Contents/dispositif-eco-energie-tertiaire.mdx';
 import Feasability from './Contents/Feasability';
 import Fundings from './Contents/Fundings';
 import GreenEnergies from './Contents/GreenEnergies';
@@ -13,7 +14,7 @@ import Helps from './Contents/Helps';
 import History from './Contents/History';
 import Livraisons from './Contents/Livraisons';
 import Network from './Contents/Network';
-import Priority from './Contents/Priority';
+import ObligationsRaccordement from './Contents/obligations-raccordement.mdx';
 import Role from './Contents/Role';
 import State from './Contents/State';
 import Strengths from './Contents/Strengths';
@@ -24,7 +25,7 @@ export type Document = {
   description: ReactNode;
   seoDescription: string;
   seoTitle?: string;
-  content: ReactNode;
+  content?: ReactNode;
 };
 
 // Don't forget to update next-sitemap.config on updating key here
@@ -177,22 +178,28 @@ export const understandings: Record<string, Document> = {
     title: 'Qu’est-ce qu’un réseau classé ?',
     description:
       'Le classement d’un réseau instaure une obligation de raccordement pour certains bâtiments, dans une zone autour du réseau qualifiée de périmètre de développement prioritaire.',
-    seoTitle: 'Obligations de raccordement aux réseaux de chaleur',
+    seoTitle: 'Qu’est-ce qu’un réseau classé ?',
     seoDescription:
-      'Vous changez votre chaudière gaz ou fioul ? Vérifiez si votre bâtiment est concerné par une obligation de raccordement au chauffage urbain.',
+      'Le classement d’un réseau instaure une obligation de raccordement pour certains bâtiments, dans une zone autour du réseau qualifiée de périmètre de développement prioritaire.',
     content: <ClassedNetwork />,
   },
-  prioritaire: {
-    title: 'Mon bâtiment est situé dans le périmètre de développement prioritaire',
-    seoTitle: 'Chauffage urbain, obligations de raccordement - réseau classé',
-    description: (
-      <>
-        Quels bâtiments sont concernés par <b>l’obligation de raccordement ?</b>
-      </>
-    ),
+  'obligations-raccordement': {
+    title: 'Mon bâtiment est-il concerné par une obligation de raccordement au réseau de chaleur ?',
+    description:
+      'Le raccordement est obligatoire sur certains réseaux, pour tout bâtiment neuf ou renouvelant son installation de chauffage au-dessus d’une certaine puissance.',
+    seoTitle: 'Mon bâtiment est-il concerné par une obligation de raccordement au réseau de chaleur ?',
     seoDescription:
-      'Mon bâtiment est-il concerné par une obligation de raccordement à un réseau de chaleur ? (procédure de classement des réseaux).',
-    content: <Priority />,
+      'Le raccordement est obligatoire sur certains réseaux, pour tout bâtiment neuf ou renouvelant son installation de chauffage au-dessus d’une certaine puissance.',
+    content: <ObligationsRaccordement />,
+  },
+  'dispositif-eco-energie-tertiaire': {
+    title: 'Valoriser un raccordement dans le cadre du dispositif Éco Énergie Tertiaire',
+    description:
+      'Se raccorder à un réseau de chaleur, c’est 23 % de réduction de consommations d’énergie comptabilisée dans le cadre du dispositif Éco Énergie Tertiaire.',
+    seoTitle: 'Valoriser un raccordement dans le cadre du dispositif Éco Énergie Tertiaire',
+    seoDescription:
+      'Se raccorder à un réseau de chaleur, c’est 23 % de réduction de consommations d’énergie comptabilisée dans le cadre du dispositif Éco Énergie Tertiaire.',
+    content: <DispositifEcoEnergieTertiaire />,
   },
 };
 

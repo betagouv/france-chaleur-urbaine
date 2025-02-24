@@ -57,14 +57,14 @@ const tools: TileListItem[] = [
   {
     title: 'Coûts de raccordement et aides',
     excerpt: 'Estimez le coût de votre raccordement.',
-    href: '/ressources/cout-raccordement',
+    href: '/ressources/cout-raccordement#contenu',
     image: '/icons/tools/innovation.svg',
     eventKey: 'Outil|Coûts de raccordement et aides',
   },
   {
     title: 'Obligations de raccordement',
     excerpt: 'Découvrez si votre bâtiment est concerné par une obligation de raccordement.',
-    href: '#obligation-raccordement',
+    href: '/ressources/obligations-raccordement#contenu',
     image: '/icons/tools/information.svg',
     eventKey: 'Outil|Obligations de raccordement',
   },
@@ -92,7 +92,7 @@ const tools: TileListItem[] = [
   {
     title: 'Téléchargement de données et outils',
     excerpt: 'Intégrez nos données et outils (API, iframe, ...).',
-    href: '/ressources/outils#iframes',
+    href: '/ressources/outils',
     image: '/icons/tools/system.svg',
     eventKey: 'Outil|Téléchargement de données et outils',
   },
@@ -103,12 +103,12 @@ const tools: TileListItem[] = [
     image: '/icons/tools/pictures.svg',
     eventKey: 'Outil|Supports pédagogiques',
   },
-  // {
-  //   title: 'Décret tertiaire',
-  //   excerpt: 'Valorisez votre raccordement dans le cadre du dispositif éco-énergie tertiaire.',
-  //   href: '/decret-tertiaire',
-  //   image: '/icons/tools/pictures.svg',
-  // },
+  {
+    title: 'Décret tertiaire',
+    excerpt: 'Valorisez votre raccordement dans le cadre du dispositif Éco-Énergie Tertiaire.',
+    href: '/ressources/dispositif-eco-energie-tertiaire#contenu',
+    image: '/icons/tools/compagnie.svg',
+  },
 ];
 
 export default function Home() {
@@ -120,7 +120,8 @@ export default function Home() {
       <Hero image="/img/banner_chauffage_gaz.png">
         <HeroTitle>Le chauffage urbain&nbsp;: une solution écologique à prix maîtrisé&nbsp;!</HeroTitle>
         <HeroSubtitle>
-          Testez votre éligibilité et comparez les coûts <strong>en 2 clics</strong>
+          Testez votre éligibilité{process.env.NEXT_PUBLIC_FLAG_ENABLE_COMPARATEUR === 'true' && ' et comparez les coûts'}{' '}
+          <strong>en 2 clics</strong>
         </HeroSubtitle>
         <HeroContent>
           <HeadSliceForm checkEligibility withWrapper={(form) => <>{form}</>} withBulkEligibility />
@@ -234,10 +235,12 @@ export default function Home() {
               Tout bâtiment renouvelant son installation de chauffage au-dessus de 30kW*
             </Text>
             <Text size="sm">* Ce seuil de puissance peut être relevé par la collectivité</Text>
-
-            <Link variant="primary" href="/carte" mt="6w">
-              Voir les réseaux classés sur la carte
-            </Link>
+            <div className="flex items-center gap-2 lg:gap-5 mt-6w">
+              <Link variant="primary" href="/carte">
+                Voir les réseaux classés sur la carte
+              </Link>
+              <Link href="/ressources/obligations-raccordement">En savoir plus</Link>
+            </div>
           </div>
         </SectionTwoColumns>
       </Section>
