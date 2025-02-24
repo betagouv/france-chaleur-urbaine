@@ -1,7 +1,7 @@
 import { atom, useAtom } from 'jotai';
 import { useHydrateAtoms } from 'jotai/utils';
 import { type Session } from 'next-auth';
-import { signOut } from 'next-auth/react';
+import { signIn, signOut } from 'next-auth/react';
 
 import { usePost, useFetch } from '@/hooks/useApi';
 import { type UserPreferencesInput, type UserPreferences } from '@/pages/api/user/preferences';
@@ -27,6 +27,7 @@ export const useAuthentication = () => {
     user: session?.user ?? null,
     isAuthenticated: !!session,
     hasRole: (role: UserRole) => session?.user && session?.user.role === role,
+    signIn,
     signOut,
   };
 };
