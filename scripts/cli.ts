@@ -269,19 +269,24 @@ program
 
 program
   .command('reseaux:update-geom')
-  .description(
-    "Met à jour la géométrie d'un réseau. Attention, le fichier contenant la géométrie doit être au format WGS 84 (4326) et non Lambert 93 (2154)"
-  )
+  .description("Met à jour la géométrie d'un réseau. La géométrie peut être en WGS 84 (4326) ou Lambert 93 (2154)")
   .argument('<id_fcu>', 'id_fcu du réseau', (v) => parseInt(v))
-  .argument('<fileName>', 'input file (format GeoJSON srid 4326)')
+  .argument('<fileName>', 'input file (format GeoJSON)')
   .action(async (id_fcu, fileName) => {
-    const geom = await readFileGeometry(fileName);
+    const { geom, srid } = await readFileGeometry(fileName);
     await kdb
       .with('geometry', (db) => db.selectNoFrom(sql.lit(JSON.stringify(geom)).as('geom')))
       .updateTable('reseaux_de_chaleur')
       .where('id_fcu', '=', id_fcu)
       .set({
-        geom: (eb) => eb.selectFrom('geometry').select(sql<string>`st_transform(ST_GeomFromGeoJSON(geometry.geom), 2154)`.as('geom')),
+        geom: (eb) =>
+          eb
+            .selectFrom('geometry')
+            .select(
+              srid === 4326
+                ? sql<string>`st_transform(ST_GeomFromGeoJSON(geometry.geom), 2154)`.as('geom')
+                : sql<string>`st_setsrid(ST_GeomFromGeoJSON(geometry.geom), 2154)`.as('geom')
+            ),
         has_trace: (eb) =>
           eb.selectFrom('geometry').select(sql<boolean>`st_geometrytype(geometry.geom) = 'ST_MultiLineString'`.as('has_trace')),
       })
@@ -291,12 +296,12 @@ program
 program
   .command('reseaux:insert-geom')
   .description(
-    'Insère un nouveau réseau (avoir créé le réseau sur airtable au préalable) avec une géométrie. Attention, le fichier contenant la géométrie doit être au format WGS 84 (4326) et non Lambert 93 (2154)'
+    'Insère un nouveau réseau (avoir créé le réseau sur airtable au préalable) avec une géométrie. La géométrie peut être en WGS 84 (4326) ou Lambert 93 (2154)'
   )
   .argument('<id_fcu>', 'id_fcu du réseau', (v) => parseInt(v))
-  .argument('<fileName>', 'input file (format GeoJSON srid 4326)')
+  .argument('<fileName>', 'input file (format GeoJSON)')
   .action(async (id_fcu, fileName) => {
-    const geom = await readFileGeometry(fileName);
+    const { geom, srid } = await readFileGeometry(fileName);
     await kdb
       .with('geometry', (db) => db.selectNoFrom(sql.lit(JSON.stringify(geom)).as('geom')))
       .insertInto('reseaux_de_chaleur')
@@ -306,7 +311,9 @@ program
           .selectFrom('geometry')
           .select((eb) => [
             eb.lit(id_fcu).as('id_fcu'),
-            sql<any>`st_transform(ST_GeomFromGeoJSON(geometry.geom), 2154)`.as('geom'),
+            srid === 4326
+              ? sql<string>`st_transform(ST_GeomFromGeoJSON(geometry.geom), 2154)`.as('geom')
+              : sql<string>`st_setsrid(ST_GeomFromGeoJSON(geometry.geom), 2154)`.as('geom'),
             sql<boolean>`st_geometrytype(geometry.geom) = 'ST_MultiLineString'`.as('has_trace'),
             eb.val([]).as('communes'),
             eb.lit(false).as('reseaux classes'),
