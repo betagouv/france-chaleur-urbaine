@@ -33,9 +33,9 @@ export const useAuthentication = () => {
 };
 
 /**
- * Returns the user informations and preferences.
+ * Returns the user preferences.
  */
-export const useUser = () => {
+export const useUserPreferences = () => {
   const { isAuthenticated } = useAuthentication();
   const { data: userPreferences } = useFetch<UserPreferences>('/api/user/preferences', { enabled: isAuthenticated });
   const { mutateAsync: updateUserPreferences } = usePost<UserPreferencesInput>('/api/user/preferences', {

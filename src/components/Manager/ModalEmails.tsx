@@ -10,7 +10,7 @@ import Heading from '@/components/ui/Heading';
 import Modal from '@/components/ui/Modal';
 import emailsContentList from '@/data/manager/manager-emails-content';
 import emailsList from '@/data/manager/manager-emails-list';
-import { useUser } from '@/services/authentication';
+import { useUserPreferences } from '@/services/authentication';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import { type Demand } from '@/types/Summary/Demand';
 
@@ -38,7 +38,7 @@ type EmailContent = {
   replyTo: string;
 };
 function ModalEmails(props: Props) {
-  const { userPreferences, updateUserPreferences } = useUser();
+  const { userPreferences, updateUserPreferences } = useUserPreferences();
   const getDefaultEmailContent = () => {
     return {
       object: '',
