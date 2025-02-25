@@ -1,7 +1,9 @@
 import Badge from '@codegouvfr/react-dsfr/Badge';
+import Highlight from '@codegouvfr/react-dsfr/Highlight';
 import Image from 'next/image';
 
 import LastArticles from '@/components/Articles/LastArticles';
+import InterviewsVideos from '@/components/Coproprietaire/InterviewsVideos';
 import AvantagesChauffageUrbain from '@/components/GenericContent/AvantagesChauffageUrbain';
 import HeadSliceForm from '@/components/HeadSliceForm';
 import Partners from '@/components/Partners/Partners';
@@ -11,6 +13,7 @@ import SimplePage from '@/components/shared/page/SimplePage';
 import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
 import Hero, { HeroContent, HeroSubtitle, HeroTitle } from '@/components/ui/Hero';
+import Icon from '@/components/ui/Icon';
 import Link from '@/components/ui/Link';
 import Section, { SectionContent, SectionHeading, SectionSubtitle, SectionTitle, SectionTwoColumns } from '@/components/ui/Section';
 import Text from '@/components/ui/Text';
@@ -245,7 +248,7 @@ export default function Home() {
         </SectionTwoColumns>
       </Section>
 
-      {/* <Section>
+      <Section variant="bordered">
         <SectionTwoColumns>
           <div>
             <SectionHeading as="h3" size="h4" mt="0">
@@ -297,21 +300,19 @@ export default function Home() {
               Le chauffage urbain, ce sont les copropriétaires et les syndics qui en parlent le mieux !
             </Text>
 
-            <Icon name="fr-icon-quote-line" color="#6A6AF4" />
-
-            <Text as="blockquote" ml="0" mt="1w" fontStyle="italic">
+            <Highlight className="mt-1w italic">
+              <Icon name="fr-icon-quote-line" color="#6A6AF4" className="mr-2w" />
               Je conseille vivement le raccordement à un réseau de chaleur pour des raisons économiques et écologiques.
-            </Text>
-            <Text size="sm" mt="2w">
-              Henry Hostein Président du conseil syndical
-            </Text>
+              <span className="block text-right mt-2">— Henry Hostein Président du conseil syndical</span>
+            </Highlight>
+            <Text size="sm" mt="2w"></Text>
 
             <Box mt="3w">
               <InterviewsVideos />
             </Box>
           </div>
         </SectionTwoColumns>
-      </Section> */}
+      </Section>
 
       <Section>
         <SectionTitle>Nos actualités</SectionTitle>

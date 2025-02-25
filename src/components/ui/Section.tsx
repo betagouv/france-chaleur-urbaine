@@ -15,6 +15,7 @@ const sectionVariants = cva('', {
     variant: {
       normal: '',
       light: 'bg-light',
+      bordered: 'border-b border-light',
       accent: 'bg-accent text-white',
     },
   },
@@ -60,6 +61,7 @@ const headingVariants = cva('', {
     variant: {
       normal: '!text-black',
       light: '!text-black',
+      bordered: '!text-black',
       accent: '!text-white',
     },
   },
@@ -92,6 +94,7 @@ const subtitleVariants = cva('text-center max-w-[640px] mx-auto', {
     variant: {
       normal: '!text-gray-900',
       light: '!text-gray-900',
+      bordered: '!text-gray-900',
       accent: '!text-gray-100',
     },
   },
