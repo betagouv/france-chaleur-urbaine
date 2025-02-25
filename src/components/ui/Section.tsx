@@ -14,8 +14,8 @@ const sectionVariants = cva('', {
     },
     variant: {
       normal: '',
-      light: 'bg-blueFrance-_975_75',
-      accent: 'bg-blueFrance-main525 text-white',
+      light: 'bg-light',
+      accent: 'bg-accent text-white',
     },
   },
   defaultVariants: {

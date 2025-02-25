@@ -34,6 +34,7 @@ const config = {
         // Use colors from DSFR through md:text-redMarianne-_975_75-active https://www.systeme-de-design.gouv.fr/fondamentaux/couleurs-palette
         ...replaceKeyDeep<typeof fr.colors.options>(fr.colors.options, 'default', 'DEFAULT'),
         blue: fr.colors.decisions.background.flat.blueFrance.default,
+        'blue-light': '#B2D6F2',
         red: fr.colors.decisions.background.flat.redMarianne.default,
         'info-light': fr.colors.decisions.background.contrast.info.default,
         info: fr.colors.decisions.text.mention.grey.default,
@@ -52,6 +53,8 @@ const config = {
         'fcu-yellow': '#F9F21A',
         'fcu-orange': '#FF692F',
         'fcu-orange-light': '#F89389',
+        light: fr.colors.decisions.background.alt.blueFrance.default,
+        accent: fr.colors.options.blueFrance.main525,
       },
     },
   },

@@ -15,9 +15,9 @@ const heroContainerVariants = cva('relative', {
     },
     variant: {
       normal: 'bg-[#C3E4E1] [&_article]:bg-[#C3E4E1]/90',
-      light: 'bg-blueFrance-_975_75 [&_article]:bg-blueFrance-_975_75/90',
-      accent: 'bg-blueFrance-main525 text-white [&_article]:bg-blueFrance-main525/90',
-      city: 'bg-[#B2D6F2]',
+      light: 'bg-light [&_article]:bg-light/90',
+      accent: 'bg-accent text-white [&_article]:bg-accent/90',
+      city: 'bg-blue-light',
       ressource: 'bg-blueCumulus-_950_100',
       transparent: 'bg-transparent',
     },
