@@ -377,6 +377,75 @@ program
   });
 
 program
+  .command('pdp:create-commune')
+  .description("Insère un nouveau PDP avec une géométrie à partir d'une commune")
+  .argument('<commune>', 'nom de la commune')
+  .argument('<id_sncu>', 'ID SNCU (identifiant réseau)', (a) => a, '')
+  .action(async (commune, id_sncu) => {
+    // check if it exists
+    if (!(await kdb.selectFrom('ign_communes').select('id').where('nom', 'ilike', commune).executeTakeFirst())) {
+      throw new Error(`La commune ${commune} n'a pas été trouvée`);
+    }
+
+    const inserted = await kdb
+      .with('geometry', (db) => db.selectFrom('ign_communes').select('geom').where('nom', 'ilike', commune))
+      .insertInto('zone_de_developpement_prioritaire')
+      .values((eb) => ({
+        id_fcu: sql<number>`(SELECT max(id_fcu) + 1 FROM zone_de_developpement_prioritaire)`,
+        geom: eb.selectFrom('geometry').select('geometry.geom'),
+        'Identifiant reseau': id_sncu,
+        communes: sql<string[]>`COALESCE(
+          (
+            SELECT array_agg(nom order by nom)
+            FROM geometry
+            JOIN ign_communes on ST_Intersects(geometry.geom, st_buffer(ign_communes.geom, -150))
+          ),
+          (
+            SELECT array_agg(nom order by nom)
+            FROM geometry
+            JOIN ign_communes on ST_Intersects(geometry.geom, ign_communes.geom)
+          )
+        )::text[]`,
+      }))
+      .returning('id_fcu')
+      .executeTakeFirstOrThrow();
+
+    console.info('PDP créé:', inserted.id_fcu);
+
+    if (id_sncu) {
+      const res = await kdb
+        .updateTable('reseaux_de_chaleur')
+        .where('Identifiant reseau', '=', id_sncu)
+        .set({
+          has_PDP: true,
+        })
+        .returning('id_fcu')
+        .executeTakeFirstOrThrow();
+      console.info('Réseau de chaleur mis à jour (has_PDP):', res.id_fcu);
+    }
+  });
+
+program
+  .command('communes:search')
+  .description('Recherche une commune dans la table ign_communes')
+  .argument('<commune>', 'nom de la commune')
+  .action(async (commune) => {
+    const res = await kdb
+      .selectFrom('ign_communes')
+      .select(['insee_com', 'nom'])
+      .where((eb) => eb(eb.fn('unaccent', ['nom']), 'ilike', sql`unaccent('%' || ${commune} || '%')`))
+      .orderBy('insee_com')
+      .execute();
+    if (res.length === 0) {
+      console.info(`Aucun résultat`);
+      return;
+    }
+    console.info(`${res.length} résultats:`);
+    console.info('Code INSEE - Nom');
+    console.info(res.map((r) => `- ${r.insee_com}  -  ${r.nom}`).join('\n'));
+  });
+
+program
   .command('reseaux:update-communes')
   .description("Met à jour les communes des réseaux de chaleur / froid / en construction, pdp grâce aux coutours des communes de l'IGN.")
   .action(async () => {

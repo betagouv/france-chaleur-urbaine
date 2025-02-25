@@ -28,7 +28,8 @@ export const syncPostgresToAirtable = async (dryRun: boolean) => {
           'id_fcu',
           // réutilise la structure des changements pour simplifier un peu
           db.raw('communes as ign_communes'),
-          db.raw("st_geometrytype(geom) = 'ST_MultiLineString' as is_line")
+          db.raw("st_geometrytype(geom) = 'ST_MultiLineString' as is_line"),
+          ...(tableConfig.pgToAirtableSyncAdditionalFields ?? [])
         )
         .orderBy('id_fcu'),
       base(tableConfig.airtable.tableName).select().all(),

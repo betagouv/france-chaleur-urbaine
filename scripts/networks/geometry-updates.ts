@@ -55,6 +55,7 @@ type AirtableConfig = {
 type TableConfig = {
   tableChangements: string;
   tableChangementsSelectFields?: string[];
+  pgToAirtableSyncAdditionalFields?: string[];
   tableCible: string;
   postgres?: PostgresConfig;
   airtable?: AirtableConfig;
@@ -66,6 +67,7 @@ export const tableConfigs: TableConfig[] = [
     tableCible: 'public.reseaux_de_chaleur',
     tableChangements: 'wip_traces.changements_reseaux_de_chaleur',
     tableChangementsSelectFields: ['id_sncu_new as id_sncu'],
+    pgToAirtableSyncAdditionalFields: ['has_PDP'],
     postgres: {
       getCreateProps: (changement) => ({
         'Identifiant reseau': changement.id_sncu,
@@ -92,11 +94,13 @@ export const tableConfigs: TableConfig[] = [
         id_fcu: changement.id_fcu,
         has_trace: changement.is_line,
         communes: changement.ign_communes.join(','),
+        has_PDP: changement.has_PDP,
       }),
       fieldsConversion: {
         id_fcu: TypeString,
         has_trace: TypeBool,
         communes: TypeString,
+        has_PDP: TypeBool,
       },
     },
   },
