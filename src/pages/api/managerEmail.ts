@@ -4,9 +4,26 @@ import z from 'zod';
 import db from '@/server/db';
 import base from '@/server/db/airtable';
 import { sendManagerEmail } from '@/server/email';
-import { handleRouteErrors, invalidRouteError, validateObjectSchema } from '@/server/helpers/server';
+import { handleRouteErrors, validateObjectSchema } from '@/server/helpers/server';
 import { Airtable } from '@/types/enum/Airtable';
 import { zAirtableRecordId } from '@/utils/validation';
+
+const GET = async (req: NextApiRequest) => {
+  const { demand_id } = await validateObjectSchema(req.query, {
+    demand_id: zAirtableRecordId,
+  });
+
+  const rawEmailsList = await base(Airtable.UTILISATEURS_EMAILS)
+    .select({
+      filterByFormula: `{demand_id} = "${demand_id}"`,
+    })
+    .all();
+  const emailsList = rawEmailsList.map((record) => ({
+    email_key: record.get('email_key'),
+    date: record.get('sent_at') ? new Date(record.get('sent_at') as string).toLocaleDateString('fr-FR') : '',
+  }));
+  return emailsList;
+};
 
 const zManagerEmail = {
   emailContent: z.object({
@@ -25,71 +42,54 @@ const zManagerEmail = {
   key: z.string(),
 };
 
-export default handleRouteErrors(
-  async (req: NextApiRequest) => {
-    if (req.method === 'GET') {
-      const { demand_id } = await validateObjectSchema(req.query, {
-        demand_id: zAirtableRecordId,
-      });
+const POST = async (req: NextApiRequest) => {
+  const parseReqBody = await JSON.parse(req.body);
+  const { emailContent, demand_id, key } = await validateObjectSchema(parseReqBody, zManagerEmail);
 
-      const rawEmailsList = await base(Airtable.UTILISATEURS_EMAILS)
-        .select({
-          filterByFormula: `{demand_id} = "${demand_id}"`,
-        })
-        .all();
-      const emailsList = rawEmailsList.map((record) => ({
-        email_key: record.get('email_key'),
-        date: record.get('sent_at') ? new Date(record.get('sent_at') as string).toLocaleDateString('fr-FR') : '',
-      }));
-      return emailsList;
-    } else if (req.method === 'POST') {
-      const parseReqBody = await JSON.parse(req.body);
-      const { emailContent, demand_id, key } = await validateObjectSchema(parseReqBody, zManagerEmail);
-
-      //Log the email
-      await base(Airtable.UTILISATEURS_EMAILS).create(
-        [
-          {
-            fields: {
-              demand_id: demand_id,
-              user_email: req.user.email,
-              email_key: key,
-              object: emailContent.object,
-              body: emailContent.body,
-              cc: emailContent.cc.join(',') || '',
-              reply_to: emailContent.replyTo,
-              to: emailContent.to,
-              signature: emailContent.signature,
-            },
-          },
-        ],
-        {
-          typecast: true,
-        }
-      );
-
-      //Update signature for the user
-      if (req.user.signature !== emailContent.signature) {
-        await db('users')
-          .update({
-            signature: emailContent.signature,
-          })
-          .where('email', req.user.email);
-      }
-
-      //Send email
-      await sendManagerEmail(
-        emailContent.object,
-        emailContent.to,
-        emailContent.body,
-        emailContent.signature,
-        emailContent.cc,
-        emailContent.replyTo
-      );
-      return;
+  //Log the email
+  await base(Airtable.UTILISATEURS_EMAILS).create(
+    [
+      {
+        fields: {
+          demand_id: demand_id,
+          user_email: req.user.email,
+          email_key: key,
+          object: emailContent.object,
+          body: emailContent.body,
+          cc: emailContent.cc.join(',') || '',
+          reply_to: emailContent.replyTo,
+          to: emailContent.to,
+          signature: emailContent.signature,
+        },
+      },
+    ],
+    {
+      typecast: true,
     }
-    throw invalidRouteError;
-  },
+  );
+
+  //Update signature for the user
+  if (req.user.signature !== emailContent.signature) {
+    await db('users')
+      .update({
+        signature: emailContent.signature,
+      })
+      .where('email', req.user.email);
+  }
+
+  //Send email
+  await sendManagerEmail(
+    emailContent.object,
+    emailContent.to,
+    emailContent.body,
+    emailContent.signature,
+    emailContent.cc,
+    emailContent.replyTo
+  );
+};
+
+export default handleRouteErrors(
+  { GET, POST },
   {
     requireAuthentication: ['gestionnaire', 'admin'],
   }

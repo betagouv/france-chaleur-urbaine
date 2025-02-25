@@ -3,13 +3,7 @@ import { type JWT, decode, encode } from 'next-auth/jwt';
 import { z } from 'zod';
 
 import { logger } from '@/server/helpers/logger';
-import {
-  handleRouteErrors,
-  invalidPermissionsError,
-  invalidRouteError,
-  requireAuthentication,
-  validateObjectSchema,
-} from '@/server/helpers/server';
+import { handleRouteErrors, invalidPermissionsError, requireAuthentication, validateObjectSchema } from '@/server/helpers/server';
 
 const DELETE = async (req: NextApiRequest, res: NextApiResponse) => {
   requireAuthentication(req.user, true);
@@ -46,14 +40,7 @@ const POST = async (req: NextApiRequest, res: NextApiResponse) => {
   return;
 };
 
-export default handleRouteErrors(async (req: NextApiRequest, res: NextApiResponse) => {
-  if (req.method === 'DELETE') {
-    return DELETE(req, res);
-  } else if (req.method === 'POST') {
-    return POST(req, res);
-  }
-  throw invalidRouteError;
-});
+export default handleRouteErrors({ DELETE, POST });
 
 /**
  * Retrieve the Next Auth JWT.

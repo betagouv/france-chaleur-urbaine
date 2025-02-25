@@ -36,6 +36,8 @@ const defaultRouteOptions = {
   requireAuthentication: false,
 } satisfies RouteOptions;
 
+type RequestMethod = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
+
 /**
  * Encapsule une route API pour logger et gérer automatiquement les erreurs :
  *  - authentification requise => retourne un statut 401
@@ -44,7 +46,10 @@ const defaultRouteOptions = {
  *  - erreur de route (invalidRouteError) => retourne un statut 404
  *  - postgres => retourne un statut 500
  */
-export function handleRouteErrors(handler: NextApiHandler, options?: RouteOptions): NextApiHandler {
+export function handleRouteErrors<HandlersConfig extends Partial<Record<RequestMethod, NextApiHandler>>>(
+  handlerOrHandlers: NextApiHandler | HandlersConfig,
+  options?: RouteOptions
+): NextApiHandler {
   const routeOptions: RouteOptions = Object.assign({}, defaultRouteOptions, options);
   return async (req: NextApiRequest, res: NextApiResponse) => {
     const startTime = Date.now();
@@ -61,6 +66,10 @@ export function handleRouteErrors(handler: NextApiHandler, options?: RouteOption
       });
       if (routeOptions?.requireAuthentication) {
         requireAuthentication(req.user, routeOptions.requireAuthentication);
+      }
+      const handler = typeof handlerOrHandlers === 'function' ? handlerOrHandlers : handlerOrHandlers[req.method as RequestMethod];
+      if (!handler) {
+        throw invalidRouteError;
       }
       const handlerResult = await handler(req, res);
       if (!res.headersSent) {
