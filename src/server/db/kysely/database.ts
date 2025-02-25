@@ -3216,6 +3216,8 @@ export interface ZoneAPotentielFortChaudTiles {
 export interface ZoneDeDeveloppementPrioritaire {
   geom: string | null;
   id_fcu: Int8;
+  'Identifiant reseau': string | null;
+  communes: string[] | null;
 }
 
 export interface ZoneDeDeveloppementPrioritaireTiles {

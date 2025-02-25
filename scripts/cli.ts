@@ -325,6 +325,58 @@ program
   });
 
 program
+  .command('pdp:create')
+  .description('Insère un nouveau PDP avec une géométrie. La géométrie peut être en WGS 84 (4326) ou Lambert 93 (2154)')
+  .argument('<fileName>', 'input file (format GeoJSON)')
+  .argument('<id_sncu>', 'ID SNCU (identifiant réseau)', (a) => a, '')
+  .action(async (fileName, id_sncu) => {
+    const { geom, srid } = await readFileGeometry(fileName);
+
+    const inserted = await kdb
+      .with('geometry', (db) =>
+        db.selectNoFrom(
+          srid === 4326
+            ? sql<any>`st_transform(ST_GeomFromGeoJSON(${sql.lit(JSON.stringify(geom))}), 2154)`.as('geom')
+            : sql<any>`st_setsrid(ST_GeomFromGeoJSON(${sql.lit(JSON.stringify(geom))}), 2154)`.as('geom')
+        )
+      )
+      .insertInto('zone_de_developpement_prioritaire')
+      .values((eb) => ({
+        id_fcu: sql<number>`(SELECT max(id_fcu) + 1 FROM zone_de_developpement_prioritaire)`,
+        geom: eb.selectFrom('geometry').select('geometry.geom'),
+        'Identifiant reseau': id_sncu,
+        communes: sql<string[]>`COALESCE(
+          (
+            SELECT array_agg(nom order by nom)
+            FROM geometry
+            JOIN ign_communes on ST_Intersects(geometry.geom, st_buffer(ign_communes.geom, -150))
+          ),
+          (
+            SELECT array_agg(nom order by nom)
+            FROM geometry
+            JOIN ign_communes on ST_Intersects(geometry.geom, ign_communes.geom)
+          )
+        )::text[]`,
+      }))
+      .returning('id_fcu')
+      .executeTakeFirstOrThrow();
+
+    console.info('PDP créé:', inserted.id_fcu);
+
+    if (id_sncu) {
+      const res = await kdb
+        .updateTable('reseaux_de_chaleur')
+        .where('Identifiant reseau', '=', id_sncu)
+        .set({
+          has_PDP: true,
+        })
+        .returning('id_fcu')
+        .executeTakeFirstOrThrow();
+      console.info('Réseau de chaleur mis à jour (has_PDP):', res.id_fcu);
+    }
+  });
+
+program
   .command('reseaux:update-communes')
   .description("Met à jour les communes des réseaux de chaleur / froid / en construction, pdp grâce aux coutours des communes de l'IGN.")
   .action(async () => {
