@@ -238,7 +238,7 @@ export default function Home() {
               Tout bâtiment renouvelant son installation de chauffage au-dessus de 30kW*
             </Text>
             <Text size="sm">* Ce seuil de puissance peut être relevé par la collectivité</Text>
-            <div className="flex items-center gap-2 lg:gap-5 mt-6w">
+            <div className="flex flex-col sm:flex-row items-center gap-2 lg:gap-5 mt-6w">
               <Link variant="primary" href="/carte">
                 Voir les réseaux classés sur la carte
               </Link>
