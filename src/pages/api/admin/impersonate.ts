@@ -3,48 +3,44 @@ import { type JWT, decode, encode } from 'next-auth/jwt';
 import { z } from 'zod';
 
 import { logger } from '@/server/helpers/logger';
-import {
-  handleRouteErrors,
-  invalidPermissionsError,
-  invalidRouteError,
-  requireAuthentication,
-  requireDeleteMethod,
-  validateObjectSchema,
-} from '@/server/helpers/server';
+import { handleRouteErrors, invalidPermissionsError, requireAuthentication, validateObjectSchema } from '@/server/helpers/server';
 
-export default handleRouteErrors(async (req: NextApiRequest, res: NextApiResponse) => {
-  if (req.method === 'DELETE') {
-    requireDeleteMethod(req);
-    const session = await requireAuthentication(req, res, true);
-    if (!session.impersonating) {
-      throw invalidPermissionsError;
-    }
-
-    // remove the impersonation
-    const { impersonatedProfile, ...jwt } = await getSessionJWT(req);
-    await generateSessionJWT(res, jwt);
-    return;
-  } else if (req.method === 'POST') {
-    await requireAuthentication(req, res, ['admin']);
-
-    const impersonatedProfile = await validateObjectSchema(req.body, {
-      role: z.literal('gestionnaire'),
-      gestionnaires: z.array(z.string()),
-    });
-
-    logger.info('impersonating', {
-      ...impersonatedProfile,
-    });
-
-    const jwt = await getSessionJWT(req);
-    await generateSessionJWT(res, {
-      ...jwt,
-      impersonatedProfile,
-    });
-    return;
+const DELETE = async (req: NextApiRequest, res: NextApiResponse) => {
+  requireAuthentication(req.user, true);
+  if (!req.session.impersonating) {
+    throw invalidPermissionsError;
   }
-  throw invalidRouteError;
-});
+
+  // remove the impersonation
+  const { impersonatedProfile: _, ...jwt } = await getSessionJWT(req);
+  await generateSessionJWT(res, jwt);
+  return;
+};
+
+const POST = async (req: NextApiRequest, res: NextApiResponse) => {
+  requireAuthentication(req.user, ['admin']);
+
+  const impersonatedProfile = await validateObjectSchema(req.body, {
+    role: z.literal('gestionnaire'),
+    gestionnaires: z.array(z.string()),
+  });
+
+  logger.info('impersonating', {
+    ...impersonatedProfile,
+  });
+
+  const jwt = await getSessionJWT(req);
+  await generateSessionJWT(res, {
+    ...jwt,
+    impersonatedProfile: {
+      role: impersonatedProfile.role,
+      gestionnaires: impersonatedProfile.gestionnaires,
+    },
+  });
+  return;
+};
+
+export default handleRouteErrors({ DELETE, POST });
 
 /**
  * Retrieve the Next Auth JWT.

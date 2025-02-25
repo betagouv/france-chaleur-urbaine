@@ -1,9 +1,9 @@
 import { Button } from '@codegouvfr/react-dsfr/Button';
 import Link from 'next/link';
-import { signIn } from 'next-auth/react';
 import { type FormEvent, useState } from 'react';
 
 import Input from '@/components/form/dsfr/Input';
+import { useAuthentication } from '@/services/authentication';
 
 import { Container, Password, PasswordIcon, PasswordInput } from './Form.styles';
 
@@ -11,6 +11,7 @@ export interface LoginFormProps {
   callbackUrl: string;
 }
 export const LoginForm = ({ callbackUrl }: LoginFormProps) => {
+  const { signIn } = useAuthentication();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [seePassword, setSeePassword] = useState(false);

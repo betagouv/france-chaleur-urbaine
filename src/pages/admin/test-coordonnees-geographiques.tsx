@@ -1,5 +1,4 @@
 import { Upload } from '@codegouvfr/react-dsfr/Upload';
-import { type GetServerSideProps } from 'next';
 import Papa from 'papaparse';
 import { type ChangeEvent, useState } from 'react';
 
@@ -9,7 +8,7 @@ import Box from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
 import { isDevModeEnabled } from '@/hooks/useDevMode';
-import { withAuthentication } from '@/server/helpers/ssr/withAuthentication';
+import { withAuthentication } from '@/server/authentication';
 import { notify, toastErrors } from '@/services/notification';
 import { latitudeColumnNameCandidates, longitudeColumnNameCandidates } from '@/shared/bulk-eligibility-coordinates';
 import { chunk } from '@/utils/array';
@@ -154,4 +153,4 @@ export default function TestCoordinatesPage() {
   );
 }
 
-export const getServerSideProps: GetServerSideProps = withAuthentication('admin');
+export const getServerSideProps = withAuthentication('admin');

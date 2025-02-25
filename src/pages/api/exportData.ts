@@ -28,11 +28,11 @@ export default handleRouteErrors(async (req: NextApiRequest, res: NextApiRespons
   let data: any;
   switch (exportType) {
     case 'demands':
-      await requireAuthentication(req, res, true);
+      requireAuthentication(req.user, true);
       data = await getDemands(req.user);
       break;
     case 'obsoleteUsers':
-      await requireAuthentication(req, res, [USER_ROLE.ADMIN]);
+      requireAuthentication(req.user, [USER_ROLE.ADMIN]);
       data = await getObsoleteUsers();
       break;
     default:

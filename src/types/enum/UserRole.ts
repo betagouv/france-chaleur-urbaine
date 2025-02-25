@@ -3,3 +3,5 @@ export enum USER_ROLE {
   GESTIONNAIRE = 'gestionnaire',
   DEMO = 'demo',
 }
+
+export type UserRole = `${USER_ROLE}`;

@@ -1,8 +1,6 @@
-import { type GetServerSideProps } from 'next';
-import { getSession } from 'next-auth/react';
-
 import { LoginForm, type LoginFormProps } from '@/components/connexion/LoginForm';
 import SimplePage from '@/components/shared/page/SimplePage';
+import { withServerSession } from '@/server/authentication';
 
 export default function ConnectionPage(props: LoginFormProps): JSX.Element {
   return (
@@ -12,10 +10,8 @@ export default function ConnectionPage(props: LoginFormProps): JSX.Element {
   );
 }
 
-export const getServerSideProps: GetServerSideProps<LoginFormProps> = async (context) => {
-  const userSession = await getSession(context);
-
-  if (userSession) {
+export const getServerSideProps = withServerSession(({ context, session }) => {
+  if (session) {
     return {
       redirect: {
         destination: '/gestionnaire',
@@ -29,4 +25,4 @@ export const getServerSideProps: GetServerSideProps<LoginFormProps> = async (con
       callbackUrl: (context.query.callbackUrl as string) || '/gestionnaire',
     },
   };
-};
+});

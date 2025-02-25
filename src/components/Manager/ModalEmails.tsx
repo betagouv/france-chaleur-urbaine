@@ -2,7 +2,6 @@ import { Button } from '@codegouvfr/react-dsfr/Button';
 import { createModal } from '@codegouvfr/react-dsfr/Modal';
 import { useIsModalOpen } from '@codegouvfr/react-dsfr/Modal/useIsModalOpen';
 import { Select } from '@codegouvfr/react-dsfr/SelectNext';
-import { useSession } from 'next-auth/react';
 import { type FormEvent, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
@@ -11,6 +10,7 @@ import Heading from '@/components/ui/Heading';
 import Modal from '@/components/ui/Modal';
 import emailsContentList from '@/data/manager/manager-emails-content';
 import emailsList from '@/data/manager/manager-emails-list';
+import { useUserPreferences } from '@/services/authentication';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import { type Demand } from '@/types/Summary/Demand';
 
@@ -38,18 +38,18 @@ type EmailContent = {
   replyTo: string;
 };
 function ModalEmails(props: Props) {
+  const { userPreferences, updateUserPreferences } = useUserPreferences();
   const getDefaultEmailContent = () => {
     return {
       object: '',
       to: props.currentDemand.Mail,
       body: '',
-      signature: session?.user.signature || '',
-      cc: session?.user.email || '',
-      replyTo: session?.user.email || '',
+      signature: userPreferences?.signature || '',
+      cc: userPreferences?.email || '',
+      replyTo: userPreferences?.email || '',
     };
   };
 
-  const { data: session, update } = useSession();
   const [isLoaded, setIsLoaded] = useState(false);
 
   const emailModal = useMemo(() => {
@@ -159,8 +159,8 @@ function ModalEmails(props: Props) {
       await props.updateDemand(props.currentDemand.id, updatedFields);
 
       //Update the current user signature
-      if (session && session.user.signature !== emailContent.signature) {
-        update({ signature: emailContent.signature });
+      if (userPreferences && userPreferences.signature !== emailContent.signature) {
+        void updateUserPreferences({ signature: emailContent.signature });
       }
 
       setSent(true);

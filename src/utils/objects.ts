@@ -57,3 +57,14 @@ export function deepIntersection<T extends object, U extends object>(
 
   return intersectionHelper(obj1, obj2) || ({} as T);
 }
+
+/**
+ * Effectue une copie profonde d'un objet en utilisant JSON.parse/stringify.
+ * Note: Cette méthode ne préserve pas les fonctions, undefined, Symbol, ou les références circulaires.
+ *
+ * @param obj L'objet à cloner
+ * @returns Une copie profonde de l'objet
+ */
+export function deepCloneJSON<T>(obj: T): T {
+  return JSON.parse(JSON.stringify(obj)) as T;
+}
