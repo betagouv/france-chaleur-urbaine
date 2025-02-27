@@ -72,3 +72,5 @@ tsconfig.tsbuildinfo
 scripts/simulateur/codes-insee.json
 
 /opendata-fcu-*.zip
+
+*.log
