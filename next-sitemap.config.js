@@ -43,11 +43,15 @@ function getPagePriority(/** @type {string} */ path) {
 const excludedPages = [
   // authenticated pages
   '/tableau-de-bord',
-  '/tests-adresse',
+  '/tests-adresses',
   '/gestionnaire',
   '/demandes',
   '/aide',
+  '/aide',
   '/admin',
+  '/admin/impostures',
+  '/admin/jobs',
+  '/admin/test-coordonnees-geographiques',
   '/admin/users',
 
   // iframes
