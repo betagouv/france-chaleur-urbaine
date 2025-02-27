@@ -30,6 +30,7 @@ const columns: ColumnDef<AdminManageUserItem>[] = [
   {
     accessorKey: 'role',
     header: 'Role',
+    align: 'center',
     flex: 2,
     cell: (info) => <UserRoleBadge role={info.getValue<UserRole>()} />,
   },
