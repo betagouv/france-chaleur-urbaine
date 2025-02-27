@@ -13,6 +13,8 @@ const envSchema = {
   LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
   API_ADRESSE_URL: z.string().default('https://api-adresse.data.gouv.fr/'),
   INSCRIPTIONS_ENABLE: z.boolean().default(false),
+  CLOCK_CRONS_ENABLE: z.boolean().default(true),
+  CLOCK_JOBS_PROCESSOR_ENABLE: z.boolean().default(true),
   LOG_SQL_QUERIES: z.boolean().default(false),
 };
 

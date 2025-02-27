@@ -1,3 +1,5 @@
+import { env } from '@/environment';
+import { registerCrons } from '@/server/cron/cron';
 import { shutdownKyselyDatabase } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
 import { processJobsIndefinitely, shutdownProcessor } from '@/server/services/jobs/processor';
@@ -26,8 +28,11 @@ let isShuttingDown = false;
 });
 
 (async () => {
-  logger.info('starting clock');
-  // FIXME à réactiver une fois la PR finalisée
-  // registerCrons();
-  void processJobsIndefinitely();
+  logger.warn('starting clock');
+  if (env.CLOCK_CRONS_ENABLE) {
+    registerCrons();
+  }
+  if (env.CLOCK_JOBS_PROCESSOR_ENABLE) {
+    void processJobsIndefinitely();
+  }
 })();
