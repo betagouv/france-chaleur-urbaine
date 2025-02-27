@@ -1,16 +1,16 @@
 import { fr } from '@codegouvfr/react-dsfr';
 import Input from '@codegouvfr/react-dsfr/Input';
 import {
-  type Cell,
-  type ColumnDef as ColumnDefOriginal,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getSortedRowModel,
+  useReactTable,
+  type Cell,
+  type ColumnDef as ColumnDefOriginal,
+  type ColumnFiltersState,
   type RowData,
   type SortingState,
-  useReactTable,
-  type ColumnFiltersState,
 } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import React from 'react';
@@ -160,6 +160,12 @@ const TableSimple = <T extends RowData>({
     overscan: 5,
   });
 
+  const gridTemplateColumns = table
+    .getHeaderGroups()[0]
+    .headers.map((header) => `${(header.column.columnDef as ColumnDef<T>).flex || 1}fr`)
+    .join(' ');
+  const hasAtLeastOneColumnSorting = table.getHeaderGroups()[0].headers.some((header) => header.column.getCanSort());
+
   return (
     <>
       <Input
@@ -195,22 +201,17 @@ const TableSimple = <T extends RowData>({
             }}
           >
             {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id} style={{ display: 'flex', width: '100%' }}>
+              <tr key={headerGroup.id} style={{ gridTemplateColumns }} className="grid w-full">
                 {headerGroup.headers.map((header) => {
                   const columnDef = header.column.columnDef as ColumnDef<T>;
                   return (
-                    <th
-                      key={header.id}
-                      colSpan={header.colSpan}
-                      style={{
-                        display: 'flex',
-                        flex: columnDef.flex || 1,
-                      }}
-                      className={cx(columnClassName(columnDef))}
-                    >
+                    <th key={header.id} colSpan={header.colSpan} className={cx('!flex flex-nowrap', columnClassName(columnDef))}>
                       {header.isPlaceholder ? null : (
                         <>
-                          {flexRender(columnDef.header, header.getContext())}
+                          {/* mt-[5px] to be aligned  */}
+                          <span className={cx('break-words', hasAtLeastOneColumnSorting ? 'mt-[5px]' : '')}>
+                            {flexRender(columnDef.header, header.getContext())}
+                          </span>
                           {header.column.getCanSort() && (
                             /* eslint-disable-next-line jsx-a11y/role-supports-aria-props */
                             <button
@@ -252,17 +253,9 @@ const TableSimple = <T extends RowData>({
           >
             {loading &&
               [1, 2, 3, 4, 5].map((value) => (
-                <tr key={`loading_${value}`} className="flex">
+                <tr key={`loading_${value}`} className="flex" style={{ gridTemplateColumns }}>
                   {columns.map((column, index) => (
-                    <td
-                      key={`loading_${value}_${index}`}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        flex: column.flex || 1,
-                      }}
-                      className={columnClassName(column)}
-                    >
+                    <td key={`loading_${value}_${index}`} className={cx('flex items-center', columnClassName(column))}>
                       <div role="status" className="animate-pulse text-center w-[90%]">
                         <div className="mx-auto my-2 h-3.5 rounded-full bg-gray-200"></div>
                       </div>
@@ -278,11 +271,10 @@ const TableSimple = <T extends RowData>({
                     data-index={virtualRow.index} // needed for dynamic row height measurement
                     ref={(node) => rowVirtualizer.measureElement(node)} // measure dynamic row height
                     key={row.id}
+                    className="grid absolute w-full"
                     style={{
-                      display: 'flex',
-                      position: 'absolute',
                       transform: `translateY(${virtualRow.start}px)`, // this should always be a `style` as it changes on scroll
-                      width: '100%',
+                      gridTemplateColumns,
                     }}
                   >
                     {row.getVisibleCells().map((cell) => {
@@ -291,12 +283,11 @@ const TableSimple = <T extends RowData>({
                       return (
                         <CellTag
                           key={cell.id}
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            flex: columnDef.flex ?? 1,
-                          }}
-                          className={cx({ 'fr-cell--fixed': columnDef.id === 'selection' }, columnClassName(columnDef))}
+                          className={cx(
+                            'overflow-auto',
+                            { 'flex items-center fr-cell--fixed': columnDef.id === 'selection' },
+                            columnClassName(columnDef)
+                          )}
                           scope={columnDef.id === 'selection' ? 'row' : undefined}
                         >
                           {cellRender(cell)}
