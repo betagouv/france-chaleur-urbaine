@@ -1,15 +1,6 @@
 'use client';
 
-import {
-  Arrow,
-  Content,
-  Portal,
-  Provider,
-  Root,
-  Trigger,
-  type TooltipContentProps,
-  type TooltipProviderProps,
-} from '@radix-ui/react-tooltip';
+import { Arrow, Content, Portal, Provider, Root, Trigger, type TooltipContentProps } from '@radix-ui/react-tooltip';
 import * as React from 'react';
 
 import Icon, { type IconProps } from '@/components/ui/Icon';
@@ -70,14 +61,10 @@ export const TooltipWrapper: React.FC<React.ComponentProps<typeof Provider>> = (
   );
 };
 
-type TooltipProps = {
+type TooltipProps = Pick<TooltipContentProps, 'side' | 'sideOffset'> & {
   title: React.ReactNode;
   children?: React.ReactNode;
   iconProps?: Partial<IconProps>;
-  side?: TooltipContentProps['side'];
-  sideOffset?: TooltipContentProps['sideOffset'];
-  delayDuration?: TooltipProviderProps['delayDuration'];
-  skipDelayDuration?: TooltipProviderProps['skipDelayDuration'];
 };
 
 /**
@@ -113,17 +100,9 @@ const Arrow = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivEleme
 ));
 Arrow.displayName = 'TooltipArrow';
 
-const Tooltip = ({
-  children,
-  title,
-  iconProps,
-  side = 'top',
-  sideOffset = 5,
-  delayDuration = 200,
-  skipDelayDuration = 500,
-}: TooltipProps) => {
+const Tooltip = ({ children, title, iconProps, side = 'top', sideOffset = 5 }: TooltipProps) => {
   return (
-    <TooltipWrapper delayDuration={delayDuration} skipDelayDuration={skipDelayDuration}>
+    <TooltipWrapper delayDuration={200} skipDelayDuration={500}>
       <TooltipTrigger asChild>{children ?? <Icon size="sm" name="ri-information-fill" cursor="help" {...iconProps} />}</TooltipTrigger>
       <TooltipContent side={side} sideOffset={sideOffset}>
         <div>{title}</div>
