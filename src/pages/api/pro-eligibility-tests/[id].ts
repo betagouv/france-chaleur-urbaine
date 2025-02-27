@@ -2,7 +2,7 @@ import { type NextApiRequest } from 'next';
 import { z } from 'zod';
 
 import { kdb, sql } from '@/server/db/kysely';
-import { handleRouteErrors, invalidRouteError } from '@/server/helpers/server';
+import { handleRouteErrors } from '@/server/helpers/server';
 
 export type ProEligibilityTestWithAddresses = Awaited<ReturnType<typeof GET>>;
 
@@ -59,22 +59,12 @@ const POST = async (req: NextApiRequest) => {
     .executeTakeFirstOrThrow();
 };
 
-const route = async (req: NextApiRequest) => {
-  if (req.method === 'GET') {
-    return GET(req);
+export default handleRouteErrors(
+  { GET, DELETE, POST },
+  {
+    requireAuthentication: ['professionnel'],
   }
-  if (req.method === 'DELETE') {
-    return DELETE(req);
-  }
-  if (req.method === 'POST') {
-    return POST(req);
-  }
-  throw invalidRouteError;
-};
-
-export default handleRouteErrors(route, {
-  requireAuthentication: ['professionnel'],
-});
+);
 
 export async function ensureValidPermissions(req: NextApiRequest, testId: string) {
   const test = await kdb.selectFrom('pro_eligibility_tests').select('user_id').where('id', '=', testId).executeTakeFirstOrThrow();

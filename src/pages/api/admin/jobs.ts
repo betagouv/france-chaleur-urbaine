@@ -1,8 +1,7 @@
 import { jsonBuildObject } from 'kysely/helpers/postgres';
-import type { NextApiRequest } from 'next';
 
 import { kdb } from '@/server/db/kysely';
-import { handleRouteErrors, invalidRouteError } from '@/server/helpers/server';
+import { handleRouteErrors } from '@/server/helpers/server';
 import { type FrontendType } from '@/utils/typescript';
 
 const GET = async () => {
@@ -31,13 +30,9 @@ const GET = async () => {
 
 export type AdminJobItem = FrontendType<Awaited<ReturnType<typeof GET>>[number]>;
 
-const route = async (req: NextApiRequest) => {
-  if (req.method === 'GET') {
-    return GET();
+export default handleRouteErrors(
+  { GET },
+  {
+    requireAuthentication: ['admin'],
   }
-  throw invalidRouteError;
-};
-
-export default handleRouteErrors(route, {
-  requireAuthentication: ['admin'],
-});
+);

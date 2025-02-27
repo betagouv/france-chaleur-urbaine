@@ -3,18 +3,8 @@ import type { NextApiRequest } from 'next';
 import { zCreateUserRequest } from '@/components/Admin/AccountCreationForm';
 import { kdb, sql } from '@/server/db/kysely';
 import { sendEmail } from '@/server/email/react-email';
-import { BadRequestError, handleRouteErrors, invalidRouteError } from '@/server/helpers/server';
+import { BadRequestError, handleRouteErrors } from '@/server/helpers/server';
 import { generateRandomToken } from '@/utils/random';
-
-const route = async (req: NextApiRequest) => {
-  if (req.method === 'GET') {
-    return GET();
-  }
-  if (req.method === 'POST') {
-    return POST(req);
-  }
-  throw invalidRouteError;
-};
 
 const GET = async () => {
   const users = await kdb
@@ -63,6 +53,9 @@ const POST = async (req: NextApiRequest) => {
   return { id: insertedUser.id };
 };
 
-export default handleRouteErrors(route, {
-  requireAuthentication: ['admin'],
-});
+export default handleRouteErrors(
+  { GET, POST },
+  {
+    requireAuthentication: ['admin'],
+  }
+);

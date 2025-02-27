@@ -2,20 +2,16 @@ import { type NextApiRequest } from 'next';
 import { z } from 'zod';
 
 import { kdb } from '@/server/db/kysely';
-import { handleRouteErrors, invalidRouteError } from '@/server/helpers/server';
+import { handleRouteErrors } from '@/server/helpers/server';
 
 const DELETE = async (req: NextApiRequest) => {
   const jobId = await z.string().parseAsync(req.query.id);
   await kdb.deleteFrom('jobs').where('id', '=', jobId).execute();
 };
 
-const route = async (req: NextApiRequest) => {
-  if (req.method === 'DELETE') {
-    return DELETE(req);
+export default handleRouteErrors(
+  { DELETE },
+  {
+    requireAuthentication: ['admin'],
   }
-  throw invalidRouteError;
-};
-
-export default handleRouteErrors(route, {
-  requireAuthentication: ['admin'],
-});
+);

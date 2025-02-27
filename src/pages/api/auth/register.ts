@@ -2,11 +2,10 @@ import { type NextApiRequest } from 'next';
 
 import { env } from '@/environment';
 import { zAccountRegisterRequest } from '@/pages/inscription';
-import { handleRouteErrors, requirePostMethod } from '@/server/helpers/server';
+import { handleRouteErrors } from '@/server/helpers/server';
 import { register } from '@/server/services/auth';
 
-const route = async (req: NextApiRequest) => {
-  requirePostMethod(req);
+const POST = async (req: NextApiRequest) => {
   if (!env.INSCRIPTIONS_ENABLE) {
     throw new Error('Les inscriptions sont désactivées');
   }
@@ -15,4 +14,4 @@ const route = async (req: NextApiRequest) => {
   return await register(email, password, role);
 };
 
-export default handleRouteErrors(route);
+export default handleRouteErrors({ POST });

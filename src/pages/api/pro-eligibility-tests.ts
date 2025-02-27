@@ -3,7 +3,7 @@ import { type NextApiRequest } from 'next';
 import { z } from 'zod';
 
 import { kdb } from '@/server/db/kysely';
-import { handleRouteErrors, invalidRouteError } from '@/server/helpers/server';
+import { handleRouteErrors } from '@/server/helpers/server';
 import { type FrontendType } from '@/utils/typescript';
 
 const GET = async (req: NextApiRequest) => {
@@ -77,16 +77,9 @@ const POST = async (req: NextApiRequest) => {
 
 export type ProEligibilityTestCreateOutput = ReturnType<typeof POST>;
 
-const route = async (req: NextApiRequest) => {
-  if (req.method === 'GET') {
-    return GET(req);
+export default handleRouteErrors(
+  { GET, POST },
+  {
+    requireAuthentication: ['professionnel'],
   }
-  if (req.method === 'POST') {
-    return POST(req);
-  }
-  throw invalidRouteError;
-};
-
-export default handleRouteErrors(route, {
-  requireAuthentication: ['professionnel'],
-});
+);

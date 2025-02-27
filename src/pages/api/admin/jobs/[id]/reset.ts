@@ -1,7 +1,7 @@
 import { type NextApiRequest } from 'next';
 
 import { kdb } from '@/server/db/kysely';
-import { handleRouteErrors, invalidRouteError } from '@/server/helpers/server';
+import { handleRouteErrors } from '@/server/helpers/server';
 
 const POST = async (req: NextApiRequest) => {
   const jobId = req.query.id as string;
@@ -16,13 +16,9 @@ const POST = async (req: NextApiRequest) => {
     .execute();
 };
 
-const route = async (req: NextApiRequest) => {
-  if (req.method === 'POST') {
-    return POST(req);
+export default handleRouteErrors(
+  { POST },
+  {
+    requireAuthentication: ['admin'],
   }
-  throw invalidRouteError;
-};
-
-export default handleRouteErrors(route, {
-  requireAuthentication: ['admin'],
-});
+);

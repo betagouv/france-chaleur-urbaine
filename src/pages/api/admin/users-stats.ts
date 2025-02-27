@@ -1,11 +1,7 @@
-import type { NextApiRequest } from 'next';
-
 import { kdb, sql } from '@/server/db/kysely';
-import { handleRouteErrors, requireGetMethod } from '@/server/helpers/server';
+import { handleRouteErrors } from '@/server/helpers/server';
 
-const route = async (req: NextApiRequest) => {
-  requireGetMethod(req);
-
+const GET = async () => {
   // note that we exclude admins from stats
   const stats = await kdb
     .selectFrom('users')
@@ -30,8 +26,11 @@ const route = async (req: NextApiRequest) => {
   return stats;
 };
 
-export default handleRouteErrors(route, {
-  requireAuthentication: ['admin'],
-});
+export type AdminUsersStats = Awaited<ReturnType<typeof GET>>;
 
-export type AdminUsersStats = Awaited<ReturnType<typeof route>>;
+export default handleRouteErrors(
+  { GET },
+  {
+    requireAuthentication: ['admin'],
+  }
+);
