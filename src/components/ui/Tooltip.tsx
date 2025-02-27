@@ -1,6 +1,6 @@
 'use client';
 
-import { Arrow, Content, Portal, Provider, Root, Trigger, type TooltipContentProps } from '@radix-ui/react-tooltip';
+import { Content, Portal, Provider, Root, Trigger, type TooltipContentProps } from '@radix-ui/react-tooltip';
 import * as React from 'react';
 
 import Icon, { type IconProps } from '@/components/ui/Icon';
