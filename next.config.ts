@@ -196,6 +196,11 @@ const nextConfig: NextConfig = {
         destination: '/ressources/obligations-raccordement',
         permanent: true,
       },
+      {
+        source: '/gestionnaire',
+        destination: '/demandes',
+        permanent: true,
+      },
     ];
   },
   async headers() {

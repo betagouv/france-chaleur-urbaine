@@ -12,7 +12,6 @@ declare module 'next-auth' {
     role: UserRole;
     email: string;
     active: boolean;
-    signature: string;
     gestionnaires: string[] | null;
     signature: string | null;
   }

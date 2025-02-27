@@ -12,6 +12,7 @@ import SEO, { type SEOProps } from '@/components/SEO';
 import Box from '@/components/ui/Box';
 import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
+import { env } from '@/environment';
 import { useAuthentication } from '@/services/authentication';
 import { deleteFetchJSON } from '@/utils/network';
 
@@ -239,10 +240,28 @@ const authenticatedNavigationMenu: MainNavigationProps.Item[] = [
       href: '/',
     },
   },
+];
+
+const professionnelNavigationMenu: MainNavigationProps.Item[] = [
+  {
+    text: "Tests d'adresses",
+    linkProps: {
+      href: '/tests-adresses',
+    },
+  },
+  {
+    text: 'Comparateur de performances',
+    linkProps: {
+      href: '/comparateur-performances',
+    },
+  },
+];
+
+const gestionnaireNavigationMenu: MainNavigationProps.Item[] = [
   {
     text: 'Tableau de bord',
     linkProps: {
-      href: '/gestionnaire',
+      href: '/demandes',
     },
   },
   {
@@ -258,9 +277,27 @@ const adminNavigationMenu: MainNavigationProps.Item[] = [
     text: 'Administration',
     menuLinks: [
       {
-        text: 'Admin',
+        text: 'Admin (ancienne version)',
         linkProps: {
           href: '/admin',
+        },
+      },
+      {
+        text: 'Gestion des utilisateurs',
+        linkProps: {
+          href: '/admin/users',
+        },
+      },
+      {
+        text: 'Suivi des tâches',
+        linkProps: {
+          href: '/admin/jobs',
+        },
+      },
+      {
+        text: 'Impostures',
+        linkProps: {
+          href: '/admin/impostures',
         },
       },
       {
@@ -294,9 +331,20 @@ function markCurrentPageActive(menuItems: MainNavigationProps.Item[], currentUrl
 }
 
 const publicQuickAccessItems: HeaderProps.QuickAccessItem[] = [
+  ...(env.INSCRIPTIONS_ENABLE
+    ? [
+        {
+          text: 'Créer un compte',
+          iconId: 'fr-icon-account-circle-line',
+          linkProps: {
+            href: '/inscription',
+          },
+        } satisfies HeaderProps.QuickAccessItem,
+      ]
+    : []),
   {
-    text: 'Espace gestionnaire',
-    iconId: 'fr-icon-account-circle-line',
+    text: 'Connexion',
+    iconId: 'fr-icon-account-circle-fill',
     linkProps: {
       href: '/connexion',
     },
@@ -327,7 +375,12 @@ const PageHeader = (props: PageHeaderProps) => {
 
   const navigationMenuItems =
     props.mode === 'authenticated'
-      ? [...authenticatedNavigationMenu, ...(hasRole('admin') ? adminNavigationMenu : [])]
+      ? [
+          ...authenticatedNavigationMenu,
+          ...(hasRole('admin') ? adminNavigationMenu : []),
+          ...(hasRole('gestionnaire') ? gestionnaireNavigationMenu : []),
+          ...(hasRole('professionnel') ? professionnelNavigationMenu : []),
+        ]
       : publicNavigationMenu;
 
   const currentPath = props.currentPage ?? router.pathname;
@@ -343,7 +396,7 @@ const PageHeader = (props: PageHeaderProps) => {
                   buttonProps: {
                     onClick: async () => {
                       await deleteFetchJSON('/api/admin/impersonate');
-                      location.reload();
+                      location.href = '/admin/impostures';
                     },
                     style: {
                       color: 'white',

@@ -1,5 +1,4 @@
 import { type Map, type ControlPosition, type IControl } from 'maplibre-gl';
-import { type MapStyle } from 'react-map-gl/maplibre';
 
 /*
 Lib CSS not compatible with v3 of maplibre
@@ -10,7 +9,7 @@ Modifications:
 */
 export type MapboxStyleDefinition = {
   title: string;
-  uri: string | MapStyle;
+  uri: any;
 };
 
 export type MapboxStyleSwitcherOptions = {

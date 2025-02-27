@@ -29,11 +29,7 @@ const Slideshow = ({ images }: SlideshowProps) => {
         }}
       />
 
-      <nav
-        role="navigation"
-        className={cx(fr.cx('fr-pagination', 'fr-mt-1w'), { 'fcu-invisible': images.length <= 1 })}
-        aria-label="Pagination"
-      >
+      <nav role="navigation" className={cx(fr.cx('fr-pagination', 'fr-mt-1w'), { invisible: images.length <= 1 })} aria-label="Pagination">
         <ul className={fr.cx('fr-pagination__list')}>
           <li>
             <a

@@ -8,7 +8,6 @@ import { sendNewDemands, sendOldDemands, sendRelanceMail } from '@/server/email'
 import { logger } from '@/server/helpers/logger';
 import { invalidPermissionsError } from '@/server/helpers/server';
 import { Airtable } from '@/types/enum/Airtable';
-import { USER_ROLE } from '@/types/enum/UserRole';
 import { type Demand } from '@/types/Summary/Demand';
 import { type User as FullUser } from '@/types/User';
 
@@ -132,11 +131,11 @@ export const getDemands = async (user: User): Promise<Demand[]> => {
 
   // Build filter formula based on user role and gestionnaires
   let filterFormula = '';
-  if (user.role === USER_ROLE.ADMIN) {
+  if (user.role === 'admin') {
     filterFormula = '';
-  } else if (user.role === USER_ROLE.DEMO) {
+  } else if (user.role === 'demo') {
     filterFormula = `REGEX_MATCH({Gestionnaires}, "(\\A|, )Paris(\\z|, )")`;
-  } else {
+  } else if (user.role === 'gestionnaire') {
     const regexPattern = user.gestionnaires.join('|');
     filterFormula = `REGEX_MATCH({Gestionnaires}, "(\\A|, )(${regexPattern})(\\z|, )")`;
   }
@@ -154,7 +153,7 @@ export const getDemands = async (user: User): Promise<Demand[]> => {
     duration: Date.now() - startTime,
   });
 
-  return user.role === USER_ROLE.DEMO
+  return user.role === 'demo'
     ? records.map(
         (record) =>
           ({
@@ -172,7 +171,7 @@ export const getDemands = async (user: User): Promise<Demand[]> => {
 const getDemand = async (user: User, demandId: string): Promise<Demand> => {
   const record = await base(Airtable.UTILISATEURS).find(demandId);
   const gestionnaires = record.get('Gestionnaires') as string[];
-  if (user.role !== USER_ROLE.ADMIN && !gestionnaires.some((gestionnaire) => user.gestionnaires?.includes(gestionnaire))) {
+  if (user.role !== 'admin' && !gestionnaires.some((gestionnaire) => user.gestionnaires?.includes(gestionnaire))) {
     throw invalidPermissionsError;
   }
   return { id: record.id, ...record.fields } as Demand;

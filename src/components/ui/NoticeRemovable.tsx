@@ -29,9 +29,9 @@ const NoticeRemovable: React.FC<NoticeRemovableProps> = ({ className, onClose, k
     <Notice
       className={className}
       isClosed={!!hidden}
-      onClose={() => {
+      onClose={(event) => {
         setHidden(true);
-        onClose?.();
+        onClose?.(event);
       }}
       {...props}
     />

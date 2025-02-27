@@ -98,3 +98,8 @@ export function slugify(text?: string | null) {
         .replace(/-+/g, '-') // Replace multiple hyphens with a single one
     : text;
 }
+
+const frenchCollator = new Intl.Collator('fr', { sensitivity: 'base' });
+
+export const compareFrenchStrings = (a: string | undefined | null, b: string | undefined | null) =>
+  frenchCollator.compare(a ?? '', b ?? '');

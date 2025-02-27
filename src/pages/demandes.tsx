@@ -14,6 +14,6 @@ function Gestionnaire(): React.ReactElement {
   );
 }
 
-export const getServerSideProps = withAuthentication();
-
 export default Gestionnaire;
+
+export const getServerSideProps = withAuthentication('gestionnaire');

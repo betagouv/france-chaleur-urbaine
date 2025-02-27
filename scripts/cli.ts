@@ -16,6 +16,7 @@ import {
   syncGestionnairesWithUsers,
   syncLastConnectionFromUsers,
 } from '@/server/services/airtable';
+import { processJobById, processJobsIndefinitely } from '@/server/services/jobs/processor';
 import { type DatabaseSourceId, type DatabaseTileInfo, tilesInfo, zDatabaseSourceId } from '@/server/services/tiles.config';
 import { type ApiAccount } from '@/types/ApiAccount';
 import { sleep } from '@/utils/time';
@@ -27,7 +28,7 @@ import { createModificationsReseau } from './airtable/create-modifications-resea
 import { fetchBaseSchema } from './airtable/dump-schema';
 import dataImportManager, { dataImportAdapters, type DataImportName } from './data-import';
 import { readFileGeometry } from './helpers/geo';
-import { runCommand } from './helpers/shell';
+import { runBash, runCommand } from './helpers/shell';
 import { downloadAndUpdateNetwork, downloadNetwork } from './networks/download-network';
 import { applyGeometryUpdates } from './networks/geometry-updates';
 import { syncPostgresToAirtable } from './networks/sync-pg-to-airtable';
@@ -416,6 +417,21 @@ program
   });
 
 program
+  .command('jobs:start')
+  .description('Start the jobs worker')
+  .action(async () => {
+    await processJobsIndefinitely();
+  });
+
+program
+  .command('jobs:process')
+  .description('Process a specific job by ID')
+  .argument('<jobId>', 'Job ID to process')
+  .action(async (jobId) => {
+    await processJobById(jobId);
+  });
+
+program
   .command('bdnd:export')
   .description('')
   .action(async () => {
@@ -427,6 +443,20 @@ program
   .description('')
   .action(async () => {
     console.info('Veuillez regarder les étapes dans scripts/bdnb/qpv/README.md');
+  });
+
+program
+  .command('db:sync')
+  .option('--single <table>', 'Print the table schema to stdout', '')
+  .description('Génère les modèles TypeScript depuis la BDD')
+  .action(async ({ single }) => {
+    const patternOptions = single
+      ? `--print --include-pattern="public.${single}"`
+      : '--out-file ./src/server/db/kysely/database.ts --exclude-pattern="(public.spatial_ref_sys|topology.*|tiger.*|public.geography_columns|public.geometry_columns)"';
+    await runBash(`yarn kysely-codegen --numeric-parser number --env-file="./.env.local" --log-level=error ${patternOptions}`);
+    if (!single) {
+      await runBash('yarn prettier --write ./src/server/db/kysely/database.ts');
+    }
   });
 
 program

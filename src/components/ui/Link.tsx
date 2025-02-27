@@ -24,7 +24,7 @@ interface LinkProps extends SpacingProperties {
   isExternal?: boolean;
   title?: string;
   style?: React.CSSProperties;
-  onClick?: () => void;
+  onClick?: (e?: any) => void;
 }
 
 /**
@@ -52,14 +52,14 @@ function Link({
     <Tag
       href={href}
       title={title}
-      onClick={() => {
+      onClick={(e) => {
         if (eventKey) {
           trackEvent(
             eventKey,
             eventPayload?.split(',').map((v) => v.trim())
           );
         }
-        onClick?.();
+        onClick?.(e);
       }}
       className={`${className} ${linkVariantToClass[variant]} ${spacingsToClasses(props)}`}
       target={isExternal ? '_blank' : undefined}
