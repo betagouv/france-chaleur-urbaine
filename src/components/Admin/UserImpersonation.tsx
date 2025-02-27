@@ -4,7 +4,6 @@ import Tag from '@codegouvfr/react-dsfr/Tag';
 import { useEffect, useMemo, useState } from 'react';
 
 import Box from '@/components/ui/Box';
-import Text from '@/components/ui/Text';
 import { fetchJSON, postFetchJSON } from '@/utils/network';
 import { normalize } from '@/utils/strings';
 
@@ -58,9 +57,9 @@ const UserImpersonation = () => {
 
   return (
     <>
-      <Text mb="2w">
+      <div className="mb-2w">
         Cette section permet de vous faire passer pour un profil gestionnaire avec des tags particuliers à des fins de test.
-      </Text>
+      </div>
 
       {selectedTagsGestionnaires.map((tag, index) => (
         <Tag

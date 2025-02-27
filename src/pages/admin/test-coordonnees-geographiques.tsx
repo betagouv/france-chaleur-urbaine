@@ -6,7 +6,6 @@ import SimplePage from '@/components/shared/page/SimplePage';
 import AsyncButton from '@/components/ui/AsyncButton';
 import Box from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
-import Text from '@/components/ui/Text';
 import { isDevModeEnabled } from '@/hooks/useDevMode';
 import { withAuthentication } from '@/server/authentication';
 import { notify, toastErrors } from '@/services/notification';
@@ -111,13 +110,13 @@ export default function TestCoordinatesPage() {
           Test de coordonnées géographiques
         </Heading>
 
-        <Text>Cet outil permet de tester l'égibilité de coordonnées géographiques (longitude / latitude) en masse.</Text>
-        <Text my="1w">
+        <div className="mb-1w">Cet outil permet de tester l'égibilité de coordonnées géographiques (longitude / latitude) en masse.</div>
+        <div className="mb-1w">
           Il faut déposer un fichier CSV avec une paire de coordonnées par ligne. Les coordonnées de longitude et latitude seront
           automatiquement détectées si elles ont des noms de colonnes parmi [{longitudeColumnNameCandidates.join(', ')}] et [
           {latitudeColumnNameCandidates.join(', ')}] respectivement.
-        </Text>
-        <Text mb="2w">
+        </div>
+        <div className="mb-2w">
           Le test dure en général environ une vingtaine de secondes pour 1000 coordonnées.{' '}
           {coordinates.length > 0 && (
             <>
@@ -125,7 +124,7 @@ export default function TestCoordinatesPage() {
               {estimatedWaitTimeMinutes > 1 && 's'}.
             </>
           )}
-        </Text>
+        </div>
 
         <Upload
           label="Choisissez un fichier .csv :"
