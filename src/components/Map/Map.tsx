@@ -6,21 +6,21 @@ import { type LayerSpecification, type MapLibreEvent } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useRouter } from 'next/router';
 import { parseAsJson, parseAsString, useQueryStates } from 'nuqs';
-import { type RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type RefObject } from 'react';
 import ReactDOMServer from 'react-dom/server';
 import MapReactGL, {
   AttributionControl,
   GeolocateControl,
   MapProvider,
+  NavigationControl,
+  ScaleControl,
   type MapRef,
   type MapSourceDataEvent,
   type MapStyle,
-  NavigationControl,
-  ScaleControl,
 } from 'react-map-gl/maplibre';
 
 import FileDragNDrop from '@/components/Map/components/FileDragNDrop';
-import { type MapConfiguration, isMapConfigurationInitialized } from '@/components/Map/map-configuration';
+import { isMapConfigurationInitialized, type MapConfiguration } from '@/components/Map/map-configuration';
 import Accordion from '@/components/ui/Accordion';
 import Box from '@/components/ui/Box';
 import Icon from '@/components/ui/Icon';
@@ -48,7 +48,7 @@ import { useBuildingsDataExtractionLayers } from './components/tools/BuildingsDa
 import { useDistancesMeasurementLayers } from './components/tools/DistancesMeasurementTool';
 import { useLinearHeatDensityLayers } from './components/tools/LinearHeatDensityTool';
 import { useMapEvents } from './map-events';
-import { type MapLegendFeature, applyMapConfigurationToLayers, layerSymbolsImagesURLs, loadMapLayers } from './map-layers';
+import { applyMapConfigurationToLayers, layerSymbolsImagesURLs, loadMapLayers, type MapLegendFeature } from './map-layers';
 import {
   CollapseLegend,
   CollapseLegendLabel,
@@ -57,16 +57,16 @@ import {
   LegendLogoLink,
   LegendLogoList,
   LegendSideBar,
+  legendWidth,
   MapGlobalStyle,
   MapSearchInputWrapper,
   MapSearchWrapper,
-  legendWidth,
 } from './Map.style';
 import useFCUMap, { FCUMapContextProvider } from './MapProvider';
 // https://openmaptiles.geo.data.gouv.fr/styles/osm-bright/style.json
 import rawOsmConfig from './osm.config.json';
 import rawSatelliteConfig from './satellite.config.json';
-import { type MapboxStyleDefinition, MapboxStyleSwitcherControl } from './StyleSwitcher';
+import { MapboxStyleSwitcherControl, type MapboxStyleDefinition } from './StyleSwitcher';
 
 const mapSettings = {
   defaultLongitude: 2.3,
@@ -626,7 +626,7 @@ export const FullyFeaturedMap = ({
                 setLegendCollapsed(!legendCollapsed);
               }}
             >
-              <Tooltip placement="right" title={legendCollapsed ? 'Afficher la légende' : 'Masquer la légende'}>
+              <Tooltip side="right" title={legendCollapsed ? 'Afficher la légende' : 'Masquer la légende'}>
                 <CollapseLegendLabel>
                   <Icon size="sm" name="fr-icon-arrow-right-s-line" rotate={legendCollapsed ? -90 : 90} />
                   <span>Légende</span>

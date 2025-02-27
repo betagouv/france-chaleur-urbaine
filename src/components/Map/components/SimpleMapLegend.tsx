@@ -27,13 +27,13 @@ import {
   DeactivatableBox,
   parseURLTabs,
   SingleCheckbox,
-  type TabId,
-  type TabObject,
   Tabs,
   tabs,
   TabScrollablePart,
   Title,
   TrackableCheckableAccordion,
+  type TabId,
+  type TabObject,
 } from './SimpleMapLegend.style';
 import { besoinsEnChaleurIntervals, besoinsEnFroidIntervals } from '../layers/besoinsEnChaleur';
 import { besoinsEnChaleurIndustrieCommunesIntervals } from '../layers/besoinsEnChaleurIndustrieCommunes';
@@ -692,9 +692,8 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                 Communes couvertes par une étude pour la création de réseaux
               </Text>
               <Tooltip
-                color="var(--text-action-high-blue-france)"
                 iconProps={{
-                  className: 'fr-mr-4w',
+                  className: 'fr-mr-4w text-blue',
                 }}
                 title={<>Information actuellement limitée à l'Île-de-France. Source : ADEME.</>}
               />
