@@ -454,7 +454,9 @@ program
       ? `--print --include-pattern="public.${single}"`
       : '--out-file ./src/server/db/kysely/database.ts --exclude-pattern="(public.spatial_ref_sys|topology.*|tiger.*|public.geography_columns|public.geometry_columns)"';
     await runBash(`yarn kysely-codegen --numeric-parser number --env-file="./.env.local" --log-level=error ${patternOptions}`);
-    await runBash('yarn prettier --write ./src/server/db/kysely/database.ts');
+    if (!single) {
+      await runBash('yarn prettier --write ./src/server/db/kysely/database.ts');
+    }
   });
 
 program
