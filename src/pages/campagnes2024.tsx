@@ -11,7 +11,7 @@ import WrappedBlock from '@/components/WrappedBlock';
 import WrappedText from '@/components/WrappedText';
 import { comparatifRcu } from '@/data/coproprietaire';
 
-export default function Campagnes2024Page() {
+function Campagnes2024Page() {
   return (
     <SimplePage
       title="France Chaleur Urbaine : Une solution numérique qui facilite le raccordement à un chauffage économique et écologique"
@@ -63,3 +63,5 @@ Une alternative écologique au fioul et au gaz !`}
     </SimplePage>
   );
 }
+
+export default Campagnes2024Page;

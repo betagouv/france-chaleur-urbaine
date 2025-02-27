@@ -5,7 +5,7 @@ import { augmentDocumentWithEmotionCache, dsfrDocumentApi } from './_app';
 
 const { augmentDocumentForDsfr } = dsfrDocumentApi;
 
-export default class MyDocument extends Document {
+class MyDocument extends Document {
   static async getInitialProps(ctx: DocumentContext) {
     const sheet = new ServerStyleSheet();
     const originalRenderPage = ctx.renderPage;
@@ -44,6 +44,8 @@ export default class MyDocument extends Document {
     );
   }
 }
+
+export default MyDocument;
 
 augmentDocumentForDsfr(MyDocument);
 

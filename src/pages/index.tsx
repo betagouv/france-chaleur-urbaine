@@ -114,7 +114,7 @@ const tools: TileListItem[] = [
   },
 ];
 
-export default function Home() {
+function Home() {
   return (
     <SimplePage
       title="Développer le chauffage urbain"
@@ -371,3 +371,5 @@ export default function Home() {
     </SimplePage>
   );
 }
+
+export default Home;

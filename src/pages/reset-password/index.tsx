@@ -2,7 +2,7 @@ import ResetPasswordForm from '@/components/connexion/ResetPasswordForm';
 import SimplePage from '@/components/shared/page/SimplePage';
 import { withServerSession } from '@/server/authentication';
 
-export default function ResetPasswordPage(): JSX.Element {
+function ResetPasswordPage() {
   return (
     <SimplePage title="Oubli de mot de passe" description="Réinitialisez le mot de passe de votre compte sur France Chaleur Urbaine.">
       <ResetPasswordForm />
@@ -24,3 +24,5 @@ export const getServerSideProps = withServerSession(({ session }) => {
     props: {},
   };
 });
+
+export default ResetPasswordPage;

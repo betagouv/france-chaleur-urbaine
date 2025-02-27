@@ -1,7 +1,7 @@
 import SimplePage from '@/components/shared/page/SimplePage';
 import Tertiaire from '@/components/Tertiaire';
 
-export default function TertiairePage() {
+function TertiairePage() {
   return (
     <SimplePage
       title="Chauffage urbain pour le secteur tertiaire"
@@ -11,3 +11,5 @@ export default function TertiairePage() {
     </SimplePage>
   );
 }
+
+export default TertiairePage;

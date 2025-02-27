@@ -5,7 +5,7 @@ import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
 // import { Container } from '@codegouvfr/react-dsfr/Con';
 
-export default function Custom404() {
+function Custom404() {
   return (
     <SimplePage title="Page non trouvée : France Chaleur Urbaine">
       <div className="fr-container fr-py-4w fr-mb-16w">
@@ -18,3 +18,5 @@ export default function Custom404() {
     </SimplePage>
   );
 }
+
+export default Custom404;

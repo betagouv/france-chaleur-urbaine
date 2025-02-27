@@ -9,7 +9,7 @@ import WrappedBlock from '@/components/WrappedBlock';
 import WrappedText from '@/components/WrappedText';
 import { comparatifRcu } from '@/data/coproprietaire';
 
-export default function FresnesPage() {
+function FresnesPage() {
   return (
     <SimplePage
       title="Solution numérique facilitant le raccordement à un chauffage économique et écologique"
@@ -54,3 +54,5 @@ Une alternative écologique au fioul et au gaz !`}
     </SimplePage>
   );
 }
+
+export default FresnesPage;

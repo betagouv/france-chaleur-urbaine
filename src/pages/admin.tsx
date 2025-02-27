@@ -4,7 +4,7 @@ import Users from '@/components/Admin/Users';
 import SimplePage from '@/components/shared/page/SimplePage';
 import { withAuthentication } from '@/server/authentication';
 
-export default function AdminPage(): JSX.Element {
+function AdminPage(): React.ReactElement {
   return (
     <SimplePage title="France Chaleur Urbaine - Admin" mode="authenticated">
       <UserImpersonation />
@@ -15,3 +15,5 @@ export default function AdminPage(): JSX.Element {
 }
 
 export const getServerSideProps = withAuthentication('admin');
+
+export default AdminPage;
