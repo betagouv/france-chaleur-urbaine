@@ -1,7 +1,7 @@
-import Document, { type DocumentContext, Head, Html, Main, NextScript } from 'next/document';
+import Document, { Head, Html, Main, NextScript, type DocumentContext } from 'next/document';
 import { ServerStyleSheet } from 'styled-components';
 
-import { augmentDocumentWithEmotionCache, dsfrDocumentApi } from './_app';
+import { augmentDocumentWithEmotionCache, dsfrDocumentApi } from '@/components/Theme/ThemeProvider';
 
 const { augmentDocumentForDsfr } = dsfrDocumentApi;
 

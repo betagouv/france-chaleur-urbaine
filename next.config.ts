@@ -215,11 +215,52 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  serverExternalPackages: [
+    'react-hook-form',
+    '@codegouvfr/react-dsfr',
+    '@codegouvfr/react-dsfr/next-pagesdir',
+    '@codegouvfr/react-dsfr/Accordion',
+    '@codegouvfr/react-dsfr/Alert',
+    '@codegouvfr/react-dsfr/Badge',
+    '@codegouvfr/react-dsfr/Breadcrumb',
+    '@codegouvfr/react-dsfr/Button',
+    '@codegouvfr/react-dsfr/ButtonsGroup',
+    '@codegouvfr/react-dsfr/Card',
+    '@codegouvfr/react-dsfr/Checkbox',
+    '@codegouvfr/react-dsfr/Con',
+    '@codegouvfr/react-dsfr/consentManagement',
+    '@codegouvfr/react-dsfr/Footer',
+    '@codegouvfr/react-dsfr/fr',
+    '@codegouvfr/react-dsfr/Highlight',
+    '@codegouvfr/react-dsfr/i18n',
+    '@codegouvfr/react-dsfr/Input',
+    '@codegouvfr/react-dsfr/link',
+    '@codegouvfr/react-dsfr/MainNavigation',
+    '@codegouvfr/react-dsfr/Modal',
+    '@codegouvfr/react-dsfr/mui',
+    '@codegouvfr/react-dsfr/next',
+    '@codegouvfr/react-dsfr/Notice',
+    '@codegouvfr/react-dsfr/Pagination',
+    '@codegouvfr/react-dsfr/RadioButtons',
+    '@codegouvfr/react-dsfr/Range',
+    '@codegouvfr/react-dsfr/SearchBar',
+    '@codegouvfr/react-dsfr/SegmentedControl',
+    '@codegouvfr/react-dsfr/SelectNext',
+    '@codegouvfr/react-dsfr/SideMenu',
+    '@codegouvfr/react-dsfr/Table',
+    '@codegouvfr/react-dsfr/Tabs',
+    '@codegouvfr/react-dsfr/Tag',
+    '@codegouvfr/react-dsfr/Tile',
+    '@codegouvfr/react-dsfr/ToggleSwitch',
+    '@codegouvfr/react-dsfr/tools',
+    '@codegouvfr/react-dsfr/Upload',
+    '@codegouvfr/react-dsfr/zz_internal',
+  ],
   webpack: (config) => {
-    config.module.rules.push({
-      test: /\.md$/,
-      use: 'raw-loader',
-    });
+    // config.module.rules.push({
+    //   test: /\.md$/,
+    //   use: 'raw-loader',
+    // });
     config.module.rules.push({
       test: /\.woff2$/,
       type: 'asset/resource',
@@ -245,7 +286,10 @@ const nextConfig: NextConfig = {
 
     return config;
   },
-  transpilePackages: ['@codegouvfr/react-dsfr'],
+  transpilePackages: [
+    // '@codegouvfr/react-dsfr',
+    // '@codegouvfr/react-dsfr/next-pagesdir',
+  ],
 };
 
 const compose =
