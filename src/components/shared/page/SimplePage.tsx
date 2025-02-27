@@ -12,6 +12,7 @@ import SEO, { type SEOProps } from '@/components/SEO';
 import Box from '@/components/ui/Box';
 import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
+import { env } from '@/environment';
 import { useAuthentication } from '@/services/authentication';
 import { deleteFetchJSON } from '@/utils/network';
 
@@ -330,13 +331,17 @@ function markCurrentPageActive(menuItems: MainNavigationProps.Item[], currentUrl
 }
 
 const publicQuickAccessItems: HeaderProps.QuickAccessItem[] = [
-  {
-    text: 'Créer un compte',
-    iconId: 'fr-icon-account-circle-line',
-    linkProps: {
-      href: '/inscription',
-    },
-  },
+  ...(env.INSCRIPTIONS_ENABLE
+    ? [
+        {
+          text: 'Créer un compte',
+          iconId: 'fr-icon-account-circle-line',
+          linkProps: {
+            href: '/inscription',
+          },
+        } satisfies HeaderProps.QuickAccessItem,
+      ]
+    : []),
   {
     text: 'Connexion',
     iconId: 'fr-icon-account-circle-fill',

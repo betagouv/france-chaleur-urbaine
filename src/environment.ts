@@ -12,6 +12,7 @@ const envSchema = {
   GITHUB_CI: z.boolean().default(false),
   LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
   API_ADRESSE_URL: z.string().default('https://api-adresse.data.gouv.fr/'),
+  INSCRIPTIONS_ENABLE: z.boolean().default(false),
   LOG_SQL_QUERIES: z.boolean().default(false),
 };
 
