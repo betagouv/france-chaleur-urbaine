@@ -1,40 +1,72 @@
 'use client';
 
-import * as TooltipPrimitive from '@radix-ui/react-tooltip';
+import {
+  Arrow,
+  Content,
+  Portal,
+  Provider,
+  Root,
+  Trigger,
+  type TooltipContentProps,
+  type TooltipProviderProps,
+} from '@radix-ui/react-tooltip';
 import * as React from 'react';
 
 import Icon, { type IconProps } from '@/components/ui/Icon';
 import cx from '@/utils/cx';
 
-const TooltipProvider = TooltipPrimitive.Provider;
+export const TooltipTrigger = Trigger;
 
-const TooltipRoot = TooltipPrimitive.Root;
+export const TooltipContent = React.forwardRef<React.ElementRef<typeof Content>, React.ComponentPropsWithoutRef<typeof Content>>(
+  ({ className, sideOffset = 4, ...props }, ref) => (
+    <Portal>
+      <Content
+        ref={ref}
+        sideOffset={sideOffset}
+        className={cx(
+          'z-50 overflow-hidden shadow-lg rounded-sm bg-white px-3 py-1.5 text-xs text-black max-w-[300px] animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2',
+          className
+        )}
+        {...props}
+      />
+    </Portal>
+  )
+);
+TooltipContent.displayName = Content.displayName;
 
-export const TooltipTrigger = TooltipPrimitive.Trigger;
+/**
+ * Example usage of TooltipWrapper with TooltipTrigger and TooltipContent
+ *
+ * @example
+ * // Basic usage with TooltipWrapper
+ * <TooltipWrapper>
+ *   <TooltipTrigger asChild>
+ *     <button className="rounded-md bg-primary px-4 py-2 text-white">Hover me</button>
+ *   </TooltipTrigger>
+ *   <TooltipContent>
+ *     <p>This is a tooltip content</p>
+ *     <Arrow className="fill-white" />
+ *   </TooltipContent>
+ * </TooltipWrapper>
+ *
+ * @example
+ * // With custom side and offset
+ * <TooltipWrapper delayDuration={200}>
+ *   <TooltipTrigger asChild>
+ *     <span className="underline cursor-help">More information</span>
+ *   </TooltipTrigger>
+ *   <TooltipContent side="bottom" sideOffset={10} className="bg-gray-800 text-white">
+ *     <p>Detailed explanation appears below the trigger</p>
+ *     <Arrow className="fill-gray-800" />
+ *   </TooltipContent>
+ * </TooltipWrapper>
+ */
 
-export const TooltipContent = React.forwardRef<
-  React.ElementRef<typeof TooltipPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>
->(({ className, sideOffset = 4, ...props }, ref) => (
-  <TooltipPrimitive.Portal>
-    <TooltipPrimitive.Content
-      ref={ref}
-      sideOffset={sideOffset}
-      className={cx(
-        'z-50 overflow-hidden shadow-lg rounded-sm bg-white px-3 py-1.5 text-xs text-black max-w-[300px] animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2',
-        className
-      )}
-      {...props}
-    />
-  </TooltipPrimitive.Portal>
-));
-TooltipContent.displayName = TooltipPrimitive.Content.displayName;
-
-export const TooltipWrapper: React.FC<React.ComponentProps<typeof TooltipProvider>> = ({ children, ...props }) => {
+export const TooltipWrapper: React.FC<React.ComponentProps<typeof Provider>> = ({ children, ...props }) => {
   return (
-    <TooltipProvider {...props}>
-      <TooltipRoot>{children}</TooltipRoot>
-    </TooltipProvider>
+    <Provider {...props}>
+      <Root>{children}</Root>
+    </Provider>
   );
 };
 
@@ -42,11 +74,44 @@ type TooltipProps = {
   title: React.ReactNode;
   children?: React.ReactNode;
   iconProps?: Partial<IconProps>;
-  side?: TooltipPrimitive.TooltipContentProps['side'];
-  sideOffset?: TooltipPrimitive.TooltipContentProps['sideOffset'];
-  delayDuration?: TooltipPrimitive.TooltipProviderProps['delayDuration'];
-  skipDelayDuration?: TooltipPrimitive.TooltipProviderProps['skipDelayDuration'];
+  side?: TooltipContentProps['side'];
+  sideOffset?: TooltipContentProps['sideOffset'];
+  delayDuration?: TooltipProviderProps['delayDuration'];
+  skipDelayDuration?: TooltipProviderProps['skipDelayDuration'];
 };
+
+/**
+ * A tooltip component that displays additional information when hovering over an element.
+ *
+ * @example
+ * // Basic usage with default info icon
+ * <Tooltip title="This is helpful information">
+ *   <button>Hover me</button>
+ * </Tooltip>
+ *
+ * @example
+ * // Custom icon with different side placement
+ * <Tooltip
+ *   title="Left side tooltip"
+ *   side="left"
+ *   iconProps={{ name: "ri-question-fill", color: "primary" }}
+ * />
+ *
+ * @example
+ * // With custom delay duration
+ * <Tooltip
+ *   title="Appears after 500ms"
+ *   delayDuration={500}
+ *   skipDelayDuration={0}
+ * >
+ *   <span className="underline">Hover for details</span>
+ * </Tooltip>
+ */
+
+const Arrow = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({ className, ...props }, ref) => (
+  <div ref={ref} className={cx('absolute h-2 w-4 rotate-[45deg]', className)} {...props} />
+));
+Arrow.displayName = 'TooltipArrow';
 
 const Tooltip = ({
   children,
@@ -61,10 +126,8 @@ const Tooltip = ({
     <TooltipWrapper delayDuration={delayDuration} skipDelayDuration={skipDelayDuration}>
       <TooltipTrigger asChild>{children ?? <Icon size="sm" name="ri-information-fill" cursor="help" {...iconProps} />}</TooltipTrigger>
       <TooltipContent side={side} sideOffset={sideOffset}>
-        <div>
-          {title} {JSON.stringify(iconProps || {})}
-        </div>
-        <TooltipPrimitive.Arrow className="fill-white" />
+        <div>{title}</div>
+        <Arrow className="fill-white" />
       </TooltipContent>
     </TooltipWrapper>
   );
