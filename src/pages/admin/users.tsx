@@ -15,7 +15,7 @@ import { useFetch } from '@/hooks/useApi';
 import { withAuthentication } from '@/server/authentication';
 import { useServices } from '@/services';
 import { type UserRole } from '@/types/enum/UserRole';
-import { frenchCollator } from '@/utils/strings';
+import { compareFrenchStrings } from '@/utils/strings';
 
 import { type AdminManageUserItem } from '../api/admin/users';
 import { type AdminUsersStats } from '../api/admin/users-stats';
@@ -23,7 +23,7 @@ const columns: ColumnDef<AdminManageUserItem>[] = [
   {
     accessorKey: 'email',
     header: 'Email',
-    sortingFn: (rowA, rowB) => frenchCollator.compare(rowA.original.email, rowB.original.email),
+    sortingFn: (rowA, rowB) => compareFrenchStrings(rowA.original.email, rowB.original.email),
     flex: 3,
     className: 'break-words break-all max-w-[200px]',
   },
@@ -46,7 +46,7 @@ const columns: ColumnDef<AdminManageUserItem>[] = [
         ))}
       </div>
     ),
-    sortingFn: (rowA, rowB) => frenchCollator.compare(rowA.original.gestionnaires?.[0] ?? '', rowB.original.gestionnaires?.[0] ?? ''),
+    sortingFn: (rowA, rowB) => compareFrenchStrings(rowA.original.gestionnaires?.[0], rowB.original.gestionnaires?.[0]),
   },
   {
     accessorKey: 'from_api',

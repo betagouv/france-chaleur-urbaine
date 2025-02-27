@@ -99,4 +99,7 @@ export function slugify(text?: string | null) {
     : text;
 }
 
-export const frenchCollator = new Intl.Collator('fr', { sensitivity: 'base' });
+const frenchCollator = new Intl.Collator('fr', { sensitivity: 'base' });
+
+export const compareFrenchStrings = (a: string | undefined | null, b: string | undefined | null) =>
+  frenchCollator.compare(a ?? '', b ?? '');

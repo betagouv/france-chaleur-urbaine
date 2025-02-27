@@ -21,14 +21,14 @@ import { type ProEligibilityTestListItem } from '@/pages/api/pro-eligibility-tes
 import { type ProEligibilityTestWithAddresses } from '@/pages/api/pro-eligibility-tests/[id]';
 import { downloadString } from '@/utils/browser';
 import { formatAsISODate, formatFrenchDate, formatFrenchDateTime } from '@/utils/date';
-import { frenchCollator } from '@/utils/strings';
+import { compareFrenchStrings } from '@/utils/strings';
 
 const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[] = [
   {
     header: 'Adresse',
     accessorKey: 'ban_address',
     accessorFn: (row) => `${row.ban_address} ${row.source_address}`,
-    sortingFn: (rowA, rowB) => frenchCollator.compare(rowA.original.ban_address ?? '', rowB.original.ban_address ?? ''),
+    sortingFn: (rowA, rowB) => compareFrenchStrings(rowA.original.ban_address, rowB.original.ban_address),
     cell: (info) => (
       <div>
         <div>
