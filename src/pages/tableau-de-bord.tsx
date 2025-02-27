@@ -4,7 +4,7 @@ import DashboardProfessionnel from '@/components/dashboard/DashboardProfessionne
 import SimplePage from '@/components/shared/page/SimplePage';
 import Box from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
-import { withServerSession } from '@/server/authentication';
+import { withAuthentication } from '@/server/authentication';
 import { useAuthentication } from '@/services/authentication';
 
 export default function DashboardPage() {
@@ -24,9 +24,9 @@ export default function DashboardPage() {
   );
 }
 
-export const getServerSideProps = withServerSession(({ session }) => {
+export const getServerSideProps = withAuthentication(undefined, ({ session }) => {
   // redirection des gestionnaire en attendant qu'ils aient un tableau de bord
-  if (session && session.user.role === 'gestionnaire') {
+  if (session.user.role === 'gestionnaire') {
     return {
       redirect: {
         destination: '/demandes',

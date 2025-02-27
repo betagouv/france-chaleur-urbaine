@@ -51,7 +51,7 @@ type WithServerSessionProps = (ctx: {
  */
 export const withServerSession = (handler: WithServerSessionProps) => async (context: GetServerSidePropsContext) => {
   const session = await getServerSession(context);
-  const res = handler({ context, session });
+  const res = await handler({ context, session });
   return 'redirect' in res
     ? res
     : deepMergeObjects(res, {
@@ -64,20 +64,18 @@ export const withServerSession = (handler: WithServerSessionProps) => async (con
 /**
  * Add authentication to a page and return the session in server side props.
  */
-export const withAuthentication = (requiredRole?: UserRole): GetServerSideProps<AuthSSRPageProps> => {
-  return async (context) => {
-    const userSession = await getServerSession(context);
-
-    if (!userSession) {
+export const withAuthentication = (requiredRole?: UserRole, handler?: WithServerSessionProps): GetServerSideProps<AuthSSRPageProps> => {
+  return withServerSession(async ({ context, session }) => {
+    if (!session) {
       return {
         redirect: {
-          destination: `/connexion?notify=error:${encodeURIComponent('Vous devez être connecté pour accéder à cette page')}`,
+          destination: `/connexion?callbackUrl=${encodeURIComponent(context.resolvedUrl)}&notify=error:${encodeURIComponent('Vous devez être connecté pour accéder à cette page')}`,
           permanent: false,
         },
       };
     }
 
-    if (requiredRole && userSession.user.role !== requiredRole) {
+    if (requiredRole && session.user.role !== requiredRole) {
       return {
         redirect: {
           destination: `/tableau-de-bord?notify=error:${encodeURIComponent("Vous n'avez pas les permissions suffisantes pour accéder à cette page")}`,
@@ -86,8 +84,12 @@ export const withAuthentication = (requiredRole?: UserRole): GetServerSideProps<
       };
     }
 
-    return { props: { session: deepCloneJSON(userSession) } };
-  };
+    if (handler) {
+      return await handler({ context, session });
+    }
+
+    return { props: {} };
+  });
 };
 
 export type AuthSSRPageProps = {
