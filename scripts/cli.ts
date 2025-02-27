@@ -270,23 +270,35 @@ program
 program
   .command('reseaux:update-geom')
   .description("Met à jour la géométrie d'un réseau. La géométrie peut être en WGS 84 (4326) ou Lambert 93 (2154)")
-  .argument('<id_fcu>', 'id_fcu du réseau', (v) => parseInt(v))
+  .argument('<id_fcu_or_sncu>', 'id_fcu ou SNCU du réseau')
   .argument('<fileName>', 'input file (format GeoJSON)')
-  .action(async (id_fcu, fileName) => {
+  .action(async (id_fcu_or_sncu, fileName) => {
     const { geom, srid } = await readFileGeometry(fileName);
+
+    // Vérifier si le paramètre est un nombre (id_fcu) ou une chaîne (identifiant reseau)
+    const isIdSNCU = id_fcu_or_sncu.endsWith('C');
+
+    // Vérifier si le réseau existe
+    const existingNetwork = isIdSNCU
+      ? await kdb.selectFrom('reseaux_de_chaleur').select('id_fcu').where('Identifiant reseau', '=', id_fcu_or_sncu).executeTakeFirst()
+      : await kdb.selectFrom('reseaux_de_chaleur').select('id_fcu').where('id_fcu', '=', parseInt(id_fcu_or_sncu)).executeTakeFirst();
+
+    if (!existingNetwork) {
+      throw new Error(`Aucun réseau trouvé avec ${isIdSNCU ? 'identifiant reseau' : 'id_fcu'} = ${id_fcu_or_sncu}`);
+    }
+
     await kdb
-      .with('geometry', (db) => db.selectNoFrom(sql.lit(JSON.stringify(geom)).as('geom')))
+      .with('geometry', (db) =>
+        db.selectNoFrom(
+          srid === 4326
+            ? sql<any>`st_transform(ST_GeomFromGeoJSON(${sql.lit(JSON.stringify(geom))}), 2154)`.as('geom')
+            : sql<any>`st_setsrid(ST_GeomFromGeoJSON(${sql.lit(JSON.stringify(geom))}), 2154)`.as('geom')
+        )
+      )
       .updateTable('reseaux_de_chaleur')
-      .where('id_fcu', '=', id_fcu)
+      .where(isIdSNCU ? 'Identifiant reseau' : 'id_fcu', '=', isIdSNCU ? id_fcu_or_sncu : parseInt(id_fcu_or_sncu))
       .set({
-        geom: (eb) =>
-          eb
-            .selectFrom('geometry')
-            .select(
-              srid === 4326
-                ? sql<string>`st_transform(ST_GeomFromGeoJSON(geometry.geom), 2154)`.as('geom')
-                : sql<string>`st_setsrid(ST_GeomFromGeoJSON(geometry.geom), 2154)`.as('geom')
-            ),
+        geom: (eb) => eb.selectFrom('geometry').select('geometry.geom'),
         has_trace: (eb) =>
           eb.selectFrom('geometry').select(sql<boolean>`st_geometrytype(geometry.geom) = 'ST_MultiLineString'`.as('has_trace')),
       })
@@ -303,7 +315,13 @@ program
   .action(async (id_fcu, fileName) => {
     const { geom, srid } = await readFileGeometry(fileName);
     await kdb
-      .with('geometry', (db) => db.selectNoFrom(sql.lit(JSON.stringify(geom)).as('geom')))
+      .with('geometry', (db) =>
+        db.selectNoFrom(
+          srid === 4326
+            ? sql<any>`st_transform(ST_GeomFromGeoJSON(${sql.lit(JSON.stringify(geom))}), 2154)`.as('geom')
+            : sql<any>`st_setsrid(ST_GeomFromGeoJSON(${sql.lit(JSON.stringify(geom))}), 2154)`.as('geom')
+        )
+      )
       .insertInto('reseaux_de_chaleur')
       .columns(['id_fcu', 'geom', 'has_trace', 'communes', 'reseaux classes', 'reseaux_techniques', 'fichiers'])
       .expression((eb) =>
@@ -311,9 +329,7 @@ program
           .selectFrom('geometry')
           .select((eb) => [
             eb.lit(id_fcu).as('id_fcu'),
-            srid === 4326
-              ? sql<string>`st_transform(ST_GeomFromGeoJSON(geometry.geom), 2154)`.as('geom')
-              : sql<string>`st_setsrid(ST_GeomFromGeoJSON(geometry.geom), 2154)`.as('geom'),
+            'geometry.geom',
             sql<boolean>`st_geometrytype(geometry.geom) = 'ST_MultiLineString'`.as('has_trace'),
             eb.val([]).as('communes'),
             eb.lit(false).as('reseaux classes'),
