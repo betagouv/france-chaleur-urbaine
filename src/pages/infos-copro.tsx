@@ -9,7 +9,7 @@ import WrappedBlock from '@/components/WrappedBlock';
 import WrappedText from '@/components/WrappedText';
 import { comparatifRcu } from '@/data/coproprietaire';
 
-export default function InfosCoproPage() {
+function InfosCoproPage() {
   return (
     <SimplePage
       title="Le chauffage urbain pour les coprpriétaires"
@@ -50,3 +50,5 @@ Une alternative écologique au fioul et au gaz !`}
     </SimplePage>
   );
 }
+
+export default InfosCoproPage;

@@ -8,7 +8,7 @@ const LOCAL_STORAGE_KEY_PREFIX = '__FCU:App__-';
  * Hook that retrieves a value from an URL param or fallbacks to using local storage.
  * It handles the storage of the value in the local storage but does not update the URL.
  */
-export default function useURLParamOrLocalStorage<T>(
+function useURLParamOrLocalStorage<T>(
   urlKey: string,
   localStorageKey: string,
   defaultValue: T,
@@ -51,3 +51,5 @@ export function parseAsString(value: string): string {
     return value;
   }
 }
+
+export default useURLParamOrLocalStorage;

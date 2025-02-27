@@ -22,7 +22,7 @@ const tertiaireCards = {
   acteurs: growths.acteurs,
 };
 
-export default function Tertiaire({ alt }: { alt?: boolean }) {
+function Tertiaire({ alt }: { alt?: boolean }) {
   const futur = (
     <Slice theme="color" padding={4}>
       <MarkdownWrapper value={fcuSolutionForFutur.body} className="fcuSolutionForFuturBody" />
@@ -124,3 +124,5 @@ Le dispositif **[«&nbsp;Coup de pouce chauffage des bâtiments résidentiels co
     </div>
   );
 }
+
+export default Tertiaire;

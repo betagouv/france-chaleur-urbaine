@@ -7,7 +7,7 @@ interface DividerProps extends SpacingProperties, HTMLAttributes<HTMLDivElement>
   vertical?: string;
 }
 
-export default function Divider({ vertical, ...props }: DividerProps) {
+function Divider({ vertical, ...props }: DividerProps) {
   return (
     <Box
       {...(vertical ? { minWidth: '1px', mx: '2w', height: vertical } : { minHeight: '1px', my: '2w' })}
@@ -16,3 +16,5 @@ export default function Divider({ vertical, ...props }: DividerProps) {
     />
   );
 }
+
+export default Divider;

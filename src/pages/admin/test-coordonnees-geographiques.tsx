@@ -1,6 +1,6 @@
 import { Upload } from '@codegouvfr/react-dsfr/Upload';
 import Papa from 'papaparse';
-import { type ChangeEvent, useState } from 'react';
+import { useState, type ChangeEvent } from 'react';
 
 import SimplePage from '@/components/shared/page/SimplePage';
 import AsyncButton from '@/components/ui/AsyncButton';
@@ -16,7 +16,7 @@ import { downloadFile } from '@/utils/browser';
 import { isDefined } from '@/utils/core';
 import { postFetchJSON } from '@/utils/network';
 
-export default function TestCoordinatesPage() {
+function TestCoordinatesPage() {
   const [coordinates, setCoordinates] = useState<Record<string, any>[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [inputFileName, setInputFileName] = useState('');
@@ -154,3 +154,5 @@ export default function TestCoordinatesPage() {
 }
 
 export const getServerSideProps = withAuthentication('admin');
+
+export default TestCoordinatesPage;

@@ -2,7 +2,7 @@ import Manager from '@/components/Manager/Manager';
 import SimplePage from '@/components/shared/page/SimplePage';
 import { withAuthentication } from '@/server/authentication';
 
-export default function Gestionnaire(): JSX.Element {
+function Gestionnaire(): React.ReactElement {
   return (
     <SimplePage
       title="Espace gestionnaire"
@@ -15,3 +15,5 @@ export default function Gestionnaire(): JSX.Element {
 }
 
 export const getServerSideProps = withAuthentication();
+
+export default Gestionnaire;

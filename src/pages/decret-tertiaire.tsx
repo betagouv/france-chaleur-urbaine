@@ -1,7 +1,7 @@
 import SimplePage from '@/components/shared/page/SimplePage';
 import Tertiaire from '@/components/Tertiaire';
 
-export default function DecretTertiairePage() {
+function DecretTertiairePage() {
   return (
     <SimplePage
       title="Décret tertiaire et chauffage urbain: atteignez vos objectifs de performance énergétique"
@@ -12,3 +12,5 @@ export default function DecretTertiairePage() {
     </SimplePage>
   );
 }
+
+export default DecretTertiairePage;

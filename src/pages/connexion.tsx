@@ -2,7 +2,7 @@ import { LoginForm, type LoginFormProps } from '@/components/connexion/LoginForm
 import SimplePage from '@/components/shared/page/SimplePage';
 import { withServerSession } from '@/server/authentication';
 
-export default function ConnectionPage(props: LoginFormProps): JSX.Element {
+function ConnectionPage(props: LoginFormProps): JSX.Element {
   return (
     <SimplePage title="Espace gestionnaire" description="Connectez-vous à votre compte France Chaleur Urbaine.">
       <LoginForm {...props} />
@@ -26,3 +26,5 @@ export const getServerSideProps = withServerSession(({ context, session }) => {
     },
   };
 });
+
+export default ConnectionPage;

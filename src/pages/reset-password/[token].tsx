@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import NewPasswordForm from '@/components/connexion/NewPasswordForm';
 import SimplePage from '@/components/shared/page/SimplePage';
 
-export default function ResetPasswordPage(): JSX.Element {
+function ResetPasswordPage() {
   const { query } = useRouter();
   return (
     <SimplePage title="Réinitialisation du mot de passe" noIndex>
@@ -11,3 +11,5 @@ export default function ResetPasswordPage(): JSX.Element {
     </SimplePage>
   );
 }
+
+export default ResetPasswordPage;

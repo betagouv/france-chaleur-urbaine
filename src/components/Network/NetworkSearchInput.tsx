@@ -19,7 +19,7 @@ interface NetworkSearchInputProps {
   className?: string;
 }
 
-export default function NetworkSearchInput(props: NetworkSearchInputProps) {
+function NetworkSearchInput(props: NetworkSearchInputProps) {
   const [results, setResults] = useState<NetworkSearchResult[]>([]);
   const [isFetching, setIsFetching] = useState(false);
   const inputId = useRef(getUuid());
@@ -115,3 +115,5 @@ const StyledComboxOption = styled(ComboboxOption)`
     font-weight: bold;
   }
 `;
+
+export default NetworkSearchInput;

@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
  * Returns router.isReady in an effect.
  * We can't use router.isReady directly because it produces next.js hydratation errors
  */
-export default function useRouterReady() {
+function useRouterReady() {
   const router = useRouter();
 
   const [isPageReady, setIsPageReady] = useState(false);
@@ -15,3 +15,5 @@ export default function useRouterReady() {
 
   return isPageReady;
 }
+
+export default useRouterReady;

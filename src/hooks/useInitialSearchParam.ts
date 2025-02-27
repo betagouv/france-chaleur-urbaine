@@ -4,7 +4,7 @@ import { useSearchParams } from 'next/navigation';
  * Returns the value of a search param.
  * Works with SSR too.
  */
-export default function useInitialSearchParam(key: string) {
+function useInitialSearchParam(key: string) {
   // Not reactive, but available on the server and on page load
   const initialSearchParams = useSearchParams();
   return (
@@ -15,3 +15,5 @@ export default function useInitialSearchParam(key: string) {
         new URLSearchParams(location.search).get(key)) ?? null
   );
 }
+
+export default useInitialSearchParam;
