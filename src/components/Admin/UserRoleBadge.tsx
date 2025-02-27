@@ -3,37 +3,34 @@ import Badge from '@codegouvfr/react-dsfr/Badge';
 import { type UserRole } from '@/types/enum/UserRole';
 import { upperCaseFirstChar } from '@/utils/strings';
 
-const roleToColor = {
+const roleConfig = {
   admin: {
-    backgroundColor: '#e31717',
-    color: '#fff',
+    className: '!bg-destructive !text-white',
   },
   demo: {
-    backgroundColor: '#e0eb26',
-    color: '#000',
+    className: '!bg-yellow-300 !text-black',
   },
   gestionnaire: {
-    backgroundColor: '#7a00fb',
-    color: '#fff',
+    className: '!bg-purple-700 !text-white',
   },
   professionnel: {
-    backgroundColor: '#0d49fb',
-    color: '#fff',
+    className: '!bg-[#0d49fb] !text-white',
   },
 } satisfies Record<
   UserRole,
   {
-    backgroundColor: string;
-    color: string;
+    className: string;
   }
 >;
 
 type UserRoleBadgeProps = {
   role: UserRole;
 };
+
 const UserRoleBadge = ({ role }: UserRoleBadgeProps) => {
+  const config = roleConfig[role];
   return (
-    <Badge small style={roleToColor[role]}>
+    <Badge small className={config.className}>
       {upperCaseFirstChar(role)}
     </Badge>
   );

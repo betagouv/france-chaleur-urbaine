@@ -5,40 +5,25 @@ import { type Jobs } from '@/server/db/kysely';
 const jobStatusConfig = {
   pending: {
     label: 'En attente',
-    style: {
-      backgroundColor: '#666666',
-      color: '#fff',
-    },
+    className: '!bg-gray-500 !text-white',
   },
   processing: {
     label: 'En cours',
-    style: {
-      backgroundColor: '#0d49fb',
-      color: '#fff',
-    },
+    className: '!bg-[#0d49fb] !text-white',
   },
   finished: {
     label: 'Terminée',
-    style: {
-      backgroundColor: '#1b8450',
-      color: '#fff',
-    },
+    className: '!bg-success !text-white',
   },
   error: {
     label: 'Erreur',
-    style: {
-      backgroundColor: '#e31717',
-      color: '#fff',
-    },
+    className: '!bg-destructive !text-white',
   },
 } satisfies Record<
   Jobs['status'],
   {
     label: string;
-    style: {
-      backgroundColor: string;
-      color: string;
-    };
+    className: string;
   }
 >;
 
@@ -54,7 +39,7 @@ type JobStatusBadgeProps = {
 const JobStatusBadge = ({ status }: JobStatusBadgeProps) => {
   const config = jobStatusConfig[status];
   return (
-    <Badge small style={config.style}>
+    <Badge small className={config.className}>
       {config.label}
     </Badge>
   );
