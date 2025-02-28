@@ -270,9 +270,9 @@ program
 program
   .command('reseaux:update-geom')
   .description("Met à jour la géométrie d'un réseau. La géométrie peut être en WGS 84 (4326) ou Lambert 93 (2154)")
-  .argument('<id_fcu_or_sncu>', 'id_fcu ou SNCU du réseau')
   .argument('<fileName>', 'input file (format GeoJSON)')
-  .action(async (id_fcu_or_sncu, fileName) => {
+  .argument('<id_fcu_or_sncu>', 'id_fcu ou SNCU du réseau')
+  .action(async (fileName, id_fcu_or_sncu) => {
     const { geom, srid } = await readFileGeometry(fileName);
 
     // Vérifier si le paramètre est un nombre (id_fcu) ou une chaîne (identifiant reseau)
@@ -312,9 +312,10 @@ program
   .description(
     'Insère un nouveau réseau (avoir créé le réseau sur airtable au préalable) avec une géométrie. La géométrie peut être en WGS 84 (4326) ou Lambert 93 (2154)'
   )
-  .argument('<id_fcu>', 'id_fcu du réseau', (v) => parseInt(v))
   .argument('<fileName>', 'input file (format GeoJSON)')
-  .action(async (id_fcu, fileName) => {
+  .argument('<id_fcu>', 'id_fcu du réseau', (v) => parseInt(v))
+  .argument('<id_sncu>', 'Identifiant du réseau', (v) => v, '')
+  .action(async (fileName, id_fcu, id_sncu) => {
     const { geom, srid } = await readFileGeometry(fileName);
     await kdb
       .with('geometry', (db) =>
@@ -325,7 +326,43 @@ program
         )
       )
       .insertInto('reseaux_de_chaleur')
-      .columns(['id_fcu', 'geom', 'has_trace', 'communes', 'reseaux classes', 'reseaux_techniques', 'fichiers'])
+      .columns(['id_fcu', 'Identifiant reseau', 'geom', 'has_trace', 'communes', 'reseaux classes', 'reseaux_techniques', 'fichiers'])
+      .expression((eb) =>
+        eb
+          .selectFrom('geometry')
+          .select((eb) => [
+            eb.lit(id_fcu).as('id_fcu'),
+            sql<string | null>`${id_sncu || null}`.as('Identifiant reseau'),
+            'geometry.geom',
+            sql<boolean>`st_geometrytype(geometry.geom) = 'ST_MultiLineString'`.as('has_trace'),
+            eb.val([]).as('communes'),
+            eb.lit(false).as('reseaux classes'),
+            eb.lit(false).as('reseaux_techniques'),
+            eb.val([]).as('fichiers'),
+          ])
+      )
+      .execute();
+  });
+
+program
+  .command('reseaux-froid:insert-geom')
+  .description(
+    'Insère un nouveau réseau (avoir créé le réseau sur airtable au préalable) avec une géométrie. La géométrie peut être en WGS 84 (4326) ou Lambert 93 (2154)'
+  )
+  .argument('<fileName>', 'input file (format GeoJSON)')
+  .argument('<id_fcu>', 'id_fcu du réseau', (v) => parseInt(v))
+  .action(async (fileName, id_fcu) => {
+    const { geom, srid } = await readFileGeometry(fileName);
+    await kdb
+      .with('geometry', (db) =>
+        db.selectNoFrom(
+          srid === 4326
+            ? sql<any>`st_transform(ST_GeomFromGeoJSON(${sql.lit(JSON.stringify(geom))}), 2154)`.as('geom')
+            : sql<any>`st_setsrid(ST_GeomFromGeoJSON(${sql.lit(JSON.stringify(geom))}), 2154)`.as('geom')
+        )
+      )
+      .insertInto('reseaux_de_froid')
+      .columns(['id_fcu', 'geom', 'has_trace', 'communes', 'reseaux classes', 'fichiers'])
       .expression((eb) =>
         eb
           .selectFrom('geometry')
@@ -335,7 +372,6 @@ program
             sql<boolean>`st_geometrytype(geometry.geom) = 'ST_MultiLineString'`.as('has_trace'),
             eb.val([]).as('communes'),
             eb.lit(false).as('reseaux classes'),
-            eb.lit(false).as('reseaux_techniques'),
             eb.val([]).as('fichiers'),
           ])
       )
