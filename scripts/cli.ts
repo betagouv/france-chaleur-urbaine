@@ -8,7 +8,7 @@ import { z } from 'zod';
 
 import { saveStatsInDB } from '@/server/cron/saveStatsInDB';
 import db from '@/server/db';
-import { kdb, sql } from '@/server/db/kysely';
+import { type DB, kdb, sql } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
 import {
   type ApiNetwork,
@@ -606,22 +606,36 @@ program
   .command('reseaux:update-communes')
   .description("Met à jour les communes des réseaux de chaleur / froid / en construction, pdp grâce aux coutours des communes de l'IGN.")
   .action(async () => {
-    const res = await sql`
-    update reseaux_de_chaleur
-    set communes = COALESCE(
-      (
-        SELECT array_agg(nom order by nom)
-        FROM ign_communes
-        WHERE ST_Intersects(reseaux_de_chaleur.geom, st_buffer(ign_communes.geom, -150))
-      ),
-      (
-        SELECT array_agg(nom order by nom)
-        FROM ign_communes
-        WHERE ST_Intersects(reseaux_de_chaleur.geom, ign_communes.geom)
-      )
-    )::text[]
-  `.execute(kdb);
-    console.info('updates', res.numAffectedRows);
+    const tables = [
+      'reseaux_de_chaleur',
+      'reseaux_de_froid',
+      'zones_et_reseaux_en_construction',
+      'zone_de_developpement_prioritaire',
+    ] satisfies ReadonlyArray<keyof DB>;
+
+    const updateTableCommunes = (table: keyof DB) => sql`
+      update ${sql.raw(table)}
+      set communes = COALESCE(
+        (
+          SELECT array_agg(nom order by nom)
+          FROM ign_communes
+          WHERE ST_Intersects(${sql.raw(table)}.geom, st_buffer(ign_communes.geom, -150))
+        ),
+        (
+          SELECT array_agg(nom order by nom)
+          FROM ign_communes
+          WHERE ST_Intersects(${sql.raw(table)}.geom, ign_communes.geom)
+        ),
+        '{}'
+      )::text[]
+    `;
+
+    await Promise.all(
+      tables.map(async (table) => {
+        const res = await updateTableCommunes(table).execute(kdb);
+        console.info(`Mise à jour de ${table}: ${res.numAffectedRows} lignes modifiées`);
+      })
+    );
   });
 
 program
