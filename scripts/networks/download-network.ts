@@ -147,7 +147,7 @@ const conversionConfigAutres = {
   mise_en_service: TypeString,
   gestionnaire: TypeString,
   // communes: TypeStringToArray,
-  is_zone: TypeBool,
+  // is_zone: TypeBool,
 } as const;
 
 /**

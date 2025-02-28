@@ -150,6 +150,7 @@ export const tableConfigs: TableConfig[] = [
   {
     tableCible: 'public.zones_et_reseaux_en_construction',
     tableChangements: 'wip_traces.changements_zones_et_reseaux_en_construction',
+    pgToAirtableSyncAdditionalFields: ['is_zone'],
     postgres: {
       getCreateProps: (changement) => ({
         is_zone: !changement.is_line,
@@ -164,17 +165,17 @@ export const tableConfigs: TableConfig[] = [
       tableName: 'FCU - Futur réseaux de chaleur',
       getCreateProps: (changement) => ({
         id_fcu: changement.id_fcu,
-        // is_zone: !changement.is_line, // pas encore disponible car ST_MultiPolygon partout
+        is_zone: changement.is_zone,
         communes: changement.ign_communes.join(','),
       }),
       getUpdateProps: (changement) => ({
         id_fcu: changement.id_fcu,
-        // is_zone: !changement.is_line, // pas encore disponible car ST_MultiPolygon partout
+        is_zone: changement.is_zone,
         communes: changement.ign_communes.join(','),
       }),
       fieldsConversion: {
         id_fcu: TypeString,
-        // is_zone: TypeBool,
+        is_zone: TypeBool,
         communes: TypeString,
       },
     },
