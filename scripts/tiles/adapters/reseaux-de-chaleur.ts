@@ -6,10 +6,11 @@ import { BaseAdapter } from '../base';
 
 export default class ReseauxDeChaleurAdapter extends BaseAdapter {
   public databaseName = 'reseaux_de_chaleur';
+  public tilesGenerationMethod: 'legacy' | 'compressed' = 'legacy';
 
   async generateGeoJSON(filepath?: string) {
     const filepathToExport = filepath || `/tmp/${this.databaseName}.geojson`;
-    await unlink(filepathToExport);
+    await unlink(filepathToExport).catch(() => {});
 
     const result = await sql<any>`
 SELECT
