@@ -19,6 +19,7 @@ import {
 import { processJobById, processJobsIndefinitely } from '@/server/services/jobs/processor';
 import { type DatabaseSourceId, type DatabaseTileInfo, tilesInfo, zDatabaseSourceId } from '@/server/services/tiles.config';
 import { type ApiAccount } from '@/types/ApiAccount';
+import { isDefined } from '@/utils/core';
 import { sleep } from '@/utils/time';
 import { nonEmptyArray } from '@/utils/typescript';
 import { optimisationProfiles, optimizeImage } from '@cli/images/optimize';
@@ -430,6 +431,43 @@ program
           ])
       )
       .execute();
+  });
+
+program
+  .command('reseaux-futur:insert-geom')
+  .description(
+    'Insère un nouveau réseau (avoir créé le réseau sur airtable au préalable) avec une géométrie. La géométrie peut être en WGS 84 (4326) ou Lambert 93 (2154)'
+  )
+  .argument('<fileName>', 'input file (format GeoJSON)')
+  .argument('[id_fcu]', 'id_fcu du réseau', (v) => parseInt(v))
+  .action(async (fileName, id_fcu) => {
+    const { geom, srid } = await readFileGeometry(fileName);
+    const inserted = await kdb
+      .with('geometry', (db) =>
+        db.selectNoFrom(
+          srid === 4326
+            ? sql<any>`st_transform(ST_GeomFromGeoJSON(${sql.lit(JSON.stringify(geom))}), 2154)`.as('geom')
+            : sql<any>`st_setsrid(ST_GeomFromGeoJSON(${sql.lit(JSON.stringify(geom))}), 2154)`.as('geom')
+        )
+      )
+      .insertInto('zones_et_reseaux_en_construction')
+      .columns(['id_fcu', 'geom', 'is_zone', 'communes'])
+      .expression((eb) =>
+        eb
+          .selectFrom('geometry')
+          .select((eb) => [
+            isDefined(id_fcu)
+              ? eb.lit(id_fcu).as('id_fcu')
+              : sql<number>`(SELECT max(id_fcu) + 1 FROM zones_et_reseaux_en_construction)`.as('id_fcu'),
+            'geometry.geom',
+            sql<boolean>`st_geometrytype(geometry.geom) = 'ST_MultiPolygon'`.as('is_zone'),
+            eb.val([]).as('communes'),
+          ])
+      )
+      .returning('id_fcu')
+      .executeTakeFirstOrThrow();
+
+    console.info('Réseau futur créé:', inserted.id_fcu);
   });
 
 program
