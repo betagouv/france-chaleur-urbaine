@@ -8,7 +8,7 @@ import { readFile } from 'node:fs/promises';
 export function detectSrid(geometry: GeoJSON.Geometry): 4326 | 2154 {
   const coordinates = JSON.stringify((geometry as any).coordinates);
   // Check if any coordinate is outside WGS84 bounds
-  const hasLargeCoordinates = coordinates.match(/[0-9]{6,}/) !== null;
+  const hasLargeCoordinates = coordinates.match(/[0-9]{6,}\./) !== null;
 
   return hasLargeCoordinates ? 2154 : 4326;
 }
