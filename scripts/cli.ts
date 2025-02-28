@@ -28,7 +28,7 @@ import { type KnownAirtableBase, knownAirtableBases } from './airtable/bases';
 import { createModificationsReseau } from './airtable/create-modifications-reseau';
 import { fetchBaseSchema } from './airtable/dump-schema';
 import dataImportManager, { dataImportAdapters, type DataImportName } from './data-import';
-import { detectSrid, readFileGeometry } from './helpers/geo';
+import { mergeGeoJSONFeaturesGeometries, readFileGeometry } from './helpers/geo';
 import { runBash, runCommand } from './helpers/shell';
 import { downloadAndUpdateNetwork, downloadNetwork } from './networks/download-network';
 import { applyGeometryUpdates } from './networks/geometry-updates';
@@ -320,38 +320,13 @@ program
 
     console.info(`Fichier chargé: ${fileName} (${geoJson.features.length} features)`);
 
-    // Extraire le SRID à partir de la première géométrie
-    const srid = geoJson.features.length > 0 ? detectSrid(geoJson.features[0].geometry) : 4326;
-
-    // Utiliser Kysely pour agréger les géométries
-    const result = await kdb
-      .with('features', (db) => {
-        const featuresJson = JSON.stringify(geoJson.features);
-        return db.selectNoFrom(sql<any>`jsonb_array_elements(${featuresJson}::jsonb)`.as('feature'));
-      })
-      .with('geometries', (db) =>
-        db
-          .selectFrom('features')
-          .select(
-            srid === 4326
-              ? sql<any>`st_transform(ST_GeomFromGeoJSON(features.feature->>'geometry'), 2154)`.as('geom')
-              : sql<any>`st_setsrid(ST_GeomFromGeoJSON(features.feature->>'geometry'), 2154)`.as('geom')
-          )
-      )
-      .with('merged', (db) => db.selectFrom('geometries').select(sql<any>`st_multi(st_union(array_agg(geom)))`.as('merged_geom')))
-      .selectFrom('merged')
-      .select(sql<string>`st_asgeojson(st_transform(merged.merged_geom, 4326))`.as('geojson'))
-      .executeTakeFirstOrThrow();
-
-    // Créer un nouveau GeoJSON avec la géométrie fusionnée
-    const mergedGeometry = JSON.parse(result.geojson) as GeoJSON.Geometry;
     const mergedGeoJson: GeoJSON.FeatureCollection = {
       type: 'FeatureCollection',
       features: [
         {
           type: 'Feature',
           properties: {},
-          geometry: mergedGeometry,
+          geometry: await mergeGeoJSONFeaturesGeometries(geoJson),
         },
       ],
     };
@@ -453,16 +428,25 @@ program
       .insertInto('zones_et_reseaux_en_construction')
       .columns(['id_fcu', 'geom', 'is_zone', 'communes'])
       .expression((eb) =>
-        eb
-          .selectFrom('geometry')
-          .select((eb) => [
-            isDefined(id_fcu)
-              ? eb.lit(id_fcu).as('id_fcu')
-              : sql<number>`(SELECT max(id_fcu) + 1 FROM zones_et_reseaux_en_construction)`.as('id_fcu'),
-            'geometry.geom',
-            sql<boolean>`st_geometrytype(geometry.geom) = 'ST_MultiPolygon'`.as('is_zone'),
-            eb.val([]).as('communes'),
-          ])
+        eb.selectFrom('geometry').select((eb) => [
+          isDefined(id_fcu)
+            ? eb.lit(id_fcu).as('id_fcu')
+            : sql<number>`(SELECT max(id_fcu) + 1 FROM zones_et_reseaux_en_construction)`.as('id_fcu'),
+          'geometry.geom',
+          sql<boolean>`st_geometrytype(geometry.geom) = 'ST_MultiPolygon'`.as('is_zone'),
+          sql<string[]>`COALESCE(
+              (
+                SELECT array_agg(nom order by nom)
+                FROM geometry
+                JOIN ign_communes on ST_Intersects(geometry.geom, st_buffer(ign_communes.geom, -150))
+              ),
+              (
+                SELECT array_agg(nom order by nom)
+                FROM geometry
+                JOIN ign_communes on ST_Intersects(geometry.geom, ign_communes.geom)
+              )
+            )::text[]`.as('communes'),
+        ])
       )
       .returning('id_fcu')
       .executeTakeFirstOrThrow();
