@@ -20,7 +20,7 @@ export const syncPostgresToAirtable = async (dryRun: boolean) => {
     if (!tableConfig.airtable) {
       continue;
     }
-    console.log(`\n\n# Synchronisation ${tableConfig.tableCible} -> ${tableConfig.airtable.tableName}`);
+    console.info(`\n\n# Synchronisation ${tableConfig.tableCible} -> ${tableConfig.airtable.tableName}`);
 
     const [postgresEntities, airtableEntities] = await Promise.all([
       db(tableConfig.tableCible)
@@ -53,7 +53,7 @@ export const syncPostgresToAirtable = async (dryRun: boolean) => {
         continue;
       }
 
-      console.log(
+      console.info(
         `- ID FCU ${postgresEntity.id_fcu}: maj airtable ${JSON.stringify(objDiff)} (anciennement ${JSON.stringify(
           pick(oldAirtableValues, Object.keys(objDiff))
         )})`
