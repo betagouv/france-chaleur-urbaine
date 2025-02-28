@@ -5,7 +5,7 @@ import { readFile } from 'node:fs/promises';
  * Lambert 93 (2154) coordinates are typically large numbers (6-7 digits)
  * WGS84 (4326) coordinates are between -180/180 for longitude and -90/90 for latitude
  */
-function detectSrid(geometry: GeoJSON.Geometry): 4326 | 2154 {
+export function detectSrid(geometry: GeoJSON.Geometry): 4326 | 2154 {
   const coordinates = JSON.stringify((geometry as any).coordinates);
   // Check if any coordinate is outside WGS84 bounds
   const hasLargeCoordinates = coordinates.match(/[0-9]{6,}/) !== null;
