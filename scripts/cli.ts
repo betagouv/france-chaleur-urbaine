@@ -368,7 +368,7 @@ program
   )
   .argument('<fileName>', 'input file (format GeoJSON)')
   .argument('<id_fcu>', 'id_fcu du réseau', (v) => parseInt(v))
-  .argument('<id_sncu>', 'Identifiant du réseau', (v) => v, '')
+  .argument('[id_sncu]', 'Identifiant du réseau')
   .action(async (fileName, id_fcu, id_sncu) => {
     const { geom, srid } = await readFileGeometry(fileName);
     await kdb
@@ -436,7 +436,7 @@ program
   .command('pdp:create')
   .description('Insère un nouveau PDP avec une géométrie. La géométrie peut être en WGS 84 (4326) ou Lambert 93 (2154)')
   .argument('<fileName>', 'input file (format GeoJSON)')
-  .argument('<id_sncu>', 'ID SNCU (identifiant réseau)', (a) => a, '')
+  .argument('[id_sncu]', 'ID SNCU (identifiant réseau)')
   .action(async (fileName, id_sncu) => {
     const { geom, srid } = await readFileGeometry(fileName);
 
@@ -537,7 +537,7 @@ program
   .command('pdp:create-commune')
   .description("Insère un nouveau PDP avec une géométrie à partir d'une commune")
   .argument('<commune>', 'nom de la commune')
-  .argument('<id_sncu>', 'ID SNCU (identifiant réseau)', (a) => a, '')
+  .argument('[id_sncu]', 'ID SNCU (identifiant réseau)')
   .action(async (commune, id_sncu) => {
     // check if it exists
     if (!(await kdb.selectFrom('ign_communes').select('id').where('nom', 'ilike', commune).executeTakeFirst())) {
