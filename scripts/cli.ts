@@ -279,9 +279,11 @@ program
     const isIdSNCU = id_fcu_or_sncu.endsWith('C');
 
     // Vérifier si le réseau existe
-    const existingNetwork = isIdSNCU
-      ? await kdb.selectFrom('reseaux_de_chaleur').select('id_fcu').where('Identifiant reseau', '=', id_fcu_or_sncu).executeTakeFirst()
-      : await kdb.selectFrom('reseaux_de_chaleur').select('id_fcu').where('id_fcu', '=', parseInt(id_fcu_or_sncu)).executeTakeFirst();
+    const existingNetwork = await kdb
+      .selectFrom('reseaux_de_chaleur')
+      .select('id_fcu')
+      .where(isIdSNCU ? 'Identifiant reseau' : 'id_fcu', '=', isIdSNCU ? id_fcu_or_sncu : parseInt(id_fcu_or_sncu))
+      .executeTakeFirst();
 
     if (!existingNetwork) {
       throw new Error(`Aucun réseau trouvé avec ${isIdSNCU ? 'identifiant reseau' : 'id_fcu'} = ${id_fcu_or_sncu}`);
@@ -296,7 +298,7 @@ program
         )
       )
       .updateTable('reseaux_de_chaleur')
-      .where(isIdSNCU ? 'Identifiant reseau' : 'id_fcu', '=', isIdSNCU ? id_fcu_or_sncu : parseInt(id_fcu_or_sncu))
+      .where('id_fcu', '=', existingNetwork.id_fcu)
       .set({
         geom: (eb) => eb.selectFrom('geometry').select('geometry.geom'),
         has_trace: (eb) =>
@@ -390,6 +392,55 @@ program
         .executeTakeFirstOrThrow();
       console.info('Réseau de chaleur mis à jour (has_PDP):', res.id_fcu);
     }
+  });
+
+program
+  .command('pdp:update')
+  .description("Met à jour la géométrie d'un PDP. La géométrie peut être en WGS 84 (4326) ou Lambert 93 (2154)")
+  .argument('<fileName>', 'input file (format GeoJSON)')
+  .argument('<id_fcu_or_sncu>', 'id_fcu ou identifiant réseau')
+  .action(async (fileName, id_fcu_or_sncu) => {
+    const { geom, srid } = await readFileGeometry(fileName);
+
+    // Vérifier si le paramètre est un nombre (id_fcu) ou une chaîne (identifiant reseau)
+    const isIdSNCU = id_fcu_or_sncu.endsWith('C');
+
+    const existingPDP = await kdb
+      .selectFrom('zone_de_developpement_prioritaire')
+      .select('id_fcu')
+      .where(isIdSNCU ? 'Identifiant reseau' : 'id_fcu', '=', isIdSNCU ? id_fcu_or_sncu : parseInt(id_fcu_or_sncu))
+      .executeTakeFirst();
+
+    if (!existingPDP) {
+      throw new Error(`Aucun PDP trouvé avec ${isIdSNCU ? 'identifiant reseau' : 'id_fcu'} = ${id_fcu_or_sncu}`);
+    }
+
+    await kdb
+      .with('geometry', (db) =>
+        db.selectNoFrom(
+          srid === 4326
+            ? sql<any>`st_transform(ST_GeomFromGeoJSON(${sql.lit(JSON.stringify(geom))}), 2154)`.as('geom')
+            : sql<any>`st_setsrid(ST_GeomFromGeoJSON(${sql.lit(JSON.stringify(geom))}), 2154)`.as('geom')
+        )
+      )
+      .updateTable('zone_de_developpement_prioritaire')
+      .where('id_fcu', '=', existingPDP.id_fcu)
+      .set({
+        geom: (eb) => eb.selectFrom('geometry').select('geometry.geom'),
+        communes: sql<string[]>`COALESCE(
+          (
+            SELECT array_agg(nom order by nom)
+            FROM geometry
+            JOIN ign_communes on ST_Intersects(geometry.geom, st_buffer(ign_communes.geom, -150))
+          ),
+          (
+            SELECT array_agg(nom order by nom)
+            FROM geometry
+            JOIN ign_communes on ST_Intersects(geometry.geom, ign_communes.geom)
+          )
+        )::text[]`,
+      })
+      .execute();
   });
 
 program
