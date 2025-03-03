@@ -153,6 +153,7 @@ export const UrlStateAccordion = ({ multi = true, queryParamName = 'accordions',
   const id = isLabelObject || props.id ? (props.id as string) : (props.label as string);
 
   const expanded = multi ? has(id) : value === id;
+
   const onExpandedChangeUrlState = multi
     ? (expanded: boolean) => (expanded ? add(id) : remove(id))
     : (expanded: boolean) => (expanded ? setValue(id) : setValue(null));
@@ -161,9 +162,9 @@ export const UrlStateAccordion = ({ multi = true, queryParamName = 'accordions',
     <Accordion
       {...props}
       expanded={expanded}
-      onExpandedChange={(expanded, e) => {
-        onExpandedChangeUrlState(expanded);
-        onExpandedChange?.(expanded, e);
+      onExpandedChange={(newExpanded, e) => {
+        onExpandedChangeUrlState(newExpanded);
+        onExpandedChange?.(newExpanded, e);
       }}
     />
   );
