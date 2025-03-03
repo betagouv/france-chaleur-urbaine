@@ -1,6 +1,5 @@
 import { fr } from '@codegouvfr/react-dsfr';
 import Badge from '@codegouvfr/react-dsfr/Badge';
-import ToggleSwitch from '@codegouvfr/react-dsfr/ToggleSwitch';
 import React from 'react';
 
 import Accordion from '@/components/ui/Accordion';
@@ -10,39 +9,19 @@ import Icon from '@/components/ui/Icon';
 import Modal, { createModal } from '@/components/ui/Modal';
 import cx from '@/utils/cx';
 
-import { Results, ResultsPlaceholder, Section, Simulator } from './ComparateurPublicodes.style';
+import { Results, ResultsPlaceholder, Simulator } from './ComparateurPublicodes.style';
 
 type ComparateurPublicodesPlaceholderProps = React.HTMLAttributes<HTMLDivElement> & {};
 
 export type TabId = 'batiment' | 'modes';
 
 export const dataYearDisclaimer = `Les données utilisées par le comparateur portent sur l'année 2023, sauf pour les prix des réseaux de chaleur où l'année de référence est 2022, dans l'attente de la publication des données 2023. Les valeurs de l'ensemble des paramètres utilisés pour les calculs sont modifiables dans le mode avancé.`;
-export const ComparateurPublicodesTitle = () => {
-  return (
-    <div>
-      <DescriptionModal />
-      <Heading as="h2">
-        Comparateur de coûts et d’émissions de CO2 <Badge severity="warning">Beta</Badge>
-      </Heading>
-      <Logos size="sm" withFCU={false} />
-      <div className="fr-text--sm fr-mt-2w">
-        Cet outil a pour objectif de comparer des configurations de chauffage et de refroidissement sur les plans techniques, économiques et
-        environnementaux.{' '}
-        <strong>Il ne remplace en aucun cas une étude de faisabilité technico-économique menée par un bureau d’études</strong> et ne peut
-        s'adapter aux situations particulières avec les hypothèses préconfigurées. Ces hypothèses représentent des configurations types,
-        elles sont donc sujets à des incertitudes importantes.{' '}
-        <a href="#" onClick={() => modalDescription.open()} className="fr-link fr-text--sm">
-          Voir l’explication détaillée
-        </a>
-        <p className="fr-text--sm fr-my-1w">{dataYearDisclaimer}</p>
-        <p className="fr-text--sm font-bold">
-          Pour une étude plus poussée (prix actualisés, prise en compte des spécificités de votre bâtiment), nous vous invitons à vous
-          rapprocher du gestionnaire du réseau de chaleur le plus proche de chez vous ou d'un bureau d'études.
-        </p>
-      </div>
-    </div>
-  );
-};
+
+export const title = (
+  <>
+    Comparateur de coûts et d’émissions de CO2 <Badge severity="warning">Beta</Badge>
+  </>
+);
 
 export const Logos = ({ size, withFCU = true, ...props }: React.ComponentProps<typeof Box> & { size?: 'sm'; withFCU?: boolean }) => {
   const height = size === 'sm' ? '32px' : '40px';
@@ -55,10 +34,43 @@ export const Logos = ({ size, withFCU = true, ...props }: React.ComponentProps<t
     </Box>
   );
 };
+
 const modalDescription = createModal({
   id: 'tool-description-modal',
   isOpenedByDefault: false,
 });
+
+export const Explanations = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
+  <>
+    <DescriptionModal />
+    <div className={cx('fr-text--sm fr-mt-2w', className)} {...props}>
+      Cet outil a pour objectif de comparer des configurations de chauffage et de refroidissement sur les plans techniques, économiques et
+      environnementaux.{' '}
+      <strong>Il ne remplace en aucun cas une étude de faisabilité technico-économique menée par un bureau d’études</strong> et ne peut
+      s'adapter aux situations particulières avec les hypothèses préconfigurées. Ces hypothèses représentent des configurations types, elles
+      sont donc sujets à des incertitudes importantes.{' '}
+      <a href="#" onClick={() => modalDescription.open()} className="fr-link fr-text--sm">
+        Voir l’explication détaillée
+      </a>
+      <p className="fr-text--sm fr-my-1w">{dataYearDisclaimer}</p>
+      <p className="fr-text--sm font-bold">
+        Pour une étude plus poussée (prix actualisés, prise en compte des spécificités de votre bâtiment), nous vous invitons à vous
+        rapprocher du gestionnaire du réseau de chaleur le plus proche de chez vous ou d'un bureau d'études.
+      </p>
+    </div>
+  </>
+);
+
+export const ComparateurPublicodesTitle = () => {
+  return (
+    <div>
+      <Heading as="h2">{title}</Heading>
+      <DescriptionModal />
+      <Logos size="sm" withFCU={false} />
+      <Explanations />
+    </div>
+  );
+};
 
 export const simulatorTabs = [
   {
@@ -191,36 +203,18 @@ export const DisclaimerButton: React.FC<React.HTMLAttributes<HTMLDivElement>> = 
 const ComparateurPublicodesPlaceholder: React.FC<ComparateurPublicodesPlaceholderProps> = ({ children, className, ...props }) => {
   return (
     <div className={cx(fr.cx('fr-container'), className)} {...props}>
-      <Section>
-        <header>
-          <ComparateurPublicodesTitle />
-          <ToggleSwitch
-            label="Mode&nbsp;avancé"
-            labelPosition="left"
-            inputTitle="Mode Pro"
-            showCheckedHint={false}
-            checked={false}
-            disabled
-            className={fr.cx('fr-mt-0')}
-            onChange={() => {
-              // Nothing to do as it's for loading state only
-            }}
-          />
-        </header>
-        <DescriptionModal />
-        <Simulator $loading={true}>
-          <Box display="flex" gap="16px" flexDirection="column">
-            {simulatorTabs.map((tab) => (
-              <Accordion key={tab.tabId} bordered label={tab.label}>
-                Chargement...
-              </Accordion>
-            ))}
-          </Box>
-          <Results>
-            <ResultsNotAvailable />
-          </Results>
-        </Simulator>
-      </Section>
+      <Simulator $loading={true}>
+        <Box display="flex" gap="16px" flexDirection="column">
+          {simulatorTabs.map((tab) => (
+            <Accordion key={tab.tabId} bordered label={tab.label}>
+              Chargement...
+            </Accordion>
+          ))}
+        </Box>
+        <Results>
+          <ResultsNotAvailable />
+        </Results>
+      </Simulator>
     </div>
   );
 };
