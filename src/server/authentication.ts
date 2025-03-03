@@ -1,4 +1,4 @@
-import { type GetServerSidePropsResult, type GetServerSideProps, type GetServerSidePropsContext } from 'next';
+import { type GetServerSideProps, type GetServerSidePropsContext, type GetServerSidePropsResult } from 'next';
 import { type Session } from 'next-auth';
 import { getServerSession as getNextAuthServerSession } from 'next-auth/next';
 
@@ -78,7 +78,7 @@ export const withAuthentication = (requiredRole?: UserRole, handler?: WithServer
     if (requiredRole && session.user.role !== requiredRole) {
       return {
         redirect: {
-          destination: `/tableau-de-bord?notify=error:${encodeURIComponent("Vous n'avez pas les permissions suffisantes pour accéder à cette page")}`,
+          destination: `/pro/tableau-de-bord?notify=error:${encodeURIComponent("Vous n'avez pas les permissions suffisantes pour accéder à cette page")}`,
           permanent: false,
         },
       };

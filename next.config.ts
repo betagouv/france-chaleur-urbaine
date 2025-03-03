@@ -198,7 +198,12 @@ const nextConfig: NextConfig = {
       },
       {
         source: '/gestionnaire',
-        destination: '/demandes',
+        destination: '/pro/demandes',
+        permanent: true,
+      },
+      {
+        source: '/aide',
+        destination: '/pro/aide',
         permanent: true,
       },
       {

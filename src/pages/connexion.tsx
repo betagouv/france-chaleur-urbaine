@@ -52,7 +52,7 @@ export const getServerSideProps = withServerSession(async ({ context, session })
   if (session) {
     return {
       redirect: {
-        destination: '/tableau-de-bord',
+        destination: '/pro/tableau-de-bord',
         permanent: false,
       },
     };
@@ -60,7 +60,7 @@ export const getServerSideProps = withServerSession(async ({ context, session })
 
   return {
     props: {
-      callbackUrl: (context.query.callbackUrl as string) || '/tableau-de-bord',
+      callbackUrl: (context.query.callbackUrl as string) || '/pro/tableau-de-bord',
     },
   };
 });

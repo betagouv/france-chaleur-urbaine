@@ -261,13 +261,13 @@ const gestionnaireNavigationMenu: MainNavigationProps.Item[] = [
   {
     text: 'Tableau de bord',
     linkProps: {
-      href: '/demandes',
+      href: '/pro/demandes',
     },
   },
   {
     text: 'Aide',
     linkProps: {
-      href: '/aide',
+      href: '/pro/aide',
     },
   },
 ];
