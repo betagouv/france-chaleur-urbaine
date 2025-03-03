@@ -170,9 +170,17 @@ const getEmissionsCO2PrecisionRange = (value: number) => {
   return { lowerBound, lowerBoundString, upperBound, upperBoundString };
 };
 
-const formatEmissionsCO2 = (value: number, suffix = 'kgCO2e') =>
-  [`${(Math.round(value / 10) * 10).toLocaleString('fr-FR', { maximumFractionDigits: 0 })}`, suffix].filter(Boolean).join(' ');
+const formatEmissionsCO2 = (value: number, suffix = 'kgCO2e') => {
+  let roundedValue = Math.round(value / 10) * 10;
+  let maximumFractionDigits = 0;
+  if (value >= 1000) {
+    roundedValue = roundedValue / 1000;
+    suffix = 'tCO2e';
+    maximumFractionDigits = 2;
+  }
 
+  return [`${roundedValue.toLocaleString('fr-FR', { maximumFractionDigits })}`, suffix].filter(Boolean).join(' ');
+};
 const formatCost = (value: number) =>
   `${(Math.round(value / 10) * 10).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 })}`;
 
@@ -398,8 +406,10 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
   const maxExistingCostValue = totalCoutsEtEmissions.reduce((acc, [, cost]) => Math.max(acc, cost), 0) * (1 + costPrecisionPercentage);
   const scaleTickCost = 500;
   const scaleCostMaxValue = Math.ceil(maxExistingCostValue / scaleTickCost) * scaleTickCost;
-  const scaleTickEmissionsCO2 = maxExistingEmissionsCO2Value > 10000 ? 10000 : 500;
-  const scaleEmissionsCO2maxValue = Math.ceil(maxExistingEmissionsCO2Value / scaleTickEmissionsCO2) * scaleTickEmissionsCO2;
+  const scaleEmissionsCO2maxValue =
+    maxExistingEmissionsCO2Value > 10000
+      ? Math.ceil(maxExistingEmissionsCO2Value / 10000) * 10000
+      : Math.ceil(maxExistingEmissionsCO2Value / 1000) * 1000;
 
   const getGrid = (value: number) => {
     if (value % 500 === 0 && value <= 3000) return 100 / (value / 500);
@@ -452,22 +462,22 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
               {typeDeBatiment === 'tertiaire' ? '' : ` (par ${perBuilding ? 'bâtiment' : 'logement'})`} - {titleItemsString}
             </Heading>
             <DisclaimerButton className="!mb-5" />
-            <div className="relative py-2">
+            <div className="relative pt-2 pb-8">
               <div className="absolute inset-0 -z-10 flex h-full w-full [&>*]:flex-1">
                 <div
                   className="ml-12 mr-3"
                   style={{
-                    backgroundImage: `repeating-linear-gradient(to right,#EEE 0,#EEE 1px,transparent 1px,transparent ${getGrid(scaleEmissionsCO2maxValue)}%)`,
+                    backgroundImage: `repeating-linear-gradient(to right,#CCC 0,#CCC 1px,transparent 1px,transparent ${getGrid(scaleEmissionsCO2maxValue)}%)`,
                     // Goal here is to give a grid that is relevent for a user
                     // when % is infinite (16.666666% for example), grid might appear inaccurate and we rather display only one understandable line instead
-                    borderRight: '1px solid #EEE',
+                    borderRight: '1px solid #CCC',
                   }}
                 ></div>
                 <div
                   className="ml-3 mr-12"
                   style={{
-                    backgroundImage: `repeating-linear-gradient(to right,#EEE 0,#EEE 1px,transparent 1px,transparent  ${getGrid(scaleCostMaxValue)}%)`,
-                    borderRight: '1px solid #EEE',
+                    backgroundImage: `repeating-linear-gradient(to right,#CCC 0,#CCC 1px,transparent 1px,transparent  ${getGrid(scaleCostMaxValue)}%)`,
+                    borderRight: '1px solid #CCC',
                   }}
                 ></div>
               </div>
@@ -504,10 +514,10 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
                 return (
                   <>
                     {showSectionTitle && (
-                      <div className="relative mb-1 mt-8 text-center text-xl font-bold bg-white/50">{graphSectionTitle}</div>
+                      <div className="relative mb-1 mt-8 text-center text-xl font-bold bg-white/20">{graphSectionTitle}</div>
                     )}
                     <div key={name} className="relative mb-1 mt-2 flex items-center justify-center text-base font-bold">
-                      <span className="bg-white">{name}</span>
+                      <span className="bg-white/20">{name}</span>
                     </div>
                     <div className="group stretch flex items-center">
                       <div className="pl-12 pr-3 flex flex-1 border-r border-solid border-white">
@@ -548,15 +558,34 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
                   </>
                 );
               })}
-              <div className="flex justify-between text-sm font-bold text-faded mt-8">
-                <div className="flex-1 px-0.5 ml-12 mr-3 flex items-center justify-between">
-                  <span>{formatEmissionsCO2(scaleEmissionsCO2maxValue)}</span>
-                  <span>{0}</span>
-                </div>
-                <div className="flex-1 px-0.5 mr-12 ml-3 flex items-center justify-between">
-                  <span>{0}</span>
-                  <span>{formatCost(scaleCostMaxValue)}</span>
-                </div>
+            </div>
+
+            <div className="flex justify-between text-sm font-bold text-faded -mt-2 mb-16">
+              <div className="flex-1 ml-12 mr-2 flex items-center justify-between relative">
+                {Array.from({ length: Math.floor(100 / getGrid(scaleEmissionsCO2maxValue)) }).map((_, i) => (
+                  <div className="relative flex-1" key={`scale_co2_${i}-${scaleEmissionsCO2maxValue}`}>
+                    &nbsp;
+                    <span className="absolute origin-bottom-right -rotate-45 w-[100px] -translate-x-[100px] whitespace-nowrap text-right">
+                      {formatEmissionsCO2(scaleEmissionsCO2maxValue * (1 - (i * getGrid(scaleEmissionsCO2maxValue)) / 100))}
+                    </span>
+                  </div>
+                ))}
+                <span className="absolute origin-bottom-right -rotate-45 right-0 whitespace-nowrap text-right">
+                  {formatEmissionsCO2(0)}
+                </span>
+              </div>
+              <div className="flex-1 mr-12 ml-2 flex items-center justify-between relative">
+                <span className="absolute origin-bottom-right -rotate-45 left-0 whitespace-nowrap text-right -translate-x-[5px]">
+                  {formatCost(0)}
+                </span>
+                {Array.from({ length: Math.floor(100 / getGrid(scaleCostMaxValue)) }).map((_, i) => (
+                  <div className="relative flex-1" key={`scale_cost_${i}-${scaleCostMaxValue}`}>
+                    &nbsp;
+                    <span className="absolute origin-bottom-right -rotate-45 w-[100%] translate-x-[5px] whitespace-nowrap text-right">
+                      {formatCost(scaleCostMaxValue * (((i + 1) * getGrid(scaleCostMaxValue)) / 100))}
+                    </span>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
