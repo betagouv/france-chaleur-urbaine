@@ -235,42 +235,44 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
       const amountP4SansAides = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P4 moins aides`);
       const amountAides = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . aides`);
 
+      const valueFormatter = advancedMode ? formatCostPrecisionRange : () => '';
+
       const amounts = advancedMode
         ? [
             ...getRow({
               title: `P1 abonnement${typeInstallation.label === 'Réseau de chaleur' ? ' (R2 du réseau de chaleur)' : ''}`,
               amount: amountP1Abo,
               color: colorP1Abo,
-              valueFormatter: formatCostPrecisionRange,
+              valueFormatter,
             }),
             ...getRow({
               title: `P1 consommation${typeInstallation.label === 'Réseau de chaleur' ? ' (R1 du réseau de chaleur)' : ''}`,
               amount: amountP1Conso,
               color: colorP1Conso,
-              valueFormatter: formatCostPrecisionRange,
+              valueFormatter,
             }),
-            ...getRow({ title: 'P1 ECS', amount: amountP1ECS, color: colorP1ECS, valueFormatter: formatCostPrecisionRange }),
-            ...getRow({ title: "P1'", amount: amountP1prime, color: colorP1prime, valueFormatter: formatCostPrecisionRange }),
+            ...getRow({ title: 'P1 ECS', amount: amountP1ECS, color: colorP1ECS, valueFormatter }),
+            ...getRow({ title: "P1'", amount: amountP1prime, color: colorP1prime, valueFormatter }),
             ...getRow({
               title: 'P1 consommation froid',
               amount: amountP1Consofroid,
               color: colorP1Consofroid,
-              valueFormatter: formatCostPrecisionRange,
+              valueFormatter,
             }),
-            ...getRow({ title: 'P2', amount: amountP2, color: colorP2, valueFormatter: formatCostPrecisionRange }),
-            ...getRow({ title: 'P3', amount: amountP3, color: colorP3, valueFormatter: formatCostPrecisionRange }),
+            ...getRow({ title: 'P2', amount: amountP2, color: colorP2, valueFormatter }),
+            ...getRow({ title: 'P3', amount: amountP3, color: colorP3, valueFormatter }),
             ...getRow({
               title: 'P4 moins aides',
               amount: amountP4SansAides,
               color: colorP4SansAides,
-              valueFormatter: formatCostPrecisionRange,
+              valueFormatter,
             }),
             ...getRow({
               title: tooltipAides,
               amount: amountAides,
               color: colorP4Aides,
               bordered: true,
-              valueFormatter: formatCostPrecisionRange,
+              valueFormatter,
             }),
           ]
         : [
@@ -278,32 +280,32 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
               title: `Abonnement${typeInstallation.label === 'Réseau de chaleur' ? ' (R2 du réseau de chaleur)' : ''}`,
               amount: amountP1Abo,
               color: colorP1Abo,
-              valueFormatter: formatCostPrecisionRange,
+              valueFormatter,
             }),
             ...getRow({
               title: `Consommation${typeInstallation.label === 'Réseau de chaleur' ? ' (R1 du réseau de chaleur)' : ''}`,
               amount: amountP1Conso + amountP1ECS,
               color: colorP1Conso,
-              valueFormatter: formatCostPrecisionRange,
+              valueFormatter,
             }),
             ...getRow({
               title: 'Maintenance',
               amount: amountP1prime + amountP2 + amountP3,
               color: colorP1prime,
-              valueFormatter: formatCostPrecisionRange,
+              valueFormatter,
             }),
             ...getRow({
               title: 'Investissement',
               amount: amountP4SansAides,
               color: colorP4SansAides,
-              valueFormatter: formatCostPrecisionRange,
+              valueFormatter,
             }),
             ...getRow({
               title: tooltipAides,
               amount: amountAides,
               color: colorP4Aides,
               bordered: true,
-              valueFormatter: formatCostPrecisionRange,
+              valueFormatter,
             }),
           ];
 
@@ -312,7 +314,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
         0
       );
       const totalAmount = totalAmountWithAides - amountAides;
-      const precisionRange = formatCostPrecisionRange(totalAmount);
+      const precisionRange = valueFormatter(totalAmount);
       maxCoutValue = Math.max(maxCoutValue, totalAmount);
       totalCoutsEtEmissions[index] = [getLabel(typeInstallation), totalAmount, -1];
       return [
@@ -513,7 +515,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
                           className="relative bg-fcu-orange-light/10 whitespace-nowrap py-0.5 tracking-tight text-left font-extrabold text-fcu-orange-light sm:text-xs md:text-sm flex items-center justify-end"
                           style={{ flex: 100 - co2UpperPercent }}
                         >
-                          <span className="pr-0.5 absolute right-[12px]">{co2UpperBoundString}</span>
+                          <span className="pr-0.5 absolute right-[12px]">{advancedMode ? co2UpperBoundString : ''}</span>
                           <div className="border-solid border-l-fcu-orange-light border-l-[12px] border-y-transparent border-y-[5px] my-1 border-r-0"></div>
                         </div>
                         <div className="relative bg-fcu-orange-light" style={{ flex: co2Width }}></div>
@@ -522,7 +524,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
                           style={{ flex: co2LowerPercent }}
                         >
                           <div className="border-solid border-r-fcu-orange-light border-r-[12px] border-y-transparent border-y-[5px] my-1 border-l-0"></div>
-                          <span className="absolute left-[12px] pl-0.5">{co2LowerBoundString}</span>
+                          <span className="absolute left-[12px] pl-0.5">{advancedMode ? co2LowerBoundString : ''}</span>
                         </div>
                       </div>
                       <div className="pr-12 pl-3 flex flex-1 border-l border-solid border-white">
@@ -530,7 +532,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
                           className="relative bg-fcu-purple/30 whitespace-nowrap tracking-tight py-0.5 text-right font-extrabold text-fcu-purple sm:text-xs md:text-sm flex items-center justify-end"
                           style={{ flex: costLowerPercent }}
                         >
-                          <span className="pr-0.5 absolute right-[12px]">{lowerBoundString}</span>
+                          <span className="pr-0.5 absolute right-[12px]">{advancedMode ? lowerBoundString : ''}</span>
                           <div className="border-solid border-l-fcu-purple border-l-[12px] border-y-transparent border-y-[5px] my-1 border-r-0"></div>
                         </div>
                         <div className="relative bg-fcu-purple" style={{ flex: costWidth }}></div>
@@ -539,7 +541,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
                           style={{ flex: 100 - costUpperPercent }}
                         >
                           <div className="border-solid border-r-fcu-purple border-r-[12px] border-y-transparent border-y-[5px] my-1 border-l-0"></div>
-                          <span className="pl-0.5 absolute left-[12px]">{upperBoundString}</span>
+                          <span className="pl-0.5 absolute left-[12px]">{advancedMode ? upperBoundString : ''}</span>
                         </div>
                       </div>
                     </div>
