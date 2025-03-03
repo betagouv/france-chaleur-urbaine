@@ -19,7 +19,6 @@ import {
 import { processJobById, processJobsIndefinitely } from '@/server/services/jobs/processor';
 import { type DatabaseSourceId, type DatabaseTileInfo, tilesInfo, zDatabaseSourceId } from '@/server/services/tiles.config';
 import { type ApiAccount } from '@/types/ApiAccount';
-import { isDefined } from '@/utils/core';
 import { sleep } from '@/utils/time';
 import { nonEmptyArray } from '@/utils/typescript';
 import { optimisationProfiles, optimizeImage } from '@cli/images/optimize';
@@ -28,9 +27,14 @@ import { type KnownAirtableBase, knownAirtableBases } from './airtable/bases';
 import { createModificationsReseau } from './airtable/create-modifications-reseau';
 import { fetchBaseSchema } from './airtable/dump-schema';
 import dataImportManager, { dataImportAdapters, type DataImportName } from './data-import';
-import { mergeGeoJSONFeaturesGeometries, readFileGeometry } from './helpers/geo';
 import { runBash, runCommand } from './helpers/shell';
 import { downloadAndUpdateNetwork, downloadNetwork } from './networks/download-network';
+import {
+  updateNetworkGeometry,
+  insertNetworkWithGeometry,
+  createPDPFromCommune,
+  updateNetworkHasPDP,
+} from './networks/geometry-operations';
 import { applyGeometryUpdates } from './networks/geometry-updates';
 import { syncPostgresToAirtable } from './networks/sync-pg-to-airtable';
 import { upsertFixedSimulateurData } from './simulateur/import';
@@ -269,75 +273,6 @@ program
   });
 
 program
-  .command('reseaux:update-geom')
-  .description("Met à jour la géométrie d'un réseau. La géométrie peut être en WGS 84 (4326) ou Lambert 93 (2154)")
-  .argument('<fileName>', 'input file (format GeoJSON)')
-  .argument('<id_fcu_or_sncu>', 'id_fcu ou SNCU du réseau')
-  .action(async (fileName, id_fcu_or_sncu) => {
-    const { geom, srid } = await readFileGeometry(fileName);
-
-    // Vérifier si le paramètre est un nombre (id_fcu) ou une chaîne (identifiant reseau)
-    const isIdSNCU = id_fcu_or_sncu.endsWith('C');
-
-    // Vérifier si le réseau existe
-    const existingNetwork = await kdb
-      .selectFrom('reseaux_de_chaleur')
-      .select('id_fcu')
-      .where(isIdSNCU ? 'Identifiant reseau' : 'id_fcu', '=', isIdSNCU ? id_fcu_or_sncu : parseInt(id_fcu_or_sncu))
-      .executeTakeFirst();
-
-    if (!existingNetwork) {
-      throw new Error(`Aucun réseau trouvé avec ${isIdSNCU ? 'identifiant reseau' : 'id_fcu'} = ${id_fcu_or_sncu}`);
-    }
-
-    await kdb
-      .with('geometry', (db) =>
-        db.selectNoFrom(
-          srid === 4326
-            ? sql<any>`st_transform(ST_GeomFromGeoJSON(${sql.lit(JSON.stringify(geom))}), 2154)`.as('geom')
-            : sql<any>`st_setsrid(ST_GeomFromGeoJSON(${sql.lit(JSON.stringify(geom))}), 2154)`.as('geom')
-        )
-      )
-      .updateTable('reseaux_de_chaleur')
-      .where('id_fcu', '=', existingNetwork.id_fcu)
-      .set({
-        geom: (eb) => eb.selectFrom('geometry').select('geometry.geom'),
-        has_trace: (eb) =>
-          eb.selectFrom('geometry').select(sql<boolean>`st_geometrytype(geometry.geom) = 'ST_MultiLineString'`.as('has_trace')),
-      })
-      .execute();
-  });
-program
-  .command('geo:merge-features')
-  .description('Charge un fichier GeoJSON (FeatureCollection), agrège les géométries et écrit un nouveau fichier avec une géométrie unique')
-  .argument('<fileName>', 'input file (format GeoJSON)')
-  .action(async (fileName) => {
-    // Lire le fichier GeoJSON
-    const geoJson = JSON.parse(await readFile(fileName, 'utf8')) as GeoJSON.FeatureCollection;
-    if (geoJson.type !== 'FeatureCollection') {
-      throw new Error('Le fichier doit être une FeatureCollection GeoJSON');
-    }
-
-    console.info(`Fichier chargé: ${fileName} (${geoJson.features.length} features)`);
-
-    const mergedGeoJson: GeoJSON.FeatureCollection = {
-      type: 'FeatureCollection',
-      features: [
-        {
-          type: 'Feature',
-          properties: {},
-          geometry: await mergeGeoJSONFeaturesGeometries(geoJson),
-        },
-      ],
-    };
-
-    // Générer le fichier de sortie
-    const outputFileName = fileName.replace(/\.geojson$/i, '_single.geojson');
-    await writeFile(outputFileName, JSON.stringify(mergedGeoJson, null, 2), 'utf8');
-    console.info(`Géométrie fusionnée écrite dans: ${outputFileName}`);
-  });
-
-program
   .command('reseaux:insert-geom')
   .description(
     'Insère un nouveau réseau (avoir créé le réseau sur airtable au préalable) avec une géométrie. La géométrie peut être en WGS 84 (4326) ou Lambert 93 (2154)'
@@ -346,32 +281,21 @@ program
   .argument('<id_fcu>', 'id_fcu du réseau', (v) => parseInt(v))
   .argument('[id_sncu]', 'Identifiant du réseau')
   .action(async (fileName, id_fcu, id_sncu) => {
-    const { geom, srid } = await readFileGeometry(fileName);
-    await kdb
-      .with('geometry', (db) =>
-        db.selectNoFrom(
-          srid === 4326
-            ? sql<any>`st_transform(ST_GeomFromGeoJSON(${sql.lit(JSON.stringify(geom))}), 2154)`.as('geom')
-            : sql<any>`st_setsrid(ST_GeomFromGeoJSON(${sql.lit(JSON.stringify(geom))}), 2154)`.as('geom')
-        )
-      )
-      .insertInto('reseaux_de_chaleur')
-      .columns(['id_fcu', 'Identifiant reseau', 'geom', 'has_trace', 'communes', 'reseaux classes', 'reseaux_techniques', 'fichiers'])
-      .expression((eb) =>
-        eb
-          .selectFrom('geometry')
-          .select((eb) => [
-            eb.lit(id_fcu).as('id_fcu'),
-            sql<string | null>`${id_sncu || null}`.as('Identifiant reseau'),
-            'geometry.geom',
-            sql<boolean>`st_geometrytype(geometry.geom) = 'ST_MultiLineString'`.as('has_trace'),
-            eb.val([]).as('communes'),
-            eb.lit(false).as('reseaux classes'),
-            eb.lit(false).as('reseaux_techniques'),
-            eb.val([]).as('fichiers'),
-          ])
-      )
-      .execute();
+    await insertNetworkWithGeometry('reseaux_de_chaleur', fileName, { id_fcu, id_sncu });
+  });
+
+program
+  .command('reseaux:update-geom')
+  .description("Met à jour la géométrie d'un réseau. La géométrie peut être en WGS 84 (4326) ou Lambert 93 (2154)")
+  .argument('<fileName>', 'input file (format GeoJSON)')
+  .argument('<id_fcu_or_sncu>', 'id_fcu ou SNCU du réseau')
+  .action(async (fileName, id_fcu_or_sncu) => {
+    // Vérifier si le paramètre est un nombre (id_fcu) ou une chaîne (identifiant reseau)
+    const isIdSNCU = id_fcu_or_sncu.endsWith('C');
+    const idField = isIdSNCU ? 'Identifiant reseau' : 'id_fcu';
+    const idValue = isIdSNCU ? id_fcu_or_sncu : parseInt(id_fcu_or_sncu);
+
+    await updateNetworkGeometry('reseaux_de_chaleur', idField, idValue, fileName);
   });
 
 program
@@ -382,30 +306,21 @@ program
   .argument('<fileName>', 'input file (format GeoJSON)')
   .argument('<id_fcu>', 'id_fcu du réseau', (v) => parseInt(v))
   .action(async (fileName, id_fcu) => {
-    const { geom, srid } = await readFileGeometry(fileName);
-    await kdb
-      .with('geometry', (db) =>
-        db.selectNoFrom(
-          srid === 4326
-            ? sql<any>`st_transform(ST_GeomFromGeoJSON(${sql.lit(JSON.stringify(geom))}), 2154)`.as('geom')
-            : sql<any>`st_setsrid(ST_GeomFromGeoJSON(${sql.lit(JSON.stringify(geom))}), 2154)`.as('geom')
-        )
-      )
-      .insertInto('reseaux_de_froid')
-      .columns(['id_fcu', 'geom', 'has_trace', 'communes', 'reseaux classes', 'fichiers'])
-      .expression((eb) =>
-        eb
-          .selectFrom('geometry')
-          .select((eb) => [
-            eb.lit(id_fcu).as('id_fcu'),
-            'geometry.geom',
-            sql<boolean>`st_geometrytype(geometry.geom) = 'ST_MultiLineString'`.as('has_trace'),
-            eb.val([]).as('communes'),
-            eb.lit(false).as('reseaux classes'),
-            eb.val([]).as('fichiers'),
-          ])
-      )
-      .execute();
+    await insertNetworkWithGeometry('reseaux_de_froid', fileName, { id_fcu });
+  });
+
+program
+  .command('reseaux-froid:update-geom')
+  .description("Met à jour la géométrie d'un réseau. La géométrie peut être en WGS 84 (4326) ou Lambert 93 (2154)")
+  .argument('<fileName>', 'input file (format GeoJSON)')
+  .argument('<id_fcu_or_sncu>', 'id_fcu ou SNCU du réseau')
+  .action(async (fileName, id_fcu_or_sncu) => {
+    // Vérifier si le paramètre est un nombre (id_fcu) ou une chaîne (identifiant reseau)
+    const isIdSNCU = id_fcu_or_sncu.endsWith('C');
+    const idField = isIdSNCU ? 'Identifiant reseau' : 'id_fcu';
+    const idValue = isIdSNCU ? id_fcu_or_sncu : parseInt(id_fcu_or_sncu);
+
+    await updateNetworkGeometry('reseaux_de_froid', idField, idValue, fileName);
   });
 
 program
@@ -416,42 +331,19 @@ program
   .argument('<fileName>', 'input file (format GeoJSON)')
   .argument('[id_fcu]', 'id_fcu du réseau', (v) => parseInt(v))
   .action(async (fileName, id_fcu) => {
-    const { geom, srid } = await readFileGeometry(fileName);
-    const inserted = await kdb
-      .with('geometry', (db) =>
-        db.selectNoFrom(
-          srid === 4326
-            ? sql<any>`st_transform(ST_GeomFromGeoJSON(${sql.lit(JSON.stringify(geom))}), 2154)`.as('geom')
-            : sql<any>`st_setsrid(ST_GeomFromGeoJSON(${sql.lit(JSON.stringify(geom))}), 2154)`.as('geom')
-        )
-      )
-      .insertInto('zones_et_reseaux_en_construction')
-      .columns(['id_fcu', 'geom', 'is_zone', 'communes'])
-      .expression((eb) =>
-        eb.selectFrom('geometry').select((eb) => [
-          isDefined(id_fcu)
-            ? eb.lit(id_fcu).as('id_fcu')
-            : sql<number>`(SELECT max(id_fcu) + 1 FROM zones_et_reseaux_en_construction)`.as('id_fcu'),
-          'geometry.geom',
-          sql<boolean>`st_geometrytype(geometry.geom) = 'ST_MultiPolygon'`.as('is_zone'),
-          sql<string[]>`COALESCE(
-              (
-                SELECT array_agg(nom order by nom)
-                FROM geometry
-                JOIN ign_communes on ST_Intersects(geometry.geom, st_buffer(ign_communes.geom, -150))
-              ),
-              (
-                SELECT array_agg(nom order by nom)
-                FROM geometry
-                JOIN ign_communes on ST_Intersects(geometry.geom, ign_communes.geom)
-              )
-            )::text[]`.as('communes'),
-        ])
-      )
-      .returning('id_fcu')
-      .executeTakeFirstOrThrow();
-
+    const inserted = await insertNetworkWithGeometry('zones_et_reseaux_en_construction', fileName, { id_fcu });
     console.info('Réseau futur créé:', inserted.id_fcu);
+  });
+
+program
+  .command('reseaux-futur:update-geom')
+  .description(
+    "Met à jour la géométrie d'un réseau futur (avoir créé le réseau sur airtable au préalable) avec une géométrie. La géométrie peut être en WGS 84 (4326) ou Lambert 93 (2154)"
+  )
+  .argument('<fileName>', 'input file (format GeoJSON)')
+  .argument('<id_fcu>', 'id_fcu du réseau', (v) => parseInt(v))
+  .action(async (fileName, id_fcu) => {
+    await updateNetworkGeometry('zones_et_reseaux_en_construction', 'id_fcu', id_fcu, fileName);
   });
 
 program
@@ -460,49 +352,11 @@ program
   .argument('<fileName>', 'input file (format GeoJSON)')
   .argument('[id_sncu]', 'ID SNCU (identifiant réseau)')
   .action(async (fileName, id_sncu) => {
-    const { geom, srid } = await readFileGeometry(fileName);
-
-    const inserted = await kdb
-      .with('geometry', (db) =>
-        db.selectNoFrom(
-          srid === 4326
-            ? sql<any>`st_transform(ST_GeomFromGeoJSON(${sql.lit(JSON.stringify(geom))}), 2154)`.as('geom')
-            : sql<any>`st_setsrid(ST_GeomFromGeoJSON(${sql.lit(JSON.stringify(geom))}), 2154)`.as('geom')
-        )
-      )
-      .insertInto('zone_de_developpement_prioritaire')
-      .values((eb) => ({
-        id_fcu: sql<number>`(SELECT max(id_fcu) + 1 FROM zone_de_developpement_prioritaire)`,
-        geom: eb.selectFrom('geometry').select('geometry.geom'),
-        'Identifiant reseau': id_sncu,
-        communes: sql<string[]>`COALESCE(
-          (
-            SELECT array_agg(nom order by nom)
-            FROM geometry
-            JOIN ign_communes on ST_Intersects(geometry.geom, st_buffer(ign_communes.geom, -150))
-          ),
-          (
-            SELECT array_agg(nom order by nom)
-            FROM geometry
-            JOIN ign_communes on ST_Intersects(geometry.geom, ign_communes.geom)
-          )
-        )::text[]`,
-      }))
-      .returning('id_fcu')
-      .executeTakeFirstOrThrow();
-
+    const inserted = await insertNetworkWithGeometry('zone_de_developpement_prioritaire', fileName, { id_sncu });
     console.info('PDP créé:', inserted.id_fcu);
 
     if (id_sncu) {
-      const res = await kdb
-        .updateTable('reseaux_de_chaleur')
-        .where('Identifiant reseau', '=', id_sncu)
-        .set({
-          has_PDP: true,
-        })
-        .returning('id_fcu')
-        .executeTakeFirstOrThrow();
-      console.info('Réseau de chaleur mis à jour (has_PDP):', res.id_fcu);
+      await updateNetworkHasPDP(id_sncu);
     }
   });
 
@@ -512,47 +366,12 @@ program
   .argument('<fileName>', 'input file (format GeoJSON)')
   .argument('<id_fcu_or_sncu>', 'id_fcu ou identifiant réseau')
   .action(async (fileName, id_fcu_or_sncu) => {
-    const { geom, srid } = await readFileGeometry(fileName);
-
     // Vérifier si le paramètre est un nombre (id_fcu) ou une chaîne (identifiant reseau)
     const isIdSNCU = id_fcu_or_sncu.endsWith('C');
+    const idField = isIdSNCU ? 'Identifiant reseau' : 'id_fcu';
+    const idValue = isIdSNCU ? id_fcu_or_sncu : parseInt(id_fcu_or_sncu);
 
-    const existingPDP = await kdb
-      .selectFrom('zone_de_developpement_prioritaire')
-      .select('id_fcu')
-      .where(isIdSNCU ? 'Identifiant reseau' : 'id_fcu', '=', isIdSNCU ? id_fcu_or_sncu : parseInt(id_fcu_or_sncu))
-      .executeTakeFirst();
-
-    if (!existingPDP) {
-      throw new Error(`Aucun PDP trouvé avec ${isIdSNCU ? 'identifiant reseau' : 'id_fcu'} = ${id_fcu_or_sncu}`);
-    }
-
-    await kdb
-      .with('geometry', (db) =>
-        db.selectNoFrom(
-          srid === 4326
-            ? sql<any>`st_transform(ST_GeomFromGeoJSON(${sql.lit(JSON.stringify(geom))}), 2154)`.as('geom')
-            : sql<any>`st_setsrid(ST_GeomFromGeoJSON(${sql.lit(JSON.stringify(geom))}), 2154)`.as('geom')
-        )
-      )
-      .updateTable('zone_de_developpement_prioritaire')
-      .where('id_fcu', '=', existingPDP.id_fcu)
-      .set({
-        geom: (eb) => eb.selectFrom('geometry').select('geometry.geom'),
-        communes: sql<string[]>`COALESCE(
-          (
-            SELECT array_agg(nom order by nom)
-            FROM geometry
-            JOIN ign_communes on ST_Intersects(geometry.geom, st_buffer(ign_communes.geom, -150))
-          ),
-          (
-            SELECT array_agg(nom order by nom)
-            FROM geometry
-            JOIN ign_communes on ST_Intersects(geometry.geom, ign_communes.geom)
-          )
-        )::text[]`,
-      })
-      .execute();
+    await updateNetworkGeometry('zone_de_developpement_prioritaire', idField, idValue, fileName);
   });
 
 program
@@ -561,47 +380,8 @@ program
   .argument('<commune>', 'nom de la commune')
   .argument('[id_sncu]', 'ID SNCU (identifiant réseau)')
   .action(async (commune, id_sncu) => {
-    // check if it exists
-    if (!(await kdb.selectFrom('ign_communes').select('id').where('nom', 'ilike', commune).executeTakeFirst())) {
-      throw new Error(`La commune ${commune} n'a pas été trouvée`);
-    }
-
-    const inserted = await kdb
-      .with('geometry', (db) => db.selectFrom('ign_communes').select('geom').where('nom', 'ilike', commune))
-      .insertInto('zone_de_developpement_prioritaire')
-      .values((eb) => ({
-        id_fcu: sql<number>`(SELECT max(id_fcu) + 1 FROM zone_de_developpement_prioritaire)`,
-        geom: eb.selectFrom('geometry').select('geometry.geom'),
-        'Identifiant reseau': id_sncu,
-        communes: sql<string[]>`COALESCE(
-          (
-            SELECT array_agg(nom order by nom)
-            FROM geometry
-            JOIN ign_communes on ST_Intersects(geometry.geom, st_buffer(ign_communes.geom, -150))
-          ),
-          (
-            SELECT array_agg(nom order by nom)
-            FROM geometry
-            JOIN ign_communes on ST_Intersects(geometry.geom, ign_communes.geom)
-          )
-        )::text[]`,
-      }))
-      .returning('id_fcu')
-      .executeTakeFirstOrThrow();
-
+    const inserted = await createPDPFromCommune(commune, id_sncu);
     console.info('PDP créé:', inserted.id_fcu);
-
-    if (id_sncu) {
-      const res = await kdb
-        .updateTable('reseaux_de_chaleur')
-        .where('Identifiant reseau', '=', id_sncu)
-        .set({
-          has_PDP: true,
-        })
-        .returning('id_fcu')
-        .executeTakeFirstOrThrow();
-      console.info('Réseau de chaleur mis à jour (has_PDP):', res.id_fcu);
-    }
   });
 
 program

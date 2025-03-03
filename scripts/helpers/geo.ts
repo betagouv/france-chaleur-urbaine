@@ -9,12 +9,25 @@ import { kdb } from '@/server/db/kysely';
  * Lambert 93 (2154) coordinates are typically large numbers (6-7 digits)
  * WGS84 (4326) coordinates are between -180/180 for longitude and -90/90 for latitude
  */
-export function detectSrid(geometry: GeoJSON.Geometry): 4326 | 2154 {
-  const coordinates = JSON.stringify((geometry as any).coordinates);
-  // Check if any coordinate is outside WGS84 bounds
-  const hasLargeCoordinates = coordinates.match(/[0-9]{6,}\./) !== null;
+export function detectSrid(geom: GeoJSON.Geometry): 4326 | 2154 {
+  const checkCoordinates = (coords: number[]) => {
+    return Math.abs(coords[0]) <= 180 && Math.abs(coords[1]) <= 90 ? 4326 : 2154;
+  };
 
-  return hasLargeCoordinates ? 2154 : 4326;
+  switch (geom.type) {
+    case 'Point':
+      return checkCoordinates(geom.coordinates);
+    case 'LineString':
+    case 'MultiPoint':
+      return checkCoordinates(geom.coordinates[0]);
+    case 'Polygon':
+    case 'MultiLineString':
+      return checkCoordinates(geom.coordinates[0][0]);
+    case 'MultiPolygon':
+      return checkCoordinates(geom.coordinates[0][0][0]);
+    default:
+      throw new Error('Unsupported geometry type');
+  }
 }
 
 type GeometryWithSrid = {
