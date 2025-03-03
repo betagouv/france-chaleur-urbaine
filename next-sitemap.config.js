@@ -69,7 +69,7 @@ const excludedPages = [
   '/satisfaction',
 
   // TODO pas encore public, supprimer quand prêt à être indexé
-  '/outils/comparateur-performances',
+  '/comparateur-couts-performances',
 ];
 
 /** @type {import('next-sitemap').IConfig} */

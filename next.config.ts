@@ -201,6 +201,11 @@ const nextConfig: NextConfig = {
         destination: '/demandes',
         permanent: true,
       },
+      {
+        source: '/outils/comparateur-performances',
+        destination: '/comparateur-couts-performances',
+        permanent: true,
+      },
     ];
   },
   async headers() {

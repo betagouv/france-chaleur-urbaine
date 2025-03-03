@@ -18,7 +18,7 @@ export default function DashboardProfessionnel() {
             title="Comparateur de performances"
             desc="Comparez les performances énergétiques et environnementales des différents modes de chauffage et de refroidissement"
             linkProps={{
-              href: '/comparateur-performances',
+              href: '/comparateur-couts-performances',
             }}
             orientation="horizontal"
             enlargeLinkOrButton
