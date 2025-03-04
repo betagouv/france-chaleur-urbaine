@@ -22,29 +22,21 @@ const FileDragNDrop = () => {
       setDragging(false);
     };
 
-    const onDrop = (event: DragEvent) => {
+    const onDrop = async (event: DragEvent) => {
       event.preventDefault();
       const file = event.dataTransfer?.files[0];
       setDragging(false);
-
-      if (file && file.name.endsWith('json')) {
-        const reader = new FileReader();
-        reader.onload = async (e) => {
-          try {
-            const geoJsonData = JSON.parse(e.target?.result as string);
-            const wgs84GeoJsonData = hasLambert93Projection(geoJsonData) ? await convertLambert93GeoJSONToWGS84(geoJsonData) : geoJsonData;
-
-            if (!mapRef?.getSource('customGeojson')) {
-              throw new Error('Source customGeojson not found');
-            }
-            (mapRef.getSource('customGeojson') as maplibregl.GeoJSONSource).setData(wgs84GeoJsonData);
-            mapRef.fitBounds(bbox(wgs84GeoJsonData) as [number, number, number, number], { maxZoom: 17, duration: 3000 });
-          } catch (error) {
-            console.error('Invalid GeoJSON', error);
-          }
-        };
-        reader.readAsText(file);
+      if (!file) {
+        return;
       }
+
+      const wgs84GeoJsonData = await convertFileToGeoJSON(file);
+      console.info('converted file', wgs84GeoJsonData);
+      if (!mapRef?.getSource('customGeojson')) {
+        throw new Error('Source customGeojson not found');
+      }
+      (mapRef.getSource('customGeojson') as maplibregl.GeoJSONSource).setData(wgs84GeoJsonData);
+      mapRef.fitBounds(bbox(wgs84GeoJsonData) as [number, number, number, number], { maxZoom: 17, duration: 3000 });
     };
 
     mapRef.getContainer().addEventListener('dragover', onDragOver);
@@ -69,3 +61,71 @@ const FileDragNDrop = () => {
 };
 
 export default FileDragNDrop;
+
+type FileConversionStrategy = {
+  extensions: string[];
+  convert: (file: File) => Promise<any>;
+};
+
+const fileConversionStrategy = [
+  {
+    extensions: ['kml'],
+    async convert(file) {
+      const text = await file.text();
+      const kml = new DOMParser().parseFromString(text, 'text/xml');
+      return (await import('@tmcw/togeojson')).kml(kml);
+    },
+  },
+  {
+    extensions: ['kmz'],
+    async convert(file) {
+      const zip = await file.arrayBuffer();
+      const zipData = await (await import('jszip')).default.loadAsync(zip);
+      const kmlFile = Object.values(zipData.files).find((f) => f.name.endsWith('.kml'));
+      if (kmlFile) {
+        const kmlText = await kmlFile.async('text');
+        const kml = new DOMParser().parseFromString(kmlText, 'text/xml');
+        return (await import('@tmcw/togeojson')).kml(kml);
+      }
+    },
+  },
+  {
+    extensions: ['zip'], // = zipped shp
+    async convert(file) {
+      const zip = await file.arrayBuffer();
+      const zipData = await (await import('jszip')).default.loadAsync(zip);
+      const shpFile = Object.values(zipData.files).find((f) => f.name.endsWith('.shp'));
+      if (shpFile) {
+        const shpBuffer = await shpFile.async('arraybuffer');
+        const source = await (await import('shapefile')).open(shpBuffer);
+        const result = await source.read();
+        return result.value;
+      }
+    },
+  },
+  {
+    extensions: ['shp'],
+    async convert(file) {
+      const content = await file.arrayBuffer();
+      const source = await (await import('shapefile')).open(content);
+      const result = await source.read();
+      return result.value;
+    },
+  },
+  {
+    extensions: ['json', 'geojson'],
+    async convert(file) {
+      const geoJsonData = JSON.parse(await file.text());
+      return hasLambert93Projection(geoJsonData) ? await convertLambert93GeoJSONToWGS84(geoJsonData) : geoJsonData;
+    },
+  },
+] satisfies FileConversionStrategy[];
+
+async function convertFileToGeoJSON(file: File) {
+  const fileExtension = file.name.split('.').pop()?.toLowerCase() as string;
+  const strategy = fileConversionStrategy.find((strategy) => strategy.extensions.includes(fileExtension));
+  if (!strategy) {
+    throw new Error('Format non pris en charge');
+  }
+  return strategy.convert(file);
+}
