@@ -49,4 +49,5 @@ allowed_patterns:
 - \/codegouvfr\/react-dsfr\/blob\/.*
 - pass
 - (?i).*key.*
+- PasswordInput
 version: "1.0"

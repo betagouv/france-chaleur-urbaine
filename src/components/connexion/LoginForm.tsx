@@ -2,10 +2,11 @@ import Link from 'next/link';
 import { type FormEvent, useState } from 'react';
 
 import Input from '@/components/form/dsfr/Input';
+import PasswordInput from '@/components/form/dsfr/PasswordInput';
 import Button from '@/components/ui/Button';
 import { useAuthentication } from '@/services/authentication';
 
-import { Container, Password, PasswordIcon, PasswordInput } from './Form.styles';
+import { Container } from './Form.styles';
 
 export interface LoginFormProps {
   callbackUrl: string;
@@ -14,7 +15,6 @@ export const LoginForm = ({ callbackUrl }: LoginFormProps) => {
   const { signIn } = useAuthentication();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [seePassword, setSeePassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const connect = async (e: FormEvent<HTMLFormElement>) => {
@@ -44,25 +44,18 @@ export const LoginForm = ({ callbackUrl }: LoginFormProps) => {
           onChange: (e) => setEmail(e.target.value),
         }}
       />
-      <PasswordInput>
-        <Input
-          label="Mot de passe"
-          nativeInputProps={{
-            required: true,
-            type: seePassword ? 'text' : 'password',
-            placeholder: 'Saisir votre mot de passe',
-            autoComplete: 'password',
-            value: password,
-            onChange: (e) => setPassword(e.target.value),
-          }}
-        />
-        <PasswordIcon onClick={() => setSeePassword(!seePassword)}>
-          <span className={seePassword ? 'ri-eye-line' : 'ri-eye-off-line'} />
-        </PasswordIcon>
-      </PasswordInput>
-      <Password>
+      <PasswordInput
+        label="Mot de passe"
+        nativeInputProps={{
+          required: true,
+          autoComplete: 'password',
+          value: password,
+          onChange: (e) => setPassword(e.target.value),
+        }}
+      />
+      <div className="flex justify-between flex-row-reverse text-sm mb-8">
         <Link href="/reset-password">Mot de passe oublié ?</Link>
-      </Password>
+      </div>
       <Button type="submit" loading={loading}>
         Me connecter
       </Button>
