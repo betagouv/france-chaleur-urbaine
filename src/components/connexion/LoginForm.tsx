@@ -55,7 +55,7 @@ export const LoginForm = ({ callbackUrl }: LoginFormProps) => {
       />
       <div className="flex justify-between flex-row-reverse text-sm mb-8">
         <Link href="/reset-password">Mot de passe oublié ?</Link>
-        {process.env.INSCRIPTIONS_ENABLE && (
+        {process.env.NEXT_PUBLIC_FLAG_ENABLE_INSCRIPTIONS && (
           <Link href={`/inscription?callbackUrl=${encodeURIComponent(callbackUrl)}`}>Créer un compte</Link>
         )}
       </div>
