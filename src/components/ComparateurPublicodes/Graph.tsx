@@ -224,7 +224,10 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
   };
 
   const modesDeChauffageFiltres = modesDeChauffage.filter(
-    (modeDeChauffage) => hasModeDeChauffage(modeDeChauffage.label) && (typeDeBatiment === 'tertiaire' ? modeDeChauffage.tertiaire : true)
+    (modeDeChauffage) =>
+      (!advancedMode ? !modeDeChauffage.advancedMode : true) &&
+      hasModeDeChauffage(modeDeChauffage.label) &&
+      (typeDeBatiment === 'tertiaire' ? modeDeChauffage.tertiaire : true)
   );
 
   const totalCoutsEtEmissions: [string, number, number][] = [];

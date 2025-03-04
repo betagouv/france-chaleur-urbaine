@@ -64,19 +64,21 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
       <Heading as="h3" size="h6">
         Chauffage collectif
       </Heading>
-      <Checkbox
-        small
-        options={(['Réseau de chaleur'] satisfies ModeDeChauffage[]).map(createOptionProps)}
-        state={nearestReseauDeChaleur ? 'success' : 'default'}
-        className="[&_p]:!mb-0"
-        stateRelatedMessage={
-          nearestReseauDeChaleur ? (
-            <span>
-              Disponible à <strong>{nearestReseauDeChaleur.distance}</strong>m du bâtiment
-            </span>
-          ) : undefined
-        }
-      />
+      {!advancedMode && !nearestReseauDeChaleur ? null : (
+        <Checkbox
+          small
+          options={(['Réseau de chaleur'] satisfies ModeDeChauffage[]).map(createOptionProps)}
+          state={nearestReseauDeChaleur ? 'success' : 'default'}
+          className="[&_p]:!mb-0"
+          stateRelatedMessage={
+            nearestReseauDeChaleur ? (
+              <span>
+                Disponible à <strong>{nearestReseauDeChaleur.distance}</strong>m du bâtiment
+              </span>
+            ) : undefined
+          }
+        />
+      )}
       <Checkbox
         small
         options={(

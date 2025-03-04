@@ -100,7 +100,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
 
   const results = displayResults ? (
     <div className="p-2 lg:p-0">
-      {!loading && address && displayResults && (
+      {advancedMode && !loading && address && displayResults && (
         <Alert size="sm" className="mb-5" variant={nearestReseauDeChaleur ? 'info' : 'warning'}>
           {nearestReseauDeChaleur ? (
             <>
@@ -153,7 +153,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
           )}
         </Alert>
       )}
-      {!loading && inclureLaClimatisation && address && displayResults && (
+      {advancedMode && !loading && inclureLaClimatisation && address && displayResults && (
         <Alert size="sm" className="mb-5" variant={nearestReseauDeFroid ? 'info' : 'warning'}>
           {nearestReseauDeFroid ? (
             <>

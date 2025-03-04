@@ -37,6 +37,7 @@ export const modesDeChauffage = [
     reversible: false,
     tertiaire: true,
     type: ['collectif'],
+    advancedMode: true,
   },
   {
     label: 'Fioul collectif',
@@ -45,6 +46,7 @@ export const modesDeChauffage = [
     reversible: false,
     tertiaire: true,
     type: ['collectif'],
+    advancedMode: true,
   },
   {
     label: 'PAC air/air collective',
