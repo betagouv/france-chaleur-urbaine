@@ -9,3 +9,4 @@ alwaysApply: false
 - Use React 19.
 - Use Next15 (check in the docs)
 - Use pages router
+- Use useSearchParams when in need for search params

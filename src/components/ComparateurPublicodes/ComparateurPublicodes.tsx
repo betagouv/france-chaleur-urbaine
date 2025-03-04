@@ -1,4 +1,5 @@
 import { fr } from '@codegouvfr/react-dsfr';
+import { useSearchParams } from 'next/navigation';
 import { parseAsStringLiteral, useQueryState } from 'nuqs';
 import React from 'react';
 
@@ -50,6 +51,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
 }) => {
   const engine = useSimulatorEngine();
   const [loading, setLoading] = React.useState(true);
+  const searchParams = useSearchParams();
 
   const [graphDrawerOpen, setGraphDrawerOpen] = React.useState(false);
   const engineDisplayMode = engine.getField('mode affichage');
@@ -215,7 +217,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
         {!advancedMode && (
           <Notice variant="info" size="sm">
             Besoin de plus de granularité dans votre estimation ? Un mode avancé est disponible sur le{' '}
-            <Link href="/pro/comparateur-couts-performances">compte pro</Link>
+            <Link href={`/pro/comparateur-couts-performances?${searchParams.toString()}`}>compte pro</Link>
           </Notice>
         )}
         <FormProvider engine={engine}>

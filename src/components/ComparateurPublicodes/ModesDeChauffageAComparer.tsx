@@ -1,3 +1,4 @@
+import { useSearchParams } from 'next/navigation';
 import React from 'react';
 
 import Checkbox from '@/components/form/dsfr/Checkbox';
@@ -13,7 +14,6 @@ import { DisclaimerButton } from './Placeholder';
 import SelectClimatisation from './SelectClimatisation';
 import SelectProductionECS from './SelectProductionECS';
 import { type SimulatorEngine } from './useSimulatorEngine';
-
 type ModesDeChauffageAComparerFormProps = React.HTMLAttributes<HTMLDivElement> & {
   engine: SimulatorEngine;
   nearestReseauDeChaleur?: LocationInfoResponse['nearestReseauDeChaleur'];
@@ -29,6 +29,7 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
   advancedMode,
   ...props
 }) => {
+  const searchParams = useSearchParams();
   const inclusClimatisation = engine.getField('Inclure la climatisation');
   const typeDeBatiment = engine.getField('type de bâtiment');
   const { has: hasModeDeChauffage, toggle: toggleModeDeChauffage } = useArrayQueryState<ModeDeChauffage>('modes-de-chauffage');
@@ -117,7 +118,7 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
       )}
       {!advancedMode && (
         <Notice variant="info" size="sm">
-          Comparez aussi les PACs sur le <Link href="/pro/comparateur-couts-performances">compte pro</Link>
+          Comparez aussi les PACs sur le <Link href={`/pro/comparateur-couts-performances?${searchParams.toString()}`}>compte pro</Link>
         </Notice>
       )}
     </div>
