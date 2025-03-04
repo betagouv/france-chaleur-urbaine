@@ -1,0 +1,11 @@
+---
+description: Performance optimization rules- Use kysely to query the database. - import kysely using `import { kdb, sql } from '@/server/db/kysely';` - For data models, read the "in src/server/db/kysely/database.ts" file.
+globs: ./**/*.{ts,tsx,js,jsx}
+alwaysApply: false
+---
+
+# Performance Optimization
+
+- Minimize "use client", "useEffect", and "useState";
+- Use dynamic loading for non-critical components.
+- Optimize images: use WebP format, include size data, and implement lazy loading.
