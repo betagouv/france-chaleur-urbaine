@@ -287,8 +287,10 @@ const TableSimple = <T extends RowData>({
                         <CellTag
                           key={cell.id}
                           className={cx(
-                            'overflow-auto',
-                            { 'flex items-center fr-cell--fixed': columnDef.id === 'selection' },
+                            {
+                              'overflow-auto': !React.isValidElement(cell.getValue()), // this is a hack as for DebugDrawer, overflow was causing problems
+                              'flex items-center fr-cell--fixed': columnDef.id === 'selection',
+                            },
                             columnClassName(columnDef)
                           )}
                           scope={columnDef.id === 'selection' ? 'row' : undefined}

@@ -102,6 +102,10 @@ const Cell = <T,>({ value, type, default: defaultValue, data, cellProps = {} }: 
     return <span>{value.join(', ')}</span>;
   }
 
+  if (React.isValidElement(value)) {
+    return React.cloneElement(value);
+  }
+
   return defaultValue;
 };
 
