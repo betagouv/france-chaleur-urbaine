@@ -2,6 +2,8 @@ import React from 'react';
 
 import Checkbox from '@/components/form/dsfr/Checkbox';
 import Heading from '@/components/ui/Heading';
+import Link from '@/components/ui/Link';
+import Notice from '@/components/ui/Notice';
 import useArrayQueryState from '@/hooks/useArrayQueryState';
 import { type LocationInfoResponse } from '@/pages/api/location-infos';
 
@@ -110,6 +112,11 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
             ).map(createOptionProps)}
           />
         </>
+      )}
+      {!advancedMode && (
+        <Notice variant="info" size="sm">
+          Comparez aussi les PACs sur le <Link href="/pro/comparateur-couts-performances">compte pro</Link>
+        </Notice>
       )}
     </div>
   );
