@@ -6,7 +6,7 @@ import useArrayQueryState from '@/hooks/useArrayQueryState';
 import { type LocationInfoResponse } from '@/pages/api/location-infos';
 
 import { Title } from './ComparateurPublicodes.style';
-import { type ModeDeChauffage, modesDeChauffage } from './mappings';
+import { modesDeChauffage, type ModeDeChauffage } from './mappings';
 import { DisclaimerButton } from './Placeholder';
 import SelectClimatisation from './SelectClimatisation';
 import SelectProductionECS from './SelectProductionECS';
@@ -32,7 +32,10 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
   const { has: hasModeDeChauffage, toggle: toggleModeDeChauffage } = useArrayQueryState<ModeDeChauffage>('modes-de-chauffage');
   const createOptionProps = (label: ModeDeChauffage) => ({
     label:
-      modesDeChauffage.find((mode) => mode.label === label)?.reversible && inclusClimatisation ? `${label} (chauffage + froid)` : label,
+      modesDeChauffage.filter((mode) => (advancedMode ? mode.advancedMode : true)).find((mode) => mode.label === label)?.reversible &&
+      inclusClimatisation
+        ? `${label} (chauffage + froid)`
+        : label,
     nativeInputProps: {
       checked: hasModeDeChauffage(label),
       onChange: () => toggleModeDeChauffage(label),
@@ -80,9 +83,9 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
             'Gaz à condensation collectif',
             'Gaz sans condensation collectif',
             'Fioul collectif',
-            'PAC air/air collective',
-            'PAC eau/eau collective',
-            'PAC air/eau collective',
+            ...(advancedMode
+              ? (['PAC air/air collective', 'PAC eau/eau collective', 'PAC air/eau collective'] satisfies ModeDeChauffage[])
+              : []),
           ] satisfies ModeDeChauffage[]
         ).map(createOptionProps)}
       />
@@ -99,9 +102,9 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
                 'Gaz à condensation individuel',
                 'Gaz sans condensation individuel',
                 'Fioul individuel',
-                'PAC air/air individuelle',
-                'PAC eau/eau individuelle',
-                'PAC air/eau individuelle',
+                ...(advancedMode
+                  ? (['PAC air/air individuelle', 'PAC eau/eau individuelle', 'PAC air/eau individuelle'] satisfies ModeDeChauffage[])
+                  : []),
                 'Radiateur électrique individuel',
               ] satisfies ModeDeChauffage[]
             ).map(createOptionProps)}

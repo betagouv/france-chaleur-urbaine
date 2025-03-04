@@ -10,6 +10,7 @@ export const modesDeChauffage = [
     reversible: false,
     tertiaire: true,
     type: ['individuel', 'collectif'],
+    advancedMode: true,
   },
   {
     label: 'Chaudière à granulés collective',
@@ -18,6 +19,7 @@ export const modesDeChauffage = [
     reversible: false,
     tertiaire: true,
     type: ['collectif'],
+    advancedMode: true,
   },
   {
     label: 'Gaz à condensation collectif',
@@ -26,6 +28,7 @@ export const modesDeChauffage = [
     reversible: false,
     tertiaire: true,
     type: ['collectif'],
+    advancedMode: true,
   },
   {
     label: 'Gaz sans condensation collectif',
@@ -50,6 +53,7 @@ export const modesDeChauffage = [
     reversible: true,
     tertiaire: true,
     type: ['collectif'],
+    advancedMode: false,
   },
   {
     label: 'PAC air/eau collective',
@@ -58,6 +62,7 @@ export const modesDeChauffage = [
     reversible: true,
     tertiaire: true,
     type: ['collectif'],
+    advancedMode: false,
   },
   {
     label: 'PAC eau/eau collective',
@@ -66,6 +71,7 @@ export const modesDeChauffage = [
     reversible: false,
     tertiaire: true,
     type: ['collectif'],
+    advancedMode: false,
   },
   {
     label: 'Poêle à granulés individuel',
@@ -74,6 +80,7 @@ export const modesDeChauffage = [
     reversible: false,
     tertiaire: false,
     type: ['individuel'],
+    advancedMode: true,
   },
   {
     label: 'Gaz à condensation individuel',
@@ -82,6 +89,7 @@ export const modesDeChauffage = [
     reversible: false,
     tertiaire: false,
     type: ['individuel'],
+    advancedMode: true,
   },
   {
     label: 'Gaz sans condensation individuel',
@@ -90,6 +98,7 @@ export const modesDeChauffage = [
     reversible: false,
     tertiaire: false,
     type: ['individuel'],
+    advancedMode: true,
   },
 
   {
@@ -99,6 +108,7 @@ export const modesDeChauffage = [
     reversible: false,
     tertiaire: false,
     type: ['individuel'],
+    advancedMode: true,
   },
 
   {
@@ -108,6 +118,7 @@ export const modesDeChauffage = [
     reversible: true,
     tertiaire: false,
     type: ['individuel'],
+    advancedMode: false,
   },
 
   {
@@ -117,6 +128,7 @@ export const modesDeChauffage = [
     reversible: true,
     tertiaire: false,
     type: ['individuel'],
+    advancedMode: false,
   },
 
   {
@@ -126,6 +138,7 @@ export const modesDeChauffage = [
     reversible: false,
     tertiaire: false,
     type: ['individuel'],
+    advancedMode: false,
   },
 
   {
@@ -135,6 +148,7 @@ export const modesDeChauffage = [
     reversible: false,
     tertiaire: true,
     type: ['individuel'],
+    advancedMode: true,
   },
 ] as const;
 
