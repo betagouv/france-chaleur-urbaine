@@ -19,7 +19,7 @@ const SimulateurPage: React.FC<InferGetServerSidePropsType<typeof getServerSideP
       title="Comparateur des performances des modes de chauffage et de refroidissement"
       description="Comparez le coût et les émissions de CO2 des réseaux de chaleur, fioul, gaz et électricité pour votre adresse et vos caractéristiques"
     >
-      <Hero variant="transparent">
+      <Hero variant="transparent" className="[&_article]:pb-0">
         <HeroTitle>{title}</HeroTitle>
         <HeroContent>
           <Logos size="sm" withFCU={false} />

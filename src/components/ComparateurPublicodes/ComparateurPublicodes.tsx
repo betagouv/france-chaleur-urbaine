@@ -1,5 +1,4 @@
 import { fr } from '@codegouvfr/react-dsfr';
-import Drawer from '@mui/material/Drawer';
 import { parseAsStringLiteral, useQueryState } from 'nuqs';
 import React from 'react';
 
@@ -9,6 +8,7 @@ import Label from '@/components/form/publicodes/Label';
 import Accordion from '@/components/ui/Accordion';
 import Alert from '@/components/ui/Alert';
 import Button from '@/components/ui/Button';
+import Drawer from '@/components/ui/Drawer';
 import { FCUArrowIcon } from '@/components/ui/Icon';
 import Link from '@/components/ui/Link';
 import Notice from '@/components/ui/Notice';
@@ -351,9 +351,8 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
             <FloatingButton onClick={() => setGraphDrawerOpen(true)} iconId="ri-arrow-up-fill">
               Voir les résultats
             </FloatingButton>
-            <Drawer open={graphDrawerOpen} onClose={() => setGraphDrawerOpen(false)} anchor="right">
-              <Button onClick={() => setGraphDrawerOpen(false)}>Fermer</Button>
-              <div style={{ maxWidth: '100vw', overflow: 'auto' }}>{results}</div>
+            <Drawer open={graphDrawerOpen} onClose={() => setGraphDrawerOpen(false)} anchor="right" full>
+              <div className="max-w-full overflow-auto">{results}</div>
             </Drawer>
             <DebugDrawer engine={engine} />
           </Simulator>
