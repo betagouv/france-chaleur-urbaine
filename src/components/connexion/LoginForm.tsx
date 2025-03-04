@@ -6,8 +6,6 @@ import PasswordInput from '@/components/form/dsfr/PasswordInput';
 import Button from '@/components/ui/Button';
 import { useAuthentication } from '@/services/authentication';
 
-import { Container } from './Form.styles';
-
 export interface LoginFormProps {
   callbackUrl: string;
 }
@@ -33,7 +31,7 @@ export const LoginForm = ({ callbackUrl }: LoginFormProps) => {
   };
 
   return (
-    <Container onSubmit={connect}>
+    <form onSubmit={connect}>
       <Input
         label="Email"
         nativeInputProps={{
@@ -54,14 +52,18 @@ export const LoginForm = ({ callbackUrl }: LoginFormProps) => {
         }}
       />
       <div className="flex justify-between flex-row-reverse text-sm mb-8">
-        <Link href="/reset-password">Mot de passe oublié ?</Link>
+        <Link key="reset-password" href="/reset-password">
+          Mot de passe oublié ?
+        </Link>
         {process.env.NEXT_PUBLIC_FLAG_ENABLE_INSCRIPTIONS && (
-          <Link href={`/inscription?callbackUrl=${encodeURIComponent(callbackUrl)}`}>Créer un compte</Link>
+          <Link key="create-account" href={`/inscription`}>
+            Créer un compte
+          </Link>
         )}
       </div>
       <Button type="submit" loading={loading}>
         Me connecter
       </Button>
-    </Container>
+    </form>
   );
 };
