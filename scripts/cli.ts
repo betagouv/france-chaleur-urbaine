@@ -195,7 +195,7 @@ program
     const filepath = await tileManager.generateGeoJSON();
 
     if (!filepath) {
-      throw new Error('Le fichier GeoJSON n’a pas été généré.');
+      throw new Error("Le fichier GeoJSON n'a pas été généré.");
     }
 
     logger.info(`GeoJSON généré: ${filepath}`);
@@ -209,7 +209,7 @@ program
     await unlink(filepath);
 
     logger.info(`La table ${tilesDatabaseName} a été populée avec les données pour ${type}.`);
-    logger.warn(`N’oubliez pas de copier la table sur dev et prod`);
+    logger.warn(`N'oubliez pas de copier la table sur dev et prod`);
     logger.warn(`./scripts/copyLocalTableToRemote.sh dev ${tilesDatabaseName} --data-only`);
     logger.warn(`./scripts/copyLocalTableToRemote.sh prod ${tilesDatabaseName} --data-only`);
     logger.warn(`Puis de l'ajouter à la carte yarn cli tiles:add-to-map ${type}`);
