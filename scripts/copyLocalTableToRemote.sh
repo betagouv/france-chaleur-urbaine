@@ -56,6 +56,7 @@ if [[ $dataonly = "true" ]]; then
   # noter le delete plutôt que truncate pour ne pas locker la table et bloquer les requêtes
   psql -v ON_ERROR_STOP=1 postgres://localhost:10000 --single-transaction -c "delete from $table;" -f /tmp/table.dump.sql
 else
+  psql -v ON_ERROR_STOP=1 postgres://localhost:10000 -c "DROP TABLE IF EXISTS $table CASCADE;"
   pg_restore --no-owner --clean --if-exists -d postgres://localhost:10000 /tmp/table.dump
 fi
 
