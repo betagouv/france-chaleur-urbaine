@@ -144,7 +144,8 @@ psql postgres://postgres:postgres_fcu@localhost:5432/postgres <<EOF
   drop view if exists opendata.zones_et_reseaux_en_construction;
   create view opendata.zones_et_reseaux_en_construction as (
     SELECT
-      "geom",
+      -- on veut obtenir 1 seul fichier shapefile pour le moment donc on dilate les multilinestring en polygone
+      CASE WHEN st_geometrytype(geom) = 'ST_MultiLineString' THEN st_buffer(geom, 1) ELSE geom END as geom,
 
       -- champs exportés en propriétés
       array_to_string("communes", ',') as "communes",
