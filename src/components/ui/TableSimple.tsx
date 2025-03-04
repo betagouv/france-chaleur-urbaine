@@ -34,6 +34,7 @@ export type TableSimpleProps<T> = {
   initialSortingState?: SortingState;
   columnFilters?: ColumnFiltersState;
   loading?: boolean;
+  caption?: string;
   enableRowSelection?: boolean;
   onSelectionChange?: (selectedRows: T[]) => void;
 };
@@ -44,6 +45,7 @@ const TableSimple = <T extends RowData>({
   initialSortingState,
   columnFilters,
   loading,
+  caption,
   enableRowSelection,
   onSelectionChange,
 }: TableSimpleProps<T>) => {
@@ -167,7 +169,7 @@ const TableSimple = <T extends RowData>({
   const hasAtLeastOneColumnSorting = table.getHeaderGroups()[0].headers.some((header) => header.column.getCanSort());
 
   return (
-    <>
+    <section>
       <Input
         label=""
         nativeInputProps={{
@@ -176,6 +178,7 @@ const TableSimple = <T extends RowData>({
           placeholder: 'Recherche...',
         }}
       />
+      {caption && <div className="text-2xl leading-8 font-bold mb-5">{caption}</div>}
       <div
         className={fr.cx('fr-table', 'fr-table--no-scroll')}
         ref={tableContainerRef}
@@ -300,7 +303,7 @@ const TableSimple = <T extends RowData>({
           </tbody>
         </table>
       </div>
-    </>
+    </section>
   );
 };
 
