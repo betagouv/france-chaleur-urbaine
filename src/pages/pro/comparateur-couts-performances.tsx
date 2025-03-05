@@ -2,8 +2,9 @@ import { type GetServerSideProps, type InferGetServerSidePropsType } from 'next'
 import dynamic from 'next/dynamic';
 import React from 'react';
 
-import Placeholder, { ComparateurPublicodesTitle } from '@/components/ComparateurPublicodes/Placeholder';
+import Placeholder, { Explanations, Logos, title } from '@/components/ComparateurPublicodes/Placeholder';
 import SimplePage from '@/components/shared/page/SimplePage';
+import Hero, { HeroContent, HeroTitle } from '@/components/ui/Hero';
 import { withAuthentication } from '@/server/authentication';
 
 const ComparateurPublicodes = dynamic(() => import('@/components/ComparateurPublicodes'), {
@@ -20,7 +21,13 @@ const SimulateurPage: React.FC<InferGetServerSidePropsType<typeof getServerSideP
       description="Comparez le coût et les émissions de CO2 des réseaux de chaleur, fioul, gaz et électricité pour votre adresse et vos caractéristiques"
       mode="authenticated"
     >
-      <ComparateurPublicodesTitle />
+      <Hero variant="transparent" className="[&_article]:pb-0">
+        <HeroTitle>{title}</HeroTitle>
+        <HeroContent>
+          <Logos size="sm" withFCU={false} />
+          <Explanations />
+        </HeroContent>
+      </Hero>
       <ComparateurPublicodes tabId={query.tabId} displayMode="technicien" />
     </SimplePage>
   );

@@ -4,7 +4,6 @@ import React from 'react';
 
 import Accordion from '@/components/ui/Accordion';
 import Box from '@/components/ui/Box';
-import Heading from '@/components/ui/Heading';
 import Icon from '@/components/ui/Icon';
 import Modal, { createModal } from '@/components/ui/Modal';
 import cx from '@/utils/cx';
@@ -60,17 +59,6 @@ export const Explanations = ({ className, ...props }: React.HTMLAttributes<HTMLD
     </div>
   </>
 );
-
-export const ComparateurPublicodesTitle = () => {
-  return (
-    <div>
-      <Heading as="h2">{title}</Heading>
-      <DescriptionModal />
-      <Logos size="sm" withFCU={false} />
-      <Explanations />
-    </div>
-  );
-};
 
 export const simulatorTabs = [
   {
