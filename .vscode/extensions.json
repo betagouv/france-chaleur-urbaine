@@ -2,6 +2,7 @@
   "recommendations": [
     "esbenp.prettier-vscode", // Prettier pour le formatage automatique du code
     "dbaeumer.vscode-eslint", // ESLint pour la linting du code JavaScript et TypeScript
-    "bradlc.vscode-tailwindcss" // Tailwind Auto completion
+    "bradlc.vscode-tailwindcss", // Tailwind Auto completion
+    "johnpapa.vscode-peacock" // Peacock for color coding your workspace
   ]
 }
