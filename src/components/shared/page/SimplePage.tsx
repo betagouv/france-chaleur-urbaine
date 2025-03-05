@@ -331,7 +331,7 @@ function markCurrentPageActive(menuItems: MainNavigationProps.Item[], currentUrl
 }
 
 const publicQuickAccessItems: HeaderProps.QuickAccessItem[] = [
-  ...(env.NEXT_PUBLIC_FLAG_ENABLE_INSCRIPTIONS
+  ...(env.NEXT_PUBLIC_FLAG_ENABLE_INSCRIPTIONS && typeof window !== 'undefined'
     ? [
         {
           text: 'Créer un compte',
