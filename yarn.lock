@@ -2951,17 +2951,17 @@
   resolved "https://registry.yarnpkg.com/@react-email/text/-/text-0.0.11.tgz#b0c24a9eba5f841fe8c4d303dc6f5c1a1095b5e3"
   integrity sha512-a7nl/2KLpRHOYx75YbYZpWspUbX1DFY7JIZbOv5x0QU8SvwDbJt+Hm01vG34PffFyYvHEXrc6Qnip2RTjljNjg==
 
-"@react-hookz/deep-equal@^1.0.4":
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/@react-hookz/deep-equal/-/deep-equal-1.0.4.tgz#68a71f36cbc88724b3ce6f4036183778b6e7f282"
-  integrity sha512-N56fTrAPUDz/R423pag+n6TXWbvlBZDtTehaGFjK0InmN+V2OFWLE/WmORhmn6Ce7dlwH5+tQN1LJFw3ngTJVg==
+"@react-hookz/deep-equal@^3.0.1":
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/@react-hookz/deep-equal/-/deep-equal-3.0.3.tgz#8e2a9a3c73eb762e5eee1037840ff313e93da849"
+  integrity sha512-SLy+NmiDpncqc2d9TR4Y4R7f8lUFOQK9WbnIq02A6wDxy+dTHfA2Np0dPvj0SFp6i1nqERLmEUe9MxPLuO/IqA==
 
-"@react-hookz/web@^24.0.4":
-  version "24.0.4"
-  resolved "https://registry.yarnpkg.com/@react-hookz/web/-/web-24.0.4.tgz#7a13d4c2cc65861b926ef6c4452fba00408c8778"
-  integrity sha512-DcIM6JiZklDyHF6CRD1FTXzuggAkQ+3Ncq2Wln7Kdih8GV6ZIeN9JfS6ZaQxpQUxan8/4n0J2V/R7nMeiSrb2Q==
+"@react-hookz/web@^25.0.1":
+  version "25.0.1"
+  resolved "https://registry.yarnpkg.com/@react-hookz/web/-/web-25.0.1.tgz#6c364ac35ce612a17e29fb547e6930a3b843f52f"
+  integrity sha512-nUwtanhyrp2Sxg+4mNvsJPRvf92lcsEexMxBjMX4kGEFYtGWnXLnhn69W2xpeoVPvxEV3OAGsh5mBYl4hnPFBg==
   dependencies:
-    "@react-hookz/deep-equal" "^1.0.4"
+    "@react-hookz/deep-equal" "^3.0.1"
 
 "@remix-run/node@^2.15.0":
   version "2.15.2"
@@ -3961,6 +3961,11 @@
   dependencies:
     "@types/react" "*"
     hoist-non-react-statics "^3.3.0"
+
+"@types/js-cookie@^3.0.6":
+  version "3.0.6"
+  resolved "https://registry.yarnpkg.com/@types/js-cookie/-/js-cookie-3.0.6.tgz#a04ca19e877687bd449f5ad37d33b104b71fdf95"
+  integrity sha512-wkw9yd1kEXOPnvEeEV1Go1MmxtBJL0RR79aOTAApecWFVu7w0NNXNqhcWgvw2YgZDYadliXkl14pa3WXw5jlCQ==
 
 "@types/json-schema@^7.0.12", "@types/json-schema@^7.0.8":
   version "7.0.15"
@@ -8588,6 +8593,11 @@ jotai@^2.9.3:
   version "2.9.3"
   resolved "https://registry.yarnpkg.com/jotai/-/jotai-2.9.3.tgz#abcae49a737cd50e3144a6c9eb39840db077c727"
   integrity sha512-IqMWKoXuEzWSShjd9UhalNsRGbdju5G2FrqNLQJT+Ih6p41VNYe2sav5hnwQx4HJr25jq9wRqvGSWGviGG6Gjw==
+
+js-cookie@^3.0.5:
+  version "3.0.5"
+  resolved "https://registry.yarnpkg.com/js-cookie/-/js-cookie-3.0.5.tgz#0b7e2fd0c01552c58ba86e0841f94dc2557dcdbc"
+  integrity sha512-cEiJEAEoIbWfCZYKWhVwFuvPX1gETRYPw6LlaTKoxD3s2AkXzkCjnp6h0V77ozyqj0jakteJ4YqDJT830+lVGw==
 
 "js-tokens@^3.0.0 || ^4.0.0", js-tokens@^4.0.0:
   version "4.0.0"
