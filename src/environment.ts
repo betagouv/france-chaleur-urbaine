@@ -7,6 +7,7 @@ dotenv.config();
 
 const envSchema = {
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
+  NEXT_PUBLIC_FLAG_ENABLE_COMPARATEUR_WIDGET: z.boolean().default(false),
   NEXT_PUBLIC_FLAG_ENABLE_COMPARATEUR: z.boolean().default(false),
   NEXT_PUBLIC_FLAG_ENABLE_TEST_ADRESSES: z.boolean().default(false),
   NEXT_PUBLIC_FLAG_ENABLE_INSCRIPTIONS: z.boolean().default(false),

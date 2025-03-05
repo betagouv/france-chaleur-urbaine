@@ -166,7 +166,7 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
                 />
               )
             )}
-            {process.env.NEXT_PUBLIC_FLAG_ENABLE_COMPARATEUR === 'true' && addressData.heatingType === 'collectif' && (
+            {process.env.NEXT_PUBLIC_FLAG_ENABLE_COMPARATEUR_WIDGET === 'true' && addressData.heatingType === 'collectif' && (
               <ComparateurPublicodesWidget
                 className="fr-mt-5w"
                 coords={[addressData?.coords?.lon, addressData?.coords?.lat]}
