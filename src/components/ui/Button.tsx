@@ -1,4 +1,5 @@
 import DsfrButton, { type ButtonProps as DsfrButtonProps } from '@codegouvfr/react-dsfr/Button';
+import { cva, type VariantProps } from 'class-variance-authority';
 import { useRouter } from 'next/router';
 import styled, { css } from 'styled-components';
 
@@ -8,17 +9,13 @@ import cx from '@/utils/cx';
 type StyledButtonProps = {
   $loading?: boolean;
   $full?: boolean;
-  variant?: 'destructive';
+  variant?: 'destructive' | 'info';
   eventKey?: TrackingEvent;
   eventPayload?: string;
 };
 
 const StyledButton = styled(DsfrButton)<DsfrButtonProps & StyledButtonProps>`
-  ${({ variant }) =>
-    variant === 'destructive' &&
-    css`
-      box-shadow: inset 0 0 0 1px var(--tw-shadow-color);
-    `}
+  box-shadow: inset 0 0 0 1px var(--tw-shadow-color);
 
   ${({ $loading, $full }) => css`
     ${$loading &&
@@ -41,9 +38,29 @@ export const variantClassNames = {
     secondary: '!border-destructive !text-destructive shadow-destructive',
     tertiary: '!text-destructive',
   },
+  info: {
+    primary: '!bg-info !text-white !hover:bg-info/90',
+    secondary: '!border-info !text-info shadow-info',
+    tertiary: '!text-info',
+  },
 };
 
-export type ButtonProps = DsfrButtonProps & RemoveDollar<StyledButtonProps> & { href?: string; stopPropagation?: boolean };
+const buttonVariants = cva('', {
+  variants: {
+    size: {
+      sm: '[&&]:!text-sm !py-0.5 !px-2 min-h-[1.5rem]',
+      md: '',
+      lg: '[&&]:!text-lg !py-2 !px-4 min-h-[3rem]',
+    },
+  },
+  defaultVariants: {
+    size: 'md',
+  },
+});
+
+export type ButtonProps = Omit<DsfrButtonProps, 'size'> &
+  RemoveDollar<StyledButtonProps> &
+  VariantProps<typeof buttonVariants> & { href?: string; stopPropagation?: boolean };
 
 /**
  * A DSFR button component with enhanced features:
@@ -68,6 +85,7 @@ const Button: React.FC<ButtonProps> = ({
   loading,
   variant,
   className,
+  size = 'md',
   ...props
 }) => {
   const router = useRouter();
@@ -119,7 +137,7 @@ const Button: React.FC<ButtonProps> = ({
       variant={variant}
       disabled={(disabled || loading) as any /** FIXME cause incompatibility with DSFR Button */}
       type={type as any /** FIXME cause incompatibility with DSFR Button */}
-      className={cx(variantClassName, className)}
+      className={cx(variantClassName, buttonVariants({ size }), className)}
       {...props}
     >
       {children}
