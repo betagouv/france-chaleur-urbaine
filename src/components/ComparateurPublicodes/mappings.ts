@@ -19,7 +19,7 @@ export const modesDeChauffage = [
     reversible: false,
     tertiaire: true,
     type: ['collectif'],
-    grandPublicMode: true,
+    grandPublicMode: false,
   },
   {
     label: 'Gaz à condensation collectif',
@@ -82,7 +82,7 @@ export const modesDeChauffage = [
     reversible: false,
     tertiaire: false,
     type: ['individuel'],
-    grandPublicMode: true,
+    grandPublicMode: false,
   },
   {
     label: 'Gaz à condensation individuel',

@@ -118,7 +118,8 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
       )}
       {!advancedMode && (
         <Notice variant="info" size="sm">
-          Comparez aussi les PACs sur le <Link href={`/pro/comparateur-couts-performances?${searchParams.toString()}`}>compte pro</Link>
+          Comparez aussi les PACs et les chaudières à granulés sur le{' '}
+          <Link href={`/pro/comparateur-couts-performances?${searchParams.toString()}`}>compte pro</Link>
         </Notice>
       )}
     </div>
