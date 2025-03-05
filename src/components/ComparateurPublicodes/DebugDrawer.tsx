@@ -98,7 +98,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
         Détails
       </FloatingButton>
 
-      <Drawer open={drawerOpen} onClose={() => setDrawerOpen(false)} anchor="right" full>
+      <Drawer open={drawerOpen} onClose={() => setDrawerOpen(false)} direction="right" full>
         {drawerOpen && (
           <Box px="3w" maxWidth="100%">
             <Heading size="h2">Bilan 1an</Heading>

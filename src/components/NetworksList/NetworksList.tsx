@@ -559,7 +559,7 @@ const NetworksList = () => {
 
   return (
     <NetworksListContainer>
-      <Drawer open={isDrawerOpened} onClose={() => toggleDrawer(false)} anchor="right">
+      <Drawer open={isDrawerOpened} onClose={() => toggleDrawer(false)} direction="right">
         <FiltersBox>
           <h3>Filtres{nbFilters > 0 ? ` (${nbFilters})` : ''}</h3>
           <Text fontSize="13px" lineHeight="18px" mb="2w">

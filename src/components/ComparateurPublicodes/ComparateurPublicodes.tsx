@@ -353,7 +353,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
             <FloatingButton onClick={() => setGraphDrawerOpen(true)} iconId="ri-arrow-up-fill">
               Voir les résultats
             </FloatingButton>
-            <Drawer open={graphDrawerOpen} onClose={() => setGraphDrawerOpen(false)} anchor="right" full>
+            <Drawer open={graphDrawerOpen} onClose={() => setGraphDrawerOpen(false)} direction="right" full>
               <div className="max-w-full overflow-auto">{results}</div>
             </Drawer>
             <DebugDrawer engine={engine} />
