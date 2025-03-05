@@ -1,5 +1,8 @@
 import DSFRNotice, { type NoticeProps as DSFRNoticeProps } from '@codegouvfr/react-dsfr/Notice';
 import React from 'react';
+import styled from 'styled-components';
+
+import cx from '@/utils/cx';
 
 export type NoticeProps = Omit<DSFRNoticeProps, 'isClosable' | 'title' | 'severity'> &
   ({ title: NonNullable<React.ReactNode>; children?: never } | { children: NonNullable<React.ReactNode>; title?: never }) & {
@@ -18,13 +21,20 @@ const classNames: { titles: { [key: string]: string }; root: { [key: string]: st
   },
 };
 
+const StyledDSFRNotice = styled(DSFRNotice)`
+  /* Because it's impossible to override the default of the DSFR */
+  & > div > div > p {
+    display: flex;
+  }
+`;
+
 const Notice: React.FC<NoticeProps> = ({ children, className, onClose, variant, title, size = 'md', ...props }) => {
   return (
-    <DSFRNotice
-      className={className}
-      title={children || title}
+    <StyledDSFRNotice
+      className={cx('', className)}
+      title={<span>{children || title}</span>}
       classes={{
-        title: classNames.titles[size],
+        title: cx('!inline-flex !items-center', classNames.titles[size]),
         root: classNames.root[size],
       }}
       severity={variant}
