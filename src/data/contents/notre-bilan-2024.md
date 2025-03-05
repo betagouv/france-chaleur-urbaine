@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/cover_bilan2024.jpg
+coverY: 0
+---
+
 # Notre bilan 2024
 
 Quel bilan pour France Chaleur Urbaine en 2024 ?
@@ -12,7 +17,9 @@ Quel bilan pour France Chaleur Urbaine en 2024 ?
 
 🙏 Merci à tous nos usagers et partenaires pour cette année riche en interactions !
 
-Pour en savoir plus, c'est ci-dessous 👇
+Pour en savoir plus, c'est ici :
 
 📈 Et pour suivre l'évolution de nos indicateurs mois par mois, rendez-vous sur notre [page statistiques](https://france-chaleur-urbaine.beta.gouv.fr/stats)
+
+<figure><img src=".gitbook/assets/FCU_Bilan.jpg" alt=""><figcaption></figcaption></figure>
 

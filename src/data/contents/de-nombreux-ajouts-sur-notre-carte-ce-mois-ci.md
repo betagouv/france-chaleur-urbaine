@@ -7,8 +7,8 @@ coverY: 0
 
 🗺️ Grâce à l'important travail de collecte réalisé par France Chaleur Urbaine, sa [carte](https://france-chaleur-urbaine.beta.gouv.fr/carte) s'enrichit chaque mois. Un travail au service du développement des réseaux de chaleur et de froid, utile aussi bien aux professionnels qu'à toute personne s'intéressant aux réseaux !\
 \
-💥 De nombreux tracés et périmètres de développement prioritaire viennent d'être ajoutés, grâce à une campagne de recensement adressée aux réseaux concernés par le classement automatique. Le nombre de réseaux en construction figurant sur la carte progresse également, grâce aux contributions reçues dans le cadre des demandes de subvention au titre du Fonds Chaleur \
-\
+💥 De nombreux tracés et périmètres de développement prioritaire viennent d'être ajoutés, grâce à une campagne de recensement adressée aux réseaux concernés par le classement automatique. Le nombre de réseaux en construction figurant sur la carte progresse également, grâce aux contributions reçues dans le cadre des demandes de subvention au titre du Fonds Chaleur.
+
 Ainsi, on compte ce mois-ci :\
 \+ 30 réseaux de chaleur et + 1 réseau de froid\
 \+ 20 réseaux de chaleur en construction (nouveau réseau ou extension)\
