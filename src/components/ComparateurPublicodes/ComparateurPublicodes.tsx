@@ -100,6 +100,24 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
     },
   });
 
+  const lienEtudeAmorce = (
+    <div className="fr-text--xs">
+      Voir le{' '}
+      <a
+        href="https://amorce.asso.fr/publications/enquete-sur-le-prix-de-vente-de-la-chaleur-et-du-froid-en-2021-rce39"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        rapport d'Amorce
+      </a>{' '}
+      pour plus d'informations ou{' '}
+      <a href="https://amorce.asso.fr/contact" target="_blank" rel="noopener noreferrer">
+        contacter l'association Amorce
+      </a>
+      .
+    </div>
+  );
+
   const results = displayResults ? (
     <div className="p-2 lg:p-0">
       {advancedMode && !loading && address && displayResults && (
@@ -140,18 +158,21 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
               </div>
             </>
           ) : (
-            <>
-              <p className="text-sm">
-                Il n'y a pas de réseau de chaleur à proximité de l'adresse testée.{' '}
-                <strong>Les simulations se basent sur le réseau de chaleur français moyen.</strong>
-              </p>
-              <p className="text-sm my-5">Vous souhaitez faire connaître à la collectivité votre intérêt pour ce mode de chauffage ?</p>
-              <div className="flex gap-5 items-center justify-end">
-                <Button onClick={displayContactForm} size="small">
+            <div className="text-sm flex flex-col gap-5">
+              <div>
+                <span>
+                  En l'absence d'un <strong>réseau de chaleur</strong> à proximité,{' '}
+                  <strong>les simulations se basent sur le réseau de chaleur français moyen.</strong>
+                </span>
+                {lienEtudeAmorce}
+              </div>
+              <div className="flex sm:flex-row flex-col gap-5 items-center justify-between">
+                <p className="text-sm">Vous souhaitez faire connaître à la collectivité votre intérêt pour ce mode de chauffage ?</p>
+                <Button onClick={displayContactForm} size="small" className="whitespace-nowrap">
                   Laissez vos coordonnées
                 </Button>
               </div>
-            </>
+            </div>
           )}
         </Alert>
       )}
@@ -184,10 +205,15 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
               )}
             </>
           ) : (
-            <>
-              En l'absence d'un <strong>réseau de froid</strong> à proximité, les simulations se basent sur le réseau de froid français
-              moyen
-            </>
+            <div className="text-sm flex flex-col gap-5">
+              <div>
+                <span>
+                  En l'absence d'un <strong>réseau de froid</strong> à proximité,{' '}
+                  <strong>les simulations se basent sur le réseau de froid français moyen.</strong>
+                </span>
+                {lienEtudeAmorce}
+              </div>
+            </div>
           )}
         </Alert>
       )}
