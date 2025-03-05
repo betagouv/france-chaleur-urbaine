@@ -35,7 +35,7 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
   const { has: hasModeDeChauffage, toggle: toggleModeDeChauffage } = useArrayQueryState<ModeDeChauffage>('modes-de-chauffage');
   const createOptionProps = (label: ModeDeChauffage) => ({
     label:
-      modesDeChauffage.filter((mode) => (advancedMode ? mode.advancedMode : true)).find((mode) => mode.label === label)?.reversible &&
+      modesDeChauffage.filter((mode) => (advancedMode ? true : mode.grandPublicMode)).find((mode) => mode.label === label)?.reversible &&
       inclusClimatisation
         ? `${label} (chauffage + froid)`
         : label,
