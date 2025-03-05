@@ -150,7 +150,7 @@ export const modesDeChauffage = [
     reversible: false,
     tertiaire: true,
     type: ['individuel'],
-    grandPublicMode: true,
+    grandPublicMode: false,
   },
 ] as const;
 
