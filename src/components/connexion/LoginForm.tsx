@@ -4,13 +4,15 @@ import { type FormEvent, useState } from 'react';
 import Input from '@/components/form/dsfr/Input';
 import PasswordInput from '@/components/form/dsfr/PasswordInput';
 import Button from '@/components/ui/Button';
-import { useAuthentication } from '@/services/authentication';
+import { useAuthentication, useRedirectionAfterLogin } from '@/services/authentication';
 
 export interface LoginFormProps {
   callbackUrl: string;
 }
 export const LoginForm = ({ callbackUrl }: LoginFormProps) => {
-  const { signIn } = useAuthentication();
+  const { signIn, session } = useAuthentication();
+  useRedirectionAfterLogin(session);
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
