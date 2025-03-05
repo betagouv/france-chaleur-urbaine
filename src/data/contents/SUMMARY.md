@@ -1,6 +1,10 @@
 # Table of contents
 
 * [Page vide à laisser (articles à insérer en dessous)](README.md)
+* [De nombreux ajouts sur notre carte ce mois-ci !](de-nombreux-ajouts-sur-notre-carte-ce-mois-ci.md)
+* [Retrouvez les quartiers prioritaires pour la politique de la ville (QPV) sur notre carte](retrouvez-les-quartiers-prioritaires-pour-la-politique-de-la-ville-qpv-sur-notre-carte.md)
+* [Découvrez les communes couvertes par une étude pour la création de réseaux](decouvrez-les-communes-couvertes-par-une-etude-pour-la-creation-de-reseaux.md)
+* [Notre bilan 2024](notre-bilan-2024.md)
 * [Quel mode de chauffage décarboné pour mon immeuble ?](quel-mode-de-chauffage-decarbone-pour-mon-immeuble.md)
 * [La carte France Chaleur Urbaine continue de s'enrichir !](la-carte-france-chaleur-urbaine-continue-de-senrichir.md)
 * ["On se décarbone" avec les réseaux de chaleur](on-se-decarbone-avec-les-reseaux-de-chaleur.md)
