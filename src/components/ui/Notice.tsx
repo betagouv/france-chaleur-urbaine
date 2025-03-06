@@ -33,10 +33,10 @@ const StyledDSFRNotice = styled(DSFRNotice)`
 const Notice: React.FC<NoticeProps> = ({ children, className, onClose, variant, title, size = 'md', ...props }) => {
   return (
     <StyledDSFRNotice
-      title={<span className={cx('', className)}>{children || title}</span>}
+      title={<span>{children || title}</span>}
       classes={{
         title: cx('!inline-flex !items-center', classNames.titles[size]),
-        root: classNames.root[size],
+        root: cx(classNames.root[size], className),
       }}
       severity={variant}
       onClose={onClose}

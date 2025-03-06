@@ -258,20 +258,22 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
       <EligibilityFormModal />
       <div className={cx(fr.cx('fr-container'), className)} {...props}>
         {!advancedMode && (
-          <Notice variant="info" size="sm" className="flex sm:flex-row flex-col gap-2">
-            <span>
-              Pour comparer d'autres modes de chauffage et pouvoir modifier l'ensemble des paramètres de calcul, un mode avancé est
-              disponible sur connexion.
+          <Notice variant="info" size="sm">
+            <span className="flex sm:flex-row flex-col gap-2">
+              <span>
+                Pour comparer d'autres modes de chauffage et pouvoir modifier l'ensemble des paramètres de calcul, un mode avancé est
+                disponible sur connexion.
+              </span>
+              <Button
+                variant="info"
+                className="whitespace-nowrap"
+                priority="secondary"
+                size="small"
+                href={`/pro/comparateur-couts-performances?${searchParams.toString()}`}
+              >
+                Accéder au mode avancé
+              </Button>
             </span>
-            <Button
-              variant="info"
-              className="whitespace-nowrap"
-              priority="secondary"
-              size="small"
-              href={`/pro/comparateur-couts-performances?${searchParams.toString()}`}
-            >
-              Accéder au mode avancé
-            </Button>
           </Notice>
         )}
         <FormProvider engine={engine}>
