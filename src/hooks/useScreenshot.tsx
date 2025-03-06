@@ -16,30 +16,35 @@ const dataUrlToBlob = (dataUrl: string): Blob => {
   return new Blob([buffer], { type: mime });
 };
 
-const addBackground = (dataUrl: string, color: string = 'white'): Promise<string> => {
+const addBackground = (dataUrl: string, { bgColor = 'white', padding = 0 }: { bgColor?: string; padding?: number }): Promise<string> => {
   return new Promise((resolve) => {
     const img = new Image();
     img.onload = () => {
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d')!;
-      canvas.width = img.width;
-      canvas.height = img.height;
-      ctx.fillStyle = color;
+      canvas.width = img.width + padding * 2;
+      canvas.height = img.height + padding * 2;
+      ctx.fillStyle = bgColor;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(img, 0, 0);
+      ctx.drawImage(img, padding, padding);
       resolve(canvas.toDataURL('image/png'));
     };
     img.src = dataUrl;
   });
 };
 
-const useScreenshot = ({ bgColor = 'white' }: { color?: string } = {}) => {
+const useScreenshot = () => {
   const [loading, setLoading] = useState(false);
   const [screenshot, setScreenshot] = useState<string | null>(null);
 
   const captureNode = async (
-    nodeRef: React.RefObject<null>,
-    { forPrint = false, padding, filename = 'impression-ecran.png' }: { filename?: string; forPrint?: boolean; padding?: string } = {}
+    nodeRef: React.RefObject<HTMLElement | null>,
+    {
+      forPrint = false,
+      padding,
+      filename = 'impression-ecran.png',
+      bgColor = 'white',
+    }: { filename?: string; forPrint?: boolean; padding?: number; bgColor?: string } = {}
   ) => {
     setLoading(true);
     setScreenshot(null);
@@ -48,26 +53,23 @@ const useScreenshot = ({ bgColor = 'white' }: { color?: string } = {}) => {
       return null;
     }
 
-    const node = nodeRef.current as HTMLElement;
+    const node = nodeRef.current;
     if (!(node instanceof HTMLElement)) {
       return null;
     }
 
     try {
-      const { width: originalWidth, padding: originalPadding } = node.style;
+      const { width: originalWidth, position: originalPosition } = node.style;
 
-      if (forPrint) node.style.width = '794px'; // A4 paper width in pixels
-      if (padding) node.style.padding = padding;
+      if (forPrint) node.style.width = '794px';
 
       const dataUrlTransparentBackground = await domtoimage.toPng(node, { filter: (node: any) => node.tagName !== 'BUTTON' });
-      // if target div has stripes in background, adding a white background directly would make it invisible
-      // so we add a white background on top of the stripes afterwards
-      const dataUrl = await addBackground(dataUrlTransparentBackground, bgColor);
+      const dataUrl = await addBackground(dataUrlTransparentBackground, { bgColor, padding });
       const blob = dataUrlToBlob(dataUrl);
       const file = new File([blob], filename, { type: 'image/png' });
 
       if (forPrint) node.style.width = originalWidth;
-      if (padding) node.style.padding = originalPadding;
+      node.style.position = originalPosition;
 
       setScreenshot(dataUrl);
       setLoading(false);
