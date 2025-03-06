@@ -518,37 +518,45 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
                       <span className="bg-white">{name}</span>
                     </div>
                     <div className="group stretch flex items-center">
-                      <div className="pl-12 pr-3 flex flex-1 border-r border-solid border-white">
+                      <div className="h-[22px] pl-12 pr-3 flex flex-1 border-r border-solid border-white">
                         <div
                           className="relative bg-fcu-orange-light/10 whitespace-nowrap py-0.5 tracking-tight text-left font-extrabold text-fcu-orange-light sm:text-xs md:text-sm flex items-center justify-end"
                           style={{ flex: 100 - co2UpperPercent }}
                         >
                           <span className="pr-0.5 absolute right-[12px]">{advancedMode ? co2UpperBoundString : ''}</span>
-                          <div className="border-solid border-l-fcu-orange-light border-l-[12px] border-y-transparent border-y-[5px] my-1 border-r-0"></div>
+                          {advancedMode && (
+                            <div className="border-solid border-l-fcu-orange-light border-l-[12px] border-y-transparent border-y-[5px] my-1 border-r-0"></div>
+                          )}
                         </div>
                         <div className="relative bg-fcu-orange-light" style={{ flex: co2Width }}></div>
                         <div
                           className="relative bg-fcu-orange-light/30 whitespace-nowrap tracking-tight py-0.5 text-right font-extrabold text-fcu-orange-light sm:text-xs md:text-sm flex items-center justify-start"
                           style={{ flex: co2LowerPercent }}
                         >
-                          <div className="border-solid border-r-fcu-orange-light border-r-[12px] border-y-transparent border-y-[5px] my-1 border-l-0"></div>
+                          {advancedMode && (
+                            <div className="border-solid border-r-fcu-orange-light border-r-[12px] border-y-transparent border-y-[5px] my-1 border-l-0"></div>
+                          )}
                           <span className="absolute left-[12px] pl-0.5">{advancedMode ? co2LowerBoundString : ''}</span>
                         </div>
                       </div>
-                      <div className="pr-12 pl-3 flex flex-1 border-l border-solid border-white">
+                      <div className="h-[22px] pr-12 pl-3 flex flex-1 border-l border-solid border-white">
                         <div
                           className="relative bg-fcu-purple/30 whitespace-nowrap tracking-tight py-0.5 text-right font-extrabold text-fcu-purple sm:text-xs md:text-sm flex items-center justify-end"
                           style={{ flex: costLowerPercent }}
                         >
                           <span className="pr-0.5 absolute right-[12px]">{advancedMode ? lowerBoundString : ''}</span>
-                          <div className="border-solid border-l-fcu-purple border-l-[12px] border-y-transparent border-y-[5px] my-1 border-r-0"></div>
+                          {advancedMode && (
+                            <div className="border-solid border-l-fcu-purple border-l-[12px] border-y-transparent border-y-[5px] my-1 border-r-0"></div>
+                          )}
                         </div>
                         <div className="relative bg-fcu-purple" style={{ flex: costWidth }}></div>
                         <div
                           className="relative bg-fcu-purple/10 whitespace-nowrap py-0.5 tracking-tight text-left font-extrabold text-fcu-purple sm:text-xs md:text-sm flex items-center justify-start"
                           style={{ flex: 100 - costUpperPercent }}
                         >
-                          <div className="border-solid border-r-fcu-purple border-r-[12px] border-y-transparent border-y-[5px] my-1 border-l-0"></div>
+                          {advancedMode && (
+                            <div className="border-solid border-r-fcu-purple border-r-[12px] border-y-transparent border-y-[5px] my-1 border-l-0"></div>
+                          )}
                           <span className="pl-0.5 absolute left-[12px]">{advancedMode ? upperBoundString : ''}</span>
                         </div>
                       </div>
