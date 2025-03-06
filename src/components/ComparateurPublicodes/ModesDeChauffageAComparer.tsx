@@ -33,12 +33,12 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
   const inclusClimatisation = engine.getField('Inclure la climatisation');
   const typeDeBatiment = engine.getField('type de bâtiment');
   const { has: hasModeDeChauffage, toggle: toggleModeDeChauffage } = useArrayQueryState<ModeDeChauffage>('modes-de-chauffage');
-  const createOptionProps = (label: ModeDeChauffage) => ({
+  const createOptionProps = (suffix?: string) => (label: ModeDeChauffage) => ({
     label:
       modesDeChauffage.filter((mode) => (advancedMode ? true : mode.grandPublicMode)).find((mode) => mode.label === label)?.reversible &&
       inclusClimatisation
-        ? `${label} (chauffage + froid)`
-        : label,
+        ? `${label}${suffix ? ` ${suffix}` : ''} (chauffage + froid)`
+        : `${label}${suffix ? ` ${suffix}` : ''}`,
     nativeInputProps: {
       checked: hasModeDeChauffage(label),
       onChange: () => toggleModeDeChauffage(label),
@@ -65,21 +65,22 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
       <Heading as="h3" size="h6">
         Chauffage collectif
       </Heading>
-      {!advancedMode && !nearestReseauDeChaleur ? null : (
-        <Checkbox
-          small
-          options={(['Réseau de chaleur'] satisfies ModeDeChauffage[]).map(createOptionProps)}
-          state={nearestReseauDeChaleur ? 'success' : 'default'}
-          className="[&_p]:!mb-0"
-          stateRelatedMessage={
-            nearestReseauDeChaleur ? (
-              <span>
-                Disponible à <strong>{nearestReseauDeChaleur.distance}</strong>m du bâtiment
-              </span>
-            ) : undefined
-          }
-        />
-      )}
+      <Checkbox
+        small
+        options={(['Réseau de chaleur'] satisfies ModeDeChauffage[]).map(
+          createOptionProps(!advancedMode && !nearestReseauDeChaleur ? '(Non disponible)' : undefined)
+        )}
+        state={nearestReseauDeChaleur ? 'success' : 'default'}
+        className="[&_p]:!mb-0"
+        disabled={!advancedMode && !nearestReseauDeChaleur}
+        stateRelatedMessage={
+          nearestReseauDeChaleur ? (
+            <span>
+              Disponible à <strong>{nearestReseauDeChaleur.distance}</strong>m du bâtiment
+            </span>
+          ) : undefined
+        }
+      />
       <Checkbox
         small
         options={(
@@ -92,7 +93,7 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
               ? (['PAC air/air collective', 'PAC eau/eau collective', 'PAC air/eau collective'] satisfies ModeDeChauffage[])
               : []),
           ] satisfies ModeDeChauffage[]
-        ).map(createOptionProps)}
+        ).map(createOptionProps())}
       />
       {typeDeBatiment === 'résidentiel' && (
         <>
@@ -112,7 +113,7 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
                   : []),
                 'Radiateur électrique individuel',
               ] satisfies ModeDeChauffage[]
-            ).map(createOptionProps)}
+            ).map(createOptionProps())}
           />
         </>
       )}

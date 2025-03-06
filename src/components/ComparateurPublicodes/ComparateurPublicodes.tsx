@@ -121,7 +121,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
 
   const results = displayResults ? (
     <div className="p-2 lg:p-0">
-      {advancedMode && !loading && address && displayResults && (
+      {!loading && address && displayResults && (
         <Alert size="sm" className="mb-5" variant={nearestReseauDeChaleur ? 'info' : 'warning'}>
           {nearestReseauDeChaleur ? (
             <>
@@ -161,11 +161,19 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
           ) : (
             <div className="text-sm flex flex-col gap-5">
               <div>
-                <span>
-                  En l'absence d'un <strong>réseau de chaleur</strong> à proximité,{' '}
-                  <strong>les simulations se basent sur le réseau de chaleur français moyen.</strong>
-                </span>
-                {lienEtudeAmorce}
+                {advancedMode ? (
+                  <>
+                    <span>
+                      En l'absence d'un <strong>réseau de chaleur</strong> à proximité,{' '}
+                      <strong>les simulations se basent sur le réseau de chaleur français moyen.</strong>
+                    </span>
+                    {lienEtudeAmorce}
+                  </>
+                ) : (
+                  <span>
+                    Pas de <strong>réseau de chaleur</strong> à proximité.
+                  </span>
+                )}
               </div>
               <div className="flex sm:flex-row flex-col gap-5 items-center justify-between">
                 <p className="text-sm">Vous souhaitez faire connaître à la collectivité votre intérêt pour ce mode de chauffage ?</p>
@@ -177,7 +185,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
           )}
         </Alert>
       )}
-      {advancedMode && !loading && inclureLaClimatisation && address && displayResults && (
+      {!loading && inclureLaClimatisation && address && displayResults && (
         <Alert size="sm" className="mb-5" variant={nearestReseauDeFroid ? 'info' : 'warning'}>
           {nearestReseauDeFroid ? (
             <>
@@ -208,11 +216,19 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
           ) : (
             <div className="text-sm flex flex-col gap-5">
               <div>
-                <span>
-                  En l'absence d'un <strong>réseau de froid</strong> à proximité,{' '}
-                  <strong>les simulations se basent sur le réseau de froid français moyen.</strong>
-                </span>
-                {lienEtudeAmorce}
+                {advancedMode ? (
+                  <>
+                    <span>
+                      En l'absence d'un <strong>réseau de froid</strong> à proximité,{' '}
+                      <strong>les simulations se basent sur le réseau de froid français moyen.</strong>
+                    </span>
+                    {lienEtudeAmorce}
+                  </>
+                ) : (
+                  <span>
+                    Pas de <strong>réseau de froid</strong> à proximité.
+                  </span>
+                )}
               </div>
             </div>
           )}
