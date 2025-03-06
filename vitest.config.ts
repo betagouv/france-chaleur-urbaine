@@ -9,9 +9,9 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     alias: {
-      '@/*': resolve(__dirname, 'src/*'),
-      '@cli/*': resolve(__dirname, 'scripts/*'),
-      '@root/*': resolve(__dirname, '*'),
+      '@': resolve(__dirname, 'src'),
+      '@cli': resolve(__dirname, 'scripts'),
+      '@root': resolve(__dirname, '.'),
     },
   },
 });
