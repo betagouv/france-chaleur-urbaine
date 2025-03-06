@@ -38,7 +38,7 @@ const tools: TileListItem[] = [
     ? [
         {
           title: 'Comparateur de coûts et d’émissions de CO2',
-          excerpt: 'Comparez les coûts des modes de chauffage.',
+          excerpt: 'Comparez les coûts et émissions des modes de chauffage.',
           href: '/comparateur-couts-performances',
           image: '/icons/tools/money.svg',
           start: (
