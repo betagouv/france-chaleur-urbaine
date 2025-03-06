@@ -73,6 +73,7 @@ type FileConversionStrategy = {
 };
 
 const fileConversionStrategy = [
+  // manque fichiers gpkg (= base sqlite), mais pas réussi à importer le module qui avait besoin de 'fs'
   {
     extensions: ['kml'],
     async convert(file) {
