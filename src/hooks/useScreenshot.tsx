@@ -16,7 +16,24 @@ const dataUrlToBlob = (dataUrl: string): Blob => {
   return new Blob([buffer], { type: mime });
 };
 
-const useScreenshot = () => {
+const addBackground = (dataUrl: string, color: string = 'white'): Promise<string> => {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d')!;
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.fillStyle = color;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0);
+      resolve(canvas.toDataURL('image/png'));
+    };
+    img.src = dataUrl;
+  });
+};
+
+const useScreenshot = ({ bgColor = 'white' }: { color?: string } = {}) => {
   const [loading, setLoading] = useState(false);
   const [screenshot, setScreenshot] = useState<string | null>(null);
 
@@ -42,7 +59,10 @@ const useScreenshot = () => {
       if (forPrint) node.style.width = '794px'; // A4 paper width in pixels
       if (padding) node.style.padding = padding;
 
-      const dataUrl = await domtoimage.toPng(node, { bgcolor: 'white', filter: (node: any) => node.tagName !== 'BUTTON' });
+      const dataUrlTransparentBackground = await domtoimage.toPng(node, { filter: (node: any) => node.tagName !== 'BUTTON' });
+      // if target div has stripes in background, adding a white background directly would make it invisible
+      // so we add a white background on top of the stripes afterwards
+      const dataUrl = await addBackground(dataUrlTransparentBackground, bgColor);
       const blob = dataUrlToBlob(dataUrl);
       const file = new File([blob], filename, { type: 'image/png' });
 
