@@ -512,10 +512,10 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
                 return (
                   <>
                     {showSectionTitle && (
-                      <div className="relative mb-1 mt-8 text-center text-xl font-bold bg-white/20">{graphSectionTitle}</div>
+                      <div className="relative mb-1 mt-8 text-center text-xl font-bold bg-white">{graphSectionTitle}</div>
                     )}
                     <div key={name} className="relative mb-1 mt-2 flex items-center justify-center text-base font-bold">
-                      <span className="bg-white/20">{name}</span>
+                      <span className="bg-white">{name}</span>
                     </div>
                     <div className="group stretch flex items-center">
                       <div className="pl-12 pr-3 flex flex-1 border-r border-solid border-white">
