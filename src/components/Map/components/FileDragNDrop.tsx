@@ -3,8 +3,12 @@ import { useEffect, useState } from 'react';
 
 import useFCUMap from '@/components/Map/MapProvider';
 import Box from '@/components/ui/Box';
+import { toastErrors } from '@/services/notification';
 import { convertLambert93GeoJSONToWGS84, hasLambert93Projection } from '@/utils/geo';
 
+/**
+ * A component that allows the user to drag and drop a geographic file to the map.
+ */
 const FileDragNDrop = () => {
   const { mapRef } = useFCUMap();
   const [dragging, setDragging] = useState(false);
@@ -22,22 +26,23 @@ const FileDragNDrop = () => {
       setDragging(false);
     };
 
-    const onDrop = async (event: DragEvent) => {
+    const onDrop = toastErrors(async (event: DragEvent) => {
       event.preventDefault();
-      const file = event.dataTransfer?.files[0];
+      const files = event.dataTransfer?.files;
       setDragging(false);
-      if (!file) {
+      if (!files || files.length === 0) {
         return;
       }
+      const wgs84GeoJsonData = Array.from(files).some((f) => f.name.endsWith('.shp'))
+        ? await readShapefileWithProjection(Array.from(files))
+        : await convertFileToGeoJSON(files[0]);
 
-      const wgs84GeoJsonData = await convertFileToGeoJSON(file);
-      console.info('converted file', wgs84GeoJsonData);
       if (!mapRef?.getSource('customGeojson')) {
         throw new Error('Source customGeojson not found');
       }
       (mapRef.getSource('customGeojson') as maplibregl.GeoJSONSource).setData(wgs84GeoJsonData);
       mapRef.fitBounds(bbox(wgs84GeoJsonData) as [number, number, number, number], { maxZoom: 17, duration: 3000 });
-    };
+    });
 
     mapRef.getContainer().addEventListener('dragover', onDragOver);
     mapRef.getContainer().addEventListener('dragleave', onDragLeave);
@@ -90,29 +95,6 @@ const fileConversionStrategy = [
     },
   },
   {
-    extensions: ['zip'], // = zipped shp
-    async convert(file) {
-      const zip = await file.arrayBuffer();
-      const zipData = await (await import('jszip')).default.loadAsync(zip);
-      const shpFile = Object.values(zipData.files).find((f) => f.name.endsWith('.shp'));
-      if (shpFile) {
-        const shpBuffer = await shpFile.async('arraybuffer');
-        const source = await (await import('shapefile')).open(shpBuffer);
-        const result = await source.read();
-        return result.value;
-      }
-    },
-  },
-  {
-    extensions: ['shp'],
-    async convert(file) {
-      const content = await file.arrayBuffer();
-      const source = await (await import('shapefile')).open(content);
-      const result = await source.read();
-      return result.value;
-    },
-  },
-  {
     extensions: ['json', 'geojson'],
     async convert(file) {
       const geoJsonData = JSON.parse(await file.text());
@@ -128,4 +110,75 @@ async function convertFileToGeoJSON(file: File) {
     throw new Error('Format non pris en charge');
   }
   return strategy.convert(file);
+}
+
+/**
+ * Reads a shapefile (.shp) with its projection (.prj) and its optional attributes (.dbf).
+ * @param files files to read
+ * @returns a geojson with the coordinates in WGS84
+ */
+async function readShapefileWithProjection(files: File[]) {
+  const fileMap = new Map(files.map((file) => [file.name.split('.').pop(), file]));
+  if (!fileMap.has('shp') || !fileMap.has('prj')) {
+    throw new Error('Un Shapefile doit contenir des fichiers .shp et .prj');
+  }
+
+  const [shp, prj, dbf] = await Promise.all(['shp', 'prj', 'dbf'].map((ext) => fileMap.get(ext)?.arrayBuffer()));
+
+  const source = await (await import('shapefile')).open(shp!, dbf);
+  const features = [];
+  let result = await source.read();
+  while (!result.done) {
+    features.push(result.value);
+    result = await source.read();
+  }
+
+  const geojson = { type: 'FeatureCollection', features };
+  const sourceCrs = prj ? await detectCrsFromProj(new TextDecoder().decode(prj)) : undefined;
+  return convertToWGS84(geojson, sourceCrs);
+}
+
+/**
+ * Detect the CRS from a .prj file using proj4.
+ * @param projText content of the .prj file
+ * @returns the CRS
+ */
+async function detectCrsFromProj(projText: string) {
+  try {
+    const proj4 = (await import('proj4')).default;
+    return (proj4(projText) as any).oProj;
+  } catch (error) {
+    console.warn("Impossible d'analyser le .prj, utilisation de EPSG:4326");
+    return undefined;
+  }
+}
+
+/**
+ * Convert the coordinates of a geojson to WGS84.
+ * @param geojson
+ * @param sourceCrs
+ * @returns a geojson with the coordinates in WGS84
+ */
+async function convertToWGS84(geojson: any, sourceCrs?: any) {
+  if (!sourceCrs) return geojson;
+
+  const proj4 = (await import('proj4')).default;
+
+  proj4.defs([
+    ['EPSG:4326', proj4.WGS84],
+    ['source-srid', sourceCrs],
+  ]);
+
+  function transformCoords(coords: any) {
+    if (Array.isArray(coords[0])) {
+      return coords.map(transformCoords);
+    }
+    return proj4('source-srid', 'EPSG:4326', coords);
+  }
+
+  geojson.features.forEach((feature: any) => {
+    feature.geometry.coordinates = transformCoords(feature.geometry.coordinates);
+  });
+
+  return geojson;
 }
