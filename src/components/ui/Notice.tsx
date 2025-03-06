@@ -6,7 +6,7 @@ import cx from '@/utils/cx';
 
 export type NoticeProps = Omit<DSFRNoticeProps, 'isClosable' | 'title' | 'severity'> &
   ({ title: NonNullable<React.ReactNode>; children?: never } | { children: NonNullable<React.ReactNode>; title?: never }) & {
-    size?: 'sm';
+    size?: 'sm' | 'xs' | 'md';
     variant?: 'info' | 'warning' | 'alert';
   };
 

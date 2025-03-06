@@ -46,19 +46,11 @@ export const variantClassNames = {
 };
 
 const buttonVariants = cva('', {
-  variants: {
-    size: {
-      sm: '[&&]:!text-sm !py-0.5 !px-2 min-h-[1.5rem]',
-      md: '',
-      lg: '[&&]:!text-lg !py-2 !px-4 min-h-[3rem]',
-    },
-  },
-  defaultVariants: {
-    size: 'md',
-  },
+  variants: {},
+  defaultVariants: {},
 });
 
-export type ButtonProps = Omit<DsfrButtonProps, 'size'> &
+export type ButtonProps = DsfrButtonProps &
   RemoveDollar<StyledButtonProps> &
   VariantProps<typeof buttonVariants> & { href?: string; stopPropagation?: boolean };
 
@@ -70,7 +62,6 @@ export type ButtonProps = Omit<DsfrButtonProps, 'size'> &
  * - Analytics event tracking via `eventKey` and `eventPayload`
  * - Stop propagation control via `stopPropagation` prop
  */
-
 const Button: React.FC<ButtonProps> = ({
   children,
   iconId,
@@ -85,7 +76,6 @@ const Button: React.FC<ButtonProps> = ({
   loading,
   variant,
   className,
-  size = 'md',
   ...props
 }) => {
   const router = useRouter();
@@ -137,7 +127,7 @@ const Button: React.FC<ButtonProps> = ({
       variant={variant}
       disabled={(disabled || loading) as any /** FIXME cause incompatibility with DSFR Button */}
       type={type as any /** FIXME cause incompatibility with DSFR Button */}
-      className={cx(variantClassName, buttonVariants({ size }), className)}
+      className={cx(variantClassName, buttonVariants({}), className)}
       {...props}
     >
       {children}

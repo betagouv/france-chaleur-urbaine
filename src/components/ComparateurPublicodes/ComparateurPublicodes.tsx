@@ -1,4 +1,5 @@
 import { fr } from '@codegouvfr/react-dsfr';
+import { CallOut } from '@codegouvfr/react-dsfr/CallOut';
 import { useSearchParams } from 'next/navigation';
 import { parseAsStringLiteral, useQueryState } from 'nuqs';
 import React from 'react';
@@ -226,13 +227,13 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
     </div>
   ) : (
     <>
-      <Notice variant="info" className="mb-5">
+      <CallOut className="mb-5 font-bold">
         {!isAddressSelected
           ? '1. Commencez par sélectionner une adresse'
           : !modesDeChauffage
             ? '2. Maintenant, sélectionnez au moins un mode de chauffage'
             : ''}
-      </Notice>
+      </CallOut>
       <ResultsNotAvailable />
     </>
   );
@@ -241,9 +242,20 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
       <EligibilityFormModal />
       <div className={cx(fr.cx('fr-container'), className)} {...props}>
         {!advancedMode && (
-          <Notice variant="info" size="sm">
-            Besoin de plus de granularité dans votre estimation ? Un mode avancé est disponible sur le{' '}
-            <Link href={`/pro/comparateur-couts-performances?${searchParams.toString()}`}>compte pro</Link>
+          <Notice variant="info" size="sm" className="flex sm:flex-row flex-col gap-2">
+            <span>
+              Pour comparer d'autres modes de chauffage et pouvoir modifier l'ensemble des paramètres de calcul, un mode avancé est
+              disponible sur connexion.
+            </span>
+            <Button
+              variant="info"
+              className="whitespace-nowrap"
+              priority="secondary"
+              size="small"
+              href={`/pro/comparateur-couts-performances?${searchParams.toString()}`}
+            >
+              Accéder au mode avancé
+            </Button>
           </Notice>
         )}
         <FormProvider engine={engine}>
