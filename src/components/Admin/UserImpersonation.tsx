@@ -49,7 +49,7 @@ const UserImpersonation = () => {
         gestionnaires: selectedTagsGestionnaires,
       });
       // trigger a full reload
-      location.href = '/demandes';
+      location.href = '/pro/demandes';
     } catch (err) {
       console.error('err', err);
     }

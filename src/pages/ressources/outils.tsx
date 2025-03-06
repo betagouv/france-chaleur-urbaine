@@ -105,7 +105,7 @@ const OutilsPage = () => {
                 Comparer les coûts et les émissions de CO2 des modes de chauffage et de refroidissement
               </Text>
             </Box>
-            <Link variant="secondary" href="/outils/comparateur-performances">
+            <Link variant="secondary" href="/comparateur-couts-performances">
               Accéder
             </Link>
           </Box>

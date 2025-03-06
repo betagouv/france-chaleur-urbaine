@@ -105,9 +105,7 @@ const ComparateurPublicodesWidget: React.FC<ComparateurPublicodesWidgetProps> = 
         <div className={fr.cx('fr-text--sm', 'fr-mt-2w')} style={{ textAlign: 'right', fontStyle: 'italic' }}>
           Accéder au{' '}
           <a
-            href={`/outils/comparateur-performances?address=${encodeURIComponent(
-              address as string
-            )}&modes-de-chauffage=${encodeURIComponent(
+            href={`/comparateur-couts-performances?address=${encodeURIComponent(address as string)}&modes-de-chauffage=${encodeURIComponent(
               modesDeChauffageToDisplay.map(({ label }) => label).join(',')
             )}&tabId=modes-de-chauffage`}
             target="_blank"

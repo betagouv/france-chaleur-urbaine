@@ -72,7 +72,7 @@ const publicNavigationMenu: MainNavigationProps.Item[] = [
         {
           text: 'Comparateur de coûts',
           linkProps: {
-            href: '/outils/comparateur-performances',
+            href: '/comparateur-couts-performances',
           },
         },
       ]
@@ -252,7 +252,7 @@ const professionnelNavigationMenu: MainNavigationProps.Item[] = [
   {
     text: 'Comparateur de performances',
     linkProps: {
-      href: '/comparateur-performances',
+      href: '/comparateur-couts-performances',
     },
   },
 ];
@@ -261,13 +261,13 @@ const gestionnaireNavigationMenu: MainNavigationProps.Item[] = [
   {
     text: 'Tableau de bord',
     linkProps: {
-      href: '/demandes',
+      href: '/pro/demandes',
     },
   },
   {
     text: 'Aide',
     linkProps: {
-      href: '/aide',
+      href: '/pro/aide',
     },
   },
 ];

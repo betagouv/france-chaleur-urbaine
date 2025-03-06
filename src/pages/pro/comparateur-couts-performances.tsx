@@ -20,7 +20,7 @@ const SimulateurPage: React.FC<InferGetServerSidePropsType<typeof getServerSideP
       description="Comparez le coût et les émissions de CO2 des réseaux de chaleur, fioul, gaz et électricité pour votre adresse et vos caractéristiques"
       mode="authenticated"
     >
-      {/* TODO version pro et authentifiée de /outils/comparateur-performances */}
+      {/* TODO version pro et authentifiée de /comparateur-couts-performances */}
       <ComparateurPublicodes tabId={query.tabId} displayMode={query.displayMode} />
     </SimplePage>
   );

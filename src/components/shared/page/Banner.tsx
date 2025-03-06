@@ -19,7 +19,7 @@ const Banner: React.FC = () => {
   if (
     process.env.NEXT_PUBLIC_FLAG_ENABLE_COMPARATEUR !== 'true' ||
     !currentUrl ||
-    currentUrl?.startsWith('/outils/comparateur-performances')
+    currentUrl?.startsWith('/comparateur-couts-performances')
   ) {
     return null;
   }
@@ -27,7 +27,7 @@ const Banner: React.FC = () => {
   return (
     <NoticeRemovableSticky className={fr.cx('fr-text--sm')} style={{ textAlign: 'center' }} keyName="comparateur">
       Comparez les coûts et les émissions de CO2 des différents modes de chauffage,{' '}
-      <Link href="/outils/comparateur-performances">accédez à notre nouveau comparateur</Link>
+      <Link href="/comparateur-couts-performances">accédez à notre nouveau comparateur</Link>
     </NoticeRemovableSticky>
   );
 };

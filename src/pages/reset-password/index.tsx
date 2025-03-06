@@ -14,7 +14,7 @@ export const getServerSideProps = withServerSession(({ session }) => {
   if (session) {
     return {
       redirect: {
-        destination: '/tableau-de-bord',
+        destination: '/pro/tableau-de-bord',
         permanent: false,
       },
     };
