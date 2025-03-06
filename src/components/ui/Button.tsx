@@ -9,7 +9,7 @@ import cx from '@/utils/cx';
 type StyledButtonProps = {
   $loading?: boolean;
   $full?: boolean;
-  variant?: 'destructive' | 'info';
+  variant?: 'destructive' | 'info' | 'default';
   eventKey?: TrackingEvent;
   eventPayload?: string;
 };
@@ -33,6 +33,11 @@ const StyledButton = styled(DsfrButton)<DsfrButtonProps & StyledButtonProps>`
 `;
 
 export const variantClassNames = {
+  default: {
+    primary: '',
+    secondary: 'shadow-blue',
+    tertiary: '',
+  },
   destructive: {
     primary: '!bg-destructive !text-white !hover:bg-destructive/90',
     secondary: '!border-destructive !text-destructive shadow-destructive',
@@ -74,7 +79,7 @@ const Button: React.FC<ButtonProps> = ({
   eventPayload,
   stopPropagation,
   loading,
-  variant,
+  variant = 'default',
   className,
   ...props
 }) => {
@@ -109,13 +114,9 @@ const Button: React.FC<ButtonProps> = ({
     onExternalClick?.(e);
   };
 
-  let variantClassName = '';
-
-  if (variant && !variantClassName) {
-    variantClassName = (variantClassNames?.[variant] as any)?.[props?.priority || ''];
-    if (!variantClassName) {
-      console.warn(`Button variant ${variant} is not supported for priority ${props.priority}`);
-    }
+  const variantClassName = (variantClassNames?.[variant] as any)?.[props?.priority || ''];
+  if (!variantClassName) {
+    console.warn(`Button variant ${variant} is not supported for priority ${props.priority}`);
   }
 
   return (
