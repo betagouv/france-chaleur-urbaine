@@ -14,20 +14,6 @@ function createGeometryExpression(geom: GeoJSON.Geometry, srid: number) {
 /**
  * Expression SQL pour calculer les communes intersectant une géométrie
  */
-const communesIntersectionExpression = sql<string[]>`COALESCE(
-  (
-    SELECT array_agg(nom order by nom)
-    FROM ign_communes
-    WHERE ST_Intersects(geometry.geom, st_buffer(ign_communes.geom, -150))
-  ),
-  (
-    SELECT array_agg(nom order by nom)
-    FROM ign_communes
-    WHERE ST_Intersects(geometry.geom, ign_communes.geom)
-  ),
-  '{}'
-)::text[]`;
-
 const communesIntersectionExpressionGeom = sql<string[]>`COALESCE(
   (
     SELECT array_agg(nom order by nom)
@@ -38,7 +24,8 @@ const communesIntersectionExpressionGeom = sql<string[]>`COALESCE(
     SELECT array_agg(nom order by nom)
     FROM geometry
     JOIN ign_communes on ST_Intersects(geometry.geom, ign_communes.geom)
-  )
+  ),
+  '{}'
 )::text[]`;
 
 /**
@@ -110,7 +97,7 @@ export async function insertEntityWithGeometry(
     id_fcu?: number;
     id_sncu?: string;
   } = {}
-): Promise<{ id_fcu: number }> {
+) {
   const { geom, srid } = await readFileGeometry(fileName);
   const { id_fcu, id_sncu } = options;
 
@@ -129,7 +116,6 @@ export async function insertEntityWithGeometry(
     .executeTakeFirstOrThrow();
 
   logger.info(`Réseau créé dans ${tableName} avec id_fcu: ${inserted.id_fcu}`);
-  return inserted;
 }
 
 /**
@@ -174,7 +160,7 @@ export async function updateEntityGeometry(
 /**
  * Crée un PDP à partir d'une commune
  */
-export async function createPDPFromCommune(code_insee: string, id_sncu?: string): Promise<{ id_fcu: number }> {
+export async function createPDPFromCommune(code_insee: string, id_sncu?: string) {
   const communeExists = await kdb.selectFrom('ign_communes').select('id').where('insee_com', '=', code_insee).executeTakeFirst();
   if (!communeExists) {
     throw new Error(`La commune ${code_insee} n'a pas été trouvée`);
@@ -187,7 +173,7 @@ export async function createPDPFromCommune(code_insee: string, id_sncu?: string)
       id_fcu: sql<number>`(SELECT COALESCE(max(id_fcu), 0) + 1 FROM zone_de_developpement_prioritaire)`,
       geom: eb.selectFrom('geometry').select('geometry.geom'),
       'Identifiant reseau': id_sncu || null,
-      communes: communesIntersectionExpression,
+      communes: communesIntersectionExpressionGeom,
     }))
     .returning('id_fcu')
     .executeTakeFirstOrThrow();
@@ -197,8 +183,6 @@ export async function createPDPFromCommune(code_insee: string, id_sncu?: string)
   if (id_sncu) {
     await updateNetworkHasPDP(id_sncu);
   }
-
-  return inserted;
 }
 
 /**
@@ -212,7 +196,9 @@ export async function updateNetworkHasPDP(id_sncu: string): Promise<void> {
       has_PDP: true,
     })
     .returning('id_fcu')
-    .executeTakeFirstOrThrow();
+    .executeTakeFirst();
 
-  logger.info(`Réseau de chaleur mis à jour (has_PDP): ${res.id_fcu}`);
+  logger.info(
+    res?.id_fcu ? `Réseau de chaleur mis à jour (has_PDP): ${res.id_fcu}` : `Aucun réseau de chaleur trouvé avec ${id_sncu} (has_PDP)`
+  );
 }

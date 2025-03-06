@@ -57,12 +57,13 @@ export function registerNetworkCommands(parentProgram: Command) {
 
   program
     .command('create-pdp-from-commune')
-    .description("Insère un nouveau PDP avec une géométrie basée sur les contours d'une commune")
+    .description(
+      "Insère un nouveau PDP avec une géométrie basée sur les contours d'une commune. Utiliser 'yarn cli communes:search <nom>' au préalable pour obtenir le code insee"
+    )
     .argument('<code_insee>', 'code insee de la commune')
     .argument('[id_sncu]', 'ID SNCU (identifiant réseau)')
     .action(async (code_insee, id_sncu) => {
-      const inserted = await createPDPFromCommune(code_insee, id_sncu);
-      logger.info('PDP créé:', inserted.id_fcu);
+      await createPDPFromCommune(code_insee, id_sncu);
     });
 
   program
