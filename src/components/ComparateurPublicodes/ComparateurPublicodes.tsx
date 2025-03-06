@@ -119,6 +119,16 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
     </div>
   );
 
+  const noticePDP = (
+    <Notice variant="warning" size="xs" className="mt-2">
+      Votre adresse est dans le périmètre de développement prioritaire du réseau. Une obligation de raccordement peut exister{' '}
+      <Link isExternal href="/ressources/obligations-raccordement">
+        ( en savoir plus )
+      </Link>
+      .
+    </Notice>
+  );
+
   const results = displayResults ? (
     <div className="p-2 lg:p-0">
       {!loading && address && displayResults && (
@@ -139,6 +149,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
                   des réseaux français.
                 </Text>
               )}
+              {addressDetail?.network.inPDP && noticePDP}
               <p className="text-sm my-5">
                 Vous souhaitez recevoir des informations adaptées à votre bâtiment de la part du gestionnaire du réseau ? Nous assurons
                 votre mise en relation !
@@ -201,6 +212,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
                 À noter qu’en l'absence de données tarifaires pour ce réseau, les simulations se basent sur le prix du froid moyen des
                 réseaux français.
               </Text>
+              {addressDetail?.network.inPDP && noticePDP}
               {lngLat && (
                 <div className="fr-text--xs">
                   <Link
