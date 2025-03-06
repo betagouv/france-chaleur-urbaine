@@ -28,6 +28,7 @@ type GraphProps = React.HTMLAttributes<HTMLDivElement> & {
   advancedMode?: boolean;
   captureImageName?: string;
   usedReseauDeChaleurLabel: string;
+  hideReseauDeChaleur?: boolean;
 };
 
 const estimatedRowHeightPx = 56;
@@ -179,7 +180,15 @@ const formatEmissionsCO2 = (value: number, suffix = 'tCO2e') => {
 const formatCost = (value: number, suffix = true) =>
   `${(Math.round(value / 10) * 10).toLocaleString('fr-FR', { ...(!suffix ? {} : { style: 'currency', currency: 'EUR' }), maximumFractionDigits: 0 })}`;
 
-const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureImageName, usedReseauDeChaleurLabel, ...props }) => {
+const Graph: React.FC<GraphProps> = ({
+  advancedMode,
+  engine,
+  className,
+  captureImageName,
+  usedReseauDeChaleurLabel,
+  hideReseauDeChaleur,
+  ...props
+}) => {
   const { has: hasModeDeChauffage } = useArrayQueryState('modes-de-chauffage');
   const coutsRef = useRef<HTMLDivElement>(null);
   useFixLegendOpacity(coutsRef);
@@ -220,7 +229,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
 
   const modesDeChauffageFiltres = modesDeChauffage.filter(
     (modeDeChauffage) =>
-      (!advancedMode ? modeDeChauffage.grandPublicMode : true) &&
+      (!advancedMode ? modeDeChauffage.grandPublicMode && !(hideReseauDeChaleur && modeDeChauffage.label === 'Réseau de chaleur') : true) &&
       hasModeDeChauffage(modeDeChauffage.label) &&
       (typeDeBatiment === 'tertiaire' ? modeDeChauffage.tertiaire : true)
   );
