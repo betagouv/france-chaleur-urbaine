@@ -40,10 +40,15 @@ const communesIntersectionExpressionGeom = sql<string[]>`COALESCE(
     JOIN ign_communes on ST_Intersects(geometry.geom, ign_communes.geom)
   )
 )::text[]`;
+
 /**
  * Définition des tables de réseaux et leurs colonnes spécifiques
  */
-type NetworkTable = 'reseaux_de_chaleur' | 'reseaux_de_froid' | 'zones_et_reseaux_en_construction' | 'zone_de_developpement_prioritaire';
+export type NetworkTable =
+  | 'reseaux_de_chaleur'
+  | 'reseaux_de_froid'
+  | 'zones_et_reseaux_en_construction'
+  | 'zone_de_developpement_prioritaire';
 
 type NetworkTableColumns = {
   [K in NetworkTable]: {
@@ -96,9 +101,9 @@ const networkTables: NetworkTableColumns = {
 };
 
 /**
- * Insère un nouveau réseau avec une géométrie
+ * Insère une nouvelle entité avec une géométrie.
  */
-export async function insertNetworkWithGeometry(
+export async function insertEntityWithGeometry(
   tableName: NetworkTable,
   fileName: string,
   options: {
@@ -128,9 +133,9 @@ export async function insertNetworkWithGeometry(
 }
 
 /**
- * Met à jour la géométrie d'un réseau existant
+ * Met à jour la géométrie d'une entité existante.
  */
-export async function updateNetworkGeometry(
+export async function updateEntityGeometry(
   tableName: NetworkTable,
   idField: string,
   idValue: string | number,
@@ -138,23 +143,23 @@ export async function updateNetworkGeometry(
 ): Promise<void> {
   const { geom, srid } = await readFileGeometry(fileName);
 
-  // Vérifier si le réseau existe
-  const existingNetwork = await kdb
+  const existingEntities = await kdb
     .selectFrom(tableName as any)
     .select('id_fcu')
     .where(idField, '=', idValue)
-    .executeTakeFirst();
+    .execute();
 
-  if (!existingNetwork) {
-    throw new Error(`Aucun réseau trouvé avec ${idField} = ${idValue}`);
+  if (existingEntities.length === 0) {
+    throw new Error(`Aucune entité trouvée avec ${idField} = ${idValue}`);
+  }
+  if (existingEntities.length > 1) {
+    throw new Error(`Plusieurs entités trouvées avec ${idField} = ${idValue}`);
   }
 
-  const geometryExpression = createGeometryExpression(geom, srid);
-
   const updateQuery = kdb
-    .with('geometry', (db) => db.selectNoFrom(geometryExpression.as('geom')))
+    .with('geometry', (db) => db.selectNoFrom(createGeometryExpression(geom, srid).as('geom')))
     .updateTable(tableName as any)
-    .where('id_fcu', '=', existingNetwork.id_fcu)
+    .where('id_fcu', '=', existingEntities[0].id_fcu)
     .set((eb) => ({
       geom: eb.selectFrom('geometry').select('geometry.geom'),
       communes: communesIntersectionExpressionGeom,
@@ -169,15 +174,14 @@ export async function updateNetworkGeometry(
 /**
  * Crée un PDP à partir d'une commune
  */
-export async function createPDPFromCommune(commune: string, id_sncu?: string): Promise<{ id_fcu: number }> {
-  // Vérifier si la commune existe
-  const communeExists = await kdb.selectFrom('ign_communes').select('id').where('nom', 'ilike', commune).executeTakeFirst();
+export async function createPDPFromCommune(code_insee: string, id_sncu?: string): Promise<{ id_fcu: number }> {
+  const communeExists = await kdb.selectFrom('ign_communes').select('id').where('insee_com', '=', code_insee).executeTakeFirst();
   if (!communeExists) {
-    throw new Error(`La commune ${commune} n'a pas été trouvée`);
+    throw new Error(`La commune ${code_insee} n'a pas été trouvée`);
   }
 
   const inserted = await kdb
-    .with('geometry', (db) => db.selectFrom('ign_communes').select('geom').where('nom', 'ilike', commune))
+    .with('geometry', (db) => db.selectFrom('ign_communes').select('geom').where('insee_com', '=', code_insee))
     .insertInto('zone_de_developpement_prioritaire')
     .values((eb) => ({
       id_fcu: sql<number>`(SELECT COALESCE(max(id_fcu), 0) + 1 FROM zone_de_developpement_prioritaire)`,
@@ -188,7 +192,7 @@ export async function createPDPFromCommune(commune: string, id_sncu?: string): P
     .returning('id_fcu')
     .executeTakeFirstOrThrow();
 
-  logger.info(`PDP créé à partir de la commune ${commune} avec id_fcu: ${inserted.id_fcu}`);
+  logger.info(`PDP créé à partir de la commune ${code_insee} avec id_fcu: ${inserted.id_fcu}`);
 
   if (id_sncu) {
     await updateNetworkHasPDP(id_sncu);

@@ -8,7 +8,7 @@ import { z } from 'zod';
 
 import { saveStatsInDB } from '@/server/cron/saveStatsInDB';
 import db from '@/server/db';
-import { type DB, kdb, sql } from '@/server/db/kysely';
+import { kdb, sql } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
 import {
   type ApiNetwork,
@@ -22,6 +22,9 @@ import { type ApiAccount } from '@/types/ApiAccount';
 import { sleep } from '@/utils/time';
 import { nonEmptyArray } from '@/utils/typescript';
 import { optimisationProfiles, optimizeImage } from '@cli/images/optimize';
+import { registerNetworkCommands } from '@cli/networks/commands';
+import { applyGeometryUpdates } from '@cli/networks/geometry-updates';
+import { syncPostgresToAirtable } from '@cli/networks/sync-pg-to-airtable';
 
 import { type KnownAirtableBase, knownAirtableBases } from './airtable/bases';
 import { createModificationsReseau } from './airtable/create-modifications-reseau';
@@ -29,14 +32,6 @@ import { fetchBaseSchema } from './airtable/dump-schema';
 import dataImportManager, { dataImportAdapters, type DataImportName } from './data-import';
 import { runBash, runCommand } from './helpers/shell';
 import { downloadAndUpdateNetwork, downloadNetwork } from './networks/download-network';
-import {
-  updateNetworkGeometry,
-  insertNetworkWithGeometry,
-  createPDPFromCommune,
-  updateNetworkHasPDP,
-} from './networks/geometry-operations';
-import { applyGeometryUpdates } from './networks/geometry-updates';
-import { syncPostgresToAirtable } from './networks/sync-pg-to-airtable';
 import { upsertFixedSimulateurData } from './simulateur/import';
 import tilesManager, { tilesAdapters, type TilesName } from './tiles';
 import { fillTiles, importGeoJSONToTable, importTilesDirectoryToTable } from './tiles/utils';
@@ -272,117 +267,7 @@ program
     await runCommand('scripts/opendata/create-opendata-archive.sh');
   });
 
-program
-  .command('reseaux:insert-geom')
-  .description(
-    'Insère un nouveau réseau (avoir créé le réseau sur airtable au préalable) avec une géométrie. La géométrie peut être en WGS 84 (4326) ou Lambert 93 (2154)'
-  )
-  .argument('<fileName>', 'input file (format GeoJSON)')
-  .argument('<id_fcu>', 'id_fcu du réseau', (v) => parseInt(v))
-  .argument('[id_sncu]', 'Identifiant du réseau')
-  .action(async (fileName, id_fcu, id_sncu) => {
-    await insertNetworkWithGeometry('reseaux_de_chaleur', fileName, { id_fcu, id_sncu });
-  });
-
-program
-  .command('reseaux:update-geom')
-  .description("Met à jour la géométrie d'un réseau. La géométrie peut être en WGS 84 (4326) ou Lambert 93 (2154)")
-  .argument('<fileName>', 'input file (format GeoJSON)')
-  .argument('<id_fcu_or_sncu>', 'id_fcu ou SNCU du réseau')
-  .action(async (fileName, id_fcu_or_sncu) => {
-    // Vérifier si le paramètre est un nombre (id_fcu) ou une chaîne (identifiant reseau)
-    const isIdSNCU = id_fcu_or_sncu.endsWith('C');
-    const idField = isIdSNCU ? 'Identifiant reseau' : 'id_fcu';
-    const idValue = isIdSNCU ? id_fcu_or_sncu : parseInt(id_fcu_or_sncu);
-
-    await updateNetworkGeometry('reseaux_de_chaleur', idField, idValue, fileName);
-  });
-
-program
-  .command('reseaux-froid:insert-geom')
-  .description(
-    'Insère un nouveau réseau (avoir créé le réseau sur airtable au préalable) avec une géométrie. La géométrie peut être en WGS 84 (4326) ou Lambert 93 (2154)'
-  )
-  .argument('<fileName>', 'input file (format GeoJSON)')
-  .argument('<id_fcu>', 'id_fcu du réseau', (v) => parseInt(v))
-  .action(async (fileName, id_fcu) => {
-    await insertNetworkWithGeometry('reseaux_de_froid', fileName, { id_fcu });
-  });
-
-program
-  .command('reseaux-froid:update-geom')
-  .description("Met à jour la géométrie d'un réseau. La géométrie peut être en WGS 84 (4326) ou Lambert 93 (2154)")
-  .argument('<fileName>', 'input file (format GeoJSON)')
-  .argument('<id_fcu_or_sncu>', 'id_fcu ou SNCU du réseau')
-  .action(async (fileName, id_fcu_or_sncu) => {
-    // Vérifier si le paramètre est un nombre (id_fcu) ou une chaîne (identifiant reseau)
-    const isIdSNCU = id_fcu_or_sncu.endsWith('C');
-    const idField = isIdSNCU ? 'Identifiant reseau' : 'id_fcu';
-    const idValue = isIdSNCU ? id_fcu_or_sncu : parseInt(id_fcu_or_sncu);
-
-    await updateNetworkGeometry('reseaux_de_froid', idField, idValue, fileName);
-  });
-
-program
-  .command('reseaux-futur:insert-geom')
-  .description(
-    'Insère un nouveau réseau (avoir créé le réseau sur airtable au préalable) avec une géométrie. La géométrie peut être en WGS 84 (4326) ou Lambert 93 (2154)'
-  )
-  .argument('<fileName>', 'input file (format GeoJSON)')
-  .argument('[id_fcu]', 'id_fcu du réseau', (v) => parseInt(v))
-  .action(async (fileName, id_fcu) => {
-    const inserted = await insertNetworkWithGeometry('zones_et_reseaux_en_construction', fileName, { id_fcu });
-    console.info('Réseau futur créé:', inserted.id_fcu);
-  });
-
-program
-  .command('reseaux-futur:update-geom')
-  .description(
-    "Met à jour la géométrie d'un réseau futur (avoir créé le réseau sur airtable au préalable) avec une géométrie. La géométrie peut être en WGS 84 (4326) ou Lambert 93 (2154)"
-  )
-  .argument('<fileName>', 'input file (format GeoJSON)')
-  .argument('<id_fcu>', 'id_fcu du réseau', (v) => parseInt(v))
-  .action(async (fileName, id_fcu) => {
-    await updateNetworkGeometry('zones_et_reseaux_en_construction', 'id_fcu', id_fcu, fileName);
-  });
-
-program
-  .command('pdp:create')
-  .description('Insère un nouveau PDP avec une géométrie. La géométrie peut être en WGS 84 (4326) ou Lambert 93 (2154)')
-  .argument('<fileName>', 'input file (format GeoJSON)')
-  .argument('[id_sncu]', 'ID SNCU (identifiant réseau)')
-  .action(async (fileName, id_sncu) => {
-    const inserted = await insertNetworkWithGeometry('zone_de_developpement_prioritaire', fileName, { id_sncu });
-    console.info('PDP créé:', inserted.id_fcu);
-
-    if (id_sncu) {
-      await updateNetworkHasPDP(id_sncu);
-    }
-  });
-
-program
-  .command('pdp:update')
-  .description("Met à jour la géométrie d'un PDP. La géométrie peut être en WGS 84 (4326) ou Lambert 93 (2154)")
-  .argument('<fileName>', 'input file (format GeoJSON)')
-  .argument('<id_fcu_or_sncu>', 'id_fcu ou identifiant réseau')
-  .action(async (fileName, id_fcu_or_sncu) => {
-    // Vérifier si le paramètre est un nombre (id_fcu) ou une chaîne (identifiant reseau)
-    const isIdSNCU = id_fcu_or_sncu.endsWith('C');
-    const idField = isIdSNCU ? 'Identifiant reseau' : 'id_fcu';
-    const idValue = isIdSNCU ? id_fcu_or_sncu : parseInt(id_fcu_or_sncu);
-
-    await updateNetworkGeometry('zone_de_developpement_prioritaire', idField, idValue, fileName);
-  });
-
-program
-  .command('pdp:create-commune')
-  .description("Insère un nouveau PDP avec une géométrie à partir d'une commune")
-  .argument('<commune>', 'nom de la commune')
-  .argument('[id_sncu]', 'ID SNCU (identifiant réseau)')
-  .action(async (commune, id_sncu) => {
-    const inserted = await createPDPFromCommune(commune, id_sncu);
-    console.info('PDP créé:', inserted.id_fcu);
-  });
+registerNetworkCommands(program);
 
 program
   .command('communes:search')
@@ -396,48 +281,13 @@ program
       .orderBy('insee_com')
       .execute();
     if (res.length === 0) {
-      console.info(`Aucun résultat`);
+      logger.info(`Aucun résultat`);
       return;
     }
-    console.info(`${res.length} résultats:`);
-    console.info('Code INSEE - Nom');
-    console.info(res.map((r) => `- ${r.insee_com}  -  ${r.nom}`).join('\n'));
-  });
-
-program
-  .command('reseaux:update-communes')
-  .description("Met à jour les communes des réseaux de chaleur / froid / en construction, pdp grâce aux coutours des communes de l'IGN.")
-  .action(async () => {
-    const tables = [
-      'reseaux_de_chaleur',
-      'reseaux_de_froid',
-      'zones_et_reseaux_en_construction',
-      'zone_de_developpement_prioritaire',
-    ] satisfies ReadonlyArray<keyof DB>;
-
-    const updateTableCommunes = (table: keyof DB) => sql`
-      update ${sql.raw(table)}
-      set communes = COALESCE(
-        (
-          SELECT array_agg(nom order by nom)
-          FROM ign_communes
-          WHERE ST_Intersects(${sql.raw(table)}.geom, st_buffer(ign_communes.geom, -150))
-        ),
-        (
-          SELECT array_agg(nom order by nom)
-          FROM ign_communes
-          WHERE ST_Intersects(${sql.raw(table)}.geom, ign_communes.geom)
-        ),
-        '{}'
-      )::text[]
-    `;
-
-    await Promise.all(
-      tables.map(async (table) => {
-        const res = await updateTableCommunes(table).execute(kdb);
-        console.info(`Mise à jour de ${table}: ${res.numAffectedRows} lignes modifiées`);
-      })
-    );
+    logger.info(`${res.length} résultats:`);
+    logger.info('Code INSEE | Nom');
+    logger.info('-----------|------------------');
+    res.forEach((r) => logger.info(`${r.insee_com?.padEnd(10)} | ${r.nom}`));
   });
 
 program
