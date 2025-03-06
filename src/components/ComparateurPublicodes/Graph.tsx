@@ -170,19 +170,14 @@ const getEmissionsCO2PrecisionRange = (value: number) => {
   return { lowerBound, lowerBoundString, upperBound, upperBoundString };
 };
 
-const formatEmissionsCO2 = (value: number, suffix = 'kgCO2e') => {
-  let roundedValue = Math.round(value / 10) * 10;
-  let maximumFractionDigits = 0;
-  if (value >= 1000) {
-    roundedValue = roundedValue / 1000;
-    suffix = 'tCO2e';
-    maximumFractionDigits = 2;
-  }
+const formatEmissionsCO2 = (value: number, suffix = 'tCO2e') => {
+  const roundedValue = (Math.round(value / 10) * 10) / 1000;
+  const maximumFractionDigits = 2;
 
   return [`${roundedValue.toLocaleString('fr-FR', { maximumFractionDigits })}`, suffix].filter(Boolean).join(' ');
 };
-const formatCost = (value: number) =>
-  `${(Math.round(value / 10) * 10).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 })}`;
+const formatCost = (value: number, suffix = true) =>
+  `${(Math.round(value / 10) * 10).toLocaleString('fr-FR', { ...(!suffix ? {} : { style: 'currency', currency: 'EUR' }), maximumFractionDigits: 0 })}`;
 
 const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureImageName, usedReseauDeChaleurLabel, ...props }) => {
   const { has: hasModeDeChauffage } = useArrayQueryState('modes-de-chauffage');
@@ -563,33 +558,37 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
               })}
             </div>
 
-            <div className="flex justify-between text-sm font-bold text-faded -mt-2 mb-16">
+            <div className="flex justify-between text-sm font-bold text-gray-600 -mt-2 mb-8">
               <div className="flex-1 ml-12 mr-2 flex items-center justify-between relative">
                 {Array.from({ length: Math.floor(100 / getGrid(scaleEmissionsCO2maxValue)) }).map((_, i) => (
                   <div className="relative flex-1" key={`scale_co2_${i}-${scaleEmissionsCO2maxValue}`}>
                     &nbsp;
                     <span className="absolute origin-bottom-right -rotate-45 w-[100px] -translate-x-[100px] whitespace-nowrap text-right">
-                      {formatEmissionsCO2(scaleEmissionsCO2maxValue * (1 - (i * getGrid(scaleEmissionsCO2maxValue)) / 100))}
+                      {formatEmissionsCO2(scaleEmissionsCO2maxValue * (1 - (i * getGrid(scaleEmissionsCO2maxValue)) / 100), '')}
                     </span>
                   </div>
                 ))}
                 <span className="absolute origin-bottom-right -rotate-45 right-0 whitespace-nowrap text-right">
-                  {formatEmissionsCO2(0)}
+                  {formatEmissionsCO2(0, '')}
                 </span>
               </div>
               <div className="flex-1 mr-12 ml-2 flex items-center justify-between relative">
                 <span className="absolute origin-bottom-right -rotate-45 left-0 whitespace-nowrap text-right -translate-x-[5px]">
-                  {formatCost(0)}
+                  {formatCost(0, false)}
                 </span>
                 {Array.from({ length: Math.floor(100 / getGrid(scaleCostMaxValue)) }).map((_, i) => (
                   <div className="relative flex-1" key={`scale_cost_${i}-${scaleCostMaxValue}`}>
                     &nbsp;
                     <span className="absolute origin-bottom-right -rotate-45 w-[100%] translate-x-[5px] whitespace-nowrap text-right">
-                      {formatCost(scaleCostMaxValue * (((i + 1) * getGrid(scaleCostMaxValue)) / 100))}
+                      {formatCost(scaleCostMaxValue * (((i + 1) * getGrid(scaleCostMaxValue)) / 100), false)}
                     </span>
                   </div>
                 ))}
               </div>
+            </div>
+            <div className="flex justify-between text-sm font-bold  text-gray-600 mb-16">
+              <div className="flex-1 ml-12 mr-2 flex items-center justify-center">Émissions de CO2 (tCO2e)</div>
+              <div className="flex-1 mr-12 ml-2 flex items-center justify-center">Coût global (€TTC)</div>
             </div>
           </div>
         )}
