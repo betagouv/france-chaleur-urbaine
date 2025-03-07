@@ -23,20 +23,6 @@ services:
     volumes:
       - mailpit:/data
 
-  web:
-    build: ./docker/web
-    command: sh -c "yarn dev"
-    environment:
-      DATABASE_URL: postgres://postgres:postgres_fcu@db:5432/postgres
-      MAIL_HOST: mailpit
-      MAIL_PORT: 1025
-    ports:
-      - '3000:3000'
-    volumes:
-      - .:/app
-    depends_on: # https://docs.docker.com/compose/startup-order/
-      - db
-
 volumes:
   db:
   mailpit:
