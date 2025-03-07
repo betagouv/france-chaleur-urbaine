@@ -5,7 +5,7 @@ import { sql } from 'kysely';
 import { kdb } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
 
-type GeometryWithSrid = {
+export type GeometryWithSrid = {
   geom: GeoJSON.Geometry;
   srid: 4326 | 2154;
 };

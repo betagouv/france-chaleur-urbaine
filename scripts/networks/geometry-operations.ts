@@ -1,6 +1,6 @@
 import { kdb, sql } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
-import { readFileGeometry } from '@cli/helpers/geo';
+import { type GeometryWithSrid } from '@cli/helpers/geo';
 
 /**
  * Crée une expression SQL pour transformer une géométrie GeoJSON en géométrie PostGIS
@@ -92,17 +92,16 @@ const networkTables: NetworkTableColumns = {
  */
 export async function insertEntityWithGeometry(
   tableName: NetworkTable,
-  fileName: string,
+  geometryConfig: GeometryWithSrid,
   options: {
     id_fcu?: number;
     id_sncu?: string;
   } = {}
 ) {
-  const { geom, srid } = await readFileGeometry(fileName);
   const { id_fcu, id_sncu } = options;
 
   const inserted = await kdb
-    .with('geometry', (db) => db.selectNoFrom(createGeometryExpression(geom, srid).as('geom')))
+    .with('geometry', (db) => db.selectNoFrom(createGeometryExpression(geometryConfig.geom, geometryConfig.srid).as('geom')))
     .insertInto(tableName as any)
     .values((eb) => ({
       id_fcu: id_fcu ? eb.lit(id_fcu) : sql<number>`(SELECT COALESCE(max(id_fcu), 0) + 1 FROM ${sql.raw(tableName)})`,
@@ -115,7 +114,7 @@ export async function insertEntityWithGeometry(
     .returning('id_fcu')
     .executeTakeFirstOrThrow();
 
-  logger.info(`Réseau créé dans ${tableName} avec id_fcu: ${inserted.id_fcu}`);
+  logger.info(`Géométrie créée pour ${tableName} avec id_fcu: ${inserted.id_fcu}`);
 }
 
 /**
@@ -125,10 +124,8 @@ export async function updateEntityGeometry(
   tableName: NetworkTable,
   idField: string,
   idValue: string | number,
-  fileName: string
+  geometryConfig: GeometryWithSrid
 ): Promise<void> {
-  const { geom, srid } = await readFileGeometry(fileName);
-
   const existingEntities = await kdb
     .selectFrom(tableName as any)
     .select('id_fcu')
@@ -142,17 +139,16 @@ export async function updateEntityGeometry(
     throw new Error(`Plusieurs entités trouvées avec ${idField} = ${idValue}`);
   }
 
-  const updateQuery = kdb
-    .with('geometry', (db) => db.selectNoFrom(createGeometryExpression(geom, srid).as('geom')))
+  await kdb
+    .with('geometry', (db) => db.selectNoFrom(createGeometryExpression(geometryConfig.geom, geometryConfig.srid).as('geom')))
     .updateTable(tableName as any)
     .where('id_fcu', '=', existingEntities[0].id_fcu)
     .set((eb) => ({
       geom: eb.selectFrom('geometry').select('geometry.geom'),
       communes: communesIntersectionExpressionGeom,
       ...networkTables[tableName].geomDependentFields(eb),
-    }));
-
-  await updateQuery.execute();
+    }))
+    .execute();
 
   logger.info(`Géométrie mise à jour pour ${tableName} avec ${idField} = ${idValue}`);
 }
@@ -161,28 +157,15 @@ export async function updateEntityGeometry(
  * Crée un PDP à partir d'une commune
  */
 export async function createPDPFromCommune(code_insee: string, id_sncu?: string) {
-  const communeExists = await kdb.selectFrom('ign_communes').select('id').where('insee_com', '=', code_insee).executeTakeFirst();
-  if (!communeExists) {
+  const existingCommune = await kdb
+    .selectFrom('ign_communes')
+    .select((eb) => sql<GeoJSON.Geometry>`ST_AsGeoJSON(${eb.ref('geom')})::json`.as('geom'))
+    .where('insee_com', '=', code_insee)
+    .executeTakeFirst();
+  if (!existingCommune) {
     throw new Error(`La commune ${code_insee} n'a pas été trouvée`);
   }
-
-  const inserted = await kdb
-    .with('geometry', (db) => db.selectFrom('ign_communes').select('geom').where('insee_com', '=', code_insee))
-    .insertInto('zone_de_developpement_prioritaire')
-    .values((eb) => ({
-      id_fcu: sql<number>`(SELECT COALESCE(max(id_fcu), 0) + 1 FROM zone_de_developpement_prioritaire)`,
-      geom: eb.selectFrom('geometry').select('geometry.geom'),
-      'Identifiant reseau': id_sncu || null,
-      communes: communesIntersectionExpressionGeom,
-    }))
-    .returning('id_fcu')
-    .executeTakeFirstOrThrow();
-
-  logger.info(`PDP créé à partir de la commune ${code_insee} avec id_fcu: ${inserted.id_fcu}`);
-
-  if (id_sncu) {
-    await updateNetworkHasPDP(id_sncu);
-  }
+  return insertEntityWithGeometry('zone_de_developpement_prioritaire', { geom: existingCommune.geom, srid: 2154 }, { id_sncu });
 }
 
 /**

@@ -3,6 +3,7 @@ import { z } from 'zod';
 
 import { kdb, sql } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
+import { readFileGeometry } from '@cli/helpers/geo';
 
 import {
   updateEntityGeometry,
@@ -35,7 +36,8 @@ export function registerNetworkCommands(parentProgram: Command) {
     .argument('[id_fcu]', 'id_fcu du réseau (autogénéré si non renseigné)', (v) => parseInt(v))
     .argument('[id_sncu]', 'Identifiant du réseau (seulement pour les réseaux de chaleur et de froid)')
     .action(async (type, fileName, id_fcu, id_sncu) => {
-      await insertEntityWithGeometry(entityTypeToTable[type], fileName, { id_fcu, id_sncu });
+      const geometryConfig = await readFileGeometry(fileName);
+      await insertEntityWithGeometry(entityTypeToTable[type], geometryConfig, { id_fcu, id_sncu });
 
       if (type === 'pdp' && id_sncu) {
         await updateNetworkHasPDP(id_sncu);
@@ -52,7 +54,8 @@ export function registerNetworkCommands(parentProgram: Command) {
       const isIdSNCU = id_fcu_or_sncu.endsWith('C');
       const idField = isIdSNCU ? 'Identifiant reseau' : 'id_fcu';
       const idValue = isIdSNCU ? id_fcu_or_sncu : parseInt(id_fcu_or_sncu);
-      await updateEntityGeometry(entityTypeToTable[type], idField, idValue, fileName);
+      const geometryConfig = await readFileGeometry(fileName);
+      await updateEntityGeometry(entityTypeToTable[type], idField, idValue, geometryConfig);
     });
 
   program
