@@ -10,7 +10,3 @@ coverY: 0
 🗺️ Cette information est aujourd'hui disponible sur toute l'Île-de-France, grâce aux informations transmises par la Direction régionale de l'[ADEME](https://www.ademe.fr/), avec pour objectif de l'étendre peu à peu à l'échelle nationale.
 
 <figure><img src=".gitbook/assets/FCU_etudes_creation.jpg" alt=""><figcaption></figcaption></figure>
-
-\
-
-
