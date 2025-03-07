@@ -10,7 +10,9 @@ import chiffresCles2023rdc from './chiffres-cles-2023-des-reseaux-de-chaleur.md'
 import chiffresCles2023rdf from './chiffres-cles-2023-des-reseaux-de-froid.md';
 import classementRdc from './classement-des-reseaux-de-chaleur.md';
 import combienCouteRaccordement from './combien-coute-un-raccordement.md';
+import nombreuxAjoutsCarte from './de-nombreux-ajouts-sur-notre-carte-ce-mois-ci.md';
 import nouveauSchemasDirecteurs from './de-nouveaux-schemas-directeurs-disponibles-sur-france-chaleur-urbaine.md';
+import decouvrezLesCommunesCouvertes from './decouvrez-les-communes-couvertes-par-une-etude-pour-la-creation-de-reseaux.md';
 import donneesOpenDataEnrichies from './des-donnees-en-open-data-enrichies.md';
 import desObligationsDePartageDeDonnees from './des-obligations-de-partage-de-donnees-a-fcu-au-titre-du-fonds-chaleur.md';
 import desReseauxVertueux from './des-reseaux-vertueux.md';
@@ -48,6 +50,7 @@ import lesSyndicsEtFranceChaleurUrbaine from './les-syndics-et-france-chaleur-ur
 import ileDeFranceChampionGeorthermieProfonde from './lile-de-france-championne-de-la-geothermie-profonde.md';
 import meilleursVoeux1 from './meilleurs-voeux-1.md';
 import meilleursVoeux from './meilleurs-voeux.md';
+import bilan2024 from './notre-bilan-2024.md';
 import notreCampagneCharlevilleMezieres from './notre-campagne-sur-charleville-mezieres.md';
 import notreCampagneFresnes from './notre-campagne-sur-fresnes.md';
 import notreCampagneStrasbourg from './notre-campagne-sur-strasbourg.md';
@@ -105,6 +108,7 @@ import readme_7 from './README (7).md';
 import readme_8 from './README (8).md';
 import readme_9 from './README (9).md';
 import retrouvezDonneesRecentes from './retrouvez-les-donnees-les-plus-recentes-des-reseaux-de-chaleur.md';
+import retrouvezQPV from './retrouvez-les-quartiers-prioritaires-pour-la-politique-de-la-ville-qpv-sur-notre-carte.md';
 import seChaufferAPrixStables from './se-chauffer-a-prix-stables.md';
 import accesSimplifieSchemasDirecteursReseauxChaleur from './un-acces-simplifie-aux-schemas-directeurs-des-reseaux-de-chaleur.md';
 import chauffageEcologiqueEconomiquePossible from './un-chauffage-ecologique-et-economique-cest-possible.md';
@@ -140,6 +144,38 @@ function getArticleAbstract(content: string): string {
 
 export const articles = (
   [
+    {
+      image: '/contents/cover_carte_mars25.jpg',
+      title: 'De nombreux ajouts sur notre carte ce mois-ci !',
+      slug: 'de-nombreux-ajouts-sur-notre-carte-ce-mois-ci',
+      content: importFile(nombreuxAjoutsCarte),
+      publishedDate: new Date('2025-03-05'),
+      themes: ['Réseaux de chaleur', 'Réseaux de froid', 'Cartographie et données'],
+    },
+    {
+      image: '/contents/cover_QPV.jpg',
+      title: 'Retrouvez les quartiers prioritaires pour la politique de la ville (QPV) sur notre carte',
+      slug: 'retrouvez-les-quartiers-prioritaires-pour-la-politique-de-la-ville-qpv',
+      content: importFile(retrouvezQPV),
+      publishedDate: new Date('2025-02-17'),
+      themes: ['Réseaux de chaleur', 'Cartographie et données'],
+    },
+    {
+      image: '/contents/cover_etude_creation.jpg',
+      title: 'Découvrez les communes couvertes par une étude pour la création de réseaux',
+      slug: 'decouvrez-les-communes-couvertes-par-une-etude-pour-la-creation-de-reseaux',
+      content: importFile(decouvrezLesCommunesCouvertes),
+      publishedDate: new Date('2025-02-12'),
+      themes: ['Réseaux de chaleur', 'Cartographie et données'],
+    },
+    {
+      image: '/contents/cover_bilan2024.jpg',
+      title: 'Notre bilan 2024',
+      slug: 'notre-bilan-2024',
+      content: importFile(bilan2024),
+      publishedDate: new Date('2025-02-06'),
+      themes: ['Réseaux de chaleur', 'Communication'],
+    },
     {
       image: '/contents/cover_chauffage-decarbone.jpg',
       title: 'Quel mode de chauffage décarboné pour mon immeuble ?',
