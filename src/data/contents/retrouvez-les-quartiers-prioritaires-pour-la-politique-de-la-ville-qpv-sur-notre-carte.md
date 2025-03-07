@@ -14,5 +14,3 @@ Encore une nouveauté sur la carte France Chaleur Urbaine !\
 Pour accéder directement aux QPV sur la carte, c'est [ici](https://france-chaleur-urbaine.beta.gouv.fr/carte?tabId=potentiel\&accordions=Potentiel+par+territoire\&additionalLayers=quartiersPrioritairesPolitiqueVille) !
 
 <figure><img src=".gitbook/assets/FCU_QPV.jpg" alt=""><figcaption></figcaption></figure>
-
-\
