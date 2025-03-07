@@ -6,7 +6,7 @@ Le classement des réseaux de chaleur, vous connaissez ?
 
 Le classement est automatique pour tous les réseaux de service public majoritairement alimentés par des énergies renouvelables et de récupération, qui réalisent un comptage de la chaleur livrée et dont l'équilibre financier est assuré.
 
-📄 La liste des réseaux répondant à ces critères vient d'être mise à jour par un arrêté en date du 3 décembre 2024 (lien en commentaire) : il recense 617 réseaux de chaleur concernés.
+📄 La liste des réseaux répondant à ces critères vient d'être mise à jour par un [arrêté en date du 3 décembre 2024](https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000050756289) : il recense 617 réseaux de chaleur concernés.
 
 🤝 France Chaleur Urbaine accompagne la mise en œuvre du classement automatique :&#x20;
 

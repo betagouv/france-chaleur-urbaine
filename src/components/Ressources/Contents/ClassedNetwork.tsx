@@ -1,5 +1,6 @@
 import { Highlight } from '@codegouvfr/react-dsfr/Highlight';
-import Link from 'next/link';
+
+import Link from '@/components/ui/Link';
 
 import { LeftImage, List, Subtitle } from './Contents.styles';
 
@@ -20,8 +21,12 @@ const ClassedNetwork = () => {
           <b>un équilibre financier assuré.</b>
         </li>
       </List>
-      592 réseaux sont concernés, listés dans l’arrêté du 22 décembre 2023 relatif au classement des réseaux de chaleur et de froid. À noter
-      que la collectivité peut toutefois faire le choix de s’opposer au classement, par une délibération motivée.
+      617 réseaux sont concernés, listés dans l’
+      <Link href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000050756289" isExternal>
+        arrêté du 3 décembre 2024
+      </Link>{' '}
+      relatif au classement des réseaux de chaleur et de froid. À noter que la collectivité peut toutefois faire le choix de s’opposer au
+      classement, par une délibération motivée.
       <br />
       <br />
       <Subtitle>Quelles obligations s’appliquent pour ces réseaux ?</Subtitle>
