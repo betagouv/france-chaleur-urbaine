@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/cover_carte_mars25.jpg
-coverY: 0
----
-
 # De nombreux ajouts sur notre carte ce mois-ci !
 
 🗺️ Grâce à l'important travail de collecte réalisé par France Chaleur Urbaine, sa [carte](https://france-chaleur-urbaine.beta.gouv.fr/carte) s'enrichit chaque mois. Un travail au service du développement des réseaux de chaleur et de froid, utile aussi bien aux professionnels qu'à toute personne s'intéressant aux réseaux !\

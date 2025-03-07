@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/cover_QPV.jpg
-coverY: 0
----
-
 # Retrouvez les quartiers prioritaires pour la politique de la ville (QPV) sur notre carte
 
 Encore une nouveauté sur la carte France Chaleur Urbaine !\

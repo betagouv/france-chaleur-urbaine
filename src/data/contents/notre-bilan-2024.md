@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/cover_bilan2024.jpg
-coverY: 0
----
-
 # Notre bilan 2024
 
 Quel bilan pour France Chaleur Urbaine en 2024 ?
