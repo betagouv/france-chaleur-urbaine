@@ -11,7 +11,6 @@ import { issues, understandings } from '@/components/Ressources/config';
 import Understanding from '@/components/Ressources/Understanding';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Box from '@/components/ui/Box';
-import Button from '@/components/ui/Button';
 import Hero, { HeroContent, HeroSubtitle, HeroTitle } from '@/components/ui/Hero';
 import Icon from '@/components/ui/Icon';
 import Link from '@/components/ui/Link';
@@ -150,9 +149,14 @@ function Home() {
         <SectionContent>
           <AvantagesChauffageUrbain />
           <div className="flex items-center justify-center mt-12">
-            <Button href="/documentation/guide-france-chaleur-urbaine.pdf" eventKey="Téléchargement|Guide FCU|coproprietaire">
+            <Link
+              variant="primary"
+              href="/documentation/guide-france-chaleur-urbaine.pdf"
+              eventKey="Téléchargement|Guide FCU|coproprietaire"
+              isExternal
+            >
               Télécharger le guide de raccordement
-            </Button>
+            </Link>
           </div>
         </SectionContent>
       </Section>
