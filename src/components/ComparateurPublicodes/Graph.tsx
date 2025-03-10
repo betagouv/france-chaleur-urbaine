@@ -469,7 +469,7 @@ const Graph: React.FC<GraphProps> = ({
               {typeDeBatiment === 'tertiaire' ? '' : ` (par ${perBuilding ? 'bâtiment' : 'logement'})`} - {titleItemsString}
             </Heading>
             <DisclaimerButton className="!mb-5" />
-            <div className="relative pt-2 pb-8">
+            <div className="relative mt-2 pb-8">
               <div className="absolute inset-0 -z-10 flex h-full w-full [&>*]:flex-1">
                 <div
                   className="ml-12 mr-3"
@@ -488,7 +488,7 @@ const Graph: React.FC<GraphProps> = ({
                   }}
                 ></div>
               </div>
-              {totalCoutsEtEmissions.map(([name, cost, co2]) => {
+              {totalCoutsEtEmissions.map(([name, cost, co2], i) => {
                 const {
                   lowerBound: co2LowerBound,
                   upperBound: co2UpperBound,
@@ -521,7 +521,9 @@ const Graph: React.FC<GraphProps> = ({
                 return (
                   <>
                     {showSectionTitle && (
-                      <div className="relative mb-1 mt-8 text-center text-xl font-bold bg-white">{graphSectionTitle}</div>
+                      <div className={cx('relative mb-1 text-center text-xl font-bold bg-white', i > 0 ? 'mt-8' : '')}>
+                        {graphSectionTitle}
+                      </div>
                     )}
                     <div key={name} className="relative mb-1 mt-2 flex items-center justify-center text-base font-bold">
                       <span className="bg-white">{name}</span>
