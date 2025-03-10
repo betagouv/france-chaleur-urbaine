@@ -33,10 +33,12 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
   const inclusClimatisation = engine.getField('Inclure la climatisation');
   const typeDeBatiment = engine.getField('type de bâtiment');
   const { has: hasModeDeChauffage, toggle: toggleModeDeChauffage } = useArrayQueryState<ModeDeChauffage>('modes-de-chauffage');
+
+  const modesDeChauffageAComparer = modesDeChauffage.filter((mode) => (advancedMode ? true : mode.grandPublicMode));
+
   const createOptionProps = (suffix?: string) => (label: ModeDeChauffage) => ({
     label:
-      modesDeChauffage.filter((mode) => (advancedMode ? true : mode.grandPublicMode)).find((mode) => mode.label === label)?.reversible &&
-      inclusClimatisation
+      modesDeChauffageAComparer.find((mode) => mode.label === label)?.reversible && inclusClimatisation
         ? `${label}${suffix ? ` ${suffix}` : ''} (chauffage + froid)`
         : `${label}${suffix ? ` ${suffix}` : ''}`,
     nativeInputProps: {
@@ -89,11 +91,13 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
             'Gaz à condensation collectif',
             'Gaz sans condensation collectif',
             'Fioul collectif',
-            ...(advancedMode
-              ? (['PAC air/air collective', 'PAC eau/eau collective', 'PAC air/eau collective'] satisfies ModeDeChauffage[])
-              : []),
+            'PAC air/air collective',
+            'PAC eau/eau collective',
+            'PAC air/eau collective',
           ] satisfies ModeDeChauffage[]
-        ).map(createOptionProps())}
+        )
+          .filter((modeLabel) => modesDeChauffageAComparer.some((mode) => mode.label === modeLabel))
+          .map(createOptionProps())}
       />
       {typeDeBatiment === 'résidentiel' && (
         <>
@@ -108,12 +112,14 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
                 'Gaz à condensation individuel',
                 'Gaz sans condensation individuel',
                 'Fioul individuel',
-                ...(advancedMode
-                  ? (['PAC air/air individuelle', 'PAC eau/eau individuelle', 'PAC air/eau individuelle'] satisfies ModeDeChauffage[])
-                  : []),
+                'PAC air/air individuelle',
+                'PAC eau/eau individuelle',
+                'PAC air/eau individuelle',
                 'Radiateur électrique individuel',
               ] satisfies ModeDeChauffage[]
-            ).map(createOptionProps())}
+            )
+              .filter((modeLabel) => modesDeChauffageAComparer.some((mode) => mode.label === modeLabel))
+              .map(createOptionProps())}
           />
         </>
       )}
