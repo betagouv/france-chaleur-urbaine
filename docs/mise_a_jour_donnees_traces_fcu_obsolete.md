@@ -1,3 +1,5 @@
+> Note du 10 mars 2025 : voir le fichier mise_a_jour_donnees_fcu.md pour le nouveau processus
+
 > Note du 21 janvier 2025 : Suite à la réduction de l'équipe, une grande partie de cette documentation n'est plus d'actualité.
 > Les modifications sont faites sur la base locale et Airtable est modifié directement.
 > Le workflow devrait évoluer prochainement.
