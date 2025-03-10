@@ -1,0 +1,30 @@
+---
+description: Code style and structure rules
+globs: ./**/*.{ts,tsx,js,jsx,css,sass,json}
+alwaysApply: false
+---
+# Style and Structure
+- Write concise, technical TypeScript code using functional and declarative programming patterns.
+- Avoid classes; prefer iteration and modularization over code duplication.
+- Use descriptive variable names with auxiliary verbs (e.g., "isLoading", "hasError").
+- Structure files into: exported component, subcomponents, helpers, static content, and types.
+
+# Naming Conventions
+- Use lowercase with dashes for directories (e.g., "components/auth-wizard").
+- Favor named exports for components.
+
+# Syntax and formatting
+- Avoid unnecessary curly braces in conditionals; use concise syntax for simple statements.
+- Avoid unnecessary comments
+- Never replace `’` by `'` in texts
+- Write declarative syntax.
+- Always import components from @/components and not ./
+- if need to use a boolean query param, use useQueryFlag from [useQueryFlag.tsx](mdc:src/hooks/useQueryFlag.tsx)
+- if need to use an array query param, use useArrayQueryState from [useArrayQueryState.tsx](mdc:src/hooks/useArrayQueryState.tsx)
+- Whenever in need for an API GET request, use useFetch from [useApi.tsx](mdc:src/hooks/useApi.tsx).
+- Whenever in need for an API POST request, use usePost from [useApi.tsx](mdc:src/hooks/useApi.tsx).
+- Whenever in need for an API DELETE request, use useDelete from [useApi.tsx](mdc:src/hooks/useApi.tsx).
+- Use [cx.ts](mdc:src/utils/cx.ts) instead of cn
+- Use "useQueryState" from nuqs for URL search parameter state management.
+- Always prefer fs/promises to fs
+

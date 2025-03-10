@@ -2,7 +2,7 @@ import { PasswordInput } from '@codegouvfr/react-dsfr/blocks/PasswordInput';
 import Checkbox from '@codegouvfr/react-dsfr/Checkbox';
 import Input from '@codegouvfr/react-dsfr/Input';
 import { standardSchemaValidator, useForm } from '@tanstack/react-form';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { z } from 'zod';
 
 import CenterLayout from '@/components/shared/page/CenterLayout';
@@ -28,8 +28,9 @@ export const zAccountRegisterRequest = z.strictObject({
 });
 export type AccountRegisterRequest = z.infer<typeof zAccountRegisterRequest>;
 
-export default function InscriptionPage() {
+function InscriptionPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const form = useForm({
     defaultValues: {
       email: '',
@@ -155,17 +156,22 @@ export default function InscriptionPage() {
                 />
               )}
             />
-            <form.Subscribe
-              selector={(state) => [state.canSubmit, state.isSubmitting]}
-              children={([canSubmit, isSubmitting]) => (
-                <Button type="submit" disabled={!canSubmit} loading={isSubmitting}>
-                  S’inscrire
-                </Button>
-              )}
-            />
+            <div className="flex justify-between flex-row-reverse text-sm mb-8 items-center">
+              <Link href={`/connexion?${searchParams.toString()}`}>Se connecter</Link>
+              <form.Subscribe
+                selector={(state) => [state.canSubmit, state.isSubmitting]}
+                children={([canSubmit, isSubmitting]) => (
+                  <Button type="submit" disabled={!canSubmit} loading={isSubmitting}>
+                    S'inscrire
+                  </Button>
+                )}
+              />
+            </div>
           </Box>
         </form>
       </CenterLayout>
     </SimplePage>
   );
 }
+
+export default InscriptionPage;

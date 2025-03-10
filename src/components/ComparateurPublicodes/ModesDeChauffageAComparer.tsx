@@ -1,17 +1,19 @@
+import { useSearchParams } from 'next/navigation';
 import React from 'react';
 
 import Checkbox from '@/components/form/dsfr/Checkbox';
 import Heading from '@/components/ui/Heading';
+import Link from '@/components/ui/Link';
+import Notice from '@/components/ui/Notice';
 import useArrayQueryState from '@/hooks/useArrayQueryState';
 import { type LocationInfoResponse } from '@/pages/api/location-infos';
 
 import { Title } from './ComparateurPublicodes.style';
-import { type ModeDeChauffage, modesDeChauffage } from './mappings';
+import { modesDeChauffage, type ModeDeChauffage } from './mappings';
 import { DisclaimerButton } from './Placeholder';
 import SelectClimatisation from './SelectClimatisation';
 import SelectProductionECS from './SelectProductionECS';
 import { type SimulatorEngine } from './useSimulatorEngine';
-
 type ModesDeChauffageAComparerFormProps = React.HTMLAttributes<HTMLDivElement> & {
   engine: SimulatorEngine;
   nearestReseauDeChaleur?: LocationInfoResponse['nearestReseauDeChaleur'];
@@ -27,12 +29,18 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
   advancedMode,
   ...props
 }) => {
+  const searchParams = useSearchParams();
   const inclusClimatisation = engine.getField('Inclure la climatisation');
   const typeDeBatiment = engine.getField('type de bâtiment');
   const { has: hasModeDeChauffage, toggle: toggleModeDeChauffage } = useArrayQueryState<ModeDeChauffage>('modes-de-chauffage');
-  const createOptionProps = (label: ModeDeChauffage) => ({
+
+  const modesDeChauffageAComparer = modesDeChauffage.filter((mode) => (advancedMode ? true : mode.grandPublicMode));
+
+  const createOptionProps = (suffix?: string) => (label: ModeDeChauffage) => ({
     label:
-      modesDeChauffage.find((mode) => mode.label === label)?.reversible && inclusClimatisation ? `${label} (chauffage + froid)` : label,
+      modesDeChauffageAComparer.find((mode) => mode.label === label)?.reversible && inclusClimatisation
+        ? `${label}${suffix ? ` ${suffix}` : ''} (chauffage + froid)`
+        : `${label}${suffix ? ` ${suffix}` : ''}`,
     nativeInputProps: {
       checked: hasModeDeChauffage(label),
       onChange: () => toggleModeDeChauffage(label),
@@ -61,9 +69,12 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
       </Heading>
       <Checkbox
         small
-        options={(['Réseau de chaleur'] satisfies ModeDeChauffage[]).map(createOptionProps)}
+        options={(['Réseau de chaleur'] satisfies ModeDeChauffage[]).map(
+          createOptionProps(!advancedMode && !nearestReseauDeChaleur ? '(Non disponible)' : undefined)
+        )}
         state={nearestReseauDeChaleur ? 'success' : 'default'}
         className="[&_p]:!mb-0"
+        disabled={!advancedMode && !nearestReseauDeChaleur}
         stateRelatedMessage={
           nearestReseauDeChaleur ? (
             <span>
@@ -84,7 +95,9 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
             'PAC eau/eau collective',
             'PAC air/eau collective',
           ] satisfies ModeDeChauffage[]
-        ).map(createOptionProps)}
+        )
+          .filter((modeLabel) => modesDeChauffageAComparer.some((mode) => mode.label === modeLabel))
+          .map(createOptionProps())}
       />
       {typeDeBatiment === 'résidentiel' && (
         <>
@@ -104,9 +117,17 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
                 'PAC air/eau individuelle',
                 'Radiateur électrique individuel',
               ] satisfies ModeDeChauffage[]
-            ).map(createOptionProps)}
+            )
+              .filter((modeLabel) => modesDeChauffageAComparer.some((mode) => mode.label === modeLabel))
+              .map(createOptionProps())}
           />
         </>
+      )}
+      {!advancedMode && (
+        <Notice variant="info" size="xs">
+          Comparez d'autres modes de chauffage sur le{' '}
+          <Link href={`/pro/comparateur-couts-performances?${searchParams.toString()}`}>mode avancé</Link>, accessible sur connexion
+        </Notice>
       )}
     </div>
   );

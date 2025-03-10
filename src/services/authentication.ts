@@ -1,19 +1,44 @@
 import { atom, useAtom } from 'jotai';
 import { useHydrateAtoms } from 'jotai/utils';
 import { type Session } from 'next-auth';
+/* eslint-disable import/order */
 import { signIn, signOut } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+/* eslint-enable import/order */
+import { useQueryState } from 'nuqs';
+import { useEffect } from 'react';
 
-import { usePost, useFetch } from '@/hooks/useApi';
-import { type UserPreferencesInput, type UserPreferences } from '@/pages/api/user/preferences';
+import { useFetch, usePost } from '@/hooks/useApi';
+import useCookie from '@/hooks/useCookie';
+import { type UserPreferences, type UserPreferencesInput } from '@/pages/api/user/preferences';
 import { type UserRole } from '@/types/enum/UserRole';
 
 const authenticationAtom = atom<Session | null>(null);
+
+export const useRedirectionAfterLogin = (session?: Session | null) => {
+  const [callbackUrlCookie, setCallbackUrlCookie, removeCookie] = useCookie('callbackUrl');
+  const [callbackUrlQueryParam, setCallbackUrlQueryParam] = useQueryState('callbackUrl');
+  const router = useRouter();
+  useEffect(() => {
+    // if the user is not authenticated, we save the callbackUrl in a cookie
+    if (!session && callbackUrlQueryParam) {
+      setCallbackUrlCookie(callbackUrlQueryParam);
+      setCallbackUrlQueryParam(null);
+    }
+
+    if (session && callbackUrlCookie) {
+      removeCookie();
+      router.push(callbackUrlCookie);
+    }
+  }, [session, callbackUrlQueryParam, setCallbackUrlCookie, setCallbackUrlQueryParam, removeCookie, router, callbackUrlCookie]);
+};
 
 /**
  * Hydrates the authentication atom with the session from the server.
  */
 export const useInitAuthentication = (session: Session | undefined) => {
   useHydrateAtoms(new Map([[authenticationAtom, session]]));
+  useRedirectionAfterLogin(session);
 };
 
 /**
@@ -21,7 +46,6 @@ export const useInitAuthentication = (session: Session | undefined) => {
  */
 export const useAuthentication = () => {
   const [session] = useAtom(authenticationAtom);
-
   return {
     session: session ?? null,
     user: session?.user ?? null,

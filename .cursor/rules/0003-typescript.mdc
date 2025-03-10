@@ -1,0 +1,10 @@
+---
+description: TypeScript specific rules and conventions
+globs: ./**/*.{ts,tsx}
+alwaysApply: false
+---
+# Typescript Usage
+
+- Use "typescript" for all code; prefer types over interfaces.
+- Avoid "enums"; use maps instead.
+- Use functional components with TypeScript types.

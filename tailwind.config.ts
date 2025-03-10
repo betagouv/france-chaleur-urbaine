@@ -37,7 +37,7 @@ const config = {
         'blue-light': '#B2D6F2',
         red: fr.colors.decisions.background.flat.redMarianne.default,
         'info-light': fr.colors.decisions.background.contrast.info.default,
-        info: fr.colors.decisions.text.mention.grey.default,
+        info: fr.colors.decisions.text.default.info.default,
         'faded-light': fr.colors.decisions.background.contrast.grey.default,
         faded: fr.colors.decisions.text.default.grey.default,
         'success-light': fr.colors.decisions.background.contrast.success.default,

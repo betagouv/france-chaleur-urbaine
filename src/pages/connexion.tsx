@@ -1,7 +1,9 @@
 import { z } from 'zod';
 
 import { LoginForm, type LoginFormProps } from '@/components/connexion/LoginForm';
+import CenterLayout from '@/components/shared/page/CenterLayout';
 import SimplePage from '@/components/shared/page/SimplePage';
+import Heading from '@/components/ui/Heading';
 import { withServerSession } from '@/server/authentication';
 import { logger } from '@/server/helpers/logger';
 import { activateUser } from '@/server/services/auth';
@@ -9,7 +11,12 @@ import { activateUser } from '@/server/services/auth';
 function ConnectionPage(props: LoginFormProps): JSX.Element {
   return (
     <SimplePage title="Espace connecté" description="Connectez-vous à votre compte France Chaleur Urbaine.">
-      <LoginForm {...props} />
+      <CenterLayout maxWidth="600px">
+        <Heading as="h1" size="h2" color="blue-france">
+          Connectez-vous
+        </Heading>
+        <LoginForm {...props} />
+      </CenterLayout>
     </SimplePage>
   );
 }

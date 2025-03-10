@@ -28,6 +28,7 @@ type GraphProps = React.HTMLAttributes<HTMLDivElement> & {
   advancedMode?: boolean;
   captureImageName?: string;
   usedReseauDeChaleurLabel: string;
+  hideReseauDeChaleur?: boolean;
 };
 
 const estimatedRowHeightPx = 56;
@@ -170,13 +171,24 @@ const getEmissionsCO2PrecisionRange = (value: number) => {
   return { lowerBound, lowerBoundString, upperBound, upperBoundString };
 };
 
-const formatEmissionsCO2 = (value: number, suffix = 'kgCO2e') =>
-  [`${(Math.round(value / 10) * 10).toLocaleString('fr-FR', { maximumFractionDigits: 0 })}`, suffix].filter(Boolean).join(' ');
+const formatEmissionsCO2 = (value: number, suffix = 'tCO2e') => {
+  const roundedValue = (Math.round(value / 10) * 10) / 1000;
+  const maximumFractionDigits = 2;
 
-const formatCost = (value: number) =>
-  `${(Math.round(value / 10) * 10).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 })}`;
+  return [`${roundedValue.toLocaleString('fr-FR', { maximumFractionDigits })}`, suffix].filter(Boolean).join(' ');
+};
+const formatCost = (value: number, suffix = true) =>
+  `${(Math.round(value / 10) * 10).toLocaleString('fr-FR', { ...(!suffix ? {} : { style: 'currency', currency: 'EUR' }), maximumFractionDigits: 0 })}`;
 
-const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureImageName, usedReseauDeChaleurLabel, ...props }) => {
+const Graph: React.FC<GraphProps> = ({
+  advancedMode,
+  engine,
+  className,
+  captureImageName,
+  usedReseauDeChaleurLabel,
+  hideReseauDeChaleur,
+  ...props
+}) => {
   const { has: hasModeDeChauffage } = useArrayQueryState('modes-de-chauffage');
   const coutsRef = useRef<HTMLDivElement>(null);
   useFixLegendOpacity(coutsRef);
@@ -216,7 +228,10 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
   };
 
   const modesDeChauffageFiltres = modesDeChauffage.filter(
-    (modeDeChauffage) => hasModeDeChauffage(modeDeChauffage.label) && (typeDeBatiment === 'tertiaire' ? modeDeChauffage.tertiaire : true)
+    (modeDeChauffage) =>
+      (!advancedMode ? modeDeChauffage.grandPublicMode && !(hideReseauDeChaleur && modeDeChauffage.label === 'Réseau de chaleur') : true) &&
+      hasModeDeChauffage(modeDeChauffage.label) &&
+      (typeDeBatiment === 'tertiaire' ? modeDeChauffage.tertiaire : true)
   );
 
   const totalCoutsEtEmissions: [string, number, number][] = [];
@@ -235,42 +250,44 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
       const amountP4SansAides = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P4 moins aides`);
       const amountAides = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . aides`);
 
+      const valueFormatter = advancedMode ? formatCostPrecisionRange : () => '';
+
       const amounts = advancedMode
         ? [
             ...getRow({
               title: `P1 abonnement${typeInstallation.label === 'Réseau de chaleur' ? ' (R2 du réseau de chaleur)' : ''}`,
               amount: amountP1Abo,
               color: colorP1Abo,
-              valueFormatter: formatCostPrecisionRange,
+              valueFormatter,
             }),
             ...getRow({
               title: `P1 consommation${typeInstallation.label === 'Réseau de chaleur' ? ' (R1 du réseau de chaleur)' : ''}`,
               amount: amountP1Conso,
               color: colorP1Conso,
-              valueFormatter: formatCostPrecisionRange,
+              valueFormatter,
             }),
-            ...getRow({ title: 'P1 ECS', amount: amountP1ECS, color: colorP1ECS, valueFormatter: formatCostPrecisionRange }),
-            ...getRow({ title: "P1'", amount: amountP1prime, color: colorP1prime, valueFormatter: formatCostPrecisionRange }),
+            ...getRow({ title: 'P1 ECS', amount: amountP1ECS, color: colorP1ECS, valueFormatter }),
+            ...getRow({ title: "P1'", amount: amountP1prime, color: colorP1prime, valueFormatter }),
             ...getRow({
               title: 'P1 consommation froid',
               amount: amountP1Consofroid,
               color: colorP1Consofroid,
-              valueFormatter: formatCostPrecisionRange,
+              valueFormatter,
             }),
-            ...getRow({ title: 'P2', amount: amountP2, color: colorP2, valueFormatter: formatCostPrecisionRange }),
-            ...getRow({ title: 'P3', amount: amountP3, color: colorP3, valueFormatter: formatCostPrecisionRange }),
+            ...getRow({ title: 'P2', amount: amountP2, color: colorP2, valueFormatter }),
+            ...getRow({ title: 'P3', amount: amountP3, color: colorP3, valueFormatter }),
             ...getRow({
               title: 'P4 moins aides',
               amount: amountP4SansAides,
               color: colorP4SansAides,
-              valueFormatter: formatCostPrecisionRange,
+              valueFormatter,
             }),
             ...getRow({
               title: tooltipAides,
               amount: amountAides,
               color: colorP4Aides,
               bordered: true,
-              valueFormatter: formatCostPrecisionRange,
+              valueFormatter,
             }),
           ]
         : [
@@ -278,32 +295,32 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
               title: `Abonnement${typeInstallation.label === 'Réseau de chaleur' ? ' (R2 du réseau de chaleur)' : ''}`,
               amount: amountP1Abo,
               color: colorP1Abo,
-              valueFormatter: formatCostPrecisionRange,
+              valueFormatter,
             }),
             ...getRow({
               title: `Consommation${typeInstallation.label === 'Réseau de chaleur' ? ' (R1 du réseau de chaleur)' : ''}`,
               amount: amountP1Conso + amountP1ECS,
               color: colorP1Conso,
-              valueFormatter: formatCostPrecisionRange,
+              valueFormatter,
             }),
             ...getRow({
               title: 'Maintenance',
               amount: amountP1prime + amountP2 + amountP3,
               color: colorP1prime,
-              valueFormatter: formatCostPrecisionRange,
+              valueFormatter,
             }),
             ...getRow({
               title: 'Investissement',
               amount: amountP4SansAides,
               color: colorP4SansAides,
-              valueFormatter: formatCostPrecisionRange,
+              valueFormatter,
             }),
             ...getRow({
               title: tooltipAides,
               amount: amountAides,
               color: colorP4Aides,
               bordered: true,
-              valueFormatter: formatCostPrecisionRange,
+              valueFormatter,
             }),
           ];
 
@@ -312,7 +329,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
         0
       );
       const totalAmount = totalAmountWithAides - amountAides;
-      const precisionRange = formatCostPrecisionRange(totalAmount);
+      const precisionRange = valueFormatter(totalAmount);
       maxCoutValue = Math.max(maxCoutValue, totalAmount);
       totalCoutsEtEmissions[index] = [getLabel(typeInstallation), totalAmount, -1];
       return [
@@ -396,8 +413,10 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
   const maxExistingCostValue = totalCoutsEtEmissions.reduce((acc, [, cost]) => Math.max(acc, cost), 0) * (1 + costPrecisionPercentage);
   const scaleTickCost = 500;
   const scaleCostMaxValue = Math.ceil(maxExistingCostValue / scaleTickCost) * scaleTickCost;
-  const scaleTickEmissionsCO2 = maxExistingEmissionsCO2Value > 10000 ? 10000 : 500;
-  const scaleEmissionsCO2maxValue = Math.ceil(maxExistingEmissionsCO2Value / scaleTickEmissionsCO2) * scaleTickEmissionsCO2;
+  const scaleEmissionsCO2maxValue =
+    maxExistingEmissionsCO2Value > 10000
+      ? Math.ceil(maxExistingEmissionsCO2Value / 10000) * 10000
+      : Math.ceil(maxExistingEmissionsCO2Value / 1000) * 1000;
 
   const getGrid = (value: number) => {
     if (value % 500 === 0 && value <= 3000) return 100 / (value / 500);
@@ -450,26 +469,26 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
               {typeDeBatiment === 'tertiaire' ? '' : ` (par ${perBuilding ? 'bâtiment' : 'logement'})`} - {titleItemsString}
             </Heading>
             <DisclaimerButton className="!mb-5" />
-            <div className="relative py-2">
+            <div className="relative mt-2 pb-8">
               <div className="absolute inset-0 -z-10 flex h-full w-full [&>*]:flex-1">
                 <div
                   className="ml-12 mr-3"
                   style={{
-                    backgroundImage: `repeating-linear-gradient(to right,#EEE 0,#EEE 1px,transparent 1px,transparent ${getGrid(scaleEmissionsCO2maxValue)}%)`,
+                    backgroundImage: `repeating-linear-gradient(to right,#CCC 0,#CCC 1px,transparent 1px,transparent ${getGrid(scaleEmissionsCO2maxValue)}%)`,
                     // Goal here is to give a grid that is relevent for a user
                     // when % is infinite (16.666666% for example), grid might appear inaccurate and we rather display only one understandable line instead
-                    borderRight: '1px solid #EEE',
+                    borderRight: '1px solid #CCC',
                   }}
                 ></div>
                 <div
                   className="ml-3 mr-12"
                   style={{
-                    backgroundImage: `repeating-linear-gradient(to right,#EEE 0,#EEE 1px,transparent 1px,transparent  ${getGrid(scaleCostMaxValue)}%)`,
-                    borderRight: '1px solid #EEE',
+                    backgroundImage: `repeating-linear-gradient(to right,#CCC 0,#CCC 1px,transparent 1px,transparent  ${getGrid(scaleCostMaxValue)}%)`,
+                    borderRight: '1px solid #CCC',
                   }}
                 ></div>
               </div>
-              {totalCoutsEtEmissions.map(([name, cost, co2]) => {
+              {totalCoutsEtEmissions.map(([name, cost, co2], i) => {
                 const {
                   lowerBound: co2LowerBound,
                   upperBound: co2UpperBound,
@@ -502,60 +521,93 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
                 return (
                   <>
                     {showSectionTitle && (
-                      <div className="relative mb-1 mt-8 text-center text-xl font-bold bg-white/50">{graphSectionTitle}</div>
+                      <div className={cx('relative mb-1 text-center text-xl font-bold bg-white', i > 0 ? 'mt-8' : '')}>
+                        {graphSectionTitle}
+                      </div>
                     )}
                     <div key={name} className="relative mb-1 mt-2 flex items-center justify-center text-base font-bold">
                       <span className="bg-white">{name}</span>
                     </div>
                     <div className="group stretch flex items-center">
-                      <div className="pl-12 pr-3 flex flex-1 border-r border-solid border-white">
+                      <div className="h-[22px] pl-12 pr-3 flex flex-1 border-r border-solid border-white">
                         <div
                           className="relative bg-fcu-orange-light/10 whitespace-nowrap py-0.5 tracking-tight text-left font-extrabold text-fcu-orange-light sm:text-xs md:text-sm flex items-center justify-end"
                           style={{ flex: 100 - co2UpperPercent }}
                         >
-                          <span className="pr-0.5 absolute right-[12px]">{co2UpperBoundString}</span>
-                          <div className="border-solid border-l-fcu-orange-light border-l-[12px] border-y-transparent border-y-[5px] my-1 border-r-0"></div>
+                          <span className="pr-0.5 absolute right-[12px]">{advancedMode ? co2UpperBoundString : ''}</span>
+                          {advancedMode && (
+                            <div className="border-solid border-l-fcu-orange-light border-l-[12px] border-y-transparent border-y-[5px] my-1 border-r-0"></div>
+                          )}
                         </div>
                         <div className="relative bg-fcu-orange-light" style={{ flex: co2Width }}></div>
                         <div
                           className="relative bg-fcu-orange-light/30 whitespace-nowrap tracking-tight py-0.5 text-right font-extrabold text-fcu-orange-light sm:text-xs md:text-sm flex items-center justify-start"
                           style={{ flex: co2LowerPercent }}
                         >
-                          <div className="border-solid border-r-fcu-orange-light border-r-[12px] border-y-transparent border-y-[5px] my-1 border-l-0"></div>
-                          <span className="absolute left-[12px] pl-0.5">{co2LowerBoundString}</span>
+                          {advancedMode && (
+                            <div className="border-solid border-r-fcu-orange-light border-r-[12px] border-y-transparent border-y-[5px] my-1 border-l-0"></div>
+                          )}
+                          <span className="absolute left-[12px] pl-0.5">{advancedMode ? co2LowerBoundString : ''}</span>
                         </div>
                       </div>
-                      <div className="pr-12 pl-3 flex flex-1 border-l border-solid border-white">
+                      <div className="h-[22px] pr-12 pl-3 flex flex-1 border-l border-solid border-white">
                         <div
                           className="relative bg-fcu-purple/30 whitespace-nowrap tracking-tight py-0.5 text-right font-extrabold text-fcu-purple sm:text-xs md:text-sm flex items-center justify-end"
                           style={{ flex: costLowerPercent }}
                         >
-                          <span className="pr-0.5 absolute right-[12px]">{lowerBoundString}</span>
-                          <div className="border-solid border-l-fcu-purple border-l-[12px] border-y-transparent border-y-[5px] my-1 border-r-0"></div>
+                          <span className="pr-0.5 absolute right-[12px]">{advancedMode ? lowerBoundString : ''}</span>
+                          {advancedMode && (
+                            <div className="border-solid border-l-fcu-purple border-l-[12px] border-y-transparent border-y-[5px] my-1 border-r-0"></div>
+                          )}
                         </div>
                         <div className="relative bg-fcu-purple" style={{ flex: costWidth }}></div>
                         <div
                           className="relative bg-fcu-purple/10 whitespace-nowrap py-0.5 tracking-tight text-left font-extrabold text-fcu-purple sm:text-xs md:text-sm flex items-center justify-start"
                           style={{ flex: 100 - costUpperPercent }}
                         >
-                          <div className="border-solid border-r-fcu-purple border-r-[12px] border-y-transparent border-y-[5px] my-1 border-l-0"></div>
-                          <span className="pl-0.5 absolute left-[12px]">{upperBoundString}</span>
+                          {advancedMode && (
+                            <div className="border-solid border-r-fcu-purple border-r-[12px] border-y-transparent border-y-[5px] my-1 border-l-0"></div>
+                          )}
+                          <span className="pl-0.5 absolute left-[12px]">{advancedMode ? upperBoundString : ''}</span>
                         </div>
                       </div>
                     </div>
                   </>
                 );
               })}
-              <div className="flex justify-between text-sm font-bold text-faded mt-8">
-                <div className="flex-1 px-0.5 ml-12 mr-3 flex items-center justify-between">
-                  <span>{formatEmissionsCO2(scaleEmissionsCO2maxValue)}</span>
-                  <span>{0}</span>
-                </div>
-                <div className="flex-1 px-0.5 mr-12 ml-3 flex items-center justify-between">
-                  <span>{0}</span>
-                  <span>{formatCost(scaleCostMaxValue)}</span>
-                </div>
+            </div>
+
+            <div className="flex justify-between text-sm font-bold text-gray-600 -mt-2 mb-8">
+              <div className="flex-1 ml-12 mr-2 flex items-center justify-between relative">
+                {Array.from({ length: Math.floor(100 / getGrid(scaleEmissionsCO2maxValue)) }).map((_, i) => (
+                  <div className="relative flex-1" key={`scale_co2_${i}-${scaleEmissionsCO2maxValue}`}>
+                    &nbsp;
+                    <span className="absolute origin-bottom-right -rotate-45 w-[100px] -translate-x-[100px] whitespace-nowrap text-right">
+                      {formatEmissionsCO2(scaleEmissionsCO2maxValue * (1 - (i * getGrid(scaleEmissionsCO2maxValue)) / 100), '')}
+                    </span>
+                  </div>
+                ))}
+                <span className="absolute origin-bottom-right -rotate-45 right-0 whitespace-nowrap text-right">
+                  {formatEmissionsCO2(0, '')}
+                </span>
               </div>
+              <div className="flex-1 mr-12 ml-2 flex items-center justify-between relative">
+                <span className="absolute origin-bottom-right -rotate-45 left-0 whitespace-nowrap text-right -translate-x-[5px]">
+                  {formatCost(0, false)}
+                </span>
+                {Array.from({ length: Math.floor(100 / getGrid(scaleCostMaxValue)) }).map((_, i) => (
+                  <div className="relative flex-1" key={`scale_cost_${i}-${scaleCostMaxValue}`}>
+                    &nbsp;
+                    <span className="absolute origin-bottom-right -rotate-45 w-[100%] translate-x-[5px] whitespace-nowrap text-right">
+                      {formatCost(scaleCostMaxValue * (((i + 1) * getGrid(scaleCostMaxValue)) / 100), false)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="flex justify-between text-sm font-bold  text-gray-600 mb-16">
+              <div className="flex-1 ml-12 mr-2 flex items-center justify-center">Émissions de CO2 (tCO2e)</div>
+              <div className="flex-1 mr-12 ml-2 flex items-center justify-center">Coût global (€TTC)</div>
             </div>
           </div>
         )}
@@ -644,7 +696,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
         <div className="text-center">
           <Button
             priority="secondary"
-            onClick={async () => await captureNodeAndDownload(ref, { padding: '20px', filename: `${captureImageName}-${graphType}.png` })}
+            onClick={async () => await captureNodeAndDownload(ref, { padding: 20, filename: `${captureImageName}-${graphType}.png` })}
             loading={capturing}
           >
             Sauvegarder l'image

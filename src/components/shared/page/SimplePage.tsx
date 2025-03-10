@@ -70,7 +70,7 @@ const publicNavigationMenu: MainNavigationProps.Item[] = [
   ...(process.env.NEXT_PUBLIC_FLAG_ENABLE_COMPARATEUR === 'true'
     ? [
         {
-          text: 'Comparateur de coûts',
+          text: 'Comparateur de coûts et CO2',
           linkProps: {
             href: '/comparateur-couts-performances',
           },
@@ -331,7 +331,7 @@ function markCurrentPageActive(menuItems: MainNavigationProps.Item[], currentUrl
 }
 
 const publicQuickAccessItems: HeaderProps.QuickAccessItem[] = [
-  ...(env.INSCRIPTIONS_ENABLE
+  ...(env.NEXT_PUBLIC_FLAG_ENABLE_INSCRIPTIONS && typeof window !== 'undefined'
     ? [
         {
           text: 'Créer un compte',
