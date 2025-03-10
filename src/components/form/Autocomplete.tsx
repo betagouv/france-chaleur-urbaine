@@ -15,6 +15,7 @@ export type AutocompleteProps<Option extends DefaultOption> = Omit<React.Compone
   nativeInputProps?: Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'value'>;
   getOptionLabel?: (data: { option: Option; result: React.ReactNode }) => React.ReactNode;
   getOptionValue: (option: Option) => string;
+  onLoadingChange?: (loading: boolean) => void;
 };
 
 const Autocomplete = <Option extends DefaultOption>({
@@ -26,6 +27,7 @@ const Autocomplete = <Option extends DefaultOption>({
   getOptionValue,
   onSelect,
   onClear,
+  onLoadingChange,
   defaultValue,
   ...props
 }: AutocompleteProps<Option>) => {
@@ -42,6 +44,10 @@ const Autocomplete = <Option extends DefaultOption>({
       setInputValue(`${defaultValue}`);
     }
   }, [inputValue, defaultValue]);
+
+  React.useEffect(() => {
+    onLoadingChange?.(loading);
+  }, [loading, onLoadingChange]);
 
   useDebouncedEffect(
     () => {
