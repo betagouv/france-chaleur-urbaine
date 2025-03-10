@@ -339,7 +339,7 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
           <div className="flex items-center gap-2 w-full">
             <div className="flex-1" />
             <Button iconId="fr-icon-download-line" priority="secondary" onClick={downloadCSV} disabled={filteredAddresses.length === 0}>
-              Télécharger
+              Télécharger le détail
             </Button>
 
             <ModalSimple
