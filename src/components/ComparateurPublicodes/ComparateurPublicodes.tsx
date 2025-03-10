@@ -122,8 +122,8 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
   const noticePDP = (
     <Notice variant="warning" size="xs" className="mt-2">
       Votre adresse est dans le périmètre de développement prioritaire du réseau. Une obligation de raccordement peut exister{' '}
-      <Link isExternal href="/ressources/obligations-raccordement">
-        ( en savoir plus )
+      <Link isExternal href="/ressources/obligations-raccordement#contenu">
+        (en savoir plus)
       </Link>
       .
     </Notice>
