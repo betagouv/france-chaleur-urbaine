@@ -381,7 +381,7 @@ const Indicator = ({ label, value, loading, onClick, active }: IndicatorProps) =
   const Element = onClick ? 'button' : 'div';
   return (
     <Element
-      className={`fr-p-2w transition-colors ${active ? 'text-blue' : ''} ${onClick ? 'cursor-pointer hover:bg-gray-100 text-left' : ''}`}
+      className={`fr-p-2w flex flex-col h-full transition-colors ${active ? 'text-blue' : ''} ${onClick ? 'cursor-pointer hover:bg-gray-100 text-left' : ''}`}
       onClick={onClick}
       title={onClick ? 'Cliquer pour filtrer' : undefined}
     >
