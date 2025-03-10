@@ -306,6 +306,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
                 }
               >
                 <AddressAutocomplete
+                  excludeCities
                   label={
                     <Label
                       label="Adresse"
