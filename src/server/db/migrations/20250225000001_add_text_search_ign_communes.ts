@@ -1,5 +1,8 @@
 import { type Knex } from 'knex';
 
+// This creates an index on the nom column of the ign_communes table.
+// - It applies the unaccent function to remove accents before indexing.
+// - It uses a GIN index with trigram operations (gin_trgm_ops), which improves search performance for text queries, especially LIKE, ILIKE, and full-text searches.
 export async function up(knex: Knex): Promise<void> {
   await knex.raw(`
     CREATE EXTENSION IF NOT EXISTS unaccent;
