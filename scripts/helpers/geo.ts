@@ -1,8 +1,6 @@
 import { readFile } from 'node:fs/promises';
 
-import { sql } from 'kysely';
-
-import { kdb } from '@/server/db/kysely';
+import { kdb, sql } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
 
 export type GeometryWithSrid = {
