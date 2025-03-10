@@ -87,6 +87,10 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
     accessorKey: 'eligibility_status.tauxENRR',
     suffix: '%',
     align: 'right',
+    filterFn: (row, columnId, filterValue: number) => {
+      const value = row.getValue<number>(columnId);
+      return value != null && value >= filterValue;
+    },
   },
   {
     header: 'Contenu CO2 ACV (g/kWh)',
@@ -109,12 +113,34 @@ const initialSortingState: SortingState = [
   },
 ];
 
+const quickFilterPresets = {
+  all: {
+    label: 'adresses',
+    filters: [],
+  },
+  adressesEligibles: {
+    label: 'potentiellement raccordables',
+    filters: [{ id: 'eligibility_status.isEligible', value: true }],
+  },
+  adressesMoins100mPlus50ENRR: {
+    label: "à moins de 100m d'un réseau à plus de 50% d'ENRR",
+    filters: [
+      { id: 'eligibility_status.distance', value: 100 },
+      { id: 'eligibility_status.tauxENRR', value: 50 },
+    ],
+  },
+  adressesDansPDP: {
+    label: 'dans un périmètre de développement prioritaire',
+    filters: [{ id: 'eligibility_status.inPDP', value: true }],
+  },
+};
+type QuickFilterPresetKey = keyof typeof quickFilterPresets;
+
 const queryParamName = 'test-adresses';
 
 type ProEligibilityTestItemProps = {
   test: ProEligibilityTestListItem;
 };
-
 export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemProps) {
   const queryClient = useQueryClient();
   const [value] = useQueryState(queryParamName);
@@ -139,11 +165,15 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
 
   const stats = {
     adressesCount: addresses.length,
-    adressesEligiblesCount: addresses.filter((address) => address.eligibility_status && address.eligibility_status.isEligible).length,
-    adressesProches150mReseauCount: addresses.filter(
-      (address) => address.eligibility_status?.distance && address.eligibility_status.distance <= 150
+    adressesEligibles: addresses.filter((address) => address.eligibility_status && address.eligibility_status.isEligible).length,
+    adressesMoins100mPlus50ENRR: addresses.filter(
+      (address) =>
+        address.eligibility_status?.distance &&
+        address.eligibility_status.distance <= 100 &&
+        address.eligibility_status?.tauxENRR &&
+        address.eligibility_status.tauxENRR >= 50
     ).length,
-    adressesDansPDPCount: addresses.filter((address) => address.eligibility_status && address.eligibility_status.inPDP).length,
+    adressesDansPDP: addresses.filter((address) => address.eligibility_status && address.eligibility_status.inPDP).length,
   };
 
   const handleDelete = async (testId: string) => {
@@ -153,13 +183,24 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
     await deleteTest(testId);
   };
 
-  const handleIndicatorClick = (filterKey: string, filterValue: boolean | number) => {
-    setColumnFilters((prev) => {
-      // toggle filter or add new filter
-      return prev[0]?.id === filterKey ? [] : [{ id: filterKey, value: filterValue }];
-    });
+  const toggleFilterPreset = (presetKey: QuickFilterPresetKey) => {
+    const preset = quickFilterPresets[presetKey];
+    setColumnFilters(isPresetActive(presetKey) ? [] : preset.filters);
   };
-  const isIndicatorFilterActive = (filterKey: string) => columnFilters[0]?.id === filterKey;
+
+  const isPresetActive = (presetKey: QuickFilterPresetKey) => {
+    const preset = quickFilterPresets[presetKey];
+    if (preset.filters.length === 0) {
+      return columnFilters.length === 0;
+    }
+
+    // Check if all filters in the preset are active
+    return (
+      preset.filters.every((presetFilter) =>
+        columnFilters.some((activeFilter) => activeFilter.id === presetFilter.id && activeFilter.value === presetFilter.value)
+      ) && columnFilters.length === preset.filters.length
+    );
+  };
 
   const filteredAddresses = useMemo(() => {
     if (!testDetails?.addresses) return [];
@@ -167,17 +208,20 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
     return testDetails.addresses.filter((address) => {
       if (!columnFilters.length) return true;
 
-      const filter = columnFilters[0];
-      switch (filter.id) {
-        case 'eligibility_status.isEligible':
-          return address.eligibility_status?.isEligible === filter.value;
-        case 'eligibility_status.distance':
-          return address.eligibility_status?.distance != null && address.eligibility_status.distance <= (filter.value as number);
-        case 'eligibility_status.inPDP':
-          return address.eligibility_status?.inPDP === filter.value;
-        default:
-          return true;
-      }
+      return columnFilters.every((filter) => {
+        switch (filter.id) {
+          case 'eligibility_status.isEligible':
+            return address.eligibility_status?.isEligible === filter.value;
+          case 'eligibility_status.distance':
+            return address.eligibility_status?.distance != null && address.eligibility_status.distance <= (filter.value as number);
+          case 'eligibility_status.inPDP':
+            return address.eligibility_status?.inPDP === filter.value;
+          case 'eligibility_status.tauxENRR':
+            return address.eligibility_status?.tauxENRR != null && address.eligibility_status.tauxENRR >= (filter.value as number);
+          default:
+            return true;
+        }
+      });
     });
   }, [testDetails?.addresses, columnFilters]);
 
@@ -262,34 +306,34 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
           <div className="flex items-center">
             <Indicator
               loading={isLoading}
-              label="Adresses"
+              label={quickFilterPresets.all.label}
               value={stats.adressesCount}
-              onClick={() => setColumnFilters([])}
-              active={columnFilters.length === 0}
+              onClick={() => toggleFilterPreset('all')}
+              active={isPresetActive('all')}
             />
             <Divider />
             <Indicator
               loading={isLoading}
-              label="Adresses raccordables"
-              value={stats.adressesEligiblesCount}
-              onClick={() => handleIndicatorClick('eligibility_status.isEligible', true)}
-              active={isIndicatorFilterActive('eligibility_status.isEligible')}
+              label={quickFilterPresets.adressesEligibles.label}
+              value={stats.adressesEligibles}
+              onClick={() => toggleFilterPreset('adressesEligibles')}
+              active={isPresetActive('adressesEligibles')}
             />
             <Divider />
             <Indicator
               loading={isLoading}
-              label="Adresses à moins de 150m d'un réseau"
-              value={stats.adressesProches150mReseauCount}
-              onClick={() => handleIndicatorClick('eligibility_status.distance', 150)}
-              active={isIndicatorFilterActive('eligibility_status.distance')}
+              label={quickFilterPresets.adressesMoins100mPlus50ENRR.label}
+              value={stats.adressesMoins100mPlus50ENRR}
+              onClick={() => toggleFilterPreset('adressesMoins100mPlus50ENRR')}
+              active={isPresetActive('adressesMoins100mPlus50ENRR')}
             />
             <Divider />
             <Indicator
               loading={isLoading}
-              label="Adresses dans un PDP"
-              value={stats.adressesDansPDPCount}
-              onClick={() => handleIndicatorClick('eligibility_status.inPDP', true)}
-              active={isIndicatorFilterActive('eligibility_status.inPDP')}
+              label={quickFilterPresets.adressesDansPDP.label}
+              value={stats.adressesDansPDP}
+              onClick={() => toggleFilterPreset('adressesDansPDP')}
+              active={isPresetActive('adressesDansPDP')}
             />
           </div>
           <div className="flex items-center gap-2 w-full">
