@@ -65,6 +65,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
   const [lngLat, setLngLat] = React.useState<[number, number]>();
   const [nearestReseauDeChaleur, setNearestReseauDeChaleur] = React.useState<LocationInfoResponse['nearestReseauDeChaleur']>();
   const [addressError, setAddressError] = React.useState<boolean>(false);
+  const [addressLoading, setAddressLoading] = React.useState<boolean>(false);
   const [nearestReseauDeFroid, setNearestReseauDeFroid] = React.useState<LocationInfoResponse['nearestReseauDeFroid']>();
   const inclureLaClimatisation = engine.getField('Inclure la climatisation');
   const { heatNetworkService } = useServices();
@@ -318,10 +319,16 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
                     addressError ? 'Désolé, nous n’avons pas trouvé la ville associée à cette adresse, essayez avec une autre' : undefined
                   }
                   defaultValue={address || ''}
+                  onLoadingChange={(loading) => {
+                    if (loading) {
+                      setAddressLoading(true);
+                    }
+                  }}
                   onClear={() => {
                     setNearestReseauDeChaleur(undefined);
                     setNearestReseauDeFroid(undefined);
                     setAddressError(false);
+                    setAddressLoading(false);
                     setAddress(null);
                     setLngLat(undefined);
 
@@ -336,51 +343,58 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
                     );
                   }}
                   onSelect={async (selectedAddress) => {
-                    setAddressError(false);
-                    setLngLat(undefined);
+                    try {
+                      setAddressError(false);
+                      setLngLat(undefined);
 
-                    const [lon, lat] = selectedAddress.geometry.coordinates;
-                    const addressLabel = selectedAddress.properties.label;
-                    if (addressLabel !== address) {
-                      setAddress(null);
-                    }
-                    const network = await heatNetworkService.findByCoords(selectedAddress);
-                    setAddressDetail({
-                      network,
-                      geoAddress: selectedAddress,
-                    });
-                    const infos: LocationInfoResponse = await postFetchJSON('/api/location-infos', {
-                      lon,
-                      lat,
-                      city: selectedAddress.properties.city,
-                      cityCode: selectedAddress.properties.citycode,
-                    });
-                    setNearestReseauDeChaleur(infos.nearestReseauDeChaleur);
-                    setNearestReseauDeFroid(infos.nearestReseauDeFroid);
+                      const [lon, lat] = selectedAddress.geometry.coordinates;
+                      const addressLabel = selectedAddress.properties.label;
+                      if (addressLabel !== address) {
+                        setAddress(null);
+                      }
+                      const network = await heatNetworkService.findByCoords(selectedAddress);
+                      setAddressDetail({
+                        network,
+                        geoAddress: selectedAddress,
+                      });
+                      const infos: LocationInfoResponse = await postFetchJSON('/api/location-infos', {
+                        lon,
+                        lat,
+                        city: selectedAddress.properties.city,
+                        cityCode: selectedAddress.properties.citycode,
+                      });
+                      setNearestReseauDeChaleur(infos.nearestReseauDeChaleur);
+                      setNearestReseauDeFroid(infos.nearestReseauDeFroid);
 
-                    if (!infos.infosVille) {
+                      if (!infos.infosVille) {
+                        setAddressError(true);
+
+                        return;
+                      }
+
+                      setAddress(addressLabel);
+
+                      if (infos.nearestReseauDeChaleur || infos.nearestReseauDeFroid) {
+                        setLngLat(selectedAddress.geometry.coordinates);
+                      }
+
+                      console.debug('locations-infos', infos);
+
+                      engine.setSituation(
+                        ObjectEntries(addresseToPublicodesRules).reduce(
+                          (acc, [key, infoGetter]) => ({
+                            ...acc,
+                            [key]: infoGetter(infos) ?? null,
+                          }),
+                          {}
+                        )
+                      );
+                    } catch (e) {
                       setAddressError(true);
-
-                      return;
+                      console.error('Error setting address', e);
+                    } finally {
+                      setAddressLoading(false);
                     }
-
-                    setAddress(addressLabel);
-
-                    if (infos.nearestReseauDeChaleur || infos.nearestReseauDeFroid) {
-                      setLngLat(selectedAddress.geometry.coordinates);
-                    }
-
-                    console.debug('locations-infos', infos);
-
-                    engine.setSituation(
-                      ObjectEntries(addresseToPublicodesRules).reduce(
-                        (acc, [key, infoGetter]) => ({
-                          ...acc,
-                          [key]: infoGetter(infos) ?? null,
-                        }),
-                        {}
-                      )
-                    );
                   }}
                 />
                 {advancedMode ? <ParametresDuBatimentTechnicien engine={engine} /> : <ParametresDuBatimentGrandPublic engine={engine} />}
@@ -419,7 +433,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
                 </Accordion>
               )}
             </div>
-            <Results>{results}</Results>
+            <Results className={addressLoading ? 'opacity-30 animate-pulse' : ''}>{results}</Results>
             <FloatingButton onClick={() => setGraphDrawerOpen(true)} iconId="ri-arrow-up-fill">
               Voir les résultats
             </FloatingButton>
