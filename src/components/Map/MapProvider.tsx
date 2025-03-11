@@ -48,7 +48,9 @@ export const FCUMapContextProvider: React.FC<React.PropsWithChildren<{ initialMa
   const [mapDraw, setMapDraw] = React.useState<MapboxDraw | null>(null);
   const [isDrawing, setIsDrawing] = React.useState(false);
   const [mapLayersLoaded, setMapLayersLoaded] = React.useState(false);
-  const [originalMapConfiguration, setMapConfiguration] = React.useState<MapConfiguration>(defaultMapConfiguration);
+  const [originalMapConfiguration, setMapConfiguration] = React.useState<MapConfiguration>(
+    (initialMapConfiguration ?? defaultMapConfiguration) as MapConfiguration
+  );
   const reseauxDeChaleurFilters = useReseauxDeChaleurFilters();
 
   const mapConfiguration = deepMergeObjects(originalMapConfiguration, reseauxDeChaleurFilters.filters);
@@ -58,27 +60,14 @@ export const FCUMapContextProvider: React.FC<React.PropsWithChildren<{ initialMa
   }
 
   React.useEffect(() => {
-    if (!initialMapConfiguration) {
-      return;
-    }
-    const { anneeConstruction, contenuCO2, emissionsCO2, livraisonsAnnuelles, prixMoyen, tauxENRR } =
-      reseauxDeChaleurFilters.limits.reseauxDeChaleur;
-
     setMapConfiguration({
-      ...initialMapConfiguration,
+      ...originalMapConfiguration,
       reseauxDeChaleur: {
-        ...initialMapConfiguration.reseauxDeChaleur,
-        limits: {
-          anneeConstruction,
-          contenuCO2,
-          emissionsCO2,
-          livraisonsAnnuelles,
-          prixMoyen,
-          tauxENRR,
-        },
+        ...originalMapConfiguration.reseauxDeChaleur,
+        ...reseauxDeChaleurFilters.filters,
       },
     });
-  }, []);
+  }, [reseauxDeChaleurFilters.filters]);
 
   const toggleLayer: UseFCUMapResult['toggleLayer'] = (property) => {
     toggleBoolean(mapConfiguration, property);

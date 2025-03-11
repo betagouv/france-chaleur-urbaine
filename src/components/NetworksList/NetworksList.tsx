@@ -84,7 +84,7 @@ const FiltersBox = styled(Box)`
     font-size: 0.9rem;
   }
 `;
-export function filterReseauxDeChaleur(reseauxDeChaleur: NetworkToCompare[], filters: Filters['reseauxDeChaleur']): NetworkToCompare[] {
+export function filterReseauxDeChaleur(reseauxDeChaleur: NetworkToCompare[], filters: Filters): NetworkToCompare[] {
   const filterKeys = Object.keys(filters);
 
   return reseauxDeChaleur.filter((reseau) => {
@@ -94,7 +94,7 @@ export function filterReseauxDeChaleur(reseauxDeChaleur: NetworkToCompare[], fil
       .filter(({ confKey }) => filterKeys.includes(confKey))
       .forEach((reseauxDeChaleurFilter) => {
         const filter = filters[reseauxDeChaleurFilter.confKey];
-        const value = reseau[reseauxDeChaleurFilter?.valueKey];
+        const value = reseau[reseauxDeChaleurFilter.valueKey];
 
         if (typeof value !== 'number' || value < filter[0] || value > filter[1]) {
           showReseau = false;
@@ -109,16 +109,16 @@ export function filterReseauxDeChaleur(reseauxDeChaleur: NetworkToCompare[], fil
           showReseau = false;
         }
       });
-    (filters.energieMobilisee || []).forEach((energieMobilisee) => {
+    filters.energieMobilisee.forEach((energieMobilisee) => {
       if (reseau[`energie_ratio_${energieMobilisee}`] <= 0) {
         showReseau = false;
       }
     });
-    if (filters.regions && !filters.regions.includes(reseau.region)) {
+    if (filters.regions.length > 0 && !filters.regions.includes(reseau.region)) {
       showReseau = false;
     }
 
-    if (filters.gestionnaires) {
+    if (filters.gestionnaires.length > 0) {
       if (filters.gestionnaires.includes('autre')) {
         // If 'autre' is selected, exclude networks whose gestionnaire matches any unselected filter
         const gestionnairesToExclude = gestionnairesFilters
@@ -296,13 +296,9 @@ const NetworksList = () => {
   const [regionsList, setRegionsList] = useState<ReseauxDeChaleurFiltersProps['regionsList']>([]);
   const [allNetworks, setAllNetworks] = useState<NetworkToCompare[]>([]);
   const [searchValue, setSearchValue] = useState<string>('');
-  const { filters: objectFilters, countFilters } = useReseauxDeChaleurFilters();
-  const nbFilters = countFilters('reseauxDeChaleur');
+  const { filters: objectFilters, nbFilters } = useReseauxDeChaleurFilters();
 
-  let filteredNetworks = filterReseauxDeChaleur(
-    allNetworks,
-    objectFilters?.reseauxDeChaleur || ({} as NonNullable<typeof objectFilters.reseauxDeChaleur>)
-  );
+  let filteredNetworks = filterReseauxDeChaleur(allNetworks, objectFilters || ({} as NonNullable<typeof objectFilters>));
 
   if (searchValue) {
     const searchValueLowerCase = searchValue.toLocaleLowerCase();
@@ -580,7 +576,7 @@ const NetworksList = () => {
               }}
             >
               <Icon size="md" name="fr-icon-filter-line" color="var(--text-action-high-blue-france)" />
-              Tous les filtres ({countFilters('reseauxDeChaleur')})
+              Tous les filtres ({nbFilters})
             </Button>
             <Button
               disabled={!filteredNetworks.length}

@@ -52,8 +52,8 @@ export type MapConfiguration = {
   filtreGestionnaire: string[];
   reseauxDeChaleur: {
     show: boolean;
-    isClassed?: boolean;
-    energieMobilisee?: FiltreEnergieConfKey[];
+    isClassed: boolean;
+    energieMobilisee: FiltreEnergieConfKey[];
     tauxENRR: Interval;
     emissionsCO2: Interval;
     contenuCO2: Interval;
@@ -160,6 +160,7 @@ export const emptyMapConfiguration: EmptyMapConfiguration = {
   reseauxDeChaleur: {
     show: false,
     energieMobilisee: [],
+    isClassed: false,
     energie_ratio_biomasse: percentageMaxInterval,
     energie_ratio_geothermie: percentageMaxInterval,
     energie_ratio_uve: percentageMaxInterval,

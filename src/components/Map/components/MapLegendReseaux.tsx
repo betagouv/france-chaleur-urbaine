@@ -42,8 +42,7 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
   isIframeContext,
   ...props
 }) => {
-  const { mapConfiguration, toggleLayer, countFilters } = useFCUMap();
-  const nbFilters = countFilters('reseauxDeChaleur');
+  const { mapConfiguration, toggleLayer, nbFilters } = useFCUMap();
 
   const enabledFeatures = useMemo(() => {
     return props.enabledFeatures ?? mapLegendFeatures;

@@ -54,13 +54,19 @@ export function deepMergeObjects<T, U>(obj1: T, obj2: U): T & U {
   const result: any = cloneDeep(obj1);
 
   for (const key in obj2) {
-    if (obj2[key] !== null && typeof obj2[key] === 'object' && !Array.isArray(obj2[key])) {
-      if (key in result && typeof result[key] === 'object' && !Array.isArray(result[key])) {
+    if (obj2[key] !== null && typeof obj2[key] === 'object') {
+      if (Array.isArray(obj2[key])) {
+        // Handle arrays by cloning them
+        result[key] = cloneDeep(obj2[key]);
+      } else if (key in result && typeof result[key] === 'object') {
+        // Recursively merge objects
         result[key] = deepMergeObjects(result[key], obj2[key]);
       } else {
-        result[key] = { ...obj2[key] };
+        // Clone objects that don't exist in result
+        result[key] = cloneDeep(obj2[key]);
       }
     } else {
+      // Handle primitive values
       result[key] = obj2[key];
     }
   }

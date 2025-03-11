@@ -1,4 +1,4 @@
-export type Interval = [number, number];
+export type Interval = [min: number, max: number];
 
 /**
  * Returns true if two intervals are equal, false otherwise.
