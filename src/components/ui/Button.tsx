@@ -114,7 +114,7 @@ const Button: React.FC<ButtonProps> = ({
     onExternalClick?.(e);
   };
 
-  const variantClassName = (variantClassNames?.[variant] as any)?.[props?.priority || ''];
+  const variantClassName = (variantClassNames?.[variant] as any)?.[props?.priority || 'primary'];
   if (!variantClassName) {
     console.warn(`Button variant ${variant} is not supported for priority ${props.priority}`);
   }
