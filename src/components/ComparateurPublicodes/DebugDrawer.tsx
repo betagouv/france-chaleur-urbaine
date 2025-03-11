@@ -38,8 +38,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
             variant="tertiaryNoOutline"
             href={`${clientConfig.publicodesDocumentationURL}/doc/${utils.encodeRuleName(key)}?situation=${serializedSituation}`}
             isExternal
-            className="reset-external"
-            px="1w"
+            className="reset-external !px-0.5 ml-auto"
           >
             <Icon name="fr-icon-article-line" />
           </Link>
@@ -60,8 +59,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
             variant="tertiaryNoOutline"
             href={`${clientConfig.publicodesDocumentationURL}/doc/${utils.encodeRuleName(key)}?situation=${serializedSituation}`}
             isExternal
-            className="reset-external"
-            px="1w"
+            className="reset-external !px-0.5 ml-auto"
           >
             <Icon name="fr-icon-article-line" />
           </Link>
@@ -69,6 +67,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
       </Tooltip>
     );
   };
+
   const bool = (key: DottedName) => {
     return (
       <Tooltip title={key}>
@@ -78,8 +77,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
             variant="tertiaryNoOutline"
             href={`${clientConfig.publicodesDocumentationURL}/doc/${utils.encodeRuleName(key)}?situation=${serializedSituation}`}
             isExternal
-            className="reset-external"
-            px="1w"
+            className="reset-external !px-0.5 ml-auto"
           >
             <Icon name="fr-icon-article-line" />
           </Link>
@@ -104,6 +102,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
             <Heading size="h2">Bilan 1an</Heading>
 
             <TableSimple
+              fluid
               caption="Bilan à 1 an par lgt type / tertiaire chauffage"
               columns={[
                 { header: 'Installation', accessorKey: 'installation' },
@@ -140,6 +139,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
             <Heading size="h2">Calculs économiques</Heading>
 
             <TableSimple
+              fluid
               caption="Coût d'achat du combustible"
               columns={[
                 { header: 'Paramètres', accessorKey: 'parametres' },
@@ -191,6 +191,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
             />
 
             <TableSimple
+              fluid
               caption="P4 - Investissement total (sans aide) €TTC"
               columns={[
                 { header: 'Installation', accessorKey: 'installation' },
@@ -223,6 +224,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
             />
 
             <TableSimple
+              fluid
               caption="P1 - Coût du combustible par lgt type / tertiaire"
               columns={[
                 { header: 'Installation', accessorKey: 'installation' },
@@ -243,6 +245,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
             />
 
             <TableSimple
+              fluid
               caption="P2, P3 - Coût de l'entretien"
               columns={[
                 { header: 'Installation', accessorKey: 'installation' },
@@ -265,6 +268,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
             />
 
             <TableSimple
+              fluid
               caption="Montant des aides par logement/tertiaire"
               columns={[
                 { header: 'Installation', accessorKey: 'installation' },
@@ -304,6 +308,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
             <Heading size="h2">Calculs techniques</Heading>
 
             <TableSimple
+              fluid
               caption="Puissance totale des installations"
               columns={[
                 { header: 'Installation', accessorKey: 'installation' },
@@ -492,6 +497,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
             />
 
             <TableSimple
+              fluid
               caption="Si besoins équipements ECS différenciés"
               columns={[
                 { header: 'Installation', accessorKey: 'installation' },
@@ -516,6 +522,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
             />
 
             <TableSimple
+              fluid
               caption="Bilan par lgt / tertiaire"
               columns={[
                 { header: 'Installation', accessorKey: 'installation' },
@@ -532,6 +539,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
             />
 
             <TableSimple
+              fluid
               caption="Bilan des consommations par lgt / tertiaire"
               columns={[
                 { header: 'Installation', accessorKey: 'installation' },
@@ -555,6 +563,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
             <Heading size="h2">Calculs environnementaux</Heading>
 
             <TableSimple
+              fluid
               caption="Calculs environnementaux"
               columns={[
                 { header: 'Installation', accessorKey: 'installation' },
