@@ -40,10 +40,10 @@ const Autocomplete = <Option extends DefaultOption>({
   const generatedId = useId();
 
   React.useEffect(() => {
-    if (!inputValue && defaultValue) {
+    if (!defaultValueSet && !inputValue && defaultValue) {
       setInputValue(`${defaultValue}`);
     }
-  }, [inputValue, defaultValue]);
+  }, [defaultValueSet, inputValue, defaultValue]);
 
   React.useEffect(() => {
     onLoadingChange?.(loading);
