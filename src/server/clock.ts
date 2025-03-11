@@ -1,4 +1,4 @@
-import { env } from '@/environment';
+import { serverConfig } from '@/server/config';
 import { registerCrons } from '@/server/cron/cron';
 import { shutdownKyselyDatabase } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
@@ -29,10 +29,10 @@ let isShuttingDown = false;
 
 (async () => {
   logger.warn('starting clock');
-  if (env.CLOCK_CRONS_ENABLE) {
+  if (serverConfig.CLOCK_CRONS_ENABLE) {
     registerCrons();
   }
-  if (env.CLOCK_JOBS_PROCESSOR_ENABLE) {
+  if (serverConfig.CLOCK_JOBS_PROCESSOR_ENABLE) {
     void processJobsIndefinitely();
   }
 })();

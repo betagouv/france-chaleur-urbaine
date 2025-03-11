@@ -1,3 +1,11 @@
+import { z } from 'zod';
+
+const booleanSchema = z
+  .enum(['0', '1', 'true', 'false'])
+  .catch('false')
+  .transform((value) => value == 'true' || value == '1');
+
+// Attention, il faut référencer explicitement chaque variable process.env.NEXT_PUBLIC_*
 export const clientConfig = {
   websiteOrigin: process.env.NEXT_PUBLIC_MAP_ORIGIN,
   tracking: {
@@ -14,4 +22,8 @@ export const clientConfig = {
   summaryAreaSizeLimit: 5, // km²
   networkInfoFieldMaxCharacters: 700,
   networkSearchMinimumCharactersThreshold: 3,
+  ENABLE_COMPARATEUR_WIDGET: booleanSchema.default(false).parse(process.env.NEXT_PUBLIC_FLAG_ENABLE_COMPARATEUR_WIDGET),
+  ENABLE_COMPARATEUR: booleanSchema.default(false).parse(process.env.NEXT_PUBLIC_FLAG_ENABLE_COMPARATEUR),
+  ENABLE_TEST_ADRESSES: booleanSchema.default(false).parse(process.env.NEXT_PUBLIC_FLAG_ENABLE_TEST_ADRESSES),
+  ENABLE_INSCRIPTIONS: booleanSchema.default(false).parse(process.env.NEXT_PUBLIC_FLAG_ENABLE_INSCRIPTIONS),
 };

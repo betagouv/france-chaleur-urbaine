@@ -6,13 +6,13 @@ import { useRouter } from 'next/router';
 import React from 'react';
 import styled, { css } from 'styled-components';
 
+import { clientConfig } from '@/client-config';
 import { FooterConsentManagementItem } from '@/components/ConsentBanner';
 import { HeaderQuickAccessItem, type HeaderProps } from '@/components/dsfr/Header';
 import SEO, { type SEOProps } from '@/components/SEO';
 import Box from '@/components/ui/Box';
 import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
-import { env } from '@/environment';
 import { useAuthentication } from '@/services/authentication';
 import { deleteFetchJSON } from '@/utils/network';
 
@@ -67,7 +67,7 @@ const publicNavigationMenu: MainNavigationProps.Item[] = [
       href: '/',
     },
   },
-  ...(process.env.NEXT_PUBLIC_FLAG_ENABLE_COMPARATEUR === 'true'
+  ...(clientConfig.ENABLE_COMPARATEUR
     ? [
         {
           text: 'Comparateur de coûts et CO2',
@@ -331,7 +331,7 @@ function markCurrentPageActive(menuItems: MainNavigationProps.Item[], currentUrl
 }
 
 const publicQuickAccessItems: HeaderProps.QuickAccessItem[] = [
-  ...(env.NEXT_PUBLIC_FLAG_ENABLE_INSCRIPTIONS && typeof window !== 'undefined'
+  ...(clientConfig.ENABLE_INSCRIPTIONS
     ? [
         {
           text: 'Créer un compte',
