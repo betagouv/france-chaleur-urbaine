@@ -109,6 +109,7 @@ const Autocomplete = <Option extends DefaultOption>({
             textOverflow: 'ellipsis',
             paddingRight: '2.5rem',
           }}
+          autoComplete="off"
         />
         {loading && (
           <Oval
