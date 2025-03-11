@@ -9,7 +9,7 @@ export default function DashboardProfessionnel() {
             title="Tests d'adresses"
             desc="Testez l'éligibilité d'adresses pour le raccordement à un réseau de chaleur"
             linkProps={{
-              href: '/tests-adresses',
+              href: '/pro/tests-adresses',
             }}
             orientation="horizontal"
             enlargeLinkOrButton

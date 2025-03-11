@@ -246,13 +246,13 @@ const professionnelNavigationMenu: MainNavigationProps.Item[] = [
   {
     text: "Tests d'adresses",
     linkProps: {
-      href: '/tests-adresses',
+      href: '/pro/tests-adresses',
     },
   },
   {
     text: 'Comparateur de performances',
     linkProps: {
-      href: '/comparateur-couts-performances',
+      href: '/pro/comparateur-couts-performances',
     },
   },
 ];
