@@ -3,7 +3,6 @@ import Tabs from '@codegouvfr/react-dsfr/Tabs';
 import { useQueryClient } from '@tanstack/react-query';
 import { type SortingState, type ColumnFiltersState } from '@tanstack/react-table';
 import { useQueryState } from 'nuqs';
-import { unparse } from 'papaparse';
 import { useState, useMemo } from 'react';
 
 import CompleteEligibilityTestForm from '@/components/dashboard/professionnel/eligibility-test/CompleteEligibilityTestForm';
@@ -19,6 +18,8 @@ import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
 import { useDelete, useFetch, usePost } from '@/hooks/useApi';
 import { type ProEligibilityTestListItem } from '@/pages/api/pro-eligibility-tests';
 import { type ProEligibilityTestWithAddresses } from '@/pages/api/pro-eligibility-tests/[id]';
+import { toastErrors } from '@/services/notification';
+import { getProEligibilityTestAsXlsx } from '@/services/xlsx';
 import { downloadString } from '@/utils/browser';
 import { formatAsISODate, formatFrenchDate, formatFrenchDateTime } from '@/utils/date';
 import { compareFrenchStrings } from '@/utils/strings';
@@ -240,25 +241,17 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
       );
   }, [filteredAddresses]);
 
-  const downloadCSV = () => {
+  const downloadCSV = toastErrors(async () => {
     if (!filteredAddresses.length) return;
 
-    const csvData = filteredAddresses.map((address) => ({
-      adresse_source: address.source_address,
-      adresse_ban: address.ban_address,
-      indice_fiabilite: address.ban_score,
-      raccordable: address.eligibility_status?.isEligible ? 'Oui' : 'Non',
-      distance_reseau: address.eligibility_status?.distance,
-      pdp: address.eligibility_status?.inPDP ? 'Oui' : 'Non',
-      taux_enrr: address.eligibility_status?.tauxENRR,
-      co2: address.eligibility_status?.co2,
-      identifiant: address.eligibility_status?.id,
-    }));
+    const xlsx = await getProEligibilityTestAsXlsx(filteredAddresses);
 
-    const csv = unparse(csvData);
-
-    downloadString(csv, `fcu-${test.name}-adresses-${formatAsISODate(new Date())}.csv`, 'text/csv;charset=utf-8;');
-  };
+    downloadString(
+      xlsx,
+      `fcu-${test.name}-adresses-${formatAsISODate(new Date())}.xlsx`,
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    );
+  });
 
   return (
     <Box>
