@@ -5,12 +5,8 @@ import { z } from 'zod';
 dotenv.config({ path: '.env.local' });
 dotenv.config();
 
-const envSchema = {
+const serverConfigSchema = {
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
-  NEXT_PUBLIC_FLAG_ENABLE_COMPARATEUR_WIDGET: z.boolean().default(false),
-  NEXT_PUBLIC_FLAG_ENABLE_COMPARATEUR: z.boolean().default(false),
-  NEXT_PUBLIC_FLAG_ENABLE_TEST_ADRESSES: z.boolean().default(false),
-  NEXT_PUBLIC_FLAG_ENABLE_INSCRIPTIONS: z.boolean().default(false),
   IS_REVIEW_APP: z.boolean().default(false),
   GITHUB_CI: z.boolean().default(false),
   LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
@@ -20,6 +16,6 @@ const envSchema = {
   LOG_SQL_QUERIES: z.boolean().default(false),
 };
 
-export const env = parseEnv(process.env, envSchema);
+export const serverConfig = parseEnv(process.env, serverConfigSchema);
 
-export type Env = z.infer<z.ZodObject<typeof envSchema>>;
+export type ServerConfig = z.infer<z.ZodObject<typeof serverConfigSchema>>;

@@ -4,7 +4,7 @@ export { sql } from 'kysely';
 export * from './database';
 import '@/server/db'; // permet d'importer les variables d'env correctement
 
-import { env } from '@/environment';
+import { serverConfig } from '@/server/config';
 import { parentLogger } from '@/server/helpers/logger';
 import { sleep } from '@/utils/time';
 
@@ -32,7 +32,7 @@ const logger = parentLogger.child({
 // to communicate with your database.
 export const db = new Kysely<Database>({
   dialect,
-  log: env.LOG_SQL_QUERIES
+  log: serverConfig.LOG_SQL_QUERIES
     ? (event) => {
         logger.debug(`query ${event.level === 'error' ? 'failed' : 'completed'}`, {
           durationMs: Math.round(event.queryDurationMillis),

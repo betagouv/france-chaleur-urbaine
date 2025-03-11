@@ -1,3 +1,4 @@
+import { clientConfig } from '@/client-config';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Box from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
@@ -93,7 +94,7 @@ const OutilsPage = () => {
           Accéder
         </Link>
       </Box>
-      {process.env.NEXT_PUBLIC_FLAG_ENABLE_COMPARATEUR === 'true' && (
+      {clientConfig.ENABLE_COMPARATEUR && (
         <Box backgroundColor="blue-france-975-75">
           <Box py="5w" className="fr-container">
             <Heading as="h2" size="h3" color="blue-france" mb="0">

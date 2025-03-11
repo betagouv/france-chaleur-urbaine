@@ -1,7 +1,7 @@
 import Papa from 'papaparse';
 import { type Logger } from 'winston';
 
-import { env } from '@/environment';
+import { serverConfig } from '@/server/config';
 import { parentLogger } from '@/server/helpers/logger';
 import { handleError } from '@/utils/network';
 import { sleep } from '@/utils/time';
@@ -49,13 +49,13 @@ export async function getAddressesCoordinates(addressesCSV: string, contextLogge
       form.append('result_columns', 'result_label');
       form.append('result_columns', 'result_status');
 
-      const res = await fetch(`${env.API_ADRESSE_URL}search/csv/`, {
+      const res = await fetch(`${serverConfig.API_ADRESSE_URL}search/csv/`, {
         method: 'post',
         body: form,
       });
 
       if (!res.ok) {
-        await handleError(res, `${env.API_ADRESSE_URL}search/csv/`);
+        await handleError(res, `${serverConfig.API_ADRESSE_URL}search/csv/`);
       }
 
       const responseBody = await res.text();

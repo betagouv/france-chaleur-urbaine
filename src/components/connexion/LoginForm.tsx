@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { type FormEvent, useState } from 'react';
 
+import { clientConfig } from '@/client-config';
 import Input from '@/components/form/dsfr/Input';
 import PasswordInput from '@/components/form/dsfr/PasswordInput';
 import Button from '@/components/ui/Button';
@@ -57,7 +58,7 @@ export const LoginForm = ({ callbackUrl }: LoginFormProps) => {
         <Link key="reset-password" href="/reset-password">
           Mot de passe oublié ?
         </Link>
-        {process.env.NEXT_PUBLIC_FLAG_ENABLE_INSCRIPTIONS && (
+        {clientConfig.ENABLE_INSCRIPTIONS && (
           <Link key="create-account" href={`/inscription`}>
             Créer un compte
           </Link>
