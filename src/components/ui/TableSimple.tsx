@@ -23,10 +23,9 @@ import TableCell, { type TableCellProps } from './TableCell';
 export type ColumnDef<T, K = any> = ColumnDefOriginal<T, K> & {
   cellType?: TableCellProps<T>['type'];
   align?: 'center' | 'left' | 'right';
-  flex?: number;
   className?: string;
   suffix?: React.ReactNode;
-};
+} & ({ flex?: number } | { width?: 'auto' | string });
 
 export type TableSimpleProps<T> = {
   columns: ColumnDef<T>[];
@@ -36,6 +35,8 @@ export type TableSimpleProps<T> = {
   loading?: boolean;
   caption?: string;
   enableRowSelection?: boolean;
+  className?: string;
+  fluid?: boolean;
   onSelectionChange?: (selectedRows: T[]) => void;
 };
 
@@ -48,6 +49,8 @@ const TableSimple = <T extends RowData>({
   caption,
   enableRowSelection,
   onSelectionChange,
+  className,
+  fluid,
 }: TableSimpleProps<T>) => {
   const [globalFilter, setGlobalFilter] = React.useState<any>([]);
   const [sortingState, setSortingState] = React.useState<SortingState>(initialSortingState ?? []);
@@ -164,9 +167,11 @@ const TableSimple = <T extends RowData>({
 
   const gridTemplateColumns = table
     .getHeaderGroups()[0]
-    .headers.map((header, index) =>
-      enableRowSelection && index === 0 ? 'auto' : `${(header.column.columnDef as ColumnDef<T>).flex || 1}fr`
-    )
+    .headers.map((header, index) => {
+      const columnDef = header.column.columnDef as ColumnDef<T>;
+      const sizeValue = (columnDef as any)?.width ?? `${(columnDef as any)?.flex ?? 1}fr`; // TOFIX: remove any but could not find a way to do it
+      return enableRowSelection && index === 0 ? 'auto' : sizeValue;
+    })
     .join(' ');
   const hasAtLeastOneColumnSorting = table.getHeaderGroups()[0].headers.some((header) => header.column.getCanSort());
 
@@ -192,6 +197,7 @@ const TableSimple = <T extends RowData>({
       >
         {/* Even though we're still using sematic table tags, we must use CSS grid and flexbox for dynamic row heights */}
         <table
+          className={cx(fluid ? '!w-[max-content]' : '', className)}
           style={{
             display: 'grid',
             overflow: 'unset', // overwrite the dsfr
@@ -218,7 +224,12 @@ const TableSimple = <T extends RowData>({
                       {header.isPlaceholder ? null : (
                         <>
                           {/* mt-[5px] to be aligned  */}
-                          <span className={cx('break-all', hasAtLeastOneColumnSorting ? 'mt-[5px]' : '')}>
+                          <span
+                            className={cx('', hasAtLeastOneColumnSorting ? 'mt-[5px]' : '')}
+                            style={{
+                              wordBreak: 'break-word', // does not exist in tailwind
+                            }}
+                          >
                             {flexRender(columnDef.header, header.getContext())}
                           </span>
                           {header.column.getCanSort() && (

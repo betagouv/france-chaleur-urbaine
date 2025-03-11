@@ -42,17 +42,18 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
         <div className=" text-xs text-gray-600">{info.row.original.source_address}</div>
       </div>
     ),
-    flex: 2,
+    flex: 1,
   },
   {
     header: 'Indice de fiabilité',
     accessorKey: 'ban_score',
-    flex: 1,
+    width: '130px',
     suffix: '%',
     align: 'right',
   },
   {
     header: 'Raccordable',
+    width: '130px',
     accessorKey: 'eligibility_status.isEligible',
     id: 'eligibility_status.isEligible', // used to filter
     cellType: 'Boolean',
@@ -61,6 +62,7 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
   },
   {
     header: 'Distance au réseau',
+    width: '130px',
     accessorKey: 'eligibility_status.distance',
     id: 'eligibility_status.distance', // used to filter
     suffix: 'm',
@@ -72,6 +74,7 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
   },
   {
     header: 'PDP',
+    width: '100px',
     accessorKey: 'eligibility_status.inPDP',
     id: 'eligibility_status.inPDP', // used to filter
     cellType: 'Boolean',
@@ -80,17 +83,20 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
   },
   {
     header: 'Taux EnR&R',
+    width: '130px',
     accessorKey: 'eligibility_status.tauxENRR',
     suffix: '%',
     align: 'right',
   },
   {
     header: 'Contenu CO2 ACV (g/kWh)',
+    width: '130px',
     accessorKey: 'eligibility_status.co2',
     align: 'right',
   },
   {
     header: 'Identifiant',
+    width: '130px',
     accessorKey: 'eligibility_status.id',
     align: 'right',
   },
