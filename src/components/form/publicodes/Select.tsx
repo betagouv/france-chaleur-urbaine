@@ -30,7 +30,10 @@ const Select = ({
   hintText?: DSFRSelectProps['hint']; // harmonize with Input
   onChange?: (option?: string) => void;
 }) => {
-  const [ref, isInView] = useInViewport<HTMLDivElement>();
+  const [ref, isInViewRaw] = useInViewport<HTMLDivElement>();
+  const isInView =
+    !ref.current || // Hack because when Select value reveals another Select, ref is null and thus not in view
+    isInViewRaw;
   const { engine } = usePublicodesFormContext();
   const unit = !hideUnit && isInView ? engine.getUnit(name) : '';
 
