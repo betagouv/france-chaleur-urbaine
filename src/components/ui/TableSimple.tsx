@@ -164,7 +164,9 @@ const TableSimple = <T extends RowData>({
 
   const gridTemplateColumns = table
     .getHeaderGroups()[0]
-    .headers.map((header) => `${(header.column.columnDef as ColumnDef<T>).flex || 1}fr`)
+    .headers.map((header, index) =>
+      enableRowSelection && index === 0 ? 'auto' : `${(header.column.columnDef as ColumnDef<T>).flex || 1}fr`
+    )
     .join(' ');
   const hasAtLeastOneColumnSorting = table.getHeaderGroups()[0].headers.some((header) => header.column.getCanSort());
 
@@ -208,18 +210,22 @@ const TableSimple = <T extends RowData>({
                 {headerGroup.headers.map((header) => {
                   const columnDef = header.column.columnDef as ColumnDef<T>;
                   return (
-                    <th key={header.id} colSpan={header.colSpan} className={cx('!flex flex-nowrap', columnClassName(columnDef))}>
+                    <th
+                      key={header.id}
+                      colSpan={header.colSpan}
+                      className={cx('!flex flex-nowrap overflow-auto gap-1', columnClassName(columnDef))}
+                    >
                       {header.isPlaceholder ? null : (
                         <>
                           {/* mt-[5px] to be aligned  */}
-                          <span className={cx('break-words', hasAtLeastOneColumnSorting ? 'mt-[5px]' : '')}>
+                          <span className={cx('break-all', hasAtLeastOneColumnSorting ? 'mt-[5px]' : '')}>
                             {flexRender(columnDef.header, header.getContext())}
                           </span>
                           {header.column.getCanSort() && (
                             /* eslint-disable-next-line jsx-a11y/role-supports-aria-props */
                             <button
                               type="button"
-                              className="fr-btn--sort fr-btn fr-btn--sm ml-2 relative"
+                              className="fr-btn--sort fr-btn fr-btn--sm relative"
                               aria-sort={
                                 (
                                   {
