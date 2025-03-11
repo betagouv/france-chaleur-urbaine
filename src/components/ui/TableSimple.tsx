@@ -35,6 +35,8 @@ export type TableSimpleProps<T> = {
   loading?: boolean;
   caption?: string;
   enableRowSelection?: boolean;
+  className?: string;
+  fluid?: boolean;
   onSelectionChange?: (selectedRows: T[]) => void;
 };
 
@@ -47,6 +49,8 @@ const TableSimple = <T extends RowData>({
   caption,
   enableRowSelection,
   onSelectionChange,
+  className,
+  fluid,
 }: TableSimpleProps<T>) => {
   const [globalFilter, setGlobalFilter] = React.useState<any>([]);
   const [sortingState, setSortingState] = React.useState<SortingState>(initialSortingState ?? []);
@@ -193,6 +197,7 @@ const TableSimple = <T extends RowData>({
       >
         {/* Even though we're still using sematic table tags, we must use CSS grid and flexbox for dynamic row heights */}
         <table
+          className={cx(fluid ? '!w-[max-content]' : '', className)}
           style={{
             display: 'grid',
             overflow: 'unset', // overwrite the dsfr
