@@ -38,9 +38,10 @@ const MapSearchForm = ({ onAddressSelect }: { onAddressSelect?: HandleAddressSel
       state={eligibilityError ? 'error' : undefined}
       stateRelatedMessage={
         eligibilityError ? (
-          <>
+          // get rid of parent flex
+          <div>
             Une erreur est survenue. Veuillez réessayer ou bien <Link href="/contact">contacter le support</Link>.
-          </>
+          </div>
         ) : undefined
       }
       defaultValue={defaultAddress || ''}
