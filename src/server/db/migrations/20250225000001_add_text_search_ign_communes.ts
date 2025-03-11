@@ -9,10 +9,12 @@ export async function up(knex: Knex): Promise<void> {
     CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
     -- obligatoire pour utiliser unaccent dans un index
-    ALTER FUNCTION unaccent(text) IMMUTABLE;
-    ALTER FUNCTION unaccent(regdictionary, text) IMMUTABLE;
+    CREATE OR REPLACE FUNCTION immutable_unaccent(text) RETURNS text AS $$
+      SELECT unaccent('public.unaccent', $1);
+    $$ LANGUAGE sql IMMUTABLE;
 
-    CREATE INDEX IF NOT EXISTS idx_ign_communes_unaccent ON ign_communes USING gin (unaccent(nom) gin_trgm_ops);
+    DROP INDEX idx_ign_communes_unaccent;
+    CREATE INDEX IF NOT EXISTS idx_ign_communes_unaccent ON ign_communes USING gin (immutable_unaccent(nom) gin_trgm_ops);
   `);
 }
 

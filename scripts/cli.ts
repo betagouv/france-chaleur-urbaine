@@ -277,7 +277,7 @@ program
     const res = await kdb
       .selectFrom('ign_communes')
       .select(['insee_com', 'nom'])
-      .where((eb) => eb(eb.fn('unaccent', ['nom']), 'ilike', sql`unaccent('%' || ${commune} || '%')`))
+      .where((eb) => eb(eb.fn('immutable_unaccent', ['nom']), 'ilike', sql`immutable_unaccent('%' || ${commune} || '%')`))
       .orderBy('insee_com')
       .execute();
     if (res.length === 0) {
