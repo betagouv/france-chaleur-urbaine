@@ -1,4 +1,4 @@
-import { atom, useAtom } from 'jotai';
+import { atom, useAtom, useSetAtom } from 'jotai';
 import { useHydrateAtoms } from 'jotai/utils';
 import { type Session } from 'next-auth';
 /* eslint-disable import/order */
@@ -38,6 +38,12 @@ export const useRedirectionAfterLogin = (session?: Session | null) => {
  */
 export const useInitAuthentication = (session: Session | undefined) => {
   useHydrateAtoms(new Map([[authenticationAtom, session]]));
+
+  const setAuthenticationAtom = useSetAtom(authenticationAtom);
+  useEffect(() => {
+    setAuthenticationAtom(session ?? null);
+  }, [session, setAuthenticationAtom]);
+
   useRedirectionAfterLogin(session);
 };
 
