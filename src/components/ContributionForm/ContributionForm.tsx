@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { z, type ZodSchema } from 'zod';
 
 import Input from '@/components/form/dsfr/Input';
-import { getInputErrorStates } from '@/components/form/tanstack-form';
+import { getInputErrorStates } from '@/components/form/react-form/useForm';
 import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
 import { toastErrors } from '@/services/notification';
