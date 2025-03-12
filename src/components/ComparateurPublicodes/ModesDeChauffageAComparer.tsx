@@ -1,7 +1,7 @@
 import { useSearchParams } from 'next/navigation';
 import React from 'react';
 
-import Checkbox from '@/components/form/dsfr/Checkbox';
+import Checkboxes from '@/components/form/dsfr/Checkboxes';
 import Heading from '@/components/ui/Heading';
 import Link from '@/components/ui/Link';
 import Notice from '@/components/ui/Notice';
@@ -67,7 +67,7 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
       <Heading as="h3" size="h6">
         Chauffage collectif
       </Heading>
-      <Checkbox
+      <Checkboxes
         small
         options={(['Réseau de chaleur'] satisfies ModeDeChauffage[]).map(
           createOptionProps(!advancedMode && !nearestReseauDeChaleur ? '(Non disponible)' : undefined)
@@ -83,7 +83,7 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
           ) : undefined
         }
       />
-      <Checkbox
+      <Checkboxes
         small
         options={(
           [
@@ -104,7 +104,7 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
           <Heading as="h3" size="h6">
             Chauffage individuel
           </Heading>
-          <Checkbox
+          <Checkboxes
             small
             options={(
               [
