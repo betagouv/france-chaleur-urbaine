@@ -43,8 +43,8 @@ const ReseauxDeChaleurFilters: React.FC<ReseauxDeChaleurFiltersProps> = ({ regio
           {
             label: 'Réseaux classés',
             nativeInputProps: {
-              checked: filters?.reseauxDeChaleur?.isClassed,
-              onChange: (e) => updateFilter('reseauxDeChaleur.isClassed', e.target.checked),
+              checked: filters.isClassed,
+              onChange: (e) => updateFilter('isClassed', e.target.checked),
             },
           },
         ]}
@@ -58,15 +58,15 @@ const ReseauxDeChaleurFilters: React.FC<ReseauxDeChaleurFiltersProps> = ({ regio
             acc.push({
               label,
               nativeInputProps: {
-                checked: filters?.reseauxDeChaleur?.energieMobilisee?.includes(confKey) || false,
+                checked: filters.energieMobilisee.includes(confKey),
                 onChange: () => {
-                  const currentItems = filters?.reseauxDeChaleur?.energieMobilisee || [];
+                  const currentItems = filters.energieMobilisee;
 
                   const newItems = currentItems.includes(confKey)
                     ? currentItems.filter((key) => key !== confKey) // Remove if already selected
                     : [...currentItems, confKey]; // Add if not selected
 
-                  updateFilter('reseauxDeChaleur.energieMobilisee', newItems.length ? newItems : undefined);
+                  updateFilter('energieMobilisee', newItems.length ? newItems : undefined);
                 },
               },
             });
@@ -89,9 +89,9 @@ const ReseauxDeChaleurFilters: React.FC<ReseauxDeChaleurFiltersProps> = ({ regio
             small
             key={filtreEnergie.confKey}
             label={filtreEnergie.label}
-            domain={limits.reseauxDeChaleur[`energie_ratio_${filtreEnergie.confKey}`]}
-            value={filters?.reseauxDeChaleur?.[`energie_ratio_${filtreEnergie.confKey}`]}
-            onChange={(interval) => updateFilter(`reseauxDeChaleur.energie_ratio_${filtreEnergie.confKey}`, interval)}
+            domain={limits[`energie_ratio_${filtreEnergie.confKey}`]}
+            value={filters[`energie_ratio_${filtreEnergie.confKey}`]}
+            onChange={(interval) => updateFilter(`energie_ratio_${filtreEnergie.confKey}`, interval)}
             unit="%"
             className={fr.cx(index > 0 ? 'fr-mt-2w' : null)}
           />
@@ -111,15 +111,15 @@ const ReseauxDeChaleurFilters: React.FC<ReseauxDeChaleurFiltersProps> = ({ regio
                   acc.push({
                     label: regionName,
                     nativeInputProps: {
-                      checked: filters?.reseauxDeChaleur?.regions?.includes(regionName) || false,
+                      checked: filters.regions.includes(regionName),
                       onChange: () => {
-                        const currentItems = filters?.reseauxDeChaleur?.regions || [];
+                        const currentItems = filters.regions;
 
                         const newItems = currentItems.includes(regionName)
                           ? currentItems.filter((key) => key !== regionName) // Remove if already selected
                           : [...currentItems, regionName]; // Add if not selected
 
-                        updateFilter('reseauxDeChaleur.regions', newItems.length ? newItems : undefined);
+                        updateFilter('regions', newItems.length ? newItems : undefined);
                       },
                     },
                   });
@@ -142,15 +142,15 @@ const ReseauxDeChaleurFilters: React.FC<ReseauxDeChaleurFiltersProps> = ({ regio
                 acc.push({
                   label,
                   nativeInputProps: {
-                    checked: filters?.reseauxDeChaleur?.gestionnaires?.includes(value) || false,
+                    checked: filters.gestionnaires.includes(value),
                     onChange: () => {
-                      const currentItems = filters?.reseauxDeChaleur?.gestionnaires || [];
+                      const currentItems = filters.gestionnaires;
 
                       const newItems = currentItems.includes(value)
                         ? currentItems.filter((key) => key !== value) // Remove if already selected
                         : [...currentItems, value]; // Add if not selected
 
-                      updateFilter('reseauxDeChaleur.gestionnaires', newItems.length ? newItems : undefined);
+                      updateFilter('gestionnaires', newItems.length ? newItems : undefined);
                     },
                   },
                 });
@@ -166,9 +166,9 @@ const ReseauxDeChaleurFilters: React.FC<ReseauxDeChaleurFiltersProps> = ({ regio
         loading={loading}
         small
         label="Taux d’EnR&R"
-        domain={limits.reseauxDeChaleur.tauxENRR}
-        value={filters?.reseauxDeChaleur?.tauxENRR}
-        onChange={(interval) => updateFilter('reseauxDeChaleur.tauxENRR', interval)}
+        domain={limits.tauxENRR}
+        value={filters.tauxENRR}
+        onChange={(interval) => updateFilter('tauxENRR', interval)}
         unit="%"
       />
       <br />
@@ -176,9 +176,9 @@ const ReseauxDeChaleurFilters: React.FC<ReseauxDeChaleurFiltersProps> = ({ regio
         loading={loading}
         small
         label="Contenu CO2 ACV"
-        domain={limits.reseauxDeChaleur.emissionsCO2}
-        value={filters?.reseauxDeChaleur?.emissionsCO2}
-        onChange={(interval) => updateFilter('reseauxDeChaleur.emissionsCO2', interval)}
+        domain={limits.emissionsCO2}
+        value={filters.emissionsCO2}
+        onChange={(interval) => updateFilter('emissionsCO2', interval)}
         unit="gCO2/kWh"
         tooltip="Émissions en analyse du cycle de vie (directes et indirectes)"
       />
@@ -187,9 +187,9 @@ const ReseauxDeChaleurFilters: React.FC<ReseauxDeChaleurFiltersProps> = ({ regio
         loading={loading}
         small
         label="Contenu CO2"
-        domain={limits.reseauxDeChaleur.contenuCO2}
-        value={filters?.reseauxDeChaleur?.contenuCO2}
-        onChange={(interval) => updateFilter('reseauxDeChaleur.contenuCO2', interval)}
+        domain={limits.contenuCO2}
+        value={filters.contenuCO2}
+        onChange={(interval) => updateFilter('contenuCO2', interval)}
         unit="gCO2/kWh"
         tooltip="Émissions en analyse du cycle de vie (directes et indirectes)"
       />
@@ -198,9 +198,9 @@ const ReseauxDeChaleurFilters: React.FC<ReseauxDeChaleurFiltersProps> = ({ regio
         loading={loading}
         small
         label="Prix moyen de la chaleur"
-        domain={limits.reseauxDeChaleur.prixMoyen}
-        value={filters?.reseauxDeChaleur?.prixMoyen}
-        onChange={(interval) => updateFilter('reseauxDeChaleur.prixMoyen', interval)}
+        domain={limits.prixMoyen}
+        value={filters.prixMoyen}
+        onChange={(interval) => updateFilter('prixMoyen', interval)}
         unit="€TTC/MWh"
         tooltip="La comparaison avec le prix d'autres modes de chauffage n’est pertinente qu’en coût global annuel, en intégrant les coûts d’exploitation, de maintenance et d’investissement, amortis sur la durée de vie des installations."
       />
@@ -209,9 +209,9 @@ const ReseauxDeChaleurFilters: React.FC<ReseauxDeChaleurFiltersProps> = ({ regio
         loading={loading}
         small
         label="Livraisons annuelles de chaleur"
-        domain={limits.reseauxDeChaleur.livraisonsAnnuelles}
-        value={filters?.reseauxDeChaleur?.livraisonsAnnuelles}
-        onChange={(interval) => updateFilter('reseauxDeChaleur.livraisonsAnnuelles', interval)}
+        domain={limits.livraisonsAnnuelles}
+        value={filters.livraisonsAnnuelles}
+        onChange={(interval) => updateFilter('livraisonsAnnuelles', interval)}
         domainTransform={{
           percentToValue: (v) => roundNumberProgressively(getLivraisonsAnnuellesFromPercentage(v)),
           valueToPercent: (v) => roundNumberProgressively(getPercentageFromLivraisonsAnnuelles(v)),
@@ -223,9 +223,9 @@ const ReseauxDeChaleurFilters: React.FC<ReseauxDeChaleurFiltersProps> = ({ regio
         loading={loading}
         small
         label="Année de construction"
-        domain={limits.reseauxDeChaleur.anneeConstruction}
-        value={filters?.reseauxDeChaleur?.anneeConstruction}
-        onChange={(interval) => updateFilter('reseauxDeChaleur.anneeConstruction', interval)}
+        domain={limits.anneeConstruction}
+        value={filters.anneeConstruction}
+        onChange={(interval) => updateFilter('anneeConstruction', interval)}
       />
       <FilterResetButtonWrapper>
         {nbFilters > 0 && (
@@ -239,9 +239,8 @@ const ReseauxDeChaleurFilters: React.FC<ReseauxDeChaleurFiltersProps> = ({ regio
             onClick={() =>
               router.push(
                 `/carte?rdc_filters=${filtersQueryParam}&tabId=reseaux/filtres${
-                  filters?.reseauxDeChaleur?.regions?.length && regionsList
-                    ? `&zoom=${bestZoomForRegions}&coord=` +
-                      regionsList.find(({ name }) => name === filters?.reseauxDeChaleur?.regions[0])?.coord
+                  filters.regions.length && regionsList
+                    ? `&zoom=${bestZoomForRegions}&coord=` + regionsList.find(({ name }) => name === filters.regions[0])?.coord
                     : ''
                 }`
               )

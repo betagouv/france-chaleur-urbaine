@@ -3,8 +3,7 @@ import { type ExpressionSpecification } from 'maplibre-gl';
 import { filtresEnergies, percentageMaxInterval, type MapConfiguration } from '@/components/Map/map-configuration';
 import { gestionnairesFilters } from '@/services';
 import { type Network } from '@/types/Summary/Network';
-import { isDefined } from '@/utils/core';
-import { intervalsEqual } from '@/utils/interval';
+import { type Interval, intervalsEqual } from '@/utils/interval';
 
 type ReseauxDeChaleurFilter = {
   valueKey: keyof Network;
@@ -42,7 +41,7 @@ export const reseauxDeChaleurFilters = [
   },
 ] satisfies ReseauxDeChaleurFilter[];
 
-export type ReseauxDeChaleurLimits = Record<(typeof reseauxDeChaleurFilters)[number]['confKey'], [min: number, max: number]>;
+export type ReseauxDeChaleurLimits = Record<(typeof reseauxDeChaleurFilters)[number]['confKey'], Interval>;
 
 /**
  * Applique chaque filtre de réseau de chaleur si l'intervalle est compris
@@ -50,7 +49,7 @@ export type ReseauxDeChaleurLimits = Record<(typeof reseauxDeChaleurFilters)[num
  */
 export function buildReseauxDeChaleurFilters(conf: MapConfiguration['reseauxDeChaleur']): ExpressionSpecification[] {
   return [
-    ...(isDefined(conf.isClassed) ? [['==', ['get', 'reseaux classes'], conf.isClassed] satisfies ExpressionSpecification] : []),
+    ...(conf.isClassed ? [['==', ['get', 'reseaux classes'], true] satisfies ExpressionSpecification] : []),
     ...(conf.energieMobilisee && conf.energieMobilisee.length > 0
       ? conf.energieMobilisee.map(
           (energie) => ['>', ['coalesce', ['get', `energie_ratio_${energie}`]], 0] satisfies ExpressionSpecification
@@ -60,7 +59,7 @@ export function buildReseauxDeChaleurFilters(conf: MapConfiguration['reseauxDeCh
       const minValue = filtre.filterPreprocess ? filtre.filterPreprocess(conf[filtre.confKey][0]) : conf[filtre.confKey][0];
       const maxValue = filtre.filterPreprocess ? filtre.filterPreprocess(conf[filtre.confKey][1]) : conf[filtre.confKey][1];
 
-      return intervalsEqual(conf[filtre.confKey], conf.limits![filtre.confKey])
+      return intervalsEqual(conf[filtre.confKey], conf.limits[filtre.confKey])
         ? []
         : ([
             ['>=', ['coalesce', ['get', filtre.valueKey], Number.MIN_SAFE_INTEGER], minValue],
