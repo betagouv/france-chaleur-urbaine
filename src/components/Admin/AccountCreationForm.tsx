@@ -1,6 +1,6 @@
 import Input from '@codegouvfr/react-dsfr/Input';
 import Select from '@codegouvfr/react-dsfr/SelectNext';
-import { standardSchemaValidator, useForm } from '@tanstack/react-form';
+import { useForm } from '@tanstack/react-form';
 import { z } from 'zod';
 
 import Box from '@/components/ui/Box';
@@ -22,7 +22,6 @@ const AccountCreationForm = () => {
       email: '',
       role: 'professionnel',
     } as CreateUserRequest,
-    validatorAdapter: standardSchemaValidator(),
     validators: {
       onChange: zCreateUserRequest,
     },

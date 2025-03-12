@@ -1,6 +1,6 @@
 import Input from '@codegouvfr/react-dsfr/Input';
 import { Upload } from '@codegouvfr/react-dsfr/Upload';
-import { standardSchemaValidator, useForm } from '@tanstack/react-form';
+import { useForm } from '@tanstack/react-form';
 import { z } from 'zod';
 
 import { getInputErrorStates } from '@/components/form/tanstack-form';
@@ -33,7 +33,6 @@ const CreateEligibilityTestForm = () => {
       name: '',
       file: undefined as unknown as File,
     },
-    validatorAdapter: standardSchemaValidator(),
     validators: {
       onChange: zCreateEligibilityTest,
     },
