@@ -2,7 +2,7 @@ import { Upload } from '@codegouvfr/react-dsfr/Upload';
 import { useForm } from '@tanstack/react-form';
 import { z } from 'zod';
 
-import { getInputErrorStates } from '@/components/form/tanstack-form';
+import { getInputErrorStates } from '@/components/form/react-form/useForm';
 import Button from '@/components/ui/Button';
 import { useModal } from '@/components/ui/ModalSimple';
 import { usePost } from '@/hooks/useApi';

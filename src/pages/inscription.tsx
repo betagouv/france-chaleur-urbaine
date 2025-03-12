@@ -1,15 +1,10 @@
-import { PasswordInput } from '@codegouvfr/react-dsfr/blocks/PasswordInput';
-import Checkbox from '@codegouvfr/react-dsfr/Checkbox';
-import Input from '@codegouvfr/react-dsfr/Input';
-import { useForm } from '@tanstack/react-form';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { z } from 'zod';
 
-import { getInputErrorStates } from '@/components/form/tanstack-form';
+import useForm from '@/components/form/react-form/useForm';
 import CenterLayout from '@/components/shared/page/CenterLayout';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Box from '@/components/ui/Box';
-import Button from '@/components/ui/Button';
 import Heading from '@/components/ui/Heading';
 import Link from '@/components/ui/Link';
 import { toastErrors } from '@/services/notification';
@@ -32,16 +27,14 @@ export type AccountRegisterRequest = z.infer<typeof zAccountRegisterRequest>;
 function InscriptionPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const form = useForm({
+  const { EmailInput, PasswordInput, Checkbox, Submit, Form } = useForm({
     defaultValues: {
       email: '',
       password: '',
       acceptCGU: false,
       role: 'professionnel',
     } as AccountRegisterRequest,
-    validators: {
-      onChange: zAccountRegisterRequest,
-    },
+    schema: zAccountRegisterRequest,
     onSubmit: toastErrors(async ({ value }) => {
       await postFetchJSON('/api/auth/register', value);
       router.push('/inscription/bravo');
@@ -55,52 +48,11 @@ function InscriptionPage() {
           Créer votre compte
         </Heading>
 
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            form.handleSubmit();
-          }}
-        >
+        <Form>
           <Box display="flex" flexDirection="column" gap="16px">
-            <form.Field
-              name="email"
-              children={(field) => (
-                <Input
-                  label="Email"
-                  nativeInputProps={{
-                    required: true,
-                    id: field.name,
-                    name: field.name,
-                    placeholder: 'Saisir votre email',
-                    autoComplete: 'email',
-                    value: field.state.value,
-                    onChange: (e) => field.handleChange(e.target.value),
-                    onBlur: field.handleBlur,
-                  }}
-                  {...getInputErrorStates(field)}
-                />
-              )}
-            />
-            <form.Field
-              name="password"
-              children={(field) => (
-                <PasswordInput
-                  label="Mot de passe"
-                  nativeInputProps={{
-                    required: true,
-                    id: field.name,
-                    name: field.name,
-                    placeholder: 'Saisir votre mot de passe',
-                    autoComplete: 'password',
-                    value: field.state.value,
-                    onChange: (e) => field.handleChange(e.target.value),
-                    onBlur: field.handleBlur,
-                  }}
-                  {...getInputErrorStates(field)}
-                />
-              )}
-            />
+            <EmailInput name="email" label="Email" nativeInputProps={{ placeholder: 'Saisir votre email' }} />
+            <PasswordInput name="password" label="Mot de passe" nativeInputProps={{ placeholder: 'Saisir votre mot de passe' }} />
+
             {/* TODO pas encore géré */}
             {/* <form.Field
               name="role"
@@ -122,44 +74,24 @@ function InscriptionPage() {
                 />
               )}
             /> */}
-            <form.Field
+            <Checkbox
               name="acceptCGU"
-              children={(field) => (
-                <Checkbox
-                  small
-                  options={[
-                    {
-                      label: (
-                        <>
-                          J'atteste avoir lu et accepté les&nbsp;
-                          <Link href="/mentions-legales" isExternal>
-                            conditions générales d'utilisation
-                          </Link>
-                        </>
-                      ),
-                      nativeInputProps: {
-                        name: field.name,
-                        onChange: (e) => field.handleChange(e.target.checked),
-                      },
-                    },
-                  ]}
-                  {...getInputErrorStates(field)}
-                />
-              )}
+              small
+              label={
+                <>
+                  J'atteste avoir lu et accepté les&nbsp;
+                  <Link href="/mentions-legales" isExternal>
+                    conditions générales d'utilisation
+                  </Link>
+                </>
+              }
             />
             <div className="flex justify-between flex-row-reverse text-sm mb-8 items-center">
               <Link href={`/connexion?${searchParams.toString()}`}>Se connecter</Link>
-              <form.Subscribe
-                selector={(state) => [state.canSubmit, state.isSubmitting]}
-                children={([canSubmit, isSubmitting]) => (
-                  <Button type="submit" disabled={!canSubmit} loading={isSubmitting}>
-                    S'inscrire
-                  </Button>
-                )}
-              />
+              <Submit>S'inscrire</Submit>
             </div>
           </Box>
-        </form>
+        </Form>
       </CenterLayout>
     </SimplePage>
   );
