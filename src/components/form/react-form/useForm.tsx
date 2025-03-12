@@ -1,3 +1,4 @@
+import { type SelectProps as DSFRSelectProps } from '@codegouvfr/react-dsfr/SelectNext';
 import {
   useForm as useTanStackForm,
   type FormOptions,
@@ -5,15 +6,19 @@ import {
   type FormAsyncValidateOrFn,
   type AnyFieldApi,
 } from '@tanstack/react-form';
+import { type FieldApi } from '@tanstack/react-form';
 import { useEffect } from 'react';
 import { useState } from 'react';
 
 import DsfrCheckbox, { type CheckboxProps as DsfrCheckboxProps } from '@/components/form/dsfr/Checkbox';
+import DsfrCheckboxes, { type CheckboxesProps as DsfrCheckboxesProps } from '@/components/form/dsfr/Checkboxes';
 import DsfrInput from '@/components/form/dsfr/Input';
 import DsfrPasswordInput from '@/components/form/dsfr/PasswordInput';
+import DsfrRadio, { type RadioProps as DsfrRadioProps } from '@/components/form/dsfr/Radio';
+import DsfrSelect, { type SelectOption as DsfrSelectOption } from '@/components/form/dsfr/Select';
+import DsfrSelectCheckboxes, { type SelectCheckboxesProps as DsfrSelectCheckboxesProps } from '@/components/form/dsfr/SelectCheckboxes';
 import DsfrTextArea from '@/components/form/dsfr/TextArea';
 import Button, { type ButtonProps } from '@/components/ui/Button';
-
 /**
  * Get the error states for an input field.
  */
@@ -28,7 +33,12 @@ export function getAllErrors(field: AnyFieldApi): string[] {
   ];
 }
 
-export function getInputErrorStates(field: AnyFieldApi): Pick<DsfrCheckboxProps, 'state' | 'stateRelatedMessage'> {
+export function getInputErrorStates<TData>(
+  field: FieldApi<TData, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any>
+): {
+  state?: 'success' | 'error' | 'info' | 'default';
+  stateRelatedMessage?: React.ReactNode;
+} {
   const allErrors = getAllErrors(field);
 
   return {
@@ -219,7 +229,7 @@ function useForm<
     <Input nativeInputProps={{ type: 'email', autoComplete: 'email', ...nativeInputProps }} {...props} />
   );
   const UrlInput: typeof Input = ({ nativeInputProps, iconId = 'fr-icon-link', ...props }) => (
-    <Input nativeInputProps={{ type: 'email', autoComplete: 'email', ...nativeInputProps }} iconId={iconId} {...props} />
+    <Input nativeInputProps={{ type: 'url', autoComplete: 'url', ...nativeInputProps }} iconId={iconId} {...props} />
   );
 
   const Checkbox = ({
@@ -243,6 +253,158 @@ function useForm<
             checked: field.state.value as any,
             ...nativeInputProps,
           }}
+          {...getInputErrorStates(field)}
+          {...props}
+        />
+      )}
+    />
+  );
+
+  const Checkboxes = ({
+    name,
+    fieldInputProps,
+    label,
+    options,
+    ...props
+  }: FieldProps &
+    Omit<DsfrCheckboxesProps, 'stateRelatedMessage' | 'state' | 'options' | 'name'> & {
+      options: (Omit<DsfrCheckboxesProps['options'][number], 'nativeInputProps'> & {
+        nativeInputProps?: Omit<DsfrCheckboxesProps['options'][number]['nativeInputProps'], 'checked' | 'onChange' | 'onBlur'>;
+      })[];
+    }) => (
+    <form.Field
+      name={name}
+      {...fieldInputProps}
+      children={(field) => (
+        <DsfrCheckboxes
+          small
+          label={label}
+          options={options.map((option) => ({
+            ...option,
+            nativeInputProps: {
+              name: `${name}`,
+              onChange: (e) => {
+                const value = (field.state.value as string[]) || [];
+
+                const optionValue = option.nativeInputProps?.value || option.label;
+                if (e.target.checked) {
+                  field.handleChange([...value, optionValue] as any);
+                } else {
+                  field.handleChange(value.filter((v) => v !== optionValue) as any);
+                }
+              },
+              checked: Array.isArray(field.state.value) && field.state.value.includes(option.nativeInputProps?.value || option.label),
+              ...option.nativeInputProps,
+            },
+          }))}
+          {...getInputErrorStates(field)}
+          {...props}
+        />
+      )}
+    />
+  );
+
+  const SelectCheckboxes = ({
+    name,
+    fieldInputProps,
+    label,
+    options,
+    ...props
+  }: FieldProps &
+    Omit<DsfrSelectCheckboxesProps, 'stateRelatedMessage' | 'state' | 'options' | 'fieldId'> & {
+      options: (Omit<DsfrSelectCheckboxesProps['options'][number], 'nativeInputProps'> & {
+        nativeInputProps?: Omit<DsfrSelectCheckboxesProps['options'][number]['nativeInputProps'], 'checked' | 'onChange' | 'onBlur'>;
+      })[];
+    }) => (
+    <form.Field
+      name={name}
+      {...fieldInputProps}
+      children={(field) => (
+        <DsfrSelectCheckboxes
+          fieldId={name}
+          label={label}
+          options={options.map((option) => ({
+            ...option,
+            nativeInputProps: {
+              name: `${name}`,
+              onChange: (e) => {
+                const value = (field.state.value as string[]) || [];
+
+                const optionValue = option.nativeInputProps?.value || option.label;
+                if (e.target.checked) {
+                  field.handleChange([...value, optionValue] as any);
+                } else {
+                  field.handleChange(value.filter((v) => v !== optionValue) as any);
+                }
+              },
+              checked: Array.isArray(field.state.value) && field.state.value.includes(option.nativeInputProps?.value || option.label),
+              ...option.nativeInputProps,
+            },
+          }))}
+          {...getInputErrorStates(field)}
+          {...props}
+        />
+      )}
+    />
+  );
+
+  const Select = <Options extends DsfrSelectOption[]>({
+    name,
+    fieldInputProps,
+    options,
+    label,
+    nativeSelectProps,
+    ...props
+  }: FieldProps &
+    Omit<DSFRSelectProps<Options>, 'nativeSelectProps' | 'state' | 'stateRelatedMessage'> & {
+      nativeSelectProps?: Omit<DSFRSelectProps<Options>['nativeSelectProps'], 'value' | 'onChange' | 'onBlur'>;
+    }) => (
+    <form.Field
+      name={name}
+      {...fieldInputProps}
+      children={(field) => (
+        <DsfrSelect<Options>
+          label={label}
+          options={options}
+          nativeSelectProps={{
+            id: `${name}`,
+            name: `${name}`,
+            value: field.state.value as any,
+            onChange: (e) => field.handleChange(e.target.value as any),
+            onBlur: field.handleBlur,
+            ...nativeSelectProps,
+          }}
+          {...getInputErrorStates(field)}
+          {...props}
+        />
+      )}
+    />
+  );
+
+  const Radio = ({
+    name,
+    fieldInputProps,
+    options,
+    label,
+    orientation,
+    ...props
+  }: FieldProps & Omit<DsfrRadioProps, 'state' | 'stateRelatedMessage'>) => (
+    <form.Field
+      name={name}
+      {...fieldInputProps}
+      children={(field) => (
+        <DsfrRadio
+          label={label}
+          orientation={orientation}
+          options={options.map((option) => ({
+            ...option,
+            nativeInputProps: {
+              ...option.nativeInputProps,
+              checked: field.state.value && field.state.value === option.nativeInputProps.value,
+              onChange: (e) => field.handleChange(e.target.value as any),
+              onBlur: field.handleBlur,
+            },
+          }))}
           {...getInputErrorStates(field)}
           {...props}
         />
@@ -320,7 +482,22 @@ function useForm<
     </form>
   );
 
-  return { form, Input, PasswordInput, EmailInput, Textarea, UrlInput, Checkbox, Submit, Form, FormDebug };
+  return {
+    form,
+    Input,
+    PasswordInput,
+    EmailInput,
+    Textarea,
+    UrlInput,
+    Checkbox,
+    Submit,
+    Form,
+    FormDebug,
+    Select,
+    Radio,
+    Checkboxes,
+    SelectCheckboxes,
+  };
 }
 
 export default useForm;
