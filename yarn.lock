@@ -2856,12 +2856,12 @@
   dependencies:
     "@react-hookz/deep-equal" "^3.0.1"
 
-"@remix-run/node@^2.15.0":
-  version "2.15.2"
-  resolved "https://registry.yarnpkg.com/@remix-run/node/-/node-2.15.2.tgz#7ea460335b66a06d22e554a84edf09e2b8879a8a"
-  integrity sha512-NS/h5uxje7DYCNgcKqKAiUhf0r2HVnoYUBWLyIIMmCUP1ddWurBP6xTPcWzGhEvV/EvguniYi1wJZ5+X8sonWw==
+"@remix-run/node@^2.15.3":
+  version "2.16.0"
+  resolved "https://registry.yarnpkg.com/@remix-run/node/-/node-2.16.0.tgz#9ffde5408c80726b4fc276f24a36ddfec337b86d"
+  integrity sha512-9yYBYCHYO1+bIScGAtOy5/r4BoTS8E5lpQmjWP99UxSCSiKHPEO76V9Z8mmmarTNis/FPN+sUwfmbQWNHLA2vw==
   dependencies:
-    "@remix-run/server-runtime" "2.15.2"
+    "@remix-run/server-runtime" "2.16.0"
     "@remix-run/web-fetch" "^4.4.2"
     "@web3-storage/multipart-parser" "^1.0.0"
     cookie-signature "^1.1.0"
@@ -2869,17 +2869,17 @@
     stream-slice "^0.1.2"
     undici "^6.11.1"
 
-"@remix-run/router@1.21.0":
-  version "1.21.0"
-  resolved "https://registry.yarnpkg.com/@remix-run/router/-/router-1.21.0.tgz#c65ae4262bdcfe415dbd4f64ec87676e4a56e2b5"
-  integrity sha512-xfSkCAchbdG5PnbrKqFWwia4Bi61nH+wm8wLEqfHDyp7Y3dZzgqS2itV8i4gAq9pC2HsTpwyBC6Ds8VHZ96JlA==
+"@remix-run/router@1.23.0":
+  version "1.23.0"
+  resolved "https://registry.yarnpkg.com/@remix-run/router/-/router-1.23.0.tgz#35390d0e7779626c026b11376da6789eb8389242"
+  integrity sha512-O3rHJzAQKamUz1fvE0Qaw0xSFqsA/yafi2iqeE0pvdFtCO1viYx8QL6f3Ln/aCCTLxs68SLf0KPM9eSeM8yBnA==
 
-"@remix-run/server-runtime@2.15.2":
-  version "2.15.2"
-  resolved "https://registry.yarnpkg.com/@remix-run/server-runtime/-/server-runtime-2.15.2.tgz#5be945027612c0891748d1788d39fea1ef0ba33c"
-  integrity sha512-OqiPcvEnnU88B8b1LIWHHkQ3Tz2GDAmQ1RihFNQsbrFKpDsQLkw0lJlnfgKA/uHd0CEEacpfV7C9qqJT3V6Z2g==
+"@remix-run/server-runtime@2.16.0":
+  version "2.16.0"
+  resolved "https://registry.yarnpkg.com/@remix-run/server-runtime/-/server-runtime-2.16.0.tgz#3f671b32d59fe4438b7f8a484ec757826750fdab"
+  integrity sha512-gbuc4slxPi+pT47MrUYprX/wCuDlYL6H3LHZSvimWO1kDCBt8oefHzdHDPjLi4B1xzqXZomswTbuJzpZ7xRRTg==
   dependencies:
-    "@remix-run/router" "1.21.0"
+    "@remix-run/router" "1.23.0"
     "@types/cookie" "^0.6.0"
     "@web3-storage/multipart-parser" "^1.0.0"
     cookie "^0.6.0"
@@ -3392,10 +3392,10 @@
   dependencies:
     "@typescript-eslint/utils" "^8.15.0"
 
-"@tanstack/form-core@0.41.0":
-  version "0.41.0"
-  resolved "https://registry.yarnpkg.com/@tanstack/form-core/-/form-core-0.41.0.tgz#ea8eaccc2a6aaa061c24a3a4430869603c255164"
-  integrity sha512-626Xfi0C2xB9StzykIOXR/ugx/dUiwY/nY5opCovgXwBNqPEPrN3vMepC//rnGt1/jZmm3/7MW+02Ntc64UAmw==
+"@tanstack/form-core@1.0.5":
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/@tanstack/form-core/-/form-core-1.0.5.tgz#cff94d6bb5792fdd5803123c912feb1ea0a67fa9"
+  integrity sha512-jLwdYKFTfdf9DcNLi9QS6sdHV3NsEsfWR0LHc5qosFfGS8WXQ/EAm8yr88jZyV4gvEO8XE8W2Sf7i4VAZnxxCQ==
   dependencies:
     "@tanstack/store" "^0.7.0"
 
@@ -3404,13 +3404,13 @@
   resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-5.66.4.tgz#44b87bff289466adbfa0de8daa5756cbd2d61c61"
   integrity sha512-skM/gzNX4shPkqmdTCSoHtJAPMTtmIJNS0hE+xwTTUVYwezArCT34NMermABmBVUg5Ls5aiUXEDXfqwR1oVkcA==
 
-"@tanstack/react-form@0.41.0":
-  version "0.41.0"
-  resolved "https://registry.yarnpkg.com/@tanstack/react-form/-/react-form-0.41.0.tgz#dec276bb6710475b29bf5fac01ce839384ae2555"
-  integrity sha512-ijz/GFljdy+dz8JzfHpUO91Q2LBVKnMa7Q2clH1EiuTL5uvOq68MKeoYb9UhzYvFTXPqJZ4GMHhJEqy7cix9LQ==
+"@tanstack/react-form@^1.0.5":
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/@tanstack/react-form/-/react-form-1.0.5.tgz#a573ffbebead948973727800ce14cb5ddc944b9c"
+  integrity sha512-4e9Au0s2Uk7f2nlY0olte5s8k8vZHLjmqvRoVyw+rjzt0clDnryNJu3ZHuOaUcyG0vOG/Ame84q2voyImBKzFQ==
   dependencies:
-    "@remix-run/node" "^2.15.0"
-    "@tanstack/form-core" "0.41.0"
+    "@remix-run/node" "^2.15.3"
+    "@tanstack/form-core" "1.0.5"
     "@tanstack/react-store" "^0.7.0"
     decode-formdata "^0.8.0"
 

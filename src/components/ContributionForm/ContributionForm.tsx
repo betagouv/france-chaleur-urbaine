@@ -1,7 +1,7 @@
 import Alert from '@codegouvfr/react-dsfr/Alert';
 import RadioButtons from '@codegouvfr/react-dsfr/RadioButtons';
 import { Upload } from '@codegouvfr/react-dsfr/Upload';
-import { type FormState, standardSchemaValidator, useForm } from '@tanstack/react-form';
+import { useForm } from '@tanstack/react-form';
 import { useEffect, useState } from 'react';
 import { z, type ZodSchema } from 'zod';
 
@@ -361,7 +361,6 @@ const ContributionForm = () => {
       typeDemande: '',
       dansCadreDemandeADEME: '',
     } satisfies Record<keyof FormData, ''> as unknown as FormData,
-    validatorAdapter: standardSchemaValidator(),
     validators: {
       onChange: zContributionFormData,
     },
@@ -423,7 +422,7 @@ const ContributionForm = () => {
       />
 
       <form.Subscribe
-        selector={(state: FormState<FormData>) => state.values.typeUtilisateur}
+        selector={(state) => state.values.typeUtilisateur}
         children={(typeUtilisateur) =>
           typeUtilisateur === 'Autre' && (
             <form.Field
@@ -532,7 +531,7 @@ const ContributionForm = () => {
       />
 
       <form.Subscribe
-        selector={(state: FormState<FormData>) => state.values.typeDemande}
+        selector={(state) => state.values.typeDemande}
         children={(typeDemande) =>
           typeDemande !== '' &&
           typeDemandeFields[typeDemande].map((option) => (

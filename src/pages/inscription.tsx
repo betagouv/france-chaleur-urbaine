@@ -1,10 +1,11 @@
 import { PasswordInput } from '@codegouvfr/react-dsfr/blocks/PasswordInput';
 import Checkbox from '@codegouvfr/react-dsfr/Checkbox';
 import Input from '@codegouvfr/react-dsfr/Input';
-import { standardSchemaValidator, useForm } from '@tanstack/react-form';
+import { useForm } from '@tanstack/react-form';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { z } from 'zod';
 
+import { getInputErrorStates } from '@/components/form/tanstack-form';
 import CenterLayout from '@/components/shared/page/CenterLayout';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Box from '@/components/ui/Box';
@@ -38,7 +39,6 @@ function InscriptionPage() {
       acceptCGU: false,
       role: 'professionnel',
     } as AccountRegisterRequest,
-    validatorAdapter: standardSchemaValidator(),
     validators: {
       onChange: zAccountRegisterRequest,
     },
@@ -78,8 +78,7 @@ function InscriptionPage() {
                     onChange: (e) => field.handleChange(e.target.value),
                     onBlur: field.handleBlur,
                   }}
-                  state={field.state.meta.isTouched && field.state.meta.errors.length ? 'error' : 'default'}
-                  stateRelatedMessage={field.state.meta.errors.join(', ')}
+                  {...getInputErrorStates(field)}
                 />
               )}
             />
@@ -98,14 +97,7 @@ function InscriptionPage() {
                     onChange: (e) => field.handleChange(e.target.value),
                     onBlur: field.handleBlur,
                   }}
-                  messages={
-                    field.state.meta.isTouched
-                      ? field.state.meta.errors.map((e) => ({
-                          message: e,
-                          severity: 'error',
-                        }))
-                      : []
-                  }
+                  {...getInputErrorStates(field)}
                 />
               )}
             />
@@ -151,8 +143,7 @@ function InscriptionPage() {
                       },
                     },
                   ]}
-                  state={field.state.meta.isTouched && field.state.meta.errors.length ? 'error' : 'default'}
-                  stateRelatedMessage={field.state.meta.errors.join(', ')}
+                  {...getInputErrorStates(field)}
                 />
               )}
             />
