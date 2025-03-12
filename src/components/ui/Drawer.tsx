@@ -46,7 +46,7 @@ const Drawer = ({ children, open, onClose, direction = 'right', className, full 
             <DrawerVaul.Handle
               className={cx(
                 '!mx-0 absolute', // override default values which prevent right positioning
-                'flex-shrink-0 rounded-full bg-zinc-300',
+                'flex-shrink-0 rounded-full bg-zinc-300 cursor-grab',
                 orientation === 'horizontal' ? '!w-1.5 !h-12 top-1/2 -translate-y-1/2' : '!w-12 !h-1.5 left-1/2 -translate-x-1/2',
                 direction === 'right' ? 'left-1.5' : direction === 'left' ? 'right-1.5' : direction === 'bottom' ? 'top-1.5' : 'bottom-1.5'
               )}
