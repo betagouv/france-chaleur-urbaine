@@ -5,7 +5,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover
 import Checkboxes, { type CheckboxesProps } from './Checkboxes';
 import FieldWrapper, { type FieldWrapperProps } from './FieldWrapper';
 
-type SelectCheckboxesProps = Omit<FieldWrapperProps, 'onSelect' | 'children'> & CheckboxesProps;
+export type SelectCheckboxesProps = Omit<FieldWrapperProps, 'onSelect' | 'children'> & CheckboxesProps;
 
 const StyledCheckboxes = styled(Checkboxes)`
   margin-bottom: 0.5rem;
