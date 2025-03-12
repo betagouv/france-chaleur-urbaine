@@ -29,14 +29,15 @@ const StyledCheckbox = styled(DsfrCheckbox)<{
   `}
 `;
 
-export type CheckboxesProps = DsfrCheckboxProps & {
+export type CheckboxesProps = Omit<DsfrCheckboxProps, 'legend'> & {
   fullWidth?: boolean;
+  label?: DsfrCheckboxProps['legend'];
 };
 
-const Checkboxes: React.FC<CheckboxesProps> = ({ fullWidth = true, ...props }) => {
+const Checkboxes: React.FC<CheckboxesProps> = ({ fullWidth = true, label, ...props }) => {
   // HACK to force the checkbox to be re-rendered when the options change from outside
   const key = props.options.map(({ nativeInputProps: { value } }) => value).join('_');
-  return <StyledCheckbox key={key} $fullWidth={fullWidth} {...props} />;
+  return <StyledCheckbox legend={label} key={key} $fullWidth={fullWidth} {...props} />;
 };
 
 export default Checkboxes;
