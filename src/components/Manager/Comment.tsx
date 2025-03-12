@@ -41,7 +41,6 @@ const Comment = ({
     <TextAreaInput
       label=""
       size="sm"
-      textArea={true}
       nativeTextAreaProps={{
         value,
         onChange: onChangeHandler,

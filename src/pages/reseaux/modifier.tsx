@@ -6,6 +6,7 @@ import { type ChangeEvent, type FormEvent, useEffect, useMemo, useRef, useState 
 
 import { clientConfig } from '@/client-config';
 import Input from '@/components/form/dsfr/Input';
+import TextArea from '@/components/form/dsfr/TextArea';
 import NetworkSearchInput from '@/components/Network/NetworkSearchInput';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Box from '@/components/ui/Box';
@@ -339,8 +340,7 @@ function ModifierReseauxPage() {
               Renseigner des informations complémentaires à faire apparaître sur la fiche du réseau (
               {clientConfig.networkInfoFieldMaxCharacters} caractères maximum) (Optionnel)
             </Text>
-            <Input
-              textArea={true}
+            <TextArea
               label=""
               nativeTextAreaProps={{
                 placeholder:

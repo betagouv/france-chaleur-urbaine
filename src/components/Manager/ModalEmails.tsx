@@ -6,6 +6,7 @@ import { type FormEvent, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
 import Input from '@/components/form/dsfr/Input';
+import TextArea from '@/components/form/dsfr/TextArea';
 import Heading from '@/components/ui/Heading';
 import Modal from '@/components/ui/Modal';
 import emailsContentList from '@/data/manager/manager-emails-content';
@@ -259,9 +260,8 @@ function ModalEmails(props: Props) {
                   onChange: (e) => setEmailContentValue('object', e.target.value),
                 }}
               />
-              <Input
+              <TextArea
                 label="Corps"
-                textArea
                 nativeTextAreaProps={{
                   required: true,
                   rows: 10,

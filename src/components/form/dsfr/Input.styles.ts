@@ -1,9 +1,12 @@
 import { PasswordInput as DSFRPasswordInput } from '@codegouvfr/react-dsfr/blocks/PasswordInput';
-import { Input as DSFRInput } from '@codegouvfr/react-dsfr/Input';
+import { Input as DSFRInput, type InputProps as DSFRInputProps } from '@codegouvfr/react-dsfr/Input';
 import styled, { css } from 'styled-components';
 
 export type InputSize = 'sm';
 export type InputCustomProps = { $size?: InputSize };
+
+export type TextAreaProps = DSFRInputProps.TextArea & InputCustomProps;
+export type InputProps = DSFRInputProps.RegularInput & InputCustomProps;
 
 // Common styles for small inputs
 const smallInputStyles = css`
