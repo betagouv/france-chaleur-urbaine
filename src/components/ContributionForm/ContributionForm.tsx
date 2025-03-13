@@ -1,10 +1,10 @@
 import Alert from '@codegouvfr/react-dsfr/Alert';
-import RadioButtons from '@codegouvfr/react-dsfr/RadioButtons';
 import { useForm } from '@tanstack/react-form';
 import { useEffect, useState } from 'react';
 import { z, type ZodSchema } from 'zod';
 
 import Input from '@/components/form/dsfr/Input';
+import Radio from '@/components/form/dsfr/Radio';
 import Upload from '@/components/form/dsfr/Upload';
 import { getInputErrorStates } from '@/components/form/react-form/useForm';
 import Box from '@/components/ui/Box';
@@ -403,8 +403,8 @@ const ContributionForm = () => {
           },
         }}
         children={(field) => (
-          <RadioButtons
-            legend="Vous êtes :"
+          <Radio
+            label="Vous êtes :"
             name={field.name}
             options={typesUtilisateur.map((option) => ({
               label: option.label,
@@ -468,8 +468,8 @@ const ContributionForm = () => {
       <form.Field
         name="dansCadreDemandeADEME"
         children={(field) => (
-          <RadioButtons
-            legend="Votre contribution s’inscrit dans le cadre d’une demande de subvention ADEME :"
+          <Radio
+            label="Votre contribution s’inscrit dans le cadre d’une demande de subvention ADEME :"
             name={field.name}
             options={[
               {
@@ -511,8 +511,8 @@ const ContributionForm = () => {
           },
         }}
         children={(field) => (
-          <RadioButtons
-            legend="Vous souhaitez :"
+          <Radio
+            label="Vous souhaitez :"
             name={field.name}
             options={typesDemande.map((option) => ({
               label: option.label,
