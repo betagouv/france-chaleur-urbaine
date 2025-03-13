@@ -3,7 +3,7 @@ import Tabs from '@codegouvfr/react-dsfr/Tabs';
 import { useQueryClient } from '@tanstack/react-query';
 import { type SortingState, type ColumnFiltersState } from '@tanstack/react-table';
 import { useQueryState } from 'nuqs';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 
 import CompleteEligibilityTestForm from '@/components/dashboard/professionnel/eligibility-test/CompleteEligibilityTestForm';
 import Map, { type AdresseEligible } from '@/components/Map/Map';
@@ -17,7 +17,7 @@ import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
 import { useDelete, useFetch, usePost } from '@/hooks/useApi';
 import { type ProEligibilityTestListItem } from '@/pages/api/pro-eligibility-tests';
 import { type ProEligibilityTestWithAddresses } from '@/pages/api/pro-eligibility-tests/[id]';
-import { toastErrors } from '@/services/notification';
+import { notify, toastErrors } from '@/services/notification';
 import { getProEligibilityTestAsXlsx } from '@/services/xlsx';
 import { downloadString } from '@/utils/browser';
 import { formatAsISODate, formatFrenchDate, formatFrenchDateTime } from '@/utils/date';
@@ -147,7 +147,11 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
   const [viewDetail, setViewDetail] = useState(value === test.id);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
-  const { data: testDetails, isLoading } = useFetch<ProEligibilityTestWithAddresses>(`/api/pro-eligibility-tests/${test.id}`, {
+  const {
+    data: testDetails,
+    isLoading,
+    refetch,
+  } = useFetch<ProEligibilityTestWithAddresses>(`/api/pro-eligibility-tests/${test.id}`, {
     enabled: viewDetail,
   });
   const { mutateAsync: markAsSeen } = usePost(`/api/pro-eligibility-tests/${test.id}/mark-as-seen`, {
@@ -201,6 +205,16 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
       ) && columnFilters.length === preset.filters.length
     );
   };
+
+  useEffect(() => {
+    if (viewDetail && test.has_unseen_results) {
+      (async () => {
+        void markAsSeen({});
+        await refetch();
+        notify('success', 'Les résultats de ce test ont été mis à jour');
+      })();
+    }
+  }, [viewDetail, test.has_unseen_results, markAsSeen, refetch]);
 
   const filteredAddresses = useMemo(() => {
     if (!testDetails?.addresses) return [];
