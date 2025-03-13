@@ -264,9 +264,9 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
   }, [filteredAddresses]);
 
   const downloadCSV = toastErrors(async () => {
-    if (!filteredAddresses.length) return;
+    if (!testDetails?.addresses.length) return;
 
-    const xlsx = await getProEligibilityTestAsXlsx(filteredAddresses);
+    const xlsx = await getProEligibilityTestAsXlsx(testDetails.addresses);
 
     downloadString(
       xlsx,
