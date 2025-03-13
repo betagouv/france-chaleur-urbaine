@@ -22,6 +22,7 @@ import { getProEligibilityTestAsXlsx } from '@/services/xlsx';
 import { downloadString } from '@/utils/browser';
 import { formatAsISODate, formatFrenchDate, formatFrenchDateTime } from '@/utils/date';
 import { compareFrenchStrings } from '@/utils/strings';
+import { type FlattenKeys } from '@/utils/typescript';
 
 const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[] = [
   {
@@ -55,7 +56,6 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
     header: 'Raccordable',
     width: '130px',
     accessorKey: 'eligibility_status.isEligible',
-    id: 'eligibility_status.isEligible', // used to filter
     cellType: 'Boolean',
     align: 'center',
     filterFn: 'equals',
@@ -64,7 +64,6 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
     header: 'Distance au réseau',
     width: '130px',
     accessorKey: 'eligibility_status.distance',
-    id: 'eligibility_status.distance', // used to filter
     suffix: 'm',
     align: 'right',
     filterFn: (row, columnId, filterValue: number) => {
@@ -76,7 +75,6 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
     header: 'PDP',
     width: '100px',
     accessorKey: 'eligibility_status.inPDP',
-    id: 'eligibility_status.inPDP', // used to filter
     cellType: 'Boolean',
     align: 'center',
     filterFn: 'equals',
@@ -113,6 +111,16 @@ const initialSortingState: SortingState = [
   },
 ];
 
+type DotToUnderscore<T extends string> = T extends `${infer A}.${infer B}` ? `${A}_${DotToUnderscore<B>}` : T;
+
+type QuickFilterPreset = {
+  label: string;
+  filters: Array<{
+    id: DotToUnderscore<FlattenKeys<ProEligibilityTestWithAddresses['addresses'][number]>>;
+    value: boolean | number;
+  }>;
+};
+
 const quickFilterPresets = {
   all: {
     label: 'adresses',
@@ -120,20 +128,20 @@ const quickFilterPresets = {
   },
   adressesEligibles: {
     label: 'potentiellement raccordables',
-    filters: [{ id: 'eligibility_status.isEligible', value: true }],
+    filters: [{ id: 'eligibility_status_isEligible', value: true }],
   },
   adressesMoins100mPlus50ENRR: {
     label: "à moins de 100m d'un réseau à plus de 50% d'ENRR",
     filters: [
-      { id: 'eligibility_status.distance', value: 100 },
-      { id: 'eligibility_status.tauxENRR', value: 50 },
+      { id: 'eligibility_status_distance', value: 100 },
+      { id: 'eligibility_status_tauxENRR', value: 50 },
     ],
   },
   adressesDansPDP: {
     label: 'dans un périmètre de développement prioritaire',
-    filters: [{ id: 'eligibility_status.inPDP', value: true }],
+    filters: [{ id: 'eligibility_status_inPDP', value: true }],
   },
-};
+} satisfies Record<string, QuickFilterPreset>;
 type QuickFilterPresetKey = keyof typeof quickFilterPresets;
 
 const queryParamName = 'test-adresses';
@@ -224,15 +232,16 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
 
       return columnFilters.every((filter) => {
         switch (filter.id) {
-          case 'eligibility_status.isEligible':
+          case 'eligibility_status_isEligible':
             return address.eligibility_status?.isEligible === filter.value;
-          case 'eligibility_status.distance':
+          case 'eligibility_status_distance':
             return address.eligibility_status?.distance != null && address.eligibility_status.distance <= (filter.value as number);
-          case 'eligibility_status.inPDP':
+          case 'eligibility_status_inPDP':
             return address.eligibility_status?.inPDP === filter.value;
-          case 'eligibility_status.tauxENRR':
+          case 'eligibility_status_tauxENRR':
             return address.eligibility_status?.tauxENRR != null && address.eligibility_status.tauxENRR >= (filter.value as number);
           default:
+            console.warn(`filter '${filter.id}' not implemented`);
             return true;
         }
       });
