@@ -1,13 +1,16 @@
+import { Stepper } from '@codegouvfr/react-dsfr/Stepper';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { z } from 'zod';
 
 import useForm from '@/components/form/react-form/useForm';
+import Button from '@/components/ui/Button';
 import Link from '@/components/ui/Link';
 import { toastErrors } from '@/services/notification';
 import { userRolesInscription } from '@/types/enum/UserRole';
 import { postFetchJSON } from '@/utils/network';
 
-export const zAccountRegisterRequest = z.strictObject({
+export const zAccountRegisterRequest = z.object({
   email: z.string().email("L'adresse email n'est pas valide").max(100, "L'email ne peut pas dépasser 100 caractères"),
   password: z
     .string()
@@ -18,33 +21,93 @@ export const zAccountRegisterRequest = z.strictObject({
     message: "Veuillez accepter les conditions générales d'utilisation",
   }),
 });
-export type AccountRegisterRequest = z.infer<typeof zAccountRegisterRequest>;
 
-function RegisterForm() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const { EmailInput, PasswordInput, Checkbox, Submit, Form } = useForm({
+export const zNameSchema = z.object({
+  name: z.string().min(1, 'Le nom est obligatoire'),
+});
+
+export const zAdditionalInfoSchema = z.strictObject({
+  besoins: z.string().min(1, 'Le nom est obligatoire'),
+});
+
+const steps = [
+  {
+    label: 'Choisir un identifiant',
+    schema: zAccountRegisterRequest,
     defaultValues: {
       email: '',
       password: '',
       acceptCGU: false,
       role: 'professionnel',
     } as AccountRegisterRequest,
-    schema: zAccountRegisterRequest,
+  },
+  {
+    label: 'Choisir un nom',
+    schema: zNameSchema,
+    defaultValues: {
+      name: '',
+    },
+  },
+  {
+    label: 'Informations complémentaires',
+    schema: zAdditionalInfoSchema,
+    defaultValues: {
+      besoins: 'test default',
+    },
+  },
+];
+
+export type AccountRegisterRequest = z.infer<typeof zAccountRegisterRequest>;
+
+function RegisterForm() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const [stepIndex, setStepIndex] = useState(0);
+  const step = steps[stepIndex];
+  const previousStep = steps[stepIndex - 1];
+  const nextStep = steps[stepIndex + 1];
+  const [formData, setFormData] = useState(step?.defaultValues || {});
+
+  const currentFormData = Object.fromEntries(
+    Object.entries(step.defaultValues).map(([key]) => [key, (formData as any)[key] || (step.defaultValues as any)[key]])
+  );
+
+  const { EmailInput, PasswordInput, Checkbox, Submit, Form, Input, form } = useForm({
+    defaultValues: currentFormData,
+    schema: step.schema,
     onSubmit: toastErrors(async ({ value }) => {
-      await postFetchJSON('/api/auth/register', value);
-      router.push('/inscription/bravo');
+      const newFormData = { ...formData, ...value };
+      setFormData(newFormData);
+
+      if (stepIndex < steps.length - 1) {
+        setStepIndex(stepIndex + 1);
+      } else {
+        if (window.confirm(`Voulez-vous vraiment enregistrer ces informations ${JSON.stringify(newFormData, null, 2)} ?`)) {
+          await postFetchJSON('/api/auth/register', value);
+          router.push('/inscription/bravo');
+        }
+      }
     }),
   });
 
-  return (
-    <Form>
-      <div className="flex flex-col gap-4">
-        <EmailInput name="email" label="Email" nativeInputProps={{ placeholder: 'Saisir votre email' }} />
-        <PasswordInput name="password" label="Mot de passe" nativeInputProps={{ placeholder: 'Saisir votre mot de passe' }} />
+  useEffect(() => {
+    form.reset(currentFormData);
+  }, [stepIndex]);
 
-        {/* TODO pas encore géré */}
-        {/* <form.Field
+  return (
+    <>
+      <Stepper currentStep={stepIndex + 1} stepCount={steps.length} title={steps[stepIndex].label} nextTitle={nextStep?.label} />
+
+      <Form>
+        <div className="flex flex-col gap-4">
+          {stepIndex === 0 && (
+            <>
+              <EmailInput name="email" label="Email" nativeInputProps={{ placeholder: 'Saisir votre email' }} />
+              <PasswordInput name="password" label="Mot de passe" nativeInputProps={{ placeholder: 'Saisir votre mot de passe' }} />
+
+              {/* TODO pas encore géré */}
+              {/* <form.Field
               name="role"
               children={(field) => (
                 <Select
@@ -64,24 +127,43 @@ function RegisterForm() {
                 />
               )}
             /> */}
-        <Checkbox
-          name="acceptCGU"
-          small
-          label={
-            <>
-              J'atteste avoir lu et accepté les&nbsp;
-              <Link href="/mentions-legales" isExternal>
-                conditions générales d'utilisation
-              </Link>
+              <Checkbox
+                name="acceptCGU"
+                small
+                label={
+                  <>
+                    J'atteste avoir lu et accepté les&nbsp;
+                    <Link href="/mentions-legales" isExternal>
+                      conditions générales d'utilisation
+                    </Link>
+                  </>
+                }
+              />
             </>
-          }
-        />
-        <div className="flex justify-between flex-row-reverse text-sm mb-8 items-center">
-          <Link href={`/connexion?${searchParams.toString()}`}>Se connecter</Link>
-          <Submit>S'inscrire</Submit>
+          )}
+          {stepIndex === 1 && (
+            <>
+              <Input name="name" label="Nom" />
+            </>
+          )}
+          {stepIndex === 2 && (
+            <>
+              <Input name="besoins" label="Besoins" />
+            </>
+          )}
+          <div className="flex justify-between text-sm mb-8 items-center">
+            {previousStep ? (
+              <Button priority="secondary" onClick={() => setStepIndex(stepIndex - 1)}>
+                Précedent
+              </Button>
+            ) : (
+              <Link href={`/connexion?${searchParams.toString()}`}>Se connecter</Link>
+            )}
+            <Submit>Valider</Submit>
+          </div>
         </div>
-      </div>
-    </Form>
+      </Form>
+    </>
   );
 }
 
