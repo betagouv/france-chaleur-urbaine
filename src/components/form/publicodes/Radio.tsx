@@ -1,12 +1,11 @@
-import { RadioButtons } from '@codegouvfr/react-dsfr/RadioButtons';
-
+import Radio from '@/components/form/dsfr/Radio';
 import useInViewport from '@/hooks/useInViewport';
 
 import { usePublicodesFormContext } from './FormProvider';
 import { fixupBooleanEngineValue, getOptions } from './helpers';
 import Label from './Label';
 
-export type RadioButtonsProps = React.ComponentProps<typeof RadioButtons>;
+export type RadioProps = React.ComponentProps<typeof Radio>;
 export type RadioOption = { value: string | number; label?: string };
 
 const RadioInput = ({
@@ -14,10 +13,9 @@ const RadioInput = ({
   label: legend,
   help,
   ...props
-}: Omit<RadioButtonsProps, 'legend' | 'options' | 'name'> & {
+}: Omit<RadioProps, 'options' | 'name'> & {
   name: string;
   help?: React.ReactNode;
-  label?: RadioButtonsProps['legend']; // harmonize with Input
 }) => {
   const [ref, isInView] = useInViewport<HTMLFieldSetElement>();
   const { engine } = usePublicodesFormContext();
@@ -26,7 +24,7 @@ const RadioInput = ({
   const valueInEngine = isInView ? fixupBooleanEngineValue(engine.getField(name)) : '';
 
   return (
-    <RadioButtons
+    <Radio
       ref={ref}
       name={name}
       options={options.map((optionValue) => ({
@@ -45,7 +43,7 @@ const RadioInput = ({
           },
         },
       }))}
-      legend={<Label label={legend} help={help} />}
+      label={<Label label={legend} help={help} />}
       // state={props.state ?? fieldState.error ? 'error' : 'default'}
       // stateRelatedMessage={props.stateRelatedMessage ?? fieldState.error?.message}
       {...props}
