@@ -16,6 +16,9 @@ const roleConfig = {
   professionnel: {
     className: '!bg-[#0d49fb] !text-white',
   },
+  particulier: {
+    className: '!bg-[#2ca892] !text-white',
+  },
 } satisfies Record<
   UserRole,
   {
