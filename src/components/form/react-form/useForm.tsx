@@ -1,5 +1,10 @@
-import { useForm as useTanStackForm, type FormOptions, type FormValidateOrFn, type FormAsyncValidateOrFn } from '@tanstack/react-form';
-import { type FieldApi } from '@tanstack/react-form';
+import {
+  useForm as useTanStackForm,
+  type FormOptions,
+  type FormValidateOrFn,
+  type FormAsyncValidateOrFn,
+  type AnyFieldApi,
+} from '@tanstack/react-form';
 import { useEffect } from 'react';
 import { useState } from 'react';
 
@@ -12,9 +17,7 @@ import Button, { type ButtonProps } from '@/components/ui/Button';
 /**
  * Get the error states for an input field.
  */
-export function getAllErrors<TData>(
-  field: FieldApi<TData, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any>
-): string[] {
+export function getAllErrors(field: AnyFieldApi): string[] {
   return [
     ...new Set(
       [
@@ -25,9 +28,7 @@ export function getAllErrors<TData>(
   ];
 }
 
-export function getInputErrorStates<TData>(
-  field: FieldApi<TData, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any>
-): Pick<DsfrCheckboxProps, 'state' | 'stateRelatedMessage'> {
+export function getInputErrorStates(field: AnyFieldApi): Pick<DsfrCheckboxProps, 'state' | 'stateRelatedMessage'> {
   const allErrors = getAllErrors(field);
 
   return {
