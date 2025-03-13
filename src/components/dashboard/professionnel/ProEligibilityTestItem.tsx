@@ -3,7 +3,7 @@ import Tabs from '@codegouvfr/react-dsfr/Tabs';
 import { useQueryClient } from '@tanstack/react-query';
 import { type SortingState, type ColumnFiltersState } from '@tanstack/react-table';
 import { useQueryState } from 'nuqs';
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, Fragment } from 'react';
 
 import CompleteEligibilityTestForm from '@/components/dashboard/professionnel/eligibility-test/CompleteEligibilityTestForm';
 import Map, { type AdresseEligible } from '@/components/Map/Map';
@@ -22,7 +22,7 @@ import { getProEligibilityTestAsXlsx } from '@/services/xlsx';
 import { downloadString } from '@/utils/browser';
 import { formatAsISODate, formatFrenchDate, formatFrenchDateTime } from '@/utils/date';
 import { compareFrenchStrings } from '@/utils/strings';
-import { type FlattenKeys } from '@/utils/typescript';
+import { ObjectEntries, type FlattenKeys } from '@/utils/typescript';
 
 const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[] = [
   {
@@ -175,8 +175,8 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
 
   const addresses = testDetails?.addresses ?? [];
 
-  const stats = {
-    adressesCount: addresses.length,
+  const presetStats: Record<QuickFilterPresetKey, number> = {
+    all: addresses.length,
     adressesEligibles: addresses.filter((address) => address.eligibility_status && address.eligibility_status.isEligible).length,
     adressesMoins100mPlus50ENRR: addresses.filter(
       (address) =>
@@ -318,37 +318,18 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
     >
       <div className="flex flex-wrap mb-4">
         <div className="flex items-center">
-          <Indicator
-            loading={isLoading}
-            label={quickFilterPresets.all.label}
-            value={stats.adressesCount}
-            onClick={() => toggleFilterPreset('all')}
-            active={isPresetActive('all')}
-          />
-          <Divider />
-          <Indicator
-            loading={isLoading}
-            label={quickFilterPresets.adressesEligibles.label}
-            value={stats.adressesEligibles}
-            onClick={() => toggleFilterPreset('adressesEligibles')}
-            active={isPresetActive('adressesEligibles')}
-          />
-          <Divider />
-          <Indicator
-            loading={isLoading}
-            label={quickFilterPresets.adressesMoins100mPlus50ENRR.label}
-            value={stats.adressesMoins100mPlus50ENRR}
-            onClick={() => toggleFilterPreset('adressesMoins100mPlus50ENRR')}
-            active={isPresetActive('adressesMoins100mPlus50ENRR')}
-          />
-          <Divider />
-          <Indicator
-            loading={isLoading}
-            label={quickFilterPresets.adressesDansPDP.label}
-            value={stats.adressesDansPDP}
-            onClick={() => toggleFilterPreset('adressesDansPDP')}
-            active={isPresetActive('adressesDansPDP')}
-          />
+          {ObjectEntries(quickFilterPresets).map(([key, preset], index) => (
+            <Fragment key={key}>
+              <Indicator
+                loading={isLoading}
+                label={preset.label}
+                value={presetStats[key]}
+                onClick={() => toggleFilterPreset(key)}
+                active={isPresetActive(key)}
+              />
+              {index < Object.keys(quickFilterPresets).length - 1 && <Divider />}
+            </Fragment>
+          ))}
         </div>
         <div className="flex items-center gap-2 w-full">
           <div className="flex-1" />
