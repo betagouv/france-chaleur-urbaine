@@ -1,7 +1,7 @@
-import { Upload } from '@codegouvfr/react-dsfr/Upload';
 import Papa from 'papaparse';
 import { useState, type ChangeEvent } from 'react';
 
+import Upload from '@/components/form/dsfr/Upload';
 import SimplePage from '@/components/shared/page/SimplePage';
 import AsyncButton from '@/components/ui/AsyncButton';
 import Box from '@/components/ui/Box';

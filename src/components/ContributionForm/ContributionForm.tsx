@@ -1,11 +1,11 @@
 import Alert from '@codegouvfr/react-dsfr/Alert';
 import RadioButtons from '@codegouvfr/react-dsfr/RadioButtons';
-import { Upload } from '@codegouvfr/react-dsfr/Upload';
 import { useForm } from '@tanstack/react-form';
 import { useEffect, useState } from 'react';
 import { z, type ZodSchema } from 'zod';
 
 import Input from '@/components/form/dsfr/Input';
+import Upload from '@/components/form/dsfr/Upload';
 import { getInputErrorStates } from '@/components/form/react-form/useForm';
 import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
@@ -420,7 +420,6 @@ const ContributionForm = () => {
           />
         )}
       />
-
       <form.Subscribe
         selector={(state) => state.values.typeUtilisateur}
         children={(typeUtilisateur) =>
