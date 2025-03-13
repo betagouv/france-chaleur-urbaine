@@ -1,6 +1,6 @@
 import { Stepper } from '@codegouvfr/react-dsfr/Stepper';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { z } from 'zod';
 
 import useForm from '@/components/form/react-form/useForm';
@@ -26,11 +26,17 @@ export const zNameSchema = z.object({
   name: z.string().min(1, 'Le nom est obligatoire'),
 });
 
-export const zAdditionalInfoSchema = z.strictObject({
+export const zAdditionalInfoSchema = z.object({
   besoins: z.string().min(1, 'Le nom est obligatoire'),
 });
 
-const steps = [
+type FormStep = {
+  label: string;
+  schema: z.ZodType<any>;
+  defaultValues: Record<string, any>;
+};
+
+const steps: FormStep[] = [
   {
     label: 'Choisir un identifiant',
     schema: zAccountRegisterRequest,
@@ -38,24 +44,28 @@ const steps = [
       email: '',
       password: '',
       acceptCGU: false,
-      role: 'professionnel',
-    } as AccountRegisterRequest,
+      role: 'professionnel' as const,
+    } satisfies AccountRegisterRequest,
   },
   {
     label: 'Choisir un nom',
     schema: zNameSchema,
     defaultValues: {
       name: '',
-    },
+    } satisfies z.infer<typeof zNameSchema>,
   },
   {
     label: 'Informations complémentaires',
     schema: zAdditionalInfoSchema,
     defaultValues: {
       besoins: 'test default',
-    },
+    } satisfies z.infer<typeof zAdditionalInfoSchema>,
   },
-];
+] as const;
+
+type FormValues = z.infer<typeof zAccountRegisterRequest> & z.infer<typeof zNameSchema> & z.infer<typeof zAdditionalInfoSchema>;
+
+const defaultValues = steps.reduce<FormValues>((acc, curr) => ({ ...acc, ...curr.defaultValues }), {} as FormValues);
 
 export type AccountRegisterRequest = z.infer<typeof zAccountRegisterRequest>;
 
@@ -67,14 +77,10 @@ function RegisterForm() {
   const step = steps[stepIndex];
   const previousStep = steps[stepIndex - 1];
   const nextStep = steps[stepIndex + 1];
-  const [formData, setFormData] = useState(step?.defaultValues || {});
+  const [formData, setFormData] = useState(defaultValues);
 
-  const currentFormData = Object.fromEntries(
-    Object.entries(step.defaultValues).map(([key]) => [key, (formData as any)[key] || (step.defaultValues as any)[key]])
-  );
-
-  const { EmailInput, PasswordInput, Checkbox, Submit, Form, Input, form } = useForm({
-    defaultValues: currentFormData,
+  const { EmailInput, PasswordInput, Checkbox, Submit, Form, Input } = useForm({
+    defaultValues: formData,
     schema: step.schema,
     onSubmit: toastErrors(async ({ value }) => {
       const newFormData = { ...formData, ...value };
@@ -90,10 +96,6 @@ function RegisterForm() {
       }
     }),
   });
-
-  useEffect(() => {
-    form.reset(currentFormData);
-  }, [stepIndex]);
 
   return (
     <>
