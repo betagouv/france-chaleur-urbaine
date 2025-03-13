@@ -44,7 +44,7 @@ const steps: FormStep[] = [
       email: '',
       password: '',
       acceptCGU: false,
-      role: 'professionnel' as const,
+      role: 'particulier',
     } satisfies AccountRegisterRequest,
   },
   {
