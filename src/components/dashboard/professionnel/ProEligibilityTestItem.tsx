@@ -9,7 +9,6 @@ import CompleteEligibilityTestForm from '@/components/dashboard/professionnel/el
 import Map, { type AdresseEligible } from '@/components/Map/Map';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import { UrlStateAccordion } from '@/components/ui/Accordion';
-import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
 import Icon from '@/components/ui/Icon';
 import Loader from '@/components/ui/Loader';
@@ -254,153 +253,151 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
   });
 
   return (
-    <Box>
-      <UrlStateAccordion
-        queryParamName={queryParamName}
-        multi={false}
-        id={test.id}
-        label={
-          <div className="flex items-center justify-between w-full">
-            <div className="flex-auto">{test.name}</div>
-            {test.last_job_has_error && (
-              <Badge severity="error" small className="fr-mx-1w">
-                Erreur
+    <UrlStateAccordion
+      queryParamName={queryParamName}
+      multi={false}
+      id={test.id}
+      label={
+        <div className="flex items-center justify-between w-full">
+          <div className="flex-auto">{test.name}</div>
+          {test.last_job_has_error && (
+            <Badge severity="error" small className="fr-mx-1w">
+              Erreur
+            </Badge>
+          )}
+          {test.has_pending_jobs ? (
+            <Badge severity="new" small className="fr-mx-1w">
+              Mise à jour en attente
+            </Badge>
+          ) : (
+            test.has_unseen_results && (
+              <Badge severity="info" small className="fr-mx-1w">
+                Nouveaux résultats
               </Badge>
-            )}
-            {test.has_pending_jobs ? (
-              <Badge severity="new" small className="fr-mx-1w">
-                Mise à jour en attente
-              </Badge>
-            ) : (
-              test.has_unseen_results && (
-                <Badge severity="info" small className="fr-mx-1w">
-                  Nouveaux résultats
-                </Badge>
-              )
-            )}
-            <div className="fr-mx-1w text-xs text-gray-800 font-normal cursor-help" title={formatFrenchDateTime(new Date(test.updated_at))}>
-              Dernière mise à jour&nbsp;: {formatFrenchDate(new Date(test.updated_at))}
-            </div>
-          </div>
-        }
-        onClose={async (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          await handleDelete(test.id);
-        }}
-        onExpandedChange={(expanded) => {
-          setViewDetail(expanded);
-          if (expanded && test.has_unseen_results) {
-            markAsSeen({});
-          }
-        }}
-      >
-        <div className="flex flex-wrap mb-4">
-          <div className="flex items-center">
-            <Indicator
-              loading={isLoading}
-              label={quickFilterPresets.all.label}
-              value={stats.adressesCount}
-              onClick={() => toggleFilterPreset('all')}
-              active={isPresetActive('all')}
-            />
-            <Divider />
-            <Indicator
-              loading={isLoading}
-              label={quickFilterPresets.adressesEligibles.label}
-              value={stats.adressesEligibles}
-              onClick={() => toggleFilterPreset('adressesEligibles')}
-              active={isPresetActive('adressesEligibles')}
-            />
-            <Divider />
-            <Indicator
-              loading={isLoading}
-              label={quickFilterPresets.adressesMoins100mPlus50ENRR.label}
-              value={stats.adressesMoins100mPlus50ENRR}
-              onClick={() => toggleFilterPreset('adressesMoins100mPlus50ENRR')}
-              active={isPresetActive('adressesMoins100mPlus50ENRR')}
-            />
-            <Divider />
-            <Indicator
-              loading={isLoading}
-              label={quickFilterPresets.adressesDansPDP.label}
-              value={stats.adressesDansPDP}
-              onClick={() => toggleFilterPreset('adressesDansPDP')}
-              active={isPresetActive('adressesDansPDP')}
-            />
-          </div>
-          <div className="flex items-center gap-2 w-full">
-            <div className="flex-1" />
-            <Button iconId="fr-icon-download-line" priority="secondary" onClick={downloadCSV} disabled={filteredAddresses.length === 0}>
-              Télécharger le détail
-            </Button>
-
-            <ModalSimple
-              title="Ajout d'adresses"
-              size="medium"
-              trigger={
-                <Button iconId="fr-icon-add-line" priority="secondary">
-                  Ajouter des adresses
-                </Button>
-              }
-            >
-              <CompleteEligibilityTestForm testId={test.id} />
-            </ModalSimple>
-
-            <Button
-              onClick={() => handleDelete(test.id)}
-              loading={isDeleting}
-              variant="destructive"
-              priority="secondary"
-              title="Supprimer le test"
-            >
-              <Icon name="ri-delete-bin-2-line" />
-            </Button>
+            )
+          )}
+          <div className="fr-mx-1w text-xs text-gray-800 font-normal cursor-help" title={formatFrenchDateTime(new Date(test.updated_at))}>
+            Dernière mise à jour&nbsp;: {formatFrenchDate(new Date(test.updated_at))}
           </div>
         </div>
-
-        {viewDetail && (
-          <Tabs
-            tabs={[
-              {
-                label: 'Liste',
-                iconId: 'fr-icon-list-unordered',
-                content: (
-                  <TableSimple
-                    columns={columns}
-                    data={testDetails?.addresses || []}
-                    initialSortingState={initialSortingState}
-                    columnFilters={columnFilters}
-                  />
-                ),
-                isDefault: true,
-              },
-              {
-                label: 'Carte',
-                iconId: 'fr-icon-map-pin-2-line',
-                content: (
-                  <div className="min-h-[50vh] aspect-[4/3]">
-                    <Map
-                      initialMapConfiguration={createMapConfiguration({
-                        reseauxDeChaleur: {
-                          show: true,
-                        },
-                        reseauxEnConstruction: true,
-                        zonesDeDeveloppementPrioritaire: true,
-                      })}
-                      geolocDisabled
-                      withLegend={false}
-                      withoutLogo
-                      adressesEligibles={filteredAddressesMapData}
-                    />
-                  </div>
-                ),
-              },
-            ]}
+      }
+      onClose={async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        await handleDelete(test.id);
+      }}
+      onExpandedChange={(expanded) => {
+        setViewDetail(expanded);
+        if (expanded && test.has_unseen_results) {
+          markAsSeen({});
+        }
+      }}
+    >
+      <div className="flex flex-wrap mb-4">
+        <div className="flex items-center">
+          <Indicator
+            loading={isLoading}
+            label={quickFilterPresets.all.label}
+            value={stats.adressesCount}
+            onClick={() => toggleFilterPreset('all')}
+            active={isPresetActive('all')}
           />
-        )}
-      </UrlStateAccordion>
-    </Box>
+          <Divider />
+          <Indicator
+            loading={isLoading}
+            label={quickFilterPresets.adressesEligibles.label}
+            value={stats.adressesEligibles}
+            onClick={() => toggleFilterPreset('adressesEligibles')}
+            active={isPresetActive('adressesEligibles')}
+          />
+          <Divider />
+          <Indicator
+            loading={isLoading}
+            label={quickFilterPresets.adressesMoins100mPlus50ENRR.label}
+            value={stats.adressesMoins100mPlus50ENRR}
+            onClick={() => toggleFilterPreset('adressesMoins100mPlus50ENRR')}
+            active={isPresetActive('adressesMoins100mPlus50ENRR')}
+          />
+          <Divider />
+          <Indicator
+            loading={isLoading}
+            label={quickFilterPresets.adressesDansPDP.label}
+            value={stats.adressesDansPDP}
+            onClick={() => toggleFilterPreset('adressesDansPDP')}
+            active={isPresetActive('adressesDansPDP')}
+          />
+        </div>
+        <div className="flex items-center gap-2 w-full">
+          <div className="flex-1" />
+          <Button iconId="fr-icon-download-line" priority="secondary" onClick={downloadCSV} disabled={filteredAddresses.length === 0}>
+            Télécharger le détail
+          </Button>
+
+          <ModalSimple
+            title="Ajout d'adresses"
+            size="medium"
+            trigger={
+              <Button iconId="fr-icon-add-line" priority="secondary">
+                Ajouter des adresses
+              </Button>
+            }
+          >
+            <CompleteEligibilityTestForm testId={test.id} />
+          </ModalSimple>
+
+          <Button
+            onClick={() => handleDelete(test.id)}
+            loading={isDeleting}
+            variant="destructive"
+            priority="secondary"
+            title="Supprimer le test"
+          >
+            <Icon name="ri-delete-bin-2-line" />
+          </Button>
+        </div>
+      </div>
+
+      {viewDetail && (
+        <Tabs
+          tabs={[
+            {
+              label: 'Liste',
+              iconId: 'fr-icon-list-unordered',
+              content: (
+                <TableSimple
+                  columns={columns}
+                  data={testDetails?.addresses || []}
+                  initialSortingState={initialSortingState}
+                  columnFilters={columnFilters}
+                />
+              ),
+              isDefault: true,
+            },
+            {
+              label: 'Carte',
+              iconId: 'fr-icon-map-pin-2-line',
+              content: (
+                <div className="min-h-[50vh] aspect-[4/3]">
+                  <Map
+                    initialMapConfiguration={createMapConfiguration({
+                      reseauxDeChaleur: {
+                        show: true,
+                      },
+                      reseauxEnConstruction: true,
+                      zonesDeDeveloppementPrioritaire: true,
+                    })}
+                    geolocDisabled
+                    withLegend={false}
+                    withoutLogo
+                    adressesEligibles={filteredAddressesMapData}
+                  />
+                </div>
+              ),
+            },
+          ]}
+        />
+      )}
+    </UrlStateAccordion>
   );
 }
 type IndicatorProps = {
