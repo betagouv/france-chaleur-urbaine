@@ -13,7 +13,6 @@ export async function up(knex: Knex): Promise<void> {
       SELECT unaccent('public.unaccent', $1);
     $$ LANGUAGE sql IMMUTABLE;
 
-    DROP INDEX idx_ign_communes_unaccent;
     CREATE INDEX IF NOT EXISTS idx_ign_communes_unaccent ON ign_communes USING gin (immutable_unaccent(nom) gin_trgm_ops);
   `);
 }
