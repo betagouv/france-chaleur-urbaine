@@ -474,7 +474,7 @@ export const FullyFeaturedMap = ({
       return;
     }
     let shouldUpdate = false;
-    const newMarkersList: MapMarkerInfos[] = markersList;
+    const newMarkersList = [...markersList];
     const newSoughtAddresses = soughtAddresses.map((sAddress: any | never[]) => {
       const id = sAddress.id;
       const markerIndex = newMarkersList.findIndex((marker) => marker.id === id);
