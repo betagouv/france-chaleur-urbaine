@@ -1,5 +1,4 @@
 import { type SortingState } from '@tanstack/react-table';
-import { type GetServerSideProps } from 'next';
 
 import AccountCreationForm from '@/components/Admin/AccountCreationForm';
 import UserRoleBadge from '@/components/Admin/UserRoleBadge';
@@ -136,4 +135,4 @@ export default function ManageUsers() {
   );
 }
 
-export const getServerSideProps: GetServerSideProps = withAuthentication('admin');
+export const getServerSideProps = withAuthentication(['admin']);
