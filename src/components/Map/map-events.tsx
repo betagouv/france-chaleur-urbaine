@@ -136,6 +136,25 @@ export function useMapEvents({ mapLayersLoaded, isDrawing, mapRef }: UseMapEvent
     };
   }, [mapLayersLoaded, isDrawing]);
 
+  // reset the cursor style and the hovered feature state when starting to draw
+  useEffect(() => {
+    if (!mapLayersLoaded || !mapRef) {
+      return;
+    }
+
+    if (isDrawing && lastHoveredFeatureRef.current !== null) {
+      mapRef.getCanvas().style.cursor = '';
+      mapRef.setFeatureState(
+        {
+          source: lastHoveredFeatureRef.current.source,
+          sourceLayer: lastHoveredFeatureRef.current.sourceLayer,
+          id: lastHoveredFeatureRef.current.id,
+        },
+        { hover: false }
+      );
+    }
+  }, [mapLayersLoaded, isDrawing]);
+
   return {
     Popup: popupComponent,
   };
