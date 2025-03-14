@@ -2,6 +2,7 @@ import { existsSync } from 'fs';
 import { readFile, unlink, writeFile } from 'fs/promises';
 
 import { createCommand, InvalidArgumentError } from '@commander-js/extra-typings';
+import { genSalt, hash } from 'bcryptjs';
 import camelcase from 'camelcase';
 import prompts from 'prompts';
 import { z } from 'zod';
@@ -19,6 +20,7 @@ import {
 import { processJobById, processJobsIndefinitely } from '@/server/services/jobs/processor';
 import { type DatabaseSourceId, type DatabaseTileInfo, tilesInfo, zDatabaseSourceId } from '@/server/services/tiles.config';
 import { type ApiAccount } from '@/types/ApiAccount';
+import { userRoles } from '@/types/enum/UserRole';
 import { sleep } from '@/utils/time';
 import { nonEmptyArray } from '@/utils/typescript';
 import { optimisationProfiles, optimizeImage } from '@cli/images/optimize';
@@ -339,6 +341,37 @@ program
       process.exit(1);
     }
     await createGestionnairesFromAPI(account, data);
+  });
+
+program
+  .command('users:add')
+  .description('Add a new user')
+  .argument('<email>', 'Email of the user', (v) => z.string().email().parse(v))
+  .argument('<password>', 'Password of the user')
+  .argument('<role>', 'Role of the user', (v) => z.enum(userRoles).parse(v))
+  .argument(
+    '[tags_gestionnaires]',
+    'Tags gestionnaires (gestionnaire only)',
+    (v) => z.preprocess((v) => String(v).split(','), z.array(z.string())).parse(v),
+    []
+  )
+  .action(async (email, password, role, tags_gestionnaires) => {
+    const existingUser = await kdb.selectFrom('users').select('id').where('email', '=', email).executeTakeFirst();
+    if (existingUser) {
+      throw new Error(`L'utilisateur associé à l'email '${email}' existe déjà.`);
+    }
+
+    await kdb
+      .insertInto('users')
+      .values({
+        email,
+        password: await hash(password, await genSalt(10)),
+        role,
+        status: 'valid',
+        gestionnaires: tags_gestionnaires,
+      })
+      .execute();
+    logger.info(`Utilisateur ${email} créé avec succès.`);
   });
 
 program
