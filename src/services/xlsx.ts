@@ -25,7 +25,7 @@ const columns: CSVColumn[] = [
   {
     header: "Indice de fiabilité de l'adresse testée",
     description:
-      "Min = 0 , Max = 1. Cet indice traduit la correspondance entre l'adresse renseignée par l'utilisateur et celle effectivement testée",
+      "Min = 0 , Max = 100. Cet indice traduit la correspondance entre l'adresse renseignée par l'utilisateur et celle effectivement testée",
     accessor: (address) => `${address.ban_score ?? ''}`,
     minWidth: 40,
   },
