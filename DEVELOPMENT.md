@@ -30,3 +30,13 @@ docker pull ghcr.io/osgeo/gdal:alpine-normal-latest-arm64
 
 docker pull naxgrp/tippecanoe
 ```
+
+## Ajout d'utilisateurs de test
+
+Pour créer des utilisateurs de chaque rôle :
+```sh
+yarn cli users:add admin@fcu.local 'MON MDP SECURE' admin
+yarn cli users:add professionnel@fcu.local 'MON MDP SECURE' professionnel
+yarn cli users:add particulier@fcu.local 'MON MDP SECURE' particulier
+yarn cli users:add gestionnaire@fcu.local 'MON MDP SECURE' gestionnaire ENGIE_2407C,ENGIE_2305C,ENGIE_7615C,ENGIE_6105C
+```
