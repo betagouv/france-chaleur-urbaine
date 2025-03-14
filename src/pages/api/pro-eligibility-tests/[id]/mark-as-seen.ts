@@ -21,6 +21,6 @@ const POST = async (req: NextApiRequest) => {
 export default handleRouteErrors(
   { POST },
   {
-    requireAuthentication: ['professionnel'],
+    requireAuthentication: ['particulier', 'professionnel'],
   }
 );

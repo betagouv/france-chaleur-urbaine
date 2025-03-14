@@ -4,6 +4,8 @@ import { z } from 'zod';
 
 import { logger } from '@/server/helpers/logger';
 import { handleRouteErrors, invalidPermissionsError, requireAuthentication, validateObjectSchema } from '@/server/helpers/server';
+import { type UserRole } from '@/types/enum/UserRole';
+import { type NonEmptyArray } from '@/utils/typescript';
 
 const DELETE = async (req: NextApiRequest, res: NextApiResponse) => {
   requireAuthentication(req.user, true);
@@ -21,8 +23,8 @@ const POST = async (req: NextApiRequest, res: NextApiResponse) => {
   requireAuthentication(req.user, ['admin']);
 
   const impersonatedProfile = await validateObjectSchema(req.body, {
-    role: z.literal('gestionnaire'),
-    gestionnaires: z.array(z.string()),
+    role: z.enum(['gestionnaire', 'professionnel', 'particulier'] as NonEmptyArray<UserRole>),
+    gestionnaires: z.array(z.string()).optional(),
   });
 
   logger.info('impersonating', {
@@ -34,7 +36,7 @@ const POST = async (req: NextApiRequest, res: NextApiResponse) => {
     ...jwt,
     impersonatedProfile: {
       role: impersonatedProfile.role,
-      gestionnaires: impersonatedProfile.gestionnaires,
+      gestionnaires: impersonatedProfile.gestionnaires ?? [],
     },
   });
   return;

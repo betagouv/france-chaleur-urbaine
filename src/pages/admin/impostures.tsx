@@ -1,5 +1,3 @@
-import { type GetServerSideProps } from 'next';
-
 import UserImpersonation from '@/components/Admin/UserImpersonation';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Heading from '@/components/ui/Heading';
@@ -21,4 +19,4 @@ export default function Impostures() {
   );
 }
 
-export const getServerSideProps: GetServerSideProps = withAuthentication('admin');
+export const getServerSideProps = withAuthentication(['admin']);

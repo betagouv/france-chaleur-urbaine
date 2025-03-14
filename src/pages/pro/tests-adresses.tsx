@@ -1,5 +1,4 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { type GetServerSideProps } from 'next';
 import { useEffect, useState } from 'react';
 
 import CreateEligibilityTestForm from '@/components/dashboard/professionnel/eligibility-test/CreateEligibilityTestForm';
@@ -36,8 +35,19 @@ export default function TestsAdresses(): JSX.Element {
             <CreateEligibilityTestForm />
           </ModalSimple>
         </div>
+        <p>
+          Cette page vous permet de faire des tests d'adresse en masse (jusqu'à 100k adresses) afin d'obtenir des informations sur
+          l'éligibilité potentielle des adresses pour le raccordement aux réseaux de chaleur.
+        </p>
+        <Heading as="h3" color="blue-france">
+          Vos tests
+        </Heading>
         {isLoading && <Loader size="lg" />}
-        {eligibilityTests?.length === 0 && <>Aucun test</>}
+        {eligibilityTests?.length === 0 && (
+          <>
+            Vous n'avez effectué aucun test d'adresses pour le moment. Vous pouvez en faire via le bouton "Nouveau test" en haut à droite.
+          </>
+        )}
         <AnimatePresence>
           {eligibilityTests?.map((test) => (
             <motion.div
@@ -56,4 +66,4 @@ export default function TestsAdresses(): JSX.Element {
   );
 }
 
-export const getServerSideProps: GetServerSideProps = withAuthentication('professionnel');
+export const getServerSideProps = withAuthentication(['particulier', 'professionnel']);

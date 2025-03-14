@@ -152,6 +152,6 @@ function TestCoordinatesPage() {
   );
 }
 
-export const getServerSideProps = withAuthentication('admin');
+export const getServerSideProps = withAuthentication(['admin']);
 
 export default TestCoordinatesPage;

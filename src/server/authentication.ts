@@ -30,7 +30,7 @@ export const getServerSession = async ({ req, res }: Pick<ServerSessionContext, 
  *
  * Or:
  * import { withServerSession, type Session } from '@/server/services/authentication';
- * export const getServerSideProps: GetServerSideProps<{ session: Session }> = async (context: GetServerSidePropsContext) => {
+ * export const getServerSideProps<{ session: Session }> = async (context: GetServerSidePropsContext) => {
  *   const { props } = await withServerSession(context);
  *
  *   return {
@@ -64,7 +64,7 @@ export const withServerSession = (handler: WithServerSessionProps) => async (con
 /**
  * Add authentication to a page and return the session in server side props.
  */
-export const withAuthentication = (requiredRole?: UserRole, handler?: WithServerSessionProps): GetServerSideProps<AuthSSRPageProps> => {
+export const withAuthentication = (requiredRoles?: UserRole[], handler?: WithServerSessionProps): GetServerSideProps<AuthSSRPageProps> => {
   return withServerSession(async ({ context, session }) => {
     if (!session) {
       return {
@@ -75,7 +75,7 @@ export const withAuthentication = (requiredRole?: UserRole, handler?: WithServer
       };
     }
 
-    if (requiredRole && session.user.role !== requiredRole) {
+    if (requiredRoles && !requiredRoles.includes(session.user.role)) {
       return {
         redirect: {
           destination: `/pro/tableau-de-bord?notify=error:${encodeURIComponent("Vous n'avez pas les permissions suffisantes pour accéder à cette page")}`,

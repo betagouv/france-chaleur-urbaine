@@ -11,7 +11,11 @@ type InternalFlattenKeys<Obj, ValueType> =
     ? {
         [Key in keyof Obj]:
           | (Obj[Key] extends ValueType ? `${Key & string}` : never)
-          | (Obj[Key] extends Record<string, any> ? `${Key & string}.${FlattenKeys<Obj[Key], ValueType> & string}` : never);
+          | (Obj[Key] extends Record<string, any> | null
+              ? Obj[Key] extends null
+                ? never
+                : `${Key & string}.${FlattenKeys<NonNullable<Obj[Key]>, ValueType> & string}`
+              : never);
       }[keyof Obj]
     : never;
 

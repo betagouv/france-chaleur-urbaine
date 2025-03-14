@@ -1,5 +1,4 @@
 import { type SortingState } from '@tanstack/react-table';
-import { type GetServerSideProps } from 'next';
 import { useEffect, useState } from 'react';
 
 import JobStatusBadge from '@/components/Admin/JobStatusBadge';
@@ -144,4 +143,4 @@ export default function ManageJobs() {
   );
 }
 
-export const getServerSideProps: GetServerSideProps = withAuthentication('admin');
+export const getServerSideProps = withAuthentication(['admin']);

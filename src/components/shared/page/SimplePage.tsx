@@ -244,15 +244,15 @@ const authenticatedNavigationMenu: MainNavigationProps.Item[] = [
 
 const professionnelNavigationMenu: MainNavigationProps.Item[] = [
   {
-    text: "Tests d'adresses",
-    linkProps: {
-      href: '/pro/tests-adresses',
-    },
-  },
-  {
     text: 'Comparateur de performances',
     linkProps: {
       href: '/pro/comparateur-couts-performances',
+    },
+  },
+  {
+    text: "Tests d'adresses",
+    linkProps: {
+      href: '/pro/tests-adresses',
     },
   },
 ];
@@ -379,7 +379,7 @@ const PageHeader = (props: PageHeaderProps) => {
           ...authenticatedNavigationMenu,
           ...(hasRole('admin') ? adminNavigationMenu : []),
           ...(hasRole('gestionnaire') ? gestionnaireNavigationMenu : []),
-          ...(hasRole('professionnel') ? professionnelNavigationMenu : []),
+          ...(hasRole('particulier') || hasRole('professionnel') ? professionnelNavigationMenu : []),
         ]
       : publicNavigationMenu;
 

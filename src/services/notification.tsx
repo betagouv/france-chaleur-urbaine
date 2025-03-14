@@ -12,7 +12,7 @@ type Variant = 'success' | 'error' | 'none';
 
 export const notify = (variant: Variant, message: Message, options: Options = {}) => {
   const notifyFn = variant === 'none' ? toast : toast[variant];
-  return notifyFn(message, { ...options });
+  return notifyFn(message, { duration: 5000, ...options });
 };
 
 export const NotifierContainer = ({ children }: any) => {
