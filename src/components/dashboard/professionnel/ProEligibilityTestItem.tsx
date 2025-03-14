@@ -14,6 +14,7 @@ import Icon from '@/components/ui/Icon';
 import Link from '@/components/ui/Link';
 import Loader from '@/components/ui/Loader';
 import ModalSimple from '@/components/ui/ModalSimple';
+import Notice from '@/components/ui/Notice';
 import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
 import Tooltip from '@/components/ui/Tooltip';
 import { useDelete, useFetch, usePost } from '@/hooks/useApi';
@@ -389,46 +390,53 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
         </div>
       </div>
 
-      {viewDetail && (
-        <Tabs
-          tabs={[
-            {
-              label: 'Liste',
-              iconId: 'fr-icon-list-unordered',
-              content: (
-                <TableSimple
-                  columns={columns}
-                  data={testDetails?.addresses || []}
-                  initialSortingState={initialSortingState}
-                  columnFilters={columnFilters}
-                />
-              ),
-              isDefault: true,
-            },
-            {
-              label: 'Carte',
-              iconId: 'fr-icon-map-pin-2-line',
-              content: (
-                <div className="min-h-[50vh] aspect-[4/3]">
-                  <Map
-                    initialMapConfiguration={createMapConfiguration({
-                      reseauxDeChaleur: {
-                        show: true,
-                      },
-                      reseauxEnConstruction: true,
-                      zonesDeDeveloppementPrioritaire: true,
-                    })}
-                    geolocDisabled
-                    withLegend={false}
-                    withoutLogo
-                    adressesEligibles={filteredAddressesMapData}
+      {viewDetail &&
+        (testDetails && testDetails.addresses.length > 0 ? (
+          <Tabs
+            tabs={[
+              {
+                label: 'Liste',
+                iconId: 'fr-icon-list-unordered',
+                content: (
+                  <TableSimple
+                    columns={columns}
+                    data={testDetails?.addresses || []}
+                    initialSortingState={initialSortingState}
+                    columnFilters={columnFilters}
                   />
-                </div>
-              ),
-            },
-          ]}
-        />
-      )}
+                ),
+                isDefault: true,
+              },
+              {
+                label: 'Carte',
+                iconId: 'fr-icon-map-pin-2-line',
+                content: (
+                  <div className="min-h-[50vh] aspect-[4/3]">
+                    <Map
+                      initialMapConfiguration={createMapConfiguration({
+                        reseauxDeChaleur: {
+                          show: true,
+                        },
+                        reseauxEnConstruction: true,
+                        zonesDeDeveloppementPrioritaire: true,
+                      })}
+                      geolocDisabled
+                      withLegend={false}
+                      withoutLogo
+                      adressesEligibles={filteredAddressesMapData}
+                    />
+                  </div>
+                ),
+              },
+            ]}
+          />
+        ) : (
+          !isLoading && (
+            <Notice size="sm">
+              Les résultats ne sont pas encore disponibles et devraient l'être d'ici quelques minutes selon la taille de votre fichier.
+            </Notice>
+          )
+        ))}
     </UrlStateAccordion>
   );
 }
