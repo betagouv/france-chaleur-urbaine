@@ -11,9 +11,11 @@ import { createMapConfiguration } from '@/components/Map/map-configuration';
 import { UrlStateAccordion } from '@/components/ui/Accordion';
 import Button from '@/components/ui/Button';
 import Icon from '@/components/ui/Icon';
+import Link from '@/components/ui/Link';
 import Loader from '@/components/ui/Loader';
 import ModalSimple from '@/components/ui/ModalSimple';
 import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
+import Tooltip from '@/components/ui/Tooltip';
 import { useDelete, useFetch, usePost } from '@/hooks/useApi';
 import { type ProEligibilityTestListItem } from '@/pages/api/pro-eligibility-tests';
 import { type ProEligibilityTestWithAddresses } from '@/pages/api/pro-eligibility-tests/[id]';
@@ -114,7 +116,7 @@ const initialSortingState: SortingState = [
 type DotToUnderscore<T extends string> = T extends `${infer A}.${infer B}` ? `${A}_${DotToUnderscore<B>}` : T;
 
 type QuickFilterPreset = {
-  label: string;
+  label: React.ReactNode;
   filters: Array<{
     id: DotToUnderscore<FlattenKeys<ProEligibilityTestWithAddresses['addresses'][number]>>;
     value: boolean | number;
@@ -127,7 +129,19 @@ const quickFilterPresets = {
     filters: [],
   },
   adressesEligibles: {
-    label: 'potentiellement raccordables',
+    label: (
+      <>
+        potentiellement raccordables{' '}
+        <Tooltip
+          title={
+            <>
+              Le bâtiment est jugé potentiellement raccordable s'il se situe à moins de 200 m d'un réseau existant, sauf sur Paris où ce
+              seuil est réduit à 100 m. Attention, le mode de chauffage n'est pas pris en compte.
+            </>
+          }
+        />
+      </>
+    ),
     filters: [{ id: 'eligibility_status_isEligible', value: true }],
   },
   adressesMoins100mPlus50ENRR: {
@@ -138,7 +152,21 @@ const quickFilterPresets = {
     ],
   },
   adressesDansPDP: {
-    label: 'dans un périmètre de développement prioritaire',
+    label: (
+      <>
+        dans un périmètre de développement prioritaire{' '}
+        <Tooltip
+          title={
+            <>
+              Une obligation de raccordement peut s'appliquer.{' '}
+              <Link href="/ressources/obligations-raccordement#contenu" isExternal>
+                En savoir plus
+              </Link>
+            </>
+          }
+        />
+      </>
+    ),
     filters: [{ id: 'eligibility_status_inPDP', value: true }],
   },
 } satisfies Record<string, QuickFilterPreset>;
@@ -405,7 +433,7 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
   );
 }
 type IndicatorProps = {
-  label: string;
+  label: React.ReactNode;
   value: number;
   loading?: boolean;
   onClick?: () => void;
