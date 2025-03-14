@@ -15,10 +15,14 @@ const StyledDSFRSelect = styled(DSFRSelect)<AdditionalSelectProps>`
   `}
 `;
 
-export type SelectProps<Options extends DSFRSelectProps.Option[]> = DSFRSelectProps<Options> & RemoveDollar<AdditionalSelectProps>;
+export type SelectOption = DSFRSelectProps.Option;
+export type SelectProps<Options extends SelectOption[]> = Omit<DSFRSelectProps<Options>, 'state'> &
+  RemoveDollar<AdditionalSelectProps> & {
+    state?: 'error' | 'default' | 'success' | 'info';
+  };
 
-const Select = <Options extends DSFRSelectProps.Option[]>({ small, ...props }: SelectProps<Options>) => {
-  return <StyledDSFRSelect $small={small} {...props} />;
+const Select = <Options extends SelectOption[]>({ small, state, ...props }: SelectProps<Options>) => {
+  return <StyledDSFRSelect state={state === 'success' ? 'valid' : state} $small={small} {...props} />;
 };
 
 export default Select;

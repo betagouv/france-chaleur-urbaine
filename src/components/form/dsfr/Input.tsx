@@ -1,19 +1,18 @@
 import React, { forwardRef } from 'react';
 
-import { Input as StyledDSFRInput, type InputSize } from './Input.styles';
+import { Input as StyledDSFRInput, type InputSize, type InputProps as InputPropsStyled } from './Input.styles';
 
-export type InputProps = React.ComponentProps<typeof StyledDSFRInput> & {
+export type InputProps = InputPropsStyled & {
   size?: InputSize;
   hideOptionalLabel?: boolean;
 };
 
 const Input = forwardRef<HTMLDivElement, InputProps>(({ label, size, hideOptionalLabel, nativeInputProps, ...props }, ref) => {
-  const optional = !hideOptionalLabel && !nativeInputProps?.required && !props?.nativeTextAreaProps?.required;
+  const optional = !hideOptionalLabel && !nativeInputProps?.required;
 
   return (
     <StyledDSFRInput
       ref={ref}
-      // @ts-expect-error don't manage to make typescript infer correctly
       $size={size}
       label={
         label ? (

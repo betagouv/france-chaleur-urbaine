@@ -1,7 +1,7 @@
 import { useToggle } from '@react-hookz/web';
 import styled from 'styled-components';
 
-import Checkbox from '@/components/form/dsfr/Checkbox';
+import Checkboxes from '@/components/form/dsfr/Checkboxes';
 import useFCUMap from '@/components/Map/MapProvider';
 import Accordion from '@/components/ui/Accordion';
 import Box, { type BoxProps } from '@/components/ui/Box';
@@ -34,7 +34,7 @@ function VillesPotentielMapLegend(props?: BoxProps) {
   return (
     <StyledBox {...props}>
       <Accordion small label="Légende" onExpandedChange={toggleLegend} expanded={legendShown} style={{ paddingBottom: '0' }}>
-        <Checkbox
+        <Checkboxes
           small
           className="fr-mt-1w fr-ml-1v"
           options={[

@@ -9,7 +9,7 @@ export type FieldWrapperProps = React.HTMLAttributes<HTMLDivElement> & {
   label?: React.ReactNode;
   hintText?: React.ReactNode;
   disabled?: boolean;
-  state?: 'success' | 'error' | 'default';
+  state?: 'success' | 'error' | 'default' | 'info';
   stateRelatedMessage?: React.ReactNode;
 };
 

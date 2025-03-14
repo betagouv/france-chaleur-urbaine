@@ -1,11 +1,12 @@
 import { Alert } from '@codegouvfr/react-dsfr/Alert';
-import { RadioButtons } from '@codegouvfr/react-dsfr/RadioButtons';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { type ChangeEvent, type FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 
 import { clientConfig } from '@/client-config';
 import Input from '@/components/form/dsfr/Input';
+import Radio from '@/components/form/dsfr/Radio';
+import TextArea from '@/components/form/dsfr/TextArea';
 import NetworkSearchInput from '@/components/Network/NetworkSearchInput';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Box from '@/components/ui/Box';
@@ -215,8 +216,8 @@ function ModifierReseauxPage() {
                 Voir la fiche actuelle du réseau
               </Link>
             )}
-            <RadioButtons
-              legend=""
+            <Radio
+              label=""
               name="type"
               options={[
                 {
@@ -286,8 +287,8 @@ function ModifierReseauxPage() {
             <Text mt="4w" mb="2w" fontWeight="bold">
               Modifier des informations erronées ou incomplètes sur la fiche
             </Text>
-            <RadioButtons
-              legend=""
+            <Radio
+              label=""
               orientation="horizontal"
               name="reseauClasse"
               options={[
@@ -339,8 +340,7 @@ function ModifierReseauxPage() {
               Renseigner des informations complémentaires à faire apparaître sur la fiche du réseau (
               {clientConfig.networkInfoFieldMaxCharacters} caractères maximum) (Optionnel)
             </Text>
-            <Input
-              textArea={true}
+            <TextArea
               label=""
               nativeTextAreaProps={{
                 placeholder:

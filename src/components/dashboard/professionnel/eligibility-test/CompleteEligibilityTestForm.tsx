@@ -1,8 +1,8 @@
-import { Upload } from '@codegouvfr/react-dsfr/Upload';
-import { standardSchemaValidator, useForm } from '@tanstack/react-form';
+import { useForm } from '@tanstack/react-form';
 import { z } from 'zod';
 
-import { getInputErrorStates } from '@/components/form/tanstack-form';
+import Upload from '@/components/form/dsfr/Upload';
+import { getInputErrorStates } from '@/components/form/react-form/useForm';
 import Button from '@/components/ui/Button';
 import { useModal } from '@/components/ui/ModalSimple';
 import { usePost } from '@/hooks/useApi';
@@ -31,7 +31,6 @@ const CompleteEligibilityTestForm = ({ testId }: CompleteEligibilityTestFormProp
     defaultValues: {
       file: undefined as unknown as File,
     },
-    validatorAdapter: standardSchemaValidator(),
     validators: {
       onChange: zCompleteEligibilityTest,
     },

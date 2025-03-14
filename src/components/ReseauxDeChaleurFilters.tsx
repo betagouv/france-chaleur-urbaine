@@ -3,7 +3,7 @@ import { useRouter } from 'next/navigation';
 import React from 'react';
 import styled from 'styled-components';
 
-import Checkbox from '@/components/form/dsfr/Checkbox';
+import Checkboxes from '@/components/form/dsfr/Checkboxes';
 import RangeFilter, { roundNumberProgressively } from '@/components/form/dsfr/RangeFilter';
 import SelectCheckboxes from '@/components/form/dsfr/SelectCheckboxes';
 import { filtresEnergies } from '@/components/Map/map-configuration';
@@ -36,7 +36,7 @@ const ReseauxDeChaleurFilters: React.FC<ReseauxDeChaleurFiltersProps> = ({ regio
 
   return (
     <>
-      <Checkbox
+      <Checkboxes
         small
         fullWidth={false}
         options={[
