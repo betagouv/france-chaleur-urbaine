@@ -277,8 +277,8 @@ const HeadSliceForm = ({
                 <li>Recevez par mail le résultat de votre test</li>
                 <li>Visualisez les adresses testées sur notre cartographie</li>
                 <li>
-                  Vous pourrez ensuite sélectionner dans la liste les adresses celles pour lesquelles vous souhaitez être **mis en relation
-                  par France Chaleur Urbaine avec le(s) gestionnaire(s) des réseaux de chaleur.**
+                  Vous pourrez ensuite sélectionner dans la liste les adresses celles pour lesquelles vous souhaitez être{' '}
+                  <strong>mis en relation par France Chaleur Urbaine avec le(s) gestionnaire(s) des réseaux de chaleur.</strong>
                 </li>
               </ol>
             </div>
