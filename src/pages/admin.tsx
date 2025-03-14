@@ -12,6 +12,6 @@ function AdminPage(): React.ReactElement {
   );
 }
 
-export const getServerSideProps = withAuthentication('admin');
+export const getServerSideProps = withAuthentication(['admin']);
 
 export default AdminPage;

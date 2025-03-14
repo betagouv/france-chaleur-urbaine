@@ -1,4 +1,4 @@
-import { type GetServerSideProps, type InferGetServerSidePropsType } from 'next';
+import { type GetServerSidePropsContext, type InferGetServerSidePropsType } from 'next';
 import dynamic from 'next/dynamic';
 import React from 'react';
 
@@ -36,7 +36,7 @@ const SimulateurPage: React.FC<InferGetServerSidePropsType<typeof getServerSideP
 
 export default SimulateurPage;
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const res = await withAuthentication('professionnel')(context);
+export const getServerSideProps = async (context: GetServerSidePropsContext) => {
+  const res = await withAuthentication(['particulier', 'professionnel'])(context);
   return 'redirect' in res ? res : { props: { ...(res as any).props, query: context.query } };
 };

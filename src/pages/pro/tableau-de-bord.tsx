@@ -8,7 +8,7 @@ import { withAuthentication } from '@/server/authentication';
 import { useAuthentication } from '@/services/authentication';
 
 export default function DashboardPage() {
-  const { user } = useAuthentication();
+  const { hasRole } = useAuthentication();
 
   return (
     <SimplePage title="Tableau de bord" mode="authenticated">
@@ -16,9 +16,9 @@ export default function DashboardPage() {
         <Heading as="h1" color="blue-france">
           Tableau de bord
         </Heading>
-        {user?.role === 'admin' && <DashboardAdmin />}
-        {user?.role === 'gestionnaire' && <DashboardGestionnaire />}
-        {user?.role === 'professionnel' && <DashboardProfessionnel />}
+        {hasRole('admin') && <DashboardAdmin />}
+        {hasRole('gestionnaire') && <DashboardGestionnaire />}
+        {(hasRole('particulier') || hasRole('professionnel')) && <DashboardProfessionnel />}
       </Box>
     </SimplePage>
   );

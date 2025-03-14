@@ -1,5 +1,4 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { type GetServerSideProps } from 'next';
 import { useEffect, useState } from 'react';
 
 import CreateEligibilityTestForm from '@/components/dashboard/professionnel/eligibility-test/CreateEligibilityTestForm';
@@ -56,4 +55,4 @@ export default function TestsAdresses(): JSX.Element {
   );
 }
 
-export const getServerSideProps: GetServerSideProps = withAuthentication('professionnel');
+export const getServerSideProps = withAuthentication(['particulier', 'professionnel']);

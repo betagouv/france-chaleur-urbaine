@@ -1,6 +1,6 @@
 import { Alert } from '@codegouvfr/react-dsfr/Alert';
 import { Button } from '@codegouvfr/react-dsfr/Button';
-import { type GetServerSideProps } from 'next';
+import { type GetServerSidePropsContext } from 'next';
 import { useRouter } from 'next/router';
 import { type FormEvent, useEffect, useState } from 'react';
 
@@ -83,7 +83,7 @@ function Satisfaction() {
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
+export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   const { id, satisfaction } = context.query;
   await updateRelanceAnswer(id as string, satisfaction === 'true');
   return { props: {} };
