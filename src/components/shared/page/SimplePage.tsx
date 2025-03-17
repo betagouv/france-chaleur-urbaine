@@ -331,24 +331,13 @@ function markCurrentPageActive(menuItems: MainNavigationProps.Item[], currentUrl
 }
 
 const publicQuickAccessItems: HeaderProps.QuickAccessItem[] = [
-  ...(clientConfig.ENABLE_INSCRIPTIONS
-    ? [
-        {
-          text: 'Créer un compte',
-          iconId: 'fr-icon-account-circle-line',
-          linkProps: {
-            href: '/inscription',
-          },
-        } satisfies HeaderProps.QuickAccessItem,
-      ]
-    : []),
   {
-    text: 'Connexion',
-    iconId: 'fr-icon-account-circle-fill',
+    text: 'Connectez-vous',
+    iconId: 'fr-icon-account-circle-line',
     linkProps: {
       href: '/connexion',
     },
-  },
+  } satisfies HeaderProps.QuickAccessItem,
 ];
 
 interface PageHeaderProps {
