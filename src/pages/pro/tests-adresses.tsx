@@ -25,11 +25,15 @@ export default function TestsAdresses(): JSX.Element {
   }, [eligibilityTests]);
 
   return (
-    <SimplePage title="Tests d'adresses" description="Votre tableau de bord pour la gestion de vos tests d'adresses" mode="authenticated">
+    <SimplePage
+      title="Test d'adresses en masse"
+      description="Votre tableau de bord pour la gestion de vos tests d'adresses en masse"
+      mode="authenticated"
+    >
       <Box as="main" className="fr-container" my="4w">
         <div className="flex items-center justify-between fr-mb-4w">
           <Heading color="blue-france" className="!mb-0">
-            Tests d'adresses
+            Test d'adresses en masse
           </Heading>
           <ModalSimple title="Création d'un test d'adresses" size="medium" trigger={<Button>Nouveau test</Button>}>
             <CreateEligibilityTestForm />

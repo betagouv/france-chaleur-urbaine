@@ -8,8 +8,8 @@ export default function DashboardProfessionnel() {
       <div className="grid gap-8 grid-cols-2 items-center justify-between mb-5">
         {clientConfig.ENABLE_COMPARATEUR && (
           <Tile
-            title="Comparateur de performances"
-            desc="Comparez les performances énergétiques et environnementales des différents modes de chauffage et de refroidissement"
+            title="Comparateur de prix et d'émissions de CO2"
+            desc="Comparez les performances des modes de chauffage et de refroidissement (réseaux de chaleur et de froid, gaz, fioul, biomasse, PAC...) en termes de coûts et émissions de CO2."
             linkProps={{
               href: '/pro/comparateur-couts-performances',
             }}
@@ -19,8 +19,8 @@ export default function DashboardProfessionnel() {
         )}
         {clientConfig.ENABLE_TEST_ADRESSES && (
           <Tile
-            title="Tests d'adresses"
-            desc="Testez l'éligibilité d'adresses pour le raccordement à un réseau de chaleur"
+            title="Test d'adresses en masse"
+            desc="Repérez sur un parc de bâtiments ceux potentiellement raccordables, et accédez aux caractéristiques des réseaux les plus proches."
             linkProps={{
               href: '/pro/tests-adresses',
             }}

@@ -250,7 +250,7 @@ const professionnelNavigationMenu: MainNavigationProps.Item[] = [
     },
   },
   {
-    text: "Tests d'adresses",
+    text: "Test d'adresses",
     linkProps: {
       href: '/pro/tests-adresses',
     },
