@@ -6,7 +6,6 @@ import Tag from '@/components/Manager/Tag';
 import SimplePage from '@/components/shared/page/SimplePage';
 import AsyncButton from '@/components/ui/AsyncButton';
 import Box from '@/components/ui/Box';
-import Button from '@/components/ui/Button';
 import Heading from '@/components/ui/Heading';
 import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
 import Text from '@/components/ui/Text';
@@ -68,21 +67,6 @@ const columns: ColumnDef<AdminManageUserItem>[] = [
     accessorKey: 'created_at',
     header: 'Créé le',
     cellType: 'Date',
-  },
-  {
-    accessorKey: '_id',
-    header: '',
-    align: 'right',
-    cell: (info) => (
-      <Button
-        size="small"
-        priority="tertiary"
-        variant="destructive"
-        iconId="fr-icon-delete-bin-line"
-        title="Supprimer l'utilisateur"
-        onClick={() => alert(`${info.row.original.id}`)}
-      />
-    ),
   },
 ];
 
