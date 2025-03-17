@@ -537,16 +537,11 @@ const NetworkPanel = ({
                 isExternal
               >
                 données locales de l’énergie diffusées par le SDES
+              </Link>{' '}
+              et{' '}
+              <Link href="https://fedene.fr/ressource/bibliotheque-de-donnees-des-reseaux-de-chaleur-et-de-froid-2024/" isExternal>
+                bibliothèque de données de la Fedene Réseaux de chaleur et de froid
               </Link>
-              {!isCold && (
-                <>
-                  {' '}
-                  et{' '}
-                  <Link href="https://fedene.fr/ressource/bibliotheque-de-donnees-des-reseaux-de-chaleur-et-de-froid-2024/" isExternal>
-                    bibliothèque de données de la Fedene Réseaux de chaleur et de froid
-                  </Link>
-                </>
-              )}
             </li>
             <li>Données 2021 : ViaSeva.</li>
           </ul>
