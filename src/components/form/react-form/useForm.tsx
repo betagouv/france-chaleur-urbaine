@@ -5,6 +5,7 @@ import {
   type FormValidateOrFn,
   type FormAsyncValidateOrFn,
   type AnyFieldApi,
+  useStore,
 } from '@tanstack/react-form';
 import { type FieldApi } from '@tanstack/react-form';
 import { useEffect } from 'react';
@@ -482,6 +483,8 @@ function useForm<
     </form>
   );
 
+  const useValue = <T,>(fieldName: keyof TFormData) => useStore(form.store, (state) => state.values[fieldName] as T);
+
   return {
     form,
     Input,
@@ -497,6 +500,7 @@ function useForm<
     Radio,
     Checkboxes,
     SelectCheckboxes,
+    useValue,
   };
 }
 
