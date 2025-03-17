@@ -103,6 +103,12 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
     header: 'Identifiant',
     width: '130px',
     accessorKey: 'eligibility_status.id',
+    cell: (info) =>
+      info.row.original.eligibility_status?.id && (
+        <Link href={`/reseaux/${info.row.original.eligibility_status.id}`} isExternal title="Ouvrir la fiche réseau">
+          {info.row.original.eligibility_status.id}
+        </Link>
+      ),
     align: 'right',
   },
 ];
