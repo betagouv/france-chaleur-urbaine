@@ -11,10 +11,12 @@ export async function up(knex: Knex): Promise<void> {
     ALTER TABLE public.users ADD COLUMN phone varchar(20);
     ALTER TABLE public.users ADD COLUMN besoins varchar(255)[];
     ALTER TABLE public.users ADD COLUMN accepted_cgu_at timestamp;
+    ALTER TABLE public.users ADD COLUMN optin_at timestamp;
 
     CREATE INDEX idx_users_first_name ON public.users(first_name);
     CREATE INDEX idx_users_last_name ON public.users(last_name);
     CREATE INDEX idx_users_structure ON public.users(structure);
+    CREATE INDEX idx_users_optin_at ON public.users(optin_at);
   `);
 }
 
@@ -33,5 +35,6 @@ export async function down(knex: Knex): Promise<void> {
     ALTER TABLE public.users DROP COLUMN phone;
     ALTER TABLE public.users DROP COLUMN besoins;
     ALTER TABLE public.users DROP COLUMN accepted_cgu_at;
+    ALTER TABLE public.users DROP COLUMN optin_at;
   `);
 }

@@ -33,6 +33,7 @@ const steps: FormStep[] = [
       email: '',
       password: '',
       accept_cgu: false,
+      optin_newsletter: false,
       role: 'professionnel',
     } satisfies CredentialsSchema,
   },
@@ -110,6 +111,7 @@ function RegisterForm() {
                 }))}
               />
 
+              <Checkbox name="optin_newsletter" small label={<>Je souhaite rester informé des actualités de France Chaleur Urbaine</>} />
               <Checkbox
                 name="accept_cgu"
                 small

@@ -3151,6 +3151,7 @@ export interface Users {
   job: string | null;
   last_connection: Timestamp | null;
   last_name: string | null;
+  optin_at: Timestamp | null;
   password: string;
   phone: string | null;
   receive_new_demands: boolean | null;

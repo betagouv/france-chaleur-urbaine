@@ -13,6 +13,7 @@ export const register = async ({
   password,
   role,
   accept_cgu,
+  optin_newsletter,
   ...userData
 }: {
   email: string;
@@ -27,6 +28,7 @@ export const register = async ({
   phone?: string | null;
   besoins: string[];
   accept_cgu: boolean;
+  optin_newsletter: boolean;
 }) => {
   const existingUser = await kdb.selectFrom('users').select('id').where('email', '=', email).executeTakeFirst();
   if (existingUser) {
@@ -44,6 +46,7 @@ export const register = async ({
       activation_token: activationToken,
       gestionnaires: [],
       accepted_cgu_at: accept_cgu ? new Date() : null,
+      optin_at: optin_newsletter ? new Date() : null,
       ...userData,
     })
     .returning(['id', 'email'])
