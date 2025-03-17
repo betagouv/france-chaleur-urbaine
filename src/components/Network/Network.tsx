@@ -319,6 +319,7 @@ const NetworkPanel = ({
                     <Property
                       label="Développement du réseau"
                       value={network['Dev_reseau%']}
+                      round
                       unit="%"
                       tooltip="Ratio entre le nombre de nouveaux abonnés en 2022 et le nombre total d'abonnés en 2021."
                     />
@@ -400,11 +401,12 @@ const NetworkPanel = ({
                           <Property
                             label={<Box ml="2w">% de la part variable (fonction des consommations)</Box>}
                             value={network['PV%']}
+                            round
                             unit="%"
                           />
                         )}
                         {isDefined(network['PF%']) && (
-                          <Property label={<Box ml="2w">% de la part fixe (abonnement)</Box>} value={network['PF%']} unit="%" />
+                          <Property label={<Box ml="2w">% de la part fixe (abonnement)</Box>} value={network['PF%']} round unit="%" />
                         )}
                       </>
                     )}
