@@ -10,6 +10,7 @@ import {
 import { type FieldApi } from '@tanstack/react-form';
 import { useEffect } from 'react';
 import { useState } from 'react';
+import { type ZodRawShape } from 'zod';
 
 import DsfrCheckbox, { type CheckboxProps as DsfrCheckboxProps } from '@/components/form/dsfr/Checkbox';
 import DsfrCheckboxes, { type CheckboxesProps as DsfrCheckboxesProps } from '@/components/form/dsfr/Checkboxes';
@@ -130,6 +131,14 @@ function useForm<
 
   type FieldProps = { name: OriginalFieldProps['name'] } & { fieldInputProps?: Omit<OriginalFieldProps, 'children' | 'name'> };
 
+  const schemaShape = schema ? (schema as any).innerType?.()?.shape || (schema as any).shape : ({} as ZodRawShape);
+
+  const isRequiredField = (fieldname: keyof TFormData) => {
+    const field = (schemaShape as any)?.[fieldname];
+
+    return !field?.isOptional?.();
+  };
+
   const Input = ({
     name,
     fieldInputProps,
@@ -144,7 +153,7 @@ function useForm<
         <DsfrInput
           label={label}
           nativeInputProps={{
-            required: true,
+            required: isRequiredField(name as keyof TFormData),
             id: nativeInputProps?.id || `${name}`,
             name: nativeInputProps?.name || `${name}`,
             value: field.state.value as any,
@@ -173,7 +182,7 @@ function useForm<
         <DsfrTextArea
           label={label}
           nativeTextAreaProps={{
-            required: true,
+            required: isRequiredField(name as keyof TFormData),
             id: nativeTextAreaProps?.id || `${name}`,
             name: nativeTextAreaProps?.name || `${name}`,
             value: field.state.value as any,
@@ -202,9 +211,9 @@ function useForm<
         <DsfrPasswordInput
           label={label}
           nativeInputProps={{
+            required: isRequiredField(name as keyof TFormData),
             type: 'password',
             autoComplete: 'password',
-            required: true,
             id: nativeInputProps?.id || `${name}`,
             name: nativeInputProps?.name || `${name}`,
             value: field.state.value as any,
@@ -249,6 +258,7 @@ function useForm<
           small
           label={label}
           nativeInputProps={{
+            required: isRequiredField(name as keyof TFormData),
             name: nativeInputProps?.name || `${name}`,
             onChange: (e) => field.handleChange(e.target.checked as any),
             checked: field.state.value as any,
@@ -370,6 +380,7 @@ function useForm<
           nativeSelectProps={{
             id: `${name}`,
             name: `${name}`,
+            required: isRequiredField(name as keyof TFormData),
             value: field.state.value as any,
             onChange: (e) => field.handleChange(e.target.value as any),
             onBlur: field.handleBlur,
@@ -401,6 +412,7 @@ function useForm<
             ...option,
             nativeInputProps: {
               ...option.nativeInputProps,
+              required: isRequiredField(name as keyof TFormData),
               checked: field.state.value && field.state.value === option.nativeInputProps.value,
               onChange: (e) => field.handleChange(e.target.value as any),
               onBlur: field.handleBlur,
