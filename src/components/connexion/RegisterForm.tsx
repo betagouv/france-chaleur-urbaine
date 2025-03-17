@@ -1,41 +1,23 @@
 import { Stepper } from '@codegouvfr/react-dsfr/Stepper';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
-import { z } from 'zod';
+import { type z } from 'zod';
 
 import useForm from '@/components/form/react-form/useForm';
 import Button from '@/components/ui/Button';
 import Link from '@/components/ui/Link';
 import { toastErrors } from '@/services/notification';
+import {
+  zCredentialsSchema,
+  zIdentitySchema,
+  zAdditionalInfoSchema,
+  type CredentialsSchema,
+  type IdentitySchema,
+  type AdditionalInfoSchema,
+} from '@/services/user';
 import { userRolesInscription } from '@/types/enum/UserRole';
 import { postFetchJSON } from '@/utils/network';
 import { upperCaseFirstChar } from '@/utils/strings';
-
-export const zAccountRegisterRequest = z.object({
-  email: z.string().email("L'adresse email n'est pas valide").max(100, "L'email ne peut pas dépasser 100 caractères"),
-  password: z
-    .string()
-    .min(10, 'Le mot de passe doit contenir au minimum 10 caractères')
-    .max(100, 'Le mot de passe ne peut pas dépasser 100 caractères'),
-  role: z.enum(userRolesInscription),
-  accept_cgu: z.boolean().refine((val) => val === true, {
-    message: "Veuillez accepter les conditions générales d'utilisation",
-  }),
-});
-
-export const zNameSchema = z.object({
-  first_name: z.string().min(1, 'Le prénom est obligatoire'),
-  last_name: z.string().min(1, 'Le nom de famille est obligatoire'),
-  structure: z.string().min(1, 'La structure est obligatoire'),
-  structure_type: z.string(),
-  job: z.string().min(1, 'Le poste est obligatoire'),
-  email: z.string().email("L'adresse email n'est pas valide"),
-  phone: z.string().nullable().optional(),
-});
-
-export const zAdditionalInfoSchema = z.object({
-  besoins: z.array(z.string()),
-});
 
 type FormStep = {
   label: string;
@@ -46,17 +28,17 @@ type FormStep = {
 const steps: FormStep[] = [
   {
     label: 'Choisir un identifiant',
-    schema: zAccountRegisterRequest,
+    schema: zCredentialsSchema,
     defaultValues: {
       email: '',
       password: '',
       accept_cgu: false,
       role: 'professionnel',
-    } satisfies AccountRegisterRequest,
+    } satisfies CredentialsSchema,
   },
   {
     label: 'Choisir un nom',
-    schema: zNameSchema,
+    schema: zIdentitySchema,
     defaultValues: {
       first_name: '',
       last_name: '',
@@ -65,22 +47,20 @@ const steps: FormStep[] = [
       job: '',
       email: '',
       phone: null,
-    } satisfies z.infer<typeof zNameSchema>,
+    } satisfies IdentitySchema,
   },
   {
     label: 'Informations complémentaires',
     schema: zAdditionalInfoSchema,
     defaultValues: {
       besoins: [],
-    } satisfies z.infer<typeof zAdditionalInfoSchema>,
+    } satisfies AdditionalInfoSchema,
   },
 ] as const;
 
-type FormValues = z.infer<typeof zAccountRegisterRequest> & z.infer<typeof zNameSchema> & z.infer<typeof zAdditionalInfoSchema>;
+type FormValues = AdditionalInfoSchema & IdentitySchema & CredentialsSchema;
 
 const defaultValues = steps.reduce<FormValues>((acc, curr) => ({ ...acc, ...curr.defaultValues }), {} as FormValues);
-
-export type AccountRegisterRequest = z.infer<typeof zAccountRegisterRequest>;
 
 function RegisterForm() {
   const router = useRouter();
@@ -92,18 +72,7 @@ function RegisterForm() {
   const nextStep = steps[stepIndex + 1];
   const [formData, setFormData] = useState(defaultValues);
 
-  const {
-    EmailInput,
-    PasswordInput,
-    Checkbox,
-    Submit,
-    Form,
-    Input,
-    Checkboxes,
-    Radio,
-
-    Select,
-  } = useForm({
+  const { EmailInput, PasswordInput, Checkbox, Submit, Form, Input, Checkboxes, Radio, useValue, Select } = useForm({
     defaultValues: formData,
     schema: step.schema,
     onSubmit: toastErrors(async ({ value }) => {
@@ -113,14 +82,13 @@ function RegisterForm() {
       if (stepIndex < steps.length - 1) {
         setStepIndex(stepIndex + 1);
       } else {
-        if (window.confirm(`Voulez-vous vraiment enregistrer ces informations ${JSON.stringify(newFormData, null, 2)} ?`)) {
-          await postFetchJSON('/api/auth/register', value);
-          router.push('/inscription/bravo');
-        }
+        await postFetchJSON('/api/auth/register', value);
+        router.push('/inscription/bravo');
       }
     }),
   });
 
+  const structureType = useValue('structure_type');
   return (
     <>
       <Stepper currentStep={stepIndex + 1} stepCount={steps.length} title={steps[stepIndex].label} nextTitle={nextStep?.label} />
@@ -141,6 +109,7 @@ function RegisterForm() {
                   },
                 }))}
               />
+
               <Checkbox
                 name="accept_cgu"
                 small
@@ -174,8 +143,8 @@ function RegisterForm() {
                   { label: 'Autre (préciser)', value: 'autre' },
                 ]}
               />
+              {structureType === 'autre' && <Input name="structure_other" label="Renseignez le type de structure" />}
               <Input name="job" label="Poste" />
-              <EmailInput name="email" label="Email" />
               <Input name="phone" label="Téléphone" />
             </>
           )}

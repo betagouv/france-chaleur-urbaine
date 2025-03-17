@@ -3137,22 +3137,31 @@ export interface ReseauxDeFroidTiles {
 }
 
 export interface Users {
-  activation_token: string | null;
+  accepted_cgu_at: Timestamp | null;
   activated_at: Timestamp | null;
+  activation_token: string | null;
   active: Generated<boolean | null>;
+  besoins: string[] | null;
   created_at: Generated<Timestamp | null>;
   email: string;
+  first_name: string | null;
   from_api: string | null;
   gestionnaires: string[] | null;
   id: Generated<string>;
+  job: string | null;
   last_connection: Timestamp | null;
+  last_name: string | null;
   password: string;
+  phone: string | null;
   receive_new_demands: boolean | null;
   receive_old_demands: boolean | null;
   reset_token: string | null;
   status: 'pending_email_confirmation' | 'valid';
   role: UserRole;
   signature: string | null;
+  structure: string | null;
+  structure_other: string | null;
+  structure_type: string | null;
 }
 
 export interface ZoneAPotentielChaud {

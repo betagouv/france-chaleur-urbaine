@@ -8,7 +8,26 @@ import { generateRandomToken } from '@/utils/random';
 
 import { sendEmail } from '../email/react-email';
 
-export const register = async (email: string, password: string, role: UserRole) => {
+export const register = async ({
+  email,
+  password,
+  role,
+  accept_cgu,
+  ...userData
+}: {
+  email: string;
+  password: string;
+  role: UserRole;
+  first_name: string;
+  last_name: string;
+  structure: string;
+  structure_type: string;
+  structure_other?: string;
+  job: string;
+  phone?: string | null;
+  besoins: string[];
+  accept_cgu: boolean;
+}) => {
   const existingUser = await kdb.selectFrom('users').select('id').where('email', '=', email).executeTakeFirst();
   if (existingUser) {
     throw new BadRequestError(`L'utilisateur associé à l'email '${email}' existe déjà.`);
@@ -24,6 +43,8 @@ export const register = async (email: string, password: string, role: UserRole) 
       status: 'pending_email_confirmation',
       activation_token: activationToken,
       gestionnaires: [],
+      accepted_cgu_at: accept_cgu ? new Date() : null,
+      ...userData,
     })
     .returning(['id', 'email'])
     .executeTakeFirstOrThrow();
