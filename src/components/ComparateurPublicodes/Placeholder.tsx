@@ -14,7 +14,7 @@ type ComparateurPublicodesPlaceholderProps = React.HTMLAttributes<HTMLDivElement
 
 export type TabId = 'batiment' | 'modes';
 
-export const dataYearDisclaimer = `Les données utilisées par le comparateur portent sur l'année 2023, sauf pour les prix des réseaux de chaleur où l'année de référence est 2022, dans l'attente de la publication des données 2023. Les valeurs de l'ensemble des paramètres utilisés pour les calculs sont modifiables dans le mode avancé.`;
+export const dataYearDisclaimer = `Les données utilisées par le comparateur portent sur l'année 2023. Les valeurs de l'ensemble des paramètres utilisés pour les calculs sont modifiables dans le mode avancé.`;
 
 export const title = (
   <>

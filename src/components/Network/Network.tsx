@@ -308,35 +308,23 @@ const NetworkPanel = ({
 
                   <Property label="Contenu CO2 ACV (non réglementaire)" value={network.contenu_CO2_ACV_2023_tmp} formatter={formatCO2} />
                   <Property label="Contenu CO2 (non réglementaire)" value={network.contenu_CO2_2023_tmp} formatter={formatCO2} />
+                  <Property
+                    label="Rendement"
+                    value={network['Rend%']}
+                    round
+                    unit="%"
+                    tooltip="Rapport entre l'énergie thermique livrée aux abonnés et l'énergie thermique injectée dans le réseau."
+                  />
+                  {!isCold && (
+                    <Property
+                      label="Développement du réseau"
+                      value={network['Dev_reseau%']}
+                      round
+                      unit="%"
+                      tooltip="Ratio entre le nombre de nouveaux abonnés en 2022 et le nombre total d'abonnés en 2021."
+                    />
+                  )}
                 </Box>
-
-                {!isCold && (
-                  <>
-                    <Text size="sm" fontStyle="italic" my="2w">
-                      <Text as="span" underline>
-                        Données pour l'année 2022
-                      </Text>
-                      &nbsp;(en attente de la diffusion par la FEDENE des données 2023)
-                    </Text>
-                    <Box borderLeft="2px solid grey" pl="2w">
-                      <Property
-                        label="Rendement"
-                        value={network['Rend%']}
-                        round
-                        unit="%"
-                        tooltip="Rapport entre l'énergie thermique livrée aux abonnés l'énergie thermique injectée dans le réseau."
-                      />
-                      {!isCold && (
-                        <Property
-                          label="Développement du réseau"
-                          value={network['Dev_reseau%']}
-                          unit="%"
-                          tooltip="Ratio entre le nombre de nouveaux abonnés en 2022 et le nombre total d'abonnés en 2021."
-                        />
-                      )}
-                    </Box>
-                  </>
-                )}
 
                 <Text size="sm" fontStyle="italic" my="2w">
                   <Text as="span" underline>
@@ -374,9 +362,9 @@ const NetworkPanel = ({
 
                 <Text size="sm" fontStyle="italic" mb="2w">
                   <Text as="span" underline>
-                    Données pour l'année 2022
+                    Données pour l'année 2023
                   </Text>
-                  &nbsp;(en attente de la diffusion par la FEDENE des données 2023)
+                  , disponibles pour les réseaux classés - sauf opposition du maître d'ouvrage ou gestionnaire du réseau
                 </Text>
                 {network.PM || network.PM_L || network.PM_T || network['PV%'] || network['PF%'] ? (
                   <>
@@ -413,17 +401,18 @@ const NetworkPanel = ({
                           <Property
                             label={<Box ml="2w">% de la part variable (fonction des consommations)</Box>}
                             value={network['PV%']}
+                            round
                             unit="%"
                           />
                         )}
                         {isDefined(network['PF%']) && (
-                          <Property label={<Box ml="2w">% de la part fixe (abonnement)</Box>} value={network['PF%']} unit="%" />
+                          <Property label={<Box ml="2w">% de la part fixe (abonnement)</Box>} value={network['PF%']} round unit="%" />
                         )}
                       </>
                     )}
                   </>
                 ) : (
-                  <div>Ces informations ne sont pas disponibles pour le moment.</div>
+                  <div>Ces informations ne sont pas disponibles.</div>
                 )}
               </BoxSection>
             )}
@@ -434,24 +423,6 @@ const NetworkPanel = ({
                   Contacts
                 </Heading>
                 <Property label="Maître d'Ouvrage" value={network.MO} />
-                <Box display="flex" justifyContent="space-between">
-                  <Box display="flex">
-                    <strong>Adresse</strong>
-                  </Box>
-                  <Box textAlign="right">
-                    {isDefined(network.adresse_mo) ? (
-                      <>
-                        {network.adresse_mo}
-                        <br />
-                      </>
-                    ) : (
-                      ''
-                    )}
-                    {isDefined(network.CP_MO) ? network.CP_MO : ''} {isDefined(network.ville_mo) ? network.ville_mo : ''}
-                  </Box>
-                </Box>
-
-                <br />
                 <Property label="Gestionnaire" value={network.Gestionnaire} />
                 <Property
                   label="Site Internet"
@@ -516,9 +487,12 @@ const NetworkPanel = ({
 
             {!isCold && (!displayBlocks || displayBlocks.includes('energies')) && (
               <BoxSection>
-                <Heading as="h3" color="blue-france">
+                <Heading as="h3" color="blue-france" mb="2w">
                   Mix énergétique
                 </Heading>
+                <Text size="sm" fontStyle="italic" underline>
+                  Données pour l'année 2023
+                </Text>
                 {isDefined(network.production_totale_MWh) ? <EnergiesChart network={network} /> : <Text>Non connu</Text>}
               </BoxSection>
             )}
@@ -563,16 +537,12 @@ const NetworkPanel = ({
                 isExternal
               >
                 données locales de l’énergie diffusées par le SDES
+              </Link>{' '}
+              et{' '}
+              <Link href="https://fedene.fr/ressource/bibliotheque-de-donnees-des-reseaux-de-chaleur-et-de-froid-2024/" isExternal>
+                bibliothèque de données de la Fedene Réseaux de chaleur et de froid
               </Link>
             </li>
-            {!isCold && (
-              <li>
-                Données 2022 :{' '}
-                <Link href="https://fedene.fr/ressource/bibliotheque-de-donnees-des-reseaux-de-chaleur-et-de-froid-2023/" isExternal>
-                  bibliothèque de données de la Fedene Réseaux de chaleur et de froid
-                </Link>
-              </li>
-            )}
             <li>Données 2021 : ViaSeva.</li>
           </ul>
 
