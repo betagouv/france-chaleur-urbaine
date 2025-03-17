@@ -313,7 +313,7 @@ const NetworkPanel = ({
                     value={network['Rend%']}
                     round
                     unit="%"
-                    tooltip="Rapport entre l'énergie thermique livrée aux abonnés l'énergie thermique injectée dans le réseau."
+                    tooltip="Rapport entre l'énergie thermique livrée aux abonnés et l'énergie thermique injectée dans le réseau."
                   />
                   {!isCold && (
                     <Property
