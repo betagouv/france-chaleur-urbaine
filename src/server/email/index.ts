@@ -115,6 +115,7 @@ export const sendRelanceMail = async (demand: Demand, id: string): Promise<void>
       month: 'long',
       day: 'numeric',
     }),
+    adresse: demand.Adresse,
     link: `${process.env.NEXTAUTH_URL}/satisfaction?id=${id}&satisfaction=`,
     calendarLink: 'https://cal.com/erwangravez/15min',
   });
