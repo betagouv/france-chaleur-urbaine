@@ -324,8 +324,9 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
             </Badge>
           )}
           {test.has_pending_jobs ? (
-            <Badge severity="new" small className="fr-mx-1w">
-              Mise à jour en attente
+            <Badge severity="new" noIcon small className="fr-mx-1w">
+              <Loader height={12} width={12} strokeWidth={6} color="var(--text-action-high-yellow-moutarde)" className="mr-2" /> Mise à jour
+              en attente
             </Badge>
           ) : (
             test.has_unseen_results && (
