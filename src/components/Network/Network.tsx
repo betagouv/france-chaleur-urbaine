@@ -412,7 +412,7 @@ const NetworkPanel = ({
                     )}
                   </>
                 ) : (
-                  <div>Ces informations ne sont pas disponibles pour le moment.</div>
+                  <div>Ces informations ne sont pas disponibles.</div>
                 )}
               </BoxSection>
             )}
