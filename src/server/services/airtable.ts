@@ -1,8 +1,9 @@
 import bcrypt from 'bcryptjs';
+import { type Insertable } from 'kysely';
 
 import db from '@/server/db';
 import base from '@/server/db/airtable';
-import { kdb, sql } from '@/server/db/kysely';
+import { kdb, sql, type Users } from '@/server/db/kysely';
 import { parentLogger } from '@/server/helpers/logger';
 import { type ApiAccount } from '@/types/ApiAccount';
 import { Airtable } from '@/types/enum/Airtable';
@@ -128,7 +129,8 @@ export const syncGestionnairesWithUsers = async () => {
           receive_old_demands: oldDemands,
           active,
           role: USER_ROLE.GESTIONNAIRE,
-        };
+          status: 'valid',
+        } satisfies Insertable<Users>;
 
         if (!DRY_RUN) {
           try {
