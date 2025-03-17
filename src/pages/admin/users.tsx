@@ -21,21 +21,21 @@ const columns: ColumnDef<AdminManageUserItem>[] = [
     accessorKey: 'email',
     header: 'Email',
     sortingFn: (rowA, rowB) => compareFrenchStrings(rowA.original.email, rowB.original.email),
-    flex: 3,
-    className: 'break-words break-all max-w-[200px]',
+    flex: 2.5,
+    className: 'break-words break-all',
   },
   {
     accessorKey: 'role',
     header: 'Role',
     align: 'center',
-    flex: 2,
+    flex: 1.5,
     cell: (info) => <UserRoleBadge role={info.getValue<UserRole>()} />,
   },
   {
     accessorKey: 'gestionnaires',
     id: 'gestionnaires',
     header: 'Tags gestionnaire',
-    flex: 4,
+    flex: 3,
     cell: (info) => (
       <div className="flex flex-wrap gap-1">
         {info.getValue<string[]>().map((tag) => (
