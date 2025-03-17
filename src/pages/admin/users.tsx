@@ -1,6 +1,5 @@
 import { type SortingState } from '@tanstack/react-table';
 
-import AccountCreationForm from '@/components/Admin/AccountCreationForm';
 import UserRoleBadge from '@/components/Admin/UserRoleBadge';
 import Tag from '@/components/Manager/Tag';
 import SimplePage from '@/components/shared/page/SimplePage';
@@ -109,11 +108,6 @@ export default function ManageUsers() {
         <AsyncButton size="small" onClick={async () => exportService.exportXLSX('obsoleteUsers')}>
           Exporter la liste des comptes obsolètes (connexion de plus de 6 mois ou nulle)
         </AsyncButton>
-
-        <Heading as="h2" color="blue-france" mt="4w">
-          Créer un compte
-        </Heading>
-        <AccountCreationForm />
       </Box>
     </SimplePage>
   );
