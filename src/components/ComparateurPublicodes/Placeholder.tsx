@@ -10,11 +10,17 @@ import cx from '@/utils/cx';
 
 import { Results, ResultsPlaceholder, Simulator } from './ComparateurPublicodes.style';
 
-type ComparateurPublicodesPlaceholderProps = React.HTMLAttributes<HTMLDivElement> & {};
+type ComparateurPublicodesPlaceholderProps = React.HTMLAttributes<HTMLDivElement> & { advancedMode: boolean };
 
 export type TabId = 'batiment' | 'modes';
 
-export const dataYearDisclaimer = `Les données utilisées par le comparateur portent sur l'année 2023. Les valeurs de l'ensemble des paramètres utilisés pour les calculs sont modifiables dans le mode avancé.`;
+export const DataYearDisclaimer: React.FC<{ advancedMode?: boolean }> = ({ advancedMode }) => (
+  <span>
+    Les données utilisées par le comparateur portent sur l'année 2023. Les valeurs de l'ensemble des paramètres utilisés pour les calculs
+    sont modifiables
+    {!advancedMode && ' dans le mode avancé'}.
+  </span>
+);
 
 export const title = (
   <>
@@ -39,16 +45,16 @@ const modalDescription = createModal({
   isOpenedByDefault: false,
 });
 
-export const Explanations = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
+export const Explanations = ({ className, advancedMode, ...props }: React.HTMLAttributes<HTMLDivElement> & { advancedMode: boolean }) => (
   <>
     <DescriptionModal />
     <div className={cx('fr-text--sm fr-mt-2w', className)} {...props}>
-      Cet outil permet de comparer les modes de chauffage en termes de coûts et d'émissions de CO2. Il s'appuie sur des hypothèses qui
-      représentent des configurations types, sujets à des incertitudes importantes (
+      Cet outil permet de comparer les modes de chauffage{advancedMode ? ' et de refroidissement' : ''} en termes de coûts et d'émissions de
+      CO2. Il s'appuie sur des hypothèses qui représentent des configurations types, sujets à des incertitudes importantes (
       <a href="#" onClick={() => modalDescription.open()} className="fr-link fr-text--sm">
         voir l’explication détaillée
       </a>
-      ), et ne se substitue en aucun cas à une étude de faisabilité technico-économique. {dataYearDisclaimer}
+      ), et ne se substitue en aucun cas à une étude de faisabilité technico-économique. <DataYearDisclaimer advancedMode={advancedMode} />
       <p className="fr-text--sm font-bold !mt-2">
         Pour une étude plus poussée (prix actualisés, prise en compte des spécificités de votre bâtiment), nous vous invitons à vous
         rapprocher du gestionnaire du réseau de chaleur le plus proche de chez vous ou d'un bureau d'études.
@@ -72,11 +78,20 @@ export const simulatorTabs = [
   },
 ] as const;
 
-export const ResultsNotAvailable = () => (
+export const ResultsNotAvailable = ({ advancedMode }: { advancedMode: boolean }) => (
   <ResultsPlaceholder>
     <img src="/img/simulateur_placeholder.svg" alt="" />
     <div>
-      Les résultats s’afficheront ici une fois <strong>une adresse</strong> et <strong>au moins un mode de chauffage</strong> sélectionnés
+      Les résultats s’afficheront ici une fois{' '}
+      {advancedMode ? (
+        <>
+          <strong>une adresse</strong> et <strong>au moins un mode de chauffage</strong> sélectionnés
+        </>
+      ) : (
+        <>
+          <strong>une adresse</strong> sélectionnée
+        </>
+      )}
     </div>
     <Logos size="sm" withFCU />
   </ResultsPlaceholder>
@@ -185,19 +200,28 @@ export const DisclaimerButton: React.FC<React.HTMLAttributes<HTMLDivElement>> = 
   );
 };
 
-const ComparateurPublicodesPlaceholder: React.FC<ComparateurPublicodesPlaceholderProps> = ({ children, className, ...props }) => {
+const ComparateurPublicodesPlaceholder: React.FC<ComparateurPublicodesPlaceholderProps> = ({
+  children,
+  className,
+  advancedMode,
+  ...props
+}) => {
   return (
     <div className={cx(fr.cx('fr-container'), className)} {...props}>
       <Simulator $loading={true}>
         <Box display="flex" gap="16px" flexDirection="column">
-          {simulatorTabs.map((tab) => (
-            <Accordion key={tab.tabId} bordered label={tab.label}>
-              Chargement...
-            </Accordion>
-          ))}
+          {advancedMode ? (
+            simulatorTabs.map((tab) => (
+              <Accordion key={tab.tabId} bordered label={tab.label}>
+                Chargement...
+              </Accordion>
+            ))
+          ) : (
+            <>Chargement...</>
+          )}
         </Box>
         <Results>
-          <ResultsNotAvailable />
+          <ResultsNotAvailable advancedMode={advancedMode} />
         </Results>
       </Simulator>
     </div>

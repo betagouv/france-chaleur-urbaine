@@ -15,7 +15,7 @@ import cx from '@/utils/cx';
 
 import { ChartPlaceholder, GraphTooltip } from './ComparateurPublicodes.style';
 import { modesDeChauffage } from './mappings';
-import { dataYearDisclaimer, DisclaimerButton, Logos } from './Placeholder';
+import { DataYearDisclaimer, DisclaimerButton, Logos } from './Placeholder';
 import { type SimulatorEngine } from './useSimulatorEngine';
 
 const COST_PRECISION = 10;
@@ -189,7 +189,7 @@ const Graph: React.FC<GraphProps> = ({
   hideReseauDeChaleur,
   ...props
 }) => {
-  const { has: hasModeDeChauffage } = useArrayQueryState('modes-de-chauffage');
+  const { has: hasModeDeChauffage, items: selectedModesDeChauffage } = useArrayQueryState('modes-de-chauffage');
   const coutsRef = useRef<HTMLDivElement>(null);
   useFixLegendOpacity(coutsRef);
   const ref = useRef(null);
@@ -229,8 +229,11 @@ const Graph: React.FC<GraphProps> = ({
 
   const modesDeChauffageFiltres = modesDeChauffage.filter(
     (modeDeChauffage) =>
-      (!advancedMode ? modeDeChauffage.grandPublicMode && !(hideReseauDeChaleur && modeDeChauffage.label === 'Réseau de chaleur') : true) &&
-      hasModeDeChauffage(modeDeChauffage.label) &&
+      (advancedMode
+        ? selectedModesDeChauffage.length > 0
+          ? hasModeDeChauffage(modeDeChauffage.label)
+          : true
+        : modeDeChauffage.grandPublicMode && !(hideReseauDeChaleur && modeDeChauffage.label === 'Réseau de chaleur')) &&
       (typeDeBatiment === 'tertiaire' ? modeDeChauffage.tertiaire : true)
   );
 
@@ -431,35 +434,36 @@ const Graph: React.FC<GraphProps> = ({
 
   let graphSectionTitle = '';
 
+  const segments: React.ComponentProps<typeof SegmentedControl>['segments'] = [
+    {
+      label: 'Coût et émissions de CO2',
+      nativeInputProps: {
+        checked: graphType === 'couts-emissions',
+        onChange: () => setGraphType('couts-emissions'),
+      },
+    },
+    {
+      label: 'Détails des coûts',
+      nativeInputProps: {
+        checked: graphType === 'couts',
+        onChange: () => setGraphType('couts'),
+      },
+    },
+  ];
+  if (advancedMode) {
+    segments.push({
+      label: 'Émissions de CO2',
+      nativeInputProps: {
+        checked: graphType === 'emissions',
+        onChange: () => setGraphType('emissions'),
+      },
+    });
+  }
+
   return (
     <>
       <Box textAlign="right" my="4w">
-        <SegmentedControl
-          hideLegend
-          segments={[
-            {
-              label: 'Coût et émissions de CO2',
-              nativeInputProps: {
-                checked: graphType === 'couts-emissions',
-                onChange: () => setGraphType('couts-emissions'),
-              },
-            },
-            {
-              label: 'Détails des coûts',
-              nativeInputProps: {
-                checked: graphType === 'couts',
-                onChange: () => setGraphType('couts'),
-              },
-            },
-            {
-              label: 'Émissions de CO2',
-              nativeInputProps: {
-                checked: graphType === 'emissions',
-                onChange: () => setGraphType('emissions'),
-              },
-            },
-          ]}
-        />
+        <SegmentedControl hideLegend segments={segments} />
       </Box>
       <div ref={ref} className={cx(className)} {...props}>
         {graphType === 'couts-emissions' && (
@@ -690,7 +694,9 @@ const Graph: React.FC<GraphProps> = ({
           </>
         )}
         <Logos className="fr-mt-4w" size="sm" justifyContent="end" />
-        <div className="text-right text-xs text-faded">{dataYearDisclaimer}</div>
+        <div className="text-right text-xs text-faded">
+          <DataYearDisclaimer advancedMode={advancedMode} />
+        </div>
       </div>
       <div className="mt-12 flex flex-col gap-2 border-2 border-dashed border-info-light p-2">
         <div className="text-center">

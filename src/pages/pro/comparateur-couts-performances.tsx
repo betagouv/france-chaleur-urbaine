@@ -11,7 +11,7 @@ import { withAuthentication } from '@/server/authentication';
 const ComparateurPublicodes = dynamic(() => import('@/components/ComparateurPublicodes'), {
   // Publicode engine takes 2s to load and is unnecessary on the server side
   ssr: false,
-  loading: () => <Placeholder />,
+  loading: () => <Placeholder advancedMode={true} />,
 });
 
 const SimulateurPage: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = ({ query }) => {
@@ -26,10 +26,10 @@ const SimulateurPage: React.FC<InferGetServerSidePropsType<typeof getServerSideP
         <HeroTitle>{title}</HeroTitle>
         <HeroContent>
           <Logos size="sm" withFCU={false} />
-          <Explanations />
+          <Explanations advancedMode={true} />
         </HeroContent>
       </Hero>
-      <ComparateurPublicodes tabId={query.tabId} displayMode="technicien" />
+      <ComparateurPublicodes tabId={query.tabId} advancedMode={true} />
     </SimplePage>
   );
 };

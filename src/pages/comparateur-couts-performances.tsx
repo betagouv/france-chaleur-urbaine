@@ -10,7 +10,7 @@ import Hero, { HeroContent, HeroTitle } from '@/components/ui/Hero';
 const ComparateurPublicodes = dynamic(() => import('@/components/ComparateurPublicodes'), {
   // Publicode engine takes 2s to load and is unnecessary on the server side
   ssr: false,
-  loading: () => <Placeholder />,
+  loading: () => <Placeholder advancedMode={false} />,
 });
 
 const SimulateurPage: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = ({ query }) => {
@@ -24,10 +24,10 @@ const SimulateurPage: React.FC<InferGetServerSidePropsType<typeof getServerSideP
         <HeroTitle>{title}</HeroTitle>
         <HeroContent>
           <Logos size="sm" withFCU={false} />
-          <Explanations />
+          <Explanations advancedMode={false} />
         </HeroContent>
       </Hero>
-      <ComparateurPublicodes tabId={query.tabId} displayMode="grand public" />
+      <ComparateurPublicodes tabId={query.tabId} advancedMode={false} />
     </SimplePage>
   );
 };

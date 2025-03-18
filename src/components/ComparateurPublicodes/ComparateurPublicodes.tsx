@@ -37,7 +37,7 @@ import { ResultsNotAvailable, simulatorTabs } from './Placeholder';
 import useSimulatorEngine from './useSimulatorEngine';
 
 type ComparateurPublicodesProps = React.HTMLAttributes<HTMLDivElement> & {
-  displayMode: 'technicien' | 'grand public';
+  advancedMode: boolean;
   tabId: TabId;
 };
 
@@ -46,8 +46,8 @@ export type TabId = (typeof simulatorTabs)[number]['tabId'];
 const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
   children,
   className,
-  displayMode: defaultDisplayMode,
   tabId: defaultTabId,
+  advancedMode,
   ...props
 }) => {
   const engine = useSimulatorEngine();
@@ -55,13 +55,9 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
   const searchParams = useSearchParams();
 
   const [graphDrawerOpen, setGraphDrawerOpen] = React.useState(false);
-  const engineDisplayMode = engine.getField('mode affichage');
-  const [displayMode] = React.useState<ComparateurPublicodesProps['displayMode']>(defaultDisplayMode || engineDisplayMode);
-  const advancedMode = displayMode === 'technicien';
 
   const [address, setAddress] = useQueryState('address');
   const [addressDetail, setAddressDetail] = React.useState<AddressDetail>();
-  const [modesDeChauffage] = useQueryState('modes-de-chauffage');
   const [lngLat, setLngLat] = React.useState<[number, number]>();
   const [nearestReseauDeChaleur, setNearestReseauDeChaleur] = React.useState<LocationInfoResponse['nearestReseauDeChaleur']>();
   const [addressError, setAddressError] = React.useState<boolean>(false);
@@ -91,7 +87,13 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
 
   const isAddressSelected = engine.getField('code département') !== undefined;
 
-  const displayResults = isAddressSelected && !!modesDeChauffage;
+  const displayResults = isAddressSelected;
+
+  React.useEffect(() => {
+    engine.setField('Inclure la climatisation', 'non');
+    engine.setField('Production eau chaude sanitaire', 'oui');
+    engine.setStringField('type de production ECS', 'Avec équipement chauffage');
+  }, [advancedMode]);
 
   const { open: displayContactForm, EligibilityFormModal } = useEligibilityForm({
     id: `eligibility-form-comparateur`,
@@ -266,16 +268,105 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
     </div>
   ) : (
     <>
-      <CallOut className="mb-5 font-bold">
-        {!isAddressSelected
-          ? '1. Commencez par sélectionner une adresse'
-          : !modesDeChauffage
-            ? '2. Maintenant, sélectionnez au moins un mode de chauffage'
-            : ''}
-      </CallOut>
-      <ResultsNotAvailable />
+      <CallOut className="mb-5 font-bold">Renseignez une adresse</CallOut>
+      <ResultsNotAvailable advancedMode={advancedMode} />
     </>
   );
+
+  const addressAutocomplete = (
+    <AddressAutocomplete
+      excludeCities
+      label={
+        <Label
+          label="Adresse"
+          help="Pour le moment, l’adresse est utilisée uniquement pour évaluer la proximité aux réseaux de chaleur et froid et la zone climatique, et non pour récupérer les caractéristiques du bâtiment"
+        ></Label>
+      }
+      state={addressError ? 'error' : undefined}
+      stateRelatedMessage={
+        addressError ? 'Désolé, nous n’avons pas trouvé la ville associée à cette adresse, essayez avec une autre' : undefined
+      }
+      defaultValue={address || ''}
+      onLoadingChange={(loading) => {
+        if (loading) {
+          setAddressLoading(true);
+        }
+      }}
+      onClear={() => {
+        setNearestReseauDeChaleur(undefined);
+        setNearestReseauDeFroid(undefined);
+        setAddressError(false);
+        setAddressLoading(false);
+        setAddress(null);
+        setLngLat(undefined);
+
+        engine.setSituation(
+          ObjectEntries(addresseToPublicodesRules).reduce(
+            (acc, [key]) => ({
+              ...acc,
+              [key]: null,
+            }),
+            {}
+          )
+        );
+      }}
+      onSelect={async (selectedAddress) => {
+        try {
+          setAddressError(false);
+          setLngLat(undefined);
+
+          const [lon, lat] = selectedAddress.geometry.coordinates;
+          const addressLabel = selectedAddress.properties.label;
+          if (addressLabel !== address) {
+            setAddress(null);
+          }
+          const network = await heatNetworkService.findByCoords(selectedAddress);
+          setAddressDetail({
+            network,
+            geoAddress: selectedAddress,
+          });
+          const infos: LocationInfoResponse = await postFetchJSON('/api/location-infos', {
+            lon,
+            lat,
+            city: selectedAddress.properties.city,
+            cityCode: selectedAddress.properties.citycode,
+          });
+          setNearestReseauDeChaleur(infos.nearestReseauDeChaleur);
+          setNearestReseauDeFroid(infos.nearestReseauDeFroid);
+
+          if (!infos.infosVille) {
+            setAddressError(true);
+
+            return;
+          }
+
+          setAddress(addressLabel);
+
+          if (infos.nearestReseauDeChaleur || infos.nearestReseauDeFroid) {
+            setLngLat(selectedAddress.geometry.coordinates);
+          }
+
+          console.debug('locations-infos', infos);
+
+          engine.setSituation(
+            ObjectEntries(addresseToPublicodesRules).reduce(
+              (acc, [key, infoGetter]) => ({
+                ...acc,
+                [key]: infoGetter(infos) ?? null,
+              }),
+              {}
+            )
+          );
+        } catch (e) {
+          setAddressError(true);
+          console.error('Error setting address', e);
+        } finally {
+          setAddressLoading(false);
+        }
+      }}
+    />
+  );
+
   return (
     <>
       <EligibilityFormModal />
@@ -301,136 +392,41 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
         )}
         <FormProvider engine={engine}>
           <Simulator $loading={loading}>
-            <div className="flex flex-col gap-4">
-              <Accordion
-                expanded={selectedTabId === simulatorTabs[0].tabId}
-                onExpandedChange={(expanded) => (expanded ? setSelectedTabId(simulatorTabs[0].tabId) : setSelectedTabId(null))}
-                bordered
-                label={
-                  <div>
-                    {simulatorTabs[0].label}
-                    {address && selectedTabId !== simulatorTabs[0].tabId && (
-                      <div className={fr.cx('fr-text--xs', 'fr-text--light')}>{address}</div>
-                    )}
-                  </div>
-                }
-              >
-                <AddressAutocomplete
-                  excludeCities
+            {advancedMode ? (
+              <div className="flex flex-col gap-4">
+                <Accordion
+                  expanded={selectedTabId === simulatorTabs[0].tabId}
+                  onExpandedChange={(expanded) => (expanded ? setSelectedTabId(simulatorTabs[0].tabId) : setSelectedTabId(null))}
+                  bordered
                   label={
-                    <Label
-                      label="Adresse"
-                      help="Pour le moment, l’adresse est utilisée uniquement pour évaluer la proximité aux réseaux de chaleur et froid et la zone climatique, et non pour récupérer les caractéristiques du bâtiment"
-                    ></Label>
+                    <div>
+                      {simulatorTabs[0].label}
+                      {address && selectedTabId !== simulatorTabs[0].tabId && (
+                        <div className={fr.cx('fr-text--xs', 'fr-text--light')}>{address}</div>
+                      )}
+                    </div>
                   }
-                  state={addressError ? 'error' : undefined}
-                  stateRelatedMessage={
-                    addressError ? 'Désolé, nous n’avons pas trouvé la ville associée à cette adresse, essayez avec une autre' : undefined
-                  }
-                  defaultValue={address || ''}
-                  onLoadingChange={(loading) => {
-                    if (loading) {
-                      setAddressLoading(true);
-                    }
-                  }}
-                  onClear={() => {
-                    setNearestReseauDeChaleur(undefined);
-                    setNearestReseauDeFroid(undefined);
-                    setAddressError(false);
-                    setAddressLoading(false);
-                    setAddress(null);
-                    setLngLat(undefined);
-
-                    engine.setSituation(
-                      ObjectEntries(addresseToPublicodesRules).reduce(
-                        (acc, [key]) => ({
-                          ...acc,
-                          [key]: null,
-                        }),
-                        {}
-                      )
-                    );
-                  }}
-                  onSelect={async (selectedAddress) => {
-                    try {
-                      setAddressError(false);
-                      setLngLat(undefined);
-
-                      const [lon, lat] = selectedAddress.geometry.coordinates;
-                      const addressLabel = selectedAddress.properties.label;
-                      if (addressLabel !== address) {
-                        setAddress(null);
-                      }
-                      const network = await heatNetworkService.findByCoords(selectedAddress);
-                      setAddressDetail({
-                        network,
-                        geoAddress: selectedAddress,
-                      });
-                      const infos: LocationInfoResponse = await postFetchJSON('/api/location-infos', {
-                        lon,
-                        lat,
-                        city: selectedAddress.properties.city,
-                        cityCode: selectedAddress.properties.citycode,
-                      });
-                      setNearestReseauDeChaleur(infos.nearestReseauDeChaleur);
-                      setNearestReseauDeFroid(infos.nearestReseauDeFroid);
-
-                      if (!infos.infosVille) {
-                        setAddressError(true);
-
-                        return;
-                      }
-
-                      setAddress(addressLabel);
-
-                      if (infos.nearestReseauDeChaleur || infos.nearestReseauDeFroid) {
-                        setLngLat(selectedAddress.geometry.coordinates);
-                      }
-
-                      console.debug('locations-infos', infos);
-
-                      engine.setSituation(
-                        ObjectEntries(addresseToPublicodesRules).reduce(
-                          (acc, [key, infoGetter]) => ({
-                            ...acc,
-                            [key]: infoGetter(infos) ?? null,
-                          }),
-                          {}
-                        )
-                      );
-                    } catch (e) {
-                      setAddressError(true);
-                      console.error('Error setting address', e);
-                    } finally {
-                      setAddressLoading(false);
-                    }
-                  }}
-                />
-                {advancedMode ? <ParametresDuBatimentTechnicien engine={engine} /> : <ParametresDuBatimentGrandPublic engine={engine} />}
-                <Button onClick={() => setSelectedTabId(simulatorTabs[1].tabId)} full disabled={!isAddressSelected} className="fr-mt-2w">
-                  Continuer
-                </Button>
-              </Accordion>
-              <Accordion
-                expanded={selectedTabId === simulatorTabs[1].tabId}
-                onExpandedChange={(expanded) => (expanded ? setSelectedTabId(simulatorTabs[1].tabId) : setSelectedTabId(null))}
-                disabled={!isAddressSelected}
-                bordered
-                label={simulatorTabs[1].label}
-              >
-                <ModesDeChauffageAComparer
-                  engine={engine}
-                  nearestReseauDeChaleur={nearestReseauDeChaleur}
-                  nearestReseauDeFroid={nearestReseauDeFroid}
-                  advancedMode={advancedMode}
-                />
-                {advancedMode && (
-                  <Button onClick={() => setSelectedTabId(simulatorTabs[2].tabId)} full disabled={!modesDeChauffage} className="fr-mt-2w">
+                >
+                  {addressAutocomplete}
+                  <ParametresDuBatimentTechnicien engine={engine} />
+                  <Button onClick={() => setSelectedTabId(simulatorTabs[1].tabId)} full disabled={!isAddressSelected} className="fr-mt-2w">
                     Continuer
                   </Button>
-                )}
-              </Accordion>
-              {advancedMode && (
+                </Accordion>
+                <Accordion
+                  expanded={selectedTabId === simulatorTabs[1].tabId}
+                  onExpandedChange={(expanded) => (expanded ? setSelectedTabId(simulatorTabs[1].tabId) : setSelectedTabId(null))}
+                  disabled={!isAddressSelected}
+                  bordered
+                  label={simulatorTabs[1].label}
+                >
+                  <ModesDeChauffageAComparer
+                    engine={engine}
+                    nearestReseauDeChaleur={nearestReseauDeChaleur}
+                    nearestReseauDeFroid={nearestReseauDeFroid}
+                    advancedMode={advancedMode}
+                  />
+                </Accordion>
                 <Accordion
                   expanded={selectedTabId === simulatorTabs[2].tabId}
                   onExpandedChange={(expanded) => (expanded ? setSelectedTabId(simulatorTabs[2].tabId) : setSelectedTabId(null))}
@@ -440,8 +436,13 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
                 >
                   <ParametresDesModesDeChauffage engine={engine} />
                 </Accordion>
-              )}
-            </div>
+              </div>
+            ) : (
+              <div className="flex flex-col">
+                {addressAutocomplete}
+                <ParametresDuBatimentGrandPublic engine={engine} />
+              </div>
+            )}
             <Results className={addressLoading ? 'opacity-30 animate-pulse' : ''}>{results}</Results>
             <FloatingButton onClick={() => setGraphDrawerOpen(true)} iconId="ri-arrow-up-fill">
               Voir les résultats
