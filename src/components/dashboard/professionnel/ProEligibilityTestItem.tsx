@@ -426,6 +426,7 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
                     data={testDetails?.addresses || []}
                     initialSortingState={initialSortingState}
                     columnFilters={columnFilters}
+                    smallPadding
                   />
                 ),
                 isDefault: true,
