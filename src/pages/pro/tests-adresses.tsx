@@ -49,7 +49,8 @@ export default function TestsAdresses(): JSX.Element {
         {isLoading && <Loader size="lg" />}
         {eligibilityTests?.length === 0 && (
           <>
-            Vous n'avez effectué aucun test d'adresses pour le moment. Vous pouvez en faire via le bouton "Nouveau test" en haut à droite.
+            Vous n'avez effectué aucun test d'adresses pour le moment. Pour réaliser un test, cliquez sur "Nouveau test" en haut à droite et
+            téléchargez votre liste d'adresses.
           </>
         )}
         <AnimatePresence>
