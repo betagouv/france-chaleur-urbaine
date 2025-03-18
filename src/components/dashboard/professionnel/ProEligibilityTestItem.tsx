@@ -7,6 +7,7 @@ import { useState, useMemo, useEffect, Fragment } from 'react';
 
 import CompleteEligibilityTestForm from '@/components/dashboard/professionnel/eligibility-test/CompleteEligibilityTestForm';
 import RenameEligibilityTestForm from '@/components/dashboard/professionnel/eligibility-test/RenameEligibilityTestForm';
+import ProcheReseauBadge from '@/components/dashboard/professionnel/ProcheReseauBadge';
 import Map, { type AdresseEligible } from '@/components/Map/Map';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import { UrlStateAccordion } from '@/components/ui/Accordion';
@@ -58,10 +59,19 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
     enableSorting: false,
   },
   {
-    header: 'Raccordable',
+    header: 'Proche réseau',
     width: '130px',
     accessorKey: 'eligibility_status.isEligible',
-    cellType: 'Boolean',
+    cell: (info) => {
+      const eligibility = info.row.original.eligibility_status;
+      return eligibility === null || !eligibility.isEligible ? (
+        <ProcheReseauBadge type="aucun" />
+      ) : eligibility.futurNetwork ? (
+        <ProcheReseauBadge type="en_construction" />
+      ) : (
+        <ProcheReseauBadge type="existant" />
+      );
+    },
     align: 'center',
     filterFn: 'equals',
     enableSorting: false,
