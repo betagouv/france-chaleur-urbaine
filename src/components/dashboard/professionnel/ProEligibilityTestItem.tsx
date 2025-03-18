@@ -47,6 +47,7 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
       </div>
     ),
     flex: 1,
+    enableSorting: false,
   },
   {
     header: 'Indice de fiabilité',
@@ -54,6 +55,7 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
     width: '130px',
     suffix: '%',
     align: 'right',
+    enableSorting: false,
   },
   {
     header: 'Raccordable',
@@ -62,6 +64,7 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
     cellType: 'Boolean',
     align: 'center',
     filterFn: 'equals',
+    enableSorting: false,
   },
   {
     header: 'Distance au réseau',
@@ -87,6 +90,7 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
     cellType: 'Boolean',
     align: 'center',
     filterFn: 'equals',
+    enableSorting: false,
   },
   {
     header: 'Taux EnR&R',
@@ -116,6 +120,7 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
         </Link>
       ),
     align: 'right',
+    enableSorting: false,
   },
 ];
 
