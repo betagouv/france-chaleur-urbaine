@@ -80,7 +80,7 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
       </>
     ),
     accessorKey: 'ban_score',
-    width: '130px',
+    width: '90px',
     suffix: '%',
     align: 'right',
     enableSorting: false,
@@ -166,7 +166,7 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
         />
       </>
     ),
-    width: '100px',
+    width: '70px',
     accessorKey: 'eligibility_status.inPDP',
     cellType: 'Boolean',
     align: 'center',
@@ -185,7 +185,7 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
         />
       </>
     ),
-    width: '130px',
+    width: '100px',
     accessorKey: 'eligibility_status.tauxENRR',
     suffix: '%',
     align: 'right',
