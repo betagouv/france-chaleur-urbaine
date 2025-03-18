@@ -11,7 +11,6 @@ import Map, { type AdresseEligible } from '@/components/Map/Map';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import { UrlStateAccordion } from '@/components/ui/Accordion';
 import Button from '@/components/ui/Button';
-import Icon from '@/components/ui/Icon';
 import Link from '@/components/ui/Link';
 import Loader from '@/components/ui/Loader';
 import ModalSimple from '@/components/ui/ModalSimple';
@@ -205,7 +204,7 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
       );
     },
   });
-  const { mutateAsync: deleteTest, isLoading: isDeleting } = useDelete(`/api/pro-eligibility-tests/${test.id}`, {
+  const { mutateAsync: deleteTest } = useDelete(`/api/pro-eligibility-tests/${test.id}`, {
     invalidate: ['/api/pro-eligibility-tests'],
   });
 
@@ -389,16 +388,6 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
           >
             <CompleteEligibilityTestForm testId={test.id} />
           </ModalSimple>
-
-          <Button
-            onClick={() => handleDelete(test.id)}
-            loading={isDeleting}
-            variant="destructive"
-            priority="secondary"
-            title="Supprimer le test"
-          >
-            <Icon name="ri-delete-bin-2-line" />
-          </Button>
         </div>
       </div>
 
