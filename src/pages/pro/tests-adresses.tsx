@@ -36,6 +36,11 @@ export default function TestsAdresses(): JSX.Element {
           Cette page vous permet de faire des tests d'adresse en masse (jusqu'à 100k adresses) afin d'obtenir des informations sur
           l'éligibilité potentielle des adresses pour le raccordement aux réseaux de chaleur.
         </p>
+        <p>
+          Pour être mis en relation avec le gestionnaire d'un réseau pour obtenir plus d'informations, vous pouvez utiliser le formulaire en
+          ligne sur notre site ou nous contacter par mail si le besoin concerne plusieurs adresses&nbsp;:{' '}
+          <a href="mailto:france-chaleur-urbaine@developpement-durable.gouv.fr">france-chaleur-urbaine@developpement-durable.gouv.fr</a>
+        </p>
         <div className="flex items-center justify-between fr-mb-2w">
           <Heading as="h3" color="blue-france" mb="0">
             Vos tests
