@@ -2,7 +2,7 @@ import { createModal as createdDSFRModal } from '@codegouvfr/react-dsfr/Modal';
 import { useIsModalOpen as useIsDSFRModalOpen } from '@codegouvfr/react-dsfr/Modal/useIsModalOpen';
 import { usePrevious } from '@react-hookz/web';
 import dynamic from 'next/dynamic';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import styled, { css } from 'styled-components';
 
@@ -79,8 +79,12 @@ const Modal = ({ modal, size, onOpen, loading, onClose, open, lazy = false, chil
     }
   }, [open, modal, isOpened, previousOpen]);
 
+  const preventPropagationClick = useCallback((e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    e.stopPropagation();
+  }, []);
+
   return createPortal(
-    <StyledModal customSize={size === 'custom'}>
+    <StyledModal customSize={size === 'custom'} onClick={preventPropagationClick}>
       <modal.Component size={size !== 'custom' ? size : undefined} {...props}>
         {(!lazy || isOpened) && children}
       </modal.Component>

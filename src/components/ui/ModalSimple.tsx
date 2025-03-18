@@ -1,4 +1,4 @@
-import { type PropsWithChildren, useCallback, useMemo, useState, createContext, useContext } from 'react';
+import { type PropsWithChildren, useCallback, useMemo, useState, createContext, useContext, type MouseEvent } from 'react';
 
 import Modal, { createModal } from './Modal';
 
@@ -38,7 +38,9 @@ const ModalSimple = ({ children, trigger, title, size = 'medium' }: ModalSimpleP
     });
   }, [isOpen]);
 
-  const handleTriggerClick = useCallback(() => {
+  const handleTriggerClick = useCallback((e: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
+    // prevent propagation in case the modal is inside another button
+    e.stopPropagation();
     setOpen(true);
   }, []);
 
@@ -55,7 +57,7 @@ const ModalSimple = ({ children, trigger, title, size = 'medium' }: ModalSimpleP
 
   return (
     <>
-      <div onClick={handleTriggerClick}>{trigger}</div>
+      <div onClickCapture={handleTriggerClick}>{trigger}</div>
       {modal && (
         <Modal modal={modal} title={title} size={size} open={isOpen} onClose={handleClose}>
           <ModalContext.Provider value={contextValue}>{children}</ModalContext.Provider>

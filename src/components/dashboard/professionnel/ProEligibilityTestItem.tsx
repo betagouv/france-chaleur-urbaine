@@ -6,6 +6,7 @@ import { useQueryState } from 'nuqs';
 import { useState, useMemo, useEffect, Fragment } from 'react';
 
 import CompleteEligibilityTestForm from '@/components/dashboard/professionnel/eligibility-test/CompleteEligibilityTestForm';
+import RenameEligibilityTestForm from '@/components/dashboard/professionnel/eligibility-test/RenameEligibilityTestForm';
 import Map, { type AdresseEligible } from '@/components/Map/Map';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import { UrlStateAccordion } from '@/components/ui/Accordion';
@@ -317,7 +318,14 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
       id={test.id}
       label={
         <div className="flex items-center justify-between w-full">
-          <div className="flex-auto">{test.name}</div>
+          <div>{test.name}</div>
+          <ModalSimple
+            title="Renommer le test"
+            trigger={<Button priority="tertiary no outline" size="small" iconId="fr-icon-pencil-line" title="Renommer le test" />}
+          >
+            <RenameEligibilityTestForm currentName={test.name} testId={test.id} />
+          </ModalSimple>
+          <div className="flex-auto" />
           {test.last_job_has_error && (
             <Badge severity="error" small className="fr-mx-1w">
               Erreur
@@ -340,9 +348,7 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
           </div>
         </div>
       }
-      onClose={async (e) => {
-        e.preventDefault();
-        e.stopPropagation();
+      onClose={async () => {
         await handleDelete(test.id);
       }}
       onExpandedChange={(expanded) => {
