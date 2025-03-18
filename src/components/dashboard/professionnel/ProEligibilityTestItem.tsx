@@ -152,7 +152,7 @@ const quickFilterPresets = {
     filters: [{ id: 'eligibility_status_isEligible', value: true }],
   },
   adressesMoins100mPlus50ENRR: {
-    label: "à moins de 100m d'un réseau à plus de 50% d'ENRR",
+    label: "à moins de 100m d'un réseau à plus de 50% d'ENR&R",
     filters: [
       { id: 'eligibility_status_distance', value: 100 },
       { id: 'eligibility_status_tauxENRR', value: 50 },
