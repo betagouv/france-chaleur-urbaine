@@ -138,7 +138,7 @@ const quickFilterPresets = {
   adressesEligibles: {
     label: (
       <>
-        potentiellement raccordables{' '}
+        potentiellement raccordables&nbsp;
         <Tooltip
           title={
             <>
@@ -161,7 +161,7 @@ const quickFilterPresets = {
   adressesDansPDP: {
     label: (
       <>
-        dans un périmètre de développement prioritaire{' '}
+        dans un périmètre de développement prioritaire&nbsp;
         <Tooltip
           title={
             <>
