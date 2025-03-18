@@ -2,7 +2,6 @@ import { useRouter } from 'next/router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { EligibilityFormContact, EligibilityFormMessageConfirmation } from '@/components/EligibilityForm';
-import BulkEligibilityForm from '@/components/EligibilityForm/BulkEligibilityForm';
 import { CheckEligibilityFormLabel, SelectEnergy } from '@/components/EligibilityForm/components';
 import { energyInputsDefaultLabels, type EnergyInputsLabelsType } from '@/components/EligibilityForm/EligibilityFormAddress';
 import AddressAutocomplete from '@/components/form/dsfr/AddressAutocompleteInput';
@@ -10,12 +9,10 @@ import MarkdownWrapper from '@/components/MarkdownWrapper';
 import Slice from '@/components/Slice';
 import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
-import Heading from '@/components/ui/Heading';
 import Icon from '@/components/ui/Icon';
 import Link from '@/components/ui/Link';
 import Modal, { createModal } from '@/components/ui/Modal';
 import useContactFormFCU from '@/hooks/useContactFormFCU';
-import useQueryFlag from '@/hooks/useQueryFlag';
 import { useServices } from '@/services';
 import { AnalyticsFormId } from '@/services/analytics';
 import { type AvailableHeating } from '@/types/AddressData';
@@ -55,7 +52,6 @@ const HeadSliceForm = ({
   pageBody,
   children,
   needGradient,
-  externBulkForm,
   withBulkEligibility,
   withWrapper,
 }: HeadBannerType) => {
@@ -81,7 +77,6 @@ const HeadSliceForm = ({
   const [address, setAddress] = useState('');
   const [autoValidate, setAutoValidate] = useState(false);
   const [eligibilityError, setEligibilityError] = useState(false);
-  const [displayBulkEligibility, toggleDisplayBulkEligibility] = useQueryFlag('bulk');
 
   const child = useMemo(
     () =>
@@ -105,7 +100,6 @@ const HeadSliceForm = ({
       return;
     }
 
-    toggleDisplayBulkEligibility(false);
     if (handleOnFetchAddress) {
       handleOnFetchAddress({ address });
     }
@@ -203,17 +197,9 @@ const HeadSliceForm = ({
                   <span>ou</span>
                   <span className="!text-green-700 flex items-center gap-0.5">
                     <Icon name="ri-file-excel-2-line" />
-                    <Button
-                      type="button"
-                      size="medium"
-                      className="!text-green-700 underline hover:!bg-transparent hover:opacity-80 !shadow-none !pr-0 !pl-0"
-                      priority="tertiary"
-                      onClick={() => {
-                        toggleDisplayBulkEligibility(true);
-                      }}
-                    >
+                    <Link href="/inscription" className="!text-green-700 hover:!bg-transparent hover:opacity-80 !shadow-none !pr-0 !pl-0">
                       Tester une liste d’adresses
-                    </Button>
+                    </Link>
                   </span>
                 </>
               )}
@@ -254,10 +240,9 @@ const HeadSliceForm = ({
       <Modal
         modal={eligibilityTestModal}
         title=""
-        open={contactReady || (withBulkEligibility && displayBulkEligibility)}
+        open={contactReady}
         size="custom"
         onClose={() => {
-          toggleDisplayBulkEligibility(false);
           handleResetFormContact();
         }}
         loading={loadingStatus === 'loading'}
@@ -268,26 +253,6 @@ const HeadSliceForm = ({
           )}
           {messageReceived && <EligibilityFormMessageConfirmation addressData={addressData} />}
         </div>
-        {!externBulkForm && withBulkEligibility && displayBulkEligibility && (
-          <div className="flex flex-col gap-8 lg:flex-row">
-            <div className="flex-1">
-              <Heading as="h3">Testez un grand nombre d’adresses pour identifier des bâtiments proches des réseaux de chaleur !</Heading>
-              <ol>
-                <li>Téléchargez votre fichier (une ligne par adresse) et renseignez votre email</li>
-                <li>Recevez par mail le résultat de votre test</li>
-                <li>Visualisez les adresses testées sur notre cartographie</li>
-                <li>
-                  Vous pourrez ensuite sélectionner dans la liste les adresses celles pour lesquelles vous souhaitez être{' '}
-                  <strong>mis en relation par France Chaleur Urbaine avec le(s) gestionnaire(s) des réseaux de chaleur.</strong>
-                </li>
-              </ol>
-            </div>
-            <div className="flex-1">
-              <BulkEligibilityForm />
-              <img width="70%" className="mx-auto" src="/img/carto-addresses.png" />
-            </div>
-          </div>
-        )}
       </Modal>
     </>
   );
