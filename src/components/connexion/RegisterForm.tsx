@@ -1,4 +1,3 @@
-import { Stepper } from '@codegouvfr/react-dsfr/Stepper';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { type z } from 'zod';
@@ -9,14 +8,7 @@ import Button from '@/components/ui/Button';
 import Highlight from '@/components/ui/Highlight';
 import Link from '@/components/ui/Link';
 import { toastErrors } from '@/services/notification';
-import {
-  zCredentialsSchema,
-  zIdentitySchema,
-  zAdditionalInfoSchema,
-  type CredentialsSchema,
-  type IdentitySchema,
-  type AdditionalInfoSchema,
-} from '@/services/user';
+import { zCredentialsSchema, zIdentitySchema, type CredentialsSchema, type IdentitySchema } from '@/services/user';
 import { userRolesInscription } from '@/types/enum/UserRole';
 import { postFetchJSON } from '@/utils/network';
 import { upperCaseFirstChar } from '@/utils/strings';
@@ -45,23 +37,16 @@ const steps: FormStep[] = [
       first_name: '',
       last_name: '',
       role: 'professionnel',
-      structure: '',
+      structure_name: '',
       structure_type: '',
-      job: '',
+      structure_other: '',
       email: '',
       phone: null,
     } satisfies IdentitySchema,
   },
-  {
-    label: 'Vos besoins',
-    schema: zAdditionalInfoSchema,
-    defaultValues: {
-      besoins: [],
-    } satisfies AdditionalInfoSchema,
-  },
 ] as const;
 
-type FormValues = AdditionalInfoSchema & IdentitySchema & CredentialsSchema;
+type FormValues = IdentitySchema & CredentialsSchema;
 
 const defaultValues = steps.reduce<FormValues>((acc, curr) => ({ ...acc, ...curr.defaultValues }), {} as FormValues);
 
@@ -72,10 +57,9 @@ function RegisterForm() {
   const [stepIndex, setStepIndex] = useState(0);
   const step = steps[stepIndex];
   const previousStep = steps[stepIndex - 1];
-  const nextStep = steps[stepIndex + 1];
   const [formData, setFormData] = useState(defaultValues);
 
-  const { EmailInput, PasswordInput, Checkbox, Submit, Form, Input, Checkboxes, Radio, useValue, Select, PhoneInput } = useForm({
+  const { EmailInput, PasswordInput, Checkbox, Submit, Form, Input, Radio, useValue, Select, PhoneInput } = useForm({
     defaultValues: formData,
     schema: step.schema,
     onSubmit: toastErrors(async ({ value }) => {
@@ -114,7 +98,6 @@ function RegisterForm() {
           </Highlight>
         </>
       )}
-      <Stepper currentStep={stepIndex + 1} stepCount={steps.length} title={steps[stepIndex].label} nextTitle={nextStep?.label} />
 
       <Form>
         <div className="flex flex-col gap-4">
@@ -160,7 +143,11 @@ function RegisterForm() {
                 </Alert>
               ) : (
                 <>
-                  <Input name="structure" label="Structure" />
+                  <Input
+                    name="structure_name"
+                    label="Nom de la structure"
+                    hideOptionalLabel={true /* TODO: isOptional does not seem to be working correctly */}
+                  />
                   <Select
                     name="structure_type"
                     label="Type de structure"
@@ -176,61 +163,8 @@ function RegisterForm() {
                     ]}
                   />
                   {structureType === 'autre' && <Input name="structure_other" label="Renseignez le type de structure" />}
-                  <Input name="job" label="Poste" />
                 </>
               )}
-            </>
-          )}
-          {stepIndex === 2 && (
-            <>
-              <Checkboxes
-                name="besoins"
-                label="Afin d'enrichir l'espace connecté, partagez-nous vos besoins"
-                options={[
-                  {
-                    label: 'Comparer les coûts et émissions de CO2 de modes de chauffage et de refroidissement',
-                    nativeInputProps: {
-                      value: 'comparer',
-                    },
-                  },
-                  {
-                    label: 'Tester des listes d’adresses',
-                    nativeInputProps: {
-                      value: 'test',
-                    },
-                  },
-                  {
-                    label: 'Réaliser des études sur les potentiels de raccordement / développement de réseaux',
-                    nativeInputProps: {
-                      value: 'potentiel',
-                    },
-                  },
-                  {
-                    label: 'Etre notifié en cas d’actualisation de la carte',
-                    nativeInputProps: {
-                      value: 'actualisation',
-                    },
-                  },
-                  {
-                    label: 'Intégrer une communauté de professionnels sur les réseaux de chaleur',
-                    nativeInputProps: {
-                      value: 'communaute',
-                    },
-                  },
-                  {
-                    label: 'Faire connaître mon parc de bâtiments aux collectivités et gestionnaires de réseaux',
-                    nativeInputProps: {
-                      value: 'presentation',
-                    },
-                  },
-                  {
-                    label: 'Autre',
-                    nativeInputProps: {
-                      value: 'autre',
-                    },
-                  },
-                ]}
-              />
             </>
           )}
           <div className="flex justify-between text-sm mb-8 items-center">

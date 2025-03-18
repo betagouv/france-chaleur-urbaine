@@ -8,7 +8,7 @@ function InscriptionPage() {
     <SimplePage title="Création d'un compte connecté" description="Connectez-vous à votre compte France Chaleur Urbaine.">
       <CenterLayout maxWidth="600px">
         <Heading as="h1" size="h2" color="blue-france">
-          Création de compte sur France Chaleur Urbaine
+          Créez votre compte pour accéder à des fonctionnalités avancées
         </Heading>
         <RegisterForm />
       </CenterLayout>

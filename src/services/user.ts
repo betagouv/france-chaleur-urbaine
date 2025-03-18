@@ -21,10 +21,9 @@ export const zIdentitySchema = z
     first_name: z.string().min(1, 'Le prénom est obligatoire'),
     last_name: z.string().min(1, 'Le nom de famille est obligatoire'),
     role: z.enum(userRolesInscription),
-    structure: z.string().min(0, 'La structure est obligatoire').optional(),
+    structure_name: z.string().min(0, 'La structure est obligatoire').optional(),
     structure_type: z.string().optional(),
     structure_other: z.string().optional(),
-    job: z.string().min(0, 'Le poste est obligatoire'),
     email: z.string().email("L'adresse email n'est pas valide"),
     phone: z
       .string()
@@ -38,9 +37,9 @@ export const zIdentitySchema = z
     message: "Le type de structure 'Autre' doit être précisé",
     path: ['structure_other'],
   })
-  .refine((data) => data.role === 'particulier' || !!data.structure, {
+  .refine((data) => data.role === 'particulier' || !!data.structure_name, {
     message: 'La structure est obligatoire',
-    path: ['structure'],
+    path: ['structure_name'],
   })
   .refine((data) => data.role === 'particulier' || !!data.structure_type, {
     message: 'Le type de structure est obligatoire',
@@ -49,13 +48,7 @@ export const zIdentitySchema = z
 
 export type IdentitySchema = z.infer<typeof zIdentitySchema>;
 
-export const zAdditionalInfoSchema = z.object({
-  besoins: z.array(z.string()),
-});
-
-export type AdditionalInfoSchema = z.infer<typeof zAdditionalInfoSchema>;
-
 // Can't use .merge() because of use of refine
-export const registrationSchema = z.intersection(z.intersection(zCredentialsSchema, zIdentitySchema), zAdditionalInfoSchema);
+export const registrationSchema = z.intersection(zCredentialsSchema, zIdentitySchema);
 
 export type RegistrationSchema = z.infer<typeof registrationSchema>;
