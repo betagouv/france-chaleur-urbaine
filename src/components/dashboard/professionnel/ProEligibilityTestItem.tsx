@@ -38,7 +38,10 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
             className: 'fr-ml-1v',
           }}
           title={
-            <>Contient l'adresse testée sur la BAN (Base d'Adresse Nationale) et l'adresse d'origine de votre fichier (en gris clair).</>
+            <>
+              Pour chaque ligne du tableau, la première adresse correspond à l'adresse testée (adresse trouvée dans la Base Adresse
+              Nationale). La seconde est celle présente dans le fichier téléversé.
+            </>
           }
         />
       </>
