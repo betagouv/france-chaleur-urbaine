@@ -30,28 +30,55 @@ import { ObjectEntries, type FlattenKeys } from '@/utils/typescript';
 
 const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[] = [
   {
-    header: 'Adresse',
+    header: () => (
+      <>
+        Adresse
+        <Tooltip
+          iconProps={{
+            className: 'fr-ml-1v',
+          }}
+          title={
+            <>Contient l'adresse testée sur la BAN (Base d'Adresse Nationale) et l'adresse d'origine de votre fichier (en gris clair).</>
+          }
+        />
+      </>
+    ),
     accessorKey: 'ban_address',
     accessorFn: (row) => `${row.ban_address} ${row.source_address}`,
     sortingFn: (rowA, rowB) => compareFrenchStrings(rowA.original.ban_address, rowB.original.ban_address),
     cell: (info) => (
       <div>
         <div>
-          <div className="color-blue">{info.row.original.ban_address}</div>
+          <div>{info.row.original.ban_address}</div>
           {!info.row.original.ban_valid && (
             <Badge severity="error" small>
               Adresse invalide
             </Badge>
           )}
         </div>
-        <div className=" text-xs text-gray-600">{info.row.original.source_address}</div>
+        <div className=" text-xs italic text-gray-500">{info.row.original.source_address}</div>
       </div>
     ),
     flex: 1,
     enableSorting: false,
   },
   {
-    header: 'Indice de fiabilité',
+    header: () => (
+      <>
+        Indice de fiabilité
+        <Tooltip
+          iconProps={{
+            className: 'fr-ml-1v',
+          }}
+          title={
+            <>
+              Min = 0 , Max = 100. Cet indice traduit la correspondance entre l'adresse renseignée par l'utilisateur et celle effectivement
+              testée.
+            </>
+          }
+        />
+      </>
+    ),
     accessorKey: 'ban_score',
     width: '130px',
     suffix: '%',
@@ -59,7 +86,26 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
     enableSorting: false,
   },
   {
-    header: 'Proche réseau',
+    header: () => (
+      <>
+        Proche réseau
+        <Tooltip
+          iconProps={{
+            className: 'fr-ml-1v',
+          }}
+          title={
+            <>
+              Le bâtiment est jugé potentiellement raccordable s'il se situe à moins de 200 m d'un réseau existant, sauf sur Paris où ce
+              seuil est réduit à 100 m, ou bien si Le bâtiment est situé à moins de 200 m du tracé d'un réseau en construction, ou situé
+              dans une zone sur laquelle nous avons connaissance d'un réseau en construction ou en cours de mise en service.
+              <br />
+              <br />
+              Attention, le mode de chauffage n'est pas pris en compte.
+            </>
+          }
+        />
+      </>
+    ),
     width: '130px',
     accessorKey: 'eligibility_status.isEligible',
     cell: (info) => {
@@ -77,7 +123,17 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
     enableSorting: false,
   },
   {
-    header: 'Distance au réseau',
+    header: () => (
+      <>
+        Distance au réseau
+        <Tooltip
+          iconProps={{
+            className: 'fr-ml-1v',
+          }}
+          title={<>Distance au réseau le plus proche, fournie uniquement si elle est de moins de 1000m.</>}
+        />
+      </>
+    ),
     width: '130px',
     accessorKey: 'eligibility_status.distance',
     suffix: 'm',
@@ -94,7 +150,22 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
     },
   },
   {
-    header: 'PDP',
+    header: () => (
+      <>
+        PDP
+        <Tooltip
+          iconProps={{
+            className: 'fr-ml-1v',
+          }}
+          title={
+            <>
+              Positif si l'adresse se situe dans le <strong>périmètre de développement prioritaire</strong> d'un réseau classé (d'après les
+              données dont nous disposons). Une obligation de raccordement peut alors s'appliquer.
+            </>
+          }
+        />
+      </>
+    ),
     width: '100px',
     accessorKey: 'eligibility_status.inPDP',
     cellType: 'Boolean',
@@ -103,7 +174,17 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
     enableSorting: false,
   },
   {
-    header: 'Taux EnR&R',
+    header: () => (
+      <>
+        Taux EnR&R
+        <Tooltip
+          iconProps={{
+            className: 'fr-ml-1v',
+          }}
+          title={<>Taux d'énergies renouvelables et de récupération issu de l'arrêté DPE du 16 mars 2023</>}
+        />
+      </>
+    ),
     width: '130px',
     accessorKey: 'eligibility_status.tauxENRR',
     suffix: '%',
@@ -114,13 +195,33 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
     },
   },
   {
-    header: 'Contenu CO2 ACV (g/kWh)',
+    header: () => (
+      <>
+        Contenu CO2 ACV (g/kWh)
+        <Tooltip
+          iconProps={{
+            className: 'fr-ml-1v',
+          }}
+          title={<>Contenu CO2 en analyse du cycle de vie issu de l'arrêté DPE du 16 mars 2023</>}
+        />
+      </>
+    ),
     width: '130px',
     accessorKey: 'eligibility_status.co2',
     align: 'right',
   },
   {
-    header: 'Identifiant',
+    header: () => (
+      <>
+        Identifiant
+        <Tooltip
+          iconProps={{
+            className: 'fr-ml-1v',
+          }}
+          title={<>Identifiant réseau national</>}
+        />
+      </>
+    ),
     width: '130px',
     accessorKey: 'eligibility_status.id',
     cell: (info) =>
