@@ -4,10 +4,10 @@ export async function up(knex: Knex): Promise<void> {
   await knex.raw(`
     ALTER TABLE public.users ADD COLUMN first_name varchar(255);
     ALTER TABLE public.users ADD COLUMN last_name varchar(255);
-    ALTER TABLE public.users ADD COLUMN structure varchar(255);
-    ALTER TABLE public.users ADD COLUMN structure_type varchar(100);
-    ALTER TABLE public.users ADD COLUMN structure_other varchar(255);
-    ALTER TABLE public.users ADD COLUMN job varchar(255);
+    ALTER TABLE public.users ADD COLUMN structure varchar(255) NULL;
+    ALTER TABLE public.users ADD COLUMN structure_type varchar(100) NULL;
+    ALTER TABLE public.users ADD COLUMN structure_other varchar(255) NULL;
+    ALTER TABLE public.users ADD COLUMN job varchar(255) NULL;
     ALTER TABLE public.users ADD COLUMN phone varchar(20);
     ALTER TABLE public.users ADD COLUMN besoins varchar(255)[];
     ALTER TABLE public.users ADD COLUMN accepted_cgu_at timestamp;

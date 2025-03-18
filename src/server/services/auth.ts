@@ -21,10 +21,10 @@ export const register = async ({
   role: UserRole;
   first_name: string;
   last_name: string;
-  structure: string;
-  structure_type: string;
+  structure?: string;
+  structure_type?: string;
   structure_other?: string;
-  job: string;
+  job?: string;
   phone?: string | null;
   besoins: string[];
   accept_cgu: boolean;
