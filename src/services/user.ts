@@ -34,7 +34,7 @@ export const zIdentitySchema = z
         message: "Le numéro de téléphone n'est pas valide",
       }),
   })
-  .refine((data) => !(data.structure_type === 'other' && !data.structure_other), {
+  .refine((data) => !(data.structure_type === 'autre' && !data.structure_other), {
     message: "Le type de structure 'Autre' doit être précisé",
     path: ['structure_other'],
   })
