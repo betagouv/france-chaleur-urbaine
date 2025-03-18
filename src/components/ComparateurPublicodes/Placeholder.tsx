@@ -43,16 +43,13 @@ export const Explanations = ({ className, ...props }: React.HTMLAttributes<HTMLD
   <>
     <DescriptionModal />
     <div className={cx('fr-text--sm fr-mt-2w', className)} {...props}>
-      Cet outil a pour objectif de comparer des configurations de chauffage et de refroidissement sur les plans techniques, économiques et
-      environnementaux.{' '}
-      <strong>Il ne remplace en aucun cas une étude de faisabilité technico-économique menée par un bureau d’études</strong> et ne peut
-      s'adapter aux situations particulières avec les hypothèses préconfigurées. Ces hypothèses représentent des configurations types, elles
-      sont donc sujets à des incertitudes importantes.{' '}
+      Cet outil permet de comparer les modes de chauffage en termes de coûts et d'émissions de CO2. Il s'appuie sur des hypothèses qui
+      représentent des configurations types, sujets à des incertitudes importantes (
       <a href="#" onClick={() => modalDescription.open()} className="fr-link fr-text--sm">
-        Voir l’explication détaillée
+        voir l’explication détaillée
       </a>
-      <p className="fr-text--sm fr-my-1w">{dataYearDisclaimer}</p>
-      <p className="fr-text--sm font-bold">
+      ), et ne se substitue en aucun cas à une étude de faisabilité technico-économique. {dataYearDisclaimer}
+      <p className="fr-text--sm font-bold !mt-2">
         Pour une étude plus poussée (prix actualisés, prise en compte des spécificités de votre bâtiment), nous vous invitons à vous
         rapprocher du gestionnaire du réseau de chaleur le plus proche de chez vous ou d'un bureau d'études.
       </p>
