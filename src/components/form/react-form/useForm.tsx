@@ -270,7 +270,6 @@ function useForm<
           small
           label={label}
           nativeInputProps={{
-            required: isRequiredField(name as keyof TFormData),
             name: nativeInputProps?.name || `${name}`,
             onChange: (e) => field.handleChange(e.target.checked as any),
             checked: field.state.value as any,

@@ -11,7 +11,7 @@ export const zCredentialsSchema = z.object({
   accept_cgu: z.boolean().refine((val) => val === true, {
     message: "Veuillez accepter les conditions générales d'utilisation",
   }),
-  optin_newsletter: z.boolean().optional(),
+  optin_newsletter: z.boolean(),
 });
 
 export type CredentialsSchema = z.infer<typeof zCredentialsSchema>;
