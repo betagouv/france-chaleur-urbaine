@@ -4,7 +4,9 @@ import { useState } from 'react';
 import { type z } from 'zod';
 
 import useForm from '@/components/form/react-form/useForm';
+import Alert from '@/components/ui/Alert';
 import Button from '@/components/ui/Button';
+import Highlight from '@/components/ui/Highlight';
 import Link from '@/components/ui/Link';
 import { toastErrors } from '@/services/notification';
 import {
@@ -34,15 +36,15 @@ const steps: FormStep[] = [
       password: '',
       accept_cgu: false,
       optin_newsletter: false,
-      role: 'professionnel',
     } satisfies CredentialsSchema,
   },
   {
-    label: 'Choisir un nom',
+    label: 'Votre profil',
     schema: zIdentitySchema,
     defaultValues: {
       first_name: '',
       last_name: '',
+      role: 'professionnel',
       structure: '',
       structure_type: '',
       job: '',
@@ -51,7 +53,7 @@ const steps: FormStep[] = [
     } satisfies IdentitySchema,
   },
   {
-    label: 'Informations complémentaires',
+    label: 'Vos besoins',
     schema: zAdditionalInfoSchema,
     defaultValues: {
       besoins: [],
@@ -73,7 +75,7 @@ function RegisterForm() {
   const nextStep = steps[stepIndex + 1];
   const [formData, setFormData] = useState(defaultValues);
 
-  const { EmailInput, PasswordInput, Checkbox, Submit, Form, Input, Checkboxes, Radio, useValue, Select } = useForm({
+  const { EmailInput, PasswordInput, Checkbox, Submit, Form, Input, Checkboxes, Radio, useValue, Select, PhoneInput } = useForm({
     defaultValues: formData,
     schema: step.schema,
     onSubmit: toastErrors(async ({ value }) => {
@@ -90,8 +92,28 @@ function RegisterForm() {
   });
 
   const structureType = useValue('structure_type');
+  const role = useValue('role');
   return (
     <>
+      {stepIndex === 0 && (
+        <>
+          <span className="block">Connectez-vous pour bénéficier de fonctionnalités avancées :</span>
+          <ul className="list-disc pl-4 my-5">
+            <li>
+              <strong>Comparez</strong> les <strong>coûts et émissions de CO2</strong> des différents systèmes de chauffage et de
+              refroidissement (réseaux de chaleur et de froid, gaz, fioul, biomasse, PAC...) - mode avancé du comparateur
+            </li>
+            <li>
+              Testez instantanément la <strong>proximité à un réseau de chaleur</strong> d'un grand nombre d'adresses
+            </li>
+            {/* <br />- Envoyez des <strong>demandes d'informations groupées</strong> TODO à remettre quand la fonctionnalité sera dispo */}
+          </ul>
+          <Highlight variant="blue" size="sm" className="my-5">
+            <strong>Vous êtes maître d'ouvrage ou gestionnaire d'un réseau de chaleur ?</strong> Retrouvez l'ensemble des demandes déposées
+            à proximité de votre réseau. Pour paramétrer vos accès, merci de <Link href="/contact">nous contacter</Link>.
+          </Highlight>
+        </>
+      )}
       <Stepper currentStep={stepIndex + 1} stepCount={steps.length} title={steps[stepIndex].label} nextTitle={nextStep?.label} />
 
       <Form>
@@ -100,17 +122,6 @@ function RegisterForm() {
             <>
               <EmailInput name="email" label="Email" nativeInputProps={{ placeholder: 'Saisir votre email' }} />
               <PasswordInput name="password" label="Mot de passe" nativeInputProps={{ placeholder: 'Saisir votre mot de passe' }} />
-              <Radio
-                name="role"
-                label="Vous êtes :"
-                options={userRolesInscription.map((role) => ({
-                  label: upperCaseFirstChar(role),
-                  nativeInputProps: {
-                    value: role,
-                  },
-                }))}
-              />
-
               <Checkbox name="optin_newsletter" small label={<>Je souhaite rester informé des actualités de France Chaleur Urbaine</>} />
               <Checkbox
                 name="accept_cgu"
@@ -130,24 +141,44 @@ function RegisterForm() {
             <>
               <Input name="first_name" label="Prénom" />
               <Input name="last_name" label="Nom de famille" />
-              <Input name="structure" label="Structure" />
-              <Select
-                name="structure_type"
-                label="Type de structure"
-                options={[
-                  { label: "Bureau d'études", value: 'bureau_etudes' },
-                  { label: 'Gestionnaire de réseaux de chaleur', value: 'gestionnaire_reseaux' },
-                  { label: 'Collectivité', value: 'collectivite' },
-                  { label: 'Syndic de copropriété', value: 'syndic_copropriete' },
-                  { label: 'Bailleur social', value: 'bailleur_social' },
-                  { label: 'Gestionnaire de parc tertiaire', value: 'gestionnaire_parc_tertiaire' },
-                  { label: 'Mandataire / délégataire CEE', value: 'mandataire_cee' },
-                  { label: 'Autre (préciser)', value: 'autre' },
-                ]}
+              <PhoneInput name="phone" label="Téléphone" />
+              <Radio
+                name="role"
+                label="Vous êtes :"
+                options={userRolesInscription.map((role) => ({
+                  label: upperCaseFirstChar(role),
+                  nativeInputProps: {
+                    value: role,
+                  },
+                }))}
               />
-              {structureType === 'autre' && <Input name="structure_other" label="Renseignez le type de structure" />}
-              <Input name="job" label="Poste" />
-              <Input name="phone" label="Téléphone" />
+              {role === 'particulier' ? (
+                <Alert variant="info" className="mb-5">
+                  L'espace connecté est principalement dédié aux professionnels ! L'utilisation du mode avancé du comparateur nécessite une
+                  bonne connaissance des contraintes inhérentes à chaque mode de chauffage, qui ne sont pas prises en compte dans les
+                  simulations.
+                </Alert>
+              ) : (
+                <>
+                  <Input name="structure" label="Structure" />
+                  <Select
+                    name="structure_type"
+                    label="Type de structure"
+                    options={[
+                      { label: "Bureau d'études", value: 'bureau_etudes' },
+                      { label: 'Gestionnaire de réseaux de chaleur', value: 'gestionnaire_reseaux' },
+                      { label: 'Collectivité', value: 'collectivite' },
+                      { label: 'Syndic de copropriété', value: 'syndic_copropriete' },
+                      { label: 'Bailleur social', value: 'bailleur_social' },
+                      { label: 'Gestionnaire de parc tertiaire', value: 'gestionnaire_parc_tertiaire' },
+                      { label: 'Mandataire / délégataire CEE', value: 'mandataire_cee' },
+                      { label: 'Autre (préciser)', value: 'autre' },
+                    ]}
+                  />
+                  {structureType === 'autre' && <Input name="structure_other" label="Renseignez le type de structure" />}
+                  <Input name="job" label="Poste" />
+                </>
+              )}
             </>
           )}
           {stepIndex === 2 && (

@@ -8,7 +8,6 @@ export const zCredentialsSchema = z.object({
     .string()
     .min(10, 'Le mot de passe doit contenir au minimum 10 caractères')
     .max(100, 'Le mot de passe ne peut pas dépasser 100 caractères'),
-  role: z.enum(userRolesInscription),
   accept_cgu: z.boolean().refine((val) => val === true, {
     message: "Veuillez accepter les conditions générales d'utilisation",
   }),
@@ -21,16 +20,31 @@ export const zIdentitySchema = z
   .object({
     first_name: z.string().min(1, 'Le prénom est obligatoire'),
     last_name: z.string().min(1, 'Le nom de famille est obligatoire'),
-    structure: z.string().min(1, 'La structure est obligatoire'),
-    structure_type: z.string(),
+    role: z.enum(userRolesInscription),
+    structure: z.string().min(0, 'La structure est obligatoire').optional(),
+    structure_type: z.string().optional(),
     structure_other: z.string().optional(),
-    job: z.string().min(1, 'Le poste est obligatoire'),
+    job: z.string().min(0, 'Le poste est obligatoire'),
     email: z.string().email("L'adresse email n'est pas valide"),
-    phone: z.string().nullable().optional(),
+    phone: z
+      .string()
+      .nullable()
+      .optional()
+      .refine((val) => !val || /^(?:(?:\+|00)33|0)\s*[1-9](?:[\s.-]*\d{2}){4}$/.test(val), {
+        message: "Le numéro de téléphone n'est pas valide",
+      }),
   })
   .refine((data) => !(data.structure_type === 'other' && !data.structure_other), {
     message: "Le type de structure 'Autre' doit être précisé",
     path: ['structure_other'],
+  })
+  .refine((data) => data.role === 'particulier' || !!data.structure, {
+    message: 'La structure est obligatoire',
+    path: ['structure'],
+  })
+  .refine((data) => data.role === 'particulier' || !!data.structure_type, {
+    message: 'Le type de structure est obligatoire',
+    path: ['structure_type'],
   });
 
 export type IdentitySchema = z.infer<typeof zIdentitySchema>;
@@ -41,5 +55,7 @@ export const zAdditionalInfoSchema = z.object({
 
 export type AdditionalInfoSchema = z.infer<typeof zAdditionalInfoSchema>;
 
-export const registrationSchema = zCredentialsSchema.merge(zIdentitySchema.innerType()).merge(zAdditionalInfoSchema);
+// Can't use .merge() because of use of refine
+export const registrationSchema = z.intersection(z.intersection(zCredentialsSchema, zIdentitySchema), zAdditionalInfoSchema);
+
 export type RegistrationSchema = z.infer<typeof registrationSchema>;
