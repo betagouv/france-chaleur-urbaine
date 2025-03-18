@@ -394,6 +394,7 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
       {viewDetail &&
         (testDetails && testDetails.addresses.length > 0 ? (
           <Tabs
+            className="[&_[role='tabpanel']]:!p-2w" // decrease the default big padding of tabs panels
             tabs={[
               {
                 label: 'Liste',
