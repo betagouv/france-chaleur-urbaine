@@ -10,7 +10,6 @@ import {
 import { type FieldApi } from '@tanstack/react-form';
 import { useEffect } from 'react';
 import { useState } from 'react';
-import { type ZodRawShape } from 'zod';
 
 import DsfrCheckbox, { type CheckboxProps as DsfrCheckboxProps } from '@/components/form/dsfr/Checkbox';
 import DsfrCheckboxes, { type CheckboxesProps as DsfrCheckboxesProps } from '@/components/form/dsfr/Checkboxes';
@@ -21,6 +20,8 @@ import DsfrSelect, { type SelectOption as DsfrSelectOption } from '@/components/
 import DsfrSelectCheckboxes, { type SelectCheckboxesProps as DsfrSelectCheckboxesProps } from '@/components/form/dsfr/SelectCheckboxes';
 import DsfrTextArea from '@/components/form/dsfr/TextArea';
 import Button, { type ButtonProps } from '@/components/ui/Button';
+import { getSchemaShape } from '@/utils/validation';
+
 /**
  * Get the error states for an input field.
  */
@@ -131,11 +132,10 @@ function useForm<
 
   type FieldProps = { name: OriginalFieldProps['name'] } & { fieldInputProps?: Omit<OriginalFieldProps, 'children' | 'name'> };
 
-  const schemaShape = schema ? (schema as any).innerType?.()?.shape || (schema as any).shape : ({} as ZodRawShape);
+  const schemaShape = getSchemaShape(schema as any);
 
   const isRequiredField = (fieldname: keyof TFormData) => {
     const field = (schemaShape as any)?.[fieldname];
-
     return !field?.isOptional?.();
   };
 
@@ -237,6 +237,18 @@ function useForm<
 
   const EmailInput: typeof Input = ({ nativeInputProps, ...props }) => (
     <Input nativeInputProps={{ type: 'email', autoComplete: 'email', ...nativeInputProps }} {...props} />
+  );
+
+  const PhoneInput: typeof Input = ({ nativeInputProps, ...props }) => (
+    <Input
+      nativeInputProps={{
+        type: 'tel',
+        autoComplete: 'tel',
+        placeholder: '0123456789',
+        ...nativeInputProps,
+      }}
+      {...props}
+    />
   );
   const UrlInput: typeof Input = ({ nativeInputProps, iconId = 'fr-icon-link', ...props }) => (
     <Input nativeInputProps={{ type: 'url', autoComplete: 'url', ...nativeInputProps }} iconId={iconId} {...props} />
@@ -505,6 +517,7 @@ function useForm<
     Textarea,
     UrlInput,
     Checkbox,
+    PhoneInput,
     Submit,
     Form,
     FormDebug,
