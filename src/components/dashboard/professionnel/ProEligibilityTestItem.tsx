@@ -73,6 +73,12 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
       const value = row.getValue<number>(columnId);
       return value != null && value <= filterValue;
     },
+    // nulls last
+    sortingFn: (rowA, rowB, columnId) => {
+      const valueA = rowA.getValue<number>(columnId);
+      const valueB = rowB.getValue<number>(columnId);
+      return valueA === null ? 1 : valueB === null ? -1 : valueA - valueB;
+    },
   },
   {
     header: 'PDP',
