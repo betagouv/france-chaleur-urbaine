@@ -31,21 +31,19 @@ export default function TestsAdresses(): JSX.Element {
       mode="authenticated"
     >
       <Box as="main" className="fr-container" my="4w">
-        <div className="flex items-center justify-between fr-mb-4w">
-          <Heading color="blue-france" className="!mb-0">
-            Test d'adresses en masse
+        <Heading color="blue-france">Test d'adresses en masse</Heading>
+        <p>
+          Cette page vous permet de faire des tests d'adresse en masse (jusqu'à 100k adresses) afin d'obtenir des informations sur
+          l'éligibilité potentielle des adresses pour le raccordement aux réseaux de chaleur.
+        </p>
+        <div className="flex items-center justify-between fr-mb-2w">
+          <Heading as="h3" color="blue-france" mb="0">
+            Vos tests
           </Heading>
           <ModalSimple title="Création d'un test d'adresses" size="medium" trigger={<Button>Nouveau test</Button>}>
             <CreateEligibilityTestForm />
           </ModalSimple>
         </div>
-        <p>
-          Cette page vous permet de faire des tests d'adresse en masse (jusqu'à 100k adresses) afin d'obtenir des informations sur
-          l'éligibilité potentielle des adresses pour le raccordement aux réseaux de chaleur.
-        </p>
-        <Heading as="h3" color="blue-france">
-          Vos tests
-        </Heading>
         {isLoading && <Loader size="lg" />}
         {eligibilityTests?.length === 0 && (
           <>
