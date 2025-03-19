@@ -5,6 +5,7 @@ import { useQueryState } from 'nuqs';
 import React, { type FormEvent, useState } from 'react';
 
 import Input from '@/components/form/dsfr/Input';
+import TextArea from '@/components/form/dsfr/TextArea';
 import { submitToAirtable } from '@/services/airtable';
 import { Airtable } from '@/types/enum/Airtable';
 
@@ -109,8 +110,7 @@ const ContactForm = () => {
               onChange: (e) => setReason(e.target.value),
             }}
           />
-          <Input
-            textArea
+          <TextArea
             label="Votre message :"
             nativeTextAreaProps={{
               required: true,

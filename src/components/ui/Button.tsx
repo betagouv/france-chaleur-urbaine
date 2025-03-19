@@ -115,7 +115,8 @@ const Button: React.FC<ButtonProps> = ({
   };
 
   const variantClassName = (variantClassNames?.[variant] as any)?.[props?.priority || 'primary'];
-  if (!variantClassName) {
+
+  if (variantClassName === undefined) {
     console.warn(`Button variant ${variant} is not supported for priority ${props.priority}`);
   }
 

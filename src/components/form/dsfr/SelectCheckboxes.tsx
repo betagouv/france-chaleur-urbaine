@@ -2,12 +2,12 @@ import styled, { css } from 'styled-components';
 
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover';
 
-import Checkbox, { type CheckboxProps } from './Checkbox';
+import Checkboxes, { type CheckboxesProps } from './Checkboxes';
 import FieldWrapper, { type FieldWrapperProps } from './FieldWrapper';
 
-type SelectCheckboxesProps = Omit<FieldWrapperProps, 'onSelect' | 'children'> & CheckboxProps;
+export type SelectCheckboxesProps = Omit<FieldWrapperProps, 'onSelect' | 'children'> & CheckboxesProps;
 
-const StyledCheckbox = styled(Checkbox)`
+const StyledCheckboxes = styled(Checkboxes)`
   margin-bottom: 0.5rem;
 
   .fr-fieldset__content .fr-radio-group:first-child,
@@ -60,7 +60,7 @@ const SelectCheckboxes = ({ fieldId, label, hintText, state, stateRelatedMessage
           sideOffset={0} // Controls space between trigger and popover
           avoidCollisions={false}
         >
-          <StyledCheckbox {...props} />
+          <StyledCheckboxes {...props} />
         </PopoverContent>
       </Popover>
     </FieldWrapper>

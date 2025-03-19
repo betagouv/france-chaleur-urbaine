@@ -1,5 +1,6 @@
-import { RadioButtons } from '@codegouvfr/react-dsfr/RadioButtons';
 import React from 'react';
+
+import Radio from '@/components/form/dsfr/Radio';
 
 type SelectEnergyProps = {
   children?: React.ReactNode;
@@ -16,8 +17,8 @@ const SelectEnergy = ({ children, label, name, cardMode, selectOptions = {}, val
   return (
     <>
       {children}
-      <RadioButtons
-        legend={typeof label === 'string' ? (label ?? 'Chauffage actuel ') : label}
+      <Radio
+        label={typeof label === 'string' ? (label ?? 'Chauffage actuel ') : label}
         name={name}
         className={className}
         orientation={cardMode ? 'vertical' : 'horizontal'}

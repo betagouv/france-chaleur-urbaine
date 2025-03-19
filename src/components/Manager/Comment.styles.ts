@@ -1,8 +1,8 @@
 import styled from 'styled-components';
 
-import Input from '@/components/form/dsfr/Input';
+import TextArea from '@/components/form/dsfr/TextArea';
 
-export const TextAreaInput = styled(Input)`
+export const TextAreaInput = styled(TextArea)`
   min-width: 250px;
   & > .fr-input {
     font-size: 13px;

@@ -4,7 +4,7 @@ import { type GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
 import { type FormEvent, useEffect, useState } from 'react';
 
-import Input from '@/components/form/dsfr/Input';
+import TextArea from '@/components/form/dsfr/TextArea';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Slice from '@/components/Slice';
 import { updateRelanceAnswer } from '@/server/services/manager';
@@ -58,8 +58,7 @@ function Satisfaction() {
           <Alert severity="success" title="Merci pour votre retour." />
         ) : (
           <form onSubmit={send}>
-            <Input
-              textArea
+            <TextArea
               label="Commentaire"
               nativeTextAreaProps={{
                 value: comment,

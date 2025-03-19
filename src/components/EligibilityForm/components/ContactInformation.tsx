@@ -1,12 +1,12 @@
 import { fr } from '@codegouvfr/react-dsfr';
 import { Alert } from '@codegouvfr/react-dsfr/Alert';
-import RadioButtons from '@codegouvfr/react-dsfr/RadioButtons';
 import Select from '@codegouvfr/react-dsfr/SelectNext';
 import { Field, useFormikContext } from 'formik';
 import { type ReactNode, useState } from 'react';
 import styled from 'styled-components';
 import * as Yup from 'yup';
 
+import Radio from '@/components/form/dsfr/Radio';
 import Input from '@/components/form/formik/input';
 import Box from '@/components/ui/Box';
 import Text from '@/components/ui/Text';
@@ -170,8 +170,8 @@ const ContactInformation = ({
     <>
       <Field required>
         {({ field }: any) => (
-          <RadioButtons
-            legend={fieldLabelInformation.structure.label}
+          <Radio
+            label={fieldLabelInformation.structure.label}
             name="structure"
             className={fr.cx(`fr-mt-${cardMode ? '1' : '3'}w`)}
             orientation={cardMode ? 'vertical' : 'horizontal'}
@@ -280,8 +280,8 @@ const ContactInformation = ({
         {heatingTypeInput}
         <Field required>
           {({ field }: any) => (
-            <RadioButtons
-              legend={heatingTypeInput ? 'Énergie de chauffage :' : fieldLabelInformation.heatingEnergy.label}
+            <Radio
+              label={heatingTypeInput ? 'Énergie de chauffage :' : fieldLabelInformation.heatingEnergy.label}
               name="heatingEnergy"
               className="heatingEnergyContactInformations"
               orientation={cardMode ? 'vertical' : 'horizontal'}

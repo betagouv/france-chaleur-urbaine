@@ -2,7 +2,7 @@ import { useToggle } from '@react-hookz/web';
 import React, { type ReactNode, useContext, useState } from 'react';
 import styled, { css } from 'styled-components';
 
-import Checkbox from '@/components/form/dsfr/Checkbox';
+import Checkboxes from '@/components/form/dsfr/Checkboxes';
 import cx from '@/utils/cx';
 
 import AsyncButton, { type AsyncButtonProps } from './AsyncButton';
@@ -92,7 +92,7 @@ export const NewsletterCheckbox = ({
     return null;
   }
   return (
-    <Checkbox
+    <Checkboxes
       small
       options={[
         {

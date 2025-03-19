@@ -1,4 +1,31 @@
-import { z } from 'zod';
+import z, { type ZodTypeAny, ZodObject, type ZodRawShape, ZodEffects } from 'zod';
+
+/**
+ * Recursively unwraps ZodEffects to get the base schema.
+ */
+const unwrapSchema = (schema: ZodTypeAny): ZodTypeAny => {
+  while (schema instanceof ZodEffects) {
+    schema = schema._def.schema;
+  }
+  return schema;
+};
+
+/**
+ * Extracts the shape from a ZodObject schema, even if it's wrapped in effects.
+ */
+export const getSchemaShape = (schema: ZodTypeAny): ZodRawShape => {
+  if (!schema) return {} as ZodRawShape;
+
+  // Unwrap schema from ZodEffects layers
+  const unwrappedSchema = unwrapSchema(schema);
+
+  // If it's a ZodObject, return its shape
+  if (unwrappedSchema instanceof ZodObject) {
+    return unwrappedSchema.shape;
+  }
+
+  return {} as ZodRawShape;
+};
 
 export const zAirtableRecordId = z.string().regex(/^[a-zA-Z0-9]{17}$/); // e.g. rec6nCFUO7Nzj6M9n
 

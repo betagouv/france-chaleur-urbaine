@@ -1,8 +1,8 @@
 import { Alert } from '@codegouvfr/react-dsfr/Alert';
-import { Upload } from '@codegouvfr/react-dsfr/Upload';
 import { useState, type ChangeEvent, type FormEvent } from 'react';
 
 import Input from '@/components/form/dsfr/Input';
+import Upload from '@/components/form/dsfr/Upload';
 import Button from '@/components/ui/Button';
 import { useServices } from '@/services';
 
