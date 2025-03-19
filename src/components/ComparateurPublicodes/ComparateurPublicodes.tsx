@@ -59,6 +59,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
   const [address, setAddress] = useQueryState('address');
   const [addressDetail, setAddressDetail] = React.useState<AddressDetail>();
   const [lngLat, setLngLat] = React.useState<[number, number]>();
+  const [modesDeChauffageQueryParam] = useQueryState('modes-de-chauffage');
   const [nearestReseauDeChaleur, setNearestReseauDeChaleur] = React.useState<LocationInfoResponse['nearestReseauDeChaleur']>();
   const [addressError, setAddressError] = React.useState<boolean>(false);
   const [addressLoading, setAddressLoading] = React.useState<boolean>(false);
@@ -87,7 +88,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
 
   const isAddressSelected = engine.getField('code département') !== undefined;
 
-  const displayResults = isAddressSelected;
+  const displayGraph = isAddressSelected && (!advancedMode || (advancedMode && !!modesDeChauffageQueryParam));
 
   React.useEffect(() => {
     engine.setField('Inclure la climatisation', 'non');
@@ -141,9 +142,18 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
     </Notice>
   );
 
-  const results = displayResults ? (
+  const results = (
     <div className="p-2 lg:p-0">
-      {!loading && address && displayResults && (
+      {!displayGraph && (
+        <CallOut className="mb-5 font-bold">
+          {advancedMode
+            ? !isAddressSelected
+              ? '1. Commencez par renseigner une adresse'
+              : '2. Maintenant, sélectionnez au moins un mode de chauffage'
+            : 'Renseignez une adresse'}
+        </CallOut>
+      )}
+      {!loading && address && (
         <Alert size="sm" className="mb-5" variant={nearestReseauDeChaleur ? 'info' : 'warning'}>
           {nearestReseauDeChaleur ? (
             <>
@@ -208,7 +218,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
           )}
         </Alert>
       )}
-      {!loading && inclureLaClimatisation && address && displayResults && (
+      {!loading && inclureLaClimatisation && address && (
         <Alert size="sm" className="mb-5" variant={nearestReseauDeFroid ? 'info' : 'warning'}>
           {nearestReseauDeFroid ? (
             <>
@@ -258,19 +268,18 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
           )}
         </Alert>
       )}
-      <Graph
-        engine={engine}
-        advancedMode={advancedMode}
-        hideReseauDeChaleur={!advancedMode && !nearestReseauDeChaleur}
-        usedReseauDeChaleurLabel={nearestReseauDeChaleur?.nom_reseau || 'Valeur moyenne'}
-        captureImageName={`${new Date().getFullYear()}-${slugify(address)}`}
-      />
+      {displayGraph ? (
+        <Graph
+          engine={engine}
+          advancedMode={advancedMode}
+          hideReseauDeChaleur={!advancedMode && !nearestReseauDeChaleur}
+          usedReseauDeChaleurLabel={nearestReseauDeChaleur?.nom_reseau || 'Valeur moyenne'}
+          captureImageName={`${new Date().getFullYear()}-${slugify(address)}`}
+        />
+      ) : (
+        <ResultsNotAvailable advancedMode={advancedMode} />
+      )}
     </div>
-  ) : (
-    <>
-      <CallOut className="mb-5 font-bold">Renseignez une adresse</CallOut>
-      <ResultsNotAvailable advancedMode={advancedMode} />
-    </>
   );
 
   const addressAutocomplete = (
@@ -410,7 +419,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
                   {addressAutocomplete}
                   <ParametresDuBatimentTechnicien engine={engine} />
                   <Button onClick={() => setSelectedTabId(simulatorTabs[1].tabId)} full disabled={!isAddressSelected} className="fr-mt-2w">
-                    Continuer
+                    Étape suivante
                   </Button>
                 </Accordion>
                 <Accordion

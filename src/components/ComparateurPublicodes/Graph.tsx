@@ -189,7 +189,7 @@ const Graph: React.FC<GraphProps> = ({
   hideReseauDeChaleur,
   ...props
 }) => {
-  const { has: hasModeDeChauffage, items: selectedModesDeChauffage } = useArrayQueryState('modes-de-chauffage');
+  const { has: hasModeDeChauffage } = useArrayQueryState('modes-de-chauffage');
   const coutsRef = useRef<HTMLDivElement>(null);
   useFixLegendOpacity(coutsRef);
   const ref = useRef(null);
@@ -230,9 +230,7 @@ const Graph: React.FC<GraphProps> = ({
   const modesDeChauffageFiltres = modesDeChauffage.filter(
     (modeDeChauffage) =>
       (advancedMode
-        ? selectedModesDeChauffage.length > 0
-          ? hasModeDeChauffage(modeDeChauffage.label)
-          : true
+        ? hasModeDeChauffage(modeDeChauffage.label)
         : modeDeChauffage.grandPublicMode && !(hideReseauDeChaleur && modeDeChauffage.label === 'Réseau de chaleur')) &&
       (typeDeBatiment === 'tertiaire' ? modeDeChauffage.tertiaire : true)
   );
