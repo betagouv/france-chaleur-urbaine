@@ -8,6 +8,7 @@ import {
   useReactTable,
   type Cell,
   type ColumnDef as ColumnDefOriginal,
+  type SortingFn,
   type ColumnFiltersState,
   type RowData,
   type SortingState,
@@ -20,11 +21,21 @@ import cx from '@/utils/cx';
 
 import TableCell, { type TableCellProps } from './TableCell';
 
+export const customSortingFn = <T extends RowData>(): Record<string, SortingFn<T>> => ({
+  nullsAlwaysLast: (rowA: any, rowB: any, columnId: string) => {
+    const valueA = rowA.getValue(columnId);
+    const valueB = rowB.getValue(columnId);
+    if (valueA === null || valueB === null) return 0;
+    return valueA - valueB;
+  },
+});
+
 export type ColumnDef<T, K = any> = ColumnDefOriginal<T, K> & {
   cellType?: TableCellProps<T>['type'];
   align?: 'center' | 'left' | 'right';
   className?: string;
   suffix?: React.ReactNode;
+  sorting?: keyof ReturnType<typeof customSortingFn<T>>;
 } & ({ flex?: number } | { width?: 'auto' | string });
 
 export type TableSimpleProps<T> = {
@@ -123,6 +134,13 @@ const TableSimple = <T extends RowData>({
     }
     return columns;
   }, [columns, enableRowSelection]);
+
+  const customSortingFns = customSortingFn<T>();
+  tableColumns.forEach((column) => {
+    if (column.sorting && customSortingFns[column.sorting]) {
+      column.sortingFn = customSortingFns[column.sorting];
+    }
+  });
 
   const table = useReactTable({
     data,
