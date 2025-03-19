@@ -24,11 +24,9 @@ export const register = async ({
   structure?: string;
   structure_type?: string;
   structure_other?: string;
-  job?: string;
   phone?: string | null;
-  besoins: string[];
-  accept_cgu: boolean;
-  optin_newsletter: boolean;
+  accept_cgu?: boolean;
+  optin_newsletter?: boolean;
 }) => {
   const existingUser = await kdb.selectFrom('users').select('id').where('email', '=', email).executeTakeFirst();
   if (existingUser) {
