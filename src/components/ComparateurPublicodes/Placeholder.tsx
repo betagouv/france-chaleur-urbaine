@@ -1,5 +1,4 @@
 import { fr } from '@codegouvfr/react-dsfr';
-import Badge from '@codegouvfr/react-dsfr/Badge';
 import React from 'react';
 
 import Accordion from '@/components/ui/Accordion';
@@ -22,11 +21,7 @@ export const DataYearDisclaimer: React.FC<{ advancedMode?: boolean }> = ({ advan
   </span>
 );
 
-export const title = (
-  <>
-    Comparateur de coûts et d’émissions de CO2 <Badge severity="warning">Beta</Badge>
-  </>
-);
+export const title = 'Comparateur de coûts et d’émissions de CO2';
 
 export const Logos = ({ size, withFCU = true, ...props }: React.ComponentProps<typeof Box> & { size?: 'sm'; withFCU?: boolean }) => {
   const height = size === 'sm' ? '32px' : '40px';
