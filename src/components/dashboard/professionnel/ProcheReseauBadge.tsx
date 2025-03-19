@@ -10,7 +10,7 @@ const procheReseauConfig = {
     className: '!bg-[#079067] !text-white',
   },
   en_construction: {
-    label: 'En construction',
+    label: 'À venir',
     className: '!bg-[#DA5DD5] !text-white',
   },
 } satisfies Record<

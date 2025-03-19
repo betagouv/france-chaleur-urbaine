@@ -98,12 +98,8 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
           }}
           title={
             <>
-              Le bâtiment est jugé potentiellement raccordable s'il se situe à moins de 200 m d'un réseau existant, sauf sur Paris où ce
-              seuil est réduit à 100 m, ou bien si Le bâtiment est situé à moins de 200 m du tracé d'un réseau en construction, ou situé
-              dans une zone sur laquelle nous avons connaissance d'un réseau en construction ou en cours de mise en service.
-              <br />
-              <br />
-              Attention, le mode de chauffage n'est pas pris en compte.
+              Le bâtiment se situe à moins de 200 m d'un réseau existant ou en construction, ou dans une zone où un réseau est en
+              construction, dont nous n’avons pas encore le tracé. <em>Exception : sur Paris, le seuil de distance est réduit à 100 m.</em>
             </>
           }
         />
@@ -492,7 +488,7 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
             </Fragment>
           ))}
         </div>
-        <div className="flex items-center gap-2 w-full">
+        <div className="flex items-center gap-2 w-full mt-2">
           <Button iconId="fr-icon-download-line" priority="primary" onClick={downloadCSV} disabled={filteredAddresses.length === 0}>
             Télécharger les résultats détaillés
           </Button>
