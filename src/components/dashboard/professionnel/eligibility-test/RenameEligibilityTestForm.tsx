@@ -1,7 +1,4 @@
-import { Input } from '@codegouvfr/react-dsfr/Input';
-import { standardSchemaValidator, useForm } from '@tanstack/react-form';
-
-import { getInputErrorStates } from '@/components/form/tanstack-form';
+import useForm from '@/components/form/react-form/useForm';
 import Button from '@/components/ui/Button';
 import { useModal } from '@/components/ui/ModalSimple';
 import { usePost } from '@/hooks/useApi';
@@ -22,14 +19,11 @@ const RenameEligibilityTestForm = ({ testId, currentName }: RenameEligibilityTes
     },
   });
 
-  const form = useForm({
+  const { Form, Input, Submit } = useForm({
     defaultValues: {
       name: currentName,
     },
-    validatorAdapter: standardSchemaValidator(),
-    validators: {
-      onChange: zRenameProEligibilityTestRequest,
-    },
+    schema: zRenameProEligibilityTestRequest,
     onSubmit: toastErrors(
       async ({ value }: { value: RenameProEligibilityTestRequest }) => {
         await renameTest({
@@ -42,47 +36,18 @@ const RenameEligibilityTestForm = ({ testId, currentName }: RenameEligibilityTes
   });
 
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        void form.handleSubmit();
-      }}
-    >
+    <Form>
       <div className="flex flex-col gap-4">
-        <form.Field
-          name="name"
-          children={(field) => (
-            <Input
-              label="Nom du test"
-              nativeInputProps={{
-                required: true,
-                id: field.name,
-                name: field.name,
-                value: field.state.value,
-                onChange: (e) => field.handleChange(e.target.value),
-                onBlur: field.handleBlur,
-              }}
-              {...getInputErrorStates(field)}
-            />
-          )}
-        />
+        <Input name="name" label="Nom du test" />
 
-        <form.Subscribe
-          selector={(state) => [state.canSubmit, state.isSubmitting]}
-          children={([canSubmit, isSubmitting]) => (
-            <div className="flex justify-end gap-2 mt-4">
-              <Button priority="secondary" onClick={closeModal}>
-                Annuler
-              </Button>
-              <Button type="submit" disabled={!canSubmit} loading={isSubmitting}>
-                Renommer
-              </Button>
-            </div>
-          )}
-        />
+        <div className="flex justify-end gap-2 mt-4">
+          <Button priority="secondary" onClick={closeModal}>
+            Annuler
+          </Button>
+          <Submit>Renommer</Submit>
+        </div>
       </div>
-    </form>
+    </Form>
   );
 };
 
