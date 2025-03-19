@@ -2,7 +2,6 @@ import { type GetServerSidePropsContext, type InferGetServerSidePropsType } from
 import dynamic from 'next/dynamic';
 import React from 'react';
 
-import { clientConfig } from '@/client-config';
 import Placeholder, { Explanations, Logos, title } from '@/components/ComparateurPublicodes/Placeholder';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Hero, { HeroContent, HeroTitle } from '@/components/ui/Hero';
@@ -17,7 +16,7 @@ const ComparateurPublicodes = dynamic(() => import('@/components/ComparateurPubl
 const SimulateurPage: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = ({ query }) => {
   return (
     <SimplePage
-      noIndex={!clientConfig.ENABLE_COMPARATEUR}
+      noIndex={true}
       title="Comparateur des performances des modes de chauffage et de refroidissement"
       description="Comparez le coût et les émissions de CO2 des réseaux de chaleur, fioul, gaz et électricité pour votre adresse et vos caractéristiques"
       mode="authenticated"

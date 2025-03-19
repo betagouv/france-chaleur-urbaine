@@ -17,7 +17,7 @@ const SimulateurPage: React.FC<InferGetServerSidePropsType<typeof getServerSideP
   return (
     <SimplePage
       noIndex={!clientConfig.ENABLE_COMPARATEUR}
-      title="Comparateur des performances des modes de chauffage et de refroidissement"
+      title="Comparateur de coûts et d’émissions de CO2"
       description="Comparez le coût et les émissions de CO2 des réseaux de chaleur, fioul, gaz et électricité pour votre adresse et vos caractéristiques"
     >
       <Hero variant="transparent" className="[&_article]:pb-0">
