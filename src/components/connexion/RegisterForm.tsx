@@ -81,8 +81,8 @@ function RegisterForm() {
     <>
       {stepIndex === 0 && (
         <>
-          <span className="block">Connectez-vous pour bénéficier de fonctionnalités avancées :</span>
-          <ul className="list-disc pl-4 my-5">
+          <span className="block text-sm">Connectez-vous pour bénéficier de fonctionnalités avancées :</span>
+          <ul className="list-disc pl-4 my-5 text-sm">
             <li>
               <strong>Comparez</strong> les <strong>coûts et émissions de CO2</strong> des différents systèmes de chauffage et de
               refroidissement (réseaux de chaleur et de froid, gaz, fioul, biomasse, PAC...) - mode avancé du comparateur
