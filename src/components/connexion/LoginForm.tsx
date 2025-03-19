@@ -58,15 +58,17 @@ export const LoginForm = ({ callbackUrl }: LoginFormProps) => {
         <Link key="reset-password" href="/reset-password">
           Mot de passe oublié ?
         </Link>
-        {clientConfig.ENABLE_INSCRIPTIONS && (
-          <Link key="create-account" href={`/inscription`}>
-            Créer un compte
-          </Link>
-        )}
       </div>
-      <Button type="submit" loading={loading}>
-        Me connecter
-      </Button>
+      <div className="flex justify-between text-sm mb-8 items-center">
+        {clientConfig.ENABLE_INSCRIPTIONS && (
+          <Button key="create-account" priority="tertiary" href={`/inscription`}>
+            Créer un compte
+          </Button>
+        )}
+        <Button type="submit" loading={loading}>
+          Me connecter
+        </Button>
+      </div>
     </form>
   );
 };
