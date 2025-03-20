@@ -14,6 +14,7 @@ import {
   type SortingState,
 } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
+import { cva } from 'class-variance-authority';
 import React from 'react';
 
 import { isDevModeEnabled } from '@/hooks/useDevMode';
@@ -48,9 +49,22 @@ export type TableSimpleProps<T> = {
   enableRowSelection?: boolean;
   className?: string;
   fluid?: boolean;
-  smallPadding?: boolean;
+  padding?: 'sm' | 'md' | 'lg';
   onSelectionChange?: (selectedRows: T[]) => void;
 };
+
+const cellCustomClasses = cva('', {
+  variants: {
+    padding: {
+      sm: '!p-2',
+      md: '',
+      lg: '!p-6',
+    },
+  },
+  defaultVariants: {
+    padding: 'md',
+  },
+});
 
 const TableSimple = <T extends RowData>({
   data,
@@ -63,7 +77,7 @@ const TableSimple = <T extends RowData>({
   onSelectionChange,
   className,
   fluid,
-  smallPadding,
+  padding = 'md',
 }: TableSimpleProps<T>) => {
   const [globalFilter, setGlobalFilter] = React.useState<any>([]);
   const [sortingState, setSortingState] = React.useState<SortingState>(initialSortingState ?? []);
@@ -239,7 +253,7 @@ const TableSimple = <T extends RowData>({
                     <th
                       key={header.id}
                       colSpan={header.colSpan}
-                      className={cx('!flex flex-nowrap overflow-auto gap-1', columnClassName(columnDef), smallPadding && '!p-2')}
+                      className={cx('!flex flex-nowrap overflow-auto gap-1', columnClassName(columnDef), cellCustomClasses({ padding }))}
                     >
                       {header.isPlaceholder ? null : (
                         <>
@@ -327,9 +341,9 @@ const TableSimple = <T extends RowData>({
                             {
                               'overflow-auto': !React.isValidElement(cell.getValue()), // this is a hack as for DebugDrawer, overflow was causing problems
                               'flex items-center fr-cell--fixed': columnDef.id === 'selection',
-                              '!p-2': smallPadding,
                             },
-                            columnClassName(columnDef)
+                            columnClassName(columnDef),
+                            cellCustomClasses({ padding })
                           )}
                           scope={columnDef.id === 'selection' ? 'row' : undefined}
                         >
