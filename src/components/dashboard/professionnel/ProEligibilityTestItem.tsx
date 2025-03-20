@@ -231,8 +231,8 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
 
 const initialSortingState: SortingState = [
   {
-    id: 'created_at',
-    desc: true,
+    id: 'eligibility_status_distance',
+    desc: false,
   },
 ];
 
