@@ -8,10 +8,10 @@ import Button from '@/components/ui/Button';
 import Highlight from '@/components/ui/Highlight';
 import Link from '@/components/ui/Link';
 import { toastErrors } from '@/services/notification';
-import { zCredentialsSchema, zIdentitySchema, type CredentialsSchema, type IdentitySchema } from '@/services/user';
 import { userRolesInscription } from '@/types/enum/UserRole';
 import { postFetchJSON } from '@/utils/network';
 import { upperCaseFirstChar } from '@/utils/strings';
+import { zCredentialsSchema, zIdentitySchema, type CredentialsSchema, type IdentitySchema } from '@/validation/user';
 
 type FormStep = {
   label: string;
