@@ -148,6 +148,35 @@ const useFixLegendOpacity = (coutsRef?: React.RefObject<HTMLDivElement | null>) 
   });
 };
 
+const roundUpToNearestThreshold =
+  (thresholds: [number, number][]) =>
+  (value: number): number => {
+    for (const [threshold, divisor] of thresholds) {
+      if (value > threshold) {
+        return Math.ceil(value / divisor) * divisor;
+      }
+    }
+    return Math.ceil(value / thresholds[thresholds.length - 1][1]) * thresholds[thresholds.length - 1][1];
+  };
+
+const roundScale = roundUpToNearestThreshold([
+  [1000000, 1000000], // For large values (> 1,000,000), round up to the nearest 1,000,000
+  [100000, 100000], // For large values (> 100,000), round up to the nearest 100,000
+  [10000, 10000], // For medium values (> 10,000), round up to the nearest 10,000
+  [0, 1000], // For smaller values, round up to the nearest 1,000
+]);
+
+const getGridRepeatPercentage = (value: number) => {
+  let gridPercentage = 50;
+  if (value % 500 === 0 && value <= 3000) gridPercentage = 100 / (value / 500);
+  if (value % 1000 === 0 && value <= 10000) gridPercentage = 100 / (value / 1000);
+  if (value % 10000 === 0 && value > 10000) gridPercentage = 100 / (value / 10000);
+  if (value % 100000 === 0 && value > 100000) gridPercentage = 100 / (value / 100000);
+  if (value % 1000000 === 0 && value > 1000000) gridPercentage = 100 / (value / 1000000);
+  console.log('grid', value, gridPercentage);
+  return gridPercentage;
+};
+
 const getCostPrecisionRange = (value: number) => {
   const lowerBound = Math.round((value * (1 - costPrecisionPercentage)) / 10) * 10;
   const upperBound = Math.round((value * (1 + costPrecisionPercentage)) / 10) * 10;
@@ -412,19 +441,9 @@ const Graph: React.FC<GraphProps> = ({
   const maxExistingEmissionsCO2Value =
     totalCoutsEtEmissions.reduce((acc, [, , co2]) => Math.max(acc, co2), 0) * (1 + co2PrecisionPercentage);
   const maxExistingCostValue = totalCoutsEtEmissions.reduce((acc, [, cost]) => Math.max(acc, cost), 0) * (1 + costPrecisionPercentage);
-  const scaleTickCost = 500;
-  const scaleCostMaxValue = Math.ceil(maxExistingCostValue / scaleTickCost) * scaleTickCost;
-  const scaleEmissionsCO2maxValue =
-    maxExistingEmissionsCO2Value > 10000
-      ? Math.ceil(maxExistingEmissionsCO2Value / 10000) * 10000
-      : Math.ceil(maxExistingEmissionsCO2Value / 1000) * 1000;
 
-  const getGrid = (value: number) => {
-    if (value % 500 === 0 && value <= 3000) return 100 / (value / 500);
-    if (value % 1000 === 0 && value <= 10000) return 100 / (value / 1000);
-    if (value % 10000 === 0 && value > 10000) return 100 / (value / 10000);
-    return 50;
-  };
+  const scaleEmissionsCO2maxValue = roundScale(maxExistingEmissionsCO2Value);
+  const scaleCostMaxValue = roundScale(maxExistingCostValue);
 
   const titleItems = ['chauffage', inclusClimatisation && 'froid', inclusECS && 'ECS'].filter(Boolean);
   const titleItemsString =
@@ -476,7 +495,7 @@ const Graph: React.FC<GraphProps> = ({
                 <div
                   className="ml-12 mr-3"
                   style={{
-                    backgroundImage: `repeating-linear-gradient(to right,#CCC 0,#CCC 1px,transparent 1px,transparent ${getGrid(scaleEmissionsCO2maxValue)}%)`,
+                    backgroundImage: `repeating-linear-gradient(to right,#CCC 0,#CCC 1px,transparent 1px,transparent ${getGridRepeatPercentage(scaleEmissionsCO2maxValue)}%)`,
                     // Goal here is to give a grid that is relevent for a user
                     // when % is infinite (16.666666% for example), grid might appear inaccurate and we rather display only one understandable line instead
                     borderRight: '1px solid #CCC',
@@ -485,7 +504,7 @@ const Graph: React.FC<GraphProps> = ({
                 <div
                   className="ml-3 mr-12"
                   style={{
-                    backgroundImage: `repeating-linear-gradient(to right,#CCC 0,#CCC 1px,transparent 1px,transparent  ${getGrid(scaleCostMaxValue)}%)`,
+                    backgroundImage: `repeating-linear-gradient(to right,#CCC 0,#CCC 1px,transparent 1px,transparent  ${getGridRepeatPercentage(scaleCostMaxValue)}%)`,
                     borderRight: '1px solid #CCC',
                   }}
                 ></div>
@@ -581,11 +600,14 @@ const Graph: React.FC<GraphProps> = ({
 
             <div className="flex justify-between text-sm font-bold text-gray-600 -mt-2 mb-8">
               <div className="flex-1 ml-12 mr-2 flex items-center justify-between relative">
-                {Array.from({ length: Math.floor(100 / getGrid(scaleEmissionsCO2maxValue)) }).map((_, i) => (
+                {Array.from({ length: Math.floor(100 / getGridRepeatPercentage(scaleEmissionsCO2maxValue)) }).map((_, i) => (
                   <div className="relative flex-1" key={`scale_co2_${i}-${scaleEmissionsCO2maxValue}`}>
                     &nbsp;
                     <span className="absolute origin-bottom-right -rotate-45 w-[100px] -translate-x-[100px] whitespace-nowrap text-right">
-                      {formatEmissionsCO2(scaleEmissionsCO2maxValue * (1 - (i * getGrid(scaleEmissionsCO2maxValue)) / 100), '')}
+                      {formatEmissionsCO2(
+                        scaleEmissionsCO2maxValue * (1 - (i * getGridRepeatPercentage(scaleEmissionsCO2maxValue)) / 100),
+                        ''
+                      )}
                     </span>
                   </div>
                 ))}
@@ -597,11 +619,11 @@ const Graph: React.FC<GraphProps> = ({
                 <span className="absolute origin-bottom-right -rotate-45 left-0 whitespace-nowrap text-right -translate-x-[5px]">
                   {formatCost(0, false)}
                 </span>
-                {Array.from({ length: Math.floor(100 / getGrid(scaleCostMaxValue)) }).map((_, i) => (
+                {Array.from({ length: Math.floor(100 / getGridRepeatPercentage(scaleCostMaxValue)) }).map((_, i) => (
                   <div className="relative flex-1" key={`scale_cost_${i}-${scaleCostMaxValue}`}>
                     &nbsp;
                     <span className="absolute origin-bottom-right -rotate-45 w-[100%] translate-x-[5px] whitespace-nowrap text-right">
-                      {formatCost(scaleCostMaxValue * (((i + 1) * getGrid(scaleCostMaxValue)) / 100), false)}
+                      {formatCost(scaleCostMaxValue * (((i + 1) * getGridRepeatPercentage(scaleCostMaxValue)) / 100), false)}
                     </span>
                   </div>
                 ))}
