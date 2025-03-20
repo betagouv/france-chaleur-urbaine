@@ -73,4 +73,4 @@ export default function TestsAdresses(): JSX.Element {
   );
 }
 
-export const getServerSideProps = withAuthentication(['particulier', 'professionnel']);
+export const getServerSideProps = withAuthentication(['particulier', 'professionnel', 'gestionnaire', 'admin']);

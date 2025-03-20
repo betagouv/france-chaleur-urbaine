@@ -244,7 +244,13 @@ const authenticatedNavigationMenu: MainNavigationProps.Item[] = [
 
 const professionnelNavigationMenu: MainNavigationProps.Item[] = [
   {
-    text: 'Comparateur de performances',
+    text: 'Tableau de bord',
+    linkProps: {
+      href: '/pro/tableau-de-bord',
+    },
+  },
+  {
+    text: 'Comparateur de coûts et CO2',
     linkProps: {
       href: '/pro/comparateur-couts-performances',
     },
@@ -270,9 +276,39 @@ const gestionnaireNavigationMenu: MainNavigationProps.Item[] = [
       href: '/pro/aide',
     },
   },
+  {
+    text: 'Comparateur de coûts et CO2',
+    linkProps: {
+      href: '/pro/comparateur-couts-performances',
+    },
+  },
+  {
+    text: "Test d'adresses",
+    linkProps: {
+      href: '/pro/tests-adresses',
+    },
+  },
 ];
 
 const adminNavigationMenu: MainNavigationProps.Item[] = [
+  {
+    text: 'Tableau de bord',
+    linkProps: {
+      href: '/pro/tableau-de-bord',
+    },
+  },
+  {
+    text: 'Comparateur de coûts et CO2',
+    linkProps: {
+      href: '/pro/comparateur-couts-performances',
+    },
+  },
+  {
+    text: "Test d'adresses",
+    linkProps: {
+      href: '/pro/tests-adresses',
+    },
+  },
   {
     text: 'Administration',
     menuLinks: [
