@@ -45,3 +45,17 @@ export const zPassword = z.string().refine(
 export const emailSchema = z.string().trim().toLowerCase().email('Invalid email address');
 
 export const sanitizeEmail = (email: string): string => emailSchema.safeParse(email)?.data ?? email;
+
+/**
+ * Parses a boolean from an environment variable.
+ *
+ * @example
+ * ENABLE_INSCRIPTIONS=true
+ * ENABLE_INSCRIPTIONS=1
+ * ENABLE_INSCRIPTIONS=0
+ * ENABLE_INSCRIPTIONS=false
+ */
+export const envBooleanSchema = z
+  .enum(['0', '1', 'true', 'false'])
+  .catch('false')
+  .transform((value) => value == 'true' || value == '1');

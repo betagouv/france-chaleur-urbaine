@@ -3,7 +3,6 @@ import { usePathname } from 'next/navigation';
 import React from 'react';
 import styled from 'styled-components';
 
-import { clientConfig } from '@/client-config';
 import Link from '@/components/ui/Link';
 import NoticeRemovable from '@/components/ui/NoticeRemovable';
 
@@ -17,7 +16,7 @@ const NoticeRemovableSticky = styled(NoticeRemovable)`
 const Banner: React.FC = () => {
   const currentUrl = usePathname();
 
-  if (!clientConfig.ENABLE_COMPARATEUR || !currentUrl || currentUrl?.startsWith('/comparateur-couts-performances')) {
+  if (!currentUrl || currentUrl?.startsWith('/comparateur-couts-performances')) {
     return null;
   }
 

@@ -33,6 +33,7 @@ const DELETE = async (req: NextApiRequest) => {
   await kdb.transaction().execute(async (trx) => {
     await trx.deleteFrom('pro_eligibility_tests_addresses').where('test_id', '=', testId).execute();
     await trx.deleteFrom('pro_eligibility_tests').where('id', '=', testId).execute();
+    await trx.deleteFrom('jobs').where('entity_id', '=', testId).execute();
   });
 };
 
@@ -62,7 +63,7 @@ const POST = async (req: NextApiRequest) => {
 export default handleRouteErrors(
   { GET, DELETE, POST },
   {
-    requireAuthentication: ['particulier', 'professionnel'],
+    requireAuthentication: ['particulier', 'professionnel', 'gestionnaire', 'admin'],
   }
 );
 

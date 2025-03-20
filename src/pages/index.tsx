@@ -2,7 +2,6 @@ import Badge from '@codegouvfr/react-dsfr/Badge';
 import Highlight from '@codegouvfr/react-dsfr/Highlight';
 import Image from 'next/image';
 
-import { clientConfig } from '@/client-config';
 import LastArticles from '@/components/Articles/LastArticles';
 import InterviewsVideos from '@/components/Coproprietaire/InterviewsVideos';
 import AvantagesChauffageUrbain from '@/components/GenericContent/AvantagesChauffageUrbain';
@@ -34,22 +33,18 @@ const tools: TileListItem[] = [
     image: '/icons/tools/france.svg',
     eventKey: 'Outil|Carte des réseaux et potentiels',
   },
-  ...(clientConfig.ENABLE_COMPARATEUR
-    ? [
-        {
-          title: 'Comparateur de coûts et d’émissions de CO2',
-          excerpt: 'Comparez les coûts et émissions des modes de chauffage.',
-          href: '/comparateur-couts-performances',
-          image: '/icons/tools/money.svg',
-          start: (
-            <Badge noIcon severity="success">
-              Nouveau
-            </Badge>
-          ),
-          eventKey: "Outil|Comparateur de coûts et d'émissions de CO2",
-        } satisfies TileListItem,
-      ]
-    : []),
+  {
+    title: 'Comparateur de coûts et d’émissions de CO2',
+    excerpt: 'Comparez les coûts et émissions des modes de chauffage.',
+    href: '/comparateur-couts-performances',
+    image: '/icons/tools/money.svg',
+    start: (
+      <Badge noIcon severity="success">
+        Nouveau
+      </Badge>
+    ),
+    eventKey: "Outil|Comparateur de coûts et d'émissions de CO2",
+  } satisfies TileListItem,
   // {
   //   title: 'Compatibilité des modes de chauffage',
   //   excerpt: 'Quels chauffages pour quels bâtiments ?',
@@ -123,7 +118,7 @@ function Home() {
       <Hero image="/img/banner_chauffage_gaz.png">
         <HeroTitle>Le chauffage urbain&nbsp;: une solution écologique à prix maîtrisé&nbsp;!</HeroTitle>
         <HeroSubtitle>
-          Testez votre éligibilité{clientConfig.ENABLE_COMPARATEUR && ' et comparez les coûts'} <strong>en 2 clics</strong>
+          Testez votre éligibilité et comparez les coûts <strong>en 2 clics</strong>
         </HeroSubtitle>
         <HeroContent>
           <HeadSliceForm checkEligibility withWrapper={(form) => <>{form}</>} withBulkEligibility />

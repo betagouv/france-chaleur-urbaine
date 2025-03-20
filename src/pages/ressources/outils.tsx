@@ -1,4 +1,3 @@
-import { clientConfig } from '@/client-config';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Box from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
@@ -94,24 +93,22 @@ const OutilsPage = () => {
           Accéder
         </Link>
       </Box>
-      {clientConfig.ENABLE_COMPARATEUR && (
-        <Box backgroundColor="blue-france-975-75">
-          <Box py="5w" className="fr-container">
-            <Heading as="h2" size="h3" color="blue-france" mb="0">
-              Comparateur de performances
-            </Heading>
-            <Box display="flex" my="2w">
-              <FCUArrowIcon />
-              <Text size="lg" ml="1w">
-                Comparer les coûts et les émissions de CO2 des modes de chauffage et de refroidissement
-              </Text>
-            </Box>
-            <Link variant="secondary" href="/comparateur-couts-performances">
-              Accéder
-            </Link>
+      <Box backgroundColor="blue-france-975-75">
+        <Box py="5w" className="fr-container">
+          <Heading as="h2" size="h3" color="blue-france" mb="0">
+            Comparateur de performances
+          </Heading>
+          <Box display="flex" my="2w">
+            <FCUArrowIcon />
+            <Text size="lg" ml="1w">
+              Comparer les coûts et les émissions de CO2 des modes de chauffage et de refroidissement
+            </Text>
           </Box>
+          <Link variant="secondary" href="/comparateur-couts-performances">
+            Accéder
+          </Link>
         </Box>
-      )}
+      </Box>
       <Box py="5w" className="fr-container">
         <Heading as="h2" size="h3" color="blue-france" mb="0" mt="8w">
           Simulateur de CO2
