@@ -3,7 +3,6 @@ import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import { useCallback, useMemo, useState } from 'react';
 
-import { clientConfig } from '@/client-config';
 import Map from '@/components/Map/Map';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import MarkdownWrapper from '@/components/MarkdownWrapper';
@@ -167,7 +166,7 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
                 />
               )
             )}
-            {clientConfig.ENABLE_COMPARATEUR_WIDGET && addressData.heatingType === 'collectif' && (
+            {addressData.heatingType === 'collectif' && (
               <ComparateurPublicodesWidget
                 className="fr-mt-5w"
                 coords={[addressData?.coords?.lon, addressData?.coords?.lat]}

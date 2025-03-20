@@ -6,7 +6,6 @@ import { useRouter } from 'next/router';
 import React from 'react';
 import styled, { css } from 'styled-components';
 
-import { clientConfig } from '@/client-config';
 import { FooterConsentManagementItem } from '@/components/ConsentBanner';
 import { HeaderQuickAccessItem, type HeaderProps } from '@/components/dsfr/Header';
 import SEO, { type SEOProps } from '@/components/SEO';
@@ -67,16 +66,12 @@ const publicNavigationMenu: MainNavigationProps.Item[] = [
       href: '/',
     },
   },
-  ...(clientConfig.ENABLE_COMPARATEUR
-    ? [
-        {
-          text: 'Comparateur de coûts et CO2',
-          linkProps: {
-            href: '/comparateur-couts-performances',
-          },
-        },
-      ]
-    : []),
+  {
+    text: 'Comparateur de coûts et CO2',
+    linkProps: {
+      href: '/comparateur-couts-performances',
+    },
+  },
   {
     text: 'Carte des réseaux',
     linkProps: {

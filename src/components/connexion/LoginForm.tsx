@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { type FormEvent, useState } from 'react';
 
-import { clientConfig } from '@/client-config';
 import Input from '@/components/form/dsfr/Input';
 import PasswordInput from '@/components/form/dsfr/PasswordInput';
 import Button from '@/components/ui/Button';
@@ -60,11 +59,9 @@ export const LoginForm = ({ callbackUrl }: LoginFormProps) => {
         </Link>
       </div>
       <div className="flex justify-between text-sm mb-8 items-center">
-        {clientConfig.ENABLE_INSCRIPTIONS && (
-          <Button key="create-account" priority="tertiary" href={`/inscription`}>
-            Créer un compte
-          </Button>
-        )}
+        <Button key="create-account" priority="tertiary" href={`/inscription`}>
+          Créer un compte
+        </Button>
         <Button type="submit" loading={loading}>
           Me connecter
         </Button>
