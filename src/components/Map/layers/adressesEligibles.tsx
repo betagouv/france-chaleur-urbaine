@@ -78,7 +78,7 @@ function Popup(adresseEligible: AdresseEligible, { Property, Title, TwoColumns }
     <>
       <Title>
         {adresseEligible.isEligible ? (
-          <span className="text-success">✓ Adresse raccordable</span>
+          <span className="text-success">✓ Adresse potentiellement raccordable</span>
         ) : (
           <span className="text-error">✗ Adresse non raccordable</span>
         )}
