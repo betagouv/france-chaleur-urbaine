@@ -117,14 +117,14 @@ export const DescriptionModal = () => {
 
       <ul>
         <li>
-          Niveau grand public (simplifié) : conçu pour les utilisateurs non-experts, ce mode propose une interface intuitive avec des
-          valeurs prédéfinies pour faciliter la comparaison. Il permet une évaluation rapide des coûts globaux et des impacts
-          environnementaux sans nécessiter de connaissances techniques approfondies,
+          un <strong>mode grand public</strong>, conçu pour les utilisateurs non-experts. Il repose sur une interface intuitive avec des
+          paramètres pré-renseignés, focalisée sur la comparaison entre les réseaux de chaleur et les modes fossiles.
         </li>
         <li>
-          Niveau technicien (avancé) : destiné aux utilisateurs plus expérimentés, ce mode offre une plus grande flexibilité en permettant
-          de modifier en détail un large éventail de variables. Il permet une analyse plus fine et personnalisée des systèmes en fonction
-          des spécificités du projet.
+          un <strong>mode avancé</strong>, également ouvert à tous mais accessible sur création de compte. Destiné aux utilisateurs plus
+          expérimentés, il permet de modifier un large éventail de variables. Il offre ainsi une analyse plus fine et personnalisée des
+          systèmes en fonction des spécificités du projet. Le mode avancé comprend également des modes de chauffage non-fossiles (pompes à
+          chaleur, radiateurs électriques, chaudières biomasses…), ainsi que différents modes de refroidissement.
         </li>
       </ul>
 
