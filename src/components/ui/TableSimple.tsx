@@ -59,6 +59,7 @@ export type TableSimpleProps<T> = {
   loading?: boolean;
   caption?: string;
   enableRowSelection?: boolean;
+  enableGlobalFilter?: boolean;
   className?: string;
   fluid?: boolean;
   padding?: 'sm' | 'md' | 'lg';
@@ -87,6 +88,7 @@ const TableSimple = <T extends RowData>({
   loading,
   caption,
   enableRowSelection,
+  enableGlobalFilter = false,
   onSelectionChange,
   className,
   fluid,
@@ -230,14 +232,16 @@ const TableSimple = <T extends RowData>({
 
   return (
     <section>
-      <Input
-        label=""
-        nativeInputProps={{
-          value: globalFilter,
-          onChange: (e) => table.setGlobalFilter(e.target.value),
-          placeholder: 'Recherche...',
-        }}
-      />
+      {enableGlobalFilter && (
+        <Input
+          label=""
+          nativeInputProps={{
+            value: globalFilter,
+            onChange: (e) => table.setGlobalFilter(e.target.value),
+            placeholder: 'Recherche...',
+          }}
+        />
+      )}
       {caption && <div className="text-2xl leading-8 font-bold mb-5">{caption}</div>}
       <div
         className={fr.cx('fr-table', 'fr-table--no-scroll')}

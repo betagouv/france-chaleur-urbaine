@@ -137,7 +137,7 @@ export default function ManageJobs() {
           Cette page permet de suivre l'avancement des tâches de test d'éligibilité des utilisateurs professionnels. Si une tâche est en
           erreur, alors on peut la réinitialiser pour relancer le traitement.
         </Text>
-        <TableSimple columns={columns} data={jobs || []} initialSortingState={initialSortingState} loading={isLoading} />
+        <TableSimple columns={columns} data={jobs || []} initialSortingState={initialSortingState} enableGlobalFilter loading={isLoading} />
       </Box>
     </SimplePage>
   );

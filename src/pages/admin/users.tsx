@@ -104,7 +104,13 @@ export default function ManageUsers() {
         <Heading as="h2" color="blue-france" mt="4w">
           Liste des comptes
         </Heading>
-        <TableSimple columns={columns} data={users || []} initialSortingState={initialSortingState} loading={isLoading} />
+        <TableSimple
+          columns={columns}
+          data={users || []}
+          initialSortingState={initialSortingState}
+          enableGlobalFilter
+          loading={isLoading}
+        />
         <AsyncButton size="small" onClick={async () => exportService.exportXLSX('obsoleteUsers')}>
           Exporter la liste des comptes obsolètes (connexion de plus de 6 mois ou nulle)
         </AsyncButton>
