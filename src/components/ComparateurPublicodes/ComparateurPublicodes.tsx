@@ -435,6 +435,9 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
                     nearestReseauDeFroid={nearestReseauDeFroid}
                     advancedMode={advancedMode}
                   />
+                  <Button onClick={() => setSelectedTabId(simulatorTabs[2].tabId)} full disabled={!isAddressSelected} className="fr-mt-2w">
+                    Étape suivante
+                  </Button>
                 </Accordion>
                 <Accordion
                   expanded={selectedTabId === simulatorTabs[2].tabId}
