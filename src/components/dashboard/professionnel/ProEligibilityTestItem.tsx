@@ -516,6 +516,7 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
                     initialSortingState={initialSortingState}
                     columnFilters={columnFilters}
                     padding="sm"
+                    maxRowHeight={56}
                   />
                 ),
                 isDefault: true,

@@ -64,6 +64,7 @@ export type TableSimpleProps<T> = {
   fluid?: boolean;
   padding?: 'sm' | 'md' | 'lg';
   onSelectionChange?: (selectedRows: T[]) => void;
+  maxRowHeight?: number;
 };
 
 const cellCustomClasses = cva('', {
@@ -91,6 +92,7 @@ const TableSimple = <T extends RowData>({
   className,
   fluid,
   padding = 'md',
+  maxRowHeight = 64,
 }: TableSimpleProps<T>) => {
   const [globalFilter, setGlobalFilter] = React.useState<any>([]);
   const [sortingState, setSortingState] = React.useState<SortingState>(initialSortingState ?? []);
@@ -200,20 +202,21 @@ const TableSimple = <T extends RowData>({
   }, [rowSelection, onSelectionChange, table]);
 
   const { rows } = table.getRowModel();
+  const { rows: filteredRows } = table.getFilteredRowModel();
 
   // the virtualizer needs to know the scrollable container element
   const tableContainerRef = React.useRef<HTMLDivElement>(null);
 
   const rowVirtualizer = useVirtualizer({
     count: rows.length,
-    estimateSize: () => 64, // estimate row height for accurate scrollbar dragging
+    estimateSize: () => maxRowHeight, // estimate row height for accurate scrollbar dragging
     getScrollElement: () => tableContainerRef.current,
     // measure dynamic row height, except in firefox because it measures table border height incorrectly
     measureElement:
       typeof window !== 'undefined' && navigator.userAgent.indexOf('Firefox') === -1
         ? (element) => element?.getBoundingClientRect().height
         : undefined,
-    overscan: 5,
+    overscan: 10, // The number of items to render above and below the visible area
   });
 
   const gridTemplateColumns = table
@@ -323,7 +326,7 @@ const TableSimple = <T extends RowData>({
           <tbody
             style={{
               display: 'grid',
-              height: `${(loading ? 5 : rowVirtualizer.getTotalSize()) * 50}px`, // tells scrollbar how big the table is
+              height: `${(loading ? 5 : filteredRows.length) * maxRowHeight}px`, // tells scrollbar how big the table is
               position: 'relative', // needed for absolute positioning of rows
             }}
           >
