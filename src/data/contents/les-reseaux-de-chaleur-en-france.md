@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/FCU_reperes_RC_bandeau (1).jpg
+coverY: 0
+---
+
 # Les réseaux de chaleur en France
 
 🤓 Nous vous offrons aujourd'hui une image inédite de la répartition des réseaux de chaleur sur le territoire français !\
@@ -9,3 +14,5 @@ Elle comprend 1105 repères qui correspondent chacun à un réseau de chaleur :\
 France Chaleur Urbaine, c'est LA plateforme qui centralise les informations des réseaux de chaleur et permet leur visualisation !\
 \
 👉 Pour en savoir plus sur chacun de ces réseaux, rendez-vous sur notre [carte en ligne.](https://france-chaleur-urbaine.beta.gouv.fr/carte)
+
+<figure><img src=".gitbook/assets/FCU_reperes_RC.jpg" alt=""><figcaption></figcaption></figure>

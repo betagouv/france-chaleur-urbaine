@@ -1,7 +1,7 @@
 # Table of contents
 
 * [Page vide à laisser (articles à insérer en dessous)](README.md)
-* [Un nouvel outil innovant pour comparer les coûts et émissions de CO2 des modes de chauffage](un-nouvel-outil-innovant-pour-comparer-les-couts-et-emissions-de-co2-des-modes-de-chauffage.md)
+* [Un outil innovant pour comparer coût et impact carbone des modes de chauffage et de refroidissement](un-outil-innovant-pour-comparer-cout-et-impact-carbone-des-modes-de-chauffage-et-de-refroidissement.md)
 * [Les réseaux de froid en France](les-reseaux-de-froid-en-france.md)
 * [France chaleur Urbaine labellisé service numérique à impact national](france-chaleur-urbaine-labellise-service-numerique-a-impact-national.md)
 * [Les réseaux de chaleur en France](les-reseaux-de-chaleur-en-france.md)

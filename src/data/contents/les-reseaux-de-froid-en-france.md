@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/FCU_reperes_RF_bandeau (1).jpg
+coverY: 0
+---
+
 # Les réseaux de froid en France
 
 🤓 Après vous avoir fait découvrir la répartition territoriale des réseaux de chaleur en France, focus aujourd'hui sur les réseaux de froid !\
@@ -11,3 +16,5 @@ Ils sont aujourd'hui peu nombreux : leur développement constitue donc un enjeu 
 ⚪ les cercles matérialisent 18 réseaux recensés par l'enquête annuelle dont le tracé reste à récupérer par France Chaleur Urbaine. Ils ne représentent que 23% des livraisons annuelles de froid en France.\
 \
 👉 Pour en savoir plus sur chacun de ces réseaux, rendez-vous sur notre [carte en ligne](https://france-chaleur-urbaine.beta.gouv.fr/carte) !
+
+<figure><img src=".gitbook/assets/FCU_reperes_RF.jpg" alt=""><figcaption></figcaption></figure>
