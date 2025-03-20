@@ -25,18 +25,36 @@ export default function TestsAdresses(): JSX.Element {
   }, [eligibilityTests]);
 
   return (
-    <SimplePage title="Tests d'adresses" description="Votre tableau de bord pour la gestion de vos tests d'adresses" mode="authenticated">
+    <SimplePage
+      title="Test d'adresses en masse"
+      description="Votre tableau de bord pour la gestion de vos tests d'adresses en masse"
+      mode="authenticated"
+    >
       <Box as="main" className="fr-container" my="4w">
-        <div className="flex items-center justify-between fr-mb-4w">
-          <Heading color="blue-france" className="!mb-0">
-            Tests d'adresses
+        <Heading color="blue-france">Test d'adresses en masse</Heading>
+        <p>
+          Repérez sur un parc de bâtiments ceux potentiellement raccordables, et accéder aux caractéristiques des réseaux les plus proches.
+        </p>
+        <p>
+          Pour être mis en relation avec le gestionnaire d'un réseau pour obtenir plus d'informations, vous pouvez utiliser le formulaire en
+          ligne sur notre site ou nous contacter par mail si le besoin concerne plusieurs adresses&nbsp;:{' '}
+          <a href="mailto:france-chaleur-urbaine@developpement-durable.gouv.fr">france-chaleur-urbaine@developpement-durable.gouv.fr</a>
+        </p>
+        <div className="flex items-center justify-between fr-mb-2w">
+          <Heading as="h3" color="blue-france" mb="0">
+            Vos tests
           </Heading>
           <ModalSimple title="Création d'un test d'adresses" size="medium" trigger={<Button>Nouveau test</Button>}>
             <CreateEligibilityTestForm />
           </ModalSimple>
         </div>
         {isLoading && <Loader size="lg" />}
-        {eligibilityTests?.length === 0 && <>Aucun test</>}
+        {eligibilityTests?.length === 0 && (
+          <>
+            Vous n'avez effectué aucun test d'adresses pour le moment. Pour réaliser un test, cliquez sur "Nouveau test" en haut à droite et
+            téléchargez votre liste d'adresses.
+          </>
+        )}
         <AnimatePresence>
           {eligibilityTests?.map((test) => (
             <motion.div

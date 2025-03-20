@@ -1,12 +1,10 @@
 import { type SortingState } from '@tanstack/react-table';
 
-import AccountCreationForm from '@/components/Admin/AccountCreationForm';
 import UserRoleBadge from '@/components/Admin/UserRoleBadge';
 import Tag from '@/components/Manager/Tag';
 import SimplePage from '@/components/shared/page/SimplePage';
 import AsyncButton from '@/components/ui/AsyncButton';
 import Box from '@/components/ui/Box';
-import Button from '@/components/ui/Button';
 import Heading from '@/components/ui/Heading';
 import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
 import Text from '@/components/ui/Text';
@@ -23,21 +21,21 @@ const columns: ColumnDef<AdminManageUserItem>[] = [
     accessorKey: 'email',
     header: 'Email',
     sortingFn: (rowA, rowB) => compareFrenchStrings(rowA.original.email, rowB.original.email),
-    flex: 3,
-    className: 'break-words break-all max-w-[200px]',
+    flex: 2.5,
+    className: 'break-words break-all',
   },
   {
     accessorKey: 'role',
     header: 'Role',
     align: 'center',
-    flex: 2,
+    flex: 1.5,
     cell: (info) => <UserRoleBadge role={info.getValue<UserRole>()} />,
   },
   {
     accessorKey: 'gestionnaires',
     id: 'gestionnaires',
     header: 'Tags gestionnaire',
-    flex: 4,
+    flex: 3,
     cell: (info) => (
       <div className="flex flex-wrap gap-1">
         {info.getValue<string[]>().map((tag) => (
@@ -68,21 +66,6 @@ const columns: ColumnDef<AdminManageUserItem>[] = [
     accessorKey: 'created_at',
     header: 'Créé le',
     cellType: 'Date',
-  },
-  {
-    accessorKey: '_id',
-    header: '',
-    align: 'right',
-    cell: (info) => (
-      <Button
-        size="small"
-        priority="tertiary"
-        variant="destructive"
-        iconId="fr-icon-delete-bin-line"
-        title="Supprimer l'utilisateur"
-        onClick={() => alert(`${info.row.original.id}`)}
-      />
-    ),
   },
 ];
 
@@ -125,11 +108,6 @@ export default function ManageUsers() {
         <AsyncButton size="small" onClick={async () => exportService.exportXLSX('obsoleteUsers')}>
           Exporter la liste des comptes obsolètes (connexion de plus de 6 mois ou nulle)
         </AsyncButton>
-
-        <Heading as="h2" color="blue-france" mt="4w">
-          Créer un compte
-        </Heading>
-        <AccountCreationForm />
       </Box>
     </SimplePage>
   );

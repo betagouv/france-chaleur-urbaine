@@ -4,7 +4,6 @@ import { type ComponentProps } from 'react';
 import { type User } from '@/types/User';
 
 import EmailInscription from './EmailInscription';
-import EmailInvitation from './EmailInvitation';
 import { type CommonEmailProps, commonEmailsProps } from './helpers';
 import { logger } from '../helpers/logger';
 
@@ -19,10 +18,6 @@ const emails = {
   inscription: {
     subject: '[France Chaleur Urbaine] Confirmez votre email',
     component: EmailInscription,
-  },
-  invitation: {
-    subject: '[France Chaleur Urbaine] Création de votre compte',
-    component: EmailInvitation,
   },
 } as const satisfies Record<string, EmailDefinition>;
 

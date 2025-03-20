@@ -8,6 +8,7 @@ import {
   useReactTable,
   type Cell,
   type ColumnDef as ColumnDefOriginal,
+  type SortingFn,
   type ColumnFiltersState,
   type RowData,
   type SortingState,
@@ -20,11 +21,21 @@ import cx from '@/utils/cx';
 
 import TableCell, { type TableCellProps } from './TableCell';
 
+export const customSortingFn = <T extends RowData>(): Record<string, SortingFn<T>> => ({
+  nullsAlwaysLast: (rowA: any, rowB: any, columnId: string) => {
+    const valueA = rowA.getValue(columnId);
+    const valueB = rowB.getValue(columnId);
+    if (valueA === null || valueB === null) return 0;
+    return valueA - valueB;
+  },
+});
+
 export type ColumnDef<T, K = any> = ColumnDefOriginal<T, K> & {
   cellType?: TableCellProps<T>['type'];
   align?: 'center' | 'left' | 'right';
   className?: string;
   suffix?: React.ReactNode;
+  sorting?: keyof ReturnType<typeof customSortingFn<T>>;
 } & ({ flex?: number } | { width?: 'auto' | string });
 
 export type TableSimpleProps<T> = {
@@ -37,6 +48,7 @@ export type TableSimpleProps<T> = {
   enableRowSelection?: boolean;
   className?: string;
   fluid?: boolean;
+  smallPadding?: boolean;
   onSelectionChange?: (selectedRows: T[]) => void;
 };
 
@@ -51,6 +63,7 @@ const TableSimple = <T extends RowData>({
   onSelectionChange,
   className,
   fluid,
+  smallPadding,
 }: TableSimpleProps<T>) => {
   const [globalFilter, setGlobalFilter] = React.useState<any>([]);
   const [sortingState, setSortingState] = React.useState<SortingState>(initialSortingState ?? []);
@@ -121,6 +134,13 @@ const TableSimple = <T extends RowData>({
     }
     return columns;
   }, [columns, enableRowSelection]);
+
+  const customSortingFns = customSortingFn<T>();
+  tableColumns.forEach((column) => {
+    if (column.sorting && customSortingFns[column.sorting]) {
+      column.sortingFn = customSortingFns[column.sorting];
+    }
+  });
 
   const table = useReactTable({
     data,
@@ -219,7 +239,7 @@ const TableSimple = <T extends RowData>({
                     <th
                       key={header.id}
                       colSpan={header.colSpan}
-                      className={cx('!flex flex-nowrap overflow-auto gap-1', columnClassName(columnDef))}
+                      className={cx('!flex flex-nowrap overflow-auto gap-1', columnClassName(columnDef), smallPadding && '!p-2')}
                     >
                       {header.isPlaceholder ? null : (
                         <>
@@ -307,6 +327,7 @@ const TableSimple = <T extends RowData>({
                             {
                               'overflow-auto': !React.isValidElement(cell.getValue()), // this is a hack as for DebugDrawer, overflow was causing problems
                               'flex items-center fr-cell--fixed': columnDef.id === 'selection',
+                              '!p-2': smallPadding,
                             },
                             columnClassName(columnDef)
                           )}

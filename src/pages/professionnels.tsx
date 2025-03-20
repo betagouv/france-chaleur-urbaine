@@ -36,7 +36,6 @@ const Professionnels = () => {
       <HeadSliceForm
         checkEligibility
         withBulkEligibility
-        externBulkForm
         withWrapper={(form) => (
           <Box backgroundColor="blue-cumulus-950-100">
             <Box className="fr-container" display="flex" alignItems="center" gap="16px">
