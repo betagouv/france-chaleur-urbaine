@@ -252,6 +252,7 @@ const TableSimple = <T extends RowData>({
           style={{
             display: 'grid',
             overflow: 'unset', // overwrite the dsfr
+            marginTop: '1px', // make top border visible as overflow hides it
           }}
         >
           <thead
@@ -270,7 +271,11 @@ const TableSimple = <T extends RowData>({
                     <th
                       key={header.id}
                       colSpan={header.colSpan}
-                      className={cx('!flex flex-nowrap overflow-auto gap-1', columnClassName(columnDef), cellCustomClasses({ padding }))}
+                      className={cx(
+                        '!flex flex-nowrap items-center overflow-auto gap-1',
+                        columnClassName(columnDef),
+                        cellCustomClasses({ padding })
+                      )}
                     >
                       {header.isPlaceholder ? null : (
                         <>
@@ -318,15 +323,19 @@ const TableSimple = <T extends RowData>({
           <tbody
             style={{
               display: 'grid',
-              height: `${rowVirtualizer.getTotalSize() || 5 * 50}px`, // tells scrollbar how big the table is
+              height: `${(loading ? 5 : rowVirtualizer.getTotalSize()) * 50}px`, // tells scrollbar how big the table is
               position: 'relative', // needed for absolute positioning of rows
             }}
           >
             {loading &&
-              [1, 2, 3, 4, 5].map((value) => (
-                <tr key={`loading_${value}`} className="flex" style={{ gridTemplateColumns }}>
+              [1, 2, 3, 4, 5].map((value, index) => (
+                <tr
+                  key={`loading_${value}`}
+                  className="grid absolute w-full"
+                  style={{ gridTemplateColumns, transform: `translateY(${index * 50}px)` }}
+                >
                   {columns.map((column, index) => (
-                    <td key={`loading_${value}_${index}`} className={cx('flex items-center', columnClassName(column))}>
+                    <td key={`loading_${value}_${index}`} className={cx('!flex items-center', columnClassName(column))}>
                       <div role="status" className="animate-pulse text-center w-[90%]">
                         <div className="mx-auto my-2 h-3.5 rounded-full bg-gray-200"></div>
                       </div>
@@ -351,13 +360,15 @@ const TableSimple = <T extends RowData>({
                     {row.getVisibleCells().map((cell) => {
                       const columnDef = cell.column.columnDef as ColumnDef<T>;
                       const CellTag = columnDef.id === 'selection' ? 'th' : 'td';
+
                       return (
                         <CellTag
                           key={cell.id}
                           className={cx(
+                            '!flex items-center',
                             {
                               'overflow-auto': !React.isValidElement(cell.getValue()), // this is a hack as for DebugDrawer, overflow was causing problems
-                              'flex items-center fr-cell--fixed': columnDef.id === 'selection',
+                              'fr-cell--fixed': columnDef.id === 'selection',
                             },
                             columnClassName(columnDef),
                             cellCustomClasses({ padding })
