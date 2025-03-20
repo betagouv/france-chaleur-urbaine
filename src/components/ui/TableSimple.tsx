@@ -24,11 +24,10 @@ import cx from '@/utils/cx';
 import TableCell, { type TableCellProps } from './TableCell';
 
 export const customSortingFn = <T extends RowData>(): Record<string, SortingFn<T>> => ({
-  nullsAlwaysLast: (rowA: any, rowB: any, columnId: string) => {
+  nullsLast: (rowA: any, rowB: any, columnId: string) => {
     const valueA = rowA.getValue(columnId);
     const valueB = rowB.getValue(columnId);
-    if (valueA === null || valueB === null) return 0;
-    return valueA - valueB;
+    return valueA === null ? 1 : valueB === null ? -1 : valueA - valueB;
   },
 });
 

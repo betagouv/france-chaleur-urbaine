@@ -138,7 +138,7 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
     suffix: 'm',
     align: 'right',
     filter: 'notNullAndLessThanOrEqual',
-    sorting: 'nullsAlwaysLast',
+    sorting: 'nullsLast',
   },
   {
     header: () => (
@@ -181,6 +181,7 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
     suffix: '%',
     align: 'right',
     filter: 'notNullAndGreaterThanOrEqual',
+    sorting: 'nullsLast',
   },
   {
     header: () => (
@@ -197,6 +198,7 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
     width: '130px',
     accessorKey: 'eligibility_status.co2',
     align: 'right',
+    sorting: 'nullsLast',
   },
   {
     header: () => (
