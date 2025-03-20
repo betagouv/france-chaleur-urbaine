@@ -368,7 +368,7 @@ const PageHeader = (props: PageHeaderProps) => {
           ...authenticatedNavigationMenu,
           ...(hasRole('admin') ? adminNavigationMenu : []),
           ...(hasRole('gestionnaire') ? gestionnaireNavigationMenu : []),
-          ...(hasRole('professionnel') ? professionnelNavigationMenu : []),
+          ...(hasRole('particulier') || hasRole('professionnel') ? professionnelNavigationMenu : []),
         ]
       : publicNavigationMenu;
 

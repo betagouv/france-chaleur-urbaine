@@ -1,5 +1,4 @@
 import { fr } from '@codegouvfr/react-dsfr';
-import Badge from '@codegouvfr/react-dsfr/Badge';
 import React from 'react';
 
 import Accordion from '@/components/ui/Accordion';
@@ -10,17 +9,19 @@ import cx from '@/utils/cx';
 
 import { Results, ResultsPlaceholder, Simulator } from './ComparateurPublicodes.style';
 
-type ComparateurPublicodesPlaceholderProps = React.HTMLAttributes<HTMLDivElement> & {};
+type ComparateurPublicodesPlaceholderProps = React.HTMLAttributes<HTMLDivElement> & { advancedMode: boolean };
 
 export type TabId = 'batiment' | 'modes';
 
-export const dataYearDisclaimer = `Les données utilisées par le comparateur portent sur l'année 2023. Les valeurs de l'ensemble des paramètres utilisés pour les calculs sont modifiables dans le mode avancé.`;
-
-export const title = (
-  <>
-    Comparateur de coûts et d’émissions de CO2 <Badge severity="warning">Beta</Badge>
-  </>
+export const DataYearDisclaimer: React.FC<{ advancedMode?: boolean }> = ({ advancedMode }) => (
+  <span>
+    Les données utilisées par le comparateur portent sur l'année 2023. Les valeurs de l'ensemble des paramètres utilisés pour les calculs
+    sont modifiables
+    {!advancedMode && ' dans le mode avancé'}.
+  </span>
 );
+
+export const title = 'Comparateur de coûts et d’émissions de CO2';
 
 export const Logos = ({ size, withFCU = true, ...props }: React.ComponentProps<typeof Box> & { size?: 'sm'; withFCU?: boolean }) => {
   const height = size === 'sm' ? '32px' : '40px';
@@ -39,20 +40,17 @@ const modalDescription = createModal({
   isOpenedByDefault: false,
 });
 
-export const Explanations = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
+export const Explanations = ({ className, advancedMode, ...props }: React.HTMLAttributes<HTMLDivElement> & { advancedMode: boolean }) => (
   <>
     <DescriptionModal />
     <div className={cx('fr-text--sm fr-mt-2w', className)} {...props}>
-      Cet outil a pour objectif de comparer des configurations de chauffage et de refroidissement sur les plans techniques, économiques et
-      environnementaux.{' '}
-      <strong>Il ne remplace en aucun cas une étude de faisabilité technico-économique menée par un bureau d’études</strong> et ne peut
-      s'adapter aux situations particulières avec les hypothèses préconfigurées. Ces hypothèses représentent des configurations types, elles
-      sont donc sujets à des incertitudes importantes.{' '}
+      Cet outil permet de comparer les modes de chauffage{advancedMode ? ' et de refroidissement' : ''} en termes de coûts et d'émissions de
+      CO2. Il s'appuie sur des hypothèses qui représentent des configurations types, sujets à des incertitudes importantes (
       <a href="#" onClick={() => modalDescription.open()} className="fr-link fr-text--sm">
-        Voir l’explication détaillée
+        voir l’explication détaillée
       </a>
-      <p className="fr-text--sm fr-my-1w">{dataYearDisclaimer}</p>
-      <p className="fr-text--sm font-bold">
+      ), et ne se substitue en aucun cas à une étude de faisabilité technico-économique. <DataYearDisclaimer advancedMode={advancedMode} />
+      <p className="fr-text--sm font-bold !mt-2">
         Pour une étude plus poussée (prix actualisés, prise en compte des spécificités de votre bâtiment), nous vous invitons à vous
         rapprocher du gestionnaire du réseau de chaleur le plus proche de chez vous ou d'un bureau d'études.
       </p>
@@ -75,11 +73,20 @@ export const simulatorTabs = [
   },
 ] as const;
 
-export const ResultsNotAvailable = () => (
+export const ResultsNotAvailable = ({ advancedMode }: { advancedMode: boolean }) => (
   <ResultsPlaceholder>
     <img src="/img/simulateur_placeholder.svg" alt="" />
     <div>
-      Les résultats s’afficheront ici une fois <strong>une adresse</strong> et <strong>au moins un mode de chauffage</strong> sélectionnés
+      Les résultats s’afficheront ici une fois{' '}
+      {advancedMode ? (
+        <>
+          <strong>une adresse</strong> et <strong>au moins un mode de chauffage</strong> sélectionnés
+        </>
+      ) : (
+        <>
+          <strong>une adresse</strong> sélectionnée
+        </>
+      )}
     </div>
     <Logos size="sm" withFCU />
   </ResultsPlaceholder>
@@ -188,19 +195,28 @@ export const DisclaimerButton: React.FC<React.HTMLAttributes<HTMLDivElement>> = 
   );
 };
 
-const ComparateurPublicodesPlaceholder: React.FC<ComparateurPublicodesPlaceholderProps> = ({ children, className, ...props }) => {
+const ComparateurPublicodesPlaceholder: React.FC<ComparateurPublicodesPlaceholderProps> = ({
+  children,
+  className,
+  advancedMode,
+  ...props
+}) => {
   return (
     <div className={cx(fr.cx('fr-container'), className)} {...props}>
       <Simulator $loading={true}>
         <Box display="flex" gap="16px" flexDirection="column">
-          {simulatorTabs.map((tab) => (
-            <Accordion key={tab.tabId} bordered label={tab.label}>
-              Chargement...
-            </Accordion>
-          ))}
+          {advancedMode ? (
+            simulatorTabs.map((tab) => (
+              <Accordion key={tab.tabId} bordered label={tab.label}>
+                Chargement...
+              </Accordion>
+            ))
+          ) : (
+            <>Chargement...</>
+          )}
         </Box>
         <Results>
-          <ResultsNotAvailable />
+          <ResultsNotAvailable advancedMode={advancedMode} />
         </Results>
       </Simulator>
     </div>

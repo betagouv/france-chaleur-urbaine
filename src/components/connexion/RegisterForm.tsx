@@ -143,11 +143,6 @@ function RegisterForm() {
                 </Alert>
               ) : (
                 <>
-                  <Input
-                    name="structure_name"
-                    label="Nom de la structure"
-                    hideOptionalLabel={true /* TODO: isOptional does not seem to be working correctly */}
-                  />
                   <Select
                     name="structure_type"
                     label="Type de structure"
@@ -162,6 +157,11 @@ function RegisterForm() {
                       { label: 'Autre (préciser)', value: 'autre' },
                     ]}
                   />
+                  <Input
+                    name="structure_name"
+                    label="Nom de la structure"
+                    hideOptionalLabel={true /* TODO: isOptional does not seem to be working correctly */}
+                  />
                   {structureType === 'autre' && <Input name="structure_other" label="Renseignez le type de structure" />}
                 </>
               )}
@@ -173,7 +173,9 @@ function RegisterForm() {
                 Précedent
               </Button>
             ) : (
-              <Link href={`/connexion?${searchParams.toString()}`}>Se connecter</Link>
+              <Button priority="tertiary" href={`/connexion?${searchParams.toString()}`}>
+                Se connecter
+              </Button>
             )}
             <Submit>Valider</Submit>
           </div>

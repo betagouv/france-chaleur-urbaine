@@ -10,24 +10,24 @@ import Hero, { HeroContent, HeroTitle } from '@/components/ui/Hero';
 const ComparateurPublicodes = dynamic(() => import('@/components/ComparateurPublicodes'), {
   // Publicode engine takes 2s to load and is unnecessary on the server side
   ssr: false,
-  loading: () => <Placeholder />,
+  loading: () => <Placeholder advancedMode={false} />,
 });
 
 const SimulateurPage: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = ({ query }) => {
   return (
     <SimplePage
       noIndex={!clientConfig.ENABLE_COMPARATEUR}
-      title="Comparateur des performances des modes de chauffage et de refroidissement"
+      title="Comparateur de coûts et d’émissions de CO2"
       description="Comparez le coût et les émissions de CO2 des réseaux de chaleur, fioul, gaz et électricité pour votre adresse et vos caractéristiques"
     >
       <Hero variant="transparent" className="[&_article]:pb-0">
         <HeroTitle>{title}</HeroTitle>
         <HeroContent>
           <Logos size="sm" withFCU={false} />
-          <Explanations />
+          <Explanations advancedMode={false} />
         </HeroContent>
       </Hero>
-      <ComparateurPublicodes tabId={query.tabId} displayMode="grand public" />
+      <ComparateurPublicodes tabId={query.tabId} advancedMode={false} />
     </SimplePage>
   );
 };
