@@ -173,7 +173,6 @@ const getGridRepeatPercentage = (value: number) => {
   if (value % 10000 === 0 && value > 10000) gridPercentage = 100 / (value / 10000);
   if (value % 100000 === 0 && value > 100000) gridPercentage = 100 / (value / 100000);
   if (value % 1000000 === 0 && value > 1000000) gridPercentage = 100 / (value / 1000000);
-  console.log('grid', value, gridPercentage);
   return gridPercentage;
 };
 
