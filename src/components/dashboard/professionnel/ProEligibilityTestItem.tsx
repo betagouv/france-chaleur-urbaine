@@ -22,7 +22,7 @@ import { useDelete, useFetch, usePost } from '@/hooks/useApi';
 import { type ProEligibilityTestListItem } from '@/pages/api/pro-eligibility-tests';
 import { type ProEligibilityTestWithAddresses } from '@/pages/api/pro-eligibility-tests/[id]';
 import { notify, toastErrors } from '@/services/notification';
-import { getProEligibilityTestAsXlsx } from '@/services/test-adresses/xlsx';
+import { getProEligibilityTestAsXlsx } from '@/services/xlsx/test-adresses';
 import { downloadString } from '@/utils/browser';
 import { formatAsISODate, formatFrenchDate, formatFrenchDateTime } from '@/utils/date';
 import { compareFrenchStrings } from '@/utils/strings';
