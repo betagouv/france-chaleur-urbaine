@@ -16,6 +16,7 @@ export type TableCellType =
   | 'Number'
   | 'Boolean'
   | 'Image'
+  | 'Price'
   | 'NoWrap'
   | 'Percent';
 
@@ -86,9 +87,11 @@ const Cell = <T,>({ value, type, default: defaultValue, data, cellProps = {} }: 
       </Link>
     );
   } else if (type === 'Number') {
-    return value;
+    return (value as number).toLocaleString(undefined, { ...cellProps });
   } else if (type === 'Percent') {
-    return (value as number).toLocaleString(undefined, { style: 'percent', minimumFractionDigits: 2, ...cellProps });
+    return (value as number).toLocaleString(undefined, { style: 'percent', ...(cellProps ? cellProps : { minimumFractionDigits: 2 }) });
+  } else if (type === 'Price') {
+    return (value as number).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', ...cellProps });
   } else if (type === 'Image') {
     const { onClick, alt, ...restCellProps } = cellProps;
     const onImageClick = (imageUrl: string) => (e: any) => {
