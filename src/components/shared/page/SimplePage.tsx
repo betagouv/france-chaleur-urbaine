@@ -408,7 +408,7 @@ const PageHeader = (props: PageHeaderProps) => {
   const quickAccessItems =
     props.mode === 'authenticated'
       ? ([
-          ...(session?.impersonating && typeof window !== 'undefined' // for not causing hydration problems
+          ...(session?.impersonating
             ? [
                 {
                   text: 'Imposture en cours',
