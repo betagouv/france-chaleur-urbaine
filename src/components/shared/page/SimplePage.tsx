@@ -260,15 +260,9 @@ const professionnelNavigationMenu: MainNavigationProps.Item[] = [
 
 const gestionnaireNavigationMenu: MainNavigationProps.Item[] = [
   {
-    text: 'Tableau de bord',
+    text: 'Demandes',
     linkProps: {
       href: '/pro/demandes',
-    },
-  },
-  {
-    text: 'Aide',
-    linkProps: {
-      href: '/pro/aide',
     },
   },
   {
@@ -281,6 +275,12 @@ const gestionnaireNavigationMenu: MainNavigationProps.Item[] = [
     text: "Test d'adresses",
     linkProps: {
       href: '/pro/tests-adresses',
+    },
+  },
+  {
+    text: 'Aide',
+    linkProps: {
+      href: '/pro/aide',
     },
   },
 ];
