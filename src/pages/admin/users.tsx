@@ -46,8 +46,8 @@ const columns: ColumnDef<AdminManageUserItem>[] = [
     sortingFn: (rowA, rowB) => compareFrenchStrings(rowA.original.gestionnaires?.[0], rowB.original.gestionnaires?.[0]),
   },
   {
-    accessorKey: 'from_api',
-    header: "Reçu de l'API",
+    accessorKey: 'optin_at',
+    header: 'Newsletter',
     cellType: 'Boolean',
     align: 'center',
   },

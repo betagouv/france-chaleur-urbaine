@@ -12,6 +12,7 @@ const GET = async () => {
       'created_at',
       'last_connection',
       'gestionnaires',
+      sql<boolean>`optin_at IS NOT NULL`.as('optin_at'),
       sql<boolean>`from_api IS NOT NULL`.as('from_api'),
     ])
     .orderBy('id')
