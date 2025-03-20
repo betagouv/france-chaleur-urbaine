@@ -103,3 +103,16 @@ const frenchCollator = new Intl.Collator('fr', { sensitivity: 'base' });
 
 export const compareFrenchStrings = (a: string | undefined | null, b: string | undefined | null) =>
   frenchCollator.compare(a ?? '', b ?? '');
+
+/**
+ * Parse an unknown charset text buffer to a string.
+ * Allows fixing the encoding of a text buffer that is not UTF-8 (e.g. ISO-8859-1).
+ * @param textBuffer - The text buffer to parse.
+ * @returns The parsed string.
+ */
+export async function parseUnknownCharsetText(textBuffer: ArrayBuffer): Promise<string> {
+  const chardet = await import('chardet');
+  const textUint8Array = new Uint8Array(textBuffer);
+  const detectedEncoding = chardet.detect(textUint8Array) ?? 'utf-8';
+  return new TextDecoder(detectedEncoding).decode(textUint8Array);
+}

@@ -8,6 +8,7 @@ import { useModal } from '@/components/ui/ModalSimple';
 import { usePost } from '@/hooks/useApi';
 import { type ProEligibilityTestFileRequest } from '@/pages/api/pro-eligibility-tests/[id]';
 import { toastErrors } from '@/services/notification';
+import { parseUnknownCharsetText } from '@/utils/strings';
 
 import { allowedExtensions, FormErrorMessage, zAddressesFile } from './shared';
 
@@ -36,7 +37,7 @@ const CompleteEligibilityTestForm = ({ testId }: CompleteEligibilityTestFormProp
     },
     onSubmit: toastErrors(async ({ value }: { value: CompleteEligibilityTest }) => {
       await completeTest({
-        csvContent: await value.file.text(),
+        csvContent: await parseUnknownCharsetText(await value.file.arrayBuffer()),
       });
       closeModal();
     }, FormErrorMessage),

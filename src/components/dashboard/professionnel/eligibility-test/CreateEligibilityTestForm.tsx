@@ -9,6 +9,7 @@ import { useModal } from '@/components/ui/ModalSimple';
 import { usePost } from '@/hooks/useApi';
 import { type ProEligibilityTestCreateInput, type ProEligibilityTestCreateOutput } from '@/pages/api/pro-eligibility-tests';
 import { toastErrors } from '@/services/notification';
+import { parseUnknownCharsetText } from '@/utils/strings';
 
 import { allowedExtensions, FormErrorMessage, zAddressesFile } from './shared';
 
@@ -39,7 +40,7 @@ const CreateEligibilityTestForm = () => {
     onSubmit: toastErrors(async ({ value }: { value: CreateEligibilityTest }) => {
       await createTest({
         name: value.name,
-        csvContent: await value.file.text(),
+        csvContent: await parseUnknownCharsetText(await value.file.arrayBuffer()),
       });
       closeModal();
     }, FormErrorMessage),
