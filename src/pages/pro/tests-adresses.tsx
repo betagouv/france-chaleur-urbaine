@@ -33,7 +33,7 @@ export default function TestsAdresses(): JSX.Element {
       <Box as="main" className="fr-container" my="4w">
         <Heading color="blue-france">Test d'adresses en masse</Heading>
         <p>
-          Repérez sur un parc de bâtiments ceux potentiellement raccordables, et accéder aux caractéristiques des réseaux les plus proches.
+          Repérez sur un parc de bâtiments ceux potentiellement raccordables, et accédez aux caractéristiques des réseaux les plus proches.
         </p>
         <p>
           Pour être mis en relation avec le gestionnaire d'un réseau pour obtenir plus d'informations, vous pouvez utiliser le formulaire en
