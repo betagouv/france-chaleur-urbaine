@@ -4,6 +4,7 @@ import React from 'react';
 import Accordion from '@/components/ui/Accordion';
 import Box from '@/components/ui/Box';
 import Icon from '@/components/ui/Icon';
+import Link from '@/components/ui/Link';
 import Modal, { createModal } from '@/components/ui/Modal';
 import cx from '@/utils/cx';
 
@@ -151,6 +152,14 @@ export const DescriptionModal = () => {
         dans l'objectif de développer les réseaux de chaleur et de froid vertueux. La mise en place de l'interface en ligne est financée sur
         le budget de France Chaleur Urbaine.
       </p>
+      <Link
+        href="/documentation/Note_methodologique_comparateur.pdf"
+        eventKey="Téléchargement|Méthodologie comparateur"
+        isExternal
+        className="inline-block fr-mb-2w"
+      >
+        Accéder à la note méthodologique du comparateur
+      </Link>
       <Logos />
     </Modal>
   );

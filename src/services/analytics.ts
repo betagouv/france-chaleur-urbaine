@@ -657,6 +657,9 @@ const trackingEvents = {
   'Téléchargement|Schéma directeur': {
     matomo: ['Téléchargement', 'Schéma directeur'],
   },
+  'Téléchargement|Méthodologie comparateur': {
+    matomo: ['Téléchargement', 'Méthodologie comparateur'],
+  },
   'Outils|Simulation coût raccordement': {
     matomo: ['Outils', 'Simulation coût raccordement'],
   },
