@@ -7,7 +7,6 @@ import {
   type AnyFieldApi,
   useStore,
 } from '@tanstack/react-form';
-import { type FieldApi } from '@tanstack/react-form';
 import { useEffect } from 'react';
 import { useState } from 'react';
 
@@ -36,9 +35,7 @@ export function getAllErrors(field: AnyFieldApi): string[] {
   ];
 }
 
-export function getInputErrorStates<TData>(
-  field: FieldApi<TData, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any>
-): {
+export function getInputErrorStates(field: AnyFieldApi): {
   state?: 'success' | 'error' | 'info' | 'default';
   stateRelatedMessage?: React.ReactNode;
 } {
