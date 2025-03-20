@@ -462,7 +462,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
             <Drawer open={graphDrawerOpen} onClose={() => setGraphDrawerOpen(false)} direction="right" full>
               <div className="max-w-full overflow-auto">{results}</div>
             </Drawer>
-            <DebugDrawer engine={engine} />
+            {advancedMode && <DebugDrawer engine={engine} />}
           </Simulator>
         </FormProvider>
       </div>
