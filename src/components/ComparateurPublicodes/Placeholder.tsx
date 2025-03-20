@@ -140,6 +140,11 @@ export const DescriptionModal = () => {
         cadre du classement (coût manifestement disproportionné). Une méthodologie dédiée est en cours d'élaboration.
       </p>
       <p>
+        Les données utilisées par le comparateur portent sur l'année 2023, sauf pour le contenu CO2 des réseaux et leur taux ENRR, pour
+        lesquels les données sont issues de l'arrêté du 5 juillet 2024, portant sur l'année 2022 ou la moyenne des années 2020, 2021 et 2022
+        (en attente de la parution du nouvel arrêté)
+      </p>
+      <p>
         Cet outil prend la suite d'RCE33, outil développé par l'association AMORCE. L'association AMORCE pilote le projet, le bureau
         d’études Elcimaï y a apporté son expertise technique et France Chaleur Urbaine a mis en place la version disponible en ligne. Cet
         outil bénéficie d'un financement du programme européen Heat&Cool LIFE, piloté par la Région Sud, qui vise à développer des outils
