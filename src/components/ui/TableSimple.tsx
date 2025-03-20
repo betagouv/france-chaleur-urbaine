@@ -12,6 +12,7 @@ import {
   type ColumnFiltersState,
   type RowData,
   type SortingState,
+  type FilterFn,
 } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { cva } from 'class-variance-authority';
@@ -31,12 +32,24 @@ export const customSortingFn = <T extends RowData>(): Record<string, SortingFn<T
   },
 });
 
+export const customFilterFn = <T extends RowData>(): Record<string, FilterFn<T>> => ({
+  notNullAndGreaterThanOrEqual: (row, columnId, filterValue: number) => {
+    const value = row.getValue<number>(columnId);
+    return value != null && value >= filterValue;
+  },
+  notNullAndLessThanOrEqual: (row, columnId, filterValue: number) => {
+    const value = row.getValue<number>(columnId);
+    return value != null && value <= filterValue;
+  },
+});
+
 export type ColumnDef<T, K = any> = ColumnDefOriginal<T, K> & {
   cellType?: TableCellProps<T>['type'];
   align?: 'center' | 'left' | 'right';
   className?: string;
   suffix?: React.ReactNode;
   sorting?: keyof ReturnType<typeof customSortingFn<T>>;
+  filter?: keyof ReturnType<typeof customFilterFn<T>>;
 } & ({ flex?: number } | { width?: 'auto' | string });
 
 export type TableSimpleProps<T> = {
@@ -150,9 +163,13 @@ const TableSimple = <T extends RowData>({
   }, [columns, enableRowSelection]);
 
   const customSortingFns = customSortingFn<T>();
+  const customFilterFns = customFilterFn<T>();
   tableColumns.forEach((column) => {
     if (column.sorting && customSortingFns[column.sorting]) {
       column.sortingFn = customSortingFns[column.sorting];
+    }
+    if (column.filter && customFilterFns[column.filter]) {
+      column.filterFn = customFilterFns[column.filter];
     }
   });
 

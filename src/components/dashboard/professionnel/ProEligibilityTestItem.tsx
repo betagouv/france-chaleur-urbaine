@@ -137,10 +137,7 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
     accessorKey: 'eligibility_status.distance',
     suffix: 'm',
     align: 'right',
-    filterFn: (row, columnId, filterValue: number) => {
-      const value = row.getValue<number>(columnId);
-      return value != null && value <= filterValue;
-    },
+    filter: 'notNullAndLessThanOrEqual',
     sorting: 'nullsAlwaysLast',
   },
   {
@@ -183,10 +180,7 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
     accessorKey: 'eligibility_status.tauxENRR',
     suffix: '%',
     align: 'right',
-    filterFn: (row, columnId, filterValue: number) => {
-      const value = row.getValue<number>(columnId);
-      return value != null && value >= filterValue;
-    },
+    filter: 'notNullAndGreaterThanOrEqual',
   },
   {
     header: () => (
