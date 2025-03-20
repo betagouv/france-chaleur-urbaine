@@ -12,8 +12,10 @@ import {
   type ColumnFiltersState,
   type RowData,
   type SortingState,
+  type FilterFn,
 } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
+import { cva } from 'class-variance-authority';
 import React from 'react';
 
 import { isDevModeEnabled } from '@/hooks/useDevMode';
@@ -30,12 +32,24 @@ export const customSortingFn = <T extends RowData>(): Record<string, SortingFn<T
   },
 });
 
+export const customFilterFn = <T extends RowData>(): Record<string, FilterFn<T>> => ({
+  notNullAndGreaterThanOrEqual: (row, columnId, filterValue: number) => {
+    const value = row.getValue<number>(columnId);
+    return value != null && value >= filterValue;
+  },
+  notNullAndLessThanOrEqual: (row, columnId, filterValue: number) => {
+    const value = row.getValue<number>(columnId);
+    return value != null && value <= filterValue;
+  },
+});
+
 export type ColumnDef<T, K = any> = ColumnDefOriginal<T, K> & {
   cellType?: TableCellProps<T>['type'];
   align?: 'center' | 'left' | 'right';
   className?: string;
   suffix?: React.ReactNode;
   sorting?: keyof ReturnType<typeof customSortingFn<T>>;
+  filter?: keyof ReturnType<typeof customFilterFn<T>>;
 } & ({ flex?: number } | { width?: 'auto' | string });
 
 export type TableSimpleProps<T> = {
@@ -48,9 +62,23 @@ export type TableSimpleProps<T> = {
   enableRowSelection?: boolean;
   className?: string;
   fluid?: boolean;
-  smallPadding?: boolean;
+  padding?: 'sm' | 'md' | 'lg';
   onSelectionChange?: (selectedRows: T[]) => void;
+  maxRowHeight?: number;
 };
+
+const cellCustomClasses = cva('', {
+  variants: {
+    padding: {
+      sm: '!p-2',
+      md: '',
+      lg: '!p-6',
+    },
+  },
+  defaultVariants: {
+    padding: 'md',
+  },
+});
 
 const TableSimple = <T extends RowData>({
   data,
@@ -63,7 +91,8 @@ const TableSimple = <T extends RowData>({
   onSelectionChange,
   className,
   fluid,
-  smallPadding,
+  padding = 'md',
+  maxRowHeight = 64,
 }: TableSimpleProps<T>) => {
   const [globalFilter, setGlobalFilter] = React.useState<any>([]);
   const [sortingState, setSortingState] = React.useState<SortingState>(initialSortingState ?? []);
@@ -136,9 +165,13 @@ const TableSimple = <T extends RowData>({
   }, [columns, enableRowSelection]);
 
   const customSortingFns = customSortingFn<T>();
+  const customFilterFns = customFilterFn<T>();
   tableColumns.forEach((column) => {
     if (column.sorting && customSortingFns[column.sorting]) {
       column.sortingFn = customSortingFns[column.sorting];
+    }
+    if (column.filter && customFilterFns[column.filter]) {
+      column.filterFn = customFilterFns[column.filter];
     }
   });
 
@@ -169,20 +202,21 @@ const TableSimple = <T extends RowData>({
   }, [rowSelection, onSelectionChange, table]);
 
   const { rows } = table.getRowModel();
+  const { rows: filteredRows } = table.getFilteredRowModel();
 
   // the virtualizer needs to know the scrollable container element
   const tableContainerRef = React.useRef<HTMLDivElement>(null);
 
   const rowVirtualizer = useVirtualizer({
     count: rows.length,
-    estimateSize: () => 64, // estimate row height for accurate scrollbar dragging
+    estimateSize: () => maxRowHeight, // estimate row height for accurate scrollbar dragging
     getScrollElement: () => tableContainerRef.current,
     // measure dynamic row height, except in firefox because it measures table border height incorrectly
     measureElement:
       typeof window !== 'undefined' && navigator.userAgent.indexOf('Firefox') === -1
         ? (element) => element?.getBoundingClientRect().height
         : undefined,
-    overscan: 5,
+    overscan: 10, // The number of items to render above and below the visible area
   });
 
   const gridTemplateColumns = table
@@ -221,6 +255,7 @@ const TableSimple = <T extends RowData>({
           style={{
             display: 'grid',
             overflow: 'unset', // overwrite the dsfr
+            marginTop: '1px', // make top border visible as overflow hides it
           }}
         >
           <thead
@@ -239,7 +274,11 @@ const TableSimple = <T extends RowData>({
                     <th
                       key={header.id}
                       colSpan={header.colSpan}
-                      className={cx('!flex flex-nowrap overflow-auto gap-1', columnClassName(columnDef), smallPadding && '!p-2')}
+                      className={cx(
+                        '!flex flex-nowrap items-center overflow-auto gap-1',
+                        columnClassName(columnDef),
+                        cellCustomClasses({ padding })
+                      )}
                     >
                       {header.isPlaceholder ? null : (
                         <>
@@ -287,15 +326,19 @@ const TableSimple = <T extends RowData>({
           <tbody
             style={{
               display: 'grid',
-              height: `${rowVirtualizer.getTotalSize() || 5 * 50}px`, // tells scrollbar how big the table is
+              height: `${(loading ? 5 : filteredRows.length) * maxRowHeight}px`, // tells scrollbar how big the table is
               position: 'relative', // needed for absolute positioning of rows
             }}
           >
             {loading &&
-              [1, 2, 3, 4, 5].map((value) => (
-                <tr key={`loading_${value}`} className="flex" style={{ gridTemplateColumns }}>
+              [1, 2, 3, 4, 5].map((value, index) => (
+                <tr
+                  key={`loading_${value}`}
+                  className="grid absolute w-full"
+                  style={{ gridTemplateColumns, transform: `translateY(${index * 50}px)` }}
+                >
                   {columns.map((column, index) => (
-                    <td key={`loading_${value}_${index}`} className={cx('flex items-center', columnClassName(column))}>
+                    <td key={`loading_${value}_${index}`} className={cx('!flex items-center', columnClassName(column))}>
                       <div role="status" className="animate-pulse text-center w-[90%]">
                         <div className="mx-auto my-2 h-3.5 rounded-full bg-gray-200"></div>
                       </div>
@@ -320,16 +363,18 @@ const TableSimple = <T extends RowData>({
                     {row.getVisibleCells().map((cell) => {
                       const columnDef = cell.column.columnDef as ColumnDef<T>;
                       const CellTag = columnDef.id === 'selection' ? 'th' : 'td';
+
                       return (
                         <CellTag
                           key={cell.id}
                           className={cx(
+                            '!flex items-center',
                             {
                               'overflow-auto': !React.isValidElement(cell.getValue()), // this is a hack as for DebugDrawer, overflow was causing problems
-                              'flex items-center fr-cell--fixed': columnDef.id === 'selection',
-                              '!p-2': smallPadding,
+                              'fr-cell--fixed': columnDef.id === 'selection',
                             },
-                            columnClassName(columnDef)
+                            columnClassName(columnDef),
+                            cellCustomClasses({ padding })
                           )}
                           scope={columnDef.id === 'selection' ? 'row' : undefined}
                         >

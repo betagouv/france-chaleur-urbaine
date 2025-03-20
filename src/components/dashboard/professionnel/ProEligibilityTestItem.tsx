@@ -22,7 +22,7 @@ import { useDelete, useFetch, usePost } from '@/hooks/useApi';
 import { type ProEligibilityTestListItem } from '@/pages/api/pro-eligibility-tests';
 import { type ProEligibilityTestWithAddresses } from '@/pages/api/pro-eligibility-tests/[id]';
 import { notify, toastErrors } from '@/services/notification';
-import { getProEligibilityTestAsXlsx } from '@/services/xlsx';
+import { getProEligibilityTestAsXlsx } from '@/services/xlsx/test-adresses';
 import { downloadString } from '@/utils/browser';
 import { formatAsISODate, formatFrenchDate, formatFrenchDateTime } from '@/utils/date';
 import { compareFrenchStrings } from '@/utils/strings';
@@ -137,10 +137,7 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
     accessorKey: 'eligibility_status.distance',
     suffix: 'm',
     align: 'right',
-    filterFn: (row, columnId, filterValue: number) => {
-      const value = row.getValue<number>(columnId);
-      return value != null && value <= filterValue;
-    },
+    filter: 'notNullAndLessThanOrEqual',
     sorting: 'nullsAlwaysLast',
   },
   {
@@ -183,10 +180,7 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
     accessorKey: 'eligibility_status.tauxENRR',
     suffix: '%',
     align: 'right',
-    filterFn: (row, columnId, filterValue: number) => {
-      const value = row.getValue<number>(columnId);
-      return value != null && value >= filterValue;
-    },
+    filter: 'notNullAndGreaterThanOrEqual',
   },
   {
     header: () => (
@@ -521,7 +515,8 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
                     data={testDetails?.addresses || []}
                     initialSortingState={initialSortingState}
                     columnFilters={columnFilters}
-                    smallPadding
+                    padding="sm"
+                    maxRowHeight={56}
                   />
                 ),
                 isDefault: true,
