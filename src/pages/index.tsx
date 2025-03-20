@@ -76,7 +76,7 @@ const tools: TileListItem[] = [
   {
     title: "Test d'adresses en masse",
     excerpt: 'Testez directement une liste d’adresses.',
-    href: '/?bulk',
+    href: '/inscription',
     image: '/icons/tools/map.svg',
     eventKey: "Outil|Test d'adresses en masse",
   },

@@ -1,12 +1,10 @@
 import Image from 'next/image';
 
 import LastArticles from '@/components/Articles/LastArticles';
-import BulkEligibilityForm from '@/components/EligibilityForm/BulkEligibilityForm';
 import IframeIntegration from '@/components/GenericContent/IframeIntegration';
 import ObligationRaccordement from '@/components/GenericContent/ObligationRaccordement';
 import ReduireImpact from '@/components/GenericContent/ReduireImpact';
 import HeadSliceForm from '@/components/HeadSliceForm';
-import { ArrowPuce } from '@/components/MarkdownWrapper/MarkdownWrapper.style';
 import Partners from '@/components/Partners/Partners';
 import { issues, understandings } from '@/components/Ressources/config';
 import SimulateurCoutRaccordement from '@/components/Ressources/Contents/SimulateurCoutRaccordement';
@@ -118,7 +116,7 @@ const Professionnels = () => {
                 Testez un grand nombre d’adresses
               </Heading>
               <Text size="lg">
-                <Link href="#test-liste">Identifiez instantanément</Link> les bâtiments raccordables de votre parc
+                <Link href="/inscription">Identifiez instantanément</Link> les bâtiments raccordables de votre parc
               </Text>
             </Box>
 
@@ -131,47 +129,6 @@ const Professionnels = () => {
                 <Link href="#simulateur-aide">Découvrez le montant du coup de pouce chauffage</Link> des bâtiments résidentiels collectifs
                 et tertiaires
               </Text>
-            </Box>
-          </ResponsiveRow>
-        </Box>
-      </Box>
-
-      <Box py="10w" id="test-liste">
-        <Box className="fr-container">
-          <Heading as="h2" center>
-            Testez un grand nombre d’adresses en 2 clics
-          </Heading>
-          <ResponsiveRow mt="10w">
-            <Box flex>
-              <Heading as="h4" color="blue-france">
-                Identifiez facilement les bâtiments proches des réseaux de chaleur !
-              </Heading>
-              <ArrowPuce>
-                <Text size="lg" color="grey">
-                  Téléchargez votre fichier (une ligne par adresse) et renseignez votre email
-                </Text>
-              </ArrowPuce>
-              <ArrowPuce>
-                <Text size="lg" color="grey">
-                  Recevez par mail le résultat de votre test
-                </Text>
-              </ArrowPuce>
-              <ArrowPuce>
-                <Text size="lg" color="grey">
-                  Visualisez les adresses testées sur notre cartographie
-                </Text>
-              </ArrowPuce>
-              <ArrowPuce>
-                <Text size="lg" color="grey">
-                  Vous pourrez ensuite sélectionner dans la liste les adresses pour lesquelles vous souhaitez être mis en relation par
-                  France Chaleur Urbaine avec le(s) gestionnaire(s) des réseaux de chaleur.
-                </Text>
-              </ArrowPuce>
-            </Box>
-
-            <Box flex>
-              <BulkEligibilityForm />
-              <Image width="405" height={0} alt="" src="/img/carto-addresses.png" style={{ maxWidth: '100%', height: 'auto' }} />
             </Box>
           </ResponsiveRow>
         </Box>

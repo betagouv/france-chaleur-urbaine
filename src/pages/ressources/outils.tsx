@@ -28,7 +28,7 @@ const OutilsPage = () => {
             Repérer sur un parc de bâtiments ceux potentiellement raccordables, et accéder aux caractéristiques des réseaux les plus proches
           </Text>
         </Box>
-        <Link variant="secondary" href="/?bulk">
+        <Link variant="secondary" href="/inscription">
           Accéder
         </Link>
       </Box>
@@ -96,7 +96,7 @@ const OutilsPage = () => {
       <Box backgroundColor="blue-france-975-75">
         <Box py="5w" className="fr-container">
           <Heading as="h2" size="h3" color="blue-france" mb="0">
-            Comparateur de performances
+            Comparateur de coûts et d'émissions de CO2
           </Heading>
           <Box display="flex" my="2w">
             <FCUArrowIcon />
@@ -110,7 +110,7 @@ const OutilsPage = () => {
         </Box>
       </Box>
       <Box py="5w" className="fr-container">
-        <Heading as="h2" size="h3" color="blue-france" mb="0" mt="8w">
+        <Heading as="h2" size="h3" color="blue-france" mb="0">
           Simulateur de CO2
         </Heading>
         <Box display="flex" my="2w">
