@@ -1362,10 +1362,10 @@
     "@babel/helper-validator-identifier" "^7.24.7"
     to-fast-properties "^2.0.0"
 
-"@betagouv/france-chaleur-urbaine-publicodes@^1.0.3":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@betagouv/france-chaleur-urbaine-publicodes/-/france-chaleur-urbaine-publicodes-1.0.3.tgz#8f0f413405f75d84256d0f614e87e8cb9df01113"
-  integrity sha512-3cye7V7iD2vGwXOptMWyof6444a3+v4Sxf4ktF9hvbOh1uCTYA40Wophg6e19pX+3JH+7CDCqXb1hzlp32LMhA==
+"@betagouv/france-chaleur-urbaine-publicodes@^1.0.5":
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/@betagouv/france-chaleur-urbaine-publicodes/-/france-chaleur-urbaine-publicodes-1.0.5.tgz#dd1684929766e0aa7569e035d42c18b7fd85a970"
+  integrity sha512-75QlBi8kCGdX6p1cNVnPtUwF5Xo7WMxrrTEPh0k7BXc/ReZA2O9Rnm82//ZJJXVwGd6fRDf4KXSBjfitb4vaAw==
 
 "@codegouvfr/react-dsfr@^1.20.0":
   version "1.20.0"
