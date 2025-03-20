@@ -15,8 +15,8 @@ export type TabId = 'batiment' | 'modes';
 
 export const DataYearDisclaimer: React.FC<{ advancedMode?: boolean }> = ({ advancedMode }) => (
   <span>
-    Les données utilisées par le comparateur portent sur l'année 2023. Les valeurs de l'ensemble des paramètres utilisés pour les calculs
-    sont modifiables
+    Sauf mention contraire, les données utilisées par le comparateur portent sur l'année 2023. Les valeurs de l'ensemble des paramètres
+    utilisés pour les calculs sont modifiables
     {!advancedMode && ' dans le mode avancé'}.
   </span>
 );
