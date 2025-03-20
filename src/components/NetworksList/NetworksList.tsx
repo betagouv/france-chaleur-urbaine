@@ -1,7 +1,7 @@
 import Button from '@codegouvfr/react-dsfr/Button';
 import Input from '@codegouvfr/react-dsfr/Input';
-import { useGridApiRef } from '@mui/x-data-grid';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { type ColumnDefTemplate, type CellContext } from '@tanstack/react-table';
+import { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import XLSX from 'xlsx';
 
@@ -12,7 +12,7 @@ import Box from '@/components/ui/Box';
 import Drawer from '@/components/ui/Drawer';
 import Icon from '@/components/ui/Icon';
 import Link from '@/components/ui/Link';
-import { type ColumnDef, Table } from '@/components/ui/Table';
+import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
 import Text from '@/components/ui/Text';
 import useReseauxDeChaleurFilters, { type Filters } from '@/hooks/useReseauxDeChaleurFilters';
 import { gestionnairesFilters, useServices } from '@/services';
@@ -20,6 +20,7 @@ import { type NetworkToCompare } from '@/types/Summary/Network';
 import { downloadFile } from '@/utils/browser';
 import { isDefined } from '@/utils/core';
 import { type Interval } from '@/utils/interval';
+import { compareFrenchStrings } from '@/utils/strings';
 
 import NetworkName from './NetworkName';
 
@@ -151,14 +152,6 @@ export function filterReseauxDeChaleur(reseauxDeChaleur: NetworkToCompare[], fil
   });
 }
 
-const formatPercentage = (value?: number | string) =>
-  isDefined(value) ? ((value as number) / 100).toLocaleString('fr-FR', { style: 'percent', maximumFractionDigits: 1 }) : undefined;
-
-const formatNumber = (value?: number | string) => (isDefined(value) ? (value as number).toFixed(1) : undefined);
-
-const formatPrice = (value?: number | string) =>
-  isDefined(value) ? value.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }) : undefined;
-
 const exportColumns: {
   field: keyof NetworkToCompare;
   columnName: string;
@@ -289,9 +282,12 @@ const exportAsXLSX = (allNetworks: NetworkToCompare[]) => {
   downloadFile(url, `${new Date().toISOString().split('T')[0]}_reseauxDeChaleur.xlsx`);
 };
 
+const PercentageCell: ColumnDefTemplate<CellContext<NetworkToCompare, any>> = ({ getValue }) => {
+  return (getValue() / 100).toLocaleString(undefined, { style: 'percent', maximumFractionDigits: 1 });
+};
+
 const NetworksList = () => {
   const { networksService } = useServices();
-  const tableApiRef = useGridApiRef();
   const [isDrawerOpened, toggleDrawer] = useState<boolean>(false);
   const [regionsList, setRegionsList] = useState<ReseauxDeChaleurFiltersProps['regionsList']>([]);
   const [allNetworks, setAllNetworks] = useState<NetworkToCompare[]>([]);
@@ -316,52 +312,53 @@ const NetworksList = () => {
   const [dataToDisplay, setDataToDisplay] = useState<DataToDisplay>('general');
   const [loaded, setLoaded] = useState(false);
 
-  const networkGeneralRowsParams: ColumnDef<NetworkToCompare>[] = useMemo(
+  const allNetworkColumns: ColumnDef<NetworkToCompare>[] = useMemo(
     () => [
       {
-        field: 'nom_reseau',
-        headerName: 'Nom du réseau',
-        minWidth: 250,
-        sortable: true,
-        renderCell: (params) => (
+        accessorKey: 'nom_reseau',
+        header: 'Nom du réseau',
+        width: '250px',
+        filterFn: (row, _, filterValue) => {
+          return (
+            row.original.nom_reseau?.toLocaleLowerCase().includes(filterValue.toLocaleLowerCase()) ||
+            row.original['Identifiant reseau']?.toLocaleLowerCase().includes(filterValue.toLocaleLowerCase())
+          );
+        },
+        cell: (params) => (
           <NetworkName
-            name={params.row.nom_reseau}
-            isClassed={params.row['reseaux classes']}
-            identifiant={params.row['Identifiant reseau']}
+            name={params.row.original.nom_reseau}
+            isClassed={params.row.original['reseaux classes']}
+            identifiant={params.row.original['Identifiant reseau']}
           />
         ),
       },
       {
-        field: 'Identifiant reseau',
-        headerName: 'Identifiant',
-        minWidth: 120,
-        sortable: true,
+        accessorKey: 'Identifiant reseau',
+        header: 'Identifiant',
+        width: '130px',
       },
       {
-        field: 'communes',
-        headerName: 'Communes',
-        minWidth: 250,
-        sortable: true,
-        sortComparator: (v1, v2, param1, param2) => `${param1.value.join(', ')}`.localeCompare(param2.value.join(', ')),
-        renderCell: (params) => <Text>{params.row.communes ? params.row.communes.join(', ') : undefined}</Text>,
+        accessorKey: 'communes',
+        header: 'Communes',
+        width: '250px',
+        sortingFn: (rowA, rowB) => compareFrenchStrings(rowA.original.communes.join(', '), rowB.original.communes.join(', ')),
+        cell: ({ getValue }) => <Text>{getValue() ? getValue().join(', ') : undefined}</Text>,
       },
       {
-        field: 'Gestionnaire',
-        headerName: 'Gestionnaire',
-        minWidth: 250,
-        sortable: true,
+        accessorKey: 'Gestionnaire',
+        header: 'Gestionnaire',
+        width: '250px',
       },
       {
-        field: 'Taux EnR&R',
-        headerName: 'Taux EnR&R',
-        minWidth: 110,
-        sortable: true,
+        accessorKey: 'Taux EnR&R',
+        header: 'Taux EnR&R',
+        width: '110px',
         align: 'right',
-        renderCell: (params) => <Text>{isDefined(params.row['Taux EnR&R']) ? `${params.row['Taux EnR&R']}%` : undefined}</Text>,
+        cell: ({ getValue }) => <Text>{isDefined(getValue()) ? `${getValue()}%` : undefined}</Text>,
       },
       {
-        field: 'contenu CO2 ACV',
-        renderHeader: () => (
+        accessorKey: 'contenu CO2 ACV',
+        header: () => (
           <Box>
             Contenu CO2 ACV
             <Text fontWeight="regular" mt="1w">
@@ -369,13 +366,12 @@ const NetworksList = () => {
             </Text>
           </Box>
         ),
-        minWidth: 175,
-        sortable: true,
+        width: '175px',
         align: 'right',
       },
       {
-        field: 'contenu CO2',
-        renderHeader: () => (
+        accessorKey: 'contenu CO2',
+        header: () => (
           <Box>
             Contenu CO2
             <Text fontWeight="regular" mt="1w">
@@ -383,13 +379,12 @@ const NetworksList = () => {
             </Text>
           </Box>
         ),
-        minWidth: 140,
-        sortable: true,
+        width: '140px',
         align: 'right',
       },
       {
-        field: 'PM',
-        renderHeader: () => (
+        accessorKey: 'PM',
+        header: () => (
           <Box>
             Prix moyen
             <Text fontWeight="regular" mt="1w">
@@ -397,21 +392,22 @@ const NetworksList = () => {
             </Text>
           </Box>
         ),
-        minWidth: 130,
-        sortable: true,
+        width: '130px',
         align: 'right',
-        renderCell: (params) => <Text>{formatPrice(params.row.PM)}</Text>,
+        cellType: 'Price',
+        cellProps: {
+          maximumFractionDigits: 0,
+        },
       },
       {
-        field: 'annee_creation',
-        headerName: 'Année de construction',
-        minWidth: 130,
-        sortable: true,
+        accessorKey: 'annee_creation',
+        header: 'Année de construction',
+        width: '130px',
         align: 'right',
       },
       {
-        field: 'livraisons_totale_MWh',
-        renderHeader: () => (
+        accessorKey: 'livraisons_totale_MWh',
+        header: () => (
           <Box>
             Livraisons de chaleur
             <br />
@@ -421,136 +417,120 @@ const NetworksList = () => {
             </Text>
           </Box>
         ),
-        minWidth: 180,
-        sortable: true,
+        width: '180px',
         align: 'right',
-        renderCell: (params) => <Text>{formatNumber(params.row.livraisons_totale_MWh)}</Text>,
+        cellType: 'Number',
+        cellProps: {
+          minimumFractionDigits: 1,
+          maximumFractionDigits: 1,
+        },
       },
       {
-        field: 'energie_ratio_biomasse',
-        headerName: 'Biomasse',
-        minWidth: 110,
-        sortable: true,
+        accessorKey: 'energie_ratio_biomasse',
+        header: 'Biomasse',
+        width: '110px',
         align: 'right',
-        renderCell: (params) => <Text>{formatPercentage(params.row.energie_ratio_biomasse)}</Text>,
+        cell: PercentageCell,
       },
       {
-        field: 'energie_ratio_geothermie',
-        headerName: 'Géothermie',
-        minWidth: 110,
-        sortable: true,
+        accessorKey: 'energie_ratio_geothermie',
+        header: 'Géothermie',
+        width: '110px',
         align: 'right',
-        renderCell: (params) => <Text>{formatPercentage(params.row.energie_ratio_geothermie)}</Text>,
+        cell: PercentageCell,
       },
       {
-        field: 'energie_ratio_uve',
-        headerName: 'UVE',
-        minWidth: 110,
-        sortable: true,
+        accessorKey: 'energie_ratio_uve',
+        header: 'UVE',
+        width: '110px',
         align: 'right',
-        renderCell: (params) => <Text>{formatPercentage(params.row.energie_ratio_uve)}</Text>,
+        cell: PercentageCell,
       },
       {
-        field: 'energie_ratio_chaleurIndustrielle',
-        headerName: 'Chaleur industrielle',
-        minWidth: 110,
-        sortable: true,
+        accessorKey: 'energie_ratio_chaleurIndustrielle',
+        header: 'Chaleur industrielle',
+        width: '110px',
         align: 'right',
-        renderCell: (params) => <Text>{formatPercentage(params.row.energie_ratio_chaleurIndustrielle)}</Text>,
+        cell: PercentageCell,
       },
       {
-        field: 'energie_ratio_solaireThermique',
-        headerName: 'Solaire thermique',
-        minWidth: 110,
-        sortable: true,
+        accessorKey: 'energie_ratio_solaireThermique',
+        header: 'Solaire thermique',
+        width: '110px',
         align: 'right',
-        renderCell: (params) => <Text>{formatPercentage(params.row.energie_ratio_solaireThermique)}</Text>,
+        cell: PercentageCell,
       },
       {
-        field: 'energie_ratio_pompeAChaleur',
-        headerName: 'Pompe à chaleur',
-        minWidth: 110,
-        sortable: true,
+        accessorKey: 'energie_ratio_pompeAChaleur',
+        header: 'Pompe à chaleur',
+        width: '110px',
         align: 'right',
-        renderCell: (params) => <Text>{formatPercentage(params.row.energie_ratio_pompeAChaleur)}</Text>,
+        cell: PercentageCell,
       },
       {
-        field: 'energie_ratio_gaz',
-        headerName: 'Gaz',
-        minWidth: 110,
-        sortable: true,
+        accessorKey: 'energie_ratio_gaz',
+        header: 'Gaz',
+        width: '110px',
         align: 'right',
-        renderCell: (params) => <Text>{formatPercentage(params.row.energie_ratio_gaz)}</Text>,
+        cell: PercentageCell,
       },
       {
-        field: 'energie_ratio_fioul',
-        headerName: 'Fioul',
-        minWidth: 110,
-        sortable: true,
+        accessorKey: 'energie_ratio_fioul',
+        header: 'Fioul',
+        width: '110px',
         align: 'right',
-        renderCell: (params) => <Text>{formatPercentage(params.row.energie_ratio_fioul)}</Text>,
+        cell: PercentageCell,
       },
     ],
     []
   );
 
-  const onChangeDataToDisplay = useCallback(
-    (newDataToDisplay: DataToDisplay) => {
-      if (tableApiRef && tableApiRef.current) {
-        GeneralFieldsList.forEach((fieldName: string) =>
-          tableApiRef.current.setColumnVisibility(fieldName, newDataToDisplay === 'general' ? true : false)
-        );
-        MixEnergetiqueFieldsList.forEach((fieldName: string) =>
-          tableApiRef.current.setColumnVisibility(fieldName, newDataToDisplay === 'general' ? false : true)
-        );
-        setDataToDisplay(newDataToDisplay);
-        if (tableApiRef.current?.setPage) {
-          tableApiRef.current.setPage(0);
-        }
-        setDataToDisplay(newDataToDisplay);
+  const networkColumns = useMemo(() => {
+    return allNetworkColumns.filter((col) => {
+      const inGeneralList = GeneralFieldsList.includes((col as any).accessorKey);
+      const inMixEnergetiqueList = MixEnergetiqueFieldsList.includes((col as any).accessorKey as any);
+      if (!inGeneralList && !inMixEnergetiqueList) {
+        // if not in general or mix energetique list, it's always on
+        return true;
       }
-    },
-    [tableApiRef, GeneralFieldsList, MixEnergetiqueFieldsList, setDataToDisplay]
-  );
+
+      return dataToDisplay === 'general' ? inGeneralList : inMixEnergetiqueList;
+    });
+  }, [dataToDisplay, allNetworkColumns, GeneralFieldsList, MixEnergetiqueFieldsList]);
 
   useEffect(() => {
-    if (loaded && tableApiRef && tableApiRef.current) {
-      onChangeDataToDisplay('general');
+    if (loaded) {
+      return;
     }
-  }, [loaded, tableApiRef]);
+    (async () => {
+      try {
+        const networks: NetworkToCompare[] = await networksService.fetch();
+        setAllNetworks(networks);
 
-  useEffect(() => {
-    if (!loaded) {
-      (async () => {
-        try {
-          const networks: NetworkToCompare[] = await networksService.fetch();
-          setAllNetworks(networks);
+        const newRegionsList: ReseauxDeChaleurFiltersProps['regionsList'] = [];
+        networks.forEach((network) => {
+          if (!newRegionsList.find(({ name }) => name === network.region.trim())) {
+            newRegionsList.push({ name: network.region.trim(), coord: `${network.lon},${network.lat}` });
+          } else {
+            const index = newRegionsList.findIndex(({ name }) => name === network.region.trim());
+            const existingCoords = newRegionsList[index].coord.split(',');
+            // Calculate average position between existing and new coordinates
+            const avgLon = (parseFloat(existingCoords[0]) + network.lon) / 2;
+            const avgLat = (parseFloat(existingCoords[1]) + network.lat) / 2;
+            newRegionsList[index].coord = `${avgLon},${avgLat}`;
+          }
+        });
 
-          const newRegionsList: ReseauxDeChaleurFiltersProps['regionsList'] = [];
-          networks.forEach((network) => {
-            if (!newRegionsList.find(({ name }) => name === network.region.trim())) {
-              newRegionsList.push({ name: network.region.trim(), coord: `${network.lon},${network.lat}` });
-            } else {
-              const index = newRegionsList.findIndex(({ name }) => name === network.region.trim());
-              const existingCoords = newRegionsList[index].coord.split(',');
-              // Calculate average position between existing and new coordinates
-              const avgLon = (parseFloat(existingCoords[0]) + network.lon) / 2;
-              const avgLat = (parseFloat(existingCoords[1]) + network.lat) / 2;
-              newRegionsList[index].coord = `${avgLon},${avgLat}`;
-            }
-          });
+        newRegionsList.sort((a, b) => a.name.localeCompare(b.name));
+        setRegionsList(newRegionsList);
 
-          newRegionsList.sort((a, b) => a.name.localeCompare(b.name));
-          setRegionsList(newRegionsList);
-
+        setLoaded(true);
+      } finally {
+        setTimeout(() => {
           setLoaded(true);
-        } finally {
-          setTimeout(() => {
-            setLoaded(true);
-          });
-        }
-      })();
-    }
+        });
+      }
+    })();
   }, []);
 
   return (
@@ -568,13 +548,7 @@ const NetworksList = () => {
         <Box display="flex" gap="16px" flexWrap="wrap" flexDirection="row" alignItems="center" justifyContent="space-between" pb="4w">
           <Text fontWeight="bold">{loaded ? filteredNetworks.length : '-'}&nbsp;réseaux</Text>
           <Box display="flex" flexWrap="wrap" flexDirection="row" alignItems="flex-end" gap="16px">
-            <Button
-              priority="secondary"
-              size="medium"
-              onClick={() => {
-                toggleDrawer(true);
-              }}
-            >
+            <Button priority="secondary" size="medium" onClick={() => toggleDrawer(true)}>
               <Icon size="md" name="fr-icon-filter-line" color="var(--text-action-high-blue-france)" />
               Tous les filtres ({nbFilters})
             </Button>
@@ -607,9 +581,7 @@ const NetworksList = () => {
             priority={dataToDisplay === 'general' ? 'secondary' : 'tertiary'}
             size="small"
             className={`fr-mx-auto networks-list-selector ${dataToDisplay === 'general' ? 'active' : ''}`}
-            onClick={() => {
-              onChangeDataToDisplay('general');
-            }}
+            onClick={() => setDataToDisplay('general')}
           >
             Général
           </Button>
@@ -617,30 +589,19 @@ const NetworksList = () => {
             priority={dataToDisplay === 'mix_energetique' ? 'secondary' : 'tertiary'}
             size="small"
             className={`fr-mx-auto networks-list-selector ${dataToDisplay === 'mix_energetique' ? 'active' : ''}`}
-            onClick={() => {
-              onChangeDataToDisplay('mix_energetique');
-            }}
+            onClick={() => setDataToDisplay('mix_energetique')}
           >
             Mix énergétique
           </Button>
         </Box>
         <Box height="100%" width="100%" display="flex" flexDirection="column" justifyContent="space-between" style={{ overflow: 'hidden' }}>
-          <Table
-            apiRef={tableApiRef}
-            columns={networkGeneralRowsParams}
-            rows={filteredNetworks}
-            disableColumnMenu
-            columnHeaderHeight={100}
-            getRowHeight={() => 'auto'}
-            hideFooterSelectedRowCount
+          <TableSimple
+            columns={networkColumns}
+            data={filteredNetworks}
             loading={!loaded}
-            sortingOrder={['desc', 'asc']}
-            initialState={{
-              sorting: {
-                sortModel: [{ field: 'Identifiant reseau', sort: 'asc' }],
-              },
-            }}
-            pageSize={15}
+            padding="sm"
+            maxRowHeight={124}
+            initialSortingState={[{ id: 'Identifiant reseau', desc: false }]}
           />
         </Box>
         <Text size="xs" className="fr-hint-text" mt="2w">
