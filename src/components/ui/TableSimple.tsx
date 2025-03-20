@@ -63,7 +63,7 @@ export type TableSimpleProps<T> = {
   fluid?: boolean;
   padding?: 'sm' | 'md' | 'lg';
   onSelectionChange?: (selectedRows: T[]) => void;
-  maxRowHeight?: number;
+  rowHeight?: number;
 };
 
 const cellCustomClasses = cva('', {
@@ -91,7 +91,7 @@ const TableSimple = <T extends RowData>({
   className,
   fluid,
   padding = 'md',
-  maxRowHeight = 64,
+  rowHeight = 64,
 }: TableSimpleProps<T>) => {
   const [globalFilter, setGlobalFilter] = React.useState<any>([]);
   const [sortingState, setSortingState] = React.useState<SortingState>(initialSortingState ?? []);
@@ -208,7 +208,7 @@ const TableSimple = <T extends RowData>({
 
   const rowVirtualizer = useVirtualizer({
     count: rows.length,
-    estimateSize: () => maxRowHeight, // estimate row height for accurate scrollbar dragging
+    estimateSize: () => rowHeight, // estimate row height for accurate scrollbar dragging
     getScrollElement: () => tableContainerRef.current,
     // measure dynamic row height, except in firefox because it measures table border height incorrectly
     measureElement:
@@ -325,7 +325,7 @@ const TableSimple = <T extends RowData>({
           <tbody
             style={{
               display: 'grid',
-              height: `${(loading ? 5 : filteredRows.length) * maxRowHeight}px`, // tells scrollbar how big the table is
+              height: `${(loading ? 5 : filteredRows.length) * rowHeight}px`, // tells scrollbar how big the table is
               position: 'relative', // needed for absolute positioning of rows
             }}
           >
@@ -334,7 +334,7 @@ const TableSimple = <T extends RowData>({
                 <tr
                   key={`loading_${value}`}
                   className="grid absolute w-full"
-                  style={{ gridTemplateColumns, transform: `translateY(${index * 50}px)` }}
+                  style={{ gridTemplateColumns, transform: `translateY(${index * rowHeight}px)`, height: rowHeight }}
                 >
                   {columns.map((column, index) => (
                     <td key={`loading_${value}_${index}`} className={cx('!flex items-center', columnClassName(column))}>
@@ -357,6 +357,7 @@ const TableSimple = <T extends RowData>({
                     style={{
                       transform: `translateY(${virtualRow.start}px)`, // this should always be a `style` as it changes on scroll
                       gridTemplateColumns,
+                      height: rowHeight,
                     }}
                   >
                     {row.getVisibleCells().map((cell) => {

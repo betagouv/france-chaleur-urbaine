@@ -600,7 +600,7 @@ const NetworksList = () => {
             data={filteredNetworks}
             loading={!loaded}
             padding="sm"
-            maxRowHeight={124}
+            rowHeight={124}
             initialSortingState={[{ id: 'Identifiant reseau', desc: false }]}
           />
         </Box>
