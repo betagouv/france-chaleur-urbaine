@@ -33,7 +33,7 @@ export const emptyFilterLimits = {
 export type Filters = typeof emptyFilterLimits;
 export type FilterKeys = FlattenKeys<Filters>;
 
-type FilterWithLimits = Filters & { limits: ReseauxDeChaleurLimits };
+export type FilterWithLimits = Filters & { limits: ReseauxDeChaleurLimits };
 
 const useReseauxDeChaleurFilters = ({ queryParamName = 'rdc_filters' }: { queryParamName?: string } = {}) => {
   const [urlFilters, setUrlFilters] = useQueryState(queryParamName, parseAsJson<Partial<Filters>>().withDefault({} as Filters));
