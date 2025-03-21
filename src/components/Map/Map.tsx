@@ -249,14 +249,14 @@ export const FullyFeaturedMap = ({
           addressDetails,
           search,
         };
-        handleOnFetchAddress({ address }, true);
+        handleOnFetchAddress({ address }, 'carte');
         handleOnSuccessAddress(
           {
             address,
             geoAddress: addressDetails.geoAddress,
             eligibility: addressDetails.network,
           },
-          true
+          'carte'
         );
         setSoughtAddresses([newAddress, ...soughtAddresses]);
         setSelectedCardIndex(0);

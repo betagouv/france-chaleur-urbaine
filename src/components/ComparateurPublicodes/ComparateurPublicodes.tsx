@@ -99,6 +99,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
   }, [advancedMode]);
 
   const { open: displayContactForm, EligibilityFormModal } = useEligibilityForm({
+    context: 'comparateur',
     id: `eligibility-form-comparateur`,
     address: {
       address,
