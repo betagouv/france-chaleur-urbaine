@@ -1,46 +1,51 @@
-import db from '@/server/db';
+import { sql } from 'kysely';
+
+import { kdb } from '@/server/db/kysely';
 import { handleRouteErrors } from '@/server/helpers/server';
 import { STAT_KEY, STAT_LABEL, STAT_METHOD, STAT_PERIOD } from '@/types/enum/MatomoStats';
 
-export default handleRouteErrors(async () => {
-  return await db('matomo_stats as s')
-    .select(
-      db.raw(
-        `TO_CHAR(
-              date::date, 'yyyy-mm-dd'
-            ) as date`
-      ),
-      db.raw(
-        `(SELECT s1.value
-            FROM public.matomo_stats as s1
-            WHERE s1.stat_label = '${STAT_LABEL.NB_ELIGIBLE}'
-            AND s1.date = s.date
-            AND s1.method = '${STAT_METHOD.DATABASE}'
-            AND s1.stat_key = '${STAT_KEY.BULK_CONTACTS}'
-            AND s1.period = '${STAT_PERIOD.MONTHLY}' ) as "${STAT_LABEL.NB_ELIGIBLE}"`
-      ),
-      db.raw(
-        `(SELECT s2.value
-            FROM public.matomo_stats as s2
-            WHERE s2.stat_label = '${STAT_LABEL.NB_UNELIGIBLE}'
-            AND s2.date = s.date
-            AND s2.method = '${STAT_METHOD.DATABASE}'
-            AND s2.stat_key = '${STAT_KEY.BULK_CONTACTS}'
-            AND s2.period = '${STAT_PERIOD.MONTHLY}') as "${STAT_LABEL.NB_UNELIGIBLE}"`
-      ),
-      db.raw(
-        `(SELECT s3.value
-            FROM public.matomo_stats as s3
-            WHERE s3.stat_label = '${STAT_LABEL.NB_TOTAL}'
-            AND s3.date = s.date
-            AND s3.method = '${STAT_METHOD.DATABASE}'
-            AND s3.stat_key = '${STAT_KEY.BULK_CONTACTS}'
-            AND s3.period = '${STAT_PERIOD.MONTHLY}') as "${STAT_LABEL.NB_TOTAL}"`
-      )
-    )
-    .where('s.method', STAT_METHOD.DATABASE)
-    .andWhere('s.stat_key', STAT_KEY.BULK_CONTACTS)
-    .andWhere('s.period', STAT_PERIOD.MONTHLY)
-    .orderBy('s.date', 'ASC')
-    .groupBy('s.date');
-});
+const GET = async () => {
+  return await kdb
+    .selectFrom('matomo_stats as s')
+    .select([
+      sql<string>`TO_CHAR(date::date, 'yyyy-mm-dd')`.as('date'),
+      (eb) =>
+        eb
+          .selectFrom('matomo_stats as s1')
+          .select('s1.value')
+          .where('s1.stat_label', '=', STAT_LABEL.NB_ELIGIBLE)
+          .where('s1.date', '=', eb.ref('s.date'))
+          .where('s1.method', '=', STAT_METHOD.DATABASE)
+          .where('s1.stat_key', '=', STAT_KEY.BULK_CONTACTS)
+          .where('s1.period', '=', STAT_PERIOD.MONTHLY)
+          .as(STAT_LABEL.NB_ELIGIBLE),
+      (eb) =>
+        eb
+          .selectFrom('matomo_stats as s2')
+          .select('s2.value')
+          .where('s2.stat_label', '=', STAT_LABEL.NB_UNELIGIBLE)
+          .where('s2.date', '=', eb.ref('s.date'))
+          .where('s2.method', '=', STAT_METHOD.DATABASE)
+          .where('s2.stat_key', '=', STAT_KEY.BULK_CONTACTS)
+          .where('s2.period', '=', STAT_PERIOD.MONTHLY)
+          .as(STAT_LABEL.NB_UNELIGIBLE),
+      (eb) =>
+        eb
+          .selectFrom('matomo_stats as s3')
+          .select('s3.value')
+          .where('s3.stat_label', '=', STAT_LABEL.NB_TOTAL)
+          .where('s3.date', '=', eb.ref('s.date'))
+          .where('s3.method', '=', STAT_METHOD.DATABASE)
+          .where('s3.stat_key', '=', STAT_KEY.BULK_CONTACTS)
+          .where('s3.period', '=', STAT_PERIOD.MONTHLY)
+          .as(STAT_LABEL.NB_TOTAL),
+    ])
+    .where('s.method', '=', STAT_METHOD.DATABASE)
+    .where('s.stat_key', '=', STAT_KEY.BULK_CONTACTS)
+    .where('s.period', '=', STAT_PERIOD.MONTHLY)
+    .orderBy('s.date', 'asc')
+    .groupBy('s.date')
+    .execute();
+};
+
+export default handleRouteErrors({ GET });

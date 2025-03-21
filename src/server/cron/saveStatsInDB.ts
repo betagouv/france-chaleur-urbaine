@@ -2,6 +2,7 @@ import * as Sentry from '@sentry/node';
 
 import db from '@/server/db';
 import base from '@/server/db/airtable';
+import { kdb, sql } from '@/server/db/kysely';
 import { bulkFetchRangeFromMatomo } from '@/server/services/matomo';
 import { type MatomoActionMetrics, type MatomoPageMetrics, type MatomoUniqueVisitorsMetrics } from '@/server/services/matomo_types';
 import { Airtable } from '@/types/enum/Airtable';
@@ -159,50 +160,72 @@ const saveBulkContactStats = async (startDate: string, endDate: string) => {
   start.setUTCHours(0, 0, 0);
   const end = new Date(endDate);
   end.setUTCHours(23, 59, 59);
-  const results = await db('eligibility_tests')
-    .select()
-    .whereNull('in_error')
-    .andWhereBetween('created_at', [start, end])
-    .orderBy('created_at', 'asc');
+  const [legacyEligibilityTestsStats, proEligibilityTestsStats] = await Promise.all([
+    kdb
+      .selectFrom('eligibility_tests')
+      .select([
+        sql<number>`sum(COALESCE(addresses_count, 0) - COALESCE(error_count, 0))`.as('total'),
+        sql<number>`sum(COALESCE(eligibile_count, 0))`.as('nbEligible'),
+      ])
+      .where('in_error', 'is', null)
+      .where('created_at', '>=', start)
+      .where('created_at', '<=', end)
+      .executeTakeFirst(),
+    kdb
+      .selectFrom('pro_eligibility_tests')
+      .leftJoin('pro_eligibility_tests_addresses', 'pro_eligibility_tests.id', 'pro_eligibility_tests_addresses.test_id')
+      .select([
+        sql<number>`count(pro_eligibility_tests_addresses.id)`.as('total'),
+        sql<number>`count(case when eligibility_status->'isEligible' = 'true' then 1 end)`.as('nbEligible'),
+      ])
+      .where('ban_valid', 'is', true)
+      .where('pro_eligibility_tests.created_at', '>=', start)
+      .where('pro_eligibility_tests.created_at', '<=', end)
+      .executeTakeFirst(),
+  ]);
 
-  if (results[0]) {
-    const monthValue = {
-      nbTotal: 0,
-      nbEligible: 0,
-      nbUneligible: 0,
-    };
-    results.map((value: any) => {
-      monthValue.nbTotal += value.addresses_count - value.error_count;
-      monthValue.nbEligible += value.eligibile_count;
-      monthValue.nbUneligible = monthValue.nbTotal - monthValue.nbEligible;
-    });
-    await Promise.all([
-      db('matomo_stats').insert({
+  const monthValue = {
+    nbTotal: (legacyEligibilityTestsStats?.total ?? 0) + (proEligibilityTestsStats?.total ?? 0),
+    nbEligible: (legacyEligibilityTestsStats?.nbEligible ?? 0) + (proEligibilityTestsStats?.nbEligible ?? 0),
+    nbUneligible: 0,
+  };
+  monthValue.nbUneligible = monthValue.nbTotal - monthValue.nbEligible;
+
+  await Promise.all([
+    kdb
+      .insertInto('matomo_stats')
+      .values({
         method: STAT_METHOD.DATABASE,
         stat_key: STAT_KEY.BULK_CONTACTS,
         date: startDate,
         period: STAT_PERIOD.MONTHLY,
         value: monthValue.nbEligible,
         stat_label: STAT_LABEL.NB_ELIGIBLE,
-      }),
-      db('matomo_stats').insert({
+      })
+      .execute(),
+    kdb
+      .insertInto('matomo_stats')
+      .values({
         method: STAT_METHOD.DATABASE,
         stat_key: STAT_KEY.BULK_CONTACTS,
         date: startDate,
         period: STAT_PERIOD.MONTHLY,
         value: monthValue.nbUneligible,
         stat_label: STAT_LABEL.NB_UNELIGIBLE,
-      }),
-      db('matomo_stats').insert({
+      })
+      .execute(),
+    kdb
+      .insertInto('matomo_stats')
+      .values({
         method: STAT_METHOD.DATABASE,
         stat_key: STAT_KEY.BULK_CONTACTS,
         date: startDate,
         period: STAT_PERIOD.MONTHLY,
         value: monthValue.nbTotal,
         stat_label: STAT_LABEL.NB_TOTAL,
-      }),
-    ]);
-  }
+      })
+      .execute(),
+  ]);
   console.log(`saveStatsInDB END : saveBulkContactStats`);
 };
 
