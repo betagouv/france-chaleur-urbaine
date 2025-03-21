@@ -15,10 +15,11 @@ import { FCUArrowIcon } from '@/components/ui/Icon';
 import Link from '@/components/ui/Link';
 import Notice from '@/components/ui/Notice';
 import Section, { SectionContent, SectionHeading } from '@/components/ui/Section';
-import Text from '@/components/ui/Text';
 import useEligibilityForm from '@/hooks/useEligibilityForm';
 import { type LocationInfoResponse } from '@/pages/api/location-infos';
 import { useServices } from '@/services';
+import { trackEvent } from '@/services/analytics';
+import { getNetworkEligibilityDistances } from '@/services/eligibility';
 import { type AddressDetail } from '@/types/HeatNetworksResponse';
 import cx from '@/utils/cx';
 import { postFetchJSON } from '@/utils/network';
@@ -97,6 +98,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
   }, [advancedMode]);
 
   const { open: displayContactForm, EligibilityFormModal } = useEligibilityForm({
+    context: 'comparateur',
     id: `eligibility-form-comparateur`,
     address: {
       address,
@@ -166,10 +168,10 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
               </Link>{' '}
               est à <strong>{nearestReseauDeChaleur.distance}m</strong> de votre adresse.
               {!nearestReseauDeChaleur?.PM && (
-                <Text color="warning" my="1v" size="xs">
+                <p className="fr-text--sm font-bold fr-my-1v">
                   À noter qu’en l'absence de données tarifaires pour ce réseau, les simulations se basent sur le prix de la chaleur moyen
                   des réseaux français.
-                </Text>
+                </p>
               )}
               {addressDetail?.network.inPDP ? noticePDP : addressDetail?.network.isClasse ? noticeClasse : undefined}
               <p className="text-sm my-5">
@@ -224,16 +226,17 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
             <>
               Le réseau de froid{' '}
               <Link
+                variant="link"
                 href={`/reseaux/${nearestReseauDeFroid['Identifiant reseau']}?address=${encodeURIComponent(address as string)}`}
                 isExternal
               >
                 <strong>{nearestReseauDeFroid.nom_reseau}</strong>
               </Link>{' '}
               est à <strong>{nearestReseauDeFroid.distance}m</strong> de votre adresse.
-              <Text color="warning" my="1v" size="xs">
+              <p className="fr-text--sm font-bold fr-my-1v">
                 À noter qu’en l'absence de données tarifaires pour ce réseau, les simulations se basent sur le prix du froid moyen des
                 réseaux français.
-              </Text>
+              </p>
               {addressDetail?.network.inPDP ? noticePDP : addressDetail?.network.isClasse ? noticeClasse : undefined}
               {lngLat && (
                 <div className="fr-text--xs">
@@ -334,18 +337,28 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
             network,
             geoAddress: selectedAddress,
           });
+          trackEvent('Eligibilité|Formulaire de test - Comparateur - Envoi', selectedAddress.properties.label);
           const infos: LocationInfoResponse = await postFetchJSON('/api/location-infos', {
             lon,
             lat,
             city: selectedAddress.properties.city,
             cityCode: selectedAddress.properties.citycode,
           });
+          console.info('locations-infos', infos);
+          const isEligible =
+            infos.nearestReseauDeChaleur &&
+            infos.nearestReseauDeChaleur.distance <
+              getNetworkEligibilityDistances(infos.nearestReseauDeChaleur['Identifiant reseau']).eligibleDistance;
+          trackEvent(
+            `Eligibilité|Formulaire de test - Comparateur - Adresse ${isEligible ? 'É' : 'Iné'}ligible`,
+            selectedAddress.properties.label
+          );
+
           setNearestReseauDeChaleur(infos.nearestReseauDeChaleur);
           setNearestReseauDeFroid(infos.nearestReseauDeFroid);
 
           if (!infos.infosVille) {
             setAddressError(true);
-
             return;
           }
 
@@ -354,8 +367,6 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
           if (infos.nearestReseauDeChaleur || infos.nearestReseauDeFroid) {
             setLngLat(selectedAddress.geometry.coordinates);
           }
-
-          console.debug('locations-infos', infos);
 
           engine.setSituation(
             ObjectEntries(addresseToPublicodesRules).reduce(

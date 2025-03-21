@@ -1,6 +1,7 @@
 import XLSX from 'xlsx';
 
 import db from '@/server/db';
+import { getNetworkEligibilityDistances } from '@/services/eligibility';
 import { EXPORT_FORMAT } from '@/types/enum/ExportFormat';
 import { type CityNetwork, type HeatNetwork } from '@/types/HeatNetworksResponse';
 
@@ -246,13 +247,6 @@ export const getExport = (addresses: any[]) => {
   XLSX.utils.book_append_sheet(wb, ws, 'Résultats');
   XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(legend), 'Légende');
   return XLSX.write(wb, { bookType: EXPORT_FORMAT.XLSX, type: 'base64' });
-};
-
-export const getNetworkEligibilityDistances = (networkId: string) => {
-  // cas spécifique pour les réseaux de Paris
-  return ['7501C', '7511C'].includes(networkId)
-    ? { eligibleDistance: 100, veryEligibleDistance: 60 }
-    : { eligibleDistance: 200, veryEligibleDistance: 100 };
 };
 
 export const getCityEligilityStatus = async (city: string): Promise<CityNetwork> => {

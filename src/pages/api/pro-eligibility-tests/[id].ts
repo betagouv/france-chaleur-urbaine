@@ -30,11 +30,13 @@ const DELETE = async (req: NextApiRequest) => {
   const testId = await z.string().parseAsync(req.query.id);
   ensureValidPermissions(req, testId);
 
-  await kdb.transaction().execute(async (trx) => {
-    await trx.deleteFrom('pro_eligibility_tests_addresses').where('test_id', '=', testId).execute();
-    await trx.deleteFrom('pro_eligibility_tests').where('id', '=', testId).execute();
-    await trx.deleteFrom('jobs').where('entity_id', '=', testId).execute();
-  });
+  await kdb
+    .updateTable('pro_eligibility_tests')
+    .where('id', '=', testId)
+    .set({
+      deleted_at: new Date(),
+    })
+    .execute();
 };
 
 export const zProEligibilityTestFileRequest = z.strictObject({

@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import XLSX from 'xlsx';
 
 import { reseauxDeChaleurFilters } from '@/components/Map/layers/filters';
-import { filtresEnergies } from '@/components/Map/map-configuration';
+import { filtresEnergies, percentageMaxInterval } from '@/components/Map/map-configuration';
 import ReseauxDeChaleurFilters, { type ReseauxDeChaleurFiltersProps } from '@/components/ReseauxDeChaleurFilters';
 import Box from '@/components/ui/Box';
 import Drawer from '@/components/ui/Drawer';
@@ -14,12 +14,12 @@ import Icon from '@/components/ui/Icon';
 import Link from '@/components/ui/Link';
 import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
 import Text from '@/components/ui/Text';
-import useReseauxDeChaleurFilters, { type Filters } from '@/hooks/useReseauxDeChaleurFilters';
+import useReseauxDeChaleurFilters, { type FilterWithLimits } from '@/hooks/useReseauxDeChaleurFilters';
 import { gestionnairesFilters, useServices } from '@/services';
 import { type NetworkToCompare } from '@/types/Summary/Network';
 import { downloadFile } from '@/utils/browser';
 import { isDefined } from '@/utils/core';
-import { type Interval } from '@/utils/interval';
+import { intervalsEqual, type Interval } from '@/utils/interval';
 import { compareFrenchStrings } from '@/utils/strings';
 
 import NetworkName from './NetworkName';
@@ -85,14 +85,12 @@ const FiltersBox = styled(Box)`
     font-size: 0.9rem;
   }
 `;
-export function filterReseauxDeChaleur(reseauxDeChaleur: NetworkToCompare[], filters: Filters): NetworkToCompare[] {
-  const filterKeys = Object.keys(filters);
-
+export function filterReseauxDeChaleur(reseauxDeChaleur: NetworkToCompare[], filters: FilterWithLimits): NetworkToCompare[] {
   return reseauxDeChaleur.filter((reseau) => {
     let showReseau = true;
 
     reseauxDeChaleurFilters
-      .filter(({ confKey }) => filterKeys.includes(confKey))
+      .filter(({ confKey }) => !intervalsEqual(filters[confKey], filters.limits[confKey]))
       .forEach((reseauxDeChaleurFilter) => {
         const filter = filters[reseauxDeChaleurFilter.confKey];
         const value = reseau[reseauxDeChaleurFilter.valueKey];
@@ -102,7 +100,7 @@ export function filterReseauxDeChaleur(reseauxDeChaleur: NetworkToCompare[], fil
         }
       });
     filtresEnergies
-      .filter(({ confKey }) => filterKeys.includes(`energie_ratio_${confKey}`))
+      .filter(({ confKey }) => !intervalsEqual(filters[`energie_ratio_${confKey}`], percentageMaxInterval))
       .forEach((filtreEnergie) => {
         const filter = filters[`energie_ratio_${filtreEnergie.confKey}`];
         const value = reseau[`energie_ratio_${filtreEnergie.confKey}`];

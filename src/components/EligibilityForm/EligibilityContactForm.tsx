@@ -3,16 +3,17 @@ import React, { useCallback, useState } from 'react';
 import { EligibilityFormAddress, EligibilityFormContact, EligibilityFormMessageConfirmation } from '@/components/EligibilityForm';
 import Box from '@/components/ui/Box';
 import Link from '@/components/ui/Link';
-import useContactFormFCU from '@/hooks/useContactFormFCU';
+import useContactFormFCU, { type ContactFormContext } from '@/hooks/useContactFormFCU';
 
 import { ContactFormWrapper, EligibilityContactFormStyle } from './EligibilityContactForm.style';
 
 export type EligibilityContactFormProps = {
   fullAddress: any;
   onSubmit?: (data?: Record<string, any>) => void;
+  context?: ContactFormContext;
 };
 
-const EligibilityContactForm: React.FC<EligibilityContactFormProps> = ({ fullAddress, onSubmit }) => {
+const EligibilityContactForm: React.FC<EligibilityContactFormProps> = ({ fullAddress, onSubmit, context }) => {
   const {
     addressData,
     contactReady,
@@ -28,13 +29,13 @@ const EligibilityContactForm: React.FC<EligibilityContactFormProps> = ({ fullAdd
 
   const onSuccess = useCallback(
     // Notification of success is done directly when receving the result, because of the heatingtype late asking
-    (data: any) => handleOnSuccessAddress(data, true, true),
+    (data: any) => handleOnSuccessAddress(data, context, true),
     [handleOnSuccessAddress]
   );
   const handleSubmitForm = async (data: Record<string, any>) => {
     try {
       setContactFormError(false);
-      await handleOnSubmitContact(data, true);
+      await handleOnSubmitContact(data, context);
       onSubmit?.(data);
       setFormIsSend(true);
     } catch (err) {

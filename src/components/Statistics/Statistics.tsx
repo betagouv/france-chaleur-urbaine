@@ -126,7 +126,9 @@ const Statistics = () => {
         (entry[STAT_LABEL.FORM_TEST_CARTE_UNELIGIBLE] ?? 0) +
         (entry[STAT_LABEL.FORM_TEST_CARTE_ELIGIBLE] ?? 0) +
         (entry[STAT_LABEL.FORM_TEST_FICHE_RESEAU_UNELIGIBLE] ?? 0) +
-        (entry[STAT_LABEL.FORM_TEST_FICHE_RESEAU_ELIGIBLE] ?? 0)
+        (entry[STAT_LABEL.FORM_TEST_FICHE_RESEAU_ELIGIBLE] ?? 0) +
+        (entry[STAT_LABEL.FORM_TEST_COMPARATEUR_UNELIGIBLE] ?? 0) +
+        (entry[STAT_LABEL.FORM_TEST_COMPARATEUR_ELIGIBLE] ?? 0)
       );
     }
   });
@@ -226,11 +228,14 @@ const Statistics = () => {
             (entry[STAT_LABEL.FORM_TEST_CARTE_UNELIGIBLE] ?? 0) +
             (entry[STAT_LABEL.FORM_TEST_CARTE_ELIGIBLE] ?? 0) +
             (entry[STAT_LABEL.FORM_TEST_FICHE_RESEAU_UNELIGIBLE] ?? 0) +
-            (entry[STAT_LABEL.FORM_TEST_FICHE_RESEAU_ELIGIBLE] ?? 0);
+            (entry[STAT_LABEL.FORM_TEST_FICHE_RESEAU_ELIGIBLE] ?? 0) +
+            (entry[STAT_LABEL.FORM_TEST_COMPARATEUR_UNELIGIBLE] ?? 0) +
+            (entry[STAT_LABEL.FORM_TEST_COMPARATEUR_ELIGIBLE] ?? 0);
           nbTotalEligible +=
             (entry[STAT_LABEL.FORM_TEST_ELIGIBLE] ?? 0) +
             (entry[STAT_LABEL.FORM_TEST_CARTE_ELIGIBLE] ?? 0) +
-            (entry[STAT_LABEL.FORM_TEST_FICHE_RESEAU_ELIGIBLE] ?? 0);
+            (entry[STAT_LABEL.FORM_TEST_FICHE_RESEAU_ELIGIBLE] ?? 0) +
+            (entry[STAT_LABEL.FORM_TEST_COMPARATEUR_ELIGIBLE] ?? 0);
         }
       });
     if (nbTotalEligible && nbTotal) {

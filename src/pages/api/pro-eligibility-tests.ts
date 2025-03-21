@@ -10,6 +10,7 @@ const GET = async (req: NextApiRequest) => {
   const eligibilityTests = await kdb
     .selectFrom('pro_eligibility_tests')
     .where('user_id', '=', req.user.id)
+    .where('deleted_at', 'is', null)
     .selectAll()
     .select((eb) => [
       eb

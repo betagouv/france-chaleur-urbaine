@@ -9,6 +9,17 @@ import { type FormDemandCreation } from '@/types/Summary/Demand';
 
 const warningMessage = "N'oubliez pas d'indiquer votre type de chauffage.";
 
+export type ContactFormContext = 'comparateur' | 'carte';
+
+const contextToAnalyticsPrefix = {
+  comparateur: 'Comparateur',
+  carte: 'Carte',
+} as const;
+
+function getContextPrefix(context?: ContactFormContext) {
+  return context && contextToAnalyticsPrefix[context] ? (` - ${contextToAnalyticsPrefix[context]}` as const) : '';
+}
+
 const useContactFormFCU = () => {
   const [addressData, setAddressData] = useState<AddressDataType>({});
   const [contactReady, setContactReady] = useState(false);
@@ -27,18 +38,18 @@ const useContactFormFCU = () => {
     setLoadingStatus('idle');
   }, []);
 
-  const handleOnFetchAddress = ({ address }: { address: any }, fromMap?: boolean) => {
+  const handleOnFetchAddress = ({ address }: { address: any }, context?: ContactFormContext) => {
     setLoadingStatus('loading');
     setMessageSent(false);
     setMessageReceived(false);
-    trackEvent(`Eligibilité|Formulaire de test${fromMap ? ' - Carte' : ''} - Envoi`, address);
+    trackEvent(`Eligibilité|Formulaire de test${getContextPrefix(context)} - Envoi`, address);
   };
 
-  const handleOnSuccessAddress = useCallback((data: AddressDataType, fromMap?: boolean, dontNotify?: boolean) => {
+  const handleOnSuccessAddress = useCallback((data: AddressDataType, context?: ContactFormContext, dontNotify?: boolean) => {
     const { address, heatingType, eligibility } = data;
     if (!dontNotify) {
       trackEvent(
-        `Eligibilité|Formulaire de test${fromMap ? ' - Carte' : ''} - Adresse ${eligibility?.isEligible ? 'É' : 'Iné'}ligible`,
+        `Eligibilité|Formulaire de test${getContextPrefix(context)} - Adresse ${eligibility?.isEligible ? 'É' : 'Iné'}ligible`,
         address || 'Adresse indefini'
       );
     }
@@ -49,7 +60,7 @@ const useContactFormFCU = () => {
   }, []);
 
   const handleOnSubmitContact = useCallback(
-    async (data?: AddressDataType, fromMap?: boolean) => {
+    async (data?: AddressDataType, context?: ContactFormContext) => {
       if (data) {
         if (data.structure !== 'Tertiaire') {
           data.company = '';
@@ -109,7 +120,7 @@ const useContactFormFCU = () => {
       setMessageSent(true);
       const { eligibility, address = '' } = (data as AddressDataType) || {};
       trackEvent(
-        `Eligibilité|Formulaire de contact ${eligibility?.isEligible ? 'é' : 'iné'}ligible${fromMap ? ' - Carte' : ''} - Envoi`,
+        `Eligibilité|Formulaire de contact ${eligibility?.isEligible ? 'é' : 'iné'}ligible${getContextPrefix(context)} - Envoi`,
         address
       );
       setAddressData({
