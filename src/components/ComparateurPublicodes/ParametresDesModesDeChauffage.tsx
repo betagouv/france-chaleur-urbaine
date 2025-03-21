@@ -3,7 +3,7 @@ import React from 'react';
 import Input from '@/components/form/publicodes/Input';
 import RadioInput from '@/components/form/publicodes/Radio';
 import Select from '@/components/form/publicodes/Select';
-import { UrlStateAccordion as Accordion, UrlStateAccordion } from '@/components/ui/Accordion';
+import { UrlStateAccordion, UrlStateAccordion as Accordion } from '@/components/ui/Accordion';
 import useArrayQueryState from '@/hooks/useArrayQueryState';
 
 import { Title } from './ComparateurPublicodes.style';

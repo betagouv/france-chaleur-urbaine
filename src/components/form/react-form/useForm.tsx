@@ -1,10 +1,10 @@
 import { type SelectProps as DSFRSelectProps } from '@codegouvfr/react-dsfr/SelectNext';
 import {
-  useForm as useTanStackForm,
+  type AnyFieldApi,
+  type FormAsyncValidateOrFn,
   type FormOptions,
   type FormValidateOrFn,
-  type FormAsyncValidateOrFn,
-  type AnyFieldApi,
+  useForm as useTanStackForm,
   useStore,
 } from '@tanstack/react-form';
 import { useEffect } from 'react';

@@ -1,7 +1,7 @@
 import { type Interval } from '@/utils/interval';
 import { formatMWhAn } from '@/utils/strings';
 
-import { ifHoverElse, type PopupStyleHelpers, type MapSourceLayersSpecification } from './common';
+import { ifHoverElse, type MapSourceLayersSpecification, type PopupStyleHelpers } from './common';
 
 export const communesFortPotentielPourCreationReseauxChaleurLayerColor = '#FF8329';
 export const communesFortPotentielPourCreationReseauxChaleurLayerOpacity = 0.7;

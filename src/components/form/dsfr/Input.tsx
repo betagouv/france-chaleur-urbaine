@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react';
 
-import { Input as StyledDSFRInput, type InputSize, type InputProps as InputPropsStyled } from './Input.styles';
+import { Input as StyledDSFRInput, type InputProps as InputPropsStyled, type InputSize } from './Input.styles';
 
 export type InputProps = InputPropsStyled & {
   size?: InputSize;

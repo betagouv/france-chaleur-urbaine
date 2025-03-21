@@ -3,7 +3,7 @@ import Button from '@/components/ui/Button';
 import { useModal } from '@/components/ui/ModalSimple';
 import { usePost } from '@/hooks/useApi';
 import { notify, toastErrors } from '@/services/notification';
-import { zRenameProEligibilityTestRequest, type RenameProEligibilityTestRequest } from '@/validation/pro-eligibility-test';
+import { type RenameProEligibilityTestRequest, zRenameProEligibilityTestRequest } from '@/validation/pro-eligibility-test';
 
 type RenameEligibilityTestFormProps = {
   testId: string;

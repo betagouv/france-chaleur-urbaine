@@ -1,7 +1,7 @@
 import formidable from 'formidable';
 import { z } from 'zod';
 
-import { riskyExtensions, filesLimits, zContributionFormData } from '@/components/ContributionForm/ContributionForm';
+import { filesLimits, riskyExtensions, zContributionFormData } from '@/components/ContributionForm/ContributionForm';
 import { AirtableDB } from '@/server/db/airtable';
 import { logger } from '@/server/helpers/logger';
 import { createRateLimiter } from '@/server/helpers/rate-limit';

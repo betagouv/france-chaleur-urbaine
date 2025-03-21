@@ -1,7 +1,7 @@
 import { darken } from '@/utils/color';
 import { formatMWhAn, formatMWhString } from '@/utils/strings';
 
-import { type LegendInterval, type ColorThreshold, type MapSourceLayersSpecification, ifHoverElse, type PopupStyleHelpers } from './common';
+import { type ColorThreshold, ifHoverElse, type LegendInterval, type MapSourceLayersSpecification, type PopupStyleHelpers } from './common';
 
 const besoinsEnChaleurIndustrieCommunesDefaultColor = '#fbf2e7';
 const besoinsEnChaleurIndustrieCommunesMaxValue = 1_500_000;

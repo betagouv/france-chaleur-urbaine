@@ -3,7 +3,7 @@ import { HttpStatusCode } from 'axios';
 import { errors as formidableErrors } from 'formidable';
 import type { NextApiHandler, NextApiRequest, NextApiResponse } from 'next';
 import { type User } from 'next-auth';
-import { type ZodRawShape, z } from 'zod';
+import { z, type ZodRawShape } from 'zod';
 
 import { getServerSession } from '@/server/authentication';
 import { type UserRole } from '@/types/enum/UserRole';

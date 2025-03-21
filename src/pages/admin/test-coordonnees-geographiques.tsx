@@ -1,5 +1,5 @@
 import Papa from 'papaparse';
-import { useState, type ChangeEvent } from 'react';
+import { type ChangeEvent, useState } from 'react';
 
 import Upload from '@/components/form/dsfr/Upload';
 import SimplePage from '@/components/shared/page/SimplePage';

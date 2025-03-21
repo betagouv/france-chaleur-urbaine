@@ -1,6 +1,6 @@
 import Button from '@codegouvfr/react-dsfr/Button';
 import Input from '@codegouvfr/react-dsfr/Input';
-import { type ColumnDefTemplate, type CellContext } from '@tanstack/react-table';
+import { type CellContext, type ColumnDefTemplate } from '@tanstack/react-table';
 import { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import XLSX from 'xlsx';
@@ -19,7 +19,7 @@ import { gestionnairesFilters, useServices } from '@/services';
 import { type NetworkToCompare } from '@/types/Summary/Network';
 import { downloadFile } from '@/utils/browser';
 import { isDefined } from '@/utils/core';
-import { intervalsEqual, type Interval } from '@/utils/interval';
+import { type Interval, intervalsEqual } from '@/utils/interval';
 import { compareFrenchStrings } from '@/utils/strings';
 
 import NetworkName from './NetworkName';

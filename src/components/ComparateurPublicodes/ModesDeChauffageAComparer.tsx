@@ -9,7 +9,7 @@ import useArrayQueryState from '@/hooks/useArrayQueryState';
 import { type LocationInfoResponse } from '@/pages/api/location-infos';
 
 import { Title } from './ComparateurPublicodes.style';
-import { modesDeChauffage, type ModeDeChauffage } from './mappings';
+import { type ModeDeChauffage, modesDeChauffage } from './mappings';
 import { DisclaimerButton } from './Placeholder';
 import SelectClimatisation from './SelectClimatisation';
 import SelectProductionECS from './SelectProductionECS';

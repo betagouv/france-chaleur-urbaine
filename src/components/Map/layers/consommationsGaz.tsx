@@ -4,7 +4,7 @@ import { type GasSummary } from '@/types/Summary/Gas';
 import { formatMWhAn } from '@/utils/strings';
 import { ObjectEntries } from '@/utils/typescript';
 
-import { ifHoverElse, intermediateTileLayersMinZoom, type PopupStyleHelpers, type MapSourceLayersSpecification } from './common';
+import { ifHoverElse, intermediateTileLayersMinZoom, type MapSourceLayersSpecification, type PopupStyleHelpers } from './common';
 
 export const consommationsGazLayerStyle = {
   T: '#0032E5',

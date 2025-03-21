@@ -1,4 +1,4 @@
-import { ifHoverElse, type PopupStyleHelpers, type MapSourceLayersSpecification } from './common';
+import { ifHoverElse, type MapSourceLayersSpecification, type PopupStyleHelpers } from './common';
 
 export const adressesEligiblesLayersSpec = [
   {

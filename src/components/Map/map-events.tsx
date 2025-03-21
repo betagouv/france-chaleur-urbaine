@@ -4,10 +4,10 @@ import { explode } from '@turf/explode';
 import { lineString, point } from '@turf/helpers';
 import { nearestPoint } from '@turf/nearest-point';
 import { nearestPointOnLine } from '@turf/nearest-point-on-line';
-import { type GeometryCollection, type Point, type Position, type Geometry, type Feature } from 'geojson';
+import { type Feature, type Geometry, type GeometryCollection, type Point, type Position } from 'geojson';
 import { type MapGeoJSONFeature } from 'maplibre-gl';
 import { useEffect, useRef, useState } from 'react';
-import { Popup, type MapMouseEvent, type MapRef } from 'react-map-gl/maplibre';
+import { type MapMouseEvent, type MapRef, Popup } from 'react-map-gl/maplibre';
 
 import { isDevModeEnabled } from '@/hooks/useDevMode';
 import { type SourceId } from '@/server/services/tiles.config';

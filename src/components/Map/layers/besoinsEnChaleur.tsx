@@ -3,7 +3,7 @@ import { type DataDrivenPropertyValueSpecification } from 'maplibre-gl';
 import { darken } from '@/utils/color';
 import { formatMWhAn, formatMWhString } from '@/utils/strings';
 
-import { type LegendInterval, type ColorThreshold, type MapSourceLayersSpecification, ifHoverElse, type PopupStyleHelpers } from './common';
+import { type ColorThreshold, ifHoverElse, type LegendInterval, type MapSourceLayersSpecification, type PopupStyleHelpers } from './common';
 
 const besoinsBatimentsDefaultColor = '#ffffff';
 const besoinsEnChaleurMaxValue = 6_000;

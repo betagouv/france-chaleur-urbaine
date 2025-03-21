@@ -3,7 +3,7 @@ import { type NetworkSummary } from '@/types/Summary/Network';
 import { isDefined } from '@/utils/core';
 import { prettyFormatNumber } from '@/utils/strings';
 
-import { ifHoverElse, type PopupStyleHelpers, type MapSourceLayersSpecification } from './common';
+import { ifHoverElse, type MapSourceLayersSpecification, type PopupStyleHelpers } from './common';
 import { buildFiltreGestionnaire, buildFiltreIdentifiantReseau } from './filters';
 
 export const reseauxDeFroidColor = '#0094FF';

@@ -7,7 +7,7 @@ import React from 'react';
 import styled, { css } from 'styled-components';
 
 import { FooterConsentManagementItem } from '@/components/ConsentBanner';
-import { HeaderQuickAccessItem, type HeaderProps } from '@/components/dsfr/Header';
+import { type HeaderProps, HeaderQuickAccessItem } from '@/components/dsfr/Header';
 import SEO, { type SEOProps } from '@/components/SEO';
 import Box from '@/components/ui/Box';
 import Link from '@/components/ui/Link';

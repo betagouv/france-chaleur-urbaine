@@ -1,6 +1,6 @@
 import { formatTypeEnergieChauffage } from '@/utils/format';
 
-import { ifHoverElse, type PopupStyleHelpers, type MapSourceLayersSpecification } from './common';
+import { ifHoverElse, type MapSourceLayersSpecification, type PopupStyleHelpers } from './common';
 
 export const demandesEligibiliteLayerStyle = {
   fill: { color: '#FFFFFF', size: 4 },

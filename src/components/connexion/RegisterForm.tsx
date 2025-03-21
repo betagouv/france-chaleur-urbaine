@@ -11,7 +11,7 @@ import { toastErrors } from '@/services/notification';
 import { userRolesInscription } from '@/types/enum/UserRole';
 import { postFetchJSON } from '@/utils/network';
 import { upperCaseFirstChar } from '@/utils/strings';
-import { zCredentialsSchema, zIdentitySchema, type CredentialsSchema, type IdentitySchema } from '@/validation/user';
+import { type CredentialsSchema, type IdentitySchema, zCredentialsSchema, zIdentitySchema } from '@/validation/user';
 
 type FormStep = {
   label: string;

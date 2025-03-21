@@ -1,8 +1,8 @@
 import { type MapConfiguration } from '@/components/Map/map-configuration';
-import { type PopupHandler, type MapLayerSpecification } from '@/components/Map/map-layers';
+import { type MapLayerSpecification, type PopupHandler } from '@/components/Map/map-layers';
 import Text from '@/components/ui/Text';
 
-import { ifHoverElse, type PopupStyleHelpers, type LayerSymbolSpecification, type MapSourceLayersSpecification } from '../common';
+import { ifHoverElse, type LayerSymbolSpecification, type MapSourceLayersSpecification, type PopupStyleHelpers } from '../common';
 
 export const enrrMobilisablesChaleurFataleLayerSymbols = [
   {

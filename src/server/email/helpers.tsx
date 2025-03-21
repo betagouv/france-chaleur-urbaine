@@ -1,5 +1,5 @@
 import { Body, Button, Container, Head, Html, Img, Preview, Section } from '@react-email/components';
-import { type PropsWithChildren, type ComponentProps, type CSSProperties } from 'react';
+import { type ComponentProps, type CSSProperties, type PropsWithChildren } from 'react';
 
 export const commonEmailsProps = {
   websiteUrl: process.env.NEXT_PUBLIC_MAP_ORIGIN as string,

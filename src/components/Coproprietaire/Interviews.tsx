@@ -1,4 +1,4 @@
-import { Logo, Container, Quote, Author, Icon } from './Interviews.styles';
+import { Author, Container, Icon, Logo, Quote } from './Interviews.styles';
 import InterviewsVideos from './InterviewsVideos';
 
 const quotes = {

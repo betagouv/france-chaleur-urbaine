@@ -1,7 +1,7 @@
 import { darken } from '@/utils/color';
 import { formatMWhAn, prettyFormatNumber } from '@/utils/strings';
 
-import { ifHoverElse, type PopupStyleHelpers, type MapSourceLayersSpecification } from './common';
+import { ifHoverElse, type MapSourceLayersSpecification, type PopupStyleHelpers } from './common';
 
 export const zonePotentielChaudColor = '#b0cc4e';
 export const zonePotentielFortChaudColor = '#448d60';

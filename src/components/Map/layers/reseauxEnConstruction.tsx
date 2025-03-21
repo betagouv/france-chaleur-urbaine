@@ -1,6 +1,6 @@
 import { type FuturNetworkSummary } from '@/types/Summary/FuturNetwork';
 
-import { ifHoverElse, type PopupStyleHelpers, type MapSourceLayersSpecification } from './common';
+import { ifHoverElse, type MapSourceLayersSpecification, type PopupStyleHelpers } from './common';
 import { buildFiltreGestionnaire } from './filters';
 
 export const reseauxEnConstructionColor = '#DA5DD5';

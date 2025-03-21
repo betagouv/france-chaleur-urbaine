@@ -2,7 +2,7 @@ import Button from '@/components/ui/Button';
 import Link from '@/components/ui/Link';
 import { darken } from '@/utils/color';
 
-import { ifHoverElse, type PopupStyleHelpers, type MapSourceLayersSpecification } from './common';
+import { ifHoverElse, type MapSourceLayersSpecification, type PopupStyleHelpers } from './common';
 
 export const quartiersPrioritairesPolitiqueVille2015anruColor = '#d16d26';
 export const quartiersPrioritairesPolitiqueVille2024Color = '#2f5390';
