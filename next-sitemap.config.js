@@ -64,7 +64,6 @@ const excludedPages = [
   '/viaseva',
 
   // misc pages
-  '/stats-v1',
   '/satisfaction',
 
   // TODO pas encore public, supprimer quand prêt à être indexé
