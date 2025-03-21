@@ -6,7 +6,7 @@ import { darken } from '@/utils/color';
 import { formatTypeEnergieChauffage } from '@/utils/format';
 import { ObjectEntries } from '@/utils/typescript';
 
-import { type MapSourceLayersSpecification, type PopupStyleHelpers, ifHoverElse, intermediateTileLayersMinZoom } from './common';
+import { ifHoverElse, intermediateTileLayersMinZoom, type MapSourceLayersSpecification, type PopupStyleHelpers } from './common';
 
 export const caracteristiquesBatimentsLayerStyle = {
   a: '#0D8A61',

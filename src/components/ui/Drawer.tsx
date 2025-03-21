@@ -1,5 +1,5 @@
 import { cva } from 'class-variance-authority';
-import { Drawer as DrawerVaul, type DialogProps } from 'vaul'; // Use vaul instead of @radix-ui/react-dialog because it does not do nice transitions
+import { type DialogProps, Drawer as DrawerVaul } from 'vaul'; // Use vaul instead of @radix-ui/react-dialog because it does not do nice transitions
 
 import cx from '@/utils/cx';
 

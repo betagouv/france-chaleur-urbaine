@@ -27,13 +27,13 @@ import {
   DeactivatableBox,
   parseURLTabs,
   SingleCheckbox,
+  type TabId,
+  type TabObject,
   Tabs,
   tabs,
   TabScrollablePart,
   Title,
   TrackableCheckableAccordion,
-  type TabId,
-  type TabObject,
 } from './SimpleMapLegend.style';
 import { besoinsEnChaleurIntervals, besoinsEnFroidIntervals } from '../layers/besoinsEnChaleur';
 import { besoinsEnChaleurIndustrieCommunesIntervals } from '../layers/besoinsEnChaleurIndustrieCommunes';

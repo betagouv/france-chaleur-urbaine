@@ -4,7 +4,7 @@ import Input from '@/components/form/dsfr/Input';
 import AsyncButton from '@/components/ui/AsyncButton';
 import Box from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
-import { Table, type ColumnDef } from '@/components/ui/Table';
+import { type ColumnDef, Table } from '@/components/ui/Table';
 import { type AdminManageUserItem } from '@/pages/api/admin/users';
 import { useServices } from '@/services';
 

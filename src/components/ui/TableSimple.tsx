@@ -1,18 +1,18 @@
 import { fr } from '@codegouvfr/react-dsfr';
 import Input from '@codegouvfr/react-dsfr/Input';
 import {
+  type Cell,
+  type ColumnDef as ColumnDefOriginal,
+  type ColumnFiltersState,
+  type FilterFn,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getSortedRowModel,
-  useReactTable,
-  type Cell,
-  type ColumnDef as ColumnDefOriginal,
-  type SortingFn,
-  type ColumnFiltersState,
   type RowData,
+  type SortingFn,
   type SortingState,
-  type FilterFn,
+  useReactTable,
 } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { cva } from 'class-variance-authority';

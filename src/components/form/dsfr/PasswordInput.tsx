@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react';
 
-import { PasswordInput as StyledDSFRPasswordInput, type InputSize } from './Input.styles';
+import { type InputSize, PasswordInput as StyledDSFRPasswordInput } from './Input.styles';
 
 export type InputProps = React.ComponentProps<typeof StyledDSFRPasswordInput> & {
   size?: InputSize;

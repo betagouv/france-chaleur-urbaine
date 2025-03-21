@@ -1,8 +1,8 @@
-import { sql, type Selectable } from 'kysely';
+import { type Selectable, sql } from 'kysely';
 import { limitFunction } from 'p-limit';
 import { type Logger } from 'winston';
 
-import { kdb, type Jobs } from '@/server/db/kysely';
+import { type Jobs, kdb } from '@/server/db/kysely';
 import { getEligilityStatus } from '@/server/services/addresseInformation';
 import { type APIAdresseResult, getAddressesCoordinates } from '@/server/services/api-adresse';
 import { chunk } from '@/utils/array';

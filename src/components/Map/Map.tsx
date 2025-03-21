@@ -6,16 +6,16 @@ import { type LayerSpecification, type MapLibreEvent } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useRouter } from 'next/router';
 import { parseAsJson, parseAsString, useQueryStates } from 'nuqs';
-import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState, type RefObject } from 'react';
+import { type ReactNode, type RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import ReactDOMServer from 'react-dom/server';
 import MapReactGL, {
   AttributionControl,
   GeolocateControl,
   MapProvider,
-  NavigationControl,
-  ScaleControl,
   type MapRef,
   type MapSourceDataEvent,
+  NavigationControl,
+  ScaleControl,
 } from 'react-map-gl/maplibre';
 
 import FileDragNDrop from '@/components/Map/components/FileDragNDrop';
@@ -65,7 +65,7 @@ import useFCUMap, { FCUMapContextProvider } from './MapProvider';
 // https://openmaptiles.geo.data.gouv.fr/styles/osm-bright/style.json
 import rawOsmConfig from './osm.config.json';
 import rawSatelliteConfig from './satellite.config.json';
-import { MapboxStyleSwitcherControl, type MapboxStyleDefinition } from './StyleSwitcher';
+import { type MapboxStyleDefinition, MapboxStyleSwitcherControl } from './StyleSwitcher';
 
 const mapSettings = {
   defaultLongitude: 2.3,

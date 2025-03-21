@@ -1,6 +1,6 @@
 import { darken } from '@/utils/color';
 
-import { ifHoverElse, type PopupStyleHelpers, type MapSourceLayersSpecification } from '../common';
+import { ifHoverElse, type MapSourceLayersSpecification, type PopupStyleHelpers } from '../common';
 
 export const enrrMobilisablesFrichesLayerColor = '#dc958e';
 export const enrrMobilisablesFrichesLayerOpacity = 0.7;

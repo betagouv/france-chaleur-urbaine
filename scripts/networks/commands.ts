@@ -6,11 +6,11 @@ import { logger } from '@/server/helpers/logger';
 import { readFileGeometry } from '@cli/helpers/geo';
 
 import {
-  updateEntityGeometry,
-  insertEntityWithGeometry,
   createPDPFromCommune,
-  updateNetworkHasPDP,
+  insertEntityWithGeometry,
   type NetworkTable,
+  updateEntityGeometry,
+  updateNetworkHasPDP,
 } from './geometry-operations';
 
 const entityTypes = ['rdc', 'rdf', 'pdp', 'futur'] as const;

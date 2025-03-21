@@ -5,7 +5,7 @@ import Input from '@/components/form/dsfr/Input';
 import Box from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
 import Icon from '@/components/ui/Icon';
-import { Table, type ColumnDef } from '@/components/ui/Table';
+import { type ColumnDef, Table } from '@/components/ui/Table';
 import { useServices } from '@/services';
 import { type EligibilityDemand } from '@/types/EligibilityDemand';
 

@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import Box from '@/components/ui/Box';
 import Icon from '@/components/ui/Icon';
-import Section, { SectionSubtitle, SectionTitle, type SectionProps } from '@/components/ui/Section';
+import Section, { type SectionProps, SectionSubtitle, SectionTitle } from '@/components/ui/Section';
 import { partenaires } from '@/data/partenaires/partnerData';
 import { shuffleArray } from '@/utils/array';
 

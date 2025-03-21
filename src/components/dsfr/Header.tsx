@@ -12,7 +12,7 @@ import { useTranslation as useSearchBarTranslation } from '@codegouvfr/react-dsf
 import { SearchButton } from '@codegouvfr/react-dsfr/SearchBar/SearchButton';
 import { cx } from '@codegouvfr/react-dsfr/tools/cx';
 import { setBrandTopAndHomeLinkProps } from '@codegouvfr/react-dsfr/zz_internal/brandTopAndHomeLinkProps';
-import { cloneElement, forwardRef, memo, type ComponentProps, type CSSProperties, type ReactNode } from 'react';
+import { cloneElement, type ComponentProps, type CSSProperties, forwardRef, memo, type ReactNode } from 'react';
 import type { Equals } from 'tsafe';
 import { assert } from 'tsafe/assert';
 import { symToStr } from 'tsafe/symToStr';

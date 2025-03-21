@@ -1,9 +1,9 @@
 import Badge from '@codegouvfr/react-dsfr/Badge';
 import Tabs from '@codegouvfr/react-dsfr/Tabs';
 import { useQueryClient } from '@tanstack/react-query';
-import { type SortingState, type ColumnFiltersState } from '@tanstack/react-table';
+import { type ColumnFiltersState, type SortingState } from '@tanstack/react-table';
 import { useQueryState } from 'nuqs';
-import { useState, useMemo, useEffect, Fragment } from 'react';
+import { Fragment, useEffect, useMemo, useState } from 'react';
 
 import CompleteEligibilityTestForm from '@/components/dashboard/professionnel/eligibility-test/CompleteEligibilityTestForm';
 import RenameEligibilityTestForm from '@/components/dashboard/professionnel/eligibility-test/RenameEligibilityTestForm';
@@ -26,7 +26,7 @@ import { getProEligibilityTestAsXlsx } from '@/services/xlsx/test-adresses';
 import { downloadString } from '@/utils/browser';
 import { formatAsISODate, formatFrenchDate, formatFrenchDateTime } from '@/utils/date';
 import { compareFrenchStrings } from '@/utils/strings';
-import { ObjectEntries, type FlattenKeys } from '@/utils/typescript';
+import { type FlattenKeys, ObjectEntries } from '@/utils/typescript';
 
 const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[] = [
   {

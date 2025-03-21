@@ -3,13 +3,13 @@ import { Pagination, type PaginationProps } from '@codegouvfr/react-dsfr/Paginat
 import LinearProgress from '@mui/material/LinearProgress';
 import {
   DataGrid,
-  gridPageCountSelector,
-  gridPaginationModelSelector,
-  useGridApiContext,
-  useGridSelector,
   type DataGridProps,
   type GridColDef,
+  gridPageCountSelector,
+  gridPaginationModelSelector,
   type GridValidRowModel,
+  useGridApiContext,
+  useGridSelector,
 } from '@mui/x-data-grid';
 
 import { ColHeader } from './Table.style';

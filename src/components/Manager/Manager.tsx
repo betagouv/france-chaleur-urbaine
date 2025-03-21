@@ -8,7 +8,7 @@ import Map from '@/components/Map/Map';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import Box from '@/components/ui/Box';
 import Icon from '@/components/ui/Icon';
-import { Table, type ColumnDef } from '@/components/ui/Table';
+import { type ColumnDef, Table } from '@/components/ui/Table';
 import { useServices } from '@/services';
 import { type MapMarkerInfos } from '@/types/MapComponentsInfos';
 import { type Point } from '@/types/Point';

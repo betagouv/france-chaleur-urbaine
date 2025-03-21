@@ -1,6 +1,6 @@
 import { darken } from '@/utils/color';
 
-import { ifHoverElse, type PopupStyleHelpers, type MapSourceLayersSpecification } from '../common';
+import { ifHoverElse, type MapSourceLayersSpecification, type PopupStyleHelpers } from '../common';
 
 export const enrrMobilisablesThalassothermieLayerColor = '#4c64c9';
 export const enrrMobilisablesThalassothermieLayerOpacity = 0.6;

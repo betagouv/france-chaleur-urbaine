@@ -5,7 +5,7 @@
 
 import { fr } from '@codegouvfr/react-dsfr';
 import Checkbox, { type CheckboxProps } from '@codegouvfr/react-dsfr/Checkbox';
-import React, { forwardRef, memo, useEffect, useId, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import React, { type CSSProperties, forwardRef, memo, type ReactNode, useEffect, useId, useRef, useState } from 'react';
 import styled from 'styled-components';
 import type { Equals } from 'tsafe';
 import { assert } from 'tsafe/assert';

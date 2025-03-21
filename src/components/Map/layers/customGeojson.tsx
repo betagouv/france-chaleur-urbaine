@@ -1,6 +1,6 @@
 import { ObjectEntries } from '@/utils/typescript';
 
-import { type MapSourceLayersSpecification, ifHoverElse, type PopupStyleHelpers } from './common';
+import { ifHoverElse, type MapSourceLayersSpecification, type PopupStyleHelpers } from './common';
 
 export const customGeojsonLayersSpec = [
   {

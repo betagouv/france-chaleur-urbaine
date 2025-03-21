@@ -1,6 +1,6 @@
 import { Text } from '@react-email/components';
 
-import { DSFRButton, EmailTemplate, type EmailProps } from './helpers';
+import { DSFRButton, type EmailProps, EmailTemplate } from './helpers';
 
 type EmailInscriptionProps = EmailProps<{
   activationToken: string;

@@ -1,6 +1,6 @@
 import Button from '@/components/ui/Button';
 
-import { ifHoverElse, type PopupStyleHelpers, type MapSourceLayersSpecification } from './common';
+import { ifHoverElse, type MapSourceLayersSpecification, type PopupStyleHelpers } from './common';
 
 export const installationsGeothermieProfondeLayerColor = '#8400a8';
 export const installationsGeothermieProfondeLayerOpacity = 0.8;

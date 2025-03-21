@@ -1,5 +1,5 @@
 import { type DataDrivenPropertyValueSpecification, type SourceSpecification } from 'maplibre-gl';
-import { isValidElement, type ComponentProps, type PropsWithChildren } from 'react';
+import { type ComponentProps, isValidElement, type PropsWithChildren } from 'react';
 
 import { type MapLayerSpecification } from '@/components/Map/map-layers';
 import Box from '@/components/ui/Box';

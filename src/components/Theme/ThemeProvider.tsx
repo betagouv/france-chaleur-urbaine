@@ -4,7 +4,7 @@ import '@reach/combobox/styles.css';
 import { useLocalStorageValue } from '@react-hookz/web';
 import Link from 'next/link';
 import React from 'react';
-import { createGlobalStyle, ThemeProvider as StyledComponentsThemeProvider, StyleSheetManager } from 'styled-components';
+import { createGlobalStyle, StyleSheetManager, ThemeProvider as StyledComponentsThemeProvider } from 'styled-components';
 import { createEmotionSsrAdvancedApproach } from 'tss-react/next/pagesDir';
 
 import { MuiDsfrThemeProvider } from './MuiDsfrThemeProvider';

@@ -15,9 +15,10 @@ import {
   ButtonLink,
   Cartridge,
   CheckItem,
-  CountItem,
   CounterItem,
+  CountItem,
   ExtraLink,
+  isExternalLink,
   KnowMoreLink,
   MarkdownWrapperStyled,
   PuceIcon,
@@ -25,7 +26,6 @@ import {
   ThumbItem,
   WhiteArrowItem,
   WhiteCheckItem,
-  isExternalLink,
 } from './MarkdownWrapper.style';
 
 export const RoutedLink = (props: any) => {
