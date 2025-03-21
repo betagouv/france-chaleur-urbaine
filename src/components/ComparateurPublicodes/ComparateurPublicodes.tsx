@@ -19,6 +19,8 @@ import Text from '@/components/ui/Text';
 import useEligibilityForm from '@/hooks/useEligibilityForm';
 import { type LocationInfoResponse } from '@/pages/api/location-infos';
 import { useServices } from '@/services';
+import { trackEvent } from '@/services/analytics';
+import { getNetworkEligibilityDistances } from '@/services/eligibility';
 import { type AddressDetail } from '@/types/HeatNetworksResponse';
 import cx from '@/utils/cx';
 import { postFetchJSON } from '@/utils/network';
@@ -334,18 +336,28 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
             network,
             geoAddress: selectedAddress,
           });
+          trackEvent('Eligibilité|Formulaire de test - Comparateur - Envoi', selectedAddress.properties.label);
           const infos: LocationInfoResponse = await postFetchJSON('/api/location-infos', {
             lon,
             lat,
             city: selectedAddress.properties.city,
             cityCode: selectedAddress.properties.citycode,
           });
+          console.info('locations-infos', infos);
+          const isEligible =
+            infos.nearestReseauDeChaleur &&
+            infos.nearestReseauDeChaleur.distance <
+              getNetworkEligibilityDistances(infos.nearestReseauDeChaleur['Identifiant reseau']).eligibleDistance;
+          trackEvent(
+            `Eligibilité|Formulaire de test - Comparateur - Adresse ${isEligible ? 'É' : 'Iné'}ligible`,
+            selectedAddress.properties.label
+          );
+
           setNearestReseauDeChaleur(infos.nearestReseauDeChaleur);
           setNearestReseauDeFroid(infos.nearestReseauDeFroid);
 
           if (!infos.infosVille) {
             setAddressError(true);
-
             return;
           }
 
@@ -354,8 +366,6 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
           if (infos.nearestReseauDeChaleur || infos.nearestReseauDeFroid) {
             setLngLat(selectedAddress.geometry.coordinates);
           }
-
-          console.debug('locations-infos', infos);
 
           engine.setSituation(
             ObjectEntries(addresseToPublicodesRules).reduce(

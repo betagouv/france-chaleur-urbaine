@@ -416,6 +416,16 @@ const trackingEvents = {
     google: 'sdziCKqh6c0ZELGIqf89', // Contact > Formulaire envoyé - Non Eligible
     facebook: 'Formulaire de contact inéligible - Fiche réseau - Envoi',
   },
+  'Eligibilité|Formulaire de contact éligible - Comparateur - Envoi': {
+    matomo: ['Eligibilité', 'Formulaire de contact éligible - Comparateur - Envoi'],
+    google: '47QiCKeh6c0ZELGIqf89', // Contact > Formulaire envoyé - Eligible
+    facebook: 'Formulaire de contact éligible - Comparateur - Envoi',
+  },
+  'Eligibilité|Formulaire de contact inéligible - Comparateur - Envoi': {
+    matomo: ['Eligibilité', 'Formulaire de contact inéligible - Comparateur - Envoi'],
+    google: 'sdziCKqh6c0ZELGIqf89', // Contact > Formulaire envoyé - Non Eligible
+    facebook: 'Formulaire de contact inéligible - Comparateur - Envoi',
+  },
   'Eligibilité|Formulaire de contact éligible - Envoi': {
     matomo: ['Eligibilité', 'Formulaire de contact éligible - Envoi'],
     google: '47QiCKeh6c0ZELGIqf89', // Contact > Formulaire envoyé - Eligible
@@ -473,6 +483,25 @@ const trackingEvents = {
     matomo: ['Eligibilité', 'Formulaire de test - Fiche réseau - Envoi'],
     google: 'XNYRCJ6h6c0ZELGIqf89', // Test éligibilité
     facebook: 'Formulaire de test - Fiche réseau - Envoi',
+    linkedin: 5492674,
+  },
+  // comparateur
+  'Eligibilité|Formulaire de test - Comparateur - Adresse Inéligible': {
+    matomo: ['Eligibilité', 'Formulaire de test - Comparateur - Adresse Inéligible'],
+    google: 'izv4CKGh6c0ZELGIqf89', // Formulaire - non éligible
+    facebook: 'Formulaire de test - Comparateur - Adresse Inéligible',
+    linkedin: 5492666,
+  },
+  'Eligibilité|Formulaire de test - Comparateur - Adresse Éligible': {
+    matomo: ['Eligibilité', 'Formulaire de test - Comparateur - Adresse Éligible'],
+    google: 'CFo-CKSh6c0ZELGIqf89', // Formulaire - éligible
+    facebook: 'Formulaire de test - Comparateur - Adresse Éligible',
+    linkedin: 5392842,
+  },
+  'Eligibilité|Formulaire de test - Comparateur - Envoi': {
+    matomo: ['Eligibilité', 'Formulaire de test - Comparateur - Envoi'],
+    google: 'XNYRCJ6h6c0ZELGIqf89', // Test éligibilité
+    facebook: 'Formulaire de test - Comparateur - Envoi',
     linkedin: 5492674,
   },
   'Eligibilité|Formulaire de test - Envoi': {
