@@ -32,5 +32,7 @@ export enum STAT_LABEL {
   FORM_TEST_CARTE_ELIGIBLE = 'Formulaire de test - Carte - Adresse Éligible',
   FORM_TEST_FICHE_RESEAU_UNELIGIBLE = 'Formulaire de test - Fiche réseau - Adresse Inéligible',
   FORM_TEST_FICHE_RESEAU_ELIGIBLE = 'Formulaire de test - Fiche réseau - Adresse Éligible',
+  FORM_TEST_COMPARATEUR_UNELIGIBLE = 'Formulaire de test - Comparateur - Adresse Inéligible',
+  FORM_TEST_COMPARATEUR_ELIGIBLE = 'Formulaire de test - Comparateur - Adresse Éligible',
   TRACES = 'Tracés',
 }
