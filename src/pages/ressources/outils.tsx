@@ -28,7 +28,7 @@ const OutilsPage = () => {
             Repérer sur un parc de bâtiments ceux potentiellement raccordables, et accéder aux caractéristiques des réseaux les plus proches
           </Text>
         </Box>
-        <Link variant="secondary" href="/inscription">
+        <Link variant="secondary" href="/pro/tests-adresses">
           Accéder
         </Link>
       </Box>

@@ -197,7 +197,10 @@ const HeadSliceForm = ({
                   <span>ou</span>
                   <span className="!text-green-700 flex items-center gap-0.5">
                     <Icon name="ri-file-excel-2-line" />
-                    <Link href="/inscription" className="!text-green-700 hover:!bg-transparent hover:opacity-80 !shadow-none !pr-0 !pl-0">
+                    <Link
+                      href="/pro/tests-adresses"
+                      className="!text-green-700 hover:!bg-transparent hover:opacity-80 !shadow-none !pr-0 !pl-0"
+                    >
                       Tester une liste d’adresses
                     </Link>
                   </span>
