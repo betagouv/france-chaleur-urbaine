@@ -116,7 +116,7 @@ const Professionnels = () => {
                 Testez un grand nombre d’adresses
               </Heading>
               <Text size="lg">
-                <Link href="/inscription">Identifiez instantanément</Link> les bâtiments raccordables de votre parc
+                <Link href="/pro/tests-adresses">Identifiez instantanément</Link> les bâtiments raccordables de votre parc
               </Text>
             </Box>
 
