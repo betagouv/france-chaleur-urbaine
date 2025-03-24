@@ -1,7 +1,9 @@
 import { fr } from '@codegouvfr/react-dsfr';
+import { cva } from 'class-variance-authority';
 import React from 'react';
 import { Oval } from 'react-loader-spinner';
-import styled from 'styled-components';
+
+import cx from '@/utils/cx';
 
 type OvalProps = React.ComponentProps<typeof Oval>;
 
@@ -9,6 +11,7 @@ type LoaderProps = Omit<OvalProps, 'wrapperClass' | 'wrapperStyle'> & {
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   style?: React.CSSProperties;
   className?: string;
+  variant?: 'section';
 };
 
 const sizeMap = {
@@ -19,19 +22,23 @@ const sizeMap = {
   xl: 60,
 };
 
-const StyledOval = styled(Oval)`
-  animation: spin 1s linear infinite;
-`;
+const loaderVariants = cva('[&_svg]:animate-spin', {
+  variants: {
+    variant: {
+      section: 'flex justify-center my-12',
+    },
+  },
+});
 
-const Loader: React.FC<LoaderProps> = ({ size = 'sm', className, style, ...props }) => {
+const Loader: React.FC<LoaderProps> = ({ size = 'sm', variant, className, style, ...props }) => {
   const dimension = sizeMap[size];
 
   return (
-    <StyledOval
+    <Oval
       height={dimension}
       width={dimension}
       color={fr.colors.decisions.background.active.blueFrance.default}
-      wrapperClass={className as OvalProps['wrapperClass']}
+      wrapperClass={cx(loaderVariants({ variant }), className) as OvalProps['wrapperClass']}
       wrapperStyle={style as OvalProps['wrapperStyle']}
       {...props}
     />
