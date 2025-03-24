@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/FCU_cover_service_impact.jpg
+coverY: 0
+---
+
 # France chaleur Urbaine labellisé service numérique à impact national
 
 🎉France Chaleur Urbaine rejoint le cercle sélectif des [services numériques à impact national](https://beta.gouv.fr/startups?national_impact=true) !
