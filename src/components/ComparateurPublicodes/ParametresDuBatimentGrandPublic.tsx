@@ -1,8 +1,10 @@
+import { useSearchParams } from 'next/navigation';
 import React from 'react';
 
 import Input from '@/components/form/publicodes/Input';
 import RadioInput from '@/components/form/publicodes/Radio';
 import Select from '@/components/form/publicodes/Select';
+import Link from '@/components/ui/Link';
 
 import { type SimulatorEngine } from './useSimulatorEngine';
 
@@ -17,7 +19,9 @@ const ParametresDuBatimentGrandPublicForm: React.FC<ParametresDuBatimentGrandPub
   ...props
 }) => {
   const typeBatiment = engine.getField('type de bâtiment');
+  const nbLogements = engine.getFieldAsNumber("nombre de logements dans l'immeuble concerné");
 
+  const searchParams = useSearchParams();
   return (
     <div {...props}>
       <RadioInput name="type de bâtiment" small orientation="horizontal" />
@@ -71,6 +75,18 @@ const ParametresDuBatimentGrandPublicForm: React.FC<ParametresDuBatimentGrandPub
               min: 1,
               type: 'number',
             }}
+            {...(nbLogements && nbLogements <= 1
+              ? {
+                  state: 'error',
+                  stateRelatedMessage: (
+                    <span>
+                      Le mode grand public du comparateur est limité aux bâtiments collectifs (copropriétés, logement social...). Pour une
+                      maison individuelle, rendez-vous sur le{' '}
+                      <Link href={`/pro/comparateur-couts-performances?${searchParams.toString()}`}>comparateur complet</Link>.
+                    </span>
+                  ),
+                }
+              : {})}
           />
         </>
       )}
