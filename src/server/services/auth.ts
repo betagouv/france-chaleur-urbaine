@@ -28,9 +28,9 @@ export const register = async ({
   accept_cgu?: boolean;
   optin_newsletter?: boolean;
 }) => {
-  const existingUser = await kdb.selectFrom('users').select('id').where('email', '=', email).executeTakeFirst();
+  const existingUser = await kdb.selectFrom('users').select('id').where('email', '=', email.trim().toLowerCase()).executeTakeFirst();
   if (existingUser) {
-    throw new BadRequestError(`L'utilisateur associé à l'email '${email}' existe déjà.`);
+    throw new BadRequestError(`L'utilisateur associé à l'email '${email}' existe déjà. Connectez-vous.`);
   }
 
   const activationToken = generateRandomToken();
