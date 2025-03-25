@@ -9,6 +9,7 @@ import Button from '@/components/ui/Button';
 import Heading from '@/components/ui/Heading';
 import Loader from '@/components/ui/Loader';
 import ModalSimple from '@/components/ui/ModalSimple';
+import Section, { SectionContent, SectionSubtitle, SectionTitle } from '@/components/ui/Section';
 import { useFetch } from '@/hooks/useApi';
 import { type ProEligibilityTestListItem } from '@/pages/api/pro-eligibility-tests';
 import { withAuthentication } from '@/server/authentication';
@@ -23,6 +24,12 @@ export default function TestsAdresses(): JSX.Element {
   useEffect(() => {
     setHasPendingJobs(eligibilityTests?.some((test) => test.has_pending_jobs) ?? false);
   }, [eligibilityTests]);
+
+  const newTestButton = (
+    <ModalSimple title="Création d'un test d'adresses" size="medium" trigger={<Button>Nouveau test</Button>}>
+      <CreateEligibilityTestForm />
+    </ModalSimple>
+  );
 
   return (
     <SimplePage
@@ -44,30 +51,35 @@ export default function TestsAdresses(): JSX.Element {
           <Heading as="h3" color="blue-france" mb="0">
             Vos tests
           </Heading>
-          <ModalSimple title="Création d'un test d'adresses" size="medium" trigger={<Button>Nouveau test</Button>}>
-            <CreateEligibilityTestForm />
-          </ModalSimple>
+          {eligibilityTests?.length ? newTestButton : null}
         </div>
-        {isLoading && <Loader size="lg" />}
-        {eligibilityTests?.length === 0 && (
+        {isLoading ? (
+          <Loader size="lg" variant="section" />
+        ) : (
           <>
-            Vous n'avez effectué aucun test d'adresses pour le moment. Pour réaliser un test, cliquez sur "Nouveau test" en haut à droite et
-            téléchargez votre liste d'adresses.
+            {eligibilityTests?.length ? (
+              <AnimatePresence>
+                {eligibilityTests?.map((test) => (
+                  <motion.div
+                    key={test.id}
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <ProEligibilityTestItem test={test} />
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            ) : (
+              <Section variant="empty">
+                <SectionTitle>Vous n'avez effectué aucun test d'adresses pour le moment</SectionTitle>
+                <SectionSubtitle>Pour réaliser un test, cliquez sur "Nouveau test" et téléchargez votre liste d'adresses.</SectionSubtitle>
+                <SectionContent className="flex justify-center">{newTestButton}</SectionContent>
+              </Section>
+            )}
           </>
         )}
-        <AnimatePresence>
-          {eligibilityTests?.map((test) => (
-            <motion.div
-              key={test.id}
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.3 }}
-            >
-              <ProEligibilityTestItem test={test} />
-            </motion.div>
-          ))}
-        </AnimatePresence>
       </Box>
     </SimplePage>
   );

@@ -502,7 +502,7 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
           </ModalSimple>
         </div>
       </div>
-
+      {isLoading && <Loader size="lg" variant="section" />}
       {viewDetail &&
         (testDetails && testDetails.addresses.length > 0 ? (
           <Tabs

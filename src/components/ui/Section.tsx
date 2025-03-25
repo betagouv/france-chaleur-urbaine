@@ -17,6 +17,7 @@ const sectionVariants = cva('', {
       light: 'bg-light',
       bordered: 'border-b border-light',
       accent: 'bg-accent text-white',
+      empty: 'border border-dashed border-gray-300',
     },
   },
   defaultVariants: {
@@ -63,6 +64,7 @@ const headingVariants = cva('', {
       light: '!text-black',
       bordered: '!text-black',
       accent: '!text-white',
+      empty: '!text-black !text-base',
     },
   },
   defaultVariants: {
@@ -96,6 +98,7 @@ const subtitleVariants = cva('text-center max-w-[640px] mx-auto', {
       light: '!text-gray-900',
       bordered: '!text-gray-900',
       accent: '!text-gray-100',
+      empty: '!text-gray-500',
     },
   },
   defaultVariants: {
