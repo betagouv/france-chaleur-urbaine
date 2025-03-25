@@ -150,7 +150,7 @@ export const articles = (
   [
     {
       image: '/contents/FCU_cover_comparateur.jpg',
-      title: 'Outil innovant pour comparer les coûts et performances des modes de chauffage',
+      title: 'Un outil innovant pour comparer coût et impact carbone des modes de chauffage',
       seoTitle: 'Outil innovant : comparer les coûts et performances des modes de chauffage',
       slug: 'un-outil-innovant-pour-comparer-cout-et-impact-carbone-des-modes-de-chauffage-et-de-refroidissement',
       content: importFile(comparateurCoutsPerformances),
