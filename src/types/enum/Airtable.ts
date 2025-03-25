@@ -6,6 +6,7 @@ export enum Airtable {
   NEWSLETTER = 'FCU - Newsletter',
   CONTRIBUTION = 'FCU - Contribution',
   CONNEXION = 'FCU - Connexion espace gestionnaire',
+  COMPTES_PRO = 'FCU - Comptes pro',
   GESTIONNAIRES = 'FCU - Gestionnaires',
   GESTIONNAIRES_API = 'FCU - Gestionnaires API',
   NETWORKS = 'FCU - Réseaux de chaleur',

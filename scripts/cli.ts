@@ -14,6 +14,7 @@ import { logger } from '@/server/helpers/logger';
 import {
   type ApiNetwork,
   createGestionnairesFromAPI,
+  syncComptesProFromUsers,
   syncGestionnairesWithUsers,
   syncLastConnectionFromUsers,
 } from '@/server/services/airtable';
@@ -398,6 +399,19 @@ program
       process.exit(1);
     }
     await syncLastConnectionFromUsers();
+  });
+
+program
+  .command('users:sync-comptes-pro-to-airtable')
+  .description('Sync users last connection from PostGres to Airtable.')
+  .action(async () => {
+    if (!process.env.DRY_RUN) {
+      logger.info('');
+      logger.info('USAGE:');
+      logger.info('⚠️ DRY_RUN is not set, use DRY_RUN=<true|false> yarn cli users:sync-last-connection-to-airtable');
+      process.exit(1);
+    }
+    await syncComptesProFromUsers();
   });
 
 program

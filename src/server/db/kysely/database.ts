@@ -3161,7 +3161,7 @@ export interface Users {
   status: 'pending_email_confirmation' | 'valid';
   role: UserRole;
   signature: string | null;
-  structure: string | null;
+  structure_name: string | null;
   structure_other: string | null;
   structure_type: string | null;
 }

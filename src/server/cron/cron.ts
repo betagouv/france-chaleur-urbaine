@@ -31,6 +31,7 @@ export function registerCrons() {
     onTick: async () => {
       launchJob('syncGestionnairesWithUsers');
       launchJob('syncLastConnectionFromUsers', '1 hour');
+      launchJob('syncComptesProFromUsers', '1 hour');
     },
     start: true,
     timeZone: 'Europe/Paris',

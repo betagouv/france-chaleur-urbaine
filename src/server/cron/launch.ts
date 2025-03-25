@@ -1,6 +1,6 @@
 import * as Sentry from '@sentry/node';
 
-import { syncGestionnairesWithUsers, syncLastConnectionFromUsers } from '@/server/services/airtable';
+import { syncComptesProFromUsers, syncGestionnairesWithUsers, syncLastConnectionFromUsers } from '@/server/services/airtable';
 import { dailyNewManagerMail, dailyRelanceMail, weeklyOldManagerMail } from '@/server/services/manager';
 
 import '@root/sentry.node.config';
@@ -11,6 +11,7 @@ export const jobs: Record<string, any> = {
   dailyRelanceMail,
   syncGestionnairesWithUsers,
   syncLastConnectionFromUsers,
+  syncComptesProFromUsers,
 };
 
 export const launchJob = async (job: string, ...params: any) => {
