@@ -20,6 +20,7 @@ import deuxIdeesRecuesGeothermie from './deux-idees-recues-sur-la-geothermie.md'
 import deuxIdeesRecuesEnergieSolaire from './deux-idees-recues-sur-lenergie-solaire.md';
 import dossierSpecialSurLesReseauxDeChaleur from './dossier-special-sur-les-reseaux-de-chaleur.md';
 import faisonsConnaitreLeChauffageUrbain from './faisons-connaitre-le-chauffage-urbain.md';
+import fcuLabelliseServiceNumeriqueAImpactNational from './france-chaleur-urbaine-labellise-service-numerique-a-impact-national.md';
 import franceChaleurUrbainePourBureauxEtudes from './france-chaleur-urbaine-pour-les-bureaux-detudes.md';
 import franceChaleurUrbaineSeConstruitAvecSesUsagers from './france-chaleur-urbaine-se-construit-avec-ses-usagers.md';
 import identifierZonesImplantationsSolaireThermique from './identifier-des-zones-dimplantation-pour-le-solaire-thermique.md';
@@ -35,6 +36,7 @@ import leChauffageUrbainDansLaPresse from './le-chauffage-urbain-dans-la-presse.
 import leChauffageUrbainPourLesBatimentsTertiairesUnContexteOnNePeutPlusFavorable from './le-chauffage-urbain-pour-les-batiments-tertiaires-un-contexte-on-ne-peut-plus-favorable.md';
 import leClassementDesReseauxBilan from './le-classement-des-reseaux-quel-bilan.md';
 import lesReseauxDeChaleurDesEnergiesVertes from './les-reseaux-de-chaleur-des-energies-vertes.md';
+import lesReseauxDeChaleurEnFrance from './les-reseaux-de-chaleur-en-france.md';
 import lesReseauxDeChaleurEnMoinsDe15Secondes from './les-reseaux-de-chaleur-en-moins-de-15-secondes.md';
 import lesReseauxDeChaleurRegionBourgogneFrancheComte from './les-reseaux-de-chaleur-en-region-focus-sur-la-bourgogne-franche-comte.md';
 import lesReseauxDeChaleurRegionBretagne from './les-reseaux-de-chaleur-en-region-focus-sur-la-bretagne.md';
@@ -44,6 +46,7 @@ import reseauxDeChaleurEnRegionCentreValDeLoire from './les-reseaux-de-chaleur-e
 import lesReseauxDeChaleurRegionGrandEst from './les-reseaux-de-chaleur-en-region-focus-sur-le-grand-est.md';
 import lesReseauxDeChaleurRegionHautsDeFrance from './les-reseaux-de-chaleur-en-region-focus-sur-les-hauts-de-france.md';
 import reseauxDeChaleurEnRegionIleDeFrance from './les-reseaux-de-chaleur-en-region-focus-sur-lile-de-france.md';
+import lesReseauxDeFroidEnFrance from './les-reseaux-de-froid-en-france.md';
 import lesReseauxDeFroidSurNotreCartographie from './les-reseaux-de-froid-sur-notre-cartographie.md';
 import lesReseauxLesPlusEcologiquesSontLesPlusEconomiques from './les-reseaux-les-plus-ecologiques-sont-les-plus-economiques.md';
 import lesSyndicsEtFranceChaleurUrbaine from './les-syndics-et-france-chaleur-urbaine.md';
@@ -113,6 +116,7 @@ import seChaufferAPrixStables from './se-chauffer-a-prix-stables.md';
 import accesSimplifieSchemasDirecteursReseauxChaleur from './un-acces-simplifie-aux-schemas-directeurs-des-reseaux-de-chaleur.md';
 import chauffageEcologiqueEconomiquePossible from './un-chauffage-ecologique-et-economique-cest-possible.md';
 import unGuidePourLesExploitants from './un-guide-pour-les-exploitants.md';
+import comparateurCoutsPerformances from './un-outil-innovant-pour-comparer-cout-et-impact-carbone-des-modes-de-chauffage-et-de-refroidissement.md';
 import unPlanNationalDactionPourLaGeothermie from './un-plan-national-daction-pour-la-geothermie.md';
 import uneCampagneDeCommunicationAmiens from './une-campagne-de-communication-sur-la-ville-damiens.md';
 import uneEmissionPedagogiqueReseauChaleur from './une-emission-pedagogique-sur-les-reseaux-de-chaleur.md';
@@ -144,6 +148,40 @@ function getArticleAbstract(content: string): string {
 
 export const articles = (
   [
+    {
+      image: '/contents/FCU_cover_comparateur.jpg',
+      title: 'Outil innovant pour comparer les coûts et performances des modes de chauffage',
+      seoTitle: 'Outil innovant : comparer les coûts et performances des modes de chauffage',
+      slug: 'un-outil-innovant-pour-comparer-cout-et-impact-carbone-des-modes-de-chauffage-et-de-refroidissement',
+      content: importFile(comparateurCoutsPerformances),
+      publishedDate: new Date('2025-03-24'),
+      themes: ['Réseaux de chaleur', 'Réseaux de froid', 'Prix'],
+    },
+    {
+      image: '/contents/FCU_reperes_RF_bandeau.jpg',
+      title: 'Les réseaux de froid en France',
+      slug: 'les-reseaux-de-froid-en-france',
+      content: importFile(lesReseauxDeFroidEnFrance),
+      publishedDate: new Date('2025-03-20'),
+      themes: ['Réseaux de froid', 'Cartographie et données'],
+    },
+    {
+      image: '/contents/FCU_cover_service_impact.jpg',
+      title: 'France Chaleur Urbaine labellisé service numérique à impact national',
+      seoTitle: 'Labellisation service à impact national',
+      slug: 'france-chaleur-urbaine-labellise-service-numerique-a-impact-national',
+      content: importFile(fcuLabelliseServiceNumeriqueAImpactNational),
+      publishedDate: new Date('2025-03-17'),
+      themes: ['Communication', 'Autre'],
+    },
+    {
+      image: '/contents/FCU_reperes_RC_bandeau.jpg',
+      title: 'Les réseaux de chaleur en France',
+      slug: 'les-reseaux-de-chaleur-en-france',
+      content: importFile(lesReseauxDeChaleurEnFrance),
+      publishedDate: new Date('2025-03-13'),
+      themes: ['Réseaux de chaleur', 'Cartographie et données'],
+    },
     {
       image: '/contents/cover_carte_mars25.jpg',
       title: 'De nombreux ajouts sur notre carte ce mois-ci !',
