@@ -111,7 +111,7 @@ const ComparateurPublicodesWidget: React.FC<ComparateurPublicodesWidgetProps> = 
             target="_blank"
             rel="noopener noreferrer"
           >
-            comparateur complet
+            mode avancé
           </a>
         </div>
       </FormProvider>
