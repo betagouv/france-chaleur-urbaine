@@ -265,6 +265,8 @@ const Graph: React.FC<GraphProps> = ({
 
   const totalCoutsEtEmissions: [string, number, number][] = [];
 
+  let graphSectionTitle = '';
+
   let maxCoutValue = 3000;
   const coutGraphData = [
     ['Mode de chauffage', { role: 'annotation' }, ...coutGraphColumns, { role: 'annotation' }],
@@ -361,7 +363,21 @@ const Graph: React.FC<GraphProps> = ({
       const precisionRange = valueFormatter(totalAmount);
       maxCoutValue = Math.max(maxCoutValue, totalAmount);
       totalCoutsEtEmissions[index] = [getLabel(typeInstallation), totalAmount, -1];
+
+      const graphSectionType: string = typeInstallation.type.includes('individuel') ? 'Chauffage individuel' : 'Chauffage collectif';
+      let showSectionTitle = false;
+      if (graphSectionTitle !== (graphSectionType as string)) {
+        showSectionTitle = true;
+        graphSectionTitle = graphSectionType;
+      }
+
       return [
+        ...(showSectionTitle
+          ? [
+              ...(index !== 0 ? [[' ', '', ...amounts.map((amount) => (Number.isNaN(+amount) ? '' : 0)), '']] : []), // Additional line to add some space
+              [' ', showSectionTitle ? `-- ${graphSectionTitle}` : '', ...amounts.map((amount) => (Number.isNaN(+amount) ? '' : 0)), ''],
+            ]
+          : []),
         [' ', getLabel(typeInstallation), ...amounts.map((amount) => (Number.isNaN(+amount) ? '' : 0)), ''],
         [getLabel(typeInstallation), '', ...amounts, precisionRange],
       ];
@@ -388,6 +404,7 @@ const Graph: React.FC<GraphProps> = ({
 
   let maxEmissionsCO2Value = 5000 * nbAppartements;
 
+  graphSectionTitle = '';
   const emissionsCO2GraphData = [
     ['Mode de chauffage', { role: 'annotation' }, ...emissionsCO2GraphColumns, { type: 'string', role: 'annotation' }],
     ...modesDeChauffageFiltres.flatMap((typeInstallation, index) => {
@@ -416,7 +433,20 @@ const Graph: React.FC<GraphProps> = ({
       const totalAmount = (amounts.filter((amount) => !Number.isNaN(+amount)) as number[]).reduce((acc, amount) => acc + amount, 0);
       maxEmissionsCO2Value = Math.max(maxEmissionsCO2Value, totalAmount);
       totalCoutsEtEmissions[index][2] = totalAmount;
+      const graphSectionType: string = typeInstallation.type.includes('individuel') ? 'Chauffage individuel' : 'Chauffage collectif';
+      let showSectionTitle = false;
+      if (graphSectionTitle !== (graphSectionType as string)) {
+        showSectionTitle = true;
+        graphSectionTitle = graphSectionType;
+      }
+
       return [
+        ...(showSectionTitle
+          ? [
+              ...(index !== 0 ? [[' ', '', ...amounts.map((amount) => (Number.isNaN(+amount) ? '' : 0)), '']] : []), // Additional line to add some space
+              [' ', showSectionTitle ? `-- ${graphSectionTitle}` : '', ...amounts.map((amount) => (Number.isNaN(+amount) ? '' : 0)), ''],
+            ]
+          : []),
         ['', `${getLabel(typeInstallation)}`, ...amounts.map((amount) => (Number.isNaN(+amount) ? '' : 0)), ''],
         [getLabel(typeInstallation), '', ...amounts, formatEmissionsCO2(totalAmount)],
       ];
@@ -448,7 +478,7 @@ const Graph: React.FC<GraphProps> = ({
   const titleItemsString =
     titleItems.length > 1 ? titleItems.slice(0, -1).join(', ') + ' et ' + titleItems[titleItems.length - 1] : titleItems[0] || '';
 
-  let graphSectionTitle = '';
+  graphSectionTitle = '';
 
   const segments: React.ComponentProps<typeof SegmentedControl>['segments'] = [
     {
