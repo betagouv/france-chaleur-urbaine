@@ -160,7 +160,7 @@ export const syncComptesProFromUsers = async (interval?: string) => {
         logDry(` ➕ Creating new comptePro for ${user.email}`);
         if (!DRY_RUN) {
           try {
-            await base(Airtable.COMPTES_PRO).create([{ fields: data }], { typecast: true });
+            await base(Airtable.COMPTES_PRO).create([{ fields: data as any }], { typecast: true });
             stats.totalCreated++;
           } catch (e) {
             logger.error(`Could not create ${user.email} in ${Airtable.COMPTES_PRO} with ${JSON.stringify(data)}`, { error: e });
@@ -181,7 +181,7 @@ export const syncComptesProFromUsers = async (interval?: string) => {
       logDry(` 🔄 Update ${user.email} with`, JSON.stringify(data));
       if (!DRY_RUN) {
         try {
-          await base(Airtable.COMPTES_PRO).update(comptePro.id, data, { typecast: true });
+          await base(Airtable.COMPTES_PRO).update(comptePro.id, data as any, { typecast: true });
         } catch (e) {
           logger.error(`Could not update ${user.email} to ${Airtable.COMPTES_PRO} with ${JSON.stringify(data)}`, { error: e });
           return;
