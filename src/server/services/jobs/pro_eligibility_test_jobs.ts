@@ -26,9 +26,10 @@ export async function processProEligibilityTestJob(job: ProEligibilityTestJob, l
   const startTime = Date.now();
   const lines = job.data.csvContent
     .replace(/\r\n/g, '\n')
+    .replace(/"/g, '')
     .split('\n')
-    .filter((line) => line); // remove empty lines
-
+    .filter((line) => line) // remove empty lines
+    .map((line) => `"${line}"`); // add quotes to get a single column address
   logger.info('infos', { addressesCount: lines.length });
   const addresses: APIAdresseResult[] = [];
   const chunks = chunk(lines, chunkSize);
