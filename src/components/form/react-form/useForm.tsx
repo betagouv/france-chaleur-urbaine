@@ -18,6 +18,7 @@ import DsfrRadio, { type RadioProps as DsfrRadioProps } from '@/components/form/
 import DsfrSelect, { type SelectOption as DsfrSelectOption } from '@/components/form/dsfr/Select';
 import DsfrSelectCheckboxes, { type SelectCheckboxesProps as DsfrSelectCheckboxesProps } from '@/components/form/dsfr/SelectCheckboxes';
 import DsfrTextArea from '@/components/form/dsfr/TextArea';
+import DsfrUpload, { type UploadProps as DsfrUploadProps } from '@/components/form/dsfr/Upload';
 import Button, { type ButtonProps } from '@/components/ui/Button';
 import { getSchemaShape } from '@/utils/validation';
 
@@ -433,6 +434,39 @@ function useForm<
     />
   );
 
+  const Upload = ({
+    name,
+    fieldInputProps,
+    label,
+    hint,
+    nativeInputProps,
+    ...props
+  }: FieldProps & Omit<DsfrUploadProps, 'stateRelatedMessage' | 'state'>) => (
+    <form.Field
+      name={name}
+      {...fieldInputProps}
+      children={(field) => (
+        <DsfrUpload
+          label={label}
+          hint={hint}
+          nativeInputProps={{
+            required: isRequiredField(name as keyof TFormData),
+            id: nativeInputProps?.id || `${name}`,
+            name: nativeInputProps?.name || `${name}`,
+            onBlur: field.handleBlur,
+            ...nativeInputProps,
+            onChange: (e) => {
+              field.handleChange((nativeInputProps?.multiple ? e.target.files : e.target.files?.[0]) as any);
+              nativeInputProps?.onChange?.(e);
+            },
+          }}
+          {...getInputErrorStates(field)}
+          {...props}
+        />
+      )}
+    />
+  );
+
   const Submit = ({ children, ...props }: Omit<ButtonProps, 'type' | 'disabled' | 'loading'>) => (
     <form.Subscribe
       selector={(state) => [state.canSubmit, state.isSubmitting]}
@@ -521,6 +555,7 @@ function useForm<
     Radio,
     Checkboxes,
     SelectCheckboxes,
+    Upload,
     useValue,
   };
 }

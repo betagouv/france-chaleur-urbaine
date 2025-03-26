@@ -1,8 +1,6 @@
-import { useForm } from '@tanstack/react-form';
 import { z } from 'zod';
 
-import Upload from '@/components/form/dsfr/Upload';
-import { getInputErrorStates } from '@/components/form/react-form/useForm';
+import useForm from '@/components/form/react-form/useForm';
 import Button from '@/components/ui/Button';
 import { useModal } from '@/components/ui/ModalSimple';
 import { usePost } from '@/hooks/useApi';
@@ -28,13 +26,11 @@ const CompleteEligibilityTestForm = ({ testId }: CompleteEligibilityTestFormProp
     invalidate: ['/api/pro-eligibility-tests'],
   });
 
-  const form = useForm({
+  const { Form, Submit, Upload } = useForm({
     defaultValues: {
       file: undefined as unknown as File,
     },
-    validators: {
-      onChange: zCompleteEligibilityTest,
-    },
+    schema: zCompleteEligibilityTest,
     onSubmit: toastErrors(async ({ value }: { value: CompleteEligibilityTest }) => {
       await completeTest({
         csvContent: await parseUnknownCharsetText(await value.file.arrayBuffer()),
@@ -44,54 +40,24 @@ const CompleteEligibilityTestForm = ({ testId }: CompleteEligibilityTestFormProp
   });
 
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        void form.handleSubmit();
-      }}
-    >
+    <Form>
       <div className="flex flex-col gap-4">
-        <form.Field
+        <Upload
           name="file"
-          children={(field) => (
-            <Upload
-              label="Choisissez un fichier .txt ou .csv (une adresse par ligne) :"
-              hint=""
-              nativeInputProps={{
-                required: true,
-                id: field.name,
-                name: field.name,
-                accept: allowedExtensions.join(','),
-                onChange: (e) => {
-                  const file = e.target.files?.[0];
-                  if (!file) {
-                    return;
-                  }
-                  field.handleChange(file);
-                },
-                onBlur: field.handleBlur,
-              }}
-              {...getInputErrorStates(field)}
-            />
-          )}
+          label="Choisissez un fichier .txt ou .csv (une adresse par ligne) :"
+          nativeInputProps={{
+            accept: allowedExtensions.join(','),
+          }}
         />
 
-        <form.Subscribe
-          selector={(state) => [state.canSubmit, state.isSubmitting]}
-          children={([canSubmit, isSubmitting]) => (
-            <div className="flex justify-end gap-2 mt-4">
-              <Button priority="secondary" onClick={closeModal}>
-                Annuler
-              </Button>
-              <Button type="submit" disabled={!canSubmit} loading={isSubmitting}>
-                Compléter le test
-              </Button>
-            </div>
-          )}
-        />
+        <div className="flex justify-end gap-2 mt-4">
+          <Button priority="secondary" onClick={closeModal}>
+            Annuler
+          </Button>
+          <Submit>Compléter le test</Submit>
+        </div>
       </div>
-    </form>
+    </Form>
   );
 };
 
