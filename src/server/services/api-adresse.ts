@@ -29,7 +29,7 @@ export type APIAdresseResult = {
 
 const MINIMUM_RETRY_DELAY = 2_000;
 const MAXIMUM_RETRY_DELAY = 30_000;
-const MAX_TOTAL_TIME = 10_000; // 3 minutes
+const MAX_TOTAL_TIME = 180_000; // 3 minutes
 
 export async function getAddressesCoordinates(addressesCSV: string, contextLogger?: Logger) {
   const startTime = Date.now();

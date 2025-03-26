@@ -11,7 +11,7 @@ import { toastErrors } from '@/services/notification';
 import { userRolesInscription } from '@/types/enum/UserRole';
 import { postFetchJSON } from '@/utils/network';
 import { upperCaseFirstChar } from '@/utils/strings';
-import { type CredentialsSchema, type IdentitySchema, zCredentialsSchema, zIdentitySchema } from '@/validation/user';
+import { type CredentialsSchema, type IdentitySchema, structureTypes, zCredentialsSchema, zIdentitySchema } from '@/validation/user';
 
 type FormStep = {
   label: string;
@@ -146,16 +146,7 @@ function RegisterForm() {
                   <Select
                     name="structure_type"
                     label="Type de structure"
-                    options={[
-                      { label: "Bureau d'études", value: 'bureau_etudes' },
-                      { label: 'Gestionnaire de réseaux de chaleur', value: 'gestionnaire_reseaux' },
-                      { label: 'Collectivité', value: 'collectivite' },
-                      { label: 'Syndic de copropriété', value: 'syndic_copropriete' },
-                      { label: 'Bailleur social', value: 'bailleur_social' },
-                      { label: 'Gestionnaire de parc tertiaire', value: 'gestionnaire_parc_tertiaire' },
-                      { label: 'Mandataire / délégataire CEE', value: 'mandataire_cee' },
-                      { label: 'Autre (préciser)', value: 'autre' },
-                    ]}
+                    options={Object.entries(structureTypes).map(([key, label]) => ({ label, value: key }))}
                   />
                   <Input
                     name="structure_name"

@@ -2,6 +2,8 @@ import { type DottedName } from '@betagouv/france-chaleur-urbaine-publicodes';
 
 import { type LocationInfoResponse } from '@/pages/api/location-infos';
 
+export type ModeDeChauffageType = ('individuel' | 'collectif')[];
+
 export const modesDeChauffage = [
   {
     label: 'Réseau de chaleur',
@@ -9,7 +11,7 @@ export const modesDeChauffage = [
     coutPublicodeKey: 'Réseaux de chaleur',
     reversible: false,
     tertiaire: true,
-    type: ['individuel', 'collectif'],
+    type: ['individuel', 'collectif'] as ModeDeChauffageType,
     grandPublicMode: true,
   },
   {
@@ -18,7 +20,7 @@ export const modesDeChauffage = [
     coutPublicodeKey: 'Chaudière à granulés coll',
     reversible: false,
     tertiaire: true,
-    type: ['collectif'],
+    type: ['collectif'] as ModeDeChauffageType,
     grandPublicMode: false,
   },
   {
@@ -27,7 +29,7 @@ export const modesDeChauffage = [
     coutPublicodeKey: 'Gaz coll avec cond',
     reversible: false,
     tertiaire: true,
-    type: ['collectif'],
+    type: ['collectif'] as ModeDeChauffageType,
     grandPublicMode: true,
   },
   {
@@ -36,7 +38,7 @@ export const modesDeChauffage = [
     coutPublicodeKey: 'Gaz coll sans cond',
     reversible: false,
     tertiaire: true,
-    type: ['collectif'],
+    type: ['collectif'] as ModeDeChauffageType,
     grandPublicMode: true,
   },
   {
@@ -45,7 +47,7 @@ export const modesDeChauffage = [
     coutPublicodeKey: 'Fioul coll',
     reversible: false,
     tertiaire: true,
-    type: ['collectif'],
+    type: ['collectif'] as ModeDeChauffageType,
     grandPublicMode: true,
   },
   {
@@ -54,7 +56,7 @@ export const modesDeChauffage = [
     coutPublicodeKey: 'PAC air-air coll',
     reversible: true,
     tertiaire: true,
-    type: ['collectif'],
+    type: ['collectif'] as ModeDeChauffageType,
     grandPublicMode: false,
   },
   {
@@ -63,7 +65,7 @@ export const modesDeChauffage = [
     coutPublicodeKey: 'PAC air-eau coll',
     reversible: true,
     tertiaire: true,
-    type: ['collectif'],
+    type: ['collectif'] as ModeDeChauffageType,
     grandPublicMode: false,
   },
   {
@@ -72,7 +74,7 @@ export const modesDeChauffage = [
     coutPublicodeKey: 'PAC eau-eau coll',
     reversible: false,
     tertiaire: true,
-    type: ['collectif'],
+    type: ['collectif'] as ModeDeChauffageType,
     grandPublicMode: false,
   },
   {
@@ -81,7 +83,7 @@ export const modesDeChauffage = [
     coutPublicodeKey: 'Poêle à granulés indiv',
     reversible: false,
     tertiaire: false,
-    type: ['individuel'],
+    type: ['individuel'] as ModeDeChauffageType,
     grandPublicMode: false,
   },
   {
@@ -90,7 +92,7 @@ export const modesDeChauffage = [
     coutPublicodeKey: 'Gaz indiv avec cond',
     reversible: false,
     tertiaire: false,
-    type: ['individuel'],
+    type: ['individuel'] as ModeDeChauffageType,
     grandPublicMode: true,
   },
   {
@@ -99,7 +101,7 @@ export const modesDeChauffage = [
     coutPublicodeKey: 'Gaz indiv sans cond',
     reversible: false,
     tertiaire: false,
-    type: ['individuel'],
+    type: ['individuel'] as ModeDeChauffageType,
     grandPublicMode: true,
   },
 
@@ -109,7 +111,7 @@ export const modesDeChauffage = [
     coutPublicodeKey: 'Fioul indiv',
     reversible: false,
     tertiaire: false,
-    type: ['individuel'],
+    type: ['individuel'] as ModeDeChauffageType,
     grandPublicMode: true,
   },
 
@@ -119,7 +121,7 @@ export const modesDeChauffage = [
     coutPublicodeKey: 'PAC air-air indiv',
     reversible: true,
     tertiaire: false,
-    type: ['individuel'],
+    type: ['individuel'] as ModeDeChauffageType,
     grandPublicMode: false,
   },
 
@@ -129,7 +131,7 @@ export const modesDeChauffage = [
     coutPublicodeKey: 'PAC air-eau indiv',
     reversible: true,
     tertiaire: false,
-    type: ['individuel'],
+    type: ['individuel'] as ModeDeChauffageType,
     grandPublicMode: false,
   },
 
@@ -139,7 +141,7 @@ export const modesDeChauffage = [
     coutPublicodeKey: 'PAC eau-eau indiv',
     reversible: false,
     tertiaire: false,
-    type: ['individuel'],
+    type: ['individuel'] as ModeDeChauffageType,
     grandPublicMode: false,
   },
 
@@ -149,7 +151,7 @@ export const modesDeChauffage = [
     coutPublicodeKey: 'Radiateur électrique',
     reversible: false,
     tertiaire: true,
-    type: ['individuel'],
+    type: ['individuel'] as ModeDeChauffageType,
     grandPublicMode: false,
   },
 ] as const;

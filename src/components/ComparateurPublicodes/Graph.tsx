@@ -31,8 +31,8 @@ type GraphProps = React.HTMLAttributes<HTMLDivElement> & {
   hideReseauDeChaleur?: boolean;
 };
 
-const estimatedRowHeightPx = 56;
-const estimatedBaseGraphHeightPx = 150;
+const estimatedRowHeightPx = 24;
+const estimatedLegendAndUnitsHeightPx = 140;
 
 const commonGraphOptions: React.ComponentProps<typeof Chart>['options'] = {
   chartArea: {
@@ -265,6 +265,8 @@ const Graph: React.FC<GraphProps> = ({
 
   const totalCoutsEtEmissions: [string, number, number][] = [];
 
+  let graphSectionTitle = '';
+
   let maxCoutValue = 3000;
   const coutGraphData = [
     ['Mode de chauffage', { role: 'annotation' }, ...coutGraphColumns, { role: 'annotation' }],
@@ -361,7 +363,21 @@ const Graph: React.FC<GraphProps> = ({
       const precisionRange = valueFormatter(totalAmount);
       maxCoutValue = Math.max(maxCoutValue, totalAmount);
       totalCoutsEtEmissions[index] = [getLabel(typeInstallation), totalAmount, -1];
+
+      const graphSectionType: string = typeInstallation.type.includes('collectif') ? 'Chauffage collectif' : 'Chauffage individuel';
+      let showSectionTitle = false;
+      if (graphSectionTitle !== (graphSectionType as string)) {
+        showSectionTitle = true;
+        graphSectionTitle = graphSectionType;
+      }
+
       return [
+        ...(showSectionTitle
+          ? [
+              ...(index !== 0 ? [[' ', '', ...amounts.map((amount) => (Number.isNaN(+amount) ? '' : 0)), '']] : []), // Additional line to add some space
+              [' ', showSectionTitle ? `-- ${graphSectionTitle}` : '', ...amounts.map((amount) => (Number.isNaN(+amount) ? '' : 0)), ''],
+            ]
+          : []),
         [' ', getLabel(typeInstallation), ...amounts.map((amount) => (Number.isNaN(+amount) ? '' : 0)), ''],
         [getLabel(typeInstallation), '', ...amounts, precisionRange],
       ];
@@ -388,6 +404,7 @@ const Graph: React.FC<GraphProps> = ({
 
   let maxEmissionsCO2Value = 5000 * nbAppartements;
 
+  graphSectionTitle = '';
   const emissionsCO2GraphData = [
     ['Mode de chauffage', { role: 'annotation' }, ...emissionsCO2GraphColumns, { type: 'string', role: 'annotation' }],
     ...modesDeChauffageFiltres.flatMap((typeInstallation, index) => {
@@ -416,7 +433,20 @@ const Graph: React.FC<GraphProps> = ({
       const totalAmount = (amounts.filter((amount) => !Number.isNaN(+amount)) as number[]).reduce((acc, amount) => acc + amount, 0);
       maxEmissionsCO2Value = Math.max(maxEmissionsCO2Value, totalAmount);
       totalCoutsEtEmissions[index][2] = totalAmount;
+      const graphSectionType: string = typeInstallation.type.includes('collectif') ? 'Chauffage collectif' : 'Chauffage individuel';
+      let showSectionTitle = false;
+      if (graphSectionTitle !== (graphSectionType as string)) {
+        showSectionTitle = true;
+        graphSectionTitle = graphSectionType;
+      }
+
       return [
+        ...(showSectionTitle
+          ? [
+              ...(index !== 0 ? [[' ', '', ...amounts.map((amount) => (Number.isNaN(+amount) ? '' : 0)), '']] : []), // Additional line to add some space
+              [' ', showSectionTitle ? `-- ${graphSectionTitle}` : '', ...amounts.map((amount) => (Number.isNaN(+amount) ? '' : 0)), ''],
+            ]
+          : []),
         ['', `${getLabel(typeInstallation)}`, ...amounts.map((amount) => (Number.isNaN(+amount) ? '' : 0)), ''],
         [getLabel(typeInstallation), '', ...amounts, formatEmissionsCO2(totalAmount)],
       ];
@@ -435,8 +465,6 @@ const Graph: React.FC<GraphProps> = ({
     },
   });
 
-  const chartHeight = modesDeChauffageFiltres.length * estimatedRowHeightPx + estimatedBaseGraphHeightPx;
-
   const maxExistingEmissionsCO2Value =
     totalCoutsEtEmissions.reduce((acc, [, , co2]) => Math.max(acc, co2), 0) * (1 + co2PrecisionPercentage);
   const maxExistingCostValue = totalCoutsEtEmissions.reduce((acc, [, cost]) => Math.max(acc, cost), 0) * (1 + costPrecisionPercentage);
@@ -448,7 +476,7 @@ const Graph: React.FC<GraphProps> = ({
   const titleItemsString =
     titleItems.length > 1 ? titleItems.slice(0, -1).join(', ') + ' et ' + titleItems[titleItems.length - 1] : titleItems[0] || '';
 
-  let graphSectionTitle = '';
+  graphSectionTitle = '';
 
   const segments: React.ComponentProps<typeof SegmentedControl>['segments'] = [
     {
@@ -658,7 +686,7 @@ const Graph: React.FC<GraphProps> = ({
               data={coutGraphData}
               options={{
                 ...coutGraphOptions,
-                height: chartHeight, // dynamic height https://github.com/rakannimer/react-google-charts/issues/385
+                height: coutGraphData.length * estimatedRowHeightPx + estimatedLegendAndUnitsHeightPx, // dynamic height https://github.com/rakannimer/react-google-charts/issues/385
               }}
             />
           </div>
@@ -707,7 +735,7 @@ const Graph: React.FC<GraphProps> = ({
               data={emissionsCO2GraphData}
               options={{
                 ...emissionsCO2GraphOptions,
-                height: chartHeight, // dynamic height https://github.com/rakannimer/react-google-charts/issues/385
+                height: emissionsCO2GraphData.length * estimatedRowHeightPx + estimatedLegendAndUnitsHeightPx, // dynamic height https://github.com/rakannimer/react-google-charts/issues/385
               }}
             />
           </>

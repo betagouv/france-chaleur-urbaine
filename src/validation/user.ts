@@ -2,6 +2,17 @@ import { z } from 'zod';
 
 import { userRolesInscription } from '@/types/enum/UserRole';
 
+export const structureTypes = {
+  bureau_etudes: "Bureau d'études",
+  gestionnaire_reseaux: 'Gestionnaire de réseaux de chaleur',
+  collectivite: 'Collectivité',
+  syndic_copropriete: 'Syndic de copropriété',
+  bailleur_social: 'Bailleur social',
+  gestionnaire_parc_tertiaire: 'Gestionnaire de parc tertiaire',
+  mandataire_cee: 'Mandataire / délégataire CEE',
+  autre: 'Autre (préciser)',
+};
+
 export const zCredentialsSchema = z.object({
   email: z.string().email("L'adresse email n'est pas valide").max(100, "L'email ne peut pas dépasser 100 caractères"),
   password: z
