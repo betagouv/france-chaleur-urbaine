@@ -438,7 +438,7 @@ function useForm<
     name,
     fieldInputProps,
     label,
-    hint,
+    hint = '',
     nativeInputProps,
     ...props
   }: FieldProps & Omit<DsfrUploadProps, 'stateRelatedMessage' | 'state'>) => (
