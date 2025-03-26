@@ -364,7 +364,7 @@ const Graph: React.FC<GraphProps> = ({
       maxCoutValue = Math.max(maxCoutValue, totalAmount);
       totalCoutsEtEmissions[index] = [getLabel(typeInstallation), totalAmount, -1];
 
-      const graphSectionType: string = typeInstallation.type.includes('individuel') ? 'Chauffage individuel' : 'Chauffage collectif';
+      const graphSectionType: string = typeInstallation.type.includes('collectif') ? 'Chauffage collectif' : 'Chauffage individuel';
       let showSectionTitle = false;
       if (graphSectionTitle !== (graphSectionType as string)) {
         showSectionTitle = true;
@@ -433,7 +433,7 @@ const Graph: React.FC<GraphProps> = ({
       const totalAmount = (amounts.filter((amount) => !Number.isNaN(+amount)) as number[]).reduce((acc, amount) => acc + amount, 0);
       maxEmissionsCO2Value = Math.max(maxEmissionsCO2Value, totalAmount);
       totalCoutsEtEmissions[index][2] = totalAmount;
-      const graphSectionType: string = typeInstallation.type.includes('individuel') ? 'Chauffage individuel' : 'Chauffage collectif';
+      const graphSectionType: string = typeInstallation.type.includes('collectif') ? 'Chauffage collectif' : 'Chauffage individuel';
       let showSectionTitle = false;
       if (graphSectionTitle !== (graphSectionType as string)) {
         showSectionTitle = true;
