@@ -10,6 +10,7 @@ import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
 import Text from '@/components/ui/Text';
 import { useDelete, useFetch, usePost } from '@/hooks/useApi';
 import { type AdminJobItem } from '@/pages/api/admin/jobs';
+import { type JobDownload } from '@/pages/api/admin/jobs/[id]/download';
 import { withAuthentication } from '@/server/authentication';
 import { toastErrors } from '@/services/notification';
 import { downloadString } from '@/utils/browser';
@@ -88,8 +89,8 @@ const columns: ColumnDef<AdminJobItem>[] = [
             iconId="fr-icon-download-line"
             title="Télécharger le fichier"
             onClick={toastErrors(async () => {
-              const job = await fetchJSON(`/api/admin/jobs/${info.row.original.id}/download`);
-              downloadString(job.data.csvContent, `jobs-fcu-${info.row.original.id}.csv`, 'text/csv');
+              const job = await fetchJSON<JobDownload>(`/api/admin/jobs/${info.row.original.id}/download`);
+              downloadString((job.data as any).csvContent, `jobs-fcu-${info.row.original.id}.csv`, 'text/csv');
             })}
           />
           <Button
