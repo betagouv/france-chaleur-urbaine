@@ -12,6 +12,8 @@ import { useDelete, useFetch, usePost } from '@/hooks/useApi';
 import { type AdminJobItem } from '@/pages/api/admin/jobs';
 import { withAuthentication } from '@/server/authentication';
 import { toastErrors } from '@/services/notification';
+import { downloadString } from '@/utils/browser';
+import { fetchJSON } from '@/utils/network';
 
 const columns: ColumnDef<AdminJobItem>[] = [
   {
@@ -80,6 +82,16 @@ const columns: ColumnDef<AdminJobItem>[] = [
 
       return (
         <>
+          <Button
+            size="small"
+            priority="tertiary"
+            iconId="fr-icon-download-line"
+            title="Télécharger le fichier"
+            onClick={toastErrors(async () => {
+              const job = await fetchJSON<{ csvContent: string }>(`/api/admin/jobs/${info.row.original.id}/download`);
+              downloadString(job.data.csvContent, `jobs-fcu-${info.row.original.id}.csv`, 'text/csv');
+            })}
+          />
           <Button
             size="small"
             priority="tertiary"
