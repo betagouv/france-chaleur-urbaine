@@ -38,7 +38,8 @@
     "scalingo-postbuild": "yarn build && next-sitemap",
     "predev": "only-include-used-icons --silent",
     "prebuild": "only-include-used-icons",
-    "talisman:add-exception": "node-talisman -i -g pre-commit"
+    "talisman:add-exception": "node-talisman -i -g pre-commit",
+    "ts": "NODE_OPTIONS=\"--max-old-space-size=8192\" yarn tsc --build --clean && yarn tsc"
   },
   "dependencies": {
     "@betagouv/france-chaleur-urbaine-publicodes": "^1.0.5",
