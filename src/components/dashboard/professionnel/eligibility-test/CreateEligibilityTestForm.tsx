@@ -56,25 +56,16 @@ const CreateEligibilityTestForm = () => {
       return;
     }
 
-    try {
-      // Initialize test name to the filename without extension by default
-      if (form.getFieldValue('name') === '') {
-        const nameWithoutExtension = file.name.replace(/\.[^/.]+$/, '');
-        form.setFieldValue('name', nameWithoutExtension);
-      }
-      form.validateField('name', 'change');
+    const content = await parseUnknownCharsetText(await file.arrayBuffer());
+    const lines = content.split('\n', 3).map((line) => line.trim());
+    setPreviewLines(lines);
 
-      const content = await parseUnknownCharsetText(await file.arrayBuffer());
-      const lines = content
-        .split('\n')
-        .map((line) => line.trim())
-        .filter((line) => line.length > 0)
-        .slice(0, 3);
-      setPreviewLines(lines);
-    } catch (error) {
-      console.error('Erreur lors de la lecture du fichier:', error);
-      setPreviewLines([]);
+    // Initialize test name to the filename without extension by default
+    if (form.getFieldValue('name') === '') {
+      const nameWithoutExtension = file.name.replace(/\.[^/.]+$/, '');
+      form.setFieldValue('name', nameWithoutExtension);
     }
+    form.validateField('name', 'change');
   };
 
   const skipFirstLine = useValue('skipFirstLine');
@@ -103,7 +94,7 @@ const CreateEligibilityTestForm = () => {
                 ))}
               </div>
             </div>
-            <Checkbox name="skipFirstLine" label="Ignorer la première ligne (en-têtes)" />
+            <Checkbox name="skipFirstLine" label="Ignorer la première ligne (si entête)" />
           </>
         )}
 

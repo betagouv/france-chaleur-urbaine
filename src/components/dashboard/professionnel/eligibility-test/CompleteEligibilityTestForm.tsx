@@ -7,6 +7,7 @@ import { useModal } from '@/components/ui/ModalSimple';
 import { usePost } from '@/hooks/useApi';
 import { type ProEligibilityTestFileRequest } from '@/pages/api/pro-eligibility-tests/[id]';
 import { toastErrors } from '@/services/notification';
+import { CSVToArray } from '@/utils/csv';
 import { parseUnknownCharsetText } from '@/utils/strings';
 
 import { allowedExtensions, FormErrorMessage, zAddressesFile } from './shared';
@@ -54,15 +55,18 @@ const CompleteEligibilityTestForm = ({ testId }: CompleteEligibilityTestFormProp
       return;
     }
 
-    const content = await parseUnknownCharsetText(await file.arrayBuffer());
-    const lines = content
-      .split('\n', 3)
-      .map((line) => line.trim())
-      .filter((line) => line.length > 0);
-    setPreviewLines(lines);
+    const isCSVFile = file.name.toLowerCase().endsWith('csv');
+
+    // FIXME vérifier si vraiment besoin de cloner si on supprime le rerender qui fait tout échouer
+    const fileClone = new File([file.slice(0, file.size, file.type)], file.name, { type: file.type });
+    const content = await parseUnknownCharsetText(await fileClone.arrayBuffer());
+    const lines = content.split('\n', 3).map((line) => line.trim());
+
+    const csvSeparator = lines.every((line) => line.includes(';')) ? ';' : ',';
+    setPreviewLines(isCSVFile ? CSVToArray(lines.join('\n'), csvSeparator).map((x) => x.join(', ')) : lines);
   };
 
-  const skipFirstLine = useValue('skipFirstLine');
+  const skipFirstLine = useValue<boolean>('skipFirstLine');
 
   return (
     <Form>
@@ -88,7 +92,7 @@ const CompleteEligibilityTestForm = ({ testId }: CompleteEligibilityTestFormProp
                 ))}
               </div>
             </div>
-            <Checkbox name="skipFirstLine" label="Ignorer la première ligne (en-têtes)" />
+            <Checkbox name="skipFirstLine" label="Ignorer la première ligne (si entête)" />
           </>
         )}
 
