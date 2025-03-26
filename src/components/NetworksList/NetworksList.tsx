@@ -104,7 +104,9 @@ export function filterReseauxDeChaleur(reseauxDeChaleur: NetworkToCompare[], fil
       .forEach((filtreEnergie) => {
         const filter = filters[`energie_ratio_${filtreEnergie.confKey}`];
         const value = reseau[`energie_ratio_${filtreEnergie.confKey}`];
-        if (value < filter[0] || value > filter[1]) {
+        // TODO in prod, it leads to Application error: a client-side exception has occurred (see the browser console for more information).
+        // Could not reproduce locally nor on dev
+        if (value < filter?.[0] || value > filter?.[1]) {
           showReseau = false;
         }
       });
