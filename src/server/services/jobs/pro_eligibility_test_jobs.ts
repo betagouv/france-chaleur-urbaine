@@ -25,9 +25,10 @@ const chunkSize = 1000;
 export async function processProEligibilityTestJob(job: ProEligibilityTestJob, logger: Logger) {
   const startTime = Date.now();
   const lines = job.data.csvContent
+    .replace(/\r\n/g, '\n')
     .split('\n')
-    .filter((line) => line) // remove empty lines
-    .map((line) => (line.startsWith('"') ? line : `"${line}"`)); // only add quotes if not already quoted
+    .filter((line) => line); // remove empty lines
+
   logger.info('infos', { addressesCount: lines.length });
   const addresses: APIAdresseResult[] = [];
   const chunks = chunk(lines, chunkSize);

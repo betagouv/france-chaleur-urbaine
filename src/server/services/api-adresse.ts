@@ -41,7 +41,7 @@ export async function getAddressesCoordinates(addressesCSV: string, contextLogge
   for (;;) {
     try {
       const form = new FormData();
-      form.append('data', new Blob([`address\n${addressesCSV}`]), 'file.csv');
+      form.append('data', new Blob([addressesCSV]), 'file.csv');
       form.append('result_columns', 'latitude');
       form.append('result_columns', 'longitude');
       form.append('result_columns', 'result_score');
