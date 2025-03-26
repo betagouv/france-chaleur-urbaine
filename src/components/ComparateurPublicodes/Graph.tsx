@@ -31,8 +31,8 @@ type GraphProps = React.HTMLAttributes<HTMLDivElement> & {
   hideReseauDeChaleur?: boolean;
 };
 
-const estimatedRowHeightPx = 56;
-const estimatedBaseGraphHeightPx = 150;
+const estimatedRowHeightPx = 24;
+const estimatedLegendAndUnitsHeightPx = 140;
 
 const commonGraphOptions: React.ComponentProps<typeof Chart>['options'] = {
   chartArea: {
@@ -465,8 +465,6 @@ const Graph: React.FC<GraphProps> = ({
     },
   });
 
-  const chartHeight = modesDeChauffageFiltres.length * estimatedRowHeightPx + estimatedBaseGraphHeightPx;
-
   const maxExistingEmissionsCO2Value =
     totalCoutsEtEmissions.reduce((acc, [, , co2]) => Math.max(acc, co2), 0) * (1 + co2PrecisionPercentage);
   const maxExistingCostValue = totalCoutsEtEmissions.reduce((acc, [, cost]) => Math.max(acc, cost), 0) * (1 + costPrecisionPercentage);
@@ -688,7 +686,7 @@ const Graph: React.FC<GraphProps> = ({
               data={coutGraphData}
               options={{
                 ...coutGraphOptions,
-                height: chartHeight, // dynamic height https://github.com/rakannimer/react-google-charts/issues/385
+                height: coutGraphData.length * estimatedRowHeightPx + estimatedLegendAndUnitsHeightPx, // dynamic height https://github.com/rakannimer/react-google-charts/issues/385
               }}
             />
           </div>
@@ -737,7 +735,7 @@ const Graph: React.FC<GraphProps> = ({
               data={emissionsCO2GraphData}
               options={{
                 ...emissionsCO2GraphOptions,
-                height: chartHeight, // dynamic height https://github.com/rakannimer/react-google-charts/issues/385
+                height: emissionsCO2GraphData.length * estimatedRowHeightPx + estimatedLegendAndUnitsHeightPx, // dynamic height https://github.com/rakannimer/react-google-charts/issues/385
               }}
             />
           </>
