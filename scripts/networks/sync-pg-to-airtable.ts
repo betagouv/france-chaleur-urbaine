@@ -28,19 +28,9 @@ export const syncPostgresToAirtable = async (dryRun: boolean) => {
           'id_fcu',
           // réutilise la structure des changements pour simplifier un peu
           db.raw('communes as ign_communes'),
+          db.raw('departement'),
+          db.raw('region'),
           db.raw("st_geometrytype(geom) = 'ST_MultiLineString' as is_line"),
-          db.raw(`(
-            SELECT string_agg(DISTINCT id.nom, ', ' ORDER BY id.nom)
-            FROM unnest(${tableConfig.tableCible}.communes_insee) as ci
-            JOIN ign_communes ic ON ic.insee_com = ci
-            JOIN ign_departements id ON id.insee_dep = ic.insee_dep
-          ) as departement`),
-          db.raw(`(
-            SELECT string_agg(DISTINCT ir.nom, ', ' ORDER BY ir.nom)
-            FROM unnest(${tableConfig.tableCible}.communes_insee) as ci
-            JOIN ign_communes ic ON ic.insee_com = ci
-            JOIN ign_regions ir ON ir.insee_reg = ic.insee_reg
-          ) as region`),
           ...(tableConfig.pgToAirtableSyncAdditionalFields ?? [])
         )
         .orderBy('id_fcu'),
