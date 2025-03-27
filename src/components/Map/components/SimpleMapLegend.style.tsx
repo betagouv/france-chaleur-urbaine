@@ -10,10 +10,10 @@ import CheckableAccordion, { type CheckableAccordionProps } from '@/components/u
 import Heading from '@/components/ui/Heading';
 import { type LegendTrackingEvent, trackEvent } from '@/services/analytics';
 import cx from '@/utils/cx';
-import IconEnrr from '@root/public/icons/enrr.svg?icon';
-import IconOutils from '@root/public/icons/outils.svg?icon';
-import IconPotentiel from '@root/public/icons/potentiel.svg?icon';
-import IconReseaux from '@root/public/icons/reseaux.svg?icon';
+// import IconEnrr from '@root/public/icons/enrr.svg?icon';
+// import IconOutils from '@root/public/icons/outils.svg?icon';
+// import IconPotentiel from '@root/public/icons/potentiel.svg?icon';
+// import IconReseaux from '@root/public/icons/reseaux.svg?icon';
 
 import useFCUMap from '../MapProvider';
 
@@ -28,7 +28,8 @@ const StyledDSFRCheckbox = styled.div<{
     `}
 
   --data-uri-svg: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3C/svg%3E");
-  background-image: radial-gradient(
+  background-image:
+    radial-gradient(
       at 5px 4px,
       transparent 4px,
       var(--border-action-high-blue-france) 4px,
@@ -127,7 +128,7 @@ const tabsDefinition = [
     tabId: 'reseaux',
     label: (
       <>
-        <IconReseaux height="22" width="22" />
+        {/* <IconReseaux height="22" width="22" /> */}
         Réseaux
       </>
     ),
@@ -137,7 +138,7 @@ const tabsDefinition = [
     tabId: 'potentiel',
     label: (
       <>
-        <IconPotentiel height="22" width="22" />
+        {/* <IconPotentiel height="22" width="22" /> */}
         Potentiel
       </>
     ),
@@ -146,7 +147,7 @@ const tabsDefinition = [
     tabId: 'enrr',
     label: (
       <>
-        <IconEnrr height="22" width="22" />
+        {/* <IconEnrr height="22" width="22" /> */}
         EnR&R
       </>
     ),
@@ -155,7 +156,7 @@ const tabsDefinition = [
     tabId: 'outils',
     label: (
       <>
-        <IconOutils height="22" width="22" />
+        {/* <IconOutils height="22" width="22" /> */}
         Outils
       </>
     ),
