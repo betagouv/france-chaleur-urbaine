@@ -230,36 +230,36 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  webpack: (config) => {
-    config.module.rules.push({
-      test: /\.md$/,
-      use: 'raw-loader',
-    });
-    config.module.rules.push({
-      test: /\.woff2$/,
-      type: 'asset/resource',
-    });
+  // webpack: (config) => {
+  //   config.module.rules.push({
+  //     test: /\.md$/,
+  //     use: 'raw-loader',
+  //   });
+  //   config.module.rules.push({
+  //     test: /\.woff2$/,
+  //     type: 'asset/resource',
+  //   });
 
-    // https://github.com/gregberge/svgr/issues/860#issuecomment-1653928947
-    // This is done to prevent DSFR Display component to fail with undefined URL for SVG See https://github.com/betagouv/france-chaleur-urbaine/pull/882
-    // In order to load a SVG, you will need to suffix it with ?icon
-    // example: `import IconPotentiel from '@/public/icons/potentiel.svg?icon';`
-    const nextImageLoaderRule = config.module.rules.find((rule) => rule.test?.test?.('.svg'));
+  //   // https://github.com/gregberge/svgr/issues/860#issuecomment-1653928947
+  //   // This is done to prevent DSFR Display component to fail with undefined URL for SVG See https://github.com/betagouv/france-chaleur-urbaine/pull/882
+  //   // In order to load a SVG, you will need to suffix it with ?icon
+  //   // example: `import IconPotentiel from '@/public/icons/potentiel.svg?icon';`
+  //   const nextImageLoaderRule = config.module.rules.find((rule) => rule.test?.test?.('.svg'));
 
-    if (nextImageLoaderRule) {
-      nextImageLoaderRule.resourceQuery = {
-        not: [...(nextImageLoaderRule.resourceQuery?.not || []), /icon/],
-      };
-    }
+  //   if (nextImageLoaderRule) {
+  //     nextImageLoaderRule.resourceQuery = {
+  //       not: [...(nextImageLoaderRule.resourceQuery?.not || []), /icon/],
+  //     };
+  //   }
 
-    config.module.rules.push({
-      issuer: nextImageLoaderRule?.issuer,
-      resourceQuery: /icon/, // *.svg?icon
-      use: ['@svgr/webpack'],
-    });
+  //   config.module.rules.push({
+  //     issuer: nextImageLoaderRule?.issuer,
+  //     resourceQuery: /icon/, // *.svg?icon
+  //     use: ['@svgr/webpack'],
+  //   });
 
-    return config;
-  },
+  //   return config;
+  // },
   transpilePackages: ['@codegouvfr/react-dsfr'],
 };
 

@@ -1,6 +1,8 @@
+// import { Footer } from '@codegouvfr/react-dsfr/Footer';
+import { Footer } from '@/components/dsfr/Footer';
 import { fr } from '@codegouvfr/react-dsfr';
-import { Footer } from '@codegouvfr/react-dsfr/Footer';
-import UnstyledMainNavigation, { type MainNavigationProps } from '@codegouvfr/react-dsfr/MainNavigation';
+import SEO, { type SEOProps } from '@/components/SEO';
+import UnstyledMainNavigation, { type MainNavigationProps } from '@/components/dsfr/MainNavigation';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import React from 'react';
@@ -8,7 +10,6 @@ import styled, { css } from 'styled-components';
 
 import { FooterConsentManagementItem } from '@/components/ConsentBanner';
 import { type HeaderProps, HeaderQuickAccessItem } from '@/components/dsfr/Header';
-import SEO, { type SEOProps } from '@/components/SEO';
 import Box from '@/components/ui/Box';
 import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
@@ -376,17 +377,17 @@ interface PageHeaderProps {
   currentPage?: string;
 }
 
-/**
- * The navbar and toolbar are hidden automatically when <= 992px by the DSFR component because they are moved in
- * a modal, behind a hamburger menu.
- *
- * When in fullscreen:
- * - the first line is hidden automatically when >= 992px, and is displayed otherwise because the hamburger menu appears
- * - the service (title and description) is hidden (useful when < 992px)
- * - the second line takes more elements:
- *   - a logo at the left
- *   - tool links at the right
- */
+// /**
+//  * The navbar and toolbar are hidden automatically when <= 992px by the DSFR component because they are moved in
+//  * a modal, behind a hamburger menu.
+//  *
+//  * When in fullscreen:
+//  * - the first line is hidden automatically when >= 992px, and is displayed otherwise because the hamburger menu appears
+//  * - the service (title and description) is hidden (useful when < 992px)
+//  * - the second line takes more elements:
+//  *   - a logo at the left
+//  *   - tool links at the right
+//  */
 const PageHeader = (props: PageHeaderProps) => {
   const router = useRouter();
   const { session, hasRole, signOut } = useAuthentication();
@@ -441,6 +442,7 @@ const PageHeader = (props: PageHeaderProps) => {
     <>
       <Banner />
       <StyledHeader
+        disableDisplay
         $isFullScreenMode={isFullScreenMode}
         brandTop={
           <>
@@ -464,26 +466,26 @@ const PageHeader = (props: PageHeaderProps) => {
         navigation={
           isFullScreenMode ? (
             <Box display="flex">
-              <Link href="/" className="fcu-navigation-logo" variant="tertiaryNoOutline" title="Revenir à la page d'accueil" p="0" mr="3w">
+              <Link
+                href="/"
+                className="fcu-navigation-logo min-w-[3rem] max-w-[5rem]"
+                variant="tertiaryNoOutline"
+                title="Revenir à la page d'accueil"
+                p="0"
+                mr="3w"
+              >
                 <Image height={50} width={70} src="/logo-fcu.png" alt="logo france chaleur urbaine" priority />
               </Link>
-              <MainNavigation
-                items={markCurrentPageActive(navigationMenuItems, currentPath)}
-                className="fr-col"
-                $compact={isFullScreenMode}
-              />
-              {isFullScreenMode && (
-                // structure from https://github.com/codegouvfr/react-dsfr/blob/eee67f75124b5c3d011703cb6c5cd88eb41ae54c/src/Header/Header.tsx#L158-L179
-                <Box className={fr.cx('fr-header__tools-links')}>
-                  <ul className={fr.cx('fr-btns-group', 'fr-col--middle')}>
-                    {quickAccessItems.map((quickAccessItem, index) => (
-                      <li key={index}>
-                        <HeaderQuickAccessItem quickAccessItem={quickAccessItem} />
-                      </li>
-                    ))}
-                  </ul>
-                </Box>
-              )}
+              <MainNavigation items={markCurrentPageActive(navigationMenuItems, currentPath)} className="fr-col" $compact />
+              <Box className={fr.cx('fr-header__tools-links')}>
+                <ul className={fr.cx('fr-btns-group', 'fr-col--middle')}>
+                  {quickAccessItems.map((quickAccessItem, index) => (
+                    <li key={index}>
+                      <HeaderQuickAccessItem quickAccessItem={quickAccessItem} />
+                    </li>
+                  ))}
+                </ul>
+              </Box>
             </Box>
           ) : (
             markCurrentPageActive(navigationMenuItems, currentPath)

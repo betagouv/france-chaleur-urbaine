@@ -16,7 +16,7 @@
   },
   "homepage": "https://github.com/betagouv/france-chaleur-urbaine#readme",
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --turbo",
     "build": "next build",
     "build:analyze": "ANALYZE=true yarn build",
     "start": "next start -p $PORT",
