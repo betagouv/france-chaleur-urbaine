@@ -7,7 +7,7 @@ import Checkbox from '@/components/form/dsfr/Checkbox';
 import Upload from '@/components/form/dsfr/Upload';
 import { getInputErrorStates } from '@/components/form/react-form/useForm';
 import Button from '@/components/ui/Button';
-import { useModal } from '@/components/ui/ModalSimple';
+import { useDialog } from '@/components/ui/Dialog';
 import { usePost } from '@/hooks/useApi';
 import { type ProEligibilityTestCreateInput, type ProEligibilityTestCreateOutput } from '@/pages/api/pro-eligibility-tests';
 import { toastErrors } from '@/services/notification';
@@ -28,7 +28,7 @@ const zCreateEligibilityTest = z.strictObject({
 type CreateEligibilityTest = z.infer<typeof zCreateEligibilityTest>;
 
 const CreateEligibilityTestForm = () => {
-  const { closeModal } = useModal();
+  const { closeDialog } = useDialog();
   const [previewLines, setPreviewLines] = useState<string[]>([]);
   const { mutateAsync: createTest } = usePost<ProEligibilityTestCreateInput, ProEligibilityTestCreateOutput>('/api/pro-eligibility-tests', {
     invalidate: ['/api/pro-eligibility-tests'],
@@ -52,7 +52,7 @@ const CreateEligibilityTestForm = () => {
         name: value.name,
         csvContent,
       });
-      closeModal();
+      closeDialog();
     }, FormErrorMessage),
   });
 
@@ -164,7 +164,7 @@ const CreateEligibilityTestForm = () => {
           selector={(state) => [state.canSubmit, state.isSubmitting]}
           children={([canSubmit, isSubmitting]) => (
             <div className="flex justify-end gap-2 mt-4">
-              <Button priority="secondary" onClick={closeModal}>
+              <Button priority="secondary" onClick={closeDialog}>
                 Annuler
               </Button>
               <Button type="submit" disabled={!canSubmit} loading={isSubmitting}>
