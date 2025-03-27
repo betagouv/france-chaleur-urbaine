@@ -3021,6 +3021,7 @@ export interface ReseauxDeChaleur {
   adresse_mo: string | null;
   annee_creation: number | null;
   communes: string[] | null;
+  communes_insee: string[] | null;
   'contenu CO2': number | null;
   'contenu CO2 ACV': number | null;
   contenu_CO2_2023_tmp: number | null;
@@ -3117,6 +3118,7 @@ export interface ReseauxDeFroid {
   adresse_mo: string | null;
   annee_creation: number | null;
   communes: string[] | null;
+  communes_insee: string[] | null;
   'contenu CO2': number | null;
   'contenu CO2 ACV': number | null;
   contenu_CO2_2023_tmp: number | null;
@@ -3245,10 +3247,13 @@ export interface ZoneAPotentielFortChaudTiles {
 }
 
 export interface ZoneDeDeveloppementPrioritaire {
+  communes: string[] | null;
+  communes_insee: string[] | null;
+  departement: string | null;
   geom: string | null;
   id_fcu: number;
   'Identifiant reseau': string | null;
-  communes: string[] | null;
+  region: string | null;
 }
 
 export interface ZoneDeDeveloppementPrioritaireTiles {
@@ -3260,11 +3265,14 @@ export interface ZoneDeDeveloppementPrioritaireTiles {
 
 export interface ZonesEtReseauxEnConstruction {
   communes: string[] | null;
+  communes_insee: string[] | null;
+  departement: string | null;
   geom: string;
   gestionnaire: string | null;
   id_fcu: number;
   is_zone: Generated<boolean>;
   mise_en_service: string | null;
+  region: string | null;
 }
 
 export interface ZonesEtReseauxEnConstructionTiles {

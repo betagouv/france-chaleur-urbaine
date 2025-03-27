@@ -95,6 +95,8 @@ export const tableConfigs: TableConfig[] = [
         has_trace: changement.is_line,
         communes: changement.ign_communes.join(','),
         has_PDP: changement.has_PDP,
+        departement: changement.departement,
+        region: changement.region,
       }),
       fieldsConversion: {
         id_fcu: TypeString,
@@ -135,6 +137,8 @@ export const tableConfigs: TableConfig[] = [
         id_fcu: changement.id_fcu,
         has_trace: changement.is_line,
         communes: changement.ign_communes.join(','),
+        departement: changement.departement,
+        region: changement.region,
       }),
       fieldsConversion: {
         id_fcu: TypeString,
@@ -172,6 +176,8 @@ export const tableConfigs: TableConfig[] = [
         id_fcu: changement.id_fcu,
         is_zone: changement.is_zone,
         communes: changement.ign_communes.join(','),
+        departement: changement.departement,
+        region: changement.region,
       }),
       fieldsConversion: {
         id_fcu: TypeString,
