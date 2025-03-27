@@ -6,9 +6,9 @@ import ProEligibilityTestItem from '@/components/dashboard/professionnel/ProElig
 import SimplePage from '@/components/shared/page/SimplePage';
 import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
+import Dialog from '@/components/ui/Dialog';
 import Heading from '@/components/ui/Heading';
 import Loader from '@/components/ui/Loader';
-import ModalSimple from '@/components/ui/ModalSimple';
 import Section, { SectionContent, SectionSubtitle, SectionTitle } from '@/components/ui/Section';
 import { useFetch } from '@/hooks/useApi';
 import { type ProEligibilityTestListItem } from '@/pages/api/pro-eligibility-tests';
@@ -16,6 +16,7 @@ import { withAuthentication } from '@/server/authentication';
 
 export default function TestsAdresses(): JSX.Element {
   const [hasPendingJobs, setHasPendingJobs] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const { data: eligibilityTests, isLoading } = useFetch<ProEligibilityTestListItem[]>('/api/pro-eligibility-tests', {
     refetchInterval: hasPendingJobs ? 5000 : false,
@@ -26,9 +27,14 @@ export default function TestsAdresses(): JSX.Element {
   }, [eligibilityTests]);
 
   const newTestButton = (
-    <ModalSimple title="Création d'un test d'adresses" size="medium" trigger={<Button>Nouveau test</Button>}>
+    <Dialog
+      title="Création d'un test d'adresses"
+      trigger={<Button>Nouveau test</Button>}
+      open={isDialogOpen}
+      onOpenChange={setIsDialogOpen}
+    >
       <CreateEligibilityTestForm />
-    </ModalSimple>
+    </Dialog>
   );
 
   return (

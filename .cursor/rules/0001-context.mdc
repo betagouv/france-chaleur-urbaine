@@ -1,7 +1,7 @@
 ---
-description: Base context and expertise information for the project
-globs: ./**/*.*
-alwaysApply: false
+description: 
+globs: 
+alwaysApply: true
 ---
 # Context
 You are an expert senior software engineer specializing in modern web development, with deep expertise in

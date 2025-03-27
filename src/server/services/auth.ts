@@ -28,7 +28,8 @@ export const register = async ({
   accept_cgu?: boolean;
   optin_newsletter?: boolean;
 }) => {
-  const existingUser = await kdb.selectFrom('users').select('id').where('email', '=', email.trim().toLowerCase()).executeTakeFirst();
+  const lowerCaseEmail = email.trim().toLowerCase();
+  const existingUser = await kdb.selectFrom('users').select('id').where('email', 'ilike', lowerCaseEmail).executeTakeFirst();
   if (existingUser) {
     throw new BadRequestError(`L'utilisateur associé à l'email '${email}' existe déjà. Connectez-vous.`);
   }
@@ -37,7 +38,7 @@ export const register = async ({
   const insertedUser = await kdb
     .insertInto('users')
     .values({
-      email,
+      email: lowerCaseEmail,
       password: await hash(password, await genSalt(10)),
       role,
       status: 'pending_email_confirmation',

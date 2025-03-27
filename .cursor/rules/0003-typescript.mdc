@@ -1,6 +1,6 @@
 ---
 description: TypeScript specific rules and conventions
-globs: ./**/*.{ts,tsx}
+globs: *.tsx,*.ts
 alwaysApply: false
 ---
 # Typescript Usage

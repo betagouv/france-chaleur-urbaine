@@ -1,6 +1,6 @@
 ---
 description: Use of Next
-globs: ./**/*.{ts,tsx,js,jsx,prisma,sql}
+globs: *.tsx,*.ts,*.js,*.js
 alwaysApply: false
 ---
 
