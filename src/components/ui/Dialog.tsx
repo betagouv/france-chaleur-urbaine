@@ -9,7 +9,7 @@ export type DialogProps = PropsWithChildren<{
   trigger?: React.ReactNode;
   title: string;
   description?: string;
-  size?: 'small' | 'medium' | 'large';
+  size?: 'sm' | 'md' | 'lg';
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 }>;
@@ -28,7 +28,7 @@ export const useDialog = () => {
   return context;
 };
 
-const Dialog = ({ children, trigger, title, description, size = 'medium', open, onOpenChange }: DialogProps) => {
+const Dialog = ({ children, trigger, title, description, size = 'md', open, onOpenChange }: DialogProps) => {
   const handleClose = () => {
     onOpenChange?.(false);
   };
@@ -57,9 +57,9 @@ const Dialog = ({ children, trigger, title, description, size = 'medium', open, 
           <motion.div
             className={cx(
               'fixed left-1/2 top-1/2 z-50 max-h-[85vh] w-full transform overflow-auto bg-white p-8 shadow-xl',
-              size === 'small' && 'max-w-sm',
-              size === 'medium' && 'max-w-lg',
-              size === 'large' && 'max-w-4xl'
+              size === 'sm' && 'max-w-sm',
+              size === 'md' && 'max-w-lg',
+              size === 'lg' && 'max-w-4xl'
             )}
             initial={{ opacity: 0, y: -10, x: '-50%', translateY: '-50%' }}
             animate={{ opacity: 1, y: 0, x: '-50%', translateY: '-50%' }}

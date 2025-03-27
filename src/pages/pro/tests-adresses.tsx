@@ -30,7 +30,6 @@ export default function TestsAdresses(): JSX.Element {
     <Dialog
       title="Création d'un test d'adresses"
       trigger={<Button>Nouveau test</Button>}
-      size="medium"
       open={isDialogOpen}
       onOpenChange={setIsDialogOpen}
     >
