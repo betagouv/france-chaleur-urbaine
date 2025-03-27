@@ -101,21 +101,36 @@ export function registerNetworkCommands(parentProgram: Command) {
       );
 
       // 2. MAJ des labels communes, départements et régions
-      const updateTableLabels = (table: NetworkTable) => sql`
-        update ${sql.raw(table)}
-        set
-          communes = ARRAY(
-            SELECT DISTINCT ic.nom
-            FROM unnest(${sql.raw(table)}.communes_insee) as ci
-            JOIN ign_communes ic ON ic.insee_com = ci
-            ORDER BY ic.nom
-          )
-      `;
+      const updateTableLabels = async (table: NetworkTable) => {
+        return await kdb
+          .updateTable(table)
+          .set({
+            communes: sql<string[]>`ARRAY(
+              SELECT DISTINCT ic.nom
+              FROM unnest(${sql.raw(table)}.communes_insee) as ci
+              JOIN ign_communes ic ON ic.insee_com = ci
+              ORDER BY ic.nom
+            )`,
+            departement: sql<string>`(
+              SELECT string_agg(DISTINCT id.nom, ', ' ORDER BY id.nom)
+              FROM unnest(${sql.raw(table)}.communes_insee) as ci
+              JOIN ign_communes ic ON ic.insee_com = ci
+              JOIN ign_departements id ON id.insee_dep = ic.insee_dep
+            )`,
+            region: sql<string>`(
+              SELECT string_agg(DISTINCT ir.nom, ', ' ORDER BY ir.nom)
+              FROM unnest(${sql.raw(table)}.communes_insee) as ci
+              JOIN ign_communes ic ON ic.insee_com = ci
+              JOIN ign_regions ir ON ir.insee_reg = ic.insee_reg
+            )`,
+          })
+          .executeTakeFirstOrThrow();
+      };
 
       await Promise.all(
         Object.values(entityTypeToTable).map(async (table) => {
-          const res = await updateTableLabels(table).execute(kdb);
-          logger.info(`Mise à jour des labels pour ${table}: ${res.numAffectedRows} lignes modifiées`);
+          const res = await updateTableLabels(table);
+          logger.info(`Mise à jour des labels pour ${table}: ${res.numUpdatedRows} lignes modifiées`);
         })
       );
     });
