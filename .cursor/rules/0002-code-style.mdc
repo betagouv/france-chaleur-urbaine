@@ -1,6 +1,6 @@
 ---
 description: Code style and structure rules
-globs: ./**/*.{ts,tsx,js,jsx,css,sass,json}
+globs: *.tsx,*.ts,*.js,*.js,*.css,*.sass,*.json
 alwaysApply: false
 ---
 # Style and Structure

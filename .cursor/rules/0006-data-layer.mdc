@@ -1,6 +1,6 @@
 ---
 description: Database and data layer rules- Use "typescript" for all code; prefer types over interfaces. - Avoid "enums"; use maps instead. - Use functional components with TypeScript types.
-globs: ./**/*.{ts,tsx,js,jsx,prisma,sql}
+globs: *.tsx,*.ts,*.js,*.js,*.sql
 alwaysApply: false
 ---
 

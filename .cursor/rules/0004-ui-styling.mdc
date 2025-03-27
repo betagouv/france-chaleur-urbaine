@@ -1,6 +1,6 @@
 ---
-description: UI and styling conventions
-globs: ./**/*.{ts,tsx,css,js,jsx}
+description: 
+globs: *.tsx,*.ts,*.js,*.jsx
 alwaysApply: false
 ---
 # UI and styling
