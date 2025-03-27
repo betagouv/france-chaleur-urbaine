@@ -12,16 +12,16 @@ function createGeometryExpression(geom: GeoJSON.Geometry, srid: number) {
 }
 
 /**
- * Expression SQL pour calculer les communes intersectant une géométrie
+ * Expression SQL pour calculer les codes INSEE des communes intersectant une géométrie
  */
-const communesIntersectionExpressionGeom = sql<string[]>`COALESCE(
+const communesInseeExpressionGeom = sql<string[]>`COALESCE(
   (
-    SELECT array_agg(nom order by nom)
+    SELECT array_agg(insee_com order by insee_com)
     FROM geometry
-    JOIN ign_communes on ST_Intersects(geometry.geom, st_buffer(ign_communes.geom, -150))
+    JOIN ign_communes on ST_Intersects(geometry.geom, ign_communes.geom_150m)
   ),
   (
-    SELECT array_agg(nom order by nom)
+    SELECT array_agg(insee_com order by insee_com)
     FROM geometry
     JOIN ign_communes on ST_Intersects(geometry.geom, ign_communes.geom)
   ),
@@ -88,6 +88,41 @@ const networkTables: NetworkTableColumns = {
 };
 
 /**
+ * Met à jour les champs département et région pour une entité (les labels sont concaténés).
+ */
+async function updateLabelsCommunesDepartementAndRegion(tableName: NetworkTable, id_fcu: number): Promise<void> {
+  await kdb
+    .updateTable(tableName)
+    .where('id_fcu', '=', id_fcu)
+    .set({
+      communes: sql<string[]>`(
+        SELECT DISTINCT ic.nom
+        FROM unnest(${sql.raw(tableName)}.communes_insee) as ci
+        JOIN ign_communes ic ON ic.insee_com = ci
+        WHERE ${sql.raw(tableName)}.id_fcu = ${id_fcu}
+        ORDER BY ic.nom
+      )`,
+      departement: sql<string>`(
+        SELECT string_agg(DISTINCT id.nom, ', ' ORDER BY id.nom)
+        FROM unnest(${sql.raw(tableName)}.communes_insee) as ci
+        JOIN ign_communes ic ON ic.insee_com = ci
+        JOIN ign_departements id ON id.insee_dep = ic.insee_dep
+        WHERE ${sql.raw(tableName)}.id_fcu = ${id_fcu}
+      )`,
+      region: sql<string>`(
+        SELECT string_agg(DISTINCT ir.nom, ', ' ORDER BY ir.nom)
+        FROM unnest(${sql.raw(tableName)}.communes_insee) as ci
+        JOIN ign_communes ic ON ic.insee_com = ci
+        JOIN ign_regions ir ON ir.insee_reg = ic.insee_reg
+        WHERE ${sql.raw(tableName)}.id_fcu = ${id_fcu}
+      )`,
+    })
+    .execute();
+
+  logger.info(`Département et région mis à jour pour ${tableName} avec id_fcu: ${id_fcu}`);
+}
+
+/**
  * Insère une nouvelle entité avec une géométrie.
  */
 export async function insertEntityWithGeometry(
@@ -106,13 +141,15 @@ export async function insertEntityWithGeometry(
     .values((eb) => ({
       id_fcu: id_fcu ? eb.lit(id_fcu) : sql<number>`(SELECT COALESCE(max(id_fcu), 0) + 1 FROM ${sql.raw(tableName)})`,
       geom: eb.selectFrom('geometry').select('geometry.geom'),
-      communes: communesIntersectionExpressionGeom,
+      communes_insee: communesInseeExpressionGeom,
       ...networkTables[tableName].geomDependentFields(eb),
       ...networkTables[tableName].createFields?.(eb),
       ...networkTables[tableName].additionalFields?.(id_sncu),
     }))
     .returning('id_fcu')
     .executeTakeFirstOrThrow();
+
+  await updateLabelsCommunesDepartementAndRegion(tableName, inserted.id_fcu);
 
   logger.info(`Géométrie créée pour ${tableName} avec id_fcu: ${inserted.id_fcu}`);
 }
@@ -139,16 +176,20 @@ export async function updateEntityGeometry(
     throw new Error(`Plusieurs entités trouvées avec ${idField} = ${idValue}`);
   }
 
+  const id_fcu = existingEntities[0].id_fcu;
+
   await kdb
     .with('geometry', (db) => db.selectNoFrom(createGeometryExpression(geometryConfig.geom, geometryConfig.srid).as('geom')))
     .updateTable(tableName as any)
-    .where('id_fcu', '=', existingEntities[0].id_fcu)
+    .where('id_fcu', '=', id_fcu)
     .set((eb) => ({
       geom: eb.selectFrom('geometry').select('geometry.geom'),
-      communes: communesIntersectionExpressionGeom,
+      communes_insee: communesInseeExpressionGeom,
       ...networkTables[tableName].geomDependentFields(eb),
     }))
     .execute();
+
+  await updateLabelsCommunesDepartementAndRegion(tableName, id_fcu);
 
   logger.info(`Géométrie mise à jour pour ${tableName} avec ${idField} = ${idValue}`);
 }

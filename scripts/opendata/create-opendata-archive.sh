@@ -136,7 +136,9 @@ psql postgres://postgres:postgres_fcu@localhost:5432/postgres <<EOF
 
       -- champs exportés en propriétés
       "Identifiant reseau",
-      array_to_string("communes", ',') as "communes"
+      array_to_string("communes", ',') as "communes",
+      departement,
+      region
     FROM zone_de_developpement_prioritaire
     order by "Identifiant reseau", id_fcu
   );
@@ -149,6 +151,8 @@ psql postgres://postgres:postgres_fcu@localhost:5432/postgres <<EOF
 
       -- champs exportés en propriétés
       array_to_string("communes", ',') as "communes",
+      departement,
+      region,
       "gestionnaire",
       "mise_en_service"
     FROM zones_et_reseaux_en_construction
