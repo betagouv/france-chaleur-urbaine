@@ -2829,6 +2829,7 @@ export interface EtudesEnCoursTiles {
 
 export interface IgnCommunes {
   geom: string | null;
+  geom_150m: string | null;
   id: string | null;
   insee_arr: string | null;
   insee_can: string | null;
@@ -2841,6 +2842,25 @@ export interface IgnCommunes {
   population: Numeric | null;
   siren_epci: string | null;
   statut: string | null;
+}
+
+export interface IgnDepartements {
+  geom: string | null;
+  id: string | null;
+  insee_dep: string | null;
+  insee_reg: string | null;
+  nom: string | null;
+  nom_m: string | null;
+  ogc_fid: Generated<number>;
+}
+
+export interface IgnRegions {
+  geom: string | null;
+  id: string | null;
+  insee_reg: string | null;
+  nom: string | null;
+  nom_m: string | null;
+  ogc_fid: Generated<number>;
 }
 
 export interface Jobs {
@@ -3301,6 +3321,8 @@ export interface DB {
   etudes_en_cours: EtudesEnCours;
   etudes_en_cours_tiles: EtudesEnCoursTiles;
   ign_communes: IgnCommunes;
+  ign_departements: IgnDepartements;
+  ign_regions: IgnRegions;
   jobs: Jobs;
   knex_migrations: KnexMigrations;
   knex_migrations_lock: KnexMigrationsLock;
