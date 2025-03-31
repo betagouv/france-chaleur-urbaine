@@ -143,6 +143,10 @@ const nextConfig: NextConfig = {
           loaders: ['@svgr/webpack'],
           as: '*.js',
         },
+        '*.md': {
+          loaders: ['raw-loader'],
+          as: '*.js',
+        },
       },
     },
   },
