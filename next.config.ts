@@ -136,6 +136,16 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
+  experimental: {
+    turbo: {
+      rules: {
+        '*.svgr': {
+          loaders: ['@svgr/webpack'],
+          as: '*.js',
+        },
+      },
+    },
+  },
   // too many conflicts with map draw listeners
   // reactStrictMode: true,
   async redirects() {
@@ -234,6 +244,10 @@ const nextConfig: NextConfig = {
     config.module.rules.push({
       test: /\.md$/,
       use: 'raw-loader',
+    });
+    config.module.rules.push({
+      test: /\.svgr$/,
+      use: '@svgr/webpack',
     });
     config.module.rules.push({
       test: /\.woff2$/,
