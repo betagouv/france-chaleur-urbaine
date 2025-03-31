@@ -105,7 +105,11 @@ function RegisterForm() {
             <>
               <EmailInput name="email" label="Email" nativeInputProps={{ placeholder: 'Saisir votre email' }} />
               <PasswordInput name="password" label="Mot de passe" nativeInputProps={{ placeholder: 'Saisir votre mot de passe' }} />
-              <Checkbox name="optin_newsletter" small label={<>Je souhaite rester informé des actualités de France Chaleur Urbaine</>} />
+              <Checkbox
+                name="optin_newsletter"
+                small
+                label={<>Je souhaite recevoir la newsletter trimestrielle de France Chaleur Urbaine</>}
+              />
               <Checkbox
                 name="accept_cgu"
                 small
