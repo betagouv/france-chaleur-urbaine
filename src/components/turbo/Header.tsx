@@ -1,22 +1,30 @@
-// Source: https://github.com/codegouvfr/react-dsfr/blob/fcc1fe8b51e0946252121834e400efb6151e77fd/src/Header/Header.tsx - Change L187
+// @ts-nocheck
+/* eslint-disable */
 /* eslint-disable no-inner-declarations */
-
+import { Display } from '@codegouvfr/react-dsfr/Display/Display';
 import { fr } from '@codegouvfr/react-dsfr/fr';
 import type { FrIconClassName, RiIconClassName } from '@codegouvfr/react-dsfr/fr/generatedFromCss/classNames';
 import { createComponentI18nApi } from '@codegouvfr/react-dsfr/i18n';
 import type { RegisteredLinkProps } from '@codegouvfr/react-dsfr/link';
-import { getLink } from '@codegouvfr/react-dsfr/link';
 import type { MainNavigationProps } from '@codegouvfr/react-dsfr/MainNavigation';
-import { MainNavigation } from '@codegouvfr/react-dsfr/MainNavigation';
 import { useTranslation as useSearchBarTranslation } from '@codegouvfr/react-dsfr/SearchBar/SearchBar';
 import { SearchButton } from '@codegouvfr/react-dsfr/SearchBar/SearchButton';
 import { cx } from '@codegouvfr/react-dsfr/tools/cx';
+import type { JSX } from '@codegouvfr/react-dsfr/tools/JSX';
 import { setBrandTopAndHomeLinkProps } from '@codegouvfr/react-dsfr/zz_internal/brandTopAndHomeLinkProps';
-import { cloneElement, type ComponentProps, type CSSProperties, forwardRef, memo, type ReactNode } from 'react';
-import type { Equals } from 'tsafe';
+import React, { memo, forwardRef, cloneElement, type ReactNode, type CSSProperties, type ComponentProps } from 'react';
 import { assert } from 'tsafe/assert';
 import { symToStr } from 'tsafe/symToStr';
+
+// import { getLink } from '@codegouvfr/react-dsfr/link';
 import { typeGuard } from 'tsafe/typeGuard';
+
+import Link from '@/components/ui/Link';
+
+import type { Equals } from 'tsafe';
+
+// import { MainNavigation } from '@codegouvfr/react-dsfr/MainNavigation';
+import MainNavigation from './MainNavigation';
 
 export type HeaderProps = {
   className?: string;
@@ -82,6 +90,8 @@ export type HeaderProps = {
     >
   >;
   style?: CSSProperties;
+  /** Default: false */
+  disableDisplay?: boolean;
 };
 
 export namespace HeaderProps {
@@ -126,6 +136,7 @@ export const Header = memo(
       onSearchButtonClick,
       classes = {},
       style,
+      disableDisplay = false,
       ...rest
     } = props;
 
@@ -137,6 +148,7 @@ export const Header = memo(
     const menuButtonId = `${id}-menu-button`;
     const searchModalId = `${id}-search-modal`;
     const searchInputId = `${id}-search-input`;
+    const searchLabelId = `${id}-search-label`;
 
     const isSearchBarEnabled = renderSearchInput !== undefined || onSearchButtonClick !== undefined;
 
@@ -145,7 +157,7 @@ export const Header = memo(
     const { t } = useTranslation();
     const { t: tSearchBar } = useSearchBarTranslation();
 
-    const { Link } = getLink();
+    // const { Link } = getLink();
 
     const getQuickAccessNode = (usecase: 'mobile' | 'desktop') => (
       <ul className={fr.cx('fr-btns-group')}>
@@ -173,6 +185,7 @@ export const Header = memo(
                     case 'desktop':
                       return '';
                   }
+                  assert<Equals<typeof usecase, never>>();
                 })()}`,
               });
             })()}
@@ -180,11 +193,12 @@ export const Header = memo(
         ))}
       </ul>
     );
+
     const hasOperatorLink = operatorLogo?.linkProps !== undefined;
 
     return (
       <>
-        {/* <Display /> Removed because it puts a h1 in the code source of the page which breask SEO */}
+        {!disableDisplay && <Display />}
         <header role="banner" id={id} className={cx(fr.cx('fr-header'), classes.root, className)} ref={ref} style={style} {...rest}>
           <div className={cx(fr.cx('fr-header__body' as any), classes.body)}>
             <div className={cx(fr.cx('fr-container'), classes.container)}>
@@ -195,7 +209,7 @@ export const Header = memo(
                       {(() => {
                         const children = <p className={fr.cx('fr-logo')}>{brandTop}</p>;
 
-                        return serviceTitle !== undefined ? children : <Link {...(homeLinkProps as any)}>{children}</Link>;
+                        return serviceTitle !== undefined ? children : <Link {...homeLinkProps}>{children}</Link>;
                       })()}
                     </div>
                     {operatorLogo !== undefined && (
@@ -221,7 +235,7 @@ export const Header = memo(
                             />
                           );
 
-                          return hasOperatorLink ? <Link {...(operatorLogo.linkProps as any)}>{children}</Link> : children;
+                          return hasOperatorLink ? <Link {...operatorLogo.linkProps}>{children}</Link> : children;
                         })()}
                       </div>
                     )}
@@ -254,7 +268,7 @@ export const Header = memo(
                   </div>
                   {serviceTitle !== undefined && (
                     <div className={cx(fr.cx('fr-header__service', hasOperatorLink && 'fr-enlarge-link'), classes.service)}>
-                      <Link {...(homeLinkProps as any)}>
+                      <Link {...homeLinkProps}>
                         <p className={cx(fr.cx('fr-header__service-title'), classes.serviceTitle)}>{serviceTitle}</p>
                       </Link>
                       {serviceTagline !== undefined && (
@@ -286,7 +300,7 @@ export const Header = memo(
                             {t('close')}
                           </button>
                           <div className={fr.cx('fr-search-bar')} role="search">
-                            <label className={fr.cx('fr-label')} htmlFor={searchInputId}>
+                            <label className={fr.cx('fr-label')} htmlFor={searchInputId} id={searchLabelId}>
                               {tSearchBar('label')}
                             </label>
                             {(
@@ -367,14 +381,14 @@ export type HeaderQuickAccessItemProps = {
 };
 
 /** NOTE: If you wrap this component you should forward the id */
-export function HeaderQuickAccessItem(props: HeaderQuickAccessItemProps): React.ReactElement {
+export function HeaderQuickAccessItem(props: HeaderQuickAccessItemProps): JSX.Element {
   const { className, quickAccessItem, id } = props;
 
-  const { Link } = getLink();
+  // const { Link } = getLink();
 
   return quickAccessItem.linkProps !== undefined ? (
     <Link
-      {...(quickAccessItem.linkProps as any)}
+      {...quickAccessItem.linkProps}
       className={cx(fr.cx('fr-btn', quickAccessItem.iconId), quickAccessItem.linkProps.className, className)}
       id={id}
     >
