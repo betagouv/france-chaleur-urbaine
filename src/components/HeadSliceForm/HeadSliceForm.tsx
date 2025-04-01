@@ -7,7 +7,6 @@ import { energyInputsDefaultLabels, type EnergyInputsLabelsType } from '@/compon
 import AddressAutocomplete from '@/components/form/dsfr/AddressAutocompleteInput';
 import MarkdownWrapper from '@/components/MarkdownWrapper';
 import Slice from '@/components/Slice';
-import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
 import Icon from '@/components/ui/Icon';
 import Link from '@/components/ui/Link';
@@ -118,6 +117,7 @@ const HeadSliceForm = ({
     } catch (err: any) {
       setEligibilityError(true);
     }
+    setLoadingStatus('idle');
   }, [address, geoAddress, heatingType, heatNetworkService, handleOnFetchAddress, handleOnSuccessAddress]);
 
   useEffect(() => {
@@ -177,11 +177,15 @@ const HeadSliceForm = ({
               {warningMessage}
             </div>
 
-            {eligibilityError && (
-              <Box textColor="#c00">
-                Une erreur est survenue. Veuillez réessayer ou bien <Link href="/contact">contacter le support</Link>.
-              </Box>
-            )}
+            <div className="mb-1">
+              {eligibilityError ? (
+                <span className="text-error">
+                  Une erreur est survenue. Veuillez réessayer ou bien <Link href="/contact">contacter le support</Link>.
+                </span>
+              ) : (
+                <>&nbsp;</>
+              )}
+            </div>
 
             <div className="flex justify-between gap-2 items-center">
               <Button

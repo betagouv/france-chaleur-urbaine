@@ -223,7 +223,7 @@ export const syncGestionnairesWithUsers = async () => {
       const oldDemands = !!gestionnaire.get('Relance');
       const active = !!gestionnaire.get('Actif');
       const allTags = [...new Set([...tags, ...tagsFromAPI])];
-      const user = users.find((user) => user.email.toLowerCase() === email.toLowerCase());
+      const user = users.find((dbUser) => dbUser?.email?.toLowerCase() === email.toLowerCase());
 
       if (!user) {
         logDry(`    🆕 Create user for ${email} with ${allTags.join(',')}.`);
