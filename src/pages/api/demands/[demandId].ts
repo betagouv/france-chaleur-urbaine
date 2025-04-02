@@ -28,6 +28,6 @@ export default handleRouteErrors(
     return demand;
   },
   {
-    requireAuthentication: ['gestionnaire'],
+    requireAuthentication: ['gestionnaire', 'demo'],
   }
 );
