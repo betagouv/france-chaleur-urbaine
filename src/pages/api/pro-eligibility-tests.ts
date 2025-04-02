@@ -81,6 +81,6 @@ export type ProEligibilityTestCreateOutput = ReturnType<typeof POST>;
 export default handleRouteErrors(
   { GET, POST },
   {
-    requireAuthentication: ['particulier', 'professionnel', 'gestionnaire', 'admin'],
+    requireAuthentication: ['particulier', 'professionnel', 'gestionnaire', 'admin', 'demo'],
   }
 );
