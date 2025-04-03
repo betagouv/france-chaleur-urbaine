@@ -7,7 +7,7 @@ import { Fragment, useEffect, useMemo, useState } from 'react';
 
 import CompleteEligibilityTestForm from '@/components/dashboard/professionnel/eligibility-test/CompleteEligibilityTestForm';
 import RenameEligibilityTestForm from '@/components/dashboard/professionnel/eligibility-test/RenameEligibilityTestForm';
-import ProcheReseauBadge from '@/components/dashboard/professionnel/ProcheReseauBadge';
+import ProcheReseauBadge, { type ProcheReseauBadgeProps } from '@/components/dashboard/professionnel/ProcheReseauBadge';
 import Map, { type AdresseEligible } from '@/components/Map/Map';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import { UrlStateAccordion } from '@/components/ui/Accordion';
@@ -52,14 +52,14 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
     cell: (info) => (
       <div>
         <div>
-          <div>{info.row.original.ban_address}</div>
+          <div className="leading-none tracking-tight">{info.row.original.ban_address}</div>
           {!info.row.original.ban_valid && (
             <Badge severity="error" small>
               Adresse invalide
             </Badge>
           )}
         </div>
-        <div className=" text-xs italic text-gray-500">{info.row.original.source_address}</div>
+        <div className=" text-xs italic text-gray-500 tracking-tighter">{info.row.original.source_address}</div>
       </div>
     ),
     flex: 1,
@@ -87,6 +87,10 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
     suffix: '%',
     align: 'right',
     enableSorting: false,
+    filterType: 'Range',
+    filterProps: {
+      unit: '%',
+    },
   },
   {
     header: () => (
@@ -118,8 +122,11 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
       );
     },
     align: 'center',
-    filterFn: 'equals',
     enableSorting: false,
+    filterType: 'Facets',
+    filterProps: {
+      Component: ({ value }) => <ProcheReseauBadge type={value as ProcheReseauBadgeProps['type']} />,
+    },
   },
   {
     header: () => (
@@ -137,8 +144,11 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
     accessorKey: 'eligibility_status.distance',
     suffix: 'm',
     align: 'right',
-    filter: 'notNullAndLessThanOrEqual',
     sorting: 'nullsLast',
+    filterType: 'Range',
+    filterProps: {
+      unit: 'm',
+    },
   },
   {
     header: () => (
@@ -161,8 +171,8 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
     accessorKey: 'eligibility_status.inPDP',
     cellType: 'Boolean',
     align: 'center',
-    filterFn: 'equals',
     enableSorting: false,
+    filterType: 'Facets',
   },
   {
     header: () => (
@@ -180,8 +190,12 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
     accessorKey: 'eligibility_status.tauxENRR',
     suffix: '%',
     align: 'right',
-    filter: 'notNullAndGreaterThanOrEqual',
     sorting: 'nullsLast',
+    filterType: 'Range',
+    filterProps: {
+      domain: [0, 100],
+      unit: '%',
+    },
   },
   {
     header: () => (
@@ -199,6 +213,11 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
     accessorKey: 'eligibility_status.co2',
     align: 'right',
     sorting: 'nullsLast',
+    filterType: 'Range',
+    filterProps: {
+      unit: 'g/kWh',
+      step: 0.001,
+    },
   },
   {
     header: () => (
@@ -238,7 +257,7 @@ type QuickFilterPreset = {
   label: React.ReactNode;
   filters: Array<{
     id: DotToUnderscore<FlattenKeys<ProEligibilityTestWithAddresses['addresses'][number]>>;
-    value: boolean | number;
+    value: boolean | number | [number, number] | Record<string, boolean>;
   }>;
 };
 
@@ -261,13 +280,13 @@ const quickFilterPresets = {
         />
       </>
     ),
-    filters: [{ id: 'eligibility_status_isEligible', value: true }],
+    filters: [{ id: 'eligibility_status_isEligible', value: { true: true, false: false } }],
   },
   adressesMoins100mPlus50ENRR: {
     label: "à moins de 100m d'un réseau à plus de 50% d'ENR&R",
     filters: [
-      { id: 'eligibility_status_distance', value: 100 },
-      { id: 'eligibility_status_tauxENRR', value: 50 },
+      { id: 'eligibility_status_distance', value: [0, 100] },
+      { id: 'eligibility_status_tauxENRR', value: [50, 100] },
     ],
   },
   adressesDansPDP: {
@@ -286,7 +305,12 @@ const quickFilterPresets = {
         />
       </>
     ),
-    filters: [{ id: 'eligibility_status_inPDP', value: true }],
+    filters: [
+      {
+        id: 'eligibility_status_inPDP',
+        value: { true: true, false: false },
+      },
+    ],
   },
 } satisfies Record<string, QuickFilterPreset>;
 type QuickFilterPresetKey = keyof typeof quickFilterPresets;
