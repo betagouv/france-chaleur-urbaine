@@ -110,17 +110,8 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
       </>
     ),
     width: '130px',
-    accessorKey: 'eligibility_status.isEligible',
-    cell: (info) => {
-      const eligibility = info.row.original.eligibility_status;
-      return eligibility === null || !eligibility.isEligible ? (
-        <ProcheReseauBadge type="aucun" />
-      ) : eligibility.futurNetwork ? (
-        <ProcheReseauBadge type="en_construction" />
-      ) : (
-        <ProcheReseauBadge type="existant" />
-      );
-    },
+    accessorKey: 'eligibility_status.etat_reseau',
+    cell: (info) => <ProcheReseauBadge type={info.getValue()} />,
     align: 'center',
     enableSorting: false,
     filterType: 'Facets',

@@ -23,7 +23,22 @@ const GET = async (req: NextApiRequest) => {
     .selectAll()
     .select([sql`ST_AsGeoJSON(st_transform(geom, 4326))::json`.as('geom')])
     .execute();
-  return { ...eligibilityTest, addresses };
+
+  return {
+    ...eligibilityTest,
+    addresses: addresses.map((address) => ({
+      ...address,
+      eligibility_status: {
+        ...address.eligibility_status,
+        etat_reseau:
+          address.eligibility_status === null || !address.eligibility_status
+            ? 'aucun'
+            : address.eligibility_status.futurNetwork
+              ? 'en_construction'
+              : 'existant',
+      },
+    })),
+  };
 };
 
 const DELETE = async (req: NextApiRequest) => {
