@@ -371,12 +371,16 @@ const TableSimple = <T extends RowData>({
                                 </PopoverTrigger>
                                 <PopoverContent className="px-5 pb-2 py-8 w-[300px]" side="top">
                                   <TableFilter
-                                    type={columnDef.filterType}
-                                    value={header.column.getFilterValue()}
+                                    type={columnDef.filterType as any /* Not working as is for an unknown reason*/}
+                                    value={header.column.getFilterValue() as any /* Not working as is for an unknown reason*/}
                                     onChange={header.column.setFilterValue}
-                                    filterProps={columnDef.filterProps}
-                                    facetedMinMaxValues={header.column.getFacetedMinMaxValues()}
-                                    facetedUniqueValues={header.column.getFacetedUniqueValues()}
+                                    filterProps={columnDef.filterProps as any /* Not working as is for an unknown reason*/}
+                                    facetedMinMaxValues={
+                                      header.column.getFacetedMinMaxValues() as any /* Not working as is for an unknown reason*/
+                                    }
+                                    facetedUniqueValues={
+                                      header.column.getFacetedUniqueValues() as any /* Not working as is for an unknown reason*/
+                                    }
                                   />
                                   <Button
                                     priority="tertiary"
