@@ -89,6 +89,7 @@ export type TableSimpleProps<T> = {
   padding?: 'sm' | 'md' | 'lg';
   onSelectionChange?: (selectedRows: T[]) => void;
   rowHeight?: number;
+  controlsLayout?: 'inline' | 'block';
 };
 
 const cellCustomClasses = cva('', {
@@ -118,6 +119,7 @@ const TableSimple = <T extends RowData>({
   fluid,
   padding = 'md',
   rowHeight = 64,
+  controlsLayout = 'inline',
 }: TableSimpleProps<T>) => {
   const [globalFilter, setGlobalFilter] = React.useState<any>([]);
   const [sortingState, setSortingState] = React.useState<SortingState>(initialSortingState ?? []);
@@ -318,23 +320,24 @@ const TableSimple = <T extends RowData>({
                       key={header.id}
                       colSpan={header.colSpan}
                       className={cx(
-                        '!flex flex-nowrap items-center overflow-auto gap-1',
+                        '!flex flex-nowrap items-between overflow-auto gap-1',
+                        controlsLayout === 'inline' ? 'items-center' : 'items-between',
                         columnClassName(columnDef),
                         cellCustomClasses({ padding })
                       )}
                     >
                       {header.isPlaceholder ? null : (
-                        <div className="flex gap-1 flex-wrap">
+                        <div className={cx('flex gap-1', controlsLayout === 'inline' ? 'flex-row items-center' : 'flex-col')}>
                           {/* mt-[5px] to be aligned  */}
                           <span
-                            className={cx('', hasAtLeastOneColumnSorting ? 'mt-[5px]' : '')}
+                            className={cx(controlsLayout === 'inline' ? '' : 'flex-1', hasAtLeastOneColumnSorting ? 'mt-[5px]' : '')}
                             style={{
                               wordBreak: 'break-word', // does not exist in tailwind
                             }}
                           >
                             {flexRender(columnDef.header, header.getContext())}
                           </span>
-                          <div className={cx('flex gap-1 flex-1', columnClassName(columnDef))}>
+                          <div className={cx('flex gap-1', controlsLayout === 'inline' ? 'flex-1' : '', columnClassName(columnDef))}>
                             {header.column.getCanSort() && (
                               /* eslint-disable-next-line jsx-a11y/role-supports-aria-props */
                               <Button

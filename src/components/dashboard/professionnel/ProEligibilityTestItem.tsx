@@ -537,6 +537,7 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
                 iconId: 'fr-icon-list-unordered',
                 content: (
                   <TableSimple
+                    controlsLayout="block"
                     columns={columns}
                     data={testDetails?.addresses || []}
                     initialSortingState={initialSortingState}
