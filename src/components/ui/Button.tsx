@@ -55,9 +55,9 @@ const buttonVariants = cva('', {
   defaultVariants: {},
 });
 
-export type ButtonProps = DsfrButtonProps &
+export type ButtonProps = Omit<DsfrButtonProps, 'children'> &
   RemoveDollar<StyledButtonProps> &
-  VariantProps<typeof buttonVariants> & { href?: string; stopPropagation?: boolean };
+  VariantProps<typeof buttonVariants> & { href?: string; stopPropagation?: boolean } & { children?: React.ReactNode };
 
 /**
  * A DSFR button component with enhanced features:
@@ -130,7 +130,7 @@ const Button: React.FC<ButtonProps> = ({
       disabled={(disabled || loading) as any /** FIXME cause incompatibility with DSFR Button */}
       type={type as any /** FIXME cause incompatibility with DSFR Button */}
       className={cx(variantClassName, buttonVariants({}), className)}
-      {...props}
+      {...(props as any)}
     >
       {children}
     </StyledButton>

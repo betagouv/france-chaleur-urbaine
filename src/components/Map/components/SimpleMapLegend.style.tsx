@@ -10,10 +10,10 @@ import CheckableAccordion, { type CheckableAccordionProps } from '@/components/u
 import Heading from '@/components/ui/Heading';
 import { type LegendTrackingEvent, trackEvent } from '@/services/analytics';
 import cx from '@/utils/cx';
-import IconEnrr from '@root/public/icons/enrr.svg?icon';
-import IconOutils from '@root/public/icons/outils.svg?icon';
-import IconPotentiel from '@root/public/icons/potentiel.svg?icon';
-import IconReseaux from '@root/public/icons/reseaux.svg?icon';
+import IconEnrr from '@root/public/icons/enrr.svgr';
+import IconOutils from '@root/public/icons/outils.svgr';
+import IconPotentiel from '@root/public/icons/potentiel.svgr';
+import IconReseaux from '@root/public/icons/reseaux.svgr';
 
 import useFCUMap from '../MapProvider';
 

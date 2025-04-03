@@ -69,6 +69,7 @@
     "react/react-in-jsx-scope": "off",
     "no-irregular-whitespace": "off",
     "@next/next/no-img-element": "off",
+    "@typescript-eslint/ban-ts-comment": ["warn", { "ts-nocheck": true }],
 
     // turn on errors for missing imports
     "import/no-unresolved": "error",
