@@ -21,7 +21,7 @@ const procheReseauConfig = {
   }
 >;
 
-type ProcheReseauBadgeProps = {
+export type ProcheReseauBadgeProps = {
   type: keyof typeof procheReseauConfig;
 };
 

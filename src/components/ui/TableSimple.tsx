@@ -7,6 +7,9 @@ import {
   type FilterFn,
   flexRender,
   getCoreRowModel,
+  getFacetedMinMaxValues,
+  getFacetedRowModel,
+  getFacetedUniqueValues,
   getFilteredRowModel,
   getSortedRowModel,
   type RowData,
@@ -19,10 +22,12 @@ import { cva } from 'class-variance-authority';
 import React from 'react';
 
 import Button from '@/components/ui/Button';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover';
 import { isDevModeEnabled } from '@/hooks/useDevMode';
 import cx from '@/utils/cx';
 
 import TableCell, { type TableCellProps } from './TableCell';
+import TableFilter, { defaultTableFilterFns, type TableFilterProps } from './TableFilter';
 
 export const customSortingFn = <T extends RowData>(): Record<string, SortingFn<T>> => ({
   nullsLast: (rowA: any, rowB: any, columnId: string) => {
@@ -41,6 +46,22 @@ export const customFilterFn = <T extends RowData>(): Record<string, FilterFn<T>>
     const value = row.getValue<number>(columnId);
     return value != null && value <= filterValue;
   },
+  inNumberRangeNotNull: (row, columnId, filterValue: [number, number]) => {
+    const [min, max] = filterValue;
+    const value = row.getValue<number>(columnId);
+    return value != null && value >= min && value <= max;
+  },
+  includesAny: (row, columnId, filterValue: Record<string, boolean>) => {
+    let value = row.getValue<any>(columnId);
+    if (value === true) value = 'true';
+    if (value === false) value = 'false';
+
+    if (!value) return false;
+
+    return Object.entries(filterValue)
+      .filter(([, isSelected]) => isSelected)
+      .some(([key]) => value.includes(key));
+  },
 });
 
 export type ColumnDef<T, K = any> = ColumnDefOriginal<T, K> & {
@@ -50,6 +71,8 @@ export type ColumnDef<T, K = any> = ColumnDefOriginal<T, K> & {
   suffix?: React.ReactNode;
   sorting?: keyof ReturnType<typeof customSortingFn<T>>;
   filter?: keyof ReturnType<typeof customFilterFn<T>>;
+  filterType?: TableFilterProps['type'];
+  filterProps?: TableFilterProps['filterProps'];
 } & ({ flex?: number } | { width?: 'auto' | string });
 
 export type TableSimpleProps<T> = {
@@ -85,7 +108,7 @@ const TableSimple = <T extends RowData>({
   data,
   columns,
   initialSortingState,
-  columnFilters,
+  columnFilters: defaultColumnFilters,
   loading,
   caption,
   enableRowSelection,
@@ -99,6 +122,11 @@ const TableSimple = <T extends RowData>({
   const [globalFilter, setGlobalFilter] = React.useState<any>([]);
   const [sortingState, setSortingState] = React.useState<SortingState>(initialSortingState ?? []);
   const [rowSelection, setRowSelection] = React.useState<Record<string, boolean>>({});
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(defaultColumnFilters ?? []);
+
+  React.useEffect(() => {
+    setColumnFilters(defaultColumnFilters ?? []);
+  }, [defaultColumnFilters]);
 
   const columnClassName = ({ align, className }: ColumnDef<T>) => {
     const classNames = [];
@@ -168,12 +196,17 @@ const TableSimple = <T extends RowData>({
 
   const customSortingFns = customSortingFn<T>();
   const customFilterFns = customFilterFn<T>();
+
   tableColumns.forEach((column) => {
     if (column.sorting && customSortingFns[column.sorting]) {
       column.sortingFn = customSortingFns[column.sorting];
     }
     if (column.filter && customFilterFns[column.filter]) {
       column.filterFn = customFilterFns[column.filter];
+    }
+    const filterTypeName = defaultTableFilterFns[column.filterType as keyof typeof defaultTableFilterFns];
+    if (!column.filter && !column.filterFn && column.filterType && filterTypeName) {
+      column.filterFn = customFilterFns[filterTypeName] || filterTypeName;
     }
   });
 
@@ -188,11 +221,15 @@ const TableSimple = <T extends RowData>({
     },
     enableRowSelection,
     onRowSelectionChange: setRowSelection,
+    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
     onGlobalFilterChange: setGlobalFilter,
     onSortingChange: setSortingState,
+    getFacetedRowModel: getFacetedRowModel(), //if you need a list of values for a column (other faceted row models depend on this one)
+    getFacetedMinMaxValues: getFacetedMinMaxValues(), //if you need min/max values
+    getFacetedUniqueValues: getFacetedUniqueValues(), //if you need a list of unique values
     debugTable: isDevModeEnabled(),
   });
 
@@ -322,6 +359,45 @@ const TableSimple = <T extends RowData>({
                                 )}
                               </Button>
                             )}
+                            {header.column.getCanFilter() && columnDef.filterType ? (
+                              <Popover>
+                                <PopoverTrigger asChild>
+                                  <Button
+                                    priority={header.column.getIsFiltered() ? 'secondary' : 'tertiary'}
+                                    iconId={header.column.getIsFiltered() ? 'ri-filter-2-fill' : 'ri-filter-2-line'}
+                                    size="small"
+                                    className="min-w-8"
+                                  ></Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="px-5 pb-2 py-8 w-[300px]" side="top">
+                                  <TableFilter
+                                    type={columnDef.filterType}
+                                    value={header.column.getFilterValue()}
+                                    onChange={header.column.setFilterValue}
+                                    filterProps={columnDef.filterProps}
+                                    facetedMinMaxValues={header.column.getFacetedMinMaxValues()}
+                                    facetedUniqueValues={header.column.getFacetedUniqueValues()}
+                                  />
+                                  <Button
+                                    priority="tertiary"
+                                    iconId="ri-close-line"
+                                    size="small"
+                                    className={cx(header.column.getIsFiltered() ? 'visible' : 'invisible')}
+                                    onClick={() => {
+                                      header.column.setFilterValue(undefined);
+                                      // Close the popover programmatically
+                                      const popoverElement = document.querySelector('[data-radix-popper-content-wrapper]');
+                                      if (popoverElement) {
+                                        const popoverTrigger = popoverElement.previousElementSibling as HTMLElement;
+                                        popoverTrigger?.click?.();
+                                      }
+                                    }}
+                                  >
+                                    Réinitialiser
+                                  </Button>
+                                </PopoverContent>
+                              </Popover>
+                            ) : null}
                           </div>
                         </div>
                       )}
