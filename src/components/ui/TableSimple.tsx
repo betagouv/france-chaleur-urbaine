@@ -230,6 +230,8 @@ const TableSimple = <T extends RowData>({
     .join(' ');
   const hasAtLeastOneColumnSorting = table.getHeaderGroups()[0].headers.some((header) => header.column.getCanSort());
 
+  const nbRowsToDisplay = loading ? 5 : filteredRows.length || 1; /* There is one empty row when no data is present */
+
   return (
     <section>
       {enableGlobalFilter && (
@@ -329,7 +331,7 @@ const TableSimple = <T extends RowData>({
           <tbody
             style={{
               display: 'grid',
-              height: `${(loading ? 5 : filteredRows.length) * rowHeight}px`, // tells scrollbar how big the table is
+              height: `${nbRowsToDisplay * rowHeight}px`, // tells scrollbar how big the table is
               position: 'relative', // needed for absolute positioning of rows
             }}
           >
@@ -350,45 +352,53 @@ const TableSimple = <T extends RowData>({
                 </tr>
               ))}
             {!loading &&
-              rowVirtualizer.getVirtualItems().map((virtualRow) => {
-                const row = rows[virtualRow.index];
-                return (
-                  <tr
-                    data-index={virtualRow.index} // needed for dynamic row height measurement
-                    ref={(node) => rowVirtualizer.measureElement(node)} // measure dynamic row height
-                    key={row.id}
-                    className="grid absolute w-full"
-                    style={{
-                      transform: `translateY(${virtualRow.start}px)`, // this should always be a `style` as it changes on scroll
-                      gridTemplateColumns,
-                      height: rowHeight,
-                    }}
-                  >
-                    {row.getVisibleCells().map((cell) => {
-                      const columnDef = cell.column.columnDef as ColumnDef<T>;
-                      const CellTag = columnDef.id === 'selection' ? 'th' : 'td';
+              (rowVirtualizer.getVirtualItems().length === 0 ? (
+                <tr>
+                  <td colSpan={columns.length} className="!flex justify-center items-center h-full text-black ">
+                    {data.length === 0 ? 'Aucun résultat' : 'Aucun résultat trouvé, élargissez votre recherche'}
+                  </td>
+                </tr>
+              ) : (
+                rowVirtualizer.getVirtualItems().map((virtualRow) => {
+                  const row = rows[virtualRow.index];
+                  return (
+                    <tr
+                      data-index={virtualRow.index} // needed for dynamic row height measurement
+                      ref={(node) => rowVirtualizer.measureElement(node)} // measure dynamic row height
+                      key={row.id}
+                      className="grid absolute w-full"
+                      style={{
+                        transform: `translateY(${virtualRow.start}px)`, // this should always be a `style` as it changes on scroll
+                        gridTemplateColumns,
+                        height: rowHeight,
+                      }}
+                    >
+                      {row.getVisibleCells().map((cell) => {
+                        const columnDef = cell.column.columnDef as ColumnDef<T>;
+                        const CellTag = columnDef.id === 'selection' ? 'th' : 'td';
 
-                      return (
-                        <CellTag
-                          key={cell.id}
-                          className={cx(
-                            '!flex items-center',
-                            {
-                              'overflow-auto': !React.isValidElement(cell.getValue()), // this is a hack as for DebugDrawer, overflow was causing problems
-                              'fr-cell--fixed': columnDef.id === 'selection',
-                            },
-                            columnClassName(columnDef),
-                            cellCustomClasses({ padding })
-                          )}
-                          scope={columnDef.id === 'selection' ? 'row' : undefined}
-                        >
-                          {cellRender(cell)}
-                        </CellTag>
-                      );
-                    })}
-                  </tr>
-                );
-              })}
+                        return (
+                          <CellTag
+                            key={cell.id}
+                            className={cx(
+                              '!flex items-center',
+                              {
+                                'overflow-auto': !React.isValidElement(cell.getValue()), // this is a hack as for DebugDrawer, overflow was causing problems
+                                'fr-cell--fixed': columnDef.id === 'selection',
+                              },
+                              columnClassName(columnDef),
+                              cellCustomClasses({ padding })
+                            )}
+                            scope={columnDef.id === 'selection' ? 'row' : undefined}
+                          >
+                            {cellRender(cell)}
+                          </CellTag>
+                        );
+                      })}
+                    </tr>
+                  );
+                })
+              ))}
           </tbody>
         </table>
       </div>
