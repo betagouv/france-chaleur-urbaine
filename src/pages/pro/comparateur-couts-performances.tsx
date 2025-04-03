@@ -36,6 +36,6 @@ const SimulateurPage: React.FC<InferGetServerSidePropsType<typeof getServerSideP
 export default SimulateurPage;
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-  const res = await withAuthentication(['particulier', 'professionnel', 'gestionnaire', 'admin'])(context);
+  const res = await withAuthentication(['particulier', 'professionnel', 'gestionnaire', 'admin', 'demo'])(context);
   return 'redirect' in res ? res : { props: { ...(res as any).props, query: context.query } };
 };

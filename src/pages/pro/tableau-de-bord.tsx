@@ -16,7 +16,7 @@ export default function DashboardPage() {
         <Heading as="h1" color="blue-france">
           Tableau de bord
         </Heading>
-        {hasRole('admin') && <DashboardAdmin />}
+        {(hasRole('admin') || hasRole('demo')) && <DashboardAdmin />}
         {hasRole('gestionnaire') && <DashboardGestionnaire />}
         {(hasRole('particulier') || hasRole('professionnel')) && <DashboardProfessionnel />}
       </Box>

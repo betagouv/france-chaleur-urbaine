@@ -134,10 +134,10 @@ export const getDemands = async (user: User): Promise<Demand[]> => {
   if (user.role === 'admin') {
     filterFormula = '';
   } else if (user.role === 'demo') {
-    filterFormula = `REGEX_MATCH({Gestionnaires}, "(\\A|, )Paris(\\z|, )")`;
+    filterFormula = `AND({Gestionnaires validés} = TRUE(), REGEX_MATCH({Gestionnaires}, "(\\A|, )Paris(\\z|, )"))`;
   } else if (user.role === 'gestionnaire') {
     const regexPattern = user.gestionnaires.join('|');
-    filterFormula = `REGEX_MATCH({Gestionnaires}, "(\\A|, )(${regexPattern})(\\z|, )")`;
+    filterFormula = `AND({Gestionnaires validés} = TRUE(), REGEX_MATCH({Gestionnaires}, "(\\A|, )(${regexPattern})(\\z|, )"))`;
   }
 
   const records = await base(Airtable.UTILISATEURS)
