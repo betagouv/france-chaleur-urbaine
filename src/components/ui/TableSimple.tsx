@@ -18,6 +18,7 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 import { cva } from 'class-variance-authority';
 import React from 'react';
 
+import Button from '@/components/ui/Button';
 import { isDevModeEnabled } from '@/hooks/useDevMode';
 import cx from '@/utils/cx';
 
@@ -286,7 +287,7 @@ const TableSimple = <T extends RowData>({
                       )}
                     >
                       {header.isPlaceholder ? null : (
-                        <>
+                        <div className="flex gap-1 flex-wrap">
                           {/* mt-[5px] to be aligned  */}
                           <span
                             className={cx('', hasAtLeastOneColumnSorting ? 'mt-[5px]' : '')}
@@ -296,31 +297,33 @@ const TableSimple = <T extends RowData>({
                           >
                             {flexRender(columnDef.header, header.getContext())}
                           </span>
-                          {header.column.getCanSort() && (
-                            /* eslint-disable-next-line jsx-a11y/role-supports-aria-props */
-                            <button
-                              type="button"
-                              className="fr-btn--sort fr-btn fr-btn--sm relative"
-                              aria-sort={
-                                (
-                                  {
-                                    asc: 'ascending',
-                                    desc: 'descending',
-                                  } as const
-                                )[header.column.getIsSorted() as string] ?? undefined
-                              }
-                              onClick={header.column.getToggleSortingHandler()}
-                              title="Cliquer pour trier"
-                            >
-                              Trier
-                              {header.column.getIsSorted() && table.getState().sorting.length > 1 && (
-                                <span className="absolute bottom-[2px] right-1 text-xs">
-                                  {table.getState().sorting.findIndex((sort) => sort.id === header.column.id) + 1}
-                                </span>
-                              )}
-                            </button>
-                          )}
-                        </>
+                          <div className={cx('flex gap-1 flex-1', columnClassName(columnDef))}>
+                            {header.column.getCanSort() && (
+                              /* eslint-disable-next-line jsx-a11y/role-supports-aria-props */
+                              <Button
+                                priority={header.column.getIsSorted() ? 'secondary' : 'tertiary'}
+                                className="fr-btn--sort relative min-w-8 border"
+                                aria-sort={
+                                  (
+                                    {
+                                      asc: 'ascending',
+                                      desc: 'descending',
+                                    } as const
+                                  )[header.column.getIsSorted() as string] ?? undefined
+                                }
+                                onClick={header.column.getToggleSortingHandler()}
+                                title="Cliquer pour trier"
+                              >
+                                Trier
+                                {header.column.getIsSorted() && table.getState().sorting.length > 1 && (
+                                  <span className="absolute bottom-[2px] right-1 text-xs">
+                                    {table.getState().sorting.findIndex((sort) => sort.id === header.column.id) + 1}
+                                  </span>
+                                )}
+                              </Button>
+                            )}
+                          </div>
+                        </div>
                       )}
                     </th>
                   );
