@@ -366,7 +366,7 @@ const TableSimple = <T extends RowData>({
                                     priority={header.column.getIsFiltered() ? 'secondary' : 'tertiary'}
                                     iconId={header.column.getIsFiltered() ? 'ri-filter-2-fill' : 'ri-filter-2-line'}
                                     size="small"
-                                    className="min-w-8"
+                                    className={cx('min-w-8', header.column.getIsFiltered() && 'animate-[puff_0.2s_ease-in-out]')}
                                   ></Button>
                                 </PopoverTrigger>
                                 <PopoverContent className="px-5 pb-2 py-8 w-[300px]" side="top">
