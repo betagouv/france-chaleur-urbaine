@@ -321,6 +321,7 @@ const TableSimple = <T extends RowData>({
                       colSpan={header.colSpan}
                       className={cx(
                         '!flex flex-nowrap items-between overflow-auto gap-1',
+                        'hover:shadow-[-5px_0_5px_-5px_rgba(0,0,0,0.05),5px_0_5px_-5px_rgba(0,0,0,0.05)]',
                         controlsLayout === 'inline' ? 'items-center' : 'items-between',
                         columnClassName(columnDef),
                         cellCustomClasses({ padding })
