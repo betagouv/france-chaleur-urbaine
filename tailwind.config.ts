@@ -58,6 +58,16 @@ const config = {
         light: fr.colors.decisions.background.alt.blueFrance.default,
         accent: fr.colors.options.blueFrance.main525,
       },
+      keyframes: {
+        puff: {
+          '0%': { transform: 'scale(1)', opacity: '1' },
+          '50%': { transform: 'scale(1.1)', opacity: '0.8' },
+          '100%': { transform: 'scale(1)', opacity: '1' },
+        },
+      },
+      animation: {
+        puff: 'puff 0.2s ease-in-out',
+      },
     },
   },
   plugins: [

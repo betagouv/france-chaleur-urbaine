@@ -3,11 +3,12 @@ import Tabs from '@codegouvfr/react-dsfr/Tabs';
 import { useQueryClient } from '@tanstack/react-query';
 import { type ColumnFiltersState, type SortingState } from '@tanstack/react-table';
 import { useQueryState } from 'nuqs';
+import React from 'react';
 import { Fragment, useEffect, useMemo, useState } from 'react';
 
 import CompleteEligibilityTestForm from '@/components/dashboard/professionnel/eligibility-test/CompleteEligibilityTestForm';
 import RenameEligibilityTestForm from '@/components/dashboard/professionnel/eligibility-test/RenameEligibilityTestForm';
-import ProcheReseauBadge from '@/components/dashboard/professionnel/ProcheReseauBadge';
+import ProcheReseauBadge, { type ProcheReseauBadgeProps } from '@/components/dashboard/professionnel/ProcheReseauBadge';
 import Map, { type AdresseEligible } from '@/components/Map/Map';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import { UrlStateAccordion } from '@/components/ui/Accordion';
@@ -52,14 +53,14 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
     cell: (info) => (
       <div>
         <div>
-          <div>{info.row.original.ban_address}</div>
+          <div className="leading-none tracking-tight">{info.row.original.ban_address}</div>
           {!info.row.original.ban_valid && (
             <Badge severity="error" small>
               Adresse invalide
             </Badge>
           )}
         </div>
-        <div className=" text-xs italic text-gray-500">{info.row.original.source_address}</div>
+        <div className=" text-xs italic text-gray-500 tracking-tighter">{info.row.original.source_address}</div>
       </div>
     ),
     flex: 1,
@@ -87,6 +88,10 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
     suffix: '%',
     align: 'right',
     enableSorting: false,
+    filterType: 'Range',
+    filterProps: {
+      unit: '%',
+    },
   },
   {
     header: () => (
@@ -106,20 +111,14 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
       </>
     ),
     width: '130px',
-    accessorKey: 'eligibility_status.isEligible',
-    cell: (info) => {
-      const eligibility = info.row.original.eligibility_status;
-      return eligibility === null || !eligibility.isEligible ? (
-        <ProcheReseauBadge type="aucun" />
-      ) : eligibility.futurNetwork ? (
-        <ProcheReseauBadge type="en_construction" />
-      ) : (
-        <ProcheReseauBadge type="existant" />
-      );
-    },
+    accessorKey: 'eligibility_status.etat_reseau',
+    cell: (info) => <ProcheReseauBadge type={info.getValue()} />,
     align: 'center',
-    filterFn: 'equals',
     enableSorting: false,
+    filterType: 'Facets',
+    filterProps: {
+      Component: ({ value }) => <ProcheReseauBadge type={value as ProcheReseauBadgeProps['type']} />,
+    },
   },
   {
     header: () => (
@@ -137,8 +136,11 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
     accessorKey: 'eligibility_status.distance',
     suffix: 'm',
     align: 'right',
-    filter: 'notNullAndLessThanOrEqual',
     sorting: 'nullsLast',
+    filterType: 'Range',
+    filterProps: {
+      unit: 'm',
+    },
   },
   {
     header: () => (
@@ -161,8 +163,8 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
     accessorKey: 'eligibility_status.inPDP',
     cellType: 'Boolean',
     align: 'center',
-    filterFn: 'equals',
     enableSorting: false,
+    filterType: 'Facets',
   },
   {
     header: () => (
@@ -180,8 +182,12 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
     accessorKey: 'eligibility_status.tauxENRR',
     suffix: '%',
     align: 'right',
-    filter: 'notNullAndGreaterThanOrEqual',
     sorting: 'nullsLast',
+    filterType: 'Range',
+    filterProps: {
+      domain: [0, 100],
+      unit: '%',
+    },
   },
   {
     header: () => (
@@ -199,6 +205,11 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
     accessorKey: 'eligibility_status.co2',
     align: 'right',
     sorting: 'nullsLast',
+    filterType: 'Range',
+    filterProps: {
+      unit: 'g/kWh',
+      step: 0.001,
+    },
   },
   {
     header: () => (
@@ -238,7 +249,7 @@ type QuickFilterPreset = {
   label: React.ReactNode;
   filters: Array<{
     id: DotToUnderscore<FlattenKeys<ProEligibilityTestWithAddresses['addresses'][number]>>;
-    value: boolean | number;
+    value: boolean | number | [number, number] | Record<string, boolean>;
   }>;
 };
 
@@ -261,13 +272,13 @@ const quickFilterPresets = {
         />
       </>
     ),
-    filters: [{ id: 'eligibility_status_isEligible', value: true }],
+    filters: [{ id: 'eligibility_status_isEligible', value: { true: true, false: false } }],
   },
   adressesMoins100mPlus50ENRR: {
     label: "à moins de 100m d'un réseau à plus de 50% d'ENR&R",
     filters: [
-      { id: 'eligibility_status_distance', value: 100 },
-      { id: 'eligibility_status_tauxENRR', value: 50 },
+      { id: 'eligibility_status_distance', value: [0, 100] },
+      { id: 'eligibility_status_tauxENRR', value: [50, 100] },
     ],
   },
   adressesDansPDP: {
@@ -286,7 +297,12 @@ const quickFilterPresets = {
         />
       </>
     ),
-    filters: [{ id: 'eligibility_status_inPDP', value: true }],
+    filters: [
+      {
+        id: 'eligibility_status_inPDP',
+        value: { true: true, false: false },
+      },
+    ],
   },
 } satisfies Record<string, QuickFilterPreset>;
 type QuickFilterPresetKey = keyof typeof quickFilterPresets;
@@ -296,11 +312,12 @@ const queryParamName = 'test-adresses';
 type ProEligibilityTestItemProps = {
   test: ProEligibilityTestListItem;
 };
-export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemProps) {
+function ProEligibilityTestItem({ test }: ProEligibilityTestItemProps) {
   const queryClient = useQueryClient();
   const [value] = useQueryState(queryParamName);
   const [viewDetail, setViewDetail] = useState(value === test.id);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [filteredAddresses, setFilteredAddresses] = useState<ProEligibilityTestWithAddresses['addresses']>([]);
 
   const {
     data: testDetails,
@@ -309,6 +326,7 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
   } = useFetch<ProEligibilityTestWithAddresses>(`/api/pro-eligibility-tests/${test.id}`, {
     enabled: viewDetail,
   });
+
   const { mutateAsync: markAsSeen } = usePost(`/api/pro-eligibility-tests/${test.id}/mark-as-seen`, {
     onMutate: () => {
       queryClient.setQueryData<ProEligibilityTestListItem[]>(['/api/pro-eligibility-tests'], (tests) =>
@@ -316,6 +334,7 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
       );
     },
   });
+
   const { mutateAsync: deleteTest } = useDelete(`/api/pro-eligibility-tests/${test.id}`, {
     invalidate: ['/api/pro-eligibility-tests'],
   });
@@ -370,30 +389,6 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
       })();
     }
   }, [viewDetail, test.has_unseen_results, markAsSeen, refetch]);
-
-  const filteredAddresses = useMemo(() => {
-    if (!testDetails?.addresses) return [];
-
-    return testDetails.addresses.filter((address) => {
-      if (!columnFilters.length) return true;
-
-      return columnFilters.every((filter) => {
-        switch (filter.id) {
-          case 'eligibility_status_isEligible':
-            return address.eligibility_status?.isEligible === filter.value;
-          case 'eligibility_status_distance':
-            return address.eligibility_status?.distance != null && address.eligibility_status.distance <= (filter.value as number);
-          case 'eligibility_status_inPDP':
-            return address.eligibility_status?.inPDP === filter.value;
-          case 'eligibility_status_tauxENRR':
-            return address.eligibility_status?.tauxENRR != null && address.eligibility_status.tauxENRR >= (filter.value as number);
-          default:
-            console.warn(`filter '${filter.id}' not implemented`);
-            return true;
-        }
-      });
-    });
-  }, [testDetails?.addresses, columnFilters]);
 
   const filteredAddressesMapData = useMemo(() => {
     return filteredAddresses
@@ -509,10 +504,11 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
             className="[&_[role='tabpanel']]:!p-2w" // decrease the default big padding of tabs panels
             tabs={[
               {
-                label: 'Liste',
+                label: `Liste (${filteredAddresses.length})`,
                 iconId: 'fr-icon-list-unordered',
                 content: (
                   <TableSimple
+                    controlsLayout="block"
                     columns={columns}
                     data={testDetails?.addresses || []}
                     initialSortingState={initialSortingState}
@@ -520,12 +516,21 @@ export default function ProEligibilityTestItem({ test }: ProEligibilityTestItemP
                     enableGlobalFilter
                     padding="sm"
                     rowHeight={56}
+                    onFilterChange={setFilteredAddresses}
                   />
                 ),
                 isDefault: true,
               },
               {
-                label: 'Carte',
+                label: (
+                  <>
+                    Carte ({filteredAddressesMapData.length}){' '}
+                    <Tooltip
+                      iconProps={{ color: 'var(--text-default-grey)', className: 'ml-1' }}
+                      title="Une différencede nombre de résultats peut exister si la requête à la Base d'Adresse Nationale n'as pas fonctionné ou si les coordonnées géographiques ne sont pas disponibles."
+                    />
+                  </>
+                ),
                 iconId: 'fr-icon-map-pin-2-line',
                 content: (
                   <div className="min-h-[50vh] aspect-[4/3]">
@@ -579,3 +584,5 @@ const Indicator = ({ label, value, loading, onClick, active }: IndicatorProps) =
 };
 
 const Divider = () => <div className="h-12 w-px bg-gray-300" />;
+
+export default ProEligibilityTestItem;

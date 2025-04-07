@@ -11,8 +11,8 @@ export function roundNumberProgressively(v: number): number {
   return v > 2 ? Math.round(v) : v > 1 ? Math.round(v * 10) / 10 : Math.round(v * 100) / 100;
 }
 
-type RangeFilterProps = Omit<RangeProps, 'min' | 'max' | 'nativeInputProps'> & {
-  label: React.ReactNode;
+export type RangeFilterProps = Omit<RangeProps, 'min' | 'max' | 'nativeInputProps' | 'label'> & {
+  label?: RangeProps['label'];
   value?: Interval;
   domain: Interval;
   onChange: (values: Interval) => void;
