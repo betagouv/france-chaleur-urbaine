@@ -90,6 +90,7 @@ export type TableSimpleProps<T> = {
   onSelectionChange?: (selectedRows: T[]) => void;
   rowHeight?: number;
   controlsLayout?: 'inline' | 'block';
+  onFilterChange?: (filteredRows: T[]) => void;
 };
 
 const cellCustomClasses = cva('', {
@@ -115,6 +116,7 @@ const TableSimple = <T extends RowData>({
   enableRowSelection,
   enableGlobalFilter = false,
   onSelectionChange,
+  onFilterChange,
   className,
   fluid,
   padding = 'md',
@@ -245,6 +247,15 @@ const TableSimple = <T extends RowData>({
   const { rows } = table.getRowModel();
   const { rows: filteredRows } = table.getFilteredRowModel();
 
+  const hasAtLeastOneFilter = table.getState().columnFilters.length > 0;
+  const hasAtLeastOneColumnSorting = table.getHeaderGroups()[0].headers.some((header) => header.column.getCanSort());
+
+  React.useEffect(() => {
+    if (onFilterChange) {
+      onFilterChange(hasAtLeastOneFilter ? filteredRows.map((row) => row.original) : data);
+    }
+  }, [filteredRows, hasAtLeastOneFilter, onFilterChange]);
+
   // the virtualizer needs to know the scrollable container element
   const tableContainerRef = React.useRef<HTMLDivElement>(null);
 
@@ -268,7 +279,6 @@ const TableSimple = <T extends RowData>({
       return enableRowSelection && index === 0 ? 'auto' : sizeValue;
     })
     .join(' ');
-  const hasAtLeastOneColumnSorting = table.getHeaderGroups()[0].headers.some((header) => header.column.getCanSort());
 
   const nbRowsToDisplay = loading ? 5 : filteredRows.length || 1; /* There is one empty row when no data is present */
 
