@@ -31,7 +31,14 @@ export const defaultTableFilterFns = {
 
 const Filter = ({ value, type, onChange, filterProps, facetedUniqueValues, facetedMinMaxValues }: TableFilterProps) => {
   React.useEffect(() => {
-    if (type === 'Range' && value && filterProps.domain && value[0] === filterProps.domain[0] && value[1] === filterProps.domain[1]) {
+    if (!value) {
+      return;
+    }
+    // reset filters when they are back to defaults
+    if (type === 'Range') {
+      const domain = filterProps.domain || (facetedMinMaxValues as Interval);
+      if (domain && value[0] === domain[0] && value[1] === domain[1]) onChange(undefined);
+    } else if (type === 'Facets' && Object.values(value).every((v) => v === true)) {
       onChange(undefined);
     }
   }, [type, value, filterProps, onChange]);
