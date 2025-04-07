@@ -57,6 +57,7 @@ const config = {
         'fcu-orange-light': '#F89389',
         light: fr.colors.decisions.background.alt.blueFrance.default,
         accent: fr.colors.options.blueFrance.main525,
+        grey: 'var(--text-default-grey)',
       },
       keyframes: {
         puff: {

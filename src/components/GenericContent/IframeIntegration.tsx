@@ -38,7 +38,8 @@ const IframeIntegration = ({ pageFrom }: { pageFrom?: PageFromType }) => {
           </Text>
           <IFrameMapIntegrationForm label={<Text size="lg">Vous souhaitez centrer la carte sur un endroit en particulier&nbsp;?</Text>} />
           <Text size="sm" mt="3w" legacyColor={pageFrom === 'pro' ? 'darkerblue' : undefined}>
-            Ajustez les valeurs des variables "width" et "height" pour obtenir un affichage optimal sur votre site.
+            Ajustez les valeurs des variables <strong>"width"</strong> et <strong>"height"</strong> pour obtenir un affichage optimal sur
+            votre site.
           </Text>
           <Text size="sm" mt="2w" legacyColor={pageFrom === 'pro' ? 'darkerblue' : undefined}>
             Si vous souhaitez une carte personnalisée avec seulement vos réseaux, votre logo ou d'autres informations, n'hésitez pas à{' '}
@@ -61,7 +62,8 @@ const IframeIntegration = ({ pageFrom }: { pageFrom?: PageFromType }) => {
             link={`<iframe title="France chaleur urbaine - Éligibilité" src="https://france-chaleur-urbaine.beta.gouv.fr/form" width="100%" height="330" />`}
           />
           <Text size="sm" mt="3w" legacyColor="darkerblue">
-            Ajustez les valeurs des variables "width" et "height" pour obtenir un affichage optimal sur votre site.
+            Ajustez les valeurs des variables <strong>"width"</strong> et <strong>"height"</strong> pour obtenir un affichage optimal sur
+            votre site.
           </Text>
         </Box>
       </ResponsiveRow>
