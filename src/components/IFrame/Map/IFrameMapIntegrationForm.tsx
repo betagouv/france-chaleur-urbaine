@@ -52,7 +52,7 @@ const IFrameMapIntegrationForm = ({ label }: { label?: ReactNode }) => {
       </AddressContainer>
       <StyledIFrameLink
         className="fr-mt-3w"
-        link={`<iframe title="France chaleur urbaine - Carte" src="https://france-chaleur-urbaine.beta.gouv.fr/map?${url}" width="100%" height="600" />`}
+        link={`<iframe title="France chaleur urbaine - Carte" src="https://france-chaleur-urbaine.beta.gouv.fr/map?${url}" width="100%" height="600"></iframe>`}
       />
     </>
   );

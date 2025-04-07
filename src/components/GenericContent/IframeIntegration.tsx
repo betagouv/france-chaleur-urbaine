@@ -59,7 +59,7 @@ const IframeIntegration = ({ pageFrom }: { pageFrom?: PageFromType }) => {
             Intégrez le champ de recherche sur votre site en copiant ces lignes de code&nbsp;:
           </Text>
           <StyledIFrameLink
-            link={`<iframe title="France chaleur urbaine - Éligibilité" src="https://france-chaleur-urbaine.beta.gouv.fr/form" width="100%" height="330" />`}
+            link={`<iframe title="France chaleur urbaine - Éligibilité" src="https://france-chaleur-urbaine.beta.gouv.fr/form" width="100%" height="330"></iframe>`}
           />
           <Text size="sm" mt="3w" legacyColor="darkerblue">
             Ajustez les valeurs des variables <strong>"width"</strong> et <strong>"height"</strong> pour obtenir un affichage optimal sur
