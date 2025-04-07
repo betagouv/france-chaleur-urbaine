@@ -237,6 +237,16 @@ const nextConfig: NextConfig = {
         destination: '/comparateur-couts-performances',
         permanent: true,
       },
+      {
+        source: '/webinaire/2025/presentation-classement',
+        destination: '/webinaires/20250401_webinaire_classement_FCU.pdf',
+        permanent: false,
+      },
+      {
+        source: '/webinaire/2025/replay-classement',
+        destination: 'https://youtu.be/iIwDUexhmlw',
+        permanent: true,
+      },
     ];
   },
   async headers() {
