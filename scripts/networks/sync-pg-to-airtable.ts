@@ -28,6 +28,8 @@ export const syncPostgresToAirtable = async (dryRun: boolean) => {
           'id_fcu',
           // réutilise la structure des changements pour simplifier un peu
           db.raw('communes as ign_communes'),
+          db.raw('departement'),
+          db.raw('region'),
           db.raw("st_geometrytype(geom) = 'ST_MultiLineString' as is_line"),
           ...(tableConfig.pgToAirtableSyncAdditionalFields ?? [])
         )

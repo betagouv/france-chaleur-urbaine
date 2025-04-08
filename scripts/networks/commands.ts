@@ -75,27 +75,62 @@ export function registerNetworkCommands(parentProgram: Command) {
       "Met à jour les communes des tables réseaux de chaleur / froid / en construction, pdp grâce aux coutours des communes de l'IGN."
     )
     .action(async () => {
-      const updateTableCommunes = (table: NetworkTable) => sql`
-    update ${sql.raw(table)}
-    set communes = COALESCE(
-      (
-        SELECT array_agg(nom order by nom)
-        FROM ign_communes
-        WHERE ST_Intersects(${sql.raw(table)}.geom, st_buffer(ign_communes.geom, -150))
-      ),
-      (
-        SELECT array_agg(nom order by nom)
-        FROM ign_communes
-        WHERE ST_Intersects(${sql.raw(table)}.geom, ign_communes.geom)
-      ),
-      '{}'
-    )::text[]
-  `;
+      // 1. MAJ communes_insee avec les codes communes
+      const updateTableCommunesInsee = (table: NetworkTable) => sql`
+        update ${sql.raw(table)}
+        set communes_insee = COALESCE(
+          (
+            SELECT array_agg(insee_com order by insee_com)
+            FROM ign_communes
+            WHERE ST_Intersects(${sql.raw(table)}.geom, ign_communes.geom_150m)
+          ),
+          (
+            SELECT array_agg(insee_com order by insee_com)
+            FROM ign_communes
+            WHERE ST_Intersects(${sql.raw(table)}.geom, ign_communes.geom)
+          ),
+          '{}'
+        )::text[]
+      `;
 
       await Promise.all(
         Object.values(entityTypeToTable).map(async (table) => {
-          const res = await updateTableCommunes(table).execute(kdb);
+          const res = await updateTableCommunesInsee(table).execute(kdb);
           logger.info(`Mise à jour de ${table}: ${res.numAffectedRows} lignes modifiées`);
+        })
+      );
+
+      // 2. MAJ des labels communes, départements et régions
+      const updateTableLabels = async (table: NetworkTable) => {
+        return await kdb
+          .updateTable(table)
+          .set({
+            communes: sql<string[]>`ARRAY(
+              SELECT DISTINCT ic.nom
+              FROM unnest(${sql.raw(table)}.communes_insee) as ci
+              JOIN ign_communes ic ON ic.insee_com = ci
+              ORDER BY ic.nom
+            )`,
+            departement: sql<string>`(
+              SELECT string_agg(DISTINCT id.nom, ', ' ORDER BY id.nom)
+              FROM unnest(${sql.raw(table)}.communes_insee) as ci
+              JOIN ign_communes ic ON ic.insee_com = ci
+              JOIN ign_departements id ON id.insee_dep = ic.insee_dep
+            )`,
+            region: sql<string>`(
+              SELECT string_agg(DISTINCT ir.nom, ', ' ORDER BY ir.nom)
+              FROM unnest(${sql.raw(table)}.communes_insee) as ci
+              JOIN ign_communes ic ON ic.insee_com = ci
+              JOIN ign_regions ir ON ir.insee_reg = ic.insee_reg
+            )`,
+          })
+          .executeTakeFirstOrThrow();
+      };
+
+      await Promise.all(
+        Object.values(entityTypeToTable).map(async (table) => {
+          const res = await updateTableLabels(table);
+          logger.info(`Mise à jour des labels pour ${table}: ${res.numUpdatedRows} lignes modifiées`);
         })
       );
     });
