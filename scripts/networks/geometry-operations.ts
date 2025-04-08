@@ -97,11 +97,10 @@ async function updateLabelsCommunesDepartementAndRegion(tableName: NetworkTable,
     .where('id_fcu', '=', id_fcu)
     .set({
       communes: sql<string[]>`(
-        SELECT DISTINCT ic.nom
+        SELECT array_agg(ic.nom ORDER BY ic.nom)
         FROM unnest(${sql.raw(tableName)}.communes_insee) as ci
         JOIN ign_communes ic ON ic.insee_com = ci
         WHERE ${sql.raw(tableName)}.id_fcu = ${id_fcu}
-        ORDER BY ic.nom
       )`,
       departement: sql<string>`(
         SELECT string_agg(DISTINCT id.nom, ', ' ORDER BY id.nom)
