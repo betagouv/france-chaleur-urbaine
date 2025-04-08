@@ -25,7 +25,7 @@ import { type ProEligibilityTestWithAddresses } from '@/pages/api/pro-eligibilit
 import { notify, toastErrors } from '@/services/notification';
 import { getProEligibilityTestAsXlsx } from '@/services/xlsx/test-adresses';
 import { downloadString } from '@/utils/browser';
-import { formatAsISODate, formatFrenchDate, formatFrenchDateTime } from '@/utils/date';
+import { formatAsISODateMinutes, formatFrenchDate, formatFrenchDateTime } from '@/utils/date';
 import { compareFrenchStrings } from '@/utils/strings';
 import { type FlattenKeys, ObjectEntries } from '@/utils/typescript';
 
@@ -412,7 +412,7 @@ function ProEligibilityTestItem({ test }: ProEligibilityTestItemProps) {
 
     downloadString(
       xlsx,
-      `fcu-${test.name}-adresses-${formatAsISODate(new Date())}.xlsx`,
+      `fcu-${test.name}-adresses-${formatAsISODateMinutes(new Date())}.xlsx`,
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     );
   });

@@ -28,6 +28,8 @@ const conversionConfigReseauxDeChaleur = {
   // id: TypeNumber,
   'Identifiant reseau': TypeString,
   //has_trace: TypeBool,
+  // date_actualisation_trace: TypeString,
+  // date_actualisation_pdp: TypeString,
   //'non ref 2022': TypeBool,
   'reseaux classes': TypeBool,
   has_PDP: TypeBool,
@@ -112,6 +114,7 @@ const conversionConfigReseauxDeFroid = {
   nom_reseau: TypeString,
   //'non ref 2022': TypeBool,
   //has_trace: TypeBool,
+  // date_actualisation_trace: TypeString,
   'Taux EnR&R': TypeNumber,
   Gestionnaire: TypeString,
   // communes: TypeStringToArray,
@@ -146,6 +149,7 @@ const conversionConfigReseauxDeFroid = {
 const conversionConfigAutres = {
   mise_en_service: TypeString,
   gestionnaire: TypeString,
+  // date_actualisation_trace: TypeString,
   // communes: TypeStringToArray,
   // is_zone: TypeBool,
 } as const;

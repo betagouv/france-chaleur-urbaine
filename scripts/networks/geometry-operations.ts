@@ -1,5 +1,6 @@
 import { kdb, sql } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
+import { formatAsISODate } from '@/utils/date';
 import { type GeometryWithSrid } from '@cli/helpers/geo';
 
 /**
@@ -142,6 +143,7 @@ export async function insertEntityWithGeometry(
       id_fcu: id_fcu ? eb.lit(id_fcu) : sql<number>`(SELECT COALESCE(max(id_fcu), 0) + 1 FROM ${sql.raw(tableName)})`,
       geom: eb.selectFrom('geometry').select('geometry.geom'),
       communes_insee: communesInseeExpressionGeom,
+      date_actualisation_trace: eb.val(new Date()),
       ...networkTables[tableName].geomDependentFields(eb),
       ...networkTables[tableName].createFields?.(eb),
       ...networkTables[tableName].additionalFields?.(id_sncu),
@@ -185,6 +187,7 @@ export async function updateEntityGeometry(
     .set((eb) => ({
       geom: eb.selectFrom('geometry').select('geometry.geom'),
       communes_insee: communesInseeExpressionGeom,
+      date_actualisation_trace: eb.val(new Date()),
       ...networkTables[tableName].geomDependentFields(eb),
     }))
     .execute();
@@ -218,6 +221,7 @@ export async function updateNetworkHasPDP(id_sncu: string): Promise<void> {
     .where('Identifiant reseau', '=', id_sncu)
     .set({
       has_PDP: true,
+      date_actualisation_pdp: formatAsISODate(new Date()),
     })
     .returning('id_fcu')
     .executeTakeFirst();
