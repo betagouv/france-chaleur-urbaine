@@ -197,6 +197,24 @@ export async function updateEntityGeometry(
 }
 
 /**
+ * Met à jour les informations d'une entité sans modifier sa géométrie.
+ * Par exemple après avoir fait une opération manuelle pour fusionner des entités.
+ */
+export async function updateEntityWithoutGeometry(tableName: NetworkTable, idField: string, idValue: string | number): Promise<void> {
+  const existingEntity = await kdb
+    .selectFrom(tableName as any)
+    .select(sql<GeoJSON.Geometry>`ST_AsGeoJSON(geom)::json`.as('geom'))
+    .where(idField, '=', idValue)
+    .executeTakeFirst();
+
+  if (!existingEntity) {
+    throw new Error(`Aucune entité trouvée avec ${idField} = ${idValue}`);
+  }
+
+  await updateEntityGeometry(tableName, idField, idValue, { geom: existingEntity.geom, srid: 2154 });
+}
+
+/**
  * Crée un PDP à partir d'une commune
  */
 export async function createPDPFromCommune(code_insee: string, id_sncu?: string) {

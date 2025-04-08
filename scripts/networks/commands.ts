@@ -10,6 +10,7 @@ import {
   insertEntityWithGeometry,
   type NetworkTable,
   updateEntityGeometry,
+  updateEntityWithoutGeometry,
   updateNetworkHasPDP,
 } from './geometry-operations';
 
@@ -56,6 +57,18 @@ export function registerNetworkCommands(parentProgram: Command) {
       const idValue = isIdSNCU ? id_fcu_or_sncu : parseInt(id_fcu_or_sncu);
       const geometryConfig = await readFileGeometry(fileName);
       await updateEntityGeometry(entityTypeToTable[type], idField, idValue, geometryConfig);
+    });
+
+  program
+    .command('refresh-infos')
+    .description("Met à jour les informations d'une entité sans modifier sa géométrie (communes, départements, etc.)")
+    .argument('<type>', "type d'entité", (v) => z.enum(entityTypes).parse(v))
+    .argument('<id_fcu_or_sncu>', 'id_fcu ou SNCU du réseau')
+    .action(async (type, id_fcu_or_sncu) => {
+      const isIdSNCU = id_fcu_or_sncu.endsWith('C');
+      const idField = isIdSNCU ? 'Identifiant reseau' : 'id_fcu';
+      const idValue = isIdSNCU ? id_fcu_or_sncu : parseInt(id_fcu_or_sncu);
+      await updateEntityWithoutGeometry(entityTypeToTable[type], idField, idValue);
     });
 
   program
