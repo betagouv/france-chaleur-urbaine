@@ -5,8 +5,11 @@ import useSWR from 'swr';
 import Graph from '@/components/Graph';
 import Slice from '@/components/Slice';
 import Hero, { HeroTitle } from '@/components/ui/Hero';
+import Loader from '@/components/ui/Loader';
 import Tooltip from '@/components/ui/Tooltip';
 import statistics from '@/data/statistics';
+import { useFetch } from '@/hooks/useApi';
+import { type Statistiques } from '@/pages/api/statistiques/all';
 import { type MatomoMonthStat } from '@/server/services/matomo_types';
 import { STAT_LABEL } from '@/types/enum/MatomoStats';
 import { fetchJSON } from '@/utils/network';
@@ -140,6 +143,8 @@ const Statistics = () => {
       );
     }
   });
+
+  const { data: stats, isLoading: statsLoading } = useFetch<Statistiques>('/api/statistiques/all');
 
   const { data: dataVisits, error: errorVisits } = useSWR<MatomoMonthStat[]>('/api/statistiques/visits', fetchJSON, {
     onError: (err) => console.warn('errorVisits >>', err),
@@ -478,6 +483,13 @@ const Statistics = () => {
                   <NumberBlock>
                     <NumberHighlight>{totalBulkTests.toLocaleString('fr-FR')}</NumberHighlight>
                     Total d'adresses testées en liste (tests en masse par des professionnels)
+                  </NumberBlock>
+                  <HorizontalSeparator />
+                  <NumberBlock>
+                    <NumberHighlight>
+                      {statsLoading ? <Loader size="md" /> : stats?.comptesPro?.total.toLocaleString('fr-FR')}
+                    </NumberHighlight>
+                    "comptes pro" créés (bureaux d'études, bailleurs sociaux, ...)
                   </NumberBlock>
                 </NumberContainer>
               </ColumnContainer>
