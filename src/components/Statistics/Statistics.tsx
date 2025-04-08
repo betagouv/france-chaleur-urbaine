@@ -269,7 +269,7 @@ const Statistics = () => {
                 <NumberContainer>
                   <NumberBlock className="fr-col-md-6 fr-col-12">
                     <NumberHighlight>{statistics.connection}</NumberHighlight>
-                    Raccordements à l'étude ou en cours
+                    Raccordements <strong>à l'étude, en cours ou effectif</strong>
                     <Tooltip title="Par raccordements à l’étude, on désigne ceux pour lesquels une étude de faisabilité technico-économique est en cours au niveau du gestionnaire du réseau, ou a été transmise à la copropriété ou au bâtiment tertiaire. En copropriété, la proposition du gestionnaire de réseau devra ensuite être votée en AG avant que les travaux ne puissent démarrer." />
                     <br />
                     <NumberText>(~{statistics.logements} logements)</NumberText>
