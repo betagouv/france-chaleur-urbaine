@@ -527,7 +527,7 @@ function ProEligibilityTestItem({ test }: ProEligibilityTestItemProps) {
                     Carte ({filteredAddressesMapData.length}){' '}
                     <Tooltip
                       iconProps={{ color: 'var(--text-default-grey)', className: 'ml-1' }}
-                      title="Une différencede nombre de résultats peut exister si la requête à la Base d'Adresse Nationale n'as pas fonctionné ou si les coordonnées géographiques ne sont pas disponibles."
+                      title="Une différence de nombre de résultats peut exister si la requête à la Base d'Adresse Nationale n'as pas fonctionné ou si les coordonnées géographiques ne sont pas disponibles."
                     />
                   </>
                 ),
