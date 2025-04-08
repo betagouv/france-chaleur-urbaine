@@ -117,6 +117,14 @@ const Statistics = () => {
     onError: (err) => console.warn('errorDataActions >>', err),
   });
 
+  const totalComparateurTests = useMemo(() => {
+    if (!dataActions) return 0;
+
+    return dataActions.reduce((total, entry) => {
+      return total + (entry[STAT_LABEL.FORM_TEST_COMPARATEUR_ELIGIBLE] ?? 0) + (entry[STAT_LABEL.FORM_TEST_COMPARATEUR_UNELIGIBLE] ?? 0);
+    }, 0);
+  }, [dataActions]);
+
   const formatedDataEligibilityTest = getFormattedData(dataActions, (year: string, monthIndex: number, entry) => {
     const [entryYear, entryMonth] = entry?.date?.split('-') || ['YYYY', 'MM'];
     if (parseInt(entryMonth) - 1 === monthIndex && entryYear === year) {
@@ -148,6 +156,7 @@ const Statistics = () => {
   const { data: dataCountContact, error: errorCountContact } = useSWR<any>('/api/statistiques/contacts?group=monthly', fetchJSON, {
     onError: (err) => console.warn('errorCountContact >>', err),
   });
+
   const formatedDataCountContact = getFormattedData(dataCountContact, (year: string, monthIndex: number, entry: any) => {
     const [entryYear, entryMonth] = entry?.date?.split('-') || ['YYYY', 'MM'];
     if (
@@ -404,6 +413,11 @@ const Statistics = () => {
                   <NumberBlock>
                     <NumberHighlight>{Math.round(percentAddressTests)}%</NumberHighlight>
                     Des visiteurs testent une adresse
+                  </NumberBlock>
+                  <HorizontalSeparator />
+                  <NumberBlock>
+                    <NumberHighlight>{totalComparateurTests.toLocaleString('fr-FR')}</NumberHighlight>
+                    simulations réalisées avec le comparateur de coûts et d'émissions de CO2 des modes de chauffage
                   </NumberBlock>
                 </NumberContainer>
               </ColumnContainer>

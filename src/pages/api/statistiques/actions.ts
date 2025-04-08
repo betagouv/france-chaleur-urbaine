@@ -51,6 +51,18 @@ export default handleRouteErrors(async () => {
         FROM public.matomo_stats as s7
         WHERE s7.stat_label = '${STAT_LABEL.FORM_TEST_FICHE_RESEAU_UNELIGIBLE}'
         AND s7.date = s.date) as "${STAT_LABEL.FORM_TEST_FICHE_RESEAU_UNELIGIBLE}"`
+      ),
+      db.raw(
+        `(SELECT s8.value
+        FROM public.matomo_stats as s8
+        WHERE s8.stat_label = '${STAT_LABEL.FORM_TEST_COMPARATEUR_ELIGIBLE}'
+        AND s8.date = s.date) as "${STAT_LABEL.FORM_TEST_COMPARATEUR_ELIGIBLE}"`
+      ),
+      db.raw(
+        `(SELECT s9.value
+        FROM public.matomo_stats as s9
+        WHERE s9.stat_label = '${STAT_LABEL.FORM_TEST_COMPARATEUR_UNELIGIBLE}'
+        AND s9.date = s.date) as "${STAT_LABEL.FORM_TEST_COMPARATEUR_UNELIGIBLE}"`
       )
     )
     .where('s.method', STAT_METHOD.ACTIONS)

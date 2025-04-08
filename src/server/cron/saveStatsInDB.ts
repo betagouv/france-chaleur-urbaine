@@ -17,6 +17,8 @@ const DATA_ACTION_STATS: string[] = [
   STAT_LABEL.FORM_TEST_ELIGIBLE,
   STAT_LABEL.FORM_TEST_FICHE_RESEAU_UNELIGIBLE,
   STAT_LABEL.FORM_TEST_FICHE_RESEAU_ELIGIBLE,
+  STAT_LABEL.FORM_TEST_COMPARATEUR_UNELIGIBLE,
+  STAT_LABEL.FORM_TEST_COMPARATEUR_ELIGIBLE,
   STAT_LABEL.TRACES,
 ];
 
@@ -243,6 +245,7 @@ export const saveStatsInDB = async (start?: string, end?: string) => {
       endDate.setDate(0);
     }
     const stringEndDate = endDate.toISOString().slice(0, 10);
+    console.log(`From ${stringStartDate} to ${stringEndDate}`);
 
     const endAirtableDate = endDate;
     endAirtableDate.setDate(endAirtableDate.getDate() + 1);
