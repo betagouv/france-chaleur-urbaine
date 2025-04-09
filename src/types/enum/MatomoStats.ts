@@ -16,6 +16,8 @@ export enum STAT_KEY {
   NB_EVENTS = 'nb_events',
   NB_CONTACTS = 'count_contacts',
   BULK_CONTACTS = 'count_bulk_contact',
+  NB_ACCOUNTS_PRO_CREATED = 'nb_accounts_pro_created',
+  NB_ACCOUNTS_PARTICULIER_CREATED = 'nb_accounts_particulier_created',
 }
 
 export enum STAT_PARAMS {

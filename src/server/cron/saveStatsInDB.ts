@@ -6,8 +6,8 @@ import { bulkFetchRangeFromMatomo } from '@/server/services/matomo';
 import { type MatomoActionMetrics, type MatomoPageMetrics, type MatomoUniqueVisitorsMetrics } from '@/server/services/matomo_types';
 import { Airtable } from '@/types/enum/Airtable';
 import { STAT_KEY, STAT_LABEL, STAT_METHOD, STAT_PARAMS, STAT_PERIOD } from '@/types/enum/MatomoStats';
-
 import '@root/sentry.node.config';
+import { USER_ROLE } from '@/types/enum/UserRole';
 
 const DATA_ACTION_STATS: string[] = [
   STAT_LABEL.FORM_TEST_CARTE_UNELIGIBLE,
@@ -52,7 +52,7 @@ const addStat =
 
     const existing = await query.executeTakeFirst();
 
-    const message = `${stat_key} - ${stat_label} - ${date} - ${period} - ${method}`;
+    const message = `${stat_key} - ${date} - ${period} - ${method} - ${stat_label || 'No label'}`;
     if (existing) {
       if (existing.value !== value) {
         console.log(`⚠️ Conflict detected: ${existing.value}≠${value} for ${message}`);
@@ -286,6 +286,55 @@ const saveBulkContactStats = async (startDate: string, endDate: string) => {
   console.log(`saveStatsInDB END : saveBulkContactStats`);
 };
 
+const saveComptesProCreatedStats = async (startDate: string, endDate: string) => {
+  console.log(`saveStatsInDB START : saveComptesProCreatedStats`);
+  const start = new Date(startDate);
+  start.setUTCHours(0, 0, 0);
+  const end = new Date(endDate);
+  end.setUTCHours(23, 59, 59);
+  const comptesProCreated = await kdb
+    .selectFrom('users')
+    .select([
+      sql<string>`TO_CHAR(date_trunc('day', created_at), 'yyyy-mm-dd')`.as('date'),
+      sql<number>`COUNT(CASE WHEN role = ${USER_ROLE.PROFESSIONNEL} THEN 1 END)`.as('professionnels'),
+      sql<number>`COUNT(CASE WHEN role = ${USER_ROLE.PARTICULIER} THEN 1 END)`.as('particuliers'),
+    ])
+    .where('created_at', '>=', start)
+    .where('created_at', '<=', end)
+    .groupBy(sql`date_trunc('day', created_at)`)
+    .orderBy('date', 'asc')
+    .execute();
+
+  // Check if we have any data to process
+  if (comptesProCreated.length === 0) {
+    console.log('No accounts created in the specified period');
+    return;
+  }
+
+  const statsPromises = comptesProCreated.flatMap((monthData) => {
+    console.log(
+      `Processing accounts created for ${monthData.date}: ${monthData.professionnels} pro, ${monthData.particuliers} particuliers`
+    );
+
+    return [
+      addStatFromDB({
+        stat_key: STAT_KEY.NB_ACCOUNTS_PRO_CREATED,
+        date: monthData.date,
+        value: monthData.professionnels,
+      }),
+      addStatFromDB({
+        stat_key: STAT_KEY.NB_ACCOUNTS_PARTICULIER_CREATED,
+        date: monthData.date,
+        value: monthData.particuliers,
+      }),
+    ];
+  });
+
+  await Promise.all(statsPromises);
+
+  console.log(`saveStatsInDB END : saveComptesProCreatedStats`);
+};
+
 export const saveStatsInDB = async (start?: string, end?: string) => {
   console.log(`CRON JOB START: saveStatsInDB`);
   try {
@@ -312,6 +361,7 @@ export const saveStatsInDB = async (start?: string, end?: string) => {
       saveVisitsStats(stringStartDate, stringEndDate),
       saveVisitsMapStats(stringStartDate, stringEndDate),
       saveBulkContactStats(stringStartDate, stringEndDate),
+      saveComptesProCreatedStats(stringStartDate, stringEndDate),
     ]);
   } catch (e) {
     Sentry.captureException(e);

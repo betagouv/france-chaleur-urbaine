@@ -487,7 +487,11 @@ const Statistics = () => {
                   <HorizontalSeparator />
                   <NumberBlock>
                     <NumberHighlight>
-                      {statsLoading ? <Loader size="md" /> : stats?.comptesPro?.total.toLocaleString('fr-FR')}
+                      {statsLoading ? (
+                        <Loader size="md" />
+                      ) : (
+                        ((stats?.comptes?.particuliers?.total || 0) + (stats?.comptes?.professionnels?.total || 0)).toLocaleString('fr-FR')
+                      )}
                     </NumberHighlight>
                     "comptes pro" créés (bureaux d'études, bailleurs sociaux, ...)
                   </NumberBlock>
