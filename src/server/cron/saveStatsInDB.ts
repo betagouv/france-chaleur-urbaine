@@ -166,7 +166,7 @@ const saveActionsStats = async (startDate: string, endDate: string) => {
             stat_key: STAT_KEY.NB_EVENTS,
             date: startDate,
             period: STAT_PERIOD.MONTHLY,
-            value: data[action],
+            value: +data[action],
             stat_label: action,
           });
         }
