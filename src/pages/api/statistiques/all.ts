@@ -2,7 +2,7 @@ import { sql } from 'kysely';
 
 import { kdb } from '@/server/db/kysely';
 import { handleRouteErrors } from '@/server/helpers/server';
-import { STAT_KEY, STAT_METHOD, STAT_PERIOD } from '@/types/enum/MatomoStats';
+import { STAT_COMMUNES_SANS_RESEAU, STAT_KEY, STAT_METHOD, STAT_PERIOD } from '@/types/enum/MatomoStats';
 
 export type Statistiques = Awaited<ReturnType<typeof statistiques>>;
 /**
@@ -42,20 +42,39 @@ export const getStatsForMethod =
   };
 
 const getStatsForDatabase = getStatsForMethod(STAT_METHOD.DATABASE);
+const getStatsForActions = getStatsForMethod(STAT_METHOD.ACTIONS);
+
 const statistiques = async () => {
   const comptesProCreated = await getStatsForDatabase([
     STAT_KEY.NB_ACCOUNTS_PRO_CREATED,
     STAT_KEY.NB_ACCOUNTS_PARTICULIER_CREATED,
   ] as const);
-  // const communesSansReseauTestees = await getStatsForActions([STAT_COMMUNES_SANS_RESEAU.NB_TOTAL]);
 
   const nbComptesPro = comptesProCreated[STAT_KEY.NB_ACCOUNTS_PRO_CREATED].reduce((acc, curr) => acc + curr.value, 0);
   const nbComptesParticulier = comptesProCreated[STAT_KEY.NB_ACCOUNTS_PARTICULIER_CREATED].reduce((acc, curr) => acc + curr.value, 0);
+
+  const communesSansReseauTestees = await getStatsForActions([
+    STAT_COMMUNES_SANS_RESEAU.NB_TESTS,
+    STAT_COMMUNES_SANS_RESEAU.NB_DEMANDES,
+  ] as const);
+
+  const nbCommunesSansReseauTestees = communesSansReseauTestees[STAT_COMMUNES_SANS_RESEAU.NB_TESTS].reduce(
+    (acc, curr) => acc + curr.value,
+    0
+  );
+  const nbCommunesSansReseauAccompagnees = communesSansReseauTestees[STAT_COMMUNES_SANS_RESEAU.NB_DEMANDES].reduce(
+    (acc, curr) => acc + curr.value,
+    0
+  );
 
   return {
     comptes: {
       professionnels: { total: nbComptesPro },
       particuliers: { total: nbComptesParticulier },
+    },
+    communesSansReseau: {
+      testees: { total: nbCommunesSansReseauTestees },
+      accompagnees: { total: nbCommunesSansReseauAccompagnees },
     },
   };
 };

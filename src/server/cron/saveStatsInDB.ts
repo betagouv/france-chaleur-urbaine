@@ -5,7 +5,7 @@ import { kdb, sql } from '@/server/db/kysely';
 import { bulkFetchRangeFromMatomo } from '@/server/services/matomo';
 import { type MatomoActionMetrics, type MatomoPageMetrics, type MatomoUniqueVisitorsMetrics } from '@/server/services/matomo_types';
 import { Airtable } from '@/types/enum/Airtable';
-import { STAT_KEY, STAT_LABEL, STAT_METHOD, STAT_PARAMS, STAT_PERIOD } from '@/types/enum/MatomoStats';
+import { STAT_COMMUNES_SANS_RESEAU, STAT_KEY, STAT_LABEL, STAT_METHOD, STAT_PARAMS, STAT_PERIOD } from '@/types/enum/MatomoStats';
 import '@root/sentry.node.config';
 import { USER_ROLE } from '@/types/enum/UserRole';
 
@@ -20,6 +20,8 @@ const DATA_ACTION_STATS: string[] = [
   STAT_LABEL.FORM_TEST_COMPARATEUR_ELIGIBLE,
   STAT_LABEL.TRACES,
 ];
+
+const COMMUNES_SANS_RESEAU_CATEGORIES = [STAT_COMMUNES_SANS_RESEAU.NB_DEMANDES, STAT_COMMUNES_SANS_RESEAU.NB_TESTS] as const;
 
 const addStat =
   (method: string) =>
@@ -95,6 +97,35 @@ const addStatFromAirtable = addStat(STAT_METHOD.AIRTABLE);
 const addStatFromActions = addStat(STAT_METHOD.ACTIONS);
 const addStatFromVisitsSummary = addStat(STAT_METHOD.VISIT_SUMMARY);
 const addStatFromMapVisitSummary = addStat(STAT_METHOD.MAP_VISIT_SUMMARY);
+
+const retrieveAndSaveEventCategoriesFromMatomo = async <T extends string[]>(startDate: string, endDate: string, categoryKeys: T) => {
+  const results = await bulkFetchRangeFromMatomo<MatomoActionMetrics>(
+    {
+      method: 'Events.getCategory',
+      period: 'range',
+      date: startDate + ',' + endDate,
+    },
+    (entry) => ({ [entry.label]: entry.nb_events })
+  );
+
+  if (!results[0]) {
+    return [];
+  }
+  const data: any = results[0];
+  await Promise.all(
+    categoryKeys.map(async (categoryKey: T[number]) => {
+      if (data[categoryKey]) {
+        return addStatFromActions({
+          stat_key: categoryKey,
+          date: startDate,
+          value: +data[categoryKey],
+        });
+      }
+    })
+  );
+
+  return results;
+};
 
 const saveDemandsStats = async (startDate: string, endDate: string) => {
   console.log(`saveStatsInDB START : saveDemandsStats`);
@@ -335,6 +366,17 @@ const saveComptesProCreatedStats = async (startDate: string, endDate: string) =>
   console.log(`saveStatsInDB END : saveComptesProCreatedStats`);
 };
 
+const saveCommunesSansReseauStats = async (startDate: string, endDate: string) => {
+  console.log(`saveStatsInDB START : saveCommunesSansReseauStats`);
+  const start = new Date(startDate);
+  start.setUTCHours(0, 0, 0);
+  const end = new Date(endDate);
+  end.setUTCHours(23, 59, 59);
+  await retrieveAndSaveEventCategoriesFromMatomo(startDate, endDate, COMMUNES_SANS_RESEAU_CATEGORIES as unknown as string[]);
+
+  console.log(`saveStatsInDB END : saveCommunesSansReseauStats`);
+};
+
 export const saveStatsInDB = async (start?: string, end?: string) => {
   console.log(`CRON JOB START: saveStatsInDB`);
   try {
@@ -362,6 +404,7 @@ export const saveStatsInDB = async (start?: string, end?: string) => {
       saveVisitsMapStats(stringStartDate, stringEndDate),
       saveBulkContactStats(stringStartDate, stringEndDate),
       saveComptesProCreatedStats(stringStartDate, stringEndDate),
+      saveCommunesSansReseauStats(stringStartDate, stringEndAirtableDate),
     ]);
   } catch (e) {
     Sentry.captureException(e);

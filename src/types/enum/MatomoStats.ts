@@ -38,3 +38,8 @@ export enum STAT_LABEL {
   FORM_TEST_COMPARATEUR_ELIGIBLE = 'Formulaire de test - Comparateur - Adresse Éligible',
   TRACES = 'Tracés',
 }
+
+export enum STAT_COMMUNES_SANS_RESEAU {
+  NB_TESTS = 'Villes Potentiel - Visites',
+  NB_DEMANDES = 'Villes Potentiel - Demandes',
+}

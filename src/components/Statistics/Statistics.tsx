@@ -500,6 +500,27 @@ const Statistics = () => {
             </div>
           </StatisticsSliceContainer>
         </Slice>
+        <Slice>
+          <StatisticsSliceContainer className="fr-grid-row fr-grid-row--gutters">
+            <div className="fr-col-md-8 fr-col-12">
+              <ColumnContainer>
+                <NumberContainer>
+                  <NumberBlock className="fr-col-md-6 fr-col-12">
+                    <NumberHighlight>{stats?.communesSansReseau?.testees?.total}</NumberHighlight>
+                    communes sans réseau de chaleur ayant testé leur potentiel
+                  </NumberBlock>
+                  <NumberBlock className="fr-col-md-6 fr-col-12">
+                    <NumberHighlight>{stats?.communesSansReseau?.accompagnees?.total}</NumberHighlight>
+                    communes accompagnées dans la démarche de création d'un réseau
+                    <NumberSubText className="fr-mt-1w">
+                      mise en relation avec le Cerema, Amorce, les relais locaux : CCRT, ...
+                    </NumberSubText>
+                  </NumberBlock>
+                </NumberContainer>
+              </ColumnContainer>
+            </div>
+          </StatisticsSliceContainer>
+        </Slice>
       </Container>
     </>
   );
