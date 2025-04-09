@@ -1,6 +1,5 @@
 import * as Sentry from '@sentry/node';
 
-import db from '@/server/db';
 import base from '@/server/db/airtable';
 import { kdb, sql } from '@/server/db/kysely';
 import { bulkFetchRangeFromMatomo } from '@/server/services/matomo';
@@ -22,7 +21,81 @@ const DATA_ACTION_STATS: string[] = [
   STAT_LABEL.TRACES,
 ];
 
-//From Airtable - demandes : éligibles / non éligibles / totales
+const addStat =
+  (method: string) =>
+  async ({
+    value,
+    period = STAT_PERIOD.MONTHLY,
+    stat_key,
+    date,
+    stat_label,
+    method_params,
+  }: {
+    value: number;
+    stat_key: string;
+    date: string | Date;
+    period?: string;
+    stat_label?: string; // deprecated
+    method_params?: string;
+  }) => {
+    // Optional: Check existing value before insert to detect conflicts precisely
+    let query = kdb
+      .selectFrom('matomo_stats')
+      .selectAll()
+      .where('method', '=', method)
+      .where('stat_key', '=', stat_key)
+      .where(kdb.fn('DATE', ['date']), '=', date)
+      .where('period', '=', period);
+    if (stat_label) {
+      query = query.where('stat_label', '=', stat_label);
+    }
+
+    const existing = await query.executeTakeFirst();
+
+    const message = `${stat_key} - ${stat_label} - ${date} - ${period} - ${method}`;
+    if (existing) {
+      if (existing.value !== value) {
+        console.log(`⚠️ Conflict detected: ${existing.value}≠${value} for ${message}`);
+      } else {
+        console.log(`💤 No change for ${message}`);
+      }
+
+      return existing;
+    }
+
+    const result = await kdb
+      .insertInto('matomo_stats')
+      .values({
+        value,
+        period,
+        stat_key,
+        stat_label,
+        date,
+        method,
+        method_params,
+      })
+      .onConflict(
+        (oc) =>
+          oc
+            .columns(['method', 'stat_key', 'date', 'period', 'stat_label']) // Unique constraint columns
+            .doNothing() // do not update as some values are replaced manually in the database
+        // .doUpdateSet({
+        //   value, // Update value if conflict occurs
+        // })
+      )
+      .returning([sql<number>`"value"::integer`.as('value'), 'stat_key', 'stat_label', 'date', 'period', 'method'])
+      .execute();
+    console.log(`✅ Inserted ${stat_key} - ${stat_label} - ${date} - ${period} - ${method}`);
+
+    return result;
+  };
+
+const addStatFromDB = addStat(STAT_METHOD.DATABASE);
+const addStatFromAirtable = addStat(STAT_METHOD.AIRTABLE);
+const addStatFromActions = addStat(STAT_METHOD.ACTIONS);
+const addStatFromVisitsSummary = addStat(STAT_METHOD.VISIT_SUMMARY);
+const addStatFromMapVisitSummary = addStat(STAT_METHOD.MAP_VISIT_SUMMARY);
+
 const saveDemandsStats = async (startDate: string, endDate: string) => {
   console.log(`saveStatsInDB START : saveDemandsStats`);
   const records = await base(Airtable.UTILISATEURS)
@@ -48,24 +121,21 @@ const saveDemandsStats = async (startDate: string, endDate: string) => {
     }
   });
   await Promise.all([
-    db('matomo_stats').insert({
-      method: STAT_METHOD.AIRTABLE,
+    addStatFromAirtable({
       stat_key: STAT_KEY.NB_CONTACTS,
       date: startDate,
       period: STAT_PERIOD.MONTHLY,
       value: monthValue.nbEligible,
       stat_label: STAT_LABEL.NB_ELIGIBLE,
     }),
-    db('matomo_stats').insert({
-      method: STAT_METHOD.AIRTABLE,
+    addStatFromAirtable({
       stat_key: STAT_KEY.NB_CONTACTS,
       date: startDate,
       period: STAT_PERIOD.MONTHLY,
       value: monthValue.nbUneligible,
       stat_label: STAT_LABEL.NB_UNELIGIBLE,
     }),
-    db('matomo_stats').insert({
-      method: STAT_METHOD.AIRTABLE,
+    addStatFromAirtable({
       stat_key: STAT_KEY.NB_CONTACTS,
       date: startDate,
       period: STAT_PERIOD.MONTHLY,
@@ -92,8 +162,7 @@ const saveActionsStats = async (startDate: string, endDate: string) => {
     await Promise.all(
       DATA_ACTION_STATS.map(async (action: any) => {
         if (data[action]) {
-          await db('matomo_stats').insert({
-            method: STAT_METHOD.ACTIONS,
+          addStatFromActions({
             stat_key: STAT_KEY.NB_EVENTS,
             date: startDate,
             period: STAT_PERIOD.MONTHLY,
@@ -116,8 +185,7 @@ const saveVisitsStats = async (startDate: string, endDate: string) => {
     date: startDate + ',' + endDate,
   });
   if (results[0].value) {
-    await db('matomo_stats').insert({
-      method: STAT_METHOD.VISIT_SUMMARY,
+    await addStatFromVisitsSummary({
       stat_key: STAT_KEY.NB_UNIQ_VISITORS,
       date: startDate,
       period: STAT_PERIOD.MONTHLY,
@@ -142,8 +210,7 @@ const saveVisitsMapStats = async (startDate: string, endDate: string) => {
   if (results[0]) {
     const data: any = results[0];
     if (data.value) {
-      await db('matomo_stats').insert({
-        method: STAT_METHOD.MAP_VISIT_SUMMARY,
+      await addStatFromMapVisitSummary({
         method_params: STAT_PARAMS.URL,
         stat_key: STAT_KEY.NB_VISITS,
         date: startDate,
@@ -194,39 +261,27 @@ const saveBulkContactStats = async (startDate: string, endDate: string) => {
   monthValue.nbUneligible = monthValue.nbTotal - monthValue.nbEligible;
 
   await Promise.all([
-    kdb
-      .insertInto('matomo_stats')
-      .values({
-        method: STAT_METHOD.DATABASE,
-        stat_key: STAT_KEY.BULK_CONTACTS,
-        date: startDate,
-        period: STAT_PERIOD.MONTHLY,
-        value: monthValue.nbEligible,
-        stat_label: STAT_LABEL.NB_ELIGIBLE,
-      })
-      .execute(),
-    kdb
-      .insertInto('matomo_stats')
-      .values({
-        method: STAT_METHOD.DATABASE,
-        stat_key: STAT_KEY.BULK_CONTACTS,
-        date: startDate,
-        period: STAT_PERIOD.MONTHLY,
-        value: monthValue.nbUneligible,
-        stat_label: STAT_LABEL.NB_UNELIGIBLE,
-      })
-      .execute(),
-    kdb
-      .insertInto('matomo_stats')
-      .values({
-        method: STAT_METHOD.DATABASE,
-        stat_key: STAT_KEY.BULK_CONTACTS,
-        date: startDate,
-        period: STAT_PERIOD.MONTHLY,
-        value: monthValue.nbTotal,
-        stat_label: STAT_LABEL.NB_TOTAL,
-      })
-      .execute(),
+    addStatFromDB({
+      stat_key: STAT_KEY.BULK_CONTACTS,
+      date: startDate,
+      period: STAT_PERIOD.MONTHLY,
+      value: monthValue.nbEligible,
+      stat_label: STAT_LABEL.NB_ELIGIBLE,
+    }),
+    addStatFromDB({
+      stat_key: STAT_KEY.BULK_CONTACTS,
+      date: startDate,
+      period: STAT_PERIOD.MONTHLY,
+      value: monthValue.nbUneligible,
+      stat_label: STAT_LABEL.NB_UNELIGIBLE,
+    }),
+    addStatFromDB({
+      stat_key: STAT_KEY.BULK_CONTACTS,
+      date: startDate,
+      period: STAT_PERIOD.MONTHLY,
+      value: monthValue.nbTotal,
+      stat_label: STAT_LABEL.NB_TOTAL,
+    }),
   ]);
   console.log(`saveStatsInDB END : saveBulkContactStats`);
 };
