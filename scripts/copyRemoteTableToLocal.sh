@@ -26,33 +26,47 @@ fi
 
 if [[ $env = "prod" ]]; then
   SCALINGO_APP=france-chaleur-urbaine
+  DB_PORT=10001
 else
   SCALINGO_APP=france-chaleur-urbaine-dev
+  DB_PORT=10000
 fi
 
-# ferme le tunnel quand le programme s'arrête
-trap 'kill %1' EXIT
+# Check if there's already a process using the DB_PORT
+PORT_IN_USE=$(lsof -i :$DB_PORT > /dev/null 2>&1; echo $?)
+
+if [ $PORT_IN_USE -ne 0 ]; then
+  echo "Database tunnel not running, starting it..."
+  # ferme le tunnel quand le programme s'arrête
+  trap 'kill %1' EXIT
+
+  # ouvre un tunnel vers BDD distance
+  scalingo -a $SCALINGO_APP db-tunnel $SCALINGO_TUNNEL_ARGS SCALINGO_POSTGRESQL_URL &
+  sleep 4
+fi
+
 
 echo "> Synchronisation de la table distante '$table' depuis l'environnement $env..."
-
-# ouvre un tunnel vers BDD distance
-scalingo -a $SCALINGO_APP db-tunnel $SCALINGO_TUNNEL_ARGS SCALINGO_POSTGRESQL_URL &
-sleep 4
 
 POSTGRESQL_URL=$(scalingo -a $SCALINGO_APP env-get SCALINGO_POSTGRESQL_URL)
 export PGUSER=$(expr $POSTGRESQL_URL : '.*/\([^:]*\):.*')
 export PGPASSWORD=$(expr $POSTGRESQL_URL : '.*:\([^@]*\)@.*')
 
+echo "Exporting data from remote database $env:$DB_PORT..."
 # export depuis BDD distance
 if [[ $dataonly = "true" ]]; then
-  pg_dump postgres://localhost:10000 --data-only -t $table >/tmp/table.dump.sql
+  pg_dump postgres://localhost:$DB_PORT --data-only -t $table >/tmp/table.dump.sql
 else
-  pg_dump postgres://localhost:10000 --format=c --no-owner -t $table >/tmp/table.dump
+  pg_dump postgres://localhost:$DB_PORT --format=c --no-owner -t $table >/tmp/table.dump
 fi
 
-# ferme le tunnel
-kill %1
+if [ $PORT_IN_USE -ne 0 ]; then
+  echo "Closing database tunnel..."
+  # ferme le tunnel
+  kill %1
+fi
 
+echo "Importing data from $table to $env database..."
 # import vers BDD locale
 if [[ $dataonly = "true" ]]; then
   # noter le delete plutôt que truncate pour ne pas locker la table et bloquer les requêtes
