@@ -21,7 +21,6 @@ import {
   GraphsWrapper,
   HorizontalSeparator,
   LastActuDate,
-  LoadingTextHighlight,
   NumberBlock,
   NumberContainer,
   NumberHighlight,
@@ -120,7 +119,11 @@ const NumberHighLightLoading = ({ loading, children }: { loading: boolean; child
 };
 
 const Statistics = () => {
-  const { data: dataActions, error: errorDataActions } = useSWR<MatomoMonthStat[]>('/api/statistiques/actions', fetchJSON, {
+  const {
+    data: dataActions,
+    error: errorDataActions,
+    isLoading: isLoadingDataActions,
+  } = useSWR<MatomoMonthStat[]>('/api/statistiques/actions', fetchJSON, {
     onError: (err) => console.warn('errorDataActions >>', err),
   });
 
@@ -162,7 +165,11 @@ const Statistics = () => {
   });
 
   //From Airtable
-  const { data: dataCountContact, error: errorCountContact } = useSWR<any>('/api/statistiques/contacts?group=monthly', fetchJSON, {
+  const {
+    data: dataCountContact,
+    error: errorCountContact,
+    isLoading: isLoadingCountContact,
+  } = useSWR<any>('/api/statistiques/contacts?group=monthly', fetchJSON, {
     onError: (err) => console.warn('errorCountContact >>', err),
   });
 
@@ -177,7 +184,11 @@ const Statistics = () => {
     }
   });
 
-  const { data: dataCountBulkContact, error: errorCountBulkContact } = useSWR<any>('/api/statistiques/bulk', fetchJSON, {
+  const {
+    data: dataCountBulkContact,
+    error: errorCountBulkContact,
+    isLoading: isLoadingCountBulkContact,
+  } = useSWR<any>('/api/statistiques/bulk', fetchJSON, {
     onError: (err) => console.warn('errorCountContact >>', err),
   });
 
@@ -344,16 +355,9 @@ const Statistics = () => {
                 <LastActuDate>Au {lastCronUpdate} :</LastActuDate>
                 <NumberContainer className="flex-col">
                   <NumberBlock>
-                    <NumberHighlight>
-                      {totalContactDemands > 0 ? (
-                        totalContactDemands.toLocaleString('fr-FR')
-                      ) : (
-                        <>
-                          <LoadingTextHighlight>Chargement en cours...</LoadingTextHighlight>
-                          <br />
-                        </>
-                      )}
-                    </NumberHighlight>
+                    <NumberHighLightLoading loading={isLoadingCountContact}>
+                      {totalContactDemands.toLocaleString('fr-FR')}
+                    </NumberHighLightLoading>
                     Total des demandes de mise en contact avec un gestionnaire
                   </NumberBlock>
                   <NumberBlock className="fr-mt-2w">
@@ -388,16 +392,18 @@ const Statistics = () => {
                 <LastActuDate>Au {lastCronUpdate} :</LastActuDate>
                 <NumberContainer>
                   <NumberBlock>
-                    <NumberHighlight>{totalAddressTests.toLocaleString('fr-FR')}</NumberHighlight>
+                    <NumberHighLightLoading loading={isLoadingDataActions}>
+                      {totalAddressTests.toLocaleString('fr-FR')}
+                    </NumberHighLightLoading>
                     Total d'adresses testées
                   </NumberBlock>
                   <NumberBlock className="fr-mt-2w">
-                    <NumberHighlight>
+                    <NumberHighLightLoading loading={isLoadingDataActions}>
                       <span>{Math.round(percentAddressPossible)}%</span>
                       <Tooltip
                         title={`"Potentiellement raccordables" : tests effectués pour des bâtiments situés à moins de 100 m d'un réseau (60 m sur Paris)`}
                       />
-                    </NumberHighlight>
+                    </NumberHighLightLoading>
                     Des adresses testées sont potentiellement raccordables
                   </NumberBlock>
                 </NumberContainer>
@@ -425,12 +431,14 @@ const Statistics = () => {
                 <LastActuDate>Au {lastCronUpdate} :</LastActuDate>
                 <NumberContainer>
                   <NumberBlock>
-                    <NumberHighlight>{Math.round(percentAddressTests)}%</NumberHighlight>
+                    <NumberHighLightLoading loading={isLoadingDataActions}>{Math.round(percentAddressTests)}%</NumberHighLightLoading>
                     Des visiteurs testent une adresse
                   </NumberBlock>
                   <HorizontalSeparator />
                   <NumberBlock>
-                    <NumberHighlight>{totalComparateurTests.toLocaleString('fr-FR')}</NumberHighlight>
+                    <NumberHighLightLoading loading={isLoadingDataActions}>
+                      {totalComparateurTests.toLocaleString('fr-FR')}
+                    </NumberHighLightLoading>
                     simulations réalisées avec le comparateur de coûts et d'émissions de CO2 des modes de chauffage
                   </NumberBlock>
                 </NumberContainer>
@@ -463,7 +471,9 @@ const Statistics = () => {
                   </NumberBlock>
                   <HorizontalSeparator />
                   <NumberBlock>
-                    <NumberHighlight>{totalDownload.toLocaleString('fr-FR', { maximumFractionDigits: 0 })}</NumberHighlight>
+                    <NumberHighLightLoading loading={isLoadingDataActions}>
+                      {totalDownload.toLocaleString('fr-FR', { maximumFractionDigits: 0 })}
+                    </NumberHighLightLoading>
                     Téléchargements des tracés sur le site
                   </NumberBlock>
                 </NumberContainer>
@@ -491,7 +501,9 @@ const Statistics = () => {
                 <LastActuDate>Au {lastCronUpdate} :</LastActuDate>
                 <NumberContainer>
                   <NumberBlock>
-                    <NumberHighlight>{totalBulkTests.toLocaleString('fr-FR')}</NumberHighlight>
+                    <NumberHighLightLoading loading={isLoadingCountBulkContact}>
+                      {totalBulkTests.toLocaleString('fr-FR')}
+                    </NumberHighLightLoading>
                     Total d'adresses testées en liste (tests en masse par des professionnels)
                   </NumberBlock>
                   <HorizontalSeparator />

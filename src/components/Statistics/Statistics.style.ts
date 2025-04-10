@@ -64,9 +64,6 @@ export const NumberHighlight = styled.div`
     color: var(--text-default-grey);
   }
 `;
-export const LoadingTextHighlight = styled.span`
-  font-size: 24px;
-`;
 
 export const NumberText = styled.span`
   font-size: 0.9rem;
