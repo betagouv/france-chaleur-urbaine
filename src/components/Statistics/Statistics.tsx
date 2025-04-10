@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { useMemo } from 'react';
-import useSWR from 'swr';
 
 import Graph from '@/components/Graph';
 import Slice from '@/components/Slice';
@@ -13,7 +12,6 @@ import { type Statistiques } from '@/pages/api/statistiques/all';
 import { type MatomoMonthStat } from '@/server/services/matomo_types';
 import { STAT_LABEL } from '@/types/enum/MatomoStats';
 import { dayjs } from '@/utils/date';
-import { fetchJSON } from '@/utils/network';
 
 import {
   ColumnContainer,
@@ -123,9 +121,7 @@ const Statistics = () => {
     data: dataActions,
     error: errorDataActions,
     isLoading: isLoadingDataActions,
-  } = useSWR<MatomoMonthStat[]>('/api/statistiques/actions', fetchJSON, {
-    onError: (err) => console.warn('errorDataActions >>', err),
-  });
+  } = useFetch<MatomoMonthStat[]>('/api/statistiques/actions');
 
   const totalComparateurTests = useMemo(() => {
     if (!dataActions) return 0;
@@ -153,9 +149,7 @@ const Statistics = () => {
 
   const { data: stats, isLoading: statsLoading } = useFetch<Statistiques>('/api/statistiques/all');
 
-  const { data: dataVisits, error: errorVisits } = useSWR<MatomoMonthStat[]>('/api/statistiques/visits', fetchJSON, {
-    onError: (err) => console.warn('errorVisits >>', err),
-  });
+  const { data: dataVisits, error: errorVisits } = useFetch<MatomoMonthStat[]>('/api/statistiques/visits');
 
   const formatedDataVisits = getFormattedData(dataVisits, (year: string, monthIndex: number, entry) => {
     const [entryYear, entryMonth] = entry?.date?.split('-') || ['YYYY', 'MM'];
@@ -169,9 +163,7 @@ const Statistics = () => {
     data: dataCountContact,
     error: errorCountContact,
     isLoading: isLoadingCountContact,
-  } = useSWR<any>('/api/statistiques/contacts?group=monthly', fetchJSON, {
-    onError: (err) => console.warn('errorCountContact >>', err),
-  });
+  } = useFetch<any>('/api/statistiques/contacts?group=monthly');
 
   const formatedDataCountContact = getFormattedData(dataCountContact, (year: string, monthIndex: number, entry: any) => {
     const [entryYear, entryMonth] = entry?.date?.split('-') || ['YYYY', 'MM'];
@@ -188,9 +180,7 @@ const Statistics = () => {
     data: dataCountBulkContact,
     error: errorCountBulkContact,
     isLoading: isLoadingCountBulkContact,
-  } = useSWR<any>('/api/statistiques/bulk', fetchJSON, {
-    onError: (err) => console.warn('errorCountContact >>', err),
-  });
+  } = useFetch<any>('/api/statistiques/bulk');
 
   const formatedDataCountBulkContact = getFormattedData(dataCountBulkContact, (year: string, monthIndex: number, entry: any) => {
     const [entryYear, entryMonth] = entry?.date?.split('-') || ['YYYY', 'MM'];
@@ -203,9 +193,7 @@ const Statistics = () => {
     }
   });
 
-  const { data: dataVisitsMap, error: errorVisitsMap } = useSWR<MatomoMonthStat[]>('/api/statistiques/visitsMap', fetchJSON, {
-    onError: (err) => console.warn('errorVisitsMap >>', err),
-  });
+  const { data: dataVisitsMap, error: errorVisitsMap } = useFetch<MatomoMonthStat[]>('/api/statistiques/visitsMap');
 
   const formatedDataVisitsMap = getFormattedData(dataVisitsMap, (year: string, monthIndex: number, entry) => {
     const [entryYear, entryMonth] = entry?.date?.split('-') || ['YYYY', 'MM'];

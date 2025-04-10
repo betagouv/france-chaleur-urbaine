@@ -151,7 +151,6 @@
     "sharp": "^0.32.5",
     "styled-components": "^6.0.0",
     "stylis": "^4.0.0",
-    "swr": "^2.2.1",
     "tslib": "^2.6.1",
     "tss-react": "^4.9.10",
     "unified": "^10.1.2",
