@@ -523,9 +523,7 @@ const Statistics = () => {
                       {(stats?.communesSansReseau?.accompagnees?.total || 0).toLocaleString('fr-FR')}
                     </NumberHighLightLoading>
                     Communes accompagnées dans la démarche de création d'un réseau
-                    <NumberSubText className="fr-mt-1w">
-                      mise en relation avec le Cerema, Amorce, les relais locaux : CCRT, ...
-                    </NumberSubText>
+                    <NumberSubText className="fr-mt-1w">mise en relation avec le Cerema, Amorce, les relais locaux</NumberSubText>
                   </NumberBlock>
                 </NumberContainer>
               </ColumnContainer>
