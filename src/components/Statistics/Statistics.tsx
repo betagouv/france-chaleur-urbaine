@@ -24,7 +24,6 @@ import {
   NumberBlock,
   NumberContainer,
   NumberHighlight,
-  NumberItalicText,
   NumberSubText,
   NumberText,
   StatisticsSliceContainer,
@@ -113,6 +112,10 @@ const getFormattedData = <Data,>(
     returnData.unshift(['x', ...yearsList]);
   }
   return returnData;
+};
+
+const NumberHighLightLoading = ({ loading, children }: { loading: boolean; children: React.ReactNode }) => {
+  return <NumberHighlight>{loading ? <Loader size="md" /> : children}</NumberHighlight>;
 };
 
 const Statistics = () => {
@@ -280,8 +283,8 @@ const Statistics = () => {
             <div className="fr-col-md-8 fr-col-12">
               <ColumnContainer>
                 <LastActuDate>Au {statistics.lastActu} :</LastActuDate>
-                <NumberContainer>
-                  <NumberBlock className="fr-col-md-6 fr-col-12">
+                <NumberContainer $orientation="row">
+                  <NumberBlock>
                     <NumberHighlight>{statistics.connection}</NumberHighlight>
                     Raccordements <strong>à l'étude, en cours ou effectif</strong>
                     <Tooltip title="Par raccordements à l’étude, on désigne ceux pour lesquels une étude de faisabilité technico-économique est en cours au niveau du gestionnaire du réseau, ou a été transmise à la copropriété ou au bâtiment tertiaire. En copropriété, la proposition du gestionnaire de réseau devra ensuite être votée en AG avant que les travaux ne puissent démarrer." />
@@ -292,11 +295,11 @@ const Statistics = () => {
                       A titre de comparaison, le nombre total de bâtiments raccordés en France en 2023 s'élève à 2 685
                     </NumberSubText>
                   </NumberBlock>
-                  <NumberBlock className="fr-col-md-6 fr-col-12">
+                  <NumberBlock>
                     <NumberHighlight>~ {statistics.CO2Tons}</NumberHighlight>
                     Tonnes de CO2 potentiellement économisées par an
                     <br />
-                    <NumberItalicText>1 tonne = 1 aller-retour Paris-New York en avion</NumberItalicText>
+                    <NumberSubText className="fr-mt-1w">1 tonne = 1 aller-retour Paris-New York en avion</NumberSubText>
                   </NumberBlock>
                 </NumberContainer>
               </ColumnContainer>
@@ -304,7 +307,7 @@ const Statistics = () => {
             <div className="fr-col-md-4 fr-col-12">
               <ColumnContainer>
                 <LastActuDate>Au {statistics.lastActu} :</LastActuDate>
-                <NumberContainer>
+                <NumberContainer className="flex-col">
                   <NumberBlock>
                     <NumberHighlight>{statistics.networks}</NumberHighlight>
                     Réseaux recensés représentant
@@ -335,7 +338,7 @@ const Statistics = () => {
             </div>
             <div className="fr-col-md-4 fr-col-12">
               <ColumnContainer>
-                <NumberContainer>
+                <NumberContainer className="flex-col">
                   <NumberBlock>
                     <NumberHighlight>
                       {totalContactDemands > 0 ? (
@@ -486,13 +489,9 @@ const Statistics = () => {
                   </NumberBlock>
                   <HorizontalSeparator />
                   <NumberBlock>
-                    <NumberHighlight>
-                      {statsLoading ? (
-                        <Loader size="md" />
-                      ) : (
-                        ((stats?.comptes?.particuliers?.total || 0) + (stats?.comptes?.professionnels?.total || 0)).toLocaleString('fr-FR')
-                      )}
-                    </NumberHighlight>
+                    <NumberHighLightLoading loading={statsLoading}>
+                      {((stats?.comptes?.particuliers?.total || 0) + (stats?.comptes?.professionnels?.total || 0)).toLocaleString('fr-FR')}
+                    </NumberHighLightLoading>
                     "comptes pro" créés (bureaux d'études, bailleurs sociaux, ...)
                   </NumberBlock>
                 </NumberContainer>
@@ -504,13 +503,17 @@ const Statistics = () => {
           <StatisticsSliceContainer className="fr-grid-row fr-grid-row--gutters">
             <div className="fr-col-md-8 fr-col-12">
               <ColumnContainer>
-                <NumberContainer>
-                  <NumberBlock className="fr-col-md-6 fr-col-12">
-                    <NumberHighlight>{stats?.communesSansReseau?.testees?.total}</NumberHighlight>
+                <NumberContainer $orientation="row">
+                  <NumberBlock>
+                    <NumberHighLightLoading loading={statsLoading}>
+                      {(stats?.communesSansReseau?.testees?.total || 0).toLocaleString('fr-FR')}
+                    </NumberHighLightLoading>
                     communes sans réseau de chaleur ayant testé leur potentiel
                   </NumberBlock>
-                  <NumberBlock className="fr-col-md-6 fr-col-12">
-                    <NumberHighlight>{stats?.communesSansReseau?.accompagnees?.total}</NumberHighlight>
+                  <NumberBlock>
+                    <NumberHighLightLoading loading={statsLoading}>
+                      {(stats?.communesSansReseau?.accompagnees?.total || 0).toLocaleString('fr-FR')}
+                    </NumberHighLightLoading>
                     communes accompagnées dans la démarche de création d'un réseau
                     <NumberSubText className="fr-mt-1w">
                       mise en relation avec le Cerema, Amorce, les relais locaux : CCRT, ...
