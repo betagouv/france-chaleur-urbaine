@@ -23,6 +23,48 @@ const DATA_ACTION_STATS: string[] = [
 
 const COMMUNES_SANS_RESEAU_CATEGORIES = [STAT_COMMUNES_SANS_RESEAU.NB_DEMANDES, STAT_COMMUNES_SANS_RESEAU.NB_TESTS] as const;
 
+const DRY_RUN = process.env.DRY_RUN === 'true';
+/**
+ * Generates an array of full months between start and end dates
+ * Each month object contains the first and last day of the month
+ *
+ * @param startDate - Start date in ISO format (YYYY-MM-DD)
+ * @param endDate - End date in ISO format (YYYY-MM-DD)
+ * @returns Array of objects with startDate and endDate for each full month
+ */
+const getFullMonthsBetweenDates = (startDate: string, endDate: string): { startDate: string; endDate: string }[] => {
+  // Create dates with UTC time set to midnight to ensure consistent date handling across timezones
+  const start = new Date(startDate);
+  start.setUTCHours(0, 0, 0, 0);
+
+  const end = new Date(endDate);
+  end.setUTCHours(0, 0, 0, 0);
+
+  const months: { startDate: string; endDate: string }[] = [];
+
+  // Set start to the first day of its month (in UTC)
+  const currentMonth = new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), 1));
+
+  // Loop through each month until we reach or exceed the end date
+  while (currentMonth <= end) {
+    // Calculate the last day of the current month (in UTC)
+    const lastDay = new Date(Date.UTC(currentMonth.getUTCFullYear(), currentMonth.getUTCMonth() + 1, 0));
+
+    // Only include the month if it's fully within the range
+    if (lastDay <= end && currentMonth >= start) {
+      months.push({
+        startDate: currentMonth.toISOString().slice(0, 10),
+        endDate: lastDay.toISOString().slice(0, 10),
+      });
+    }
+
+    // Move to the first day of the next month
+    currentMonth.setUTCMonth(currentMonth.getUTCMonth() + 1);
+  }
+
+  return months;
+};
+
 const addStat =
   (method: string) =>
   async ({
@@ -65,61 +107,77 @@ const addStat =
       return existing;
     }
 
-    const result = await kdb
-      .insertInto('matomo_stats')
-      .values({
-        value,
-        period,
-        stat_key,
-        stat_label,
-        date,
-        method,
-        method_params,
-      })
-      .onConflict(
-        (oc) =>
-          oc
-            .columns(['method', 'stat_key', 'date', 'period', 'stat_label']) // Unique constraint columns
-            .doNothing() // do not update as some values are replaced manually in the database
-        // .doUpdateSet({
-        //   value, // Update value if conflict occurs
-        // })
-      )
-      .returning([sql<number>`"value"::integer`.as('value'), 'stat_key', 'stat_label', 'date', 'period', 'method'])
-      .execute();
-    console.log(`✅ Inserted ${stat_key} - ${stat_label} - ${date} - ${period} - ${method}`);
+    if (value === 0) {
+      console.log(`💤 Not inserting ${stat_key}:${value} - ${date} - ${period} - ${method} - ${stat_label}`);
+      return null;
+    }
 
-    return result;
+    if (DRY_RUN) {
+      console.log(`[DRY]`, `✅ Inserted ${stat_key}:${value} - ${date} - ${period} - ${method} - ${stat_label}`);
+      return null;
+    }
+    try {
+      const result = await kdb
+        .insertInto('matomo_stats')
+        .values({
+          value,
+          period,
+          stat_key,
+          stat_label,
+          date,
+          method,
+          method_params,
+        })
+        .onConflict(
+          (oc) =>
+            oc
+              .columns(['method', 'stat_key', 'date', 'period', 'stat_label']) // Unique constraint columns
+              .doNothing() // do not update as some values are replaced manually in the database
+          // .doUpdateSet({
+          //   value, // Update value if conflict occurs
+          // })
+        )
+        .returning([sql<number>`"value"::integer`.as('value'), 'stat_key', 'stat_label', 'date', 'period', 'method'])
+        .execute();
+      console.log(`✅ Inserted ${stat_key}:${value} - ${date} - ${period} - ${method} - ${stat_label}`);
+
+      return result;
+    } catch (e: any) {
+      console.error(`❌ Error inserting ${stat_key}:${value} ${e.toString()} - ${date} - ${period} - ${method} - ${stat_label}`);
+      return null;
+    }
   };
 
 const addStatFromDB = addStat(STAT_METHOD.DATABASE);
 const addStatFromAirtable = addStat(STAT_METHOD.AIRTABLE);
 const addStatFromActions = addStat(STAT_METHOD.ACTIONS);
+const addStatFromActionsCategory = addStat(STAT_METHOD.ACTIONS_CATEGORY);
 const addStatFromVisitsSummary = addStat(STAT_METHOD.VISIT_SUMMARY);
 const addStatFromMapVisitSummary = addStat(STAT_METHOD.MAP_VISIT_SUMMARY);
 
-const retrieveAndSaveEventCategoriesFromMatomo = async <T extends string[]>(startDate: string, endDate: string, categoryKeys: T) => {
-  const results = await bulkFetchRangeFromMatomo<MatomoActionMetrics>(
+const retrieveEventCategoriesFromMatomo = async <T extends string[]>(startDate: string, endDate: string, categoryKeys: T) => {
+  const rawNumberEvents = await bulkFetchRangeFromMatomo<MatomoActionMetrics>(
     {
-      method: 'Events.getCategory',
+      method: STAT_METHOD.ACTIONS_CATEGORY,
       period: 'range',
       date: startDate + ',' + endDate,
     },
     (entry) => ({ [entry.label]: entry.nb_events })
   );
 
-  if (!results[0]) {
+  if (!rawNumberEvents[0]) {
     return [];
   }
-  const data: any = results[0];
+
+  const results: Record<T[number], number> = {} as Record<T[number], number>;
+
+  const data: any = rawNumberEvents[0];
   await Promise.all(
     categoryKeys.map(async (categoryKey: T[number]) => {
       if (data[categoryKey]) {
-        return addStatFromActions({
-          stat_key: categoryKey,
-          date: startDate,
-          value: +data[categoryKey],
-        });
+        results[categoryKey] = +data[categoryKey];
+      } else {
+        console.log(`💤 Not found ${categoryKey} - ${startDate}`);
       }
     })
   );
@@ -342,21 +400,21 @@ const saveComptesProCreatedStats = async (startDate: string, endDate: string) =>
     return;
   }
 
-  const statsPromises = comptesProCreated.flatMap((monthData) => {
-    console.log(
-      `Processing accounts created for ${monthData.date}: ${monthData.professionnels} pro, ${monthData.particuliers} particuliers`
-    );
+  const statsPromises = comptesProCreated.flatMap((dayData) => {
+    // console.log(`Processing accounts created for ${dayData.date}: ${dayData.professionnels} pro, ${dayData.particuliers} particuliers`);
 
     return [
       addStatFromDB({
         stat_key: STAT_KEY.NB_ACCOUNTS_PRO_CREATED,
-        date: monthData.date,
-        value: monthData.professionnels,
+        date: dayData.date,
+        period: STAT_PERIOD.DAILY,
+        value: dayData.professionnels,
       }),
       addStatFromDB({
         stat_key: STAT_KEY.NB_ACCOUNTS_PARTICULIER_CREATED,
-        date: monthData.date,
-        value: monthData.particuliers,
+        date: dayData.date,
+        period: STAT_PERIOD.DAILY,
+        value: dayData.particuliers,
       }),
     ];
   });
@@ -372,7 +430,29 @@ const saveCommunesSansReseauStats = async (startDate: string, endDate: string) =
   start.setUTCHours(0, 0, 0);
   const end = new Date(endDate);
   end.setUTCHours(23, 59, 59);
-  await retrieveAndSaveEventCategoriesFromMatomo(startDate, endDate, COMMUNES_SANS_RESEAU_CATEGORIES as unknown as string[]);
+
+  const fullMonths = getFullMonthsBetweenDates(start.toISOString(), end.toISOString());
+
+  await Promise.all(
+    fullMonths.map(async (month) => {
+      console.log(`Processing month: ${month.startDate} to ${month.endDate}`);
+      const results = await retrieveEventCategoriesFromMatomo(
+        month.startDate,
+        month.endDate,
+        COMMUNES_SANS_RESEAU_CATEGORIES as unknown as string[]
+      );
+      await Promise.all(
+        Object.entries(results).map(([stat_key, value]) => {
+          addStatFromActionsCategory({
+            stat_key,
+            date: month.startDate,
+            period: STAT_PERIOD.MONTHLY,
+            value,
+          });
+        })
+      );
+    })
+  );
 
   console.log(`saveStatsInDB END : saveCommunesSansReseauStats`);
 };

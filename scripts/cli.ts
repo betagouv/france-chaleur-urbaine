@@ -318,11 +318,18 @@ program
   });
 
 program
-  .command('update-monthly-stats')
+  .command('stats:update-monthly')
   .description('Update the table matomo_stats used by the stats page. Data come from Matomo and Airtable.')
   .argument('[start-date]', 'Format : YYYY-MM-DD')
   .argument('[end-date]', 'Format : YYYY-MM-DD')
   .action(async (startDate, endDate) => {
+    if (!process.env.DRY_RUN) {
+      logger.info('');
+      logger.info('USAGE:');
+      logger.info('⚠️ DRY_RUN is not set, use DRY_RUN=<true|false> yarn cli stats:update-monthly ...');
+      process.exit(1);
+    }
+
     await saveStatsInDB(startDate, endDate);
   });
 

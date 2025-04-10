@@ -1,11 +1,13 @@
 export enum STAT_PERIOD {
   MONTHLY = 'month',
+  DAILY = 'day',
 }
 
 export enum STAT_METHOD {
   VISIT_SUMMARY = 'VisitsSummary.getUniqueVisitors',
   MAP_VISIT_SUMMARY = 'Actions.getPageUrl',
   ACTIONS = 'Events.getAction',
+  ACTIONS_CATEGORY = 'Events.getCategory',
   AIRTABLE = 'Airtable',
   DATABASE = 'Database',
 }
