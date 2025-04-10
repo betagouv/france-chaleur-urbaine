@@ -3,10 +3,11 @@ import { type ReactNode, useState } from 'react';
 
 import AddressAutocomplete from '@/components/addressAutocomplete/AddressAutocomplete';
 import { type LegendURLKey, selectableLayers } from '@/components/Map/map-layers';
+import Notice from '@/components/ui/Notice';
 import { type Coords } from '@/types/Coords';
 import { type SuggestionItem } from '@/types/Suggestions';
 
-import { AddressContainer, DivQuestionCenterMap, StyledIFrameLink } from './IFrameMapIntegrationForm.styles';
+import { StyledIFrameLink } from './IFrameMapIntegrationForm.styles';
 
 const IFrameMapIntegrationForm = ({ label }: { label?: ReactNode }) => {
   const [coords, setCoords] = useState<Coords | null>(null);
@@ -46,13 +47,19 @@ const IFrameMapIntegrationForm = ({ label }: { label?: ReactNode }) => {
           },
         }))}
       />
-      {label ? label : <DivQuestionCenterMap>Vous souhaitez centrer la carte sur un endroit en particulier ?</DivQuestionCenterMap>}
-      <AddressContainer>
+      {label ? (
+        label
+      ) : (
+        <Notice variant="info" size="xs">
+          Vous souhaitez centrer la carte sur un endroit en particulier ?
+        </Notice>
+      )}
+      <div className="mt-4 max-w-[500px]">
         <AddressAutocomplete onAddressSelected={onAddressSelected} placeholder="Tapez ici votre adresse" />
-      </AddressContainer>
+      </div>
       <StyledIFrameLink
         className="fr-mt-3w"
-        link={`<iframe title="France chaleur urbaine - Carte" src="https://france-chaleur-urbaine.beta.gouv.fr/map?${url}" width="100%" height="600" />`}
+        link={`<iframe title="France chaleur urbaine - Carte" src="https://france-chaleur-urbaine.beta.gouv.fr/map?${url}" width="100%" height="600"></iframe>`}
       />
     </>
   );
