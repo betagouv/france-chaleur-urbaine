@@ -51,7 +51,7 @@ export const NumberBlock = styled.div`
 `;
 
 export const NumberHighlight = styled.div`
-  color: #4550e5;
+  color: var(--blue-france-main-525);
   font-size: 32px;
   font-weight: 700;
   margin-bottom: 1rem;
