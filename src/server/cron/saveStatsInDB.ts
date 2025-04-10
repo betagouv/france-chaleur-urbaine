@@ -21,8 +21,6 @@ const DATA_ACTION_STATS: string[] = [
   STAT_LABEL.TRACES,
 ];
 
-const COMMUNES_SANS_RESEAU_CATEGORIES = [STAT_COMMUNES_SANS_RESEAU.NB_DEMANDES, STAT_COMMUNES_SANS_RESEAU.NB_TESTS] as const;
-
 const DRY_RUN = process.env.DRY_RUN === 'true';
 /**
  * Generates an array of full months between start and end dates
@@ -96,7 +94,7 @@ const addStat =
 
     const existing = await query.executeTakeFirst();
 
-    const message = `${stat_key} - ${date} - ${period} - ${method} - ${stat_label || 'No label'}`;
+    const message = `${stat_key}:${value} - ${date} - ${period} - ${method} - ${stat_label || 'No label'}`;
     if (existing) {
       if (existing.value !== value) {
         console.log(`⚠️ Conflict detected: ${existing.value}≠${value} for ${message}`);
@@ -108,12 +106,12 @@ const addStat =
     }
 
     if (value === 0) {
-      console.log(`💤 Not inserting ${stat_key}:${value} - ${date} - ${period} - ${method} - ${stat_label}`);
+      console.log(`💤 Not inserting ${message}`);
       return null;
     }
 
     if (DRY_RUN) {
-      console.log(`[DRY]`, `✅ Inserted ${stat_key}:${value} - ${date} - ${period} - ${method} - ${stat_label}`);
+      console.log(`[DRY]`, `✅ Inserted ${message}`);
       return null;
     }
     try {
@@ -139,11 +137,11 @@ const addStat =
         )
         .returning([sql<number>`"value"::integer`.as('value'), 'stat_key', 'stat_label', 'date', 'period', 'method'])
         .execute();
-      console.log(`✅ Inserted ${stat_key}:${value} - ${date} - ${period} - ${method} - ${stat_label}`);
+      console.log(`✅ Inserted ${message}`);
 
       return result;
     } catch (e: any) {
-      console.error(`❌ Error inserting ${stat_key}:${value} ${e.toString()} - ${date} - ${period} - ${method} - ${stat_label}`);
+      console.error(`❌ Error inserting "${e.toString()}" ${message}`);
       return null;
     }
   };
@@ -155,35 +153,83 @@ const addStatFromActionsCategory = addStat(STAT_METHOD.ACTIONS_CATEGORY);
 const addStatFromVisitsSummary = addStat(STAT_METHOD.VISIT_SUMMARY);
 const addStatFromMapVisitSummary = addStat(STAT_METHOD.MAP_VISIT_SUMMARY);
 
-const retrieveEventCategoriesFromMatomo = async <T extends string[]>(startDate: string, endDate: string, categoryKeys: T) => {
-  const rawNumberEvents = await bulkFetchRangeFromMatomo<MatomoActionMetrics>(
-    {
-      method: STAT_METHOD.ACTIONS_CATEGORY,
-      period: 'range',
-      date: startDate + ',' + endDate,
-    },
-    (entry) => ({ [entry.label]: entry.nb_events })
-  );
-
-  if (!rawNumberEvents[0]) {
-    return [];
-  }
-
-  const results: Record<T[number], number> = {} as Record<T[number], number>;
-
-  const data: any = rawNumberEvents[0];
-  await Promise.all(
-    categoryKeys.map(async (categoryKey: T[number]) => {
-      if (data[categoryKey]) {
-        results[categoryKey] = +data[categoryKey];
-      } else {
-        console.log(`💤 Not found ${categoryKey} - ${startDate}`);
-      }
+const countRecordsFromAirtable = async (
+  startDate: string,
+  endDate: string,
+  { table, dateField, period }: { table: Airtable; dateField: string; period: STAT_PERIOD }
+) => {
+  const records = await base(table)
+    .select({
+      filterByFormula: `AND(
+          IS_BEFORE({${dateField}}, "${endDate}"),
+          IS_AFTER({${dateField}}, "${startDate}")
+        )`,
     })
-  );
+    .all();
+
+  // Group records by day or month and count them
+  const recordsByDay = records.reduce((acc: Record<string, number>, record: any) => {
+    const date = record.fields[dateField];
+    if (date) {
+      let formattedDate;
+      if (period === STAT_PERIOD.DAILY) {
+        // Format date to YYYY-MM-DD for daily period
+        formattedDate = new Date(date).toISOString().split('T')[0];
+      } else if (period === STAT_PERIOD.MONTHLY) {
+        // Format date to YYYY-MM-01 for monthly period (first day of month)
+        const dateObj = new Date(date);
+        formattedDate = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-01`;
+      } else {
+        // Default to daily format
+        formattedDate = new Date(date).toISOString().split('T')[0];
+      }
+      acc[formattedDate] = (acc[formattedDate] || 0) + 1;
+    }
+    return acc;
+  }, {});
+
+  const results: Record<string, number> = {};
+
+  Object.entries(recordsByDay).forEach(([date, count]) => {
+    results[date] = count;
+  });
 
   return results;
 };
+
+const countRecordsFromMatomo =
+  (method: STAT_METHOD) =>
+  async <T extends string[]>(startDate: string, endDate: string, categoryKeys: T) => {
+    const rawNumberEvents = await bulkFetchRangeFromMatomo<MatomoActionMetrics>(
+      {
+        method,
+        period: 'range',
+        date: startDate + ',' + endDate,
+      },
+      (entry) => ({ [entry.label]: entry.nb_events })
+    );
+
+    if (!rawNumberEvents[0]) {
+      return [];
+    }
+
+    const results: Record<T[number], number> = {} as Record<T[number], number>;
+
+    const data: any = rawNumberEvents[0];
+    await Promise.all(
+      categoryKeys.map(async (categoryKey: T[number]) => {
+        if (data[categoryKey]) {
+          results[categoryKey] = +data[categoryKey];
+        } else {
+          console.log(`💤 Not found ${categoryKey} - ${startDate}`);
+        }
+      })
+    );
+
+    return results;
+  };
+
+const countEventCategoriesFromMatomo = countRecordsFromMatomo(STAT_METHOD.ACTIONS_CATEGORY);
 
 const saveDemandsStats = async (startDate: string, endDate: string) => {
   console.log(`saveStatsInDB START : saveDemandsStats`);
@@ -435,12 +481,7 @@ const saveCommunesSansReseauStats = async (startDate: string, endDate: string) =
 
   await Promise.all(
     fullMonths.map(async (month) => {
-      console.log(`Processing month: ${month.startDate} to ${month.endDate}`);
-      const results = await retrieveEventCategoriesFromMatomo(
-        month.startDate,
-        month.endDate,
-        COMMUNES_SANS_RESEAU_CATEGORIES as unknown as string[]
-      );
+      const results = await countEventCategoriesFromMatomo(month.startDate, month.endDate, [STAT_COMMUNES_SANS_RESEAU.NB_TESTS]);
       await Promise.all(
         Object.entries(results).map(([stat_key, value]) => {
           addStatFromActionsCategory({
@@ -452,6 +493,24 @@ const saveCommunesSansReseauStats = async (startDate: string, endDate: string) =
         })
       );
     })
+  );
+
+  // Those stats are retrieved from Airtable and not matomo as there are discrepancies between the two
+  const results = await countRecordsFromAirtable(startDate, endDate, {
+    table: Airtable.COMMUNES_SANS_RESEAU,
+    dateField: 'Date de création',
+    period: STAT_PERIOD.MONTHLY,
+  });
+
+  await Promise.all(
+    Object.entries(results).map(([stat_date, value]) =>
+      addStatFromAirtable({
+        stat_key: STAT_COMMUNES_SANS_RESEAU.NB_DEMANDES,
+        date: stat_date,
+        period: STAT_PERIOD.MONTHLY,
+        value,
+      })
+    )
   );
 
   console.log(`saveStatsInDB END : saveCommunesSansReseauStats`);
