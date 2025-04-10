@@ -1,3 +1,18 @@
+import dayjs from 'dayjs';
+import localeData from 'dayjs/plugin/localeData';
+import localizedFormat from 'dayjs/plugin/localizedFormat';
+import relativeTime from 'dayjs/plugin/relativeTime';
+
+dayjs.extend(relativeTime);
+dayjs.extend(localeData);
+dayjs.extend(localizedFormat);
+dayjs().localeData();
+
+import 'dayjs/locale/fr';
+
+dayjs.locale('fr');
+export { dayjs };
+
 /**
  * Formatte une date en string au format ISO jusqu'à la minute.
  * Exemple : 2024-01-25T16:48

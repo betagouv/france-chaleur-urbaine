@@ -12,6 +12,7 @@ import { useFetch } from '@/hooks/useApi';
 import { type Statistiques } from '@/pages/api/statistiques/all';
 import { type MatomoMonthStat } from '@/server/services/matomo_types';
 import { STAT_LABEL } from '@/types/enum/MatomoStats';
+import { dayjs } from '@/utils/date';
 import { fetchJSON } from '@/utils/network';
 
 import {
@@ -272,6 +273,8 @@ const Statistics = () => {
     return nbTotal;
   }, [dataActions]);
 
+  const lastCronUpdate = dayjs().subtract(1, 'month').endOf('month').format('LL');
+
   return (
     <>
       <Hero variant="ressource">
@@ -338,6 +341,7 @@ const Statistics = () => {
             </div>
             <div className="fr-col-md-4 fr-col-12">
               <ColumnContainer>
+                <LastActuDate>Au {lastCronUpdate} :</LastActuDate>
                 <NumberContainer className="flex-col">
                   <NumberBlock>
                     <NumberHighlight>
@@ -381,6 +385,7 @@ const Statistics = () => {
             </div>
             <div className="fr-col-md-4 fr-col-12">
               <ColumnContainer>
+                <LastActuDate>Au {lastCronUpdate} :</LastActuDate>
                 <NumberContainer>
                   <NumberBlock>
                     <NumberHighlight>{totalAddressTests.toLocaleString('fr-FR')}</NumberHighlight>
@@ -417,6 +422,7 @@ const Statistics = () => {
             </div>
             <div className="fr-col-md-4 fr-col-12">
               <ColumnContainer>
+                <LastActuDate>Au {lastCronUpdate} :</LastActuDate>
                 <NumberContainer>
                   <NumberBlock>
                     <NumberHighlight>{Math.round(percentAddressTests)}%</NumberHighlight>
@@ -482,6 +488,7 @@ const Statistics = () => {
             </div>
             <div className="fr-col-md-4 fr-col-12">
               <ColumnContainer>
+                <LastActuDate>Au {lastCronUpdate} :</LastActuDate>
                 <NumberContainer>
                   <NumberBlock>
                     <NumberHighlight>{totalBulkTests.toLocaleString('fr-FR')}</NumberHighlight>
@@ -492,7 +499,7 @@ const Statistics = () => {
                     <NumberHighLightLoading loading={statsLoading}>
                       {((stats?.comptes?.particuliers?.total || 0) + (stats?.comptes?.professionnels?.total || 0)).toLocaleString('fr-FR')}
                     </NumberHighLightLoading>
-                    "comptes pro" créés (bureaux d'études, bailleurs sociaux, ...)
+                    comptes pro créés (bureaux d'études, bailleurs sociaux, ...)
                   </NumberBlock>
                 </NumberContainer>
               </ColumnContainer>
@@ -503,6 +510,7 @@ const Statistics = () => {
           <StatisticsSliceContainer className="fr-grid-row fr-grid-row--gutters">
             <div className="fr-col-md-8 fr-col-12">
               <ColumnContainer>
+                <LastActuDate>Au {lastCronUpdate} :</LastActuDate>
                 <NumberContainer $orientation="row">
                   <NumberBlock>
                     <NumberHighLightLoading loading={statsLoading}>

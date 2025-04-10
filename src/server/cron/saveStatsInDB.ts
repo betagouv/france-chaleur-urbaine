@@ -517,7 +517,7 @@ const saveCommunesSansReseauStats = async (startDate: string, endDate: string) =
 };
 
 export const saveStatsInDB = async (start?: string, end?: string) => {
-  console.log(`CRON JOB START: saveStatsInDB`);
+  console.log(`CRON JOB START: saveStatsInDB`, start, end);
   try {
     const startDate = start ? new Date(start) : new Date();
     if (!start) {
