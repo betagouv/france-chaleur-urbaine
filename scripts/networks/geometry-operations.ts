@@ -1,5 +1,6 @@
 import { kdb, sql } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
+import { formatAsISODate } from '@/utils/date';
 import { type GeometryWithSrid } from '@cli/helpers/geo';
 
 /**
@@ -96,11 +97,10 @@ async function updateLabelsCommunesDepartementAndRegion(tableName: NetworkTable,
     .where('id_fcu', '=', id_fcu)
     .set({
       communes: sql<string[]>`(
-        SELECT DISTINCT ic.nom
+        SELECT array_agg(ic.nom ORDER BY ic.nom)
         FROM unnest(${sql.raw(tableName)}.communes_insee) as ci
         JOIN ign_communes ic ON ic.insee_com = ci
         WHERE ${sql.raw(tableName)}.id_fcu = ${id_fcu}
-        ORDER BY ic.nom
       )`,
       departement: sql<string>`(
         SELECT string_agg(DISTINCT id.nom, ', ' ORDER BY id.nom)
@@ -142,6 +142,7 @@ export async function insertEntityWithGeometry(
       id_fcu: id_fcu ? eb.lit(id_fcu) : sql<number>`(SELECT COALESCE(max(id_fcu), 0) + 1 FROM ${sql.raw(tableName)})`,
       geom: eb.selectFrom('geometry').select('geometry.geom'),
       communes_insee: communesInseeExpressionGeom,
+      date_actualisation_trace: eb.val(new Date()),
       ...networkTables[tableName].geomDependentFields(eb),
       ...networkTables[tableName].createFields?.(eb),
       ...networkTables[tableName].additionalFields?.(id_sncu),
@@ -185,6 +186,7 @@ export async function updateEntityGeometry(
     .set((eb) => ({
       geom: eb.selectFrom('geometry').select('geometry.geom'),
       communes_insee: communesInseeExpressionGeom,
+      date_actualisation_trace: eb.val(new Date()),
       ...networkTables[tableName].geomDependentFields(eb),
     }))
     .execute();
@@ -192,6 +194,24 @@ export async function updateEntityGeometry(
   await updateLabelsCommunesDepartementAndRegion(tableName, id_fcu);
 
   logger.info(`Géométrie mise à jour pour ${tableName} avec ${idField} = ${idValue}`);
+}
+
+/**
+ * Met à jour les informations d'une entité sans modifier sa géométrie.
+ * Par exemple après avoir fait une opération manuelle pour fusionner des entités.
+ */
+export async function updateEntityWithoutGeometry(tableName: NetworkTable, idField: string, idValue: string | number): Promise<void> {
+  const existingEntity = await kdb
+    .selectFrom(tableName as any)
+    .select(sql<GeoJSON.Geometry>`ST_AsGeoJSON(geom)::json`.as('geom'))
+    .where(idField, '=', idValue)
+    .executeTakeFirst();
+
+  if (!existingEntity) {
+    throw new Error(`Aucune entité trouvée avec ${idField} = ${idValue}`);
+  }
+
+  await updateEntityGeometry(tableName, idField, idValue, { geom: existingEntity.geom, srid: 2154 });
 }
 
 /**
@@ -218,6 +238,7 @@ export async function updateNetworkHasPDP(id_sncu: string): Promise<void> {
     .where('Identifiant reseau', '=', id_sncu)
     .set({
       has_PDP: true,
+      date_actualisation_pdp: formatAsISODate(new Date()),
     })
     .returning('id_fcu')
     .executeTakeFirst();

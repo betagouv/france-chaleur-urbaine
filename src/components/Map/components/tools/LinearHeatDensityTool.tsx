@@ -18,7 +18,7 @@ import { type PointDeConsommation } from '@/pages/api/linear-heat-density';
 import { useServices } from '@/services';
 import { trackEvent } from '@/services/analytics';
 import { downloadObject } from '@/utils/browser';
-import { formatAsISODate } from '@/utils/date';
+import { formatAsISODateMinutes } from '@/utils/date';
 import { formatDistance } from '@/utils/geo';
 
 import { type MeasureFeature, type MeasureLabelFeature } from './measure';
@@ -240,7 +240,7 @@ const LinearHeatDensityTool: React.FC = () => {
         type: 'FeatureCollection',
         features,
       },
-      `FCU_export_tracé_${formatAsISODate(new Date())}.geojson`,
+      `FCU_export_tracé_${formatAsISODateMinutes(new Date())}.geojson`,
       'application/geo+json'
     );
     trackEvent('Carto|Densité thermique linéaire|Exporter le tracé');

@@ -3,6 +3,7 @@ import { createLogger, format, transports } from 'winston';
 
 import db from '@/server/db';
 import { AirtableDB, type AirtableTable } from '@/server/db/airtable';
+import { formatAsISODate } from '@/utils/date';
 
 import { type Type, TypeBool, TypeString } from './download-network';
 
@@ -67,7 +68,7 @@ export const tableConfigs: TableConfig[] = [
     tableCible: 'public.reseaux_de_chaleur',
     tableChangements: 'wip_traces.changements_reseaux_de_chaleur',
     tableChangementsSelectFields: ['id_sncu_new as id_sncu'],
-    pgToAirtableSyncAdditionalFields: ['has_PDP'],
+    pgToAirtableSyncAdditionalFields: ['has_PDP', 'date_actualisation_trace', 'date_actualisation_pdp'],
     postgres: {
       getCreateProps: (changement) => ({
         'Identifiant reseau': changement.id_sncu,
@@ -97,6 +98,8 @@ export const tableConfigs: TableConfig[] = [
         has_PDP: changement.has_PDP,
         departement: changement.departement,
         region: changement.region,
+        date_actualisation_trace: changement.date_actualisation_trace ? formatAsISODate(changement.date_actualisation_trace) : null,
+        date_actualisation_pdp: changement.date_actualisation_pdp ? formatAsISODate(changement.date_actualisation_pdp) : null,
       }),
       fieldsConversion: {
         id_fcu: TypeString,
@@ -105,6 +108,8 @@ export const tableConfigs: TableConfig[] = [
         departement: TypeString,
         region: TypeString,
         has_PDP: TypeBool,
+        date_actualisation_trace: TypeString,
+        date_actualisation_pdp: TypeString,
       },
     },
   },
@@ -112,6 +117,7 @@ export const tableConfigs: TableConfig[] = [
     tableCible: 'public.reseaux_de_froid',
     tableChangements: 'wip_traces.changements_reseaux_de_froid',
     tableChangementsSelectFields: ['id_sncu_new as id_sncu'],
+    pgToAirtableSyncAdditionalFields: ['date_actualisation_trace'],
     postgres: {
       getCreateProps: (changement) => ({
         'Identifiant reseau': changement.id_sncu,
@@ -141,6 +147,7 @@ export const tableConfigs: TableConfig[] = [
         communes: changement.ign_communes.join(','),
         departement: changement.departement,
         region: changement.region,
+        date_actualisation_trace: changement.date_actualisation_trace ? formatAsISODate(changement.date_actualisation_trace) : null,
       }),
       fieldsConversion: {
         id_fcu: TypeString,
@@ -148,6 +155,7 @@ export const tableConfigs: TableConfig[] = [
         communes: TypeString,
         departement: TypeString,
         region: TypeString,
+        date_actualisation_trace: TypeString,
       },
     },
   },
@@ -158,7 +166,7 @@ export const tableConfigs: TableConfig[] = [
   {
     tableCible: 'public.zones_et_reseaux_en_construction',
     tableChangements: 'wip_traces.changements_zones_et_reseaux_en_construction',
-    pgToAirtableSyncAdditionalFields: ['is_zone'],
+    pgToAirtableSyncAdditionalFields: ['is_zone', 'date_actualisation_trace'],
     postgres: {
       getCreateProps: (changement) => ({
         is_zone: !changement.is_line,
@@ -182,6 +190,7 @@ export const tableConfigs: TableConfig[] = [
         communes: changement.ign_communes.join(','),
         departement: changement.departement,
         region: changement.region,
+        date_actualisation_trace: changement.date_actualisation_trace ? formatAsISODate(changement.date_actualisation_trace) : null,
       }),
       fieldsConversion: {
         id_fcu: TypeString,
@@ -189,6 +198,7 @@ export const tableConfigs: TableConfig[] = [
         communes: TypeString,
         departement: TypeString,
         region: TypeString,
+        date_actualisation_trace: TypeString,
       },
     },
   },
