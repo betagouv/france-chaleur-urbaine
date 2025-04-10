@@ -499,7 +499,7 @@ const Statistics = () => {
                     <NumberHighLightLoading loading={statsLoading}>
                       {((stats?.comptes?.particuliers?.total || 0) + (stats?.comptes?.professionnels?.total || 0)).toLocaleString('fr-FR')}
                     </NumberHighLightLoading>
-                    comptes pro créés (bureaux d'études, bailleurs sociaux, ...)
+                    Comptes pro créés (bureaux d'études, bailleurs sociaux, ...)
                   </NumberBlock>
                 </NumberContainer>
               </ColumnContainer>
@@ -516,13 +516,13 @@ const Statistics = () => {
                     <NumberHighLightLoading loading={statsLoading}>
                       {(stats?.communesSansReseau?.testees?.total || 0).toLocaleString('fr-FR')}
                     </NumberHighLightLoading>
-                    communes sans réseau de chaleur ayant testé leur potentiel
+                    Communes sans réseau de chaleur ayant testé leur potentiel
                   </NumberBlock>
                   <NumberBlock>
                     <NumberHighLightLoading loading={statsLoading}>
                       {(stats?.communesSansReseau?.accompagnees?.total || 0).toLocaleString('fr-FR')}
                     </NumberHighLightLoading>
-                    communes accompagnées dans la démarche de création d'un réseau
+                    Communes accompagnées dans la démarche de création d'un réseau
                     <NumberSubText className="fr-mt-1w">
                       mise en relation avec le Cerema, Amorce, les relais locaux : CCRT, ...
                     </NumberSubText>
