@@ -247,6 +247,16 @@ const nextConfig: NextConfig = {
         destination: 'https://youtu.be/iIwDUexhmlw',
         permanent: true,
       },
+      {
+        source: '/webinaire/2025/presentation-initier-un-reseau',
+        destination: '/webinaires/20250401_webinaire_classement_FCU.pdf',
+        permanent: false,
+      },
+      {
+        source: '/webinaire/2025/replay-initier-un-reseau',
+        destination: 'https://youtu.be/yHyRZk_-eb4',
+        permanent: true,
+      },
     ];
   },
   async headers() {
