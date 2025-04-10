@@ -1,11 +1,13 @@
 export enum STAT_PERIOD {
   MONTHLY = 'month',
+  DAILY = 'day',
 }
 
 export enum STAT_METHOD {
   VISIT_SUMMARY = 'VisitsSummary.getUniqueVisitors',
   MAP_VISIT_SUMMARY = 'Actions.getPageUrl',
   ACTIONS = 'Events.getAction',
+  ACTIONS_CATEGORY = 'Events.getCategory',
   AIRTABLE = 'Airtable',
   DATABASE = 'Database',
 }
@@ -16,6 +18,8 @@ export enum STAT_KEY {
   NB_EVENTS = 'nb_events',
   NB_CONTACTS = 'count_contacts',
   BULK_CONTACTS = 'count_bulk_contact',
+  NB_ACCOUNTS_PRO_CREATED = 'nb_accounts_pro_created',
+  NB_ACCOUNTS_PARTICULIER_CREATED = 'nb_accounts_particulier_created',
 }
 
 export enum STAT_PARAMS {
@@ -35,4 +39,9 @@ export enum STAT_LABEL {
   FORM_TEST_COMPARATEUR_UNELIGIBLE = 'Formulaire de test - Comparateur - Adresse Inéligible',
   FORM_TEST_COMPARATEUR_ELIGIBLE = 'Formulaire de test - Comparateur - Adresse Éligible',
   TRACES = 'Tracés',
+}
+
+export enum STAT_COMMUNES_SANS_RESEAU {
+  NB_TESTS = 'Villes Potentiel - Visites',
+  NB_DEMANDES = 'Villes Potentiel - Demandes',
 }

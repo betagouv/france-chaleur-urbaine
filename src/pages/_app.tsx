@@ -7,7 +7,6 @@ import type Link from 'next/link';
 // use AppProgressBar instead of PagesProgressBar on purpose as it handles better the query params ignoring
 import { AppProgressBar as ProgressBar } from 'next-nprogress-bar';
 import { useState } from 'react';
-import { SWRConfig, type SWRConfiguration } from 'swr';
 
 import '@/components/Map/StyleSwitcher/styles.css';
 import SEO from '@/components/SEO';
@@ -36,10 +35,6 @@ declare module '@codegouvfr/react-dsfr/next-pagesdir' {
 }
 
 export { augmentDocumentWithEmotionCache, dsfrDocumentApi };
-
-const swrConfig: SWRConfiguration = {
-  revalidateOnFocus: false,
-};
 
 function App({ Component, pageProps }: AppProps<AuthSSRPageProps>) {
   const [queryClient] = useState(
@@ -77,10 +72,8 @@ function App({ Component, pageProps }: AppProps<AuthSSRPageProps>) {
             exportService: new ExportService(axiosHttpClient),
           }}
         >
-          <SWRConfig value={swrConfig}>
-            <ProgressBar height="4px" color={fr.colors.decisions.background.active.blueFrance.default} />
-            <Component {...pageProps} />
-          </SWRConfig>
+          <ProgressBar height="4px" color={fr.colors.decisions.background.active.blueFrance.default} />
+          <Component {...pageProps} />
         </ServicesContext.Provider>
       </ThemeProvider>
     </QueryClientProvider>

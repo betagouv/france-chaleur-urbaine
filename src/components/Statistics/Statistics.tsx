@@ -1,15 +1,17 @@
 import Link from 'next/link';
 import { useMemo } from 'react';
-import useSWR from 'swr';
 
 import Graph from '@/components/Graph';
 import Slice from '@/components/Slice';
 import Hero, { HeroTitle } from '@/components/ui/Hero';
+import Loader from '@/components/ui/Loader';
 import Tooltip from '@/components/ui/Tooltip';
 import statistics from '@/data/statistics';
+import { useFetch } from '@/hooks/useApi';
+import { type Statistiques } from '@/pages/api/statistiques/all';
 import { type MatomoMonthStat } from '@/server/services/matomo_types';
 import { STAT_LABEL } from '@/types/enum/MatomoStats';
-import { fetchJSON } from '@/utils/network';
+import { dayjs } from '@/utils/date';
 
 import {
   ColumnContainer,
@@ -17,11 +19,9 @@ import {
   GraphsWrapper,
   HorizontalSeparator,
   LastActuDate,
-  LoadingTextHighlight,
   NumberBlock,
   NumberContainer,
   NumberHighlight,
-  NumberItalicText,
   NumberSubText,
   NumberText,
   StatisticsSliceContainer,
@@ -112,10 +112,24 @@ const getFormattedData = <Data,>(
   return returnData;
 };
 
+const NumberHighLightLoading = ({ loading, children }: { loading: boolean; children: React.ReactNode }) => {
+  return <NumberHighlight>{loading ? <Loader size="md" /> : children}</NumberHighlight>;
+};
+
 const Statistics = () => {
-  const { data: dataActions, error: errorDataActions } = useSWR<MatomoMonthStat[]>('/api/statistiques/actions', fetchJSON, {
-    onError: (err) => console.warn('errorDataActions >>', err),
-  });
+  const {
+    data: dataActions,
+    error: errorDataActions,
+    isLoading: isLoadingDataActions,
+  } = useFetch<MatomoMonthStat[]>('/api/statistiques/actions');
+
+  const totalComparateurTests = useMemo(() => {
+    if (!dataActions) return 0;
+
+    return dataActions.reduce((total, entry) => {
+      return total + (entry[STAT_LABEL.FORM_TEST_COMPARATEUR_ELIGIBLE] ?? 0) + (entry[STAT_LABEL.FORM_TEST_COMPARATEUR_UNELIGIBLE] ?? 0);
+    }, 0);
+  }, [dataActions]);
 
   const formatedDataEligibilityTest = getFormattedData(dataActions, (year: string, monthIndex: number, entry) => {
     const [entryYear, entryMonth] = entry?.date?.split('-') || ['YYYY', 'MM'];
@@ -133,9 +147,9 @@ const Statistics = () => {
     }
   });
 
-  const { data: dataVisits, error: errorVisits } = useSWR<MatomoMonthStat[]>('/api/statistiques/visits', fetchJSON, {
-    onError: (err) => console.warn('errorVisits >>', err),
-  });
+  const { data: stats, isLoading: statsLoading } = useFetch<Statistiques>('/api/statistiques/all');
+
+  const { data: dataVisits, error: errorVisits } = useFetch<MatomoMonthStat[]>('/api/statistiques/visits');
 
   const formatedDataVisits = getFormattedData(dataVisits, (year: string, monthIndex: number, entry) => {
     const [entryYear, entryMonth] = entry?.date?.split('-') || ['YYYY', 'MM'];
@@ -145,9 +159,12 @@ const Statistics = () => {
   });
 
   //From Airtable
-  const { data: dataCountContact, error: errorCountContact } = useSWR<any>('/api/statistiques/contacts?group=monthly', fetchJSON, {
-    onError: (err) => console.warn('errorCountContact >>', err),
-  });
+  const {
+    data: dataCountContact,
+    error: errorCountContact,
+    isLoading: isLoadingCountContact,
+  } = useFetch<any>('/api/statistiques/contacts?group=monthly');
+
   const formatedDataCountContact = getFormattedData(dataCountContact, (year: string, monthIndex: number, entry: any) => {
     const [entryYear, entryMonth] = entry?.date?.split('-') || ['YYYY', 'MM'];
     if (
@@ -159,9 +176,11 @@ const Statistics = () => {
     }
   });
 
-  const { data: dataCountBulkContact, error: errorCountBulkContact } = useSWR<any>('/api/statistiques/bulk', fetchJSON, {
-    onError: (err) => console.warn('errorCountContact >>', err),
-  });
+  const {
+    data: dataCountBulkContact,
+    error: errorCountBulkContact,
+    isLoading: isLoadingCountBulkContact,
+  } = useFetch<any>('/api/statistiques/bulk');
 
   const formatedDataCountBulkContact = getFormattedData(dataCountBulkContact, (year: string, monthIndex: number, entry: any) => {
     const [entryYear, entryMonth] = entry?.date?.split('-') || ['YYYY', 'MM'];
@@ -174,9 +193,7 @@ const Statistics = () => {
     }
   });
 
-  const { data: dataVisitsMap, error: errorVisitsMap } = useSWR<MatomoMonthStat[]>('/api/statistiques/visitsMap', fetchJSON, {
-    onError: (err) => console.warn('errorVisitsMap >>', err),
-  });
+  const { data: dataVisitsMap, error: errorVisitsMap } = useFetch<MatomoMonthStat[]>('/api/statistiques/visitsMap');
 
   const formatedDataVisitsMap = getFormattedData(dataVisitsMap, (year: string, monthIndex: number, entry) => {
     const [entryYear, entryMonth] = entry?.date?.split('-') || ['YYYY', 'MM'];
@@ -255,6 +272,8 @@ const Statistics = () => {
     return nbTotal;
   }, [dataActions]);
 
+  const lastCronUpdate = dayjs().subtract(1, 'month').endOf('month').format('LL');
+
   return (
     <>
       <Hero variant="ressource">
@@ -266,10 +285,10 @@ const Statistics = () => {
             <div className="fr-col-md-8 fr-col-12">
               <ColumnContainer>
                 <LastActuDate>Au {statistics.lastActu} :</LastActuDate>
-                <NumberContainer>
-                  <NumberBlock className="fr-col-md-6 fr-col-12">
+                <NumberContainer $orientation="row">
+                  <NumberBlock>
                     <NumberHighlight>{statistics.connection}</NumberHighlight>
-                    Raccordements à l'étude ou en cours
+                    Raccordements <strong>à l'étude, en cours ou effectif</strong>
                     <Tooltip title="Par raccordements à l’étude, on désigne ceux pour lesquels une étude de faisabilité technico-économique est en cours au niveau du gestionnaire du réseau, ou a été transmise à la copropriété ou au bâtiment tertiaire. En copropriété, la proposition du gestionnaire de réseau devra ensuite être votée en AG avant que les travaux ne puissent démarrer." />
                     <br />
                     <NumberText>(~{statistics.logements} logements)</NumberText>
@@ -278,11 +297,11 @@ const Statistics = () => {
                       A titre de comparaison, le nombre total de bâtiments raccordés en France en 2023 s'élève à 2 685
                     </NumberSubText>
                   </NumberBlock>
-                  <NumberBlock className="fr-col-md-6 fr-col-12">
+                  <NumberBlock>
                     <NumberHighlight>~ {statistics.CO2Tons}</NumberHighlight>
                     Tonnes de CO2 potentiellement économisées par an
                     <br />
-                    <NumberItalicText>1 tonne = 1 aller-retour Paris-New York en avion</NumberItalicText>
+                    <NumberSubText className="fr-mt-1w">1 tonne = 1 aller-retour Paris-New York en avion</NumberSubText>
                   </NumberBlock>
                 </NumberContainer>
               </ColumnContainer>
@@ -290,7 +309,7 @@ const Statistics = () => {
             <div className="fr-col-md-4 fr-col-12">
               <ColumnContainer>
                 <LastActuDate>Au {statistics.lastActu} :</LastActuDate>
-                <NumberContainer>
+                <NumberContainer className="flex-col">
                   <NumberBlock>
                     <NumberHighlight>{statistics.networks}</NumberHighlight>
                     Réseaux recensés représentant
@@ -321,18 +340,12 @@ const Statistics = () => {
             </div>
             <div className="fr-col-md-4 fr-col-12">
               <ColumnContainer>
-                <NumberContainer>
+                <LastActuDate>Au {lastCronUpdate} :</LastActuDate>
+                <NumberContainer className="flex-col">
                   <NumberBlock>
-                    <NumberHighlight>
-                      {totalContactDemands > 0 ? (
-                        totalContactDemands.toLocaleString('fr-FR')
-                      ) : (
-                        <>
-                          <LoadingTextHighlight>Chargement en cours...</LoadingTextHighlight>
-                          <br />
-                        </>
-                      )}
-                    </NumberHighlight>
+                    <NumberHighLightLoading loading={isLoadingCountContact}>
+                      {totalContactDemands.toLocaleString('fr-FR')}
+                    </NumberHighLightLoading>
                     Total des demandes de mise en contact avec un gestionnaire
                   </NumberBlock>
                   <NumberBlock className="fr-mt-2w">
@@ -364,18 +377,21 @@ const Statistics = () => {
             </div>
             <div className="fr-col-md-4 fr-col-12">
               <ColumnContainer>
+                <LastActuDate>Au {lastCronUpdate} :</LastActuDate>
                 <NumberContainer>
                   <NumberBlock>
-                    <NumberHighlight>{totalAddressTests.toLocaleString('fr-FR')}</NumberHighlight>
+                    <NumberHighLightLoading loading={isLoadingDataActions}>
+                      {totalAddressTests.toLocaleString('fr-FR')}
+                    </NumberHighLightLoading>
                     Total d'adresses testées
                   </NumberBlock>
                   <NumberBlock className="fr-mt-2w">
-                    <NumberHighlight>
+                    <NumberHighLightLoading loading={isLoadingDataActions}>
                       <span>{Math.round(percentAddressPossible)}%</span>
                       <Tooltip
                         title={`"Potentiellement raccordables" : tests effectués pour des bâtiments situés à moins de 100 m d'un réseau (60 m sur Paris)`}
                       />
-                    </NumberHighlight>
+                    </NumberHighLightLoading>
                     Des adresses testées sont potentiellement raccordables
                   </NumberBlock>
                 </NumberContainer>
@@ -400,10 +416,18 @@ const Statistics = () => {
             </div>
             <div className="fr-col-md-4 fr-col-12">
               <ColumnContainer>
+                <LastActuDate>Au {lastCronUpdate} :</LastActuDate>
                 <NumberContainer>
                   <NumberBlock>
-                    <NumberHighlight>{Math.round(percentAddressTests)}%</NumberHighlight>
+                    <NumberHighLightLoading loading={isLoadingDataActions}>{Math.round(percentAddressTests)}%</NumberHighLightLoading>
                     Des visiteurs testent une adresse
+                  </NumberBlock>
+                  <HorizontalSeparator />
+                  <NumberBlock>
+                    <NumberHighLightLoading loading={isLoadingDataActions}>
+                      {totalComparateurTests.toLocaleString('fr-FR')}
+                    </NumberHighLightLoading>
+                    simulations réalisées avec le comparateur de coûts et d'émissions de CO2 des modes de chauffage
                   </NumberBlock>
                 </NumberContainer>
               </ColumnContainer>
@@ -435,7 +459,9 @@ const Statistics = () => {
                   </NumberBlock>
                   <HorizontalSeparator />
                   <NumberBlock>
-                    <NumberHighlight>{totalDownload.toLocaleString('fr-FR', { maximumFractionDigits: 0 })}</NumberHighlight>
+                    <NumberHighLightLoading loading={isLoadingDataActions}>
+                      {totalDownload.toLocaleString('fr-FR', { maximumFractionDigits: 0 })}
+                    </NumberHighLightLoading>
                     Téléchargements des tracés sur le site
                   </NumberBlock>
                 </NumberContainer>
@@ -460,10 +486,44 @@ const Statistics = () => {
             </div>
             <div className="fr-col-md-4 fr-col-12">
               <ColumnContainer>
+                <LastActuDate>Au {lastCronUpdate} :</LastActuDate>
                 <NumberContainer>
                   <NumberBlock>
-                    <NumberHighlight>{totalBulkTests.toLocaleString('fr-FR')}</NumberHighlight>
+                    <NumberHighLightLoading loading={isLoadingCountBulkContact}>
+                      {totalBulkTests.toLocaleString('fr-FR')}
+                    </NumberHighLightLoading>
                     Total d'adresses testées en liste (tests en masse par des professionnels)
+                  </NumberBlock>
+                  <HorizontalSeparator />
+                  <NumberBlock>
+                    <NumberHighLightLoading loading={statsLoading}>
+                      {((stats?.comptes?.particuliers?.total || 0) + (stats?.comptes?.professionnels?.total || 0)).toLocaleString('fr-FR')}
+                    </NumberHighLightLoading>
+                    Comptes pro créés (bureaux d'études, bailleurs sociaux, ...)
+                  </NumberBlock>
+                </NumberContainer>
+              </ColumnContainer>
+            </div>
+          </StatisticsSliceContainer>
+        </Slice>
+        <Slice>
+          <StatisticsSliceContainer className="fr-grid-row fr-grid-row--gutters">
+            <div className="fr-col-md-8 fr-col-12">
+              <ColumnContainer>
+                <LastActuDate>Au {lastCronUpdate} :</LastActuDate>
+                <NumberContainer $orientation="row">
+                  <NumberBlock>
+                    <NumberHighLightLoading loading={statsLoading}>
+                      {(stats?.communesSansReseau?.testees?.total || 0).toLocaleString('fr-FR')}
+                    </NumberHighLightLoading>
+                    Communes sans réseau de chaleur ayant testé leur potentiel
+                  </NumberBlock>
+                  <NumberBlock>
+                    <NumberHighLightLoading loading={statsLoading}>
+                      {(stats?.communesSansReseau?.accompagnees?.total || 0).toLocaleString('fr-FR')}
+                    </NumberHighLightLoading>
+                    Communes accompagnées dans la démarche de création d'un réseau
+                    <NumberSubText className="fr-mt-1w">mise en relation avec le Cerema, Amorce, les relais locaux</NumberSubText>
                   </NumberBlock>
                 </NumberContainer>
               </ColumnContainer>

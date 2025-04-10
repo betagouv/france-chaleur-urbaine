@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 export const Container = styled.div`
   font-weight: 500;
@@ -13,7 +13,7 @@ export const StatisticsSliceContainer = styled.div`
   justify-content: space-between;
   gap: 32px 0;
   flex-wrap: wrap;
-  margin-bottom: 16px;
+  margin-bottom: 8px;
 `;
 
 export const ColumnContainer = styled.div<{
@@ -29,12 +29,21 @@ export const GraphsWrapper = styled.div`
   width: 100%;
 `;
 
-export const NumberContainer = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  height: 100%;
-  align-content: flex-start;
-  gap: 24px 0;
+export const NumberContainer = styled.div<{ $orientation?: 'row' | 'col' }>`
+  ${({ $orientation }) => css`
+    display: flex;
+    flex-wrap: wrap;
+    height: 100%;
+    align-content: flex-start;
+    gap: 24px 8px;
+    flex-direction: ${$orientation === 'row' ? 'row' : 'column'};
+    ${$orientation === 'row' &&
+    css`
+      & > * {
+        flex: 1;
+      }
+    `}
+  `}
 `;
 
 export const NumberBlock = styled.div`
@@ -42,7 +51,7 @@ export const NumberBlock = styled.div`
 `;
 
 export const NumberHighlight = styled.div`
-  color: #4550e5;
+  color: var(--blue-france-main-525);
   font-size: 32px;
   font-weight: 700;
   margin-bottom: 1rem;
@@ -54,14 +63,6 @@ export const NumberHighlight = styled.div`
     margin-left: 0.5rem;
     color: var(--text-default-grey);
   }
-`;
-export const LoadingTextHighlight = styled.span`
-  font-size: 24px;
-`;
-
-export const NumberItalicText = styled.span`
-  font-style: italic;
-  font-size: 0.8rem;
 `;
 
 export const NumberText = styled.span`

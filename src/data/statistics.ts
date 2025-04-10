@@ -1,12 +1,12 @@
 const statistics = {
-  connection: '1460',
-  logements: '43 800',
-  CO2Tons: '78 330',
-  networks: '839', // réseaux avec tracé
-  heatPercent: '93',
+  connection: '1 499', // raccordements à l'étude ou en cours
+  logements: '44 970',
+  CO2Tons: '80 422', // Tonnes de CO2 potentiellement économisées par an
+  networks: '868', // réseaux avec tracé - Réseaux recensés représentant X% de la chaleur livrée par les réseaux en France
+  heatPercent: '93', // de la chaleur livrée par les réseaux en France
   connectionPercent: '24',
-  iFrameIntegration: '57',
-  lastActu: '27 janvier 2025',
+  iFrameIntegration: '60',
+  lastActu: '8 avril 2025',
 };
 
 export default statistics;

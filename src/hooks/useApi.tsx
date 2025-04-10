@@ -18,7 +18,7 @@ type UseQueryParams = Parameters<typeof useQuery>;
 
 export const useFetch = <TQueryFnData, TError = Error, TData = TQueryFnData, TQueryKey extends QueryKey = QueryKey>(
   url: string,
-  { queryKey, queryFn, ...options }: Partialize<UseQueryOptions<TQueryFnData, TError, TData, TQueryKey>, 'queryKey' | 'queryFn'>,
+  { queryKey, queryFn, ...options }: Partialize<UseQueryOptions<TQueryFnData, TError, TData, TQueryKey>, 'queryKey' | 'queryFn'> = {},
   queryClient?: UseQueryParams[1]
 ): UseQueryResult<TData, TError> => {
   return useQuery<TQueryFnData, TError, TData, TQueryKey>(
