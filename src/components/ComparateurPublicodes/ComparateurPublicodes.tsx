@@ -4,6 +4,7 @@ import { useSearchParams } from 'next/navigation';
 import { parseAsStringLiteral, useQueryState } from 'nuqs';
 import React from 'react';
 
+import SituationConfiguration from '@/components/ComparateurPublicodes/SituationConfiguration';
 import AddressAutocomplete from '@/components/form/dsfr/AddressAutocompleteInput';
 import { FormProvider } from '@/components/form/publicodes/FormProvider';
 import Label from '@/components/form/publicodes/Label';
@@ -393,6 +394,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
   return (
     <>
       <EligibilityFormModal />
+      {advancedMode && <SituationConfiguration engine={engine} />}
       <div className={cx(fr.cx('fr-container'), className)} {...props}>
         {!advancedMode && (
           <Notice variant="info" size="sm">
