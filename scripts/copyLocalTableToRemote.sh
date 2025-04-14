@@ -49,7 +49,7 @@ if [ $PORT_IN_USE -ne 0 ]; then
   # ferme le tunnel quand le programme s'arrête
   trap 'kill %1' EXIT
   # ouvre un tunnel vers BDD cible
-  scalingo -a $SCALINGO_APP db-tunnel $SCALINGO_TUNNEL_ARGS SCALINGO_POSTGRESQL_URL &
+  scalingo -a $SCALINGO_APP db-tunnel -p $DB_PORT $SCALINGO_TUNNEL_ARGS SCALINGO_POSTGRESQL_URL &
   sleep 4
 fi
 
