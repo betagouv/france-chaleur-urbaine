@@ -60,15 +60,22 @@ const SelectProductionECS = ({ ...props }: SelectProductionECS) => {
               : 'solaire-thermique',
         onChange: (e) => {
           const newValue = e.target.value;
-          engine.setField('Production eau chaude sanitaire', newValue === 'non' ? 'non' : 'oui');
-          engine.setStringField(
-            'type de production ECS',
-            newValue === 'equipement-chauffage'
-              ? 'Avec équipement chauffage'
-              : newValue === 'chauffe-eau-electrique'
-                ? 'Chauffe-eau électrique'
-                : 'Solaire thermique'
-          );
+
+          if (newValue === 'non') {
+            engine.setField('Production eau chaude sanitaire', 'non');
+            engine.resetField('type de production ECS');
+            return;
+          }
+
+          engine.resetField('Production eau chaude sanitaire');
+          if (newValue === 'equipement-chauffage') {
+            engine.resetField('type de production ECS');
+          } else {
+            engine.setStringField(
+              'type de production ECS',
+              newValue === 'chauffe-eau-electrique' ? 'Chauffe-eau électrique' : 'Solaire thermique'
+            );
+          }
         },
       }}
       {...props}
