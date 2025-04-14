@@ -5,7 +5,7 @@ coverY: 0
 
 # Initier un projet de réseau avec France Chaleur Urbaine
 
-Avec France Chaleur Urbaine, plus de 700 communes ont pu découvrir que leur territoire présente un réel potentiel pour la création d'un réseau de chaleur, et plus d'une centaine d'entre elles ont souhaité bénéficier d'un accompagnement personnalisé pour initier un projet de réseau !\
+💥Avec France Chaleur Urbaine, plus de 700 communes ont pu découvrir que leur territoire présente un réel potentiel pour la création d'un réseau de chaleur, et plus d'une centaine d'entre elles ont souhaité bénéficier d'un accompagnement personnalisé pour initier un projet de réseau !\
 \
 Comment ? Grâce à l'outil de sensibilisation dédié aux élus mis en ligne fin 2024, sur lequel 2300 tests ont déjà été effectués, pour plus de 1400 communes différentes. Des communes situées sur l'ensemble du territoire français, comme l'illustre la carte ci-dessous.\
 \

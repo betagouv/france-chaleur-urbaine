@@ -1,5 +1,5 @@
 ---
-cover: .gitbook/assets/FCU_cover_reseaux_competitifs.png
+cover: .gitbook/assets/FCU_cover_reseaux_competitifs.jpg
 coverY: 0
 ---
 

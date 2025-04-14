@@ -1,5 +1,5 @@
 ---
-cover: .gitbook/assets/FCU_reperes_RF_bandeau (1).jpg
+cover: .gitbook/assets/FCU_cover_reperes_RFU.jpg
 coverY: 0
 ---
 

@@ -1,5 +1,5 @@
 ---
-cover: .gitbook/assets/FCU_cover_replay_classement.png
+cover: .gitbook/assets/FCU_cover_replay_classement.jpg
 coverY: 0
 ---
 

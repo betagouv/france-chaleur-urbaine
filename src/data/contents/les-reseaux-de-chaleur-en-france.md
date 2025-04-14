@@ -1,5 +1,5 @@
 ---
-cover: .gitbook/assets/FCU_reperes_RC_bandeau (1).jpg
+cover: .gitbook/assets/FCU_cover_reperes_RCU.jpg
 coverY: 0
 ---
 

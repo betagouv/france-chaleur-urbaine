@@ -1,5 +1,5 @@
 ---
-cover: .gitbook/assets/FCU_cover_journee_USH.png
+cover: .gitbook/assets/FCU_cover_journee_USH.jpg
 coverY: 0
 ---
 
