@@ -146,8 +146,7 @@ psql postgres://postgres:postgres_fcu@localhost:5432/postgres <<EOF
   drop view if exists opendata.zones_et_reseaux_en_construction;
   create view opendata.zones_et_reseaux_en_construction as (
     SELECT
-      -- on veut obtenir 1 seul fichier shapefile pour le moment donc on dilate les multilinestring en polygone
-      CASE WHEN st_geometrytype(geom) = 'ST_MultiLineString' THEN st_buffer(geom, 1) ELSE geom END as geom,
+      "geom",
 
       -- champs exportés en propriétés
       array_to_string("communes", ',') as "communes",
@@ -199,7 +198,8 @@ ogr2ogr -f "ESRI Shapefile" -lco ENCODING=UTF-8 "$opendata_dir"/reseaux_de_chale
 ogr2ogr -f "ESRI Shapefile" -lco ENCODING=UTF-8 "$opendata_dir"/reseaux_de_froid.shp "$pgQuery" -sql "SELECT * FROM opendata.reseaux_de_froid WHERE st_geometrytype(geom) = 'ST_MultiLineString'"
 ogr2ogr -f "ESRI Shapefile" -lco ENCODING=UTF-8 "$opendata_dir"/reseaux_de_froid_sans_traces.shp "$pgQuery" -sql "SELECT * FROM opendata.reseaux_de_froid WHERE st_geometrytype(geom) = 'ST_Point'"
 ogr2ogr -f "ESRI Shapefile" -lco ENCODING=UTF-8 "$opendata_dir"/pdp.shp "$pgQuery" opendata.zone_de_developpement_prioritaire
-ogr2ogr -f "ESRI Shapefile" -lco ENCODING=UTF-8 "$opendata_dir"/zones_et_reseaux_en_construction.shp "$pgQuery" opendata.zones_et_reseaux_en_construction
+ogr2ogr -f "ESRI Shapefile" -lco ENCODING=UTF-8 "$opendata_dir"/reseaux_en_construction_traces.shp "$pgQuery" opendata.zones_et_reseaux_en_construction -sql "SELECT * FROM opendata.reseaux_de_froid WHERE st_geometrytype(geom) = 'ST_MultiLineString'"
+ogr2ogr -f "ESRI Shapefile" -lco ENCODING=UTF-8 "$opendata_dir"/reseaux_en_construction_zones.shp "$pgQuery" opendata.zones_et_reseaux_en_construction -sql "SELECT * FROM opendata.reseaux_de_froid WHERE st_geometrytype(geom) = 'ST_MultiPolygon'"
 
 # Copie de doc
 cp scripts/opendata/nomenclature_shapefile_des_reseaux_de_chaleur_et_froid.xlsx "$opendata_dir/"
