@@ -48,6 +48,13 @@ const usePublicodesEngine = <DottedName extends string>(rules: Rules, options?: 
     rerender({});
   };
 
+  const resetField = (key: DottedName) => {
+    engine.setSituation({
+      ...Object.fromEntries(Object.entries(engine.getSituation()).filter(([k]) => k !== key)),
+    });
+    rerender({});
+  };
+
   const setSituation = (situation: Partial<Record<DottedName, any>>) => {
     engine.setSituation(situation);
     rerender({});
@@ -84,6 +91,14 @@ const usePublicodesEngine = <DottedName extends string>(rules: Rules, options?: 
     })?.nodeValue;
   };
 
+  const isDefaultValue = (key: DottedName, value: any) => {
+    const defaultValue = getFieldDefaultValue(key as any);
+
+    if (defaultValue === true && value === 'oui') return true;
+    if (defaultValue === false && value === 'non') return true;
+    return defaultValue === value;
+  };
+
   const getFieldAsNumber = (key: DottedName) => {
     return (getField(key) as number) || 0;
   };
@@ -111,6 +126,8 @@ const usePublicodesEngine = <DottedName extends string>(rules: Rules, options?: 
     setStringField,
     getNode,
     getUnit,
+    isDefaultValue,
+    resetField,
     getFieldAsNumber,
     getSituation,
   };
