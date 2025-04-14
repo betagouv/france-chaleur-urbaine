@@ -198,8 +198,8 @@ ogr2ogr -f "ESRI Shapefile" -lco ENCODING=UTF-8 "$opendata_dir"/reseaux_de_chale
 ogr2ogr -f "ESRI Shapefile" -lco ENCODING=UTF-8 "$opendata_dir"/reseaux_de_froid.shp "$pgQuery" -sql "SELECT * FROM opendata.reseaux_de_froid WHERE st_geometrytype(geom) = 'ST_MultiLineString'"
 ogr2ogr -f "ESRI Shapefile" -lco ENCODING=UTF-8 "$opendata_dir"/reseaux_de_froid_sans_traces.shp "$pgQuery" -sql "SELECT * FROM opendata.reseaux_de_froid WHERE st_geometrytype(geom) = 'ST_Point'"
 ogr2ogr -f "ESRI Shapefile" -lco ENCODING=UTF-8 "$opendata_dir"/pdp.shp "$pgQuery" opendata.zone_de_developpement_prioritaire
-ogr2ogr -f "ESRI Shapefile" -lco ENCODING=UTF-8 "$opendata_dir"/reseaux_en_construction_traces.shp "$pgQuery" opendata.zones_et_reseaux_en_construction -sql "SELECT * FROM opendata.reseaux_de_froid WHERE st_geometrytype(geom) = 'ST_MultiLineString'"
-ogr2ogr -f "ESRI Shapefile" -lco ENCODING=UTF-8 "$opendata_dir"/reseaux_en_construction_zones.shp "$pgQuery" opendata.zones_et_reseaux_en_construction -sql "SELECT * FROM opendata.reseaux_de_froid WHERE st_geometrytype(geom) = 'ST_MultiPolygon'"
+ogr2ogr -f "ESRI Shapefile" -lco ENCODING=UTF-8 "$opendata_dir"/reseaux_en_construction_traces.shp "$pgQuery" opendata.zones_et_reseaux_en_construction -sql "SELECT * FROM opendata.zones_et_reseaux_en_construction WHERE st_geometrytype(geom) = 'ST_MultiLineString'"
+ogr2ogr -f "ESRI Shapefile" -lco ENCODING=UTF-8 "$opendata_dir"/reseaux_en_construction_zones.shp "$pgQuery" opendata.zones_et_reseaux_en_construction -sql "SELECT * FROM opendata.zones_et_reseaux_en_construction WHERE st_geometrytype(geom) = 'ST_MultiPolygon'"
 
 # Copie de doc
 cp scripts/opendata/nomenclature_shapefile_des_reseaux_de_chaleur_et_froid.xlsx "$opendata_dir/"
