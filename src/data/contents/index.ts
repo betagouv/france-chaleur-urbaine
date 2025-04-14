@@ -12,6 +12,7 @@ import classementRdc from './classement-des-reseaux-de-chaleur.md';
 import combienCouteRaccordement from './combien-coute-un-raccordement.md';
 import nombreuxAjoutsCarte from './de-nombreux-ajouts-sur-notre-carte-ce-mois-ci.md';
 import nouveauSchemasDirecteurs from './de-nouveaux-schemas-directeurs-disponibles-sur-france-chaleur-urbaine.md';
+import decarbonerLeParcSocial from './decarboner-le-parc-social.md';
 import decouvrezLesCommunesCouvertes from './decouvrez-les-communes-couvertes-par-une-etude-pour-la-creation-de-reseaux.md';
 import donneesOpenDataEnrichies from './des-donnees-en-open-data-enrichies.md';
 import desObligationsDePartageDeDonnees from './des-obligations-de-partage-de-donnees-a-fcu-au-titre-du-fonds-chaleur.md';
@@ -26,6 +27,7 @@ import franceChaleurUrbaineSeConstruitAvecSesUsagers from './france-chaleur-urba
 import identifierZonesImplantationsSolaireThermique from './identifier-des-zones-dimplantation-pour-le-solaire-thermique.md';
 import informerLesCoproprietes from './informer-les-coproprietes-sur-les-reseaux-de-chaleur.md';
 import informerGestionnairesTertiaires from './informer-les-gestionnaires-de-batiments-tertiaires-sur-les-reseaux-de-chaleur.md';
+import initierUnProjetDeReseauAvecFranceChaleurUrbaine from './initier-un-projet-de-reseau-avec-france-chaleur-urbaine.md';
 import carteEnrichit from './la-carte-france-chaleur-urbaine-continue-de-senrichir.md';
 import laCarteFCUSEnrichit from './la-carte-france-chaleur-urbaine-senrichit-1.md';
 import carteFranceEnrichit from './la-carte-france-chaleur-urbaine-senrichit.md';
@@ -34,6 +36,7 @@ import lappelAProjets1Ville1ReseauDeLademeEstRelance from './lappel-a-projets-1-
 import leChauffageLePlusEconomiquePourLhabitatCollectif from './le-chauffage-le-plus-economique-pour-lhabitat-collectif.md';
 import leChauffageUrbainDansLaPresse from './le-chauffage-urbain-dans-la-presse.md';
 import leChauffageUrbainPourLesBatimentsTertiairesUnContexteOnNePeutPlusFavorable from './le-chauffage-urbain-pour-les-batiments-tertiaires-un-contexte-on-ne-peut-plus-favorable.md';
+import leChauffageUrbainUneAlternativeEcologiqueEtCompetitiveAuxChaudieresFossiles from './le-chauffage-urbain-une-alternative-ecologique-et-competitive-aux-chaudieres-fossiles.md';
 import leClassementDesReseauxBilan from './le-classement-des-reseaux-quel-bilan.md';
 import lesReseauxDeChaleurDesEnergiesVertes from './les-reseaux-de-chaleur-des-energies-vertes.md';
 import lesReseauxDeChaleurEnFrance from './les-reseaux-de-chaleur-en-france.md';
@@ -113,6 +116,7 @@ import readme_9 from './README (9).md';
 import retrouvezDonneesRecentes from './retrouvez-les-donnees-les-plus-recentes-des-reseaux-de-chaleur.md';
 import retrouvezQPV from './retrouvez-les-quartiers-prioritaires-pour-la-politique-de-la-ville-qpv-sur-notre-carte.md';
 import seChaufferAPrixStables from './se-chauffer-a-prix-stables.md';
+import toutSavoirSurLeClassementDesReseauxDeChaleur from './tout-savoir-sur-le-classement-des-reseaux-de-chaleur.md';
 import accesSimplifieSchemasDirecteursReseauxChaleur from './un-acces-simplifie-aux-schemas-directeurs-des-reseaux-de-chaleur.md';
 import chauffageEcologiqueEconomiquePossible from './un-chauffage-ecologique-et-economique-cest-possible.md';
 import unGuidePourLesExploitants from './un-guide-pour-les-exploitants.md';
@@ -148,6 +152,38 @@ function getArticleAbstract(content: string): string {
 
 export const articles = (
   [
+    {
+      image: '/contents/FCU_cover_tests_potentiel.jpg',
+      title: 'Initier un projet de réseau avec France Chaleur Urbaine',
+      slug: 'initier-un-projet-de-reseau-avec-france-chaleur-urbaine',
+      content: importFile(initierUnProjetDeReseauAvecFranceChaleurUrbaine),
+      publishedDate: new Date('2025-04-10'),
+      themes: ['Réseaux de chaleur', 'Cartographie et données'],
+    },
+    {
+      image: '/contents/FCU_cover_replay_classement.png',
+      title: 'Tout savoir sur le classement des réseaux de chaleur',
+      slug: 'tout-savoir-sur-le-classement-des-reseaux-de-chaleur',
+      content: importFile(toutSavoirSurLeClassementDesReseauxDeChaleur),
+      publishedDate: new Date('2025-04-07'),
+      themes: ['Réseaux de chaleur', 'Réglementation'],
+    },
+    {
+      image: '/contents/FCU_cover_reseaux_competitifs.png',
+      title: 'Le chauffage urbain, une alternative écologique et compétitive aux chaudières fossiles',
+      slug: 'le-chauffage-urbain-une-alternative-ecologique-et-competitive-aux-chaudieres-fossiles',
+      content: importFile(leChauffageUrbainUneAlternativeEcologiqueEtCompetitiveAuxChaudieresFossiles),
+      publishedDate: new Date('2025-04-04'),
+      themes: ['Réseaux de chaleur', 'Prix'],
+    },
+    {
+      image: '/contents/FCU_cover_journee_USH.png',
+      title: 'Décarboner le parc social',
+      slug: 'decarboner-le-parc-social',
+      content: importFile(decarbonerLeParcSocial),
+      publishedDate: new Date('2025-03-27'),
+      themes: ['Réseaux de chaleur'],
+    },
     {
       image: '/contents/FCU_cover_comparateur.jpg',
       title: 'Un outil innovant pour comparer coût et impact carbone des modes de chauffage',
