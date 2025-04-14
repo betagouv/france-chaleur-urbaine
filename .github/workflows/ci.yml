@@ -21,22 +21,22 @@ jobs:
         uses: actions/setup-node@8f152de45cc393bb48ce5d89d36b731f54556e65 # v4.0.0
         with:
           node-version: 20
-          cache: yarn
+          cache: pnpm
 
       - name: Install Dependencies 💾
-        run: yarn --frozen-lockfile
+        run: pnpm install
 
       - name: Audit 🛡️
-        run: yarn audit
+        run: pnpm audit
         continue-on-error: true
 
       - name: Lint 🧹
-        run: yarn lint
+        run: pnpm lint
 
       - name: Test ✅
-        run: yarn test
+        run: pnpm test
 
       - name: Build 📦
-        run: yarn build
+        run: pnpm build
         env:
           GITHUB_CI: true
