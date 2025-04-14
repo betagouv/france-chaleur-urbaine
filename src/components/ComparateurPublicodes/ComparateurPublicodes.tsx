@@ -275,8 +275,11 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
         <Graph
           engine={engine}
           advancedMode={advancedMode}
-          hideReseauDeChaleur={!advancedMode && !nearestReseauDeChaleur}
-          usedReseauDeChaleurLabel={nearestReseauDeChaleur?.nom_reseau || 'Valeur moyenne'}
+          reseauDeChaleur={{
+            label: nearestReseauDeChaleur?.nom_reseau,
+            hide: !advancedMode && !nearestReseauDeChaleur,
+            hasPriceData: !!nearestReseauDeChaleur?.PM,
+          }}
           captureImageName={`${new Date().getFullYear()}-${slugify(address)}`}
         />
       ) : (
