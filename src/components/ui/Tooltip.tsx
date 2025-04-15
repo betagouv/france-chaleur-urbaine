@@ -101,16 +101,21 @@ const Arrow = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivEleme
 ));
 Arrow.displayName = 'TooltipArrow';
 
-const Tooltip = ({ children, title, iconProps, side = 'top', sideOffset = 5 }: TooltipProps) => {
-  return (
-    <TooltipWrapper delayDuration={200} skipDelayDuration={500}>
-      <TooltipTrigger asChild>{children ?? <Icon size="sm" name="ri-information-fill" cursor="help" {...iconProps} />}</TooltipTrigger>
-      <TooltipContent side={side} sideOffset={sideOffset}>
-        <div>{title}</div>
-        <Arrow className="fill-white" />
-      </TooltipContent>
-    </TooltipWrapper>
-  );
-};
+export const TooltipIcon = React.forwardRef<HTMLSpanElement, Partial<IconProps>>(
+  ({ className, cursor = 'help', size = 'sm', name = 'ri-information-fill', ...props }, ref) => (
+    <Icon ref={ref} size={size} name={name} cursor={cursor} className={className} {...props} />
+  )
+);
+TooltipIcon.displayName = 'TooltipIcon';
+
+const Tooltip = ({ children, title, iconProps, side = 'top', sideOffset = 5 }: TooltipProps) => (
+  <TooltipWrapper delayDuration={200} skipDelayDuration={500}>
+    <TooltipTrigger asChild>{children ?? <TooltipIcon {...iconProps} />}</TooltipTrigger>
+    <TooltipContent side={side} sideOffset={sideOffset}>
+      <div>{title}</div>
+      <Arrow className="fill-white" />
+    </TooltipContent>
+  </TooltipWrapper>
+);
 
 export default Tooltip;

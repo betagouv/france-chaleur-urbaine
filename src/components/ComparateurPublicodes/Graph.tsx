@@ -27,8 +27,11 @@ type GraphProps = React.HTMLAttributes<HTMLDivElement> & {
   engine: SimulatorEngine;
   advancedMode?: boolean;
   captureImageName?: string;
-  usedReseauDeChaleurLabel: string;
-  hideReseauDeChaleur?: boolean;
+  reseauDeChaleur: {
+    label?: string;
+    hide: boolean;
+    hasPriceData: boolean;
+  };
 };
 
 const estimatedRowHeightPx = 24;
@@ -208,15 +211,7 @@ const formatEmissionsCO2 = (value: number, suffix = 'tCO2e') => {
 const formatCost = (value: number, suffix = true) =>
   `${(Math.round(value / 10) * 10).toLocaleString('fr-FR', { ...(!suffix ? {} : { style: 'currency', currency: 'EUR' }), maximumFractionDigits: 0 })}`;
 
-const Graph: React.FC<GraphProps> = ({
-  advancedMode,
-  engine,
-  className,
-  captureImageName,
-  usedReseauDeChaleurLabel,
-  hideReseauDeChaleur,
-  ...props
-}) => {
+const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureImageName, reseauDeChaleur, ...props }) => {
   const { has: hasModeDeChauffage } = useArrayQueryState('modes-de-chauffage');
   const coutsRef = useRef<HTMLDivElement>(null);
   useFixLegendOpacity(coutsRef);
@@ -243,13 +238,13 @@ const Graph: React.FC<GraphProps> = ({
   const typeDeProductionDeFroid = engine.getField('type de production de froid');
   const typeDeBatiment = engine.getField('type de bâtiment');
 
-  const getLabel = (typeInstallation: (typeof modesDeChauffage)[number]) => {
+  const getLabel = (typeInstallation: (typeof modesDeChauffage)[number], type: 'price' | 'co2' | 'both') => {
     let suffix = '';
     if (inclusClimatisation) {
       suffix = typeInstallation.reversible ? ' (chauffage + froid)' : ` + ${typeDeProductionDeFroid}`;
     }
     if (typeInstallation.label === 'Réseau de chaleur') {
-      return `Réseau de chaleur (${usedReseauDeChaleurLabel})`;
+      return `Réseau de chaleur (${reseauDeChaleur.label && !(type === 'price' && !reseauDeChaleur.hasPriceData) ? reseauDeChaleur.label : 'Valeur moyenne'})`;
     }
 
     return `${typeInstallation.label}${suffix}`;
@@ -259,7 +254,7 @@ const Graph: React.FC<GraphProps> = ({
     (modeDeChauffage) =>
       (advancedMode
         ? hasModeDeChauffage(modeDeChauffage.label)
-        : modeDeChauffage.grandPublicMode && !(hideReseauDeChaleur && modeDeChauffage.label === 'Réseau de chaleur')) &&
+        : modeDeChauffage.grandPublicMode && !(reseauDeChaleur?.hide && modeDeChauffage.label === 'Réseau de chaleur')) &&
       (typeDeBatiment === 'tertiaire' ? modeDeChauffage.tertiaire : true)
   );
 
@@ -362,7 +357,7 @@ const Graph: React.FC<GraphProps> = ({
       const totalAmount = totalAmountWithAides - amountAides;
       const precisionRange = valueFormatter(totalAmount);
       maxCoutValue = Math.max(maxCoutValue, totalAmount);
-      totalCoutsEtEmissions[index] = [getLabel(typeInstallation), totalAmount, -1];
+      totalCoutsEtEmissions[index] = [getLabel(typeInstallation, 'both'), totalAmount, -1];
 
       const graphSectionType: string = typeInstallation.type.includes('collectif') ? 'Chauffage collectif' : 'Chauffage individuel';
       let showSectionTitle = false;
@@ -378,8 +373,8 @@ const Graph: React.FC<GraphProps> = ({
               [' ', showSectionTitle ? `-- ${graphSectionTitle}` : '', ...amounts.map((amount) => (Number.isNaN(+amount) ? '' : 0)), ''],
             ]
           : []),
-        [' ', getLabel(typeInstallation), ...amounts.map((amount) => (Number.isNaN(+amount) ? '' : 0)), ''],
-        [getLabel(typeInstallation), '', ...amounts, precisionRange],
+        [' ', `${getLabel(typeInstallation, 'price')}`, ...amounts.map((amount) => (Number.isNaN(+amount) ? '' : 0)), ''],
+        [`${getLabel(typeInstallation, 'price')}`, '', ...amounts, precisionRange],
       ];
     }),
   ];
@@ -447,8 +442,8 @@ const Graph: React.FC<GraphProps> = ({
               [' ', showSectionTitle ? `-- ${graphSectionTitle}` : '', ...amounts.map((amount) => (Number.isNaN(+amount) ? '' : 0)), ''],
             ]
           : []),
-        ['', `${getLabel(typeInstallation)}`, ...amounts.map((amount) => (Number.isNaN(+amount) ? '' : 0)), ''],
-        [getLabel(typeInstallation), '', ...amounts, formatEmissionsCO2(totalAmount)],
+        ['', `${getLabel(typeInstallation, 'co2')}`, ...amounts.map((amount) => (Number.isNaN(+amount) ? '' : 0)), ''],
+        [getLabel(typeInstallation, 'co2'), '', ...amounts, formatEmissionsCO2(totalAmount)],
       ];
     }),
   ];
@@ -566,6 +561,8 @@ const Graph: React.FC<GraphProps> = ({
                   graphSectionTitle = graphSectionType;
                 }
 
+                const isReseauDeChaleurMoyenForCost = name.includes('Réseau de chaleur') && !reseauDeChaleur.hasPriceData;
+
                 return (
                   <>
                     {showSectionTitle && (
@@ -574,7 +571,7 @@ const Graph: React.FC<GraphProps> = ({
                       </div>
                     )}
                     <div key={name} className="relative mb-1 mt-2 flex items-center justify-center text-base font-bold">
-                      <span className="bg-white">{name}</span>
+                      <span className="bg-white flex items-center gap-2 justify-center w-full">{name}</span>
                     </div>
                     <div className="group stretch flex items-center">
                       <div className="h-[22px] pl-12 pr-3 flex flex-1 border-r border-solid border-white">
@@ -620,6 +617,14 @@ const Graph: React.FC<GraphProps> = ({
                         </div>
                       </div>
                     </div>
+                    {isReseauDeChaleurMoyenForCost && (
+                      <span className="flex text-xs italic mt-1">
+                        <span className="flex-1"></span>
+                        <span className="flex-1 pl-8 tracking-tighter leading-tight text-warning">
+                          Prix moyen français, faute de données tarifaires pour ce réseau.
+                        </span>
+                      </span>
+                    )}
                   </>
                 );
               })}
