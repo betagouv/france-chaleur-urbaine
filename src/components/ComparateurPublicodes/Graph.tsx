@@ -8,7 +8,6 @@ import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
 import Heading from '@/components/ui/Heading';
 import Notice from '@/components/ui/Notice';
-import Tooltip, { TooltipIcon } from '@/components/ui/Tooltip';
 import useArrayQueryState from '@/hooks/useArrayQueryState';
 import useScreenshot from '@/hooks/useScreenshot';
 import { deepMergeObjects } from '@/utils/core';
@@ -596,7 +595,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
                           <span className="absolute left-[12px] pl-0.5">{advancedMode ? co2LowerBoundString : ''}</span>
                         </div>
                       </div>
-                      <div className={cx('h-[22px] pr-12 pl-3 flex flex-1 border-l border-solid border-white')}>
+                      <div className="h-[22px] pr-12 pl-3 flex flex-1 border-l border-solid border-white">
                         <div
                           className="relative bg-fcu-purple/30 whitespace-nowrap tracking-tight py-0.5 text-right font-extrabold text-fcu-purple sm:text-xs md:text-sm flex items-center justify-end"
                           style={{ flex: costLowerPercent }}
@@ -614,17 +613,18 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
                           {advancedMode && (
                             <div className="border-solid border-r-fcu-purple border-r-[12px] border-y-transparent border-y-[5px] my-1 border-l-0"></div>
                           )}
-                          <span className="pl-0.5 absolute left-[12px]">
-                            {advancedMode ? upperBoundString : ''}
-                            {isReseauDeChaleurMoyenForCost && (
-                              <Tooltip title="En l'absence de données tarifaires pour ce réseau, les simulations se basent sur le prix de la chaleur moyen des réseaux français.">
-                                <TooltipIcon className="ml-2" color="var(--text-default-warning)" />
-                              </Tooltip>
-                            )}
-                          </span>
+                          <span className="pl-0.5 absolute left-[12px]">{advancedMode ? upperBoundString : ''}</span>
                         </div>
                       </div>
                     </div>
+                    {isReseauDeChaleurMoyenForCost && (
+                      <span className="flex text-xs italic mt-1">
+                        <span className="flex-1"></span>
+                        <span className="flex-1 pl-8 tracking-tighter leading-tight text-warning">
+                          Prix moyen français, faute de données tarifaires pour ce réseau.
+                        </span>
+                      </span>
+                    )}
                   </>
                 );
               })}
