@@ -8,7 +8,7 @@ import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
 import Heading from '@/components/ui/Heading';
 import Notice from '@/components/ui/Notice';
-import Tooltip from '@/components/ui/Tooltip';
+import Tooltip, { TooltipIcon } from '@/components/ui/Tooltip';
 import useArrayQueryState from '@/hooks/useArrayQueryState';
 import useScreenshot from '@/hooks/useScreenshot';
 import { deepMergeObjects } from '@/utils/core';
@@ -358,7 +358,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
       const totalAmount = totalAmountWithAides - amountAides;
       const precisionRange = valueFormatter(totalAmount);
       maxCoutValue = Math.max(maxCoutValue, totalAmount);
-      totalCoutsEtEmissions[index] = [getLabel(typeInstallation, 'price'), totalAmount, -1];
+      totalCoutsEtEmissions[index] = [getLabel(typeInstallation, 'both'), totalAmount, -1];
 
       const graphSectionType: string = typeInstallation.type.includes('collectif') ? 'Chauffage collectif' : 'Chauffage individuel';
       let showSectionTitle = false;
@@ -562,6 +562,8 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
                   graphSectionTitle = graphSectionType;
                 }
 
+                const isReseauDeChaleurMoyenForCost = name.includes('Réseau de chaleur') && !reseauDeChaleur.hasPriceData;
+
                 return (
                   <>
                     {showSectionTitle && (
@@ -570,22 +572,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
                       </div>
                     )}
                     <div key={name} className="relative mb-1 mt-2 flex items-center justify-center text-base font-bold">
-                      <span className="bg-white flex items-center gap-2 justify-center w-full">
-                        {name.includes('Réseau de chaleur') && !reseauDeChaleur.hasPriceData ? (
-                          <span className="w-full [&>*]:flex-1">
-                            <span className="w-full block text-center">Réseau de chaleur</span>
-                            <span className="flex items-center gap-2 [&>*]:flex-1 w-full [&>*]:text-center text-gray-500">
-                              <span>{reseauDeChaleur.label}</span>
-                              <span className="flex justify-center items-center gap-1">
-                                <span className="text-center">Réseau moyen français</span>
-                                <Tooltip title="En l'absence de données tarifaires pour ce réseau, les simulations se basent sur le prix de la chaleur moyen des réseaux français."></Tooltip>
-                              </span>
-                            </span>
-                          </span>
-                        ) : (
-                          name
-                        )}
-                      </span>
+                      <span className="bg-white flex items-center gap-2 justify-center w-full">{name}</span>
                     </div>
                     <div className="group stretch flex items-center">
                       <div className="h-[22px] pl-12 pr-3 flex flex-1 border-r border-solid border-white">
@@ -609,7 +596,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
                           <span className="absolute left-[12px] pl-0.5">{advancedMode ? co2LowerBoundString : ''}</span>
                         </div>
                       </div>
-                      <div className="h-[22px] pr-12 pl-3 flex flex-1 border-l border-solid border-white">
+                      <div className={cx('h-[22px] pr-12 pl-3 flex flex-1 border-l border-solid border-white')}>
                         <div
                           className="relative bg-fcu-purple/30 whitespace-nowrap tracking-tight py-0.5 text-right font-extrabold text-fcu-purple sm:text-xs md:text-sm flex items-center justify-end"
                           style={{ flex: costLowerPercent }}
@@ -627,7 +614,14 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
                           {advancedMode && (
                             <div className="border-solid border-r-fcu-purple border-r-[12px] border-y-transparent border-y-[5px] my-1 border-l-0"></div>
                           )}
-                          <span className="pl-0.5 absolute left-[12px]">{advancedMode ? upperBoundString : ''}</span>
+                          <span className="pl-0.5 absolute left-[12px]">
+                            {advancedMode ? upperBoundString : ''}
+                            {isReseauDeChaleurMoyenForCost && (
+                              <Tooltip title="En l'absence de données tarifaires pour ce réseau, les simulations se basent sur le prix de la chaleur moyen des réseaux français.">
+                                <TooltipIcon className="ml-2" color="var(--text-default-warning)" />
+                              </Tooltip>
+                            )}
+                          </span>
                         </div>
                       </div>
                     </div>
