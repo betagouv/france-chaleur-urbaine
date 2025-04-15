@@ -168,7 +168,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
               </Link>{' '}
               est à <strong>{nearestReseauDeChaleur.distance}m</strong> de votre adresse.
               {!nearestReseauDeChaleur?.PM && (
-                <p className="fr-text--xs text-warning font-bold fr-my-1v">
+                <p className="fr-text--sm font-bold fr-my-1v">
                   À noter qu’en l'absence de données tarifaires pour ce réseau, les simulations se basent sur le prix de la chaleur moyen
                   des réseaux français.
                 </p>
