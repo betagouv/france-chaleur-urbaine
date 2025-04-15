@@ -561,7 +561,8 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
                   graphSectionTitle = graphSectionType;
                 }
 
-                const isReseauDeChaleurMoyenForCost = name.includes('Réseau de chaleur') && !reseauDeChaleur.hasPriceData;
+                const isReseauDeChaleurMoyenForCost =
+                  reseauDeChaleur.label && name.includes('Réseau de chaleur') && !reseauDeChaleur.hasPriceData;
 
                 return (
                   <>
