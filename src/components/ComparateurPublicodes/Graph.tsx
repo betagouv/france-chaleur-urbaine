@@ -8,6 +8,7 @@ import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
 import Heading from '@/components/ui/Heading';
 import Notice from '@/components/ui/Notice';
+import Tooltip from '@/components/ui/Tooltip';
 import useArrayQueryState from '@/hooks/useArrayQueryState';
 import useScreenshot from '@/hooks/useScreenshot';
 import { deepMergeObjects } from '@/utils/core';
@@ -575,7 +576,10 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
                             <span className="w-full block text-center">Réseau de chaleur</span>
                             <span className="flex items-center gap-2 [&>*]:flex-1 w-full [&>*]:text-center text-gray-500">
                               <span>{reseauDeChaleur.label}</span>
-                              <span className="text-center">Valeur moyenne</span>
+                              <span className="flex justify-center items-center gap-1">
+                                <span className="text-center">Réseau moyen français</span>
+                                <Tooltip title="En l'absence de données tarifaires pour ce réseau, les simulations se basent sur le prix de la chaleur moyen des réseaux français."></Tooltip>
+                              </span>
                             </span>
                           </span>
                         ) : (
