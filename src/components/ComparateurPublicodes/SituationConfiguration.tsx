@@ -12,6 +12,11 @@ interface SituationConfigurationProps {
   engine: SimulatorEngine;
 }
 
+const chainedConfigurations = {
+  'type de production de froid': ['Inclure la climatisation'],
+  'type de production ECS': ['Production eau chaude sanitaire'],
+};
+
 const SituationConfiguration: React.FC<SituationConfigurationProps> = ({ engine }) => {
   const situation = engine.getSituation();
 
@@ -29,6 +34,15 @@ const SituationConfiguration: React.FC<SituationConfigurationProps> = ({ engine 
         ) : null}
       </>
     );
+  };
+
+  const deleteSituationConfig = (key: DottedName) => {
+    engine.resetField(key as DottedName);
+    if (chainedConfigurations[key as keyof typeof chainedConfigurations]) {
+      chainedConfigurations[key as keyof typeof chainedConfigurations].forEach((chainedKey) => {
+        engine.resetField(chainedKey as DottedName);
+      });
+    }
   };
 
   if (!engine.loaded) {
@@ -70,7 +84,7 @@ const SituationConfiguration: React.FC<SituationConfigurationProps> = ({ engine 
                     priority="tertiary"
                     size="small"
                     title={`Supprimer ${key}`}
-                    onClick={() => engine.resetField(key as DottedName)}
+                    onClick={() => deleteSituationConfig(key as DottedName)}
                     className="!min-h-2"
                   />
                 </motion.div>
