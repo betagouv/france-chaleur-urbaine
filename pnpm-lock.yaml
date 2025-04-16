@@ -88,6 +88,9 @@ importers:
       '@sentry/nextjs':
         specifier: ^7.117.0
         version: 7.119.2(next@15.2.4(@babel/core@7.25.2)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)(webpack@5.99.5)
+      '@sentry/node':
+        specifier: ^7.119.2
+        version: 7.119.2
       '@socialgouv/matomo-next':
         specifier: ^1.9.0
         version: 1.9.0(next@15.2.4(@babel/core@7.25.2)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))
