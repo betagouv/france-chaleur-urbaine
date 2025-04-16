@@ -24,19 +24,16 @@ export const useFetch = <TQueryFnData, TError = Error, TData = TQueryFnData, TQu
   return useQuery<TQueryFnData, TError, TData, TQueryKey>(
     {
       queryKey: queryKey || ([url] as unknown as TQueryKey),
-      queryFn: queryFn ? queryFn : async () => fetchJSON<TQueryFnData>(url),
+      queryFn: queryFn ?? (() => fetchJSON<TQueryFnData>(url)),
       ...options,
     },
     queryClient
   );
 };
 
-/**
- * Typescript values are inversed to facilitate the use of usePost with <Input,Output>
- */
 const useAction = <TVariables, TOutput = unknown, TError = Error, TContext = unknown>(
-  methodName: 'POST' | 'DELETE' | 'PUT',
-  url: string,
+  method: 'POST' | 'PUT' | 'DELETE',
+  url: string | ((variables: TVariables & { id: string }) => string),
   {
     mutationFn,
     mutationKey,
@@ -50,45 +47,71 @@ const useAction = <TVariables, TOutput = unknown, TError = Error, TContext = unk
 ): UseMutationResult<TOutput, TError, TVariables, TContext> & { isLoading?: boolean } => {
   const queryClientDefault = useQueryClient();
   const queryClient = queryClientCustom || queryClientDefault;
-  let method;
 
-  if (methodName === 'POST') {
-    method = postFetchJSON;
-  } else if (methodName === 'DELETE') {
-    method = deleteFetchJSON;
-  } else if (methodName === 'PUT') {
-    method = putFetchJSON;
-  } else {
-    throw new Error(`Invalid method name: ${methodName}. Only 'POST' or 'DELETE' or 'PUT' are allowed.`);
-  }
+  const fetchMethod = {
+    POST: postFetchJSON,
+    PUT: putFetchJSON,
+    DELETE: deleteFetchJSON,
+  }[method];
 
   const result = useMutation<TOutput, TError, TVariables, TContext>({
-    mutationKey: mutationKey || ([`${methodName.toLowerCase()} ${url}`] as unknown as MutationKey),
+    mutationKey: mutationKey || ([`${method.toLowerCase()} ${typeof url === 'string' ? url : 'dynamic-url'}`] as unknown as MutationKey),
     onSuccess: (data, variables, context) => {
       if (invalidate) {
-        invalidate.forEach((key) =>
-          queryClient.invalidateQueries({
-            queryKey: [key],
-          })
-        );
+        invalidate.forEach((key) => queryClient.invalidateQueries({ queryKey: [key] }));
       }
       onSuccess?.(data, variables, context);
     },
-    mutationFn: mutationFn ? mutationFn : async (value: TVariables) => method<TVariables>(url, value) as TOutput,
+    mutationFn:
+      mutationFn ??
+      (async (variables: TVariables) => {
+        const varWithId = variables as TVariables & { id: string };
+        const { id, ...rest } = varWithId;
+        const finalUrl = typeof url === 'function' ? url(varWithId) : url;
+        return (await fetchMethod<typeof rest>(finalUrl, rest)) as TOutput;
+      }),
     ...options,
   });
 
-  return { ...result, isLoading: result?.isPending };
+  return { ...result, isLoading: result.isPending };
 };
 
+// POST /static-url
 export const usePost = <TVariables, TOutput = unknown, TError = Error, TContext = unknown>(
   ...args: OmitFirst<Parameters<typeof useAction<TVariables, TOutput, TError, TContext>>>
 ) => useAction<TVariables, TOutput, TError, TContext>('POST', ...args);
 
+// PUT /static-url
+export const usePut = <TVariables, TOutput = unknown, TError = Error, TContext = unknown>(
+  ...args: OmitFirst<Parameters<typeof useAction<TVariables, TOutput, TError, TContext>>>
+) => useAction<TVariables, TOutput, TError, TContext>('PUT', ...args);
+
+// DELETE /static-url
 export const useDelete = <TVariables, TOutput = unknown, TError = Error, TContext = unknown>(
   ...args: OmitFirst<Parameters<typeof useAction<TVariables, TOutput, TError, TContext>>>
 ) => useAction<TVariables, TOutput, TError, TContext>('DELETE', ...args);
 
-export const usePut = <TVariables, TOutput = unknown, TError = Error, TContext = unknown>(
-  ...args: OmitFirst<Parameters<typeof useAction<TVariables, TOutput, TError, TContext>>>
-) => useAction<TVariables, TOutput, TError, TContext>('PUT', ...args);
+export const usePutId = <TVariables, TOutput = unknown, TError = Error, TContext = unknown>(
+  url: (variables: TVariables & { id: string }) => string,
+  ...args: OmitFirst<Parameters<typeof usePut<TVariables, TOutput, TError, TContext>>>
+) => {
+  const result = usePut(url, ...args);
+  return {
+    ...result,
+    mutate: (id: string, variables: TVariables) => result.mutate({ id, ...variables }),
+    mutateAsync: (id: string, variables: TVariables) => result.mutateAsync({ id, ...variables }),
+  };
+};
+
+// DELETE /resource/:id
+export const useDeleteId = <TVariables, TOutput = unknown, TError = Error, TContext = unknown>(
+  url: (variables: TVariables & { id: string }) => string,
+  ...args: OmitFirst<Parameters<typeof useDelete<TVariables, TOutput, TError, TContext>>>
+) => {
+  const result = useDelete(url, ...args);
+  return {
+    ...result,
+    mutate: (id: string, variables?: TVariables) => result.mutate({ id, ...(variables || ({} as TVariables)) }),
+    mutateAsync: (id: string, variables?: TVariables) => result.mutateAsync({ id, ...(variables || ({} as TVariables)) }),
+  };
+};
