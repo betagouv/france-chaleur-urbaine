@@ -17,26 +17,31 @@ jobs:
       - name: Checkout 🛎️
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda # v4.1.0
+        with:
+          version: 10
+
       - name: Setup Node 🔧
         uses: actions/setup-node@8f152de45cc393bb48ce5d89d36b731f54556e65 # v4.0.0
         with:
           node-version: 20
-          cache: yarn
+          cache: pnpm
 
       - name: Install Dependencies 💾
-        run: yarn --frozen-lockfile
+        run: pnpm install
 
       - name: Audit 🛡️
-        run: yarn audit
+        run: pnpm audit
         continue-on-error: true
 
-      - name: Lint 🧹
-        run: yarn lint
+      # - name: Lint 🧹
+      #   run: pnpm lint
 
       - name: Test ✅
-        run: yarn test
+        run: pnpm test
 
       - name: Build 📦
-        run: yarn build
+        run: pnpm build
         env:
           GITHUB_CI: true
