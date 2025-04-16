@@ -13,6 +13,7 @@ import Map, { type AdresseEligible } from '@/components/Map/Map';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import { UrlStateAccordion } from '@/components/ui/Accordion';
 import Button from '@/components/ui/Button';
+import Dialog from '@/components/ui/Dialog';
 import Link from '@/components/ui/Link';
 import Loader from '@/components/ui/Loader';
 import ModalSimple from '@/components/ui/ModalSimple';
@@ -500,58 +501,92 @@ function ProEligibilityTestItem({ test }: ProEligibilityTestItemProps) {
       {isLoading && <Loader size="lg" variant="section" />}
       {viewDetail &&
         (testDetails && testDetails.addresses.length > 0 ? (
-          <Tabs
-            className="[&_[role='tabpanel']]:!p-2w" // decrease the default big padding of tabs panels
-            tabs={[
-              {
-                label: `Liste (${filteredAddresses.length})`,
-                iconId: 'fr-icon-list-unordered',
-                content: (
-                  <TableSimple
-                    controlsLayout="block"
-                    columns={columns}
-                    data={testDetails?.addresses || []}
-                    initialSortingState={initialSortingState}
-                    columnFilters={columnFilters}
-                    enableGlobalFilter
-                    padding="sm"
-                    rowHeight={56}
-                    onFilterChange={setFilteredAddresses}
-                  />
-                ),
-                isDefault: true,
-              },
-              {
-                label: (
-                  <>
-                    Carte ({filteredAddressesMapData.length}){' '}
-                    <Tooltip
-                      iconProps={{ color: 'var(--text-default-grey)', className: 'ml-1' }}
-                      title="Une différence de nombre de résultats peut exister si la requête à la Base d'Adresse Nationale n'as pas fonctionné ou si les coordonnées géographiques ne sont pas disponibles."
+          <>
+            <Tabs
+              className="[&_[role='tabpanel']]:!p-2w" // decrease the default big padding of tabs panels
+              tabs={[
+                {
+                  label: `Liste (${filteredAddresses.length})`,
+                  iconId: 'fr-icon-list-unordered',
+                  content: (
+                    <TableSimple
+                      controlsLayout="block"
+                      columns={columns}
+                      data={testDetails?.addresses || []}
+                      initialSortingState={initialSortingState}
+                      columnFilters={columnFilters}
+                      enableGlobalFilter
+                      padding="sm"
+                      rowHeight={56}
+                      onFilterChange={setFilteredAddresses}
                     />
-                  </>
-                ),
-                iconId: 'fr-icon-map-pin-2-line',
-                content: (
-                  <div className="min-h-[50vh] aspect-[4/3]">
-                    <Map
-                      initialMapConfiguration={createMapConfiguration({
-                        reseauxDeChaleur: {
-                          show: true,
-                        },
-                        reseauxEnConstruction: true,
-                        zonesDeDeveloppementPrioritaire: true,
-                      })}
-                      geolocDisabled
-                      withLegend={false}
-                      withoutLogo
-                      adressesEligibles={filteredAddressesMapData}
-                    />
+                  ),
+                  isDefault: true,
+                },
+                {
+                  label: (
+                    <>
+                      Carte ({filteredAddressesMapData.length}){' '}
+                      <Tooltip
+                        iconProps={{ color: 'var(--text-default-grey)', className: 'ml-1' }}
+                        title="Une différence de nombre de résultats peut exister si la requête à la Base d'Adresse Nationale n'as pas fonctionné ou si les coordonnées géographiques ne sont pas disponibles."
+                      />
+                    </>
+                  ),
+                  iconId: 'fr-icon-map-pin-2-line',
+                  content: (
+                    <div className="min-h-[50vh] aspect-[4/3]">
+                      <Map
+                        initialMapConfiguration={createMapConfiguration({
+                          reseauxDeChaleur: {
+                            show: true,
+                          },
+                          reseauxEnConstruction: true,
+                          zonesDeDeveloppementPrioritaire: true,
+                        })}
+                        geolocDisabled
+                        withLegend={false}
+                        withoutLogo
+                        adressesEligibles={filteredAddressesMapData}
+                      />
+                    </div>
+                  ),
+                },
+              ]}
+            />
+            <div className="flex justify-end mt-4">
+              <Dialog
+                title="Accompagnement par France Chaleur Urbaine"
+                trigger={<Button iconId="fr-icon-mail-line">Demander conseil à un expert de France Chaleur Urbaine</Button>}
+              >
+                <div className="text-gray-700">
+                  <p className="mb-4">
+                    France Chaleur Urbaine peut vous accompagner dans votre démarche et vous mettre en relation avec le ou les gestionnaires
+                    de réseaux de chaleur concernés par vos adresses.
+                  </p>
+                  <p className="mb-6">
+                    Utilisez le bouton ci-dessous pour nous contacter. Un conseiller France Chaleur Urbaine prendra contact avec vous dans
+                    les plus brefs délais pour étudier votre projet et faciliter vos échanges avec les gestionnaires de réseaux.
+                  </p>
+                  <div className="flex justify-center">
+                    <Button
+                      iconId="fr-icon-mail-line"
+                      priority="secondary"
+                      linkProps={{
+                        href: `mailto:contact@france-chaleur-urbaine.fr?subject=${encodeURIComponent(
+                          `[FCU] Demande de mise en relation - Test "${test.name}"`
+                        )}&body=${encodeURIComponent(
+                          `Bonjour,\n\nJe souhaite être mis en relation avec les gestionnaires de réseaux de chaleur concernés par mon test d'adresses "${test.name}" (ID: ${test.id}).\n\nMerci de me recontacter pour étudier mon projet.\n\nCordialement`
+                        )}`,
+                      }}
+                    >
+                      Contacter un expert France Chaleur Urbaine
+                    </Button>
                   </div>
-                ),
-              },
-            ]}
-          />
+                </div>
+              </Dialog>
+            </div>
+          </>
         ) : (
           !isLoading && (
             <Notice size="sm">
