@@ -590,10 +590,10 @@ function ProEligibilityTestItem({ test, readOnly = false }: ProEligibilityTestIt
                         iconId="fr-icon-mail-line"
                         priority="secondary"
                         linkProps={{
-                          href: `mailto:contact@france-chaleur-urbaine.fr?subject=${encodeURIComponent(
+                          href: `mailto:france-chaleur-urbaine@developpement-durable.gouv.fr?subject=${encodeURIComponent(
                             `[FCU] Demande de mise en relation - Test "${test.name}"`
                           )}&body=${encodeURIComponent(
-                            `Bonjour,\n\nJe souhaite être mis en relation avec les gestionnaires de réseaux de chaleur concernés par mon test d'adresses "${test.name}" (ID: ${test.id}).\n\nMerci de me recontacter pour étudier mon projet.\n\nCordialement`
+                            `Bonjour,\n\nJe souhaite être mis en relation avec les gestionnaires de réseaux de chaleur concernés par certaines adresses de mon test d'adresses "${test.name}".\n\nMerci de me recontacter pour étudier mon projet.\n\nCordialement`
                           )}`,
                         }}
                       >
