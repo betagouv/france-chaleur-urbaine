@@ -311,9 +311,12 @@ type QuickFilterPresetKey = keyof typeof quickFilterPresets;
 const queryParamName = 'test-adresses';
 
 type ProEligibilityTestItemProps = {
-  test: ProEligibilityTestListItem;
+  test: ProEligibilityTestListItem & {
+    user_email?: string;
+  };
+  readOnly?: boolean;
 };
-function ProEligibilityTestItem({ test }: ProEligibilityTestItemProps) {
+function ProEligibilityTestItem({ test, readOnly = false }: ProEligibilityTestItemProps) {
   const queryClient = useQueryClient();
   const [value] = useQueryState(queryParamName);
   const [viewDetail, setViewDetail] = useState(value === test.id);
@@ -426,12 +429,14 @@ function ProEligibilityTestItem({ test }: ProEligibilityTestItemProps) {
       label={
         <div className="flex items-center justify-between w-full">
           <div>{test.name}</div>
-          <ModalSimple
-            title="Renommer le test"
-            trigger={<Button priority="tertiary no outline" size="small" iconId="fr-icon-pencil-line" title="Renommer le test" />}
-          >
-            <RenameEligibilityTestForm currentName={test.name} testId={test.id} />
-          </ModalSimple>
+          {!readOnly && (
+            <ModalSimple
+              title="Renommer le test"
+              trigger={<Button priority="tertiary no outline" size="small" iconId="fr-icon-pencil-line" title="Renommer le test" />}
+            >
+              <RenameEligibilityTestForm currentName={test.name} testId={test.id} />
+            </ModalSimple>
+          )}
           <div className="flex-auto" />
           {test.last_job_has_error && (
             <Badge severity="error" small className="fr-mx-1w">
@@ -451,16 +456,25 @@ function ProEligibilityTestItem({ test }: ProEligibilityTestItemProps) {
             )
           )}
           <div className="fr-mx-1w text-xs text-gray-800 font-normal cursor-help" title={formatFrenchDateTime(new Date(test.updated_at))}>
+            {readOnly && (
+              <>
+                <span className="font-semibold">{test.user_email}</span> -{' '}
+              </>
+            )}
             Dernière mise à jour&nbsp;: {formatFrenchDate(new Date(test.updated_at))}
           </div>
         </div>
       }
-      onClose={async () => {
-        await handleDelete(test.id);
-      }}
+      onClose={
+        !readOnly
+          ? async () => {
+              await handleDelete(test.id);
+            }
+          : undefined
+      }
       onExpandedChange={(expanded) => {
         setViewDetail(expanded);
-        if (expanded && test.has_unseen_results) {
+        if (expanded && test.has_unseen_results && !readOnly) {
           markAsSeen({});
         }
       }}
@@ -485,17 +499,19 @@ function ProEligibilityTestItem({ test }: ProEligibilityTestItemProps) {
             Télécharger les résultats détaillés
           </Button>
 
-          <ModalSimple
-            title="Ajout d'adresses"
-            size="medium"
-            trigger={
-              <Button iconId="fr-icon-add-line" priority="secondary">
-                Ajouter des adresses
-              </Button>
-            }
-          >
-            <CompleteEligibilityTestForm testId={test.id} />
-          </ModalSimple>
+          {!readOnly && (
+            <ModalSimple
+              title="Ajout d'adresses"
+              size="medium"
+              trigger={
+                <Button iconId="fr-icon-add-line" priority="secondary">
+                  Ajouter des adresses
+                </Button>
+              }
+            >
+              <CompleteEligibilityTestForm testId={test.id} />
+            </ModalSimple>
+          )}
         </div>
       </div>
       {isLoading && <Loader size="lg" variant="section" />}
@@ -554,38 +570,40 @@ function ProEligibilityTestItem({ test }: ProEligibilityTestItemProps) {
                 },
               ]}
             />
-            <div className="flex justify-end mt-4">
-              <Dialog
-                title="Accompagnement par France Chaleur Urbaine"
-                trigger={<Button iconId="fr-icon-mail-line">Demander conseil à un expert de France Chaleur Urbaine</Button>}
-              >
-                <div className="text-gray-700">
-                  <p className="mb-4">
-                    France Chaleur Urbaine peut vous accompagner dans votre démarche et vous mettre en relation avec le ou les gestionnaires
-                    de réseaux de chaleur concernés par vos adresses.
-                  </p>
-                  <p className="mb-6">
-                    Utilisez le bouton ci-dessous pour nous contacter. Un conseiller France Chaleur Urbaine prendra contact avec vous dans
-                    les plus brefs délais pour étudier votre projet et faciliter vos échanges avec les gestionnaires de réseaux.
-                  </p>
-                  <div className="flex justify-center">
-                    <Button
-                      iconId="fr-icon-mail-line"
-                      priority="secondary"
-                      linkProps={{
-                        href: `mailto:contact@france-chaleur-urbaine.fr?subject=${encodeURIComponent(
-                          `[FCU] Demande de mise en relation - Test "${test.name}"`
-                        )}&body=${encodeURIComponent(
-                          `Bonjour,\n\nJe souhaite être mis en relation avec les gestionnaires de réseaux de chaleur concernés par mon test d'adresses "${test.name}" (ID: ${test.id}).\n\nMerci de me recontacter pour étudier mon projet.\n\nCordialement`
-                        )}`,
-                      }}
-                    >
-                      Contacter un expert France Chaleur Urbaine
-                    </Button>
+            {!readOnly && (
+              <div className="flex justify-end mt-4">
+                <Dialog
+                  title="Accompagnement par France Chaleur Urbaine"
+                  trigger={<Button iconId="fr-icon-mail-line">Demander conseil à un expert de France Chaleur Urbaine</Button>}
+                >
+                  <div className="text-gray-700">
+                    <p className="mb-4">
+                      France Chaleur Urbaine peut vous accompagner dans votre démarche et vous mettre en relation avec le ou les
+                      gestionnaires de réseaux de chaleur concernés par vos adresses.
+                    </p>
+                    <p className="mb-6">
+                      Utilisez le bouton ci-dessous pour nous contacter. Un conseiller France Chaleur Urbaine prendra contact avec vous dans
+                      les plus brefs délais pour étudier votre projet et faciliter vos échanges avec les gestionnaires de réseaux.
+                    </p>
+                    <div className="flex justify-center">
+                      <Button
+                        iconId="fr-icon-mail-line"
+                        priority="secondary"
+                        linkProps={{
+                          href: `mailto:contact@france-chaleur-urbaine.fr?subject=${encodeURIComponent(
+                            `[FCU] Demande de mise en relation - Test "${test.name}"`
+                          )}&body=${encodeURIComponent(
+                            `Bonjour,\n\nJe souhaite être mis en relation avec les gestionnaires de réseaux de chaleur concernés par mon test d'adresses "${test.name}" (ID: ${test.id}).\n\nMerci de me recontacter pour étudier mon projet.\n\nCordialement`
+                          )}`,
+                        }}
+                      >
+                        Contacter un expert France Chaleur Urbaine
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              </Dialog>
-            </div>
+                </Dialog>
+              </div>
+            )}
           </>
         ) : (
           !isLoading && (
