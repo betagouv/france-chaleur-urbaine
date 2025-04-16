@@ -11,6 +11,21 @@ export class FetchError extends Error {
     this.status = options.status;
   }
 }
+export const fetchMethod =
+  <Method extends 'POST' | 'PUT' | 'DELETE'>(method: Method) =>
+  async <Data = any, Body = any>(url: string, body?: Body): Promise<Data> => {
+    const res = await fetch(url, {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: body ? JSON.stringify(body) : undefined,
+    });
+    if (!res.ok) {
+      await handleError(res, url);
+    }
+    return await res.json();
+  };
 
 export const fetchJSON = async <Data = any>(url: string): Promise<Data> => {
   const res = await fetch(url);
@@ -20,19 +35,9 @@ export const fetchJSON = async <Data = any>(url: string): Promise<Data> => {
   return await res.json();
 };
 
-export const postFetchJSON = async <Data = any>(url: string, body?: any): Promise<Data> => {
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: body ? JSON.stringify(body) : undefined,
-  });
-  if (!res.ok) {
-    await handleError(res, url);
-  }
-  return await res.json();
-};
+export const postFetchJSON = fetchMethod('POST');
+export const putFetchJSON = fetchMethod('PUT');
+export const deleteFetchJSON = fetchMethod('DELETE');
 
 export const postFormDataFetchJSON = async <Data = any>(url: string, formState: object): Promise<Data> => {
   const formData = new FormData();
@@ -49,33 +54,6 @@ export const postFormDataFetchJSON = async <Data = any>(url: string, formState: 
   const res = await fetch(url, {
     method: 'POST',
     body: formData,
-  });
-  if (!res.ok) {
-    await handleError(res, url);
-  }
-  return await res.json();
-};
-
-export const deleteFetchJSON = async <Data = any>(url: string): Promise<Data> => {
-  const res = await fetch(url, {
-    method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-  if (!res.ok) {
-    await handleError(res, url);
-  }
-  return await res.json();
-};
-
-export const putFetchJSON = async <Data = any>(url: string, body?: any): Promise<Data> => {
-  const res = await fetch(url, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: body ? JSON.stringify(body) : undefined,
   });
   if (!res.ok) {
     await handleError(res, url);
