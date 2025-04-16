@@ -161,7 +161,7 @@ export const articles = (
       themes: ['Réseaux de chaleur', 'Cartographie et données'],
     },
     {
-      image: '/contents/FCU_cover_replay_classement.png',
+      image: '/contents/FCU_cover_replay_classement.jpg',
       title: 'Tout savoir sur le classement des réseaux de chaleur',
       slug: 'tout-savoir-sur-le-classement-des-reseaux-de-chaleur',
       content: importFile(toutSavoirSurLeClassementDesReseauxDeChaleur),
@@ -169,7 +169,7 @@ export const articles = (
       themes: ['Réseaux de chaleur', 'Réglementation'],
     },
     {
-      image: '/contents/FCU_cover_reseaux_competitifs.png',
+      image: '/contents/FCU_cover_reseaux_competitifs.jpg',
       title: 'Le chauffage urbain, une alternative écologique et compétitive aux chaudières fossiles',
       slug: 'le-chauffage-urbain-une-alternative-ecologique-et-competitive-aux-chaudieres-fossiles',
       content: importFile(leChauffageUrbainUneAlternativeEcologiqueEtCompetitiveAuxChaudieresFossiles),
@@ -177,7 +177,7 @@ export const articles = (
       themes: ['Réseaux de chaleur', 'Prix'],
     },
     {
-      image: '/contents/FCU_cover_journee_USH.png',
+      image: '/contents/FCU_cover_journee_USH.jpg',
       title: 'Décarboner le parc social',
       slug: 'decarboner-le-parc-social',
       content: importFile(decarbonerLeParcSocial),
@@ -194,7 +194,7 @@ export const articles = (
       themes: ['Réseaux de chaleur', 'Réseaux de froid', 'Prix'],
     },
     {
-      image: '/contents/FCU_reperes_RF_bandeau.jpg',
+      image: '/contents/FCU_cover_reperes_RFU.jpg',
       title: 'Les réseaux de froid en France',
       slug: 'les-reseaux-de-froid-en-france',
       content: importFile(lesReseauxDeFroidEnFrance),
@@ -211,7 +211,7 @@ export const articles = (
       themes: ['Communication', 'Autre'],
     },
     {
-      image: '/contents/FCU_reperes_RC_bandeau.jpg',
+      image: '/contents/FCU_cover_reperes_RCU.jpg',
       title: 'Les réseaux de chaleur en France',
       slug: 'les-reseaux-de-chaleur-en-france',
       content: importFile(lesReseauxDeChaleurEnFrance),

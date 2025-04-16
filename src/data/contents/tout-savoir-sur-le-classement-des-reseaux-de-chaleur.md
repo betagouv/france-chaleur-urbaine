@@ -4,8 +4,7 @@ Mardi dernier nous organisions notre webinaire annuel sur le classement des rés
 \
 🎥 Vous souhaitez accéder à la présentation et au replay ? C'est ici :&#x20;
 
-[https://france-chaleur-urbaine.beta.gouv.fr/webinaire/2025/presentation-classement
-\
+[https://france-chaleur-urbaine.beta.gouv.fr/webinaire/2025/presentation-classement\
 https://france-chaleur-urbaine.beta.gouv.fr/webinaire/2025/replay-classement ](https://france-chaleur-urbaine.beta.gouv.fr/webinaire/2025/presentation-classementhttps://france-chaleur-urbaine.beta.gouv.fr/webinaire/2025/replay-classement)\
 \
 Au programme :\
