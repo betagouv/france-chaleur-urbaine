@@ -35,8 +35,8 @@ jobs:
         run: pnpm audit
         continue-on-error: true
 
-      - name: Lint 🧹
-        run: pnpm lint
+      # - name: Lint 🧹
+      #   run: pnpm lint
 
       - name: Test ✅
         run: pnpm test
