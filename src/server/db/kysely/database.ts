@@ -2903,6 +2903,15 @@ export interface NetworkIris {
   geom: string | null;
 }
 
+export interface ProComparateurConfigurations {
+  created_at: Generated<Timestamp>;
+  id: string;
+  name: string;
+  situation: Generated<Json>;
+  updated_at: Generated<Timestamp>;
+  user_id: string;
+}
+
 export interface ProEligibilityTests {
   created_at: Generated<Timestamp>;
   deleted_at: Timestamp | null;
@@ -3337,6 +3346,7 @@ export interface DB {
   knex_migrations_lock: KnexMigrationsLock;
   matomo_stats: MatomoStats;
   network_iris: NetworkIris;
+  pro_comparateur_configurations: ProComparateurConfigurations;
   pro_eligibility_tests: ProEligibilityTests;
   pro_eligibility_tests_addresses: ProEligibilityTestsAddresses;
   raccordements_tiles: RaccordementsTiles;
