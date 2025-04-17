@@ -67,14 +67,19 @@ const useAction = <TVariables extends object, TOutput = unknown, TError = Error,
     },
     mutationFn:
       mutationFn ??
-      (async (variables: TVariables) => {
+      (async (variables: TVariables | string) => {
         const variablesWithId = variables as TVariables & { id: string };
+        let parameters;
         if (variablesWithId?.id) {
           setIsLoadingId(variablesWithId.id);
+          const { id, ...rest } = variablesWithId;
+          parameters = rest;
+        } else {
+          parameters = variables;
         }
-        const { id, ...rest } = variablesWithId;
+
         const finalUrl = typeof url === 'function' ? url(variablesWithId) : url;
-        const result = (await fetchMethod<typeof rest>(finalUrl, rest)) as TOutput;
+        const result = (await fetchMethod<typeof parameters>(finalUrl, parameters)) as TOutput;
         setIsLoadingId(undefined);
         return result;
       }),
@@ -92,18 +97,8 @@ export const usePost = <TVariables extends object, TOutput = unknown, TError = E
 // PUT /static-url
 export const usePut = <TVariables extends object, TOutput = unknown, TError = Error, TContext = unknown>(
   ...args: OmitFirst<Parameters<typeof useAction<TVariables, TOutput, TError, TContext>>>
-) => useAction<TVariables, TOutput, TError, TContext>('PUT', ...args);
-
-// DELETE /static-url
-export const useDelete = <TVariables extends object, TOutput = unknown, TError = Error, TContext = unknown>(
-  ...args: OmitFirst<Parameters<typeof useAction<TVariables, TOutput, TError, TContext>>>
-) => useAction<TVariables, TOutput, TError, TContext>('DELETE', ...args);
-
-export const usePutId = <TVariables extends object, TOutput = unknown, TError = Error, TContext = unknown>(
-  url: (variables: TVariables & { id: string }) => string,
-  ...args: OmitFirst<Parameters<typeof usePut<TVariables, TOutput, TError, TContext>>>
 ) => {
-  const result = usePut(url, ...args);
+  const result = useAction<TVariables, TOutput, TError, TContext>('PUT', ...args);
   return {
     ...result,
     mutate: (id: string, variables: TVariables) => result.mutate({ id, ...variables } as TVariables),
@@ -111,15 +106,25 @@ export const usePutId = <TVariables extends object, TOutput = unknown, TError = 
   };
 };
 
+// DELETE /static-url
+export const useDelete = <TVariables extends object, TOutput = unknown, TError = Error, TContext = unknown>(
+  ...args: OmitFirst<Parameters<typeof useAction<TVariables, TOutput, TError, TContext>>>
+) => {
+  const result = useAction<TVariables, TOutput, TError, TContext>('DELETE', ...args);
+  return {
+    ...result,
+    mutate: (id: string, variables?: TVariables) => result.mutate({ id, ...variables } as TVariables),
+    mutateAsync: (id: string, variables?: TVariables) => result.mutateAsync({ id, ...variables } as TVariables),
+  };
+};
+
+export const usePutId = <TVariables extends object, TOutput = unknown, TError = Error, TContext = unknown>(
+  url: (variables: TVariables & { id: string }) => string,
+  ...args: OmitFirst<Parameters<typeof usePut<TVariables, TOutput, TError, TContext>>>
+) => usePut(url, ...args);
+
 // DELETE /resource/:id
 export const useDeleteId = <TVariables extends object, TOutput = unknown, TError = Error, TContext = unknown>(
   url: (variables: TVariables & { id: string }) => string,
   ...args: OmitFirst<Parameters<typeof useDelete<TVariables, TOutput, TError, TContext>>>
-) => {
-  const result = useDelete(url, ...args);
-  return {
-    ...result,
-    mutate: (id: string, variables?: TVariables) => result.mutate({ id, ...(variables || ({} as TVariables)) } as TVariables),
-    mutateAsync: (id: string, variables?: TVariables) => result.mutateAsync({ id, ...(variables || ({} as TVariables)) } as TVariables),
-  };
-};
+) => useDelete(url, ...args);
