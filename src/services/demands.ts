@@ -11,6 +11,7 @@ export type RowsParams = {
   render?: (d: Demand) => any;
 };
 
+// TODO à supprimer une fois refactor terminé
 export class DemandsService {
   httpClient: HttpClient;
   constructor(http: HttpClient) {
