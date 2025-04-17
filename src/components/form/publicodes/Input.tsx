@@ -6,19 +6,19 @@ import useInViewport from '@/hooks/useInViewport';
 import { isDefined } from '@/utils/core';
 
 import Label from './Label';
+import labels from './labels';
 import DSFRInput from '../dsfr/Input';
 import { usePublicodesFormContext } from '../publicodes/FormProvider';
 export type DSFRInputProps = React.ComponentProps<typeof DSFRInput>;
 
-type InputProps = DSFRInputProps &
-  Omit<DSFRInputProps, 'nativeTextAreaProps'> & {
-    textArea?: false;
-    placeholderPrecision?: number;
-    name: DottedName;
-    label: string;
-    hideUnit?: boolean;
-    help?: React.ReactNode;
-  };
+type InputProps = Omit<DSFRInputProps, 'nativeTextAreaProps' | 'label'> & {
+  textArea?: false;
+  placeholderPrecision?: number;
+  name: DottedName;
+  label?: keyof typeof labels | string;
+  hideUnit?: boolean;
+  help?: React.ReactNode;
+};
 
 const Input = ({ name, placeholderPrecision, textArea, nativeInputProps, label, help, hideUnit = false, ...props }: InputProps) => {
   const [ref, isInView] = useInViewport<HTMLDivElement>();
@@ -52,11 +52,13 @@ const Input = ({ name, placeholderPrecision, textArea, nativeInputProps, label, 
     500
   );
 
+  const displayLabel = label ? label : name in labels ? labels[name as keyof typeof labels] : name;
+
   return (
     <DSFRInput
       ref={ref}
       textArea={false}
-      label={<Label label={label} unit={!hideUnit ? unit : undefined} help={help} />}
+      label={<Label label={displayLabel} unit={!hideUnit ? unit : undefined} help={help} />}
       hideOptionalLabel
       nativeInputProps={{
         ...nativeInputProps,

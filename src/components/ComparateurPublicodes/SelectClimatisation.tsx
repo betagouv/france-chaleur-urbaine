@@ -31,7 +31,13 @@ const SelectClimatisation = ({ ...props }: SelectClimatisation) => {
         value: !inclureLaClimatisation ? 'non' : typeDeProductionDeFroid === 'Groupe froid' ? 'groupe-froid' : 'reseau-de-froid',
         onChange: (e) => {
           const newValue = e.target.value;
-          engine.setField('Inclure la climatisation', newValue === 'non' ? 'non' : 'oui');
+          if (newValue === 'non') {
+            engine.resetField('Inclure la climatisation');
+            engine.resetField('type de production de froid');
+            return;
+          }
+
+          engine.setField('Inclure la climatisation', 'oui');
           engine.setStringField('type de production de froid', newValue === 'groupe-froid' ? 'Groupe froid' : 'Réseau de froid');
         },
       }}

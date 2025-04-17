@@ -9,7 +9,7 @@ import cx from '@/utils/cx';
 type StyledButtonProps = {
   $loading?: boolean;
   $full?: boolean;
-  variant?: 'destructive' | 'info' | 'default';
+  variant?: keyof typeof variantClassNames;
   eventKey?: TrackingEvent;
   eventPayload?: string;
 };
@@ -47,6 +47,11 @@ export const variantClassNames = {
     primary: '!bg-info !text-white !hover:bg-info/90',
     secondary: '!border-info !text-info shadow-info',
     tertiary: '!text-info',
+  },
+  faded: {
+    primary: '!bg-faded !text-white !hover:bg-faded/90',
+    secondary: '!border-faded !text-faded shadow-faded',
+    tertiary: '!text-faded',
   },
 };
 

@@ -8,6 +8,7 @@ import { isDefined } from '@/utils/core';
 import { usePublicodesFormContext } from './FormProvider';
 import { fixupBooleanEngineValue, fixupSituationStringValue, getOptions } from './helpers';
 import Label from './Label';
+import labels from './labels';
 
 export type DSFRSelectProps = React.ComponentProps<typeof DSFRSelect> & {
   withDefaultOption?: boolean;
@@ -25,10 +26,11 @@ const Select = ({
   nativeSelectProps,
   withDefaultOption = true,
   ...props
-}: Omit<DSFRSelectProps, 'hint' | 'options'> & {
+}: Omit<DSFRSelectProps, 'hint' | 'options' | 'label'> & {
   name: DottedName;
   hintText?: DSFRSelectProps['hint']; // harmonize with Input
   onChange?: (option?: string) => void;
+  label?: keyof typeof labels | string;
 }) => {
   const [ref, isInViewRaw] = useInViewport<HTMLDivElement>();
   const isInView =
@@ -45,10 +47,12 @@ const Select = ({
       }`
     : '';
 
+  const displayLabel = label ? label : name in labels ? labels[name as keyof typeof labels] : name;
+
   return (
     <DSFRSelect
       ref={ref}
-      label={<Label label={label} unit={!hideUnit ? unit : undefined} help={help} />}
+      label={<Label label={displayLabel} unit={!hideUnit ? unit : undefined} help={help} />}
       nativeSelectProps={{
         ...nativeSelectProps,
         value,
