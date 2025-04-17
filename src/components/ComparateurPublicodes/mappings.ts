@@ -176,3 +176,5 @@ export const addresseToPublicodesRules = {
   'code département': (infos) => `'${infos.infosVille.departement_id}'`,
   'température de référence chaud commune': (infos) => +infos.infosVille.temperature_ref_altitude_moyenne,
 } as const satisfies Partial<Record<DottedName, (infos: LocationInfoResponse) => any>>;
+
+export const addresseToPublicodesRulesKeys = Object.keys(addresseToPublicodesRules) as DottedName[];
