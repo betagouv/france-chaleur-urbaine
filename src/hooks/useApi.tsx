@@ -11,7 +11,7 @@ import {
   type UseQueryResult,
 } from '@tanstack/react-query';
 
-import { deleteFetchJSON, fetchJSON, postFetchJSON } from '@/utils/network';
+import { deleteFetchJSON, fetchJSON, postFetchJSON, putFetchJSON } from '@/utils/network';
 import { type OmitFirst, type Partialize } from '@/utils/typescript';
 
 type UseQueryParams = Parameters<typeof useQuery>;
@@ -35,7 +35,7 @@ export const useFetch = <TQueryFnData, TError = Error, TData = TQueryFnData, TQu
  * Typescript values are inversed to facilitate the use of usePost with <Input,Output>
  */
 const useAction = <TVariables, TOutput = unknown, TError = Error, TContext = unknown>(
-  methodName: 'POST' | 'DELETE',
+  methodName: 'POST' | 'DELETE' | 'PUT',
   url: string,
   {
     mutationFn,
@@ -56,8 +56,10 @@ const useAction = <TVariables, TOutput = unknown, TError = Error, TContext = unk
     method = postFetchJSON;
   } else if (methodName === 'DELETE') {
     method = deleteFetchJSON;
+  } else if (methodName === 'PUT') {
+    method = putFetchJSON;
   } else {
-    throw new Error(`Invalid method name: ${methodName}. Only 'POST' or 'DELETE' are allowed.`);
+    throw new Error(`Invalid method name: ${methodName}. Only 'POST' or 'DELETE' or 'PUT' are allowed.`);
   }
 
   const result = useMutation<TOutput, TError, TVariables, TContext>({
@@ -86,3 +88,7 @@ export const usePost = <TVariables, TOutput = unknown, TError = Error, TContext 
 export const useDelete = <TVariables, TOutput = unknown, TError = Error, TContext = unknown>(
   ...args: OmitFirst<Parameters<typeof useAction<TVariables, TOutput, TError, TContext>>>
 ) => useAction<TVariables, TOutput, TError, TContext>('DELETE', ...args);
+
+export const usePut = <TVariables, TOutput = unknown, TError = Error, TContext = unknown>(
+  ...args: OmitFirst<Parameters<typeof useAction<TVariables, TOutput, TError, TContext>>>
+) => useAction<TVariables, TOutput, TError, TContext>('PUT', ...args);

@@ -1,3 +1,5 @@
+import { type DemandStatus } from '@/types/enum/DemandSatus';
+
 import { type Coords } from '../Coords';
 
 export type DemandSummary = {
@@ -14,7 +16,7 @@ export type DemandSummary = {
 export type EditableDemandSummary = {
   'Prise de contact': boolean;
   Commentaire: string;
-  Status: string;
+  Status: DemandStatus | '';
 };
 
 export type Demand = DemandSummary &
@@ -46,6 +48,9 @@ export type Demand = DemandSummary &
     'Emails envoyés'?: string;
     Longitude: number;
     Latitude: number;
+
+    // computed
+    haut_potentiel: boolean;
   };
 
 export type ContactFormInfos = {
