@@ -8,14 +8,12 @@ export type ProEligibilityTestWithAddresses = Awaited<ReturnType<typeof GET>>;
 
 const GET = async (req: NextApiRequest) => {
   const testId = await z.string().parseAsync(req.query.id);
-  ensureValidPermissions(req, testId);
+  // admins can see all tests
+  if (req.user.role !== 'admin') {
+    ensureValidPermissions(req, testId);
+  }
 
-  const eligibilityTest = await kdb
-    .selectFrom('pro_eligibility_tests')
-    .where('user_id', '=', req.user.id)
-    .where('id', '=', testId)
-    .selectAll()
-    .executeTakeFirstOrThrow();
+  const eligibilityTest = await kdb.selectFrom('pro_eligibility_tests').where('id', '=', testId).selectAll().executeTakeFirstOrThrow();
 
   const addresses = await kdb
     .selectFrom('pro_eligibility_tests_addresses')

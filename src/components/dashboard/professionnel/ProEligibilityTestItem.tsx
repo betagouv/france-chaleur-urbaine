@@ -13,6 +13,7 @@ import Map, { type AdresseEligible } from '@/components/Map/Map';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import { UrlStateAccordion } from '@/components/ui/Accordion';
 import Button from '@/components/ui/Button';
+import Dialog from '@/components/ui/Dialog';
 import Link from '@/components/ui/Link';
 import Loader from '@/components/ui/Loader';
 import ModalSimple from '@/components/ui/ModalSimple';
@@ -310,9 +311,12 @@ type QuickFilterPresetKey = keyof typeof quickFilterPresets;
 const queryParamName = 'test-adresses';
 
 type ProEligibilityTestItemProps = {
-  test: ProEligibilityTestListItem;
+  test: ProEligibilityTestListItem & {
+    user_email?: string;
+  };
+  readOnly?: boolean;
 };
-function ProEligibilityTestItem({ test }: ProEligibilityTestItemProps) {
+function ProEligibilityTestItem({ test, readOnly = false }: ProEligibilityTestItemProps) {
   const queryClient = useQueryClient();
   const [value] = useQueryState(queryParamName);
   const [viewDetail, setViewDetail] = useState(value === test.id);
@@ -425,12 +429,14 @@ function ProEligibilityTestItem({ test }: ProEligibilityTestItemProps) {
       label={
         <div className="flex items-center justify-between w-full">
           <div>{test.name}</div>
-          <ModalSimple
-            title="Renommer le test"
-            trigger={<Button priority="tertiary no outline" size="small" iconId="fr-icon-pencil-line" title="Renommer le test" />}
-          >
-            <RenameEligibilityTestForm currentName={test.name} testId={test.id} />
-          </ModalSimple>
+          {!readOnly && (
+            <ModalSimple
+              title="Renommer le test"
+              trigger={<Button priority="tertiary no outline" size="small" iconId="fr-icon-pencil-line" title="Renommer le test" />}
+            >
+              <RenameEligibilityTestForm currentName={test.name} testId={test.id} />
+            </ModalSimple>
+          )}
           <div className="flex-auto" />
           {test.last_job_has_error && (
             <Badge severity="error" small className="fr-mx-1w">
@@ -450,16 +456,25 @@ function ProEligibilityTestItem({ test }: ProEligibilityTestItemProps) {
             )
           )}
           <div className="fr-mx-1w text-xs text-gray-800 font-normal cursor-help" title={formatFrenchDateTime(new Date(test.updated_at))}>
+            {readOnly && (
+              <>
+                <span className="font-semibold">{test.user_email}</span> -{' '}
+              </>
+            )}
             Dernière mise à jour&nbsp;: {formatFrenchDate(new Date(test.updated_at))}
           </div>
         </div>
       }
-      onClose={async () => {
-        await handleDelete(test.id);
-      }}
+      onClose={
+        !readOnly
+          ? async () => {
+              await handleDelete(test.id);
+            }
+          : undefined
+      }
       onExpandedChange={(expanded) => {
         setViewDetail(expanded);
-        if (expanded && test.has_unseen_results) {
+        if (expanded && test.has_unseen_results && !readOnly) {
           markAsSeen({});
         }
       }}
@@ -484,74 +499,113 @@ function ProEligibilityTestItem({ test }: ProEligibilityTestItemProps) {
             Télécharger les résultats détaillés
           </Button>
 
-          <ModalSimple
-            title="Ajout d'adresses"
-            size="medium"
-            trigger={
-              <Button iconId="fr-icon-add-line" priority="secondary">
-                Ajouter des adresses
-              </Button>
-            }
-          >
-            <CompleteEligibilityTestForm testId={test.id} />
-          </ModalSimple>
+          {!readOnly && (
+            <ModalSimple
+              title="Ajout d'adresses"
+              size="medium"
+              trigger={
+                <Button iconId="fr-icon-add-line" priority="secondary">
+                  Ajouter des adresses
+                </Button>
+              }
+            >
+              <CompleteEligibilityTestForm testId={test.id} />
+            </ModalSimple>
+          )}
         </div>
       </div>
       {isLoading && <Loader size="lg" variant="section" />}
       {viewDetail &&
         (testDetails && testDetails.addresses.length > 0 ? (
-          <Tabs
-            className="[&_[role='tabpanel']]:!p-2w" // decrease the default big padding of tabs panels
-            tabs={[
-              {
-                label: `Liste (${filteredAddresses.length})`,
-                iconId: 'fr-icon-list-unordered',
-                content: (
-                  <TableSimple
-                    controlsLayout="block"
-                    columns={columns}
-                    data={testDetails?.addresses || []}
-                    initialSortingState={initialSortingState}
-                    columnFilters={columnFilters}
-                    enableGlobalFilter
-                    padding="sm"
-                    rowHeight={56}
-                    onFilterChange={setFilteredAddresses}
-                  />
-                ),
-                isDefault: true,
-              },
-              {
-                label: (
-                  <>
-                    Carte ({filteredAddressesMapData.length}){' '}
-                    <Tooltip
-                      iconProps={{ color: 'var(--text-default-grey)', className: 'ml-1' }}
-                      title="Une différence de nombre de résultats peut exister si la requête à la Base d'Adresse Nationale n'as pas fonctionné ou si les coordonnées géographiques ne sont pas disponibles."
+          <>
+            <Tabs
+              className="[&_[role='tabpanel']]:!p-2w" // decrease the default big padding of tabs panels
+              tabs={[
+                {
+                  label: `Liste (${filteredAddresses.length})`,
+                  iconId: 'fr-icon-list-unordered',
+                  content: (
+                    <TableSimple
+                      controlsLayout="block"
+                      columns={columns}
+                      data={testDetails?.addresses || []}
+                      initialSortingState={initialSortingState}
+                      columnFilters={columnFilters}
+                      enableGlobalFilter
+                      padding="sm"
+                      rowHeight={56}
+                      onFilterChange={setFilteredAddresses}
                     />
-                  </>
-                ),
-                iconId: 'fr-icon-map-pin-2-line',
-                content: (
-                  <div className="min-h-[50vh] aspect-[4/3]">
-                    <Map
-                      initialMapConfiguration={createMapConfiguration({
-                        reseauxDeChaleur: {
-                          show: true,
-                        },
-                        reseauxEnConstruction: true,
-                        zonesDeDeveloppementPrioritaire: true,
-                      })}
-                      geolocDisabled
-                      withLegend={false}
-                      withoutLogo
-                      adressesEligibles={filteredAddressesMapData}
-                    />
+                  ),
+                  isDefault: true,
+                },
+                {
+                  label: (
+                    <>
+                      Carte ({filteredAddressesMapData.length}){' '}
+                      <Tooltip
+                        iconProps={{ color: 'var(--text-default-grey)', className: 'ml-1' }}
+                        title="Une différence de nombre de résultats peut exister si la requête à la Base d'Adresse Nationale n'as pas fonctionné ou si les coordonnées géographiques ne sont pas disponibles."
+                      />
+                    </>
+                  ),
+                  iconId: 'fr-icon-map-pin-2-line',
+                  content: (
+                    <div className="min-h-[50vh] aspect-[4/3]">
+                      <Map
+                        initialMapConfiguration={createMapConfiguration({
+                          reseauxDeChaleur: {
+                            show: true,
+                          },
+                          reseauxEnConstruction: true,
+                          zonesDeDeveloppementPrioritaire: true,
+                        })}
+                        geolocDisabled
+                        withLegend={false}
+                        withoutLogo
+                        adressesEligibles={filteredAddressesMapData}
+                      />
+                    </div>
+                  ),
+                },
+              ]}
+            />
+            {!readOnly && (
+              <div className="flex justify-end mt-4">
+                <Dialog
+                  title="Accompagnement par France Chaleur Urbaine"
+                  trigger={<Button iconId="fr-icon-mail-line">Être mis en relation avec les gestionnaires des réseaux</Button>}
+                >
+                  <div className="text-gray-700">
+                    <p className="mb-4">
+                      France Chaleur Urbaine peut assurer votre mise en relation avec les gestionnaires de réseaux de chaleur. Cette mise en
+                      relation vous permet d'obtenir plus d'informations sur la faisabilité des raccordements et les conditions tarifaires,
+                      sans aucun engagement de votre part.
+                    </p>
+                    <p className="mb-6">
+                      Utilisez le bouton ci-dessous pour nous contacter : un conseiller France Chaleur Urbaine reviendra vers vous dans les
+                      plus brefs délais.
+                    </p>
+                    <div className="flex justify-center">
+                      <Button
+                        iconId="fr-icon-mail-line"
+                        priority="secondary"
+                        linkProps={{
+                          href: `mailto:france-chaleur-urbaine@developpement-durable.gouv.fr?subject=${encodeURIComponent(
+                            `[FCU] Demande de mise en relation - Test "${test.name}"`
+                          )}&body=${encodeURIComponent(
+                            `Bonjour,\n\nJe souhaite être mis en relation avec les gestionnaires de réseaux de chaleur concernés par certaines adresses de mon test d'adresses "${test.name}".\n\nMerci de me recontacter pour étudier mon projet.\n\nCordialement`
+                          )}`,
+                        }}
+                      >
+                        Contacter France Chaleur Urbaine
+                      </Button>
+                    </div>
                   </div>
-                ),
-              },
-            ]}
-          />
+                </Dialog>
+              </div>
+            )}
+          </>
         ) : (
           !isLoading && (
             <Notice size="sm">

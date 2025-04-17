@@ -326,6 +326,12 @@ const adminNavigationMenu: MainNavigationProps.Item[] = [
         },
       },
       {
+        text: "Tests d'adresses",
+        linkProps: {
+          href: '/admin/tests-adresses',
+        },
+      },
+      {
         text: 'Impostures',
         linkProps: {
           href: '/admin/impostures',
