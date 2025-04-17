@@ -1,32 +1,35 @@
 import { type NextApiRequest } from 'next';
 import { type z } from 'zod';
 
+import { type DB } from '@/server/db/kysely';
+
 import buildContext, { type Context } from './context-builder';
 
-export type ListConfig = {
-  select?: string[];
-  filter?: Record<string, any>;
+export type FilterConfig<_T extends keyof DB> = {
+  filters?: Record<string, any>;
+};
+
+type GetConfig<_T extends keyof DB> = {
+  select?: (keyof DB[_T])[];
+} & FilterConfig<_T>;
+
+export type ListConfig<_T extends keyof DB> = {
   page?: number;
   pageSize?: number;
-  orderBy?: string;
-  orderDirection?: 'asc' | 'desc';
-};
+  orderBy?: Record<string, 'asc' | 'desc'>;
+} & GetConfig<_T>;
 
-type GetConfig = {
-  select?: string[];
-  filter?: Record<string, any>;
-};
-
-type CrudHandlers<T = any> = {
-  create: (body: any, context: Context) => Promise<T>;
-  update: (id: string, body: any, context: Context) => Promise<T>;
-  remove: (id: string, context: Context) => Promise<T>;
-  list: (config: ListConfig, context: Context) => Promise<T[]>;
-  get: (id: string, config: GetConfig, context: Context) => Promise<T>;
+type CrudHandlers<T extends keyof DB> = {
+  create: (body: any, context: Context) => Promise<DB[T]>;
+  update: (id: string, body: any, config: FilterConfig<T>, context: Context) => Promise<DB[T]>;
+  remove: (id: string, config: FilterConfig<T>, context: Context) => Promise<DB[T]>;
+  list: (config: ListConfig<T>, context: Context) => Promise<{ items: DB[T][]; count: number }>;
+  get: (id: string, config: GetConfig<T>, context: Context) => Promise<DB[T]>;
 };
 
 export { type Context };
 
+type DBObject = DB[keyof DB];
 type ApiResponseCommon =
   | {
       status: 'error';
@@ -36,11 +39,11 @@ type ApiResponseCommon =
       status: 'success';
     };
 
-type ApiResponseQueryGet<T = any> = ApiResponseCommon & {
+type ApiResponseQueryGet<T extends DBObject> = ApiResponseCommon & {
   item?: T;
 };
 
-type ApiResponseQueryList<T = any> = ApiResponseCommon & {
+type ApiResponseQueryList<T extends DBObject> = ApiResponseCommon & {
   items?: T[];
   pageInfo?: {
     count: number;
@@ -66,42 +69,61 @@ const validateSchemaIfExists = (schema?: z.ZodSchema, body?: any) => {
   return result;
 };
 
-const crud = <T = any>({
+/**
+ * Creates CRUD API handlers for a service
+ *
+ * @param handlers - Service handlers for CRUD operations
+ * @returns Object containing HTTP method handlers (GET, POST, PUT, DELETE) and utility functions
+ *
+ * @example
+ * import * as situationService from '@/server/services/comparateur/simulation';
+ *
+ * const { GET, POST, PUT, DELETE, _types } = crud<'tableName'>(serviceHandlers);
+ *
+ * export type ApiResponse = typeof _types;
+ *
+ * export default handleRouteErrors(
+ *   { GET, POST, PUT, DELETE },
+ *   {
+ *     requireAuthentication: ['particulier', 'professionnel', 'gestionnaire', 'admin', 'demo'],
+ *   }
+ * );
+ */
+const crud = <T extends keyof DB>({
   validation,
   ...handlers
 }: Partial<CrudHandlers<T>> & {
   validation?: Partial<Record<ValidationType, z.ZodSchema>>;
 }) => {
-  const GET_LIST = async (req: NextApiRequest): Promise<ApiResponseQueryList<T>> => {
+  const GET_LIST = async (req: NextApiRequest): Promise<ApiResponseQueryList<DB[T]>> => {
     const slug = Array.isArray(req.query.slug) ? req.query.slug : [req.query.slug || ''];
     const id = slug.length > 0 ? slug[0] : null;
     const context = buildContext(req);
 
     // Extract config from query params
-    const { select, filter, page, pageSize, orderBy, orderDirection, ...restQuery } = req.query;
+    const { select, filters, page, pageSize, orderBy } = req.query;
 
-    const listConfig: ListConfig = {
-      select: select ? (Array.isArray(select) ? select : [select]) : undefined,
-      filter: filter ? (typeof filter === 'string' ? JSON.parse(filter) : filter) : restQuery,
+    const listConfig: ListConfig<T> = {
+      select: select ? (typeof select === 'string' ? JSON.parse(select) : select) : undefined,
+      filters: filters ? (typeof filters === 'string' ? JSON.parse(filters) : filters) : undefined,
       page: page ? Number(page) : undefined,
       pageSize: pageSize ? Number(pageSize) : undefined,
-      orderBy: orderBy as string | undefined,
-      orderDirection: orderDirection as 'asc' | 'desc' | undefined,
+      orderBy: orderBy as Record<string, 'asc' | 'desc'> | undefined,
     };
 
     try {
       if (!id && handlers.list) {
         const data = await handlers.list(listConfig, context);
-        const items = Array.isArray(data) ? data : [];
+        const { items, count } = data;
         return {
           status: 'success',
           items,
           pageInfo: {
-            count: items.length,
+            count,
             page: listConfig.page,
             pageSize: listConfig.pageSize,
           },
-        } as ApiResponseQueryList<T>;
+        } as ApiResponseQueryList<DB[T]>;
       }
 
       return {
@@ -116,16 +138,16 @@ const crud = <T = any>({
     }
   };
 
-  const GET_ONE = async (req: NextApiRequest): Promise<ApiResponseQueryGet<T>> => {
+  const GET_ONE = async (req: NextApiRequest): Promise<ApiResponseQueryGet<DB[T]>> => {
     const slug = Array.isArray(req.query.slug) ? req.query.slug : [req.query.slug || ''];
     const id = slug.length > 0 ? slug[0] : null;
     const context = buildContext(req);
     // Extract config from query params
-    const { select, filter } = req.query;
+    const { select, filters } = req.query;
 
-    const getConfig: GetConfig = {
-      select: select ? (Array.isArray(select) ? select : [select]) : undefined,
-      filter: filter ? (typeof filter === 'string' ? JSON.parse(filter) : filter) : undefined,
+    const getConfig: GetConfig<T> = {
+      select: select ? ((Array.isArray(select) ? select : [select]) as (keyof DB[T])[]) : undefined,
+      filters: filters ? (typeof filters === 'string' ? JSON.parse(filters) : filters) : undefined,
     };
 
     try {
@@ -134,7 +156,7 @@ const crud = <T = any>({
         return {
           status: 'success',
           item,
-        } as ApiResponseQueryGet<T>;
+        } as ApiResponseQueryGet<DB[T]>;
       }
 
       return {
@@ -149,7 +171,7 @@ const crud = <T = any>({
     }
   };
 
-  const GET = async (req: NextApiRequest): Promise<ApiResponseQueryGet<T> | ApiResponseQueryList<T>> => {
+  const GET = async (req: NextApiRequest): Promise<ApiResponseQueryGet<DB[T]> | ApiResponseQueryList<DB[T]>> => {
     const slug = Array.isArray(req.query.slug) ? req.query.slug : [req.query.slug || ''];
     const id = slug.length > 0 ? slug[0] : null;
 
@@ -160,7 +182,7 @@ const crud = <T = any>({
     return GET_LIST(req);
   };
 
-  const POST = async (req: NextApiRequest): Promise<ApiResponseMutation<T>> => {
+  const POST = async (req: NextApiRequest): Promise<ApiResponseMutation<DB[T]>> => {
     try {
       validateSchemaIfExists(validation?.create, req.body);
       const slug = Array.isArray(req.query.slug) ? req.query.slug : [req.query.slug || ''];
@@ -187,7 +209,7 @@ const crud = <T = any>({
     }
   };
 
-  const PUT = async (req: NextApiRequest): Promise<ApiResponseMutation<T>> => {
+  const PUT = async (req: NextApiRequest): Promise<ApiResponseMutation<DB[T]>> => {
     try {
       validateSchemaIfExists(validation?.update, req.body);
       const slug = Array.isArray(req.query.slug) ? req.query.slug : [req.query.slug || ''];
@@ -195,7 +217,7 @@ const crud = <T = any>({
       const context = buildContext(req);
 
       if (id && handlers.update) {
-        const item = await handlers.update(id, req.body, context);
+        const item = await handlers.update(id, req.body, {}, context);
         return {
           status: 'success',
           item,
@@ -214,7 +236,7 @@ const crud = <T = any>({
     }
   };
 
-  const DELETE = async (req: NextApiRequest): Promise<ApiResponseMutation<T>> => {
+  const DELETE = async (req: NextApiRequest): Promise<ApiResponseMutation<DB[T]>> => {
     try {
       validateSchemaIfExists(validation?.delete, req.body);
       const slug = Array.isArray(req.query.slug) ? req.query.slug : [req.query.slug || ''];
@@ -222,7 +244,7 @@ const crud = <T = any>({
       const context = buildContext(req);
 
       if (id && handlers.remove) {
-        const result = await handlers.remove(id, context);
+        const result = await handlers.remove(id, {}, context);
         return {
           status: 'success',
           item: result,
@@ -241,7 +263,25 @@ const crud = <T = any>({
     }
   };
 
-  return { GET, POST, PUT, DELETE, GET_LIST, GET_ONE };
+  return {
+    GET,
+    POST,
+    PUT,
+    DELETE,
+    GET_LIST,
+    GET_ONE,
+    _types: null as unknown as {
+      list: Awaited<ReturnType<typeof GET_LIST>>;
+      get: Awaited<ReturnType<typeof GET_ONE>>;
+      create: Awaited<ReturnType<typeof POST>>;
+      update: Awaited<ReturnType<typeof PUT>>;
+      delete: Awaited<ReturnType<typeof DELETE>>;
+      createInput: z.infer<NonNullable<NonNullable<typeof validation>['create']>>;
+      updateInput: z.infer<NonNullable<NonNullable<typeof validation>['update']>>;
+    },
+  };
 };
+
+export type CrudResponse<T extends keyof DB> = ReturnType<typeof crud<T>>['_types'];
 
 export default crud;
