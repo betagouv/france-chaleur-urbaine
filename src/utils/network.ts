@@ -27,8 +27,42 @@ export const fetchMethod =
     return await res.json();
   };
 
-export const fetchJSON = async <Data = any>(url: string): Promise<Data> => {
-  const res = await fetch(url);
+/**
+ * Converts an object to URLSearchParams
+ * Handles nested objects by serializing them to JSON
+ * @param obj The object to convert
+ * @returns URLSearchParams instance
+ */
+export const objectToURLSearchParams = (obj: Record<string, any>): URLSearchParams => {
+  const params = new URLSearchParams();
+
+  for (const [key, value] of Object.entries(obj)) {
+    if (value === undefined || value === null) {
+      continue;
+    }
+
+    if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+      params.append(key, String(value));
+    } else if (typeof value === 'object') {
+      // Serialize objects and arrays to JSON strings
+      params.append(key, JSON.stringify(value));
+    }
+  }
+
+  return params;
+};
+
+export const fetchJSON = async <Data = any>(
+  url: string,
+  variables: RequestInit & {
+    params?: Record<string, any>;
+  } = {}
+): Promise<Data> => {
+  const { params, ...init } = variables;
+
+  const queryString = params ? `?${objectToURLSearchParams(params as Record<string, string>).toString()}` : '';
+
+  const res = await fetch(`${url}${queryString}`, init);
   if (!res.ok) {
     await handleError(res, url);
   }
