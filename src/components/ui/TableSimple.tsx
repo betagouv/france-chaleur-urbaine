@@ -25,6 +25,7 @@ import Button from '@/components/ui/Button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover';
 import { isDevModeEnabled } from '@/hooks/useDevMode';
 import cx from '@/utils/cx';
+import { type FlattenKeys } from '@/utils/typescript';
 
 import TableCell, { type TableCellProps } from './TableCell';
 import TableFilter, { defaultTableFilterFns, type TableFilterProps } from './TableFilter';
@@ -504,3 +505,13 @@ const TableSimple = <T extends RowData>({
 };
 
 export default TableSimple;
+
+type DotToUnderscore<T extends string> = T extends `${infer A}.${infer B}` ? `${A}_${DotToUnderscore<B>}` : T;
+
+export type QuickFilterPreset<Data> = {
+  label: React.ReactNode;
+  filters: Array<{
+    id: DotToUnderscore<FlattenKeys<Data>>;
+    value: boolean | number | [number, number] | Record<string, boolean>;
+  }>;
+};
