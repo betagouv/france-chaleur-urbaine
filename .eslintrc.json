@@ -59,7 +59,9 @@
         "vars": "all",
         "args": "after-used",
         "ignoreRestSiblings": true,
-        "caughtErrorsIgnorePattern": "^ignore"
+        "varsIgnorePattern": "^_",
+        "argsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^(ignore|_)"
       }
     ],
     "@typescript-eslint/consistent-type-imports": ["error", { "fixStyle": "inline-type-imports" }],
