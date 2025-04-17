@@ -18,7 +18,7 @@ import Link from '@/components/ui/Link';
 import Loader from '@/components/ui/Loader';
 import ModalSimple from '@/components/ui/ModalSimple';
 import Notice from '@/components/ui/Notice';
-import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
+import TableSimple, { type ColumnDef, type QuickFilterPreset } from '@/components/ui/TableSimple';
 import Tooltip from '@/components/ui/Tooltip';
 import { useDelete, useFetch, usePost } from '@/hooks/useApi';
 import { type ProEligibilityTestListItem } from '@/pages/api/pro-eligibility-tests';
@@ -28,7 +28,7 @@ import { getProEligibilityTestAsXlsx } from '@/services/xlsx/test-adresses';
 import { downloadString } from '@/utils/browser';
 import { formatAsISODateMinutes, formatFrenchDate, formatFrenchDateTime } from '@/utils/date';
 import { compareFrenchStrings } from '@/utils/strings';
-import { type FlattenKeys, ObjectEntries } from '@/utils/typescript';
+import { ObjectEntries } from '@/utils/typescript';
 
 const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[] = [
   {
@@ -244,16 +244,6 @@ const initialSortingState: SortingState = [
   },
 ];
 
-type DotToUnderscore<T extends string> = T extends `${infer A}.${infer B}` ? `${A}_${DotToUnderscore<B>}` : T;
-
-type QuickFilterPreset = {
-  label: React.ReactNode;
-  filters: Array<{
-    id: DotToUnderscore<FlattenKeys<ProEligibilityTestWithAddresses['addresses'][number]>>;
-    value: boolean | number | [number, number] | Record<string, boolean>;
-  }>;
-};
-
 const quickFilterPresets = {
   all: {
     label: 'adresses',
@@ -305,7 +295,7 @@ const quickFilterPresets = {
       },
     ],
   },
-} satisfies Record<string, QuickFilterPreset>;
+} satisfies Record<string, QuickFilterPreset<ProEligibilityTestWithAddresses['addresses'][number]>>;
 type QuickFilterPresetKey = keyof typeof quickFilterPresets;
 
 const queryParamName = 'test-adresses';

@@ -69,6 +69,20 @@ export const deleteFetchJSON = async <Data = any>(url: string): Promise<Data> =>
   return await res.json();
 };
 
+export const putFetchJSON = async <Data = any>(url: string, body?: any): Promise<Data> => {
+  const res = await fetch(url, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  if (!res.ok) {
+    await handleError(res, url);
+  }
+  return await res.json();
+};
+
 export async function handleError(res: Response, url: string) {
   const isJson = res.headers.get('Content-Type')?.includes('application/json');
   const errorData = isJson ? await res.json().catch(() => null) : null;
