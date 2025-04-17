@@ -574,16 +574,17 @@ function ProEligibilityTestItem({ test, readOnly = false }: ProEligibilityTestIt
               <div className="flex justify-end mt-4">
                 <Dialog
                   title="Accompagnement par France Chaleur Urbaine"
-                  trigger={<Button iconId="fr-icon-mail-line">Demander conseil à un expert de France Chaleur Urbaine</Button>}
+                  trigger={<Button iconId="fr-icon-mail-line">Être mis en relation avec les gestionnaires des réseaux</Button>}
                 >
                   <div className="text-gray-700">
                     <p className="mb-4">
-                      France Chaleur Urbaine peut vous accompagner dans votre démarche et vous mettre en relation avec le ou les
-                      gestionnaires de réseaux de chaleur concernés par vos adresses.
+                      France Chaleur Urbaine peut assurer votre mise en relation avec les gestionnaires de réseaux de chaleur. Cette mise en
+                      relation vous permet d'obtenir plus d'informations sur la faisabilité des raccordements et les conditions tarifaires,
+                      sans aucun engagement de votre part.
                     </p>
                     <p className="mb-6">
-                      Utilisez le bouton ci-dessous pour nous contacter. Un conseiller France Chaleur Urbaine prendra contact avec vous dans
-                      les plus brefs délais pour étudier votre projet et faciliter vos échanges avec les gestionnaires de réseaux.
+                      Utilisez le bouton ci-dessous pour nous contacter : un conseiller France Chaleur Urbaine reviendra vers vous dans les
+                      plus brefs délais.
                     </p>
                     <div className="flex justify-center">
                       <Button
@@ -597,7 +598,7 @@ function ProEligibilityTestItem({ test, readOnly = false }: ProEligibilityTestIt
                           )}`,
                         }}
                       >
-                        Contacter un expert France Chaleur Urbaine
+                        Contacter France Chaleur Urbaine
                       </Button>
                     </div>
                   </div>
