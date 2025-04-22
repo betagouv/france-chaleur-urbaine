@@ -2,7 +2,7 @@ import { useDeleteId, useFetch, usePost, usePutId } from '@/hooks/useApi';
 import { type CrudResponse } from '@/server/api/crud';
 import { type DB } from '@/server/db/kysely';
 
-const useCrud = <T extends CrudResponse<keyof DB>>(url: string) => {
+const useCrud = <T extends CrudResponse<keyof DB, any>>(url: string) => {
   const { mutateAsync: create, isLoading: isCreating } = usePost<NonNullable<T['createInput']>, T['create']>(url, {
     invalidate: [url],
   });

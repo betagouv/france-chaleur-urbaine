@@ -89,11 +89,11 @@ const validateSchemaIfExists = (schema?: z.ZodSchema, body?: any) => {
  *   }
  * );
  */
-const crud = <T extends keyof DB>({
+const crud = <T extends keyof DB, Validation extends CrudValidation>({
   validation,
   ...handlers
 }: Partial<CrudHandlers<T>> & {
-  validation?: Partial<Record<ValidationType, z.ZodSchema>>;
+  validation?: Validation;
 }) => {
   const GET_LIST = async (req: NextApiRequest): Promise<ApiResponseQueryList<DB[T]>> => {
     const slug = Array.isArray(req.query.slug) ? req.query.slug : [req.query.slug || ''];
@@ -282,6 +282,8 @@ const crud = <T extends keyof DB>({
   };
 };
 
-export type CrudResponse<T extends keyof DB> = ReturnType<typeof crud<T>>['_types'];
+type CrudValidation = Partial<Record<ValidationType, z.ZodSchema>>;
+
+export type CrudResponse<T extends keyof DB, V extends CrudValidation> = ReturnType<typeof crud<T, V>>['_types'];
 
 export default crud;
