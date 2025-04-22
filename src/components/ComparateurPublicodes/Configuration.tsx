@@ -11,6 +11,7 @@ import Button from '@/components/ui/Button';
 import { pick } from '@/utils/core';
 import cx from '@/utils/cx';
 import { upperCaseFirstChar } from '@/utils/strings';
+import { hasProperty } from '@/utils/typescript';
 
 interface ConfigurationProps {
   engine: SimulatorEngine;
@@ -42,9 +43,9 @@ const Configuration: React.FC<ConfigurationProps> = ({ engine, address }) => {
   };
 
   const deleteSituationConfig = (key: DottedName) => {
-    engine.resetField(key as DottedName);
-    if (chainedConfigurations[key as keyof typeof chainedConfigurations]) {
-      chainedConfigurations[key as keyof typeof chainedConfigurations].forEach((chainedKey) => {
+    engine.resetField(key);
+    if (hasProperty(chainedConfigurations, key)) {
+      chainedConfigurations[key].forEach((chainedKey) => {
         engine.resetField(chainedKey as DottedName);
       });
     }
