@@ -14,9 +14,10 @@ import Tag from '@/components/Manager/Tag';
 import Map from '@/components/Map/Map';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import SimplePage from '@/components/shared/page/SimplePage';
+import { VerticalDivider } from '@/components/ui/Divider';
 import Icon from '@/components/ui/Icon';
+import Indicator from '@/components/ui/Indicator';
 import Link from '@/components/ui/Link';
-import Loader from '@/components/ui/Loader';
 import TableSimple, { type ColumnDef, type QuickFilterPreset } from '@/components/ui/TableSimple';
 import Tooltip from '@/components/ui/Tooltip';
 import { useFetch } from '@/hooks/useApi';
@@ -28,7 +29,7 @@ import { type Demand } from '@/types/Summary/Demand';
 import { isDefined } from '@/utils/core';
 import { putFetchJSON } from '@/utils/network';
 import { upperCaseFirstChar } from '@/utils/strings';
-import { ObjectEntries } from '@/utils/typescript';
+import { ObjectEntries, ObjectKeys } from '@/utils/typescript';
 
 type MapCenterLocation = {
   center: Point;
@@ -213,12 +214,23 @@ function getDemandsTableColumns(updateDemand: (demandId: string, demandUpdate: P
       enableSorting: false,
       filterType: 'Facets',
     },
+
+    // TODO besoin de définir mais cacher pour utiliser dans les presets
+    {
+      accessorKey: 'haut_potentiel',
+      filterType: 'Facets', // obligatoire pour faire fonctionner le filtre
+    },
+    {
+      accessorKey: 'en PDP',
+      filterType: 'Facets', // obligatoire pour faire fonctionner le filtre
+    },
   ];
 }
 
 const quickFilterPresets = {
   all: {
     label: 'demandes totales',
+    getStat: (demands) => demands.length,
     filters: [],
   },
   demandesATraiter: {
@@ -228,8 +240,10 @@ const quickFilterPresets = {
         <Tooltip title={<>Prospect non recontacté et statut en attente de prise en charge</>} />
       </>
     ),
+    getStat: (demands) =>
+      demands.filter((demand) => demand.Status === 'En attente de prise en charge' && !demand['Prise de contact']).length,
     filters: [
-      { id: 'Status', value: { 'en attente de prise en charge': false } },
+      { id: 'Status', value: { 'En attente de prise en charge': true } },
       { id: 'Prise de contact', value: { true: false, false: true } },
     ],
   },
@@ -246,6 +260,7 @@ const quickFilterPresets = {
         />
       </>
     ),
+    getStat: (demands) => demands.filter((demand) => demand.haut_potentiel).length,
     filters: [{ id: 'haut_potentiel', value: { true: true, false: false } }],
   },
   demandesDansPDP: {
@@ -264,10 +279,11 @@ const quickFilterPresets = {
         />
       </>
     ),
+    getStat: (demands) => demands.filter((demand) => demand['en PDP'] === 'Oui').length,
     filters: [
       {
         id: 'en PDP',
-        value: { true: true, false: false },
+        value: { Oui: true, Non: false },
       },
     ],
   },
@@ -287,14 +303,13 @@ function DemandesNew(): React.ReactElement {
 
   const { data: demands = [], isLoading } = useFetch<Demand[]>('/api/demands');
 
-  const presetStats: Record<QuickFilterPresetKey, number> = {
-    all: demands.length,
-    demandesATraiter: demands.filter(
-      (demand) => demand.Status !== '' && demand.Status !== 'En attente de prise en charge' && !demand['Prise de contact']
-    ).length,
-    demandesAHautPotentiel: demands.filter((demand) => demand.haut_potentiel).length,
-    demandesDansPDP: demands.filter((demand) => demand['en PDP']).length,
-  };
+  const presetStats = ObjectKeys(quickFilterPresets).reduce(
+    (acc, key) => ({
+      ...acc,
+      [key]: quickFilterPresets[key].getStat(demands),
+    }),
+    {} as Record<QuickFilterPresetKey, number>
+  );
 
   // Update map when filtered demands change
   const mapPins = useMemo(() => {
@@ -425,7 +440,7 @@ function DemandesNew(): React.ReactElement {
                 onClick={() => toggleFilterPreset(key)}
                 active={isPresetActive(key)}
               />
-              {index < Object.keys(quickFilterPresets).length - 1 && <Divider />}
+              {index < Object.keys(quickFilterPresets).length - 1 && <VerticalDivider />}
             </Fragment>
           ))}
         </div>
@@ -440,6 +455,8 @@ function DemandesNew(): React.ReactElement {
                 controlsLayout="block"
                 onSelectionChange={onTableSelectionChange}
                 initialSortingState={[{ id: 'Date demandes', desc: true }]}
+                columnFilters={columnFilters}
+                rowHeight={100} /* TODO utiliser un tableau avec hauteur dynamique*/
               />
             </div>
 
@@ -496,27 +513,3 @@ function DemandesNew(): React.ReactElement {
 export default DemandesNew;
 
 export const getServerSideProps = withAuthentication(['gestionnaire', 'demo']);
-
-// TODO harmoniser avec indicator de ProEligibilityTestItem et en faire un composant ?
-type IndicatorProps = {
-  label: React.ReactNode;
-  value: number;
-  loading?: boolean;
-  onClick?: () => void;
-  active?: boolean;
-};
-const Indicator = ({ label, value, loading, onClick, active }: IndicatorProps) => {
-  const Element = onClick ? 'button' : 'div';
-  return (
-    <Element
-      className={`fr-p-2w flex flex-col h-full transition-colors ${active ? 'text-blue' : ''} ${onClick ? 'cursor-pointer hover:bg-gray-100 text-left' : ''}`}
-      onClick={onClick}
-      title={onClick ? 'Cliquer pour filtrer' : undefined}
-    >
-      <div className="font-bold text-xl">{loading ? <Loader size="sm" className="my-[6px]" /> : value}</div>
-      <div>{label}</div>
-    </Element>
-  );
-};
-
-const Divider = () => <div className="h-12 w-px bg-gray-300" />;

@@ -506,6 +506,7 @@ type DotToUnderscore<T extends string> = T extends `${infer A}.${infer B}` ? `${
 
 export type QuickFilterPreset<Data> = {
   label: React.ReactNode;
+  getStat?: (data: Data[]) => number;
   filters: Array<{
     id: DotToUnderscore<FlattenKeys<Data>>;
     value: boolean | number | [number, number] | Record<string, boolean>;

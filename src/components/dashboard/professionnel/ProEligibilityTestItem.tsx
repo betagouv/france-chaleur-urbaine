@@ -14,6 +14,8 @@ import { createMapConfiguration } from '@/components/Map/map-configuration';
 import { UrlStateAccordion } from '@/components/ui/Accordion';
 import Button from '@/components/ui/Button';
 import Dialog from '@/components/ui/Dialog';
+import { VerticalDivider } from '@/components/ui/Divider';
+import Indicator from '@/components/ui/Indicator';
 import Link from '@/components/ui/Link';
 import Loader from '@/components/ui/Loader';
 import ModalSimple from '@/components/ui/ModalSimple';
@@ -28,7 +30,7 @@ import { getProEligibilityTestAsXlsx } from '@/services/xlsx/test-adresses';
 import { downloadString } from '@/utils/browser';
 import { formatAsISODateMinutes, formatFrenchDate, formatFrenchDateTime } from '@/utils/date';
 import { compareFrenchStrings } from '@/utils/strings';
-import { ObjectEntries } from '@/utils/typescript';
+import { ObjectEntries, ObjectKeys } from '@/utils/typescript';
 
 const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[] = [
   {
@@ -247,6 +249,7 @@ const initialSortingState: SortingState = [
 const quickFilterPresets = {
   all: {
     label: 'adresses',
+    getStat: (addresses) => addresses.length,
     filters: [],
   },
   adressesEligibles: {
@@ -263,10 +266,20 @@ const quickFilterPresets = {
         />
       </>
     ),
+    getStat: (addresses) => addresses.filter((address) => address.eligibility_status && address.eligibility_status.isEligible).length,
     filters: [{ id: 'eligibility_status_isEligible', value: { true: true, false: false } }],
   },
   adressesMoins100mPlus50ENRR: {
     label: "à moins de 100m d'un réseau à plus de 50% d'ENR&R",
+    getStat: (addresses) =>
+      addresses.filter(
+        (address) =>
+          address.eligibility_status &&
+          address.eligibility_status.distance &&
+          address.eligibility_status.distance <= 100 &&
+          address.eligibility_status.tauxENRR &&
+          address.eligibility_status.tauxENRR >= 50
+      ).length,
     filters: [
       { id: 'eligibility_status_distance', value: [0, 100] },
       { id: 'eligibility_status_tauxENRR', value: [50, 100] },
@@ -288,6 +301,7 @@ const quickFilterPresets = {
         />
       </>
     ),
+    getStat: (addresses) => addresses.filter((address) => address.eligibility_status && address.eligibility_status.inPDP).length,
     filters: [
       {
         id: 'eligibility_status_inPDP',
@@ -335,18 +349,13 @@ function ProEligibilityTestItem({ test, readOnly = false }: ProEligibilityTestIt
 
   const addresses = testDetails?.addresses ?? [];
 
-  const presetStats: Record<QuickFilterPresetKey, number> = {
-    all: addresses.length,
-    adressesEligibles: addresses.filter((address) => address.eligibility_status && address.eligibility_status.isEligible).length,
-    adressesMoins100mPlus50ENRR: addresses.filter(
-      (address) =>
-        address.eligibility_status?.distance &&
-        address.eligibility_status.distance <= 100 &&
-        address.eligibility_status?.tauxENRR &&
-        address.eligibility_status.tauxENRR >= 50
-    ).length,
-    adressesDansPDP: addresses.filter((address) => address.eligibility_status && address.eligibility_status.inPDP).length,
-  };
+  const presetStats = ObjectKeys(quickFilterPresets).reduce(
+    (acc, key) => ({
+      ...acc,
+      [key]: quickFilterPresets[key].getStat(addresses),
+    }),
+    {} as Record<QuickFilterPresetKey, number>
+  );
 
   const handleDelete = async (testId: string) => {
     if (!confirm('Êtes-vous sûr de vouloir supprimer ce test ?')) {
@@ -480,7 +489,7 @@ function ProEligibilityTestItem({ test, readOnly = false }: ProEligibilityTestIt
                 onClick={() => toggleFilterPreset(key)}
                 active={isPresetActive(key)}
               />
-              {index < Object.keys(quickFilterPresets).length - 1 && <Divider />}
+              {index < Object.keys(quickFilterPresets).length - 1 && <VerticalDivider />}
             </Fragment>
           ))}
         </div>
@@ -606,27 +615,5 @@ function ProEligibilityTestItem({ test, readOnly = false }: ProEligibilityTestIt
     </UrlStateAccordion>
   );
 }
-type IndicatorProps = {
-  label: React.ReactNode;
-  value: number;
-  loading?: boolean;
-  onClick?: () => void;
-  active?: boolean;
-};
-const Indicator = ({ label, value, loading, onClick, active }: IndicatorProps) => {
-  const Element = onClick ? 'button' : 'div';
-  return (
-    <Element
-      className={`fr-p-2w flex flex-col h-full transition-colors ${active ? 'text-blue' : ''} ${onClick ? 'cursor-pointer hover:bg-gray-100 text-left' : ''}`}
-      onClick={onClick}
-      title={onClick ? 'Cliquer pour filtrer' : undefined}
-    >
-      <div className="font-bold text-xl">{loading ? <Loader size="sm" className="my-[6px]" /> : value}</div>
-      <div>{label}</div>
-    </Element>
-  );
-};
-
-const Divider = () => <div className="h-12 w-px bg-gray-300" />;
 
 export default ProEligibilityTestItem;

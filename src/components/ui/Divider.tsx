@@ -18,3 +18,5 @@ function Divider({ vertical, ...props }: DividerProps) {
 }
 
 export default Divider;
+
+export const VerticalDivider = () => <div className="h-12 w-px bg-gray-300" />;

@@ -47,7 +47,9 @@ const Filter = ({ value, type, onChange, filterProps, facetedUniqueValues, facet
     const { domain, ...rangeFilterProps } = filterProps || {};
 
     return (
-      <RangeFilter small value={value} onChange={onChange} domain={domain || (facetedMinMaxValues as Interval)} {...rangeFilterProps} />
+      value && (
+        <RangeFilter small value={value} onChange={onChange} domain={domain || (facetedMinMaxValues as Interval)} {...rangeFilterProps} />
+      )
     );
   } else if (type === 'Facets') {
     const entries = Object.entries(facetedUniqueValues ? Object.fromEntries(facetedUniqueValues) : {}).sort(([k1], [k2]) =>
