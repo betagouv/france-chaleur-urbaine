@@ -19,6 +19,7 @@ import MapReactGL, {
 } from 'react-map-gl/maplibre';
 
 import FileDragNDrop from '@/components/Map/components/FileDragNDrop';
+import { type AdresseEligible } from '@/components/Map/layers/adressesEligibles';
 import { isMapConfigurationInitialized, type MapConfiguration } from '@/components/Map/map-configuration';
 import Accordion from '@/components/ui/Accordion';
 import Box from '@/components/ui/Box';
@@ -95,14 +96,6 @@ type ViewState = {
   longitude: number;
   latitude: number;
   zoom: number;
-};
-
-export type AdresseEligible = {
-  id: string;
-  address: string;
-  isEligible: boolean;
-  longitude: number;
-  latitude: number;
 };
 
 type MapProps = {
