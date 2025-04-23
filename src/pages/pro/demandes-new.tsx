@@ -297,9 +297,9 @@ function DemandesNew(): React.ReactElement {
   const [selectedRows, setSelectedRows] = useState<Demand[]>([]);
 
   const [mapCollapsed, setMapCollapsed] = useState(false);
-  // const [mapPins, setMapPins] = useState<MapMarkerInfos[]>([]);
   const [mapCenterLocation, setMapCenterLocation] = useState<MapCenterLocation>();
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [filteredDemands, setFilteredDemands] = useState<Demand[]>([]);
 
   const { data: demands = [], isLoading } = useFetch<Demand[]>('/api/demands');
 
@@ -313,7 +313,7 @@ function DemandesNew(): React.ReactElement {
 
   // Update map when filtered demands change
   const mapPins = useMemo(() => {
-    const pins = demands.map<MapMarkerInfos>((demand) => ({
+    const pins = filteredDemands.map<MapMarkerInfos>((demand) => ({
       id: demand.id,
       latitude: demand.Latitude,
       longitude: demand.Longitude,
@@ -332,7 +332,22 @@ function DemandesNew(): React.ReactElement {
     }
 
     return pins;
-  }, [demands, selectedRows]);
+  }, [filteredDemands, selectedRows]);
+
+  // const filteredDemandsMapData = useMemo(() => {
+  //   return filteredDemands
+  //     .filter((demand) => demand.haut_potentiel)
+  //     .map(
+  //       (demand) =>
+  //         ({
+  //           id: demand.id,
+  //           longitude: demand.Longitude,
+  //           latitude: demand.Latitude,
+  //           address: demand.Adresse,
+  //           isEligible: demand.haut_potentiel,
+  //         }) satisfies AdresseEligible
+  //     );
+  // }, [filteredDemands]);
 
   // const highlightPin = useCallback(
   //   (selectedPinId: string) => {
@@ -444,19 +459,20 @@ function DemandesNew(): React.ReactElement {
             </Fragment>
           ))}
         </div>
-        {demands.length > 0 && isDefined(mapCenterLocation) ? (
+        {demands.length > 0 ? (
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
             <div className={`${mapCollapsed ? 'lg:col-span-5' : 'lg:col-span-3'} overflow-auto`}>
               <TableSimple
                 columns={tableColumns}
                 data={demands}
                 loading={isLoading}
-                fluid={true}
-                controlsLayout="block"
-                onSelectionChange={onTableSelectionChange}
                 initialSortingState={[{ id: 'Date demandes', desc: true }]}
                 columnFilters={columnFilters}
+                onFilterChange={setFilteredDemands}
+                fluid
+                controlsLayout="block"
                 rowHeight={100} /* TODO utiliser un tableau avec hauteur dynamique*/
+                onSelectionChange={onTableSelectionChange}
               />
             </div>
 
@@ -480,22 +496,25 @@ function DemandesNew(): React.ReactElement {
                   <Icon size="lg" name="ri-arrow-left-s-fill" />
                 </div>
                 <div className="h-[600px]">
-                  <Map
-                    noPopup
-                    withoutLogo
-                    initialCenter={mapCenterLocation.center}
-                    initialZoom={mapCenterLocation.zoom}
-                    initialMapConfiguration={createMapConfiguration({
-                      reseauxDeChaleur: {
-                        show: true,
-                      },
-                      reseauxEnConstruction: true,
-                      zonesDeDeveloppementPrioritaire: true,
-                    })}
-                    pinsList={mapPins}
-                    geolocDisabled
-                    mapRef={mapRef}
-                  />
+                  {isDefined(mapCenterLocation) && (
+                    <Map
+                      noPopup
+                      withoutLogo
+                      initialCenter={mapCenterLocation.center}
+                      initialZoom={mapCenterLocation.zoom}
+                      initialMapConfiguration={createMapConfiguration({
+                        reseauxDeChaleur: {
+                          show: true,
+                        },
+                        reseauxEnConstruction: true,
+                        zonesDeDeveloppementPrioritaire: true,
+                      })}
+                      geolocDisabled
+                      mapRef={mapRef}
+                      pinsList={mapPins}
+                      // adressesEligibles={filteredDemandsMapData}
+                    />
+                  )}
                 </div>
               </div>
             )}
