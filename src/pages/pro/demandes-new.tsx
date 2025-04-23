@@ -47,6 +47,19 @@ const displayModeDeChauffage = (demand: Demand) => {
 function getDemandsTableColumns(updateDemand: (demandId: string, demandUpdate: Partial<Demand>) => Promise<void>): ColumnDef<Demand>[] {
   return [
     {
+      id: 'indicators',
+      header: '',
+      cell: ({ row }) => (
+        <>
+          {row.original.Status === 'En attente de prise en charge' && !row.original['Prise de contact'] && (
+            <Icon name="fr-icon-flag-fill" size="sm" title="En attente de prise en charge" color="var(--text-action-high-blue-france)" />
+          )}
+          {row.original.haut_potentiel && <Icon name="fr-icon-star-s-fill" size="sm" title="Haut potentiel" color="#f0d73a" />}
+        </>
+      ),
+      width: '70px',
+    },
+    {
       accessorKey: 'Status',
       header: 'Statut',
       cell: ({ row }) => <Status demand={row.original} updateDemand={updateDemand} />,
