@@ -36,8 +36,8 @@ type MapCenterLocation = {
 };
 
 const displayModeDeChauffage = (demand: Demand) => {
-  const modeDeChauffage = demand['Mode de chauffage'].toLowerCase().trim();
-  if (['gaz', 'fioul', 'électricité'].includes(modeDeChauffage)) {
+  const modeDeChauffage = demand['Mode de chauffage']?.toLowerCase()?.trim();
+  if (modeDeChauffage && ['gaz', 'fioul', 'électricité'].includes(modeDeChauffage)) {
     return `${upperCaseFirstChar(modeDeChauffage)} ${demand['Type de chauffage'] ? demand['Type de chauffage'].toLowerCase() : ''}`;
   }
   return demand['Type de chauffage'];
