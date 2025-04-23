@@ -390,12 +390,8 @@ const TableSimple = <T extends RowData>({
                                     value={header.column.getFilterValue() as any /* Not working as is for an unknown reason*/}
                                     onChange={header.column.setFilterValue}
                                     filterProps={columnDef.filterProps as any /* Not working as is for an unknown reason*/}
-                                    facetedMinMaxValues={
-                                      header.column.getFacetedMinMaxValues() as any /* Not working as is for an unknown reason*/
-                                    }
-                                    facetedUniqueValues={
-                                      header.column.getFacetedUniqueValues() as any /* Not working as is for an unknown reason*/
-                                    }
+                                    facetedMinMaxValues={header.column.getFacetedMinMaxValues()}
+                                    facetedUniqueValues={header.column.getFacetedUniqueValues()}
                                   />
                                   <Button
                                     priority="tertiary"

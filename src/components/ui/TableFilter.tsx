@@ -50,14 +50,16 @@ const Filter = ({ value, type, onChange, filterProps, facetedUniqueValues, facet
       <RangeFilter small value={value} onChange={onChange} domain={domain || (facetedMinMaxValues as Interval)} {...rangeFilterProps} />
     );
   } else if (type === 'Facets') {
-    const entries = facetedUniqueValues ? Object.fromEntries(facetedUniqueValues) : {};
+    const entries = Object.entries(facetedUniqueValues ? Object.fromEntries(facetedUniqueValues) : {}).sort(([k1], [k2]) =>
+      k1.localeCompare(k2)
+    );
     const { Component, ...facetsFilterProps } = filterProps || {};
 
     return (
       <Checkboxes
         small
         className="!mb-0"
-        options={Object.entries(entries).map(([facetKey, nbOccurences]) => ({
+        options={entries.map(([facetKey, nbOccurences]) => ({
           label: (
             <span className="flex items-center gap-1">
               {facetKey === 'true' || facetKey === 'false' ? (
@@ -76,8 +78,7 @@ const Filter = ({ value, type, onChange, filterProps, facetedUniqueValues, facet
             checked: !value ? true : value[facetKey] === true,
             onChange: () => {
               const newValue = {
-                ...(value ||
-                  Object.entries(entries).reduce((acc, [facetKey]) => ({ ...acc, [facetKey]: true }), {} as Record<string, boolean>)),
+                ...(value || entries.reduce((acc, [facetKey]) => ({ ...acc, [facetKey]: true }), {} as Record<string, boolean>)),
               };
               newValue[facetKey] = !newValue[facetKey];
               onChange(newValue);
