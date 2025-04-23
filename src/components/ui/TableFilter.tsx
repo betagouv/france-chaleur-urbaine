@@ -68,7 +68,7 @@ const Filter = ({ value, type, onChange, filterProps, facetedUniqueValues, facet
                 <Component value={facetKey} />
               ) : (
                 facetKey
-              )}
+              )}{' '}
               ({nbOccurences as number})
             </span>
           ),
