@@ -153,13 +153,17 @@ export const getDemands = async (user: User): Promise<Demand[]> => {
     duration: Date.now() - startTime,
   });
 
-  // ajoute le champ haut_potentiel = en chauffage collectif avec : soit à -100m hors Paris / -60m Paris, soit +100 logements, soit tertiaire.
   records.forEach((record) => {
+    // ajoute le champ haut_potentiel = en chauffage collectif avec : soit à -100m hors Paris / -60m Paris, soit +100 logements, soit tertiaire.
     const fields = record.fields as Demand;
     const isParis = fields['Gestionnaires']?.includes('Paris');
     const distanceThreshold = isParis ? 60 : 100;
     fields.haut_potentiel =
       fields['Distance au réseau'] < distanceThreshold || fields['Logement'] >= 100 || fields['Type de chauffage'] === 'Collectif';
+
+    // complète les valeurs par défaut pour simplifier l'usage côté UI
+    fields['Prise de contact'] ??= false;
+    fields.Status ??= 'En attente de prise en charge';
   });
 
   return user.role === 'demo'

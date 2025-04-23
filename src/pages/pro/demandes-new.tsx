@@ -56,10 +56,11 @@ function getDemandsTableColumns(updateDemand: (demandId: string, demandUpdate: P
       },
     },
     {
-      accessorKey: 'Prospect recontacté',
+      accessorKey: 'Prise de contact',
       header: 'Prospect recontacté',
       cell: ({ row }) => <Contacted demand={row.original} updateDemand={updateDemand} />,
       align: 'center',
+      filterType: 'Facets',
     },
     {
       accessorKey: 'Contact / Envoi de mails',
