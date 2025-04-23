@@ -43,7 +43,7 @@ const DemandStatusBadge = ({ status }: DemandStatusBadgeProps) => {
   const config = statusConfig[status] ?? statusConfig[DEMANDE_STATUS.EMPTY];
   return (
     <Badge small className={config.className}>
-      {upperCaseFirstChar(status || DEMANDE_STATUS.EMPTY)} - {JSON.stringify(status)}
+      {upperCaseFirstChar(status || DEMANDE_STATUS.EMPTY)}
     </Badge>
   );
 };
