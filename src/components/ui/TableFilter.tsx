@@ -36,7 +36,7 @@ const Filter = ({ value, type, onChange, filterProps, facetedUniqueValues, facet
     }
     // reset filters when they are back to defaults
     if (type === 'Range') {
-      const domain = filterProps.domain || (facetedMinMaxValues as Interval);
+      const domain = filterProps?.domain || (facetedMinMaxValues as Interval);
       if (domain && value[0] === domain[0] && value[1] === domain[1]) onChange(undefined);
     } else if (type === 'Facets' && Object.values(value).every((v) => v === true)) {
       onChange(undefined);
