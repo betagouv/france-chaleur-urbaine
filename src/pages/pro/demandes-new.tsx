@@ -495,7 +495,7 @@ function DemandesNew(): React.ReactElement {
                   <div className="text-sm">Masquer la carte</div>
                   <Icon size="lg" name="ri-arrow-left-s-fill" />
                 </div>
-                <div className="h-[600px]">
+                <div className="max-lg:h-[600px] lg:h-[calc(100dvh-140px)]">
                   {isDefined(mapCenterLocation) && (
                     <Map
                       noPopup
