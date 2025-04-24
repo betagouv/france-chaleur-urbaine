@@ -342,7 +342,11 @@ const TableSimple = <T extends RowData>({
                         <div className={cx('flex gap-1', controlsLayout === 'inline' ? 'flex-row items-center' : 'flex-col')}>
                           {/* mt-[5px] to be aligned  */}
                           <span
-                            className={cx(controlsLayout === 'inline' ? '' : 'flex-1', hasAtLeastOneColumnSorting ? 'mt-[5px]' : '')}
+                            className={cx(
+                              'leading-tight tracking-tighter',
+                              controlsLayout === 'inline' ? '' : 'flex-1',
+                              hasAtLeastOneColumnSorting ? 'mt-[5px]' : ''
+                            )}
                             style={{
                               wordBreak: 'break-word', // does not exist in tailwind
                             }}
