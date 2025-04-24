@@ -9,4 +9,4 @@ export enum DEMANDE_STATUS {
   ABANDONNED = 'Projet abandonné par le prospect',
 }
 
-export type DemandStatus = `${DEMANDE_STATUS}`;
+export type DemandStatus = DEMANDE_STATUS;

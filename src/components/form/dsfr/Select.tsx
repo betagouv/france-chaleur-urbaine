@@ -2,27 +2,29 @@ import DSFRSelect, { type SelectProps as DSFRSelectProps } from '@codegouvfr/rea
 import styled, { css } from 'styled-components';
 
 type AdditionalSelectProps = {
-  $small?: boolean;
+  $size?: 'sm' | 'md';
 };
 
 const StyledDSFRSelect = styled(DSFRSelect)<AdditionalSelectProps>`
-  ${({ $small }) => css`
-    ${$small &&
+  ${({ $size }) => css`
+    ${$size === 'sm' &&
     css`
-      padding: 0.35rem 2rem 0.35rem 0.5rem;
-      font-size: 0.875rem;
+      .fr-select {
+        padding: 0.35rem 2rem 0.35rem 0.5rem;
+        font-size: 0.875rem;
+      }
     `}
   `}
 `;
 
 export type SelectOption = DSFRSelectProps.Option;
-export type SelectProps<Options extends SelectOption[]> = Omit<DSFRSelectProps<Options>, 'state'> &
+export type SelectProps<Options extends SelectOption[]> = Omit<DSFRSelectProps<Options>, 'state' | 'size'> &
   RemoveDollar<AdditionalSelectProps> & {
     state?: 'error' | 'default' | 'success' | 'info';
   };
 
-const Select = <Options extends SelectOption[]>({ small, state, ...props }: SelectProps<Options>) => {
-  return <StyledDSFRSelect state={state === 'success' ? 'valid' : state} $small={small} {...props} />;
+const Select = <Options extends SelectOption[]>({ size = 'md', state, ...props }: SelectProps<Options>) => {
+  return <StyledDSFRSelect state={state === 'success' ? 'valid' : state} $size={size} {...props} />;
 };
 
 export default Select;
