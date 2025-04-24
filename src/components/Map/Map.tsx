@@ -113,6 +113,7 @@ type MapProps = {
   pinsList?: MapMarkerInfos[];
   initialCenter?: Point;
   initialZoom?: number;
+  enableFlyToCentering?: boolean;
   bounds?: BoundingBox;
   geolocDisabled?: boolean;
   withFCUAttribution?: boolean;
@@ -146,6 +147,7 @@ export const FullyFeaturedMap = ({
   pinsList,
   initialCenter,
   initialZoom,
+  enableFlyToCentering,
   bounds: defaultBounds,
   geolocDisabled,
   withFCUAttribution,
@@ -435,7 +437,11 @@ export const FullyFeaturedMap = ({
       };
       setMarkersList([newMarker]);
     }
-    jumpTo({ coordinates: initialCenter, zoom: initialZoom });
+    if (enableFlyToCentering) {
+      mapRef.current?.getMap()?.flyTo({ center: initialCenter, zoom: initialZoom, essential: true, duration: 1000 });
+    } else {
+      jumpTo({ coordinates: initialCenter, zoom: initialZoom });
+    }
   }, [initialCenter, jumpTo, withCenterPin, mapRef.current]);
 
   useEffect(() => {

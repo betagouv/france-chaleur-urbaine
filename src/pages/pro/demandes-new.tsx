@@ -36,6 +36,7 @@ import { ObjectEntries, ObjectKeys } from '@/utils/typescript';
 type MapCenterLocation = {
   center: Point;
   zoom: number;
+  flyTo?: boolean;
 };
 
 const displayModeDeChauffage = (demand: Demand) => {
@@ -363,6 +364,7 @@ function DemandesNew(): React.ReactElement {
       setMapCenterLocation({
         center: [selectedDemand.longitude, selectedDemand.latitude],
         zoom: selectedDemandId ? 16 : 8,
+        flyTo: true,
       });
     } else {
       console.warn('selectedDemandId should not be selected anymore');
@@ -500,6 +502,7 @@ function DemandesNew(): React.ReactElement {
                     withoutLogo
                     initialCenter={mapCenterLocation.center}
                     initialZoom={mapCenterLocation.zoom}
+                    enableFlyToCentering
                     initialMapConfiguration={createMapConfiguration({
                       reseauxDeChaleur: {
                         show: true,
