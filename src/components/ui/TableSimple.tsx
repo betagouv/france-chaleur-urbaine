@@ -256,10 +256,10 @@ const TableSimple = <T extends RowData>({
   const hasAtLeastOneColumnSorting = table.getHeaderGroups()[0].headers.some((header) => header.column.getCanSort());
 
   React.useEffect(() => {
-    if (onFilterChange) {
+    if (onFilterChange && rows.length > 0) {
       onFilterChange(hasAtLeastOneFilter ? filteredRows.map((row) => row.original) : data);
     }
-  }, [filteredRows, hasAtLeastOneFilter, onFilterChange]);
+  }, [rows, filteredRows, hasAtLeastOneFilter, onFilterChange]);
 
   // the virtualizer needs to know the scrollable container element
   const tableContainerRef = React.useRef<HTMLDivElement>(null);
