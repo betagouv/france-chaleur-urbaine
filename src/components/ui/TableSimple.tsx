@@ -66,6 +66,7 @@ export const customFilterFn = <T extends RowData>(): Record<string, FilterFn<T>>
 });
 
 export type ColumnDef<T, K = any> = ColumnDefOriginal<T, K> & {
+  accessorKey?: string;
   cellType?: TableCellProps<T>['type'];
   align?: 'center' | 'left' | 'right';
   className?: string;
@@ -74,6 +75,7 @@ export type ColumnDef<T, K = any> = ColumnDefOriginal<T, K> & {
   filter?: keyof ReturnType<typeof customFilterFn<T>>;
   filterType?: TableFilterProps['type'];
   filterProps?: TableFilterProps['filterProps'];
+  visible?: boolean;
 } & ({ flex?: number } | { width?: 'auto' | string });
 
 export type TableSimpleProps<T> = {
@@ -219,6 +221,16 @@ const TableSimple = <T extends RowData>({
     }
   });
 
+  const columnVisibility = React.useMemo(() => {
+    return tableColumns.reduce(
+      (acc, column) => {
+        acc[column.id || (column.accessorKey as string)] = column.visible ?? true;
+        return acc;
+      },
+      {} as Record<string, boolean>
+    );
+  }, [tableColumns]);
+
   const table = useReactTable({
     data,
     columns: tableColumns,
@@ -227,6 +239,7 @@ const TableSimple = <T extends RowData>({
       globalFilter,
       columnFilters,
       rowSelection,
+      columnVisibility,
     },
     enableRowSelection,
     onRowSelectionChange: setRowSelection,

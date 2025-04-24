@@ -238,10 +238,12 @@ function getDemandsTableColumns(updateDemand: (demandId: string, demandUpdate: P
     {
       accessorKey: 'haut_potentiel',
       filterType: 'Facets', // obligatoire pour faire fonctionner le filtre
+      visible: false,
     },
     {
       accessorKey: 'en PDP',
       filterType: 'Facets', // obligatoire pour faire fonctionner le filtre
+      visible: false,
     },
   ];
 }
