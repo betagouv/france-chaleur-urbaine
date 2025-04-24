@@ -99,6 +99,7 @@ export type TableSimpleProps<T> = {
   onFilterChange?: (filteredRows: T[]) => void;
   nbLoadingItems?: number;
   loadingEmptyMessage?: string;
+  height?: string;
 };
 
 const cellCustomClasses = cva('', {
@@ -134,6 +135,7 @@ const TableSimple = <T extends RowData>({
   controlsLayout = 'inline',
   nbLoadingItems = 5,
   loadingEmptyMessage = 'Aucun résultat',
+  height = '600px',
 }: TableSimpleProps<T>) => {
   const [globalFilter, setGlobalFilter] = React.useState<any>([]);
   const [sortingState, setSortingState] = React.useState<SortingState>(initialSortingState ?? []);
@@ -322,7 +324,7 @@ const TableSimple = <T extends RowData>({
         style={{
           overflow: 'overlay', // our scrollable table container
           position: 'relative', // needed for sticky header
-          maxHeight: '600px', // should be a fixed height
+          maxHeight: height, // should be a fixed height
         }}
       >
         {/* Even though we're still using sematic table tags, we must use CSS grid and flexbox for dynamic row heights */}

@@ -19,6 +19,7 @@ import { VerticalDivider } from '@/components/ui/Divider';
 import Icon from '@/components/ui/Icon';
 import Indicator from '@/components/ui/Indicator';
 import Link from '@/components/ui/Link';
+import Loader from '@/components/ui/Loader';
 import TableSimple, { type ColumnDef, type QuickFilterPreset } from '@/components/ui/TableSimple';
 import Tooltip from '@/components/ui/Tooltip';
 import { useFetch } from '@/hooks/useApi';
@@ -456,56 +457,57 @@ function DemandesNew(): React.ReactElement {
               rowSelection={tableRowSelection}
               onRowClick={onTableRowClick}
               loadingEmptyMessage="Vous n'avez pas encore reçu de demandes"
+              height="calc(100dvh - 140px)"
             />
           </div>
 
-          {demands.length > 0 && (
-            <>
-              {mapCollapsed ? (
-                <div className="flex justify-end">
-                  <div
-                    className="flex items-center gap-2 bg-white p-1 rounded-md cursor-pointer shadow-sm"
-                    onClick={() => setMapCollapsed(false)}
-                  >
-                    <div className="text-sm">Afficher la carte</div>
-                    <Icon size="lg" name="ri-arrow-right-s-fill" />
+          {mapCollapsed ? (
+            <div className="flex justify-end">
+              <div
+                className="flex items-center gap-2 bg-white p-1 rounded-md cursor-pointer shadow-sm"
+                onClick={() => setMapCollapsed(false)}
+              >
+                <div className="text-sm">Afficher la carte</div>
+                <Icon size="lg" name="ri-arrow-right-s-fill" />
+              </div>
+            </div>
+          ) : (
+            <div className="lg:col-span-2 relative">
+              <div
+                className="absolute top-2 left-2 z-10 flex items-center gap-2 bg-white p-1 rounded-md cursor-pointer shadow-sm"
+                onClick={() => setMapCollapsed(true)}
+              >
+                <div className="text-sm">Masquer la carte</div>
+                <Icon size="lg" name="ri-arrow-left-s-fill" />
+              </div>
+              <div className="max-lg:h-[600px] lg:h-[calc(100dvh-140px)]">
+                {isDefined(mapCenterLocation) ? (
+                  <Map
+                    noPopup
+                    withoutLogo
+                    initialCenter={mapCenterLocation.center}
+                    initialZoom={mapCenterLocation.zoom}
+                    initialMapConfiguration={createMapConfiguration({
+                      reseauxDeChaleur: {
+                        show: true,
+                      },
+                      reseauxEnConstruction: true,
+                      zonesDeDeveloppementPrioritaire: true,
+                    })}
+                    geolocDisabled
+                    mapRef={mapRef}
+                    withSoughtAddresses={false}
+                    adressesEligibles={filteredDemandsMapData}
+                    adressesEligiblesAutoFit={false}
+                    onFeatureClick={onFeatureClick}
+                  />
+                ) : (
+                  <div className="absolute inset-0 flex justify-center items-center">
+                    <Loader size="lg" />
                   </div>
-                </div>
-              ) : (
-                <div className="lg:col-span-2 relative">
-                  <div
-                    className="absolute top-2 left-2 z-10 flex items-center gap-2 bg-white p-1 rounded-md cursor-pointer shadow-sm"
-                    onClick={() => setMapCollapsed(true)}
-                  >
-                    <div className="text-sm">Masquer la carte</div>
-                    <Icon size="lg" name="ri-arrow-left-s-fill" />
-                  </div>
-                  <div className="max-lg:h-[600px] lg:h-[calc(100dvh-140px)]">
-                    {isDefined(mapCenterLocation) && (
-                      <Map
-                        noPopup
-                        withoutLogo
-                        initialCenter={mapCenterLocation.center}
-                        initialZoom={mapCenterLocation.zoom}
-                        initialMapConfiguration={createMapConfiguration({
-                          reseauxDeChaleur: {
-                            show: true,
-                          },
-                          reseauxEnConstruction: true,
-                          zonesDeDeveloppementPrioritaire: true,
-                        })}
-                        geolocDisabled
-                        mapRef={mapRef}
-                        withSoughtAddresses={false}
-                        adressesEligibles={filteredDemandsMapData}
-                        adressesEligiblesAutoFit={false}
-                        onFeatureClick={onFeatureClick}
-                      />
-                    )}
-                  </div>
-                </div>
-              )}
-            </>
+                )}
+              </div>
+            </div>
           )}
         </div>
       </div>
