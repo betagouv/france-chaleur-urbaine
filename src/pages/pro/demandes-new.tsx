@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { type ColumnFiltersState } from '@tanstack/react-table';
 import { type Virtualizer } from '@tanstack/react-virtual';
-import { Fragment, useCallback, useMemo, useRef, useState } from 'react';
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { type RefObject } from 'react';
 import { type MapGeoJSONFeature, type MapRef } from 'react-map-gl/maplibre';
 
@@ -338,6 +338,11 @@ function DemandesNew(): React.ReactElement {
     }),
     {} as Record<QuickFilterPresetKey, number>
   );
+
+  // reset selection when filters change
+  useEffect(() => {
+    setSelectedDemandId(null);
+  }, [filteredDemands]);
 
   const filteredDemandsMapData = useMemo(() => {
     const demands = filteredDemands.map(
