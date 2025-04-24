@@ -13,6 +13,7 @@ import {
   getFilteredRowModel,
   getSortedRowModel,
   type RowData,
+  type RowSelectionState,
   type SortingFn,
   type SortingState,
   useReactTable,
@@ -90,7 +91,9 @@ export type TableSimpleProps<T> = {
   className?: string;
   fluid?: boolean;
   padding?: 'sm' | 'md' | 'lg';
+  rowSelection?: RowSelectionState;
   onSelectionChange?: (selectedRows: T[]) => void;
+  onRowClick?: (rowId: string) => void;
   rowHeight?: number;
   controlsLayout?: 'inline' | 'block';
   onFilterChange?: (filteredRows: T[]) => void;
@@ -120,7 +123,9 @@ const TableSimple = <T extends RowData>({
   caption,
   enableRowSelection,
   enableGlobalFilter = false,
+  rowSelection,
   onSelectionChange,
+  onRowClick,
   onFilterChange,
   className,
   fluid,
@@ -132,7 +137,6 @@ const TableSimple = <T extends RowData>({
 }: TableSimpleProps<T>) => {
   const [globalFilter, setGlobalFilter] = React.useState<any>([]);
   const [sortingState, setSortingState] = React.useState<SortingState>(initialSortingState ?? []);
-  const [rowSelection, setRowSelection] = React.useState<Record<string, boolean>>({});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(defaultColumnFilters ?? []);
 
   React.useEffect(() => {
@@ -242,7 +246,6 @@ const TableSimple = <T extends RowData>({
       columnVisibility,
     },
     enableRowSelection,
-    onRowSelectionChange: setRowSelection,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -481,11 +484,16 @@ const TableSimple = <T extends RowData>({
                       data-index={virtualRow.index} // needed for dynamic row height measurement
                       ref={(node) => rowVirtualizer.measureElement(node)} // measure dynamic row height
                       key={row.id}
-                      className="grid absolute w-full"
+                      className={cx(
+                        'grid absolute w-full',
+                        onRowClick && 'cursor-pointer transition-colors duration-100',
+                        onRowClick && (rowSelection?.[(row.original as any).id] ? '!bg-[#e1f1f5]' : 'hover:!bg-gray-200')
+                      )}
                       style={{
                         transform: `translateY(${virtualRow.start}px)`, // this should always be a `style` as it changes on scroll
                         gridTemplateColumns,
                       }}
+                      onClick={onRowClick ? () => onRowClick((row.original as any).id) : undefined}
                     >
                       {row.getVisibleCells().map((cell) => {
                         const columnDef = cell.column.columnDef as ColumnDef<T>;

@@ -2,7 +2,7 @@ import geoViewport from '@mapbox/geo-viewport';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import { useDebouncedEffect, useLocalStorageValue } from '@react-hookz/web';
-import { type LayerSpecification, type MapLibreEvent } from 'maplibre-gl';
+import { type LayerSpecification, type MapGeoJSONFeature, type MapLibreEvent } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useRouter } from 'next/router';
 import { parseAsJson, parseAsString, useQueryStates } from 'nuqs';
@@ -120,6 +120,7 @@ type MapProps = {
   mapRef?: RefObject<MapRef>;
   adressesEligibles?: AdresseEligible[];
   adressesEligiblesAutoFit?: boolean;
+  onFeatureClick?: (feature: MapGeoJSONFeature) => void;
   children?: ReactNode;
 };
 
@@ -153,6 +154,7 @@ export const FullyFeaturedMap = ({
   className,
   adressesEligibles,
   adressesEligiblesAutoFit = true,
+  onFeatureClick,
   children,
   ...props
 }: MapProps & React.HTMLAttributes<HTMLDivElement>) => {
@@ -381,7 +383,7 @@ export const FullyFeaturedMap = ({
     setMapLayersLoaded(true);
   };
 
-  const { Popup } = useMapEvents({ mapLayersLoaded, isDrawing, mapRef: mapRef.current });
+  const { Popup } = useMapEvents({ mapLayersLoaded, isDrawing, mapRef: mapRef.current, onFeatureClick });
 
   // disable the switcher control as it conflicts with map layers and drawing interactions
   useEffect(() => {
@@ -614,6 +616,7 @@ export const FullyFeaturedMap = ({
           id: address.id,
           address: address.address,
           isEligible: address.isEligible,
+          selected: address.selected,
         },
       })),
     });

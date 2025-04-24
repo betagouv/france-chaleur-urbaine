@@ -32,12 +32,13 @@ type UseMapEventsProps = {
   mapLayersLoaded: boolean;
   isDrawing: boolean;
   mapRef: MapRef | null;
+  onFeatureClick?: (feature: MapGeoJSONFeature) => void;
 };
 
 /**
  * Register mouse events (move and click).
  */
-export function useMapEvents({ mapLayersLoaded, isDrawing, mapRef }: UseMapEventsProps) {
+export function useMapEvents({ mapLayersLoaded, isDrawing, mapRef, onFeatureClick }: UseMapEventsProps) {
   const [popupComponent, setPopupComponent] = useState<(() => JSX.Element) | null>(null);
 
   const lastHoveredFeatureRef = useRef<{
@@ -110,10 +111,13 @@ export function useMapEvents({ mapLayersLoaded, isDrawing, mapRef }: UseMapEvent
       }
       const popupFunc = layerSpec.popup;
 
+      onFeatureClick?.(hoveredFeature);
+
       setPopupComponent(() => (
         <Popup
           longitude={snapPoint[0]}
           latitude={snapPoint[1]}
+          offset={layerSpec.popupOffset}
           closeButton={false} // manual handling
           key={Math.random()} // force the popup to resfresh
         >

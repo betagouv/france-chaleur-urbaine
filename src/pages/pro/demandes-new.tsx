@@ -2,7 +2,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { type ColumnFiltersState } from '@tanstack/react-table';
 import { Fragment, useCallback, useMemo, useRef, useState } from 'react';
 import { type RefObject } from 'react';
-import { type MapRef } from 'react-map-gl/maplibre';
+import { type MapGeoJSONFeature, type MapRef } from 'react-map-gl/maplibre';
 
 import AdditionalInformation from '@/components/Manager/AdditionalInformation';
 import Comment from '@/components/Manager/Comment';
@@ -11,6 +11,7 @@ import Contacted from '@/components/Manager/Contacted';
 import DemandStatusBadge from '@/components/Manager/DemandStatusBadge';
 import Status from '@/components/Manager/Status';
 import Tag from '@/components/Manager/Tag';
+import { type AdresseEligible } from '@/components/Map/layers/adressesEligibles';
 import Map from '@/components/Map/Map';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import SimplePage from '@/components/shared/page/SimplePage';
@@ -23,7 +24,6 @@ import Tooltip from '@/components/ui/Tooltip';
 import { useFetch } from '@/hooks/useApi';
 import { withAuthentication } from '@/server/authentication';
 import { type DemandStatus } from '@/types/enum/DemandSatus';
-import { type MapMarkerInfos } from '@/types/MapComponentsInfos';
 import { type Point } from '@/types/Point';
 import { type Demand } from '@/types/Summary/Demand';
 import { isDefined } from '@/utils/core';
@@ -315,7 +315,11 @@ function DemandesNew(): React.ReactElement {
   const queryClient = useQueryClient();
   const mapRef = useRef<MapRef>(null) as RefObject<MapRef>;
 
-  const [selectedRows, setSelectedRows] = useState<Demand[]>([]);
+  const [selectedDemandId, setSelectedDemandId] = useState<string | null>(null);
+
+  const tableRowSelection = useMemo(() => {
+    return selectedDemandId ? { [selectedDemandId]: true } : {};
+  }, [selectedDemandId]);
 
   const [mapCollapsed, setMapCollapsed] = useState(false);
   const [mapCenterLocation, setMapCenterLocation] = useState<MapCenterLocation>();
@@ -332,79 +336,31 @@ function DemandesNew(): React.ReactElement {
     {} as Record<QuickFilterPresetKey, number>
   );
 
-  // Update map when filtered demands change
-  const mapPins = useMemo(() => {
-    const pins = filteredDemands.map<MapMarkerInfos>((demand) => ({
-      id: demand.id,
-      latitude: demand.Latitude,
-      longitude: demand.Longitude,
-      popup: true,
-      popupContent: demand.Adresse,
-      // onClickAction: onMapPinClick,
-      color: selectedRows.some((row) => row.id === demand.id) ? 'red' : '#4550e5',
-    }));
+  const filteredDemandsMapData = useMemo(() => {
+    const demands = filteredDemands.map(
+      (demand) =>
+        ({
+          id: demand.id,
+          longitude: demand.Longitude,
+          latitude: demand.Latitude,
+          address: demand.Adresse,
+          selected: demand.id === selectedDemandId,
+          // isEligible: demand.haut_potentiel,
+        }) satisfies AdresseEligible
+    );
 
-    // center on first demand
-    if (pins[0]) {
+    // center on the selected demand or the first one
+    const selectedDemand = isDefined(selectedDemandId) ? demands.find((demand) => demand.id === selectedDemandId) : demands[0];
+    if (selectedDemand) {
       setMapCenterLocation({
-        center: [pins[0].longitude, pins[0].latitude],
-        zoom: 8,
+        center: [selectedDemand.longitude, selectedDemand.latitude],
+        zoom: selectedDemandId ? 16 : 8,
       });
+    } else {
+      console.warn('selectedDemandId should not be selected anymore');
     }
-
-    return pins;
-  }, [filteredDemands, selectedRows]);
-
-  // const filteredDemandsMapData = useMemo(() => {
-  //   return filteredDemands
-  //     .filter((demand) => demand.haut_potentiel)
-  //     .map(
-  //       (demand) =>
-  //         ({
-  //           id: demand.id,
-  //           longitude: demand.Longitude,
-  //           latitude: demand.Latitude,
-  //           address: demand.Adresse,
-  //           isEligible: demand.haut_potentiel,
-  //         }) satisfies AdresseEligible
-  //     );
-  // }, [filteredDemands]);
-
-  // const highlightPin = useCallback(
-  //   (selectedPinId: string) => {
-  //     setMapPins((currentMapPins) => [
-  //       ...currentMapPins.map((pin) => ({
-  //         ...pin,
-  //         color: pin.id === selectedPinId ? 'red' : '#4550e5',
-  //       })),
-  //     ]);
-  //   },
-  //   [setMapPins]
-  // );
-
-  // const onMapPinClick = useCallback(
-  //   (demandId: string) => {
-  //     const selectedDemand = filteredDemands.find((demand) => demand.id === demandId);
-  //     if (selectedDemand) {
-  //       setSelectedRows([selectedDemand]);
-  //       highlightPin(demandId);
-
-  //       // Find page that contains this demand and navigate to it
-  //       const demandIndex = filteredDemands.findIndex((d) => d.id === demandId);
-  //       if (demandIndex !== -1) {
-  //         const demandPage = Math.floor(demandIndex / itemsPerPage) + 1;
-  //         setCurrentPage(demandPage);
-  //       }
-
-  //       // Center map on the selected demand
-  //       setMapCenterLocation({
-  //         center: [selectedDemand.Longitude, selectedDemand.Latitude],
-  //         zoom: 16,
-  //       });
-  //     }
-  //   },
-  //   [filteredDemands, highlightPin, itemsPerPage]
-  // );
+    return demands;
+  }, [filteredDemands, selectedDemandId]);
 
   const updateDemand = useCallback(async (demandId: string, demandUpdate: Partial<Demand>) => {
     await putFetchJSON(`/api/demands/${demandId}`, demandUpdate);
@@ -426,14 +382,19 @@ function DemandesNew(): React.ReactElement {
 
   const tableColumns = useMemo(() => getDemandsTableColumns(updateDemand), [updateDemand]);
 
-  const onTableSelectionChange = useCallback((selectedRows: Demand[]) => {
-    console.log('onSelectionChange', selectedRows);
-    setSelectedRows(selectedRows);
-    if (selectedRows.length === 1) {
-      const selectedDemand = selectedRows[0];
-      // highlightPin(selectedDemand.id);
+  const onFeatureClick = useCallback((feature: MapGeoJSONFeature) => {
+    if (feature.source !== 'adressesEligibles') {
+      return;
+    }
+    setSelectedDemandId(feature.id as string);
+  }, []);
+
+  const onTableRowClick = useCallback((demandId: string) => {
+    setSelectedDemandId(demandId);
+    const demand = demands.find((demand) => demand.id === demandId);
+    if (demand) {
       setMapCenterLocation({
-        center: [selectedDemand.Longitude, selectedDemand.Latitude],
+        center: [demand.Longitude, demand.Latitude],
         zoom: 16,
       });
     }
@@ -492,7 +453,8 @@ function DemandesNew(): React.ReactElement {
               onFilterChange={setFilteredDemands}
               fluid
               controlsLayout="block"
-              onSelectionChange={onTableSelectionChange}
+              rowSelection={tableRowSelection}
+              onRowClick={onTableRowClick}
               loadingEmptyMessage="Vous n'avez pas encore reçu de demandes"
             />
           </div>
@@ -534,8 +496,10 @@ function DemandesNew(): React.ReactElement {
                         })}
                         geolocDisabled
                         mapRef={mapRef}
-                        pinsList={mapPins}
-                        // adressesEligibles={filteredDemandsMapData}
+                        withSoughtAddresses={false}
+                        adressesEligibles={filteredDemandsMapData}
+                        adressesEligiblesAutoFit={false}
+                        onFeatureClick={onFeatureClick}
                       />
                     )}
                   </div>
