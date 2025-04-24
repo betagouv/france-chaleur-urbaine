@@ -66,7 +66,7 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
         <div className=" text-xs italic text-gray-500 tracking-tighter">{info.row.original.source_address}</div>
       </div>
     ),
-    flex: 1,
+    width: 'minmax(200px, 1fr)',
     enableSorting: false,
   },
   {
