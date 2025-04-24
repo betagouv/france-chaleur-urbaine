@@ -237,7 +237,7 @@ function getDemandsTableColumns(updateDemand: (demandId: string, demandUpdate: P
       filterType: 'Facets',
     },
 
-    // TODO besoin de définir mais cacher pour utiliser dans les presets
+    // obligatoire afin d'être utilisables dans les presets
     {
       accessorKey: 'haut_potentiel',
       filterType: 'Facets', // obligatoire pour faire fonctionner le filtre
