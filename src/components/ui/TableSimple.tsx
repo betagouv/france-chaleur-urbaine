@@ -282,6 +282,7 @@ const TableSimple = <T extends RowData>({
     .join(' ');
 
   const nbRowsToDisplay = loading ? 5 : filteredRows.length || 1; /* There is one empty row when no data is present */
+  const bodyHeight = loading ? nbRowsToDisplay * rowHeight : rowVirtualizer.getTotalSize();
 
   return (
     <section>
@@ -429,7 +430,7 @@ const TableSimple = <T extends RowData>({
           <tbody
             style={{
               display: 'grid',
-              height: `${nbRowsToDisplay * rowHeight}px`, // tells scrollbar how big the table is
+              height: `${bodyHeight}px`, // tells scrollbar how big the table is
               position: 'relative', // needed for absolute positioning of rows
             }}
           >
@@ -468,7 +469,6 @@ const TableSimple = <T extends RowData>({
                       style={{
                         transform: `translateY(${virtualRow.start}px)`, // this should always be a `style` as it changes on scroll
                         gridTemplateColumns,
-                        height: rowHeight,
                       }}
                     >
                       {row.getVisibleCells().map((cell) => {
