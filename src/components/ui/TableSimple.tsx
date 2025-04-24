@@ -92,6 +92,7 @@ export type TableSimpleProps<T> = {
   rowHeight?: number;
   controlsLayout?: 'inline' | 'block';
   onFilterChange?: (filteredRows: T[]) => void;
+  nbLoadingItems?: number;
 };
 
 const cellCustomClasses = cva('', {
@@ -123,6 +124,7 @@ const TableSimple = <T extends RowData>({
   padding = 'md',
   rowHeight = 64,
   controlsLayout = 'inline',
+  nbLoadingItems = 5,
 }: TableSimpleProps<T>) => {
   const [globalFilter, setGlobalFilter] = React.useState<any>([]);
   const [sortingState, setSortingState] = React.useState<SortingState>(initialSortingState ?? []);
@@ -281,8 +283,7 @@ const TableSimple = <T extends RowData>({
     })
     .join(' ');
 
-  const nbRowsToDisplay = loading ? 5 : filteredRows.length || 1; /* There is one empty row when no data is present */
-  const bodyHeight = loading ? nbRowsToDisplay * rowHeight : rowVirtualizer.getTotalSize();
+  const bodyHeight = loading ? nbLoadingItems * rowHeight : rowVirtualizer.getTotalSize() || 1 * rowHeight;
 
   return (
     <section>
@@ -435,7 +436,7 @@ const TableSimple = <T extends RowData>({
             }}
           >
             {loading &&
-              [1, 2, 3, 4, 5].map((value, index) => (
+              [...Array(nbLoadingItems)].map((value, index) => (
                 <tr
                   key={`loading_${value}`}
                   className="grid absolute w-full"
