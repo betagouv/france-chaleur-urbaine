@@ -1,5 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { type ColumnFiltersState } from '@tanstack/react-table';
+import { type Virtualizer } from '@tanstack/react-virtual';
 import { Fragment, useCallback, useMemo, useRef, useState } from 'react';
 import { type RefObject } from 'react';
 import { type MapGeoJSONFeature, type MapRef } from 'react-map-gl/maplibre';
@@ -315,6 +316,7 @@ type QuickFilterPresetKey = keyof typeof quickFilterPresets;
 function DemandesNew(): React.ReactElement {
   const queryClient = useQueryClient();
   const mapRef = useRef<MapRef>(null) as RefObject<MapRef>;
+  const virtualizerRef = useRef<Virtualizer<HTMLDivElement, Element>>(null) as RefObject<Virtualizer<HTMLDivElement, Element>>;
 
   const [selectedDemandId, setSelectedDemandId] = useState<string | null>(null);
 
@@ -383,12 +385,17 @@ function DemandesNew(): React.ReactElement {
 
   const tableColumns = useMemo(() => getDemandsTableColumns(updateDemand), [updateDemand]);
 
-  const onFeatureClick = useCallback((feature: MapGeoJSONFeature) => {
-    if (feature.source !== 'adressesEligibles') {
-      return;
-    }
-    setSelectedDemandId(feature.id as string);
-  }, []);
+  const onFeatureClick = useCallback(
+    (feature: MapGeoJSONFeature) => {
+      if (feature.source !== 'adressesEligibles') {
+        return;
+      }
+      setSelectedDemandId(feature.id as string);
+      const rowIndex = filteredDemands.findIndex((demand) => demand.id === feature.id);
+      virtualizerRef.current?.scrollToIndex(rowIndex, { align: 'center' });
+    },
+    [filteredDemands, virtualizerRef.current]
+  );
 
   const onTableRowClick = useCallback((demandId: string) => {
     setSelectedDemandId(demandId);
@@ -458,6 +465,7 @@ function DemandesNew(): React.ReactElement {
               onRowClick={onTableRowClick}
               loadingEmptyMessage="Vous n'avez pas encore reçu de demandes"
               height="calc(100dvh - 140px)"
+              virtualizerRef={virtualizerRef}
             />
           </div>
 

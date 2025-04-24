@@ -18,9 +18,9 @@ import {
   type SortingState,
   useReactTable,
 } from '@tanstack/react-table';
-import { useVirtualizer } from '@tanstack/react-virtual';
+import { useVirtualizer, type Virtualizer } from '@tanstack/react-virtual';
 import { cva } from 'class-variance-authority';
-import React from 'react';
+import React, { type RefObject, useEffect } from 'react';
 
 import Button from '@/components/ui/Button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover';
@@ -100,6 +100,7 @@ export type TableSimpleProps<T> = {
   nbLoadingItems?: number;
   loadingEmptyMessage?: string;
   height?: string;
+  virtualizerRef?: RefObject<Virtualizer<HTMLDivElement, Element>>;
 };
 
 const cellCustomClasses = cva('', {
@@ -136,6 +137,7 @@ const TableSimple = <T extends RowData>({
   nbLoadingItems = 5,
   loadingEmptyMessage = 'Aucun résultat',
   height = '600px',
+  virtualizerRef,
 }: TableSimpleProps<T>) => {
   const [globalFilter, setGlobalFilter] = React.useState<any>([]);
   const [sortingState, setSortingState] = React.useState<SortingState>(initialSortingState ?? []);
@@ -293,6 +295,12 @@ const TableSimple = <T extends RowData>({
         : undefined,
     overscan: 10, // The number of items to render above and below the visible area
   });
+
+  useEffect(() => {
+    if (virtualizerRef) {
+      virtualizerRef.current = rowVirtualizer;
+    }
+  }, [rowVirtualizer, virtualizerRef]);
 
   const gridTemplateColumns = table
     .getHeaderGroups()[0]
