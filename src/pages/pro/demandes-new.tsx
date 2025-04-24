@@ -346,7 +346,7 @@ function DemandesNew(): React.ReactElement {
   }, [filteredDemands]);
 
   const filteredDemandsMapData = useMemo(() => {
-    const demands = filteredDemands.map(
+    return filteredDemands.map(
       (demand) =>
         ({
           id: demand.id,
@@ -357,19 +357,6 @@ function DemandesNew(): React.ReactElement {
           // isEligible: demand.haut_potentiel,
         }) satisfies AdresseEligible
     );
-
-    // center on the selected demand or the first one
-    const selectedDemand = isDefined(selectedDemandId) ? demands.find((demand) => demand.id === selectedDemandId) : demands[0];
-    if (selectedDemand) {
-      setMapCenterLocation({
-        center: [selectedDemand.longitude, selectedDemand.latitude],
-        zoom: selectedDemandId ? 16 : 8,
-        flyTo: true,
-      });
-    } else {
-      console.warn('selectedDemandId should not be selected anymore');
-    }
-    return demands;
   }, [filteredDemands, selectedDemandId]);
 
   const updateDemand = useCallback(async (demandId: string, demandUpdate: Partial<Demand>) => {
@@ -404,13 +391,31 @@ function DemandesNew(): React.ReactElement {
     [filteredDemands, virtualizerRef.current]
   );
 
-  const onTableRowClick = useCallback((demandId: string) => {
-    setSelectedDemandId(demandId);
-    const demand = demands.find((demand) => demand.id === demandId);
-    if (demand) {
+  const onTableRowClick = useCallback(
+    (demandId: string) => {
+      setSelectedDemandId(demandId);
+      const selectedDemand = demands.find((demand) => demand.id === demandId);
+      if (selectedDemand) {
+        setMapCenterLocation({
+          center: [selectedDemand.Longitude, selectedDemand.Latitude],
+          zoom: 16,
+          flyTo: true,
+        });
+      }
+    },
+    [demands]
+  );
+
+  const onTableFiltersChange = useCallback((demands: Demand[]) => {
+    setFilteredDemands(demands);
+
+    // center on the first demand if any
+    const firstDemand = demands[0];
+    if (firstDemand) {
       setMapCenterLocation({
-        center: [demand.Longitude, demand.Latitude],
-        zoom: 16,
+        center: [firstDemand.Longitude, firstDemand.Latitude],
+        zoom: 8,
+        flyTo: true,
       });
     }
   }, []);
@@ -465,7 +470,7 @@ function DemandesNew(): React.ReactElement {
               loading={isLoading}
               initialSortingState={[{ id: 'Date demandes', desc: true }]}
               columnFilters={columnFilters}
-              onFilterChange={setFilteredDemands}
+              onFilterChange={onTableFiltersChange}
               fluid
               controlsLayout="block"
               rowSelection={tableRowSelection}
