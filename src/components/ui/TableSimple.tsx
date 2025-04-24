@@ -93,6 +93,7 @@ export type TableSimpleProps<T> = {
   controlsLayout?: 'inline' | 'block';
   onFilterChange?: (filteredRows: T[]) => void;
   nbLoadingItems?: number;
+  loadingEmptyMessage?: string;
 };
 
 const cellCustomClasses = cva('', {
@@ -125,6 +126,7 @@ const TableSimple = <T extends RowData>({
   rowHeight = 64,
   controlsLayout = 'inline',
   nbLoadingItems = 5,
+  loadingEmptyMessage = 'Aucun résultat',
 }: TableSimpleProps<T>) => {
   const [globalFilter, setGlobalFilter] = React.useState<any>([]);
   const [sortingState, setSortingState] = React.useState<SortingState>(initialSortingState ?? []);
@@ -454,8 +456,8 @@ const TableSimple = <T extends RowData>({
             {!loading &&
               (rowVirtualizer.getVirtualItems().length === 0 ? (
                 <tr>
-                  <td colSpan={columns.length} className="!flex justify-center items-center h-full text-black ">
-                    {data.length === 0 ? 'Aucun résultat' : 'Aucun résultat trouvé, élargissez votre recherche'}
+                  <td colSpan={columns.length} className="!flex justify-start items-center h-full text-black ">
+                    {data.length === 0 ? loadingEmptyMessage : 'Aucun résultat trouvé, élargissez votre recherche'}
                   </td>
                 </tr>
               ) : (
