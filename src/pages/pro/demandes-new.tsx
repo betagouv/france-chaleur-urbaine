@@ -71,7 +71,13 @@ function getDemandsTableColumns(updateDemand: (demandId: string, demandUpdate: P
     },
     {
       accessorKey: 'Prise de contact',
-      header: 'Prospect recontacté',
+      header: () => (
+        <>
+          Prospect
+          <br />
+          recontacté
+        </>
+      ),
       cell: ({ row }) => <Contacted demand={row.original} updateDemand={updateDemand} />,
       align: 'center',
       filterType: 'Facets',
@@ -116,7 +122,7 @@ function getDemandsTableColumns(updateDemand: (demandId: string, demandUpdate: P
       accessorKey: 'Structure',
       header: 'Type',
       cell: ({ row }) => <Tag text={row.original.Structure} />,
-      width: '120px',
+      width: '150px',
       filterType: 'Facets',
     },
     {
@@ -472,71 +478,70 @@ function DemandesNew(): React.ReactElement {
             </Fragment>
           ))}
         </div>
-        {demands.length > 0 ? (
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
-            <div className={`${mapCollapsed ? 'lg:col-span-5' : 'lg:col-span-3'} overflow-auto`}>
-              <TableSimple
-                columns={tableColumns}
-                data={demands}
-                loading={isLoading}
-                initialSortingState={[{ id: 'Date demandes', desc: true }]}
-                columnFilters={columnFilters}
-                onFilterChange={setFilteredDemands}
-                fluid
-                controlsLayout="block"
-                rowHeight={100} /* TODO utiliser un tableau avec hauteur dynamique*/
-                onSelectionChange={onTableSelectionChange}
-              />
-            </div>
 
-            {mapCollapsed ? (
-              <div className="flex justify-end">
-                <div
-                  className="flex items-center gap-2 bg-white p-1 rounded-md cursor-pointer shadow-sm"
-                  onClick={() => setMapCollapsed(false)}
-                >
-                  <div className="text-sm">Afficher la carte</div>
-                  <Icon size="lg" name="ri-arrow-right-s-fill" />
-                </div>
-              </div>
-            ) : (
-              <div className="lg:col-span-2 relative">
-                <div
-                  className="absolute top-2 left-2 z-10 flex items-center gap-2 bg-white p-1 rounded-md cursor-pointer shadow-sm"
-                  onClick={() => setMapCollapsed(true)}
-                >
-                  <div className="text-sm">Masquer la carte</div>
-                  <Icon size="lg" name="ri-arrow-left-s-fill" />
-                </div>
-                <div className="max-lg:h-[600px] lg:h-[calc(100dvh-140px)]">
-                  {isDefined(mapCenterLocation) && (
-                    <Map
-                      noPopup
-                      withoutLogo
-                      initialCenter={mapCenterLocation.center}
-                      initialZoom={mapCenterLocation.zoom}
-                      initialMapConfiguration={createMapConfiguration({
-                        reseauxDeChaleur: {
-                          show: true,
-                        },
-                        reseauxEnConstruction: true,
-                        zonesDeDeveloppementPrioritaire: true,
-                      })}
-                      geolocDisabled
-                      mapRef={mapRef}
-                      pinsList={mapPins}
-                      // adressesEligibles={filteredDemandsMapData}
-                    />
-                  )}
-                </div>
-              </div>
-            )}
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+          <div className={`${mapCollapsed ? 'lg:col-span-5' : 'lg:col-span-3'} overflow-auto`}>
+            <TableSimple
+              columns={tableColumns}
+              data={demands}
+              loading={isLoading}
+              initialSortingState={[{ id: 'Date demandes', desc: true }]}
+              columnFilters={columnFilters}
+              onFilterChange={setFilteredDemands}
+              fluid
+              controlsLayout="block"
+              onSelectionChange={onTableSelectionChange}
+              loadingEmptyMessage="Vous n'avez pas encore reçu de demandes"
+            />
           </div>
-        ) : (
-          <h2 className="mt-8 text-center">
-            {isLoading ? 'Chargement de vos données en cours...' : "Vous n'avez pas encore reçu de demandes"}
-          </h2>
-        )}
+
+          {demands.length > 0 && (
+            <>
+              {mapCollapsed ? (
+                <div className="flex justify-end">
+                  <div
+                    className="flex items-center gap-2 bg-white p-1 rounded-md cursor-pointer shadow-sm"
+                    onClick={() => setMapCollapsed(false)}
+                  >
+                    <div className="text-sm">Afficher la carte</div>
+                    <Icon size="lg" name="ri-arrow-right-s-fill" />
+                  </div>
+                </div>
+              ) : (
+                <div className="lg:col-span-2 relative">
+                  <div
+                    className="absolute top-2 left-2 z-10 flex items-center gap-2 bg-white p-1 rounded-md cursor-pointer shadow-sm"
+                    onClick={() => setMapCollapsed(true)}
+                  >
+                    <div className="text-sm">Masquer la carte</div>
+                    <Icon size="lg" name="ri-arrow-left-s-fill" />
+                  </div>
+                  <div className="max-lg:h-[600px] lg:h-[calc(100dvh-140px)]">
+                    {isDefined(mapCenterLocation) && (
+                      <Map
+                        noPopup
+                        withoutLogo
+                        initialCenter={mapCenterLocation.center}
+                        initialZoom={mapCenterLocation.zoom}
+                        initialMapConfiguration={createMapConfiguration({
+                          reseauxDeChaleur: {
+                            show: true,
+                          },
+                          reseauxEnConstruction: true,
+                          zonesDeDeveloppementPrioritaire: true,
+                        })}
+                        geolocDisabled
+                        mapRef={mapRef}
+                        pinsList={mapPins}
+                        // adressesEligibles={filteredDemandsMapData}
+                      />
+                    )}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </div>
       </div>
     </SimplePage>
   );
