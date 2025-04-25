@@ -89,6 +89,7 @@ export type TableSimpleProps<T> = {
   enableRowSelection?: boolean;
   enableGlobalFilter?: boolean;
   className?: string;
+  wrapperClassName?: string;
   fluid?: boolean;
   padding?: 'sm' | 'md' | 'lg';
   rowSelection?: RowSelectionState;
@@ -129,7 +130,8 @@ const TableSimple = <T extends RowData>({
   onSelectionChange,
   onRowClick,
   onFilterChange,
-  className,
+  className: tableClassName,
+  wrapperClassName,
   fluid,
   padding = 'md',
   rowHeight = 64,
@@ -314,7 +316,7 @@ const TableSimple = <T extends RowData>({
   const bodyHeight = loading ? nbLoadingItems * rowHeight : rowVirtualizer.getTotalSize() || 1 * rowHeight;
 
   return (
-    <section>
+    <section className={wrapperClassName}>
       {enableGlobalFilter && (
         <Input
           label=""
@@ -322,12 +324,13 @@ const TableSimple = <T extends RowData>({
             value: globalFilter,
             onChange: (e) => table.setGlobalFilter(e.target.value),
             placeholder: 'Recherche...',
+            className: 'mb-2',
           }}
         />
       )}
       {caption && <div className="text-2xl leading-8 font-bold mb-5">{caption}</div>}
       <div
-        className={fr.cx('fr-table', 'fr-table--no-scroll')}
+        className={cx(fr.cx('fr-table', 'fr-table--no-scroll'), '!my-0')}
         ref={tableContainerRef}
         style={{
           overflow: 'overlay', // our scrollable table container
@@ -337,7 +340,7 @@ const TableSimple = <T extends RowData>({
       >
         {/* Even though we're still using sematic table tags, we must use CSS grid and flexbox for dynamic row heights */}
         <table
-          className={cx(fluid ? '!w-[max-content]' : '', className)}
+          className={cx(fluid ? '!w-[max-content]' : '', tableClassName)}
           style={{
             display: 'grid',
             overflow: 'unset', // overwrite the dsfr
