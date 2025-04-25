@@ -68,6 +68,7 @@ import rawOsmConfig from './osm.config.json';
 import rawSatelliteConfig from './satellite.config.json';
 import { type MapboxStyleDefinition, MapboxStyleSwitcherControl } from './StyleSwitcher';
 
+export { AdresseEligible };
 const mapSettings = {
   defaultLongitude: 2.3,
   defaultLatitude: 47,
