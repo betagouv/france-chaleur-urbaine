@@ -21,6 +21,7 @@ import Icon from '@/components/ui/Icon';
 import Indicator from '@/components/ui/Indicator';
 import Link from '@/components/ui/Link';
 import Loader from '@/components/ui/Loader';
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/Resizable';
 import TableSimple, { type ColumnDef, type QuickFilterPreset } from '@/components/ui/TableSimple';
 import Tooltip from '@/components/ui/Tooltip';
 import { useFetch } from '@/hooks/useApi';
@@ -33,7 +34,6 @@ import cx from '@/utils/cx';
 import { putFetchJSON } from '@/utils/network';
 import { upperCaseFirstChar } from '@/utils/strings';
 import { ObjectEntries, ObjectKeys } from '@/utils/typescript';
-
 type MapCenterLocation = {
   center: Point;
   zoom: number;
@@ -328,7 +328,6 @@ function DemandesNew(): React.ReactElement {
     return selectedDemandId ? { [selectedDemandId]: true } : {};
   }, [selectedDemandId]);
 
-  const [mapCollapsed, setMapCollapsed] = useState(false);
   const [mapCenterLocation, setMapCenterLocation] = useState<MapCenterLocation>();
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [filteredDemands, setFilteredDemands] = useState<Demand[]>([]);
@@ -465,9 +464,8 @@ function DemandesNew(): React.ReactElement {
             </Fragment>
           ))}
         </div>
-
-        <div className="flex flex-col md:flex-row gap-4 transition-all relative">
-          <div className={`flex-1 overflow-auto`}>
+        <ResizablePanelGroup direction="horizontal" className="gap-4">
+          <ResizablePanel defaultSize={66}>
             <TableSimple
               columns={tableColumns}
               data={demands}
@@ -484,13 +482,10 @@ function DemandesNew(): React.ReactElement {
               height="calc(100dvh - 140px)"
               virtualizerRef={virtualizerRef}
             />
-          </div>
-
-          <div className={cx('relative', mapCollapsed ? 'w-[40px]' : 'w-full md:w-[30%] lg:w-[40%]')}>
-            <div
-              className={cx('max-md:h-[600px] md:h-[calc(100dvh-140px)] bg-[#F8F4F0]', mapCollapsed && 'cursor-pointer')}
-              {...(mapCollapsed ? { onClick: () => setMapCollapsed(false) } : {})}
-            >
+          </ResizablePanel>
+          <ResizableHandle />
+          <ResizablePanel defaultSize={34}>
+            <div className={cx('max-md:h-[600px] md:h-[calc(100dvh-140px)] bg-[#F8F4F0]')}>
               {isDefined(mapCenterLocation) ? (
                 <Map
                   noPopup
@@ -518,16 +513,8 @@ function DemandesNew(): React.ReactElement {
                 </div>
               )}
             </div>
-            <div
-              className="absolute whitespace-nowrap rotate-90 cursor-pointer p-1 top-1/2 left-0 -translate-x-1/2 -translate-y-1/2 z-10 flex items-center gap-2 bg-blue text-white"
-              onClick={() => setMapCollapsed(!mapCollapsed)}
-            >
-              <Icon size="sm" name="fr-icon-arrow-right-s-line" rotate={mapCollapsed ? 90 : -90} />
-              <div className="text-sm">{mapCollapsed ? 'Afficher la carte' : 'Masquer la carte'}</div>
-              <Icon size="sm" name="fr-icon-arrow-right-s-line" rotate={mapCollapsed ? 90 : -90} />
-            </div>
-          </div>
-        </div>
+          </ResizablePanel>
+        </ResizablePanelGroup>
       </div>
     </SimplePage>
   );

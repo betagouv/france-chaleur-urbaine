@@ -80,6 +80,8 @@ const colors = {
 
   primary: palette.blue,
 
+  border: '#d1d5db',
+
   'fcu-green': '#009364',
   'fcu-blue': '#00B1F8',
   'fcu-purple': '#8585F6',
