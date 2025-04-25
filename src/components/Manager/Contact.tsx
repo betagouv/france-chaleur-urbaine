@@ -44,7 +44,7 @@ const Contact = ({
   const nomStructureAccompagnante = getNomStructureAccompagnante();
 
   return (
-    <ContactInfos className="fr-m-1w">
+    <ContactInfos className="w-full">
       <>
         <Name>
           {demand.Prénom ?? ''} {demand.Nom}
@@ -57,10 +57,15 @@ const Contact = ({
             }}
           >
             <Icon size="sm" name="ri-mail-line" className="fr-mr-1w" />
-            <u>{demand.Mail}</u>
+            <u className="whitespace-normal">{demand.Mail}</u>
           </EmailInfo>
         )}
-        {demand.Téléphone && <OtherInfo>{demand.Téléphone}</OtherInfo>}
+        {demand.Téléphone && (
+          <OtherInfo>
+            <Icon size="sm" name="ri-phone-line" className="fr-mr-1w" />
+            <span>{demand.Téléphone}</span>
+          </OtherInfo>
+        )}
       </>
       {demand.Mail && (
         <ModalEmails
