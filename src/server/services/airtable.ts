@@ -238,6 +238,8 @@ export const syncGestionnairesWithUsers = async () => {
           status: 'valid',
         } satisfies Insertable<Users>;
 
+        let insertedUser = false;
+
         if (!DRY_RUN) {
           try {
             await db('users').insert(data);
@@ -248,13 +250,16 @@ export const syncGestionnairesWithUsers = async () => {
               },
               { typecast: true }
             );
+            insertedUser = true;
           } catch (e) {
             logger.error(`Could not create ${email} in database`, { error: e });
           }
         }
 
-        logDry(`    📩 Sending inscription email to ${email}`);
-        if (!DRY_RUN) await sendInscriptionEmail(email);
+        if (insertedUser) {
+          logDry(`    📩 Sending inscription email to ${email}`);
+          if (!DRY_RUN) await sendInscriptionEmail(email);
+        }
         stats.totalCreated++;
         return;
       }
