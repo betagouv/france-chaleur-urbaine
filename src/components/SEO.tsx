@@ -3,7 +3,7 @@ import { usePathname } from 'next/navigation';
 import React from 'react';
 import type { Graph, Thing } from 'schema-dts';
 
-import { colors } from './ui/helpers/colors';
+import colors from './ui/helpers/colors';
 
 const maxTitleLength = 60;
 const maxDescriptionLength = 160;
