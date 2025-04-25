@@ -25,7 +25,7 @@ import TableSimple, { type ColumnDef, type QuickFilterPreset } from '@/component
 import Tooltip from '@/components/ui/Tooltip';
 import { useFetch } from '@/hooks/useApi';
 import { withAuthentication } from '@/server/authentication';
-import { type DemandStatus } from '@/types/enum/DemandSatus';
+import { DEMANDE_STATUS, type DemandStatus } from '@/types/enum/DemandSatus';
 import { type Point } from '@/types/Point';
 import { type Demand } from '@/types/Summary/Demand';
 import { isDefined } from '@/utils/core';
@@ -54,8 +54,8 @@ function getDemandsTableColumns(updateDemand: (demandId: string, demandUpdate: P
       header: '',
       cell: ({ row }) => (
         <>
-          {row.original.Status === 'En attente de prise en charge' && !row.original['Prise de contact'] && (
-            <Icon name="fr-icon-flag-fill" size="sm" title="En attente de prise en charge" color="var(--text-action-high-blue-france)" />
+          {row.original.Status === DEMANDE_STATUS.EMPTY && !row.original['Prise de contact'] && (
+            <Icon name="fr-icon-flag-fill" size="md" title={DEMANDE_STATUS.EMPTY} color="blue" />
           )}
           {row.original.haut_potentiel && <Icon name="fr-icon-star-s-fill" size="md" title="Haut potentiel" color="accent" />}
         </>

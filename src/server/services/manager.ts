@@ -8,6 +8,7 @@ import { sendNewDemands, sendOldDemands, sendRelanceMail } from '@/server/email'
 import { logger } from '@/server/helpers/logger';
 import { invalidPermissionsError } from '@/server/helpers/server';
 import { Airtable } from '@/types/enum/Airtable';
+import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import { type Demand } from '@/types/Summary/Demand';
 import { type User as FullUser } from '@/types/User';
 
@@ -163,7 +164,7 @@ export const getDemands = async (user: User): Promise<Demand[]> => {
 
     // complète les valeurs par défaut pour simplifier l'usage côté UI
     fields['Prise de contact'] ??= false;
-    fields.Status ??= 'En attente de prise en charge';
+    fields.Status ??= DEMANDE_STATUS.EMPTY;
   });
 
   return user.role === 'demo'
