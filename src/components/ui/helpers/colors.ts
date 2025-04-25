@@ -76,7 +76,7 @@ const colors = {
 
   light: fr.colors.decisions.background.alt.blueFrance.default,
 
-  accent: fr.colors.options.blueFrance.main525,
+  accent: '#FF692F',
 
   primary: palette.blue,
 
