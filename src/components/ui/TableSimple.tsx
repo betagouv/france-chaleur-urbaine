@@ -107,7 +107,7 @@ export type TableSimpleProps<T> = {
 const cellCustomClasses = cva('', {
   variants: {
     padding: {
-      sm: '!p-2',
+      sm: '!p-2 !leading-tight',
       md: '',
       lg: '!p-6',
     },

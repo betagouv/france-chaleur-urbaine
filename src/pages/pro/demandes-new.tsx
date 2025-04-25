@@ -114,7 +114,7 @@ function getDemandsTableColumns(updateDemand: (demandId: string, demandUpdate: P
           {row.original['en PDP'] === 'Oui' && <Tag text="PDP" />}
         </div>
       ),
-      width: '320px',
+      width: '220px',
       enableSorting: false,
     },
     {
@@ -475,6 +475,7 @@ function DemandesNew(): React.ReactElement {
               onFilterChange={onTableFiltersChange}
               fluid
               controlsLayout="block"
+              padding="sm"
               rowSelection={tableRowSelection}
               onRowClick={onTableRowClick}
               loadingEmptyMessage="Vous n'avez pas encore reçu de demandes"
