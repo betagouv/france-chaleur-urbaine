@@ -31,6 +31,7 @@ import useDevMode from '@/hooks/useDevMode';
 import useRouterReady from '@/hooks/useRouterReady';
 import { useServices } from '@/services';
 import { trackEvent } from '@/services/analytics';
+import { notify } from '@/services/notification';
 import { type BoundingBox } from '@/types/Coords';
 import { type AddressDetail, type HandleAddressSelect } from '@/types/HeatNetworksResponse';
 import { type MapMarkerInfos } from '@/types/MapComponentsInfos';
@@ -439,6 +440,11 @@ export const FullyFeaturedMap = ({
       setMarkersList([newMarker]);
     }
     if (enableFlyToCentering) {
+      if (initialCenter[0] === undefined || initialCenter[1] === undefined) {
+        notify('error', "Nous n'avons pas pu centrer la carte car les coordonnées sont invalides");
+        return;
+      }
+
       mapRef.current?.getMap()?.flyTo({ center: initialCenter, zoom: initialZoom, essential: true, duration: 1000 });
     } else {
       jumpTo({ coordinates: initialCenter, zoom: initialZoom });
