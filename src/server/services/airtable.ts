@@ -200,10 +200,7 @@ export const syncGestionnairesWithUsers = async () => {
   await sanitizeGestionnairesEmails();
   logDry(`Sync users from "${Airtable.GESTIONNAIRES}" sheet`);
   const gestionnaires = await base(Airtable.GESTIONNAIRES).select().all();
-  const users = await db('users')
-    .select('id', 'email', 'active', 'gestionnaires', 'receive_new_demands', 'receive_old_demands')
-    // QUESTION should we update only gestionnaires ?
-    .where('role', USER_ROLE.GESTIONNAIRE);
+  const users = await db('users').select('id', 'email', 'active', 'gestionnaires', 'receive_new_demands', 'receive_old_demands');
 
   const salt = await bcrypt.genSalt(10);
 
@@ -277,13 +274,15 @@ export const syncGestionnairesWithUsers = async () => {
         stats.totalDeactivated++;
         return;
       }
+
       const { unchanged } = diff(user.gestionnaires || [], allTags);
 
       if (
         unchanged.length === allTags.length &&
         user.receive_new_demands === newDemands &&
         user.receive_old_demands === oldDemands &&
-        user.active === active
+        user.active === active &&
+        user.role === USER_ROLE.GESTIONNAIRE
       ) {
         logDry(`    💤 No changes for ${email}`);
         return;
@@ -294,6 +293,7 @@ export const syncGestionnairesWithUsers = async () => {
         try {
           await db('users')
             .update({
+              role: USER_ROLE.GESTIONNAIRE,
               gestionnaires: allTags,
               receive_new_demands: newDemands,
               receive_old_demands: oldDemands,
