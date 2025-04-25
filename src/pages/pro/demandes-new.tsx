@@ -84,6 +84,7 @@ function getDemandsTableColumns(updateDemand: (demandId: string, demandUpdate: P
       cell: ({ row }) => <Contacted demand={row.original} updateDemand={updateDemand} />,
       align: 'center',
       filterType: 'Facets',
+      width: '90px',
     },
     {
       accessorKey: 'Contact / Envoi de mails',
@@ -120,6 +121,7 @@ function getDemandsTableColumns(updateDemand: (demandId: string, demandUpdate: P
       accessorKey: 'Date de la demande',
       header: 'Date de la demande',
       cellType: 'Date',
+      width: '110px',
     },
     {
       accessorKey: 'Structure',
