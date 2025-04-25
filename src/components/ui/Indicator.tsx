@@ -6,13 +6,14 @@ type IndicatorProps = {
   loading?: boolean;
   onClick?: () => void;
   active?: boolean;
+  className?: string;
 };
 
-function Indicator({ label, value, loading, onClick, active }: IndicatorProps) {
+function Indicator({ label, value, loading, onClick, active, className }: IndicatorProps) {
   const Element = onClick ? 'button' : 'div';
   return (
     <Element
-      className={`fr-p-2w flex flex-col h-full transition-colors ${active ? 'text-blue' : ''} ${onClick ? 'cursor-pointer hover:bg-gray-100 text-left' : ''}`}
+      className={`fr-p-2w flex flex-col h-full transition-colors ${active ? 'text-blue' : ''} ${onClick ? 'cursor-pointer hover:bg-gray-100 text-left' : ''} ${className}`}
       onClick={onClick}
       title={onClick ? 'Cliquer pour filtrer' : undefined}
     >

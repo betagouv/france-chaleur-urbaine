@@ -29,6 +29,7 @@ import { DEMANDE_STATUS, type DemandStatus } from '@/types/enum/DemandSatus';
 import { type Point } from '@/types/Point';
 import { type Demand } from '@/types/Summary/Demand';
 import { isDefined } from '@/utils/core';
+import cx from '@/utils/cx';
 import { putFetchJSON } from '@/utils/network';
 import { upperCaseFirstChar } from '@/utils/strings';
 import { ObjectEntries, ObjectKeys } from '@/utils/typescript';
@@ -449,7 +450,7 @@ function DemandesNew(): React.ReactElement {
       mode="authenticated"
     >
       <div className="mb-8">
-        <div className="flex items-center">
+        <div className="flex items-center flex-wrap">
           {ObjectEntries(quickFilterPresets).map(([key, preset], index) => (
             <Fragment key={key}>
               <Indicator
@@ -458,14 +459,15 @@ function DemandesNew(): React.ReactElement {
                 value={presetStats[key]}
                 onClick={() => toggleFilterPreset(key)}
                 active={isPresetActive(key)}
+                className="flex-1 max-w-[33%]"
               />
-              {index < Object.keys(quickFilterPresets).length - 1 && <VerticalDivider />}
+              {index < Object.keys(quickFilterPresets).length - 1 && <VerticalDivider className="hidden md:block" />}
             </Fragment>
           ))}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
-          <div className={`${mapCollapsed ? 'lg:col-span-5' : 'lg:col-span-3'} overflow-auto`}>
+        <div className="flex flex-col md:flex-row gap-4 transition-all relative">
+          <div className={`flex-1 overflow-auto`}>
             <TableSimple
               columns={tableColumns}
               data={demands}
@@ -484,55 +486,47 @@ function DemandesNew(): React.ReactElement {
             />
           </div>
 
-          {mapCollapsed ? (
-            <div className="flex justify-end">
-              <div
-                className="flex items-center gap-2 bg-white p-1 rounded-md cursor-pointer shadow-sm"
-                onClick={() => setMapCollapsed(false)}
-              >
-                <div className="text-sm">Afficher la carte</div>
-                <Icon size="lg" name="ri-arrow-right-s-fill" />
-              </div>
+          <div className={cx('relative', mapCollapsed ? 'w-[40px]' : 'w-full md:w-[30%] lg:w-[40%]')}>
+            <div
+              className={cx('max-md:h-[600px] md:h-[calc(100dvh-140px)] bg-[#F8F4F0]', mapCollapsed && 'cursor-pointer')}
+              {...(mapCollapsed ? { onClick: () => setMapCollapsed(false) } : {})}
+            >
+              {isDefined(mapCenterLocation) ? (
+                <Map
+                  noPopup
+                  withoutLogo
+                  initialCenter={mapCenterLocation.center}
+                  initialZoom={mapCenterLocation.zoom}
+                  enableFlyToCentering
+                  initialMapConfiguration={createMapConfiguration({
+                    reseauxDeChaleur: {
+                      show: true,
+                    },
+                    reseauxEnConstruction: true,
+                    zonesDeDeveloppementPrioritaire: true,
+                  })}
+                  geolocDisabled
+                  mapRef={mapRef}
+                  withSoughtAddresses={false}
+                  adressesEligibles={filteredDemandsMapData}
+                  adressesEligiblesAutoFit={false}
+                  onFeatureClick={onFeatureClick}
+                />
+              ) : (
+                <div className="absolute inset-0 flex justify-center items-center animate-pulse">
+                  <Loader size="lg" />
+                </div>
+              )}
             </div>
-          ) : (
-            <div className="lg:col-span-2 relative">
-              <div
-                className="absolute top-2 left-2 z-10 flex items-center gap-2 bg-white p-1 rounded-md cursor-pointer shadow-sm"
-                onClick={() => setMapCollapsed(true)}
-              >
-                <div className="text-sm">Masquer la carte</div>
-                <Icon size="lg" name="ri-arrow-left-s-fill" />
-              </div>
-              <div className="max-lg:h-[600px] lg:h-[calc(100dvh-140px)]">
-                {isDefined(mapCenterLocation) ? (
-                  <Map
-                    noPopup
-                    withoutLogo
-                    initialCenter={mapCenterLocation.center}
-                    initialZoom={mapCenterLocation.zoom}
-                    enableFlyToCentering
-                    initialMapConfiguration={createMapConfiguration({
-                      reseauxDeChaleur: {
-                        show: true,
-                      },
-                      reseauxEnConstruction: true,
-                      zonesDeDeveloppementPrioritaire: true,
-                    })}
-                    geolocDisabled
-                    mapRef={mapRef}
-                    withSoughtAddresses={false}
-                    adressesEligibles={filteredDemandsMapData}
-                    adressesEligiblesAutoFit={false}
-                    onFeatureClick={onFeatureClick}
-                  />
-                ) : (
-                  <div className="absolute inset-0 flex justify-center items-center">
-                    <Loader size="lg" />
-                  </div>
-                )}
-              </div>
+            <div
+              className="absolute whitespace-nowrap rotate-90 cursor-pointer p-1 top-1/2 left-0 -translate-x-1/2 -translate-y-1/2 z-10 flex items-center gap-2 bg-blue text-white"
+              onClick={() => setMapCollapsed(!mapCollapsed)}
+            >
+              <Icon size="sm" name="fr-icon-arrow-right-s-line" rotate={mapCollapsed ? 90 : -90} />
+              <div className="text-sm">{mapCollapsed ? 'Afficher la carte' : 'Masquer la carte'}</div>
+              <Icon size="sm" name="fr-icon-arrow-right-s-line" rotate={mapCollapsed ? 90 : -90} />
             </div>
-          )}
+          </div>
         </div>
       </div>
     </SimplePage>
