@@ -167,7 +167,8 @@ function getDemandsTableColumns(updateDemand: (demandId: string, demandUpdate: P
     {
       accessorKey: 'Identifiant réseau',
       header: 'ID réseau le plus proche',
-      width: '80px',
+      width: '85px',
+      filterType: 'Facets',
     },
     {
       accessorKey: 'Nom réseau',
