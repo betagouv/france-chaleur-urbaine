@@ -67,7 +67,7 @@ const publicNavigationMenu: MainNavigationProps.Item[] = [
     },
   },
   {
-    text: 'Comparateur de coûts et CO2',
+    text: 'Combien ça coûte ?',
     linkProps: {
       href: '/comparateur-couts-performances',
     },

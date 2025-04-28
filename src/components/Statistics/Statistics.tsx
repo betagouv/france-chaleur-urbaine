@@ -422,7 +422,6 @@ const Statistics = () => {
                     <NumberHighLightLoading loading={isLoadingDataActions}>{Math.round(percentAddressTests)}%</NumberHighLightLoading>
                     Des visiteurs testent une adresse
                   </NumberBlock>
-                  <HorizontalSeparator />
                   <NumberBlock>
                     <NumberHighLightLoading loading={isLoadingDataActions}>
                       {totalComparateurTests.toLocaleString('fr-FR')}
@@ -494,7 +493,6 @@ const Statistics = () => {
                     </NumberHighLightLoading>
                     Total d'adresses testées en liste (tests en masse par des professionnels)
                   </NumberBlock>
-                  <HorizontalSeparator />
                   <NumberBlock>
                     <NumberHighLightLoading loading={statsLoading}>
                       {((stats?.comptes?.particuliers?.total || 0) + (stats?.comptes?.professionnels?.total || 0)).toLocaleString('fr-FR')}
