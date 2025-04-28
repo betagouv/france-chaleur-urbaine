@@ -88,6 +88,7 @@ export type TableSimpleProps<T> = {
   caption?: string;
   enableRowSelection?: boolean;
   enableGlobalFilter?: boolean;
+  globalFilter?: string;
   className?: string;
   wrapperClassName?: string;
   fluid?: boolean;
@@ -126,6 +127,7 @@ const TableSimple = <T extends RowData>({
   caption,
   enableRowSelection,
   enableGlobalFilter = false,
+  globalFilter: externalGlobalFilter,
   rowSelection,
   onSelectionChange,
   onRowClick,
@@ -141,7 +143,7 @@ const TableSimple = <T extends RowData>({
   height = '600px',
   virtualizerRef,
 }: TableSimpleProps<T>) => {
-  const [globalFilter, setGlobalFilter] = React.useState<any>([]);
+  const [globalFilter, setGlobalFilter] = React.useState<string>('');
   const [sortingState, setSortingState] = React.useState<SortingState>(initialSortingState ?? []);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(defaultColumnFilters ?? []);
 
@@ -246,7 +248,7 @@ const TableSimple = <T extends RowData>({
     columns: tableColumns,
     state: {
       sorting: sortingState,
-      globalFilter,
+      globalFilter: externalGlobalFilter ?? globalFilter,
       columnFilters,
       rowSelection,
       columnVisibility,
@@ -256,7 +258,7 @@ const TableSimple = <T extends RowData>({
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    onGlobalFilterChange: setGlobalFilter,
+    onGlobalFilterChange: externalGlobalFilter ? undefined : setGlobalFilter,
     onSortingChange: setSortingState,
     getFacetedRowModel: getFacetedRowModel(), //if you need a list of values for a column (other faceted row models depend on this one)
     getFacetedMinMaxValues: getFacetedMinMaxValues(), //if you need min/max values

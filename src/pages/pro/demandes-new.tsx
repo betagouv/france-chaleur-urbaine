@@ -5,6 +5,7 @@ import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'rea
 import { type RefObject } from 'react';
 import { type MapGeoJSONFeature, type MapRef } from 'react-map-gl/maplibre';
 
+import Input from '@/components/form/dsfr/Input';
 import AdditionalInformation from '@/components/Manager/AdditionalInformation';
 import Comment from '@/components/Manager/Comment';
 import Contact from '@/components/Manager/Contact';
@@ -34,6 +35,7 @@ import cx from '@/utils/cx';
 import { putFetchJSON } from '@/utils/network';
 import { upperCaseFirstChar } from '@/utils/strings';
 import { ObjectEntries, ObjectKeys } from '@/utils/typescript';
+
 type MapCenterLocation = {
   center: Point;
   zoom: number;
@@ -72,6 +74,7 @@ function getDemandsTableColumns(updateDemand: (demandId: string, demandUpdate: P
       filterProps: {
         Component: ({ value }) => <DemandStatusBadge status={value as DemandStatus} />,
       },
+      enableGlobalFilter: false,
     },
     {
       accessorKey: 'Prise de contact',
@@ -86,9 +89,10 @@ function getDemandsTableColumns(updateDemand: (demandId: string, demandUpdate: P
       align: 'center',
       filterType: 'Facets',
       width: '90px',
+      enableGlobalFilter: false,
     },
     {
-      accessorKey: 'Contact / Envoi de mails',
+      accessorFn: (row) => `${row.Nom} ${row.Prénom} ${row.Mail}`,
       header: 'Contact',
       cell: ({ row }) => <Contact demand={row.original} updateDemand={updateDemand} />,
       width: '280px',
@@ -123,6 +127,7 @@ function getDemandsTableColumns(updateDemand: (demandId: string, demandUpdate: P
       header: 'Date de la demande',
       cellType: 'Date',
       width: '110px',
+      enableGlobalFilter: false,
     },
     {
       accessorKey: 'Structure',
@@ -130,6 +135,7 @@ function getDemandsTableColumns(updateDemand: (demandId: string, demandUpdate: P
       cell: ({ row }) => <Tag text={row.original.Structure} />,
       width: '150px',
       filterType: 'Facets',
+      enableGlobalFilter: false,
     },
     {
       // accessorKey: 'Mode de chauffage',
@@ -138,6 +144,7 @@ function getDemandsTableColumns(updateDemand: (demandId: string, demandUpdate: P
       cell: ({ row }) => <Tag text={displayModeDeChauffage(row.original)} />,
       width: '130px',
       filterType: 'Facets',
+      enableGlobalFilter: false,
     },
     {
       accessorKey: 'Distance au réseau',
@@ -163,6 +170,7 @@ function getDemandsTableColumns(updateDemand: (demandId: string, demandUpdate: P
         domain: [0, 1000],
         unit: 'm',
       },
+      enableGlobalFilter: false,
     },
     {
       accessorKey: 'Identifiant réseau',
@@ -183,6 +191,7 @@ function getDemandsTableColumns(updateDemand: (demandId: string, demandUpdate: P
       width: '120px',
       filterType: 'Range',
       sorting: 'nullsLast',
+      enableGlobalFilter: false,
     },
     {
       accessorKey: 'Surface en m2',
@@ -193,6 +202,7 @@ function getDemandsTableColumns(updateDemand: (demandId: string, demandUpdate: P
       filterProps: {
         unit: 'm2',
       },
+      enableGlobalFilter: false,
     },
     {
       accessorKey: 'Conso',
@@ -203,6 +213,7 @@ function getDemandsTableColumns(updateDemand: (demandId: string, demandUpdate: P
       filterProps: {
         unit: 'MWh',
       },
+      enableGlobalFilter: false,
     },
     {
       accessorKey: 'Commentaires',
@@ -331,6 +342,7 @@ function DemandesNew(): React.ReactElement {
   }, [selectedDemandId]);
 
   const [mapCenterLocation, setMapCenterLocation] = useState<MapCenterLocation>();
+  const [globalFilter, setGlobalFilter] = useState('');
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [filteredDemands, setFilteredDemands] = useState<Demand[]>([]);
 
@@ -452,6 +464,17 @@ function DemandesNew(): React.ReactElement {
     >
       <div className="mb-8">
         <div className="flex items-center flex-wrap">
+          <Input
+            label=""
+            nativeInputProps={{
+              'aria-label': 'rechercher',
+              required: true,
+              placeholder: 'Rechercher par nom, email, adresse...',
+              value: globalFilter,
+              onChange: (e) => setGlobalFilter(e.target.value),
+            }}
+            className="p-2w !mb-0 w-[350px]"
+          />
           {ObjectEntries(quickFilterPresets).map(([key, preset], index) => (
             <Fragment key={key}>
               <Indicator
@@ -472,6 +495,7 @@ function DemandesNew(): React.ReactElement {
               data={demands}
               loading={isLoading}
               initialSortingState={[{ id: 'Date demandes', desc: true }]}
+              globalFilter={globalFilter}
               columnFilters={columnFilters}
               onFilterChange={onTableFiltersChange}
               fluid
