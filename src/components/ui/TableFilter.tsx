@@ -70,6 +70,8 @@ const Filter = ({ value, type, onChange, filterProps, facetedUniqueValues, facet
                 </Badge>
               ) : Component ? (
                 <Component value={facetKey} />
+              ) : facetKey === 'undefined' ? (
+                'Aucun'
               ) : (
                 facetKey
               )}{' '}
