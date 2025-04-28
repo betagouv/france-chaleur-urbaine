@@ -460,7 +460,6 @@ function DemandesNew(): React.ReactElement {
                 value={presetStats[key]}
                 onClick={() => toggleFilterPreset(key)}
                 active={isPresetActive(key)}
-                className="flex-1 max-w-[33%]"
               />
               {index < Object.keys(quickFilterPresets).length - 1 && <VerticalDivider className="hidden md:block" />}
             </Fragment>
