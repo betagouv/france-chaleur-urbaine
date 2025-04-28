@@ -56,10 +56,7 @@ const Configuration: React.FC<ConfigurationProps> = ({ engine, address }) => {
   }
 
   const customSituation = Object.entries(situation).reduce((acc, [key, value]) => {
-    if (
-      (engine.isDefaultValue(key as DottedName, value) || engine.isDefaultValue(key as DottedName, value)) &&
-      value !== 'Groupe froid' // custom because it is by default even if Inclure la climatisation is false
-    ) {
+    if (engine.isDefaultValue(key as DottedName, value)) {
       return acc;
     }
 
