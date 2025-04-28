@@ -281,7 +281,8 @@ const quickFilterPresets = {
         <Tooltip
           title={
             <>
-              Comptabilise les demandes en chauffage collectif soit : à -100m hors paris / -60m paris, soit +100 logements, soit tertiaire.
+              Comptabilise les demandes en chauffage collectif à moins de 100m d’un réseau (moins de 60m sur Paris), ou à plus de 100
+              logements, ou tertiaires.
             </>
           }
         />
