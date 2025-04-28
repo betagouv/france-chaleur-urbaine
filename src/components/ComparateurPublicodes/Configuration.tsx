@@ -82,9 +82,9 @@ const Configuration: React.FC<ConfigurationProps> = ({ engine, address }) => {
         <h4 className="!mb-0">Configuration</h4>
         <ConfigurationDropdown
           configuration={{ address, ...toBeDisplayedSituation }}
-          onChangeConfiguration={({ address, ...newSituation }) =>
-            engine.setSituation({ ...pick(situation, addresseToPublicodesRulesKeys), ...newSituation })
-          }
+          onLoadConfiguration={({ address, ...newSituation }) => {
+            engine.setSituation({ ...pick(situation, addresseToPublicodesRulesKeys), ...newSituation });
+          }}
           loadWhenOnlyOneConfig={
             !!address && Object.keys(customSituation).some((key) => addresseToPublicodesRulesKeys.includes(key as DottedName))
           }

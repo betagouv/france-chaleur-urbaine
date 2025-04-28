@@ -11,11 +11,11 @@ import { sortKeys } from '@/utils/objects';
 
 const ConfigurationDropdown = ({
   configuration,
-  onChangeConfiguration,
+  onLoadConfiguration,
   loadWhenOnlyOneConfig,
 }: {
   configuration: Record<string, any>;
-  onChangeConfiguration: (configuration: Record<string, any>) => void;
+  onLoadConfiguration: (configuration: Record<string, any>) => void;
   loadWhenOnlyOneConfig: boolean;
 }) => {
   const [loaded, setLoaded] = useState<boolean>(false);
@@ -46,7 +46,7 @@ const ConfigurationDropdown = ({
       ProComparateurConfigurationResponse['list']['items']
     >[number];
     setIsOpen(false);
-    onChangeConfiguration(situation);
+    onLoadConfiguration(situation);
   };
 
   useEffect(() => {
@@ -54,7 +54,7 @@ const ConfigurationDropdown = ({
       loadSituation(items[0].id);
       setLoaded(true);
     }
-  }, [items?.length, loaded, configuration, onChangeConfiguration, items, loadWhenOnlyOneConfig]);
+  }, [items?.length, loaded, configuration, onLoadConfiguration, items, loadWhenOnlyOneConfig]);
 
   const handleAddNewConfig = async () => {
     const result = await createConfiguration({ name: newConfigName, situation: sortKeys(configuration) });
