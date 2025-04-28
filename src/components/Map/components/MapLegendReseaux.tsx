@@ -5,6 +5,7 @@ import { type MapLegendFeature, mapLegendFeatures } from '@/components/Map/map-l
 import useFCUMap from '@/components/Map/MapProvider';
 import ReseauxDeChaleurFilters from '@/components/ReseauxDeChaleurFilters';
 import Box from '@/components/ui/Box';
+import CallOut from '@/components/ui/CallOut';
 import Divider from '@/components/ui/Divider';
 import Icon from '@/components/ui/Icon';
 import Link from '@/components/ui/Link';
@@ -356,6 +357,15 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
           </Link>
         </Box>
       )}
+      <CallOut title="Vous êtes professionnel ?" variant="info" size="md" className="!mt-5" image="/icons/picto-compte-pro.svg">
+        <ul>
+          <li>Retrouvez vos listes d’adresses</li>
+          <li>Comparez les coûts et les émissions de CO2</li>
+        </ul>
+        <Link href="/inscription" className="fr-btn fr-btn--primary">
+          Créer un compte
+        </Link>
+      </CallOut>
     </Box>
   );
 };
