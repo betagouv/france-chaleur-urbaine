@@ -72,7 +72,6 @@ type FilterValue<T extends keyof Database, C extends keyof Database[T]> =
 type Filter<T extends keyof Database> = {
   [C in keyof Database[T]]?: FilterValue<T, C>;
 };
-// Define a type for query builders that support `where`
 // Define a type for query builders that support the `where` method
 interface WhereableQueryBuilder<DB, TB extends keyof DB, O> {
   where<RE extends ReferenceExpression<DB, TB>>(

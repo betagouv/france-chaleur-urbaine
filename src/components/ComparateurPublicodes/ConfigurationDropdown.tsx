@@ -102,9 +102,9 @@ const ConfigurationDropdown = ({
           {isLoading ? (
             <Loader />
           ) : !selectedConfig && !situationEmpty ? (
-            'Sauvez votre configuration'
+            'Sauvegarder votre configuration'
           ) : (
-            selectedConfig?.name || 'Chargez une configuration'
+            selectedConfig?.name || 'Charger une configuration'
           )}
         </span>
         <Icon name={isOpen ? 'ri-arrow-drop-up-line' : 'ri-arrow-drop-down-line'} className="text-gray-500 flex-shrink-0" size="md" />
