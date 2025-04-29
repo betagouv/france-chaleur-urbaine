@@ -77,7 +77,11 @@ const ConfigurationDropdown = ({
 
   const handleSaveConfig = async (configId: string) => updateConfiguration(configId, { situation: sortKeys(configuration) });
 
-  const handleDeleteConfig = async (configId: string) => deleteConfiguration(configId);
+  const handleDeleteConfig = async (configId: string) => {
+    if (window.confirm('Êtes-vous certain de vouloir supprimer cette configuration ?')) {
+      deleteConfiguration(configId);
+    }
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
