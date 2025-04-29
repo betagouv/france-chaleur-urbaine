@@ -171,7 +171,7 @@ function getDemandsTableColumns(updateDemand: (demandId: string, demandUpdate: P
       accessorFn: (row) => displayModeDeChauffage(row),
       header: 'Mode de chauffage',
       cell: ({ row }) => <Tag text={displayModeDeChauffage(row.original)} />,
-      width: '130px',
+      width: '135px',
       filterType: 'Facets',
       enableGlobalFilter: false,
     },
