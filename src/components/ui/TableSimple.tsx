@@ -508,7 +508,18 @@ const TableSimple = <T extends RowData>({
                         transform: `translateY(${virtualRow.start}px)`, // this should always be a `style` as it changes on scroll
                         gridTemplateColumns,
                       }}
-                      onClick={onRowClick ? () => onRowClick((row.original as any).id) : undefined}
+                      onClick={
+                        onRowClick
+                          ? (event) => {
+                              const element = event.target as HTMLElement;
+                              // prevent row click when changing values in the table
+                              if (['INPUT', 'TEXTAREA', 'LABEL', 'SELECT'].includes(element.tagName)) {
+                                return;
+                              }
+                              onRowClick((row.original as any).id);
+                            }
+                          : undefined
+                      }
                     >
                       {row.getVisibleCells().map((cell) => {
                         const columnDef = cell.column.columnDef as ColumnDef<T>;
