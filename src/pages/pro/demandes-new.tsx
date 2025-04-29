@@ -303,6 +303,7 @@ const quickFilterPresets = {
         <Tooltip title={<>Prospect non recontacté et statut en attente de prise en charge</>} />
       </>
     ),
+    valueSuffix: <Icon name="fr-icon-flag-fill" size="sm" />,
     getStat: (demands) =>
       demands.filter((demand) => demand.Status === 'En attente de prise en charge' && !demand['Prise de contact']).length,
     filters: [
@@ -507,6 +508,7 @@ function DemandesNew(): React.ReactElement {
                 loading={isLoading}
                 label={preset.label}
                 value={presetStats[key]}
+                valueSuffix={'valueSuffix' in preset ? preset.valueSuffix : null}
                 onClick={() => toggleFilterPreset(key)}
                 active={isPresetActive(key)}
               />
