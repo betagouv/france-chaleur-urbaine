@@ -25,6 +25,7 @@ import React, { type RefObject, useEffect } from 'react';
 import Button from '@/components/ui/Button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover';
 import { isDevModeEnabled } from '@/hooks/useDevMode';
+import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
 import { type FlattenKeys } from '@/utils/typescript';
 
@@ -258,7 +259,7 @@ const TableSimple = <T extends RowData>({
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    onGlobalFilterChange: externalGlobalFilter ? undefined : setGlobalFilter,
+    onGlobalFilterChange: isDefined(externalGlobalFilter) ? undefined : setGlobalFilter,
     onSortingChange: setSortingState,
     getFacetedRowModel: getFacetedRowModel(), //if you need a list of values for a column (other faceted row models depend on this one)
     getFacetedMinMaxValues: getFacetedMinMaxValues(), //if you need min/max values
@@ -276,14 +277,13 @@ const TableSimple = <T extends RowData>({
   const { rows } = table.getRowModel();
   const { rows: filteredRows } = table.getFilteredRowModel();
 
-  const hasAtLeastOneFilter = table.getState().columnFilters.length > 0;
   const hasAtLeastOneColumnSorting = table.getHeaderGroups()[0].headers.some((header) => header.column.getCanSort());
 
   React.useEffect(() => {
     if (onFilterChange && rows.length > 0) {
-      onFilterChange(hasAtLeastOneFilter ? filteredRows.map((row) => row.original) : data);
+      onFilterChange(filteredRows.map((row) => row.original));
     }
-  }, [rows, filteredRows, hasAtLeastOneFilter, onFilterChange]);
+  }, [rows, filteredRows, onFilterChange]);
 
   // the virtualizer needs to know the scrollable container element
   const tableContainerRef = React.useRef<HTMLDivElement>(null);
