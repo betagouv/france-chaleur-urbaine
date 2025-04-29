@@ -55,12 +55,21 @@ function getDemandsTableColumns(updateDemand: (demandId: string, demandUpdate: P
     {
       id: 'indicators',
       header: '',
+      align: 'center',
       cell: ({ row }) => (
         <>
           {row.original.Status === DEMANDE_STATUS.EMPTY && !row.original['Prise de contact'] && (
-            <Icon name="fr-icon-flag-fill" size="md" title={DEMANDE_STATUS.EMPTY} color="blue" />
+            <Tooltip
+              iconProps={{
+                className: 'ml-1',
+                name: 'ri-information-fill',
+                size: 'sm',
+              }}
+              title="Comptabilise les demandes en chauffage collectif à moins de 100m d’un réseau (moins de 60m sur Paris), ou à plus de 100 logements, ou tertiaires."
+            >
+              <Icon name="fr-icon-flag-fill" size="md" title={DEMANDE_STATUS.EMPTY} color="blue" className="cursor-help" />
+            </Tooltip>
           )}
-          {row.original.haut_potentiel && <Icon name="fr-icon-star-s-fill" size="md" title="Haut potentiel" color="accent" />}
         </>
       ),
       width: '70px',
@@ -75,6 +84,26 @@ function getDemandsTableColumns(updateDemand: (demandId: string, demandUpdate: P
         Component: ({ value }) => <DemandStatusBadge status={value as DemandStatus} />,
       },
       enableGlobalFilter: false,
+    },
+    {
+      accessorKey: 'haut_potentiel',
+      header: () => (
+        <div className="flex items-center">
+          Haut potentiel
+          <Tooltip
+            iconProps={{
+              className: 'ml-1',
+              name: 'ri-information-fill',
+              size: 'sm',
+            }}
+            title="Comptabilise les demandes en chauffage collectif à moins de 100m d’un réseau (moins de 60m sur Paris), ou à plus de 100 logements, ou tertiaires."
+          />
+        </div>
+      ),
+      cellType: 'Boolean',
+      align: 'center',
+      width: '100px',
+      filterType: 'Facets',
     },
     {
       accessorKey: 'Prise de contact',
@@ -254,11 +283,6 @@ function getDemandsTableColumns(updateDemand: (demandId: string, demandUpdate: P
 
     // obligatoire afin d'être utilisables dans les presets
     {
-      accessorKey: 'haut_potentiel',
-      filterType: 'Facets', // obligatoire pour faire fonctionner le filtre
-      visible: false,
-    },
-    {
       accessorKey: 'en PDP',
       filterType: 'Facets', // obligatoire pour faire fonctionner le filtre
       visible: false,
@@ -329,6 +353,8 @@ const quickFilterPresets = {
   },
 } satisfies Record<string, QuickFilterPreset<Demand>>;
 type QuickFilterPresetKey = keyof typeof quickFilterPresets;
+
+const initialSortingState = [{ id: 'Date de la demande', desc: true }];
 
 function DemandesNew(): React.ReactElement {
   const queryClient = useQueryClient();
@@ -494,7 +520,7 @@ function DemandesNew(): React.ReactElement {
               columns={tableColumns}
               data={demands}
               loading={isLoading}
-              initialSortingState={[{ id: 'Date demandes', desc: true }]}
+              initialSortingState={initialSortingState}
               globalFilter={globalFilter}
               columnFilters={columnFilters}
               onFilterChange={onTableFiltersChange}
