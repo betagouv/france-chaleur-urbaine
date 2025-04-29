@@ -7,7 +7,10 @@ export const customGeojsonLayersSpec = [
     sourceId: 'customGeojson',
     source: {
       type: 'geojson',
-      data: '',
+      data: {
+        type: 'FeatureCollection',
+        features: [],
+      },
     },
     layers: [
       {
