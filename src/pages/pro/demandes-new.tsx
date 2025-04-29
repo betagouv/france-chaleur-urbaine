@@ -408,12 +408,7 @@ function DemandesNew(): React.ReactElement {
     queryClient.setQueryData<Demand[]>(['/api/demands'], (demands) =>
       (demands ?? []).map((demand) => {
         if (demand.id === demandId) {
-          // on mute directement l'objet et on ne recrée pas un nouveau tableau demands pour ne pas réinitialiser la pagination de la datagrid
-          // les anciennes propriétés doivent être supprimées car l'API Airtable ne renvoie pas les propriétés vides
-          Object.keys(demand).forEach((key) => {
-            delete demand[key as keyof Demand];
-          });
-          Object.assign(demand, demandUpdate);
+          return { ...demand, ...demandUpdate };
         }
         return demand;
       })
