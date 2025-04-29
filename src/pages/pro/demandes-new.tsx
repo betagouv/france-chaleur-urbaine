@@ -477,7 +477,6 @@ function DemandesNew(): React.ReactElement {
     );
   };
 
-  console.log('render demandes-new');
   return (
     <SimplePage
       title="Suivi des demandes"
