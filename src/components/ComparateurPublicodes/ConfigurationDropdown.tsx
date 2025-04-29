@@ -24,6 +24,7 @@ const ConfigurationDropdown = ({
   const [newConfigName, setNewConfigName] = useState<string>('');
   const [renamingConfig, setRenamingConfig] = useState<string | null>(null);
   const [renameValue, setRenameValue] = useState<string>('');
+  const [sharingId, setSharingId] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { address, ...situation } = configuration;
   const situationEmpty = Object.keys(situation).length === 0;
@@ -102,7 +103,7 @@ const ConfigurationDropdown = ({
           {isLoading ? (
             <Loader />
           ) : !selectedConfig && !situationEmpty ? (
-            'Sauvegarder votre configuration'
+            'Sauvegarder la configuration'
           ) : (
             selectedConfig?.name || 'Charger une configuration'
           )}
@@ -188,6 +189,22 @@ const ConfigurationDropdown = ({
                         title="Renommer"
                         className="!p-[3px] hover:scale-150 hover:!py-[1px] hover:rounded-sm hover:shadow-sm [&:before]:!mr-0 transition-all"
                         loading={isUpdatingId === config.id}
+                      />
+                      <Button
+                        onClick={() => {
+                          setSharingId(config.id);
+                          navigator.clipboard.writeText(`${window.location.origin}?configId=${config.id}`);
+                          setTimeout(() => {
+                            setSharingId(null);
+                            notify('success', 'Lien copié dans le presse-papiers');
+                          }, 500);
+                        }}
+                        iconId="ri-share-forward-line"
+                        size="small"
+                        priority="tertiary"
+                        title="Partager"
+                        loading={sharingId === config.id}
+                        className="!p-[3px] hover:scale-150 hover:!py-[1px] hover:rounded-sm hover:shadow-sm [&:before]:!mr-0 transition-all"
                       />
                       <Button
                         onClick={() => handleDeleteConfig(config.id)}
