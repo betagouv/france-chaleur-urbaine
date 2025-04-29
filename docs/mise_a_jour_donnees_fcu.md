@@ -57,10 +57,10 @@ Contient des dumps PG de plusieurs tables avec des noms différents :
 
 ```sh
 # au préalable, récupérer les données à jour depuis la prod
-./scripts/copyRemoteTableToLocal.sh prod reseaux_de_chaleur
-./scripts/copyRemoteTableToLocal.sh prod reseaux_de_froid
-./scripts/copyRemoteTableToLocal.sh prod zone_de_developpement_prioritaire
-./scripts/copyRemoteTableToLocal.sh prod zones_et_reseaux_en_construction
+yarn db:pull:prod reseaux_de_chaleur
+yarn db:pull:prod reseaux_de_froid
+yarn db:pull:prod zone_de_developpement_prioritaire
+yarn db:pull:prod zones_et_reseaux_en_construction
 
 # vérifier qu'on est bien branché sur la base airtable de prod
 # vim .env.local
@@ -103,30 +103,31 @@ yarn cli download-network coldNetwork
 yarn cli download-network futurNetwork
 
 # génération des tuiles
-yarn cli tiles:generate reseaux-de-chaleur 0 14
-yarn cli tiles:fill coldNetwork 0 14
+yarn cli tiles:generate reseaux-de-chaleur
+yarn cli tiles:fill coldNetwork 0 14 # meme fonction que tiles:generate mais pas encore migré
 yarn cli tiles:fill zoneDP 0 14
 yarn cli tiles:fill futurNetwork 0 14
 
 # copie vers dev
-./scripts/copyLocalTableToRemote.sh dev reseaux_de_chaleur --data-only
-./scripts/copyLocalTableToRemote.sh dev reseaux_de_chaleur_tiles --data-only
-./scripts/copyLocalTableToRemote.sh dev reseaux_de_froid --data-only
-./scripts/copyLocalTableToRemote.sh dev reseaux_de_froid_tiles --data-only
-./scripts/copyLocalTableToRemote.sh dev zone_de_developpement_prioritaire --data-only
-./scripts/copyLocalTableToRemote.sh dev zone_de_developpement_prioritaire_tiles --data-only
-./scripts/copyLocalTableToRemote.sh dev zones_et_reseaux_en_construction --data-only
-./scripts/copyLocalTableToRemote.sh dev zones_et_reseaux_en_construction_tiles --data-only
+# Use --data-only when no structures changes
+yarn db:push:dev reseaux_de_chaleur --data-only
+yarn db:push:dev reseaux_de_chaleur_tiles --data-only
+yarn db:push:dev reseaux_de_froid --data-only
+yarn db:push:dev reseaux_de_froid_tiles --data-only
+yarn db:push:dev zone_de_developpement_prioritaire --data-only
+yarn db:push:dev zone_de_developpement_prioritaire_tiles --data-only
+yarn db:push:dev zones_et_reseaux_en_construction --data-only
+yarn db:push:dev zones_et_reseaux_en_construction_tiles --data-only
 
 # copie vers prod (quand validé en dev par Florence)
-./scripts/copyLocalTableToRemote.sh prod reseaux_de_chaleur --data-only
-./scripts/copyLocalTableToRemote.sh prod reseaux_de_chaleur_tiles --data-only
-./scripts/copyLocalTableToRemote.sh prod reseaux_de_froid --data-only
-./scripts/copyLocalTableToRemote.sh prod reseaux_de_froid_tiles --data-only
-./scripts/copyLocalTableToRemote.sh prod zone_de_developpement_prioritaire --data-only
-./scripts/copyLocalTableToRemote.sh prod zone_de_developpement_prioritaire_tiles --data-only
-./scripts/copyLocalTableToRemote.sh prod zones_et_reseaux_en_construction --data-only
-./scripts/copyLocalTableToRemote.sh prod zones_et_reseaux_en_construction_tiles --data-only
+yarn db:push:prod reseaux_de_chaleur --data-only
+yarn db:push:prod reseaux_de_chaleur_tiles --data-only
+yarn db:push:prod reseaux_de_froid --data-only
+yarn db:push:prod reseaux_de_froid_tiles --data-only
+yarn db:push:prod zone_de_developpement_prioritaire --data-only
+yarn db:push:prod zone_de_developpement_prioritaire_tiles --data-only
+yarn db:push:prod zones_et_reseaux_en_construction --data-only
+yarn db:push:prod zones_et_reseaux_en_construction_tiles --data-only
 
 ```
 

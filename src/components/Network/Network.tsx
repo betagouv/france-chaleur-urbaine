@@ -94,10 +94,14 @@ const NetworkPanel = ({
                 </Heading>
                 <Text size="sm" fontStyle="italic" mb="2w">
                   Données réglementaires,{' '}
-                  <a href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000049925781" target="_blank" rel="noreferrer noopener">
-                    arrêté du 5 juillet 2024
+                  <a
+                    href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000051520810#:~:text=%E2%80%B9%20Texte%20pr%C3%A9c%C3%A9dent-,Arr%C3%AAt%C3%A9%20du%2011%20avril%202025%20modifiant%20l'arr%C3%AAt%C3%A9%20du%2015,la%20vente%20en%20France%20m%C3%A9tropolitaine"
+                    target="_blank"
+                    rel="noreferrer noopener"
+                  >
+                    arrêté du 11 avril 2025
                   </a>{' '}
-                  portant sur l’année 2022, ou la moyenne des années 2020, 2021 et 2022.
+                  portant sur l’année 2023, ou la moyenne des années 2021, 2022 et 2023.
                 </Text>
                 {!isCold && <Property label="Taux d’EnR&R" value={network['Taux EnR&R']} unit="%" />}
                 <Property
@@ -107,6 +111,10 @@ const NetworkPanel = ({
                   tooltip="ACV : en analyse du cycle de vie (émissions directes et indirectes)."
                 />
                 <Property label="Contenu CO2" value={network['contenu CO2']} formatter={formatCO2} tooltip="Émissions directes" />
+                <Property
+                  label="Année de référence"
+                  value={network['Moyenne-annee-DPE'] === 'Moyenne' ? 'Moyenne 2021-2022-2023' : network['Moyenne-annee-DPE']}
+                />
               </Box>
             )}
 
@@ -306,8 +314,6 @@ const NetworkPanel = ({
                     </Accordion>
                   )}
 
-                  <Property label="Contenu CO2 ACV (non réglementaire)" value={network.contenu_CO2_ACV_2023_tmp} formatter={formatCO2} />
-                  <Property label="Contenu CO2 (non réglementaire)" value={network.contenu_CO2_2023_tmp} formatter={formatCO2} />
                   <Property
                     label="Rendement"
                     value={network['Rend%']}

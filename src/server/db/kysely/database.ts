@@ -3024,8 +3024,6 @@ export interface ReseauxDeChaleur {
   communes_insee: string[] | null;
   'contenu CO2': number | null;
   'contenu CO2 ACV': number | null;
-  contenu_CO2_2023_tmp: number | null;
-  contenu_CO2_ACV_2023_tmp: number | null;
   CP_MO: string | null;
   date_actualisation_pdp: Timestamp | null;
   date_actualisation_trace: Timestamp | null;
@@ -3123,8 +3121,6 @@ export interface ReseauxDeFroid {
   communes_insee: string[] | null;
   'contenu CO2': number | null;
   'contenu CO2 ACV': number | null;
-  contenu_CO2_2023_tmp: number | null;
-  contenu_CO2_ACV_2023_tmp: number | null;
   CP_MO: string | null;
   date_actualisation_trace: Timestamp | null;
   departement: string | null;
