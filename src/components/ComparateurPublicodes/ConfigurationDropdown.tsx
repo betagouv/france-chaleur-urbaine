@@ -95,7 +95,7 @@ const ConfigurationDropdown = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const selectedConfig = configs.find((config) => JSON.stringify(config.situation) === JSON.stringify(configuration));
+  const selectedConfig = configs.find((config) => JSON.stringify(config.situation) === JSON.stringify(situation));
 
   return (
     <div className="relative min-w-64 font-sans" ref={dropdownRef}>
@@ -169,7 +169,7 @@ const ConfigurationDropdown = ({
                     </div>
 
                     <div className="flex gap-0.5">
-                      {configuration && JSON.stringify(config.situation) !== JSON.stringify(configuration) && (
+                      {configuration && JSON.stringify(config.situation) !== JSON.stringify(situation) && (
                         <Button
                           onClick={() => handleSaveConfig(config.id)}
                           iconId="fr-icon-save-3-fill"
