@@ -333,39 +333,41 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
         </>
       )}
       {!isIframeContext && (
-        <Box mt="4w" display="flex" flexDirection="column" alignItems="stretch" justifyContent="center" gap="8px">
-          <Link
-            variant="primary"
-            href="/contribution"
-            className="fr-btn--tertiary d-flex"
-            style={{ width: '100%', justifyContent: 'center' }}
-          >
-            <Icon name="fr-icon-heart-line" size="sm" mr="1v" />
-            Contribuer
-          </Link>
+        <>
+          <Box mt="4w" display="flex" flexDirection="column" alignItems="stretch" justifyContent="center" gap="8px">
+            <Link
+              variant="primary"
+              href="/contribution"
+              className="fr-btn--tertiary d-flex"
+              style={{ width: '100%', justifyContent: 'center' }}
+            >
+              <Icon name="fr-icon-heart-line" size="sm" mr="1v" />
+              Contribuer
+            </Link>
 
-          <Link
-            isExternal
-            variant="primary"
-            href="https://www.data.gouv.fr/fr/datasets/traces-des-reseaux-de-chaleur-et-de-froid/"
-            eventKey="Téléchargement|Tracés|carte"
-            className="fr-btn--tertiary d-flex"
-            mx="auto"
-            style={{ width: '100%', justifyContent: 'center' }}
-          >
-            Télécharger les tracés
-          </Link>
-        </Box>
+            <Link
+              isExternal
+              variant="primary"
+              href="https://www.data.gouv.fr/fr/datasets/traces-des-reseaux-de-chaleur-et-de-froid/"
+              eventKey="Téléchargement|Tracés|carte"
+              className="fr-btn--tertiary d-flex"
+              mx="auto"
+              style={{ width: '100%', justifyContent: 'center' }}
+            >
+              Télécharger les tracés
+            </Link>
+          </Box>
+          <CallOut title="Vous êtes professionnel ?" variant="info" size="md" className="!mt-5" image="/icons/picto-compte-pro.svg">
+            <ul>
+              <li>Retrouvez vos listes d’adresses</li>
+              <li>Comparez les coûts et les émissions de CO2</li>
+            </ul>
+            <Link href="/inscription" className="fr-btn fr-btn--primary">
+              Créer un compte
+            </Link>
+          </CallOut>
+        </>
       )}
-      <CallOut title="Vous êtes professionnel ?" variant="info" size="md" className="!mt-5" image="/icons/picto-compte-pro.svg">
-        <ul>
-          <li>Retrouvez vos listes d’adresses</li>
-          <li>Comparez les coûts et les émissions de CO2</li>
-        </ul>
-        <Link href="/inscription" className="fr-btn fr-btn--primary">
-          Créer un compte
-        </Link>
-      </CallOut>
     </Box>
   );
 };
