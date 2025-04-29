@@ -83,7 +83,16 @@ const Configuration: React.FC<ConfigurationProps> = ({ engine, address }) => {
         <ConfigurationDropdown
           configuration={{ address, ...toBeDisplayedSituation }}
           onLoadConfiguration={({ address, ...newSituation }) => {
-            engine.setSituation({ ...pick(situation, addresseToPublicodesRulesKeys), ...newSituation });
+            const situationToLoad = { ...pick(situation, addresseToPublicodesRulesKeys), ...newSituation };
+            Object.entries(chainedConfigurations).forEach(([configKey, chainedKeys]) => {
+              if (configKey in situationToLoad) {
+                chainedKeys.forEach((chainedKey) => {
+                  situationToLoad[chainedKey as DottedName] = 'oui';
+                });
+              }
+            });
+
+            engine.setSituation(situationToLoad);
           }}
           loadWhenOnlyOneConfig={
             !!address && Object.keys(customSituation).some((key) => addresseToPublicodesRulesKeys.includes(key as DottedName))
