@@ -8,7 +8,7 @@ const baseModel = createBaseModel(tableName);
 
 export const create = baseModel.createMine;
 export const list = baseModel.listMine;
-export const get = baseModel.getMine;
+export const get = baseModel.get; // A user can get any configuration when it's shared with him
 export const update = baseModel.updateMine;
 export const remove = baseModel.removeMine;
 

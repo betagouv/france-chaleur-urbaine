@@ -1,3 +1,4 @@
+import { useQueryState } from 'nuqs';
 import { useEffect, useRef, useState } from 'react';
 
 import Button from '@/components/ui/Button';
@@ -28,6 +29,7 @@ const ConfigurationDropdown = ({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { address, ...situation } = configuration;
   const situationEmpty = Object.keys(situation).length === 0;
+  const [sharedConfigId, setSharedConfigId] = useQueryState('configId');
 
   const {
     items,
@@ -38,6 +40,7 @@ const ConfigurationDropdown = ({
     delete: deleteConfiguration,
     isDeletingId,
     isLoading,
+    get: getConfiguration,
   } = useCrud<ProComparateurConfigurationResponse>('/api/pro/comparateur/configurations');
 
   const configs = items || [];
@@ -49,6 +52,17 @@ const ConfigurationDropdown = ({
     setIsOpen(false);
     onLoadConfiguration(situation);
   };
+
+  useEffect(() => {
+    if (sharedConfigId) {
+      (async () => {
+        const { item: config } = await getConfiguration(sharedConfigId);
+        const { situation: { address, ...sharedConfigSituation } = {} as any } = config || {};
+        onLoadConfiguration(sharedConfigSituation);
+        setSharedConfigId(null);
+      })();
+    }
+  }, [sharedConfigId, loadSituation]);
 
   useEffect(() => {
     if (!loaded && items?.length === 1 && loadWhenOnlyOneConfig) {
@@ -197,7 +211,7 @@ const ConfigurationDropdown = ({
                       <Button
                         onClick={() => {
                           setSharingId(config.id);
-                          navigator.clipboard.writeText(`${window.location.origin}?configId=${config.id}`);
+                          navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}?configId=${config.id}`);
                           setTimeout(() => {
                             setSharingId(null);
                             notify('success', 'Lien copié dans le presse-papiers');
