@@ -106,7 +106,7 @@
     "dotenv": "^16.3.1",
     "ejs": "^3.1.10",
     "express-rate-limit": "^7.1.5",
-    "formidable": "^3.5.1",
+    "formidable": "^3.5.4",
     "formik": "^2.4.3",
     "framer-motion": "^12.4.4",
     "geojson-vt": "^3.2.1",
