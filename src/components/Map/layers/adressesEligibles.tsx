@@ -1,3 +1,4 @@
+import Tag from '@/components/Manager/Tag';
 import { isDefined } from '@/utils/core';
 
 import { ifHoverElse, type MapSourceLayersSpecification, type PopupStyleHelpers } from './common';
@@ -103,6 +104,8 @@ export type AdresseEligible = {
   latitude: number;
   isEligible?: boolean; // TODO essayer de voir si on peut avoir des couleurs différentes selon les statuts des demandes
   selected?: boolean;
+  modeDeChauffage?: string;
+  typeDeLogement?: string;
 };
 
 function Popup(adresseEligible: AdresseEligible, { Property, Title, TwoColumns }: PopupStyleHelpers) {
@@ -119,6 +122,8 @@ function Popup(adresseEligible: AdresseEligible, { Property, Title, TwoColumns }
       )}
       <TwoColumns>
         <Property label="Adresse" value={adresseEligible.address} />
+        {isDefined(adresseEligible.typeDeLogement) && <Tag text={adresseEligible.typeDeLogement} />}
+        {isDefined(adresseEligible.modeDeChauffage) && <Tag text={adresseEligible.modeDeChauffage} />}
       </TwoColumns>
     </>
   );

@@ -625,11 +625,9 @@ export const FullyFeaturedMap = ({
           type: 'Point',
           coordinates: [address.longitude, address.latitude],
         },
+        id: address.id,
         properties: {
-          id: address.id,
-          address: address.address,
-          isEligible: address.isEligible,
-          selected: address.selected,
+          ...address,
         },
       })),
     });

@@ -366,7 +366,8 @@ function DemandesNew(): React.ReactElement {
           latitude: demand.Latitude,
           address: demand.Adresse,
           selected: demand.id === selectedDemandId,
-          // isEligible: demand.haut_potentiel,
+          modeDeChauffage: displayModeDeChauffage(demand),
+          typeDeLogement: demand.Structure,
         }) satisfies AdresseEligible
     );
   }, [filteredDemands, selectedDemandId]);
