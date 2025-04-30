@@ -17,6 +17,7 @@ import { type AdresseEligible } from '@/components/Map/layers/adressesEligibles'
 import Map from '@/components/Map/Map';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import SimplePage from '@/components/shared/page/SimplePage';
+import Badge from '@/components/ui/Badge';
 import { VerticalDivider } from '@/components/ui/Divider';
 import Icon from '@/components/ui/Icon';
 import Indicator from '@/components/ui/Indicator';
@@ -59,18 +60,11 @@ function getDemandsTableColumns(updateDemand: (demandId: string, demandUpdate: P
       cell: ({ row }) => (
         <div className="flex flex-col gap-2">
           {row.original.Status === DEMANDE_STATUS.EMPTY && !row.original['Prise de contact'] && (
-            <Tooltip
-              iconProps={{
-                className: 'ml-1',
-                name: 'ri-information-fill',
-                size: 'sm',
-              }}
-              title="Comptabilise les demandes en chauffage collectif à moins de 100m d’un réseau (moins de 60m sur Paris), ou à plus de 100 logements, ou tertiaires."
-            >
-              <Icon name="fr-icon-flag-fill" size="sm" title={DEMANDE_STATUS.EMPTY} color="blue" className="cursor-help" />
+            <Tooltip title="Prospect non recontacté et statut en attente de prise en charge">
+              <Icon name="fr-icon-flag-fill" size="sm" color="blue" />
             </Tooltip>
           )}
-          {row.original.haut_potentiel && <Tag text="HP" />}
+          {row.original.haut_potentiel && <Badge type="haut_potentiel" />}
         </div>
       ),
       width: '70px',
@@ -120,7 +114,7 @@ function getDemandsTableColumns(updateDemand: (demandId: string, demandUpdate: P
       cell: ({ row }) => (
         <div className="whitespace-normal">
           {row.original.Adresse}
-          {row.original['en PDP'] === 'Oui' && <Tag text="PDP" />}
+          {row.original['en PDP'] === 'Oui' && <Badge type="pdp" />}
         </div>
       ),
       width: '220px',
@@ -280,7 +274,7 @@ const quickFilterPresets = {
     label: (
       <>
         demandes à traiter&nbsp;
-        <Tooltip title={<>Prospect non recontacté et statut en attente de prise en charge</>} />
+        <Tooltip title="Prospect non recontacté et statut en attente de prise en charge" />
       </>
     ),
     valueSuffix: <Icon name="fr-icon-flag-fill" size="sm" color="blue" />,
@@ -305,7 +299,7 @@ const quickFilterPresets = {
         />
       </>
     ),
-    valueSuffix: <Tag text="HP" />,
+    valueSuffix: <Badge type="haut_potentiel" />,
     getStat: (demands) => demands.filter((demand) => demand.haut_potentiel).length,
     filters: [{ id: 'haut_potentiel', value: { true: true, false: false } }],
   },
@@ -325,7 +319,7 @@ const quickFilterPresets = {
         />
       </>
     ),
-    valueSuffix: <Tag text="PDP" />,
+    valueSuffix: <Badge type="pdp" />,
     getStat: (demands) => demands.filter((demand) => demand['en PDP'] === 'Oui').length,
     filters: [
       {
