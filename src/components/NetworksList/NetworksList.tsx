@@ -608,10 +608,7 @@ const NetworksList = () => {
           écologique. L'année considérée varie en fonction de la disponibilité actuelle des données. Livraisons et mix énergétique : 2023.
           Données tarifaires : 2022. Taux ENRR et contenu CO2 (direct et ACV) : 2023 ou moyenne des années 2021, 2022 et 2023, sur la base
           de l'
-          <Link
-            href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000051520810#:~:text=%E2%80%B9%20Texte%20pr%C3%A9c%C3%A9dent-,Arr%C3%AAt%C3%A9%20du%2011%20avril%202025%20modifiant%20l'arr%C3%AAt%C3%A9%20du%2015,la%20vente%20en%20France%20m%C3%A9tropolitaine"
-            isExternal
-          >
+          <Link href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000051520810" isExternal>
             arrêté DPE du 11 avril 2025
           </Link>
           .
