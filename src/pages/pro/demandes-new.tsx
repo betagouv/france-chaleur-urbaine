@@ -283,7 +283,7 @@ const quickFilterPresets = {
         <Tooltip title={<>Prospect non recontacté et statut en attente de prise en charge</>} />
       </>
     ),
-    valueSuffix: <Icon name="fr-icon-flag-fill" size="sm" />,
+    valueSuffix: <Icon name="fr-icon-flag-fill" size="sm" color="blue" />,
     getStat: (demands) =>
       demands.filter((demand) => demand.Status === 'En attente de prise en charge' && !demand['Prise de contact']).length,
     filters: [
