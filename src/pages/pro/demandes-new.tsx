@@ -104,8 +104,6 @@ function getDemandsTableColumns(updateDemand: (demandId: string, demandUpdate: P
           <Tooltip
             iconProps={{
               className: 'ml-1',
-              name: 'ri-information-fill',
-              size: 'sm',
             }}
             title="La mention 'PDP' est indiquée pour les adresses situées dans le périmètre de développement prioritaire d'un réseau classé (connu par France Chaleur Urbaine)."
           />
@@ -136,7 +134,6 @@ function getDemandsTableColumns(updateDemand: (demandId: string, demandUpdate: P
       enableGlobalFilter: false,
     },
     {
-      // accessorKey: 'Mode de chauffage',
       accessorFn: (row) => displayModeDeChauffage(row),
       header: 'Mode de chauffage',
       cell: ({ row }) => <Tag text={displayModeDeChauffage(row.original)} />,
@@ -152,8 +149,6 @@ function getDemandsTableColumns(updateDemand: (demandId: string, demandUpdate: P
           <Tooltip
             iconProps={{
               className: 'ml-1',
-              name: 'ri-information-fill',
-              size: 'sm',
             }}
             title="Distance à vol d'oiseau"
           />
@@ -228,8 +223,6 @@ function getDemandsTableColumns(updateDemand: (demandId: string, demandUpdate: P
           <Tooltip
             iconProps={{
               className: 'ml-1',
-              name: 'ri-information-fill',
-              size: 'sm',
             }}
             title={
               <>
