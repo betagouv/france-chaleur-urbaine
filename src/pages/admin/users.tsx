@@ -136,6 +136,8 @@ export default function ManageUsers() {
           data={users || []}
           initialSortingState={initialSortingState}
           enableGlobalFilter
+          controlsLayout="block"
+          padding="sm"
           loading={isLoading}
         />
         <AsyncButton size="small" onClick={async () => exportService.exportXLSX('obsoleteUsers')}>
