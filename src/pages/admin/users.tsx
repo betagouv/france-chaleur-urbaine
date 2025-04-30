@@ -5,17 +5,30 @@ import Tag from '@/components/Manager/Tag';
 import SimplePage from '@/components/shared/page/SimplePage';
 import AsyncButton from '@/components/ui/AsyncButton';
 import Box from '@/components/ui/Box';
+import Button from '@/components/ui/Button';
 import Heading from '@/components/ui/Heading';
 import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
 import Text from '@/components/ui/Text';
 import { useFetch } from '@/hooks/useApi';
 import { withAuthentication } from '@/server/authentication';
 import { useServices } from '@/services';
+import { toastErrors } from '@/services/notification';
 import { type UserRole } from '@/types/enum/UserRole';
+import { postFetchJSON } from '@/utils/network';
 import { compareFrenchStrings } from '@/utils/strings';
 
 import { type AdminManageUserItem } from '../api/admin/users';
 import { type AdminUsersStats } from '../api/admin/users-stats';
+
+const startImpersonation = toastErrors(async (impersonateConfig: { role: UserRole; gestionnaires?: string[] | null }) => {
+  await postFetchJSON('/api/admin/impersonate', {
+    role: impersonateConfig.role,
+    ...(impersonateConfig.role === 'gestionnaire' && { gestionnaires: impersonateConfig.gestionnaires }),
+  });
+  // trigger a full reload
+  location.href = '/pro/tableau-de-bord';
+});
+
 const columns: ColumnDef<AdminManageUserItem>[] = [
   {
     accessorKey: 'email',
@@ -66,6 +79,20 @@ const columns: ColumnDef<AdminManageUserItem>[] = [
     accessorKey: 'created_at',
     header: 'Créé le',
     cellType: 'Date',
+  },
+  {
+    id: 'actions',
+    header: 'Actions',
+    cell: ({ row }) => (
+      <Button
+        size="small"
+        priority="tertiary"
+        iconId="ri-spy-line"
+        title="Permet d'adopter temporairement le même profil (rôle et tags gestionnaires) que cet utilisateur sans usurper son identité."
+        onClick={() => startImpersonation(row.original)}
+      />
+    ),
+    width: '70px',
   },
 ];
 
