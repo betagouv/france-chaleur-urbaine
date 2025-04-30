@@ -67,13 +67,13 @@ function getDemandsTableColumns(updateDemand: (demandId: string, demandUpdate: P
           {row.original.haut_potentiel && <Badge type="haut_potentiel" />}
         </div>
       ),
-      width: '70px',
+      width: '46px',
     },
     {
       accessorKey: 'Status',
       header: 'Statut',
       cell: ({ row }) => <Status demand={row.original} updateDemand={updateDemand} />,
-      width: '300px',
+      width: '290px',
       filterType: 'Facets',
       filterProps: {
         Component: ({ value }) => <DemandStatusBadge status={value as DemandStatus} />,
@@ -86,7 +86,7 @@ function getDemandsTableColumns(updateDemand: (demandId: string, demandUpdate: P
       cell: ({ row }) => <Contacted demand={row.original} updateDemand={updateDemand} />,
       align: 'center',
       filterType: 'Facets',
-      width: '90px',
+      width: '85px',
       enableGlobalFilter: false,
     },
     {
@@ -122,14 +122,14 @@ function getDemandsTableColumns(updateDemand: (demandId: string, demandUpdate: P
       accessorKey: 'Date de la demande',
       header: 'Date de la demande',
       cellType: 'Date',
-      width: '110px',
+      width: '94px',
       enableGlobalFilter: false,
     },
     {
       accessorKey: 'Structure',
       header: 'Type',
       cell: ({ row }) => <Tag text={row.original.Structure} />,
-      width: '150px',
+      width: '130px',
       filterType: 'Facets',
       enableGlobalFilter: false,
     },
@@ -137,7 +137,7 @@ function getDemandsTableColumns(updateDemand: (demandId: string, demandUpdate: P
       accessorFn: (row) => displayModeDeChauffage(row),
       header: 'Mode de chauffage',
       cell: ({ row }) => <Tag text={displayModeDeChauffage(row.original)} />,
-      width: '135px',
+      width: '110px',
       filterType: 'Facets',
       enableGlobalFilter: false,
     },
@@ -175,7 +175,7 @@ function getDemandsTableColumns(updateDemand: (demandId: string, demandUpdate: P
       accessorKey: 'Nom réseau',
       header: 'Nom du réseau le plus proche',
       cell: ({ row }) => <div className="whitespace-normal">{row.original['Nom réseau']}</div>,
-      width: '250px',
+      width: '200px',
     },
     {
       accessorKey: 'Logement',
