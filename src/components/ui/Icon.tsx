@@ -1,20 +1,27 @@
 import { type FrIconClassName, type RiIconClassName } from '@codegouvfr/react-dsfr';
 import { type CSSProperties, forwardRef, type HTMLAttributes, type Ref } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
+import colors, { type Color } from './helpers/colors';
 import { type SpacingProperties, spacingsToClasses } from './helpers/spacings';
+
+type AnyString = string & unknown; // tricks TypeScript to not simplify to only string
 
 type StyledIconProps = {
   cursor?: CSSProperties['cursor'];
   rotate?: number;
-  color?: string;
+  color?: Color | AnyString;
 };
 
 const StyledIcon = styled.span<StyledIconProps>`
   transform: ${({ rotate }) => (rotate ? `rotate(${rotate}deg)` : undefined)};
   transition: 0.3s;
-  cursor: ${({ cursor }) => cursor};
-  color: ${({ color }) => color};
+  ${({ color }) => css`
+    color: ${color};
+  `}
+  ${({ cursor }) => css`
+    cursor: ${cursor};
+  `}
   line-height: 0;
 
   &:before {
@@ -35,7 +42,7 @@ export type IconProps = StyledIconProps & {
  * Renders an Icon with UI helpers and that can rotate.
  */
 const Icon = forwardRef(function Icon(
-  { name, size, riSize, className, ...props }: IconProps & SpacingProperties & HTMLAttributes<HTMLDivElement>,
+  { name, size, riSize, className, color, ...props }: IconProps & SpacingProperties & Omit<HTMLAttributes<HTMLDivElement>, 'color'>,
   ref
 ) {
   return (
@@ -45,6 +52,7 @@ const Icon = forwardRef(function Icon(
       )}`}
       aria-hidden
       ref={ref as Ref<HTMLSpanElement>}
+      color={color ? (colors[color as Color] as AnyString) || (color as AnyString) : undefined}
       {...props}
     />
   );
