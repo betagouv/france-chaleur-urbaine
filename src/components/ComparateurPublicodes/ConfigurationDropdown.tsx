@@ -217,7 +217,8 @@ const ConfigurationDropdown = ({
                             setSharingId(null);
                             notify(
                               'success',
-                              'Lien copié dans le presse-papiers. Vos contacts devront disposer d’un compte pour l’ouvrir.'
+                              'Lien copié dans le presse-papiers. Vos contacts devront disposer d’un compte pour l’ouvrir.',
+                              { duration: 10000 }
                             );
                             const title = 'Ma configuration du comparateur de coûts et CO₂ de France Chaleur Urbaine';
                             const text =
