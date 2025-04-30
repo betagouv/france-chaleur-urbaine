@@ -7,8 +7,7 @@ export interface Network {
   has_trace: boolean;
   'contenu CO2': number;
   'contenu CO2 ACV': number;
-  contenu_CO2_2023_tmp: number;
-  contenu_CO2_ACV_2023_tmp: number;
+  'Moyenne-annee-DPE': string;
   nom_reseau: string;
   'Rend%': number;
   'Dev_reseau%': number;
