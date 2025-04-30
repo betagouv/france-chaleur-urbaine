@@ -86,6 +86,15 @@ function getDemandsTableColumns(updateDemand: (demandId: string, demandUpdate: P
       enableGlobalFilter: false,
     },
     {
+      accessorKey: 'Prise de contact',
+      header: 'Prospect recontacté',
+      cell: ({ row }) => <Contacted demand={row.original} updateDemand={updateDemand} />,
+      align: 'center',
+      filterType: 'Facets',
+      width: '90px',
+      enableGlobalFilter: false,
+    },
+    {
       accessorKey: 'haut_potentiel',
       header: () => (
         <div className="flex items-center">
@@ -104,21 +113,6 @@ function getDemandsTableColumns(updateDemand: (demandId: string, demandUpdate: P
       align: 'center',
       width: '100px',
       filterType: 'Facets',
-    },
-    {
-      accessorKey: 'Prise de contact',
-      header: () => (
-        <>
-          Prospect
-          <br />
-          recontacté
-        </>
-      ),
-      cell: ({ row }) => <Contacted demand={row.original} updateDemand={updateDemand} />,
-      align: 'center',
-      filterType: 'Facets',
-      width: '90px',
-      enableGlobalFilter: false,
     },
     {
       accessorFn: (row) => `${row.Nom} ${row.Prénom} ${row.Mail}`,
