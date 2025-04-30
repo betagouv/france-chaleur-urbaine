@@ -1,7 +1,7 @@
 import { useQueryState } from 'nuqs';
 import { useEffect, useRef, useState } from 'react';
 
-import Button from '@/components/ui/Button';
+import Button, { type ButtonProps } from '@/components/ui/Button';
 import Icon from '@/components/ui/Icon';
 import Loader from '@/components/ui/Loader';
 import useCrud from '@/hooks/useCrud';
@@ -10,6 +10,21 @@ import { trackEvent } from '@/services/analytics';
 import { notify } from '@/services/notification';
 import cx from '@/utils/cx';
 import { sortKeys } from '@/utils/objects';
+
+const ConfigurationButton = ({ className, disabled, ...props }: ButtonProps) => (
+  <Button
+    size="small"
+    priority="tertiary"
+    className={cx(
+      '!p-[3px] [&:before]:!mr-0 transition-all',
+      !disabled && 'hover:scale-150 hover:!py-[1px] hover:rounded-sm hover:shadow-md',
+      disabled && '!shadow-none [&:before]:opacity-40',
+      className
+    )}
+    disabled={disabled}
+    {...props}
+  />
+);
 
 const ConfigurationDropdown = ({
   configuration,
@@ -164,23 +179,17 @@ const ConfigurationDropdown = ({
                       />
                     </div>
                     <div className="flex gap-0.5">
-                      <Button
+                      <ConfigurationButton
                         onClick={() => handleRenameConfig(config.id)}
                         iconId="fr-icon-check-line"
-                        size="small"
-                        priority="tertiary"
                         title="Confirmer"
                         loading={isUpdatingId === config.id}
-                        className="!p-[3px] hover:scale-150 hover:!py-[1px] hover:rounded-sm hover:shadow-sm [&:before]:!mr-0 transition-all"
                       />
-                      <Button
+                      <ConfigurationButton
                         onClick={() => setRenamingConfig(null)}
                         iconId="fr-icon-close-line"
-                        size="small"
                         variant="destructive"
-                        priority="tertiary"
                         title="Annuler"
-                        className="!p-[3px] hover:scale-150 hover:!py-[1px] hover:rounded-sm hover:shadow-sm [&:before]:!mr-0 transition-all"
                       />
                     </div>
                   </>
@@ -194,31 +203,25 @@ const ConfigurationDropdown = ({
 
                     <div className="flex gap-0.5">
                       {configuration && JSON.stringify(config.situation) !== JSON.stringify(situation) && (
-                        <Button
+                        <ConfigurationButton
                           onClick={() => handleSaveConfig(config.id)}
                           iconId="fr-icon-save-3-fill"
-                          size="small"
                           variant={situationEmpty ? 'faded' : 'info'}
-                          priority="tertiary"
                           title="Sauver"
-                          className="!p-[3px] hover:scale-150 hover:!py-[1px] hover:rounded-sm hover:shadow-sm [&:before]:!mr-0 transition-all"
                           loading={isUpdatingId === config.id}
                           disabled={situationEmpty}
                         />
                       )}
-                      <Button
+                      <ConfigurationButton
                         onClick={() => {
                           setRenamingConfig(config.name);
                           setRenameValue(config.name);
                         }}
                         iconId="fr-icon-edit-line"
-                        size="small"
-                        priority="tertiary"
                         title="Renommer"
-                        className="!p-[3px] hover:scale-150 hover:!py-[1px] hover:rounded-sm hover:shadow-sm [&:before]:!mr-0 transition-all"
                         loading={isUpdatingId === config.id}
                       />
-                      <Button
+                      <ConfigurationButton
                         onClick={() => {
                           setSharingId(config.id);
                           const urlToShare = `${window.location.origin}${window.location.pathname}?configId=${config.id}`;
@@ -250,18 +253,13 @@ const ConfigurationDropdown = ({
                           }, 500);
                         }}
                         iconId="ri-share-forward-line"
-                        size="small"
-                        priority="tertiary"
                         variant="info"
                         title="Partager"
                         loading={sharingId === config.id}
-                        className="!p-[3px] hover:scale-150 hover:!py-[1px] hover:rounded-sm hover:shadow-sm [&:before]:!mr-0 transition-all"
                       />
-                      <Button
+                      <ConfigurationButton
                         onClick={() => handleDeleteConfig(config.id)}
                         iconId="fr-icon-delete-line"
-                        size="small"
-                        priority="tertiary"
                         variant="destructive"
                         title="Supprimer"
                         loading={isDeletingId === config.id}
