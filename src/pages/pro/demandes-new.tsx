@@ -57,7 +57,7 @@ function getDemandsTableColumns(updateDemand: (demandId: string, demandUpdate: P
       header: '',
       align: 'center',
       cell: ({ row }) => (
-        <>
+        <div className="flex flex-col gap-2">
           {row.original.Status === DEMANDE_STATUS.EMPTY && !row.original['Prise de contact'] && (
             <Tooltip
               iconProps={{
@@ -70,7 +70,8 @@ function getDemandsTableColumns(updateDemand: (demandId: string, demandUpdate: P
               <Icon name="fr-icon-flag-fill" size="sm" title={DEMANDE_STATUS.EMPTY} color="blue" className="cursor-help" />
             </Tooltip>
           )}
-        </>
+          {row.original.haut_potentiel && <Tag text="HP" />}
+        </div>
       ),
       width: '70px',
     },
@@ -93,26 +94,6 @@ function getDemandsTableColumns(updateDemand: (demandId: string, demandUpdate: P
       filterType: 'Facets',
       width: '90px',
       enableGlobalFilter: false,
-    },
-    {
-      accessorKey: 'haut_potentiel',
-      header: () => (
-        <div className="flex items-center">
-          Haut potentiel
-          <Tooltip
-            iconProps={{
-              className: 'ml-1',
-              name: 'ri-information-fill',
-              size: 'sm',
-            }}
-            title="Comptabilise les demandes en chauffage collectif à moins de 100m d’un réseau (moins de 60m sur Paris), ou à plus de 100 logements, ou tertiaires."
-          />
-        </div>
-      ),
-      cellType: 'Boolean',
-      align: 'center',
-      width: '100px',
-      filterType: 'Facets',
     },
     {
       accessorFn: (row) => `${row.Nom} ${row.Prénom} ${row.Mail}`,
@@ -277,6 +258,11 @@ function getDemandsTableColumns(updateDemand: (demandId: string, demandUpdate: P
 
     // obligatoire afin d'être utilisables dans les presets
     {
+      accessorKey: 'haut_potentiel',
+      filterType: 'Facets', // obligatoire pour faire fonctionner le filtre
+      visible: false,
+    },
+    {
       accessorKey: 'en PDP',
       filterType: 'Facets', // obligatoire pour faire fonctionner le filtre
       visible: false,
@@ -319,6 +305,7 @@ const quickFilterPresets = {
         />
       </>
     ),
+    valueSuffix: <Tag text="HP" />,
     getStat: (demands) => demands.filter((demand) => demand.haut_potentiel).length,
     filters: [{ id: 'haut_potentiel', value: { true: true, false: false } }],
   },
