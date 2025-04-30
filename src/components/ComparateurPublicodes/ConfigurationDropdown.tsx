@@ -231,11 +231,7 @@ const ConfigurationDropdown = ({
                           const title = 'Ma configuration du comparateur de coûts et CO₂ de France Chaleur Urbaine';
                           const text =
                             'Voici un lien vers une configuration personnalisée pour comparer les coûts et les émissions de CO₂ selon différents modes de chauffage. Un compte est nécessaire pour y accéder.\n\n';
-                          const sendByEmail = () =>
-                            window.open(
-                              `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(text)} ${urlToShare}`,
-                              '_blank'
-                            );
+
                           setTimeout(() => {
                             trackEvent('Comparateur Coûts CO2|Partage d’une configuration', {
                               configId: config.id,
@@ -246,11 +242,10 @@ const ConfigurationDropdown = ({
                               'Lien copié dans le presse-papiers. Vos contacts devront disposer d’un compte pour l’ouvrir.',
                               { duration: 10000 }
                             );
-                            if (navigator.share) {
-                              console.log(navigator.share({ url: urlToShare, title, text }).catch(() => sendByEmail()));
-                            } else {
-                              sendByEmail();
-                            }
+                            window.open(
+                              `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(text)} ${urlToShare}`,
+                              '_blank'
+                            );
                           }, 500);
                         }}
                         iconId="ri-share-forward-line"

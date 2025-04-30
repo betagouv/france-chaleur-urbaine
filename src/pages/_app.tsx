@@ -28,11 +28,7 @@ const ConsentBanner = dynamic(
   () => import('@/components/ConsentBanner').then((module) => module.ConsentBanner),
   { ssr: false } // Disable server side as it injects server side a hidden modal with a H1 which might affect SEO
 );
-dynamic(
-  // @ts-ignore
-  () => import('share-api-polyfill'),
-  { ssr: false } // Disable server side as it injects server side a hidden modal with a H1 which might affect SEO
-);
+
 declare module '@codegouvfr/react-dsfr/next-pagesdir' {
   interface RegisterLink {
     Link: typeof Link;
