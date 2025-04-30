@@ -6,6 +6,7 @@ import Icon from '@/components/ui/Icon';
 import Loader from '@/components/ui/Loader';
 import useCrud from '@/hooks/useCrud';
 import { type ProComparateurConfigurationResponse } from '@/pages/api/pro/comparateur/configurations/[[...slug]]';
+import { trackEvent } from '@/services/analytics';
 import { notify } from '@/services/notification';
 import cx from '@/utils/cx';
 import { sortKeys } from '@/utils/objects';
@@ -49,19 +50,26 @@ const ConfigurationDropdown = ({
     const { situation } = configs.find((config) => config.id === configId) as NonNullable<
       ProComparateurConfigurationResponse['list']['items']
     >[number];
+    trackEvent('Comparateur Coûts CO2|Chargement d’une configuration sauvegardée', {
+      configId,
+    });
     setIsOpen(false);
     onLoadConfiguration(situation);
   };
 
   useEffect(() => {
-    if (sharedConfigId) {
-      (async () => {
-        const { item: config } = await getConfiguration(sharedConfigId);
-        const { situation: { address, ...sharedConfigSituation } = {} as any } = config || {};
-        onLoadConfiguration(sharedConfigSituation);
-        setSharedConfigId(null);
-      })();
+    if (!sharedConfigId) {
+      return;
     }
+    (async () => {
+      const { item: config } = await getConfiguration(sharedConfigId);
+      const { situation: { address, ...sharedConfigSituation } = {} as any } = config || {};
+      trackEvent('Comparateur Coûts CO2|Chargement d’une configuration partagée', {
+        configId: sharedConfigId,
+      });
+      onLoadConfiguration(sharedConfigSituation);
+      setSharedConfigId(null);
+    })();
   }, [sharedConfigId, loadSituation]);
 
   useEffect(() => {
@@ -77,7 +85,9 @@ const ConfigurationDropdown = ({
       notify('error', result.error);
       return;
     }
-
+    trackEvent('Comparateur Coûts CO2|Création d’une configuration', {
+      configId: result.item?.id,
+    });
     setIsAddingNew(false);
     setNewConfigName('');
     setIsOpen(false);
@@ -214,6 +224,9 @@ const ConfigurationDropdown = ({
                           const urlToShare = `${window.location.origin}${window.location.pathname}?configId=${config.id}`;
                           navigator.clipboard.writeText(urlToShare);
                           setTimeout(() => {
+                            trackEvent('Comparateur Coûts CO2|Partage d’une configuration', {
+                              configId: config.id,
+                            });
                             setSharingId(null);
                             notify(
                               'success',

@@ -768,6 +768,18 @@ const trackingEvents = {
   'Outil|Liste repliée': {
     matomo: ['Outil', 'Liste repliée'],
   },
+  'Comparateur Coûts CO2|Partage d’une configuration': {
+    matomo: ['Comparateur Coûts CO2', 'Partage d’une configuration'],
+  },
+  'Comparateur Coûts CO2|Création d’une configuration': {
+    matomo: ['Comparateur Coûts CO2', 'Création d’une configuration'],
+  },
+  'Comparateur Coûts CO2|Chargement d’une configuration partagée': {
+    matomo: ['Comparateur Coûts CO2', 'Chargement d’une configuration partagée'],
+  },
+  'Comparateur Coûts CO2|Chargement d’une configuration sauvegardée': {
+    matomo: ['Comparateur Coûts CO2', 'Chargement d’une configuration sauvegardée'],
+  },
 
   // used to test Matomo configuration
   'Debug|Event 1': {
