@@ -211,15 +211,35 @@ const ConfigurationDropdown = ({
                       <Button
                         onClick={() => {
                           setSharingId(config.id);
-                          navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}?configId=${config.id}`);
+                          const urlToShare = `${window.location.origin}${window.location.pathname}?configId=${config.id}`;
+                          navigator.clipboard.writeText(urlToShare);
                           setTimeout(() => {
                             setSharingId(null);
-                            notify('success', 'Lien copié dans le presse-papiers');
+                            notify(
+                              'success',
+                              'Lien copié dans le presse-papiers. Vos contacts devront disposer d’un compte pour l’ouvrir.'
+                            );
+                            const title = 'Ma configuration du comparateur de coûts et CO₂ de France Chaleur Urbaine';
+                            const text =
+                              'Voici un lien vers une configuration personnalisée pour comparer les coûts et les émissions de CO₂ selon différents modes de chauffage. Un compte est nécessaire pour y accéder.';
+                            if (navigator.share) {
+                              navigator.share({
+                                url: urlToShare,
+                                title,
+                                text,
+                              });
+                            } else {
+                              window.open(
+                                `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(text)} ${urlToShare}`,
+                                '_blank'
+                              );
+                            }
                           }, 500);
                         }}
                         iconId="ri-share-forward-line"
                         size="small"
                         priority="tertiary"
+                        variant="info"
                         title="Partager"
                         loading={sharingId === config.id}
                         className="!p-[3px] hover:scale-150 hover:!py-[1px] hover:rounded-sm hover:shadow-sm [&:before]:!mr-0 transition-all"
