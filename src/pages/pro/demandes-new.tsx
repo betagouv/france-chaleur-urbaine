@@ -325,6 +325,7 @@ const quickFilterPresets = {
         />
       </>
     ),
+    valueSuffix: <Tag text="PDP" />,
     getStat: (demands) => demands.filter((demand) => demand['en PDP'] === 'Oui').length,
     filters: [
       {
