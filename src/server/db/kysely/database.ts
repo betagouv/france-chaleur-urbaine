@@ -2907,7 +2907,7 @@ export interface ProComparateurConfigurations {
   created_at: Generated<Timestamp>;
   id: string;
   name: string;
-  situation: Generated<Json>;
+  situation: { address?: string } & Generated<Json>;
   updated_at: Generated<Timestamp>;
   user_id: string;
 }

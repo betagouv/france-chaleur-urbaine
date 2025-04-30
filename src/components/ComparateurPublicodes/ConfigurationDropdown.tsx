@@ -9,7 +9,7 @@ import { type ProComparateurConfigurationResponse } from '@/pages/api/pro/compar
 import { trackEvent } from '@/services/analytics';
 import { notify } from '@/services/notification';
 import cx from '@/utils/cx';
-import { sortKeys } from '@/utils/objects';
+import { omit, sortKeys } from '@/utils/objects';
 
 const ConfigurationButton = ({ className, disabled, ...props }: ButtonProps) => (
   <Button
@@ -62,14 +62,14 @@ const ConfigurationDropdown = ({
   const configs = items || [];
 
   const loadSituation = (configId: string) => {
-    const { situation } = configs.find((config) => config.id === configId) as NonNullable<
+    const { situation: configSituation } = configs.find((config) => config.id === configId) as NonNullable<
       ProComparateurConfigurationResponse['list']['items']
     >[number];
     trackEvent('Comparateur Coûts CO2|Chargement d’une configuration sauvegardée', {
       configId,
     });
     setIsOpen(false);
-    onLoadConfiguration(situation);
+    onLoadConfiguration(configSituation);
   };
 
   useEffect(() => {
@@ -78,7 +78,7 @@ const ConfigurationDropdown = ({
     }
     (async () => {
       const { item: config } = await getConfiguration(sharedConfigId);
-      const { situation: { address, ...sharedConfigSituation } = {} as any } = config || {};
+      const { situation: { address: _address, ...sharedConfigSituation } = {} } = config || {};
       trackEvent('Comparateur Coûts CO2|Chargement d’une configuration partagée', {
         configId: sharedConfigId,
       });
@@ -134,7 +134,7 @@ const ConfigurationDropdown = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const selectedConfig = configs.find((config) => JSON.stringify(config.situation) === JSON.stringify(situation));
+  const selectedConfig = configs.find((config) => JSON.stringify(omit(config.situation, ['address'])) === JSON.stringify(situation));
 
   return (
     <div className="relative min-w-64 font-sans" ref={dropdownRef}>
@@ -157,6 +157,7 @@ const ConfigurationDropdown = ({
         <div className="absolute w-full mt-2 bg-white border rounded-md z-10">
           {configs.map((config) => {
             const isSelectedConfig = selectedConfig?.id === config.id;
+            const configSituation = omit(config.situation, ['address']);
             return (
               <div
                 key={config.id}
@@ -202,7 +203,7 @@ const ConfigurationDropdown = ({
                     </div>
 
                     <div className="flex gap-0.5">
-                      {configuration && JSON.stringify(config.situation) !== JSON.stringify(situation) && (
+                      {configuration && JSON.stringify(configSituation) !== JSON.stringify(situation) && (
                         <ConfigurationButton
                           onClick={() => handleSaveConfig(config.id)}
                           iconId="fr-icon-save-3-fill"
