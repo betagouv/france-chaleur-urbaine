@@ -322,7 +322,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
               ...acc,
               [key]: null,
             }),
-            {}
+            engine.getSituation()
           )
         );
       }}
@@ -378,7 +378,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
                 ...acc,
                 [key]: infoGetter(infos) ?? null,
               }),
-              {}
+              engine.getSituation()
             )
           );
         } catch (e) {
