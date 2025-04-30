@@ -160,7 +160,8 @@ export const getDemands = async (user: User): Promise<Demand[]> => {
     const isParis = fields['Gestionnaires']?.includes('Paris');
     const distanceThreshold = isParis ? 60 : 100;
     fields.haut_potentiel =
-      fields['Distance au réseau'] < distanceThreshold || fields['Logement'] >= 100 || fields['Type de chauffage'] === 'Collectif';
+      fields['Type de chauffage'] === 'Collectif' &&
+      (fields['Distance au réseau'] < distanceThreshold || fields['Logement'] >= 100 || fields['Structure'] === 'Tertiaire');
 
     // complète les valeurs par défaut pour simplifier l'usage côté UI
     fields['Prise de contact'] ??= false;
