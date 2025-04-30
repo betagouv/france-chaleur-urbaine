@@ -4083,6 +4083,11 @@
     "@types/geojson" "*"
     "@types/node" "*"
 
+"@types/share-api-polyfill@^1.0.5":
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/@types/share-api-polyfill/-/share-api-polyfill-1.0.5.tgz#81e462c4fe19f9d493ae81a44f9d5b7941976678"
+  integrity sha512-TXctdAA6CXcMvjuc2FZ0aeo+D4GNXjqfFO9l5Ap+qzSea9KXi4yU37K6OSv0daluDqHP3Rc1Ss0XwGtuB0rmHg==
+
 "@types/sinon@^10.0.16":
   version "10.0.20"
   resolved "https://registry.yarnpkg.com/@types/sinon/-/sinon-10.0.20.tgz#f1585debf4c0d99f9938f4111e5479fb74865146"
@@ -11997,6 +12002,11 @@ shapefile@^0.6.6:
     slice-source "0.4"
     stream-source "0.3"
     text-encoding "^0.6.4"
+
+share-api-polyfill@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/share-api-polyfill/-/share-api-polyfill-1.1.1.tgz#373bacac2f02828a3ee1bd7d9a2b72c60580080e"
+  integrity sha512-5GxXomFRth4lBpHWN136cxpv8KOo+uutljXqgO1RsptDQ5X1raRQWqLi+LoWZ/h02/TgV1STJwuMXcP/0b1vpQ==
 
 sharp@^0.32.5:
   version "0.32.6"

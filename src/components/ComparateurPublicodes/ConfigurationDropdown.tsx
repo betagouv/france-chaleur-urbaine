@@ -243,11 +243,7 @@ const ConfigurationDropdown = ({
                               { duration: 10000 }
                             );
                             if (navigator.share) {
-                              navigator.share({
-                                url: urlToShare,
-                                title,
-                                text,
-                              });
+                              console.log(navigator.share({ url: urlToShare, title, text }).catch(() => sendByEmail()));
                             } else {
                               sendByEmail();
                             }
