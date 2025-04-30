@@ -67,7 +67,7 @@ function getDemandsTableColumns(updateDemand: (demandId: string, demandUpdate: P
               }}
               title="Comptabilise les demandes en chauffage collectif à moins de 100m d’un réseau (moins de 60m sur Paris), ou à plus de 100 logements, ou tertiaires."
             >
-              <Icon name="fr-icon-flag-fill" size="md" title={DEMANDE_STATUS.EMPTY} color="blue" className="cursor-help" />
+              <Icon name="fr-icon-flag-fill" size="sm" title={DEMANDE_STATUS.EMPTY} color="blue" className="cursor-help" />
             </Tooltip>
           )}
         </>
