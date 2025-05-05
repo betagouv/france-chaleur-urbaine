@@ -2,7 +2,7 @@ import geoViewport from '@mapbox/geo-viewport';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import { useDebouncedEffect, useLocalStorageValue } from '@react-hookz/web';
-import { type LayerSpecification, type MapLibreEvent } from 'maplibre-gl';
+import { type LayerSpecification, type MapGeoJSONFeature, type MapLibreEvent } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useRouter } from 'next/router';
 import { parseAsJson, parseAsString, useQueryStates } from 'nuqs';
@@ -19,6 +19,7 @@ import MapReactGL, {
 } from 'react-map-gl/maplibre';
 
 import FileDragNDrop from '@/components/Map/components/FileDragNDrop';
+import { type AdresseEligible } from '@/components/Map/layers/adressesEligibles';
 import { isMapConfigurationInitialized, type MapConfiguration } from '@/components/Map/map-configuration';
 import Accordion from '@/components/ui/Accordion';
 import Box from '@/components/ui/Box';
@@ -30,6 +31,7 @@ import useDevMode from '@/hooks/useDevMode';
 import useRouterReady from '@/hooks/useRouterReady';
 import { useServices } from '@/services';
 import { trackEvent } from '@/services/analytics';
+import { notify } from '@/services/notification';
 import { type BoundingBox } from '@/types/Coords';
 import { type AddressDetail, type HandleAddressSelect } from '@/types/HeatNetworksResponse';
 import { type MapMarkerInfos } from '@/types/MapComponentsInfos';
@@ -67,6 +69,7 @@ import rawOsmConfig from './osm.config.json';
 import rawSatelliteConfig from './satellite.config.json';
 import { type MapboxStyleDefinition, MapboxStyleSwitcherControl } from './StyleSwitcher';
 
+export { AdresseEligible };
 const mapSettings = {
   defaultLongitude: 2.3,
   defaultLatitude: 47,
@@ -97,14 +100,6 @@ type ViewState = {
   zoom: number;
 };
 
-export type AdresseEligible = {
-  id: string;
-  address: string;
-  isEligible: boolean;
-  longitude: number;
-  latitude: number;
-};
-
 type MapProps = {
   withoutLogo?: boolean;
   initialMapConfiguration?: MapConfiguration;
@@ -120,6 +115,7 @@ type MapProps = {
   pinsList?: MapMarkerInfos[];
   initialCenter?: Point;
   initialZoom?: number;
+  enableFlyToCentering?: boolean;
   bounds?: BoundingBox;
   geolocDisabled?: boolean;
   withFCUAttribution?: boolean;
@@ -127,6 +123,7 @@ type MapProps = {
   mapRef?: RefObject<MapRef>;
   adressesEligibles?: AdresseEligible[];
   adressesEligiblesAutoFit?: boolean;
+  onFeatureClick?: (feature: MapGeoJSONFeature) => void;
   children?: ReactNode;
 };
 
@@ -152,6 +149,7 @@ export const FullyFeaturedMap = ({
   pinsList,
   initialCenter,
   initialZoom,
+  enableFlyToCentering,
   bounds: defaultBounds,
   geolocDisabled,
   withFCUAttribution,
@@ -160,6 +158,7 @@ export const FullyFeaturedMap = ({
   className,
   adressesEligibles,
   adressesEligiblesAutoFit = true,
+  onFeatureClick,
   children,
   ...props
 }: MapProps & React.HTMLAttributes<HTMLDivElement>) => {
@@ -388,7 +387,7 @@ export const FullyFeaturedMap = ({
     setMapLayersLoaded(true);
   };
 
-  const { Popup } = useMapEvents({ mapLayersLoaded, isDrawing, mapRef: mapRef.current });
+  const { Popup } = useMapEvents({ mapLayersLoaded, isDrawing, mapRef: mapRef.current, onFeatureClick });
 
   // disable the switcher control as it conflicts with map layers and drawing interactions
   useEffect(() => {
@@ -440,7 +439,16 @@ export const FullyFeaturedMap = ({
       };
       setMarkersList([newMarker]);
     }
-    jumpTo({ coordinates: initialCenter, zoom: initialZoom });
+    if (enableFlyToCentering) {
+      if (initialCenter[0] === undefined || initialCenter[1] === undefined) {
+        notify('error', "Nous n'avons pas pu centrer la carte car les coordonnées sont invalides");
+        return;
+      }
+
+      mapRef.current?.getMap()?.flyTo({ center: initialCenter, zoom: initialZoom, essential: true, duration: 1000 });
+    } else {
+      jumpTo({ coordinates: initialCenter, zoom: initialZoom });
+    }
   }, [initialCenter, jumpTo, withCenterPin, mapRef.current]);
 
   useEffect(() => {
@@ -617,10 +625,9 @@ export const FullyFeaturedMap = ({
           type: 'Point',
           coordinates: [address.longitude, address.latitude],
         },
+        id: address.id,
         properties: {
-          id: address.id,
-          address: address.address,
-          isEligible: address.isEligible,
+          ...address,
         },
       })),
     });

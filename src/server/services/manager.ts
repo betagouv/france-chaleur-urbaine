@@ -8,6 +8,7 @@ import { sendNewDemands, sendOldDemands, sendRelanceMail } from '@/server/email'
 import { logger } from '@/server/helpers/logger';
 import { invalidPermissionsError } from '@/server/helpers/server';
 import { Airtable } from '@/types/enum/Airtable';
+import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import { type Demand } from '@/types/Summary/Demand';
 import { type User as FullUser } from '@/types/User';
 
@@ -151,6 +152,20 @@ export const getDemands = async (user: User): Promise<Demand[]> => {
     recordsCount: records.length,
     tagsCounts: user.gestionnaires.length,
     duration: Date.now() - startTime,
+  });
+
+  records.forEach((record) => {
+    // ajoute le champ haut_potentiel = en chauffage collectif avec : soit à -100m hors Paris / -60m Paris, soit +100 logements, soit tertiaire.
+    const fields = record.fields as Demand;
+    const isParis = fields['Gestionnaires']?.includes('Paris');
+    const distanceThreshold = isParis ? 60 : 100;
+    fields.haut_potentiel =
+      fields['Type de chauffage'] === 'Collectif' &&
+      (fields['Distance au réseau'] < distanceThreshold || fields['Logement'] >= 100 || fields['Structure'] === 'Tertiaire');
+
+    // complète les valeurs par défaut pour simplifier l'usage côté UI
+    fields['Prise de contact'] ??= false;
+    fields.Status ??= DEMANDE_STATUS.EMPTY;
   });
 
   return user.role === 'demo'

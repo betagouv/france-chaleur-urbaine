@@ -99,7 +99,11 @@ const PopoverContent = forwardRef<
 >(({ full = true, ...props }, ref) => {
   const { width } = useContext(PopoverMeasurementsContext);
 
-  return <StyledPopoverContent ref={ref} $width={full ? width : undefined} {...props} />;
+  return (
+    <PopoverPrimitive.Portal>
+      <StyledPopoverContent ref={ref} $width={full ? width : undefined} {...props} />
+    </PopoverPrimitive.Portal>
+  );
 });
 PopoverContent.displayName = 'PopoverContent';
 

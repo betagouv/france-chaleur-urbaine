@@ -1,5 +1,7 @@
 import { type HTMLAttributes } from 'react';
 
+import cx from '@/utils/cx';
+
 import Box from './Box';
 import { type SpacingProperties } from './helpers/spacings';
 
@@ -18,3 +20,5 @@ function Divider({ vertical, ...props }: DividerProps) {
 }
 
 export default Divider;
+
+export const VerticalDivider = ({ className }: { className?: string }) => <div className={cx('h-12 w-px bg-gray-300', className)} />;

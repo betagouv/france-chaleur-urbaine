@@ -13,18 +13,21 @@ import {
   getFilteredRowModel,
   getSortedRowModel,
   type RowData,
+  type RowSelectionState,
   type SortingFn,
   type SortingState,
   useReactTable,
 } from '@tanstack/react-table';
-import { useVirtualizer } from '@tanstack/react-virtual';
+import { useVirtualizer, type Virtualizer } from '@tanstack/react-virtual';
 import { cva } from 'class-variance-authority';
-import React from 'react';
+import React, { type RefObject, useEffect } from 'react';
 
 import Button from '@/components/ui/Button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover';
 import { isDevModeEnabled } from '@/hooks/useDevMode';
+import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
+import { type FlattenKeys } from '@/utils/typescript';
 
 import TableCell, { type TableCellProps } from './TableCell';
 import TableFilter, { defaultTableFilterFns, type TableFilterProps } from './TableFilter';
@@ -65,6 +68,7 @@ export const customFilterFn = <T extends RowData>(): Record<string, FilterFn<T>>
 });
 
 export type ColumnDef<T, K = any> = ColumnDefOriginal<T, K> & {
+  accessorKey?: string;
   cellType?: TableCellProps<T>['type'];
   align?: 'center' | 'left' | 'right';
   className?: string;
@@ -73,6 +77,7 @@ export type ColumnDef<T, K = any> = ColumnDefOriginal<T, K> & {
   filter?: keyof ReturnType<typeof customFilterFn<T>>;
   filterType?: TableFilterProps['type'];
   filterProps?: TableFilterProps['filterProps'];
+  visible?: boolean;
 } & ({ flex?: number } | { width?: 'auto' | string });
 
 export type TableSimpleProps<T> = {
@@ -84,19 +89,27 @@ export type TableSimpleProps<T> = {
   caption?: string;
   enableRowSelection?: boolean;
   enableGlobalFilter?: boolean;
+  globalFilter?: string;
   className?: string;
+  wrapperClassName?: string;
   fluid?: boolean;
   padding?: 'sm' | 'md' | 'lg';
+  rowSelection?: RowSelectionState;
   onSelectionChange?: (selectedRows: T[]) => void;
+  onRowClick?: (rowId: string) => void;
   rowHeight?: number;
   controlsLayout?: 'inline' | 'block';
   onFilterChange?: (filteredRows: T[]) => void;
+  nbLoadingItems?: number;
+  loadingEmptyMessage?: string;
+  height?: string;
+  virtualizerRef?: RefObject<Virtualizer<HTMLDivElement, Element>>;
 };
 
 const cellCustomClasses = cva('', {
   variants: {
     padding: {
-      sm: '!p-2',
+      sm: '!p-2 !leading-tight',
       md: '',
       lg: '!p-6',
     },
@@ -115,17 +128,24 @@ const TableSimple = <T extends RowData>({
   caption,
   enableRowSelection,
   enableGlobalFilter = false,
+  globalFilter: externalGlobalFilter,
+  rowSelection,
   onSelectionChange,
+  onRowClick,
   onFilterChange,
-  className,
+  className: tableClassName,
+  wrapperClassName,
   fluid,
   padding = 'md',
   rowHeight = 64,
   controlsLayout = 'inline',
+  nbLoadingItems = 5,
+  loadingEmptyMessage = 'Aucun résultat',
+  height = '600px',
+  virtualizerRef,
 }: TableSimpleProps<T>) => {
-  const [globalFilter, setGlobalFilter] = React.useState<any>([]);
+  const [globalFilter, setGlobalFilter] = React.useState<string>('');
   const [sortingState, setSortingState] = React.useState<SortingState>(initialSortingState ?? []);
-  const [rowSelection, setRowSelection] = React.useState<Record<string, boolean>>({});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(defaultColumnFilters ?? []);
 
   React.useEffect(() => {
@@ -214,22 +234,32 @@ const TableSimple = <T extends RowData>({
     }
   });
 
+  const columnVisibility = React.useMemo(() => {
+    return tableColumns.reduce(
+      (acc, column) => {
+        acc[column.id || (column.accessorKey as string)] = column.visible ?? true;
+        return acc;
+      },
+      {} as Record<string, boolean>
+    );
+  }, [tableColumns]);
+
   const table = useReactTable({
     data,
     columns: tableColumns,
     state: {
       sorting: sortingState,
-      globalFilter,
+      globalFilter: externalGlobalFilter ?? globalFilter,
       columnFilters,
       rowSelection,
+      columnVisibility,
     },
     enableRowSelection,
-    onRowSelectionChange: setRowSelection,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    onGlobalFilterChange: setGlobalFilter,
+    onGlobalFilterChange: isDefined(externalGlobalFilter) ? undefined : setGlobalFilter,
     onSortingChange: setSortingState,
     getFacetedRowModel: getFacetedRowModel(), //if you need a list of values for a column (other faceted row models depend on this one)
     getFacetedMinMaxValues: getFacetedMinMaxValues(), //if you need min/max values
@@ -247,14 +277,13 @@ const TableSimple = <T extends RowData>({
   const { rows } = table.getRowModel();
   const { rows: filteredRows } = table.getFilteredRowModel();
 
-  const hasAtLeastOneFilter = table.getState().columnFilters.length > 0;
   const hasAtLeastOneColumnSorting = table.getHeaderGroups()[0].headers.some((header) => header.column.getCanSort());
 
   React.useEffect(() => {
-    if (onFilterChange) {
-      onFilterChange(hasAtLeastOneFilter ? filteredRows.map((row) => row.original) : data);
+    if (onFilterChange && rows.length > 0) {
+      onFilterChange(filteredRows.map((row) => row.original));
     }
-  }, [filteredRows, hasAtLeastOneFilter, onFilterChange]);
+  }, [rows, filteredRows, onFilterChange]);
 
   // the virtualizer needs to know the scrollable container element
   const tableContainerRef = React.useRef<HTMLDivElement>(null);
@@ -271,6 +300,12 @@ const TableSimple = <T extends RowData>({
     overscan: 10, // The number of items to render above and below the visible area
   });
 
+  useEffect(() => {
+    if (virtualizerRef) {
+      virtualizerRef.current = rowVirtualizer;
+    }
+  }, [rowVirtualizer, virtualizerRef]);
+
   const gridTemplateColumns = table
     .getHeaderGroups()[0]
     .headers.map((header, index) => {
@@ -280,10 +315,10 @@ const TableSimple = <T extends RowData>({
     })
     .join(' ');
 
-  const nbRowsToDisplay = loading ? 5 : filteredRows.length || 1; /* There is one empty row when no data is present */
+  const bodyHeight = loading ? nbLoadingItems * rowHeight : rowVirtualizer.getTotalSize() || 1 * rowHeight;
 
   return (
-    <section>
+    <section className={wrapperClassName}>
       {enableGlobalFilter && (
         <Input
           label=""
@@ -291,22 +326,23 @@ const TableSimple = <T extends RowData>({
             value: globalFilter,
             onChange: (e) => table.setGlobalFilter(e.target.value),
             placeholder: 'Recherche...',
+            className: 'mb-2',
           }}
         />
       )}
       {caption && <div className="text-2xl leading-8 font-bold mb-5">{caption}</div>}
       <div
-        className={fr.cx('fr-table', 'fr-table--no-scroll')}
+        className={cx(fr.cx('fr-table', 'fr-table--no-scroll'), '!my-0')}
         ref={tableContainerRef}
         style={{
           overflow: 'overlay', // our scrollable table container
           position: 'relative', // needed for sticky header
-          maxHeight: '600px', // should be a fixed height
+          maxHeight: height, // should be a fixed height
         }}
       >
         {/* Even though we're still using sematic table tags, we must use CSS grid and flexbox for dynamic row heights */}
         <table
-          className={cx(fluid ? '!w-[max-content]' : '', className)}
+          className={cx(fluid ? '!w-[max-content]' : '', tableClassName)}
           style={{
             display: 'grid',
             overflow: 'unset', // overwrite the dsfr
@@ -341,7 +377,11 @@ const TableSimple = <T extends RowData>({
                         <div className={cx('flex gap-1', controlsLayout === 'inline' ? 'flex-row items-center' : 'flex-col')}>
                           {/* mt-[5px] to be aligned  */}
                           <span
-                            className={cx(controlsLayout === 'inline' ? '' : 'flex-1', hasAtLeastOneColumnSorting ? 'mt-[5px]' : '')}
+                            className={cx(
+                              'leading-tight tracking-tighter',
+                              controlsLayout === 'inline' ? '' : 'flex-1',
+                              hasAtLeastOneColumnSorting ? 'mt-[5px]' : ''
+                            )}
                             style={{
                               wordBreak: 'break-word', // does not exist in tailwind
                             }}
@@ -389,12 +429,8 @@ const TableSimple = <T extends RowData>({
                                     value={header.column.getFilterValue() as any /* Not working as is for an unknown reason*/}
                                     onChange={header.column.setFilterValue}
                                     filterProps={columnDef.filterProps as any /* Not working as is for an unknown reason*/}
-                                    facetedMinMaxValues={
-                                      header.column.getFacetedMinMaxValues() as any /* Not working as is for an unknown reason*/
-                                    }
-                                    facetedUniqueValues={
-                                      header.column.getFacetedUniqueValues() as any /* Not working as is for an unknown reason*/
-                                    }
+                                    facetedMinMaxValues={header.column.getFacetedMinMaxValues()}
+                                    facetedUniqueValues={header.column.getFacetedUniqueValues()}
                                   />
                                   <Button
                                     priority="tertiary"
@@ -428,12 +464,12 @@ const TableSimple = <T extends RowData>({
           <tbody
             style={{
               display: 'grid',
-              height: `${nbRowsToDisplay * rowHeight}px`, // tells scrollbar how big the table is
+              height: `${bodyHeight}px`, // tells scrollbar how big the table is
               position: 'relative', // needed for absolute positioning of rows
             }}
           >
             {loading &&
-              [1, 2, 3, 4, 5].map((value, index) => (
+              [...Array(nbLoadingItems)].map((value, index) => (
                 <tr
                   key={`loading_${value}`}
                   className="grid absolute w-full"
@@ -451,8 +487,8 @@ const TableSimple = <T extends RowData>({
             {!loading &&
               (rowVirtualizer.getVirtualItems().length === 0 ? (
                 <tr>
-                  <td colSpan={columns.length} className="!flex justify-center items-center h-full text-black ">
-                    {data.length === 0 ? 'Aucun résultat' : 'Aucun résultat trouvé, élargissez votre recherche'}
+                  <td colSpan={columns.length} className="!flex justify-start items-center h-full text-black ">
+                    {data.length === 0 ? loadingEmptyMessage : 'Aucun résultat trouvé, élargissez votre recherche'}
                   </td>
                 </tr>
               ) : (
@@ -463,12 +499,27 @@ const TableSimple = <T extends RowData>({
                       data-index={virtualRow.index} // needed for dynamic row height measurement
                       ref={(node) => rowVirtualizer.measureElement(node)} // measure dynamic row height
                       key={row.id}
-                      className="grid absolute w-full"
+                      className={cx(
+                        'grid absolute w-full',
+                        onRowClick && 'cursor-pointer transition-colors duration-100',
+                        onRowClick && (rowSelection?.[(row.original as any).id] ? '!bg-[#e1f1f5]' : 'hover:!bg-gray-200')
+                      )}
                       style={{
                         transform: `translateY(${virtualRow.start}px)`, // this should always be a `style` as it changes on scroll
                         gridTemplateColumns,
-                        height: rowHeight,
                       }}
+                      onClick={
+                        onRowClick
+                          ? (event) => {
+                              const element = event.target as HTMLElement;
+                              // prevent row click when changing values in the table
+                              if (['INPUT', 'TEXTAREA', 'LABEL', 'SELECT'].includes(element.tagName)) {
+                                return;
+                              }
+                              onRowClick((row.original as any).id);
+                            }
+                          : undefined
+                      }
                     >
                       {row.getVisibleCells().map((cell) => {
                         const columnDef = cell.column.columnDef as ColumnDef<T>;
@@ -504,3 +555,15 @@ const TableSimple = <T extends RowData>({
 };
 
 export default TableSimple;
+
+type DotToUnderscore<T extends string> = T extends `${infer A}.${infer B}` ? `${A}_${DotToUnderscore<B>}` : T;
+
+export type QuickFilterPreset<Data> = {
+  label: React.ReactNode;
+  valueSuffix?: React.ReactNode;
+  getStat?: (data: Data[]) => number;
+  filters: Array<{
+    id: DotToUnderscore<FlattenKeys<Data>>;
+    value: boolean | number | [number, number] | Record<string, boolean>;
+  }>;
+};

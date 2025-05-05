@@ -76,9 +76,11 @@ const colors = {
 
   light: fr.colors.decisions.background.alt.blueFrance.default,
 
-  accent: fr.colors.options.blueFrance.main525,
+  accent: '#FF692F',
 
   primary: palette.blue,
+
+  border: '#d1d5db',
 
   'fcu-green': '#009364',
   'fcu-blue': '#00B1F8',

@@ -1,4 +1,9 @@
+import Tag from '@/components/Manager/Tag';
+import { isDefined } from '@/utils/core';
+
 import { ifHoverElse, type MapSourceLayersSpecification, type PopupStyleHelpers } from './common';
+
+const popupOffset = [0, -22] as [number, number];
 
 export const adressesEligiblesLayersSpec = [
   {
@@ -9,11 +14,29 @@ export const adressesEligiblesLayersSpec = [
       promoteId: 'id', // obligatoire car maplibre ne semble pas prendre l'id des features, seulement celui des properties
     },
     layers: [
-      // 2 couches séparées pour afficher les adresses éligibles au dessus des autres
+      // 3 couches séparées pour afficher les adresses éligibles au dessus des autres
+      {
+        id: 'adressesEligibles-default',
+        type: 'symbol',
+        filter: () => ['all', ['!has', 'isEligible'], ['!=', 'selected', true]],
+        layout: {
+          'icon-image': 'marker-blue',
+          'icon-overlap': 'always',
+          'icon-anchor': 'bottom',
+          'icon-offset': [0, 5],
+        },
+        paint: {
+          // display all features except the hovered one
+          'icon-opacity': ifHoverElse(0, 1),
+        },
+        isVisible: () => true,
+        popup: Popup,
+        popupOffset,
+      },
       {
         id: 'adressesEligibles-non-eligible',
         type: 'symbol',
-        filter: () => ['==', 'isEligible', false],
+        filter: () => ['any', ['==', 'isEligible', false], ['==', 'selected', true]],
         layout: {
           'icon-image': 'marker-red',
           'icon-overlap': 'always',
@@ -26,6 +49,7 @@ export const adressesEligiblesLayersSpec = [
         },
         isVisible: () => true,
         popup: Popup,
+        popupOffset,
       },
       {
         id: 'adressesEligibles-eligible',
@@ -43,12 +67,20 @@ export const adressesEligiblesLayersSpec = [
         },
         isVisible: () => true,
         popup: Popup,
+        popupOffset,
       },
       {
         id: 'adressesEligibles-hover',
         type: 'symbol',
         layout: {
-          'icon-image': ['case', ['==', ['get', 'isEligible'], true], 'marker-green', 'marker-red'] as any,
+          'icon-image': [
+            'case',
+            ['==', ['get', 'isEligible'], true],
+            'marker-green',
+            ['any', ['==', ['get', 'isEligible'], false], ['==', ['get', 'selected'], true]],
+            'marker-red',
+            'marker-blue',
+          ] as any,
           'icon-overlap': 'always',
           'icon-size': 1.2,
           'icon-anchor': 'bottom',
@@ -70,21 +102,28 @@ export type AdresseEligible = {
   address: string;
   longitude: number;
   latitude: number;
-  isEligible: boolean;
+  isEligible?: boolean; // TODO essayer de voir si on peut avoir des couleurs différentes selon les statuts des demandes
+  selected?: boolean;
+  modeDeChauffage?: string;
+  typeDeLogement?: string;
 };
 
 function Popup(adresseEligible: AdresseEligible, { Property, Title, TwoColumns }: PopupStyleHelpers) {
   return (
     <>
-      <Title>
-        {adresseEligible.isEligible ? (
-          <span className="text-success">✓ Adresse potentiellement raccordable</span>
-        ) : (
-          <span className="text-error">✗ Adresse non raccordable</span>
-        )}
-      </Title>
+      {isDefined(adresseEligible.isEligible) && (
+        <Title>
+          {adresseEligible.isEligible ? (
+            <span className="text-success">✓ Adresse potentiellement raccordable</span>
+          ) : (
+            <span className="text-error">✗ Adresse non raccordable</span>
+          )}
+        </Title>
+      )}
       <TwoColumns>
         <Property label="Adresse" value={adresseEligible.address} />
+        {isDefined(adresseEligible.typeDeLogement) && <Tag text={adresseEligible.typeDeLogement} />}
+        {isDefined(adresseEligible.modeDeChauffage) && <Tag text={adresseEligible.modeDeChauffage} />}
       </TwoColumns>
     </>
   );

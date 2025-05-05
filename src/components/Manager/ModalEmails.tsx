@@ -173,7 +173,7 @@ function ModalEmails(props: Props) {
   return (
     <Modal modal={emailModal} title="" size="large">
       <ModalContentWrapper>
-        <Heading as="h2" center>
+        <Heading as="h2" className="max-w-[90%]">
           Envoi d'un courriel à {emailContent?.to}
         </Heading>
         {!sent && !sentError ? (

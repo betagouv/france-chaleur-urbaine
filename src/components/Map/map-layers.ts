@@ -63,6 +63,10 @@ export const layerSymbolsImagesURLs = [
     key: 'marker-green',
     url: '/icons/marker-green.png',
   },
+  {
+    key: 'marker-blue',
+    url: '/icons/marker-blue.png',
+  },
   ...enrrMobilisablesChaleurFataleLayerSymbols,
 ] as const satisfies ReadonlyArray<LayerSymbolSpecification>;
 
@@ -122,10 +126,12 @@ export type MapLayerSpecification<ILayerId = string> = Omit<LayerSpecification, 
     | {
         unselectable: true;
         popup?: never;
+        popupOffset?: never;
       }
     | {
         unselectable?: false; // false by default, allows hover effect + cursor change + click to open a popup
         popup: PopupHandler;
+        popupOffset?: [number, number];
       }
   );
 

@@ -8,3 +8,5 @@ export enum DEMANDE_STATUS {
   DONE = 'Réalisé',
   ABANDONNED = 'Projet abandonné par le prospect',
 }
+
+export type DemandStatus = DEMANDE_STATUS;

@@ -1,4 +1,4 @@
-import { type ExpressionInputType } from 'maplibre-gl';
+import { type DataDrivenPropertyValueSpecification, type ExpressionInputType } from 'maplibre-gl';
 
 import DPE from '@/components/DPE';
 import { ENERGY_TYPE, ENERGY_USED } from '@/types/enum/EnergyType';
@@ -170,64 +170,67 @@ export const typeChauffageBatimentsCollectifsLayersSpec = [
 function buildLayerAndHoverLayer<LayerId extends string>(
   layerSpec: MapLayerSpecification<LayerId>
 ): readonly [MapLayerSpecification<LayerId>, MapLayerSpecification<`${LayerId}-hover`>] {
-  return [
-    deepMergeObjects(layerSpec, {
-      paint: {
-        // display all features except the hovered one
-        'icon-opacity': [
-          'interpolate',
-          ['linear'],
-          ['zoom'],
-          intermediateTileLayersMinZoom + 0.2,
-          0,
-          intermediateTileLayersMinZoom + 0.5 + 1,
-          ifHoverElse(0, typeChauffageBatimentsOpacity),
-        ],
-      },
-    }),
-    {
-      ...layerSpec,
-      id: `${layerSpec.id}-hover`,
-      layout: {
-        ...layerSpec.layout,
-        'icon-size': [
-          '+',
-          0.3,
-          [
-            'case',
-            ['<', ['get', ENERGY_PROPERTY_NB_LOT], energyFilterInterval.min],
-            getSymbolRatio(minIconSize),
-            ['<', ['get', ENERGY_PROPERTY_NB_LOT], energyFilterInterval.max],
-            [
-              'interpolate',
-              ['linear'],
-              ['get', ENERGY_PROPERTY_NB_LOT],
-              energyFilterInterval.min,
-              getSymbolRatio(minIconSize),
-              energyFilterInterval.max,
-              getSymbolRatio(maxIconSize),
-            ],
-            getSymbolRatio(maxIconSize),
-          ],
-        ],
-      },
-      paint: {
-        ...layerSpec.paint,
-        // display all features except the hovered one
-        'icon-opacity': [
-          'interpolate',
-          ['linear'],
-          ['zoom'],
-          intermediateTileLayersMinZoom + 0.2,
-          0,
-          intermediateTileLayersMinZoom + 0.5 + 1,
-          ifHoverElse(typeChauffageBatimentsOpacity, 0),
-        ],
-      },
-      unselectable: true,
-      popup: undefined, // overwrite
+  const baseLayer = deepMergeObjects(layerSpec, {
+    paint: {
+      'icon-opacity': [
+        'interpolate',
+        ['linear'],
+        ['zoom'],
+        intermediateTileLayersMinZoom + 0.2,
+        0,
+        intermediateTileLayersMinZoom + 0.5 + 1,
+        ifHoverElse(0, typeChauffageBatimentsOpacity),
+      ],
     },
-  ] as const satisfies ReadonlyArray<MapLayerSpecification>;
+  });
+
+  const { popupOffset, ...layerSpecWithoutOffset } = layerSpec;
+
+  const iconSizeExpression = [
+    '+',
+    0.3,
+    [
+      'case',
+      ['<', ['get', ENERGY_PROPERTY_NB_LOT], energyFilterInterval.min],
+      getSymbolRatio(minIconSize),
+      ['<', ['get', ENERGY_PROPERTY_NB_LOT], energyFilterInterval.max],
+      [
+        'interpolate',
+        ['linear'],
+        ['get', ENERGY_PROPERTY_NB_LOT],
+        energyFilterInterval.min,
+        getSymbolRatio(minIconSize),
+        energyFilterInterval.max,
+        getSymbolRatio(maxIconSize),
+      ],
+      getSymbolRatio(maxIconSize),
+    ],
+  ] as DataDrivenPropertyValueSpecification<number>;
+
+  const hoverLayer: MapLayerSpecification<`${LayerId}-hover`> = {
+    ...layerSpecWithoutOffset,
+    id: `${layerSpec.id}-hover` as const,
+    layout: {
+      ...layerSpec.layout,
+      'icon-size': iconSizeExpression,
+    },
+    paint: {
+      ...layerSpec.paint,
+      'icon-opacity': [
+        'interpolate',
+        ['linear'],
+        ['zoom'],
+        intermediateTileLayersMinZoom + 0.2,
+        0,
+        intermediateTileLayersMinZoom + 0.5 + 1,
+        ifHoverElse(typeChauffageBatimentsOpacity, 0),
+      ],
+    },
+    unselectable: true as const,
+    popup: undefined,
+  };
+
+  return [baseLayer, hoverLayer] as const;
 }
 
 function Popup(caracteristiqueBatiment: EnergySummary, { Property, Title, TwoColumns }: PopupStyleHelpers) {

@@ -1,9 +1,8 @@
 import { type ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react';
 
+import TextAreaInput from '@/components/form/dsfr/TextArea';
 import { type Demand } from '@/types/Summary/Demand';
 import debounce from '@/utils/debounce';
-
-import { TextAreaInput } from './Comment.styles';
 
 const Comment = ({
   demand,
@@ -41,6 +40,7 @@ const Comment = ({
     <TextAreaInput
       label=""
       size="sm"
+      className="w-full"
       nativeTextAreaProps={{
         value,
         onChange: onChangeHandler,
