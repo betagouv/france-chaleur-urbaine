@@ -61,7 +61,7 @@ function getDemandsTableColumns(updateDemand: (demandId: string, demandUpdate: P
         <div className="flex flex-col gap-2">
           {row.original.Status === DEMANDE_STATUS.EMPTY && !row.original['Prise de contact'] && (
             <Tooltip title="Prospect non recontacté et statut en attente de prise en charge">
-              <Icon name="fr-icon-flag-fill" size="sm" color="blue" />
+              <Icon name="fr-icon-flag-fill" size="sm" color="red" />
             </Tooltip>
           )}
           {row.original.haut_potentiel && <Badge type="haut_potentiel" />}
@@ -270,7 +270,7 @@ const quickFilterPresets = {
         <Tooltip title="Prospect non recontacté et statut en attente de prise en charge" />
       </>
     ),
-    valueSuffix: <Icon name="fr-icon-flag-fill" size="sm" color="blue" />,
+    valueSuffix: <Icon name="fr-icon-flag-fill" size="sm" color="red" />,
     getStat: (demands) =>
       demands.filter((demand) => demand.Status === 'En attente de prise en charge' && !demand['Prise de contact']).length,
     filters: [
