@@ -8,6 +8,8 @@ import { handleRouteErrors, validateObjectSchema } from '@/server/helpers/server
 import { Airtable } from '@/types/enum/Airtable';
 import { zAirtableRecordId } from '@/utils/validation';
 
+export type ManagerEmailResponse = Awaited<ReturnType<typeof GET>>;
+
 const GET = async (req: NextApiRequest) => {
   const { demand_id } = await validateObjectSchema(req.query, {
     demand_id: zAirtableRecordId,
