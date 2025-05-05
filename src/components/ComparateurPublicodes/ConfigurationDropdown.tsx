@@ -230,7 +230,7 @@ const ConfigurationDropdown = ({
 
                           const title = 'Ma configuration du comparateur de coûts et CO₂ de France Chaleur Urbaine';
                           const text =
-                            'Voici un lien vers une configuration personnalisée pour comparer les coûts et les émissions de CO₂ selon différents modes de chauffage. Un compte est nécessaire pour y accéder.\n\n';
+                            'Voici un lien vers une configuration personnalisée pour comparer les coûts et les émissions de CO₂ de différents modes de chauffage et de refroidissement. Un compte sur France Chaleur Urbaine est nécessaire pour y accéder.\n\n';
 
                           setTimeout(() => {
                             trackEvent('Comparateur Coûts CO2|Partage d’une configuration', {
