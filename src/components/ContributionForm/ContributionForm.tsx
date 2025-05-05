@@ -49,10 +49,6 @@ const typesDemande = [
     key: 'ajout schéma directeur',
   },
   {
-    label: 'signaler une erreur',
-    key: 'signaler une erreur',
-  },
-  {
     label: 'autre',
     key: 'autre',
   },
@@ -258,13 +254,6 @@ const typeDemandeFields = {
       hint: 'Formats préférentiels : PDF, Word.',
     },
   ],
-  'signaler une erreur': [
-    {
-      name: 'precisions',
-      label: 'Précisez :',
-      schema: stringSchema,
-    },
-  ],
   autre: [
     {
       name: 'precisions',
@@ -330,12 +319,6 @@ export const zContributionFormData = z.discriminatedUnion(
       z.object({
         typeDemande: z.literal('ajout schéma directeur'),
         ...zodSchemasByTypeDemande['ajout schéma directeur'],
-      })
-    ),
-    zCommonFormData.merge(
-      z.object({
-        typeDemande: z.literal('signaler une erreur'),
-        ...zodSchemasByTypeDemande['signaler une erreur'],
       })
     ),
     zCommonFormData.merge(

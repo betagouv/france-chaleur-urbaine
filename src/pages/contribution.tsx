@@ -11,8 +11,7 @@ function Contribution() {
     >
       <Box py="4w" className="fr-container">
         <Heading as="h1" size="h2" color="blue-france">
-          Vous souhaitez contribuer à notre carte en ajoutant des données ou en nous signalant une erreur ? C'est possible ! Complétez le
-          formulaire ci-dessous :
+          Vous souhaitez contribuer à notre carte en ajoutant des données ? C'est possible ! Complétez le formulaire ci-dessous :
         </Heading>
 
         <ContributionForm />
