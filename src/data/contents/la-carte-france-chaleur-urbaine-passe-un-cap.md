@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/cover_carte_avril_2025.jpg
+coverY: 0
+---
+
 # La carte France Chaleur Urbaine passe un cap !
 
 La [carte France Chaleur Urbaine](/carte) passe un nouveau cap : les tracés des réseaux de chaleur recensés représentent désormais plus de 95% des livraisons de chaleur annuelles en France !&#x20;
