@@ -3,7 +3,6 @@ import { useCallback, useState } from 'react';
 import Icon from '@/components/ui/Icon';
 import { type Demand } from '@/types/Summary/Demand';
 
-import { ContactInfos, EmailInfo, Name, OtherInfo } from './Contact.styles';
 import ModalEmails from './ModalEmails';
 
 const Contact = ({
@@ -44,27 +43,28 @@ const Contact = ({
   const nomStructureAccompagnante = getNomStructureAccompagnante();
 
   return (
-    <ContactInfos className="w-full">
+    <div className="w-full leading-5">
       <>
-        <Name>
+        <div className="font-bold">
           {demand.Prénom ?? ''} {demand.Nom}
-        </Name>
+        </div>
         {nomStructure && <div>{nomStructure}</div>}
         {demand.Mail && (
-          <EmailInfo
+          <div
+            className="text-gray-500 text-[13px] text-nowrap hover:bg-gray-100 cursor-pointer inline-block"
             onClick={() => {
               setShowEmailsModal(true);
             }}
           >
             <Icon size="sm" name="ri-mail-line" className="fr-mr-1w" />
             <u className="whitespace-normal">{demand.Mail}</u>
-          </EmailInfo>
+          </div>
         )}
         {demand.Téléphone && (
-          <OtherInfo>
+          <div className="text-gray-500 text-[13px]">
             <Icon size="sm" name="ri-phone-line" className="fr-mr-1w" />
             <span>{demand.Téléphone}</span>
-          </OtherInfo>
+          </div>
         )}
       </>
       {demand.Mail && (
@@ -76,7 +76,7 @@ const Contact = ({
         />
       )}
       {nomStructureAccompagnante && <div>Pour le compte de : {nomStructureAccompagnante}</div>}
-    </ContactInfos>
+    </div>
   );
 };
 
