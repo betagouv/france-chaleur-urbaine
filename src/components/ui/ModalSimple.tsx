@@ -1,12 +1,16 @@
-import { createContext, type MouseEvent, type PropsWithChildren, useCallback, useContext, useMemo, useState } from 'react';
+import { createContext, type MouseEvent, type PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 import Modal, { createModal } from './Modal';
 
-type ModalSimpleProps = PropsWithChildren<{
-  trigger: React.ReactNode;
-  title: string;
-  size?: React.ComponentProps<typeof Modal>['size'];
-}>;
+type ModalSimpleProps = PropsWithChildren<
+  {
+    title: string;
+    size?: React.ComponentProps<typeof Modal>['size'];
+  } & (
+    | { trigger: React.ReactNode; open?: never; onOpenChange?: never }
+    | { trigger?: never; open: boolean; onOpenChange: (open: boolean) => void }
+  )
+>;
 
 type ModalContextType = {
   closeModal: () => void;
@@ -27,8 +31,9 @@ export const useModal = () => {
  * This lazy loading approach improves initial page performance by not rendering unused modals.
  * The modal is created when the trigger is clicked and destroyed when closed.
  */
-const ModalSimple = ({ children, trigger, title, size = 'medium' }: ModalSimpleProps) => {
-  const [isOpen, setOpen] = useState(false);
+const ModalSimple = ({ children, trigger, title, size = 'medium', open: controlledOpen, onOpenChange }: ModalSimpleProps) => {
+  const [isOpen, setOpen] = useState(!!controlledOpen);
+  const isControlled = controlledOpen !== undefined;
 
   const modal = useMemo(() => {
     if (!isOpen) return null;
@@ -38,6 +43,12 @@ const ModalSimple = ({ children, trigger, title, size = 'medium' }: ModalSimpleP
     });
   }, [isOpen]);
 
+  useEffect(() => {
+    if (isControlled) {
+      setOpen(!!controlledOpen);
+    }
+  }, [controlledOpen, isControlled]);
+
   const handleTriggerClick = useCallback((e: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
     // prevent propagation in case the modal is inside another button
     e.stopPropagation();
@@ -46,7 +57,8 @@ const ModalSimple = ({ children, trigger, title, size = 'medium' }: ModalSimpleP
 
   const handleClose = useCallback(() => {
     setOpen(false);
-  }, []);
+    onOpenChange?.(false);
+  }, [setOpen, onOpenChange]);
 
   const contextValue = useMemo(
     () => ({
@@ -57,7 +69,7 @@ const ModalSimple = ({ children, trigger, title, size = 'medium' }: ModalSimpleP
 
   return (
     <>
-      <div onClickCapture={handleTriggerClick}>{trigger}</div>
+      {trigger && <div onClickCapture={handleTriggerClick}>{trigger}</div>}
       {modal && (
         <Modal modal={modal} title={title} size={size} open={isOpen} onClose={handleClose}>
           <ModalContext.Provider value={contextValue}>{children}</ModalContext.Provider>
