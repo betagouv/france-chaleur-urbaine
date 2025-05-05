@@ -99,6 +99,7 @@ type ExtractTableAlias<DB, T extends keyof DB> = T extends string ? T : never;
  * const filteredQuery = applyFilters(query, 'users', {
  *   status: 'active',
  *   age: ['>', 18],
+ *   user_id: ['raw', `user_id IS NULL OR user_id = '${context.user.id}'`],
  *   role: ['in', ['admin', 'moderator']]
  * });
  * ```
@@ -140,6 +141,9 @@ export function applyFilters<T extends keyof Database, O>(
         } else {
           modifiedQuery = modifiedQuery.where(columnRef, '=', value);
         }
+        break;
+      case 'raw':
+        modifiedQuery = modifiedQuery.where(sql.raw(value));
         break;
       default:
         throw new Error(`Unsupported operator: ${operator}`);
