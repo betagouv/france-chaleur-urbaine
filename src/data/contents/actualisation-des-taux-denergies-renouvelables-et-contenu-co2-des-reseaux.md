@@ -1,15 +1,9 @@
----
-cover: .gitbook/assets/19 (2).jpg
-coverY: 0
----
-
 # Actualisation des taux d'énergies renouvelables et contenu CO2 des réseaux
 
-🔎 Vous recherchez les valeurs réglementaires à utiliser pour le taux d'énergies renouvelables et de récupération et le contenu CO2 d'un réseau de chaleur ou de froid ? Retrouvez sur la carte et les fiches par réseau France Chaleur Urbaine les valeurs du dernier "arrêté DPE", en date du 5 juillet 2024.\
+🏢 Pour la réalisation des diagnostics de performance énergétique (DPE) ou pour l'application de la réglementation environnementale des bâtiments neufs (RE2020), les caractéristiques des réseaux de chaleur et de froid à prendre en compte sont définies chaque année par un arrêté.\
 \
-📊 Basées sur les données d'exploitation de l'année 2022 ou d'une moyenne sur les années 2020-2021-2022, ces valeurs sont notamment celles à utiliser pour la réalisation des diagnostics de performance énergétique ou pour l'application de la RE2020 et de la RT2012.\
+🔎 Le[ dernier arrêté, en date du 11 avril 2025](https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000051520810), met à jour les taux d'énergies renouvelables et contenus CO2 des réseaux avec les données d'exploitation de l'année 2023 ou d'une moyenne sur les années 2021-2022-2023.\
 \
-👉 Liens vers l'arrêté : [https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000049925781](https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000049925781)
+💥 Les différents outils proposés par France Chaleur Urbaine ont été actualisés pour prendre en compte les nouvelles valeurs réglementaires. Vous pourrez les retrouver sur notre [carte](https://france-chaleur-urbaine.beta.gouv.fr/carte), sur les fiches par réseau et sur la [liste des réseaux](https://france-chaleur-urbaine.beta.gouv.fr/reseaux). Les simulations de notre [comparateur des coûts et émissions de CO2](https://france-chaleur-urbaine.beta.gouv.fr/comparateur-couts-performances) des modes de chauffage se basent également sur ces nouvelles valeurs.
 
-<figure><img src=".gitbook/assets/FCU_tauxENRR-contenuCO2.jpg" alt=""><figcaption></figcaption></figure>
-
+<figure><img src=".gitbook/assets/FCU_actualisation_donnees.jpg" alt=""><figcaption></figcaption></figure>
