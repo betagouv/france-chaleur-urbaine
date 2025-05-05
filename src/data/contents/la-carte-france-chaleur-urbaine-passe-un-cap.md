@@ -1,6 +1,6 @@
 # La carte France Chaleur Urbaine passe un cap !
 
-La [carte France Chaleur](/carte) Urbaine passe un nouveau cap : les tracés des réseaux de chaleur recensés représentent désormais plus de 95% des livraisons de chaleur annuelles en France !&#x20;
+La [carte France Chaleur Urbaine](/carte) passe un nouveau cap : les tracés des réseaux de chaleur recensés représentent désormais plus de 95% des livraisons de chaleur annuelles en France !&#x20;
 
 \
 Ont été ajoutés ce mois-ci :\
