@@ -74,6 +74,8 @@ export default handleRouteErrors(async (req, res) => {
 
   const record = await AirtableDB('FCU - Contribution').create({
     Utilisateur: formValues.typeUtilisateur === 'Autre' ? formValues.typeUtilisateurAutre : formValues.typeUtilisateur,
+    Nom: formValues.nom,
+    Prénom: formValues.prenom,
     Email: formValues.email,
     'Cadre subvention ADEME': formValues.dansCadreDemandeADEME,
     Souhait: formValues.typeDemande,

@@ -277,6 +277,8 @@ const typeDemandeFields = {
 export const zCommonFormData = z.object({
   typeUtilisateur: z.enum(nonEmptyArray(typesUtilisateur.map((w) => w.key)), { message: 'Ce choix est obligatoire' }),
   typeUtilisateurAutre: stringSchema,
+  nom: z.string({ message: 'Ce champ est obligatoire' }),
+  prenom: z.string({ message: 'Ce champ est obligatoire' }),
   email: z.string().email("L'adresse email n'est pas valide"),
   dansCadreDemandeADEME: z.boolean({ message: 'Ce choix est obligatoire' }),
 });
@@ -357,6 +359,8 @@ const ContributionForm = () => {
     defaultValues: {
       typeUtilisateur: '',
       typeUtilisateurAutre: '',
+      nom: '',
+      prenom: '',
       email: '',
       typeDemande: '',
       dansCadreDemandeADEME: '',
@@ -443,6 +447,46 @@ const ContributionForm = () => {
             />
           )
         }
+      />
+
+      <form.Field
+        name="nom"
+        children={(field) => (
+          <Input
+            label="Votre nom :"
+            nativeInputProps={{
+              required: true,
+              id: field.name,
+              name: field.name,
+              placeholder: 'Saisir votre nom',
+              autoComplete: 'nom',
+              value: field.state.value,
+              onChange: (e) => field.handleChange(e.target.value),
+              onBlur: field.handleBlur,
+            }}
+            {...getInputErrorStates(field)}
+          />
+        )}
+      />
+
+      <form.Field
+        name="prenom"
+        children={(field) => (
+          <Input
+            label="Votre prénom :"
+            nativeInputProps={{
+              required: true,
+              id: field.name,
+              name: field.name,
+              placeholder: 'Saisir votre prénom',
+              autoComplete: 'prenom',
+              value: field.state.value,
+              onChange: (e) => field.handleChange(e.target.value),
+              onBlur: field.handleBlur,
+            }}
+            {...getInputErrorStates(field)}
+          />
+        )}
       />
 
       <form.Field
