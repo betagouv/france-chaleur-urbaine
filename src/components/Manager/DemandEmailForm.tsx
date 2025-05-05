@@ -4,6 +4,7 @@ import { type FormEvent, useEffect, useState } from 'react';
 
 import Input from '@/components/form/dsfr/Input';
 import TextArea from '@/components/form/dsfr/TextArea';
+import Loader from '@/components/ui/Loader';
 import emailsContentList from '@/data/manager/manager-emails-content';
 import emailsList from '@/data/manager/manager-emails-list';
 import { useFetch } from '@/hooks/useApi';
@@ -44,7 +45,9 @@ function DemandEmailForm(props: Props) {
   const [sent, setSent] = useState(false);
   const [sentError, setSentError] = useState(false);
 
-  const { data: sentHistory } = useFetch<ManagerEmailResponse>(`/api/managerEmail?demand_id=${props.currentDemand.id}`);
+  const { data: sentHistory, isLoading: isLoadingSentHistory } = useFetch<ManagerEmailResponse>(
+    `/api/managerEmail?demand_id=${props.currentDemand.id}`
+  );
 
   useEffect(() => {
     if (props.currentDemand['Emails envoyés']) {
@@ -124,7 +127,11 @@ function DemandEmailForm(props: Props) {
             <b>Historique</b>
             <br />
             <ul className="fr-ml-3w">
-              {sentHistory && sentHistory.length > 0 ? (
+              {isLoadingSentHistory ? (
+                <li>
+                  <Loader size="sm" />
+                </li>
+              ) : sentHistory && sentHistory.length > 0 ? (
                 sentHistory.map((item, index) => (
                   <li key={index}>
                     {getLabel(item.email_key as string)} envoyé le {item.date}
