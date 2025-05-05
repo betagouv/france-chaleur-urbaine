@@ -37,10 +37,15 @@ export function createBaseModel<T extends keyof DB>(tableName: T) {
     return get(id, { ...config, filters: { ...config.filters, user_id: context.user.id } }, context);
   };
 
-  const applyConfig = (query: any, config: ListConfig<T>) => {
+  const applyConfigFilters = (query: any, config: ListConfig<T>) => {
     if (config.filters) {
       query = applyFilters(query as Parameters<typeof applyFilters>[0], tableName, config.filters);
     }
+    return query;
+  };
+
+  const applyConfig = (query: any, config: ListConfig<T>) => {
+    query = applyConfigFilters(query, config);
 
     if (query.select && query.selectAll) {
       if (config.select) {
@@ -57,28 +62,21 @@ export function createBaseModel<T extends keyof DB>(tableName: T) {
         }
       }
     }
-
     return query;
   };
 
   const list = async (config: ListConfig<T>, _context: ApiContext): Promise<{ items: DB[T][]; count: number }> => {
-    let query = kdb.selectFrom(tableName);
+    const baseQuery = kdb.selectFrom(tableName);
 
-    query = applyConfig(query, config);
-
-    const countResult = await kdb
-      .selectFrom(tableName as T)
+    const countQuery = applyConfigFilters(baseQuery, config);
+    const countResult = await countQuery
       .select((eb: ExpressionBuilder<DB, ExtractTableAlias<DB, T>>) => eb.fn.countAll().as('total_count'))
       .executeTakeFirstOrThrow();
+    const count = parseInt(countResult.total_count as string, 10); // Parse count to number (handle string/bigint cases)
 
-    // Parse count to number (handle string/bigint cases)
-    const count = parseInt(countResult.total_count as string, 10);
-
+    let query = applyConfig(baseQuery, config);
     if (config.page && config.pageSize) {
       query = query.offset((config.page - 1) * config.pageSize).limit(config.pageSize);
-      if (config.page && config.pageSize) {
-        query = query.offset((config.page - 1) * config.pageSize).limit(config.pageSize);
-      }
     }
 
     const records = await query.execute();
