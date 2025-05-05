@@ -68,3 +68,11 @@ export type OmitFirst<T extends any[]> = T extends [any, ...infer R] ? R : never
  * Make fields partial for a type
  */
 export type Partialize<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+
+/**
+ * Check if an object has a property.
+ * Returns true if the property exists, false otherwise and typechecks the key.
+ */
+export function hasProperty<T extends object>(obj: T, key: string | number | symbol): key is keyof T {
+  return Object.prototype.hasOwnProperty.call(obj, key);
+}

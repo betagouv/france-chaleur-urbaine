@@ -68,3 +68,19 @@ export function deepIntersection<T extends object, U extends object>(
 export function deepCloneJSON<T>(obj: T): T {
   return JSON.parse(JSON.stringify(obj)) as T;
 }
+
+export const omit = (obj: Record<string, any>, keys: string[]) => {
+  return Object.fromEntries(Object.entries(obj).filter(([key]) => !keys.includes(key)));
+};
+
+export const sortKeys = (obj: Record<string, any>) => {
+  return Object.keys(obj)
+    .sort()
+    .reduce(
+      (acc, key) => {
+        acc[key] = obj[key];
+        return acc;
+      },
+      {} as Record<string, any>
+    );
+};

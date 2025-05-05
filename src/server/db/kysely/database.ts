@@ -2903,6 +2903,15 @@ export interface NetworkIris {
   geom: string | null;
 }
 
+export interface ProComparateurConfigurations {
+  created_at: Generated<Timestamp>;
+  id: string;
+  name: string;
+  situation: { address?: string } & Generated<Json>;
+  updated_at: Generated<Timestamp>;
+  user_id: string;
+}
+
 export interface ProEligibilityTests {
   created_at: Generated<Timestamp>;
   deleted_at: Timestamp | null;
@@ -3024,6 +3033,7 @@ export interface ReseauxDeChaleur {
   communes_insee: string[] | null;
   'contenu CO2': number | null;
   'contenu CO2 ACV': number | null;
+  'Moyenne-annee-DPE': string | null;
   CP_MO: string | null;
   date_actualisation_pdp: Timestamp | null;
   date_actualisation_trace: Timestamp | null;
@@ -3121,6 +3131,7 @@ export interface ReseauxDeFroid {
   communes_insee: string[] | null;
   'contenu CO2': number | null;
   'contenu CO2 ACV': number | null;
+  'Moyenne-annee-DPE': string | null;
   CP_MO: string | null;
   date_actualisation_trace: Timestamp | null;
   departement: string | null;
@@ -3337,6 +3348,7 @@ export interface DB {
   knex_migrations_lock: KnexMigrationsLock;
   matomo_stats: MatomoStats;
   network_iris: NetworkIris;
+  pro_comparateur_configurations: ProComparateurConfigurations;
   pro_eligibility_tests: ProEligibilityTests;
   pro_eligibility_tests_addresses: ProEligibilityTestsAddresses;
   raccordements_tiles: RaccordementsTiles;

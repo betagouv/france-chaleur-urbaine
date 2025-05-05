@@ -94,11 +94,7 @@ const NetworkPanel = ({
                 </Heading>
                 <Text size="sm" fontStyle="italic" mb="2w">
                   Données réglementaires,{' '}
-                  <a
-                    href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000051520810#:~:text=%E2%80%B9%20Texte%20pr%C3%A9c%C3%A9dent-,Arr%C3%AAt%C3%A9%20du%2011%20avril%202025%20modifiant%20l'arr%C3%AAt%C3%A9%20du%2015,la%20vente%20en%20France%20m%C3%A9tropolitaine"
-                    target="_blank"
-                    rel="noreferrer noopener"
-                  >
+                  <a href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000051520810" target="_blank" rel="noreferrer noopener">
                     arrêté du 11 avril 2025
                   </a>{' '}
                   portant sur l’année 2023, ou la moyenne des années 2021, 2022 et 2023.

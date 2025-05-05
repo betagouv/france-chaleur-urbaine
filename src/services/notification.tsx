@@ -28,7 +28,14 @@ export const NotifierContainer = ({ children }: any) => {
 
   return (
     <>
-      <Toaster />
+      <Toaster
+        toastOptions={{
+          style: {
+            boxShadow: '0 0 8px 0 rgba(0, 0, 0, 0.2)',
+            border: '1px solid #EEE',
+          },
+        }}
+      />
       {children}
     </>
   );

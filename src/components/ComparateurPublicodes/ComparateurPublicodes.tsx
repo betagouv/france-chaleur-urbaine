@@ -4,6 +4,7 @@ import { useSearchParams } from 'next/navigation';
 import { parseAsStringLiteral, useQueryState } from 'nuqs';
 import React from 'react';
 
+import Configuration from '@/components/ComparateurPublicodes/Configuration';
 import AddressAutocomplete from '@/components/form/dsfr/AddressAutocompleteInput';
 import { FormProvider } from '@/components/form/publicodes/FormProvider';
 import Label from '@/components/form/publicodes/Label';
@@ -321,7 +322,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
               ...acc,
               [key]: null,
             }),
-            {}
+            engine.getSituation()
           )
         );
       }}
@@ -377,7 +378,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
                 ...acc,
                 [key]: infoGetter(infos) ?? null,
               }),
-              {}
+              engine.getSituation()
             )
           );
         } catch (e) {
@@ -393,6 +394,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
   return (
     <>
       <EligibilityFormModal />
+      {advancedMode && <Configuration engine={engine} address={address || undefined} />}
       <div className={cx(fr.cx('fr-container'), className)} {...props}>
         {!advancedMode && (
           <Notice variant="info" size="sm">

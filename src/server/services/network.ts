@@ -130,7 +130,6 @@ export const listNetworks = async (): Promise<NetworkToCompare[]> => {
       'Gestionnaire',
       'contenu CO2',
       'contenu CO2 ACV',
-      'Moyenne-annee-DPE',
       'nom_reseau',
       'Rend%',
       'Dev_reseau%',
