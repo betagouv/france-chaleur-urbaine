@@ -468,29 +468,39 @@ const ContributionForm = () => {
       <form.Field
         name="dansCadreDemandeADEME"
         children={(field) => (
-          <Radio
-            label="Votre contribution s’inscrit dans le cadre d’une demande de subvention ADEME :"
-            name={field.name}
-            options={[
-              {
-                label: 'oui',
-                nativeInputProps: {
-                  checked: field.state.value === true,
-                  onChange: () => field.handleChange(true),
-                  onBlur: field.handleBlur,
+          <>
+            <Radio
+              label="Votre contribution s’inscrit dans le cadre d’une demande de subvention ADEME :"
+              name={field.name}
+              options={[
+                {
+                  label: 'oui',
+                  nativeInputProps: {
+                    checked: field.state.value === true,
+                    onChange: () => field.handleChange(true),
+                    onBlur: field.handleBlur,
+                  },
                 },
-              },
-              {
-                label: 'non',
-                nativeInputProps: {
-                  checked: field.state.value === false,
-                  onChange: () => field.handleChange(false),
-                  onBlur: field.handleBlur,
+                {
+                  label: 'non',
+                  nativeInputProps: {
+                    checked: field.state.value === false,
+                    onChange: () => field.handleChange(false),
+                    onBlur: field.handleBlur,
+                  },
                 },
-              },
-            ]}
-            {...getInputErrorStates(field)}
-          />
+              ]}
+              {...getInputErrorStates(field)}
+            />
+            {field.state.value && (
+              <Alert
+                description="L'attestation vous sera envoyée par mail sous quelques jours, après vérification des fichiers transmis."
+                severity="info"
+                className="fr-mt-n2w fr-mb-3w"
+                small
+              />
+            )}
+          </>
         )}
       />
 
