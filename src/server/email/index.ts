@@ -81,32 +81,6 @@ export const sendResetPasswordEmail = async (email: string, token: string): Prom
   return send([email], 'Réinitialisation de votre mot de passe FCU', html);
 };
 
-export const sendBulkEligibilityResult = async (id: string, email: string, attachment: Attachment): Promise<void> => {
-  const html = await ejs.renderFile('./src/server/email/views/bulk-eligibility.ejs', {
-    link: `${process.env.NEXTAUTH_URL}/carte?id=${id}`,
-  });
-
-  return send([email], '[France Chaleur Urbaine] Résultat de votre test', html, [], [], [attachment]);
-};
-
-export const sendBulkEligibilityErrorAdmin = async (emails: string | undefined, user: string, attachment: Attachment): Promise<void> => {
-  if (!emails) {
-    return;
-  }
-
-  const html = await ejs.renderFile('./src/server/email/views/bulk-eligibility-error-admin.ejs', {
-    user,
-  });
-
-  return send(emails.split(','), "[France Chaleur Urbaine] Erreur lors d'un test", html, [], [], [attachment]);
-};
-
-export const sendBulkEligibilityError = async (email: string): Promise<void> => {
-  const html = await ejs.renderFile('./src/server/email/views/bulk-eligibility-error.ejs');
-
-  return send([email], '[France Chaleur Urbaine] Erreur lors de votre test', html);
-};
-
 export const sendRelanceMail = async (demand: Demand, id: string): Promise<void> => {
   const html = await ejs.renderFile('./src/server/email/views/relance.ejs', {
     firstName: demand.Prénom,
