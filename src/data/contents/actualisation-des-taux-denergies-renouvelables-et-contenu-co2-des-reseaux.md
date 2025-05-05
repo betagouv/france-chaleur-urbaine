@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/cover_actualisation_donnees.jpg
+coverY: 0
+---
+
 # Actualisation des taux d'énergies renouvelables et contenu CO2 des réseaux
 
 🏢 Pour la réalisation des diagnostics de performance énergétique (DPE) ou pour l'application de la réglementation environnementale des bâtiments neufs (RE2020), les caractéristiques des réseaux de chaleur et de froid à prendre en compte sont définies chaque année par un arrêté.\

@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/cover_webinaire_comparateur.jpg
+coverY: 0
+---
+
 # Tout savoir sur notre comparateur des coûts et émissions de CO2 des modes de chauffage
 
 📢 Suite à la mise en ligne de notre [comparateur de coûts et émissions de CO2](https://france-chaleur-urbaine.beta.gouv.fr/comparateur-couts-performances) des modes de chauffage, nous avons le plaisir de vous convier à un webinaire de présentation de l'outil, le 13 juin à 10h, co-organisé avec l'[Association Amorce](https://amorce.asso.fr/) et le bureau d'études [Elcimaï](https://www.elcimai.com/).\
