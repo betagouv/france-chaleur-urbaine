@@ -388,7 +388,18 @@ const ContributionForm = () => {
   }, []);
 
   return formSuccess ? (
-    <Alert severity="success" title="Nous vous remercions pour votre contribution." />
+    <Alert
+      severity="success"
+      title="Nous vous remercions pour votre contribution."
+      description={
+        <>
+          Son intégration sur la carte sera réalisée sous quelques semaines.{' '}
+          {form.state.values.dansCadreDemandeADEME
+            ? "L'attestation pour votre dossier de demande de subvention ADEME vous sera transmise sous quelques jours."
+            : 'Nous vous tiendrons au courant.'}
+        </>
+      }
+    />
   ) : (
     <form
       onSubmit={(e) => {
