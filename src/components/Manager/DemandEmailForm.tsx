@@ -146,7 +146,7 @@ function DemandEmailForm(props: Props) {
                 sentHistory.map((item, index) => {
                   const emailTemplate = emailTemplates.find((emailTemplate) => emailTemplate.id === item.email_key);
                   return (
-                    <li key={index}>
+                    <li key={index} onClick={() => onSelectedEmailChanged(item.email_key as string)} className="cursor-pointer">
                       <span>{emailTemplate?.name}</span> -{' '}
                       <small className="text-faded italic">
                         envoyé le <time dateTime={item.date}>{dayjs(item.date).format('dddd D MMMM YYYY')}</time>
