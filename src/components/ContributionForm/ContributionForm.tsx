@@ -49,10 +49,6 @@ const typesDemande = [
     key: 'ajout schéma directeur',
   },
   {
-    label: 'signaler une erreur',
-    key: 'signaler une erreur',
-  },
-  {
     label: 'autre',
     key: 'autre',
   },
@@ -258,13 +254,6 @@ const typeDemandeFields = {
       hint: 'Formats préférentiels : PDF, Word.',
     },
   ],
-  'signaler une erreur': [
-    {
-      name: 'precisions',
-      label: 'Précisez :',
-      schema: stringSchema,
-    },
-  ],
   autre: [
     {
       name: 'precisions',
@@ -277,6 +266,8 @@ const typeDemandeFields = {
 export const zCommonFormData = z.object({
   typeUtilisateur: z.enum(nonEmptyArray(typesUtilisateur.map((w) => w.key)), { message: 'Ce choix est obligatoire' }),
   typeUtilisateurAutre: stringSchema,
+  nom: z.string({ message: 'Ce champ est obligatoire' }),
+  prenom: z.string({ message: 'Ce champ est obligatoire' }),
   email: z.string().email("L'adresse email n'est pas valide"),
   dansCadreDemandeADEME: z.boolean({ message: 'Ce choix est obligatoire' }),
 });
@@ -332,12 +323,6 @@ export const zContributionFormData = z.discriminatedUnion(
     ),
     zCommonFormData.merge(
       z.object({
-        typeDemande: z.literal('signaler une erreur'),
-        ...zodSchemasByTypeDemande['signaler une erreur'],
-      })
-    ),
-    zCommonFormData.merge(
-      z.object({
         typeDemande: z.literal('autre'),
         ...zodSchemasByTypeDemande['autre'],
       })
@@ -357,6 +342,8 @@ const ContributionForm = () => {
     defaultValues: {
       typeUtilisateur: '',
       typeUtilisateurAutre: '',
+      nom: '',
+      prenom: '',
       email: '',
       typeDemande: '',
       dansCadreDemandeADEME: '',
@@ -384,7 +371,18 @@ const ContributionForm = () => {
   }, []);
 
   return formSuccess ? (
-    <Alert severity="success" title="Nous vous remercions pour votre contribution." />
+    <Alert
+      severity="success"
+      title="Nous vous remercions pour votre contribution."
+      description={
+        <>
+          Son intégration sur la carte sera réalisée sous quelques semaines.{' '}
+          {form.state.values.dansCadreDemandeADEME
+            ? "L'attestation pour votre dossier de demande de subvention ADEME vous sera transmise sous quelques jours."
+            : 'Nous vous tiendrons au courant.'}
+        </>
+      }
+    />
   ) : (
     <form
       onSubmit={(e) => {
@@ -446,6 +444,46 @@ const ContributionForm = () => {
       />
 
       <form.Field
+        name="nom"
+        children={(field) => (
+          <Input
+            label="Votre nom :"
+            nativeInputProps={{
+              required: true,
+              id: field.name,
+              name: field.name,
+              placeholder: 'Saisir votre nom',
+              autoComplete: 'nom',
+              value: field.state.value,
+              onChange: (e) => field.handleChange(e.target.value),
+              onBlur: field.handleBlur,
+            }}
+            {...getInputErrorStates(field)}
+          />
+        )}
+      />
+
+      <form.Field
+        name="prenom"
+        children={(field) => (
+          <Input
+            label="Votre prénom :"
+            nativeInputProps={{
+              required: true,
+              id: field.name,
+              name: field.name,
+              placeholder: 'Saisir votre prénom',
+              autoComplete: 'prenom',
+              value: field.state.value,
+              onChange: (e) => field.handleChange(e.target.value),
+              onBlur: field.handleBlur,
+            }}
+            {...getInputErrorStates(field)}
+          />
+        )}
+      />
+
+      <form.Field
         name="email"
         children={(field) => (
           <Input
@@ -468,29 +506,39 @@ const ContributionForm = () => {
       <form.Field
         name="dansCadreDemandeADEME"
         children={(field) => (
-          <Radio
-            label="Votre contribution s’inscrit dans le cadre d’une demande de subvention ADEME :"
-            name={field.name}
-            options={[
-              {
-                label: 'oui',
-                nativeInputProps: {
-                  checked: field.state.value === true,
-                  onChange: () => field.handleChange(true),
-                  onBlur: field.handleBlur,
+          <>
+            <Radio
+              label="Votre contribution s’inscrit dans le cadre d’une demande de subvention ADEME :"
+              name={field.name}
+              options={[
+                {
+                  label: 'oui',
+                  nativeInputProps: {
+                    checked: field.state.value === true,
+                    onChange: () => field.handleChange(true),
+                    onBlur: field.handleBlur,
+                  },
                 },
-              },
-              {
-                label: 'non',
-                nativeInputProps: {
-                  checked: field.state.value === false,
-                  onChange: () => field.handleChange(false),
-                  onBlur: field.handleBlur,
+                {
+                  label: 'non',
+                  nativeInputProps: {
+                    checked: field.state.value === false,
+                    onChange: () => field.handleChange(false),
+                    onBlur: field.handleBlur,
+                  },
                 },
-              },
-            ]}
-            {...getInputErrorStates(field)}
-          />
+              ]}
+              {...getInputErrorStates(field)}
+            />
+            {field.state.value && (
+              <Alert
+                description="L'attestation vous sera envoyée par mail sous quelques jours, après vérification des fichiers transmis."
+                severity="info"
+                className="fr-mt-n2w fr-mb-3w"
+                small
+              />
+            )}
+          </>
         )}
       />
 
