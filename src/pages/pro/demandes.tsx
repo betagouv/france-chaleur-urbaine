@@ -128,7 +128,7 @@ function DemandesNew(): React.ReactElement {
   const virtualizerRef = useRef<Virtualizer<HTMLDivElement, Element>>(null) as RefObject<Virtualizer<HTMLDivElement, Element>>;
 
   const [selectedDemandId, setSelectedDemandId] = useState<string | null>(null);
-  const [modalDemandId, setModalDemandId] = useState<string | null>(null);
+  const [modalDemand, setModalDemand] = useState<Demand | null>(null);
   const tableRowSelection = useMemo(() => {
     return selectedDemandId ? { [selectedDemandId]: true } : {};
   }, [selectedDemandId]);
@@ -222,7 +222,7 @@ function DemandesNew(): React.ReactElement {
       {
         accessorFn: (row) => `${row.Nom} ${row.Prénom} ${row.Mail}`,
         header: 'Contact',
-        cell: ({ row }) => <Contact demand={row.original} onEmailClick={setModalDemandId} />,
+        cell: ({ row }) => <Contact demand={row.original} onEmailClick={() => setModalDemand(row.original)} />,
         width: '280px',
         enableSorting: false,
       },
@@ -447,7 +447,6 @@ function DemandesNew(): React.ReactElement {
       ) && columnFilters.length === preset.filters.length
     );
   };
-  const modalDemand = demands.find((demand) => demand.id === modalDemandId);
 
   return (
     <SimplePage
@@ -457,9 +456,9 @@ function DemandesNew(): React.ReactElement {
     >
       <ModalSimple
         title={`Envoi d'un courriel à ${modalDemand?.Mail}`}
-        open={!!modalDemandId}
+        open={!!modalDemand}
         size="large"
-        onOpenChange={(open) => !open && setModalDemandId(null)}
+        onOpenChange={(open) => !open && setModalDemand(null)}
       >
         {modalDemand && <DemandEmailForm currentDemand={modalDemand} updateDemand={updateDemand} />}
       </ModalSimple>
