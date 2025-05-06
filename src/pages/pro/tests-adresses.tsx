@@ -18,7 +18,7 @@ export default function TestsAdresses(): JSX.Element {
   const [hasPendingJobs, setHasPendingJobs] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const { data: eligibilityTests, isLoading } = useFetch<ProEligibilityTestListItem[]>('/api/pro-eligibility-tests', {
+  const { data: eligibilityTests, isLoading } = useFetch<ProEligibilityTestListItem[]>('/api/pro-eligibility-tests', undefined, {
     refetchInterval: hasPendingJobs ? 5000 : false,
   });
 

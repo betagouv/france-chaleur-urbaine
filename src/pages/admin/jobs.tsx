@@ -131,7 +131,7 @@ const initialSortingState: SortingState = [
 
 export default function ManageJobs() {
   const [hasPendingJobs, setHasPendingJobs] = useState(false);
-  const { data: jobs, isLoading } = useFetch<AdminJobItem[]>('/api/admin/jobs', {
+  const { data: jobs, isLoading } = useFetch<AdminJobItem[]>('/api/admin/jobs', undefined, {
     refetchInterval: hasPendingJobs ? 5000 : 60000,
   });
 
