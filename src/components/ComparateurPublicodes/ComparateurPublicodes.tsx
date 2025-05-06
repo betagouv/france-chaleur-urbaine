@@ -394,7 +394,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
   return (
     <>
       <EligibilityFormModal />
-      {advancedMode && <Configuration engine={engine} address={address || undefined} />}
+      {advancedMode && <Configuration engine={engine} />}
       <div className={cx(fr.cx('fr-container'), className)} {...props}>
         {!advancedMode && (
           <Notice variant="info" size="sm">
