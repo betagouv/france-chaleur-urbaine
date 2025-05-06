@@ -15,6 +15,7 @@ const sectionVariants = cva('', {
     variant: {
       normal: '',
       light: 'bg-light',
+      gray: 'bg-gray-100',
       bordered: 'border-b border-light',
       accent: 'bg-accent text-white',
       empty: 'border border-dashed border-gray-300',
