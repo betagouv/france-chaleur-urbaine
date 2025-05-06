@@ -1,9 +1,15 @@
 import { type ExpressionBuilder } from 'kysely';
 import { type ExtractTableAlias } from 'kysely/dist/cjs/parser/table-parser';
 import { type UpdateObjectExpression } from 'kysely/dist/cjs/parser/update-set-parser';
+import { z } from 'zod';
 
 import { type Context as ApiContext, type ListConfig } from '@/server/api/crud';
 import { applyFilters, type DB, type InsertObject, kdb } from '@/server/db/kysely';
+
+const filterSchema = z.record(
+  z.string(),
+  z.any().refine((val) => !(Array.isArray(val) && val[0] === 'raw'), { message: "Operators like 'raw' are not allowed in filters" })
+);
 
 /**
  * Creates basic CRUD operations for a database table
@@ -39,7 +45,8 @@ export function createBaseModel<T extends keyof DB>(tableName: T) {
 
   const applyConfigFilters = (query: any, config: ListConfig<T>) => {
     if (config.filters) {
-      query = applyFilters(query as Parameters<typeof applyFilters>[0], tableName, config.filters);
+      const parsedFilters = filterSchema.parse(config.filters);
+      query = applyFilters(query as Parameters<typeof applyFilters>[0], tableName, parsedFilters);
     }
     return query;
   };
