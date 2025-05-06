@@ -1,17 +1,18 @@
-import { Button } from '@codegouvfr/react-dsfr/Button';
-import { Select } from '@codegouvfr/react-dsfr/SelectNext';
+import dayjs from 'dayjs';
 import { type FormEvent, useEffect, useState } from 'react';
 
 import Input from '@/components/form/dsfr/Input';
 import TextArea from '@/components/form/dsfr/TextArea';
+import Button from '@/components/ui/Button';
+import CrudDropdown from '@/components/ui/CrudDropdown';
 import Loader from '@/components/ui/Loader';
-import emailsContentList from '@/data/manager/manager-emails-content';
-import emailsList from '@/data/manager/manager-emails-list';
 import { useFetch } from '@/hooks/useApi';
 import { type ManagerEmailResponse } from '@/pages/api/managerEmail';
+import { type EmailTemplatesResponse } from '@/pages/api/user/email-templates/[[...slug]]';
 import { useUserPreferences } from '@/services/authentication';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import { type Demand } from '@/types/Summary/Demand';
+import { isUUID } from '@/utils/core';
 
 type Props = {
   currentDemand: Demand;
@@ -43,11 +44,24 @@ function DemandEmailForm(props: Props) {
   const [emailKey, setEmailKey] = useState('');
   const [emailContent, setEmailContent] = useState<EmailContent>(getDefaultEmailContent());
   const [sent, setSent] = useState(false);
+  const [isSending, setIsSending] = useState(false);
   const [sentError, setSentError] = useState(false);
 
-  const { data: sentHistory, isLoading: isLoadingSentHistory } = useFetch<ManagerEmailResponse>(
-    `/api/managerEmail?demand_id=${props.currentDemand.id}`
-  );
+  const {
+    data: sentHistory,
+    isLoading: isLoadingSentHistory,
+    refetch,
+  } = useFetch<ManagerEmailResponse>(`/api/managerEmail?demand_id=${props.currentDemand.id}`);
+
+  useEffect(() => {
+    if (userPreferences) {
+      setEmailContent(getDefaultEmailContent());
+    }
+  }, [userPreferences]);
+
+  const { data: emailTemplatesData } = useFetch<EmailTemplatesResponse['list']>(`/api/user/email-templates`);
+
+  const { items: emailTemplates = [] } = emailTemplatesData || { count: 0, items: [] };
 
   useEffect(() => {
     if (props.currentDemand['Emails envoyés']) {
@@ -63,23 +77,16 @@ function DemandEmailForm(props: Props) {
   }
 
   const onSelectedEmailChanged = (emailKey: string) => {
+    const emailTemplate = emailTemplates.find((emailTemplate) => emailTemplate.id === emailKey);
     setEmailKey(emailKey);
-    setEmailContentValue('object', emailsContentList[emailKey].object);
-    const body = emailsContentList[emailKey].body.replace('[adresse]', props.currentDemand.Adresse);
+    setEmailContentValue('object', emailTemplate?.subject || '');
+    const body = emailTemplate?.body || '';
     setEmailContentValue('body', body);
-  };
-
-  const getLabel = (key: string) => {
-    const email = emailsList.find((email) => {
-      if (email.value === key) {
-        return email;
-      }
-    });
-    return email ? email.label : '';
   };
 
   const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsSending(true);
     //Save content in DB
     try {
       const res = await fetch(`/api/managerEmail`, {
@@ -94,8 +101,10 @@ function DemandEmailForm(props: Props) {
         throw new Error(`invalid status ${res.status}`);
       }
 
+      refetch();
+
       //Add email in Airtable demands list
-      alreadySent.push(getLabel(emailKey));
+      alreadySent.push(emailContent.object);
       const updatedFields: any = {
         'Emails envoyés': alreadySent.join('\n'),
         'Prise de contact': true, //Prospect recontacté
@@ -115,6 +124,8 @@ function DemandEmailForm(props: Props) {
       setSent(true);
     } catch (err: any) {
       setSentError(true);
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -132,11 +143,17 @@ function DemandEmailForm(props: Props) {
                   <Loader size="sm" />
                 </li>
               ) : sentHistory && sentHistory.length > 0 ? (
-                sentHistory.map((item, index) => (
-                  <li key={index}>
-                    {getLabel(item.email_key as string)} envoyé le {item.date}
-                  </li>
-                ))
+                sentHistory.map((item, index) => {
+                  const emailTemplate = emailTemplates.find((emailTemplate) => emailTemplate.id === item.email_key);
+                  return (
+                    <li key={index}>
+                      <span>{emailTemplate?.name}</span> -{' '}
+                      <small className="text-faded italic">
+                        envoyé le <time dateTime={item.date}>{dayjs(item.date).format('dddd D MMMM YYYY')}</time>
+                      </small>
+                    </li>
+                  );
+                })
               ) : (
                 <li>Aucun courriel envoyé</li>
               )}
@@ -175,35 +192,27 @@ function DemandEmailForm(props: Props) {
               label={
                 <div className="flex items-center justify-between gap-2">
                   <span>Objet</span>
-                  <span>
-                    <Select
-                      label=""
-                      nativeSelectProps={{
-                        required: true,
-                        onChange: (e) => onSelectedEmailChanged(e.target.value),
-                        value: emailKey,
-                      }}
-                      options={[
-                        {
-                          value: '',
-                          label: '- Sélectionner une réponse -',
-                          disabled: true,
-                          hidden: true,
-                        },
-                        ...emailsList.map((option) => {
-                          return {
-                            value: option.value,
-                            label: option.label,
-                            disabled:
-                              sentHistory &&
-                              option.value !== 'other' &&
-                              Array.isArray(sentHistory) &&
-                              sentHistory.some((email: any) => email.email_key === option.value),
-                          };
-                        }),
-                      ]}
-                    />
-                  </span>
+                  <CrudDropdown<EmailTemplatesResponse>
+                    url="/api/user/email-templates"
+                    valueKey="id"
+                    nameKey="name"
+                    data={{
+                      subject: emailContent.object,
+                      body: emailContent.body,
+                    }}
+                    onSelect={(item) => {
+                      onSelectedEmailChanged(item.id);
+                    }}
+                    preprocessItem={(item) => ({
+                      ...item,
+                      editable: isUUID(item.id),
+                      disabled: !!(
+                        sentHistory &&
+                        Array.isArray(sentHistory) &&
+                        sentHistory.some((email: any) => email.email_key === item.id)
+                      ),
+                    })}
+                  />
                 </div>
               }
               nativeInputProps={{
@@ -231,7 +240,7 @@ function DemandEmailForm(props: Props) {
                 onChange: (e) => setEmailContentValue('signature', e.target.value),
               }}
             />
-            <Button className="fr-mt-2w" type="submit">
+            <Button className="fr-mt-2w" type="submit" loading={isSending}>
               Envoyer
             </Button>
           </form>
