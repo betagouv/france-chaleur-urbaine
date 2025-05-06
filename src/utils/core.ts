@@ -144,3 +144,12 @@ export function pick<T extends object, K extends keyof T>(obj: T, keys: K[]): Pi
 export function isEmptyObject(obj: object): boolean {
   return Object.keys(obj).length === 0;
 }
+
+/**
+ * Vérifie si une valeur est un UUID PostGreSQL.
+ *
+ * @param id La valeur à vérifier.
+ * @returns `true` si la valeur est un UUID PostGreSQL, sinon `false`.
+ */
+export const isUUID = (id: unknown): id is string =>
+  typeof id === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
