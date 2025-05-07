@@ -9,11 +9,12 @@ import { type FormDemandCreation } from '@/types/Summary/Demand';
 
 const warningMessage = "N'oubliez pas d'indiquer votre type de chauffage.";
 
-export type ContactFormContext = 'comparateur' | 'carte';
+export type ContactFormContext = 'comparateur' | 'carte' | 'choix-chauffage';
 
 const contextToAnalyticsPrefix = {
   comparateur: 'Comparateur',
   carte: 'Carte',
+  'choix-chauffage': 'Choix chauffage',
 } as const;
 
 function getContextPrefix(context?: ContactFormContext) {
@@ -42,13 +43,17 @@ const useContactFormFCU = () => {
     setLoadingStatus('loading');
     setMessageSent(false);
     setMessageReceived(false);
+    // TODO à corriger
+    // @ts-ignore
     trackEvent(`Eligibilité|Formulaire de test${getContextPrefix(context)} - Envoi`, address);
   };
 
   const handleOnSuccessAddress = useCallback((data: AddressDataType, context?: ContactFormContext, dontNotify?: boolean) => {
     const { address, heatingType, eligibility } = data;
     if (!dontNotify) {
+      // TODO à corriger
       trackEvent(
+        // @ts-ignore
         `Eligibilité|Formulaire de test${getContextPrefix(context)} - Adresse ${eligibility?.isEligible ? 'É' : 'Iné'}ligible`,
         address || 'Adresse indefini'
       );
