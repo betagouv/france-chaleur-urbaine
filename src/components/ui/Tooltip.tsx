@@ -9,7 +9,7 @@ import cx from '@/utils/cx';
 export const TooltipTrigger = Trigger;
 
 export const TooltipContent = React.forwardRef<React.ElementRef<typeof Content>, React.ComponentPropsWithoutRef<typeof Content>>(
-  ({ className = 'max-w-[300px]', sideOffset = 4, ...props }, ref) => (
+  ({ className, sideOffset = 4, ...props }, ref) => (
     <Portal>
       <Content
         ref={ref}
@@ -17,6 +17,7 @@ export const TooltipContent = React.forwardRef<React.ElementRef<typeof Content>,
         className={cx(
           'z-[1751]', // one more than modal
           'overflow-hidden shadow-lg rounded-sm bg-white px-3 py-1.5 text-xs text-black animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2',
+          'max-w-[300px]',
           className
         )}
         {...props}
