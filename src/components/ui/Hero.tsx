@@ -102,7 +102,7 @@ const Hero = ({
             <Image
               src={image}
               alt=""
-              className={cx('h-full absolute top-0 left-0 w-auto object-cover', imageClassName)}
+              className={cx('h-full absolute top-0 w-auto object-cover', imagePosition === 'left' ? 'left-0' : 'right-0', imageClassName)}
               sizes="100vw"
               priority
               width={400}
