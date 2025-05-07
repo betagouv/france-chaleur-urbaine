@@ -40,7 +40,8 @@ function CrudDropdown<T extends CrudResponse<keyof DB, any>>({
   onShare,
   loadWhenOnlyOneConfig,
   preprocessItem = (item) => ({ ...item, editable: true, disabled: false }),
-  isSameObject = (obj1, obj2) => JSON.stringify(sortKeys(obj1)) === JSON.stringify(sortKeys(obj2)),
+  isSameObject = (obj1, obj2) =>
+    !!(Object.keys(obj1).length && Object.keys(obj2).length && JSON.stringify(sortKeys(obj1)) === JSON.stringify(sortKeys(obj2))),
   url,
 }: {
   data: Partial<CrudItem<T>>;
@@ -153,13 +154,7 @@ function CrudDropdown<T extends CrudResponse<keyof DB, any>>({
         onClick={() => setIsOpen(!isOpen)}
       >
         <span className={'text-gray-900 whitespace-nowrap overflow-hidden text-ellipsis text-sm'}>
-          {isLoading ? (
-            <Loader />
-          ) : !selectedItem && !dataEmpty ? (
-            saveLabel
-          ) : (
-            (selectedItem?.[nameKey] as React.ReactNode) || loadLabel || 'Charger'
-          )}
+          {isLoading ? <Loader /> : !selectedItem && dataEmpty ? loadLabel : (selectedItem?.[nameKey] as React.ReactNode) || saveLabel}
         </span>
         <Icon name={isOpen ? 'ri-arrow-drop-up-line' : 'ri-arrow-drop-down-line'} className="text-gray-500 flex-shrink-0" size="md" />
       </div>
