@@ -540,6 +540,7 @@ function ChoixChauffageResults({ typeLogement, address: _ }: ChoixChauffageResul
               <PertinenceBadge pertinence={modeDeChauffage.pertinence} />
             </>
           }
+          className="[&>.fr-collapse]:bg-gray-100 [&>.fr-collapse]:!mx-0"
           key={key}
         >
           <Heading as="h3">{modeDeChauffage.label}</Heading>
