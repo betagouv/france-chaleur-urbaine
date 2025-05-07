@@ -1,14 +1,21 @@
 import { parseAsStringLiteral, useQueryState } from 'nuqs';
+import { useState } from 'react';
 
 import { type TypeLogement } from '@/components/choix-chauffage/type-logement';
 import AddressAutocompleteInput from '@/components/form/dsfr/AddressAutocompleteInput';
 import Radio from '@/components/form/dsfr/Radio';
 import { SectionHeading, SectionTwoColumns } from '@/components/ui/Section';
+import { useServices } from '@/services';
+import { toastErrors } from '@/services/notification';
+import { type AddressDetail } from '@/types/HeatNetworksResponse';
 import { type SuggestionItem } from '@/types/Suggestions';
 import { isDefined } from '@/utils/core';
+import { workMinimum } from '@/utils/time';
 
 import ChoixChauffageResults from './ChoixChauffageResults';
+
 function ChoixChauffageForm() {
+  const { heatNetworkService } = useServices();
   const [typeLogement, setTypeLogement] = useQueryState(
     'type',
     parseAsStringLiteral([
@@ -18,6 +25,16 @@ function ChoixChauffageForm() {
     ] as const satisfies TypeLogement[])
   );
   const [address, setAddress] = useQueryState('address');
+  const [addressDetail, setAddressDetail] = useState<AddressDetail | null>(null);
+
+  const testAddressEligibility = toastErrors(async (geoAddress: SuggestionItem) => {
+    setAddress(geoAddress?.properties?.label ?? '');
+    const eligibilityStatus = await workMinimum(() => heatNetworkService.findByCoords(geoAddress), 500);
+    setAddressDetail({
+      network: eligibilityStatus,
+      geoAddress,
+    });
+  });
 
   return (
     <SectionTwoColumns className="!mt-0">
@@ -26,9 +43,14 @@ function ChoixChauffageForm() {
 
         <AddressAutocompleteInput
           className="!mb-2"
+          defaultValue={address ?? ''}
           label={<strong>Entrez votre adresse :</strong>}
-          onSelect={(geoAddress?: SuggestionItem) => {
-            setAddress(geoAddress?.properties?.label ?? '');
+          onSelect={(geoAddress: SuggestionItem) => {
+            testAddressEligibility(geoAddress);
+          }}
+          onClear={() => {
+            setAddress(null);
+            setAddressDetail(null);
           }}
         />
         <Radio
@@ -64,8 +86,8 @@ function ChoixChauffageForm() {
           ]}
         />
       </div>
-      {isDefined(typeLogement) && isDefined(address) ? (
-        <ChoixChauffageResults typeLogement={typeLogement} address={address} />
+      {isDefined(typeLogement) && isDefined(addressDetail) ? (
+        <ChoixChauffageResults typeLogement={typeLogement} addressDetail={addressDetail} />
       ) : (
         <div className="flex flex-col items-center gap-4">
           <div className="italic text-center fr-py-2w fr-px-6w">

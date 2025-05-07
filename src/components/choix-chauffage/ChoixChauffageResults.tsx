@@ -4,15 +4,20 @@ import { type ReactNode } from 'react';
 import { type TypeLogement } from '@/components/choix-chauffage/type-logement';
 import Accordion from '@/components/ui/Accordion';
 import Alert from '@/components/ui/Alert';
+import Button from '@/components/ui/Button';
 import Heading from '@/components/ui/Heading';
+import Icon from '@/components/ui/Icon';
 import Link from '@/components/ui/Link';
 import Tooltip from '@/components/ui/Tooltip';
+import useEligibilityForm from '@/hooks/useEligibilityForm';
+import { type AddressDetail } from '@/types/HeatNetworksResponse';
 import cx from '@/utils/cx';
 
 type ModeDeChauffage = {
   label: string;
   pertinence: number;
   description: string;
+  custom?: (addressDetail: AddressDetail) => ReactNode;
   contraintesTechniques: string[];
   avantages: string[];
   inconvenients: string[];
@@ -28,6 +33,40 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
       pertinence: 4,
       description:
         'Le chauffage urbain consiste à distribuer de la chaleur produite de façon centralisée à un ensemble de bâtiments, via des canalisations souterraines. On parle aussi de réseaux de chaleur. Ces réseaux sont alimentés en moyenne à plus de 66% par des énergies renouvelables et de récupération locales.',
+      custom: (addressDetail) => {
+        if (!addressDetail.network.isEligible) {
+          return null;
+        }
+        // eslint-disable-next-line react-hooks/rules-of-hooks
+        const { open: displayContactForm, EligibilityFormModal } = useEligibilityForm({
+          context: 'choix-chauffage',
+          id: `eligibility-form-choix-chauffage`,
+          address: {
+            address: addressDetail.geoAddress?.properties.label,
+            coordinates: addressDetail.geoAddress?.geometry.coordinates,
+            addressDetails: addressDetail,
+          },
+        });
+        return (
+          <div className="text-sm">
+            <EligibilityFormModal />
+            <div className="font-bold">Un réseau de chaleur passe à proximité immédiate de cette adresse</div>
+
+            <div className="flex items-center gap-2 fr-my-1w">
+              <Icon name="ri-map-pin-line" size="sm" />
+              {addressDetail.geoAddress?.properties.label}
+
+              <div className="text-success fr-ml-1w">
+                <Icon name="ri-guide-line" size="sm" className="fr-mr-1v" />
+                réseau à {addressDetail.network.distance}m à vol d’oiseau
+              </div>
+            </div>
+            <Button onClick={displayContactForm} size="small" className="fr-mb-2w">
+              Faire une demande d’information
+            </Button>
+          </div>
+        );
+      },
       contraintesTechniques: [
         'Réseau de chaleur à proximité, avec capacités de raccordement.',
         'Pour certains réseaux, seuil de puissance requis',
@@ -525,10 +564,10 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
 
 type ChoixChauffageResultsProps = {
   typeLogement: TypeLogement;
-  address: string;
+  addressDetail: AddressDetail;
 };
 
-function ChoixChauffageResults({ typeLogement, address: _ }: ChoixChauffageResultsProps) {
+function ChoixChauffageResults({ typeLogement, addressDetail }: ChoixChauffageResultsProps) {
   const modesDeChauffage = modeDeChauffageParTypeLogement[typeLogement];
   return (
     <div>
@@ -545,6 +584,9 @@ function ChoixChauffageResults({ typeLogement, address: _ }: ChoixChauffageResul
         >
           <Heading as="h3">{modeDeChauffage.label}</Heading>
           <p>{modeDeChauffage.description}</p>
+
+          {modeDeChauffage.custom && addressDetail && modeDeChauffage.custom(addressDetail)}
+
           <div className="flex flex-col gap-4">
             <ResultSection color="orange" title="⚠️ Contraintes techniques">
               <ul className="text-sm">

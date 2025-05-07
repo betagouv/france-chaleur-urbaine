@@ -63,6 +63,7 @@ const headingVariants = cva('', {
     variant: {
       normal: '!text-black',
       light: '!text-black',
+      gray: '!text-black',
       bordered: '!text-black',
       accent: '!text-white',
       empty: '!text-black !text-base',
@@ -97,6 +98,7 @@ const subtitleVariants = cva('text-center max-w-[640px] mx-auto', {
     variant: {
       normal: '!text-gray-900',
       light: '!text-gray-900',
+      gray: '!text-gray-900',
       bordered: '!text-gray-900',
       accent: '!text-gray-100',
       empty: '!text-gray-500',
