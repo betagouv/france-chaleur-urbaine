@@ -381,7 +381,7 @@ function DemandEmailForm(props: Props) {
                 }
               >
                 <span className="flex items-center gap-1 cursor-help underline text-sm">
-                  <TooltipIcon name="ri-eye-line" /> Prévisualiser le courriel
+                  <TooltipIcon name="ri-slideshow-line" /> Prévisualiser le courriel
                 </span>
               </Tooltip>
             </div>
