@@ -244,18 +244,18 @@ function ChoixChauffageResults({ typeLogement, address: _ }: ChoixChauffageResul
 
             <ResultSection title="⭐ Gains potentiels par rapport au gaz et fioul">
               <ul className="text-sm">
-                <li>
+                <li className="leading-7">
                   Émissions de CO2&nbsp;:{' '}
                   {modeDeChauffage.gainsPotentielsCO2.map((gain, key) => (
-                    <PageBadge className="!bg-green-600" key={key}>
+                    <PageBadge className="!bg-success" key={key}>
                       {gain}
                     </PageBadge>
                   ))}
                 </li>
-                <li>
+                <li className="leading-7">
                   Coût global annuel&nbsp;:{' '}
                   {modeDeChauffage.gainsPotentielsCout.map((gain, key) => (
-                    <PageBadge className="!bg-[#8585F6]" key={key}>
+                    <PageBadge className="!bg-fcu-purple" key={key}>
                       {gain}
                     </PageBadge>
                   ))}
@@ -295,9 +295,9 @@ const ResultSection = ({ children, color = 'blue', title }: { children: ReactNod
 
 const PertinenceBadge = ({ pertinence }: { pertinence: number }) =>
   pertinence > 0 ? (
-    <PageBadge className="!bg-green-600">Pertinence {Array(pertinence).fill('⭐').join('')}</PageBadge>
+    <PageBadge className="!bg-success">Pertinence {Array(pertinence).fill('⭐').join('')}</PageBadge>
   ) : (
-    <PageBadge className="!bg-red-400">Non conseillé</PageBadge>
+    <PageBadge className="!bg-error">Non conseillé</PageBadge>
   );
 
 const PageBadge = ({ children, className }: { children: NonNullable<ReactNode>; className?: string }) => (
