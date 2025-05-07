@@ -37,8 +37,20 @@ function processPlaceholders(value: string, demand: Demand): string {
   let processedValue = value;
 
   Object.entries(demand).forEach(([key, val]) => {
-    if (val && typeof val === 'string') {
-      processedValue = processedValue.replace(new RegExp(`{{${key}}}`, 'gi'), val.trim());
+    if (val && processedValue.includes(`{{${key}}}`)) {
+      let formattedValue;
+      if (typeof val === 'string') {
+        // Check if the string looks like a date
+        if (val.match(/^\d{4}-\d{2}-\d{2}/) || val.match(/^\d{2}\/\d{2}\/\d{4}/)) {
+          // Format date strings to a human-readable format
+          formattedValue = dayjs(val).format('D MMMM YYYY' + (val.includes('T') ? ' [à] HH[h]mm' : ''));
+        } else {
+          formattedValue = val.trim();
+        }
+      } else {
+        formattedValue = val.toString();
+      }
+      processedValue = processedValue.replace(new RegExp(`{{${key}}}`, 'gi'), formattedValue);
     }
   });
 
@@ -151,9 +163,21 @@ function DemandEmailForm(props: Props) {
     }
   };
 
-  const authorizedReplaceableKeys = Object.keys(props.currentDemand).filter(
-    (key) => !['id', 'Relance ID', 'haut_potentiel', 'Relance à activer', 'Gestionnaires'].includes(key)
-  );
+  const authorizedReplaceableKeys = Object.keys(props.currentDemand)
+    .filter(
+      (key) =>
+        ![
+          'id',
+          'Relance ID',
+          'haut_potentiel',
+          'Relance à activer',
+          'Gestionnaires',
+          'Emails envoyés',
+          'Éligibilité',
+          'Gestionnaires validés',
+        ].includes(key)
+    )
+    .sort((a, b) => a.localeCompare(b));
 
   return (
     <div>
@@ -220,22 +244,35 @@ function DemandEmailForm(props: Props) {
                   <span>Objet</span>
                   <div className="flex items-center gap-1">
                     <Tooltip
+                      className="max-w-[600px] min-w-[300px]"
                       title={
                         <div className="max-h-96 overflow-y-auto">
-                          <p className="">Vous pouvez utiliser des variables dans l'objet et le corps du courriel.</p>
+                          <p className="text-sm">
+                            Vous pouvez utiliser des variables dans l'objet et le corps du courriel.
+                            <br />
+                            Si vous sauvegardez votre modèle de message pour traiter de futures demandes, ces variables reprendront
+                            automatiquement les informations des demandes concernées.
+                          </p>
+                          <hr />
                           <p className="text-sm mb-1">Les variables disponibles sont :</p>
-                          <p className="text-xs italic">Cliquez dessus pour les insérer dans le corps du courriel.</p>
+                          <p className="text-xs italic font-bold">
+                            Cliquez sur une variable pour l'insérer dans le corps de votre message et le copier dans votre presse-papiers.
+                          </p>
                           <ul>
                             {authorizedReplaceableKeys.map((authorizedTemplateKey) => {
+                              const templateKey = `{{${authorizedTemplateKey}}}`;
                               return (
                                 <li key={authorizedTemplateKey}>
                                   <strong
-                                    onClick={() => setEmailContentValue('body', `${emailContent.body} {{${authorizedTemplateKey}}}`)}
-                                    className="cursor-pointer"
+                                    onClick={() => {
+                                      setEmailContentValue('body', `${emailContent.body} ${templateKey}`);
+                                      navigator.clipboard.writeText(templateKey).catch();
+                                    }}
+                                    className="cursor-pointer hover:bg-gray-200 rounded-sm p-1"
                                   >
                                     &#123;&#123;{authorizedTemplateKey}&#125;&#125;
                                   </strong>
-                                  : {props.currentDemand[authorizedTemplateKey as keyof Demand]}
+                                  : {processPlaceholders(templateKey, props.currentDemand)}
                                 </li>
                               );
                             })}
@@ -243,7 +280,7 @@ function DemandEmailForm(props: Props) {
                         </div>
                       }
                     >
-                      <span className="flex items-center gap-1">
+                      <span className="flex items-center gap-1 cursor-help">
                         <Icon name="ri-question-line" />
                         <span className="text-faded underline text-xs">Utiliser des variables</span>
                       </span>
@@ -252,6 +289,9 @@ function DemandEmailForm(props: Props) {
                       url="/api/user/email-templates"
                       valueKey="id"
                       nameKey="name"
+                      loadLabel="Modèles de réponse"
+                      saveLabel="Sauvegarder mon modèle"
+                      addLabel="Nom de mon modèle"
                       data={{
                         ...(emailContent.object && { subject: emailContent.object }),
                         ...(emailContent.body && { body: emailContent.body }),
