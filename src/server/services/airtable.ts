@@ -1,4 +1,5 @@
 import bcrypt from 'bcryptjs';
+import dayjs from 'dayjs';
 import { type Insertable } from 'kysely';
 
 import db from '@/server/db';
@@ -599,4 +600,60 @@ export const createGestionnairesFromAPI = async (account: ApiAccount, networks: 
   await sanitizeGestionnairesEmails();
   await populateGestionnaireApi(account, networks);
   await syncGestionnaireAndGestionnaireApi(account);
+};
+
+export const deactivateUsersDeletedInAirtable = async () => {
+  const gestionnaires = await base(Airtable.GESTIONNAIRES).select().all();
+  const usersInDB = await db('users')
+    .select('id', 'email', 'active', 'last_connection')
+    .where('email', 'like', '%@%')
+    .where('active', true)
+    .where('role', '=', 'gestionnaire')
+    .orderBy('last_connection');
+  const stats = {
+    totalDeactivated: 0,
+  };
+
+  logger.info(`Checking for users to deactivate...`);
+
+  // Extract emails from gestionnaires
+  const gestionnaireEmails = gestionnaires.map((gestionnaire) => (gestionnaire.get('Email') as string)?.toLowerCase()).filter(Boolean);
+
+  logger.info(`Found ${gestionnaireEmails.length} gestionnaire emails and ${usersInDB.length} gestionnaires in DB`);
+  // Find users that are active but not in gestionnaires
+  const usersToDeactivate = usersInDB.filter((user) => !gestionnaireEmails.includes(user.email.toLowerCase()));
+
+  logger.info(`Found ${usersToDeactivate.length} users to deactivate`);
+
+  if (usersToDeactivate.length === 0) {
+    logger.info(`No users to deactivate`);
+    return stats;
+  }
+
+  await Promise.all(
+    usersToDeactivate.map(async (user, index) => {
+      logger.info(
+        `${index + 1}/${usersToDeactivate.length} deactivating user ${user.email} last_connection: ${user.last_connection ? dayjs(user.last_connection).format('DD/MM/YYYY HH:mm') : 'never'}`
+      );
+
+      logDry(` 🔄 Deactivating user ${user.email}`);
+
+      if (!DRY_RUN) {
+        try {
+          // await db('users').update({ active: false }).where('id', user.id);
+          stats.totalDeactivated++;
+        } catch (e) {
+          logger.error(`Could not deactivate user ${user.email}`, { error: e });
+        }
+      } else {
+        stats.totalDeactivated++;
+      }
+    })
+  );
+
+  logger.info(`======== Deactivate users deleted in Airtable`);
+  logger.info(`Total deactivated: ${stats.totalDeactivated}`);
+  logger.info(`========`);
+
+  return stats;
 };

@@ -14,6 +14,7 @@ import { logger } from '@/server/helpers/logger';
 import {
   type ApiNetwork,
   createGestionnairesFromAPI,
+  deactivateUsersDeletedInAirtable,
   syncComptesProFromUsers,
   syncGestionnairesWithUsers,
   syncLastConnectionFromUsers,
@@ -419,6 +420,19 @@ program
       process.exit(1);
     }
     await syncComptesProFromUsers();
+  });
+
+program
+  .command('users:deactivate-users-deleted-in-airtable')
+  .description('Deactivate users which have been deleted in Airtable.')
+  .action(async () => {
+    if (!process.env.DRY_RUN) {
+      logger.info('');
+      logger.info('USAGE:');
+      logger.info('⚠️ DRY_RUN is not set, use DRY_RUN=<true|false> yarn cli users:deactivate-users-deleted-in-airtable');
+      process.exit(1);
+    }
+    await deactivateUsersDeletedInAirtable();
   });
 
 program
