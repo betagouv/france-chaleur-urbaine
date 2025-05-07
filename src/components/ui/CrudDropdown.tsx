@@ -35,6 +35,7 @@ function CrudDropdown<T extends CrudResponse<keyof DB, any>>({
   nameKey = 'name' as keyof CrudItem<T>,
   saveLabel = 'Sauvegarder',
   loadLabel = 'Charger',
+  addPlaceholderLabel = 'Nom',
   addLabel = 'Nom',
   onSelect,
   onAdd,
@@ -58,6 +59,7 @@ function CrudDropdown<T extends CrudResponse<keyof DB, any>>({
   saveLabel?: string;
   loadLabel?: string;
   addLabel?: string;
+  addPlaceholderLabel?: string;
 }) {
   const [loaded, setLoaded] = useState<boolean>(false);
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -122,7 +124,7 @@ function CrudDropdown<T extends CrudResponse<keyof DB, any>>({
   };
 
   const handleRename = async (itemId: string) => {
-    updateCrud(itemId, { name: renameValue, ...data });
+    await updateCrud(itemId, { name: renameValue, ...data });
     setIsAddingNew(false);
     setIsRenaming(null);
   };
@@ -131,7 +133,7 @@ function CrudDropdown<T extends CrudResponse<keyof DB, any>>({
 
   const handleDelete = async (itemId: string) => {
     if (window.confirm('Êtes-vous certain de vouloir supprimer cet item ?')) {
-      deleteCrud(itemId);
+      await deleteCrud(itemId);
     }
   };
 
@@ -267,7 +269,7 @@ function CrudDropdown<T extends CrudResponse<keyof DB, any>>({
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
                   className="w-full px-2 py-1 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm shadcn-border"
-                  placeholder={addLabel}
+                  placeholder={addPlaceholderLabel}
                   autoFocus
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') handleAddNew();
@@ -293,7 +295,7 @@ function CrudDropdown<T extends CrudResponse<keyof DB, any>>({
                 className="!justify-start px-4 py-2 text-primary"
                 disabled={dataEmpty || !!selectedItem}
               >
-                Nouvelle configuration
+                {addLabel}
               </Button>
             )}
           </div>

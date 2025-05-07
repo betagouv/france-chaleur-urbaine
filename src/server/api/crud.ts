@@ -149,10 +149,7 @@ const crud = <T extends keyof DB, Validation extends CrudValidation>({
       } as ApiResponseQueryGet<DB[T]>;
     }
 
-    return {
-      status: 'error',
-      error: 'Method not allowed',
-    };
+    throw invalidRouteError;
   };
 
   const GET = async (req: NextApiRequest): Promise<ApiResponseQueryGet<DB[T]> | ApiResponseQueryList<DB[T]>> => {
@@ -180,10 +177,7 @@ const crud = <T extends keyof DB, Validation extends CrudValidation>({
       };
     }
 
-    return {
-      status: 'error',
-      error: 'Method not allowed',
-    };
+    throw invalidRouteError;
   };
 
   const PUT = async (req: NextApiRequest): Promise<ApiResponseMutation<DB[T]>> => {
@@ -200,10 +194,7 @@ const crud = <T extends keyof DB, Validation extends CrudValidation>({
       };
     }
 
-    return {
-      status: 'error',
-      error: 'Method not allowed',
-    };
+    throw invalidRouteError;
   };
 
   const DELETE = async (req: NextApiRequest): Promise<ApiResponseMutation<DB[T]>> => {
@@ -220,10 +211,7 @@ const crud = <T extends keyof DB, Validation extends CrudValidation>({
       };
     }
 
-    return {
-      status: 'error',
-      error: 'Method not allowed',
-    };
+    throw invalidRouteError;
   };
 
   return {

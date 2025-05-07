@@ -77,11 +77,11 @@ Cordialement,`,
 
 export const create = baseModel.createMine;
 export const list: typeof baseModel.listMine = async (config, context) => {
-  const mines = await baseModel.listMine(config, context);
+  const mine = await baseModel.listMine(config, context);
 
   return {
-    items: [...(emailTemplateList as unknown as EmailTemplates[]), ...mines.items],
-    count: mines.count + emailTemplateList.length,
+    items: [...(emailTemplateList as unknown as EmailTemplates[]), ...mine.items],
+    count: mine.count + emailTemplateList.length,
   };
 };
 

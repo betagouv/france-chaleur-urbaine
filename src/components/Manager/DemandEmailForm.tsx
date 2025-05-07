@@ -315,7 +315,8 @@ function DemandEmailForm(props: Props) {
                       nameKey="name"
                       loadLabel="Modèles de réponse"
                       saveLabel="Sauvegarder mon modèle"
-                      addLabel="Nom de mon modèle"
+                      addLabel="Ajouter un modèle"
+                      addPlaceholderLabel="Nom de mon modèle"
                       data={{
                         ...(emailContent.object && { subject: emailContent.object }),
                         ...(emailContent.body && { body: emailContent.body }),
