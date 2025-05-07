@@ -37,7 +37,7 @@ function processPlaceholders(value: string, demand: Demand): string {
   let processedValue = value;
 
   Object.entries(demand).forEach(([key, val]) => {
-    if (val && processedValue.includes(`{{${key}}}`)) {
+    if (processedValue.includes(`{{${key}}}`)) {
       let formattedValue;
       if (typeof val === 'string') {
         // Check if the string looks like a date
@@ -184,9 +184,8 @@ function DemandEmailForm(props: Props) {
       {!sent && !sentError ? (
         <>
           <div className="w-full border border-solid border-gray-200" />
-          <div className="fr-mt-3w fr-mb-3w">
-            <b>Historique</b>
-            <br />
+          <section className="fr-mt-3w fr-mb-3w">
+            <h4>Historique</h4>
             <ul className="fr-ml-3w">
               {isLoadingSentHistory ? (
                 <li>
@@ -194,13 +193,38 @@ function DemandEmailForm(props: Props) {
                 </li>
               ) : sentHistory && sentHistory.length > 0 ? (
                 sentHistory.map((item, index) => {
-                  const emailTemplate = emailTemplates.find((emailTemplate) => emailTemplate.id === item.email_key);
+                  const object = item.object;
                   return (
                     <li key={index} onClick={() => onSelectedEmailChanged(item.email_key as string)} className="cursor-pointer">
-                      <span>{emailTemplate?.name}</span> -{' '}
-                      <small className="text-faded italic">
-                        envoyé le <time dateTime={item.date}>{dayjs(item.date).format('dddd D MMMM YYYY')}</time>
-                      </small>
+                      <Tooltip
+                        className="max-w-[600px] min-w-[300px]"
+                        title={
+                          <div className="max-h-96 overflow overflow-auto">
+                            <div className="text-sm mb-1">
+                              À: <strong>{item.to}</strong>
+                            </div>
+                            {item.cc && (
+                              <div className="text-sm mb-1">
+                                Copie à: <strong>{item.cc}</strong>
+                              </div>
+                            )}
+                            <div className="text-sm mb-1">
+                              Répondre à: <strong>{item.reply_to}</strong>
+                            </div>
+                            <div className="p-2 border border-dashed border-gray-200 bg-gray-50">
+                              <h4 className="font-mono text-sm">{item.object}</h4>
+                              <p className="whitespace-pre-line font-mono text-sm">{item.body.replaceAll('<br />', '\n')}</p>
+                            </div>
+                          </div>
+                        }
+                      >
+                        <span>
+                          <span className="underline cursor-help">{object}</span> -{' '}
+                          <small className="text-faded italic">
+                            envoyé le <time dateTime={item.date}>{dayjs(item.date).format('dddd D MMMM YYYY')}</time>
+                          </small>
+                        </span>
+                      </Tooltip>
                     </li>
                   );
                 })
@@ -208,7 +232,7 @@ function DemandEmailForm(props: Props) {
                 <li>Aucun courriel envoyé</li>
               )}
             </ul>
-          </div>
+          </section>
           <div className="fr-mb-3w w-full border border-solid border-gray-200" />
           <form onSubmit={submit}>
             <Input
