@@ -139,7 +139,8 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
     {
       label: 'Chaudière biomasse',
       pertinence: 1,
-      description: '',
+      description:
+        'La chaudière biomasse fonctionne comme une chaudière gaz ou fioul, mais utilise comme combustible du bois, sous différentes formes (granulés, bois déchiqueté, sciures…), ou d’autres combustibles organiques.',
       contraintesTechniques: [
         'Espace conséquent (chaudière et stockage)',
         'Approvisionnement local disponible',
@@ -171,8 +172,9 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
     },
     {
       label: 'PAC air-air individuelle',
-      pertinence: 0,
-      description: '',
+      pertinence: -1,
+      description:
+        "La pompe à chaleur air/air capte les calories de l'air extérieur et les restitue à l’intérieur en diffusant de l’air chaud.",
       contraintesTechniques: [
         'Emplacement pour l’unité extérieure ( (autorisation requise)',
         'Isolation globale nécessaire au préalable pour éviter des performances dégradées (chauffage peu efficace et onéreux)',
@@ -191,8 +193,183 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
       aidesInstallation: [],
     },
   ],
-  immeuble_chauffage_individuel: [],
-  maison_individuelle: [],
+  immeuble_chauffage_individuel: [
+    {
+      label: 'PAC air-eau individuelle',
+      pertinence: 3,
+      description:
+        "La pompe à chaleur air/eau capte les calories de l'air extérieur et les transfère à un circuit d’eau chaude pour assurer le chauffage et l’eau chaude sanitaire de votre logement.",
+      contraintesTechniques: [
+        'Circuit d’eau chaude dans l’appartement (remplacement d’un chauffage individuel gaz)',
+        'Isolation globale nécessaire au préalable pour éviter des performances dégradées (chauffage peu efficace et onéreux)',
+        'Espace extérieur adapté (autorisation requise) et installation d’un module intérieur',
+        'Peu conseillé en climat rigoureux (performances réduites)',
+      ],
+      avantages: ['Faibles émissions de CO2', 'Économique si bien dimensionnée', 'Possibilité de couvrir les besoins en froid'],
+      inconvenients: ['Nuisances sonores', 'Impact esthétique des modules extérieurs'],
+      gainsPotentielsCO2: ['-81% par rapport au gaz'],
+      gainsPotentielsCout: ['-46%  par rapport au gaz'],
+      aidesInstallation: [
+        <>
+          MaPrimeRénov’ : jusqu’à 5000 €, en fonction des ressources du ménage.{' '}
+          <Link href="https://www.anah.gouv.fr/sites/default/files/2025-03/202503-guide-aides-financieres.pdf" isExternal>
+            En savoir plus
+          </Link>
+        </>,
+      ],
+    },
+    {
+      label: 'PAC air-air individuelle',
+      pertinence: 1,
+      description:
+        "La pompe à chaleur air/air capte les calories de l'air extérieur et les restitue à l’intérieur en diffusant de l’air chaud.",
+      contraintesTechniques: [
+        'Espace extérieur adapté (autorisation requise) et installation d’un module intérieur',
+        'Isolation globale nécessaire au préalable pour éviter des performances dégradées (chauffage peu efficace et onéreux)',
+        'N’assure pas la production d’eau chaude sanitaire',
+        'Peu conseillé en climat rigoureux (performances réduites)',
+      ],
+      avantages: ['Faibles émissions de CO2', 'Possibilité de couvrir les besoins en froid', 'Économique si bien dimensionnée'],
+      inconvenients: [
+        'Installation non éligible aux dispositifs d’aides',
+        'Faible confort thermique (air soufflé)',
+        'Nuisances sonores',
+        'Impact esthétique des modules extérieurs',
+      ],
+      gainsPotentielsCO2: ['-70% par rapport au gaz'],
+      gainsPotentielsCout: ['+15%  par rapport au gaz'],
+      aidesInstallation: [],
+    },
+    {
+      label: 'Radiateurs électriques',
+      pertinence: 0,
+      description:
+        'Pouvant utiliser différentes technologies (convecteurs, rayonnants, à inertie…), les radiateurs électriques fonctionnent tous, comme leur nom l’indique, à base d’électricité.',
+      contraintesTechniques: ['Bonne isolation nécessaire', 'Peu adapté aux grandes pièces'],
+      avantages: ['Faibles émissions de CO2', 'Installation simple', 'Entretien facile'],
+      inconvenients: ['Coût de l’électricité élevé et fluctuant', 'Confort thermique limité (chaleur sèche et peu homogène)'],
+      gainsPotentielsCO2: ['-75% par rapport au gaz'],
+      gainsPotentielsCout: ['+14%  par rapport au gaz'],
+      aidesInstallation: [],
+    },
+  ],
+  maison_individuelle: [
+    {
+      label: 'Pompe à chaleur géothermique (eau-eau)',
+      pertinence: 4,
+      description:
+        'La pompe à chaleur géothermique (eau-eau) capte les calories du sous-sol et les transfère à un circuit d’eau chaude pour assurer le chauffage et l’eau chaude sanitaire de votre logement.',
+      contraintesTechniques: [
+        'Présence d’un potentiel géothermique exploitable sous la maison',
+        'Isolation globale nécessaire au préalable pour éviter des performances dégradées (chauffage peu efficace et onéreux)',
+        'Surface extérieure pour le forage, ainsi qu’un local technique',
+      ],
+      avantages: [
+        'Faibles émissions de CO2',
+        'Energie locale stable dans le temps',
+        'Suppression des chaudières (gain de place, sécurité)',
+        'Possibilité de couvrir les besoins en froid',
+      ],
+      inconvenients: ['Investissement initial important', 'Travaux d’installation conséquents', 'Maintenance à assurer'],
+      gainsPotentielsCO2: ['-87% par rapport au gaz', '-90% par rapport au fioul'],
+      gainsPotentielsCout: ['-37%  par rapport au gaz', '-35% par rapport au fioul'],
+      aidesInstallation: [
+        <>
+          MaPrimeRénov’ : jusqu’à 11 000 € d’aides, en fonction des ressources du ménage.{' '}
+          <Link href="https://www.anah.gouv.fr/sites/default/files/2025-03/202503-guide-aides-financieres.pdf" isExternal>
+            En savoir plus
+          </Link>
+        </>,
+      ],
+    },
+    {
+      label: 'Pompe à chaleur air-eau',
+      pertinence: 2,
+      description:
+        "La pompe à chaleur air/eau capte les calories de l'air extérieur et les transfère à un circuit d’eau chaude pour assurer le chauffage et l’eau chaude sanitaire de votre logement.",
+      contraintesTechniques: [
+        'Isolation globale nécessaire au préalable pour éviter des performances dégradées (chauffage peu efficace et onéreux)',
+        'Espace extérieur demeurant accessible pour la maintenance',
+        'Local technique',
+        'Peu conseillé en climat rigoureux (performances réduites)',
+      ],
+      avantages: [
+        'Faibles émissions de CO2',
+        'Économique si bien dimensionnée',
+        'Suppression des chaudières (gain de place, sécurité)',
+        'Possibilité de couvrir les besoins en froid',
+      ],
+      inconvenients: ['Nuisances sonores', 'Impact esthétique des modules extérieurs'],
+      gainsPotentielsCO2: ['-81% par rapport au gaz', '-86% par rapport au fioul'],
+      gainsPotentielsCout: ['-46%  par rapport au gaz', '-44% par rapport au fioul'],
+      aidesInstallation: [
+        <>
+          MaPrimeRénov’ : jusqu’à 5 000 € d’aides, en fonction des ressources du ménage.{' '}
+          <Link href="https://www.anah.gouv.fr/sites/default/files/2025-03/202503-guide-aides-financieres.pdf" isExternal>
+            En savoir plus
+          </Link>
+        </>,
+      ],
+    },
+
+    {
+      label: 'Chaudière biomasse',
+      pertinence: 1,
+      description:
+        'La chaudière biomasse fonctionne comme une chaudière gaz ou fioul, mais utilise comme combustible du bois, sous différentes formes (granulés, bois déchiqueté, sciures…), ou d’autres combustibles organiques.',
+      contraintesTechniques: [
+        'Espace conséquent (chaudière et stockage)',
+        'Approvisionnement local disponible',
+        'Déconseillé en zone sensible pour la qualité de l’air',
+      ],
+      avantages: ['Faibles émissions de CO2', 'Coût de la chaleur compétitif', 'Longévité des équipements'],
+      inconvenients: ['Investissement initial important', 'Approvisionnement à prévoir', 'Maintenance à assurer'],
+      gainsPotentielsCO2: ['-82% par rapport au gaz', '-87% par rapport au fioul'],
+      gainsPotentielsCout: ['+19% par rapport au gaz', '+24% par rapport au fioul'],
+      aidesInstallation: [
+        <>
+          MaPrimeRénov’ : jusqu’à 5 000 € d’aides, en fonction des ressources du ménage.{' '}
+          <Link href="https://www.anah.gouv.fr/sites/default/files/2025-03/202503-guide-aides-financieres.pdf" isExternal>
+            En savoir plus
+          </Link>
+        </>,
+      ],
+    },
+    {
+      label: 'PAC air-air individuelle',
+      pertinence: -1,
+      description:
+        "La pompe à chaleur air/air capte les calories de l'air extérieur et les restitue à l’intérieur en diffusant de l’air chaud.",
+      contraintesTechniques: [
+        'Emplacement pour l’unité extérieure ( (autorisation requise)',
+        'Isolation globale nécessaire au préalable pour éviter des performances dégradées (chauffage peu efficace et onéreux)',
+        'N’assure pas la production d’eau chaude sanitaire',
+        'Peu conseillé en climat rigoureux (performances réduites)',
+      ],
+      avantages: ['Faibles émissions de CO2', 'Possibilité de couvrir les besoins en froid'],
+      inconvenients: [
+        'Coût (non éligible aux dispositifs d’aides)',
+        'Faible confort thermique (air soufflé)',
+        'Nuisances sonores',
+        'Impact esthétique des modules extérieurs',
+      ],
+      gainsPotentielsCO2: ['-70% par rapport au gaz', '-77% par rapport au fioul'],
+      gainsPotentielsCout: ['+15% par rapport au gaz', '+19% par rapport au fioul'],
+      aidesInstallation: [],
+    },
+    {
+      label: 'Radiateurs électriques',
+      pertinence: -1,
+      description:
+        'Pouvant utiliser différentes technologies (convecteurs, rayonnants, à inertie…), les radiateurs électriques fonctionnent tous, comme leur nom l’indique, à base d’électricité.',
+      contraintesTechniques: ['Bonne isolation nécessaire', 'Peu adapté aux grandes pièces'],
+      avantages: ['Faibles émissions de CO2', 'Installation simple', 'Entretien facile'],
+      inconvenients: ['Coût de l’électricité élevé et fluctuant', 'Confort thermique limité (chaleur sèche et peu homogène)'],
+      gainsPotentielsCO2: ['-75% par rapport au gaz', '-81% par rapport au fioul'],
+      gainsPotentielsCout: ['+14% par rapport au gaz', '+18% par rapport au fioul'],
+      aidesInstallation: [],
+    },
+  ],
 };
 
 type ChoixChauffageResultsProps = {
@@ -272,6 +449,7 @@ function ChoixChauffageResults({ typeLogement, address: _ }: ChoixChauffageResul
 
             <ResultSection title="⭐ Aide à l’installation">
               <ul className="text-sm">
+                {modeDeChauffage.aidesInstallation.length === 0 && 'Aucune'}
                 {modeDeChauffage.aidesInstallation.map((aideInstallation, key) => (
                   <li key={key}>{aideInstallation}</li>
                 ))}
@@ -296,9 +474,9 @@ const ResultSection = ({ children, color = 'blue', title }: { children: ReactNod
 const PertinenceBadge = ({ pertinence }: { pertinence: number }) =>
   pertinence > 0 ? (
     <PageBadge className="!bg-success">Pertinence {Array(pertinence).fill('⭐').join('')}</PageBadge>
-  ) : (
+  ) : pertinence === -1 ? (
     <PageBadge className="!bg-error">Non conseillé</PageBadge>
-  );
+  ) : null;
 
 const PageBadge = ({ children, className }: { children: NonNullable<ReactNode>; className?: string }) => (
   <Badge className={cx(' !text-white !normal-case fr-mx-1w', className)}>{children}</Badge>
