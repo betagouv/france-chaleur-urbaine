@@ -57,18 +57,6 @@ export class HeatNetworkService {
     }
   }
 
-  async bulkEligibility(
-    addresses: string,
-    email: string
-  ): Promise<{
-    id: string;
-    progress: number;
-    result?: string;
-    error?: boolean;
-  }> {
-    return this.httpClient.post('/api/map/bulkEligibilityStatus', { addresses, email }).then((response) => response.data);
-  }
-
   async bulkEligibilityValues(id: string): Promise<{
     id: string;
     progress: number;
@@ -76,10 +64,6 @@ export class HeatNetworkService {
     error?: boolean;
   }> {
     return this.httpClient.get(`/api/map/bulkEligibilityStatus/${id}`);
-  }
-
-  async bulkEligibilityExport(id: string): Promise<string> {
-    return this.httpClient.post(`/api/map/bulkEligibilityStatus/${id}`).then((response) => response.data);
   }
 
   async getLinearHeatDensity(line: number[][][]): Promise<RawLinearHeatDensity> {
