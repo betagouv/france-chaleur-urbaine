@@ -1,4 +1,4 @@
-import { useQueryState } from 'nuqs';
+import { parseAsStringLiteral, useQueryState } from 'nuqs';
 
 import { type TypeLogement } from '@/components/choix-chauffage/type-logement';
 import AddressAutocompleteInput from '@/components/form/dsfr/AddressAutocompleteInput';
@@ -9,12 +9,15 @@ import { isDefined } from '@/utils/core';
 
 import ChoixChauffageResults from './ChoixChauffageResults';
 function ChoixChauffageForm() {
-  const [typeLogement, setTypeLogement] = useQueryState<TypeLogement | undefined>('type', {
-    defaultValue: undefined,
-  });
-  const [address, setAddress] = useQueryState<string | undefined>('address', {
-    defaultValue: undefined,
-  });
+  const [typeLogement, setTypeLogement] = useQueryState(
+    'type',
+    parseAsStringLiteral([
+      'immeuble_chauffage_collectif',
+      'immeuble_chauffage_individuel',
+      'maison_individuelle',
+    ] as const satisfies TypeLogement[])
+  );
+  const [address, setAddress] = useQueryState('address');
 
   return (
     <SectionTwoColumns className="!mt-0">
@@ -35,7 +38,7 @@ function ChoixChauffageForm() {
               illustration: <img alt="illustration" src="/img/picto_logement_immeuble_chauffage_collectif.svg" />,
               label: 'Immeuble chauffage collectif',
               nativeInputProps: {
-                value: 'immeuble_chauffage_collectif',
+                value: 'immeuble_chauffage_collectif' satisfies TypeLogement,
                 checked: typeLogement === 'immeuble_chauffage_collectif',
                 onChange: (e) => setTypeLogement(e.target.value as TypeLogement),
               },
@@ -44,7 +47,7 @@ function ChoixChauffageForm() {
               illustration: <img alt="illustration" src="/img/picto_logement_immeuble_chauffage_individuel.svg" />,
               label: 'Immeuble chauffage individuel',
               nativeInputProps: {
-                value: 'immeuble_chauffage_individuel',
+                value: 'immeuble_chauffage_individuel' satisfies TypeLogement,
                 checked: typeLogement === 'immeuble_chauffage_individuel',
                 onChange: (e) => setTypeLogement(e.target.value as TypeLogement),
               },
@@ -53,7 +56,7 @@ function ChoixChauffageForm() {
               illustration: <img alt="illustration" src="/img/picto_logement_maison_individuelle.svg" />,
               label: 'Maison individuelle',
               nativeInputProps: {
-                value: 'maison_individuelle',
+                value: 'maison_individuelle' satisfies TypeLogement,
                 checked: typeLogement === 'maison_individuelle',
                 onChange: (e) => setTypeLogement(e.target.value as TypeLogement),
               },
