@@ -6,6 +6,7 @@ import Accordion from '@/components/ui/Accordion';
 import Alert from '@/components/ui/Alert';
 import Heading from '@/components/ui/Heading';
 import Link from '@/components/ui/Link';
+import Tooltip from '@/components/ui/Tooltip';
 import cx from '@/utils/cx';
 
 type ModeDeChauffage = {
@@ -15,8 +16,8 @@ type ModeDeChauffage = {
   contraintesTechniques: string[];
   avantages: string[];
   inconvenients: string[];
-  gainsPotentielsCO2: string[];
-  gainsPotentielsCout: string[];
+  gainsPotentielsCO2: ReactNode[];
+  gainsPotentielsCout: ReactNode[];
   aidesInstallation: ReactNode[];
 };
 
@@ -39,8 +40,20 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
         "Garantie d'un service public",
       ],
       inconvenients: ['Contrats de longue durée (15-20 ans)'],
-      gainsPotentielsCO2: ['-49% par rapport au gaz', '-62% par rapport au fioul'],
-      gainsPotentielsCout: ['-23% par rapport au gaz', '-27% par rapport au fioul'],
+      gainsPotentielsCO2: [
+        <>
+          -49% par rapport au gaz{' '}
+          <Tooltip title="chaudière gaz collective sans condensation" iconProps={{ size: 'xs', className: 'fr-ml-1v' }} />
+        </>,
+        '-62% par rapport au fioul',
+      ],
+      gainsPotentielsCout: [
+        <>
+          -23% par rapport au gaz{' '}
+          <Tooltip title="chaudière gaz collective sans condensation" iconProps={{ size: 'xs', className: 'fr-ml-1v' }} />
+        </>,
+        '-27% par rapport au fioul',
+      ],
       aidesInstallation: [
         <>
           Le coup de pouce chauffage des bâtiments résidentiels collectifs et tertiaires permet de réduire significativement les coûts de
@@ -74,8 +87,20 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
         'Possibilité de couvrir les besoins en froid',
       ],
       inconvenients: ['Investissement initial important', 'Travaux d’installation conséquents', 'Maintenance à assurer'],
-      gainsPotentielsCO2: ['-90% par rapport au gaz', '-92% par rapport au fioul'],
-      gainsPotentielsCout: ['-9% par rapport au gaz', '-14% par rapport au fioul'],
+      gainsPotentielsCO2: [
+        <>
+          -90% par rapport au gaz{' '}
+          <Tooltip title="chaudière gaz collective sans condensation" iconProps={{ size: 'xs', className: 'fr-ml-1v' }} />
+        </>,
+        '-92% par rapport au fioul',
+      ],
+      gainsPotentielsCout: [
+        <>
+          -9% par rapport au gaz{' '}
+          <Tooltip title="chaudière gaz collective sans condensation" iconProps={{ size: 'xs', className: 'fr-ml-1v' }} />
+        </>,
+        '-14% par rapport au fioul',
+      ],
       aidesInstallation: [
         <>
           Le coup de pouce chauffage des bâtiments résidentiels collectifs et tertiaires est mobilisable lorsque le raccordement à un réseau
@@ -114,8 +139,20 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
         'Possibilité de couvrir les besoins en froid',
       ],
       inconvenients: ['Nuisances sonores', 'Impact esthétique des modules extérieurs'],
-      gainsPotentielsCO2: ['-90% par rapport au gaz', '-93% par rapport au fioul'],
-      gainsPotentielsCout: ['-25% par rapport au gaz', '-29% par rapport au fioul'],
+      gainsPotentielsCO2: [
+        <>
+          -90% par rapport au gaz{' '}
+          <Tooltip title="chaudière gaz collective sans condensation" iconProps={{ size: 'xs', className: 'fr-ml-1v' }} />
+        </>,
+        '-93% par rapport au fioul',
+      ],
+      gainsPotentielsCout: [
+        <>
+          -25% par rapport au gaz{' '}
+          <Tooltip title="chaudière gaz collective sans condensation" iconProps={{ size: 'xs', className: 'fr-ml-1v' }} />
+        </>,
+        '-29% par rapport au fioul',
+      ],
       aidesInstallation: [
         <>
           Le coup de pouce chauffage des bâtiments résidentiels collectifs et tertiaires est mobilisable lorsque le raccordement à un réseau
@@ -148,8 +185,20 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
       ],
       avantages: ['Faibles émissions de CO2', 'Longévité des équipements'],
       inconvenients: ['Investissement initial important', 'Approvisionnement à prévoir', 'Maintenance à assurer'],
-      gainsPotentielsCO2: ['-89% par rapport au gaz', '-92% par rapport au fioul'],
-      gainsPotentielsCout: ['+18% par rapport au gaz', '+12% par rapport au fioul'],
+      gainsPotentielsCO2: [
+        <>
+          -89% par rapport au gaz{' '}
+          <Tooltip title="chaudière gaz collective sans condensation" iconProps={{ size: 'xs', className: 'fr-ml-1v' }} />
+        </>,
+        '-92% par rapport au fioul',
+      ],
+      gainsPotentielsCout: [
+        <>
+          +18% par rapport au gaz{' '}
+          <Tooltip title="chaudière gaz collective sans condensation" iconProps={{ size: 'xs', className: 'fr-ml-1v' }} />
+        </>,
+        '+12% par rapport au fioul',
+      ],
       aidesInstallation: [
         <>
           Le coup de pouce chauffage des bâtiments résidentiels collectifs et tertiaires est mobilisable lorsque le raccordement à un réseau
@@ -188,8 +237,20 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
         'Nuisances sonores',
         'Impact esthétique des modules extérieurs',
       ],
-      gainsPotentielsCO2: ['-89% par rapport au gaz', '-92% par rapport au fioul'],
-      gainsPotentielsCout: ['+38% par rapport au gaz', '+31% par rapport au fioul'],
+      gainsPotentielsCO2: [
+        <>
+          -89% par rapport au gaz{' '}
+          <Tooltip title="chaudière gaz collective sans condensation" iconProps={{ size: 'xs', className: 'fr-ml-1v' }} />
+        </>,
+        '-92% par rapport au fioul',
+      ],
+      gainsPotentielsCout: [
+        <>
+          +38% par rapport au gaz{' '}
+          <Tooltip title="chaudière gaz collective sans condensation" iconProps={{ size: 'xs', className: 'fr-ml-1v' }} />
+        </>,
+        '+31% par rapport au fioul',
+      ],
       aidesInstallation: [],
     },
   ],
@@ -207,8 +268,18 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
       ],
       avantages: ['Faibles émissions de CO2', 'Économique si bien dimensionnée', 'Possibilité de couvrir les besoins en froid'],
       inconvenients: ['Nuisances sonores', 'Impact esthétique des modules extérieurs'],
-      gainsPotentielsCO2: ['-81% par rapport au gaz'],
-      gainsPotentielsCout: ['-46%  par rapport au gaz'],
+      gainsPotentielsCO2: [
+        <>
+          -81% par rapport au gaz{' '}
+          <Tooltip title="chaudière gaz individuelle sans condensation" iconProps={{ size: 'xs', className: 'fr-ml-1v' }} />
+        </>,
+      ],
+      gainsPotentielsCout: [
+        <>
+          -46% par rapport au gaz{' '}
+          <Tooltip title="chaudière gaz individuelle sans condensation" iconProps={{ size: 'xs', className: 'fr-ml-1v' }} />
+        </>,
+      ],
       aidesInstallation: [
         <>
           MaPrimeRénov’ : jusqu’à 5000 €, en fonction des ressources du ménage.{' '}
@@ -236,8 +307,18 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
         'Nuisances sonores',
         'Impact esthétique des modules extérieurs',
       ],
-      gainsPotentielsCO2: ['-70% par rapport au gaz'],
-      gainsPotentielsCout: ['+15%  par rapport au gaz'],
+      gainsPotentielsCO2: [
+        <>
+          -70% par rapport au gaz{' '}
+          <Tooltip title="chaudière gaz individuelle sans condensation" iconProps={{ size: 'xs', className: 'fr-ml-1v' }} />
+        </>,
+      ],
+      gainsPotentielsCout: [
+        <>
+          +15% par rapport au gaz{' '}
+          <Tooltip title="chaudière gaz individuelle sans condensation" iconProps={{ size: 'xs', className: 'fr-ml-1v' }} />
+        </>,
+      ],
       aidesInstallation: [],
     },
     {
@@ -248,8 +329,18 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
       contraintesTechniques: ['Bonne isolation nécessaire', 'Peu adapté aux grandes pièces'],
       avantages: ['Faibles émissions de CO2', 'Installation simple', 'Entretien facile'],
       inconvenients: ['Coût de l’électricité élevé et fluctuant', 'Confort thermique limité (chaleur sèche et peu homogène)'],
-      gainsPotentielsCO2: ['-75% par rapport au gaz'],
-      gainsPotentielsCout: ['+14%  par rapport au gaz'],
+      gainsPotentielsCO2: [
+        <>
+          -75% par rapport au gaz{' '}
+          <Tooltip title="chaudière gaz individuelle sans condensation" iconProps={{ size: 'xs', className: 'fr-ml-1v' }} />
+        </>,
+      ],
+      gainsPotentielsCout: [
+        <>
+          +14% par rapport au gaz{' '}
+          <Tooltip title="chaudière gaz individuelle sans condensation" iconProps={{ size: 'xs', className: 'fr-ml-1v' }} />
+        </>,
+      ],
       aidesInstallation: [],
     },
   ],
@@ -271,8 +362,20 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
         'Possibilité de couvrir les besoins en froid',
       ],
       inconvenients: ['Investissement initial important', 'Travaux d’installation conséquents', 'Maintenance à assurer'],
-      gainsPotentielsCO2: ['-87% par rapport au gaz', '-90% par rapport au fioul'],
-      gainsPotentielsCout: ['-37%  par rapport au gaz', '-35% par rapport au fioul'],
+      gainsPotentielsCO2: [
+        <>
+          -87% par rapport au gaz{' '}
+          <Tooltip title="chaudière gaz individuelle sans condensation" iconProps={{ size: 'xs', className: 'fr-ml-1v' }} />
+        </>,
+        '-90% par rapport au fioul',
+      ],
+      gainsPotentielsCout: [
+        <>
+          -37% par rapport au gaz{' '}
+          <Tooltip title="chaudière gaz individuelle sans condensation" iconProps={{ size: 'xs', className: 'fr-ml-1v' }} />
+        </>,
+        '-35% par rapport au fioul',
+      ],
       aidesInstallation: [
         <>
           MaPrimeRénov’ : jusqu’à 11 000 € d’aides, en fonction des ressources du ménage.{' '}
@@ -300,8 +403,20 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
         'Possibilité de couvrir les besoins en froid',
       ],
       inconvenients: ['Nuisances sonores', 'Impact esthétique des modules extérieurs'],
-      gainsPotentielsCO2: ['-81% par rapport au gaz', '-86% par rapport au fioul'],
-      gainsPotentielsCout: ['-46%  par rapport au gaz', '-44% par rapport au fioul'],
+      gainsPotentielsCO2: [
+        <>
+          -81% par rapport au gaz{' '}
+          <Tooltip title="chaudière gaz individuelle sans condensation" iconProps={{ size: 'xs', className: 'fr-ml-1v' }} />
+        </>,
+        '-86% par rapport au fioul',
+      ],
+      gainsPotentielsCout: [
+        <>
+          -46% par rapport au gaz{' '}
+          <Tooltip title="chaudière gaz individuelle sans condensation" iconProps={{ size: 'xs', className: 'fr-ml-1v' }} />
+        </>,
+        '-44% par rapport au fioul',
+      ],
       aidesInstallation: [
         <>
           MaPrimeRénov’ : jusqu’à 5 000 € d’aides, en fonction des ressources du ménage.{' '}
@@ -324,8 +439,20 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
       ],
       avantages: ['Faibles émissions de CO2', 'Coût de la chaleur compétitif', 'Longévité des équipements'],
       inconvenients: ['Investissement initial important', 'Approvisionnement à prévoir', 'Maintenance à assurer'],
-      gainsPotentielsCO2: ['-82% par rapport au gaz', '-87% par rapport au fioul'],
-      gainsPotentielsCout: ['+19% par rapport au gaz', '+24% par rapport au fioul'],
+      gainsPotentielsCO2: [
+        <>
+          -82% par rapport au gaz{' '}
+          <Tooltip title="chaudière gaz individuelle sans condensation" iconProps={{ size: 'xs', className: 'fr-ml-1v' }} />
+        </>,
+        '-87% par rapport au fioul',
+      ],
+      gainsPotentielsCout: [
+        <>
+          +19% par rapport au gaz{' '}
+          <Tooltip title="chaudière gaz individuelle sans condensation" iconProps={{ size: 'xs', className: 'fr-ml-1v' }} />
+        </>,
+        '+24% par rapport au fioul',
+      ],
       aidesInstallation: [
         <>
           MaPrimeRénov’ : jusqu’à 5 000 € d’aides, en fonction des ressources du ménage.{' '}
@@ -353,8 +480,20 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
         'Nuisances sonores',
         'Impact esthétique des modules extérieurs',
       ],
-      gainsPotentielsCO2: ['-70% par rapport au gaz', '-77% par rapport au fioul'],
-      gainsPotentielsCout: ['+15% par rapport au gaz', '+19% par rapport au fioul'],
+      gainsPotentielsCO2: [
+        <>
+          -70% par rapport au gaz{' '}
+          <Tooltip title="chaudière gaz individuelle sans condensation" iconProps={{ size: 'xs', className: 'fr-ml-1v' }} />
+        </>,
+        '-77% par rapport au fioul',
+      ],
+      gainsPotentielsCout: [
+        <>
+          +15% par rapport au gaz{' '}
+          <Tooltip title="chaudière gaz individuelle sans condensation" iconProps={{ size: 'xs', className: 'fr-ml-1v' }} />
+        </>,
+        '+19% par rapport au fioul',
+      ],
       aidesInstallation: [],
     },
     {
@@ -365,8 +504,20 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
       contraintesTechniques: ['Bonne isolation nécessaire', 'Peu adapté aux grandes pièces'],
       avantages: ['Faibles émissions de CO2', 'Installation simple', 'Entretien facile'],
       inconvenients: ['Coût de l’électricité élevé et fluctuant', 'Confort thermique limité (chaleur sèche et peu homogène)'],
-      gainsPotentielsCO2: ['-75% par rapport au gaz', '-81% par rapport au fioul'],
-      gainsPotentielsCout: ['+14% par rapport au gaz', '+18% par rapport au fioul'],
+      gainsPotentielsCO2: [
+        <>
+          -75% par rapport au gaz{' '}
+          <Tooltip title="chaudière gaz individuelle sans condensation" iconProps={{ size: 'xs', className: 'fr-ml-1v' }} />
+        </>,
+        '-81% par rapport au fioul',
+      ],
+      gainsPotentielsCout: [
+        <>
+          +14% par rapport au gaz{' '}
+          <Tooltip title="chaudière gaz individuelle sans condensation" iconProps={{ size: 'xs', className: 'fr-ml-1v' }} />
+        </>,
+        '+18% par rapport au fioul',
+      ],
       aidesInstallation: [],
     },
   ],
