@@ -35,6 +35,7 @@ function CrudDropdown<T extends CrudResponse<keyof DB, any>>({
   nameKey = 'name' as keyof CrudItem<T>,
   saveLabel = 'Sauvegarder',
   loadLabel = 'Charger',
+  addLabel = 'Nom',
   onSelect,
   onAdd,
   onShare,
@@ -56,6 +57,7 @@ function CrudDropdown<T extends CrudResponse<keyof DB, any>>({
   isSameObject?: (obj1: Partial<CrudItem<T>>, obj2: Partial<CrudItem<T>>) => boolean;
   saveLabel?: string;
   loadLabel?: string;
+  addLabel?: string;
 }) {
   const [loaded, setLoaded] = useState<boolean>(false);
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -265,7 +267,7 @@ function CrudDropdown<T extends CrudResponse<keyof DB, any>>({
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
                   className="w-full px-2 py-1 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm shadcn-border"
-                  placeholder="Nom de la config"
+                  placeholder={addLabel}
                   autoFocus
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') handleAddNew();

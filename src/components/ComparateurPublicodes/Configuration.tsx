@@ -90,6 +90,7 @@ const Configuration: React.FC<ConfigurationProps> = ({ engine }) => {
           nameKey="name"
           loadLabel="Charger une configuration"
           saveLabel="Sauvegarder la configuration"
+          addLabel="Nom de la configuration"
           isSameObject={(obj1, obj2) =>
             !!(obj1.situation && obj2.situation && JSON.stringify(sortKeys(obj1.situation)) === JSON.stringify(sortKeys(obj2.situation)))
           }
