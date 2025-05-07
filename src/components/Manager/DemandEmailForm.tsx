@@ -5,7 +5,9 @@ import Input from '@/components/form/dsfr/Input';
 import TextArea from '@/components/form/dsfr/TextArea';
 import Button from '@/components/ui/Button';
 import CrudDropdown from '@/components/ui/CrudDropdown';
+import Icon from '@/components/ui/Icon';
 import Loader from '@/components/ui/Loader';
+import Tooltip from '@/components/ui/Tooltip';
 import { useFetch } from '@/hooks/useApi';
 import { type ManagerEmailResponse } from '@/pages/api/managerEmail';
 import { type EmailTemplatesResponse } from '@/pages/api/user/email-templates/[[...slug]]';
@@ -26,6 +28,23 @@ type EmailContent = {
   cc: string;
   replyTo: string;
 };
+
+/**
+ * Processes a string value by replacing placeholders with values from the current demand
+ * Placeholders are in the format {{key}} where key is a property of the demand object
+ */
+function processPlaceholders(value: string, demand: Demand): string {
+  let processedValue = value;
+
+  Object.entries(demand).forEach(([key, val]) => {
+    if (val && typeof val === 'string') {
+      processedValue = processedValue.replace(new RegExp(`{{${key}}}`, 'gi'), val.trim());
+    }
+  });
+
+  return processedValue;
+}
+
 function DemandEmailForm(props: Props) {
   const { userPreferences, updateUserPreferences } = useUserPreferences();
 
@@ -80,8 +99,7 @@ function DemandEmailForm(props: Props) {
     const emailTemplate = emailTemplates.find((emailTemplate) => emailTemplate.id === emailKey);
     setEmailKey(emailKey);
     setEmailContentValue('object', emailTemplate?.subject || '');
-    const body = emailTemplate?.body || '';
-    setEmailContentValue('body', body);
+    setEmailContentValue('body', emailTemplate?.body || '');
   };
 
   const submit = async (e: FormEvent<HTMLFormElement>) => {
@@ -92,7 +110,11 @@ function DemandEmailForm(props: Props) {
       const res = await fetch(`/api/managerEmail`, {
         method: 'POST',
         body: JSON.stringify({
-          emailContent,
+          emailContent: {
+            ...emailContent,
+            object: processPlaceholders(emailContent.object, props.currentDemand),
+            body: processPlaceholders(emailContent.body, props.currentDemand),
+          },
           demand_id: props.currentDemand.id,
           key: emailKey,
         }),
@@ -128,6 +150,10 @@ function DemandEmailForm(props: Props) {
       setIsSending(false);
     }
   };
+
+  const authorizedReplaceableKeys = Object.keys(props.currentDemand).filter(
+    (key) => !['id', 'Relance ID', 'haut_potentiel', 'Relance à activer', 'Gestionnaires'].includes(key)
+  );
 
   return (
     <div>
@@ -192,27 +218,56 @@ function DemandEmailForm(props: Props) {
               label={
                 <div className="flex items-center justify-between gap-2">
                   <span>Objet</span>
-                  <CrudDropdown<EmailTemplatesResponse>
-                    url="/api/user/email-templates"
-                    valueKey="id"
-                    nameKey="name"
-                    data={{
-                      subject: emailContent.object,
-                      body: emailContent.body,
-                    }}
-                    onSelect={(item) => {
-                      onSelectedEmailChanged(item.id);
-                    }}
-                    preprocessItem={(item) => ({
-                      ...item,
-                      editable: isUUID(item.id),
-                      disabled: !!(
-                        sentHistory &&
-                        Array.isArray(sentHistory) &&
-                        sentHistory.some((email: any) => email.email_key === item.id)
-                      ),
-                    })}
-                  />
+                  <div className="flex items-center gap-1">
+                    <Tooltip
+                      title={
+                        <div className="max-h-96 overflow-y-auto">
+                          <p className="">Vous pouvez utiliser des variables dans l'objet et le corps du courriel.</p>
+                          <p className="text-sm mb-1">Les variables disponibles sont :</p>
+                          <p className="text-xs italic">Cliquez dessus pour les insérer dans le corps du courriel.</p>
+                          <ul>
+                            {authorizedReplaceableKeys.map((authorizedTemplateKey) => {
+                              return (
+                                <li key={authorizedTemplateKey}>
+                                  <strong
+                                    onClick={() => setEmailContentValue('body', `${emailContent.body} {{${authorizedTemplateKey}}}`)}
+                                    className="cursor-pointer"
+                                  >
+                                    &#123;&#123;{authorizedTemplateKey}&#125;&#125;
+                                  </strong>
+                                  : {props.currentDemand[authorizedTemplateKey as keyof Demand]}
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        </div>
+                      }
+                    >
+                      <span className="flex items-center gap-1">
+                        <Icon name="ri-question-line" />
+                        <span className="text-faded underline text-xs">Utiliser des variables</span>
+                      </span>
+                    </Tooltip>
+                    <CrudDropdown<EmailTemplatesResponse>
+                      url="/api/user/email-templates"
+                      valueKey="id"
+                      nameKey="name"
+                      data={{
+                        ...(emailContent.object && { subject: emailContent.object }),
+                        ...(emailContent.body && { body: emailContent.body }),
+                      }}
+                      onSelect={(item) => onSelectedEmailChanged(item.id)}
+                      preprocessItem={(item) => ({
+                        ...item,
+                        editable: isUUID(item.id),
+                        disabled: !!(
+                          sentHistory &&
+                          Array.isArray(sentHistory) &&
+                          sentHistory.some((email: any) => email.email_key === item.id)
+                        ),
+                      })}
+                    />
+                  </div>
                 </div>
               }
               nativeInputProps={{
@@ -240,9 +295,26 @@ function DemandEmailForm(props: Props) {
                 onChange: (e) => setEmailContentValue('signature', e.target.value),
               }}
             />
-            <Button className="fr-mt-2w" type="submit" loading={isSending}>
-              Envoyer
-            </Button>
+            <Tooltip
+              className="max-w-[600px] min-w-[300px]"
+              title={
+                <div className="max-h-96 overflow overflow-auto">
+                  <div className="text-sm italic mb-1">Prévisualisation du courriel</div>
+                  <div className="p-2 border border-dashed border-gray-200 bg-gray-50">
+                    <h4 className="font-mono text-sm">
+                      {emailContent.object ? processPlaceholders(emailContent.object, props.currentDemand) : "Remplissez l'objet"}
+                    </h4>
+                    <p className="whitespace-pre-line font-mono text-sm">
+                      {emailContent.body ? processPlaceholders(emailContent.body, props.currentDemand) : 'Remplissez le corps'}
+                    </p>
+                  </div>
+                </div>
+              }
+            >
+              <Button className="fr-mt-2w" type="submit" loading={isSending}>
+                Envoyer
+              </Button>
+            </Tooltip>
           </form>
         </>
       ) : (
