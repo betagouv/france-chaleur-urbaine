@@ -593,9 +593,11 @@ function ChoixChauffageResults({ typeLogement, address: _ }: ChoixChauffageResul
                 Les gains varient fortement en fonction de l'adresse et des caractéristiques du bâtiment ! Obtenez une simulation affinée
                 avec notre comparateur.
               </Alert>
-              <Link variant="primary" href="/comparateur-couts-performances" mt="2w" className="!d-inline-block fr-mx-auto">
-                Accéder au comparateur
-              </Link>
+              <div className="fr-mt-2w text-center">
+                <Link variant="primary" href="/comparateur-couts-performances">
+                  Obtenez une simulation affinée avec notre comparateur
+                </Link>
+              </div>
             </ResultSection>
 
             <ResultSection title="⭐ Aide à l’installation">
