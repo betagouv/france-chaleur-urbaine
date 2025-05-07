@@ -7,7 +7,7 @@ import Button from '@/components/ui/Button';
 import CrudDropdown from '@/components/ui/CrudDropdown';
 import Icon from '@/components/ui/Icon';
 import Loader from '@/components/ui/Loader';
-import Tooltip from '@/components/ui/Tooltip';
+import Tooltip, { TooltipIcon } from '@/components/ui/Tooltip';
 import { useFetch } from '@/hooks/useApi';
 import { type ManagerEmailResponse } from '@/pages/api/managerEmail';
 import { type EmailTemplatesResponse } from '@/pages/api/user/email-templates/[[...slug]]';
@@ -335,26 +335,31 @@ function DemandEmailForm(props: Props) {
                 onChange: (e) => setEmailContentValue('signature', e.target.value),
               }}
             />
-            <Tooltip
-              className="max-w-[600px] min-w-[300px]"
-              title={
-                <div className="max-h-96 overflow overflow-auto">
-                  <div className="text-sm italic mb-1">Prévisualisation du courriel</div>
-                  <div className="p-2 border border-dashed border-gray-200 bg-gray-50">
-                    <h4 className="font-mono text-sm">
-                      {emailContent.object ? processPlaceholders(emailContent.object, props.currentDemand) : "Remplissez l'objet"}
-                    </h4>
-                    <p className="whitespace-pre-line font-mono text-sm">
-                      {emailContent.body ? processPlaceholders(emailContent.body, props.currentDemand) : 'Remplissez le corps'}
-                    </p>
-                  </div>
-                </div>
-              }
-            >
-              <Button className="fr-mt-2w" type="submit" loading={isSending}>
+            <div className="flex items-center gap-2 fr-mt-2w">
+              <Button type="submit" loading={isSending}>
                 Envoyer
               </Button>
-            </Tooltip>
+              <Tooltip
+                className="max-w-[600px] min-w-[300px]"
+                title={
+                  <div className="max-h-96 overflow overflow-auto">
+                    <div className="text-sm italic mb-1">Prévisualisation du courriel</div>
+                    <div className="p-2 border border-dashed border-gray-200 bg-gray-50">
+                      <h4 className="font-mono text-sm">
+                        {emailContent.object ? processPlaceholders(emailContent.object, props.currentDemand) : "Remplissez l'objet"}
+                      </h4>
+                      <p className="whitespace-pre-line font-mono text-sm">
+                        {emailContent.body ? processPlaceholders(emailContent.body, props.currentDemand) : 'Remplissez le corps'}
+                      </p>
+                    </div>
+                  </div>
+                }
+              >
+                <span className="flex items-center gap-1 cursor-help underline text-sm">
+                  <TooltipIcon name="ri-eye-line" /> Prévisualiser le courriel
+                </span>
+              </Tooltip>
+            </div>
           </form>
         </>
       ) : (
