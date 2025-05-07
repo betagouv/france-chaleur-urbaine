@@ -16,9 +16,9 @@ type ModeDeChauffage = {
   contraintesTechniques: string[];
   avantages: string[];
   inconvenients: string[];
-  gainsPotentielsCO2: ReactNode[];
-  gainsPotentielsCout: ReactNode[];
-  aidesInstallation: ReactNode[];
+  gainsPotentielsCO2: NonNullable<ReactNode>[];
+  gainsPotentielsCout: NonNullable<ReactNode>[];
+  aidesInstallation: NonNullable<ReactNode>[];
 };
 
 const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = {
