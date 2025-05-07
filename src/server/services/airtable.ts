@@ -640,7 +640,7 @@ export const deactivateUsersDeletedInAirtable = async () => {
 
       if (!DRY_RUN) {
         try {
-          // await db('users').update({ active: false }).where('id', user.id);
+          await db('users').update({ active: false }).where('id', user.id);
           stats.totalDeactivated++;
         } catch (e) {
           logger.error(`Could not deactivate user ${user.email}`, { error: e });
