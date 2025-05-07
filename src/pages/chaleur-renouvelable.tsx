@@ -97,14 +97,14 @@ function ChaleurRenouvelablePage() {
                 Accéder au comparateur
               </Link>
             </div>
-            <div className="!flex-[1]">
+            <div className="!flex-1">
               <img src="/img/preview_comparateur.webp" alt="Comparateur de coûts et performances des équipements de chauffage" />
             </div>
           </SectionTwoColumns>
         </SectionContent>
       </Section>
 
-      <Section size="sm">
+      <Section size="sm" variant="light">
         <NewsletterSection
           title="Vous avez besoin de plus d’informations…"
           subtitle="sur les aides financières disponibles, l’accompagnement mobilisable, les montages juridiques… ?"
