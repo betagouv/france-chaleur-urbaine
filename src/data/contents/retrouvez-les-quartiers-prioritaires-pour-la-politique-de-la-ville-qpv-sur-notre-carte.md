@@ -6,6 +6,6 @@ Encore une nouveauté sur la carte France Chaleur Urbaine !\
 \
 ♨️ Dans ces quartiers en renouvellement urbain, le potentiel de raccordement aux réseaux de chaleur, qui sont un outil puissant pour la transition énergétique, s’avère particulièrement important : 249 d’entre eux sont desservis par un ou plusieurs réseaux de chaleur en service, et 39 par des réseaux en construction (extension ou nouveau réseau). En outre, 143 des quartiers non desservis présentent un fort potentiel pour le développement d'un réseau !
 
-Pour accéder directement aux QPV sur la carte, c'est [ici](https://france-chaleur-urbaine.beta.gouv.fr/carte?tabId=potentiel\&accordions=Potentiel+par+territoire\&additionalLayers=quartiersPrioritairesPolitiqueVille) !
+Pour accéder directement aux QPV sur la carte, c'est [ici](/carte?tabId=potentiel\&accordions=Potentiel+par+territoire\&additionalLayers=quartiersPrioritairesPolitiqueVille) !
 
 <figure><img src=".gitbook/assets/FCU_QPV.jpg" alt=""><figcaption></figcaption></figure>

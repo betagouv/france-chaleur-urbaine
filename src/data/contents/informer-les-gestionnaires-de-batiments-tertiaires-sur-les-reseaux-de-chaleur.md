@@ -9,6 +9,6 @@ Au programme :\
 \
 Ce webinaire s'adressait aux propriétaires et gestionnaires de bâtiments tertiaires, ainsi qu'aux bureaux d'études qui les accompagnent.&#x20;
 
-Vous souhaitez accéder au replay ? [Contactez-nous](https://france-chaleur-urbaine.beta.gouv.fr/contact) !
+Vous souhaitez accéder au replay ? [Contactez-nous](/contact) !
 
 <figure><img src=".gitbook/assets/47.jpg" alt=""><figcaption></figcaption></figure>

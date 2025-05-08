@@ -6,6 +6,6 @@ Avec France Chaleur Urbaine, estimer en quelques clics la densité thermique lin
 \
 🔧 Déjà proposé sur la base des consommations réelles de gaz, le calcul de la densité thermique linéaire sur France Chaleur Urbaine est aujourd'hui également réalisé sur la base des besoins en chaleur des bâtiments, modélisés par le Cerema dans le cadre du [projet EnRezo](https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo) : une donnée estimative mais qui présente l'avantage d'être disponible pour l'ensemble des bâtiments.\
 \
-👉 Concrètement comment faire ? Je clique sur l'onglet [Outils](https://france-chaleur-urbaine.beta.gouv.fr/carte?tabId=outils) dans la légende de la carte et je définis mon futur tracé. Le résultat s'affiche instantanément ! Je peux également exporter mon projet de tracé.
+👉 Concrètement comment faire ? Je clique sur l'onglet [Outils](/carte?tabId=outils) dans la légende de la carte et je définis mon futur tracé. Le résultat s'affiche instantanément ! Je peux également exporter mon projet de tracé.
 
 <figure><img src=".gitbook/assets/FCU_densite-thermique.jpg" alt=""><figcaption></figcaption></figure>

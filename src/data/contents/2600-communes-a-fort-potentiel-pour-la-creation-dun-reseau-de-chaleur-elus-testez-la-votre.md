@@ -4,7 +4,7 @@
 
 France Chaleur Urbaine recense **2 600 communes disposant d’un fort potentiel pour la création de réseaux**, qui n’en sont pas encore équipées, ainsi que **4500 autres communes** sur lesquelles un potentiel non négligeable existe également.
 
-Le [nouvel outil](https://france-chaleur-urbaine.beta.gouv.fr/collectivites-et-exploitants/potentiel-creation-reseau) dévoilé à l’occasion du salon des maires vise à sensibiliser et accompagner les élus dans la valorisation de ce potentiel.
+Le [nouvel outil](/collectivites-et-exploitants/potentiel-creation-reseau) dévoilé à l’occasion du salon des maires vise à sensibiliser et accompagner les élus dans la valorisation de ce potentiel.
 
 Il suffit de renseigner le nom d’une commune pour visualiser les zones d’opportunité pour la création de réseaux de chaleur et identifier les principaux bâtiments susceptibles d’être raccordés (informations basées sur les modélisations réalisées par le Cerema, projet EnRezo). Les élus peuvent également demander à être recontactés pour obtenir plus d'informations ou bénéficier d’un accompagnement personnalisé.
 
@@ -20,7 +20,7 @@ La programmation pluriannuelle de l’énergie récemment mise en consultation v
 
 ### **Un accompagnement tout au long de la vie du réseau**
 
-Au-delà de la création de nouveaux réseaux de chaleur, il existe un **réel enjeu à développer les réseaux en service**, en multipliant les raccordements. **France Chaleur Urbaine est aussi aux côtés des collectivités dans cette phase**, avec un [ensemble de services gratuits](https://france-chaleur-urbaine.beta.gouv.fr/collectivites-et-exploitants/potentiel-creation-reseau) mis à leur disposition (données et outils pour faire connaître et planifier le développement du réseau, accompagnement dans la réalisation de campagnes de communication…).
+Au-delà de la création de nouveaux réseaux de chaleur, il existe un **réel enjeu à développer les réseaux en service**, en multipliant les raccordements. **France Chaleur Urbaine est aussi aux côtés des collectivités dans cette phase**, avec un [ensemble de services gratuits](/collectivites-et-exploitants/potentiel-creation-reseau) mis à leur disposition (données et outils pour faire connaître et planifier le développement du réseau, accompagnement dans la réalisation de campagnes de communication…).
 
 <div>
 

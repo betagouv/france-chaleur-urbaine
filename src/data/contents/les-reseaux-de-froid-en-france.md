@@ -10,6 +10,6 @@ Ils sont aujourd'hui peu nombreux : leur développement constitue donc un enjeu 
 🔵 les ronds représentent les 36 réseaux de froid dont le tracé est visible sur la carte en ligne de France Chaleur Urbaine (dont 7 ne sont pas recensés par l'enquête annuelle des réseaux de chaleur et de froid)\
 ⚪ les cercles matérialisent 18 réseaux recensés par l'enquête annuelle dont le tracé reste à récupérer par France Chaleur Urbaine. Ils ne représentent que 23% des livraisons annuelles de froid en France.\
 \
-👉 Pour en savoir plus sur chacun de ces réseaux, rendez-vous sur notre [carte en ligne](https://france-chaleur-urbaine.beta.gouv.fr/carte) !
+👉 Pour en savoir plus sur chacun de ces réseaux, rendez-vous sur notre [carte en ligne](/carte) !
 
 <figure><img src=".gitbook/assets/FCU_reperes_RF.jpg" alt=""><figcaption></figcaption></figure>

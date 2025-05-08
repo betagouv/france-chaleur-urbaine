@@ -5,7 +5,7 @@ Mardi dernier nous organisions notre webinaire annuel sur le classement des rés
 🎥 Vous souhaitez accéder à la présentation et au replay ? C'est ici :&#x20;
 
 [https://france-chaleur-urbaine.beta.gouv.fr/webinaire/2025/presentation-classement\
-https://france-chaleur-urbaine.beta.gouv.fr/webinaire/2025/replay-classement ](https://france-chaleur-urbaine.beta.gouv.fr/webinaire/2025/presentation-classementhttps://france-chaleur-urbaine.beta.gouv.fr/webinaire/2025/replay-classement)\
+https://france-chaleur-urbaine.beta.gouv.fr/webinaire/2025/replay-classement ](/webinaire/2025/presentation-classementhttps://france-chaleur-urbaine.beta.gouv.fr/webinaire/2025/replay-classement)\
 \
 Au programme :\
 ✔️ Éléments de contexte : le classement automatique, quels objectifs ?\
@@ -17,6 +17,6 @@ Et des témoignages :\
 ✔️ Sara Malleval et Didier Fangeat (Métropole de Lyon) et Elodie Bihen (Dalkia Lyon) sur la mise en place opérationnelle.\
 ✔️ Rémi Beaulieu (association Amorce) sur le classement pour les petits réseaux de chaleur.\
 \
-🗺️ Rendez-vous également sur notre [cartographie](https://france-chaleur-urbaine.beta.gouv.fr/carte) pour visualiser les réseaux classés et leur périmètre de développement prioritaire. Vous souhaitez ajouter des éléments sur la carte ? Vous pouvez passer par notre [formulaire de contribution](https://france-chaleur-urbaine.beta.gouv.fr/contribution).
+🗺️ Rendez-vous également sur notre [cartographie](/carte) pour visualiser les réseaux classés et leur périmètre de développement prioritaire. Vous souhaitez ajouter des éléments sur la carte ? Vous pouvez passer par notre [formulaire de contribution](/contribution).
 
 <figure><img src=".gitbook/assets/FCU_replay_classement.jpg" alt=""><figcaption></figcaption></figure>

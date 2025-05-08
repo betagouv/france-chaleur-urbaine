@@ -12,4 +12,4 @@
 
 🗺 La cartographie France Chaleur Urbaine constitue un outil complémentaire qui permet d'identifier des zones pertinentes pour la création de réseaux de chaleur !
 
-Pour découvrir comment, consultez notre [guide dédié](https://france-chaleur-urbaine.beta.gouv.fr/documentation/FCU\_zones\_acceleration\_ENR.pdf)
+Pour découvrir comment, consultez notre [guide dédié](/documentation/FCU\_zones\_acceleration\_ENR.pdf)

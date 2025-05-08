@@ -6,6 +6,6 @@
 \
 👇 Petit récapitulatif en chiffres-clés ci-dessous.\
 \
-🤓 Retrouvez également nos précédentes infographies [ici](https://france-chaleur-urbaine.beta.gouv.fr/ressources/supports).
+🤓 Retrouvez également nos précédentes infographies [ici](/ressources/supports).
 
 <figure><img src=".gitbook/assets/1 (5).jpg" alt=""><figcaption></figcaption></figure>

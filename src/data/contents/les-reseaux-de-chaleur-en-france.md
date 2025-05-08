@@ -8,6 +8,6 @@ Elle comprend 1105 repères qui correspondent chacun à un réseau de chaleur :\
 \
 France Chaleur Urbaine, c'est LA plateforme qui centralise les informations des réseaux de chaleur et permet leur visualisation !\
 \
-👉 Pour en savoir plus sur chacun de ces réseaux, rendez-vous sur notre [carte en ligne.](https://france-chaleur-urbaine.beta.gouv.fr/carte)
+👉 Pour en savoir plus sur chacun de ces réseaux, rendez-vous sur notre [carte en ligne.](/carte)
 
 <figure><img src=".gitbook/assets/FCU_reperes_RC.jpg" alt=""><figcaption></figcaption></figure>

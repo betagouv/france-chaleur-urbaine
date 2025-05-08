@@ -9,6 +9,6 @@
 De nombreuses idées ont été exprimées, sur lesquelles nous aurons à cœur de travailler dans les mois à venir.\
 
 
-🤔 Vous avez raté l'atelier ? N'hésitez pas à nous faire part de vos suggestions via notre [formulaire de contact](https://france-chaleur-urbaine.beta.gouv.fr/contact).
+🤔 Vous avez raté l'atelier ? N'hésitez pas à nous faire part de vos suggestions via notre [formulaire de contact](/contact).
 
 <figure><img src=".gitbook/assets/Modele post linkedin.png" alt=""><figcaption></figcaption></figure>

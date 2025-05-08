@@ -6,6 +6,6 @@ Se chauffer avec un réseau de chaleur, c'est moins 50% d'émissions de CO2 par 
 \
 📢 Une offre à saisir sans plus attendre !\
 \
-👉 Pour vérifier si vous êtes raccordable, testez votre adresse sur [France Chaleur Urbaine](https://france-chaleur-urbaine.beta.gouv.fr/).
+👉 Pour vérifier si vous êtes raccordable, testez votre adresse sur [France Chaleur Urbaine](/).
 
 ![](.gitbook/assets/blackfriday.png)

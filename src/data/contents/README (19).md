@@ -6,6 +6,6 @@ Dans un souci d'homogénéité, les fiches accessibles depuis notre cartographie
 \
 📝 Votre réseau vient d'être verdi ou va l'être prochainement ? Faites le savoir ! Il vous est également possible d'utiliser cette fiche pour informer sur les futurs développements du réseaux, les critères de raccordement ou toute autre information utile. Vous souhaitez partager un document via cette fiche ? C'est aussi possible ! Nous vous encourageons notamment à partager vos schémas directeurs, qui nous sont souvent demandés par les usagers professionnels de France Chaleur Urbaine (bailleurs sociaux, gestionnaires de parcs tertiaires...).\
 \
-👉 Concrètement, comment ça marche ? Un [formulaire](https://france-chaleur-urbaine.beta.gouv.fr/reseaux/modifier) vous permet de corriger ou compléter les informations de votre fiche. Après une validation manuelle par notre équipe, vos ajouts apparaîtront dans une rubrique dédiée de la fiche.
+👉 Concrètement, comment ça marche ? Un [formulaire](/reseaux/modifier) vous permet de corriger ou compléter les informations de votre fiche. Après une validation manuelle par notre équipe, vos ajouts apparaîtront dans une rubrique dédiée de la fiche.
 
 ![](.gitbook/assets/completerfiche.jpg)

@@ -8,9 +8,9 @@ Comment ? Grâce à l'outil de sensibilisation dédié aux élus mis en ligne fi
 \
 👉 Vous êtes intéressé(e) par cette démarche ? Retrouvez :&#x20;
 
-* notre outil : [https://france-chaleur-urbaine.beta.gouv.fr/collectivites-et-exploitants/potentiel-creation-reseau](https://france-chaleur-urbaine.beta.gouv.fr/collectivites-et-exploitants/potentiel-creation-reseau)
-* la présentation de notre webinaire dédié à l'initiation de réseaux de chaleur organisé début 2025 : [https://france-chaleur-urbaine.beta.gouv.fr/webinaire/2025/presentation-initier-un-reseau](https://france-chaleur-urbaine.beta.gouv.fr/webinaire/2025/presentation-initier-un-reseau)
+* notre outil : [https://france-chaleur-urbaine.beta.gouv.fr/collectivites-et-exploitants/potentiel-creation-reseau](/collectivites-et-exploitants/potentiel-creation-reseau)
+* la présentation de notre webinaire dédié à l'initiation de réseaux de chaleur organisé début 2025 : [https://france-chaleur-urbaine.beta.gouv.fr/webinaire/2025/presentation-initier-un-reseau](/webinaire/2025/presentation-initier-un-reseau)
 * le replay de notre webinaire dédié à l'initiation de réseaux de chaleur organisé début 2025 : \
-  [https://france-chaleur-urbaine.beta.gouv.fr/webinaire/2025/replay-initier-un-reseau](https://france-chaleur-urbaine.beta.gouv.fr/webinaire/2025/replay-initier-un-reseau)
+  [https://france-chaleur-urbaine.beta.gouv.fr/webinaire/2025/replay-initier-un-reseau](/webinaire/2025/replay-initier-un-reseau)
 
 <figure><img src=".gitbook/assets/FCU_tests_potentiel.jpg" alt=""><figcaption></figcaption></figure>

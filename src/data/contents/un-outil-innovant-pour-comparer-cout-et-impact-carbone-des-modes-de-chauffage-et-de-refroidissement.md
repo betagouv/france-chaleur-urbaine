@@ -20,6 +20,6 @@ _Le travail technique sur lequel repose le comparateur a été réalisé par le 
 
 _(1) Baromètre énergie-info 2024, Médiateur de l’énergie. (2) Rapport Secten sur l’année 2023, Citepa._
 
-[https://france-chaleur-urbaine.beta.gouv.fr/comparateur-couts-performances](https://france-chaleur-urbaine.beta.gouv.fr/comparateur-couts-performances)
+[https://france-chaleur-urbaine.beta.gouv.fr/comparateur-couts-performances](/comparateur-couts-performances)
 
 ![](.gitbook/assets/FCU_comparateur.jpg)

@@ -29,7 +29,7 @@ Afin de faciliter et multiplier les raccordements aux réseaux de chaleur, **Fra
 Ces éléments alimentent les différentes pages et outils proposés par la start-up, et notamment :
 
 * la fonctionnalité phare du site, qui permet de **renseigner son adresse (ou une liste d’adresses) pour vérifier si un réseau de chaleur passe à proximité** et d’être mis en relation avec le gestionnaire du réseau pour envisager un raccordement. Disposer d’une bonne couverture des tracés des réseaux a permis d’améliorer significativement la qualité de la réponse apportée à ces tests ;
-* la [**cartographie interactive**](https://france-chaleur-urbaine.beta.gouv.fr/carte) France Chaleur Urbaine, vers laquelle les collectivités sont invitées à renvoyer leurs administrés pour faire connaître leurs réseaux, et grâce à laquelle elles peuvent aussi étudier les potentiels de développement de leurs réseaux ;
+* la [**cartographie interactive**](/carte) France Chaleur Urbaine, vers laquelle les collectivités sont invitées à renvoyer leurs administrés pour faire connaître leurs réseaux, et grâce à laquelle elles peuvent aussi étudier les potentiels de développement de leurs réseaux ;
 * des **fiches par réseau** qui rassemblent pour chaque réseau l’ensemble des informations techniques et financières.
 
 Aujourd’hui, près de **640 tracés sont recensés** par France Chaleur Urbaine et visibles sur sa cartographie, un nombre en constante augmentation.
@@ -83,6 +83,6 @@ De notre retour d’expérience, nous retiendrons que l’ouverture des données
 * **beaucoup de persévérance,** pour convaincre de la nécessité de mise en open data des données, et de son intérêt ;
 * **un cadre juridique défini par un document officiel,** qui aura été indispensable pour rassurer les acteurs, publics comme privés, de l’absence de tout risque associé à la mise en open data des données.
 
-_Le fichier de tracés est téléchargeable depuis notre_ [_cartographie_](https://france-chaleur-urbaine.beta.gouv.fr/carte) _(Mode professionnel) ou_ [_ici_](https://france-chaleur-urbaine.beta.gouv.fr/professionnels#cartographie)_. Il est également en ligne sur_ [_data.gouv.fr_](https://www.data.gouv.fr/fr/datasets/traces-des-reseaux-de-chaleur-et-de-froid/)_._
+_Le fichier de tracés est téléchargeable depuis notre_ [_cartographie_](/carte) _(Mode professionnel) ou_ [_ici_](/professionnels#cartographie)_. Il est également en ligne sur_ [_data.gouv.fr_](https://www.data.gouv.fr/fr/datasets/traces-des-reseaux-de-chaleur-et-de-froid/)_._
 
 ![](.gitbook/assets/opendata.jpg)

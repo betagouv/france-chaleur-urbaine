@@ -6,6 +6,6 @@
 \
 La communication sur les réseaux de chaleur par les collectivités est fondamentale ! Le réseau de chaleur étant une solution collective, sa réussite dépend en effet en partie de la connaissance et de l'adhésion des habitants. Cette communication permet aussi de montrer que les villes prennent activement part à la transition énergétique.\
 \
-👉 France Chaleur Urbaine encourage et accompagne toutes les initiatives de communication, n'hésitez pas [nous contacter](https://france-chaleur-urbaine.beta.gouv.fr/contact) !
+👉 France Chaleur Urbaine encourage et accompagne toutes les initiatives de communication, n'hésitez pas [nous contacter](/contact) !
 
 <figure><img src=".gitbook/assets/1729591207297.jpg" alt=""><figcaption></figcaption></figure>
