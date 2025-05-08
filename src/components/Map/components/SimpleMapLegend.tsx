@@ -82,11 +82,12 @@ const consommationsGazUsageLegendOpacity = 0.53;
 interface SimpleMapLegendProps {
   enabledFeatures?: MapLegendFeature[];
   legendTitle?: string;
+  withComptePro?: boolean;
 }
 
 const defaultURL: TabObject = { tabId: 'reseaux', subTabId: null };
 
-function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps) {
+function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }: SimpleMapLegendProps) {
   const [selectedTabId, setSelectedTabId] = useQueryState<TabObject>(
     'tabId',
     parseURLTabs(tabs).withDefault(defaultURL).withOptions({
@@ -110,6 +111,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
         filtersVisible={selectedTabId.subTabId === 'filtres'}
         setFiltersVisible={setReseauxFiltersVisible}
         isIframeContext
+        withComptePro={false}
       />
     );
   }
@@ -129,6 +131,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
           legendTitle={legendTitle}
           filtersVisible={selectedTabId.subTabId === 'filtres'}
           setFiltersVisible={setReseauxFiltersVisible}
+          withComptePro={withComptePro}
         />
       )}
       {selectedTabId.tabId === 'potentiel' && (

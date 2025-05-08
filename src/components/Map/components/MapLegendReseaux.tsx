@@ -34,6 +34,7 @@ interface SimpleMapLegendProps {
   filtersVisible: boolean;
   setFiltersVisible: (visible: boolean) => void;
   isIframeContext?: boolean;
+  withComptePro?: boolean;
 }
 
 const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
@@ -41,6 +42,7 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
   setFiltersVisible,
   legendTitle,
   isIframeContext,
+  withComptePro,
   ...props
 }) => {
   const { mapConfiguration, toggleLayer, nbFilters } = useFCUMap();
@@ -332,7 +334,7 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
           </Box>
         </>
       )}
-      {!isIframeContext && (
+      {withComptePro && (
         <>
           <Box mt="4w" display="flex" flexDirection="column" alignItems="stretch" justifyContent="center" gap="8px">
             <Link
