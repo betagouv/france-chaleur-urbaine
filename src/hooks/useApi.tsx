@@ -26,7 +26,7 @@ export const useFetch = <TQueryFnData, TError = Error, TData = TQueryFnData, TQu
   return useQuery<TQueryFnData, TError, TData, TQueryKey>(
     {
       queryKey: queryKey || ([url] as unknown as TQueryKey),
-      queryFn: queryFn ?? (() => fetchJSON<TQueryFnData>(url, { params: fetchVariables })),
+      queryFn: queryFn ?? (() => fetchJSON<TQueryFnData>(url, fetchVariables ? { params: fetchVariables } : undefined)),
       ...options,
     },
     queryClient

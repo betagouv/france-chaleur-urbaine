@@ -2789,6 +2789,16 @@ export interface EligibilityTests {
   version: number;
 }
 
+export interface EmailTemplates {
+  body: string;
+  created_at: Generated<Timestamp>;
+  id: string;
+  name: string;
+  subject: string;
+  updated_at: Generated<Timestamp>;
+  user_id: string | null;
+}
+
 export interface EnrrMobilisablesFrichesTiles {
   tile: Buffer;
   x: Int8;
@@ -3335,6 +3345,7 @@ export interface DB {
   donnees_de_consos_tiles: DonneesDeConsosTiles;
   eligibility_demands: EligibilityDemands;
   eligibility_tests: EligibilityTests;
+  email_templates: EmailTemplates;
   enrr_mobilisables_friches_tiles: EnrrMobilisablesFrichesTiles;
   enrr_mobilisables_parkings_tiles: EnrrMobilisablesParkingsTiles;
   enrr_mobilisables_tiles: EnrrMobilisablesTiles;

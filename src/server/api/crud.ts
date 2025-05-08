@@ -2,6 +2,7 @@ import { type NextApiRequest } from 'next';
 import { type z } from 'zod';
 
 import { type DB } from '@/server/db/kysely';
+import { invalidRouteError } from '@/server/helpers/server';
 
 import buildContext, { type Context } from './context-builder';
 
@@ -111,31 +112,21 @@ const crud = <T extends keyof DB, Validation extends CrudValidation>({
       orderBy: orderBy as Record<string, 'asc' | 'desc'> | undefined,
     };
 
-    try {
-      if (!id && handlers.list) {
-        const data = await handlers.list(listConfig, context);
-        const { items, count } = data;
-        return {
-          status: 'success',
-          items,
-          pageInfo: {
-            count,
-            page: listConfig.page,
-            pageSize: listConfig.pageSize,
-          },
-        } as ApiResponseQueryList<DB[T]>;
-      }
-
+    if (!id && handlers.list) {
+      const data = await handlers.list(listConfig, context);
+      const { items, count } = data;
       return {
-        status: 'error',
-        error: 'Method not allowed',
-      };
-    } catch (error) {
-      return {
-        status: 'error',
-        error: error instanceof Error ? error.message : 'Unknown error',
-      };
+        status: 'success',
+        items,
+        pageInfo: {
+          count,
+          page: listConfig.page,
+          pageSize: listConfig.pageSize,
+        },
+      } as ApiResponseQueryList<DB[T]>;
     }
+
+    throw invalidRouteError;
   };
 
   const GET_ONE = async (req: NextApiRequest): Promise<ApiResponseQueryGet<DB[T]>> => {
@@ -150,25 +141,15 @@ const crud = <T extends keyof DB, Validation extends CrudValidation>({
       filters: filters ? (typeof filters === 'string' ? JSON.parse(filters) : filters) : undefined,
     };
 
-    try {
-      if (id && handlers.get) {
-        const item = await handlers.get(id, getConfig, context);
-        return {
-          status: 'success',
-          item,
-        } as ApiResponseQueryGet<DB[T]>;
-      }
-
+    if (id && handlers.get) {
+      const item = await handlers.get(id, getConfig, context);
       return {
-        status: 'error',
-        error: 'Method not allowed',
-      };
-    } catch (error) {
-      return {
-        status: 'error',
-        error: error instanceof Error ? error.message : 'Unknown error',
-      };
+        status: 'success',
+        item,
+      } as ApiResponseQueryGet<DB[T]>;
     }
+
+    throw invalidRouteError;
   };
 
   const GET = async (req: NextApiRequest): Promise<ApiResponseQueryGet<DB[T]> | ApiResponseQueryList<DB[T]>> => {
@@ -183,84 +164,54 @@ const crud = <T extends keyof DB, Validation extends CrudValidation>({
   };
 
   const POST = async (req: NextApiRequest): Promise<ApiResponseMutation<DB[T]>> => {
-    try {
-      validateSchemaIfExists(validation?.create, req.body);
-      const slug = Array.isArray(req.query.slug) ? req.query.slug : [req.query.slug || ''];
-      const id = slug.length > 0 ? slug[0] : null;
-      const context = buildContext(req);
+    validateSchemaIfExists(validation?.create, req.body);
+    const slug = Array.isArray(req.query.slug) ? req.query.slug : [req.query.slug || ''];
+    const id = slug.length > 0 ? slug[0] : null;
+    const context = buildContext(req);
 
-      if (!id && handlers.create) {
-        const item = await handlers.create(req.body, context);
-        return {
-          status: 'success',
-          item,
-        };
-      }
-
+    if (!id && handlers.create) {
+      const item = await handlers.create(req.body, context);
       return {
-        status: 'error',
-        error: 'Method not allowed',
-      };
-    } catch (error) {
-      return {
-        status: 'error',
-        error: error instanceof Error ? error.message : 'Unknown error',
+        status: 'success',
+        item,
       };
     }
+
+    throw invalidRouteError;
   };
 
   const PUT = async (req: NextApiRequest): Promise<ApiResponseMutation<DB[T]>> => {
-    try {
-      validateSchemaIfExists(validation?.update, req.body);
-      const slug = Array.isArray(req.query.slug) ? req.query.slug : [req.query.slug || ''];
-      const id = slug.length > 0 ? slug[0] : null;
-      const context = buildContext(req);
+    validateSchemaIfExists(validation?.update, req.body);
+    const slug = Array.isArray(req.query.slug) ? req.query.slug : [req.query.slug || ''];
+    const id = slug.length > 0 ? slug[0] : null;
+    const context = buildContext(req);
 
-      if (id && handlers.update) {
-        const item = await handlers.update(id, req.body, {}, context);
-        return {
-          status: 'success',
-          item,
-        };
-      }
-
+    if (id && handlers.update) {
+      const item = await handlers.update(id, req.body, {}, context);
       return {
-        status: 'error',
-        error: 'Method not allowed',
-      };
-    } catch (error) {
-      return {
-        status: 'error',
-        error: error instanceof Error ? error.message : 'Unknown error',
+        status: 'success',
+        item,
       };
     }
+
+    throw invalidRouteError;
   };
 
   const DELETE = async (req: NextApiRequest): Promise<ApiResponseMutation<DB[T]>> => {
-    try {
-      validateSchemaIfExists(validation?.delete, req.body);
-      const slug = Array.isArray(req.query.slug) ? req.query.slug : [req.query.slug || ''];
-      const id = slug.length > 0 ? slug[0] : null;
-      const context = buildContext(req);
+    validateSchemaIfExists(validation?.delete, req.body);
+    const slug = Array.isArray(req.query.slug) ? req.query.slug : [req.query.slug || ''];
+    const id = slug.length > 0 ? slug[0] : null;
+    const context = buildContext(req);
 
-      if (id && handlers.remove) {
-        const result = await handlers.remove(id, {}, context);
-        return {
-          status: 'success',
-          item: result,
-        };
-      }
-
+    if (id && handlers.remove) {
+      const result = await handlers.remove(id, {}, context);
       return {
-        status: 'error',
-        error: 'Method not allowed',
-      };
-    } catch (error) {
-      return {
-        status: 'error',
-        error: error instanceof Error ? error.message : 'Unknown error',
+        status: 'success',
+        item: result,
       };
     }
+
+    throw invalidRouteError;
   };
 
   return {

@@ -4,8 +4,12 @@ import { useDeleteId, useFetch, usePost, usePutId } from '@/hooks/useApi';
 import { type CrudResponse } from '@/server/api/crud';
 import { type DB } from '@/server/db/kysely';
 import { fetchJSON } from '@/utils/network';
+import { type OmitFirst } from '@/utils/typescript';
 
-const useCrud = <T extends CrudResponse<keyof DB, any>>(url: string) => {
+const useCrud = <T extends CrudResponse<keyof DB, any>>(
+  url: string,
+  { list }: { list?: OmitFirst<Parameters<typeof useFetch<T['list']>>> } = {}
+) => {
   const { mutateAsync: create, isLoading: isCreating } = usePost<NonNullable<T['createInput']>, T['create']>(url, {
     invalidate: [url],
   });
@@ -21,7 +25,7 @@ const useCrud = <T extends CrudResponse<keyof DB, any>>(url: string) => {
     invalidate: [url],
   });
 
-  const { data, isLoading } = useFetch<T['list']>(url);
+  const { data, isLoading } = useFetch<T['list']>(url, ...(list || []));
 
   const get = useCallback((id: string, params = {}) => fetchJSON<T['get']>(`${url}/${id}`, { params }), [url]);
 

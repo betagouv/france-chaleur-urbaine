@@ -1,19 +1,9 @@
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 
 import Icon from '@/components/ui/Icon';
 import { type Demand } from '@/types/Summary/Demand';
 
-import ModalEmails from './ModalEmails';
-
-const Contact = ({
-  demand,
-  updateDemand,
-}: {
-  demand: Demand;
-  updateDemand: (demandId: string, demand: Partial<Demand>) => Promise<void>;
-}) => {
-  const [showEmailsModal, setShowEmailsModal] = useState(false);
-
+const Contact = ({ demand, onEmailClick }: { demand: Demand; onEmailClick: (demandId: string) => void }) => {
   const getNomStructure = useCallback(() => {
     if (
       demand['Structure accompagnante'] &&
@@ -52,8 +42,9 @@ const Contact = ({
         {demand.Mail && (
           <div
             className="text-gray-500 text-[13px] text-nowrap hover:bg-gray-100 cursor-pointer inline-block"
-            onClick={() => {
-              setShowEmailsModal(true);
+            onClick={(e) => {
+              e.stopPropagation();
+              onEmailClick(demand.id);
             }}
           >
             <Icon size="sm" name="ri-mail-line" className="fr-mr-1w" />
@@ -67,14 +58,6 @@ const Contact = ({
           </div>
         )}
       </>
-      {demand.Mail && (
-        <ModalEmails
-          isOpen={showEmailsModal}
-          currentDemand={demand}
-          updateDemand={updateDemand}
-          onClose={() => setShowEmailsModal(false)}
-        />
-      )}
       {nomStructureAccompagnante && <div>Pour le compte de : {nomStructureAccompagnante}</div>}
     </div>
   );

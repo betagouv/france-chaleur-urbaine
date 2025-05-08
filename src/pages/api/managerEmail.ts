@@ -8,6 +8,8 @@ import { handleRouteErrors, validateObjectSchema } from '@/server/helpers/server
 import { Airtable } from '@/types/enum/Airtable';
 import { zAirtableRecordId } from '@/utils/validation';
 
+export type ManagerEmailResponse = Awaited<ReturnType<typeof GET>>;
+
 const GET = async (req: NextApiRequest) => {
   const { demand_id } = await validateObjectSchema(req.query, {
     demand_id: zAirtableRecordId,
@@ -18,11 +20,26 @@ const GET = async (req: NextApiRequest) => {
       filterByFormula: `{demand_id} = "${demand_id}"`,
     })
     .all();
+
   const emailsList = rawEmailsList.map((record) => ({
     email_key: record.get('email_key'),
-    date: record.get('sent_at') ? new Date(record.get('sent_at') as string).toLocaleDateString('fr-FR') : '',
+    object: record.get('object'),
+    body: record.get('body'),
+    date: record.get('sent_at'),
+    to: record.get('to'),
+    cc: record.get('cc'),
+    reply_to: record.get('reply_to'),
   }));
-  return emailsList;
+
+  return emailsList as {
+    email_key: string;
+    object: string;
+    body: string;
+    date: string;
+    to: string;
+    cc?: string;
+    reply_to: string;
+  }[];
 };
 
 const zManagerEmail = {

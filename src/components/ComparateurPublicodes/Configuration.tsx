@@ -3,19 +3,22 @@ import { fr } from '@codegouvfr/react-dsfr';
 import { motion } from 'framer-motion';
 import React from 'react';
 
-import ConfigurationDropdown from '@/components/ComparateurPublicodes/ConfigurationDropdown';
 import { addresseToPublicodesRulesKeys } from '@/components/ComparateurPublicodes/mappings';
 import { type SimulatorEngine } from '@/components/ComparateurPublicodes/useSimulatorEngine';
 import labels from '@/components/form/publicodes/labels';
 import Button from '@/components/ui/Button';
+import CrudDropdown from '@/components/ui/CrudDropdown';
+import { type ProComparateurConfigurationResponse } from '@/pages/api/pro/comparateur/configurations/[[...slug]]';
+import { trackEvent } from '@/services/analytics';
+import { notify } from '@/services/notification';
 import { pick } from '@/utils/core';
 import cx from '@/utils/cx';
+import { sortKeys } from '@/utils/objects';
 import { upperCaseFirstChar } from '@/utils/strings';
 import { hasProperty } from '@/utils/typescript';
 
 interface ConfigurationProps {
   engine: SimulatorEngine;
-  address?: string;
 }
 
 const chainedConfigurations = {
@@ -23,7 +26,7 @@ const chainedConfigurations = {
   'type de production ECS': ['Production eau chaude sanitaire'],
 };
 
-const Configuration: React.FC<ConfigurationProps> = ({ engine, address }) => {
+const Configuration: React.FC<ConfigurationProps> = ({ engine }) => {
   const situation = engine.getSituation();
 
   const formatValue = (key: DottedName, value: any): React.ReactNode => {
@@ -80,9 +83,19 @@ const Configuration: React.FC<ConfigurationProps> = ({ engine, address }) => {
     <div className={cx(fr.cx('fr-container'), 'sticky top-0 bg-white z-10 py-2 shadow-sm')}>
       <div className="flex items-center justify-between">
         <h4 className="!mb-0">Configuration</h4>
-        <ConfigurationDropdown
-          configuration={{ address, ...toBeDisplayedSituation }}
-          onLoadConfiguration={({ address, ...newSituation }) => {
+        <CrudDropdown<ProComparateurConfigurationResponse>
+          url="/api/pro/comparateur/configurations"
+          data={Object.keys(toBeDisplayedSituation).length > 0 ? { situation: toBeDisplayedSituation } : ({} as any)}
+          valueKey="id"
+          nameKey="name"
+          loadLabel="Charger une configuration"
+          saveLabel="Sauvegarder la configuration"
+          addLabel="Ajouter une configuration"
+          addPlaceholderLabel="Nom de la configuration"
+          isSameObject={(obj1, obj2) =>
+            !!(obj1.situation && obj2.situation && JSON.stringify(sortKeys(obj1.situation)) === JSON.stringify(sortKeys(obj2.situation)))
+          }
+          onSelect={({ situation: newSituation, id }) => {
             const situationToLoad = { ...pick(situation, addresseToPublicodesRulesKeys), ...newSituation };
             Object.entries(chainedConfigurations).forEach(([configKey, chainedKeys]) => {
               if (configKey in situationToLoad) {
@@ -92,11 +105,33 @@ const Configuration: React.FC<ConfigurationProps> = ({ engine, address }) => {
               }
             });
 
+            trackEvent('Comparateur Coûts CO2|Création d’une configuration', {
+              configId: id,
+            });
             engine.setSituation(situationToLoad);
           }}
-          loadWhenOnlyOneConfig={
-            !!address && Object.keys(customSituation).some((key) => addresseToPublicodesRulesKeys.includes(key as DottedName))
-          }
+          onAdd={({ id }) => {
+            trackEvent('Comparateur Coûts CO2|Création d’une configuration', {
+              configId: id,
+            });
+          }}
+          onShare={({ id }, { setSharingId }) => {
+            const urlToShare = `${window.location.origin}${window.location.pathname}?configId=${id}`;
+            navigator.clipboard.writeText(urlToShare);
+
+            const title = 'Ma configuration du comparateur de coûts et CO₂ de France Chaleur Urbaine';
+            const text =
+              'Voici un lien vers une configuration personnalisée pour comparer les coûts et les émissions de CO₂ de différents modes de chauffage et de refroidissement. Un compte sur France Chaleur Urbaine est nécessaire pour y accéder.\n\n';
+
+            setTimeout(() => {
+              trackEvent('Comparateur Coûts CO2|Partage d’une configuration', { configId: id });
+              setSharingId(null);
+              notify('success', 'Lien copié dans le presse-papiers. Vos contacts devront disposer d’un compte pour l’ouvrir.', {
+                duration: 10000,
+              });
+              window.open(`mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(text)} ${urlToShare}`, '_blank');
+            }, 500);
+          }}
         />
       </div>
       {hasToBeDisplayedSituation && (

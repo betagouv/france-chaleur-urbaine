@@ -331,7 +331,7 @@ function ProEligibilityTestItem({ test, readOnly = false }: ProEligibilityTestIt
     data: testDetails,
     isLoading,
     refetch,
-  } = useFetch<ProEligibilityTestWithAddresses>(`/api/pro-eligibility-tests/${test.id}`, {
+  } = useFetch<ProEligibilityTestWithAddresses>(`/api/pro-eligibility-tests/${test.id}`, undefined, {
     enabled: viewDetail,
   });
 
