@@ -27,4 +27,9 @@ alwaysApply: false
 - Use [cx.ts](mdc:src/utils/cx.ts) instead of cn
 - Use "useQueryState" from nuqs for URL search parameter state management.
 - Always prefer fs/promises to fs
+- Ne remplace JAMAIS les apostrophes comme dans l'exemple ci-dessous
+```
+-      title: 'Part des énergies renouvelables dans la consommation finale brute d’énergie en France',
++      title: "Part des énergies renouvelables dans la consommation finale brute d'énergie en France",
+```
 
