@@ -9,6 +9,7 @@ const zDemandUpdate = {
   Status: z.nativeEnum(DEMANDE_STATUS).optional(),
   'Prise de contact': z.boolean().optional(),
   'Gestionnaire Distance au réseau': z.number().optional(),
+  'Surface en m2': z.number().optional(),
   'Gestionnaire Logement': z.number().optional(),
   'Gestionnaire Conso': z.number().optional(),
   Commentaire: z.string().optional(),

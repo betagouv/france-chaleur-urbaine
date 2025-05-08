@@ -6,6 +6,9 @@ import debounce from '@/utils/debounce';
 
 import { Container } from './AdditionalInformation.styles';
 
+const getFieldName = (field: 'Conso' | 'Logement' | 'Surface en m2' | 'Distance au réseau' | 'Affecté à') =>
+  field === 'Surface en m2' ? field : `Gestionnaire ${field}`;
+
 const AdditionalInformation = ({
   demand,
   field,
@@ -20,6 +23,7 @@ const AdditionalInformation = ({
   width?: number;
 }) => {
   const [value, setValue] = useState('');
+
   useEffect(() => {
     if (demand && value === '') {
       if (field !== 'Surface en m2' && demand[`Gestionnaire ${field}`] !== undefined) {
@@ -35,7 +39,7 @@ const AdditionalInformation = ({
       debounce(
         (e) =>
           updateDemand(demand.id, {
-            [`Gestionnaire ${field}`]: type === 'number' ? parseFloat(e.target.value) : e.target.value,
+            [getFieldName(field)]: type === 'number' ? parseFloat(e.target.value) : e.target.value,
           }),
         500
       ),
@@ -54,7 +58,7 @@ const AdditionalInformation = ({
           value: value,
           onChange: (e) => {
             // @ts-expect-error: force type
-            demand[`Gestionnaire ${field}`] = type === 'number' ? parseFloat(e.target.value) : e.target.value;
+            demand[getFieldName(field)] = type === 'number' ? parseFloat(e.target.value) : e.target.value;
             setValue(e.target.value);
             onChangeHandler(e);
           },
