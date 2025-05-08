@@ -156,12 +156,12 @@ function getArticleAbstract(content: string): string {
 export const articles = (
   [
     {
-      image: '/contents/cover_carte_avril_2025.jpg',
-      title: 'La carte France Chaleur Urbaine passe un cap !',
-      slug: 'la-carte-france-chaleur-urbaine-passe-un-cap',
-      content: importFile(laCarteFCUPasseUnCap),
-      publishedDate: new Date('2025-04-16'),
-      themes: ['Cartographie et données', 'Réseaux de chaleur', 'Réseaux de froid'],
+      image: '/contents/cover_campagne_smirec.jpg',
+      title: 'Une campagne de communication en Seine-Saint-Denis',
+      slug: 'une-campagne-de-communication-en-seine-saint-denis',
+      content: importFile(campagneCommunicationSeineSaintDenis),
+      publishedDate: new Date('2025-05-06'),
+      themes: ['Communication', 'Réseaux de chaleur'],
     },
     {
       image: '/contents/cover_webinaire_comparateur.jpg',
@@ -172,13 +172,14 @@ export const articles = (
       themes: ['Prix', 'Réseaux de chaleur', 'Réseaux de froid'],
     },
     {
-      image: '/contents/cover_campagne_smirec.jpg',
-      title: 'Une campagne de communication en Seine-Saint-Denis',
-      slug: 'une-campagne-de-communication-en-seine-saint-denis',
-      content: importFile(campagneCommunicationSeineSaintDenis),
-      publishedDate: new Date('2025-05-06'),
-      themes: ['Communication', 'Réseaux de chaleur'],
+      image: '/contents/cover_carte_avril_2025.jpg',
+      title: 'La carte France Chaleur Urbaine passe un cap !',
+      slug: 'la-carte-france-chaleur-urbaine-passe-un-cap',
+      content: importFile(laCarteFCUPasseUnCap),
+      publishedDate: new Date('2025-04-16'),
+      themes: ['Cartographie et données', 'Réseaux de chaleur', 'Réseaux de froid'],
     },
+
     {
       image: '/contents/FCU_cover_tests_potentiel.jpg',
       title: 'Initier un projet de réseau avec France Chaleur Urbaine',

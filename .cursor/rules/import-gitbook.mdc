@@ -5,6 +5,8 @@ alwaysApply: false
 ---
 # Importer les nouveaux articles ajoutés dans Git mais pas encore committés et remplir correctement les informations suivantes :
 
+En plus il faudra les trier du plus récent au plus vieux
+
 - **image** : Utiliser l'image du frontmatter du fichier `.md`.
 - **title** : Extraire le titre (`h1`) du contenu `.md`.
 - **slug** : Utiliser le nom du fichier `.md`.
