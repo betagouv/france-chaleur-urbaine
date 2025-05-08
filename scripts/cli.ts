@@ -498,10 +498,15 @@ program
       git checkout dev
       git pull --rebase
       git merge origin/feat/content
-      echo "
+
       Etapes à réaliser :
       1. Vérifier et résoudre les conflits
-      2. Ouvrir le fichier src/data/contents/index.ts, puis pour chaque article du ticket Trello :
+        - Pour plus de facilité si vous utilisez un GUI git -> "git add . && git reset HEAD"
+
+      2. Ouvrir le fichier src/data/contents/index.ts, puis entrer le prompt suivant :
+        - Applique @import-gitbook.mdc <contenu du ticket Trello>
+
+      Cela devrait :
         - Ajouter une section pour l'article
         - Référencer le contenu de l'article en l'important
         - Compléter :
@@ -510,7 +515,8 @@ program
           - slug (nom du fichier)
           - la date de publication (visible dans le ticket Trello)
           - les thèmes (visibles dans le ticket Trello)
-      3. Supprimer le frontmatter des nouveaux articles avec ./scripts/clean-gitbook-actus.sh
+
+      3. Enfin, supprime le frontmatter des nouveaux articles et les urls absolues avec ./scripts/clean-gitbook-actus.sh
     `);
   });
 

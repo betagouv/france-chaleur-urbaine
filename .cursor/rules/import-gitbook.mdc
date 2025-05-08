@@ -1,0 +1,11 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Importer les nouveaux articles ajoutés dans Git mais pas encore committés et remplir correctement les informations suivantes :
+
+- **image** : Utiliser l'image du frontmatter du fichier `.md`.
+- **title** : Extraire le titre (`h1`) du contenu `.md`.
+- **slug** : Utiliser le nom du fichier `.md`.
+- **publishedDate** et **themes** : Extraire les informations de publication et les tags dans ce format particulier :
