@@ -30,6 +30,7 @@ import TableSimple, { type ColumnDef, type QuickFilterPreset } from '@/component
 import Tooltip from '@/components/ui/Tooltip';
 import { useFetch } from '@/hooks/useApi';
 import { withAuthentication } from '@/server/authentication';
+import { toastErrors } from '@/services/notification';
 import { DEMANDE_STATUS, type DemandStatus } from '@/types/enum/DemandSatus';
 import { type Point } from '@/types/Point';
 import { type Demand } from '@/types/Summary/Demand';
@@ -168,18 +169,21 @@ function DemandesNew(): React.ReactElement {
     );
   }, [filteredDemands, selectedDemandId]);
 
-  const updateDemand = useCallback(async (demandId: string, demandUpdate: Partial<Demand>) => {
-    await putFetchJSON(`/api/demands/${demandId}`, demandUpdate);
+  const updateDemand = useCallback(
+    toastErrors(async (demandId: string, demandUpdate: Partial<Demand>) => {
+      await putFetchJSON(`/api/demands/${demandId}`, demandUpdate);
 
-    queryClient.setQueryData<Demand[]>(['/api/demands'], (demands) =>
-      (demands ?? []).map((demand) => {
-        if (demand.id === demandId) {
-          return { ...demand, ...demandUpdate };
-        }
-        return demand;
-      })
-    );
-  }, []);
+      queryClient.setQueryData<Demand[]>(['/api/demands'], (demands) =>
+        (demands ?? []).map((demand) => {
+          if (demand.id === demandId) {
+            return { ...demand, ...demandUpdate };
+          }
+          return demand;
+        })
+      );
+    }),
+    []
+  );
 
   const tableColumns: ColumnDef<Demand>[] = useMemo(
     () => [
