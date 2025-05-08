@@ -29,6 +29,7 @@ import informerLesCoproprietes from './informer-les-coproprietes-sur-les-reseaux
 import informerGestionnairesTertiaires from './informer-les-gestionnaires-de-batiments-tertiaires-sur-les-reseaux-de-chaleur.md';
 import initierUnProjetDeReseauAvecFranceChaleurUrbaine from './initier-un-projet-de-reseau-avec-france-chaleur-urbaine.md';
 import carteEnrichit from './la-carte-france-chaleur-urbaine-continue-de-senrichir.md';
+import laCarteFCUPasseUnCap from './la-carte-france-chaleur-urbaine-passe-un-cap.md';
 import laCarteFCUSEnrichit from './la-carte-france-chaleur-urbaine-senrichit-1.md';
 import carteFranceEnrichit from './la-carte-france-chaleur-urbaine-senrichit.md';
 import listeDesReseauxDeChaleur from './la-liste-des-reseaux-de-chaleur.md';
@@ -117,11 +118,13 @@ import retrouvezDonneesRecentes from './retrouvez-les-donnees-les-plus-recentes-
 import retrouvezQPV from './retrouvez-les-quartiers-prioritaires-pour-la-politique-de-la-ville-qpv-sur-notre-carte.md';
 import seChaufferAPrixStables from './se-chauffer-a-prix-stables.md';
 import toutSavoirSurLeClassementDesReseauxDeChaleur from './tout-savoir-sur-le-classement-des-reseaux-de-chaleur.md';
+import toutSavoirSurLeComparateur from './tout-savoir-sur-notre-comparateur-des-couts-et-emissions-de-co2-des-modes-de-chauffage.md';
 import accesSimplifieSchemasDirecteursReseauxChaleur from './un-acces-simplifie-aux-schemas-directeurs-des-reseaux-de-chaleur.md';
 import chauffageEcologiqueEconomiquePossible from './un-chauffage-ecologique-et-economique-cest-possible.md';
 import unGuidePourLesExploitants from './un-guide-pour-les-exploitants.md';
 import comparateurCoutsPerformances from './un-outil-innovant-pour-comparer-cout-et-impact-carbone-des-modes-de-chauffage-et-de-refroidissement.md';
 import unPlanNationalDactionPourLaGeothermie from './un-plan-national-daction-pour-la-geothermie.md';
+import campagneCommunicationSeineSaintDenis from './une-campagne-de-communication-en-seine-saint-denis.md';
 import uneCampagneDeCommunicationAmiens from './une-campagne-de-communication-sur-la-ville-damiens.md';
 import uneEmissionPedagogiqueReseauChaleur from './une-emission-pedagogique-sur-les-reseaux-de-chaleur.md';
 import uneEnqueteIfopPourFranceChaleurUrbaine from './une-enquete-ifop-pour-france-chaleur-urbaine.md';
@@ -152,6 +155,30 @@ function getArticleAbstract(content: string): string {
 
 export const articles = (
   [
+    {
+      image: '/contents/cover_carte_avril_2025.jpg',
+      title: 'La carte France Chaleur Urbaine passe un cap !',
+      slug: 'la-carte-france-chaleur-urbaine-passe-un-cap',
+      content: importFile(laCarteFCUPasseUnCap),
+      publishedDate: new Date('2025-04-16'),
+      themes: ['Cartographie et données', 'Réseaux de chaleur', 'Réseaux de froid'],
+    },
+    {
+      image: '/contents/cover_webinaire_comparateur.jpg',
+      title: 'Tout savoir sur notre comparateur des coûts et émissions de CO2 des modes de chauffage',
+      slug: 'tout-savoir-sur-notre-comparateur-des-couts-et-emissions-de-co2-des-modes-de-chauffage',
+      content: importFile(toutSavoirSurLeComparateur),
+      publishedDate: new Date('2025-04-28'),
+      themes: ['Prix', 'Réseaux de chaleur', 'Réseaux de froid'],
+    },
+    {
+      image: '/contents/cover_campagne_smirec.jpg',
+      title: 'Une campagne de communication en Seine-Saint-Denis',
+      slug: 'une-campagne-de-communication-en-seine-saint-denis',
+      content: importFile(campagneCommunicationSeineSaintDenis),
+      publishedDate: new Date('2025-05-06'),
+      themes: ['Communication', 'Réseaux de chaleur'],
+    },
     {
       image: '/contents/FCU_cover_tests_potentiel.jpg',
       title: 'Initier un projet de réseau avec France Chaleur Urbaine',
