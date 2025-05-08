@@ -173,7 +173,7 @@ function DemandEmailForm(props: Props) {
       'Distance au réseau',
       'Structure',
       'Logement',
-      'Surface',
+      'Surface en m2',
       'Mode de chauffage',
       'Type de chauffage',
       'Conso',
