@@ -163,21 +163,22 @@ function DemandEmailForm(props: Props) {
     }
   };
 
-  const authorizedReplaceableKeys = Object.keys(props.currentDemand)
-    .filter(
-      (key) =>
-        ![
-          'id',
-          'Relance ID',
-          'haut_potentiel',
-          'Relance à activer',
-          'Gestionnaires',
-          'Emails envoyés',
-          'Éligibilité',
-          'Gestionnaires validés',
-        ].includes(key)
-    )
-    .sort((a, b) => a.localeCompare(b));
+  const authorizedReplaceableKeys = Object.keys(props.currentDemand).filter((key) =>
+    [
+      'Prénom',
+      'Nom',
+      'Adresse',
+      'Mail',
+      'Date de la demande',
+      'Distance au réseau',
+      'Structure',
+      'Logement',
+      'Surface',
+      'Mode de chauffage',
+      'Type de chauffage',
+      'Conso',
+    ].includes(key)
+  );
 
   return (
     <div>
@@ -277,9 +278,7 @@ function DemandEmailForm(props: Props) {
                             Si vous sauvegardez votre modèle de message pour traiter de futures demandes, ces variables reprendront
                             automatiquement les informations des demandes concernées.
                           </p>
-                          <hr />
-                          <p className="text-sm mb-1">Les variables disponibles sont :</p>
-                          <p className="text-xs italic font-bold">
+                          <p className="font-bold text-sm">
                             Cliquez sur une variable pour l'insérer dans le corps de votre message et le copier dans votre presse-papiers.
                           </p>
                           <ul>
