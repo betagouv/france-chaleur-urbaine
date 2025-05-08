@@ -119,6 +119,7 @@ type MapProps = {
   bounds?: BoundingBox;
   geolocDisabled?: boolean;
   withFCUAttribution?: boolean;
+  withComptePro?: boolean;
   persistViewStateInURL?: boolean;
   mapRef?: RefObject<MapRef>;
   adressesEligibles?: AdresseEligible[];
@@ -153,6 +154,7 @@ export const FullyFeaturedMap = ({
   bounds: defaultBounds,
   geolocDisabled,
   withFCUAttribution,
+  withComptePro,
   persistViewStateInURL,
   mapRef: mapRefParam,
   className,
@@ -726,7 +728,7 @@ export const FullyFeaturedMap = ({
             </CollapseLegend>
             <LegendSideBar $legendCollapsed={legendCollapsed}>
               <LegendContainer>
-                <SimpleMapLegend legendTitle={legendTitle} enabledFeatures={enabledLegendFeatures} />
+                <SimpleMapLegend legendTitle={legendTitle} enabledFeatures={enabledLegendFeatures} withComptePro={withComptePro} />
               </LegendContainer>
               {!withoutLogo && (
                 <LegendLogoList>

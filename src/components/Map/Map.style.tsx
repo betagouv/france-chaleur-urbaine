@@ -155,11 +155,14 @@ export const LegendLogoLink = styled.a`
 export const LegendLogo = styled.div`
   flex: 1;
   background-color: var(--background-default-grey);
+  height: 100px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   img {
-    width: 100%;
-    vertical-align: middle;
+    max-height: 100%;
+    width: auto;
   }
-  display: inline-block;
 `;
 
 export const MapSearchInputWrapper = styled(Box)`
