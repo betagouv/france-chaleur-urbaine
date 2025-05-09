@@ -2,7 +2,7 @@
 
 * [Page vide à laisser (articles à insérer en dessous)](README.md)
 * [Une campagne de communication en Seine-Saint-Denis](une-campagne-de-communication-en-seine-saint-denis.md)
-* [Actualisation des taux d'énergies renouvelables et contenu CO2 des réseaux](actualisation-des-taux-denergies-renouvelables-et-contenu-co2-des-reseaux.md)
+* [Retrouvez les taux d'énergies renouvelables et contenus CO2 actualisés des réseaux](retrouvez-les-taux-denergies-renouvelables-et-contenus-co2-actualises-des-reseaux.md)
 * [Tout savoir sur notre comparateur des coûts et émissions de CO2 des modes de chauffage](tout-savoir-sur-notre-comparateur-des-couts-et-emissions-de-co2-des-modes-de-chauffage.md)
 * [La carte France Chaleur Urbaine passe un cap !](la-carte-france-chaleur-urbaine-passe-un-cap.md)
 * [Initier un projet de réseau avec France Chaleur Urbaine](initier-un-projet-de-reseau-avec-france-chaleur-urbaine.md)
@@ -44,7 +44,7 @@
 * [Les réseaux de chaleur en région : focus sur la Nouvelle-Aquitaine](les-reseaux-de-chaleur-en-region-focus-sur-la-nouvelle-aquitaine.md)
 * [Les réseaux de chaleur en région : focus sur l'Occitanie](<README (32).md>)
 * [Les réseaux de chaleur en région : focus sur la Provence-Alpes-Côte d'Azur](<README (31).md>)
-* [Actualisation des taux d'énergies renouvelables et contenu CO2 des réseaux](actualisation-des-taux-denergies-renouvelables-et-contenu-co2-des-reseaux-1.md)
+* [Actualisation des taux d'énergies renouvelables et contenu CO2 des réseaux](actualisation-des-taux-denergies-renouvelables-et-contenu-co2-des-reseaux.md)
 * [Les réseaux de chaleur en région : focus sur l'Auvergne-Rhône-Alpes](les-reseaux-de-chaleur-en-region-focus-sur-lauvergne-rhone-alpes.md)
 * [Identifier les besoins en chaleur des bâtiments](<README (30).md>)
 * [Les réseaux de chaleur en région : focus sur la Bourgogne-Franche-Comté](les-reseaux-de-chaleur-en-region-focus-sur-la-bourgogne-franche-comte.md)
