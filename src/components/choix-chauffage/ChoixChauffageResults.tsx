@@ -15,7 +15,7 @@ import cx from '@/utils/cx';
 
 type ModeDeChauffage = {
   label: string;
-  pertinence: number;
+  pertinence: number | ((addressDetail: AddressDetail) => ReactNode);
   description: string;
   custom?: (addressDetail: AddressDetail) => ReactNode;
   contraintesTechniques: string[];
@@ -30,7 +30,8 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
   immeuble_chauffage_collectif: [
     {
       label: 'Chauffage urbain (réseaux de chaleur)',
-      pertinence: 4,
+      pertinence: (addressDetail) =>
+        addressDetail.network.isEligible ? <PertinenceBadge pertinence={4} /> : <PertinenceBadge pertinence="unavailable" />,
       description:
         'Le chauffage urbain consiste à distribuer de la chaleur produite de façon centralisée à un ensemble de bâtiments, via des canalisations souterraines. On parle aussi de réseaux de chaleur. Ces réseaux sont alimentés en moyenne à plus de 66% par des énergies renouvelables et de récupération locales.',
       custom: (addressDetail) => {
@@ -579,7 +580,11 @@ function ChoixChauffageResults({ typeLogement, addressDetail }: ChoixChauffageRe
           label={
             <>
               {modeDeChauffage.label}
-              <PertinenceBadge pertinence={modeDeChauffage.pertinence} />
+              {typeof modeDeChauffage.pertinence === 'number' ? (
+                <PertinenceBadge pertinence={modeDeChauffage.pertinence} />
+              ) : (
+                modeDeChauffage.pertinence(addressDetail)
+              )}
             </>
           }
           className="[&>.fr-collapse]:bg-gray-100 [&>.fr-collapse]:!mx-0 [&_.fr-accordion\\_\\_btn]:py-5"
@@ -670,8 +675,10 @@ const ResultSection = ({ children, color = 'blue', title }: { children: ReactNod
   </div>
 );
 
-const PertinenceBadge = ({ pertinence }: { pertinence: number }) =>
-  pertinence > 0 ? (
+const PertinenceBadge = ({ pertinence }: { pertinence: number | 'unavailable' }) =>
+  pertinence === 'unavailable' ? (
+    <PageBadge className="!bg-[#ef8347]">Non disponible à cette adresse</PageBadge>
+  ) : pertinence > 0 ? (
     <PageBadge className="!bg-success">Pertinence {Array(pertinence).fill('⭐').join('')}</PageBadge>
   ) : pertinence === -1 ? (
     <PageBadge className="!bg-error">Non conseillé</PageBadge>
