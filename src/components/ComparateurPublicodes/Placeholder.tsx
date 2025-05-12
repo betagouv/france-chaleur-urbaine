@@ -198,7 +198,10 @@ export const DisclaimerModal = () => {
   );
 };
 
-export const DisclaimerButton: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({ className, withBouclierTarifaire = true }) => {
+export const DisclaimerButton: React.FC<React.HTMLAttributes<HTMLDivElement> & { withBouclierTarifaire?: boolean }> = ({
+  className,
+  withBouclierTarifaire = true,
+}) => {
   return (
     <>
       <DisclaimerModal />
