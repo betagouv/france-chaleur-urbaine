@@ -100,7 +100,7 @@ const quickFilterPresets = {
         <Tooltip
           title={
             <>
-              Une obligation de raccordement peut s'appliquer.{' '}
+              Périmètre de développement prioritaire (PDP) d'un réseau classé, dans lequel peut s'appliquer une obligation de raccordement.{' '}
               <Link href="/ressources/obligations-raccordement#contenu" isExternal>
                 En savoir plus
               </Link>
