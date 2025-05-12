@@ -259,7 +259,7 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
       ],
     },
     {
-      label: 'PAC air-air individuelle',
+      label: 'Pompe à chaleur air-air individuelle',
       pertinence: -1,
       description:
         "La pompe à chaleur air/air capte les calories de l'air extérieur et les restitue à l’intérieur en diffusant de l’air chaud.",
@@ -295,7 +295,7 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
   ],
   immeuble_chauffage_individuel: [
     {
-      label: 'PAC air-eau individuelle',
+      label: 'Pompe à chaleur air-eau individuelle',
       pertinence: 3,
       description:
         "La pompe à chaleur air/eau capte les calories de l'air extérieur et les transfère à un circuit d’eau chaude pour assurer le chauffage et l’eau chaude sanitaire de votre logement.",
@@ -329,7 +329,7 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
       ],
     },
     {
-      label: 'PAC air-air individuelle',
+      label: 'Pompe à chaleur air-air individuelle',
       pertinence: 1,
       description:
         "La pompe à chaleur air/air capte les calories de l'air extérieur et les restitue à l’intérieur en diffusant de l’air chaud.",
@@ -505,7 +505,7 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
       ],
     },
     {
-      label: 'PAC air-air',
+      label: 'Pompe à chaleur air-air',
       pertinence: -1,
       description:
         "La pompe à chaleur air/air capte les calories de l'air extérieur et les restitue à l’intérieur en diffusant de l’air chaud.",
