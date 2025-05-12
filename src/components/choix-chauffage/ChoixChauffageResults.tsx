@@ -640,7 +640,7 @@ function ChoixChauffageResults({ typeLogement, addressDetail }: ChoixChauffageRe
                 avec notre comparateur.
               </Alert>
               <div className="fr-mt-2w text-center">
-                <Link variant="primary" href="/comparateur-couts-performances">
+                <Link variant="primary" href="/pro/comparateur-couts-performances">
                   Obtenez une simulation affinée avec notre comparateur
                 </Link>
               </div>
