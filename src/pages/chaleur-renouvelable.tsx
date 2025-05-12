@@ -11,7 +11,7 @@ function ChaleurRenouvelablePage() {
       title="Comprendre la chaleur renouvelable"
       description="Découvrez les modes de chauffage renouvelables adaptés à votre logement"
     >
-      <Hero image="/img/landing_chaleur_renouvelable.jpg" variant="light" imageType="inline" imagePosition="right">
+      <Hero image="/img/landing_chaleur_renouvelable.webp" variant="light" imagePosition="right" className="py-8">
         <HeroTitle>Découvez le chauffage qui vous convient&nbsp;!</HeroTitle>
         <HeroSubtitle>
           Pas toujours simple de s’y retrouver entre <strong>les différents chauffages écologiques</strong>, leurs coûts et leur
