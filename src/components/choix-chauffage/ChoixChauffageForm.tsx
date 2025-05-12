@@ -40,7 +40,7 @@ function ChoixChauffageForm() {
     <Section>
       <SectionContent className="!mt-0">
         <SectionTwoColumns className="!mt-0">
-          <div>
+          <div className="!flex-[3]">
             <SectionHeading as="h2">Quel chauffage écologique pour mon logement&nbsp;?</SectionHeading>
 
             <AddressAutocompleteInput
@@ -88,17 +88,19 @@ function ChoixChauffageForm() {
               ]}
             />
           </div>
-          {isDefined(typeLogement) && isDefined(addressDetail) ? (
-            <ChoixChauffageResults typeLogement={typeLogement} addressDetail={addressDetail} />
-          ) : (
-            <div className="flex flex-col items-center gap-4">
-              <div className="italic text-center fr-py-2w fr-px-6w">
-                Renseignez votre adresse et sélectionnez un type de bâtiment pour découvrir les modes de chauffage décarbonés les plus
-                pertinents
+          <div className="!flex-[5] py-6 lg:mt-28">
+            {isDefined(typeLogement) && isDefined(addressDetail) ? (
+              <ChoixChauffageResults typeLogement={typeLogement} addressDetail={addressDetail} />
+            ) : (
+              <div className="flex flex-col items-center gap-4">
+                <div className="italic text-center fr-px-6w">
+                  Renseignez votre adresse et sélectionnez un type de bâtiment pour découvrir les modes de chauffage décarbonés les plus
+                  pertinents
+                </div>
+                <img src="/img/picto_chauffage_ecologique.svg" alt="" />
               </div>
-              <img src="/img/picto_chauffage_ecologique.svg" alt="" />
-            </div>
-          )}
+            )}
+          </div>
         </SectionTwoColumns>
       </SectionContent>
     </Section>
