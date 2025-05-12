@@ -60,7 +60,7 @@ function ChoixChauffageForm() {
               options={[
                 {
                   illustration: <img alt="illustration" src="/img/picto_logement_immeuble_chauffage_collectif.svg" />,
-                  label: 'Immeuble chauffage collectif',
+                  label: 'Immeuble à chauffage collectif',
                   nativeInputProps: {
                     value: 'immeuble_chauffage_collectif' satisfies TypeLogement,
                     checked: typeLogement === 'immeuble_chauffage_collectif',
@@ -69,7 +69,7 @@ function ChoixChauffageForm() {
                 },
                 {
                   illustration: <img alt="illustration" src="/img/picto_logement_immeuble_chauffage_individuel.svg" />,
-                  label: 'Immeuble chauffage individuel',
+                  label: 'Immeuble à chauffage individuel',
                   nativeInputProps: {
                     value: 'immeuble_chauffage_individuel' satisfies TypeLogement,
                     checked: typeLogement === 'immeuble_chauffage_individuel',
