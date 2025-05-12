@@ -82,7 +82,7 @@ const ActionsDeCommunicationPage = () => {
       <CardHorizontal
         ville="Saint-Denis, Pierrefitte-sur-Seine, Epinay-sur-Seine"
         date="Hiver 2024-2025"
-        description="Le Smirec, Syndicat mixte des réseaux d’énergie calorifique, exerce le service public de production et de distribution
+        description="Le SMIREC, Syndicat mixte des réseaux d’énergie calorifique, exerce le service public de production et de distribution
         de chaleur et de froid pour 8 communes de Seine-Saint-Denis. Ses réseaux chauffent environ 68 000 équivalent-logements et se développent
          de façon importante. France Chaleur Urbaine a accompagné le SMIREC dans la réalisation d’une campagne de communication sur trois
          communes, avec pour objectif de faire connaître les réseaux de chaleur et leurs atouts, ainsi que de valoriser l’engagement des communes et du SMIREC."
