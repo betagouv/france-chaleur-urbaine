@@ -198,26 +198,28 @@ export const DisclaimerModal = () => {
   );
 };
 
-export const DisclaimerButton: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({ className }) => {
+export const DisclaimerButton: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({ className, withBouclierTarifaire = true }) => {
   return (
     <>
       <DisclaimerModal />
-      <p className={cx('fr-text--xs text-warning !mb-0')}>
+      <p className={cx('fr-text--xs text-warning !mb-0', withBouclierTarifaire ? '' : '!mb-5')}>
         <Icon name="fr-icon-info-line" size="xs" /> Tous les modes de chauffage ne sont pas interchangeables.{' '}
         <a href="#" onClick={() => modalDisclaimer.open()} className="fr-link fr-text--xs !text-warning">
           En savoir plus
         </a>
       </p>
-      <p className={cx('fr-text--xs text-warning', className)}>
-        <Icon name="fr-icon-info-line" size="xs" /> Le bouclier tarifaire n’est pas pris en compte pour les réseaux de chaleur.{' '}
-        <Link
-          href="/documentation/comparateur/prise-en-compte_bouclier-tarifaire.pdf"
-          isExternal
-          className="fr-link fr-text--xs !text-warning"
-        >
-          En savoir plus
-        </Link>
-      </p>
+      {withBouclierTarifaire && (
+        <p className={cx('fr-text--xs text-warning', className)}>
+          <Icon name="fr-icon-info-line" size="xs" /> Le bouclier tarifaire n’est pas pris en compte pour les réseaux de chaleur.{' '}
+          <Link
+            href="/documentation/comparateur/prise-en-compte_bouclier-tarifaire.pdf"
+            isExternal
+            className="fr-link fr-text--xs !text-warning"
+          >
+            En savoir plus
+          </Link>
+        </p>
+      )}
     </>
   );
 };
