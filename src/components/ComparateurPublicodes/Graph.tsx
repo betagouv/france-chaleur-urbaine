@@ -12,6 +12,7 @@ import useArrayQueryState from '@/hooks/useArrayQueryState';
 import useScreenshot from '@/hooks/useScreenshot';
 import { deepMergeObjects } from '@/utils/core';
 import cx from '@/utils/cx';
+import { exportAsXLSX } from '@/utils/export';
 
 import { ChartPlaceholder, GraphTooltip } from './ComparateurPublicodes.style';
 import { modesDeChauffage } from './mappings';
@@ -27,6 +28,7 @@ type GraphProps = React.HTMLAttributes<HTMLDivElement> & {
   engine: SimulatorEngine;
   advancedMode?: boolean;
   captureImageName?: string;
+  export?: Parameters<typeof exportAsXLSX>[1];
   reseauDeChaleur: {
     label?: string;
     hide: boolean;
@@ -211,7 +213,15 @@ const formatEmissionsCO2 = (value: number, suffix = 'tCO2e') => {
 const formatCost = (value: number, suffix = true) =>
   `${(Math.round(value / 10) * 10).toLocaleString('fr-FR', { ...(!suffix ? {} : { style: 'currency', currency: 'EUR' }), maximumFractionDigits: 0 })}`;
 
-const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureImageName, reseauDeChaleur, ...props }) => {
+const Graph: React.FC<GraphProps> = ({
+  advancedMode,
+  engine,
+  className,
+  captureImageName,
+  reseauDeChaleur,
+  export: exportSheets,
+  ...props
+}) => {
   const { has: hasModeDeChauffage } = useArrayQueryState('modes-de-chauffage');
   const coutsRef = useRef<HTMLDivElement>(null);
   useFixLegendOpacity(coutsRef);
@@ -752,7 +762,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
         </div>
       </div>
       <div className="mt-12 flex flex-col gap-2 border-2 border-dashed border-info-light p-2">
-        <div className="text-center">
+        <div className="text-center flex gap-2 justify-center">
           <Button
             priority="secondary"
             onClick={async () => await captureNodeAndDownload(ref, { padding: 20, filename: `${captureImageName}-${graphType}.png` })}
@@ -760,10 +770,23 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
           >
             Sauvegarder l'image
           </Button>
+          {exportSheets && (
+            <Button priority="secondary" onClick={() => exportAsXLSX(`${captureImageName}.xls`, exportSheets)}>
+              Exporter les données
+            </Button>
+          )}
         </div>
-        <Notice size="sm">
-          En cas d’utilisation de l’image exportée, un lien vers le comparateur en ligne doit obligatoirement être apposé à proximité de
-          l’image.
+        <Notice size="sm" classes={{ title: '!font-normal !text-sm' }}>
+          En cas d’utilisation de l’<strong>image exportée</strong>, un lien vers le comparateur en ligne doit obligatoirement être apposé à
+          proximité de l’image.
+          {exportSheets && (
+            <>
+              <br />
+              <br />
+              En cas d’utilisation des <strong>données exportées</strong>, un lien, France Chaleur Urbaine doit obligatoirement être cité
+              comme source de données lors de la réutilisation.
+            </>
+          )}
         </Notice>
       </div>
     </>
