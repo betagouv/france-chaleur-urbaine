@@ -64,7 +64,9 @@ const quickFilterPresets = {
     label: (
       <>
         demandes à traiter&nbsp;
-        <Tooltip title="Prospect non recontacté et statut en attente de prise en charge" />
+        <Tooltip
+          title={`Le statut est "en attente de prise en charge" et la case "prospect recontacté" n'est pas cochée. La colonne "Affecté à" du tableau indique le gestionnaire à qui la demande a été transmise pour traitement.`}
+        />
       </>
     ),
     valueSuffix: <Icon name="fr-icon-flag-fill" size="sm" color="red" />,
@@ -194,7 +196,9 @@ function DemandesNew(): React.ReactElement {
         cell: ({ row }) => (
           <div className="flex flex-col gap-2">
             {row.original.Status === DEMANDE_STATUS.EMPTY && !row.original['Prise de contact'] && (
-              <Tooltip title="Prospect non recontacté et statut en attente de prise en charge">
+              <Tooltip
+                title={`Le statut est "en attente de prise en charge" et la case "prospect recontacté" n'est pas cochée. La colonne "Affecté à" du tableau indique le gestionnaire à qui la demande a été transmise pour traitement.`}
+              >
                 <Icon name="fr-icon-flag-fill" size="sm" color="red" />
               </Tooltip>
             )}
