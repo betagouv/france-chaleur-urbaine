@@ -116,6 +116,7 @@ import readme_8 from './README (8).md';
 import readme_9 from './README (9).md';
 import retrouvezDonneesRecentes from './retrouvez-les-donnees-les-plus-recentes-des-reseaux-de-chaleur.md';
 import retrouvezQPV from './retrouvez-les-quartiers-prioritaires-pour-la-politique-de-la-ville-qpv-sur-notre-carte.md';
+import retrouvezTauxEnergiesRenouvelablesEtContenuCO2DesReseaux from './retrouvez-les-taux-denergies-renouvelables-et-contenus-co2-actualises-des-reseaux.md';
 import seChaufferAPrixStables from './se-chauffer-a-prix-stables.md';
 import toutSavoirSurLeClassementDesReseauxDeChaleur from './tout-savoir-sur-le-classement-des-reseaux-de-chaleur.md';
 import toutSavoirSurLeComparateur from './tout-savoir-sur-notre-comparateur-des-couts-et-emissions-de-co2-des-modes-de-chauffage.md';
@@ -162,6 +163,14 @@ export const articles = (
       content: importFile(campagneCommunicationSeineSaintDenis),
       publishedDate: new Date('2025-05-06'),
       themes: ['Communication', 'Réseaux de chaleur'],
+    },
+    {
+      image: '/contents/FCU_tauxENRR-contenuCO2.jpg',
+      title: "Retrouvez les taux d'énergies renouvelables et contenus CO2 actualisés des réseaux",
+      slug: 'retrouvez-les-taux-denergies-renouvelables-et-contenus-co2-actualises-des-reseaux',
+      content: importFile(retrouvezTauxEnergiesRenouvelablesEtContenuCO2DesReseaux),
+      publishedDate: new Date('2025-04-30'),
+      themes: ['Cartographie et données', 'Réseaux de chaleur', 'Réseaux de froid', 'ENR&R'],
     },
     {
       image: '/contents/cover_webinaire_comparateur.jpg',
