@@ -48,9 +48,9 @@ const useContactFormFCU = () => {
     trackEvent(`Eligibilité|Formulaire de test${getContextPrefix(context)} - Envoi`, address);
   };
 
-  const handleOnSuccessAddress = useCallback((data: AddressDataType, context?: ContactFormContext, dontNotify?: boolean) => {
+  const handleOnSuccessAddress = useCallback((data: AddressDataType, context?: ContactFormContext, doTrackEvent: boolean = true) => {
     const { address, heatingType, eligibility } = data;
-    if (!dontNotify) {
+    if (doTrackEvent) {
       // TODO à corriger
       trackEvent(
         // @ts-ignore
