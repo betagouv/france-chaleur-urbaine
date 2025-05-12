@@ -23,9 +23,7 @@ function ChaleurRenouvelablePage() {
         </HeroSubtitle>
       </Hero>
 
-      <Section>
-        <ChoixChauffageForm />
-      </Section>
+      <ChoixChauffageForm />
 
       <Section variant="gray">
         <SectionContent className="!mt-0">

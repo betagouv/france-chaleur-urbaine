@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { type TypeLogement } from '@/components/choix-chauffage/type-logement';
 import AddressAutocompleteInput from '@/components/form/dsfr/AddressAutocompleteInput';
 import Radio from '@/components/form/dsfr/Radio';
-import { SectionHeading, SectionTwoColumns } from '@/components/ui/Section';
+import Section, { SectionContent, SectionHeading, SectionTwoColumns } from '@/components/ui/Section';
 import { useServices } from '@/services';
 import { toastErrors } from '@/services/notification';
 import { type AddressDetail } from '@/types/HeatNetworksResponse';
@@ -37,67 +37,71 @@ function ChoixChauffageForm() {
   });
 
   return (
-    <SectionTwoColumns className="!mt-0">
-      <div>
-        <SectionHeading as="h2">Quel chauffage écologique pour mon logement&nbsp;?</SectionHeading>
+    <Section>
+      <SectionContent className="!mt-0">
+        <SectionTwoColumns className="!mt-0">
+          <div>
+            <SectionHeading as="h2">Quel chauffage écologique pour mon logement&nbsp;?</SectionHeading>
 
-        <AddressAutocompleteInput
-          className="!mb-2"
-          defaultValue={address ?? ''}
-          label={<strong>Entrez votre adresse :</strong>}
-          onSelect={(geoAddress: SuggestionItem) => {
-            testAddressEligibility(geoAddress);
-          }}
-          onClear={() => {
-            setAddress(null);
-            setAddressDetail(null);
-          }}
-        />
-        <Radio
-          name="radio"
-          options={[
-            {
-              illustration: <img alt="illustration" src="/img/picto_logement_immeuble_chauffage_collectif.svg" />,
-              label: 'Immeuble chauffage collectif',
-              nativeInputProps: {
-                value: 'immeuble_chauffage_collectif' satisfies TypeLogement,
-                checked: typeLogement === 'immeuble_chauffage_collectif',
-                onChange: (e) => setTypeLogement(e.target.value as TypeLogement),
-              },
-            },
-            {
-              illustration: <img alt="illustration" src="/img/picto_logement_immeuble_chauffage_individuel.svg" />,
-              label: 'Immeuble chauffage individuel',
-              nativeInputProps: {
-                value: 'immeuble_chauffage_individuel' satisfies TypeLogement,
-                checked: typeLogement === 'immeuble_chauffage_individuel',
-                onChange: (e) => setTypeLogement(e.target.value as TypeLogement),
-              },
-            },
-            {
-              illustration: <img alt="illustration" src="/img/picto_logement_maison_individuelle.svg" />,
-              label: 'Maison individuelle',
-              nativeInputProps: {
-                value: 'maison_individuelle' satisfies TypeLogement,
-                checked: typeLogement === 'maison_individuelle',
-                onChange: (e) => setTypeLogement(e.target.value as TypeLogement),
-              },
-            },
-          ]}
-        />
-      </div>
-      {isDefined(typeLogement) && isDefined(addressDetail) ? (
-        <ChoixChauffageResults typeLogement={typeLogement} addressDetail={addressDetail} />
-      ) : (
-        <div className="flex flex-col items-center gap-4">
-          <div className="italic text-center fr-py-2w fr-px-6w">
-            Renseignez votre adresse et sélectionnez un type de bâtiment pour découvrir les modes de chauffage décarbonés les plus
-            pertinents
+            <AddressAutocompleteInput
+              className="!mb-2"
+              defaultValue={address ?? ''}
+              label={<strong>Entrez votre adresse :</strong>}
+              onSelect={(geoAddress: SuggestionItem) => {
+                testAddressEligibility(geoAddress);
+              }}
+              onClear={() => {
+                setAddress(null);
+                setAddressDetail(null);
+              }}
+            />
+            <Radio
+              name="radio"
+              options={[
+                {
+                  illustration: <img alt="illustration" src="/img/picto_logement_immeuble_chauffage_collectif.svg" />,
+                  label: 'Immeuble chauffage collectif',
+                  nativeInputProps: {
+                    value: 'immeuble_chauffage_collectif' satisfies TypeLogement,
+                    checked: typeLogement === 'immeuble_chauffage_collectif',
+                    onChange: (e) => setTypeLogement(e.target.value as TypeLogement),
+                  },
+                },
+                {
+                  illustration: <img alt="illustration" src="/img/picto_logement_immeuble_chauffage_individuel.svg" />,
+                  label: 'Immeuble chauffage individuel',
+                  nativeInputProps: {
+                    value: 'immeuble_chauffage_individuel' satisfies TypeLogement,
+                    checked: typeLogement === 'immeuble_chauffage_individuel',
+                    onChange: (e) => setTypeLogement(e.target.value as TypeLogement),
+                  },
+                },
+                {
+                  illustration: <img alt="illustration" src="/img/picto_logement_maison_individuelle.svg" />,
+                  label: 'Maison individuelle',
+                  nativeInputProps: {
+                    value: 'maison_individuelle' satisfies TypeLogement,
+                    checked: typeLogement === 'maison_individuelle',
+                    onChange: (e) => setTypeLogement(e.target.value as TypeLogement),
+                  },
+                },
+              ]}
+            />
           </div>
-          <img src="/img/picto_chauffage_ecologique.svg" alt="" />
-        </div>
-      )}
-    </SectionTwoColumns>
+          {isDefined(typeLogement) && isDefined(addressDetail) ? (
+            <ChoixChauffageResults typeLogement={typeLogement} addressDetail={addressDetail} />
+          ) : (
+            <div className="flex flex-col items-center gap-4">
+              <div className="italic text-center fr-py-2w fr-px-6w">
+                Renseignez votre adresse et sélectionnez un type de bâtiment pour découvrir les modes de chauffage décarbonés les plus
+                pertinents
+              </div>
+              <img src="/img/picto_chauffage_ecologique.svg" alt="" />
+            </div>
+          )}
+        </SectionTwoColumns>
+      </SectionContent>
+    </Section>
   );
 }
 
