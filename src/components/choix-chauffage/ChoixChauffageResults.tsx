@@ -48,7 +48,7 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
           },
         });
         return (
-          <div className="text-sm">
+          <>
             <EligibilityFormModal />
             <div className="font-bold">Un réseau de chaleur passe à proximité immédiate de cette adresse</div>
 
@@ -61,10 +61,10 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
                 réseau à {addressDetail.network.distance}m à vol d’oiseau
               </div>
             </div>
-            <Button onClick={displayContactForm} size="small" className="fr-mb-2w">
+            <Button onClick={displayContactForm} className="fr-mb-2w">
               Faire une demande d’information
             </Button>
-          </div>
+          </>
         );
       },
       contraintesTechniques: [
@@ -592,7 +592,7 @@ function ChoixChauffageResults({ typeLogement, addressDetail }: ChoixChauffageRe
 
           <div className="flex flex-col gap-4">
             <ResultSection color="orange" title="⚠️ Contraintes techniques">
-              <ul className="text-sm">
+              <ul>
                 {modeDeChauffage.contraintesTechniques.map((contrainteTechnique, key) => (
                   <li key={key}>{contrainteTechnique}</li>
                 ))}
@@ -601,14 +601,14 @@ function ChoixChauffageResults({ typeLogement, addressDetail }: ChoixChauffageRe
 
             <div className="grid grid-cols-2 gap-4">
               <ResultSection title="👍 Avantages">
-                <ul className="text-sm">
+                <ul>
                   {modeDeChauffage.avantages.map((avantage, key) => (
                     <li key={key}>{avantage}</li>
                   ))}
                 </ul>
               </ResultSection>
               <ResultSection title="👎 Inconvénients">
-                <ul className="text-sm">
+                <ul>
                   {modeDeChauffage.inconvenients.map((inconvenient, key) => (
                     <li key={key}>{inconvenient}</li>
                   ))}
@@ -617,7 +617,7 @@ function ChoixChauffageResults({ typeLogement, addressDetail }: ChoixChauffageRe
             </div>
 
             <ResultSection title="⭐ Gains potentiels par rapport au gaz et fioul">
-              <ul className="text-sm">
+              <ul>
                 <li className="leading-7">
                   Émissions de CO2&nbsp;:{' '}
                   {modeDeChauffage.gainsPotentielsCO2.map((gain, key) => (
@@ -635,7 +635,7 @@ function ChoixChauffageResults({ typeLogement, addressDetail }: ChoixChauffageRe
                   ))}
                 </li>
               </ul>
-              <Alert variant="warning" size="sm" className="fr-mt-2w [&>p]:!text-sm">
+              <Alert variant="warning" size="sm" className="fr-mt-2w">
                 Les gains varient fortement en fonction de l'adresse et des caractéristiques du bâtiment ! Obtenez une simulation affinée
                 avec notre comparateur.
               </Alert>
@@ -647,7 +647,7 @@ function ChoixChauffageResults({ typeLogement, addressDetail }: ChoixChauffageRe
             </ResultSection>
 
             <ResultSection title="⭐ Aide à l’installation">
-              <ul className="text-sm">
+              <ul>
                 {modeDeChauffage.aidesInstallation.length === 0 && 'Aucune'}
                 {modeDeChauffage.aidesInstallation.map((aideInstallation, key) => (
                   <li key={key}>{aideInstallation}</li>
