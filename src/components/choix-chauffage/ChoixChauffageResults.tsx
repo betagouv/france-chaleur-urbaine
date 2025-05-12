@@ -582,7 +582,7 @@ function ChoixChauffageResults({ typeLogement, addressDetail }: ChoixChauffageRe
               <PertinenceBadge pertinence={modeDeChauffage.pertinence} />
             </>
           }
-          className="[&>.fr-collapse]:bg-gray-100 [&>.fr-collapse]:!mx-0"
+          className="[&>.fr-collapse]:bg-gray-100 [&>.fr-collapse]:!mx-0 [&_.fr-accordion\\_\\_btn]:py-5"
           key={key}
         >
           <Heading as="h3">{modeDeChauffage.label}</Heading>
