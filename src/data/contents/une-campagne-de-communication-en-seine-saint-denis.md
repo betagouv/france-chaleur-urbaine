@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/cover_campagne_smirec.jpg
-coverY: 0
----
-
 # Une campagne de communication en Seine-Saint-Denis
 
 🤝 Depuis plusieurs années, France Chaleur Urbaine accompagne les collectivités et gestionnaires de réseaux de chaleur dans la promotion de leurs réseaux. Pour que le développement des réseaux de chaleur s'amplifie, il est en effet indispensable de les faire mieux connaître !
