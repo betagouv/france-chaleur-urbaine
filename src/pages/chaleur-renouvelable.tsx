@@ -3,7 +3,6 @@ import SimplePage from '@/components/shared/page/SimplePage';
 import { ResponsiveRow } from '@/components/ui/Box';
 import Hero, { HeroSubtitle, HeroTitle } from '@/components/ui/Hero';
 import Link from '@/components/ui/Link';
-import { NewsletterSection } from '@/components/ui/Newsletter';
 import Section, { SectionContent, SectionHeading, SectionTwoColumns } from '@/components/ui/Section';
 
 function ChaleurRenouvelablePage() {
@@ -100,14 +99,6 @@ function ChaleurRenouvelablePage() {
             </div>
           </SectionTwoColumns>
         </SectionContent>
-      </Section>
-
-      <Section size="sm" variant="light">
-        <NewsletterSection
-          title="Vous avez besoin de plus d’informations…"
-          subtitle="sur les aides financières disponibles, l’accompagnement mobilisable, les montages juridiques… ?"
-          buttonText="Envoyer"
-        />
       </Section>
     </SimplePage>
   );
