@@ -390,6 +390,7 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
       description:
         'La pompe à chaleur géothermique (eau-eau) capte les calories du sous-sol et les transfère à un circuit d’eau chaude pour assurer le chauffage et l’eau chaude sanitaire de votre logement.',
       contraintesTechniques: [
+        'Circuit d’eau chaude dans la maison',
         'Présence d’un potentiel géothermique exploitable sous la maison',
         'Isolation globale nécessaire au préalable pour éviter des performances dégradées (chauffage peu efficace et onéreux)',
         'Surface extérieure pour le forage, ainsi qu’un local technique',
@@ -430,6 +431,7 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
       description:
         "La pompe à chaleur air/eau capte les calories de l'air extérieur et les transfère à un circuit d’eau chaude pour assurer le chauffage et l’eau chaude sanitaire de votre logement.",
       contraintesTechniques: [
+        'Circuit d’eau chaude dans la maison',
         'Isolation globale nécessaire au préalable pour éviter des performances dégradées (chauffage peu efficace et onéreux)',
         'Espace extérieur demeurant accessible pour la maintenance',
         'Local technique',
@@ -472,6 +474,7 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
       description:
         'La chaudière biomasse fonctionne comme une chaudière gaz ou fioul, mais utilise comme combustible du bois, sous différentes formes (granulés, bois déchiqueté, sciures…), ou d’autres combustibles organiques.',
       contraintesTechniques: [
+        'Circuit d’eau chaude dans la maison',
         'Espace conséquent (chaudière et stockage)',
         'Approvisionnement local disponible',
         'Déconseillé en zone sensible pour la qualité de l’air',
@@ -502,7 +505,7 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
       ],
     },
     {
-      label: 'PAC air-air individuelle',
+      label: 'PAC air-air',
       pertinence: -1,
       description:
         "La pompe à chaleur air/air capte les calories de l'air extérieur et les restitue à l’intérieur en diffusant de l’air chaud.",
