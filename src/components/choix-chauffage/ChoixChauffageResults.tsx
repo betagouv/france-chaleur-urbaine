@@ -35,9 +35,6 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
       description:
         'Le chauffage urbain consiste à distribuer de la chaleur produite de façon centralisée à un ensemble de bâtiments, via des canalisations souterraines. On parle aussi de réseaux de chaleur. Ces réseaux sont alimentés en moyenne à plus de 66% par des énergies renouvelables et de récupération locales.',
       custom: (addressDetail) => {
-        if (!addressDetail.network.isEligible) {
-          return null;
-        }
         // eslint-disable-next-line react-hooks/rules-of-hooks
         const { open: displayContactForm, EligibilityFormModal } = useEligibilityForm({
           context: 'choix-chauffage',
@@ -50,18 +47,46 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
         });
         return (
           <>
-            <EligibilityFormModal />
-            <div className="font-bold">Un réseau de chaleur passe à proximité immédiate de cette adresse</div>
+            {addressDetail.network.isEligible ? (
+              <>
+                <EligibilityFormModal />
+                <div className="font-bold">Un réseau de chaleur passe à proximité immédiate de cette adresse.</div>
+              </>
+            ) : (
+              <div className="font-bold">Aucun réseau de chaleur passe à proximité immédiate de votre adresse.</div>
+            )}
 
             <div className="flex items-center gap-2 fr-my-1w">
               <Icon name="ri-map-pin-line" size="sm" />
               {addressDetail.geoAddress?.properties.label}
 
-              <div className="text-success fr-ml-1w">
-                <Icon name="ri-guide-line" size="sm" className="fr-mr-1v" />
-                réseau à {addressDetail.network.distance}m à vol d’oiseau
-              </div>
+              {addressDetail.network.isEligible ? (
+                <div className="text-success fr-ml-1w">
+                  <Icon name="ri-guide-line" size="sm" className="fr-mr-1v" />
+                  réseau à {addressDetail.network.distance}m à vol d’oiseau
+                </div>
+              ) : (
+                <div className="text-error fr-ml-1w">
+                  <Icon name="ri-close-line" size="sm" className="fr-mr-1v" />
+                  {addressDetail.network.distance
+                    ? 'Aucun réseau de chaleur à proximité immédiate'
+                    : `réseau à ${addressDetail.network.distance}m à vol d’oiseau`}
+                </div>
+              )}
             </div>
+
+            {addressDetail.network.inPDP && (
+              <div className="my-4">
+                <span className="font-bold">Vous êtes dans le périmètre de développement prioritaire</span> du réseau. Une obligation de
+                raccordement peut exister (
+                <Link href="/ressources/obligations-raccordement#contenu" isExternal>
+                  en savoir plus
+                </Link>
+                ). Une amende de 300 000€ peut s’appliquer en cas de non-raccordement sans dérogation.
+              </div>
+            )}
+            <div></div>
+
             <Button onClick={displayContactForm} className="fr-mb-2w">
               Faire une demande d’information
             </Button>
