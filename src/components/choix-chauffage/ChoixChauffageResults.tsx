@@ -94,7 +94,7 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
         );
       },
       contraintesTechniques: [
-        'Réseau de chaleur à proximité, avec capacités de raccordement.',
+        'Réseau de chaleur à proximité',
         'Pour certains réseaux, seuil de puissance requis',
         'Local pour la sous-station',
       ],
