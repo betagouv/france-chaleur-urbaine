@@ -362,7 +362,7 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
     },
     {
       label: 'Radiateurs électriques',
-      pertinence: 0,
+      pertinence: 1,
       description:
         'Pouvant utiliser différentes technologies (convecteurs, rayonnants, à inertie…), les radiateurs électriques fonctionnent tous, comme leur nom l’indique, à base d’électricité.',
       contraintesTechniques: ['Bonne isolation nécessaire', 'Peu adapté aux grandes pièces'],
