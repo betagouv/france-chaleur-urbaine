@@ -24,7 +24,7 @@ function ChaleurRenouvelablePage() {
 
       <ChoixChauffageForm />
 
-      <Section variant="gray">
+      <Section variant="lightaccent">
         <SectionContent className="!mt-0">
           <ResponsiveRow>
             <div className="flex-1">
