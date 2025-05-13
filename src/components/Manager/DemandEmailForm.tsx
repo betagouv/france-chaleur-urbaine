@@ -238,10 +238,10 @@ function DemandEmailForm(props: Props) {
           <form onSubmit={submit}>
             <Input
               label="À"
+              disabled
               nativeInputProps={{
                 type: 'email',
                 required: true,
-                disabled: true,
                 defaultValue: emailContent.to,
               }}
             />
