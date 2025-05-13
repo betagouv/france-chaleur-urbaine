@@ -51,7 +51,8 @@ const zManagerEmail = {
     }),
     signature: z.string(),
     cc: z.preprocess((v) => {
-      return String(v).split(',');
+      const str = String(v);
+      return str ? str.split(',') : [];
     }, z.array(z.string().email().trim())),
     replyTo: z.string().trim(),
   }),
