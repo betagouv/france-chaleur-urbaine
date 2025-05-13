@@ -43,20 +43,24 @@ const useContactFormFCU = () => {
     setLoadingStatus('loading');
     setMessageSent(false);
     setMessageReceived(false);
-    // TODO à corriger
-    // @ts-ignore
-    trackEvent(`Eligibilité|Formulaire de test${getContextPrefix(context)} - Envoi`, address);
+    const prefix = getContextPrefix(context);
+    // on ne track pas les événements pour le choix chauffage car ce n'est pas de l'éligibilité
+    if (prefix !== ' - Choix chauffage') {
+      trackEvent(`Eligibilité|Formulaire de test${prefix} - Envoi`, address);
+    }
   };
 
   const handleOnSuccessAddress = useCallback((data: AddressDataType, context?: ContactFormContext, doTrackEvent: boolean = true) => {
     const { address, heatingType, eligibility } = data;
     if (doTrackEvent) {
-      // TODO à corriger
-      trackEvent(
-        // @ts-ignore
-        `Eligibilité|Formulaire de test${getContextPrefix(context)} - Adresse ${eligibility?.isEligible ? 'É' : 'Iné'}ligible`,
-        address || 'Adresse indefini'
-      );
+      const prefix = getContextPrefix(context);
+      // on ne track pas les événements pour le choix chauffage car ce n'est pas de l'éligibilité
+      if (prefix !== ' - Choix chauffage') {
+        trackEvent(
+          `Eligibilité|Formulaire de test${prefix} - Adresse ${eligibility?.isEligible ? 'É' : 'Iné'}ligible`,
+          address || 'Adresse indefini'
+        );
+      }
     }
     setAddressData(data);
     if (address && heatingType) {
