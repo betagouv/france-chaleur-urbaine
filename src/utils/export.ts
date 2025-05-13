@@ -6,12 +6,13 @@ interface ExportColumn<T extends Record<string, any>> {
   accessorKey: keyof T;
   name: string;
   precision?: number;
+  minWidth?: number;
 }
 
 interface SheetData<T extends Record<string, any>> {
   data: T[];
   name: string;
-  columns?: ExportColumn<T>[];
+  columns: ExportColumn<T>[];
 }
 
 const processData = <T extends Record<string, any>>(items: T[], columns: ExportColumn<T>[]): Record<string, any>[] => {
@@ -54,6 +55,30 @@ const exportAsXLSX = <T extends any[]>(
   sheets.forEach((sheet) => {
     const processedData = sheet.columns ? processData(sheet.data, sheet.columns) : sheet.data;
     const xlsxSheet = XLSX.utils.json_to_sheet(processedData);
+
+    // Calculate max width based on data content for each column
+    // Initialize with column names length using reduce
+    const maxWidths: Record<string, number> = sheet.columns.reduce(
+      (acc, col) => {
+        acc[col.name] = col.name.length;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
+
+    // Check data width for each cell
+    processedData.forEach((row) => {
+      sheet.columns.forEach((col) => {
+        const cellValue = row[col.name]?.toString() || '';
+        maxWidths[col.name] = Math.max(maxWidths[col.name], cellValue.length);
+      });
+    });
+
+    // Set column widths using the calculated max width or the one specified but max to 50 as cells are too large if not
+    xlsxSheet['!cols'] = sheet.columns.map((col) => ({
+      wch: col.minWidth ? Math.min(Math.max(col.minWidth, maxWidths[col.name]), 50) : maxWidths[col.name],
+    }));
+
     XLSX.utils.book_append_sheet(workbook, xlsxSheet, sheet.name);
   });
 

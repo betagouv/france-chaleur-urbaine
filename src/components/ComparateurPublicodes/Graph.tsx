@@ -13,6 +13,7 @@ import useArrayQueryState from '@/hooks/useArrayQueryState';
 import useScreenshot from '@/hooks/useScreenshot';
 import { deepMergeObjects } from '@/utils/core';
 import cx from '@/utils/cx';
+import { type exportAsXLSX } from '@/utils/export';
 
 import { ChartPlaceholder, GraphTooltip } from './ComparateurPublicodes.style';
 import { modesDeChauffage } from './mappings';
