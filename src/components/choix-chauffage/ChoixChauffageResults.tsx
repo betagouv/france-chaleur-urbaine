@@ -674,6 +674,7 @@ function ChoixChauffageResults({ typeLogement, addressDetail }: ChoixChauffageRe
                 <Link
                   variant="primary"
                   href={`/pro/comparateur-couts-performances?address=${encodeURIComponent(addressDetail.geoAddress?.properties.label ?? '')}`}
+                  eventKey="Lien|Choix chauffage vers comparateur"
                 >
                   Obtenez une simulation affinée avec notre comparateur
                 </Link>

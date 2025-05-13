@@ -742,6 +742,10 @@ const trackingEvents = {
     matomo: ['Carto', 'Etudes en cours', 'Désactive'],
   },
 
+  'Lien|Choix chauffage vers comparateur': {
+    matomo: ['Lien', 'Choix chauffage vers comparateur'],
+  },
+
   'Outil|Carte des réseaux et potentiels': {
     matomo: ['Outil', 'Carte des réseaux et potentiels'],
   },
