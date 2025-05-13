@@ -162,11 +162,14 @@ export async function updateEntityGeometry(
   tableName: NetworkTable,
   idField: string,
   idValue: string | number,
-  geometryConfig: GeometryWithSrid
+  geometryConfig: GeometryWithSrid,
+  options: {
+    extend?: boolean;
+  } = {}
 ): Promise<void> {
   const existingEntities = await kdb
     .selectFrom(tableName as any)
-    .select('id_fcu')
+    .select(['id_fcu', sql<GeoJSON.Geometry>`ST_AsGeoJSON(geom)::json`.as('geom')])
     .where(idField, '=', idValue)
     .execute();
 
@@ -177,10 +180,24 @@ export async function updateEntityGeometry(
     throw new Error(`Plusieurs entités trouvées avec ${idField} = ${idValue}`);
   }
 
-  const id_fcu = existingEntities[0].id_fcu;
+  const existingEntity = existingEntities[0];
+
+  const id_fcu = existingEntity.id_fcu;
+
+  let finalGeometry = createGeometryExpression(geometryConfig.geom, geometryConfig.srid);
+
+  if (options.extend && existingEntity.geom) {
+    // Combine existing geometry with new geometry using ST_Union
+    finalGeometry = sql`(
+      SELECT ST_Union(
+        ${finalGeometry},
+        ${createGeometryExpression(existingEntity.geom, 2154)}
+      )
+    )`;
+  }
 
   await kdb
-    .with('geometry', (db) => db.selectNoFrom(createGeometryExpression(geometryConfig.geom, geometryConfig.srid).as('geom')))
+    .with('geometry', (db) => db.selectNoFrom(finalGeometry.as('geom')))
     .updateTable(tableName as any)
     .where('id_fcu', '=', id_fcu)
     .set((eb) => ({
@@ -193,7 +210,7 @@ export async function updateEntityGeometry(
 
   await updateLabelsCommunesDepartementAndRegion(tableName, id_fcu);
 
-  logger.info(`Géométrie mise à jour pour ${tableName} avec ${idField} = ${idValue}`);
+  logger.info(`Géométrie ${options.extend ? 'étendue' : 'mise à jour'} pour ${tableName} avec ${idField} = ${idValue}`);
 }
 
 /**

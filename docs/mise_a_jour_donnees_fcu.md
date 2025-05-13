@@ -67,17 +67,46 @@ yarn db:pull:prod zones_et_reseaux_en_construction
 
 # récupérer des tickets à faire dans la colonne "Fichiers SIG dispos" sur Trello : https://trello.com/b/Tz9kOsCy/carto
 # ! Note : le workflow est en cours de stabilisation !
+# Trier les cards par tag pour traiter les demandes similaires les unes après les autres
+# Mettre les PDP en dernier
 # créer ou vérifier quel est l'id fcu dans airtable
 
 
 # selon le ticket, mettre à jour la géométrie via ces commandes
-# yarn cli geom insert <rdc|rdf|pdp|futur> <fichier.geojson> [id_fcu] [id_sncu]
-# yarn cli geom update <rdc|rdf|pdp|futur> <fichier.geojson> <id_fcu_or_sncu>
+```
+## Cas MAJ
 
-# si nouvelle entité réseau de chaleur 123
-yarn cli geom insert rdc mon-fichier.geojson 123
+### Remplacement
+- L'entité existe déjà en base et on veut **remplacer sa géométrie**
+
+```sh
+# yarn cli geom update <rdc|rdf|pdp|futur> <fichier.geojson> <id_fcu_or_sncu>
 # si entité réseau de chaleur 123 à mettre à jour
 yarn cli geom update rdc mon-fichier.geojson 123
+```
+
+### Extension
+- L'entité existe déjà en base et on veut **étendre sa géométrie**
+```sh
+# yarn cli geom extend <rdc|rdf|pdp|futur> <fichier.geojson> <id_fcu_or_sncu>
+# si entité réseau de chaleur 123 à mettre à jour
+yarn cli geom insert rdc mon-fichier.geojson 123
+```
+
+### Suppression
+- L'entité existe en base et on veut **la supprimer**
+
+```sql
+DELETE FROM reseaux_de_chaleur where id_fcu = 123
+DELETE FROM reseaux_de_chaleur where "Identifiant reseau" = '123'
+```
+
+
+
+```sh
+# yarn cli geom insert <rdc|rdf|pdp|futur> <fichier.geojson> [id_fcu] [id_sncu]
+# si nouvelle entité réseau de chaleur 123
+yarn cli geom insert rdc mon-fichier.geojson 123
 
 # si on doit créer un pdp depuis une commune
 # - rechercher le code insee de la commune
