@@ -671,7 +671,10 @@ function ChoixChauffageResults({ typeLogement, addressDetail }: ChoixChauffageRe
                 avec notre comparateur.
               </Alert>
               <div className="fr-mt-2w text-center">
-                <Link variant="primary" href="/pro/comparateur-couts-performances">
+                <Link
+                  variant="primary"
+                  href={`/pro/comparateur-couts-performances?address=${encodeURIComponent(addressDetail.geoAddress?.properties.label ?? '')}`}
+                >
                   Obtenez une simulation affinée avec notre comparateur
                 </Link>
               </div>
