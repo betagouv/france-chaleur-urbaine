@@ -318,7 +318,10 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
                           name: `P1 conso chaud (${engine.getUnit(`Bilan x ${modesDeChauffage[0].coutPublicodeKey} . P1prime`)})`,
                           accessorKey: 'p1ConsoChaud',
                         },
-                        { name: "P1'", accessorKey: 'p1Prime' },
+                        {
+                          name: `P1' (${engine.getUnit(`Bilan x ${modesDeChauffage[0].coutPublicodeKey} . P1prime`)})`,
+                          accessorKey: 'p1Prime',
+                        },
                         {
                           name: `P1 ECS (${engine.getUnit(`Bilan x ${modesDeChauffage[0].coutPublicodeKey} . P1ECS`)})`,
                           accessorKey: 'p1Ecs',
