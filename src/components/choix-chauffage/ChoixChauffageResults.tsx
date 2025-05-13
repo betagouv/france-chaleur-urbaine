@@ -50,7 +50,6 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
           <>
             {addressDetail.network.isEligible ? (
               <>
-                <EligibilityFormModal />
                 <div className="font-bold">Un réseau de chaleur passe à proximité immédiate de cette adresse.</div>
               </>
             ) : (
@@ -88,6 +87,7 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
             )}
             <div></div>
 
+            <EligibilityFormModal />
             <Button onClick={displayContactForm} className="fr-mb-2w">
               Faire une demande d’information
             </Button>
