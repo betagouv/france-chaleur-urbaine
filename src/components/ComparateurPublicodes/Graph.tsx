@@ -777,14 +777,15 @@ const Graph: React.FC<GraphProps> = ({
           )}
         </div>
         <Notice size="sm" classes={{ title: '!font-normal !text-sm' }}>
-          En cas d’utilisation de l’<strong>image exportée</strong>, un lien vers le comparateur en ligne doit obligatoirement être apposé à
-          proximité de l’image.
-          {exportSheets && (
+          {exportSheets ? (
             <>
-              <br />
-              <br />
-              En cas d’utilisation des <strong>données exportées</strong>, un lien, France Chaleur Urbaine doit obligatoirement être cité
-              comme source de données lors de la réutilisation.
+              En cas d’utilisation de l’image ou des données exportées, un lien vers le comparateur en ligne doit obligatoirement être
+              apposé à proximité de l’image ou des données utilisées.
+            </>
+          ) : (
+            <>
+              En cas d’utilisation de l’<strong>image exportée</strong>, un lien vers le comparateur en ligne doit obligatoirement être
+              apposé à proximité de l’image.
             </>
           )}
         </Notice>
