@@ -771,7 +771,7 @@ const Graph: React.FC<GraphProps> = ({
             Sauvegarder l'image
           </Button>
           {exportSheets && (
-            <Button priority="secondary" onClick={() => exportAsXLSX(`${captureImageName}.xls`, exportSheets)}>
+            <Button priority="secondary" onClick={() => exportAsXLSX(`${captureImageName}.xlsx`, exportSheets)}>
               Exporter les données
             </Button>
           )}

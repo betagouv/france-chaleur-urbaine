@@ -45,6 +45,10 @@ const exportAsXLSX = <T extends any[]>(
   fileName: string = `${new Date().toISOString().split('T')[0]}_export.xlsx`,
   sheets: { [I in keyof T]: SheetData<T[I]> }
 ) => {
+  if (!fileName.endsWith('.xlsx')) {
+    throw new Error('Le nom du fichier doit se terminer par .xlsx');
+  }
+
   const workbook = XLSX.utils.book_new();
 
   sheets.forEach((sheet) => {
