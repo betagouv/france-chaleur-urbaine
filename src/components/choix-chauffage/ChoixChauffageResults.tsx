@@ -698,7 +698,7 @@ function ChoixChauffageResults({ typeLogement, addressDetail }: ChoixChauffageRe
 export default ChoixChauffageResults;
 
 const ResultSection = ({ children, color = 'blue', title }: { children: ReactNode; color?: 'orange' | 'blue'; title?: string }) => (
-  <div className={cx('fr-p-2w shadow-md', color === 'orange' ? 'bg-[#FFE8E5]' : 'bg-[#E3E3FD]')}>
+  <div className={cx('fr-p-2w', color === 'orange' ? 'bg-[#FFE8E5]' : 'bg-[#E3E3FD]')}>
     <p className="text-lg font-bold !fr-mb-2w">{title}</p>
     {children}
   </div>
