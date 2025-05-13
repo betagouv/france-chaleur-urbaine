@@ -11,6 +11,7 @@ import Link from '@/components/ui/Link';
 import Tooltip from '@/components/ui/Tooltip';
 import useEligibilityForm from '@/hooks/useEligibilityForm';
 import { type AddressDetail } from '@/types/HeatNetworksResponse';
+import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
 
 type ModeDeChauffage = {
@@ -68,9 +69,9 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
               ) : (
                 <div className="text-error fr-ml-1w">
                   <Icon name="ri-close-line" size="sm" className="fr-mr-1v" />
-                  {addressDetail.network.distance
-                    ? 'Aucun réseau de chaleur à proximité immédiate'
-                    : `réseau à ${addressDetail.network.distance}m à vol d’oiseau`}
+                  {isDefined(addressDetail.network.distance)
+                    ? `réseau à ${addressDetail.network.distance}m à vol d’oiseau`
+                    : 'Aucun réseau de chaleur à proximité immédiate'}
                 </div>
               )}
             </div>
