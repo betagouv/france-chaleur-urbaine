@@ -1,6 +1,7 @@
 import Button from '@codegouvfr/react-dsfr/Button';
 import Input from '@codegouvfr/react-dsfr/Input';
 import { type CellContext, type ColumnDefTemplate } from '@tanstack/react-table';
+import dynamic from 'next/dynamic';
 import { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
@@ -17,11 +18,12 @@ import useReseauxDeChaleurFilters, { type FilterWithLimits } from '@/hooks/useRe
 import { gestionnairesFilters, useServices } from '@/services';
 import { type NetworkToCompare } from '@/types/Summary/Network';
 import { isDefined } from '@/utils/core';
-import { exportAsXLSX } from '@/utils/export';
 import { type Interval, intervalsEqual } from '@/utils/interval';
 import { compareFrenchStrings } from '@/utils/strings';
 
 import NetworkName from './NetworkName';
+
+const ButtonExport = dynamic(() => import('@/components/ui/ButtonExport'), { ssr: false });
 
 type DataToDisplay = 'general' | 'mix_energetique';
 
@@ -75,6 +77,95 @@ const MixEnergetiqueFieldsList = [
 ] as const satisfies ReadonlyArray<keyof NetworkToCompare>;
 
 export const defaultInterval: Interval = [Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER];
+
+const exportColumns = [
+  {
+    accessorKey: 'nom_reseau',
+    name: 'Nom du réseau',
+  },
+  {
+    accessorKey: 'reseaux classes',
+    name: 'Réseau classé',
+  },
+  {
+    accessorKey: 'Identifiant reseau',
+    name: 'Identifiant',
+  },
+  {
+    accessorKey: 'communes',
+    name: 'Communes',
+  },
+  {
+    accessorKey: 'Gestionnaire',
+    name: 'Gestionnaire',
+  },
+  {
+    accessorKey: 'Taux EnR&R',
+    name: 'Taux EnR&R (%)',
+    precision: 1,
+  },
+  {
+    accessorKey: 'contenu CO2 ACV',
+    name: 'Contenu CO2 ACV (gCO2/kWh)',
+  },
+  {
+    accessorKey: 'contenu CO2',
+    name: 'Contenu CO2 (gCO2/kWh)',
+  },
+  {
+    accessorKey: 'PM',
+    name: 'Prix moyen (€TTC/MWh)',
+  },
+  {
+    accessorKey: 'annee_creation',
+    name: 'Année de construction',
+  },
+  {
+    accessorKey: 'livraisons_totale_MWh',
+    name: 'Livraisons de chaleur annuelles (GWh)',
+    precision: 1,
+  },
+  {
+    accessorKey: 'energie_ratio_biomasse',
+    name: 'Biomasse (%)',
+    precision: 1,
+  },
+  {
+    accessorKey: 'energie_ratio_geothermie',
+    name: 'Géothermie (%)',
+    precision: 1,
+  },
+  {
+    accessorKey: 'energie_ratio_uve',
+    name: 'UVE (%)',
+    precision: 1,
+  },
+  {
+    accessorKey: 'energie_ratio_chaleurIndustrielle',
+    name: 'Chaleur industrielle (%)',
+    precision: 1,
+  },
+  {
+    accessorKey: 'energie_ratio_solaireThermique',
+    name: 'Solaire thermique (%)',
+    precision: 1,
+  },
+  {
+    accessorKey: 'energie_ratio_pompeAChaleur',
+    name: 'Pompe à chaleur (%)',
+    precision: 1,
+  },
+  {
+    accessorKey: 'energie_ratio_gaz',
+    name: 'Gaz (%)',
+    precision: 1,
+  },
+  {
+    accessorKey: 'energie_ratio_fioul',
+    name: 'Fioul (%)',
+    precision: 1,
+  },
+];
 
 const FiltersBox = styled(Box)`
   max-width: 400px;
@@ -419,109 +510,21 @@ const NetworksList = () => {
               <Icon size="md" name="fr-icon-filter-line" color="var(--text-action-high-blue-france)" />
               Tous les filtres ({nbFilters})
             </Button>
-            <Button
+            <ButtonExport
               disabled={!filteredNetworks.length}
-              onClick={() =>
-                exportAsXLSX(`${new Date().toISOString().split('T')[0]}_reseauxDeChaleur.xlsx`, [
-                  {
-                    data: filteredNetworks,
-                    name: 'Général et Mix Énergétique',
-                    columns: [
-                      {
-                        accessorKey: 'nom_reseau',
-                        name: 'Nom du réseau',
-                      },
-                      {
-                        accessorKey: 'reseaux classes',
-                        name: 'Réseau classé',
-                      },
-                      {
-                        accessorKey: 'Identifiant reseau',
-                        name: 'Identifiant',
-                      },
-                      {
-                        accessorKey: 'communes',
-                        name: 'Communes',
-                      },
-                      {
-                        accessorKey: 'Gestionnaire',
-                        name: 'Gestionnaire',
-                      },
-                      {
-                        accessorKey: 'Taux EnR&R',
-                        name: 'Taux EnR&R (%)',
-                        precision: 1,
-                      },
-                      {
-                        accessorKey: 'contenu CO2 ACV',
-                        name: 'Contenu CO2 ACV (gCO2/kWh)',
-                      },
-                      {
-                        accessorKey: 'contenu CO2',
-                        name: 'Contenu CO2 (gCO2/kWh)',
-                      },
-                      {
-                        accessorKey: 'PM',
-                        name: 'Prix moyen (€TTC/MWh)',
-                      },
-                      {
-                        accessorKey: 'annee_creation',
-                        name: 'Année de construction',
-                      },
-                      {
-                        accessorKey: 'livraisons_totale_MWh',
-                        name: 'Livraisons de chaleur annuelles (GWh)',
-                        precision: 1,
-                      },
-                      {
-                        accessorKey: 'energie_ratio_biomasse',
-                        name: 'Biomasse (%)',
-                        precision: 1,
-                      },
-                      {
-                        accessorKey: 'energie_ratio_geothermie',
-                        name: 'Géothermie (%)',
-                        precision: 1,
-                      },
-                      {
-                        accessorKey: 'energie_ratio_uve',
-                        name: 'UVE (%)',
-                        precision: 1,
-                      },
-                      {
-                        accessorKey: 'energie_ratio_chaleurIndustrielle',
-                        name: 'Chaleur industrielle (%)',
-                        precision: 1,
-                      },
-                      {
-                        accessorKey: 'energie_ratio_solaireThermique',
-                        name: 'Solaire thermique (%)',
-                        precision: 1,
-                      },
-                      {
-                        accessorKey: 'energie_ratio_pompeAChaleur',
-                        name: 'Pompe à chaleur (%)',
-                        precision: 1,
-                      },
-                      {
-                        accessorKey: 'energie_ratio_gaz',
-                        name: 'Gaz (%)',
-                        precision: 1,
-                      },
-                      {
-                        accessorKey: 'energie_ratio_fioul',
-                        name: 'Fioul (%)',
-                        precision: 1,
-                      },
-                    ],
-                  },
-                ])
-              }
+              filename={`${new Date().toISOString().split('T')[0]}_reseauxDeChaleur.xlsx`}
+              sheets={[
+                {
+                  data: filteredNetworks,
+                  name: 'Général et Mix Énergétique',
+                  columns: exportColumns,
+                },
+              ]}
               iconId="fr-icon-file-download-line"
               iconPosition="right"
             >
               Exporter
-            </Button>
+            </ButtonExport>
             <Input
               label="Rechercher"
               hideLabel
