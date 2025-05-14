@@ -18,7 +18,7 @@
   "scripts": {
     "dev": "next dev --turbo",
     "dev:webpack": "next dev",
-    "build": "next build",
+    "build": "NODE_OPTIONS=\"--max-old-space-size=8192\" next build --turbo",
     "build:analyze": "ANALYZE=true yarn build",
     "clean": "rm -Rf node_modules && rm -Rf .next && yarn",
     "start": "next start -p $PORT",
