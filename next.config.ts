@@ -136,29 +136,27 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
-  experimental: {
-    turbo: {
-      resolveAlias: {
-        '@codegouvfr/react-dsfr/Breadcrumb': '@/components/turbo/Breadcrumb',
-        '@codegouvfr/react-dsfr/Button': '@/components/turbo/Button',
-        '@codegouvfr/react-dsfr/ButtonsGroup': '@/components/turbo/ButtonsGroup',
-        '@codegouvfr/react-dsfr/Card': '@/components/turbo/Card',
-        '@codegouvfr/react-dsfr/Footer': '@/components/turbo/Footer',
-        '@codegouvfr/react-dsfr/Header': '@/components/turbo/Header',
-        '@codegouvfr/react-dsfr/MainNavigation': '@/components/turbo/MainNavigation',
-        '@codegouvfr/react-dsfr/Menu': '@/components/turbo/Menu',
-        '@codegouvfr/react-dsfr/MegaMenu': '@/components/turbo/MegaMenu',
-        '@codegouvfr/react-dsfr/Tile': '@/components/turbo/Tile',
+  turbopack: {
+    resolveAlias: {
+      '@codegouvfr/react-dsfr/Breadcrumb': '@/components/turbo/Breadcrumb',
+      '@codegouvfr/react-dsfr/Button': '@/components/turbo/Button',
+      '@codegouvfr/react-dsfr/ButtonsGroup': '@/components/turbo/ButtonsGroup',
+      '@codegouvfr/react-dsfr/Card': '@/components/turbo/Card',
+      '@codegouvfr/react-dsfr/Footer': '@/components/turbo/Footer',
+      '@codegouvfr/react-dsfr/Header': '@/components/turbo/Header',
+      '@codegouvfr/react-dsfr/MainNavigation': '@/components/turbo/MainNavigation',
+      '@codegouvfr/react-dsfr/Menu': '@/components/turbo/Menu',
+      '@codegouvfr/react-dsfr/MegaMenu': '@/components/turbo/MegaMenu',
+      '@codegouvfr/react-dsfr/Tile': '@/components/turbo/Tile',
+    },
+    rules: {
+      '*.svgr': {
+        loaders: ['@svgr/webpack'],
+        as: '*.js',
       },
-      rules: {
-        '*.svgr': {
-          loaders: ['@svgr/webpack'],
-          as: '*.js',
-        },
-        '*.md': {
-          loaders: ['raw-loader'],
-          as: '*.js',
-        },
+      '*.md': {
+        loaders: ['raw-loader'],
+        as: '*.js',
       },
     },
   },
