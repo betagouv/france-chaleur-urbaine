@@ -314,9 +314,9 @@ const adminNavigationMenu: MainNavigationProps.Item[] = [
         },
       },
       {
-        text: 'Gestion des tags',
+        text: 'Gestion des tags gestionnaires',
         linkProps: {
-          href: '/admin/tags gestionnaires',
+          href: '/admin/tags',
         },
       },
       {
