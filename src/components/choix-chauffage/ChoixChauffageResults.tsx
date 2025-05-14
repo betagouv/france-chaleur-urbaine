@@ -50,7 +50,11 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
           <>
             {addressDetail.network.isEligible ? (
               <>
-                <div className="font-bold">Un réseau de chaleur passe à proximité immédiate de cette adresse.</div>
+                <div className="font-bold">
+                  {addressDetail.network.futurNetwork
+                    ? 'Un réseau de chaleur passera bientôt à proximité de votre adresse.'
+                    : 'Un réseau de chaleur passe à proximité immédiate de cette adresse.'}
+                </div>
               </>
             ) : (
               <div className="font-bold">Aucun réseau de chaleur passe à proximité immédiate de votre adresse.</div>
