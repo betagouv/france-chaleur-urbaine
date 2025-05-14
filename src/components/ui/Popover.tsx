@@ -80,6 +80,7 @@ const StyledPopoverContent = styled(PopoverPrimitive.Content)<{
 }>`
   z-index: 2001; /* to be above the NetworksFilters */
   border-radius: 0.375rem;
+  pointer-events: all;
   background-color: white;
   color: black;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
