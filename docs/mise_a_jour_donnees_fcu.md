@@ -53,8 +53,6 @@ Contient des dumps PG de plusieurs tables avec des noms différents :
 
 ## Étapes récupération des changements
 
-
-
 ```sh
 # au préalable, récupérer les données à jour depuis la prod
 yarn db:pull:prod reseaux_de_chaleur
@@ -67,26 +65,96 @@ yarn db:pull:prod zones_et_reseaux_en_construction
 
 # récupérer des tickets à faire dans la colonne "Fichiers SIG dispos" sur Trello : https://trello.com/b/Tz9kOsCy/carto
 # ! Note : le workflow est en cours de stabilisation !
+# Trier les cards par tag pour traiter les demandes similaires les unes après les autres
+# Mettre les PDP en dernier
 # créer ou vérifier quel est l'id fcu dans airtable
 
 
 # selon le ticket, mettre à jour la géométrie via ces commandes
-# yarn cli geom insert <rdc|rdf|pdp|futur> <fichier.geojson> [id_fcu] [id_sncu]
-# yarn cli geom update <rdc|rdf|pdp|futur> <fichier.geojson> <id_fcu_or_sncu>
+```
+## Cas MAJ
 
+Dans les différentes commandes les tables utilisées sont:
+- rdc: reseaux_de_chaleur
+- rdf: reseaux_de_froid
+- pdp: zone_de_developpement_prioritaire
+- futur: zones_et_reseaux_en_construction
+
+Les références dans Airtable sont 
+- rdc: https://airtable.com/app9opX8gRAtBqkan/tblyfmHHCtyHg0MAk/viwAhx8JLQGw2XVDN?blocks=hide
+- futur: https://airtable.com/app9opX8gRAtBqkan/tble0LoJtQeH1z63a?blocks=hide
+
+
+### Insertion
+- L'entité n'existe pas en base
+
+```sh
+# yarn cli geom insert <rdc|rdf|pdp|futur> <fichier.geojson> [id_fcu] [id_sncu]
 # si nouvelle entité réseau de chaleur 123
 yarn cli geom insert rdc mon-fichier.geojson 123
+yarn cli geom insert pdp mon-fichier.geojson 0 123C
+```
+
+Si aucun ID n'est fourni, il faut aller créer un record dans Airtable
+
+
+### Remplacement
+- L'entité existe déjà en base et on veut **remplacer sa géométrie**
+
+```sh
+# yarn cli geom update <rdc|rdf|pdp|futur> <fichier.geojson> <id_fcu_or_sncu>
 # si entité réseau de chaleur 123 à mettre à jour
 yarn cli geom update rdc mon-fichier.geojson 123
+```
 
+### Extension
+- L'entité existe déjà en base et on veut **ajouter la géométrie** a une existante
+```sh
+# yarn cli geom extend <rdc|rdf|pdp|futur> <fichier.geojson> <id_fcu_or_sncu>
+# si entité réseau de chaleur 123 à mettre à jour
+yarn cli geom extend rdc mon-fichier.geojson 123
+```
+
+### Suppression
+- L'entité existe en base et on veut **la supprimer**
+
+```sql
+DELETE FROM <nom_table> where id_fcu = 123
+DELETE FROM <nom_table> where "Identifiant reseau" = '123C'
+```
+
+### Fusion
+
+- 2 entités existent en base et on souhaite les fusionner. C'est-à-dire fusionner leurs géométries dans l'une et supprimer l'autre.
+
+Il faut donc choisir celle qui restera et supprimer l'autre
+
+
+```sql
+update <nom_table> t1
+set geom = ST_Union(t1.geom, (
+    select t2.geom
+    from <nom_table> t2
+    where t2.id_fcu = <id a supprimer> -- ID de l'entité qui sera supprimée
+  ))
+WHERE t1.id_fcu = <id a garder>; -- ID de l'entité qui sera gardée
+
+DELETE FROM <nom_table> where id_fcu = <id a supprimer>;
+```
+
+## Commandes utiles
+
+```sh
 # si on doit créer un pdp depuis une commune
 # - rechercher le code insee de la commune
 yarn cli communes:search vannes
 # - puis appeler la commande
 yarn cli geom create-pdp-from-commune 56260
+```
 
+## Finalisation
 
-
+```sh
 # quand tout est fini, ou qu'on veut voir des changement sur la carte
 
 # mise à jour des champs communes selon la géométrie des données
@@ -119,6 +187,9 @@ yarn db:push:dev zone_de_developpement_prioritaire_tiles --data-only
 yarn db:push:dev zones_et_reseaux_en_construction --data-only
 yarn db:push:dev zones_et_reseaux_en_construction_tiles --data-only
 
+# redéploie dev pour créer les pages statiques de réseaux
+# https://dashboard.scalingo.com/apps/osc-fr1/france-chaleur-urbaine-dev/deploy/manual
+
 # copie vers prod (quand validé en dev par Florence)
 yarn db:push:prod reseaux_de_chaleur --data-only
 yarn db:push:prod reseaux_de_chaleur_tiles --data-only
@@ -129,8 +200,11 @@ yarn db:push:prod zone_de_developpement_prioritaire_tiles --data-only
 yarn db:push:prod zones_et_reseaux_en_construction --data-only
 yarn db:push:prod zones_et_reseaux_en_construction_tiles --data-only
 
+# redéploie prod pour créer les pages statiques de réseaux
+# https://dashboard.scalingo.com/apps/osc-fr1/france-chaleur-urbaine/deploy/manual
 ```
 
+## Misc
 
 ```sql
 -- supprimer les tables comme les vues en dépendent et que le script copyRemoteTableToLocal ne fait pas de cascade

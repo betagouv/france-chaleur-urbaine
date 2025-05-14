@@ -50,4 +50,5 @@ allowed_patterns:
 - pass
 - (?i).*key.*
 - PasswordInput
+- (?i)https:\/\/airtable\.com\/app9opX8gRAtBqkan.* # Links to airtable in docs
 version: "1.0"

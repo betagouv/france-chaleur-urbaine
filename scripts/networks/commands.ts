@@ -34,7 +34,7 @@ export function registerNetworkCommands(parentProgram: Command) {
     )
     .argument('<type>', "type d'entité", (v) => z.enum(entityTypes).parse(v))
     .argument('<fileName>', 'input file (format GeoJSON)')
-    .argument('[id_fcu]', 'id_fcu du réseau (autogénéré si non renseigné)', (v) => parseInt(v))
+    .argument('[id_fcu]', 'id_fcu du réseau (autogénéré si non renseigné)', (v) => z.coerce.number().parse(v))
     .argument('[id_sncu]', 'Identifiant du réseau (seulement pour les réseaux de chaleur et de froid)')
     .action(async (type, fileName, id_fcu, id_sncu) => {
       const geometryConfig = await readFileGeometry(fileName);
@@ -43,6 +43,20 @@ export function registerNetworkCommands(parentProgram: Command) {
       if (type === 'pdp' && id_sncu) {
         await updateNetworkHasPDP(id_sncu);
       }
+    });
+
+  program
+    .command('extend')
+    .description("Etend la géométrie d'une entité. La géométrie peut être en WGS 84 (4326) ou Lambert 93 (2154)")
+    .argument('<type>', "type d'entité", (v) => z.enum(entityTypes).parse(v))
+    .argument('<fileName>', 'input file (format GeoJSON)')
+    .argument('<id_fcu_or_sncu>', 'id_fcu ou SNCU du réseau')
+    .action(async (type, fileName, id_fcu_or_sncu) => {
+      const isIdSNCU = id_fcu_or_sncu.endsWith('C') || id_fcu_or_sncu.endsWith('F');
+      const idField = isIdSNCU ? 'Identifiant reseau' : 'id_fcu';
+      const idValue = isIdSNCU ? id_fcu_or_sncu : parseInt(id_fcu_or_sncu);
+      const geometryConfig = await readFileGeometry(fileName);
+      await updateEntityGeometry(entityTypeToTable[type], idField, idValue, geometryConfig, { extend: true });
     });
 
   program
