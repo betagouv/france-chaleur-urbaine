@@ -141,6 +141,19 @@ export function handleRouteErrors<HandlersConfig extends Partial<Record<RequestM
         }
 
         if ((error as any).routine) {
+          // Check for unique constraint violation (error code 23505)
+          if ((error as any).code === '23505') {
+            logger.error('unique constraint violation', {
+              error: error,
+              query: error.message,
+            });
+            return res.status(400).json({
+              code: 'unique_constraint_violation',
+              message: 'Cette entrée existe déjà',
+              error: error.message,
+            });
+          }
+
           logger.error('database error', {
             error: error,
             query: error.message,
