@@ -43,6 +43,7 @@ const columns: ColumnDef<AdminManageUserItem>[] = [
     align: 'center',
     flex: 1.5,
     cell: (info) => <UserRoleBadge role={info.getValue<UserRole>()} />,
+    filterType: 'Facets',
   },
   {
     accessorKey: 'gestionnaires',
@@ -63,6 +64,7 @@ const columns: ColumnDef<AdminManageUserItem>[] = [
     header: 'Newsletter',
     cellType: 'Boolean',
     align: 'center',
+    filterType: 'Facets',
   },
   {
     accessorKey: 'last_connection',
@@ -74,6 +76,7 @@ const columns: ColumnDef<AdminManageUserItem>[] = [
     header: 'Actif',
     cellType: 'Boolean',
     align: 'center',
+    filterType: 'Facets',
   },
   {
     accessorKey: 'created_at',
