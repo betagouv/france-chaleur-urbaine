@@ -57,7 +57,7 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
                 </div>
               </>
             ) : (
-              <div className="font-bold">Aucun réseau de chaleur passe à proximité immédiate de votre adresse.</div>
+              <div className="font-bold">Aucun réseau de chaleur ne passe actuellement à proximité de votre adresse.</div>
             )}
 
             <div className="flex items-center gap-2 fr-my-1w">
