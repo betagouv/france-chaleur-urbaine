@@ -121,7 +121,7 @@ const Hero = ({
           className={cx('fr-container flex relative', heroVariants({ size }), imagePosition === 'right' ? 'flex-row-reverse' : 'flex-row')}
         >
           {image && (
-            <div className={cx('hidden lg:block', `flex-[${imageFlex}_0_0%]`)}>
+            <div className={cx('hidden lg:block', `flex-${imageFlex}`)}>
               {['inline', 'inline-cover'].includes(imageType) && (
                 <div className={cx('relative h-full')}>
                   <Image
@@ -140,7 +140,7 @@ const Hero = ({
               )}
             </div>
           )}
-          <article className={cx(articleVariants({ size }), `flex-[${titleFlex}_0_0%]`, bigTitle ? '' : 'px-2')}>{children}</article>
+          <article className={cx(articleVariants({ size }), `flex-${titleFlex}`, bigTitle ? '' : 'px-2')}>{children}</article>
         </div>
       </section>
     </HeroContext.Provider>

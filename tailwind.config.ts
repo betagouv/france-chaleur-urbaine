@@ -5,6 +5,11 @@ import colors from './src/components/ui/helpers/colors';
 
 const config = {
   content: ['./src/**/*.{js,ts,jsx,tsx,mdx}'],
+  safelist: [
+    {
+      pattern: /^flex-[2-9]$|^flex-1[0-2]$/,
+    },
+  ],
   theme: {
     extend: {
       // Use breakpoints from DSFR https://www.systeme-de-design.gouv.fr/fondamentaux/grille-et-points-de-rupture
@@ -43,9 +48,15 @@ const config = {
           [`.fr-mb-${token}`]: { marginBottom: value },
           [`.fr-ml-${token}`]: { marginLeft: value },
         };
-
         addUtilities(utilities, ['responsive', 'hover']);
       });
+
+      // Add flex ratio utilities from 2 to 12
+      const flexRatios = Object.fromEntries(
+        Array.from({ length: 11 }, (_, i) => i + 2).map((ratio) => [`.flex-${ratio}`, { flex: `${ratio} 0 0%` }])
+      );
+
+      addUtilities(flexRatios, ['responsive']);
     },
   ],
 } satisfies Config;
