@@ -402,6 +402,8 @@ export const FullyFeaturedMap = ({
       return;
     }
 
+    // legacy, display the result of a bulk eligibility test
+    // keep until end of 2025 to be compatible with links sent by email
     heatNetworkService.bulkEligibilityValues(id as string).then((response) => {
       if (response.result) {
         const newMarkersList: MapMarkerInfos[] = [];
