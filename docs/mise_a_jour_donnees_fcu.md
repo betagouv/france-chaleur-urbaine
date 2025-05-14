@@ -53,8 +53,6 @@ Contient des dumps PG de plusieurs tables avec des noms différents :
 
 ## Étapes récupération des changements
 
-
-
 ```sh
 # au préalable, récupérer les données à jour depuis la prod
 yarn db:pull:prod reseaux_de_chaleur
@@ -76,6 +74,17 @@ yarn db:pull:prod zones_et_reseaux_en_construction
 ```
 ## Cas MAJ
 
+Dans les différentes commandes les tables utilisées sont:
+- rdc: reseaux_de_chaleur
+- rdf: reseaux_de_froid
+- pdp: zone_de_developpement_prioritaire
+- futur: zones_et_reseaux_en_construction
+
+Les références dans Airtable sont 
+- rdc: https://airtable.com/app9opX8gRAtBqkan/tblyfmHHCtyHg0MAk/viwAhx8JLQGw2XVDN?blocks=hide
+- futur: https://airtable.com/app9opX8gRAtBqkan/tble0LoJtQeH1z63a?blocks=hide
+
+
 ### Insertion
 - L'entité n'existe pas en base
 
@@ -85,6 +94,9 @@ yarn db:pull:prod zones_et_reseaux_en_construction
 yarn cli geom insert rdc mon-fichier.geojson 123
 yarn cli geom insert pdp mon-fichier.geojson 0 123C
 ```
+
+Si aucun ID n'est fourni, il faut aller créer un record dans Airtable
+
 
 ### Remplacement
 - L'entité existe déjà en base et on veut **remplacer sa géométrie**
@@ -96,32 +108,38 @@ yarn cli geom update rdc mon-fichier.geojson 123
 ```
 
 ### Extension
-- L'entité existe déjà en base et on veut **étendre sa géométrie**
+- L'entité existe déjà en base et on veut **ajouter la géométrie** a une existante
 ```sh
 # yarn cli geom extend <rdc|rdf|pdp|futur> <fichier.geojson> <id_fcu_or_sncu>
 # si entité réseau de chaleur 123 à mettre à jour
-yarn cli geom insert rdc mon-fichier.geojson 123
+yarn cli geom extend rdc mon-fichier.geojson 123
 ```
 
 ### Suppression
 - L'entité existe en base et on veut **la supprimer**
 
 ```sql
-DELETE FROM reseaux_de_chaleur where id_fcu = 123
-DELETE FROM reseaux_de_chaleur where "Identifiant reseau" = '123'
-DELETE FROM zone_de_developpement_prioritaire  where id_fcu = 8002
+DELETE FROM <nom_table> where id_fcu = 123
+DELETE FROM <nom_table> where "Identifiant reseau" = '123C'
 ```
 
 ### Fusion
 
-- 2 entités existent en base et on souhaites les fusionner
+- 2 entités existent en base et on souhaite les fusionner. C'est-à-dire fusionner leurs géométries dans l'une et supprimer l'autre.
 
-Il faut donc choisir celui qui restera et supprimer l'autre
+Il faut donc choisir celle qui restera et supprimer l'autre
+
 
 ```sql
-DELETE FROM reseaux_de_chaleur where id_fcu = 123
-DELETE FROM reseaux_de_chaleur where "Identifiant reseau" = '123'
-DELETE FROM zone_de_developpement_prioritaire  where id_fcu = 8002
+update <nom_table> t1
+set geom = ST_Union(t1.geom, (
+    select t2.geom
+    from <nom_table> t2
+    where t2.id_fcu = <id a supprimer> -- ID de l'entité qui sera supprimée
+  ))
+WHERE t1.id_fcu = <id a garder>; -- ID de l'entité qui sera gardée
+
+DELETE FROM <nom_table> where id_fcu = <id a supprimer>;
 ```
 
 ## Commandes utiles
