@@ -46,6 +46,8 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
             addressDetails: addressDetail,
           },
         });
+
+        const isInFuturNetworkZone = addressDetail.network.futurNetwork && addressDetail.network.distance === null;
         return (
           <>
             {addressDetail.network.isEligible ? (
@@ -64,19 +66,20 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
               <Icon name="ri-map-pin-line" size="sm" />
               {addressDetail.geoAddress?.properties.label}
 
-              {addressDetail.network.isEligible ? (
-                <div className="text-success fr-ml-1w">
-                  <Icon name="ri-guide-line" size="sm" className="fr-mr-1v" />
-                  réseau à {addressDetail.network.distance}m à vol d’oiseau
-                </div>
-              ) : (
-                <div className="text-error fr-ml-1w">
-                  <Icon name="ri-close-line" size="sm" className="fr-mr-1v" />
-                  {isDefined(addressDetail.network.distance)
-                    ? `réseau à ${addressDetail.network.distance}m à vol d’oiseau`
-                    : 'Aucun réseau de chaleur à proximité immédiate'}
-                </div>
-              )}
+              {!isInFuturNetworkZone &&
+                (addressDetail.network.isEligible ? (
+                  <div className="text-success fr-ml-1w">
+                    <Icon name="ri-guide-line" size="sm" className="fr-mr-1v" />
+                    réseau à {addressDetail.network.distance}m à vol d’oiseau
+                  </div>
+                ) : (
+                  <div className="text-error fr-ml-1w">
+                    <Icon name="ri-close-line" size="sm" className="fr-mr-1v" />
+                    {isDefined(addressDetail.network.distance)
+                      ? `réseau à ${addressDetail.network.distance}m à vol d’oiseau`
+                      : 'Aucun réseau de chaleur à proximité immédiate'}
+                  </div>
+                ))}
             </div>
 
             {addressDetail.network.inPDP && (
