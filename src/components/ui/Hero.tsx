@@ -56,8 +56,9 @@ export type HeroProps = React.HTMLAttributes<HTMLDivElement> &
   VariantProps<typeof heroContainerVariants> & {
     image?: string;
     imageClassName?: string;
-    imageType?: 'floating' | 'inline';
+    imageType?: 'floating' | 'inline' | 'inline-cover';
     imagePosition?: 'left' | 'right';
+    imageRatio?: string;
   };
 
 const HeroContext = React.createContext<VariantProps<typeof heroContainerVariants> & { bigTitle?: boolean }>({});
@@ -89,10 +90,16 @@ const Hero = ({
   imageClassName = '',
   imageType = 'floating',
   imagePosition = 'left',
+  imageRatio,
   variant,
   ...props
 }: HeroProps) => {
-  const bigTitle = !image || imageType === 'inline';
+  const bigTitle = !image || imageType === 'inline' || imageType === 'inline-cover';
+
+  const ratio = imageRatio ?? (bigTitle ? '1/3' : '1/2');
+
+  const [imageFlex, allFlex] = ratio.split('/').map(Number);
+  const titleFlex = allFlex - imageFlex;
 
   return (
     <HeroContext.Provider value={{ size, variant, bigTitle }}>
@@ -114,15 +121,16 @@ const Hero = ({
           className={cx('fr-container flex relative', heroVariants({ size }), imagePosition === 'right' ? 'flex-row-reverse' : 'flex-row')}
         >
           {image && (
-            <div className="flex-1 hidden lg:block">
-              {imageType === 'inline' && (
+            <div className={cx('hidden lg:block', `flex-[${imageFlex}_0_0%]`)}>
+              {['inline', 'inline-cover'].includes(imageType) && (
                 <div className={cx('relative h-full')}>
                   <Image
                     src={image}
                     alt=""
                     className={cx(
-                      'w-full h-full object-contain',
-                      imagePosition === 'right' ? 'object-[right]' : 'object-[left]',
+                      'w-full h-full',
+                      imageType === 'inline-cover' ? 'object-cover' : 'object-contain',
+                      imagePosition === 'right' ? 'object-right !left-auto' : 'object-left !right-auto',
                       imageClassName
                     )}
                     priority
@@ -132,7 +140,7 @@ const Hero = ({
               )}
             </div>
           )}
-          <article className={cx(articleVariants({ size }), bigTitle ? 'flex-[2_1_0%]' : 'flex-1 px-2')}>{children}</article>
+          <article className={cx(articleVariants({ size }), `flex-[${titleFlex}_0_0%]`, bigTitle ? '' : 'px-2')}>{children}</article>
         </div>
       </section>
     </HeroContext.Provider>
