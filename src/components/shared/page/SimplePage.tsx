@@ -308,12 +308,6 @@ const adminNavigationMenu: MainNavigationProps.Item[] = [
     text: 'Administration',
     menuLinks: [
       {
-        text: 'Admin (ancienne version)',
-        linkProps: {
-          href: '/admin',
-        },
-      },
-      {
         text: 'Gestion des utilisateurs',
         linkProps: {
           href: '/admin/users',
