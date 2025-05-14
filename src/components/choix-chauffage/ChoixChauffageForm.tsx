@@ -10,7 +10,7 @@ import { toastErrors } from '@/services/notification';
 import { type AddressDetail } from '@/types/HeatNetworksResponse';
 import { type SuggestionItem } from '@/types/Suggestions';
 import { isDefined } from '@/utils/core';
-import { workMinimum } from '@/utils/time';
+import { runWithMinimumDelay } from '@/utils/time';
 
 import ChoixChauffageResults from './ChoixChauffageResults';
 
@@ -29,7 +29,7 @@ function ChoixChauffageForm() {
 
   const testAddressEligibility = toastErrors(async (geoAddress: SuggestionItem) => {
     setAddress(geoAddress?.properties?.label ?? '');
-    const eligibilityStatus = await workMinimum(() => heatNetworkService.findByCoords(geoAddress), 500);
+    const eligibilityStatus = await runWithMinimumDelay(() => heatNetworkService.findByCoords(geoAddress), 500);
     setAddressDetail({
       network: eligibilityStatus,
       geoAddress,
