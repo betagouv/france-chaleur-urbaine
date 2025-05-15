@@ -8,11 +8,12 @@ import Section, { SectionContent, SectionHeading, SectionTwoColumns } from '@/co
 function ChaleurRenouvelablePage() {
   return (
     <SimplePage
-      title="Comprendre la chaleur renouvelable"
+      title="Découvrez le chauffage qui vous convient !"
+      currentPage="/ressources/outils"
       description="Découvrez les modes de chauffage renouvelables adaptés à votre logement"
     >
       <Hero image="/img/landing_chaleur_renouvelable.webp" variant="light" imagePosition="right" imageType="inline-cover" imageRatio="2/5">
-        <HeroTitle>Découvez le chauffage qui vous convient&nbsp;!</HeroTitle>
+        <HeroTitle>Découvrez le chauffage qui vous convient&nbsp;!</HeroTitle>
         <HeroSubtitle>
           Pas toujours simple de s’y retrouver entre <strong>les différents chauffages écologiques</strong>, leurs coûts et leur
           fonctionnement&nbsp;?
