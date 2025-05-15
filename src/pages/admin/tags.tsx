@@ -12,12 +12,11 @@ import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
 import useCrud from '@/hooks/useCrud';
 import { type TagsResponse } from '@/pages/api/admin/tags/[[...slug]]';
 import { withAuthentication } from '@/server/authentication';
+import { type TagWithUsers } from '@/server/services/tags';
 import { toastErrors } from '@/services/notification';
 import { compareFrenchStrings } from '@/utils/strings';
 
-const initialSortingState = [{ id: 'name' }];
-
-type TagItem = NonNullable<TagsResponse['list']['items']>[number];
+const initialSortingState = [{ id: 'name', desc: false }];
 
 export default function ManageTags() {
   const { items: tags, create, update: updateCrud, delete: deleteCrud, isLoading } = useCrud<TagsResponse>('/api/admin/tags');
@@ -25,19 +24,32 @@ export default function ManageTags() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [editingTag, setEditingTag] = useState<TagItem | null>(null);
-  const [deletingTag, setDeletingTag] = useState<TagItem | null>(null);
+  const [editingTag, setEditingTag] = useState<TagWithUsers | null>(null);
+  const [deletingTag, setDeletingTag] = useState<TagWithUsers | null>(null);
   const [newTagName, setNewTagName] = useState('');
   const [editTagName, setEditTagName] = useState('');
 
-  const tableColumns: ColumnDef<TagItem>[] = [
+  const tableColumns: ColumnDef<TagWithUsers>[] = [
     {
       accessorKey: 'name',
       header: 'Nom',
-      sortingFn: (rowA: Row<TagItem>, rowB: Row<TagItem>) => compareFrenchStrings(rowA.original.name, rowB.original.name),
+      sortingFn: (rowA: Row<TagWithUsers>, rowB: Row<TagWithUsers>) => compareFrenchStrings(rowA.original.name, rowB.original.name),
       cell: (info: { getValue: () => string }) => <Tag text={info.getValue()} />,
       className: 'break-words break-all',
-      flex: 2,
+    },
+    {
+      accessorFn: (row) => row.users.map((u) => u.email.toLowerCase()).join(' '),
+      id: 'users',
+      header: 'Utilisateurs',
+      flex: 3,
+      cell: ({ row }) => (
+        <div className="flex flex-wrap gap-1">
+          {row.original.users.map((user) => (
+            <Tag key={user.id} text={user.email} />
+          ))}
+        </div>
+      ),
+      enableSorting: false,
     },
     {
       accessorKey: 'created_at',
@@ -47,7 +59,7 @@ export default function ManageTags() {
     {
       id: 'actions',
       header: 'Actions',
-      cell: ({ row }: { row: Row<TagItem> }) => (
+      cell: ({ row }) => (
         <div className="flex gap-2">
           <Button
             size="small"
@@ -114,7 +126,7 @@ export default function ManageTags() {
 
         <TableSimple
           columns={tableColumns}
-          data={tags}
+          data={tags as any as TagWithUsers[]}
           initialSortingState={initialSortingState}
           enableGlobalFilter
           controlsLayout="block"
