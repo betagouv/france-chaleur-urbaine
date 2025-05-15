@@ -50,23 +50,26 @@ const useContactFormFCU = () => {
     }
   };
 
-  const handleOnSuccessAddress = useCallback((data: AddressDataType, context?: ContactFormContext, doTrackEvent: boolean = true) => {
-    const { address, heatingType, eligibility } = data;
-    if (doTrackEvent) {
-      const prefix = getContextPrefix(context);
-      // on ne track pas les événements pour le choix chauffage car ce n'est pas de l'éligibilité
-      if (prefix !== ' - Choix chauffage') {
-        trackEvent(
-          `Eligibilité|Formulaire de test${prefix} - Adresse ${eligibility?.isEligible ? 'É' : 'Iné'}ligible`,
-          address || 'Adresse indefini'
-        );
+  const handleOnSuccessAddress = useCallback(
+    (data: AddressDataType, context?: ContactFormContext, options: { doTrackEvent?: boolean } = { doTrackEvent: true }) => {
+      const { address, heatingType, eligibility } = data;
+      if (options.doTrackEvent) {
+        const prefix = getContextPrefix(context);
+        // on ne track pas les événements pour le choix chauffage car ce n'est pas de l'éligibilité
+        if (prefix !== ' - Choix chauffage') {
+          trackEvent(
+            `Eligibilité|Formulaire de test${prefix} - Adresse ${eligibility?.isEligible ? 'É' : 'Iné'}ligible`,
+            address || 'Adresse indefini'
+          );
+        }
       }
-    }
-    setAddressData(data);
-    if (address && heatingType) {
-      setContactReady(true);
-    }
-  }, []);
+      setAddressData(data);
+      if (address && heatingType) {
+        setContactReady(true);
+      }
+    },
+    []
+  );
 
   const handleOnSubmitContact = useCallback(
     async (data?: AddressDataType, context?: ContactFormContext) => {

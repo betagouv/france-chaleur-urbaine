@@ -29,7 +29,7 @@ const EligibilityContactForm: React.FC<EligibilityContactFormProps> = ({ fullAdd
 
   const onSuccess = useCallback(
     // Notification of success is done directly when receving the result, because of the heatingtype late asking
-    (data: any) => handleOnSuccessAddress(data, context, false),
+    (data: any) => handleOnSuccessAddress(data, context, { doTrackEvent: false }),
     [handleOnSuccessAddress]
   );
   const handleSubmitForm = async (data: Record<string, any>) => {
