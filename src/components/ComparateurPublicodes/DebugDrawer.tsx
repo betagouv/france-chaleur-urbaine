@@ -103,7 +103,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
 
             <TableSimple
               fluid
-              caption="Bilan à 1 an par lgt type / tertiaire chauffage"
+              caption="Coûts par logement / tertiaire"
               columns={[
                 { header: 'Installation', accessorKey: 'installation' },
                 { header: 'P1 abo', accessorKey: 'p1Abo' },
@@ -564,7 +564,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
 
             <TableSimple
               fluid
-              caption="Calculs environnementaux"
+              caption="Emissions de CO2"
               columns={[
                 { header: 'Installation', accessorKey: 'installation' },
                 { header: "Besoin d'installation supplémentaire pour produire l'ECS ?", accessorKey: 'besoinInstallation' },

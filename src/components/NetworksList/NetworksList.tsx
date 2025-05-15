@@ -1,9 +1,9 @@
 import Button from '@codegouvfr/react-dsfr/Button';
 import Input from '@codegouvfr/react-dsfr/Input';
 import { type CellContext, type ColumnDefTemplate } from '@tanstack/react-table';
+import dynamic from 'next/dynamic';
 import { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
-import XLSX from 'xlsx';
 
 import { reseauxDeChaleurFilters } from '@/components/Map/layers/filters';
 import { filtresEnergies, percentageMaxInterval } from '@/components/Map/map-configuration';
@@ -17,12 +17,13 @@ import Text from '@/components/ui/Text';
 import useReseauxDeChaleurFilters, { type FilterWithLimits } from '@/hooks/useReseauxDeChaleurFilters';
 import { gestionnairesFilters, useServices } from '@/services';
 import { type NetworkToCompare } from '@/types/Summary/Network';
-import { downloadFile } from '@/utils/browser';
 import { isDefined } from '@/utils/core';
 import { type Interval, intervalsEqual } from '@/utils/interval';
 import { compareFrenchStrings } from '@/utils/strings';
 
 import NetworkName from './NetworkName';
+
+const ButtonExport = dynamic(() => import('@/components/ui/ButtonExport'), { ssr: false });
 
 type DataToDisplay = 'general' | 'mix_energetique';
 
@@ -76,6 +77,95 @@ const MixEnergetiqueFieldsList = [
 ] as const satisfies ReadonlyArray<keyof NetworkToCompare>;
 
 export const defaultInterval: Interval = [Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER];
+
+const exportColumns = [
+  {
+    accessorKey: 'nom_reseau',
+    name: 'Nom du réseau',
+  },
+  {
+    accessorKey: 'reseaux classes',
+    name: 'Réseau classé',
+  },
+  {
+    accessorKey: 'Identifiant reseau',
+    name: 'Identifiant',
+  },
+  {
+    accessorKey: 'communes',
+    name: 'Communes',
+  },
+  {
+    accessorKey: 'Gestionnaire',
+    name: 'Gestionnaire',
+  },
+  {
+    accessorKey: 'Taux EnR&R',
+    name: 'Taux EnR&R (%)',
+    precision: 1,
+  },
+  {
+    accessorKey: 'contenu CO2 ACV',
+    name: 'Contenu CO2 ACV (gCO2/kWh)',
+  },
+  {
+    accessorKey: 'contenu CO2',
+    name: 'Contenu CO2 (gCO2/kWh)',
+  },
+  {
+    accessorKey: 'PM',
+    name: 'Prix moyen (€TTC/MWh)',
+  },
+  {
+    accessorKey: 'annee_creation',
+    name: 'Année de construction',
+  },
+  {
+    accessorKey: 'livraisons_totale_MWh',
+    name: 'Livraisons de chaleur annuelles (GWh)',
+    precision: 1,
+  },
+  {
+    accessorKey: 'energie_ratio_biomasse',
+    name: 'Biomasse (%)',
+    precision: 1,
+  },
+  {
+    accessorKey: 'energie_ratio_geothermie',
+    name: 'Géothermie (%)',
+    precision: 1,
+  },
+  {
+    accessorKey: 'energie_ratio_uve',
+    name: 'UVE (%)',
+    precision: 1,
+  },
+  {
+    accessorKey: 'energie_ratio_chaleurIndustrielle',
+    name: 'Chaleur industrielle (%)',
+    precision: 1,
+  },
+  {
+    accessorKey: 'energie_ratio_solaireThermique',
+    name: 'Solaire thermique (%)',
+    precision: 1,
+  },
+  {
+    accessorKey: 'energie_ratio_pompeAChaleur',
+    name: 'Pompe à chaleur (%)',
+    precision: 1,
+  },
+  {
+    accessorKey: 'energie_ratio_gaz',
+    name: 'Gaz (%)',
+    precision: 1,
+  },
+  {
+    accessorKey: 'energie_ratio_fioul',
+    name: 'Fioul (%)',
+    precision: 1,
+  },
+];
 
 const FiltersBox = styled(Box)`
   max-width: 400px;
@@ -149,136 +239,6 @@ export function filterReseauxDeChaleur(reseauxDeChaleur: NetworkToCompare[], fil
     return showReseau;
   });
 }
-
-const exportColumns: {
-  field: keyof NetworkToCompare;
-  columnName: string;
-  precision?: number;
-}[] = [
-  {
-    field: 'nom_reseau',
-    columnName: 'Nom du réseau',
-  },
-  {
-    field: 'reseaux classes',
-    columnName: 'Réseau classé',
-  },
-  {
-    field: 'Identifiant reseau',
-    columnName: 'Identifiant',
-  },
-  {
-    field: 'communes',
-    columnName: 'Communes',
-  },
-  {
-    field: 'Gestionnaire',
-    columnName: 'Gestionnaire',
-  },
-  {
-    field: 'Taux EnR&R',
-    columnName: 'Taux EnR&R (%)',
-    precision: 1,
-  },
-  {
-    field: 'contenu CO2 ACV',
-    columnName: 'Contenu CO2 ACV (gCO2/kWh)',
-  },
-  {
-    field: 'contenu CO2',
-    columnName: 'Contenu CO2 (gCO2/kWh)',
-  },
-  {
-    field: 'PM',
-    columnName: 'Prix moyen (€TTC/MWh)',
-  },
-  {
-    field: 'annee_creation',
-    columnName: 'Année de construction',
-  },
-  {
-    field: 'livraisons_totale_MWh',
-    columnName: 'Livraisons de chaleur annuelles (GWh)',
-    precision: 1,
-  },
-  {
-    field: 'energie_ratio_biomasse',
-    columnName: 'Biomasse (%)',
-    precision: 1,
-  },
-  {
-    field: 'energie_ratio_geothermie',
-    columnName: 'Géothermie (%)',
-    precision: 1,
-  },
-  {
-    field: 'energie_ratio_uve',
-    columnName: 'UVE (%)',
-    precision: 1,
-  },
-  {
-    field: 'energie_ratio_chaleurIndustrielle',
-    columnName: 'Chaleur industrielle (%)',
-    precision: 1,
-  },
-  {
-    field: 'energie_ratio_solaireThermique',
-    columnName: 'Solaire thermique (%)',
-    precision: 1,
-  },
-  {
-    field: 'energie_ratio_pompeAChaleur',
-    columnName: 'Pompe à chaleur (%)',
-    precision: 1,
-  },
-  {
-    field: 'energie_ratio_gaz',
-    columnName: 'Gaz (%)',
-    precision: 1,
-  },
-  {
-    field: 'energie_ratio_fioul',
-    columnName: 'Fioul (%)',
-    precision: 1,
-  },
-];
-const exportAsXLSX = (allNetworks: NetworkToCompare[]) => {
-  const workbook = XLSX.utils.book_new();
-
-  const data: Record<string, any>[] = [];
-
-  allNetworks.forEach((network) => {
-    const row: Record<string, any> = {};
-
-    exportColumns.forEach((col) => {
-      let value = network[col.field];
-      if (Array.isArray(value)) {
-        value = value.join(',');
-      } else if (typeof value === 'boolean') {
-        value = value ? 'Oui' : 'Non';
-      } else if (typeof value === 'number') {
-        value = parseFloat(value.toFixed(typeof col.precision === 'number' ? col.precision : 0));
-      } else {
-        value = value?.toString();
-      }
-
-      row[col.columnName] = value;
-    });
-
-    data.push(row);
-  });
-
-  const generalSheet = XLSX.utils.json_to_sheet(data);
-
-  XLSX.utils.book_append_sheet(workbook, generalSheet, 'Général et Mix Énergétique');
-
-  // Create a Blob from the XLSX workbook
-  const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-  const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-  const url = URL.createObjectURL(blob);
-
-  downloadFile(url, `${new Date().toISOString().split('T')[0]}_reseauxDeChaleur.xlsx`);
-};
 
 const PercentageCell: ColumnDefTemplate<CellContext<NetworkToCompare, any>> = ({ getValue }) => {
   return (getValue() / 100).toLocaleString(undefined, { style: 'percent', maximumFractionDigits: 1 });
@@ -550,14 +510,21 @@ const NetworksList = () => {
               <Icon size="md" name="fr-icon-filter-line" color="var(--text-action-high-blue-france)" />
               Tous les filtres ({nbFilters})
             </Button>
-            <Button
+            <ButtonExport
               disabled={!filteredNetworks.length}
-              onClick={() => exportAsXLSX(filteredNetworks)}
+              filename={`${new Date().toISOString().split('T')[0]}_reseauxDeChaleur.xlsx`}
+              sheets={[
+                {
+                  data: filteredNetworks,
+                  name: 'Général et Mix Énergétique',
+                  columns: exportColumns,
+                },
+              ]}
               iconId="fr-icon-file-download-line"
               iconPosition="right"
             >
               Exporter
-            </Button>
+            </ButtonExport>
             <Input
               label="Rechercher"
               hideLabel

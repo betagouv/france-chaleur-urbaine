@@ -1,4 +1,5 @@
 import { SegmentedControl } from '@codegouvfr/react-dsfr/SegmentedControl';
+import dynamic from 'next/dynamic';
 import { parseAsBoolean, useQueryState } from 'nuqs';
 import React, { useRef } from 'react';
 import ReactDOMServer from 'react-dom/server';
@@ -12,12 +13,14 @@ import useArrayQueryState from '@/hooks/useArrayQueryState';
 import useScreenshot from '@/hooks/useScreenshot';
 import { deepMergeObjects } from '@/utils/core';
 import cx from '@/utils/cx';
+import { type exportAsXLSX } from '@/utils/export';
 
 import { ChartPlaceholder, GraphTooltip } from './ComparateurPublicodes.style';
 import { modesDeChauffage } from './mappings';
 import { DataYearDisclaimer, DisclaimerButton, Logos } from './Placeholder';
 import { type SimulatorEngine } from './useSimulatorEngine';
 
+const ButtonExport = dynamic(() => import('@/components/ui/ButtonExport'), { ssr: false });
 const COST_PRECISION = 10;
 const CO2_PRECISION = 5;
 const costPrecisionPercentage = COST_PRECISION / 100;
@@ -27,6 +30,7 @@ type GraphProps = React.HTMLAttributes<HTMLDivElement> & {
   engine: SimulatorEngine;
   advancedMode?: boolean;
   captureImageName?: string;
+  export?: Parameters<typeof exportAsXLSX>[1];
   reseauDeChaleur: {
     label?: string;
     hide: boolean;
@@ -211,7 +215,15 @@ const formatEmissionsCO2 = (value: number, suffix = 'tCO2e') => {
 const formatCost = (value: number, suffix = true) =>
   `${(Math.round(value / 10) * 10).toLocaleString('fr-FR', { ...(!suffix ? {} : { style: 'currency', currency: 'EUR' }), maximumFractionDigits: 0 })}`;
 
-const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureImageName, reseauDeChaleur, ...props }) => {
+const Graph: React.FC<GraphProps> = ({
+  advancedMode,
+  engine,
+  className,
+  captureImageName,
+  reseauDeChaleur,
+  export: exportSheets,
+  ...props
+}) => {
   const { has: hasModeDeChauffage } = useArrayQueryState('modes-de-chauffage');
   const coutsRef = useRef<HTMLDivElement>(null);
   useFixLegendOpacity(coutsRef);
@@ -752,7 +764,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
         </div>
       </div>
       <div className="mt-12 flex flex-col gap-2 border-2 border-dashed border-info-light p-2">
-        <div className="text-center">
+        <div className="text-center flex gap-2 justify-center">
           <Button
             priority="secondary"
             onClick={async () => await captureNodeAndDownload(ref, { padding: 20, filename: `${captureImageName}-${graphType}.png` })}
@@ -760,10 +772,24 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, captureI
           >
             Sauvegarder l'image
           </Button>
+          {exportSheets && (
+            <ButtonExport priority="secondary" filename={`${captureImageName}-${graphType}.xlsx`} sheets={exportSheets}>
+              Exporter les données
+            </ButtonExport>
+          )}
         </div>
-        <Notice size="sm">
-          En cas d’utilisation de l’image exportée, un lien vers le comparateur en ligne doit obligatoirement être apposé à proximité de
-          l’image.
+        <Notice size="sm" classes={{ title: '!font-normal !text-sm' }}>
+          {exportSheets ? (
+            <>
+              En cas d’utilisation de l’image ou des données exportées, un lien vers le comparateur en ligne doit obligatoirement être
+              apposé à proximité de l’image ou des données utilisées.
+            </>
+          ) : (
+            <>
+              En cas d’utilisation de l’<strong>image exportée</strong>, un lien vers le comparateur en ligne doit obligatoirement être
+              apposé à proximité de l’image.
+            </>
+          )}
         </Notice>
       </div>
     </>
