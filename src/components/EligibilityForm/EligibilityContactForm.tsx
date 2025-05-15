@@ -9,11 +9,12 @@ import { ContactFormWrapper, EligibilityContactFormStyle } from './EligibilityCo
 
 export type EligibilityContactFormProps = {
   fullAddress: any;
+  initialHeatingType?: string;
   onSubmit?: (data?: Record<string, any>) => void;
   context?: ContactFormContext;
 };
 
-const EligibilityContactForm: React.FC<EligibilityContactFormProps> = ({ fullAddress, onSubmit, context }) => {
+const EligibilityContactForm: React.FC<EligibilityContactFormProps> = ({ fullAddress, initialHeatingType, onSubmit, context }) => {
   const {
     addressData,
     contactReady,
@@ -49,6 +50,7 @@ const EligibilityContactForm: React.FC<EligibilityContactFormProps> = ({ fullAdd
         <EligibilityFormAddress
           heatingLabel="Mode de chauffage actuel :"
           fullAddress={fullAddress}
+          initialHeatingType={initialHeatingType}
           onChange={handleOnChangeAddress}
           onFetch={handleOnFetchAddress}
           onSuccess={onSuccess}

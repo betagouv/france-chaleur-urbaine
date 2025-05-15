@@ -45,6 +45,7 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
             coordinates: addressDetail.geoAddress?.geometry.coordinates,
             addressDetails: addressDetail,
           },
+          initialHeatingType: 'collectif',
         });
 
         const isInFuturNetworkZone = addressDetail.network.futurNetwork && addressDetail.network.distance === null;

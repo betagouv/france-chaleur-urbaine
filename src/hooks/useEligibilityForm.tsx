@@ -7,11 +7,12 @@ import { type ContactFormContext } from '@/hooks/useContactFormFCU';
 type EligibilityFormProps = {
   id: string;
   address: EligibilityContactFormProps['fullAddress'];
+  initialHeatingType?: EligibilityContactFormProps['initialHeatingType'];
   onSubmit?: EligibilityContactFormProps['onSubmit'];
   context?: ContactFormContext;
 };
 
-const useEligibilityForm = ({ id, address, onSubmit, context }: EligibilityFormProps) => {
+const useEligibilityForm = ({ id, address, initialHeatingType, onSubmit, context }: EligibilityFormProps) => {
   const modal = useMemo(() => {
     return createModal({
       id,
@@ -26,7 +27,7 @@ const useEligibilityForm = ({ id, address, onSubmit, context }: EligibilityFormP
     ...modal,
     EligibilityFormModal: () => (
       <Modal modal={modal} title="Être mis en relation">
-        <EligibilityContactForm fullAddress={address} onSubmit={onSubmit} context={context} />
+        <EligibilityContactForm fullAddress={address} initialHeatingType={initialHeatingType} onSubmit={onSubmit} context={context} />
       </Modal>
     ),
   };
