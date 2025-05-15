@@ -721,6 +721,8 @@ const PertinenceBadge = ({ pertinence }: { pertinence: number | 'unavailable' })
     <PageBadge className="!bg-error">Non conseillé</PageBadge>
   ) : null;
 
-const PageBadge = ({ children, className }: { children: NonNullable<ReactNode>; className?: string }) => (
-  <Badge className={cx(' !text-white !normal-case fr-mx-1w', className)}>{children}</Badge>
+const PageBadge = ({ children, className, ...props }: React.HTMLAttributes<HTMLDivElement> & { children: NonNullable<ReactNode> }) => (
+  <Badge className={cx(' !text-white !normal-case fr-mx-1w', className)} {...props}>
+    {children}
+  </Badge>
 );
