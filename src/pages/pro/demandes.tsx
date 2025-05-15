@@ -18,6 +18,7 @@ import { type AdresseEligible } from '@/components/Map/layers/adressesEligibles'
 import Map from '@/components/Map/Map';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import SimplePage from '@/components/shared/page/SimplePage';
+import AsyncButton from '@/components/ui/AsyncButton';
 import Badge from '@/components/ui/Badge';
 import { VerticalDivider } from '@/components/ui/Divider';
 import Icon from '@/components/ui/Icon';
@@ -30,6 +31,7 @@ import TableSimple, { type ColumnDef, type QuickFilterPreset } from '@/component
 import Tooltip from '@/components/ui/Tooltip';
 import { useFetch } from '@/hooks/useApi';
 import { withAuthentication } from '@/server/authentication';
+import { useServices } from '@/services';
 import { toastErrors } from '@/services/notification';
 import { DEMANDE_STATUS, type DemandStatus } from '@/types/enum/DemandSatus';
 import { type Point } from '@/types/Point';
@@ -129,7 +131,7 @@ function DemandesNew(): React.ReactElement {
   const queryClient = useQueryClient();
   const mapRef = useRef<MapRef>(null) as RefObject<MapRef>;
   const virtualizerRef = useRef<Virtualizer<HTMLDivElement, Element>>(null) as RefObject<Virtualizer<HTMLDivElement, Element>>;
-
+  const { exportService } = useServices();
   const [selectedDemandId, setSelectedDemandId] = useState<string | null>(null);
   const [modalDemand, setModalDemand] = useState<Demand | null>(null);
   const tableRowSelection = useMemo(() => {
@@ -496,6 +498,9 @@ function DemandesNew(): React.ReactElement {
               {index < Object.keys(quickFilterPresets).length - 1 && <VerticalDivider className="hidden md:block" />}
             </Fragment>
           ))}
+          <AsyncButton onClick={async () => exportService.exportXLSX('demands')} className="ml-auto mr-2w">
+            Exporter
+          </AsyncButton>
         </div>
         <ResizablePanelGroup direction="horizontal" className="gap-4">
           <ResizablePanel defaultSize={66}>
