@@ -111,15 +111,15 @@ const OutilsPage = () => {
       </Box>
       <Box py="5w" className="fr-container">
         <Heading as="h2" size="h3" color="blue-france" mb="0">
-          Simulateur de CO2
+          Compatibilité des modes de chauffage
         </Heading>
         <Box display="flex" my="2w">
           <FCUArrowIcon />
           <Text size="lg" ml="1w">
-            Estimer les émissions de CO2 évitées grâce au raccordement
+            Découvrir les modes de chauffage décarbonés adaptés à mon bâtiment, leurs atouts et inconvénients.
           </Text>
         </Box>
-        <Link variant="secondary" href="/professionnels#simulateur-co2">
+        <Link variant="secondary" href="/chaleur-renouvelable">
           Accéder
         </Link>
       </Box>

@@ -426,6 +426,16 @@ const trackingEvents = {
     google: 'sdziCKqh6c0ZELGIqf89', // Contact > Formulaire envoyé - Non Eligible
     facebook: 'Formulaire de contact inéligible - Comparateur - Envoi',
   },
+  'Eligibilité|Formulaire de contact éligible - Choix chauffage - Envoi': {
+    matomo: ['Eligibilité', 'Formulaire de contact éligible - Choix chauffage - Envoi'],
+    google: '47QiCKeh6c0ZELGIqf89', // Contact > Formulaire envoyé - Eligible
+    facebook: 'Formulaire de contact éligible - Choix chauffage - Envoi',
+  },
+  'Eligibilité|Formulaire de contact inéligible - Choix chauffage - Envoi': {
+    matomo: ['Eligibilité', 'Formulaire de contact inéligible - Choix chauffage - Envoi'],
+    google: 'sdziCKqh6c0ZELGIqf89', // Contact > Formulaire envoyé - Non Eligible
+    facebook: 'Formulaire de contact inéligible - Choix chauffage - Envoi',
+  },
   'Eligibilité|Formulaire de contact éligible - Envoi': {
     matomo: ['Eligibilité', 'Formulaire de contact éligible - Envoi'],
     google: '47QiCKeh6c0ZELGIqf89', // Contact > Formulaire envoyé - Eligible
@@ -730,6 +740,10 @@ const trackingEvents = {
   },
   'Carto|Etudes en cours|Désactive': {
     matomo: ['Carto', 'Etudes en cours', 'Désactive'],
+  },
+
+  'Lien|Choix chauffage vers comparateur': {
+    matomo: ['Lien', 'Choix chauffage vers comparateur'],
   },
 
   'Outil|Carte des réseaux et potentiels': {

@@ -45,14 +45,14 @@ const tools: TileListItem[] = [
       </Badge>
     ),
     eventKey: "Outil|Comparateur de coûts et d'émissions de CO2",
-  } satisfies TileListItem,
-  // {
-  //   title: 'Compatibilité des modes de chauffage',
-  //   excerpt: 'Quels chauffages pour quels bâtiments ?',
-  //   href: '/todo',
-  //   image: '/icons/tools/human-cooperation.svg',
-  //   eventKey: 'Outil|Compatibilité des modes de chauffage',
-  // },
+  },
+  {
+    title: 'Compatibilité des modes de chauffage',
+    excerpt: 'Quels chauffages décarbonés pour quels bâtiments ?',
+    href: '/chaleur-renouvelable',
+    image: '/icons/tools/human-cooperation.svg',
+    eventKey: 'Outil|Compatibilité des modes de chauffage',
+  },
   {
     title: 'Coûts de raccordement et aides',
     excerpt: 'Estimez le coût de votre raccordement.',

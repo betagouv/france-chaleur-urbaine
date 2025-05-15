@@ -17,6 +17,7 @@ type CheckEligibilityFormProps = {
   fullAddress?: any;
   formLabel?: React.ReactNode;
   heatingLabel?: React.ReactNode;
+  initialHeatingType?: string;
   energyInputsLabels?: EnergyInputsLabelsType;
   cardMode?: boolean;
   colored?: boolean;
@@ -35,6 +36,7 @@ const AddressTestForm: React.FC<CheckEligibilityFormProps> = ({
   fullAddress,
   formLabel,
   heatingLabel,
+  initialHeatingType,
   energyInputsLabels = energyInputsDefaultLabels,
   cardMode,
   colored,
@@ -57,7 +59,7 @@ const AddressTestForm: React.FC<CheckEligibilityFormProps> = ({
 
   const [status, setStatus] = useState(!coords ? 'idle' : 'success');
   const [data, setData] = useState<AddressDataType>(defaultData);
-  const [heatingType, setHeatingType] = useState('');
+  const [heatingType, setHeatingType] = useState(initialHeatingType ?? '');
   const { heatNetworkService } = useServices();
 
   useEffect(() => {

@@ -20,7 +20,7 @@ import { Airtable } from '@/types/enum/Airtable';
 import { type SuggestionItem } from '@/types/Suggestions';
 import { type ContactFormInfos, type FormDemandCreation } from '@/types/Summary/Demand';
 import { getReadableDistance } from '@/utils/geo';
-import { workMinimum } from '@/utils/time';
+import { runWithMinimumDelay } from '@/utils/time';
 
 type FormState = 'idle' | 'loadingEligibility' | 'eligibilitySubmissionError' | 'sendingDemand' | 'demandCreated' | 'demandSubmissionError';
 
@@ -50,7 +50,7 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
       trackEvent(`Eligibilité|Formulaire de test - Fiche réseau - Envoi`, geoAddress.properties.label);
 
       setFormState('loadingEligibility');
-      const eligibilityStatus = await workMinimum(() => heatNetworkService.getNetworkEligibilityStatus(networkId, geoAddress), 500);
+      const eligibilityStatus = await runWithMinimumDelay(() => heatNetworkService.getNetworkEligibilityStatus(networkId, geoAddress), 500);
       setFormState('idle');
       setEligibilityStatus(eligibilityStatus);
 

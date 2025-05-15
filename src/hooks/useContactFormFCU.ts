@@ -9,11 +9,12 @@ import { type FormDemandCreation } from '@/types/Summary/Demand';
 
 const warningMessage = "N'oubliez pas d'indiquer votre type de chauffage.";
 
-export type ContactFormContext = 'comparateur' | 'carte';
+export type ContactFormContext = 'comparateur' | 'carte' | 'choix-chauffage';
 
 const contextToAnalyticsPrefix = {
   comparateur: 'Comparateur',
   carte: 'Carte',
+  'choix-chauffage': 'Choix chauffage',
 } as const;
 
 function getContextPrefix(context?: ContactFormContext) {
@@ -42,22 +43,33 @@ const useContactFormFCU = () => {
     setLoadingStatus('loading');
     setMessageSent(false);
     setMessageReceived(false);
-    trackEvent(`Eligibilité|Formulaire de test${getContextPrefix(context)} - Envoi`, address);
+    const prefix = getContextPrefix(context);
+    // on ne track pas les événements pour le choix chauffage car ce n'est pas de l'éligibilité
+    if (prefix !== ' - Choix chauffage') {
+      trackEvent(`Eligibilité|Formulaire de test${prefix} - Envoi`, address);
+    }
   };
 
-  const handleOnSuccessAddress = useCallback((data: AddressDataType, context?: ContactFormContext, dontNotify?: boolean) => {
-    const { address, heatingType, eligibility } = data;
-    if (!dontNotify) {
-      trackEvent(
-        `Eligibilité|Formulaire de test${getContextPrefix(context)} - Adresse ${eligibility?.isEligible ? 'É' : 'Iné'}ligible`,
-        address || 'Adresse indefini'
-      );
-    }
-    setAddressData(data);
-    if (address && heatingType) {
-      setContactReady(true);
-    }
-  }, []);
+  const handleOnSuccessAddress = useCallback(
+    (data: AddressDataType, context?: ContactFormContext, options: { doTrackEvent?: boolean } = { doTrackEvent: true }) => {
+      const { address, heatingType, eligibility } = data;
+      if (options.doTrackEvent) {
+        const prefix = getContextPrefix(context);
+        // on ne track pas les événements pour le choix chauffage car ce n'est pas de l'éligibilité
+        if (prefix !== ' - Choix chauffage') {
+          trackEvent(
+            `Eligibilité|Formulaire de test${prefix} - Adresse ${eligibility?.isEligible ? 'É' : 'Iné'}ligible`,
+            address || 'Adresse indefini'
+          );
+        }
+      }
+      setAddressData(data);
+      if (address && heatingType) {
+        setContactReady(true);
+      }
+    },
+    []
+  );
 
   const handleOnSubmitContact = useCallback(
     async (data?: AddressDataType, context?: ContactFormContext) => {
