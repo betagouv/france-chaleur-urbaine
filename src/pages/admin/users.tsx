@@ -1,7 +1,9 @@
 import { type SortingState } from '@tanstack/react-table';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { z } from 'zod';
 
 import UserRoleBadge from '@/components/Admin/UserRoleBadge';
+import useForm from '@/components/form/react-form/useForm';
 import Tag from '@/components/Manager/Tag';
 import SimplePage from '@/components/shared/page/SimplePage';
 import AsyncButton from '@/components/ui/AsyncButton';
@@ -15,7 +17,8 @@ import { useFetch } from '@/hooks/useApi';
 import { withAuthentication } from '@/server/authentication';
 import { useServices } from '@/services';
 import { toastErrors } from '@/services/notification';
-import { type UserRole } from '@/types/enum/UserRole';
+import { type UserRole, userRoles } from '@/types/enum/UserRole';
+import { USER_ROLE } from '@/types/enum/UserRole';
 import { postFetchJSON } from '@/utils/network';
 import { compareFrenchStrings } from '@/utils/strings';
 
@@ -38,12 +41,47 @@ const initialSortingState: SortingState = [
   },
 ];
 
+export const zUpdateUserSchema = z.object({
+  email: z.string().email('Email invalide'),
+  role: z.enum(userRoles),
+  gestionnaires: z.array(z.string()),
+  active: z.boolean(),
+});
+
 export default function ManageUsers() {
   const { exportService } = useServices();
   const [selectedUser, setSelectedUser] = useState<AdminManageUserItem | null>(null);
+  const [gestionnaireTags, setGestionnaireTags] = useState<string[]>([]);
 
   const { data: usersStats } = useFetch<AdminUsersStats>('/api/admin/users-stats');
-  const { data: users, isLoading } = useFetch<AdminManageUserItem[]>('/api/admin/users');
+  const { data: users, isLoading, refetch: refetchUsers } = useFetch<AdminManageUserItem[]>('/api/admin/users');
+  const { data: tags } = useFetch<string[]>('/api/admin/tags-gestionnaires');
+
+  useEffect(() => {
+    if (tags) {
+      setGestionnaireTags(tags);
+    }
+  }, [tags]);
+
+  const form = useForm({
+    defaultValues: selectedUser
+      ? ({
+          email: selectedUser.email,
+          role: selectedUser.role,
+          gestionnaires: selectedUser.gestionnaires ?? [],
+          active: !!selectedUser.active,
+        } satisfies z.infer<typeof zUpdateUserSchema>)
+      : undefined,
+    validators: {
+      onChange: zUpdateUserSchema,
+    },
+    onSubmit: toastErrors(async ({ value }) => {
+      if (!selectedUser) return;
+      await postFetchJSON(`/api/admin/users/${selectedUser.id}`, value);
+      setSelectedUser(null);
+      refetchUsers();
+    }),
+  });
 
   const buildTableColumns = (setSelectedUser: (user: AdminManageUserItem) => void): ColumnDef<AdminManageUserItem>[] => [
     {
@@ -162,38 +200,35 @@ export default function ManageUsers() {
 
       <Dialog open={!!selectedUser} onOpenChange={(open) => !open && setSelectedUser(null)} title="Modifier l'utilisateur" size="md">
         {selectedUser && (
-          // FIXME formulaire complet
-          <div className="flex flex-col gap-4">
-            <div>TODO formulaire complet à faire</div>
-            <div>
-              <Text className="font-bold">Email</Text>
-              <Text>{selectedUser.email}</Text>
+          <form.Form className="flex flex-col gap-4">
+            <form.EmailInput name="email" label="Email" />
+            <form.Select
+              name="role"
+              label="Rôle"
+              options={[
+                { label: 'Administrateur', value: USER_ROLE.ADMIN },
+                { label: 'Gestionnaire', value: USER_ROLE.GESTIONNAIRE },
+                { label: 'Particulier', value: USER_ROLE.PARTICULIER },
+                { label: 'Professionnel', value: USER_ROLE.PROFESSIONNEL },
+                { label: 'Démo', value: USER_ROLE.DEMO },
+              ]}
+            />
+            <form.Checkboxes
+              name="gestionnaires"
+              label="Tags gestionnaire"
+              options={gestionnaireTags.map((tag) => ({
+                label: tag,
+                value: tag,
+              }))}
+            />
+            <form.Checkbox name="active" label="Compte actif" />
+            <div className="flex justify-end gap-2">
+              <Button priority="secondary" onClick={() => setSelectedUser(null)}>
+                Annuler
+              </Button>
+              <form.Submit>Enregistrer</form.Submit>
             </div>
-            <div>
-              <Text className="font-bold">Rôle</Text>
-              <UserRoleBadge role={selectedUser.role} />
-            </div>
-            <div>
-              <Text className="font-bold">Tags gestionnaire</Text>
-              <div className="flex flex-wrap gap-1">{selectedUser.gestionnaires?.map((tag) => <Tag key={tag} text={tag} />)}</div>
-            </div>
-            <div>
-              <Text className="font-bold">Statut</Text>
-              <Text>{selectedUser.active ? 'Actif' : 'Inactif'}</Text>
-            </div>
-            <div>
-              <Text className="font-bold">Newsletter</Text>
-              <Text>{selectedUser.optin_at ? 'Inscrit' : 'Non inscrit'}</Text>
-            </div>
-            <div>
-              <Text className="font-bold">Dernière connexion</Text>
-              <Text>{selectedUser.last_connection ? new Date(selectedUser.last_connection).toLocaleString() : 'Jamais'}</Text>
-            </div>
-            <div>
-              <Text className="font-bold">Créé le</Text>
-              <Text>{selectedUser.created_at ? new Date(selectedUser.created_at).toLocaleString() : 'Non défini'}</Text>
-            </div>
-          </div>
+          </form.Form>
         )}
       </Dialog>
     </SimplePage>

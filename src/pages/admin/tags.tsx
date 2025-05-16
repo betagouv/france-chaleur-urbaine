@@ -40,7 +40,7 @@ export default function ManageTags() {
     {
       accessorFn: (row) => row.users.map((u) => u.email.toLowerCase()).join(' '),
       id: 'users',
-      header: 'Utilisateurs',
+      header: 'Gestionnaires associés',
       flex: 3,
       cell: ({ row }) => (
         <div className="flex flex-wrap gap-1">
