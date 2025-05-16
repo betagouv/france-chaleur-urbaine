@@ -51,6 +51,11 @@ const tools: TileListItem[] = [
     excerpt: 'Quels chauffages décarbonés pour quels bâtiments ?',
     href: '/chaleur-renouvelable',
     image: '/icons/tools/human-cooperation.svg',
+    start: (
+      <Badge noIcon severity="success">
+        Nouveau
+      </Badge>
+    ),
     eventKey: 'Outil|Compatibilité des modes de chauffage',
   },
   {

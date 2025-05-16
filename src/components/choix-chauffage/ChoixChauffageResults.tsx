@@ -158,7 +158,7 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
         'Faibles émissions de CO2',
         'Energie locale stable dans le temps',
         'Suppression des chaudières (gain de place, sécurité)',
-        'Possibilité de couvrir les besoins en froid',
+        'Possibilité de couvrir les besoins en climatisation',
       ],
       inconvenients: ['Investissement initial important', 'Travaux d’installation conséquents', 'Maintenance à assurer'],
       gainsPotentielsCO2: [
@@ -210,7 +210,7 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
         'Faibles émissions de CO2',
         'Économique si bien dimensionnée',
         'Suppression des chaudières (gain de place, sécurité)',
-        'Possibilité de couvrir les besoins en froid',
+        'Possibilité de couvrir les besoins en climatisation',
       ],
       inconvenients: ['Nuisances sonores', 'Impact esthétique des modules extérieurs'],
       gainsPotentielsCO2: [
@@ -304,7 +304,7 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
         'N’assure pas la production d’eau chaude sanitaire',
         'Peu conseillé en climat rigoureux (performances réduites)',
       ],
-      avantages: ['Faibles émissions de CO2', 'Possibilité de couvrir les besoins en froid'],
+      avantages: ['Faibles émissions de CO2', 'Possibilité de couvrir les besoins en climatisation'],
       inconvenients: [
         'Coût (non éligible aux dispositifs d’aides)',
         'Faible confort thermique (air soufflé)',
@@ -335,12 +335,12 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
       description:
         "La pompe à chaleur air/eau capte les calories de l'air extérieur et les transfère à un circuit d’eau chaude pour assurer le chauffage et l’eau chaude sanitaire de votre logement.",
       contraintesTechniques: [
-        'Circuit d’eau chaude dans l’appartement (remplacement d’un chauffage individuel gaz)',
+        'Circuit d’eau chaude nécessaire dans l’appartement (remplacement d’un chauffage individuel gaz)',
         'Isolation globale nécessaire au préalable pour éviter des performances dégradées (chauffage peu efficace et onéreux)',
         'Espace extérieur adapté (autorisation requise) et installation d’un module intérieur',
         'Peu conseillé en climat rigoureux (performances réduites)',
       ],
-      avantages: ['Faibles émissions de CO2', 'Économique si bien dimensionnée', 'Possibilité de couvrir les besoins en froid'],
+      avantages: ['Faibles émissions de CO2', 'Économique si bien dimensionnée', 'Possibilité de couvrir les besoins en climatisation'],
       inconvenients: ['Nuisances sonores', 'Impact esthétique des modules extérieurs'],
       gainsPotentielsCO2: [
         <>
@@ -374,7 +374,7 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
         'N’assure pas la production d’eau chaude sanitaire',
         'Peu conseillé en climat rigoureux (performances réduites)',
       ],
-      avantages: ['Faibles émissions de CO2', 'Possibilité de couvrir les besoins en froid', 'Économique si bien dimensionnée'],
+      avantages: ['Faibles émissions de CO2', 'Possibilité de couvrir les besoins en climatisation', 'Économique si bien dimensionnée'],
       inconvenients: [
         'Installation non éligible aux dispositifs d’aides',
         'Faible confort thermique (air soufflé)',
@@ -425,7 +425,7 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
       description:
         'La pompe à chaleur géothermique (eau-eau) capte les calories du sous-sol et les transfère à un circuit d’eau chaude pour assurer le chauffage et l’eau chaude sanitaire de votre logement.',
       contraintesTechniques: [
-        'Circuit d’eau chaude dans la maison',
+        'Circuit d’eau chaude nécessaire dans la maison',
         'Présence d’un potentiel géothermique exploitable sous la maison',
         'Isolation globale nécessaire au préalable pour éviter des performances dégradées (chauffage peu efficace et onéreux)',
         'Surface extérieure pour le forage, ainsi qu’un local technique',
@@ -434,7 +434,7 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
         'Faibles émissions de CO2',
         'Energie locale stable dans le temps',
         'Suppression des chaudières (gain de place, sécurité)',
-        'Possibilité de couvrir les besoins en froid',
+        'Possibilité de couvrir les besoins en climatisation',
       ],
       inconvenients: ['Investissement initial important', 'Travaux d’installation conséquents', 'Maintenance à assurer'],
       gainsPotentielsCO2: [
@@ -468,15 +468,14 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
       contraintesTechniques: [
         'Circuit d’eau chaude dans la maison',
         'Isolation globale nécessaire au préalable pour éviter des performances dégradées (chauffage peu efficace et onéreux)',
-        'Espace extérieur demeurant accessible pour la maintenance',
-        'Local technique',
+        'Espaces extérieur et intérieur demeurant accessibles pour la maintenance',
         'Peu conseillé en climat rigoureux (performances réduites)',
       ],
       avantages: [
         'Faibles émissions de CO2',
         'Économique si bien dimensionnée',
         'Suppression des chaudières (gain de place, sécurité)',
-        'Possibilité de couvrir les besoins en froid',
+        'Possibilité de couvrir les besoins en climatisation',
       ],
       inconvenients: ['Nuisances sonores', 'Impact esthétique des modules extérieurs'],
       gainsPotentielsCO2: [
@@ -550,7 +549,7 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
         'N’assure pas la production d’eau chaude sanitaire',
         'Peu conseillé en climat rigoureux (performances réduites)',
       ],
-      avantages: ['Faibles émissions de CO2', 'Possibilité de couvrir les besoins en froid'],
+      avantages: ['Faibles émissions de CO2', 'Possibilité de couvrir les besoins en climatisation'],
       inconvenients: [
         'Coût (non éligible aux dispositifs d’aides)',
         'Faible confort thermique (air soufflé)',
@@ -683,6 +682,7 @@ function ChoixChauffageResults({ typeLogement, addressDetail }: ChoixChauffageRe
                   variant="primary"
                   href={`/pro/comparateur-couts-performances?address=${encodeURIComponent(addressDetail.geoAddress?.properties.label ?? '')}`}
                   eventKey="Lien|Choix chauffage vers comparateur"
+                  isExternal
                 >
                   Obtenez une simulation affinée avec notre comparateur
                 </Link>

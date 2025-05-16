@@ -51,7 +51,7 @@ const closeIndividual: EligibilityResult = {
 ::arrow-item[**Votre immeuble est situé à proximité** immédiate d’un réseau de chaleur ${distance ? `(${distance})` : ''}.]
 ::arrow-item[Toutefois au vu de votre chauffage actuel, **le raccordement de votre immeuble nécessiterait des travaux conséquents** et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble.]
 ::arrow-item[**L’amélioration de l’isolation thermique de votre immeuble** constitue un autre levier pour réduire votre facture énergétique et limiter votre impact écologique. Pour être accompagné dans vos projets de rénovation énergétique, rendez-vous sur [**France Rénov’**](https://france-renov.gouv.fr/).]
-::arrow-item[Découvrez également d’autres solutions de chauffage **[ici](https://france-renov.gouv.fr/renovation/chauffage)**.]
+::arrow-item[Découvrez également d’autres solutions de chauffage **<a className="whitespace-nowrap" href="/chaleur-renouvelable" target="_blank">ici</a>**.]
   `,
   text: `
 **France Chaleur Urbaine** est un service gratuit du Ministère de la transition écologique qui vous permet de découvrir **instantanément** si un réseau passe près de chez vous
@@ -98,7 +98,7 @@ const farIndividual: EligibilityResult = {
 ::arrow-item[**Votre immeuble n'est pas situé à proximité** immédiate d’un réseau de chaleur ${distance ? `(${distance})` : ''}.]
 ::arrow-item[Au vu de votre chauffage actuel, **le raccordement de votre immeuble nécessiterait des travaux conséquents** et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble.]
 ::arrow-item[**L’amélioration de l’isolation thermique de votre immeuble** constitue un autre levier pour réduire votre facture énergétique et limiter votre impact écologique. Pour être accompagné dans vos projets de rénovation énergétique, rendez-vous sur [**France Rénov’**](https://france-renov.gouv.fr/).]
-::arrow-item[Découvrez également d’autres solutions de chauffage **[ici](https://france-renov.gouv.fr/renovation/chauffage)**.]
+::arrow-item[Découvrez également d’autres solutions de chauffage **<a className="whitespace-nowrap" href="/chaleur-renouvelable" target="_blank">ici</a>**.]
     `,
   text: `
 **France Chaleur Urbaine** est un service gratuit du Ministère de la transition écologique qui vous permet de découvrir **instantanément** si un réseau passe près de chez vous
@@ -111,7 +111,7 @@ const farCollectifOutPDP: EligibilityResult = {
   body: () => `
 ::arrow-item[**Il n’existe pour le moment pas de réseau de chaleur** à proximité de votre adresse. Toutefois les réseaux de chaleur se développent !]
 ::arrow-item[Sans attendre, pour réduire votre facture énergétique et limiter votre impact écologique, **pensez à améliorer l’isolation thermique de votre immeuble**. Pour être accompagné dans vos projets de rénovation énergétique, rendez-vous sur [**France Rénov’**](https://france-renov.gouv.fr/).]
-::arrow-item[Découvrez également d’autres solutions de chauffage **[ici](https://france-renov.gouv.fr/renovation/chauffage)**.]
+::arrow-item[Découvrez également d’autres solutions de chauffage **<a className="whitespace-nowrap" href="/chaleur-renouvelable?type=immeuble_chauffage_collectif" target="_blank">ici</a>**.]
 `,
   text: `
 **France Chaleur Urbaine** est un service gratuit du Ministère de la transition écologique qui vous permet de découvrir **instantanément** si un réseau passe près de chez vous
@@ -205,7 +205,7 @@ const closeFuturIndividual: EligibilityResult = {
   }.]
 ::arrow-item[Toutefois au vu de votre chauffage actuel, **le raccordement de votre immeuble nécessiterait des travaux conséquents** et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble.]
 ::arrow-item[**L’amélioration de l’isolation thermique de votre immeuble** constitue un autre levier pour réduire votre facture énergétique et limiter votre impact écologique. Pour être accompagné dans vos projets de rénovation énergétique, rendez-vous sur [**France Rénov’**](https://france-renov.gouv.fr/).]
-::arrow-item[Découvrez également d’autres solutions de chauffage **[ici](https://france-renov.gouv.fr/renovation/chauffage)**.]
+::arrow-item[Découvrez également d’autres solutions de chauffage **<a className="whitespace-nowrap" href="/chaleur-renouvelable" target="_blank">ici</a>**.]
   `,
   text: `
 **France Chaleur Urbaine** est un service gratuit du Ministère de la transition écologique qui vous permet de découvrir **instantanément** si un réseau passe près de chez vous
@@ -243,7 +243,7 @@ const noTraceIndividual: EligibilityResult = {
   ::arrow-item[Il existe un réseau de chaleur sur cette commune, mais nous ne disposons d’aucune information sur sa localisation.]
   ::arrow-item[Au vu de votre chauffage actuel, **le raccordement de votre immeuble nécessiterait des travaux conséquents** et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble.]
   ::arrow-item[**L’amélioration de l’isolation thermique de votre immeuble** constitue un autre levier pour réduire votre facture énergétique et limiter votre impact écologique. Pour être accompagné dans vos projets de rénovation énergétique, rendez-vous sur [**France Rénov’**](https://france-renov.gouv.fr/).]
-  ::arrow-item[Découvrez également d’autres solutions de chauffage **[ici](https://france-renov.gouv.fr/renovation/chauffage)**.]
+  ::arrow-item[Découvrez également d’autres solutions de chauffage **<a className="whitespace-nowrap" href="/chaleur-renouvelable" target="_blank">ici</a>**.]
       `,
   text: `
   **France Chaleur Urbaine** est un service gratuit du Ministère de la transition écologique qui vous permet de découvrir **instantanément** si un réseau passe près de chez vous
