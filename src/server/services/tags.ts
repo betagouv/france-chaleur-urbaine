@@ -3,7 +3,6 @@ import { z } from 'zod';
 import { kdb, sql } from '@/server/db/kysely';
 import { createBaseModel } from '@/server/db/kysely/base-model';
 import { type User } from '@/types/User';
-import { type FrontendType } from '@/utils/typescript';
 
 export const tableName = 'tags';
 
@@ -46,7 +45,7 @@ export const list = async () => {
     count: records.length,
   };
 };
-export type TagWithUsers = FrontendType<Awaited<ReturnType<typeof list>>['items'][number]>;
+export type TagWithUsers = Awaited<ReturnType<typeof list>>['items'][number];
 
 export const update = baseModel.update;
 export const remove = baseModel.remove;
