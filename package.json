@@ -59,8 +59,6 @@
     "@mapbox/mapbox-gl-draw": "^1.5.0",
     "@mdx-js/loader": "^3.1.0",
     "@mdx-js/react": "^3.1.0",
-    "@mui/material": "^5.15.19",
-    "@mui/x-data-grid": "^7.6.1",
     "@next/bundle-analyzer": "^14.0.0",
     "@next/mdx": "^15.1.7",
     "@radix-ui/react-popover": "^1.1.2",
