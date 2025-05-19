@@ -7,7 +7,6 @@ import React from 'react';
 import { createGlobalStyle, StyleSheetManager, ThemeProvider as StyledComponentsThemeProvider } from 'styled-components';
 import { createEmotionSsrAdvancedApproach } from 'tss-react/next/pagesDir';
 
-import { MuiDsfrThemeProvider } from './MuiDsfrThemeProvider';
 import theme from './theme';
 
 declare module '@codegouvfr/react-dsfr/next-pagesdir' {
@@ -194,11 +193,9 @@ function ThemeProvider({ children }: { children: React.ReactNode }) {
   return (
     <StyledComponentsThemeProvider theme={theme}>
       <StyleSheetManager shouldForwardProp={shouldForwardProp} enableVendorPrefixes>
-        <MuiDsfrThemeProvider>
-          <AppGlobalStyle />
-          <DsfrFixUp />
-          {children}
-        </MuiDsfrThemeProvider>
+        <AppGlobalStyle />
+        <DsfrFixUp />
+        {children}
       </StyleSheetManager>
     </StyledComponentsThemeProvider>
   );

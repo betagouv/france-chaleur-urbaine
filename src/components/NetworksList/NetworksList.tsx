@@ -28,28 +28,10 @@ const ButtonExport = dynamic(() => import('@/components/ui/ButtonExport'), { ssr
 type DataToDisplay = 'general' | 'mix_energetique';
 
 const NetworksListContainer = styled.div`
-  .MuiDataGrid-root {
-    overflow-y: hidden;
-    --DataGrid-hasScrollY: 0;
-  }
   .networks-list-selector {
     font-weight: bold;
     &:not(.active) {
       color: var(--grey-50-1000);
-    }
-  }
-  .MuiDataGrid-virtualScroller {
-    overflow-y: hidden;
-  }
-  .MuiDataGrid-row {
-    &.even,
-    &.odd {
-      background-color: #fff;
-      padding-top: 0;
-      padding-bottom: 8px;
-    }
-    &:not(.MuiDataGrid-row--firstVisible) {
-      --rowBorderColor: var(--border-contrast-grey);
     }
   }
 `;

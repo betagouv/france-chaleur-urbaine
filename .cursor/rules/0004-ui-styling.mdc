@@ -1,5 +1,5 @@
 ---
-description: 
+description:
 globs: *.tsx,*.ts,*.js,*.jsx
 alwaysApply: false
 ---
@@ -13,7 +13,7 @@ alwaysApply: false
 - Use framer motion for animations.
 - Implement responsive design with Tailwind CSS using a mobile-first approach.
 - Prefer import of components in components/ui when importing components
-- Use [TableSimple.tsx](mdc:src/components/ui/TableSimple.tsx) over [Table.tsx](mdc:src/components/ui/Table.tsx) as it's deprecated
+- Use [TableSimple.tsx](mdc:france-chaleur-urbaine/src/components/ui/TableSimple.tsx) for all Table needs
 
 ## Creating a component
 
