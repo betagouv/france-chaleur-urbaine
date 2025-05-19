@@ -3,7 +3,7 @@ import React from 'react';
 
 import { FormProvider } from '@/components/form/publicodes/FormProvider';
 import Heading from '@/components/ui/Heading';
-import { type ColumnDef, Table } from '@/components/ui/Table';
+import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
 import { type LocationInfoResponse } from '@/pages/api/location-infos';
 import { postFetchJSON } from '@/utils/network';
 import { ObjectEntries } from '@/utils/typescript';
@@ -67,21 +67,27 @@ const ComparateurPublicodesWidget: React.FC<ComparateurPublicodesWidgetProps> = 
 
   const columns: ColumnDef<{ label: string; bilan: number }>[] = [
     {
-      headerName: 'Mode de chauffage',
-      field: 'label',
+      header: 'Mode de chauffage',
+      accessorKey: 'label',
       flex: 3,
     },
     {
-      headerName: 'Coût annuel chauffage',
+      header: 'Coût annuel chauffage',
       flex: 2,
-      field: 'bilan',
-      renderCell: ({ value }) => value.toLocaleString('fr-FR', { currency: 'EUR', maximumFractionDigits: 0, style: 'currency' }),
+      accessorKey: 'bilan',
+      cellType: 'Price',
+      cellProps: {
+        maximumFractionDigits: 0,
+      },
     },
     {
-      headerName: 'Émissions CO2',
+      header: 'Émissions CO2 (kgCO2e)',
       flex: 2,
-      field: 'emissionsCO2',
-      renderCell: ({ value }) => `${value.toLocaleString('fr-FR', { maximumFractionDigits: 0 })} kgCO2e`,
+      accessorKey: 'emissionsCO2',
+      cellType: 'Number',
+      cellProps: {
+        maximumFractionDigits: 0,
+      },
     },
   ];
 
@@ -91,17 +97,7 @@ const ComparateurPublicodesWidget: React.FC<ComparateurPublicodesWidgetProps> = 
         <Heading as="h2" size="h4">
           Comparaison des modes de chauffage
         </Heading>
-        <Table
-          style={{ width: '100%' }}
-          getRowClassName={({ id }) => (id === 'Réseau de chaleur' ? fr.cx('fr-text--bold') : '')}
-          columns={columns}
-          hideFooter
-          rows={modesDeChauffageToDisplay}
-          autosizeOnMount
-          disableRowSelectionOnClick
-          autoHeight
-          pageSize={20}
-        />
+        <TableSimple columns={columns} data={modesDeChauffageToDisplay} />
         <div className={fr.cx('fr-text--sm', 'fr-mt-2w')} style={{ textAlign: 'right', fontStyle: 'italic' }}>
           Accéder au{' '}
           <a
