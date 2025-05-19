@@ -395,7 +395,7 @@ const ContributionForm = () => {
         name="typeUtilisateur"
         listeners={{
           onChange: ({ value }) => {
-            if (value !== 'Autre') {
+            if (value !== 'Autre' && form.state.values.typeUtilisateurAutre !== '') {
               form.setFieldValue('typeUtilisateurAutre', '');
             }
           },
