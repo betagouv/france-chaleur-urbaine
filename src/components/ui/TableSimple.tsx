@@ -70,6 +70,7 @@ export const customFilterFn = <T extends RowData>(): Record<string, FilterFn<T>>
 export type ColumnDef<T, K = any> = ColumnDefOriginal<T, K> & {
   accessorKey?: string;
   cellType?: TableCellProps<T>['type'];
+  cellProps?: TableCellProps<T>['cellProps'];
   align?: 'center' | 'left' | 'right';
   className?: string;
   suffix?: React.ReactNode;

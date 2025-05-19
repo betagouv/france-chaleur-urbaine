@@ -6,29 +6,29 @@ import Link from '@/components/ui/Link';
 import { isDefined } from '@/utils/core';
 // import ContentEditable from './ContentEditable';
 
-export type TableCellType =
-  | 'Array'
-  | 'Date'
-  | 'DateTime'
-  | 'Array'
-  | 'Link'
-  | 'Json'
-  | 'Number'
-  | 'Boolean'
-  | 'Image'
-  | 'Price'
-  | 'NoWrap'
-  | 'Percent';
+type CellProps<T> = {
+  Image: Omit<React.ComponentProps<typeof Image>, 'src' | 'onClick'> & { onClick?: (imageUrl: string) => void };
+  Number: Intl.NumberFormatOptions;
+  Percent: Intl.NumberFormatOptions;
+  Price: Intl.NumberFormatOptions;
+  NoWrap: React.ComponentProps<'span'>;
+  Link: Omit<React.ComponentProps<typeof Link>, 'href'> & { href: string | ((data: T) => string) };
+  Boolean: never;
+  Array: never;
+  Date: never;
+  DateTime: never;
+  Json: never;
+};
 
 export type TableCellProps<T> = {
-  type?: TableCellType;
   value: any;
   default: any;
   data: T;
-  cellProps?: any;
-} & (TableCellType extends 'Image' ? { cellProps: React.ComponentProps<typeof Image> } : {});
+  type?: keyof CellProps<T>;
+  cellProps?: Partial<CellProps<T>[keyof CellProps<T>]>;
+};
 
-const Cell = <T,>({ value, type, default: defaultValue, data, cellProps = {} }: TableCellProps<T>) => {
+const Cell = <T,>({ value, default: defaultValue, data, type, cellProps = {} }: TableCellProps<T>) => {
   if (!value && type !== 'Boolean') {
     return defaultValue;
   }
@@ -63,7 +63,8 @@ const Cell = <T,>({ value, type, default: defaultValue, data, cellProps = {} }: 
   } else if (type === 'NoWrap') {
     return <span className="whitespace-nowrap">{value}</span>;
   } else if (type === 'Link') {
-    const { href, ...linkCellProps } = cellProps;
+    const linkProps = cellProps as CellProps<T>['Link'];
+    const { href, ...linkCellProps } = linkProps || {};
     let processedHref = href;
     if (typeof href === 'string') {
       processedHref = href.replace('[id]', (data as any).id);
@@ -87,20 +88,29 @@ const Cell = <T,>({ value, type, default: defaultValue, data, cellProps = {} }: 
       </Link>
     );
   } else if (type === 'Number') {
-    return (value as number).toLocaleString(undefined, { ...cellProps });
+    return (value as number).toLocaleString(undefined, cellProps as Intl.NumberFormatOptions);
   } else if (type === 'Percent') {
-    return (value as number).toLocaleString(undefined, { style: 'percent', ...(cellProps ? cellProps : { minimumFractionDigits: 2 }) });
+    return (value as number).toLocaleString(undefined, {
+      style: 'percent',
+      ...(cellProps ? (cellProps as Intl.NumberFormatOptions) : { minimumFractionDigits: 2 }),
+    });
   } else if (type === 'Price') {
-    return (value as number).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', ...cellProps });
+    return (value as number).toLocaleString('fr-FR', {
+      style: 'currency',
+      currency: 'EUR',
+      ...(cellProps as Intl.NumberFormatOptions),
+    });
   } else if (type === 'Image') {
-    const { onClick, alt, ...restCellProps } = cellProps;
-    const onImageClick = (imageUrl: string) => (e: any) => {
+    const imageProps = cellProps as CellProps<T>['Image'];
+    const { onClick, alt, ...restCellProps } = imageProps || {};
+
+    const onImageClick = (imageUrl: string) => (e: React.MouseEvent) => {
       e.stopPropagation();
       e.preventDefault();
-      onClick(imageUrl);
+      onClick?.(imageUrl);
     };
 
-    return <Image alt={alt} src={value} {...(onClick ? { onClick: onImageClick(value) } : {})} {...restCellProps} />;
+    return <Image alt={alt || ''} src={value} {...(onClick ? { onClick: onImageClick(value) } : {})} {...restCellProps} />;
   } else if (type === 'Array') {
     return <span>{value.join(', ')}</span>;
   }
