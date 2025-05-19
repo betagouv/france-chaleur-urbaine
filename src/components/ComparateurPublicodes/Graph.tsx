@@ -67,6 +67,8 @@ const commonGraphOptions: React.ComponentProps<typeof Chart>['options'] = {
   legend: { position: 'top', maxLines: 3 },
 };
 
+const dataYear = 2023;
+
 // graph coûts
 const colorP1Abo = '#FCC63A';
 const colorP1Conso = '#FC8162';
@@ -521,7 +523,7 @@ const Graph: React.FC<GraphProps> = ({
           <div>
             <Heading as="h6">
               Coût global et émissions de CO2 annuels
-              {typeDeBatiment === 'tertiaire' ? '' : ` (par ${perBuilding ? 'bâtiment' : 'logement'})`} - {titleItemsString}
+              {typeDeBatiment === 'tertiaire' ? '' : ` (par ${perBuilding ? 'bâtiment' : 'logement'})`} - {titleItemsString} ({dataYear})
             </Heading>
             <DisclaimerButton className="!mb-5" />
             <div className="relative mt-2 pb-8">
@@ -684,7 +686,7 @@ const Graph: React.FC<GraphProps> = ({
           <div ref={coutsRef}>
             <Heading as="h6">
               Coût global annuel - {titleItemsString}
-              {typeDeBatiment === 'tertiaire' ? '' : ' (par logement)'}
+              {typeDeBatiment === 'tertiaire' ? '' : ' (par logement)'} ({dataYear})
             </Heading>
             <DisclaimerButton className="!mb-5" />
             <Chart
@@ -711,7 +713,9 @@ const Graph: React.FC<GraphProps> = ({
         )}
         {graphType === 'emissions' && (
           <>
-            <Heading as="h6">Émissions annuelles de CO2 (par {perBuilding ? 'bâtiment' : 'logement'})</Heading>
+            <Heading as="h6">
+              Émissions annuelles de CO2 (par {perBuilding ? 'bâtiment' : 'logement'}) ({dataYear})
+            </Heading>
             <DisclaimerButton className="!mb-5" />
             {typeDeBatiment === 'résidentiel' && (
               <SegmentedControl
