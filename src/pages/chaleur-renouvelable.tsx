@@ -1,3 +1,4 @@
+import { clientConfig } from '@/client-config';
 import ChoixChauffageForm from '@/components/choix-chauffage/ChoixChauffageForm';
 import SimplePage from '@/components/shared/page/SimplePage';
 import { ResponsiveRow } from '@/components/ui/Box';
@@ -11,6 +12,7 @@ function ChaleurRenouvelablePage() {
       title="Découvrez le chauffage qui vous convient !"
       currentPage="/ressources/outils"
       description="Découvrez les modes de chauffage renouvelables adaptés à votre logement"
+      noIndex={!clientConfig.flags.enableChaleurRenouvelable}
     >
       <Hero image="/img/landing_chaleur_renouvelable.webp" variant="light" imagePosition="right" imageType="inline-cover" imageRatio="2/5">
         <HeroTitle>Découvrez le chauffage qui vous convient&nbsp;!</HeroTitle>

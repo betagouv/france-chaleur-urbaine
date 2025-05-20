@@ -16,6 +16,7 @@ export const clientConfig = {
   },
   flags: {
     enableComparateurWidget: envBooleanSchema.default(false).parse(process.env.NEXT_PUBLIC_FLAG_ENABLE_COMPARATEUR_WIDGET),
+    enableChaleurRenouvelable: envBooleanSchema.default(false).parse(process.env.NEXT_PUBLIC_FLAG_ENABLE_CHALEUR_RENOUVELABLE),
   },
   publicodesDocumentationURL:
     process.env.NEXT_PUBLIC_PUBLICODES_DOCUMENTATION_URL ?? 'https://betagouv.github.io/france-chaleur-urbaine-publicodes/',
