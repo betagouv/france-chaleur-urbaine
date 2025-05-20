@@ -1,64 +1,55 @@
-import { Button } from '@codegouvfr/react-dsfr/Button';
 import { useRouter } from 'next/router';
-import { type FormEvent, useEffect, useState } from 'react';
+import { z } from 'zod';
 
-import Input from '@/components/form/dsfr/Input';
+import useForm from '@/components/form/react-form/useForm';
+import CenterLayout from '@/components/shared/page/CenterLayout';
+import Heading from '@/components/ui/Heading';
 import { useServices } from '@/services';
-
-import { Container, PasswordAlert } from './Form.styles';
+import { toastErrors } from '@/services/notification';
+const passwordSchema = z
+  .object({
+    password: z
+      .string()
+      .min(8, 'Votre mot de passe doit avoir au moins 8 caractères')
+      .regex(/[a-z]/, 'Votre mot de passe doit contenir au moins une lettre minuscule')
+      .regex(/[A-Z]/, 'Votre mot de passe doit contenir au moins une lettre majuscule')
+      .regex(/[0-9]/, 'Votre mot de passe doit contenir au moins un chiffre'),
+    confirmation: z.string(),
+  })
+  .refine((data) => data.password === data.confirmation, {
+    message: 'Les mots de passe sont différents',
+    path: ['confirmation'],
+  });
 
 const NewPasswordForm = ({ token }: { token: string }) => {
   const { passwordService } = useServices();
   const router = useRouter();
 
-  const [password, setPassword] = useState('');
-  const [confirmation, setConfirmation] = useState('');
-  const [error, setError] = useState('');
-  const [fail, setFail] = useState('');
+  const { Form, PasswordInput, Submit } = useForm({
+    schema: passwordSchema,
+    onSubmit: toastErrors(async ({ value }) => {
+      try {
+        await passwordService.changePassword(token, value.password);
+        router.push(
+          `/connexion?notify=success:${encodeURIComponent('Mot de passe réinitialisé avec succès. Vous pouvez maintenant vous connecter.')}`
+        );
+      } catch (e: any) {
+        throw new Error(e.response.data.error?.issues?.[0]?.message ?? e.response.data.message);
+      }
+    }),
+  });
 
-  useEffect(() => {
-    setError('');
-    if (confirmation && confirmation !== password) {
-      setError('Les mots de passe sont différents.');
-    }
-    if (password && (password.length < 8 || !/[a-z]/.test(password) || !/[A-Z]/.test(password) || !/[0-9]/.test(password))) {
-      setError('Votre mot de passe doit avoir au moins 8 caractères dont 1 majuscule, 1 minuscule et 1 chiffre.');
-    }
-  }, [password, confirmation]);
-  const reset = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!error) {
-      setFail('');
-      passwordService
-        .changePassword(token, password)
-        .then(() => router.push('/connexion'))
-        .catch((e) => setFail(e.response.data.error?.issues?.[0]?.message ?? e.response.data.message));
-    }
-  };
   return (
-    <Container onSubmit={reset}>
-      <Input
-        label="Mot de passe"
-        nativeInputProps={{
-          required: true,
-          type: 'password',
-          value: password,
-          onChange: (e) => setPassword(e.target.value),
-        }}
-      />
-      <Input
-        label="Confirmer"
-        nativeInputProps={{
-          required: true,
-          type: 'password',
-          value: confirmation,
-          onChange: (e) => setConfirmation(e.target.value),
-        }}
-      />
-      {error && <PasswordAlert severity="error" title={error} />}
-      {fail && <PasswordAlert severity="error" title={fail} />}
-      <Button type="submit">Changer mon mot de passe</Button>
-    </Container>
+    <CenterLayout maxWidth="500px">
+      <Heading as="h1" size="h2">
+        Réinitialisation du mot de passe
+      </Heading>
+      <Form className="flex flex-col gap-4">
+        <PasswordInput name="password" label="Mot de passe" />
+        <PasswordInput name="confirmation" label="Confirmer" />
+        <Submit>Changer mon mot de passe</Submit>
+      </Form>
+    </CenterLayout>
   );
 };
 

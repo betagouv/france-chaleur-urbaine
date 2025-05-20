@@ -50,5 +50,12 @@ allowed_patterns:
 - pass
 - (?i).*key.*
 - PasswordInput
+- passwordService\.changePassword
+- await\s+passwordService\.changePassword
+- value\.password
+- await\s+\w+Service\.changePassword
+- "changePassword"
+- "token"
+- "value"
 - (?i)https:\/\/airtable\.com\/app9opX8gRAtBqkan.* # Links to airtable in docs
 version: "1.0"
