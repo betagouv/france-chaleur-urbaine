@@ -5,6 +5,7 @@ import { z } from 'zod';
 
 import db from '@/server/db';
 import { BadRequestError, handleRouteErrors, requirePostMethod, validateObjectSchema } from '@/server/helpers/server';
+import { activateUser } from '@/server/services/auth';
 import { zPassword } from '@/utils/validation';
 
 const changePasswordRequest = handleRouteErrors(async (req: NextApiRequest) => {
@@ -20,7 +21,7 @@ const changePasswordRequest = handleRouteErrors(async (req: NextApiRequest) => {
       } catch (err) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: 'Lien invalide. Veuillez redemander un lien de réinitialisation.',
+          message: 'Lien invalide. Veuillez réinitialiser votre mot de passe.',
         });
 
         return z.NEVER;
@@ -34,17 +35,21 @@ const changePasswordRequest = handleRouteErrors(async (req: NextApiRequest) => {
   }
 
   if (!user.reset_token) {
-    throw new BadRequestError('Ce lien a déjà été utilisé. Veuillez redemander un lien de réinitialisation.');
+    throw new BadRequestError('Ce lien a déjà été utilisé. Veuillez refaire une demande de réinitialisation de votre mot de passe.');
   }
 
   if (user.reset_token !== token.resetToken) {
-    throw new BadRequestError('Lien invalide. Veuillez redemander un lien de réinitialisation');
+    throw new BadRequestError('Lien invalide. Veuillez réinitialiser votre mot de passe.');
   }
 
   const salt = await bcrypt.genSalt(10);
   await db('users')
     .update({ reset_token: null, password: bcrypt.hashSync(password, salt) })
     .where('id', user.id);
+
+  if (user.activation_token) {
+    await activateUser(user.activation_token);
+  }
 });
 
 export default changePasswordRequest;
