@@ -1,6 +1,7 @@
 import { type Article } from '@/types/Article';
 
 import reseauxACreerOuEtendre from './1600-reseaux-a-creer-ou-etendre.md';
+import deuxCentsPDP from './200-perimetres-de-developpement-prioritaire-a-decouvrir-sur-notre-carte.md';
 import demandes from './2000-demandes.md';
 import communesAFortPotentiel from './2600-communes-a-fort-potentiel-pour-la-creation-dun-reseau-de-chaleur-elus-testez-la-votre.md';
 import objectifRaccordementAtteignableReseauxExistants from './30-de-lobjectif-de-raccordement-2035-atteignable-sur-les-reseaux-existants.md';
@@ -25,6 +26,7 @@ import fcuLabelliseServiceNumeriqueAImpactNational from './france-chaleur-urbain
 import franceChaleurUrbainePourBureauxEtudes from './france-chaleur-urbaine-pour-les-bureaux-detudes.md';
 import franceChaleurUrbaineSeConstruitAvecSesUsagers from './france-chaleur-urbaine-se-construit-avec-ses-usagers.md';
 import identifierZonesImplantationsSolaireThermique from './identifier-des-zones-dimplantation-pour-le-solaire-thermique.md';
+import communesPlusFortPotentiel from './identifier-les-communes-au-plus-fort-potentiel-pour-la-creation-dun-reseau-de-chaleur.md';
 import informerLesCoproprietes from './informer-les-coproprietes-sur-les-reseaux-de-chaleur.md';
 import informerGestionnairesTertiaires from './informer-les-gestionnaires-de-batiments-tertiaires-sur-les-reseaux-de-chaleur.md';
 import initierUnProjetDeReseauAvecFranceChaleurUrbaine from './initier-un-projet-de-reseau-avec-france-chaleur-urbaine.md';
@@ -157,6 +159,22 @@ function getArticleAbstract(content: string): string {
 export const articles = (
   [
     {
+      image: '/contents/FCU_cover_200PDP.jpg',
+      title: '200 périmètres de développement prioritaire à découvrir sur notre carte',
+      slug: '200-perimetres-de-developpement-prioritaire-a-decouvrir-sur-notre-carte',
+      content: importFile(deuxCentsPDP),
+      publishedDate: new Date('2025-05-19'),
+      themes: ['Réseaux de chaleur', 'Réseaux de froid', 'Cartographie et données'],
+    },
+    {
+      image: '/contents/FCU_cover_2600communes.jpg',
+      title: "Identifier les communes au plus fort potentiel pour la création d'un réseau de chaleur",
+      slug: 'identifier-les-communes-au-plus-fort-potentiel-pour-la-creation-dun-reseau-de-chaleur',
+      content: importFile(communesPlusFortPotentiel),
+      publishedDate: new Date('2025-05-12'),
+      themes: ['Réseaux de chaleur', 'Cartographie et données'],
+    },
+    {
       image: '/contents/cover_campagne_smirec.jpg',
       title: 'Une campagne de communication en Seine-Saint-Denis',
       slug: 'une-campagne-de-communication-en-seine-saint-denis',
@@ -165,7 +183,7 @@ export const articles = (
       themes: ['Communication', 'Réseaux de chaleur'],
     },
     {
-      image: '/contents/FCU_tauxENRR-contenuCO2.jpg',
+      image: '/contents/cover_actualisation_donnees.jpg',
       title: "Retrouvez les taux d'énergies renouvelables et contenus CO2 actualisés des réseaux",
       slug: 'retrouvez-les-taux-denergies-renouvelables-et-contenus-co2-actualises-des-reseaux',
       content: importFile(retrouvezTauxEnergiesRenouvelablesEtContenuCO2DesReseaux),
