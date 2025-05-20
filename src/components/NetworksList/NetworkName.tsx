@@ -1,7 +1,7 @@
-import Link from 'next/link';
 import styled from 'styled-components';
 
 import Box from '@/components/ui/Box';
+import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
 
 const IsClassedTag = styled(Text)`
@@ -28,7 +28,9 @@ const NetworkName = ({ name, isClassed, identifiant }: { name: string; isClassed
         </IsClassedTag>
       )}
       <Name>
-        <Link href={`/reseaux/${identifiant}`}>{name}</Link>
+        <Link href={`/reseaux/${identifiant}`} isExternal>
+          {name}
+        </Link>
       </Name>
     </Box>
   );
