@@ -30,3 +30,13 @@ find "src/data/contents" -type f -name "*.md" | while IFS= read -r fichier; do
         echo "Nettoyage effectué sur : $fichier"
     fi
 done
+
+echo "> Déplacement des fichiers de .gitbook vers public/contents"
+# Copier tous les fichiers de .gitbook vers public/contents
+cp -r src/data/contents/.gitbook/assets/* public/contents/
+
+# Supprimer le répertoire src/data/contents/.gitbook
+rm -rf src/data/contents/.gitbook
+
+echo "Déplacement terminé"
+
