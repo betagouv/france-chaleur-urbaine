@@ -1,55 +1,51 @@
-import { Alert } from '@codegouvfr/react-dsfr/Alert';
-import { Button } from '@codegouvfr/react-dsfr/Button';
-import { type FormEvent, useState } from 'react';
+import React from 'react';
+import { z } from 'zod';
 
-import Input from '@/components/form/dsfr/Input';
+import useForm from '@/components/form/react-form/useForm';
+import CenterLayout from '@/components/shared/page/CenterLayout';
+import Alert from '@/components/ui/Alert';
+import Heading from '@/components/ui/Heading';
 import { useServices } from '@/services';
-
-import { Container } from './Form.styles';
+import { toastErrors } from '@/services/notification';
+const resetPasswordSchema = z.object({
+  email: z.string().email('Veuillez entrer une adresse email valide'),
+});
 
 const ResetPasswordForm = () => {
   const { passwordService } = useServices();
+  const [success, setSuccess] = React.useState(false);
 
-  const [email, setEmail] = useState('');
-  const [success, setSuccess] = useState(false);
+  const { Form, EmailInput, Submit } = useForm({
+    schema: resetPasswordSchema,
+    onSubmit: toastErrors(async ({ value }) => {
+      await passwordService.resetPassword(value.email);
+      setSuccess(true);
+    }),
+  });
 
-  const reset = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setSuccess(false);
-    passwordService.resetPassword(email).then(() => setSuccess(true));
-  };
+  if (success) {
+    return (
+      <Alert variant="success" className="max-w-lg mx-auto my-12">
+        Un email pour réinitialiser votre mot de passe vous a été envoyé, pensez à vérifier vos spams. Si vous ne recevez pas de mail de
+        réinitialisation, merci de nous contacter :{' '}
+        <a href="mailto:france-chaleur-urbaine@developpement-durable.gouv.fr" target="_blank" rel="noopener noreferrer">
+          france-chaleur-urbaine@developpement-durable.gouv.fr
+        </a>
+        .
+      </Alert>
+    );
+  }
 
   return (
-    <Container onSubmit={reset} fullWidth={success}>
-      {success ? (
-        <Alert
-          severity="success"
-          title={
-            <>
-              Un email pour réinitialiser votre mot de passe vous a été envoyé, pensez à vérifier vos spams. Si vous ne recevez pas de mail
-              de réinitialisation, merci de nous contacter :{' '}
-              <a href="mailto:france-chaleur-urbaine@developpement-durable.gouv.fr" target="_blank" rel="noopener noreferrer">
-                france-chaleur-urbaine@developpement-durable.gouv.fr
-              </a>
-              .
-            </>
-          }
-        />
-      ) : (
-        <>
-          <Input
-            label="Votre email :"
-            nativeInputProps={{
-              required: true,
-              type: 'email',
-              value: email,
-              onChange: (e) => setEmail(e.target.value),
-            }}
-          />
-          <Button type="submit">Réinitialiser</Button>
-        </>
-      )}
-    </Container>
+    <CenterLayout maxWidth="500px">
+      <Heading as="h1" size="h2">
+        Réinitialisation du mot de passe
+      </Heading>
+      <Form>
+        <EmailInput name="email" label="Votre email :" />
+        <Submit>Réinitialiser</Submit>
+      </Form>
+    </CenterLayout>
   );
 };
 

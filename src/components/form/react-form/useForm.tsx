@@ -9,6 +9,7 @@ import {
 } from '@tanstack/react-form';
 import { useEffect } from 'react';
 import { useState } from 'react';
+import { type z } from 'zod';
 
 import DsfrCheckbox, { type CheckboxProps as DsfrCheckboxProps } from '@/components/form/dsfr/Checkbox';
 import DsfrCheckboxes, { type CheckboxesProps as DsfrCheckboxesProps } from '@/components/form/dsfr/Checkboxes';
@@ -47,45 +48,60 @@ export function getInputErrorStates(field: AnyFieldApi): {
   };
 }
 
-type UseFormProps<
-  TFormData,
-  TOnMount extends undefined | FormValidateOrFn<TFormData>,
-  TOnChange extends undefined | FormValidateOrFn<TFormData>,
-  TOnChangeAsync extends undefined | FormAsyncValidateOrFn<TFormData>,
-  TOnBlur extends undefined | FormValidateOrFn<TFormData>,
-  TOnBlurAsync extends undefined | FormAsyncValidateOrFn<TFormData>,
-  TOnSubmit extends undefined | FormValidateOrFn<TFormData>,
-  TOnSubmitAsync extends undefined | FormAsyncValidateOrFn<TFormData>,
-  TOnServer extends undefined | FormAsyncValidateOrFn<TFormData>,
-  TSubmitMeta,
-> = FormOptions<
-  TFormData,
-  TOnMount,
-  TOnChange,
-  TOnChangeAsync,
-  TOnBlur,
-  TOnBlurAsync,
-  TOnSubmit,
-  TOnSubmitAsync,
-  TOnServer,
-  TSubmitMeta
-> & {
-  schema?: TOnChange; // pass directly the schema to validate against
-};
+// Overload for Zod schema
+function useForm<
+  TSchema extends z.ZodType<any>,
+  TFormData = z.infer<TSchema>,
+  TOnMount extends undefined | FormValidateOrFn<TFormData> = undefined,
+  TOnChange extends undefined | FormValidateOrFn<TFormData> = undefined,
+  TOnChangeAsync extends undefined | FormAsyncValidateOrFn<TFormData> = undefined,
+  TOnBlur extends undefined | FormValidateOrFn<TFormData> = undefined,
+  TOnBlurAsync extends undefined | FormAsyncValidateOrFn<TFormData> = undefined,
+  TOnSubmit extends undefined | FormValidateOrFn<TFormData> = undefined,
+  TOnSubmitAsync extends undefined | FormAsyncValidateOrFn<TFormData> = undefined,
+  TOnServer extends undefined | FormAsyncValidateOrFn<TFormData> = undefined,
+  TSubmitMeta = unknown,
+>(
+  options: {
+    schema: TSchema;
+    onSubmit?: (args: { value: TFormData }) => Promise<unknown> | unknown;
+    validators?: Partial<
+      Omit<
+        FormOptions<
+          TFormData,
+          TOnMount,
+          TOnChange,
+          TOnChangeAsync,
+          TOnBlur,
+          TOnBlurAsync,
+          TOnSubmit,
+          TOnSubmitAsync,
+          TOnServer,
+          TSubmitMeta
+        >['validators'],
+        'onChange'
+      >
+    >;
+  } & Omit<
+    FormOptions<TFormData, TOnMount, TOnChange, TOnChangeAsync, TOnBlur, TOnBlurAsync, TOnSubmit, TOnSubmitAsync, TOnServer, TSubmitMeta>,
+    'validators' | 'onSubmit'
+  >
+): ReturnType<typeof useFormInternal<TFormData>>;
 
+// Original overload for non-Zod schema
 function useForm<
   TFormData,
-  TOnMount extends undefined | FormValidateOrFn<TFormData>,
-  TOnChange extends undefined | FormValidateOrFn<TFormData>,
-  TOnChangeAsync extends undefined | FormAsyncValidateOrFn<TFormData>,
-  TOnBlur extends undefined | FormValidateOrFn<TFormData>,
-  TOnBlurAsync extends undefined | FormAsyncValidateOrFn<TFormData>,
-  TOnSubmit extends undefined | FormValidateOrFn<TFormData>,
-  TOnSubmitAsync extends undefined | FormAsyncValidateOrFn<TFormData>,
-  TOnServer extends undefined | FormAsyncValidateOrFn<TFormData>,
-  TSubmitMeta,
+  TOnMount extends undefined | FormValidateOrFn<TFormData> = undefined,
+  TOnChange extends undefined | FormValidateOrFn<TFormData> = undefined,
+  TOnChangeAsync extends undefined | FormAsyncValidateOrFn<TFormData> = undefined,
+  TOnBlur extends undefined | FormValidateOrFn<TFormData> = undefined,
+  TOnBlurAsync extends undefined | FormAsyncValidateOrFn<TFormData> = undefined,
+  TOnSubmit extends undefined | FormValidateOrFn<TFormData> = undefined,
+  TOnSubmitAsync extends undefined | FormAsyncValidateOrFn<TFormData> = undefined,
+  TOnServer extends undefined | FormAsyncValidateOrFn<TFormData> = undefined,
+  TSubmitMeta = unknown,
 >(
-  options: UseFormProps<
+  options: FormOptions<
     TFormData,
     TOnMount,
     TOnChange,
@@ -96,30 +112,55 @@ function useForm<
     TOnSubmitAsync,
     TOnServer,
     TSubmitMeta
-  >
+  > & {
+    schema?: FormValidateOrFn<TFormData>; // pass directly the schema to validate against
+  }
+): ReturnType<typeof useFormInternal<TFormData>>;
+
+// Implementation
+function useForm<TFormData>(options: any): ReturnType<typeof useFormInternal<TFormData>> {
+  return useFormInternal<TFormData>(options);
+}
+
+function useFormInternal<
+  TFormData,
+  TOnMount extends undefined | FormValidateOrFn<TFormData> = undefined,
+  TOnChange extends undefined | FormValidateOrFn<TFormData> = undefined,
+  TOnChangeAsync extends undefined | FormAsyncValidateOrFn<TFormData> = undefined,
+  TOnBlur extends undefined | FormValidateOrFn<TFormData> = undefined,
+  TOnBlurAsync extends undefined | FormAsyncValidateOrFn<TFormData> = undefined,
+  TOnSubmit extends undefined | FormValidateOrFn<TFormData> = undefined,
+  TOnSubmitAsync extends undefined | FormAsyncValidateOrFn<TFormData> = undefined,
+  TOnServer extends undefined | FormAsyncValidateOrFn<TFormData> = undefined,
+  TSubmitMeta = unknown,
+>(
+  options: FormOptions<
+    TFormData,
+    TOnMount,
+    TOnChange,
+    TOnChangeAsync,
+    TOnBlur,
+    TOnBlurAsync,
+    TOnSubmit,
+    TOnSubmitAsync,
+    TOnServer,
+    TSubmitMeta
+  > & {
+    schema?: FormValidateOrFn<TFormData>; // pass directly the schema to validate against
+  }
 ) {
   const { schema, onSubmit, validators = {}, ...tanStackConfig } = options;
 
-  const formConfig: FormOptions<
-    TFormData,
-    TOnMount,
-    TOnChange,
-    TOnChangeAsync,
-    TOnBlur,
-    TOnBlurAsync,
-    TOnSubmit,
-    TOnSubmitAsync,
-    TOnServer,
-    TSubmitMeta
-  > = {
+  // Create a copy of validators with proper typing
+  const combinedValidators = { ...validators };
+
+  if (schema) {
+    combinedValidators.onChange = schema as TOnChange;
+  }
+
+  const formConfig = {
     ...tanStackConfig,
-    ...(schema
-      ? {
-          validators: { onChange: schema, ...validators }, // Use passed validators if provided, else fallback to schema
-        }
-      : {
-          validators,
-        }),
+    validators: combinedValidators,
     onSubmit,
   };
 
