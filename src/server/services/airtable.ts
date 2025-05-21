@@ -38,7 +38,7 @@ export const syncLastConnectionFromUsers = async (interval?: string) => {
     .select(['id', 'email', 'active', 'last_connection'])
     .where('last_connection', 'is not', null)
     .where('active', '=', true)
-    .where('email', 'like', '%@%'); // Filtre les comptés spéciaux qui ne sont pas des emails et donc pas dans Airtable
+    .where('email', 'like', '%@%'); // Filtre les comptes spéciaux qui ne sont pas des emails et donc pas dans Airtable
 
   if (interval) {
     query = query.where('last_connection', '>', sql.raw<Date>(`NOW() - INTERVAL '${interval}'`));
@@ -114,7 +114,7 @@ export const syncComptesProFromUsers = async (interval?: string) => {
       'structure_other',
       'structure_type',
     ])
-    .where('email', 'like', '%@%'); // Filtre les comptés spéciaux qui ne sont pas des emails et donc pas dans Airtable
+    .where('email', 'like', '%@%'); // Filtre les comptes spéciaux qui ne sont pas des emails et donc pas dans Airtable
 
   if (interval) {
     query = query.where('created_at', '>', sql.raw<Date>(`NOW() - INTERVAL '${interval}'`));
