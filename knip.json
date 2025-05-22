@@ -7,5 +7,6 @@
     "next-sitemap.config.js",
     "src/server/db/kysely/database.ts"
   ],
-  "ignoreDependencies": ["sharp", "@svgr/webpack", "kysely-codegen", "raw-loader"]
+  "ignoreDependencies": ["sharp", "@svgr/webpack", "kysely-codegen", "raw-loader", "geojson"],
+  "ignoreBinaries": ["audit", "knip", "db:introspect"]
 }
