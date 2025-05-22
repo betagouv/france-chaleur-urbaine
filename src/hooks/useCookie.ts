@@ -5,8 +5,8 @@
  *
  * To install the required dependencies:
  * ```
- * yarn add @react-hookz/web js-cookie
- * yarn add -D @types/js-cookie
+ * pnpm add @react-hookz/web js-cookie
+ * pnpm add -D @types/js-cookie
  * ```
  *
  * Note: https://react-hookz.github.io/web/?path=/docs/side-effect-usecookievalue--example#importing
