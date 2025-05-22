@@ -378,6 +378,9 @@ devDependencies:
   '@types/formidable':
     specifier: ^3.4.5
     version: 3.4.5
+  '@types/geojson':
+    specifier: ^7946.0.16
+    version: 7946.0.16
   '@types/geojson-vt':
     specifier: ^3.2.0
     version: 3.2.0
