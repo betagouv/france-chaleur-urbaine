@@ -4,7 +4,7 @@ import { getCommunePotentiel } from '@/server/services/communeAPotentiel';
 /**
  * Complète l'onglet airtable FCU - Formulaire communes sans reseau avec le type, nombre de zones, besoins en chauffage et ECS.
  *
- * Pour lancer : `yarn tsx scripts/airtable/ajout-infos-communes-sans-reseau.ts`
+ * Pour lancer : `pnpm tsx scripts/airtable/ajout-infos-communes-sans-reseau.ts`
  */
 async function main() {
   try {
