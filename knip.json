@@ -1,4 +1,11 @@
 {
   "project": ["src/**/*.{ts,tsx}"],
-  "ignore": ["src/server/cron/manual-job.ts", "src/server/db/migrations/*.ts", "scripts/**", "next-sitemap.config.js"]
+  "ignore": [
+    "src/server/cron/manual-job.ts",
+    "src/server/db/migrations/*.ts",
+    "scripts/**",
+    "next-sitemap.config.js",
+    "src/server/db/kysely/database.ts"
+  ],
+  "ignoreDependencies": ["sharp", "@svgr/webpack", "kysely-codegen", "raw-loader"]
 }
