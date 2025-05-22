@@ -55,10 +55,10 @@ Contient des dumps PG de plusieurs tables avec des noms différents :
 
 ```sh
 # au préalable, récupérer les données à jour depuis la prod
-yarn db:pull:prod reseaux_de_chaleur
-yarn db:pull:prod reseaux_de_froid
-yarn db:pull:prod zone_de_developpement_prioritaire
-yarn db:pull:prod zones_et_reseaux_en_construction
+pnpm db:pull:prod reseaux_de_chaleur
+pnpm db:pull:prod reseaux_de_froid
+pnpm db:pull:prod zone_de_developpement_prioritaire
+pnpm db:pull:prod zones_et_reseaux_en_construction
 
 # vérifier qu'on est bien branché sur la base airtable de prod
 # vim .env.local
@@ -89,10 +89,10 @@ Les références dans Airtable sont
 - L'entité n'existe pas en base
 
 ```sh
-# yarn cli geom insert <rdc|rdf|pdp|futur> <fichier.geojson> [id_fcu] [id_sncu]
+# pnpm cli geom insert <rdc|rdf|pdp|futur> <fichier.geojson> [id_fcu] [id_sncu]
 # si nouvelle entité réseau de chaleur 123
-yarn cli geom insert rdc mon-fichier.geojson 123
-yarn cli geom insert pdp mon-fichier.geojson 0 123C
+pnpm cli geom insert rdc mon-fichier.geojson 123
+pnpm cli geom insert pdp mon-fichier.geojson 0 123C
 ```
 
 Si aucun ID n'est fourni, il faut aller créer un record dans Airtable
@@ -102,17 +102,17 @@ Si aucun ID n'est fourni, il faut aller créer un record dans Airtable
 - L'entité existe déjà en base et on veut **remplacer sa géométrie**
 
 ```sh
-# yarn cli geom update <rdc|rdf|pdp|futur> <fichier.geojson> <id_fcu_or_sncu>
+# pnpm cli geom update <rdc|rdf|pdp|futur> <fichier.geojson> <id_fcu_or_sncu>
 # si entité réseau de chaleur 123 à mettre à jour
-yarn cli geom update rdc mon-fichier.geojson 123
+pnpm cli geom update rdc mon-fichier.geojson 123
 ```
 
 ### Extension
 - L'entité existe déjà en base et on veut **ajouter la géométrie** a une existante
 ```sh
-# yarn cli geom extend <rdc|rdf|pdp|futur> <fichier.geojson> <id_fcu_or_sncu>
+# pnpm cli geom extend <rdc|rdf|pdp|futur> <fichier.geojson> <id_fcu_or_sncu>
 # si entité réseau de chaleur 123 à mettre à jour
-yarn cli geom extend rdc mon-fichier.geojson 123
+pnpm cli geom extend rdc mon-fichier.geojson 123
 ```
 
 ### Suppression
@@ -147,9 +147,9 @@ DELETE FROM <nom_table> where id_fcu = <id a supprimer>;
 ```sh
 # si on doit créer un pdp depuis une commune
 # - rechercher le code insee de la commune
-yarn cli communes:search vannes
+pnpm cli communes:search vannes
 # - puis appeler la commande
-yarn cli geom create-pdp-from-commune 56260
+pnpm cli geom create-pdp-from-commune 56260
 ```
 
 ## Finalisation
@@ -160,45 +160,45 @@ yarn cli geom create-pdp-from-commune 56260
 # mise à jour des champs communes selon la géométrie des données
 # En principe obsolète car les communes sont calculées automatiquement à la mise à jour.
 # Mais il peut arriver qu'on doit appliquer des opérations une fois la géométrie chargée (ex dilatation)
-yarn cli geom update-communes
+pnpm cli geom update-communes
 
 # synchronise les champs communes, has_trace, is_zone, has_PDP
-yarn cli sync-postgres-to-airtable
+pnpm cli sync-postgres-to-airtable
 
 # mise à jour des métadonnées depuis airtable
-yarn cli download-network network
-yarn cli download-network coldNetwork
-yarn cli download-network futurNetwork
+pnpm cli download-network network
+pnpm cli download-network coldNetwork
+pnpm cli download-network futurNetwork
 
 # génération des tuiles
-yarn cli tiles:generate reseaux-de-chaleur
-yarn cli tiles:fill coldNetwork 0 14 # meme fonction que tiles:generate mais pas encore migré
-yarn cli tiles:fill zoneDP 0 14
-yarn cli tiles:fill futurNetwork 0 14
+pnpm cli tiles:generate reseaux-de-chaleur
+pnpm cli tiles:fill coldNetwork 0 14 # meme fonction que tiles:generate mais pas encore migré
+pnpm cli tiles:fill zoneDP 0 14
+pnpm cli tiles:fill futurNetwork 0 14
 
 # copie vers dev
 # Use --data-only when no structures changes
-yarn db:push:dev reseaux_de_chaleur --data-only
-yarn db:push:dev reseaux_de_chaleur_tiles --data-only
-yarn db:push:dev reseaux_de_froid --data-only
-yarn db:push:dev reseaux_de_froid_tiles --data-only
-yarn db:push:dev zone_de_developpement_prioritaire --data-only
-yarn db:push:dev zone_de_developpement_prioritaire_tiles --data-only
-yarn db:push:dev zones_et_reseaux_en_construction --data-only
-yarn db:push:dev zones_et_reseaux_en_construction_tiles --data-only
+pnpm db:push:dev reseaux_de_chaleur --data-only
+pnpm db:push:dev reseaux_de_chaleur_tiles --data-only
+pnpm db:push:dev reseaux_de_froid --data-only
+pnpm db:push:dev reseaux_de_froid_tiles --data-only
+pnpm db:push:dev zone_de_developpement_prioritaire --data-only
+pnpm db:push:dev zone_de_developpement_prioritaire_tiles --data-only
+pnpm db:push:dev zones_et_reseaux_en_construction --data-only
+pnpm db:push:dev zones_et_reseaux_en_construction_tiles --data-only
 
 # redéploie dev pour créer les pages statiques de réseaux
 # https://dashboard.scalingo.com/apps/osc-fr1/france-chaleur-urbaine-dev/deploy/manual
 
 # copie vers prod (quand validé en dev par Florence)
-yarn db:push:prod reseaux_de_chaleur --data-only
-yarn db:push:prod reseaux_de_chaleur_tiles --data-only
-yarn db:push:prod reseaux_de_froid --data-only
-yarn db:push:prod reseaux_de_froid_tiles --data-only
-yarn db:push:prod zone_de_developpement_prioritaire --data-only
-yarn db:push:prod zone_de_developpement_prioritaire_tiles --data-only
-yarn db:push:prod zones_et_reseaux_en_construction --data-only
-yarn db:push:prod zones_et_reseaux_en_construction_tiles --data-only
+pnpm db:push:prod reseaux_de_chaleur --data-only
+pnpm db:push:prod reseaux_de_chaleur_tiles --data-only
+pnpm db:push:prod reseaux_de_froid --data-only
+pnpm db:push:prod reseaux_de_froid_tiles --data-only
+pnpm db:push:prod zone_de_developpement_prioritaire --data-only
+pnpm db:push:prod zone_de_developpement_prioritaire_tiles --data-only
+pnpm db:push:prod zones_et_reseaux_en_construction --data-only
+pnpm db:push:prod zones_et_reseaux_en_construction_tiles --data-only
 
 # redéploie prod pour créer les pages statiques de réseaux
 # https://dashboard.scalingo.com/apps/osc-fr1/france-chaleur-urbaine/deploy/manual
@@ -1029,7 +1029,7 @@ Explications :
 
 On applique les changements de géométrie + maj airtable
 ```sh
-yarn cli apply-geometry-updates
+pnpm cli apply-geometry-updates
 mkdir maj_tracés_réseaux
 mv changements* maj_tracés_réseaux/
 ```
@@ -1040,15 +1040,15 @@ Ils sont déplacés dans un répertoire car le logger vide les fichiers quand on
 
 ```sh
 # mise à jour des métadonnées avec airtable
-yarn cli download-network network
-yarn cli download-network coldNetwork
-yarn cli download-network futurNetwork
+pnpm cli download-network network
+pnpm cli download-network coldNetwork
+pnpm cli download-network futurNetwork
 
 # voir génération custom via geojson pour les réseaux de chaleur via doc !
-yarn cli tiles:import-geojson-legacy reseaux_de_chaleur.geojson reseaux_de_chaleur_tiles 0 14
-yarn cli tiles:fill coldNetwork 0 14
-yarn cli tiles:fill zoneDP 0 14
-yarn cli tiles:fill futurNetwork 0 14
+pnpm cli tiles:import-geojson-legacy reseaux_de_chaleur.geojson reseaux_de_chaleur_tiles 0 14
+pnpm cli tiles:fill coldNetwork 0 14
+pnpm cli tiles:fill zoneDP 0 14
+pnpm cli tiles:fill futurNetwork 0 14
 
 # copie en dev
 ./scripts/copyLocalTableToRemote.sh dev reseaux_de_chaleur --data-only
