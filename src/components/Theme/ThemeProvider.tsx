@@ -1,6 +1,6 @@
 import { createNextDsfrIntegrationApi } from '@codegouvfr/react-dsfr/next-pagesdir';
-import isPropValid from '@emotion/is-prop-valid';
 import '@reach/combobox/styles.css';
+import isPropValid from '@emotion/is-prop-valid';
 import { useLocalStorageValue } from '@react-hookz/web';
 import Link from 'next/link';
 import React from 'react';
@@ -193,9 +193,11 @@ function ThemeProvider({ children }: { children: React.ReactNode }) {
   return (
     <StyledComponentsThemeProvider theme={theme}>
       <StyleSheetManager shouldForwardProp={shouldForwardProp} enableVendorPrefixes>
-        <AppGlobalStyle />
-        <DsfrFixUp />
-        {children}
+        <>
+          <AppGlobalStyle />
+          <DsfrFixUp />
+          {children}
+        </>
       </StyleSheetManager>
     </StyledComponentsThemeProvider>
   );

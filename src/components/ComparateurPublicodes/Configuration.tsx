@@ -1,6 +1,6 @@
 import { type DottedName } from '@betagouv/france-chaleur-urbaine-publicodes';
 import { fr } from '@codegouvfr/react-dsfr';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import React from 'react';
 
 import { addresseToPublicodesRulesKeys } from '@/components/ComparateurPublicodes/mappings';
