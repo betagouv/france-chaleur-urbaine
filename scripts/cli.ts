@@ -111,7 +111,7 @@ program
 program
   .command('tiles:import-tiles-directory')
   .description(
-    'Importe en base une arborescence de tuiles vectorielles. A utiliser typiquement après avoir utilisé tippecanoe. Exemple : `yarn cli tiles:import-mvt-directory tiles/zone_a_potentiel_fort_chaud zone_a_potentiel_fort_chaud_tiles`'
+    'Importe en base une arborescence de tuiles vectorielles. A utiliser typiquement après avoir utilisé tippecanoe. Exemple : `pnpm cli tiles:import-mvt-directory tiles/zone_a_potentiel_fort_chaud zone_a_potentiel_fort_chaud_tiles`'
   )
   .argument('<tilesDirectory>', 'Tiles directory root for MVT (Mapbox Vector Tiles)')
   .argument('<destinationTable>', 'Destination table')
@@ -158,7 +158,7 @@ program
 program
   .command('tiles:import-geojson-legacy')
   .description(
-    "Génère des tuiles vectorielles à partir d'un fichier GeoJSON et les enregistre dans postgres. Exemple : `yarn cli tiles:import-geojson-legacy reseaux_de_chaleur.geojson reseaux_de_chaleur_tiles 0 14`"
+    "Génère des tuiles vectorielles à partir d'un fichier GeoJSON et les enregistre dans postgres. Exemple : `pnpm cli tiles:import-geojson-legacy reseaux_de_chaleur.geojson reseaux_de_chaleur_tiles 0 14`"
   )
   .argument('<fileName>', 'input file (format GeoJSON)')
   .argument('<destinationTable>', 'Destination table')
@@ -171,7 +171,7 @@ program
 program
   .command('tiles:import-geojson')
   .description(
-    "Génère des tuiles vectorielles à partir d'un fichier GeoJSON et les enregistre dans postgres. Exemple : `yarn cli tiles:import-geojson etudes-en-cours etude_en_cours.geojson`"
+    "Génère des tuiles vectorielles à partir d'un fichier GeoJSON et les enregistre dans postgres. Exemple : `pnpm cli tiles:import-geojson etudes-en-cours etude_en_cours.geojson`"
   )
   .argument('<type>', `Type of resource you want to generate for - ${Object.keys(tilesAdapters).join(', ')}`)
   .argument('<file>', 'Path of the GeoJSON file')
@@ -184,7 +184,7 @@ program
 program
   .command('tiles:generate')
   .description(
-    "Génère des tuiles vectorielles à partir d'une ressource en passant par un fichier GeoJSON temporaire. Exemple : `yarn cli tiles:generate reseaux_de_chaleur`"
+    "Génère des tuiles vectorielles à partir d'une ressource en passant par un fichier GeoJSON temporaire. Exemple : `pnpm cli tiles:generate reseaux_de_chaleur`"
   )
   .argument('<type>', `Type de ressource à générer - ${Object.keys(tilesAdapters).join(', ')}`)
   .action(async (type) => {
@@ -211,7 +211,7 @@ program
     logger.warn(`N'oubliez pas de copier la table sur dev et prod`);
     logger.warn(`./scripts/copyLocalTableToRemote.sh dev ${tilesDatabaseName} --data-only`);
     logger.warn(`./scripts/copyLocalTableToRemote.sh prod ${tilesDatabaseName} --data-only`);
-    logger.warn(`Puis de l'ajouter à la carte yarn cli tiles:add-to-map ${type}`);
+    logger.warn(`Puis de l'ajouter à la carte pnpm cli tiles:add-to-map ${type}`);
   });
 
 program
@@ -327,7 +327,7 @@ program
     if (!process.env.DRY_RUN) {
       logger.info('');
       logger.info('USAGE:');
-      logger.info('⚠️ DRY_RUN is not set, use DRY_RUN=<true|false> yarn cli stats:update-monthly ...');
+      logger.info('⚠️ DRY_RUN is not set, use DRY_RUN=<true|false> pnpm cli stats:update-monthly ...');
       process.exit(1);
     }
 
@@ -346,7 +346,7 @@ program
     if (!process.env.DRY_RUN) {
       logger.info('');
       logger.info('USAGE:');
-      logger.info('⚠️ DRY_RUN is not set, use FIRST_TIME_FIX=<true|false> DRY_RUN=<true|false> yarn cli debug:upsert-users-from-api ...');
+      logger.info('⚠️ DRY_RUN is not set, use FIRST_TIME_FIX=<true|false> DRY_RUN=<true|false> pnpm cli debug:upsert-users-from-api ...');
       process.exit(1);
     }
     await createGestionnairesFromAPI(account, data);
@@ -390,7 +390,7 @@ program
     if (!process.env.DRY_RUN) {
       logger.info('');
       logger.info('USAGE:');
-      logger.info('⚠️ DRY_RUN is not set, use DRY_RUN=<true|false> yarn cli users:sync-from-airtable');
+      logger.info('⚠️ DRY_RUN is not set, use DRY_RUN=<true|false> pnpm cli users:sync-from-airtable');
       process.exit(1);
     }
     await syncGestionnairesWithUsers();
@@ -403,7 +403,7 @@ program
     if (!process.env.DRY_RUN) {
       logger.info('');
       logger.info('USAGE:');
-      logger.info('⚠️ DRY_RUN is not set, use DRY_RUN=<true|false> yarn cli users:sync-last-connection-to-airtable');
+      logger.info('⚠️ DRY_RUN is not set, use DRY_RUN=<true|false> pnpm cli users:sync-last-connection-to-airtable');
       process.exit(1);
     }
     await syncLastConnectionFromUsers();
@@ -416,7 +416,7 @@ program
     if (!process.env.DRY_RUN) {
       logger.info('');
       logger.info('USAGE:');
-      logger.info('⚠️ DRY_RUN is not set, use DRY_RUN=<true|false> yarn cli users:sync-last-connection-to-airtable');
+      logger.info('⚠️ DRY_RUN is not set, use DRY_RUN=<true|false> pnpm cli users:sync-last-connection-to-airtable');
       process.exit(1);
     }
     await syncComptesProFromUsers();
@@ -429,7 +429,7 @@ program
     if (!process.env.DRY_RUN) {
       logger.info('');
       logger.info('USAGE:');
-      logger.info('⚠️ DRY_RUN is not set, use DRY_RUN=<true|false> yarn cli users:deactivate-users-deleted-in-airtable');
+      logger.info('⚠️ DRY_RUN is not set, use DRY_RUN=<true|false> pnpm cli users:deactivate-users-deleted-in-airtable');
       process.exit(1);
     }
     await deactivateUsersDeletedInAirtable();
@@ -472,16 +472,16 @@ program
     const patternOptions = single
       ? `--print --include-pattern="public.${single}"`
       : '--out-file ./src/server/db/kysely/database.ts --exclude-pattern="(public.spatial_ref_sys|topology.*|tiger.*|public.geography_columns|public.geometry_columns)"';
-    await runBash(`yarn kysely-codegen --numeric-parser number --env-file="./.env.local" --log-level=error ${patternOptions}`);
+    await runBash(`pnpm kysely-codegen --numeric-parser number --env-file="./.env.local" --log-level=error ${patternOptions}`);
     if (!single) {
-      await runBash('yarn prettier --write ./src/server/db/kysely/database.ts');
+      await runBash('pnpm prettier --write ./src/server/db/kysely/database.ts');
     }
   });
 
 program
   .command('image:optimize')
   .description(
-    "Permet d'optimiser les images à introduire dans FCU, comme les infographies. Exemple : `yarn cli image:optimize infographie public/img/FCU_chiffres-cles_reseaux-chaleur.jpg`"
+    "Permet d'optimiser les images à introduire dans FCU, comme les infographies. Exemple : `pnpm cli image:optimize infographie public/img/FCU_chiffres-cles_reseaux-chaleur.jpg`"
   )
   .argument('<profile>', 'optimization profile', (v) => z.enum(nonEmptyArray(optimisationProfiles)).parse(v))
   .argument('<fileName>', 'input image input file')

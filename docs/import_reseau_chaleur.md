@@ -13,15 +13,15 @@
         - Il faudra peut-être modifier le fichier pour changer le nom de la table par *reseaux_de_chaleur* et supprimer sa création ainsi que celle des index
 
 3. Mise à jour des données sur les réseaux depuis Airtable
-    - Si la table des réseaux a été mise à jour lors de l'étape précédente : `yarn cli update-networks network`
+    - Si la table des réseaux a été mise à jour lors de l'étape précédente : `pnpm cli update-networks network`
     - Sinon
-        - `yarn cli download-update-network network`
+        - `pnpm cli download-update-network network`
     - Normalement ce script complète la table *zones_et_reseaux_en_construction* et regénère la table *zones_et_reseaux_en_construction_tiles*
     - /!\\ Note : pour les **réseaux de chaleur**, il faut [générer les tuiles différemment](./génération_tuiles_réseaux_de_chaleur.md).
 
 4. Si mauvaise mise à jour des tiles : mise à jour de la table *reseaux_de_chaleur_tiles*
     - Vider la table (sans la supprimer)
-    - Lancer le script tiles:fill : `yarn cli tiles:fill network 0 17`
+    - Lancer le script tiles:fill : `pnpm cli tiles:fill network 0 17`
 <br/><br/>
 
 ## Deuxième étape - en dev
@@ -102,4 +102,4 @@ Script :
     - Tables : *zone_de_developpement_prioritaire* et *zone_de_developpement_prioritaire_tiles*
     - Dans les scripts *network* devient *zoneDP*
     - Les données ne sont pas présentes dans le AirTable donc il faut sauter cette étape et utiliser le script tiles:fill directement
-        - `yarn cli tiles:fill zoneDP 0 17`
+        - `pnpm cli tiles:fill zoneDP 0 17`

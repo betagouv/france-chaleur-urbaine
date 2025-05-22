@@ -32,8 +32,8 @@ Pour l'instant tout fonctionne par région. Une table par région.
 4. Vider les tables *bnb - adresse_tiles* et *bnb - batiment_tiles*
 
 5. Lancer les calculs des tiles
-    - Pour les adresses : `yarn cli tiles:fill energy 0 17 1`
-    - Pour les bâtiments : `NODE_OPTIONS=--max-old-space-size=8192 yarn cli tiles:fill buildings 0 17 1`
+    - Pour les adresses : `pnpm cli tiles:fill energy 0 17 1`
+    - Pour les bâtiments : `NODE_OPTIONS=--max-old-space-size=8192 pnpm cli tiles:fill buildings 0 17 1`
 <br/><br/>
 
 ## Deuxième étape - en dev
