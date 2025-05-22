@@ -887,7 +887,7 @@ Explications :
 
 On applique les changements de géométrie + maj airtable
 ```sh
-yarn cli apply-geometry-updates
+pnpm cli apply-geometry-updates
 mkdir maj_tracés_réseaux
 mv changements* maj_tracés_réseaux/
 ```
@@ -898,15 +898,15 @@ Ils sont déplacés dans un répertoire car le logger vide les fichiers quand on
 
 ```sh
 # mise à jour des métadonnées avec airtable
-yarn cli download-network network
-yarn cli download-network coldNetwork
-yarn cli download-network futurNetwork
+pnpm cli download-network network
+pnpm cli download-network coldNetwork
+pnpm cli download-network futurNetwork
 
 # voir génération custom via geojson pour les réseaux de chaleur via doc !
-yarn cli tiles:import-geojson-legacy reseaux_de_chaleur.geojson reseaux_de_chaleur_tiles 0 14
-yarn cli tiles:fill coldNetwork 0 14
-yarn cli tiles:fill zoneDP 0 14
-yarn cli tiles:fill futurNetwork 0 14
+pnpm cli tiles:import-geojson-legacy reseaux_de_chaleur.geojson reseaux_de_chaleur_tiles 0 14
+pnpm cli tiles:fill coldNetwork 0 14
+pnpm cli tiles:fill zoneDP 0 14
+pnpm cli tiles:fill futurNetwork 0 14
 
 # copie en dev
 ./scripts/copyLocalTableToRemote.sh dev reseaux_de_chaleur --data-only
@@ -983,5 +983,5 @@ EOF
 
 # Maj communes, has_trace côté airtable
 # sauf zones_et_reseaux_en_construction.is_zone car pas de linestring côté export de sébastien
-yarn cli sync-postgres-to-airtable
+pnpm cli sync-postgres-to-airtable
 ```

@@ -19,7 +19,7 @@ Pré-requis :
 
 - Installer les dépendances
 ```sh
-yarn
+pnpm i
 ```
 
 - Déposer le fichier `.env.local` à la racine du projet.
@@ -44,7 +44,7 @@ pg_restore --clean --if-exists --no-owner --no-privileges --verbose --no-comment
 
 - Appliquer les migrations de la BDD.
 ```sh
-DATABASE_URL="postgres://postgres:postgres_fcu@localhost:5432/postgres" yarn db:migrate
+DATABASE_URL="postgres://postgres:postgres_fcu@localhost:5432/postgres" pnpm db:migrate
 ```
 
 - Désormais, sont accessibles :
@@ -64,8 +64,8 @@ Une partie des données est stockées dans [Airtable](https://airtable.com/), l'
 Certaines requêtes à la base de données sont générées par [Kysely](https://github.com/koskimas/kysely) à partir de [le fichier `src/db/kysely/database.d.ts`](src/db/kysely/database.d.ts).
 Celui-ci doit être généré à partir de la base de données à chaque fois que celle-ci est modifiée 
 
-- `yarn db:verify` pour voir si des modifications ont été faites à la base de données sans avoir été incluses dans le fichier `src/db/kysely/database.ts`
-- `yarn db:sync` pour générer le fichier `src/db/kysely/database.ts` à partir de la base de données
+- `pnpm db:verify` pour voir si des modifications ont été faites à la base de données sans avoir été incluses dans le fichier `src/db/kysely/database.ts`
+- `pnpm db:sync` pour générer le fichier `src/db/kysely/database.ts` à partir de la base de données
 
 ## Développement avec Publicodes
 
@@ -73,10 +73,10 @@ Les commandes ci-dessous sont à réaliser une fois pour lier la dépendance [@b
 
 ```sh
 # rend disponible le paquet @betagouv/france-chaleur-urbaine-publicodes globalement en local
-(cd france-chaleur-urbaine-publicodes && yarn link)
+(cd france-chaleur-urbaine-publicodes && pnpm link)
 
 # utilise le paquet local @betagouv/france-chaleur-urbaine-publicodes plutôt que celui du registre
-(cd france-chaleur-urbaine && yarn link @betagouv/france-chaleur-urbaine-publicodes)
+(cd france-chaleur-urbaine && pnpm link @betagouv/france-chaleur-urbaine-publicodes)
 ```
 
 Note : Le lien créé est un lien symbolique, il ne fonctionne pas quand le serveur est lancé dans un conteneur Docker.
@@ -88,7 +88,7 @@ docker compose stop web
 # corriger les permissions (root dans le conteneur != de l'utilisateur local)
 sudo chown -R $USER: .next node_modules
 # lancer le serveur
-yarn dev
+pnpm dev
 ```
 
 
@@ -98,7 +98,7 @@ yarn dev
 - [ESLint](https://eslint.org/) est utilisé pour détecter les erreurs de programmation.
 
 ```sh
-yarn lint
+pnpm lint
 ```
 
 
@@ -107,14 +107,14 @@ yarn lint
 [Vitest](https://vitest.dev/) est le framework utilisé pour les tests unitaires.
 
 ```sh
-yarn test
+pnpm test
 ```
 
 
 ## Build
 
 ```sh
-yarn build
+pnpm build
 ```
 
 Note : Il se peut qu'un problème de permissions survienne sur le dossier .next qui est monté dans le conteneur Docker.
@@ -129,7 +129,7 @@ Un hook pre-commit Git permet de vérifier que le code est correctement linté a
 
 Si talisman détecte une erreur au moment d'un commit, 2 options sont possibles :
 - soit corriger l'erreur pour supprimer l'alerte ;
-- soit ajouter une exception via la commande `yarn talisman:add-exception`.
+- soit ajouter une exception via la commande `pnpm talisman:add-exception`.
 
 
 # Licence

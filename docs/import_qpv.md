@@ -22,7 +22,7 @@ jq --argjson ids '["QP001001","QP001005","QP001006","QP001007","QP002001","QP002
 ' QP_METROPOLE_LB93_4326.geojson > QP_METROPOLE_LB93_4326_final.geojson
 cat QP_METROPOLE_LB93_4326_final.geojson | docker run -i --rm --entrypoint /bin/bash naxgrp/tippecanoe -c "tippecanoe-json-tool" | docker run -i --rm -v $PWD:/volume -w /volume --user $(id -u):$(id -g) --entrypoint /bin/bash naxgrp/tippecanoe -c "tippecanoe -e quartiers_prioritaires_politique_ville_2015_anru_tiles --read-parallel --layer=layer --force --generate-ids --minimum-zoom=5 --maximum-zoom=14"
 
-yarn cli import-mvt-directory quartiers_prioritaires_politique_ville_2015_anru_tiles quartiers_prioritaires_politique_ville_2015_anru_tiles
+pnpm cli import-mvt-directory quartiers_prioritaires_politique_ville_2015_anru_tiles quartiers_prioritaires_politique_ville_2015_anru_tiles
 
 ./scripts/copyLocalTableToRemote.sh dev quartiers_prioritaires_politique_ville_2015_anru_tiles
 ```
@@ -36,7 +36,7 @@ ogr2ogr -f "GeoJSON" qp-2024-epsg2154-20240820_4326.geojson qp-2024-epsg2154-202
 
 cat qp-2024-epsg2154-20240820_4326.geojson | docker run -i --rm --entrypoint /bin/bash naxgrp/tippecanoe -c "tippecanoe-json-tool" | docker run -i --rm -v $PWD:/volume -w /volume --user $(id -u):$(id -g) --entrypoint /bin/bash naxgrp/tippecanoe -c "tippecanoe -e quartiers_prioritaires_politique_ville_2024_tiles --read-parallel --layer=layer --force --generate-ids --minimum-zoom=5 --maximum-zoom=14"
 
-yarn cli import-mvt-directory quartiers_prioritaires_politique_ville_2024_tiles quartiers_prioritaires_politique_ville_2024_tiles
+pnpm cli import-mvt-directory quartiers_prioritaires_politique_ville_2024_tiles quartiers_prioritaires_politique_ville_2024_tiles
 
 ./scripts/copyLocalTableToRemote.sh dev quartiers_prioritaires_politique_ville_2024_tiles
 ```
