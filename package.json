@@ -151,7 +151,7 @@
     "sharp": "^0.32.5",
     "styled-components": "^6.0.0",
     "tsafe": "^1.8.5",
-    "tslib": "^2.6.1",
+    "tslib": "^2.8.1",
     "tss-react": "^4.9.10",
     "unified": "^10.1.2",
     "uuid": "^9.0.0",
@@ -161,7 +161,7 @@
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.1/xlsx-0.20.1.tgz",
     "yup": "^1.2.0",
     "znv": "^0.4.0",
-    "zod": "^3.24.1"
+    "zod": "^3.25.28"
   },
   "devDependencies": {
     "@svgr/webpack": "^8.1.0",
@@ -177,6 +177,7 @@
     "@types/geojson-vt": "^3.2.0",
     "@types/js-cookie": "^3.0.6",
     "@types/jsonwebtoken": "^9.0.2",
+    "@types/mapbox__geo-viewport": "^0.5.3",
     "@types/mapbox__mapbox-gl-draw": "^1.4.7",
     "@types/node": "^20.5.0",
     "@types/nodemailer": "^6.4.17",
@@ -184,10 +185,11 @@
     "@types/pg": "^8.11.10",
     "@types/proj4": "^2.5.6",
     "@types/prompts": "^2.4.9",
-    "@types/react": "^19.1.0",
+    "@types/react": "^19.1.5",
     "@types/react-dom": "^19.1.0",
     "@types/shapefile": "^0.6.4",
     "@types/uuid": "^9.0.2",
+    "@types/vt-pbf": "^3.1.0",
     "@typescript-eslint/eslint-plugin": "^6.4.0",
     "@typescript-eslint/parser": "^6.4.0",
     "@vitejs/plugin-react": "^4.2.1",
@@ -212,7 +214,7 @@
     "tailwindcss": "^3.4.17",
     "tailwindcss-animate": "^1.0.7",
     "tsx": "^4.7.0",
-    "typescript": "^5.8.2",
+    "typescript": "^5.8.3",
     "vitest": "^3.0.8"
   },
   "resolutions": {

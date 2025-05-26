@@ -15,6 +15,13 @@ declare module '@codegouvfr/react-dsfr/next-pagesdir' {
   }
 }
 
+declare module 'styled-components' {
+  export interface DefaultTheme {
+    media: typeof theme.media;
+    breakpoints: typeof theme.breakpoints;
+  }
+}
+
 const { withDsfr, dsfrDocumentApi } = createNextDsfrIntegrationApi({
   defaultColorScheme: 'light',
   doPersistDarkModePreferenceWithCookie: false,
