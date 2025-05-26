@@ -7,14 +7,7 @@ export type InputProps = React.ComponentProps<typeof StyledDSFRPasswordInput> & 
 };
 
 const PasswordInput = forwardRef<HTMLDivElement, InputProps>(({ size, ...props }, ref) => {
-  return (
-    <StyledDSFRPasswordInput
-      ref={ref}
-      // @ts-expect-error don't manage to make typescript infer correctly
-      $size={size}
-      {...props}
-    />
-  );
+  return <StyledDSFRPasswordInput ref={ref} $size={size} {...props} />;
 });
 
 PasswordInput.displayName = 'PasswordInput';
