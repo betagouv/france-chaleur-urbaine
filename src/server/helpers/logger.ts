@@ -10,7 +10,7 @@ const prettyLogsInDev = format((info) => {
   const symbols = Object.getOwnPropertySymbols(info);
   const levelSymbol = symbols.find((sym) => sym.toString() === 'Symbol(level)');
   const levelValue = info[levelSymbol as any];
-  const [startTag, endTag] = info.level.split(levelValue);
+  const [startTag, endTag] = info.level.split(levelValue as string);
 
   const additionalProps = Object.getOwnPropertyNames(rest).reduce(
     (acc, key) => {
@@ -36,7 +36,7 @@ const prettyLogsInDev = format((info) => {
   if (Object.keys(additionalProps).length > 0) {
     info.message = `${info.message} \x1b[90m${JSON.stringify(additionalProps)}\x1b[0m`;
   }
-  const formattedTimestamp = new Date(timestamp).toLocaleTimeString('en-GB', {
+  const formattedTimestamp = new Date(timestamp as string).toLocaleTimeString('en-GB', {
     hour: '2-digit',
     minute: '2-digit',
     second: '2-digit',
