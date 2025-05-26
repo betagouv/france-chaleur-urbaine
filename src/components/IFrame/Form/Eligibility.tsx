@@ -2,6 +2,7 @@ import { Button } from '@codegouvfr/react-dsfr/Button';
 import Image from 'next/image';
 import { useState } from 'react';
 
+import { clientConfig } from '@/client-config';
 import AddressAutocomplete from '@/components/addressAutocomplete';
 import { CheckEligibilityFormLabel, SelectEnergy } from '@/components/EligibilityForm/components';
 import { energyInputsDefaultLabels } from '@/components/EligibilityForm/EligibilityFormAddress';
@@ -37,9 +38,7 @@ const Eligibility = () => {
         />
         <Button
           disabled={!heatingType || !address}
-          onClick={() =>
-            window.open(`https://france-chaleur-urbaine.beta.gouv.fr?heating=${heatingType}&address=${address?.properties.label}`)
-          }
+          onClick={() => window.open(`${clientConfig.websiteOrigin}?heating=${heatingType}&address=${address?.properties.label}`)}
         >
           Tester mon adresse
         </Button>

@@ -129,6 +129,9 @@ const HeadSliceForm = ({
     if (heating) {
       setHeatingType(heating as AvailableHeating);
     }
+    if (address) {
+      setAddress(address as string);
+    }
   }, [router.query]);
 
   useEffect(() => {
@@ -158,6 +161,7 @@ const HeadSliceForm = ({
             </CheckEligibilityFormLabel>
             <AddressAutocomplete
               className="!mb-2"
+              defaultValue={address}
               nativeInputProps={{ placeholder: 'Tapez ici votre adresse' }}
               onSelect={(geoAddress?: SuggestionItem) => {
                 const address = geoAddress?.properties?.label;
