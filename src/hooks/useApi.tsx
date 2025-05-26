@@ -43,7 +43,7 @@ const useAction = <TVariables extends object, TOutput = unknown, TError = Error,
     onSuccess,
     ...options
   }: Partialize<UseMutationOptions<TOutput, TError, TVariables, TContext>, 'mutationKey' | 'mutationFn'> & {
-    invalidate?: string[] | InvalidateQueryFilters<TOutput, TError, TVariables>[];
+    invalidate?: string[] | InvalidateQueryFilters[];
   } = {},
   queryClientCustom?: UseQueryParams[1]
 ): UseMutationResult<TOutput, TError, TVariables, TContext> & { isLoading?: boolean; isLoadingId?: string } => {
