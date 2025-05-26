@@ -367,8 +367,11 @@ const ContributionForm = () => {
 
   // ensure the state is invalid when loaded
   useEffect(() => {
-    form.validate('submit');
+    (form.validate as any)('submit');
   }, []);
+
+  const FormFieldNoInfinite = form.Field as any; // ts-expect-error TS2589: Type instantiation is excessively deep and probably infinite
+  const formNoInfinite = form as any; // ts-expect-error TS2589: Type instantiation is excessively deep and probably infinite
 
   return formSuccess ? (
     <Alert
@@ -391,16 +394,18 @@ const ContributionForm = () => {
         form.handleSubmit();
       }}
     >
-      <form.Field
+      <FormFieldNoInfinite
         name="typeUtilisateur"
-        listeners={{
-          onChange: ({ value }) => {
-            if (value !== 'Autre') {
-              form.setFieldValue('typeUtilisateurAutre', '');
-            }
-          },
-        }}
-        children={(field) => (
+        listeners={
+          {
+            onChange: ({ value }: { value: TypeUtilisateur }) => {
+              if (value !== 'Autre') {
+                formNoInfinite.setFieldValue('typeUtilisateurAutre', '');
+              }
+            },
+          } as any
+        }
+        children={(field: any) => (
           <Radio
             label="Vous êtes :"
             name={field.name}
@@ -422,9 +427,9 @@ const ContributionForm = () => {
         selector={(state) => state.values.typeUtilisateur}
         children={(typeUtilisateur) =>
           typeUtilisateur === 'Autre' && (
-            <form.Field
+            <FormFieldNoInfinite
               name="typeUtilisateurAutre"
-              children={(field) => (
+              children={(field: any) => (
                 <Input
                   label="Précisez :"
                   nativeInputProps={{
@@ -443,9 +448,9 @@ const ContributionForm = () => {
         }
       />
 
-      <form.Field
+      <FormFieldNoInfinite
         name="nom"
-        children={(field) => (
+        children={(field: any) => (
           <Input
             label="Votre nom :"
             nativeInputProps={{
@@ -463,9 +468,9 @@ const ContributionForm = () => {
         )}
       />
 
-      <form.Field
+      <FormFieldNoInfinite
         name="prenom"
-        children={(field) => (
+        children={(field: any) => (
           <Input
             label="Votre prénom :"
             nativeInputProps={{
@@ -483,9 +488,9 @@ const ContributionForm = () => {
         )}
       />
 
-      <form.Field
+      <FormFieldNoInfinite
         name="email"
-        children={(field) => (
+        children={(field: any) => (
           <Input
             label="Votre adresse email :"
             nativeInputProps={{
@@ -503,9 +508,9 @@ const ContributionForm = () => {
         )}
       />
 
-      <form.Field
+      <FormFieldNoInfinite
         name="dansCadreDemandeADEME"
-        children={(field) => (
+        children={(field: any) => (
           <>
             <Radio
               label="Votre contribution s’inscrit dans le cadre d’une demande de subvention ADEME :"
@@ -542,23 +547,25 @@ const ContributionForm = () => {
         )}
       />
 
-      <form.Field
+      <FormFieldNoInfinite
         name="typeDemande"
-        listeners={{
-          onChange: ({ value }) => {
-            if (value === '') {
-              return;
-            }
-            // when changing typeDemande, the form remembers its old fields so we must remove them manually
-            const fieldsToDelete = new Set(ObjectKeys(form.state.fieldMeta))
-              .difference(new Set([...ObjectKeys(zCommonFormData.shape), zContributionFormData.discriminator]))
-              .difference(new Set(typeDemandeFields[value].map((f) => f.name)));
-            fieldsToDelete.forEach((field) => {
-              form.deleteField(field);
-            });
-          },
-        }}
-        children={(field) => (
+        listeners={
+          {
+            onChange: ({ value }: { value: TypeDemande | '' }) => {
+              if (value === '') {
+                return;
+              }
+              // when changing typeDemande, the form remembers its old fields so we must remove them manually
+              const fieldsToDelete = new Set(ObjectKeys(formNoInfinite.state.fieldMeta))
+                .difference(new Set([...ObjectKeys(zCommonFormData.shape), zContributionFormData.discriminator]))
+                .difference(new Set(typeDemandeFields[value].map((f) => f.name)));
+              fieldsToDelete.forEach((field) => {
+                formNoInfinite.deleteField(field);
+              });
+            },
+          } as any
+        }
+        children={(field: any) => (
           <Radio
             label="Vous souhaitez :"
             name={field.name}
@@ -582,10 +589,10 @@ const ContributionForm = () => {
         children={(typeDemande) =>
           typeDemande !== '' &&
           typeDemandeFields[typeDemande].map((option) => (
-            <form.Field
+            <FormFieldNoInfinite
               name={option.name}
               key={option.name}
-              children={(field) =>
+              children={(field: any) =>
                 'type' in option && (option as FieldConfig).type === 'file' ? (
                   <>
                     <Upload
