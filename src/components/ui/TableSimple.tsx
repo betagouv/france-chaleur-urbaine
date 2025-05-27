@@ -33,6 +33,8 @@ import TableCell, { type TableCellProps } from './TableCell';
 import TableFilter, { defaultTableFilterFns, type TableFilterProps } from './TableFilter';
 
 export const customSortingFn = <T extends RowData>(): Record<string, SortingFn<T>> => ({
+  // nullsLast will be working only when sorting is asc as react-table is just inversing the result of the function
+  // when the actual sorting valueA - valueB should be replace by valueB - valueA
   nullsLast: (rowA: any, rowB: any, columnId: string) => {
     const valueA = rowA.getValue(columnId);
     const valueB = rowB.getValue(columnId);

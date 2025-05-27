@@ -139,7 +139,7 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
     accessorKey: 'eligibility_status.distance',
     suffix: 'm',
     align: 'right',
-    sorting: 'nullsLast',
+    sortUndefined: 'last',
     filterType: 'Range',
     filterProps: {
       unit: 'm',
@@ -185,7 +185,7 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
     accessorKey: 'eligibility_status.tauxENRR',
     suffix: '%',
     align: 'right',
-    sorting: 'nullsLast',
+    sortUndefined: 'last',
     filterType: 'Range',
     filterProps: {
       domain: [0, 100],
@@ -207,7 +207,7 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
     width: '130px',
     accessorKey: 'eligibility_status.co2',
     align: 'right',
-    sorting: 'nullsLast',
+    sortUndefined: 'last',
     filterType: 'Range',
     filterProps: {
       unit: 'g/kWh',
@@ -420,6 +420,21 @@ function ProEligibilityTestItem({ test, readOnly = false }: ProEligibilityTestIt
     );
   });
 
+  const adresses = useMemo(
+    () =>
+      (testDetails?.addresses || []).map((address) => ({
+        ...address,
+        eligibility_status: {
+          ...address.eligibility_status,
+          // This can't be done on the backend because undefined are stripped from the json
+          distance: address.eligibility_status?.distance === null ? undefined : address.eligibility_status?.distance,
+          tauxENRR: address.eligibility_status?.tauxENRR === null ? undefined : address.eligibility_status?.tauxENRR,
+          co2: address.eligibility_status?.co2 === null ? undefined : address.eligibility_status?.co2,
+        },
+      })),
+    [testDetails?.addresses]
+  );
+
   return (
     <UrlStateAccordion
       queryParamName={queryParamName}
@@ -527,7 +542,7 @@ function ProEligibilityTestItem({ test, readOnly = false }: ProEligibilityTestIt
                     <TableSimple
                       controlsLayout="block"
                       columns={columns}
-                      data={testDetails?.addresses || []}
+                      data={adresses}
                       initialSortingState={initialSortingState}
                       columnFilters={columnFilters}
                       enableGlobalFilter
