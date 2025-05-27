@@ -2914,6 +2914,7 @@ export interface NetworkIris {
 }
 
 export interface ProComparateurConfigurations {
+  address: string | null;
   created_at: Generated<Timestamp>;
   id: string;
   name: string;
