@@ -2,7 +2,7 @@ import { fr } from '@codegouvfr/react-dsfr';
 import { CallOut } from '@codegouvfr/react-dsfr/CallOut';
 import { useSearchParams } from 'next/navigation';
 import { parseAsStringLiteral, useQueryState } from 'nuqs';
-import React from 'react';
+import React, { useState } from 'react';
 
 import Configuration from '@/components/ComparateurPublicodes/Configuration';
 import AddressAutocomplete from '@/components/form/dsfr/AddressAutocompleteInput';
@@ -72,6 +72,12 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
     'tabId',
     parseAsStringLiteral(simulatorTabs.map((tab) => tab.tabId)).withDefault(defaultTabId ?? 'batiment')
   );
+
+  const [forceReload, setForceReload] = useState(false);
+
+  React.useEffect(() => {
+    if (forceReload) setForceReload(false);
+  }, [forceReload]);
 
   React.useEffect(() => {
     if (engine.loaded) {
@@ -435,6 +441,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
       stateRelatedMessage={
         addressError ? 'Désolé, nous n’avons pas trouvé la ville associée à cette adresse, essayez avec une autre' : undefined
       }
+      forceReload={forceReload}
       defaultValue={address || ''}
       onLoadingChange={(loading) => {
         if (loading) {
@@ -534,6 +541,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
           address={address ?? undefined}
           onChangeAddress={(newAddress) => {
             if (newAddress !== address) {
+              setForceReload(true);
               setAddress(newAddress);
             }
           }}
