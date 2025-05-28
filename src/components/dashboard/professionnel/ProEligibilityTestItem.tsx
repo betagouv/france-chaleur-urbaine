@@ -267,7 +267,7 @@ const quickFilterPresets = {
       </>
     ),
     getStat: (addresses) => addresses.filter((address) => address.eligibility_status && address.eligibility_status.isEligible).length,
-    filters: [{ id: 'eligibility_status_isEligible', value: { true: true, false: false } }],
+    filters: [{ id: 'eligibility_status_etat_reseau', value: { en_construction: true, existant: true, aucun: false } }],
   },
   adressesMoins100mPlus50ENRR: {
     label: "à moins de 100m d'un réseau à plus de 50% d'ENR&R",

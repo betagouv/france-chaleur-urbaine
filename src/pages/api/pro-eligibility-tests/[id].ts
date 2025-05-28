@@ -29,7 +29,7 @@ const GET = async (req: NextApiRequest) => {
       eligibility_status: {
         ...address.eligibility_status,
         etat_reseau:
-          address.eligibility_status === null || !address.eligibility_status || address.eligibility_status?.distance === null
+          address.eligibility_status === null || !address.eligibility_status || !address.eligibility_status?.isEligible
             ? 'aucun'
             : address.eligibility_status.futurNetwork
               ? 'en_construction'
