@@ -1,4 +1,3 @@
-import Badge from '@codegouvfr/react-dsfr/Badge';
 import Highlight from '@codegouvfr/react-dsfr/Highlight';
 import Image from 'next/image';
 
@@ -15,9 +14,9 @@ import Box from '@/components/ui/Box';
 import Hero, { HeroContent, HeroSubtitle, HeroTitle } from '@/components/ui/Hero';
 import Icon from '@/components/ui/Icon';
 import Link from '@/components/ui/Link';
-import Section, { SectionContent, SectionHeading, SectionSubtitle, SectionTitle, SectionTwoColumns } from '@/components/ui/Section';
+import Section, { SectionContent, SectionHeading, SectionTitle, SectionTwoColumns } from '@/components/ui/Section';
+import SectionScrollableTiles, { type SectionScrollableTilesItem } from '@/components/ui/SectionScrollableTiles';
 import Text from '@/components/ui/Text';
-import TileList, { type TileListItem } from '@/components/ui/TileList';
 
 const coproprietaireCards = {
   reseau: issues.reseau,
@@ -26,97 +25,89 @@ const coproprietaireCards = {
   faisabilite: understandings.faisabilite,
 };
 
-const tools: TileListItem[] = [
+const tools: SectionScrollableTilesItem[] = [
   {
-    title: 'Carte des réseaux et potentiels',
-    excerpt: 'Découvrez la cartographie nationale des réseaux de chaleur.',
+    title: 'Carte',
+    excerpt: 'Visualisez les données des réseaux de chaleur.',
     href: '/carte',
-    image: '/icons/tools/france.svg',
+    image: '/icons/tools/v2/carte.svg',
     eventKey: 'Outil|Carte des réseaux et potentiels',
   },
   {
-    title: 'Comparateur de coûts et d’émissions de CO2',
+    title: 'Réseau d’avenir',
+    excerpt: 'Identifiez le potentiel des communes sans réseau.',
+    href: '/collectivites-et-exploitants/potentiel-creation-reseau',
+    image: '/icons/tools/v2/reseau_avenir.svg',
+    eventKey: 'Outil|Potentiel des communes sans réseau',
+  },
+  {
+    title: 'Comparateur',
     excerpt: 'Comparez les coûts et émissions des modes de chauffage.',
     href: '/comparateur-couts-performances',
-    image: '/icons/tools/money.svg',
-    start: (
-      <Badge noIcon severity="success">
-        Nouveau
-      </Badge>
-    ),
+    image: '/icons/tools/v2/comparateur.svg',
     eventKey: "Outil|Comparateur de coûts et d'émissions de CO2",
   },
   ...(clientConfig.flags.enableChaleurRenouvelable
     ? [
         {
-          title: 'Compatibilité des modes de chauffage',
-          excerpt: 'Quels chauffages décarbonés pour quels bâtiments ?',
+          title: 'Chauffage écologique',
+          excerpt: 'Quel chauffage écologique pour votre bâtiment ?',
           href: '/chaleur-renouvelable',
-          image: '/icons/tools/human-cooperation.svg',
-          start: (
-            <Badge noIcon severity="success">
-              Nouveau
-            </Badge>
-          ),
+          image: '/icons/tools/v2/chauffage_ecologique.svg',
           eventKey: 'Outil|Compatibilité des modes de chauffage' as const,
         },
       ]
     : []),
   {
-    title: 'Coûts de raccordement et aides',
-    excerpt: 'Estimez le coût de votre raccordement.',
+    title: 'Raccordement',
+    excerpt: 'Calculez le montant du raccordement et des aides.',
     href: '/ressources/cout-raccordement#contenu',
-    image: '/icons/tools/innovation.svg',
+    image: '/icons/tools/v2/raccordement.svg',
     eventKey: 'Outil|Coûts de raccordement et aides',
   },
   {
-    title: 'Obligations de raccordement',
-    excerpt: 'Découvrez si votre bâtiment est concerné par une obligation de raccordement.',
+    title: 'Obligations',
+    excerpt: 'Êtes vous concerné par une obligation de raccordement ?',
     href: '/ressources/obligations-raccordement#contenu',
-    image: '/icons/tools/information.svg',
+    image: '/icons/tools/v2/obligations.svg',
     eventKey: 'Outil|Obligations de raccordement',
   },
+
   {
-    title: 'Potentiel des communes sans réseau',
-    excerpt: 'Évaluez le potentiel de création d’un réseau sur une commune.',
-    href: '/collectivites-et-exploitants/potentiel-creation-reseau',
-    image: '/icons/tools/compass.svg',
-    eventKey: 'Outil|Potentiel des communes sans réseau',
-  },
-  {
-    title: "Test d'adresses en masse",
-    excerpt: 'Testez directement une liste d’adresses.',
+    title: 'Test en masse',
+    excerpt: 'Testez instantanément une liste d’adresses.',
     href: '/pro/tests-adresses',
-    image: '/icons/tools/map.svg',
+    image: '/icons/tools/v2/test_en_masse.svg',
     eventKey: "Outil|Test d'adresses en masse",
   },
   {
-    title: 'Liste des réseaux de chaleur',
-    excerpt: 'Retrouvez l’ensemble des réseaux et filtrez les.',
+    title: 'Décret tertiaire',
+    excerpt: 'Découvrez le dispositif Éco-Énergie Tertiaire.',
+    href: '/ressources/dispositif-eco-energie-tertiaire#contenu',
+    image: '/icons/tools/v2/decret_tertiaire.svg',
+  },
+  {
+    title: 'Liste des réseaux',
+    excerpt: 'Comparez les caractéristiques des réseaux.',
     href: '/reseaux',
-    image: '/icons/tools/search.svg',
+    image: '/icons/tools/v2/liste_reseaux.svg',
     eventKey: 'Outil|Liste des réseaux de chaleur',
   },
-  {
-    title: 'Téléchargement de données et outils',
-    excerpt: 'Intégrez nos données et outils (API, iframe, ...).',
-    href: '/ressources/outils',
-    image: '/icons/tools/system.svg',
-    eventKey: 'Outil|Téléchargement de données et outils',
-  },
-  {
-    title: 'Supports pédagogiques',
-    excerpt: 'Découvrez tous nos supports.',
-    href: '/ressources/supports',
-    image: '/icons/tools/pictures.svg',
-    eventKey: 'Outil|Supports pédagogiques',
-  },
-  {
-    title: 'Décret tertiaire',
-    excerpt: 'Valorisez votre raccordement dans le cadre du dispositif Éco-Énergie Tertiaire.',
-    href: '/ressources/dispositif-eco-energie-tertiaire#contenu',
-    image: '/icons/tools/compagnie.svg',
-  },
+
+  // {
+  //   title: 'Téléchargement de données et outils',
+  //   excerpt: 'Intégrez nos données et outils (API, iframe, ...).',
+  //   href: '/ressources/outils',
+  //   image: '/icons/tools/system.svg',
+  //   eventKey: 'Outil|Téléchargement de données et outils',
+  // },
+  // {
+  //   title: 'Supports pédagogiques',
+  //   excerpt: 'Découvrez tous nos supports.',
+  //   href: '/ressources/supports',
+  //   image: '/icons/tools/pictures.svg',
+  //   eventKey: 'Outil|Supports pédagogiques',
+  // },
 ];
 
 function Home() {
@@ -141,19 +132,7 @@ function Home() {
         </HeroContent>
       </Hero>
 
-      <Section>
-        <SectionTitle>Des outils à votre service</SectionTitle>
-        <SectionSubtitle>Découvrez l'ensemble de nos outils pour les copropriétaires et professionnels</SectionSubtitle>
-        <SectionContent>
-          <TileList
-            items={tools}
-            queryParamName="tool"
-            initialVisibleCount={4}
-            eventKeyExpanded="Outil|Liste dépliée"
-            eventKeyCollapsed="Outil|Liste repliée"
-          />
-        </SectionContent>
-      </Section>
+      <SectionScrollableTiles title="Accès direct à tous nos outils" tiles={tools} />
 
       <Section variant="light" id="avantages-du-chauffage-urbain">
         <SectionTitle>Les avantages du chauffage urbain</SectionTitle>
