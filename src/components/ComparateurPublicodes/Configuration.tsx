@@ -125,6 +125,7 @@ const Configuration: React.FC<ConfigurationProps> = ({ engine, address, onChange
               configId: id,
             });
           }}
+          sharedQueryParamName="configId"
           onShare={({ id }, { setSharingId }) => {
             const urlToShare = `${window.location.origin}${window.location.pathname}?configId=${id}`;
             navigator.clipboard.writeText(urlToShare);

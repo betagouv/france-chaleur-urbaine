@@ -45,6 +45,7 @@ function CrudDropdown<T extends CrudResponse<keyof DB, any>>({
   isSameObject = (obj1, obj2) =>
     !!(Object.keys(obj1).length && Object.keys(obj2).length && JSON.stringify(sortKeys(obj1)) === JSON.stringify(sortKeys(obj2))),
   url,
+  sharedQueryParamName = 'itemId',
 }: {
   data: Partial<CrudItem<T>>;
   valueKey?: keyof CrudItem<T>;
@@ -60,6 +61,7 @@ function CrudDropdown<T extends CrudResponse<keyof DB, any>>({
   loadLabel?: string;
   addLabel?: string;
   addPlaceholderLabel?: string;
+  sharedQueryParamName?: string;
 }) {
   const [loaded, setLoaded] = useState<boolean>(false);
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -70,7 +72,7 @@ function CrudDropdown<T extends CrudResponse<keyof DB, any>>({
   const [sharingId, setSharingId] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const dataEmpty = Object.keys(data).length === 0;
-  const [sharedId, setSharedId] = useQueryState('itemId');
+  const [sharedId, setSharedId] = useQueryState(sharedQueryParamName);
 
   const {
     items: crudItems,
