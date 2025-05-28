@@ -313,6 +313,9 @@ const TableSimple = <T extends RowData>({
     .getHeaderGroups()[0]
     .headers.map((header, index) => {
       const columnDef = header.column.columnDef as ColumnDef<T>;
+      if (columnDef.visible === false) {
+        return null;
+      }
       const sizeValue = (columnDef as any)?.width ?? `${(columnDef as any)?.flex ?? 1}fr`; // TOFIX: remove any but could not find a way to do it
       return enableRowSelection && index === 0 ? 'auto' : sizeValue;
     })
@@ -364,6 +367,11 @@ const TableSimple = <T extends RowData>({
               <tr key={headerGroup.id} style={{ gridTemplateColumns }} className="grid w-full">
                 {headerGroup.headers.map((header) => {
                   const columnDef = header.column.columnDef as ColumnDef<T>;
+
+                  if (columnDef.visible === false) {
+                    return null;
+                  }
+
                   return (
                     <th
                       key={header.id}
@@ -526,6 +534,9 @@ const TableSimple = <T extends RowData>({
                     >
                       {row.getVisibleCells().map((cell) => {
                         const columnDef = cell.column.columnDef as ColumnDef<T>;
+                        if (columnDef.visible === false) {
+                          return null;
+                        }
                         const CellTag = columnDef.id === 'selection' ? 'th' : 'td';
 
                         return (
