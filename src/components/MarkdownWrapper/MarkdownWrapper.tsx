@@ -68,7 +68,7 @@ const processor = (extender: Record<string, unknown> = {}) =>
 const MarkdownWrapper: React.FC<{
   children?: React.ReactNode;
   value?: string | React.ReactNode;
-  id?: JSX.IntrinsicAttributes;
+  id?: string;
   className?: string;
   style?: React.CSSProperties;
   withPadding?: boolean;

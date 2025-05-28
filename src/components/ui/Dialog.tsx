@@ -1,6 +1,6 @@
 import { fr } from '@codegouvfr/react-dsfr';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import React, { createContext, type PropsWithChildren, useContext, useMemo } from 'react';
 
 import cx from '@/utils/cx';
