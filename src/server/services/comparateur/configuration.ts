@@ -16,9 +16,11 @@ export const validation = {
   create: z.object({
     name: z.string(),
     situation: z.record(z.any()),
+    address: z.string().optional(),
   }),
   update: z.object({
     name: z.string().optional(),
     situation: z.record(z.any()).optional(),
+    address: z.string().optional(),
   }),
 };

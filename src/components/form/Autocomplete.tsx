@@ -10,6 +10,7 @@ export type AutocompleteProps<Option extends DefaultOption> = Omit<React.Compone
   fetchFn: (query: string) => Promise<Option[]>;
   debounceTime?: number;
   minCharThreshold?: number;
+  forceReload?: boolean;
   onSelect: (option: Option) => void;
   onClear?: () => void;
   nativeInputProps?: Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'value'>;
@@ -29,6 +30,7 @@ const Autocomplete = <Option extends DefaultOption>({
   onClear,
   onLoadingChange,
   defaultValue,
+  forceReload,
   ...props
 }: AutocompleteProps<Option>) => {
   const [inputValue, setInputValue] = useState(defaultValue ? `${defaultValue}` : '');
@@ -38,6 +40,15 @@ const Autocomplete = <Option extends DefaultOption>({
   const [options, setOptions] = useState<Option[]>([]);
   const [loading, setLoading] = useState(false);
   const generatedId = useId();
+
+  React.useEffect(() => {
+    if (forceReload && defaultValueSet) {
+      setDefaultValueSet(false);
+      setInputValue('');
+      setSelectedValue('');
+      setOptions([]);
+    }
+  }, [forceReload, defaultValueSet, defaultValue, inputValue]);
 
   React.useEffect(() => {
     if (!defaultValueSet && !inputValue && defaultValue) {

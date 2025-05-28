@@ -16,9 +16,10 @@ import cx from '@/utils/cx';
 import { sortKeys } from '@/utils/objects';
 import { upperCaseFirstChar } from '@/utils/strings';
 import { hasProperty } from '@/utils/typescript';
-
 interface ConfigurationProps {
   engine: SimulatorEngine;
+  address?: string;
+  onChangeAddress: (address: string) => void;
 }
 
 const chainedConfigurations = {
@@ -26,7 +27,7 @@ const chainedConfigurations = {
   'type de production ECS': ['Production eau chaude sanitaire'],
 };
 
-const Configuration: React.FC<ConfigurationProps> = ({ engine }) => {
+const Configuration: React.FC<ConfigurationProps> = ({ engine, address, onChangeAddress }) => {
   const situation = engine.getSituation();
 
   const formatValue = (key: DottedName, value: any): React.ReactNode => {
@@ -85,7 +86,7 @@ const Configuration: React.FC<ConfigurationProps> = ({ engine }) => {
         <h4 className="!mb-0">Configuration</h4>
         <CrudDropdown<ProComparateurConfigurationResponse>
           url="/api/pro/comparateur/configurations"
-          data={Object.keys(toBeDisplayedSituation).length > 0 ? { situation: toBeDisplayedSituation } : ({} as any)}
+          data={Object.keys(toBeDisplayedSituation).length > 0 ? { situation: toBeDisplayedSituation, address } : ({} as any)}
           valueKey="id"
           nameKey="name"
           loadLabel="Charger une configuration"
@@ -93,9 +94,14 @@ const Configuration: React.FC<ConfigurationProps> = ({ engine }) => {
           addLabel="Ajouter une configuration"
           addPlaceholderLabel="Nom de la configuration"
           isSameObject={(obj1, obj2) =>
-            !!(obj1.situation && obj2.situation && JSON.stringify(sortKeys(obj1.situation)) === JSON.stringify(sortKeys(obj2.situation)))
+            !!(
+              obj1.situation &&
+              obj2.situation &&
+              JSON.stringify(sortKeys(obj1.situation)) === JSON.stringify(sortKeys(obj2.situation)) &&
+              obj1.address === obj2.address
+            )
           }
-          onSelect={({ situation: newSituation, id }) => {
+          onSelect={({ situation: newSituation, address: newAddress, id }) => {
             const situationToLoad = { ...pick(situation, addresseToPublicodesRulesKeys), ...newSituation };
             Object.entries(chainedConfigurations).forEach(([configKey, chainedKeys]) => {
               if (configKey in situationToLoad) {
@@ -104,6 +110,10 @@ const Configuration: React.FC<ConfigurationProps> = ({ engine }) => {
                 });
               }
             });
+
+            if (newAddress && newAddress !== address) {
+              onChangeAddress(newAddress);
+            }
 
             trackEvent('Comparateur Coûts CO2|Création d’une configuration', {
               configId: id,
@@ -115,6 +125,7 @@ const Configuration: React.FC<ConfigurationProps> = ({ engine }) => {
               configId: id,
             });
           }}
+          sharedQueryParamName="configId"
           onShare={({ id }, { setSharingId }) => {
             const urlToShare = `${window.location.origin}${window.location.pathname}?configId=${id}`;
             navigator.clipboard.writeText(urlToShare);
