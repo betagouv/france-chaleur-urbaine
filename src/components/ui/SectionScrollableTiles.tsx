@@ -109,7 +109,7 @@ function SectionScrollableTiles({ title, tiles, size = 'md', className, ...props
                 <>
                   <Link
                     key={`${tile.title}-${index}`}
-                    className="flex-shrink-0 text-center hover:!bg-gray-50 cursor-pointer rounded-md p-2 py-5 flex flex-col gap-2"
+                    className="flex-shrink-0 text-center hover:!bg-gray-50 cursor-pointer rounded-md p-0.5 py-5 flex flex-col gap-2 tracking-tight"
                     style={{ width: `${tileWidth}px`, backgroundImage: 'none' }}
                     href={tile.href ?? '#'}
                     onClick={(e) => {
@@ -123,8 +123,8 @@ function SectionScrollableTiles({ title, tiles, size = 'md', className, ...props
                     }}
                   >
                     <Image src={tile.image} alt={tile.title} width={64} height={64} className="mx-auto" />
-                    <h2 className="text-sm font-semibold text-gray-900 mb-0">{tile.title}</h2>
-                    <p className="text-xs text-gray-500 mb-0">{tile.excerpt}</p>
+                    <h2 className="text-base font-semibold text-gray-900 mb-0">{tile.title}</h2>
+                    <p className="text-sm text-gray-500 mb-0">{tile.excerpt}</p>
                   </Link>
                   {index < tiles.length - 1 && (
                     <div className="flex items-center justify-center">
