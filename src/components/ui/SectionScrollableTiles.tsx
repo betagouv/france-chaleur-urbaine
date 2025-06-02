@@ -111,7 +111,7 @@ function SectionScrollableTiles({ title, tiles, size = 'md', className, ...props
                     style={{ width: `${tileWidth}px`, backgroundImage: 'none' }}
                     href={tile.href ?? '#'}
                     onClick={(e) => {
-                      e.preventDefault();
+                      e.stopPropagation();
 
                       tile.onClick?.();
 
