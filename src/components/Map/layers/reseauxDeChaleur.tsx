@@ -6,8 +6,8 @@ import { prettyFormatNumber } from '@/utils/strings';
 import { ifHoverElse, type MapSourceLayersSpecification, type PopupStyleHelpers } from './common';
 import { buildFiltreGestionnaire, buildFiltreIdentifiantReseau, buildReseauxDeChaleurFilters } from './filters';
 
-export const reseauDeChaleurClasseColor = '#079067';
-export const reseauDeChaleurNonClasseColor = '#7CC558';
+export const reseauDeChaleurClasseColor = '#0D543F';
+export const reseauDeChaleurNonClasseColor = '#48A21A';
 
 export const reseauxDeChaleurLayersSpec = [
   {
