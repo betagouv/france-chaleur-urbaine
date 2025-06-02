@@ -52,15 +52,13 @@ function SectionScrollableTiles({ title, tiles, size = 'md', className, ...props
   );
 
   const handlePrevious = useCallback(() => {
-    const newIndex = Math.max(0, currentIndex - 1);
-    setCurrentIndex(newIndex);
-    scrollToIndex(newIndex);
+    setCurrentIndex(0);
+    scrollToIndex(0);
   }, [currentIndex, scrollToIndex]);
 
   const handleNext = useCallback(() => {
-    const newIndex = Math.min(maxIndex, currentIndex + 1);
-    setCurrentIndex(newIndex);
-    scrollToIndex(newIndex);
+    setCurrentIndex(maxIndex);
+    scrollToIndex(maxIndex);
   }, [currentIndex, maxIndex, scrollToIndex]);
 
   const handleScroll = useCallback(
