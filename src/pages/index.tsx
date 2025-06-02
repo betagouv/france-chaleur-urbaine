@@ -60,14 +60,14 @@ const tools: SectionScrollableTilesItem[] = [
     : []),
   {
     title: 'Raccordement',
-    excerpt: 'Calculez le montant du raccordement et des aides.',
+    excerpt: 'Calculez le coût du raccordement et les aides.',
     href: '/ressources/cout-raccordement#contenu',
     image: '/icons/tools/v2/raccordement.svg',
     eventKey: 'Outil|Coûts de raccordement et aides',
   },
   {
     title: 'Obligations',
-    excerpt: 'Êtes vous concerné par une obligation de raccordement ?',
+    excerpt: 'Êtes-vous concerné par une obligation de raccordement ?',
     href: '/ressources/obligations-raccordement#contenu',
     image: '/icons/tools/v2/obligations.svg',
     eventKey: 'Outil|Obligations de raccordement',
