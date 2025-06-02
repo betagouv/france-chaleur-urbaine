@@ -43,7 +43,7 @@ const articleVariants = cva('flex-1 flex flex-col', {
   variants: {
     size: {
       sm: 'gap-2',
-      md: 'gap-4 py-6w 2xl:py-8w',
+      md: 'gap-4 py-4w 2xl:py-6w',
       lg: 'gap-8 py-6w 2xl:py-8w',
     },
   },
