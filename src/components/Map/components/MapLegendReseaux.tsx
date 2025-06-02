@@ -1,5 +1,6 @@
 import { Button } from '@codegouvfr/react-dsfr/Button';
 import { useMemo } from 'react';
+import React from 'react';
 
 import { type MapLegendFeature, mapLegendFeatures } from '@/components/Map/map-layers';
 import useFCUMap from '@/components/Map/MapProvider';
@@ -45,7 +46,31 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
   withComptePro,
   ...props
 }) => {
-  const { mapConfiguration, toggleLayer, nbFilters } = useFCUMap();
+  const { mapConfiguration, toggleLayer, nbFilters, mapLoaded, mapRef } = useFCUMap();
+
+  const [classeColor, setClasseColor] = React.useState<string>(reseauDeChaleurClasseColor);
+  const [nonClasseColor, setNonClasseColor] = React.useState<string>(reseauDeChaleurNonClasseColor);
+
+  React.useEffect(() => {
+    if (!mapLoaded || !mapRef) return;
+    const map = mapRef.getMap();
+    try {
+      map.setPaintProperty('reseauxDeChaleur-avec-trace', 'line-color', [
+        'case',
+        ['boolean', ['get', 'reseaux classes']],
+        classeColor,
+        nonClasseColor,
+      ]);
+      map.setPaintProperty('reseauxDeChaleur-sans-trace', 'circle-stroke-color', [
+        'case',
+        ['boolean', ['get', 'reseaux classes']],
+        classeColor,
+        nonClasseColor,
+      ]);
+    } catch (e) {
+      // Layer may not be loaded yet
+    }
+  }, [classeColor, nonClasseColor, mapLoaded, mapRef]);
 
   const enabledFeatures = useMemo(() => {
     return props.enabledFeatures ?? mapLegendFeatures;
@@ -93,22 +118,37 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
             />
 
             <Box flex>
-              <Box display="flex">
-                <Box backgroundColor={reseauDeChaleurClasseColor} height="8px" minWidth="25px" borderRadius="4px" mt="1w" />
-
+              <Box display="flex" alignItems="center">
+                <Box backgroundColor={classeColor} height="8px" minWidth="25px" borderRadius="4px" mt="1w" />
+                {mapConfiguration.reseauxDeChaleur.show && (
+                  <input
+                    type="color"
+                    value={classeColor}
+                    onChange={(e) => setClasseColor(e.target.value)}
+                    style={{ marginLeft: 8, width: 24, height: 24, border: 'none', background: 'none', cursor: 'pointer' }}
+                    aria-label="Modifier la couleur des réseaux de chaleur classés"
+                  />
+                )}
                 <Text as="label" htmlFor="reseauxDeChaleur" fontSize="14px" lineHeight="18px" cursor="pointer" pt="1v" px="1v">
                   Réseaux de chaleur classés
                 </Text>
               </Box>
 
-              <Box display="flex">
-                <Box backgroundColor={reseauDeChaleurNonClasseColor} height="8px" minWidth="25px" borderRadius="4px" mt="1w" />
-
+              <Box display="flex" alignItems="center">
+                <Box backgroundColor={nonClasseColor} height="8px" minWidth="25px" borderRadius="4px" mt="1w" />
+                {mapConfiguration.reseauxDeChaleur.show && (
+                  <input
+                    type="color"
+                    value={nonClasseColor}
+                    onChange={(e) => setNonClasseColor(e.target.value)}
+                    style={{ marginLeft: 8, width: 24, height: 24, border: 'none', background: 'none', cursor: 'pointer' }}
+                    aria-label="Modifier la couleur des réseaux de chaleur non classés"
+                  />
+                )}
                 <Box px="1v">
                   <Text as="label" htmlFor="reseauxDeChaleur" fontSize="14px" lineHeight="18px" cursor="pointer">
                     Réseaux de chaleur non classés
                   </Text>
-
                   <Text fontSize="12px" lineHeight="14px" color="grey">
                     (tracé ou cercle au centre de la commune si tracé non disponible)
                   </Text>
@@ -361,7 +401,7 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
           </Box>
           <CallOut title="Vous êtes professionnel ?" variant="info" size="md" className="!mt-5" image="/icons/picto-compte-pro.svg">
             <ul>
-              <li>Retrouvez vos listes d’adresses</li>
+              <li>Retrouvez vos listes d'adresses</li>
               <li>Comparez les coûts et les émissions de CO2</li>
             </ul>
             <Link href="/inscription" className="fr-btn fr-btn--primary">

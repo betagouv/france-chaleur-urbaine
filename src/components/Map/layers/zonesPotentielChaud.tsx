@@ -3,8 +3,8 @@ import { formatMWhAn, prettyFormatNumber } from '@/utils/strings';
 
 import { ifHoverElse, type MapSourceLayersSpecification, type PopupStyleHelpers } from './common';
 
-export const zonePotentielChaudColor = '#b0cc4e';
-export const zonePotentielFortChaudColor = '#448d60';
+export const zonePotentielChaudColor = '#c9b92d';
+export const zonePotentielFortChaudColor = '#9aa260';
 export const zonePotentielChaudOpacity = 0.3;
 
 export const zonesPotentielChaudLayersSpec = [

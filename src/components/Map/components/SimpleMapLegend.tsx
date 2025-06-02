@@ -1,6 +1,7 @@
 import Button from '@codegouvfr/react-dsfr/Button';
 import Image from 'next/image';
 import { useQueryState } from 'nuqs';
+import React from 'react';
 
 import DPE from '@/components/DPE';
 import RangeFilter from '@/components/form/dsfr/RangeFilter';
@@ -94,13 +95,32 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
       history: 'push',
     })
   );
-  const { mapConfiguration, toggleLayer, updateScaleInterval } = useFCUMap();
+  const { mapConfiguration, toggleLayer, updateScaleInterval, mapLoaded, mapRef } = useFCUMap();
   const setReseauxFiltersVisible = (visible: boolean) => setSelectedTabId({ tabId: 'reseaux', subTabId: visible ? 'filtres' : null });
 
   const nbCouchesFondBatiments =
     (mapConfiguration.caracteristiquesBatiments ? 1 : 0) +
     (mapConfiguration.besoinsEnChaleur ? 1 : 0) +
     (mapConfiguration.besoinsEnFroid ? 1 : 0);
+
+  // Color state for zones à potentiel chaud
+  const [potentielChaudColor, setPotentielChaudColor] = React.useState<`#${string}`>(zonePotentielChaudColor);
+  // Color state for zones à potentiel fort chaud
+  const [potentielFortChaudColor, setPotentielFortChaudColor] = React.useState<`#${string}`>(zonePotentielFortChaudColor);
+
+  // Update map layer color when color changes and map is loaded
+  React.useEffect(() => {
+    if (!mapLoaded || !mapRef) return;
+    const map = mapRef.getMap();
+    try {
+      map.setPaintProperty('zonesPotentielChaud', 'fill-color', potentielChaudColor);
+      map.setPaintProperty('zonesPotentielChaud-contour', 'line-color', potentielChaudColor);
+      map.setPaintProperty('zonesPotentielFortChaud', 'fill-color', potentielFortChaudColor);
+      map.setPaintProperty('zonesPotentielFortChaud-contour', 'line-color', potentielFortChaudColor);
+    } catch (e) {
+      // Layer may not be loaded yet
+    }
+  }, [potentielChaudColor, potentielFortChaudColor, mapLoaded, mapRef]);
 
   if (enabledFeatures) {
     // This is an iframe, don't show tabs
@@ -533,7 +553,17 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
                     trackingEvent="Carto|Zones à potentiel chaud"
                   />
 
-                  <IconPolygon stroke={zonePotentielChaudColor} fillOpacity={zonePotentielChaudOpacity} mt="1v" />
+                  <IconPolygon stroke={potentielChaudColor} fillOpacity={zonePotentielChaudOpacity} mt="1v" />
+
+                  {mapConfiguration.zonesOpportunite.zonesPotentielChaud && (
+                    <input
+                      type="color"
+                      value={potentielChaudColor}
+                      onChange={(e) => setPotentielChaudColor(e.target.value as `#${string}`)}
+                      style={{ marginLeft: 8, width: 24, height: 24, border: 'none', background: 'none', cursor: 'pointer' }}
+                      aria-label="Modifier la couleur des zones à potentiel chaud"
+                    />
+                  )}
 
                   <Text
                     as="label"
@@ -557,7 +587,17 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
                     trackingEvent="Carto|Zones à potentiel fort chaud"
                   />
 
-                  <IconPolygon stroke={zonePotentielFortChaudColor} fillOpacity={zonePotentielChaudOpacity} mt="1v" />
+                  <IconPolygon stroke={potentielFortChaudColor} fillOpacity={zonePotentielChaudOpacity} mt="1v" />
+
+                  {mapConfiguration.zonesOpportunite.zonesPotentielFortChaud && (
+                    <input
+                      type="color"
+                      value={potentielFortChaudColor}
+                      onChange={(e) => setPotentielFortChaudColor(e.target.value as `#${string}`)}
+                      style={{ marginLeft: 8, width: 24, height: 24, border: 'none', background: 'none', cursor: 'pointer' }}
+                      aria-label="Modifier la couleur des zones à fort potentiel chaud"
+                    />
+                  )}
 
                   <Text
                     as="label"
@@ -897,7 +937,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
                     pt="1v"
                     px="1v"
                   >
-                    Unités d’incinération
+                    Unités d'incinération
                   </Text>
                 </Box>
                 <Box display="flex">
