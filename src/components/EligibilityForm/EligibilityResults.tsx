@@ -1,4 +1,3 @@
-import { clientConfig } from '@/client-config';
 import { type AvailableHeating } from '@/types/AddressData';
 import { type HeatNetworksResponse } from '@/types/HeatNetworksResponse';
 
@@ -73,13 +72,9 @@ export const getEligibilityResult = (
 ): EligibilityResult => {
   const state = getEligibilityResultState(heatingType, eligibility);
 
-  const autreSolutionsChauffageLink = clientConfig.flags.enableChaleurRenouvelable
-    ? `<a className="whitespace-nowrap" href="/chaleur-renouvelable?address=${encodeURIComponent(address)}#quel-chauffage" target="_blank">ici</a>`
-    : '[ici](https://france-renov.gouv.fr/renovation/chauffage)';
+  const autreSolutionsChauffageLink = `<a className="whitespace-nowrap" href="/chaleur-renouvelable?address=${encodeURIComponent(address)}#quel-chauffage" target="_blank">ici</a>`;
 
-  const autreSolutionsChauffageCollectifLink = clientConfig.flags.enableChaleurRenouvelable
-    ? `<a className="whitespace-nowrap" href="/chaleur-renouvelable?address=${encodeURIComponent(address)}&type=immeuble_chauffage_collectif#quel-chauffage" target="_blank">ici</a>`
-    : '[ici](https://france-renov.gouv.fr/renovation/chauffage)';
+  const autreSolutionsChauffageCollectifLink = `<a className="whitespace-nowrap" href="/chaleur-renouvelable?address=${encodeURIComponent(address)}&type=immeuble_chauffage_collectif#quel-chauffage" target="_blank">ici</a>`;
 
   // 3 rue du petit bois 78370 Plaisir
   const closeCollectif: EligibilityResult = {

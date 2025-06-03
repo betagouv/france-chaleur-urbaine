@@ -47,17 +47,13 @@ const tools: SectionScrollableTilesItem[] = [
     image: '/icons/tools/v2/comparateur.svg',
     eventKey: "Outil|Comparateur de coûts et d'émissions de CO2",
   },
-  ...(clientConfig.flags.enableChaleurRenouvelable
-    ? [
-        {
-          title: 'Chauffage écologique',
-          excerpt: 'Quel chauffage écologique pour votre bâtiment ?',
-          href: '/chaleur-renouvelable',
-          image: '/icons/tools/v2/chauffage_ecologique.svg',
-          eventKey: 'Outil|Compatibilité des modes de chauffage' as const,
-        },
-      ]
-    : []),
+  {
+    title: 'Chauffage écologique',
+    excerpt: 'Quel chauffage écologique pour votre bâtiment ?',
+    href: '/chaleur-renouvelable',
+    image: '/icons/tools/v2/chauffage_ecologique.svg',
+    eventKey: 'Outil|Compatibilité des modes de chauffage' as const,
+  },
   {
     title: 'Raccordement',
     excerpt: 'Calculez le coût du raccordement et les aides.',

@@ -1,4 +1,3 @@
-import { clientConfig } from '@/client-config';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Box from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
@@ -110,22 +109,20 @@ const OutilsPage = () => {
           </Link>
         </Box>
       </Box>
-      {clientConfig.flags.enableChaleurRenouvelable && (
-        <Box py="5w" className="fr-container">
-          <Heading as="h2" size="h3" color="blue-france" mb="0">
-            Compatibilité des modes de chauffage
-          </Heading>
-          <Box display="flex" my="2w">
-            <FCUArrowIcon />
-            <Text size="lg" ml="1w">
-              Découvrir les modes de chauffage décarbonés adaptés à mon bâtiment, leurs atouts et inconvénients.
-            </Text>
-          </Box>
-          <Link variant="secondary" href="/chaleur-renouvelable">
-            Accéder
-          </Link>
+      <Box py="5w" className="fr-container">
+        <Heading as="h2" size="h3" color="blue-france" mb="0">
+          Compatibilité des modes de chauffage
+        </Heading>
+        <Box display="flex" my="2w">
+          <FCUArrowIcon />
+          <Text size="lg" ml="1w">
+            Découvrir les modes de chauffage décarbonés adaptés à mon bâtiment, leurs atouts et inconvénients.
+          </Text>
         </Box>
-      )}
+        <Link variant="secondary" href="/chaleur-renouvelable">
+          Accéder
+        </Link>
+      </Box>
       <Box backgroundColor="blue-france-975-75">
         <Box py="5w" className="fr-container">
           <Heading as="h2" size="h3" color="blue-france" mb="0">
