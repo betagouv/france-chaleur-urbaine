@@ -177,7 +177,7 @@ Votre situation n’est pas favorable **pour un raccordement, mais si vous souha
     body: () => `
 ::arrow-item[**Il n’existe pour le moment pas de réseau de chaleur** à proximité de votre adresse. Toutefois les réseaux de chaleur se développent !]
 ::arrow-item[Sans attendre, pour réduire votre facture énergétique et limiter votre impact écologique, **pensez à améliorer l’isolation thermique de votre immeuble**. Pour être accompagné dans vos projets de rénovation énergétique, rendez-vous sur [**France Rénov’**](https://france-renov.gouv.fr/).]
-::arrow-item[Découvrez également d’autres solutions de chauffage **<${autreSolutionsChauffageCollectifLink}**.]
+::arrow-item[Découvrez également d’autres solutions de chauffage **${autreSolutionsChauffageCollectifLink}**.]
 `,
     text: `
 **France Chaleur Urbaine** est un service gratuit du Ministère de la transition écologique qui vous permet de découvrir **instantanément** si un réseau passe près de chez vous
