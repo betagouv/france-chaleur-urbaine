@@ -714,7 +714,8 @@ const Graph: React.FC<GraphProps> = ({
         {graphType === 'emissions' && (
           <>
             <Heading as="h6">
-              Émissions annuelles de CO2 (par {perBuilding ? 'bâtiment' : 'logement'}) ({dataYear})
+              Émissions annuelles de CO2{perBuilding ? ' (par bâtiment)' : typeDeBatiment === 'tertiaire' ? '' : ' (par logement)'} (
+              {dataYear})
             </Heading>
             <DisclaimerButton className="!mb-5" />
             {typeDeBatiment === 'résidentiel' && (
