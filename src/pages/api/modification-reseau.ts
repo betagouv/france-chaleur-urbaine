@@ -16,6 +16,9 @@ export const config = {
   },
 };
 
+const emailNotAllowed = ['sample@tst.com'];
+const emailNotAllowedMessage = 'Une erreur est survenue lors de la validation de votre demande'; // This one needs to be vague so that hackers don't know exactly what to do
+
 // multipart form data may contain one field multiple times so we get the first element
 const zModificationReseau = {
   idReseau: z.preprocess((val: any) => val[0], z.string()),
@@ -24,7 +27,15 @@ const zModificationReseau = {
   prenom: z.preprocess((val: any) => val[0], z.string()),
   structure: z.preprocess((val: any) => val[0], z.string()),
   fonction: z.preprocess((val: any) => val[0], z.string()),
-  email: z.preprocess((val: any) => val[0], z.string().email()),
+  email: z.preprocess(
+    (val: any) => val[0],
+    z
+      .string()
+      .email()
+      .refine((email) => !emailNotAllowed.includes(email), {
+        message: emailNotAllowedMessage,
+      })
+  ),
   reseauClasse: z.preprocess((val: any) => parseValue(val[0]), z.boolean()),
   maitreOuvrage: z.preprocess((val: any) => val[0], z.string()),
   gestionnaire: z.preprocess((val: any) => val[0], z.string()),
