@@ -52,7 +52,7 @@ export const ContactForm = ({ onSubmit, isLoading, cardMode, city, heatingTypeIn
           <ContactInformation cardMode={cardMode} city={city} heatingTypeInput={heatingTypeInput} />
           <ContactConsent />
           <ContactFormFooter>
-            <Button type="submit" loading={isLoading}>
+            <Button type="submit" loading={isLoading} disabled={formik.isSubmitting}>
               Envoyer
             </Button>
             {formik.isSubmitting && !formik.isValid && (
