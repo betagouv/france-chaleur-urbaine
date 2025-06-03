@@ -19,13 +19,23 @@ type ModeDeChauffage = {
   pertinence: number | ((addressDetail: AddressDetail) => ReactNode);
   description: string;
   custom?: (addressDetail: AddressDetail) => ReactNode;
-  contraintesTechniques: string[];
+  contraintesTechniques: ReactNode[];
   avantages: string[];
   inconvenients: string[];
   gainsPotentielsCO2: NonNullable<ReactNode>[];
   gainsPotentielsCout: NonNullable<ReactNode>[];
   aidesInstallation: NonNullable<ReactNode>[];
 };
+
+const contrainteTechniqueZoneARisque = (
+  <>
+    Dans les zones à risque significatif, dites « zones rouges », le projet nécessite une autorisation au titre du code minier (
+    <Link isExternal href="https://www.geothermies.fr/espace-cartographique">
+      voir les zones
+    </Link>
+    )
+  </>
+);
 
 const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = {
   immeuble_chauffage_collectif: [
@@ -152,7 +162,9 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
       contraintesTechniques: [
         'Présence d’un potentiel géothermique exploitable sous le bâtiment',
         'Isolation globale nécessaire au préalable pour éviter des performances dégradées (chauffage peu efficace et onéreux)',
+        'Radiateurs basse température ou plancher chauffant',
         'Surface extérieure pour le forage, ainsi qu’un local technique',
+        contrainteTechniqueZoneARisque,
       ],
       avantages: [
         'Faibles émissions de CO2',
@@ -202,6 +214,7 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
         'La pompe à chaleur air/eau capte les calories de l’air extérieur et les transfère à un circuit d’eau chaude pour assurer le chauffage et l’eau chaude sanitaire de votre logement.',
       contraintesTechniques: [
         'Isolation globale nécessaire au préalable pour éviter des performances dégradées (chauffage peu efficace et onéreux)',
+        'Radiateurs basse température ou plancher chauffant',
         'Espace extérieur demeurant accessible pour la maintenance',
         'Local technique',
         'Peu conseillé en climat rigoureux (performances réduites)',
@@ -337,6 +350,7 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
       contraintesTechniques: [
         'Circuit d’eau chaude nécessaire dans l’appartement (remplacement d’un chauffage individuel gaz)',
         'Isolation globale nécessaire au préalable pour éviter des performances dégradées (chauffage peu efficace et onéreux)',
+        'Radiateurs basse température ou plancher chauffant',
         'Espace extérieur adapté (autorisation requise) et installation d’un module intérieur',
         'Peu conseillé en climat rigoureux (performances réduites)',
       ],
@@ -428,7 +442,9 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
         'Circuit d’eau chaude nécessaire dans la maison',
         'Présence d’un potentiel géothermique exploitable sous la maison',
         'Isolation globale nécessaire au préalable pour éviter des performances dégradées (chauffage peu efficace et onéreux)',
+        'Radiateurs basse température ou plancher chauffant',
         'Surface extérieure pour le forage, ainsi qu’un local technique',
+        contrainteTechniqueZoneARisque,
       ],
       avantages: [
         'Faibles émissions de CO2',
@@ -468,6 +484,7 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
       contraintesTechniques: [
         'Circuit d’eau chaude dans la maison',
         'Isolation globale nécessaire au préalable pour éviter des performances dégradées (chauffage peu efficace et onéreux)',
+        'Radiateurs basse température ou plancher chauffant',
         'Espaces extérieur et intérieur demeurant accessibles pour la maintenance',
         'Peu conseillé en climat rigoureux (performances réduites)',
       ],
