@@ -47,7 +47,11 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
       return {};
     }
 
-    const { body, eligibility: computedEligibility, text } = getEligibilityResult(addressData.heatingType, addressData.eligibility);
+    const {
+      body,
+      eligibility: computedEligibility,
+      text,
+    } = getEligibilityResult(addressData.address || '', addressData.heatingType, addressData.eligibility);
 
     const addBordeauxLink =
       addressData.geoAddress?.properties.citycode && bordeauxMetropoleCityCodes.includes(addressData.geoAddress?.properties.citycode);
@@ -55,7 +59,7 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
       ? body({
           distance: getReadableDistance(addressData.eligibility.distance),
           inPDP: addressData.eligibility.inPDP,
-          gestionnaire: addressData.eligibility.gestionnaire,
+          gestionnaire: addressData.eligibility.gestionnaire?.trim() || null,
           tauxENRR: addressData.eligibility.tauxENRR,
           isClasse: addressData.eligibility.isClasse,
           hasPDP: addressData.eligibility.hasPDP,

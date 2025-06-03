@@ -41,7 +41,9 @@ function ChoixChauffageForm() {
       <SectionContent className="!mt-0">
         <SectionTwoColumns className="!mt-0">
           <div className="!flex-[3]">
-            <SectionHeading as="h2">Quel chauffage écologique pour mon logement&nbsp;?</SectionHeading>
+            <SectionHeading as="h2" id="quel-chauffage">
+              Quel chauffage écologique pour mon logement&nbsp;?
+            </SectionHeading>
 
             <AddressAutocompleteInput
               className="!mb-2"
