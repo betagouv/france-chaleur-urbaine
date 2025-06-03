@@ -177,7 +177,7 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
           iconProps={{
             className: 'fr-ml-1v',
           }}
-          title={<>Taux d'énergies renouvelables et de récupération issu de l'arrêté DPE du 16 mars 2023</>}
+          title={<>Taux d'énergies renouvelables et de récupération issu de l'arrêté DPE du 11 avril 2025</>}
         />
       </>
     ),
@@ -200,7 +200,7 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
           iconProps={{
             className: 'fr-ml-1v',
           }}
-          title={<>Contenu CO2 en analyse du cycle de vie issu de l'arrêté DPE du 16 mars 2023</>}
+          title={<>Contenu CO2 en analyse du cycle de vie issu de l'arrêté DPE du 11 avril 2025</>}
         />
       </>
     ),

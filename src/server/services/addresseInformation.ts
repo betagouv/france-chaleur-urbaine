@@ -211,11 +211,11 @@ const legend = [
   ['Identifiant du réseau le plus proche', 'Identifiant réseau national'],
   [
     'Taux EnR&R du réseau le plus proche',
-    'Taux d’énergies renouvelables et de récupération issu de l’arrêté DPE du 16 mars 2023 (https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000047329716)',
+    'Taux d’énergies renouvelables et de récupération issu de l’arrêté DPE du 11 avril 2025 (https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000051520810)',
   ],
   [
     'Contenu CO2 ACV (g/kWh)',
-    'Contenu CO2 en analyse du cycle de vie issu de l’arrêté DPE du 16 mars 2023 (https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000047329716)',
+    'Contenu CO2 en analyse du cycle de vie issu de l’arrêté DPE du 11 avril 2025 (https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000051520810)',
   ],
   ['Présence d’un réseau non localisé sur la commune', 'Un réseau existe dans cette commune, mais nous ne disposons pas de son tracé.'],
   [], // empty line

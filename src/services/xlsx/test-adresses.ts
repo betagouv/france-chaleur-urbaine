@@ -69,13 +69,13 @@ const columns: CSVColumn[] = [
   },
   {
     header: 'Taux EnR&R du réseau le plus proche',
-    description: "Taux d'énergies renouvelables et de récupération issu de l'arrêté DPE du 16 mars 2023",
+    description: "Taux d'énergies renouvelables et de récupération issu de l'arrêté DPE du 11 avril 2025",
     accessor: (address) => `${address.eligibility_status?.tauxENRR ?? ''}`,
     minWidth: 40,
   },
   {
     header: 'Contenu CO2 ACV (g/kWh)',
-    description: "Contenu CO2 en analyse du cycle de vie issu de l'arrêté DPE du 16 mars 2023",
+    description: "Contenu CO2 en analyse du cycle de vie issu de l'arrêté DPE du 11 avril 2025",
     accessor: (address) => (address.eligibility_status?.co2 ? `${Math.round(address.eligibility_status.co2 * 1000)}` : ''),
     minWidth: 30,
   },
