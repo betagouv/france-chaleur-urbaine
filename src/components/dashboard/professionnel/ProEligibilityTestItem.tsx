@@ -204,6 +204,7 @@ const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[]
         />
       </>
     ),
+    cell: (info) => (info.getValue() ? `${info.getValue() * 1000}` : ''),
     width: '130px',
     accessorKey: 'eligibility_status.co2',
     align: 'right',
