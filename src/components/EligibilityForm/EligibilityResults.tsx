@@ -16,250 +16,6 @@ type EligibilityResult = {
   text: string;
 };
 
-const autreSolutionsChauffageLink = clientConfig.flags.enableChaleurRenouvelable
-  ? '<a className="whitespace-nowrap" href="/chaleur-renouvelable" target="_blank">ici</a>'
-  : '[ici](https://france-renov.gouv.fr/renovation/chauffage)';
-
-const autreSolutionsChauffageCollectifLink = clientConfig.flags.enableChaleurRenouvelable
-  ? '<a className="whitespace-nowrap" href="/chaleur-renouvelable?type=immeuble_chauffage_collectif" target="_blank">ici</a>'
-  : '[ici](https://france-renov.gouv.fr/renovation/chauffage)';
-
-// 3 rue du petit bois 78370 Plaisir
-const closeCollectif: EligibilityResult = {
-  eligibility: true,
-  body: ({ distance, inPDP, gestionnaire, tauxENRR, isClasse, hasPDP, city }) => `
-### Bonne nouvelle !
-
-::arrow-item[**Un réseau de chaleur passe à proximité** immédiate de votre adresse ${distance ? `(${distance})` : ''}.]
-${
-  isClasse && !hasPDP && !inPDP
-    ? '::arrow-item[Ce réseau est classé, ce qui signifie qu’une obligation de raccordement peut exister (<a href="/ressources/reseau-classe#contenu" target="_blank">en savoir plus</a>).]'
-    : ''
-}
-${
-  inPDP
-    ? '::arrow-item[**Vous êtes dans le périmètre de développement prioritaire** du réseau. Une obligation de raccordement peut exister (<a href="/ressources/obligations-raccordement#contenu" target="_blank">en savoir plus</a>). Une amende de 300 000€ peut s’appliquer en cas de non-raccordement sans dérogation.]'
-    : ''
-}
-::arrow-item[Avec un chauffage collectif, **votre immeuble dispose déjà des équipements nécessaires :** il s’agit du cas le plus favorable pour un raccordement !]
-${
-  gestionnaire
-    ? `::arrow-item[Le gestionnaire du réseau le plus proche est **${gestionnaire}**.${
-        tauxENRR ? ` Le taux d’énergies renouvelables et de récupération du réseau est de **${tauxENRR}%**.` : ''
-      }]`
-    : ''
-}
-${city === 'Paris' ? '::small[A noter: sur Paris, la puissance souscrite doit être d’au moins 100 kW.]' : ''}
-`,
-  text: '#### Recevez plus d’informations adaptées à votre bâtiment de la part du gestionnaire du réseau',
-};
-
-// 3 rue du petit bois 78370 Plaisir
-const closeIndividual: EligibilityResult = {
-  body: ({ distance }) => `
-::arrow-item[**Votre immeuble est situé à proximité** immédiate d’un réseau de chaleur ${distance ? `(${distance})` : ''}.]
-::arrow-item[Toutefois au vu de votre chauffage actuel, **le raccordement de votre immeuble nécessiterait des travaux conséquents** et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble.]
-::arrow-item[**L’amélioration de l’isolation thermique de votre immeuble** constitue un autre levier pour réduire votre facture énergétique et limiter votre impact écologique. Pour être accompagné dans vos projets de rénovation énergétique, rendez-vous sur [**France Rénov’**](https://france-renov.gouv.fr/).]
-::arrow-item[Découvrez également d’autres solutions de chauffage **${autreSolutionsChauffageLink}**.]
-  `,
-  text: `
-**France Chaleur Urbaine** est un service gratuit du Ministère de la transition écologique qui vous permet de découvrir **instantanément** si un réseau passe près de chez vous
-Votre situation n’est pas favorable **pour un raccordement, mais si vous souhaitez tout de même en savoir plus ou faire connaître votre demande**, laissez-nous vos coordonnées pour que nous les transmettions à votre collectivité ou au **gestionnaire du réseau le plus proche.**
-  `,
-};
-
-// 1 rue du berry 78370 Plaisir
-const intermediateCollectif: EligibilityResult = {
-  eligibility: true,
-  body: ({ distance, inPDP, gestionnaire, tauxENRR, isClasse, hasPDP, city }) => `
-::arrow-item[**Il n’existe pour le moment pas de réseau de chaleur** à proximité immédiate de votre adresse, toutefois, le réseau n’est pas très loin ${
-    distance ? `(${distance})` : ''
-  }.]
-${
-  isClasse && !hasPDP && !inPDP
-    ? '::arrow-item[Ce réseau est classé, ce qui signifie qu’une obligation de raccordement peut exister (<a href="/ressources/reseau-classe#contenu" target="_blank">en savoir plus</a>).]'
-    : ''
-}
-${
-  inPDP
-    ? '::arrow-item[De plus, **vous êtes dans le périmètre de développement prioritaire** du réseau le plus proche. Une obligation de raccordement peut exister (<a href="/ressources/obligations-raccordement#contenu" target="_blank">en savoir plus</a>). Une amende de 300 000€ peut s’appliquer en cas de non-raccordement sans dérogation.]'
-    : ''
-}
-::arrow-item[Avec un chauffage collectif, **votre immeuble dispose déjà des équipements nécessaires** : il s’agit du cas le plus favorable pour un raccordement !]
-${
-  gestionnaire
-    ? `::arrow-item[Le gestionnaire du réseau le plus proche est **${gestionnaire}**.${
-        tauxENRR ? ` Le taux d’énergies renouvelables et de récupération du réseau est de **${tauxENRR}%**.` : ''
-      }]`
-    : ''
-}
-${city === 'Paris' ? '::small[A noter: sur Paris, la puissance souscrite doit être d’au moins 100 kW.]' : ''}
-  `,
-  text: `
-**France Chaleur Urbaine** est un service gratuit du Ministère de la transition écologique qui vous permet d’être **mis en relation avec le gestionnaire** du réseau le plus proche **afin de vérifier la faisabilité du raccordement et de bénéficier d’une première estimation tarifaire gratuite et sans engagement.**
-**Il vous suffit pour cela de déposer vos coordonnées ci-dessous.**
-  `,
-};
-
-// 1 rue du berry 78370 Plaisir
-const farIndividual: EligibilityResult = {
-  body: ({ distance }) => `
-::arrow-item[**Votre immeuble n'est pas situé à proximité** immédiate d’un réseau de chaleur ${distance ? `(${distance})` : ''}.]
-::arrow-item[Au vu de votre chauffage actuel, **le raccordement de votre immeuble nécessiterait des travaux conséquents** et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble.]
-::arrow-item[**L’amélioration de l’isolation thermique de votre immeuble** constitue un autre levier pour réduire votre facture énergétique et limiter votre impact écologique. Pour être accompagné dans vos projets de rénovation énergétique, rendez-vous sur [**France Rénov’**](https://france-renov.gouv.fr/).]
-::arrow-item[Découvrez également d’autres solutions de chauffage **${autreSolutionsChauffageLink}**.]
-    `,
-  text: `
-**France Chaleur Urbaine** est un service gratuit du Ministère de la transition écologique qui vous permet de découvrir **instantanément** si un réseau passe près de chez vous
-Votre situation n’est pas favorable **pour un raccordement, mais si vous souhaitez tout de même en savoir plus ou faire connaître votre demande**, laissez-nous vos coordonnées pour que nous les transmettions à votre collectivité ou au **gestionnaire du réseau le plus proche.**
-    `,
-};
-
-// Limours
-const farCollectifOutPDP: EligibilityResult = {
-  body: () => `
-::arrow-item[**Il n’existe pour le moment pas de réseau de chaleur** à proximité de votre adresse. Toutefois les réseaux de chaleur se développent !]
-::arrow-item[Sans attendre, pour réduire votre facture énergétique et limiter votre impact écologique, **pensez à améliorer l’isolation thermique de votre immeuble**. Pour être accompagné dans vos projets de rénovation énergétique, rendez-vous sur [**France Rénov’**](https://france-renov.gouv.fr/).]
-::arrow-item[Découvrez également d’autres solutions de chauffage **<${autreSolutionsChauffageCollectifLink}**.]
-`,
-  text: `
-**France Chaleur Urbaine** est un service gratuit du Ministère de la transition écologique qui vous permet de découvrir **instantanément** si un réseau passe près de chez vous
-**Contribuez au développement des réseaux de chaleur en faisant connaître votre souhait de vous raccorder !** Laissez-nous vos coordonnées pour être tenu informé par le gestionnaire du réseau le plus proche ou par votre collectivité des projets d’extension de réseau ou de création de réseau dans votre quartier.
-`,
-};
-
-// Rue pablo neruda 76610 Le havre
-const closeFuturCollectif: EligibilityResult = {
-  eligibility: true,
-  body: ({ distance, inPDP, gestionnaire, tauxENRR, city }) => `
-### Bonne nouvelle !
-
-
-::arrow-item[**Un réseau de chaleur passera bientôt à proximité** immédiate de votre adresse ${
-    distance ? `(${distance})` : ''
-  } (réseau prévu ou en construction).]
-${
-  inPDP
-    ? '::arrow-item[**Vous êtes dans le périmètre de développement prioritaire** du réseau. Une obligation de raccordement peut exister (<a href="/ressources/obligations-raccordement#contenu" target="_blank">en savoir plus</a>). Une amende de 300 000€ peut s’appliquer en cas de non-raccordement sans dérogation.]'
-    : ''
-}
-::arrow-item[Avec un chauffage collectif, **votre immeuble dispose déjà des équipements nécessaires :** il s’agit du cas le plus favorable pour un raccordement !]
-${
-  gestionnaire
-    ? `::arrow-item[Le gestionnaire du futur réseau le plus proche est **${gestionnaire}**.${
-        tauxENRR ? ` Le taux d’énergies renouvelables et de récupération du réseau sera de **${tauxENRR}%**.` : ''
-      }]`
-    : ''
-}
-${city === 'Paris' ? '::small[A noter: sur Paris, la puissance souscrite doit être d’au moins 100 kW.]' : ''}
-`,
-  text: `
-**France Chaleur Urbaine est un service public de mise en relation avec les gestionnaires des réseaux.**
-#### Bénéficiez d'une première étude de faisabilité gratuite et sans engagement.
-`,
-};
-
-// 2 rue hardenberg 92220 Bagneux
-const farCollectifInPDP: EligibilityResult = {
-  body: ({ gestionnaire, tauxENRR }) => `
-::arrow-item[**Il n’existe pour le moment pas de réseau de chaleur** à proximité de votre adresse.]
-::arrow-item[Toutefois, les réseaux de chaleur se développent et **vous êtes dans le périmètre de développement prioritaire du réseau** le plus proche. Une obligation de raccordement peut exister (<a href="/ressources/obligations-raccordement#contenu" target="_blank">en savoir plus</a>). Une amende de 300 000€ peut s’appliquer en cas de non-raccordement sans dérogation.]
-${
-  gestionnaire
-    ? `::arrow-item[Le gestionnaire du réseau le plus proche est **${gestionnaire}**.${
-        tauxENRR ? ` Le taux d’énergies renouvelables et de récupération du réseau est de **${tauxENRR}%**.` : ''
-      }]`
-    : ''
-}
-  `,
-  text: `
-**France Chaleur Urbaine** est un service gratuit du Ministère de la transition écologique qui vous permet d’être **mis en relation avec le gestionnaire** du réseau le plus proche de chez vous **afin d’en savoir plus et de bénéficier d’une première estimation tarifaire gratuite et sans engagement.**
-**Il vous suffit pour cela de déposer vos coordonnées ci-dessous.**
-`,
-};
-
-// rue des hirondelles 76610 le havre
-const intermediateFuturCollectif: EligibilityResult = {
-  eligibility: true,
-  body: ({ distance, inPDP, gestionnaire, tauxENRR, city }) => `
-::arrow-item[**Votre immeuble n’est pas à proximité immédiate d’un réseau de chaleur, toutefois un réseau passera prochainement dans les environs** ${
-    distance ? `(${distance})` : ''
-  } (réseau prévu ou en construction).]
-${
-  inPDP
-    ? '::arrow-item[De plus, vous êtes dans le périmètre de développement prioritaire du réseau le plus proche. Une obligation de raccordement peut exister (<a href="/ressources/obligations-raccordement#contenu" target="_blank">en savoir plus</a>). Une amende de 300 000€ peut s’appliquer en cas de non-raccordement sans dérogation.]'
-    : ''
-}
-::arrow-item[Avec un chauffage collectif, **votre immeuble dispose déjà des équipements nécessaires** : il s’agit du cas le plus favorable pour un raccordement !]
-${
-  gestionnaire
-    ? `::arrow-item[Le gestionnaire du futur réseau le plus proche est **${gestionnaire}**.${
-        tauxENRR ? ` Le taux d’énergies renouvelables et de récupération du réseau sera de **${tauxENRR}%**.` : ''
-      }]`
-    : ''
-}
-${city === 'Paris' ? '::small[A noter: sur Paris, la puissance souscrite doit être d’au moins 100 kW.]' : ''}
-  `,
-  text: `
-**France Chaleur Urbaine** est un service gratuit du Ministère de la transition écologique qui vous permet d’être **mis en relation avec le gestionnaire** du réseau le plus proche **afin de vérifier la faisabilité du raccordement et de bénéficier d’une première estimation tarifaire gratuite et sans engagement.**
-**Il vous suffit pour cela de déposer vos coordonnées ci-dessous.**
-  `,
-};
-
-// rue des hirondelles 76610 le havre
-const closeFuturIndividual: EligibilityResult = {
-  body: ({ distance }) => `
-::arrow-item[**Votre immeuble est situé à proximité** immédiate d’un réseau de chaleur en projet ou en construction ${
-    distance ? `(${distance})` : ''
-  }.]
-::arrow-item[Toutefois au vu de votre chauffage actuel, **le raccordement de votre immeuble nécessiterait des travaux conséquents** et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble.]
-::arrow-item[**L’amélioration de l’isolation thermique de votre immeuble** constitue un autre levier pour réduire votre facture énergétique et limiter votre impact écologique. Pour être accompagné dans vos projets de rénovation énergétique, rendez-vous sur [**France Rénov’**](https://france-renov.gouv.fr/).]
-::arrow-item[Découvrez également d’autres solutions de chauffage **${autreSolutionsChauffageLink}**.]
-  `,
-  text: `
-**France Chaleur Urbaine** est un service gratuit du Ministère de la transition écologique qui vous permet de découvrir **instantanément** si un réseau passe près de chez vous
-Votre situation n’est pas favorable **pour un raccordement, mais si vous souhaitez tout de même en savoir plus ou faire connaître votre demande**, laissez-nous vos coordonnées pour que nous les transmettions à votre collectivité ou au **gestionnaire du réseau le plus proche.**
-  `,
-};
-
-const noTraceCollectif: EligibilityResult = {
-  body: ({ gestionnaire, tauxENRR, isClasse, city }) => `
-::arrow-item[Il existe un réseau de chaleur sur cette commune, mais nous ne disposons d’aucune information sur sa localisation.]
-${
-  isClasse
-    ? JSON.stringify(isClasse) +
-      '::arrow-item[Ce réseau est classé, ce qui signifie qu’une obligation de raccordement peut exister (<a href="/ressources/reseau-classe#contenu" target="_blank">en savoir plus</a>).]'
-    : ''
-}
-::arrow-item[Avec un chauffage collectif, **votre immeuble dispose déjà des équipements nécessaires** : il s’agit du cas le plus favorable pour un raccordement !]
-${
-  gestionnaire
-    ? `::arrow-item[Le gestionnaire du réseau le plus proche est **${gestionnaire}**.${
-        tauxENRR ? ` Le taux d’énergies renouvelables et de récupération du réseau est de **${tauxENRR}%**.` : ''
-      }]`
-    : ''
-}
-${city === 'Paris' ? '::small[A noter: sur Paris, la puissance souscrite doit être d’au moins 100 kW.]' : ''}
-  `,
-  text: `
-**France Chaleur Urbaine** est un service gratuit du Ministère de la transition écologique qui vous permet d’être **mis en relation avec le gestionnaire** du réseau le plus proche **afin de vérifier la faisabilité du raccordement et de bénéficier d’une première estimation tarifaire gratuite et sans engagement.**
-**Il vous suffit pour cela de déposer vos coordonnées ci-dessous.**
-  `,
-};
-
-const noTraceIndividual: EligibilityResult = {
-  body: () => `
-  ::arrow-item[Il existe un réseau de chaleur sur cette commune, mais nous ne disposons d’aucune information sur sa localisation.]
-  ::arrow-item[Au vu de votre chauffage actuel, **le raccordement de votre immeuble nécessiterait des travaux conséquents** et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble.]
-  ::arrow-item[**L’amélioration de l’isolation thermique de votre immeuble** constitue un autre levier pour réduire votre facture énergétique et limiter votre impact écologique. Pour être accompagné dans vos projets de rénovation énergétique, rendez-vous sur [**France Rénov’**](https://france-renov.gouv.fr/).]
-  ::arrow-item[Découvrez également d’autres solutions de chauffage **${autreSolutionsChauffageLink}**.]
-      `,
-  text: `
-  **France Chaleur Urbaine** est un service gratuit du Ministère de la transition écologique qui vous permet de découvrir **instantanément** si un réseau passe près de chez vous
-  Votre situation n’est pas favorable **pour un raccordement, mais si vous souhaitez tout de même en savoir plus ou faire connaître votre demande**, laissez-nous vos coordonnées pour que nous les transmettions à votre collectivité ou au **gestionnaire du réseau le plus proche.**
-      `,
-};
-
 type EligibilityResultState =
   // très proche
   | 'closeFuturCollectif'
@@ -310,8 +66,257 @@ export const getEligibilityResultState = (heatingType: AvailableHeating, eligibi
   return 'unknown';
 };
 
-export const getEligibilityResult = (heatingType: AvailableHeating, eligibility?: HeatNetworksResponse): EligibilityResult => {
+export const getEligibilityResult = (
+  address: string,
+  heatingType: AvailableHeating,
+  eligibility?: HeatNetworksResponse
+): EligibilityResult => {
   const state = getEligibilityResultState(heatingType, eligibility);
+
+  const autreSolutionsChauffageLink = clientConfig.flags.enableChaleurRenouvelable
+    ? `<a className="whitespace-nowrap" href="/chaleur-renouvelable?address=${encodeURIComponent(address)}" target="_blank">ici</a>`
+    : '[ici](https://france-renov.gouv.fr/renovation/chauffage)';
+
+  const autreSolutionsChauffageCollectifLink = clientConfig.flags.enableChaleurRenouvelable
+    ? `<a className="whitespace-nowrap" href="/chaleur-renouvelable?address=${encodeURIComponent(address)}&type=immeuble_chauffage_collectif" target="_blank">ici</a>`
+    : '[ici](https://france-renov.gouv.fr/renovation/chauffage)';
+
+  // 3 rue du petit bois 78370 Plaisir
+  const closeCollectif: EligibilityResult = {
+    eligibility: true,
+    body: ({ distance, inPDP, gestionnaire, tauxENRR, isClasse, hasPDP, city }) => `
+### Bonne nouvelle !
+
+::arrow-item[**Un réseau de chaleur passe à proximité** immédiate de votre adresse ${distance ? `(${distance})` : ''}.]
+${
+  isClasse && !hasPDP && !inPDP
+    ? '::arrow-item[Ce réseau est classé, ce qui signifie qu’une obligation de raccordement peut exister (<a href="/ressources/reseau-classe#contenu" target="_blank">en savoir plus</a>).]'
+    : ''
+}
+${
+  inPDP
+    ? '::arrow-item[**Vous êtes dans le périmètre de développement prioritaire** du réseau. Une obligation de raccordement peut exister (<a href="/ressources/obligations-raccordement#contenu" target="_blank">en savoir plus</a>). Une amende de 300 000€ peut s’appliquer en cas de non-raccordement sans dérogation.]'
+    : ''
+}
+::arrow-item[Avec un chauffage collectif, **votre immeuble dispose déjà des équipements nécessaires :** il s’agit du cas le plus favorable pour un raccordement !]
+${
+  gestionnaire
+    ? `::arrow-item[Le gestionnaire du réseau le plus proche est **${gestionnaire}**.${
+        tauxENRR ? ` Le taux d’énergies renouvelables et de récupération du réseau est de **${tauxENRR}%**.` : ''
+      }]`
+    : ''
+}
+${city === 'Paris' ? '::small[A noter: sur Paris, la puissance souscrite doit être d’au moins 100 kW.]' : ''}
+`,
+    text: '#### Recevez plus d’informations adaptées à votre bâtiment de la part du gestionnaire du réseau',
+  };
+
+  // 3 rue du petit bois 78370 Plaisir
+  const closeIndividual: EligibilityResult = {
+    body: ({ distance }) => `
+::arrow-item[**Votre immeuble est situé à proximité** immédiate d’un réseau de chaleur ${distance ? `(${distance})` : ''}.]
+::arrow-item[Toutefois au vu de votre chauffage actuel, **le raccordement de votre immeuble nécessiterait des travaux conséquents** et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble.]
+::arrow-item[**L’amélioration de l’isolation thermique de votre immeuble** constitue un autre levier pour réduire votre facture énergétique et limiter votre impact écologique. Pour être accompagné dans vos projets de rénovation énergétique, rendez-vous sur [**France Rénov’**](https://france-renov.gouv.fr/).]
+::arrow-item[Découvrez également d’autres solutions de chauffage **${autreSolutionsChauffageLink}**.]
+  `,
+    text: `
+**France Chaleur Urbaine** est un service gratuit du Ministère de la transition écologique qui vous permet de découvrir **instantanément** si un réseau passe près de chez vous
+Votre situation n’est pas favorable **pour un raccordement, mais si vous souhaitez tout de même en savoir plus ou faire connaître votre demande**, laissez-nous vos coordonnées pour que nous les transmettions à votre collectivité ou au **gestionnaire du réseau le plus proche.**
+  `,
+  };
+
+  // 1 rue du berry 78370 Plaisir
+  const intermediateCollectif: EligibilityResult = {
+    eligibility: true,
+    body: ({ distance, inPDP, gestionnaire, tauxENRR, isClasse, hasPDP, city }) => `
+::arrow-item[**Il n’existe pour le moment pas de réseau de chaleur** à proximité immédiate de votre adresse, toutefois, le réseau n’est pas très loin ${
+      distance ? `(${distance})` : ''
+    }.]
+${
+  isClasse && !hasPDP && !inPDP
+    ? '::arrow-item[Ce réseau est classé, ce qui signifie qu’une obligation de raccordement peut exister (<a href="/ressources/reseau-classe#contenu" target="_blank">en savoir plus</a>).]'
+    : ''
+}
+${
+  inPDP
+    ? '::arrow-item[De plus, **vous êtes dans le périmètre de développement prioritaire** du réseau le plus proche. Une obligation de raccordement peut exister (<a href="/ressources/obligations-raccordement#contenu" target="_blank">en savoir plus</a>). Une amende de 300 000€ peut s’appliquer en cas de non-raccordement sans dérogation.]'
+    : ''
+}
+::arrow-item[Avec un chauffage collectif, **votre immeuble dispose déjà des équipements nécessaires** : il s’agit du cas le plus favorable pour un raccordement !]
+${
+  gestionnaire
+    ? `::arrow-item[Le gestionnaire du réseau le plus proche est **${gestionnaire}**.${
+        tauxENRR ? ` Le taux d’énergies renouvelables et de récupération du réseau est de **${tauxENRR}%**.` : ''
+      }]`
+    : ''
+}
+${city === 'Paris' ? '::small[A noter: sur Paris, la puissance souscrite doit être d’au moins 100 kW.]' : ''}
+  `,
+    text: `
+**France Chaleur Urbaine** est un service gratuit du Ministère de la transition écologique qui vous permet d’être **mis en relation avec le gestionnaire** du réseau le plus proche **afin de vérifier la faisabilité du raccordement et de bénéficier d’une première estimation tarifaire gratuite et sans engagement.**
+**Il vous suffit pour cela de déposer vos coordonnées ci-dessous.**
+  `,
+  };
+
+  // 1 rue du berry 78370 Plaisir
+  const farIndividual: EligibilityResult = {
+    body: ({ distance }) => `
+::arrow-item[**Votre immeuble n'est pas situé à proximité** immédiate d’un réseau de chaleur ${distance ? `(${distance})` : ''}.]
+::arrow-item[Au vu de votre chauffage actuel, **le raccordement de votre immeuble nécessiterait des travaux conséquents** et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble.]
+::arrow-item[**L’amélioration de l’isolation thermique de votre immeuble** constitue un autre levier pour réduire votre facture énergétique et limiter votre impact écologique. Pour être accompagné dans vos projets de rénovation énergétique, rendez-vous sur [**France Rénov’**](https://france-renov.gouv.fr/).]
+::arrow-item[Découvrez également d’autres solutions de chauffage **${autreSolutionsChauffageLink}**.]
+    `,
+    text: `
+**France Chaleur Urbaine** est un service gratuit du Ministère de la transition écologique qui vous permet de découvrir **instantanément** si un réseau passe près de chez vous
+Votre situation n’est pas favorable **pour un raccordement, mais si vous souhaitez tout de même en savoir plus ou faire connaître votre demande**, laissez-nous vos coordonnées pour que nous les transmettions à votre collectivité ou au **gestionnaire du réseau le plus proche.**
+    `,
+  };
+
+  // Limours
+  const farCollectifOutPDP: EligibilityResult = {
+    body: () => `
+::arrow-item[**Il n’existe pour le moment pas de réseau de chaleur** à proximité de votre adresse. Toutefois les réseaux de chaleur se développent !]
+::arrow-item[Sans attendre, pour réduire votre facture énergétique et limiter votre impact écologique, **pensez à améliorer l’isolation thermique de votre immeuble**. Pour être accompagné dans vos projets de rénovation énergétique, rendez-vous sur [**France Rénov’**](https://france-renov.gouv.fr/).]
+::arrow-item[Découvrez également d’autres solutions de chauffage **<${autreSolutionsChauffageCollectifLink}**.]
+`,
+    text: `
+**France Chaleur Urbaine** est un service gratuit du Ministère de la transition écologique qui vous permet de découvrir **instantanément** si un réseau passe près de chez vous
+**Contribuez au développement des réseaux de chaleur en faisant connaître votre souhait de vous raccorder !** Laissez-nous vos coordonnées pour être tenu informé par le gestionnaire du réseau le plus proche ou par votre collectivité des projets d’extension de réseau ou de création de réseau dans votre quartier.
+`,
+  };
+
+  // Rue pablo neruda 76610 Le havre
+  const closeFuturCollectif: EligibilityResult = {
+    eligibility: true,
+    body: ({ distance, inPDP, gestionnaire, tauxENRR, city }) => `
+### Bonne nouvelle !
+
+
+::arrow-item[**Un réseau de chaleur passera bientôt à proximité** immédiate de votre adresse ${
+      distance ? `(${distance})` : ''
+    } (réseau prévu ou en construction).]
+${
+  inPDP
+    ? '::arrow-item[**Vous êtes dans le périmètre de développement prioritaire** du réseau. Une obligation de raccordement peut exister (<a href="/ressources/obligations-raccordement#contenu" target="_blank">en savoir plus</a>). Une amende de 300 000€ peut s’appliquer en cas de non-raccordement sans dérogation.]'
+    : ''
+}
+::arrow-item[Avec un chauffage collectif, **votre immeuble dispose déjà des équipements nécessaires :** il s’agit du cas le plus favorable pour un raccordement !]
+${
+  gestionnaire
+    ? `::arrow-item[Le gestionnaire du futur réseau le plus proche est **${gestionnaire}**.${
+        tauxENRR ? ` Le taux d’énergies renouvelables et de récupération du réseau sera de **${tauxENRR}%**.` : ''
+      }]`
+    : ''
+}
+${city === 'Paris' ? '::small[A noter: sur Paris, la puissance souscrite doit être d’au moins 100 kW.]' : ''}
+`,
+    text: `
+**France Chaleur Urbaine est un service public de mise en relation avec les gestionnaires des réseaux.**
+#### Bénéficiez d'une première étude de faisabilité gratuite et sans engagement.
+`,
+  };
+
+  // 2 rue hardenberg 92220 Bagneux
+  const farCollectifInPDP: EligibilityResult = {
+    body: ({ gestionnaire, tauxENRR }) => `
+::arrow-item[**Il n’existe pour le moment pas de réseau de chaleur** à proximité de votre adresse.]
+::arrow-item[Toutefois, les réseaux de chaleur se développent et **vous êtes dans le périmètre de développement prioritaire du réseau** le plus proche. Une obligation de raccordement peut exister (<a href="/ressources/obligations-raccordement#contenu" target="_blank">en savoir plus</a>). Une amende de 300 000€ peut s’appliquer en cas de non-raccordement sans dérogation.]
+${
+  gestionnaire
+    ? `::arrow-item[Le gestionnaire du réseau le plus proche est **${gestionnaire}**.${
+        tauxENRR ? ` Le taux d’énergies renouvelables et de récupération du réseau est de **${tauxENRR}%**.` : ''
+      }]`
+    : ''
+}
+  `,
+    text: `
+**France Chaleur Urbaine** est un service gratuit du Ministère de la transition écologique qui vous permet d’être **mis en relation avec le gestionnaire** du réseau le plus proche de chez vous **afin d’en savoir plus et de bénéficier d’une première estimation tarifaire gratuite et sans engagement.**
+**Il vous suffit pour cela de déposer vos coordonnées ci-dessous.**
+`,
+  };
+
+  // rue des hirondelles 76610 le havre
+  const intermediateFuturCollectif: EligibilityResult = {
+    eligibility: true,
+    body: ({ distance, inPDP, gestionnaire, tauxENRR, city }) => `
+::arrow-item[**Votre immeuble n’est pas à proximité immédiate d’un réseau de chaleur, toutefois un réseau passera prochainement dans les environs** ${
+      distance ? `(${distance})` : ''
+    } (réseau prévu ou en construction).]
+${
+  inPDP
+    ? '::arrow-item[De plus, vous êtes dans le périmètre de développement prioritaire du réseau le plus proche. Une obligation de raccordement peut exister (<a href="/ressources/obligations-raccordement#contenu" target="_blank">en savoir plus</a>). Une amende de 300 000€ peut s’appliquer en cas de non-raccordement sans dérogation.]'
+    : ''
+}
+::arrow-item[Avec un chauffage collectif, **votre immeuble dispose déjà des équipements nécessaires** : il s’agit du cas le plus favorable pour un raccordement !]
+${
+  gestionnaire
+    ? `::arrow-item[Le gestionnaire du futur réseau le plus proche est **${gestionnaire}**.${
+        tauxENRR ? ` Le taux d’énergies renouvelables et de récupération du réseau sera de **${tauxENRR}%**.` : ''
+      }]`
+    : ''
+}
+${city === 'Paris' ? '::small[A noter: sur Paris, la puissance souscrite doit être d’au moins 100 kW.]' : ''}
+  `,
+    text: `
+**France Chaleur Urbaine** est un service gratuit du Ministère de la transition écologique qui vous permet d’être **mis en relation avec le gestionnaire** du réseau le plus proche **afin de vérifier la faisabilité du raccordement et de bénéficier d’une première estimation tarifaire gratuite et sans engagement.**
+**Il vous suffit pour cela de déposer vos coordonnées ci-dessous.**
+  `,
+  };
+
+  // rue des hirondelles 76610 le havre
+  const closeFuturIndividual: EligibilityResult = {
+    body: ({ distance }) => `
+::arrow-item[**Votre immeuble est situé à proximité** immédiate d’un réseau de chaleur en projet ou en construction ${
+      distance ? `(${distance})` : ''
+    }.]
+::arrow-item[Toutefois au vu de votre chauffage actuel, **le raccordement de votre immeuble nécessiterait des travaux conséquents** et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble.]
+::arrow-item[**L’amélioration de l’isolation thermique de votre immeuble** constitue un autre levier pour réduire votre facture énergétique et limiter votre impact écologique. Pour être accompagné dans vos projets de rénovation énergétique, rendez-vous sur [**France Rénov’**](https://france-renov.gouv.fr/).]
+::arrow-item[Découvrez également d’autres solutions de chauffage **${autreSolutionsChauffageLink}**.]
+  `,
+    text: `
+**France Chaleur Urbaine** est un service gratuit du Ministère de la transition écologique qui vous permet de découvrir **instantanément** si un réseau passe près de chez vous
+Votre situation n’est pas favorable **pour un raccordement, mais si vous souhaitez tout de même en savoir plus ou faire connaître votre demande**, laissez-nous vos coordonnées pour que nous les transmettions à votre collectivité ou au **gestionnaire du réseau le plus proche.**
+  `,
+  };
+
+  const noTraceCollectif: EligibilityResult = {
+    body: ({ gestionnaire, tauxENRR, isClasse, city }) => `
+::arrow-item[Il existe un réseau de chaleur sur cette commune, mais nous ne disposons d’aucune information sur sa localisation.]
+${
+  isClasse
+    ? JSON.stringify(isClasse) +
+      '::arrow-item[Ce réseau est classé, ce qui signifie qu’une obligation de raccordement peut exister (<a href="/ressources/reseau-classe#contenu" target="_blank">en savoir plus</a>).]'
+    : ''
+}
+::arrow-item[Avec un chauffage collectif, **votre immeuble dispose déjà des équipements nécessaires** : il s’agit du cas le plus favorable pour un raccordement !]
+${
+  gestionnaire
+    ? `::arrow-item[Le gestionnaire du réseau le plus proche est **${gestionnaire}**.${
+        tauxENRR ? ` Le taux d’énergies renouvelables et de récupération du réseau est de **${tauxENRR}%**.` : ''
+      }]`
+    : ''
+}
+${city === 'Paris' ? '::small[A noter: sur Paris, la puissance souscrite doit être d’au moins 100 kW.]' : ''}
+  `,
+    text: `
+**France Chaleur Urbaine** est un service gratuit du Ministère de la transition écologique qui vous permet d’être **mis en relation avec le gestionnaire** du réseau le plus proche **afin de vérifier la faisabilité du raccordement et de bénéficier d’une première estimation tarifaire gratuite et sans engagement.**
+**Il vous suffit pour cela de déposer vos coordonnées ci-dessous.**
+  `,
+  };
+
+  const noTraceIndividual: EligibilityResult = {
+    body: () => `
+  ::arrow-item[Il existe un réseau de chaleur sur cette commune, mais nous ne disposons d’aucune information sur sa localisation.]
+  ::arrow-item[Au vu de votre chauffage actuel, **le raccordement de votre immeuble nécessiterait des travaux conséquents** et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble.]
+  ::arrow-item[**L’amélioration de l’isolation thermique de votre immeuble** constitue un autre levier pour réduire votre facture énergétique et limiter votre impact écologique. Pour être accompagné dans vos projets de rénovation énergétique, rendez-vous sur [**France Rénov’**](https://france-renov.gouv.fr/).]
+  ::arrow-item[Découvrez également d’autres solutions de chauffage **${autreSolutionsChauffageLink}**.]
+      `,
+    text: `
+  **France Chaleur Urbaine** est un service gratuit du Ministère de la transition écologique qui vous permet de découvrir **instantanément** si un réseau passe près de chez vous
+  Votre situation n’est pas favorable **pour un raccordement, mais si vous souhaitez tout de même en savoir plus ou faire connaître votre demande**, laissez-nous vos coordonnées pour que nous les transmettions à votre collectivité ou au **gestionnaire du réseau le plus proche.**
+      `,
+  };
+
   switch (state) {
     case 'closeFuturCollectif': {
       return closeFuturCollectif;
@@ -319,7 +324,6 @@ export const getEligibilityResult = (heatingType: AvailableHeating, eligibility?
     case 'closeCollectif': {
       return closeCollectif;
     }
-    // eslint-disable-next-line no-fallthrough -- règle eslint erronée
     case 'closeFuturIndividual': {
       return closeFuturIndividual;
     }

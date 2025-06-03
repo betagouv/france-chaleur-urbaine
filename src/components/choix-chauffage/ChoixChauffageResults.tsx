@@ -299,7 +299,7 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
       description:
         "La pompe à chaleur air/air capte les calories de l'air extérieur et les restitue à l’intérieur en diffusant de l’air chaud.",
       contraintesTechniques: [
-        'Emplacement pour l’unité extérieure ( (autorisation requise)',
+        'Emplacement pour l’unité extérieure (autorisation requise)',
         'Isolation globale nécessaire au préalable pour éviter des performances dégradées (chauffage peu efficace et onéreux)',
         'N’assure pas la production d’eau chaude sanitaire',
         'Peu conseillé en climat rigoureux (performances réduites)',
