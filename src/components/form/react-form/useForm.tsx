@@ -19,6 +19,7 @@ import DsfrSelect, { type SelectOption as DsfrSelectOption } from '@/components/
 import DsfrSelectCheckboxes, { type SelectCheckboxesProps as DsfrSelectCheckboxesProps } from '@/components/form/dsfr/SelectCheckboxes';
 import DsfrTextArea from '@/components/form/dsfr/TextArea';
 import Button, { type ButtonProps } from '@/components/ui/Button';
+import cx from '@/utils/cx';
 import { getSchemaShape } from '@/utils/validation';
 
 /**
@@ -276,6 +277,10 @@ function useFormInternal<
     <Input nativeInputProps={{ type: 'email', autoComplete: 'email', ...nativeInputProps }} {...props} />
   );
 
+  const NumberInput: typeof Input = ({ nativeInputProps, ...props }) => (
+    <Input nativeInputProps={{ type: 'number', ...nativeInputProps }} {...props} />
+  );
+
   const PhoneInput: typeof Input = ({ nativeInputProps, ...props }) => (
     <Input
       nativeInputProps={{
@@ -473,13 +478,18 @@ function useFormInternal<
     />
   );
 
-  const Submit = ({ children, ...props }: Omit<ButtonProps, 'type' | 'disabled' | 'loading'>) => (
+  const Submit = ({ children, loading, disabled, ...props }: Omit<ButtonProps, 'type'>) => (
     <form.Subscribe
       selector={(state) => [state.canSubmit, state.isSubmitting]}
       children={([canSubmit, isSubmitting]) => {
         const ButtonWorkingWithTypescript = Button as any;
         return (
-          <ButtonWorkingWithTypescript type="submit" disabled={!canSubmit} loading={isSubmitting} {...props}>
+          <ButtonWorkingWithTypescript
+            type="submit"
+            disabled={typeof disabled !== 'undefined' ? disabled : !canSubmit}
+            loading={isSubmitting || loading}
+            {...props}
+          >
             {children}
           </ButtonWorkingWithTypescript>
         );
@@ -530,6 +540,7 @@ function useFormInternal<
 
   const Form: React.FC<React.FormHTMLAttributes<HTMLFormElement>> = ({ children, onSubmit, ...props }) => (
     <form
+      noValidate
       onSubmit={(e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -547,21 +558,53 @@ function useFormInternal<
 
   return {
     form,
-    Input,
-    PasswordInput,
-    EmailInput,
-    Textarea,
-    UrlInput,
-    Checkbox,
-    PhoneInput,
+    useValue,
     Submit,
     Form,
     FormDebug,
-    Select,
-    Radio,
+    Field: {
+      Checkbox,
+      Checkboxes,
+      EmailInput,
+      Input,
+      NumberInput,
+      PasswordInput,
+      PhoneInput,
+      Radio,
+      Select,
+      SelectCheckboxes,
+      Textarea,
+      UrlInput,
+    },
+    FieldWrapper: ({ children, className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
+      <div className={cx('fr-fieldset__element', className)} {...props}>
+        {children}
+      </div>
+    ),
+    Fieldset: ({ children, className, ...props }: React.HTMLAttributes<HTMLFieldSetElement>) => (
+      <fieldset className={cx('fr-fieldset', className)} {...props}>
+        {children}
+      </fieldset>
+    ),
+    FieldsetLegend: ({ children, className, ...props }: React.HTMLAttributes<HTMLLegendElement>) => (
+      <legend className={cx('ml-2 mb-1w text-sm font-bold uppercase', className)} {...props}>
+        {children}
+      </legend>
+    ),
+
+    // deprecated
+    Checkbox,
     Checkboxes,
+    EmailInput,
+    Input,
+    NumberInput,
+    PasswordInput,
+    PhoneInput,
+    Radio,
+    Select,
     SelectCheckboxes,
-    useValue,
+    Textarea,
+    UrlInput,
   };
 }
 
