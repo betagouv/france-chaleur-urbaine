@@ -120,7 +120,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
     <Tabs
       selectedTabId={selectedTabId.tabId}
       tabs={tabs}
-      onTabChange={(newTabId) => {
+      onTabChange={(newTabId: string) => {
         trackEvent(`Carto|Tabs|${newTabId as TabId}`);
         setSelectedTabId({ tabId: newTabId as TabId, subTabId: null });
       }}

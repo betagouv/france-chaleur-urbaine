@@ -7,8 +7,7 @@ import {
   useForm as useTanStackForm,
   useStore,
 } from '@tanstack/react-form';
-import { useEffect } from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { type z } from 'zod';
 
 import DsfrCheckbox, { type CheckboxProps as DsfrCheckboxProps } from '@/components/form/dsfr/Checkbox';
