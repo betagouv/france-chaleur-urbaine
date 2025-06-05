@@ -5,6 +5,7 @@ import { type Knex } from 'knex';
 // - It uses a GIN index with trigram operations (gin_trgm_ops), which improves search performance for text queries, especially LIKE, ILIKE, and full-text searches.
 export async function up(knex: Knex): Promise<void> {
   await knex.raw(`
+    CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
     CREATE EXTENSION IF NOT EXISTS unaccent;
     CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
@@ -12,8 +13,6 @@ export async function up(knex: Knex): Promise<void> {
     CREATE OR REPLACE FUNCTION immutable_unaccent(text) RETURNS text AS $$
       SELECT unaccent('public.unaccent', $1);
     $$ LANGUAGE sql IMMUTABLE;
-
-    CREATE INDEX IF NOT EXISTS idx_ign_communes_unaccent ON ign_communes USING gin (immutable_unaccent(nom) gin_trgm_ops);
   `);
 }
 
