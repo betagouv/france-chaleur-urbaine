@@ -25,6 +25,7 @@ import { type ApiAccount } from '@/types/ApiAccount';
 import { userRoles } from '@/types/enum/UserRole';
 import { sleep } from '@/utils/time';
 import { nonEmptyArray } from '@/utils/typescript';
+import { allDatabaseTables, minimalDatabaseTables } from '@cli/bootstrap/tables';
 import { optimisationProfiles, optimizeImage } from '@cli/images/optimize';
 import { registerNetworkCommands } from '@cli/networks/commands';
 import { applyGeometryUpdates } from '@cli/networks/geometry-updates';
@@ -462,6 +463,16 @@ program
   .description('')
   .action(async () => {
     console.info('Veuillez regarder les étapes dans scripts/bdnb/qpv/README.md');
+  });
+
+program
+  .command('db:bootstrap')
+  .option('--full', 'Bootstrap all tables (including tiles and huge tables)', false)
+  .description('Initialise la base de données avec les tables depuis la production')
+  .action(async ({ full }) => {
+    for (const table of full ? allDatabaseTables : minimalDatabaseTables) {
+      await runBash(`yarn db:pull:prod ${table} --data-only`);
+    }
   });
 
 program
