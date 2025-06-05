@@ -35,6 +35,7 @@
     "test:watch": "vitest dev",
     "cli": "tsx scripts/cli.ts",
     "knexts": "tsx ./node_modules/knex/bin/cli.js",
+    "db:bootstrap": "pnpm db:migrate && pnpm cli db:bootstrap",
     "db:migrate": "pnpm knexts migrate:latest",
     "db:new": "pnpm knexts migrate:make",
     "db:pull:dev": "./scripts/copyRemoteTableToLocal.sh dev",

@@ -48,6 +48,10 @@ fi
 
 echo "> Synchronisation de la table distante '$table' depuis l'environnement $env..."
 
+pg_dump="docker run --rm -e PGUSER -e PGPASSWORD --network host -v /tmp/fcu:/tmp postgis/postgis:16-3.5-alpine pg_dump"
+psql="docker run --rm -e PGUSER -e PGPASSWORD --network host -v /tmp/fcu:/tmp postgis/postgis:16-3.5-alpine psql"
+pg_restore="docker run --rm -e PGUSER -e PGPASSWORD --network host -v /tmp/fcu:/tmp postgis/postgis:16-3.5-alpine pg_restore"
+
 POSTGRESQL_URL=$(scalingo -a $SCALINGO_APP env-get SCALINGO_POSTGRESQL_URL)
 export PGUSER=$(expr $POSTGRESQL_URL : '.*/\([^:]*\):.*')
 export PGPASSWORD=$(expr $POSTGRESQL_URL : '.*:\([^@]*\)@.*')
@@ -55,9 +59,9 @@ export PGPASSWORD=$(expr $POSTGRESQL_URL : '.*:\([^@]*\)@.*')
 echo "Exporting data from remote database $env:$DB_PORT..."
 # export depuis BDD distance
 if [[ $dataonly = "true" ]]; then
-  pg_dump postgres://localhost:$DB_PORT --data-only -t $table >/tmp/table.dump.sql
+  $pg_dump postgres://localhost:$DB_PORT --data-only -t $table >/tmp/fcu/table.dump.sql
 else
-  pg_dump postgres://localhost:$DB_PORT --format=c --no-owner -t $table >/tmp/table.dump
+  $pg_dump postgres://localhost:$DB_PORT --format=c --no-owner -t $table >/tmp/fcu/table.dump
 fi
 
 if [ $PORT_IN_USE -ne 0 ]; then
@@ -66,14 +70,14 @@ if [ $PORT_IN_USE -ne 0 ]; then
   kill %1
 fi
 
-echo "Importing data from $table to $env database..."
+echo "Importing data from $table to local database..."
 # import vers BDD locale
 if [[ $dataonly = "true" ]]; then
   # noter le delete plutôt que truncate pour ne pas locker la table et bloquer les requêtes
-  psql -v ON_ERROR_STOP=1 postgres://postgres:postgres_fcu@localhost:5432/postgres --single-transaction -c "delete from $table;" -f /tmp/table.dump.sql
+  $psql -v ON_ERROR_STOP=1 postgres://postgres:postgres_fcu@localhost:5432/postgres --single-transaction -c "delete from $table;" -f /tmp/table.dump.sql
 else
-  psql -v ON_ERROR_STOP=1 postgres://postgres:postgres_fcu@localhost:5432/postgres -c "DROP TABLE IF EXISTS $table CASCADE;"
-  pg_restore --no-owner --clean --if-exists -d postgres://postgres:postgres_fcu@localhost:5432/postgres /tmp/table.dump
+  $psql -v ON_ERROR_STOP=1 postgres://postgres:postgres_fcu@localhost:5432/postgres -c "DROP TABLE IF EXISTS $table CASCADE;"
+  $pg_restore --no-owner --clean --if-exists -d postgres://postgres:postgres_fcu@localhost:5432/postgres /tmp/table.dump
 fi
 
 echo "> Synchronisation terminée de $env -> local pour la table '$table'"
