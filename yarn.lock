@@ -3611,7 +3611,7 @@
   dependencies:
     "@types/node" "*"
 
-"@types/geojson-vt@3.2.5", "@types/geojson-vt@^3.2.0":
+"@types/geojson-vt@*", "@types/geojson-vt@3.2.5", "@types/geojson-vt@^3.2.0":
   version "3.2.5"
   resolved "https://registry.yarnpkg.com/@types/geojson-vt/-/geojson-vt-3.2.5.tgz#b6c356874991d9ab4207533476dfbcdb21e38408"
   integrity sha512-qDO7wqtprzlpe8FfQ//ClPV9xiuoh2nkIgiouIptON9w5jvD/fA4szvP9GBlDVdJ5dldAl0kX/sy3URbWwLx0g==
@@ -3673,6 +3673,11 @@
   version "3.3.7"
   resolved "https://registry.yarnpkg.com/@types/luxon/-/luxon-3.3.7.tgz#043d413b6492a012de47503907bdf3ec4f827933"
   integrity sha512-gKc9P2d4g5uYwmy4s/MO/yOVPmvHyvzka1YH6i5dM03UrFofHSmgc0D0ymbDRStFWHusk6cwwF6nhLm/ckBbbQ==
+
+"@types/mapbox__geo-viewport@^0.5.3":
+  version "0.5.3"
+  resolved "https://registry.yarnpkg.com/@types/mapbox__geo-viewport/-/mapbox__geo-viewport-0.5.3.tgz#ea260199e925c4ffc46095d8677d2c2fc112af7b"
+  integrity sha512-ePOETPaFQGKjotA542lozN+uruPFyRCq/wCFN+SQA+tCjJzzgcj5EpZ8BGK3K1JLyD6U67Yqo6pZ0o6+DR1qwg==
 
 "@types/mapbox__mapbox-gl-draw@^1.4.7":
   version "1.4.8"
@@ -3846,6 +3851,14 @@
   version "9.0.7"
   resolved "https://registry.yarnpkg.com/@types/uuid/-/uuid-9.0.7.tgz#b14cebc75455eeeb160d5fe23c2fcc0c64f724d8"
   integrity sha512-WUtIVRUZ9i5dYXefDEAI7sh9/O7jGvHg7Df/5O/gtH3Yabe5odI3UWopVR1qbPXQtvOxWu3mM4XxlYeZtMWF4g==
+
+"@types/vt-pbf@^3.1.0":
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/@types/vt-pbf/-/vt-pbf-3.1.0.tgz#a168713fd8c2600562c39d2b3b69f0e67337e51b"
+  integrity sha512-9I6dyk1rro7kNIJMDq8gog4dCWdTCl4nEmXlds79RLhmWlWu7/vcO72WYJ809FCy3CZ5ramkX0NsP+jr9ybf2A==
+  dependencies:
+    "@types/geojson" "*"
+    "@types/geojson-vt" "*"
 
 "@typescript-eslint/eslint-plugin@^5.4.2 || ^6.0.0 || ^7.0.0 || ^8.0.0":
   version "8.12.2"
