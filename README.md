@@ -117,9 +117,6 @@ pnpm test
 pnpm build
 ```
 
-Note : Il se peut qu'un problème de permissions survienne sur le dossier .next qui est monté dans le conteneur Docker.
-Dans ce cas, la commande `sudo chown -R $USER: .next` corrige le problème.
-
 
 ## Hook pre-commit
 
