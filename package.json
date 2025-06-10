@@ -4,7 +4,7 @@
   "private": false,
   "engines": {
     "node": "20",
-    "pnpm": "8.6.2"
+    "pnpm": "8"
   },
   "description": "Un service public pour faciliter et accélérer les raccordements aux réseaux de chaleur.",
   "repository": {
