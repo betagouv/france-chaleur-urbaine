@@ -50,14 +50,12 @@ const CompleteEligibilityTestForm = ({ testId }: CompleteEligibilityTestFormProp
     }, FormErrorMessage),
   });
 
-  const FormFieldNoInfinite = form.Field as any; // ts-expect-error TS2589: Type instantiation is excessively deep and probably infinite
-
   return (
     <Form>
       <div className="flex flex-col gap-4">
-        <FormFieldNoInfinite
+        <form.Field
           name="file"
-          children={(field: any) => (
+          children={(field) => (
             <Upload
               label="Choisissez un fichier .txt ou .csv (une adresse par ligne) :"
               hint="Si le fichier est un .csv, les colonnes seront regroupées pour déduire l'adresse."
@@ -105,9 +103,9 @@ const CompleteEligibilityTestForm = ({ testId }: CompleteEligibilityTestFormProp
                 </div>
               )}
             />
-            <FormFieldNoInfinite
+            <form.Field
               name="skipFirstLine"
-              children={(field: any) => (
+              children={(field) => (
                 <Checkbox
                   small
                   label="Ignorer la première ligne (si entête)"

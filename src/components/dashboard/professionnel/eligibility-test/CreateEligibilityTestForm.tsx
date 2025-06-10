@@ -56,8 +56,6 @@ const CreateEligibilityTestForm = () => {
     }, FormErrorMessage),
   });
 
-  const FormFieldNoInfinite = form.Field as any; // ts-expect-error TS2589: Type instantiation is excessively deep and probably infinite
-  const formNoInfinite = form as any; // ts-expect-error TS2589: Type instantiation is excessively deep and probably infinite
   return (
     <form
       onSubmit={(e) => {
@@ -67,9 +65,9 @@ const CreateEligibilityTestForm = () => {
       }}
     >
       <div className="flex flex-col gap-4">
-        <FormFieldNoInfinite
+        <form.Field
           name="file"
-          children={(field: any) => (
+          children={(field) => (
             <Upload
               label="Choisissez un fichier .txt ou .csv (une adresse par ligne) :"
               hint="Si le fichier est un .csv, les colonnes seront regroupées pour déduire l'adresse."
@@ -94,11 +92,11 @@ const CreateEligibilityTestForm = () => {
                   setPreviewLines(isCSVFile ? CSVToArray(lines.join('\n'), csvSeparator).map((x) => x.join(', ')) : lines);
 
                   // Initialize test name to the filename without extension by default
-                  if (formNoInfinite.getFieldValue('name') === '') {
+                  if (form.getFieldValue('name') === '') {
                     const nameWithoutExtension = file.name.replace(/\.[^/.]+$/, '');
-                    formNoInfinite.setFieldValue('name', nameWithoutExtension);
+                    form.setFieldValue('name', nameWithoutExtension);
                   }
-                  formNoInfinite.validateField('name', 'change');
+                  form.validateField('name', 'change');
                 },
                 onBlur: field.handleBlur,
               }}
@@ -124,9 +122,9 @@ const CreateEligibilityTestForm = () => {
                 </div>
               )}
             />
-            <FormFieldNoInfinite
+            <form.Field
               name="skipFirstLine"
-              children={(field: any) => (
+              children={(field) => (
                 <Checkbox
                   small
                   label="Ignorer la première ligne (si entête)"
@@ -142,9 +140,9 @@ const CreateEligibilityTestForm = () => {
           </>
         )}
 
-        <FormFieldNoInfinite
+        <form.Field
           name="name"
-          children={(field: any) => (
+          children={(field) => (
             <Input
               label="Nom du test"
               hintText="Le nom du test sera utilisé pour identifier le test dans l'historique"

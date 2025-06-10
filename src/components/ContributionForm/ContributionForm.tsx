@@ -370,9 +370,6 @@ const ContributionForm = () => {
     (form.validate as any)('submit');
   }, []);
 
-  const FormFieldNoInfinite = form.Field as any; // ts-expect-error TS2589: Type instantiation is excessively deep and probably infinite
-  const formNoInfinite = form as any; // ts-expect-error TS2589: Type instantiation is excessively deep and probably infinite
-
   return formSuccess ? (
     <Alert
       severity="success"
@@ -394,18 +391,18 @@ const ContributionForm = () => {
         form.handleSubmit();
       }}
     >
-      <FormFieldNoInfinite
+      <form.Field
         name="typeUtilisateur"
         listeners={
           {
             onChange: ({ value }: { value: TypeUtilisateur }) => {
               if (value !== 'Autre') {
-                formNoInfinite.setFieldValue('typeUtilisateurAutre', '');
+                form.setFieldValue('typeUtilisateurAutre', '');
               }
             },
           } as any
         }
-        children={(field: any) => (
+        children={(field) => (
           <Radio
             label="Vous êtes :"
             name={field.name}
@@ -427,9 +424,9 @@ const ContributionForm = () => {
         selector={(state) => state.values.typeUtilisateur}
         children={(typeUtilisateur) =>
           typeUtilisateur === 'Autre' && (
-            <FormFieldNoInfinite
+            <form.Field
               name="typeUtilisateurAutre"
-              children={(field: any) => (
+              children={(field) => (
                 <Input
                   label="Précisez :"
                   nativeInputProps={{
@@ -448,9 +445,9 @@ const ContributionForm = () => {
         }
       />
 
-      <FormFieldNoInfinite
+      <form.Field
         name="nom"
-        children={(field: any) => (
+        children={(field) => (
           <Input
             label="Votre nom :"
             nativeInputProps={{
@@ -468,9 +465,9 @@ const ContributionForm = () => {
         )}
       />
 
-      <FormFieldNoInfinite
+      <form.Field
         name="prenom"
-        children={(field: any) => (
+        children={(field) => (
           <Input
             label="Votre prénom :"
             nativeInputProps={{
@@ -488,9 +485,9 @@ const ContributionForm = () => {
         )}
       />
 
-      <FormFieldNoInfinite
+      <form.Field
         name="email"
-        children={(field: any) => (
+        children={(field) => (
           <Input
             label="Votre adresse email :"
             nativeInputProps={{
@@ -508,9 +505,9 @@ const ContributionForm = () => {
         )}
       />
 
-      <FormFieldNoInfinite
+      <form.Field
         name="dansCadreDemandeADEME"
-        children={(field: any) => (
+        children={(field) => (
           <>
             <Radio
               label="Votre contribution s’inscrit dans le cadre d’une demande de subvention ADEME :"
@@ -547,7 +544,7 @@ const ContributionForm = () => {
         )}
       />
 
-      <FormFieldNoInfinite
+      <form.Field
         name="typeDemande"
         listeners={
           {
@@ -556,16 +553,16 @@ const ContributionForm = () => {
                 return;
               }
               // when changing typeDemande, the form remembers its old fields so we must remove them manually
-              const fieldsToDelete = new Set(ObjectKeys(formNoInfinite.state.fieldMeta))
+              const fieldsToDelete = new Set(ObjectKeys(form.state.fieldMeta))
                 .difference(new Set([...ObjectKeys(zCommonFormData.shape), zContributionFormData.discriminator]))
                 .difference(new Set(typeDemandeFields[value].map((f) => f.name)));
               fieldsToDelete.forEach((field) => {
-                formNoInfinite.deleteField(field);
+                form.deleteField(field);
               });
             },
           } as any
         }
-        children={(field: any) => (
+        children={(field) => (
           <Radio
             label="Vous souhaitez :"
             name={field.name}
@@ -589,7 +586,7 @@ const ContributionForm = () => {
         children={(typeDemande) =>
           typeDemande !== '' &&
           typeDemandeFields[typeDemande].map((option) => (
-            <FormFieldNoInfinite
+            <form.Field
               name={option.name}
               key={option.name}
               children={(field: any) =>
