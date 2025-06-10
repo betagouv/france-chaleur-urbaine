@@ -23,11 +23,11 @@ const sizeStyles = css<InputCustomProps>`
 `;
 
 // Had to force typeof DSFRInput as type inference was not working when not
-export const Input: typeof DSFRInput = styled(DSFRInput)<InputCustomProps>`
+export const Input = styled(DSFRInput)<InputCustomProps>`
   ${sizeStyles}
 `;
 
 // Had to force typeof DSFRInput as type inference was not working when not
-export const PasswordInput: typeof DSFRPasswordInput = styled(DSFRPasswordInput)<InputCustomProps>`
+export const PasswordInput = styled(DSFRPasswordInput)<InputCustomProps>`
   ${sizeStyles}
 `;

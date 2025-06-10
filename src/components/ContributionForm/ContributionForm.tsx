@@ -367,7 +367,7 @@ const ContributionForm = () => {
 
   // ensure the state is invalid when loaded
   useEffect(() => {
-    form.validate('submit');
+    (form.validate as any)('submit');
   }, []);
 
   return formSuccess ? (
@@ -393,13 +393,15 @@ const ContributionForm = () => {
     >
       <form.Field
         name="typeUtilisateur"
-        listeners={{
-          onChange: ({ value }) => {
-            if (value !== 'Autre') {
-              form.setFieldValue('typeUtilisateurAutre', '');
-            }
-          },
-        }}
+        listeners={
+          {
+            onChange: ({ value }: { value: TypeUtilisateur }) => {
+              if (value !== 'Autre') {
+                form.setFieldValue('typeUtilisateurAutre', '');
+              }
+            },
+          } as any
+        }
         children={(field) => (
           <Radio
             label="Vous êtes :"
@@ -544,20 +546,22 @@ const ContributionForm = () => {
 
       <form.Field
         name="typeDemande"
-        listeners={{
-          onChange: ({ value }) => {
-            if (value === '') {
-              return;
-            }
-            // when changing typeDemande, the form remembers its old fields so we must remove them manually
-            const fieldsToDelete = new Set(ObjectKeys(form.state.fieldMeta))
-              .difference(new Set([...ObjectKeys(zCommonFormData.shape), zContributionFormData.discriminator]))
-              .difference(new Set(typeDemandeFields[value].map((f) => f.name)));
-            fieldsToDelete.forEach((field) => {
-              form.deleteField(field);
-            });
-          },
-        }}
+        listeners={
+          {
+            onChange: ({ value }: { value: TypeDemande | '' }) => {
+              if (value === '') {
+                return;
+              }
+              // when changing typeDemande, the form remembers its old fields so we must remove them manually
+              const fieldsToDelete = new Set(ObjectKeys(form.state.fieldMeta))
+                .difference(new Set([...ObjectKeys(zCommonFormData.shape), zContributionFormData.discriminator]))
+                .difference(new Set(typeDemandeFields[value].map((f) => f.name)));
+              fieldsToDelete.forEach((field) => {
+                form.deleteField(field);
+              });
+            },
+          } as any
+        }
         children={(field) => (
           <Radio
             label="Vous souhaitez :"
@@ -585,7 +589,7 @@ const ContributionForm = () => {
             <form.Field
               name={option.name}
               key={option.name}
-              children={(field) =>
+              children={(field: any) =>
                 'type' in option && (option as FieldConfig).type === 'file' ? (
                   <>
                     <Upload

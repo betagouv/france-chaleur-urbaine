@@ -1,5 +1,5 @@
 import { cva } from 'class-variance-authority';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 import React, { useState } from 'react';
 
 import useQueryFlag from '@/hooks/useQueryFlag';

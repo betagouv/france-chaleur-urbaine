@@ -15,7 +15,7 @@ let globalDryRun = false;
 const logger = createLogger({
   level: 'debug',
   format: format.printf(({ level, message }) => {
-    return level === 'error' ? `*** ERROR ***: ${message}` : level === 'warn' ? `* WARN *: ${message}` : message;
+    return (level === 'error' ? `*** ERROR ***: ${message}` : level === 'warn' ? `* WARN *: ${message}` : message) as string;
   }),
   transports: [
     new transports.Console(),
@@ -29,7 +29,7 @@ const logger = createLogger({
 const queriesLogger = createLogger({
   level: 'debug',
   format: format.printf(({ level, message }) => {
-    return level === 'error' ? `*** ERROR ***: ${message}` : message;
+    return (level === 'error' ? `*** ERROR ***: ${message}` : message) as string;
   }),
   transports: [
     new transports.Console(),

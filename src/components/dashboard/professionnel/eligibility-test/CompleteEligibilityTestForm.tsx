@@ -1,10 +1,9 @@
-import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
 import { z } from 'zod';
 
 import Checkbox from '@/components/form/dsfr/Checkbox';
 import Upload from '@/components/form/dsfr/Upload';
-import { getInputErrorStates } from '@/components/form/react-form/useForm';
+import useForm, { getInputErrorStates } from '@/components/form/react-form/useForm';
 import Button from '@/components/ui/Button';
 import { useModal } from '@/components/ui/ModalSimple';
 import { usePost } from '@/hooks/useApi';
@@ -33,14 +32,12 @@ const CompleteEligibilityTestForm = ({ testId }: CompleteEligibilityTestFormProp
     invalidate: ['/api/pro-eligibility-tests'],
   });
 
-  const form = useForm({
+  const { form, Form } = useForm({
     defaultValues: {
       file: undefined as unknown as File,
       skipFirstLine: false,
     },
-    validators: {
-      onChange: zCompleteEligibilityTest,
-    },
+    schema: zCompleteEligibilityTest,
     onSubmit: toastErrors(async ({ value }: { value: CompleteEligibilityTest }) => {
       const fileContent = await parseUnknownCharsetText(await value.file.arrayBuffer());
       const lines = fileContent.split('\n');
@@ -54,13 +51,7 @@ const CompleteEligibilityTestForm = ({ testId }: CompleteEligibilityTestFormProp
   });
 
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        void form.handleSubmit();
-      }}
-    >
+    <Form>
       <div className="flex flex-col gap-4">
         <form.Field
           name="file"
@@ -144,7 +135,7 @@ const CompleteEligibilityTestForm = ({ testId }: CompleteEligibilityTestFormProp
           )}
         />
       </div>
-    </form>
+    </Form>
   );
 };
 
