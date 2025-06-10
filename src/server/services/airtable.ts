@@ -13,7 +13,7 @@ import { diff } from '@/utils/array';
 import { sanitizeEmail } from '@/utils/validation';
 import { structureTypes } from '@/validation/user';
 
-import { sendInscriptionEmail } from '../email';
+import { sendEmailTemplate } from '../email';
 
 const DRY_RUN = process.env.DRY_RUN === 'true';
 
@@ -236,11 +236,11 @@ export const syncGestionnairesWithUsers = async () => {
           status: 'valid',
         } satisfies Insertable<Users>;
 
-        let insertedUser = false;
+        let insertedUserId: string | undefined;
 
         if (!DRY_RUN) {
           try {
-            await db('users').insert(data);
+            const newUsers = await db('users').insert(data).returning('id');
             await base(Airtable.GESTIONNAIRES).update(
               gestionnaire.id,
               {
@@ -248,15 +248,16 @@ export const syncGestionnairesWithUsers = async () => {
               },
               { typecast: true }
             );
-            insertedUser = true;
+
+            insertedUserId = newUsers[0].id;
           } catch (e) {
             logger.error(`Could not create ${email} in database`, { error: e });
           }
         }
 
-        if (insertedUser) {
+        if (insertedUserId) {
           logDry(`    📩 Sending inscription email to ${email}`);
-          if (!DRY_RUN) await sendInscriptionEmail(email);
+          if (!DRY_RUN) await sendEmailTemplate('inscription', { id: insertedUserId, email });
         }
         stats.totalCreated++;
         return;

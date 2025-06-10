@@ -4,7 +4,7 @@ import { z } from 'zod';
 
 import db from '@/server/db';
 import { AirtableDB } from '@/server/db/airtable';
-import { sendResetPasswordEmail } from '@/server/email';
+import { sendEmailTemplate } from '@/server/email';
 import { logger } from '@/server/helpers/logger';
 import { handleRouteErrors, requirePostMethod, validateObjectSchema } from '@/server/helpers/server';
 import { Airtable } from '@/types/enum/Airtable';
@@ -39,7 +39,7 @@ const reset = handleRouteErrors(async (req: NextApiRequest) => {
 
   const token = jwt.sign(payload, process.env.NEXTAUTH_SECRET as string);
   await db('users').update({ reset_token: resetToken }).where('id', user.id);
-  await sendResetPasswordEmail(email, token);
+  await sendEmailTemplate('reset-password', user, { token });
 });
 
 export default reset;

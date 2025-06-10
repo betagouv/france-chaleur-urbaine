@@ -43,6 +43,8 @@ fileignoreconfig:
   checksum: c5568af3b6c4162bc2ecbc78e8efc9abff9c852b774e8e60830db8a0777766b9
 - filename: src/services/tiles.config.ts
   checksum: 89f40d731f653c30750c61467b1d4727965805280e2d2888dd0cc29e8accf6cf
+- filename: src/server/email/react-email/templates/reset-password.tsx
+  checksum: 154211b211973de13aad7c810f709c40cabbd628cd1fb19653a63a5d9e59edb8
 scopeconfig:
 - scope: node
 allowed_patterns:

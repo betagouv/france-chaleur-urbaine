@@ -3,7 +3,7 @@ import z from 'zod';
 
 import db from '@/server/db';
 import base from '@/server/db/airtable';
-import { sendManagerEmail } from '@/server/email';
+import { sendEmailTemplate } from '@/server/email';
 import { handleRouteErrors, validateObjectSchema } from '@/server/helpers/server';
 import { Airtable } from '@/types/enum/Airtable';
 import { zAirtableRecordId } from '@/utils/validation';
@@ -95,14 +95,18 @@ const POST = async (req: NextApiRequest) => {
       .where('email', req.user.email);
   }
 
-  //Send email
-  await sendManagerEmail(
-    emailContent.object,
-    emailContent.to,
-    emailContent.body,
-    emailContent.signature,
-    emailContent.cc,
-    emailContent.replyTo
+  await sendEmailTemplate(
+    'manager-email',
+    { id: req.user.id, email: emailContent.to },
+    {
+      content: emailContent.body,
+      signature: emailContent.signature,
+    },
+    {
+      cc: emailContent.cc,
+      replyTo: emailContent.replyTo,
+      subject: emailContent.object,
+    }
   );
 };
 
