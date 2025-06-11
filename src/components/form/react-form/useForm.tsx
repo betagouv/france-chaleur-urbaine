@@ -41,10 +41,14 @@ export function getInputErrorStates(field: AnyFieldApi): {
   stateRelatedMessage?: React.ReactNode;
 } {
   const allErrors = getAllErrors(field);
+  const formIsSubmitted = field.form.state.submissionAttempts > 0;
+  const fieldIsBlurred = field.state.meta.isBlurred;
+
+  const displayError = (formIsSubmitted || fieldIsBlurred) && allErrors.length;
 
   return {
-    state: field.state.meta.isTouched && allErrors.length ? 'error' : 'default',
-    stateRelatedMessage: field.state.meta.isTouched && allErrors.length ? allErrors.join(', ') : undefined,
+    state: displayError ? 'error' : 'default',
+    stateRelatedMessage: displayError ? allErrors.join(', ') : undefined,
   };
 }
 
@@ -158,13 +162,11 @@ function useFormInternal<
     combinedValidators.onChange = schema as TOnChange;
   }
 
-  const formConfig = {
+  const form = useTanStackForm({
     ...tanStackConfig,
     validators: combinedValidators,
     onSubmit,
-  };
-
-  const form = useTanStackForm(formConfig);
+  });
 
   type OriginalFieldProps = React.ComponentProps<typeof form.Field>;
 
@@ -176,7 +178,6 @@ function useFormInternal<
     const field = (schemaShape as any)?.[fieldname];
     return !field?.isOptional?.();
   };
-
   const Input = ({
     name,
     fieldInputProps,
@@ -195,7 +196,16 @@ function useFormInternal<
             id: nativeInputProps?.id || `${name}`,
             name: nativeInputProps?.name || `${name}`,
             value: field.state.value as any,
-            onChange: (e: any) => field.handleChange(e.target.value as any),
+            onChange: (e: any) => {
+              const value = e.target.value;
+
+              if (nativeInputProps?.type === 'number') {
+                // if field is empty, valueAsNumber returns NaN
+                return field.handleChange(value === '' ? undefined : e.target.valueAsNumber);
+              }
+
+              return field.handleChange(value);
+            },
             onBlur: field.handleBlur,
             ...nativeInputProps,
           }}

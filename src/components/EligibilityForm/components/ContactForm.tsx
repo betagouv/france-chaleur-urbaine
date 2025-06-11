@@ -25,7 +25,7 @@ const validationSchema = z
     companyType: z.string().optional(),
     phone: z
       .string()
-      .regex(/^(?:(?:\+|00)33|0)\s*[1-9]\d{8}$/, 'Veuillez renseigner votre numéro de téléphone sous le format 0605040302')
+      .regex(/^(?:(?:\+|00)33|0)\s*[1-9]\d{8}$|^$/, 'Veuillez renseigner votre numéro de téléphone sous le format 0605040302')
       .optional(),
     email: z.string().email("Votre adresse email n'est pas valide").min(1, 'Veuillez renseigner votre adresse email'),
     heatingEnergy: z
@@ -147,10 +147,10 @@ export const ContactForm = ({ onSubmit, isLoading, cardMode, city, heatingTypeIn
     companyType: '',
     email: '',
     phone: '',
-    nbLogements: undefined,
+    nbLogements: undefined as unknown as number,
     demandCompanyType: '',
     demandCompanyName: '',
-    demandArea: undefined,
+    demandArea: undefined as unknown as number,
     heatingEnergy: '',
     termOfUse: false,
     structure: getDefaultStructure(),
