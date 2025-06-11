@@ -177,7 +177,7 @@ const typeDemandeFields = {
       label: 'Téléverser vos fichiers :',
       type: 'file',
       schema: filesSchema,
-      hint: 'Formats préférentiels : GeoJSON, Shapefile, KML, GeoPackage.',
+      hint: 'Formats préférentiels : GeoJSON, Shapefile (shp, shx, prj, cpg, dbf à fournir), KML, GeoPackage.',
     },
   ],
   'ajout tracé réseau en construction': [
