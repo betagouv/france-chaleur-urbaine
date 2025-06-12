@@ -5,12 +5,12 @@ import emailConfig from '@/server/email/config';
 import { Layout, type LayoutModifiableProps, Link, Note, Text } from '../components';
 
 export const OldDemandsEmail = ({ ...props }: LayoutModifiableProps) => {
-  const url = `${emailConfig.websiteUrl}/pro/demandes`;
   return (
     <Layout {...props}>
       <Text>Bonjour,</Text>
       <Text>
-        Vous avez une ou plusieurs demandes de raccordement en attente sur votre « <Link href={url}>Espace Gestionnaire</Link> ».
+        Vous avez une ou plusieurs demandes de raccordement en attente sur votre « 
+        <Link href={`${emailConfig.websiteUrl}/pro/demandes`}>Espace Gestionnaire</Link> ».
       </Text>
       <Text>
         Pour rappel, le statut par défaut est « En attente de prise en charge ».{' '}

@@ -15,7 +15,7 @@ type RelanceEmailProps = {
 export const RelanceEmail = ({ firstName, date, adresse, id, ...props }: RelanceEmailProps & LayoutModifiableProps) => {
   const url = `${websiteUrl}/satisfaction?id=${id}&satisfaction`;
   return (
-    <Layout variant="default" {...props}>
+    <Layout {...props}>
       <Text>Bonjour {firstName},</Text>
       <Text>
         Le {date}, vous avez utilisé France Chaleur Urbaine pour être mis en relation avec le gestionnaire du réseau de chaleur le plus

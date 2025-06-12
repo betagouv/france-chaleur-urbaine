@@ -23,7 +23,7 @@ export const ResetPasswordEmail = ({ token, ...props }: { token: string } & Layo
         Et si cela ne fonctionne toujours pas, ou en cas d'autres questions ou problèmes avec votre compte, n'hésitez pas à répondre à ce
         mail, notre équipe de support se fera un plaisir de vous aider !
       </Text>
-      <Text>Cordialement,</Text>
+      <Text>Bien cordialement,</Text>
       <Text>L'équipe France Chaleur Urbaine</Text>
     </Layout>
   );

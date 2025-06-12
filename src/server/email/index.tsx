@@ -39,7 +39,7 @@ export async function sendEmailTemplate<Type extends EmailType>(
 
   const info = await sendEmail({
     to: recipient.email,
-    subject: subject || defaultSubject,
+    subject: subject ?? defaultSubject,
     html,
     text,
     ...emailParams,

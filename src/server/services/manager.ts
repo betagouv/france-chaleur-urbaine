@@ -328,7 +328,7 @@ export const dailyRelanceMail = async () => {
       'relance',
       { id: demand.id, email: demand.Mail },
       {
-        firstName: demand.Prénom || '',
+        firstName: demand.Prénom ?? '',
         id: uuid,
         date: new Date(demand['Date demandes']).toLocaleDateString('fr-FR', {
           year: 'numeric',
