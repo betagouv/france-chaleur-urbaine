@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import db from '@/server/db';
 import base from '@/server/db/airtable';
-import { sendNewDemands, sendOldDemands, sendRelanceMail } from '@/server/email';
+import { sendEmailTemplate } from '@/server/email';
 import { logger } from '@/server/helpers/logger';
 import { invalidPermissionsError } from '@/server/helpers/server';
 import { Airtable } from '@/types/enum/Airtable';
@@ -251,7 +251,7 @@ const newDemands = async (users: FullUser[]) => {
     for (let i = 0; i < gestionnaireUsers.length; i++) {
       const email = gestionnaireUsers[i];
       if (!sent.includes(email)) {
-        await sendNewDemands(email, groupedDemands[gestionnaire].length);
+        await sendEmailTemplate('new-demands', { id: 'unknown', email }, { demands: groupedDemands[gestionnaire].length });
         sent.push(email);
       }
       if (process.env.NEXT_PUBLIC_MOCK_USER_CREATION !== 'true') {
@@ -280,7 +280,7 @@ const oldDemands = async (users: FullUser[]) => {
     for (let i = 0; i < gestionnaireUsers.length; i++) {
       const email = gestionnaireUsers[i];
       if (!sent.includes(email)) {
-        await sendOldDemands(email);
+        await sendEmailTemplate('old-demands', { id: 'unknown', email });
         sent.push(email);
       }
     }
@@ -324,6 +324,19 @@ export const dailyRelanceMail = async () => {
       [relanced ? 'Seconde relance envoyée' : 'Relance envoyée']: new Date().toDateString(),
       'Relance ID': uuid,
     });
-    await sendRelanceMail(demand, uuid);
+    await sendEmailTemplate(
+      'relance',
+      { id: demand.id, email: demand.Mail },
+      {
+        firstName: demand.Prénom ?? '',
+        id: uuid,
+        date: new Date(demand['Date demandes']).toLocaleDateString('fr-FR', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        }),
+        adresse: demand.Adresse,
+      }
+    );
   }
 };

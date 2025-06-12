@@ -1,12 +1,11 @@
 import bcrypt, { genSalt, hash } from 'bcryptjs';
 
 import { kdb } from '@/server/db/kysely';
+import { sendEmailTemplate } from '@/server/email';
 import { logger } from '@/server/helpers/logger';
 import { BadRequestError } from '@/server/helpers/server';
 import { type UserRole } from '@/types/enum/UserRole';
 import { generateRandomToken } from '@/utils/random';
-
-import { sendEmail } from '../email/react-email';
 
 export const register = async ({
   email,
@@ -52,9 +51,7 @@ export const register = async ({
     .executeTakeFirstOrThrow();
 
   logger.info('account register', { user_id: insertedUser.id, role });
-  sendEmail(insertedUser, 'inscription', {
-    activationToken: activationToken,
-  });
+  await sendEmailTemplate('activation', insertedUser, { activationToken });
   return insertedUser.id;
 };
 
