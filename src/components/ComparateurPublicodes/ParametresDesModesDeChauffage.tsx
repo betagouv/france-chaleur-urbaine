@@ -47,9 +47,9 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
           <Accordion label="Réseau de chaleur">
             <Input name="Calcul Eco . Coût d'achat du combustible . Chaleur RCU x Part abonnement" placeholderPrecision={3} />
             <Input name="Calcul Eco . Coût d'achat du combustible . Chaleur RCU x Part consommation" placeholderPrecision={3} />
-            <Input name="Paramètres économiques . Réseaux chaleur . Coût" />
-            <Input name="Paramètres économiques . Réseaux chaleur . Part fixe" />
-            <Input name="Paramètres économiques . Réseaux chaleur . Part variable" disabled />
+            <Input name="Paramètres économiques . Réseaux chaleur . Coût" placeholderPrecision={3} />
+            <Input name="Paramètres économiques . Réseaux chaleur . Part fixe" placeholderPrecision={2} />
+            <Input name="Paramètres économiques . Réseaux chaleur . Part variable" disabled placeholderPrecision={2} />
           </Accordion>
         )}
         {hasGaz && (
