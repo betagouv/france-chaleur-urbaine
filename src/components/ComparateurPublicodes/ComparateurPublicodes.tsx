@@ -169,10 +169,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
           {nearestReseauDeChaleur ? (
             <>
               Le réseau de chaleur{' '}
-              <Link
-                href={`/reseaux/${nearestReseauDeChaleur['Identifiant reseau']}?address=${encodeURIComponent(address as string)}`}
-                isExternal
-              >
+              <Link href={`/reseaux/${nearestReseauDeChaleur['Identifiant reseau']}`} isExternal>
                 <strong>{nearestReseauDeChaleur.nom_reseau}</strong>
               </Link>{' '}
               est à <strong>{nearestReseauDeChaleur.distance}m</strong> de votre adresse.
@@ -234,11 +231,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
           {nearestReseauDeFroid ? (
             <>
               Le réseau de froid{' '}
-              <Link
-                variant="link"
-                href={`/reseaux/${nearestReseauDeFroid['Identifiant reseau']}?address=${encodeURIComponent(address as string)}`}
-                isExternal
-              >
+              <Link variant="link" href={`/reseaux/${nearestReseauDeFroid['Identifiant reseau']}`} isExternal>
                 <strong>{nearestReseauDeFroid.nom_reseau}</strong>
               </Link>{' '}
               est à <strong>{nearestReseauDeFroid.distance}m</strong> de votre adresse.
