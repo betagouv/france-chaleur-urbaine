@@ -1,11 +1,11 @@
 import * as React from 'react';
 
-import emailConfig from '@/server/email/config';
+import { clientConfig } from '@/client-config';
 
 import { Layout, type LayoutModifiableProps } from '../components';
 export const InscriptionEmail = (props: LayoutModifiableProps) => {
-  const urlConnexion = `${emailConfig.websiteUrl}/connexion`;
-  const urlCollectivites = `${emailConfig.websiteUrl}/collectivites-et-exploitants`;
+  const urlConnexion = `${clientConfig.websiteOrigin}/connexion`;
+  const urlCollectivites = `${clientConfig.websiteOrigin}/collectivites-et-exploitants`;
 
   return (
     <Layout variant="markdown" {...props}>

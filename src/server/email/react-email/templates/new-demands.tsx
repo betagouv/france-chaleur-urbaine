@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import emailConfig from '@/server/email/config';
+import { clientConfig } from '@/client-config';
 
 import { Layout, type LayoutModifiableProps, Link, Note, Text } from '../components';
 
@@ -9,7 +9,7 @@ type NewDemandsEmailProps = {
 };
 
 export const NewDemandsEmail = ({ demands, ...props }: NewDemandsEmailProps & LayoutModifiableProps) => {
-  const url = `${emailConfig.websiteUrl}/pro/demandes`;
+  const url = `${clientConfig.websiteOrigin}/pro/demandes`;
   return (
     <Layout {...props}>
       <Text>Bonjour,</Text>

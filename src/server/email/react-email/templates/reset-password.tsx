@@ -1,11 +1,11 @@
 import * as React from 'react';
 
-import emailConfig from '@/server/email/config';
+import { clientConfig } from '@/client-config';
 
 import { Button, Layout, type LayoutModifiableProps, Section, Text, Url } from '../components';
 
 export const ResetPasswordEmail = ({ token, ...props }: { token: string } & LayoutModifiableProps) => {
-  const url = `${emailConfig.websiteUrl}/reset-password/${token}`;
+  const url = `${clientConfig.websiteOrigin}/reset-password/${token}`;
 
   return (
     <Layout {...props}>

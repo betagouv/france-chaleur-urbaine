@@ -1,8 +1,9 @@
 import * as React from 'react';
 
-import emailConfig from '@/server/email/config';
+import { clientConfig } from '@/client-config';
 
-const { websiteUrl, linkedInUrl, calendarLink } = emailConfig;
+const { websiteOrigin, linkedInUrl, calendarLink } = clientConfig;
+
 import { Button, Layout, type LayoutModifiableProps, Link, Note, Section, Text } from '../components';
 
 type RelanceEmailProps = {
@@ -13,7 +14,7 @@ type RelanceEmailProps = {
 };
 
 export const RelanceEmail = ({ firstName, date, adresse, id, ...props }: RelanceEmailProps & LayoutModifiableProps) => {
-  const url = `${websiteUrl}/satisfaction?id=${id}&satisfaction`;
+  const url = `${websiteOrigin}/satisfaction?id=${id}&satisfaction`;
   return (
     <Layout {...props}>
       <Text>Bonjour {firstName},</Text>
@@ -36,7 +37,7 @@ export const RelanceEmail = ({ firstName, date, adresse, id, ...props }: Relance
         <Link href={calendarLink}>Je prends rendez-vous</Link> avec France Chaleur Urbaine
       </Text>
       <Text>N'hésitez pas si vous avez la moindre question, nous nous tenons à votre disposition.</Text>
-      <Text>Cordialement,</Text>
+      <Text>Bien cordialement,</Text>
       <Text>L'équipe France Chaleur Urbaine</Text>
       <Note>
         Suivez notre actualité sur <Link href={linkedInUrl}>Linkedin</Link>

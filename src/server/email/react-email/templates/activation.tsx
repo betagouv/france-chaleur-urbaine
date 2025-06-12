@@ -1,4 +1,4 @@
-import emailConfig from '@/server/email/config';
+import { clientConfig } from '@/client-config';
 
 import { Button, Layout, type LayoutModifiableProps, Text } from '../components';
 
@@ -11,7 +11,7 @@ const ActivationEmail = ({ activationToken, ...props }: { activationToken: strin
         email.
       </Text>
 
-      <Button href={`${emailConfig.websiteUrl}/connexion?activationToken=${activationToken}`}>Confirmer mon email</Button>
+      <Button href={`${clientConfig.websiteOrigin}/connexion?activationToken=${activationToken}`}>Confirmer mon email</Button>
 
       <Text>Bien cordialement,</Text>
       <Text>L'équipe France Chaleur Urbaine</Text>

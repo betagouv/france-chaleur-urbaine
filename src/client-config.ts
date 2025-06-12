@@ -5,6 +5,8 @@ import { envBooleanSchema } from '@/utils/validation';
 // exemple: ENABLE_INSCRIPTIONS: envBooleanSchema.default(false).parse(process.env.NEXT_PUBLIC_FLAG_ENABLE_INSCRIPTIONS),
 export const clientConfig = {
   websiteOrigin: process.env.NEXT_PUBLIC_MAP_ORIGIN,
+  linkedInUrl: 'https://www.linkedin.com/company/france-chaleur-urbaine?originalSubdomain=fr',
+  calendarLink: 'https://cal.com/erwangravez/15min',
   tracking: {
     matomoServerURL: process.env.NEXT_PUBLIC_MATOMO_URL,
     matomoSiteId: process.env.NEXT_PUBLIC_MATOMO_SITE_ID,

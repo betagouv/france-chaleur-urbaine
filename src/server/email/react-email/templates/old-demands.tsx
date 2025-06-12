@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import emailConfig from '@/server/email/config';
+import { clientConfig } from '@/client-config';
 
 import { Layout, type LayoutModifiableProps, Link, Note, Text } from '../components';
 
@@ -10,7 +10,7 @@ export const OldDemandsEmail = ({ ...props }: LayoutModifiableProps) => {
       <Text>Bonjour,</Text>
       <Text>
         Vous avez une ou plusieurs demandes de raccordement en attente sur votre « 
-        <Link href={`${emailConfig.websiteUrl}/pro/demandes`}>Espace Gestionnaire</Link> ».
+        <Link href={`${clientConfig.websiteOrigin}/pro/demandes`}>Espace Gestionnaire</Link> ».
       </Text>
       <Text>
         Pour rappel, le statut par défaut est « En attente de prise en charge ».{' '}
