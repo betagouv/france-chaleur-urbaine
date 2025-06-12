@@ -474,6 +474,7 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
             name="ratios . PAC AIR EAU SCOP indiv"
             nativeInputProps={{ min: 0.1 }}
             help="SCOP : coefficient de performance pour la production de chaleur. Un SCOP de 3 signifie que pour 1 kWh d'électricité consommée, 3 kWh de chaleur sont produits."
+            placeholderPrecision={2}
           />
           <Input
             name="ratios . PAC AIR EAU SEER indiv"
@@ -497,6 +498,7 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
             name="ratios . PAC AIR EAU SCOP coll"
             nativeInputProps={{ min: 0.1 }}
             help="SCOP : coefficient de performance pour la production de chaleur. Un SCOP de 3 signifie que pour 1 kWh d'électricité consommée, 3 kWh de chaleur sont produits."
+            placeholderPrecision={2}
           />
           <Input
             name="ratios . PAC AIR EAU SEER coll"

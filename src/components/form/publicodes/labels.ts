@@ -128,6 +128,7 @@ const labels: { [key: string]: string } = {
   'ratios . PAC AIR AIR Durée de vie coll': 'Durée de vie',
   'ratios . PAC EAU EAU SCOP indiv capteurs horizontaux': 'SCOP',
   'ratios . PAC EAU EAU Durée de vie': 'Durée de vie',
+  'ratios . PAC EAU EAU SCOP coll champ de sondes': 'SCOP',
   'ratios économiques . PAC x eau-eau non réversible . Coûts hors captage sous-sol': 'Coûts hors captage sous-sol',
   'ratios économiques . PAC x eau-eau non réversible . Coûts captage sous-sol champs sur sonde': 'Coûts captage sous-sol champs sur sonde',
   'ratios . PAC AIR EAU SCOP indiv': 'SCOP',
@@ -236,6 +237,7 @@ const labels: { [key: string]: string } = {
   'ratios économiques . PAC x eau-eau non réversible x Collectif': 'Coût investissement',
   'ratios économiques . PAC x air-eau réversible x Individuel': 'Coût investissement',
   'ratios économiques . PAC x air-eau réversible x Collectif': 'Coût investissement',
+  'ratios économiques . PAC x eau-eau non réversible x Individuel': 'Coût investissement',
   'ratios économiques . Radiateur électrique x Individuel x investissement total': 'Coût investissement',
 };
 
