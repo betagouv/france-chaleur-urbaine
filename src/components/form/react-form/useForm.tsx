@@ -19,6 +19,7 @@ import DsfrSelect, { type SelectOption as DsfrSelectOption } from '@/components/
 import DsfrSelectCheckboxes, { type SelectCheckboxesProps as DsfrSelectCheckboxesProps } from '@/components/form/dsfr/SelectCheckboxes';
 import DsfrTextArea from '@/components/form/dsfr/TextArea';
 import Button, { type ButtonProps } from '@/components/ui/Button';
+import cx from '@/utils/cx';
 import { getSchemaShape } from '@/utils/validation';
 
 /**
@@ -40,10 +41,14 @@ export function getInputErrorStates(field: AnyFieldApi): {
   stateRelatedMessage?: React.ReactNode;
 } {
   const allErrors = getAllErrors(field);
+  const formIsSubmitted = field.form.state.submissionAttempts > 0;
+  const fieldIsBlurred = field.state.meta.isBlurred;
+
+  const displayError = (formIsSubmitted || fieldIsBlurred) && allErrors.length;
 
   return {
-    state: field.state.meta.isTouched && allErrors.length ? 'error' : 'default',
-    stateRelatedMessage: field.state.meta.isTouched && allErrors.length ? allErrors.join(', ') : undefined,
+    state: displayError ? 'error' : 'default',
+    stateRelatedMessage: displayError ? allErrors.join(', ') : undefined,
   };
 }
 
@@ -157,13 +162,11 @@ function useFormInternal<
     combinedValidators.onChange = schema as TOnChange;
   }
 
-  const formConfig = {
+  const form = useTanStackForm({
     ...tanStackConfig,
     validators: combinedValidators,
     onSubmit,
-  };
-
-  const form = useTanStackForm(formConfig);
+  });
 
   type OriginalFieldProps = React.ComponentProps<typeof form.Field>;
 
@@ -175,7 +178,6 @@ function useFormInternal<
     const field = (schemaShape as any)?.[fieldname];
     return !field?.isOptional?.();
   };
-
   const Input = ({
     name,
     fieldInputProps,
@@ -194,7 +196,16 @@ function useFormInternal<
             id: nativeInputProps?.id || `${name}`,
             name: nativeInputProps?.name || `${name}`,
             value: field.state.value as any,
-            onChange: (e: any) => field.handleChange(e.target.value as any),
+            onChange: (e: any) => {
+              const value = e.target.value;
+
+              if (nativeInputProps?.type === 'number') {
+                // if field is empty, valueAsNumber returns NaN
+                return field.handleChange(value === '' ? undefined : e.target.valueAsNumber);
+              }
+
+              return field.handleChange(value);
+            },
             onBlur: field.handleBlur,
             ...nativeInputProps,
           }}
@@ -274,6 +285,10 @@ function useFormInternal<
 
   const EmailInput: typeof Input = ({ nativeInputProps, ...props }) => (
     <Input nativeInputProps={{ type: 'email', autoComplete: 'email', ...nativeInputProps }} {...props} />
+  );
+
+  const NumberInput: typeof Input = ({ nativeInputProps, ...props }) => (
+    <Input nativeInputProps={{ type: 'number', ...nativeInputProps }} {...props} />
   );
 
   const PhoneInput: typeof Input = ({ nativeInputProps, ...props }) => (
@@ -473,15 +488,19 @@ function useFormInternal<
     />
   );
 
-  const Submit = ({ children, ...props }: Omit<ButtonProps, 'type' | 'disabled' | 'loading'>) => (
+  const Submit = ({ children, loading, disabled, ...props }: Omit<ButtonProps, 'type'>) => (
     <form.Subscribe
       selector={(state) => [state.canSubmit, state.isSubmitting]}
       children={([canSubmit, isSubmitting]) => {
-        const ButtonWorkingWithTypescript = Button as any;
         return (
-          <ButtonWorkingWithTypescript type="submit" disabled={!canSubmit} loading={isSubmitting} {...props}>
+          <Button
+            type="submit"
+            disabled={typeof disabled !== 'undefined' ? disabled : !canSubmit}
+            loading={isSubmitting || loading}
+            {...props}
+          >
             {children}
-          </ButtonWorkingWithTypescript>
+          </Button>
         );
       }}
     />
@@ -530,6 +549,7 @@ function useFormInternal<
 
   const Form: React.FC<React.FormHTMLAttributes<HTMLFormElement>> = ({ children, onSubmit, ...props }) => (
     <form
+      noValidate
       onSubmit={(e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -547,21 +567,53 @@ function useFormInternal<
 
   return {
     form,
-    Input,
-    PasswordInput,
-    EmailInput,
-    Textarea,
-    UrlInput,
-    Checkbox,
-    PhoneInput,
+    useValue,
     Submit,
     Form,
     FormDebug,
-    Select,
-    Radio,
+    Field: {
+      Checkbox,
+      Checkboxes,
+      EmailInput,
+      Input,
+      NumberInput,
+      PasswordInput,
+      PhoneInput,
+      Radio,
+      Select,
+      SelectCheckboxes,
+      Textarea,
+      UrlInput,
+    },
+    FieldWrapper: ({ children, className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
+      <div className={cx('fr-fieldset__element', className)} {...props}>
+        {children}
+      </div>
+    ),
+    Fieldset: ({ children, className, ...props }: React.HTMLAttributes<HTMLFieldSetElement>) => (
+      <fieldset className={cx('fr-fieldset', className)} {...props}>
+        {children}
+      </fieldset>
+    ),
+    FieldsetLegend: ({ children, className, ...props }: React.HTMLAttributes<HTMLLegendElement>) => (
+      <legend className={cx('ml-2 mb-1w text-sm font-bold uppercase', className)} {...props}>
+        {children}
+      </legend>
+    ),
+
+    // deprecated
+    Checkbox,
     Checkboxes,
+    EmailInput,
+    Input,
+    NumberInput,
+    PasswordInput,
+    PhoneInput,
+    Radio,
+    Select,
     SelectCheckboxes,
-    useValue,
+    Textarea,
+    UrlInput,
   };
 }
 

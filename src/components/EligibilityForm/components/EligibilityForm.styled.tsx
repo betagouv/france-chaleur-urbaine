@@ -72,11 +72,6 @@ export const ContactFormContentWrapper = styled.div`
   }
 `;
 
-export const ContactFormFooter = styled.div`
-  display: flex;
-  flex-direction: column;
-  margin-top: 16px;
-`;
 export const ContactMapResult = styled.div`
   height: 370px;
   width: 100%;
@@ -95,19 +90,6 @@ export const ContactFormResultMessage = styled.div<{
   p {
     ${(cardMode) => cardMode && 'margin-bottom: 0;'}
   }
-`;
-
-export const ContactFormEligibilityMessage = styled.div<{
-  cardMode?: boolean;
-}>`
-  font-size: 20px;
-  line-height: 1.5;
-  color: #000074;
-  ${({ cardMode }) =>
-    !cardMode &&
-    css`
-      margin-top: 40px;
-    `};
 `;
 
 export const ContactFormEligibilityResult = styled.div<{
