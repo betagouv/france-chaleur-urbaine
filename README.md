@@ -142,11 +142,17 @@ Chaque application contient :
 
 ```mermaid
 graph LR;
-N("Next.js (Scalingo)")-->BDD("PostgreSQL (Scalingo)");
-N-->A("Airtable (SaaS)");
-N-->B("SMTP Brevo (SaaS)");
-N-->M("Matomo (stats.beta.gouv.fr)");
-N-->S("Sentry (sentry.beta.gouv.fr)");
+    subgraph Scalingo
+        N("Next.js - france-chaleur-urbaine.beta.gouv.fr")-->BDD@{shape: cyl, label: "PostgreSQL"};
+        C[[Clock]]-->BDD;
+    end
+    subgraph Services externes
+      C-->A;
+      N-->A("Airtable (SaaS)");
+      N-->B("SMTP Brevo (SaaS)");
+      N-->M("Matomo (stats.beta.gouv.fr)");
+      N-->S("Sentry (sentry.beta.gouv.fr)");
+    end
 ```
 
 Particularité de l'environnement de dev :
