@@ -492,16 +492,15 @@ function useFormInternal<
     <form.Subscribe
       selector={(state) => [state.canSubmit, state.isSubmitting]}
       children={([canSubmit, isSubmitting]) => {
-        const ButtonWorkingWithTypescript = Button as any;
         return (
-          <ButtonWorkingWithTypescript
+          <Button
             type="submit"
             disabled={typeof disabled !== 'undefined' ? disabled : !canSubmit}
             loading={isSubmitting || loading}
             {...props}
           >
             {children}
-          </ButtonWorkingWithTypescript>
+          </Button>
         );
       }}
     />
