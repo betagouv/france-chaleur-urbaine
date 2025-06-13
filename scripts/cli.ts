@@ -210,8 +210,8 @@ program
 
     logger.info(`La table ${tilesDatabaseName} a été populée avec les données pour ${type}.`);
     logger.warn(`N'oubliez pas de copier la table sur dev et prod`);
-    logger.warn(`./scripts/copyLocalTableToRemote.sh dev ${tilesDatabaseName} --data-only`);
-    logger.warn(`./scripts/copyLocalTableToRemote.sh prod ${tilesDatabaseName} --data-only`);
+    logger.warn(`pnpm db:push:dev --data-only ${tilesDatabaseName}`);
+    logger.warn(`pnpm db:push:prod --data-only ${tilesDatabaseName}`);
     logger.warn(`Puis de l'ajouter à la carte pnpm cli tiles:add-to-map ${type}`);
   });
 
@@ -487,7 +487,7 @@ program
     }
 
     for (const table of selectedTables) {
-      await runBash(`pnpm db:pull:prod ${table} --data-only`);
+      await runBash(`pnpm db:pull:prod --data-only ${table}`);
     }
   });
 
