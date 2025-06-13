@@ -17,7 +17,7 @@ export const customGeojsonLayersSpec = [
         id: 'customGeojson-polygons',
         type: 'fill',
         paint: {
-          'fill-color': '#ccc',
+          'fill-color': '#e35050',
           'fill-opacity': 0.7,
         },
         filter: () => ['==', '$type', 'Polygon'],
@@ -29,7 +29,7 @@ export const customGeojsonLayersSpec = [
         type: 'line',
         filter: () => ['==', '$type', 'Polygon'],
         paint: {
-          'line-color': '#777',
+          'line-color': '#e35050',
           'line-width': ifHoverElse(4, 2),
         },
         isVisible: () => true,
@@ -40,7 +40,7 @@ export const customGeojsonLayersSpec = [
         type: 'line',
         filter: () => ['==', '$type', 'LineString'],
         paint: {
-          'line-color': '#777',
+          'line-color': '#e35050',
           'line-width': ifHoverElse(4, 2),
         },
         isVisible: () => true,
@@ -52,9 +52,9 @@ export const customGeojsonLayersSpec = [
         filter: () => ['==', '$type', 'Point'],
         paint: {
           'circle-radius': ifHoverElse(10, 8),
-          'circle-color': '#aaa',
+          'circle-color': '#e08b8b',
           'circle-stroke-width': 2,
-          'circle-stroke-color': '#777',
+          'circle-stroke-color': '#e35050',
         },
         isVisible: () => true,
         popup: Popup,
