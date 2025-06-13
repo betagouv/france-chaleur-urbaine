@@ -11,7 +11,7 @@ export async function up(knex: Knex): Promise<void> {
 
     -- obligatoire pour utiliser unaccent dans un index
     CREATE OR REPLACE FUNCTION immutable_unaccent(text) RETURNS text AS $$
-      SELECT unaccent('public.unaccent', $1);
+      SELECT public.unaccent($1::text);
     $$ LANGUAGE sql IMMUTABLE;
   `);
 }
