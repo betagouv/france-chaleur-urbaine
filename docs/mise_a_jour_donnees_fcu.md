@@ -80,7 +80,7 @@ Dans les différentes commandes les tables utilisées sont:
 - pdp: zone_de_developpement_prioritaire
 - futur: zones_et_reseaux_en_construction
 
-Les références dans Airtable sont 
+Les références dans Airtable sont
 - rdc: https://airtable.com/app9opX8gRAtBqkan/tblyfmHHCtyHg0MAk/viwAhx8JLQGw2XVDN?blocks=hide
 - futur: https://airtable.com/app9opX8gRAtBqkan/tble0LoJtQeH1z63a?blocks=hide
 
@@ -178,27 +178,27 @@ pnpm cli tiles:fill futurNetwork 0 14
 
 # copie vers dev
 # Use --data-only when no structures changes
-pnpm db:push:dev reseaux_de_chaleur --data-only
-pnpm db:push:dev reseaux_de_chaleur_tiles --data-only
-pnpm db:push:dev reseaux_de_froid --data-only
-pnpm db:push:dev reseaux_de_froid_tiles --data-only
-pnpm db:push:dev zone_de_developpement_prioritaire --data-only
-pnpm db:push:dev zone_de_developpement_prioritaire_tiles --data-only
-pnpm db:push:dev zones_et_reseaux_en_construction --data-only
-pnpm db:push:dev zones_et_reseaux_en_construction_tiles --data-only
+pnpm db:push:dev --data-only reseaux_de_chaleur
+pnpm db:push:dev --data-only reseaux_de_chaleur_tiles
+pnpm db:push:dev --data-only reseaux_de_froid
+pnpm db:push:dev --data-only reseaux_de_froid_tiles
+pnpm db:push:dev --data-only zone_de_developpement_prioritaire
+pnpm db:push:dev --data-only zone_de_developpement_prioritaire_tiles
+pnpm db:push:dev --data-only zones_et_reseaux_en_construction
+pnpm db:push:dev --data-only zones_et_reseaux_en_construction_tiles
 
 # redéploie dev pour créer les pages statiques de réseaux
 # https://dashboard.scalingo.com/apps/osc-fr1/france-chaleur-urbaine-dev/deploy/manual
 
 # copie vers prod (quand validé en dev par Florence)
-pnpm db:push:prod reseaux_de_chaleur --data-only
-pnpm db:push:prod reseaux_de_chaleur_tiles --data-only
-pnpm db:push:prod reseaux_de_froid --data-only
-pnpm db:push:prod reseaux_de_froid_tiles --data-only
-pnpm db:push:prod zone_de_developpement_prioritaire --data-only
-pnpm db:push:prod zone_de_developpement_prioritaire_tiles --data-only
-pnpm db:push:prod zones_et_reseaux_en_construction --data-only
-pnpm db:push:prod zones_et_reseaux_en_construction_tiles --data-only
+pnpm db:push:prod --data-only reseaux_de_chaleur
+pnpm db:push:prod --data-only reseaux_de_chaleur_tiles
+pnpm db:push:prod --data-only reseaux_de_froid
+pnpm db:push:prod --data-only reseaux_de_froid_tiles
+pnpm db:push:prod --data-only zone_de_developpement_prioritaire
+pnpm db:push:prod --data-only zone_de_developpement_prioritaire_tiles
+pnpm db:push:prod --data-only zones_et_reseaux_en_construction
+pnpm db:push:prod --data-only zones_et_reseaux_en_construction_tiles
 
 # redéploie prod pour créer les pages statiques de réseaux
 # https://dashboard.scalingo.com/apps/osc-fr1/france-chaleur-urbaine/deploy/manual
