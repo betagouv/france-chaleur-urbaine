@@ -32,12 +32,12 @@ export const allDatabaseTables: TableInfo[] = [
     description: "Adresses des tests d'éligibilité professionnels",
   },
   {
-    name: 'eligibility_demands',
-    description: "Demandes d'éligibilité (obsolète, date d'avant le compte professionnel)",
-  },
-  {
     name: 'eligibility_tests',
     description: "Tests d'éligibilité (obsolète, date d'avant le compte professionnel)",
+  },
+  {
+    name: 'eligibility_demands',
+    description: "Demandes d'éligibilité (obsolète, date d'avant le compte professionnel)",
   },
 
   // données de référence FCU
@@ -84,6 +84,14 @@ export const allDatabaseTables: TableInfo[] = [
 
   // données de référence / tuiles seules
   {
+    name: 'regions',
+    description: 'Liste des régions françaises (obsolète)',
+  },
+  {
+    name: 'departements',
+    description: 'Liste des départements français',
+  },
+  {
     name: 'communes',
     description: 'Liste des communes françaises (utilisées pour le comparateur des modes de chauffage)',
     // différent de ign_communes qui elle est plus à jour, mais ne contient pas les altitudes moyennes ni les températures de référence
@@ -91,14 +99,6 @@ export const allDatabaseTables: TableInfo[] = [
   {
     name: 'ign_communes',
     description: 'Données IGN des communes',
-  },
-  {
-    name: 'regions',
-    description: 'Liste des régions françaises (obsolète)',
-  },
-  {
-    name: 'departements',
-    description: 'Liste des départements français',
   },
   {
     name: 'registre_copro_r11_220125',
