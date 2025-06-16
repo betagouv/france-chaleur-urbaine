@@ -1,79 +1,37 @@
 #!/bin/bash -e
 
 usage() {
-  echo "Usage: copyRemoteTableToLocal.sh <dev|prod> <table_name> [--data-only]"
-  echo "Used to synchronize a remote table with a local table (dropped and recreated each sync)"
+  echo "Usage: copyRemoteTableToLocal.sh <dev|prod> [--data-only] <table_name1> [table_name2 ...]"
+  echo "Used to synchronize remote tables with local tables (dropped and recreated each sync)"
   echo "Use --data-only to perform a zero downtime update (in a transaction)"
   echo "Use the env variable SCALINGO_TUNNEL_ARGS=\"-i $HOME/.ssh/keys/path_to_keys_ed\" if your SSH key is not ~/.ssh/id_rsa"
 }
 
-env=$1
-table=$2
-options=$3
-if [[ $env != "dev" && $env != "prod" ]]; then
-  usage
-  exit 1
-fi
+source "$(dirname "$0")/db_sync_common.sh"
 
-if [[ "$table" = "" ]]; then
-  usage
-  exit 1
-fi
+init_env "$@"
+get_db_credentials
+setup_tunnel
 
-if [[ $options == "--data-only" ]] ; then
-  dataonly=true
-fi
+echo "> Synchronisation des tables distante de $ENV vers la BDD locale..."
 
-if [[ $env = "prod" ]]; then
-  SCALINGO_APP=france-chaleur-urbaine
-  DB_PORT=10001
+echo "Exporting data from remote $ENV database..."
+if [ $DATAONLY = true ]; then
+  dump_tables_sql postgres://localhost:$DB_PORT "${TABLES[@]}"
 else
-  SCALINGO_APP=france-chaleur-urbaine-dev
-  DB_PORT=10000
+  dump_tables postgres://localhost:$DB_PORT "${TABLES[@]}"
 fi
 
-# Check if there's already a process using the DB_PORT
-PORT_IN_USE=$(lsof -i :$DB_PORT > /dev/null 2>&1; echo $?)
-
-if [ $PORT_IN_USE -ne 0 ]; then
-  echo "Database tunnel not running, starting it..."
-  # ferme le tunnel quand le programme s'arrête
-  trap 'kill %1' EXIT
-
-  # ouvre un tunnel vers BDD distance
-  scalingo -a $SCALINGO_APP db-tunnel -p $DB_PORT $SCALINGO_TUNNEL_ARGS SCALINGO_POSTGRESQL_URL &
-  sleep 4
-fi
-
-
-echo "> Synchronisation de la table distante '$table' depuis l'environnement $env..."
-
-POSTGRESQL_URL=$(scalingo -a $SCALINGO_APP env-get SCALINGO_POSTGRESQL_URL)
-export PGUSER=$(expr $POSTGRESQL_URL : '.*/\([^:]*\):.*')
-export PGPASSWORD=$(expr $POSTGRESQL_URL : '.*:\([^@]*\)@.*')
-
-echo "Exporting data from remote database $env:$DB_PORT..."
-# export depuis BDD distance
-if [[ $dataonly = "true" ]]; then
-  pg_dump postgres://localhost:$DB_PORT --data-only -t $table >/tmp/table.dump.sql
+echo "Importing data to local database..."
+if [ $DATAONLY = true ]; then
+  load_tables_in_transaction postgres://postgres:postgres_fcu@localhost:5432/postgres "${TABLES[@]}"
 else
-  pg_dump postgres://localhost:$DB_PORT --format=c --no-owner -t $table >/tmp/table.dump
+  truncate_tables postgres://postgres:postgres_fcu@localhost:5432/postgres "${TABLES[@]}"
+  restore_tables postgres://postgres:postgres_fcu@localhost:5432/postgres "${TABLES[@]}"
 fi
 
-if [ $PORT_IN_USE -ne 0 ]; then
-  echo "Closing database tunnel..."
-  # ferme le tunnel
-  kill %1
-fi
+echo "> Synchronisation terminée de $ENV -> local"
 
-echo "Importing data from $table to $env database..."
-# import vers BDD locale
-if [[ $dataonly = "true" ]]; then
-  # noter le delete plutôt que truncate pour ne pas locker la table et bloquer les requêtes
-  psql -v ON_ERROR_STOP=1 postgres://postgres:postgres_fcu@localhost:5432/postgres --single-transaction -c "delete from $table;" -f /tmp/table.dump.sql
-else
-  psql -v ON_ERROR_STOP=1 postgres://postgres:postgres_fcu@localhost:5432/postgres -c "DROP TABLE IF EXISTS $table CASCADE;"
-  pg_restore --no-owner --clean --if-exists -d postgres://postgres:postgres_fcu@localhost:5432/postgres /tmp/table.dump
-fi
-
-echo "> Synchronisation terminée de $env -> local pour la table '$table'"
+# ferme le tunnel
+echo "Closing database tunnel..."
+kill %1

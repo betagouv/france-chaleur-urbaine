@@ -36,6 +36,7 @@
     "cli": "tsx scripts/cli.ts",
     "knexts": "tsx ./node_modules/knex/bin/cli.js",
     "db:migrate": "pnpm knexts migrate:latest",
+    "db:bootstrap": "pnpm cli db:bootstrap",
     "db:new": "pnpm knexts migrate:make",
     "db:pull:dev": "./scripts/copyRemoteTableToLocal.sh dev",
     "db:pull:prod": "./scripts/copyRemoteTableToLocal.sh prod",

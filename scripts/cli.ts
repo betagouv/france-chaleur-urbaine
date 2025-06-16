@@ -25,6 +25,7 @@ import { type ApiAccount } from '@/types/ApiAccount';
 import { userRoles } from '@/types/enum/UserRole';
 import { sleep } from '@/utils/time';
 import { nonEmptyArray } from '@/utils/typescript';
+import { allDatabaseTables } from '@cli/bootstrap/tables';
 import { optimisationProfiles, optimizeImage } from '@cli/images/optimize';
 import { registerNetworkCommands } from '@cli/networks/commands';
 import { applyGeometryUpdates } from '@cli/networks/geometry-updates';
@@ -209,8 +210,8 @@ program
 
     logger.info(`La table ${tilesDatabaseName} a été populée avec les données pour ${type}.`);
     logger.warn(`N'oubliez pas de copier la table sur dev et prod`);
-    logger.warn(`./scripts/copyLocalTableToRemote.sh dev ${tilesDatabaseName} --data-only`);
-    logger.warn(`./scripts/copyLocalTableToRemote.sh prod ${tilesDatabaseName} --data-only`);
+    logger.warn(`pnpm db:push:dev --data-only ${tilesDatabaseName}`);
+    logger.warn(`pnpm db:push:prod --data-only ${tilesDatabaseName}`);
     logger.warn(`Puis de l'ajouter à la carte pnpm cli tiles:add-to-map ${type}`);
   });
 
@@ -462,6 +463,37 @@ program
   .description('')
   .action(async () => {
     console.info('Veuillez regarder les étapes dans scripts/bdnb/qpv/README.md');
+  });
+
+program
+  .command('db:bootstrap')
+  .description('Initialise la base de données avec les tables depuis la production')
+  .option('--sequential', 'Télécharge les tables une par une', false)
+  .action(async ({ sequential }) => {
+    const { selectedTables } = (await prompts({
+      type: 'multiselect',
+      name: 'selectedTables',
+      message: 'Sélectionnez les tables à télécharger :',
+      choices: allDatabaseTables.map((table) => ({
+        title: `${table.name} - ${table.description}`,
+        value: table.name,
+        selected: true,
+      })),
+      hint: '- Espace pour sélectionner/désélectionner, Entrée pour valider',
+    })) as { selectedTables: string[] };
+
+    if (!selectedTables || selectedTables.length === 0) {
+      console.log('Aucune table sélectionnée. Opération annulée.');
+      return;
+    }
+
+    if (sequential)
+      for (const table of selectedTables) {
+        await runBash(`pnpm db:pull:prod --data-only "${table}"`);
+      }
+    else {
+      await runBash(`pnpm db:pull:prod --data-only ${selectedTables.map((t) => `"${t}"`).join(' ')}`);
+    }
   });
 
 program

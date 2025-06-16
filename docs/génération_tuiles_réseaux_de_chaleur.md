@@ -14,6 +14,6 @@ pnpm cli tiles:generate-geojson reseaux-de-chaleur --file reseaux_de_chaleur.geo
 pnpm cli tiles:import-geojson-legacy reseaux_de_chaleur.geojson reseaux_de_chaleur_tiles 0 14
 
 # Enfin, synchronisation avec la BDD de dev ou prod
-./scripts/copyLocalTableToRemote.sh dev reseaux_de_chaleur_tiles --data-only
-# ./scripts/copyLocalTableToRemote.sh prod reseaux_de_chaleur_tiles --data-only
+./scripts/copyLocalTableToRemote.sh dev --data-only reseaux_de_chaleur_tiles
+# ./scripts/copyLocalTableToRemote.sh prod --data-only reseaux_de_chaleur_tiles
 ```

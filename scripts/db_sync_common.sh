@@ -1,0 +1,123 @@
+#!/bin/bash -e
+
+pg_shell="docker run --rm -e PGUSER -e PGPASSWORD --network host -v /tmp/fcu:/tmp postgis/postgis:16-3.5-alpine sh"
+pg_dump="docker run --rm -e PGUSER -e PGPASSWORD --network host -v /tmp/fcu:/tmp postgis/postgis:16-3.5-alpine pg_dump"
+psql="docker run --rm -e PGUSER -e PGPASSWORD --network host -v /tmp/fcu:/tmp postgis/postgis:16-3.5-alpine psql"
+pg_restore="docker run --rm -e PGUSER -e PGPASSWORD --network host -v /tmp/fcu:/tmp postgis/postgis:16-3.5-alpine pg_restore"
+
+init_env() {
+  ENV=$1
+  shift
+
+  if [[ $ENV != "dev" && $ENV != "prod" ]]; then
+    usage
+    exit 1
+  fi
+
+  DATAONLY=false
+  if [[ "$1" == "--data-only" ]]; then
+    DATAONLY=true
+    shift
+  fi
+
+  TABLES=("$@")
+  if [ ${#TABLES[@]} -eq 0 ]; then
+    usage
+    exit 1
+  fi
+
+  if [[ $ENV = "prod" ]]; then
+    SCALINGO_APP=france-chaleur-urbaine
+    DB_PORT=10001
+  else
+    SCALINGO_APP=france-chaleur-urbaine-dev
+    DB_PORT=10000
+  fi
+
+  # fix permissions for docker volume
+  mkdir -p /tmp/fcu
+  chmod 777 /tmp/fcu
+}
+
+setup_tunnel() {
+  echo "Database tunnel not running, starting it..."
+  # ferme le tunnel quand le programme s'arrête
+  trap 'kill %1' EXIT
+  # ouvre un tunnel vers BDD cible
+  scalingo -a $SCALINGO_APP db-tunnel -p $DB_PORT $SCALINGO_TUNNEL_ARGS SCALINGO_POSTGRESQL_URL &
+  sleep 4
+}
+
+get_db_credentials() {
+  POSTGRESQL_URL=$(scalingo -a $SCALINGO_APP env-get SCALINGO_POSTGRESQL_URL)
+  export PGUSER=$(expr $POSTGRESQL_URL : '.*/\([^:]*\):.*')
+  export PGPASSWORD=$(expr $POSTGRESQL_URL : '.*:\([^@]*\)@.*')
+}
+
+truncate_tables() {
+  local database_url=$1
+  shift
+  local tables=("$@")
+  local sql_args=""
+  local first=true
+  for table in "${tables[@]}"; do
+    if [ "$first" = true ]; then
+      sql_args="\"$table\""
+      first=false
+    else
+      sql_args="$sql_args, \"$table\""
+    fi
+  done
+  $psql -v ON_ERROR_STOP=1 $database_url -c "TRUNCATE TABLE $sql_args RESTART IDENTITY CASCADE;"
+}
+
+drop_tables() {
+  local database_url=$1
+  shift
+  local tables=("$@")
+  local sql_args=""
+  for table in "${tables[@]}"; do
+    sql_args="$sql_args DROP TABLE IF EXISTS \"$table\" CASCADE;"
+  done
+  $psql -v ON_ERROR_STOP=1 $database_url -c "$sql_args"
+}
+
+dump_tables() {
+  local database_url=$1
+  shift
+  local tables=("$@")
+  local table_args=()
+  for table in "${tables[@]}"; do
+    table_args+=("-t" "\"$table\"")
+  done
+  $pg_shell -c "rm -rf /tmp/tables.dump"
+  $pg_dump -j 10 -Fd $database_url "${table_args[@]}" -f /tmp/tables.dump
+}
+
+restore_tables() {
+  local database_url=$1
+  $pg_restore -j 10 -Fd -O --data-only -d $database_url /tmp/tables.dump
+}
+
+dump_tables_sql() {
+  local database_url=$1
+  shift
+  local tables=("$@")
+  local table_args=()
+  for table in "${tables[@]}"; do
+    table_args+=("-t" "\"$table\"")
+  done
+  $pg_shell -c "rm -rf /tmp/tables.sql"
+  $pg_dump --data-only $database_url "${table_args[@]}" >/tmp/fcu/tables.sql
+}
+
+load_tables_in_transaction() {
+  local database_url=$1
+  shift
+  local tables=("$@")
+  local sql_args=""
+  for table in "${tables[@]}"; do
+    sql_args="$sql_args DELETE FROM \"$table\";"
+  done
+  $psql -v ON_ERROR_STOP=1 $database_url --single-transaction -c "$sql_args" -f /tmp/tables.sql
+}

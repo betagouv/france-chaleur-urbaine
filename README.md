@@ -10,9 +10,9 @@ Il utilise, entre autre, [Docker](https://www.docker.com), [React](https://react
 
 Pré-requis :
 - Node.js version 20
-- Yarn
+- pnpm
 - Docker
-- Récupérer le dump des tables de référence auprès d'un membre de l'équipe ou depuis le dashboard Scalingo
+- Posséder un compte Scalingo et avois accès aux applications FCU
 - Récupérer le fichier `.env.local` auprès d'un membre de l'équipe
 
 ### Site local
@@ -29,27 +29,25 @@ pnpm i
 docker compose up -d
 ```
 
-- Importer le fichier dans la BDD (~ 20-30 minutes)
+- Installer la [CLI Scalingo](https://doc.scalingo.com/platform/cli/start) puis s'authentifier (servira à voir les logs et créer des tunnels vers les bases de données prod et dev)
+```sh
+scalingo login
+```
 
-Si le fichier a été récupéré depuis le dashboard Scalingo, il faut le décompresser avant de l'importer.
+- Peupler la base de données locale à partir de la base de production, notamment les tables de référence et calculées.
+```sh
+pnpm db:bootstrap
+```
+
+- Si jamais l'étape de bootstrap est trop lente, essayer de récupérer un dump depuis le dashboard Scalingo et l'importer en local (~ 20-30 minutes)
 ```sh
 tar -xzvf 20240XXXXXXXXXX_france_chal_3098.tar.gz
-```
-
-puis
-
-```sh
 pg_restore --clean --if-exists --no-owner --no-privileges --verbose --no-comments --dbname postgres://postgres:postgres_fcu@localhost:5432/postgres 20240XXXXXXXXXX_france_chal_3098.pgsql
-```
-
-- Appliquer les migrations de la BDD.
-```sh
-DATABASE_URL="postgres://postgres:postgres_fcu@localhost:5432/postgres" pnpm db:migrate
 ```
 
 - Désormais, sont accessibles :
   - Le site internet : http://localhost:3000/
-  - L'interface maildev pour les emails : http://localhost:1080/
+  - L'interface mailpit pour les emails : http://localhost:8025/
   - La base de données PostgreSQL : localhost:5432
 
 ### Airtable
