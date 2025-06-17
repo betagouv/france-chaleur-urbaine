@@ -243,6 +243,16 @@ const nextConfig: NextConfig = {
         destination: 'https://youtu.be/yHyRZk_-eb4',
         permanent: true,
       },
+      {
+        source: '/webinaire/2025/presentation-collectivites-exploitants-juin',
+        destination: '/webinaires/20250617_webinaire_collectivites_exploitants_juin.pdf',
+        permanent: false,
+      },
+      {
+        source: '/webinaire/2025/replay-collectivites-exploitants-juin',
+        destination: 'https://youtu.be/aetWYIxs0MA',
+        permanent: true,
+      },
     ];
   },
   async headers() {
