@@ -30,7 +30,7 @@ import { type AdminDemand, type Demand } from '@/types/Summary/Demand';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
 import { putFetchJSON } from '@/utils/network';
-import { upperCaseFirstChar } from '@/utils/strings';
+import { formatMWh, upperCaseFirstChar } from '@/utils/strings';
 import { ObjectEntries, ObjectKeys } from '@/utils/typescript';
 
 type MapCenterLocation = {
@@ -65,10 +65,10 @@ type QuickFilterPresetKey = keyof typeof quickFilterPresets;
 const initialSortingState = [{ id: 'Date de la demande', desc: true }];
 
 const tagsGestionnairesStyleByType = {
-  ville: { title: 'Ville', className: '!bg-[#27ca53] !text-white' },
-  metropole: { title: 'Métropole', className: '!bg-[#1747a7] !text-white' },
-  gestionnaire: { title: 'Gestionnaire tête de réseau', className: '!bg-[#8940d2] !text-white' },
-  reseau: { title: 'Réseau spécifique', className: '!bg-[#d24047] !text-white' },
+  ville: { title: 'Ville', className: '!bg-[#42a835] !text-white' },
+  metropole: { title: 'Métropole', className: '!bg-[#3562bb] !text-white' },
+  gestionnaire: { title: 'Gestionnaire tête de réseau', className: '!bg-[#7a40b4] !text-white' },
+  reseau: { title: 'Réseau spécifique', className: '!bg-[#ba474c] !text-white' },
 };
 
 function DemandesAdmin(): React.ReactElement {
@@ -159,10 +159,11 @@ function DemandesAdmin(): React.ReactElement {
             </div>
             <div className="flex flex-wrap gap-1">
               Conseillé:
+              <br />
               {info.row.original.recommended_tags.map((tag) => (
                 <Badge
                   small
-                  className={cx('!block', tagsGestionnairesStyleByType[tag.type].className)}
+                  className={cx('!block !normal-case', tagsGestionnairesStyleByType[tag.type].className)}
                   key={tag.name}
                   {...{ title: tagsGestionnairesStyleByType[tag.type].title }}
                 >
@@ -172,7 +173,7 @@ function DemandesAdmin(): React.ReactElement {
             </div>
           </div>
         ),
-        width: '250px',
+        width: '400px',
         enableSorting: false,
       },
       {
@@ -212,16 +213,16 @@ function DemandesAdmin(): React.ReactElement {
         header: 'Type',
         cell: ({ row }) => <Tag text={row.original.Structure} />,
         width: '130px',
-        filterType: 'Facets',
         enableGlobalFilter: false,
+        enableSorting: false,
       },
       {
         accessorFn: (row) => displayModeDeChauffage(row),
         header: 'Mode de chauffage',
         cell: ({ row }) => <Tag text={displayModeDeChauffage(row.original)} />,
         width: '134px',
-        filterType: 'Facets',
         enableGlobalFilter: false,
+        enableSorting: false,
       },
       {
         accessorFn: (row) => `${row.Nom} ${row.Prénom} ${row.Mail}`,
@@ -236,6 +237,7 @@ function DemandesAdmin(): React.ReactElement {
         cellType: 'Date',
         width: '94px',
         enableGlobalFilter: false,
+        enableSorting: false,
       },
       {
         accessorKey: 'Distance au réseau',
@@ -254,55 +256,45 @@ function DemandesAdmin(): React.ReactElement {
           <AdditionalInformation demand={row.original} field="Distance au réseau" updateDemand={updateDemand} type="number" />
         ),
         width: '120px',
-        filterType: 'Range',
-        filterProps: {
-          domain: [0, 1000],
-          unit: 'm',
-        },
         enableGlobalFilter: false,
+        enableSorting: false,
       },
       {
         accessorKey: 'Identifiant réseau',
         header: 'ID réseau le plus proche',
         width: '85px',
-        filterType: 'Facets',
+        enableSorting: false,
       },
       {
         accessorKey: 'Nom réseau',
         header: 'Nom du réseau le plus proche',
         cell: ({ row }) => <div className="whitespace-normal">{row.original['Nom réseau']}</div>,
         width: '200px',
+        enableSorting: false,
       },
       {
         accessorKey: 'Logement',
         header: 'Nb logements (lots)',
-        cell: ({ row }) => <AdditionalInformation demand={row.original} field="Logement" updateDemand={updateDemand} type="number" />,
+        cell: (info) => info.getValue<number>() && <>{info.getValue<number>()}&nbsp;</>,
         width: '120px',
-        filterType: 'Range',
-        sorting: 'nullsLast',
         enableGlobalFilter: false,
+        enableSorting: false,
       },
       {
         accessorKey: 'Surface en m2',
         header: 'Surface en m2',
-        cell: ({ row }) => <AdditionalInformation demand={row.original} field="Surface en m2" updateDemand={updateDemand} type="number" />,
+        cell: (info) => info.getValue<number>() && <>{info.getValue<number>()}&nbsp;m²</>,
         width: '120px',
-        filterType: 'Range',
-        filterProps: {
-          unit: 'm2',
-        },
         enableGlobalFilter: false,
+        enableSorting: false,
       },
       {
         accessorKey: 'Conso',
         header: 'Conso gaz (MWh)',
-        cell: ({ row }) => <AdditionalInformation demand={row.original} field="Conso" updateDemand={updateDemand} type="number" />,
+        cell: (info) => info.getValue<number>() && formatMWh(info.getValue<number>()),
         width: '120px',
-        filterType: 'Range',
-        filterProps: {
-          unit: 'MWh',
-        },
         enableGlobalFilter: false,
+        enableSorting: false,
       },
       {
         accessorKey: 'Commentaires',
@@ -314,10 +306,7 @@ function DemandesAdmin(): React.ReactElement {
       {
         accessorKey: 'Commentaires interne FCU',
         header: 'Commentaires interne FCU',
-        cell: ({ row }) => (
-          <></>
-          // FIXME TODO ajouter le commentaire interne FCU
-        ),
+        cell: ({ row }) => <>{row.original.Commentaires_internes_FCU}</>,
         width: '280px',
         enableSorting: false,
       },
