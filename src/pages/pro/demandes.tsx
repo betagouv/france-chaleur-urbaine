@@ -277,7 +277,7 @@ function DemandesNew(): React.ReactElement {
         accessorFn: (row) => displayModeDeChauffage(row),
         header: 'Mode de chauffage',
         cell: ({ row }) => <Tag text={displayModeDeChauffage(row.original)} />,
-        width: '126px',
+        width: '134px',
         filterType: 'Facets',
         enableGlobalFilter: false,
       },
