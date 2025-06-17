@@ -22,6 +22,13 @@ const GET = async () => {
   const demands = await Promise.all(
     records.map(async (record) => {
       const demand = { id: record.id, ...record.fields } as AdminDemand;
+      if (!demand.Latitude || !demand.Longitude || !demand.Ville) {
+        logger.warn('missing demand fields', {
+          demandId: demand.id,
+          missingFields: ['Latitude', 'Longitude', 'Ville'],
+        });
+        return null;
+      }
       const eligibilityStatus = await getEligilityStatus(demand.Latitude, demand.Longitude, demand.Ville);
       const tagGestionnaire = getTagGestionnaire(eligibilityStatus.gestionnaire);
       const metropoleName = findMetropoleNameByCity(demand.Ville);
@@ -46,6 +53,14 @@ const GET = async () => {
                 {
                   type: 'gestionnaire',
                   name: tagGestionnaire,
+                },
+              ]
+            : []),
+          ...(tagGestionnaire && eligibilityStatus.id
+            ? [
+                {
+                  type: 'reseau',
+                  name: `${tagGestionnaire}_${eligibilityStatus.id}`,
                 },
               ]
             : []),
