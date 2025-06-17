@@ -392,6 +392,23 @@ export interface BdnbRegistre2022PaysDeLaLoire {
   y: number | null;
 }
 
+export interface BesoinsEnChaleurBatiments {
+  chauf_mwh: Numeric | null;
+  com_insee: string | null;
+  ecs_mwh: Numeric | null;
+  en_chauf: string | null;
+  en_ecs: string | null;
+  froid_mwh: Numeric | null;
+  geom: string | null;
+  idbatiment: string | null;
+  inst_chauf: string | null;
+  inst_ecs: string | null;
+  ogc_fid: Generated<number>;
+  part_ter: Numeric | null;
+  sdp_m2: Numeric | null;
+  secteur: string | null;
+}
+
 export interface BesoinsEnChaleurIndustrieCommunesTiles {
   tile: Buffer;
   x: Int8;
@@ -2752,6 +2769,45 @@ export interface Departements {
   zone_climatique: string | null;
 }
 
+export interface DonneesDeConsoEtPdlGazNat2020 {
+  adresse: string | null;
+  annee: string | null;
+  code_eic: string | null;
+  code_grand: string | null;
+  conso: string | null;
+  conso_nb: number | null;
+  filiere: string | null;
+  geom: string | null;
+  iris_code: string | null;
+  iris_libel: string | null;
+  latitude: string | null;
+  layer: string | null;
+  longitude: string | null;
+  nom_commun: string | null;
+  ogc_fid: Int8 | null;
+  operateur: string | null;
+  pdl: string | null;
+  pdl_nb: number | null;
+  result_cit: string | null;
+  result_con: string | null;
+  result_hou: string | null;
+  result_id: string | null;
+  result_lab: string | null;
+  result_nam: string | null;
+  result_pos: string | null;
+  result_sco: string | null;
+  result_str: string | null;
+  result_typ: string | null;
+  rownum: string;
+}
+
+export interface DonneesDeConsoEtPdlGazNat2020Tiles {
+  tile: Buffer;
+  x: Int8;
+  y: Int8;
+  z: Int8;
+}
+
 export interface DonneesDeConsos {
   adresse: string | null;
   code_grand: string | null;
@@ -2813,6 +2869,13 @@ export interface EnrrMobilisablesParkingsTiles {
   z: Int8;
 }
 
+export interface EnrrMobilisablesThalassothermieTiles {
+  tile: Buffer;
+  x: Int8;
+  y: Int8;
+  z: Int8;
+}
+
 export interface EnrrMobilisablesTiles {
   tile: Buffer;
   x: Int8;
@@ -2828,6 +2891,13 @@ export interface EtudesEnCours {
   launched_at: Timestamp;
   maitre_ouvrage: string;
   status: string;
+}
+
+export interface EnrrMobilisablesZonesGeothermieProfondeTiles {
+  tile: Buffer;
+  x: Int8;
+  y: Int8;
+  z: Int8;
 }
 
 export interface EtudesEnCoursTiles {
@@ -2871,6 +2941,27 @@ export interface IgnRegions {
   nom: string | null;
   nom_m: string | null;
   ogc_fid: Generated<number>;
+}
+
+export interface InstallationsGeothermieProfondeTiles {
+  tile: Buffer;
+  x: Int8;
+  y: Int8;
+  z: Int8;
+}
+
+export interface InstallationsGeothermieSurfaceEchangeursFermesTiles {
+  tile: Buffer;
+  x: Int8;
+  y: Int8;
+  z: Int8;
+}
+
+export interface InstallationsGeothermieSurfaceEchangeursOuvertsTiles {
+  tile: Buffer;
+  x: Int8;
+  y: Int8;
+  z: Int8;
 }
 
 export interface Jobs {
@@ -2942,6 +3033,20 @@ export interface ProEligibilityTestsAddresses {
   id: Generated<string>;
   source_address: string;
   test_id: string;
+}
+
+export interface QuartiersPrioritairesPolitiqueVille2015AnruTiles {
+  tile: Buffer;
+  x: Int8;
+  y: Int8;
+  z: Int8;
+}
+
+export interface QuartiersPrioritairesPolitiqueVille2024Tiles {
+  tile: Buffer;
+  x: Int8;
+  y: Int8;
+  z: Int8;
 }
 
 export interface RaccordementsTiles {
@@ -3044,7 +3149,8 @@ export interface ReseauxDeChaleur {
   communes_insee: string[] | null;
   'contenu CO2': number | null;
   'contenu CO2 ACV': number | null;
-  'Moyenne-annee-DPE': string | null;
+  contenu_CO2_2023_tmp: number | null;
+  contenu_CO2_ACV_2023_tmp: number | null;
   CP_MO: string | null;
   date_actualisation_pdp: Timestamp | null;
   date_actualisation_trace: Timestamp | null;
@@ -3068,6 +3174,7 @@ export interface ReseauxDeChaleur {
   livraisons_totale_MWh: number | null;
   longueur_reseau: number | null;
   MO: string | null;
+  'Moyenne-annee-DPE': string | null;
   nb_pdl: number | null;
   nom_reseau: string | null;
   'PF%': number | null;
@@ -3128,13 +3235,6 @@ export interface ReseauxDeChaleurTiles {
   z: Int8;
 }
 
-export interface ReseauxDeChaleurTilesPrFiltres {
-  tile: Buffer;
-  x: Int8;
-  y: Int8;
-  z: Int8;
-}
-
 export interface ReseauxDeFroid {
   adresse_mo: string | null;
   annee_creation: number | null;
@@ -3142,7 +3242,8 @@ export interface ReseauxDeFroid {
   communes_insee: string[] | null;
   'contenu CO2': number | null;
   'contenu CO2 ACV': number | null;
-  'Moyenne-annee-DPE': string | null;
+  contenu_CO2_2023_tmp: number | null;
+  contenu_CO2_ACV_2023_tmp: number | null;
   CP_MO: string | null;
   date_actualisation_trace: Timestamp | null;
   departement: string | null;
@@ -3161,6 +3262,7 @@ export interface ReseauxDeFroid {
   livraisons_totale_MWh: number | null;
   longueur_reseau: number | null;
   MO: string | null;
+  'Moyenne-annee-DPE': string | null;
   nb_pdl: number | null;
   nom_reseau: string | null;
   production_totale_MWh: number | null;
@@ -3185,14 +3287,12 @@ export interface Users {
   activated_at: Timestamp | null;
   activation_token: string | null;
   active: Generated<boolean | null>;
-  besoins: string[] | null;
   created_at: Generated<Timestamp | null>;
   email: string;
   first_name: string | null;
   from_api: string | null;
   gestionnaires: string[] | null;
   id: Generated<string>;
-  job: string | null;
   last_connection: Timestamp | null;
   last_name: string | null;
   optin_at: Timestamp | null;
@@ -3201,9 +3301,9 @@ export interface Users {
   receive_new_demands: boolean | null;
   receive_old_demands: boolean | null;
   reset_token: string | null;
-  status: 'pending_email_confirmation' | 'valid';
   role: UserRole;
   signature: string | null;
+  status: 'pending_email_confirmation' | 'valid';
   structure_name: string | null;
   structure_other: string | null;
   structure_type: string | null;
@@ -3322,6 +3422,7 @@ export interface DB {
   bdnb_registre2022_occitanie: BdnbRegistre2022Occitanie;
   bdnb_registre2022_paca: BdnbRegistre2022Paca;
   'bdnb_registre2022_pays-de-la-loire': BdnbRegistre2022PaysDeLaLoire;
+  besoins_en_chaleur_batiments: BesoinsEnChaleurBatiments;
   besoins_en_chaleur_industrie_communes_tiles: BesoinsEnChaleurIndustrieCommunesTiles;
   besoins_en_chaleur_tiles: BesoinsEnChaleurTiles;
   'bnb - adresse_tiles': BnbAdresseTiles;
@@ -3342,6 +3443,8 @@ export interface DB {
   communes: Communes;
   communes_fort_potentiel_pour_creation_reseaux_chaleur_tiles: CommunesFortPotentielPourCreationReseauxChaleurTiles;
   departements: Departements;
+  Donnees_de_conso_et_pdl_gaz_nat_2020: DonneesDeConsoEtPdlGazNat2020;
+  Donnees_de_conso_et_pdl_gaz_nat_2020_tiles: DonneesDeConsoEtPdlGazNat2020Tiles;
   donnees_de_consos: DonneesDeConsos;
   donnees_de_consos_tiles: DonneesDeConsosTiles;
   eligibility_demands: EligibilityDemands;
@@ -3349,12 +3452,17 @@ export interface DB {
   email_templates: EmailTemplates;
   enrr_mobilisables_friches_tiles: EnrrMobilisablesFrichesTiles;
   enrr_mobilisables_parkings_tiles: EnrrMobilisablesParkingsTiles;
+  enrr_mobilisables_thalassothermie_tiles: EnrrMobilisablesThalassothermieTiles;
   enrr_mobilisables_tiles: EnrrMobilisablesTiles;
+  enrr_mobilisables_zones_geothermie_profonde_tiles: EnrrMobilisablesZonesGeothermieProfondeTiles;
   etudes_en_cours: EtudesEnCours;
   etudes_en_cours_tiles: EtudesEnCoursTiles;
   ign_communes: IgnCommunes;
   ign_departements: IgnDepartements;
   ign_regions: IgnRegions;
+  installations_geothermie_profonde_tiles: InstallationsGeothermieProfondeTiles;
+  installations_geothermie_surface_echangeurs_fermes_tiles: InstallationsGeothermieSurfaceEchangeursFermesTiles;
+  installations_geothermie_surface_echangeurs_ouverts_tiles: InstallationsGeothermieSurfaceEchangeursOuvertsTiles;
   jobs: Jobs;
   knex_migrations: KnexMigrations;
   knex_migrations_lock: KnexMigrationsLock;
@@ -3363,12 +3471,13 @@ export interface DB {
   pro_comparateur_configurations: ProComparateurConfigurations;
   pro_eligibility_tests: ProEligibilityTests;
   pro_eligibility_tests_addresses: ProEligibilityTestsAddresses;
+  quartiers_prioritaires_politique_ville_2015_anru_tiles: QuartiersPrioritairesPolitiqueVille2015AnruTiles;
+  quartiers_prioritaires_politique_ville_2024_tiles: QuartiersPrioritairesPolitiqueVille2024Tiles;
   raccordements_tiles: RaccordementsTiles;
   regions: Regions;
   registre_copro_r11_220125: RegistreCoproR11220125;
   reseaux_de_chaleur: ReseauxDeChaleur;
   reseaux_de_chaleur_tiles: ReseauxDeChaleurTiles;
-  reseaux_de_chaleur_tiles_pr_filtres: ReseauxDeChaleurTilesPrFiltres;
   reseaux_de_froid: ReseauxDeFroid;
   reseaux_de_froid_tiles: ReseauxDeFroidTiles;
   users: Users;
