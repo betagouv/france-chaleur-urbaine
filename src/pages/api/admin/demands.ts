@@ -2,6 +2,7 @@ import { AirtableDB } from '@/server/db/airtable';
 import { logger } from '@/server/helpers/logger';
 import { handleRouteErrors } from '@/server/helpers/server';
 import { getEligilityStatus } from '@/server/services/addresseInformation';
+import { findMetropoleNameByCity } from '@/server/services/metropoles';
 import { type AdminDemand } from '@/types/Summary/Demand';
 
 const GET = async () => {
@@ -23,6 +24,7 @@ const GET = async () => {
       const demand = { id: record.id, ...record.fields } as AdminDemand;
       const eligibilityStatus = await getEligilityStatus(demand.Latitude, demand.Longitude, demand.Ville);
       const tagGestionnaire = getTagGestionnaire(eligibilityStatus.gestionnaire);
+      const metropoleName = findMetropoleNameByCity(demand.Ville);
       return {
         ...demand,
         eligibilityStatus,
@@ -31,10 +33,14 @@ const GET = async () => {
             type: 'ville',
             name: demand.Ville,
           },
-          // {
-          //   type: 'metropole',
-          //   name: demand.Metropole,
-          // },
+          ...(metropoleName
+            ? [
+                {
+                  type: 'metropole',
+                  name: `${metropoleName}M`,
+                },
+              ]
+            : []),
           ...(tagGestionnaire
             ? [
                 {

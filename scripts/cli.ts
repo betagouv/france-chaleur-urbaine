@@ -23,6 +23,7 @@ import { processJobById, processJobsIndefinitely } from '@/server/services/jobs/
 import { type DatabaseSourceId, type DatabaseTileInfo, tilesInfo, zDatabaseSourceId } from '@/server/services/tiles.config';
 import { type ApiAccount } from '@/types/ApiAccount';
 import { userRoles } from '@/types/enum/UserRole';
+import { fetchJSON } from '@/utils/network';
 import { sleep } from '@/utils/time';
 import { nonEmptyArray } from '@/utils/typescript';
 import { allDatabaseTables } from '@cli/bootstrap/tables';
@@ -141,6 +142,37 @@ program
     logger.info(`Importing data for ${type}`);
     const importer = dataImportManager(type as DataImportName);
     await importer.importData(options.file);
+  });
+
+type EPCI = {
+  code: string;
+  nom: string;
+  type: string;
+  modeFinancement: string;
+  populationTotale: number;
+  populationMunicipale: number;
+  membres: {
+    code: string;
+    siren: string;
+    nom: string;
+    populationTotale: number;
+    populationMunicipale: number;
+  }[];
+};
+
+program
+  .command('import:metropoles')
+  .description('Import the metropoles from the file epci.json')
+  .action(async () => {
+    const epci = await fetchJSON<EPCI[]>('https://unpkg.com/@etalab/decoupage-administratif/data/epci.json');
+    const metropoles = epci
+      .filter((epci) => epci.type === 'METRO')
+      .map((metropole) => ({
+        code: metropole.code,
+        nom: metropole.nom,
+        membres: metropole.membres.map((membre) => ({ code: membre.code, nom: membre.nom })),
+      }));
+    console.info(JSON.stringify(metropoles, null, 2));
   });
 
 program
