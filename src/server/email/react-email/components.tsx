@@ -105,7 +105,7 @@ export const Link = ReactEmailLink;
 export const LogoFCU = () => (
   <Img
     style={{
-      height: '100px',
+      height: '120px',
     }}
     alt="France Chaleur Urbaine"
     src="https://france-chaleur-urbaine.beta.gouv.fr/logo-fcu-with-typo.jpg"
@@ -115,7 +115,7 @@ export const LogoFCU = () => (
 export const LogoRF = ({ style }: React.ComponentProps<typeof ReactEmailImg>) => (
   <Img
     style={{
-      height: '100px',
+      height: '80px',
       ...style,
     }}
     alt="République Française"
