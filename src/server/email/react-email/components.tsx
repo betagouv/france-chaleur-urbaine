@@ -152,7 +152,7 @@ export type LayoutProps = LayoutModifiableProps &
   (
     | {
         children: React.ReactNode;
-        variant?: 'default' | 'section';
+        variant?: 'default' | 'section' | 'empty';
       }
     | {
         children: string;
@@ -166,7 +166,7 @@ export const Layout = ({ children, variant = 'default', preview }: LayoutProps) 
     {preview && <ReactEmailPreview>{preview}</ReactEmailPreview>}
     <Body>
       <Container>
-        <Logo />
+        {variant !== 'empty' && <Logo />}
         {variant === 'markdown' ? (
           <Markdown>{children as string}</Markdown>
         ) : variant === 'section' ? (
@@ -174,7 +174,7 @@ export const Layout = ({ children, variant = 'default', preview }: LayoutProps) 
         ) : (
           children
         )}
-        <LogoRF style={{ marginTop: 32 }} />
+        {variant !== 'empty' && <LogoRF style={{ marginTop: 32 }} />}
       </Container>
     </Body>
   </ReactEmailHtml>
