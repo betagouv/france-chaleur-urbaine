@@ -235,7 +235,7 @@ const nextConfig: NextConfig = {
       },
       {
         source: '/webinaire/2025/presentation-initier-un-reseau',
-        destination: '/webinaires/20250401_webinaire_classement_FCU.pdf',
+        destination: '/webinaires/20250128_webinaire_communes_sans_reseau.pdf',
         permanent: false,
       },
       {
