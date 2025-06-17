@@ -102,7 +102,7 @@ export const Html = ReactEmailHtml;
 export const Img = ReactEmailImg;
 export const Link = ReactEmailLink;
 
-export const Logo = () => (
+export const LogoFCU = () => (
   <Img
     style={{
       height: '100px',
@@ -166,7 +166,6 @@ export const Layout = ({ children, variant = 'default', preview }: LayoutProps) 
     {preview && <ReactEmailPreview>{preview}</ReactEmailPreview>}
     <Body>
       <Container>
-        {variant !== 'empty' && <Logo />}
         {variant === 'markdown' ? (
           <Markdown>{children as string}</Markdown>
         ) : variant === 'section' ? (
@@ -174,7 +173,22 @@ export const Layout = ({ children, variant = 'default', preview }: LayoutProps) 
         ) : (
           children
         )}
-        {variant !== 'empty' && <LogoRF style={{ marginTop: 32 }} />}
+        {variant !== 'empty' && (
+          <table
+            style={{
+              marginTop: '32px',
+            }}
+          >
+            <tr>
+              <td>
+                <LogoRF />
+              </td>
+              <td>
+                <LogoFCU />
+              </td>
+            </tr>
+          </table>
+        )}
       </Container>
     </Body>
   </ReactEmailHtml>
