@@ -48,10 +48,19 @@ export type Demand = DemandSummary &
     'Emails envoyés'?: string;
     Longitude: number;
     Latitude: number;
+    'Gestionnaires validés': boolean;
+    Commentaires_internes_FCU: string;
 
     // computed
     haut_potentiel: boolean;
   };
+
+export type AdminDemand = Demand & {
+  recommended_tags: {
+    name: string;
+    type: 'ville' | 'metropole' | 'gestionnaire' | 'reseau';
+  }[];
+};
 
 export type ContactFormInfos = {
   structure: AvailableStructure;

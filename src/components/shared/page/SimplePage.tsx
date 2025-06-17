@@ -314,6 +314,12 @@ const adminNavigationMenu: MainNavigationProps.Item[] = [
         },
       },
       {
+        text: 'Gestion des demandes',
+        linkProps: {
+          href: '/admin/demandes',
+        },
+      },
+      {
         text: 'Suivi des tâches',
         linkProps: {
           href: '/admin/jobs',
