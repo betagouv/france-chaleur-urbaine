@@ -192,11 +192,11 @@ const getDemand = async (user: User, demandId: string): Promise<Demand> => {
   return { id: record.id, ...record.fields } as Demand;
 };
 
-export const updateDemand = async (user: User, demandId: string, update: Partial<Demand>): Promise<Demand | null> => {
+export const updateDemand = async (user: User, demandId: string, updateData: Partial<Demand>): Promise<Demand | null> => {
   // check permissions
   await getDemand(user, demandId);
 
-  const [record] = await base(Airtable.UTILISATEURS).update([{ id: demandId, fields: update }]);
+  const record = await base(Airtable.UTILISATEURS).update(demandId, updateData, { typecast: true });
 
   // legacy check, may be obsolete as errors seem to be thrown by the Airtable API
   const error = (record as any)?.error;

@@ -15,6 +15,7 @@ import Map from '@/components/Map/Map';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import SimplePage from '@/components/shared/page/SimplePage';
 import AsyncButton from '@/components/ui/AsyncButton';
+import ChipAutoComplete, { type ChipOption } from '@/components/ui/ChipAutoComplete';
 import { VerticalDivider } from '@/components/ui/Divider';
 import Icon from '@/components/ui/Icon';
 import Indicator from '@/components/ui/Indicator';
@@ -24,7 +25,7 @@ import TableSimple, { type ColumnDef, type QuickFilterPreset } from '@/component
 import Tooltip from '@/components/ui/Tooltip';
 import { useFetch } from '@/hooks/useApi';
 import { withAuthentication } from '@/server/authentication';
-import { toastErrors } from '@/services/notification';
+import { notify, toastErrors } from '@/services/notification';
 import { type Point } from '@/types/Point';
 import { type AdminDemand, type Demand } from '@/types/Summary/Demand';
 import { isDefined } from '@/utils/core';
@@ -69,6 +70,7 @@ const tagsGestionnairesStyleByType = {
   metropole: { title: 'Métropole', className: '!bg-[#3562bb] !text-white' },
   gestionnaire: { title: 'Gestionnaire tête de réseau', className: '!bg-[#7a40b4] !text-white' },
   reseau: { title: 'Réseau spécifique', className: '!bg-[#ba474c] !text-white' },
+  '': { title: 'Inconnu', className: '!bg-[#787878] !text-white' },
 };
 
 function DemandesAdmin(): React.ReactElement {
@@ -85,6 +87,17 @@ function DemandesAdmin(): React.ReactElement {
   const [filteredDemands, setFilteredDemands] = useState<AdminDemand[]>([]);
 
   const { data: demands = [], isLoading } = useFetch<AdminDemand[]>('/api/admin/demands');
+  const { data: tagsResponse } = useFetch<{ items: Array<{ id: string; name: string; type: string }> }>('/api/admin/tags');
+
+  const tagsOptions: ChipOption[] = useMemo(() => {
+    return tagsResponse?.items
+      ? tagsResponse.items.map((tag) => ({
+          name: tag.name,
+          type: tag.type,
+          className: tagsGestionnairesStyleByType[tag.type as keyof typeof tagsGestionnairesStyleByType]?.className,
+        }))
+      : [];
+  }, [tagsResponse]);
 
   const presetStats = ObjectKeys(quickFilterPresets).reduce(
     (acc, key) => ({
@@ -116,7 +129,7 @@ function DemandesAdmin(): React.ReactElement {
 
   const updateDemand = useCallback(
     toastErrors(async (demandId: string, demandUpdate: Partial<Demand>) => {
-      await putFetchJSON(`/api/admin/demands/${demandId}`, demandUpdate);
+      void putFetchJSON(`/api/admin/demands/${demandId}`, demandUpdate).catch((err) => notify('error', err.message));
 
       queryClient.setQueryData<AdminDemand[]>(['/api/admin/demands'], (demands) =>
         (demands ?? []).map((demand) => {
@@ -150,29 +163,37 @@ function DemandesAdmin(): React.ReactElement {
       {
         accessorKey: 'Gestionnaires',
         header: 'Gestionnaires',
-        cell: (info) => (
-          <div className="block">
-            <div className="flex flex-wrap gap-1">
-              {(info.getValue<string[]>() ?? []).map((tag) => (
-                <Tag key={tag} text={tag} />
-              ))}
+        cell: (info) => {
+          const currentGestionnaires = info.getValue<string[]>() ?? [];
+
+          return (
+            <div className="block">
+              <ChipAutoComplete
+                options={tagsOptions}
+                value={currentGestionnaires}
+                onChange={(newGestionnaires) => {
+                  updateDemand(info.row.original.id, {
+                    Gestionnaires: newGestionnaires,
+                  });
+                }}
+              />
+              <div className="flex flex-wrap gap-1 mt-2">
+                Conseillé:
+                <br />
+                {info.row.original.recommended_tags.map((tag) => (
+                  <Badge
+                    small
+                    className={cx('!block !normal-case', tagsGestionnairesStyleByType[tag.type].className)}
+                    key={tag.name}
+                    {...{ title: tagsGestionnairesStyleByType[tag.type].title }}
+                  >
+                    {tag.name}
+                  </Badge>
+                ))}
+              </div>
             </div>
-            <div className="flex flex-wrap gap-1">
-              Conseillé:
-              <br />
-              {info.row.original.recommended_tags.map((tag) => (
-                <Badge
-                  small
-                  className={cx('!block !normal-case', tagsGestionnairesStyleByType[tag.type].className)}
-                  key={tag.name}
-                  {...{ title: tagsGestionnairesStyleByType[tag.type].title }}
-                >
-                  {tag.name}
-                </Badge>
-              ))}
-            </div>
-          </div>
-        ),
+          );
+        },
         width: '400px',
         enableSorting: false,
       },
@@ -185,14 +206,16 @@ function DemandesAdmin(): React.ReactElement {
       },
       {
         id: 'action',
-        accessorKey: 'Gestionnaire validé',
-        header: 'Validation',
-        cell: ({ row }) => (
+        accessorKey: 'Gestionnaires validés',
+        header: 'Gestionnaire validé',
+        cell: (info) => (
           <AsyncButton
             priority="primary"
             size="small"
             onClick={async () => {
-              console.log('validate', row.original.id);
+              updateDemand(info.row.original.id, {
+                'Gestionnaires validés': true,
+              });
             }}
           >
             Valider
@@ -297,21 +320,21 @@ function DemandesAdmin(): React.ReactElement {
         enableSorting: false,
       },
       {
-        accessorKey: 'Commentaires',
-        header: 'Commentaires',
+        accessorKey: 'Commentaire',
+        header: 'Commentaire',
         cell: ({ row }) => <Comment demand={row.original} updateDemand={updateDemand} />,
         width: '280px',
         enableSorting: false,
       },
       {
-        accessorKey: 'Commentaires interne FCU',
-        header: 'Commentaires interne FCU',
+        accessorKey: 'Commentaires_internes_FCU',
+        header: 'Commentaires internes FCU',
         cell: ({ row }) => <>{row.original.Commentaires_internes_FCU}</>,
         width: '280px',
         enableSorting: false,
       },
     ],
-    [updateDemand]
+    [updateDemand, tagsOptions]
   );
 
   const onFeatureClick = useCallback(
