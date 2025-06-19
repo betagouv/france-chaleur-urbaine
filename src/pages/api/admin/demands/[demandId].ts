@@ -23,6 +23,6 @@ export default handleRouteErrors(
     return demand;
   },
   {
-    requireAuthentication: ['gestionnaire', 'demo'],
+    requireAuthentication: ['admin'],
   }
 );
