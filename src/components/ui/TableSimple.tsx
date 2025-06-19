@@ -341,7 +341,8 @@ const TableSimple = <T extends RowData>({
         className={cx(fr.cx('fr-table', 'fr-table--no-scroll'), '!my-0')}
         ref={tableContainerRef}
         style={{
-          overflow: 'overlay', // our scrollable table container
+          overflow: 'auto', // our scrollable table container
+          scrollbarGutter: 'stable',
           position: 'relative', // needed for sticky header
           maxHeight: height, // should be a fixed height
         }}
