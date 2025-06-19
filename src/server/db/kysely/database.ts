@@ -3289,6 +3289,14 @@ export interface ReseauxDeFroidTiles {
   z: Int8;
 }
 
+export interface Tags {
+  created_at: Generated<Timestamp>;
+  id: Generated<string>;
+  name: string;
+  type: string;
+  updated_at: Generated<Timestamp>;
+}
+
 export interface Users {
   accepted_cgu_at: Timestamp | null;
   activated_at: Timestamp | null;
@@ -3487,6 +3495,7 @@ export interface DB {
   reseaux_de_chaleur_tiles: ReseauxDeChaleurTiles;
   reseaux_de_froid: ReseauxDeFroid;
   reseaux_de_froid_tiles: ReseauxDeFroidTiles;
+  tags: Tags;
   users: Users;
   zone_a_potentiel_chaud: ZoneAPotentielChaud;
   zone_a_potentiel_chaud_tiles: ZoneAPotentielChaudTiles;
