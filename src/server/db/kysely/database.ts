@@ -3229,6 +3229,7 @@ export interface ReseauxDeChaleur {
   'Rend%': number | null;
   'reseaux classes': boolean | null;
   reseaux_techniques: boolean | null;
+  tags: string[];
   'Taux EnR&R': number | null;
   vapeur: string | null;
   ville_mo: string | null;
@@ -3411,6 +3412,7 @@ export interface ZonesEtReseauxEnConstruction {
   is_zone: Generated<boolean>;
   mise_en_service: string | null;
   region: string | null;
+  tags: string[];
 }
 
 export interface ZonesEtReseauxEnConstructionTiles {
