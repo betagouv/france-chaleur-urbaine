@@ -5,7 +5,7 @@ import base, { AirtableDB } from '@/server/db/airtable';
 import { logger } from '@/server/helpers/logger';
 import { BadRequestError, handleRouteErrors, requirePostMethod } from '@/server/helpers/server';
 import { closestNetwork, getConso, getDistanceToNetwork, getNbLogement } from '@/server/services/addresseInformation';
-import { getGestionnaires, getToRelanceDemand } from '@/server/services/manager';
+import { getToRelanceDemand } from '@/server/services/manager';
 import { Airtable } from '@/types/enum/Airtable';
 
 export default handleRouteErrors(async function PostRecords(req: NextApiRequest) {
@@ -47,7 +47,8 @@ export default handleRouteErrors(async function PostRecords(req: NextApiRequest)
         networkId ? getDistanceToNetwork(networkId, values.Latitude, values.Longitude) : closestNetwork(values.Latitude, values.Longitude),
       ]);
 
-      const gestionnaires = await getGestionnaires(values, network ? network['Identifiant reseau'] : '');
+      // TODO voir si on veut garder l'affectation ici ou plutôt dans l'admin de gestion des demandes (préféré)
+      // const gestionnaires = await getGestionnaires(values, network ? network['Identifiant reseau'] : '');
 
       const toRelance = network && network.distance < 200 && values['Type de chauffage'] === 'Collectif';
 
@@ -56,13 +57,14 @@ export default handleRouteErrors(async function PostRecords(req: NextApiRequest)
         nbLogement,
         conso,
         network,
-        gestionnaires,
+        // gestionnaires,
       });
 
       await AirtableDB(Airtable.UTILISATEURS).update(
         demandId,
         {
-          Gestionnaires: gestionnaires,
+          // Gestionnaires: gestionnaires,
+          Gestionnaires: [],
           Conso: conso ? conso.conso_nb : undefined,
           'ID Conso': conso ? conso.rownum : undefined,
           Logement: nbLogement ? nbLogement.nb_logements : undefined,

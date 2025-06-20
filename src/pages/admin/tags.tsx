@@ -1,8 +1,9 @@
 import { Input } from '@codegouvfr/react-dsfr/Input';
+import Tag from '@codegouvfr/react-dsfr/Tag';
 import { type Row } from '@tanstack/react-table';
 import { useState } from 'react';
 
-import Tag from '@/components/Manager/Tag';
+import Select, { type SelectOption } from '@/components/form/dsfr/Select';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
@@ -14,9 +15,19 @@ import { type TagsResponse } from '@/pages/api/admin/tags/[[...slug]]';
 import { withAuthentication } from '@/server/authentication';
 import { type TagWithUsers } from '@/server/services/tags';
 import { toastErrors } from '@/services/notification';
+import { tagsGestionnairesStyleByType } from '@/services/tags';
+import cx from '@/utils/cx';
 import { compareFrenchStrings } from '@/utils/strings';
 
 const initialSortingState = [{ id: 'name', desc: false }];
+
+const tagTypeOptions: SelectOption[] = [
+  { label: 'Sélectionner un type', value: '' },
+  { label: 'Ville', value: 'ville' },
+  { label: 'Métropole', value: 'metropole' },
+  { label: 'Gestionnaire tête de réseau', value: 'gestionnaire' },
+  { label: 'Réseau spécifique', value: 'reseau' },
+];
 
 export default function ManageTags() {
   const { items: tags, create, update: updateCrud, delete: deleteCrud, isLoading } = useCrud<TagsResponse>('/api/admin/tags');
@@ -28,14 +39,31 @@ export default function ManageTags() {
   const [deletingTag, setDeletingTag] = useState<TagWithUsers | null>(null);
   const [newTagName, setNewTagName] = useState('');
   const [editTagName, setEditTagName] = useState('');
+  const [newTagType, setNewTagType] = useState<string>('');
+  const [editTagType, setEditTagType] = useState<string>('');
 
   const tableColumns: ColumnDef<TagWithUsers>[] = [
     {
       accessorKey: 'name',
       header: 'Nom',
       sortingFn: (rowA: Row<TagWithUsers>, rowB: Row<TagWithUsers>) => compareFrenchStrings(rowA.original.name, rowB.original.name),
-      cell: (info: { getValue: () => string }) => <Tag text={info.getValue()} />,
+      cell: (info) => (
+        <Tag className={cx(tagsGestionnairesStyleByType[info.row.original.type as keyof typeof tagsGestionnairesStyleByType]?.className)}>
+          {info.getValue()}
+        </Tag>
+      ),
       className: 'break-words break-all',
+    },
+    {
+      accessorKey: 'type',
+      header: 'Type',
+      cell: (info) => {
+        const type = info.getValue() as string;
+        const typeInfo = tagsGestionnairesStyleByType[type as keyof typeof tagsGestionnairesStyleByType];
+        return type && typeInfo ? typeInfo.title : '';
+      },
+      filterType: 'Facets',
+      width: '150px',
     },
     {
       accessorFn: (row) => row.users.map((u) => u.email.toLowerCase()).join(' '),
@@ -45,7 +73,7 @@ export default function ManageTags() {
       cell: ({ row }) => (
         <div className="flex flex-wrap gap-1">
           {row.original.users.map((user) => (
-            <Tag key={user.id} text={user.email} />
+            <Tag key={user.id}>{user.email}</Tag>
           ))}
         </div>
       ),
@@ -69,6 +97,7 @@ export default function ManageTags() {
             onClick={() => {
               setEditingTag(row.original);
               setEditTagName(row.original.name);
+              setEditTagType(row.original.type);
               setIsEditDialogOpen(true);
             }}
           />
@@ -92,19 +121,16 @@ export default function ManageTags() {
   const handleCreate = toastErrors(
     async () => {
       if (!newTagName.trim()) return;
-      await create({ name: newTagName.trim() });
-      setNewTagName('');
-      setIsCreateDialogOpen(false);
+      await create({ name: newTagName.trim(), type: newTagType });
+      resetCreateDialog();
     },
     (err: any) => (err.code === 'unique_constraint_violation' ? 'Ce tag existe déjà' : err.message)
   );
 
   const handleEdit = toastErrors(async () => {
     if (!editingTag || !editTagName.trim()) return;
-    await updateCrud(editingTag.id, { name: editTagName.trim() });
-    setEditTagName('');
-    setEditingTag(null);
-    setIsEditDialogOpen(false);
+    await updateCrud(editingTag.id, { name: editTagName.trim(), type: editTagType });
+    resetEditDialog();
   });
 
   const handleDelete = toastErrors(async () => {
@@ -113,6 +139,19 @@ export default function ManageTags() {
     setDeletingTag(null);
     setIsDeleteDialogOpen(false);
   });
+
+  const resetCreateDialog = () => {
+    setNewTagName('');
+    setNewTagType('');
+    setIsCreateDialogOpen(false);
+  };
+
+  const resetEditDialog = () => {
+    setEditTagName('');
+    setEditTagType('');
+    setEditingTag(null);
+    setIsEditDialogOpen(false);
+  };
 
   return (
     <SimplePage title="Gestion des tags" mode="authenticated">
@@ -146,8 +185,16 @@ export default function ManageTags() {
               onKeyDown: (e) => e.key === 'Enter' && handleCreate(),
             }}
           />
+          <Select
+            label="Type du tag"
+            options={tagTypeOptions}
+            nativeSelectProps={{
+              value: newTagType,
+              onChange: (e) => setNewTagType(e.target.value),
+            }}
+          />
           <div className="flex justify-end gap-2">
-            <Button priority="secondary" onClick={() => setIsCreateDialogOpen(false)}>
+            <Button priority="secondary" onClick={resetCreateDialog}>
               Annuler
             </Button>
             <Button onClick={handleCreate}>Créer</Button>
@@ -159,15 +206,23 @@ export default function ManageTags() {
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen} title="Modifier le tag" size="sm">
         <div className="flex flex-col gap-4">
           <Input
-            label="Nom du tag"
+            label="Nom"
             nativeInputProps={{
               value: editTagName,
               onChange: (e) => setEditTagName(e.target.value),
               onKeyDown: (e) => e.key === 'Enter' && handleEdit(),
             }}
           />
+          <Select
+            label="Type"
+            options={tagTypeOptions}
+            nativeSelectProps={{
+              value: editTagType,
+              onChange: (e) => setEditTagType(e.target.value),
+            }}
+          />
           <div className="flex justify-end gap-2">
-            <Button priority="secondary" onClick={() => setIsEditDialogOpen(false)}>
+            <Button priority="secondary" onClick={resetEditDialog}>
               Annuler
             </Button>
             <Button onClick={handleEdit}>Modifier</Button>

@@ -54,8 +54,10 @@ export const remove = baseModel.remove;
 export const validation = {
   create: z.object({
     name: z.string(),
+    type: z.string().optional(),
   }),
   update: z.object({
     name: z.string().optional(),
+    type: z.string().optional(),
   }),
 };
