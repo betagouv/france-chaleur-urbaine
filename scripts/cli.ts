@@ -166,7 +166,7 @@ program
   .action(async () => {
     const epci = await fetchJSON<EPCI[]>('https://unpkg.com/@etalab/decoupage-administratif/data/epci.json');
     const metropoles = epci
-      .filter((epci) => epci.type === 'METRO')
+      .filter((epci) => ['CA', 'METRO'].includes(epci.type))
       .map((metropole) => ({
         code: metropole.code,
         nom: metropole.nom,
