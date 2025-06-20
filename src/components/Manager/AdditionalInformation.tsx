@@ -15,18 +15,23 @@ const AdditionalInformation = ({
   updateDemand,
   type,
   width,
+  simpleField,
 }: {
   demand: Demand;
   field: 'Conso' | 'Logement' | 'Surface en m2' | 'Distance au réseau' | 'Affecté à';
   updateDemand: (demandId: string, demand: Partial<Demand>) => void;
   type: 'number' | 'text';
   width?: number;
+  /**
+   * Do not use the Gestionnaire prefix for the field name
+   */
+  simpleField?: boolean;
 }) => {
   const [value, setValue] = useState('');
 
   useEffect(() => {
     if (demand && value === '') {
-      if (field !== 'Surface en m2' && demand[`Gestionnaire ${field}`] !== undefined) {
+      if (!simpleField && field !== 'Surface en m2' && demand[`Gestionnaire ${field}`] !== undefined) {
         setValue(demand[`Gestionnaire ${field}`].toString());
       } else if (demand[field]) {
         setValue(demand[field].toString());
@@ -39,7 +44,7 @@ const AdditionalInformation = ({
       debounce(
         (e) =>
           updateDemand(demand.id, {
-            [getFieldName(field)]: type === 'number' ? parseFloat(e.target.value) : e.target.value,
+            [simpleField ? field : getFieldName(field)]: type === 'number' ? parseFloat(e.target.value) : e.target.value,
           }),
         500
       ),
@@ -58,7 +63,7 @@ const AdditionalInformation = ({
           value: value,
           onChange: (e) => {
             // @ts-expect-error: force type
-            demand[getFieldName(field)] = type === 'number' ? parseFloat(e.target.value) : e.target.value;
+            demand[simpleField ? field : getFieldName(field)] = type === 'number' ? parseFloat(e.target.value) : e.target.value;
             setValue(e.target.value);
             onChangeHandler(e);
           },

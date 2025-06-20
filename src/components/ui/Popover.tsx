@@ -15,7 +15,7 @@
 */
 
 import * as PopoverPrimitive from '@radix-ui/react-popover';
-import { createContext, forwardRef, type ReactNode, useContext, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import { createContext, forwardRef, useContext, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
 
 import useDimensions from '@/hooks/useDimensions';
@@ -34,7 +34,7 @@ const PopoverMeasurementsContext = createContext<Measurements>({
   setHeight: () => void 0,
 });
 
-const Popover = ({ children }: { children: ReactNode }) => {
+const Popover = ({ children, ...props }: PopoverPrimitive.PopoverProps) => {
   const [width, setWidth] = useState<number>();
   const [height, setHeight] = useState<number>();
 
@@ -42,7 +42,7 @@ const Popover = ({ children }: { children: ReactNode }) => {
 
   return (
     <PopoverMeasurementsContext.Provider value={value}>
-      <PopoverPrimitive.Root>{children}</PopoverPrimitive.Root>
+      <PopoverPrimitive.Root {...props}>{children}</PopoverPrimitive.Root>
     </PopoverMeasurementsContext.Provider>
   );
 };
