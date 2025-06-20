@@ -19,55 +19,62 @@ const GET = async () => {
     duration: Date.now() - startTime,
   });
 
-  const demands = await Promise.all(
-    records.map(async (record) => {
-      const demand = { id: record.id, ...record.fields } as AdminDemand;
-      if (!demand.Latitude || !demand.Longitude || !demand.Ville) {
-        logger.warn('missing demand fields', {
-          demandId: demand.id,
-          missingFields: ['Latitude', 'Longitude', 'Ville'],
-        });
-        return null;
-      }
-      const eligibilityStatus = await getEligilityStatus(demand.Latitude, demand.Longitude, demand.Ville);
-      const tagGestionnaire = getTagGestionnaire(eligibilityStatus.gestionnaire);
-      const metropoleName = findMetropoleNameByCity(demand.Ville);
-      return {
-        ...demand,
-        eligibilityStatus,
-        recommended_tags: [
-          {
-            type: 'ville',
-            name: demand.Ville,
-          },
-          ...(metropoleName
-            ? [
-                {
-                  type: 'metropole',
-                  name: `${metropoleName}M`,
-                },
-              ]
-            : []),
-          ...(tagGestionnaire
-            ? [
-                {
-                  type: 'gestionnaire',
-                  name: tagGestionnaire,
-                },
-              ]
-            : []),
-          ...(tagGestionnaire && eligibilityStatus.id
-            ? [
-                {
-                  type: 'reseau',
-                  name: `${tagGestionnaire}_${eligibilityStatus.id}`,
-                },
-              ]
-            : []),
-        ],
-      };
-    })
-  );
+  const demands = (
+    await Promise.all(
+      records.map(async (record) => {
+        const demand = { id: record.id, ...record.fields } as AdminDemand;
+        demand['Gestionnaires validés'] ??= false;
+        demand['Commentaire'] ??= '';
+        demand['Commentaires_internes_FCU'] ??= '';
+
+        if (!demand.Latitude || !demand.Longitude || !demand.Ville) {
+          logger.warn('missing demand fields', {
+            demandId: demand.id,
+            missingFields: ['Latitude', 'Longitude', 'Ville'],
+          });
+          return null;
+        }
+
+        const eligibilityStatus = await getEligilityStatus(demand.Latitude, demand.Longitude, demand.Ville);
+        const tagGestionnaire = getTagGestionnaire(eligibilityStatus.gestionnaire);
+        const metropoleName = findMetropoleNameByCity(demand.Ville);
+        return {
+          ...demand,
+          eligibilityStatus,
+          recommended_tags: [
+            {
+              type: 'ville',
+              name: demand.Ville,
+            },
+            ...(metropoleName
+              ? [
+                  {
+                    type: 'metropole',
+                    name: `${metropoleName}M`,
+                  },
+                ]
+              : []),
+            ...(tagGestionnaire
+              ? [
+                  {
+                    type: 'gestionnaire',
+                    name: tagGestionnaire,
+                  },
+                ]
+              : []),
+            ...(tagGestionnaire && eligibilityStatus.id
+              ? [
+                  {
+                    type: 'reseau',
+                    name: `${tagGestionnaire}_${eligibilityStatus.id}`,
+                  },
+                ]
+              : []),
+          ],
+        };
+      })
+    )
+  ).filter((v) => v !== null);
 
   return demands;
   // TODO ajouter les tags conseillés, ville, métropole, gestionnaire, réseau
