@@ -193,27 +193,32 @@ function DemandesAdmin(): React.ReactElement {
       {
         accessorKey: 'Affecté à',
         header: 'Affecté à',
-        cell: ({ row }) => <AdditionalInformation demand={row.original} field="Affecté à" updateDemand={updateDemand} type="text" />,
+        cell: ({ row }) => (
+          <AdditionalInformation demand={row.original} field="Affecté à" updateDemand={updateDemand} type="text" simpleField />
+        ),
         width: '200px',
         enableSorting: false,
       },
       {
-        id: 'action',
         accessorKey: 'Gestionnaires validés',
         header: 'Gestionnaire validé',
-        cell: (info) => (
-          <AsyncButton
-            priority="primary"
-            size="small"
-            onClick={async () => {
-              updateDemand(info.row.original.id, {
-                'Gestionnaires validés': true,
-              });
-            }}
-          >
-            Valider
-          </AsyncButton>
-        ),
+        align: 'center',
+        cell: (info) =>
+          info.row.original['Gestionnaires validés'] ? (
+            <span className="text-green-500 text-3xl">✓</span>
+          ) : (
+            <AsyncButton
+              priority="primary"
+              size="small"
+              onClick={async () => {
+                updateDemand(info.row.original.id, {
+                  'Gestionnaires validés': true,
+                });
+              }}
+            >
+              Valider
+            </AsyncButton>
+          ),
         width: '120px',
         enableSorting: false,
       },
@@ -268,9 +273,7 @@ function DemandesAdmin(): React.ReactElement {
             />
           </div>
         ),
-        cell: ({ row }) => (
-          <AdditionalInformation demand={row.original} field="Distance au réseau" updateDemand={updateDemand} type="number" />
-        ),
+        cell: (info) => info.getValue<number>() && <>{info.getValue<number>()}&nbsp;m</>,
         width: '120px',
         enableGlobalFilter: false,
         enableSorting: false,
@@ -315,14 +318,14 @@ function DemandesAdmin(): React.ReactElement {
       {
         accessorKey: 'Commentaire',
         header: 'Commentaire',
-        cell: ({ row }) => <Comment demand={row.original} updateDemand={updateDemand} />,
+        cell: ({ row }) => <Comment demand={row.original} field="Commentaire" updateDemand={updateDemand} />,
         width: '280px',
         enableSorting: false,
       },
       {
         accessorKey: 'Commentaires_internes_FCU',
         header: 'Commentaires internes FCU',
-        cell: ({ row }) => <>{row.original.Commentaires_internes_FCU}</>,
+        cell: ({ row }) => <Comment demand={row.original} field="Commentaires_internes_FCU" updateDemand={updateDemand} />,
         width: '280px',
         enableSorting: false,
       },

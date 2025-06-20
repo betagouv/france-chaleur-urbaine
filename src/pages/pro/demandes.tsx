@@ -351,7 +351,7 @@ function DemandesNew(): React.ReactElement {
       {
         accessorKey: 'Commentaires',
         header: 'Commentaires',
-        cell: ({ row }) => <Comment demand={row.original} updateDemand={updateDemand} />,
+        cell: ({ row }) => <Comment demand={row.original} field="Commentaire" updateDemand={updateDemand} />,
         width: '280px',
         enableSorting: false,
       },

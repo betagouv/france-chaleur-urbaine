@@ -5,8 +5,9 @@ import { handleRouteErrors, requirePutMethod, validateObjectSchema } from '@/ser
 import { updateDemand } from '@/server/services/manager';
 
 const zDemandUpdate = {
-  'Gestionnaires validés': z.boolean().optional(),
   Gestionnaires: z.array(z.string()).optional(),
+  'Affecté à': z.string().optional(),
+  'Gestionnaires validés': z.boolean().optional(),
   Commentaire: z.string().optional(),
   Commentaires_internes_FCU: z.string().optional(),
 };
