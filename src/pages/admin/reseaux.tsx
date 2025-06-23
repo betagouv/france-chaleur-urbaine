@@ -9,7 +9,8 @@ import Link from '@/components/ui/Link';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/Resizable';
 import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
 import { useFetch } from '@/hooks/useApi';
-import { type AdminReseauxResponse } from '@/pages/api/admin/reseaux';
+import { type ReseauDeChaleur } from '@/pages/api/admin/reseaux-de-chaleur';
+import { type ReseauEnConstruction } from '@/pages/api/admin/reseaux-en-construction';
 import { withAuthentication } from '@/server/authentication';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
@@ -19,24 +20,23 @@ const tabIds = ['reseaux-de-chaleur', 'reseaux-en-construction'] as const;
 const GestionDesReseaux = () => {
   const [selectedTab, setSelectedTab] = useQueryState('tab', parseAsStringLiteral(tabIds).withDefault('reseaux-de-chaleur'));
 
-  const [selectedNetwork, setSelectedNetwork] = useState<
-    AdminReseauxResponse['reseauxDeChaleur'][number] | AdminReseauxResponse['reseauxEnConstruction'][number] | null
-  >(null);
+  const [selectedNetwork, setSelectedNetwork] = useState<ReseauDeChaleur | ReseauEnConstruction | null>(null);
 
-  const { data: networks, isLoading } = useFetch<AdminReseauxResponse>('/api/admin/reseaux');
+  const { data: reseauxDeChaleur, isLoading: isLoadingReseauxDeChaleur } = useFetch<ReseauDeChaleur[]>('/api/admin/reseaux-de-chaleur');
+  const { data: reseauxEnConstruction, isLoading: isLoadingReseauxEnConstruction } = useFetch<ReseauEnConstruction[]>(
+    '/api/admin/reseaux-en-construction'
+  );
 
   const onTableRowClick = useCallback(
     (idFCU: number) => {
       setSelectedNetwork(
-        (selectedTab === 'reseaux-de-chaleur' ? networks?.reseauxDeChaleur : networks?.reseauxEnConstruction)?.find(
-          (reseau) => reseau.id_fcu === idFCU
-        ) ?? null
+        (selectedTab === 'reseaux-de-chaleur' ? reseauxDeChaleur : reseauxEnConstruction)?.find((reseau) => reseau.id_fcu === idFCU) ?? null
       );
     },
-    [networks, selectedTab]
+    [reseauxDeChaleur, selectedTab]
   );
 
-  const reseauxDeChaleurColumns = useMemo<ColumnDef<AdminReseauxResponse['reseauxDeChaleur'][number]>[]>(
+  const reseauxDeChaleurColumns = useMemo<ColumnDef<ReseauDeChaleur>[]>(
     () => [
       {
         accessorKey: 'id_fcu',
@@ -64,6 +64,22 @@ const GestionDesReseaux = () => {
           ),
       },
       {
+        accessorKey: 'Gestionnaire',
+        header: 'Gestionnaire',
+        width: '150px',
+      },
+      {
+        accessorKey: 'MO',
+        header: "Maître d'ouvrage",
+        width: '150px',
+      },
+      {
+        accessorKey: 'communes',
+        header: 'Communes',
+        width: '200px',
+        cell: ({ row }) => row.original.communes?.join(', '),
+      },
+      {
         accessorKey: 'tags',
         header: 'Tags',
         cell: () => (
@@ -76,12 +92,23 @@ const GestionDesReseaux = () => {
     []
   );
 
-  const reseauxEnConstructionColumns = useMemo<ColumnDef<AdminReseauxResponse['reseauxEnConstruction'][number]>[]>(
+  const reseauxEnConstructionColumns = useMemo<ColumnDef<ReseauEnConstruction>[]>(
     () => [
       {
         accessorKey: 'id_fcu',
         header: 'id_fcu',
         width: '100px',
+      },
+      {
+        accessorKey: 'gestionnaire',
+        header: 'Gestionnaire',
+        width: '150px',
+      },
+      {
+        accessorKey: 'communes',
+        header: 'Communes',
+        width: '200px',
+        cell: ({ row }) => row.original.communes?.join(', '),
       },
       {
         accessorKey: 'tags',
@@ -98,12 +125,12 @@ const GestionDesReseaux = () => {
 
   const tabs = [
     {
-      label: `Réseaux de chaleur (${networks?.reseauxDeChaleur.length ?? 0})`,
+      label: `Réseaux de chaleur (${reseauxDeChaleur?.length ?? 0})`,
       content: (
         <TableSimple
           columns={reseauxDeChaleurColumns}
-          data={networks?.reseauxDeChaleur ?? []}
-          loading={isLoading}
+          data={reseauxDeChaleur ?? []}
+          loading={isLoadingReseauxDeChaleur}
           fluid
           controlsLayout="block"
           padding="sm"
@@ -116,12 +143,12 @@ const GestionDesReseaux = () => {
       isDefault: selectedTab === 'reseaux-de-chaleur',
     },
     {
-      label: `Réseaux en construction (${networks?.reseauxEnConstruction.length ?? 0})`,
+      label: `Réseaux en construction (${reseauxEnConstruction?.length ?? 0})`,
       content: (
         <TableSimple
           columns={reseauxEnConstructionColumns}
-          data={networks?.reseauxEnConstruction ?? []}
-          loading={isLoading}
+          data={reseauxEnConstruction ?? []}
+          loading={isLoadingReseauxEnConstruction}
           fluid
           controlsLayout="block"
           padding="sm"
