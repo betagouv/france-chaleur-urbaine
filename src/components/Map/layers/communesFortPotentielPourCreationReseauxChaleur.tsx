@@ -79,7 +79,7 @@ function Popup(
           value={communeFortPotentielPourCreationReseauxChaleur.zones_fort_potentiel_ecs_mwh}
           formatter={formatMWhAn}
         />
-        <Property label="Source" value="BRGM" />
+        <Property label="Source" value="Cerema-INSEE" />
       </TwoColumns>
     </>
   );
