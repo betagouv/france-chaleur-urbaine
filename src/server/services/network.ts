@@ -1,6 +1,9 @@
 import db from '@/server/db';
+import { kdb, sql } from '@/server/db/kysely';
+import { type BoundingBox } from '@/types/Coords';
 import { type Network, type NetworkToCompare } from '@/types/Summary/Network';
 import { isDefined } from '@/utils/core';
+import { parseBbox } from '@/utils/geo';
 
 export const getNetwork = (id: string): Promise<Network> =>
   db('reseaux_de_chaleur')
@@ -211,4 +214,43 @@ export const listNetworks = async (): Promise<NetworkToCompare[]> => {
       'contenu CO2': isDefined(network['contenu CO2']) ? network['contenu CO2'] * 1000 : null,
     } as NetworkToCompare;
   });
+};
+
+export const listReseauxDeChaleur = async () => {
+  const reseauxDeChaleur = await kdb
+    .selectFrom('reseaux_de_chaleur')
+    .select([
+      'id_fcu',
+      'Identifiant reseau',
+      'nom_reseau',
+      'communes',
+      'Gestionnaire',
+      'MO',
+      'tags',
+      sql<BoundingBox>`st_transform(ST_Envelope(geom), 4326)::box2d`.as('bbox'),
+    ])
+    .orderBy('id_fcu')
+    .execute();
+
+  // transforme les bbox en JS pour être performant
+  reseauxDeChaleur.forEach((reseau) => {
+    reseau.bbox = parseBbox(reseau.bbox as unknown as string);
+  });
+
+  return reseauxDeChaleur;
+};
+
+export const listReseauxEnConstruction = async () => {
+  const reseauxDeChaleur = await kdb
+    .selectFrom('zones_et_reseaux_en_construction')
+    .select(['id_fcu', 'communes', 'gestionnaire', 'tags', sql<BoundingBox>`st_transform(ST_Envelope(geom), 4326)::box2d`.as('bbox')])
+    .orderBy('id_fcu')
+    .execute();
+
+  // transforme les bbox en JS pour être performant
+  reseauxDeChaleur.forEach((reseau) => {
+    reseau.bbox = parseBbox(reseau.bbox as unknown as string);
+  });
+
+  return reseauxDeChaleur;
 };

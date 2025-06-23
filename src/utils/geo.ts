@@ -1,6 +1,8 @@
 import { round } from '@turf/helpers';
 import kinks from '@turf/kinks';
 
+import { type BoundingBox } from '@/types/Coords';
+
 /**
  * Pretty format a distance in meters or kilometers.
  */
@@ -99,4 +101,12 @@ export const convertLambert93GeoJSONToWGS84 = async (geojson: any): Promise<any>
       },
     })),
   };
+};
+
+// Format: "BOX(3.385585947402232 47.35474249860378,3.38691096486787 47.35645923457523)"
+export const parseBbox = (bbox: string): BoundingBox => {
+  const [min, max] = bbox.slice(4, -1).split(',');
+  const [minX, minY] = min.split(' ').map(Number);
+  const [maxX, maxY] = max.split(' ').map(Number);
+  return [minX, minY, maxX, maxY];
 };
