@@ -1,3 +1,5 @@
+import Tabs from '@codegouvfr/react-dsfr/Tabs';
+import { parseAsStringLiteral, useQueryState } from 'nuqs';
 import { useCallback, useMemo, useState } from 'react';
 
 import Map from '@/components/Map/Map';
@@ -9,19 +11,29 @@ import { useFetch } from '@/hooks/useApi';
 import { type AdminReseauxResponse } from '@/pages/api/admin/reseaux';
 import cx from '@/utils/cx';
 
+const tabIds = ['reseaux-de-chaleur', 'reseaux-en-construction'] as const;
+
 const GestionDesReseaux = () => {
-  const [selectedNetwork, setSelectedNetwork] = useState<AdminReseauxResponse['reseauxDeChaleur'][number] | null>(null);
+  const [selectedTab, setSelectedTab] = useQueryState('tab', parseAsStringLiteral(tabIds).withDefault('reseaux-de-chaleur'));
+
+  const [selectedNetwork, setSelectedNetwork] = useState<
+    AdminReseauxResponse['reseauxDeChaleur'][number] | AdminReseauxResponse['reseauxEnConstruction'][number] | null
+  >(null);
 
   const { data: networks, isLoading } = useFetch<AdminReseauxResponse>('/api/admin/reseaux');
 
   const onTableRowClick = useCallback(
     (idFCU: number) => {
-      setSelectedNetwork(networks?.reseauxDeChaleur.find((reseau) => reseau.id_fcu === idFCU) ?? null);
+      setSelectedNetwork(
+        (selectedTab === 'reseaux-de-chaleur' ? networks?.reseauxDeChaleur : networks?.reseauxEnConstruction)?.find(
+          (reseau) => reseau.id_fcu === idFCU
+        ) ?? null
+      );
     },
-    [networks]
+    [networks, selectedTab]
   );
 
-  const columns = useMemo<ColumnDef<AdminReseauxResponse['reseauxDeChaleur'][number]>[]>(
+  const reseauxDeChaleurColumns = useMemo<ColumnDef<AdminReseauxResponse['reseauxDeChaleur'][number]>[]>(
     () => [
       {
         accessorKey: 'id_fcu',
@@ -51,6 +63,65 @@ const GestionDesReseaux = () => {
     []
   );
 
+  const reseauxEnConstructionColumns = useMemo<ColumnDef<AdminReseauxResponse['reseauxEnConstruction'][number]>[]>(
+    () => [
+      {
+        accessorKey: 'id_fcu',
+        header: 'id_fcu',
+        width: '100px',
+      },
+      {
+        accessorKey: 'tags',
+        header: 'Tags',
+        cell: () => (
+          <></>
+          // TODO: Implémenter ChipAutoComplete pour les tags
+        ),
+        width: '400px',
+      },
+    ],
+    []
+  );
+
+  const tabs = [
+    {
+      label: `Réseaux de chaleur (${networks?.reseauxDeChaleur.length ?? 0})`,
+      content: (
+        <TableSimple
+          columns={reseauxDeChaleurColumns}
+          data={networks?.reseauxDeChaleur ?? []}
+          loading={isLoading}
+          fluid
+          controlsLayout="block"
+          padding="sm"
+          loadingEmptyMessage="Aucun réseau de chaleur à afficher"
+          height="calc(100dvh - 200px)"
+          onRowClick={onTableRowClick}
+          rowIdKey="id_fcu"
+        />
+      ),
+      isDefault: selectedTab === 'reseaux-de-chaleur',
+    },
+    {
+      label: `Réseaux en construction (${networks?.reseauxEnConstruction.length ?? 0})`,
+      content: (
+        <TableSimple
+          columns={reseauxEnConstructionColumns}
+          data={networks?.reseauxEnConstruction ?? []}
+          loading={isLoading}
+          fluid
+          controlsLayout="block"
+          padding="sm"
+          loadingEmptyMessage="Aucun réseau en construction à afficher"
+          height="calc(100dvh - 200px)"
+          onRowClick={onTableRowClick}
+          rowIdKey="id_fcu"
+        />
+      ),
+      isDefault: selectedTab === 'reseaux-en-construction',
+    },
+  ];
+
   return (
     <SimplePage
       title="Gestion des réseaux"
@@ -60,17 +131,13 @@ const GestionDesReseaux = () => {
       <div className="mb-8">
         <ResizablePanelGroup direction="horizontal" className="gap-4">
           <ResizablePanel defaultSize={66}>
-            <TableSimple
-              columns={columns}
-              data={networks?.reseauxDeChaleur ?? []}
-              loading={isLoading}
-              fluid
-              controlsLayout="block"
-              padding="sm"
-              loadingEmptyMessage="Aucun réseau à afficher"
-              height="calc(100dvh - 140px)"
-              onRowClick={onTableRowClick}
-              rowIdKey="id_fcu"
+            <Tabs
+              tabs={tabs}
+              onTabChange={(event) => {
+                const newTab = event.tabIndex === 0 ? 'reseaux-de-chaleur' : 'reseaux-en-construction';
+                setSelectedTab(newTab);
+                setSelectedNetwork(null);
+              }}
             />
           </ResizablePanel>
           <ResizableHandle />
