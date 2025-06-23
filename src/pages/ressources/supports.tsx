@@ -170,6 +170,12 @@ const infographies: InfographieItemProps[] = [
     eventKey: 'Téléchargement|Supports|Centre-Val de Loire',
   },
   {
+    label: "Les réseaux de chaleur en région : l'Île-de-France",
+    imgUrl: '/img/FCU_Infographie_Ile_de_France.preview.webp',
+    linkUrl: '/img/FCU_Infographie_Ile_de_France.webp',
+    eventKey: 'Téléchargement|Supports|Île-de-France',
+  },
+  {
     label: 'Chiffres-clés des réseaux de chaleur 2023',
     imgUrl: '/img/FCU_chiffres-cles_reseaux-chaleur.preview.webp',
     linkUrl: '/img/FCU_chiffres-cles_reseaux-chaleur.webp',
