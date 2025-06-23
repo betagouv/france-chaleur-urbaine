@@ -11,6 +11,7 @@ import Heading from '@/components/ui/Heading';
 import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
 import Text from '@/components/ui/Text';
 import { useFetch } from '@/hooks/useApi';
+import useCrud from '@/hooks/useCrud';
 import { type UserUpdate } from '@/pages/api/admin/users/[userId]';
 import { withAuthentication } from '@/server/authentication';
 import { useServices } from '@/services';
@@ -20,6 +21,7 @@ import { type UserRole } from '@/types/enum/UserRole';
 import { postFetchJSON, putFetchJSON } from '@/utils/network';
 import { compareFrenchStrings } from '@/utils/strings';
 
+import { type TagsResponse } from '../api/admin/tags/[[...slug]]';
 import { type AdminManageUserItem } from '../api/admin/users';
 import { type AdminUsersStats } from '../api/admin/users-stats';
 
@@ -44,7 +46,7 @@ export default function ManageUsers() {
 
   const { data: usersStats } = useFetch<AdminUsersStats>('/api/admin/users-stats');
   const { data: users, isLoading, refetch: refetchUsers } = useFetch<AdminManageUserItem[]>('/api/admin/users');
-  const { data: tagsResponse } = useFetch<{ items: Array<{ id: string; name: string; type: string }> }>('/api/admin/tags');
+  const { items: tags } = useCrud<TagsResponse>('/api/admin/tags');
 
   const updateUser = useCallback(
     toastErrors(async (userId: string, userUpdate: Partial<UserUpdate>) => {
@@ -55,14 +57,14 @@ export default function ManageUsers() {
   );
 
   const tagsOptions: ChipOption[] = useMemo(() => {
-    return tagsResponse?.items
-      ? tagsResponse.items.map((tag) => ({
+    return tags
+      ? tags.map((tag) => ({
           name: tag.name,
           type: tag.type,
           className: tagsGestionnairesStyleByType[tag.type as keyof typeof tagsGestionnairesStyleByType]?.className,
         }))
       : [];
-  }, [tagsResponse]);
+  }, [tags]);
 
   const columns: ColumnDef<AdminManageUserItem>[] = useMemo(
     () => [

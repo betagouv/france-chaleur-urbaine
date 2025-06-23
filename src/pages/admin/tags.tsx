@@ -10,6 +10,7 @@ import Button from '@/components/ui/Button';
 import Dialog from '@/components/ui/Dialog';
 import Heading from '@/components/ui/Heading';
 import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
+import { useFetch } from '@/hooks/useApi';
 import useCrud from '@/hooks/useCrud';
 import { type TagsResponse } from '@/pages/api/admin/tags/[[...slug]]';
 import { withAuthentication } from '@/server/authentication';
@@ -30,7 +31,8 @@ const tagTypeOptions: SelectOption[] = [
 ];
 
 export default function ManageTags() {
-  const { items: tags, create, update: updateCrud, delete: deleteCrud, isLoading } = useCrud<TagsResponse>('/api/admin/tags');
+  const { data: tags, isLoading } = useFetch<TagWithUsers[]>('/api/admin/tags/with-users');
+  const { create, update: updateCrud, delete: deleteCrud } = useCrud<TagsResponse>('/api/admin/tags');
 
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -165,7 +167,7 @@ export default function ManageTags() {
 
         <TableSimple
           columns={tableColumns}
-          data={tags as any as TagWithUsers[]}
+          data={tags || []}
           initialSortingState={initialSortingState}
           enableGlobalFilter
           controlsLayout="block"

@@ -8,13 +8,26 @@ export const tableName = 'tags';
 
 const baseModel = createBaseModel(tableName);
 
-export const create = baseModel.create;
 export const list = async () => {
+  const records = await kdb
+    .selectFrom('tags as t')
+    .select(['t.id', 't.name', 't.type', 't.created_at', 't.updated_at'])
+    .orderBy('t.name')
+    .execute();
+
+  return {
+    items: records,
+    count: records.length,
+  };
+};
+export type Tag = Awaited<ReturnType<typeof list>>['items'][number];
+
+export const listWithUsers = async () => {
   const records = await kdb
     .selectFrom('tags as t')
     .leftJoin(
       'users as u',
-      (join) => join.on(sql.ref('t.name'), '=', sql`${sql.ref('u.gestionnaires')}[1]`) // expression builder ne supporte pas `ANY()` directement
+      (join) => join.on(sql.ref('t.name'), '=', sql`ANY(${sql.ref('u.gestionnaires')})`) // expression builder ne supporte pas `ANY()` directement
     )
     .select([
       't.id',
@@ -41,13 +54,11 @@ export const list = async () => {
     .orderBy('t.name')
     .execute();
 
-  return {
-    items: records,
-    count: records.length,
-  };
+  return records;
 };
-export type TagWithUsers = Awaited<ReturnType<typeof list>>['items'][number];
+export type TagWithUsers = Awaited<ReturnType<typeof listWithUsers>>[number];
 
+export const create = baseModel.create;
 export const update = baseModel.update;
 export const remove = baseModel.remove;
 
