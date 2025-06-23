@@ -5,10 +5,13 @@ import { useCallback, useMemo, useState } from 'react';
 import Map from '@/components/Map/Map';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import SimplePage from '@/components/shared/page/SimplePage';
+import Link from '@/components/ui/Link';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/Resizable';
 import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
 import { useFetch } from '@/hooks/useApi';
 import { type AdminReseauxResponse } from '@/pages/api/admin/reseaux';
+import { withAuthentication } from '@/server/authentication';
+import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
 
 const tabIds = ['reseaux-de-chaleur', 'reseaux-en-construction'] as const;
@@ -49,6 +52,16 @@ const GestionDesReseaux = () => {
         accessorKey: 'nom_reseau',
         header: 'Nom',
         width: '300px',
+        cell: ({ row }) =>
+          isDefined(row.original['Identifiant reseau']) ? (
+            <div>
+              <Link className="" href={`/reseaux/${row.original['Identifiant reseau']}`} isExternal>
+                {row.original.nom_reseau}
+              </Link>
+            </div>
+          ) : (
+            row.original.nom_reseau
+          ),
       },
       {
         accessorKey: 'tags',
@@ -166,3 +179,5 @@ const GestionDesReseaux = () => {
 };
 
 export default GestionDesReseaux;
+
+export const getServerSideProps = withAuthentication(['admin']);
