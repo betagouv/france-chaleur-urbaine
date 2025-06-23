@@ -19,7 +19,7 @@ fileignoreconfig:
 - filename: scripts/copyRemoteTableToLocal.sh
   checksum: 2b379d50d78806a26e79c2c45562529bdac4115487af223b33863153c7be5b0d
 - filename: scripts/db_sync_common.sh
-  checksum: d775ac591ee8f3caf80dfb3c5fb046af9440f158d8e6fc94f2ed935c725562a3
+  checksum: b5508e88b5e1f10f91b5c1a7999b66ee08c6262a369c838846c29c8338da605c
 - filename: src/components/ComparateurPublicodes/DebugDrawer.tsx
   checksum: 5e675d6da8d48880b27b4f45242dfb2ee0e30c93cf2f59f4f1795ddbef87b83f
 - filename: src/components/Map/Map.tsx

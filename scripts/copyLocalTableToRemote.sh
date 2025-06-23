@@ -17,17 +17,17 @@ echo "> Synchronisation des tables locales vers l'environnement $env..."
 
 echo "Exporting data from local database..."
 if [ $DATAONLY = true ]; then
-  dump_tables_sql postgres://postgres:postgres_fcu@localhost:5432/postgres "${TABLES[@]}"
+  dump_tables_sql postgres://postgres:postgres_fcu@$DOCKER_HOST:5432/postgres "${TABLES[@]}"
 else
-  dump_tables postgres://postgres:postgres_fcu@localhost:5432/postgres "${TABLES[@]}"
+  dump_tables postgres://postgres:postgres_fcu@$DOCKER_HOST:5432/postgres "${TABLES[@]}"
 fi
 
 echo "Importing data to remote database $env:$DB_PORT..."
 if [ $DATAONLY = true ]; then
-  load_tables_in_transaction postgres://localhost:$DB_PORT "${TABLES[@]}"
+  load_tables_in_transaction postgres://$DOCKER_HOST:$DB_PORT "${TABLES[@]}"
 else
-  truncate_tables postgres://localhost:$DB_PORT "${TABLES[@]}"
-  restore_tables postgres://localhost:$DB_PORT "${TABLES[@]}"
+  truncate_tables postgres://$DOCKER_HOST:$DB_PORT "${TABLES[@]}"
+  restore_tables postgres://$DOCKER_HOST:$DB_PORT "${TABLES[@]}"
 fi
 
 echo "> Synchronisation terminée de local -> $ENV"

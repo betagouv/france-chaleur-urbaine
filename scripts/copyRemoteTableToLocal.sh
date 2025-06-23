@@ -15,19 +15,19 @@ setup_tunnel
 
 echo "> Synchronisation des tables distante de $ENV vers la BDD locale..."
 
-echo "Exporting data from remote $ENV database..."
+echo "Exporting data from remote $ENV database on port $DB_PORT..."
 if [ $DATAONLY = true ]; then
-  dump_tables_sql postgres://localhost:$DB_PORT "${TABLES[@]}"
+  dump_tables_sql postgres://$DOCKER_HOST:$DB_PORT "${TABLES[@]}"
 else
-  dump_tables postgres://localhost:$DB_PORT "${TABLES[@]}"
+  dump_tables postgres://$DOCKER_HOST:$DB_PORT "${TABLES[@]}"
 fi
 
 echo "Importing data to local database..."
 if [ $DATAONLY = true ]; then
-  load_tables_in_transaction postgres://postgres:postgres_fcu@localhost:5432/postgres "${TABLES[@]}"
+  load_tables_in_transaction postgres://postgres:postgres_fcu@$DOCKER_HOST:5432/postgres "${TABLES[@]}"
 else
-  truncate_tables postgres://postgres:postgres_fcu@localhost:5432/postgres "${TABLES[@]}"
-  restore_tables postgres://postgres:postgres_fcu@localhost:5432/postgres "${TABLES[@]}"
+  truncate_tables postgres://postgres:postgres_fcu@$DOCKER_HOST:5432/postgres "${TABLES[@]}"
+  restore_tables postgres://postgres:postgres_fcu@$DOCKER_HOST:5432/postgres "${TABLES[@]}"
 fi
 
 echo "> Synchronisation terminée de $ENV -> local"

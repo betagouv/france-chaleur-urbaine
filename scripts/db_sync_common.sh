@@ -1,9 +1,19 @@
 #!/bin/bash -e
 
-pg_shell="docker run --rm -e PGUSER -e PGPASSWORD --network host -v /tmp/fcu:/tmp postgis/postgis:16-3.5-alpine sh"
-pg_dump="docker run --rm -e PGUSER -e PGPASSWORD --network host -v /tmp/fcu:/tmp postgis/postgis:16-3.5-alpine pg_dump"
-psql="docker run --rm -e PGUSER -e PGPASSWORD --network host -v /tmp/fcu:/tmp postgis/postgis:16-3.5-alpine psql"
-pg_restore="docker run --rm -e PGUSER -e PGPASSWORD --network host -v /tmp/fcu:/tmp postgis/postgis:16-3.5-alpine pg_restore"
+COMMON_PG_PARAMS="-e $PGUSER -e $PGPASSWORD --network host -v /tmp/fcu:/tmp postgis/postgis:16-3.5-alpine"
+
+
+# Detect OS and set LOCALHOST accordingly
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  DOCKER_HOST="host.docker.internal"
+else
+  DOCKER_HOST="localhost"
+fi
+
+pg_shell="docker run --rm $COMMON_PG_PARAMS sh"
+pg_dump="docker run --rm $COMMON_PG_PARAMS pg_dump"
+psql="docker run --rm $COMMON_PG_PARAMS psql"
+pg_restore="docker run --rm $COMMON_PG_PARAMS pg_restore"
 
 init_env() {
   ENV=$1
@@ -40,7 +50,7 @@ init_env() {
 }
 
 setup_tunnel() {
-  echo "Database tunnel not running, starting it..."
+  echo "Database tunnel not running, starting it for $SCALINGO_APP on port $DB_PORT..."
   # ferme le tunnel quand le programme s'arrête
   trap 'kill %1' EXIT
   # ouvre un tunnel vers BDD cible
