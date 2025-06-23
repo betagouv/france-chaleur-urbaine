@@ -19,7 +19,7 @@ const PressJanuary24 = () => {
 # Près de 30% des logements à raccorder au chauffage urbain d’ici 2035 identifiés par France Chaleur Urbaine
 <br />
 
-#### Le projet de Stratégie française pour l’énergie et le climat du Gouvernement table sur 300 000 à 360 000 logements à raccorder chaque année au chauffage urbain jusqu’en 2035, un objectif qui inclut les raccordements sur de nouveaux réseaux à créer. Sur les réseaux existants, France Chaleur Urbaine identifie déjà <strong style="font-size: inherit">1 275 300 logements potentiellement raccordables</strong>.
+#### Le projet de Stratégie française pour l’énergie et le climat du Gouvernement table sur 300 000 à 360 000 logements à raccorder chaque année au chauffage urbain jusqu’en 2035, un objectif qui inclut les raccordements sur de nouveaux réseaux à créer. Sur les réseaux existants, France Chaleur Urbaine identifie déjà <strong-inherit>1 275 300 logements potentiellement raccordables</strong-inherit>.
 
 Les réseaux de chaleur, aussi qualifiés de chauffage urbain, constituent l’un des leviers pour la décarbonation des bâtiments. Alimentés à plus de 66% par des énergies renouvelables et de récupération (géothermie, chaleur issue de l’incinération des ordures ménagères, biomasse…), ils émettent deux fois moins de gaz à effet de serre qu’un chauffage au gaz ou fioul<sup><a href="#source-1">1</a></sup>.
 
@@ -34,7 +34,7 @@ Alors que l’exercice de planification écologique mené à l’échelle nation
 <br />
 <br />
 
-<div style="font-style: italic">Il est possible d’intégrer le test d’adresse France Chaleur Urbaine dans n’importe quelle page web en copiant-collant la ligne suivante dans le code source de la page :</div>
+<div><em>Il est possible d’intégrer le test d’adresse France Chaleur Urbaine dans n’importe quelle page web en copiant-collant la ligne suivante dans le code source de la page :</em></div>
 `}
           />
 

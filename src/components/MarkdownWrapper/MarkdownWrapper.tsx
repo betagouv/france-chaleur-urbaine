@@ -104,6 +104,7 @@ const MarkdownWrapper: React.FC<{
           'button-link': ButtonLink,
           'extra-link': ExtraLink,
           'know-more-link': KnowMoreLink,
+          'strong-inherit': (props: any) => <strong style={{ fontSize: 'inherit' }} {...props} />,
           small: SmallText,
         }).processSync(md).result
       }
