@@ -5,6 +5,7 @@ import { useCallback, useMemo, useState } from 'react';
 import Map from '@/components/Map/Map';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import SimplePage from '@/components/shared/page/SimplePage';
+import ChipAutoComplete from '@/components/ui/ChipAutoComplete';
 import Link from '@/components/ui/Link';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/Resizable';
 import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
@@ -12,6 +13,7 @@ import { useFetch } from '@/hooks/useApi';
 import { type ReseauDeChaleur } from '@/pages/api/admin/reseaux-de-chaleur';
 import { type ReseauEnConstruction } from '@/pages/api/admin/reseaux-en-construction';
 import { withAuthentication } from '@/server/authentication';
+import { useFCUTags } from '@/services/tags';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
 
@@ -26,6 +28,7 @@ const GestionDesReseaux = () => {
   const { data: reseauxEnConstruction, isLoading: isLoadingReseauxEnConstruction } = useFetch<ReseauEnConstruction[]>(
     '/api/admin/reseaux-en-construction'
   );
+  const { tagsOptions } = useFCUTags();
 
   const onTableRowClick = useCallback(
     (idFCU: number) => {
@@ -82,14 +85,16 @@ const GestionDesReseaux = () => {
       {
         accessorKey: 'tags',
         header: 'Tags',
-        cell: () => (
-          <></>
-          // TODO: Implémenter ChipAutoComplete pour les tags
+        cell: (info) => (
+          <div className="block">
+            <ChipAutoComplete options={tagsOptions} value={info.getValue<string[]>() ?? []} onChange={() => {}} />
+          </div>
         ),
         width: '400px',
+        enableSorting: false,
       },
     ],
-    []
+    [tagsOptions]
   );
 
   const reseauxEnConstructionColumns = useMemo<ColumnDef<ReseauEnConstruction>[]>(
@@ -113,14 +118,16 @@ const GestionDesReseaux = () => {
       {
         accessorKey: 'tags',
         header: 'Tags',
-        cell: () => (
-          <></>
-          // TODO: Implémenter ChipAutoComplete pour les tags
+        cell: (info) => (
+          <div className="block">
+            <ChipAutoComplete options={tagsOptions} value={info.getValue<string[]>() ?? []} onChange={() => {}} />
+          </div>
         ),
         width: '400px',
+        enableSorting: false,
       },
     ],
-    []
+    [tagsOptions]
   );
 
   const tabs = [

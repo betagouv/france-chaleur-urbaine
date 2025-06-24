@@ -15,7 +15,7 @@ import Map from '@/components/Map/Map';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import SimplePage from '@/components/shared/page/SimplePage';
 import AsyncButton from '@/components/ui/AsyncButton';
-import ChipAutoComplete, { type ChipOption } from '@/components/ui/ChipAutoComplete';
+import ChipAutoComplete from '@/components/ui/ChipAutoComplete';
 import { VerticalDivider } from '@/components/ui/Divider';
 import Icon from '@/components/ui/Icon';
 import Indicator from '@/components/ui/Indicator';
@@ -26,7 +26,7 @@ import Tooltip from '@/components/ui/Tooltip';
 import { useFetch } from '@/hooks/useApi';
 import { withAuthentication } from '@/server/authentication';
 import { notify, toastErrors } from '@/services/notification';
-import { tagsGestionnairesStyleByType } from '@/services/tags';
+import { tagsGestionnairesStyleByType, useFCUTags } from '@/services/tags';
 import { type Point } from '@/types/Point';
 import { type AdminDemand, type Demand } from '@/types/Summary/Demand';
 import { isDefined } from '@/utils/core';
@@ -79,17 +79,7 @@ function DemandesAdmin(): React.ReactElement {
   const [filteredDemands, setFilteredDemands] = useState<AdminDemand[]>([]);
 
   const { data: demands = [], isLoading } = useFetch<AdminDemand[]>('/api/admin/demands');
-  const { data: tagsResponse } = useFetch<{ items: Array<{ id: string; name: string; type: string }> }>('/api/admin/tags');
-
-  const tagsOptions: ChipOption[] = useMemo(() => {
-    return tagsResponse?.items
-      ? tagsResponse.items.map((tag) => ({
-          name: tag.name,
-          type: tag.type,
-          className: tagsGestionnairesStyleByType[tag.type as keyof typeof tagsGestionnairesStyleByType]?.className,
-        }))
-      : [];
-  }, [tagsResponse]);
+  const { tagsOptions } = useFCUTags();
 
   const presetStats = ObjectKeys(quickFilterPresets).reduce(
     (acc, key) => ({

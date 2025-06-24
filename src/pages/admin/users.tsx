@@ -1,4 +1,5 @@
 import { type SortingState } from '@tanstack/react-table';
+import { type Selectable } from 'kysely';
 import { useCallback, useMemo } from 'react';
 
 import UserRoleBadge from '@/components/Admin/UserRoleBadge';
@@ -14,9 +15,10 @@ import { useFetch } from '@/hooks/useApi';
 import useCrud from '@/hooks/useCrud';
 import { type UserUpdate } from '@/pages/api/admin/users/[userId]';
 import { withAuthentication } from '@/server/authentication';
+import { type Tags } from '@/server/db/kysely';
 import { useServices } from '@/services';
 import { toastErrors } from '@/services/notification';
-import { tagsGestionnairesStyleByType } from '@/services/tags';
+import { fcuTagsToOptions } from '@/services/tags';
 import { type UserRole } from '@/types/enum/UserRole';
 import { postFetchJSON, putFetchJSON } from '@/utils/network';
 import { compareFrenchStrings } from '@/utils/strings';
@@ -56,15 +58,7 @@ export default function ManageUsers() {
     []
   );
 
-  const tagsOptions: ChipOption[] = useMemo(() => {
-    return tags
-      ? tags.map((tag) => ({
-          name: tag.name,
-          type: tag.type,
-          className: tagsGestionnairesStyleByType[tag.type as keyof typeof tagsGestionnairesStyleByType]?.className,
-        }))
-      : [];
-  }, [tags]);
+  const tagsOptions: ChipOption[] = useMemo(() => fcuTagsToOptions((tags as unknown as Selectable<Tags>[]) ?? []), [tags]);
 
   const columns: ColumnDef<AdminManageUserItem>[] = useMemo(
     () => [
