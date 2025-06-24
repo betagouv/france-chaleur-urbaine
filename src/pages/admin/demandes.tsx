@@ -25,7 +25,7 @@ import TableSimple, { type ColumnDef, type QuickFilterPreset } from '@/component
 import Tooltip from '@/components/ui/Tooltip';
 import { useFetch } from '@/hooks/useApi';
 import { withAuthentication } from '@/server/authentication';
-import { notify, toastErrors } from '@/services/notification';
+import { toastErrors } from '@/services/notification';
 import { tagsGestionnairesStyleByType, useFCUTags } from '@/services/tags';
 import { type Point } from '@/types/Point';
 import { type AdminDemand, type Demand } from '@/types/Summary/Demand';
@@ -111,8 +111,6 @@ function DemandesAdmin(): React.ReactElement {
 
   const updateDemand = useCallback(
     toastErrors(async (demandId: string, demandUpdate: Partial<Demand>) => {
-      void putFetchJSON(`/api/admin/demands/${demandId}`, demandUpdate).catch((err) => notify('error', err.message));
-
       queryClient.setQueryData<AdminDemand[]>(['/api/admin/demands'], (demands) =>
         (demands ?? []).map((demand) => {
           if (demand.id === demandId) {
@@ -121,6 +119,7 @@ function DemandesAdmin(): React.ReactElement {
           return demand;
         })
       );
+      await putFetchJSON(`/api/admin/demands/${demandId}`, demandUpdate);
     }),
     []
   );
@@ -146,13 +145,11 @@ function DemandesAdmin(): React.ReactElement {
         accessorKey: 'Gestionnaires',
         header: 'Gestionnaires',
         cell: (info) => {
-          const currentGestionnaires = info.getValue<string[]>() ?? [];
-
           return (
             <div className="block">
               <ChipAutoComplete
                 options={tagsOptions}
-                value={currentGestionnaires}
+                value={info.getValue<string[]>() ?? []}
                 onChange={(newGestionnaires) => {
                   updateDemand(info.row.original.id, {
                     Gestionnaires: newGestionnaires,
