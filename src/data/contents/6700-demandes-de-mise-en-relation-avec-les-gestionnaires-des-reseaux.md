@@ -11,7 +11,7 @@ Ces demandes concernent majoritairement des bâtiments à proximité des réseau
 
 🏢 Pour les professionnels, France Chaleur Urbaine assure le dépôt de demandes groupées, afin que les raccordements puissent être envisagés en toute simplicité à l'échelle d'un parc de bâtiments : il suffit pour cela de nous contacter !
 
-📍 L'ensemble des demandes est visible sur l'image ci-dessous, ou en version interactive sur notre carte en ligne (lien en commentaire).
+📍 L'ensemble des demandes est visible sur l'image ci-dessous, ou en version interactive sur notre [carte en ligne](https://france-chaleur-urbaine.beta.gouv.fr/carte?tabId=potentiel\&additionalLayers=demandesEligibilite).
 
 Au-delà d'une plateforme numérique d'information sur les réseaux, France Chaleur Urbaine assure ainsi un véritable service à ses usagers !
 
