@@ -240,6 +240,10 @@ export const listReseauxDeChaleur = async () => {
   return reseauxDeChaleur;
 };
 
+export const updateReseauDeChaleur = async (id: number, tags: string[]) => {
+  await kdb.updateTable('reseaux_de_chaleur').set({ tags }).where('id_fcu', '=', id).execute();
+};
+
 export const listReseauxEnConstruction = async () => {
   const reseauxDeChaleur = await kdb
     .selectFrom('zones_et_reseaux_en_construction')
@@ -253,4 +257,8 @@ export const listReseauxEnConstruction = async () => {
   });
 
   return reseauxDeChaleur;
+};
+
+export const updateReseauEnConstruction = async (id: number, tags: string[]) => {
+  await kdb.updateTable('zones_et_reseaux_en_construction').set({ tags }).where('id_fcu', '=', id).execute();
 };

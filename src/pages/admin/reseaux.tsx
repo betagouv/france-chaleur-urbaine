@@ -13,9 +13,11 @@ import { useFetch } from '@/hooks/useApi';
 import { type ReseauDeChaleur } from '@/pages/api/admin/reseaux-de-chaleur';
 import { type ReseauEnConstruction } from '@/pages/api/admin/reseaux-en-construction';
 import { withAuthentication } from '@/server/authentication';
+import { toastErrors } from '@/services/notification';
 import { useFCUTags } from '@/services/tags';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
+import { patchFetchJSON } from '@/utils/network';
 
 const tabIds = ['reseaux-de-chaleur', 'reseaux-en-construction'] as const;
 
@@ -24,10 +26,16 @@ const GestionDesReseaux = () => {
 
   const [selectedNetwork, setSelectedNetwork] = useState<ReseauDeChaleur | ReseauEnConstruction | null>(null);
 
-  const { data: reseauxDeChaleur, isLoading: isLoadingReseauxDeChaleur } = useFetch<ReseauDeChaleur[]>('/api/admin/reseaux-de-chaleur');
-  const { data: reseauxEnConstruction, isLoading: isLoadingReseauxEnConstruction } = useFetch<ReseauEnConstruction[]>(
-    '/api/admin/reseaux-en-construction'
-  );
+  const {
+    data: reseauxDeChaleur,
+    isLoading: isLoadingReseauxDeChaleur,
+    refetch: refetchReseauxDeChaleur,
+  } = useFetch<ReseauDeChaleur[]>('/api/admin/reseaux-de-chaleur');
+  const {
+    data: reseauxEnConstruction,
+    isLoading: isLoadingReseauxEnConstruction,
+    refetch: refetchReseauxEnConstruction,
+  } = useFetch<ReseauEnConstruction[]>('/api/admin/reseaux-en-construction');
   const { tagsOptions } = useFCUTags();
 
   const onTableRowClick = useCallback(
@@ -36,7 +44,23 @@ const GestionDesReseaux = () => {
         (selectedTab === 'reseaux-de-chaleur' ? reseauxDeChaleur : reseauxEnConstruction)?.find((reseau) => reseau.id_fcu === idFCU) ?? null
       );
     },
-    [reseauxDeChaleur, selectedTab]
+    [reseauxDeChaleur, reseauxEnConstruction, selectedTab]
+  );
+
+  const updateReseauDeChaleur = useCallback(
+    toastErrors(async (reseauId: number, reseauUpdate: Partial<ReseauDeChaleur>) => {
+      await patchFetchJSON(`/api/admin/reseaux-de-chaleur/${reseauId}`, reseauUpdate);
+      refetchReseauxDeChaleur();
+    }),
+    []
+  );
+
+  const updateReseauEnConstruction = useCallback(
+    toastErrors(async (reseauId: number, reseauUpdate: Partial<ReseauEnConstruction>) => {
+      await patchFetchJSON(`/api/admin/reseaux-en-construction/${reseauId}`, reseauUpdate);
+      refetchReseauxEnConstruction();
+    }),
+    []
   );
 
   const reseauxDeChaleurColumns = useMemo<ColumnDef<ReseauDeChaleur>[]>(
@@ -87,14 +111,18 @@ const GestionDesReseaux = () => {
         header: 'Tags',
         cell: (info) => (
           <div className="block">
-            <ChipAutoComplete options={tagsOptions} value={info.getValue<string[]>() ?? []} onChange={() => {}} />
+            <ChipAutoComplete
+              options={tagsOptions}
+              value={info.getValue<string[]>() ?? []}
+              onChange={(tags) => updateReseauDeChaleur(info.row.original.id_fcu, { tags })}
+            />
           </div>
         ),
         width: '400px',
         enableSorting: false,
       },
     ],
-    [tagsOptions]
+    [tagsOptions, updateReseauDeChaleur]
   );
 
   const reseauxEnConstructionColumns = useMemo<ColumnDef<ReseauEnConstruction>[]>(
@@ -120,14 +148,18 @@ const GestionDesReseaux = () => {
         header: 'Tags',
         cell: (info) => (
           <div className="block">
-            <ChipAutoComplete options={tagsOptions} value={info.getValue<string[]>() ?? []} onChange={() => {}} />
+            <ChipAutoComplete
+              options={tagsOptions}
+              value={info.getValue<string[]>() ?? []}
+              onChange={(tags) => updateReseauEnConstruction(info.row.original.id_fcu, { tags })}
+            />
           </div>
         ),
         width: '400px',
         enableSorting: false,
       },
     ],
-    [tagsOptions]
+    [tagsOptions, updateReseauEnConstruction]
   );
 
   const tabs = [

@@ -12,7 +12,7 @@ export class FetchError extends Error {
   }
 }
 export const fetchMethod =
-  <Method extends 'POST' | 'PUT' | 'DELETE'>(method: Method) =>
+  <Method extends 'POST' | 'PUT' | 'PATCH' | 'DELETE'>(method: Method) =>
   async <Data = any, Body = any>(url: string, body?: Body): Promise<Data> => {
     const res = await fetch(url, {
       method,
@@ -71,6 +71,7 @@ export const fetchJSON = async <Data = any>(
 
 export const postFetchJSON = fetchMethod('POST');
 export const putFetchJSON = fetchMethod('PUT');
+export const patchFetchJSON = fetchMethod('PATCH');
 export const deleteFetchJSON = fetchMethod('DELETE');
 
 export const postFormDataFetchJSON = async <Data = any>(url: string, formState: object): Promise<Data> => {
