@@ -3,7 +3,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { type Virtualizer } from '@tanstack/react-virtual';
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { type RefObject } from 'react';
-import { type MapGeoJSONFeature, type MapRef } from 'react-map-gl/maplibre';
+import { type MapGeoJSONFeature } from 'react-map-gl/maplibre';
 
 import Input from '@/components/form/dsfr/Input';
 import AdditionalInformation from '@/components/Manager/AdditionalInformation';
@@ -68,7 +68,6 @@ const initialSortingState = [{ id: 'Date de la demande', desc: true }];
 
 function DemandesAdmin(): React.ReactElement {
   const queryClient = useQueryClient();
-  const mapRef = useRef<MapRef>(null) as RefObject<MapRef>;
   const virtualizerRef = useRef<Virtualizer<HTMLDivElement, Element>>(null) as RefObject<Virtualizer<HTMLDivElement, Element>>;
   const [selectedDemandId, setSelectedDemandId] = useState<string | null>(null);
   const tableRowSelection = useMemo(() => {
@@ -442,7 +441,6 @@ function DemandesAdmin(): React.ReactElement {
                     zonesDeDeveloppementPrioritaire: true,
                   })}
                   geolocDisabled
-                  mapRef={mapRef}
                   withSoughtAddresses={false}
                   adressesEligibles={filteredDemandsMapData}
                   adressesEligiblesAutoFit={false}
