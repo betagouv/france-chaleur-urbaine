@@ -1,7 +1,6 @@
 #!/bin/bash -e
 
-COMMON_PG_PARAMS="-e $PGUSER -e $PGPASSWORD --network host -v /tmp/fcu:/tmp postgis/postgis:16-3.5-alpine"
-
+COMMON_PG_PARAMS="-e PGUSER -e PGPASSWORD --network host -v /tmp/fcu:/tmp postgis/postgis:16-3.5-alpine"
 
 # Detect OS and set LOCALHOST accordingly
 if [[ "$OSTYPE" == "darwin"* ]]; then
@@ -50,8 +49,13 @@ init_env() {
 }
 
 setup_tunnel() {
+  if lsof -i :$DB_PORT >/dev/null 2>&1; then
+    echo "Database tunnel already running on port $DB_PORT, skipping..."
+    return 0
+  fi
+
   echo "Database tunnel not running, starting it for $SCALINGO_APP on port $DB_PORT..."
-  # ferme le tunnel quand le programme s'arrête
+  # ferme le tunnel quand ctrl-c est pressé
   trap 'kill %1' EXIT
   # ouvre un tunnel vers BDD cible
   scalingo -a $SCALINGO_APP db-tunnel -p $DB_PORT $SCALINGO_TUNNEL_ARGS SCALINGO_POSTGRESQL_URL &

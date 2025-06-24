@@ -31,7 +31,3 @@ else
 fi
 
 echo "> Synchronisation terminée de local -> $ENV"
-
-# ferme le tunnel
-echo "Closing database tunnel..."
-kill %1
