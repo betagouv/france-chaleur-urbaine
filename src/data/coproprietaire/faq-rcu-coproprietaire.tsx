@@ -1,13 +1,13 @@
 const faqRcuCoproprietaire = [
   {
     label: 'Quelles énergies alimentent les réseaux de chaleur ?',
-    body: `Les réseaux de chaleur sont alimentés en moyenne à 62 % par des énergies renouvelables et de récupération disponibles localement (ENR&R). Cette chaleur "verte" est principalement issue :
+    body: `Les réseaux de chaleur sont alimentés en moyenne à 66,5 % par des énergies renouvelables et de récupération disponibles localement (ENR&R). Cette chaleur "verte" est principalement issue :
 
 - de la récupération de la chaleur issue de l’incinération de nos déchets, première source d'ENR&R dans les réseaux de chaleur ;
 - de la combustion de la biomasse (bois déchet, bois issu de l’élagage urbain d’hiver, produits forestiers issus de l’exploitation ou de l’entretien des forêts, résidus agricoles…) ;
 - de la géothermie (chaleur extraite du sous-sol).
 
-Les 32 % restants correspondent majoritairement à du gaz naturel.  
+Les 32 % restants correspondent majoritairement à du gaz naturel.
 Il est à noter que le mix énergétique est variable d’un réseau à l’autre et que le gaz est généralement utilisé en appoint/secours pour assurer la continuité du service.
 `,
   },
@@ -56,7 +56,7 @@ Le projet peut alors être soumis au vote de l’assemblée générale de la cop
 
 - le bâtiment est équipé d’un système de chauffage collectif → il possède un réseau de distribution interne et des équipements adaptés au sein des logements ;
 - le bâtiment est équipé d’un système de chauffage individuel avec un système de distribution de la chaleur à eau → il possède les équipements adaptés au sein des logements ;
-- le bâtiment est équipé d’un système de chauffage individuel électrique → les équipements nécessaires à la desserte de la chaleur au sein de la copropriété devront être mis en place, ce qui peut s’avérer coûteux et techniquement compliqué. 
+- le bâtiment est équipé d’un système de chauffage individuel électrique → les équipements nécessaires à la desserte de la chaleur au sein de la copropriété devront être mis en place, ce qui peut s’avérer coûteux et techniquement compliqué.
 
 C’est le gestionnaire du réseau de chaleur auquel la copropriété se raccorde qui est en charge de la réalisation des travaux sur le réseau dit « primaire », qui s’arrête au pied de l’immeuble. Ces travaux sont suivis par la copropriété, qui est associée aux réunions de chantier. Sur le réseau « secondaire », interne à l’immeuble, les travaux sont gérés par le syndic de copropriété.
 `,

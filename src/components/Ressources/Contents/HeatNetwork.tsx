@@ -87,9 +87,9 @@ const HeatNetwork = ({
       <Subtitle ref={energiesRef}>Quelles énergies alimentent les réseaux de chaleur ?</Subtitle>
       <WithImage>
         <div>
-          En 2021, les{' '}
+          En 2023, les{' '}
           <b>
-            réseaux de chaleur sont alimentés en moyenne à 62,6 % par des{' '}
+            réseaux de chaleur sont alimentés en moyenne à 66,5 % par des{' '}
             <Link href="/ressources/energies-vertes#contenu">énergies renouvelables et de récupération</Link>
           </b>
           . Les principales sources d’énergies renouvelables et de récupération exploitées sont :
@@ -97,12 +97,12 @@ const HeatNetwork = ({
           <br />
           <ul>
             <li>
-              la <b>récupération de la chaleur issue de l’incinération des ordures ménagères</b>, qui représente 26,9 % du mix énergétique
-              des réseaux. On qualifie d’unités de valorisation énergétique les sites dont la chaleur est récupérée ;
+              la <b>récupération de la chaleur issue de l’incinération des ordures ménagères</b>, qui représente 29 % du mix énergétique des
+              réseaux. On qualifie d’unités de valorisation énergétique les sites dont la chaleur est récupérée ;
             </li>
             <br />
             <li>
-              la <b>combustion de la biomasse</b>, qui représente 23,9 % du mix énergétique des réseaux de chaleur. Il s’agit principalement
+              la <b>combustion de la biomasse</b>, qui représente 25,5 % du mix énergétique des réseaux de chaleur. Il s’agit principalement
               de bois (biomasse forestière, sous-produits de l’industrie du bois, déchets), et dans une moindre mesure de biomasse agricole
               (résidus de récolte et déchets des industries agroalimentaires, cultures énergétiques) et de déchets organiques ;
             </li>
@@ -178,24 +178,25 @@ const HeatNetwork = ({
       <Subtitle ref={caracteristiquesRef}>Quelles sont aujourd’hui les caractéristiques des réseaux de chaleur français ?</Subtitle>
       L’
       <b>
-        <a href="https://www.fedene.fr/lenquete-annuelle-des-reseaux-de-chaleur-et-de-froid/" target="_blank" rel="noreferrer">
+        <a href="hhttps://fedene.fr/enquete-annuelle-des-reseaux-de-chaleur-froid-2024/" target="_blank" rel="noreferrer">
           enquête annuelle des réseaux de chaleur et de froid
         </a>
       </b>{' '}
-      réalisée par le Syndicat national du chauffage urbain, avec le concours de l’association Amorce et sous tutelle du ministère de la
-      transition énergétique, recense <b>898 réseaux de chaleur en 2021. 6529 km de réseaux</b> alimentent ainsi
-      <b>44 945 bâtiments</b>, avec un total de chaleur livrée en 2021 qui s’élève à <b>29,8 TWh</b>. Grâce à un{' '}
-      <b>taux d’énergies renouvelables et de récupération de 62,6 %</b>, les réseaux de chaleur français ont un{' '}
-      <b>contenu carbone moyen en analyse du cycle de vie de 125 eqCO2/kWh</b> seulement, un contenu qui a été divisé de près de moitié en
-      10 ans. En 2021, ils ont ainsi permis d’éviter l’émission de plus de 6,63 millions de tonnes de CO2 (par rapport à des chaudières
-      individuelles gaz), soit l’équivalent de 11,6 millions d’aller-retours Paris-New York (source : SNCU).
+      réalisée par la Fedene Réseaux de chaleur et de froid, avec le concours de l’association Amorce et sous tutelle du ministère de la
+      transition écologique, recense <b>1000 réseaux de chaleur en 2023</b>. <b>7 515 km</b> de réseaux alimentent ainsi{' '}
+      <b>50 065 bâtiments</b>, avec un total de chaleur livrée en 2023 qui s’élève à <b>26,4 TWh</b>. Grâce à un{' '}
+      <b>taux d’énergies renouvelables et de récupération de 66,5 %</b>, les réseaux de chaleur français ont un{' '}
+      <b>contenu carbone moyen en analyse du cycle de vie de 113 eqCO2/kWh</b> seulement, un contenu qui a été divisé de près de moitié en
+      10 ans. En 2023, ils ont ainsi permis d’éviter l’émission de plus de 4,5 millions de tonnes de CO2 (par rapport à des chaudières
+      individuelles gaz), soit l’équivalent de 2,2 millions de voitures retirées de la circulation (source : Fedene Réseaux de chaleur et de
+      froid).
       <br />
       <br />
-      43 % de la consommation énergétique de la France est consacrée à la chaleur.{' '}
-      <b>Les réseaux de chaleur n’en couvrent encore qu’une faible part, de l’ordre de 5%</b>
-      . La France se positionne ainsi en 19ème place comparée à ses voisins européens. En revanche, le mix énergétique des réseaux de
-      chaleur français est plus vertueux que la moyenne européenne. En 2018, on comptait 58 % d’énergies renouvelables et de récupération
-      dans les réseaux de chaleur français, contre une moyenne européenne de 33 %.
+      45 % de la consommation énergétique de la France est consacrée à la chaleur.{' '}
+      <b>Les réseaux de chaleur n’en couvrent que de l’ordre de 5%</b>. Cette part est relativement faible comparativement à celle de nos
+      voisins européens. En revanche, le mix énergétique des réseaux de chaleur français est plus vertueux que la moyenne européenne. En
+      2022, on comptait 66,5 % d’énergies renouvelables et de récupération dans les réseaux de chaleur français, contre une moyenne
+      européenne de 43 %.
       <br />
       <br />
       <br />
@@ -210,7 +211,7 @@ const HeatNetwork = ({
       <br />
       <br />
       Pour y parvenir, la Programmation Pluriannuelle de l’Énergie (PPE) a défini pour objectif une quantité de chaleur renouvelable et de
-      récupération de 24,4 TWh en 2023 et entre 31 et 36 TWh en 2028. En 2021, cette quantité s’élève à 18,6 TWh (source : SNCU).
+      récupération de 24,4 TWh en 2023 et entre 31 et 36 TWh en 2028. En 2023, cette quantité s’élève à 19,4 TWh (source : SNCU).
       <br />
       <br />
       L’atteinte des objectifs fixés par la loi passera par :
@@ -233,6 +234,13 @@ const HeatNetwork = ({
       Le schéma directeur national des réseaux de chaleur réalisé par ViaSèva et Manergy en partenariat avec le SNCU et avec le soutien de
       l’ADEME identifie <b>1600 réseaux de chaleur à créer ou étendre partout en France d’ici 2030</b>, et un{' '}
       <b>taux d’énergies renouvelables et de récupération de 73 %</b> à atteindre à cet horizon.
+      <br />
+      <br />
+      Sur la{' '}
+      <Link href="/carte?accordions=Potentiel+par+territoire&tabId=potentiel&additionalLayers=communesFortPotentielPourCreationReseauxChaleur">
+        carte France Chaleur Urbaine
+      </Link>
+      , sont identifiées 2600 communes à fort potentiel pour la création d'un réseau de chaleur, qui n'en sont pas encore équipées.
       <br />
       <br />
       <br />
@@ -274,10 +282,8 @@ const HeatNetwork = ({
               <b>
                 les réseaux de chaleur sont le mode de chauffage le moins cher pour les logements collectifs et les bâtiments tertiaires
               </b>
-              . En 2021, la facture annuelle pour un logement moyen en habitat collectif (copropriété) s’élève à 1036 € pour un logement
-              raccordé à un réseau de chaleur, contre 1200 € pour un chauffage au gaz collectif et 1843 € pour un chauffage au fioul
-              collectif ! Les réseaux de chaleur alimentés à plus de 50 % par des énergies renouvelables bénéficient d’un taux de TVA réduit
-              à 5,5 % sur l’ensemble de la facture, c’est-à-dire le plus bas du marché ;
+              . Pour comparer les prix propres à chaque réseau, France Chaleur Urbaine propose un comparateur en ligne réalisé en
+              partenariat avec l'association Amorce, accessible <Link href="/comparateur-couts-performances">ici</Link>.
             </li>
           </ul>
         </div>
@@ -359,12 +365,12 @@ const HeatNetwork = ({
       </ul>
       La couverture du territoire national par les réseaux de chaleur reste hétérogène, même si les principales villes sont désormais
       équipées d’un réseau. Pour pouvoir se raccorder, il est indispensable d’être{' '}
-      <b>situé à proximité de l’un des 898 réseaux de chaleur français</b>. Il n’existe pas de seuil de distance exact à respecter pour être
-      raccordable. Celui-ci dépendra du niveau de consommation énergétique du bâtiment à raccorder, mais aussi de chaque réseau, selon ses
-      caractéristiques techniques. France Chaleur Urbaine considère qu’un bâtiment a de fortes chances d’être raccordable s’il est situé à
-      moins de 100 m d’un réseau de chaleur. Pour des distances comprises entre 100 et 200 m, le raccordement reste envisageable. Dans tous
-      les cas, le gestionnaire du réseau de chaleur sera le seul à pouvoir confirmer si le raccordement est possible ou non, en fonction des
-      caractéristiques du bâtiment et de celles du réseau.
+      <b>situé à proximité de l’un des 1000 réseaux de chaleur français</b>. Il n’existe pas de seuil de distance exact à respecter pour
+      être raccordable. Celui-ci dépendra du niveau de consommation énergétique du bâtiment à raccorder, mais aussi de chaque réseau, selon
+      ses caractéristiques techniques. France Chaleur Urbaine considère qu’un bâtiment a de fortes chances d’être raccordable s’il est situé
+      à moins de 100 m d’un réseau de chaleur. Pour des distances comprises entre 100 et 200 m, le raccordement reste envisageable. Dans
+      tous les cas, le gestionnaire du réseau de chaleur sera le seul à pouvoir confirmer si le raccordement est possible ou non, en
+      fonction des caractéristiques du bâtiment et de celles du réseau.
       <br />
       <br />
       <ul>
@@ -427,15 +433,12 @@ const HeatNetwork = ({
           </ul>
           <br />
           L’
-          <Link href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000048730127" target="_blank" rel="noreferrer">
-            arrêté du 22 décembre 2023
+          <Link href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000050756289" target="_blank" rel="noreferrer">
+            arrêté du 3 décembre 2024
           </Link>{' '}
-          relatif au classement des réseaux de chaleur et de froid recense{' '}
-          <b>
-            592 réseaux répondant à ces critères. La cartographie France Chaleur Urbaine permet de visualiser les réseaux de chaleur
-            concernés. Leur périmètre de développement prioritaire, zone dans laquelle s’applique l’obligation de raccordement, figure
-            également sur la carte dès lors que la collectivité l’a transmis.
-          </b>
+          relatif au classement des réseaux de chaleur et de froid recense <b>617 réseaux répondant à ces critères</b>. La cartographie
+          France Chaleur Urbaine permet de visualiser les réseaux de chaleur concernés. Leur périmètre de développement prioritaire, zone
+          dans laquelle s’applique l’obligation de raccordement, figure également sur la carte dès lors que la collectivité l’a transmis.
         </div>
         <Infographie height={294} src="/img/FCU_Infographie_Classement_small.jpg" alt="Classement des réseaux de chaleur" />
       </WithImage>
