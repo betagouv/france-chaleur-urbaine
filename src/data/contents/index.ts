@@ -6,6 +6,7 @@ import demandes from './2000-demandes.md';
 import communesAFortPotentiel from './2600-communes-a-fort-potentiel-pour-la-creation-dun-reseau-de-chaleur-elus-testez-la-votre.md';
 import objectifRaccordementAtteignableReseauxExistants from './30-de-lobjectif-de-raccordement-2035-atteignable-sur-les-reseaux-existants.md';
 import reseauxDeChaleurClasses from './636-reseaux-de-chaleur-classes.md';
+import sixMilleSeptCentsDemandes from './6700-demandes-de-mise-en-relation-avec-les-gestionnaires-des-reseaux.md';
 import actualisationTauxEnergiesRenouvelablesEtContenuCO2DesReseaux from './actualisation-des-taux-denergies-renouvelables-et-contenu-co2-des-reseaux.md';
 import chiffresCles2023rdc from './chiffres-cles-2023-des-reseaux-de-chaleur.md';
 import chiffresCles2023rdf from './chiffres-cles-2023-des-reseaux-de-froid.md';
@@ -21,6 +22,7 @@ import desReseauxVertueux from './des-reseaux-vertueux.md';
 import deuxIdeesRecuesGeothermie from './deux-idees-recues-sur-la-geothermie.md';
 import deuxIdeesRecuesEnergieSolaire from './deux-idees-recues-sur-lenergie-solaire.md';
 import dossierSpecialSurLesReseauxDeChaleur from './dossier-special-sur-les-reseaux-de-chaleur.md';
+import espaceConnecte from './du-nouveau-sur-lespace-connecte-france-chaleur-urbaine.md';
 import faisonsConnaitreLeChauffageUrbain from './faisons-connaitre-le-chauffage-urbain.md';
 import fcuLabelliseServiceNumeriqueAImpactNational from './france-chaleur-urbaine-labellise-service-numerique-a-impact-national.md';
 import franceChaleurUrbainePourBureauxEtudes from './france-chaleur-urbaine-pour-les-bureaux-detudes.md';
@@ -53,6 +55,7 @@ import lesReseauxDeChaleurRegionGrandEst from './les-reseaux-de-chaleur-en-regio
 import lesReseauxDeChaleurRegionHautsDeFrance from './les-reseaux-de-chaleur-en-region-focus-sur-les-hauts-de-france.md';
 import reseauxDeChaleurEnRegionIleDeFrance from './les-reseaux-de-chaleur-en-region-focus-sur-lile-de-france.md';
 import lesReseauxDeFroidEnFrance from './les-reseaux-de-froid-en-france.md';
+import lesReseauxDeFroidQuelsAtouts from './les-reseaux-de-froid-quels-atouts-et-ou-en-est-on.md';
 import lesReseauxDeFroidSurNotreCartographie from './les-reseaux-de-froid-sur-notre-cartographie.md';
 import lesReseauxLesPlusEcologiquesSontLesPlusEconomiques from './les-reseaux-les-plus-ecologiques-sont-les-plus-economiques.md';
 import lesSyndicsEtFranceChaleurUrbaine from './les-syndics-et-france-chaleur-urbaine.md';
@@ -158,6 +161,30 @@ function getArticleAbstract(content: string): string {
 
 export const articles = (
   [
+    {
+      image: '/contents/FCU_cover_reseaux-froid-atouts.jpg',
+      title: 'Les réseaux de froid : quels atouts et où en est-on ?',
+      slug: 'les-reseaux-de-froid-quels-atouts-et-ou-en-est-on',
+      content: importFile(lesReseauxDeFroidQuelsAtouts),
+      publishedDate: new Date('2025-06-18'),
+      themes: ['Réseaux de froid'],
+    },
+    {
+      image: '/contents/FCU_cover_6700demandes.jpg',
+      title: '6700 demandes de mise en relation avec les gestionnaires des réseaux',
+      slug: '6700-demandes-de-mise-en-relation-avec-les-gestionnaires-des-reseaux',
+      content: importFile(sixMilleSeptCentsDemandes),
+      publishedDate: new Date('2025-06-10'),
+      themes: ['Réseaux de chaleur', 'Cartographie et données'],
+    },
+    {
+      image: '/contents/FCU_cover_espace-connecte.jpg',
+      title: "Du nouveau sur l'espace connecté France Chaleur Urbaine",
+      slug: 'du-nouveau-sur-lespace-connecte-france-chaleur-urbaine',
+      content: importFile(espaceConnecte),
+      publishedDate: new Date('2025-05-26'),
+      themes: ['Réseaux de chaleur'],
+    },
     {
       image: '/contents/FCU_cover_200PDP.jpg',
       title: '200 périmètres de développement prioritaire à découvrir sur notre carte',
