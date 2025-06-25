@@ -71,7 +71,7 @@ export const reseauxDeChaleurLayersSpec = [
 function Popup(reseauDeChaleur: NetworkSummary, { Property, Title, TwoColumns }: PopupStyleHelpers) {
   return (
     <>
-      <Title>{reseauDeChaleur.nom_reseau ?? 'Réseau de chaleur'}</Title>
+      <Title title={`ID FCU: ${reseauDeChaleur.id_fcu}`}>{reseauDeChaleur.nom_reseau ?? 'Réseau de chaleur'}</Title>
       <TwoColumns>
         <Property label="Identifiant" value={reseauDeChaleur['Identifiant reseau']} />
         <Property label="Gestionnaire" value={reseauDeChaleur.Gestionnaire} />

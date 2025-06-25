@@ -89,6 +89,7 @@ export interface NetworkAttachment {
 
 export interface NetworkSummary {
   length: number;
+  id_fcu: string;
   'Taux EnR&R': number;
   Gestionnaire: string;
   commentaires?: string;

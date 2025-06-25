@@ -44,12 +44,13 @@ export const ifHoverElse = <T extends string | number>(valueIfHover: T, valueEls
 type PopupTitleProps = {
   close: () => void;
   subtitle?: string | React.ReactNode;
+  title?: string;
 };
 
-const PopupTitle = ({ subtitle, close, children }: PropsWithChildren<PopupTitleProps>) => (
+const PopupTitle = ({ subtitle, close, children, title }: PropsWithChildren<PopupTitleProps>) => (
   <Box display="flex" justifyContent="space-between">
     <Box alignSelf="center" mr="1v">
-      <Heading as="h6" mb="0">
+      <Heading as="h6" mb="0" title={title}>
         {children}
       </Heading>
       {subtitle && (
