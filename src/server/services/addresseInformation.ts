@@ -1,6 +1,7 @@
 import XLSX from 'xlsx';
 
 import db from '@/server/db';
+import { kdb, sql } from '@/server/db/kysely';
 import { getNetworkEligibilityDistances } from '@/services/eligibility';
 import { EXPORT_FORMAT } from '@/types/enum/ExportFormat';
 import { type CityNetwork, type HeatNetwork } from '@/types/HeatNetworksResponse';
@@ -461,3 +462,167 @@ export const getEligilityStatus = async (lat: number, lon: number, city?: string
     hasNoTraceNetwork: false,
   };
 };
+
+/**
+ * Permet d'obtenir l'éligibilité d'un point géographique, avec plus d'informations sur les réseaux les plus proches.
+ * Également plus efficace niveau requêtage que getNetworkEligilityStatus.
+ */
+export const getDetailedEligibilityStatus = async (lat: number, lon: number) => {
+  const [reseauDeChaleur, reseauDeChaleurSansTrace, reseauEnConstruction, zoneEnConstruction, pdp] = await Promise.all([
+    kdb
+      .selectFrom('reseaux_de_chaleur')
+      .select([
+        'id_fcu',
+        'Identifiant reseau',
+        'tags',
+        sql<number>`round(ST_Distance(geom, ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)))`.as(
+          'distance'
+        ),
+      ])
+      .where('has_trace', '=', true)
+      .orderBy((eb) => sql`${eb.ref('geom')} <-> ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)`)
+      .limit(1)
+      .executeTakeFirstOrThrow(),
+
+    kdb
+      .with('commune', (eb) =>
+        eb
+          .selectFrom('ign_communes')
+          .select(['insee_com', 'nom'])
+          .where(
+            (eb) =>
+              sql`ST_Contains(
+                ${eb.ref('geom')},
+                ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)
+              )`
+          )
+          .limit(1)
+      )
+      .selectFrom('reseaux_de_chaleur')
+      .innerJoin('commune', (join) =>
+        join.on((eb) => eb('commune.insee_com', '=', sql<string>`ANY(${eb.ref('reseaux_de_chaleur.communes_insee')})`))
+      )
+      .select(['id_fcu', 'commune.nom', 'tags'])
+      .where('has_trace', '=', false)
+      .limit(1)
+      .executeTakeFirst(),
+
+    kdb
+      .selectFrom('zones_et_reseaux_en_construction')
+      .select([
+        'id_fcu',
+        'tags',
+        sql<number>`round(ST_Distance(geom, ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)))`.as(
+          'distance'
+        ),
+      ])
+      .where('is_zone', '=', false)
+      .orderBy((eb) => sql`${eb.ref('geom')} <-> ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)`)
+      .limit(1)
+      .executeTakeFirstOrThrow(),
+
+    kdb
+      .selectFrom('zones_et_reseaux_en_construction')
+      .select([
+        'id_fcu',
+        'tags',
+        sql<number>`round(ST_Distance(geom, ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)))`.as(
+          'distance'
+        ),
+      ])
+      .where('is_zone', '=', true)
+      .orderBy((eb) => sql`${eb.ref('geom')} <-> ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)`)
+      .limit(1)
+      .executeTakeFirstOrThrow(),
+
+    kdb
+      .selectFrom('zone_de_developpement_prioritaire')
+      .select(['id_fcu', 'Identifiant reseau'])
+      .where(
+        (eb) =>
+          sql`ST_Contains(
+            ${eb.ref('geom')},
+            ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)
+          )`
+      )
+      .limit(1)
+      .executeTakeFirst(),
+  ]);
+
+  const determineEligibilityType = (): EligibilityType => {
+    const eligibilityDistances = getNetworkEligibilityDistances(reseauDeChaleur?.['Identifiant reseau'] ?? '');
+    const futurEligibilityDistances = getNetworkEligibilityDistances(''); // gets the default distances
+
+    // Réseau existant à moins de 100m (60m sur Paris)
+    if (reseauDeChaleur.distance <= eligibilityDistances.veryEligibleDistance) {
+      return 'reseau_existant_tres_proche';
+    }
+
+    // Réseau futur à moins de 100m (60 sur Paris)
+    if (reseauEnConstruction.distance <= futurEligibilityDistances.veryEligibleDistance) {
+      return 'reseau_futur_tres_proche';
+    }
+
+    // Dans zone futur réseau
+    if (zoneEnConstruction.distance === 0) {
+      // TODO vérifier s'il faut un st_contains
+      return 'dans_zone_reseau_futur';
+    }
+
+    // Réseau existant entre 100 et 200m (60 et 100 sur Paris)
+    if (reseauDeChaleur.distance <= eligibilityDistances.eligibleDistance) {
+      return 'reseau_existant_proche';
+    }
+
+    // Réseau futur entre 100 et 200m (60 et 100 sur Paris)
+    if (reseauEnConstruction.distance <= futurEligibilityDistances.eligibleDistance) {
+      return 'reseau_futur_proche';
+    }
+
+    // Réseau existant entre 200 et 1000m
+    if (reseauDeChaleur.distance <= 1000) {
+      return 'reseau_existant_loin';
+    }
+
+    // Réseau futur entre 200 et 1000m
+    if (reseauEnConstruction.distance <= 1000) {
+      return 'reseau_futur_loin';
+    }
+
+    // Pas de tracé sur la ville, mais ville où l'on sait qu'existe un réseau (repère)
+    if (reseauDeChaleurSansTrace) {
+      return 'dans_ville_reseau_existant_sans_trace';
+    }
+
+    // Pas de tracé à moins de 1000m, ni repère réseau sur ville
+    return 'trop_eloigne';
+  };
+  const eligibilityType = determineEligibilityType();
+
+  return {
+    eligibilityType,
+    reseauDeChaleur,
+    reseauDeChaleurSansTrace,
+    reseauEnConstruction,
+    zoneEnConstruction,
+    pdp,
+    tags: eligibilityType.startsWith('reseau_existant')
+      ? (reseauDeChaleur.tags ?? [])
+      : eligibilityType.startsWith('reseau_futur')
+        ? (reseauEnConstruction.tags ?? [])
+        : [],
+  };
+};
+
+type EligibilityType =
+  | 'reseau_existant_tres_proche'
+  | 'reseau_futur_tres_proche'
+  | 'dans_zone_reseau_futur'
+  | 'reseau_existant_proche'
+  | 'reseau_futur_proche'
+  | 'reseau_existant_loin'
+  | 'reseau_futur_loin'
+  | 'dans_ville_reseau_existant_sans_trace'
+  | 'trop_eloigne';
+
+export type DetailedEligibilityStatus = Awaited<ReturnType<typeof getDetailedEligibilityStatus>>;

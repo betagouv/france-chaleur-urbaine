@@ -1,3 +1,4 @@
+import { type DetailedEligibilityStatus } from '@/server/services/addresseInformation';
 import { type DemandStatus } from '@/types/enum/DemandSatus';
 
 import { type Coords } from '../Coords';
@@ -56,10 +57,13 @@ export type Demand = DemandSummary &
   };
 
 export type AdminDemand = Demand & {
-  recommended_tags: {
+  recommendedTags: {
     name: string;
     type: 'ville' | 'metropole' | 'gestionnaire' | 'reseau';
   }[];
+  eligibilityStatus: any;
+  detailedEligibilityStatus: DetailedEligibilityStatus;
+  networkTags: string[];
 };
 
 export type ContactFormInfos = {
