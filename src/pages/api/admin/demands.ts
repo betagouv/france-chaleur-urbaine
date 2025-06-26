@@ -1,12 +1,12 @@
 import { AirtableDB } from '@/server/db/airtable';
 import { logger } from '@/server/helpers/logger';
 import { handleRouteErrors } from '@/server/helpers/server';
-import { getEligilityStatus } from '@/server/services/addresseInformation';
+import { getDetailedEligibilityStatus, getEligilityStatus } from '@/server/services/addresseInformation';
 import { findMetropoleNameByCity } from '@/server/services/metropoles';
 import { type AdminDemand } from '@/types/Summary/Demand';
 
 const GET = async () => {
-  const startTime = Date.now();
+  let startTime = Date.now();
   const records = await AirtableDB('FCU - Utilisateurs')
     .select({
       filterByFormula: '{Gestionnaires validés} = FALSE()',
@@ -19,6 +19,7 @@ const GET = async () => {
     duration: Date.now() - startTime,
   });
 
+  startTime = Date.now();
   const demands = (
     await Promise.all(
       records.map(async (record) => {
@@ -35,13 +36,16 @@ const GET = async () => {
           return null;
         }
 
-        const eligibilityStatus = await getEligilityStatus(demand.Latitude, demand.Longitude, demand.Ville);
+        const eligibilityStatus = await getEligilityStatus(demand.Latitude, demand.Longitude, demand.Ville); // TODO à supprimer une fois getDetailedEligibilityStatus suffisant
+        const detailedEligibilityStatus = await getDetailedEligibilityStatus(demand.Latitude, demand.Longitude);
         const tagGestionnaire = getTagGestionnaire(eligibilityStatus.gestionnaire);
         const metropoleName = findMetropoleNameByCity(demand.Ville);
         return {
           ...demand,
           eligibilityStatus,
-          recommended_tags: [
+          detailedEligibilityStatus,
+          networkTags: detailedEligibilityStatus.tags,
+          recommendedTags: [
             {
               type: 'ville',
               name: demand.Ville,
@@ -51,7 +55,7 @@ const GET = async () => {
                   {
                     type: 'metropole',
                     name: `${metropoleName}M`,
-                  },
+                  } as const,
                 ]
               : []),
             ...(tagGestionnaire
@@ -59,7 +63,7 @@ const GET = async () => {
                   {
                     type: 'gestionnaire',
                     name: tagGestionnaire,
-                  },
+                  } as const,
                 ]
               : []),
             ...(tagGestionnaire && eligibilityStatus.id
@@ -67,18 +71,19 @@ const GET = async () => {
                   {
                     type: 'reseau',
                     name: `${tagGestionnaire}_${eligibilityStatus.id}`,
-                  },
+                  } as const,
                 ]
               : []),
           ],
-        };
+        } satisfies AdminDemand;
       })
     )
   ).filter((v) => v !== null);
-
+  logger.info('getDetailedEligilityStatus', {
+    recordsCount: records.length,
+    duration: Date.now() - startTime,
+  });
   return demands;
-  // TODO ajouter les tags conseillés, ville, métropole, gestionnaire, réseau
-  // TODO ajouter l'éligibilité pour chaque demande pour avoir plus d'informations
 };
 
 export default handleRouteErrors(
