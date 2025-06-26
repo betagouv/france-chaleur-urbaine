@@ -186,8 +186,8 @@ const HeatNetwork = ({
       transition écologique, recense <b>1000 réseaux de chaleur en 2023</b>. <b>7 515 km</b> de réseaux alimentent ainsi{' '}
       <b>50 065 bâtiments</b>, avec un total de chaleur livrée en 2023 qui s’élève à <b>26,4 TWh</b>. Grâce à un{' '}
       <b>taux d’énergies renouvelables et de récupération de 66,5 %</b>, les réseaux de chaleur français ont un{' '}
-      <b>contenu carbone moyen en analyse du cycle de vie de 113 eqCO2/kWh</b> seulement, un contenu qui a été divisé de près de moitié en
-      10 ans. En 2023, ils ont ainsi permis d’éviter l’émission de plus de 4,5 millions de tonnes de CO2 (par rapport à des chaudières
+      <b>contenu carbone moyen en analyse du cycle de vie de 113 gCO2/kWh</b> seulement, un contenu qui a été divisé de près de moitié en 10
+      ans. En 2023, ils ont ainsi permis d’éviter l’émission de plus de 4,5 millions de tonnes de CO2 (par rapport à des chaudières
       individuelles gaz), soit l’équivalent de 2,2 millions de voitures retirées de la circulation (source : Fedene Réseaux de chaleur et de
       froid).
       <br />
@@ -444,7 +444,7 @@ const HeatNetwork = ({
       </WithImage>
       <br />
       <b>C’est la collectivité qui définit le périmètre de développement prioritaire de son réseau, par délibération</b>
-      . Si ce périmètre n’est pas défini avant le 1er juillet 2023, un périmètre par défaut s’appliquera (périmètre du contrat de
+      . Si ce périmètre n’est pas défini avant le 1er juillet 2025, un périmètre par défaut s’appliquera (périmètre du contrat de
       concession, ou en l’absence de concession au périmètre du territoire de la ou des communes desservies par le réseau).
       <br />
       <br />À noter que les collectivités ont la possibilité de délibérer pour s’opposer au classement, si ce refus est justifié.
