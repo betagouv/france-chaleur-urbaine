@@ -51,27 +51,23 @@ Contient des dumps PG de plusieurs tables avec des noms différents :
 - zones_et_reseaux_en_construction : table zones_et_reseaux_en_construction_full
 
 
-## Étapes récupération des changements
+## Worflow
 
+! Note : le workflow est en cours de stabilisation !
+
+- Récupérer les dernières évolutions de la base
 ```sh
 # au préalable, récupérer les données à jour depuis la prod
 pnpm db:pull:prod reseaux_de_chaleur
 pnpm db:pull:prod reseaux_de_froid
 pnpm db:pull:prod zone_de_developpement_prioritaire
 pnpm db:pull:prod zones_et_reseaux_en_construction
-
-# vérifier qu'on est bien branché sur la base airtable de prod
-# vim .env.local
-
-# récupérer des tickets à faire dans la colonne "Fichiers SIG dispos" sur Trello : https://trello.com/b/Tz9kOsCy/carto
-# ! Note : le workflow est en cours de stabilisation !
-# Trier les cards par tag pour traiter les demandes similaires les unes après les autres
-# Mettre les PDP en dernier
-# créer ou vérifier quel est l'id fcu dans airtable
-
-
-# selon le ticket, mettre à jour la géométrie via ces commandes
 ```
+- Vérifier qu'on est bien branché sur la base airtable de prod `vim .env.local`
+- Récupérer des tickets à faire dans la colonne "Fichiers SIG dispos" sur Trello : https://trello.com/b/Tz9kOsCy/carto
+- Classer les cards dans la colonne commencant par les réseaux de chaleur et en finissant par les PDP
+- Trier les cards par tag pour traiter les demandes similaires les unes après les autres
+
 ## Cas MAJ
 
 Dans les différentes commandes les tables utilisées sont:
@@ -92,6 +88,8 @@ Les références dans Airtable sont
 # pnpm cli geom insert <rdc|rdf|pdp|futur> <fichier.geojson> [id_fcu] [id_sncu]
 # si nouvelle entité réseau de chaleur 123
 pnpm cli geom insert rdc mon-fichier.geojson 123
+pnpm cli geom insert rdf mon-fichier.geojson 123
+pnpm cli geom insert futur mon-fichier.geojson 123
 pnpm cli geom insert pdp mon-fichier.geojson 0 123C
 ```
 
@@ -101,11 +99,22 @@ Si aucun ID n'est fourni, il faut aller créer un record dans Airtable
 ### Remplacement
 - L'entité existe déjà en base et on veut **remplacer sa géométrie**
 
+#### Avec un fichier geojson
 ```sh
 # pnpm cli geom update <rdc|rdf|pdp|futur> <fichier.geojson> <id_fcu_or_sncu>
 # si entité réseau de chaleur 123 à mettre à jour
 pnpm cli geom update rdc mon-fichier.geojson 123
+pnpm cli geom update rdf mon-fichier.geojson 123
+pnpm cli geom update futur mon-fichier.geojson 123
 ```
+
+#### Sans fichier geojson
+Dans le cas ou la géometrie est un point et que sa position doit être mise à jour et qu'aucun fichier geojson n'est fourni
+
+- Allez sur https://geojson.io
+- Créez un point avec le bouton "Pin" en haut à droite
+- Copiez le contenu du geojson et le sauver dans un fichier
+- Lancez la commande dans le paragraphe ci-dessus
 
 ### Extension
 - L'entité existe déjà en base et on veut **ajouter la géométrie** a une existante
@@ -113,6 +122,8 @@ pnpm cli geom update rdc mon-fichier.geojson 123
 # pnpm cli geom extend <rdc|rdf|pdp|futur> <fichier.geojson> <id_fcu_or_sncu>
 # si entité réseau de chaleur 123 à mettre à jour
 pnpm cli geom extend rdc mon-fichier.geojson 123
+pnpm cli geom extend rdf mon-fichier.geojson 123
+pnpm cli geom extend futur mon-fichier.geojson 123
 ```
 
 ### Suppression
@@ -152,14 +163,24 @@ pnpm cli communes:search vannes
 pnpm cli geom create-pdp-from-commune 56260
 ```
 
+### Debugger une géometrie
+
+Lancer la commande suivante dans postgres
+
+```sql
+select id_fcu, st_asgeojson(st_transform(geom, 4326)) from public.reseaux_de_chaleur where id_fcu = 217;
+```
+Et copier le contenu dans geojson.io
+
+
 ## Finalisation
 
-```sh
-# quand tout est fini, ou qu'on veut voir des changement sur la carte
+Quand tout est fini, ou qu'on veut voir des changement sur la carte
 
+```sh
 # mise à jour des champs communes selon la géométrie des données
 # En principe obsolète car les communes sont calculées automatiquement à la mise à jour.
-# Mais il peut arriver qu'on doit appliquer des opérations une fois la géométrie chargée (ex dilatation)
+# Mais il peut arriver qu'on doive appliquer des opérations une fois la géométrie chargée (ex dilatation)
 pnpm cli geom update-communes
 
 # synchronise les champs communes, has_trace, is_zone, has_PDP

@@ -1,6 +1,6 @@
 ---
-description: 
-globs: 
+description:
+globs:
 alwaysApply: true
 ---
 <CORE_PRINCIPLES>
@@ -33,4 +33,6 @@ Responses must follow:
   - Note remaining questions
   - Prefix chat message response with (📄 rule: <rule name>) for every rule that has been applied
   </FINAL_ANSWER>
+
+When inline, just proceed with the changes
 </OUTPUT_FORMAT>

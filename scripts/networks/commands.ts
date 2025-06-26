@@ -1,9 +1,14 @@
+import fs from 'fs';
+
 import { type Command } from '@commander-js/extra-typings';
+import prompts from 'prompts';
 import { z } from 'zod';
 
 import { kdb, sql } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
+import { TrelloService } from '@/services/TrelloService';
 import { readFileGeometry } from '@cli/helpers/geo';
+import { runBash } from '@cli/helpers/shell';
 
 import {
   createPDPFromCommune,
@@ -26,6 +31,183 @@ const entityTypeToTable = {
 
 export function registerNetworkCommands(parentProgram: Command) {
   const program = parentProgram.command('geom').description('Commandes pour gérer les géométries des données FCU (réseaux, PDP. etc)');
+
+  program
+    .command('trello')
+    .description('Lit les cartes Trello de la colonne "Fichiers SIG dispos" et affiche leurs informations')
+    .action(async () => {
+      const TRELLO_API_KEY = process.env.TRELLO_API_KEY;
+      const TRELLO_TOKEN = process.env.TRELLO_TOKEN;
+      const TRELLO_BOARD_ID = process.env.TRELLO_BOARD_ID || 'Tz9kOsCy';
+      const TRELLO_POWER_UP_URL = 'https://trello.com/power-ups/685a9ed1a4cc64154fc1bd6d/edit/api-key';
+      const COLUMN_TO_PROCESS = 'Fichiers SIG dispos';
+      const COLUMN_ONGOING = 'En cours Dev';
+      const COLUMN_DONE = 'Modifs faites';
+
+      if (!TRELLO_API_KEY || !TRELLO_TOKEN) {
+        logger.error("Variables d'environnement TRELLO_API_KEY et TRELLO_TOKEN requises");
+        logger.info('📋 Configuration requise :');
+        logger.info(`1. Allez sur ${TRELLO_POWER_UP_URL}`);
+        logger.info('2. Cliquez sur "Token"');
+        logger.info('3. Connectez votre compte');
+        logger.info('4. Ajoutez ces variables à votre fichier .env.local :');
+        logger.info('   TRELLO_API_KEY=votre_api_key');
+        logger.info('   TRELLO_TOKEN=votre_token');
+        logger.info('   TRELLO_BOARD_ID=Tz9kOsCy (optionnel)');
+        process.exit(1);
+      }
+
+      runBash('open http://localhost:3000/carte');
+      runBash('open .');
+
+      try {
+        const trelloService = new TrelloService(TRELLO_API_KEY, TRELLO_TOKEN, TRELLO_BOARD_ID);
+
+        await trelloService.testConnection();
+        logger.info('✅ Connexion à Trello API réussie');
+
+        const cards = await trelloService.getCardsInColumnByName(COLUMN_TO_PROCESS);
+
+        if (cards.length === 0) {
+          logger.info(`Aucune carte trouvée dans la colonne "${COLUMN_TO_PROCESS}"`);
+          return;
+        }
+
+        logger.info(`\n📋 ${cards.length} carte(s) trouvée(s) dans "${COLUMN_TO_PROCESS}":\n`);
+
+        for (const card of cards.filter((card) => card.attachments.some((attachment) => attachment.fileName.endsWith('.geojson')))) {
+          const name = card.name;
+          const labels = card.labels.map((label) => label.name).join(', ');
+          const onlyOneLabel = card.labels.length === 1;
+          const suggestedId = onlyOneLabel ? name.match(/ID\s*(?:FCU\s*)?(\d+[CF]?)/)?.[1] : undefined;
+          const isIdSNCU = suggestedId?.endsWith('C') || suggestedId?.endsWith('F');
+          const attachmentUrls = card.attachments.filter((attachment) => attachment.fileName.endsWith('.geojson'));
+          const suggestedEntityType = onlyOneLabel
+            ? card.labels.find((label) => label.name === 'Réseau chaleur')
+              ? 'rdc'
+              : card.labels.find((label) => label.name === 'Réseau froid')
+                ? 'rdf'
+                : card.labels.find((label) => label.name === 'PDP')
+                  ? 'pdp'
+                  : card.labels.find((label) => label.name === 'Réseau en construction')
+                    ? 'futur'
+                    : undefined
+            : undefined;
+
+          const nameLc = name.toLowerCase();
+          const suggestedAction = onlyOneLabel
+            ? nameLc.startsWith('crea')
+              ? 'insert'
+              : nameLc.includes('extension')
+                ? 'extend'
+                : nameLc.includes('maj')
+                  ? 'update'
+                  : undefined
+            : undefined;
+          logger.info(`══════════════════════════`);
+          logger.info(`Processing "${name}" (${labels})`);
+          logger.info(
+            [
+              card.desc,
+              `Suggested Entity Type: ${suggestedEntityType}\nSuggested Action: ${suggestedAction}\nSuggested ID: ${suggestedId}`,
+            ].join('\n\n')
+          );
+          logger.info(`══════════════════════════`);
+
+          await trelloService.moveCardInColumnByName(card.id, COLUMN_ONGOING);
+
+          const localPaths = await trelloService.downloadAttachments(attachmentUrls);
+
+          for (const localPath of localPaths) {
+            try {
+              logger.info(`Drag n drop le fichier ${localPath} dans la carte`);
+              const { entityType } = await prompts({
+                type: 'select',
+                name: 'entityType',
+                message: "Sélectionnez le type d'entité :",
+                hint: suggestedEntityType,
+                choices: [
+                  { title: 'Réseau de chaleur (rdc)', value: 'rdc' },
+                  { title: 'Réseau de froid (rdf)', value: 'rdf' },
+                  { title: 'Plan de développement (pdp)', value: 'pdp' },
+                  { title: 'Réseau futur (futur)', value: 'futur' },
+                ],
+              });
+
+              const { action } = await prompts({
+                type: 'select',
+                name: 'action',
+                message: "Sélectionnez l'action à effectuer :",
+                hint: suggestedAction,
+                choices: [
+                  { title: 'Insérer une nouvelle entité', value: 'insert' },
+                  { title: 'Mettre à jour la géométrie', value: 'update' },
+                  { title: 'Étendre la géométrie', value: 'extend' },
+                  { title: "Supprimer l'entité", value: 'remove' },
+                ],
+              });
+
+              const { id_fcu_or_sncu } = await prompts({
+                type: 'text',
+                name: 'id_fcu_or_sncu',
+                hint: suggestedId,
+                message: "Entrez l'ID FCU ou SNCU :",
+                validate: (value) => (value.length > 0 ? true : "L'ID est requis"),
+              });
+
+              if (!action || !entityType || !id_fcu_or_sncu) {
+                logger.info('❌ Action, type ou ID manquant');
+                await trelloService.moveCardInColumnByName(card.id, COLUMN_TO_PROCESS);
+                process.exit(1);
+              }
+
+              if (action === 'remove') {
+                logger.warn('⚠️ La suppression nécessite une intervention manuelle en base de données');
+                logger.info(`Exécutez cette requête SQL :`);
+                logger.info(
+                  `DELETE FROM ${entityTypeToTable[entityType as EntityType]} WHERE ${isIdSNCU ? 'Identifiant reseau' : 'id_fcu'} = ${id_fcu_or_sncu}`
+                );
+              } else {
+                let command: string;
+                switch (action) {
+                  case 'insert':
+                    command = `pnpm cli geom insert ${entityType} ${localPath} ${id_fcu_or_sncu}`;
+                    break;
+                  case 'update':
+                    command = `pnpm cli geom update ${entityType} ${localPath} ${id_fcu_or_sncu}`;
+                    break;
+                  case 'extend':
+                    command = `pnpm cli geom extend ${entityType} ${localPath} ${id_fcu_or_sncu}`;
+                    break;
+                  default:
+                    throw new Error(`Action non reconnue: ${action}`);
+                }
+
+                logger.info(`🚀 Exécution: ${command}`);
+                await runBash(command);
+                logger.info('✅ Action terminée avec succès');
+
+                fs.unlinkSync(localPath);
+                logger.info('🧹 Fichier temporaire supprimé');
+              }
+            } catch (error) {
+              logger.error(`❌ Erreur lors du traitement de ${localPath}:`, error);
+            }
+          }
+          await trelloService.moveCardInColumnByName(card.id, COLUMN_DONE);
+        }
+      } catch (error) {
+        logger.error('Erreur lors de la récupération des cartes Trello:', error);
+        if (error instanceof Error && error.message.includes('400')) {
+          logger.info('');
+          logger.info('💡 Conseils de dépannage :');
+          logger.info('- Vérifiez que votre API key et token sont valides');
+          logger.info('- Assurez-vous que votre token a les bonnes permissions');
+          logger.info(`- Régénérez votre token sur ${TRELLO_POWER_UP_URL}`);
+        }
+        process.exit(1);
+      }
+    });
 
   program
     .command('insert')

@@ -15,6 +15,7 @@ interface HeadingProps extends SpacingProperties {
   id?: string;
   className?: string;
   maxWidth?: CSSProperties['maxWidth'];
+  title?: string;
 }
 
 /**
@@ -42,6 +43,7 @@ function Heading(props: PropsWithChildren<HeadingProps>) {
       ${spacingsToClasses(props)} ${props.className ?? ''}`}
       style={style}
       id={props.id}
+      title={props.title}
     >
       {props.children}
     </Type>
