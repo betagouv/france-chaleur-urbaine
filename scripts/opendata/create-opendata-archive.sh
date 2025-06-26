@@ -9,11 +9,21 @@ opendata_dir=$(mktemp -d)
 
 echo "Utilisation du répertoire temporaire $opendata_dir"
 
+# Detect OS and set LOCALHOST accordingly
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  DOCKER_HOST="host.docker.internal"
+else
+  DOCKER_HOST="localhost"
+fi
+
+psql="docker run -i --rm --network host postgis/postgis:16-3.5-alpine psql"
+
+
 # Création des vues
 # Les vues préparent les champs qu'on veut exporter en GeoJSON/Shapefile et type bien les champs pour que le format Shapefile soit correct.
 # On ne fait pas de requête directement car postgres ne permet pas d'appeler des fonction avec + de 100 paramètres (par exemple pour `json_build_object`).
 # Pour les exports Shapefile des réseaux de chaleur et de froid, on utilise des tables avec des champs texte pour autoriser les valeurs vides dans le fichier dbf
-psql postgres://postgres:postgres_fcu@localhost:5432/postgres <<EOF
+$psql postgres://postgres:postgres_fcu@$DOCKER_HOST:5432/postgres <<EOF
   drop schema if exists opendata cascade;
   create schema if not exists opendata;
 
@@ -267,7 +277,7 @@ dumpGeoJSON () {
   local fileName=$2
   local whereCondition=$3
 
-  psql postgres://postgres:postgres_fcu@localhost:5432/postgres -c "COPY (
+  $psql postgres://postgres:postgres_fcu@$DOCKER_HOST:5432/postgres -c "COPY (
     SELECT json_build_object(
         'type', 'FeatureCollection',
         'crs', json_build_object(
