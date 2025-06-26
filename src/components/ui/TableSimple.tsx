@@ -482,11 +482,11 @@ const TableSimple = <T extends RowData>({
             }}
           >
             {loading &&
-              [...Array(nbLoadingItems)].map((value, index) => (
+              Array.from({ length: nbLoadingItems }, (_, i) => i).map((value) => (
                 <tr
                   key={`loading_${value}`}
                   className="grid absolute w-full"
-                  style={{ gridTemplateColumns, transform: `translateY(${index * rowHeight}px)`, height: rowHeight }}
+                  style={{ gridTemplateColumns, transform: `translateY(${value * rowHeight}px)`, height: rowHeight }}
                 >
                   {columns.map((column, index) => (
                     <td key={`loading_${value}_${index}`} className={cx('!flex items-center', columnClassName(column))}>
