@@ -125,7 +125,7 @@ export function registerNetworkCommands(parentProgram: Command) {
                 type: 'select',
                 name: 'entityType',
                 message: "Sélectionnez le type d'entité :",
-                // initial: suggestedEntityType,
+                hint: suggestedEntityType,
                 choices: [
                   { title: 'Réseau de chaleur (rdc)', value: 'rdc' },
                   { title: 'Réseau de froid (rdf)', value: 'rdf' },
@@ -138,7 +138,7 @@ export function registerNetworkCommands(parentProgram: Command) {
                 type: 'select',
                 name: 'action',
                 message: "Sélectionnez l'action à effectuer :",
-                // initial: suggestedAction, Not working when put
+                hint: suggestedAction,
                 choices: [
                   { title: 'Insérer une nouvelle entité', value: 'insert' },
                   { title: 'Mettre à jour la géométrie', value: 'update' },
@@ -150,7 +150,7 @@ export function registerNetworkCommands(parentProgram: Command) {
               const { id_fcu_or_sncu } = await prompts({
                 type: 'text',
                 name: 'id_fcu_or_sncu',
-                // initial: suggestedId,
+                hint: suggestedId,
                 message: "Entrez l'ID FCU ou SNCU :",
                 validate: (value) => (value.length > 0 ? true : "L'ID est requis"),
               });
