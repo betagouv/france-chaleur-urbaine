@@ -65,7 +65,7 @@ pnpm db:pull:prod zones_et_reseaux_en_construction
 ```
 - Vérifier qu'on est bien branché sur la base airtable de prod `vim .env.local`
 - Récupérer des tickets à faire dans la colonne "Fichiers SIG dispos" sur Trello : https://trello.com/b/Tz9kOsCy/carto
-- Classer les cards dans la colonneen commencant par les réseaux de chaleur et en finissant par les PDP
+- Classer les cards dans la colonne commencant par les réseaux de chaleur et en finissant par les PDP
 - Trier les cards par tag pour traiter les demandes similaires les unes après les autres
 
 ## Cas MAJ
@@ -99,6 +99,7 @@ Si aucun ID n'est fourni, il faut aller créer un record dans Airtable
 ### Remplacement
 - L'entité existe déjà en base et on veut **remplacer sa géométrie**
 
+#### Avec un fichier geojson
 ```sh
 # pnpm cli geom update <rdc|rdf|pdp|futur> <fichier.geojson> <id_fcu_or_sncu>
 # si entité réseau de chaleur 123 à mettre à jour
@@ -106,6 +107,14 @@ pnpm cli geom update rdc mon-fichier.geojson 123
 pnpm cli geom update rdf mon-fichier.geojson 123
 pnpm cli geom update futur mon-fichier.geojson 123
 ```
+
+#### Sans fichier geojson
+Dans le cas ou la géometrie est un point et que sa position doit être mise à jour et qu'aucun fichier geojson n'est fourni
+
+- Allez sur https://geojson.io
+- Créez un point avec le bouton "Pin" en haut à droite
+- Copiez le contenu du geojson et le sauver dans un fichier
+- Lancez la commande dans le paragraphe ci-dessus
 
 ### Extension
 - L'entité existe déjà en base et on veut **ajouter la géométrie** a une existante
@@ -153,6 +162,16 @@ pnpm cli communes:search vannes
 # - puis appeler la commande
 pnpm cli geom create-pdp-from-commune 56260
 ```
+
+### Debugger une géometrie
+
+Lancer la commande suivante dans postgres
+
+```sql
+select id_fcu, st_asgeojson(st_transform(geom, 4326)) from public.reseaux_de_chaleur where id_fcu = 217;
+```
+Et copier le contenu dans geojson.io
+
 
 ## Finalisation
 
