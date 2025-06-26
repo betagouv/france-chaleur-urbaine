@@ -8,6 +8,7 @@ import Box from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
 import Hero, { HeroSubtitle, HeroTitle } from '@/components/ui/Hero';
 import { articles } from '@/data/contents';
+import { formatFrenchSpacing } from '@/utils/strings';
 
 const themes = [
   ...articles
@@ -93,7 +94,7 @@ const ActualitesPage = () => {
                       ))}
                     </ul>
                   }
-                  title={article.title}
+                  title={formatFrenchSpacing(article.title)}
                   titleAs="h3"
                   detail={
                     <Box as="span" iconLeft="fr-icon-arrow-right-line">

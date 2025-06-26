@@ -104,6 +104,12 @@ const frenchCollator = new Intl.Collator('fr', { sensitivity: 'base' });
 export const compareFrenchStrings = (a: string | undefined | null, b: string | undefined | null) =>
   frenchCollator.compare(a ?? '', b ?? '');
 
+export function formatFrenchSpacing(text: string): string {
+  return text
+    .replace(/ (\?|!|:|;|»)/g, '\u00A0$1') // non-breaking space before ? ! : ; »
+    .replace(/(«) /g, '$1\u00A0'); // non-breaking space after «
+}
+
 /**
  * Parse an unknown charset text buffer to a string.
  * Allows fixing the encoding of a text buffer that is not UTF-8 (e.g. ISO-8859-1).
