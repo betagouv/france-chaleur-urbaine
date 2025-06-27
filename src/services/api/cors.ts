@@ -2,8 +2,8 @@ import Cors from 'cors';
 import { type NextApiHandler, type NextApiRequest, type NextApiResponse } from 'next';
 
 const cors = Cors({
-  methods: ['GET', 'POST', 'HEAD'],
-  origin: [/^(https:\/\/)?france-chaleur-urbaine-(.)+\.osc-fr1\.scalingo\.io\/?$/, 'https://france-chaleur-urbaine.beta.gouv.fr/'],
+  methods: ['GET', 'POST', 'HEAD', 'OPTIONS'],
+  origin: '*',
 });
 
 function runMiddleware(req: NextApiRequest, res: NextApiResponse, fn: Function) {

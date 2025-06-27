@@ -36,7 +36,7 @@ const defaultRouteOptions = {
   requireAuthentication: false,
 } satisfies RouteOptions;
 
-type RequestMethod = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
+type RequestMethod = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE' | 'OPTIONS';
 
 /**
  * Encapsule une route API pour logger et gérer automatiquement les erreurs :
@@ -67,17 +67,23 @@ export function handleRouteErrors<HandlersConfig extends Partial<Record<RequestM
       if (routeOptions?.requireAuthentication) {
         requireAuthentication(req.user, routeOptions.requireAuthentication);
       }
-      const handler = typeof handlerOrHandlers === 'function' ? handlerOrHandlers : handlerOrHandlers[req.method as RequestMethod];
-      if (!handler) {
-        throw invalidRouteError;
-      }
-      const handlerResult = await handler(req, res);
-      if (!res.headersSent) {
-        res.status(HttpStatusCode.Ok).json(
-          handlerResult ?? {
-            message: 'success',
-          }
-        );
+
+      // handle preflight requests
+      if (req.method === 'OPTIONS') {
+        res.status(HttpStatusCode.Ok).end();
+      } else {
+        const handler = typeof handlerOrHandlers === 'function' ? handlerOrHandlers : handlerOrHandlers[req.method as RequestMethod];
+        if (!handler) {
+          throw invalidRouteError;
+        }
+        const handlerResult = await handler(req, res);
+        if (!res.headersSent) {
+          res.status(HttpStatusCode.Ok).json(
+            handlerResult ?? {
+              message: 'success',
+            }
+          );
+        }
       }
       if (routeOptions.logRequest) {
         logger.info('request completed', { duration: Date.now() - startTime });
