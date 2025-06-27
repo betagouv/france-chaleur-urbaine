@@ -468,7 +468,14 @@ export const getEligilityStatus = async (lat: number, lon: number, city?: string
  * Également plus efficace niveau requêtage que getNetworkEligilityStatus.
  */
 export const getDetailedEligibilityStatus = async (lat: number, lon: number) => {
-  const [reseauDeChaleur, reseauDeChaleurSansTrace, reseauEnConstruction, zoneEnConstruction, pdp] = await Promise.all([
+  const [commune, reseauDeChaleur, reseauDeChaleurSansTrace, reseauEnConstruction, zoneEnConstruction, pdp] = await Promise.all([
+    kdb
+      .selectFrom('ign_communes')
+      .select(['nom', 'insee_com', 'insee_dep', 'insee_reg'])
+      .orderBy((eb) => sql`${eb.ref('geom')} <-> ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)`)
+      .limit(1)
+      .executeTakeFirstOrThrow(),
+
     kdb
       .selectFrom('reseaux_de_chaleur')
       .select([
@@ -601,6 +608,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
 
   return {
     eligibilityType,
+    commune,
     reseauDeChaleur,
     reseauDeChaleurSansTrace,
     reseauEnConstruction,

@@ -1,8 +1,8 @@
 import { AirtableDB } from '@/server/db/airtable';
 import { logger } from '@/server/helpers/logger';
 import { handleRouteErrors } from '@/server/helpers/server';
-import { getDetailedEligibilityStatus, getEligilityStatus } from '@/server/services/addresseInformation';
-import { findMetropoleNameByCity } from '@/server/services/metropoles';
+import { getDetailedEligibilityStatus } from '@/server/services/addresseInformation';
+import { findMetropoleNameTagByCity } from '@/server/services/metropoles';
 import { type AdminDemand } from '@/types/Summary/Demand';
 
 const GET = async () => {
@@ -36,13 +36,10 @@ const GET = async () => {
           return null;
         }
 
-        const eligibilityStatus = await getEligilityStatus(demand.Latitude, demand.Longitude, demand.Ville); // TODO à supprimer une fois getDetailedEligibilityStatus suffisant
         const detailedEligibilityStatus = await getDetailedEligibilityStatus(demand.Latitude, demand.Longitude);
-        const tagGestionnaire = getTagGestionnaire(eligibilityStatus.gestionnaire);
-        const metropoleName = findMetropoleNameByCity(demand.Ville);
+        const metropoleName = await findMetropoleNameTagByCity(detailedEligibilityStatus.commune.insee_com!);
         return {
           ...demand,
-          eligibilityStatus,
           detailedEligibilityStatus,
           networkTags: detailedEligibilityStatus.tags,
           recommendedTags: [
@@ -54,23 +51,7 @@ const GET = async () => {
               ? [
                   {
                     type: 'metropole',
-                    name: `${metropoleName}M`,
-                  } as const,
-                ]
-              : []),
-            ...(tagGestionnaire
-              ? [
-                  {
-                    type: 'gestionnaire',
-                    name: tagGestionnaire,
-                  } as const,
-                ]
-              : []),
-            ...(tagGestionnaire && eligibilityStatus.id
-              ? [
-                  {
-                    type: 'reseau',
-                    name: `${tagGestionnaire}_${eligibilityStatus.id}`,
+                    name: metropoleName,
                   } as const,
                 ]
               : []),
@@ -92,16 +73,3 @@ export default handleRouteErrors(
     requireAuthentication: ['admin'],
   }
 );
-
-function getTagGestionnaire(gestionnaireReseau: string | null) {
-  const gestionnaire = (gestionnaireReseau ?? '').toLocaleLowerCase();
-  return gestionnaire.includes('dalkia')
-    ? 'Dalkia'
-    : gestionnaire.includes('idex')
-      ? 'IDEX'
-      : gestionnaire.includes('coriance')
-        ? 'Coriance'
-        : gestionnaire.includes('engie')
-          ? 'ENGIE'
-          : null;
-}
