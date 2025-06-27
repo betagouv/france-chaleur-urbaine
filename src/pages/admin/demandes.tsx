@@ -239,10 +239,10 @@ function DemandesAdmin(): React.ReactElement {
         enableSorting: false,
       },
       {
-        accessorKey: 'Adresse',
-        header: 'Adresse',
-        cell: ({ row }) => <div className="whitespace-normal">{row.original.Adresse}</div>,
-        width: '220px',
+        accessorFn: (row) => `${row.Nom} ${row.Prénom} ${row.Mail}`,
+        header: 'Contact',
+        cell: ({ row }) => <Contact demand={row.original} onEmailClick={() => {}} />,
+        width: '280px',
         enableSorting: false,
       },
       {
@@ -262,10 +262,10 @@ function DemandesAdmin(): React.ReactElement {
         enableSorting: false,
       },
       {
-        accessorFn: (row) => `${row.Nom} ${row.Prénom} ${row.Mail}`,
-        header: 'Contact',
-        cell: ({ row }) => <Contact demand={row.original} onEmailClick={() => {}} />,
-        width: '280px',
+        accessorKey: 'Adresse',
+        header: 'Adresse',
+        cell: ({ row }) => <div className="whitespace-normal">{row.original.Adresse}</div>,
+        width: '220px',
         enableSorting: false,
       },
       {
