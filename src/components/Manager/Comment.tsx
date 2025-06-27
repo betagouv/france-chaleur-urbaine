@@ -6,19 +6,21 @@ import debounce from '@/utils/debounce';
 
 const Comment = ({
   demand,
+  field,
   updateDemand,
 }: {
   demand: Demand;
+  field: 'Commentaire' | 'Commentaires_internes_FCU';
   updateDemand: (demandId: string, demand: Partial<Demand>) => Promise<void>;
 }) => {
-  const [value, setValue] = useState(demand.Commentaire);
+  const [value, setValue] = useState(demand[field]);
 
   const debouncedUpdateDemand = useMemo(
     () =>
       debounce(
         (value: string) =>
           updateDemand(demand.id, {
-            Commentaire: value,
+            [field]: value,
           }),
         500
       ),

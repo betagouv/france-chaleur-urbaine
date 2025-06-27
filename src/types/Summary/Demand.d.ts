@@ -1,3 +1,4 @@
+import { type DetailedEligibilityStatus } from '@/server/services/addresseInformation';
 import { type DemandStatus } from '@/types/enum/DemandSatus';
 
 import { type Coords } from '../Coords';
@@ -48,10 +49,22 @@ export type Demand = DemandSummary &
     'Emails envoyés'?: string;
     Longitude: number;
     Latitude: number;
+    'Gestionnaires validés': boolean;
+    Commentaires_internes_FCU: string;
 
     // computed
     haut_potentiel: boolean;
   };
+
+export type AdminDemand = Demand & {
+  recommendedTags: {
+    name: string;
+    type: 'ville' | 'metropole' | 'gestionnaire' | 'reseau';
+  }[];
+  eligibilityStatus: any;
+  detailedEligibilityStatus: DetailedEligibilityStatus;
+  networkTags: string[];
+};
 
 export type ContactFormInfos = {
   structure: AvailableStructure;

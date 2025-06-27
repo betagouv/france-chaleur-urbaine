@@ -99,7 +99,8 @@ export type TableSimpleProps<T> = {
   padding?: 'sm' | 'md' | 'lg';
   rowSelection?: RowSelectionState;
   onSelectionChange?: (selectedRows: T[]) => void;
-  onRowClick?: (rowId: string) => void;
+  onRowClick?: (rowId: any) => void;
+  rowIdKey?: keyof T;
   rowHeight?: number;
   controlsLayout?: 'inline' | 'block';
   onFilterChange?: (filteredRows: T[]) => void;
@@ -135,6 +136,7 @@ const TableSimple = <T extends RowData>({
   rowSelection,
   onSelectionChange,
   onRowClick,
+  rowIdKey = 'id' as any,
   onFilterChange,
   className: tableClassName,
   wrapperClassName,
@@ -480,11 +482,11 @@ const TableSimple = <T extends RowData>({
             }}
           >
             {loading &&
-              [...Array(nbLoadingItems)].map((value, index) => (
+              Array.from({ length: nbLoadingItems }, (_, i) => i).map((value) => (
                 <tr
                   key={`loading_${value}`}
                   className="grid absolute w-full"
-                  style={{ gridTemplateColumns, transform: `translateY(${index * rowHeight}px)`, height: rowHeight }}
+                  style={{ gridTemplateColumns, transform: `translateY(${value * rowHeight}px)`, height: rowHeight }}
                 >
                   {columns.map((column, index) => (
                     <td key={`loading_${value}_${index}`} className={cx('!flex items-center', columnClassName(column))}>
@@ -513,7 +515,7 @@ const TableSimple = <T extends RowData>({
                       className={cx(
                         'grid absolute w-full',
                         onRowClick && 'cursor-pointer transition-colors duration-100',
-                        onRowClick && (rowSelection?.[(row.original as any).id] ? '!bg-[#e1f1f5]' : 'hover:!bg-gray-200')
+                        onRowClick && (rowSelection?.[(row.original as any)[rowIdKey]] ? '!bg-[#e1f1f5]' : 'hover:!bg-gray-200')
                       )}
                       style={{
                         transform: `translateY(${virtualRow.start}px)`, // this should always be a `style` as it changes on scroll
@@ -527,7 +529,7 @@ const TableSimple = <T extends RowData>({
                               if (['INPUT', 'TEXTAREA', 'LABEL', 'SELECT'].includes(element.tagName)) {
                                 return;
                               }
-                              onRowClick((row.original as any).id);
+                              onRowClick((row.original as any)[rowIdKey]);
                             }
                           : undefined
                       }

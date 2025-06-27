@@ -3222,6 +3222,7 @@ export interface ReseauxDeChaleur {
   'Rend%': number | null;
   'reseaux classes': boolean | null;
   reseaux_techniques: boolean | null;
+  tags: string[];
   'Taux EnR&R': number | null;
   vapeur: string | null;
   ville_mo: string | null;
@@ -3280,6 +3281,14 @@ export interface ReseauxDeFroidTiles {
   x: Int8;
   y: Int8;
   z: Int8;
+}
+
+export interface Tags {
+  created_at: Generated<Timestamp>;
+  id: Generated<string>;
+  name: string;
+  type: string;
+  updated_at: Generated<Timestamp>;
 }
 
 export interface Users {
@@ -3396,6 +3405,7 @@ export interface ZonesEtReseauxEnConstruction {
   is_zone: Generated<boolean>;
   mise_en_service: string | null;
   region: string | null;
+  tags: string[];
 }
 
 export interface ZonesEtReseauxEnConstructionTiles {
@@ -3480,6 +3490,7 @@ export interface DB {
   reseaux_de_chaleur_tiles: ReseauxDeChaleurTiles;
   reseaux_de_froid: ReseauxDeFroid;
   reseaux_de_froid_tiles: ReseauxDeFroidTiles;
+  tags: Tags;
   users: Users;
   zone_a_potentiel_chaud: ZoneAPotentielChaud;
   zone_a_potentiel_chaud_tiles: ZoneAPotentielChaudTiles;

@@ -12,8 +12,6 @@ import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import { type Demand } from '@/types/Summary/Demand';
 import { type User as FullUser } from '@/types/User';
 
-import { gestionnairesPerCity, gestionnairesPerDepartment, gestionnairesPerNetwork } from './gestionnaires.config';
-
 export const getAllDemands = async (): Promise<Demand[]> => {
   const records = await base(Airtable.UTILISATEURS)
     .select({ sort: [{ field: 'Date demandes', direction: 'desc' }] })
@@ -74,40 +72,6 @@ export const getAllStaledDemandsSince = async (dateDiff: number): Promise<Demand
     })
     .all();
   return records.map((record) => ({ id: record.id, ...record.fields }) as Demand);
-};
-
-export const getGestionnaires = async (demand: Demand, network: string): Promise<string[]> => {
-  let city = demand.Ville;
-  if (!city) {
-    const address = demand.Adresse.split(' ');
-    city = address[address.length - 1];
-  }
-  let gestionnaires = [city];
-  const configPerCity = gestionnairesPerCity[city];
-  if (configPerCity) {
-    if (!configPerCity.network || configPerCity.network === network) {
-      gestionnaires = gestionnaires.concat(configPerCity.gestionnaires);
-    }
-  }
-  const configPerNetwork = gestionnairesPerNetwork[network];
-  if (configPerNetwork) {
-    gestionnaires = gestionnaires.concat(configPerNetwork);
-  }
-
-  const configPerDepartment = gestionnairesPerDepartment[demand.Departement];
-  if (configPerDepartment) {
-    gestionnaires = gestionnaires.concat(configPerDepartment);
-  }
-
-  const apiAccounts = await db('api_accounts').select('name', 'networks');
-  apiAccounts.forEach((apiAccount) => {
-    if (apiAccount.networks.includes(network)) {
-      gestionnaires.push(`${apiAccount.name}_${network}`);
-      gestionnaires.push(apiAccount.name);
-    }
-  });
-
-  return [...new Set(gestionnaires)];
 };
 
 export const getGestionnairesDemands = async (gestionnaires: string[]): Promise<Demand[]> => {
@@ -192,11 +156,11 @@ const getDemand = async (user: User, demandId: string): Promise<Demand> => {
   return { id: record.id, ...record.fields } as Demand;
 };
 
-export const updateDemand = async (user: User, demandId: string, update: Partial<Demand>): Promise<Demand | null> => {
+export const updateDemand = async (user: User, demandId: string, updateData: Partial<Demand>): Promise<Demand | null> => {
   // check permissions
   await getDemand(user, demandId);
 
-  const [record] = await base(Airtable.UTILISATEURS).update([{ id: demandId, fields: update }]);
+  const record = await base(Airtable.UTILISATEURS).update(demandId, updateData, { typecast: true });
 
   // legacy check, may be obsolete as errors seem to be thrown by the Airtable API
   const error = (record as any)?.error;
