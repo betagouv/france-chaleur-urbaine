@@ -210,9 +210,9 @@ function DemandesAdmin(): React.ReactElement {
         accessorKey: 'Affecté à',
         header: 'Affecté à',
         cell: ({ row }) => (
-          <AdditionalInformation demand={row.original} field="Affecté à" updateDemand={updateDemand} type="text" simpleField />
+          <AdditionalInformation demand={row.original} field="Affecté à" updateDemand={updateDemand} type="text" simpleField width={150} />
         ),
-        width: '200px',
+        width: '150px',
         enableSorting: false,
       },
       {
