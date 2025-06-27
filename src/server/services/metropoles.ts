@@ -1,3 +1,5 @@
+import { kdb } from '@/server/db/kysely';
+
 // données générées par pnpm cli import:metropoles
 const metropoles = [
   {
@@ -3772,7 +3774,21 @@ const metropoles = [
   },
 ];
 
-export function findMetropoleNameByCity(cityName: string): string | null {
-  const metropole = metropoles.find((metropole) => metropole.membres.some((membre) => membre.nom === cityName));
-  return metropole ? metropole.membres[0].nom : null;
-}
+/**
+ * Recherche un tag de métropole à partir du code INSEE d'une ville.
+ * Si la ville fait partie d'une métropole, le tag est de la forme "VilleM".
+ * Le tag doit aussi exister dans la table tags pour avoir du sens.
+ *
+ * @param cityName Nom de la ville
+ * @returns
+ */
+export const findMetropoleNameTagByCity = async (codeInsee: string): Promise<string | null> => {
+  const metropole = metropoles.find((metropole) => metropole.membres.some((membre) => membre.code === codeInsee));
+  const tagName = metropole ? `${metropole.membres[0].nom}M` : null;
+  if (!tagName) {
+    return null;
+  }
+  // ensure that the tag exists
+  const tag = await kdb.selectFrom('tags').select('name').where('name', '=', tagName).executeTakeFirst();
+  return tag ? tagName : null;
+};
