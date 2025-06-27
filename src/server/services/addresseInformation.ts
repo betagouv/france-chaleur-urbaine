@@ -560,6 +560,11 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
     const eligibilityDistances = getNetworkEligibilityDistances(reseauDeChaleur?.['Identifiant reseau'] ?? '');
     const futurEligibilityDistances = getNetworkEligibilityDistances(''); // gets the default distances
 
+    // Dans un PDP
+    if (pdp) {
+      return 'dans_pdp';
+    }
+
     // Réseau existant à moins de 100m (60m sur Paris)
     if (reseauDeChaleur.distance <= eligibilityDistances.veryEligibleDistance) {
       return 'reseau_existant_tres_proche';
@@ -606,6 +611,8 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
   };
   const eligibilityType = determineEligibilityType();
 
+  const tagsDistanceThreshold = 500; // m
+
   return {
     eligibilityType,
     commune,
@@ -614,15 +621,23 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
     reseauEnConstruction,
     zoneEnConstruction,
     pdp,
-    tags: eligibilityType.startsWith('reseau_existant')
-      ? (reseauDeChaleur.tags ?? [])
-      : eligibilityType.startsWith('reseau_futur')
-        ? (reseauEnConstruction.tags ?? [])
-        : [],
+    tags:
+      pdp && pdp['Identifiant reseau']
+        ? await findPDPTags(pdp['Identifiant reseau'])
+        : eligibilityType.startsWith('reseau_existant')
+          ? reseauDeChaleur.distance <= tagsDistanceThreshold
+            ? (reseauDeChaleur.tags ?? [])
+            : []
+          : eligibilityType.startsWith('reseau_futur')
+            ? reseauEnConstruction.distance <= tagsDistanceThreshold
+              ? (reseauEnConstruction.tags ?? [])
+              : []
+            : [],
   };
 };
 
 type EligibilityType =
+  | 'dans_pdp'
   | 'reseau_existant_tres_proche'
   | 'reseau_futur_tres_proche'
   | 'dans_zone_reseau_futur'
@@ -634,3 +649,13 @@ type EligibilityType =
   | 'trop_eloigne';
 
 export type DetailedEligibilityStatus = Awaited<ReturnType<typeof getDetailedEligibilityStatus>>;
+
+/**
+ * Récupère les tags d'un réseau de chaleur à partir de son id_sncu
+ * @param id_sncu - L'identifiant du réseau de chaleur
+ * @returns Les tags du réseau de chaleur
+ */
+const findPDPTags = async (id_sncu: string) => {
+  const reseau = await kdb.selectFrom('reseaux_de_chaleur').select('tags').where('Identifiant reseau', '=', id_sncu).executeTakeFirst();
+  return reseau?.tags ?? [];
+};
