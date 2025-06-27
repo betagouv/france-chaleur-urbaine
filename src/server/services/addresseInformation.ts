@@ -577,7 +577,6 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
 
     // Dans zone futur réseau
     if (zoneEnConstruction.distance === 0) {
-      // TODO vérifier s'il faut un st_contains
       return 'dans_zone_reseau_futur';
     }
 
