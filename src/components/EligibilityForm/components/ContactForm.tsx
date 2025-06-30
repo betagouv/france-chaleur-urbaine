@@ -260,23 +260,23 @@ export const ContactForm = ({ onSubmit, isLoading, cardMode, city, heatingTypeIn
               <Field.NumberInput name="nbLogements" label={fieldLabelInformation.nbLogements} />
             </FieldWrapper>
           )}
-          <FieldWrapper>{heatingTypeInput}</FieldWrapper>
-          <FieldWrapper>
-            <Field.Radio
-              label={heatingTypeInput ? 'Énergie de chauffage :' : fieldLabelInformation.heatingEnergy.label}
-              name="heatingEnergy"
-              className="heatingEnergyContactInformations"
-              orientation={cardMode ? 'vertical' : 'horizontal'}
-              options={fieldLabelInformation.heatingEnergy.inputs.map(({ value, label }) => ({
-                label,
-                nativeInputProps: {
-                  value,
-                },
-              }))}
-            />
-          </FieldWrapper>
         </Fieldset>
       )}
+      <FieldWrapper>{heatingTypeInput}</FieldWrapper>
+      <FieldWrapper>
+        <Field.Radio
+          label={heatingTypeInput ? 'Énergie de chauffage :' : fieldLabelInformation.heatingEnergy.label}
+          name="heatingEnergy"
+          className="heatingEnergyContactInformations"
+          orientation={cardMode ? 'vertical' : 'horizontal'}
+          options={fieldLabelInformation.heatingEnergy.inputs.map(({ value, label }) => ({
+            label,
+            nativeInputProps: {
+              value,
+            },
+          }))}
+        />
+      </FieldWrapper>
       <FieldWrapper>
         <Field.Checkbox name="termOfUse" label="J’accepte les conditions générales d’utilisation du service." />
       </FieldWrapper>
