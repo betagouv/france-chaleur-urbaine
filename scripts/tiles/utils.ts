@@ -343,11 +343,11 @@ const dockerImageArch =
           throw new Error(`Unsupported architecture: ${arch()}`);
         })();
 
-export const generateGeoJSON = async (filepath: string) => {
+export const generateGeoJSONFromTable = async (filepath: string, table: string) => {
   await unlinkFileIfExists(`${dockerVolumePath}/output.geojson`);
   await runDocker(
     `ghcr.io/osgeo/gdal:alpine-normal-latest-${dockerImageArch}`,
-    `ogr2ogr -f GeoJSON output.geojson PG:"host=localhost user=postgres dbname=postgres password=postgres_fcu" etudes_en_cours -t_srs EPSG:4326`
+    `ogr2ogr -f GeoJSON output.geojson PG:"host=localhost user=postgres dbname=postgres password=postgres_fcu" ${table} -t_srs EPSG:4326`
   );
   await moveFile(`${dockerVolumePath}/output.geojson`, filepath);
 

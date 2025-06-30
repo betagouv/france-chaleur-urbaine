@@ -1,4 +1,4 @@
-import { generateGeoJSON, importGeoJSONToTable, importGeoJSONWithTipeeCanoe } from './utils';
+import { generateGeoJSONFromTable, importGeoJSONToTable, importGeoJSONWithTipeeCanoe } from './utils';
 
 export abstract class BaseAdapter {
   abstract readonly databaseName: string;
@@ -7,7 +7,7 @@ export abstract class BaseAdapter {
   public tilesGenerationMethod: 'legacy' | 'compressed' = 'compressed';
 
   async generateGeoJSON(filepath?: string) {
-    return generateGeoJSON(filepath || `${this.databaseName}.geojson`);
+    return generateGeoJSONFromTable(filepath || `${this.databaseName}.geojson`, this.databaseName);
   }
 
   async importGeoJSON(filepath: string) {
