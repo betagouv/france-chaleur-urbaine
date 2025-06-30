@@ -10,6 +10,7 @@ import Text from '@/components/ui/Text';
 import { articles, getArticle } from '@/data/contents';
 import { type Article } from '@/types/Article';
 import { deepCloneJSON } from '@/utils/objects';
+import { formatFrenchSpacing } from '@/utils/strings';
 
 const ArticleContentWrapper = styled(Box)`
   img {
@@ -70,7 +71,7 @@ const ActualitePage: React.FC<{ article: Article }> = ({ article }) => {
       <Box backgroundColor="blue-cumulus-950-100">
         <Box maxWidth="1000px" mx="auto" pt="8w" pb="4w" px="2w">
           <Heading size="h1" color="blue-france" mb="0">
-            {title}
+            {formatFrenchSpacing(title)}
           </Heading>
 
           <Text className="fr-icon-arrow-right-line" my="2w">
