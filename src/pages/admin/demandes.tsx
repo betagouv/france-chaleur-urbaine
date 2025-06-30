@@ -1,4 +1,3 @@
-import DSFRTag from '@codegouvfr/react-dsfr/Tag';
 import { useQueryClient } from '@tanstack/react-query';
 import { type Virtualizer } from '@tanstack/react-virtual';
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -26,7 +25,7 @@ import Tooltip from '@/components/ui/Tooltip';
 import { useFetch } from '@/hooks/useApi';
 import { withAuthentication } from '@/server/authentication';
 import { toastErrors } from '@/services/notification';
-import { tagsGestionnairesStyleByType, useFCUTags } from '@/services/tags';
+import { defaultTagChipOption, useFCUTags } from '@/services/tags';
 import { type Point } from '@/types/Point';
 import { type AdminDemand, type Demand } from '@/types/Summary/Demand';
 import { isDefined } from '@/utils/core';
@@ -149,6 +148,7 @@ function DemandesAdmin(): React.ReactElement {
             <div className="block">
               <ChipAutoComplete
                 options={tagsOptions}
+                defaultOption={defaultTagChipOption}
                 value={info.getValue<string[]>() ?? []}
                 onChange={(newGestionnaires) => {
                   updateDemand(info.row.original.id, {
@@ -157,49 +157,6 @@ function DemandesAdmin(): React.ReactElement {
                 }}
               />
               <div className="flex flex-wrap gap-1 mt-2">Éligibilité : {info.row.original.detailedEligibilityStatus.eligibilityType}</div>
-              <div className="flex flex-wrap items-center gap-1 mt-2">
-                Tags du réseau :
-                <br />
-                {info.row.original.networkTags.map((tag) => {
-                  const tagConfig = tagsOptions.find((option) => option.name === tag);
-                  return (
-                    <DSFRTag
-                      key={tag}
-                      small
-                      className={cx('!block !normal-case', tagConfig?.className)}
-                      nativeButtonProps={{
-                        title: tagConfig?.type,
-                        onClick: () =>
-                          updateDemand(info.row.original.id, {
-                            Gestionnaires: [...info.row.original.Gestionnaires, tag],
-                          }),
-                      }}
-                    >
-                      {tag}
-                    </DSFRTag>
-                  );
-                })}
-              </div>
-              <div className="flex flex-wrap items-center gap-1 mt-2">
-                Conseillé (calculé) :
-                <br />
-                {info.row.original.recommendedTags.map((tag) => (
-                  <DSFRTag
-                    key={tag.name}
-                    small
-                    className={cx('!block !normal-case', tagsGestionnairesStyleByType[tag.type].className)}
-                    nativeButtonProps={{
-                      title: tagsGestionnairesStyleByType[tag.type].title,
-                      onClick: () =>
-                        updateDemand(info.row.original.id, {
-                          Gestionnaires: [...info.row.original.Gestionnaires, tag.name],
-                        }),
-                    }}
-                  >
-                    {tag.name}
-                  </DSFRTag>
-                ))}
-              </div>
             </div>
           );
         },

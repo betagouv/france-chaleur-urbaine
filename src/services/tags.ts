@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 
 import { type ChipOption } from '@/components/ui/ChipAutoComplete';
 import { useFetch } from '@/hooks/useApi';
+import { type TagWithUsers } from '@/server/services/tags';
 
 export const tagsGestionnairesStyleByType = {
   ville: { title: 'Ville', className: '[&:not(:hover)]:!bg-[#42a835] hover:!bg-[#348029] !text-white' },
@@ -12,23 +13,18 @@ export const tagsGestionnairesStyleByType = {
 };
 
 export const useFCUTags = () => {
-  const { data: tagsResponse } = useFetch<{ items: Array<{ id: string; name: string; type: string }> }>('/api/admin/tags');
+  const { data: tags } = useFetch<TagWithUsers[]>('/api/admin/tags/with-users');
 
-  const tagsOptions: ChipOption[] = useMemo(() => {
-    return tagsResponse?.items
-      ? tagsResponse.items.map((tag) => ({
-          name: tag.name,
-          type: tag.type,
-          className: tagsGestionnairesStyleByType[tag.type as keyof typeof tagsGestionnairesStyleByType]?.className,
-        }))
-      : [];
-  }, [tagsResponse]);
-  return { tags: tagsResponse?.items ?? [], tagsOptions };
+  const tagsOptions: ChipOption[] = useMemo(() => (tags ? fcuTagsToChipOptions(tags) : []), [tags]);
+  return { tags, tagsOptions };
 };
 
-export const fcuTagsToOptions = (tags: Array<{ id: string; name: string; type: string }>) =>
+export const fcuTagsToChipOptions = (tags: TagWithUsers[]): ChipOption[] =>
   tags.map((tag) => ({
-    name: tag.name,
-    type: tag.type,
+    key: tag.name,
+    label: `${tag.name} (${tag.users?.length ?? 0})`,
     className: tagsGestionnairesStyleByType[tag.type as keyof typeof tagsGestionnairesStyleByType]?.className,
+    title: tag.users?.map((user) => user.email).join(', '),
   }));
+
+export const defaultTagChipOption: ChipOption = { ...tagsGestionnairesStyleByType[''], title: '', key: '', label: '' };

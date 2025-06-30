@@ -5,13 +5,15 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover
 import cx from '@/utils/cx';
 
 export type ChipOption = {
-  name: string;
-  type?: string;
+  key: string;
+  label: string;
+  title?: string;
   className?: string;
 };
 
 export type ChipAutoCompleteProps = {
   options: ChipOption[];
+  defaultOption: ChipOption;
   value: string[];
   onChange: (value: string[]) => void;
   label?: string;
@@ -22,6 +24,7 @@ export type ChipAutoCompleteProps = {
 
 const ChipAutoComplete = ({
   options,
+  defaultOption,
   value,
   onChange,
   label,
@@ -35,7 +38,7 @@ const ChipAutoComplete = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const filteredOptions = useMemo(() => {
     const searchValue = inputValue.toLowerCase();
-    return searchValue === '' ? options : options.filter((option) => option.name.toLowerCase().includes(searchValue));
+    return searchValue === '' ? options : options.filter((option) => option.key.toLowerCase().includes(searchValue));
   }, [inputValue, options]);
 
   useEffect(() => {
@@ -57,7 +60,7 @@ const ChipAutoComplete = ({
     setTimeout(() => inputRef.current?.focus(), 0);
     setInputValue('');
     setIsOpen(false);
-    onChange([...value, option.name]);
+    onChange([...value, option.key]);
   };
 
   const handleChipRemove = (chipName: string) => {
@@ -96,22 +99,23 @@ const ChipAutoComplete = ({
             )}
             onClick={() => inputRef.current?.focus()}
           >
-            {value.map((chipNom) => {
-              const chipOption = options.find((opt) => opt.name === chipNom);
+            {value.map((tagName) => {
+              const chipOption = options.find((option) => option.key === tagName) ?? defaultOption;
               return (
                 <Tag
-                  key={chipNom}
+                  key={tagName}
                   dismissible
                   small
                   className={chipOption?.className}
                   nativeButtonProps={{
+                    title: chipOption?.title,
                     onClick: (e: React.MouseEvent<HTMLButtonElement>) => {
                       e.stopPropagation();
-                      handleChipRemove(chipNom);
+                      handleChipRemove(tagName);
                     },
                   }}
                 >
-                  {chipNom}
+                  {chipOption.label || tagName}
                 </Tag>
               );
             })}
@@ -151,15 +155,15 @@ const ChipAutoComplete = ({
           <ul className="max-h-48 overflow-auto p-0 list-none">
             {filteredOptions.map((option, index) => (
               <li
-                key={option.name}
+                key={option.key}
                 className={cx('px-3 py-2 text-sm cursor-pointer hover:bg-blue-100', index === highlightedIndex && 'bg-blue-50')}
                 onMouseDown={() => handleOptionSelect(option)}
                 onMouseEnter={() => setHighlightedIndex(index)}
                 aria-selected={index === highlightedIndex}
                 role="option"
               >
-                <Tag small className={option.className} title={option.type}>
-                  {option.name}
+                <Tag small className={option.className} title={option.title}>
+                  {option.label}
                 </Tag>
               </li>
             ))}

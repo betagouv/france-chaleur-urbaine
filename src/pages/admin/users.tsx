@@ -18,7 +18,7 @@ import { withAuthentication } from '@/server/authentication';
 import { type Tags } from '@/server/db/kysely';
 import { useServices } from '@/services';
 import { toastErrors } from '@/services/notification';
-import { fcuTagsToOptions } from '@/services/tags';
+import { fcuTagsToChipOptions } from '@/services/tags';
 import { type UserRole } from '@/types/enum/UserRole';
 import { postFetchJSON, putFetchJSON } from '@/utils/network';
 import { compareFrenchStrings } from '@/utils/strings';
@@ -58,7 +58,7 @@ export default function ManageUsers() {
     []
   );
 
-  const tagsOptions: ChipOption[] = useMemo(() => fcuTagsToOptions((tags as unknown as Selectable<Tags>[]) ?? []), [tags]);
+  const tagsOptions: ChipOption[] = useMemo(() => fcuTagsToChipOptions((tags as unknown as Selectable<Tags>[]) ?? []), [tags]);
 
   const columns: ColumnDef<AdminManageUserItem>[] = useMemo(
     () => [

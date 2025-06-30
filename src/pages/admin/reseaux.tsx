@@ -14,7 +14,7 @@ import { type ReseauDeChaleur } from '@/pages/api/admin/reseaux-de-chaleur';
 import { type ReseauEnConstruction } from '@/pages/api/admin/reseaux-en-construction';
 import { withAuthentication } from '@/server/authentication';
 import { toastErrors } from '@/services/notification';
-import { useFCUTags } from '@/services/tags';
+import { defaultTagChipOption, useFCUTags } from '@/services/tags';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
 import { patchFetchJSON } from '@/utils/network';
@@ -113,6 +113,7 @@ const GestionDesReseaux = () => {
           <div className="block">
             <ChipAutoComplete
               options={tagsOptions}
+              defaultOption={defaultTagChipOption}
               value={info.getValue<string[]>() ?? []}
               onChange={(tags) => updateReseauDeChaleur(info.row.original.id_fcu, { tags })}
             />
@@ -150,6 +151,7 @@ const GestionDesReseaux = () => {
           <div className="block">
             <ChipAutoComplete
               options={tagsOptions}
+              defaultOption={defaultTagChipOption}
               value={info.getValue<string[]>() ?? []}
               onChange={(tags) => updateReseauEnConstruction(info.row.original.id_fcu, { tags })}
             />
