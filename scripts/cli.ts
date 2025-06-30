@@ -209,10 +209,11 @@ program
     await unlink(filepath);
 
     logger.info(`La table ${tilesDatabaseName} a été populée avec les données pour ${type}.`);
-    logger.warn(`N'oubliez pas de copier la table sur dev et prod`);
+    logger.warn(`N'oubliez pas`);
+    logger.warn(`- de l'ajouter à la carte pnpm cli tiles:add-to-map ${type}`);
+    logger.warn(`- de copier la table sur dev et prod`);
     logger.warn(`pnpm db:push:dev --data-only ${tilesDatabaseName}`);
     logger.warn(`pnpm db:push:prod --data-only ${tilesDatabaseName}`);
-    logger.warn(`Puis de l'ajouter à la carte pnpm cli tiles:add-to-map ${type}`);
   });
 
 program
