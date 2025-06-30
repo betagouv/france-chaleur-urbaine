@@ -184,7 +184,14 @@ function DemandesAdmin(): React.ReactElement {
               priority="primary"
               size="small"
               onClick={async () => {
-                updateDemand(info.row.original.id, {
+                const demand = info.row.original;
+                updateDemand(demand.id, {
+                  // assign recommended tags if no gestionnaires are set
+                  ...(!demand.Gestionnaires || demand.Gestionnaires.length === 0
+                    ? {
+                        Gestionnaires: demand.recommendedTags.map((tag) => tag.name),
+                      }
+                    : {}),
                   'Gestionnaires validés': true,
                 });
               }}
