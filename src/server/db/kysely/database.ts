@@ -2900,6 +2900,13 @@ export interface EnrrMobilisablesZonesGeothermieProfondeTiles {
   z: Int8;
 }
 
+export interface Epci {
+  code: string;
+  membres: Json;
+  nom: string;
+  type: string;
+}
+
 export interface EtudesEnCoursTiles {
   tile: Buffer;
   x: Int8;
@@ -3472,6 +3479,7 @@ export interface DB {
   enrr_mobilisables_thalassothermie_tiles: EnrrMobilisablesThalassothermieTiles;
   enrr_mobilisables_tiles: EnrrMobilisablesTiles;
   enrr_mobilisables_zones_geothermie_profonde_tiles: EnrrMobilisablesZonesGeothermieProfondeTiles;
+  epci: Epci;
   etudes_en_cours: EtudesEnCours;
   etudes_en_cours_tiles: EtudesEnCoursTiles;
   ign_communes: IgnCommunes;

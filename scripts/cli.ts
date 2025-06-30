@@ -162,18 +162,25 @@ type EPCI = {
 };
 
 program
-  .command('import:metropoles')
-  .description('Import the metropoles from the file epci.json')
+  .command('import:epci')
+  .description('Import the french EPCI (used for tags)')
   .action(async () => {
-    const epci = await fetchJSON<EPCI[]>('https://unpkg.com/@etalab/decoupage-administratif/data/epci.json');
-    const metropoles = epci
-      .filter((epci) => ['CA', 'METRO'].includes(epci.type))
+    const allEPCI = await fetchJSON<EPCI[]>('https://unpkg.com/@etalab/decoupage-administratif@5.2.0/data/epci.json');
+    const epci = allEPCI
+      // seules les communautés d'agglomération, les communautés urbaines et les métropoles sont intéressantes pour le moment
+      .filter((epci) => ['CA', 'CU', 'METRO'].includes(epci.type))
       .map((metropole) => ({
         code: metropole.code,
         nom: metropole.nom,
-        membres: metropole.membres.map((membre) => ({ code: membre.code, nom: membre.nom })),
+        type: metropole.type,
+        membres: JSON.stringify(metropole.membres.map((membre) => ({ code: membre.code, nom: membre.nom }))),
       }));
-    console.info(JSON.stringify(metropoles, null, 2));
+
+    await kdb.transaction().execute(async (tx) => {
+      await tx.deleteFrom('epci').execute();
+      await tx.insertInto('epci').values(epci).execute();
+    });
+    console.info(`${epci.length} EPCI importés`);
   });
 
 program

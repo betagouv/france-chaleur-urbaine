@@ -2,7 +2,7 @@ import { AirtableDB } from '@/server/db/airtable';
 import { logger } from '@/server/helpers/logger';
 import { handleRouteErrors } from '@/server/helpers/server';
 import { getDetailedEligibilityStatus } from '@/server/services/addresseInformation';
-import { findMetropoleNameTagByCity } from '@/server/services/metropoles';
+import { findMetropoleNameTagByCity } from '@/server/services/epci';
 import { type AdminDemand } from '@/types/Summary/Demand';
 
 const GET = async () => {
