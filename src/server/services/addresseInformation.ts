@@ -482,6 +482,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
         'id_fcu',
         'Identifiant reseau',
         'tags',
+        'communes',
         sql<number>`round(ST_Distance(geom, ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)))`.as(
           'distance'
         ),
@@ -519,6 +520,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
       .select([
         'id_fcu',
         'tags',
+        'communes',
         sql<number>`round(ST_Distance(geom, ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)))`.as(
           'distance'
         ),

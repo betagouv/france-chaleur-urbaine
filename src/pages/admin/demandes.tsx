@@ -14,6 +14,7 @@ import Map from '@/components/Map/Map';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import SimplePage from '@/components/shared/page/SimplePage';
 import AsyncButton from '@/components/ui/AsyncButton';
+import Badge from '@/components/ui/Badge';
 import ChipAutoComplete from '@/components/ui/ChipAutoComplete';
 import { VerticalDivider } from '@/components/ui/Divider';
 import Icon from '@/components/ui/Icon';
@@ -156,7 +157,13 @@ function DemandesAdmin(): React.ReactElement {
                   });
                 }}
               />
-              <div className="flex flex-wrap gap-1 mt-2">Éligibilité : {info.row.original.detailedEligibilityStatus.eligibilityType}</div>
+              <div className="my-1">Éligibilité : {info.row.original.detailedEligibilityStatus.eligibilityType}</div>
+              <div className="my-1">
+                {info.row.original.detailedEligibilityStatus.reseauDeChaleur?.communes &&
+                  !info.row.original.detailedEligibilityStatus.reseauDeChaleur.communes.includes(info.row.original.Ville) && (
+                    <Badge type="warning_ville_differente" />
+                  )}
+              </div>
             </div>
           );
         },
