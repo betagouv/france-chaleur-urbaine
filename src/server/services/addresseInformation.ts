@@ -621,8 +621,10 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
     zoneEnConstruction,
     pdp,
     tags:
-      pdp && pdp['Identifiant reseau']
-        ? await findPDPTags(pdp['Identifiant reseau'])
+      eligibilityType === 'dans_pdp'
+        ? pdp && pdp['Identifiant reseau']
+          ? await findPDPTags(pdp['Identifiant reseau'])
+          : []
         : eligibilityType.startsWith('reseau_existant')
           ? reseauDeChaleur.distance <= tagsDistanceThreshold
             ? (reseauDeChaleur.tags ?? [])
@@ -631,7 +633,11 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
             ? reseauEnConstruction.distance <= tagsDistanceThreshold
               ? (reseauEnConstruction.tags ?? [])
               : []
-            : [],
+            : eligibilityType === 'dans_zone_reseau_futur'
+              ? (zoneEnConstruction.tags ?? [])
+              : eligibilityType === 'dans_ville_reseau_existant_sans_trace'
+                ? (reseauDeChaleurSansTrace?.tags ?? [])
+                : [],
   };
 };
 
