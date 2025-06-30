@@ -61,7 +61,6 @@ export type AdminDemand = Demand & {
     name: string;
     type: 'ville' | 'metropole' | 'gestionnaire' | 'reseau';
   }[];
-  eligibilityStatus: any;
   detailedEligibilityStatus: DetailedEligibilityStatus;
   networkTags: string[];
 };

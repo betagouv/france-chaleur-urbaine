@@ -149,7 +149,7 @@ function DemandesAdmin(): React.ReactElement {
               <ChipAutoComplete
                 options={tagsOptions}
                 defaultOption={defaultTagChipOption}
-                value={info.getValue<string[]>() ?? []}
+                value={info.getValue<string[]>() ?? info.row.original.recommendedTags.map((tag) => tag.name)}
                 onChange={(newGestionnaires) => {
                   updateDemand(info.row.original.id, {
                     Gestionnaires: newGestionnaires,

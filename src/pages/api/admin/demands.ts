@@ -50,11 +50,15 @@ const GET = async () => {
             ...(metropoleName
               ? [
                   {
-                    type: 'metropole',
+                    type: 'metropole' as const,
                     name: metropoleName,
-                  } as const,
+                  },
                 ]
               : []),
+            ...detailedEligibilityStatus.tags.map((tag) => ({
+              type: 'reseau' as const,
+              name: tag,
+            })),
           ],
         } satisfies AdminDemand;
       })
