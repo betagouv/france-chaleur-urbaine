@@ -249,6 +249,11 @@ const nextConfig: NextConfig = {
         permanent: false,
       },
       {
+        source: '/webinaire/2025/presentation-comparateur',
+        destination: '/webinaires/202506_webinaire_comparateur.pdf',
+        permanent: false,
+      },
+      {
         source: '/webinaire/2025/replay-collectivites-exploitants-juin',
         destination: 'https://youtu.be/aetWYIxs0MA',
         permanent: true,
