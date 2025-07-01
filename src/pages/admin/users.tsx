@@ -69,6 +69,7 @@ export default function ManageUsers() {
         align: 'center',
         flex: 1.5,
         cell: (info) => <UserRoleBadge role={info.getValue<UserRole>()} />,
+        filterType: 'Facets',
       },
       {
         accessorKey: 'gestionnaires',
@@ -91,10 +92,18 @@ export default function ManageUsers() {
         sortingFn: (rowA, rowB) => compareFrenchStrings(rowA.original.gestionnaires?.[0], rowB.original.gestionnaires?.[0]),
       },
       {
-        accessorKey: 'optin_at',
-        header: 'Newsletter',
+        accessorKey: 'receive_new_demands',
+        header: 'Notif nouvelle demande',
         cellType: 'Boolean',
         align: 'center',
+        filterType: 'Facets',
+      },
+      {
+        accessorKey: 'receive_old_demands',
+        header: 'Notif relance',
+        cellType: 'Boolean',
+        align: 'center',
+        filterType: 'Facets',
       },
       {
         accessorKey: 'last_connection',
@@ -106,6 +115,7 @@ export default function ManageUsers() {
         header: 'Actif',
         cellType: 'Boolean',
         align: 'center',
+        filterType: 'Facets',
       },
       {
         accessorKey: 'created_at',
