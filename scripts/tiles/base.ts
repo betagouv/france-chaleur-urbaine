@@ -5,6 +5,7 @@ export abstract class BaseAdapter {
   public zoomMin: number = 5;
   public zoomMax: number = 14;
   public tilesGenerationMethod: 'legacy' | 'compressed' = 'compressed';
+  public tippeCanoeArgs?: string;
 
   async generateGeoJSON(filepath?: string) {
     return generateGeoJSONFromTable(filepath || `${this.databaseName}.geojson`, this.databaseName);
@@ -12,8 +13,12 @@ export abstract class BaseAdapter {
 
   async importGeoJSON(filepath: string) {
     const tilesDatabaseName = `${this.databaseName}_tiles`;
-    const importFn = this.tilesGenerationMethod === 'legacy' ? importGeoJSONToTable : importGeoJSONWithTipeeCanoe;
-    await importFn(filepath, tilesDatabaseName, this.zoomMin, this.zoomMax);
+
+    if (this.tilesGenerationMethod === 'legacy') {
+      await importGeoJSONToTable(filepath, tilesDatabaseName, this.zoomMin, this.zoomMax);
+    } else {
+      await importGeoJSONWithTipeeCanoe(filepath, tilesDatabaseName, this.zoomMin, this.zoomMax, this.tippeCanoeArgs);
+    }
     return tilesDatabaseName;
   }
 }

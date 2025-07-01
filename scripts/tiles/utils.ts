@@ -376,14 +376,26 @@ export const importTilesDirectoryToTable = async (tilesDirectory: string, destin
   await importTilesDirectory(tilesDirectory, destinationTable);
 };
 
-export const importGeoJSONWithTipeeCanoe = async (fileName: string, destinationTable: string, zoomMin: number, zoomMax: number) => {
-  const tilesDirectory = await generateTilesFromGeoJSON(fileName, destinationTable, zoomMin, zoomMax);
+export const importGeoJSONWithTipeeCanoe = async (
+  fileName: string,
+  destinationTable: string,
+  zoomMin: number,
+  zoomMax: number,
+  tippeCanoeArgs?: string
+) => {
+  const tilesDirectory = await generateTilesFromGeoJSON(fileName, destinationTable, zoomMin, zoomMax, tippeCanoeArgs);
   await importTilesDirectoryToTable(tilesDirectory, destinationTable);
 };
 
-export const generateTilesFromGeoJSON = async (fileName: string, destinationTable: string, zoomMin: number, zoomMax: number) => {
+export const generateTilesFromGeoJSON = async (
+  fileName: string,
+  destinationTable: string,
+  zoomMin: number,
+  zoomMax: number,
+  tippeCanoeArgs?: string
+) => {
   await runBash(
-    `cat ${fileName} | docker run -i --rm --entrypoint /bin/bash naxgrp/tippecanoe -c "tippecanoe-json-tool" | docker run -i --rm -v ${dockerVolumePath}:/volume -w /volume --user $(id -u):$(id -g) --entrypoint /bin/bash naxgrp/tippecanoe -c "tippecanoe -e ${destinationTable} --read-parallel --layer=layer --force --generate-ids --minimum-zoom=${zoomMin} --maximum-zoom=${zoomMax}"`
+    `cat ${fileName} | docker run -i --rm --entrypoint /bin/bash naxgrp/tippecanoe -c "tippecanoe-json-tool" | docker run -i --rm -v ${dockerVolumePath}:/volume -w /volume --user $(id -u):$(id -g) --entrypoint /bin/bash naxgrp/tippecanoe -c "tippecanoe -e ${destinationTable} --read-parallel --layer=layer --force --generate-ids --minimum-zoom=${zoomMin} --maximum-zoom=${zoomMax} ${tippeCanoeArgs ?? ''}"`
   );
   return `${dockerVolumePath}/${destinationTable}`;
 };
