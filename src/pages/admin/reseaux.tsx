@@ -176,7 +176,7 @@ const GestionDesReseaux = () => {
           controlsLayout="block"
           padding="sm"
           loadingEmptyMessage="Aucun réseau de chaleur à afficher"
-          height="calc(100dvh - 200px)"
+          height="calc(100dvh - 194px)"
           onRowClick={onTableRowClick}
           rowIdKey="id_fcu"
           enableGlobalFilter
@@ -195,7 +195,7 @@ const GestionDesReseaux = () => {
           controlsLayout="block"
           padding="sm"
           loadingEmptyMessage="Aucun réseau en construction à afficher"
-          height="calc(100dvh - 200px)"
+          height="calc(100dvh - 194px)"
           onRowClick={onTableRowClick}
           rowIdKey="id_fcu"
           enableGlobalFilter
@@ -225,7 +225,7 @@ const GestionDesReseaux = () => {
           </ResizablePanel>
           <ResizableHandle />
           <ResizablePanel defaultSize={34}>
-            <div className={cx('max-md:h-[600px] md:h-[calc(100dvh-140px)] bg-[#F8F4F0]')}>
+            <div className={cx('max-md:h-[700px] md:h-[calc(100dvh-56px)] bg-[#F8F4F0]')}>
               <Map
                 noPopup
                 withoutLogo
