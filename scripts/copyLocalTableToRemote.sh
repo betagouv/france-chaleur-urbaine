@@ -26,7 +26,6 @@ echo "Importing data to remote database $env:$DB_PORT..."
 if [ $DATAONLY = true ]; then
   load_tables_in_transaction postgres://$DOCKER_HOST:$DB_PORT "${TABLES[@]}"
 else
-  truncate_tables postgres://$DOCKER_HOST:$DB_PORT "${TABLES[@]}"
   restore_tables postgres://$DOCKER_HOST:$DB_PORT "${TABLES[@]}"
 fi
 

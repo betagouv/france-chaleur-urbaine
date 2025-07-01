@@ -26,7 +26,6 @@ echo "Importing data to local database..."
 if [ $DATAONLY = true ]; then
   load_tables_in_transaction postgres://postgres:postgres_fcu@$DOCKER_HOST:5432/postgres "${TABLES[@]}"
 else
-  truncate_tables postgres://postgres:postgres_fcu@$DOCKER_HOST:5432/postgres "${TABLES[@]}"
   restore_tables postgres://postgres:postgres_fcu@$DOCKER_HOST:5432/postgres "${TABLES[@]}"
 fi
 
