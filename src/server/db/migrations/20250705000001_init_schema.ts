@@ -2837,8 +2837,8 @@ CREATE TABLE etudes_en_cours (
   id INTEGER PRIMARY KEY,
   maitre_ouvrage TEXT NOT NULL,
   status TEXT NOT NULL DEFAULT '',
-  geom GEOMETRY, -- or TEXT if you store GeoJSON
-  commune_ids INTEGER[], -- assumes Postgres
+  geom GEOMETRY,
+  commune_ids INTEGER[],
   communes TEXT,
   launched_at TIMESTAMP
 );
