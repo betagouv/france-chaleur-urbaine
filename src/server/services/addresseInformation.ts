@@ -558,88 +558,120 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
       .executeTakeFirst(),
   ]);
 
-  const determineEligibilityType = (): EligibilityType => {
+  const determineEligibilityResult = async (): Promise<EligibilityResult> => {
+    const tagsDistanceThreshold = 500; // m
     const eligibilityDistances = getNetworkEligibilityDistances(reseauDeChaleur?.['Identifiant reseau'] ?? '');
     const futurEligibilityDistances = getNetworkEligibilityDistances(''); // gets the default distances
 
     // Dans un PDP
     if (pdp) {
-      return 'dans_pdp';
+      return {
+        type: 'dans_pdp',
+        distance: 0,
+        tags: pdp['Identifiant reseau'] ? await findPDPTags(pdp['Identifiant reseau']) : [],
+        communes: [],
+      };
     }
 
     // Réseau existant à moins de 100m (60m sur Paris)
     if (reseauDeChaleur.distance <= eligibilityDistances.veryEligibleDistance) {
-      return 'reseau_existant_tres_proche';
+      return {
+        type: 'reseau_existant_tres_proche',
+        distance: reseauDeChaleur.distance,
+        tags: reseauDeChaleur.distance <= tagsDistanceThreshold ? (reseauDeChaleur.tags ?? []) : [],
+        communes: reseauDeChaleur.communes ?? [],
+      };
     }
 
     // Réseau futur à moins de 100m (60 sur Paris)
     if (reseauEnConstruction.distance <= futurEligibilityDistances.veryEligibleDistance) {
-      return 'reseau_futur_tres_proche';
+      return {
+        type: 'reseau_futur_tres_proche',
+        distance: reseauEnConstruction.distance,
+        tags: reseauEnConstruction.distance <= tagsDistanceThreshold ? (reseauEnConstruction.tags ?? []) : [],
+        communes: reseauEnConstruction.communes ?? [],
+      };
     }
 
     // Dans zone futur réseau
     if (zoneEnConstruction.distance === 0) {
-      return 'dans_zone_reseau_futur';
+      return {
+        type: 'dans_zone_reseau_futur',
+        distance: 0,
+        tags: zoneEnConstruction.distance <= tagsDistanceThreshold ? (zoneEnConstruction.tags ?? []) : [],
+        communes: [],
+      };
     }
 
     // Réseau existant entre 100 et 200m (60 et 100 sur Paris)
     if (reseauDeChaleur.distance <= eligibilityDistances.eligibleDistance) {
-      return 'reseau_existant_proche';
+      return {
+        type: 'reseau_existant_proche',
+        distance: reseauDeChaleur.distance,
+        tags: reseauDeChaleur.distance <= tagsDistanceThreshold ? (reseauDeChaleur.tags ?? []) : [],
+        communes: reseauDeChaleur.communes ?? [],
+      };
     }
 
     // Réseau futur entre 100 et 200m (60 et 100 sur Paris)
     if (reseauEnConstruction.distance <= futurEligibilityDistances.eligibleDistance) {
-      return 'reseau_futur_proche';
+      return {
+        type: 'reseau_futur_proche',
+        distance: reseauEnConstruction.distance,
+        tags: reseauEnConstruction.distance <= tagsDistanceThreshold ? (reseauEnConstruction.tags ?? []) : [],
+        communes: reseauEnConstruction.communes ?? [],
+      };
     }
 
     // Réseau existant entre 200 et 1000m
     if (reseauDeChaleur.distance <= 1000) {
-      return 'reseau_existant_loin';
+      return {
+        type: 'reseau_existant_loin',
+        distance: reseauDeChaleur.distance,
+        tags: reseauDeChaleur.distance <= tagsDistanceThreshold ? (reseauDeChaleur.tags ?? []) : [],
+        communes: reseauDeChaleur.communes ?? [],
+      };
     }
 
     // Réseau futur entre 200 et 1000m
     if (reseauEnConstruction.distance <= 1000) {
-      return 'reseau_futur_loin';
+      return {
+        type: 'reseau_futur_loin',
+        distance: reseauEnConstruction.distance,
+        tags: reseauEnConstruction.distance <= tagsDistanceThreshold ? (reseauEnConstruction.tags ?? []) : [],
+        communes: reseauEnConstruction.communes ?? [],
+      };
     }
 
     // Pas de tracé sur la ville, mais ville où l'on sait qu'existe un réseau (repère)
     if (reseauDeChaleurSansTrace) {
-      return 'dans_ville_reseau_existant_sans_trace';
+      return {
+        type: 'dans_ville_reseau_existant_sans_trace',
+        distance: 0,
+        tags: reseauDeChaleurSansTrace.tags ?? [],
+        communes: [reseauDeChaleurSansTrace.nom ?? ''],
+      };
     }
 
     // Pas de tracé à moins de 1000m, ni repère réseau sur ville
-    return 'trop_eloigne';
+    return {
+      type: 'trop_eloigne',
+      distance: 0,
+      tags: [],
+      communes: [],
+    };
   };
-  const eligibilityType = determineEligibilityType();
-
-  const tagsDistanceThreshold = 500; // m
+  const eligibilityResult = await determineEligibilityResult();
 
   return {
-    eligibilityType,
+    eligibilityType: eligibilityResult.type,
     commune,
     reseauDeChaleur,
     reseauDeChaleurSansTrace,
     reseauEnConstruction,
     zoneEnConstruction,
     pdp,
-    tags:
-      eligibilityType === 'dans_pdp'
-        ? pdp && pdp['Identifiant reseau']
-          ? await findPDPTags(pdp['Identifiant reseau'])
-          : []
-        : eligibilityType.startsWith('reseau_existant')
-          ? reseauDeChaleur.distance <= tagsDistanceThreshold
-            ? (reseauDeChaleur.tags ?? [])
-            : []
-          : eligibilityType.startsWith('reseau_futur')
-            ? reseauEnConstruction.distance <= tagsDistanceThreshold
-              ? (reseauEnConstruction.tags ?? [])
-              : []
-            : eligibilityType === 'dans_zone_reseau_futur'
-              ? (zoneEnConstruction.tags ?? [])
-              : eligibilityType === 'dans_ville_reseau_existant_sans_trace'
-                ? (reseauDeChaleurSansTrace?.tags ?? [])
-                : [],
+    tags: eligibilityResult.tags,
   };
 };
 
@@ -654,6 +686,13 @@ type EligibilityType =
   | 'reseau_futur_loin'
   | 'dans_ville_reseau_existant_sans_trace'
   | 'trop_eloigne';
+
+type EligibilityResult = {
+  type: EligibilityType;
+  distance: number;
+  tags: string[];
+  communes: string[];
+};
 
 export type DetailedEligibilityStatus = Awaited<ReturnType<typeof getDetailedEligibilityStatus>>;
 
