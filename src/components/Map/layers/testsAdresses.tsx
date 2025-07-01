@@ -7,8 +7,14 @@ import { structureTypes } from '@/validation/user';
 import { ifHoverElse, type MapSourceLayersSpecification, type PopupStyleHelpers } from './common';
 
 export const testsAdressesLayerStyle = {
-  fill: { color: '#FFFFFF', size: 4 },
-  stroke: { color: '#dd75ff', size: 2 },
+  eligible: {
+    fill: { color: '#00efaf', size: 4 },
+    stroke: { color: '#00b894', size: 2 },
+  },
+  notEligible: {
+    fill: { color: '#ff6b6b', size: 4 },
+    stroke: { color: '#e74c3c', size: 2 },
+  },
 };
 
 export const testsAdressesLayersSpec = [
@@ -23,10 +29,20 @@ export const testsAdressesLayersSpec = [
         id: 'testsAdresses',
         type: 'circle',
         paint: {
-          'circle-color': testsAdressesLayerStyle.fill.color,
-          'circle-stroke-color': testsAdressesLayerStyle.stroke.color,
-          'circle-radius': ifHoverElse(testsAdressesLayerStyle.fill.size + 2, testsAdressesLayerStyle.fill.size),
-          'circle-stroke-width': testsAdressesLayerStyle.stroke.size,
+          'circle-color': [
+            'case',
+            ['get', 'isEligible'],
+            testsAdressesLayerStyle.eligible.fill.color,
+            testsAdressesLayerStyle.notEligible.fill.color,
+          ],
+          'circle-stroke-color': [
+            'case',
+            ['get', 'isEligible'],
+            testsAdressesLayerStyle.eligible.stroke.color,
+            testsAdressesLayerStyle.notEligible.stroke.color,
+          ],
+          'circle-radius': ifHoverElse(testsAdressesLayerStyle.eligible.fill.size + 2, testsAdressesLayerStyle.eligible.fill.size),
+          'circle-stroke-width': testsAdressesLayerStyle.eligible.stroke.size,
         },
         isVisible: (config) => config.testsAdresses,
         popup: Popup,

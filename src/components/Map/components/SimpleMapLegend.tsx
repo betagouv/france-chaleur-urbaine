@@ -181,11 +181,20 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
               />
 
               <Box
-                backgroundColor={testsAdressesLayerStyle.fill.color}
-                border={`2px solid ${testsAdressesLayerStyle.stroke.color}`}
+                backgroundColor={testsAdressesLayerStyle.eligible.fill.color}
+                border={`2px solid ${testsAdressesLayerStyle.eligible.stroke.color}`}
                 borderRadius="50%"
                 minHeight="16px"
                 minWidth="16px"
+                mt="1v"
+              />
+              <Box
+                backgroundColor={testsAdressesLayerStyle.notEligible.fill.color}
+                border={`2px solid ${testsAdressesLayerStyle.notEligible.stroke.color}`}
+                borderRadius="50%"
+                minHeight="16px"
+                minWidth="16px"
+                ml="1v"
                 mt="1v"
               />
 

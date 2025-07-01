@@ -25,7 +25,8 @@ FROM (
     'properties', jsonb_build_object(
       'ban_address', a.ban_address,
       'tests', a.tests,
-      'eligibility_status', a.eligibility_status
+      'eligibility_status', a.eligibility_status,
+      'isEligible', (a.eligibility_status->>'isEligible')::boolean
     )
   ) AS feature
   FROM (
