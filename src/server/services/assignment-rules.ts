@@ -1,0 +1,39 @@
+import { z } from 'zod';
+
+import { kdb } from '@/server/db/kysely';
+import { createBaseModel } from '@/server/db/kysely/base-model';
+
+export const tableName = 'assignment_rules';
+
+const baseModel = createBaseModel(tableName);
+
+export const list = async () => {
+  const records = await kdb
+    .selectFrom('assignment_rules')
+    .select(['id', 'search_pattern', 'result', 'active', 'created_at', 'updated_at'])
+    .orderBy('created_at', 'desc')
+    .execute();
+
+  return {
+    items: records,
+    count: records.length,
+  };
+};
+export type AssignmentRule = Awaited<ReturnType<typeof list>>['items'][number];
+
+export const create = baseModel.create;
+export const update = baseModel.update;
+export const remove = baseModel.remove;
+
+export const validation = {
+  create: z.object({
+    search_pattern: z.string().min(1, 'Le pattern de recherche est requis'),
+    result: z.string().min(1, 'Le résultat est requis'),
+    active: z.boolean().optional(),
+  }),
+  update: z.object({
+    search_pattern: z.string().min(1, 'Le pattern de recherche est requis').optional(),
+    result: z.string().min(1, 'Le résultat est requis').optional(),
+    active: z.boolean().optional(),
+  }),
+};

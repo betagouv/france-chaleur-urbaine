@@ -3297,6 +3297,15 @@ export interface ReseauxDeFroidTiles {
   z: Int8;
 }
 
+export interface AssignmentRules {
+  id: string;
+  search_pattern: string;
+  result: string;
+  active: boolean;
+  created_at: Generated<Timestamp>;
+  updated_at: Generated<Timestamp>;
+}
+
 export interface Tags {
   created_at: Generated<Timestamp>;
   id: Generated<string>;
@@ -3431,6 +3440,7 @@ export interface ZonesEtReseauxEnConstructionTiles {
 
 export interface DB {
   api_accounts: ApiAccounts;
+  assignment_rules: AssignmentRules;
   batiments_raccordes_rdc: BatimentsRaccordesRdc;
   batiments_raccordes_reseaux_chaleur_froid_tiles: BatimentsRaccordesReseauxChaleurFroidTiles;
   bdnb_registre2022_aura: BdnbRegistre2022Aura;

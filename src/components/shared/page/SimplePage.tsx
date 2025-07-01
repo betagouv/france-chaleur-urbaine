@@ -326,6 +326,12 @@ const adminNavigationMenu: MainNavigationProps.Item[] = [
         },
       },
       {
+        text: "Gestion des règles d'affectation",
+        linkProps: {
+          href: '/admin/assignment-rules',
+        },
+      },
+      {
         text: 'Gestion des réseaux',
         linkProps: {
           href: '/admin/reseaux',
