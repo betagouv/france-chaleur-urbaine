@@ -13,3 +13,4 @@ alwaysApply: false
 - Use kysely to query the database.
 - import kysely using `import { kdb, sql } from '@/server/db/kysely';`
 - For data models, read it in [database.ts](mdc:src/server/db/kysely/database.ts) file.
+- Schema migrations use knex.js are located in src/server/db/migrations/. They are run with the pnpm db:migrate command.
