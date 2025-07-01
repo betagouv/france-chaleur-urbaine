@@ -23,24 +23,29 @@ export const testsAdressesLayersSpec = [
     source: {
       type: 'vector',
       tiles: [`/api/map/testsAdresses/{z}/{x}/{y}`],
+      maxzoom: 12,
     },
     layers: [
       {
-        id: 'testsAdresses',
+        id: 'testsAdresses-notEligible',
         type: 'circle',
+        filter: () => ['==', ['get', 'isEligible'], false],
         paint: {
-          'circle-color': [
-            'case',
-            ['get', 'isEligible'],
-            testsAdressesLayerStyle.eligible.fill.color,
-            testsAdressesLayerStyle.notEligible.fill.color,
-          ],
-          'circle-stroke-color': [
-            'case',
-            ['get', 'isEligible'],
-            testsAdressesLayerStyle.eligible.stroke.color,
-            testsAdressesLayerStyle.notEligible.stroke.color,
-          ],
+          'circle-color': testsAdressesLayerStyle.notEligible.fill.color,
+          'circle-stroke-color': testsAdressesLayerStyle.notEligible.stroke.color,
+          'circle-radius': ifHoverElse(testsAdressesLayerStyle.notEligible.fill.size + 2, testsAdressesLayerStyle.notEligible.fill.size),
+          'circle-stroke-width': testsAdressesLayerStyle.notEligible.stroke.size,
+        },
+        isVisible: (config) => config.testsAdresses,
+        popup: Popup,
+      },
+      {
+        id: 'testsAdresses-eligible',
+        type: 'circle',
+        filter: () => ['==', ['get', 'isEligible'], true],
+        paint: {
+          'circle-color': testsAdressesLayerStyle.eligible.fill.color,
+          'circle-stroke-color': testsAdressesLayerStyle.eligible.stroke.color,
           'circle-radius': ifHoverElse(testsAdressesLayerStyle.eligible.fill.size + 2, testsAdressesLayerStyle.eligible.fill.size),
           'circle-stroke-width': testsAdressesLayerStyle.eligible.stroke.size,
         },
