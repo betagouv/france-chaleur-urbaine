@@ -179,6 +179,7 @@ const GestionDesReseaux = () => {
           height="calc(100dvh - 200px)"
           onRowClick={onTableRowClick}
           rowIdKey="id_fcu"
+          enableGlobalFilter
         />
       ),
       isDefault: selectedTab === 'reseaux-de-chaleur',
@@ -197,6 +198,7 @@ const GestionDesReseaux = () => {
           height="calc(100dvh - 200px)"
           onRowClick={onTableRowClick}
           rowIdKey="id_fcu"
+          enableGlobalFilter
         />
       ),
       isDefault: selectedTab === 'reseaux-en-construction',
