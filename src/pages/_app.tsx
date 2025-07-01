@@ -5,6 +5,7 @@ import type { AppProps } from 'next/app';
 import dynamic from 'next/dynamic';
 import type Link from 'next/link';
 // use AppProgressBar instead of PagesProgressBar on purpose as it handles better the query params ignoring
+import { SessionProvider } from 'next-auth/react';
 import { AppProgressBar as ProgressBar } from 'next-nprogress-bar';
 import { useState } from 'react';
 
@@ -37,7 +38,7 @@ declare module '@codegouvfr/react-dsfr/next-pagesdir' {
 
 export { augmentDocumentWithEmotionCache, dsfrDocumentApi };
 
-function App({ Component, pageProps }: AppProps<AuthSSRPageProps>) {
+const AppProvider = ({ Component, pageProps }: AppProps<AuthSSRPageProps>) => {
   const [queryClient] = useState(
     () =>
       new QueryClient({
@@ -51,11 +52,7 @@ function App({ Component, pageProps }: AppProps<AuthSSRPageProps>) {
         },
       })
   );
-
   useInitAuthentication(pageProps.session);
-  usePreserveScroll();
-  useAnalytics();
-
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
@@ -78,6 +75,17 @@ function App({ Component, pageProps }: AppProps<AuthSSRPageProps>) {
         </ServicesContext.Provider>
       </ThemeProvider>
     </QueryClientProvider>
+  );
+};
+
+function App(appProps: AppProps<AuthSSRPageProps>) {
+  usePreserveScroll();
+  useAnalytics();
+
+  return (
+    <SessionProvider session={appProps.pageProps.session}>
+      <AppProvider {...appProps} />
+    </SessionProvider>
   );
 }
 export default App;
