@@ -3144,12 +3144,6 @@ CREATE TABLE public.reseaux_de_chaleur_tiles (
     z bigint NOT NULL,
     tile bytea NOT NULL
 );
-CREATE TABLE public.pro_eligibility_tests_addresses_tiles (
-    x bigint NOT NULL,
-    y bigint NOT NULL,
-    z bigint NOT NULL,
-    tile bytea NOT NULL
-);
 CREATE TABLE public.reseaux_de_froid (
     id_fcu smallint NOT NULL,
     geom public.geometry,
