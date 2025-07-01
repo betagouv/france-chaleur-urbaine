@@ -60,14 +60,13 @@ export type TestAdresse = {
   id: string;
   ban_address: string;
   eligibility_status: string;
-  tests: string;
+  users: string;
 };
 
 export type Test = {
   id: string;
   name: string;
   created_at: string;
-  user: TestUser;
 };
 
 export type TestUser = {
@@ -79,6 +78,7 @@ export type TestUser = {
   structure_type: string;
   phone: string;
   gestionnaires: string[];
+  tests: Test[];
 };
 
 export type EligibilityStatus = {
@@ -99,39 +99,20 @@ export type EligibilityStatus = {
 };
 
 function Popup(
-  { ban_address, eligibility_status: eligibility_status_string, tests: tests_string }: TestAdresse,
+  { ban_address, eligibility_status: eligibility_status_string, users: users_string }: TestAdresse,
   { Property, Title, TwoColumns }: PopupStyleHelpers
 ) {
   const eligibilityStatus = JSON.parse(eligibility_status_string) as EligibilityStatus;
-  const tests: Test[] = tests_string ? JSON.parse(tests_string) : [];
-
-  const interestedUsers = tests.reduce(
-    (acc, { user, ...test }) => {
-      acc[user.id] = acc[user.id] || {
-        first_name: user.first_name,
-        last_name: user.last_name,
-        role: user.role,
-        gestionnaires: user.gestionnaires,
-        structure_name: user.structure_name,
-        structure_type: user.structure_type,
-        phone: user.phone,
-        tests: [],
-      };
-
-      acc[user.id].tests.push(test);
-      return acc;
-    },
-    {} as Record<string, TestUser & { tests: Omit<Test, 'user'>[] }>
-  );
+  const users: TestUser[] = users_string ? JSON.parse(users_string) : [];
 
   return (
     <>
       <Title>{ban_address}</Title>
-      <h6 className="text-lg !mb-0">Utilisateurs interessés ({Object.keys(interestedUsers).length})</h6>
+      <h6 className="text-lg !mb-0">Utilisateurs interessés ({users.length})</h6>
       <TwoColumns>
-        {Object.entries(interestedUsers)
-          .sort((a, b) => a[1].first_name?.toLowerCase().localeCompare(b[1].first_name?.toLowerCase() || '') || 0)
-          ?.map(([id, { first_name, last_name, role, structure_name, structure_type, phone, gestionnaires, tests }]) => {
+        {users
+          .sort((a, b) => a.first_name?.toLowerCase().localeCompare(b.first_name?.toLowerCase() || '') || 0)
+          ?.map(({ id, first_name, last_name, role, structure_name, structure_type, phone, gestionnaires, tests }) => {
             const name = first_name || last_name ? `${upperCaseFirstChar(first_name)} ${upperCaseFirstChar(last_name)}` : '';
             const roleLabel = role ? ` (${role})` : '';
 
