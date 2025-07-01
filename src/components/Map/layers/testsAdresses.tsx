@@ -129,18 +129,18 @@ function Popup(
           ?.map(([id, { first_name, last_name, role, structure_name, structure_type, phone, gestionnaires, tests }]) => {
             const name = first_name || last_name ? `${upperCaseFirstChar(first_name)} ${upperCaseFirstChar(last_name)}` : '';
             const roleLabel = role ? ` (${role})` : '';
-            const phoneLabel = phone ? (
-              <>
-                - <a href={`tel:${phone}`}>{phone}</a>
-              </>
-            ) : (
-              ''
-            );
 
             return (
               <Property
                 key={id}
-                label={`${name}${roleLabel}${phoneLabel}`}
+                label={
+                  <Tooltip title={<>Tel: {phone ? <a href={`tel:${phone}`}>{phone}</a> : 'Non renseigné'}</>}>
+                    <span>
+                      {name}
+                      {roleLabel}
+                    </span>
+                  </Tooltip>
+                }
                 value={
                   <Tooltip
                     title={tests.map(({ id: test_id, name, created_at }) => (
