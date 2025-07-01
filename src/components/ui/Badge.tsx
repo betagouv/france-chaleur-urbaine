@@ -1,4 +1,5 @@
 import { Badge as DSFRBadge, type BadgeProps } from '@codegouvfr/react-dsfr/Badge';
+import { type ReactNode } from 'react';
 
 import Tooltip from '@/components/ui/Tooltip';
 import cx from '@/utils/cx';
@@ -35,16 +36,17 @@ type TypeBadge = keyof typeof badgeConfigs;
 type FCUBadgeProps = {
   type: TypeBadge;
   className?: string;
+  title?: ReactNode;
 };
 
-const Badge = ({ type, className }: FCUBadgeProps) => {
+const Badge = ({ type, className, title }: FCUBadgeProps) => {
   const config = badgeConfigs[type] as BadgeConfig;
   const badgeElement = (
     <DSFRBadge small className={cx('!block', className, config.className)} severity={config.severity}>
       {config.label}
     </DSFRBadge>
   );
-  return config.title ? <Tooltip title={config.title}>{badgeElement}</Tooltip> : badgeElement;
+  return config.title ? <Tooltip title={title ?? config.title}>{badgeElement}</Tooltip> : badgeElement;
 };
 
 export default Badge;

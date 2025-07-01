@@ -510,7 +510,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
       .innerJoin('commune', (join) =>
         join.on((eb) => eb('commune.insee_com', '=', sql<string>`ANY(${eb.ref('reseaux_de_chaleur.communes_insee')})`))
       )
-      .select(['id_fcu', 'commune.nom', 'tags'])
+      .select(['id_fcu', 'commune.nom', 'tags', 'communes'])
       .where('has_trace', '=', false)
       .limit(1)
       .executeTakeFirst(),
@@ -535,6 +535,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
       .select([
         'id_fcu',
         'tags',
+        'communes',
         sql<number>`round(ST_Distance(geom, ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)))`.as(
           'distance'
         ),
@@ -546,7 +547,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
 
     kdb
       .selectFrom('zone_de_developpement_prioritaire')
-      .select(['id_fcu', 'Identifiant reseau'])
+      .select(['id_fcu', 'Identifiant reseau', 'communes'])
       .where(
         (eb) =>
           sql`ST_Contains(
@@ -569,7 +570,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
         type: 'dans_pdp',
         distance: 0,
         tags: pdp['Identifiant reseau'] ? await findPDPTags(pdp['Identifiant reseau']) : [],
-        communes: [],
+        communes: pdp.communes ?? [],
       };
     }
 
@@ -599,7 +600,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
         type: 'dans_zone_reseau_futur',
         distance: 0,
         tags: zoneEnConstruction.distance <= tagsDistanceThreshold ? (zoneEnConstruction.tags ?? []) : [],
-        communes: [],
+        communes: zoneEnConstruction.communes ?? [],
       };
     }
 
@@ -665,13 +666,15 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
 
   return {
     eligibilityType: eligibilityResult.type,
+    tags: eligibilityResult.tags,
+    distance: eligibilityResult.distance,
+    communes: eligibilityResult.communes,
     commune,
     reseauDeChaleur,
     reseauDeChaleurSansTrace,
     reseauEnConstruction,
     zoneEnConstruction,
     pdp,
-    tags: eligibilityResult.tags,
   };
 };
 

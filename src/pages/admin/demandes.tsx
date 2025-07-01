@@ -145,23 +145,27 @@ function DemandesAdmin(): React.ReactElement {
         accessorKey: 'Gestionnaires',
         header: 'Gestionnaires',
         cell: (info) => {
+          const demand = info.row.original;
           return (
             <div className="block">
               <ChipAutoComplete
                 options={tagsOptions}
                 defaultOption={defaultTagChipOption}
-                value={info.getValue<string[]>() ?? info.row.original.recommendedTags.map((tag) => tag.name)}
+                value={demand.Gestionnaires ?? demand.recommendedTags.map((tag) => tag.name)}
                 onChange={(newGestionnaires) => {
-                  updateDemand(info.row.original.id, {
+                  updateDemand(demand.id, {
                     Gestionnaires: newGestionnaires,
                   });
                 }}
               />
-              <div className="my-1">Éligibilité : {info.row.original.detailedEligibilityStatus.eligibilityType}</div>
+              <div className="my-1">Éligibilité : {demand.detailedEligibilityStatus.eligibilityType}</div>
               <div className="my-1">
-                {info.row.original.detailedEligibilityStatus.reseauDeChaleur?.communes &&
-                  !info.row.original.detailedEligibilityStatus.reseauDeChaleur.communes.includes(info.row.original.Ville) && (
-                    <Badge type="warning_ville_differente" />
+                {demand.detailedEligibilityStatus.eligibilityType !== 'trop_eloigne' &&
+                  !demand.detailedEligibilityStatus.communes.includes(demand.detailedEligibilityStatus.commune.nom!) && (
+                    <Badge
+                      type="warning_ville_differente"
+                      title={`La ville de la demande (${demand.detailedEligibilityStatus.commune.nom!}) ne correspond pas à ${demand.detailedEligibilityStatus.communes.length > 1 ? 'aux villes' : 'la ville'} du réseau (${demand.detailedEligibilityStatus.communes.join(', ')})`}
+                    />
                   )}
               </div>
             </div>
