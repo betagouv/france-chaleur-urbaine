@@ -4,7 +4,7 @@ import Tooltip from '@/components/ui/Tooltip';
 import { upperCaseFirstChar } from '@/utils/strings';
 import { structureTypes } from '@/validation/user';
 
-import { ifHoverElse, type MapSourceLayersSpecification, type PopupStyleHelpers } from './common';
+import { type MapSourceLayersSpecification, type PopupStyleHelpers } from './common';
 
 export const testsAdressesLayerStyle = {
   eligible: {
@@ -33,7 +33,23 @@ export const testsAdressesLayersSpec = [
         paint: {
           'circle-color': testsAdressesLayerStyle.notEligible.fill.color,
           'circle-stroke-color': testsAdressesLayerStyle.notEligible.stroke.color,
-          'circle-radius': ifHoverElse(testsAdressesLayerStyle.notEligible.fill.size + 2, testsAdressesLayerStyle.notEligible.fill.size),
+          'circle-radius': [
+            'interpolate',
+            ['linear'],
+            ['get', 'nbUsers'],
+            1,
+            testsAdressesLayerStyle.notEligible.fill.size,
+            2,
+            testsAdressesLayerStyle.notEligible.fill.size * 1.25,
+            3,
+            testsAdressesLayerStyle.notEligible.fill.size * 1.5,
+            4,
+            testsAdressesLayerStyle.notEligible.fill.size * 2,
+            6,
+            testsAdressesLayerStyle.notEligible.fill.size * 2.5,
+            10,
+            testsAdressesLayerStyle.notEligible.fill.size * 3,
+          ],
           'circle-stroke-width': testsAdressesLayerStyle.notEligible.stroke.size,
         },
         isVisible: (config) => config.testsAdresses,
@@ -46,7 +62,23 @@ export const testsAdressesLayersSpec = [
         paint: {
           'circle-color': testsAdressesLayerStyle.eligible.fill.color,
           'circle-stroke-color': testsAdressesLayerStyle.eligible.stroke.color,
-          'circle-radius': ifHoverElse(testsAdressesLayerStyle.eligible.fill.size + 2, testsAdressesLayerStyle.eligible.fill.size),
+          'circle-radius': [
+            'interpolate',
+            ['linear'],
+            ['get', 'nbUsers'],
+            1,
+            testsAdressesLayerStyle.eligible.fill.size,
+            2,
+            testsAdressesLayerStyle.eligible.fill.size * 1.25,
+            3,
+            testsAdressesLayerStyle.eligible.fill.size * 1.5,
+            4,
+            testsAdressesLayerStyle.eligible.fill.size * 2,
+            6,
+            testsAdressesLayerStyle.eligible.fill.size * 2.5,
+            10,
+            testsAdressesLayerStyle.eligible.fill.size * 3,
+          ],
           'circle-stroke-width': testsAdressesLayerStyle.eligible.stroke.size,
         },
         isVisible: (config) => config.testsAdresses,
