@@ -220,6 +220,12 @@ const trackingEvents = {
   'Carto|Demandes de raccordement|Désactive': {
     matomo: ['Carto', 'Demandes de raccordement', 'Désactive'],
   },
+  'Carto|Adresses testées|Active': {
+    matomo: ['Carto', 'Carto|Adresses testées', 'Active'],
+  },
+  'Carto|Adresses testées|Désactive': {
+    matomo: ['Carto', 'Carto|Adresses testées', 'Désactive'],
+  },
   'Carto|Consommations globales de gaz|Active': {
     matomo: ['Carto', 'Consommations globales de gaz', 'Active'],
   },

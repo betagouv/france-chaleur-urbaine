@@ -193,6 +193,10 @@ export const allDatabaseTables: TableInfo[] = [
     description: 'Tuiles vectorielles des études en cours',
   },
   {
+    name: 'pro_eligibility_tests_addresses_tiles',
+    description: "Tuiles vectorielles des tests d'adresses",
+  },
+  {
     name: 'quartiers_prioritaires_politique_ville_2015_anru_tiles',
     description: "Tuiles des QPV 2015 de l'ANRU",
   },

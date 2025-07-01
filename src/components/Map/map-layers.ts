@@ -43,6 +43,7 @@ import { perimetresDeDeveloppementPrioritaireLayersSpec } from './layers/perimet
 import { reseauxDeChaleurLayersSpec } from './layers/reseauxDeChaleur';
 import { reseauxDeFroidLayersSpec } from './layers/reseauxDeFroid';
 import { reseauxEnConstructionLayersSpec } from './layers/reseauxEnConstruction';
+import { testsAdressesLayersSpec } from './layers/testsAdresses';
 import { typeChauffageBatimentsCollectifsLayersSpec } from './layers/typeChauffageBatimentsCollectifs';
 import { zonesPotentielChaudLayersSpec } from './layers/zonesPotentielChaud';
 
@@ -152,6 +153,7 @@ export const mapLayers = [
   ...typeChauffageBatimentsCollectifsLayersSpec,
   ...consommationsGazLayersSpec,
   ...demandesEligibiliteLayersSpec,
+  ...testsAdressesLayersSpec,
   ...reseauxDeChaleurLayersSpec,
   ...reseauxDeFroidLayersSpec,
   ...enrrMobilisablesChaleurFataleLayersSpec,

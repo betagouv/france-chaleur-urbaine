@@ -18,6 +18,7 @@ import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
 import Tooltip from '@/components/ui/Tooltip';
 import { trackEvent } from '@/services/analytics';
+import { useAuthentication } from '@/services/authentication';
 
 import IconPolygon from './IconPolygon';
 import MapLegendReseaux from './MapLegendReseaux';
@@ -45,6 +46,9 @@ import {
 } from '../layers/communesFortPotentielPourCreationReseauxChaleur';
 import { consommationsGazInterval, consommationsGazLayerStyle } from '../layers/consommationsGaz';
 import { demandesEligibiliteLayerStyle } from '../layers/demandesEligibilite';
+import BuildingsDataExtractionTool from './tools/BuildingsDataExtractionTool';
+import DistancesMeasurementTool from './tools/DistancesMeasurementTool';
+import LinearHeatDensityTool from './tools/LinearHeatDensityTool';
 import { enrrMobilisablesFrichesLayerColor, enrrMobilisablesFrichesLayerOpacity } from '../layers/enrr-mobilisables/friches';
 import { enrrMobilisablesParkingsLayerColor, enrrMobilisablesParkingsLayerOpacity } from '../layers/enrr-mobilisables/parkings';
 import {
@@ -66,15 +70,13 @@ import {
   installationsGeothermieSurfaceEchangeursOuvertsOpacity,
   installationsGeothermieSurfaceEchangeursOuvertsRealiseeColor,
 } from '../layers/installationsGeothermie';
+import { testsAdressesLayerStyle } from '../layers/testsAdresses';
 import {
   energyFilterInterval,
   typeChauffageBatimentsCollectifsStyle,
   typeChauffageBatimentsOpacity,
 } from '../layers/typeChauffageBatimentsCollectifs';
 import { zonePotentielChaudColor, zonePotentielChaudOpacity, zonePotentielFortChaudColor } from '../layers/zonesPotentielChaud';
-import BuildingsDataExtractionTool from './tools/BuildingsDataExtractionTool';
-import DistancesMeasurementTool from './tools/DistancesMeasurementTool';
-import LinearHeatDensityTool from './tools/LinearHeatDensityTool';
 
 const consommationsGazLegendColor = '#D9D9D9';
 const consommationsGazUsageLegendOpacity = 0.53;
@@ -88,6 +90,7 @@ interface SimpleMapLegendProps {
 const defaultURL: TabObject = { tabId: 'reseaux', subTabId: null };
 
 function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }: SimpleMapLegendProps) {
+  const { hasRole } = useAuthentication();
   const [selectedTabId, setSelectedTabId] = useQueryState<TabObject>(
     'tabId',
     parseURLTabs(tabs).withDefault(defaultURL).withOptions({
@@ -167,6 +170,39 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
               Demandes de raccordement sur France Chaleur Urbaine
             </Text>
           </Box>
+
+          {hasRole('admin') && (
+            <Box display="flex" alignItems="start" mb="2w">
+              <SingleCheckbox
+                name="testsAdresses"
+                checked={mapConfiguration.testsAdresses}
+                onChange={() => toggleLayer('testsAdresses')}
+                trackingEvent="Carto|Adresses testées"
+              />
+
+              <Box
+                backgroundColor={testsAdressesLayerStyle.fill.color}
+                border={`2px solid ${testsAdressesLayerStyle.stroke.color}`}
+                borderRadius="50%"
+                minHeight="16px"
+                minWidth="16px"
+                mt="1v"
+              />
+
+              <Text
+                as="label"
+                htmlFor="testsAdresses"
+                fontSize="14px"
+                lineHeight="18px"
+                className="fr-col"
+                cursor="pointer"
+                pl="1w"
+                style={{ marginTop: '2px' }}
+              >
+                Adresses testées
+              </Text>
+            </Box>
+          )}
           <UrlStateAccordion label="Bâtiments consommateurs gaz et fioul" small>
             <TrackableCheckableAccordion
               name="consommationsGaz"
