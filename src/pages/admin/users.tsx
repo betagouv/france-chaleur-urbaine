@@ -1,5 +1,4 @@
 import { type SortingState } from '@tanstack/react-table';
-import { type Selectable } from 'kysely';
 import { useCallback, useMemo } from 'react';
 
 import UserRoleBadge from '@/components/Admin/UserRoleBadge';
@@ -7,23 +6,20 @@ import SimplePage from '@/components/shared/page/SimplePage';
 import AsyncButton from '@/components/ui/AsyncButton';
 import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
-import ChipAutoComplete, { type ChipOption } from '@/components/ui/ChipAutoComplete';
+import ChipAutoComplete from '@/components/ui/ChipAutoComplete';
 import Heading from '@/components/ui/Heading';
 import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
 import Text from '@/components/ui/Text';
 import { useFetch } from '@/hooks/useApi';
-import useCrud from '@/hooks/useCrud';
 import { type UserUpdate } from '@/pages/api/admin/users/[userId]';
 import { withAuthentication } from '@/server/authentication';
-import { type Tags } from '@/server/db/kysely';
 import { useServices } from '@/services';
 import { toastErrors } from '@/services/notification';
-import { fcuTagsToChipOptions } from '@/services/tags';
+import { defaultTagChipOption, useFCUTags } from '@/services/tags';
 import { type UserRole } from '@/types/enum/UserRole';
 import { postFetchJSON, putFetchJSON } from '@/utils/network';
 import { compareFrenchStrings } from '@/utils/strings';
 
-import { type TagsResponse } from '../api/admin/tags/[[...slug]]';
 import { type AdminManageUserItem } from '../api/admin/users';
 import { type AdminUsersStats } from '../api/admin/users-stats';
 
@@ -48,7 +44,7 @@ export default function ManageUsers() {
 
   const { data: usersStats } = useFetch<AdminUsersStats>('/api/admin/users-stats');
   const { data: users, isLoading, refetch: refetchUsers } = useFetch<AdminManageUserItem[]>('/api/admin/users');
-  const { items: tags } = useCrud<TagsResponse>('/api/admin/tags');
+  const { tagsOptions } = useFCUTags();
 
   const updateUser = useCallback(
     toastErrors(async (userId: string, userUpdate: Partial<UserUpdate>) => {
@@ -57,8 +53,6 @@ export default function ManageUsers() {
     }),
     []
   );
-
-  const tagsOptions: ChipOption[] = useMemo(() => fcuTagsToChipOptions((tags as unknown as Selectable<Tags>[]) ?? []), [tags]);
 
   const columns: ColumnDef<AdminManageUserItem>[] = useMemo(
     () => [
@@ -85,6 +79,7 @@ export default function ManageUsers() {
           info.row.original.role === 'gestionnaire' && (
             <ChipAutoComplete
               options={tagsOptions}
+              defaultOption={defaultTagChipOption}
               value={info.getValue<string[]>()}
               onChange={(newGestionnaires) => {
                 updateUser(info.row.original.id, {
