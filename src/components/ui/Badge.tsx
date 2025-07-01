@@ -23,18 +23,24 @@ const badgeConfigs = {
     title: 'La ville de la demande ne correspond pas aux villes du réseau',
     className: '!bg-[#FFDA8F] !text-[#454B58]',
   },
+  api_user: {
+    label: 'API',
+    title: 'Utilisateur créé depuis l’API',
+    className: '!bg-[#FFDA8F] !text-[#454B58]',
+  },
 } satisfies Record<string, BadgeConfig>;
 
 type TypeBadge = keyof typeof badgeConfigs;
 
 type FCUBadgeProps = {
   type: TypeBadge;
+  className?: string;
 };
 
-const Badge = ({ type }: FCUBadgeProps) => {
+const Badge = ({ type, className }: FCUBadgeProps) => {
   const config = badgeConfigs[type] as BadgeConfig;
   const badgeElement = (
-    <DSFRBadge small className={cx('!block', config.className)} severity={config.severity}>
+    <DSFRBadge small className={cx('!block', className, config.className)} severity={config.severity}>
       {config.label}
     </DSFRBadge>
   );

@@ -4,6 +4,7 @@ import { useCallback, useMemo } from 'react';
 import UserRoleBadge from '@/components/Admin/UserRoleBadge';
 import SimplePage from '@/components/shared/page/SimplePage';
 import AsyncButton from '@/components/ui/AsyncButton';
+import Badge from '@/components/ui/Badge';
 import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
 import ChipAutoComplete from '@/components/ui/ChipAutoComplete';
@@ -60,6 +61,12 @@ export default function ManageUsers() {
         accessorKey: 'email',
         header: 'Email',
         sortingFn: (rowA, rowB) => compareFrenchStrings(rowA.original.email, rowB.original.email),
+        cell: (info) => (
+          <div>
+            {info.getValue<string>()}
+            {info.row.original.from_api && <Badge type="api_user" className="mt-1" />}
+          </div>
+        ),
         flex: 2.5,
         className: 'break-words break-all',
       },
