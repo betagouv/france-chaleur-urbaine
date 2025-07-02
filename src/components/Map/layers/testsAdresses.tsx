@@ -13,7 +13,7 @@ export const testsAdressesLayerStyle = {
   },
   notEligible: {
     fill: { color: '#ff8c42', size: 1 },
-    stroke: { color: '#e67e22', size: 1 },
+    stroke: { color: '#b9661e', size: 1 },
   },
 };
 
@@ -61,7 +61,7 @@ export const testsAdressesLayersSpec = [
           'circle-radius': [
             'interpolate',
             ['linear'],
-            ['get', 'nbUsers'],
+            ['zoom'],
             8,
             ['interpolate', ['linear'], ['get', 'nbUsers'], ...getSizesArray(testsAdressesLayerStyle.eligible.fill.size)],
             14,
