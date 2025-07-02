@@ -303,7 +303,7 @@ dumpGeoJSON zone_de_developpement_prioritaire "$opendata_dir"/pdp.geojson
 dumpGeoJSON zones_et_reseaux_en_construction "$opendata_dir"/zones_et_reseaux_en_construction.geojson
 
 # Création des shapefile
-pgQuery='PG:host=localhost user=postgres dbname=postgres password=postgres_fcu'
+pgQuery="PG:host=$DOCKER_HOST user=postgres dbname=postgres password=postgres_fcu"
 
 ogr2ogr -f "ESRI Shapefile" -lco ENCODING=UTF-8 "$opendata_dir"/reseaux_de_chaleur.shp "$pgQuery" -sql "SELECT * FROM opendata.reseaux_de_chaleur_shp WHERE st_geometrytype(geom) = 'ST_MultiLineString'"
 ogr2ogr -f "ESRI Shapefile" -lco ENCODING=UTF-8 "$opendata_dir"/reseaux_de_chaleur_sans_traces.shp "$pgQuery" -sql "SELECT * FROM opendata.reseaux_de_chaleur_shp WHERE st_geometrytype(geom) = 'ST_Point'"
