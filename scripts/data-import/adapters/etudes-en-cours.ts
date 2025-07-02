@@ -42,6 +42,7 @@ export default class EtudesEnCoursAdapter extends BaseAdapter {
   /**
    *
    * @param filepath must be like in "data/etudes-en-cours-sample.csv", initially taken from a Google Doc named "Extraction de DATA Cartographie - pour FCU_02122024"
+   * https://docs.google.com/spreadsheets/d/11MJDXja4Od1tmYUM7a4d2EqiaGjlQiUM/edit?gid=1515069000#gid=1515069000
    */
   async importData(filepath?: string) {
     if (!filepath) {
@@ -61,13 +62,19 @@ export default class EtudesEnCoursAdapter extends BaseAdapter {
         const statusString = row['Etude en cours / étude réalisée (pour FCU)'];
         const status = statusString === 'Etude en cours' ? 'ongoing' : statusString === 'Etude réalisée' ? 'done' : null;
         if (!status) {
-          logger.error('status not found', { row });
+          logger.error('⚠️ status not found', { row });
           return acc;
         }
 
-        const [day, month, year] = row['Date lancement du projet / étude pour FCU (mois / année)'].split('/');
+        const launchedAt = row['Date lancement du projet / étude pour FCU (mois / année)'];
+        if (!launchedAt) {
+          logger.error('⚠️ launchedAt not found', { row });
+          return acc;
+        }
+        const [day, month, year] = launchedAt?.split('/') || [];
         const formattedDate = new Date(`${month}/${day}/${year} 12:00:00`); // Use 12 in order to bypass timezone problems as command is launched on local
 
+        logger.info(`🚀 Handling ${row.EtudeId}`, { row });
         acc[row.EtudeId].push({
           maitre_ouvrage: row["Maître d'ouvrage  "] || '',
           code_insee: row['Code INSEE'],
@@ -89,6 +96,7 @@ export default class EtudesEnCoursAdapter extends BaseAdapter {
         const [etudeId, communes] = entry;
         const maitres_ouvrage = [...new Set(communes.map(({ maitre_ouvrage }) => maitre_ouvrage))].join(', ');
         const commune_ids = communes.map(({ code_insee }) => `${code_insee}`);
+
         const launched_at = communes.reduce(
           (acc, commune) => {
             if (acc && acc.toISOString() !== commune.launched_at.toISOString()) {
@@ -110,6 +118,12 @@ export default class EtudesEnCoursAdapter extends BaseAdapter {
           undefined as string | undefined
         );
         logger.info(`${index}/${entries.length} Inserting ${etudeId}`);
+
+        if (commune_ids.length === 0) {
+          logger.error(`⚠️ No commune ids found for ${etudeId}`);
+          logger.error(entry);
+          return;
+        }
 
         const communeNames = await kdb
           .selectFrom('ign_communes')

@@ -2833,6 +2833,15 @@ CREATE TABLE public.enrr_mobilisables_zones_geothermie_profonde_tiles (
     z bigint NOT NULL,
     tile bytea NOT NULL
 );
+CREATE TABLE etudes_en_cours (
+  id INTEGER PRIMARY KEY,
+  maitre_ouvrage TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT '',
+  geom GEOMETRY,
+  commune_ids INTEGER[],
+  communes TEXT,
+  launched_at TIMESTAMP
+);
 CREATE TABLE public.etudes_en_cours_tiles (
     x bigint NOT NULL,
     y bigint NOT NULL,

@@ -63,6 +63,7 @@ allowed_patterns:
 - changePassword
 - token
 - value
+- (?i)https:\/\/docs\.google\.com\/.*
 - resetPasswordSchema
 - (?i)https:\/\/airtable\.com\/app9opX8gRAtBqkan.*
 version: "1.0"
