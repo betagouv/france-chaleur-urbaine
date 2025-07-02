@@ -12,12 +12,17 @@ echo "Utilisation du répertoire temporaire $opendata_dir"
 # Detect OS and set LOCALHOST accordingly
 if [[ "$OSTYPE" == "darwin"* ]]; then
   DOCKER_HOST="host.docker.internal"
+  GDAL_IMAGE="ghcr.io/osgeo/gdal:alpine-normal-latest-arm64"
 else
   DOCKER_HOST="localhost"
+  GDAL_IMAGE="ghcr.io/osgeo/gdal:alpine-normal-latest-amd64"
 fi
 
 psql="docker run -i --rm --network host postgis/postgis:16-3.5-alpine psql"
 
+ogr2ogr() {
+  docker run -i --rm -v "$opendata_dir":/output "$GDAL_IMAGE" ogr2ogr "$@"
+}
 
 # Création des vues
 # Les vues préparent les champs qu'on veut exporter en GeoJSON/Shapefile et type bien les champs pour que le format Shapefile soit correct.
@@ -305,13 +310,13 @@ dumpGeoJSON zones_et_reseaux_en_construction "$opendata_dir"/zones_et_reseaux_en
 # Création des shapefile
 pgQuery="PG:host=$DOCKER_HOST user=postgres dbname=postgres password=postgres_fcu"
 
-ogr2ogr -f "ESRI Shapefile" -lco ENCODING=UTF-8 "$opendata_dir"/reseaux_de_chaleur.shp "$pgQuery" -sql "SELECT * FROM opendata.reseaux_de_chaleur_shp WHERE st_geometrytype(geom) = 'ST_MultiLineString'"
-ogr2ogr -f "ESRI Shapefile" -lco ENCODING=UTF-8 "$opendata_dir"/reseaux_de_chaleur_sans_traces.shp "$pgQuery" -sql "SELECT * FROM opendata.reseaux_de_chaleur_shp WHERE st_geometrytype(geom) = 'ST_Point'"
-ogr2ogr -f "ESRI Shapefile" -lco ENCODING=UTF-8 "$opendata_dir"/reseaux_de_froid.shp "$pgQuery" -sql "SELECT * FROM opendata.reseaux_de_froid_shp WHERE st_geometrytype(geom) = 'ST_MultiLineString'"
-ogr2ogr -f "ESRI Shapefile" -lco ENCODING=UTF-8 "$opendata_dir"/reseaux_de_froid_sans_traces.shp "$pgQuery" -sql "SELECT * FROM opendata.reseaux_de_froid_shp WHERE st_geometrytype(geom) = 'ST_Point'"
-ogr2ogr -f "ESRI Shapefile" -lco ENCODING=UTF-8 "$opendata_dir"/pdp.shp "$pgQuery" opendata.zone_de_developpement_prioritaire
-ogr2ogr -f "ESRI Shapefile" -lco ENCODING=UTF-8 "$opendata_dir"/reseaux_en_construction_traces.shp "$pgQuery" opendata.zones_et_reseaux_en_construction -sql "SELECT * FROM opendata.zones_et_reseaux_en_construction WHERE st_geometrytype(geom) = 'ST_MultiLineString'"
-ogr2ogr -f "ESRI Shapefile" -lco ENCODING=UTF-8 "$opendata_dir"/reseaux_en_construction_zones.shp "$pgQuery" opendata.zones_et_reseaux_en_construction -sql "SELECT * FROM opendata.zones_et_reseaux_en_construction WHERE st_geometrytype(geom) = 'ST_MultiPolygon'"
+ogr2ogr -f "ESRI Shapefile" -lco ENCODING=UTF-8 /output/reseaux_de_chaleur.shp "$pgQuery" -sql "SELECT * FROM opendata.reseaux_de_chaleur_shp WHERE st_geometrytype(geom) = 'ST_MultiLineString'"
+ogr2ogr -f "ESRI Shapefile" -lco ENCODING=UTF-8 /output/reseaux_de_chaleur_sans_traces.shp "$pgQuery" -sql "SELECT * FROM opendata.reseaux_de_chaleur_shp WHERE st_geometrytype(geom) = 'ST_Point'"
+ogr2ogr -f "ESRI Shapefile" -lco ENCODING=UTF-8 /output/reseaux_de_froid.shp "$pgQuery" -sql "SELECT * FROM opendata.reseaux_de_froid_shp WHERE st_geometrytype(geom) = 'ST_MultiLineString'"
+ogr2ogr -f "ESRI Shapefile" -lco ENCODING=UTF-8 /output/reseaux_de_froid_sans_traces.shp "$pgQuery" -sql "SELECT * FROM opendata.reseaux_de_froid_shp WHERE st_geometrytype(geom) = 'ST_Point'"
+ogr2ogr -f "ESRI Shapefile" -lco ENCODING=UTF-8 /output/pdp.shp "$pgQuery" opendata.zone_de_developpement_prioritaire
+ogr2ogr -f "ESRI Shapefile" -lco ENCODING=UTF-8 /output/reseaux_en_construction_traces.shp "$pgQuery" opendata.zones_et_reseaux_en_construction -sql "SELECT * FROM opendata.zones_et_reseaux_en_construction WHERE st_geometrytype(geom) = 'ST_MultiLineString'"
+ogr2ogr -f "ESRI Shapefile" -lco ENCODING=UTF-8 /output/reseaux_en_construction_zones.shp "$pgQuery" opendata.zones_et_reseaux_en_construction -sql "SELECT * FROM opendata.zones_et_reseaux_en_construction WHERE st_geometrytype(geom) = 'ST_MultiPolygon'"
 
 # Copie de doc
 cp scripts/opendata/nomenclature_shapefile_des_reseaux_de_chaleur_et_froid.xlsx "$opendata_dir/"
