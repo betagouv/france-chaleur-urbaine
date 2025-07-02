@@ -74,6 +74,7 @@ export type MapConfiguration = {
   reseauxEnConstruction: boolean;
   zonesDeDeveloppementPrioritaire: boolean;
   demandesEligibilite: boolean;
+  testsAdresses: boolean;
   consommationsGaz: {
     show: boolean;
     logements: boolean;
@@ -238,6 +239,7 @@ export const emptyMapConfiguration: EmptyMapConfiguration = {
   densiteThermiqueLineaire: false,
   mesureDistance: false,
   extractionDonneesBatiment: false,
+  testsAdresses: false,
   etudesEnCours: false,
 };
 

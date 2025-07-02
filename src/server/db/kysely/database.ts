@@ -3035,6 +3035,13 @@ export interface ProEligibilityTestsAddresses {
   test_id: string;
 }
 
+export interface ProEligibilityTestsAddressesTiles {
+  tile: Buffer;
+  x: Int8;
+  y: Int8;
+  z: Int8;
+}
+
 export interface QuartiersPrioritairesPolitiqueVille2015AnruTiles {
   tile: Buffer;
   x: Int8;
@@ -3471,6 +3478,7 @@ export interface DB {
   pro_comparateur_configurations: ProComparateurConfigurations;
   pro_eligibility_tests: ProEligibilityTests;
   pro_eligibility_tests_addresses: ProEligibilityTestsAddresses;
+  pro_eligibility_tests_addresses_tiles: ProEligibilityTestsAddressesTiles;
   quartiers_prioritaires_politique_ville_2015_anru_tiles: QuartiersPrioritairesPolitiqueVille2015AnruTiles;
   quartiers_prioritaires_politique_ville_2024_tiles: QuartiersPrioritairesPolitiqueVille2024Tiles;
   raccordements_tiles: RaccordementsTiles;

@@ -64,7 +64,7 @@ const PopupTitle = ({ subtitle, close, children, title }: PropsWithChildren<Popu
 );
 
 type PopupPropertyProps<T> = {
-  label: string;
+  label: React.ReactNode;
   value: T | undefined;
   unit?: string; // overridden by the formatter if present
   formatter?: (value: T) => React.ReactNode;

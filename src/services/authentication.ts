@@ -2,7 +2,7 @@ import { atom, useAtom, useSetAtom } from 'jotai';
 import { useHydrateAtoms } from 'jotai/utils';
 import { type Session } from 'next-auth';
 /* eslint-disable import/order */
-import { signIn, signOut } from 'next-auth/react';
+import { signIn, signOut, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 /* eslint-enable import/order */
 import { useQueryState } from 'nuqs';
@@ -36,13 +36,15 @@ export const useRedirectionAfterLogin = (session?: Session | null) => {
 /**
  * Hydrates the authentication atom with the session from the server.
  */
-export const useInitAuthentication = (session: Session | undefined) => {
-  useHydrateAtoms(new Map([[authenticationAtom, session]]));
+export const useInitAuthentication = (serverSession: Session | undefined) => {
+  useHydrateAtoms(new Map([[authenticationAtom, serverSession]]));
+  const { data: updatedSession } = useSession();
 
+  const session = serverSession ?? updatedSession;
   const setAuthenticationAtom = useSetAtom(authenticationAtom);
   useEffect(() => {
-    setAuthenticationAtom(session ?? null);
-  }, [session, setAuthenticationAtom]);
+    setAuthenticationAtom(updatedSession ?? null);
+  }, [updatedSession, setAuthenticationAtom]);
 
   useRedirectionAfterLogin(session);
 };
