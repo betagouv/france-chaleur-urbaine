@@ -8,13 +8,17 @@ import { type MapSourceLayersSpecification, type PopupStyleHelpers } from './com
 
 export const testsAdressesLayerStyle = {
   eligible: {
-    fill: { color: '#00efaf', size: 4 },
-    stroke: { color: '#00b894', size: 2 },
+    fill: { color: '#00ff88', size: 1 },
+    stroke: { color: '#00cc6a', size: 1 },
   },
   notEligible: {
-    fill: { color: '#ff6b6b', size: 4 },
-    stroke: { color: '#e74c3c', size: 2 },
+    fill: { color: '#ff8c42', size: 1 },
+    stroke: { color: '#e67e22', size: 1 },
   },
+};
+
+const getSizesArray = (size: number) => {
+  return [1, size * 1.25, size * 1.5, size * 2, size * 2.5, size * 3];
 };
 
 export const testsAdressesLayersSpec = [
@@ -36,19 +40,11 @@ export const testsAdressesLayersSpec = [
           'circle-radius': [
             'interpolate',
             ['linear'],
-            ['get', 'nbUsers'],
-            1,
-            testsAdressesLayerStyle.notEligible.fill.size,
-            2,
-            testsAdressesLayerStyle.notEligible.fill.size * 1.25,
-            3,
-            testsAdressesLayerStyle.notEligible.fill.size * 1.5,
-            4,
-            testsAdressesLayerStyle.notEligible.fill.size * 2,
-            6,
-            testsAdressesLayerStyle.notEligible.fill.size * 2.5,
-            10,
-            testsAdressesLayerStyle.notEligible.fill.size * 3,
+            ['zoom'],
+            8,
+            ['interpolate', ['linear'], ['get', 'nbUsers'], ...getSizesArray(testsAdressesLayerStyle.notEligible.fill.size)],
+            14,
+            ['interpolate', ['linear'], ['get', 'nbUsers'], ...getSizesArray(testsAdressesLayerStyle.notEligible.fill.size * 4)],
           ],
           'circle-stroke-width': testsAdressesLayerStyle.notEligible.stroke.size,
         },
@@ -66,18 +62,10 @@ export const testsAdressesLayersSpec = [
             'interpolate',
             ['linear'],
             ['get', 'nbUsers'],
-            1,
-            testsAdressesLayerStyle.eligible.fill.size,
-            2,
-            testsAdressesLayerStyle.eligible.fill.size * 1.25,
-            3,
-            testsAdressesLayerStyle.eligible.fill.size * 1.5,
-            4,
-            testsAdressesLayerStyle.eligible.fill.size * 2,
-            6,
-            testsAdressesLayerStyle.eligible.fill.size * 2.5,
-            10,
-            testsAdressesLayerStyle.eligible.fill.size * 3,
+            8,
+            ['interpolate', ['linear'], ['get', 'nbUsers'], ...getSizesArray(testsAdressesLayerStyle.eligible.fill.size)],
+            14,
+            ['interpolate', ['linear'], ['get', 'nbUsers'], ...getSizesArray(testsAdressesLayerStyle.eligible.fill.size * 4)],
           ],
           'circle-stroke-width': testsAdressesLayerStyle.eligible.stroke.size,
         },
@@ -125,7 +113,6 @@ export type EligibilityStatus = {
   isEligible: boolean;
   futurNetwork: boolean;
   gestionnaire: string | null;
-  isBasedOnIris: boolean;
   hasNoTraceNetwork: boolean;
   veryEligibleDistance: number | null;
 };
@@ -162,9 +149,9 @@ function Popup(
                 value={
                   <Tooltip
                     title={tests.map(({ id: test_id, name, created_at }) => (
-                      <div key={test_id} className="flex items-center gap-1 [&>div]:flex-1 [&>div:first-child]:whitespace-nowrap">
+                      <TwoColumns key={test_id}>
                         <Property label={name} value={dayjs(created_at).format('DD/MM/YYYY HH:mm')} />
-                      </div>
+                      </TwoColumns>
                     ))}
                   >
                     <span>
@@ -180,22 +167,28 @@ function Popup(
           })}
       </TwoColumns>
       <h6 className="text-lg !mb-0">Éligibilité</h6>
-      <TwoColumns>
-        <Property label="ID" value={eligibilityStatus.id} />
-        <Property label="CO2" value={eligibilityStatus.co2} />
-        <Property label="Nom" value={eligibilityStatus.name} />
-        <Property label="Dans un PDP" value={eligibilityStatus.inPDP ? 'Oui' : 'Non'} />
-        <Property label="A un PDP" value={eligibilityStatus.hasPDP ? 'Oui' : 'Non'} />
-        <Property label="Distance" value={eligibilityStatus.distance} />
-        <Property label="Classe" value={eligibilityStatus.isClasse ? 'Oui' : 'Non'} />
-        <Property label="Taux ENRR" value={eligibilityStatus.tauxENRR} />
-        <Property label="Éligibilité" value={eligibilityStatus.isEligible ? 'Oui' : 'Non'} />
-        <Property label="Réseau futur" value={eligibilityStatus.futurNetwork ? 'Oui' : 'Non'} />
-        <Property label="Gestionnaire" value={eligibilityStatus.gestionnaire} />
-        <Property label="Basé sur IRIS" value={eligibilityStatus.isBasedOnIris ? 'Oui' : 'Non'} />
-        <Property label="Réseau sans tracé" value={eligibilityStatus.hasNoTraceNetwork ? 'Oui' : 'Non'} />
-        <Property label="Distance très éligible" value={eligibilityStatus.veryEligibleDistance} />
-      </TwoColumns>
+
+      {eligibilityStatus.id ? (
+        <TwoColumns>
+          <Property label="ID" value={eligibilityStatus.id} />
+          <Property label="CO2" value={eligibilityStatus.co2} />
+          <Property label="Nom" value={eligibilityStatus.name} />
+          <Property label="Dans un PDP" value={eligibilityStatus.inPDP ? 'Oui' : 'Non'} />
+          <Property label="A un PDP" value={eligibilityStatus.hasPDP ? 'Oui' : 'Non'} />
+          <Property label="Distance" value={eligibilityStatus.distance} />
+          <Property label="Classe" value={eligibilityStatus.isClasse ? 'Oui' : 'Non'} />
+          <Property label="Taux ENRR" value={eligibilityStatus.tauxENRR} />
+          <Property label="Éligibilité" value={eligibilityStatus.isEligible ? 'Oui' : 'Non'} />
+          <Property label="Réseau futur" value={eligibilityStatus.futurNetwork ? 'Oui' : 'Non'} />
+          <Property label="Gestionnaire" value={eligibilityStatus.gestionnaire} />
+          <Property label="Réseau sans tracé" value={eligibilityStatus.hasNoTraceNetwork ? 'Oui' : 'Non'} />
+          <Property label="Distance très éligible" value={eligibilityStatus.veryEligibleDistance} />
+        </TwoColumns>
+      ) : (
+        <TwoColumns>
+          <Property label="Non éligible" value="Aucun réseau à proximité " />
+        </TwoColumns>
+      )}
     </>
   );
 }
