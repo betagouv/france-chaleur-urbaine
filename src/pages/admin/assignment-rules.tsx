@@ -1,6 +1,8 @@
 import { Input } from '@codegouvfr/react-dsfr/Input';
 import { useState } from 'react';
 
+import ExpressionTester from '@/components/assignment-rules/ExpressionTester';
+import ExpressionValidator from '@/components/assignment-rules/ExpressionValidator';
 import Checkbox from '@/components/form/dsfr/Checkbox';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Box from '@/components/ui/Box';
@@ -14,6 +16,7 @@ import { withAuthentication } from '@/server/authentication';
 import { type AssignmentRule } from '@/server/services/assignment-rules';
 import { toastErrors } from '@/services/notification';
 import cx from '@/utils/cx';
+import { validateExpression } from '@/utils/expression-parser';
 
 const initialSortingState = [{ id: 'search_pattern', desc: false }];
 
@@ -41,15 +44,15 @@ export default function ManageAssignmentRules() {
   const tableColumns: ColumnDef<AssignmentRule>[] = [
     {
       accessorKey: 'search_pattern',
-      header: 'Pattern de recherche',
-      cell: (info) => <div className="font-mono text-sm bg-gray-100 p-2 rounded">{info.getValue()}</div>,
+      header: 'Règle',
+      cell: (info) => <div className="font-mono px-2 py-1 rounded">{info.getValue()}</div>,
       className: 'break-words break-all',
       flex: 2,
     },
     {
       accessorKey: 'result',
       header: 'Résultat',
-      cell: (info) => <div className="font-mono text-sm bg-blue-50 p-2 rounded">{info.getValue()}</div>,
+      cell: (info) => <div className="font-mono bg-blue-50 px-2 py-1 rounded">{info.getValue()}</div>,
       className: 'break-words break-all',
     },
     {
@@ -66,6 +69,7 @@ export default function ManageAssignmentRules() {
         </span>
       ),
       width: '100px',
+      filterType: 'Facets',
     },
     {
       accessorKey: 'created_at',
@@ -111,6 +115,13 @@ export default function ManageAssignmentRules() {
   const handleCreate = toastErrors(
     async () => {
       if (!newSearchPattern.trim() || !newResult.trim()) return;
+
+      // Validation de l'expression
+      const validation = validateExpression(newSearchPattern.trim());
+      if (!validation.isValid) {
+        throw new Error(`Expression invalide: ${validation.error}`);
+      }
+
       await create({
         search_pattern: newSearchPattern.trim(),
         result: newResult.trim(),
@@ -123,6 +134,13 @@ export default function ManageAssignmentRules() {
 
   const handleEdit = toastErrors(async () => {
     if (!editingRule || !editSearchPattern.trim() || !editResult.trim()) return;
+
+    // Validation de l'expression
+    const validation = validateExpression(editSearchPattern.trim());
+    if (!validation.isValid) {
+      throw new Error(`Expression invalide: ${validation.error}`);
+    }
+
     await updateCrud(editingRule.id, {
       search_pattern: editSearchPattern.trim(),
       result: editResult.trim(),
@@ -183,9 +201,11 @@ export default function ManageAssignmentRules() {
               value: newSearchPattern,
               onChange: (e) => setNewSearchPattern(e.target.value),
               onKeyDown: (e) => e.key === 'Enter' && handleCreate(),
-              placeholder: 'Ex: .*@example\\.com',
+              placeholder: 'Ex: "Tag1" && "Tag2" || ("Tag3" && !"Tag4")',
             }}
           />
+          <ExpressionValidator expression={newSearchPattern} />
+          <ExpressionTester expression={newSearchPattern} />
           <Input
             label="Résultat"
             nativeInputProps={{
@@ -221,9 +241,11 @@ export default function ManageAssignmentRules() {
               value: editSearchPattern,
               onChange: (e) => setEditSearchPattern(e.target.value),
               onKeyDown: (e) => e.key === 'Enter' && handleEdit(),
-              placeholder: 'Ex: .*@example\\.com',
+              placeholder: 'Ex: "Tag1" && "Tag2" || ("Tag3" && !"Tag4")',
             }}
           />
+          <ExpressionValidator expression={editSearchPattern} />
+          <ExpressionTester expression={editSearchPattern} />
           <Input
             label="Résultat"
             nativeInputProps={{

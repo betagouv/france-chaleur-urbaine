@@ -4,8 +4,9 @@ import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'rea
 import { type RefObject } from 'react';
 import { type MapGeoJSONFeature } from 'react-map-gl/maplibre';
 
+import TableFieldInput from '@/components/Admin/TableFieldInput';
+import EligibilityHelpDialog, { eligibilityTitleByType } from '@/components/EligibilityHelpDialog';
 import Input from '@/components/form/dsfr/Input';
-import AdditionalInformation from '@/components/Manager/AdditionalInformation';
 import Comment from '@/components/Manager/Comment';
 import Contact from '@/components/Manager/Contact';
 import Tag from '@/components/Manager/Tag';
@@ -17,7 +18,6 @@ import AsyncButton from '@/components/ui/AsyncButton';
 import Badge from '@/components/ui/Badge';
 import ChipAutoComplete from '@/components/ui/ChipAutoComplete';
 import { VerticalDivider } from '@/components/ui/Divider';
-import EligibilityHelpDialog, { eligibilityTitleByType } from '@/components/ui/EligibilityHelpDialog';
 import Icon from '@/components/ui/Icon';
 import Indicator from '@/components/ui/Indicator';
 import Loader from '@/components/ui/Loader';
@@ -178,9 +178,16 @@ function DemandesAdmin(): React.ReactElement {
       {
         accessorKey: 'Affecté à',
         header: 'Affecté à',
-        cell: ({ row }) => (
-          <AdditionalInformation demand={row.original} field="Affecté à" updateDemand={updateDemand} type="text" simpleField width={150} />
-        ),
+        cell: (info) => {
+          const demand = info.row.original;
+          return (
+            <TableFieldInput
+              title="Affecté à"
+              value={demand['Affecté à'] || demand.recommendedAssignment}
+              onChange={(value) => updateDemand(demand.id, { 'Affecté à': value })}
+            />
+          );
+        },
         width: '150px',
         enableSorting: false,
       },
@@ -202,6 +209,12 @@ function DemandesAdmin(): React.ReactElement {
                   ...(!demand.Gestionnaires || demand.Gestionnaires.length === 0
                     ? {
                         Gestionnaires: demand.recommendedTags.map((tag) => tag.name),
+                      }
+                    : {}),
+                  // assign recommended assignment if none is set
+                  ...(!demand['Affecté à']
+                    ? {
+                        'Affecté à': demand.recommendedAssignment,
                       }
                     : {}),
                   'Gestionnaires validés': true,
