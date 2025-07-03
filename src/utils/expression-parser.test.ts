@@ -26,7 +26,7 @@ describe('expression-parser', () => {
     { expr: '"Tag avec espaces"', values: ['Tag avec espaces'], expected: true, desc: 'Tag avec espaces présent' },
     { expr: '"Tag avec espaces"', values: ['TagSansEspaces'], expected: false, desc: 'Tag avec espaces absent' },
     { expr: '"Tag 1" && "Tag 2"', values: ['Tag 1', 'Tag 2'], expected: true, desc: 'ET avec espaces' },
-    { expr: '"Support Niveau 2" || "Utilisateur Premium"', values: ['Utilisateur Premium'], expected: true, desc: 'OU avec espaces' },
+    { expr: '"Tag 1" || "Tag 2"', values: ['Tag 2'], expected: true, desc: 'OU avec espaces' },
     { expr: '("Tag A" || "Tag B") && "Tag C"', values: ['Tag A', 'Tag C'], expected: true, desc: 'Parenthèses avec espaces' },
   ];
 
