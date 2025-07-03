@@ -3474,7 +3474,6 @@ export interface DB {
   knex_migrations: KnexMigrations;
   knex_migrations_lock: KnexMigrationsLock;
   matomo_stats: MatomoStats;
-  network_iris: NetworkIris;
   pro_comparateur_configurations: ProComparateurConfigurations;
   pro_eligibility_tests: ProEligibilityTests;
   pro_eligibility_tests_addresses: ProEligibilityTestsAddresses;

@@ -125,10 +125,6 @@ export const allDatabaseTables: TableInfo[] = [
     description: 'Tuiles vectorielles des communes à fort potentiel pour la création de réseaux de chaleur',
   },
   {
-    name: 'network_iris',
-    description: 'Données IRIS du réseau (a priori obsolète)',
-  },
-  {
     name: 'raccordements_tiles',
     description: 'Tuiles vectorielles des raccordements',
   },
