@@ -6,7 +6,7 @@ import { type DB } from '@/server/db/kysely';
 import { fetchJSON } from '@/utils/network';
 import { type OmitFirst } from '@/utils/typescript';
 
-const useCrud = <T extends CrudResponse<keyof DB, any>>(
+const useCrud = <T extends CrudResponse<keyof DB, any>, TListItem = T['list']['items']>(
   url: string,
   { list }: { list?: OmitFirst<Parameters<typeof useFetch<T['list']>>> } = {}
 ) => {
@@ -29,7 +29,7 @@ const useCrud = <T extends CrudResponse<keyof DB, any>>(
 
   const get = useCallback((id: string, params = {}) => fetchJSON<T['get']>(`${url}/${id}`, { params }), [url]);
 
-  const items = (data?.items || []) as NonNullable<T['list']['items']>;
+  const items = (data?.items || []) as NonNullable<TListItem>;
 
   return {
     items,

@@ -54,9 +54,12 @@ export const listWithUsers = async () => {
     .orderBy('t.name')
     .execute();
 
-  return records;
+  return {
+    items: records,
+    count: records.length,
+  };
 };
-export type TagWithUsers = Awaited<ReturnType<typeof listWithUsers>>[number];
+export type TagWithUsers = Awaited<ReturnType<typeof listWithUsers>>['items'][number];
 
 export const create = baseModel.create;
 export const update = baseModel.update;

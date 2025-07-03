@@ -2,7 +2,10 @@ import crud from '@/server/api/crud';
 import { handleRouteErrors } from '@/server/helpers/server';
 import * as tagsService from '@/server/services/tags';
 
-const { GET, POST, PUT, DELETE, _types } = crud<typeof tagsService.tableName, typeof tagsService.validation>(tagsService as any);
+const { GET, POST, PUT, DELETE, _types } = crud<typeof tagsService.tableName, typeof tagsService.validation>({
+  ...tagsService,
+  list: tagsService.listWithUsers as any,
+});
 
 export type TagsResponse = typeof _types;
 

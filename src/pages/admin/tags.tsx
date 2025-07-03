@@ -10,7 +10,6 @@ import Button from '@/components/ui/Button';
 import Dialog from '@/components/ui/Dialog';
 import Heading from '@/components/ui/Heading';
 import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
-import { useFetch } from '@/hooks/useApi';
 import useCrud from '@/hooks/useCrud';
 import { type TagsResponse } from '@/pages/api/admin/tags/[[...slug]]';
 import { withAuthentication } from '@/server/authentication';
@@ -31,8 +30,13 @@ const tagTypeOptions: SelectOption[] = [
 ];
 
 export default function ManageTags() {
-  const { data: tags, isLoading } = useFetch<TagWithUsers[]>('/api/admin/tags/with-users');
-  const { create, update: updateCrud, delete: deleteCrud } = useCrud<TagsResponse>('/api/admin/tags');
+  const {
+    items: tags,
+    isLoading,
+    create,
+    update: updateCrud,
+    delete: deleteCrud,
+  } = useCrud<TagsResponse, TagWithUsers[]>('/api/admin/tags');
 
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);

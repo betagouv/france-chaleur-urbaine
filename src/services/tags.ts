@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
 
 import { type ChipOption } from '@/components/ui/ChipAutoComplete';
-import { useFetch } from '@/hooks/useApi';
+import useCrud from '@/hooks/useCrud';
+import { type TagsResponse } from '@/pages/api/admin/tags/[[...slug]]';
 import { type TagWithUsers } from '@/server/services/tags';
 
 export const tagsGestionnairesStyleByType = {
@@ -13,7 +14,7 @@ export const tagsGestionnairesStyleByType = {
 };
 
 export const useFCUTags = () => {
-  const { data: tags } = useFetch<TagWithUsers[]>('/api/admin/tags/with-users');
+  const { items: tags } = useCrud<TagsResponse, TagWithUsers[]>('/api/admin/tags');
 
   const tagsOptions: ChipOption[] = useMemo(() => (tags ? fcuTagsToChipOptions(tags) : []), [tags]);
   return { tags, tagsOptions };
