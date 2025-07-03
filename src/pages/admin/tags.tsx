@@ -7,6 +7,7 @@ import Select, { type SelectOption } from '@/components/form/dsfr/Select';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
+import CallOut from '@/components/ui/CallOut';
 import Dialog from '@/components/ui/Dialog';
 import Heading from '@/components/ui/Heading';
 import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
@@ -168,6 +169,32 @@ export default function ManageTags() {
           </Heading>
           <Button onClick={() => setIsCreateDialogOpen(true)}>Ajouter un tag</Button>
         </div>
+
+        <CallOut title="Tags gestionnaires" size="sm">
+          <p>Les tags sont utilisés pour mettre en relation les demandes déposées avec les gestionnaires.</p>
+          <ul className="mb-0">
+            <li>Les tags listés ici sont associés à des utilisateurs qui sont actifs.</li>
+            <li>Chaque tag est associé à un type de tag (ville, métropole, gestionnaire tête de réseau, réseau spécifique).</li>
+            <li>Les couleurs sont indicatives et ne servent que comme indicateur visuel.</li>
+            <li>
+              Lorsqu'une demande est déposée, le champ <strong>Gestionnaires</strong> propose des suggestions de tags en fonction d'un
+              algorithme prédéfini :
+              <ul className="mb-0">
+                <li>
+                  <strong>Ville</strong> : le tag de la ville de la demande est affecté automatiquement.
+                </li>
+                <li>
+                  <strong>Métropole</strong> : le tag de la métropole (ou CA ou CU) liée à la ville est affecté s'il existe dans la liste
+                  des tags (format : NomVille + M).
+                </li>
+                <li>
+                  <strong>Tags réseaux</strong> : les tags sont récupérés automatiquement depuis le réseau le plus proche selon
+                  l'éligibilité.
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </CallOut>
 
         <TableSimple
           columns={tableColumns}
