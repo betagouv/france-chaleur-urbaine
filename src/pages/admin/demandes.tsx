@@ -17,6 +17,7 @@ import AsyncButton from '@/components/ui/AsyncButton';
 import Badge from '@/components/ui/Badge';
 import ChipAutoComplete from '@/components/ui/ChipAutoComplete';
 import { VerticalDivider } from '@/components/ui/Divider';
+import EligibilityHelpDialog, { eligibilityTitleByType } from '@/components/ui/EligibilityHelpDialog';
 import Icon from '@/components/ui/Icon';
 import Indicator from '@/components/ui/Indicator';
 import Loader from '@/components/ui/Loader';
@@ -158,7 +159,7 @@ function DemandesAdmin(): React.ReactElement {
                   });
                 }}
               />
-              <div className="my-1">Éligibilité : {demand.detailedEligibilityStatus.eligibilityType}</div>
+              <div className="my-1 text-gray-700 italic">{eligibilityTitleByType[demand.detailedEligibilityStatus.eligibilityType]}</div>
               <div className="my-1">
                 {demand.detailedEligibilityStatus.eligibilityType !== 'trop_eloigne' &&
                   !demand.detailedEligibilityStatus.communes.includes(demand.detailedEligibilityStatus.commune.nom!) && (
@@ -372,7 +373,7 @@ function DemandesAdmin(): React.ReactElement {
       mode="authenticated"
     >
       <div className="mb-8">
-        <div className="flex items-center flex-wrap">
+        <div className="flex items-center flex-wrap gap-4">
           <Input
             label=""
             nativeInputProps={{
@@ -395,6 +396,7 @@ function DemandesAdmin(): React.ReactElement {
               {index < Object.keys(quickFilterPresets).length - 1 && <VerticalDivider className="hidden md:block" />}
             </Fragment>
           ))}
+          <EligibilityHelpDialog />
         </div>
         <ResizablePanelGroup direction="horizontal" className="gap-4">
           <ResizablePanel defaultSize={66}>

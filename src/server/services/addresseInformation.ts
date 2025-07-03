@@ -678,7 +678,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
   };
 };
 
-type EligibilityType =
+export type EligibilityType =
   | 'dans_pdp'
   | 'reseau_existant_tres_proche'
   | 'reseau_futur_tres_proche'
