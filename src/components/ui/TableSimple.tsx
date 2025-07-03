@@ -338,10 +338,10 @@ const TableSimple = <T extends RowData>({
       )}
       {caption && <div className="text-2xl leading-8 font-bold mb-5">{caption}</div>}
       <div
-        className={cx(fr.cx('fr-table', 'fr-table--no-scroll'), '!my-0')}
+        className={cx(fr.cx('fr-table', 'fr-table--no-scroll'), 'scrollbar-visible !my-0')}
         ref={tableContainerRef}
         style={{
-          overflow: 'overlay', // our scrollable table container
+          overflow: 'auto', // our scrollable table container
           position: 'relative', // needed for sticky header
           maxHeight: height, // should be a fixed height
         }}

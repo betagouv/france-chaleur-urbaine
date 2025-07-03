@@ -12,6 +12,7 @@ import { useState } from 'react';
 import '@/components/Map/StyleSwitcher/styles.css';
 import SEO from '@/components/SEO';
 import ThemeProvider, { augmentDocumentWithEmotionCache, dsfrDocumentApi } from '@/components/Theme/ThemeProvider';
+import useHtmlAttributes from '@/hooks/useHtmlAttributes';
 import { usePreserveScroll } from '@/hooks/usePreserveScroll';
 import { type AuthSSRPageProps } from '@/server/authentication';
 import { HeatNetworkService, ServicesContext, SuggestionService } from '@/services';
@@ -81,6 +82,7 @@ const AppProvider = ({ Component, pageProps }: AppProps<AuthSSRPageProps>) => {
 function App(appProps: AppProps<AuthSSRPageProps>) {
   usePreserveScroll();
   useAnalytics();
+  useHtmlAttributes();
 
   return (
     <SessionProvider session={appProps.pageProps.session}>
