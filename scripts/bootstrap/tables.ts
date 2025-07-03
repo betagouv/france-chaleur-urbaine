@@ -70,6 +70,10 @@ export const allDatabaseTables: TableInfo[] = [
     description: 'Tuiles vectorielles des réseaux de froid',
   },
   {
+    name: 'tags',
+    description: 'Tags utilisés pour la mise en relation gestionnaires <-> demandes',
+  },
+  {
     name: 'zone_de_developpement_prioritaire',
     description: 'Zones de développement prioritaire',
   },
