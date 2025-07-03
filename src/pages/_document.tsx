@@ -10,6 +10,10 @@ class MyDocument extends Document {
     const sheet = new ServerStyleSheet();
     const originalRenderPage = ctx.renderPage;
 
+    // Note: Ici, ctx.req est undefined quand on est en mode static generation (ce qui est le cas sur plusieurs pages du site)
+    // Cela rend impossible d'accéder à la locale de l'utilisateur ou à son user-agent
+    // Si des variables doivent être ajoutées à <html />, utiliser le hook useHtmlAttributes.ts
+
     try {
       ctx.renderPage = () =>
         originalRenderPage({
