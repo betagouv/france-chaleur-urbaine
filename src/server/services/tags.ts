@@ -44,7 +44,7 @@ export const listWithUsers = async () => {
               'email', u.email,
               'tags', u.gestionnaires
             )
-          ) FILTER (WHERE u.email IS NOT NULL),
+          ) FILTER (WHERE u.email IS NOT NULL AND active IS TRUE),
           '[]'::json
         )`
         )
