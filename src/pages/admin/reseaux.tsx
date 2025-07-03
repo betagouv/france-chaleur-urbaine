@@ -101,20 +101,19 @@ const GestionDesReseaux = () => {
         width: '150px',
       },
       {
-        accessorKey: 'communes',
+        accessorFn: (row) => row.communes?.join(', '),
         header: 'Communes',
         width: '200px',
-        cell: ({ row }) => row.original.communes?.join(', '),
       },
       {
-        accessorKey: 'tags',
+        accessorFn: (row) => row.tags?.join(', '),
         header: 'Tags',
         cell: (info) => (
           <div className="block">
             <ChipAutoComplete
               options={tagsOptions}
               defaultOption={defaultTagChipOption}
-              value={info.getValue<string[]>() ?? []}
+              value={info.row.original.tags ?? []}
               onChange={(tags) => updateReseauDeChaleur(info.row.original.id_fcu, { tags })}
             />
           </div>
@@ -139,20 +138,19 @@ const GestionDesReseaux = () => {
         width: '150px',
       },
       {
-        accessorKey: 'communes',
+        accessorFn: (row) => row.communes?.join(', '),
         header: 'Communes',
         width: '200px',
-        cell: ({ row }) => row.original.communes?.join(', '),
       },
       {
-        accessorKey: 'tags',
+        accessorFn: (row) => row.tags?.join(', '),
         header: 'Tags',
         cell: (info) => (
           <div className="block">
             <ChipAutoComplete
               options={tagsOptions}
               defaultOption={defaultTagChipOption}
-              value={info.getValue<string[]>() ?? []}
+              value={info.row.original.tags ?? []}
               onChange={(tags) => updateReseauEnConstruction(info.row.original.id_fcu, { tags })}
             />
           </div>
