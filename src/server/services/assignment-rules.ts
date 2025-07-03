@@ -30,7 +30,7 @@ export const validation = {
   create: z.object({
     search_pattern: z
       .string()
-      .min(1, 'Le pattern de recherche est requis')
+      .min(1, 'La règle est requise')
       .refine(
         (pattern) => {
           const validation = validateExpression(pattern);
@@ -47,7 +47,7 @@ export const validation = {
   update: z.object({
     search_pattern: z
       .string()
-      .min(1, 'Le pattern de recherche est requis')
+      .min(1, 'La règle est requise')
       .refine(
         (pattern) => {
           const validation = validateExpression(pattern);

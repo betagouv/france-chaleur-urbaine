@@ -196,7 +196,7 @@ export default function ManageAssignmentRules() {
       <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen} title="Ajouter une règle" size="lg">
         <div className="flex flex-col gap-4">
           <Input
-            label="Pattern de recherche"
+            label="Règle"
             nativeInputProps={{
               value: newSearchPattern,
               onChange: (e) => setNewSearchPattern(e.target.value),
@@ -236,7 +236,7 @@ export default function ManageAssignmentRules() {
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen} title="Modifier la règle" size="lg">
         <div className="flex flex-col gap-4">
           <Input
-            label="Pattern de recherche"
+            label="Règle"
             nativeInputProps={{
               value: editSearchPattern,
               onChange: (e) => setEditSearchPattern(e.target.value),
