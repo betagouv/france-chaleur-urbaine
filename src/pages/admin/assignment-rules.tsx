@@ -7,6 +7,7 @@ import Checkbox from '@/components/form/dsfr/Checkbox';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
+import CallOut from '@/components/ui/CallOut';
 import Dialog from '@/components/ui/Dialog';
 import Heading from '@/components/ui/Heading';
 import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
@@ -44,7 +45,7 @@ export default function ManageAssignmentRules() {
   const tableColumns: ColumnDef<AssignmentRule>[] = [
     {
       accessorKey: 'search_pattern',
-      header: 'Règle',
+      header: 'Motif de recherche',
       cell: (info) => <div className="font-mono px-2 py-1 rounded">{info.getValue()}</div>,
       className: 'break-words break-all',
       flex: 2,
@@ -180,6 +181,31 @@ export default function ManageAssignmentRules() {
           </Heading>
           <Button onClick={() => setIsCreateDialogOpen(true)}>Ajouter une règle</Button>
         </div>
+        <CallOut title="Règles d'affectation" size="sm">
+          <p>
+            Les règles d'affectation permettent d'automatiser le calcul du champ <strong>Affecté à</strong> des demandes en fonction des
+            tags gestionnaires.
+          </p>
+          <ul className="mb-0">
+            <li>Chaque règle est composée d'un motif de recherche qui est une expression logique et d'un tag résultant.</li>
+            <li>
+              Les expressions peuvent utiliser les opérateurs <code>&&</code> (ET), <code>||</code> (OU), <code>!</code> (NON) et les
+              parenthèses.
+            </li>
+            <li>
+              Exemple : <code>SIPPEREC && (ENGIE || Coriance) && !Dalkia </code> affectera les demandes ayant le tag "SIPPEREC" ET le tag
+              "ENGIE" OU "Coriance", ET n'ayant PAS le tag "Dalkia".
+            </li>
+            <li>
+              Le résultat correspond à la valeur qui sera utilisée pour le champ <strong>Affecté à</strong> de la demande si la règle
+              s'applique.
+            </li>
+            <li>
+              Le champ <strong>Affecté à</strong> proposera des suggestions de tags en fonction des résultats issues des règles
+              d'affectation.
+            </li>
+          </ul>
+        </CallOut>
 
         <TableSimple
           columns={tableColumns}
@@ -196,7 +222,7 @@ export default function ManageAssignmentRules() {
       <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen} title="Ajouter une règle" size="lg">
         <div className="flex flex-col gap-4">
           <Input
-            label="Règle"
+            label="Motif de recherche"
             nativeInputProps={{
               value: newSearchPattern,
               onChange: (e) => setNewSearchPattern(e.target.value),
@@ -236,7 +262,7 @@ export default function ManageAssignmentRules() {
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen} title="Modifier la règle" size="lg">
         <div className="flex flex-col gap-4">
           <Input
-            label="Règle"
+            label="Motif de recherche"
             nativeInputProps={{
               value: editSearchPattern,
               onChange: (e) => setEditSearchPattern(e.target.value),
