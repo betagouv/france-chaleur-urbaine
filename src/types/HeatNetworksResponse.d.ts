@@ -5,7 +5,6 @@ export type HeatNetwork = {
   distance: number | null;
   veryEligibleDistance: number | null;
   inPDP: boolean;
-  isBasedOnIris: boolean;
   futurNetwork: boolean;
   id: string | null;
   name: string | null;

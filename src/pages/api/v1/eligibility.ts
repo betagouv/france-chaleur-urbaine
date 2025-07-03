@@ -16,7 +16,6 @@ const GET = async (req: NextApiRequest) => {
     isEligible: result.isEligible,
     distance: result.distance,
     inPDP: result.inPDP,
-    isBasedOnIris: result.isBasedOnIris,
     futurNetwork: result.futurNetwork,
     id: result.id,
     name: result.name,
