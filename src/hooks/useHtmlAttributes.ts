@@ -7,12 +7,21 @@ const getOsFromUserAgent = (ua: string): string => {
   return 'unknown';
 };
 
+const getBrowserFromUserAgent = (ua: string): string => {
+  if (/Firefox/i.test(ua)) return 'firefox';
+  if (/Chrome/i.test(ua)) return 'chrome';
+  if (/Safari/i.test(ua)) return 'safari';
+  if (/Edge/i.test(ua)) return 'edge';
+  return 'unknown';
+};
+
 function useHtmlAttributes(additionalAttributes: Record<string, string> = {}) {
   useEffect(() => {
     const html = document.documentElement;
 
     const attributes = {
       'data-os': getOsFromUserAgent(navigator.userAgent),
+      'data-browser': getBrowserFromUserAgent(navigator.userAgent),
       ...additionalAttributes,
     };
 
