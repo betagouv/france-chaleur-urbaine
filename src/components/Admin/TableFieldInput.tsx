@@ -5,13 +5,13 @@ import debounce from '@/utils/debounce';
 
 export type TableFieldInputProps = {
   value: string;
-  title?: string;
   onChange: (value: string) => void;
+  title?: string;
   debounceMs?: number;
 };
 
 const TableFieldInput = forwardRef<HTMLInputElement, TableFieldInputProps>(
-  ({ value: valueExternal, onChange: onChangeExternal, debounceMs = 500, title }, ref) => {
+  ({ value: valueExternal, onChange: onChangeExternal, title, debounceMs = 500 }, ref) => {
     const [value, setValue] = useState(valueExternal);
 
     const debouncedUpdateDemand = useMemo(() => debounce((value: string) => onChangeExternal(value), debounceMs), [onChangeExternal]);
