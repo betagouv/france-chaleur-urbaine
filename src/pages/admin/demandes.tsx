@@ -148,18 +148,42 @@ function DemandesAdmin(): React.ReactElement {
         header: 'Gestionnaires',
         cell: (info) => {
           const demand = info.row.original;
+
           return (
             <div className="block">
-              <ChipAutoComplete
-                options={tagsOptions}
-                defaultOption={defaultTagChipOption}
-                value={demand.Gestionnaires ?? demand.recommendedTags.map((tag) => tag.name)}
-                onChange={(newGestionnaires) => {
-                  updateDemand(demand.id, {
-                    Gestionnaires: newGestionnaires,
-                  });
-                }}
-              />
+              <div className="relative">
+                <ChipAutoComplete
+                  options={tagsOptions}
+                  defaultOption={defaultTagChipOption}
+                  value={demand.Gestionnaires ?? demand.recommendedTags.map((tag) => tag.name)}
+                  onChange={(newGestionnaires) => {
+                    updateDemand(demand.id, {
+                      Gestionnaires: newGestionnaires,
+                    });
+                  }}
+                />
+                {/* visual indicator that the tags are suggested */}
+                {(!demand.Gestionnaires || demand.Gestionnaires.length === 0) && (
+                  <div className="absolute top-0 right-1 z-10 flex gap-1">
+                    <Icon
+                      name="fr-icon-sparkling-2-line"
+                      size="xs"
+                      color="blue"
+                      className="cursor-help"
+                      title="Tags suggérés automatiquement"
+                    />
+                    {demand.Gestionnaires && demand.Gestionnaires.length === 0 && (
+                      <button
+                        onClick={() => updateDemand(demand.id, { Gestionnaires: undefined })}
+                        className="p-0.5 hover:bg-gray-100 rounded"
+                        title="Revoir les tags suggérés"
+                      >
+                        <Icon name="fr-icon-refresh-line" size="xs" color="blue" />
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
               <div className="flex items-center gap-2">
                 <EligibilityHelpDialog detailedEligibilityStatus={demand.detailedEligibilityStatus}>
                   <Button
