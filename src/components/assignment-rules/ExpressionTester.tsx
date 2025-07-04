@@ -77,6 +77,10 @@ const ExpressionTester = ({ expression, className }: ExpressionTesterProps) => {
             className="w-full px-2 py-1 text-sm border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             onKeyDown={(e) => e.key === 'Enter' && handleTest()}
           />
+          <div className="text-xs text-gray-500 mt-1">
+            Utilisez des astérisques (*) dans l'expression pour des correspondances partielles. Ex: "ENGIE*" correspond à "ENGIE_1",
+            "ENGIE_2", etc.
+          </div>
         </div>
 
         <div className="flex gap-2">

@@ -1,16 +1,57 @@
 // Types pour l'AST (Abstract Syntax Tree)
 export type ASTNode =
-  | { type: 'tag'; value: string }
+  | { type: 'tag'; value: string; hasWildcard: boolean }
   | { type: 'not'; operand: ASTNode }
   | { type: 'and'; left: ASTNode; right: ASTNode }
   | { type: 'or'; left: ASTNode; right: ASTNode };
 
 // Token types pour le lexer
 type Token =
-  | { type: 'tag'; value: string }
+  | { type: 'tag'; value: string; hasWildcard: boolean }
   | { type: 'operator'; value: '&&' | '||' | '!' }
   | { type: 'paren'; value: '(' | ')' }
   | { type: 'whitespace' };
+
+/**
+ * Fonction utilitaire pour faire correspondre un pattern avec wildcard à une valeur
+ */
+function matchesWildcard(pattern: string, value: string): boolean {
+  // Si pas de wildcard, correspondance exacte
+  if (!pattern.includes('*')) {
+    return pattern === value;
+  }
+
+  // Pattern avec wildcard
+  const parts = pattern.split('*');
+
+  // Cas: "Tag*" (wildcard à la fin)
+  if (parts.length === 2 && parts[1] === '') {
+    return value.startsWith(parts[0]);
+  }
+
+  // Cas: "*Tag" (wildcard au début)
+  if (parts.length === 2 && parts[0] === '') {
+    return value.endsWith(parts[1]);
+  }
+
+  // Cas: "*Tag*" (wildcard au début et à la fin)
+  if (parts.length === 3 && parts[0] === '' && parts[2] === '') {
+    return value.includes(parts[1]);
+  }
+
+  // Cas: "Tag*Value" (wildcard au milieu)
+  if (parts.length === 3) {
+    return value.startsWith(parts[0]) && value.endsWith(parts[2]);
+  }
+
+  // Autres cas complexes avec plusieurs wildcards
+  const regexPattern = pattern
+    .replace(/\*/g, '.*') // Remplacer * par .* pour regex
+    .replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // Échapper les caractères spéciaux regex
+
+  const regex = new RegExp(`^${regexPattern}$`);
+  return regex.test(value);
+}
 
 /**
  * Lexer pour tokeniser l'expression
@@ -70,7 +111,7 @@ function tokenize(expression: string): Token[] {
       }
 
       current++; // Consommer le guillemet fermant
-      tokens.push({ type: 'tag', value: tag });
+      tokens.push({ type: 'tag', value: tag, hasWildcard: tag.includes('*') });
       continue;
     }
 
@@ -81,7 +122,7 @@ function tokenize(expression: string): Token[] {
         tag += expression[current];
         current++;
       }
-      tokens.push({ type: 'tag', value: tag });
+      tokens.push({ type: 'tag', value: tag, hasWildcard: tag.includes('*') });
       continue;
     }
 
@@ -148,8 +189,9 @@ function parseFactor(tokens: Token[], index: { value: number }): ASTNode {
   }
 
   if (token.type === 'tag') {
+    const tagToken = token as any;
     index.value++; // Consommer le tag
-    return { type: 'tag', value: (token as any).value };
+    return { type: 'tag', value: tagToken.value, hasWildcard: tagToken.hasWildcard };
   }
 
   throw new Error(`Token inattendu: ${token.type} à la position ${index.value}`);
@@ -180,7 +222,13 @@ export function parseExpressionToAST(expression: string): ASTNode {
 export function evaluateAST(ast: ASTNode, values: string[]): boolean {
   switch (ast.type) {
     case 'tag':
-      return values.includes(ast.value);
+      if (ast.hasWildcard) {
+        // Utiliser la correspondance avec wildcard
+        return values.some((value) => matchesWildcard(ast.value, value));
+      } else {
+        // Correspondance exacte (comportement original)
+        return values.includes(ast.value);
+      }
 
     case 'not':
       return !evaluateAST(ast.operand, values);

@@ -193,8 +193,25 @@ export default function ManageAssignmentRules() {
               parenthèses.
             </li>
             <li>
-              Exemple : <code>SIPPEREC && (ENGIE || Coriance) && !Dalkia </code> affectera les demandes ayant le tag "SIPPEREC" ET le tag
-              "ENGIE" OU "Coriance", ET n'ayant PAS le tag "Dalkia".
+              Les tags peuvent utiliser des caractères joker <code>*</code> pour des correspondances partielles :
+              <ul>
+                <li>
+                  <code>Tag*</code> : correspond à tous les tags commençant par "Tag" (ex: Tag1, Tag2, TagAdmin)
+                </li>
+                <li>
+                  <code>*Tag</code> : correspond à tous les tags finissant par "Tag" (ex: MonTag, VotreTag)
+                </li>
+                <li>
+                  <code>*Tag*</code> : correspond à tous les tags contenant "Tag" (ex: MonTag, TagAdmin, VotreTag)
+                </li>
+                <li>
+                  <code>Tag</code> : correspondance exacte (comportement par défaut)
+                </li>
+              </ul>
+            </li>
+            <li>
+              Exemple : <code>SIPPEREC && (ENGIE* || Coriance) && !Dalkia* </code> affectera les demandes ayant le tag "SIPPEREC" ET un tag
+              commençant par "ENGIE" OU le tag exact "Coriance", ET n'ayant aucun tag commençant par "Dalkia".
             </li>
             <li>
               Le résultat correspond à la valeur qui sera utilisée pour le champ <strong>Affecté à</strong> de la demande si la règle
@@ -227,7 +244,7 @@ export default function ManageAssignmentRules() {
               value: newSearchPattern,
               onChange: (e) => setNewSearchPattern(e.target.value),
               onKeyDown: (e) => e.key === 'Enter' && handleCreate(),
-              placeholder: 'Ex: "Tag1" && "Tag2" || ("Tag3" && !"Tag4")',
+              placeholder: 'Ex: "Tag1" && "Tag2*" || ("Tag3" && !"Tag4*")',
             }}
           />
           <ExpressionValidator expression={newSearchPattern} />
@@ -267,7 +284,7 @@ export default function ManageAssignmentRules() {
               value: editSearchPattern,
               onChange: (e) => setEditSearchPattern(e.target.value),
               onKeyDown: (e) => e.key === 'Enter' && handleEdit(),
-              placeholder: 'Ex: "Tag1" && "Tag2" || ("Tag3" && !"Tag4")',
+              placeholder: 'Ex: "Tag1" && "Tag2*" || ("Tag3" && !"Tag4*")',
             }}
           />
           <ExpressionValidator expression={editSearchPattern} />
