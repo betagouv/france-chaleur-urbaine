@@ -11,31 +11,40 @@ export type ChipOption = {
   className?: string;
 };
 
-export type ChipAutoCompleteProps = {
+type ChipAutoCompletePropsBase = {
   options: ChipOption[];
   defaultOption: ChipOption;
-  value: string[];
-  onChange: (value: string[]) => void;
   label?: string;
   placeholder?: string;
   disabled?: boolean;
   className?: string;
 };
 
-const ChipAutoComplete = ({
-  options,
-  defaultOption,
-  value,
-  onChange,
-  label,
-  placeholder = 'Ajouter…',
-  disabled = false,
-  className,
-}: ChipAutoCompleteProps) => {
+type ChipAutoCompletePropsMultiple = ChipAutoCompletePropsBase & {
+  multiple: true;
+  value: string[];
+  onChange: (value: string[]) => void;
+};
+
+type ChipAutoCompletePropsSingle = ChipAutoCompletePropsBase & {
+  multiple?: false;
+  value: string;
+  onChange: (value: string) => void;
+};
+
+export type ChipAutoCompleteProps = ChipAutoCompletePropsMultiple | ChipAutoCompletePropsSingle;
+
+const ChipAutoComplete = (rawProps: ChipAutoCompleteProps) => {
+  // keep props to allow type inference with multiple
+  const props = { multiple: false, ...rawProps } satisfies ChipAutoCompleteProps;
+  const { options, defaultOption, value, label, placeholder = 'Ajouter…', disabled = false, className } = props;
   const [inputValue, setInputValue] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const valueArray = Array.isArray(value) ? value : [value];
+
   const filteredOptions = useMemo(() => {
     const searchValue = inputValue.toLowerCase();
     return searchValue === '' ? options : options.filter((option) => option.key.toLowerCase().includes(searchValue));
@@ -60,11 +69,12 @@ const ChipAutoComplete = ({
     setTimeout(() => inputRef.current?.focus(), 0);
     setInputValue('');
     setIsOpen(false);
-    onChange([...value, option.key]);
+
+    props.multiple ? props.onChange([...valueArray, option.key]) : props.onChange(option.key);
   };
 
   const handleChipRemove = (chipName: string) => {
-    onChange(value.filter((v) => v !== chipName));
+    props.multiple ? props.onChange(valueArray.filter((v) => v !== chipName)) : props.onChange('');
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -77,8 +87,8 @@ const ChipAutoComplete = ({
     } else if (e.key === 'Enter' && isOpen && filteredOptions[highlightedIndex]) {
       e.preventDefault();
       handleOptionSelect(filteredOptions[highlightedIndex]);
-    } else if (e.key === 'Backspace' && inputValue === '' && value.length > 0) {
-      handleChipRemove(value[value.length - 1]);
+    } else if (e.key === 'Backspace' && inputValue === '' && valueArray.length > 0) {
+      handleChipRemove(valueArray[valueArray.length - 1]);
     }
   };
 
@@ -94,12 +104,12 @@ const ChipAutoComplete = ({
         <PopoverTrigger asChild>
           <div
             className={cx(
-              'flex flex-wrap items-center gap-1 border rounded px-2 py-1 bg-white focus-within:ring-2 ring-blue-00 min-h-[2.5rem] cursor-text',
+              'flex flex-wrap items-center gap-1 border rounded pl-2 pr-4 py-1 bg-white focus-within:ring-2 ring-blue-00 min-h-[2.5rem] cursor-text',
               disabled && 'opacity-60 pointer-events-none'
             )}
             onClick={() => inputRef.current?.focus()}
           >
-            {value.map((tagName) => {
+            {valueArray.map((tagName) => {
               const chipOption = options.find((option) => option.key === tagName) ?? defaultOption;
               return (
                 <Tag
@@ -122,7 +132,7 @@ const ChipAutoComplete = ({
             <input
               ref={inputRef}
               type="text"
-              className="flex-1 min-w-[6ch] !outline-none border-none bg-transparent text-sm py-1"
+              className="flex-1 min-w-[6ch] w-full !outline-none border-none bg-transparent text-sm py-1"
               value={inputValue}
               onClick={(e) => {
                 e.stopPropagation();

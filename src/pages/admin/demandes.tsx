@@ -17,7 +17,7 @@ import SimplePage from '@/components/shared/page/SimplePage';
 import AsyncButton from '@/components/ui/AsyncButton';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
-import ChipAutoComplete from '@/components/ui/ChipAutoComplete';
+import ChipAutoComplete, { type ChipOption } from '@/components/ui/ChipAutoComplete';
 import { VerticalDivider } from '@/components/ui/Divider';
 import Icon from '@/components/ui/Icon';
 import Indicator from '@/components/ui/Indicator';
@@ -68,6 +68,8 @@ type QuickFilterPresetKey = keyof typeof quickFilterPresets;
 
 const initialSortingState = [{ id: 'Date de la demande', desc: true }];
 
+const defaultAssignmentChipOption: ChipOption = { title: '', key: 'Non affecté', label: 'Non affecté', className: 'bg-gray-200' };
+
 function DemandesAdmin(): React.ReactElement {
   const queryClient = useQueryClient();
   const virtualizerRef = useRef<Virtualizer<HTMLDivElement, Element>>(null) as RefObject<Virtualizer<HTMLDivElement, Element>>;
@@ -82,6 +84,15 @@ function DemandesAdmin(): React.ReactElement {
 
   const { data: demands = [], isLoading } = useFetch<AdminDemand[]>('/api/admin/demands');
   const { tagsOptions } = useFCUTags();
+  const { data: assignmentRulesResults = [] } = useFetch<string[]>('/api/admin/assignment-rules/results');
+  const assignmentRulesResultsOptions: ChipOption[] = useMemo(
+    () =>
+      assignmentRulesResults.map((rule) => ({
+        key: rule,
+        label: rule,
+      })),
+    [assignmentRulesResults]
+  );
 
   const presetStats = ObjectKeys(quickFilterPresets).reduce(
     (acc, key) => ({
@@ -161,10 +172,11 @@ function DemandesAdmin(): React.ReactElement {
                       Gestionnaires: newGestionnaires,
                     });
                   }}
+                  multiple
                 />
                 {/* visual indicator that the tags are suggested */}
-                {(!demand.Gestionnaires || demand.Gestionnaires.length === 0) && (
-                  <div className="absolute top-0 right-1 z-10 flex gap-1">
+                <div className="absolute top-0 right-1 z-10 flex gap-1">
+                  {(!demand.Gestionnaires || demand.Gestionnaires.length === 0) && (
                     <Icon
                       name="fr-icon-sparkling-2-line"
                       size="xs"
@@ -172,17 +184,17 @@ function DemandesAdmin(): React.ReactElement {
                       className="cursor-help"
                       title="Tags suggérés automatiquement"
                     />
-                    {demand.Gestionnaires && demand.Gestionnaires.length === 0 && (
-                      <button
-                        onClick={() => updateDemand(demand.id, { Gestionnaires: undefined })}
-                        className="p-0.5 hover:bg-gray-100 rounded"
-                        title="Revoir les tags suggérés"
-                      >
-                        <Icon name="fr-icon-refresh-line" size="xs" color="blue" />
-                      </button>
-                    )}
-                  </div>
-                )}
+                  )}
+                  {demand.Gestionnaires && demand.Gestionnaires.length > 0 && (
+                    <button
+                      onClick={() => updateDemand(demand.id, { Gestionnaires: undefined })}
+                      className="p-0.5 hover:bg-gray-100 rounded"
+                      title="Revoir les tags suggérés"
+                    >
+                      <Icon name="fr-icon-refresh-line" size="xs" color="blue" />
+                    </button>
+                  )}
+                </div>
               </div>
               <div className="flex items-center gap-2">
                 <EligibilityHelpDialog detailedEligibilityStatus={demand.detailedEligibilityStatus}>
@@ -217,14 +229,39 @@ function DemandesAdmin(): React.ReactElement {
         cell: (info) => {
           const demand = info.row.original;
           return (
-            <TableFieldInput
-              title="Affecté à"
-              value={demand['Affecté à'] || demand.recommendedAssignment}
-              onChange={(value) => updateDemand(demand.id, { 'Affecté à': value })}
-            />
+            <div className="block relative">
+              <ChipAutoComplete
+                options={assignmentRulesResultsOptions}
+                defaultOption={defaultAssignmentChipOption}
+                value={demand['Affecté à'] || demand.recommendedAssignment || ''}
+                onChange={(value) => updateDemand(demand.id, { 'Affecté à': value })}
+                className="w-full"
+              />
+              <div className="absolute top-0 right-1 z-10 flex gap-1">
+                {/* visual indicator that the tag is suggested */}
+                {!demand['Affecté à'] && (
+                  <Icon
+                    name="fr-icon-sparkling-2-line"
+                    size="xs"
+                    color="blue"
+                    className="cursor-help"
+                    title="Affectation suggérée automatiquement"
+                  />
+                )}
+                {demand['Affecté à'] && demand['Affecté à'] !== demand.recommendedAssignment && (
+                  <button
+                    onClick={() => updateDemand(demand.id, { 'Affecté à': '' })}
+                    className="p-0.5 hover:bg-gray-100 rounded"
+                    title="Revoir l'affectation suggérée"
+                  >
+                    <Icon name="fr-icon-refresh-line" size="xs" color="blue" />
+                  </button>
+                )}
+              </div>
+            </div>
           );
         },
-        width: '150px',
+        width: '200px',
         enableSorting: false,
       },
       {

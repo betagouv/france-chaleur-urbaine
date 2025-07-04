@@ -115,6 +115,7 @@ const GestionDesReseaux = () => {
               defaultOption={defaultTagChipOption}
               value={info.row.original.tags ?? []}
               onChange={(tags) => updateReseauDeChaleur(info.row.original.id_fcu, { tags })}
+              multiple
             />
           </div>
         ),
@@ -152,6 +153,7 @@ const GestionDesReseaux = () => {
               defaultOption={defaultTagChipOption}
               value={info.row.original.tags ?? []}
               onChange={(tags) => updateReseauEnConstruction(info.row.original.id_fcu, { tags })}
+              multiple
             />
           </div>
         ),

@@ -94,6 +94,7 @@ export default function ManageUsers() {
                   gestionnaires: newGestionnaires,
                 });
               }}
+              multiple
             />
           ),
         sortingFn: (rowA, rowB) => compareFrenchStrings(rowA.original.gestionnaires?.[0], rowB.original.gestionnaires?.[0]),
