@@ -297,14 +297,34 @@ function DemandesAdmin(): React.ReactElement {
       {
         accessorKey: 'Identifiant réseau',
         header: 'ID réseau le plus proche',
+        cell: (info) => {
+          const demand = info.row.original;
+          return (
+            <TableFieldInput
+              title="Identifiant réseau"
+              value={demand['Identifiant réseau'] ?? ''}
+              onChange={(value) => updateDemand(demand.id, { 'Identifiant réseau': value })}
+            />
+          );
+        },
         width: '85px',
         enableSorting: false,
       },
       {
         accessorKey: 'Nom réseau',
         header: 'Nom du réseau le plus proche',
-        cell: ({ row }) => <div className="whitespace-normal">{row.original['Nom réseau']}</div>,
-        width: '200px',
+        cell: (info) => {
+          const demand = info.row.original;
+          return (
+            <TableFieldInput
+              className="w-[250px]"
+              title="Nom du réseau"
+              value={demand['Nom réseau'] ?? ''}
+              onChange={(value) => updateDemand(demand.id, { 'Nom réseau': value })}
+            />
+          );
+        },
+        width: '250px',
         enableSorting: false,
       },
       {
