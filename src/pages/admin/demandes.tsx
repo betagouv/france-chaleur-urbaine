@@ -275,7 +275,6 @@ function DemandesAdmin(): React.ReactElement {
         cellType: 'Date',
         width: '94px',
         enableGlobalFilter: false,
-        enableSorting: false,
       },
       {
         accessorKey: 'Distance au réseau',

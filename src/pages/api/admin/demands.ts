@@ -12,7 +12,7 @@ const GET = async () => {
   const records = await AirtableDB('FCU - Utilisateurs')
     .select({
       filterByFormula: '{Gestionnaires validés} = FALSE()',
-      sort: [{ field: 'Date demandes', direction: 'desc' }],
+      sort: [{ field: 'Date de la demande', direction: 'desc' }],
     })
     .all();
 
