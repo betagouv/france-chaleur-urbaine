@@ -4,44 +4,58 @@ import { type InputProps } from '@/components/form/dsfr/Input';
 import { Input } from '@/components/form/dsfr/Input.styles';
 import debounce from '@/utils/debounce';
 
-export type TableFieldInputProps = {
-  value: string;
-  onChange: (value: string) => void;
+export type TableFieldInputProps = Omit<InputProps, 'label'> & {
   title?: string;
   debounceMs?: number;
-} & Omit<InputProps, 'label'>;
+} & (
+    | {
+        type: 'number';
+        value: number;
+        onChange: (value: number) => void;
+      }
+    | {
+        type?: 'text';
+        value: string;
+        onChange: (value: string) => void;
+      }
+  );
 
-const TableFieldInput = forwardRef<HTMLInputElement, TableFieldInputProps>(
-  ({ value: valueExternal, onChange: onChangeExternal, title, debounceMs = 500, nativeInputProps, ...props }, ref) => {
-    const [value, setValue] = useState(valueExternal);
+const TableFieldInput = forwardRef<HTMLInputElement, TableFieldInputProps>((rawProps, ref) => {
+  const props = { type: 'text', ...rawProps } satisfies TableFieldInputProps;
+  const { value: valueExternal, onChange: onChangeExternal, title, debounceMs = 500, nativeInputProps, type, ...restProps } = props;
+  const [value, setValue] = useState(valueExternal);
 
-    const debouncedUpdateDemand = useMemo(() => debounce((value: string) => onChangeExternal(value), debounceMs), [onChangeExternal]);
+  const debouncedUpdateDemand = useMemo(
+    () => debounce((value: string | number) => (onChangeExternal as any)(value), debounceMs),
+    [onChangeExternal]
+  );
 
-    const onChange = useCallback(
-      (e: ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value;
-        setValue(value);
-        debouncedUpdateDemand(value);
-      },
-      [debouncedUpdateDemand]
-    );
+  const onChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      const typedValue = type === 'number' ? parseInt(value) : value;
+      setValue(typedValue);
+      debouncedUpdateDemand(typedValue);
+    },
+    [debouncedUpdateDemand]
+  );
 
-    return (
-      <Input
-        ref={ref}
-        $size="sm"
-        label=""
-        {...props}
-        nativeInputProps={{
-          value,
-          onChange,
-          title,
-          ...nativeInputProps,
-        }}
-      />
-    );
-  }
-);
+  return (
+    <Input
+      ref={ref}
+      $size="sm"
+      label=""
+      {...restProps}
+      nativeInputProps={{
+        value,
+        onChange,
+        title,
+        type,
+        ...nativeInputProps,
+      }}
+    />
+  );
+});
 
 TableFieldInput.displayName = 'TableFieldInput';
 

@@ -123,7 +123,7 @@ function DemandesAdmin(): React.ReactElement {
   }, [filteredDemands, selectedDemandId]);
 
   const updateDemand = useCallback(
-    toastErrors(async (demandId: string, demandUpdate: Partial<Demand>) => {
+    toastErrors(async (demandId: string, demandUpdate: Partial<AdminDemand>) => {
       queryClient.setQueryData<AdminDemand[]>(['/api/admin/demands'], (demands) =>
         (demands ?? []).map((demand) => {
           if (demand.id === demandId) {
@@ -204,12 +204,12 @@ function DemandesAdmin(): React.ReactElement {
                     priority="tertiary no outline"
                     size="small"
                   >
-                    {eligibilityTitleByType[demand.detailedEligibilityStatus.eligibilityType]}
+                    {eligibilityTitleByType[demand.detailedEligibilityStatus.type]}
                   </Button>
                 </EligibilityHelpDialog>
               </div>
               <div className="my-1">
-                {demand.detailedEligibilityStatus.eligibilityType !== 'trop_eloigne' &&
+                {demand.detailedEligibilityStatus.type !== 'trop_eloigne' &&
                   !demand.detailedEligibilityStatus.communes.includes(demand.detailedEligibilityStatus.commune.nom!) && (
                     <Badge
                       type="warning_ville_differente"
@@ -268,16 +268,17 @@ function DemandesAdmin(): React.ReactElement {
         accessorKey: 'Gestionnaires validés',
         header: 'Gestionnaire validé',
         align: 'center',
-        cell: (info) =>
-          info.row.original['Gestionnaires validés'] ? (
+        cell: (info) => {
+          const demand = info.row.original;
+          return demand['Gestionnaires validés'] ? (
             <span className="text-green-500 text-3xl">✓</span>
           ) : (
             <AsyncButton
               priority="primary"
               size="small"
               onClick={async () => {
-                const demand = info.row.original;
                 updateDemand(demand.id, {
+                  'Gestionnaires validés': true,
                   // assign recommended tags if no gestionnaires are set
                   ...(!demand.Gestionnaires || demand.Gestionnaires.length === 0
                     ? {
@@ -290,13 +291,18 @@ function DemandesAdmin(): React.ReactElement {
                         'Affecté à': demand.recommendedAssignment,
                       }
                     : {}),
-                  'Gestionnaires validés': true,
+                  // assign network info if not set
+                  'Nom réseau': demand['Nom réseau'] || demand.detailedEligibilityStatus.nom,
+                  'Identifiant réseau': demand['Identifiant réseau'] || demand.detailedEligibilityStatus.id_sncu,
+                  'Distance au réseau': demand['Distance au réseau'] ?? demand.detailedEligibilityStatus.distance,
+                  'Relance à activer': demand.detailedEligibilityStatus.distance < 200 && demand['Type de chauffage'] === 'Collectif',
                 });
               }}
             >
               Valider
             </AsyncButton>
-          ),
+          );
+        },
         width: '120px',
         enableSorting: false,
       },
@@ -350,7 +356,17 @@ function DemandesAdmin(): React.ReactElement {
             />
           </div>
         ),
-        cell: (info) => info.getValue<number>() && <>{info.getValue<number>()}&nbsp;m</>,
+        cell: (info) => {
+          const demand = info.row.original;
+          return (
+            <TableFieldInput
+              title="Distance au réseau"
+              value={demand['Distance au réseau'] || demand.detailedEligibilityStatus.distance}
+              onChange={(value) => updateDemand(demand.id, { 'Distance au réseau': value })}
+              type="number"
+            />
+          );
+        },
         width: '120px',
         enableGlobalFilter: false,
         enableSorting: false,
@@ -363,7 +379,7 @@ function DemandesAdmin(): React.ReactElement {
           return (
             <TableFieldInput
               title="Identifiant réseau"
-              value={demand['Identifiant réseau'] ?? ''}
+              value={demand['Identifiant réseau'] ?? demand.detailedEligibilityStatus.id_sncu}
               onChange={(value) => updateDemand(demand.id, { 'Identifiant réseau': value })}
             />
           );
@@ -380,7 +396,7 @@ function DemandesAdmin(): React.ReactElement {
             <TableFieldInput
               className="w-[250px]"
               title="Nom du réseau"
-              value={demand['Nom réseau'] ?? ''}
+              value={demand['Nom réseau'] ?? demand.detailedEligibilityStatus.nom}
               onChange={(value) => updateDemand(demand.id, { 'Nom réseau': value })}
             />
           );

@@ -57,6 +57,9 @@ export type Demand = DemandSummary &
   };
 
 export type AdminDemand = Demand & {
+  // airtable fields
+  'Relance à activer'?: boolean;
+
   recommendedTags: {
     name: string;
     type: 'ville' | 'metropole' | 'gestionnaire' | 'reseau';

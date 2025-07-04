@@ -71,6 +71,7 @@ const GET = async () => {
         demand['Gestionnaires validés'] ??= false;
         demand['Commentaire'] ??= '';
         demand['Commentaires_internes_FCU'] ??= '';
+        demand['Relance à activer'] ??= false;
 
         if (!demand.Latitude || !demand.Longitude || !demand.Ville) {
           logger.warn('missing demand fields', {
@@ -105,7 +106,6 @@ const GET = async () => {
         return {
           ...demand,
           detailedEligibilityStatus,
-          networkTags: detailedEligibilityStatus.tags,
           recommendedTags,
           recommendedAssignment: getRecommendedAssignment(recommendedTags.map((tag) => tag.name)),
         } satisfies AdminDemand;

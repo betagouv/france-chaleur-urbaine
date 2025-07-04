@@ -481,6 +481,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
       .select([
         'id_fcu',
         'Identifiant reseau',
+        'nom_reseau',
         'tags',
         'communes',
         sql<number>`round(ST_Distance(geom, ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)))`.as(
@@ -510,7 +511,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
       .innerJoin('commune', (join) =>
         join.on((eb) => eb('commune.insee_com', '=', sql<string>`ANY(${eb.ref('reseaux_de_chaleur.communes_insee')})`))
       )
-      .select(['id_fcu', 'commune.nom', 'tags', 'communes'])
+      .select(['id_fcu', 'Identifiant reseau', 'nom_reseau', 'commune.nom', 'tags', 'communes'])
       .where('has_trace', '=', false)
       .limit(1)
       .executeTakeFirst(),
@@ -569,6 +570,8 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
       return {
         type: 'dans_pdp',
         distance: 0,
+        id_sncu: pdp['Identifiant reseau'] ?? '',
+        nom: '', // TODO trouver le nom du réseau associé au PDP
         tags: pdp['Identifiant reseau'] ? await findPDPTags(pdp['Identifiant reseau']) : [],
         communes: pdp.communes ?? [],
       };
@@ -579,6 +582,8 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
       return {
         type: 'reseau_existant_tres_proche',
         distance: reseauDeChaleur.distance,
+        id_sncu: reseauDeChaleur['Identifiant reseau'] ?? '',
+        nom: reseauDeChaleur.nom_reseau ?? '',
         tags: reseauDeChaleur.distance <= tagsDistanceThreshold ? (reseauDeChaleur.tags ?? []) : [],
         communes: reseauDeChaleur.communes ?? [],
       };
@@ -589,6 +594,8 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
       return {
         type: 'reseau_futur_tres_proche',
         distance: reseauEnConstruction.distance,
+        id_sncu: '',
+        nom: '', // TODO récupérer le nom du réseau futur via sync airtable
         tags: reseauEnConstruction.distance <= tagsDistanceThreshold ? (reseauEnConstruction.tags ?? []) : [],
         communes: reseauEnConstruction.communes ?? [],
       };
@@ -599,6 +606,8 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
       return {
         type: 'dans_zone_reseau_futur',
         distance: 0,
+        id_sncu: '',
+        nom: '', // TODO récupérer le nom du réseau futur via sync airtable
         tags: zoneEnConstruction.distance <= tagsDistanceThreshold ? (zoneEnConstruction.tags ?? []) : [],
         communes: zoneEnConstruction.communes ?? [],
       };
@@ -609,6 +618,8 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
       return {
         type: 'reseau_existant_proche',
         distance: reseauDeChaleur.distance,
+        id_sncu: reseauDeChaleur['Identifiant reseau'] ?? '',
+        nom: reseauDeChaleur.nom_reseau ?? '',
         tags: reseauDeChaleur.distance <= tagsDistanceThreshold ? (reseauDeChaleur.tags ?? []) : [],
         communes: reseauDeChaleur.communes ?? [],
       };
@@ -619,6 +630,8 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
       return {
         type: 'reseau_futur_proche',
         distance: reseauEnConstruction.distance,
+        id_sncu: '',
+        nom: '', // TODO récupérer le nom du réseau futur via sync airtable
         tags: reseauEnConstruction.distance <= tagsDistanceThreshold ? (reseauEnConstruction.tags ?? []) : [],
         communes: reseauEnConstruction.communes ?? [],
       };
@@ -629,6 +642,8 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
       return {
         type: 'reseau_existant_loin',
         distance: reseauDeChaleur.distance,
+        id_sncu: reseauDeChaleur['Identifiant reseau'] ?? '',
+        nom: reseauDeChaleur.nom_reseau ?? '',
         tags: reseauDeChaleur.distance <= tagsDistanceThreshold ? (reseauDeChaleur.tags ?? []) : [],
         communes: reseauDeChaleur.communes ?? [],
       };
@@ -639,6 +654,8 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
       return {
         type: 'reseau_futur_loin',
         distance: reseauEnConstruction.distance,
+        id_sncu: '',
+        nom: '', // TODO récupérer le nom du réseau futur via sync airtable
         tags: reseauEnConstruction.distance <= tagsDistanceThreshold ? (reseauEnConstruction.tags ?? []) : [],
         communes: reseauEnConstruction.communes ?? [],
       };
@@ -649,6 +666,8 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
       return {
         type: 'dans_ville_reseau_existant_sans_trace',
         distance: 0,
+        id_sncu: reseauDeChaleurSansTrace['Identifiant reseau'] ?? '',
+        nom: reseauDeChaleurSansTrace.nom_reseau ?? '',
         tags: reseauDeChaleurSansTrace.tags ?? [],
         communes: [reseauDeChaleurSansTrace.nom ?? ''],
       };
@@ -658,6 +677,8 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
     return {
       type: 'trop_eloigne',
       distance: 0,
+      id_sncu: '',
+      nom: '',
       tags: [],
       communes: [],
     };
@@ -665,10 +686,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
   const eligibilityResult = await determineEligibilityResult();
 
   return {
-    eligibilityType: eligibilityResult.type,
-    tags: eligibilityResult.tags,
-    distance: eligibilityResult.distance,
-    communes: eligibilityResult.communes,
+    ...eligibilityResult,
     commune,
     reseauDeChaleur,
     reseauDeChaleurSansTrace,
@@ -693,6 +711,8 @@ export type EligibilityType =
 type EligibilityResult = {
   type: EligibilityType;
   distance: number;
+  id_sncu: string;
+  nom: string;
   tags: string[];
   communes: string[];
 };

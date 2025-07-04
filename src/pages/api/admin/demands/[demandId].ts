@@ -3,17 +3,19 @@ import { z } from 'zod';
 
 import { handleRouteErrors, validateObjectSchema } from '@/server/helpers/server';
 import { updateDemand } from '@/server/services/manager';
-import { type Demand } from '@/types/Summary/Demand';
+import { type AdminDemand } from '@/types/Summary/Demand';
 
 const zDemandUpdate = {
   Gestionnaires: z.array(z.string()).optional(),
   'Affecté à': z.string().optional(),
   'Gestionnaires validés': z.boolean().optional(),
+  'Distance au réseau': z.number().optional(),
   'Identifiant réseau': z.string().optional(),
   'Nom réseau': z.string().optional(),
+  'Relance à activer': z.boolean().optional(),
   Commentaire: z.string().optional(),
   Commentaires_internes_FCU: z.string().optional(),
-} satisfies Partial<Record<keyof Demand, z.ZodType<any>>>;
+} satisfies Partial<Record<keyof AdminDemand, z.ZodType<any>>>;
 
 export type DemandUpdate = z.infer<z.ZodObject<typeof zDemandUpdate>>;
 
