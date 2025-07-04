@@ -16,6 +16,7 @@ import { createMapConfiguration } from '@/components/Map/map-configuration';
 import SimplePage from '@/components/shared/page/SimplePage';
 import AsyncButton from '@/components/ui/AsyncButton';
 import Badge from '@/components/ui/Badge';
+import Button from '@/components/ui/Button';
 import ChipAutoComplete from '@/components/ui/ChipAutoComplete';
 import { VerticalDivider } from '@/components/ui/Divider';
 import Icon from '@/components/ui/Icon';
@@ -159,7 +160,18 @@ function DemandesAdmin(): React.ReactElement {
                   });
                 }}
               />
-              <div className="my-1 text-gray-700 italic">{eligibilityTitleByType[demand.detailedEligibilityStatus.eligibilityType]}</div>
+              <div className="flex items-center gap-2">
+                <EligibilityHelpDialog detailedEligibilityStatus={demand.detailedEligibilityStatus}>
+                  <Button
+                    className="!text-gray-700 !font-normal italic"
+                    title="Voir le détail de l'éligibilité"
+                    priority="tertiary no outline"
+                    size="small"
+                  >
+                    {eligibilityTitleByType[demand.detailedEligibilityStatus.eligibilityType]}
+                  </Button>
+                </EligibilityHelpDialog>
+              </div>
               <div className="my-1">
                 {demand.detailedEligibilityStatus.eligibilityType !== 'trop_eloigne' &&
                   !demand.detailedEligibilityStatus.communes.includes(demand.detailedEligibilityStatus.commune.nom!) && (
