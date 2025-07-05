@@ -114,7 +114,7 @@ const EligibilityHelpDialog = ({ children, detailedEligibilityStatus }: Eligibil
         <div className="space-y-4 max-h-[60vh] overflow-y-auto">
           <div className="space-y-3">
             {eligibilityCases.map((eligibilityCase) => {
-              const isCurrent = detailedEligibilityStatus && eligibilityCase.type === detailedEligibilityStatus.eligibilityType;
+              const isCurrent = detailedEligibilityStatus && eligibilityCase.type === detailedEligibilityStatus.type;
               return (
                 <div
                   key={eligibilityCase.type}
