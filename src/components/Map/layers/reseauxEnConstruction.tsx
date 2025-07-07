@@ -51,7 +51,7 @@ export const reseauxEnConstructionLayersSpec = [
 function Popup(reseauEnConstruction: FuturNetworkSummary, { Property, Title, TwoColumns }: PopupStyleHelpers) {
   return (
     <>
-      <Title>Réseau en construction</Title>
+      <Title title={`ID FCU: ${reseauEnConstruction.id_fcu}`}>{reseauEnConstruction.nom_reseau ?? 'Réseau en construction'}</Title>
       <TwoColumns>
         <Property label="Gestionnaire" value={reseauEnConstruction.gestionnaire} />
         <Property label="Mise en service" value={reseauEnConstruction.mise_en_service} />
