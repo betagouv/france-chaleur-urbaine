@@ -1,3 +1,4 @@
+threshold: medium
 fileignoreconfig:
 - filename: .env
   checksum: 81233fa2ce97469feae7a0b794fff052255307f658a9a5cdd7cfe54bc40fef36
