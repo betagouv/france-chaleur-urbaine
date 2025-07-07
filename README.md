@@ -34,6 +34,11 @@ docker compose up -d
 scalingo login
 ```
 
+- Préparer la structure de la BDD
+```sh
+pnpm db:migrate
+```
+
 - Peupler la base de données locale à partir de la base de production, notamment les tables de référence et calculées.
 ```sh
 pnpm db:bootstrap
