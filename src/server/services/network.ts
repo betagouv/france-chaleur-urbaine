@@ -1,5 +1,5 @@
 import db from '@/server/db';
-import { kdb, sql } from '@/server/db/kysely';
+import { kdb, sql, type ZoneDeDeveloppementPrioritaire } from '@/server/db/kysely';
 import { type BoundingBox } from '@/types/Coords';
 import { type Network, type NetworkToCompare } from '@/types/Summary/Network';
 import { isDefined } from '@/utils/core';
@@ -268,4 +268,33 @@ export const listReseauxEnConstruction = async () => {
 
 export const updateReseauEnConstruction = async (id: number, tags: string[]) => {
   await kdb.updateTable('zones_et_reseaux_en_construction').set({ tags }).where('id_fcu', '=', id).execute();
+};
+
+export const listPerimetresDeDeveloppementPrioritaire = async () => {
+  const perimetresDeDeveloppementPrioritaire = await kdb
+    .selectFrom('zone_de_developpement_prioritaire')
+    .select([
+      'id_fcu',
+      'Identifiant reseau',
+      'reseau_de_chaleur_id',
+      'reseau_en_construction_id',
+      'communes',
+      sql<BoundingBox>`st_transform(ST_Envelope(geom), 4326)::box2d`.as('bbox'),
+    ])
+    .orderBy('id_fcu')
+    .execute();
+
+  // transforme les bbox en JS pour être performant
+  perimetresDeDeveloppementPrioritaire.forEach((perimetre) => {
+    perimetre.bbox = parseBbox(perimetre.bbox as unknown as string);
+  });
+
+  return perimetresDeDeveloppementPrioritaire;
+};
+
+export const updatePerimetreDeDeveloppementPrioritaire = async (
+  id: number,
+  data: Partial<Pick<ZoneDeDeveloppementPrioritaire, 'Identifiant reseau' | 'reseau_de_chaleur_id' | 'reseau_en_construction_id'>>
+) => {
+  await kdb.updateTable('zone_de_developpement_prioritaire').set(data).where('id_fcu', '=', id).execute();
 };

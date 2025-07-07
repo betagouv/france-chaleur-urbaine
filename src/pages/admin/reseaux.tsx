@@ -10,6 +10,7 @@ import Link from '@/components/ui/Link';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/Resizable';
 import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
 import { useFetch } from '@/hooks/useApi';
+import { type PerimetreDeDeveloppementPrioritaire } from '@/pages/api/admin/perimetres-de-developpement-prioritaire';
 import { type ReseauDeChaleur } from '@/pages/api/admin/reseaux-de-chaleur';
 import { type ReseauEnConstruction } from '@/pages/api/admin/reseaux-en-construction';
 import { withAuthentication } from '@/server/authentication';
@@ -19,12 +20,14 @@ import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
 import { patchFetchJSON } from '@/utils/network';
 
-const tabIds = ['reseaux-de-chaleur', 'reseaux-en-construction'] as const;
+const tabIds = ['reseaux-de-chaleur', 'reseaux-en-construction', 'perimetres-de-developpement-prioritaire'] as const;
 
 const GestionDesReseaux = () => {
   const [selectedTab, setSelectedTab] = useQueryState('tab', parseAsStringLiteral(tabIds).withDefault('reseaux-de-chaleur'));
 
-  const [selectedNetwork, setSelectedNetwork] = useState<ReseauDeChaleur | ReseauEnConstruction | null>(null);
+  const [selectedNetwork, setSelectedNetwork] = useState<
+    ReseauDeChaleur | ReseauEnConstruction | PerimetreDeDeveloppementPrioritaire | null
+  >(null);
 
   const {
     data: reseauxDeChaleur,
@@ -36,15 +39,25 @@ const GestionDesReseaux = () => {
     isLoading: isLoadingReseauxEnConstruction,
     refetch: refetchReseauxEnConstruction,
   } = useFetch<ReseauEnConstruction[]>('/api/admin/reseaux-en-construction');
+  const {
+    data: perimetresDeDeveloppementPrioritaire,
+    isLoading: isLoadingPerimetresDeDeveloppementPrioritaire,
+    refetch: refetchPerimetresDeDeveloppementPrioritaire,
+  } = useFetch<PerimetreDeDeveloppementPrioritaire[]>('/api/admin/perimetres-de-developpement-prioritaire');
   const { tagsOptions } = useFCUTags();
 
   const onTableRowClick = useCallback(
     (idFCU: number) => {
       setSelectedNetwork(
-        (selectedTab === 'reseaux-de-chaleur' ? reseauxDeChaleur : reseauxEnConstruction)?.find((reseau) => reseau.id_fcu === idFCU) ?? null
+        (selectedTab === 'reseaux-de-chaleur'
+          ? reseauxDeChaleur
+          : selectedTab === 'reseaux-en-construction'
+            ? reseauxEnConstruction
+            : perimetresDeDeveloppementPrioritaire
+        )?.find((reseau) => reseau.id_fcu === idFCU) ?? null
       );
     },
-    [reseauxDeChaleur, reseauxEnConstruction, selectedTab]
+    [reseauxDeChaleur, reseauxEnConstruction, perimetresDeDeveloppementPrioritaire, selectedTab]
   );
 
   const updateReseauDeChaleur = useCallback(
@@ -59,6 +72,14 @@ const GestionDesReseaux = () => {
     toastErrors(async (reseauId: number, reseauUpdate: Partial<ReseauEnConstruction>) => {
       await patchFetchJSON(`/api/admin/reseaux-en-construction/${reseauId}`, reseauUpdate);
       refetchReseauxEnConstruction();
+    }),
+    []
+  );
+
+  const _updatePerimetreDeDeveloppementPrioritaire = useCallback(
+    toastErrors(async (pdpId: number, pdpUpdate: Partial<PerimetreDeDeveloppementPrioritaire>) => {
+      await patchFetchJSON(`/api/admin/perimetres-de-developpement-prioritaire/${pdpId}`, pdpUpdate);
+      refetchPerimetresDeDeveloppementPrioritaire();
     }),
     []
   );
@@ -169,6 +190,37 @@ const GestionDesReseaux = () => {
     [tagsOptions, updateReseauEnConstruction]
   );
 
+  const perimetresDeDeveloppementPrioritaireColumns = useMemo<ColumnDef<PerimetreDeDeveloppementPrioritaire>[]>(
+    () => [
+      {
+        accessorKey: 'id_fcu',
+        header: 'id_fcu',
+        width: '100px',
+      },
+      {
+        accessorFn: (row) => row.communes?.join(', '),
+        header: 'Communes',
+        width: '200px',
+      },
+      {
+        accessorKey: 'Identifiant reseau',
+        header: 'ID SNCU',
+        width: '140px',
+      },
+      {
+        accessorKey: 'reseau_de_chaleur_id_fcu',
+        header: 'ID Réseau de chaleur',
+        width: '140px',
+      },
+      {
+        accessorKey: 'reseau_en_construction_id_fcu',
+        header: 'ID Réseau en construction',
+        width: '140px',
+      },
+    ],
+    []
+  );
+
   const tabs = [
     {
       label: `Réseaux de chaleur (${reseauxDeChaleur?.length ?? 0})`,
@@ -208,6 +260,25 @@ const GestionDesReseaux = () => {
       ),
       isDefault: selectedTab === 'reseaux-en-construction',
     },
+    {
+      label: `Périmètres de développement prioritaire (${perimetresDeDeveloppementPrioritaire?.length ?? 0})`,
+      content: (
+        <TableSimple
+          columns={perimetresDeDeveloppementPrioritaireColumns}
+          data={perimetresDeDeveloppementPrioritaire ?? []}
+          loading={isLoadingPerimetresDeDeveloppementPrioritaire}
+          fluid
+          controlsLayout="block"
+          padding="sm"
+          loadingEmptyMessage="Aucun périmètre de développement prioritaire à afficher"
+          height="calc(100dvh - 194px)"
+          onRowClick={onTableRowClick}
+          rowIdKey="id_fcu"
+          enableGlobalFilter
+        />
+      ),
+      isDefault: selectedTab === 'perimetres-de-developpement-prioritaire',
+    },
   ];
 
   return (
@@ -222,7 +293,7 @@ const GestionDesReseaux = () => {
             <Tabs
               tabs={tabs}
               onTabChange={(event) => {
-                const newTab = event.tabIndex === 0 ? 'reseaux-de-chaleur' : 'reseaux-en-construction';
+                const newTab = tabIds[event.tabIndex];
                 setSelectedTab(newTab);
                 setSelectedNetwork(null);
               }}
