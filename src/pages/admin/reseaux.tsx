@@ -134,6 +134,11 @@ const GestionDesReseaux = () => {
         width: '100px',
       },
       {
+        accessorKey: 'nom_reseau',
+        header: 'Nom',
+        width: '300px',
+      },
+      {
         accessorKey: 'gestionnaire',
         header: 'Gestionnaire',
         width: '150px',

@@ -3427,6 +3427,7 @@ export interface ZonesEtReseauxEnConstruction {
   id_fcu: number;
   is_zone: Generated<boolean>;
   mise_en_service: string | null;
+  nom_reseau: string | null;
   region: string | null;
   tags: string[];
 }

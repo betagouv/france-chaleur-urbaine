@@ -247,7 +247,14 @@ export const updateReseauDeChaleur = async (id: number, tags: string[]) => {
 export const listReseauxEnConstruction = async () => {
   const reseauxDeChaleur = await kdb
     .selectFrom('zones_et_reseaux_en_construction')
-    .select(['id_fcu', 'communes', 'gestionnaire', 'tags', sql<BoundingBox>`st_transform(ST_Envelope(geom), 4326)::box2d`.as('bbox')])
+    .select([
+      'id_fcu',
+      'nom_reseau',
+      'communes',
+      'gestionnaire',
+      'tags',
+      sql<BoundingBox>`st_transform(ST_Envelope(geom), 4326)::box2d`.as('bbox'),
+    ])
     .orderBy('id_fcu')
     .execute();
 
