@@ -168,7 +168,7 @@ program
     const allEPCI = await fetchJSON<EPCI[]>('https://unpkg.com/@etalab/decoupage-administratif@5.2.0/data/epci.json');
     const epci = allEPCI
       // seules les communautés d'agglomération, les communautés urbaines et les métropoles sont intéressantes pour le moment
-      .filter((epci) => ['CA', 'CU', 'METRO'].includes(epci.type))
+      .filter((epci) => ['CA', 'CU', 'METRO', 'MET69'].includes(epci.type))
       .map((metropole) => ({
         code: metropole.code,
         nom: metropole.nom,
