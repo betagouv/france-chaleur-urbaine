@@ -10,13 +10,13 @@ export type TableFieldInputProps = Omit<InputProps, 'label'> & {
 } & (
     | {
         type: 'number';
-        value: number | null;
-        onChange: (value: number | null) => void;
+        value: number | null | undefined;
+        onChange: (value: number | undefined) => void;
       }
     | {
         type?: 'text';
-        value: string | null;
-        onChange: (value: string | null) => void;
+        value: string | null | undefined;
+        onChange: (value: string | undefined) => void;
       }
   );
 
