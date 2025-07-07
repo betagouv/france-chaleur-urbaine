@@ -12,7 +12,7 @@ a[target='_blank'].reset-external {
   }
 }
 
-html[data-browser='firefox'] .scrollbar-visible{
+html[data-browser='firefox'] .scrollbar-visible {
   scrollbar-width: auto;
   scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
 
