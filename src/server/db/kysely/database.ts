@@ -3400,14 +3400,16 @@ export interface ZoneAPotentielFortChaudTiles {
 }
 
 export interface ZoneDeDeveloppementPrioritaire {
+  id_fcu: number;
   communes: string[] | null;
   communes_insee: string[] | null;
   date_actualisation_trace: Timestamp | null;
   departement: string | null;
   geom: string | null;
-  id_fcu: number;
   'Identifiant reseau': string | null;
   region: string | null;
+  reseau_de_chaleur_id: number | null;
+  reseau_en_construction_id: number | null;
 }
 
 export interface ZoneDeDeveloppementPrioritaireTiles {

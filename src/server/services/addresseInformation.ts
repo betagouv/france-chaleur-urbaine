@@ -1,7 +1,8 @@
 import XLSX from 'xlsx';
 
 import db from '@/server/db';
-import { kdb, sql } from '@/server/db/kysely';
+import { kdb, sql, type ZoneDeDeveloppementPrioritaire } from '@/server/db/kysely';
+import { logger } from '@/server/helpers/logger';
 import { getNetworkEligibilityDistances } from '@/services/eligibility';
 import { EXPORT_FORMAT } from '@/types/enum/ExportFormat';
 import { type CityNetwork, type HeatNetwork } from '@/types/HeatNetworksResponse';
@@ -520,6 +521,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
       .selectFrom('zones_et_reseaux_en_construction')
       .select([
         'id_fcu',
+        'nom_reseau',
         'tags',
         'communes',
         sql<number>`round(ST_Distance(geom, ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)))`.as(
@@ -535,6 +537,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
       .selectFrom('zones_et_reseaux_en_construction')
       .select([
         'id_fcu',
+        'nom_reseau',
         'tags',
         'communes',
         sql<number>`round(ST_Distance(geom, ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)))`.as(
@@ -548,7 +551,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
 
     kdb
       .selectFrom('zone_de_developpement_prioritaire')
-      .select(['id_fcu', 'Identifiant reseau', 'communes'])
+      .select(['id_fcu', 'Identifiant reseau', 'communes', 'reseau_de_chaleur_id', 'reseau_en_construction_id'])
       .where(
         (eb) =>
           sql`ST_Contains(
@@ -567,12 +570,13 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
 
     // Dans un PDP
     if (pdp) {
+      const networkInfos = await findPDPAssociatedNetwork(pdp);
       return {
         type: 'dans_pdp',
-        distance: 0,
+        distance: networkInfos?.distance ?? 0,
         id_sncu: pdp['Identifiant reseau'] ?? '',
-        nom: '', // TODO trouver le nom du réseau associé au PDP
-        tags: pdp['Identifiant reseau'] ? await findPDPTags(pdp['Identifiant reseau']) : [],
+        nom: networkInfos?.nom_reseau ?? '',
+        tags: networkInfos?.tags ?? [],
         communes: pdp.communes ?? [],
       };
     }
@@ -595,7 +599,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
         type: 'reseau_futur_tres_proche',
         distance: reseauEnConstruction.distance,
         id_sncu: '',
-        nom: '', // TODO récupérer le nom du réseau futur via sync airtable
+        nom: reseauEnConstruction.nom_reseau ?? '',
         tags: reseauEnConstruction.distance <= tagsDistanceThreshold ? (reseauEnConstruction.tags ?? []) : [],
         communes: reseauEnConstruction.communes ?? [],
       };
@@ -607,7 +611,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
         type: 'dans_zone_reseau_futur',
         distance: 0,
         id_sncu: '',
-        nom: '', // TODO récupérer le nom du réseau futur via sync airtable
+        nom: zoneEnConstruction.nom_reseau ?? '',
         tags: zoneEnConstruction.distance <= tagsDistanceThreshold ? (zoneEnConstruction.tags ?? []) : [],
         communes: zoneEnConstruction.communes ?? [],
       };
@@ -631,7 +635,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
         type: 'reseau_futur_proche',
         distance: reseauEnConstruction.distance,
         id_sncu: '',
-        nom: '', // TODO récupérer le nom du réseau futur via sync airtable
+        nom: reseauEnConstruction.nom_reseau ?? '',
         tags: reseauEnConstruction.distance <= tagsDistanceThreshold ? (reseauEnConstruction.tags ?? []) : [],
         communes: reseauEnConstruction.communes ?? [],
       };
@@ -655,7 +659,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
         type: 'reseau_futur_loin',
         distance: reseauEnConstruction.distance,
         id_sncu: '',
-        nom: '', // TODO récupérer le nom du réseau futur via sync airtable
+        nom: reseauEnConstruction.nom_reseau ?? '',
         tags: reseauEnConstruction.distance <= tagsDistanceThreshold ? (reseauEnConstruction.tags ?? []) : [],
         communes: reseauEnConstruction.communes ?? [],
       };
@@ -720,11 +724,47 @@ type EligibilityResult = {
 export type DetailedEligibilityStatus = Awaited<ReturnType<typeof getDetailedEligibilityStatus>>;
 
 /**
- * Récupère les tags d'un réseau de chaleur à partir de son id_sncu
- * @param id_sncu - L'identifiant du réseau de chaleur
- * @returns Les tags du réseau de chaleur
+ * Récupère les informations d'un réseau de chaleur ou en construction associé à un PDP
+ * @param pdp - Le PDP
+ * @returns Les informations du réseau de chaleur ou en construction associé au PDP
  */
-const findPDPTags = async (id_sncu: string) => {
-  const reseau = await kdb.selectFrom('reseaux_de_chaleur').select('tags').where('Identifiant reseau', '=', id_sncu).executeTakeFirst();
-  return reseau?.tags ?? [];
+const findPDPAssociatedNetwork = async (
+  pdp: Pick<ZoneDeDeveloppementPrioritaire, 'Identifiant reseau' | 'reseau_de_chaleur_id' | 'reseau_en_construction_id'>
+) => {
+  // Recherche d'abord dans les réseaux de chaleur existants
+  if (pdp['Identifiant reseau'] || pdp.reseau_de_chaleur_id) {
+    const reseauDeChaleur = await kdb
+      .selectFrom('reseaux_de_chaleur')
+      .select(['id_fcu', 'nom_reseau', 'communes', 'tags', sql<number>`0`.as('distance')])
+      .where((eb) =>
+        pdp['Identifiant reseau'] ? eb('Identifiant reseau', '=', pdp['Identifiant reseau']) : eb('id_fcu', '=', pdp.reseau_de_chaleur_id!)
+      )
+      .executeTakeFirst();
+
+    if (!reseauDeChaleur) {
+      logger.warn('Aucun réseau de chaleurtrouvé pour le PDP', { pdp });
+    }
+
+    if (reseauDeChaleur) {
+      return reseauDeChaleur;
+    }
+  }
+
+  // Sinon recherche dans les réseaux en construction
+  if (pdp.reseau_en_construction_id) {
+    const reseauEnConstruction = await kdb
+      .selectFrom('zones_et_reseaux_en_construction')
+      .select(['id_fcu', 'nom_reseau', 'communes', 'tags', sql<number>`0`.as('distance')])
+      .where('id_fcu', '=', pdp.reseau_en_construction_id)
+      .executeTakeFirst();
+
+    if (!reseauEnConstruction) {
+      logger.warn('Aucun réseau en construction trouvé pour le PDP', { pdp });
+    }
+
+    return reseauEnConstruction;
+  }
+
+  logger.warn('Aucun réseau de chaleur ou en construction trouvé pour le PDP', { pdp });
+  return null;
 };
