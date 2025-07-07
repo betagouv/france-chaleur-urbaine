@@ -10,13 +10,13 @@ export type TableFieldInputProps = Omit<InputProps, 'label'> & {
 } & (
     | {
         type: 'number';
-        value: number;
-        onChange: (value: number) => void;
+        value: number | null;
+        onChange: (value: number | null) => void;
       }
     | {
         type?: 'text';
-        value: string;
-        onChange: (value: string) => void;
+        value: string | null;
+        onChange: (value: string | null) => void;
       }
   );
 
@@ -47,7 +47,7 @@ const TableFieldInput = forwardRef<HTMLInputElement, TableFieldInputProps>((rawP
       label=""
       {...restProps}
       nativeInputProps={{
-        value,
+        value: value ?? undefined,
         onChange,
         title,
         type,

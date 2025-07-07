@@ -2,6 +2,7 @@ import Tabs from '@codegouvfr/react-dsfr/Tabs';
 import { parseAsStringLiteral, useQueryState } from 'nuqs';
 import { useCallback, useMemo, useState } from 'react';
 
+import TableFieldInput from '@/components/Admin/TableFieldInput';
 import Map from '@/components/Map/Map';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import SimplePage from '@/components/shared/page/SimplePage';
@@ -76,7 +77,7 @@ const GestionDesReseaux = () => {
     []
   );
 
-  const _updatePerimetreDeDeveloppementPrioritaire = useCallback(
+  const updatePerimetreDeDeveloppementPrioritaire = useCallback(
     toastErrors(async (pdpId: number, pdpUpdate: Partial<PerimetreDeDeveloppementPrioritaire>) => {
       await patchFetchJSON(`/api/admin/perimetres-de-developpement-prioritaire/${pdpId}`, pdpUpdate);
       refetchPerimetresDeDeveloppementPrioritaire();
@@ -211,11 +212,33 @@ const GestionDesReseaux = () => {
         accessorKey: 'reseau_de_chaleur_id_fcu',
         header: 'ID Réseau de chaleur',
         width: '140px',
+        cell: (info) => {
+          const network = info.row.original;
+          return (
+            <TableFieldInput
+              title="ID Réseau de chaleur"
+              value={network.reseau_de_chaleur_id}
+              onChange={(value) => updatePerimetreDeDeveloppementPrioritaire(network.id_fcu, { reseau_de_chaleur_id: value })}
+              type="number"
+            />
+          );
+        },
       },
       {
         accessorKey: 'reseau_en_construction_id_fcu',
         header: 'ID Réseau en construction',
         width: '140px',
+        cell: (info) => {
+          const network = info.row.original;
+          return (
+            <TableFieldInput
+              title="ID Réseau en construction"
+              value={network.reseau_en_construction_id}
+              onChange={(value) => updatePerimetreDeDeveloppementPrioritaire(network.id_fcu, { reseau_en_construction_id: value })}
+              type="number"
+            />
+          );
+        },
       },
     ],
     []
