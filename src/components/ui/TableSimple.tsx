@@ -198,7 +198,7 @@ const TableRow = <T extends RowData>({
             )}
             scope={columnDef.id === 'selection' ? 'row' : undefined}
           >
-            <TableCell<T> type={cellType} value={value} data={cell.row.original} cellProps={columnDef.cellProps}>
+            <TableCell type={cellType} value={value} data={cell.row.original} cellProps={columnDef.cellProps}>
               {flexRender(columnDef.cell, cell.getContext())}
             </TableCell>
             {value ? suffix : ''}
