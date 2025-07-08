@@ -1,7 +1,7 @@
 import { type Knex } from 'knex';
 
 export async function up(knex: Knex): Promise<void> {
-  await knex.schema.dropTable('network_iris');
+  await knex.schema.dropTableIfExists('network_iris');
 }
 
 export async function down(knex: Knex): Promise<void> {
