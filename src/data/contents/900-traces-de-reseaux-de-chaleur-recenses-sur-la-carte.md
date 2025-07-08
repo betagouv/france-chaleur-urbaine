@@ -5,7 +5,7 @@ coverY: 0
 
 # 900 tracés de réseaux de chaleur recensés sur la carte !
 
-🎉 Le seuil des 900 tracés de réseaux de chaleur recensés sur la carte France Chaleur Urbaine est franchi !\
+🎉 Le seuil des 900 tracés de réseaux de chaleur recensés sur la [carte](https://france-chaleur-urbaine.beta.gouv.fr/carte) France Chaleur Urbaine est franchi !\
 \
 Ce mois-ci encore, la carte s'est enrichie. Ont notamment été ajoutés :\
 ✅ 6 tracés de réseaux de chaleur en service, situés à Carhaix, La Gacilly, Asnières, Langueux, Lafrançaise, Toul\
