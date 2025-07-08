@@ -1,6 +1,6 @@
 import { Badge } from '@codegouvfr/react-dsfr/Badge';
 import Image from 'next/image';
-import React from 'react';
+import React, { memo } from 'react';
 
 import Link from '@/components/ui/Link';
 import { isDefined } from '@/utils/core';
@@ -22,17 +22,16 @@ type CellProps<T> = {
 
 export type TableCellProps<T> = {
   value: any;
-  default: any;
   data: T;
+  children: React.ReactNode;
   type?: keyof CellProps<T>;
   cellProps?: Partial<CellProps<T>[keyof CellProps<T>]>;
 };
 
-const Cell = <T,>({ value, default: defaultValue, data, type, cellProps = {} }: TableCellProps<T>) => {
+const Cell = <T,>({ value, children: defaultValue, data, type, cellProps = {} }: TableCellProps<T>) => {
   if (!value && type !== 'Boolean') {
     return defaultValue;
   }
-
   if (type === 'DateTime' || type === 'Date') {
     const date = new Date(value);
 
@@ -122,4 +121,10 @@ const Cell = <T,>({ value, default: defaultValue, data, type, cellProps = {} }: 
   return defaultValue;
 };
 
-export default Cell;
+export default memo(Cell, (prevProps, nextProps) => {
+  return (
+    prevProps.type === nextProps.type &&
+    JSON.stringify(prevProps.value) === JSON.stringify(nextProps.value) &&
+    JSON.stringify(prevProps.data) === JSON.stringify(nextProps.data)
+  );
+});
