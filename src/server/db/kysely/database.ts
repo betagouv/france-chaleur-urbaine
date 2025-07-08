@@ -3408,8 +3408,8 @@ export interface ZoneDeDeveloppementPrioritaire {
   geom: string | null;
   'Identifiant reseau': string | null;
   region: string | null;
-  reseau_de_chaleur_id: number | null;
-  reseau_en_construction_id: number | null;
+  reseau_de_chaleur_ids: number[];
+  reseau_en_construction_ids: number[];
 }
 
 export interface ZoneDeDeveloppementPrioritaireTiles {

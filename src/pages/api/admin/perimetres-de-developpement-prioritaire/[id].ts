@@ -6,8 +6,8 @@ import { updatePerimetreDeDeveloppementPrioritaire } from '@/server/services/net
 
 const zBody = z.object({
   Identifiant_reseau: z.string().optional(),
-  reseau_de_chaleur_id: z.number().optional(),
-  reseau_en_construction_id: z.number().optional(),
+  reseau_de_chaleur_ids: z.array(z.number()).optional(),
+  reseau_en_construction_ids: z.array(z.number()).optional(),
 });
 
 const PATCH = async (req: NextApiRequest) => {

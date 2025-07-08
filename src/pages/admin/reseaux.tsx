@@ -209,33 +209,39 @@ const GestionDesReseaux = () => {
         width: '140px',
       },
       {
-        accessorKey: 'reseau_de_chaleur_id_fcu',
-        header: 'ID Réseau de chaleur',
+        accessorKey: 'reseau_de_chaleur_ids',
+        header: 'IDs Réseaux de chaleur',
         width: '140px',
         cell: (info) => {
           const network = info.row.original;
           return (
             <TableFieldInput
-              title="ID Réseau de chaleur"
-              value={network.reseau_de_chaleur_id}
-              onChange={(value) => updatePerimetreDeDeveloppementPrioritaire(network.id_fcu, { reseau_de_chaleur_id: value })}
-              type="number"
+              title="IDs Réseaux de chaleur"
+              value={network.reseau_de_chaleur_ids.join(',')}
+              onChange={(value) =>
+                updatePerimetreDeDeveloppementPrioritaire(network.id_fcu, {
+                  reseau_de_chaleur_ids: value ? value.split(',').map(Number) : [],
+                })
+              }
             />
           );
         },
       },
       {
-        accessorKey: 'reseau_en_construction_id_fcu',
-        header: 'ID Réseau en construction',
+        accessorKey: 'reseau_en_construction_ids',
+        header: 'IDs Réseaux en construction',
         width: '140px',
         cell: (info) => {
           const network = info.row.original;
           return (
             <TableFieldInput
-              title="ID Réseau en construction"
-              value={network.reseau_en_construction_id}
-              onChange={(value) => updatePerimetreDeDeveloppementPrioritaire(network.id_fcu, { reseau_en_construction_id: value })}
-              type="number"
+              title="IDs Réseaux en construction"
+              value={network.reseau_en_construction_ids.join(',')}
+              onChange={(value) =>
+                updatePerimetreDeDeveloppementPrioritaire(network.id_fcu, {
+                  reseau_en_construction_ids: value ? value.split(',').map(Number) : [],
+                })
+              }
             />
           );
         },

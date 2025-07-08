@@ -276,8 +276,8 @@ export const listPerimetresDeDeveloppementPrioritaire = async () => {
     .select([
       'id_fcu',
       'Identifiant reseau',
-      'reseau_de_chaleur_id',
-      'reseau_en_construction_id',
+      'reseau_de_chaleur_ids',
+      'reseau_en_construction_ids',
       'communes',
       sql<BoundingBox>`st_transform(ST_Envelope(geom), 4326)::box2d`.as('bbox'),
     ])
@@ -294,7 +294,7 @@ export const listPerimetresDeDeveloppementPrioritaire = async () => {
 
 export const updatePerimetreDeDeveloppementPrioritaire = async (
   id: number,
-  data: Partial<Pick<ZoneDeDeveloppementPrioritaire, 'Identifiant reseau' | 'reseau_de_chaleur_id' | 'reseau_en_construction_id'>>
+  data: Partial<Pick<ZoneDeDeveloppementPrioritaire, 'Identifiant reseau' | 'reseau_de_chaleur_ids' | 'reseau_en_construction_ids'>>
 ) => {
   await kdb.updateTable('zone_de_developpement_prioritaire').set(data).where('id_fcu', '=', id).execute();
 };
