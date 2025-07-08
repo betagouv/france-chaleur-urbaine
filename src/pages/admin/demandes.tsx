@@ -31,6 +31,8 @@ import { toastErrors } from '@/services/notification';
 import { defaultTagChipOption, useFCUTags } from '@/services/tags';
 import { type Point } from '@/types/Point';
 import { type AdminDemand, type Demand } from '@/types/Summary/Demand';
+import { defaultEmptyNumberValue, defaultEmptyStringValue } from '@/utils/airtable';
+import { arrayEquals } from '@/utils/array';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
 import { putFetchJSON } from '@/utils/network';
@@ -161,41 +163,19 @@ function DemandesAdmin(): React.ReactElement {
           const demand = info.row.original;
 
           return (
-            <div className="block">
-              <div className="relative">
-                <ChipAutoComplete
-                  options={tagsOptions}
-                  defaultOption={defaultTagChipOption}
-                  value={demand.Gestionnaires ?? demand.recommendedTags.map((tag) => tag.name)}
-                  onChange={(newGestionnaires) => {
-                    updateDemand(demand.id, {
-                      Gestionnaires: newGestionnaires,
-                    });
-                  }}
-                  multiple
-                />
-                {/* visual indicator that the tags are suggested */}
-                <div className="absolute top-0 right-1 z-10 flex gap-1">
-                  {(!demand.Gestionnaires || demand.Gestionnaires.length === 0) && (
-                    <Icon
-                      name="fr-icon-sparkling-2-line"
-                      size="xs"
-                      color="blue"
-                      className="cursor-help"
-                      title="Tags suggérés automatiquement"
-                    />
-                  )}
-                  {demand.Gestionnaires && demand.Gestionnaires.length > 0 && (
-                    <button
-                      onClick={() => updateDemand(demand.id, { Gestionnaires: undefined })}
-                      className="p-0.5 hover:bg-gray-100 rounded"
-                      title="Revoir les tags suggérés"
-                    >
-                      <Icon name="fr-icon-refresh-line" size="xs" color="blue" />
-                    </button>
-                  )}
-                </div>
-              </div>
+            <div className="block w-full">
+              <ChipAutoComplete
+                options={tagsOptions}
+                defaultOption={defaultTagChipOption}
+                value={demand.Gestionnaires ?? []}
+                onChange={(newGestionnaires) => {
+                  updateDemand(demand.id, {
+                    Gestionnaires: newGestionnaires,
+                  });
+                }}
+                multiple
+                suggestedValue={demand.recommendedTags.map((tag) => tag.name)}
+              />
               <div className="flex items-center gap-2">
                 <EligibilityHelpDialog detailedEligibilityStatus={demand.detailedEligibilityStatus}>
                   <Button
@@ -229,36 +209,13 @@ function DemandesAdmin(): React.ReactElement {
         cell: (info) => {
           const demand = info.row.original;
           return (
-            <div className="block relative">
-              <ChipAutoComplete
-                options={assignmentRulesResultsOptions}
-                defaultOption={defaultAssignmentChipOption}
-                value={demand['Affecté à'] || demand.recommendedAssignment || ''}
-                onChange={(value) => updateDemand(demand.id, { 'Affecté à': value })}
-                className="w-full"
-              />
-              <div className="absolute top-0 right-1 z-10 flex gap-1">
-                {/* visual indicator that the tag is suggested */}
-                {!demand['Affecté à'] && (
-                  <Icon
-                    name="fr-icon-sparkling-2-line"
-                    size="xs"
-                    color="blue"
-                    className="cursor-help"
-                    title="Affectation suggérée automatiquement"
-                  />
-                )}
-                {demand['Affecté à'] && demand['Affecté à'] !== demand.recommendedAssignment && (
-                  <button
-                    onClick={() => updateDemand(demand.id, { 'Affecté à': '' })}
-                    className="p-0.5 hover:bg-gray-100 rounded"
-                    title="Revoir l'affectation suggérée"
-                  >
-                    <Icon name="fr-icon-refresh-line" size="xs" color="blue" />
-                  </button>
-                )}
-              </div>
-            </div>
+            <ChipAutoComplete
+              options={assignmentRulesResultsOptions}
+              defaultOption={defaultAssignmentChipOption}
+              value={demand['Affecté à'] ?? ''}
+              onChange={(value) => updateDemand(demand.id, { 'Affecté à': value || (null as any) })} // null allows a truly empty field (not an empty tag)
+              suggestedValue={demand.recommendedAssignment}
+            />
           );
         },
         width: '200px',
@@ -279,22 +236,22 @@ function DemandesAdmin(): React.ReactElement {
               onClick={async () => {
                 updateDemand(demand.id, {
                   'Gestionnaires validés': true,
-                  // assign recommended tags if no gestionnaires are set
-                  ...(!demand.Gestionnaires || demand.Gestionnaires.length === 0
-                    ? {
-                        Gestionnaires: demand.recommendedTags.map((tag) => tag.name),
-                      }
-                    : {}),
-                  // assign recommended assignment if none is set
-                  ...(!demand['Affecté à']
-                    ? {
-                        'Affecté à': demand.recommendedAssignment,
-                      }
-                    : {}),
-                  // assign network info if not set
-                  'Nom réseau': demand['Nom réseau'] || demand.detailedEligibilityStatus.nom,
-                  'Identifiant réseau': demand['Identifiant réseau'] || demand.detailedEligibilityStatus.id_sncu,
-                  'Distance au réseau': demand['Distance au réseau'] ?? demand.detailedEligibilityStatus.distance,
+
+                  // assign recommended tags, assignment, and network infos if not are set
+                  Gestionnaires: arrayEquals(demand.Gestionnaires ?? [], [defaultEmptyStringValue])
+                    ? demand.recommendedTags.map((tag) => tag.name)
+                    : (demand.Gestionnaires ?? []),
+                  'Affecté à': demand['Affecté à'] === defaultEmptyStringValue ? demand.recommendedAssignment : demand['Affecté à'],
+                  'Nom réseau':
+                    demand['Nom réseau'] === defaultEmptyStringValue ? demand.detailedEligibilityStatus.nom : demand['Nom réseau'],
+                  'Identifiant réseau':
+                    demand['Identifiant réseau'] === defaultEmptyStringValue
+                      ? demand.detailedEligibilityStatus.id_sncu
+                      : demand['Identifiant réseau'],
+                  'Distance au réseau':
+                    demand['Distance au réseau'] === defaultEmptyNumberValue
+                      ? demand.detailedEligibilityStatus.distance
+                      : demand['Distance au réseau'],
                   'Relance à activer': demand.detailedEligibilityStatus.distance < 200 && demand['Type de chauffage'] === 'Collectif',
                 });
               }}
@@ -360,10 +317,11 @@ function DemandesAdmin(): React.ReactElement {
           const demand = info.row.original;
           return (
             <TableFieldInput
-              title="Distance au réseau"
-              value={demand['Distance au réseau'] || demand.detailedEligibilityStatus.distance}
-              onChange={(value) => updateDemand(demand.id, { 'Distance au réseau': value })}
               type="number"
+              title="Distance au réseau"
+              value={demand['Distance au réseau']}
+              onChange={(value) => updateDemand(demand.id, { 'Distance au réseau': value })}
+              suggestedValue={demand.detailedEligibilityStatus.distance}
             />
           );
         },
@@ -379,8 +337,9 @@ function DemandesAdmin(): React.ReactElement {
           return (
             <TableFieldInput
               title="Identifiant réseau"
-              value={demand['Identifiant réseau'] ?? demand.detailedEligibilityStatus.id_sncu}
+              value={demand['Identifiant réseau']}
               onChange={(value) => updateDemand(demand.id, { 'Identifiant réseau': value })}
+              suggestedValue={demand.detailedEligibilityStatus.id_sncu}
             />
           );
         },
@@ -394,10 +353,10 @@ function DemandesAdmin(): React.ReactElement {
           const demand = info.row.original;
           return (
             <TableFieldInput
-              className="w-[250px]"
               title="Nom du réseau"
-              value={demand['Nom réseau'] ?? demand.detailedEligibilityStatus.nom}
+              value={demand['Nom réseau']}
               onChange={(value) => updateDemand(demand.id, { 'Nom réseau': value })}
+              suggestedValue={demand.detailedEligibilityStatus.nom}
             />
           );
         },

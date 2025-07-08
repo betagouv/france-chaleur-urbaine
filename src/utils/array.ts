@@ -47,3 +47,18 @@ export const diff = (oldArray: string[], newArray: string[]) => {
 
   return { added, removed, unchanged };
 };
+
+/**
+ * Compares two arrays for equality.
+ *
+ * @param array1 First array to compare
+ * @param array2 Second array to compare
+ * @returns True if arrays have same length and elements, false otherwise
+ */
+export function arrayEquals<T>(array1: T[], array2: T[]): boolean {
+  if (array1.length !== array2.length) {
+    return false;
+  }
+
+  return array1.every((value, index) => value === array2[index]);
+}
