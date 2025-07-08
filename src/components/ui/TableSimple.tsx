@@ -149,7 +149,6 @@ const TableRow = <T extends RowData>({
   measureElement,
   columnClassName,
 }: TableRowProps<T>) => {
-  console.log('rerender TableRow', row.id);
   return (
     <tr
       data-index={virtualRow.index}
