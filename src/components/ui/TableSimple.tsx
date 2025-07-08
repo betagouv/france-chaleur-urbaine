@@ -512,7 +512,7 @@ const TableSimple = <T extends RowData>({
       typeof window !== 'undefined' && navigator.userAgent.indexOf('Firefox') === -1
         ? (element) => element?.getBoundingClientRect().height
         : undefined,
-    overscan: 10, // The number of items to render above and below the visible area
+    overscan: 20, // The number of items to render above and below the visible area
   });
 
   useEffect(() => {
