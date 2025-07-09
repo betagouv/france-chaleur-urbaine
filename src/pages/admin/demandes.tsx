@@ -88,11 +88,13 @@ function DemandesAdmin(): React.ReactElement {
   const { tagsOptions } = useFCUTags();
   const { data: assignmentRulesResults = [] } = useFetch<string[]>('/api/admin/assignment-rules/results');
   const assignmentRulesResultsOptions: ChipOption[] = useMemo(
-    () =>
-      assignmentRulesResults.map((rule) => ({
+    () => [
+      ...assignmentRulesResults.map((rule) => ({
         key: rule,
         label: rule,
       })),
+      defaultAssignmentChipOption,
+    ],
     [assignmentRulesResults]
   );
 

@@ -60,7 +60,7 @@ const GET = async () => {
         });
       }
     }
-    return '';
+    return 'Non affecté';
   }
 
   startTime = Date.now();
