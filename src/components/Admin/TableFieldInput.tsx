@@ -52,6 +52,14 @@ const TableFieldInput = forwardRef<HTMLInputElement, TableFieldInputProps>((rawP
     (onChangeExternal as any)(defaultEmptyValue);
   }, [onChangeExternal, props.type]);
 
+  const onClick = useCallback(
+    (e: React.MouseEvent<HTMLInputElement>) => {
+      e.stopPropagation();
+      nativeInputProps?.onClick?.(e);
+    },
+    [nativeInputProps?.onClick]
+  );
+
   const inputElement = (
     <Input
       className="w-full"
@@ -65,6 +73,7 @@ const TableFieldInput = forwardRef<HTMLInputElement, TableFieldInputProps>((rawP
         title,
         type,
         ...nativeInputProps,
+        onClick,
       }}
     />
   );

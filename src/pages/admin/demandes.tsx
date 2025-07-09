@@ -35,6 +35,7 @@ import { defaultEmptyNumberValue, defaultEmptyStringValue } from '@/utils/airtab
 import { arrayEquals } from '@/utils/array';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
+import { stopPropagation } from '@/utils/events';
 import { putFetchJSON } from '@/utils/network';
 import { formatMWh, upperCaseFirstChar } from '@/utils/strings';
 import { ObjectEntries, ObjectKeys } from '@/utils/typescript';
@@ -178,7 +179,7 @@ function DemandesAdmin(): React.ReactElement {
                 multiple
                 suggestedValue={demand.recommendedTags.map((tag) => tag.name)}
               />
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2" onClick={stopPropagation}>
                 <EligibilityHelpDialog detailedEligibilityStatus={demand.detailedEligibilityStatus}>
                   <Button
                     className="!text-gray-700 !font-normal italic"
