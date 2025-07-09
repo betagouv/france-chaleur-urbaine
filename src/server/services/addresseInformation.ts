@@ -732,7 +732,7 @@ const findPDPAssociatedNetwork = async (
   lat: number,
   lon: number
 ) => {
-  const [reseauDeChaleur, reseauEnConstruction] = await Promise.all([
+  const [reseauDeChaleur, reseauEnConstruction, zoneEnConstruction] = await Promise.all([
     pdp['Identifiant reseau'] || pdp.reseau_de_chaleur_ids.length > 0
       ? kdb
           .selectFrom('reseaux_de_chaleur')
@@ -760,29 +760,50 @@ const findPDPAssociatedNetwork = async (
           .executeTakeFirst()
       : null,
 
-    pdp.reseau_en_construction_ids.length > 0
-      ? kdb
-          .selectFrom('zones_et_reseaux_en_construction')
-          .select([
-            'id_fcu',
-            'nom_reseau',
-            'tags',
-            'communes',
-            sql<number>`round(ST_Distance(geom, ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)))`.as(
-              'distance'
-            ),
-          ])
-          .where('is_zone', '=', false)
-          .where('id_fcu', 'in', pdp.reseau_en_construction_ids)
-          .orderBy((eb) => sql`${eb.ref('geom')} <-> ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)`)
-          .limit(1)
-          .executeTakeFirst()
-      : null,
+    ...(pdp.reseau_en_construction_ids.length > 0
+      ? [
+          kdb
+            .selectFrom('zones_et_reseaux_en_construction')
+            .select([
+              'id_fcu',
+              'nom_reseau',
+              'tags',
+              'communes',
+              sql<number>`round(ST_Distance(geom, ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)))`.as(
+                'distance'
+              ),
+            ])
+            .where('is_zone', '=', false)
+            .where('id_fcu', 'in', pdp.reseau_en_construction_ids)
+            .orderBy((eb) => sql`${eb.ref('geom')} <-> ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)`)
+            .limit(1)
+            .executeTakeFirst(),
+
+          kdb
+            .selectFrom('zones_et_reseaux_en_construction')
+            .select([
+              'id_fcu',
+              'nom_reseau',
+              'tags',
+              'communes',
+              sql<number>`round(ST_Distance(geom, ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)))`.as(
+                'distance'
+              ),
+            ])
+            .where('is_zone', '=', true)
+            .where('id_fcu', 'in', pdp.reseau_en_construction_ids)
+            .orderBy((eb) => sql`${eb.ref('geom')} <-> ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)`)
+            .limit(1)
+            .executeTakeFirst(),
+        ]
+      : []),
   ]);
 
-  return reseauDeChaleur && reseauEnConstruction
-    ? reseauDeChaleur.distance <= reseauEnConstruction.distance
-      ? reseauDeChaleur
-      : reseauEnConstruction
-    : (reseauDeChaleur ?? reseauEnConstruction);
+  return zoneEnConstruction?.distance === 0
+    ? zoneEnConstruction
+    : reseauDeChaleur && reseauEnConstruction
+      ? reseauDeChaleur.distance <= reseauEnConstruction.distance
+        ? reseauDeChaleur
+        : reseauEnConstruction
+      : (reseauDeChaleur ?? reseauEnConstruction);
 };
