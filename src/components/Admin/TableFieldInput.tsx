@@ -75,12 +75,13 @@ const TableFieldInput = forwardRef<HTMLInputElement, TableFieldInputProps>((rawP
         type,
         ...nativeInputProps,
         onClick,
+        onDoubleClick: stopPropagation,
       }}
     />
   );
 
   return isDefined(props.suggestedValue) ? (
-    <div className="block relative w-full" onClick={stopPropagation}>
+    <div className="block relative w-full" onClick={stopPropagation} onDoubleClick={stopPropagation}>
       <div className="absolute top-0 right-1 z-10 flex gap-1">
         {/* visual indicator that the value is suggested */}
         {valueExternal === defaultEmptyValue ? (

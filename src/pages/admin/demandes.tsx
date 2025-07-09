@@ -185,7 +185,7 @@ function DemandesAdmin(): React.ReactElement {
                 multiple
                 suggestedValue={demand.recommendedTags.map((tag) => tag.name)}
               />
-              <div className="flex items-center gap-2" onClick={stopPropagation}>
+              <div className="flex items-center gap-2" onClick={stopPropagation} onDoubleClick={stopPropagation}>
                 <EligibilityHelpDialog detailedEligibilityStatus={demand.detailedEligibilityStatus}>
                   <Button
                     className="!text-gray-700 !font-normal italic"

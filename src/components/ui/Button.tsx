@@ -5,6 +5,7 @@ import styled, { css } from 'styled-components';
 
 import { trackEvent, type TrackingEvent } from '@/services/analytics';
 import cx from '@/utils/cx';
+import { stopPropagation as stopPropagationHandler } from '@/utils/events';
 
 type StyledButtonProps = {
   $loading?: boolean;
@@ -135,6 +136,7 @@ const Button: React.FC<ButtonProps> = ({
       disabled={(disabled || loading) as any /** FIXME cause incompatibility with DSFR Button */}
       type={type as any /** FIXME cause incompatibility with DSFR Button */}
       className={cx(variantClassName, buttonVariants({}), className)}
+      onDoubleClick={stopPropagationHandler}
       {...(props as any)}
     >
       {children}

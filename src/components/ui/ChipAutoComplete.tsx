@@ -130,7 +130,7 @@ const ChipAutoComplete = (rawProps: ChipAutoCompleteProps) => {
   }, [props.suggestedValue, props.onChange]);
 
   const inputElement = (
-    <div className={cx('w-full', className)} onClick={stopPropagation}>
+    <div className={cx('w-full', className)} onClick={stopPropagation} onDoubleClick={stopPropagation}>
       {label && <label className="block mb-1 text-sm font-medium">{label}</label>}
       <Popover
         open={isOpen && inputValue !== '' && filteredOptions.length > 0}
@@ -221,7 +221,7 @@ const ChipAutoComplete = (rawProps: ChipAutoCompleteProps) => {
   );
 
   return isDefined(props.suggestedValue) ? (
-    <div className="block relative w-full" onClick={stopPropagation}>
+    <div className="block relative w-full" onClick={stopPropagation} onDoubleClick={stopPropagation}>
       <div className="absolute top-0 right-1 z-10 flex gap-1">
         {/* visual indicator that the value is suggested */}
         {arrayEquals(valueExternalArray, [defaultEmptyStringValue]) ? (
