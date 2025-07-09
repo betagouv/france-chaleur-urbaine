@@ -6,6 +6,7 @@ import Icon from '@/components/ui/Icon';
 import { defaultEmptyNumberValue, defaultEmptyStringValue } from '@/utils/airtable';
 import { isDefined } from '@/utils/core';
 import debounce from '@/utils/debounce';
+import { stopPropagation } from '@/utils/events';
 
 export type TableFieldInputProps = Omit<InputProps, 'label'> & {
   title?: string;
@@ -79,7 +80,7 @@ const TableFieldInput = forwardRef<HTMLInputElement, TableFieldInputProps>((rawP
   );
 
   return isDefined(props.suggestedValue) ? (
-    <div className="block relative w-full">
+    <div className="block relative w-full" onClick={stopPropagation}>
       <div className="absolute top-0 right-1 z-10 flex gap-1">
         {/* visual indicator that the value is suggested */}
         {valueExternal === defaultEmptyValue ? (
