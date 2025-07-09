@@ -103,6 +103,7 @@ export type TableSimpleProps<T> = {
   rowSelection?: RowSelectionState;
   onSelectionChange?: (selectedRows: T[]) => void;
   onRowClick?: (rowId: any) => void;
+  onRowDoubleClick?: (rowId: any) => void;
   rowIdKey?: keyof T;
   rowHeight?: number;
   controlsLayout?: 'inline' | 'block';
@@ -134,6 +135,7 @@ type TableRowProps<T> = {
   rowSelection?: RowSelectionState;
   padding: 'sm' | 'md' | 'lg';
   onRowClick?: (rowId: any) => void;
+  onRowDoubleClick?: (rowId: any) => void;
   measureElement?: (element: Element | null) => void;
   columnClassName: (columnDef: ColumnDef<T>) => string;
 };
@@ -146,6 +148,7 @@ const TableRow = <T extends RowData>({
   rowSelection,
   padding,
   onRowClick,
+  onRowDoubleClick,
   measureElement,
   columnClassName,
 }: TableRowProps<T>) => {
@@ -173,6 +176,18 @@ const TableRow = <T extends RowData>({
                 return;
               }
               onRowClick((row.original as any)[rowIdKey]);
+            }
+          : undefined
+      }
+      onDoubleClick={
+        onRowDoubleClick
+          ? (event) => {
+              const element = event.target as HTMLElement;
+              // prevent row click when changing values in the table
+              if (['INPUT', 'TEXTAREA', 'LABEL', 'SELECT'].includes(element.tagName)) {
+                return;
+              }
+              onRowDoubleClick((row.original as any)[rowIdKey]);
             }
           : undefined
       }
@@ -362,6 +377,7 @@ const TableSimple = <T extends RowData>({
   rowSelection,
   onSelectionChange,
   onRowClick,
+  onRowDoubleClick,
   rowIdKey = 'id' as any,
   onFilterChange,
   className: tableClassName,
@@ -638,6 +654,7 @@ const TableSimple = <T extends RowData>({
                       rowSelection={rowSelection}
                       padding={padding}
                       onRowClick={onRowClick}
+                      onRowDoubleClick={onRowDoubleClick}
                       measureElement={(node) => rowVirtualizer.measureElement(node)}
                       columnClassName={columnClassName}
                     />

@@ -420,19 +420,31 @@ function DemandesAdmin(): React.ReactElement {
     [filteredDemands, virtualizerRef.current]
   );
 
-  const onTableRowClick = useCallback(
-    (demandId: string) => {
+  const selectAndCenterOnDemand = useCallback(
+    (demandId: string, zoom: number) => {
       setSelectedDemandId(demandId);
       const selectedDemand = demands.find((demand) => demand.id === demandId);
       if (selectedDemand) {
         setMapCenterLocation({
           center: [selectedDemand.Longitude, selectedDemand.Latitude],
-          zoom: 16,
+          zoom,
           flyTo: true,
         });
       }
     },
     [demands]
+  );
+  const onTableRowClick = useCallback(
+    (demandId: string) => {
+      selectAndCenterOnDemand(demandId, 13);
+    },
+    [selectAndCenterOnDemand]
+  );
+  const onTableRowDoubleClick = useCallback(
+    (demandId: string) => {
+      selectAndCenterOnDemand(demandId, 16);
+    },
+    [selectAndCenterOnDemand]
   );
 
   const onTableFiltersChange = useCallback((demands: AdminDemand[]) => {
@@ -495,6 +507,7 @@ function DemandesAdmin(): React.ReactElement {
               padding="sm"
               rowSelection={tableRowSelection}
               onRowClick={onTableRowClick}
+              onRowDoubleClick={onTableRowDoubleClick}
               loadingEmptyMessage="Aucune demande à afficher"
               height="calc(100dvh - 140px)"
               virtualizerRef={virtualizerRef}
