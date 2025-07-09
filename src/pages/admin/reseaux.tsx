@@ -207,6 +207,20 @@ const GestionDesReseaux = () => {
         accessorKey: 'Identifiant reseau',
         header: 'ID SNCU',
         width: '140px',
+        cell: (info) => {
+          const network = info.row.original;
+          return (
+            <TableFieldInput
+              title="ID SNCU"
+              value={network['Identifiant reseau']}
+              onChange={(value) =>
+                updatePerimetreDeDeveloppementPrioritaire(network.id_fcu, {
+                  'Identifiant reseau': value,
+                })
+              }
+            />
+          );
+        },
       },
       {
         accessorKey: 'reseau_de_chaleur_ids',

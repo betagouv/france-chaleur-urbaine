@@ -5,7 +5,7 @@ import { handleRouteErrors } from '@/server/helpers/server';
 import { updatePerimetreDeDeveloppementPrioritaire } from '@/server/services/network';
 
 const zBody = z.object({
-  Identifiant_reseau: z.string().optional(),
+  'Identifiant reseau': z.string().optional(),
   reseau_de_chaleur_ids: z.array(z.number()).optional(),
   reseau_en_construction_ids: z.array(z.number()).optional(),
 });
