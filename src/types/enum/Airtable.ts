@@ -11,7 +11,7 @@ export enum Airtable {
   GESTIONNAIRES_API = 'FCU - Gestionnaires API',
   NETWORKS = 'FCU - Réseaux de chaleur',
   COLD_NETWORKS = 'FCU - Réseaux de froid',
-  FUTUR_NETWORKS = 'FCU - Futur réseaux de chaleur',
+  FUTUR_NETWORKS = 'FCU - Futurs réseaux de chaleur',
   MODIFICATIONS_RESEAU = 'FCU - Modifications réseau',
   DEMANDES_ELIGIBILITES = 'FCU - test en masse',
   UTILISATEURS_EMAILS = 'FCU - Utilisateurs emails',

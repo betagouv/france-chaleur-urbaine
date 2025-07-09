@@ -178,7 +178,7 @@ export const tableConfigs: TableConfig[] = [
       }),
     },
     airtable: {
-      tableName: 'FCU - Futur réseaux de chaleur',
+      tableName: 'FCU - Futurs réseaux de chaleur',
       getCreateProps: (changement) => ({
         id_fcu: changement.id_fcu,
         is_zone: changement.is_zone,
