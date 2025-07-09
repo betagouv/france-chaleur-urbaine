@@ -159,9 +159,9 @@ const TableRow = <T extends RowData>({
       key={row.id}
       className={cx(
         'grid absolute w-full',
-        row.index % 2 === 0 ? '!bg-white' : '!bg-gray-50',
-        onRowClick && 'cursor-pointer transition-colors duration-100',
-        onRowClick && (rowSelection?.[(row.original as any)[rowIdKey]] ? '!bg-[#e1f1f5]' : 'hover:!bg-gray-200')
+        onRowClick && 'cursor-pointer transition-colors duration-100 hover:!bg-gray-200',
+        onRowClick &&
+          (rowSelection?.[(row.original as any)[rowIdKey]] ? '!bg-[#e1f1f5]' : row.index % 2 === 0 ? '!bg-white' : '!bg-gray-50')
       )}
       style={{
         transform: `translateY(${virtualRow.start}px)`,
