@@ -73,6 +73,11 @@ const initialSortingState = [{ id: 'Date de la demande', desc: true }];
 
 const defaultAssignmentChipOption: ChipOption = { title: '', key: 'Non affecté', label: 'Non affecté', className: 'bg-gray-200' };
 
+/**
+ * Permet de savoir quand la table est rafraichie par un changement de valeur et donc de ne pas centrer la carte sur la première demande quand les demandes changent.
+ */
+let isUpdatingDemandField = false;
+
 function DemandesAdmin(): React.ReactElement {
   const queryClient = useQueryClient();
   const virtualizerRef = useRef<Virtualizer<HTMLDivElement, Element>>(null) as RefObject<Virtualizer<HTMLDivElement, Element>>;
@@ -129,6 +134,7 @@ function DemandesAdmin(): React.ReactElement {
 
   const updateDemand = useCallback(
     toastErrors(async (demandId: string, demandUpdate: Partial<AdminDemand>) => {
+      isUpdatingDemandField = true; // prevent the map from being centered on the first demand
       queryClient.setQueryData<AdminDemand[]>(['/api/admin/demands'], (demands) =>
         (demands ?? []).map((demand) => {
           if (demand.id === demandId) {
@@ -452,13 +458,14 @@ function DemandesAdmin(): React.ReactElement {
 
     // center on the first demand if any
     const firstDemand = demands[0];
-    if (firstDemand) {
+    if (firstDemand && !isUpdatingDemandField) {
       setMapCenterLocation({
         center: [firstDemand.Longitude, firstDemand.Latitude],
         zoom: 8,
         flyTo: true,
       });
     }
+    isUpdatingDemandField = false;
   }, []);
 
   return (
