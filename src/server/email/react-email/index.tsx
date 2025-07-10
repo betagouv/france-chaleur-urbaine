@@ -1,6 +1,8 @@
 import { render } from '@react-email/components';
 import React from 'react';
 
+import CreationDemandeEmail from '@/server/email/react-email/templates/creation-demande';
+
 import ActivationEmail from './templates/activation';
 import InscriptionEmail from './templates/inscription';
 import ManagerEmail from './templates/manager-email';
@@ -44,6 +46,11 @@ export const emails = {
     subject: '[France Chaleur Urbaine] Votre demande',
     preview: 'Mise à jour importante concernant votre demande de raccordement',
     Component: RelanceEmail,
+  },
+  'creation-demande': {
+    subject: '[France Chaleur Urbaine] Votre demande de contact',
+    preview: 'Votre demande de contact',
+    Component: CreationDemandeEmail,
   },
 } as const;
 

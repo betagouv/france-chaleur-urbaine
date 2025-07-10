@@ -2,6 +2,7 @@ import type { NextApiRequest } from 'next';
 import { v4 as uuidv4 } from 'uuid';
 
 import base, { AirtableDB } from '@/server/db/airtable';
+import { sendEmailTemplate } from '@/server/email';
 import { logger } from '@/server/helpers/logger';
 import { BadRequestError, handleRouteErrors, requirePostMethod } from '@/server/helpers/server';
 import { getConso, getNbLogement } from '@/server/services/addresseInformation';
@@ -73,6 +74,8 @@ export default handleRouteErrors(async function PostRecords(req: NextApiRequest)
         },
         { typecast: true }
       );
+
+      await sendEmailTemplate('creation-demande', { id: 'unknown', email: values.Mail }, { demand: values });
       return { id: demandId };
     }
 

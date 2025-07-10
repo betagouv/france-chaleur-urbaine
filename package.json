@@ -20,7 +20,7 @@
     "dev": "next dev --turbo",
     "scan": "pnpm dev & npx react-scan@latest localhost:3000",
     "dev:webpack": "next dev",
-    "dev:email": "email dev --dir src/server/email/react-email/templates",
+    "dev:email": "NODE_ENV=test email dev --dir src/server/email/react-email/templates",
     "build": "NODE_OPTIONS=\"--max-old-space-size=8192\" next build",
     "build:analyze": "ANALYZE=true pnpm build",
     "deadcode": "npx knip",
