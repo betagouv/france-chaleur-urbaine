@@ -7,6 +7,7 @@ import communesAFortPotentiel from './2600-communes-a-fort-potentiel-pour-la-cre
 import objectifRaccordementAtteignableReseauxExistants from './30-de-lobjectif-de-raccordement-2035-atteignable-sur-les-reseaux-existants.md';
 import reseauxDeChaleurClasses from './636-reseaux-de-chaleur-classes.md';
 import sixMilleSeptCentsDemandes from './6700-demandes-de-mise-en-relation-avec-les-gestionnaires-des-reseaux.md';
+import neufCentsTracesDeReseauxDeChaleurRecensesSurLaCarte from './900-traces-de-reseaux-de-chaleur-recenses-sur-la-carte.md';
 import actualisationTauxEnergiesRenouvelablesEtContenuCO2DesReseaux from './actualisation-des-taux-denergies-renouvelables-et-contenu-co2-des-reseaux.md';
 import chiffresCles2023rdc from './chiffres-cles-2023-des-reseaux-de-chaleur.md';
 import chiffresCles2023rdf from './chiffres-cles-2023-des-reseaux-de-froid.md';
@@ -54,7 +55,9 @@ import reseauxDeChaleurEnRegionCentreValDeLoire from './les-reseaux-de-chaleur-e
 import lesReseauxDeChaleurRegionGrandEst from './les-reseaux-de-chaleur-en-region-focus-sur-le-grand-est.md';
 import lesReseauxDeChaleurRegionHautsDeFrance from './les-reseaux-de-chaleur-en-region-focus-sur-les-hauts-de-france.md';
 import reseauxDeChaleurEnRegionIleDeFrance from './les-reseaux-de-chaleur-en-region-focus-sur-lile-de-france.md';
+import lesReseauxDeFroidCommentCaMarche from './les-reseaux-de-froid-comment-ca-marche.md';
 import lesReseauxDeFroidEnFrance from './les-reseaux-de-froid-en-france.md';
+import lesReseauxDeFroidQuelquesExemples from './les-reseaux-de-froid-quelques-exemples.md';
 import lesReseauxDeFroidQuelsAtouts from './les-reseaux-de-froid-quels-atouts-et-ou-en-est-on.md';
 import lesReseauxDeFroidSurNotreCartographie from './les-reseaux-de-froid-sur-notre-cartographie.md';
 import lesReseauxLesPlusEcologiquesSontLesPlusEconomiques from './les-reseaux-les-plus-ecologiques-sont-les-plus-economiques.md';
@@ -161,6 +164,30 @@ function getArticleAbstract(content: string): string {
 
 export const articles = (
   [
+    {
+      image: '/contents/cover_carte_avril_2025.jpg',
+      title: '900 tracés de réseaux de chaleur recensés sur la carte !',
+      slug: '900-traces-de-reseaux-de-chaleur-recenses-sur-la-carte',
+      content: importFile(neufCentsTracesDeReseauxDeChaleurRecensesSurLaCarte),
+      publishedDate: new Date('2025-07-03'),
+      themes: ['Réseaux de chaleur', 'Réseaux de froid', 'Cartographie et données'],
+    },
+    {
+      image: '/contents/FCU_cover_exemple_reeau-froid.jpg',
+      title: 'Les réseaux de froid : quelques exemples',
+      slug: 'les-reseaux-de-froid-quelques-exemples',
+      content: importFile(lesReseauxDeFroidQuelquesExemples),
+      publishedDate: new Date('2025-07-01'),
+      themes: ['Réseaux de froid'],
+    },
+    {
+      image: '/contents/FCU_cover_fonctionnement_reseau-froid.jpg',
+      title: 'Les réseaux de froid : comment ça marche ?',
+      slug: 'les-reseaux-de-froid-comment-ca-marche',
+      content: importFile(lesReseauxDeFroidCommentCaMarche),
+      publishedDate: new Date('2025-06-24'),
+      themes: ['Réseaux de froid'],
+    },
     {
       image: '/contents/FCU_cover_reseaux-froid-atouts.jpg',
       title: 'Les réseaux de froid : quels atouts et où en est-on ?',
