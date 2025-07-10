@@ -19,14 +19,7 @@ const AsyncButton = ({ children, onClick, disabled, ...props }: AsyncButtonProps
   }, [loading, onClick]);
 
   return (
-    <Button
-      loading={loading}
-      disabled={disabled || loading}
-      onClick={() => onAsyncClick()}
-      {
-        ...(props as any) /* TODO don't manage to make it work with typescript */
-      }
-    >
+    <Button loading={loading} disabled={disabled || loading} onClick={onAsyncClick} stopPropagation {...props}>
       {children}
     </Button>
   );

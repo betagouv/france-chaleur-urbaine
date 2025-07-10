@@ -277,7 +277,7 @@ function DemandesNew(): React.ReactElement {
         accessorFn: (row) => displayModeDeChauffage(row),
         header: 'Mode de chauffage',
         cell: ({ row }) => <Tag text={displayModeDeChauffage(row.original)} />,
-        width: '126px',
+        width: '134px',
         filterType: 'Facets',
         enableGlobalFilter: false,
       },
@@ -351,7 +351,7 @@ function DemandesNew(): React.ReactElement {
       {
         accessorKey: 'Commentaires',
         header: 'Commentaires',
-        cell: ({ row }) => <Comment demand={row.original} updateDemand={updateDemand} />,
+        cell: ({ row }) => <Comment demand={row.original} field="Commentaire" updateDemand={updateDemand} />,
         width: '280px',
         enableSorting: false,
       },

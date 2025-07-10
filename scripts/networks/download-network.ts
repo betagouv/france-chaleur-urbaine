@@ -144,7 +144,8 @@ const conversionConfigReseauxDeFroid = {
   fichiers: TypeJSONArray,
 } as const;
 
-const conversionConfigAutres = {
+const conversionConfigReseauxEnConstruction = {
+  nom_reseau: TypeString,
   mise_en_service: TypeString,
   gestionnaire: TypeString,
   // date_actualisation_trace: TypeString,
@@ -290,7 +291,7 @@ function convertEntityFromAirtableToPostgres(type: DatabaseSourceId, airtableNet
       ? conversionConfigReseauxDeChaleur
       : type === 'coldNetwork'
         ? conversionConfigReseauxDeFroid
-        : conversionConfigAutres;
+        : conversionConfigReseauxEnConstruction;
 
   return Object.entries(conversionConfig).reduce((acc, [key, type]) => {
     acc[key] = convertAirtableValue(airtableNetwork.get(key), type);

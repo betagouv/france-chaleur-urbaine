@@ -1,6 +1,7 @@
 import XLSX from 'xlsx';
 
 import db from '@/server/db';
+import { kdb, sql, type ZoneDeDeveloppementPrioritaire } from '@/server/db/kysely';
 import { getNetworkEligibilityDistances } from '@/services/eligibility';
 import { EXPORT_FORMAT } from '@/types/enum/ExportFormat';
 import { type CityNetwork, type HeatNetwork } from '@/types/HeatNetworksResponse';
@@ -460,4 +461,349 @@ export const getEligilityStatus = async (lat: number, lon: number, city?: string
     hasPDP: null,
     hasNoTraceNetwork: false,
   };
+};
+
+/**
+ * Permet d'obtenir l'éligibilité d'un point géographique, avec plus d'informations sur les réseaux les plus proches.
+ * Également plus efficace niveau requêtage que getNetworkEligilityStatus.
+ */
+export const getDetailedEligibilityStatus = async (lat: number, lon: number) => {
+  const [commune, reseauDeChaleur, reseauDeChaleurSansTrace, reseauEnConstruction, zoneEnConstruction, pdp] = await Promise.all([
+    kdb
+      .selectFrom('ign_communes')
+      .select(['nom', 'insee_com', 'insee_dep', 'insee_reg'])
+      .orderBy((eb) => sql`${eb.ref('geom')} <-> ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)`)
+      .limit(1)
+      .executeTakeFirstOrThrow(),
+
+    kdb
+      .selectFrom('reseaux_de_chaleur')
+      .select([
+        'id_fcu',
+        'Identifiant reseau',
+        'nom_reseau',
+        'tags',
+        'communes',
+        sql<number>`round(ST_Distance(geom, ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)))`.as(
+          'distance'
+        ),
+      ])
+      .where('has_trace', '=', true)
+      .orderBy((eb) => sql`${eb.ref('geom')} <-> ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)`)
+      .limit(1)
+      .executeTakeFirstOrThrow(),
+
+    kdb
+      .with('commune', (eb) =>
+        eb
+          .selectFrom('ign_communes')
+          .select(['insee_com', 'nom'])
+          .where(
+            (eb) =>
+              sql`ST_Contains(
+                ${eb.ref('geom')},
+                ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)
+              )`
+          )
+          .limit(1)
+      )
+      .selectFrom('reseaux_de_chaleur')
+      .innerJoin('commune', (join) =>
+        join.on((eb) => eb('commune.insee_com', '=', sql<string>`ANY(${eb.ref('reseaux_de_chaleur.communes_insee')})`))
+      )
+      .select(['id_fcu', 'Identifiant reseau', 'nom_reseau', 'commune.nom', 'tags', 'communes'])
+      .where('has_trace', '=', false)
+      .limit(1)
+      .executeTakeFirst(),
+
+    kdb
+      .selectFrom('zones_et_reseaux_en_construction')
+      .select([
+        'id_fcu',
+        'nom_reseau',
+        'tags',
+        'communes',
+        sql<number>`round(ST_Distance(geom, ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)))`.as(
+          'distance'
+        ),
+      ])
+      .where('is_zone', '=', false)
+      .orderBy((eb) => sql`${eb.ref('geom')} <-> ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)`)
+      .limit(1)
+      .executeTakeFirstOrThrow(),
+
+    kdb
+      .selectFrom('zones_et_reseaux_en_construction')
+      .select([
+        'id_fcu',
+        'nom_reseau',
+        'tags',
+        'communes',
+        sql<number>`round(ST_Distance(geom, ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)))`.as(
+          'distance'
+        ),
+      ])
+      .where('is_zone', '=', true)
+      .orderBy((eb) => sql`${eb.ref('geom')} <-> ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)`)
+      .limit(1)
+      .executeTakeFirstOrThrow(),
+
+    kdb
+      .selectFrom('zone_de_developpement_prioritaire')
+      .select(['id_fcu', 'Identifiant reseau', 'communes', 'reseau_de_chaleur_ids', 'reseau_en_construction_ids'])
+      .where(
+        (eb) =>
+          sql`ST_Contains(
+            ${eb.ref('geom')},
+            ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)
+          )`
+      )
+      .limit(1)
+      .executeTakeFirst(),
+  ]);
+
+  const determineEligibilityResult = async (): Promise<EligibilityResult> => {
+    const tagsDistanceThreshold = 500; // m
+    const eligibilityDistances = getNetworkEligibilityDistances(reseauDeChaleur?.['Identifiant reseau'] ?? '');
+    const futurEligibilityDistances = getNetworkEligibilityDistances(''); // gets the default distances
+
+    // Dans un PDP
+    if (pdp) {
+      const networkInfos = await findPDPAssociatedNetwork(pdp, lat, lon);
+      return {
+        type: 'dans_pdp',
+        distance: networkInfos?.distance ?? 0,
+        id_sncu: pdp['Identifiant reseau'] ?? '',
+        nom: networkInfos?.nom_reseau ?? '',
+        tags: networkInfos?.tags ?? [],
+        communes: pdp.communes ?? [],
+      };
+    }
+
+    // Réseau existant à moins de 100m (60m sur Paris)
+    if (reseauDeChaleur.distance <= eligibilityDistances.veryEligibleDistance) {
+      return {
+        type: 'reseau_existant_tres_proche',
+        distance: reseauDeChaleur.distance,
+        id_sncu: reseauDeChaleur['Identifiant reseau'] ?? '',
+        nom: reseauDeChaleur.nom_reseau ?? '',
+        tags: reseauDeChaleur.distance <= tagsDistanceThreshold ? (reseauDeChaleur.tags ?? []) : [],
+        communes: reseauDeChaleur.communes ?? [],
+      };
+    }
+
+    // Réseau futur à moins de 100m (60 sur Paris)
+    if (reseauEnConstruction.distance <= futurEligibilityDistances.veryEligibleDistance) {
+      return {
+        type: 'reseau_futur_tres_proche',
+        distance: reseauEnConstruction.distance,
+        id_sncu: '',
+        nom: reseauEnConstruction.nom_reseau ?? '',
+        tags: reseauEnConstruction.distance <= tagsDistanceThreshold ? (reseauEnConstruction.tags ?? []) : [],
+        communes: reseauEnConstruction.communes ?? [],
+      };
+    }
+
+    // Dans zone futur réseau
+    if (zoneEnConstruction.distance === 0) {
+      return {
+        type: 'dans_zone_reseau_futur',
+        distance: 0,
+        id_sncu: '',
+        nom: zoneEnConstruction.nom_reseau ?? '',
+        tags: zoneEnConstruction.distance <= tagsDistanceThreshold ? (zoneEnConstruction.tags ?? []) : [],
+        communes: zoneEnConstruction.communes ?? [],
+      };
+    }
+
+    // Réseau existant entre 100 et 200m (60 et 100 sur Paris)
+    if (reseauDeChaleur.distance <= eligibilityDistances.eligibleDistance) {
+      return {
+        type: 'reseau_existant_proche',
+        distance: reseauDeChaleur.distance,
+        id_sncu: reseauDeChaleur['Identifiant reseau'] ?? '',
+        nom: reseauDeChaleur.nom_reseau ?? '',
+        tags: reseauDeChaleur.distance <= tagsDistanceThreshold ? (reseauDeChaleur.tags ?? []) : [],
+        communes: reseauDeChaleur.communes ?? [],
+      };
+    }
+
+    // Réseau futur entre 100 et 200m (60 et 100 sur Paris)
+    if (reseauEnConstruction.distance <= futurEligibilityDistances.eligibleDistance) {
+      return {
+        type: 'reseau_futur_proche',
+        distance: reseauEnConstruction.distance,
+        id_sncu: '',
+        nom: reseauEnConstruction.nom_reseau ?? '',
+        tags: reseauEnConstruction.distance <= tagsDistanceThreshold ? (reseauEnConstruction.tags ?? []) : [],
+        communes: reseauEnConstruction.communes ?? [],
+      };
+    }
+
+    // Réseau existant entre 200 et 1000m
+    if (reseauDeChaleur.distance <= 1000) {
+      return {
+        type: 'reseau_existant_loin',
+        distance: reseauDeChaleur.distance,
+        id_sncu: reseauDeChaleur['Identifiant reseau'] ?? '',
+        nom: reseauDeChaleur.nom_reseau ?? '',
+        tags: reseauDeChaleur.distance <= tagsDistanceThreshold ? (reseauDeChaleur.tags ?? []) : [],
+        communes: reseauDeChaleur.communes ?? [],
+      };
+    }
+
+    // Réseau futur entre 200 et 1000m
+    if (reseauEnConstruction.distance <= 1000) {
+      return {
+        type: 'reseau_futur_loin',
+        distance: reseauEnConstruction.distance,
+        id_sncu: '',
+        nom: reseauEnConstruction.nom_reseau ?? '',
+        tags: reseauEnConstruction.distance <= tagsDistanceThreshold ? (reseauEnConstruction.tags ?? []) : [],
+        communes: reseauEnConstruction.communes ?? [],
+      };
+    }
+
+    // Pas de tracé sur la ville, mais ville où l'on sait qu'existe un réseau (repère)
+    if (reseauDeChaleurSansTrace) {
+      return {
+        type: 'dans_ville_reseau_existant_sans_trace',
+        distance: 0,
+        id_sncu: reseauDeChaleurSansTrace['Identifiant reseau'] ?? '',
+        nom: reseauDeChaleurSansTrace.nom_reseau ?? '',
+        tags: reseauDeChaleurSansTrace.tags ?? [],
+        communes: [reseauDeChaleurSansTrace.nom ?? ''],
+      };
+    }
+
+    // Pas de tracé à moins de 1000m, ni repère réseau sur ville
+    return {
+      type: 'trop_eloigne',
+      distance: 0,
+      id_sncu: '',
+      nom: '',
+      tags: [],
+      communes: [],
+    };
+  };
+  const eligibilityResult = await determineEligibilityResult();
+
+  return {
+    ...eligibilityResult,
+    commune,
+    reseauDeChaleur,
+    reseauDeChaleurSansTrace,
+    reseauEnConstruction,
+    zoneEnConstruction,
+    pdp,
+  };
+};
+
+export type EligibilityType =
+  | 'dans_pdp'
+  | 'reseau_existant_tres_proche'
+  | 'reseau_futur_tres_proche'
+  | 'dans_zone_reseau_futur'
+  | 'reseau_existant_proche'
+  | 'reseau_futur_proche'
+  | 'reseau_existant_loin'
+  | 'reseau_futur_loin'
+  | 'dans_ville_reseau_existant_sans_trace'
+  | 'trop_eloigne';
+
+type EligibilityResult = {
+  type: EligibilityType;
+  distance: number;
+  id_sncu: string;
+  nom: string;
+  tags: string[];
+  communes: string[];
+};
+
+export type DetailedEligibilityStatus = Awaited<ReturnType<typeof getDetailedEligibilityStatus>>;
+
+/**
+ * Récupère le réseau de chaleur ou en construction le plus proche tout en restant associé au PDP
+ * @param pdp - Le PDP
+ * @returns Les informations du réseau de chaleur ou en construction associé au PDP
+ */
+const findPDPAssociatedNetwork = async (
+  pdp: Pick<ZoneDeDeveloppementPrioritaire, 'Identifiant reseau' | 'reseau_de_chaleur_ids' | 'reseau_en_construction_ids'>,
+  lat: number,
+  lon: number
+) => {
+  const [reseauDeChaleur, reseauEnConstruction, zoneEnConstruction] = await Promise.all([
+    pdp['Identifiant reseau'] || pdp.reseau_de_chaleur_ids.length > 0
+      ? kdb
+          .selectFrom('reseaux_de_chaleur')
+          .select([
+            'id_fcu',
+            'Identifiant reseau',
+            'nom_reseau',
+            'tags',
+            'communes',
+            sql<number>`round(ST_Distance(geom, ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)))`.as(
+              'distance'
+            ),
+          ])
+          .where('has_trace', '=', true)
+          .where((eb) =>
+            eb.or(
+              [
+                pdp['Identifiant reseau'] ? eb('Identifiant reseau', '=', pdp['Identifiant reseau']) : null,
+                pdp.reseau_de_chaleur_ids.length > 0 ? eb('id_fcu', 'in', pdp.reseau_de_chaleur_ids) : null,
+              ].filter((v) => !!v)
+            )
+          )
+          .orderBy((eb) => sql`${eb.ref('geom')} <-> ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)`)
+          .limit(1)
+          .executeTakeFirst()
+      : null,
+
+    ...(pdp.reseau_en_construction_ids.length > 0
+      ? [
+          kdb
+            .selectFrom('zones_et_reseaux_en_construction')
+            .select([
+              'id_fcu',
+              'nom_reseau',
+              'tags',
+              'communes',
+              sql<number>`round(ST_Distance(geom, ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)))`.as(
+                'distance'
+              ),
+            ])
+            .where('is_zone', '=', false)
+            .where('id_fcu', 'in', pdp.reseau_en_construction_ids)
+            .orderBy((eb) => sql`${eb.ref('geom')} <-> ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)`)
+            .limit(1)
+            .executeTakeFirst(),
+
+          kdb
+            .selectFrom('zones_et_reseaux_en_construction')
+            .select([
+              'id_fcu',
+              'nom_reseau',
+              'tags',
+              'communes',
+              sql<number>`round(ST_Distance(geom, ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)))`.as(
+                'distance'
+              ),
+            ])
+            .where('is_zone', '=', true)
+            .where('id_fcu', 'in', pdp.reseau_en_construction_ids)
+            .orderBy((eb) => sql`${eb.ref('geom')} <-> ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)`)
+            .limit(1)
+            .executeTakeFirst(),
+        ]
+      : []),
+  ]);
+
+  return zoneEnConstruction?.distance === 0
+    ? zoneEnConstruction
+    : reseauDeChaleur && reseauEnConstruction
+      ? reseauDeChaleur.distance <= reseauEnConstruction.distance
+        ? reseauDeChaleur
+        : reseauEnConstruction
+      : (reseauDeChaleur ?? reseauEnConstruction);
 };

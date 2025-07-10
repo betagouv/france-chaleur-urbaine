@@ -43,6 +43,8 @@ export type RequireProps<T, K extends keyof T> = T & {
   [P in K]-?: T[P];
 };
 
+export type ExtractKeys<T, Prop extends keyof any> = T extends readonly Record<Prop, infer K>[] ? K : never;
+
 export type ExtractKeysOfType<T, Prop> = {
   [K in keyof T]: T[K] extends Prop ? K : never;
 }[keyof T];

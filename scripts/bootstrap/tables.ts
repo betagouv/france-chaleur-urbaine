@@ -39,6 +39,10 @@ export const allDatabaseTables: TableInfo[] = [
     name: 'eligibility_demands',
     description: "Demandes d'éligibilité (obsolète, date d'avant le compte professionnel)",
   },
+  {
+    name: 'assignment_rules',
+    description: "Règles d'affectation pour l'application automatique de tags",
+  },
 
   // données de référence FCU
   {
@@ -64,6 +68,10 @@ export const allDatabaseTables: TableInfo[] = [
   {
     name: 'reseaux_de_froid_tiles',
     description: 'Tuiles vectorielles des réseaux de froid',
+  },
+  {
+    name: 'tags',
+    description: 'Tags utilisés pour la mise en relation gestionnaires <-> demandes',
   },
   {
     name: 'zone_de_developpement_prioritaire',
@@ -95,6 +103,10 @@ export const allDatabaseTables: TableInfo[] = [
     name: 'communes',
     description: 'Liste des communes françaises (utilisées pour le comparateur des modes de chauffage)',
     // différent de ign_communes qui elle est plus à jour, mais ne contient pas les altitudes moyennes ni les températures de référence
+  },
+  {
+    name: 'epci',
+    description: 'EPCI français (utilisé pour les tags)',
   },
   {
     name: 'ign_communes',

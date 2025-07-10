@@ -2912,6 +2912,13 @@ export interface EnrrMobilisablesZonesGeothermieProfondeTiles {
   z: Int8;
 }
 
+export interface Epci {
+  code: string;
+  membres: Json;
+  nom: string;
+  type: string;
+}
+
 export interface EtudesEnCoursTiles {
   tile: Buffer;
   x: Int8;
@@ -3241,6 +3248,7 @@ export interface ReseauxDeChaleur {
   'Rend%': number | null;
   'reseaux classes': boolean | null;
   reseaux_techniques: boolean | null;
+  tags: string[];
   'Taux EnR&R': number | null;
   vapeur: string | null;
   ville_mo: string | null;
@@ -3299,6 +3307,23 @@ export interface ReseauxDeFroidTiles {
   x: Int8;
   y: Int8;
   z: Int8;
+}
+
+export interface AssignmentRules {
+  id: string;
+  search_pattern: string;
+  result: string;
+  active: boolean;
+  created_at: Generated<Timestamp>;
+  updated_at: Generated<Timestamp>;
+}
+
+export interface Tags {
+  created_at: Generated<Timestamp>;
+  id: Generated<string>;
+  name: string;
+  type: string;
+  updated_at: Generated<Timestamp>;
 }
 
 export interface Users {
@@ -3387,14 +3412,16 @@ export interface ZoneAPotentielFortChaudTiles {
 }
 
 export interface ZoneDeDeveloppementPrioritaire {
+  id_fcu: number;
   communes: string[] | null;
   communes_insee: string[] | null;
   date_actualisation_trace: Timestamp | null;
   departement: string | null;
   geom: string | null;
-  id_fcu: number;
   'Identifiant reseau': string | null;
   region: string | null;
+  reseau_de_chaleur_ids: number[];
+  reseau_en_construction_ids: number[];
 }
 
 export interface ZoneDeDeveloppementPrioritaireTiles {
@@ -3414,7 +3441,9 @@ export interface ZonesEtReseauxEnConstruction {
   id_fcu: number;
   is_zone: Generated<boolean>;
   mise_en_service: string | null;
+  nom_reseau: string | null;
   region: string | null;
+  tags: string[];
 }
 
 export interface ZonesEtReseauxEnConstructionTiles {
@@ -3426,6 +3455,7 @@ export interface ZonesEtReseauxEnConstructionTiles {
 
 export interface DB {
   api_accounts: ApiAccounts;
+  assignment_rules: AssignmentRules;
   batiments_raccordes_rdc: BatimentsRaccordesRdc;
   batiments_raccordes_reseaux_chaleur_froid_tiles: BatimentsRaccordesReseauxChaleurFroidTiles;
   bdnb_registre2022_aura: BdnbRegistre2022Aura;
@@ -3475,6 +3505,7 @@ export interface DB {
   enrr_mobilisables_thalassothermie_tiles: EnrrMobilisablesThalassothermieTiles;
   enrr_mobilisables_tiles: EnrrMobilisablesTiles;
   enrr_mobilisables_zones_geothermie_profonde_tiles: EnrrMobilisablesZonesGeothermieProfondeTiles;
+  epci: Epci;
   etudes_en_cours: EtudesEnCours;
   etudes_en_cours_tiles: EtudesEnCoursTiles;
   ign_communes: IgnCommunes;
@@ -3500,6 +3531,7 @@ export interface DB {
   reseaux_de_chaleur_tiles: ReseauxDeChaleurTiles;
   reseaux_de_froid: ReseauxDeFroid;
   reseaux_de_froid_tiles: ReseauxDeFroidTiles;
+  tags: Tags;
   users: Users;
   zone_a_potentiel_chaud: ZoneAPotentielChaud;
   zone_a_potentiel_chaud_tiles: ZoneAPotentielChaudTiles;

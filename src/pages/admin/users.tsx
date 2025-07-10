@@ -1,20 +1,24 @@
 import { type SortingState } from '@tanstack/react-table';
+import { useCallback, useMemo } from 'react';
 
 import UserRoleBadge from '@/components/Admin/UserRoleBadge';
-import Tag from '@/components/Manager/Tag';
 import SimplePage from '@/components/shared/page/SimplePage';
 import AsyncButton from '@/components/ui/AsyncButton';
+import Badge from '@/components/ui/Badge';
 import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
+import ChipAutoComplete from '@/components/ui/ChipAutoComplete';
 import Heading from '@/components/ui/Heading';
 import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
 import Text from '@/components/ui/Text';
 import { useFetch } from '@/hooks/useApi';
+import { type UserUpdate } from '@/pages/api/admin/users/[userId]';
 import { withAuthentication } from '@/server/authentication';
 import { useServices } from '@/services';
 import { toastErrors } from '@/services/notification';
+import { defaultTagChipOption, useFCUTags } from '@/services/tags';
 import { type UserRole } from '@/types/enum/UserRole';
-import { postFetchJSON } from '@/utils/network';
+import { postFetchJSON, putFetchJSON } from '@/utils/network';
 import { compareFrenchStrings } from '@/utils/strings';
 
 import { type AdminManageUserItem } from '../api/admin/users';
@@ -29,73 +33,6 @@ const startImpersonation = toastErrors(async (impersonateConfig: { role: UserRol
   location.href = '/pro/tableau-de-bord';
 });
 
-const columns: ColumnDef<AdminManageUserItem>[] = [
-  {
-    accessorKey: 'email',
-    header: 'Email',
-    sortingFn: (rowA, rowB) => compareFrenchStrings(rowA.original.email, rowB.original.email),
-    flex: 2.5,
-    className: 'break-words break-all',
-  },
-  {
-    accessorKey: 'role',
-    header: 'Role',
-    align: 'center',
-    flex: 1.5,
-    cell: (info) => <UserRoleBadge role={info.getValue<UserRole>()} />,
-  },
-  {
-    accessorKey: 'gestionnaires',
-    id: 'gestionnaires',
-    header: 'Tags gestionnaire',
-    flex: 3,
-    cell: (info) => (
-      <div className="flex flex-wrap gap-1">
-        {info.getValue<string[]>().map((tag) => (
-          <Tag key={tag} text={tag} />
-        ))}
-      </div>
-    ),
-    sortingFn: (rowA, rowB) => compareFrenchStrings(rowA.original.gestionnaires?.[0], rowB.original.gestionnaires?.[0]),
-  },
-  {
-    accessorKey: 'optin_at',
-    header: 'Newsletter',
-    cellType: 'Boolean',
-    align: 'center',
-  },
-  {
-    accessorKey: 'last_connection',
-    header: 'Dernière activité',
-    cellType: 'DateTime',
-  },
-  {
-    accessorKey: 'active',
-    header: 'Actif',
-    cellType: 'Boolean',
-    align: 'center',
-  },
-  {
-    accessorKey: 'created_at',
-    header: 'Créé le',
-    cellType: 'Date',
-  },
-  {
-    id: 'actions',
-    header: 'Actions',
-    cell: ({ row }) => (
-      <Button
-        size="small"
-        priority="tertiary"
-        iconId="ri-spy-line"
-        title="Permet d'adopter temporairement le même profil (rôle et tags gestionnaires) que cet utilisateur sans usurper son identité."
-        onClick={() => startImpersonation(row.original)}
-      />
-    ),
-    width: '70px',
-  },
-];
-
 const initialSortingState: SortingState = [
   {
     id: 'created_at',
@@ -107,7 +44,109 @@ export default function ManageUsers() {
   const { exportService } = useServices();
 
   const { data: usersStats } = useFetch<AdminUsersStats>('/api/admin/users-stats');
-  const { data: users, isLoading } = useFetch<AdminManageUserItem[]>('/api/admin/users');
+  const { data: users, isLoading, refetch: refetchUsers } = useFetch<AdminManageUserItem[]>('/api/admin/users');
+  const { tagsOptions } = useFCUTags();
+
+  const updateUser = useCallback(
+    toastErrors(async (userId: string, userUpdate: Partial<UserUpdate>) => {
+      await putFetchJSON(`/api/admin/users/${userId}`, userUpdate);
+      refetchUsers();
+    }),
+    []
+  );
+
+  const columns: ColumnDef<AdminManageUserItem>[] = useMemo(
+    () => [
+      {
+        accessorKey: 'email',
+        header: 'Email',
+        sortingFn: (rowA, rowB) => compareFrenchStrings(rowA.original.email, rowB.original.email),
+        cell: (info) => (
+          <div>
+            {info.getValue<string>()}
+            {info.row.original.from_api && <Badge type="api_user" className="mt-1" />}
+          </div>
+        ),
+        flex: 2.5,
+        className: 'break-words break-all',
+      },
+      {
+        accessorKey: 'role',
+        header: 'Role',
+        align: 'center',
+        flex: 1.5,
+        cell: (info) => <UserRoleBadge role={info.getValue<UserRole>()} />,
+        filterType: 'Facets',
+      },
+      {
+        accessorKey: 'gestionnaires',
+        id: 'gestionnaires',
+        header: 'Tags gestionnaire',
+        flex: 3,
+        cell: (info) =>
+          info.row.original.role === 'gestionnaire' && (
+            <ChipAutoComplete
+              options={tagsOptions}
+              defaultOption={defaultTagChipOption}
+              value={info.getValue<string[]>()}
+              onChange={(newGestionnaires) => {
+                updateUser(info.row.original.id, {
+                  gestionnaires: newGestionnaires,
+                });
+              }}
+              multiple
+            />
+          ),
+        sortingFn: (rowA, rowB) => compareFrenchStrings(rowA.original.gestionnaires?.[0], rowB.original.gestionnaires?.[0]),
+      },
+      {
+        accessorKey: 'receive_new_demands',
+        header: 'Notif nouvelle demande',
+        cellType: 'Boolean',
+        align: 'center',
+        filterType: 'Facets',
+      },
+      {
+        accessorKey: 'receive_old_demands',
+        header: 'Notif relance',
+        cellType: 'Boolean',
+        align: 'center',
+        filterType: 'Facets',
+      },
+      {
+        accessorKey: 'last_connection',
+        header: 'Dernière activité',
+        cellType: 'DateTime',
+      },
+      {
+        accessorKey: 'active',
+        header: 'Actif',
+        cellType: 'Boolean',
+        align: 'center',
+        filterType: 'Facets',
+      },
+      {
+        accessorKey: 'created_at',
+        header: 'Créé le',
+        cellType: 'Date',
+      },
+      {
+        id: 'actions',
+        header: 'Actions',
+        cell: ({ row }) => (
+          <Button
+            size="small"
+            priority="tertiary"
+            iconId="ri-spy-line"
+            title="Permet d'adopter temporairement le même profil (rôle et tags gestionnaires) que cet utilisateur sans usurper son identité."
+            onClick={() => startImpersonation(row.original)}
+          />
+        ),
+        width: '70px',
+      },
+    ],
+    [tagsOptions]
+  );
 
   return (
     <SimplePage title="Gestion des utilisateurs" mode="authenticated">

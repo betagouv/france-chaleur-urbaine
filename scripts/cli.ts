@@ -5,6 +5,7 @@ import { createCommand, InvalidArgumentError } from '@commander-js/extra-typings
 import { genSalt, hash } from 'bcryptjs';
 import camelcase from 'camelcase';
 import prompts from 'prompts';
+import XLSX from 'xlsx';
 import { z } from 'zod';
 
 import { saveStatsInDB } from '@/server/cron/saveStatsInDB';
@@ -23,6 +24,7 @@ import { processJobById, processJobsIndefinitely } from '@/server/services/jobs/
 import { type DatabaseSourceId, type DatabaseTileInfo, tilesInfo, zDatabaseSourceId } from '@/server/services/tiles.config';
 import { type ApiAccount } from '@/types/ApiAccount';
 import { userRoles } from '@/types/enum/UserRole';
+import { fetchJSON } from '@/utils/network';
 import { sleep } from '@/utils/time';
 import { nonEmptyArray } from '@/utils/typescript';
 import { allDatabaseTables } from '@cli/bootstrap/tables';
@@ -141,6 +143,44 @@ program
     logger.info(`Importing data for ${type}`);
     const importer = dataImportManager(type as DataImportName);
     await importer.importData(options.file);
+  });
+
+type EPCI = {
+  code: string;
+  nom: string;
+  type: string;
+  modeFinancement: string;
+  populationTotale: number;
+  populationMunicipale: number;
+  membres: {
+    code: string;
+    siren: string;
+    nom: string;
+    populationTotale: number;
+    populationMunicipale: number;
+  }[];
+};
+
+program
+  .command('import:epci')
+  .description('Import the french EPCI (used for tags)')
+  .action(async () => {
+    const allEPCI = await fetchJSON<EPCI[]>('https://unpkg.com/@etalab/decoupage-administratif@5.2.0/data/epci.json');
+    const epci = allEPCI
+      // seules les communautés d'agglomération, les communautés urbaines et les métropoles sont intéressantes pour le moment
+      .filter((epci) => ['CA', 'CU', 'METRO', 'MET69'].includes(epci.type))
+      .map((metropole) => ({
+        code: metropole.code,
+        nom: metropole.nom,
+        type: metropole.type,
+        membres: JSON.stringify(metropole.membres.map((membre) => ({ code: membre.code, nom: membre.nom }))),
+      }));
+
+    await kdb.transaction().execute(async (tx) => {
+      await tx.deleteFrom('epci').execute();
+      await tx.insertInto('epci').values(epci).execute();
+    });
+    console.info(`${epci.length} EPCI importés`);
   });
 
 program
@@ -310,6 +350,90 @@ program
   .option('--dry-run', 'Run the command in dry-run mode', false)
   .action(async ({ dryRun }) => {
     await syncPostgresToAirtable(dryRun);
+  });
+
+type XlsxRow = {
+  tag: string;
+  id_sncu?: string;
+  id_fcu?: string;
+  id_fcu_futur?: string;
+};
+
+type Output = {
+  [id: string]: string[];
+};
+
+program
+  .command('import:tags-reseaux')
+  .description('Importe les tags des réseaux de chaleur et en construction depuis un fichier CSV')
+  .argument('<file>', 'Path to the XLSX file')
+  .action(async (file) => {
+    const workbook = XLSX.readFile(file);
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    const data: XlsxRow[] = XLSX.utils.sheet_to_json(sheet, {
+      header: ['tag', 'id_sncu', 'id_fcu', 'id_fcu_futur'],
+      raw: false,
+      defval: null,
+      range: 1, // Skip header row
+    });
+
+    const tagsByIDSNCU = data.reduce<Output>((acc, { tag, id_sncu }) => {
+      if (id_sncu) {
+        const ids = id_sncu
+          .replaceAll('.', ',')
+          .split(',')
+          .map((id) => id.trim());
+        ids.forEach((id) => {
+          if (!acc[id]) acc[id] = [];
+          acc[id].push(tag);
+        });
+      }
+      return acc;
+    }, {});
+
+    const tagsByIDFCU = data.reduce<Output>((acc, { tag, id_fcu }) => {
+      if (id_fcu) {
+        const ids = id_fcu
+          .replaceAll('.', ',')
+          .split(',')
+          .map((id) => id.trim());
+        ids.forEach((id) => {
+          if (!acc[id]) acc[id] = [];
+          acc[id].push(tag);
+        });
+      }
+      return acc;
+    }, {});
+
+    const tagsByIDFCUFutur = data.reduce<Output>((acc, { tag, id_fcu_futur }) => {
+      if (id_fcu_futur) {
+        const ids = id_fcu_futur
+          .replaceAll('.', ',')
+          .split(',')
+          .map((id) => id.trim());
+        ids.forEach((id) => {
+          if (!acc[id]) acc[id] = [];
+          acc[id].push(tag);
+        });
+      }
+      return acc;
+    }, {});
+
+    // maj réseaux de chaleur selon id sncu
+    for (const [id_sncu, tags] of Object.entries(tagsByIDSNCU)) {
+      await kdb.updateTable('reseaux_de_chaleur').set({ tags }).where('Identifiant reseau', '=', id_sncu).execute();
+    }
+
+    // maj réseaux de chaleur selon id fcu
+    for (const [id_fcu, tags] of Object.entries(tagsByIDFCU)) {
+      await kdb.updateTable('reseaux_de_chaleur').set({ tags }).where('id_fcu', '=', parseInt(id_fcu)).execute();
+    }
+
+    // maj réseaux en construction selon id fcu
+    for (const [id_fcu_futur, tags] of Object.entries(tagsByIDFCUFutur)) {
+      await kdb.updateTable('zones_et_reseaux_en_construction').set({ tags }).where('id_fcu', '=', parseInt(id_fcu_futur)).execute();
+    }
+    console.info('Tags importés avec succès');
   });
 
 program

@@ -110,7 +110,7 @@ dump_tables() {
 
 restore_tables() {
   local database_url=$1
-  $pg_restore -j 10 -Fd -O --data-only -d $database_url /tmp/tables.dump
+  $pg_restore -j 10 -Fd -O --clean -d $database_url /tmp/tables.dump
 }
 
 dump_tables_sql() {

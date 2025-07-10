@@ -196,7 +196,17 @@ pnpm cli tiles:generate reseaux-de-chaleur
 pnpm cli tiles:fill coldNetwork 0 14 # meme fonction que tiles:generate mais pas encore migré
 pnpm cli tiles:fill zoneDP 0 14
 pnpm cli tiles:fill futurNetwork 0 14
+```
 
+On peut vérifier que les entités sont toutes de type "ST_Point", "ST_MultiLineString" ou "ST_MultiPolygon".
+```sql
+SELECT st_geometrytype(geom), count(*) FROM public.reseaux_de_chaleur group by st_geometrytype(geom);
+SELECT st_geometrytype(geom), count(*) FROM public.reseaux_de_froid group by st_geometrytype(geom);
+SELECT st_geometrytype(geom), count(*) FROM public.zone_de_developpement_prioritaire group by st_geometrytype(geom);
+SELECT st_geometrytype(geom), count(*) FROM public.zones_et_reseaux_en_construction group by st_geometrytype(geom);
+```
+
+```sh
 # copie vers dev
 # Use --data-only when no structures changes
 pnpm db:push:dev --data-only reseaux_de_chaleur
@@ -223,6 +233,9 @@ pnpm db:push:prod --data-only zones_et_reseaux_en_construction_tiles
 
 # redéploie prod pour créer les pages statiques de réseaux
 # https://dashboard.scalingo.com/apps/osc-fr1/france-chaleur-urbaine/deploy/manual
+
+# Générer l'archive opendata et l'envoyer à Florence pour maj sur data.gouv.fr
+pnpm cli opendata:create-archive
 ```
 
 ## Misc
@@ -233,9 +246,6 @@ DROP TABLE public.reseaux_de_chaleur cascade;
 DROP TABLE public.reseaux_de_froid cascade;
 DROP TABLE public.zone_de_developpement_prioritaire cascade;
 DROP TABLE public.zones_et_reseaux_en_construction cascade;
-```
-
-```sh
 ```
 
 ```sql
