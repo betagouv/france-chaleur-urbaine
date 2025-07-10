@@ -39,9 +39,19 @@ export default handleRouteErrors(async function PostRecords(req: NextApiRequest)
 
     case Airtable.UTILISATEURS: {
       // bad airtable type
-      const { id: demandId }: any = await base(Airtable.UTILISATEURS).create(values, {
-        typecast: true,
-      });
+      const { id: demandId }: any = await base(Airtable.UTILISATEURS).create(
+        {
+          ...values,
+          Gestionnaires: [defaultEmptyStringValue],
+          'Affecté à': defaultEmptyStringValue,
+          'Distance au réseau': defaultEmptyNumberValue,
+          'Identifiant réseau': defaultEmptyStringValue,
+          'Nom réseau': defaultEmptyStringValue,
+        },
+        {
+          typecast: true,
+        }
+      );
       const [conso, nbLogement] = await Promise.all([
         getConso(values.Latitude, values.Longitude),
         values.Logement ? values.Logement : getNbLogement(values.Latitude, values.Longitude),
@@ -56,11 +66,6 @@ export default handleRouteErrors(async function PostRecords(req: NextApiRequest)
       await AirtableDB(Airtable.UTILISATEURS).update(
         demandId,
         {
-          Gestionnaires: [defaultEmptyStringValue],
-          'Affecté à': defaultEmptyStringValue,
-          'Distance au réseau': defaultEmptyNumberValue,
-          'Identifiant réseau': defaultEmptyStringValue,
-          'Nom réseau': defaultEmptyStringValue,
           Conso: conso ? conso.conso_nb : undefined,
           'ID Conso': conso ? conso.rownum : undefined,
           Logement: nbLogement ? nbLogement.nb_logements : undefined,
