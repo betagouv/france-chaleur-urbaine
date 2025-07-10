@@ -1,8 +1,8 @@
-import Link from 'next/link';
 import { type RefObject } from 'react';
 
 import Infographie from '@/components/Infographie';
 import TrackedVideo from '@/components/TrackedVideo/TrackedVideo';
+import Link from '@/components/ui/Link';
 
 import { Subtitle } from './Contents.styles';
 import { Container, WithImage, WithVideo } from './DistrictHeating.styles';
@@ -87,32 +87,34 @@ const DistrictHeating = ({
       <Subtitle ref={avantagesRef}>Quels sont les avantages du chauffage urbain ?</Subtitle>
       <WithImage>
         <div>
-          Le chauffage urbain permet de mobiliser des énergies renouvelables et de récupération locales. Aujourd’hui, les réseaux de chaleur
-          français sont alimentés à plus de 62 % par celles-ci, un pourcentage qui ne cesse d’augmenter. Le recours à ces énergies locales
-          et décarbonées permet au chauffage urbain d’afficher des{' '}
-          <Link href="/ressources/avantages#contenu">atouts de natures différentes</Link>
-          {' '}:
+          Le chauffage urbain permet de mobiliser des énergies renouvelables et de récupération locales. En 2023, les réseaux de chaleur
+          français sont alimentés à plus de 66 % par celles-ci, un pourcentage qui ne cesse d'augmenter. Le recours à ces énergies locales
+          et décarbonées permet au chauffage urbain d'afficher des{' '}
+          <Link href="/ressources/avantages#contenu">atouts de natures différentes</Link> :
           <ul>
             <br />
             <li>
-              <b>Un mode de chauffage écologique et propre :</b> en moyenne, le chauffage urbain émet 2 fois moins de gaz à effet de serre
-              qu’un chauffage purement fossile (gaz ou fioul), et contribue ainsi à la lutte contre le changement climatique. Le chauffage
-              urbain a également un impact positif sur la qualité de l’air : il émet 18 fois moins de particules fines qu’un chauffage au
-              fioul !
+              <b>Un mode de chauffage écologique et propre :</b> en moyenne, le chauffage urbain émet 2 à 3 fois moins de gaz à effet de
+              serre qu'un chauffage purement fossile (gaz ou fioul), et contribue ainsi à la lutte contre le changement climatique. Le
+              chauffage urbain a également un impact positif sur la qualité de l'air : il émet 18 fois moins de particules fines qu'un
+              chauffage au fioul !
             </li>
             <br />
             <li>
-              <b>Un mode de chauffage économique :</b> la part d’énergies renouvelables et de récupération locales qui alimente les réseaux
-              de chaleur leur permet d’afficher des tarifs beaucoup plus stables que ceux du gaz, du fioul ou de l’électricité, qui sont
+              <b>Un mode de chauffage économique :</b> la part d'énergies renouvelables et de récupération locales qui alimente les réseaux
+              de chaleur leur permet d'afficher des tarifs beaucoup plus stables que ceux du gaz, du fioul ou de l'électricité, qui sont
               notamment soumis à des fluctuations en fonction du contexte géopolitique. Entre 2015 et 2021, le coût du chauffage urbain a
-              augmenté en moyenne de 5 % seulement, contre 26 % pour l’électricité, 29 % pour le gaz et 71 % pour le fioul ! Le chauffage
-              urbain offre également des tarifs compétitifs, grâce à un taux de TVA réduit à 5.5 % sur l’ensemble de la facture pour tous
+              augmenté en moyenne de 5 % seulement, contre 26 % pour l'électricité, 29 % pour le gaz et 71 % pour le fioul ! Le chauffage
+              urbain offre également des tarifs compétitifs, grâce à un taux de TVA réduit à 5.5 % sur l'ensemble de la facture pour tous
               les réseaux majoritairement alimentés par des énergies renouvelables et de récupération (taux le plus bas du marché).
-              L’enquête annuelle sur le prix de la chaleur réalisée par l’association Amorce montre qu’il s’agit du mode de chauffage le
+              L'enquête annuelle sur le prix de la chaleur réalisée par l'association Amorce montre qu'il s'agit du mode de chauffage le
               plus économique pour les immeubles de logements collectifs et tertiaires, loin devant toutes les autres solutions de
-              chauffage. Enfin, les aides financières mises en place récemment au titre du « Coup de pouce chauffage des bâtiments
-              résidentiels collectifs et tertiaires » permettent de réduire significativement le coût des travaux pour le raccordement au
-              chauffage urbain.
+              chauffage. Enfin, les aides financières mises en place récemment au titre du « Coup de pouce chauffage des bâtiments
+              résidentiels collectifs et tertiaires » permettent de réduire significativement le coût des travaux pour le raccordement au
+              chauffage urbain. Un <Link href="/ressources/cout-raccordement">simulateur des coûts de raccordement</Link>, avant et après
+              déduction du coup de pouce, et un{' '}
+              <Link href="/comparateur-couts-performances">comparateur des coûts et émissions de CO2 des modes de chauffage</Link> sont
+              disponibles sur France Chaleur Urbaine.
             </li>
           </ul>
         </div>
@@ -185,7 +187,7 @@ const DistrictHeating = ({
           <b>La distance au réseau :</b>
         </li>
       </ul>
-      Pour se raccorder au chauffage urbain, il faut avant tout être <b>situé à proximité de l’un des 898 réseaux de chaleur français</b>.
+      Pour se raccorder au chauffage urbain, il faut avant tout être <b>situé à proximité de l'un des 1000 réseaux de chaleur français</b>.
       Il est difficile de définir un seuil de distance exact à respecter pour être raccordable. Celui-ci dépend du niveau de consommation
       énergétique du bâtiment à raccorder, et varie également selon chaque réseau. Sur France Chaleur Urbaine, nous considérons que le
       bâtiment a de fortes chances d’être raccordable s’il est à moins de 100 m du réseau, et que le raccordement reste envisageable pour
@@ -250,9 +252,12 @@ const DistrictHeating = ({
             </ul>
           </ul>
           <br />
-          <b>592 réseaux de chaleur sont concernés</b> (arrêté du 22 décembre 2023 relatif au classement des réseaux de chaleur et de
-          froid). À noter que la collectivité a toutefois la possibilité de délibérer sur le non-classement du réseau si elle souhaite s’y
-          opposer, en justifiant les motifs.
+          <b>617 réseaux de chaleur sont concernés</b> (
+          <Link href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000050756289" isExternal>
+            arrêté du 3 décembre 2024
+          </Link>{' '}
+          relatif au classement des réseaux de chaleur et de froid). À noter que la collectivité a toutefois la possibilité de délibérer sur
+          le non-classement du réseau si elle souhaite s'y opposer, en justifiant les motifs.
         </div>
         <Infographie src="/img/FCU_Infographie_Classement_small.jpg" alt="Classement des réseaux de chaleur" />
       </WithImage>
@@ -263,10 +268,10 @@ const DistrictHeating = ({
         </li>
       </ul>
       L’obligation de raccordement s’applique{' '}
-      <b>dans une certaine zone autour du réseau de chaleur qualifiée de «  périmètre de développement prioritaire ».</b> Les collectivités
-      ont jusqu’au 1er juillet 2023 pour définir ce périmètre, par délibération. Au-delà de cette date, un périmètre par défaut
-      s’appliquera, qui correspond au périmètre du contrat de concession, ou en l’absence de concession au périmètre du territoire de la ou
-      des communes desservies par le réseau.
+      <b>dans une certaine zone autour du réseau de chaleur qualifiée de « périmètre de développement prioritaire ».</b> Les collectivités
+      ont jusqu'au 1er juillet de l'année suivant le classement pour définir ce périmètre, par délibération. Au-delà de cette date, un
+      périmètre par défaut s'appliquera, qui correspond au périmètre du contrat de concession, ou en l'absence de concession au périmètre du
+      territoire de la ou des communes desservies par le réseau.
       <br />
       La <Link href="/carte">cartographie France Chaleur Urbaine</Link> permet de visualiser les réseaux répondant aux critères du
       classement, et leur périmètre de développement prioritaire dès lors que celui-ci a été transmis par la collectivité.
