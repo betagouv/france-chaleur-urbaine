@@ -113,6 +113,12 @@ const publicNavigationMenu: MainNavigationProps.Item[] = [
         },
       },
       {
+        text: 'Nos replays et présentations',
+        linkProps: {
+          href: '/webinaires',
+        },
+      },
+      {
         text: 'Outils',
         linkProps: {
           href: '/ressources/outils',
