@@ -9,7 +9,7 @@ import { type MapSourceLayersSpecification, type PopupStyleHelpers } from './com
 export const testsAdressesLayerStyle = {
   eligible: {
     fill: { color: '#00ff88', size: 1 },
-    stroke: { color: '#00cc6a', size: 1 },
+    stroke: { color: '#037f43', size: 1 },
   },
   notEligible: {
     fill: { color: '#ff8c42', size: 1 },
@@ -132,7 +132,7 @@ function Popup(
         {users
           .sort((a, b) => a.first_name?.toLowerCase().localeCompare(b.first_name?.toLowerCase() || '') || 0)
           ?.map(({ id, first_name, last_name, role, structure_name, structure_type, phone, gestionnaires, tests }) => {
-            const name = first_name || last_name ? `${upperCaseFirstChar(first_name)} ${upperCaseFirstChar(last_name)}` : '';
+            const name = first_name || last_name ? `${upperCaseFirstChar(first_name || '')} ${upperCaseFirstChar(last_name || '')}` : '';
             const roleLabel = role ? ` (${role})` : '';
 
             return (
