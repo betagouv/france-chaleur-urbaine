@@ -46,7 +46,7 @@ export default function ManageAssignmentRules() {
     {
       accessorKey: 'search_pattern',
       header: 'Motif de recherche',
-      cell: (info) => <div className="font-mono px-2 py-1 rounded">{info.getValue()}</div>,
+      cell: (info) => <div className="bg-zinc-50 px-1 py-[0.1rem] rounded-sm font-mono">{info.getValue()}</div>,
       className: 'break-words break-all',
       flex: 2,
     },
@@ -71,6 +71,7 @@ export default function ManageAssignmentRules() {
       ),
       width: '100px',
       filterType: 'Facets',
+      align: 'center',
     },
     {
       accessorKey: 'created_at',
@@ -81,6 +82,7 @@ export default function ManageAssignmentRules() {
     {
       id: 'actions',
       header: 'Actions',
+      align: 'right',
       cell: ({ row }) => (
         <div className="flex gap-2">
           <Button
@@ -186,7 +188,7 @@ export default function ManageAssignmentRules() {
             Les règles d'affectation permettent d'automatiser le calcul du champ <strong>Affecté à</strong> des demandes en fonction des
             tags gestionnaires.
           </p>
-          <ul className="mb-0 [&_code]:bg-zinc-300 [&_code]:px-1 [&_code]:py-[0.1rem] [&_code]:rounded-sm">
+          <ul className="mb-0 [&_code]:bg-zinc-300 [&_code]:px-1 [&_code]:py-[0.1rem] [&_code]:rounded-sm [&_code]:font-mono">
             <li>Chaque règle est composée d'un motif de recherche qui est une expression logique et d'un tag résultant.</li>
             <li>
               Les expressions peuvent utiliser les opérateurs <code>&&</code> (ET), <code>||</code> (OU), <code>!</code> (NON) et les
