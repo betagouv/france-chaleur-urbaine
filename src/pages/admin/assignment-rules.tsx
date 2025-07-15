@@ -186,7 +186,7 @@ export default function ManageAssignmentRules() {
             Les règles d'affectation permettent d'automatiser le calcul du champ <strong>Affecté à</strong> des demandes en fonction des
             tags gestionnaires.
           </p>
-          <ul className="mb-0">
+          <ul className="mb-0 [&_code]:bg-zinc-300 [&_code]:px-1 [&_code]:py-[0.1rem] [&_code]:rounded-sm">
             <li>Chaque règle est composée d'un motif de recherche qui est une expression logique et d'un tag résultant.</li>
             <li>
               Les expressions peuvent utiliser les opérateurs <code>&&</code> (ET), <code>||</code> (OU), <code>!</code> (NON) et les
@@ -210,7 +210,7 @@ export default function ManageAssignmentRules() {
               </ul>
             </li>
             <li>
-              Exemple : <code>SIPPEREC && (ENGIE* || Coriance) && !Dalkia* </code> affectera les demandes ayant le tag "SIPPEREC" ET un tag
+              Exemple : <code>SIPPEREC && (ENGIE* || Coriance) && !Dalkia*</code> affectera les demandes ayant le tag "SIPPEREC" ET un tag
               commençant par "ENGIE" OU le tag exact "Coriance", ET n'ayant aucun tag commençant par "Dalkia".
             </li>
             <li>
