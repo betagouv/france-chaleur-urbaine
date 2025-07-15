@@ -82,6 +82,8 @@ const colors = {
 
   border: '#d1d5db',
 
+  stripe: '#F6F6F6',
+
   'fcu-green': '#009364',
   'fcu-blue': '#00B1F8',
   'fcu-purple': '#8585F6',

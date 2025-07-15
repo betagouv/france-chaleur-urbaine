@@ -152,16 +152,16 @@ const TableRow = <T extends RowData>({
   measureElement,
   columnClassName,
 }: TableRowProps<T>) => {
+  const canSelectRow = onRowClick || onRowDoubleClick;
+  const isSelected = rowSelection?.[(row.original as any)[rowIdKey]];
   return (
     <tr
       data-index={virtualRow.index}
       ref={measureElement}
-      key={row.id}
       className={cx(
         'grid absolute w-full',
-        onRowClick && 'cursor-pointer transition-colors duration-100 hover:!bg-gray-200',
-        onRowClick &&
-          (rowSelection?.[(row.original as any)[rowIdKey]] ? '!bg-[#e1f1f5]' : row.index % 2 === 0 ? '!bg-white' : '!bg-gray-50')
+        canSelectRow && 'cursor-pointer transition-colors duration-100 hover:!bg-gray-200',
+        isSelected ? '!bg-[#e1f1f5]' : virtualRow.index % 2 === 0 ? '!bg-white' : '!bg-stripe'
       )}
       style={{
         transform: `translateY(${virtualRow.start}px)`,
