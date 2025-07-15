@@ -116,3 +116,5 @@ export type PopupContext = {
   hasRole: ReturnType<typeof useAuthentication>['hasRole'];
   isAuthenticated: ReturnType<typeof useAuthentication>['isAuthenticated'];
 };
+
+export type PopupHandler<Data = any> = (data: Data, styleHelpers: PopupStyleHelpers, context: PopupContext) => React.ReactNode;
