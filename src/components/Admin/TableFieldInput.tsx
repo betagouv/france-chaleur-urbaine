@@ -3,6 +3,7 @@ import React, { type ChangeEvent, forwardRef, useCallback, useMemo, useState } f
 import { type InputProps } from '@/components/form/dsfr/Input';
 import { Input } from '@/components/form/dsfr/Input.styles';
 import Icon from '@/components/ui/Icon';
+import Tooltip from '@/components/ui/Tooltip';
 import { defaultEmptyNumberValue, defaultEmptyStringValue } from '@/utils/airtable';
 import { isDefined } from '@/utils/core';
 import debounce from '@/utils/debounce';
@@ -82,14 +83,18 @@ const TableFieldInput = forwardRef<HTMLInputElement, TableFieldInputProps>((rawP
 
   return isDefined(props.suggestedValue) ? (
     <div className="block relative w-full" onClick={stopPropagation} onDoubleClick={stopPropagation}>
-      <div className="absolute top-0 right-1 z-10 flex gap-1">
+      <div className="absolute top-0.5 right-0.5 z-10 flex gap-1">
         {/* visual indicator that the value is suggested */}
         {valueExternal === defaultEmptyValue ? (
-          <Icon name="fr-icon-sparkling-2-line" size="xs" color="blue" className="cursor-help" title="Valeur suggérée automatiquement" />
+          <Tooltip title="Valeur suggérée automatiquement">
+            <Icon name="fr-icon-sparkling-2-line" size="xs" color="info" className="p-0.5 cursor-help" />
+          </Tooltip>
         ) : (
-          <button onClick={resetValue} className="p-0.5 hover:bg-gray-100 rounded" title={`Revoir la suggestion (${props.suggestedValue})`}>
-            <Icon name="fr-icon-refresh-line" size="xs" color="blue" />
-          </button>
+          <Tooltip title={`Revoir la suggestion (${props.suggestedValue})`}>
+            <button onClick={resetValue} className="-mt-1 p-0.5 hover:bg-gray-100 rounded">
+              <Icon name="fr-icon-refresh-line" size="xs" color="warning" />
+            </button>
+          </Tooltip>
         )}
       </div>
       {inputElement}

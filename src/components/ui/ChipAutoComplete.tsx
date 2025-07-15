@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import Icon from '@/components/ui/Icon';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover';
+import Tooltip from '@/components/ui/Tooltip';
 import { defaultEmptyStringValue } from '@/utils/airtable';
 import { arrayEquals } from '@/utils/array';
 import { isDefined } from '@/utils/core';
@@ -222,14 +223,18 @@ const ChipAutoComplete = (rawProps: ChipAutoCompleteProps) => {
 
   return isDefined(props.suggestedValue) ? (
     <div className="block relative w-full" onClick={stopPropagation} onDoubleClick={stopPropagation}>
-      <div className="absolute top-0 right-1 z-10 flex gap-1">
+      <div className="absolute top-0.5 right-0.5 z-10 flex gap-1">
         {/* visual indicator that the value is suggested */}
         {arrayEquals(valueExternalArray, [defaultEmptyStringValue]) ? (
-          <Icon name="fr-icon-sparkling-2-line" size="xs" color="blue" className="cursor-help" title="Valeur suggérée automatiquement" />
+          <Tooltip title="Valeur suggérée automatiquement">
+            <Icon name="fr-icon-sparkling-2-line" size="xs" color="info" className="p-0.5 cursor-help" />
+          </Tooltip>
         ) : (
-          <button onClick={resetValue} className="p-0.5 hover:bg-gray-100 rounded" title={`Revoir la suggestion (${props.suggestedValue})`}>
-            <Icon name="fr-icon-refresh-line" size="xs" color="blue" />
-          </button>
+          <Tooltip title={`Revoir la suggestion (${props.suggestedValue})`}>
+            <button onClick={resetValue} className="-mt-0.5 p-0.5 hover:bg-gray-100 rounded">
+              <Icon name="fr-icon-refresh-line" size="xs" color="warning" />
+            </button>
+          </Tooltip>
         )}
       </div>
       {inputElement}
