@@ -3,7 +3,7 @@ import { type NetworkSummary } from '@/types/Summary/Network';
 import { isDefined } from '@/utils/core';
 import { prettyFormatNumber } from '@/utils/strings';
 
-import { ifHoverElse, type MapSourceLayersSpecification, type PopupStyleHelpers } from './common';
+import { ifHoverElse, type MapSourceLayersSpecification, type PopupContext, type PopupStyleHelpers } from './common';
 import { buildFiltreGestionnaire, buildFiltreIdentifiantReseau, buildReseauxDeChaleurFilters } from './filters';
 
 export const reseauDeChaleurClasseColor = '#0D543F';
@@ -68,7 +68,14 @@ export const reseauxDeChaleurLayersSpec = [
   },
 ] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
 
-function Popup(reseauDeChaleur: NetworkSummary, { Property, Title, TwoColumns }: PopupStyleHelpers) {
+function Popup(reseauDeChaleur: NetworkSummary, { Property, Title, TwoColumns }: PopupStyleHelpers, { hasRole }: PopupContext) {
+  let tags: string[] = [];
+
+  try {
+    tags = JSON.parse(reseauDeChaleur.tags);
+  } catch {
+    tags = ["Tags non affichables, veuillez contacter l'équipe"];
+  }
   return (
     <>
       <Title title={`ID FCU: ${reseauDeChaleur.id_fcu}`}>{reseauDeChaleur.nom_reseau ?? 'Réseau de chaleur'}</Title>
@@ -81,6 +88,7 @@ function Popup(reseauDeChaleur: NetworkSummary, { Property, Title, TwoColumns }:
           value={reseauDeChaleur['contenu CO2 ACV']}
           formatter={(value) => (isDefined(value) ? `${prettyFormatNumber(value * 1000)} g/kWh` : 'Non connu')}
         />
+        {hasRole('admin') && <Property label="Tags" value={tags.join(', ')} />}
       </TwoColumns>
       {reseauDeChaleur['Identifiant reseau'] && (
         <Button
