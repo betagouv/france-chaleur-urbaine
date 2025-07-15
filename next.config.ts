@@ -254,8 +254,23 @@ const nextConfig: NextConfig = {
         permanent: false,
       },
       {
+        source: '/webinaire/2025/replay-presentation-comparateur',
+        destination: 'https://vimeo.com/1095849733',
+        permanent: false,
+      },
+      {
         source: '/webinaire/2025/replay-collectivites-exploitants-juin',
         destination: 'https://youtu.be/aetWYIxs0MA',
+        permanent: true,
+      },
+      {
+        source: '/webinaire/2025/presentation-france-chaleur-urbaine',
+        destination: '/webinaires/202506_webinaire_presentation.pdf',
+        permanent: true,
+      },
+      {
+        source: '/webinaire/2025/replay-presentation-france-chaleur-urbaine',
+        destination: 'https://youtu.be/tfGtfrTK2gc',
         permanent: true,
       },
     ];

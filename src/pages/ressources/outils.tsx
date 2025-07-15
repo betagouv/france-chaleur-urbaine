@@ -139,19 +139,21 @@ const OutilsPage = () => {
           </Link>
         </Box>
       </Box>
-      <Box py="5w" className="fr-container">
-        <Heading as="h2" size="h3" color="blue-france" mb="0">
-          Liste des réseaux de chaleur
-        </Heading>
-        <Box display="flex" my="2w">
-          <FCUArrowIcon />
-          <Text size="lg" ml="1w">
-            Retrouver l'ensemble des réseaux et les filtrer selon leurs caractéristiques
-          </Text>
+      <Box>
+        <Box py="5w" className="fr-container">
+          <Heading as="h2" size="h3" color="blue-france" mb="0">
+            Liste des réseaux de chaleur
+          </Heading>
+          <Box display="flex" my="2w">
+            <FCUArrowIcon />
+            <Text size="lg" ml="1w">
+              Retrouver l'ensemble des réseaux et les filtrer selon leurs caractéristiques
+            </Text>
+          </Box>
+          <Link variant="secondary" href="/reseaux">
+            Accéder
+          </Link>
         </Box>
-        <Link variant="secondary" href="/reseaux">
-          Accéder
-        </Link>
       </Box>
     </SimplePage>
   );
