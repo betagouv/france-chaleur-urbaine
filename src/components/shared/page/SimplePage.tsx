@@ -391,16 +391,6 @@ function markCurrentPageActive(menuItems: MainNavigationProps.Item[], currentUrl
   });
 }
 
-const publicQuickAccessItems: HeaderProps.QuickAccessItem[] = [
-  {
-    text: 'Connectez-vous',
-    iconId: 'fr-icon-account-circle-line',
-    linkProps: {
-      href: '/connexion',
-    },
-  } satisfies HeaderProps.QuickAccessItem,
-];
-
 interface PageHeaderProps {
   mode: PageMode;
   currentPage?: string;
@@ -419,7 +409,7 @@ interface PageHeaderProps {
  */
 const PageHeader = (props: PageHeaderProps) => {
   const router = useRouter();
-  const { session, hasRole, signOut } = useAuthentication();
+  const { session, hasRole, signOut, isAuthenticated } = useAuthentication();
 
   const isFullScreenMode = props.mode === 'public-fullscreen' || props.mode === 'authenticated';
 
@@ -465,7 +455,15 @@ const PageHeader = (props: PageHeaderProps) => {
             },
           },
         ] satisfies HeaderProps.QuickAccessItem[])
-      : publicQuickAccessItems;
+      : [
+          {
+            text: isAuthenticated ? 'Espace connecté' : 'Connectez-vous',
+            iconId: isAuthenticated ? 'fr-icon-account-circle-fill' : 'fr-icon-account-circle-line',
+            linkProps: {
+              href: '/connexion',
+            },
+          } satisfies HeaderProps.QuickAccessItem,
+        ];
 
   return (
     <>
