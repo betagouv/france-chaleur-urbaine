@@ -15,8 +15,8 @@ type CellProps<T> = {
   Link: Omit<React.ComponentProps<typeof Link>, 'href'> & { href: string | ((data: T) => string) };
   Boolean: never;
   Array: never;
-  Date: never;
-  DateTime: never;
+  Date: Parameters<typeof Date.prototype.toLocaleString>[1];
+  DateTime: Parameters<typeof Date.prototype.toLocaleDateString>[1];
   Json: never;
 };
 
@@ -32,20 +32,28 @@ const Cell = <T,>({ value, children: defaultValue, data, type, cellProps = {} }:
   if (!value && type !== 'Boolean') {
     return defaultValue;
   }
+  const hasCellProps = Object.keys(cellProps).length > 0;
   if (type === 'DateTime' || type === 'Date') {
-    const date = new Date(value);
-
     if (type === 'DateTime') {
+      const dateTime = new Date(value);
       return (
-        <span className="block">
-          <span className="block whitespace-nowrap">{date.toLocaleDateString()}</span>
-          <span className="block font-sans text-xs uppercase text-gray-400">{date.toLocaleTimeString()}</span>
+        <span className="block" suppressHydrationWarning>
+          <time dateTime={dateTime.toISOString()} className="block whitespace-nowrap">
+            {dateTime.toLocaleDateString(undefined, hasCellProps ? (cellProps as Intl.DateTimeFormatOptions) : { dateStyle: 'medium' })}
+          </time>
+          <time dateTime={dateTime.toISOString()} className="block font-sans text-xs uppercase text-gray-400">
+            {dateTime.toLocaleTimeString(undefined, hasCellProps ? (cellProps as Intl.DateTimeFormatOptions) : { timeStyle: 'short' })}
+          </time>
         </span>
       );
     } else if (type === 'Date') {
+      const date = new Date(value);
+      const computedCellProps: Intl.DateTimeFormatOptions = hasCellProps
+        ? (cellProps as Intl.DateTimeFormatOptions)
+        : { dateStyle: 'long' };
       return (
-        <time dateTime={date.toISOString()} title={date.toLocaleString()}>
-          {date.toLocaleDateString()}
+        <time dateTime={date.toISOString()} title={date.toLocaleString(undefined, computedCellProps)} suppressHydrationWarning>
+          {date.toLocaleString(undefined, computedCellProps)}
         </time>
       );
     }
