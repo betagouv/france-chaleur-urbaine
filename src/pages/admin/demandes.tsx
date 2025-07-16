@@ -1,3 +1,4 @@
+import { usePrevious } from '@react-hookz/web';
 import { useQueryClient } from '@tanstack/react-query';
 import { type Virtualizer } from '@tanstack/react-virtual';
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -112,10 +113,26 @@ function DemandesAdmin(): React.ReactElement {
     {} as Record<QuickFilterPresetKey, number>
   );
 
-  // reset selection when filters change
+  // Only reset selection if the filteredDemands array has changed in content, not just selectedDemandId.
+  // Use usePrevious to keep track of the previous filteredDemands for comparison.
+  const prevFilteredDemands = usePrevious(filteredDemands);
+
   useEffect(() => {
-    setSelectedDemandId(null);
-  }, [filteredDemands]);
+    if (!prevFilteredDemands) return;
+
+    const hasOtherDemandChanged = filteredDemands.some((currDemand) => {
+      if (currDemand.id === selectedDemandId) return false; // ignore selected
+      const prevDemand = prevFilteredDemands.find((d) => d.id === currDemand.id);
+      if (!prevDemand) return true; // new item appeared
+      return JSON.stringify(currDemand) !== JSON.stringify(prevDemand); // changed content
+    });
+
+    const demandsLengthChanged = filteredDemands.length !== prevFilteredDemands.length;
+
+    if (demandsLengthChanged || hasOtherDemandChanged) {
+      setSelectedDemandId(null);
+    }
+  }, [filteredDemands, prevFilteredDemands, selectedDemandId]);
 
   const filteredDemandsMapData = useMemo(() => {
     return filteredDemands.map(
