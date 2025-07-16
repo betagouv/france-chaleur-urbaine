@@ -127,3 +127,8 @@ export const mapEventBus = createEventBus<{
 export const useMapEventBus = createEventBusHook(mapEventBus);
 
 export type PopupHandler<Data = any> = (data: Data, styleHelpers: PopupStyleHelpers, context: PopupContext) => React.ReactNode;
+
+/**
+ * Helper to define a popup function for a layer.
+ */
+export const defineLayerPopup = <Data,>(popupFunc: PopupHandler<Data>) => popupFunc;

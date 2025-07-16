@@ -49,6 +49,7 @@ export const databaseSourceIds = [
   'enrrMobilisables-zonesGeothermieProfonde',
   'enrrMobilisables-thalassothermie',
   'installationsGeothermieProfonde',
+  'perimetresGeothermieProfonde',
   'installationsGeothermieSurfaceEchangeursOuverts',
   'installationsGeothermieSurfaceEchangeursFermes',
   'zonesPotentielChaud',
@@ -283,6 +284,16 @@ export const tilesInfo: Record<DatabaseSourceId, TileInfo> = {
   installationsGeothermieProfonde: {
     source: 'database',
     tiles: 'installations_geothermie_profonde_tiles',
+    compressedTiles: true,
+    table: '', // useless
+    properties: [], // useless
+    sourceLayer: '', // useless
+    id: '', // useless
+    extraWhere: (query) => query, // useless
+  },
+  perimetresGeothermieProfonde: {
+    source: 'database',
+    tiles: 'perimetres_geothermie_profonde_tiles',
     compressedTiles: true,
     table: '', // useless
     properties: [], // useless

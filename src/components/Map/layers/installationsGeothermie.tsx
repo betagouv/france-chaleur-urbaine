@@ -32,7 +32,7 @@ export const installationsGeothermieLayersSpec = [
           'circle-radius': ifHoverElse(10, 8),
           'circle-opacity': installationsGeothermieProfondeLayerOpacity,
         },
-        isVisible: (config) => config.installationsGeothermieProfonde,
+        isVisible: (config) => config.geothermieProfonde.show && config.geothermieProfonde.showInstallations,
         popup: PopupInstallationGeothermieProfonde,
       },
     ],

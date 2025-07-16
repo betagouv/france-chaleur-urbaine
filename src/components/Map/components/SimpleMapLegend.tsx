@@ -70,6 +70,7 @@ import {
   installationsGeothermieSurfaceEchangeursOuvertsOpacity,
   installationsGeothermieSurfaceEchangeursOuvertsRealiseeColor,
 } from '../layers/installationsGeothermie';
+import { aquifereColorMap, perimetresGeothermieProfondeLayerOpacity, statutColorMap } from '../layers/perimetresGeothermieProfonde';
 import { testsAdressesLayerStyle } from '../layers/testsAdresses';
 import {
   energyFilterInterval,
@@ -1182,50 +1183,116 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
           </UrlStateAccordion>
 
           <UrlStateAccordion label="Installations existantes" small>
-            <Box display="flex" alignItems="center" my="2w">
-              <SingleCheckbox
-                name="installationsGeothermieProfonde"
-                checked={mapConfiguration.installationsGeothermieProfonde}
-                onChange={() => toggleLayer('installationsGeothermieProfonde')}
-                trackingEvent="Carto|Installations géothermie profonde"
-              />
+            <TrackableCheckableAccordion
+              name="geothermieProfonde"
+              checked={mapConfiguration.geothermieProfonde.show}
+              layerName="geothermieProfonde.show"
+              trackingEvent="Carto|Géothermie profonde"
+              label={
+                <>
+                  <Box flex>Géothermie profonde</Box>
+                  <Tooltip
+                    className="max-w-[400px]"
+                    title={
+                      <>
+                        Sources :
+                        <ul>
+                          <li>
+                            installations :{' '}
+                            <Link href="https://www.geothermies.fr/espace-cartographique" isExternal>
+                              BRGM
+                            </Link>
+                          </li>
+                          <li>
+                            périmètres d'exploitation :{' '}
+                            <Link href="https://www.drieat.ile-de-france.developpement-durable.gouv.fr/" isExternal>
+                              DRIEAT
+                            </Link>{' '}
+                            (juin 2025)
+                          </li>
+                        </ul>
+                      </>
+                    }
+                  />
+                </>
+              }
+            >
+              <DeactivatableBox disabled={!mapConfiguration.geothermieProfonde.show} ml="1w" mr="1w">
+                <Box display="flex" alignItems="center">
+                  <SingleCheckbox
+                    name="installationsGeothermieProfonde"
+                    checked={mapConfiguration.geothermieProfonde.showInstallations}
+                    onChange={() => toggleLayer('geothermieProfonde.showInstallations')}
+                    trackingEvent="Carto|Installations géothermie profonde"
+                  />
 
-              <Box
-                backgroundColor={installationsGeothermieProfondeLayerColor}
-                opacity={installationsGeothermieProfondeLayerOpacity}
-                borderRadius="50%"
-                minHeight="16px"
-                minWidth="16px"
-              />
+                  <Box
+                    backgroundColor={installationsGeothermieProfondeLayerColor}
+                    opacity={installationsGeothermieProfondeLayerOpacity}
+                    borderRadius="50%"
+                    minHeight="16px"
+                    minWidth="16px"
+                  />
 
-              <Text
-                as="label"
-                htmlFor="installationsGeothermieProfonde"
-                fontSize="14px"
-                lineHeight="18px"
-                className="fr-col"
-                cursor="pointer"
-                pl="1w"
-                mt="1v"
-              >
-                Géothermie profonde
-              </Text>
-              <Tooltip
-                title={
+                  <Text
+                    as="label"
+                    htmlFor="installationsGeothermieProfonde"
+                    fontSize="14px"
+                    lineHeight="18px"
+                    className="fr-col"
+                    cursor="pointer"
+                    pt="1v"
+                    px="1v"
+                  >
+                    Installations
+                  </Text>
+                </Box>
+
+                <Box display="flex">
+                  <SingleCheckbox
+                    name="perimetresGeothermieProfonde"
+                    checked={mapConfiguration.geothermieProfonde.showPerimetres}
+                    onChange={() => toggleLayer('geothermieProfonde.showPerimetres')}
+                    trackingEvent="Carto|Périmètres géothermie profonde"
+                  />
+
+                  <IconPolygon stroke={aquifereColorMap.Dogger} mt="1v" />
+
+                  <Text
+                    as="label"
+                    htmlFor="perimetresGeothermieProfonde"
+                    fontSize="14px"
+                    lineHeight="18px"
+                    className="fr-col"
+                    cursor="pointer"
+                    pt="1v"
+                    px="1v"
+                  >
+                    Périmètres d'exploitation
+                  </Text>
+                </Box>
+                {mapConfiguration.geothermieProfonde.show && mapConfiguration.geothermieProfonde.showPerimetres && (
                   <>
-                    Source :{' '}
-                    <Link href="https://www.geothermies.fr/espace-cartographique" isExternal>
-                      BRGM
-                    </Link>
+                    <Box display="flex" flexWrap="wrap" gap="8px" mt="1w" ml="3w">
+                      {Object.entries(aquifereColorMap).map(([aquifere, color]) => (
+                        <div className="flex items-center gap-1" key={aquifere}>
+                          <IconPolygon stroke={color} fillOpacity={perimetresGeothermieProfondeLayerOpacity} strokeWidth={0} />
+                          <div className="text-xs">{aquifere}</div>
+                        </div>
+                      ))}
+                    </Box>
+                    <div className="flex items-center gap-1 ml-6 mt-2">
+                      <IconPolygon stroke={statutColorMap.Existant} fillOpacity={0} />
+                      <div className="text-xs">Existant</div>
+                    </div>
+                    <div className="flex items-center gap-1 ml-6 mt-1">
+                      <IconPolygon stroke={statutColorMap.AR} fillOpacity={0} />
+                      <div className="text-xs">Arrêté d'autorisation de recherche</div>
+                    </div>
                   </>
-                }
-                iconProps={{
-                  color: 'var(--text-action-high-blue-france)',
-                }}
-              />
-              {/* spacer */}
-              <Box width="32px" />
-            </Box>
+                )}
+              </DeactivatableBox>
+            </TrackableCheckableAccordion>
 
             <TrackableCheckableAccordion
               name="installationsGeothermieSurfaceEchangeursOuverts"

@@ -107,7 +107,11 @@ export type MapConfiguration = {
     showParkings: boolean;
   };
   enrrMobilisablesThalassothermie: boolean;
-  installationsGeothermieProfonde: boolean;
+  geothermieProfonde: {
+    show: boolean;
+    showInstallations: boolean;
+    showPerimetres: boolean;
+  };
   installationsGeothermieSurfaceEchangeursOuverts: boolean;
   installationsGeothermieSurfaceEchangeursFermes: boolean;
   zonesOpportunite: {
@@ -215,7 +219,11 @@ export const emptyMapConfiguration: EmptyMapConfiguration = {
     showParkings: true,
   },
   enrrMobilisablesThalassothermie: false,
-  installationsGeothermieProfonde: false,
+  geothermieProfonde: {
+    show: false,
+    showInstallations: true,
+    showPerimetres: true,
+  },
   installationsGeothermieSurfaceEchangeursOuverts: false,
   installationsGeothermieSurfaceEchangeursFermes: false,
   zonesOpportunite: {

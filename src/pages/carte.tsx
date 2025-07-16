@@ -33,7 +33,7 @@ export const layerURLKeysToMapConfigPath = {
   enrrMobilisablesGeothermieProfonde: 'enrrMobilisablesGeothermieProfonde',
   enrrMobilisablesSolaireThermique: 'enrrMobilisablesSolaireThermique.show',
   enrrMobilisablesThalassothermie: 'enrrMobilisablesThalassothermie',
-  installationsGeothermieProfonde: 'installationsGeothermieProfonde',
+  geothermieProfonde: 'geothermieProfonde.show',
   installationsGeothermieSurfaceEchangeursFermes: 'installationsGeothermieSurfaceEchangeursFermes',
   installationsGeothermieSurfaceEchangeursOuverts: 'installationsGeothermieSurfaceEchangeursOuverts',
   caracteristiquesBatiments: 'caracteristiquesBatiments',

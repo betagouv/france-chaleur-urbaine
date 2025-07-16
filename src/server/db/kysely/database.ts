@@ -3017,10 +3017,11 @@ export interface MatomoStats {
   value: number;
 }
 
-export interface NetworkIris {
-  code_iris: string | null;
-  fid: number;
-  geom: string | null;
+export interface PerimetresGeothermieProfondeTiles {
+  tile: Buffer;
+  x: Int8;
+  y: Int8;
+  z: Int8;
 }
 
 export interface ProComparateurConfigurations {
@@ -3518,6 +3519,7 @@ export interface DB {
   knex_migrations: KnexMigrations;
   knex_migrations_lock: KnexMigrationsLock;
   matomo_stats: MatomoStats;
+  perimetres_geothermie_profonde_tiles: PerimetresGeothermieProfondeTiles;
   pro_comparateur_configurations: ProComparateurConfigurations;
   pro_eligibility_tests: ProEligibilityTests;
   pro_eligibility_tests_addresses: ProEligibilityTestsAddresses;
