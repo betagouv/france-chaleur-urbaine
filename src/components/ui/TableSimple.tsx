@@ -160,7 +160,8 @@ const TableRow = <T extends RowData>({
       ref={measureElement}
       className={cx(
         'grid absolute w-full',
-        canSelectRow && 'cursor-pointer transition-colors duration-100 hover:!bg-gray-200',
+        canSelectRow && 'cursor-pointer transition-colors duration-100',
+        !isSelected && 'hover:!bg-gray-200',
         isSelected ? '!bg-[#e1f1f5] hover:!bg-[#d2eaf1]' : virtualRow.index % 2 === 0 ? '!bg-white' : '!bg-stripe'
       )}
       style={{
