@@ -6,6 +6,7 @@ import { nearestPoint } from '@turf/nearest-point';
 import { nearestPointOnLine } from '@turf/nearest-point-on-line';
 import { type Feature, type Geometry, type GeometryCollection, type Point, type Position } from 'geojson';
 import { type MapGeoJSONFeature } from 'maplibre-gl';
+import { usePathname } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { type MapMouseEvent, type MapRef, Popup } from 'react-map-gl/maplibre';
 
@@ -14,7 +15,7 @@ import { type SourceId } from '@/server/services/tiles.config';
 import { useAuthentication } from '@/services/authentication';
 import { isDefined } from '@/utils/core';
 
-import { buildPopupStyleHelpers, type PopupContext } from './layers/common';
+import { buildPopupStyleHelpers, mapEventBus, type PopupContext } from './layers/common';
 import { mapLayers, type MapLayerSpecification } from './map-layers';
 
 const selectionBuffer = 15; // pixels
@@ -42,8 +43,9 @@ type UseMapEventsProps = {
 export function useMapEvents({ mapLayersLoaded, isDrawing, mapRef, onFeatureClick }: UseMapEventsProps) {
   const [popupComponent, setPopupComponent] = useState<(() => JSX.Element) | null>(null);
   const { hasRole, isAuthenticated } = useAuthentication();
+  const pathname = usePathname();
 
-  const popupContext: PopupContext = useMemo(() => ({ hasRole, isAuthenticated }), [hasRole, isAuthenticated]);
+  const popupContext: PopupContext = useMemo(() => ({ hasRole, isAuthenticated, mapEventBus, pathname }), [hasRole, isAuthenticated]);
 
   const lastHoveredFeatureRef = useRef<{
     source: SourceId;

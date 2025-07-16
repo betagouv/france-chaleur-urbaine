@@ -1,3 +1,6 @@
+import Tag from '@codegouvfr/react-dsfr/Tag';
+import React from 'react';
+
 import Button from '@/components/ui/Button';
 import { type NetworkSummary } from '@/types/Summary/Network';
 import { isDefined } from '@/utils/core';
@@ -68,7 +71,11 @@ export const reseauxDeChaleurLayersSpec = [
   },
 ] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
 
-function Popup(reseauDeChaleur: NetworkSummary, { Property, Title, TwoColumns }: PopupStyleHelpers, { hasRole }: PopupContext) {
+function Popup(
+  reseauDeChaleur: NetworkSummary,
+  { Property, Title, TwoColumns }: PopupStyleHelpers,
+  { hasRole, mapEventBus, pathname }: PopupContext
+) {
   let tags: string[] = [];
 
   try {
@@ -88,8 +95,40 @@ function Popup(reseauDeChaleur: NetworkSummary, { Property, Title, TwoColumns }:
           value={reseauDeChaleur['contenu CO2 ACV']}
           formatter={(value) => (isDefined(value) ? `${prettyFormatNumber(value * 1000)} g/kWh` : 'Non connu')}
         />
-        {hasRole('admin') && <Property label="Tags" value={tags.join(', ')} />}
       </TwoColumns>
+      {hasRole('admin') && pathname === '/admin/demandes' && tags.length > 0 && (
+        <div className="my-5">
+          <h6 className="mb-2">Admin</h6>
+          <p className="text-sm italic mb-2">
+            Pour ajouter un tag à une demande, sélectionnez la dans la liste des demandes, puis cliquez sur un tag ci-dessous
+          </p>
+          <TwoColumns>
+            <Property
+              label="Tags"
+              value={
+                <div className="flex flex-wrap gap-2">
+                  {tags.map((tag) => (
+                    <Tag
+                      small
+                      key={tag}
+                      className="cursor-pointer hover:opacity-60"
+                      nativeButtonProps={{
+                        onClick: (e) => {
+                          e.stopPropagation();
+                          e.preventDefault();
+                          mapEventBus.emit('rdc-add-tag', { tag });
+                        },
+                      }}
+                    >
+                      {tag}
+                    </Tag>
+                  ))}
+                </div>
+              }
+            />
+          </TwoColumns>
+        </div>
+      )}
       {reseauDeChaleur['Identifiant reseau'] && (
         <Button
           priority="secondary"

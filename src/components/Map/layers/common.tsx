@@ -8,6 +8,7 @@ import Heading from '@/components/ui/Heading';
 import type { SourceId } from '@/server/services/tiles.config';
 import { type useAuthentication } from '@/services/authentication';
 import { isDefined } from '@/utils/core';
+import { createEventBus, createEventBusHook } from '@/utils/event-bus';
 import { prettyFormatNumber } from '@/utils/strings';
 
 export type LayerSymbolSpecification = {
@@ -115,6 +116,14 @@ export type PopupStyleHelpers = ReturnType<typeof buildPopupStyleHelpers>;
 export type PopupContext = {
   hasRole: ReturnType<typeof useAuthentication>['hasRole'];
   isAuthenticated: ReturnType<typeof useAuthentication>['isAuthenticated'];
+  mapEventBus: typeof mapEventBus;
+  pathname: string;
 };
+
+export const mapEventBus = createEventBus<{
+  'rdc-add-tag': { tag: string };
+}>();
+
+export const useMapEventBus = createEventBusHook(mapEventBus);
 
 export type PopupHandler<Data = any> = (data: Data, styleHelpers: PopupStyleHelpers, context: PopupContext) => React.ReactNode;
