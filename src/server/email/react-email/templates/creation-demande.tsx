@@ -111,7 +111,7 @@ const CreationDemandeEmail = ({ demand }: CreationDemandeEmailProps) => {
         </>
       )}
 
-      {(demand.Structure === 'Tertiaire' || demand.Structure === 'Bailleur social') && (
+      {(demand.Structure === 'Tertiaire' || demand.Structure === 'Bailleur social' || demand.Structure === 'Autre') && (
         <>
           {demand['Type de chauffage'] === 'Collectif' &&
             (demand['Distance au réseau'] < distanceThreshold ? (
