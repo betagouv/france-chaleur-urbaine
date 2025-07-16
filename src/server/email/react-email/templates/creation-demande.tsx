@@ -111,7 +111,7 @@ const CreationDemandeEmail = ({ demand }: CreationDemandeEmailProps) => {
         </>
       )}
 
-      {demand.Structure === 'Tertiaire' && (
+      {(demand.Structure === 'Tertiaire' || demand.Structure === 'Bailleur social') && (
         <>
           {demand['Type de chauffage'] === 'Collectif' &&
             (demand['Distance au réseau'] < distanceThreshold ? (
@@ -188,6 +188,36 @@ const CreationDemandeEmail = ({ demand }: CreationDemandeEmailProps) => {
                 </Text>
               </>
             ))}
+        </>
+      )}
+
+      {demand.Structure === 'Maison individuelle' && (
+        <>
+          {demand['Distance au réseau'] < intermediateDistanceThreshold ? (
+            <>
+              <Text>
+                Votre adresse se situe à proximité d'un réseau de chaleur. Cependant, le raccordement des maisons individuelles aux réseaux
+                de chaleur reste rare à ce jour, pour des raisons techniques et économiques. Nous transmettons tout de même votre demande au
+                gestionnaire du réseau, mais il est probable qu'il ne puisse y donner suite.
+              </Text>
+            </>
+          ) : (
+            <>
+              <Text>
+                Malheureusement, il n'existe pas de réseau de chaleur à proximité de votre adresse à ce jour. De plus, le raccordement des
+                maisons individuelles aux réseaux de chaleur reste rare aujourd'hui, pour des raisons techniques et économiques.
+              </Text>
+              <Text>
+                Votre demande permettra tout de même à votre commune ou au gestionnaire du réseau le plus proche de prendre connaissance de
+                votre intérêt pour ce mode de chauffage.
+              </Text>
+            </>
+          )}
+          <Text>
+            L’amélioration de l’isolation thermique de votre maison constitue un autre levier pour réduire votre facture énergétique et
+            limiter votre impact écologique. Pour être accompagné dans vos projets de rénovation énergétique,, rendez-vous sur{' '}
+            <Link href="https://france-renov.gouv.fr/">France Rénov</Link>.
+          </Text>
         </>
       )}
 

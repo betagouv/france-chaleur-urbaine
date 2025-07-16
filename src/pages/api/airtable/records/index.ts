@@ -75,7 +75,7 @@ export default handleRouteErrors(async function PostRecords(req: NextApiRequest)
         { typecast: true }
       );
 
-      await sendEmailTemplate('creation-demande', { id: 'unknown', email: values.Mail }, { demand: values });
+      await sendEmailTemplate('creation-demande', { email: values.Mail }, { demand: values });
       return { id: demandId };
     }
 

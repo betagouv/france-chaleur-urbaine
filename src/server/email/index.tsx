@@ -1,11 +1,10 @@
 import nodemailer from 'nodemailer';
 
 import { logger } from '@/server/helpers/logger';
-import { type User } from '@/types/User';
 
 import { type EmailType, renderEmail } from './react-email';
 
-type EmailUser = Pick<User, 'id' | 'email'>;
+type EmailUser = { id?: string; email: string };
 
 type EmailParams = Parameters<typeof mailTransport.sendMail>[0];
 
