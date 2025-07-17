@@ -200,9 +200,14 @@ const TableRow = <T extends RowData>({
         }
         const CellTag = columnDef.id === 'selection' ? 'th' : 'td';
         const value = cell.getValue();
+
         return (
           <CellTag
-            key={cell.id}
+            key={
+              // In case record has an id, use it in the key to avoid mismatching of cells
+              // if rows change (as mainly index of the row is used in the key but no other identifier)
+              `${cell.id}_${(cell.row.original as any).id ?? ''}`
+            }
             className={cx(
               '!flex items-center',
               {
