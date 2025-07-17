@@ -11,7 +11,7 @@ import { useState } from 'react';
 
 import '@/components/Map/StyleSwitcher/styles.css';
 import SEO from '@/components/SEO';
-import ThemeProvider, { augmentDocumentWithEmotionCache, dsfrDocumentApi } from '@/components/Theme/ThemeProvider';
+import ThemeProvider, { dsfrDocumentApi } from '@/components/Theme/ThemeProvider';
 import useHtmlAttributes from '@/hooks/useHtmlAttributes';
 import { usePreserveScroll } from '@/hooks/usePreserveScroll';
 import { type AuthSSRPageProps } from '@/server/authentication';
@@ -37,7 +37,7 @@ declare module '@codegouvfr/react-dsfr/next-pagesdir' {
   }
 }
 
-export { augmentDocumentWithEmotionCache, dsfrDocumentApi };
+export { dsfrDocumentApi };
 
 const AppProvider = ({ Component, pageProps }: AppProps<AuthSSRPageProps>) => {
   const [queryClient] = useState(

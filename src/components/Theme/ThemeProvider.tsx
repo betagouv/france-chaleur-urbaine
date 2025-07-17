@@ -5,7 +5,6 @@ import { useLocalStorageValue } from '@react-hookz/web';
 import Link from 'next/link';
 import React from 'react';
 import { createGlobalStyle, StyleSheetManager, ThemeProvider as StyledComponentsThemeProvider } from 'styled-components';
-import { createEmotionSsrAdvancedApproach } from 'tss-react/next/pagesDir';
 
 import theme from './theme';
 
@@ -41,13 +40,6 @@ const { withDsfr, dsfrDocumentApi } = createNextDsfrIntegrationApi({
 });
 
 export { dsfrDocumentApi };
-
-// https://github.com/codegouvfr/react-dsfr/issues/281#issuecomment-2231266401
-const { withAppEmotionCache, augmentDocumentWithEmotionCache } = createEmotionSsrAdvancedApproach({
-  key: 'css',
-});
-
-export { augmentDocumentWithEmotionCache };
 
 export const AppGlobalStyle = createGlobalStyle`
   html {
@@ -209,4 +201,4 @@ function ThemeProvider({ children }: { children: React.ReactNode }) {
     </StyledComponentsThemeProvider>
   );
 }
-export default withDsfr(withAppEmotionCache(ThemeProvider));
+export default withDsfr(ThemeProvider);
