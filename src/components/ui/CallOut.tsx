@@ -56,9 +56,10 @@ const textVariants = cva('', {
 
 export type CallOutProps = VariantProps<typeof callOutVariants> & DSFRCallOutProps & { image?: string };
 
-const CallOut = ({ children, className, variant, size, image, ...props }: CallOutProps) => {
+const CallOut = ({ children, className, variant, size, image, bodyAs, ...props }: CallOutProps) => {
   return (
     <DSFRCallOut
+      bodyAs={bodyAs || (typeof children !== 'string' ? 'div' : undefined)}
       classes={{
         root: cx(callOutVariants({ variant, size, withImage: !!image }), className),
         title: titleVariants({ size }),
