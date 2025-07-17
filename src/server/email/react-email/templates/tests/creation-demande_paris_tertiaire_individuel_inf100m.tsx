@@ -1,0 +1,17 @@
+import CreationDemandeEmail from '@/server/email/react-email/templates/creation-demande';
+
+const CreationDemandeEmailDebug = () => {
+  return (
+    <CreationDemandeEmail
+      demand={{
+        Adresse: '123 Rue de la Paix, 75000 Paris',
+        Departement: 'Paris',
+        Structure: 'Tertiaire',
+        'Type de chauffage': 'Individuel',
+        'Distance au réseau': 50,
+      }}
+    />
+  );
+};
+
+export default CreationDemandeEmailDebug;

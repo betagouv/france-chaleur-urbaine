@@ -1,7 +1,7 @@
 import { type Airtable } from '@/types/enum/Airtable';
 import { type AirtableDemandCreation, type FormDemandCreation } from '@/types/Summary/Demand';
 
-const formatHeatingEnergyToAirtable: (heatingEnergy: string) => string = (heatingEnergy) => {
+const formatHeatingEnergyToAirtable = (heatingEnergy: string) => {
   switch (heatingEnergy) {
     case 'électricité':
       return 'Électricité';
@@ -13,7 +13,7 @@ const formatHeatingEnergyToAirtable: (heatingEnergy: string) => string = (heatin
       return 'Autre / Je ne sais pas';
   }
 };
-const formatHeatingTypeToAirtable: (heatingType?: string) => string = (heatingType) => {
+export const formatHeatingTypeToAirtable = (heatingType?: string) => {
   switch (heatingType) {
     case 'individuel':
       return 'Individuel';
