@@ -19,7 +19,7 @@ const CreationDemandeEmail = ({ demand }: CreationDemandeEmailProps) => {
   const intermediateDistanceThreshold = demand['Departement'] === 'Paris' ? 100 : 200;
   return (
     <Layout>
-      {process.env.NODE_ENV === 'test' && <pre>Paramètres : {JSON.stringify(demand, null, 2)}</pre>}
+      {process.env.NODE_ENV === 'test' && <pre>Paramètres (affiché seulement sur mailpit) : {JSON.stringify(demand, null, 2)}</pre>}
       <Text>Bonjour,</Text>
       <Text>
         Nous vous remercions pour votre demande de contact sur <Link href={clientConfig.websiteOrigin}>France Chaleur Urbaine</Link> pour le{' '}
