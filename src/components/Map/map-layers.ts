@@ -35,6 +35,7 @@ import { enrrMobilisablesZonesGeothermieProfondeLayersSpec } from './layers/enrr
 import { etudesEnCoursLayersSpec } from './layers/etudesEnCours';
 import { installationsGeothermieLayersSpec } from './layers/installationsGeothermie';
 import { perimetresDeDeveloppementPrioritaireLayersSpec } from './layers/perimetresDeDeveloppementPrioritaire';
+import { perimetresGeothermieProfondeLayersSpec } from './layers/perimetresGeothermieProfonde';
 import { reseauxDeChaleurLayersSpec } from './layers/reseauxDeChaleur';
 import { reseauxDeFroidLayersSpec } from './layers/reseauxDeFroid';
 import { reseauxEnConstructionLayersSpec } from './layers/reseauxEnConstruction';
@@ -138,6 +139,7 @@ export const mapLayers = [
   ...besoinsEnChaleurIndustrieCommunesLayersSpec,
   ...quartiersPrioritairesPolitiqueVilleLayersSpec,
   ...perimetresDeDeveloppementPrioritaireLayersSpec,
+  ...perimetresGeothermieProfondeLayersSpec,
   ...reseauxEnConstructionLayersSpec,
   ...besoinsEnChaleurLayersSpec,
   ...enrrMobilisablesFrichesLayersSpec,

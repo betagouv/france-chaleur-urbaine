@@ -225,6 +225,10 @@ export const allDatabaseTables: TableInfo[] = [
     description: 'Tuiles des installations de géothermie profonde',
   },
   {
+    name: 'perimetres_geothermie_profonde_tiles',
+    description: 'Tuiles des périmètres de géothermie profonde',
+  },
+  {
     name: 'installations_geothermie_surface_echangeurs_fermes_tiles',
     description: 'Tuiles des installations de géothermie en surface avec échangeurs fermés',
   },

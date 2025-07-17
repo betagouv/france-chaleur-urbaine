@@ -346,10 +346,22 @@ const trackingEvents = {
   'Carto|Thalassothermie|Désactive': {
     matomo: ['Carto', 'Thalassothermie', 'Désactive'],
   },
+  'Carto|Géothermie profonde|Active': {
+    matomo: ['Carto', 'Géothermie profonde', 'Active'],
+  },
+  'Carto|Géothermie profonde|Désactive': {
+    matomo: ['Carto', 'Géothermie profonde', 'Désactive'],
+  },
   'Carto|Installations géothermie profonde|Active': {
     matomo: ['Carto', 'Installations géothermie profonde', 'Active'],
   },
   'Carto|Installations géothermie profonde|Désactive': {
+    matomo: ['Carto', 'Installations géothermie profonde', 'Désactive'],
+  },
+  'Carto|Périmètres géothermie profonde|Active': {
+    matomo: ['Carto', 'Périmètres géothermie profonde', 'Active'],
+  },
+  'Carto|Périmètres géothermie profonde|Désactive': {
     matomo: ['Carto', 'Installations géothermie profonde', 'Désactive'],
   },
   'Carto|Installations géothermie surface fermés|Active': {
