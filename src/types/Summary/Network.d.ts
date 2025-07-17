@@ -100,6 +100,7 @@ export interface NetworkSummary {
   livraisons_totale_MWh: number;
   nb_pdl: number;
   isCold?: boolean;
+  tags: string;
 }
 
 export interface NetworkToCompare extends Network {

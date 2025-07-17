@@ -20,12 +20,7 @@ import { batimentsRaccordesReseauxChaleurFroidLayersSpec } from './layers/batime
 import { besoinsEnChaleurLayersSpec } from './layers/besoinsEnChaleur';
 import { besoinsEnChaleurIndustrieCommunesLayersSpec } from './layers/besoinsEnChaleurIndustrieCommunes';
 import { caracteristiquesBatimentsLayersSpec } from './layers/caracteristiquesBatiments';
-import {
-  type LayerSymbolSpecification,
-  type MapSourceLayersSpecification,
-  type PopupStyleHelpers,
-  tileSourcesMaxZoom,
-} from './layers/common';
+import { type LayerSymbolSpecification, type MapSourceLayersSpecification, type PopupHandler, tileSourcesMaxZoom } from './layers/common';
 import { communesFortPotentielPourCreationReseauxChaleurLayersSpec } from './layers/communesFortPotentielPourCreationReseauxChaleur';
 import { consommationsGazLayersSpec } from './layers/consommationsGaz';
 import { demandesEligibiliteLayersSpec } from './layers/demandesEligibilite';
@@ -113,7 +108,6 @@ export const legendURLKeyToLegendFeature: Record<LegendURLKey | string, MapLegen
   raccordementsChaud: 'batimentsRaccordesReseauxChaleur',
   raccordementsFroid: 'batimentsRaccordesReseauxFroid',
 };
-export type PopupHandler<Data = any> = (data: Data, styleHelpers: PopupStyleHelpers) => React.ReactNode;
 
 export type MapLayerSpecification<ILayerId = string> = Omit<LayerSpecification, 'source' | 'source-layer' | 'filter'> & {
   id: ILayerId;

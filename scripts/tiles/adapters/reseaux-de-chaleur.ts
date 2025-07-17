@@ -45,7 +45,8 @@ FROM (
         'energie_ratio_solaireThermique', "energie_ratio_solaireThermique",
         'energie_ratio_pompeAChaleur', "energie_ratio_pompeAChaleur",
         'energie_ratio_gaz', "energie_ratio_gaz",
-        'energie_ratio_fioul', "energie_ratio_fioul"
+        'energie_ratio_fioul', "energie_ratio_fioul",
+        'tags', "tags"
       )
     ) AS feature
   FROM (

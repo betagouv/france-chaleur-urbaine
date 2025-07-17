@@ -223,6 +223,9 @@ dependencies:
   maplibre-gl:
     specifier: ^5.1.0
     version: 5.1.0
+  mitt:
+    specifier: ^3.0.1
+    version: 3.0.1
   motion:
     specifier: ^12.12.1
     version: 12.16.0(@emotion/is-prop-valid@1.2.2)(react-dom@19.1.0)(react@19.1.0)

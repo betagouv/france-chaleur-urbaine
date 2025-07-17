@@ -59,6 +59,19 @@ const ChipAutoComplete = (rawProps: ChipAutoCompleteProps) => {
   const [highlightedIndex, setHighlightedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+    // Update the valueArray when the valueExternalArray changes
+    if (!arrayEquals(valueExternalArray, valueArray)) {
+      setValueArray(
+        arrayEquals(valueExternalArray, [defaultEmptyStringValue]) && isDefined(props.suggestedValue)
+          ? props.multiple
+            ? props.suggestedValue
+            : [props.suggestedValue]
+          : valueExternalArray
+      );
+    }
+  }, [JSON.stringify(valueExternalArray)]);
+
   const filteredOptions = useMemo(() => {
     const searchValue = inputValue.toLowerCase();
     return searchValue === '' ? options : options.filter((option) => option.key.toLowerCase().includes(searchValue));

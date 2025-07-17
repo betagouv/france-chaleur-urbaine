@@ -1,3 +1,4 @@
+import { usePrevious } from '@react-hookz/web';
 import { useQueryClient } from '@tanstack/react-query';
 import { type Virtualizer } from '@tanstack/react-virtual';
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -11,6 +12,7 @@ import Comment from '@/components/Manager/Comment';
 import Contact from '@/components/Manager/Contact';
 import Tag from '@/components/Manager/Tag';
 import { type AdresseEligible } from '@/components/Map/layers/adressesEligibles';
+import { useMapEventBus } from '@/components/Map/layers/common';
 import Map from '@/components/Map/Map';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import SimplePage from '@/components/shared/page/SimplePage';
@@ -27,7 +29,7 @@ import TableSimple, { type ColumnDef, type QuickFilterPreset } from '@/component
 import Tooltip from '@/components/ui/Tooltip';
 import { useFetch } from '@/hooks/useApi';
 import { withAuthentication } from '@/server/authentication';
-import { toastErrors } from '@/services/notification';
+import { notify, toastErrors } from '@/services/notification';
 import { defaultTagChipOption, useFCUTags } from '@/services/tags';
 import { type Point } from '@/types/Point';
 import { type AdminDemand, type Demand } from '@/types/Summary/Demand';
@@ -112,10 +114,26 @@ function DemandesAdmin(): React.ReactElement {
     {} as Record<QuickFilterPresetKey, number>
   );
 
-  // reset selection when filters change
+  // Only reset selection if the filteredDemands array has changed in content, not just selectedDemandId.
+  // Use usePrevious to keep track of the previous filteredDemands for comparison.
+  const prevFilteredDemands = usePrevious(filteredDemands);
+
   useEffect(() => {
-    setSelectedDemandId(null);
-  }, [filteredDemands]);
+    if (!prevFilteredDemands) return;
+
+    const hasOtherDemandChanged = filteredDemands.some((currDemand) => {
+      if (currDemand.id === selectedDemandId) return false; // ignore selected
+      const prevDemand = prevFilteredDemands.find((d) => d.id === currDemand.id);
+      if (!prevDemand) return true; // new item appeared
+      return JSON.stringify(currDemand) !== JSON.stringify(prevDemand); // changed content
+    });
+
+    const demandsLengthChanged = filteredDemands.length !== prevFilteredDemands.length;
+
+    if (demandsLengthChanged || hasOtherDemandChanged) {
+      setSelectedDemandId(null);
+    }
+  }, [filteredDemands, prevFilteredDemands, selectedDemandId]);
 
   const filteredDemandsMapData = useMemo(() => {
     return filteredDemands.map(
@@ -147,6 +165,21 @@ function DemandesAdmin(): React.ReactElement {
     }),
     []
   );
+
+  useMapEventBus('rdc-add-tag', (event) => {
+    const selectedDemand = demands.find((demand) => demand.id === selectedDemandId);
+    if (!selectedDemandId || !selectedDemand) {
+      notify('error', 'Aucune demande n‘est sélectionnée');
+      return;
+    }
+    const currentTags = arrayEquals(selectedDemand.Gestionnaires ?? [], [defaultEmptyStringValue])
+      ? selectedDemand.recommendedTags.map((tag) => tag.name)
+      : (selectedDemand.Gestionnaires ?? []);
+
+    updateDemand(selectedDemandId, {
+      Gestionnaires: [...new Set([...currentTags, event.tag])],
+    });
+  });
 
   const tableColumns: ColumnDef<AdminDemand>[] = useMemo(
     () => [

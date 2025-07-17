@@ -160,8 +160,9 @@ const TableRow = <T extends RowData>({
       ref={measureElement}
       className={cx(
         'grid absolute w-full',
-        canSelectRow && 'cursor-pointer transition-colors duration-100 hover:!bg-gray-200',
-        isSelected ? '!bg-[#e1f1f5]' : virtualRow.index % 2 === 0 ? '!bg-white' : '!bg-stripe'
+        canSelectRow && 'cursor-pointer transition-colors duration-100',
+        !isSelected && 'hover:!bg-gray-200',
+        isSelected ? '!bg-[#e1f1f5] hover:!bg-[#d2eaf1]' : virtualRow.index % 2 === 0 ? '!bg-white' : '!bg-stripe'
       )}
       style={{
         transform: `translateY(${virtualRow.start}px)`,
@@ -199,9 +200,14 @@ const TableRow = <T extends RowData>({
         }
         const CellTag = columnDef.id === 'selection' ? 'th' : 'td';
         const value = cell.getValue();
+
         return (
           <CellTag
-            key={cell.id}
+            key={
+              // In case record has an id, use it in the key to avoid mismatching of cells
+              // if rows change (as mainly index of the row is used in the key but no other identifier)
+              `${cell.id}_${(cell.row.original as any).id ?? ''}`
+            }
             className={cx(
               '!flex items-center',
               {
