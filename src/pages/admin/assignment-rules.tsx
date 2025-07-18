@@ -38,14 +38,14 @@ export default function ManageAssignmentRules() {
       accessorKey: 'search_pattern',
       header: 'Conditions',
       cell: (info) => <div className="bg-zinc-50 px-1 py-[0.1rem] rounded-sm font-mono text-sm">{info.getValue()}</div>,
-      className: 'break-words break-all',
+      className: 'break-words',
       flex: 2,
     },
     {
       accessorKey: 'result',
       header: 'Actions',
       cell: (info) => <div className="font-mono bg-blue-50 px-2 py-1 rounded text-sm">{info.getValue()}</div>,
-      className: 'break-words break-all',
+      className: 'break-words',
     },
     {
       accessorKey: 'active',
