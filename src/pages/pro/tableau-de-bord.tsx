@@ -16,8 +16,8 @@ export default function DashboardPage() {
         <Heading as="h1" color="blue-france">
           Tableau de bord
         </Heading>
-        {(hasRole('admin') || hasRole('demo')) && <DashboardAdmin />}
-        {hasRole('gestionnaire') && <DashboardGestionnaire />}
+        {hasRole('admin') && <DashboardAdmin />}
+        {(hasRole('gestionnaire') || hasRole('demo')) && <DashboardGestionnaire />}
         {(hasRole('particulier') || hasRole('professionnel')) && <DashboardProfessionnel />}
       </Box>
     </SimplePage>

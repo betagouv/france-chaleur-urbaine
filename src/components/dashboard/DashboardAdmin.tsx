@@ -4,28 +4,28 @@ export default function DashboardAdmin() {
   return (
     <div className="grid gap-8 grid-cols-2 items-center justify-between mb-5">
       <Tile
-        title="Comparateur de prix et d'émissions de CO2"
-        desc="Comparez les performances des modes de chauffage et de refroidissement (réseaux de chaleur et de froid, gaz, fioul, biomasse, PAC...) en termes de coûts et émissions de CO2."
+        title="Gestion des demandes"
+        desc="Gérez les demandes de raccordement à affecter"
         linkProps={{
-          href: '/pro/comparateur-couts-performances',
+          href: '/admin/demandes',
         }}
         orientation="horizontal"
         enlargeLinkOrButton
       />
       <Tile
-        title="Test d'adresses en masse"
-        desc="Repérez sur un parc de bâtiments ceux potentiellement raccordables, et accédez aux caractéristiques des réseaux les plus proches."
+        title="Gestion des utilisateurs"
+        desc="Gérez les utilisateurs de l'application"
         linkProps={{
-          href: '/pro/tests-adresses',
+          href: '/admin/users',
         }}
         orientation="horizontal"
         enlargeLinkOrButton
       />
       <Tile
-        title="Demandes"
-        desc="Retrouvez les demandes de raccordement déposées sur vos réseaux"
+        title="Gestion des réseaux"
+        desc="Gérez les réseaux de chaleur et de froid"
         linkProps={{
-          href: '/pro/demandes',
+          href: '/admin/reseaux',
         }}
         orientation="horizontal"
         enlargeLinkOrButton

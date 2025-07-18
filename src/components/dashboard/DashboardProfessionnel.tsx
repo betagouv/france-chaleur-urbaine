@@ -1,4 +1,4 @@
-import Tile from '@codegouvfr/react-dsfr/Tile';
+import Tile from '@/components/ui/Tile';
 
 export default function DashboardProfessionnel() {
   return (
