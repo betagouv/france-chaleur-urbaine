@@ -7,8 +7,81 @@ import { type NetworkSummary } from '@/types/Summary/Network';
 import { isDefined } from '@/utils/core';
 import { prettyFormatNumber } from '@/utils/strings';
 
-import { ifHoverElse, type MapSourceLayersSpecification, type PopupContext, type PopupStyleHelpers } from './common';
+import { defineLayerPopup, ifHoverElse, type MapSourceLayersSpecification } from './common';
 import { buildFiltreGestionnaire, buildFiltreIdentifiantReseau, buildReseauxDeChaleurFilters } from './filters';
+
+const Popup = defineLayerPopup<NetworkSummary>((reseauDeChaleur, { Property, Title, TwoColumns }, { hasRole, mapEventBus, pathname }) => {
+  let tags: string[] = [];
+
+  try {
+    tags = JSON.parse(reseauDeChaleur.tags);
+  } catch {
+    tags = ["Tags non affichables, veuillez contacter l'équipe"];
+  }
+  return (
+    <>
+      <Title title={`ID FCU: ${reseauDeChaleur.id_fcu}`}>{reseauDeChaleur.nom_reseau ?? 'Réseau de chaleur'}</Title>
+      <TwoColumns>
+        <Property label="Identifiant" value={reseauDeChaleur['Identifiant reseau']} />
+        <Property label="Gestionnaire" value={reseauDeChaleur.Gestionnaire} />
+        <Property label="Taux EnR&R" value={reseauDeChaleur['Taux EnR&R']} unit="%" />
+        <Property
+          label="Contenu CO2 ACV"
+          value={reseauDeChaleur['contenu CO2 ACV']}
+          formatter={(value) => (isDefined(value) ? `${prettyFormatNumber(value * 1000)} g/kWh` : 'Non connu')}
+        />
+        {hasRole('admin') && ['/admin/demandes', '/admin/reseaux'].includes(pathname) && (
+          <Property
+            label={
+              <>
+                Tags
+                <Tooltip
+                  iconProps={{ className: 'fr-ml-1v' }}
+                  title="Pour ajouter un tag à une demande, sélectionnez la dans la liste des demandes, puis cliquez sur un tag ci-dessous
+"
+                />
+              </>
+            }
+            value={
+              tags.length === 0 ? (
+                'Aucun tag'
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  {tags.map((tag) => (
+                    <Tag
+                      small
+                      key={tag}
+                      className="cursor-pointer hover:opacity-60"
+                      nativeButtonProps={{
+                        onClick: (e) => {
+                          e.stopPropagation();
+                          e.preventDefault();
+                          mapEventBus.emit('rdc-add-tag', { tag });
+                        },
+                      }}
+                    >
+                      {tag}
+                    </Tag>
+                  ))}
+                </div>
+              )
+            }
+          />
+        )}
+      </TwoColumns>
+      {reseauDeChaleur['Identifiant reseau'] && (
+        <Button
+          priority="secondary"
+          full
+          iconId="fr-icon-eye-line"
+          linkProps={{ href: `/reseaux/${reseauDeChaleur['Identifiant reseau']}`, target: '_blank', rel: 'noopener noreferrer' }}
+        >
+          Voir la fiche du réseau
+        </Button>
+      )}
+    </>
+  );
+});
 
 export const reseauDeChaleurClasseColor = '#0D543F';
 export const reseauDeChaleurNonClasseColor = '#48A21A';
@@ -71,80 +144,3 @@ export const reseauxDeChaleurLayersSpec = [
     ],
   },
 ] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
-
-function Popup(
-  reseauDeChaleur: NetworkSummary,
-  { Property, Title, TwoColumns }: PopupStyleHelpers,
-  { hasRole, mapEventBus, pathname }: PopupContext
-) {
-  let tags: string[] = [];
-
-  try {
-    tags = JSON.parse(reseauDeChaleur.tags);
-  } catch {
-    tags = ["Tags non affichables, veuillez contacter l'équipe"];
-  }
-  return (
-    <>
-      <Title title={`ID FCU: ${reseauDeChaleur.id_fcu}`}>{reseauDeChaleur.nom_reseau ?? 'Réseau de chaleur'}</Title>
-      <TwoColumns>
-        <Property label="Identifiant" value={reseauDeChaleur['Identifiant reseau']} />
-        <Property label="Gestionnaire" value={reseauDeChaleur.Gestionnaire} />
-        <Property label="Taux EnR&R" value={reseauDeChaleur['Taux EnR&R']} unit="%" />
-        <Property
-          label="Contenu CO2 ACV"
-          value={reseauDeChaleur['contenu CO2 ACV']}
-          formatter={(value) => (isDefined(value) ? `${prettyFormatNumber(value * 1000)} g/kWh` : 'Non connu')}
-        />
-        {hasRole('admin') && pathname === '/admin/demandes' && (
-          <Property
-            label={
-              <>
-                Tags
-                <Tooltip
-                  iconProps={{ className: 'fr-ml-1v' }}
-                  title="Pour ajouter un tag à une demande, sélectionnez la dans la liste des demandes, puis cliquez sur un tag ci-dessous
-"
-                />
-              </>
-            }
-            value={
-              tags.length === 0 ? (
-                'Aucun tag'
-              ) : (
-                <div className="flex flex-wrap gap-2">
-                  {tags.map((tag) => (
-                    <Tag
-                      small
-                      key={tag}
-                      className="cursor-pointer hover:opacity-60"
-                      nativeButtonProps={{
-                        onClick: (e) => {
-                          e.stopPropagation();
-                          e.preventDefault();
-                          mapEventBus.emit('rdc-add-tag', { tag });
-                        },
-                      }}
-                    >
-                      {tag}
-                    </Tag>
-                  ))}
-                </div>
-              )
-            }
-          />
-        )}
-      </TwoColumns>
-      {reseauDeChaleur['Identifiant reseau'] && (
-        <Button
-          priority="secondary"
-          full
-          iconId="fr-icon-eye-line"
-          linkProps={{ href: `/reseaux/${reseauDeChaleur['Identifiant reseau']}`, target: '_blank', rel: 'noopener noreferrer' }}
-        >
-          Voir la fiche du réseau
-        </Button>
-      )}
-    </>
-  );
-}

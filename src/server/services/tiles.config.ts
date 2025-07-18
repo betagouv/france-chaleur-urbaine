@@ -154,7 +154,7 @@ export const tilesInfo: Record<DatabaseSourceId, TileInfo> = {
     airtable: Airtable.FUTUR_NETWORKS,
     id: 'id_fcu',
     extraWhere: (query) => query,
-    properties: ['id_fcu', 'nom_reseau', 'mise_en_service', 'gestionnaire', 'is_zone'],
+    properties: ['id_fcu', 'nom_reseau', 'mise_en_service', 'gestionnaire', 'is_zone', 'tags'],
     sourceLayer: 'futurOutline',
   },
   coldNetwork: {

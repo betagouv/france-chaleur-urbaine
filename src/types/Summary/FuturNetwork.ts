@@ -3,4 +3,5 @@ export interface FuturNetworkSummary {
   nom_reseau?: string;
   gestionnaire: string;
   mise_en_service: string;
+  tags: string;
 }
