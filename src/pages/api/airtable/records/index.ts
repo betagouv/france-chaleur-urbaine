@@ -75,7 +75,11 @@ export default handleRouteErrors(async function PostRecords(req: NextApiRequest)
         { typecast: true }
       );
 
-      await sendEmailTemplate('creation-demande', { email: values.Mail }, { demand: values });
+      await sendEmailTemplate(
+        'creation-demande',
+        { email: values.Mail },
+        { demand: { ...values, 'Distance au réseau': values['Distance au réseau'] ?? 9999 } } // si > 1000m la distance est null, or le template veut une distance
+      );
       return { id: demandId };
     }
 
