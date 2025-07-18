@@ -183,6 +183,41 @@ program
     console.info(`${epci.length} EPCI importés`);
   });
 
+type EPT = {
+  code: string;
+  nom: string;
+  type: string;
+  modeFinancement: string;
+  populationTotale: number;
+  populationMunicipale: number;
+  membres: {
+    code: string;
+    siren: string;
+    nom: string;
+    populationTotale: number;
+    populationMunicipale: number;
+  }[];
+};
+
+program
+  .command('import:ept')
+  .description('Import the french EPT (Établissements Publics Territoriaux) (used for dynamic rules)')
+  .action(async () => {
+    const allEPT = await fetchJSON<EPT[]>('https://unpkg.com/@etalab/decoupage-administratif@5.2.0/data/ept.json');
+    const ept = allEPT.map((etablissement) => ({
+      code: etablissement.code,
+      nom: etablissement.nom,
+      type: etablissement.type,
+      membres: JSON.stringify(etablissement.membres.map((membre) => ({ code: membre.code, nom: membre.nom }))),
+    }));
+
+    await kdb.transaction().execute(async (tx) => {
+      await tx.deleteFrom('ept').execute();
+      await tx.insertInto('ept').values(ept).execute();
+    });
+    console.info(`${ept.length} EPT importés`);
+  });
+
 program
   .command('tiles:generate-geojson')
   .description('Generate GeoJSON file for a given resource')
