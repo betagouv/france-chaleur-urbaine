@@ -17,6 +17,23 @@ describe('expression-parser', () => {
       insee_dep: '94',
       insee_reg: '11',
     },
+    departement: {
+      nom: 'Val-de-Marne',
+      insee_dep: '94',
+    },
+    region: {
+      nom: 'Île-de-France',
+      insee_reg: '11',
+    },
+    epci: {
+      code: '200054781',
+      nom: 'Métropole du Grand Paris',
+      type: 'METRO',
+    },
+    ept: {
+      code: '200057958',
+      nom: 'Établissement public territorial Grand-Orly Seine Bièvre',
+    },
     reseauDeChaleur: {
       id_fcu: 296,
       'Identifiant reseau': '9402C',
@@ -25,12 +42,34 @@ describe('expression-parser', () => {
       communes: ['Créteil'],
       distance: 29,
     },
+    reseauDeChaleurSansTrace: {
+      id_fcu: 1076,
+      'Identifiant reseau': '9403C',
+      nom_reseau: 'Réseau Créteil Village',
+      nom: 'Créteil',
+      tags: ['Dalkia', 'Dalkia_IDF'],
+      communes: ['Créteil'],
+    },
     reseauEnConstruction: {
       id_fcu: 158,
       nom_reseau: null,
       tags: ['SIPPEREC', 'SIPPEREC_BLR'],
       communes: ['Bourg-la-Reine'],
       distance: 8752,
+    },
+    zoneEnConstruction: {
+      id_fcu: 71,
+      nom_reseau: 'Réseaux de Créteil - Scuc',
+      tags: ['Dalkia', 'Dalkia_IDF', 'Dalkia_9402C'],
+      communes: ['Créteil'],
+      distance: 0,
+    },
+    pdp: {
+      id_fcu: 162,
+      'Identifiant reseau': '9402C',
+      communes: ['Créteil'],
+      reseau_de_chaleur_ids: [],
+      reseau_en_construction_ids: [9, 71, 72],
     },
   };
 
@@ -92,6 +131,80 @@ describe('expression-parser', () => {
       data: sampleEligibilityData,
       expected: true,
       desc: 'Code commune correct',
+    },
+
+    // Tests département
+    {
+      expr: 'departement.nom:"Val-de-Marne"',
+      data: sampleEligibilityData,
+      expected: true,
+      desc: 'Nom de département correct',
+    },
+    {
+      expr: 'departement.nom:"Seine-et-Marne"',
+      data: sampleEligibilityData,
+      expected: false,
+      desc: 'Nom de département incorrect',
+    },
+    {
+      expr: 'departement.insee_dep:"94"',
+      data: sampleEligibilityData,
+      expected: true,
+      desc: 'Code département par propriété departement',
+    },
+
+    // Tests région
+    {
+      expr: 'region.nom:"Île-de-France"',
+      data: sampleEligibilityData,
+      expected: true,
+      desc: 'Nom de région correct',
+    },
+    {
+      expr: 'region.nom:"Auvergne-Rhône-Alpes"',
+      data: sampleEligibilityData,
+      expected: false,
+      desc: 'Nom de région incorrect',
+    },
+    {
+      expr: 'region.insee_reg:"11"',
+      data: sampleEligibilityData,
+      expected: true,
+      desc: 'Code région correct',
+    },
+
+    // Tests EPCI
+    {
+      expr: 'epci.nom:"Métropole du Grand Paris"',
+      data: sampleEligibilityData,
+      expected: true,
+      desc: 'Nom EPCI correct',
+    },
+    {
+      expr: 'epci.code:"200054781"',
+      data: sampleEligibilityData,
+      expected: true,
+      desc: 'Code EPCI correct',
+    },
+    {
+      expr: 'epci.type:"METRO"',
+      data: sampleEligibilityData,
+      expected: true,
+      desc: 'Type EPCI correct',
+    },
+
+    // Tests EPT
+    {
+      expr: 'ept.nom:"Établissement public territorial Grand-Orly Seine Bièvre"',
+      data: sampleEligibilityData,
+      expected: true,
+      desc: 'Nom EPT correct',
+    },
+    {
+      expr: 'ept.code:"200057958"',
+      data: sampleEligibilityData,
+      expected: true,
+      desc: 'Code EPT correct',
     },
 
     // Tests type
@@ -192,6 +305,12 @@ describe('expression-parser', () => {
       data: sampleEligibilityData,
       expected: true,
       desc: 'Expression complexe multiple conditions',
+    },
+    {
+      expr: 'region.nom:"Île-de-France" && epci.type:"METRO" && departement.insee_dep:"94"',
+      data: sampleEligibilityData,
+      expected: true,
+      desc: 'Expression complexe avec nouvelles propriétés territoriales',
     },
   ];
 

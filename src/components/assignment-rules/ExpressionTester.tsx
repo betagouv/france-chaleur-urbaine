@@ -23,6 +23,23 @@ const getDefaultEligibilityData = () => ({
     insee_dep: '94',
     insee_reg: '11',
   },
+  departement: {
+    nom: 'Val-de-Marne',
+    insee_dep: '94',
+  },
+  region: {
+    nom: 'Île-de-France',
+    insee_reg: '11',
+  },
+  epci: {
+    code: '200054781',
+    nom: 'Métropole du Grand Paris',
+    type: 'METRO',
+  },
+  ept: {
+    code: '200057958',
+    nom: 'Établissement public territorial Grand-Orly Seine Bièvre',
+  },
   reseauDeChaleur: {
     id_fcu: 296,
     'Identifiant reseau': '9402C',
@@ -30,6 +47,14 @@ const getDefaultEligibilityData = () => ({
     tags: ['Dalkia', 'Dalkia_IDF', 'Dalkia_9402C'],
     communes: ['Créteil'],
     distance: 29,
+  },
+  reseauDeChaleurSansTrace: {
+    id_fcu: 1076,
+    'Identifiant reseau': '9403C',
+    nom_reseau: 'Réseau Créteil Village',
+    nom: 'Créteil',
+    tags: ['Dalkia', 'Dalkia_IDF'],
+    communes: ['Créteil'],
   },
   reseauEnConstruction: {
     id_fcu: 158,
@@ -210,7 +235,8 @@ const ExpressionTester = ({ expression, className }: ExpressionTesterProps) => {
             <div className="text-xs text-gray-500 mt-1">
               Test avec données par défaut : Créteil (94), type "dans_pdp", distance 0m.
               <br />
-              Vous pouvez tester des conditions comme : tag:"ENGIE*", commune.insee_dep:"94", type:"dans_pdp", distance:&lt;100
+              Vous pouvez tester des conditions comme : tag:"ENGIE*", departement.nom:"Val-de-Marne", region.nom:"Île-de-France",
+              epci.nom:"Métropole du Grand Paris", type:"dans_pdp", distance:&lt;100
             </div>
           </div>
         )}

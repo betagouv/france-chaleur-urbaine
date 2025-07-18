@@ -122,8 +122,8 @@ export default function ManageAssignmentRules() {
 
         <CallOut title="Règles dynamiques" size="sm">
           <p>
-            Les règles dynamiques permettent d'automatiser l'ajout de tags et l'affectation des demandes selon des critères complexes basés
-            sur les données d'éligibilité.
+            Les règles dynamiques permettent d'automatiser l'ajout de tags et l'affectation des demandes selon des critères basés sur les
+            données d'éligibilité.
           </p>
           <div className="space-y-3">
             <div>
@@ -136,10 +136,19 @@ export default function ManageAssignmentRules() {
                   <code>commune.nom:"Paris"</code> : nom de la commune
                 </li>
                 <li>
-                  <code>commune.insee_dep:"94"</code> : code département
+                  <code>departement.nom:"Val-de-Marne"</code> : nom du département
                 </li>
                 <li>
-                  <code>commune.insee_reg:"11"</code> : code région
+                  <code>region.nom:"Île-de-France"</code> : nom de la région
+                </li>
+                <li>
+                  <code>epci.nom:"Métropole du Grand Paris"</code> : nom de l'EPCI
+                </li>
+                <li>
+                  <code>epci.type:"METRO"</code> : type d'EPCI
+                </li>
+                <li>
+                  <code>ept.nom:"Nom de l'EPT"</code> : nom de l'EPT
                 </li>
                 <li>
                   <code>type:"dans_pdp"</code> : type d'éligibilité
@@ -191,6 +200,12 @@ export default function ManageAssignmentRules() {
                 </li>
                 <li>
                   <code>commune.nom:"Paris" || commune.nom:"Lyon"</code> → <code>tag:"Grande_Ville"</code>
+                </li>
+                <li>
+                  <code>region.nom:"Île-de-France" && epci.type:"METRO"</code> → <code>tag:"IDF_METRO"</code>
+                </li>
+                <li>
+                  <code>departement.nom:"Puy-de-Dôme"</code> → <code>tag:"ADUHME" affecte:"ADUHME"</code>
                 </li>
               </ul>
             </div>
