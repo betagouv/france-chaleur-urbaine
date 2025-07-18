@@ -20,10 +20,11 @@ const ExpressionValidator = ({ expression, className, showAST = false }: Express
     const indent = '  '.repeat(depth);
 
     switch (ast.type) {
-      case 'tag':
+      case 'condition':
         return (
           <div className="font-mono text-sm">
-            {indent}Tag: {ast.value}
+            {indent}
+            {ast.field}: {ast.value} {ast.hasWildcard ? '(wildcard)' : ''}
           </div>
         );
       case 'not':
