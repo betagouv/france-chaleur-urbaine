@@ -3,7 +3,7 @@
  * Please do not edit it manually.
  */
 
-import type { ColumnType } from 'kysely';
+import type { ColumnType, JSONColumnType } from 'kysely';
 
 import { type UserRole } from '@/types/enum/UserRole';
 import { type HeatNetwork } from '@/types/HeatNetworksResponse';
@@ -2914,7 +2914,24 @@ export interface EnrrMobilisablesZonesGeothermieProfondeTiles {
 
 export interface Epci {
   code: string;
-  membres: Json;
+  membres: JSONColumnType<
+    {
+      code: string;
+      nom: string;
+    }[]
+  >;
+  nom: string;
+  type: string;
+}
+
+export interface Ept {
+  code: string;
+  membres: JSONColumnType<
+    {
+      code: string;
+      nom: string;
+    }[]
+  >;
   nom: string;
   type: string;
 }
@@ -3507,6 +3524,7 @@ export interface DB {
   enrr_mobilisables_tiles: EnrrMobilisablesTiles;
   enrr_mobilisables_zones_geothermie_profonde_tiles: EnrrMobilisablesZonesGeothermieProfondeTiles;
   epci: Epci;
+  ept: Ept;
   etudes_en_cours: EtudesEnCours;
   etudes_en_cours_tiles: EtudesEnCoursTiles;
   ign_communes: IgnCommunes;
