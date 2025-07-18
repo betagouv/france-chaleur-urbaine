@@ -562,6 +562,36 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
       .executeTakeFirst(),
   ]);
 
+  const [departement, region, epci, ept] = await Promise.all([
+    kdb
+      .selectFrom('ign_departements')
+      .select(['nom', 'insee_dep'])
+      .where('insee_dep', '=', commune.insee_dep)
+      .limit(1)
+      .executeTakeFirstOrThrow(),
+
+    kdb
+      .selectFrom('ign_regions')
+      .select(['nom', 'insee_reg'])
+      .where('insee_reg', '=', commune.insee_reg)
+      .limit(1)
+      .executeTakeFirstOrThrow(),
+
+    kdb
+      .selectFrom('epci')
+      .select(['code', 'nom', 'type'])
+      .where('membres', '@>', sql<any>`jsonb_build_array(jsonb_build_object('code', ${sql.lit(commune.insee_com)}))`)
+      .limit(1)
+      .executeTakeFirst(),
+
+    kdb
+      .selectFrom('ept')
+      .select(['code', 'nom'])
+      .where('membres', '@>', sql<any>`jsonb_build_array(jsonb_build_object('code', ${sql.lit(commune.insee_com)}))`)
+      .limit(1)
+      .executeTakeFirst(),
+  ]);
+
   const determineEligibilityResult = async (): Promise<EligibilityResult> => {
     const tagsDistanceThreshold = 500; // m
     const eligibilityDistances = getNetworkEligibilityDistances(reseauDeChaleur?.['Identifiant reseau'] ?? '');
@@ -691,6 +721,10 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
   return {
     ...eligibilityResult,
     commune,
+    departement,
+    region,
+    epci,
+    ept,
     reseauDeChaleur,
     reseauDeChaleurSansTrace,
     reseauEnConstruction,

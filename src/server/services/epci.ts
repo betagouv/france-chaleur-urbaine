@@ -12,10 +12,10 @@ export const findMetropoleNameTagByCity = async (codeInsee: string): Promise<str
   const epci = await kdb
     .selectFrom('epci')
     .selectAll()
-    .where('membres', '@>', sql<string>`jsonb_build_array(jsonb_build_object('code', ${sql.lit(codeInsee)}))`)
+    .where('membres', '@>', sql<any>`jsonb_build_array(jsonb_build_object('code', ${sql.lit(codeInsee)}))`)
     .executeTakeFirst();
 
-  const tagName = epci ? `${(epci.membres as any)[0].nom}M` : null;
+  const tagName = epci ? `${epci.membres[0].nom}M` : null;
   if (!tagName) {
     return null;
   }
