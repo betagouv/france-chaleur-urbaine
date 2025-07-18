@@ -79,7 +79,7 @@ export default function ManageUsers() {
         filterType: 'Facets',
       },
       {
-        accessorKey: 'gestionnaires',
+        accessorFn: (row) => row.gestionnaires?.map((u) => u.toLowerCase()).join(' ') ?? '',
         id: 'gestionnaires',
         header: 'Tags gestionnaire',
         flex: 3,
@@ -88,7 +88,7 @@ export default function ManageUsers() {
             <ChipAutoComplete
               options={tagsOptions}
               defaultOption={defaultTagChipOption}
-              value={info.getValue<string[]>()}
+              value={info.row.original.gestionnaires ?? []}
               onChange={(newGestionnaires) => {
                 updateUser(info.row.original.id, {
                   gestionnaires: newGestionnaires,
