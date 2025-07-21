@@ -13,17 +13,27 @@ const assignmentRuleSchema = z.object({
   search_pattern: z
     .string()
     .min(1, 'Le motif de recherche est obligatoire')
-    .refine(
-      (value) => validateExpression(value.trim()).isValid,
-      (value) => ({ message: `Expression invalide: ${validateExpression(value.trim()).error}` })
-    ),
+    .superRefine((value, ctx) => {
+      const validation = validateExpression(value.trim());
+      if (!validation.isValid) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Expression invalide: ${validation.error}`,
+        });
+      }
+    }),
   result: z
     .string()
     .min(1, 'Le résultat est obligatoire')
-    .refine(
-      (value) => validateResult(value.trim()).isValid,
-      (value) => ({ message: `Format de résultat invalide: ${validateResult(value.trim()).error}` })
-    ),
+    .superRefine((value, ctx) => {
+      const validation = validateResult(value.trim());
+      if (!validation.isValid) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Format de résultat invalide: ${validation.error}`,
+        });
+      }
+    }),
   active: z.boolean(),
 });
 
