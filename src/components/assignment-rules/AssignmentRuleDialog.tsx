@@ -102,8 +102,13 @@ const AssignmentRuleDialog = ({ open, onOpenChange, rule, onSubmit }: Assignment
             selector={(state) => state.values.search_pattern}
             children={(searchPatternValue) => (
               <>
-                <ExpressionValidator expression={searchPatternValue || ''} />
-                <ExpressionTester expression={searchPatternValue || ''} />
+                <ExpressionValidator expression={searchPatternValue} />
+                <ExpressionTester
+                  expression={searchPatternValue || ''}
+                  onPropertySelect={(property) => {
+                    form.setFieldValue('search_pattern', `${searchPatternValue} ${property}`);
+                  }}
+                />
               </>
             )}
           />

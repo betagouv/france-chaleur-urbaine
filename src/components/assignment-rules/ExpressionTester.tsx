@@ -269,10 +269,6 @@ const ExpressionTester = ({ expression, className, onPropertySelect }: Expressio
     );
   };
 
-  if (!expression.trim()) {
-    return null;
-  }
-
   return (
     <div className={cx('mt-3 p-3 bg-gray-50 border rounded', className)}>
       <div className="text-sm font-medium mb-2">Tester l'expression</div>
