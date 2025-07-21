@@ -563,7 +563,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
       .executeTakeFirst(),
   ]);
 
-  const [departement, region, epci, ept] = await Promise.all([
+  const [departement, region, epci, ept, metropoleNameTag] = await Promise.all([
     kdb
       .selectFrom('ign_departements')
       .select(['nom', 'insee_dep'])
@@ -591,9 +591,9 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
       .where('membres', '@>', sql<any>`jsonb_build_array(jsonb_build_object('code', ${sql.lit(commune.insee_com)}))`)
       .limit(1)
       .executeTakeFirst(),
-  ]);
 
-  const metropoleNameTag = await findMetropoleNameTagByCity(commune.insee_com!);
+    findMetropoleNameTagByCity(commune.insee_com!),
+  ]);
 
   const determineEligibilityResult = async (): Promise<EligibilityResult> => {
     const tagsDistanceThreshold = 500; // m
