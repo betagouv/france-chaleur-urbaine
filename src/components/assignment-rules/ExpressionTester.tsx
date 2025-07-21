@@ -7,6 +7,34 @@ import { testExpression } from '@/utils/expression-parser';
 export type ExpressionTesterProps = {
   expression: string;
   className?: string;
+  onPropertySelect?: (property: string) => void;
+};
+
+// Fonction pour aplatir un objet JSON en propriétés avec chemins
+const flattenObject = (
+  obj: any,
+  prefix = '',
+  result: { path: string; value: any; type: string }[] = []
+): { path: string; value: any; type: string }[] => {
+  for (const key in obj) {
+    if (Object.hasOwn(obj, key)) {
+      const value = obj[key];
+      const path = prefix ? `${prefix}.${key}` : key;
+
+      if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
+        // Objet : continuer la récursion sans ajouter l'objet lui-même
+        flattenObject(value, path, result);
+      } else if (Array.isArray(value)) {
+        // Tableau : ajouter la propriété
+        result.push({ path, value, type: 'array' });
+      } else {
+        // Valeur primitive
+        const type = typeof value;
+        result.push({ path, value, type });
+      }
+    }
+  }
+  return result;
 };
 
 // Données d'éligibilité par défaut pour les tests
@@ -79,22 +107,23 @@ const getDefaultEligibilityData = () => ({
   },
 });
 
-const ExpressionTester = ({ expression, className }: ExpressionTesterProps) => {
-  const [isJsonMode, setIsJsonMode] = useState(false);
+const ExpressionTester = ({ expression, className, onPropertySelect }: ExpressionTesterProps) => {
+  const [mode, setMode] = useState<'properties' | 'simple' | 'json'>('properties');
   const [jsonData, setJsonData] = useState<string>(JSON.stringify(getDefaultEligibilityData(), null, 2));
   const [testTags, setTestTags] = useState<string>('ENGIE,ENGIE_IDF,DALKIA');
   const [testResult, setTestResult] = useState<{ isValid: boolean; error?: string; result?: boolean } | null>(null);
   const [jsonError, setJsonError] = useState<string | null>(null);
+  const [searchFilter, setSearchFilter] = useState<string>('');
 
   const getCurrentEligibilityData = () => {
-    if (isJsonMode) {
+    if (mode === 'json') {
       try {
         return JSON.parse(jsonData);
       } catch (error) {
         throw new Error(`JSON invalide: ${error instanceof Error ? error.message : 'Format incorrect'}`);
       }
     } else {
-      // Mode simple : modification des tags uniquement
+      // Mode simple ou propriétés : modification des tags uniquement
       const tags = testTags
         .split(',')
         .map((v) => v.trim())
@@ -104,6 +133,22 @@ const ExpressionTester = ({ expression, className }: ExpressionTesterProps) => {
         ...getDefaultEligibilityData(),
         tags,
       };
+    }
+  };
+
+  const getFilteredProperties = () => {
+    try {
+      const eligibilityData = getCurrentEligibilityData();
+      const flattened = flattenObject(eligibilityData);
+
+      if (!searchFilter.trim()) {
+        return flattened;
+      }
+
+      const filter = searchFilter.toLowerCase();
+      return flattened.filter((prop) => prop.path.toLowerCase().includes(filter) || String(prop.value).toLowerCase().includes(filter));
+    } catch (error) {
+      return [];
     }
   };
 
@@ -129,10 +174,11 @@ const ExpressionTester = ({ expression, className }: ExpressionTesterProps) => {
     setJsonData(JSON.stringify(getDefaultEligibilityData(), null, 2));
     setTestResult(null);
     setJsonError(null);
+    setSearchFilter('');
   };
 
-  const handleModeToggle = () => {
-    if (!isJsonMode) {
+  const handleModeChange = (newMode: 'properties' | 'simple' | 'json') => {
+    if (newMode === 'json' && mode !== 'json') {
       // Passage en mode JSON : inclure les tags actuels
       try {
         const currentData = getCurrentEligibilityData();
@@ -141,7 +187,7 @@ const ExpressionTester = ({ expression, className }: ExpressionTesterProps) => {
         // Garder le JSON actuel en cas d'erreur
       }
     }
-    setIsJsonMode(!isJsonMode);
+    setMode(newMode);
     setJsonError(null);
     setTestResult(null);
   };
@@ -150,6 +196,42 @@ const ExpressionTester = ({ expression, className }: ExpressionTesterProps) => {
     setJsonData(value);
     setJsonError(null);
     setTestResult(null);
+  };
+
+  const handlePropertyClick = (property: string) => {
+    if (onPropertySelect) {
+      onPropertySelect(property);
+    }
+  };
+
+  const formatValue = (value: any): string => {
+    if (Array.isArray(value)) {
+      return `[${value.join(', ')}]`;
+    }
+    if (typeof value === 'object' && value !== null) {
+      return '{...}';
+    }
+    if (typeof value === 'string') {
+      return `"${value}"`;
+    }
+    return String(value);
+  };
+
+  const getTypeColor = (type: string): string => {
+    switch (type) {
+      case 'string':
+        return 'text-green-600';
+      case 'number':
+        return 'text-blue-600';
+      case 'boolean':
+        return 'text-purple-600';
+      case 'array':
+        return 'text-orange-600';
+      case 'object':
+        return 'text-gray-600';
+      default:
+        return 'text-gray-500';
+    }
   };
 
   const renderResult = (): ReactNode => {
@@ -198,16 +280,53 @@ const ExpressionTester = ({ expression, className }: ExpressionTesterProps) => {
       <div className="space-y-3">
         {/* Sélecteur de mode */}
         <div className="flex gap-2">
-          <Button size="small" priority={!isJsonMode ? 'primary' : 'secondary'} onClick={() => !isJsonMode || handleModeToggle()}>
+          <Button size="small" priority={mode === 'properties' ? 'primary' : 'secondary'} onClick={() => handleModeChange('properties')}>
+            Propriétés
+          </Button>
+          <Button size="small" priority={mode === 'simple' ? 'primary' : 'secondary'} onClick={() => handleModeChange('simple')}>
             Mode simple
           </Button>
-          <Button size="small" priority={isJsonMode ? 'primary' : 'secondary'} onClick={() => isJsonMode || handleModeToggle()}>
+          <Button size="small" priority={mode === 'json' ? 'primary' : 'secondary'} onClick={() => handleModeChange('json')}>
             Mode JSON
           </Button>
         </div>
 
         {/* Interface selon le mode */}
-        {isJsonMode ? (
+        {mode === 'properties' ? (
+          <div>
+            <div className="mb-2">
+              <input
+                type="text"
+                value={searchFilter}
+                onChange={(e) => setSearchFilter(e.target.value)}
+                placeholder="Rechercher dans les propriétés..."
+                className="w-full px-2 py-1 text-sm border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <div className="border rounded max-h-48 overflow-y-auto bg-white">
+              <div className="text-xs text-gray-500 p-2 border-b bg-gray-50">Cliquez sur une propriété pour l'ajouter à votre règle</div>
+              {getFilteredProperties().map((prop, index) => (
+                <div
+                  key={index}
+                  onClick={() => handlePropertyClick(prop.path)}
+                  className="p-2 hover:bg-blue-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+                >
+                  <div className="flex justify-between items-start">
+                    <span className="font-mono text-sm text-blue-700 flex-1">{prop.path}</span>
+                    <span className={cx('text-xs ml-2', getTypeColor(prop.type))}>{prop.type}</span>
+                  </div>
+                  <div className="text-xs text-gray-600 mt-1 font-mono">{formatValue(prop.value)}</div>
+                </div>
+              ))}
+              {getFilteredProperties().length === 0 && (
+                <div className="p-4 text-center text-gray-500 text-sm">Aucune propriété trouvée</div>
+              )}
+            </div>
+
+            <div className="text-xs text-gray-500 mt-1">Test avec données par défaut : Créteil (94), type "dans_pdp", distance 0m.</div>
+          </div>
+        ) : mode === 'json' ? (
           <div>
             <label className="block text-xs text-gray-600 mb-1">Données d'éligibilité (JSON)</label>
             <textarea
