@@ -444,7 +444,7 @@ function DemandesAdmin(): React.ReactElement {
         enableSorting: false,
       },
     ],
-    [updateDemand, tagsOptions]
+    [updateDemand, tagsOptions, assignmentRulesResultsOptions]
   );
 
   const onFeatureClick = useCallback(
