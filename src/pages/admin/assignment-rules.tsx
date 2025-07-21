@@ -1,7 +1,6 @@
 import { useState } from 'react';
 
-import CreateAssignmentRuleDialog from '@/components/assignment-rules/CreateAssignmentRuleDialog';
-import EditAssignmentRuleDialog from '@/components/assignment-rules/EditAssignmentRuleDialog';
+import AssignmentRuleDialog from '@/components/assignment-rules/AssignmentRuleDialog';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
@@ -27,8 +26,7 @@ export default function ManageAssignmentRules() {
     delete: deleteCrud,
   } = useCrud<AssignmentRulesResponse>('/api/admin/assignment-rules');
 
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isRuleDialogOpen, setIsRuleDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [editingRule, setEditingRule] = useState<AssignmentRule | null>(null);
   const [deletingRule, setDeletingRule] = useState<AssignmentRule | null>(null);
@@ -83,7 +81,7 @@ export default function ManageAssignmentRules() {
             title="Modifier la règle"
             onClick={() => {
               setEditingRule(row.original);
-              setIsEditDialogOpen(true);
+              setIsRuleDialogOpen(true);
             }}
           />
           <Button
@@ -117,7 +115,14 @@ export default function ManageAssignmentRules() {
           <Heading as="h1" color="blue-france">
             Gestion des règles dynamiques
           </Heading>
-          <Button onClick={() => setIsCreateDialogOpen(true)}>Ajouter une règle</Button>
+          <Button
+            onClick={() => {
+              setEditingRule(null);
+              setIsRuleDialogOpen(true);
+            }}
+          >
+            Ajouter une règle
+          </Button>
         </div>
 
         <CallOut title="Règles dynamiques" size="sm">
@@ -223,20 +228,21 @@ export default function ManageAssignmentRules() {
         />
       </Box>
 
-      <CreateAssignmentRuleDialog
-        open={isCreateDialogOpen}
-        onOpenChange={setIsCreateDialogOpen}
-        onCreate={async (data) => {
-          await create(data);
+      <AssignmentRuleDialog
+        open={isRuleDialogOpen}
+        onOpenChange={(open) => {
+          setIsRuleDialogOpen(open);
+          if (!open) {
+            setEditingRule(null);
+          }
         }}
-      />
-
-      <EditAssignmentRuleDialog
-        open={isEditDialogOpen}
-        onOpenChange={setIsEditDialogOpen}
         rule={editingRule}
-        onUpdate={async (id, data) => {
-          await updateCrud(id, data);
+        onSubmit={async (ruleData) => {
+          if (editingRule) {
+            await updateCrud(editingRule.id, ruleData);
+          } else {
+            await create(ruleData);
+          }
         }}
       />
 
