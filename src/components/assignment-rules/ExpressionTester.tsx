@@ -306,13 +306,13 @@ const ExpressionTester = ({ expression, className, onPropertySelect }: Expressio
                 <div
                   key={index}
                   onClick={() => handlePropertyClick(prop.path)}
-                  className="p-2 hover:bg-blue-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+                  className="px-2 py-1 hover:bg-blue-50 cursor-pointer border-b border-gray-100 last:border-b-0"
                 >
-                  <div className="flex justify-between items-start">
-                    <span className="font-mono text-sm text-blue-700 flex-1">{prop.path}</span>
-                    <span className={cx('text-xs ml-2', getTypeColor(prop.type))}>{prop.type}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-sm text-blue-700 flex-1 truncate">{prop.path}</span>
+                    <span className="text-xs text-gray-500">{formatValue(prop.value)}</span>
+                    <span className={cx('text-xs px-1 rounded', getTypeColor(prop.type))}>{prop.type}</span>
                   </div>
-                  <div className="text-xs text-gray-600 mt-1 font-mono">{formatValue(prop.value)}</div>
                 </div>
               ))}
               {getFilteredProperties().length === 0 && (
