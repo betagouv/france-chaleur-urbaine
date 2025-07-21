@@ -1,13 +1,16 @@
 // Types pour l'AST (Abstract Syntax Tree)
 export type ASTNode =
-  | { type: 'tag'; value: string; hasWildcard: boolean }
+  | { type: 'condition'; field: string; value: string; hasWildcard: boolean }
   | { type: 'not'; operand: ASTNode }
   | { type: 'and'; left: ASTNode; right: ASTNode }
   | { type: 'or'; left: ASTNode; right: ASTNode };
 
+// Types pour les résultats
+export type ResultAction = { type: 'tag'; value: string } | { type: 'affecte'; value: string };
+
 // Token types pour le lexer
 type Token =
-  | { type: 'tag'; value: string; hasWildcard: boolean }
+  | { type: 'condition'; field: string; value: string; hasWildcard: boolean }
   | { type: 'operator'; value: '&&' | '||' | '!' }
   | { type: 'paren'; value: '(' | ')' }
   | { type: 'whitespace' };
@@ -96,34 +99,48 @@ function tokenize(expression: string): Token[] {
       continue;
     }
 
-    // Tags (chaînes entre guillemets)
-    if (char === '"') {
-      let tag = '';
-      current++; // Consommer le guillemet ouvrant
+    // Conditions (field:"value")
+    if (/[a-zA-Z_]/.test(char)) {
+      let field = '';
 
-      while (current < expression.length && expression[current] !== '"') {
-        tag += expression[current];
+      // Lire le nom du champ (peut contenir des points pour les propriétés imbriquées)
+      while (current < expression.length && /[a-zA-Z0-9_.]/.test(expression[current])) {
+        field += expression[current];
         current++;
       }
 
-      if (current >= expression.length) {
-        throw new Error(`Guillemet fermant manquant pour le tag: ${tag}`);
-      }
+      // Vérifier qu'on a bien ':'
+      if (current < expression.length && expression[current] === ':') {
+        current++; // Consommer ':'
 
-      current++; // Consommer le guillemet fermant
-      tokens.push({ type: 'tag', value: tag, hasWildcard: tag.includes('*') });
-      continue;
-    }
+        // Vérifier qu'on a bien '"'
+        if (current < expression.length && expression[current] === '"') {
+          current++; // Consommer le guillemet ouvrant
+          let value = '';
 
-    // Tags sans guillemets (séquence de caractères non-espace, non-opérateur, non-parenthèse)
-    if (![' ', '\t', '\n', '(', ')', '!', '&', '|', '"'].includes(char)) {
-      let tag = '';
-      while (current < expression.length && ![' ', '\t', '\n', '(', ')', '!', '&', '|', '"'].includes(expression[current])) {
-        tag += expression[current];
-        current++;
+          while (current < expression.length && expression[current] !== '"') {
+            value += expression[current];
+            current++;
+          }
+
+          if (current >= expression.length) {
+            throw new Error(`Guillemet fermant manquant pour la condition: ${field}:"${value}`);
+          }
+
+          current++; // Consommer le guillemet fermant
+          tokens.push({
+            type: 'condition',
+            field,
+            value,
+            hasWildcard: value.includes('*'),
+          });
+          continue;
+        } else {
+          throw new Error(`Valeur manquante pour le champ: ${field}. Format attendu: ${field}:"valeur"`);
+        }
+      } else {
+        throw new Error(`Caractère ':' manquant après le champ: ${field}. Format attendu: ${field}:"valeur"`);
       }
-      tokens.push({ type: 'tag', value: tag, hasWildcard: tag.includes('*') });
-      continue;
     }
 
     // Caractère non reconnu
@@ -135,9 +152,6 @@ function tokenize(expression: string): Token[] {
 
 /**
  * Parser récursif pour construire l'AST
- * Utilise la grammaire: expression -> term ('||' term)*
- *                      term -> factor ('&&' factor)*
- *                      factor -> '!' factor | '(' expression ')' | tag
  */
 function parseExpression(tokens: Token[], index: { value: number }): ASTNode {
   let left = parseTerm(tokens, index);
@@ -188,10 +202,15 @@ function parseFactor(tokens: Token[], index: { value: number }): ASTNode {
     return expression;
   }
 
-  if (token.type === 'tag') {
-    const tagToken = token as any;
-    index.value++; // Consommer le tag
-    return { type: 'tag', value: tagToken.value, hasWildcard: tagToken.hasWildcard };
+  if (token.type === 'condition') {
+    const conditionToken = token as any;
+    index.value++; // Consommer la condition
+    return {
+      type: 'condition',
+      field: conditionToken.field,
+      value: conditionToken.value,
+      hasWildcard: conditionToken.hasWildcard,
+    };
   }
 
   throw new Error(`Token inattendu: ${token.type} à la position ${index.value}`);
@@ -217,27 +236,100 @@ export function parseExpressionToAST(expression: string): ASTNode {
 }
 
 /**
- * Évalue un AST sur une liste de valeurs
+ * Parse une string de résultat en actions
  */
-export function evaluateAST(ast: ASTNode, values: string[]): boolean {
+export function parseResultActions(result: string): ResultAction[] {
+  const actions: ResultAction[] = [];
+
+  // Regex pour matcher tag:"value" ou affecte:"value"
+  const regex = /(tag|affecte):"([^"]+)"/g;
+  let match;
+
+  while ((match = regex.exec(result)) !== null) {
+    const [, type, value] = match;
+    if (type === 'tag' || type === 'affecte') {
+      actions.push({ type, value });
+    }
+  }
+
+  if (actions.length === 0) {
+    throw new Error(`Format de résultat invalide: ${result}. Format attendu: tag:"valeur" ou affecte:"valeur"`);
+  }
+
+  return actions;
+}
+
+/**
+ * Récupère une valeur dans un objet via un chemin (ex: "commune.nom")
+ */
+function getValueByPath(obj: any, path: string): any {
+  return path.split('.').reduce((current, key) => {
+    if (current === null || current === undefined) return undefined;
+    return current[key];
+  }, obj);
+}
+
+/**
+ * Évalue un AST sur les données d'éligibilité détaillées
+ */
+export function evaluateAST(ast: ASTNode, eligibilityData: any): boolean {
   switch (ast.type) {
-    case 'tag':
-      if (ast.hasWildcard) {
-        // Utiliser la correspondance avec wildcard
-        return values.some((value) => matchesWildcard(ast.value, value));
-      } else {
-        // Correspondance exacte (comportement original)
-        return values.includes(ast.value);
+    case 'condition': {
+      // Mapper 'tag' vers 'tags' dans les données
+      const fieldPath = ast.field === 'tag' ? 'tags' : ast.field;
+      const value = getValueByPath(eligibilityData, fieldPath);
+
+      if (value === undefined || value === null) {
+        return false;
       }
 
+      // Cas général pour tous les tableaux (contains)
+      if (Array.isArray(value)) {
+        if (ast.hasWildcard) {
+          return value.some((item: string) => matchesWildcard(ast.value, String(item)));
+        } else {
+          return value.some((item: any) => String(item) === ast.value);
+        }
+      }
+
+      // Pour les comparaisons numériques avec opérateurs (<, >, <=, >=, =)
+      if (typeof value === 'number' && (ast.value.startsWith('<') || ast.value.startsWith('>') || ast.value.startsWith('='))) {
+        const operator = ast.value.charAt(0);
+        const comparisonValue = parseFloat(ast.value.substring(1));
+
+        if (isNaN(comparisonValue)) {
+          return false;
+        }
+
+        switch (operator) {
+          case '<':
+            return value < comparisonValue;
+          case '>':
+            return value > comparisonValue;
+          case '=':
+            return value === comparisonValue;
+          default:
+            return false;
+        }
+      }
+
+      // Cas général (string, number, etc.)
+      const stringValue = String(value);
+      if (ast.hasWildcard) {
+        return matchesWildcard(ast.value, stringValue);
+      } else {
+        return stringValue === ast.value;
+      }
+    }
+
     case 'not':
-      return !evaluateAST(ast.operand, values);
+      return !evaluateAST(ast.operand, eligibilityData);
 
     case 'and':
-      return evaluateAST(ast.left, values) && evaluateAST(ast.right, values);
+      return evaluateAST(ast.left, eligibilityData) && evaluateAST(ast.right, eligibilityData);
 
     case 'or':
-      return evaluateAST(ast.left, values) || evaluateAST(ast.right, values);
+      return evaluateAST(ast.left, eligibilityData) || evaluateAST(ast.right, eligibilityData);
 
     default:
       throw new Error(`Type de nœud AST non supporté: ${(ast as any).type}`);
@@ -260,16 +352,31 @@ export function validateExpression(expression: string): { isValid: boolean; erro
 }
 
 /**
- * Teste une expression sur une liste de valeurs
+ * Valide une string de résultat
  */
-export function testExpression(expression: string, values: string[]): { isValid: boolean; error?: string; result?: boolean } {
+export function validateResult(result: string): { isValid: boolean; error?: string; actions?: ResultAction[] } {
+  try {
+    const actions = parseResultActions(result);
+    return { isValid: true, actions };
+  } catch (error) {
+    return {
+      isValid: false,
+      error: error instanceof Error ? error.message : 'Erreur de validation inconnue',
+    };
+  }
+}
+
+/**
+ * Teste une expression sur des données d'éligibilité
+ */
+export function testExpression(expression: string, eligibilityData: any): { isValid: boolean; error?: string; result?: boolean } {
   const validation = validateExpression(expression);
   if (!validation.isValid) {
     return validation;
   }
 
   try {
-    const result = evaluateAST(validation.ast!, values);
+    const result = evaluateAST(validation.ast!, eligibilityData);
     return { isValid: true, result };
   } catch (error) {
     return {

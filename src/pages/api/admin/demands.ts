@@ -2,10 +2,10 @@ import { AirtableDB } from '@/server/db/airtable';
 import { kdb } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
 import { handleRouteErrors } from '@/server/helpers/server';
-import { getDetailedEligibilityStatus } from '@/server/services/addresseInformation';
+import { type DetailedEligibilityStatus, getDetailedEligibilityStatus } from '@/server/services/addresseInformation';
 import { findMetropoleNameTagByCity } from '@/server/services/epci';
 import { type AdminDemand } from '@/types/Summary/Demand';
-import { evaluateAST, parseExpressionToAST } from '@/utils/expression-parser';
+import { evaluateAST, parseExpressionToAST, parseResultActions } from '@/utils/expression-parser';
 
 const GET = async () => {
   let startTime = Date.now();
@@ -21,19 +21,19 @@ const GET = async () => {
     duration: Date.now() - startTime,
   });
 
+  // Récupére et parse les règles et leurs résultats
   const assignmentRules = await kdb
     .selectFrom('assignment_rules')
     .select(['search_pattern', 'result'])
-    .where('active', 'is', true)
+    .where('active', '=', true)
     .orderBy('search_pattern', 'asc')
     .execute();
-  // Parse les règles une seule fois
   const parsedRules = assignmentRules
     .map((rule) => {
       try {
         return {
           ast: parseExpressionToAST(rule.search_pattern),
-          result: rule.result,
+          actions: parseResultActions(rule.result),
           search_pattern: rule.search_pattern,
         };
       } catch (error) {
@@ -46,12 +46,26 @@ const GET = async () => {
     })
     .filter((rule): rule is NonNullable<typeof rule> => rule !== null);
 
-  function getRecommendedAssignment(tags: string[]) {
+  function applyParsedRulesToEligibilityData(eligibilityData: DetailedEligibilityStatus): {
+    tags: string[];
+    assignment: string | null;
+  } {
+    const appliedTags: string[] = [];
+    let assignment: string | null = null;
+
     for (const rule of parsedRules) {
       try {
-        const matches = evaluateAST(rule.ast, tags);
+        const matches = evaluateAST(rule.ast, eligibilityData);
+
         if (matches) {
-          return rule.result;
+          for (const action of rule.actions) {
+            if (action.type === 'tag') {
+              appliedTags.push(action.value);
+            } else if (action.type === 'affecte' && assignment === null) {
+              // prend la première affectation trouvée
+              assignment = action.value;
+            }
+          }
         }
       } catch (error) {
         logger.warn('Failed to evaluate assignment rule', {
@@ -60,7 +74,11 @@ const GET = async () => {
         });
       }
     }
-    return 'Non affecté';
+
+    return {
+      tags: [...new Set(appliedTags)],
+      assignment,
+    };
   }
 
   startTime = Date.now();
@@ -84,6 +102,8 @@ const GET = async () => {
         const detailedEligibilityStatus = await getDetailedEligibilityStatus(demand.Latitude, demand.Longitude);
         const metropoleName = await findMetropoleNameTagByCity(detailedEligibilityStatus.commune.insee_com!);
 
+        const rulesResult = applyParsedRulesToEligibilityData(detailedEligibilityStatus);
+
         const recommendedTags = [
           {
             type: 'ville',
@@ -101,13 +121,18 @@ const GET = async () => {
             type: 'reseau' as const,
             name: tag,
           })),
+          // Ajouter les tags issus des règles
+          ...rulesResult.tags.map((tag) => ({
+            type: 'gestionnaire' as const,
+            name: tag,
+          })),
         ] satisfies AdminDemand['recommendedTags'];
 
         return {
           ...demand,
           detailedEligibilityStatus,
           recommendedTags,
-          recommendedAssignment: getRecommendedAssignment(recommendedTags.map((tag) => tag.name)),
+          recommendedAssignment: rulesResult.assignment ?? 'Non affecté',
         } satisfies AdminDemand;
       })
     )
