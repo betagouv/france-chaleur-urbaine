@@ -6,14 +6,15 @@ type ModalSimpleProps = PropsWithChildren<
   {
     title: string;
     size?: React.ComponentProps<typeof Modal>['size'];
+    loading?: boolean;
   } & (
     | { trigger: React.ReactNode; open?: never; onOpenChange?: never }
-    | { trigger?: never; open: boolean; onOpenChange: (open: boolean) => void }
+    | { trigger?: never; open: boolean; onOpenChange: (open: boolean) => any }
   )
 >;
 
 type ModalContextType = {
-  closeModal: () => void;
+  closeModal: () => any;
 } | null;
 
 const ModalContext = createContext<ModalContextType>(null);
