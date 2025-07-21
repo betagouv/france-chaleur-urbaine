@@ -78,7 +78,7 @@
     "@sentry/nextjs": "^7.117.0",
     "@sentry/node": "7.119.2",
     "@socialgouv/matomo-next": "^1.9.0",
-    "@tanstack/react-form": "^1.12.2",
+    "@tanstack/react-form": "^1.14.1",
     "@tanstack/react-query": "^5.66.9",
     "@tanstack/react-table": "^8.20.6",
     "@tanstack/react-virtual": "^3.11.2",
