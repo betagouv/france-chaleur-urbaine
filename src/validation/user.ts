@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { userRolesInscription } from '@/types/enum/UserRole';
+import { userRoles, userRolesInscription } from '@/types/enum/UserRole';
 
 export const structureTypes = {
   bureau_etudes: "Bureau d'études",
@@ -63,3 +63,22 @@ export type IdentitySchema = z.infer<typeof zIdentitySchema>;
 export const registrationSchema = z.intersection(zCredentialsSchema, zIdentitySchema);
 
 export type RegistrationSchema = z.infer<typeof registrationSchema>;
+
+export const adminUserFormSchema = z.object({
+  status: z.enum(['pending_email_confirmation', 'valid']),
+  active: z.boolean(),
+  email: z.string().email(),
+  first_name: z.string().optional().nullable(),
+  last_name: z.string().optional().nullable(),
+  gestionnaires: z.array(z.string()).optional(),
+  structure_name: z.string().optional().nullable(),
+  structure_other: z.string().optional().nullable(),
+  structure_type: z.string().optional().nullable(),
+  optin_at: z.boolean().nullable(),
+  phone: z.string().optional().nullable(),
+  receive_new_demands: z.boolean(),
+  receive_old_demands: z.boolean(),
+  role: z.enum(userRoles),
+});
+
+export type AdminUserFormData = z.infer<typeof adminUserFormSchema>;

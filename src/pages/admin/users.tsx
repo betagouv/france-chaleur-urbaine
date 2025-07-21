@@ -1,6 +1,8 @@
 import { type SortingState } from '@tanstack/react-table';
+import { useQueryState } from 'nuqs';
 import { useCallback, useMemo } from 'react';
 
+import UserForm from '@/components/Admin/UserForm';
 import UserRoleBadge from '@/components/Admin/UserRoleBadge';
 import SimplePage from '@/components/shared/page/SimplePage';
 import AsyncButton from '@/components/ui/AsyncButton';
@@ -9,17 +11,18 @@ import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
 import ChipAutoComplete from '@/components/ui/ChipAutoComplete';
 import Heading from '@/components/ui/Heading';
+import ModalSimple from '@/components/ui/ModalSimple';
 import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
 import Text from '@/components/ui/Text';
-import { useFetch } from '@/hooks/useApi';
-import { type UserUpdate } from '@/pages/api/admin/users/[userId]';
+import { useFetch, usePutId } from '@/hooks/useApi';
 import { withAuthentication } from '@/server/authentication';
 import { useServices } from '@/services';
-import { toastErrors } from '@/services/notification';
+import { notify, toastErrors } from '@/services/notification';
 import { defaultTagChipOption, useFCUTags } from '@/services/tags';
 import { type UserRole } from '@/types/enum/UserRole';
-import { postFetchJSON, putFetchJSON } from '@/utils/network';
+import { postFetchJSON } from '@/utils/network';
 import { compareFrenchStrings } from '@/utils/strings';
+import { type AdminUserFormData } from '@/validation/user';
 
 import { type AdminManageUserItem } from '../api/admin/users';
 import { type AdminUsersStats } from '../api/admin/users-stats';
@@ -42,17 +45,24 @@ const initialSortingState: SortingState = [
 
 export default function ManageUsers() {
   const { exportService } = useServices();
+  const [userId, setUserId] = useQueryState('userId');
 
   const { data: usersStats } = useFetch<AdminUsersStats>('/api/admin/users-stats');
-  const { data: users, isLoading, refetch: refetchUsers } = useFetch<AdminManageUserItem[]>('/api/admin/users');
+  const { data: users, isLoading } = useFetch<AdminManageUserItem[]>('/api/admin/users');
+  const { mutateAsync: mutateUser, isLoading: isMutatingUser } = usePutId(({ id }) => `/api/admin/users/${id}`, {
+    invalidate: ['/api/admin/users'],
+  });
   const { tagsOptions } = useFCUTags();
 
   const updateUser = useCallback(
-    toastErrors(async (userId: string, userUpdate: Partial<UserUpdate>) => {
-      await putFetchJSON(`/api/admin/users/${userId}`, userUpdate);
-      refetchUsers();
+    toastErrors(async (userId: string, userUpdate: Partial<AdminUserFormData>) => {
+      await mutateUser(userId, userUpdate);
+      if (userId) {
+        setUserId(null);
+      }
+      notify('success', 'Utilisateur mis à jour');
     }),
-    []
+    [userId, setUserId]
   );
 
   const columns: ColumnDef<AdminManageUserItem>[] = useMemo(
@@ -63,8 +73,15 @@ export default function ManageUsers() {
         sortingFn: (rowA, rowB) => compareFrenchStrings(rowA.original.email, rowB.original.email),
         cell: (info) => (
           <div>
-            {info.getValue<string>()}
-            {info.row.original.from_api && <Badge type="api_user" className="mt-1" />}
+            <div>
+              {info.getValue<string>()}
+              {!!info.row.original.from_api && <Badge type="api_user" className="mt-1" />}
+            </div>
+            {(info.row.original.first_name || info.row.original.last_name) && (
+              <div className="text-sm text-faded font-bold">
+                {[info.row.original.first_name, info.row.original.last_name].filter(Boolean).join(' ')}
+              </div>
+            )}
           </div>
         ),
         flex: 2.5,
@@ -134,22 +151,45 @@ export default function ManageUsers() {
         id: 'actions',
         header: 'Actions',
         cell: ({ row }) => (
-          <Button
-            size="small"
-            priority="tertiary"
-            iconId="ri-spy-line"
-            title="Permet d'adopter temporairement le même profil (rôle et tags gestionnaires) que cet utilisateur sans usurper son identité."
-            onClick={() => startImpersonation(row.original)}
-          />
+          <>
+            <Button
+              size="small"
+              priority="tertiary"
+              iconId="ri-edit-line"
+              title="Modifier l'utilisateur"
+              onClick={() => setUserId(row.original.id)}
+            />
+            <Button
+              size="small"
+              priority="tertiary"
+              iconId="ri-spy-line"
+              variant="info"
+              title="Permet d'adopter temporairement le même profil (rôle et tags gestionnaires) que cet utilisateur sans usurper son identité."
+              onClick={() => startImpersonation(row.original)}
+            />
+          </>
         ),
-        width: '70px',
+        width: '80px',
       },
     ],
     [tagsOptions]
   );
 
+  const editingUser = useMemo(() => users?.find((u) => u.id === userId), [users, userId]);
+
   return (
     <SimplePage title="Gestion des utilisateurs" mode="authenticated">
+      <ModalSimple open={!!userId} onOpenChange={() => setUserId(null)} title="Modifier un utilisateur" loading={isLoading}>
+        {isLoading ? null : (
+          <>
+            {editingUser ? (
+              <UserForm loading={isMutatingUser} onSubmit={(data) => updateUser(userId as string, data)} user={editingUser} />
+            ) : (
+              <span>Utilisateur non trouvé</span>
+            )}
+          </>
+        )}
+      </ModalSimple>
       <Box py="4w" className="fr-container">
         <Heading as="h1" color="blue-france">
           Gestion des utilisateurs
