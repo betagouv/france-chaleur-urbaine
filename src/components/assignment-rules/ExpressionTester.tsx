@@ -296,11 +296,11 @@ const ExpressionTester = ({ expression, className, onPropertySelect }: Expressio
                 value={searchFilter}
                 onChange={(e) => setSearchFilter(e.target.value)}
                 placeholder="Rechercher dans les propriétés..."
-                className="w-full px-2 py-1 text-sm border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="fr-input w-full px-2 py-1 text-sm border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
-            <div className="border rounded max-h-48 overflow-y-auto bg-white">
+            <div className="border rounded max-h-80 overflow-y-auto bg-white">
               <div className="text-xs text-gray-500 p-2 border-b bg-gray-50">Cliquez sur une propriété pour l'ajouter à votre règle</div>
               {getFilteredProperties().map((prop, index) => (
                 <div
