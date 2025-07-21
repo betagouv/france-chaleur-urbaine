@@ -50,11 +50,11 @@ function convertSearchPatternToExtendedSyntax(pattern: string): string {
   // On cherche les chaînes entre guillemets ou les mots sans guillemets (avec support Unicode)
   return pattern.replace(/"([^"]+)"|([A-Za-z\u00C0-\u017F0-9_*-]+)/g, (match, quoted, unquoted) => {
     if (quoted) {
-      // Chaîne entre guillemets : "value" -> tag:"value"
-      return `tag:"${quoted}"`;
+      // Chaîne entre guillemets : "value" -> tags:"value"
+      return `tags:"${quoted}"`;
     } else if (unquoted && !['&&', '||', '!'].includes(unquoted)) {
-      // Mot sans guillemets qui n'est pas un opérateur : value -> tag:"value"
-      return `tag:"${unquoted}"`;
+      // Mot sans guillemets qui n'est pas un opérateur : value -> tags:"value"
+      return `tags:"${unquoted}"`;
     }
     return match;
   });
@@ -62,9 +62,9 @@ function convertSearchPatternToExtendedSyntax(pattern: string): string {
 
 /**
  * Reconvertit un search_pattern du nouveau format vers l'ancien format
- * Ex: tag:"ENGIE*" && tag:"SIPPEREC" -> "ENGIE*" && "SIPPEREC"
+ * Ex: tag:"ENGIE*" && tags:"SIPPEREC" -> "ENGIE*" && "SIPPEREC"
  */
 function revertSearchPatternFromExtendedSyntax(pattern: string): string {
   // Remplace tag:"value" par "value"
-  return pattern.replace(/tag:"([^"]+)"/g, '"$1"');
+  return pattern.replace(/tags:"([^"]+)"/g, '"$1"');
 }
