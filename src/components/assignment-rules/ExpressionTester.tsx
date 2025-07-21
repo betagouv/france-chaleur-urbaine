@@ -259,8 +259,9 @@ const ExpressionTester = ({ expression, className, onPropertySelect }: Expressio
 
     return (
       <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded">
-        <div className="text-sm text-blue-800">
-          <strong>Résultat :</strong> {testResult.result ? 'Vrai' : 'Faux'}
+        <div className="text-sm">
+          <strong>Résultat :</strong>{' '}
+          <span className={testResult.result ? 'text-green-600' : 'text-red-600'}>{testResult.result ? 'Vrai' : 'Faux'}</span>
         </div>
         <div className="text-xs text-blue-600 mt-1">
           L'expression est valide et retourne {testResult.result ? 'true' : 'false'} avec les données de test.
