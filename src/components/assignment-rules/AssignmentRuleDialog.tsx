@@ -50,7 +50,7 @@ const AssignmentRuleDialog = ({ open, onOpenChange, rule, onSubmit }: Assignment
   const isEditing = !!rule;
   const title = isEditing ? 'Modifier la règle' : 'Ajouter une règle';
 
-  const { Form, Field, Submit, form, useValue } = useForm({
+  const { Form, Field, Submit, form } = useForm({
     schema: assignmentRuleSchema,
     defaultValues: {
       search_pattern: rule?.search_pattern ?? '',
@@ -85,8 +85,6 @@ const AssignmentRuleDialog = ({ open, onOpenChange, rule, onSubmit }: Assignment
     onOpenChange(false);
   };
 
-  const searchPatternValue = useValue<string>('search_pattern');
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange} title={title} size="lg">
       <Form>
@@ -100,8 +98,15 @@ const AssignmentRuleDialog = ({ open, onOpenChange, rule, onSubmit }: Assignment
             }}
           />
 
-          <ExpressionValidator expression={searchPatternValue || ''} />
-          <ExpressionTester expression={searchPatternValue || ''} />
+          <form.Subscribe
+            selector={(state) => state.values.search_pattern}
+            children={(searchPatternValue) => (
+              <>
+                <ExpressionValidator expression={searchPatternValue || ''} />
+                <ExpressionTester expression={searchPatternValue || ''} />
+              </>
+            )}
+          />
 
           <Field.Input
             name="result"
