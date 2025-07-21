@@ -135,10 +135,16 @@ export default function ManageAssignmentRules() {
               <h4 className="font-medium mb-2">Conditions disponibles :</h4>
               <ul className="mb-0 text-sm space-y-1 [&_code]:bg-zinc-300 [&_code]:px-1 [&_code]:py-[0.1rem] [&_code]:rounded-sm [&_code]:font-mono">
                 <li>
-                  <code>tag:"pattern"</code> : cherche dans les tags gestionnaires
+                  <code>tags:"pattern"</code> : cherche dans les tags gestionnaires
+                </li>
+                <li>
+                  <code>communes:"Paris"</code> : cherche dans les communes du réseau
                 </li>
                 <li>
                   <code>commune.nom:"Paris"</code> : nom de la commune
+                </li>
+                <li>
+                  <code>commune.insee_dep:"75"</code> : code département de la commune
                 </li>
                 <li>
                   <code>departement.nom:"Val-de-Marne"</code> : nom du département
@@ -159,10 +165,13 @@ export default function ManageAssignmentRules() {
                   <code>type:"dans_pdp"</code> : type d'éligibilité
                 </li>
                 <li>
-                  <code>distance:"0"</code> : distance au réseau
+                  <code>distance:"&lt;100"</code> : distance au réseau (avec opérateurs &lt;, &gt;, =)
                 </li>
                 <li>
                   <code>nom:"Réseau*"</code> : nom du réseau
+                </li>
+                <li>
+                  <code>reseauDeChaleur.tags:"Dalkia*"</code> : tags du réseau de chaleur
                 </li>
               </ul>
             </div>
@@ -201,7 +210,7 @@ export default function ManageAssignmentRules() {
                   <code>commune.insee_dep:"94"</code> → <code>tag:"Val-de-Marne"</code>
                 </li>
                 <li>
-                  <code>tag:"ENGIE*" && type:"dans_pdp"</code> → <code>affecte:"ENGIE"</code>
+                  <code>tags:"ENGIE*" && type:"dans_pdp"</code> → <code>affecte:"ENGIE"</code>
                 </li>
                 <li>
                   <code>commune.nom:"Paris" || commune.nom:"Lyon"</code> → <code>tag:"Grande_Ville"</code>

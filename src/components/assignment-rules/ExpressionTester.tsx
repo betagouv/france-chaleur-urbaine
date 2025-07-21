@@ -354,7 +354,7 @@ const ExpressionTester = ({ expression, className, onPropertySelect }: Expressio
             <div className="text-xs text-gray-500 mt-1">
               Test avec données par défaut : Créteil (94), type "dans_pdp", distance 0m.
               <br />
-              Vous pouvez tester des conditions comme : tag:"ENGIE*", departement.nom:"Val-de-Marne", region.nom:"Île-de-France",
+              Vous pouvez tester des conditions comme : tags:"ENGIE*", departement.nom:"Val-de-Marne", region.nom:"Île-de-France",
               epci.nom:"Métropole du Grand Paris", type:"dans_pdp", distance:&lt;100
             </div>
           </div>

@@ -92,9 +92,9 @@ const AssignmentRuleDialog = ({ open, onOpenChange, rule, onSubmit }: Assignment
           <Field.Input
             name="search_pattern"
             label="Motif de recherche"
-            hintText='Ex: tag:"ENGIE*" && commune.insee_dep:"94" || commune.nom:"Paris"'
+            hintText='Ex: tags:"ENGIE*" && commune.insee_dep:"94" || commune.nom:"Paris"'
             nativeInputProps={{
-              placeholder: 'Ex: tag:"ENGIE*" && commune.insee_dep:"94"',
+              placeholder: 'Ex: tags:"ENGIE*" && commune.insee_dep:"94"',
             }}
           />
 

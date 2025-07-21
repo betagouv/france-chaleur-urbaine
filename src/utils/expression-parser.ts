@@ -283,21 +283,12 @@ export function evaluateAST(ast: ASTNode, eligibilityData: any): boolean {
         return false;
       }
 
-      // Cas spécial pour les tags (array)
-      if (ast.field === 'tag' && Array.isArray(value)) {
+      // Cas général pour tous les tableaux (contains)
+      if (Array.isArray(value)) {
         if (ast.hasWildcard) {
-          return value.some((tag: string) => matchesWildcard(ast.value, tag));
+          return value.some((item: string) => matchesWildcard(ast.value, String(item)));
         } else {
-          return value.includes(ast.value);
-        }
-      }
-
-      // Cas spécial pour les communes (array)
-      if (ast.field === 'communes' && Array.isArray(value)) {
-        if (ast.hasWildcard) {
-          return value.some((commune: string) => matchesWildcard(ast.value, commune));
-        } else {
-          return value.includes(ast.value);
+          return value.some((item: any) => String(item) === ast.value);
         }
       }
 
