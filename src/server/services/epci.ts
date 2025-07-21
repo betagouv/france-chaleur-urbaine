@@ -13,6 +13,7 @@ export const findMetropoleNameTagByCity = async (codeInsee: string): Promise<str
     .selectFrom('epci')
     .selectAll()
     .where('membres', '@>', sql<any>`jsonb_build_array(jsonb_build_object('code', ${sql.lit(codeInsee)}))`)
+    .limit(1)
     .executeTakeFirst();
 
   const tagName = epci ? `${epci.membres[0].nom}M` : null;

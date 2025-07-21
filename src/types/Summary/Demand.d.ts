@@ -60,10 +60,7 @@ export type AdminDemand = Demand & {
   // airtable fields
   'Relance à activer'?: boolean;
 
-  recommendedTags: {
-    name: string;
-    type: 'ville' | 'metropole' | 'gestionnaire' | 'reseau';
-  }[];
+  recommendedTags: string[];
   recommendedAssignment: string;
   detailedEligibilityStatus: DetailedEligibilityStatus;
   networkTags: string[];

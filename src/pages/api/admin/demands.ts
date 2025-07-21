@@ -3,7 +3,6 @@ import { kdb } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
 import { handleRouteErrors } from '@/server/helpers/server';
 import { type DetailedEligibilityStatus, getDetailedEligibilityStatus } from '@/server/services/addresseInformation';
-import { findMetropoleNameTagByCity } from '@/server/services/epci';
 import { type AdminDemand } from '@/types/Summary/Demand';
 import { evaluateAST, parseExpressionToAST, parseResultActions } from '@/utils/expression-parser';
 
@@ -100,38 +99,12 @@ const GET = async () => {
         }
 
         const detailedEligibilityStatus = await getDetailedEligibilityStatus(demand.Latitude, demand.Longitude);
-        const metropoleName = await findMetropoleNameTagByCity(detailedEligibilityStatus.commune.insee_com!);
-
         const rulesResult = applyParsedRulesToEligibilityData(detailedEligibilityStatus);
-
-        const recommendedTags = [
-          {
-            type: 'ville',
-            name: demand.Ville,
-          },
-          ...(metropoleName
-            ? [
-                {
-                  type: 'metropole' as const,
-                  name: metropoleName,
-                },
-              ]
-            : []),
-          ...detailedEligibilityStatus.tags.map((tag) => ({
-            type: 'reseau' as const,
-            name: tag,
-          })),
-          // Ajouter les tags issus des règles
-          ...rulesResult.tags.map((tag) => ({
-            type: 'gestionnaire' as const,
-            name: tag,
-          })),
-        ] satisfies AdminDemand['recommendedTags'];
 
         return {
           ...demand,
           detailedEligibilityStatus,
-          recommendedTags,
+          recommendedTags: [...detailedEligibilityStatus.tags, ...rulesResult.tags],
           recommendedAssignment: rulesResult.assignment ?? 'Non affecté',
         } satisfies AdminDemand;
       })

@@ -173,7 +173,7 @@ function DemandesAdmin(): React.ReactElement {
       return;
     }
     const currentTags = arrayEquals(selectedDemand.Gestionnaires ?? [], [defaultEmptyStringValue])
-      ? selectedDemand.recommendedTags.map((tag) => tag.name)
+      ? selectedDemand.recommendedTags
       : (selectedDemand.Gestionnaires ?? []);
 
     updateDemand(selectedDemandId, {
@@ -216,7 +216,7 @@ function DemandesAdmin(): React.ReactElement {
                   });
                 }}
                 multiple
-                suggestedValue={demand.recommendedTags.map((tag) => tag.name)}
+                suggestedValue={demand.recommendedTags}
               />
               <div className="flex items-center gap-2" onClick={stopPropagation} onDoubleClick={stopPropagation}>
                 <EligibilityHelpDialog detailedEligibilityStatus={demand.detailedEligibilityStatus}>
@@ -281,7 +281,7 @@ function DemandesAdmin(): React.ReactElement {
 
                   // assign recommended tags, assignment, and network infos if not are set
                   Gestionnaires: arrayEquals(demand.Gestionnaires ?? [], [defaultEmptyStringValue])
-                    ? demand.recommendedTags.map((tag) => tag.name)
+                    ? demand.recommendedTags
                     : (demand.Gestionnaires ?? []),
                   'Affecté à': demand['Affecté à'] === defaultEmptyStringValue ? demand.recommendedAssignment : demand['Affecté à'],
                   'Nom réseau':

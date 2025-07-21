@@ -2,6 +2,7 @@ import XLSX from 'xlsx';
 
 import db from '@/server/db';
 import { kdb, sql, type ZoneDeDeveloppementPrioritaire } from '@/server/db/kysely';
+import { findMetropoleNameTagByCity } from '@/server/services/epci';
 import { getNetworkEligibilityDistances } from '@/services/eligibility';
 import { EXPORT_FORMAT } from '@/types/enum/ExportFormat';
 import { type CityNetwork, type HeatNetwork } from '@/types/HeatNetworksResponse';
@@ -592,6 +593,8 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
       .executeTakeFirst(),
   ]);
 
+  const metropoleNameTag = await findMetropoleNameTagByCity(commune.insee_com!);
+
   const determineEligibilityResult = async (): Promise<EligibilityResult> => {
     const tagsDistanceThreshold = 500; // m
     const eligibilityDistances = getNetworkEligibilityDistances(reseauDeChaleur?.['Identifiant reseau'] ?? '');
@@ -720,6 +723,11 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
 
   return {
     ...eligibilityResult,
+    tags: [
+      commune.nom!, // ville
+      ...(metropoleNameTag ? [metropoleNameTag] : []), // métropole
+      ...eligibilityResult.tags, // tags réseau + résultats des règles
+    ],
     commune,
     departement,
     region,
