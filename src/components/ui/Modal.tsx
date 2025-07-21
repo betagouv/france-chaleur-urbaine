@@ -86,9 +86,9 @@ const Modal = ({ modal, size, onOpen, loading, onClose, open, lazy = false, chil
   return createPortal(
     <StyledModal customSize={size === 'custom'} onClick={preventPropagationClick}>
       <modal.Component size={size !== 'custom' ? size : undefined} {...props}>
+        {loading && <Loader size="lg" variant="section" />}
         {(!lazy || isOpened) && children}
       </modal.Component>
-      {loading && <Loader size="lg" />}
     </StyledModal>,
     document.body
   );

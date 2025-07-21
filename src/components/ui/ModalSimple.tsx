@@ -31,7 +31,7 @@ export const useModal = () => {
  * This lazy loading approach improves initial page performance by not rendering unused modals.
  * The modal is created when the trigger is clicked and destroyed when closed.
  */
-const ModalSimple = ({ children, trigger, title, size = 'medium', open: controlledOpen, onOpenChange }: ModalSimpleProps) => {
+const ModalSimple = ({ children, trigger, title, size = 'medium', open: controlledOpen, onOpenChange, loading }: ModalSimpleProps) => {
   const [isOpen, setOpen] = useState(!!controlledOpen);
   const isControlled = controlledOpen !== undefined;
 
@@ -71,7 +71,7 @@ const ModalSimple = ({ children, trigger, title, size = 'medium', open: controll
     <>
       {trigger && <div onClickCapture={handleTriggerClick}>{trigger}</div>}
       {modal && (
-        <Modal modal={modal} title={title} size={size} open={isOpen} onClose={handleClose}>
+        <Modal modal={modal} title={title} size={size} open={isOpen} onClose={handleClose} loading={loading}>
           <ModalContext.Provider value={contextValue}>{children}</ModalContext.Provider>
         </Modal>
       )}
