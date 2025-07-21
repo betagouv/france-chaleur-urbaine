@@ -18,7 +18,7 @@ const assignmentRuleSchema = z.object({
       if (!validation.isValid) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: `Expression invalide: ${validation.error}`,
+          message: validation.error,
         });
       }
     }),
@@ -30,7 +30,7 @@ const assignmentRuleSchema = z.object({
       if (!validation.isValid) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: `Format de résultat invalide: ${validation.error}`,
+          message: validation.error,
         });
       }
     }),
