@@ -1,6 +1,7 @@
 # Table of contents
 
 * [Page vide à laisser (articles à insérer en dessous)](README.md)
+* [Visualisez les périmètres d'exploitation des opérations de géothermie profonde](visualisez-les-perimetres-dexploitation-des-operations-de-geothermie-profonde.md)
 * [Retrouvez les replays et présentations de nos webinaires](retrouvez-les-replays-et-presentations-de-nos-webinaires.md)
 * [1.5 million d'adresses testées par des professionnels](1.5-million-dadresses-testees-par-des-professionnels.md)
 * [900 tracés de réseaux de chaleur recensés sur la carte !](900-traces-de-reseaux-de-chaleur-recenses-sur-la-carte.md)
