@@ -1,6 +1,8 @@
 # Table of contents
 
 * [Page vide à laisser (articles à insérer en dessous)](README.md)
+* [Retrouvez les replays et présentations de nos webinaires](retrouvez-les-replays-et-presentations-de-nos-webinaires.md)
+* [1.5 million d'adresses testées par des professionnels](1.5-million-dadresses-testees-par-des-professionnels.md)
 * [900 tracés de réseaux de chaleur recensés sur la carte !](900-traces-de-reseaux-de-chaleur-recenses-sur-la-carte.md)
 * [Les réseaux de froid : quelques exemples](les-reseaux-de-froid-quelques-exemples.md)
 * [Les réseaux de froid : comment ça marche ?](les-reseaux-de-froid-comment-ca-marche.md)
