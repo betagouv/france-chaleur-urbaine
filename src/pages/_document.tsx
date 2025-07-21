@@ -1,7 +1,7 @@
 import Document, { type DocumentContext, Head, Html, Main, NextScript } from 'next/document';
 import { ServerStyleSheet } from 'styled-components';
 
-import { augmentDocumentWithEmotionCache, dsfrDocumentApi } from './_app';
+import { dsfrDocumentApi } from './_app';
 
 const { augmentDocumentForDsfr } = dsfrDocumentApi;
 
@@ -52,5 +52,3 @@ class MyDocument extends Document {
 export default MyDocument;
 
 augmentDocumentForDsfr(MyDocument);
-
-augmentDocumentWithEmotionCache(Document);
