@@ -48,7 +48,7 @@ export function registerNetworkCommands(parentProgram: Command) {
         logger.error("Variables d'environnement TRELLO_API_KEY et TRELLO_TOKEN requises");
         logger.info('📋 Configuration requise :');
         logger.info(`1. Allez sur ${TRELLO_POWER_UP_URL}`);
-        logger.info('2. Cliquez sur "Token"');
+        logger.info('2. Cliquez sur lien "Token" dans le texte à droite de "API key"');
         logger.info('3. Connectez votre compte');
         logger.info('4. Ajoutez ces variables à votre fichier .env.local :');
         logger.info('   TRELLO_API_KEY=votre_api_key');
