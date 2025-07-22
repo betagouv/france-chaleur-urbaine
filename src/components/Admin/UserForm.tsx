@@ -1,20 +1,24 @@
 import useForm from '@/components/form/react-form/useForm';
 import Badge from '@/components/ui/Badge';
 import Tag from '@/components/ui/Tag';
-import { type AdminManageUserItem } from '@/pages/api/admin/users';
+import { type UsersResponse } from '@/pages/api/admin/users/[[...slug]]';
 import { userRoles } from '@/types/enum/UserRole';
 import cx from '@/utils/cx';
-import { type AdminUserFormData, adminUserFormSchema, structureTypes } from '@/validation/user';
+import { createUserAdminSchema, structureTypes, updateUserAdminSchema } from '@/validation/user';
+
+export type OnCreate = (data: UsersResponse['createInput']) => Promise<void> | void;
+export type OnUpdate = (data: UsersResponse['updateInput']) => Promise<void> | void;
 
 type UserFormProps = {
-  user?: AdminManageUserItem;
-  onSubmit: (data: Partial<AdminUserFormData>) => Promise<void> | void;
   loading?: boolean;
+  user?: UsersResponse['listItem'];
+  onSubmit: OnCreate | OnUpdate;
 };
 
 const UserForm = ({ user, onSubmit, loading }: UserFormProps) => {
+  const isNew = !user?.id;
   const { Form, Field, Submit, FieldWrapper, useValue } = useForm({
-    schema: adminUserFormSchema,
+    schema: isNew ? createUserAdminSchema : updateUserAdminSchema,
     defaultValues: {
       status: user?.status || 'pending_email_confirmation',
       role: user?.role || 'particulier',
@@ -30,7 +34,7 @@ const UserForm = ({ user, onSubmit, loading }: UserFormProps) => {
       structure_type: user?.structure_type ?? '',
       structure_other: user?.structure_other ?? '',
     },
-    onSubmit: async ({ value }) => onSubmit(value),
+    onSubmit: async ({ value }) => onSubmit(value as any),
   });
 
   const roleOptions = userRoles.map((role) => ({
@@ -60,13 +64,15 @@ const UserForm = ({ user, onSubmit, loading }: UserFormProps) => {
             label={
               <>
                 Compte actif
-                <Tag className="ml-2" variant={user?.status === 'valid' ? 'success' : 'warning'} outline size="sm">
-                  {user?.status === 'valid' ? 'Validé' : 'En attente de confirmation email'}
-                </Tag>
+                {!isNew && (
+                  <Tag className="ml-2" variant={user?.status === 'valid' ? 'success' : 'warning'} outline size="sm">
+                    {user?.status === 'valid' ? 'Validé' : 'En attente de confirmation email'}
+                  </Tag>
+                )}
               </>
             }
           />
-          <Field.Checkbox name="optin_at" label={<>A accepté les conditions d'utilisation</>} />
+          {!isNew && <Field.Checkbox name="optin_at" label={<>A accepté les conditions d'utilisation</>} />}
         </FieldWrapper>
         <FieldWrapper>
           <Field.Checkbox name="receive_new_demands" label="Reçois les nouvelles demandes" />
@@ -134,16 +140,18 @@ const UserForm = ({ user, onSubmit, loading }: UserFormProps) => {
         <div className="flex justify-end">
           <Submit loading={loading}>{user ? 'Mettre à jour' : 'Créer'} l'utilisateur</Submit>
         </div>
-        <FieldWrapper>
-          <label className="fr-label">
-            ID
-            <span className="text-gray-500 mx-2">(Lecture seule)</span>
-            {user?.from_api && <Badge type="api_user" />}
-          </label>
-          <div className="fr-input-group">
-            <input type="text" value={user?.id?.toString() || ''} disabled className="fr-input" />
-          </div>
-        </FieldWrapper>
+        {!isNew && (
+          <FieldWrapper>
+            <label className="fr-label">
+              ID
+              <span className="text-gray-500 mx-2">(Lecture seule)</span>
+              {user?.from_api && <Badge type="api_user" />}
+            </label>
+            <div className="fr-input-group">
+              <input type="text" value={user?.id?.toString() || ''} disabled className="fr-input" />
+            </div>
+          </FieldWrapper>
+        )}
       </div>
     </Form>
   );

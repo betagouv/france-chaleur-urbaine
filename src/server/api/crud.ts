@@ -41,11 +41,15 @@ type ApiResponseCommon =
     };
 
 type ApiResponseQueryGet<T extends DBObject> = ApiResponseCommon & {
-  item?: T;
+  item?: T & {
+    id?: string;
+  };
 };
 
 type ApiResponseQueryList<T extends DBObject> = ApiResponseCommon & {
-  items?: T[];
+  items?: (T & {
+    id?: string;
+  })[];
   pageInfo?: {
     count: number;
     page?: number;
@@ -170,7 +174,7 @@ const crud = <T extends keyof DB, Validation extends CrudValidation>({
     const context = buildContext(req);
 
     if (!id && handlers.create) {
-      const item = await handlers.create(req.body, context);
+      const item = await handlers.create(req.body as Parameters<typeof handlers.create>[0], context);
       return {
         status: 'success',
         item,
@@ -187,7 +191,7 @@ const crud = <T extends keyof DB, Validation extends CrudValidation>({
     const context = buildContext(req);
 
     if (id && handlers.update) {
-      const item = await handlers.update(id, req.body, {}, context);
+      const item = await handlers.update(id, req.body as Parameters<typeof handlers.update>[0], {}, context);
       return {
         status: 'success',
         item,
@@ -223,6 +227,7 @@ const crud = <T extends keyof DB, Validation extends CrudValidation>({
     GET_ONE,
     _types: null as unknown as {
       list: Awaited<ReturnType<typeof GET_LIST>>;
+      listItem: NonNullable<Awaited<ReturnType<typeof GET_LIST>>['items']>[number];
       get: Awaited<ReturnType<typeof GET_ONE>>;
       create: Awaited<ReturnType<typeof POST>>;
       update: Awaited<ReturnType<typeof PUT>>;

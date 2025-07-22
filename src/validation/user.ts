@@ -64,13 +64,10 @@ export const registrationSchema = z.intersection(zCredentialsSchema, zIdentitySc
 
 export type RegistrationSchema = z.infer<typeof registrationSchema>;
 
-export const adminUserFormSchema = z.object({
-  status: z.enum(['pending_email_confirmation', 'valid']),
-  active: z.boolean(),
+export const createUserAdminSchema = z.object({
   email: z.string().email(),
   first_name: z.string().optional().nullable(),
   last_name: z.string().optional().nullable(),
-  gestionnaires: z.array(z.string()).optional(),
   structure_name: z.string().optional().nullable(),
   structure_other: z.string().optional().nullable(),
   structure_type: z.string().optional().nullable(),
@@ -81,4 +78,21 @@ export const adminUserFormSchema = z.object({
   role: z.enum(userRoles),
 });
 
-export type AdminUserFormData = z.infer<typeof adminUserFormSchema>;
+export const updateUserAdminSchema = z
+  .object({
+    status: z.enum(['pending_email_confirmation', 'valid']),
+    active: z.boolean(),
+    email: z.string().email().optional(),
+    first_name: z.string().optional(),
+    last_name: z.string().optional(),
+    gestionnaires: z.array(z.string()).optional(),
+    structure_name: z.string().optional(),
+    structure_other: z.string().optional(),
+    structure_type: z.string().optional(),
+    optin_at: z.boolean().optional(),
+    phone: z.string().optional(),
+    receive_new_demands: z.boolean().optional(),
+    receive_old_demands: z.boolean().optional(),
+    role: z.enum(userRoles).optional(),
+  })
+  .partial();

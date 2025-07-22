@@ -14,7 +14,9 @@ import Heading from '@/components/ui/Heading';
 import ModalSimple from '@/components/ui/ModalSimple';
 import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
 import Text from '@/components/ui/Text';
-import { useFetch, usePutId } from '@/hooks/useApi';
+import { useFetch } from '@/hooks/useApi';
+import useCrud from '@/hooks/useCrud';
+import { type UsersResponse } from '@/pages/api/admin/users/[[...slug]]';
 import { withAuthentication } from '@/server/authentication';
 import { useServices } from '@/services';
 import { notify, toastErrors } from '@/services/notification';
@@ -22,9 +24,7 @@ import { defaultTagChipOption, useFCUTags } from '@/services/tags';
 import { type UserRole } from '@/types/enum/UserRole';
 import { postFetchJSON } from '@/utils/network';
 import { compareFrenchStrings } from '@/utils/strings';
-import { type AdminUserFormData } from '@/validation/user';
 
-import { type AdminManageUserItem } from '../api/admin/users';
 import { type AdminUsersStats } from '../api/admin/users-stats';
 
 const startImpersonation = toastErrors(async (impersonateConfig: { role: UserRole; gestionnaires?: string[] | null }) => {
@@ -48,24 +48,39 @@ export default function ManageUsers() {
   const [userId, setUserId] = useQueryState('userId');
 
   const { data: usersStats } = useFetch<AdminUsersStats>('/api/admin/users-stats');
-  const { data: users, isLoading } = useFetch<AdminManageUserItem[]>('/api/admin/users');
-  const { mutateAsync: mutateUser, isLoading: isMutatingUser } = usePutId(({ id }) => `/api/admin/users/${id}`, {
-    invalidate: ['/api/admin/users'],
-  });
   const { tagsOptions } = useFCUTags();
 
-  const updateUser = useCallback(
-    toastErrors(async (userId: string, userUpdate: Partial<AdminUserFormData>) => {
-      await mutateUser(userId, userUpdate);
-      if (userId) {
-        setUserId(null);
-      }
-      notify('success', 'Utilisateur mis à jour');
-    }),
-    [userId, setUserId]
+  const {
+    items: users,
+    isLoading,
+    create: createUser,
+    update: updateUser,
+    isUpdatingId: updatingUserId,
+    isCreating: creatingUser,
+  } = useCrud<UsersResponse>('/api/admin/users');
+
+  const handleUpdateUser = useCallback(
+    (userId: string) =>
+      toastErrors(async (userUpdate: UsersResponse['updateInput']) => {
+        await updateUser(userId, userUpdate);
+        if (userId) {
+          setUserId(null);
+        }
+        notify('success', 'Utilisateur mis à jour');
+      }),
+    [setUserId]
   );
 
-  const columns: ColumnDef<AdminManageUserItem>[] = useMemo(
+  const handleCreateUser = useCallback(
+    toastErrors(async (userCreate: UsersResponse['createInput']) => {
+      await createUser(userCreate);
+      setUserId(null);
+      notify('success', 'Utilisateur créé');
+    }),
+    [setUserId]
+  );
+
+  const columns: ColumnDef<UsersResponse['listItem']>[] = useMemo(
     () => [
       {
         accessorKey: 'email',
@@ -107,9 +122,7 @@ export default function ManageUsers() {
               defaultOption={defaultTagChipOption}
               value={info.row.original.gestionnaires ?? []}
               onChange={(newGestionnaires) => {
-                updateUser(info.row.original.id, {
-                  gestionnaires: newGestionnaires,
-                });
+                handleUpdateUser(info.row.original.id)({ gestionnaires: newGestionnaires });
               }}
               multiple
             />
@@ -175,7 +188,7 @@ export default function ManageUsers() {
     [tagsOptions]
   );
 
-  const editingUser = useMemo(() => users?.find((u) => u.id === userId), [users, userId]);
+  const editingUser = useMemo(() => users?.find((u) => u.id === (userId as string)), [users, userId]);
 
   return (
     <SimplePage title="Gestion des utilisateurs" mode="authenticated">
@@ -183,7 +196,9 @@ export default function ManageUsers() {
         {isLoading ? null : (
           <>
             {editingUser ? (
-              <UserForm loading={isMutatingUser} onSubmit={(data) => updateUser(userId as string, data)} user={editingUser} />
+              <UserForm loading={!!updatingUserId} onSubmit={handleUpdateUser(userId as string)} user={editingUser} />
+            ) : userId === 'new' ? (
+              <UserForm loading={creatingUser} onSubmit={handleCreateUser} />
             ) : (
               <span>Utilisateur non trouvé</span>
             )}
@@ -191,9 +206,12 @@ export default function ManageUsers() {
         )}
       </ModalSimple>
       <Box py="4w" className="fr-container">
-        <Heading as="h1" color="blue-france">
-          Gestion des utilisateurs
-        </Heading>
+        <header className="flex justify-between items-center">
+          <Heading as="h1" color="blue-france">
+            Gestion des utilisateurs
+          </Heading>
+          <Button size="small" priority="secondary" iconId="ri-add-line" title="Ajouter un utilisateur" onClick={() => setUserId('new')} />
+        </header>
 
         <Heading as="h2" color="blue-france">
           Statistiques d'activité
