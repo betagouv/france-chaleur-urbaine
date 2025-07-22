@@ -93,13 +93,15 @@ export const convertLambert93GeoJSONToWGS84 = async (geojson: any): Promise<any>
   return {
     ...geojson,
     crs: { type: 'name', properties: { name: 'EPSG:4326' } },
-    features: geojson.features.map((feature: any) => ({
-      ...feature,
-      geometry: {
-        ...feature.geometry,
-        coordinates: convertCoordinates(feature.geometry.coordinates, 'EPSG:2154', 'EPSG:4326'),
-      },
-    })),
+    features: geojson.features
+      .filter((feature: any) => feature.geometry !== null)
+      .map((feature: any) => ({
+        ...feature,
+        geometry: {
+          ...feature.geometry,
+          coordinates: convertCoordinates(feature.geometry.coordinates, 'EPSG:2154', 'EPSG:4326'),
+        },
+      })),
   };
 };
 
