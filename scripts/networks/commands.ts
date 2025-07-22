@@ -179,8 +179,15 @@ export function registerNetworkCommands(parentProgram: Command) {
                   { title: 'Réseau de froid (rdf)', value: 'rdf' },
                   { title: 'Plan de développement (pdp)', value: 'pdp' },
                   { title: 'Réseau futur (futur)', value: 'futur' },
+                  { title: 'Passer', value: 'skip' },
                 ],
               });
+              if (entityType === 'skip') {
+                logger.info('👌 Action passée');
+                fs.unlinkSync(localPath);
+                logger.debug('🧹 Fichier temporaire supprimé');
+                continue;
+              }
 
               const { action } = await prompts({
                 type: 'select',
