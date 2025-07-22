@@ -21,7 +21,7 @@ fi
 psql="docker run -i --rm --network host postgis/postgis:16-3.5-alpine psql"
 
 ogr2ogr() {
-  docker run -i --rm -v "$opendata_dir":/output "$GDAL_IMAGE" ogr2ogr "$@"
+  docker run -i --rm --network host -v "$opendata_dir":/output "$GDAL_IMAGE" ogr2ogr "$@"
 }
 
 # Création des vues
