@@ -6,7 +6,7 @@ import { z } from 'zod';
 
 import { kdb, sql } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
-import { TrelloService } from '@/services/TrelloService';
+import { type TrelloCard, type TrelloLabel, TrelloService } from '@/services/TrelloService';
 import { readFileGeometry } from '@cli/helpers/geo';
 import { runBash } from '@cli/helpers/shell';
 
@@ -75,9 +75,56 @@ export function registerNetworkCommands(parentProgram: Command) {
 
         logger.info(`\n📋 ${cards.length} carte(s) trouvée(s) dans "${COLUMN_TO_PROCESS}":\n`);
 
-        for (const card of cards.filter((card) => card.attachments.some((attachment) => attachment.fileName.endsWith('.geojson')))) {
+        const getCardPriority = (card: TrelloCard): number => {
+          const labelNames = card.labels.map((label) => label.name);
+          const hasReseauChaleur = labelNames.includes('Réseau chaleur');
+          const hasReseauFroid = labelNames.includes('Réseau froid');
+          const hasReseauConstruction = labelNames.includes('Réseau en construction');
+          const hasPDP = labelNames.includes('PDP');
+          const labelCount = labelNames.length;
+
+          // 1. "Réseau chaleur" (uniquement)
+          if (hasReseauChaleur && labelCount === 1) return 1;
+
+          // 2. "Réseau en construction" (uniquement)
+          if (hasReseauConstruction && labelCount === 1) return 2;
+
+          // 3. "Réseau chaleur" (au moins)
+          if (hasReseauChaleur && labelCount > 1) return 3;
+
+          // 4. "Réseau froid" (au moins)
+          if (hasReseauFroid) return 4;
+
+          // 5. "Réseau en construction" (au moins)
+          if (hasReseauConstruction && labelCount > 1) return 5;
+
+          // 6. "PDP" (au moins)
+          if (hasPDP) return 6;
+
+          return 999;
+        };
+
+        const sortedCards = cards
+          .filter((card) => card.attachments.some((attachment) => attachment.fileName.endsWith('.geojson')))
+          .sort((a, b) => getCardPriority(a) - getCardPriority(b));
+
+        const colorizeLabel = (label: TrelloLabel): string => {
+          const colorMap: Record<string, string> = {
+            green_dark: '\x1b[32m', // réseaux de chaleur
+            blue_dark: '\x1b[34m', // réseaux de froid
+            pink: '\x1b[95m', // réseaux en construction
+            yellow: '\x1b[33m', // PDP
+          };
+          const reset = '\x1b[0m';
+          const color = colorMap[label.color] || '';
+          return `${color}${label.name}${reset}`;
+        };
+
+        logger.info(`🔄 Cartes triées par priorité de labels`);
+
+        for (const card of sortedCards) {
           const name = card.name;
-          const labels = card.labels.map((label) => label.name).join(', ');
+          const labels = card.labels.map(colorizeLabel).join(', ');
           const onlyOneLabel = card.labels.length === 1;
           const suggestedId = onlyOneLabel ? name.match(/ID\s*(?:FCU\s*)?(\d+[CF]?)/)?.[1] : undefined;
           const isIdSNCU = suggestedId?.endsWith('C') || suggestedId?.endsWith('F');
@@ -105,7 +152,8 @@ export function registerNetworkCommands(parentProgram: Command) {
                   : undefined
             : undefined;
           logger.info(`══════════════════════════`);
-          logger.info(`Processing "${name}" (${labels})`);
+          logger.info(labels);
+          logger.info(`# ${name}`);
           logger.info(
             [
               card.desc,
@@ -183,12 +231,12 @@ export function registerNetworkCommands(parentProgram: Command) {
                     throw new Error(`Action non reconnue: ${action}`);
                 }
 
-                logger.info(`🚀 Exécution: ${command}`);
+                logger.debug(`🚀 Exécution: ${command}`);
                 await runBash(command);
-                logger.info('✅ Action terminée avec succès');
+                logger.debug('✅ Action terminée avec succès');
 
                 fs.unlinkSync(localPath);
-                logger.info('🧹 Fichier temporaire supprimé');
+                logger.debug('🧹 Fichier temporaire supprimé');
               }
             } catch (error) {
               logger.error(`❌ Erreur lors du traitement de ${localPath}:`, error);
