@@ -31,6 +31,19 @@ export async function readFileGeometry(fileName: string): Promise<GeometryWithSr
     geom = geom.geometries[0];
   }
 
+  // convert to multi-geometry if needed
+  if (geom.type === 'LineString') {
+    geom = {
+      type: 'MultiLineString',
+      coordinates: [geom.coordinates],
+    };
+  } else if (geom.type === 'Polygon') {
+    geom = {
+      type: 'MultiPolygon',
+      coordinates: [geom.coordinates],
+    };
+  }
+
   const srid = detectSrid(geom);
 
   logger.debug('Geometry type', { type: geom.type, srid });
