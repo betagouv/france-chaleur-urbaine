@@ -12,14 +12,7 @@ import { saveStatsInDB } from '@/server/cron/saveStatsInDB';
 import db from '@/server/db';
 import { kdb, sql } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
-import {
-  type ApiNetwork,
-  createGestionnairesFromAPI,
-  deactivateUsersDeletedInAirtable,
-  syncComptesProFromUsers,
-  syncGestionnairesWithUsers,
-  syncLastConnectionFromUsers,
-} from '@/server/services/airtable';
+import { type ApiNetwork, createGestionnairesFromAPI, syncComptesProFromUsers } from '@/server/services/airtable';
 import { processJobById, processJobsIndefinitely } from '@/server/services/jobs/processor';
 import { type DatabaseSourceId, type DatabaseTileInfo, tilesInfo, zDatabaseSourceId } from '@/server/services/tiles.config';
 import { type ApiAccount } from '@/types/ApiAccount';
@@ -545,32 +538,6 @@ program
   });
 
 program
-  .command('users:sync-from-airtable')
-  .description('Sync users created in Airtable in PostGres.')
-  .action(async () => {
-    if (!process.env.DRY_RUN) {
-      logger.info('');
-      logger.info('USAGE:');
-      logger.info('⚠️ DRY_RUN is not set, use DRY_RUN=<true|false> pnpm cli users:sync-from-airtable');
-      process.exit(1);
-    }
-    await syncGestionnairesWithUsers();
-  });
-
-program
-  .command('users:sync-last-connection-to-airtable')
-  .description('Sync users last connection from PostGres to Airtable.')
-  .action(async () => {
-    if (!process.env.DRY_RUN) {
-      logger.info('');
-      logger.info('USAGE:');
-      logger.info('⚠️ DRY_RUN is not set, use DRY_RUN=<true|false> pnpm cli users:sync-last-connection-to-airtable');
-      process.exit(1);
-    }
-    await syncLastConnectionFromUsers();
-  });
-
-program
   .command('users:sync-comptes-pro-to-airtable')
   .description('Sync users last connection from PostGres to Airtable.')
   .action(async () => {
@@ -581,19 +548,6 @@ program
       process.exit(1);
     }
     await syncComptesProFromUsers();
-  });
-
-program
-  .command('users:deactivate-users-deleted-in-airtable')
-  .description('Deactivate users which have been deleted in Airtable.')
-  .action(async () => {
-    if (!process.env.DRY_RUN) {
-      logger.info('');
-      logger.info('USAGE:');
-      logger.info('⚠️ DRY_RUN is not set, use DRY_RUN=<true|false> pnpm cli users:deactivate-users-deleted-in-airtable');
-      process.exit(1);
-    }
-    await deactivateUsersDeletedInAirtable();
   });
 
 program

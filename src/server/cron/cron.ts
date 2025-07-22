@@ -29,8 +29,6 @@ export function registerCrons() {
   new cron.CronJob({
     cronTime: '00 * * * *', // toutes les heures
     onTick: async () => {
-      launchJob('syncGestionnairesWithUsers');
-      launchJob('syncLastConnectionFromUsers', '1 hour');
       launchJob('syncComptesProFromUsers', '1 hour');
     },
     start: true,
