@@ -13,6 +13,7 @@ import ChipAutoComplete from '@/components/ui/ChipAutoComplete';
 import Heading from '@/components/ui/Heading';
 import ModalSimple from '@/components/ui/ModalSimple';
 import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
+import Tag from '@/components/ui/Tag';
 import Text from '@/components/ui/Text';
 import { useFetch } from '@/hooks/useApi';
 import useCrud from '@/hooks/useCrud';
@@ -22,6 +23,7 @@ import { useServices } from '@/services';
 import { notify, toastErrors } from '@/services/notification';
 import { defaultTagChipOption, useFCUTags } from '@/services/tags';
 import { type UserRole } from '@/types/enum/UserRole';
+import cx from '@/utils/cx';
 import { postFetchJSON } from '@/utils/network';
 import { compareFrenchStrings } from '@/utils/strings';
 
@@ -115,18 +117,45 @@ export default function ManageUsers() {
         id: 'gestionnaires',
         header: 'Tags gestionnaire',
         flex: 3,
-        cell: (info) =>
-          info.row.original.role === 'gestionnaire' && (
-            <ChipAutoComplete
-              options={tagsOptions}
-              defaultOption={defaultTagChipOption}
-              value={info.row.original.gestionnaires ?? []}
-              onChange={(newGestionnaires) => {
-                handleUpdateUser(info.row.original.id)({ gestionnaires: newGestionnaires });
-              }}
-              multiple
-            />
-          ),
+        cell: (info) => {
+          const apiTags = info.row.original.gestionnaires_from_api ?? [];
+          return (
+            <div className="">
+              {info.row.original.role === 'gestionnaire' && (
+                <ChipAutoComplete
+                  options={tagsOptions}
+                  defaultOption={defaultTagChipOption}
+                  value={info.row.original.gestionnaires ?? []}
+                  onChange={(newGestionnaires) => {
+                    handleUpdateUser(info.row.original.id)({ gestionnaires: newGestionnaires });
+                  }}
+                  multiple
+                />
+              )}
+              {(info.row.original.gestionnaires_from_api ?? []).length > 0 && (
+                <details>
+                  <summary className="text-xs block mt-2">Voir les tags de l'API</summary>
+                  <div className="flex flex-wrap gap-1 p-2 border border-dashed border-faded rounded-sm">
+                    {apiTags.map((tagName) => {
+                      const chipOption = tagsOptions.find((option) => option.key === tagName);
+                      return (
+                        <Tag
+                          key={`${tagName}-api`}
+                          dismissible
+                          size="sm"
+                          className={cx(chipOption?.className, 'border-dashed')}
+                          title={chipOption?.title}
+                        >
+                          {chipOption?.label || tagName}
+                        </Tag>
+                      );
+                    })}
+                  </div>
+                </details>
+              )}
+            </div>
+          );
+        },
         sortingFn: (rowA, rowB) => compareFrenchStrings(rowA.original.gestionnaires?.[0], rowB.original.gestionnaires?.[0]),
       },
       {

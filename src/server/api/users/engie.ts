@@ -43,30 +43,28 @@ export const handleData = async (account: ApiAccounts, networks: EngieApiNetwork
     {} as Record<string, Set<string>>
   );
 
-  const existingUsersFromApi = (
-    await kdb
-      .selectFrom('users')
-      .innerJoin('api_accounts', 'users.from_api', 'api_accounts.key')
-      .select(['users.email'])
-      .where('api_accounts.name', '=', account.name)
-      .where('users.active', '=', true)
-      .execute()
-  ).map(({ email }) => email);
+  const existingUsersFromApi = await kdb
+    .selectFrom('users')
+    .innerJoin('api_accounts', 'users.from_api', 'api_accounts.key')
+    .select(['users.email', 'users.gestionnaires'])
+    .where('api_accounts.name', '=', account.name)
+    .where('users.active', '=', true)
+    .execute();
 
   logger.info(`🔍 Found ${existingUsersFromApi.length} users in DB`);
 
   await Promise.all(
     Object.entries(recordsToSync).map(async ([email, tags]) => {
-      const existingEmailIndex = existingUsersFromApi.indexOf(email);
+      const existingEmailIndex = existingUsersFromApi.findIndex((user) => user.email === email);
       if (existingEmailIndex !== -1) {
         existingUsersFromApi.splice(existingEmailIndex, 1);
       }
-
+      const apiTags = Array.from(tags);
       const sanitizedEmail = sanitizeEmail(email);
 
       const user = await kdb
         .selectFrom('users')
-        .select(['id', 'gestionnaires_from_api', 'active'])
+        .select(['id', 'gestionnaires_from_api', 'gestionnaires', 'active'])
         .where('email', '=', sanitizedEmail)
         .executeTakeFirst();
 
@@ -81,8 +79,8 @@ export const handleData = async (account: ApiAccounts, networks: EngieApiNetwork
               active: true,
               structure_name: account.name,
               email: sanitizedEmail,
-              gestionnaires: [],
-              gestionnaires_from_api: Array.from(tags),
+              gestionnaires: apiTags,
+              gestionnaires_from_api: apiTags,
               from_api: account.key,
             },
             {} as any
@@ -93,7 +91,9 @@ export const handleData = async (account: ApiAccounts, networks: EngieApiNetwork
         return;
       }
 
-      if (JSON.stringify(user.gestionnaires_from_api) === JSON.stringify(Array.from(tags)) && user.active === true) {
+      const allTags = [...new Set([...(user.gestionnaires || []), ...apiTags])];
+
+      if (JSON.stringify(user.gestionnaires) === JSON.stringify(allTags) && user.active === true) {
         logger.info(`💤 User ${email} already has the same tags and is active`);
         return;
       }
@@ -103,7 +103,11 @@ export const handleData = async (account: ApiAccounts, networks: EngieApiNetwork
         logger.info(' ✅ Done');
         await kdb
           .updateTable('users')
-          .set({ gestionnaires_from_api: Array.from(tags), active: true })
+          .set({
+            gestionnaires: allTags,
+            gestionnaires_from_api: apiTags,
+            active: true,
+          })
           .where('id', '=', user.id)
           .execute();
       } else {
@@ -115,7 +119,7 @@ export const handleData = async (account: ApiAccounts, networks: EngieApiNetwork
   logger.info(`🔍 Deactivate ${existingUsersFromApi.length} users not in the API`);
 
   await Promise.all(
-    existingUsersFromApi.map(async (email) => {
+    existingUsersFromApi.map(async ({ email }) => {
       logger.info(`🚫 Deactivate user ${email}`);
       if (!clientConfig.dryRun) {
         await kdb.updateTable('users').set({ active: false }).where('email', '=', email).execute();
