@@ -3354,6 +3354,7 @@ export interface Users {
   first_name: string | null;
   from_api: string | null;
   gestionnaires: string[] | null;
+  gestionnaires_from_api: string[] | null;
   id: Generated<string>;
   last_connection: Date | null;
   last_name: string | null;
