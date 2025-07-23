@@ -278,6 +278,12 @@ export default function ManageUsers() {
           columns={columns}
           data={users || []}
           initialSortingState={initialSortingState}
+          columnFilters={[
+            {
+              id: 'active',
+              value: { true: true, false: false },
+            },
+          ]}
           enableGlobalFilter
           controlsLayout="block"
           padding="sm"
