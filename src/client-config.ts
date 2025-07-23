@@ -24,4 +24,5 @@ export const clientConfig = {
   summaryAreaSizeLimit: 5, // km²
   networkInfoFieldMaxCharacters: 700,
   networkSearchMinimumCharactersThreshold: 3,
+  dryRun: envBooleanSchema.default(true).parse(process.env.DRY_RUN),
 };
