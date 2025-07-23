@@ -192,6 +192,7 @@ export default function ManageUsers() {
       {
         id: 'actions',
         header: 'Actions',
+        align: 'right',
         cell: ({ row }) => (
           <>
             <Button
@@ -209,9 +210,25 @@ export default function ManageUsers() {
               title="Permet d'adopter temporairement le même profil (rôle et tags gestionnaires) que cet utilisateur sans usurper son identité."
               onClick={() => startImpersonation(row.original)}
             />
+            <Button
+              size="small"
+              variant="destructive"
+              priority="tertiary"
+              iconId={row.original.active ? 'ri-delete-back-2-line' : 'ri-delete-bin-line'}
+              title={row.original.active ? "Désactiver l'utilisateur" : "Supprimer l'utilisateur"}
+              onClick={() => {
+                if (row.original.active) {
+                  handleUpdateUser(row.original.id)({ active: false });
+                  return;
+                }
+                if (window.confirm('Voulez-vous vraiment supprimer cet utilisateur ? Cette action est irréversible.')) {
+                  alert("Cette fonctionnalité n'est pas encore implémentée, demandez à l'équipe technique");
+                }
+              }}
+            />
           </>
         ),
-        width: '80px',
+        width: '110px',
       },
     ],
     [tagsOptions]
