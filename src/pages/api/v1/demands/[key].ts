@@ -13,7 +13,7 @@ const demands = handleRouteErrors(async (req: NextApiRequest, res: NextApiRespon
     return;
   }
 
-  const demands = await getGestionnairesDemands(account.gestionnaires);
+  const demands = await getGestionnairesDemands(account.gestionnaires || []);
   return demands.map((demand) => ({
     id: demand.id,
     distance: demand['Distance au réseau'],

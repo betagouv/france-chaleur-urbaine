@@ -1,9 +1,8 @@
 import { type NextApiRequest, type NextApiResponse } from 'next';
 
-import db from '@/server/db';
-import { type ApiAccount } from '@/types/ApiAccount';
+import { kdb } from '@/server/db/kysely';
 
-export const apiUser = async (req: NextApiRequest, res: NextApiResponse): Promise<ApiAccount | null> => {
+export const apiUser = async (req: NextApiRequest, res: NextApiResponse) => {
   const { key } = req.query;
 
   if (!key) {
@@ -30,7 +29,7 @@ export const apiUser = async (req: NextApiRequest, res: NextApiResponse): Promis
     return null;
   }
 
-  const account: ApiAccount = await db('api_accounts').where('key', key).first();
+  const account = await kdb.selectFrom('api_accounts').where('key', '=', key).selectAll().executeTakeFirst();
   if (!account || account.token !== bearerToken[1]) {
     res.status(401).json({
       message: 'Please check account key and token',
