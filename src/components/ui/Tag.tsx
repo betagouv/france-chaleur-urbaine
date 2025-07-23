@@ -27,7 +27,7 @@ const tagVariants = cva('', {
     {
       variant: 'success',
       outline: true,
-      class: '!bg-white !text-success border border-success',
+      class: '[&&]:!bg-white [&&]:!text-success border border-success',
     },
     {
       variant: 'warning',
@@ -37,12 +37,12 @@ const tagVariants = cva('', {
     {
       variant: 'error',
       outline: true,
-      class: '!bg-white !text-error border border-error',
+      class: '[&&]:!bg-white [&&]:!text-error border border-error',
     },
     {
       variant: 'info',
       outline: true,
-      class: '!bg-white [&&]:!text-info border border-info',
+      class: '[&&]:!bg-white [&&]:!text-info border border-info',
     },
   ],
   defaultVariants: {
