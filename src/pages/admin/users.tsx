@@ -4,12 +4,12 @@ import { useCallback, useMemo, useState } from 'react';
 
 import UserForm from '@/components/Admin/UserForm';
 import UserRoleBadge from '@/components/Admin/UserRoleBadge';
+import FCUTagAutocomplete from '@/components/form/FCUTagAutocomplete';
 import SimplePage from '@/components/shared/page/SimplePage';
 import AsyncButton from '@/components/ui/AsyncButton';
 import Badge from '@/components/ui/Badge';
 import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
-import ChipAutoComplete from '@/components/ui/ChipAutoComplete';
 import Heading from '@/components/ui/Heading';
 import ModalSimple from '@/components/ui/ModalSimple';
 import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
@@ -20,7 +20,6 @@ import { type UsersResponse } from '@/pages/api/admin/users/[[...slug]]';
 import { withAuthentication } from '@/server/authentication';
 import { useServices } from '@/services';
 import { notify, toastErrors } from '@/services/notification';
-import { defaultTagChipOption, useFCUTags } from '@/services/tags';
 import { type UserRole } from '@/types/enum/UserRole';
 import { postFetchJSON } from '@/utils/network';
 import { compareFrenchStrings } from '@/utils/strings';
@@ -56,7 +55,6 @@ export default function ManageUsers() {
   const [nbUsersFilter, setNbUsersFilter] = useState<number>(0);
 
   const { data: usersStats } = useFetch<AdminUsersStats>('/api/admin/users-stats');
-  const { tagsOptions } = useFCUTags();
 
   const {
     items: users,
@@ -124,25 +122,12 @@ export default function ManageUsers() {
         header: 'Tags gestionnaire',
         flex: 3,
         cell: (info) => {
-          const apiTags = info.row.original.gestionnaires_from_api ?? [];
           return (
             info.row.original.role === 'gestionnaire' && (
-              <ChipAutoComplete
-                options={tagsOptions.map((option) => ({
-                  ...option,
-                  dismissible: !apiTags.includes(option.key),
-                  label: apiTags.includes(option.key) ? (
-                    <span className="flex items-center gap-1">
-                      <span>{option.label}</span>
-                      <Badge type="api_user" size="xs" title="Tag créé par l'API" />
-                    </span>
-                  ) : (
-                    option.label
-                  ),
-                }))}
-                defaultOption={defaultTagChipOption}
+              <FCUTagAutocomplete
+                undismissibles={info.row.original.gestionnaires_from_api ?? []}
                 value={info.row.original.gestionnaires ?? []}
-                onChange={(newGestionnaires) => {
+                onChange={(newGestionnaires: string[]) => {
                   handleUpdateUser(info.row.original.id)({ gestionnaires: newGestionnaires });
                 }}
                 multiple
@@ -225,7 +210,7 @@ export default function ManageUsers() {
         width: '110px',
       },
     ],
-    [tagsOptions]
+    []
   );
 
   const editingUser = useMemo(() => users?.find((u) => u.id === (userId as string)), [users, userId]);

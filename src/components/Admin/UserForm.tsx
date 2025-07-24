@@ -1,3 +1,4 @@
+import FCUTagAutocompleteInput from '@/components/form/dsfr/FCUTagAutocompleteInput';
 import useForm from '@/components/form/react-form/useForm';
 import Badge from '@/components/ui/Badge';
 import Tag from '@/components/ui/Tag';
@@ -21,7 +22,7 @@ const UserForm = ({ user, onSubmit, loading }: UserFormProps) => {
     schema: isNew ? createUserAdminSchema : updateUserAdminSchema,
     defaultValues: {
       status: user?.status || 'pending_email_confirmation',
-      role: user?.role || 'particulier',
+      role: user?.role || 'gestionnaire',
       active: user?.active ?? true,
       optin_at: !!user?.optin_at,
       receive_new_demands: user?.receive_new_demands ?? true,
@@ -30,6 +31,7 @@ const UserForm = ({ user, onSubmit, loading }: UserFormProps) => {
       last_name: user?.last_name ?? '',
       phone: user?.phone ?? '',
       email: user?.email ?? '',
+      gestionnaires: user?.gestionnaires ?? [],
       structure_name: user?.structure_name ?? '',
       structure_type: user?.structure_type ?? '',
       structure_other: user?.structure_other ?? '',
@@ -75,8 +77,8 @@ const UserForm = ({ user, onSubmit, loading }: UserFormProps) => {
           {!isNew && <Field.Checkbox name="optin_at" label={<>A accepté les conditions d'utilisation</>} />}
         </FieldWrapper>
         <FieldWrapper>
-          <Field.Checkbox name="receive_new_demands" label="Reçois les nouvelles demandes" />
-          <Field.Checkbox name="receive_old_demands" label="Reçois les anciennes demandes" />
+          <Field.Checkbox name="receive_new_demands" label="Reçoit les nouvelles demandes" />
+          <Field.Checkbox name="receive_old_demands" label="Reçoit les anciennes demandes" />
         </FieldWrapper>
         <FieldWrapper>
           <Field.EmailInput
@@ -87,6 +89,17 @@ const UserForm = ({ user, onSubmit, loading }: UserFormProps) => {
             }}
           />
         </FieldWrapper>
+        {role === 'gestionnaire' && (
+          <FieldWrapper>
+            <Field.Custom
+              name="gestionnaires"
+              label="Gestionnaires"
+              Component={(props: any) => (
+                <FCUTagAutocompleteInput undismissibles={user?.gestionnaires_from_api ?? []} multiple {...props} />
+              )}
+            />
+          </FieldWrapper>
+        )}
         {role === 'professionnel' && (
           <FieldWrapper>
             <Field.Input

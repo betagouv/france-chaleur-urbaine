@@ -84,6 +84,9 @@ const colors = {
 
   stripe: '#F6F6F6',
 
+  input: '#EEE', // fr.colors.options.grey._950_100.default,
+  'input-border': '#3A3A3A', // fr.colors.decisions.border.plain.grey,
+
   'fcu-green': '#009364',
   'fcu-blue': '#00B1F8',
   'fcu-purple': '#8585F6',
