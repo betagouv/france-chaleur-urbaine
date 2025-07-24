@@ -132,6 +132,7 @@ import toutSavoirSurLeClassementDesReseauxDeChaleur from './tout-savoir-sur-le-c
 import toutSavoirSurLeComparateur from './tout-savoir-sur-notre-comparateur-des-couts-et-emissions-de-co2-des-modes-de-chauffage.md';
 import accesSimplifieSchemasDirecteursReseauxChaleur from './un-acces-simplifie-aux-schemas-directeurs-des-reseaux-de-chaleur.md';
 import chauffageEcologiqueEconomiquePossible from './un-chauffage-ecologique-et-economique-cest-possible.md';
+import unEnrichissementImportantDeLaCarteCeMoisCi from './un-enrichissement-important-de-la-carte-ce-mois-ci.md';
 import unGuidePourLesExploitants from './un-guide-pour-les-exploitants.md';
 import comparateurCoutsPerformances from './un-outil-innovant-pour-comparer-cout-et-impact-carbone-des-modes-de-chauffage-et-de-refroidissement.md';
 import unPlanNationalDactionPourLaGeothermie from './un-plan-national-daction-pour-la-geothermie.md';
@@ -167,6 +168,14 @@ function getArticleAbstract(content: string): string {
 
 export const articles = (
   [
+    {
+      image: '/contents/FCU_carte_juillet_2025.jpg',
+      title: 'Un enrichissement important de la carte ce mois-ci !',
+      slug: 'un-enrichissement-important-de-la-carte-ce-mois-ci',
+      content: importFile(unEnrichissementImportantDeLaCarteCeMoisCi),
+      publishedDate: new Date('2025-07-24'),
+      themes: ['Cartographie et données', 'Réseaux de chaleur', 'Réseaux de froid'],
+    },
     {
       image: '/contents/FCU_cover_perimetres_geothermie.jpg',
       title: "Visualisez les périmètres d'exploitation des opérations de géothermie profonde",

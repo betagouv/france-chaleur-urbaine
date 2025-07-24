@@ -1,11 +1,6 @@
----
-cover: .gitbook/assets/FCU_cover_replays_presentations.jpg
-coverY: 0
----
-
 # Retrouvez les replays et présentations de nos webinaires
 
-📹 Vous vous posez une question sur les réseaux de chaleur, ou sur les outils proposés par France Chaleur Urbaine ? Pour faciliter l'accès à l'information, les replays de nos webinaires sont désormais mis à disposition sur notre site, sur une [page dédiée](https://france-chaleur-urbaine.beta.gouv.fr/webinaires) !\
+📹 Vous vous posez une question sur les réseaux de chaleur, ou sur les outils proposés par France Chaleur Urbaine ? Pour faciliter l'accès à l'information, les replays de nos webinaires sont désormais mis à disposition sur notre site, sur une [page dédiée](/webinaires) !\
 \
 Dès à présent, vous y pourrez retrouver :\
 ✅ une présentation à jour de l'ensemble des outils et services proposés par France Chaleur Urbaine\
