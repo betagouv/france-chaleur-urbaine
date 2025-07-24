@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 
 import { type ChipOption } from '@/components/ui/ChipAutoComplete';
-import useCrud from '@/hooks/useCrud';
+import { useFetch } from '@/hooks/useApi';
 import { type TagsResponse } from '@/pages/api/admin/tags/[[...slug]]';
 import { type TagWithUsers } from '@/server/services/tags';
 
@@ -14,7 +14,9 @@ export const tagsGestionnairesStyleByType = {
 };
 
 export const useFCUTags = () => {
-  const { items: tags } = useCrud<TagsResponse, TagWithUsers[]>('/api/admin/tags');
+  const { data } = useFetch<TagsResponse['list']>('/api/admin/tags', {}, { staleTime: 60_000 });
+
+  const tags = (data?.items ?? []) as unknown as TagWithUsers[];
 
   const tagsOptions: ChipOption[] = useMemo(() => (tags ? fcuTagsToChipOptions(tags) : []), [tags]);
   return { tags, tagsOptions };
