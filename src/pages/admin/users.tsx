@@ -218,7 +218,12 @@ export default function ManageUsers() {
 
   return (
     <SimplePage title="Gestion des utilisateurs" mode="authenticated">
-      <ModalSimple open={!!userId} onOpenChange={() => setUserId(null)} title="Modifier un utilisateur" loading={isLoading}>
+      <ModalSimple
+        open={!!userId}
+        onOpenChange={() => setUserId(null)}
+        title={editingUser ? 'Modifier un utilisateur' : 'Créer un utilisateur'}
+        loading={isLoading}
+      >
         {isLoading ? null : (
           <>
             {editingUser ? (
