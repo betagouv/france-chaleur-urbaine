@@ -6,6 +6,7 @@ import { useQueryState } from 'nuqs';
 import React from 'react';
 import { Fragment, useEffect, useMemo, useState } from 'react';
 
+import { clientConfig } from '@/client-config';
 import CompleteEligibilityTestForm from '@/components/dashboard/professionnel/eligibility-test/CompleteEligibilityTestForm';
 import RenameEligibilityTestForm from '@/components/dashboard/professionnel/eligibility-test/RenameEligibilityTestForm';
 import ProcheReseauBadge, { type ProcheReseauBadgeProps } from '@/components/dashboard/professionnel/ProcheReseauBadge';
@@ -606,7 +607,7 @@ function ProEligibilityTestItem({ test, readOnly = false }: ProEligibilityTestIt
                         iconId="fr-icon-mail-line"
                         priority="secondary"
                         linkProps={{
-                          href: `mailto:france-chaleur-urbaine@developpement-durable.gouv.fr?subject=${encodeURIComponent(
+                          href: `mailto:${clientConfig.contactEmail}?subject=${encodeURIComponent(
                             `[FCU] Demande de mise en relation - Test "${test.name}"`
                           )}&body=${encodeURIComponent(
                             `Bonjour,\n\nJe souhaite être mis en relation avec les gestionnaires de réseaux de chaleur concernés par certaines adresses de mon test d'adresses "${test.name}".\n\nMerci de me recontacter pour étudier mon projet.\n\nCordialement`

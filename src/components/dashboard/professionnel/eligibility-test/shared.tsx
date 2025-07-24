@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { clientConfig } from '@/client-config';
 import { formatFileSize } from '@/utils/strings';
 
 const filesLimits = {
@@ -20,6 +21,6 @@ export const zAddressesFile = z
 export const FormErrorMessage = () => (
   <span>
     Une erreur est survenue. Veuillez réessayer plus tard, si le problème persiste contactez-nous directement à l'adresse:{' '}
-    <a href="mailto:france-chaleur-urbaine@developpement-durable.gouv.fr">france-chaleur-urbaine@developpement-durable.gouv.fr</a>
+    <a href={`mailto:${clientConfig.contactEmail}`}>{clientConfig.contactEmail}</a>
   </span>
 );

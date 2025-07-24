@@ -1,5 +1,6 @@
 import { fr } from '@codegouvfr/react-dsfr';
 
+import { clientConfig } from '@/client-config';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Accordion from '@/components/ui/Accordion';
 import { withAuthentication } from '@/server/authentication';
@@ -40,8 +41,7 @@ const faqItems: FaqItem[] = [
     content: (
       <p>
         Cette information n’est à ce jour pas directement visible depuis l’espace gestionnaire, mais peut être obtenue par un simple mail
-        adressé à{' '}
-        <a href="mailto:france-chaleur-urbaine@developpement-durable.gouv.fr">france-chaleur-urbaine@developpement-durable.gouv.fr</a>.
+        adressé à <a href={`mailto:${clientConfig.contactEmail}`}>{clientConfig.contactEmail}</a>.
       </p>
     ),
   },
@@ -49,8 +49,7 @@ const faqItems: FaqItem[] = [
     title: 'Comment ouvrir un accès à l’espace gestionnaire à un membre de mon équipe ?',
     content: (
       <p>
-        Il suffit pour cela d’envoyer un mail à l’adresse{' '}
-        <a href="mailto:france-chaleur-urbaine@developpement-durable.gouv.fr">france-chaleur-urbaine@developpement-durable.gouv.fr</a>.
+        Il suffit pour cela d’envoyer un mail à l’adresse <a href={`mailto:${clientConfig.contactEmail}`}>{clientConfig.contactEmail}</a>.
       </p>
     ),
   },
@@ -228,8 +227,7 @@ const AidePage = () => {
           gestionnaire ? Nous sommes à votre écoute !
         </p>
         <p>
-          Contactez-nous&nbsp;:{' '}
-          <a href="mailto:france-chaleur-urbaine@developpement-durable.gouv.fr">france-chaleur-urbaine@developpement-durable.gouv.fr</a>
+          Contactez-nous&nbsp;: <a href={`mailto:${clientConfig.contactEmail}`}>{clientConfig.contactEmail}</a>
         </p>
 
         <div className={fr.cx('fr-accordions-group')}>

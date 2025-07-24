@@ -1,6 +1,7 @@
 import React from 'react';
 import { z } from 'zod';
 
+import { clientConfig } from '@/client-config';
 import useForm from '@/components/form/react-form/useForm';
 import CenterLayout from '@/components/shared/page/CenterLayout';
 import Alert from '@/components/ui/Alert';
@@ -28,8 +29,8 @@ const ResetPasswordForm = () => {
       <Alert variant="success" className="max-w-lg mx-auto my-12">
         Un email pour réinitialiser votre mot de passe vous a été envoyé, pensez à vérifier vos spams. Si vous ne recevez pas de mail de
         réinitialisation, merci de nous contacter :{' '}
-        <a href="mailto:france-chaleur-urbaine@developpement-durable.gouv.fr" target="_blank" rel="noopener noreferrer">
-          france-chaleur-urbaine@developpement-durable.gouv.fr
+        <a href={`mailto:${clientConfig.contactEmail}`} target="_blank" rel="noopener noreferrer">
+          {clientConfig.contactEmail}
         </a>
         .
       </Alert>

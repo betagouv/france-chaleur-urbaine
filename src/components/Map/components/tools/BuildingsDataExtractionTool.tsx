@@ -246,7 +246,7 @@ const BuildingsDataExtractionTool: React.FC = () => {
                 La zone définie est trop grande ({areaSize.toFixed(2)} km²), veuillez réduire la taille de recherche (maximum{' '}
                 {clientConfig.summaryAreaSizeLimit} km²). Si vous avez besoin de statistiques sur une zone élargie ou plus précise,
                 n'hésitez pas à{' '}
-                <a href="mailto:france-chaleur-urbaine@developpement-durable.gouv.fr" target="_blank" rel="noopener noreferrer">
+                <a href={`mailto:${clientConfig.contactEmail}`} target="_blank" rel="noopener noreferrer">
                   nous contacter
                 </a>
               </>

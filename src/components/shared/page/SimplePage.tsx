@@ -7,6 +7,7 @@ import { useRouter } from 'next/router';
 import React from 'react';
 import styled, { css } from 'styled-components';
 
+import { clientConfig } from '@/client-config';
 import { FooterConsentManagementItem } from '@/components/ConsentBanner';
 import SEO, { type SEOProps } from '@/components/SEO';
 import Box from '@/components/ui/Box';
@@ -536,7 +537,7 @@ const PageFooter = () => (
         </Text>
         <br />
         <Text as="span" fontWeight="bold">
-          <a href="mailto:france-chaleur-urbaine@developpement-durable.gouv.fr">france-chaleur-urbaine@developpement-durable.gouv.fr</a>
+          <a href={`mailto:${clientConfig.contactEmail}`}>{clientConfig.contactEmail}</a>
         </Text>
       </>
     }

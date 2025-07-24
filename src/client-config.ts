@@ -5,6 +5,7 @@ import { envBooleanSchema } from '@/utils/validation';
 // exemple: ENABLE_INSCRIPTIONS: envBooleanSchema.default(false).parse(process.env.NEXT_PUBLIC_FLAG_ENABLE_INSCRIPTIONS),
 export const clientConfig = {
   websiteOrigin: process.env.NEXT_PUBLIC_MAP_ORIGIN,
+  contactEmail: 'france.chaleur.urbaine@ademe.fr', // changer également dans openapi-schema.yaml
   linkedInUrl: 'https://www.linkedin.com/company/france-chaleur-urbaine?originalSubdomain=fr',
   calendarLink: 'https://cal.com/erwangravez/15min',
   tracking: {

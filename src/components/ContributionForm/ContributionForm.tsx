@@ -3,6 +3,7 @@ import { useForm } from '@tanstack/react-form';
 import { useEffect, useState } from 'react';
 import { z, type ZodSchema } from 'zod';
 
+import { clientConfig } from '@/client-config';
 import Input from '@/components/form/dsfr/Input';
 import Radio from '@/components/form/dsfr/Radio';
 import Upload from '@/components/form/dsfr/Upload';
@@ -359,7 +360,7 @@ const ContributionForm = () => {
       () => (
         <span>
           Une erreur est survenue. Veuillez réessayer plus tard, si le problème persiste contactez-nous directement à l'adresse:{' '}
-          <a href="mailto:france-chaleur-urbaine@developpement-durable.gouv.fr">france-chaleur-urbaine@developpement-durable.gouv.fr</a>
+          <a href={`mailto:${clientConfig.contactEmail}`}>{clientConfig.contactEmail}</a>
         </span>
       )
     ),
