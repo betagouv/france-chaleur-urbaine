@@ -3,10 +3,10 @@ import { parseAsStringLiteral, useQueryState } from 'nuqs';
 import { useCallback, useMemo, useState } from 'react';
 
 import TableFieldInput from '@/components/Admin/TableFieldInput';
+import FCUTagAutocomplete from '@/components/form/FCUTagAutocomplete';
 import Map from '@/components/Map/Map';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import SimplePage from '@/components/shared/page/SimplePage';
-import ChipAutoComplete from '@/components/ui/ChipAutoComplete';
 import Link from '@/components/ui/Link';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/Resizable';
 import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
@@ -16,7 +16,6 @@ import { type ReseauDeChaleur } from '@/pages/api/admin/reseaux-de-chaleur';
 import { type ReseauEnConstruction } from '@/pages/api/admin/reseaux-en-construction';
 import { withAuthentication } from '@/server/authentication';
 import { toastErrors } from '@/services/notification';
-import { defaultTagChipOption, useFCUTags } from '@/services/tags';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
 import { patchFetchJSON } from '@/utils/network';
@@ -45,7 +44,6 @@ const GestionDesReseaux = () => {
     isLoading: isLoadingPerimetresDeDeveloppementPrioritaire,
     refetch: refetchPerimetresDeDeveloppementPrioritaire,
   } = useFetch<PerimetreDeDeveloppementPrioritaire[]>('/api/admin/perimetres-de-developpement-prioritaire');
-  const { tagsOptions } = useFCUTags();
 
   const onTableRowClick = useCallback(
     (idFCU: number) => {
@@ -132,11 +130,11 @@ const GestionDesReseaux = () => {
         header: 'Tags',
         cell: (info) => (
           <div className="block">
-            <ChipAutoComplete
-              options={tagsOptions}
-              defaultOption={defaultTagChipOption}
+            <FCUTagAutocomplete
               value={info.row.original.tags ?? []}
-              onChange={(tags) => updateReseauDeChaleur(info.row.original.id_fcu, { tags })}
+              onChange={(tags: string[] /* TODO should be handled by typescript */) =>
+                updateReseauDeChaleur(info.row.original.id_fcu, { tags })
+              }
               multiple
             />
           </div>
@@ -145,7 +143,7 @@ const GestionDesReseaux = () => {
         enableSorting: false,
       },
     ],
-    [tagsOptions, updateReseauDeChaleur]
+    [updateReseauDeChaleur]
   );
 
   const reseauxEnConstructionColumns = useMemo<ColumnDef<ReseauEnConstruction>[]>(
@@ -175,11 +173,11 @@ const GestionDesReseaux = () => {
         header: 'Tags',
         cell: (info) => (
           <div className="block">
-            <ChipAutoComplete
-              options={tagsOptions}
-              defaultOption={defaultTagChipOption}
+            <FCUTagAutocomplete
               value={info.row.original.tags ?? []}
-              onChange={(tags) => updateReseauEnConstruction(info.row.original.id_fcu, { tags })}
+              onChange={(tags: string[] /* TODO should be handled by typescript */) =>
+                updateReseauEnConstruction(info.row.original.id_fcu, { tags })
+              }
               multiple
             />
           </div>
@@ -188,7 +186,7 @@ const GestionDesReseaux = () => {
         enableSorting: false,
       },
     ],
-    [tagsOptions, updateReseauEnConstruction]
+    [updateReseauEnConstruction]
   );
 
   const perimetresDeDeveloppementPrioritaireColumns = useMemo<ColumnDef<PerimetreDeDeveloppementPrioritaire>[]>(

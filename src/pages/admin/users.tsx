@@ -121,7 +121,7 @@ export default function ManageUsers() {
               <FCUTagAutocomplete
                 undismissibles={info.row.original.gestionnaires_from_api ?? []}
                 value={info.row.original.gestionnaires ?? []}
-                onChange={(newGestionnaires: string[]) => {
+                onChange={(newGestionnaires: string[] /* TODO should be handled by typescript */) => {
                   handleUpdateUser(info.row.original.id)({ gestionnaires: newGestionnaires });
                 }}
                 multiple

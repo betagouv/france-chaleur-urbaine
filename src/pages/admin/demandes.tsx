@@ -8,6 +8,7 @@ import { type MapGeoJSONFeature } from 'react-map-gl/maplibre';
 import TableFieldInput from '@/components/Admin/TableFieldInput';
 import EligibilityHelpDialog, { eligibilityTitleByType } from '@/components/EligibilityHelpDialog';
 import Input from '@/components/form/dsfr/Input';
+import FCUTagAutocomplete from '@/components/form/FCUTagAutocomplete';
 import Comment from '@/components/Manager/Comment';
 import Contact from '@/components/Manager/Contact';
 import Tag from '@/components/Manager/Tag';
@@ -30,7 +31,6 @@ import Tooltip from '@/components/ui/Tooltip';
 import { useFetch } from '@/hooks/useApi';
 import { withAuthentication } from '@/server/authentication';
 import { notify, toastErrors } from '@/services/notification';
-import { defaultTagChipOption, useFCUTags } from '@/services/tags';
 import { type Point } from '@/types/Point';
 import { type AdminDemand, type Demand } from '@/types/Summary/Demand';
 import { defaultEmptyNumberValue, defaultEmptyStringValue } from '@/utils/airtable';
@@ -93,7 +93,6 @@ function DemandesAdmin(): React.ReactElement {
   const [filteredDemands, setFilteredDemands] = useState<AdminDemand[]>([]);
 
   const { data: demands = [], isLoading } = useFetch<AdminDemand[]>('/api/admin/demands');
-  const { tagsOptions } = useFCUTags();
   const { data: assignmentRulesResults = [] } = useFetch<string[]>('/api/admin/assignment-rules/results');
   const assignmentRulesResultsOptions: ChipOption[] = useMemo(
     () => [
@@ -206,11 +205,9 @@ function DemandesAdmin(): React.ReactElement {
 
           return (
             <div className="block w-full">
-              <ChipAutoComplete
-                options={tagsOptions}
-                defaultOption={defaultTagChipOption}
+              <FCUTagAutocomplete
                 value={demand.Gestionnaires ?? []}
-                onChange={(newGestionnaires) => {
+                onChange={(newGestionnaires: string[] /* TODO should be handled by typescript */) => {
                   updateDemand(demand.id, {
                     Gestionnaires: newGestionnaires,
                   });
@@ -444,7 +441,7 @@ function DemandesAdmin(): React.ReactElement {
         enableSorting: false,
       },
     ],
-    [updateDemand, tagsOptions, assignmentRulesResultsOptions]
+    [updateDemand, assignmentRulesResultsOptions]
   );
 
   const onFeatureClick = useCallback(
