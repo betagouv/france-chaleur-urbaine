@@ -1,6 +1,6 @@
-import { type SortingState } from '@tanstack/react-table';
+import { type ColumnFiltersState, type SortingState } from '@tanstack/react-table';
 import { useQueryState } from 'nuqs';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import UserForm from '@/components/Admin/UserForm';
 import UserRoleBadge from '@/components/Admin/UserRoleBadge';
@@ -43,9 +43,17 @@ const initialSortingState: SortingState = [
   },
 ];
 
+const initialColumnFilters: ColumnFiltersState = [
+  {
+    id: 'active',
+    value: { true: true, false: false },
+  },
+];
+
 export default function ManageUsers() {
   const { exportService } = useServices();
   const [userId, setUserId] = useQueryState('userId');
+  const [nbUsersFilter, setNbUsersFilter] = useState<number>(0);
 
   const { data: usersStats } = useFetch<AdminUsersStats>('/api/admin/users-stats');
   const { tagsOptions } = useFCUTags();
@@ -222,6 +230,13 @@ export default function ManageUsers() {
 
   const editingUser = useMemo(() => users?.find((u) => u.id === (userId as string)), [users, userId]);
 
+  const onFilterChange = useCallback(
+    (filteredRows: typeof users) => {
+      setNbUsersFilter(filteredRows.length);
+    },
+    [setNbUsersFilter]
+  );
+
   return (
     <SimplePage title="Gestion des utilisateurs" mode="authenticated">
       <ModalSimple open={!!userId} onOpenChange={() => setUserId(null)} title="Modifier un utilisateur" loading={isLoading}>
@@ -271,12 +286,8 @@ export default function ManageUsers() {
           columns={columns}
           data={users || []}
           initialSortingState={initialSortingState}
-          columnFilters={[
-            {
-              id: 'active',
-              value: { true: true, false: false },
-            },
-          ]}
+          columnFilters={initialColumnFilters}
+          onFilterChange={onFilterChange}
           enableGlobalFilter
           controlsLayout="block"
           padding="sm"
