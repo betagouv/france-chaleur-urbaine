@@ -12,7 +12,7 @@ type DownloadFileOptions = {
 
 export async function downloadFile({ url, fileName, headers }: DownloadFileOptions): Promise<string> {
   const filePath = fileName || `temp_${Date.now()}.geojson`;
-  logger.info(`📥 Téléchargement de ${url} dans ${filePath}`);
+  logger.debug(`📥 Téléchargement de ${url} dans ${filePath}`);
 
   try {
     const response = await axios.get(url, { responseType: 'stream', headers });
@@ -25,7 +25,7 @@ export async function downloadFile({ url, fileName, headers }: DownloadFileOptio
       writeStream.on('error', reject);
     });
 
-    logger.info(`✅ Fichier téléchargé: ${filePath}`);
+    logger.debug(`✅ Fichier téléchargé: ${filePath}`);
     return filePath;
   } catch (error) {
     logger.error(`❌ Erreur lors du téléchargement de ${url}:`, error);

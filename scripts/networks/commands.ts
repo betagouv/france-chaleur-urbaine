@@ -6,7 +6,7 @@ import { z } from 'zod';
 
 import { kdb, sql } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
-import { TrelloService } from '@/services/TrelloService';
+import { type TrelloCard, type TrelloLabel, TrelloService } from '@/services/TrelloService';
 import { readFileGeometry } from '@cli/helpers/geo';
 import { runBash } from '@cli/helpers/shell';
 
@@ -29,6 +29,35 @@ const entityTypeToTable = {
   futur: 'zones_et_reseaux_en_construction',
 } as const satisfies Record<EntityType, NetworkTable>;
 
+const getCardPriority = (card: TrelloCard): number => {
+  const labelNames = card.labels.map((label) => label.name);
+  const hasReseauChaleur = labelNames.includes('Réseau chaleur');
+  const hasReseauFroid = labelNames.includes('Réseau froid');
+  const hasReseauConstruction = labelNames.includes('Réseau en construction');
+  const hasPDP = labelNames.includes('PDP');
+  const labelCount = labelNames.length;
+
+  // 1. "Réseau chaleur" (uniquement)
+  if (hasReseauChaleur && labelCount === 1) return 1;
+
+  // 2. "Réseau en construction" (uniquement)
+  if (hasReseauConstruction && labelCount === 1) return 2;
+
+  // 3. "Réseau chaleur" (au moins)
+  if (hasReseauChaleur && labelCount > 1) return 3;
+
+  // 4. "Réseau froid" (au moins)
+  if (hasReseauFroid) return 4;
+
+  // 5. "Réseau en construction" (au moins)
+  if (hasReseauConstruction && labelCount > 1) return 5;
+
+  // 6. "PDP" (au moins)
+  if (hasPDP) return 6;
+
+  return 999;
+};
+
 export function registerNetworkCommands(parentProgram: Command) {
   const program = parentProgram.command('geom').description('Commandes pour gérer les géométries des données FCU (réseaux, PDP. etc)');
 
@@ -48,7 +77,7 @@ export function registerNetworkCommands(parentProgram: Command) {
         logger.error("Variables d'environnement TRELLO_API_KEY et TRELLO_TOKEN requises");
         logger.info('📋 Configuration requise :');
         logger.info(`1. Allez sur ${TRELLO_POWER_UP_URL}`);
-        logger.info('2. Cliquez sur "Token"');
+        logger.info('2. Cliquez sur lien "Token" dans le texte à droite de "API key"');
         logger.info('3. Connectez votre compte');
         logger.info('4. Ajoutez ces variables à votre fichier .env.local :');
         logger.info('   TRELLO_API_KEY=votre_api_key');
@@ -75,9 +104,27 @@ export function registerNetworkCommands(parentProgram: Command) {
 
         logger.info(`\n📋 ${cards.length} carte(s) trouvée(s) dans "${COLUMN_TO_PROCESS}":\n`);
 
-        for (const card of cards.filter((card) => card.attachments.some((attachment) => attachment.fileName.endsWith('.geojson')))) {
+        const sortedCards = cards
+          .filter((card) => card.attachments.some((attachment) => attachment.fileName.endsWith('.geojson')))
+          .sort((a, b) => getCardPriority(a) - getCardPriority(b));
+
+        const colorizeLabel = (label: TrelloLabel): string => {
+          const colorMap: Record<string, string> = {
+            green_dark: '\x1b[32m', // réseaux de chaleur
+            blue_dark: '\x1b[34m', // réseaux de froid
+            pink: '\x1b[95m', // réseaux en construction
+            yellow: '\x1b[33m', // PDP
+          };
+          const reset = '\x1b[0m';
+          const color = colorMap[label.color] || '';
+          return `${color}${label.name}${reset}`;
+        };
+
+        logger.info(`🔄 Cartes triées par priorité de labels`);
+
+        for (const card of sortedCards) {
           const name = card.name;
-          const labels = card.labels.map((label) => label.name).join(', ');
+          const labels = card.labels.map(colorizeLabel).join(', ');
           const onlyOneLabel = card.labels.length === 1;
           const suggestedId = onlyOneLabel ? name.match(/ID\s*(?:FCU\s*)?(\d+[CF]?)/)?.[1] : undefined;
           const isIdSNCU = suggestedId?.endsWith('C') || suggestedId?.endsWith('F');
@@ -105,7 +152,8 @@ export function registerNetworkCommands(parentProgram: Command) {
                   : undefined
             : undefined;
           logger.info(`══════════════════════════`);
-          logger.info(`Processing "${name}" (${labels})`);
+          logger.info(labels);
+          logger.info(`# ${name}`);
           logger.info(
             [
               card.desc,
@@ -131,8 +179,15 @@ export function registerNetworkCommands(parentProgram: Command) {
                   { title: 'Réseau de froid (rdf)', value: 'rdf' },
                   { title: 'Plan de développement (pdp)', value: 'pdp' },
                   { title: 'Réseau futur (futur)', value: 'futur' },
+                  { title: 'Passer', value: 'skip' },
                 ],
               });
+              if (entityType === 'skip') {
+                logger.info('👌 Action passée');
+                fs.unlinkSync(localPath);
+                logger.debug('🧹 Fichier temporaire supprimé');
+                continue;
+              }
 
               const { action } = await prompts({
                 type: 'select',
@@ -183,12 +238,12 @@ export function registerNetworkCommands(parentProgram: Command) {
                     throw new Error(`Action non reconnue: ${action}`);
                 }
 
-                logger.info(`🚀 Exécution: ${command}`);
+                logger.debug(`🚀 Exécution: ${command}`);
                 await runBash(command);
-                logger.info('✅ Action terminée avec succès');
+                logger.debug('✅ Action terminée avec succès');
 
                 fs.unlinkSync(localPath);
-                logger.info('🧹 Fichier temporaire supprimé');
+                logger.debug('🧹 Fichier temporaire supprimé');
               }
             } catch (error) {
               logger.error(`❌ Erreur lors du traitement de ${localPath}:`, error);

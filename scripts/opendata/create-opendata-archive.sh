@@ -21,7 +21,7 @@ fi
 psql="docker run -i --rm --network host postgis/postgis:16-3.5-alpine psql"
 
 ogr2ogr() {
-  docker run -i --rm -v "$opendata_dir":/output "$GDAL_IMAGE" ogr2ogr "$@"
+  docker run -i --rm --network host -v "$opendata_dir":/output "$GDAL_IMAGE" ogr2ogr "$@"
 }
 
 # Création des vues
@@ -322,8 +322,12 @@ ogr2ogr -f "ESRI Shapefile" -lco ENCODING=UTF-8 /output/reseaux_en_construction_
 cp scripts/opendata/nomenclature_shapefile_des_reseaux_de_chaleur_et_froid.xlsx "$opendata_dir/"
 
 # Création de l'archive
-archiveName=opendata-fcu-$(date +%d%m%y).zip
+archiveName=$(date +%d%m%y)-opendata-fcu.zip
 rm -f "$archiveName"
 zip -j "$archiveName" "$opendata_dir"/*
-echo -e "\nArchive opendata prête pour envoi à Florence sur Mattermost => $archiveName"
+echo -e "\nArchive opendata prête pour envoi => $archiveName
+Prérequis : avoir un compte sur data.gouv.fr et avoir accès au compte France Chaleur Urbaine
+1. Aller sur le jeu de données Tracés des réseaux de chaleur et de froid : https://www.data.gouv.fr/admin/datasets/64f05d3568e4d575eb454ffe
+2. Ajouter une mise à jour avec l'archive avec le nom du fichier. Préciser le contenu de la mise à jour dans le champ 'Description'.
+3. Enfin, modifier le fichier principal (opendata-fcu.zip) avec l'archive."
 rm -r "$opendata_dir"

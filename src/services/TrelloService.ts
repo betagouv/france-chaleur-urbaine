@@ -12,17 +12,19 @@ export type TrelloCard = {
   url: string;
   due: string | null;
   dateLastActivity: string;
-  labels: Array<{
-    id: string;
-    name: string;
-    color: string;
-  }>;
+  labels: TrelloLabel[];
   attachments: Array<{
     id: string;
     name: string;
     url: string;
     fileName: string;
   }>;
+};
+
+export type TrelloLabel = {
+  id: string;
+  name: string;
+  color: string;
 };
 
 export type TrelloList = {
@@ -54,14 +56,14 @@ export class TrelloService {
 
   private async getUrl<T>(path: string, queryParams: Record<string, string> = {}): Promise<T> {
     const url = `https://api.trello.com/1${path}?${this.getAuthParams()}&${new URLSearchParams(queryParams).toString()}`;
-    logger.info(`GET ${url}`);
+    logger.debug(`GET ${url}`);
     const { data } = await axios.get<T>(url);
     return data;
   }
 
   private async putUrl<T>(path: string, queryParams: Record<string, string> = {}): Promise<T> {
     const url = `https://api.trello.com/1${path}?${this.getAuthParams()}&${new URLSearchParams(queryParams).toString()}`;
-    logger.info(`PUT ${url}`);
+    logger.debug(`PUT ${url}`);
     const { data } = await axios.put<T>(url);
     return data;
   }
