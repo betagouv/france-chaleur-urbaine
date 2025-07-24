@@ -322,7 +322,7 @@ ogr2ogr -f "ESRI Shapefile" -lco ENCODING=UTF-8 /output/reseaux_en_construction_
 cp scripts/opendata/nomenclature_shapefile_des_reseaux_de_chaleur_et_froid.xlsx "$opendata_dir/"
 
 # Création de l'archive
-archiveName=opendata-fcu-$(date +%d%m%y).zip
+archiveName=$(date +%d%m%y)-opendata-fcu.zip
 rm -f "$archiveName"
 zip -j "$archiveName" "$opendata_dir"/*
 echo -e "\nArchive opendata prête pour envoi à Florence sur Mattermost => $archiveName"
