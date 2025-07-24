@@ -242,7 +242,9 @@ export default function ManageUsers() {
           <Heading as="h1" color="blue-france">
             Gestion des utilisateurs
           </Heading>
-          <Button size="small" priority="secondary" iconId="ri-add-line" title="Ajouter un utilisateur" onClick={() => setUserId('new')} />
+          <Button size="small" priority="secondary" iconId="ri-add-line" title="Ajouter un utilisateur" onClick={() => setUserId('new')}>
+            <span>Ajouter un utilisateur</span>
+          </Button>
         </header>
 
         <Heading as="h2" color="blue-france">
