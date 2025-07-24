@@ -238,14 +238,9 @@ export default function ManageUsers() {
         )}
       </ModalSimple>
       <Box py="4w" className="fr-container">
-        <header className="flex justify-between items-center">
-          <Heading as="h1" color="blue-france">
-            Gestion des utilisateurs
-          </Heading>
-          <Button size="small" priority="secondary" iconId="ri-add-line" title="Ajouter un utilisateur" onClick={() => setUserId('new')}>
-            <span>Ajouter un utilisateur</span>
-          </Button>
-        </header>
+        <Heading as="h1" color="blue-france">
+          Gestion des utilisateurs
+        </Heading>
 
         <Heading as="h2" color="blue-france">
           Statistiques d'activité
@@ -259,9 +254,19 @@ export default function ManageUsers() {
           </>
         )}
 
-        <Heading as="h2" color="blue-france" mt="4w">
-          Liste des comptes
-        </Heading>
+        <header className="flex justify-between items-center">
+          <div>
+            <Heading as="h2" color="blue-france" mt="4w">
+              Liste des comptes{' '}
+              <small className="text-faded text-base">
+                {nbUsersFilter} / {users?.length}
+              </small>
+            </Heading>
+          </div>
+          <Button size="small" priority="secondary" iconId="ri-add-line" title="Ajouter un utilisateur" onClick={() => setUserId('new')}>
+            <span>Ajouter un utilisateur</span>
+          </Button>
+        </header>
         <TableSimple
           columns={columns}
           data={users || []}
