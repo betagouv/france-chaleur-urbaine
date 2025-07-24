@@ -18,7 +18,7 @@ const filterSchema = z.record(
  * @returns Object containing CRUD operations for the specified table
  */
 export function createBaseModel<T extends keyof DB>(tableName: T) {
-  const create = async (data: InsertObject<DB, T>, _context: ApiContext): Promise<DB[T]> => {
+  const create = async (data: InsertObject<DB, T>, _context: ApiContext) => {
     const record = await kdb.insertInto(tableName).values(data).returningAll().executeTakeFirstOrThrow();
 
     return record as unknown as DB[T];
@@ -28,7 +28,7 @@ export function createBaseModel<T extends keyof DB>(tableName: T) {
     return create({ ...data, user_id: context.user.id } as InsertObject<DB, T>, context);
   };
 
-  const get = async (id: string, _config: ListConfig<T>, _context: ApiContext): Promise<DB[T]> => {
+  const get = async (id: string, _config: ListConfig<T>, _context: ApiContext) => {
     const query = kdb
       .selectFrom(tableName)
       .where('id' as any, '=', id)
@@ -39,7 +39,7 @@ export function createBaseModel<T extends keyof DB>(tableName: T) {
     return record as unknown as DB[T];
   };
 
-  const getMine = async (id: string, config: ListConfig<T>, context: ApiContext): Promise<DB[T]> => {
+  const getMine = async (id: string, config: ListConfig<T>, context: ApiContext) => {
     return get(id, { ...config, filters: { ...config.filters, user_id: context.user.id } }, context);
   };
 
@@ -72,7 +72,7 @@ export function createBaseModel<T extends keyof DB>(tableName: T) {
     return query;
   };
 
-  const list = async (config: ListConfig<T>, _context: ApiContext): Promise<{ items: DB[T][]; count: number }> => {
+  const list = async (config: ListConfig<T>, _context: ApiContext) => {
     const baseQuery = kdb.selectFrom(tableName);
 
     const countQuery = applyConfigFilters(baseQuery, config);
@@ -103,7 +103,7 @@ export function createBaseModel<T extends keyof DB>(tableName: T) {
     data: UpdateObjectExpression<DB, ExtractTableAlias<DB, T>, ExtractTableAlias<DB, T>>,
     config: ListConfig<T>,
     _context: ApiContext
-  ): Promise<DB[T]> => {
+  ) => {
     let query = kdb
       .updateTable(tableName)
       .set(data)
@@ -116,7 +116,7 @@ export function createBaseModel<T extends keyof DB>(tableName: T) {
     return record as unknown as DB[T];
   };
 
-  const updateMine = async (id: string, data: Partial<InsertObject<DB, T>>, config: ListConfig<T>, context: ApiContext): Promise<DB[T]> => {
+  const updateMine = async (id: string, data: Partial<InsertObject<DB, T>>, config: ListConfig<T>, context: ApiContext) => {
     return update(
       id,
       { ...data, user_id: context.user.id } as UpdateObjectExpression<DB, ExtractTableAlias<DB, T>, ExtractTableAlias<DB, T>>,
@@ -125,7 +125,7 @@ export function createBaseModel<T extends keyof DB>(tableName: T) {
     );
   };
 
-  const remove = async (id: string, config: ListConfig<T>, _context: ApiContext): Promise<DB[T]> => {
+  const remove = async (id: string, config: ListConfig<T>, _context: ApiContext) => {
     let getQuery = kdb.selectFrom(tableName).where('id' as any, '=', id);
 
     if (config) {
@@ -144,7 +144,7 @@ export function createBaseModel<T extends keyof DB>(tableName: T) {
     return record as unknown as DB[T];
   };
 
-  const removeMine = async (id: string, config: ListConfig<T>, context: ApiContext): Promise<DB[T]> => {
+  const removeMine = async (id: string, config: ListConfig<T>, context: ApiContext) => {
     return remove(id, { ...config, filters: { ...config.filters, user_id: context.user.id } }, context);
   };
 

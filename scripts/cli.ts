@@ -8,21 +8,14 @@ import prompts from 'prompts';
 import XLSX from 'xlsx';
 import { z } from 'zod';
 
+import { getApiHandler } from '@/server/api/users';
 import { saveStatsInDB } from '@/server/cron/saveStatsInDB';
 import db from '@/server/db';
 import { kdb, sql } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
-import {
-  type ApiNetwork,
-  createGestionnairesFromAPI,
-  deactivateUsersDeletedInAirtable,
-  syncComptesProFromUsers,
-  syncGestionnairesWithUsers,
-  syncLastConnectionFromUsers,
-} from '@/server/services/airtable';
+import { syncComptesProFromUsers } from '@/server/services/airtable';
 import { processJobById, processJobsIndefinitely } from '@/server/services/jobs/processor';
 import { type DatabaseSourceId, type DatabaseTileInfo, tilesInfo, zDatabaseSourceId } from '@/server/services/tiles.config';
-import { type ApiAccount } from '@/types/ApiAccount';
 import { userRoles } from '@/types/enum/UserRole';
 import { fetchJSON } from '@/utils/network';
 import { sleep } from '@/utils/time';
@@ -498,19 +491,27 @@ program
 program
   .command('debug:upsert-users-from-api')
   .description('Update Gestionnaires and Gestionnaires API airtables from file.')
-  .argument('<accountKey>', 'Key of the account in api_accounts')
+  .argument('<accountName>', 'Name of the account in api_accounts')
   .argument('<file>', 'File with data')
-  .action(async (accountKey, file) => {
-    const account: ApiAccount = await db('api_accounts').where('key', accountKey).first();
-    const data: ApiNetwork[] = JSON.parse(await readFile(file, 'utf8'));
+  .action(async (accountName, file) => {
+    const account = await kdb.selectFrom('api_accounts').where('name', '=', accountName).selectAll().executeTakeFirst();
+
+    if (!account) {
+      logger.error(`Account ${accountName} not found`);
+      process.exit(1);
+    }
+
+    const data = JSON.parse(await readFile(file, 'utf8'));
 
     if (!process.env.DRY_RUN) {
       logger.info('');
       logger.info('USAGE:');
-      logger.info('⚠️ DRY_RUN is not set, use FIRST_TIME_FIX=<true|false> DRY_RUN=<true|false> pnpm cli debug:upsert-users-from-api ...');
+      logger.info('⚠️ DRY_RUN is not set, use DRY_RUN=<true|false> pnpm cli debug:upsert-users-from-api ...');
       process.exit(1);
     }
-    await createGestionnairesFromAPI(account, data);
+
+    const apiHandler = getApiHandler(account);
+    await apiHandler.handleData(data);
   });
 
 program
@@ -545,32 +546,6 @@ program
   });
 
 program
-  .command('users:sync-from-airtable')
-  .description('Sync users created in Airtable in PostGres.')
-  .action(async () => {
-    if (!process.env.DRY_RUN) {
-      logger.info('');
-      logger.info('USAGE:');
-      logger.info('⚠️ DRY_RUN is not set, use DRY_RUN=<true|false> pnpm cli users:sync-from-airtable');
-      process.exit(1);
-    }
-    await syncGestionnairesWithUsers();
-  });
-
-program
-  .command('users:sync-last-connection-to-airtable')
-  .description('Sync users last connection from PostGres to Airtable.')
-  .action(async () => {
-    if (!process.env.DRY_RUN) {
-      logger.info('');
-      logger.info('USAGE:');
-      logger.info('⚠️ DRY_RUN is not set, use DRY_RUN=<true|false> pnpm cli users:sync-last-connection-to-airtable');
-      process.exit(1);
-    }
-    await syncLastConnectionFromUsers();
-  });
-
-program
   .command('users:sync-comptes-pro-to-airtable')
   .description('Sync users last connection from PostGres to Airtable.')
   .action(async () => {
@@ -581,19 +556,6 @@ program
       process.exit(1);
     }
     await syncComptesProFromUsers();
-  });
-
-program
-  .command('users:deactivate-users-deleted-in-airtable')
-  .description('Deactivate users which have been deleted in Airtable.')
-  .action(async () => {
-    if (!process.env.DRY_RUN) {
-      logger.info('');
-      logger.info('USAGE:');
-      logger.info('⚠️ DRY_RUN is not set, use DRY_RUN=<true|false> pnpm cli users:deactivate-users-deleted-in-airtable');
-      process.exit(1);
-    }
-    await deactivateUsersDeletedInAirtable();
   });
 
 program

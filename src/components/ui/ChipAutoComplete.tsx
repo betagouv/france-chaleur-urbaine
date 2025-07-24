@@ -1,5 +1,5 @@
 import Tag from '@codegouvfr/react-dsfr/Tag';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import Icon from '@/components/ui/Icon';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover';
@@ -12,9 +12,10 @@ import { stopPropagation } from '@/utils/events';
 
 export type ChipOption = {
   key: string;
-  label: string;
+  label: ReactNode;
   title?: string;
   className?: string;
+  dismissible?: boolean;
 };
 
 type ChipAutoCompletePropsBase = {
@@ -24,28 +25,30 @@ type ChipAutoCompletePropsBase = {
   placeholder?: string;
   disabled?: boolean;
   className?: string;
+  classNames?: {
+    wrapper?: string;
+    input?: string;
+  };
 };
 
-type ChipAutoCompletePropsMultiple = ChipAutoCompletePropsBase & {
-  multiple: true;
-  value: string[];
-  suggestedValue?: string[];
-  onChange: (value: string[]) => void;
-};
-
-type ChipAutoCompletePropsSingle = ChipAutoCompletePropsBase & {
-  multiple?: false;
-  value: string;
-  suggestedValue?: string;
-  onChange: (value: string) => void;
-};
-
-export type ChipAutoCompleteProps = ChipAutoCompletePropsMultiple | ChipAutoCompletePropsSingle;
+export type ChipAutoCompleteProps =
+  | (ChipAutoCompletePropsBase & {
+      multiple: true;
+      value: string[];
+      suggestedValue?: string[];
+      onChange: (value: string[]) => void;
+    })
+  | (ChipAutoCompletePropsBase & {
+      multiple?: false;
+      value: string;
+      suggestedValue?: string;
+      onChange: (value: string) => void;
+    });
 
 const ChipAutoComplete = (rawProps: ChipAutoCompleteProps) => {
   // keep props to allow type inference with multiple
   const props = { multiple: false, ...rawProps } satisfies ChipAutoCompleteProps;
-  const { options, defaultOption, value: valueExternal, label, placeholder = 'Ajouter…', disabled = false, className } = props;
+  const { options, defaultOption, value: valueExternal, label, placeholder = 'Ajouter…', disabled = false, className, classNames } = props;
   const valueExternalArray = Array.isArray(valueExternal) ? valueExternal : [valueExternal];
   const [valueArray, setValueArray] = useState(
     arrayEquals(valueExternalArray, [defaultEmptyStringValue]) && isDefined(props.suggestedValue)
@@ -155,8 +158,9 @@ const ChipAutoComplete = (rawProps: ChipAutoCompleteProps) => {
         <PopoverTrigger asChild>
           <div
             className={cx(
-              'flex flex-wrap items-center gap-1 border rounded pl-2 pr-4 py-1 bg-white focus-within:ring-2 ring-blue-00 min-h-[2.5rem] cursor-text',
-              disabled && 'opacity-60 pointer-events-none'
+              'flex flex-wrap items-center gap-1 focus-within:ring-2 ring-blue-00 cursor-text',
+              disabled && 'opacity-60 pointer-events-none',
+              classNames?.wrapper || 'border rounded pl-2 pr-4 py-1 min-h-[2.5rem] bg-white'
             )}
             onClick={() => inputRef.current?.focus()}
           >
@@ -165,7 +169,7 @@ const ChipAutoComplete = (rawProps: ChipAutoCompleteProps) => {
               return (
                 <Tag
                   key={tagName}
-                  dismissible
+                  dismissible={chipOption.dismissible !== false}
                   small
                   className={chipOption?.className}
                   nativeButtonProps={{
@@ -183,7 +187,7 @@ const ChipAutoComplete = (rawProps: ChipAutoCompleteProps) => {
             <input
               ref={inputRef}
               type="text"
-              className="flex-1 min-w-[6ch] w-full !outline-none border-none bg-transparent text-sm py-1"
+              className={cx('flex-1 w-full !outline-none border-none bg-transparent text-sm min-w-[6ch]', classNames?.input || ' py-1')}
               value={inputValue}
               onClick={(e) => {
                 e.stopPropagation();

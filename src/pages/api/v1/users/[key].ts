@@ -1,18 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import z from 'zod';
 
+import { getApiHandler } from '@/server/api/users';
 import { handleRouteErrors, requirePutMethod } from '@/server/helpers/server';
-import { createGestionnairesFromAPI } from '@/server/services/airtable';
 import { apiUser } from '@/services/api/authentication';
 import { withCors } from '@/services/api/cors';
-
-const ApiNetworkValidation = z.object({
-  id_sncu: z.string(),
-  full_url: z.string(),
-  public_name: z.string(),
-  contacts: z.array(z.string().email().toLowerCase().trim()),
-});
-const ApiNetworksValidation = z.array(ApiNetworkValidation);
 
 /**
  * Appelé par ENGIE tous les vendredi à 12h
@@ -46,14 +37,16 @@ const apiUsers = handleRouteErrors(async (req: NextApiRequest, res: NextApiRespo
     return;
   }
 
-  const input = ApiNetworksValidation.safeParse(req.body);
-  if (!input.success) {
-    res.status(400).json(input.error);
+  const apiHandler = getApiHandler(account);
+
+  try {
+    console.log('DEBUG');
+    console.log('req.body', req.body);
+    await apiHandler.handleData(req.body);
+  } catch (error) {
+    res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error' });
     return;
   }
-
-  const stats = await createGestionnairesFromAPI(account, input.data);
-  return stats;
 });
 
 export default withCors(apiUsers);

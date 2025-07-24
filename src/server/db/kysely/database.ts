@@ -3345,19 +3345,20 @@ export interface Tags {
 }
 
 export interface Users {
-  accepted_cgu_at: Timestamp | null;
-  activated_at: Timestamp | null;
+  accepted_cgu_at: Date | null;
+  activated_at: Date | null;
   activation_token: string | null;
-  active: Generated<boolean | null>;
-  created_at: Generated<Timestamp | null>;
+  active: Generated<boolean>;
+  created_at: Generated<Date | null>;
   email: string;
   first_name: string | null;
   from_api: string | null;
   gestionnaires: string[] | null;
+  gestionnaires_from_api: string[] | null;
   id: Generated<string>;
-  last_connection: Timestamp | null;
+  last_connection: Date | null;
   last_name: string | null;
-  optin_at: Timestamp | null;
+  optin_at: Date | null;
   password: string;
   phone: string | null;
   receive_new_demands: boolean | null;

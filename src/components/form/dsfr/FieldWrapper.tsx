@@ -39,7 +39,7 @@ const FieldWrapper = ({
       {...props}
     >
       {(label || hintText) && (
-        <label className="fr-label" htmlFor={fieldId || generatedId}>
+        <label className="fr-label mb-2" htmlFor={fieldId || generatedId}>
           {label}
           {hintText && <span className="fr-hint-text">{hintText}</span>}
         </label>
