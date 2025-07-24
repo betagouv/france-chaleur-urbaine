@@ -1,5 +1,5 @@
 import Tag from '@codegouvfr/react-dsfr/Tag';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import Icon from '@/components/ui/Icon';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover';
@@ -12,9 +12,10 @@ import { stopPropagation } from '@/utils/events';
 
 export type ChipOption = {
   key: string;
-  label: string;
+  label: ReactNode;
   title?: string;
   className?: string;
+  dismissible?: boolean;
 };
 
 type ChipAutoCompletePropsBase = {
@@ -165,7 +166,7 @@ const ChipAutoComplete = (rawProps: ChipAutoCompleteProps) => {
               return (
                 <Tag
                   key={tagName}
-                  dismissible
+                  dismissible={chipOption.dismissible !== false}
                   small
                   className={chipOption?.className}
                   nativeButtonProps={{
