@@ -65,26 +65,20 @@ export default function ManageUsers() {
     isCreating: creatingUser,
   } = useCrud<UsersResponse>('/api/admin/users');
 
-  const handleUpdateUser = useCallback(
-    (userId: string) =>
-      toastErrors(async (userUpdate: UsersResponse['updateInput']) => {
-        await updateUser(userId, userUpdate);
-        if (userId) {
-          setUserId(null);
-        }
-        notify('success', 'Utilisateur mis à jour');
-      }),
-    [setUserId]
-  );
+  const handleUpdateUser = (userId: string) =>
+    toastErrors(async (userUpdate: UsersResponse['updateInput']) => {
+      await updateUser(userId, userUpdate);
+      if (userId) {
+        setUserId(null);
+      }
+      notify('success', 'Utilisateur mis à jour');
+    });
 
-  const handleCreateUser = useCallback(
-    toastErrors(async (userCreate: UsersResponse['createInput']) => {
-      await createUser(userCreate);
-      setUserId(null);
-      notify('success', 'Utilisateur créé');
-    }),
-    [setUserId]
-  );
+  const handleCreateUser = toastErrors(async (userCreate: UsersResponse['createInput']) => {
+    await createUser(userCreate);
+    setUserId(null);
+    notify('success', 'Utilisateur créé');
+  });
 
   const columns: ColumnDef<UsersResponse['listItem']>[] = useMemo(
     () => [

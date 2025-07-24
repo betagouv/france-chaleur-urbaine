@@ -84,6 +84,7 @@ const UserForm = ({ user, onSubmit, loading }: UserFormProps) => {
           <Field.EmailInput
             name="email"
             label="Email"
+            hideOptionalLabel
             nativeInputProps={{
               placeholder: 'exemple@email.com',
             }}
@@ -151,7 +152,7 @@ const UserForm = ({ user, onSubmit, loading }: UserFormProps) => {
         </FieldWrapper>
 
         <div className="flex justify-end">
-          <Submit loading={loading}>{user ? 'Mettre à jour' : 'Créer'} l'utilisateur</Submit>
+          <Submit loading={loading}>{isNew ? 'Créer' : 'Mettre à jour'} l'utilisateur</Submit>
         </div>
         {!isNew && (
           <FieldWrapper>
