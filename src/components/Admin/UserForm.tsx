@@ -10,6 +10,11 @@ import { createUserAdminSchema, structureTypes, updateUserAdminSchema } from '@/
 export type OnCreate = (data: UsersResponse['createInput']) => Promise<void> | void;
 export type OnUpdate = (data: UsersResponse['updateInput']) => Promise<void> | void;
 
+const roleOptions = userRoles.map((role) => ({
+  label: role.charAt(0).toUpperCase() + role.slice(1),
+  value: role,
+}));
+
 type UserFormProps = {
   loading?: boolean;
   user?: UsersResponse['listItem'];
@@ -38,11 +43,6 @@ const UserForm = ({ user, onSubmit, loading }: UserFormProps) => {
     },
     onSubmit: async ({ value }) => onSubmit(value as any),
   });
-
-  const roleOptions = userRoles.map((role) => ({
-    label: role.charAt(0).toUpperCase() + role.slice(1),
-    value: role,
-  }));
 
   const role = useValue('role');
   const structureType = useValue('structure_type');

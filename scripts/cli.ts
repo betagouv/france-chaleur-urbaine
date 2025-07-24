@@ -491,7 +491,7 @@ program
 program
   .command('debug:upsert-users-from-api')
   .description('Update Gestionnaires and Gestionnaires API airtables from file.')
-  .argument('<accountName>', 'Key of the account in api_accounts')
+  .argument('<accountName>', 'Name of the account in api_accounts')
   .argument('<file>', 'File with data')
   .action(async (accountName, file) => {
     const account = await kdb.selectFrom('api_accounts').where('name', '=', accountName).selectAll().executeTakeFirst();
