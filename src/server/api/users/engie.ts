@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { clientConfig } from '@/client-config';
+import cliConfig from '@/cli-config';
 import { type ApiAccounts, kdb } from '@/server/db/kysely';
 import { parentLogger } from '@/server/helpers/logger';
 import { create } from '@/server/services/user';
@@ -8,7 +8,7 @@ import { sanitizeEmail } from '@/utils/validation';
 
 const logger = parentLogger.child({
   module: 'engie',
-  dry_run: clientConfig.dryRun,
+  dry_run: cliConfig.dryRun,
 });
 
 export const validation = z.array(
@@ -70,7 +70,7 @@ export const handleData = async (account: ApiAccounts, networks: EngieApiNetwork
 
       if (!user) {
         logger.info(`🆕 Create user ${email}`);
-        if (!clientConfig.dryRun) {
+        if (!cliConfig.dryRun) {
           await create(
             {
               status: 'valid',
@@ -99,7 +99,7 @@ export const handleData = async (account: ApiAccounts, networks: EngieApiNetwork
       }
 
       logger.info(`🔄 Update user ${email} (${user.id})`, { gestionnaires_from_api: user.gestionnaires_from_api });
-      if (!clientConfig.dryRun) {
+      if (!cliConfig.dryRun) {
         logger.info(' ✅ Done');
         await kdb
           .updateTable('users')
@@ -121,7 +121,7 @@ export const handleData = async (account: ApiAccounts, networks: EngieApiNetwork
   await Promise.all(
     existingUsersFromApi.map(async ({ email }) => {
       logger.info(`🚫 Deactivate user ${email}`);
-      if (!clientConfig.dryRun) {
+      if (!cliConfig.dryRun) {
         await kdb.updateTable('users').set({ active: false }).where('email', '=', email).execute();
       } else {
         logger.info(' ⏭️ Skipped');
