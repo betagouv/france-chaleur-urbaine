@@ -27,21 +27,19 @@ type ChipAutoCompletePropsBase = {
   className?: string;
 };
 
-type ChipAutoCompletePropsMultiple = ChipAutoCompletePropsBase & {
-  multiple: true;
-  value: string[];
-  suggestedValue?: string[];
-  onChange: (value: string[]) => void;
-};
-
-type ChipAutoCompletePropsSingle = ChipAutoCompletePropsBase & {
-  multiple?: false;
-  value: string;
-  suggestedValue?: string;
-  onChange: (value: string) => void;
-};
-
-export type ChipAutoCompleteProps = ChipAutoCompletePropsMultiple | ChipAutoCompletePropsSingle;
+export type ChipAutoCompleteProps =
+  | (ChipAutoCompletePropsBase & {
+      multiple: true;
+      value: string[];
+      suggestedValue?: string[];
+      onChange: (value: string[]) => void;
+    })
+  | (ChipAutoCompletePropsBase & {
+      multiple?: false;
+      value: string;
+      suggestedValue?: string;
+      onChange: (value: string) => void;
+    });
 
 const ChipAutoComplete = (rawProps: ChipAutoCompleteProps) => {
   // keep props to allow type inference with multiple
