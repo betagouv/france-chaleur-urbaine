@@ -94,7 +94,7 @@ const UserForm = ({ user, onSubmit, loading }: UserFormProps) => {
           <FieldWrapper>
             <Field.Custom
               name="gestionnaires"
-              label="Gestionnaires"
+              label="Tags gestionnaires"
               Component={(props: any) => (
                 <FCUTagAutocompleteInput undismissibles={user?.gestionnaires_from_api ?? []} multiple {...props} />
               )}
