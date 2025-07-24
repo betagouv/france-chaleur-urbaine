@@ -7,7 +7,7 @@ import {
   useForm as useTanStackForm,
   useStore,
 } from '@tanstack/react-form';
-import { useEffect, useState } from 'react';
+import { type ComponentType, useEffect, useState } from 'react';
 import { type z } from 'zod';
 
 import DsfrCheckbox, { type CheckboxProps as DsfrCheckboxProps } from '@/components/form/dsfr/Checkbox';
@@ -21,6 +21,13 @@ import DsfrTextArea from '@/components/form/dsfr/TextArea';
 import Button, { type ButtonProps } from '@/components/ui/Button';
 import cx from '@/utils/cx';
 import { getSchemaShape } from '@/utils/validation';
+
+type CustomFieldProps<T extends ComponentType<any>> = {
+  name: string;
+  fieldInputProps?: any;
+  label?: string;
+  Component: React.ComponentType<Omit<React.ComponentProps<T>, 'value' | 'onChange' | 'state' | 'stateRelatedMessage'>>;
+} & Omit<React.ComponentProps<T>, 'value' | 'onChange' | 'state' | 'stateRelatedMessage'>;
 
 /**
  * Get the error states for an input field.
@@ -488,6 +495,30 @@ function useFormInternal<
     />
   );
 
+  const Custom = <T extends ComponentType<any>>({
+    name,
+    fieldInputProps,
+    label,
+    Component: CustomComponent,
+    ...props
+  }: CustomFieldProps<T>) => (
+    <form.Field
+      name={name}
+      {...fieldInputProps}
+      children={(field) => {
+        return (
+          <CustomComponent
+            value={field.state.value}
+            onChange={field.handleChange}
+            label={label}
+            {...getInputErrorStates(field)}
+            {...(props as React.ComponentProps<T>)}
+          />
+        );
+      }}
+    />
+  );
+
   const Submit = ({ children, loading, disabled, ...props }: Omit<ButtonProps, 'type'>) => (
     <form.Subscribe
       selector={(state) => [state.canSubmit, state.isSubmitting]}
@@ -574,6 +605,7 @@ function useFormInternal<
     Field: {
       Checkbox,
       Checkboxes,
+      Custom,
       EmailInput,
       Input,
       NumberInput,
