@@ -29,6 +29,35 @@ const entityTypeToTable = {
   futur: 'zones_et_reseaux_en_construction',
 } as const satisfies Record<EntityType, NetworkTable>;
 
+const getCardPriority = (card: TrelloCard): number => {
+  const labelNames = card.labels.map((label) => label.name);
+  const hasReseauChaleur = labelNames.includes('Réseau chaleur');
+  const hasReseauFroid = labelNames.includes('Réseau froid');
+  const hasReseauConstruction = labelNames.includes('Réseau en construction');
+  const hasPDP = labelNames.includes('PDP');
+  const labelCount = labelNames.length;
+
+  // 1. "Réseau chaleur" (uniquement)
+  if (hasReseauChaleur && labelCount === 1) return 1;
+
+  // 2. "Réseau en construction" (uniquement)
+  if (hasReseauConstruction && labelCount === 1) return 2;
+
+  // 3. "Réseau chaleur" (au moins)
+  if (hasReseauChaleur && labelCount > 1) return 3;
+
+  // 4. "Réseau froid" (au moins)
+  if (hasReseauFroid) return 4;
+
+  // 5. "Réseau en construction" (au moins)
+  if (hasReseauConstruction && labelCount > 1) return 5;
+
+  // 6. "PDP" (au moins)
+  if (hasPDP) return 6;
+
+  return 999;
+};
+
 export function registerNetworkCommands(parentProgram: Command) {
   const program = parentProgram.command('geom').description('Commandes pour gérer les géométries des données FCU (réseaux, PDP. etc)');
 
@@ -74,35 +103,6 @@ export function registerNetworkCommands(parentProgram: Command) {
         }
 
         logger.info(`\n📋 ${cards.length} carte(s) trouvée(s) dans "${COLUMN_TO_PROCESS}":\n`);
-
-        const getCardPriority = (card: TrelloCard): number => {
-          const labelNames = card.labels.map((label) => label.name);
-          const hasReseauChaleur = labelNames.includes('Réseau chaleur');
-          const hasReseauFroid = labelNames.includes('Réseau froid');
-          const hasReseauConstruction = labelNames.includes('Réseau en construction');
-          const hasPDP = labelNames.includes('PDP');
-          const labelCount = labelNames.length;
-
-          // 1. "Réseau chaleur" (uniquement)
-          if (hasReseauChaleur && labelCount === 1) return 1;
-
-          // 2. "Réseau en construction" (uniquement)
-          if (hasReseauConstruction && labelCount === 1) return 2;
-
-          // 3. "Réseau chaleur" (au moins)
-          if (hasReseauChaleur && labelCount > 1) return 3;
-
-          // 4. "Réseau froid" (au moins)
-          if (hasReseauFroid) return 4;
-
-          // 5. "Réseau en construction" (au moins)
-          if (hasReseauConstruction && labelCount > 1) return 5;
-
-          // 6. "PDP" (au moins)
-          if (hasPDP) return 6;
-
-          return 999;
-        };
 
         const sortedCards = cards
           .filter((card) => card.attachments.some((attachment) => attachment.fileName.endsWith('.geojson')))
