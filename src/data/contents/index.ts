@@ -1,5 +1,6 @@
 import { type Article } from '@/types/Article';
 
+import unMillionCinqCentsMilleAdressesTestees from './1.5-million-dadresses-testees-par-des-professionnels.md';
 import reseauxACreerOuEtendre from './1600-reseaux-a-creer-ou-etendre.md';
 import deuxCentsPDP from './200-perimetres-de-developpement-prioritaire-a-decouvrir-sur-notre-carte.md';
 import demandes from './2000-demandes.md';
@@ -124,6 +125,7 @@ import readme_8 from './README (8).md';
 import readme_9 from './README (9).md';
 import retrouvezDonneesRecentes from './retrouvez-les-donnees-les-plus-recentes-des-reseaux-de-chaleur.md';
 import retrouvezQPV from './retrouvez-les-quartiers-prioritaires-pour-la-politique-de-la-ville-qpv-sur-notre-carte.md';
+import retrouvezReplaysWebinaires from './retrouvez-les-replays-et-presentations-de-nos-webinaires.md';
 import retrouvezTauxEnergiesRenouvelablesEtContenuCO2DesReseaux from './retrouvez-les-taux-denergies-renouvelables-et-contenus-co2-actualises-des-reseaux.md';
 import seChaufferAPrixStables from './se-chauffer-a-prix-stables.md';
 import toutSavoirSurLeClassementDesReseauxDeChaleur from './tout-savoir-sur-le-classement-des-reseaux-de-chaleur.md';
@@ -140,6 +142,7 @@ import uneEnqueteIfopPourFranceChaleurUrbaine from './une-enquete-ifop-pour-fran
 import visiteCentraleFroidAlsaceChaufferieCharras from './visite-de-la-centrale-de-froid-alsace-et-de-la-chaufferie-charras.md';
 import visiteDunDatacenter from './visite-dun-datacenter.md';
 import visiteDuneChaufferieBiomasse from './visite-dune-chaufferie-biomasse.md';
+import visualisezPerimetresGeothermieProfonde from './visualisez-les-perimetres-dexploitation-des-operations-de-geothermie-profonde.md';
 
 const importFile = (file: string) => {
   return file.replaceAll('.gitbook/assets/', '/contents/');
@@ -164,6 +167,30 @@ function getArticleAbstract(content: string): string {
 
 export const articles = (
   [
+    {
+      image: '/contents/FCU_cover_perimetres_geothermie.jpg',
+      title: "Visualisez les périmètres d'exploitation des opérations de géothermie profonde",
+      slug: 'visualisez-les-perimetres-dexploitation-des-operations-de-geothermie-profonde',
+      content: importFile(visualisezPerimetresGeothermieProfonde),
+      publishedDate: new Date('2025-07-22'),
+      themes: ['Cartographie et données', 'ENR&R', 'Réseaux de chaleur'],
+    },
+    {
+      image: '/contents/FCU_cover_replays_presentations.jpg',
+      title: 'Retrouvez les replays et présentations de nos webinaires',
+      slug: 'retrouvez-les-replays-et-presentations-de-nos-webinaires',
+      content: importFile(retrouvezReplaysWebinaires),
+      publishedDate: new Date('2025-07-16'),
+      themes: ['Réseaux de chaleur', 'Réseaux de froid', 'Communication'],
+    },
+    {
+      image: '/contents/FCU_cover_adreses-testees.jpg',
+      title: "1.5 million d'adresses testées par des professionnels",
+      slug: '1.5-million-dadresses-testees-par-des-professionnels',
+      content: importFile(unMillionCinqCentsMilleAdressesTestees),
+      publishedDate: new Date('2025-07-10'),
+      themes: ['Réseaux de chaleur'],
+    },
     {
       image: '/contents/cover_carte_avril_2025.jpg',
       title: '900 tracés de réseaux de chaleur recensés sur la carte !',
