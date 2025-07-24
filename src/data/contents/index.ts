@@ -169,7 +169,7 @@ function getArticleAbstract(content: string): string {
 export const articles = (
   [
     {
-      image: '/contents/FCU_carte_juillet_2025.jpg',
+      image: '/contents/cover_carte_avril_2025.jpg',
       title: 'Un enrichissement important de la carte ce mois-ci !',
       slug: 'un-enrichissement-important-de-la-carte-ce-mois-ci',
       content: importFile(unEnrichissementImportantDeLaCarteCeMoisCi),
