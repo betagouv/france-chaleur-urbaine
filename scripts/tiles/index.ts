@@ -1,6 +1,8 @@
 import EtudeEnCoursAdapter from './adapters/etudes-en-cours';
 import InstallationsGeothermieSurfaceEchangeursFermesAdapter from './adapters/installations-geothermie-surface-echangeurs-fermes';
 import InstallationsGeothermieSurfaceEchangeursOuvertsAdapter from './adapters/installations-geothermie-surface-echangeurs-ouverts';
+import OuvragesGeothermieSurfaceEchangeursFermesAdapter from './adapters/ouvrages-geothermie-surface-echangeurs-fermes';
+import OuvragesGeothermieSurfaceEchangeursOuvertsAdapter from './adapters/ouvrages-geothermie-surface-echangeurs-ouverts';
 import PerimetresGeothermieProfondeAdapter from './adapters/perimetres-geothermie-profonde';
 import ReseauxDeChaleurAdapter from './adapters/reseaux-de-chaleur';
 import TestsAdressesAdapter from './adapters/tests-adresses';
@@ -12,6 +14,8 @@ export const tilesAdapters = {
   'reseaux-de-chaleur': ReseauxDeChaleurAdapter,
   'installations-geothermie-surface-echangeurs-fermes': InstallationsGeothermieSurfaceEchangeursFermesAdapter,
   'installations-geothermie-surface-echangeurs-ouverts': InstallationsGeothermieSurfaceEchangeursOuvertsAdapter,
+  'ouvrages-geothermie-surface-echangeurs-fermes': OuvragesGeothermieSurfaceEchangeursFermesAdapter,
+  'ouvrages-geothermie-surface-echangeurs-ouverts': OuvragesGeothermieSurfaceEchangeursOuvertsAdapter,
 };
 
 export type TilesName = keyof typeof tilesAdapters;
