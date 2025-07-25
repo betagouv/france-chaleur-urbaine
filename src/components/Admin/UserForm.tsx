@@ -2,6 +2,7 @@ import FCUTagAutocompleteInput from '@/components/form/dsfr/FCUTagAutocompleteIn
 import useForm from '@/components/form/react-form/useForm';
 import Badge from '@/components/ui/Badge';
 import Tag from '@/components/ui/Tag';
+import Tooltip from '@/components/ui/Tooltip';
 import { type UsersResponse } from '@/pages/api/admin/users/[[...slug]]';
 import { userRoles } from '@/types/enum/UserRole';
 import cx from '@/utils/cx';
@@ -77,8 +78,31 @@ const UserForm = ({ user, onSubmit, loading }: UserFormProps) => {
           {!isNew && <Field.Checkbox name="optin_at" label={<>A accepté les conditions d'utilisation</>} />}
         </FieldWrapper>
         <FieldWrapper>
-          <Field.Checkbox name="receive_new_demands" label="Reçoit les nouvelles demandes" />
-          <Field.Checkbox name="receive_old_demands" label="Reçoit les anciennes demandes" />
+          Notifications email :
+          <Field.Checkbox
+            name="receive_new_demands"
+            label={
+              <>
+                Nouvelles demandes
+                <Tooltip
+                  title="Notifications quotidiennes pour les nouvelles demandes déposées sur France Chaleur Urbaine"
+                  iconProps={{ className: 'ml-1 mb-2' }}
+                />
+              </>
+            }
+          />
+          <Field.Checkbox
+            name="receive_old_demands"
+            label={
+              <>
+                Demandes en attente de prise en charge
+                <Tooltip
+                  title="Notifications hebdomadaires si des demandes sont en attente de prise en charge depuis plus de 7 jours"
+                  iconProps={{ className: 'ml-1 mb-2' }}
+                />
+              </>
+            }
+          />
         </FieldWrapper>
         <FieldWrapper>
           <Field.EmailInput
