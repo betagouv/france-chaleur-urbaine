@@ -26,8 +26,12 @@ const PUT = async (req: NextApiRequest) => {
   await AirtableDB('FCU - Utilisateurs').update(req.query.demandId as string, demandUpdate as any, { typecast: true });
 };
 
+const DELETE = async (req: NextApiRequest) => {
+  await AirtableDB('FCU - Utilisateurs').destroy(req.query.demandId as string);
+};
+
 export default handleRouteErrors(
-  { PUT },
+  { DELETE, PUT },
   {
     requireAuthentication: ['admin'],
   }

@@ -38,7 +38,7 @@ import { arrayEquals } from '@/utils/array';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
 import { stopPropagation } from '@/utils/events';
-import { putFetchJSON } from '@/utils/network';
+import { deleteFetchJSON, putFetchJSON } from '@/utils/network';
 import { formatMWh, upperCaseFirstChar } from '@/utils/strings';
 import { ObjectEntries, ObjectKeys } from '@/utils/typescript';
 
@@ -165,6 +165,18 @@ function DemandesAdmin(): React.ReactElement {
     []
   );
 
+  const deleteDemand = useCallback(
+    toastErrors(async (demandId: string) => {
+      await deleteFetchJSON(`/api/admin/demands/${demandId}`);
+
+      queryClient.setQueryData<AdminDemand[]>(['/api/admin/demands'], (demands) =>
+        (demands ?? []).filter((demand) => demand.id !== demandId)
+      );
+      notify('success', 'Demande supprimée');
+    }),
+    []
+  );
+
   useMapEventBus('rdc-add-tag', (event) => {
     const selectedDemand = demands.find((demand) => demand.id === selectedDemandId);
     if (!selectedDemandId || !selectedDemand) {
@@ -269,34 +281,49 @@ function DemandesAdmin(): React.ReactElement {
           return demand['Gestionnaires validés'] ? (
             <span className="text-green-500 text-3xl">✓</span>
           ) : (
-            <AsyncButton
-              priority="primary"
-              size="small"
-              onClick={async () => {
-                updateDemand(demand.id, {
-                  'Gestionnaires validés': true,
+            <div className="flex flex-col items-center gap-2">
+              <AsyncButton
+                priority="primary"
+                size="small"
+                onClick={async () => {
+                  updateDemand(demand.id, {
+                    'Gestionnaires validés': true,
 
-                  // assign recommended tags, assignment, and network infos if not are set
-                  Gestionnaires: arrayEquals(demand.Gestionnaires ?? [], [defaultEmptyStringValue])
-                    ? demand.recommendedTags
-                    : (demand.Gestionnaires ?? []),
-                  'Affecté à': demand['Affecté à'] === defaultEmptyStringValue ? demand.recommendedAssignment : demand['Affecté à'],
-                  'Nom réseau':
-                    demand['Nom réseau'] === defaultEmptyStringValue ? demand.detailedEligibilityStatus.nom : demand['Nom réseau'],
-                  'Identifiant réseau':
-                    demand['Identifiant réseau'] === defaultEmptyStringValue
-                      ? demand.detailedEligibilityStatus.id_sncu
-                      : demand['Identifiant réseau'],
-                  'Distance au réseau':
-                    demand['Distance au réseau'] === defaultEmptyNumberValue
-                      ? demand.detailedEligibilityStatus.distance
-                      : demand['Distance au réseau'],
-                  'Relance à activer': demand.detailedEligibilityStatus.distance < 200 && demand['Type de chauffage'] === 'Collectif',
-                });
-              }}
-            >
-              Valider
-            </AsyncButton>
+                    // assign recommended tags, assignment, and network infos if not are set
+                    Gestionnaires: arrayEquals(demand.Gestionnaires ?? [], [defaultEmptyStringValue])
+                      ? demand.recommendedTags
+                      : (demand.Gestionnaires ?? []),
+                    'Affecté à': demand['Affecté à'] === defaultEmptyStringValue ? demand.recommendedAssignment : demand['Affecté à'],
+                    'Nom réseau':
+                      demand['Nom réseau'] === defaultEmptyStringValue ? demand.detailedEligibilityStatus.nom : demand['Nom réseau'],
+                    'Identifiant réseau':
+                      demand['Identifiant réseau'] === defaultEmptyStringValue
+                        ? demand.detailedEligibilityStatus.id_sncu
+                        : demand['Identifiant réseau'],
+                    'Distance au réseau':
+                      demand['Distance au réseau'] === defaultEmptyNumberValue
+                        ? demand.detailedEligibilityStatus.distance
+                        : demand['Distance au réseau'],
+                    'Relance à activer': demand.detailedEligibilityStatus.distance < 200 && demand['Type de chauffage'] === 'Collectif',
+                  });
+                }}
+              >
+                Valider
+              </AsyncButton>
+              <AsyncButton
+                priority="secondary"
+                size="small"
+                iconId="fr-icon-delete-line"
+                variant="destructive"
+                title="Supprimer la demande"
+                onClick={async () => {
+                  if (!confirm('Êtes-vous sûr de vouloir supprimer cette demande ?')) {
+                    return;
+                  }
+                  await deleteDemand(demand.id);
+                }}
+              />
+            </div>
           );
         },
         width: '120px',
