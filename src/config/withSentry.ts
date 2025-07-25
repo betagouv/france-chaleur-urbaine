@@ -5,7 +5,9 @@ const withSentry =
   (webpackPluginOptions = {}, sentryOptions = {}) =>
   (nextConfig: NextConfig) => {
     if (!process.env.NEXT_PUBLIC_SENTRY_DSN) {
-      console.log('Sentry is disabled: NEXT_PUBLIC_SENTRY_DSN is not defined');
+      if (!process.env.SENTRY_DISABLED_IGNORE_WARNING) {
+        console.info('Sentry is disabled: NEXT_PUBLIC_SENTRY_DSN is not defined');
+      }
       return nextConfig;
     }
 
