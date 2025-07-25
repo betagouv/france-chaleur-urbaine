@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'motion/react';
 import { useEffect, useState } from 'react';
 
+import { clientConfig } from '@/client-config';
 import CreateEligibilityTestForm from '@/components/dashboard/professionnel/eligibility-test/CreateEligibilityTestForm';
 import ProEligibilityTestItem from '@/components/dashboard/professionnel/ProEligibilityTestItem';
 import SimplePage from '@/components/shared/page/SimplePage';
@@ -51,7 +52,7 @@ export default function TestsAdresses(): JSX.Element {
         <p>
           Pour être mis en relation avec le gestionnaire d'un réseau pour obtenir plus d'informations, vous pouvez utiliser le formulaire en
           ligne sur notre site ou nous contacter par mail si le besoin concerne plusieurs adresses&nbsp;:{' '}
-          <a href="mailto:france-chaleur-urbaine@developpement-durable.gouv.fr">france-chaleur-urbaine@developpement-durable.gouv.fr</a>
+          <a href={`mailto:${clientConfig.contactEmail}`}>{clientConfig.contactEmail}</a>
         </p>
         <div className="flex items-center justify-between fr-mb-2w">
           <Heading as="h3" color="blue-france" mb="0">

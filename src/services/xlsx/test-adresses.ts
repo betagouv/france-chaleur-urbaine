@@ -1,3 +1,4 @@
+import { clientConfig } from '@/client-config';
 import { type ProEligibilityTestWithAddresses } from '@/pages/api/pro-eligibility-tests/[id]';
 
 type ColumnAccessor = (address: ProEligibilityTestWithAddresses['addresses'][number]) => string;
@@ -92,7 +93,7 @@ const legend = [
   [],
   [
     'Mise en relation avec le gestionnaire',
-    "Pour être mis en relation avec le gestionnaire d'un réseau pour obtenir plus d'informations, vous pouvez utiliser le formulaire en ligne sur notre site ou nous contacter par mail si le besoin concerne plusieurs adresses : france-chaleur-urbaine@developpement-durable.gouv.fr ",
+    `Pour être mis en relation avec le gestionnaire d'un réseau pour obtenir plus d'informations, vous pouvez utiliser le formulaire en ligne sur notre site ou nous contacter par mail si le besoin concerne plusieurs adresses : ${clientConfig.contactEmail} `,
   ],
 ];
 

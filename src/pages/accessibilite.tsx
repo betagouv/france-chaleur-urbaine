@@ -1,3 +1,4 @@
+import { clientConfig } from '@/client-config';
 import SimplePage from '@/components/shared/page/SimplePage';
 
 function Accessibilite() {
@@ -52,8 +53,8 @@ function Accessibilite() {
             <ul className="fr-mb-4w">
               <li>
                 Envoyer un message à{' '}
-                <a href="mailto:france-chaleur-urbaine@developpement-durable.gouv.fr" target="_blank" rel="noopener noreferrer">
-                  france-chaleur-urbaine@developpement-durable.gouv.fr
+                <a href={`mailto:${clientConfig.contactEmail}`} target="_blank" rel="noopener noreferrer">
+                  {clientConfig.contactEmail}
                 </a>
               </li>
             </ul>

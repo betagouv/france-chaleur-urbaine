@@ -1,3 +1,4 @@
+import { clientConfig } from '@/client-config';
 import MarkdownWrapper from '@/components/MarkdownWrapper';
 import Slice from '@/components/Slice';
 
@@ -37,7 +38,7 @@ alt="Batiments et description de l'enquête IFOP"
 
 **À propos de France Chaleur Urbaine, retrouvez notre [dossier de presse](https://france-chaleur-urbaine.beta.gouv.fr/documentation/dossier-presse.pdf)**
 
-Pour nous contacter : [france-chaleur-urbaine@developpement-durable.gouv.fr](mailto:france-chaleur-urbaine@developpement-durable.gouv.fr)
+Pour nous contacter : [${clientConfig.contactEmail}](mailto:${clientConfig.contactEmail})
 
 (1) https://www.ecologie.gouv.fr/concertation-decarbonation-des-batiments
 (2) https://www.gouvernement.fr/upload/media/content/0001/06/3a74943433702a0247ca9f7190177a37710a9678.pdf

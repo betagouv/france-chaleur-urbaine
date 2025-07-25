@@ -1,3 +1,4 @@
+import { clientConfig } from '@/client-config';
 import MarkdownWrapper from '@/components/MarkdownWrapper';
 import Slice from '@/components/Slice';
 
@@ -26,7 +27,7 @@ Le service public **France Chaleur Urbaine, entièrement financé par l’État,
 
 **A propos de France Chaleur Urbaine, retrouvez [notre dossier de presse ici](/documentation/dossier-presse.pdf)**
 
-Pour nous contacter : [france-chaleur-urbaine@developpement-durable.gouv.fr](mailto:france-chaleur-urbaine@developpement-durable.gouv.fr)`}
+Pour nous contacter : [${clientConfig.contactEmail}](mailto:${clientConfig.contactEmail})`}
         />
         <Image src="/img/FCU_Infographie_Menage.jpg" alt="Les ménages français et le chauffage" />
       </Slice>
