@@ -1,4 +1,5 @@
 import Button from '@/components/ui/Button';
+import Link from '@/components/ui/Link';
 
 import { ifHoverElse, type MapSourceLayersSpecification, type PopupStyleHelpers } from './common';
 
@@ -137,14 +138,24 @@ function PopupInstallationGeothermieSurface(
 ) {
   return (
     <>
-      <Title>{installationGeothermieSurface.nom_instal}</Title>
+      <Title>{installationGeothermieSurface.nom_instal || 'Installation géothermie de surface'}</Title>
       <TwoColumns>
         <Property label="Catégorie réglementaire" value={installationGeothermieSurface.categ_gth} />
         <Property label="Usage(s) de l'énergie produite" value={installationGeothermieSurface.usage_gth} />
         <Property label="Nombre d'ouvrages raccordés" value={installationGeothermieSurface.nombre_ouv} />
         <Property label="Puissance thermique délivrée" value={installationGeothermieSurface.p_pac} unit="kW" />
         <Property label="Statut" value={installationGeothermieSurface.statut_inst} />
-        <Property label="Source" value="BRGM" />
+        <Property
+          label="Source"
+          value={
+            <>
+              <Link href="https://www.geothermies.fr/espace-cartographique" isExternal>
+                BRGM
+              </Link>{' '}
+              (juillet 2025)
+            </>
+          }
+        />
       </TwoColumns>
     </>
   );
@@ -196,7 +207,7 @@ type InstallationGeothermieSurfaceEchangeursOuverts = {
   gmi_decla: null | string;
   categ_gth: null | string;
   type_inst: 'GTH_AQUIFERE';
-  proced_gth: 'sur aquifère' | null;
+  proced_gth: ProcedGth | null;
   usage_gth: null | string;
   desc_inst: null | string;
   nombre_ouv: number;
@@ -215,8 +226,8 @@ type InstallationGeothermieSurfaceEchangeursOuverts = {
   x_ouv93: number;
   y_ouv93: number;
   alti_inst: number | null;
-  recueil: string | null;
-  date_extra: '2024-11-30Z';
+  recueil: Recueil | null;
+  date_extra: '2025-07-23Z';
   puissance_calorifique: number | null;
   taux_couverture: TauxCouverture | null;
   surface: number | null;
@@ -232,7 +243,7 @@ type InstallationGeothermieSurfaceEchangeursFermes = {
   gmi_decla: null | string;
   categ_gth: null | string;
   type_inst: 'GTH_SONDE';
-  proced_gth: 'avec sonde';
+  proced_gth: ProcedGth;
   usage_gth: null | string;
   desc_inst: null | string;
   nombre_ouv: number;
@@ -252,14 +263,31 @@ type InstallationGeothermieSurfaceEchangeursFermes = {
   x_ouv93: number;
   y_ouv93: number;
   alti_inst: number | null;
-  recueil: string | null;
-  date_extra: '2024-11-30Z';
+  recueil: Recueil | null;
+  date_extra: '2025-07-23Z';
   puissance_calorifique: number | null;
   taux_couverture: TauxCouverture | null;
   surface: number | null;
   batiment: null | string;
 };
+export type ProcedGth = 'sur aquifère' | 'avec sonde';
+
+export type Recueil =
+  | 'BRGM'
+  | 'GESFOR'
+  | 'Portail GMI'
+  | 'BRGM, Portail GMI'
+  | 'BRGM, GESFOR'
+  | 'DREAL'
+  | 'Portail DUPLOS'
+  | 'BRGM, DREAL'
+  | 'GESFOR, Portail GMI'
+  | 'Portail forage domestique'
+  | 'ARS'
+  | 'BRGM, Portail DUPLOS'
+  | 'CONSEIL REGIONAL'
+  | 'Portail DUPLOS, Portail GMI';
 
 type StatutInst = 'Réalisé' | 'Déclaré' | 'Déclaré, Réalisé';
 
-type TauxCouverture = 'Entre 50% et 70%' | 'Entre 30% et 50%' | 'Plus de 90%' | 'Entre 70% et 90%' | 'Moins de 30%';
+export type TauxCouverture = 'Plus de 90%' | 'Entre 50% et 70%' | 'Entre 30% et 50%' | 'Entre 70% et 90%' | 'Moins de 30%';

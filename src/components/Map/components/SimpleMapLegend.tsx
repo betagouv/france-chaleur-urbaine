@@ -1308,7 +1308,8 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
                         Source :{' '}
                         <Link href="https://www.geothermies.fr/espace-cartographique" isExternal>
                           BRGM
-                        </Link>
+                        </Link>{' '}
+                        (juillet 2025)
                       </>
                     }
                   />
@@ -1356,7 +1357,8 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
                         Source :{' '}
                         <Link href="https://www.geothermies.fr/espace-cartographique" isExternal>
                           BRGM
-                        </Link>
+                        </Link>{' '}
+                        (juillet 2025)
                       </>
                     }
                   />
