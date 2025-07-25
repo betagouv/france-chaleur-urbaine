@@ -147,7 +147,7 @@ export const CheckableAccordion = memo(
 
     return (
       <section className={cx(fr.cx('fr-accordion'), className)} style={style} ref={ref} {...rest}>
-        <Box display="flex">
+        <Box display="flex" alignItems="center">
           <StyledCheckbox
             small={small}
             options={[
