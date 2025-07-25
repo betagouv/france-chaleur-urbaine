@@ -97,21 +97,21 @@ const addStat =
     const message = `${stat_key}:${value} - ${date} - ${period} - ${method} - ${stat_label || 'No label'}`;
     if (existing) {
       if (existing.value !== value) {
-        console.log(`⚠️ Conflict detected: ${existing.value}≠${value} for ${message}`);
+        console.warn(`⚠️ Conflict detected: ${existing.value}≠${value} for ${message}`);
       } else {
-        console.log(`💤 No change for ${message}`);
+        console.info(`💤 No change for ${message}`);
       }
 
       return existing;
     }
 
     if (value === 0) {
-      console.log(`💤 Not inserting ${message}`);
+      console.info(`💤 Not inserting ${message}`);
       return null;
     }
 
     if (DRY_RUN) {
-      console.log(`[DRY]`, `✅ Inserted ${message}`);
+      console.info(`[DRY]`, `✅ Inserted ${message}`);
       return null;
     }
     try {
@@ -137,7 +137,7 @@ const addStat =
         )
         .returning([sql<number>`"value"::integer`.as('value'), 'stat_key', 'stat_label', 'date', 'period', 'method'])
         .execute();
-      console.log(`✅ Inserted ${message}`);
+      console.info(`✅ Inserted ${message}`);
 
       return result;
     } catch (e: any) {
@@ -221,7 +221,7 @@ const countRecordsFromMatomo =
         if (data[categoryKey]) {
           results[categoryKey] = +data[categoryKey];
         } else {
-          console.log(`💤 Not found ${categoryKey} - ${startDate}`);
+          console.info(`💤 Not found ${categoryKey} - ${startDate}`);
         }
       })
     );
@@ -232,7 +232,7 @@ const countRecordsFromMatomo =
 const countEventCategoriesFromMatomo = countRecordsFromMatomo(STAT_METHOD.ACTIONS_CATEGORY);
 
 const saveDemandsStats = async (startDate: string, endDate: string) => {
-  console.log(`saveStatsInDB START : saveDemandsStats`);
+  console.info(`saveStatsInDB START : saveDemandsStats`);
   const records = await base(Airtable.UTILISATEURS)
     .select({
       filterByFormula: `AND(
@@ -278,12 +278,12 @@ const saveDemandsStats = async (startDate: string, endDate: string) => {
       stat_label: STAT_LABEL.NB_TOTAL,
     }),
   ]);
-  console.log(`saveStatsInDB END : saveDemandsStats`);
+  console.info(`saveStatsInDB END : saveDemandsStats`);
 };
 
 //From Matomo - actions sur le site
 const saveActionsStats = async (startDate: string, endDate: string) => {
-  console.log(`saveStatsInDB START : saveActionsStats`);
+  console.info(`saveStatsInDB START : saveActionsStats`);
   const results = await bulkFetchRangeFromMatomo<MatomoActionMetrics>(
     {
       method: 'Events.getAction',
@@ -308,12 +308,12 @@ const saveActionsStats = async (startDate: string, endDate: string) => {
       })
     );
   }
-  console.log(`saveStatsInDB END : saveActionsStats`);
+  console.info(`saveStatsInDB END : saveActionsStats`);
 };
 
 //From Matomo - visites sur le site
 const saveVisitsStats = async (startDate: string, endDate: string) => {
-  console.log(`saveStatsInDB START : saveVisitsStats`);
+  console.info(`saveStatsInDB START : saveVisitsStats`);
   const results = await bulkFetchRangeFromMatomo<MatomoUniqueVisitorsMetrics>({
     method: 'VisitsSummary.getUniqueVisitors',
     period: 'range',
@@ -327,12 +327,12 @@ const saveVisitsStats = async (startDate: string, endDate: string) => {
       value: results[0].value,
     });
   }
-  console.log(`saveStatsInDB END : saveVisitsStats`);
+  console.info(`saveStatsInDB END : saveVisitsStats`);
 };
 
 //From Matomo - visites sur la page de la carte (/carte)
 const saveVisitsMapStats = async (startDate: string, endDate: string) => {
-  console.log(`saveStatsInDB START : saveVisitsMapStats`);
+  console.info(`saveStatsInDB START : saveVisitsMapStats`);
   const results = await bulkFetchRangeFromMatomo<MatomoPageMetrics>(
     {
       method: 'Actions.getPageUrl',
@@ -354,12 +354,12 @@ const saveVisitsMapStats = async (startDate: string, endDate: string) => {
       });
     }
   }
-  console.log(`saveStatsInDB END : saveVisitsMapStats`);
+  console.info(`saveStatsInDB END : saveVisitsMapStats`);
 };
 
 //From Database - demandes en masse : éligibles / non éligibles / totales
 const saveBulkContactStats = async (startDate: string, endDate: string) => {
-  console.log(`saveStatsInDB START : saveBulkContactStats`);
+  console.info(`saveStatsInDB START : saveBulkContactStats`);
   const start = new Date(startDate);
   start.setUTCHours(0, 0, 0);
   const end = new Date(endDate);
@@ -418,11 +418,11 @@ const saveBulkContactStats = async (startDate: string, endDate: string) => {
       stat_label: STAT_LABEL.NB_TOTAL,
     }),
   ]);
-  console.log(`saveStatsInDB END : saveBulkContactStats`);
+  console.info(`saveStatsInDB END : saveBulkContactStats`);
 };
 
 const saveComptesProCreatedStats = async (startDate: string, endDate: string) => {
-  console.log(`saveStatsInDB START : saveComptesProCreatedStats`);
+  console.info(`saveStatsInDB START : saveComptesProCreatedStats`);
   const start = new Date(startDate);
   start.setUTCHours(0, 0, 0);
   const end = new Date(endDate);
@@ -442,7 +442,7 @@ const saveComptesProCreatedStats = async (startDate: string, endDate: string) =>
 
   // Check if we have any data to process
   if (comptesProCreated.length === 0) {
-    console.log('No accounts created in the specified period');
+    console.warn('No accounts created in the specified period');
     return;
   }
 
@@ -467,11 +467,11 @@ const saveComptesProCreatedStats = async (startDate: string, endDate: string) =>
 
   await Promise.all(statsPromises);
 
-  console.log(`saveStatsInDB END : saveComptesProCreatedStats`);
+  console.info(`saveStatsInDB END : saveComptesProCreatedStats`);
 };
 
 const saveCommunesSansReseauStats = async (startDate: string, endDate: string) => {
-  console.log(`saveStatsInDB START : saveCommunesSansReseauStats`);
+  console.info(`saveStatsInDB START : saveCommunesSansReseauStats`);
   const start = new Date(startDate);
   start.setUTCHours(0, 0, 0);
   const end = new Date(endDate);
@@ -513,11 +513,11 @@ const saveCommunesSansReseauStats = async (startDate: string, endDate: string) =
     )
   );
 
-  console.log(`saveStatsInDB END : saveCommunesSansReseauStats`);
+  console.info(`saveStatsInDB END : saveCommunesSansReseauStats`);
 };
 
 export const saveStatsInDB = async (start?: string, end?: string) => {
-  console.log(`CRON JOB START: saveStatsInDB`, start, end);
+  console.info(`CRON JOB START: saveStatsInDB`, start, end);
   try {
     const startDate = start ? new Date(start) : new Date();
     if (!start) {
@@ -530,7 +530,7 @@ export const saveStatsInDB = async (start?: string, end?: string) => {
       endDate.setDate(0);
     }
     const stringEndDate = endDate.toISOString().slice(0, 10);
-    console.log(`From ${stringStartDate} to ${stringEndDate}`);
+    console.info(`From ${stringStartDate} to ${stringEndDate}`);
 
     const endAirtableDate = endDate;
     endAirtableDate.setDate(endAirtableDate.getDate() + 1);
@@ -547,7 +547,7 @@ export const saveStatsInDB = async (start?: string, end?: string) => {
     ]);
   } catch (e) {
     Sentry.captureException(e);
-    console.log(`CRON JOB ERROR: saveStatsInDB`, e);
+    console.error(`CRON JOB ERROR: saveStatsInDB`, e);
   }
-  console.log('CRON JOB STOP: saveStatsInDB');
+  console.info('CRON JOB STOP: saveStatsInDB');
 };

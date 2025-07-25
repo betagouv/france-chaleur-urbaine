@@ -5,6 +5,7 @@ import Input from '@/components/form/dsfr/Input';
 import PasswordInput from '@/components/form/dsfr/PasswordInput';
 import Button from '@/components/ui/Button';
 import { useAuthentication, useRedirectionAfterLogin } from '@/services/authentication';
+import { toastErrors } from '@/services/notification';
 
 export interface LoginFormProps {
   callbackUrl: string;
@@ -17,7 +18,7 @@ export const LoginForm = ({ callbackUrl }: LoginFormProps) => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const connect = async (e: FormEvent<HTMLFormElement>) => {
+  const connect = toastErrors(async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     try {
@@ -26,11 +27,10 @@ export const LoginForm = ({ callbackUrl }: LoginFormProps) => {
         email,
         password,
       });
-    } catch (err) {
-      console.log(err);
+    } finally {
       setLoading(false);
     }
-  };
+  });
 
   return (
     <form onSubmit={connect}>

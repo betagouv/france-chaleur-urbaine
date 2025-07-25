@@ -13,11 +13,11 @@ export const jobs: Record<string, any> = {
 };
 
 export const launchJob = async (job: string, ...params: any) => {
-  console.log(`CRON JOB START: ${job}`);
+  console.info(`CRON JOB START: ${job}`);
   try {
     await jobs[job](...params);
   } catch (e) {
     Sentry.captureException(e);
-    console.log(`CRON JOB ERROR: ${job}`, e);
+    console.error(`CRON JOB ERROR: ${job}`, e);
   }
 };

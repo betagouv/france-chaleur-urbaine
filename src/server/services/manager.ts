@@ -230,7 +230,7 @@ const newDemands = async (users: FullUser[]) => {
     }
   }
 
-  console.log(`${sent.length} email(s) envoyé(s) pour les nouvelles demandes.`);
+  console.info(`${sent.length} email(s) envoyé(s) pour les nouvelles demandes.`);
 };
 
 const oldDemands = async (users: FullUser[]) => {
@@ -250,7 +250,7 @@ const oldDemands = async (users: FullUser[]) => {
     }
   }
 
-  console.log(`${sent.length} email(s) envoyé(s) pour les vieilles demandes.`);
+  console.info(`${sent.length} email(s) envoyé(s) pour les vieilles demandes.`);
 };
 
 /**

@@ -4,7 +4,7 @@ import { launchJob } from './launch';
 import { saveStatsInDB } from './saveStatsInDB';
 
 export function registerCrons() {
-  console.log('-- CRON JOB --- Started cron jobs waiting to get ticked...');
+  console.info('-- CRON JOB --- Started cron jobs waiting to get ticked...');
   new cron.CronJob({
     cronTime: '00 10 * * 1-5', // du lundi au vendredi à 10:00
     onTick: () => launchJob('dailyNewManagerMail'),

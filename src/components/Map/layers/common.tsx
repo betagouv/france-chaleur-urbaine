@@ -70,7 +70,7 @@ type PopupPropertyProps<T> = {
   value: T | undefined;
   unit?: string; // overridden by the formatter if present
   formatter?: (value: T) => React.ReactNode;
-} & (T extends number ? { raw?: boolean } : {});
+} & (T extends number ? { raw?: boolean } : object);
 
 function PopupProperty<T>({ label, value, unit, formatter, ...props }: PopupPropertyProps<T>) {
   return (
