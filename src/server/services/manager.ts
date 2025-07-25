@@ -253,6 +253,10 @@ const oldDemands = async (users: FullUser[]) => {
   console.log(`${sent.length} email(s) envoyé(s) pour les vieilles demandes.`);
 };
 
+/**
+ * Envoie un email de relance aux gestionnaires qui ont des demandes en attente de prise en charge
+ * depuis plus de 7 jours.
+ */
 export const weeklyOldManagerMail = async () => {
   const users: FullUser[] = await db('users')
     .where('active', true)
@@ -261,6 +265,9 @@ export const weeklyOldManagerMail = async () => {
   await oldDemands(users);
 };
 
+/**
+ * Envoie un email pour notifier les gestionnaires de nouvelles demandes.
+ */
 export const dailyNewManagerMail = async () => {
   const users: FullUser[] = await db('users')
     .where('active', true)
@@ -278,6 +285,11 @@ export const updateRelanceAnswer = async (id: string, relanced: boolean) => {
   }
 };
 
+/**
+ * Envoie des relances aux utilisateurs s'ils n'ont pas été recontactés par le gestionnaire
+ * après 1 mois pour la première relance
+ * puis 15 jours plus tard pour la seconde relance
+ */
 export const dailyRelanceMail = async () => {
   const demands = await getAllToRelanceDemands();
   for (let i = 0; i < demands.length; i++) {
