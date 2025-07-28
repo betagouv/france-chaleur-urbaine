@@ -364,29 +364,65 @@ const trackingEvents = {
   'Carto|Périmètres géothermie profonde|Désactive': {
     matomo: ['Carto', 'Installations géothermie profonde', 'Désactive'],
   },
-  'Carto|Installations géothermie surface fermés|Active': {
-    matomo: ['Carto', 'Installations géothermie surface fermés', 'Active'],
+  'Carto|Géothermie sur nappe|Active': {
+    matomo: ['Carto', 'Géothermie sur nappe', 'Active'],
   },
-  'Carto|Installations géothermie surface fermés|Désactive': {
-    matomo: ['Carto', 'Installations géothermie surface fermés', 'Désactive'],
+  'Carto|Géothermie sur nappe|Désactive': {
+    matomo: ['Carto', 'Géothermie sur nappe', 'Désactive'],
   },
-  'Carto|Installations géothermie surface ouverts|Active': {
-    matomo: ['Carto', 'Installations géothermie surface ouverts', 'Active'],
+  'Carto|Installations géothermie sur nappe réalisées|Active': {
+    matomo: ['Carto', 'Installations géothermie sur nappe réalisées', 'Active'],
   },
-  'Carto|Installations géothermie surface ouverts|Désactive': {
-    matomo: ['Carto', 'Installations géothermie surface ouverts', 'Désactive'],
+  'Carto|Installations géothermie sur nappe réalisées|Désactive': {
+    matomo: ['Carto', 'Installations géothermie sur nappe réalisées', 'Désactive'],
   },
-  'Carto|Ouvrages géothermie surface fermés|Active': {
-    matomo: ['Carto', 'Ouvrages géothermie surface fermés', 'Active'],
+  'Carto|Installations géothermie sur nappe déclarées|Active': {
+    matomo: ['Carto', 'Installations géothermie sur nappe déclarées', 'Active'],
   },
-  'Carto|Ouvrages géothermie surface fermés|Désactive': {
-    matomo: ['Carto', 'Ouvrages géothermie surface fermés', 'Désactive'],
+  'Carto|Installations géothermie sur nappe déclarées|Désactive': {
+    matomo: ['Carto', 'Installations géothermie sur nappe déclarées', 'Désactive'],
   },
-  'Carto|Ouvrages géothermie surface ouverts|Active': {
-    matomo: ['Carto', 'Ouvrages géothermie surface ouverts', 'Active'],
+  'Carto|Ouvrages géothermie sur nappe réalisés|Active': {
+    matomo: ['Carto', 'Ouvrages géothermie sur nappe réalisés', 'Active'],
   },
-  'Carto|Ouvrages géothermie surface ouverts|Désactive': {
-    matomo: ['Carto', 'Ouvrages géothermie surface ouverts', 'Désactive'],
+  'Carto|Ouvrages géothermie sur nappe réalisés|Désactive': {
+    matomo: ['Carto', 'Ouvrages géothermie sur nappe réalisés', 'Désactive'],
+  },
+  'Carto|Ouvrages géothermie sur nappe déclarés|Active': {
+    matomo: ['Carto', 'Ouvrages géothermie sur nappe déclarés', 'Active'],
+  },
+  'Carto|Ouvrages géothermie sur nappe déclarés|Désactive': {
+    matomo: ['Carto', 'Ouvrages géothermie sur nappe déclarés', 'Désactive'],
+  },
+  'Carto|Géothermie sur sonde|Active': {
+    matomo: ['Carto', 'Géothermie sur sonde', 'Active'],
+  },
+  'Carto|Géothermie sur sonde|Désactive': {
+    matomo: ['Carto', 'Géothermie sur sonde', 'Désactive'],
+  },
+  'Carto|Installations géothermie sur sonde réalisées|Active': {
+    matomo: ['Carto', 'Installations géothermie sur sonde réalisées', 'Active'],
+  },
+  'Carto|Installations géothermie sur sonde réalisées|Désactive': {
+    matomo: ['Carto', 'Installations géothermie sur sonde réalisées', 'Désactive'],
+  },
+  'Carto|Installations géothermie sur sonde déclarées|Active': {
+    matomo: ['Carto', 'Installations géothermie sur sonde déclarées', 'Active'],
+  },
+  'Carto|Installations géothermie sur sonde déclarées|Désactive': {
+    matomo: ['Carto', 'Installations géothermie sur sonde déclarées', 'Désactive'],
+  },
+  'Carto|Ouvrages géothermie sur sonde réalisés|Active': {
+    matomo: ['Carto', 'Ouvrages géothermie sur sonde réalisés', 'Active'],
+  },
+  'Carto|Ouvrages géothermie sur sonde réalisés|Désactive': {
+    matomo: ['Carto', 'Ouvrages géothermie sur sonde réalisés', 'Désactive'],
+  },
+  'Carto|Ouvrages géothermie sur sonde déclarés|Active': {
+    matomo: ['Carto', 'Ouvrages géothermie sur sonde déclarés', 'Active'],
+  },
+  'Carto|Ouvrages géothermie sur sonde déclarés|Désactive': {
+    matomo: ['Carto', 'Ouvrages géothermie sur sonde déclarés', 'Désactive'],
   },
   'Carto|Quartiers Prioritaires politique Ville|Active': {
     matomo: ['Carto', 'Quartiers Prioritaires politique Ville', 'Active'],

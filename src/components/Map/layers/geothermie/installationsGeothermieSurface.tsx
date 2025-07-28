@@ -61,7 +61,21 @@ export const installationsGeothermieSurfaceLayersSpec = [
           'circle-radius': ifHoverElse(10, 8),
           'circle-opacity': installationsGeothermieSurfaceEchangeursFermesOpacity,
         },
-        isVisible: (config) => config.installationsGeothermieSurfaceEchangeursFermes,
+        isVisible: (config) =>
+          config.geothermieSurfaceEchangeursFermes.show &&
+          (config.geothermieSurfaceEchangeursFermes.showInstallationsDeclarees ||
+            config.geothermieSurfaceEchangeursFermes.showInstallationsRealisees),
+        filter: (config) => [
+          'in',
+          ['get', 'statut_inst'],
+          [
+            'literal',
+            [
+              config.geothermieSurfaceEchangeursFermes.showInstallationsDeclarees && 'Déclaré',
+              config.geothermieSurfaceEchangeursFermes.showInstallationsRealisees && 'Réalisé',
+            ].filter(Boolean),
+          ],
+        ],
         popup: PopupInstallationGeothermieSurface,
       },
     ],
@@ -88,7 +102,21 @@ export const installationsGeothermieSurfaceLayersSpec = [
           'circle-radius': ifHoverElse(10, 8),
           'circle-opacity': installationsGeothermieSurfaceEchangeursOuvertsOpacity,
         },
-        isVisible: (config) => config.installationsGeothermieSurfaceEchangeursOuverts,
+        isVisible: (config) =>
+          config.geothermieSurfaceEchangeursOuverts.show &&
+          (config.geothermieSurfaceEchangeursOuverts.showInstallationsDeclarees ||
+            config.geothermieSurfaceEchangeursOuverts.showInstallationsRealisees),
+        filter: (config) => [
+          'in',
+          ['get', 'statut_inst'],
+          [
+            'literal',
+            [
+              config.geothermieSurfaceEchangeursOuverts.showInstallationsDeclarees && 'Déclaré',
+              config.geothermieSurfaceEchangeursOuverts.showInstallationsRealisees && 'Réalisé',
+            ].filter(Boolean),
+          ],
+        ],
         popup: PopupInstallationGeothermieSurface,
       },
     ],

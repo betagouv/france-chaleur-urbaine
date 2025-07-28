@@ -79,7 +79,20 @@ export const ouvragesGeothermieSurfaceLayersSpec = [
           ],
           'icon-opacity': ifHoverElse(0, ouvragesGeothermieSurfaceEchangeursFermesOpacity),
         },
-        isVisible: (config) => config.ouvragesGeothermieSurfaceEchangeursFermes,
+        isVisible: (config) =>
+          config.geothermieSurfaceEchangeursFermes.show &&
+          (config.geothermieSurfaceEchangeursFermes.showOuvragesDeclares || config.geothermieSurfaceEchangeursFermes.showOuvragesRealises),
+        filter: (config) => [
+          'in',
+          ['get', 'statut_bss'],
+          [
+            'literal',
+            [
+              config.geothermieSurfaceEchangeursFermes.showOuvragesDeclares && 'Déclaré',
+              config.geothermieSurfaceEchangeursFermes.showOuvragesRealises && 'Réalisé',
+            ].filter(Boolean),
+          ],
+        ],
         popup: PopupOuvrageGeothermieSurface,
       },
       {
@@ -99,7 +112,20 @@ export const ouvragesGeothermieSurfaceLayersSpec = [
           ],
           'icon-opacity': ifHoverElse(ouvragesGeothermieSurfaceEchangeursFermesOpacity, 0),
         },
-        isVisible: (config) => config.ouvragesGeothermieSurfaceEchangeursFermes,
+        isVisible: (config) =>
+          config.geothermieSurfaceEchangeursFermes.show &&
+          (config.geothermieSurfaceEchangeursFermes.showOuvragesDeclares || config.geothermieSurfaceEchangeursFermes.showOuvragesRealises),
+        filter: (config) => [
+          'in',
+          ['get', 'statut_bss'],
+          [
+            'literal',
+            [
+              config.geothermieSurfaceEchangeursFermes.showOuvragesDeclares && 'Déclaré',
+              config.geothermieSurfaceEchangeursFermes.showOuvragesRealises && 'Réalisé',
+            ].filter(Boolean),
+          ],
+        ],
         unselectable: true,
       },
     ],
@@ -130,7 +156,21 @@ export const ouvragesGeothermieSurfaceLayersSpec = [
           ],
           'icon-opacity': ifHoverElse(0, ouvragesGeothermieSurfaceEchangeursOuvertsOpacity),
         },
-        isVisible: (config) => config.ouvragesGeothermieSurfaceEchangeursOuverts,
+        isVisible: (config) =>
+          config.geothermieSurfaceEchangeursOuverts.show &&
+          (config.geothermieSurfaceEchangeursOuverts.showOuvragesDeclares ||
+            config.geothermieSurfaceEchangeursOuverts.showOuvragesRealises),
+        filter: (config) => [
+          'in',
+          ['get', 'statut_bss'],
+          [
+            'literal',
+            [
+              config.geothermieSurfaceEchangeursOuverts.showOuvragesDeclares && 'Déclaré',
+              config.geothermieSurfaceEchangeursOuverts.showOuvragesRealises && 'Réalisé',
+            ].filter(Boolean),
+          ],
+        ],
         popup: PopupOuvrageGeothermieSurface,
       },
       {
@@ -150,7 +190,21 @@ export const ouvragesGeothermieSurfaceLayersSpec = [
           ],
           'icon-opacity': ifHoverElse(ouvragesGeothermieSurfaceEchangeursOuvertsOpacity, 0),
         },
-        isVisible: (config) => config.ouvragesGeothermieSurfaceEchangeursOuverts,
+        isVisible: (config) =>
+          config.geothermieSurfaceEchangeursOuverts.show &&
+          (config.geothermieSurfaceEchangeursOuverts.showOuvragesDeclares ||
+            config.geothermieSurfaceEchangeursOuverts.showOuvragesRealises),
+        filter: (config) => [
+          'in',
+          ['get', 'statut_bss'],
+          [
+            'literal',
+            [
+              config.geothermieSurfaceEchangeursOuverts.showOuvragesDeclares && 'Déclaré',
+              config.geothermieSurfaceEchangeursOuverts.showOuvragesRealises && 'Réalisé',
+            ].filter(Boolean),
+          ],
+        ],
         unselectable: true,
       },
     ],

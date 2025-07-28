@@ -112,10 +112,20 @@ export type MapConfiguration = {
     showInstallations: boolean;
     showPerimetres: boolean;
   };
-  installationsGeothermieSurfaceEchangeursOuverts: boolean;
-  installationsGeothermieSurfaceEchangeursFermes: boolean;
-  ouvragesGeothermieSurfaceEchangeursFermes: boolean;
-  ouvragesGeothermieSurfaceEchangeursOuverts: boolean;
+  geothermieSurfaceEchangeursOuverts: {
+    show: boolean;
+    showInstallationsRealisees: boolean;
+    showInstallationsDeclarees: boolean;
+    showOuvragesRealises: boolean;
+    showOuvragesDeclares: boolean;
+  };
+  geothermieSurfaceEchangeursFermes: {
+    show: boolean;
+    showInstallationsRealisees: boolean;
+    showInstallationsDeclarees: boolean;
+    showOuvragesRealises: boolean;
+    showOuvragesDeclares: boolean;
+  };
   zonesOpportunite: {
     show: boolean;
     zonesPotentielChaud: boolean;
@@ -226,10 +236,20 @@ export const emptyMapConfiguration: EmptyMapConfiguration = {
     showInstallations: true,
     showPerimetres: true,
   },
-  installationsGeothermieSurfaceEchangeursOuverts: false,
-  installationsGeothermieSurfaceEchangeursFermes: false,
-  ouvragesGeothermieSurfaceEchangeursFermes: false,
-  ouvragesGeothermieSurfaceEchangeursOuverts: false,
+  geothermieSurfaceEchangeursOuverts: {
+    show: false,
+    showInstallationsRealisees: true,
+    showInstallationsDeclarees: true,
+    showOuvragesRealises: false,
+    showOuvragesDeclares: false,
+  },
+  geothermieSurfaceEchangeursFermes: {
+    show: false,
+    showInstallationsRealisees: true,
+    showInstallationsDeclarees: true,
+    showOuvragesRealises: false,
+    showOuvragesDeclares: false,
+  },
   zonesOpportunite: {
     show: false,
     zonesPotentielChaud: true,
