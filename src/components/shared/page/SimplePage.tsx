@@ -82,7 +82,7 @@ const MainNavigation = styled(UnstyledMainNavigation)<{ $compact?: boolean }>`
 
 export default SimplePage;
 
-const publicNavigationMenu: MainNavigationProps.Item[] = [
+export const publicNavigationMenu: MainNavigationProps.Item[] = [
   {
     text: 'Accueil',
     linkProps: {
@@ -600,7 +600,7 @@ const PageFooter = () => (
         },
       ],
     }}
-    accessibility="non compliant"
+    accessibility="partially compliant"
     accessibilityLinkProps={{
       href: '/accessibilite',
     }}
@@ -625,6 +625,12 @@ const PageFooter = () => (
         text: 'Contact',
         linkProps: {
           href: '/contact',
+        },
+      },
+      {
+        text: 'Plan du site',
+        linkProps: {
+          href: '/plan-du-site',
         },
       },
       {
