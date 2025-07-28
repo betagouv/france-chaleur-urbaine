@@ -236,6 +236,14 @@ export const allDatabaseTables: TableInfo[] = [
     name: 'installations_geothermie_surface_echangeurs_ouverts_tiles',
     description: 'Tuiles des installations de géothermie en surface avec échangeurs ouverts',
   },
+  {
+    name: 'ouvrages_geothermie_surface_echangeurs_fermes_tiles',
+    description: 'Ouvrages de géothermie en surface avec échangeurs fermés',
+  },
+  {
+    name: 'ouvrages_geothermie_surface_echangeurs_ouverts_tiles',
+    description: 'Ouvrages de géothermie en surface avec échangeurs ouverts',
+  },
 
   // données BDNB (Base de données nationale des bâtiments)
   // découpées historiquement par région pour résoudre des problèmes de performance et de taille d'indexes

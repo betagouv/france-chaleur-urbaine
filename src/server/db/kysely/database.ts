@@ -3034,6 +3034,20 @@ export interface MatomoStats {
   value: number;
 }
 
+export interface OuvragesGeothermieSurfaceEchangeursFermesTiles {
+  tile: Buffer;
+  x: Int8;
+  y: Int8;
+  z: Int8;
+}
+
+export interface OuvragesGeothermieSurfaceEchangeursOuvertsTiles {
+  tile: Buffer;
+  x: Int8;
+  y: Int8;
+  z: Int8;
+}
+
 export interface PerimetresGeothermieProfondeTiles {
   tile: Buffer;
   x: Int8;
@@ -3538,6 +3552,8 @@ export interface DB {
   knex_migrations: KnexMigrations;
   knex_migrations_lock: KnexMigrationsLock;
   matomo_stats: MatomoStats;
+  ouvrages_geothermie_surface_echangeurs_fermes_tiles: OuvragesGeothermieSurfaceEchangeursFermesTiles;
+  ouvrages_geothermie_surface_echangeurs_ouverts_tiles: OuvragesGeothermieSurfaceEchangeursOuvertsTiles;
   perimetres_geothermie_profonde_tiles: PerimetresGeothermieProfondeTiles;
   pro_comparateur_configurations: ProComparateurConfigurations;
   pro_eligibility_tests: ProEligibilityTests;
