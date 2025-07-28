@@ -32,20 +32,15 @@ export abstract class BaseAdapter {
     return tilesDatabaseName;
   }
 
-  /**
-   * Build a strategy to download a GeoJSON file from a URL and save it to a file
-   */
-  buildDownloadGeoJSONFromURLStrategy =
-    (url: string) =>
-    async (filepath: string = `/tmp/${this.databaseName}.geojson`) => {
-      const response = await fetch(url);
-      const geojson = await response.json();
-      const featuresCount = geojson.features?.length || 0;
-      this.logger.info(`Features downloaded`, { count: featuresCount });
-      geojson.features.forEach((feature: any) => {
-        delete feature.id; // remove string id so that tippecanoe can generate a unique numeric id
-      });
-      await writeFile(filepath, JSON.stringify(geojson));
-      return filepath;
-    };
+  async downloadGeoJSON(url: string, filepath = `/tmp/${this.databaseName}.geojson`) {
+    const response = await fetch(url);
+    const geojson = await response.json();
+    const featuresCount = geojson.features?.length || 0;
+    this.logger.info(`Features downloaded`, { count: featuresCount });
+    geojson.features.forEach((feature: any) => {
+      delete feature.id; // remove string id so that tippecanoe can generate a unique numeric id
+    });
+    await writeFile(filepath, JSON.stringify(geojson));
+    return filepath;
+  }
 }
