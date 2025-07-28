@@ -2,6 +2,7 @@ import { fr } from '@codegouvfr/react-dsfr';
 import { Footer } from '@codegouvfr/react-dsfr/Footer';
 import { type HeaderProps, HeaderQuickAccessItem } from '@codegouvfr/react-dsfr/Header';
 import UnstyledMainNavigation, { type MainNavigationProps } from '@codegouvfr/react-dsfr/MainNavigation';
+import { SkipLinks } from '@codegouvfr/react-dsfr/SkipLinks';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import React from 'react';
@@ -32,6 +33,13 @@ const SimplePage = ({ mode, currentPage, children, noIndex, includeFooter = true
   return (
     <>
       <SEO noIndex={mode === 'authenticated' ? true : noIndex} {...props} />
+      <SkipLinks
+        links={[
+          { label: 'Contenu', anchor: '#main-content' },
+          { label: 'Navigation', anchor: '#main-header' },
+          { label: 'Pied de page', anchor: '#main-footer' },
+        ]}
+      />
       <PageHeader mode={mode ?? 'public'} currentPage={currentPage} />
 
       {children}
@@ -470,6 +478,7 @@ const PageHeader = (props: PageHeaderProps) => {
     <>
       <Banner />
       <StyledHeader
+        id="main-header"
         disableDisplay
         $isFullScreenMode={isFullScreenMode}
         brandTop={
@@ -526,6 +535,7 @@ const PageHeader = (props: PageHeaderProps) => {
 
 const PageFooter = () => (
   <Footer
+    id="main-footer"
     contentDescription={
       <>
         France Chaleur Urbaine est un projet d'innovation pour accélérer le raccordement des bâtiments aux réseaux de chaleur en vue de
