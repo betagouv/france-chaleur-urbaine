@@ -63,14 +63,28 @@ import { etudesEnCoursColor, etudesEnCoursOpacity } from '../layers/etudesEnCour
 import {
   installationsGeothermieProfondeLayerColor,
   installationsGeothermieProfondeLayerOpacity,
+} from '../layers/geothermie/installationsGeothermieProfonde';
+import {
   installationsGeothermieSurfaceEchangeursFermesDeclareeColor,
   installationsGeothermieSurfaceEchangeursFermesOpacity,
   installationsGeothermieSurfaceEchangeursFermesRealiseeColor,
   installationsGeothermieSurfaceEchangeursOuvertsDeclareeColor,
   installationsGeothermieSurfaceEchangeursOuvertsOpacity,
   installationsGeothermieSurfaceEchangeursOuvertsRealiseeColor,
-} from '../layers/installationsGeothermie';
-import { aquifereColorMap, perimetresGeothermieProfondeLayerOpacity, statutColorMap } from '../layers/perimetresGeothermieProfonde';
+} from '../layers/geothermie/installationsGeothermieSurface';
+import {
+  ouvragesGeothermieSurfaceEchangeursFermesDeclareeColor,
+  ouvragesGeothermieSurfaceEchangeursFermesOpacity,
+  ouvragesGeothermieSurfaceEchangeursFermesRealiseeColor,
+  ouvragesGeothermieSurfaceEchangeursOuvertsDeclareeColor,
+  ouvragesGeothermieSurfaceEchangeursOuvertsOpacity,
+  ouvragesGeothermieSurfaceEchangeursOuvertsRealiseeColor,
+} from '../layers/geothermie/ouvragesGeothermieSurface';
+import {
+  aquifereColorMap,
+  perimetresGeothermieProfondeLayerOpacity,
+  statutColorMap,
+} from '../layers/geothermie/perimetresGeothermieProfonde';
 import { testsAdressesLayerStyle } from '../layers/testsAdresses';
 import {
   energyFilterInterval,
@@ -1389,6 +1403,100 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
                   />
 
                   <Text size="sm">Installation déclarée</Text>
+                </Box>
+              </DeactivatableBox>
+            </TrackableCheckableAccordion>
+            <TrackableCheckableAccordion
+              name="ouvragesGeothermieSurfaceEchangeursOuverts"
+              checked={mapConfiguration.ouvragesGeothermieSurfaceEchangeursOuverts}
+              layerName="ouvragesGeothermieSurfaceEchangeursOuverts"
+              trackingEvent="Carto|Ouvrages géothermie surface ouverts"
+              label={
+                <>
+                  <Box flex>Ouvrages de géothermie de surface sur échangeurs ouverts (nappe)</Box>
+                  <Tooltip
+                    title={
+                      <>
+                        Source :{' '}
+                        <Link href="https://www.geothermies.fr/espace-cartographique" isExternal>
+                          BRGM
+                        </Link>{' '}
+                        (juillet 2025)
+                      </>
+                    }
+                  />
+                </>
+              }
+            >
+              <DeactivatableBox disabled={!mapConfiguration.ouvragesGeothermieSurfaceEchangeursOuverts} mx="1w">
+                <Box display="flex" alignItems="center">
+                  <Box
+                    backgroundColor={ouvragesGeothermieSurfaceEchangeursOuvertsRealiseeColor}
+                    opacity={ouvragesGeothermieSurfaceEchangeursOuvertsOpacity}
+                    height="10px"
+                    width="10px"
+                    mr="1w"
+                  />
+
+                  <Text size="sm">Ouvrage réalisé</Text>
+                </Box>
+                <Box display="flex" alignItems="center">
+                  <Box
+                    backgroundColor={ouvragesGeothermieSurfaceEchangeursOuvertsDeclareeColor}
+                    opacity={ouvragesGeothermieSurfaceEchangeursOuvertsOpacity}
+                    height="10px"
+                    width="10px"
+                    mr="1w"
+                  />
+
+                  <Text size="sm">Ouvrage déclaré</Text>
+                </Box>
+              </DeactivatableBox>
+            </TrackableCheckableAccordion>
+            <TrackableCheckableAccordion
+              name="ouvragesGeothermieSurfaceEchangeursFermes"
+              checked={mapConfiguration.ouvragesGeothermieSurfaceEchangeursFermes}
+              layerName="ouvragesGeothermieSurfaceEchangeursFermes"
+              trackingEvent="Carto|Ouvrages géothermie surface fermés"
+              label={
+                <>
+                  <Box flex>Ouvrages de géothermie de surface sur échangeurs fermés (sonde)</Box>
+                  <Tooltip
+                    title={
+                      <>
+                        Source :{' '}
+                        <Link href="https://www.geothermies.fr/espace-cartographique" isExternal>
+                          BRGM
+                        </Link>{' '}
+                        (juillet 2025)
+                      </>
+                    }
+                  />
+                </>
+              }
+            >
+              <DeactivatableBox disabled={!mapConfiguration.ouvragesGeothermieSurfaceEchangeursFermes} mx="1w">
+                <Box display="flex" alignItems="center">
+                  <Box
+                    backgroundColor={ouvragesGeothermieSurfaceEchangeursFermesRealiseeColor}
+                    opacity={ouvragesGeothermieSurfaceEchangeursFermesOpacity}
+                    height="10px"
+                    width="10px"
+                    mr="1w"
+                  />
+
+                  <Text size="sm">Ouvrage réalisé</Text>
+                </Box>
+                <Box display="flex" alignItems="center">
+                  <Box
+                    backgroundColor={ouvragesGeothermieSurfaceEchangeursFermesDeclareeColor}
+                    opacity={ouvragesGeothermieSurfaceEchangeursFermesOpacity}
+                    height="10px"
+                    width="10px"
+                    mr="1w"
+                  />
+
+                  <Text size="sm">Ouvrage déclaré</Text>
                 </Box>
               </DeactivatableBox>
             </TrackableCheckableAccordion>

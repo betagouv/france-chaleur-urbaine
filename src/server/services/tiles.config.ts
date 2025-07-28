@@ -52,6 +52,8 @@ export const databaseSourceIds = [
   'perimetresGeothermieProfonde',
   'installationsGeothermieSurfaceEchangeursOuverts',
   'installationsGeothermieSurfaceEchangeursFermes',
+  'ouvragesGeothermieSurfaceEchangeursFermes',
+  'ouvragesGeothermieSurfaceEchangeursOuverts',
   'zonesPotentielChaud',
   'zonesPotentielFortChaud',
   'besoinsEnChaleur',
@@ -314,6 +316,26 @@ export const tilesInfo: Record<DatabaseSourceId, TileInfo> = {
   installationsGeothermieSurfaceEchangeursOuverts: {
     source: 'database',
     tiles: 'installations_geothermie_surface_echangeurs_ouverts_tiles',
+    compressedTiles: true,
+    table: '', // useless
+    properties: [], // useless
+    sourceLayer: '', // useless
+    id: '', // useless
+    extraWhere: (query) => query, // useless
+  },
+  ouvragesGeothermieSurfaceEchangeursFermes: {
+    source: 'database',
+    tiles: 'ouvrages_geothermie_surface_echangeurs_fermes_tiles',
+    compressedTiles: true,
+    table: '', // useless
+    properties: [], // useless
+    sourceLayer: '', // useless
+    id: '', // useless
+    extraWhere: (query) => query, // useless
+  },
+  ouvragesGeothermieSurfaceEchangeursOuverts: {
+    source: 'database',
+    tiles: 'ouvrages_geothermie_surface_echangeurs_ouverts_tiles',
     compressedTiles: true,
     table: '', // useless
     properties: [], // useless

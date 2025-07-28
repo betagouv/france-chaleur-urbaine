@@ -36,6 +36,8 @@ export const layerURLKeysToMapConfigPath = {
   geothermieProfonde: 'geothermieProfonde.show',
   installationsGeothermieSurfaceEchangeursFermes: 'installationsGeothermieSurfaceEchangeursFermes',
   installationsGeothermieSurfaceEchangeursOuverts: 'installationsGeothermieSurfaceEchangeursOuverts',
+  ouvragesGeothermieSurfaceEchangeursFermes: 'ouvragesGeothermieSurfaceEchangeursFermes',
+  ouvragesGeothermieSurfaceEchangeursOuverts: 'ouvragesGeothermieSurfaceEchangeursOuverts',
   caracteristiquesBatiments: 'caracteristiquesBatiments',
   besoinsEnChaleur: 'besoinsEnChaleur',
   besoinsEnFroid: 'besoinsEnFroid',

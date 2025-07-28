@@ -376,6 +376,18 @@ const trackingEvents = {
   'Carto|Installations géothermie surface ouverts|Désactive': {
     matomo: ['Carto', 'Installations géothermie surface ouverts', 'Désactive'],
   },
+  'Carto|Ouvrages géothermie surface fermés|Active': {
+    matomo: ['Carto', 'Ouvrages géothermie surface fermés', 'Active'],
+  },
+  'Carto|Ouvrages géothermie surface fermés|Désactive': {
+    matomo: ['Carto', 'Ouvrages géothermie surface fermés', 'Désactive'],
+  },
+  'Carto|Ouvrages géothermie surface ouverts|Active': {
+    matomo: ['Carto', 'Ouvrages géothermie surface ouverts', 'Active'],
+  },
+  'Carto|Ouvrages géothermie surface ouverts|Désactive': {
+    matomo: ['Carto', 'Ouvrages géothermie surface ouverts', 'Désactive'],
+  },
   'Carto|Quartiers Prioritaires politique Ville|Active': {
     matomo: ['Carto', 'Quartiers Prioritaires politique Ville', 'Active'],
   },

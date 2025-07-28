@@ -114,6 +114,8 @@ export type MapConfiguration = {
   };
   installationsGeothermieSurfaceEchangeursOuverts: boolean;
   installationsGeothermieSurfaceEchangeursFermes: boolean;
+  ouvragesGeothermieSurfaceEchangeursFermes: boolean;
+  ouvragesGeothermieSurfaceEchangeursOuverts: boolean;
   zonesOpportunite: {
     show: boolean;
     zonesPotentielChaud: boolean;
@@ -226,6 +228,8 @@ export const emptyMapConfiguration: EmptyMapConfiguration = {
   },
   installationsGeothermieSurfaceEchangeursOuverts: false,
   installationsGeothermieSurfaceEchangeursFermes: false,
+  ouvragesGeothermieSurfaceEchangeursFermes: false,
+  ouvragesGeothermieSurfaceEchangeursOuverts: false,
   zonesOpportunite: {
     show: false,
     zonesPotentielChaud: true,
