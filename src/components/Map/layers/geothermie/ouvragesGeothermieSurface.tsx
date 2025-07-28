@@ -67,7 +67,7 @@ export const ouvragesGeothermieSurfaceLayersSpec = [
         layout: {
           'icon-image': 'square',
           'icon-overlap': 'always',
-          'icon-size': 0.7,
+          'icon-size': 0.6,
         },
         paint: {
           'icon-color': [
@@ -87,7 +87,7 @@ export const ouvragesGeothermieSurfaceLayersSpec = [
         layout: {
           'icon-image': 'square',
           'icon-overlap': 'always',
-          'icon-size': 0.9,
+          'icon-size': 0.8,
         },
         paint: {
           'icon-color': [
@@ -118,7 +118,7 @@ export const ouvragesGeothermieSurfaceLayersSpec = [
         layout: {
           'icon-image': 'square',
           'icon-overlap': 'always',
-          'icon-size': 0.7,
+          'icon-size': 0.6,
         },
         paint: {
           'icon-color': [
@@ -138,7 +138,7 @@ export const ouvragesGeothermieSurfaceLayersSpec = [
         layout: {
           'icon-image': 'square',
           'icon-overlap': 'always',
-          'icon-size': 0.9,
+          'icon-size': 0.8,
         },
         paint: {
           'icon-color': [
