@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 
+import Badge from '@/components/ui/Badge';
 import ChipAutoComplete, { type ChipAutoCompleteProps } from '@/components/ui/ChipAutoComplete';
 import { defaultTagChipOption, useFCUTags } from '@/services/tags';
 
@@ -12,6 +13,14 @@ const FCUTagAutocomplete: React.FC<FCUTagAutocompleteProps> = ({ undismissibles 
     return tagsOptions.map((option) => ({
       ...option,
       dismissible: !(undismissibles || []).includes(option.key),
+      label: (undismissibles || []).includes(option.key) ? (
+        <div className="flex items-center gap-1">
+          <span>{option.label}</span>
+          <Badge type="api_user" size="xs" />
+        </div>
+      ) : (
+        option.label
+      ),
     }));
   }, [tagsOptions, undismissibles]);
 
