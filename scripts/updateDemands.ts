@@ -4,7 +4,7 @@ import { Airtable } from '@/types/enum/Airtable';
 
 const updateDemands = async () => {
   try {
-    const demands = await base(Airtable.UTILISATEURS).select().all();
+    const demands = await base(Airtable.DEMANDES).select().all();
     console.log(demands.filter((demand) => demand.get('Latitude') && demand.get('Longitude')).length, 'demandes a analyser');
     let i = 1;
     for (const demand of demands.filter((demand) => demand.get('Latitude') && demand.get('Longitude'))) {
@@ -43,7 +43,7 @@ const updateDemands = async () => {
         }
       }
       if (shouldUpdate) {
-        await base(Airtable.UTILISATEURS).update(demand.getId(), newValue);
+        await base(Airtable.DEMANDES).update(demand.getId(), newValue);
       }
     }
   } catch (e) {

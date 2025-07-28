@@ -14,13 +14,13 @@ export default handleRouteErrors(async (req: NextApiRequest) => {
   });
   // would be best with the type in the URL
   const { type, ...values } = await validateObjectSchema(req.body, {
-    type: z.enum([Airtable.UTILISATEURS]),
+    type: z.enum([Airtable.DEMANDES]),
     sondage: z.array(z.string().max(300)), // may contain an unknown string as the last value if Other is included
   });
 
   switch (type) {
-    case Airtable.UTILISATEURS: {
-      await base(Airtable.UTILISATEURS).update(id, { Sondage: values.sondage }, { typecast: true });
+    case Airtable.DEMANDES: {
+      await base(Airtable.DEMANDES).update(id, { Sondage: values.sondage }, { typecast: true });
     }
   }
 });

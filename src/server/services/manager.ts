@@ -13,14 +13,14 @@ import { type Demand } from '@/types/Summary/Demand';
 import { type User as FullUser } from '@/types/User';
 
 export const getAllDemands = async (): Promise<Demand[]> => {
-  const records = await base(Airtable.UTILISATEURS)
+  const records = await base(Airtable.DEMANDES)
     .select({ sort: [{ field: 'Date demandes', direction: 'desc' }] })
     .all();
   return records.map((record) => ({ id: record.id, ...record.fields }) as Demand);
 };
 
 export const getAllNewDemands = async (): Promise<Demand[]> => {
-  const records = await base(Airtable.UTILISATEURS)
+  const records = await base(Airtable.DEMANDES)
     .select({
       filterByFormula: `AND(
         {Gestionnaires validés} = TRUE(),
@@ -32,7 +32,7 @@ export const getAllNewDemands = async (): Promise<Demand[]> => {
 };
 
 export const getAllToRelanceDemands = async (): Promise<Demand[]> => {
-  const records = await base(Airtable.UTILISATEURS)
+  const records = await base(Airtable.DEMANDES)
     .select({
       filterByFormula: `OR(
         AND(
@@ -55,7 +55,7 @@ export const getAllToRelanceDemands = async (): Promise<Demand[]> => {
 };
 
 export const getToRelanceDemand = async (id: string): Promise<Demand | undefined> => {
-  const records = await base(Airtable.UTILISATEURS)
+  const records = await base(Airtable.DEMANDES)
     .select({
       filterByFormula: `{Relance ID} = "${id}"`,
     })
@@ -63,7 +63,7 @@ export const getToRelanceDemand = async (id: string): Promise<Demand | undefined
   return records.map((record) => ({ id: record.id, ...record.fields }) as Demand)[0];
 };
 export const getAllStaledDemandsSince = async (dateDiff: number): Promise<Demand[]> => {
-  const records = await base(Airtable.UTILISATEURS)
+  const records = await base(Airtable.DEMANDES)
     .select({
       filterByFormula: `AND(
         IS_BEFORE({Notification envoyé}, DATEADD(TODAY(), ${dateDiff}, "days")),
@@ -75,7 +75,7 @@ export const getAllStaledDemandsSince = async (dateDiff: number): Promise<Demand
 };
 
 export const getGestionnairesDemands = async (gestionnaires: string[]): Promise<Demand[]> => {
-  const records = await base(Airtable.UTILISATEURS)
+  const records = await base(Airtable.DEMANDES)
     .select({
       filterByFormula: `{Gestionnaires validés} = TRUE()`,
       sort: [{ field: 'Date demandes', direction: 'desc' }],
@@ -105,7 +105,7 @@ export const getDemands = async (user: User): Promise<Demand[]> => {
     filterFormula = `AND({Gestionnaires validés} = TRUE(), REGEX_MATCH({Gestionnaires}, "(\\A|, )(${regexPattern})(\\z|, )"))`;
   }
 
-  const records = await base(Airtable.UTILISATEURS)
+  const records = await base(Airtable.DEMANDES)
     .select({
       filterByFormula: filterFormula,
       sort: [{ field: 'Date demandes', direction: 'desc' }],
@@ -148,7 +148,7 @@ export const getDemands = async (user: User): Promise<Demand[]> => {
 };
 
 const getDemand = async (user: User, demandId: string): Promise<Demand> => {
-  const record = await base(Airtable.UTILISATEURS).find(demandId);
+  const record = await base(Airtable.DEMANDES).find(demandId);
   const gestionnaires = record.get('Gestionnaires') as string[];
   if (user.role !== 'admin' && !gestionnaires.some((gestionnaire) => user.gestionnaires?.includes(gestionnaire))) {
     throw invalidPermissionsError;
@@ -160,7 +160,7 @@ export const updateDemand = async (user: User, demandId: string, updateData: Par
   // check permissions
   await getDemand(user, demandId);
 
-  const record = await base(Airtable.UTILISATEURS).update(demandId, updateData, { typecast: true });
+  const record = await base(Airtable.DEMANDES).update(demandId, updateData, { typecast: true });
 
   // legacy check, may be obsolete as errors seem to be thrown by the Airtable API
   const error = (record as any)?.error;
@@ -221,7 +221,7 @@ const newDemands = async (users: FullUser[]) => {
       if (process.env.NEXT_PUBLIC_MOCK_USER_CREATION !== 'true') {
         await Promise.all(
           groupedDemands[gestionnaire].map((demand) =>
-            base(Airtable.UTILISATEURS).update(demand.id, {
+            base(Airtable.DEMANDES).update(demand.id, {
               'Notification envoyé': new Date().toDateString(),
             })
           )
@@ -279,7 +279,7 @@ export const dailyNewManagerMail = async () => {
 export const updateRelanceAnswer = async (id: string, relanced: boolean) => {
   const demand = await getToRelanceDemand(id);
   if (demand) {
-    await base(Airtable.UTILISATEURS).update(demand.id, {
+    await base(Airtable.DEMANDES).update(demand.id, {
       'Recontacté par le gestionnaire': relanced ? 'Oui' : 'Non',
     });
   }
@@ -296,7 +296,7 @@ export const dailyRelanceMail = async () => {
     const demand = demands[i];
     const relanced = demand['Relance envoyée'];
     const uuid = uuidv4();
-    await base(Airtable.UTILISATEURS).update(demand.id, {
+    await base(Airtable.DEMANDES).update(demand.id, {
       [relanced ? 'Seconde relance envoyée' : 'Relance envoyée']: new Date().toDateString(),
       'Relance ID': uuid,
     });

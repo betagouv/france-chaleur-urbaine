@@ -52,7 +52,7 @@ const EligibilityFormMessageConfirmation = ({ addressData = {}, cardMode }: { ad
         {
           sondage: sondage.includes('Autre') ? [...sondage, other] : sondage,
         },
-        Airtable.UTILISATEURS
+        Airtable.DEMANDES
       );
       setSondageAnswered(true);
     }

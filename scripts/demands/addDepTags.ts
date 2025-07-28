@@ -3,7 +3,7 @@ import { Airtable } from '@/types/enum/Airtable';
 
 const updateDemands = async () => {
   try {
-    const demands = await base(Airtable.UTILISATEURS).select().all();
+    const demands = await base(Airtable.DEMANDES).select().all();
     await Promise.all(
       demands
         .filter((demand: any) => demand.get('Departement') && demand.get('Departement').includes('Puy-de-Dôme'))
@@ -11,7 +11,7 @@ const updateDemands = async () => {
           const gestionnaires = demand.get('Gestionnaires') as [string];
           if (gestionnaires) {
             gestionnaires.push('ADUHME');
-            await base(Airtable.UTILISATEURS).update(
+            await base(Airtable.DEMANDES).update(
               demand.id,
               {
                 Gestionnaires: gestionnaires,

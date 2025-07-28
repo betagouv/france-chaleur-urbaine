@@ -127,7 +127,7 @@ const useContactFormFCU = () => {
         mtm_kwd,
         mtm_source,
       } as FormDemandCreation);
-      const response = await submitToAirtable(formatData, Airtable.UTILISATEURS);
+      const response = await submitToAirtable(formatData, Airtable.DEMANDES);
       const { id } = await response.json();
       setMessageSent(true);
       const { eligibility, address = '' } = (data as AddressDataType) || {};

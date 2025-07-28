@@ -233,7 +233,7 @@ const countEventCategoriesFromMatomo = countRecordsFromMatomo(STAT_METHOD.ACTION
 
 const saveDemandsStats = async (startDate: string, endDate: string) => {
   console.info(`saveStatsInDB START : saveDemandsStats`);
-  const records = await base(Airtable.UTILISATEURS)
+  const records = await base(Airtable.DEMANDES)
     .select({
       filterByFormula: `AND(
           IS_BEFORE({Date de la demande}, "${endDate}"),

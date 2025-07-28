@@ -109,7 +109,7 @@ export const preTable: (region: string) => Record<string, string> = (region) => 
 export const tilesInfo: Record<DatabaseSourceId, TileInfo> = {
   demands: {
     source: 'airtable',
-    table: Airtable.UTILISATEURS,
+    table: Airtable.DEMANDES,
     properties: ['Mode de chauffage', 'Adresse', 'Type de chauffage', 'Structure'],
     sourceLayer: 'demands',
   },

@@ -106,7 +106,7 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
         networkId,
       };
       setFormState('sendingDemand');
-      await submitToAirtable(formatDataToAirtable(demandCreation), Airtable.UTILISATEURS);
+      await submitToAirtable(formatDataToAirtable(demandCreation), Airtable.DEMANDES);
       setFormState('demandCreated');
       trackEvent(
         `Eligibilité|Formulaire de contact ${eligibilityStatus?.isEligible ? 'é' : 'iné'}ligible - Fiche réseau - Envoi`,

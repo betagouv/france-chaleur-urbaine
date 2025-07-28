@@ -1,5 +1,5 @@
 export enum Airtable {
-  UTILISATEURS = 'FCU - Utilisateurs',
+  DEMANDES = 'FCU - Utilisateurs',
   RELANCE = 'FCU - Utilisateurs relance',
   CONTACT = 'FCU - Formulaire de contact',
   COMMUNES_SANS_RESEAU = 'FCU - Formulaire communes sans reseau',
@@ -7,8 +7,6 @@ export enum Airtable {
   CONTRIBUTION = 'FCU - Contribution',
   CONNEXION = 'FCU - Connexion espace gestionnaire',
   COMPTES_PRO = 'FCU - Comptes pro',
-  GESTIONNAIRES = 'FCU - Gestionnaires',
-  GESTIONNAIRES_API = 'FCU - Gestionnaires API',
   NETWORKS = 'FCU - Réseaux de chaleur',
   COLD_NETWORKS = 'FCU - Réseaux de froid',
   FUTUR_NETWORKS = 'FCU - Futurs réseaux de chaleur',

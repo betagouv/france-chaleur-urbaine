@@ -31,16 +31,16 @@ export default handleRouteErrors(async function PostRecords(req: NextApiRequest)
     case Airtable.RELANCE: {
       const demand = await getToRelanceDemand(values.id);
       if (demand) {
-        await AirtableDB(Airtable.UTILISATEURS).update(demand.id, {
+        await AirtableDB(Airtable.DEMANDES).update(demand.id, {
           'Commentaire relance': values.comment,
         });
       }
       return;
     }
 
-    case Airtable.UTILISATEURS: {
+    case Airtable.DEMANDES: {
       // bad airtable type
-      const { id: demandId }: any = await base(Airtable.UTILISATEURS).create(
+      const { id: demandId }: any = await base(Airtable.DEMANDES).create(
         {
           ...values,
           Gestionnaires: [defaultEmptyStringValue],
@@ -64,7 +64,7 @@ export default handleRouteErrors(async function PostRecords(req: NextApiRequest)
         conso,
       });
 
-      await AirtableDB(Airtable.UTILISATEURS).update(
+      await AirtableDB(Airtable.DEMANDES).update(
         demandId,
         {
           Conso: conso ? conso.conso_nb : undefined,
