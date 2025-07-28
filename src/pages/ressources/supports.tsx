@@ -394,7 +394,7 @@ interface InfographieItemProps {
 const InfographieItem = ({ width = 150, ...props }: InfographieItemProps) => (
   <StyledInfographieItem className="fr-card fr-card--no-border fr-card--no-background fr-enlarge-link" width={width}>
     <Link href={props.linkUrl} isExternal eventKey={props.eventKey}>
-      <img src={props.imgUrl} alt="" loading="lazy" width={width} />
+      <img src={props.imgUrl} alt={`Aperçu de l'infographie : ${props.label}`} loading="lazy" width={width} />
       <Text size="sm" p="1v">
         {props.label}
       </Text>

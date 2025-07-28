@@ -486,7 +486,7 @@ const PageHeader = (props: PageHeaderProps) => {
         operatorLogo={{
           imgUrl: '/FCU_logo_Monogramme.svg',
           orientation: 'horizontal',
-          alt: '',
+          alt: 'Logo France Chaleur Urbaine',
         }}
         serviceTagline="Faciliter les raccordements aux réseaux de chaleur"
         serviceTitle="France Chaleur Urbaine"
@@ -502,7 +502,7 @@ const PageHeader = (props: PageHeaderProps) => {
                 p="0"
                 mr="3w"
               >
-                <Image height={50} width={70} src="/logo-fcu.png" alt="logo france chaleur urbaine" priority />
+                <Image height={50} width={70} src="/logo-fcu.png" alt="Logo France Chaleur Urbaine" priority />
               </Link>
               <MainNavigation items={markCurrentPageActive(navigationMenuItems, currentPath)} className="fr-col" $compact />
               <Box className={fr.cx('fr-header__tools-links')}>
@@ -545,7 +545,7 @@ const PageFooter = () => (
     operatorLogo={{
       imgUrl: '/logo-fcu-with-typo.jpg',
       orientation: 'horizontal',
-      alt: '',
+      alt: 'Logo France Chaleur Urbaine',
     }}
     license=""
     partnersLogos={{

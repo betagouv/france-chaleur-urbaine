@@ -108,7 +108,7 @@ const Hero = ({
           <div className="absolute top-0 left-0 right-0 bottom-0 hidden lg:block">
             <Image
               src={image}
-              alt=""
+              alt="Image d'arrière-plan décorative"
               className={cx('h-full absolute top-0 w-auto object-cover', imagePosition === 'left' ? 'left-0' : 'right-0', imageClassName)}
               sizes="100vw"
               priority
@@ -126,7 +126,7 @@ const Hero = ({
                 <div className={cx('relative h-full')}>
                   <Image
                     src={image}
-                    alt=""
+                    alt="Image d'illustration"
                     className={cx(
                       'w-full h-full',
                       imageType === 'inline-cover' ? 'object-cover' : 'object-contain',

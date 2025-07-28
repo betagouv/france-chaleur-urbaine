@@ -120,7 +120,7 @@ function SectionScrollableTiles({ title, tiles, size = 'md', className, ...props
                       }
                     }}
                   >
-                    <Image src={tile.image} alt={tile.title} width={64} height={64} className="mx-auto" />
+                    <Image src={tile.image} alt={`Icône pour ${tile.title}`} width={64} height={64} className="mx-auto" />
                     <h2 className="text-base font-semibold text-gray-900 mb-0">{tile.title}</h2>
                     <p className="text-sm text-gray-500 mb-0">{tile.excerpt}</p>
                   </Link>

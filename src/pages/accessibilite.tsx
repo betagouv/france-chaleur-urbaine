@@ -28,6 +28,13 @@ function Accessibilite() {
             </p>
             <h3>Établissement de cette déclaration d’accessibilité</h3>
             <p>Cette déclaration a été établie le 19/11/2021.</p>
+
+            <h3>Améliorations récentes</h3>
+            <p>Nous avons récemment apporté les améliorations suivantes :</p>
+            <ul>
+              <li>Ajout d'attributs alt appropriés sur toutes les images</li>
+            </ul>
+
             <strong>
               Technologies utilisées pour la réalisation de France Chaleur Urbaine,{' '}
               <a href="https://france-chaleur-urbaine.beta.gouv.fr/">france-chaleur-urbaine.beta.gouv.fr</a>

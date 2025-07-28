@@ -70,7 +70,7 @@ const CallOut = ({ children, className, variant, size, image, bodyAs, ...props }
     >
       {image && (
         <div className="z-10 w-24 absolute top-0 bottom-0 left-2 [&>img]:w-full flex items-center justify-center">
-          <img src={image} alt="" />
+          <img src={image} alt="Icône d'illustration" />
         </div>
       )}
       {children}
