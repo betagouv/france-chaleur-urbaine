@@ -44,11 +44,11 @@ export const list = async () => {
 };
 export type User = Awaited<ReturnType<typeof list>>['items'][number];
 
-export const create: typeof baseModel.create = async (data, _context) => {
+export const create: typeof baseModel.create = async ({ optin_at, ...data }, _context) => {
   const salt = await bcrypt.genSalt(10);
   const password = await bcrypt.hash(Math.random().toString(36).slice(2, 10), salt);
 
-  const record = await baseModel.create({ ...data, password, status: 'valid' }, _context);
+  const record = await baseModel.create({ ...data, optin_at: optin_at ? new Date() : null, password, status: 'valid' }, _context);
 
   if (data.active && data.role === 'gestionnaire') {
     await sendEmailTemplate('inscription', { id: (record as any).id, email: data.email as string });
