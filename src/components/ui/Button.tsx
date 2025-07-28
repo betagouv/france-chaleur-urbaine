@@ -16,8 +16,6 @@ type StyledButtonProps = {
 };
 
 const StyledButton = styled(DsfrButton)<DsfrButtonProps & StyledButtonProps>`
-  box-shadow: inset 0 0 0 1px var(--tw-shadow-color);
-
   ${({ $loading, $full }) => css`
     ${$loading &&
     css`
