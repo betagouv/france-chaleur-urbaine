@@ -215,7 +215,7 @@ program
   .command('tiles:generate-geojson')
   .description('Generate GeoJSON file for a given resource')
   .argument('<type>', `Type of resource you want to generate for - ${Object.keys(tilesAdapters).join(', ')}`)
-  .option('--file <file>', 'Path of the file to export to', '')
+  .option('--file <file>', 'Path of the file to export to')
   .action(async (type, options) => {
     logger.info(`Generating GeoJSON file for ${type}`);
     const tileManager = tilesManager(type as TilesName);
