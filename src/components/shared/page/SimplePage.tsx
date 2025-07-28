@@ -15,6 +15,7 @@ import Box from '@/components/ui/Box';
 import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
 import { useAuthentication } from '@/services/authentication';
+import cx from '@/utils/cx';
 import { deleteFetchJSON } from '@/utils/network';
 
 import Banner from './Banner';
@@ -27,9 +28,20 @@ type SimplePageProps = {
   mode?: PageMode;
   currentPage?: string;
   includeFooter?: boolean;
+  boxed?: boolean;
+  className?: string;
 } & SEOProps;
 
-const SimplePage = ({ mode, currentPage, children, noIndex, includeFooter = true, ...props }: SimplePageProps) => {
+const SimplePage = ({
+  mode,
+  currentPage,
+  children,
+  noIndex,
+  includeFooter = true,
+  boxed = false,
+  className,
+  ...props
+}: SimplePageProps) => {
   return (
     <>
       <SEO noIndex={mode === 'authenticated' ? true : noIndex} {...props} />
@@ -42,7 +54,9 @@ const SimplePage = ({ mode, currentPage, children, noIndex, includeFooter = true
       />
       <PageHeader mode={mode ?? 'public'} currentPage={currentPage} />
 
-      {children}
+      <main id="main-content" className={cx(boxed ? 'fr-container fr-mt-2w' : '', className)}>
+        {children}
+      </main>
       {includeFooter && <PageFooter />}
     </>
   );
