@@ -1308,198 +1308,203 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
               </DeactivatableBox>
             </TrackableCheckableAccordion>
 
-            <TrackableCheckableAccordion
-              name="installationsGeothermieSurfaceEchangeursOuverts"
-              checked={mapConfiguration.installationsGeothermieSurfaceEchangeursOuverts}
-              layerName="installationsGeothermieSurfaceEchangeursOuverts"
-              trackingEvent="Carto|Installations géothermie surface ouverts"
-              label={
-                <>
-                  <Box flex>Géothermie de surface sur échangeurs ouverts (nappe)</Box>
-                  <Tooltip
-                    title={
-                      <>
-                        Source :{' '}
-                        <Link href="https://www.geothermies.fr/espace-cartographique" isExternal>
-                          BRGM
-                        </Link>{' '}
-                        (juillet 2025)
-                      </>
-                    }
-                  />
-                </>
-              }
-            >
-              <DeactivatableBox disabled={!mapConfiguration.installationsGeothermieSurfaceEchangeursOuverts} mx="1w">
-                <Box display="flex" alignItems="center">
-                  <Box
-                    backgroundColor={installationsGeothermieSurfaceEchangeursOuvertsRealiseeColor}
-                    opacity={installationsGeothermieSurfaceEchangeursOuvertsOpacity}
-                    height="10px"
-                    width="10px"
-                    borderRadius="50%"
-                    mr="1w"
-                  />
+            <UrlStateAccordion label="Géothermie de surface sur échangeurs ouverts (nappe)" small>
+              <TrackableCheckableAccordion
+                name="installationsGeothermieSurfaceEchangeursOuverts"
+                checked={mapConfiguration.installationsGeothermieSurfaceEchangeursOuverts}
+                layerName="installationsGeothermieSurfaceEchangeursOuverts"
+                trackingEvent="Carto|Installations géothermie surface ouverts"
+                label={
+                  <>
+                    <Box flex>Installations</Box>
+                    <Tooltip
+                      title={
+                        <>
+                          Source :{' '}
+                          <Link href="https://www.geothermies.fr/espace-cartographique" isExternal>
+                            BRGM
+                          </Link>{' '}
+                          (juillet 2025)
+                        </>
+                      }
+                    />
+                  </>
+                }
+              >
+                <DeactivatableBox disabled={!mapConfiguration.installationsGeothermieSurfaceEchangeursOuverts} mx="1w">
+                  <Box display="flex" alignItems="center">
+                    <Box
+                      backgroundColor={installationsGeothermieSurfaceEchangeursOuvertsRealiseeColor}
+                      opacity={installationsGeothermieSurfaceEchangeursOuvertsOpacity}
+                      height="10px"
+                      width="10px"
+                      borderRadius="50%"
+                      mr="1w"
+                    />
 
-                  <Text size="sm">Installation réalisée</Text>
-                </Box>
-                <Box display="flex" alignItems="center">
-                  <Box
-                    backgroundColor={installationsGeothermieSurfaceEchangeursOuvertsDeclareeColor}
-                    opacity={installationsGeothermieSurfaceEchangeursOuvertsOpacity}
-                    height="10px"
-                    width="10px"
-                    borderRadius="50%"
-                    mr="1w"
-                  />
+                    <Text size="sm">Installation réalisée</Text>
+                  </Box>
+                  <Box display="flex" alignItems="center">
+                    <Box
+                      backgroundColor={installationsGeothermieSurfaceEchangeursOuvertsDeclareeColor}
+                      opacity={installationsGeothermieSurfaceEchangeursOuvertsOpacity}
+                      height="10px"
+                      width="10px"
+                      borderRadius="50%"
+                      mr="1w"
+                    />
 
-                  <Text size="sm">Installation déclarée</Text>
-                </Box>
-              </DeactivatableBox>
-            </TrackableCheckableAccordion>
-            <TrackableCheckableAccordion
-              name="installationsGeothermieSurfaceEchangeursFermes"
-              checked={mapConfiguration.installationsGeothermieSurfaceEchangeursFermes}
-              layerName="installationsGeothermieSurfaceEchangeursFermes"
-              trackingEvent="Carto|Installations géothermie surface fermés"
-              label={
-                <>
-                  <Box flex>Géothermie de surface sur échangeurs fermés (sonde)</Box>
-                  <Tooltip
-                    title={
-                      <>
-                        Source :{' '}
-                        <Link href="https://www.geothermies.fr/espace-cartographique" isExternal>
-                          BRGM
-                        </Link>{' '}
-                        (juillet 2025)
-                      </>
-                    }
-                  />
-                </>
-              }
-            >
-              <DeactivatableBox disabled={!mapConfiguration.installationsGeothermieSurfaceEchangeursFermes} mx="1w">
-                <Box display="flex" alignItems="center">
-                  <Box
-                    backgroundColor={installationsGeothermieSurfaceEchangeursFermesRealiseeColor}
-                    opacity={installationsGeothermieSurfaceEchangeursFermesOpacity}
-                    height="10px"
-                    width="10px"
-                    borderRadius="50%"
-                    mr="1w"
-                  />
+                    <Text size="sm">Installation déclarée</Text>
+                  </Box>
+                </DeactivatableBox>
+              </TrackableCheckableAccordion>
+              <TrackableCheckableAccordion
+                name="ouvragesGeothermieSurfaceEchangeursOuverts"
+                checked={mapConfiguration.ouvragesGeothermieSurfaceEchangeursOuverts}
+                layerName="ouvragesGeothermieSurfaceEchangeursOuverts"
+                trackingEvent="Carto|Ouvrages géothermie surface ouverts"
+                label={
+                  <>
+                    <Box flex>Ouvrages</Box>
+                    <Tooltip
+                      title={
+                        <>
+                          Source :{' '}
+                          <Link href="https://www.geothermies.fr/espace-cartographique" isExternal>
+                            BRGM
+                          </Link>{' '}
+                          (juillet 2025)
+                        </>
+                      }
+                    />
+                  </>
+                }
+              >
+                <DeactivatableBox disabled={!mapConfiguration.ouvragesGeothermieSurfaceEchangeursOuverts} mx="1w">
+                  <Box display="flex" alignItems="center">
+                    <Box
+                      backgroundColor={ouvragesGeothermieSurfaceEchangeursOuvertsRealiseeColor}
+                      opacity={ouvragesGeothermieSurfaceEchangeursOuvertsOpacity}
+                      height="10px"
+                      width="10px"
+                      mr="1w"
+                    />
 
-                  <Text size="sm">Installation réalisée</Text>
-                </Box>
-                <Box display="flex" alignItems="center">
-                  <Box
-                    backgroundColor={installationsGeothermieSurfaceEchangeursFermesDeclareeColor}
-                    opacity={installationsGeothermieSurfaceEchangeursFermesOpacity}
-                    height="10px"
-                    width="10px"
-                    borderRadius="50%"
-                    mr="1w"
-                  />
+                    <Text size="sm">Ouvrage réalisé</Text>
+                  </Box>
+                  <Box display="flex" alignItems="center">
+                    <Box
+                      backgroundColor={ouvragesGeothermieSurfaceEchangeursOuvertsDeclareeColor}
+                      opacity={ouvragesGeothermieSurfaceEchangeursOuvertsOpacity}
+                      height="10px"
+                      width="10px"
+                      mr="1w"
+                    />
 
-                  <Text size="sm">Installation déclarée</Text>
-                </Box>
-              </DeactivatableBox>
-            </TrackableCheckableAccordion>
-            <TrackableCheckableAccordion
-              name="ouvragesGeothermieSurfaceEchangeursOuverts"
-              checked={mapConfiguration.ouvragesGeothermieSurfaceEchangeursOuverts}
-              layerName="ouvragesGeothermieSurfaceEchangeursOuverts"
-              trackingEvent="Carto|Ouvrages géothermie surface ouverts"
-              label={
-                <>
-                  <Box flex>Ouvrages de géothermie de surface sur échangeurs ouverts (nappe)</Box>
-                  <Tooltip
-                    title={
-                      <>
-                        Source :{' '}
-                        <Link href="https://www.geothermies.fr/espace-cartographique" isExternal>
-                          BRGM
-                        </Link>{' '}
-                        (juillet 2025)
-                      </>
-                    }
-                  />
-                </>
-              }
-            >
-              <DeactivatableBox disabled={!mapConfiguration.ouvragesGeothermieSurfaceEchangeursOuverts} mx="1w">
-                <Box display="flex" alignItems="center">
-                  <Box
-                    backgroundColor={ouvragesGeothermieSurfaceEchangeursOuvertsRealiseeColor}
-                    opacity={ouvragesGeothermieSurfaceEchangeursOuvertsOpacity}
-                    height="10px"
-                    width="10px"
-                    mr="1w"
-                  />
+                    <Text size="sm">Ouvrage déclaré</Text>
+                  </Box>
+                </DeactivatableBox>
+              </TrackableCheckableAccordion>
+            </UrlStateAccordion>
+            <UrlStateAccordion label="Géothermie de surface sur échangeurs fermés (sonde)" small>
+              <TrackableCheckableAccordion
+                name="installationsGeothermieSurfaceEchangeursFermes"
+                checked={mapConfiguration.installationsGeothermieSurfaceEchangeursFermes}
+                layerName="installationsGeothermieSurfaceEchangeursFermes"
+                trackingEvent="Carto|Installations géothermie surface fermés"
+                label={
+                  <>
+                    <Box flex>Installations</Box>
+                    <Tooltip
+                      title={
+                        <>
+                          Source :{' '}
+                          <Link href="https://www.geothermies.fr/espace-cartographique" isExternal>
+                            BRGM
+                          </Link>{' '}
+                          (juillet 2025)
+                        </>
+                      }
+                    />
+                  </>
+                }
+              >
+                <DeactivatableBox disabled={!mapConfiguration.installationsGeothermieSurfaceEchangeursFermes} mx="1w">
+                  <Box display="flex" alignItems="center">
+                    <Box
+                      backgroundColor={installationsGeothermieSurfaceEchangeursFermesRealiseeColor}
+                      opacity={installationsGeothermieSurfaceEchangeursFermesOpacity}
+                      height="10px"
+                      width="10px"
+                      borderRadius="50%"
+                      mr="1w"
+                    />
 
-                  <Text size="sm">Ouvrage réalisé</Text>
-                </Box>
-                <Box display="flex" alignItems="center">
-                  <Box
-                    backgroundColor={ouvragesGeothermieSurfaceEchangeursOuvertsDeclareeColor}
-                    opacity={ouvragesGeothermieSurfaceEchangeursOuvertsOpacity}
-                    height="10px"
-                    width="10px"
-                    mr="1w"
-                  />
+                    <Text size="sm">Installation réalisée</Text>
+                  </Box>
+                  <Box display="flex" alignItems="center">
+                    <Box
+                      backgroundColor={installationsGeothermieSurfaceEchangeursFermesDeclareeColor}
+                      opacity={installationsGeothermieSurfaceEchangeursFermesOpacity}
+                      height="10px"
+                      width="10px"
+                      borderRadius="50%"
+                      mr="1w"
+                    />
 
-                  <Text size="sm">Ouvrage déclaré</Text>
-                </Box>
-              </DeactivatableBox>
-            </TrackableCheckableAccordion>
-            <TrackableCheckableAccordion
-              name="ouvragesGeothermieSurfaceEchangeursFermes"
-              checked={mapConfiguration.ouvragesGeothermieSurfaceEchangeursFermes}
-              layerName="ouvragesGeothermieSurfaceEchangeursFermes"
-              trackingEvent="Carto|Ouvrages géothermie surface fermés"
-              label={
-                <>
-                  <Box flex>Ouvrages de géothermie de surface sur échangeurs fermés (sonde)</Box>
-                  <Tooltip
-                    title={
-                      <>
-                        Source :{' '}
-                        <Link href="https://www.geothermies.fr/espace-cartographique" isExternal>
-                          BRGM
-                        </Link>{' '}
-                        (juillet 2025)
-                      </>
-                    }
-                  />
-                </>
-              }
-            >
-              <DeactivatableBox disabled={!mapConfiguration.ouvragesGeothermieSurfaceEchangeursFermes} mx="1w">
-                <Box display="flex" alignItems="center">
-                  <Box
-                    backgroundColor={ouvragesGeothermieSurfaceEchangeursFermesRealiseeColor}
-                    opacity={ouvragesGeothermieSurfaceEchangeursFermesOpacity}
-                    height="10px"
-                    width="10px"
-                    mr="1w"
-                  />
+                    <Text size="sm">Installation déclarée</Text>
+                  </Box>
+                </DeactivatableBox>
+              </TrackableCheckableAccordion>
 
-                  <Text size="sm">Ouvrage réalisé</Text>
-                </Box>
-                <Box display="flex" alignItems="center">
-                  <Box
-                    backgroundColor={ouvragesGeothermieSurfaceEchangeursFermesDeclareeColor}
-                    opacity={ouvragesGeothermieSurfaceEchangeursFermesOpacity}
-                    height="10px"
-                    width="10px"
-                    mr="1w"
-                  />
+              <TrackableCheckableAccordion
+                name="ouvragesGeothermieSurfaceEchangeursFermes"
+                checked={mapConfiguration.ouvragesGeothermieSurfaceEchangeursFermes}
+                layerName="ouvragesGeothermieSurfaceEchangeursFermes"
+                trackingEvent="Carto|Ouvrages géothermie surface fermés"
+                label={
+                  <>
+                    <Box flex>Ouvrages</Box>
+                    <Tooltip
+                      title={
+                        <>
+                          Source :{' '}
+                          <Link href="https://www.geothermies.fr/espace-cartographique" isExternal>
+                            BRGM
+                          </Link>{' '}
+                          (juillet 2025)
+                        </>
+                      }
+                    />
+                  </>
+                }
+              >
+                <DeactivatableBox disabled={!mapConfiguration.ouvragesGeothermieSurfaceEchangeursFermes} mx="1w">
+                  <Box display="flex" alignItems="center">
+                    <Box
+                      backgroundColor={ouvragesGeothermieSurfaceEchangeursFermesRealiseeColor}
+                      opacity={ouvragesGeothermieSurfaceEchangeursFermesOpacity}
+                      height="10px"
+                      width="10px"
+                      mr="1w"
+                    />
 
-                  <Text size="sm">Ouvrage déclaré</Text>
-                </Box>
-              </DeactivatableBox>
-            </TrackableCheckableAccordion>
+                    <Text size="sm">Ouvrage réalisé</Text>
+                  </Box>
+                  <Box display="flex" alignItems="center">
+                    <Box
+                      backgroundColor={ouvragesGeothermieSurfaceEchangeursFermesDeclareeColor}
+                      opacity={ouvragesGeothermieSurfaceEchangeursFermesOpacity}
+                      height="10px"
+                      width="10px"
+                      mr="1w"
+                    />
+
+                    <Text size="sm">Ouvrage déclaré</Text>
+                  </Box>
+                </DeactivatableBox>
+              </TrackableCheckableAccordion>
+            </UrlStateAccordion>
           </UrlStateAccordion>
         </TabScrollablePart>
       )}
