@@ -674,6 +674,14 @@ program
     `);
   });
 
+program
+  .command('utils:geojson-to-ts')
+  .description("Génère les types TypeScript à partir d'un fichier GeoJSON")
+  .argument('<file>', 'Path to the GeoJSON file')
+  .action(async (file) => {
+    await runBash(`pnpx quicktype -l ts --prefer-unions --prefer-types --prefer-const-values -o types.ts "${file}"`);
+  });
+
 ['SIGINT', 'SIGTERM', 'SIGQUIT'].forEach((signal) => {
   process.on(signal, async () => {
     logger.warn('Received stop signal');
