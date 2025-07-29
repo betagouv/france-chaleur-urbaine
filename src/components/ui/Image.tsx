@@ -16,7 +16,7 @@ const Image: React.FC<ImageProps> = ({ caption, altText, ...props }) => {
   return (
     <figure>
       <NextImage {...props} />
-      <figcaption className="text-sm text-faded italic text-center">
+      <figcaption className="text-sm text-faded italic text-center mt-1 mb-2">
         {altText ? (
           <details>
             <summary>{caption}</summary>
