@@ -31,9 +31,9 @@ const usePublicodesEngine = <DottedName extends string>(rules: Rules, options?: 
   const [loaded, setLoaded] = React.useState(false);
 
   const engine = React.useMemo(() => {
-    console.time('engine');
+    console.time('engine'); // eslint-disable-line no-console
     const e = new Engine(rules, options);
-    console.timeEnd('engine');
+    console.timeEnd('engine'); // eslint-disable-line no-console
     setLoaded(true);
     return e;
   }, []);
