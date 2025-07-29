@@ -1319,6 +1319,8 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
                   <Tooltip
                     title={
                       <>
+                        Une installation peut être constituée d'un ou plusieurs ouvrages.
+                        <br />
                         Source :{' '}
                         <Link href="https://www.geothermies.fr/espace-cartographique" isExternal>
                           BRGM
@@ -1469,6 +1471,8 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
                   <Tooltip
                     title={
                       <>
+                        Une installation peut être constituée d'un ou plusieurs ouvrages.
+                        <br />
                         Source :{' '}
                         <Link href="https://www.geothermies.fr/espace-cartographique" isExternal>
                           BRGM
