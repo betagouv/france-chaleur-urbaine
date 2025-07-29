@@ -2,7 +2,7 @@ import { Card } from '@codegouvfr/react-dsfr/Card';
 
 import { type Article as ArticleType } from '@/types/Article';
 
-const Article = ({ article, isHorizontal }: { article: ArticleType; isHorizontal?: boolean }) => {
+const Article = ({ article, isHorizontal, titleAs = 'h3' }: { article: ArticleType; isHorizontal?: boolean; titleAs?: 'h4' | 'h3' }) => {
   return (
     <Card
       title={article.title}
@@ -16,7 +16,7 @@ const Article = ({ article, isHorizontal }: { article: ArticleType; isHorizontal
       border
       background={false}
       size="small"
-      titleAs="h4"
+      titleAs={titleAs}
       horizontal={isHorizontal}
     />
   );

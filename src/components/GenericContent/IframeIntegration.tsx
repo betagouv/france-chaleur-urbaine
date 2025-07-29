@@ -30,7 +30,7 @@ const IframeIntegration = ({ pageFrom }: { pageFrom?: PageFromType }) => {
           <Text size="lg" mt="2w">
             Nous mettons à votre disposition deux iframes que vous pouvez librement utiliser en un simple copié/collé.
           </Text>
-          <Heading as="h6" color="blue-france" mt="5w" mb="0">
+          <Heading size="h6" as="h5" color="blue-france" mt="5w" mb="0">
             1- Iframe cartographie
           </Heading>
           <hr />
@@ -55,7 +55,7 @@ const IframeIntegration = ({ pageFrom }: { pageFrom?: PageFromType }) => {
             src="/img/collectivite-iframe.jpg"
             alt="Visualisation de ce à quoi ressemblerait l'iframe de la carte France Chaleur Urbaine sur un site internet"
           />
-          <Heading as="h6" color="blue-france" mt="5w" mb="0" id="iframe">
+          <Heading size="h6" as="h5" color="blue-france" mt="5w" mb="0" id="iframe">
             2- Iframe test d’adresse
           </Heading>
           <hr />
