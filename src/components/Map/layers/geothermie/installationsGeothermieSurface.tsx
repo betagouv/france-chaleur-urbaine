@@ -15,8 +15,9 @@ const PopupInstallationGeothermieSurface = defineLayerPopup<
 >((installationGeothermieSurface, { Property, Title, TwoColumns }) => {
   return (
     <>
-      <Title>{installationGeothermieSurface.nom_instal || 'Installation géothermie de surface'}</Title>
+      <Title>Installation géothermie de surface</Title>
       <TwoColumns>
+        <Property label="Nom de l'installation" value={installationGeothermieSurface.nom_instal} />
         <Property label="Catégorie réglementaire" value={installationGeothermieSurface.categ_gth} />
         <Property label="Usage(s) de l'énergie produite" value={installationGeothermieSurface.usage_gth} />
         <Property label="Nombre d'ouvrages raccordés" value={installationGeothermieSurface.nombre_ouv} />
