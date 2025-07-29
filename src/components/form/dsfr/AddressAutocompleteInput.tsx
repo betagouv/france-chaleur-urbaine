@@ -25,6 +25,7 @@ const AddressAutocompleteInput = ({
       className={className}
     >
       <Autocomplete
+        id={fieldId}
         nativeInputProps={{
           className: fr.cx('fr-input', {
             'fr-input--error': state === 'error',

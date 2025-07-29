@@ -515,6 +515,7 @@ const NetworksList = () => {
                   <Icon size="sm" name="fr-icon-search-line" />
                 </Button>
               }
+              aria-label="Rechercher"
               nativeInputProps={{
                 placeholder: 'Rechercher',
                 value: searchValue,
