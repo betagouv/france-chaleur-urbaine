@@ -35,19 +35,21 @@ const PopupOuvrageGeothermieSurface = defineLayerPopup<
           }
         />
       </TwoColumns>
-      <Button
-        priority="tertiary"
-        className="fr-mt-1w"
-        full
-        iconId="fr-icon-eye-line"
-        linkProps={{
-          href: `http://ficheinfoterre.brgm.fr/InfoterreFiche/ficheBss.action?id=${ouvrageGeothermieSurface.bss_id}`,
-          target: '_blank',
-          rel: 'noopener noreferrer',
-        }}
-      >
-        Fiche technique de l'ouvrage
-      </Button>
+      {ouvrageGeothermieSurface.statut_bss === 'Réalisé' && (
+        <Button
+          priority="tertiary"
+          className="fr-mt-1w"
+          full
+          iconId="fr-icon-eye-line"
+          linkProps={{
+            href: `http://ficheinfoterre.brgm.fr/InfoterreFiche/ficheBss.action?id=${ouvrageGeothermieSurface.bss_id}`,
+            target: '_blank',
+            rel: 'noopener noreferrer',
+          }}
+        >
+          Fiche technique de l'ouvrage
+        </Button>
+      )}
     </>
   );
 });
