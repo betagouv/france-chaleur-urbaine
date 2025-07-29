@@ -36,21 +36,25 @@ export const variantClassNames = {
     primary: '',
     secondary: 'shadow-blue',
     tertiary: '',
+    'tertiary no outline': '',
   },
   destructive: {
     primary: '!bg-destructive !text-white !hover:bg-destructive/90',
     secondary: '!border-destructive !text-destructive shadow-destructive',
     tertiary: '!text-destructive',
+    'tertiary no outline': '',
   },
   info: {
     primary: '!bg-info !text-white !hover:bg-info/90',
     secondary: '!border-info !text-info shadow-info',
     tertiary: '!text-info',
+    'tertiary no outline': '',
   },
   faded: {
     primary: '!bg-faded !text-white !hover:bg-faded/90',
     secondary: '!border-faded !text-faded shadow-faded',
     tertiary: '!text-faded',
+    'tertiary no outline': '',
   },
 };
 
