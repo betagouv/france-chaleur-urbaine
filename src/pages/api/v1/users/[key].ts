@@ -40,8 +40,6 @@ const apiUsers = handleRouteErrors(async (req: NextApiRequest, res: NextApiRespo
   const apiHandler = getApiHandler(account);
 
   try {
-    console.log('DEBUG');
-    console.log('req.body', req.body);
     await apiHandler.handleData(req.body);
   } catch (error) {
     res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error' });
