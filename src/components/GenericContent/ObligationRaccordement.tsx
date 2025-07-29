@@ -1,5 +1,6 @@
 import Box, { ResponsiveRow } from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
+import colors from '@/components/ui/helpers/colors';
 import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
 
@@ -23,7 +24,7 @@ const ObligationRaccordement = () => {
             développement prioritaire.
           </Text>
 
-          <Box backgroundColor="yellow-moutarde-main-679" borderRadius="12px" p="3w" pt="4w" mt="3w" textColor="#fff" fontWeight="bold">
+          <Box backgroundColor={colors.warning} borderRadius="12px" p="3w" pt="4w" mt="3w" textColor="#fff" fontWeight="bold">
             <Text>
               <Text as="span" fontSize="32px">
                 300 000€

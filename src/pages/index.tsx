@@ -10,6 +10,7 @@ import { issues, understandings } from '@/components/Ressources/config';
 import Understanding from '@/components/Ressources/Understanding';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Box from '@/components/ui/Box';
+import colors from '@/components/ui/helpers/colors';
 import Hero, { HeroContent, HeroSubtitle, HeroTitle } from '@/components/ui/Hero';
 import Icon from '@/components/ui/Icon';
 import Image from '@/components/ui/Image';
@@ -217,8 +218,7 @@ Ce système contribue à la transition énergétique des villes en mutualisant l
               Cette obligation s’applique dans une certaine zone autour du réseau, définie par la collectivité, qualifiée de périmètre de
               développement prioritaire.
             </Text>
-
-            <Box backgroundColor="yellow-moutarde-main-679" borderRadius="12px" p="3w" pt="4w" mt="3w" textColor="#fff" fontWeight="bold">
+            <Box backgroundColor={colors.warning} borderRadius="12px" p="3w" pt="4w" mt="3w" textColor="#fff" fontWeight="bold">
               <Text>
                 <Text as="span" fontSize="32px">
                   300 000€

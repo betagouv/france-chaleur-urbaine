@@ -28,7 +28,7 @@ const Owner = () => {
           </Box>
           <Box backgroundColor="background-action-low-blue-france" mt="3w" py="4w" px="2w">
             <ResponsiveRow alignItems="center" gap="20px">
-              <Box textColor="#4550E5">
+              <Box textColor="#6060ff">
                 <Text size="lead" fontWeight="bold">
                   Obligation
                 </Text>

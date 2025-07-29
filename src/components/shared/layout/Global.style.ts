@@ -94,7 +94,7 @@ export const GlobalStyle: any = createGlobalStyle` /* TODO: Wait Fix from @types
       .rcu-comparatif-image-legend {
         margin: 1rem 1rem 0 1rem;
         text-align: center;
-        color: #4550E5;
+        color: #6060ff;
         p {
           margin-bottom: 0;
         }
@@ -151,7 +151,7 @@ export const GlobalStyle: any = createGlobalStyle` /* TODO: Wait Fix from @types
       color: #000074 !important;
     }
     b {
-      color: #4550E5;
+      color: #6060ff;
     }
     ${({ theme }) => theme.media.lg`
       padding-left: 64px;

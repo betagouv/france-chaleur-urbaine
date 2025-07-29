@@ -76,7 +76,7 @@ const colors = {
 
   light: fr.colors.decisions.background.alt.blueFrance.default,
 
-  accent: fr.colors.options.blueFrance.main525.default,
+  accent: '#6060ff',
 
   primary: palette.blue,
 
@@ -90,7 +90,7 @@ const colors = {
   'fcu-green': '#009364',
   'fcu-blue': '#00B1F8',
   'fcu-purple': '#8585F6',
-  'fcu-purple-dark': '#4550E5',
+  'fcu-purple-dark': '#6060ff',
   'fcu-yellow': '#F9F21A',
   'fcu-orange': '#FF692F',
   'fcu-orange-light': '#F89389',
@@ -101,7 +101,7 @@ export type Color = keyof typeof colors;
 export default colors;
 
 export const legacyColors = {
-  lightblue: '#4550E5',
+  lightblue: '#6060ff',
   purple: 'var(--blue-france-main-525)',
   darkblue: 'var(--blue-france-sun-113-625)',
   darkerblue: 'var(--legacy-darker-blue)',

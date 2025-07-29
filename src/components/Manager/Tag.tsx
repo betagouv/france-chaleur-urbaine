@@ -6,7 +6,7 @@ const colors: Record<string, { color: string; backgroundColor: string }> = {
   'Maison individuelle': { color: '#264653', backgroundColor: '#2a9d8f' },
   'Bailleur social': { color: '#006d77', backgroundColor: '#83c5be' },
   Copropriété: { color: '#86BD46', backgroundColor: '#EBF5E0' },
-  'Fioul collectif': { color: '#FFFFFF', backgroundColor: '#4550E5' },
+  'Fioul collectif': { color: '#FFFFFF', backgroundColor: '#6060ff' },
   'Gaz individuel': { color: '#EE9817', backgroundColor: '#FBE69C' },
   'Gaz collectif': { color: '#E55049', backgroundColor: '#FEA8A2' },
   'Électricité individuel': { color: '#518CBC', backgroundColor: '#BFEDFF' },

@@ -39,7 +39,7 @@ import {
 } from './ModalCarteFrance.style';
 
 const minFillColor = '#E2E3EE';
-const maxFillColor = '#4550E5';
+const maxFillColor = '#6060ff';
 const nbBins = 5;
 
 export type DistanceReseau = '50m' | '100m' | '150m';
