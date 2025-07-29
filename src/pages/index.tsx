@@ -180,6 +180,18 @@ function Home() {
                 height={890}
                 priority
                 className="fr-responsive-img"
+                caption="Schéma de fonctionnement d’un réseau de chaleur urbain"
+                altText={`Ce schéma illustre comment un réseau de chaleur urbain alimente une ville en énergie thermique de manière centralisée et efficace. Voici les éléments clés représentés :
+
+- **Bâtiments résidentiels et tertiaires** : raccordés au réseau pour le chauffage et l’eau chaude.
+- **Centrale de production de chaleur** : alimente le réseau à partir de diverses sources (biomasse, géothermie, incinération...).
+- **Énergies renouvelables** : panneaux solaires thermiques visibles sur certains bâtiments.
+- **Espaces publics apaisés** : infrastructures douces et durables (pistes cyclables, végétation...).
+- **Usagers** : habitants qui profitent du confort thermique fourni par le réseau.
+- **Réseau souterrain** : tuyaux rouges et bleus indiquent le circuit aller (chaud) et retour (refroidi).
+- **Boucle de retour** : l’eau refroidie repart vers la centrale pour être réchauffée à nouveau.
+
+Ce système contribue à la transition énergétique des villes en mutualisant la production et en réduisant les émissions de CO₂.`}
               />
 
               <Link variant="primary" href="reseaux-chaleur#contenu">

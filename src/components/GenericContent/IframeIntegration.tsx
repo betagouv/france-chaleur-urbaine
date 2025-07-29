@@ -51,7 +51,10 @@ const IframeIntegration = ({ pageFrom }: { pageFrom?: PageFromType }) => {
         </Box>
 
         <Box flex>
-          <CartoImage src="/img/collectivite-iframe.jpg" alt="" />
+          <CartoImage
+            src="/img/collectivite-iframe.jpg"
+            alt="Visualisation de ce à quoi ressemblerait l'iframe de la carte France Chaleur Urbaine sur un site internet"
+          />
           <Heading as="h6" color="blue-france" mt="5w" mb="0" id="iframe">
             2- Iframe test d’adresse
           </Heading>
