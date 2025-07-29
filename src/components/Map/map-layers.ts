@@ -33,9 +33,11 @@ import { enrrMobilisablesParkingsLayersSpec } from './layers/enrr-mobilisables/p
 import { enrrMobilisablesThalassothermieLayersSpec } from './layers/enrr-mobilisables/thalassothermie';
 import { enrrMobilisablesZonesGeothermieProfondeLayersSpec } from './layers/enrr-mobilisables/zonesGeothermieProfonde';
 import { etudesEnCoursLayersSpec } from './layers/etudesEnCours';
-import { installationsGeothermieLayersSpec } from './layers/installationsGeothermie';
+import { installationsGeothermieProfondeLayersSpec } from './layers/geothermie/installationsGeothermieProfonde';
+import { installationsGeothermieSurfaceLayersSpec } from './layers/geothermie/installationsGeothermieSurface';
+import { ouvragesGeothermieSurfaceLayersSpec } from './layers/geothermie/ouvragesGeothermieSurface';
+import { perimetresGeothermieProfondeLayersSpec } from './layers/geothermie/perimetresGeothermieProfonde';
 import { perimetresDeDeveloppementPrioritaireLayersSpec } from './layers/perimetresDeDeveloppementPrioritaire';
-import { perimetresGeothermieProfondeLayersSpec } from './layers/perimetresGeothermieProfonde';
 import { reseauxDeChaleurLayersSpec } from './layers/reseauxDeChaleur';
 import { reseauxDeFroidLayersSpec } from './layers/reseauxDeFroid';
 import { reseauxEnConstructionLayersSpec } from './layers/reseauxEnConstruction';
@@ -153,7 +155,9 @@ export const mapLayers = [
   ...reseauxDeChaleurLayersSpec,
   ...reseauxDeFroidLayersSpec,
   ...enrrMobilisablesChaleurFataleLayersSpec,
-  ...installationsGeothermieLayersSpec,
+  ...ouvragesGeothermieSurfaceLayersSpec,
+  ...installationsGeothermieSurfaceLayersSpec,
+  ...installationsGeothermieProfondeLayersSpec,
   ...communesFortPotentielPourCreationReseauxChaleurLayersSpec,
   ...etudesEnCoursLayersSpec,
   ...adressesEligiblesLayersSpec,

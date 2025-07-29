@@ -63,14 +63,28 @@ import { etudesEnCoursColor, etudesEnCoursOpacity } from '../layers/etudesEnCour
 import {
   installationsGeothermieProfondeLayerColor,
   installationsGeothermieProfondeLayerOpacity,
+} from '../layers/geothermie/installationsGeothermieProfonde';
+import {
   installationsGeothermieSurfaceEchangeursFermesDeclareeColor,
   installationsGeothermieSurfaceEchangeursFermesOpacity,
   installationsGeothermieSurfaceEchangeursFermesRealiseeColor,
   installationsGeothermieSurfaceEchangeursOuvertsDeclareeColor,
   installationsGeothermieSurfaceEchangeursOuvertsOpacity,
   installationsGeothermieSurfaceEchangeursOuvertsRealiseeColor,
-} from '../layers/installationsGeothermie';
-import { aquifereColorMap, perimetresGeothermieProfondeLayerOpacity, statutColorMap } from '../layers/perimetresGeothermieProfonde';
+} from '../layers/geothermie/installationsGeothermieSurface';
+import {
+  ouvragesGeothermieSurfaceEchangeursFermesDeclareeColor,
+  ouvragesGeothermieSurfaceEchangeursFermesOpacity,
+  ouvragesGeothermieSurfaceEchangeursFermesRealiseeColor,
+  ouvragesGeothermieSurfaceEchangeursOuvertsDeclareeColor,
+  ouvragesGeothermieSurfaceEchangeursOuvertsOpacity,
+  ouvragesGeothermieSurfaceEchangeursOuvertsRealiseeColor,
+} from '../layers/geothermie/ouvragesGeothermieSurface';
+import {
+  aquifereColorMap,
+  perimetresGeothermieProfondeLayerOpacity,
+  statutColorMap,
+} from '../layers/geothermie/perimetresGeothermieProfonde';
 import { testsAdressesLayerStyle } from '../layers/testsAdresses';
 import {
   energyFilterInterval,
@@ -1295,28 +1309,41 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
             </TrackableCheckableAccordion>
 
             <TrackableCheckableAccordion
-              name="installationsGeothermieSurfaceEchangeursOuverts"
-              checked={mapConfiguration.installationsGeothermieSurfaceEchangeursOuverts}
-              layerName="installationsGeothermieSurfaceEchangeursOuverts"
-              trackingEvent="Carto|Installations géothermie surface ouverts"
+              name="geothermieSurfaceEchangeursOuverts"
+              checked={mapConfiguration.geothermieSurfaceEchangeursOuverts.show}
+              layerName="geothermieSurfaceEchangeursOuverts.show"
+              trackingEvent="Carto|Géothermie sur nappe"
               label={
                 <>
                   <Box flex>Géothermie de surface sur échangeurs ouverts (nappe)</Box>
                   <Tooltip
                     title={
                       <>
+                        Une installation peut être constituée d'un ou plusieurs ouvrages.
+                        <br />
                         Source :{' '}
                         <Link href="https://www.geothermies.fr/espace-cartographique" isExternal>
                           BRGM
-                        </Link>
+                        </Link>{' '}
+                        (juillet 2025)
                       </>
                     }
+                    iconProps={{
+                      className: 'mt-1',
+                    }}
                   />
                 </>
               }
             >
-              <DeactivatableBox disabled={!mapConfiguration.installationsGeothermieSurfaceEchangeursOuverts} mx="1w">
-                <Box display="flex" alignItems="center">
+              <DeactivatableBox disabled={!mapConfiguration.geothermieSurfaceEchangeursOuverts.show} ml="1w" mr="1w">
+                <Box display="flex" alignItems="center" my="1w">
+                  <SingleCheckbox
+                    name="installationsGeothermieSurfaceEchangeursOuvertsRealisees"
+                    checked={mapConfiguration.geothermieSurfaceEchangeursOuverts.showInstallationsRealisees}
+                    onChange={() => toggleLayer('geothermieSurfaceEchangeursOuverts.showInstallationsRealisees')}
+                    trackingEvent="Carto|Installations géothermie sur nappe réalisées"
+                  />
+
                   <Box
                     backgroundColor={installationsGeothermieSurfaceEchangeursOuvertsRealiseeColor}
                     opacity={installationsGeothermieSurfaceEchangeursOuvertsOpacity}
@@ -1326,9 +1353,28 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
                     mr="1w"
                   />
 
-                  <Text size="sm">Installation réalisée</Text>
+                  <Text
+                    as="label"
+                    htmlFor="installationsGeothermieSurfaceEchangeursOuvertsRealisees"
+                    fontSize="14px"
+                    lineHeight="18px"
+                    className="fr-col"
+                    cursor="pointer"
+                    pt="1v"
+                    px="1v"
+                  >
+                    Installations réalisées
+                  </Text>
                 </Box>
-                <Box display="flex" alignItems="center">
+
+                <Box display="flex" alignItems="center" my="1w">
+                  <SingleCheckbox
+                    name="installationsGeothermieSurfaceEchangeursOuvertsDeclarees"
+                    checked={mapConfiguration.geothermieSurfaceEchangeursOuverts.showInstallationsDeclarees}
+                    onChange={() => toggleLayer('geothermieSurfaceEchangeursOuverts.showInstallationsDeclarees')}
+                    trackingEvent="Carto|Installations géothermie sur nappe déclarées"
+                  />
+
                   <Box
                     backgroundColor={installationsGeothermieSurfaceEchangeursOuvertsDeclareeColor}
                     opacity={installationsGeothermieSurfaceEchangeursOuvertsOpacity}
@@ -1338,33 +1384,118 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
                     mr="1w"
                   />
 
-                  <Text size="sm">Installation déclarée</Text>
+                  <Text
+                    as="label"
+                    htmlFor="installationsGeothermieSurfaceEchangeursOuvertsDeclarees"
+                    fontSize="14px"
+                    lineHeight="18px"
+                    className="fr-col"
+                    cursor="pointer"
+                    pt="1v"
+                    px="1v"
+                  >
+                    Installations déclarées
+                  </Text>
+                </Box>
+
+                <Box display="flex" alignItems="center" my="1w">
+                  <SingleCheckbox
+                    name="ouvragesGeothermieSurfaceEchangeursOuvertsRealises"
+                    checked={mapConfiguration.geothermieSurfaceEchangeursOuverts.showOuvragesRealises}
+                    onChange={() => toggleLayer('geothermieSurfaceEchangeursOuverts.showOuvragesRealises')}
+                    trackingEvent="Carto|Ouvrages géothermie sur nappe réalisés"
+                  />
+
+                  <Box
+                    backgroundColor={ouvragesGeothermieSurfaceEchangeursOuvertsRealiseeColor}
+                    opacity={ouvragesGeothermieSurfaceEchangeursOuvertsOpacity}
+                    height="10px"
+                    width="10px"
+                    mr="1w"
+                  />
+
+                  <Text
+                    as="label"
+                    htmlFor="ouvragesGeothermieSurfaceEchangeursOuvertsRealises"
+                    fontSize="14px"
+                    lineHeight="18px"
+                    className="fr-col"
+                    cursor="pointer"
+                    pt="1v"
+                    px="1v"
+                  >
+                    Ouvrages réalisés
+                  </Text>
+                </Box>
+
+                <Box display="flex" alignItems="center" my="1w">
+                  <SingleCheckbox
+                    name="ouvragesGeothermieSurfaceEchangeursOuvertsDeclarees"
+                    checked={mapConfiguration.geothermieSurfaceEchangeursOuverts.showOuvragesDeclares}
+                    onChange={() => toggleLayer('geothermieSurfaceEchangeursOuverts.showOuvragesDeclares')}
+                    trackingEvent="Carto|Ouvrages géothermie sur nappe déclarés"
+                  />
+
+                  <Box
+                    backgroundColor={ouvragesGeothermieSurfaceEchangeursOuvertsDeclareeColor}
+                    opacity={ouvragesGeothermieSurfaceEchangeursOuvertsOpacity}
+                    height="10px"
+                    width="10px"
+                    mr="1w"
+                  />
+
+                  <Text
+                    as="label"
+                    htmlFor="ouvragesGeothermieSurfaceEchangeursOuvertsDeclarees"
+                    fontSize="14px"
+                    lineHeight="18px"
+                    className="fr-col"
+                    cursor="pointer"
+                    pt="1v"
+                    px="1v"
+                  >
+                    Ouvrages déclarés
+                  </Text>
                 </Box>
               </DeactivatableBox>
             </TrackableCheckableAccordion>
+
             <TrackableCheckableAccordion
-              name="installationsGeothermieSurfaceEchangeursFermes"
-              checked={mapConfiguration.installationsGeothermieSurfaceEchangeursFermes}
-              layerName="installationsGeothermieSurfaceEchangeursFermes"
-              trackingEvent="Carto|Installations géothermie surface fermés"
+              name="geothermieSurfaceEchangeursFermes"
+              checked={mapConfiguration.geothermieSurfaceEchangeursFermes.show}
+              layerName="geothermieSurfaceEchangeursFermes.show"
+              trackingEvent="Carto|Géothermie sur sonde"
               label={
                 <>
                   <Box flex>Géothermie de surface sur échangeurs fermés (sonde)</Box>
                   <Tooltip
                     title={
                       <>
+                        Une installation peut être constituée d'un ou plusieurs ouvrages.
+                        <br />
                         Source :{' '}
                         <Link href="https://www.geothermies.fr/espace-cartographique" isExternal>
                           BRGM
-                        </Link>
+                        </Link>{' '}
+                        (juillet 2025)
                       </>
                     }
+                    iconProps={{
+                      className: 'mt-1',
+                    }}
                   />
                 </>
               }
             >
-              <DeactivatableBox disabled={!mapConfiguration.installationsGeothermieSurfaceEchangeursFermes} mx="1w">
-                <Box display="flex" alignItems="center">
+              <DeactivatableBox disabled={!mapConfiguration.geothermieSurfaceEchangeursFermes.show} ml="1w" mr="1w">
+                <Box display="flex" alignItems="center" my="1w">
+                  <SingleCheckbox
+                    name="installationsGeothermieSurfaceEchangeursFermesRealisees"
+                    checked={mapConfiguration.geothermieSurfaceEchangeursFermes.showInstallationsRealisees}
+                    onChange={() => toggleLayer('geothermieSurfaceEchangeursFermes.showInstallationsRealisees')}
+                    trackingEvent="Carto|Installations géothermie sur sonde réalisées"
+                  />
+
                   <Box
                     backgroundColor={installationsGeothermieSurfaceEchangeursFermesRealiseeColor}
                     opacity={installationsGeothermieSurfaceEchangeursFermesOpacity}
@@ -1374,9 +1505,28 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
                     mr="1w"
                   />
 
-                  <Text size="sm">Installation réalisée</Text>
+                  <Text
+                    as="label"
+                    htmlFor="installationsGeothermieSurfaceEchangeursFermesRealisees"
+                    fontSize="14px"
+                    lineHeight="18px"
+                    className="fr-col"
+                    cursor="pointer"
+                    pt="1v"
+                    px="1v"
+                  >
+                    Installations réalisées
+                  </Text>
                 </Box>
-                <Box display="flex" alignItems="center">
+
+                <Box display="flex" alignItems="center" my="1w">
+                  <SingleCheckbox
+                    name="installationsGeothermieSurfaceEchangeursFermesDeclarees"
+                    checked={mapConfiguration.geothermieSurfaceEchangeursFermes.showInstallationsDeclarees}
+                    onChange={() => toggleLayer('geothermieSurfaceEchangeursFermes.showInstallationsDeclarees')}
+                    trackingEvent="Carto|Installations géothermie sur sonde déclarées"
+                  />
+
                   <Box
                     backgroundColor={installationsGeothermieSurfaceEchangeursFermesDeclareeColor}
                     opacity={installationsGeothermieSurfaceEchangeursFermesOpacity}
@@ -1386,7 +1536,78 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
                     mr="1w"
                   />
 
-                  <Text size="sm">Installation déclarée</Text>
+                  <Text
+                    as="label"
+                    htmlFor="installationsGeothermieSurfaceEchangeursFermesDeclarees"
+                    fontSize="14px"
+                    lineHeight="18px"
+                    className="fr-col"
+                    cursor="pointer"
+                    pt="1v"
+                    px="1v"
+                  >
+                    Installations déclarées
+                  </Text>
+                </Box>
+
+                <Box display="flex" alignItems="center" my="1w">
+                  <SingleCheckbox
+                    name="ouvragesGeothermieSurfaceEchangeursFermesRealises"
+                    checked={mapConfiguration.geothermieSurfaceEchangeursFermes.showOuvragesRealises}
+                    onChange={() => toggleLayer('geothermieSurfaceEchangeursFermes.showOuvragesRealises')}
+                    trackingEvent="Carto|Ouvrages géothermie sur sonde réalisés"
+                  />
+
+                  <Box
+                    backgroundColor={ouvragesGeothermieSurfaceEchangeursFermesRealiseeColor}
+                    opacity={ouvragesGeothermieSurfaceEchangeursFermesOpacity}
+                    height="10px"
+                    width="10px"
+                    mr="1w"
+                  />
+
+                  <Text
+                    as="label"
+                    htmlFor="ouvragesGeothermieSurfaceEchangeursFermesRealises"
+                    fontSize="14px"
+                    lineHeight="18px"
+                    className="fr-col"
+                    cursor="pointer"
+                    pt="1v"
+                    px="1v"
+                  >
+                    Ouvrages réalisés
+                  </Text>
+                </Box>
+
+                <Box display="flex" alignItems="center" my="1w">
+                  <SingleCheckbox
+                    name="ouvragesGeothermieSurfaceEchangeursFermesDeclarees"
+                    checked={mapConfiguration.geothermieSurfaceEchangeursFermes.showOuvragesDeclares}
+                    onChange={() => toggleLayer('geothermieSurfaceEchangeursFermes.showOuvragesDeclares')}
+                    trackingEvent="Carto|Ouvrages géothermie sur sonde déclarés"
+                  />
+
+                  <Box
+                    backgroundColor={ouvragesGeothermieSurfaceEchangeursFermesDeclareeColor}
+                    opacity={ouvragesGeothermieSurfaceEchangeursFermesOpacity}
+                    height="10px"
+                    width="10px"
+                    mr="1w"
+                  />
+
+                  <Text
+                    as="label"
+                    htmlFor="ouvragesGeothermieSurfaceEchangeursFermesDeclarees"
+                    fontSize="14px"
+                    lineHeight="18px"
+                    className="fr-col"
+                    cursor="pointer"
+                    pt="1v"
+                    px="1v"
+                  >
+                    Ouvrages déclarés
+                  </Text>
                 </Box>
               </DeactivatableBox>
             </TrackableCheckableAccordion>

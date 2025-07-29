@@ -1,6 +1,6 @@
 import { defineLayerPopup, ifHoverElse } from '@/components/Map/layers/common';
 
-import { type MapSourceLayersSpecification } from './common';
+import { type MapSourceLayersSpecification } from '../common';
 
 export const perimetresGeothermieProfondeLayerColor = '#b084cc';
 export const perimetresGeothermieProfondeLayerOpacity = 0.5;

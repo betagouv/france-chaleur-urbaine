@@ -215,7 +215,7 @@ program
   .command('tiles:generate-geojson')
   .description('Generate GeoJSON file for a given resource')
   .argument('<type>', `Type of resource you want to generate for - ${Object.keys(tilesAdapters).join(', ')}`)
-  .option('--file <file>', 'Path of the file to export to', '')
+  .option('--file <file>', 'Path of the file to export to')
   .action(async (type, options) => {
     logger.info(`Generating GeoJSON file for ${type}`);
     const tileManager = tilesManager(type as TilesName);
@@ -672,6 +672,14 @@ program
 
       3. Enfin, supprime le frontmatter des nouveaux articles et les urls absolues avec ./scripts/clean-gitbook-actus.sh
     `);
+  });
+
+program
+  .command('utils:geojson-to-ts')
+  .description("Génère les types TypeScript à partir d'un fichier GeoJSON")
+  .argument('<file>', 'Path to the GeoJSON file')
+  .action(async (file) => {
+    await runBash(`pnpx quicktype -l ts --prefer-unions --prefer-types --prefer-const-values -o types.ts "${file}"`);
   });
 
 ['SIGINT', 'SIGTERM', 'SIGQUIT'].forEach((signal) => {
