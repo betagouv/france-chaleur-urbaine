@@ -1,10 +1,10 @@
 import { ButtonsGroup } from '@codegouvfr/react-dsfr/ButtonsGroup';
 import { createModal } from '@codegouvfr/react-dsfr/Modal';
-import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
 
 import Box from '@/components/ui/Box';
+import Image from '@/components/ui/Image';
 import Modal from '@/components/ui/Modal';
 import Text from '@/components/ui/Text';
 import Tooltip from '@/components/ui/Tooltip';

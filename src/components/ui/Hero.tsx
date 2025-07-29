@@ -1,7 +1,7 @@
 import { cva, type VariantProps } from 'class-variance-authority';
-import Image from 'next/image';
 import React from 'react';
 
+import Image from '@/components/ui/Image';
 import cx from '@/utils/cx';
 
 import Heading from './Heading';

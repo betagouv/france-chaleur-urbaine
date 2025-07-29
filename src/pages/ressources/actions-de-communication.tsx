@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import { type PropsWithChildren } from 'react';
 
 import SimplePage from '@/components/shared/page/SimplePage';
@@ -6,6 +5,7 @@ import Slideshow from '@/components/Slideshow';
 import Box from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
 import Hero, { HeroSubtitle, HeroTitle } from '@/components/ui/Hero';
+import Image from '@/components/ui/Image';
 import Text from '@/components/ui/Text';
 
 const ActionsDeCommunicationPage = () => {

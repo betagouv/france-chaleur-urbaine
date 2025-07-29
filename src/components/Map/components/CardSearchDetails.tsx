@@ -1,10 +1,10 @@
 import Badge from '@codegouvfr/react-dsfr/Badge';
 import { Button } from '@codegouvfr/react-dsfr/Button';
-import Image from 'next/image';
 import { memo, useCallback, useMemo } from 'react';
 
 import Box from '@/components/ui/Box';
 import Icon from '@/components/ui/Icon';
+import Image from '@/components/ui/Image';
 import useEligibilityForm from '@/hooks/useEligibilityForm';
 import { type Point } from '@/types/Point';
 import { type StoredAddress } from '@/types/StoredAddress';

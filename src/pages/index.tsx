@@ -1,5 +1,4 @@
 import Highlight from '@codegouvfr/react-dsfr/Highlight';
-import Image from 'next/image';
 
 import { clientConfig } from '@/client-config';
 import LastArticles from '@/components/Articles/LastArticles';
@@ -13,6 +12,7 @@ import SimplePage from '@/components/shared/page/SimplePage';
 import Box from '@/components/ui/Box';
 import Hero, { HeroContent, HeroSubtitle, HeroTitle } from '@/components/ui/Hero';
 import Icon from '@/components/ui/Icon';
+import Image from '@/components/ui/Image';
 import Link from '@/components/ui/Link';
 import Section, { SectionContent, SectionHeading, SectionTitle, SectionTwoColumns } from '@/components/ui/Section';
 import SectionScrollableTiles, { type SectionScrollableTilesItem } from '@/components/ui/SectionScrollableTiles';

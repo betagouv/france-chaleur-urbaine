@@ -1,7 +1,7 @@
 import { Badge } from '@codegouvfr/react-dsfr/Badge';
-import Image from 'next/image';
 import React, { memo } from 'react';
 
+import Image from '@/components/ui/Image';
 import Link from '@/components/ui/Link';
 import { isDefined } from '@/utils/core';
 // import ContentEditable from './ContentEditable';

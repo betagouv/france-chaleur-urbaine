@@ -1,8 +1,7 @@
-import Image from 'next/image';
-
 import { List } from '@/components/Ressources/Contents/Contents.styles';
 import TextList from '@/components/TextList';
 import Hero, { HeroSubtitle, HeroTitle } from '@/components/ui/Hero';
+import Image from '@/components/ui/Image';
 import Link from '@/components/ui/Link';
 import Section, { SectionContent, SectionHeading, SectionTitle } from '@/components/ui/Section';
 import TableSimple from '@/components/ui/TableSimple';

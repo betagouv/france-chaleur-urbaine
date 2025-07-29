@@ -1,5 +1,3 @@
-import Image from 'next/image';
-
 import LastArticles from '@/components/Articles/LastArticles';
 import IframeIntegration from '@/components/GenericContent/IframeIntegration';
 import ObligationRaccordement from '@/components/GenericContent/ObligationRaccordement';
@@ -15,6 +13,7 @@ import { TypeSurf } from '@/components/SimulatorCO2/SimulatorCO2.businessRule';
 import Owner from '@/components/Tertiaire/Owner';
 import Box, { ResponsiveRow } from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
+import Image from '@/components/ui/Image';
 import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
 

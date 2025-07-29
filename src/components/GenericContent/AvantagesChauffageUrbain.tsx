@@ -1,7 +1,6 @@
-import Image from 'next/image';
-
 import Box from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
+import Image from '@/components/ui/Image';
 import Text from '@/components/ui/Text';
 
 const AvantagesChauffageUrbain = ({ title }: { title?: string }) => {

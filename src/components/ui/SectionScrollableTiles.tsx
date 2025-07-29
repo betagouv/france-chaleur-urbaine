@@ -1,11 +1,11 @@
 'use client';
 
 import { AnimatePresence } from 'motion/react';
-import Image from 'next/image';
 import React from 'react';
 import { useCallback, useRef, useState } from 'react';
 
 import Button from '@/components/ui/Button';
+import Image from '@/components/ui/Image';
 import Link from '@/components/ui/Link';
 import Section, { SectionContent, SectionHeading } from '@/components/ui/Section';
 import { trackEvent, type TrackingEvent } from '@/services/analytics';
