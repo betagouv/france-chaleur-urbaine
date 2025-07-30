@@ -5,7 +5,7 @@ import SimplePage, { publicNavigationMenu } from '@/components/shared/page/Simpl
 
 const PlanDuSite: NextPage = () => {
   return (
-    <SimplePage title="Plan du site" boxed>
+    <SimplePage title="Plan du site" layout="center">
       <h1>Plan du site</h1>
       <nav aria-label="Plan du site">
         <ul className="list-disc pl-6">

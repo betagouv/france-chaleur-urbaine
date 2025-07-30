@@ -28,7 +28,7 @@ type SimplePageProps = {
   mode?: PageMode;
   currentPage?: string;
   includeFooter?: boolean;
-  boxed?: boolean;
+  layout?: 'center' | 'fluid';
   className?: string;
 } & SEOProps;
 
@@ -38,7 +38,7 @@ const SimplePage = ({
   children,
   noIndex,
   includeFooter = true,
-  boxed = false,
+  layout = 'fluid',
   className,
   ...props
 }: SimplePageProps) => {
@@ -54,7 +54,7 @@ const SimplePage = ({
       />
       <PageHeader mode={mode ?? 'public'} currentPage={currentPage} />
 
-      <main id="main-content" className={cx(boxed ? 'fr-container fr-mt-2w' : '', className)}>
+      <main id="main-content" className={cx(layout === 'center' ? 'fr-container fr-mt-2w' : '', className)}>
         {children}
       </main>
       {includeFooter && <PageFooter />}
