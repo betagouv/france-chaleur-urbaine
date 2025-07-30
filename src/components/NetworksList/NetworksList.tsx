@@ -511,7 +511,7 @@ const NetworksList = () => {
               label="Rechercher"
               hideLabel
               addon={
-                <Button className="primary">
+                <Button className="primary" aria-label="Rechercher">
                   <Icon size="sm" name="fr-icon-search-line" />
                 </Button>
               }
