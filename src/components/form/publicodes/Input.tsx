@@ -1,4 +1,4 @@
-import { type DottedName } from '@betagouv/france-chaleur-urbaine-publicodes';
+import { type RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
 import { useDebouncedEffect } from '@react-hookz/web';
 import React from 'react';
 
@@ -14,7 +14,7 @@ export type DSFRInputProps = React.ComponentProps<typeof DSFRInput>;
 type InputProps = Omit<DSFRInputProps, 'nativeTextAreaProps' | 'label'> & {
   textArea?: false;
   placeholderPrecision?: number;
-  name: DottedName;
+  name: RuleName;
   label?: keyof typeof labels | string;
   hideUnit?: boolean;
   help?: React.ReactNode;

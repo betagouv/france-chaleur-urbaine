@@ -1,7 +1,7 @@
 import { SegmentedControl } from '@codegouvfr/react-dsfr/SegmentedControl';
 import dynamic from 'next/dynamic';
 import { parseAsBoolean, useQueryState } from 'nuqs';
-import React, { useRef } from 'react';
+import React, { Fragment, useRef } from 'react';
 import ReactDOMServer from 'react-dom/server';
 import Chart from 'react-google-charts';
 
@@ -579,7 +579,7 @@ const Graph: React.FC<GraphProps> = ({
                   reseauDeChaleur.label && name.includes('Réseau de chaleur') && !reseauDeChaleur.hasPriceData;
 
                 return (
-                  <>
+                  <Fragment key={name}>
                     {showSectionTitle && (
                       <div className={cx('relative mb-1 text-center text-xl font-bold bg-white', i > 0 ? 'mt-8' : '')}>
                         {graphSectionTitle}
@@ -640,7 +640,7 @@ const Graph: React.FC<GraphProps> = ({
                         </span>
                       </span>
                     )}
-                  </>
+                  </Fragment>
                 );
               })}
             </div>

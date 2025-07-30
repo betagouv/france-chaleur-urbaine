@@ -1,3 +1,4 @@
+import { type RuleName, type Situation } from '@betagouv/france-chaleur-urbaine-publicodes';
 import Engine from 'publicodes';
 import React from 'react';
 
@@ -26,13 +27,13 @@ export const formatUnit = ({ numerators, denominators }: Unit): string => {
   return nums + (dens ? ' / ' + dens : '');
 };
 
-const usePublicodesEngine = <DottedName extends string>(rules: Rules, options?: Options) => {
+const usePublicodesEngine = (rules: Rules, options?: Options) => {
   const [, rerender] = React.useState({});
   const [loaded, setLoaded] = React.useState(false);
 
   const engine = React.useMemo(() => {
     console.time('engine'); // eslint-disable-line no-console
-    const e = new Engine(rules, options);
+    const e = new Engine<RuleName>(rules, options);
     console.timeEnd('engine'); // eslint-disable-line no-console
     setLoaded(true);
     return e;
@@ -40,27 +41,27 @@ const usePublicodesEngine = <DottedName extends string>(rules: Rules, options?: 
 
   const parsedRules = engine.getParsedRules();
 
-  const setField = (key: DottedName, value: any) => {
+  const setField = <Key extends RuleName>(key: Key, value: Required<Situation>[Key] | '') => {
     engine.setSituation({
       ...engine.getSituation(),
-      [key as any]: value === '' || value === undefined ? null : value,
+      [key]: value === '' || value === undefined ? null : value,
     });
     rerender({});
   };
 
-  const resetField = (key: DottedName) => {
+  const resetField = (key: RuleName) => {
     engine.setSituation({
       ...Object.fromEntries(Object.entries(engine.getSituation()).filter(([k]) => k !== key)),
     });
     rerender({});
   };
 
-  const setSituation = (situation: Partial<Record<DottedName, any>>) => {
+  const setSituation = (situation: Partial<Record<RuleName, any>>) => {
     engine.setSituation(situation);
     rerender({});
   };
 
-  const setStringField = (key: DottedName, value: any) => {
+  const setStringField = (key: RuleName, value: any) => {
     setField(key, value === '' ? null : `'${value}'`);
   };
 
@@ -68,7 +69,7 @@ const usePublicodesEngine = <DottedName extends string>(rules: Rules, options?: 
     (window as any).engine = engine;
   }
 
-  const getNode = (key: DottedName) => {
+  const getNode = (key: RuleName) => {
     const result = engine.evaluate(key as any);
 
     if (result === null || result === undefined) {
@@ -78,11 +79,11 @@ const usePublicodesEngine = <DottedName extends string>(rules: Rules, options?: 
     return result;
   };
 
-  const getField = (key: DottedName) => {
-    return getNode(key as any).nodeValue;
+  const getField = (key: RuleName) => {
+    return getNode(key).nodeValue;
   };
 
-  const getFieldDefaultValue = (key: DottedName) => {
+  const getFieldDefaultValue = (key: RuleName) => {
     return engine.evaluate({
       valeur: key,
       contexte: {
@@ -91,13 +92,13 @@ const usePublicodesEngine = <DottedName extends string>(rules: Rules, options?: 
     })?.nodeValue;
   };
 
-  const isDefaultValue = (key: DottedName, value: any) => {
-    const defaultValue = getFieldDefaultValue(key as any);
+  const isDefaultValue = (key: RuleName, value: any) => {
+    const defaultValue = getFieldDefaultValue(key);
     // custom case as type de production froid is "Groupe froid" by default even if Inclure la climatisation is false
     if (
       key === 'type de production de froid' &&
       (value === "'Groupe froid'" || value === 'Groupe froid') &&
-      getField('Inclure la climatisation' as DottedName)
+      getField('Inclure la climatisation' as RuleName)
     ) {
       return false;
     }
@@ -108,20 +109,20 @@ const usePublicodesEngine = <DottedName extends string>(rules: Rules, options?: 
     return defaultValue === value;
   };
 
-  const getFieldAsNumber = (key: DottedName) => {
+  const getFieldAsNumber = (key: RuleName) => {
     return (getField(key) as number) || 0;
   };
 
-  const getUnit = (key: DottedName) => {
+  const getUnit = (key: RuleName) => {
     const node = getNode(key as any);
     const unit = !node?.unit ? '' : formatUnit(node.unit);
     return unit;
   };
 
-  const getParsedRule = (key: DottedName) => parsedRules[key as string];
+  const getParsedRule = (key: RuleName) => parsedRules[key];
 
   const getSituation = () => {
-    return engine.getSituation() as Record<DottedName, number | string>;
+    return engine.getSituation() as Record<RuleName, number | string>;
   };
 
   return {

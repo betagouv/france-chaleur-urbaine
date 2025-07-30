@@ -54,7 +54,7 @@
     "ts": "NODE_OPTIONS=\"--max-old-space-size=8192\" pnpm tsc --build --clean && pnpm tsc"
   },
   "dependencies": {
-    "@betagouv/france-chaleur-urbaine-publicodes": "^1.0.6",
+    "@betagouv/france-chaleur-urbaine-publicodes": "^1.1.0",
     "@codegouvfr/react-dsfr": "^1.26.0",
     "@commander-js/extra-typings": "^12.1.0",
     "@emotion/is-prop-valid": "1.2.2",
@@ -136,7 +136,7 @@
     "pg": "^8.11.3",
     "proj4": "^2.15.0",
     "prompts": "^2.4.2",
-    "publicodes": "npm:@totak/publicodes@1.5.1-fcu6",
+    "publicodes": "1.9.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-google-charts": "^4.0.1",

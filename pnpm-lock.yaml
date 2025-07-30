@@ -11,8 +11,8 @@ overrides:
 
 dependencies:
   '@betagouv/france-chaleur-urbaine-publicodes':
-    specifier: ^1.0.6
-    version: 1.0.6
+    specifier: ^1.1.0
+    version: 1.1.0(publicodes@1.9.0)
   '@codegouvfr/react-dsfr':
     specifier: ^1.26.0
     version: 1.26.0
@@ -257,8 +257,8 @@ dependencies:
     specifier: ^2.4.2
     version: 2.4.2
   publicodes:
-    specifier: npm:@totak/publicodes@1.5.1-fcu6
-    version: /@totak/publicodes@1.5.1-fcu6(@types/mocha@9.1.1)
+    specifier: 1.9.0
+    version: 1.9.0
   react:
     specifier: ^19.1.0
     version: 19.1.0
@@ -2018,8 +2018,12 @@ packages:
       '@babel/helper-validator-identifier': 7.27.1
     dev: false
 
-  /@betagouv/france-chaleur-urbaine-publicodes@1.0.6:
-    resolution: {integrity: sha512-xFqbs+S4KQ+XbWIXLLjsro8Cds8rTwsPuZUamHUexYlIgwFHFoUrjXbNTILdf1/nr+5+aO6H0mcdzxasoY9DSA==}
+  /@betagouv/france-chaleur-urbaine-publicodes@1.1.0(publicodes@1.9.0):
+    resolution: {integrity: sha512-JoX7FgZH4/tRqL5+nHbOj7UcmYiCMzfrNsdNYiAI/dSn5kOsrhJQNpNbsVk3D1bO+I8tGSKaqx9V3YS1T1sJ7A==}
+    peerDependencies:
+      publicodes: ^1.9.0
+    dependencies:
+      publicodes: 1.9.0
     dev: false
 
   /@codegouvfr/react-dsfr@1.26.0:
@@ -5091,14 +5095,6 @@ packages:
       '@xmldom/xmldom': 0.9.8
     dev: false
 
-  /@totak/publicodes@1.5.1-fcu6(@types/mocha@9.1.1):
-    resolution: {integrity: sha512-92QM2d8vLs5IsEoBNwjsad6+w7jqwPIvsAxkulSM2n4bsN0qGfof6t4/F7/zjCk3GkGZm0obCycVlgywdCGf1g==}
-    peerDependencies:
-      '@types/mocha': ^9.0.0
-    dependencies:
-      '@types/mocha': 9.1.1
-    dev: false
-
   /@trysound/sax@0.2.0:
     resolution: {integrity: sha512-L7z9BgrNEcYyUYtF+HaEfiS5ebkh9jXqbszz7pC0hRBPaatV0XjSD3+eHrpqFemQfgwiFF0QPIarnIihIDn7OA==}
     engines: {node: '>=10.13.0'}
@@ -5436,10 +5432,6 @@ packages:
 
   /@types/mdx@2.0.13:
     resolution: {integrity: sha512-+OWZQfAYyio6YkJb3HLxDrvnx6SWWDbC0zVPfBRzUk0/nqoDyf6dNxQi3eArPe8rJ473nobTMQ/8Zk+LxJ+Yuw==}
-    dev: false
-
-  /@types/mocha@9.1.1:
-    resolution: {integrity: sha512-Z61JK7DKDtdKTWwLeElSEBcWGRLY8g95ic5FoQqI9CMx0ns/Ghep3B4DfcEimiKMvtamNVULVNKEsiwV3aQmXw==}
     dev: false
 
   /@types/ms@0.7.34:
@@ -12361,6 +12353,10 @@ packages:
   /psl@1.9.0:
     resolution: {integrity: sha512-E/ZsdU4HLs/68gYzgGTkMicWTLPdAftJLfJFlLUAAKZGkStNU72sZjT66SnMDVOfOWY/YAoiD7Jxa9iHvngcag==}
     dev: true
+
+  /publicodes@1.9.0:
+    resolution: {integrity: sha512-0E2vsKAZTq3jNm+sWYDDZfHjePPaPkBIn8cMLS7qtMxC8HRyPQMEFkqowibycLwY+C/hrG0OJJt6+estMiXxYA==}
+    dev: false
 
   /pump@3.0.0:
     resolution: {integrity: sha512-LwZy+p3SFs1Pytd/jYct4wpv49HiYCqd9Rlc5ZVdk0V+8Yzv6jR5Blk3TRmPL1ft69TxP0IMZGJ+WPFU2BFhww==}

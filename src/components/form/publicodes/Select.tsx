@@ -1,4 +1,4 @@
-import { type DottedName } from '@betagouv/france-chaleur-urbaine-publicodes';
+import { type RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
 import { Select as DSFRSelect } from '@codegouvfr/react-dsfr/SelectNext';
 import React from 'react';
 
@@ -27,7 +27,7 @@ const Select = ({
   withDefaultOption = true,
   ...props
 }: Omit<DSFRSelectProps, 'hint' | 'options' | 'label'> & {
-  name: DottedName;
+  name: RuleName;
   hintText?: DSFRSelectProps['hint']; // harmonize with Input
   onChange?: (option?: string) => void;
   label?: keyof typeof labels | string;
@@ -40,11 +40,9 @@ const Select = ({
   const unit = !hideUnit && isInView ? engine.getUnit(name) : '';
 
   const options = isInView ? getOptions(engine, name) : [];
-  const defaultValue = isInView ? fixupBooleanEngineValue(engine.getFieldDefaultValue(name) as string | null | undefined) : '';
-  const value = isInView
-    ? `${
-        (withDefaultOption ? fixupSituationStringValue(engine.getSituation()[name]) : fixupBooleanEngineValue(engine.getField(name))) ?? ''
-      }`
+  const defaultValue = isInView ? fixupBooleanEngineValue(engine.getFieldDefaultValue(name)) : '';
+  const value: any = isInView
+    ? `${(withDefaultOption ? fixupSituationStringValue(engine.getSituation()[name]) : fixupBooleanEngineValue(engine.getField(name))) ?? ''}`
     : '';
 
   const displayLabel = label ? label : name in labels ? labels[name as keyof typeof labels] : name;
@@ -58,11 +56,7 @@ const Select = ({
         value,
         onChange: (e) => {
           const value = e.target.value;
-          if (['oui', 'non'].includes(value)) {
-            engine.setField(name, value);
-          } else {
-            engine.setStringField(name, value);
-          }
+          engine.setStringField(name, value);
           onExternalChange?.(value);
         },
       }}

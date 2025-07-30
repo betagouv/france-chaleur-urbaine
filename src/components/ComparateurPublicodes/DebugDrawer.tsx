@@ -1,4 +1,4 @@
-import { type DottedName } from '@betagouv/france-chaleur-urbaine-publicodes';
+import { type RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
 import Button from '@codegouvfr/react-dsfr/Button';
 import { utils } from 'publicodes';
 import { useState } from 'react';
@@ -26,7 +26,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
 
   const serializedSituation = encodeURIComponent(JSON.stringify(engine.getSituation()));
 
-  const roundNumber = (key: DottedName) => {
+  const roundNumber = (key: RuleName) => {
     const node = engine.getNode(key);
     const value = Math.round(node.nodeValue as number);
     const unit = node.unit ? formatUnit(node.unit) : '';
@@ -47,7 +47,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
     );
   };
 
-  const number = (key: DottedName) => {
+  const number = (key: RuleName) => {
     const node = engine.getNode(key);
     const value = Math.round((node.nodeValue as number) * 1000) / 1000;
     const unit = node.unit ? formatUnit(node.unit) : '';
@@ -68,7 +68,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
     );
   };
 
-  const bool = (key: DottedName) => {
+  const bool = (key: RuleName) => {
     return (
       <Tooltip title={key}>
         <div className="flex items-center gap-1">

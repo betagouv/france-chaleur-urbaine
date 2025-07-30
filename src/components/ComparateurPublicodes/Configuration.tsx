@@ -1,4 +1,4 @@
-import { type DottedName } from '@betagouv/france-chaleur-urbaine-publicodes';
+import { type RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
 import { fr } from '@codegouvfr/react-dsfr';
 import { motion } from 'motion/react';
 import React from 'react';
@@ -30,7 +30,7 @@ const chainedConfigurations = {
 const Configuration: React.FC<ConfigurationProps> = ({ engine, address, onChangeAddress }) => {
   const situation = engine.getSituation();
 
-  const formatValue = (key: DottedName, value: any): React.ReactNode => {
+  const formatValue = (key: RuleName, value: any): React.ReactNode => {
     const unit = engine.getUnit(key);
 
     return (
@@ -46,11 +46,11 @@ const Configuration: React.FC<ConfigurationProps> = ({ engine, address, onChange
     );
   };
 
-  const deleteSituationConfig = (key: DottedName) => {
+  const deleteSituationConfig = (key: RuleName) => {
     engine.resetField(key);
     if (hasProperty(chainedConfigurations, key)) {
       chainedConfigurations[key].forEach((chainedKey) => {
-        engine.resetField(chainedKey as DottedName);
+        engine.resetField(chainedKey as RuleName);
       });
     }
   };
@@ -60,7 +60,7 @@ const Configuration: React.FC<ConfigurationProps> = ({ engine, address, onChange
   }
 
   const customSituation = Object.entries(situation).reduce((acc, [key, value]) => {
-    if (engine.isDefaultValue(key as DottedName, value)) {
+    if (engine.isDefaultValue(key as RuleName, value)) {
       return acc;
     }
 
@@ -71,7 +71,7 @@ const Configuration: React.FC<ConfigurationProps> = ({ engine, address, onChange
     const label = labels[key];
     const value = situationValue;
 
-    if (!label || addresseToPublicodesRulesKeys.includes(key as DottedName)) {
+    if (!label || addresseToPublicodesRulesKeys.includes(key as RuleName)) {
       return acc;
     }
 
@@ -106,7 +106,7 @@ const Configuration: React.FC<ConfigurationProps> = ({ engine, address, onChange
             Object.entries(chainedConfigurations).forEach(([configKey, chainedKeys]) => {
               if (configKey in situationToLoad) {
                 chainedKeys.forEach((chainedKey) => {
-                  situationToLoad[chainedKey as DottedName] = 'oui';
+                  situationToLoad[chainedKey as RuleName] = 'oui';
                 });
               }
             });
@@ -160,7 +160,7 @@ const Configuration: React.FC<ConfigurationProps> = ({ engine, address, onChange
               >
                 <span>
                   <span className="text-faded">{upperCaseFirstChar(label || '')}</span>:{' '}
-                  <strong className="text-bold">{formatValue(key as DottedName, value)}</strong>
+                  <strong className="text-bold">{formatValue(key as RuleName, value)}</strong>
                 </span>
                 <Button
                   iconId="fr-icon-close-line"
@@ -168,7 +168,7 @@ const Configuration: React.FC<ConfigurationProps> = ({ engine, address, onChange
                   priority="tertiary"
                   size="small"
                   title={`Supprimer ${key}`}
-                  onClick={() => deleteSituationConfig(key as DottedName)}
+                  onClick={() => deleteSituationConfig(key as RuleName)}
                   className="!min-h-2"
                 />
               </motion.div>
