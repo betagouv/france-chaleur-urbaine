@@ -16,7 +16,7 @@ export const config = {
   },
 };
 
-const emailNotAllowed = ['sample@tst.com'];
+const emailNotAllowed = ['sample@tst.com', 'sample@email.tst'];
 const emailNotAllowedMessage = 'Une erreur est survenue lors de la validation de votre demande'; // This one needs to be vague so that hackers don't know exactly what to do
 
 // multipart form data may contain one field multiple times so we get the first element
