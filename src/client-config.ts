@@ -25,7 +25,4 @@ export const clientConfig = {
   summaryAreaSizeLimit: 5, // km²
   networkInfoFieldMaxCharacters: 700,
   networkSearchMinimumCharactersThreshold: 3,
-  emails: {
-    contact: 'france.chaleur.urbaine@ademe.fr',
-  },
 };
