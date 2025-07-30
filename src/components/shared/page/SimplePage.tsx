@@ -600,7 +600,7 @@ const PageFooter = () => (
         },
       ],
     }}
-    accessibility="partially compliant"
+    accessibility="non compliant"
     accessibilityLinkProps={{
       href: '/accessibilite',
     }}
