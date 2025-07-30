@@ -106,7 +106,7 @@ const Autocomplete = <Option extends DefaultOption>({
     >
       <div style={{ position: 'relative' }}>
         <ComboboxInput
-          id={generatedId}
+          id={props.id || generatedId}
           value={selectedValue || inputValue}
           onChange={(event) => {
             setSelectedValue('');

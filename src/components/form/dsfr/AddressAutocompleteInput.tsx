@@ -1,4 +1,5 @@
 import { fr } from '@codegouvfr/react-dsfr';
+import { useId } from 'react';
 
 import Autocomplete, { type AddressAutocompleteProps } from '../AddressAutocomplete';
 import FieldWrapper, { type FieldWrapperProps } from '../dsfr/FieldWrapper';
@@ -15,9 +16,12 @@ const AddressAutocompleteInput = ({
   nativeInputProps,
   ...props
 }: AddressAutocompleteInputProps) => {
+  const generatedId = useId();
+  const id = fieldId || generatedId;
+
   return (
     <FieldWrapper
-      fieldId={fieldId}
+      fieldId={id}
       label={typeof label === 'undefined' ? 'Adresse' : label}
       hintText={hintText}
       state={state}
@@ -25,7 +29,7 @@ const AddressAutocompleteInput = ({
       className={className}
     >
       <Autocomplete
-        id={fieldId}
+        id={id}
         nativeInputProps={{
           className: fr.cx('fr-input', {
             'fr-input--error': state === 'error',
