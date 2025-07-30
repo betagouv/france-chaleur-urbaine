@@ -1,5 +1,4 @@
 import Button from '@codegouvfr/react-dsfr/Button';
-import Image from 'next/image';
 import { useQueryState } from 'nuqs';
 
 import DPE from '@/components/DPE';
@@ -14,6 +13,7 @@ import { type MapLegendFeature } from '@/components/Map/map-layers';
 import useFCUMap from '@/components/Map/MapProvider';
 import { UrlStateAccordion } from '@/components/ui/Accordion';
 import Box from '@/components/ui/Box';
+import Image from '@/components/ui/Image';
 import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
 import Tooltip from '@/components/ui/Tooltip';

@@ -49,8 +49,8 @@ export const VideoIndex = styled.button<{ active: boolean }>`
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background-color: ${({ active }) => (active ? '#4550E5' : '#D9D9D9')};
+  background-color: ${({ active }) => (active ? '#6060ff' : '#D9D9D9')};
   &:hover {
-    background-color: ${({ active }) => (active ? '#4550E5' : '#D9D9D9')} !important;
+    background-color: ${({ active }) => (active ? '#6060ff' : '#D9D9D9')} !important;
   }
 `;

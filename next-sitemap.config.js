@@ -42,18 +42,12 @@ function getPagePriority(/** @type {string} */ path) {
 // Page that should not be indexed by Google because there is no point
 const excludedPages = [
   // authenticated pages
-  '/pro/tableau-de-bord',
-  '/pro/tests-adresses',
-  '/pro/comparateur-couts-performances',
-  '/pro/demandes',
-  '/pro/aide',
+  '/pro/*',
   '/admin',
-  '/admin/impostures',
-  '/admin/jobs',
-  '/admin/test-coordonnees-geographiques',
-  '/admin/users',
+  '/admin/*',
 
   // iframes
+  '/iframe/*',
   '/carte-collectivite',
   '/charleville-mezieres',
   '/dalkia',
@@ -65,9 +59,7 @@ const excludedPages = [
 
   // misc pages
   '/satisfaction',
-
-  // TODO pas encore public, supprimer quand prêt à être indexé
-  '/comparateur-couts-performances',
+  '/inscription/bravo',
 ];
 
 /** @type {import('next-sitemap').IConfig} */

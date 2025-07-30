@@ -2,7 +2,7 @@ import { fr } from '@codegouvfr/react-dsfr';
 import { Footer } from '@codegouvfr/react-dsfr/Footer';
 import { type HeaderProps, HeaderQuickAccessItem } from '@codegouvfr/react-dsfr/Header';
 import UnstyledMainNavigation, { type MainNavigationProps } from '@codegouvfr/react-dsfr/MainNavigation';
-import Image from 'next/image';
+import { SkipLinks } from '@codegouvfr/react-dsfr/SkipLinks';
 import { useRouter } from 'next/router';
 import React from 'react';
 import styled, { css } from 'styled-components';
@@ -11,9 +11,11 @@ import { clientConfig } from '@/client-config';
 import { FooterConsentManagementItem } from '@/components/ConsentBanner';
 import SEO, { type SEOProps } from '@/components/SEO';
 import Box from '@/components/ui/Box';
+import Image from '@/components/ui/Image';
 import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
 import { useAuthentication } from '@/services/authentication';
+import cx from '@/utils/cx';
 import { deleteFetchJSON } from '@/utils/network';
 
 import Banner from './Banner';
@@ -26,15 +28,35 @@ type SimplePageProps = {
   mode?: PageMode;
   currentPage?: string;
   includeFooter?: boolean;
+  layout?: 'center' | 'fluid';
+  className?: string;
 } & SEOProps;
 
-const SimplePage = ({ mode, currentPage, children, noIndex, includeFooter = true, ...props }: SimplePageProps) => {
+const SimplePage = ({
+  mode,
+  currentPage,
+  children,
+  noIndex,
+  includeFooter = true,
+  layout = 'fluid',
+  className,
+  ...props
+}: SimplePageProps) => {
   return (
     <>
       <SEO noIndex={mode === 'authenticated' ? true : noIndex} {...props} />
+      <SkipLinks
+        links={[
+          { label: 'Contenu', anchor: '#main-content' },
+          { label: 'Navigation', anchor: '#main-header' },
+          { label: 'Pied de page', anchor: '#main-footer' },
+        ]}
+      />
       <PageHeader mode={mode ?? 'public'} currentPage={currentPage} />
 
-      {children}
+      <main id="main-content" className={cx(layout === 'center' ? 'fr-container fr-mt-2w' : '', className)}>
+        {children}
+      </main>
       {includeFooter && <PageFooter />}
     </>
   );
@@ -60,7 +82,7 @@ const MainNavigation = styled(UnstyledMainNavigation)<{ $compact?: boolean }>`
 
 export default SimplePage;
 
-const publicNavigationMenu: MainNavigationProps.Item[] = [
+export const publicNavigationMenu: MainNavigationProps.Item[] = [
   {
     text: 'Accueil',
     linkProps: {
@@ -470,6 +492,7 @@ const PageHeader = (props: PageHeaderProps) => {
     <>
       <Banner />
       <StyledHeader
+        id="main-header"
         disableDisplay
         $isFullScreenMode={isFullScreenMode}
         brandTop={
@@ -486,7 +509,7 @@ const PageHeader = (props: PageHeaderProps) => {
         operatorLogo={{
           imgUrl: '/FCU_logo_Monogramme.svg',
           orientation: 'horizontal',
-          alt: '',
+          alt: 'Logo France Chaleur Urbaine',
         }}
         serviceTagline="Faciliter les raccordements aux réseaux de chaleur"
         serviceTitle="France Chaleur Urbaine"
@@ -502,7 +525,7 @@ const PageHeader = (props: PageHeaderProps) => {
                 p="0"
                 mr="3w"
               >
-                <Image height={50} width={70} src="/logo-fcu.png" alt="logo france chaleur urbaine" priority />
+                <Image height={50} width={70} src="/logo-fcu.png" alt="Logo France Chaleur Urbaine" priority />
               </Link>
               <MainNavigation items={markCurrentPageActive(navigationMenuItems, currentPath)} className="fr-col" $compact />
               <Box className={fr.cx('fr-header__tools-links')}>
@@ -526,6 +549,7 @@ const PageHeader = (props: PageHeaderProps) => {
 
 const PageFooter = () => (
   <Footer
+    id="main-footer"
     contentDescription={
       <>
         France Chaleur Urbaine est un projet d'innovation pour accélérer le raccordement des bâtiments aux réseaux de chaleur en vue de
@@ -545,7 +569,7 @@ const PageFooter = () => (
     operatorLogo={{
       imgUrl: '/logo-fcu-with-typo.jpg',
       orientation: 'horizontal',
-      alt: '',
+      alt: 'Logo France Chaleur Urbaine',
     }}
     license=""
     partnersLogos={{
@@ -601,6 +625,12 @@ const PageFooter = () => (
         text: 'Contact',
         linkProps: {
           href: '/contact',
+        },
+      },
+      {
+        text: 'Plan du site',
+        linkProps: {
+          href: '/plan-du-site',
         },
       },
       {

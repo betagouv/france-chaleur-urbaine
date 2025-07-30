@@ -1,11 +1,11 @@
 import { Button } from '@codegouvfr/react-dsfr/Button';
-import Image from 'next/image';
 import { useState } from 'react';
 
 import { clientConfig } from '@/client-config';
 import AddressAutocomplete from '@/components/addressAutocomplete';
 import { CheckEligibilityFormLabel, SelectEnergy } from '@/components/EligibilityForm/components';
 import { energyInputsDefaultLabels } from '@/components/EligibilityForm/EligibilityFormAddress';
+import Image from '@/components/ui/Image';
 import { AnalyticsFormId } from '@/services/analytics';
 import { type SuggestionItem } from '@/types/Suggestions';
 

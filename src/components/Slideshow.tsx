@@ -20,7 +20,7 @@ const Slideshow = ({ images }: SlideshowProps) => {
     <Box display="flex" flexDirection="column">
       <img
         src={images[visibleSlideIndex]}
-        alt=""
+        alt={`Diapositive ${visibleSlideIndex + 1} sur ${images.length}`}
         className={fr.cx('fr-responsive-img')}
         loading="lazy"
         style={{

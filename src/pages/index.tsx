@@ -1,5 +1,4 @@
 import Highlight from '@codegouvfr/react-dsfr/Highlight';
-import Image from 'next/image';
 
 import { clientConfig } from '@/client-config';
 import LastArticles from '@/components/Articles/LastArticles';
@@ -11,8 +10,10 @@ import { issues, understandings } from '@/components/Ressources/config';
 import Understanding from '@/components/Ressources/Understanding';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Box from '@/components/ui/Box';
+import colors from '@/components/ui/helpers/colors';
 import Hero, { HeroContent, HeroSubtitle, HeroTitle } from '@/components/ui/Hero';
 import Icon from '@/components/ui/Icon';
+import Image from '@/components/ui/Image';
 import Link from '@/components/ui/Link';
 import Section, { SectionContent, SectionHeading, SectionTitle, SectionTwoColumns } from '@/components/ui/Section';
 import SectionScrollableTiles, { type SectionScrollableTilesItem } from '@/components/ui/SectionScrollableTiles';
@@ -180,6 +181,18 @@ function Home() {
                 height={890}
                 priority
                 className="fr-responsive-img"
+                caption="Schéma de fonctionnement d’un réseau de chaleur urbain"
+                altText={`Ce schéma illustre comment un réseau de chaleur urbain alimente une ville en énergie thermique de manière centralisée et efficace. Voici les éléments clés représentés :
+
+- **Bâtiments résidentiels et tertiaires** : raccordés au réseau pour le chauffage et l’eau chaude.
+- **Centrale de production de chaleur** : alimente le réseau à partir de diverses sources (biomasse, géothermie, incinération...).
+- **Énergies renouvelables** : panneaux solaires thermiques visibles sur certains bâtiments.
+- **Espaces publics apaisés** : infrastructures douces et durables (pistes cyclables, végétation...).
+- **Usagers** : habitants qui profitent du confort thermique fourni par le réseau.
+- **Réseau souterrain** : tuyaux rouges et bleus indiquent le circuit aller (chaud) et retour (refroidi).
+- **Boucle de retour** : l’eau refroidie repart vers la centrale pour être réchauffée à nouveau.
+
+Ce système contribue à la transition énergétique des villes en mutualisant la production et en réduisant les émissions de CO₂.`}
               />
 
               <Link variant="primary" href="reseaux-chaleur#contenu">
@@ -205,8 +218,7 @@ function Home() {
               Cette obligation s’applique dans une certaine zone autour du réseau, définie par la collectivité, qualifiée de périmètre de
               développement prioritaire.
             </Text>
-
-            <Box backgroundColor="yellow-moutarde-main-679" borderRadius="12px" p="3w" pt="4w" mt="3w" textColor="#fff" fontWeight="bold">
+            <Box backgroundColor={colors.warning} borderRadius="12px" p="3w" pt="4w" mt="3w" textColor="#fff" fontWeight="bold">
               <Text>
                 <Text as="span" fontSize="32px">
                   300 000€

@@ -1,31 +1,28 @@
 import React, { useState } from 'react';
 
 import Icon from '@/components/ui/Icon';
+import Video from '@/components/ui/Video';
 
 const videos = [
-  'https://www.youtube.com/embed/zsOgW8sIByc',
-  'https://www.youtube.com/embed/iv0gb71XOj4',
-  'https://www.youtube.com/embed/wtNmhwa5_DA',
-  'https://www.youtube.com/embed/2mO97aF1T4c',
-  'https://www.youtube.com/embed/wieL5MpMtnE',
-  'https://www.youtube.com/embed/eDnhC9l5pWI',
-  'https://www.youtube.com/embed/c2Qgctn9SVY',
+  {
+    url: 'https://www.youtube.com/embed/zsOgW8sIByc',
+    caption: 'Bande annonce de la série "Les ambassadeurs du chauffage urbain"',
+  },
+  { url: 'https://www.youtube.com/embed/iv0gb71XOj4', caption: 'Les ambassadeurs du chauffage urbain 1/6' },
+  { url: 'https://www.youtube.com/embed/wtNmhwa5_DA', caption: 'Les ambassadeurs du chauffage urbain 2/6' },
+  { url: 'https://www.youtube.com/embed/2mO97aF1T4c', caption: 'Les ambassadeurs du chauffage urbain 3/6' },
+  { url: 'https://www.youtube.com/embed/wieL5MpMtnE', caption: 'Les ambassadeurs du chauffage urbain 4/6' },
+  { url: 'https://www.youtube.com/embed/eDnhC9l5pWI', caption: 'Les ambassadeurs du chauffage urbain 5/6' },
+  { url: 'https://www.youtube.com/embed/c2Qgctn9SVY?cc_load_policy=1', caption: 'Les ambassadeurs du chauffage urbain 6/6' },
 ];
 
 const InterviewsVideos = () => {
   const [videoIndex, setVideoIndex] = useState(0);
+  const video = videos[videoIndex];
 
   return (
     <>
-      <iframe
-        className="fr-ratio-16x9"
-        width="100%"
-        src={videos[videoIndex]}
-        title="YouTube video player"
-        allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowFullScreen
-        loading="lazy"
-      />
+      <Video {...video} altText={`Le transcript de cette vidéo est disponible sur YouTube.`} />
 
       <nav role="navigation" className="fr-pagination" aria-label="Pagination">
         <ul className="fr-pagination__list">

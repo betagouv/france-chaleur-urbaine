@@ -1,7 +1,6 @@
-import Image from 'next/image';
-
 import Box from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
+import Image from '@/components/ui/Image';
 import Text from '@/components/ui/Text';
 
 const AvantagesChauffageUrbain = ({ title }: { title?: string }) => {
@@ -23,7 +22,7 @@ const AvantagesChauffageUrbain = ({ title }: { title?: string }) => {
         <Box display="flex" flexDirection="column" alignItems="center" className="fr-col-12 fr-col-lg-6 fr-col-xl-3">
           <Image src="/img/copro_avantages_2.webp" alt="" width={120} height={100} priority className="img-object-contain" />
           <Text size="lg" textAlign="center" mt="2w">
-            Profitez de subventions pour le raccordement et d’une TVA à 5,5%
+            Profitez de subventions pour le raccordement et d'une TVA à 5,5%
           </Text>
         </Box>
 

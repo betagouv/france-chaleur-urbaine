@@ -34,7 +34,7 @@ const Newsletter = () => {
               onChange: (e) => setEmail(e.target.value),
             }}
           />
-          <Button type="submit" priority="secondary" loading={sending}>
+          <Button type="submit" priority="primary" loading={sending}>
             S'inscrire
           </Button>
         </>

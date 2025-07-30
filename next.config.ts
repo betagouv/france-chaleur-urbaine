@@ -97,6 +97,8 @@ const configFunctions = [
         'https://snap.licdn.com',
         'https://api.mapbox.com/',
         'https://*.hotjar.com',
+        'https://www.ssa.gov/accessibility/', // Nécessaire pour faire fonctionner le bookmarklet ANDI
+        'https://ajax.googleapis.com/', // Nécessaire pour faire fonctionner le bookmarklet ANDI
       ],
       'connect-src': [
         "'self'",

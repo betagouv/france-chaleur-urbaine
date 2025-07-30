@@ -63,10 +63,16 @@ const StyledBox = styled.div<StyleProps>`
   border-left: ${({ borderLeft }) => borderLeft};
   box-shadow: ${({ boxShadow }) => boxShadow};
   background-color: ${({ backgroundColor }) =>
-    backgroundColor ? (backgroundColor?.startsWith('#') ? backgroundColor : `var(--${backgroundColor})`) : undefined};
+    backgroundColor
+      ? backgroundColor?.startsWith('#') || backgroundColor.startsWith('var(--')
+        ? backgroundColor
+        : `var(--${backgroundColor})`
+      : undefined};
   font-size: ${({ fontSize }) => fontSize};
   font-style: ${({ fontStyle }) => fontStyle};
-  color: ${({ textColor }) => (textColor ? (textColor.startsWith('#') ? textColor : `var(--${textColor})`) : undefined)};
+  color: ${({ textColor }) =>
+    textColor ? (textColor.startsWith('#') || textColor.startsWith('var(--') ? textColor : `var(--${textColor})`) : undefined};
+  )};
   text-align: ${({ textAlign }) => textAlign};
   text-wrap: ${({ textWrap }) => textWrap};
   white-space: ${({ whiteSpace }) => whiteSpace};

@@ -1,11 +1,11 @@
 'use client';
 
 import { AnimatePresence } from 'motion/react';
-import Image from 'next/image';
 import React from 'react';
 import { useCallback, useRef, useState } from 'react';
 
 import Button from '@/components/ui/Button';
+import Image from '@/components/ui/Image';
 import Link from '@/components/ui/Link';
 import Section, { SectionContent, SectionHeading } from '@/components/ui/Section';
 import { trackEvent, type TrackingEvent } from '@/services/analytics';
@@ -120,7 +120,7 @@ function SectionScrollableTiles({ title, tiles, size = 'md', className, ...props
                       }
                     }}
                   >
-                    <Image src={tile.image} alt={tile.title} width={64} height={64} className="mx-auto" />
+                    <Image src={tile.image} alt="" width={64} height={64} className="mx-auto" />
                     <h2 className="text-base font-semibold text-gray-900 mb-0">{tile.title}</h2>
                     <p className="text-sm text-gray-500 mb-0">{tile.excerpt}</p>
                   </Link>

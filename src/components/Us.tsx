@@ -1,8 +1,7 @@
-import Image from 'next/image';
-
 import { List } from '@/components/Ressources/Contents/Contents.styles';
 import TextList from '@/components/TextList';
 import Hero, { HeroSubtitle, HeroTitle } from '@/components/ui/Hero';
+import Image from '@/components/ui/Image';
 import Link from '@/components/ui/Link';
 import Section, { SectionContent, SectionHeading, SectionTitle } from '@/components/ui/Section';
 import TableSimple from '@/components/ui/TableSimple';
@@ -86,6 +85,26 @@ const Us = () => {
               height={400}
               priority
               className="mx-auto"
+              caption="Dépenses annuelles par source de financement"
+              altText={`Ce graphique montre l'évolution des dépenses annuelles de **France Chaleur Urbaine** par source de financement, entre **2021 et 2024**, exprimées en milliers d’euros (k€).
+
+**Montants totaux par année :**
+- **2021** : 230 k€
+- **2022** : 453 k€
+- **2023** : 643 k€
+- **2024** : 864 k€
+
+**Sources de financement représentées :**
+- **DINUM** (bleu foncé) – contribution principale chaque année
+- **ADEME** (vert)
+- **DGEC** (bleu clair)
+- **DRIEAT** (jaune) – uniquement en 2022
+
+**Observations :**
+- La contribution totale augmente chaque année.
+- DINUM reste la principale source de financement.
+- La part de **DGEC** et **ADEME** progresse nettement en 2023 et 2024.
+- **DRIEAT** n’apparaît que brièvement en 2022.`}
             />
           </div>
           <SectionHeading as="h3" className="text-center">

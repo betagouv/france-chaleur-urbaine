@@ -11,7 +11,7 @@ const webinaires = [
     start: 'Juin 2025',
     desc: "Ce webinaire présente en détail les différents outils et services proposés par France Chaleur Urbaine : test d'adresse (simple et en masse), mise en relation avec les gestionnaires des réseaux, carte des réseaux et potentiels, fiches techniques des réseaux, comparateur de coûts et émissions de C02 des modes de chauffage, iframes, supports de communication…",
     imageUrl: '/img/webinaires/vignette_prezFCU.png',
-    imageAlt: 'Présentation de France Chaleur Urbaine',
+    imageAlt: 'Page de garde de la présentation de France Chaleur Urbaine',
     linkProps: { href: '/webinaire/2025/presentation-france-chaleur-urbaine' },
     footer: (
       <ul className="fr-btns-group fr-btns-group--inline-reverse fr-btns-group--inline-lg">
@@ -33,7 +33,7 @@ const webinaires = [
     start: 'Juin 2025',
     desc: "Organisé en partenariat avec l'Association Amorce et avec la participation du bureau d'étude Elcimaï, ce webinaire offre une présentation détaillée du comparateur de coûts et émissions de CO2 des modes de chauffage et de refroidissement en ligne sur France Chaleur Urbaine : périmètre de l'outil, interface, méthodologie de calculs…",
     imageUrl: '/img/webinaires/vignette_comparateur.png',
-    imageAlt: 'Comparateur de coûts et émissions de CO2',
+    imageAlt: 'Page de garde de la présentation du comparateur de coûts et émissions de CO2',
     linkProps: { href: '/webinaire/2025/presentation-comparateur' },
     footer: (
       <ul className="fr-btns-group fr-btns-group--inline-reverse fr-btns-group--inline-lg">
@@ -56,7 +56,7 @@ const webinaires = [
     start: 'Avril 2025',
     desc: "Ce webinaire rappelle ce qu'est le classement, quels sont les réseaux concernés et obligations associées, avec l'intervention du Cerema. Il montre comment les outils France Chaleur Urbaine peuvent être utilisés dans le cadre de la mise en œuvre du classement. Des retours d'expériences de collectivités sont également présentés (Rennes métropole, Lyon métropole…).",
     imageUrl: '/img/webinaires/vignette_classement.png',
-    imageAlt: 'Classement des réseaux de chaleur',
+    imageAlt: 'Page de garde de la présentation du classement des réseaux de chaleur',
     linkProps: { href: '/webinaire/2025/presentation-classement' },
     footer: (
       <ul className="fr-btns-group fr-btns-group--inline-reverse fr-btns-group--inline-lg">
@@ -78,7 +78,7 @@ const webinaires = [
     start: 'Janvier 2025',
     desc: "Ce webinaire, organisé en partenariat avec l'Association Amorce et le Cerema, s'adresse aux collectivités qui souhaitent envisager la mise en place d'un réseau de chaleur sur leur territoire. Il rappelle le fonctionnement d'un réseau de chaleur, montre comment identifier les opportunités de création de réseau sur un territoire, présente les étapes d'un projet de réseau, les modes de gestion envisageables et les aides financières mobilisables.",
     imageUrl: '/img/webinaires/vignette_initier.png',
-    imageAlt: 'Initier un projet de réseau de chaleur',
+    imageAlt: "Page de garde de la présentation de la mise en place d'un projet de réseau de chaleur",
     linkProps: { href: '/webinaire/2025/presentation-initier' },
     footer: (
       <ul className="fr-btns-group fr-btns-group--inline-reverse fr-btns-group--inline-lg">

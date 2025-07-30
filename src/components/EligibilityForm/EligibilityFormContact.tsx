@@ -1,6 +1,5 @@
 import { Alert } from '@codegouvfr/react-dsfr/Alert';
 import dynamic from 'next/dynamic';
-import Image from 'next/image';
 import { useCallback, useMemo, useState } from 'react';
 
 import { clientConfig } from '@/client-config';
@@ -9,6 +8,7 @@ import { createMapConfiguration } from '@/components/Map/map-configuration';
 import MarkdownWrapper from '@/components/MarkdownWrapper';
 import Box from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
+import Image from '@/components/ui/Image';
 import Link from '@/components/ui/Link';
 import { type AddressDataType } from '@/types/AddressData';
 import { type ContactFormInfos } from '@/types/Summary/Demand';
