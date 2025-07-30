@@ -1,0 +1,13 @@
+{
+  "defaults": {
+    "reporters": ["json"],
+    "standard": "WCAG2AA"
+  },
+  "urls": [
+    "http://localhost:3000",
+    "http://localhost:3000/carte",
+    "http://localhost:3000/reseau",
+    "http://localhost:3000/accessibilite",
+    "http://localhost:3000/contact"
+  ]
+}
