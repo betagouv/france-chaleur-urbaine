@@ -7,8 +7,23 @@ jobs:
   CI:
     # The type of runner that the job will run on
     runs-on: ubuntu-22.04
+    services:
+      postgres:
+        image: postgis/postgis:16-3.5-alpine
+        env:
+          POSTGRES_USER: fcu
+          POSTGRES_PASSWORD: fcu_pass
+          POSTGRES_DB: fcu_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     env:
       NEXT_TELEMETRY_DISABLED: 1
+      DATABASE_URL: postgres://fcu:fcu_pass@localhost:5432/fcu_db
 
     steps:
       - name: Checkout 🛎️
@@ -36,6 +51,9 @@ jobs:
 
       - name: Lint 🧹
         run: pnpm lint
+
+      - name: Run database migrations 🔄
+        run: pnpm db:migrate
 
       - name: Test ✅
         run: pnpm test
