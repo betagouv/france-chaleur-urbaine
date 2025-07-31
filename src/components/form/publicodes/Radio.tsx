@@ -1,4 +1,4 @@
-import { type DottedName } from '@betagouv/france-chaleur-urbaine-publicodes';
+import { type PBoolean, type RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
 
 import Radio from '@/components/form/dsfr/Radio';
 import useInViewport from '@/hooks/useInViewport';
@@ -17,7 +17,7 @@ const RadioInput = ({
   help,
   ...props
 }: Omit<RadioProps, 'options' | 'name'> & {
-  name: DottedName;
+  name: RuleName;
   label?: keyof typeof labels | string;
   help?: React.ReactNode;
 }) => {
@@ -42,7 +42,7 @@ const RadioInput = ({
             e.stopPropagation();
             const value = e.target.value;
             if (['oui', 'non'].includes(value)) {
-              engine.setField(name, value);
+              engine.setField(name, value as PBoolean);
             } else {
               engine.setStringField(name, value);
             }

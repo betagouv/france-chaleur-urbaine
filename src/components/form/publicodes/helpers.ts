@@ -1,9 +1,16 @@
+import { type RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
+
 import { type usePublicodesFormContext } from './FormProvider';
 
-export const getOptions = (engine: ReturnType<typeof usePublicodesFormContext>['engine'], name: string): string[] => {
+export const getOptions = (engine: ReturnType<typeof usePublicodesFormContext>['engine'], name: RuleName): string[] => {
   const rule = engine.getRule(name);
+  if (rule == undefined) {
+    // si vide, c'est que c'est un booléen.
+    // a changé depuis que les possibilités ne sont que des strings
+    return ['oui', 'non'];
+  }
   if (rule.rawNode['une possibilité']) {
-    return (rule.rawNode as any)['une possibilité']['possibilités'].map((value: string) => value.replace(/^'+|'+$/g, '')) || [];
+    return (rule.rawNode as any)['une possibilité'].map((value: string) => value.replace(/^'+|'+$/g, '')) || [];
   }
 
   if (rule.rawNode['par défaut']) {

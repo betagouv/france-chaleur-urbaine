@@ -1,4 +1,4 @@
-import { type DottedName } from '@betagouv/france-chaleur-urbaine-publicodes';
+import { type RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
 
 import { type LocationInfoResponse } from '@/pages/api/location-infos';
 
@@ -175,6 +175,6 @@ export const addresseToPublicodesRules = {
 
   'code département': (infos) => `'${infos.infosVille.departement_id}'`,
   'température de référence chaud commune': (infos) => +infos.infosVille.temperature_ref_altitude_moyenne,
-} as const satisfies Partial<Record<DottedName, (infos: LocationInfoResponse) => any>>;
+} as const satisfies Partial<Record<RuleName, (infos: LocationInfoResponse) => any>>;
 
-export const addresseToPublicodesRulesKeys = Object.keys(addresseToPublicodesRules) as DottedName[];
+export const addresseToPublicodesRulesKeys = Object.keys(addresseToPublicodesRules) as RuleName[];

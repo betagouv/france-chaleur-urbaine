@@ -25,7 +25,7 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
   const hasFioul = hasModeDeChauffage('Fioul individuel') || hasModeDeChauffage('Fioul collectif');
   const hasGranules = hasModeDeChauffage('Chaudière à granulés collective') || hasModeDeChauffage('Poêle à granulés individuel');
   const utiliseReseauDeFroid =
-    engine.getField('type de production de froid') === 'Réseau de froid' && engine.getField('Inclure la climatisation') === 'oui';
+    engine.getField('type de production de froid') === 'Réseau de froid' && engine.getField('Inclure la climatisation');
 
   return (
     <div {...props}>

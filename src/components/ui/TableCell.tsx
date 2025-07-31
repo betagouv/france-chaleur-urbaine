@@ -130,9 +130,38 @@ const Cell = <T,>({ value, children: defaultValue, data, type, cellProps = {} }:
 };
 
 export default memo(Cell, (prevProps, nextProps) => {
-  return (
-    prevProps.type === nextProps.type &&
-    JSON.stringify(prevProps.value) === JSON.stringify(nextProps.value) &&
-    JSON.stringify(prevProps.data) === JSON.stringify(nextProps.data)
-  );
+  // Éviter la sérialisation JSON qui peut causer des erreurs de structure circulaire
+  // Comparer directement les types et les valeurs
+  return prevProps.type === nextProps.type && isEqual(prevProps.value, nextProps.value) && isEqual(prevProps.data, nextProps.data);
 });
+
+// Fonction utilitaire pour comparer des objets sans sérialisation JSON
+function isEqual(a: any, b: any): boolean {
+  // Si les références sont identiques
+  if (a === b) return true;
+
+  // Si l'un est null/undefined mais pas l'autre
+  if (a == null || b == null) return a === b;
+
+  // Types différents
+  if (typeof a !== typeof b) return false;
+
+  // Pour les tableaux
+  if (Array.isArray(a) && Array.isArray(b)) {
+    if (a.length !== b.length) return false;
+    return a.every((item, index) => isEqual(item, b[index]));
+  }
+
+  // Pour les objets (non-null)
+  if (typeof a === 'object') {
+    const keysA = Object.keys(a);
+    const keysB = Object.keys(b);
+
+    if (keysA.length !== keysB.length) return false;
+
+    return keysA.every((key) => a[key] === b[key]);
+  }
+
+  // Pour les autres types primitifs
+  return a === b;
+}
