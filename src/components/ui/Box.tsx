@@ -72,7 +72,6 @@ const StyledBox = styled.div<StyleProps>`
   font-style: ${({ fontStyle }) => fontStyle};
   color: ${({ textColor }) =>
     textColor ? (textColor.startsWith('#') || textColor.startsWith('var(--') ? textColor : `var(--${textColor})`) : undefined};
-  )};
   text-align: ${({ textAlign }) => textAlign};
   text-wrap: ${({ textWrap }) => textWrap};
   white-space: ${({ whiteSpace }) => whiteSpace};
