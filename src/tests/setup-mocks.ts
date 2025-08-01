@@ -2,6 +2,9 @@
 import React from 'react';
 import { afterAll, afterEach, vi } from 'vitest';
 
+// overridden in CI
+process.env.DATABASE_URL = process.env.DATABASE_URL ?? 'postgres://fcu_test:fcu_test_pass@localhost:5433/fcu_test';
+
 vi.mock('next/router', () => ({
   useRouter: () => ({
     route: '/',
@@ -165,6 +168,12 @@ vi.mock('@/utils/api', () => ({
   postFetchJSON: vi.fn().mockResolvedValue({}),
   postFormDataFetchJSON: vi.fn().mockResolvedValue({}),
   getFetchJSON: vi.fn().mockResolvedValue({}),
+}));
+
+// Mock authentication
+export const mockGetServerSession = vi.fn();
+vi.mock('@/server/authentication', () => ({
+  getServerSession: mockGetServerSession,
 }));
 
 // Mock AddressAutocomplete
