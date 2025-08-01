@@ -16,6 +16,12 @@ export default defineConfig({
       '@react-hookz/web/useCookieValue': resolve(__dirname, 'node_modules/@react-hookz/web/dist/useCookieValue/index.js'),
     },
     setupFiles: ['./src/tests/setup-mocks.ts'],
+    onConsoleLog: (log) => {
+      // Suppress specific React warnings
+      if (log.includes('React does not recognize')) {
+        return false;
+      }
+    },
   },
   assetsInclude: ['**/*.md', '**/*.svgr', '**/*.mdx'],
 });
