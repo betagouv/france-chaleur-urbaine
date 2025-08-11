@@ -6,6 +6,7 @@ import { sendEmailTemplate } from '@/server/email';
 import { logger } from '@/server/helpers/logger';
 import { BadRequestError, handleRouteErrors, requirePostMethod } from '@/server/helpers/server';
 import { getConso, getNbLogement } from '@/server/services/addresseInformation';
+import { createEvent } from '@/server/services/events';
 import { getToRelanceDemand } from '@/server/services/manager';
 import { Airtable } from '@/types/enum/Airtable';
 import { defaultEmptyNumberValue, defaultEmptyStringValue } from '@/utils/airtable';
@@ -75,11 +76,20 @@ export default handleRouteErrors(async function PostRecords(req: NextApiRequest)
         { typecast: true }
       );
 
-      await sendEmailTemplate(
-        'creation-demande',
-        { email: values.Mail },
-        { demand: { ...values, 'Distance au réseau': values['Distance au réseau'] ?? 9999 } } // si > 1000m la distance est null, or le template veut une distance
-      );
+      await Promise.all([
+        createEvent({
+          type: 'demand_created',
+          context_type: 'demand',
+          context_id: demandId,
+          data: values,
+        }),
+        sendEmailTemplate(
+          'creation-demande',
+          { email: values.Mail },
+          { demand: { ...values, 'Distance au réseau': values['Distance au réseau'] ?? 9999 } } // si > 1000m la distance est null, or le template veut une distance
+        ),
+      ]);
+
       return { id: demandId };
     }
 

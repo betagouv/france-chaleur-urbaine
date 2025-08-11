@@ -1,4 +1,5 @@
 import { type ColumnFiltersState, type SortingState } from '@tanstack/react-table';
+import { useRouter } from 'next/navigation';
 import { useQueryState } from 'nuqs';
 import { useCallback, useMemo, useState } from 'react';
 
@@ -50,6 +51,7 @@ const initialColumnFilters: ColumnFiltersState = [
 ];
 
 export default function ManageUsers() {
+  const router = useRouter();
   const { exportService } = useServices();
   const [userId, setUserId] = useQueryState('userId');
   const [nbUsersFilter, setNbUsersFilter] = useState<number>(0);
@@ -174,6 +176,15 @@ export default function ManageUsers() {
               iconId="ri-edit-line"
               title="Modifier l'utilisateur"
               onClick={() => setUserId(row.original.id)}
+            />
+            <Button
+              size="small"
+              priority="tertiary"
+              iconId="ri-history-line"
+              title="Voir l'historique des événements"
+              onClick={() => {
+                router.push(`/admin/events?authorId=${row.original.id}`);
+              }}
             />
             <Button
               size="small"

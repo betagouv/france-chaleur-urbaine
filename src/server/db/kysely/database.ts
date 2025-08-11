@@ -2943,6 +2943,30 @@ export interface EtudesEnCoursTiles {
   z: Int8;
 }
 
+export const eventTypes = [
+  'user_login',
+  'user_activated',
+  'user_created',
+  'user_updated',
+  'user_deleted',
+  'demand_created',
+  'demand_assigned',
+  'demand_updated',
+  'demand_deleted',
+] as const;
+
+export type EventType = (typeof eventTypes)[number];
+
+export interface Events {
+  author_id: string | null;
+  context_id: string | null;
+  context_type: string | null;
+  created_at: Generated<Timestamp>;
+  data: Generated<Json>;
+  id: Generated<string>;
+  type: EventType;
+}
+
 export interface IgnCommunes {
   geom: string | null;
   geom_150m: string | null;
@@ -3542,6 +3566,7 @@ export interface DB {
   ept: Ept;
   etudes_en_cours: EtudesEnCours;
   etudes_en_cours_tiles: EtudesEnCoursTiles;
+  events: Events;
   ign_communes: IgnCommunes;
   ign_departements: IgnDepartements;
   ign_regions: IgnRegions;
