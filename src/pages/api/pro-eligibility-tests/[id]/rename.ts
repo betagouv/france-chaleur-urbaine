@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { ensureValidPermissions } from '@/pages/api/pro-eligibility-tests/[id]';
 import { kdb } from '@/server/db/kysely';
 import { handleRouteErrors } from '@/server/helpers/server';
+import { createUserEvent } from '@/server/services/events';
 import { zRenameProEligibilityTestRequest } from '@/validation/pro-eligibility-test';
 
 const POST = async (req: NextApiRequest) => {
@@ -19,6 +20,14 @@ const POST = async (req: NextApiRequest) => {
       name,
     })
     .execute();
+
+  await createUserEvent({
+    type: 'pro_eligibility_test_renamed',
+    context_type: 'pro_eligibility_test',
+    context_id: testId,
+    data: { name },
+    author_id: req.user.id,
+  });
 };
 
 export default handleRouteErrors(

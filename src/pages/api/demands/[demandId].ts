@@ -1,7 +1,7 @@
 import type { NextApiRequest } from 'next';
 import { z } from 'zod';
 
-import { handleRouteErrors, requirePutMethod, validateObjectSchema } from '@/server/helpers/server';
+import { handleRouteErrors, validateObjectSchema } from '@/server/helpers/server';
 import { updateDemand } from '@/server/services/manager';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 
@@ -19,15 +19,15 @@ const zDemandUpdate = {
 
 export type DemandUpdate = z.infer<z.ZodObject<typeof zDemandUpdate>>;
 
+const PUT = async (req: NextApiRequest) => {
+  const demandUpdate = await validateObjectSchema(req.body, zDemandUpdate);
+
+  const demand = await updateDemand(req.user, req.query.demandId as string, demandUpdate);
+  return demand;
+};
+
 export default handleRouteErrors(
-  async (req: NextApiRequest) => {
-    requirePutMethod(req);
-
-    const demandUpdate = await validateObjectSchema(req.body, zDemandUpdate);
-
-    const demand = await updateDemand(req.user, req.query.demandId as string, demandUpdate);
-    return demand;
-  },
+  { PUT },
   {
     requireAuthentication: ['gestionnaire', 'demo'],
   }

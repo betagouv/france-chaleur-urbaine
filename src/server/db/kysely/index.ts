@@ -2,6 +2,7 @@ import '@/server/db'; // permet d'importer les variables d'env correctement
 import {
   type ComparisonOperatorExpression,
   type Expression,
+  type Insertable,
   type InsertObject,
   Kysely,
   type OperandValueExpressionOrList,
@@ -18,7 +19,7 @@ import { sleep } from '@/utils/time';
 import { type DB as Database } from './database';
 
 export * from './database';
-export { InsertObject, sql };
+export { Insertable, InsertObject, sql };
 
 // Automatically convert postgres number fields from string to javascript numbers.
 types.setTypeParser(types.builtins.INT2, (value) => parseInt(value));

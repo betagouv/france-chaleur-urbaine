@@ -7,6 +7,7 @@ import base from '@/server/db/airtable';
 import { sendEmailTemplate } from '@/server/email';
 import { logger } from '@/server/helpers/logger';
 import { invalidPermissionsError } from '@/server/helpers/server';
+import { createUserEvent } from '@/server/services/events';
 import { Airtable } from '@/types/enum/Airtable';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import { type Demand } from '@/types/Summary/Demand';
@@ -167,6 +168,13 @@ export const updateDemand = async (user: User, demandId: string, updateData: Par
   if (error) {
     throw new Error(error);
   }
+  await createUserEvent({
+    type: 'demand_updated',
+    context_type: 'demand',
+    context_id: demandId,
+    data: updateData,
+    author_id: user.id,
+  });
   return { id: record.id, ...record.fields } as Demand;
 };
 

@@ -4,6 +4,7 @@ import { z } from 'zod';
 
 import { kdb } from '@/server/db/kysely';
 import { handleRouteErrors } from '@/server/helpers/server';
+import { createUserEvent } from '@/server/services/events';
 import { type FrontendType } from '@/utils/typescript';
 
 const GET = async (req: NextApiRequest) => {
@@ -69,6 +70,13 @@ const POST = async (req: NextApiRequest) => {
       .executeTakeFirstOrThrow();
 
     return createdEligibilityTest.id;
+  });
+  await createUserEvent({
+    type: 'pro_eligibility_test_created',
+    context_type: 'pro_eligibility_test',
+    context_id: createdEligibilityTestId,
+    data: { name },
+    author_id: req.user.id,
   });
 
   return {
