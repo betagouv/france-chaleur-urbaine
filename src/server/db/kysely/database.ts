@@ -5,6 +5,7 @@
 
 import type { ColumnType, JSONColumnType } from 'kysely';
 
+import { type EventType } from '@/shared/events';
 import { type UserRole } from '@/types/enum/UserRole';
 import { type HeatNetwork } from '@/types/HeatNetworksResponse';
 
@@ -2942,24 +2943,6 @@ export interface EtudesEnCoursTiles {
   y: Int8;
   z: Int8;
 }
-
-export const eventTypes = [
-  'user_login',
-  'user_activated',
-  'user_created',
-  'user_updated',
-  'user_deleted',
-  'demand_created',
-  'demand_assigned',
-  'demand_updated',
-  'demand_deleted',
-  'pro_eligibility_test_created',
-  'pro_eligibility_test_renamed',
-  'pro_eligibility_test_updated',
-  'pro_eligibility_test_deleted',
-] as const;
-
-export type EventType = (typeof eventTypes)[number];
 
 export interface Events {
   author_id: string | null;

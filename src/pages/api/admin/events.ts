@@ -1,9 +1,9 @@
 import { type NextApiRequest } from 'next';
 import { z } from 'zod';
 
-import { eventTypes } from '@/server/db/kysely/database';
 import { handleRouteErrors, validateObjectSchema } from '@/server/helpers/server';
 import { listEvents } from '@/server/services/events';
+import { eventTypes } from '@/shared/events';
 
 const querySchema = {
   authorId: z.string().uuid().optional(),

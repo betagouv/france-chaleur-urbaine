@@ -1,35 +1,99 @@
 import { Select } from '@codegouvfr/react-dsfr/SelectNext';
+import { ToggleSwitch } from '@codegouvfr/react-dsfr/ToggleSwitch';
 import { parseAsString, useQueryStates } from 'nuqs';
-import { useMemo } from 'react';
+import { type ReactNode, useCallback, useMemo } from 'react';
 
 import UserRoleBadge from '@/components/Admin/UserRoleBadge';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
 import Heading from '@/components/ui/Heading';
-import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
 import Tag from '@/components/ui/Tag';
+import VirtualList, { type VirtualListRowProps } from '@/components/ui/VirtualList';
 import { useFetch } from '@/hooks/useApi';
+import useQueryFlag from '@/hooks/useQueryFlag';
 import { withAuthentication } from '@/server/authentication';
-import { type EventType } from '@/server/db/kysely';
 import { type AdminEvent } from '@/server/services/events';
+import { type EventType, eventTypes } from '@/shared/events';
 import { type UserRole } from '@/types/enum/UserRole';
 
-const eventTypeLabels = {
-  user_login: 'Connexion',
-  user_activated: 'Compte activé',
-  user_created: 'Création de compte',
-  user_updated: 'Mise à jour de compte',
-  user_deleted: 'Suppression de compte',
-  demand_created: 'Création de demande',
-  demand_assigned: 'Assignation de demande',
-  demand_updated: 'Mise à jour de demande',
-  demand_deleted: 'Suppression de demande',
-  pro_eligibility_test_created: "Création de test d'éligibilité",
-  pro_eligibility_test_renamed: "Renommage de test d'éligibilité",
-  pro_eligibility_test_updated: "Mise à jour de test d'éligibilité",
-  pro_eligibility_test_deleted: "Suppression de test d'éligibilité",
-} as const satisfies Record<EventType, string>;
+type Filters = {
+  type?: string | null;
+  authorId?: string | null;
+  contextType?: string | null;
+  contextId?: string | null;
+};
+
+const FilterButton = ({ onClick, children }: { onClick: () => void; children: ReactNode }) => (
+  <Button size="small" priority="tertiary no outline" className="!px-1" onClick={onClick}>
+    {children}
+  </Button>
+);
+
+const eventLabelRenderers: Record<EventType, (event: AdminEvent, updateFilters: (filters: Partial<Filters>) => void) => ReactNode> = {
+  user_login: () => "s'est connecté",
+  user_activated: () => 'a activé son compte',
+  user_created: () => 'a créé un compte',
+  user_updated: () => 'a mis à jour un compte',
+  user_deleted: () => 'a supprimé un compte',
+  demand_created: (event, updateFilters) => (
+    <>
+      <span>Une </span>
+      <FilterButton onClick={() => updateFilters({ contextType: 'demand', contextId: event.context_id })}>demande</FilterButton>
+      <span> a été créée</span>
+    </>
+  ),
+  demand_assigned: (event, updateFilters) => (
+    <>
+      <span>a assigné une </span>
+      <FilterButton onClick={() => updateFilters({ contextType: 'demand', contextId: event.context_id })}>demande</FilterButton>
+    </>
+  ),
+  demand_updated: (event, updateFilters) => (
+    <>
+      <span>a mis à jour une </span>
+      <FilterButton onClick={() => updateFilters({ contextType: 'demand', contextId: event.context_id })}>demande</FilterButton>
+    </>
+  ),
+  demand_deleted: (event, updateFilters) => (
+    <>
+      <span>a supprimé une </span>
+      <FilterButton onClick={() => updateFilters({ contextType: 'demand', contextId: event.context_id })}>demande</FilterButton>
+    </>
+  ),
+  pro_eligibility_test_created: (event, updateFilters) => (
+    <>
+      <span>a créé un </span>
+      <FilterButton onClick={() => updateFilters({ contextType: 'pro_eligibility_test', contextId: event.context_id })}>
+        test d'éligibilité
+      </FilterButton>
+    </>
+  ),
+  pro_eligibility_test_renamed: (event, updateFilters) => (
+    <>
+      <span>a renommé un </span>
+      <FilterButton onClick={() => updateFilters({ contextType: 'pro_eligibility_test', contextId: event.context_id })}>
+        test d'éligibilité
+      </FilterButton>
+    </>
+  ),
+  pro_eligibility_test_updated: (event, updateFilters) => (
+    <>
+      <span>a mis à jour un </span>
+      <FilterButton onClick={() => updateFilters({ contextType: 'pro_eligibility_test', contextId: event.context_id })}>
+        test d'éligibilité
+      </FilterButton>
+    </>
+  ),
+  pro_eligibility_test_deleted: (event, updateFilters) => (
+    <>
+      <span>a supprimé un </span>
+      <FilterButton onClick={() => updateFilters({ contextType: 'pro_eligibility_test', contextId: event.context_id })}>
+        test d'éligibilité
+      </FilterButton>
+    </>
+  ),
+};
 
 export default function AdminEventsPage() {
   const [filters, setFilters] = useQueryStates({
@@ -37,7 +101,16 @@ export default function AdminEventsPage() {
     authorId: parseAsString,
     contextType: parseAsString,
     contextId: parseAsString,
-  });
+  } satisfies Record<keyof Filters, any>);
+
+  const [showDetails, toggleShowDetails] = useQueryFlag('details');
+
+  const updateFilters = useCallback(
+    (partial: Partial<Filters>) => {
+      setFilters((filters) => ({ ...filters, ...partial }));
+    },
+    [setFilters]
+  );
 
   const apiUrl = useMemo(() => {
     const params = new URLSearchParams();
@@ -48,63 +121,11 @@ export default function AdminEventsPage() {
     return `/api/admin/events${params.toString() ? `?${params.toString()}` : ''}`;
   }, [filters]);
 
-  const { data: events, isLoading } = useFetch<AdminEvent[]>(apiUrl);
+  const { data: events } = useFetch<AdminEvent[]>(apiUrl);
 
-  const columns = useMemo<ColumnDef<AdminEvent>[]>(
-    () => [
-      { accessorKey: 'created_at', header: 'Date', cellType: 'DateTime' },
-      {
-        accessorFn: (row) => `${row.author?.email}${row.author?.role}`,
-        header: 'Auteur',
-        cell: ({ row }) => {
-          const event = row.original;
-          return event.author ? (
-            <div className="flex flex-col gap-2">
-              <Button
-                size="small"
-                priority="tertiary no outline"
-                className="!px-1"
-                onClick={() => setFilters({ ...filters, authorId: event.author_id })}
-              >
-                {event.author.email}
-              </Button>
-              <UserRoleBadge role={event.author.role as UserRole} />
-            </div>
-          ) : null;
-        },
-      },
-      {
-        accessorKey: 'type',
-        header: 'Type',
-        cell: ({ row }) => {
-          const event = row.original;
-          return event.context_type === 'demand' ? (
-            <Button
-              size="small"
-              priority="tertiary no outline"
-              className="!px-1"
-              onClick={() => setFilters({ ...filters, contextType: 'demand', contextId: event.context_id })}
-            >
-              {eventTypeLabels[event.type]}
-            </Button>
-          ) : (
-            eventTypeLabels[event.type]
-          );
-        },
-      },
-      {
-        accessorKey: 'data',
-        header: 'Données',
-        cell: (info) => {
-          const value = info.getValue() as unknown;
-          if (value && typeof value === 'object')
-            return <pre className="text-xs whitespace-pre-wrap">{JSON.stringify(value, null, 2)}</pre>;
-          return String(value ?? '');
-        },
-        enableSorting: false,
-      },
-    ],
-    [filters]
+  const BoundEventRow = useCallback(
+    ({ item }: VirtualListRowProps<AdminEvent>) => <EventRow item={item} updateFilters={updateFilters} showDetails={showDetails} />,
+    [updateFilters, showDetails]
   );
 
   return (
@@ -120,17 +141,15 @@ export default function AdminEventsPage() {
               label="Filtrer par type (beta)"
               nativeSelectProps={{
                 value: filters.type ?? '',
-                onChange: (e) => setFilters({ ...filters, type: e.target.value || null }),
+                onChange: (e) => updateFilters({ type: e.target.value || null }),
               }}
-              options={[
-                { label: 'Tous', value: '' },
-                { label: 'user_login', value: 'user_login' },
-                { label: 'user_created', value: 'user_created' },
-                { label: 'demand_created', value: 'demand_created' },
-                { label: 'demand_assigned', value: 'demand_assigned' },
-              ]}
+              options={[{ label: 'Tous', value: '' }, ...eventTypes.map((type) => ({ label: type, value: type }))]}
             />
           </div>
+          <div className="fr-col-12 fr-col-md-3 ml-auto">
+            <ToggleSwitch label="Afficher les détails" checked={showDetails} onChange={() => toggleShowDetails()} />
+          </div>
+
           {filters.authorId || (filters.contextType && filters.contextId) ? (
             <div className="fr-col-12 fr-col-md-9">
               <div className="flex items-center gap-2 flex-wrap">
@@ -140,7 +159,7 @@ export default function AdminEventsPage() {
                     size="sm"
                     variant="info"
                     nativeButtonProps={{
-                      onClick: () => setFilters({ ...filters, authorId: null }),
+                      onClick: () => updateFilters({ authorId: null }),
                       title: "Supprimer le filtre d'auteur",
                     }}
                   >
@@ -153,7 +172,7 @@ export default function AdminEventsPage() {
                     size="sm"
                     variant="info"
                     nativeButtonProps={{
-                      onClick: () => setFilters({ ...filters, contextType: null, contextId: null }),
+                      onClick: () => updateFilters({ contextType: null, contextId: null }),
                       title: 'Supprimer le filtre de contexte',
                     }}
                   >
@@ -165,10 +184,38 @@ export default function AdminEventsPage() {
           ) : null}
         </div>
 
-        <TableSimple columns={columns} data={events ?? []} loading={isLoading} enableGlobalFilter padding="sm" />
+        <VirtualList items={events ?? []} estimateSize={48} renderRow={BoundEventRow} getItemKey={(item) => item.id} />
       </Box>
     </SimplePage>
   );
 }
 
 export const getServerSideProps = withAuthentication(['admin']);
+
+type EventRowProps = VirtualListRowProps<AdminEvent> & {
+  updateFilters: (filters: Partial<Filters>) => void;
+  showDetails: boolean;
+};
+
+const EventRow = ({ item: event, updateFilters, showDetails }: EventRowProps) => {
+  return (
+    <div className="flex items-center border-b border-b-gray-200 px-2 py-1">
+      <div className="shrink-0 w-30 text-xs text-gray-500 mr-4">{new Date(event.created_at).toLocaleString('fr-FR')}</div>
+      {event.author ? (
+        <>
+          <UserRoleBadge role={event.author.role as UserRole} />
+          <FilterButton onClick={() => updateFilters({ authorId: event.author_id })}>{event.author.email}</FilterButton>
+        </>
+      ) : null}
+      <div className="text-sm">{eventLabelRenderers[event.type](event, updateFilters)}</div>
+      {showDetails &&
+        event.data &&
+        typeof event.data === 'object' &&
+        Object.keys(event.data).length > 0 &&
+        (() => {
+          const strEventData = JSON.stringify(event.data, null, 2);
+          return <pre className="text-xs whitespace-pre-wrap">{strEventData.substring(0, strEventData.length - 2).substring(2)}</pre>;
+        })()}
+    </div>
+  );
+};
