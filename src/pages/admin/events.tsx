@@ -5,12 +5,31 @@ import { useMemo } from 'react';
 import UserRoleBadge from '@/components/Admin/UserRoleBadge';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Box from '@/components/ui/Box';
+import Button from '@/components/ui/Button';
 import Heading from '@/components/ui/Heading';
 import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
+import Tag from '@/components/ui/Tag';
 import { useFetch } from '@/hooks/useApi';
 import { withAuthentication } from '@/server/authentication';
+import { type EventType } from '@/server/db/kysely';
 import { type AdminEvent } from '@/server/services/events';
 import { type UserRole } from '@/types/enum/UserRole';
+
+const eventTypeLabels = {
+  user_login: 'Connexion',
+  user_activated: 'Compte activé',
+  user_created: 'Création de compte',
+  user_updated: 'Mise à jour de compte',
+  user_deleted: 'Suppression de compte',
+  demand_created: 'Création de demande',
+  demand_assigned: 'Assignation de demande',
+  demand_updated: 'Mise à jour de demande',
+  demand_deleted: 'Suppression de demande',
+  pro_eligibility_test_created: "Création de test d'éligibilité",
+  pro_eligibility_test_renamed: "Renommage de test d'éligibilité",
+  pro_eligibility_test_updated: "Mise à jour de test d'éligibilité",
+  pro_eligibility_test_deleted: "Suppression de test d'éligibilité",
+} as const satisfies Record<EventType, string>;
 
 export default function AdminEventsPage() {
   const [filters, setFilters] = useQueryStates({
@@ -41,13 +60,38 @@ export default function AdminEventsPage() {
           const event = row.original;
           return event.author ? (
             <div className="flex flex-col gap-2">
-              <div>{event.author.email}</div>
+              <Button
+                size="small"
+                priority="tertiary no outline"
+                className="!px-1"
+                onClick={() => setFilters({ ...filters, authorId: event.author_id })}
+              >
+                {event.author.email}
+              </Button>
               <UserRoleBadge role={event.author.role as UserRole} />
             </div>
           ) : null;
         },
       },
-      { accessorKey: 'type', header: 'Type' },
+      {
+        accessorKey: 'type',
+        header: 'Type',
+        cell: ({ row }) => {
+          const event = row.original;
+          return event.context_type === 'demand' ? (
+            <Button
+              size="small"
+              priority="tertiary no outline"
+              className="!px-1"
+              onClick={() => setFilters({ ...filters, contextType: 'demand', contextId: event.context_id })}
+            >
+              {eventTypeLabels[event.type]}
+            </Button>
+          ) : (
+            eventTypeLabels[event.type]
+          );
+        },
+      },
       {
         accessorKey: 'data',
         header: 'Données',
@@ -60,7 +104,7 @@ export default function AdminEventsPage() {
         enableSorting: false,
       },
     ],
-    []
+    [filters]
   );
 
   return (
@@ -87,6 +131,38 @@ export default function AdminEventsPage() {
               ]}
             />
           </div>
+          {filters.authorId || (filters.contextType && filters.contextId) ? (
+            <div className="fr-col-12 fr-col-md-9">
+              <div className="flex items-center gap-2 flex-wrap">
+                {filters.authorId && (
+                  <Tag
+                    dismissible
+                    size="sm"
+                    variant="info"
+                    nativeButtonProps={{
+                      onClick: () => setFilters({ ...filters, authorId: null }),
+                      title: "Supprimer le filtre d'auteur",
+                    }}
+                  >
+                    Auteur:{filters.authorId}
+                  </Tag>
+                )}
+                {filters.contextType && filters.contextId && (
+                  <Tag
+                    dismissible
+                    size="sm"
+                    variant="info"
+                    nativeButtonProps={{
+                      onClick: () => setFilters({ ...filters, contextType: null, contextId: null }),
+                      title: 'Supprimer le filtre de contexte',
+                    }}
+                  >
+                    {`${filters.contextType}:${filters.contextId}`}
+                  </Tag>
+                )}
+              </div>
+            </div>
+          ) : null}
         </div>
 
         <TableSimple columns={columns} data={events ?? []} loading={isLoading} enableGlobalFilter padding="sm" />
