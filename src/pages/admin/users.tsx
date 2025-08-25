@@ -10,6 +10,7 @@ import AsyncButton from '@/components/ui/AsyncButton';
 import Badge from '@/components/ui/Badge';
 import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
+import HamburgerMenu, { type HamburgerMenuItem } from '@/components/ui/HamburgerMenu';
 import Heading from '@/components/ui/Heading';
 import ModalSimple from '@/components/ui/ModalSimple';
 import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
@@ -166,30 +167,32 @@ export default function ManageUsers() {
         id: 'actions',
         header: 'Actions',
         align: 'right',
-        cell: ({ row }) => (
-          <>
-            <Button
-              size="small"
-              priority="tertiary"
-              iconId="ri-edit-line"
-              title="Modifier l'utilisateur"
-              onClick={() => setUserId(row.original.id)}
-            />
-            <Button
-              size="small"
-              priority="tertiary"
-              iconId="ri-spy-line"
-              variant="info"
-              title="Permet d'adopter temporairement le même profil (rôle et tags gestionnaires) que cet utilisateur sans usurper son identité."
-              onClick={() => startImpersonation(row.original)}
-            />
-            <Button
-              size="small"
-              variant="destructive"
-              priority="tertiary"
-              iconId={row.original.active ? 'ri-delete-back-2-line' : 'ri-delete-bin-line'}
-              title={row.original.active ? "Désactiver l'utilisateur" : "Supprimer l'utilisateur"}
-              onClick={() => {
+        cell: ({ row }) => {
+          const menuItems: HamburgerMenuItem[] = [
+            {
+              id: 'edit',
+              label: "Modifier l'utilisateur",
+              icon: 'ri-edit-line',
+              onClick: () => setUserId(row.original.id),
+            },
+            {
+              id: 'history',
+              label: "Voir l'historique des événements",
+              icon: 'ri-history-line',
+              href: `/admin/events?authorId=${row.original.id}`,
+            },
+            {
+              id: 'impersonate',
+              label: 'Adopter le profil',
+              icon: 'ri-spy-line',
+              onClick: () => startImpersonation(row.original),
+            },
+            {
+              id: 'delete',
+              label: row.original.active ? "Désactiver l'utilisateur" : "Supprimer l'utilisateur",
+              icon: row.original.active ? 'ri-delete-back-2-line' : 'ri-delete-bin-line',
+              variant: 'destructive',
+              onClick: () => {
                 if (row.original.active) {
                   handleUpdateUser(row.original.id)({ active: false });
                   return;
@@ -197,11 +200,13 @@ export default function ManageUsers() {
                 if (window.confirm('Voulez-vous vraiment supprimer cet utilisateur ? Cette action est irréversible.')) {
                   alert("Cette fonctionnalité n'est pas encore implémentée, demandez à l'équipe technique");
                 }
-              }}
-            />
-          </>
-        ),
-        width: '110px',
+              },
+            },
+          ];
+
+          return <HamburgerMenu items={menuItems} />;
+        },
+        width: '50px',
       },
     ],
     []

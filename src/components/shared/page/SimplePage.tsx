@@ -337,6 +337,12 @@ const adminNavigationMenu: MainNavigationProps.Item[] = [
     text: 'Administration',
     menuLinks: [
       {
+        text: 'Activité du site',
+        linkProps: {
+          href: '/admin/events',
+        },
+      },
+      {
         text: 'Gestion des utilisateurs',
         linkProps: {
           href: '/admin/users',

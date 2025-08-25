@@ -1,6 +1,7 @@
 import type { NextApiRequest } from 'next';
 import { v4 as uuidv4 } from 'uuid';
 
+import { createEvent } from '@/modules/events/server/service';
 import base, { AirtableDB } from '@/server/db/airtable';
 import { sendEmailTemplate } from '@/server/email';
 import { logger } from '@/server/helpers/logger';
@@ -75,11 +76,20 @@ export default handleRouteErrors(async function PostRecords(req: NextApiRequest)
         { typecast: true }
       );
 
-      await sendEmailTemplate(
-        'creation-demande',
-        { email: values.Mail },
-        { demand: { ...values, 'Distance au réseau': values['Distance au réseau'] ?? 9999 } } // si > 1000m la distance est null, or le template veut une distance
-      );
+      await Promise.all([
+        createEvent({
+          type: 'demand_created',
+          context_type: 'demand',
+          context_id: demandId,
+          data: values,
+        }),
+        sendEmailTemplate(
+          'creation-demande',
+          { email: values.Mail },
+          { demand: { ...values, 'Distance au réseau': values['Distance au réseau'] ?? 9999 } } // si > 1000m la distance est null, or le template veut une distance
+        ),
+      ]);
+
       return { id: demandId };
     }
 

@@ -1,6 +1,7 @@
 import { type NextApiRequest } from 'next';
 import { z } from 'zod';
 
+import { createUserEvent } from '@/modules/events/server/service';
 import { kdb, sql } from '@/server/db/kysely';
 import { handleRouteErrors } from '@/server/helpers/server';
 
@@ -50,6 +51,13 @@ const DELETE = async (req: NextApiRequest) => {
       deleted_at: new Date(),
     })
     .execute();
+
+  await createUserEvent({
+    type: 'pro_eligibility_test_deleted',
+    context_type: 'pro_eligibility_test',
+    context_id: testId,
+    author_id: req.user.id,
+  });
 };
 
 export const zProEligibilityTestFileRequest = z.strictObject({
@@ -73,6 +81,13 @@ const POST = async (req: NextApiRequest) => {
     })
     .returning('id')
     .executeTakeFirstOrThrow();
+
+  await createUserEvent({
+    type: 'pro_eligibility_test_updated',
+    context_type: 'pro_eligibility_test',
+    context_id: testId,
+    author_id: req.user.id,
+  });
 };
 
 export default handleRouteErrors(

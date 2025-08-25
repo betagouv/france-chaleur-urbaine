@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker';
 import { type User } from 'next-auth';
 import { v4 as uuidv4 } from 'uuid';
 
+import { createUserEvent } from '@/modules/events/server/service';
 import db from '@/server/db';
 import base from '@/server/db/airtable';
 import { sendEmailTemplate } from '@/server/email';
@@ -167,6 +168,13 @@ export const updateDemand = async (user: User, demandId: string, updateData: Par
   if (error) {
     throw new Error(error);
   }
+  await createUserEvent({
+    type: 'demand_updated',
+    context_type: 'demand',
+    context_id: demandId,
+    data: updateData,
+    author_id: user.id,
+  });
   return { id: record.id, ...record.fields } as Demand;
 };
 
