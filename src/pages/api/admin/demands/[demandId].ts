@@ -1,9 +1,9 @@
 import type { NextApiRequest } from 'next';
 import { z } from 'zod';
 
+import { createUserEvent } from '@/modules/events/server/service';
 import { AirtableDB } from '@/server/db/airtable';
 import { handleRouteErrors, validateObjectSchema } from '@/server/helpers/server';
-import { createUserEvent } from '@/server/services/events';
 import { type AdminDemand } from '@/types/Summary/Demand';
 
 const zDemandUpdate = {

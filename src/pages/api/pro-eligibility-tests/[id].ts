@@ -1,9 +1,9 @@
 import { type NextApiRequest } from 'next';
 import { z } from 'zod';
 
+import { createUserEvent } from '@/modules/events/server/service';
 import { kdb, sql } from '@/server/db/kysely';
 import { handleRouteErrors } from '@/server/helpers/server';
-import { createUserEvent } from '@/server/services/events';
 
 export type ProEligibilityTestWithAddresses = Awaited<ReturnType<typeof GET>>;
 

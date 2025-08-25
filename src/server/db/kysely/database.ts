@@ -5,7 +5,7 @@
 
 import type { ColumnType, JSONColumnType } from 'kysely';
 
-import { type EventType } from '@/shared/events';
+import { type EventType } from '@/modules/events/constants';
 import { type UserRole } from '@/types/enum/UserRole';
 import { type HeatNetwork } from '@/types/HeatNetworksResponse';
 

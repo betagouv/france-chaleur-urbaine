@@ -2,12 +2,12 @@ import { faker } from '@faker-js/faker';
 import { type User } from 'next-auth';
 import { v4 as uuidv4 } from 'uuid';
 
+import { createUserEvent } from '@/modules/events/server/service';
 import db from '@/server/db';
 import base from '@/server/db/airtable';
 import { sendEmailTemplate } from '@/server/email';
 import { logger } from '@/server/helpers/logger';
 import { invalidPermissionsError } from '@/server/helpers/server';
-import { createUserEvent } from '@/server/services/events';
 import { Airtable } from '@/types/enum/Airtable';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import { type Demand } from '@/types/Summary/Demand';

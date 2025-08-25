@@ -1,10 +1,10 @@
 import { type NextApiRequest } from 'next';
 import { z } from 'zod';
 
+import { createUserEvent } from '@/modules/events/server/service';
 import { ensureValidPermissions } from '@/pages/api/pro-eligibility-tests/[id]';
 import { kdb } from '@/server/db/kysely';
 import { handleRouteErrors } from '@/server/helpers/server';
-import { createUserEvent } from '@/server/services/events';
 import { zRenameProEligibilityTestRequest } from '@/validation/pro-eligibility-test';
 
 const POST = async (req: NextApiRequest) => {

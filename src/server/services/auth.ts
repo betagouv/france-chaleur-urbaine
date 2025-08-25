@@ -1,10 +1,10 @@
 import bcrypt, { genSalt, hash } from 'bcryptjs';
 
+import { createUserEvent } from '@/modules/events/server/service';
 import { kdb } from '@/server/db/kysely';
 import { sendEmailTemplate } from '@/server/email';
 import { logger } from '@/server/helpers/logger';
 import { BadRequestError } from '@/server/helpers/server';
-import { createUserEvent } from '@/server/services/events';
 import { type UserRole } from '@/types/enum/UserRole';
 import { generateRandomToken } from '@/utils/random';
 

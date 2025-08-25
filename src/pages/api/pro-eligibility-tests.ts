@@ -2,9 +2,9 @@ import { type Selectable } from 'kysely';
 import { type NextApiRequest } from 'next';
 import { z } from 'zod';
 
+import { createUserEvent } from '@/modules/events/server/service';
 import { kdb } from '@/server/db/kysely';
 import { handleRouteErrors } from '@/server/helpers/server';
-import { createUserEvent } from '@/server/services/events';
 import { type FrontendType } from '@/utils/typescript';
 
 const GET = async (req: NextApiRequest) => {

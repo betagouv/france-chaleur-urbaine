@@ -1,12 +1,12 @@
 import type { NextApiRequest } from 'next';
 import { v4 as uuidv4 } from 'uuid';
 
+import { createEvent } from '@/modules/events/server/service';
 import base, { AirtableDB } from '@/server/db/airtable';
 import { sendEmailTemplate } from '@/server/email';
 import { logger } from '@/server/helpers/logger';
 import { BadRequestError, handleRouteErrors, requirePostMethod } from '@/server/helpers/server';
 import { getConso, getNbLogement } from '@/server/services/addresseInformation';
-import { createEvent } from '@/server/services/events';
 import { getToRelanceDemand } from '@/server/services/manager';
 import { Airtable } from '@/types/enum/Airtable';
 import { defaultEmptyNumberValue, defaultEmptyStringValue } from '@/utils/airtable';
