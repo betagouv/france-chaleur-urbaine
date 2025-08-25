@@ -239,8 +239,8 @@ dependencies:
     specifier: ^6.10.0
     version: 6.10.0
   nuqs:
-    specifier: ^1.17.7
-    version: 1.17.7(next@15.3.3)
+    specifier: ^2.5.0
+    version: 2.5.0(next@15.3.3)(react@19.1.0)
   p-limit:
     specifier: ^6.2.0
     version: 6.2.0
@@ -4820,6 +4820,10 @@ packages:
     resolution: {integrity: sha512-9BCxFwvbGg/RsZK9tjXd8s4UcwR0MWeFQ1XEKIQVVvAGJyINdrqKMcTRyLoK8Rse1GjzLV9cwjWV1olXRWEXVA==}
     dev: true
 
+  /@standard-schema/spec@1.0.0:
+    resolution: {integrity: sha512-m2bOd0f2RT9k8QJx1JN85cZYyH1RqFBdlwtkSlf4tBDYLCiiZnv1fIIwacK6cqwXavOydf0NPToMQgpKq+dVlA==}
+    dev: false
+
   /@svgr/babel-plugin-add-jsx-attribute@8.0.0(@babel/core@7.25.2):
     resolution: {integrity: sha512-b9MIk7yhdS1pMCZM8VeNfUlSKVRhsHZNMl5O9SfaX0l0t5wjdgu4IDzGB8bpnGBBOjGST3rRFVsaaEtI4W6f7g==}
     engines: {node: '>=14'}
@@ -6560,7 +6564,7 @@ packages:
     engines: {node: ^10 || ^12 || >=14}
     hasBin: true
     peerDependencies:
-      postcss: ^8.2.10
+      postcss: ^8.1.0
     dependencies:
       browserslist: 4.23.3
       caniuse-lite: 1.0.30001676
@@ -11623,13 +11627,30 @@ packages:
       boolbase: 1.0.0
     dev: true
 
-  /nuqs@1.17.7(next@15.3.3):
-    resolution: {integrity: sha512-LiiC5XGqVPCGNA3Hg4tPmI5Ur0egmp+mB9FLWPltQfC6VbQyHqkJf4aZV6f9o8wX86Le9KAIHdnNCtx0f1ZTnw==}
+  /nuqs@2.5.0(next@15.3.3)(react@19.1.0):
+    resolution: {integrity: sha512-WGPCF0azXlkwWeT8S0C6juROK56I4Lmt92Ke4cu2nM1o70pZ6DhGmGxL5/yBznTEWoi/1t7Mlh7RY9WvjkdtKA==}
     peerDependencies:
-      next: '>=13.4 <14.0.2 || ^14.0.3'
+      '@remix-run/react': '>=2'
+      '@tanstack/react-router': ^1
+      next: '>=14.2.0'
+      react: '>=18.2.0 || ^19.0.0-0'
+      react-router: ^6 || ^7
+      react-router-dom: ^6 || ^7
+    peerDependenciesMeta:
+      '@remix-run/react':
+        optional: true
+      '@tanstack/react-router':
+        optional: true
+      next:
+        optional: true
+      react-router:
+        optional: true
+      react-router-dom:
+        optional: true
     dependencies:
-      mitt: 3.0.1
+      '@standard-schema/spec': 1.0.0
       next: 15.3.3(@babel/core@7.25.2)(react-dom@19.1.0)(react@19.1.0)
+      react: 19.1.0
     dev: false
 
   /oauth-sign@0.9.0:
@@ -12094,7 +12115,7 @@ packages:
     resolution: {integrity: sha512-hpr+J05B2FVYUAXHeK1YyI267J/dDDhMU6B6civm8hSY1jYJnBXxzKDKDswzJmtLHryrjhnDjqqp/49t8FALew==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
-      postcss: ^8.2.10
+      postcss: ^8.0.0
     dependencies:
       postcss: 8.4.32
       postcss-value-parser: 4.2.0
@@ -12106,7 +12127,7 @@ packages:
     resolution: {integrity: sha512-7hsAZ4xGXl4MW+OKEWCnF6T5jqBw80/EE9aXg1r2yyn1RsVEU8EtKXbijEODa+rg7iih4bKf7vlvTGYR4CnPNg==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
-      postcss: ^8.2.10
+      postcss: ^8.0.0
     dependencies:
       postcss: 8.4.32
       postcss-value-parser: 4.2.0
@@ -12118,7 +12139,7 @@ packages:
     resolution: {integrity: sha512-dDLF8pEO191hJMtlHFPRa8xsizHaM82MLfNkUHdUtVEV3tgTp5oj+8qbEqYM57SLfc74KSbw//4SeJma2LRVIw==}
     engines: {node: ^12 || ^14 || >= 16}
     peerDependencies:
-      postcss: ^8.2.10
+      postcss: ^8.4.21
     dependencies:
       camelcase-css: 2.0.1
       postcss: 8.4.32
@@ -12128,7 +12149,7 @@ packages:
     resolution: {integrity: sha512-bSVhyJGL00wMVoPUzAVAnbEoWyqRxkjv64tUl427SKnPrENtq6hJwUojroMz2VB+Q1edmi4IfrAPpami5VVgMQ==}
     engines: {node: '>= 14'}
     peerDependencies:
-      postcss: ^8.2.10
+      postcss: '>=8.0.9'
       ts-node: '>=9.0.0'
     peerDependenciesMeta:
       postcss:
@@ -12145,7 +12166,7 @@ packages:
     resolution: {integrity: sha512-HQbt28KulC5AJzG+cZtj9kvKB93CFCdLvog1WFLf1D+xmMvPGlBstkpTEZfK5+AN9hfJocyBFCNiqyS48bpgzQ==}
     engines: {node: '>=12.0'}
     peerDependencies:
-      postcss: ^8.2.10
+      postcss: ^8.2.14
     dependencies:
       postcss: 8.4.32
       postcss-selector-parser: 6.1.2

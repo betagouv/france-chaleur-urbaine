@@ -7,6 +7,7 @@ import type Link from 'next/link';
 // use AppProgressBar instead of PagesProgressBar on purpose as it handles better the query params ignoring
 import { SessionProvider } from 'next-auth/react';
 import { AppProgressBar as ProgressBar } from 'next-nprogress-bar';
+import { NuqsAdapter } from 'nuqs/adapters/next/pages';
 import { useState } from 'react';
 
 import '@/components/Map/StyleSwitcher/styles.css';
@@ -39,7 +40,33 @@ declare module '@codegouvfr/react-dsfr/next-pagesdir' {
 
 export { dsfrDocumentApi };
 
-const AppProvider = ({ Component, pageProps }: AppProps<AuthSSRPageProps>) => {
+const AppInner = ({ Component, pageProps }: AppProps<AuthSSRPageProps>) => {
+  // internally calls useQueryState from nuqs, so it needs to be called inside an underlying component
+  useInitAuthentication(pageProps.session);
+  return (
+    <ThemeProvider>
+      <SEO />
+      <ConsentBanner />
+      <NotifierContainer />
+      <ServicesContext.Provider
+        value={{
+          suggestionService: new SuggestionService(axiosHttpClient),
+          heatNetworkService: new HeatNetworkService(axiosHttpClient),
+          demandsService: new DemandsService(axiosHttpClient),
+          passwordService: new PasswordService(axiosHttpClient),
+          adminService: new AdminService(axiosHttpClient),
+          networksService: new NetworksService(axiosHttpClient),
+          exportService: new ExportService(axiosHttpClient),
+        }}
+      >
+        <ProgressBar height="4px" color={fr.colors.decisions.background.active.blueFrance.default} />
+        <Component {...pageProps} />
+      </ServicesContext.Provider>
+    </ThemeProvider>
+  );
+};
+
+const AppProvider = (props: AppProps<AuthSSRPageProps>) => {
   const [queryClient] = useState(
     () =>
       new QueryClient({
@@ -53,28 +80,11 @@ const AppProvider = ({ Component, pageProps }: AppProps<AuthSSRPageProps>) => {
         },
       })
   );
-  useInitAuthentication(pageProps.session);
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        <SEO />
-        <ConsentBanner />
-        <NotifierContainer />
-        <ServicesContext.Provider
-          value={{
-            suggestionService: new SuggestionService(axiosHttpClient),
-            heatNetworkService: new HeatNetworkService(axiosHttpClient),
-            demandsService: new DemandsService(axiosHttpClient),
-            passwordService: new PasswordService(axiosHttpClient),
-            adminService: new AdminService(axiosHttpClient),
-            networksService: new NetworksService(axiosHttpClient),
-            exportService: new ExportService(axiosHttpClient),
-          }}
-        >
-          <ProgressBar height="4px" color={fr.colors.decisions.background.active.blueFrance.default} />
-          <Component {...pageProps} />
-        </ServicesContext.Provider>
-      </ThemeProvider>
+      <NuqsAdapter>
+        <AppInner {...props} />
+      </NuqsAdapter>
     </QueryClientProvider>
   );
 };

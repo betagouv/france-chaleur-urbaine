@@ -36,7 +36,10 @@ export type FilterKeys = FlattenKeys<Filters>;
 export type FilterWithLimits = Filters & { limits: ReseauxDeChaleurLimits };
 
 const useReseauxDeChaleurFilters = ({ queryParamName = 'rdc_filters' }: { queryParamName?: string } = {}) => {
-  const [urlFilters, setUrlFilters] = useQueryState(queryParamName, parseAsJson<Partial<Filters>>().withDefault({} as Filters));
+  const [urlFilters, setUrlFilters] = useQueryState(
+    queryParamName,
+    parseAsJson<Partial<Filters>>((value) => value as Partial<Filters>).withDefault({} as Filters)
+  );
   const [defaultFilters, setDefaultFilters] = useState<FilterWithLimits>({ ...emptyFilterLimits, limits: {} as ReseauxDeChaleurLimits }); // pas génial, mais un refacto s'imposera pour avoir un typage correct
   const searchParams = useSearchParams();
   const [loaded, setLoaded] = useState(false);
