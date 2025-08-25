@@ -73,7 +73,7 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
           createOptionProps(!advancedMode && !nearestReseauDeChaleur ? '(Non disponible)' : undefined)
         )}
         state={nearestReseauDeChaleur ? 'success' : 'default'}
-        className="[&_p]:!mb-0"
+        className="[&_label]:!mb-4"
         disabled={!advancedMode && !nearestReseauDeChaleur}
         stateRelatedMessage={
           nearestReseauDeChaleur ? (
