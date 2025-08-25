@@ -1,0 +1,29 @@
+name: Accessibility Tests
+on:
+  push:
+    branches-ignore: [main]
+  pull_request:
+    branches-ignore: [main]
+jobs:
+  accessibility:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - run: pnpm install
+      - run: pnpm build
+      - run: |
+          pnpm start &
+          timeout 60 bash -c 'until curl -f http://localhost:3000 > /dev/null 2>&1; do sleep 1; done'
+      - run: npm install -g pa11y-ci
+      - run: pa11y-ci --urls http://localhost:3000 --reporter json > accessibility-report.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: accessibility-report
+          path: accessibility-report.json
