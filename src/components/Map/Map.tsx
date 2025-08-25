@@ -544,7 +544,7 @@ export const FullyFeaturedMap = ({
   const [{ bounds: boundsInQuery }, setQuery] = useQueryStates({
     coord: parseAsString,
     zoom: parseAsString,
-    bounds: parseAsJson(),
+    bounds: parseAsJson<any>((value) => value),
   });
   const bounds = boundsInQuery || defaultBounds;
   // store the view state in the URL (e.g. /carte?coord=2.3429253,48.7998120&zoom=11.36)
