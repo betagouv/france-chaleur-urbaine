@@ -446,7 +446,8 @@ const PageHeader = (props: PageHeaderProps) => {
         ]
       : publicNavigationMenu;
 
-  const currentPath = props.currentPage ?? router.pathname;
+  // Use router.isReady to ensure stable path during hydration
+  const currentPath = props.currentPage ?? (router.isReady ? router.pathname : '');
 
   const quickAccessItems =
     props.mode === 'authenticated'
