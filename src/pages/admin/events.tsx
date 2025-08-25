@@ -208,14 +208,9 @@ const EventRow = ({ item: event, updateFilters, showDetails }: EventRowProps) =>
         </>
       ) : null}
       <div className="text-sm">{eventLabelRenderers[event.type](event, updateFilters)}</div>
-      {showDetails &&
-        event.data &&
-        typeof event.data === 'object' &&
-        Object.keys(event.data).length > 0 &&
-        (() => {
-          const strEventData = JSON.stringify(event.data, null, 2);
-          return <pre className="text-xs whitespace-pre-wrap">{strEventData.substring(0, strEventData.length - 2).substring(2)}</pre>;
-        })()}
+      {showDetails && event.data && typeof event.data === 'object' && Object.keys(event.data).length > 0 && (
+        <pre className="text-xs whitespace-pre-wrap">{JSON.stringify(event.data, null, 2).slice(2, -2)}</pre>
+      )}
     </div>
   );
 };
