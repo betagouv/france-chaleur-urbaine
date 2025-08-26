@@ -17,6 +17,7 @@ import MapReactGL, {
   NavigationControl,
   ScaleControl,
 } from 'react-map-gl/maplibre';
+import { z } from 'zod';
 
 import FileDragNDrop from '@/components/Map/components/FileDragNDrop';
 import { type AdresseEligible } from '@/components/Map/layers/adressesEligibles';
@@ -99,6 +100,9 @@ type ViewState = {
   latitude: number;
   zoom: number;
 };
+
+// Zod schema for BoundingBox validation
+const boundingBoxSchema = z.tuple([z.number(), z.number(), z.number(), z.number()]);
 
 type MapProps = {
   withoutLogo?: boolean;
@@ -544,7 +548,7 @@ export const FullyFeaturedMap = ({
   const [{ bounds: boundsInQuery }, setQuery] = useQueryStates({
     coord: parseAsString,
     zoom: parseAsString,
-    bounds: parseAsJson(),
+    bounds: parseAsJson(boundingBoxSchema.parse),
   });
   const bounds = boundsInQuery || defaultBounds;
   // store the view state in the URL (e.g. /carte?coord=2.3429253,48.7998120&zoom=11.36)
