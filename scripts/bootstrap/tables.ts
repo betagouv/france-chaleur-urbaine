@@ -43,6 +43,10 @@ export const allDatabaseTables: TableInfo[] = [
     name: 'assignment_rules',
     description: "Règles d'affectation pour l'application automatique de tags",
   },
+  {
+    name: 'events',
+    description: "Événements pour le suivi de l'activité des utilisateurs",
+  },
 
   // données de référence FCU
   {
