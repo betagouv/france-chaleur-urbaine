@@ -44,6 +44,7 @@ import { reseauxEnConstructionLayersSpec } from './layers/reseauxEnConstruction'
 import { testsAdressesLayersSpec } from './layers/testsAdresses';
 import { typeChauffageBatimentsCollectifsLayersSpec } from './layers/typeChauffageBatimentsCollectifs';
 import { zonesPotentielChaudLayersSpec } from './layers/zonesPotentielChaud';
+import { zonesPotentielFroidLayersSpec } from './layers/zonesPotentielFroid';
 
 /**
  * Symbols used by layers and that must be loaded at map initialization.
@@ -137,6 +138,7 @@ export const mapLayers = [
   ...customGeojsonLayersSpec,
   ...enrrMobilisablesZonesGeothermieProfondeLayersSpec,
   ...zonesPotentielChaudLayersSpec,
+  ...zonesPotentielFroidLayersSpec,
   ...caracteristiquesBatimentsLayersSpec,
   ...besoinsEnChaleurIndustrieCommunesLayersSpec,
   ...quartiersPrioritairesPolitiqueVilleLayersSpec,

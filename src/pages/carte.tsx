@@ -29,6 +29,7 @@ export const layerURLKeysToMapConfigPath = {
   batimentsRaccordesReseauxChaleur: 'batimentsRaccordesReseauxChaleur',
   batimentsRaccordesReseauxFroid: 'batimentsRaccordesReseauxFroid',
   zonesOpportunite: 'zonesOpportunite.show',
+  zonesOpportuniteFroid: 'zonesOpportuniteFroid.show',
   enrrMobilisablesChaleurFatale: 'enrrMobilisablesChaleurFatale.show',
   enrrMobilisablesGeothermieProfonde: 'enrrMobilisablesGeothermieProfonde',
   enrrMobilisablesSolaireThermique: 'enrrMobilisablesSolaireThermique.show',
