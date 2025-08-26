@@ -14,7 +14,6 @@ import { useFetch } from '@/hooks/useApi';
 import useQueryFlag from '@/hooks/useQueryFlag';
 import { type EventType, eventTypes } from '@/modules/events/constants';
 import { type AdminEvent } from '@/modules/events/server/service';
-import { withAuthentication } from '@/server/authentication';
 import { type UserRole } from '@/types/enum/UserRole';
 
 type Filters = {
@@ -189,8 +188,6 @@ export default function AdminEventsPage() {
     </SimplePage>
   );
 }
-
-export const getServerSideProps = withAuthentication(['admin']);
 
 type EventRowProps = VirtualListRowProps<AdminEvent> & {
   updateFilters: (filters: Partial<Filters>) => void;
