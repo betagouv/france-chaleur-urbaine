@@ -2,6 +2,7 @@ import { type Selectable } from 'kysely';
 import { type NextApiRequest } from 'next';
 import { z } from 'zod';
 
+import { createUserEvent } from '@/modules/events/server/service';
 import { kdb } from '@/server/db/kysely';
 import { handleRouteErrors } from '@/server/helpers/server';
 import { type FrontendType } from '@/utils/typescript';
@@ -69,6 +70,13 @@ const POST = async (req: NextApiRequest) => {
       .executeTakeFirstOrThrow();
 
     return createdEligibilityTest.id;
+  });
+  await createUserEvent({
+    type: 'pro_eligibility_test_created',
+    context_type: 'pro_eligibility_test',
+    context_id: createdEligibilityTestId,
+    data: { name },
+    author_id: req.user.id,
   });
 
   return {

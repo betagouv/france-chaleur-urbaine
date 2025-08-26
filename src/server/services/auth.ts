@@ -1,5 +1,6 @@
 import bcrypt, { genSalt, hash } from 'bcryptjs';
 
+import { createUserEvent } from '@/modules/events/server/service';
 import { kdb } from '@/server/db/kysely';
 import { sendEmailTemplate } from '@/server/email';
 import { logger } from '@/server/helpers/logger';
@@ -52,6 +53,13 @@ export const register = async ({
 
   logger.info('account register', { user_id: insertedUser.id, role });
   await sendEmailTemplate('activation', insertedUser, { activationToken });
+
+  await createUserEvent({
+    type: 'user_created',
+    context_type: 'user',
+    context_id: insertedUser.id,
+    author_id: insertedUser.id,
+  });
   return insertedUser.id;
 };
 
@@ -77,6 +85,12 @@ export const login = async (email: string, password: string) => {
   }
 
   logger.info('account login', { user_id: user.id });
+  await createUserEvent({
+    type: 'user_login',
+    context_type: 'user',
+    context_id: user.id,
+    author_id: user.id,
+  });
   return {
     id: user.id,
     email: user.email,
@@ -105,4 +119,10 @@ export const activateUser = async (activationToken: string) => {
     .executeTakeFirstOrThrow();
 
   logger.info('account activate', { user_id: existingUser.id });
+  await createUserEvent({
+    type: 'user_activated',
+    context_type: 'user',
+    context_id: existingUser.id,
+    author_id: existingUser.id,
+  });
 };

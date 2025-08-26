@@ -5,6 +5,7 @@
 
 import type { ColumnType, JSONColumnType } from 'kysely';
 
+import { type EventType } from '@/modules/events/constants';
 import { type UserRole } from '@/types/enum/UserRole';
 import { type HeatNetwork } from '@/types/HeatNetworksResponse';
 
@@ -2943,6 +2944,16 @@ export interface EtudesEnCoursTiles {
   z: Int8;
 }
 
+export interface Events {
+  author_id: string | null;
+  context_id: string | null;
+  context_type: string | null;
+  created_at: Generated<Timestamp>;
+  data: Generated<Json>;
+  id: Generated<string>;
+  type: EventType;
+}
+
 export interface IgnCommunes {
   geom: string | null;
   geom_150m: string | null;
@@ -3542,6 +3553,7 @@ export interface DB {
   ept: Ept;
   etudes_en_cours: EtudesEnCours;
   etudes_en_cours_tiles: EtudesEnCoursTiles;
+  events: Events;
   ign_communes: IgnCommunes;
   ign_departements: IgnDepartements;
   ign_regions: IgnRegions;
