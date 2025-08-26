@@ -3636,8 +3636,12 @@ export interface DB {
   users: Users;
   zone_a_potentiel_chaud: ZoneAPotentielChaud;
   zone_a_potentiel_chaud_tiles: ZoneAPotentielChaudTiles;
+  zone_a_potentiel_froid: ZoneAPotentielFroid;
+  zone_a_potentiel_froid_tiles: ZoneAPotentielFroidTiles;
   zone_a_potentiel_fort_chaud: ZoneAPotentielFortChaud;
   zone_a_potentiel_fort_chaud_tiles: ZoneAPotentielFortChaudTiles;
+  zone_a_potentiel_fort_froid: ZoneAPotentielFortFroid;
+  zone_a_potentiel_fort_froid_tiles: ZoneAPotentielFortFroidTiles;
   zone_de_developpement_prioritaire: ZoneDeDeveloppementPrioritaire;
   zone_de_developpement_prioritaire_tiles: ZoneDeDeveloppementPrioritaireTiles;
   zones_et_reseaux_en_construction: ZonesEtReseauxEnConstruction;
