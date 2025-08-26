@@ -3419,7 +3419,33 @@ export interface ZoneAPotentielChaud {
   surf_sol_8: Numeric | null;
 }
 
+export interface ZoneAPotentielFroid {
+  bat_imp: Numeric | null;
+  bes_min: string | null;
+  com_insee: string | null;
+  dens_min: string | null;
+  dep: string | null;
+  dist_con: string | null;
+  filere: string | null;
+  froid_mwh: Numeric | null;
+  geom: string | null;
+  icu_sensib: Numeric | null;
+  icu_val: string | null;
+  id_zone: string | null;
+  ogc_fid: Generated<number>;
+  part_ter: Numeric | null;
+  reg: string | null;
+  type_zone: string | null;
+}
+
 export interface ZoneAPotentielChaudTiles {
+  tile: Buffer;
+  x: Int8;
+  y: Int8;
+  z: Int8;
+}
+
+export interface ZoneAPotentielFroidTiles {
   tile: Buffer;
   x: Int8;
   y: Int8;
@@ -3449,6 +3475,32 @@ export interface ZoneAPotentielFortChaud {
 }
 
 export interface ZoneAPotentielFortChaudTiles {
+  tile: Buffer;
+  x: Int8;
+  y: Int8;
+  z: Int8;
+}
+
+export interface ZoneAPotentielFortFroid {
+  bat_imp: Numeric | null;
+  bes_min: string | null;
+  com_insee: string | null;
+  dens_min: string | null;
+  dep: string | null;
+  dist_con: string | null;
+  filere: string | null;
+  froid_mwh: Numeric | null;
+  geom: string | null;
+  icu_sensib: Numeric | null;
+  icu_val: string | null;
+  id_zone: string | null;
+  ogc_fid: Generated<number>;
+  part_ter: Numeric | null;
+  reg: string | null;
+  type_zone: string | null;
+}
+
+export interface ZoneAPotentielFortFroidTiles {
   tile: Buffer;
   x: Int8;
   y: Int8;

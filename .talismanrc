@@ -18,6 +18,10 @@ fileignoreconfig:
   checksum: a3ea18c599994f5715090b33dc8e576e260181c3263e08e3f7f04133d1b57d03
 - filename: scripts/copyRemoteTableToLocal.sh
   checksum: 2b379d50d78806a26e79c2c45562529bdac4115487af223b33863153c7be5b0d
+- filename: scripts/data-import/adapters/zones-opportunite-fort-froid.ts
+  checksum: ef841b5a6dbaff203553b7646ec71cdd0cc8580de21b13f961c68444faf47299
+- filename: scripts/data-import/adapters/zones-opportunite-froid.ts
+  checksum: ab9ea1acc05053f6d50282ccb9aa5b309e581c208cec95f4a4c2463ff041e492
 - filename: scripts/db_sync_common.sh
   checksum: e23e852383c7fabc2b0a1d89e63a8595cdb4b4c6959fdc8cea4491b6d292aef3
 - filename: scripts/opendata/create-opendata-archive.sh
