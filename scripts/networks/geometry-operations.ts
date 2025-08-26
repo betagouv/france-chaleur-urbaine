@@ -140,7 +140,7 @@ export async function insertEntityWithGeometry(
     .insertInto(tableName as any)
     .values((eb) => ({
       id_fcu: id_fcu ? eb.lit(id_fcu) : sql<number>`(SELECT COALESCE(max(id_fcu), 0) + 1 FROM ${sql.raw(tableName)})`,
-      geom: eb.selectFrom('geometry').select('ST_Force2D(geometry.geom)'),
+      geom: sql`ST_Force2D(${eb.selectFrom('geometry').select('geometry.geom')})`,
       communes_insee: communesInseeExpressionGeom,
       date_actualisation_trace: eb.val(new Date()),
       ...networkTables[tableName].geomDependentFields(eb),
@@ -201,7 +201,7 @@ export async function updateEntityGeometry(
     .updateTable(tableName as any)
     .where('id_fcu', '=', id_fcu)
     .set((eb) => ({
-      geom: eb.selectFrom('geometry').select('ST_Force2D(geometry.geom)'),
+      geom: sql`ST_Force2D(${eb.selectFrom('geometry').select('geometry.geom')})`,
       communes_insee: communesInseeExpressionGeom,
       date_actualisation_trace: eb.val(new Date()),
       ...networkTables[tableName].geomDependentFields(eb),
