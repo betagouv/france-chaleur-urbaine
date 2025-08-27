@@ -215,12 +215,13 @@ program
   .command('tiles:generate-geojson')
   .description('Generate GeoJSON file for a given resource')
   .argument('<type>', `Type of resource you want to generate for - ${Object.keys(tilesAdapters).join(', ')}`)
-  .option('--file <file>', 'Path of the file to export to')
+  .option('--input <file>', 'Path of the file to import from')
+  .option('--output <file>', 'Path of the file to export to')
   .action(async (type, options) => {
     logger.info(`Generating GeoJSON file for ${type}`);
     const tileManager = tilesManager(type as TilesName);
 
-    const filepath = await tileManager.generateGeoJSON(options.file);
+    const filepath = await tileManager.generateGeoJSON(options);
     console.info(`GeoJSON generated in ${filepath}`);
   });
 
@@ -256,12 +257,12 @@ program
     "Génère des tuiles vectorielles à partir d'une ressource en passant par un fichier GeoJSON temporaire. Exemple : `pnpm cli tiles:generate reseaux_de_chaleur`"
   )
   .argument('<type>', `Type de ressource à générer - ${Object.keys(tilesAdapters).join(', ')}`)
-  .action(async (type) => {
+  .option('--input <file>', 'Path of the file to import from')
+  .action(async (type, options) => {
     logger.info(`Génération du fichier GeoJSON pour ${type}`);
     const tileManager = tilesManager(type as TilesName);
 
-    const filepath = await tileManager.generateGeoJSON();
-
+    const filepath = await tileManager.generateGeoJSON(options);
     if (!filepath) {
       throw new Error("Le fichier GeoJSON n'a pas été généré.");
     }

@@ -6,6 +6,7 @@ import OuvragesGeothermieSurfaceEchangeursOuvertsAdapter from './adapters/ouvrag
 import PerimetresGeothermieProfondeAdapter from './adapters/perimetres-geothermie-profonde';
 import ReseauxDeChaleurAdapter from './adapters/reseaux-de-chaleur';
 import TestsAdressesAdapter from './adapters/tests-adresses';
+import ZonesAUrbaniserAdapter from './adapters/zones-a-urbaniser';
 import ZonesOpportuniteFortFroidAdapter from './adapters/zones-opportunite-fort-froid';
 import ZonesOpportuniteFroidAdapter from './adapters/zones-opportunite-froid';
 
@@ -20,6 +21,7 @@ export const tilesAdapters = {
   'ouvrages-geothermie-surface-echangeurs-ouverts': OuvragesGeothermieSurfaceEchangeursOuvertsAdapter,
   'zones-opportunite-froid': ZonesOpportuniteFroidAdapter,
   'zones-opportunite-fort-froid': ZonesOpportuniteFortFroidAdapter,
+  'zones-a-urbaniser': ZonesAUrbaniserAdapter,
 };
 
 export type TilesName = keyof typeof tilesAdapters;

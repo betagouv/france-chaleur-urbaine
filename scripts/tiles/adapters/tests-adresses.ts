@@ -10,8 +10,8 @@ export default class TestsAdressesAdapter extends BaseAdapter {
   public zoomMax: number = 12;
   public tippeCanoeArgs = '--drop-rate=0 --no-tile-size-limit --no-feature-limit';
 
-  async generateGeoJSON(filepath?: string) {
-    const filepathToExport = filepath || `/tmp/${this.databaseName}.geojson`;
+  async generateGeoJSON(options?: { input?: string; output?: string }) {
+    const filepathToExport = options?.output || `/tmp/${this.databaseName}.geojson`;
     await unlink(filepathToExport).catch(() => {});
     const result = await sql<any>`
     SELECT json_build_object(

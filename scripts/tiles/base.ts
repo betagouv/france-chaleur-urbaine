@@ -1,8 +1,11 @@
-import { writeFile } from 'node:fs/promises';
+import { mkdtemp, readdir, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
 import { parentLogger } from '@/server/helpers/logger';
 
 import { generateGeoJSONFromTable, importGeoJSONToTable, importGeoJSONWithTipeeCanoe } from './utils';
+import { runBash, unlinkFileIfExists } from '../helpers/shell';
 
 export abstract class BaseAdapter {
   abstract readonly databaseName: string;
@@ -17,8 +20,8 @@ export abstract class BaseAdapter {
     this.logger = parentLogger.child({ name: this.name });
   }
 
-  async generateGeoJSON(filepath?: string) {
-    return generateGeoJSONFromTable(filepath || `${this.databaseName}.geojson`, this.databaseName);
+  async generateGeoJSON(options?: { input?: string; output?: string }) {
+    return generateGeoJSONFromTable(options?.output || `${this.databaseName}.geojson`, this.databaseName);
   }
 
   async importGeoJSON(filepath: string) {
@@ -42,5 +45,44 @@ export abstract class BaseAdapter {
     });
     await writeFile(filepath, JSON.stringify(geojson));
     return filepath;
+  }
+
+  async extractZippedShapefileToGeoJSON(zipFilePath: string, outputFilePath?: string): Promise<string> {
+    const outputPath = outputFilePath || `/tmp/${this.databaseName}.geojson`;
+
+    const tempDir = await mkdtemp(join(tmpdir(), 'zip-extract-'));
+
+    try {
+      this.logger.info('Extraction du fichier ZIP', { zipFilePath, tempDir });
+
+      await runBash(`unzip -o "${zipFilePath}" -d "${tempDir}"`);
+
+      const extractedFiles = await readdir(tempDir);
+      const shapefileBase = extractedFiles.find((file) => file.endsWith('.shp'))?.replace('.shp', '');
+
+      if (!shapefileBase) {
+        throw new Error('Aucun fichier shapefile (.shp) trouvé dans le ZIP');
+      }
+
+      const shapefilePath = join(tempDir, `${shapefileBase}.shp`);
+
+      this.logger.info('Conversion du shapefile en GeoJSON', {
+        shapefile: shapefilePath,
+        output: outputPath,
+      });
+
+      await unlinkFileIfExists(outputPath);
+
+      await runBash(`ogr2ogr -f GeoJSON -t_srs EPSG:4326 "${outputPath}" "${shapefilePath}"`);
+
+      this.logger.info('Conversion terminée', { outputPath });
+
+      return outputPath;
+    } finally {
+      // Nettoie le répertoire temporaire
+      await runBash(`rm -rf "${tempDir}"`).catch((err) => {
+        this.logger.warn('Erreur lors du nettoyage du répertoire temporaire', { tempDir, error: err });
+      });
+    }
   }
 }
