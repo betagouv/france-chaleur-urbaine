@@ -460,6 +460,24 @@ const trackingEvents = {
   'Carto|Zones à potentiel fort chaud|Désactive': {
     matomo: ['Carto', 'Zones à potentiel fort chaud', 'Désactive'],
   },
+  "Carto|Zones d'opportunité froid|Active": {
+    matomo: ['Carto', "Zones d'opportunité froid", 'Active'],
+  },
+  "Carto|Zones d'opportunité froid|Désactive": {
+    matomo: ['Carto', "Zones d'opportunité froid", 'Désactive'],
+  },
+  'Carto|Zones à potentiel froid|Active': {
+    matomo: ['Carto', 'Zones à potentiel froid', 'Active'],
+  },
+  'Carto|Zones à potentiel froid|Désactive': {
+    matomo: ['Carto', 'Zones à potentiel froid', 'Désactive'],
+  },
+  'Carto|Zones à potentiel fort froid|Active': {
+    matomo: ['Carto', 'Zones à potentiel fort froid', 'Active'],
+  },
+  'Carto|Zones à potentiel fort froid|Désactive': {
+    matomo: ['Carto', 'Zones à potentiel fort froid', 'Désactive'],
+  },
 
   // formulaire d'éligibilité
   'Eligibilité|Formulaire de contact éligible - Carte - Envoi': {

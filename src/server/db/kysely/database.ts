@@ -3419,7 +3419,33 @@ export interface ZoneAPotentielChaud {
   surf_sol_8: Numeric | null;
 }
 
+export interface ZoneAPotentielFroid {
+  bat_imp: Numeric | null;
+  bes_min: string | null;
+  com_insee: string | null;
+  dens_min: string | null;
+  dep: string | null;
+  dist_con: string | null;
+  filere: string | null;
+  froid_mwh: Numeric | null;
+  geom: string | null;
+  icu_sensib: Numeric | null;
+  icu_val: string | null;
+  id_zone: string | null;
+  ogc_fid: Generated<number>;
+  part_ter: Numeric | null;
+  reg: string | null;
+  type_zone: string | null;
+}
+
 export interface ZoneAPotentielChaudTiles {
+  tile: Buffer;
+  x: Int8;
+  y: Int8;
+  z: Int8;
+}
+
+export interface ZoneAPotentielFroidTiles {
   tile: Buffer;
   x: Int8;
   y: Int8;
@@ -3449,6 +3475,32 @@ export interface ZoneAPotentielFortChaud {
 }
 
 export interface ZoneAPotentielFortChaudTiles {
+  tile: Buffer;
+  x: Int8;
+  y: Int8;
+  z: Int8;
+}
+
+export interface ZoneAPotentielFortFroid {
+  bat_imp: Numeric | null;
+  bes_min: string | null;
+  com_insee: string | null;
+  dens_min: string | null;
+  dep: string | null;
+  dist_con: string | null;
+  filere: string | null;
+  froid_mwh: Numeric | null;
+  geom: string | null;
+  icu_sensib: Numeric | null;
+  icu_val: string | null;
+  id_zone: string | null;
+  ogc_fid: Generated<number>;
+  part_ter: Numeric | null;
+  reg: string | null;
+  type_zone: string | null;
+}
+
+export interface ZoneAPotentielFortFroidTiles {
   tile: Buffer;
   x: Int8;
   y: Int8;
@@ -3584,8 +3636,12 @@ export interface DB {
   users: Users;
   zone_a_potentiel_chaud: ZoneAPotentielChaud;
   zone_a_potentiel_chaud_tiles: ZoneAPotentielChaudTiles;
+  zone_a_potentiel_froid: ZoneAPotentielFroid;
+  zone_a_potentiel_froid_tiles: ZoneAPotentielFroidTiles;
   zone_a_potentiel_fort_chaud: ZoneAPotentielFortChaud;
   zone_a_potentiel_fort_chaud_tiles: ZoneAPotentielFortChaudTiles;
+  zone_a_potentiel_fort_froid: ZoneAPotentielFortFroid;
+  zone_a_potentiel_fort_froid_tiles: ZoneAPotentielFortFroidTiles;
   zone_de_developpement_prioritaire: ZoneDeDeveloppementPrioritaire;
   zone_de_developpement_prioritaire_tiles: ZoneDeDeveloppementPrioritaireTiles;
   zones_et_reseaux_en_construction: ZonesEtReseauxEnConstruction;

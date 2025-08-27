@@ -56,6 +56,8 @@ export const databaseSourceIds = [
   'ouvragesGeothermieSurfaceEchangeursOuverts',
   'zonesPotentielChaud',
   'zonesPotentielFortChaud',
+  'zonesPotentielFroid',
+  'zonesPotentielFortFroid',
   'besoinsEnChaleur',
   'besoinsEnChaleurIndustrieCommunes',
   'communesFortPotentielPourCreationReseauxChaleur',
@@ -356,6 +358,26 @@ export const tilesInfo: Record<DatabaseSourceId, TileInfo> = {
   zonesPotentielFortChaud: {
     source: 'database',
     tiles: 'zone_a_potentiel_fort_chaud_tiles',
+    compressedTiles: true,
+    table: '', // useless
+    properties: [], // useless
+    sourceLayer: '', // useless
+    id: '', // useless
+    extraWhere: (query) => query, // useless
+  },
+  zonesPotentielFroid: {
+    source: 'database',
+    tiles: 'zone_a_potentiel_froid_tiles',
+    compressedTiles: true,
+    table: '', // useless
+    properties: [], // useless
+    sourceLayer: '', // useless
+    id: '', // useless
+    extraWhere: (query) => query, // useless
+  },
+  zonesPotentielFortFroid: {
+    source: 'database',
+    tiles: 'zone_a_potentiel_fort_froid_tiles',
     compressedTiles: true,
     table: '', // useless
     properties: [], // useless

@@ -92,6 +92,7 @@ import {
   typeChauffageBatimentsOpacity,
 } from '../layers/typeChauffageBatimentsCollectifs';
 import { zonePotentielChaudColor, zonePotentielChaudOpacity, zonePotentielFortChaudColor } from '../layers/zonesPotentielChaud';
+import { zonePotentielFortFroidColor, zonePotentielFroidColor, zonePotentielFroidOpacity } from '../layers/zonesPotentielFroid';
 
 const consommationsGazLegendColor = '#D9D9D9';
 const consommationsGazUsageLegendOpacity = 0.53;
@@ -630,6 +631,83 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
                     px="1v"
                   >
                     Zones à fort potentiel
+                  </Text>
+                </Box>
+              </DeactivatableBox>
+            </TrackableCheckableAccordion>
+
+            <TrackableCheckableAccordion
+              name="zonesOpportuniteFroid"
+              checked={mapConfiguration.zonesOpportuniteFroid.show}
+              layerName="zonesOpportuniteFroid.show"
+              trackingEvent="Carto|Zones d'opportunité froid"
+              label={
+                <>
+                  <IconPolygon stroke={zonePotentielFortFroidColor} fillOpacity={zonePotentielFroidOpacity} mt="1v" />
+                  <Box flex>Zones d'opportunité pour la création de réseaux de froid</Box>
+                  <Tooltip
+                    title={
+                      <>
+                        Modélisation réalisée par le Cerema dans le cadre du projet EnRezo.
+                        <br />
+                        <Link
+                          href="https://reseaux-chaleur.cerema.fr/sites/reseaux-chaleur-v2/files/fichiers/2024/01/Methodologie_zones_opportunite_VF.pdf"
+                          isExternal
+                        >
+                          Accéder à la méthodologie
+                        </Link>
+                      </>
+                    }
+                  />
+                </>
+              }
+            >
+              <DeactivatableBox disabled={!mapConfiguration.zonesOpportuniteFroid.show} display="flex" flexWrap="wrap" ml="1w" mr="1w">
+                <Box display="flex">
+                  <SingleCheckbox
+                    name="zonesPotentielFroid"
+                    checked={mapConfiguration.zonesOpportuniteFroid.zonesPotentielFroid}
+                    onChange={() => toggleLayer('zonesOpportuniteFroid.zonesPotentielFroid')}
+                    trackingEvent="Carto|Zones à potentiel froid"
+                  />
+
+                  <IconPolygon stroke={zonePotentielFroidColor} fillOpacity={zonePotentielFroidOpacity} mt="1v" />
+
+                  <Text
+                    as="label"
+                    htmlFor="zonesPotentielFroid"
+                    fontSize="14px"
+                    lineHeight="18px"
+                    className="fr-col"
+                    cursor="pointer"
+                    pt="1v"
+                    px="1v"
+                  >
+                    Zones à potentiel froid
+                  </Text>
+                </Box>
+
+                <Box display="flex">
+                  <SingleCheckbox
+                    name="zonesPotentielFortFroid"
+                    checked={mapConfiguration.zonesOpportuniteFroid.zonesPotentielFortFroid}
+                    onChange={() => toggleLayer('zonesOpportuniteFroid.zonesPotentielFortFroid')}
+                    trackingEvent="Carto|Zones à potentiel fort froid"
+                  />
+
+                  <IconPolygon stroke={zonePotentielFortFroidColor} fillOpacity={zonePotentielFroidOpacity} mt="1v" />
+
+                  <Text
+                    as="label"
+                    htmlFor="zonesPotentielFortFroid"
+                    fontSize="14px"
+                    lineHeight="18px"
+                    className="fr-col"
+                    cursor="pointer"
+                    pt="1v"
+                    px="1v"
+                  >
+                    Zones à fort potentiel froid
                   </Text>
                 </Box>
               </DeactivatableBox>

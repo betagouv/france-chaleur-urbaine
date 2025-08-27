@@ -161,6 +161,22 @@ export const allDatabaseTables: TableInfo[] = [
     description: 'Tuiles vectorielles des zones à fort potentiel chaud',
   },
   {
+    name: 'zone_a_potentiel_froid',
+    description: 'Zones à potentiel froid',
+  },
+  {
+    name: 'zone_a_potentiel_froid_tiles',
+    description: 'Tuiles vectorielles des zones à potentiel froid',
+  },
+  {
+    name: 'zone_a_potentiel_fort_froid',
+    description: 'Zones à fort potentiel froid',
+  },
+  {
+    name: 'zone_a_potentiel_fort_froid_tiles',
+    description: 'Tuiles vectorielles des zones à fort potentiel froid',
+  },
+  {
     name: 'batiments_raccordes_rdc',
     description: 'Bâtiments raccordés au réseau de chaleur au rez-de-chaussée',
   },
