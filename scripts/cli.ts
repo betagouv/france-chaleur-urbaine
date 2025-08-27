@@ -9,6 +9,7 @@ import XLSX from 'xlsx';
 import { z } from 'zod';
 
 import { getApiHandler } from '@/server/api/users';
+import { serverConfig } from '@/server/config';
 import { saveStatsInDB } from '@/server/cron/saveStatsInDB';
 import db from '@/server/db';
 import { kdb, sql } from '@/server/db/kysely';
@@ -339,6 +340,34 @@ program
   )
   .action(async () => {
     await runCommand('scripts/opendata/create-opendata-archive.sh');
+  });
+
+program
+  .command('opendata:publish')
+  .description('Publie une archive OpenData sur data.gouv.fr dans le dataset des tracés des réseaux de chaleur et de froid')
+  .argument('<archive-path>', 'Chemin vers le fichier archive (.zip) à publier')
+  .option('--description <desc>', 'Description personnalisée pour la mise à jour')
+  .action(async (archivePath, options) => {
+    const { createDataGouvFrService } = await import('../src/services/dataGouvFr');
+
+    // Vérifier que le fichier archive existe
+    if (!existsSync(archivePath)) {
+      logger.error(`Le fichier archive '${archivePath}' n'existe pas.`);
+      process.exit(1);
+    }
+
+    const dataGouvService = createDataGouvFrService();
+
+    logger.info(`Publication de l'archive '${archivePath}' sur data.gouv.fr...`);
+    logger.info(`Dataset ID: ${serverConfig.DATA_GOUV_FR_DATASET_ID}`);
+
+    await dataGouvService.publishOpendataArchive(
+      archivePath,
+      `Mise à jour du ${new Date().toLocaleDateString('fr-FR')} : ${options.description ?? 'ajout et actualisation de tracés'}`
+    );
+
+    logger.info('✅ Publication réussie !');
+    logger.info(`URL du dataset: https://www.data.gouv.fr/datasets/${serverConfig.DATA_GOUV_FR_DATASET_ID}/`);
   });
 
 registerNetworkCommands(program);
