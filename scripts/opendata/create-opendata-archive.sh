@@ -330,4 +330,4 @@ Prérequis : avoir un compte sur data.gouv.fr et avoir accès au compte France C
 1. Aller sur le jeu de données Tracés des réseaux de chaleur et de froid : https://www.data.gouv.fr/admin/datasets/64f05d3568e4d575eb454ffe
 2. Ajouter une mise à jour avec l'archive avec le nom du fichier. Préciser le contenu de la mise à jour dans le champ 'Description'.
 3. Enfin, modifier le fichier principal (opendata-fcu.zip) avec l'archive."
-rm -r "$opendata_dir"
+rm -rf "$opendata_dir"
