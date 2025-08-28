@@ -40,7 +40,7 @@ export interface CreateResourcePayload {
 /**
  * Service pour interagir avec l'API data.gouv.fr
  */
-export class DataGouvFrService {
+export class APIDataGouvService {
   private apiUrl = serverConfig.DATA_GOUV_FR_API_URL;
   private apiKey: string;
 
