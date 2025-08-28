@@ -328,12 +328,11 @@ zip -j "$archiveName" "$opendata_dir"/*
 echo -e "\nArchive opendata prête pour envoi => $archiveName
 
 Option 1 - Publication automatique (recommandée) :
-  Utilisez la commande CLI pour publier automatiquement sur data.gouv.fr :
+  Utilisez la commande CLI pour publier automatiquement sur data.gouv.fr en ajustant la description :
   
-  pnpm cli opendata:publish $archiveName
+  pnpm cli opendata:publish $archiveName --description "ajout et actualisation de tracés (existants et en construction)"
   
   Prérequis : définir DATA_GOUV_FR_API_KEY dans .env.local
-  Documentation : docs/opendata_publication.md
 
 Option 2 - Publication manuelle :
   Prérequis : avoir un compte sur data.gouv.fr et avoir accès au compte France Chaleur Urbaine
