@@ -2,7 +2,7 @@ import { readFile } from 'fs/promises';
 
 import { serverConfig } from '@/server/config';
 import { dayjs } from '@/utils/date';
-import { fetchJSON } from '@/utils/network';
+import { fetchJSON, putFetchJSON } from '@/utils/network';
 
 export interface DataGouvResource {
   id: string;
@@ -76,23 +76,7 @@ export class APIDataGouvService {
    * Met à jour les métadonnées d'une ressource existante
    */
   async updateResourceMetadata(datasetId: string, resourceId: string, payload: Partial<CreateResourcePayload>): Promise<DataGouvResource> {
-    const url = `${this.apiUrl}/datasets/${datasetId}/resources/${resourceId}/`;
-
-    const response = await fetch(url, {
-      method: 'PUT',
-      headers: {
-        ...this.getHeaders(),
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Failed to update resource metadata: ${response.status} - ${errorText}`);
-    }
-
-    return response.json();
+    return await putFetchJSON(`${this.apiUrl}/datasets/${datasetId}/resources/${resourceId}/`, payload, this.getHeaders());
   }
 
   /**
