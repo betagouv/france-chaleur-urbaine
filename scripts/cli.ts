@@ -9,6 +9,7 @@ import XLSX from 'xlsx';
 import { z } from 'zod';
 
 import { getApiHandler } from '@/server/api/users';
+import { serverConfig } from '@/server/config';
 import { saveStatsInDB } from '@/server/cron/saveStatsInDB';
 import db from '@/server/db';
 import { kdb, sql } from '@/server/db/kysely';
@@ -16,6 +17,7 @@ import { logger } from '@/server/helpers/logger';
 import { syncComptesProFromUsers } from '@/server/services/airtable';
 import { processJobById, processJobsIndefinitely } from '@/server/services/jobs/processor';
 import { type DatabaseSourceId, type DatabaseTileInfo, tilesInfo, zDatabaseSourceId } from '@/server/services/tiles.config';
+import { APIDataGouvService } from '@/services/api-data-gouv';
 import { userRoles } from '@/types/enum/UserRole';
 import { fetchJSON } from '@/utils/network';
 import { sleep } from '@/utils/time';
@@ -339,6 +341,30 @@ program
   )
   .action(async () => {
     await runCommand('scripts/opendata/create-opendata-archive.sh');
+  });
+
+program
+  .command('opendata:publish')
+  .description('Publie une archive OpenData sur data.gouv.fr dans le dataset des tracés des réseaux de chaleur et de froid')
+  .argument('<archive-path>', 'Chemin vers le fichier archive (.zip) à publier')
+  .option('--description <desc>', 'Description personnalisée pour la mise à jour')
+  .action(async (archivePath, options) => {
+    if (!existsSync(archivePath)) {
+      logger.error(`Le fichier archive '${archivePath}' n'existe pas.`);
+      process.exit(1);
+    }
+
+    logger.info(`Publication de l'archive '${archivePath}' sur data.gouv.fr...`);
+    logger.info(`Dataset ID: ${serverConfig.DATA_GOUV_FR_DATASET_ID}`);
+
+    const apiDataGouvService = new APIDataGouvService();
+    await apiDataGouvService.publishOpendataArchive(
+      archivePath,
+      `Mise à jour du ${new Date().toLocaleDateString('fr-FR')} : ${options.description ?? 'ajout et actualisation de tracés'}`
+    );
+
+    logger.info('✅ Publication réussie !');
+    logger.info(`URL du dataset: https://www.data.gouv.fr/datasets/${serverConfig.DATA_GOUV_FR_DATASET_ID}/`);
   });
 
 registerNetworkCommands(program);

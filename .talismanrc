@@ -25,7 +25,7 @@ fileignoreconfig:
 - filename: scripts/db_sync_common.sh
   checksum: e23e852383c7fabc2b0a1d89e63a8595cdb4b4c6959fdc8cea4491b6d292aef3
 - filename: scripts/opendata/create-opendata-archive.sh
-  checksum: c6c769ce331a64047f4847a514b570e5f084ae45813edd91b47ac1d207c17fe5
+  checksum: 5b248229f5f5ea92e1ab4b9d6156b3ecdaaf94ab3f8e7adc41728151c67a87d1
 - filename: src/components/ComparateurPublicodes/DebugDrawer.tsx
   checksum: 5e675d6da8d48880b27b4f45242dfb2ee0e30c93cf2f59f4f1795ddbef87b83f
 - filename: src/components/Map/Map.tsx

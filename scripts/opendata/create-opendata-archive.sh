@@ -326,8 +326,17 @@ archiveName=$(date +%d%m%y)-opendata-fcu.zip
 rm -f "$archiveName"
 zip -j "$archiveName" "$opendata_dir"/*
 echo -e "\nArchive opendata prête pour envoi => $archiveName
-Prérequis : avoir un compte sur data.gouv.fr et avoir accès au compte France Chaleur Urbaine
-1. Aller sur le jeu de données Tracés des réseaux de chaleur et de froid : https://www.data.gouv.fr/admin/datasets/64f05d3568e4d575eb454ffe
-2. Ajouter une mise à jour avec l'archive avec le nom du fichier. Préciser le contenu de la mise à jour dans le champ 'Description'.
-3. Enfin, modifier le fichier principal (opendata-fcu.zip) avec l'archive."
-rm -r "$opendata_dir"
+
+Option 1 - Publication automatique (recommandée) :
+  Utilisez la commande CLI pour publier automatiquement sur data.gouv.fr en ajustant la description :
+  
+  pnpm cli opendata:publish $archiveName --description "ajout et actualisation de tracés (existants et en construction)"
+  
+  Prérequis : définir DATA_GOUV_FR_API_KEY dans .env.local
+
+Option 2 - Publication manuelle :
+  Prérequis : avoir un compte sur data.gouv.fr et avoir accès au compte France Chaleur Urbaine
+  1. Aller sur le jeu de données Tracés des réseaux de chaleur et de froid : https://www.data.gouv.fr/admin/datasets/64f05d3568e4d575eb454ffe
+  2. Ajouter une mise à jour avec l'archive avec le nom du fichier. Préciser le contenu de la mise à jour dans le champ 'Description'.
+  3. Enfin, modifier le fichier principal (opendata-fcu.zip) avec l'archive."
+rm -rf "$opendata_dir"

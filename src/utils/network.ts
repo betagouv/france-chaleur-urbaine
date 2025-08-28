@@ -13,11 +13,12 @@ export class FetchError extends Error {
 }
 export const fetchMethod =
   <Method extends 'POST' | 'PUT' | 'PATCH' | 'DELETE'>(method: Method) =>
-  async <Data = any, Body = any>(url: string, body?: Body): Promise<Data> => {
+  async <Data = any, Body = any>(url: string, body?: Body, headers?: Record<string, string>): Promise<Data> => {
     const res = await fetch(url, {
       method,
       headers: {
         'Content-Type': 'application/json',
+        ...headers,
       },
       body: body ? JSON.stringify(body) : undefined,
     });
