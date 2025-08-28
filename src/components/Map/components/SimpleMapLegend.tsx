@@ -91,6 +91,7 @@ import {
   typeChauffageBatimentsCollectifsStyle,
   typeChauffageBatimentsOpacity,
 } from '../layers/typeChauffageBatimentsCollectifs';
+import { zonesAUrbaniserColor, zonesAUrbaniserOpacity } from '../layers/zonesAUrbaniser';
 import { zonePotentielChaudColor, zonePotentielChaudOpacity, zonePotentielFortChaudColor } from '../layers/zonesPotentielChaud';
 import { zonePotentielFortFroidColor, zonePotentielFroidColor, zonePotentielFroidOpacity } from '../layers/zonesPotentielFroid';
 
@@ -757,6 +758,30 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
                   />
                 </Box>
               </DeactivatableBox>
+            </TrackableCheckableAccordion>
+
+            <TrackableCheckableAccordion
+              name="zonesAUrbaniser"
+              checked={mapConfiguration.zonesAUrbaniser}
+              layerName="zonesAUrbaniser"
+              trackingEvent="Carto|Zones à urbaniser"
+              label={
+                <>
+                  <IconPolygon stroke={zonesAUrbaniserColor} fillOpacity={zonesAUrbaniserOpacity} mt="1v" />
+                  <Box flex>Zones à urbaniser</Box>
+                  <Tooltip
+                    title={
+                      <>
+                        Zones destinées à être ouvertes à l'urbanisation selon les documents d'urbanisme en vigueur.
+                        <br />
+                        Source : Cerema
+                      </>
+                    }
+                  />
+                </>
+              }
+            >
+              <></>
             </TrackableCheckableAccordion>
 
             <TrackableCheckableAccordion
