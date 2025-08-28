@@ -1,8 +1,7 @@
 import { readFile } from 'fs/promises';
 
-import dayjs from 'dayjs';
-
 import { serverConfig } from '@/server/config';
+import { dayjs } from '@/utils/date';
 import { fetchJSON } from '@/utils/network';
 
 export interface DataGouvResource {
@@ -42,16 +41,23 @@ export interface CreateResourcePayload {
  * Service pour interagir avec l'API data.gouv.fr
  */
 export class DataGouvFrService {
-  private getHeaders(): Record<string, string> {
+  private apiUrl = serverConfig.DATA_GOUV_FR_API_URL;
+  private apiKey: string;
+
+  constructor() {
     if (!serverConfig.DATA_GOUV_FR_API_KEY) {
       throw new Error(
         "Clé API data.gouv.fr manquante. Définissez DATA_GOUV_FR_API_KEY dans les variables d'environnement. (à générer sur https://www.data.gouv.fr/admin/me/profile)"
       );
     }
 
+    this.apiKey = serverConfig.DATA_GOUV_FR_API_KEY;
+  }
+
+  private getHeaders(): Record<string, string> {
     return {
       Accept: 'application/json',
-      'X-Api-Key': serverConfig.DATA_GOUV_FR_API_KEY,
+      'X-Api-Key': this.apiKey,
     };
   }
 
@@ -59,7 +65,7 @@ export class DataGouvFrService {
    * Récupère les informations d'un dataset
    */
   async getDataset(datasetId: string): Promise<DataGouvDataset> {
-    const url = `${serverConfig.DATA_GOUV_FR_API_URL}/datasets/${datasetId}/`;
+    const url = `${this.apiUrl}/datasets/${datasetId}/`;
 
     return fetchJSON<DataGouvDataset>(url, {
       headers: this.getHeaders(),
@@ -70,7 +76,7 @@ export class DataGouvFrService {
    * Met à jour les métadonnées d'une ressource existante
    */
   async updateResourceMetadata(datasetId: string, resourceId: string, payload: Partial<CreateResourcePayload>): Promise<DataGouvResource> {
-    const url = `${serverConfig.DATA_GOUV_FR_API_URL}/datasets/${datasetId}/resources/${resourceId}/`;
+    const url = `${this.apiUrl}/datasets/${datasetId}/resources/${resourceId}/`;
 
     const response = await fetch(url, {
       method: 'PUT',
@@ -94,7 +100,7 @@ export class DataGouvFrService {
    * Utilise l'endpoint /upload/ qui crée et upload en une seule fois
    */
   async uploadFileAndCreateResource(datasetId: string, filePath: string, resourceInfo: UploadResourcePayload): Promise<DataGouvResource> {
-    const url = `${serverConfig.DATA_GOUV_FR_API_URL}/datasets/${datasetId}/upload/`;
+    const url = `${this.apiUrl}/datasets/${datasetId}/upload/`;
 
     const formData = new FormData();
     const fileBuffer = await readFile(filePath);
@@ -104,18 +110,9 @@ export class DataGouvFrService {
     formData.append('file', blob, resourceInfo.title);
 
     // Ajoute les métadonnées de la ressource si fournies
-    if (resourceInfo.title) {
-      formData.append('title', resourceInfo.title);
-    }
-    if (resourceInfo.description) {
-      formData.append('description', resourceInfo.description);
-    }
-    if (resourceInfo.type) {
-      formData.append('type', resourceInfo.type);
-    }
-    if (resourceInfo.format) {
-      formData.append('format', resourceInfo.format);
-    }
+    (['title', 'description', 'type', 'format'] as const).forEach(
+      (fieldName) => resourceInfo[fieldName] && formData.append(fieldName, resourceInfo[fieldName])
+    );
 
     const response = await fetch(url, {
       method: 'POST',
@@ -156,7 +153,7 @@ export class DataGouvFrService {
    * Upload un fichier vers une ressource
    */
   async uploadFileToResource(datasetId: string, resourceId: string, filePath: string, fileName: string): Promise<DataGouvResource> {
-    const url = `${serverConfig.DATA_GOUV_FR_API_URL}/datasets/${datasetId}/resources/${resourceId}/upload/`;
+    const url = `${this.apiUrl}/datasets/${datasetId}/resources/${resourceId}/upload/`;
 
     const formData = new FormData();
     const fileBuffer = await readFile(filePath);
@@ -212,17 +209,4 @@ export class DataGouvFrService {
     // 2. Met à jour le fichier principal
     await this.updateMainResource(serverConfig.DATA_GOUV_FR_DATASET_ID!, filePath);
   }
-}
-
-/**
- * Factory function pour créer une instance du service
- */
-export function createDataGouvFrService(): DataGouvFrService {
-  if (!serverConfig.DATA_GOUV_FR_API_KEY) {
-    throw new Error(
-      "Clé API data.gouv.fr manquante. Définissez DATA_GOUV_FR_API_KEY dans les variables d'environnement. (à générer sur https://www.data.gouv.fr/admin/me/profile)"
-    );
-  }
-
-  return new DataGouvFrService();
 }

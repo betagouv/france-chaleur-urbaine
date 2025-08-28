@@ -17,6 +17,7 @@ import { logger } from '@/server/helpers/logger';
 import { syncComptesProFromUsers } from '@/server/services/airtable';
 import { processJobById, processJobsIndefinitely } from '@/server/services/jobs/processor';
 import { type DatabaseSourceId, type DatabaseTileInfo, tilesInfo, zDatabaseSourceId } from '@/server/services/tiles.config';
+import { DataGouvFrService } from '@/services/dataGouvFr';
 import { userRoles } from '@/types/enum/UserRole';
 import { fetchJSON } from '@/utils/network';
 import { sleep } from '@/utils/time';
@@ -348,19 +349,15 @@ program
   .argument('<archive-path>', 'Chemin vers le fichier archive (.zip) à publier')
   .option('--description <desc>', 'Description personnalisée pour la mise à jour')
   .action(async (archivePath, options) => {
-    const { createDataGouvFrService } = await import('../src/services/dataGouvFr');
-
-    // Vérifier que le fichier archive existe
     if (!existsSync(archivePath)) {
       logger.error(`Le fichier archive '${archivePath}' n'existe pas.`);
       process.exit(1);
     }
 
-    const dataGouvService = createDataGouvFrService();
-
     logger.info(`Publication de l'archive '${archivePath}' sur data.gouv.fr...`);
     logger.info(`Dataset ID: ${serverConfig.DATA_GOUV_FR_DATASET_ID}`);
 
+    const dataGouvService = new DataGouvFrService();
     await dataGouvService.publishOpendataArchive(
       archivePath,
       `Mise à jour du ${new Date().toLocaleDateString('fr-FR')} : ${options.description ?? 'ajout et actualisation de tracés'}`
