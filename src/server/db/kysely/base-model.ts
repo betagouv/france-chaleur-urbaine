@@ -11,6 +11,8 @@ const filterSchema = z.record(
   z.any().refine((val) => !(Array.isArray(val) && val[0] === 'raw'), { message: "Operators like 'raw' are not allowed in filters" })
 );
 
+export type { ApiContext, ListConfig };
+
 /**
  * Creates basic CRUD operations for a database table
  *
