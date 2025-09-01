@@ -150,6 +150,7 @@ export const CheckableAccordion = memo(
         <Box display="flex" alignItems="center">
           <StyledCheckbox
             small={small}
+            className="py-2"
             options={[
               {
                 label: <HtmlTitleTag className={cx(fr.cx('fr-accordion__title'), classes.title)}>{label}</HtmlTitleTag>,

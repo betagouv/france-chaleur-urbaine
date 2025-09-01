@@ -760,7 +760,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
               </DeactivatableBox>
             </TrackableCheckableAccordion>
 
-            <Box display="flex" alignItems="start" my="2w">
+            <Box display="flex" alignItems="start" my="3v">
               <SingleCheckbox
                 name="zonesAUrbaniser"
                 checked={mapConfiguration.zonesAUrbaniser}
@@ -847,7 +847,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
               </DeactivatableBox>
             </TrackableCheckableAccordion>
 
-            <Box display="flex" alignItems="start" my="2w">
+            <Box display="flex" alignItems="start" my="3v">
               <SingleCheckbox
                 name="etudesEnCours"
                 checked={mapConfiguration.etudesEnCours}
@@ -1169,7 +1169,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
               </DeactivatableBox>
             </TrackableCheckableAccordion>
 
-            <Box display="flex" alignItems="center" my="2w">
+            <Box display="flex" alignItems="center" my="3v">
               <SingleCheckbox
                 name="enrrMobilisablesGeothermieProfonde"
                 checked={mapConfiguration.enrrMobilisablesGeothermieProfonde}
@@ -1269,7 +1269,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
               </DeactivatableBox>
             </TrackableCheckableAccordion>
 
-            <Box display="flex" alignItems="center" my="2w">
+            <Box display="flex" alignItems="center" my="3v">
               <SingleCheckbox
                 name="enrrMobilisablesThalassothermie"
                 checked={mapConfiguration.enrrMobilisablesThalassothermie}
