@@ -150,6 +150,7 @@ export type MapConfiguration = {
     qpv2015anru: boolean;
     qpv2024: boolean;
   };
+  zonesAUrbaniser: boolean;
   densiteThermiqueLineaire: boolean;
   mesureDistance: boolean;
   extractionDonneesBatiment: boolean;
@@ -278,6 +279,7 @@ export const emptyMapConfiguration: EmptyMapConfiguration = {
     qpv2015anru: true,
     qpv2024: true,
   },
+  zonesAUrbaniser: false,
   densiteThermiqueLineaire: false,
   mesureDistance: false,
   extractionDonneesBatiment: false,

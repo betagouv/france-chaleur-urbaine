@@ -3,17 +3,22 @@ description: Code style and structure rules
 globs: *.tsx,*.ts,*.js,*.js,*.css,*.sass,*.json
 alwaysApply: false
 ---
+
 # Style and Structure
+
 - Write concise, technical TypeScript code using functional and declarative programming patterns.
 - Avoid classes; prefer iteration and modularization over code duplication.
 - Use descriptive variable names with auxiliary verbs (e.g., "isLoading", "hasError").
 - Structure files into: exported component, subcomponents, helpers, static content, and types.
+- When writing comments, always use the imperative form of verbs (e.g., "Create…" instead of "To create…").
 
 # Naming Conventions
-- Use lowercase with dashes for directories (e.g., "components/auth-wizard").
+
+- Use lowercase with dashes for directories and files (e.g., "components/auth-wizard"), except for UI component files.
 - Favor named exports for components.
 
 # Syntax and formatting
+
 - Avoid unnecessary curly braces in conditionals; use concise syntax for simple statements.
 - Avoid unnecessary comments
 - Never replace `’` by `'` in texts
@@ -28,8 +33,8 @@ alwaysApply: false
 - Use "useQueryState" from nuqs for URL search parameter state management.
 - Always prefer fs/promises to fs
 - Ne remplace JAMAIS les apostrophes comme dans l'exemple ci-dessous
+
 ```
 -      title: 'Part des énergies renouvelables dans la consommation finale brute d’énergie en France',
 +      title: "Part des énergies renouvelables dans la consommation finale brute d'énergie en France",
 ```
-

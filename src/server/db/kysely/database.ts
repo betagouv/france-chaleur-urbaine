@@ -3507,6 +3507,13 @@ export interface ZoneAPotentielFortFroidTiles {
   z: Int8;
 }
 
+export interface ZoneAUrbaniserTiles {
+  tile: Buffer;
+  x: Int8;
+  y: Int8;
+  z: Int8;
+}
+
 export interface ZoneDeDeveloppementPrioritaire {
   id_fcu: number;
   communes: string[] | null;
@@ -3642,6 +3649,7 @@ export interface DB {
   zone_a_potentiel_fort_chaud_tiles: ZoneAPotentielFortChaudTiles;
   zone_a_potentiel_fort_froid: ZoneAPotentielFortFroid;
   zone_a_potentiel_fort_froid_tiles: ZoneAPotentielFortFroidTiles;
+  zone_a_urbaniser_tiles: ZoneAUrbaniserTiles;
   zone_de_developpement_prioritaire: ZoneDeDeveloppementPrioritaire;
   zone_de_developpement_prioritaire_tiles: ZoneDeDeveloppementPrioritaireTiles;
   zones_et_reseaux_en_construction: ZonesEtReseauxEnConstruction;

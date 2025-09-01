@@ -91,6 +91,7 @@ import {
   typeChauffageBatimentsCollectifsStyle,
   typeChauffageBatimentsOpacity,
 } from '../layers/typeChauffageBatimentsCollectifs';
+import { zonesAUrbaniserColor, zonesAUrbaniserOpacity } from '../layers/zonesAUrbaniser';
 import { zonePotentielChaudColor, zonePotentielChaudOpacity, zonePotentielFortChaudColor } from '../layers/zonesPotentielChaud';
 import { zonePotentielFortFroidColor, zonePotentielFroidColor, zonePotentielFroidOpacity } from '../layers/zonesPotentielFroid';
 
@@ -759,6 +760,41 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
               </DeactivatableBox>
             </TrackableCheckableAccordion>
 
+            <Box display="flex" alignItems="start" my="3v">
+              <SingleCheckbox
+                name="zonesAUrbaniser"
+                checked={mapConfiguration.zonesAUrbaniser}
+                onChange={() => toggleLayer('zonesAUrbaniser')}
+                trackingEvent="Carto|Zones à urbaniser"
+              />
+
+              <IconPolygon stroke={zonesAUrbaniserColor} fillOpacity={zonesAUrbaniserOpacity} mt="1v" />
+
+              <Text
+                as="label"
+                htmlFor="zonesAUrbaniser"
+                fontSize="14px"
+                className="fr-col"
+                cursor="pointer"
+                pl="1w"
+                style={{ marginTop: '2px' }}
+              >
+                Zones à urbaniser
+              </Text>
+              <Tooltip
+                iconProps={{
+                  className: 'fr-mr-4w text-blue',
+                }}
+                title={
+                  <>
+                    Zones destinées à être ouvertes à l'urbanisation selon les documents d'urbanisme en vigueur.
+                    <br />
+                    Source : Cerema
+                  </>
+                }
+              />
+            </Box>
+
             <TrackableCheckableAccordion
               name="besoinsEnChaleurIndustrieCommunes"
               checked={mapConfiguration.besoinsEnChaleurIndustrieCommunes}
@@ -811,7 +847,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
               </DeactivatableBox>
             </TrackableCheckableAccordion>
 
-            <Box display="flex" alignItems="start" my="2w">
+            <Box display="flex" alignItems="start" my="3v">
               <SingleCheckbox
                 name="etudesEnCours"
                 checked={mapConfiguration.etudesEnCours}
@@ -1133,7 +1169,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
               </DeactivatableBox>
             </TrackableCheckableAccordion>
 
-            <Box display="flex" alignItems="center" my="2w">
+            <Box display="flex" alignItems="center" my="3v">
               <SingleCheckbox
                 name="enrrMobilisablesGeothermieProfonde"
                 checked={mapConfiguration.enrrMobilisablesGeothermieProfonde}
@@ -1233,7 +1269,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
               </DeactivatableBox>
             </TrackableCheckableAccordion>
 
-            <Box display="flex" alignItems="center" my="2w">
+            <Box display="flex" alignItems="center" my="3v">
               <SingleCheckbox
                 name="enrrMobilisablesThalassothermie"
                 checked={mapConfiguration.enrrMobilisablesThalassothermie}

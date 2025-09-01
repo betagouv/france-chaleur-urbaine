@@ -8,8 +8,8 @@ export default class ReseauxDeChaleurAdapter extends BaseAdapter {
   public databaseName = 'reseaux_de_chaleur';
   public tilesGenerationMethod: 'legacy' | 'compressed' = 'legacy';
 
-  async generateGeoJSON(filepath?: string) {
-    const filepathToExport = filepath || `/tmp/${this.databaseName}.geojson`;
+  async generateGeoJSON(options?: { input?: string; output?: string }) {
+    const filepathToExport = options?.output || `/tmp/${this.databaseName}.geojson`;
     await unlink(filepathToExport).catch(() => {});
 
     const result = await sql<any>`

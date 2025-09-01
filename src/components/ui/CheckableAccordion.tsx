@@ -150,6 +150,7 @@ export const CheckableAccordion = memo(
         <Box display="flex" alignItems="center">
           <StyledCheckbox
             small={small}
+            className="py-2"
             options={[
               {
                 label: <HtmlTitleTag className={cx(fr.cx('fr-accordion__title'), classes.title)}>{label}</HtmlTitleTag>,
@@ -171,7 +172,7 @@ export const CheckableAccordion = memo(
           {showToggle && (
             <StyledToggleButton
               $small={small}
-              className={fr.cx('fr-accordion__btn')}
+              className={cx(fr.cx('fr-accordion__btn'), 'self-stretch')}
               aria-expanded={isExpanded}
               aria-controls={collapseElementId}
               onClick={onExtendButtonClick}

@@ -478,6 +478,12 @@ const trackingEvents = {
   'Carto|Zones à potentiel fort froid|Désactive': {
     matomo: ['Carto', 'Zones à potentiel fort froid', 'Désactive'],
   },
+  'Carto|Zones à urbaniser|Active': {
+    matomo: ['Carto', 'Zones à urbaniser', 'Active'],
+  },
+  'Carto|Zones à urbaniser|Désactive': {
+    matomo: ['Carto', 'Zones à urbaniser', 'Désactive'],
+  },
 
   // formulaire d'éligibilité
   'Eligibilité|Formulaire de contact éligible - Carte - Envoi': {

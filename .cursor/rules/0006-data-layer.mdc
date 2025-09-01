@@ -15,5 +15,5 @@ alwaysApply: false
 - For data models, read it in [database.ts](mdc:src/server/db/kysely/database.ts) file.
 - Schema migrations use knex.js are located in src/server/db/migrations/. They are run with the pnpm db:migrate command.
 
-- Schema migrations use the format YYYYMMDDXXXXXXN_synthetic_name.ts
+- Schema migrations use the format YYYYMMDDXXXXXXN_synthetic_name.ts. Always use the current date by default
 - if we are in a branch different that dev or main, XXXXXXN should be incremented 000000, then 000001 then 000002 etc

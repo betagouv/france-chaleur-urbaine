@@ -43,6 +43,7 @@ import { reseauxDeFroidLayersSpec } from './layers/reseauxDeFroid';
 import { reseauxEnConstructionLayersSpec } from './layers/reseauxEnConstruction';
 import { testsAdressesLayersSpec } from './layers/testsAdresses';
 import { typeChauffageBatimentsCollectifsLayersSpec } from './layers/typeChauffageBatimentsCollectifs';
+import { zonesAUrbaniserLayersSpec } from './layers/zonesAUrbaniser';
 import { zonesPotentielChaudLayersSpec } from './layers/zonesPotentielChaud';
 import { zonesPotentielFroidLayersSpec } from './layers/zonesPotentielFroid';
 
@@ -139,6 +140,7 @@ export const mapLayers = [
   ...enrrMobilisablesZonesGeothermieProfondeLayersSpec,
   ...zonesPotentielChaudLayersSpec,
   ...zonesPotentielFroidLayersSpec,
+  ...zonesAUrbaniserLayersSpec,
   ...caracteristiquesBatimentsLayersSpec,
   ...besoinsEnChaleurIndustrieCommunesLayersSpec,
   ...quartiersPrioritairesPolitiqueVilleLayersSpec,
