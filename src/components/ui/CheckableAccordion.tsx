@@ -171,7 +171,7 @@ export const CheckableAccordion = memo(
           {showToggle && (
             <StyledToggleButton
               $small={small}
-              className={fr.cx('fr-accordion__btn')}
+              className={cx(fr.cx('fr-accordion__btn'), 'self-stretch')}
               aria-expanded={isExpanded}
               aria-controls={collapseElementId}
               onClick={onExtendButtonClick}
