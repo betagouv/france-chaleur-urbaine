@@ -760,29 +760,40 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
               </DeactivatableBox>
             </TrackableCheckableAccordion>
 
-            <TrackableCheckableAccordion
-              name="zonesAUrbaniser"
-              checked={mapConfiguration.zonesAUrbaniser}
-              layerName="zonesAUrbaniser"
-              trackingEvent="Carto|Zones à urbaniser"
-              label={
-                <>
-                  <IconPolygon stroke={zonesAUrbaniserColor} fillOpacity={zonesAUrbaniserOpacity} mt="1v" />
-                  <Box flex>Zones à urbaniser</Box>
-                  <Tooltip
-                    title={
-                      <>
-                        Zones destinées à être ouvertes à l'urbanisation selon les documents d'urbanisme en vigueur.
-                        <br />
-                        Source : Cerema
-                      </>
-                    }
-                  />
-                </>
-              }
-            >
-              <></>
-            </TrackableCheckableAccordion>
+            <Box display="flex" alignItems="start" my="2w">
+              <SingleCheckbox
+                name="zonesAUrbaniser"
+                checked={mapConfiguration.zonesAUrbaniser}
+                onChange={() => toggleLayer('zonesAUrbaniser')}
+                trackingEvent="Carto|Zones à urbaniser"
+              />
+
+              <IconPolygon stroke={zonesAUrbaniserColor} fillOpacity={zonesAUrbaniserOpacity} mt="1v" />
+
+              <Text
+                as="label"
+                htmlFor="zonesAUrbaniser"
+                fontSize="14px"
+                className="fr-col"
+                cursor="pointer"
+                pl="1w"
+                style={{ marginTop: '2px' }}
+              >
+                Zones à urbaniser
+              </Text>
+              <Tooltip
+                iconProps={{
+                  className: 'fr-mr-4w text-blue',
+                }}
+                title={
+                  <>
+                    Zones destinées à être ouvertes à l'urbanisation selon les documents d'urbanisme en vigueur.
+                    <br />
+                    Source : Cerema
+                  </>
+                }
+              />
+            </Box>
 
             <TrackableCheckableAccordion
               name="besoinsEnChaleurIndustrieCommunes"
