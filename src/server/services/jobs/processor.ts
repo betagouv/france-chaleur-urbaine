@@ -1,8 +1,8 @@
 import { type Selectable } from 'kysely';
 
+import { processProEligibilityTestJob } from '@/modules/pro-eligibility-tests/server/jobs';
 import { type Jobs, kdb } from '@/server/db/kysely';
 import { parentLogger } from '@/server/helpers/logger';
-import { processProEligibilityTestJob } from '@/server/services/jobs/pro_eligibility_test_jobs';
 import { sleep } from '@/utils/time';
 
 const logger = parentLogger.child({

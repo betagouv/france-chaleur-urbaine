@@ -7,9 +7,6 @@ import React from 'react';
 import { Fragment, useEffect, useMemo, useState } from 'react';
 
 import { clientConfig } from '@/client-config';
-import CompleteEligibilityTestForm from '@/components/dashboard/professionnel/eligibility-test/CompleteEligibilityTestForm';
-import RenameEligibilityTestForm from '@/components/dashboard/professionnel/eligibility-test/RenameEligibilityTestForm';
-import ProcheReseauBadge, { type ProcheReseauBadgeProps } from '@/components/dashboard/professionnel/ProcheReseauBadge';
 import Map, { type AdresseEligible } from '@/components/Map/Map';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import { UrlStateAccordion } from '@/components/ui/Accordion';
@@ -23,17 +20,24 @@ import ModalSimple from '@/components/ui/ModalSimple';
 import Notice from '@/components/ui/Notice';
 import TableSimple, { type ColumnDef, type QuickFilterPreset } from '@/components/ui/TableSimple';
 import Tooltip from '@/components/ui/Tooltip';
-import { useDelete, useFetch, usePost } from '@/hooks/useApi';
-import { type ProEligibilityTestListItem } from '@/pages/api/pro-eligibility-tests';
-import { type ProEligibilityTestWithAddresses } from '@/pages/api/pro-eligibility-tests/[id]';
+import { useFetch, usePost } from '@/hooks/useApi';
+import RenameEligibilityTestForm from '@/modules/pro-eligibility-tests/client/RenameEligibilityTestForm';
+import UpsertEligibilityTestForm from '@/modules/pro-eligibility-tests/client/UpsertEligibilityTestForm';
+import { type ProEligibilityTestResponse } from '@/modules/pro-eligibility-tests/server/api';
 import { notify, toastErrors } from '@/services/notification';
-import { getProEligibilityTestAsXlsx } from '@/services/xlsx/test-adresses';
 import { downloadString } from '@/utils/browser';
 import { formatAsISODateMinutes, formatFrenchDate, formatFrenchDateTime } from '@/utils/date';
 import { compareFrenchStrings } from '@/utils/strings';
 import { ObjectEntries, ObjectKeys } from '@/utils/typescript';
 
-const columns: ColumnDef<ProEligibilityTestWithAddresses['addresses'][number]>[] = [
+import ProcheReseauBadge, { type ProcheReseauBadgeProps } from './ProcheReseauBadge';
+import { getProEligibilityTestAsXlsx } from '../utils/xlsx';
+
+export type ProEligibilityTest = NonNullable<ProEligibilityTestResponse['listItem']>;
+export type ProEligibilityTestWithAddresses = NonNullable<ProEligibilityTestResponse['get']['item']>;
+export type ProEligibilityTestWithAddressesItem = ProEligibilityTestWithAddresses['addresses'][number];
+
+const columns: ColumnDef<ProEligibilityTestWithAddressesItem>[] = [
   {
     header: () => (
       <>
@@ -311,45 +315,48 @@ const quickFilterPresets = {
       },
     ],
   },
-} satisfies Record<string, QuickFilterPreset<ProEligibilityTestWithAddresses['addresses'][number]>>;
+} satisfies Record<string, QuickFilterPreset<ProEligibilityTestWithAddressesItem>>;
 type QuickFilterPresetKey = keyof typeof quickFilterPresets;
 
 const queryParamName = 'test-adresses';
 
 type ProEligibilityTestItemProps = {
-  test: ProEligibilityTestListItem & {
+  test: ProEligibilityTest & {
     user_email?: string;
   };
+  onDelete?: (testId: string) => void;
   readOnly?: boolean;
 };
-function ProEligibilityTestItem({ test, readOnly = false }: ProEligibilityTestItemProps) {
+function ProEligibilityTestItem({ test, onDelete, readOnly = false }: ProEligibilityTestItemProps) {
   const queryClient = useQueryClient();
   const [value] = useQueryState(queryParamName);
   const [viewDetail, setViewDetail] = useState(value === test.id);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [filteredAddresses, setFilteredAddresses] = useState<ProEligibilityTestWithAddresses['addresses']>([]);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const {
     data: testDetails,
     isLoading,
     refetch,
-  } = useFetch<ProEligibilityTestWithAddresses>(`/api/pro-eligibility-tests/${test.id}`, undefined, {
+  } = useFetch<ProEligibilityTestResponse['get']>(`/api/pro-eligibility-tests/${test.id}`, undefined, {
     enabled: viewDetail,
   });
 
   const { mutateAsync: markAsSeen } = usePost(`/api/pro-eligibility-tests/${test.id}/mark-as-seen`, {
     onMutate: () => {
-      queryClient.setQueryData<ProEligibilityTestListItem[]>(['/api/pro-eligibility-tests'], (tests) =>
-        (tests ?? []).map((testItem) => (testItem.id === test.id ? { ...testItem, has_unseen_results: false } : testItem))
-      );
+      queryClient.setQueryData(['/api/pro-eligibility-tests'], (testsResponse: ProEligibilityTestResponse['list']) => {
+        return {
+          ...testsResponse,
+          items: (testsResponse?.items ?? []).map((testItem) =>
+            testItem.id === test.id ? { ...testItem, has_unseen_results: false } : testItem
+          ),
+        };
+      });
     },
   });
 
-  const { mutateAsync: deleteTest } = useDelete(`/api/pro-eligibility-tests/${test.id}`, {
-    invalidate: ['/api/pro-eligibility-tests'],
-  });
-
-  const addresses = testDetails?.addresses ?? [];
+  const addresses = testDetails?.item?.addresses ?? [];
 
   const presetStats = ObjectKeys(quickFilterPresets).reduce(
     (acc, key) => ({
@@ -363,7 +370,7 @@ function ProEligibilityTestItem({ test, readOnly = false }: ProEligibilityTestIt
     if (!confirm('Êtes-vous sûr de vouloir supprimer ce test ?')) {
       return;
     }
-    await deleteTest(testId);
+    await onDelete?.(testId);
   };
 
   const toggleFilterPreset = (presetKey: QuickFilterPresetKey) => {
@@ -386,14 +393,14 @@ function ProEligibilityTestItem({ test, readOnly = false }: ProEligibilityTestIt
   };
 
   useEffect(() => {
-    if (viewDetail && test.has_unseen_results) {
+    if (viewDetail && test.has_unseen_results && !readOnly) {
       (async () => {
         void markAsSeen({});
         await refetch();
         notify('success', 'Les résultats de ce test ont été mis à jour');
       })();
     }
-  }, [viewDetail, test.has_unseen_results, markAsSeen, refetch]);
+  }, [viewDetail, test.has_unseen_results, markAsSeen, refetch, readOnly]);
 
   const filteredAddressesMapData = useMemo(() => {
     return filteredAddresses
@@ -411,9 +418,9 @@ function ProEligibilityTestItem({ test, readOnly = false }: ProEligibilityTestIt
   }, [filteredAddresses]);
 
   const downloadCSV = toastErrors(async () => {
-    if (!testDetails?.addresses.length) return;
+    if (!addresses.length) return;
 
-    const xlsx = await getProEligibilityTestAsXlsx(testDetails.addresses);
+    const xlsx = await getProEligibilityTestAsXlsx(addresses);
 
     downloadString(
       xlsx,
@@ -424,7 +431,7 @@ function ProEligibilityTestItem({ test, readOnly = false }: ProEligibilityTestIt
 
   const adresses = useMemo(
     () =>
-      (testDetails?.addresses || []).map((address) => ({
+      (addresses || []).map((address) => ({
         ...address,
         eligibility_status: {
           ...address.eligibility_status,
@@ -434,7 +441,7 @@ function ProEligibilityTestItem({ test, readOnly = false }: ProEligibilityTestIt
           co2: address.eligibility_status?.co2 === null ? undefined : address.eligibility_status?.co2,
         },
       })),
-    [testDetails?.addresses]
+    [addresses]
   );
 
   return (
@@ -449,6 +456,7 @@ function ProEligibilityTestItem({ test, readOnly = false }: ProEligibilityTestIt
             <ModalSimple
               title="Renommer le test"
               trigger={<Button priority="tertiary no outline" size="small" iconId="fr-icon-pencil-line" title="Renommer le test" />}
+              size="large"
             >
               <RenameEligibilityTestForm currentName={test.name} testId={test.id} />
             </ModalSimple>
@@ -516,23 +524,20 @@ function ProEligibilityTestItem({ test, readOnly = false }: ProEligibilityTestIt
           </Button>
 
           {!readOnly && (
-            <ModalSimple
-              title="Ajout d'adresses"
-              size="medium"
-              trigger={
-                <Button iconId="fr-icon-add-line" priority="secondary">
-                  Ajouter des adresses
-                </Button>
-              }
-            >
-              <CompleteEligibilityTestForm testId={test.id} />
-            </ModalSimple>
+            <>
+              <Button iconId="fr-icon-add-line" priority="secondary" onClick={() => setIsDialogOpen(true)}>
+                Ajouter des adresses
+              </Button>
+              <ModalSimple title="Ajout d'adresses" size="medium" open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <UpsertEligibilityTestForm testId={test.id} onComplete={() => setIsDialogOpen(false)} />
+              </ModalSimple>
+            </>
           )}
         </div>
       </div>
       {isLoading && <Loader size="lg" variant="section" />}
       {viewDetail &&
-        (testDetails && testDetails.addresses.length > 0 ? (
+        (addresses.length > 0 ? (
           <>
             <Tabs
               className="[&_[role='tabpanel']]:!p-2w" // decrease the default big padding of tabs panels

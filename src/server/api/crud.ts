@@ -30,7 +30,6 @@ type CrudHandlers<T extends keyof DB> = {
 
 export { type Context };
 
-type DBObject = DB[keyof DB];
 type ApiResponseCommon =
   | {
       status: 'error';
@@ -40,13 +39,13 @@ type ApiResponseCommon =
       status: 'success';
     };
 
-type ApiResponseQueryGet<T extends DBObject> = ApiResponseCommon & {
+export type ApiResponseQueryGet<T extends object> = ApiResponseCommon & {
   item?: T & {
     id?: string;
   };
 };
 
-type ApiResponseQueryList<T extends DBObject> = ApiResponseCommon & {
+export type ApiResponseQueryList<T extends object> = ApiResponseCommon & {
   items?: (T & {
     id?: string;
   })[];
@@ -58,7 +57,7 @@ type ApiResponseQueryList<T extends DBObject> = ApiResponseCommon & {
   };
 };
 
-type ApiResponseMutation<T = any> = ApiResponseCommon & {
+export type ApiResponseMutation<T = any> = ApiResponseCommon & {
   item?: T;
 };
 
@@ -159,7 +158,6 @@ const crud = <T extends keyof DB, Validation extends CrudValidation>({
   const GET = async (req: NextApiRequest): Promise<ApiResponseQueryGet<DB[T]> | ApiResponseQueryList<DB[T]>> => {
     const slug = Array.isArray(req.query.slug) ? req.query.slug : [req.query.slug || ''];
     const id = slug.length > 0 ? slug[0] : null;
-
     if (id) {
       return GET_ONE(req);
     }

@@ -1,7 +1,8 @@
 import { clientConfig } from '@/client-config';
-import { type ProEligibilityTestWithAddresses } from '@/pages/api/pro-eligibility-tests/[id]';
 
-type ColumnAccessor = (address: ProEligibilityTestWithAddresses['addresses'][number]) => string;
+import { type ProEligibilityTestResponse } from '../server/api';
+
+type ColumnAccessor = (address: ProEligibilityTestResponse['getItem']['addresses'][number]) => string;
 
 type CSVColumn = {
   header: string;
@@ -97,7 +98,7 @@ const legend = [
   ],
 ];
 
-export const getProEligibilityTestAsXlsx = async (addresses: ProEligibilityTestWithAddresses['addresses']) => {
+export const getProEligibilityTestAsXlsx = async (addresses: ProEligibilityTestResponse['getItem']['addresses']) => {
   const XLSX = await import('xlsx');
 
   const wb = XLSX.utils.book_new();
