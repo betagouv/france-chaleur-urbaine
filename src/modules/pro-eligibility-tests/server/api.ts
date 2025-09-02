@@ -32,6 +32,7 @@ export default handleRouteErrors(
     PUT: async (req) => {
       const context = buildContext(req);
       const [itemId, action] = req.query.slug as string[];
+
       if (action === 'mark-as-seen') {
         const item = await proEligibilityTestsService.markAsSeen(itemId, context);
         return {

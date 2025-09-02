@@ -20,11 +20,11 @@ import ModalSimple from '@/components/ui/ModalSimple';
 import Notice from '@/components/ui/Notice';
 import TableSimple, { type ColumnDef, type QuickFilterPreset } from '@/components/ui/TableSimple';
 import Tooltip from '@/components/ui/Tooltip';
-import { useFetch, usePost } from '@/hooks/useApi';
+import { useFetch, usePut } from '@/hooks/useApi';
 import RenameEligibilityTestForm from '@/modules/pro-eligibility-tests/client/RenameEligibilityTestForm';
 import UpsertEligibilityTestForm from '@/modules/pro-eligibility-tests/client/UpsertEligibilityTestForm';
 import { type ProEligibilityTestResponse } from '@/modules/pro-eligibility-tests/server/api';
-import { notify, toastErrors } from '@/services/notification';
+import { toastErrors } from '@/services/notification';
 import { downloadString } from '@/utils/browser';
 import { formatAsISODateMinutes, formatFrenchDate, formatFrenchDateTime } from '@/utils/date';
 import { compareFrenchStrings } from '@/utils/strings';
@@ -343,7 +343,7 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false }: ProEligibi
     enabled: viewDetail,
   });
 
-  const { mutateAsync: markAsSeen } = usePost(`/api/pro-eligibility-tests/${test.id}/mark-as-seen`, {
+  const { mutateAsync: markAsSeen } = usePut(`/api/pro-eligibility-tests/${test.id}/mark-as-seen`, {
     onMutate: () => {
       queryClient.setQueryData(['/api/pro-eligibility-tests'], (testsResponse: ProEligibilityTestResponse['list']) => {
         return {
@@ -394,11 +394,7 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false }: ProEligibi
 
   useEffect(() => {
     if (viewDetail && test.has_unseen_results && !readOnly) {
-      (async () => {
-        void markAsSeen({});
-        await refetch();
-        notify('success', 'Les résultats de ce test ont été mis à jour');
-      })();
+      void markAsSeen(test.id, {});
     }
   }, [viewDetail, test.has_unseen_results, markAsSeen, refetch, readOnly]);
 
