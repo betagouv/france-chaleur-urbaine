@@ -22,8 +22,10 @@
       "modules": true
     },
     "ecmaVersion": 12,
-    "sourceType": "module"
+    "sourceType": "module",
+    "project": "./tsconfig.json"
   },
+  "ignorePatterns": [".eslintrc.json"],
   "plugins": ["react", "@typescript-eslint", "prettier", "better-styled-components"],
   "rules": {
     "prettier/prettier": "error",
@@ -45,6 +47,7 @@
         "terms": ["FIXME"]
       }
     ],
+    "@typescript-eslint/no-floating-promises": "warn",
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/ban-types": "warn",

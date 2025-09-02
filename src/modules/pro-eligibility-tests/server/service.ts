@@ -172,7 +172,7 @@ export const update = async (
   _config: ListConfig<typeof tableName>,
   context: ApiContext
 ) => {
-  ensureValidPermissions(context, testId);
+  await ensureValidPermissions(context, testId);
 
   const hasNewAddresses = updatedData.content && updatedData.content.length > 0;
 
@@ -222,11 +222,12 @@ export const update = async (
 
     return updatedItem as unknown as DB[typeof tableName];
   }
+
   throw new Error('No updated data');
 };
 
 export const remove: typeof baseModel.remove = async (testId, _config, context) => {
-  ensureValidPermissions(context, testId);
+  await ensureValidPermissions(context, testId);
   const removedItem = await kdb
     .updateTable('pro_eligibility_tests')
     .where('id', '=', testId)
@@ -245,7 +246,7 @@ export const remove: typeof baseModel.remove = async (testId, _config, context) 
 };
 
 export const markAsSeen = async (testId: string, context: ApiContext) => {
-  ensureValidPermissions(context, testId);
+  await ensureValidPermissions(context, testId);
   await kdb.updateTable('pro_eligibility_tests').where('id', '=', testId).set({ has_unseen_results: false }).execute();
 };
 
