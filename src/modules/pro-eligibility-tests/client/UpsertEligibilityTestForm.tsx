@@ -142,7 +142,7 @@ const UpsertEligibilityTestForm = ({ testId, onComplete }: UpsertEligibilityTest
             */}
           <Upload
             label="Choisissez un fichier .txt ou .csv (une adresse par ligne) :"
-            hint="Si le fichier est un .csv, les colonnes seront regroupées pour déduire l'adresse."
+            hint="Si le fichier est un .csv, les colonnes seront découpées pour déduire l'adresse ou les coordonnées géographiques."
             nativeInputProps={{
               required: true,
               accept: allowedExtensions.join(','),
