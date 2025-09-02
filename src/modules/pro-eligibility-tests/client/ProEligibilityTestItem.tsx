@@ -343,7 +343,7 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false }: ProEligibi
     enabled: viewDetail,
   });
 
-  const { mutateAsync: markAsSeen } = usePut(`/api/pro-eligibility-tests/${test.id}/mark-as-seen`, {
+  const { mutateAsync: markAsSeen, isLoading: isMarkAsSeenLoading } = usePut(`/api/pro-eligibility-tests/${test.id}/mark-as-seen`, {
     onMutate: () => {
       queryClient.setQueryData(['/api/pro-eligibility-tests'], (testsResponse: ProEligibilityTestResponse['list']) => {
         return {
@@ -393,10 +393,13 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false }: ProEligibi
   };
 
   useEffect(() => {
-    if (viewDetail && test.has_unseen_results && !readOnly) {
-      void markAsSeen(test.id, {});
+    if (viewDetail && test.has_unseen_results && !readOnly && !isMarkAsSeenLoading) {
+      (async () => {
+        await markAsSeen(test.id, {});
+        await refetch();
+      })();
     }
-  }, [viewDetail, test.has_unseen_results, markAsSeen, refetch, readOnly]);
+  }, [viewDetail, test.has_unseen_results, markAsSeen, refetch, readOnly, isMarkAsSeenLoading]);
 
   const filteredAddressesMapData = useMemo(() => {
     return filteredAddresses
@@ -492,10 +495,11 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false }: ProEligibi
             }
           : undefined
       }
-      onExpandedChange={(expanded) => {
+      onExpandedChange={async (expanded) => {
         setViewDetail(expanded);
         if (expanded && test.has_unseen_results && !readOnly) {
-          markAsSeen({});
+          await markAsSeen(test.id, {});
+          await refetch();
         }
       }}
     >
