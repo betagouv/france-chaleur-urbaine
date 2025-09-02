@@ -234,6 +234,7 @@ export const remove: typeof baseModel.remove = async (testId, _config, context) 
     .set({
       deleted_at: new Date(),
     })
+    .returningAll()
     .execute();
 
   await createUserEvent({
@@ -242,6 +243,7 @@ export const remove: typeof baseModel.remove = async (testId, _config, context) 
     context_id: testId,
     author_id: context.user.id,
   });
+
   return removedItem as unknown as DB[typeof tableName];
 };
 
