@@ -9,7 +9,7 @@ import { useFetch } from '@/hooks/useApi';
 import ProEligibilityTestItem from '@/modules/pro-eligibility-tests/client/ProEligibilityTestItem';
 import { type AdminProEligibilityTestListItem } from '@/pages/api/admin/pro-eligibility-tests';
 
-export default function AdminTestsAdresses() {
+export default function TestAddressesAdminPage() {
   const [emailFilter, setEmailFilter] = useQueryState('email');
   const { data: tests, isLoading } = useFetch<AdminProEligibilityTestListItem[]>('/api/admin/pro-eligibility-tests');
 

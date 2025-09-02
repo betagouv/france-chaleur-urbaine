@@ -31,21 +31,13 @@ export default handleRouteErrors(
     POST,
     PUT: async (req) => {
       const context = buildContext(req);
-      const { slug } = req.query;
-      const [itemId, action] = slug as string[];
+      const [itemId, action] = req.query.slug as string[];
       if (action === 'mark-as-seen') {
-        try {
-          const item = await proEligibilityTestsService.markAsSeen(itemId, context);
-          return {
-            status: 'success',
-            item,
-          };
-        } catch (error) {
-          return {
-            status: 'error',
-            error: error instanceof Error ? error.message : 'Une erreur est survenue',
-          };
-        }
+        const item = await proEligibilityTestsService.markAsSeen(itemId, context);
+        return {
+          status: 'success',
+          item,
+        };
       }
 
       return PUT(req);

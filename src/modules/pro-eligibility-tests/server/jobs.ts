@@ -37,13 +37,16 @@ type JobStats = {
 
 const chunkSize = 1000;
 
+function isProEligibilityTestJobDeprecated(job: any): job is ProEligibilityTestJobDeprecated {
+  return !!job.data.csvContent;
+}
+
 export async function processProEligibilityTestJob(job: ProEligibilityTestJob, logger: Logger) {
   const startTime = Date.now();
   let { content, separator, dataType, hasHeaders, columnMapping } = job.data;
-  const deprecatedJob = job as unknown as ProEligibilityTestJobDeprecated;
 
-  if (deprecatedJob.data.csvContent) {
-    content = deprecatedJob.data.csvContent;
+  if (isProEligibilityTestJobDeprecated(job)) {
+    content = job.data.csvContent;
     columnMapping = { addressColumn: 0 };
     dataType = 'address';
     separator = '\x00'; /* Null character. Unlikely to appear in a CSV file */

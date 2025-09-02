@@ -6,7 +6,6 @@ export type CSVColumn = {
   index: number;
   name: string;
   type: ColumnType;
-  sampleValues: string[];
   confidence: number; // 0-1 score for type detection confidence
 };
 
@@ -35,7 +34,6 @@ export function analyzeCSV(content: string, separator?: string) {
 
   const columns: CSVColumn[] = headers.map((header, index) => {
     const columnData = rows.map((row) => row[index] || '').filter((val) => val.trim() !== '');
-    const sampleValues = columnData.slice(0, 5); // First 5 non-empty values for preview
 
     const type = detectColumnType(header, columnData);
     const confidence = calculateConfidence(header, columnData, type);
@@ -44,7 +42,6 @@ export function analyzeCSV(content: string, separator?: string) {
       index,
       name: header,
       type,
-      sampleValues,
       confidence,
     };
   });

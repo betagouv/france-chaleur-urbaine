@@ -5,7 +5,7 @@ import Upload from '@/components/form/dsfr/Upload';
 import useForm from '@/components/form/react-form/useForm';
 import Notice, { type NoticeProps } from '@/components/ui/Notice';
 import useCrud from '@/hooks/useCrud';
-import { notify, toastErrors } from '@/services/notification';
+import { toastErrors } from '@/services/notification';
 import { parseUnknownCharsetText } from '@/utils/strings';
 
 import CSVImportTable from './CSVImportTable';
@@ -35,22 +35,17 @@ const UpsertEligibilityTestForm = ({ testId, onComplete }: UpsertEligibilityTest
       columnMapping: {} as ColumnMapping,
     },
     onSubmit: toastErrors(async ({ value }) => {
-      try {
-        if (isUpdate) {
-          await completeTest(testId, value);
-        } else {
-          await createTest(value);
-        }
-        onComplete?.();
-      } catch (error) {
-        console.error(error);
-        notify('error', 'Une erreur est survenue lors de la création du test');
+      if (isUpdate) {
+        await completeTest(testId, value);
+      } else {
+        await createTest(value);
       }
+      onComplete?.();
     }, FormErrorMessage),
   });
 
-  const processContent = useCallback((content: string, separator?: string) => {
-    try {
+  const processContent = useCallback(
+    toastErrors((content: string, separator?: string) => {
       const fileAnalysis = analyzeCSV(content, separator);
 
       if (!separator) {
@@ -70,10 +65,9 @@ const UpsertEligibilityTestForm = ({ testId, onComplete }: UpsertEligibilityTest
 
       form.setFieldValue('dataType', fileAnalysis.hasCoordinateColumns ? 'coordinates' : 'address');
       setAnalysis(fileAnalysis);
-    } catch (error) {
-      console.error(error);
-    }
-  }, []);
+    }),
+    []
+  );
 
   const handleFileChange = useCallback(
     async (file: File | undefined) => {
@@ -142,7 +136,10 @@ const UpsertEligibilityTestForm = ({ testId, onComplete }: UpsertEligibilityTest
         <FieldWrapper>
           {/* <Field.Custom
             name="file"
-            Component={({ value, onChange, ...props }: any) => ( */}
+            Component={({ value, onChange, ...props }: any) => (
+
+            // TODO: uncomment this when we have a way to handle files
+            */}
           <Upload
             label="Choisissez un fichier .txt ou .csv (une adresse par ligne) :"
             hint="Si le fichier est un .csv, les colonnes seront regroupées pour déduire l'adresse."
