@@ -90,7 +90,7 @@ const UpsertEligibilityTestForm = ({ testId, onComplete }: UpsertEligibilityTest
       const content = await parseUnknownCharsetText(await file.arrayBuffer());
       form.setFieldValue('name', file.name);
       form.setFieldValue('content', content);
-      processContent(content);
+      void processContent(content);
     },
     [form]
   );
@@ -227,17 +227,13 @@ const UpsertEligibilityTestForm = ({ testId, onComplete }: UpsertEligibilityTest
                       </span>
                     }
                     nativeSelectProps={{
-                      value: columnMapping.addressColumn?.toString() || '',
+                      value: columnMapping.addressColumn?.toString() ?? '',
                       onChange: (e) => {
-                        form.setFieldValue('columnMapping.latitudeColumn', undefined);
-                        form.setFieldValue('columnMapping.longitudeColumn', undefined);
-                        form.setFieldValue('columnMapping.addressColumn', Number(e.target.value));
-                        const newMapping = {
-                          addressColumn: Number(e.target.value),
+                        form.setFieldValue('columnMapping', {
+                          addressColumn: e.target.value ? Number(e.target.value) : undefined,
                           latitudeColumn: undefined,
                           longitudeColumn: undefined,
-                        };
-                        form.setFieldValue('columnMapping', newMapping);
+                        });
                       },
                     }}
                     options={columnOptions}
@@ -257,7 +253,7 @@ const UpsertEligibilityTestForm = ({ testId, onComplete }: UpsertEligibilityTest
                         value: columnMapping.latitudeColumn?.toString() || '',
                         onChange: (e) => {
                           form.setFieldValue('columnMapping.addressColumn', undefined);
-                          form.setFieldValue('columnMapping.latitudeColumn', Number(e.target.value));
+                          form.setFieldValue('columnMapping.latitudeColumn', e.target.value ? Number(e.target.value) : undefined);
                         },
                       }}
                       options={columnOptions}
@@ -275,7 +271,7 @@ const UpsertEligibilityTestForm = ({ testId, onComplete }: UpsertEligibilityTest
                         value: columnMapping.longitudeColumn?.toString() || '',
                         onChange: (e) => {
                           form.setFieldValue('columnMapping.addressColumn', undefined);
-                          form.setFieldValue('columnMapping.longitudeColumn', Number(e.target.value));
+                          form.setFieldValue('columnMapping.longitudeColumn', e.target.value ? Number(e.target.value) : undefined);
                         },
                       }}
                       options={columnOptions}
