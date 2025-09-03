@@ -81,16 +81,14 @@ const addStat =
     method_params?: string;
   }) => {
     // Optional: Check existing value before insert to detect conflicts precisely
-    let query = kdb
+    const query = kdb
       .selectFrom('matomo_stats')
       .selectAll()
       .where('method', '=', method)
       .where('stat_key', '=', stat_key)
       .where(kdb.fn('DATE', ['date']), '=', date)
-      .where('period', '=', period);
-    if (stat_label) {
-      query = query.where('stat_label', '=', stat_label);
-    }
+      .where('period', '=', period)
+      .where((eb) => eb.and(stat_label ? [eb('stat_label', '=', stat_label)] : []));
 
     const existing = await query.executeTakeFirst();
 
@@ -98,6 +96,26 @@ const addStat =
     if (existing) {
       if (existing.value !== value) {
         console.warn(`⚠️ Conflict detected: ${existing.value}≠${value} for ${message}`);
+
+        if (DRY_RUN) {
+          console.info(`[DRY]`, `✅ Updated ${message}`);
+          return null;
+        }
+        try {
+          await kdb
+            .updateTable('matomo_stats')
+            .set({ value })
+            .where('method', '=', method)
+            .where('stat_key', '=', stat_key)
+            .where(kdb.fn('DATE', ['date']), '=', date)
+            .where('period', '=', period)
+            .where((eb) => eb.and(stat_label ? [eb('stat_label', '=', stat_label)] : []))
+            .execute();
+          console.info(`✅ Updated ${message}`);
+        } catch (e: any) {
+          console.error(`❌ Error updating "${e.toString()}" ${message}`);
+          return null;
+        }
       } else {
         console.info(`💤 No change for ${message}`);
       }
