@@ -443,6 +443,8 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false }: ProEligibi
     [addresses]
   );
 
+  const isDataLoading = isLoading || !!(test.has_pending_jobs && addresses.length === 0);
+
   return (
     <UrlStateAccordion
       queryParamName={queryParamName}
@@ -508,7 +510,7 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false }: ProEligibi
           {ObjectEntries(quickFilterPresets).map(([key, preset], index) => (
             <Fragment key={key}>
               <Indicator
-                loading={isLoading}
+                loading={isDataLoading}
                 label={preset.label}
                 value={presetStats[key]}
                 onClick={() => toggleFilterPreset(key)}
@@ -535,7 +537,7 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false }: ProEligibi
           )}
         </div>
       </div>
-      {isLoading && <Loader size="lg" variant="section" />}
+      {isDataLoading && <Loader size="lg" variant="section" />}
       {viewDetail &&
         (addresses.length > 0 ? (
           <>
