@@ -9,7 +9,13 @@ import { toastErrors } from '@/services/notification';
 import { parseUnknownCharsetText } from '@/utils/strings';
 
 import CSVImportTable from './CSVImportTable';
-import { allowedExtensions, FormErrorMessage, zCreateEligibilityTestInput, zUpdateEligibilityTestInput } from '../constants';
+import {
+  allowedExtensions,
+  FormErrorMessage,
+  NO_SEPARATOR_VALUE,
+  zCreateEligibilityTestInput,
+  zUpdateEligibilityTestInput,
+} from '../constants';
 import { analyzeCSV, type ColumnMapping } from '../utils/csvColumnDetection';
 
 type UpsertEligibilityTestFormProps = {
@@ -51,19 +57,24 @@ const UpsertEligibilityTestForm = ({ testId, onComplete }: UpsertEligibilityTest
       if (!separator) {
         form.setFieldValue('separator', fileAnalysis.separator);
       }
-      form.setFieldValue(
-        'columnMapping',
-        fileAnalysis.hasCoordinateColumns
-          ? {
-              latitudeColumn: fileAnalysis.suggestedLatitudeColumn,
-              longitudeColumn: fileAnalysis.suggestedLongitudeColumn,
-            }
-          : {
-              addressColumn: fileAnalysis.suggestedAddressColumn,
-            }
-      );
 
-      form.setFieldValue('dataType', fileAnalysis.hasCoordinateColumns ? 'coordinates' : 'address');
+      const newColumnMapping = fileAnalysis.hasCoordinateColumns
+        ? {
+            latitudeColumn: fileAnalysis.suggestedLatitudeColumn,
+            longitudeColumn: fileAnalysis.suggestedLongitudeColumn,
+            addressColumn: undefined,
+          }
+        : {
+            addressColumn: fileAnalysis.suggestedAddressColumn || 0,
+            latitudeColumn: undefined,
+            longitudeColumn: undefined,
+          };
+
+      form.setFieldValue('columnMapping', newColumnMapping);
+
+      const newDataType = fileAnalysis.hasCoordinateColumns ? 'coordinates' : 'address';
+      form.setFieldValue('dataType', newDataType);
+
       setAnalysis(fileAnalysis);
     }),
     []
@@ -171,7 +182,7 @@ const UpsertEligibilityTestForm = ({ testId, onComplete }: UpsertEligibilityTest
                       { label: 'Tab', value: '\t' },
                       { label: '|', value: '|' },
                       { label: 'Espace', value: ' ' },
-                      { label: 'Aucun', value: '\x00' /* Null character. Unlikely to appear in a CSV file */ },
+                      { label: 'Aucun', value: NO_SEPARATOR_VALUE },
                     ]}
                     nativeSelectProps={{
                       onChange: (e: any) => {
@@ -221,6 +232,12 @@ const UpsertEligibilityTestForm = ({ testId, onComplete }: UpsertEligibilityTest
                         form.setFieldValue('columnMapping.latitudeColumn', undefined);
                         form.setFieldValue('columnMapping.longitudeColumn', undefined);
                         form.setFieldValue('columnMapping.addressColumn', Number(e.target.value));
+                        const newMapping = {
+                          addressColumn: Number(e.target.value),
+                          latitudeColumn: undefined,
+                          longitudeColumn: undefined,
+                        };
+                        form.setFieldValue('columnMapping', newMapping);
                       },
                     }}
                     options={columnOptions}

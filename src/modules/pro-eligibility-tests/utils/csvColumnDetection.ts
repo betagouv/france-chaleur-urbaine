@@ -16,7 +16,7 @@ export type CSVAnalysis = ReturnType<typeof analyzeCSV>;
 export function analyzeCSV(content: string, separator?: string) {
   // Use PapaParse to auto-detect delimiter and parse
   const papaResult = Papa.parse<string[]>(content, {
-    delimiter: separator || '', // auto-detect
+    delimiter: separator,
     skipEmptyLines: true,
   });
 

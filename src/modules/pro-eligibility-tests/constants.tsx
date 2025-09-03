@@ -9,6 +9,8 @@ const filesLimits = {
 
 export const allowedExtensions = ['.csv', '.txt'] as const;
 
+export const NO_SEPARATOR_VALUE = '__NO_SEPARATOR__';
+
 export const zAddressesFile = z
   .instanceof(File, { message: 'Veuillez choisir un fichier' })
   .refine((file) => file.size <= filesLimits.maxFileSize, {
