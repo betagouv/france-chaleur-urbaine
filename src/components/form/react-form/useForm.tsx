@@ -437,7 +437,7 @@ function useFormInternal<
     nativeSelectProps,
     ...props
   }: FieldProps &
-    Omit<DSFRSelectProps<Options>, 'nativeSelectProps' | 'state' | 'stateRelatedMessage'> & {
+    Omit<DSFRSelectProps<Options>, 'nativeSelectProps' | 'state' | 'stateRelatedMessage' | 'onChange'> & {
       nativeSelectProps?: Omit<DSFRSelectProps<Options>['nativeSelectProps'], 'value' | 'onChange' | 'onBlur'>;
     }) => (
     <form.Field

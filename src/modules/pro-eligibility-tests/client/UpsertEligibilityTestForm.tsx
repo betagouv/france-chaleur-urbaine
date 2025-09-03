@@ -184,9 +184,9 @@ const UpsertEligibilityTestForm = ({ testId, onComplete }: UpsertEligibilityTest
                       { label: 'Espace', value: ' ' },
                       { label: 'Aucun', value: NO_SEPARATOR_VALUE },
                     ]}
-                    nativeSelectProps={{
-                      onChange: (e: any) => {
-                        processContent(content as string, e.target.value);
+                    fieldInputProps={{
+                      listeners: {
+                        onChange: ({ value }) => processContent(content as string, value as string),
                       },
                     }}
                   />
