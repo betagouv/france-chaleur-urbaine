@@ -96,6 +96,12 @@ const addStat =
     if (existing) {
       if (existing.value !== value) {
         console.warn(`⚠️ Conflict detected: ${existing.value}≠${value} for ${message}`);
+        if (Math.abs(existing.value - value) > 1000) {
+          console.warn(
+            `💥 Large difference detected: ${existing.value}≠${value} for ${message}. Attention, c'est peut-être normal car on a déjà corrigé des données suite à des abus sur le site.`
+          );
+          return null;
+        }
 
         if (DRY_RUN) {
           console.info(`[DRY]`, `✅ Updated ${message}`);
