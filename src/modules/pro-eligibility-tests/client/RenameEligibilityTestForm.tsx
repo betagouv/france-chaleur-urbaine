@@ -1,9 +1,10 @@
 import useForm from '@/components/form/react-form/useForm';
 import Button from '@/components/ui/Button';
 import { useModal } from '@/components/ui/ModalSimple';
-import { usePost } from '@/hooks/useApi';
+import { usePut } from '@/hooks/useApi';
 import { notify, toastErrors } from '@/services/notification';
-import { type RenameProEligibilityTestRequest, zRenameProEligibilityTestRequest } from '@/validation/pro-eligibility-test';
+
+import { type RenameProEligibilityTestRequest, zRenameProEligibilityTestRequest } from '../constants';
 
 type RenameEligibilityTestFormProps = {
   testId: string;
@@ -12,7 +13,7 @@ type RenameEligibilityTestFormProps = {
 
 const RenameEligibilityTestForm = ({ testId, currentName }: RenameEligibilityTestFormProps) => {
   const { closeModal } = useModal();
-  const { mutateAsync: renameTest } = usePost<RenameProEligibilityTestRequest>(`/api/pro-eligibility-tests/${testId}/rename`, {
+  const { mutateAsync: renameTest } = usePut<RenameProEligibilityTestRequest>(`/api/pro-eligibility-tests/${testId}`, {
     invalidate: ['/api/pro-eligibility-tests'],
     onSuccess: () => {
       notify('success', 'Le test a été renommé avec succès');
@@ -26,7 +27,7 @@ const RenameEligibilityTestForm = ({ testId, currentName }: RenameEligibilityTes
     schema: zRenameProEligibilityTestRequest,
     onSubmit: toastErrors(
       async ({ value }: { value: RenameProEligibilityTestRequest }) => {
-        await renameTest({
+        await renameTest(testId, {
           name: value.name,
         });
         closeModal();

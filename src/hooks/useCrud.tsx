@@ -25,7 +25,7 @@ const useCrud = <T extends CrudResponse<keyof DB, any>, TListItem = T['list']['i
     invalidate: [url],
   });
 
-  const { data, isLoading } = useFetch<T['list']>(url, ...(list || []));
+  const { data, isLoading, refetch } = useFetch<T['list']>(url, ...(list || []));
 
   const get = useCallback((id: string, params = {}) => fetchJSON<T['get']>(`${url}/${id}`, { params }), [url]);
 
@@ -34,6 +34,7 @@ const useCrud = <T extends CrudResponse<keyof DB, any>, TListItem = T['list']['i
   return {
     items,
     isLoading,
+    refetch,
     create,
     isCreating,
     update,

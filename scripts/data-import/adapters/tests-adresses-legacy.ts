@@ -111,7 +111,7 @@ export default class TestsAdressesLegacyAdapter extends BaseAdapter {
 
               const addressData = {
                 test_id: id as string,
-                source_address: addressItem.address,
+                source_address: addressItem.address || '',
                 ban_valid: addressItem.result_status === 'ok',
                 ban_address: addressItem.result_label,
                 ban_score: isDefined(addressItem.result_score) ? Math.round(addressItem.result_score * 100) : null,

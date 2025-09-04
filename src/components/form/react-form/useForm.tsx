@@ -437,7 +437,7 @@ function useFormInternal<
     nativeSelectProps,
     ...props
   }: FieldProps &
-    Omit<DSFRSelectProps<Options>, 'nativeSelectProps' | 'state' | 'stateRelatedMessage'> & {
+    Omit<DSFRSelectProps<Options>, 'nativeSelectProps' | 'state' | 'stateRelatedMessage' | 'onChange'> & {
       nativeSelectProps?: Omit<DSFRSelectProps<Options>['nativeSelectProps'], 'value' | 'onChange' | 'onBlur'>;
     }) => (
     <form.Field
@@ -563,15 +563,15 @@ function useFormInternal<
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <h4 className="text-xs font-semibold mb-1">Current Values:</h4>
-                <pre className="overflow-auto max-h-40">{JSON.stringify(values, null, 2)}</pre>
+                <pre className="overflow-auto max-h-40 border border-gray-200 bg-opacity-50 p-0.5">{JSON.stringify(values, null, 2)}</pre>
               </div>
               <div>
                 <h4 className="text-xs font-semibold mb-1">Current Errors:</h4>
-                <pre className="overflow-auto max-h-40">{JSON.stringify(errors, null, 2)}</pre>
+                <pre className="overflow-auto max-h-40 border border-gray-200 bg-opacity-50 p-0.5">{JSON.stringify(errors, null, 2)}</pre>
               </div>
             </div>
             <h4 className="text-xs font-semibold mb-1">Remaining state:</h4>
-            <pre>{JSON.stringify(state, null, 2)}</pre>
+            <pre className="overflow-auto max-h-96 border border-gray-200 bg-opacity-50 p-0.5">{JSON.stringify(state, null, 2)}</pre>
           </div>
         )}
       />

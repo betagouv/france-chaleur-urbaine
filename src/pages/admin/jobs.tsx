@@ -90,7 +90,11 @@ const columns: ColumnDef<AdminJobItem>[] = [
             title="Télécharger le fichier"
             onClick={toastErrors(async () => {
               const job = await fetchJSON<JobDownload>(`/api/admin/jobs/${info.row.original.id}/download`);
-              downloadString((job.data as any).csvContent, `jobs-fcu-${info.row.original.id}.csv`, 'text/csv');
+              downloadString(
+                (job.data as any).content || (job.data as any) /** deprecated */.csvContent,
+                `jobs-fcu-${info.row.original.id}.csv`,
+                'text/csv'
+              );
             })}
           />
           <Button

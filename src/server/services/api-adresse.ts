@@ -7,7 +7,9 @@ import { handleError } from '@/utils/network';
 import { sleep } from '@/utils/time';
 
 export type APIAdresseResult = {
-  address: string;
+  address?: string;
+  latitude?: number;
+  longitude?: number;
 } & (
   | {
       result_status: 'ok';
@@ -31,7 +33,7 @@ const MINIMUM_RETRY_DELAY = 2_000;
 const MAXIMUM_RETRY_DELAY = 30_000;
 const MAX_TOTAL_TIME = 180_000; // 3 minutes
 
-export async function getAddressesCoordinates(addressesCSV: string, contextLogger?: Logger) {
+async function makeAPIRequest(url: string, form: FormData, contextLogger?: Logger) {
   const startTime = Date.now();
   let attempt = 0;
   const logger = (contextLogger ?? parentLogger).child({
@@ -40,22 +42,13 @@ export async function getAddressesCoordinates(addressesCSV: string, contextLogge
 
   for (;;) {
     try {
-      const form = new FormData();
-      form.append('data', new Blob([`address\n${addressesCSV}`]), 'file.csv');
-      form.append('result_columns', 'latitude');
-      form.append('result_columns', 'longitude');
-      form.append('result_columns', 'result_score');
-      form.append('result_columns', 'result_city');
-      form.append('result_columns', 'result_label');
-      form.append('result_columns', 'result_status');
-
-      const res = await fetch(`${serverConfig.API_ADRESSE_URL}search/csv/`, {
+      const res = await fetch(url, {
         method: 'post',
         body: form,
       });
 
       if (!res.ok) {
-        await handleError(res, `${serverConfig.API_ADRESSE_URL}search/csv/`);
+        await handleError(res, url);
       }
 
       const responseBody = await res.text();
@@ -71,10 +64,6 @@ export async function getAddressesCoordinates(addressesCSV: string, contextLogge
 
       const data = results.data as APIAdresseResult[];
 
-      // TODO vérifier si on peut avoir seulement quelques lignes en error et pas toutes
-      // if (data.some((result) => result.result_status === 'error')) {
-      //   throw new Error('Some addresses returned with error status');
-      // }
       const stats = data.reduce(
         (acc, result) => {
           acc[result.result_status] = (acc[result.result_status] || 0) + 1;
@@ -99,4 +88,39 @@ export async function getAddressesCoordinates(addressesCSV: string, contextLogge
       await sleep(delay);
     }
   }
+}
+
+export async function getAddressesCoordinates(addressesCSV: string, contextLogger?: Logger) {
+  const form = new FormData();
+  form.append('data', new Blob([`address\n${addressesCSV}`]), 'file.csv');
+  form.append('result_columns', 'latitude');
+  form.append('result_columns', 'longitude');
+  form.append('result_columns', 'result_score');
+  form.append('result_columns', 'result_city');
+  form.append('result_columns', 'result_label');
+  form.append('result_columns', 'result_status');
+
+  return makeAPIRequest(`${serverConfig.API_ADRESSE_URL}search/csv/`, form, contextLogger);
+}
+
+export async function getCoordinatesAddresses(coordinatesCSV: string, contextLogger?: Logger) {
+  const form = new FormData();
+  form.append('data', new Blob([`latitude,longitude\n${coordinatesCSV}`]), 'file.csv');
+  form.append('result_columns', 'result_score');
+  form.append('result_columns', 'result_city');
+  form.append('result_columns', 'result_label');
+  form.append('result_columns', 'result_status');
+
+  const results = await makeAPIRequest('https://data.geopf.fr/geocodage/reverse/csv', form, contextLogger);
+
+  // Transform results to include the original coordinates as "address" field and ensure same structure
+  return results.map((result, index) => {
+    const coordinateLines = coordinatesCSV.split('\n');
+    const originalCoordinates = coordinateLines[index];
+
+    return {
+      ...result,
+      address: originalCoordinates, // Include original coordinates as address
+    };
+  });
 }

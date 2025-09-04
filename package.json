@@ -32,6 +32,7 @@
     "prelint": "pnpm prettier-check",
     "lint": "next lint",
     "lint:fix": "prettier-check && eslint . -c .eslintrc.json --ext js,jsx,ts,tsx,json --fix",
+    "lint:file": "eslint -c .eslintrc.json --fix",
     "test": "vitest run",
     "test:watch": "vitest dev",
     "cli": "tsx scripts/cli.ts",
