@@ -78,7 +78,7 @@ export const list = async (_: ListConfig<typeof tableName>, context: ApiContext)
 export const get = async (testId: string, _config: ListConfig<typeof tableName>, context: ApiContext) => {
   // admins can see all tests
   if (context.user.role !== 'admin') {
-    void ensureValidPermissions(context, testId);
+    await ensureValidPermissions(context, testId);
   }
 
   const eligibilityTest = await kdb

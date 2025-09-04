@@ -321,7 +321,7 @@ const saveActionsStats = async (startDate: string, endDate: string) => {
     await Promise.all(
       DATA_ACTION_STATS.map(async (action: any) => {
         if (data[action]) {
-          void addStatFromActions({
+          await addStatFromActions({
             stat_key: STAT_KEY.NB_EVENTS,
             date: startDate,
             period: STAT_PERIOD.MONTHLY,
@@ -507,8 +507,8 @@ const saveCommunesSansReseauStats = async (startDate: string, endDate: string) =
     fullMonths.map(async (month) => {
       const results = await countEventCategoriesFromMatomo(month.startDate, month.endDate, [STAT_COMMUNES_SANS_RESEAU.NB_TESTS]);
       await Promise.all(
-        Object.entries(results).map(([stat_key, value]) => {
-          void addStatFromActionsCategory({
+        Object.entries(results).map(async ([stat_key, value]) => {
+          await addStatFromActionsCategory({
             stat_key,
             date: month.startDate,
             period: STAT_PERIOD.MONTHLY,

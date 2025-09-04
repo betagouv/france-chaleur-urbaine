@@ -66,7 +66,7 @@ const contributionRateLimiter = createRateLimiter();
 
 export default handleRouteErrors(async (req, res) => {
   requirePostMethod(req);
-  void contributionRateLimiter(req, res);
+  await contributionRateLimiter(req, res);
 
   const [arrayFields, files] = await formidable(filesLimits).parse(req);
   const fields = flattenMultipartData(arrayFields);

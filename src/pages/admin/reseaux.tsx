@@ -62,7 +62,7 @@ const GestionDesReseaux = () => {
   const updateReseauDeChaleur = useCallback(
     toastErrors(async (reseauId: number, reseauUpdate: Partial<ReseauDeChaleur>) => {
       await patchFetchJSON(`/api/admin/reseaux-de-chaleur/${reseauId}`, reseauUpdate);
-      void refetchReseauxDeChaleur();
+      await refetchReseauxDeChaleur();
     }),
     []
   );
@@ -70,7 +70,7 @@ const GestionDesReseaux = () => {
   const updateReseauEnConstruction = useCallback(
     toastErrors(async (reseauId: number, reseauUpdate: Partial<ReseauEnConstruction>) => {
       await patchFetchJSON(`/api/admin/reseaux-en-construction/${reseauId}`, reseauUpdate);
-      void refetchReseauxEnConstruction();
+      await refetchReseauxEnConstruction();
     }),
     []
   );
@@ -78,7 +78,7 @@ const GestionDesReseaux = () => {
   const updatePerimetreDeDeveloppementPrioritaire = useCallback(
     toastErrors(async (pdpId: number, pdpUpdate: Partial<PerimetreDeDeveloppementPrioritaire>) => {
       await patchFetchJSON(`/api/admin/perimetres-de-developpement-prioritaire/${pdpId}`, pdpUpdate);
-      void refetchPerimetresDeDeveloppementPrioritaire();
+      await refetchPerimetresDeDeveloppementPrioritaire();
     }),
     []
   );

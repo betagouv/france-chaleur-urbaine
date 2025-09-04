@@ -65,7 +65,7 @@ const rateLimiter = createRateLimiter();
 
 export default handleRouteErrors(async (req, res) => {
   requirePostMethod(req);
-  void rateLimiter(req, res);
+  await rateLimiter(req, res);
 
   const form = formidable({
     maxFiles: 3,
@@ -91,7 +91,7 @@ export default handleRouteErrors(async (req, res) => {
   // 2nd step to upload attachments directly instead of using a temporary URL
   await Promise.all(
     (files.fichiers ?? []).map(async (fichier, index) => {
-      void uploadAttachment(record.id, 'fichiers', {
+      await uploadAttachment(record.id, 'fichiers', {
         contentType: fichier.mimetype ?? 'text/plain',
         filename: fichier.originalFilename ?? `Fichier ${index + 1}`,
         file: (await readFile(fichier.filepath)).toString('base64'),
