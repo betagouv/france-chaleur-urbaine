@@ -1,3 +1,5 @@
+import { proEligibilityTestsRouter } from '@/modules/pro-eligibility-tests/server/trpc-routes';
+
 import { publicProcedure, router } from './connection';
 
 /**
@@ -14,6 +16,7 @@ export const appRouter = router({
       message: 'tRPC server is running!',
     };
   }),
+  proEligibilityTests: proEligibilityTestsRouter,
 });
 
 // Export type definition of API
