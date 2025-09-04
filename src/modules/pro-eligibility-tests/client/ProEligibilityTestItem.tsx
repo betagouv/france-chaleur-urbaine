@@ -394,7 +394,7 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false }: ProEligibi
 
   useEffect(() => {
     if (viewDetail && test.has_unseen_results && !readOnly && !isMarkAsSeenLoading) {
-      (async () => {
+      void (async () => {
         await markAsSeen(test.id, {});
         await refetch();
       })();

@@ -33,7 +33,7 @@ export const zip = async (files: any[], name: string): Promise<any> => {
   files.forEach((file) => {
     archive.append(Buffer.from(file.sheet), { name: file.name });
   });
-  archive.finalize();
+  void archive.finalize();
 
   const content = await getStream(b64s);
   return { content, name: `${name}.zip` };

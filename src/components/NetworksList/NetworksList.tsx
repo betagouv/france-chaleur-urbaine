@@ -442,7 +442,7 @@ const NetworksList = () => {
     if (loaded) {
       return;
     }
-    (async () => {
+    void (async () => {
       try {
         const networks: NetworkToCompare[] = await networksService.fetch();
         setAllNetworks(networks);

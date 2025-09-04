@@ -81,7 +81,7 @@ const AddressAutocomplete = ({
     const { address } = router.query;
     if (address && suggestions.length > 0) {
       handleSelect(address as string, suggestions);
-      router.replace(router.pathname);
+      void router.replace(router.pathname);
     }
   }, [router.query, suggestions, handleSelect, router]);
 

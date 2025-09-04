@@ -8,7 +8,7 @@ const useQueryFlag = (key: string): [boolean, (value?: boolean) => void] => {
   });
 
   const toggleFlag = (value?: boolean): void => {
-    setFlag(value !== undefined ? value : !flag);
+    void setFlag(value !== undefined ? value : !flag);
   };
 
   return [flag, toggleFlag];

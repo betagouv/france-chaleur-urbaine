@@ -73,13 +73,13 @@ function ModifierReseauxPage() {
   useEffect(() => {
     const reseau = router.query.reseau;
     if (router.isReady && typeof reseau === 'string') {
-      setFormValue('idReseau', reseau);
-      (async () => {
+      void setFormValue('idReseau', reseau);
+      void (async () => {
         const [network] = await postFetchJSON<NetworkSearchResult[]>('/api/networks/search', {
           search: reseau,
         });
         if (network) {
-          onNetworkSelect(network);
+          void onNetworkSelect(network);
           // download existing files as if they were uploaded by the user
           if (network.fichiers instanceof Array) {
             const existingFiles = (
@@ -91,7 +91,7 @@ function ModifierReseauxPage() {
               )
             ).filter((v): v is File => v !== null);
 
-            setFormValue('fichiers', existingFiles);
+            void setFormValue('fichiers', existingFiles);
           }
         }
       })();
@@ -136,9 +136,9 @@ function ModifierReseauxPage() {
       return;
     }
 
-    setFormValue('idReseau', `${network['Identifiant reseau']} - ${network.nom_reseau}`);
-    setFormValue('reseauClasse', network['reseaux classes'] ?? false);
-    setFormValue(
+    void setFormValue('idReseau', `${network['Identifiant reseau']} - ${network.nom_reseau}`);
+    void setFormValue('reseauClasse', network['reseaux classes'] ?? false);
+    void setFormValue(
       'maitreOuvrage',
       [
         network.MO,
@@ -149,9 +149,9 @@ function ModifierReseauxPage() {
         .filter((v) => !!v)
         .join(' - ')
     );
-    setFormValue('gestionnaire', network.Gestionnaire ?? '');
-    setFormValue('siteInternet', network.website_gestionnaire ?? '');
-    setFormValue('informationsComplementaires', network.informationsComplementaires ?? '');
+    void setFormValue('gestionnaire', network.Gestionnaire ?? '');
+    void setFormValue('siteInternet', network.website_gestionnaire ?? '');
+    void setFormValue('informationsComplementaires', network.informationsComplementaires ?? '');
   }
 
   async function handleFileUpload(event: ChangeEvent<HTMLInputElement>) {
@@ -159,7 +159,7 @@ function ModifierReseauxPage() {
     if (!files || files.length === 0) {
       return;
     }
-    setFormValue('fichiers', [...formState.fichiers, ...files]);
+    void setFormValue('fichiers', [...formState.fichiers, ...files]);
   }
 
   return (
@@ -205,7 +205,7 @@ function ModifierReseauxPage() {
               label="Identifiant SNCU - nom du réseau"
               value={formState.idReseau}
               onChange={(value) => {
-                setFormValue('idReseau', value);
+                void setFormValue('idReseau', value);
                 setSelectedNetwork(null); // hide the link
               }}
               selectedNetwork={selectedNetwork}
@@ -226,7 +226,7 @@ function ModifierReseauxPage() {
                     required: true,
                     value: 'collectivite',
                     checked: formState.type === 'collectivite',
-                    onChange: () => setFormValue('type', 'collectivite'),
+                    onChange: () => void setFormValue('type', 'collectivite'),
                   },
                 },
                 {
@@ -235,7 +235,7 @@ function ModifierReseauxPage() {
                     required: true,
                     value: 'exploitant',
                     checked: formState.type === 'exploitant',
-                    onChange: () => setFormValue('type', 'exploitant'),
+                    onChange: () => void setFormValue('type', 'exploitant'),
                   },
                 },
               ]}
@@ -247,7 +247,7 @@ function ModifierReseauxPage() {
               nativeInputProps={{
                 required: true,
                 value: formState.nom,
-                onChange: (e) => setFormValue('nom', e.target.value),
+                onChange: (e) => void setFormValue('nom', e.target.value),
               }}
             />
             <Input
@@ -255,7 +255,7 @@ function ModifierReseauxPage() {
               nativeInputProps={{
                 required: true,
                 value: formState.prenom,
-                onChange: (e) => setFormValue('prenom', e.target.value),
+                onChange: (e) => void setFormValue('prenom', e.target.value),
               }}
             />
             <Input
@@ -263,7 +263,7 @@ function ModifierReseauxPage() {
               nativeInputProps={{
                 required: true,
                 value: formState.structure,
-                onChange: (e) => setFormValue('structure', e.target.value),
+                onChange: (e) => void setFormValue('structure', e.target.value),
               }}
             />
             <Input
@@ -271,7 +271,7 @@ function ModifierReseauxPage() {
               nativeInputProps={{
                 required: true,
                 value: formState.fonction,
-                onChange: (e) => setFormValue('fonction', e.target.value),
+                onChange: (e) => void setFormValue('fonction', e.target.value),
               }}
             />
             <Input
@@ -280,7 +280,7 @@ function ModifierReseauxPage() {
                 required: true,
                 type: 'email',
                 value: formState.email,
-                onChange: (e) => setFormValue('email', e.target.value),
+                onChange: (e) => void setFormValue('email', e.target.value),
               }}
             />
 
@@ -297,7 +297,7 @@ function ModifierReseauxPage() {
                   nativeInputProps: {
                     value: 'classe',
                     checked: formState.reseauClasse === true,
-                    onChange: () => setFormValue('reseauClasse', true),
+                    onChange: () => void setFormValue('reseauClasse', true),
                   },
                 },
                 {
@@ -305,7 +305,7 @@ function ModifierReseauxPage() {
                   nativeInputProps: {
                     value: 'nonClasse',
                     checked: formState.reseauClasse === false,
-                    onChange: () => setFormValue('reseauClasse', false),
+                    onChange: () => void setFormValue('reseauClasse', false),
                   },
                 },
               ]}
@@ -315,7 +315,7 @@ function ModifierReseauxPage() {
               nativeInputProps={{
                 required: true,
                 value: formState.maitreOuvrage,
-                onChange: (e) => setFormValue('maitreOuvrage', e.target.value),
+                onChange: (e) => void setFormValue('maitreOuvrage', e.target.value),
               }}
             />
             <Input
@@ -323,7 +323,7 @@ function ModifierReseauxPage() {
               nativeInputProps={{
                 required: true,
                 value: formState.gestionnaire,
-                onChange: (e) => setFormValue('gestionnaire', e.target.value),
+                onChange: (e) => void setFormValue('gestionnaire', e.target.value),
               }}
             />
             <Input
@@ -332,7 +332,7 @@ function ModifierReseauxPage() {
                 placeholder: 'https://www.monreseau.fr',
                 // type: 'url', uncomment when all data has been cleaned from airtable
                 value: formState.siteInternet,
-                onChange: (e) => setFormValue('siteInternet', e.target.value),
+                onChange: (e) => void setFormValue('siteInternet', e.target.value),
               }}
             />
 
@@ -346,7 +346,7 @@ function ModifierReseauxPage() {
                 placeholder:
                   'Projets de verdissement ou de développement du réseau, puissance minimale requise pour le raccordement, ou toute autre information utile (cible grand public et professionnels)',
                 value: formState.informationsComplementaires,
-                onChange: (e) => setFormValue('informationsComplementaires', e.target.value),
+                onChange: (e) => void setFormValue('informationsComplementaires', e.target.value),
                 rows: 5,
                 maxLength: clientConfig.networkInfoFieldMaxCharacters,
               }}
@@ -378,7 +378,7 @@ function ModifierReseauxPage() {
                       title="Supprimer le fichier"
                       onClick={() => {
                         formState.fichiers.splice(index, 1);
-                        setFormValue('fichiers', [...formState.fichiers]);
+                        void setFormValue('fichiers', [...formState.fichiers]);
                       }}
                     >
                       <Icon name="ri-delete-bin-2-line" color="var(--text-default-error)" size="lg" />

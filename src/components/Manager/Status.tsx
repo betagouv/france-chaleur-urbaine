@@ -32,7 +32,7 @@ const Status = ({
         onChange: (e) => {
           const newStatus = e.target.value as DemandStatus;
           setStatus(newStatus);
-          updateDemand(demand.id, { Status: newStatus });
+          void updateDemand(demand.id, { Status: newStatus });
         },
         value: status || DEMANDE_STATUS.EMPTY,
       }}

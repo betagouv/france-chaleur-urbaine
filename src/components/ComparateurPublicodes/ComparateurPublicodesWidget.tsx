@@ -52,7 +52,7 @@ const ComparateurPublicodesWidget: React.FC<ComparateurPublicodesWidgetProps> = 
         )
       );
     };
-    loadInfos();
+    void loadInfos();
   }, [coords, city, cityCode]);
 
   const modesDeChauffageToDisplay = modesDeChauffage

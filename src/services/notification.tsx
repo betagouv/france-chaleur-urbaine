@@ -22,7 +22,7 @@ export const NotifierContainer = ({ children }: any) => {
     if (notifyParam) {
       const [variant, message] = notifyParam.split(':') as [Variant, string];
       notify(variant, message, { id: message });
-      setNotifyParam(null);
+      void setNotifyParam(null);
     }
   }, [notifyParam, setNotifyParam]);
 

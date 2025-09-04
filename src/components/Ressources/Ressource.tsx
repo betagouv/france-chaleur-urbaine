@@ -18,7 +18,7 @@ const Ressource = ({ ressourceKey }: { ressourceKey: string }) => {
   const router = useRouter();
   useEffect(() => {
     if (ressourceKey && !getContent(ressourceKey)) {
-      router.push('/ressources');
+      void router.push('/ressources');
     }
 
     const handleRouteChange = (url: string) => {

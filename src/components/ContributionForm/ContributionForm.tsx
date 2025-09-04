@@ -368,7 +368,7 @@ const ContributionForm = () => {
 
   // ensure the state is invalid when loaded
   useEffect(() => {
-    (form.validate as any)('submit');
+    void (form.validate as any)('submit');
   }, []);
 
   return formSuccess ? (
@@ -389,7 +389,7 @@ const ContributionForm = () => {
       onSubmit={(e) => {
         e.preventDefault();
         e.stopPropagation();
-        form.handleSubmit();
+        void form.handleSubmit();
       }}
     >
       <form.Field

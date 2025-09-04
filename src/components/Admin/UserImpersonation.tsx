@@ -28,7 +28,7 @@ const UserImpersonation = () => {
   const [allTagsGestionnaires, setAllTagsGestionnaires] = useState<TagOption[]>([]);
 
   useEffect(() => {
-    (async () => {
+    void (async () => {
       const tags = await fetchJSON<string[]>('/api/admin/tags-gestionnaires');
       setAllTagsGestionnaires(
         tags.sort(Intl.Collator().compare).map((tag) => ({

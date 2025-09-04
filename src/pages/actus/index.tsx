@@ -25,7 +25,7 @@ const ActualitesPage = () => {
   const [selectedThemes, setSelectedThemes] = useQueryState('themes', parseAsArrayOf(parseAsString).withDefault([]));
 
   function toggleTheme(theme: string) {
-    setSelectedThemes(selectedThemes?.includes(theme) ? selectedThemes?.filter((t) => t !== theme) : [...selectedThemes, theme]);
+    void setSelectedThemes(selectedThemes?.includes(theme) ? selectedThemes?.filter((t) => t !== theme) : [...selectedThemes, theme]);
   }
 
   const filteredActus = useMemo(() => {

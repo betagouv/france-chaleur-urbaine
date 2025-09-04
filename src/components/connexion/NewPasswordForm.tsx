@@ -30,7 +30,7 @@ const NewPasswordForm = ({ token }: { token: string }) => {
     onSubmit: toastErrors(async ({ value }) => {
       try {
         await passwordService.changePassword(token, value.password);
-        router.push(
+        void router.push(
           `/connexion?notify=success:${encodeURIComponent('Mot de passe réinitialisé avec succès. Vous pouvez maintenant vous connecter.')}`
         );
       } catch (e: any) {

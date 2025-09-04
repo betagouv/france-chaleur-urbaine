@@ -137,7 +137,7 @@ const HeadSliceForm = ({
   useEffect(() => {
     if (autoValidate && heatingType && address && geoAddress) {
       setAutoValidate(false);
-      testAddress();
+      void testAddress();
     }
   }, [heatingType, address, geoAddress, autoValidate, testAddress]);
 

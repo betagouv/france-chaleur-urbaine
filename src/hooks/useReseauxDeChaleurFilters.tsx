@@ -53,7 +53,7 @@ const useReseauxDeChaleurFilters = ({ queryParamName = 'rdc_filters' }: { queryP
     if (loaded) {
       return;
     }
-    (async () => {
+    void (async () => {
       try {
         const networkLimits = await fetchJSON<ReseauxDeChaleurLimits>('/api/map/network-limits');
 
@@ -81,7 +81,7 @@ const useReseauxDeChaleurFilters = ({ queryParamName = 'rdc_filters' }: { queryP
     const fullFilters = deepMergeObjects(urlFilters, updatedFilters);
     const changedFilters = deepIntersection(defaultFilters, fullFilters, { keepArray: true });
 
-    setUrlFilters(Object.keys(changedFilters).length === 0 ? null : changedFilters);
+    void setUrlFilters(Object.keys(changedFilters).length === 0 ? null : changedFilters);
   };
 
   const resetFilters = () => setUrlFilters(null);

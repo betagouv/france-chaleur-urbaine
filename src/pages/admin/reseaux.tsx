@@ -62,7 +62,7 @@ const GestionDesReseaux = () => {
   const updateReseauDeChaleur = useCallback(
     toastErrors(async (reseauId: number, reseauUpdate: Partial<ReseauDeChaleur>) => {
       await patchFetchJSON(`/api/admin/reseaux-de-chaleur/${reseauId}`, reseauUpdate);
-      refetchReseauxDeChaleur();
+      void refetchReseauxDeChaleur();
     }),
     []
   );
@@ -70,7 +70,7 @@ const GestionDesReseaux = () => {
   const updateReseauEnConstruction = useCallback(
     toastErrors(async (reseauId: number, reseauUpdate: Partial<ReseauEnConstruction>) => {
       await patchFetchJSON(`/api/admin/reseaux-en-construction/${reseauId}`, reseauUpdate);
-      refetchReseauxEnConstruction();
+      void refetchReseauxEnConstruction();
     }),
     []
   );
@@ -78,7 +78,7 @@ const GestionDesReseaux = () => {
   const updatePerimetreDeDeveloppementPrioritaire = useCallback(
     toastErrors(async (pdpId: number, pdpUpdate: Partial<PerimetreDeDeveloppementPrioritaire>) => {
       await patchFetchJSON(`/api/admin/perimetres-de-developpement-prioritaire/${pdpId}`, pdpUpdate);
-      refetchPerimetresDeDeveloppementPrioritaire();
+      void refetchPerimetresDeDeveloppementPrioritaire();
     }),
     []
   );
@@ -133,7 +133,7 @@ const GestionDesReseaux = () => {
             <FCUTagAutocomplete
               value={info.row.original.tags ?? []}
               onChange={(tags: string[] /* TODO should be handled by typescript */) =>
-                updateReseauDeChaleur(info.row.original.id_fcu, { tags })
+                void updateReseauDeChaleur(info.row.original.id_fcu, { tags })
               }
               multiple
             />
@@ -335,7 +335,7 @@ const GestionDesReseaux = () => {
               tabs={tabs}
               onTabChange={(event) => {
                 const newTab = tabIds[event.tabIndex];
-                setSelectedTab(newTab);
+                void setSelectedTab(newTab);
                 setSelectedNetwork(null);
               }}
             />

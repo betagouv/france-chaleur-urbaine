@@ -9,7 +9,7 @@ const IFrameLink = ({ link, withBacklink = true, ...props }: { link: string; wit
   const onCopy = () => {
     setCopied(true);
     setTimeout(() => setCopied(false), 1000);
-    navigator.clipboard.writeText(linkWithBacklink).catch();
+    void navigator.clipboard.writeText(linkWithBacklink).catch();
   };
 
   return (

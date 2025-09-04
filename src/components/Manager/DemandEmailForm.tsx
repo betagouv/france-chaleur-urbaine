@@ -135,7 +135,7 @@ function DemandEmailForm(props: Props) {
         throw new Error(`invalid status ${res.status}`);
       }
 
-      refetch();
+      void refetch();
 
       //Add email in Airtable demands list
       alreadySent.push(emailContent.object);
@@ -289,7 +289,7 @@ function DemandEmailForm(props: Props) {
                                   <strong
                                     onClick={() => {
                                       setEmailContentValue('body', `${emailContent.body} ${templateKey}`);
-                                      navigator.clipboard.writeText(templateKey).catch();
+                                      void navigator.clipboard.writeText(templateKey).catch();
                                     }}
                                     className="cursor-pointer hover:bg-gray-200 rounded-sm p-1"
                                   >

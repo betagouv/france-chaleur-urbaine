@@ -98,7 +98,7 @@ const Button: React.FC<ButtonProps> = ({
       if (href.startsWith('http')) {
         window.open(href, '_blank');
       } else {
-        router.push(href);
+        void router.push(href);
       }
     }
     if (eventKey) {

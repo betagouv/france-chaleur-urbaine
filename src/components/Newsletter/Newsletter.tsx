@@ -14,7 +14,7 @@ const Newsletter = () => {
   const addToNewsletter = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSending(true);
-    submitToAirtable({ Email: email }, Airtable.NEWSLETTER).then(() => setSent(true));
+    void submitToAirtable({ Email: email }, Airtable.NEWSLETTER).then(() => setSent(true));
   };
 
   return (

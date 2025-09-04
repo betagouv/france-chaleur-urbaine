@@ -29,7 +29,7 @@ export function registerCrons() {
   new cron.CronJob({
     cronTime: '00 * * * *', // toutes les heures
     onTick: async () => {
-      launchJob('syncComptesProFromUsers', '1 hour');
+      void launchJob('syncComptesProFromUsers', '1 hour');
     },
     start: true,
     timeZone: 'Europe/Paris',

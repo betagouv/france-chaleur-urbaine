@@ -106,7 +106,7 @@ export default function AdminEventsPage() {
 
   const updateFilters = useCallback(
     (partial: Partial<Filters>) => {
-      setFilters((filters) => ({ ...filters, ...partial }));
+      void setFilters((filters) => ({ ...filters, ...partial }));
     },
     [setFilters]
   );
