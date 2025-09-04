@@ -25,7 +25,7 @@
     "sourceType": "module",
     "project": "./tsconfig.json"
   },
-  "ignorePatterns": [".eslintrc.json"],
+  "ignorePatterns": [".eslintrc.json", "package.json"],
   "plugins": ["react", "@typescript-eslint", "prettier", "better-styled-components"],
   "rules": {
     "prettier/prettier": "error",
