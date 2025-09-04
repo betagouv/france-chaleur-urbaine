@@ -17,6 +17,8 @@ const serverConfigSchema = {
   DATA_GOUV_FR_API_URL: z.string().default('https://www.data.gouv.fr/api/1'),
   DATA_GOUV_FR_API_KEY: z.string().optional(),
   DATA_GOUV_FR_DATASET_ID: z.string().optional(),
+  PIPEDRIVE_BASE_URL: z.string().default('https://api.pipedrive.com/v1'),
+  PIPEDRIVE_API_KEY: z.string().optional(),
 };
 
 export const serverConfig = parseEnv(process.env, serverConfigSchema);
