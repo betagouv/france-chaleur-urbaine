@@ -1,10 +1,9 @@
 import { type NextApiRequest } from 'next';
 import { type z } from 'zod';
 
+import buildContext, { type Context } from '@/modules/config/server/context-builder';
 import { type DB } from '@/server/db/kysely';
 import { invalidRouteError } from '@/server/helpers/server';
-
-import buildContext, { type Context } from './context-builder';
 
 export type FilterConfig<_T extends keyof DB> = {
   filters?: Record<string, any>;

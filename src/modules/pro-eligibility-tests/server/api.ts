@@ -1,4 +1,4 @@
-import buildContext from '@/server/api/context-builder';
+import buildContext from '@/modules/config/server/context-builder';
 import crud, { type ApiResponseMutation, type ApiResponseQueryGet, type ApiResponseQueryList } from '@/server/api/crud';
 import { handleRouteErrors } from '@/server/helpers/server';
 
