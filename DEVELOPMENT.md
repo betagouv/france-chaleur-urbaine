@@ -40,3 +40,10 @@ pnpm cli users:add professionnel@fcu.local 'MON MDP SECURE' professionnel
 pnpm cli users:add particulier@fcu.local 'MON MDP SECURE' particulier
 pnpm cli users:add gestionnaire@fcu.local 'MON MDP SECURE' gestionnaire ENGIE_2407C,ENGIE_2305C,ENGIE_7615C,ENGIE_6105C
 ```
+
+
+## Pipedrive
+
+La connexion est utilisée pour le moment pour récupérer les nombres d'iframes qui est utilisé dans les statistiques.
+
+Un token a été généré sur https://francechaleururbaine.pipedrive.com/settings/api et doit être défini par la variable d'environnement `PIPEDRIVE_API_KEY`.

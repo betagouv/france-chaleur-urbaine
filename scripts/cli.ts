@@ -27,6 +27,7 @@ import { optimisationProfiles, optimizeImage } from '@cli/images/optimize';
 import { registerNetworkCommands } from '@cli/networks/commands';
 import { applyGeometryUpdates } from '@cli/networks/geometry-updates';
 import { syncPostgresToAirtable } from '@cli/networks/sync-pg-to-airtable';
+import { refreshStatistics } from '@cli/stats/refresh';
 
 import { type KnownAirtableBase, knownAirtableBases } from './airtable/bases';
 import { createModificationsReseau } from './airtable/create-modifications-reseau';
@@ -513,6 +514,13 @@ program
     }
 
     await saveStatsInDB(startDate, endDate);
+  });
+
+program
+  .command('stats:refresh')
+  .description('Refresh the statistics')
+  .action(async () => {
+    await refreshStatistics();
   });
 
 program

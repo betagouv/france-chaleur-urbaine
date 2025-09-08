@@ -1,5 +1,11 @@
 import { type ReactElement } from 'react';
 
+/**
+ * Formate un nombre pour l'affichage en ajoutant des espaces comme séparateurs de milliers.
+ * @param number - Le nombre à formater
+ * @param precision - Nombre de décimales à conserver (optionnel)
+ * @returns Le nombre formaté sous forme de chaîne de caractères, ou null si l'entrée n'est pas un nombre
+ */
 export function prettyFormatNumber(number: number | null | undefined, precision?: number): string | null {
   return typeof number === 'number'
     ? (precision !== undefined ? number.toFixed(precision) : number.toString()).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
