@@ -616,6 +616,12 @@ const PageFooter = () => (
     }}
     bottomItems={[
       {
+        text: 'CGU',
+        linkProps: {
+          href: '/cgu',
+        },
+      },
+      {
         text: 'Données personnelles',
         linkProps: {
           href: '/politique-de-confidentialite',

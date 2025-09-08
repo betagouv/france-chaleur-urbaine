@@ -25,6 +25,9 @@ dependencies:
   '@faker-js/faker':
     specifier: ^8.0.2
     version: 8.3.1
+  '@incubateur-ademe/legal-pages-react':
+    specifier: ^0.5.0
+    version: 0.5.0(react-dom@19.1.0)(react@19.1.0)
   '@mapbox/geo-viewport':
     specifier: ^0.5.0
     version: 0.5.0
@@ -2907,6 +2910,22 @@ packages:
     os: [win32]
     requiresBuild: true
     optional: true
+
+  /@incubateur-ademe/legal-pages-markdown@0.5.0:
+    resolution: {integrity: sha512-GBzX8IvgzcH9CAHZvQmNfIkbiU63ttvrkuRdFxj6L9JTI3DWzcJQ8Vl6SCGuKiS8A+ldyZdM97zTN21TUPn3WA==}
+    dev: false
+
+  /@incubateur-ademe/legal-pages-react@0.5.0(react-dom@19.1.0)(react@19.1.0):
+    resolution: {integrity: sha512-xdSuds4poR6f8fOq8CYF2gVJzuqmCL6veJId0ISn8UDf12LECON0oK+e2S7xO8Kz6hPNuJ5ZnS7qS2am3Lx12w==}
+    peerDependencies:
+      react: ^18.3.0
+      react-dom: ^18.3.0
+    dependencies:
+      '@incubateur-ademe/legal-pages-markdown': 0.5.0
+      mustache: 4.2.0
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+    dev: false
 
   /@isaacs/cliui@8.0.2:
     resolution: {integrity: sha512-O8jcjabXaleOG9DQ0+ARXWZBTfnP4WNAqzuiJK7ll44AmxGKv/J2M4TPjxjY3znBCfvBXFzucm1twdyFybFqEA==}
@@ -6474,7 +6493,7 @@ packages:
     engines: {node: ^10 || ^12 || >=14}
     hasBin: true
     peerDependencies:
-      postcss: ^8.1.0
+      postcss: ^8.2.10
     dependencies:
       browserslist: 4.23.3
       caniuse-lite: 1.0.30001676
@@ -11294,6 +11313,11 @@ packages:
   /murmurhash-js@1.0.0:
     resolution: {integrity: sha512-TvmkNhkv8yct0SVBSy+o8wYzXjE4Zz3PCesbfs8HiCXXdcTuocApFv11UWlNFWKYsP2okqrhb7JNlSm9InBhIw==}
 
+  /mustache@4.2.0:
+    resolution: {integrity: sha512-71ippSywq5Yb7/tVYyGbkBggbU8H3u5Rz56fH60jGFgr8uHwxs+aSKeqmluIVzM0m0kB7xQjKS6qPfd0b2ZoqQ==}
+    hasBin: true
+    dev: false
+
   /mz@2.7.0:
     resolution: {integrity: sha512-z81GNO7nnYMEhrGh9LeymoE4+Yr0Wn5McHIZMK5cfQCl+NDX08sCZgUc9/6MHni9IWuFLm1Z3HTCXu2z9fN62Q==}
     dependencies:
@@ -12031,7 +12055,7 @@ packages:
     resolution: {integrity: sha512-hpr+J05B2FVYUAXHeK1YyI267J/dDDhMU6B6civm8hSY1jYJnBXxzKDKDswzJmtLHryrjhnDjqqp/49t8FALew==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
-      postcss: ^8.0.0
+      postcss: ^8.2.10
     dependencies:
       postcss: 8.4.32
       postcss-value-parser: 4.2.0
@@ -12043,7 +12067,7 @@ packages:
     resolution: {integrity: sha512-7hsAZ4xGXl4MW+OKEWCnF6T5jqBw80/EE9aXg1r2yyn1RsVEU8EtKXbijEODa+rg7iih4bKf7vlvTGYR4CnPNg==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
-      postcss: ^8.0.0
+      postcss: ^8.2.10
     dependencies:
       postcss: 8.4.32
       postcss-value-parser: 4.2.0
@@ -12055,7 +12079,7 @@ packages:
     resolution: {integrity: sha512-dDLF8pEO191hJMtlHFPRa8xsizHaM82MLfNkUHdUtVEV3tgTp5oj+8qbEqYM57SLfc74KSbw//4SeJma2LRVIw==}
     engines: {node: ^12 || ^14 || >= 16}
     peerDependencies:
-      postcss: ^8.4.21
+      postcss: ^8.2.10
     dependencies:
       camelcase-css: 2.0.1
       postcss: 8.4.32
@@ -12065,7 +12089,7 @@ packages:
     resolution: {integrity: sha512-bSVhyJGL00wMVoPUzAVAnbEoWyqRxkjv64tUl427SKnPrENtq6hJwUojroMz2VB+Q1edmi4IfrAPpami5VVgMQ==}
     engines: {node: '>= 14'}
     peerDependencies:
-      postcss: '>=8.0.9'
+      postcss: ^8.2.10
       ts-node: '>=9.0.0'
     peerDependenciesMeta:
       postcss:
@@ -12082,7 +12106,7 @@ packages:
     resolution: {integrity: sha512-HQbt28KulC5AJzG+cZtj9kvKB93CFCdLvog1WFLf1D+xmMvPGlBstkpTEZfK5+AN9hfJocyBFCNiqyS48bpgzQ==}
     engines: {node: '>=12.0'}
     peerDependencies:
-      postcss: ^8.2.14
+      postcss: ^8.2.10
     dependencies:
       postcss: 8.4.32
       postcss-selector-parser: 6.1.2
