@@ -6,11 +6,11 @@ import buildContext from '@/modules/config/server/context-builder';
  * Creates context for an incoming request using FCU's existing context builder
  * @link https://trpc.io/docs/context
  */
-export function createContext(opts: CreateNextContextOptions) {
+export async function createContext(opts: CreateNextContextOptions) {
   const { req, res } = opts;
 
-  // Use FCU's existing context builder
-  const baseContext = buildContext(req);
+  // Use FCU's context builder which handles session management
+  const baseContext = await buildContext(req, res);
 
   return {
     ...baseContext,
@@ -19,4 +19,4 @@ export function createContext(opts: CreateNextContextOptions) {
   };
 }
 
-export type Context = ReturnType<typeof createContext>;
+export type Context = Awaited<ReturnType<typeof createContext>>;

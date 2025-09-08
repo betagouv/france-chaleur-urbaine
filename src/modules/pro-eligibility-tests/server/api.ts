@@ -30,7 +30,7 @@ export default handleRouteErrors(
     GET,
     POST,
     PUT: async (req) => {
-      const context = buildContext(req);
+      const context = await buildContext(req);
       const [itemId, action] = req.query.slug as string[];
 
       if (action === 'mark-as-seen') {

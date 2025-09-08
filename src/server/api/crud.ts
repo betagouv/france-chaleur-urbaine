@@ -101,7 +101,7 @@ const crud = <T extends keyof DB, Validation extends CrudValidation>({
   const GET_LIST = async (req: NextApiRequest): Promise<ApiResponseQueryList<DB[T]>> => {
     const slug = Array.isArray(req.query.slug) ? req.query.slug : [req.query.slug || ''];
     const id = slug.length > 0 ? slug[0] : null;
-    const context = buildContext(req);
+    const context = await buildContext(req);
 
     // Extract config from query params
     const { select, filters, page, pageSize, orderBy } = req.query;
@@ -134,7 +134,7 @@ const crud = <T extends keyof DB, Validation extends CrudValidation>({
   const GET_ONE = async (req: NextApiRequest): Promise<ApiResponseQueryGet<DB[T]>> => {
     const slug = Array.isArray(req.query.slug) ? req.query.slug : [req.query.slug || ''];
     const id = slug.length > 0 ? slug[0] : null;
-    const context = buildContext(req);
+    const context = await buildContext(req);
     // Extract config from query params
     const { select, filters } = req.query;
 
@@ -168,7 +168,7 @@ const crud = <T extends keyof DB, Validation extends CrudValidation>({
     validateSchemaIfExists(validation?.create, req.body);
     const slug = Array.isArray(req.query.slug) ? req.query.slug : [req.query.slug || ''];
     const id = slug.length > 0 ? slug[0] : null;
-    const context = buildContext(req);
+    const context = await buildContext(req);
 
     if (!id && handlers.create) {
       const item = await handlers.create(req.body as Parameters<typeof handlers.create>[0], context);
@@ -185,7 +185,7 @@ const crud = <T extends keyof DB, Validation extends CrudValidation>({
     validateSchemaIfExists(validation?.update, req.body);
     const slug = Array.isArray(req.query.slug) ? req.query.slug : [req.query.slug || ''];
     const id = slug.length > 0 ? slug[0] : null;
-    const context = buildContext(req);
+    const context = await buildContext(req);
 
     if (id && handlers.update) {
       const item = await handlers.update(id, req.body as Parameters<typeof handlers.update>[0], {}, context);
@@ -202,7 +202,7 @@ const crud = <T extends keyof DB, Validation extends CrudValidation>({
     validateSchemaIfExists(validation?.delete, req.body);
     const slug = Array.isArray(req.query.slug) ? req.query.slug : [req.query.slug || ''];
     const id = slug.length > 0 ? slug[0] : null;
-    const context = buildContext(req);
+    const context = await buildContext(req);
 
     if (id && handlers.remove) {
       const result = await handlers.remove(id, {}, context);
