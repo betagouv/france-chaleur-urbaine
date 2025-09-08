@@ -1,6 +1,7 @@
 import { type NextApiRequest, type NextApiResponse } from 'next';
 
 import { getServerSession } from '@/server/authentication';
+import { parentLogger } from '@/server/helpers/logger';
 import { type UserRole } from '@/types/enum/UserRole';
 
 export type Context = Awaited<ReturnType<typeof buildContext>>;
@@ -16,6 +17,10 @@ const buildContext = async (req: NextApiRequest, res?: NextApiResponse) => {
     return req.user?.role === role;
   };
 
+  const logger = parentLogger.child({
+    user: process.env.LOG_REQUEST_USER ? req.user?.id : undefined,
+  });
+
   return {
     user: req.user,
     userId: req.user?.id,
@@ -23,6 +28,7 @@ const buildContext = async (req: NextApiRequest, res?: NextApiResponse) => {
     session: req.session,
     query: req.query,
     hasRole,
+    logger,
   };
 };
 
