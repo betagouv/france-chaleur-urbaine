@@ -1,7 +1,7 @@
 import useForm from '@/components/form/react-form/useForm';
 import Button from '@/components/ui/Button';
 import { useModal } from '@/components/ui/ModalSimple';
-import { usePut } from '@/hooks/useApi';
+import trpc from '@/modules/trpc/client';
 import { notify, toastErrors } from '@/services/notification';
 
 import { type RenameProEligibilityTestRequest, zRenameProEligibilityTestRequest } from '../constants';
@@ -13,10 +13,30 @@ type RenameEligibilityTestFormProps = {
 
 const RenameEligibilityTestForm = ({ testId, currentName }: RenameEligibilityTestFormProps) => {
   const { closeModal } = useModal();
-  const { mutateAsync: renameTest } = usePut<RenameProEligibilityTestRequest>(`/api/pro-eligibility-tests/${testId}`, {
-    invalidate: ['/api/pro-eligibility-tests'],
-    onSuccess: () => {
+  const utils = trpc.useUtils();
+
+  const { mutateAsync: renameTest } = trpc.proEligibilityTests.update.useMutation({
+    onSuccess: (updatedTest) => {
       notify('success', 'Le test a été renommé avec succès');
+
+      // Update the get cache if it exists for this test
+      utils.proEligibilityTests.get.setData({ id: testId }, (oldData) => {
+        if (oldData) {
+          return { ...oldData, name: updatedTest.name };
+        }
+        return oldData;
+      });
+
+      // Update the list cache to reflect the renamed test
+      utils.proEligibilityTests.list.setData(undefined, (oldData) => {
+        if (oldData) {
+          return {
+            ...oldData,
+            items: oldData.items.map((item) => (item.id === testId ? { ...item, name: updatedTest.name } : item)),
+          };
+        }
+        return oldData;
+      });
     },
   });
 
@@ -27,7 +47,8 @@ const RenameEligibilityTestForm = ({ testId, currentName }: RenameEligibilityTes
     schema: zRenameProEligibilityTestRequest,
     onSubmit: toastErrors(
       async ({ value }: { value: RenameProEligibilityTestRequest }) => {
-        await renameTest(testId, {
+        await renameTest({
+          id: testId,
           name: value.name,
         });
         closeModal();

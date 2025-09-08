@@ -32,5 +32,5 @@ function createProcedureWithAuth<T extends ReturnType<typeof t.procedure.use>>(b
 
 export const router = t.router;
 
-export const publicProcedure = t.procedure;
-export const authProcedure = createProcedureWithAuth(t.procedure.use(authMiddleware));
+export const route = createProcedureWithAuth(t.procedure.use(authMiddleware));
+export const routeRole = (roles: Context['user']['role'][]) => route.meta({ auth: { roles } });

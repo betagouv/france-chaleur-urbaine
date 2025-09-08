@@ -80,6 +80,7 @@ export type CreateEligibilityTestInput = z.infer<typeof zCreateEligibilityTestIn
 
 export const zUpdateEligibilityTestInput = z.strictObject({
   // file: zAddressesFile, // TODO: uncomment this when we have a way to handle files
+  id: z.string(),
   name: z
     .string({ message: 'Le nom du test est obligatoire' })
     .min(1, { message: 'Le nom du test est obligatoire' })

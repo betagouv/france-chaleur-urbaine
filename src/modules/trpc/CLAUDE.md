@@ -6,30 +6,19 @@ Ready-to-use tRPC v11 module with authentication, middleware system, and API doc
 
 ### 1. Install Dependencies
 ```bash
-pnpm add @trpc/server @trpc/client @trpc/react-query @trpc/next superjson zod trpc-ui
+# Install dependencies
+pnpm add @trpc/server @trpc/client @trpc/react-query @trpc/next superjson zod
+pnpm add -D trpc-ui
+
+# Create api
+
+mkdir -p src/pages/api/trpc/[trpc].ts
+echo "export { default } from '@/modules/trpc/server/api';" > src/pages/api/trpc/[trpc].ts
+echo "export { default } from '@/modules/trpc/server/api-panel';" > src/pages/api/trpc/inde.ts
+
 ```
 
-### 2. Add API Routes
-Create these files in your Next.js project:
-
-**`/src/pages/api/trpc/[trpc].ts`** (Main tRPC handler):
-```typescript
-import { createNextApiHandler } from '@trpc/server/adapters/next';
-import { appRouter } from '@/modules/trpc/server/routes';
-import { createContext } from '@/modules/trpc/server/context';
-
-export default createNextApiHandler({
-  router: appRouter,
-  createContext,
-});
-```
-
-**`/src/pages/api/trpc/index.ts`** (API Documentation Panel):
-```typescript
-export { default } from '@/modules/trpc/server/api-panel';
-```
-
-### 3. Integrate with _app.tsx
+### 2. Integrate with _app.tsx
 ```typescript
 import { trpc } from '@/modules/trpc/client';
 
@@ -44,94 +33,116 @@ export default trpc.withTRPC(MyApp);
 - **API Panel**: http://localhost:3000/api/trpc
 - **Health Check**: `curl "http://localhost:3000/api/trpc/healthCheck"`
 
-## Features
-
-- ✅ **tRPC v11** with Pages Router integration
-- ✅ **Authentication system** with `.auth()` decorator pattern
-- ✅ **Role-based authorization** using FCU's existing auth system
-- ✅ **Extensible middleware system**
-- ✅ **Interactive API documentation panel**
-- ✅ **Type-safe procedures** with full TypeScript support
-
 ## Usage
 
-### Basic Queries
-```typescript
-// In React components
-const { data } = trpc.healthCheck.useQuery();
-const { data } = trpc.public.useQuery({ message: "Hello!" });
-```
+- All routes has to be defined in `src/modules/trpc/server/routes.ts`
+- Context is created on france-chaleur-urbaine/src/modules/trpc/server/context.ts
 
-### Authenticated Queries
-```typescript
-// Using the .auth() decorator
-const { data } = trpc.me.useQuery(); // Requires authentication
-const { data } = trpc.adminStats.useQuery(); // Requires admin role
-```
+### Create new routes on server
 
-### Mutations
-```typescript
-const mutation = trpc.echo.useMutation({
-  onSuccess: (data) => console.log(data.echo),
+When using trpc in an existing or newly created module
+
+1. Create validation schema in `src/modules/<moduleName>/constants.ts` as it will be used on server and client
+
+2. Create a `src/modules/<moduleName>/server/trpc-routes.ts` with the following
+
+```ts
+import { z } from 'zod';
+
+import { zCreateModuleNameInput, zUpdateModuleNameInput } from '@/modules/pro-eligibility-tests/constants';
+import { route, router, routeRole } from '@/modules/trpc/server';
+
+import * as moduleNamesService from './service';
+
+const authRoute = routeRole(['admin', 'gestionnaire']);
+const adminRoute = routeRole(['admin']);
+
+export const moduleNamesRouter = router({
+  create: route.input(zCreateModuleNameInput).mutation(async ({ input, ctx }) => {
+    return await moduleNamesService.create(input, ctx);
+  }),
+  update: route.input(zUpdateModuleNameInput).mutation(async ({ input, ctx }) => {
+    return await moduleNamesService.update(input.id, input, {}, ctx);
+  }),
+  list: authRoute.query(async ({ ctx }) => {
+    return await moduleNamesService.list({}, ctx);
+  }),
+  get: authRoute.input(z.object({ id: z.string() })).query(async ({ input, ctx }) => {
+    return await moduleNamesService.get(input.id, {}, ctx);
+  }),
+  delete: authRoute.input(z.object({ id: z.string() })).mutation(async ({ input, ctx }) => {
+    return await moduleNamesService.remove(input.id, {}, ctx);
+  }),
 });
-
-mutation.mutate({ message: "Hello tRPC!" });
 ```
 
-## Adding New Routes
+3. Add it to `src/modules/trpc/server/routes.ts`
 
-**In `/src/modules/trpc/server/routes.ts`**:
-```typescript
+```ts
+import { moduleNameRouter } from '@/modules/moduleName/server/trpc-routes';
+
+import { route, router } from './connection';
+
+/**
+ * This is the primary router for your server.
+ *
+ * All routers added in /modules/trpc/routers should be manually added here.
+ */
 export const appRouter = router({
-  // Public endpoint
-  myRoute: publicProcedure
-    .input(z.object({ id: z.string() }))
-    .query(({ input, ctx }) => {
-      return { result: input.id };
-    }),
-
-  // Protected endpoint with auth decorator
-  myAuthRoute: authProcedure
-    .auth({ authenticated: true, roles: ['admin'] })
-    .query(({ ctx }) => {
-      return { user: ctx.user };
-    }),
+  // Health check endpoint - no auth required
+  healthCheck: route.query(() => {
+    return {
+      status: 'ok',
+      timestamp: new Date().toISOString(),
+      message: 'tRPC server is running!',
+    };
+  }),
+  moduleName: moduleNameRouter,
 });
+
+// Export type definition of API
+export type AppRouter = typeof appRouter;
 ```
 
-## Available Endpoints
+### Use routes on frontend
 
-📖 **Interactive API Documentation**: http://localhost:3000/api/trpc
+```ts
+import trpc, { type RouterOutput } from '@/modules/trpc/client';
 
-## Architecture
-
-```
-src/modules/trpc/
-├── server/
-│   ├── connection.ts      # Core tRPC setup + auth middleware
-│   ├── context.ts         # Context using FCU's existing auth
-│   ├── routes.ts          # Main app router with example routes
-│   ├── api.ts             # Next.js API handler
-│   ├── api-panel.ts       # API documentation panel
-│   ├── utils.ts           # Utility functions
-│   └── middlewares/       # Extensible middleware system
-│       └── auth.ts        # Authentication middleware
-├── client.ts              # tRPC client configuration
-├── server.ts              # Server-side exports
-└── types.ts               # TypeScript definitions
+const { data: testDetails, isLoading, refetch } = trpc.moduleName.get.useQuery({ id: test.id }, { enabled: viewDetail });
 ```
 
-## Middleware System
+### Invalidate queries or update cache
 
-Extensible middleware architecture in `/server/middlewares/`:
-- **Auth middleware**: Authentication and role checking
-- **Custom middlewares**: Easy to add and compose
+Based on the situation, if new data has been received, 2 options can be used:
 
-Create new middlewares by following the pattern in `/middlewares/auth.ts`.
+- Invalidate queries
+```ts
+  const utils = trpc.useUtils();
 
-## Development
+  void utils.moduleName.list.invalidate();
+  void utils.moduleName.get.invalidate({ id: testId });
+```
 
-- **Start server**: `pnpm dev`
-- **API Documentation**: http://localhost:3000/api/trpc
-- **Health Check**: http://localhost:3000/api/trpc/healthCheck
-- **TypeScript Check**: `pnpm ts`
+- Update cache
+
+```ts
+  // Update the get cache if it exists for this test
+  utils.moduleName.get.setData({ id: testId }, (oldData) => {
+    if (oldData) {
+      return { ...oldData, name: updatedTest.name };
+    }
+    return oldData;
+  });
+
+  // Update the list cache to reflect the renamed test
+  utils.moduleName.list.setData(undefined, (oldData) => {
+    if (oldData) {
+      return {
+        ...oldData,
+        items: oldData.items.map((item) => (item.id === testId ? { ...item, name: updatedTest.name } : item)),
+      };
+    }
+    return oldData;
+  });
+```

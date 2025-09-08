@@ -1,6 +1,6 @@
 import { proEligibilityTestsRouter } from '@/modules/pro-eligibility-tests/server/trpc-routes';
 
-import { publicProcedure, router } from './connection';
+import { route, router } from './connection';
 
 /**
  * This is the primary router for your server.
@@ -9,7 +9,7 @@ import { publicProcedure, router } from './connection';
  */
 export const appRouter = router({
   // Health check endpoint - no auth required
-  healthCheck: publicProcedure.query(() => {
+  healthCheck: route.query(() => {
     return {
       status: 'ok',
       timestamp: new Date().toISOString(),

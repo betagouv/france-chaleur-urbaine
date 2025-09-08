@@ -5,14 +5,15 @@ import Box from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
 import Loader from '@/components/ui/Loader';
 import Text from '@/components/ui/Text';
-import { useFetch } from '@/hooks/useApi';
 import ProEligibilityTestItem from '@/modules/pro-eligibility-tests/client/ProEligibilityTestItem';
-import { type AdminProEligibilityTestListItem } from '@/pages/api/admin/pro-eligibility-tests';
+import trpc from '@/modules/trpc/client';
 
 export default function TestAddressesAdminPage() {
   const [emailFilter, setEmailFilter] = useQueryState('email');
-  const { data: tests, isLoading } = useFetch<AdminProEligibilityTestListItem[]>('/api/admin/pro-eligibility-tests');
 
+  const { data, isLoading } = trpc.proEligibilityTests.listAdmin.useQuery();
+
+  const tests = data?.items || [];
   const filteredTests = tests?.filter((test) => !emailFilter || test.user_email?.toLowerCase().includes(emailFilter.toLowerCase()));
 
   return (

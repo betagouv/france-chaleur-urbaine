@@ -5,12 +5,10 @@ import {
   zCreateEligibilityTestInput,
   zUpdateEligibilityTestInput,
 } from '@/modules/pro-eligibility-tests/constants';
-import { type DB, kdb, sql } from '@/server/db/kysely';
-import { type ApiContext, createBaseModel, type ListConfig } from '@/server/db/kysely/base-model';
+import { kdb, sql } from '@/server/db/kysely';
+import { type ApiContext, type ListConfig } from '@/server/db/kysely/base-model';
 
 export const tableName = 'pro_eligibility_tests';
-
-const baseModel = createBaseModel(tableName);
 
 export const listAdmin = async () => {
   const tests = await kdb
@@ -39,7 +37,11 @@ export const listAdmin = async () => {
     ])
     .orderBy('pro_eligibility_tests.created_at', 'desc')
     .execute();
-  return tests;
+
+  return {
+    items: tests,
+    count: tests.length,
+  };
 };
 
 export const list = async (_: ListConfig<typeof tableName>, context: ApiContext) => {
@@ -182,7 +184,7 @@ export const update = async (
       .where('id', '=', testId)
       .set({ ...updatedData, ...(hasNewAddresses ? { has_unseen_results: true } : {}) })
       .returningAll()
-      .execute();
+      .executeTakeFirstOrThrow();
     await createUserEvent({
       type: 'pro_eligibility_test_renamed',
       context_type: 'pro_eligibility_test',
@@ -190,7 +192,7 @@ export const update = async (
       author_id: context.user.id,
     });
 
-    return updatedItem as unknown as DB[typeof tableName];
+    return updatedItem;
   }
 
   if (hasNewAddresses) {
@@ -199,7 +201,7 @@ export const update = async (
       .where('id', '=', testId)
       .set({ has_unseen_results: true })
       .returningAll()
-      .execute();
+      .executeTakeFirstOrThrow();
 
     await kdb
       .insertInto('jobs')
@@ -220,13 +222,13 @@ export const update = async (
       author_id: context.user.id,
     });
 
-    return updatedItem as unknown as DB[typeof tableName];
+    return updatedItem;
   }
 
   throw new Error('No updated data');
 };
 
-export const remove: typeof baseModel.remove = async (testId, _config, context) => {
+export const remove = async (testId: string, _config: ListConfig<typeof tableName>, context: ApiContext) => {
   await ensureValidPermissions(context, testId);
   const removedItem = await kdb
     .updateTable('pro_eligibility_tests')
@@ -235,7 +237,7 @@ export const remove: typeof baseModel.remove = async (testId, _config, context) 
       deleted_at: new Date(),
     })
     .returningAll()
-    .execute();
+    .executeTakeFirstOrThrow();
 
   await createUserEvent({
     type: 'pro_eligibility_test_deleted',
@@ -244,7 +246,7 @@ export const remove: typeof baseModel.remove = async (testId, _config, context) 
     author_id: context.user.id,
   });
 
-  return removedItem as unknown as DB[typeof tableName];
+  return removedItem;
 };
 
 export const markAsSeen = async (testId: string, context: ApiContext) => {

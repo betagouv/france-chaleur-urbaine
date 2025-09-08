@@ -1,6 +1,5 @@
 import Badge from '@codegouvfr/react-dsfr/Badge';
 import Tabs from '@codegouvfr/react-dsfr/Tabs';
-import { useQueryClient } from '@tanstack/react-query';
 import { type ColumnFiltersState, type SortingState } from '@tanstack/react-table';
 import { useQueryState } from 'nuqs';
 import React from 'react';
@@ -20,10 +19,9 @@ import ModalSimple from '@/components/ui/ModalSimple';
 import Notice from '@/components/ui/Notice';
 import TableSimple, { type ColumnDef, type QuickFilterPreset } from '@/components/ui/TableSimple';
 import Tooltip from '@/components/ui/Tooltip';
-import { useFetch, usePut } from '@/hooks/useApi';
 import RenameEligibilityTestForm from '@/modules/pro-eligibility-tests/client/RenameEligibilityTestForm';
 import UpsertEligibilityTestForm from '@/modules/pro-eligibility-tests/client/UpsertEligibilityTestForm';
-import { type ProEligibilityTestResponse } from '@/modules/pro-eligibility-tests/server/api';
+import trpc, { type RouterOutput } from '@/modules/trpc/client';
 import { toastErrors } from '@/services/notification';
 import { downloadString } from '@/utils/browser';
 import { formatAsISODateMinutes, formatFrenchDate, formatFrenchDateTime } from '@/utils/date';
@@ -33,11 +31,7 @@ import { ObjectEntries, ObjectKeys } from '@/utils/typescript';
 import ProcheReseauBadge, { type ProcheReseauBadgeProps } from './ProcheReseauBadge';
 import { getProEligibilityTestAsXlsx } from '../utils/xlsx';
 
-export type ProEligibilityTest = NonNullable<ProEligibilityTestResponse['listItem']>;
-export type ProEligibilityTestWithAddresses = NonNullable<ProEligibilityTestResponse['get']['item']>;
-export type ProEligibilityTestWithAddressesItem = ProEligibilityTestWithAddresses['addresses'][number];
-
-const columns: ColumnDef<ProEligibilityTestWithAddressesItem>[] = [
+const columns: ColumnDef<RouterOutput['proEligibilityTests']['get']['addresses'][number]>[] = [
   {
     header: () => (
       <>
@@ -315,48 +309,59 @@ const quickFilterPresets = {
       },
     ],
   },
-} satisfies Record<string, QuickFilterPreset<ProEligibilityTestWithAddressesItem>>;
+} satisfies Record<string, QuickFilterPreset<RouterOutput['proEligibilityTests']['get']['addresses'][number]>>;
 type QuickFilterPresetKey = keyof typeof quickFilterPresets;
 
 const queryParamName = 'test-adresses';
 
 type ProEligibilityTestItemProps = {
-  test: ProEligibilityTest & {
-    user_email?: string;
-  };
-  onDelete?: (testId: string) => void;
+  test: RouterOutput['proEligibilityTests']['list']['items'][number] | RouterOutput['proEligibilityTests']['listAdmin']['items'][number];
+  onDelete?: () => void;
   readOnly?: boolean;
+  className?: string;
 };
-function ProEligibilityTestItem({ test, onDelete, readOnly = false }: ProEligibilityTestItemProps) {
-  const queryClient = useQueryClient();
+function ProEligibilityTestItem({ test, onDelete, readOnly = false, className }: ProEligibilityTestItemProps) {
   const [value] = useQueryState(queryParamName);
   const [viewDetail, setViewDetail] = useState(value === test.id);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [filteredAddresses, setFilteredAddresses] = useState<ProEligibilityTestWithAddresses['addresses']>([]);
+  const [filteredAddresses, setFilteredAddresses] = useState<RouterOutput['proEligibilityTests']['get']['addresses']>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const {
-    data: testDetails,
-    isLoading,
-    refetch,
-  } = useFetch<ProEligibilityTestResponse['get']>(`/api/pro-eligibility-tests/${test.id}`, undefined, {
-    enabled: viewDetail,
-  });
+  const { data: testDetails, isLoading, refetch } = trpc.proEligibilityTests.get.useQuery({ id: test.id }, { enabled: viewDetail });
 
-  const { mutateAsync: markAsSeen, isLoading: isMarkAsSeenLoading } = usePut(`/api/pro-eligibility-tests/${test.id}/mark-as-seen`, {
-    onMutate: () => {
-      queryClient.setQueryData(['/api/pro-eligibility-tests'], (testsResponse: ProEligibilityTestResponse['list']) => {
-        return {
-          ...testsResponse,
-          items: (testsResponse?.items ?? []).map((testItem) =>
-            testItem.id === test.id ? { ...testItem, has_unseen_results: false } : testItem
-          ),
-        };
+  const utils = trpc.useUtils();
+
+  const { mutateAsync: markAsSeen, isPending: isMarkAsSeenLoading } = trpc.proEligibilityTests.markAsSeen.useMutation({
+    onMutate: async ({ id }) => {
+      // Update the list cache optimistically
+      await utils.proEligibilityTests.list.cancel();
+
+      utils.proEligibilityTests.list.setData(undefined, (oldData) => {
+        if (oldData) {
+          return {
+            ...oldData,
+            items: oldData.items.map((testItem) => (testItem.id === id ? { ...testItem, has_unseen_results: false } : testItem)),
+          };
+        }
+        return oldData;
       });
+
+      // Update the get cache if it exists
+      utils.proEligibilityTests.get.setData({ id }, (oldData) => {
+        if (oldData) {
+          return { ...oldData, has_unseen_results: false };
+        }
+        return oldData;
+      });
+    },
+    onError: () => {
+      // Invalidate queries on error to refetch the correct state
+      void utils.proEligibilityTests.list.invalidate();
+      void utils.proEligibilityTests.get.invalidate({ id: test.id });
     },
   });
 
-  const addresses = testDetails?.item?.addresses ?? [];
+  const addresses = testDetails?.addresses ?? [];
 
   const presetStats = ObjectKeys(quickFilterPresets).reduce(
     (acc, key) => ({
@@ -366,11 +371,11 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false }: ProEligibi
     {} as Record<QuickFilterPresetKey, number>
   );
 
-  const handleDelete = async (testId: string) => {
+  const handleDelete = async () => {
     if (!confirm('Êtes-vous sûr de vouloir supprimer ce test ?')) {
       return;
     }
-    await onDelete?.(testId);
+    await onDelete?.();
   };
 
   const toggleFilterPreset = (presetKey: QuickFilterPresetKey) => {
@@ -395,8 +400,7 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false }: ProEligibi
   useEffect(() => {
     if (viewDetail && test.has_unseen_results && !readOnly && !isMarkAsSeenLoading) {
       void (async () => {
-        await markAsSeen(test.id, {});
-        await refetch();
+        await markAsSeen({ id: test.id });
       })();
     }
   }, [viewDetail, test.has_unseen_results, markAsSeen, refetch, readOnly, isMarkAsSeenLoading]);
@@ -450,6 +454,7 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false }: ProEligibi
       queryParamName={queryParamName}
       multi={false}
       id={test.id}
+      className={className}
       label={
         <div className="flex items-center justify-between w-full">
           <div>{test.name}</div>
@@ -493,14 +498,14 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false }: ProEligibi
       onClose={
         !readOnly
           ? async () => {
-              await handleDelete(test.id);
+              await handleDelete();
             }
           : undefined
       }
       onExpandedChange={async (expanded) => {
         setViewDetail(expanded);
         if (expanded && test.has_unseen_results && !readOnly) {
-          await markAsSeen(test.id, {});
+          await markAsSeen({ id: test.id });
           await refetch();
         }
       }}
