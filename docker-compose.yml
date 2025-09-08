@@ -13,6 +13,21 @@ services:
       - ./docker/postgresql.conf:/etc/postgresql/postgresql.conf:ro
       - db:/var/lib/postgresql/data
 
+  db_test:
+    image: postgis/postgis:16-3.5-alpine
+    shm_size: 256m
+    platform: linux/amd64
+    command: postgres -c config_file=/etc/postgresql/postgresql.conf
+    environment:
+      POSTGRES_USER: fcu_test
+      POSTGRES_PASSWORD: fcu_test_pass
+      POSTGRES_DB: fcu_test
+    ports:
+      - '5433:5432'
+    volumes:
+      - ./docker/postgresql-test.conf:/etc/postgresql/postgresql.conf:ro
+      - db_test:/var/lib/postgresql/data
+
   mailpit:
     image: axllent/mailpit:v1.18.5
     restart: unless-stopped
@@ -26,4 +41,5 @@ services:
 
 volumes:
   db:
+  db_test:
   mailpit:

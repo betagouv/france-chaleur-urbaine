@@ -4,7 +4,7 @@ export async function up(knex: Knex): Promise<void> {
   await knex.raw(`
     CREATE TABLE IF NOT EXISTS public.zone_a_potentiel_froid
     (
-        ogc_fid integer NOT NULL DEFAULT nextval('zone_a_potentiel_froid_ogc_fid_seq'::regclass),
+        ogc_fid integer NOT NULL,
         id_zone character varying(254) COLLATE pg_catalog."default",
         com_insee character varying(254) COLLATE pg_catalog."default",
         dist_con character varying(254) COLLATE pg_catalog."default",
@@ -29,7 +29,7 @@ export async function up(knex: Knex): Promise<void> {
 
     CREATE TABLE IF NOT EXISTS public.zone_a_potentiel_fort_froid
     (
-        ogc_fid integer NOT NULL DEFAULT nextval('zone_a_potentiel_fort_froid_ogc_fid_seq'::regclass),
+        ogc_fid integer NOT NULL,
         id_zone character varying(254) COLLATE pg_catalog."default",
         com_insee character varying(254) COLLATE pg_catalog."default",
         dist_con character varying(254) COLLATE pg_catalog."default",
