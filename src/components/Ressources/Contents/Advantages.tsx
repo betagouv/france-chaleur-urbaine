@@ -27,7 +27,8 @@ const contents = [
   },
   {
     title: 'Chauffage collectif au gaz :',
-    highlight: 'À partir de 2025, le chauffage au gaz sera interdit dans l’habitat collectif neuf !',
+    highlight:
+      "Les seuils d'émissions autorisées par la RE2020 imposent désormais l'hybridation des chaudières à gaz (avec une EnR complémentaire ou une pompe à chaleur) dans les bâtiments neufs.",
     list: [
       <>
         Importantes <b>émissions de gaz à effet de serre</b>
