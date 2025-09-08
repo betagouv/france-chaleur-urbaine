@@ -5,7 +5,8 @@ import { beforeEach, describe, expect, it } from 'vitest';
 
 import usersStatsHandler from '@/pages/api/admin/users-stats';
 import { type DB } from '@/server/db/kysely';
-import { cleanDatabase, mockUserSession, seedTableUser, uuid } from '@/tests/test-helpers';
+import { cleanDatabase, seedTableUser } from '@/tests/fixtures';
+import { mockUserSession, uuid } from '@/tests/helpers';
 
 const adminUser = {
   id: uuid(1),
