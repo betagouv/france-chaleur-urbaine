@@ -92,11 +92,13 @@ const UpsertEligibilityTestForm = ({ testId, onComplete }: UpsertEligibilityTest
         return;
       }
       const content = await parseUnknownCharsetText(await file.arrayBuffer());
-      form.setFieldValue('name', file.name);
+      if (!isUpdate) {
+        form.setFieldValue('name', file.name);
+      }
       form.setFieldValue('content', content);
       void processContent(content);
     },
-    [form]
+    [form, isUpdate]
   );
 
   const hasHeaders = useValue('hasHeaders') as boolean;

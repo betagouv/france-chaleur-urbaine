@@ -15,7 +15,7 @@ const RenameEligibilityTestForm = ({ testId, currentName }: RenameEligibilityTes
   const { closeModal } = useModal();
   const utils = trpc.useUtils();
 
-  const { mutateAsync: renameTest } = trpc.proEligibilityTests.update.useMutation({
+  const { mutateAsync: renameTest } = trpc.proEligibilityTests.rename.useMutation({
     onSuccess: (updatedTest) => {
       notify('success', 'Le test a été renommé avec succès');
 

@@ -332,27 +332,9 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false, className }:
   const utils = trpc.useUtils();
 
   const { mutateAsync: markAsSeen, isPending: isMarkAsSeenLoading } = trpc.proEligibilityTests.markAsSeen.useMutation({
-    onMutate: async ({ id }) => {
-      // Update the list cache optimistically
-      await utils.proEligibilityTests.list.cancel();
-
-      utils.proEligibilityTests.list.setData(undefined, (oldData) => {
-        if (oldData) {
-          return {
-            ...oldData,
-            items: oldData.items.map((testItem) => (testItem.id === id ? { ...testItem, has_unseen_results: false } : testItem)),
-          };
-        }
-        return oldData;
-      });
-
-      // Update the get cache if it exists
-      utils.proEligibilityTests.get.setData({ id }, (oldData) => {
-        if (oldData) {
-          return { ...oldData, has_unseen_results: false };
-        }
-        return oldData;
-      });
+    onSuccess: async () => {
+      void utils.proEligibilityTests.list.invalidate();
+      void utils.proEligibilityTests.get.invalidate({ id: test.id });
     },
     onError: () => {
       // Invalidate queries on error to refetch the correct state
