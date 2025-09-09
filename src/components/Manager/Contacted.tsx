@@ -10,7 +10,7 @@ const Contacted = ({
   updateDemand: (demandId: string, demand: Partial<Demand>) => Promise<void>;
 }) => {
   const handleCheckboxChange = (e: any) => {
-    updateDemand(demand.id, {
+    void updateDemand(demand.id, {
       'Prise de contact': e.target.checked,
     });
   };

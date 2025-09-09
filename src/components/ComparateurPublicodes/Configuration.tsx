@@ -128,7 +128,7 @@ const Configuration: React.FC<ConfigurationProps> = ({ engine, address, onChange
           sharedQueryParamName="configId"
           onShare={({ id }, { setSharingId }) => {
             const urlToShare = `${window.location.origin}${window.location.pathname}?configId=${id}`;
-            navigator.clipboard.writeText(urlToShare);
+            void navigator.clipboard.writeText(urlToShare);
 
             const title = 'Ma configuration du comparateur de coûts et CO₂ de France Chaleur Urbaine';
             const text =

@@ -23,7 +23,7 @@ export const useRedirectionAfterLogin = (session?: Session | null) => {
     // if the user is not authenticated, we save the callbackUrl in a cookie
     if (!session && callbackUrlQueryParam) {
       setCallbackUrlCookie(callbackUrlQueryParam);
-      setCallbackUrlQueryParam(null);
+      void setCallbackUrlQueryParam(null);
     }
 
     if (session && callbackUrlCookie) {

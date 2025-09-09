@@ -446,7 +446,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
         setNearestReseauDeFroid(undefined);
         setAddressError(false);
         setAddressLoading(false);
-        setAddress(null);
+        void setAddress(null);
         setLngLat(undefined);
 
         engine.setSituation(
@@ -467,7 +467,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
           const [lon, lat] = selectedAddress.geometry.coordinates;
           const addressLabel = selectedAddress.properties.label;
           if (addressLabel !== address) {
-            setAddress(null);
+            void setAddress(null);
           }
           const network = await heatNetworkService.findByCoords(selectedAddress);
           setAddressDetail({
@@ -499,7 +499,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
             return;
           }
 
-          setAddress(addressLabel);
+          void setAddress(addressLabel);
 
           if (infos.nearestReseauDeChaleur || infos.nearestReseauDeFroid) {
             setLngLat(selectedAddress.geometry.coordinates);
@@ -535,7 +535,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
           onChangeAddress={(newAddress) => {
             if (newAddress !== address) {
               setForceReload(true);
-              setAddress(newAddress);
+              void setAddress(newAddress);
             }
           }}
         />

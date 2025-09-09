@@ -27,7 +27,7 @@ let isShuttingDown = false;
   });
 });
 
-(async () => {
+void (async () => {
   logger.warn('starting clock');
   if (serverConfig.CLOCK_CRONS_ENABLE) {
     registerCrons();

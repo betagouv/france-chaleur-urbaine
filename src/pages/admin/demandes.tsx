@@ -187,7 +187,7 @@ function DemandesAdmin(): React.ReactElement {
       ? selectedDemand.recommendedTags
       : (selectedDemand.Gestionnaires ?? []);
 
-    updateDemand(selectedDemandId, {
+    void updateDemand(selectedDemandId, {
       Gestionnaires: [...new Set([...currentTags, event.tag])],
     });
   });
@@ -220,7 +220,7 @@ function DemandesAdmin(): React.ReactElement {
               <FCUTagAutocomplete
                 value={demand.Gestionnaires ?? []}
                 onChange={(newGestionnaires: string[] /* TODO should be handled by typescript */) => {
-                  updateDemand(demand.id, {
+                  void updateDemand(demand.id, {
                     Gestionnaires: newGestionnaires,
                   });
                 }}
@@ -286,7 +286,7 @@ function DemandesAdmin(): React.ReactElement {
                 priority="primary"
                 size="small"
                 onClick={async () => {
-                  updateDemand(demand.id, {
+                  void updateDemand(demand.id, {
                     'Gestionnaires validés': true,
 
                     // assign recommended tags, assignment, and network infos if not are set

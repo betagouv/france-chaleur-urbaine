@@ -62,7 +62,7 @@ const Autocomplete = <Option extends DefaultOption>({
 
   useDebouncedEffect(
     () => {
-      (async () => {
+      void (async () => {
         if (!(inputValue?.length >= minCharThreshold && !selectedValue && !error)) {
           return;
         }

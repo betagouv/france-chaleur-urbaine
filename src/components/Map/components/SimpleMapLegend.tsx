@@ -141,8 +141,8 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
       selectedTabId={selectedTabId.tabId}
       tabs={tabs}
       onTabChange={(newTabId: string) => {
-        trackEvent(`Carto|Tabs|${newTabId as TabId}`);
-        setSelectedTabId({ tabId: newTabId as TabId, subTabId: null });
+        void trackEvent(`Carto|Tabs|${newTabId as TabId}`);
+        void setSelectedTabId({ tabId: newTabId as TabId, subTabId: null });
       }}
     >
       {selectedTabId.tabId === 'reseaux' && (

@@ -20,19 +20,19 @@ export async function processInParallel<T>(
     if (!nextItem.done) {
       const operationPromise = asyncLimit(() => asyncOperation(nextItem.value));
       pendingPromises.push(operationPromise);
-      operationPromise.finally(() => {
+      void operationPromise.finally(() => {
         // remove the promise
         const index = pendingPromises.indexOf(operationPromise);
         if (index !== -1) {
           pendingPromises.splice(index, 1);
         }
-        tryProcessNextOperation();
+        void tryProcessNextOperation();
       });
     }
   };
 
   for (let i = 0; i < maxParallel; i++) {
-    tryProcessNextOperation();
+    void tryProcessNextOperation();
   }
 
   // wait for all operations

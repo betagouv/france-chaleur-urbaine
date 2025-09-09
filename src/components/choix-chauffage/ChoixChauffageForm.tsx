@@ -28,7 +28,7 @@ function ChoixChauffageForm() {
   const [addressDetail, setAddressDetail] = useState<AddressDetail | null>(null);
 
   const testAddressEligibility = toastErrors(async (geoAddress: SuggestionItem) => {
-    setAddress(geoAddress?.properties?.label ?? '');
+    void setAddress(geoAddress?.properties?.label ?? '');
     const eligibilityStatus = await runWithMinimumDelay(() => heatNetworkService.findByCoords(geoAddress), 500);
     setAddressDetail({
       network: eligibilityStatus,
@@ -50,10 +50,10 @@ function ChoixChauffageForm() {
               defaultValue={address ?? ''}
               label={<strong>Entrez votre adresse :</strong>}
               onSelect={(geoAddress: SuggestionItem) => {
-                testAddressEligibility(geoAddress);
+                void testAddressEligibility(geoAddress);
               }}
               onClear={() => {
-                setAddress(null);
+                void setAddress(null);
                 setAddressDetail(null);
               }}
             />

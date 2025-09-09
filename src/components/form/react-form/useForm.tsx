@@ -585,7 +585,7 @@ function useFormInternal<
         e.preventDefault();
         e.stopPropagation();
         onSubmit?.(e);
-        form.handleSubmit();
+        void form.handleSubmit();
       }}
       {...props}
     >

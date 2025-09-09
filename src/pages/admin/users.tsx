@@ -70,14 +70,14 @@ export default function ManageUsers() {
     toastErrors(async (userUpdate: UsersResponse['updateInput']) => {
       await updateUser(userId, userUpdate);
       if (userId) {
-        setUserId(null);
+        void setUserId(null);
       }
       notify('success', 'Utilisateur mis à jour');
     });
 
   const handleCreateUser = toastErrors(async (userCreate: UsersResponse['createInput']) => {
     await createUser(userCreate);
-    setUserId(null);
+    void setUserId(null);
     notify('success', 'Utilisateur créé');
   });
 
@@ -123,7 +123,7 @@ export default function ManageUsers() {
                 undismissibles={info.row.original.gestionnaires_from_api ?? []}
                 value={info.row.original.gestionnaires ?? []}
                 onChange={(newGestionnaires: string[] /* TODO should be handled by typescript */) => {
-                  handleUpdateUser(info.row.original.id)({ gestionnaires: newGestionnaires });
+                  void handleUpdateUser(info.row.original.id)({ gestionnaires: newGestionnaires });
                 }}
                 multiple
               />
@@ -194,7 +194,7 @@ export default function ManageUsers() {
               variant: 'destructive',
               onClick: () => {
                 if (row.original.active) {
-                  handleUpdateUser(row.original.id)({ active: false });
+                  void handleUpdateUser(row.original.id)({ active: false });
                   return;
                 }
                 if (window.confirm('Voulez-vous vraiment supprimer cet utilisateur ? Cette action est irréversible.')) {

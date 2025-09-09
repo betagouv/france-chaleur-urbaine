@@ -81,7 +81,7 @@ const MarkdownWrapper: React.FC<{
       const content = value || (typeof children === 'string' && children) || '';
       setMd(String(content));
     };
-    getContent();
+    void getContent();
   }, [children, value]);
 
   return typeof value === 'object' ? (

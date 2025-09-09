@@ -64,7 +64,7 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
   };
 
   const onAddressSelected = (geoAddress?: SuggestionItem) => {
-    setDefaultAddress(null);
+    void setDefaultAddress(null);
     // beware, this function gets called every time the address changes
     // and we only need the result when the address is complete
     if (!geoAddress) {
@@ -73,7 +73,7 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
     setSelectedGeoAddress(geoAddress);
     setEligibilityStatus(undefined);
     setHeatingType('');
-    testAddressEligibility(geoAddress);
+    void testAddressEligibility(geoAddress);
   };
 
   // appelé quand on soumet le formulaire de contact (dernière étape), on crée la demande côté airtable

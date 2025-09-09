@@ -8,12 +8,12 @@ const useArrayQueryState = <Type extends string>(name: string) => {
   });
 
   const set = (newItems: Type[]) => {
-    setItems(newItems.length > 0 ? newItems : null);
+    void setItems(newItems.length > 0 ? newItems : null);
   };
 
   const add = (name: Type) => {
     if (!items.includes(name)) {
-      setItems((prevItems) => {
+      void setItems((prevItems) => {
         const newItems = [...prevItems, name].filter(Boolean);
 
         return newItems.length > 0 ? newItems : null;
@@ -22,7 +22,7 @@ const useArrayQueryState = <Type extends string>(name: string) => {
   };
 
   const remove = (name: Type) => {
-    setItems((prevItems) => {
+    void setItems((prevItems) => {
       const newItems = prevItems.filter((accordion) => accordion !== name);
 
       // If no items are left, remove the query param by setting null

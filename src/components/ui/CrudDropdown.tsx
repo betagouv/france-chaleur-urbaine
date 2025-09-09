@@ -98,11 +98,11 @@ function CrudDropdown<T extends CrudResponse<keyof DB, any>>({
     if (!sharedId) {
       return;
     }
-    (async () => {
+    void (async () => {
       const { item } = await getCrud(sharedId);
 
       onSelect(item as CrudItem<T>);
-      setSharedId(null);
+      void setSharedId(null);
     })();
   }, [sharedId, handleSelect]);
 
@@ -192,7 +192,7 @@ function CrudDropdown<T extends CrudResponse<keyof DB, any>>({
                         autoFocus
                         onKeyDown={(e) => {
                           e.stopPropagation();
-                          if (e.key === 'Enter') handleRename(item[valueKey] as string);
+                          if (e.key === 'Enter') void handleRename(item[valueKey] as string);
                         }}
                       />
                     </div>
@@ -274,7 +274,7 @@ function CrudDropdown<T extends CrudResponse<keyof DB, any>>({
                   placeholder={addPlaceholderLabel}
                   autoFocus
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter') handleAddNew();
+                    if (e.key === 'Enter') void handleAddNew();
                   }}
                 />
                 <Button

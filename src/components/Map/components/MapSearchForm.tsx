@@ -15,7 +15,7 @@ const MapSearchForm = ({ onAddressSelect }: { onAddressSelect?: HandleAddressSel
     if (!geoAddress) {
       return;
     }
-    setDefaultAddress(null);
+    void setDefaultAddress(null);
     try {
       setEligibilityError(false);
       const network = await heatNetworkService.findByCoords(geoAddress);

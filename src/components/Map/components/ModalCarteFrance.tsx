@@ -79,7 +79,7 @@ function ModalCarteFrance() {
       });
     }
     if (modalOpened && !statsData) {
-      fetchStats();
+      void fetchStats();
     }
   }, [modalOpened]);
 

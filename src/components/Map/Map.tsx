@@ -408,7 +408,7 @@ export const FullyFeaturedMap = ({
 
     // legacy, display the result of a bulk eligibility test
     // keep until end of 2025 to be compatible with links sent by email
-    heatNetworkService.bulkEligibilityValues(id as string).then((response) => {
+    void heatNetworkService.bulkEligibilityValues(id as string).then((response) => {
       if (response.result) {
         const newMarkersList: MapMarkerInfos[] = [];
         response.result.forEach((address) => {
@@ -467,7 +467,7 @@ export const FullyFeaturedMap = ({
     const { coord, id } = router.query;
     if (!geolocDisabled && !coord && !initialCenter && !id && navigator.geolocation) {
       if (navigator.permissions) {
-        navigator.permissions.query({ name: 'geolocation' }).then(({ state }) => {
+        void navigator.permissions.query({ name: 'geolocation' }).then(({ state }) => {
           if (state === 'granted' || state === 'prompt') {
             navigator.geolocation.getCurrentPosition((pos) => {
               const { longitude, latitude } = pos.coords;
@@ -557,7 +557,7 @@ export const FullyFeaturedMap = ({
       if (!viewState) {
         return;
       }
-      setQuery(
+      void setQuery(
         {
           coord: `${viewState.longitude.toFixed(7)},${viewState.latitude.toFixed(7)}`,
           zoom: viewState.zoom.toFixed(2),
