@@ -151,6 +151,7 @@ export type MapConfiguration = {
     qpv2024: boolean;
   };
   zonesAUrbaniser: boolean;
+  ressourcesGeothermalesNappes: boolean;
   densiteThermiqueLineaire: boolean;
   mesureDistance: boolean;
   extractionDonneesBatiment: boolean;
@@ -280,6 +281,7 @@ export const emptyMapConfiguration: EmptyMapConfiguration = {
     qpv2024: true,
   },
   zonesAUrbaniser: false,
+  ressourcesGeothermalesNappes: false,
   densiteThermiqueLineaire: false,
   mesureDistance: false,
   extractionDonneesBatiment: false,

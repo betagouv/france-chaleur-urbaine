@@ -258,11 +258,15 @@ export const allDatabaseTables: TableInfo[] = [
   },
   {
     name: 'ouvrages_geothermie_surface_echangeurs_fermes_tiles',
-    description: 'Ouvrages de géothermie en surface avec échangeurs fermés',
+    description: 'Tuiles des ouvrages de géothermie en surface avec échangeurs fermés',
   },
   {
     name: 'ouvrages_geothermie_surface_echangeurs_ouverts_tiles',
-    description: 'Ouvrages de géothermie en surface avec échangeurs ouverts',
+    description: 'Tuiles des ouvrages de géothermie en surface avec échangeurs ouverts',
+  },
+  {
+    name: 'ressources_geothermales_nappes_tiles',
+    description: 'Tuiles des ressources géothermales en nappes',
   },
 
   // données BDNB (Base de données nationale des bâtiments)

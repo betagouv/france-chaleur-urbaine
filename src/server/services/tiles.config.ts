@@ -67,6 +67,7 @@ export const databaseSourceIds = [
   'etudesEnCours',
   'testsAdresses',
   'zonesAUrbaniser',
+  'ressourcesGeothermalesNappes',
 ] as const;
 
 export const zDatabaseSourceId = z.enum(databaseSourceIds);
@@ -459,6 +460,16 @@ export const tilesInfo: Record<DatabaseSourceId, TileInfo> = {
   zonesAUrbaniser: {
     source: 'database',
     tiles: 'zone_a_urbaniser_tiles',
+    compressedTiles: true,
+    table: '', // useless
+    properties: [], // useless
+    sourceLayer: '', // useless
+    id: '', // useless
+    extraWhere: (query) => query, // useless
+  },
+  ressourcesGeothermalesNappes: {
+    source: 'database',
+    tiles: 'ressources_geothermales_nappes_tiles',
     compressedTiles: true,
     table: '', // useless
     properties: [], // useless

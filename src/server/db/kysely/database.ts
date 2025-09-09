@@ -3352,6 +3352,13 @@ export interface ReseauxDeFroidTiles {
   z: Int8;
 }
 
+export interface RessourcesGeothermalesNappesTiles {
+  tile: Buffer;
+  x: Int8;
+  y: Int8;
+  z: Int8;
+}
+
 export interface AssignmentRules {
   id: string;
   search_pattern: string;
@@ -3639,6 +3646,7 @@ export interface DB {
   reseaux_de_chaleur_tiles: ReseauxDeChaleurTiles;
   reseaux_de_froid: ReseauxDeFroid;
   reseaux_de_froid_tiles: ReseauxDeFroidTiles;
+  ressources_geothermales_nappes_tiles: RessourcesGeothermalesNappesTiles;
   tags: Tags;
   users: Users;
   zone_a_potentiel_chaud: ZoneAPotentielChaud;

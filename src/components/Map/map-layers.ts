@@ -41,6 +41,7 @@ import { perimetresDeDeveloppementPrioritaireLayersSpec } from './layers/perimet
 import { reseauxDeChaleurLayersSpec } from './layers/reseauxDeChaleur';
 import { reseauxDeFroidLayersSpec } from './layers/reseauxDeFroid';
 import { reseauxEnConstructionLayersSpec } from './layers/reseauxEnConstruction';
+import { ressourcesGeothermalesNappesLayersSpec } from './layers/ressourcesGeothermalesNappes';
 import { testsAdressesLayersSpec } from './layers/testsAdresses';
 import { typeChauffageBatimentsCollectifsLayersSpec } from './layers/typeChauffageBatimentsCollectifs';
 import { zonesAUrbaniserLayersSpec } from './layers/zonesAUrbaniser';
@@ -138,6 +139,7 @@ export type MapLayerSpecification<ILayerId = string> = Omit<LayerSpecification, 
 export const mapLayers = [
   ...customGeojsonLayersSpec,
   ...enrrMobilisablesZonesGeothermieProfondeLayersSpec,
+  ...ressourcesGeothermalesNappesLayersSpec,
   ...zonesPotentielChaudLayersSpec,
   ...zonesPotentielFroidLayersSpec,
   ...zonesAUrbaniserLayersSpec,

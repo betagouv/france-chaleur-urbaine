@@ -57,14 +57,31 @@ export abstract class BaseAdapter {
 
       await runBash(`unzip -o "${zipFilePath}" -d "${tempDir}"`);
 
-      const extractedFiles = await readdir(tempDir);
-      const shapefileBase = extractedFiles.find((file) => file.endsWith('.shp'))?.replace('.shp', '');
+      const findShapefile = async (dir: string): Promise<string | null> => {
+        const files = await readdir(dir, { withFileTypes: true });
 
-      if (!shapefileBase) {
+        // search in current directory
+        const shpFile = files.find((file) => !file.isDirectory() && file.name.endsWith('.shp'));
+        if (shpFile) {
+          return join(dir, shpFile.name);
+        }
+
+        // search in subdirectories
+        for (const file of files) {
+          if (file.isDirectory()) {
+            const result = await findShapefile(join(dir, file.name));
+            if (result) return result;
+          }
+        }
+
+        return null;
+      };
+
+      const shapefilePath = await findShapefile(tempDir);
+
+      if (!shapefilePath) {
         throw new Error('Aucun fichier shapefile (.shp) trouvé dans le ZIP');
       }
-
-      const shapefilePath = join(tempDir, `${shapefileBase}.shp`);
 
       this.logger.info('Conversion du shapefile en GeoJSON', {
         shapefile: shapefilePath,
