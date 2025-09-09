@@ -470,7 +470,10 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false, className }:
           <div className="fr-mx-1w text-xs text-gray-800 font-normal cursor-help" title={formatFrenchDateTime(new Date(test.updated_at))}>
             {readOnly && (
               <>
-                <span className="font-semibold">{test.user_email}</span> -{' '}
+                <span className="font-semibold">
+                  {(test as RouterOutput['proEligibilityTests']['listAdmin']['items'][number]).user_email}
+                </span>{' '}
+                -{' '}
               </>
             )}
             Dernière mise à jour&nbsp;: {formatFrenchDate(new Date(test.updated_at))}
