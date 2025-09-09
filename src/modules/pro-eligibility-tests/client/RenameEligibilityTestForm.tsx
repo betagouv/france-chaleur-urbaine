@@ -13,30 +13,13 @@ type RenameEligibilityTestFormProps = {
 
 const RenameEligibilityTestForm = ({ testId, currentName }: RenameEligibilityTestFormProps) => {
   const { closeModal } = useModal();
-  const utils = trpc.useUtils();
 
   const { mutateAsync: renameTest } = trpc.proEligibilityTests.rename.useMutation({
-    onSuccess: (updatedTest) => {
+    meta: {
+      invalidates: ['proEligibilityTests.list', 'proEligibilityTests.get'],
+    },
+    onSuccess: () => {
       notify('success', 'Le test a été renommé avec succès');
-
-      // Update the get cache if it exists for this test
-      utils.proEligibilityTests.get.setData({ id: testId }, (oldData) => {
-        if (oldData) {
-          return { ...oldData, name: updatedTest.name };
-        }
-        return oldData;
-      });
-
-      // Update the list cache to reflect the renamed test
-      utils.proEligibilityTests.list.setData(undefined, (oldData) => {
-        if (oldData) {
-          return {
-            ...oldData,
-            items: oldData.items.map((item) => (item.id === testId ? { ...item, name: updatedTest.name } : item)),
-          };
-        }
-        return oldData;
-      });
     },
   });
 

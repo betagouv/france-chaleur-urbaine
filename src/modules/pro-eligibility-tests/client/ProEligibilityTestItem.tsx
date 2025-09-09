@@ -332,9 +332,8 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false, className }:
   const utils = trpc.useUtils();
 
   const { mutateAsync: markAsSeen, isPending: isMarkAsSeenLoading } = trpc.proEligibilityTests.markAsSeen.useMutation({
-    onSuccess: async () => {
-      void utils.proEligibilityTests.list.invalidate();
-      void utils.proEligibilityTests.get.invalidate({ id: test.id });
+    meta: {
+      invalidates: ['proEligibilityTests.list', 'proEligibilityTests.get'],
     },
     onError: () => {
       // Invalidate queries on error to refetch the correct state

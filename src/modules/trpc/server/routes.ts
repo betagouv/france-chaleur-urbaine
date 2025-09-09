@@ -1,4 +1,8 @@
+// eslint-disable-next-line import/no-unresolved -- This works and we need to get back the types
+import { type MutationProcedure, type QueryProcedure } from '@trpc/server/dist/unstable-core-do-not-import.d-C8vB_hCN.cjs';
+
 import { proEligibilityTestsRouter } from '@/modules/pro-eligibility-tests/server/trpc-routes';
+import { type FlattenKeys } from '@/utils/typescript';
 
 import { route, router } from './connection';
 
@@ -21,3 +25,5 @@ export const appRouter = router({
 
 // Export type definition of API
 export type AppRouter = typeof appRouter;
+
+export type AppRouterKeys = FlattenKeys<Omit<AppRouter, '_def'>, MutationProcedure<any> | QueryProcedure<any>>;

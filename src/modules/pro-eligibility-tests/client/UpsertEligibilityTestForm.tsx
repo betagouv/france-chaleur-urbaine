@@ -26,9 +26,16 @@ type UpsertEligibilityTestFormProps = {
 const UpsertEligibilityTestForm = ({ testId, onComplete }: UpsertEligibilityTestFormProps) => {
   const isUpdate = !!testId;
 
-  const { mutateAsync: createTest } = trpc.proEligibilityTests.create.useMutation();
-  const { mutateAsync: updateTest } = trpc.proEligibilityTests.update.useMutation();
-  const utils = trpc.useUtils();
+  const { mutateAsync: createTest } = trpc.proEligibilityTests.create.useMutation({
+    meta: {
+      invalidates: ['proEligibilityTests.list'],
+    },
+  });
+  const { mutateAsync: updateTest } = trpc.proEligibilityTests.update.useMutation({
+    meta: {
+      invalidates: ['proEligibilityTests.list', 'proEligibilityTests.get'],
+    },
+  });
 
   const [analysis, setAnalysis] = useState<ReturnType<typeof analyzeCSV> | null>(null);
 
@@ -45,11 +52,9 @@ const UpsertEligibilityTestForm = ({ testId, onComplete }: UpsertEligibilityTest
     onSubmit: toastErrors(async ({ value }) => {
       if (isUpdate) {
         await updateTest({ ...value, id: testId });
-        void utils.proEligibilityTests.get.invalidate({ id: testId });
       } else {
         await createTest(value);
       }
-      void utils.proEligibilityTests.list.invalidate();
       onComplete?.();
     }, FormErrorMessage),
   });

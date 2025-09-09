@@ -21,16 +21,14 @@ export default function TestsAdressesPage(): JSX.Element {
     refetchInterval: hasPendingJobs ? 5000 : false,
   });
 
-  const utils = trpc.useUtils();
-
   const {
     mutateAsync: deleteTest,
     isPending: isDeleteTestPending,
     variables: deleteTestVariables,
   } = trpc.proEligibilityTests.delete.useMutation({
-    onSuccess: () => {
-      void utils.proEligibilityTests.list.invalidate();
-    },
+    meta: {
+      invalidates: ['proEligibilityTests.list']
+    }
   });
 
   const eligibilityTests = data?.items || [];

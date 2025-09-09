@@ -1,9 +1,60 @@
+import { matchQuery, MutationCache, QueryClient } from '@tanstack/react-query';
 import { httpBatchLink, loggerLink } from '@trpc/client';
 import { createTRPCNext } from '@trpc/next';
 import { type NextPageContext } from 'next';
 
-import { type AppRouter } from '../types';
+import { type AppRouter, type AppRouterKeys } from '../types';
 
+/**
+ * Create a custom QueryClient with automatic cache invalidation for mutations
+ */
+const createQueryClient = () => {
+  const client = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: 1,
+        staleTime: 5 * 60 * 1000, // 5 minutes
+      },
+    },
+    mutationCache: new MutationCache({
+      onSuccess: async (_data, _variables, _context, mutation) => {
+        void client.invalidateQueries({
+          predicate: (query) =>
+            // invalidate all matching tags at once
+            // or everything if no meta is provided
+            mutation.meta?.invalidates?.some((queryKey: AppRouterKeys) => matchQuery({ queryKey }, query)) ?? true,
+        });
+
+        // const meta = mutation.meta as { invalidates?: AppRouterKeys[] };
+        // console.log('');//eslint-disable-line
+        // console.log('╔════START══meta.invalidates══════════════════════════════════════════════════');//eslint-disable-line
+        // console.log(meta.invalidates);//eslint-disable-line
+        // console.log('╚════END════meta.invalidates══════════════════════════════════════════════════');//eslint-disable-line
+        // debugger;
+        // if (meta?.invalidates) {
+        //   for (const queryKey of meta.invalidates) {
+        //     // Convert tRPC path to React Query key format
+        //     // const parts = (queryKey as string).split('.');
+        //     console.log('queryKey', queryKey);
+        //     const lo = await client.invalidateQueries({
+        //       queryKey: queryKey.split('.'),
+        //     });
+        //     console.log('lo', lo);
+        //   }
+        // }
+      },
+    }),
+  });
+  return client;
+};
+
+declare module '@tanstack/react-query' {
+  interface Register {
+    mutationMeta: {
+      invalidates?: Array<AppRouterKeys>;
+    };
+  }
+}
 /**
  * Extend `NextPageContext` with meta data that can be picked up by `responseMeta()` when server-side rendering
  */
@@ -59,15 +110,7 @@ const trpc = createTRPCNext<AppRouter>({
       /**
        * @link https://tanstack.com/query/v5/docs/react/reference/QueryClient
        */
-      queryClientConfig: {
-        defaultOptions: {
-          queries: {
-            retry: 1,
-            // Use isPending instead of isLoading for v5 compatibility
-            staleTime: 5 * 60 * 1000, // 5 minutes
-          },
-        },
-      },
+      queryClient: createQueryClient(),
     };
   },
   /**
