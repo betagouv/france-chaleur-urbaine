@@ -15,6 +15,7 @@ import SEO from '@/components/SEO';
 import ThemeProvider, { dsfrDocumentApi } from '@/components/Theme/ThemeProvider';
 import useHtmlAttributes from '@/hooks/useHtmlAttributes';
 import { usePreserveScroll } from '@/hooks/usePreserveScroll';
+import trpc from '@/modules/trpc/client';
 import { type AuthSSRPageProps } from '@/server/authentication';
 import { HeatNetworkService, ServicesContext, SuggestionService } from '@/services';
 import { AdminService } from '@/services/admin';
@@ -100,4 +101,4 @@ function App(appProps: AppProps<AuthSSRPageProps>) {
     </SessionProvider>
   );
 }
-export default App;
+export default trpc.withTRPC(App);

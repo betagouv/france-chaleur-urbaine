@@ -1,8 +1,9 @@
 import { clientConfig } from '@/client-config';
+import { type RouterOutput } from '@/modules/trpc/client';
 
-import { type ProEligibilityTestResponse } from '../server/api';
+type ProEligibilityTestAddress = RouterOutput['proEligibilityTests']['get']['addresses'][number];
 
-type ColumnAccessor = (address: ProEligibilityTestResponse['getItem']['addresses'][number]) => string;
+type ColumnAccessor = (address: ProEligibilityTestAddress) => string;
 
 type CSVColumn = {
   header: string;
@@ -98,7 +99,7 @@ const legend = [
   ],
 ];
 
-export const getProEligibilityTestAsXlsx = async (addresses: ProEligibilityTestResponse['getItem']['addresses']) => {
+export const getProEligibilityTestAsXlsx = async (addresses: ProEligibilityTestAddress[]) => {
   const XLSX = await import('xlsx');
 
   const wb = XLSX.utils.book_new();

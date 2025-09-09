@@ -9,24 +9,31 @@ import Dialog from '@/components/ui/Dialog';
 import Heading from '@/components/ui/Heading';
 import Loader from '@/components/ui/Loader';
 import Section, { SectionContent, SectionSubtitle, SectionTitle } from '@/components/ui/Section';
-import useCrud from '@/hooks/useCrud';
 import ProEligibilityTestItem from '@/modules/pro-eligibility-tests/client/ProEligibilityTestItem';
 import UpsertEligibilityTestForm from '@/modules/pro-eligibility-tests/client/UpsertEligibilityTestForm';
-import { type ProEligibilityTestResponse } from '@/modules/pro-eligibility-tests/server/api';
+import trpc from '@/modules/trpc/client';
 
 export default function TestsAdressesPage(): JSX.Element {
   const [hasPendingJobs, setHasPendingJobs] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const {
-    items,
-    isLoading,
-    delete: deleteTest,
-  } = useCrud('/api/pro-eligibility-tests', {
-    list: [undefined, { refetchInterval: hasPendingJobs ? 5000 : false }],
+  const { data, isLoading } = trpc.proEligibilityTests.list.useQuery(undefined, {
+    refetchInterval: hasPendingJobs ? 5000 : false,
   });
 
-  const eligibilityTests = items as unknown as ProEligibilityTestResponse['listItem'][];
+  const utils = trpc.useUtils();
+
+  const {
+    mutateAsync: deleteTest,
+    isPending: isDeleteTestPending,
+    variables: deleteTestVariables,
+  } = trpc.proEligibilityTests.delete.useMutation({
+    onSuccess: () => {
+      void utils.proEligibilityTests.list.invalidate();
+    },
+  });
+
+  const eligibilityTests = data?.items || [];
 
   useEffect(() => {
     setHasPendingJobs(eligibilityTests?.some((test) => test.has_pending_jobs) ?? false);
@@ -80,7 +87,11 @@ export default function TestsAdressesPage(): JSX.Element {
                     exit={{ opacity: 0, y: -10 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <ProEligibilityTestItem test={test} onDelete={() => deleteTest(test.id as string)} />
+                    <ProEligibilityTestItem
+                      test={test}
+                      onDelete={() => deleteTest({ id: test.id })}
+                      className={isDeleteTestPending && deleteTestVariables?.id === test.id ? 'opacity-50' : ''}
+                    />
                   </motion.div>
                 ))}
               </AnimatePresence>

@@ -4,7 +4,7 @@ import DSFRSelect from '@/components/form/dsfr/Select';
 import Upload from '@/components/form/dsfr/Upload';
 import useForm from '@/components/form/react-form/useForm';
 import Notice, { type NoticeProps } from '@/components/ui/Notice';
-import useCrud from '@/hooks/useCrud';
+import trpc from '@/modules/trpc/client';
 import { toastErrors } from '@/services/notification';
 import { parseUnknownCharsetText } from '@/utils/strings';
 
@@ -26,14 +26,16 @@ type UpsertEligibilityTestFormProps = {
 const UpsertEligibilityTestForm = ({ testId, onComplete }: UpsertEligibilityTestFormProps) => {
   const isUpdate = !!testId;
 
-  const { create: createTest, update: completeTest } = useCrud('/api/pro-eligibility-tests', {});
+  const { mutateAsync: createTest } = trpc.proEligibilityTests.create.useMutation();
+  const { mutateAsync: updateTest } = trpc.proEligibilityTests.update.useMutation();
+  const utils = trpc.useUtils();
 
   const [analysis, setAnalysis] = useState<ReturnType<typeof analyzeCSV> | null>(null);
 
   const { form, Form, Field, Radio, Submit, FieldWrapper, Checkbox, useValue, Select } = useForm({
     schema: isUpdate ? zUpdateEligibilityTestInput : zCreateEligibilityTestInput,
     defaultValues: {
-      name: '',
+      ...(isUpdate ? { id: testId } : { name: '' }),
       content: '',
       hasHeaders: true,
       dataType: 'address',
@@ -42,10 +44,12 @@ const UpsertEligibilityTestForm = ({ testId, onComplete }: UpsertEligibilityTest
     },
     onSubmit: toastErrors(async ({ value }) => {
       if (isUpdate) {
-        await completeTest(testId, value);
+        await updateTest({ ...value, id: testId });
+        void utils.proEligibilityTests.get.invalidate({ id: testId });
       } else {
         await createTest(value);
       }
+      void utils.proEligibilityTests.list.invalidate();
       onComplete?.();
     }, FormErrorMessage),
   });
@@ -88,11 +92,13 @@ const UpsertEligibilityTestForm = ({ testId, onComplete }: UpsertEligibilityTest
         return;
       }
       const content = await parseUnknownCharsetText(await file.arrayBuffer());
-      form.setFieldValue('name', file.name);
+      if (!isUpdate) {
+        form.setFieldValue('name', file.name);
+      }
       form.setFieldValue('content', content);
       void processContent(content);
     },
-    [form]
+    [form, isUpdate]
   );
 
   const hasHeaders = useValue('hasHeaders') as boolean;
@@ -144,6 +150,7 @@ const UpsertEligibilityTestForm = ({ testId, onComplete }: UpsertEligibilityTest
   return (
     <Form>
       <div className="flex flex-col gap-4">
+        {isUpdate && <Field.Input name="id" nativeInputProps={{ type: 'hidden' }} label="" />}
         <FieldWrapper>
           {/* <Field.Custom
             name="file"
