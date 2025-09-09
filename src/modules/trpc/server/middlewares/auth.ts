@@ -40,7 +40,7 @@ export function createAuthMiddleware(t: any) {
       if (!hasAnyRole) {
         throw new TRPCError({
           code: 'FORBIDDEN',
-          message: `Required role: ${authConfig.roles.join(' or ')}`,
+          message: `Permissions invalides`,
         });
       }
     }

@@ -1,6 +1,6 @@
 # Modules
 
-This folder aimes at holding different modules based on specific purposes
+This folder aims at holding different modules based on specific purposes
 
 All modules should be orginized the same way
 
