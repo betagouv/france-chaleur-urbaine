@@ -35,8 +35,7 @@ const UpsertEligibilityTestForm = ({ testId, onComplete }: UpsertEligibilityTest
   const { form, Form, Field, Radio, Submit, FieldWrapper, Checkbox, useValue, Select } = useForm({
     schema: isUpdate ? zUpdateEligibilityTestInput : zCreateEligibilityTestInput,
     defaultValues: {
-      ...(isUpdate ? { id: testId } : {}),
-      name: '',
+      ...(isUpdate ? { id: testId } : { name: '' }),
       content: '',
       hasHeaders: true,
       dataType: 'address',

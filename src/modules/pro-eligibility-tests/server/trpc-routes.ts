@@ -1,19 +1,26 @@
 import { z } from 'zod';
 
-import { zCreateEligibilityTestInput, zUpdateEligibilityTestInput } from '@/modules/pro-eligibility-tests/constants';
-import { route, router, routeRole } from '@/modules/trpc/server';
+import {
+  zCreateEligibilityTestInput,
+  zRenameEligibilityTestInput,
+  zUpdateEligibilityTestInput,
+} from '@/modules/pro-eligibility-tests/constants';
+import { router, routeRole } from '@/modules/trpc/server';
 
 import * as proEligibilityTestsService from './service';
 
-const authRoute = routeRole(['admin', 'gestionnaire']);
+const authRoute = routeRole(['admin', 'gestionnaire', 'particulier', 'professionnel', 'demo']);
 const adminRoute = routeRole(['admin']);
 
 export const proEligibilityTestsRouter = router({
-  create: route.input(zCreateEligibilityTestInput).mutation(async ({ input, ctx }) => {
+  create: authRoute.input(zCreateEligibilityTestInput).mutation(async ({ input, ctx }) => {
     return await proEligibilityTestsService.create(input, ctx);
   }),
-  update: route.input(zUpdateEligibilityTestInput).mutation(async ({ input, ctx }) => {
+  update: authRoute.input(zUpdateEligibilityTestInput).mutation(async ({ input, ctx }) => {
     return await proEligibilityTestsService.update(input.id, input, {}, ctx);
+  }),
+  rename: authRoute.input(zRenameEligibilityTestInput).mutation(async ({ input, ctx }) => {
+    return await proEligibilityTestsService.rename(input.id, input, {}, ctx);
   }),
   list: authRoute.query(async ({ ctx }) => {
     return await proEligibilityTestsService.list({}, ctx);

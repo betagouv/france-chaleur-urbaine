@@ -81,16 +81,19 @@ export type CreateEligibilityTestInput = z.infer<typeof zCreateEligibilityTestIn
 export const zUpdateEligibilityTestInput = z.strictObject({
   // file: zAddressesFile, // TODO: uncomment this when we have a way to handle files
   id: z.string(),
-  name: z
-    .string({ message: 'Le nom du test est obligatoire' })
-    .min(1, { message: 'Le nom du test est obligatoire' })
-    .max(100, { message: 'Le nom du test ne doit pas dépasser 100 caractères' })
-    .optional(),
   hasHeaders: z.boolean().optional(),
   content: z.string().optional(),
   separator: z.string().optional().nullable(),
   dataType: z.enum(['address', 'coordinates']).optional(),
   columnMapping: zColumnMapping.optional(),
+});
+
+export const zRenameEligibilityTestInput = z.strictObject({
+  id: z.string(),
+  name: z
+    .string({ message: 'Le nom du test est obligatoire' })
+    .min(1, { message: 'Le nom du test est obligatoire' })
+    .max(100, { message: 'Le nom du test ne doit pas dépasser 100 caractères' }),
 });
 
 export type UpdateEligibilityTestInput = z.infer<typeof zUpdateEligibilityTestInput>;

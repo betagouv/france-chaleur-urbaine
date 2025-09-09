@@ -168,6 +168,31 @@ export const create = async ({ name, ...input }: CreateEligibilityTestInput, con
   return createdItem;
 };
 
+export const rename = async (
+  testId: string,
+  updatedData: UpdateEligibilityTestInput,
+  _config: ListConfig<typeof tableName>,
+  context: ApiContext
+) => {
+  await ensureValidPermissions(context, testId);
+
+  const updatedItem = await kdb
+    .updateTable('pro_eligibility_tests')
+    .where('id', '=', testId)
+    .set(updatedData)
+    .returningAll()
+    .executeTakeFirstOrThrow();
+
+  await createUserEvent({
+    type: 'pro_eligibility_test_renamed',
+    context_type: 'pro_eligibility_test',
+    context_id: testId,
+    author_id: context.user.id,
+  });
+
+  return updatedItem;
+};
+
 export const update = async (
   testId: string,
   updatedData: UpdateEligibilityTestInput,
@@ -176,56 +201,33 @@ export const update = async (
 ) => {
   await ensureValidPermissions(context, testId);
 
-  const hasNewAddresses = updatedData.content && updatedData.content.length > 0;
+  const updatedItem = await kdb
+    .updateTable('pro_eligibility_tests')
+    .where('id', '=', testId)
+    .set({ has_unseen_results: true })
+    .returningAll()
+    .executeTakeFirstOrThrow();
 
-  if (Object.keys(updatedData).length === 1 && 'name' in updatedData) {
-    const updatedItem = await kdb
-      .updateTable('pro_eligibility_tests')
-      .where('id', '=', testId)
-      .set({ ...updatedData, ...(hasNewAddresses ? { has_unseen_results: true } : {}) })
-      .returningAll()
-      .executeTakeFirstOrThrow();
-    await createUserEvent({
-      type: 'pro_eligibility_test_renamed',
-      context_type: 'pro_eligibility_test',
-      context_id: testId,
-      author_id: context.user.id,
-    });
+  await kdb
+    .insertInto('jobs')
+    .values({
+      type: 'pro_eligibility_test',
+      data: updatedData,
+      status: 'pending',
+      entity_id: testId,
+      user_id: context.user.id,
+    })
+    .returning('id')
+    .executeTakeFirstOrThrow();
 
-    return updatedItem;
-  }
+  await createUserEvent({
+    type: 'pro_eligibility_test_updated',
+    context_type: 'pro_eligibility_test',
+    context_id: testId,
+    author_id: context.user.id,
+  });
 
-  if (hasNewAddresses) {
-    const updatedItem = await kdb
-      .updateTable('pro_eligibility_tests')
-      .where('id', '=', testId)
-      .set({ has_unseen_results: true })
-      .returningAll()
-      .executeTakeFirstOrThrow();
-
-    await kdb
-      .insertInto('jobs')
-      .values({
-        type: 'pro_eligibility_test',
-        data: updatedData,
-        status: 'pending',
-        entity_id: testId,
-        user_id: context.user.id,
-      })
-      .returning('id')
-      .executeTakeFirstOrThrow();
-
-    await createUserEvent({
-      type: 'name' in updatedData ? 'pro_eligibility_test_renamed' : 'pro_eligibility_test_updated',
-      context_type: 'pro_eligibility_test',
-      context_id: testId,
-      author_id: context.user.id,
-    });
-
-    return updatedItem;
-  }
-
-  throw new Error('No updated data');
+  return updatedItem;
 };
 
 export const remove = async (testId: string, _config: ListConfig<typeof tableName>, context: ApiContext) => {
