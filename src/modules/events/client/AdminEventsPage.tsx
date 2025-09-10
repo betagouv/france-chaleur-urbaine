@@ -92,6 +92,13 @@ const eventLabelRenderers: Record<EventType, (event: AdminEvent, updateFilters: 
       </FilterButton>
     </>
   ),
+  build_tiles: (event) => (
+    <>
+      <span>
+        a reconstruit les tuiles <strong>{(event.data as any)?.name}</strong>
+      </span>
+    </>
+  ),
 };
 
 export default function AdminEventsPage() {

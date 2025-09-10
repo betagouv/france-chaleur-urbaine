@@ -141,7 +141,7 @@ export async function processProEligibilityTestJob(job: ProEligibilityTestJob, l
             addressItem.result_status === 'ok' ? await getEligilityStatus(addressItem.latitude, addressItem.longitude) : null;
 
           const addressData = {
-            test_id: job.entity_id,
+            test_id: job.entity_id!,
             source_address: addressItem.address as string,
             ban_valid: addressItem.result_status === 'ok',
             ban_address: addressItem.result_label,

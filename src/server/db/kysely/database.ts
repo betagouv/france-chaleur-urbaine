@@ -3014,11 +3014,11 @@ export interface InstallationsGeothermieSurfaceEchangeursOuvertsTiles {
 export interface Jobs {
   created_at: Generated<Timestamp>;
   data: Json;
-  entity_id: string;
+  entity_id: string | null;
   id: Generated<string>;
   status: 'pending' | 'processing' | 'finished' | 'error';
   result: Json | null;
-  type: 'pro_eligibility_test';
+  type: 'pro_eligibility_test' | 'build_tiles';
   updated_at: Generated<Timestamp>;
   user_id: string;
 }
