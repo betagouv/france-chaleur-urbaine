@@ -47,3 +47,19 @@ pnpm cli users:add gestionnaire@fcu.local 'MON MDP SECURE' gestionnaire ENGIE_24
 La connexion est utilisée pour le moment pour récupérer les nombres d'iframes qui est utilisé dans les statistiques.
 
 Un token a été généré sur https://francechaleururbaine.pipedrive.com/settings/api et doit être défini par la variable d'environnement `PIPEDRIVE_API_KEY`.
+
+
+## Configuration des notifications de déploiement Scalingo dans Mattermost
+
+- Dans Mattermost, aller dans Menu principal (en haut à gauche) > Intégrations > Webhooks entrants.
+- Créer un webhook entrant avec ces informations:
+  - Titre : FCU Notifications déploiement Scalingo
+  - Canal : [France Chaleur Urbaine] Notifications
+  - Verrouiller le canal : oui
+  - Utilisateur : scalingo
+  - Photo de profil : https://avatars.githubusercontent.com/u/4868969
+
+- Sur Scalingo, créer un nouveau notifier sur https://dashboard.scalingo.com/apps/osc-fr1/france-chaleur-urbaine/settings/notifiers/ :
+  - Name : Notification déploiement Mattermost
+  - URL of the webhook : https://mattermost.incubateur.net/hooks/zsw9wcg5at8r98f9o8c9fe4imr (le lien obtenu à l'étape précédente)
+  - Events : sélectionner tous
