@@ -85,6 +85,7 @@ import {
   perimetresGeothermieProfondeLayerOpacity,
   statutColorMap,
 } from '../layers/geothermie/perimetresGeothermieProfonde';
+import { ressourcesGeothermalesNappesConfig, ressourcesGeothermalesNappesOpacity } from '../layers/ressourcesGeothermalesNappes';
 import { testsAdressesLayerStyle } from '../layers/testsAdresses';
 import {
   energyFilterInterval,
@@ -1213,6 +1214,41 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
               {/* spacer */}
               <Box width="32px" />
             </Box>
+
+            <TrackableCheckableAccordion
+              name="ressourcesGeothermalesNappes"
+              checked={mapConfiguration.ressourcesGeothermalesNappes}
+              layerName="ressourcesGeothermalesNappes"
+              trackingEvent="Carto|Ressources géothermales nappes"
+              label={
+                <>
+                  <Box flex>Ressources géothermales sur nappes</Box>
+                  <Tooltip
+                    title={
+                      <>
+                        Potentiel de géothermie sur nappes pour la production de chaleur ou de froid.
+                        <br />
+                        Source :{' '}
+                        <Link href="https://www.geothermies.fr/espace-cartographique" isExternal>
+                          BRGM-Ademe
+                        </Link>
+                      </>
+                    }
+                  />
+                </>
+              }
+            >
+              <DeactivatableBox disabled={!mapConfiguration.ressourcesGeothermalesNappes} ml="1w" mr="1w">
+                {ressourcesGeothermalesNappesConfig.map((item) => (
+                  <Box key={item.value} display="flex" alignItems="center" my="1v">
+                    <IconPolygon stroke={item.color} fillOpacity={ressourcesGeothermalesNappesOpacity} />
+                    <Text fontSize="12px" lineHeight="16px" className="fr-col" pl="1v">
+                      {item.label}
+                    </Text>
+                  </Box>
+                ))}
+              </DeactivatableBox>
+            </TrackableCheckableAccordion>
 
             <TrackableCheckableAccordion
               name="enrrMobilisablesSolaireThermique"

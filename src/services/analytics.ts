@@ -484,6 +484,12 @@ const trackingEvents = {
   'Carto|Zones à urbaniser|Désactive': {
     matomo: ['Carto', 'Zones à urbaniser', 'Désactive'],
   },
+  'Carto|Ressources géothermales nappes|Active': {
+    matomo: ['Carto', 'Ressources géothermales nappes', 'Active'],
+  },
+  'Carto|Ressources géothermales nappes|Désactive': {
+    matomo: ['Carto', 'Ressources géothermales nappes', 'Désactive'],
+  },
 
   // formulaire d'éligibilité
   'Eligibilité|Formulaire de contact éligible - Carte - Envoi': {

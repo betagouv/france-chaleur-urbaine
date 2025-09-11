@@ -26,6 +26,8 @@ fileignoreconfig:
   checksum: e23e852383c7fabc2b0a1d89e63a8595cdb4b4c6959fdc8cea4491b6d292aef3
 - filename: scripts/opendata/create-opendata-archive.sh
   checksum: 5b248229f5f5ea92e1ab4b9d6156b3ecdaaf94ab3f8e7adc41728151c67a87d1
+- filename: scripts/tiles/adapters/ressources-geothermales-nappes.ts
+  checksum: 5f9ac2951bc336323f5415e25249998bf0f012c3443833fa4ae751fc78ce1827
 - filename: src/components/ComparateurPublicodes/DebugDrawer.tsx
   checksum: 5e675d6da8d48880b27b4f45242dfb2ee0e30c93cf2f59f4f1795ddbef87b83f
 - filename: src/components/Map/Map.tsx
