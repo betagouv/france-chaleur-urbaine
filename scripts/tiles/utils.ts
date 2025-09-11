@@ -334,7 +334,7 @@ export const importGeoJSONToTable = async (fileName: string, destinationTable: s
   await saveGeoJSONToTable(geojson, destinationTable, zoomMin, zoomMax);
 };
 
-const dockerImageArch =
+export const dockerImageArch =
   arch() === 'arm64'
     ? 'arm64'
     : arch() === 'x64'

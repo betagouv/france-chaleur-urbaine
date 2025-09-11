@@ -8,6 +8,8 @@ import prompts from 'prompts';
 import XLSX from 'xlsx';
 import { z } from 'zod';
 
+import { tilesTypes } from '@/modules/tiles/server/generation-config';
+import { runTilesGeneration } from '@/modules/tiles/server/generation-run';
 import { getApiHandler } from '@/server/api/users';
 import { serverConfig } from '@/server/config';
 import { saveStatsInDB } from '@/server/cron/saveStatsInDB';
@@ -255,7 +257,7 @@ program
   });
 
 program
-  .command('tiles:generate')
+  .command('tiles:generate-legacy')
   .description(
     "Génère des tuiles vectorielles à partir d'une ressource en passant par un fichier GeoJSON temporaire. Exemple : `pnpm cli tiles:generate reseaux_de_chaleur`"
   )
@@ -286,6 +288,22 @@ program
     logger.warn(`- de copier la table sur dev et prod`);
     logger.warn(`pnpm db:push:dev --data-only ${tilesDatabaseName}`);
     logger.warn(`pnpm db:push:prod --data-only ${tilesDatabaseName}`);
+  });
+
+program
+  .command('tiles:generate')
+  .description('Génère des tuiles vectorielles pour une ressource')
+  .argument('<type>', `Type de ressource à générer - ${tilesTypes.join(', ')}`, (v) => z.enum(nonEmptyArray(tilesTypes)).parse(v))
+  .option('--input <file>', 'Path of the file to import from')
+  .action(async (type, options) => {
+    logger.info(`Génération du fichier GeoJSON pour ${type}`);
+    const config = await runTilesGeneration(type, options.input);
+    logger.info(`La table ${config.tilesTableName} a été populée avec les données pour ${type}.`);
+    logger.warn(`N'oubliez pas`);
+    logger.warn(`- de l'ajouter à la carte pnpm cli tiles:add-to-map ${type}`);
+    logger.warn(`- de copier la table sur dev et prod`);
+    logger.warn(`pnpm db:push:dev --data-only ${config.tilesTableName}`);
+    logger.warn(`pnpm db:push:prod --data-only ${config.tilesTableName}`);
   });
 
 program

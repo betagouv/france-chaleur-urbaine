@@ -2,6 +2,8 @@ import { createLogger as createWinstonLogger, format, transports } from 'winston
 
 import { serverConfig } from '@/server/config';
 
+export { type Logger } from 'winston';
+
 /**
  * Colorize inside of the message and display objects as stringified JSON.
  */
