@@ -1,4 +1,2 @@
 gdal-bin
-build-essential
-libsqlite3-dev
-zlib1g-dev
+docker.io
