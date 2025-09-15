@@ -26,8 +26,8 @@ dependencies:
     specifier: ^8.0.2
     version: 8.3.1
   '@incubateur-ademe/legal-pages-react':
-    specifier: ^0.5.0
-    version: 0.5.0(react-dom@19.1.0)(react@19.1.0)
+    specifier: 0.4.0-next-client.0
+    version: 0.4.0-next-client.0(react-dom@19.1.0)(react@19.1.0)
   '@mapbox/geo-viewport':
     specifier: ^0.5.0
     version: 0.5.0
@@ -2911,17 +2911,17 @@ packages:
     requiresBuild: true
     optional: true
 
-  /@incubateur-ademe/legal-pages-markdown@0.5.0:
-    resolution: {integrity: sha512-GBzX8IvgzcH9CAHZvQmNfIkbiU63ttvrkuRdFxj6L9JTI3DWzcJQ8Vl6SCGuKiS8A+ldyZdM97zTN21TUPn3WA==}
+  /@incubateur-ademe/legal-pages-markdown@0.4.0-next-client.0:
+    resolution: {integrity: sha512-PSzla0UtbfJMGpX1nAlhcDOJ7JXpfBjnbbNzSb4l7QlrRaZ0bJIyofnz9VeqwcERGKNtwBFw7IGB8nmAR68xcw==}
     dev: false
 
-  /@incubateur-ademe/legal-pages-react@0.5.0(react-dom@19.1.0)(react@19.1.0):
-    resolution: {integrity: sha512-xdSuds4poR6f8fOq8CYF2gVJzuqmCL6veJId0ISn8UDf12LECON0oK+e2S7xO8Kz6hPNuJ5ZnS7qS2am3Lx12w==}
+  /@incubateur-ademe/legal-pages-react@0.4.0-next-client.0(react-dom@19.1.0)(react@19.1.0):
+    resolution: {integrity: sha512-cFYfRVKbYcrxatpC977l0YoqrWcor+c7Ke+S8AnulSm5Dk+KsyqmcFvu05/uudZWgzI7cMQnnFiszqnIVLum1g==}
     peerDependencies:
       react: ^18.3.0
       react-dom: ^18.3.0
     dependencies:
-      '@incubateur-ademe/legal-pages-markdown': 0.5.0
+      '@incubateur-ademe/legal-pages-markdown': 0.4.0-next-client.0
       mustache: 4.2.0
       react: 19.1.0
       react-dom: 19.1.0(react@19.1.0)
@@ -6493,7 +6493,7 @@ packages:
     engines: {node: ^10 || ^12 || >=14}
     hasBin: true
     peerDependencies:
-      postcss: ^8.2.10
+      postcss: ^8.1.0
     dependencies:
       browserslist: 4.23.3
       caniuse-lite: 1.0.30001676
@@ -12055,7 +12055,7 @@ packages:
     resolution: {integrity: sha512-hpr+J05B2FVYUAXHeK1YyI267J/dDDhMU6B6civm8hSY1jYJnBXxzKDKDswzJmtLHryrjhnDjqqp/49t8FALew==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
-      postcss: ^8.2.10
+      postcss: ^8.0.0
     dependencies:
       postcss: 8.4.32
       postcss-value-parser: 4.2.0
@@ -12067,7 +12067,7 @@ packages:
     resolution: {integrity: sha512-7hsAZ4xGXl4MW+OKEWCnF6T5jqBw80/EE9aXg1r2yyn1RsVEU8EtKXbijEODa+rg7iih4bKf7vlvTGYR4CnPNg==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
-      postcss: ^8.2.10
+      postcss: ^8.0.0
     dependencies:
       postcss: 8.4.32
       postcss-value-parser: 4.2.0
@@ -12079,7 +12079,7 @@ packages:
     resolution: {integrity: sha512-dDLF8pEO191hJMtlHFPRa8xsizHaM82MLfNkUHdUtVEV3tgTp5oj+8qbEqYM57SLfc74KSbw//4SeJma2LRVIw==}
     engines: {node: ^12 || ^14 || >= 16}
     peerDependencies:
-      postcss: ^8.2.10
+      postcss: ^8.4.21
     dependencies:
       camelcase-css: 2.0.1
       postcss: 8.4.32
@@ -12089,7 +12089,7 @@ packages:
     resolution: {integrity: sha512-bSVhyJGL00wMVoPUzAVAnbEoWyqRxkjv64tUl427SKnPrENtq6hJwUojroMz2VB+Q1edmi4IfrAPpami5VVgMQ==}
     engines: {node: '>= 14'}
     peerDependencies:
-      postcss: ^8.2.10
+      postcss: '>=8.0.9'
       ts-node: '>=9.0.0'
     peerDependenciesMeta:
       postcss:
@@ -12106,7 +12106,7 @@ packages:
     resolution: {integrity: sha512-HQbt28KulC5AJzG+cZtj9kvKB93CFCdLvog1WFLf1D+xmMvPGlBstkpTEZfK5+AN9hfJocyBFCNiqyS48bpgzQ==}
     engines: {node: '>=12.0'}
     peerDependencies:
-      postcss: ^8.2.10
+      postcss: ^8.2.14
     dependencies:
       postcss: 8.4.32
       postcss-selector-parser: 6.1.2

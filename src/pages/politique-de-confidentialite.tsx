@@ -1,7 +1,10 @@
-import { PrivacyPolicy } from '@incubateur-ademe/legal-pages-react';
+import { type PrivacyPolicy } from '@incubateur-ademe/legal-pages-react';
+// @ts-expect-error PrivacyPolicyClient is not exported
+import PrivacyPolicyClient from '@incubateur-ademe/legal-pages-react/PrivacyPolicyClient';
 
 import SimplePage from '@/components/shared/page/SimplePage';
 
+const PrivacyPolicyComponent = PrivacyPolicyClient as unknown as typeof PrivacyPolicy;
 function PolitiqueDeConfidentialitePage() {
   return (
     <SimplePage
@@ -9,8 +12,7 @@ function PolitiqueDeConfidentialitePage() {
       description="Politique de protection des données personnelles de la plateforme France Chaleur Urbaine"
       layout="center"
     >
-      <PrivacyPolicy
-        includeBetaGouv
+      <PrivacyPolicyComponent
         cookieConsentButton={<button>CLICK</button>}
         siteName="France Chaleur Urbaine"
         date="08/09/2025"

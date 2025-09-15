@@ -1,4 +1,8 @@
-import { LegalNotice } from '@incubateur-ademe/legal-pages-react';
+import { type LegalNotice } from '@incubateur-ademe/legal-pages-react';
+// @ts-expect-error LegalNoticeClient is not exported
+import LegalNoticeClient from '@incubateur-ademe/legal-pages-react/LegalNoticeClient';
+
+const LegalNoticeComponent = LegalNoticeClient as unknown as typeof LegalNotice;
 
 import { clientConfig } from '@/client-config';
 import SimplePage from '@/components/shared/page/SimplePage';
@@ -10,7 +14,7 @@ function MentionsLegalesPage() {
       description="France Chaleur Urbaine est un service du Ministère de la transition écologique qui vise à faciliter et multiplier les raccordements aux réseaux de chaleur."
       layout="center"
     >
-      <LegalNotice
+      <LegalNoticeComponent
         includeBetaGouv
         siteName="France Chaleur Urbaine"
         siteUrl={process.env.NEXT_PUBLIC_SITE_URL!}
