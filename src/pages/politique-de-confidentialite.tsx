@@ -1,62 +1,57 @@
-import styled from 'styled-components';
+import { type PrivacyPolicy } from '@incubateur-ademe/legal-pages-react';
+// @ts-expect-error PrivacyPolicyClient is not exported
+import PrivacyPolicyClient from '@incubateur-ademe/legal-pages-react/PrivacyPolicyClient';
 
-import MarkdownWrapper from '@/components/MarkdownWrapper';
 import SimplePage from '@/components/shared/page/SimplePage';
-import privacyPolicy from '@/data/fcu-privacy-policy';
 
-const StyledMarkdown = styled(MarkdownWrapper)`
-  margin-bottom: 2em;
-
-  p {
-    font-size: 1rem;
-    line-height: 1.5em;
-    margin-bottom: 0.75em;
-  }
-
-  em {
-    color: inherit;
-    font-style: italic;
-  }
-  strong {
-    color: inherit;
-  }
-  strong em {
-    text-decoration: underline;
-    color: inherit;
-  }
-
-  h2:not(:first-child) {
-    margin-top: 1em;
-  }
-
-  h2,
-  h3 {
-    color: rgb(56, 56, 56);
-  }
-
-  ul {
-    font-size: 1rem;
-    line-height: 1.5em;
-  }
-`;
-
-function PrivacyPolicy() {
+const PrivacyPolicyComponent = PrivacyPolicyClient as unknown as typeof PrivacyPolicy;
+function PolitiqueDeConfidentialitePage() {
   return (
     <SimplePage
       title="Politique de confidentialité"
       description="Politique de protection des données personnelles de la plateforme France Chaleur Urbaine"
+      layout="center"
     >
-      <div className="fr-container fr-mt-2w">
-        <div className="fr-grid-row">
-          <div className="fr-col-12">
-            <div className="fr-col-12">
-              <StyledMarkdown value={privacyPolicy} />
-            </div>
-          </div>
-        </div>
-      </div>
+      <PrivacyPolicyComponent
+        cookieConsentButton={<button>CLICK</button>}
+        siteName="France Chaleur Urbaine"
+        date="08/09/2025"
+        cookies={[
+          {
+            category: 'Mesure d’audience anonymisée',
+            name: 'Matomo',
+            expiration: '13 mois',
+            finalities: 'Mesure d’audience',
+            editor: 'Matomo & ADEME',
+            destination: 'France',
+          },
+        ]}
+        thirdParties={[
+          {
+            name: 'Scalingo',
+            country: 'France',
+            hostingCountry: 'France',
+            serviceType: 'Hébergement site',
+            policyUrl: 'https://scalingo.com/fr/informations-legales',
+          },
+          {
+            name: 'Scalingo',
+            country: 'France',
+            hostingCountry: 'France',
+            serviceType: 'Base de données',
+            policyUrl: 'https://scalingo.com/fr/informations-legales',
+          },
+          {
+            name: 'Airtable',
+            country: 'États-Unis',
+            hostingCountry: 'États-Unis',
+            serviceType: 'Base de données',
+            policyUrl: 'https://www.airtable.com/company/tos/fr',
+          },
+        ]}
+      />
     </SimplePage>
   );
 }
 
-export default PrivacyPolicy;
+export default PolitiqueDeConfidentialitePage;

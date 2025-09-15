@@ -25,6 +25,9 @@ dependencies:
   '@faker-js/faker':
     specifier: ^8.0.2
     version: 8.3.1
+  '@incubateur-ademe/legal-pages-react':
+    specifier: 0.4.0-next-client.0
+    version: 0.4.0-next-client.0(react-dom@19.1.0)(react@19.1.0)
   '@mapbox/geo-viewport':
     specifier: ^0.5.0
     version: 0.5.0
@@ -2932,6 +2935,22 @@ packages:
     os: [win32]
     requiresBuild: true
     optional: true
+
+  /@incubateur-ademe/legal-pages-markdown@0.4.0-next-client.0:
+    resolution: {integrity: sha512-PSzla0UtbfJMGpX1nAlhcDOJ7JXpfBjnbbNzSb4l7QlrRaZ0bJIyofnz9VeqwcERGKNtwBFw7IGB8nmAR68xcw==}
+    dev: false
+
+  /@incubateur-ademe/legal-pages-react@0.4.0-next-client.0(react-dom@19.1.0)(react@19.1.0):
+    resolution: {integrity: sha512-cFYfRVKbYcrxatpC977l0YoqrWcor+c7Ke+S8AnulSm5Dk+KsyqmcFvu05/uudZWgzI7cMQnnFiszqnIVLum1g==}
+    peerDependencies:
+      react: ^18.3.0
+      react-dom: ^18.3.0
+    dependencies:
+      '@incubateur-ademe/legal-pages-markdown': 0.4.0-next-client.0
+      mustache: 4.2.0
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+    dev: false
 
   /@isaacs/cliui@8.0.2:
     resolution: {integrity: sha512-O8jcjabXaleOG9DQ0+ARXWZBTfnP4WNAqzuiJK7ll44AmxGKv/J2M4TPjxjY3znBCfvBXFzucm1twdyFybFqEA==}
@@ -11537,6 +11556,11 @@ packages:
 
   /murmurhash-js@1.0.0:
     resolution: {integrity: sha512-TvmkNhkv8yct0SVBSy+o8wYzXjE4Zz3PCesbfs8HiCXXdcTuocApFv11UWlNFWKYsP2okqrhb7JNlSm9InBhIw==}
+
+  /mustache@4.2.0:
+    resolution: {integrity: sha512-71ippSywq5Yb7/tVYyGbkBggbU8H3u5Rz56fH60jGFgr8uHwxs+aSKeqmluIVzM0m0kB7xQjKS6qPfd0b2ZoqQ==}
+    hasBin: true
+    dev: false
 
   /mz@2.7.0:
     resolution: {integrity: sha512-z81GNO7nnYMEhrGh9LeymoE4+Yr0Wn5McHIZMK5cfQCl+NDX08sCZgUc9/6MHni9IWuFLm1Z3HTCXu2z9fN62Q==}

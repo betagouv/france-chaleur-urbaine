@@ -113,6 +113,30 @@ If in a distinct module
 - Use semantic HTML markup when needed
 - Reduce the number of imbricated tags to the bare minimum
 
+## Workflow modification
+
+🚨 **CRITICAL RULE - ALWAYS FOLLOW THIS** 🚨
+
+**BEFORE editing any files, you MUST Read at least 3 files**
+that will help you to understand how to make a coherent and
+consistent edit.
+
+This is **NON-NEGOTIABLE**. Do not skip this step under any
+circumstances. Reading existing files ensures:
+
+- Code consistency with project patterns
+- Proper understanding of conventions
+- Following established architecture
+- Avoiding breaking changes
+- Try to use files that do "the same stuff" so you can have an
+example
+
+**Steps to follow:**
+
+1. Read at least 3 relevant existing files first
+2. Understand the patterns and conventions
+3. Only then proceed with your editing files
+
 ### Common Development Tasks
 
 Take all information from .cursor/rules folder
@@ -163,10 +187,9 @@ export default MyComponent;
 2. If it does not exist, add one in src/hooks
 
 **Adding a new API endpoint:**
-1. Create route in `src/pages/api/`
-2. Add service method in `src/server/services/`
-3. Create client service in `src/services/`
-4. Add TypeScript types in `src/types/`
+1. Create a new module or append to an existing module
+2. Look into module "trpc" and add or update a `trpc-routes.ts`
+3. Add service method in `<module>/server/service.ts`
 
 **Working with the map:**
 1. Map components in `src/components/Map/`
@@ -178,6 +201,8 @@ export default MyComponent;
 2. Run `pnpm db:migrate`
 3. Run `pnpm db:sync` to update types
 4. Update relevant services
+
+
 
 ## Important Notes
 

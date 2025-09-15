@@ -1,62 +1,35 @@
-import styled from 'styled-components';
+import { type LegalNotice } from '@incubateur-ademe/legal-pages-react';
+// @ts-expect-error LegalNoticeClient is not exported
+import LegalNoticeClient from '@incubateur-ademe/legal-pages-react/LegalNoticeClient';
 
-import MarkdownWrapper from '@/components/MarkdownWrapper';
+const LegalNoticeComponent = LegalNoticeClient as unknown as typeof LegalNotice;
+
+import { clientConfig } from '@/client-config';
 import SimplePage from '@/components/shared/page/SimplePage';
-import termOfUse from '@/data/fcu-term-of-use';
 
-const StyledMarkdown = styled(MarkdownWrapper)`
-  margin-bottom: 2em;
-
-  p {
-    font-size: 1rem;
-    line-height: 1.5em;
-    margin-bottom: 0.75em;
-  }
-
-  em {
-    color: inherit;
-    font-style: italic;
-  }
-  strong {
-    color: inherit;
-  }
-  strong em {
-    text-decoration: underline;
-    color: inherit;
-  }
-
-  h2:not(:first-child) {
-    margin-top: 1em;
-  }
-
-  h2,
-  h3 {
-    color: rgb(56, 56, 56);
-  }
-
-  ul {
-    font-size: 1rem;
-    line-height: 1.5em;
-  }
-`;
-
-function LegalMentions() {
+function MentionsLegalesPage() {
   return (
     <SimplePage
       title="Mentions légales"
       description="France Chaleur Urbaine est un service du Ministère de la transition écologique qui vise à faciliter et multiplier les raccordements aux réseaux de chaleur."
+      layout="center"
     >
-      <div className="fr-container fr-mt-2w">
-        <div className="fr-grid-row">
-          <div className="fr-col-12">
-            <div className="fr-col-12">
-              <StyledMarkdown value={termOfUse} />
-            </div>
-          </div>
-        </div>
-      </div>
+      <LegalNoticeComponent
+        includeBetaGouv
+        siteName="France Chaleur Urbaine"
+        siteUrl={process.env.NEXT_PUBLIC_SITE_URL!}
+        licenceUrl="https://www.etalab.gouv.fr/licence-ouverte-open-licence/"
+        date="08/09/2025"
+        siteHost={{
+          name: 'Scalingo',
+          address: '13 rue Jacques Peirotes<br/>67000 Strasbourg',
+          country: 'France',
+          email: 'support@scalingo.com',
+        }}
+        contactEmail={clientConfig.contactEmail}
+      />
     </SimplePage>
   );
 }
 
-export default LegalMentions;
+export default MentionsLegalesPage;

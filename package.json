@@ -60,6 +60,7 @@
     "@commander-js/extra-typings": "^12.1.0",
     "@emotion/is-prop-valid": "1.2.2",
     "@faker-js/faker": "^8.0.2",
+    "@incubateur-ademe/legal-pages-react": "0.4.0-next-client.0",
     "@mapbox/geo-viewport": "^0.5.0",
     "@mapbox/mapbox-gl-draw": "^1.5.0",
     "@mdx-js/loader": "^3.1.0",
