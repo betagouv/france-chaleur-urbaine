@@ -12,6 +12,13 @@ export const zUpdateReseauEnConstructionInput = z.object({
   tags: z.array(z.string()),
 });
 
+export const zUpdateGeometryInput = z.object({
+  id: z.number(),
+  geometry: z.string(),
+});
+
+export type UpdateGeometryInput = z.infer<typeof zUpdateGeometryInput>;
+
 export type UpdateReseauEnConstructionInput = z.infer<typeof zUpdateReseauEnConstructionInput>;
 
 export const zUpdatePerimetreDeDeveloppementPrioritaireInput = z.object({

@@ -1,4 +1,5 @@
 import {
+  zUpdateGeometryInput,
   zUpdatePerimetreDeDeveloppementPrioritaireInput,
   zUpdateReseauEnConstructionInput,
   zUpdateReseauInput,
@@ -15,6 +16,9 @@ export const reseauxRouter = router({
   }),
   updateTags: adminRoute.input(zUpdateReseauInput).mutation(async ({ input }) => {
     return await reseauxService.updateTags(input.id, input.tags);
+  }),
+  updateGeometry: adminRoute.input(zUpdateGeometryInput).mutation(async ({ input }) => {
+    return await reseauxService.updateGeometry(input.id, input.geometry);
   }),
   listEnConstruction: adminRoute.query(async () => {
     return await reseauxService.listReseauxEnConstruction();

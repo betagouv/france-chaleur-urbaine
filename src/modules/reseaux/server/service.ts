@@ -298,3 +298,7 @@ export const updatePerimetreDeDeveloppementPrioritaire = async (
 ) => {
   await kdb.updateTable('zone_de_developpement_prioritaire').set(data).where('id_fcu', '=', id).execute();
 };
+
+export const updateGeometry = async (id: number, geometry: string) => {
+  await kdb.updateTable('reseaux_de_chaleur').set({ geom_update: geometry }).where('id_fcu', '=', id).execute();
+};

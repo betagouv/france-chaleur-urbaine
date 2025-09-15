@@ -4,6 +4,7 @@ import { useCallback, useMemo, useState } from 'react';
 
 import TableFieldInput from '@/components/Admin/TableFieldInput';
 import FCUTagAutocomplete from '@/components/form/FCUTagAutocomplete';
+import AdminEditLegend from '@/components/Map/components/AdminEditLegend';
 import Map from '@/components/Map/Map';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import SimplePage from '@/components/shared/page/SimplePage';
@@ -28,6 +29,7 @@ const GestionDesReseaux = () => {
   const [selectedNetwork, setSelectedNetwork] = useState<
     ReseauDeChaleur | ReseauEnConstruction | PerimetreDeDeveloppementPrioritaire | null
   >(null);
+  const [editingId, setEditingId] = useState<number | null>(null);
 
   const { data: reseauxDeChaleur, isLoading: isLoadingReseauxDeChaleur, refetch: refetchReseauxDeChaleur } = trpc.reseaux.list.useQuery();
 
@@ -105,8 +107,27 @@ const GestionDesReseaux = () => {
     [updatePerimetreDeDeveloppementPrioritaire]
   );
 
+  const rowSelection = selectedNetwork ? { [selectedNetwork.id_fcu]: true } : {};
+
   const reseauxDeChaleurColumns = useMemo<ColumnDef<ReseauDeChaleur>[]>(
     () => [
+      {
+        id: 'actions',
+        cell: ({ row }) => (
+          <div className="flex gap-2">
+            <Button
+              size="small"
+              priority="secondary"
+              iconId="fr-icon-edit-line"
+              title="Modifier le tag"
+              onClick={() => {
+                setEditingId(row.original.id_fcu);
+              }}
+            />
+          </div>
+        ),
+        width: '40px',
+      },
       {
         accessorKey: 'id_fcu',
         header: 'id_fcu',
@@ -164,33 +185,29 @@ const GestionDesReseaux = () => {
         width: '400px',
         enableSorting: false,
       },
-      {
-        id: 'actions',
-        header: 'Actions',
-        cell: () => (
-          <div className="flex gap-2">
-            <Button
-              size="small"
-              priority="tertiary"
-              iconId="fr-icon-edit-line"
-              title="Modifier le tag"
-              onClick={() => {
-                // setEditingTag(row.original);
-                // setEditTagName(row.original.name);
-                // setEditTagType(row.original.type);
-                // setIsEditDialogOpen(true);
-              }}
-            />
-          </div>
-        ),
-        width: '120px',
-      },
     ],
     [updateReseauDeChaleur]
   );
 
   const reseauxEnConstructionColumns = useMemo<ColumnDef<ReseauEnConstruction>[]>(
     () => [
+      {
+        id: 'actions',
+        cell: ({ row }) => (
+          <div className="flex gap-2">
+            <Button
+              size="small"
+              priority="secondary"
+              iconId="fr-icon-edit-line"
+              title="Modifier le tag"
+              onClick={() => {
+                setEditingId(row.original.id_fcu);
+              }}
+            />
+          </div>
+        ),
+        width: '40px',
+      },
       {
         accessorKey: 'id_fcu',
         header: 'id_fcu',
@@ -235,6 +252,23 @@ const GestionDesReseaux = () => {
   const perimetresDeDeveloppementPrioritaireColumns = useMemo<ColumnDef<PerimetreDeDeveloppementPrioritaire>[]>(
     () => [
       {
+        id: 'actions',
+        cell: ({ row }) => (
+          <div className="flex gap-2">
+            <Button
+              size="small"
+              priority="secondary"
+              iconId="fr-icon-edit-line"
+              title="Modifier le tag"
+              onClick={() => {
+                setEditingId(row.original.id_fcu);
+              }}
+            />
+          </div>
+        ),
+        width: '40px',
+      },
+      {
         accessorKey: 'id_fcu',
         header: 'id_fcu',
         width: '100px',
@@ -242,12 +276,12 @@ const GestionDesReseaux = () => {
       {
         accessorFn: (row) => row.communes?.join(', '),
         header: 'Communes',
-        width: '200px',
+        width: '300px',
       },
       {
         accessorKey: 'Identifiant reseau',
         header: 'ID SNCU',
-        width: '140px',
+        width: '100px',
         cell: (info) => {
           const network = info.row.original;
           return (
@@ -321,6 +355,7 @@ const GestionDesReseaux = () => {
           onRowClick={onTableRowClick}
           rowIdKey="id_fcu"
           enableGlobalFilter
+          rowSelection={selectedTab === 'reseaux-de-chaleur' ? rowSelection : {}}
         />
       ),
       isDefault: selectedTab === 'reseaux-de-chaleur',
@@ -340,6 +375,7 @@ const GestionDesReseaux = () => {
           onRowClick={onTableRowClick}
           rowIdKey="id_fcu"
           enableGlobalFilter
+          rowSelection={selectedTab === 'reseaux-en-construction' ? rowSelection : {}}
         />
       ),
       isDefault: selectedTab === 'reseaux-en-construction',
@@ -359,6 +395,7 @@ const GestionDesReseaux = () => {
           onRowClick={onTableRowClick}
           rowIdKey="id_fcu"
           enableGlobalFilter
+          rowSelection={selectedTab === 'perimetres-de-developpement-prioritaire' ? rowSelection : {}}
         />
       ),
       isDefault: selectedTab === 'perimetres-de-developpement-prioritaire',
@@ -399,7 +436,47 @@ const GestionDesReseaux = () => {
                 geolocDisabled
                 withSoughtAddresses={false}
                 bounds={selectedNetwork?.bbox}
-              />
+                withLegend={false}
+              >
+                {!!editingId && (
+                  <AdminEditLegend>
+                    <div className="text-center">
+                      Modifier le tracé de{' '}
+                      <strong>{(selectedNetwork as ReseauDeChaleur | ReseauEnConstruction)?.nom_reseau || selectedNetwork?.id_fcu}</strong>
+                    </div>
+                    <div className="flex gap-2 items-center justify-center my-2">
+                      <Button
+                        size="small"
+                        variant="default"
+                        priority="primary"
+                        iconId="fr-icon-check-line"
+                        title="Valider"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          e.preventDefault();
+                          // setEditingId(null);
+                        }}
+                      >
+                        Valider
+                      </Button>
+                      <Button
+                        size="small"
+                        variant="faded"
+                        priority="tertiary"
+                        iconId="fr-icon-close-line"
+                        title="Fermer"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          e.preventDefault();
+                          setEditingId(null);
+                        }}
+                      >
+                        Annuler
+                      </Button>
+                    </div>
+                  </AdminEditLegend>
+                )}
+              </Map>
             </div>
           </ResizablePanel>
         </ResizablePanelGroup>

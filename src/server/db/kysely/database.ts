@@ -3229,6 +3229,7 @@ export interface ReseauxDeChaleur {
   eau_surchauffee: string | null;
   fichiers: Json | null;
   geom: string | null;
+  geom_update: string | null;
   Gestionnaire: string | null;
   has_PDP: Generated<boolean>;
   has_trace: Generated<boolean>;

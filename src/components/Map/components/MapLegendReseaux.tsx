@@ -31,6 +31,7 @@ import { reseauxEnConstructionColor, reseauxEnConstructionOpacity } from '../lay
 interface SimpleMapLegendProps {
   enabledFeatures?: MapLegendFeature[];
   legendTitle?: string;
+  showFilters?: boolean;
   filtersVisible: boolean;
   setFiltersVisible: (visible: boolean) => void;
   isIframeContext?: boolean;
@@ -43,6 +44,7 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
   legendTitle,
   isIframeContext,
   withComptePro,
+  showFilters = true,
   ...props
 }) => {
   const { mapConfiguration, toggleLayer, nbFilters } = useFCUMap();
@@ -51,7 +53,7 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
     return props.enabledFeatures ?? mapLegendFeatures;
   }, [props.enabledFeatures]);
 
-  if (filtersVisible) {
+  if (filtersVisible && showFilters) {
     return (
       <LegendFilters>
         <Button
@@ -132,7 +134,7 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
               }}
             />
           </Box>
-          {!isIframeContext && (
+          {!isIframeContext && showFilters && (
             <Button
               onClick={() => setFiltersVisible(true)}
               priority="tertiary"

@@ -751,6 +751,7 @@ export const FullyFeaturedMap = ({
             </LegendSideBar>
           </>
         )}
+        {children}
         <MapProvider>
           <MapReactGL
             initialViewState={initialViewState}
