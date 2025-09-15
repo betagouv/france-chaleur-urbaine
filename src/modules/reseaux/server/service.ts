@@ -240,7 +240,7 @@ export const listReseauxDeChaleur = async () => {
   return reseauxDeChaleur;
 };
 
-export const updateReseauDeChaleur = async (id: number, tags: string[]) => {
+export const updateTags = async (id: number, tags: string[]) => {
   await kdb.updateTable('reseaux_de_chaleur').set({ tags }).where('id_fcu', '=', id).execute();
 };
 

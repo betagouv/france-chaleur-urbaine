@@ -93,9 +93,15 @@ const GestionDesReseaux = () => {
   });
 
   const handleUpdatePerimetreDeDeveloppementPrioritaire = useCallback(
-    toastErrors(async (pdpId: number, pdpUpdate: Partial<PerimetreDeDeveloppementPrioritaire>) => {
-      await updatePerimetreDeDeveloppementPrioritaire({ id: pdpId, ...pdpUpdate });
-    }),
+    toastErrors(
+      async (pdpId: number, { 'Identifiant reseau': identifiantReseau, ...rest }: Partial<PerimetreDeDeveloppementPrioritaire>) => {
+        await updatePerimetreDeDeveloppementPrioritaire({
+          id: pdpId,
+          ...rest,
+          'Identifiant reseau': identifiantReseau ?? undefined, // for bypassing typescript error
+        });
+      }
+    ),
     [updatePerimetreDeDeveloppementPrioritaire]
   );
 
@@ -250,7 +256,7 @@ const GestionDesReseaux = () => {
               value={network['Identifiant reseau']}
               onChange={(value) =>
                 void handleUpdatePerimetreDeDeveloppementPrioritaire(network.id_fcu, {
-                  'Identifiant reseau': value,
+                  'Identifiant reseau': value ?? undefined,
                 })
               }
             />

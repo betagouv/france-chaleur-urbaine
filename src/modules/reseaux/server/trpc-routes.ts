@@ -11,7 +11,7 @@ const adminRoute = routeRole(['admin']);
 
 export const reseauxRouter = router({
   list: adminRoute.query(async () => {
-    return await reseauxService.list();
+    return await reseauxService.listReseauxDeChaleur();
   }),
   updateTags: adminRoute.input(zUpdateReseauInput).mutation(async ({ input }) => {
     return await reseauxService.updateTags(input.id, input.tags);
