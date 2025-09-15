@@ -11,18 +11,16 @@ import Button from '@/components/ui/Button';
 import Link from '@/components/ui/Link';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/Resizable';
 import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
-import { useFetch } from '@/hooks/useApi';
 import trpc, { type RouterOutput } from '@/modules/trpc/client';
-import { type PerimetreDeDeveloppementPrioritaire } from '@/pages/api/admin/perimetres-de-developpement-prioritaire';
 import { toastErrors } from '@/services/notification';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
-import { patchFetchJSON } from '@/utils/network';
 
 const tabIds = ['reseaux-de-chaleur', 'reseaux-en-construction', 'perimetres-de-developpement-prioritaire'] as const;
 
 type ReseauDeChaleur = RouterOutput['reseaux']['list'][number];
 type ReseauEnConstruction = RouterOutput['reseaux']['listEnConstruction'][number];
+type PerimetreDeDeveloppementPrioritaire = RouterOutput['reseaux']['listPerimetresDeDeveloppementPrioritaire'][number];
 
 const GestionDesReseaux = () => {
   const [selectedTab, setSelectedTab] = useQueryState('tab', parseAsStringLiteral(tabIds).withDefault('reseaux-de-chaleur'));
@@ -42,7 +40,7 @@ const GestionDesReseaux = () => {
     data: perimetresDeDeveloppementPrioritaire,
     isLoading: isLoadingPerimetresDeDeveloppementPrioritaire,
     refetch: refetchPerimetresDeDeveloppementPrioritaire,
-  } = useFetch<PerimetreDeDeveloppementPrioritaire[]>('/api/admin/perimetres-de-developpement-prioritaire');
+  } = trpc.reseaux.listPerimetresDeDeveloppementPrioritaire.useQuery();
 
   const onTableRowClick = useCallback(
     (idFCU: number) => {
@@ -88,12 +86,17 @@ const GestionDesReseaux = () => {
     [updateReseauEnConstruction]
   );
 
-  const updatePerimetreDeDeveloppementPrioritaire = useCallback(
+  const { mutateAsync: updatePerimetreDeDeveloppementPrioritaire } = trpc.reseaux.updatePerimetreDeDeveloppementPrioritaire.useMutation({
+    onSuccess: () => {
+      void refetchPerimetresDeDeveloppementPrioritaire();
+    },
+  });
+
+  const handleUpdatePerimetreDeDeveloppementPrioritaire = useCallback(
     toastErrors(async (pdpId: number, pdpUpdate: Partial<PerimetreDeDeveloppementPrioritaire>) => {
-      await patchFetchJSON(`/api/admin/perimetres-de-developpement-prioritaire/${pdpId}`, pdpUpdate);
-      await refetchPerimetresDeDeveloppementPrioritaire();
+      await updatePerimetreDeDeveloppementPrioritaire({ id: pdpId, ...pdpUpdate });
     }),
-    []
+    [updatePerimetreDeDeveloppementPrioritaire]
   );
 
   const reseauxDeChaleurColumns = useMemo<ColumnDef<ReseauDeChaleur>[]>(
@@ -246,7 +249,7 @@ const GestionDesReseaux = () => {
               title="ID SNCU"
               value={network['Identifiant reseau']}
               onChange={(value) =>
-                updatePerimetreDeDeveloppementPrioritaire(network.id_fcu, {
+                void handleUpdatePerimetreDeDeveloppementPrioritaire(network.id_fcu, {
                   'Identifiant reseau': value,
                 })
               }
@@ -265,7 +268,7 @@ const GestionDesReseaux = () => {
               title="IDs Réseaux de chaleur"
               value={network.reseau_de_chaleur_ids.join(',')}
               onChange={(value) =>
-                updatePerimetreDeDeveloppementPrioritaire(network.id_fcu, {
+                void handleUpdatePerimetreDeDeveloppementPrioritaire(network.id_fcu, {
                   reseau_de_chaleur_ids: value ? value.split(',').map(Number) : [],
                 })
               }
@@ -284,7 +287,7 @@ const GestionDesReseaux = () => {
               title="IDs Réseaux en construction"
               value={network.reseau_en_construction_ids.join(',')}
               onChange={(value) =>
-                updatePerimetreDeDeveloppementPrioritaire(network.id_fcu, {
+                void handleUpdatePerimetreDeDeveloppementPrioritaire(network.id_fcu, {
                   reseau_en_construction_ids: value ? value.split(',').map(Number) : [],
                 })
               }
@@ -293,7 +296,7 @@ const GestionDesReseaux = () => {
         },
       },
     ],
-    []
+    [handleUpdatePerimetreDeDeveloppementPrioritaire]
   );
 
   const tabs = [
