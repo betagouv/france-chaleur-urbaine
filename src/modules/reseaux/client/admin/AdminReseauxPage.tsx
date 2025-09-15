@@ -7,13 +7,13 @@ import FCUTagAutocomplete from '@/components/form/FCUTagAutocomplete';
 import Map from '@/components/Map/Map';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import SimplePage from '@/components/shared/page/SimplePage';
+import Button from '@/components/ui/Button';
 import Link from '@/components/ui/Link';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/Resizable';
 import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
 import { useFetch } from '@/hooks/useApi';
 import trpc, { type RouterOutput } from '@/modules/trpc/client';
 import { type PerimetreDeDeveloppementPrioritaire } from '@/pages/api/admin/perimetres-de-developpement-prioritaire';
-import { type ReseauEnConstruction } from '@/pages/api/admin/reseaux-en-construction';
 import { toastErrors } from '@/services/notification';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
@@ -22,6 +22,7 @@ import { patchFetchJSON } from '@/utils/network';
 const tabIds = ['reseaux-de-chaleur', 'reseaux-en-construction', 'perimetres-de-developpement-prioritaire'] as const;
 
 type ReseauDeChaleur = RouterOutput['reseaux']['list'][number];
+type ReseauEnConstruction = RouterOutput['reseaux']['listEnConstruction'][number];
 
 const GestionDesReseaux = () => {
   const [selectedTab, setSelectedTab] = useQueryState('tab', parseAsStringLiteral(tabIds).withDefault('reseaux-de-chaleur'));
@@ -36,7 +37,7 @@ const GestionDesReseaux = () => {
     data: reseauxEnConstruction,
     isLoading: isLoadingReseauxEnConstruction,
     refetch: refetchReseauxEnConstruction,
-  } = useFetch<ReseauEnConstruction[]>('/api/admin/reseaux-en-construction');
+  } = trpc.reseaux.listEnConstruction.useQuery();
   const {
     data: perimetresDeDeveloppementPrioritaire,
     isLoading: isLoadingPerimetresDeDeveloppementPrioritaire,
@@ -72,12 +73,19 @@ const GestionDesReseaux = () => {
     []
   );
 
-  const updateReseauEnConstruction = useCallback(
+  const { mutateAsync: updateReseauEnConstruction } = trpc.reseaux.updateEnConstructionTags.useMutation({
+    onSuccess: () => {
+      void refetchReseauxEnConstruction();
+    },
+  });
+
+  const handleUpdateReseauEnConstruction = useCallback(
     toastErrors(async (reseauId: number, reseauUpdate: Partial<ReseauEnConstruction>) => {
-      await patchFetchJSON(`/api/admin/reseaux-en-construction/${reseauId}`, reseauUpdate);
-      await refetchReseauxEnConstruction();
+      if (reseauUpdate.tags) {
+        await updateReseauEnConstruction({ id: reseauId, tags: reseauUpdate.tags });
+      }
     }),
-    []
+    [updateReseauEnConstruction]
   );
 
   const updatePerimetreDeDeveloppementPrioritaire = useCallback(
@@ -147,6 +155,27 @@ const GestionDesReseaux = () => {
         width: '400px',
         enableSorting: false,
       },
+      {
+        id: 'actions',
+        header: 'Actions',
+        cell: () => (
+          <div className="flex gap-2">
+            <Button
+              size="small"
+              priority="tertiary"
+              iconId="fr-icon-edit-line"
+              title="Modifier le tag"
+              onClick={() => {
+                // setEditingTag(row.original);
+                // setEditTagName(row.original.name);
+                // setEditTagType(row.original.type);
+                // setIsEditDialogOpen(true);
+              }}
+            />
+          </div>
+        ),
+        width: '120px',
+      },
     ],
     [updateReseauDeChaleur]
   );
@@ -181,7 +210,7 @@ const GestionDesReseaux = () => {
             <FCUTagAutocomplete
               value={info.row.original.tags ?? []}
               onChange={(tags: string[] /* TODO should be handled by typescript */) =>
-                updateReseauEnConstruction(info.row.original.id_fcu, { tags })
+                void handleUpdateReseauEnConstruction(info.row.original.id_fcu, { tags })
               }
               multiple
             />
@@ -191,7 +220,7 @@ const GestionDesReseaux = () => {
         enableSorting: false,
       },
     ],
-    [updateReseauEnConstruction]
+    [handleUpdateReseauEnConstruction]
   );
 
   const perimetresDeDeveloppementPrioritaireColumns = useMemo<ColumnDef<PerimetreDeDeveloppementPrioritaire>[]>(

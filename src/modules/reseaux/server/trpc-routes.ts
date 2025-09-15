@@ -1,4 +1,4 @@
-import { zUpdateReseauInput } from '@/modules/reseaux/constants';
+import { zUpdateReseauEnConstructionInput, zUpdateReseauInput } from '@/modules/reseaux/constants';
 import { router, routeRole } from '@/modules/trpc/server';
 
 import * as reseauxService from './service';
@@ -11,5 +11,11 @@ export const reseauxRouter = router({
   }),
   updateTags: adminRoute.input(zUpdateReseauInput).mutation(async ({ input }) => {
     return await reseauxService.updateTags(input.id, input.tags);
+  }),
+  listEnConstruction: adminRoute.query(async () => {
+    return await reseauxService.listReseauxEnConstruction();
+  }),
+  updateEnConstructionTags: adminRoute.input(zUpdateReseauEnConstructionInput).mutation(async ({ input }) => {
+    return await reseauxService.updateReseauEnConstruction(input.id, input.tags);
   }),
 });
