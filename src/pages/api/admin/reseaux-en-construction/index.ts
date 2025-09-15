@@ -1,5 +1,5 @@
+import { listReseauxEnConstruction } from '@/modules/reseaux/server/service';
 import { handleRouteErrors } from '@/server/helpers/server';
-import { listReseauxEnConstruction } from '@/server/services/network';
 
 const GET = listReseauxEnConstruction;
 

@@ -1,5 +1,5 @@
+import { listPerimetresDeDeveloppementPrioritaire } from '@/modules/reseaux/server/service';
 import { handleRouteErrors } from '@/server/helpers/server';
-import { listPerimetresDeDeveloppementPrioritaire } from '@/server/services/network';
 
 const GET = listPerimetresDeDeveloppementPrioritaire;
 

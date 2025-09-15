@@ -11,8 +11,8 @@ import Link from '@/components/ui/Link';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/Resizable';
 import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
 import { useFetch } from '@/hooks/useApi';
+import trpc, { type RouterOutput } from '@/modules/trpc/client';
 import { type PerimetreDeDeveloppementPrioritaire } from '@/pages/api/admin/perimetres-de-developpement-prioritaire';
-import { type ReseauDeChaleur } from '@/pages/api/admin/reseaux-de-chaleur';
 import { type ReseauEnConstruction } from '@/pages/api/admin/reseaux-en-construction';
 import { toastErrors } from '@/services/notification';
 import { isDefined } from '@/utils/core';
@@ -21,6 +21,8 @@ import { patchFetchJSON } from '@/utils/network';
 
 const tabIds = ['reseaux-de-chaleur', 'reseaux-en-construction', 'perimetres-de-developpement-prioritaire'] as const;
 
+type ReseauDeChaleur = RouterOutput['reseaux']['list'][number];
+
 const GestionDesReseaux = () => {
   const [selectedTab, setSelectedTab] = useQueryState('tab', parseAsStringLiteral(tabIds).withDefault('reseaux-de-chaleur'));
 
@@ -28,11 +30,8 @@ const GestionDesReseaux = () => {
     ReseauDeChaleur | ReseauEnConstruction | PerimetreDeDeveloppementPrioritaire | null
   >(null);
 
-  const {
-    data: reseauxDeChaleur,
-    isLoading: isLoadingReseauxDeChaleur,
-    refetch: refetchReseauxDeChaleur,
-  } = useFetch<ReseauDeChaleur[]>('/api/admin/reseaux-de-chaleur');
+  const { data: reseauxDeChaleur, isLoading: isLoadingReseauxDeChaleur, refetch: refetchReseauxDeChaleur } = trpc.reseaux.list.useQuery();
+
   const {
     data: reseauxEnConstruction,
     isLoading: isLoadingReseauxEnConstruction,
@@ -58,10 +57,17 @@ const GestionDesReseaux = () => {
     [reseauxDeChaleur, reseauxEnConstruction, perimetresDeDeveloppementPrioritaire, selectedTab]
   );
 
-  const updateReseauDeChaleur = useCallback(
+  const { mutateAsync: updateReseauDeChaleur } = trpc.reseaux.updateTags.useMutation({
+    onSuccess: () => {
+      void refetchReseauxDeChaleur();
+    },
+  });
+
+  const handleUpdateReseauDeChaleur = useCallback(
     toastErrors(async (reseauId: number, reseauUpdate: Partial<ReseauDeChaleur>) => {
-      await patchFetchJSON(`/api/admin/reseaux-de-chaleur/${reseauId}`, reseauUpdate);
-      await refetchReseauxDeChaleur();
+      if (reseauUpdate.tags) {
+        await updateReseauDeChaleur({ id: reseauId, tags: reseauUpdate.tags });
+      }
     }),
     []
   );
@@ -132,7 +138,7 @@ const GestionDesReseaux = () => {
             <FCUTagAutocomplete
               value={info.row.original.tags ?? []}
               onChange={(tags: string[] /* TODO should be handled by typescript */) =>
-                void updateReseauDeChaleur(info.row.original.id_fcu, { tags })
+                void handleUpdateReseauDeChaleur(info.row.original.id_fcu, { tags })
               }
               multiple
             />

@@ -4,7 +4,7 @@ import City from '@/components/Cities/City';
 import { GlobalStyle } from '@/components/shared/layout/Global.style';
 import SimplePage from '@/components/shared/page/SimplePage';
 import citiesData from '@/data/villes/villes';
-import { getNetwork } from '@/server/services/network';
+import { getNetwork } from '@/modules/reseaux/server/service';
 import { deepCloneJSON } from '@/utils/objects';
 
 type ComponentProps = InferGetStaticPropsType<typeof getStaticProps>;

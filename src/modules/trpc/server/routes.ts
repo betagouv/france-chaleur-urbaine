@@ -1,4 +1,5 @@
 import { proEligibilityTestsRouter } from '@/modules/pro-eligibility-tests/server/trpc-routes';
+import { reseauxRouter } from '@/modules/reseaux/server/trpc-routes';
 
 import { route, router } from './connection';
 
@@ -17,6 +18,7 @@ export const appRouter = router({
     };
   }),
   proEligibilityTests: proEligibilityTestsRouter,
+  reseaux: reseauxRouter,
 });
 
 // Export type definition of API

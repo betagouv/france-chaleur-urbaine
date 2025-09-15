@@ -1,8 +1,8 @@
 import { type NextApiRequest } from 'next';
 import { z } from 'zod';
 
+import { updatePerimetreDeDeveloppementPrioritaire } from '@/modules/reseaux/server/service';
 import { handleRouteErrors } from '@/server/helpers/server';
-import { updatePerimetreDeDeveloppementPrioritaire } from '@/server/services/network';
 
 const zBody = z.object({
   'Identifiant reseau': z.string().optional(),
