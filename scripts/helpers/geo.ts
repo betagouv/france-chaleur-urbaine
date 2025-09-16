@@ -9,6 +9,15 @@ export type GeometryWithSrid = {
 };
 
 /**
+ * Crée une expression SQL pour transformer une géométrie GeoJSON en géométrie PostGIS
+ */
+export function createGeometryExpression(geom: GeoJSON.Geometry, srid: number) {
+  return srid === 4326
+    ? sql<any>`st_transform(ST_GeomFromGeoJSON(${sql.lit(JSON.stringify(geom))}), 2154)`
+    : sql<any>`st_setsrid(ST_GeomFromGeoJSON(${sql.lit(JSON.stringify(geom))}), 2154)`;
+}
+
+/**
  * Process a GeoJSON geometry and return it with its detected SRID.
  * Handles FeatureCollection, GeometryCollection, and converts single geometries to multi-geometries.
  */

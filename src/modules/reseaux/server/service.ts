@@ -4,8 +4,7 @@ import { type BoundingBox } from '@/types/Coords';
 import { type Network, type NetworkToCompare } from '@/types/Summary/Network';
 import { isDefined } from '@/utils/core';
 import { parseBbox } from '@/utils/geo';
-import { processGeometry } from '@cli/helpers/geo';
-import { updateEntityGeometry } from '@cli/networks/geometry-operations';
+import { createGeometryExpression, processGeometry } from '@cli/helpers/geo';
 
 export const getNetwork = (id: string): Promise<Network> =>
   db('reseaux_de_chaleur')
@@ -302,9 +301,19 @@ export const updatePerimetreDeDeveloppementPrioritaire = async (
 };
 
 export const updateGeometry = async (
-  id: number,
+  id_fcu: number,
   geometry: any,
   dbName: 'reseaux_de_chaleur' | 'zones_et_reseaux_en_construction' | 'zone_de_developpement_prioritaire'
 ) => {
-  await updateEntityGeometry(dbName, 'id_fcu', id, await processGeometry(geometry));
+  const processedGeometry = await processGeometry(geometry);
+  const finalGeometry = createGeometryExpression(processedGeometry.geom, processedGeometry.srid);
+
+  await kdb
+    .with('geometry', (db) => db.selectNoFrom(finalGeometry.as('geom')))
+    .updateTable(dbName)
+    .where('id_fcu', '=', id_fcu)
+    .set((eb) => ({
+      geom_update: sql`ST_Force2D(${eb.selectFrom('geometry').select('geometry.geom')})`,
+    }))
+    .execute();
 };

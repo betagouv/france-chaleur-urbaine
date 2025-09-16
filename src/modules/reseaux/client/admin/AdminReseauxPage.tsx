@@ -489,7 +489,7 @@ const GestionDesReseaux = () => {
       description="Tableau d'administration pour gérer les réseaux de chaleur et en construction"
       mode="authenticated"
     >
-      <div className="mb-8">
+      <div className="my-8">
         {totalGeomUpdates > 0 && (
           <Notice variant="warning" className="mb-4">
             <div className="flex items-center justify-between w-full">
