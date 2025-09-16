@@ -4,6 +4,8 @@ fileignoreconfig:
   ignore_detectors:
   - filename
   - filesize
+- filename: .github/workflows/ci.yml
+  checksum: d8aeea397f98ece557d953eebf72f65b329a501fb92809aa36ed5358c910a659
 - filename: docs/import_qpv.md
   checksum: c1d6b94bb550a972f1d97490a39dc3dc234b03c9ac5c7426cc85b5518a39966d
 - filename: docs/mise_a_jour_donnees_fcu.md
