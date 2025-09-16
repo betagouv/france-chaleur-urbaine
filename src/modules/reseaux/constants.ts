@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { zGeometry } from '@/utils/validation';
+
 export const zUpdateReseauInput = z.object({
   id: z.number(),
   tags: z.array(z.string()),
@@ -14,7 +16,8 @@ export const zUpdateReseauEnConstructionInput = z.object({
 
 export const zUpdateGeometryInput = z.object({
   id: z.number(),
-  geometry: z.string(),
+  geometry: zGeometry,
+  type: z.enum(['reseaux_de_chaleur', 'zones_et_reseaux_en_construction', 'zone_de_developpement_prioritaire']),
 });
 
 export type UpdateGeometryInput = z.infer<typeof zUpdateGeometryInput>;

@@ -4,6 +4,8 @@ import { type BoundingBox } from '@/types/Coords';
 import { type Network, type NetworkToCompare } from '@/types/Summary/Network';
 import { isDefined } from '@/utils/core';
 import { parseBbox } from '@/utils/geo';
+import { processGeometry } from '@cli/helpers/geo';
+import { updateEntityGeometry } from '@cli/networks/geometry-operations';
 
 export const getNetwork = (id: string): Promise<Network> =>
   db('reseaux_de_chaleur')
@@ -299,6 +301,10 @@ export const updatePerimetreDeDeveloppementPrioritaire = async (
   await kdb.updateTable('zone_de_developpement_prioritaire').set(data).where('id_fcu', '=', id).execute();
 };
 
-export const updateGeometry = async (id: number, geometry: string) => {
-  await kdb.updateTable('reseaux_de_chaleur').set({ geom_update: geometry }).where('id_fcu', '=', id).execute();
+export const updateGeometry = async (
+  id: number,
+  geometry: any,
+  dbName: 'reseaux_de_chaleur' | 'zones_et_reseaux_en_construction' | 'zone_de_developpement_prioritaire'
+) => {
+  await updateEntityGeometry(dbName, 'id_fcu', id, await processGeometry(geometry));
 };

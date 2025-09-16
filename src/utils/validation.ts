@@ -59,3 +59,7 @@ export const envBooleanSchema = z
   .enum(['0', '1', 'true', 'false'])
   .catch('false')
   .transform((value) => value == 'true' || value == '1');
+
+export type AllowedGeometry = GeoJSON.Feature<GeoJSON.Point | GeoJSON.LineString | GeoJSON.Polygon>;
+
+export const zGeometry = z.any();

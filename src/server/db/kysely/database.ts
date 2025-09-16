@@ -3529,6 +3529,7 @@ export interface ZoneDeDeveloppementPrioritaire {
   date_actualisation_trace: Timestamp | null;
   departement: string | null;
   geom: string | null;
+  geom_update: string | null;
   'Identifiant reseau': string | null;
   region: string | null;
   reseau_de_chaleur_ids: number[];
@@ -3548,6 +3549,7 @@ export interface ZonesEtReseauxEnConstruction {
   date_actualisation_trace: Timestamp | null;
   departement: string | null;
   geom: string;
+  geom_update: string | null;
   gestionnaire: string | null;
   id_fcu: number;
   is_zone: Generated<boolean>;

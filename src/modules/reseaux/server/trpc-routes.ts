@@ -18,7 +18,7 @@ export const reseauxRouter = router({
     return await reseauxService.updateTags(input.id, input.tags);
   }),
   updateGeometry: adminRoute.input(zUpdateGeometryInput).mutation(async ({ input }) => {
-    return await reseauxService.updateGeometry(input.id, input.geometry);
+    return await reseauxService.updateGeometry(input.id, input.geometry, input.type);
   }),
   listEnConstruction: adminRoute.query(async () => {
     return await reseauxService.listReseauxEnConstruction();
