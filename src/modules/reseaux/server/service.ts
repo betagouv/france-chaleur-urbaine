@@ -227,7 +227,9 @@ export const listReseauxDeChaleur = async () => {
       'communes',
       'Gestionnaire',
       'MO',
-      'geom_update',
+      sql<any>`CASE WHEN geom_update IS NOT NULL THEN ST_AsGeoJSON(ST_ForcePolygonCCW(ST_Transform(geom_update, 4326)))::json ELSE NULL END`.as(
+        'geom_update'
+      ),
       'tags',
       sql<BoundingBox>`st_transform(ST_Envelope(geom), 4326)::box2d`.as('bbox'),
     ])
@@ -254,7 +256,9 @@ export const listReseauxEnConstruction = async () => {
       'nom_reseau',
       'communes',
       'gestionnaire',
-      'geom_update',
+      sql<any>`CASE WHEN geom_update IS NOT NULL THEN ST_AsGeoJSON(ST_ForcePolygonCCW(ST_Transform(geom_update, 4326)))::json ELSE NULL END`.as(
+        'geom_update'
+      ),
       'tags',
       sql<BoundingBox>`st_transform(ST_Envelope(geom), 4326)::box2d`.as('bbox'),
     ])
@@ -282,7 +286,7 @@ export const listPerimetresDeDeveloppementPrioritaire = async () => {
       'reseau_de_chaleur_ids',
       'reseau_en_construction_ids',
       'communes',
-      'geom_update',
+      sql<any>`CASE WHEN geom_update IS NOT NULL THEN ST_AsGeoJSON(ST_Transform(geom_update, 4326))::json ELSE NULL END`.as('geom_update'),
       sql<BoundingBox>`st_transform(ST_Envelope(geom), 4326)::box2d`.as('bbox'),
     ])
     .orderBy('id_fcu')
@@ -318,5 +322,18 @@ export const updateGeometry = async (
     .set((eb) => ({
       geom_update: sql`ST_Force2D(${eb.selectFrom('geometry').select('geometry.geom')})`,
     }))
+    .execute();
+};
+
+export const deleteGeomUpdate = async (
+  id_fcu: number,
+  dbName: 'reseaux_de_chaleur' | 'zones_et_reseaux_en_construction' | 'zone_de_developpement_prioritaire'
+) => {
+  await kdb
+    .updateTable(dbName)
+    .where('id_fcu', '=', id_fcu)
+    .set({
+      geom_update: null,
+    })
     .execute();
 };

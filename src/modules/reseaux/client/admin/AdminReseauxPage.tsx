@@ -107,6 +107,18 @@ const GestionDesReseaux = () => {
   const { mutateAsync: updateGeometry, isPending: isUpdatingGeometry } = trpc.reseaux.updateGeometry.useMutation({
     onSuccess: () => {
       void refetchReseauxDeChaleur();
+      void refetchReseauxEnConstruction();
+      void refetchPerimetresDeDeveloppementPrioritaire();
+      setUpdatedGeom(null);
+      setEditingId(null);
+    },
+  });
+
+  const { mutateAsync: deleteGeomUpdate, isPending: isDeletingGeomUpdate } = trpc.reseaux.deleteGeomUpdate.useMutation({
+    onSuccess: () => {
+      void refetchReseauxDeChaleur();
+      void refetchReseauxEnConstruction();
+      void refetchPerimetresDeDeveloppementPrioritaire();
       setUpdatedGeom(null);
       setEditingId(null);
     },
@@ -148,6 +160,24 @@ const GestionDesReseaux = () => {
     [editingId, updatedGeom, updateGeometry]
   );
 
+  const handleDeleteGeomUpdate = useCallback(
+    toastErrors(async () => {
+      if (!selectedNetwork) {
+        return;
+      }
+      await deleteGeomUpdate({
+        id: selectedNetwork.id_fcu,
+        type:
+          selectedTab === 'reseaux-de-chaleur'
+            ? 'reseaux_de_chaleur'
+            : selectedTab === 'reseaux-en-construction'
+              ? 'zones_et_reseaux_en_construction'
+              : 'zone_de_developpement_prioritaire',
+      });
+    }),
+    [selectedNetwork, deleteGeomUpdate, selectedTab]
+  );
+
   const rowSelection = selectedNetwork ? { [selectedNetwork.id_fcu]: true } : {};
 
   const reseauxDeChaleurColumns = useMemo<ColumnDef<ReseauDeChaleur>[]>(
@@ -170,9 +200,12 @@ const GestionDesReseaux = () => {
                 setSelectedNetwork(row.original);
               }}
             />
+            {row.original.geom_update && (
+              <Icon name="fr-icon-warning-line" size="sm" color="warning" title="Géométrie modifiée" className="flex items-center" />
+            )}
           </div>
         ),
-        width: '40px',
+        width: '70px',
       },
       {
         accessorKey: 'id_fcu',
@@ -240,7 +273,7 @@ const GestionDesReseaux = () => {
       {
         id: 'actions',
         cell: ({ row }) => (
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
             <Button
               size="small"
               priority="secondary"
@@ -253,9 +286,12 @@ const GestionDesReseaux = () => {
                 setSelectedNetwork(row.original);
               }}
             />
+            {row.original.geom_update && (
+              <Icon name="fr-icon-warning-line" size="sm" color="warning" title="Géométrie modifiée" className="flex items-center" />
+            )}
           </div>
         ),
-        width: '40px',
+        width: '70px',
       },
       {
         accessorKey: 'id_fcu',
@@ -316,9 +352,12 @@ const GestionDesReseaux = () => {
                 setSelectedNetwork(row.original);
               }}
             />
+            {row.original.geom_update && (
+              <Icon name="fr-icon-warning-line" size="sm" color="warning" title="Géométrie modifiée" className="flex items-center" />
+            )}
           </div>
         ),
-        width: '40px',
+        width: '70px',
       },
       {
         accessorKey: 'id_fcu',
@@ -509,16 +548,16 @@ const GestionDesReseaux = () => {
     >
       {totalGeomUpdates > 0 && (
         <Notice variant="warning" className="mb-4">
-          <div className="flex items-center justify-center w-full gap-2">
-            <span className="font-medium">
+          <span className="flex items-center justify-center w-full gap-2">
+            <span className="font-medium text-base">
               {totalGeomUpdates} modification{totalGeomUpdates > 1 ? 's' : ''} de géométrie en attente
             </span>
-            <span className="text-sm text-gray-600 font-normal">
+            <span className="text-sm text-gray-700 font-normal">
               <strong>({reseauxDeChaleurWithGeomUpdate?.length ?? 0}</strong> réseaux de chaleur,{' '}
               <strong>{reseauxEnConstructionWithGeomUpdate?.length ?? 0}</strong> réseaux en construction,{' '}
               <strong>{perimetresDeDeveloppementPrioritaireWithGeomUpdate?.length ?? 0}</strong> périmètres)
             </span>
-          </div>
+          </span>
         </Notice>
       )}
       <div className="my-8">
@@ -566,17 +605,17 @@ const GestionDesReseaux = () => {
                             : []
                     }
                   >
-                    <div className="text-center text-sm">
+                    <div className="text-center text-sm mt-2">
                       Modifier le tracé de{' '}
                       <strong>{(selectedNetwork as ReseauDeChaleur | ReseauEnConstruction)?.nom_reseau || selectedNetwork?.id_fcu}</strong>
                     </div>
 
                     {!updatedGeom ? (
-                      <Notice variant="warning" size="sm">
+                      <Notice variant="warning" size="sm" className="mx-2">
                         Glissez et déposez le tracé sur la carte
                       </Notice>
                     ) : (
-                      <Notice variant="info" size="sm">
+                      <Notice variant="info" size="sm" className="mx-2">
                         Tracé déposé en rouge
                       </Notice>
                     )}
@@ -613,6 +652,23 @@ const GestionDesReseaux = () => {
                       >
                         Annuler
                       </Button>
+                      {selectedNetwork?.geom_update && (
+                        <Button
+                          size="small"
+                          variant="destructive"
+                          priority="secondary"
+                          iconId="fr-icon-delete-line"
+                          title="Supprimer la géométrie modifiée"
+                          loading={isDeletingGeomUpdate}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            void handleDeleteGeomUpdate();
+                          }}
+                        >
+                          Supprimer
+                        </Button>
+                      )}
                     </div>
                   </AdminEditLegend>
                 )}

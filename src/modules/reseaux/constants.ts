@@ -32,3 +32,10 @@ export const zUpdatePerimetreDeDeveloppementPrioritaireInput = z.object({
 });
 
 export type UpdatePerimetreDeDeveloppementPrioritaireInput = z.infer<typeof zUpdatePerimetreDeDeveloppementPrioritaireInput>;
+
+export const zDeleteGeomUpdateInput = z.object({
+  id: z.number(),
+  type: z.enum(['reseaux_de_chaleur', 'zones_et_reseaux_en_construction', 'zone_de_developpement_prioritaire']),
+});
+
+export type DeleteGeomUpdateInput = z.infer<typeof zDeleteGeomUpdateInput>;
