@@ -289,6 +289,8 @@ export const emptyMapConfiguration: EmptyMapConfiguration = {
   extractionDonneesBatiment: false,
   testsAdresses: false,
   etudesEnCours: false,
+  customGeojson: false,
+  geomUpdate: false,
 };
 
 export const defaultMapConfiguration = createMapConfiguration({
