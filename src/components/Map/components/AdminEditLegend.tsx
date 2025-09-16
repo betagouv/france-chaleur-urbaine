@@ -26,7 +26,9 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, children }: SimpleMapLe
           filtersVisible={false}
           setFiltersVisible={() => {}}
           withComptePro={false}
+          showHeader={false}
         />
+
         <div className="p-2">
           <Button size="small" priority="secondary" onClick={() => setShowAllLayers((prev) => !prev)}>
             {showAllLayers ? 'Voir la sélection' : 'Voir toutes les couches'}

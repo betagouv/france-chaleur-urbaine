@@ -36,6 +36,7 @@ interface SimpleMapLegendProps {
   setFiltersVisible: (visible: boolean) => void;
   isIframeContext?: boolean;
   withComptePro?: boolean;
+  showHeader?: boolean;
 }
 
 const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
@@ -45,6 +46,7 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
   isIframeContext,
   withComptePro,
   showFilters = true,
+  showHeader = true,
   ...props
 }) => {
   const { mapConfiguration, toggleLayer, nbFilters } = useFCUMap();
@@ -79,10 +81,14 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
 
   return (
     <Box mt="2v" px="1w" style={{ overflow: 'auto' }}>
-      <Title>{legendTitle || 'Réseaux de chaleur et de froid'}</Title>
-      <Text fontSize="13px" lineHeight="18px" mb="2w">
-        Cliquez sur un réseau pour connaître ses caractéristiques
-      </Text>
+      {showHeader && (
+        <>
+          <Title>{legendTitle || 'Réseaux de chaleur et de froid'}</Title>
+          <Text fontSize="13px" lineHeight="18px" mb="2w">
+            Cliquez sur un réseau pour connaître ses caractéristiques
+          </Text>
+        </>
+      )}
 
       {enabledFeatures.includes('reseauxDeChaleur') && (
         <>
