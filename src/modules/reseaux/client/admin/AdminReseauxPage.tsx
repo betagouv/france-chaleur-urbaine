@@ -564,7 +564,7 @@ const GestionDesReseaux = () => {
     (perimetresDeDeveloppementPrioritaireWithGeomUpdate?.length ?? 0);
 
   const handleSyncGeomUpdates = toastErrors(async () => {
-    await applyGeometriesUpdates({});
+    await applyGeometriesUpdates();
   });
 
   // Prepare geomUpdate features for the map
