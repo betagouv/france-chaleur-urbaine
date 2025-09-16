@@ -573,7 +573,7 @@ const TableSimple = <T extends RowData>({
             }}
           />
         )}
-        {topRightActions}
+        <div className={cx(enableGlobalFilter && 'mb-6' /** mb-6 to be aligned with the input */)}>{topRightActions}</div>
       </div>
       {caption && <div className="text-2xl leading-8 font-bold mb-5">{caption}</div>}
       <div
