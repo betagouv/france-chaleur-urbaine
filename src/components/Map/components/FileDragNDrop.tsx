@@ -6,10 +6,14 @@ import Box from '@/components/ui/Box';
 import { toastErrors } from '@/services/notification';
 import { convertLambert93GeoJSONToWGS84, hasLambert93Projection } from '@/utils/geo';
 
+export type FileDragNDropProps = {
+  onDrop?: (geojson: any) => void;
+};
+
 /**
  * A component that allows the user to drag and drop a geographic file to the map.
  */
-const FileDragNDrop = () => {
+const FileDragNDrop = ({ onDrop }: FileDragNDropProps) => {
   const { mapRef } = useFCUMap();
   const [dragging, setDragging] = useState(false);
 
@@ -26,7 +30,7 @@ const FileDragNDrop = () => {
       setDragging(false);
     };
 
-    const onDrop = toastErrors(async (event: DragEvent) => {
+    const handleDrop = toastErrors(async (event: DragEvent) => {
       event.preventDefault();
       const files = event.dataTransfer?.files;
       setDragging(false);
@@ -37,6 +41,11 @@ const FileDragNDrop = () => {
         ? await readShapefileWithProjection(Array.from(files))
         : await convertFileToGeoJSON(files[0]);
 
+      // Call the provided onDrop callback if available
+      if (onDrop) {
+        onDrop(wgs84GeoJsonData);
+      }
+
       if (!mapRef?.getSource('customGeojson')) {
         throw new Error('Source customGeojson not found');
       }
@@ -46,13 +55,13 @@ const FileDragNDrop = () => {
 
     mapRef.getContainer().addEventListener('dragover', onDragOver);
     mapRef.getContainer().addEventListener('dragleave', onDragLeave);
-    mapRef.getContainer().addEventListener('drop', onDrop);
+    mapRef.getContainer().addEventListener('drop', handleDrop);
     return () => {
       mapRef.getContainer().removeEventListener('dragover', onDragOver);
       mapRef.getContainer().removeEventListener('dragleave', onDragLeave);
-      mapRef.getContainer().removeEventListener('drop', onDrop);
+      mapRef.getContainer().removeEventListener('drop', handleDrop);
     };
-  }, [mapRef]);
+  }, [mapRef, onDrop]);
 
   return (
     <Box

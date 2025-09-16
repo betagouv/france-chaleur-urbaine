@@ -129,6 +129,7 @@ type MapProps = {
   adressesEligibles?: AdresseEligible[];
   adressesEligiblesAutoFit?: boolean;
   onFeatureClick?: (feature: MapGeoJSONFeature) => void;
+  onGeomDrop?: (geojson: any) => void;
   children?: ReactNode;
 };
 
@@ -165,6 +166,7 @@ export const FullyFeaturedMap = ({
   adressesEligibles,
   adressesEligiblesAutoFit = true,
   onFeatureClick,
+  onGeomDrop,
   children,
   ...props
 }: MapProps & React.HTMLAttributes<HTMLDivElement>) => {
@@ -779,7 +781,7 @@ export const FullyFeaturedMap = ({
             {Popup}
             {children}
             {mapMarkers}
-            <FileDragNDrop />
+            <FileDragNDrop onDrop={onGeomDrop} />
           </MapReactGL>
           {withLegend && (
             <MapSearchWrapper $legendCollapsed={legendCollapsed}>
