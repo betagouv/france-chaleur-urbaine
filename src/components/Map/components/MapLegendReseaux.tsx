@@ -360,8 +360,7 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
               htmlFor="customGeojson"
               fontSize="14px"
               lineHeight="18px"
-              classN
-              ame="fr-col"
+              className="fr-col"
               cursor="pointer"
               style={{ marginTop: '2px' }}
             >
