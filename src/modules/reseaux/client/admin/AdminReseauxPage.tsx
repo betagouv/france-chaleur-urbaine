@@ -439,6 +439,50 @@ const GestionDesReseaux = () => {
     alert('Super, demande à Martin ou Maxime de recréer les tuiles');
   };
 
+  // Prepare geomUpdate features for the map
+  const geomUpdateFeatures: GeoJSON.Feature[] = useMemo(() => {
+    return [
+      ...(reseauxDeChaleurWithGeomUpdate
+        ?.filter((reseau) => reseau.geom_update)
+        .map((reseau) => ({
+          id: `${reseau.id_fcu}-reseau-de-chaleur`,
+          type: 'Feature' as const,
+          geometry: reseau.geom_update,
+          properties: {
+            ...(reseau.geom_update.properties || {}),
+            nom_reseau: reseau.nom_reseau,
+            type: 'reseau_de_chaleur',
+            id_fcu: reseau.id_fcu,
+          },
+        })) ?? []),
+      ...(reseauxEnConstructionWithGeomUpdate
+        ?.filter((reseau) => reseau.geom_update)
+        .map((reseau) => ({
+          id: `${reseau.id_fcu}-reseau-en-construction`,
+          type: 'Feature' as const,
+          geometry: reseau.geom_update,
+          properties: {
+            ...(reseau.geom_update.properties || {}),
+            nom_reseau: reseau.nom_reseau,
+            type: 'reseau_en_construction',
+            id_fcu: reseau.id_fcu,
+          },
+        })) ?? []),
+      ...(perimetresDeDeveloppementPrioritaireWithGeomUpdate
+        ?.filter((pdp) => pdp.geom_update)
+        .map((pdp) => ({
+          id: `${pdp.id_fcu}-perimetre-de-developpement-prioritaire`,
+          type: 'Feature' as const,
+          geometry: pdp.geom_update,
+          properties: {
+            ...(pdp.geom_update.properties || {}),
+            type: 'perimetres_de_developpement_prioritaire',
+            id_fcu: pdp.id_fcu,
+          },
+        })) ?? []),
+    ];
+  }, [reseauxDeChaleurWithGeomUpdate, reseauxEnConstructionWithGeomUpdate, perimetresDeDeveloppementPrioritaireWithGeomUpdate]);
+
   const tabs = [
     {
       label: (
@@ -586,12 +630,15 @@ const GestionDesReseaux = () => {
                   },
                   reseauxEnConstruction: true,
                   zonesDeDeveloppementPrioritaire: true,
+                  geomUpdate: true,
+                  customGeojson: true,
                 })}
                 geolocDisabled
                 withSoughtAddresses={false}
                 bounds={selectedNetwork?.bbox}
                 withLegend={false}
                 onGeomDrop={handleGeomDrop}
+                geomUpdateFeatures={geomUpdateFeatures}
               >
                 {!!editingId && (
                   <AdminEditLegend

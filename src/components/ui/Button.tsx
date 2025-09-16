@@ -40,7 +40,7 @@ export const variantClassNames = {
   },
   destructive: {
     primary: '!bg-destructive !text-white !hover:bg-destructive/90',
-    secondary: '!border-destructive !text-destructive shadow-destructive',
+    secondary: '!border-destructive !text-destructive !shadow-destructive',
     tertiary: '!text-destructive',
     'tertiary no outline': '',
   },

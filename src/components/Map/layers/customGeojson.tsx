@@ -2,6 +2,10 @@ import { ObjectEntries } from '@/utils/typescript';
 
 import { ifHoverElse, type MapSourceLayersSpecification, type PopupStyleHelpers } from './common';
 
+export const customGeojsonColor = '#e35050';
+export const customGeojsonHoverColor = '#e08b8b';
+export const customGeojsonOpacity = 0.7;
+
 export const customGeojsonLayersSpec = [
   {
     sourceId: 'customGeojson',
@@ -17,8 +21,8 @@ export const customGeojsonLayersSpec = [
         id: 'customGeojson-polygons',
         type: 'fill',
         paint: {
-          'fill-color': '#e35050',
-          'fill-opacity': 0.7,
+          'fill-color': customGeojsonColor,
+          'fill-opacity': customGeojsonOpacity,
         },
         filter: () => ['==', '$type', 'Polygon'],
         isVisible: () => true,
@@ -29,7 +33,7 @@ export const customGeojsonLayersSpec = [
         type: 'line',
         filter: () => ['==', '$type', 'Polygon'],
         paint: {
-          'line-color': '#e35050',
+          'line-color': customGeojsonColor,
           'line-width': ifHoverElse(4, 2),
         },
         isVisible: () => true,
@@ -40,7 +44,7 @@ export const customGeojsonLayersSpec = [
         type: 'line',
         filter: () => ['==', '$type', 'LineString'],
         paint: {
-          'line-color': '#e35050',
+          'line-color': customGeojsonColor,
           'line-width': ifHoverElse(4, 2),
         },
         isVisible: () => true,
@@ -52,9 +56,9 @@ export const customGeojsonLayersSpec = [
         filter: () => ['==', '$type', 'Point'],
         paint: {
           'circle-radius': ifHoverElse(10, 8),
-          'circle-color': '#e08b8b',
+          'circle-color': customGeojsonHoverColor,
           'circle-stroke-width': 2,
-          'circle-stroke-color': '#e35050',
+          'circle-stroke-color': customGeojsonColor,
         },
         isVisible: () => true,
         popup: Popup,

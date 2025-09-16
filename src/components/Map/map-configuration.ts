@@ -155,6 +155,8 @@ export type MapConfiguration = {
   densiteThermiqueLineaire: boolean;
   mesureDistance: boolean;
   extractionDonneesBatiment: boolean;
+  customGeojson: boolean;
+  geomUpdate: boolean;
 };
 
 /**
@@ -294,6 +296,7 @@ export const defaultMapConfiguration = createMapConfiguration({
     show: true,
   },
   reseauxEnConstruction: true,
+  customGeojson: true,
 });
 
 export const iframeSimpleMapConfiguration = createMapConfiguration({

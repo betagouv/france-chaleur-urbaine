@@ -1,6 +1,8 @@
 import { Button } from '@codegouvfr/react-dsfr/Button';
 import { useMemo } from 'react';
 
+import { customGeojsonColor, customGeojsonOpacity } from '@/components/Map/layers/customGeojson';
+import { geomUpdateColor, geomUpdateOpacity } from '@/components/Map/layers/geomUpdate';
 import { type MapLegendFeature, mapLegendFeatures } from '@/components/Map/map-layers';
 import useFCUMap from '@/components/Map/MapProvider';
 import ReseauxDeChaleurFilters from '@/components/ReseauxDeChaleurFilters';
@@ -11,6 +13,7 @@ import Icon from '@/components/ui/Icon';
 import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
 import Tooltip from '@/components/ui/Tooltip';
+import { useAuthentication } from '@/services/authentication';
 
 import { LegendFilters, SingleCheckbox, TabScrollablePart, Title } from './SimpleMapLegend.style';
 import {
@@ -50,6 +53,7 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
   ...props
 }) => {
   const { mapConfiguration, toggleLayer, nbFilters } = useFCUMap();
+  const { hasRole } = useAuthentication();
 
   const enabledFeatures = useMemo(() => {
     return props.enabledFeatures ?? mapLegendFeatures;
@@ -341,6 +345,47 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
             </Text>
           </Box>
         </>
+      )}
+
+      {hasRole('admin') && (
+        <div className="mb-2">
+          <span className="font-bold">Admin</span>
+          <Box display="flex">
+            <SingleCheckbox name="customGeojson" checked={mapConfiguration.customGeojson} onChange={() => toggleLayer('customGeojson')} />
+
+            <Box backgroundColor={customGeojsonColor} opacity={customGeojsonOpacity} height="16px" width="16px" mt="1v" mr="3v" />
+
+            <Text
+              as="label"
+              htmlFor="customGeojson"
+              fontSize="14px"
+              lineHeight="18px"
+              classN
+              ame="fr-col"
+              cursor="pointer"
+              style={{ marginTop: '2px' }}
+            >
+              Custom Geojson
+            </Text>
+          </Box>
+          <Box display="flex">
+            <SingleCheckbox name="geomUpdate" checked={mapConfiguration.geomUpdate} onChange={() => toggleLayer('geomUpdate')} />
+
+            <Box backgroundColor={geomUpdateColor} opacity={geomUpdateOpacity} height="16px" width="16px" mt="1v" mr="3v" />
+
+            <Text
+              as="label"
+              htmlFor="customGeojson"
+              fontSize="14px"
+              lineHeight="18px"
+              className="fr-col"
+              cursor="pointer"
+              style={{ marginTop: '2px' }}
+            >
+              Géométrie modifiée
+            </Text>
+          </Box>
+        </div>
       )}
       {withComptePro && (
         <>

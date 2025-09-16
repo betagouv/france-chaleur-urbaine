@@ -8,6 +8,7 @@ import {
 
 import { clientConfig } from '@/client-config';
 import { customGeojsonLayersSpec } from '@/components/Map/layers/customGeojson';
+import { geomUpdateLayersSpec } from '@/components/Map/layers/geomUpdate';
 import { quartiersPrioritairesPolitiqueVilleLayersSpec } from '@/components/Map/layers/quartiersPrioritairesPolitiqueVille';
 import { type MapConfiguration } from '@/components/Map/map-configuration';
 import { deepMergeObjects, isDefined } from '@/utils/core';
@@ -102,6 +103,8 @@ export const mapLegendFeatures = [
   'zonesDeDeveloppementPrioritaire',
   'batimentsRaccordesReseauxChaleur',
   'batimentsRaccordesReseauxFroid',
+  'customGeojson',
+  'geomUpdate',
 ] as const;
 
 export type MapLegendFeature = (typeof mapLegendFeatures)[number];
@@ -138,6 +141,7 @@ export type MapLayerSpecification<ILayerId = string> = Omit<LayerSpecification, 
 
 export const mapLayers = [
   ...customGeojsonLayersSpec,
+  ...geomUpdateLayersSpec,
   ...enrrMobilisablesZonesGeothermieProfondeLayersSpec,
   ...ressourcesGeothermalesNappesLayersSpec,
   ...zonesPotentielChaudLayersSpec,
