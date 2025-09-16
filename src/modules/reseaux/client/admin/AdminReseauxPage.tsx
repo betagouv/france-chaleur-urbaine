@@ -9,6 +9,7 @@ import Map from '@/components/Map/Map';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Button from '@/components/ui/Button';
+import Icon from '@/components/ui/Icon';
 import Link from '@/components/ui/Link';
 import Notice from '@/components/ui/Notice';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/Resizable';
@@ -401,7 +402,12 @@ const GestionDesReseaux = () => {
 
   const tabs = [
     {
-      label: `Réseaux de chaleur (${reseauxDeChaleur?.length ?? 0})`,
+      label: (
+        <>
+          {(reseauxDeChaleurWithGeomUpdate || []).length > 0 && <Icon name="fr-icon-warning-line" size="sm" color="warning" />}
+          Réseaux de chaleur ({reseauxDeChaleur?.length ?? 0})
+        </>
+      ),
       content: (
         <TableSimple
           columns={reseauxDeChaleurColumns}
@@ -428,7 +434,12 @@ const GestionDesReseaux = () => {
       isDefault: selectedTab === 'reseaux-de-chaleur',
     },
     {
-      label: `Réseaux en construction (${reseauxEnConstruction?.length ?? 0})`,
+      label: (
+        <>
+          {(reseauxEnConstructionWithGeomUpdate || []).length > 0 && <Icon name="fr-icon-warning-line" size="sm" color="warning" />}
+          Réseaux en construction ({reseauxEnConstruction?.length ?? 0})
+        </>
+      ),
       content: (
         <TableSimple
           columns={reseauxEnConstructionColumns}
@@ -455,7 +466,14 @@ const GestionDesReseaux = () => {
       isDefault: selectedTab === 'reseaux-en-construction',
     },
     {
-      label: `Périmètres de développement prioritaire (${perimetresDeDeveloppementPrioritaire?.length ?? 0})`,
+      label: (
+        <>
+          {(perimetresDeDeveloppementPrioritaireWithGeomUpdate || []).length > 0 && (
+            <Icon name="fr-icon-warning-line" size="sm" color="warning" />
+          )}
+          Périmètres de développement prioritaire ({perimetresDeDeveloppementPrioritaire?.length ?? 0})
+        </>
+      ),
       content: (
         <TableSimple
           columns={perimetresDeDeveloppementPrioritaireColumns}
@@ -489,22 +507,21 @@ const GestionDesReseaux = () => {
       description="Tableau d'administration pour gérer les réseaux de chaleur et en construction"
       mode="authenticated"
     >
+      {totalGeomUpdates > 0 && (
+        <Notice variant="warning" className="mb-4">
+          <div className="flex items-center justify-center w-full gap-2">
+            <span className="font-medium">
+              {totalGeomUpdates} modification{totalGeomUpdates > 1 ? 's' : ''} de géométrie en attente
+            </span>
+            <span className="text-sm text-gray-600 font-normal">
+              <strong>({reseauxDeChaleurWithGeomUpdate?.length ?? 0}</strong> réseaux de chaleur,{' '}
+              <strong>{reseauxEnConstructionWithGeomUpdate?.length ?? 0}</strong> réseaux en construction,{' '}
+              <strong>{perimetresDeDeveloppementPrioritaireWithGeomUpdate?.length ?? 0}</strong> périmètres)
+            </span>
+          </div>
+        </Notice>
+      )}
       <div className="my-8">
-        {totalGeomUpdates > 0 && (
-          <Notice variant="warning" className="mb-4">
-            <div className="flex items-center justify-between w-full">
-              <div className="flex items-center gap-2">
-                <span className="font-medium">
-                  {totalGeomUpdates} modification{totalGeomUpdates > 1 ? 's' : ''} de géométrie en attente
-                </span>
-                <span className="text-sm text-gray-600">
-                  ({reseauxDeChaleurWithGeomUpdate?.length ?? 0} réseaux de chaleur, {reseauxEnConstructionWithGeomUpdate?.length ?? 0}{' '}
-                  réseaux en construction, {perimetresDeDeveloppementPrioritaireWithGeomUpdate?.length ?? 0} périmètres)
-                </span>
-              </div>
-            </div>
-          </Notice>
-        )}
         <ResizablePanelGroup direction="horizontal" className="gap-4">
           <ResizablePanel defaultSize={66}>
             <Tabs

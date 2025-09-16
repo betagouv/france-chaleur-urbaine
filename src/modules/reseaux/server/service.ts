@@ -227,6 +227,7 @@ export const listReseauxDeChaleur = async () => {
       'communes',
       'Gestionnaire',
       'MO',
+      'geom_update',
       'tags',
       sql<BoundingBox>`st_transform(ST_Envelope(geom), 4326)::box2d`.as('bbox'),
     ])
@@ -253,6 +254,7 @@ export const listReseauxEnConstruction = async () => {
       'nom_reseau',
       'communes',
       'gestionnaire',
+      'geom_update',
       'tags',
       sql<BoundingBox>`st_transform(ST_Envelope(geom), 4326)::box2d`.as('bbox'),
     ])
@@ -280,6 +282,7 @@ export const listPerimetresDeDeveloppementPrioritaire = async () => {
       'reseau_de_chaleur_ids',
       'reseau_en_construction_ids',
       'communes',
+      'geom_update',
       sql<BoundingBox>`st_transform(ST_Envelope(geom), 4326)::box2d`.as('bbox'),
     ])
     .orderBy('id_fcu')
