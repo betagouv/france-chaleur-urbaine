@@ -50,6 +50,12 @@ export const variantClassNames = {
     tertiary: '!text-info',
     'tertiary no outline': '',
   },
+  warning: {
+    primary: '!bg-warning !text-white !hover:bg-warning/90',
+    secondary: '!border-warning !text-warning shadow-warning',
+    tertiary: '!text-warning',
+    'tertiary no outline': '',
+  },
   faded: {
     primary: '!bg-faded !text-white !hover:bg-faded/90',
     secondary: '!border-faded !text-faded shadow-faded',
