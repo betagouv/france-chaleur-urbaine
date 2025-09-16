@@ -18,7 +18,7 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/componen
 import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
 import Tag from '@/components/ui/Tag';
 import trpc, { type RouterOutput } from '@/modules/trpc/client';
-import { toastErrors } from '@/services/notification';
+import { notify, toastErrors } from '@/services/notification';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
 
@@ -138,6 +138,14 @@ const GestionDesReseaux = () => {
 
   const { mutateAsync: updateReseauEnConstruction } = trpc.reseaux.reseauEnConstruction.updateTags.useMutation({
     onSuccess: () => void tabInfo.refetch(),
+  });
+
+  const { mutateAsync: applyGeometriesUpdates } = trpc.tiles.applyGeometriesUpdates.useMutation({
+    onSuccess: async () => {
+      notify('success', "Les mises à jour de géométrie ont été appliquées. Les tuiles seront regénérées d'ici quelques minutes");
+
+      await Promise.all([refetchReseauxDeChaleur(), refetchReseauxEnConstruction(), refetchPerimetresDeDeveloppementPrioritaire()]);
+    },
   });
 
   const handleUpdateReseauEnConstruction = useCallback(
@@ -555,9 +563,9 @@ const GestionDesReseaux = () => {
     (reseauxEnConstructionWithGeomUpdate?.length ?? 0) +
     (perimetresDeDeveloppementPrioritaireWithGeomUpdate?.length ?? 0);
 
-  const handleSyncGeomUpdates = () => {
-    alert('Super, demande à Martin ou Maxime de recréer les tuiles');
-  };
+  const handleSyncGeomUpdates = toastErrors(async () => {
+    await applyGeometriesUpdates({});
+  });
 
   // Prepare geomUpdate features for the map
   const geomUpdateFeatures: GeoJSON.Feature[] = useMemo(() => {
