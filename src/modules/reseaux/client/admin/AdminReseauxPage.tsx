@@ -25,6 +25,21 @@ type ReseauDeChaleur = RouterOutput['reseaux']['list'][number];
 type ReseauEnConstruction = RouterOutput['reseaux']['listEnConstruction'][number];
 type PerimetreDeDeveloppementPrioritaire = RouterOutput['reseaux']['listPerimetresDeDeveloppementPrioritaire'][number];
 
+const ModifiedIcon = <T extends Record<string, any>>(record: T & { geom_delete: boolean; geom_update: any }) => {
+  if (!record.geom_update && !record.geom_delete) {
+    return null;
+  }
+  return (
+    <Icon
+      name={record.geom_delete ? 'fr-icon-close-circle-line' : 'fr-icon-refresh-line'}
+      size="sm"
+      color="warning"
+      title={record.geom_delete ? 'Géométrie supprimée' : 'Géométrie modifiée'}
+      className="flex items-center"
+    />
+  );
+};
+
 const GestionDesReseaux = () => {
   const [selectedTab, setSelectedTab] = useQueryState('tab', parseAsStringLiteral(tabIds).withDefault('reseaux-de-chaleur'));
 
@@ -105,22 +120,42 @@ const GestionDesReseaux = () => {
   });
 
   const { mutateAsync: updateGeometry, isPending: isUpdatingGeometry } = trpc.reseaux.updateGeometry.useMutation({
-    onSuccess: () => {
-      void refetchReseauxDeChaleur();
-      void refetchReseauxEnConstruction();
-      void refetchPerimetresDeDeveloppementPrioritaire();
+    onSuccess: (_, { type }) => {
+      if (type === 'reseaux_de_chaleur') {
+        void refetchReseauxDeChaleur();
+      } else if (type === 'zones_et_reseaux_en_construction') {
+        void refetchReseauxEnConstruction();
+      } else if (type === 'zone_de_developpement_prioritaire') {
+        void refetchPerimetresDeDeveloppementPrioritaire();
+      }
       setUpdatedGeom(null);
       setEditingId(null);
     },
   });
 
   const { mutateAsync: deleteGeomUpdate, isPending: isDeletingGeomUpdate } = trpc.reseaux.deleteGeomUpdate.useMutation({
-    onSuccess: () => {
-      void refetchReseauxDeChaleur();
-      void refetchReseauxEnConstruction();
-      void refetchPerimetresDeDeveloppementPrioritaire();
+    onSuccess: (_, { type }) => {
+      if (type === 'reseaux_de_chaleur') {
+        void refetchReseauxDeChaleur();
+      } else if (type === 'zones_et_reseaux_en_construction') {
+        void refetchReseauxEnConstruction();
+      } else if (type === 'zone_de_developpement_prioritaire') {
+        void refetchPerimetresDeDeveloppementPrioritaire();
+      }
       setUpdatedGeom(null);
       setEditingId(null);
+    },
+  });
+
+  const { mutateAsync: deleteNetwork, isPending: isDeletingNetwork } = trpc.reseaux.deleteNetwork.useMutation({
+    onSuccess: (_, { type }) => {
+      if (type === 'reseaux_de_chaleur') {
+        void refetchReseauxDeChaleur();
+      } else if (type === 'zones_et_reseaux_en_construction') {
+        void refetchReseauxEnConstruction();
+      } else if (type === 'zone_de_developpement_prioritaire') {
+        void refetchPerimetresDeDeveloppementPrioritaire();
+      }
     },
   });
 
@@ -136,10 +171,6 @@ const GestionDesReseaux = () => {
     ),
     [updatePerimetreDeDeveloppementPrioritaire]
   );
-
-  const handleGeomDrop = useCallback((geojson: any) => {
-    setUpdatedGeom(geojson);
-  }, []);
 
   const handleValidateGeometry = useCallback(
     toastErrors(async () => {
@@ -178,6 +209,24 @@ const GestionDesReseaux = () => {
     [selectedNetwork, deleteGeomUpdate, selectedTab]
   );
 
+  const handleDeleteNetwork = useCallback(
+    toastErrors(async (id: number, type: string, name: string) => {
+      if (
+        !window.confirm(
+          `Êtes-vous sûr de vouloir supprimer "${name}" ?\n\nCette action marquera le réseau comme supprimé et sera effectif à la prochaine synchronisation.`
+        )
+      ) {
+        return;
+      }
+
+      await deleteNetwork({
+        id,
+        type: type as 'reseaux_de_chaleur' | 'zones_et_reseaux_en_construction' | 'zone_de_developpement_prioritaire',
+      });
+    }),
+    [deleteNetwork]
+  );
+
   const rowSelection = selectedNetwork ? { [selectedNetwork.id_fcu]: true } : {};
 
   const reseauxDeChaleurColumns = useMemo<ColumnDef<ReseauDeChaleur>[]>(
@@ -200,12 +249,24 @@ const GestionDesReseaux = () => {
                 setSelectedNetwork(row.original);
               }}
             />
-            {row.original.geom_update && (
-              <Icon name="fr-icon-warning-line" size="sm" color="warning" title="Géométrie modifiée" className="flex items-center" />
-            )}
+            <Button
+              size="small"
+              priority="secondary"
+              variant="destructive"
+              iconId="fr-icon-delete-line"
+              title="Supprimer le réseau (géométrie vide)"
+              loading={isDeletingNetwork}
+              disabled={row.original.geom_delete}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                void handleDeleteNetwork(row.original.id_fcu, 'reseaux_de_chaleur', row.original.nom_reseau || `ID ${row.original.id_fcu}`);
+              }}
+            />
+            <ModifiedIcon {...row.original} />
           </div>
         ),
-        width: '70px',
+        width: '120px',
       },
       {
         accessorKey: 'id_fcu',
@@ -286,12 +347,28 @@ const GestionDesReseaux = () => {
                 setSelectedNetwork(row.original);
               }}
             />
-            {row.original.geom_update && (
-              <Icon name="fr-icon-warning-line" size="sm" color="warning" title="Géométrie modifiée" className="flex items-center" />
-            )}
+            <Button
+              size="small"
+              priority="secondary"
+              variant="destructive"
+              iconId="fr-icon-delete-line"
+              title="Supprimer le réseau (géométrie vide)"
+              loading={isDeletingNetwork}
+              disabled={row.original.geom_delete}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                void handleDeleteNetwork(
+                  row.original.id_fcu,
+                  'zones_et_reseaux_en_construction',
+                  row.original.nom_reseau || `ID ${row.original.id_fcu}`
+                );
+              }}
+            />
+            <ModifiedIcon {...row.original} />
           </div>
         ),
-        width: '70px',
+        width: '120px',
       },
       {
         accessorKey: 'id_fcu',
@@ -352,12 +429,24 @@ const GestionDesReseaux = () => {
                 setSelectedNetwork(row.original);
               }}
             />
-            {row.original.geom_update && (
-              <Icon name="fr-icon-warning-line" size="sm" color="warning" title="Géométrie modifiée" className="flex items-center" />
-            )}
+            <Button
+              size="small"
+              priority="secondary"
+              variant="destructive"
+              iconId="fr-icon-delete-line"
+              title="Supprimer le périmètre (géométrie vide)"
+              loading={isDeletingNetwork}
+              disabled={row.original.geom_delete}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                void handleDeleteNetwork(row.original.id_fcu, 'zone_de_developpement_prioritaire', `ID ${row.original.id_fcu}`);
+              }}
+            />
+            <ModifiedIcon {...row.original} />
           </div>
         ),
-        width: '70px',
+        width: '120px',
       },
       {
         accessorKey: 'id_fcu',
@@ -637,7 +726,7 @@ const GestionDesReseaux = () => {
                 withSoughtAddresses={false}
                 bounds={selectedNetwork?.bbox}
                 withLegend={false}
-                onGeomDrop={handleGeomDrop}
+                onGeomDrop={setUpdatedGeom}
                 geomUpdateFeatures={geomUpdateFeatures}
               >
                 {!!editingId && (
@@ -652,7 +741,124 @@ const GestionDesReseaux = () => {
                             : []
                     }
                   >
-                    <div className="text-center text-sm mt-2">
+                    {selectedNetwork?.geom_delete ? (
+                      <>
+                        <div className="text-center text-sm mt-2">
+                          Suppression du tracé de{' '}
+                          <strong>
+                            {(selectedNetwork as ReseauDeChaleur | ReseauEnConstruction)?.nom_reseau || selectedNetwork?.id_fcu}
+                          </strong>
+                        </div>
+                        <Notice variant="warning" size="sm" className="mx-2">
+                          Ce réseau est marqué pour suppression. Vous pouvez annuler cette suppression.
+                        </Notice>
+                        <div className="flex gap-2 items-center justify-center my-2">
+                          <Button
+                            size="small"
+                            variant="destructive"
+                            priority="primary"
+                            iconId="fr-icon-refresh-line"
+                            title="Annuler la suppression"
+                            loading={isDeletingGeomUpdate}
+                            disabled={!selectedNetwork}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              e.preventDefault();
+                              void handleDeleteGeomUpdate();
+                            }}
+                          >
+                            Annuler la suppression
+                          </Button>
+                          <Button
+                            size="small"
+                            variant="faded"
+                            priority="tertiary"
+                            iconId="fr-icon-close-line"
+                            title="Fermer"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              e.preventDefault();
+                              setEditingId(null);
+                              setUpdatedGeom(null);
+                            }}
+                          >
+                            Fermer
+                          </Button>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="text-center text-sm mt-2">
+                          Modification du tracé de{' '}
+                          <strong>
+                            {(selectedNetwork as ReseauDeChaleur | ReseauEnConstruction)?.nom_reseau || selectedNetwork?.id_fcu}
+                          </strong>
+                        </div>
+                        {!updatedGeom ? (
+                          <Notice variant="warning" size="sm" className="mx-2">
+                            Glissez et déposez le tracé sur la carte
+                          </Notice>
+                        ) : (
+                          <Notice variant="info" size="sm" className="mx-2">
+                            Tracé déposé en rouge
+                          </Notice>
+                        )}
+                        <div className="flex gap-2 items-center justify-center my-2">
+                          {selectedNetwork?.geom_update && !updatedGeom ? (
+                            <Button
+                              size="small"
+                              variant="destructive"
+                              priority="primary"
+                              iconId="fr-icon-refresh-line"
+                              title="Annuler la modification"
+                              loading={isDeletingGeomUpdate}
+                              disabled={!selectedNetwork}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                void handleDeleteGeomUpdate();
+                              }}
+                            >
+                              Annuler la modification
+                            </Button>
+                          ) : (
+                            <Button
+                              size="small"
+                              variant="default"
+                              priority="primary"
+                              iconId="fr-icon-check-line"
+                              title="Valider la modification"
+                              loading={isUpdatingGeometry}
+                              disabled={!selectedNetwork || !updatedGeom}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                void handleValidateGeometry();
+                              }}
+                            >
+                              Valider la modification
+                            </Button>
+                          )}
+                          <Button
+                            size="small"
+                            variant="faded"
+                            priority="tertiary"
+                            iconId="fr-icon-close-line"
+                            title="Annuler"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              e.preventDefault();
+                              setEditingId(null);
+                              setUpdatedGeom(null);
+                            }}
+                          >
+                            Annuler
+                          </Button>
+                        </div>
+                      </>
+                    )}
+
+                    {/* <div className="text-center text-sm mt-2">
                       Modifier le tracé de{' '}
                       <strong>{(selectedNetwork as ReseauDeChaleur | ReseauEnConstruction)?.nom_reseau || selectedNetwork?.id_fcu}</strong>
                     </div>
@@ -716,7 +922,7 @@ const GestionDesReseaux = () => {
                           Supprimer
                         </Button>
                       )}
-                    </div>
+                    </div> */}
                   </AdminEditLegend>
                 )}
               </Map>

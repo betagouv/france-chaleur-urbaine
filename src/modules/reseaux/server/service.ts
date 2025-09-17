@@ -232,6 +232,9 @@ export const listReseauxDeChaleur = async () => {
       ),
       'tags',
       sql<BoundingBox>`st_transform(ST_Envelope(geom), 4326)::box2d`.as('bbox'),
+      sql<boolean>`geom_update IS NOT NULL AND GeometryType(geom_update) = 'GEOMETRYCOLLECTION' AND ST_IsEmpty(geom_update)`.as(
+        'geom_delete'
+      ),
     ])
     .orderBy('id_fcu')
     .execute();
@@ -261,6 +264,9 @@ export const listReseauxEnConstruction = async () => {
       ),
       'tags',
       sql<BoundingBox>`st_transform(ST_Envelope(geom), 4326)::box2d`.as('bbox'),
+      sql<boolean>`geom_update IS NOT NULL AND GeometryType(geom_update) = 'GEOMETRYCOLLECTION' AND ST_IsEmpty(geom_update)`.as(
+        'geom_delete'
+      ),
     ])
     .orderBy('id_fcu')
     .execute();
@@ -288,6 +294,9 @@ export const listPerimetresDeDeveloppementPrioritaire = async () => {
       'communes',
       sql<any>`CASE WHEN geom_update IS NOT NULL THEN ST_AsGeoJSON(ST_Transform(geom_update, 4326))::json ELSE NULL END`.as('geom_update'),
       sql<BoundingBox>`st_transform(ST_Envelope(geom), 4326)::box2d`.as('bbox'),
+      sql<boolean>`geom_update IS NOT NULL AND GeometryType(geom_update) = 'GEOMETRYCOLLECTION' AND ST_IsEmpty(geom_update)`.as(
+        'geom_delete'
+      ),
     ])
     .orderBy('id_fcu')
     .execute();
@@ -334,6 +343,20 @@ export const deleteGeomUpdate = async (
     .where('id_fcu', '=', id_fcu)
     .set({
       geom_update: null,
+    })
+    .execute();
+};
+
+export const deleteNetwork = async (
+  id_fcu: number,
+  dbName: 'reseaux_de_chaleur' | 'zones_et_reseaux_en_construction' | 'zone_de_developpement_prioritaire'
+) => {
+  // Create an empty GeometryCollection directly in SQL to mark as deleted
+  await kdb
+    .updateTable(dbName)
+    .where('id_fcu', '=', id_fcu)
+    .set({
+      geom_update: sql`ST_GeomFromText('GEOMETRYCOLLECTION EMPTY', 4326)`,
     })
     .execute();
 };
