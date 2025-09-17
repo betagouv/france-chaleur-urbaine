@@ -266,7 +266,8 @@ const Fundings = () => {
           l’éco-PTZ copropriétés.{' '}
         </li>
         <li>
-          Les logements appartenant aux copropriétaires souscrivant au prêt ne doivent pas avoir déjà fait l’objet d’un éco-PTZ individuel.{' '}
+          Les logements appartenant aux copropriétaires souscrivant au prêt ne doivent pas avoir déjà fait l’objet d’un éco-PTZ
+          individuel.{' '}
         </li>
         <li>Bâtiments achevés depuis au moins 2 ans. </li>
         <li>Les travaux doivent impérativement être réalisés par une entreprise Reconnue garant de l'environnement (RGE).</li>

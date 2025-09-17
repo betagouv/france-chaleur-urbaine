@@ -22,29 +22,29 @@ export const tilesConfigs = {
     generateGeoJSON: getInputFilePath,
   }),
   'tests-adresses': defineTilesConfig({
-    tilesTableName: 'tests_adresses_tiles',
+    tilesTableName: 'pro_eligibility_tests_addresses_tiles',
     zoomMax: 12,
     tippeCanoeArgs: '--drop-rate=0 --no-tile-size-limit --no-feature-limit',
     generateGeoJSON: testsAdressesGeoJSONQuery,
   }),
   'reseaux-de-chaleur': defineTilesConfig({
     tilesTableName: 'reseaux_de_chaleur_tiles',
-    tilesGenerationMethod: 'legacy',
+    tippeCanoeArgs: '--no-tile-compression', // legacy
     generateGeoJSON: reseauxDeChaleurGeoJSONQuery,
   }),
   'reseaux-de-froid': defineTilesConfig({
     tilesTableName: 'reseaux_de_froid_tiles',
-    tilesGenerationMethod: 'legacy',
+    tippeCanoeArgs: '--no-tile-compression --layer=coldOutline', // legacy
     generateGeoJSON: extractGeoJSONFromDatabaseTable('reseaux_de_froid'),
   }),
   'reseaux-en-construction': defineTilesConfig({
     tilesTableName: 'zones_et_reseaux_en_construction_tiles',
-    tilesGenerationMethod: 'legacy',
+    tippeCanoeArgs: '--no-tile-compression --layer=futurOutline', // legacy
     generateGeoJSON: extractGeoJSONFromDatabaseTable('zones_et_reseaux_en_construction'),
   }),
   'perimetres-de-developpement-prioritaire': defineTilesConfig({
     tilesTableName: 'zone_de_developpement_prioritaire_tiles',
-    tilesGenerationMethod: 'legacy',
+    tippeCanoeArgs: '--no-tile-compression --layer=zoneDP', // legacy
     generateGeoJSON: extractGeoJSONFromDatabaseTable('zone_de_developpement_prioritaire'),
   }),
   'installations-geothermie-surface-echangeurs-fermes': defineTilesConfig({

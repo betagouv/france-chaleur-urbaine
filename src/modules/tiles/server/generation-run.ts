@@ -3,8 +3,8 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 import { tilesConfigs, type TilesType } from '@/modules/tiles/server/generation-config';
+import { importGeoJSONWithTipeeCanoe } from '@/modules/tiles/server/generation-import';
 import { parentLogger } from '@/server/helpers/logger';
-import { importGeoJSONToTable, importGeoJSONWithTipeeCanoe } from '@cli/tiles/utils';
 
 export async function runTilesGeneration(name: TilesType, inputFilePath?: string) {
   const config = tilesConfigs[name];
@@ -21,12 +21,15 @@ export async function runTilesGeneration(name: TilesType, inputFilePath?: string
   const geojsonPath = await config.generateGeoJSON({ ...jobConfig, inputFilePath });
 
   logger.info(`Importation du GeoJSON dans la table ${config.tilesTableName}`);
-  // TODO refactor pour utiliser le logger
-  if (config.tilesGenerationMethod === 'legacy') {
-    await importGeoJSONToTable(geojsonPath, config.tilesTableName, config.zoomMin, config.zoomMax);
-  } else {
-    await importGeoJSONWithTipeeCanoe(geojsonPath, config.tilesTableName, config.zoomMin, config.zoomMax, config.tippeCanoeArgs);
-  }
+  await importGeoJSONWithTipeeCanoe({
+    geojsonFilePath: geojsonPath,
+    logger,
+    tempDirectory,
+    tilesTableName: config.tilesTableName,
+    zoomMin: config.zoomMin,
+    zoomMax: config.zoomMax,
+    tippeCanoeArgs: config.tippeCanoeArgs,
+  });
   logger.info(`GeoJSON importée dans la table ${config.tilesTableName}`);
   await rm(tempDirectory, { recursive: true });
   return config;

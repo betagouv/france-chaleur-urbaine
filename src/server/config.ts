@@ -6,6 +6,7 @@ dotenv.config({ path: '.env.local' });
 dotenv.config();
 
 const serverConfigSchema = {
+  DATABASE_URL: z.string(),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   IS_REVIEW_APP: z.boolean().default(false),
   GITHUB_CI: z.boolean().default(false),

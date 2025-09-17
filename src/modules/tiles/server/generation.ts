@@ -1,10 +1,18 @@
+import { type DB } from '@/server/db/kysely';
 import { type Logger } from '@/server/helpers/logger';
+
+/**
+ * Tables tuiles
+ */
+export type TilesTable = keyof {
+  [K in keyof DB as K extends `${string}_tiles` ? K : never]: true;
+};
 
 type TilesGenerationConfig = {
   /**
    * Nom de la table dans la base de données où seront importées les tuiles.
    */
-  tilesTableName: string;
+  tilesTableName: TilesTable;
   /**
    * 5 par défaut, généralement ne pas changer.
    */
@@ -52,5 +60,19 @@ export function defineTilesConfig(config: TilesGenerationConfig): TilesGeneratio
 }
 
 export const defineTilesGenerationStrategy = (fn: (config: GenerateGeoJSONConfig) => Promise<string>) => {
+  return fn;
+};
+
+export type ImportGeoJSONConfig = {
+  geojsonFilePath: string;
+  logger: Logger;
+  tempDirectory: string;
+  tilesTableName: TilesTable;
+  zoomMin: number;
+  zoomMax: number;
+  tippeCanoeArgs?: string;
+};
+
+export const defineTilesImportStrategy = (fn: (config: ImportGeoJSONConfig) => Promise<void>) => {
   return fn;
 };

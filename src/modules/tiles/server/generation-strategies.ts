@@ -5,10 +5,10 @@ import { join } from 'node:path';
 import { sql } from 'kysely';
 
 import { defineTilesGenerationStrategy } from '@/modules/tiles/server/generation';
-import { kdb } from '@/server/db/kysely';
+import { type DB, kdb } from '@/server/db/kysely';
 import { fetchJSON } from '@/utils/network';
-import { dockerVolumePath, moveFile, runBash, runDocker } from '@cli/helpers/shell';
-import { dockerImageArch } from '@cli/tiles/utils';
+import { ogr2ogrConvertToGeoJSON, ogr2ogrExtractGeoJSONFromDatabaseTable } from '@/utils/ogr2ogr';
+import { runBash } from '@/utils/system';
 
 export const getInputFilePath = defineTilesGenerationStrategy(async ({ inputFilePath }) => {
   if (!inputFilePath) {
@@ -22,14 +22,10 @@ export const getInputFilePath = defineTilesGenerationStrategy(async ({ inputFile
  * @param tableName - The name of the database table
  * @returns a function that will extract the GeoJSON file from the database table
  */
-export const extractGeoJSONFromDatabaseTable = (tableName: string) =>
+export const extractGeoJSONFromDatabaseTable = (tableName: keyof DB) =>
   defineTilesGenerationStrategy(async ({ tempDirectory }) => {
-    await runDocker(
-      `ghcr.io/osgeo/gdal:alpine-normal-latest-${dockerImageArch}`,
-      `ogr2ogr -f GeoJSON output.geojson PG:"host=localhost user=postgres dbname=postgres password=postgres_fcu" ${tableName} -t_srs EPSG:4326`
-    );
     const targetTilesFilePath = join(tempDirectory, 'tiles-features.geojson');
-    await moveFile(join(dockerVolumePath, 'output.geojson'), targetTilesFilePath);
+    await ogr2ogrExtractGeoJSONFromDatabaseTable(tableName, targetTilesFilePath);
     return targetTilesFilePath;
   });
 
@@ -99,7 +95,7 @@ export const extractZippedShapefileToGeoJSON = defineTilesGenerationStrategy(asy
       output: targetTilesFilePath,
     });
 
-    await runBash(`ogr2ogr -f GeoJSON -t_srs EPSG:4326 "${targetTilesFilePath}" "${shapefilePath}"`);
+    await ogr2ogrConvertToGeoJSON(targetTilesFilePath, shapefilePath);
 
     return targetTilesFilePath;
   } finally {
