@@ -19,6 +19,7 @@ const serverConfigSchema = {
   DATA_GOUV_FR_DATASET_ID: z.string().optional(),
   PIPEDRIVE_BASE_URL: z.string().default('https://api.pipedrive.com/v1'),
   PIPEDRIVE_API_KEY: z.string().optional(),
+  USE_DOCKER_GEO_COMMANDS: z.boolean().default(false),
 };
 
 export const serverConfig = parseEnv(process.env, serverConfigSchema);

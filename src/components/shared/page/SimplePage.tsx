@@ -396,6 +396,12 @@ const adminNavigationMenu: MainNavigationProps.Item[] = [
           href: '/admin/test-coordonnees-geographiques',
         },
       },
+      {
+        text: 'Diagnostic',
+        linkProps: {
+          href: '/admin/diagnostic',
+        },
+      },
     ],
   },
 ];
