@@ -649,14 +649,6 @@ export const FullyFeaturedMap = ({
   useEffect(() => {
     if (!mapRef.current || !mapLayersLoaded || !geomUpdateFeatures) return;
 
-    console.log(''); //eslint-disable-line
-    console.log('╔════START════════════════════════════════════════════════════'); //eslint-disable-line
-    console.log({
-      type: 'FeatureCollection',
-      features: geomUpdateFeatures,
-    }); //eslint-disable-line
-    console.log('╚════END══════════════════════════════════════════════════════'); //eslint-disable-line
-
     (mapRef.current.getSource('geomUpdate') as GeoJSONSource)?.setData({
       type: 'FeatureCollection',
       features: geomUpdateFeatures,

@@ -348,8 +348,8 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
       )}
 
       {hasRole('admin') && (
-        <div className="mb-2">
-          <span className="font-bold">Admin</span>
+        <div className="my-2">
+          <Title className="mb-1">Admin</Title>
           <Box display="flex">
             <SingleCheckbox name="customGeojson" checked={mapConfiguration.customGeojson} onChange={() => toggleLayer('customGeojson')} />
 
@@ -364,7 +364,7 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
               cursor="pointer"
               style={{ marginTop: '2px' }}
             >
-              Custom Geojson
+              Fichier déposé sur la carte
             </Text>
           </Box>
           <Box display="flex">
@@ -374,7 +374,7 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
 
             <Text
               as="label"
-              htmlFor="customGeojson"
+              htmlFor="geomUpdate"
               fontSize="14px"
               lineHeight="18px"
               className="fr-col"

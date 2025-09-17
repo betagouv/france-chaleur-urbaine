@@ -25,7 +25,7 @@ export const customGeojsonLayersSpec = [
           'fill-opacity': customGeojsonOpacity,
         },
         filter: () => ['==', '$type', 'Polygon'],
-        isVisible: () => true,
+        isVisible: (config) => config.customGeojson,
         popup: Popup,
       },
       {
@@ -36,7 +36,7 @@ export const customGeojsonLayersSpec = [
           'line-color': customGeojsonColor,
           'line-width': ifHoverElse(4, 2),
         },
-        isVisible: () => true,
+        isVisible: (config) => config.customGeojson,
         unselectable: true,
       },
       {
@@ -47,7 +47,7 @@ export const customGeojsonLayersSpec = [
           'line-color': customGeojsonColor,
           'line-width': ifHoverElse(4, 2),
         },
-        isVisible: () => true,
+        isVisible: (config) => config.customGeojson,
         popup: Popup,
       },
       {
@@ -60,7 +60,7 @@ export const customGeojsonLayersSpec = [
           'circle-stroke-width': 2,
           'circle-stroke-color': customGeojsonColor,
         },
-        isVisible: () => true,
+        isVisible: (config) => config.customGeojson,
         popup: Popup,
       },
     ],
