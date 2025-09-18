@@ -1,6 +1,9 @@
 import { type BuildTilesInput } from '@/modules/tiles/constants';
 import { kdb, sql } from '@/server/db/kysely';
 import { type ApiContext } from '@/server/db/kysely/base-model';
+import { type DatabaseSourceId } from '@/server/services/tiles.config';
+import { downloadNetwork } from '@cli/networks/download-network';
+import { syncPostgresToAirtable } from '@cli/networks/sync-pg-to-airtable';
 
 export const createBuildTilesJob = async ({ name }: BuildTilesInput, context: ApiContext) => {
   return await kdb
@@ -106,5 +109,36 @@ export const applyGeometriesUpdates = async (context: ApiContext) => {
   return {
     processed,
     jobsCreated: updatedEntities,
+  };
+};
+
+/**
+ * Synchronise les géométries mises à jour vers Airtable.
+ * Équivalent de la CLI sync-postgres-to-airtable.
+ */
+export const syncGeometriesToAirtable = async (_context: ApiContext) => {
+  await syncPostgresToAirtable(false); // false = pas de dry run
+
+  return {
+    message: 'Synchronisation vers Airtable terminée avec succès',
+  };
+};
+
+/**
+ * Synchronise les métadonnées depuis Airtable vers Postgres.
+ * Équivalent de la CLI download-network pour toutes les tables.
+ */
+export const syncMetadataFromAirtable = async (_context: ApiContext) => {
+  const networkTables: DatabaseSourceId[] = ['network', 'coldNetwork', 'futurNetwork'];
+
+  await Promise.all(
+    networkTables.map(async (table) => {
+      await downloadNetwork(table);
+    })
+  );
+
+  return {
+    message: 'Synchronisation depuis Airtable terminée avec succès',
+    tables: networkTables,
   };
 };

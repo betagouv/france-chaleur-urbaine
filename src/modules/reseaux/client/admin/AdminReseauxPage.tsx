@@ -140,11 +140,35 @@ const GestionDesReseaux = () => {
     onSuccess: () => void tabInfo.refetch(),
   });
 
+  const { mutateAsync: syncGeometriesToAirtable } = trpc.tiles.syncGeometriesToAirtable.useMutation();
+  const { mutateAsync: syncMetadataFromAirtable } = trpc.tiles.syncMetadataFromAirtable.useMutation();
+
   const { mutateAsync: applyGeometriesUpdates } = trpc.tiles.applyGeometriesUpdates.useMutation({
     onSuccess: async () => {
-      notify('success', "Les mises à jour de géométrie ont été appliquées. Les tuiles seront regénérées d'ici quelques minutes");
+      try {
+        notify('success', 'Synchronisation vers Airtable en cours...');
 
-      await Promise.all([refetchReseauxDeChaleur(), refetchReseauxEnConstruction(), refetchPerimetresDeDeveloppementPrioritaire()]);
+        // Étape 2: Synchroniser les géométries vers Airtable
+        await syncGeometriesToAirtable();
+        notify('success', 'Synchronisation des métadonnées depuis Airtable en cours...');
+
+        // Étape 3: Synchroniser les métadonnées depuis Airtable
+        await syncMetadataFromAirtable();
+
+        notify(
+          'success',
+          "Toutes les synchronisations ont été effectuées avec succès. Les tuiles seront regénérées d'ici quelques minutes"
+        );
+
+        await Promise.all([
+          trpcUtils.reseaux.list.invalidate(),
+          trpcUtils.reseaux.listEnConstruction.invalidate(),
+          trpcUtils.reseaux.listPerimetresDeDeveloppementPrioritaire.invalidate(),
+        ]);
+      } catch (error) {
+        notify('error', 'Erreur lors de la synchronisation avec Airtable');
+        console.error('Erreur synchronisation:', error);
+      }
     },
   });
 
