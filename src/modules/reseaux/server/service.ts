@@ -380,6 +380,65 @@ export const deleteNetwork = async (
   logger.info(`Le réseau ${id_fcu} a été mis en attente de suppression`);
 };
 
+const createReseauDeChaleur = async (id: string, finalGeometry: any) => {
+  const id_sncu = id.includes('C') || id.includes('F') ? id : null;
+
+  // Pour les réseaux de chaleur, l'ID est l'identifiant réseau (string)
+  const maxIdResult = await kdb
+    .selectFrom('reseaux_de_chaleur')
+    .select(sql<number>`COALESCE(MAX(id_fcu), 0) + 1`.as('next_id'))
+    .executeTakeFirstOrThrow();
+
+  return await kdb
+    .insertInto('reseaux_de_chaleur')
+    .values({
+      ...(id_sncu ? { 'Identifiant reseau': id_sncu, id_fcu: maxIdResult.next_id } : { id_fcu: parseInt(id) }),
+      geom: null,
+      tags: [],
+      geom_update: sql`ST_Force2D(${finalGeometry})`,
+    })
+    .returningAll()
+    .executeTakeFirstOrThrow();
+};
+
+const createReseauEnConstruction = async (id: string, finalGeometry: any) => {
+  const id_fcu = parseInt(id);
+  if (isNaN(id_fcu)) {
+    throw new Error('ID FCU invalide');
+  }
+
+  return await kdb
+    .insertInto('zones_et_reseaux_en_construction')
+    .values({
+      id_fcu,
+      geom: null,
+      geom_update: sql`ST_Force2D(${finalGeometry})`,
+      nom_reseau: `Nouveau réseau en construction ${id_fcu}`,
+      tags: [],
+    })
+    .returningAll()
+    .executeTakeFirstOrThrow();
+};
+
+const createPerimetreDeDeveloppementPrioritaire = async (id: string, finalGeometry: any) => {
+  const id_fcu = parseInt(id);
+  if (isNaN(id_fcu)) {
+    throw new Error('ID FCU invalide');
+  }
+
+  return await kdb
+    .insertInto('zone_de_developpement_prioritaire')
+    .values({
+      id_fcu,
+      geom: null,
+      geom_update: sql`ST_Force2D(${finalGeometry})`,
+      reseau_de_chaleur_ids: [],
+      reseau_en_construction_ids: [],
+    })
+    .returningAll()
+    .executeTakeFirstOrThrow();
+};
+
 export const createNetwork = async (
   id: string,
   geometry: any,
@@ -387,59 +446,15 @@ export const createNetwork = async (
 ) => {
   const processedGeometry = await processGeometry(geometry);
   const finalGeometry = createGeometryExpression(processedGeometry.geom, processedGeometry.srid);
-  let result = null;
 
-  if (dbName === 'reseaux_de_chaleur') {
-    const id_sncu = id.includes('C') || id.includes('F') ? id : null;
-
-    // Pour les réseaux de chaleur, l'ID est l'identifiant réseau (string)
-    const maxIdResult = await kdb
-      .selectFrom('reseaux_de_chaleur')
-      .select(sql<number>`COALESCE(MAX(id_fcu), 0) + 1`.as('next_id'))
-      .executeTakeFirstOrThrow();
-
-    result = await kdb
-      .insertInto('reseaux_de_chaleur')
-      .values({
-        ...(id_sncu ? { 'Identifiant reseau': id_sncu, id_fcu: maxIdResult.next_id } : { id_fcu: parseInt(id) }),
-        geom: null,
-        tags: [],
-        geom_update: sql`ST_Force2D(${finalGeometry})`,
-      })
-      .returningAll()
-      .executeTakeFirstOrThrow();
-  } else {
-    // Pour les autres types, l'ID est un id_fcu (convertir string en number)
-    const id_fcu = parseInt(id);
-    if (isNaN(id_fcu)) {
-      throw new Error('ID FCU invalide');
-    }
-
-    if (dbName === 'zones_et_reseaux_en_construction') {
-      result = await kdb
-        .insertInto('zones_et_reseaux_en_construction')
-        .values({
-          id_fcu,
-          geom: null,
-          geom_update: sql`ST_Force2D(${finalGeometry})`,
-          nom_reseau: `Nouveau réseau en construction ${id_fcu}`,
-          tags: [],
-        })
-        .returningAll()
-        .executeTakeFirstOrThrow();
-    } else if (dbName === 'zone_de_developpement_prioritaire') {
-      result = await kdb
-        .insertInto('zone_de_developpement_prioritaire')
-        .values({
-          id_fcu,
-          geom: null,
-          geom_update: sql`ST_Force2D(${finalGeometry})`,
-          reseau_de_chaleur_ids: [],
-          reseau_en_construction_ids: [],
-        })
-        .returningAll()
-        .executeTakeFirstOrThrow();
-    }
+  switch (dbName) {
+    case 'reseaux_de_chaleur':
+      return await createReseauDeChaleur(id, finalGeometry);
+    case 'zones_et_reseaux_en_construction':
+      return await createReseauEnConstruction(id, finalGeometry);
+    case 'zone_de_developpement_prioritaire':
+      return await createPerimetreDeDeveloppementPrioritaire(id, finalGeometry);
+    default:
+      throw new Error(`Type de réseau non supporté: ${dbName}`);
   }
-  return result;
 };
