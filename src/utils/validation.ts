@@ -1,4 +1,5 @@
 import z, { ZodEffects, ZodObject, type ZodRawShape, type ZodTypeAny } from 'zod';
+import { GeoJSONSchema } from 'zod-geojson';
 
 /**
  * Recursively unwraps ZodEffects to get the base schema.
@@ -62,4 +63,4 @@ export const envBooleanSchema = z
 
 export type AllowedGeometry = GeoJSON.Feature<GeoJSON.Point | GeoJSON.LineString | GeoJSON.Polygon>;
 
-export const zGeometry = z.any();
+export const zGeometry = GeoJSONSchema;

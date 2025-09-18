@@ -174,7 +174,8 @@
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.1/xlsx-0.20.1.tgz",
     "yup": "^1.2.0",
     "znv": "^0.4.0",
-    "zod": "^3.25.28"
+    "zod": "^3.25.28",
+    "zod-geojson": "^1.1.0"
   },
   "devDependencies": {
     "@svgr/webpack": "^8.1.0",

@@ -370,6 +370,9 @@ dependencies:
   zod:
     specifier: ^3.25.28
     version: 3.25.57
+  zod-geojson:
+    specifier: ^1.1.0
+    version: 1.1.0(zod@3.25.57)
 
 devDependencies:
   '@svgr/webpack':
@@ -15597,6 +15600,14 @@ packages:
       zod: ^3.13.2
     dependencies:
       colorette: 2.0.20
+      zod: 3.25.57
+    dev: false
+
+  /zod-geojson@1.1.0(zod@3.25.57):
+    resolution: {integrity: sha512-PjcgIJvrfN75qFpueJOJRXxrJLCGWutTR/c3k7QqizbcEFWhuS4vKAxtiCKBofHm7/dHzw2yaaKmf/BkxbRhTg==}
+    peerDependencies:
+      zod: '>=3.25.0'
+    dependencies:
       zod: 3.25.57
     dev: false
 
