@@ -1,4 +1,5 @@
 import {
+  zCreateNetworkInput,
   zDeleteGeomUpdateInput,
   zDeleteNetworkInput,
   zUpdateGeometryInput,
@@ -42,5 +43,8 @@ export const reseauxRouter = router({
   }),
   deleteNetwork: adminRoute.input(zDeleteNetworkInput).mutation(async ({ input }) => {
     return await reseauxService.deleteNetwork(input.id, input.type);
+  }),
+  createNetwork: adminRoute.input(zCreateNetworkInput).mutation(async ({ input }) => {
+    return await reseauxService.createNetwork(input.id, input.geometry, input.type);
   }),
 });

@@ -3548,7 +3548,7 @@ export interface ZonesEtReseauxEnConstruction {
   communes_insee: string[] | null;
   date_actualisation_trace: Timestamp | null;
   departement: string | null;
-  geom: string;
+  geom: string | null;
   geom_update: string | null;
   gestionnaire: string | null;
   id_fcu: number;

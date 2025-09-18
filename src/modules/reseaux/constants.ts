@@ -46,3 +46,11 @@ export const zDeleteNetworkInput = z.object({
 });
 
 export type DeleteNetworkInput = z.infer<typeof zDeleteNetworkInput>;
+
+export const zCreateNetworkInput = z.object({
+  id: z.string(), // String pour supporter à la fois les ID numériques et les identifiants réseau
+  geometry: zGeometry,
+  type: z.enum(['reseaux_de_chaleur', 'zones_et_reseaux_en_construction', 'zone_de_developpement_prioritaire']),
+});
+
+export type CreateNetworkInput = z.infer<typeof zCreateNetworkInput>;
