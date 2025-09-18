@@ -2,12 +2,14 @@ import { spawn } from 'node:child_process';
 
 import { serverConfig } from '@/server/config';
 import { createLogger } from '@/server/helpers/logger';
+import { knownAirtableBases } from '@cli/airtable/bases';
 
 const logger = createLogger('diagnostic');
 
 export async function runDiagnostic() {
   return {
     geo: await checkGeoCommands(),
+    airtable: getAirtableBase(),
   };
 }
 
@@ -72,7 +74,7 @@ async function testCommandExists(command: string): Promise<{ exists: boolean; ou
   });
 }
 
-export async function checkGeoCommands() {
+async function checkGeoCommands() {
   logger.info('Vérification des commandes géographiques...');
 
   const [ogr2ogr, tippecanoe] = await Promise.all([testCommandExists('ogr2ogr'), testCommandExists('tippecanoe')]);
@@ -82,4 +84,11 @@ export async function checkGeoCommands() {
     ogr2ogr,
     tippecanoe,
   };
+}
+
+function getAirtableBase(): string {
+  return (
+    Object.entries(knownAirtableBases).find(([_, value]) => value === serverConfig.AIRTABLE_BASE)?.[0] ||
+    `inconnu ${serverConfig.AIRTABLE_BASE}`
+  );
 }

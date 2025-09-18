@@ -6,6 +6,8 @@ dotenv.config({ path: '.env.local' });
 dotenv.config();
 
 const serverConfigSchema = {
+  AIRTABLE_BASE: z.string(),
+  AIRTABLE_KEY_API: z.string(),
   DATABASE_URL: z.string(),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   IS_REVIEW_APP: z.boolean().default(false),

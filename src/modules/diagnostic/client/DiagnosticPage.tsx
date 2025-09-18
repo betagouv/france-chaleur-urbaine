@@ -63,6 +63,10 @@ const DiagnosticPage = () => {
                   {diagnosticData.geo.USE_DOCKER_GEO_COMMANDS ? '🐳 Activé' : '🚫 Désactivé'}
                 </td>
               </tr>
+              <tr>
+                <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Base Airtable</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{getAirtableBaseStatus(diagnosticData.airtable)}</td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -75,4 +79,17 @@ export default DiagnosticPage;
 
 const getCommandStatus = (commandResult: { exists: boolean; output: string }) => {
   return commandResult.exists ? `✅ ${commandResult.output.trim()}` : `❌ ${commandResult.output}`;
+};
+
+const getAirtableBaseStatus = (airtableBase: string) => {
+  if (airtableBase.startsWith('inconnu')) {
+    return `❌ ${airtableBase}`;
+  }
+
+  const statusMap = {
+    prod: '🟢 Production',
+    dev: '🟡 Développement',
+  } as const;
+
+  return statusMap[airtableBase as keyof typeof statusMap] || `❓ ${airtableBase}`;
 };
