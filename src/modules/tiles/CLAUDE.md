@@ -45,7 +45,7 @@ type TilesGenerationConfig = {
 - **`extractGeoJSONFromDatabaseTable`** : Depuis une table PostgreSQL
 - **`downloadGeoJSONFromURL`** : Depuis une API/URL
 - **`extractZippedShapefileToGeoJSON`** : Depuis un shapefile zippé
-- **`fromSQLQuery`** : Requête SQL personnalisée
+- **`generateGeoJSONFromSQLQuery`** : Requête SQL personnalisée
 - **`getInputFilePath`** : Fichier fourni en entrée
 
 ## Configurations disponibles
@@ -88,7 +88,7 @@ export const tilesConfigs = {
 // Requête SQL personnalisée
 'ma-source-sql': defineTilesConfig({
   tilesTableName: 'ma_source_tiles',
-  generateGeoJSON: fromSQLQuery(`SELECT json_build_object(...) as geojson FROM ...`),
+  generateGeoJSON: generateGeoJSONFromSQLQuery(`SELECT json_build_object(...) as geojson FROM ...`),
 }),
 ```
 
@@ -137,7 +137,7 @@ trpc.tiles.syncMetadataFromAirtable.useMutation()
 ## Gestion des géométries
 
 Le module gère automatiquement :
-- Les créations de géométries (`geom_update` → `geom`)
+- Les créations de géométries (`geom_update` + `geom` vide → `geom`)
 - Les mises à jour (`geom` + `geom_update` → `geom`)
 - Les suppressions (`geom_update` vide → suppression)
 - La régénération automatique des tuiles affectées

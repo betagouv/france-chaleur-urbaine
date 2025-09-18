@@ -112,7 +112,10 @@ export const extractZippedShapefileToGeoJSON = defineTilesGenerationStrategy(asy
  * @param featureMapFunction - A function to map the features
  * @returns a function that will generate a GeoJSON file from the SQL query
  */
-export const fromSQLQuery = (featureCollectionQuery: string, featureMapFunction?: (feature: GeoJSON.Feature) => GeoJSON.Feature) =>
+export const generateGeoJSONFromSQLQuery = (
+  featureCollectionQuery: string,
+  featureMapFunction?: (feature: GeoJSON.Feature) => GeoJSON.Feature
+) =>
   defineTilesGenerationStrategy(async ({ tempDirectory, logger }) => {
     const result = await sql<any>`${featureCollectionQuery}`.execute(kdb);
 

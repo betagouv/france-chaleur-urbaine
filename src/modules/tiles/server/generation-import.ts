@@ -1,4 +1,4 @@
-import { readdir, readFile, rename, stat } from 'node:fs/promises';
+import { readFile, rename } from 'node:fs/promises';
 import { basename, join } from 'node:path';
 
 import { defineTilesImportStrategy, type TilesTable } from '@/modules/tiles/server/generation';
@@ -7,7 +7,7 @@ import db from '@/server/db';
 import { kdb } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
 import { processInParallel } from '@/types/async';
-import { dockerVolumePath, runBash, runDocker } from '@/utils/system';
+import { dockerVolumePath, listDirectoryEntries, runBash, runDocker } from '@/utils/system';
 
 /**
  * Importe un fichier GeoJSON en base avec tippecanoe.
@@ -144,18 +144,3 @@ const importTilesDirectory = async (basePath: string, destinationTable: string) 
     duration: Date.now() - startTime,
   });
 };
-
-async function listDirectoryEntries(basePath: string, type: 'dir' | 'file'): Promise<string[]> {
-  const entries = await readdir(basePath);
-  const subEntries: string[] = [];
-
-  await Promise.all(
-    entries.map(async (name) => {
-      const fileStats = await stat(join(basePath, name));
-      if ((type === 'dir' && fileStats.isDirectory()) || (type === 'file' && fileStats.isFile())) {
-        subEntries.push(name);
-      }
-    })
-  );
-  return subEntries;
-}

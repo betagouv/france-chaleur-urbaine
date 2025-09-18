@@ -1,12 +1,10 @@
 import SimplePage from '@/components/shared/page/SimplePage';
 import Button from '@/components/ui/Button';
 import Heading from '@/components/ui/Heading';
-import trpc from '@/modules/trpc/client/next';
-
-export type DiagnosticPageProps = Record<string, never>;
+import trpc from '@/modules/trpc/client';
 
 const DiagnosticPage = () => {
-  const { data: diagnosticData, error, refetch, isFetching } = trpc.diagnostic.runDiagnostic.useQuery();
+  const { data: diagnosticData, error, refetch, isFetching } = trpc.diagnostic.run.useQuery();
 
   return (
     <SimplePage title="Diagnostic du système" mode="authenticated" layout="center">

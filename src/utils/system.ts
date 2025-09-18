@@ -1,7 +1,8 @@
 import { spawn } from 'node:child_process';
 import { existsSync, mkdirSync } from 'node:fs';
-import { copyFile, unlink } from 'node:fs/promises';
+import { copyFile, readdir, stat, unlink } from 'node:fs/promises';
 import { arch } from 'node:os';
+import { join } from 'node:path';
 
 import { createLogger } from '@/server/helpers/logger';
 
@@ -134,4 +135,19 @@ export async function moveFile(src: string, dest: string) {
  */
 export async function unlinkFileIfExists(src: string) {
   if (existsSync(src)) await unlink(src);
+}
+
+export async function listDirectoryEntries(basePath: string, type: 'dir' | 'file'): Promise<string[]> {
+  const entries = await readdir(basePath);
+  const subEntries: string[] = [];
+
+  await Promise.all(
+    entries.map(async (name) => {
+      const fileStats = await stat(join(basePath, name));
+      if ((type === 'dir' && fileStats.isDirectory()) || (type === 'file' && fileStats.isFile())) {
+        subEntries.push(name);
+      }
+    })
+  );
+  return subEntries;
 }

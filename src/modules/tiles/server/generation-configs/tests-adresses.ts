@@ -1,6 +1,6 @@
-import { fromSQLQuery } from '@/modules/tiles/server/generation-strategies';
+import { generateGeoJSONFromSQLQuery } from '@/modules/tiles/server/generation-strategies';
 
-export const testsAdressesGeoJSONQuery = fromSQLQuery(
+export const testsAdressesGeoJSONQuery = generateGeoJSONFromSQLQuery(
   `
 SELECT json_build_object(
   'type', 'FeatureCollection',
