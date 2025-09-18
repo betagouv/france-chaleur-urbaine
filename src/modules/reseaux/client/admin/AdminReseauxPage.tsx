@@ -876,19 +876,19 @@ const GestionDesReseaux = () => {
                               variant="destructive"
                               priority="primary"
                               iconId="fr-icon-refresh-line"
-                              title={selectedNetwork?.geom ? 'Annuler la modification' : 'Annuler la création'}
+                              title={!selectedNetwork?.geom_create ? 'Annuler la modification' : 'Annuler la création'}
                               loading={isDeletingGeomUpdate}
                               disabled={!selectedNetwork}
                               stopPropagation
                               onClick={() => {
-                                if (!selectedNetwork?.geom) {
+                                if (selectedNetwork?.geom_create) {
                                   void handleDeleteNetwork(selectedNetwork.id_fcu, tabInfo.type, `ID ${selectedNetwork.id_fcu}`);
                                 } else {
                                   void handleDeleteGeomUpdate();
                                 }
                               }}
                             >
-                              {selectedNetwork?.geom ? 'Annuler la modification' : 'Annuler la création'}
+                              {!selectedNetwork?.geom_create ? 'Annuler la modification' : 'Annuler la création'}
                             </Button>
                           ) : (
                             <Button
