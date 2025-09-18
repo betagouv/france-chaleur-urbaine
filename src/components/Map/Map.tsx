@@ -130,7 +130,7 @@ type MapProps = {
   adressesEligiblesAutoFit?: boolean;
   onFeatureClick?: (feature: MapGeoJSONFeature) => void;
   onGeomDrop?: (geojson: any) => void;
-  geomUpdateFeatures?: any[];
+  geomUpdateFeatures?: GeoJSON.Feature[];
   children?: ReactNode;
 };
 
