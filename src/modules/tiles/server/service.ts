@@ -1,5 +1,7 @@
+import { type ExpressionBuilder } from 'kysely';
+
 import { type BuildTilesInput } from '@/modules/tiles/constants';
-import { kdb, sql } from '@/server/db/kysely';
+import { type DB, kdb, sql } from '@/server/db/kysely';
 import { type ApiContext } from '@/server/db/kysely/base-model';
 import { type DatabaseSourceId } from '@/server/services/tiles.config';
 import { downloadNetwork } from '@cli/networks/download-network';
@@ -61,16 +63,18 @@ const communesInseeExpressionGeomUpdate = sql<string[]>`COALESCE(
 /**
  * Définition des champs dépendants de la géométrie pour chaque table
  */
-const networkTablesGeomFields = {
-  reseaux_de_chaleur: (_eb: any) => ({
-    has_trace: sql<boolean>`st_geometrytype(geom_update) = 'ST_MultiLineString'`,
+const networkTablesGeomFields: {
+  [K in NetworkTable]: (eb: ExpressionBuilder<DB, K>) => Record<string, any>;
+} = {
+  reseaux_de_chaleur: (eb) => ({
+    has_trace: sql<boolean>`st_geometrytype(${eb.ref('geom_update')}) = 'ST_MultiLineString'`,
   }),
-  reseaux_de_froid: (_eb: any) => ({
-    has_trace: sql<boolean>`st_geometrytype(geom_update) = 'ST_MultiLineString'`,
+  reseaux_de_froid: () => ({
+    // has_trace: sql<boolean>`st_geometrytype(${eb.ref('geom_update')}) = 'ST_MultiLineString'`,
   }),
   zone_de_developpement_prioritaire: () => ({}),
-  zones_et_reseaux_en_construction: (_eb: any) => ({
-    is_zone: sql<boolean>`st_geometrytype(geom_update) = 'ST_MultiPolygon' or st_geometrytype(geom_update) = 'ST_Polygon'`,
+  zones_et_reseaux_en_construction: (eb) => ({
+    is_zone: sql<boolean>`st_geometrytype(${eb.ref('geom_update')}) = 'ST_MultiPolygon' or st_geometrytype(geom_update) = 'ST_Polygon'`,
   }),
 };
 
