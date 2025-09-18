@@ -24,9 +24,9 @@ import cx from '@/utils/cx';
 
 const tabIds = ['reseaux-de-chaleur', 'reseaux-en-construction', 'perimetres-de-developpement-prioritaire'] as const;
 
-type ReseauDeChaleur = RouterOutput['reseaux']['list'][number];
-type ReseauEnConstruction = RouterOutput['reseaux']['listEnConstruction'][number];
-type PerimetreDeDeveloppementPrioritaire = RouterOutput['reseaux']['listPerimetresDeDeveloppementPrioritaire'][number];
+type ReseauDeChaleur = RouterOutput['reseaux']['reseauDeChaleur']['list'][number];
+type ReseauEnConstruction = RouterOutput['reseaux']['reseauEnConstruction']['list'][number];
+type PerimetreDeDeveloppementPrioritaire = RouterOutput['reseaux']['perimetreDeDeveloppementPrioritaire']['list'][number];
 
 const ModifiedIcon = <T extends Record<string, any>>(record: T & { geom_delete: boolean; geom_update: any; geom_create: boolean }) => {
   if (!record.geom_update && !record.geom_delete && !record.geom_create) {
@@ -61,19 +61,19 @@ const GestionDesReseaux = () => {
     data: reseauxDeChaleur,
     isFetching: isFetchingReseauxDeChaleur,
     isLoading: isLoadingReseauxDeChaleur,
-  } = trpc.reseaux.list.useQuery();
+  } = trpc.reseaux.reseauDeChaleur.list.useQuery();
 
   const {
     data: reseauxEnConstruction,
     isFetching: isFetchingReseauxEnConstruction,
     isLoading: isLoadingReseauxEnConstruction,
-  } = trpc.reseaux.listEnConstruction.useQuery();
+  } = trpc.reseaux.reseauEnConstruction.list.useQuery();
 
   const {
     data: perimetresDeDeveloppementPrioritaire,
     isFetching: isFetchingPerimetresDeDeveloppementPrioritaire,
     isLoading: isLoadingPerimetresDeDeveloppementPrioritaire,
-  } = trpc.reseaux.listPerimetresDeDeveloppementPrioritaire.useQuery();
+  } = trpc.reseaux.perimetreDeDeveloppementPrioritaire.list.useQuery();
 
   const onTableRowClick = useCallback(
     (idFCU: number) => {
@@ -105,25 +105,25 @@ const GestionDesReseaux = () => {
       enabledFeatures: ['reseauxDeChaleur'],
       title: 'Réseaux de chaleur',
       type: 'reseaux_de_chaleur',
-      refetch: () => void trpcUtils.reseaux.list.invalidate(),
+      refetch: () => void trpcUtils.reseaux.reseauDeChaleur.list.invalidate(),
     },
     'reseaux-en-construction': {
       enabledFeatures: ['reseauxEnConstruction'],
       title: 'Réseaux en construction',
       type: 'zones_et_reseaux_en_construction',
-      refetch: () => void trpcUtils.reseaux.listEnConstruction.invalidate(),
+      refetch: () => void trpcUtils.reseaux.reseauEnConstruction.list.invalidate(),
     },
     'perimetres-de-developpement-prioritaire': {
       enabledFeatures: ['zonesDeDeveloppementPrioritaire'],
       title: 'Périmètres de développement prioritaire',
       type: 'zone_de_developpement_prioritaire',
-      refetch: () => void trpcUtils.reseaux.listPerimetresDeDeveloppementPrioritaire.invalidate(),
+      refetch: () => void trpcUtils.reseaux.perimetreDeDeveloppementPrioritaire.list.invalidate(),
     },
   };
 
   const tabInfo = tabsInfo[selectedTab];
 
-  const { mutateAsync: updateReseauDeChaleur } = trpc.reseaux.updateTags.useMutation({
+  const { mutateAsync: updateReseauDeChaleur } = trpc.reseaux.reseauDeChaleur.updateTags.useMutation({
     onSuccess: () => void tabInfo.refetch(),
   });
 
@@ -136,7 +136,7 @@ const GestionDesReseaux = () => {
     []
   );
 
-  const { mutateAsync: updateReseauEnConstruction } = trpc.reseaux.updateEnConstructionTags.useMutation({
+  const { mutateAsync: updateReseauEnConstruction } = trpc.reseaux.reseauEnConstruction.updateTags.useMutation({
     onSuccess: () => void tabInfo.refetch(),
   });
 
@@ -149,7 +149,7 @@ const GestionDesReseaux = () => {
     [updateReseauEnConstruction]
   );
 
-  const { mutateAsync: updatePerimetreDeDeveloppementPrioritaire } = trpc.reseaux.updatePerimetreDeDeveloppementPrioritaire.useMutation({
+  const { mutateAsync: updatePerimetreDeDeveloppementPrioritaire } = trpc.reseaux.perimetreDeDeveloppementPrioritaire.update.useMutation({
     onSuccess: () => void tabInfo.refetch(),
   });
 
@@ -166,7 +166,7 @@ const GestionDesReseaux = () => {
     [updatePerimetreDeDeveloppementPrioritaire]
   );
 
-  const { mutateAsync: updateGeometry, isPending: isUpdatingGeometry } = trpc.reseaux.updateGeometry.useMutation({
+  const { mutateAsync: updateGeomUpdate, isPending: isUpdatingGeometry } = trpc.reseaux.updateGeomUpdate.useMutation({
     onSuccess: () => {
       void tabInfo.refetch();
       handleCancelEdit();
@@ -207,14 +207,14 @@ const GestionDesReseaux = () => {
           type: tabInfo.type,
         });
       } else {
-        await updateGeometry({
+        await updateGeomUpdate({
           id: typeof editingId === 'number' ? editingId : parseInt(editingId || '0'),
           geometry: updatedGeom,
           type: tabInfo.type,
         });
       }
     }),
-    [editingId, updatedGeom, updateGeometry, createNetwork, selectedNetwork, selectedTab]
+    [editingId, updatedGeom, updateGeomUpdate, createNetwork, selectedNetwork, selectedTab]
   );
 
   const handleDeleteGeomUpdate = useCallback(

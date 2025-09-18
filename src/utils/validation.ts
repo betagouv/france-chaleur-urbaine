@@ -1,11 +1,11 @@
-import z, { ZodEffects, ZodObject, type ZodRawShape, type ZodTypeAny } from 'zod';
+import { z, ZodObject, type ZodRawShape, type ZodTypeAny } from 'zod';
 import { GeoJSONSchema } from 'zod-geojson';
 
 /**
  * Recursively unwraps ZodEffects to get the base schema.
  */
 const unwrapSchema = (schema: ZodTypeAny): ZodTypeAny => {
-  while (schema instanceof ZodEffects) {
+  while (schema instanceof z.ZodEffects) {
     schema = schema._def.schema;
   }
   return schema;

@@ -2,7 +2,7 @@ import {
   zCreateNetworkInput,
   zDeleteGeomUpdateInput,
   zDeleteNetworkInput,
-  zUpdateGeometryInput,
+  zUpdateGeomUpdateInput,
   zUpdatePerimetreDeDeveloppementPrioritaireInput,
   zUpdateReseauEnConstructionInput,
   zUpdateReseauInput,
@@ -13,38 +13,51 @@ import * as reseauxService from './service';
 
 const adminRoute = routeRole(['admin']);
 
-export const reseauxRouter = router({
+const reseauDeChaleurRouter = router({
   list: adminRoute.query(async () => {
     return await reseauxService.listReseauxDeChaleur();
   }),
   updateTags: adminRoute.input(zUpdateReseauInput).mutation(async ({ input }) => {
     return await reseauxService.updateTags(input.id, input.tags);
   }),
-  updateGeometry: adminRoute.input(zUpdateGeometryInput).mutation(async ({ input }) => {
-    return await reseauxService.updateGeometry(input.id, input.geometry, input.type);
-  }),
-  listEnConstruction: adminRoute.query(async () => {
+});
+
+const reseauEnConstructionRouter = router({
+  list: adminRoute.query(async () => {
     return await reseauxService.listReseauxEnConstruction();
   }),
-  updateEnConstructionTags: adminRoute.input(zUpdateReseauEnConstructionInput).mutation(async ({ input }) => {
+  updateTags: adminRoute.input(zUpdateReseauEnConstructionInput).mutation(async ({ input }) => {
     return await reseauxService.updateReseauEnConstruction(input.id, input.tags);
   }),
-  listPerimetresDeDeveloppementPrioritaire: adminRoute.query(async () => {
+});
+
+const perimetreDeDeveloppementPrioritaireRouter = router({
+  list: adminRoute.query(async () => {
     return await reseauxService.listPerimetresDeDeveloppementPrioritaire();
   }),
-  updatePerimetreDeDeveloppementPrioritaire: adminRoute
-    .input(zUpdatePerimetreDeDeveloppementPrioritaireInput)
-    .mutation(async ({ input }) => {
-      const { id, ...data } = input;
-      return await reseauxService.updatePerimetreDeDeveloppementPrioritaire(id, data);
-    }),
+  update: adminRoute.input(zUpdatePerimetreDeDeveloppementPrioritaireInput).mutation(async ({ input }) => {
+    const { id, ...data } = input;
+    return await reseauxService.updatePerimetreDeDeveloppementPrioritaire(id, data);
+  }),
+});
+
+export const reseauxRouter = router({
+  // Sous-routeurs par type
+  reseauDeChaleur: reseauDeChaleurRouter,
+  reseauEnConstruction: reseauEnConstructionRouter,
+  perimetreDeDeveloppementPrioritaire: perimetreDeDeveloppementPrioritaireRouter,
+
+  // Opérations communes à tous les types
+  updateGeomUpdate: adminRoute.input(zUpdateGeomUpdateInput).mutation(async ({ input }) => {
+    return await reseauxService.updateGeomUpdate(input.id as number, input.geometry, input.type);
+  }),
   deleteGeomUpdate: adminRoute.input(zDeleteGeomUpdateInput).mutation(async ({ input }) => {
-    return await reseauxService.deleteGeomUpdate(input.id, input.type);
+    return await reseauxService.deleteGeomUpdate(input.id as number, input.type);
   }),
   deleteNetwork: adminRoute.input(zDeleteNetworkInput).mutation(async ({ input }) => {
-    return await reseauxService.deleteNetwork(input.id, input.type);
+    return await reseauxService.deleteNetwork(input.id as number, input.type);
   }),
   createNetwork: adminRoute.input(zCreateNetworkInput).mutation(async ({ input }) => {
-    return await reseauxService.createNetwork(input.id, input.geometry, input.type);
+    return await reseauxService.createNetwork(input.id as string, input.geometry, input.type);
   }),
 });

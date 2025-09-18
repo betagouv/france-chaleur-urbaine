@@ -326,7 +326,7 @@ export const updatePerimetreDeDeveloppementPrioritaire = async (
   await kdb.updateTable('zone_de_developpement_prioritaire').set(data).where('id_fcu', '=', id).execute();
 };
 
-export const updateGeometry = async (
+export const updateGeomUpdate = async (
   id_fcu: number,
   geometry: any,
   dbName: 'reseaux_de_chaleur' | 'zones_et_reseaux_en_construction' | 'zone_de_developpement_prioritaire'
@@ -396,6 +396,9 @@ const createReseauDeChaleur = async (id: string, finalGeometry: any) => {
       geom: null,
       tags: [],
       geom_update: sql`ST_Force2D(${finalGeometry})`,
+      'reseaux classes': false,
+      reseaux_techniques: false,
+      fichiers: [],
     })
     .returningAll()
     .executeTakeFirstOrThrow();
