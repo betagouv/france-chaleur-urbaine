@@ -161,9 +161,9 @@ const GestionDesReseaux = () => {
         );
 
         await Promise.all([
-          trpcUtils.reseaux.list.invalidate(),
-          trpcUtils.reseaux.listEnConstruction.invalidate(),
-          trpcUtils.reseaux.listPerimetresDeDeveloppementPrioritaire.invalidate(),
+          trpcUtils.reseaux.reseauDeChaleur.list.invalidate(),
+          trpcUtils.reseaux.reseauEnConstruction.list.invalidate(),
+          trpcUtils.reseaux.perimetreDeDeveloppementPrioritaire.list.invalidate(),
         ]);
       } catch (error) {
         notify('error', 'Erreur lors de la synchronisation avec Airtable');
