@@ -1,4 +1,5 @@
 import SimplePage from '@/components/shared/page/SimplePage';
+import Alert from '@/components/ui/Alert';
 import Button from '@/components/ui/Button';
 import Heading from '@/components/ui/Heading';
 import trpc from '@/modules/trpc/client';
@@ -33,12 +34,9 @@ const DiagnosticPage = () => {
           </div>
         </div>
       ) : error ? (
-        <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-          <Heading as="h3" size="h5" className="text-red-800 mb-2">
-            Erreur lors du diagnostic
-          </Heading>
-          <p className="text-red-700 text-sm">{error.message || "Une erreur inattendue s'est produite"}</p>
-        </div>
+        <Alert variant="error" title="Erreur lors du diagnostic">
+          {error.message || "Une erreur inattendue s'est produite"}
+        </Alert>
       ) : diagnosticData ? (
         <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
           <table className="w-full">
