@@ -1,64 +1,64 @@
-# name: CI
+name: CI
 
-# # Controls when the action will run.
-# on: [push]
+# Controls when the action will run.
+on: [push]
 
-# jobs:
-#   CI:
-#     # The type of runner that the job will run on
-#     runs-on: ubuntu-22.04
-#     services:
-#       postgres:
-#         image: postgis/postgis:16-3.5-alpine
-#         env:
-#           POSTGRES_USER: fcu
-#           POSTGRES_PASSWORD: fcu_pass
-#           POSTGRES_DB: fcu_db
-#         ports:
-#           - 5432:5432
-#         options: >-
-#           --health-cmd pg_isready
-#           --health-interval 10s
-#           --health-timeout 5s
-#           --health-retries 5
-#     env:
-#       NEXT_TELEMETRY_DISABLED: 1
-#       DATABASE_URL: postgres://fcu:fcu_pass@localhost:5432/fcu_db
+jobs:
+  CI:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-22.04
+    services:
+      postgres:
+        image: postgis/postgis:16-3.5-alpine
+        env:
+          POSTGRES_USER: fcu
+          POSTGRES_PASSWORD: fcu_pass
+          POSTGRES_DB: fcu_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      NEXT_TELEMETRY_DISABLED: 1
+      DATABASE_URL: postgres://fcu:fcu_pass@localhost:5432/fcu_db
 
-#     steps:
-#       - name: Checkout 🛎️
-#         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
-#       - uses: pnpm/action-setup@v4
-#         name: Install pnpm
-#         with:
-#           version: 8.6.2
-#           run_install: false
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        with:
+          version: 8.6.2
+          run_install: false
 
-#       - name: Setup Node 🔧
-#         uses: actions/setup-node@8f152de45cc393bb48ce5d89d36b731f54556e65 # v4.0.0
-#         with:
-#           node-version: 20
-#           cache: pnpm
-#           cache-dependency-path: pnpm-lock.yaml
+      - name: Setup Node 🔧
+        uses: actions/setup-node@8f152de45cc393bb48ce5d89d36b731f54556e65 # v4.0.0
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
 
-#       - name: Install Dependencies 💾
-#         run: pnpm install
+      - name: Install Dependencies 💾
+        run: pnpm install
 
-#       - name: Audit 🛡️
-#         run: pnpm audit
-#         continue-on-error: true
+      - name: Audit 🛡️
+        run: pnpm audit
+        continue-on-error: true
 
-#       - name: Lint 🧹
-#         run: pnpm lint
+      - name: Lint 🧹
+        run: pnpm lint
 
-#       - name: Run database migrations 🔄
-#         run: pnpm db:migrate
+      - name: Run database migrations 🔄
+        run: pnpm db:migrate
 
-#       - name: Test ✅
-#         run: pnpm test
+      - name: Test ✅
+        run: pnpm test
 
-#       - name: Build 📦
-#         run: pnpm build
-#         env:
-#           GITHUB_CI: true
+      - name: Build 📦
+        run: pnpm build
+        env:
+          GITHUB_CI: true
