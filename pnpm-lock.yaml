@@ -370,9 +370,6 @@ dependencies:
   zod:
     specifier: ^3.25.76
     version: 3.25.76
-  zod-geojson:
-    specifier: ^1.1.0
-    version: 1.1.0(zod@3.25.76)
 
 devDependencies:
   '@svgr/webpack':
@@ -6430,7 +6427,7 @@ packages:
     engines: {node: ^10 || ^12 || >=14}
     hasBin: true
     peerDependencies:
-      postcss: ^8.2.10
+      postcss: ^8.1.0
     dependencies:
       browserslist: 4.25.1
       caniuse-lite: 1.0.30001727
@@ -11857,7 +11854,7 @@ packages:
     resolution: {integrity: sha512-hpr+J05B2FVYUAXHeK1YyI267J/dDDhMU6B6civm8hSY1jYJnBXxzKDKDswzJmtLHryrjhnDjqqp/49t8FALew==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
-      postcss: ^8.2.10
+      postcss: ^8.0.0
     dependencies:
       postcss: 8.5.6
       postcss-value-parser: 4.2.0
@@ -11869,7 +11866,7 @@ packages:
     resolution: {integrity: sha512-7hsAZ4xGXl4MW+OKEWCnF6T5jqBw80/EE9aXg1r2yyn1RsVEU8EtKXbijEODa+rg7iih4bKf7vlvTGYR4CnPNg==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
-      postcss: ^8.2.10
+      postcss: ^8.0.0
     dependencies:
       postcss: 8.5.6
       postcss-value-parser: 4.2.0
@@ -11881,7 +11878,7 @@ packages:
     resolution: {integrity: sha512-dDLF8pEO191hJMtlHFPRa8xsizHaM82MLfNkUHdUtVEV3tgTp5oj+8qbEqYM57SLfc74KSbw//4SeJma2LRVIw==}
     engines: {node: ^12 || ^14 || >= 16}
     peerDependencies:
-      postcss: ^8.2.10
+      postcss: ^8.4.21
     dependencies:
       camelcase-css: 2.0.1
       postcss: 8.5.6
@@ -11891,7 +11888,7 @@ packages:
     resolution: {integrity: sha512-bSVhyJGL00wMVoPUzAVAnbEoWyqRxkjv64tUl427SKnPrENtq6hJwUojroMz2VB+Q1edmi4IfrAPpami5VVgMQ==}
     engines: {node: '>= 14'}
     peerDependencies:
-      postcss: ^8.2.10
+      postcss: '>=8.0.9'
       ts-node: '>=9.0.0'
     peerDependenciesMeta:
       postcss:
@@ -11908,7 +11905,7 @@ packages:
     resolution: {integrity: sha512-HQbt28KulC5AJzG+cZtj9kvKB93CFCdLvog1WFLf1D+xmMvPGlBstkpTEZfK5+AN9hfJocyBFCNiqyS48bpgzQ==}
     engines: {node: '>=12.0'}
     peerDependencies:
-      postcss: ^8.2.10
+      postcss: ^8.2.14
     dependencies:
       postcss: 8.5.6
       postcss-selector-parser: 6.1.2
@@ -15093,14 +15090,6 @@ packages:
       zod: ^3.13.2
     dependencies:
       colorette: 2.0.20
-      zod: 3.25.76
-    dev: false
-
-  /zod-geojson@1.1.0(zod@3.25.76):
-    resolution: {integrity: sha512-PjcgIJvrfN75qFpueJOJRXxrJLCGWutTR/c3k7QqizbcEFWhuS4vKAxtiCKBofHm7/dHzw2yaaKmf/BkxbRhTg==}
-    peerDependencies:
-      zod: '>=3.25.0'
-    dependencies:
       zod: 3.25.76
     dev: false
 

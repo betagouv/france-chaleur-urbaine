@@ -1,8 +1,6 @@
 import { z } from 'zod';
 
-import { zGeometry as zGeometryComplex } from '@/utils/validation';
-
-const zGeometry = zGeometryComplex as any; // simplifie typescript partout où zGeometry est utilisé
+import { zGeometry } from '@/utils/validation';
 
 export const zUpdateReseauInput = z.object({
   id: z.number(),
