@@ -7,7 +7,7 @@ import db from '@/server/db';
 import { kdb } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
 import { processInParallel } from '@/types/async';
-import { dockerVolumePath, listDirectoryEntries, runBash, runDocker } from '@/utils/system';
+import { type CommandResult, dockerVolumePath, listDirectoryEntries, runBash, type RunCommandOptions, runDocker } from '@/utils/system';
 
 /**
  * Importe un fichier GeoJSON en base avec tippecanoe.
@@ -35,11 +35,17 @@ type TippecanoeConfig = {
   tippeCanoeArgs?: string;
 };
 
+export const runTippecanoe = async (command: string, options: RunCommandOptions = {}): Promise<CommandResult> => {
+  return serverConfig.USE_DOCKER_GEO_COMMANDS
+    ? await runDocker('naxgrp/tippecanoe', `tippecanoe ${command}`, options)
+    : await runBash(`tippecanoe ${command}`, options);
+};
+
 /**
  * Génère les tuiles sous forme de répertoire à partir d'un fichier GeoJSON.
  * @param config - Configuration des tuiles
  */
-const generateTilesFromGeoJSON = async (config: TippecanoeConfig) => {
+export const generateTilesFromGeoJSON = async (config: TippecanoeConfig) => {
   if (serverConfig.USE_DOCKER_GEO_COMMANDS) {
     const inputFileName = basename(config.geojsonFilePath);
     const outputDirectoryName = 'output_tiles';

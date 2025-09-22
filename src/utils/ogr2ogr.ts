@@ -12,7 +12,7 @@ import { type CommandResult, dockerImageArch, dockerVolumePath, runBash, type Ru
  * @param options - Options d'exécution
  * @returns Une promesse qui se résout quand la commande se termine
  */
-export function runOgr2ogr(command: string, options: RunCommandOptions = {}): Promise<CommandResult | void> {
+export function runOgr2ogr(command: string, options: RunCommandOptions = {}): Promise<CommandResult> {
   if (serverConfig.USE_DOCKER_GEO_COMMANDS) {
     return runDocker(`ghcr.io/osgeo/gdal:alpine-normal-latest-${dockerImageArch}`, `ogr2ogr ${command}`, options);
   } else {
@@ -26,13 +26,20 @@ export async function ogr2ogrImportGeoJSONToDatabaseTable(
   ogr2ogrOptions: string,
   options: RunCommandOptions = {}
 ): Promise<CommandResult | void> {
+  let inputFileName = basename(inputFilePath);
   if (serverConfig.USE_DOCKER_GEO_COMMANDS) {
-    await rename(inputFilePath, join(dockerVolumePath, 'input.geojson'));
+    const randomPrefix = `input_${Math.random().toString(36).substring(2, 10)}_`;
+    inputFileName = `${randomPrefix}${inputFileName}`;
+    await rename(inputFilePath, join(dockerVolumePath, inputFileName));
   }
   await runOgr2ogr(
     `-f PostgreSQL ${pgUrlToGdal(serverConfig.DATABASE_URL)} ${tableName} -nln ${tableName} -lco GEOMETRY_NAME=geom -t_srs EPSG:2154 -overwrite ${ogr2ogrOptions}`,
     options
   );
+  if (serverConfig.USE_DOCKER_GEO_COMMANDS) {
+    // input
+    await rename(join(dockerVolumePath, inputFileName), inputFilePath);
+  }
 }
 
 export async function ogr2ogrExtractGeoJSONFromDatabaseTable(
@@ -54,8 +61,11 @@ export async function ogr2ogrConvertToGeoJSON(
   outputFilePath: string,
   options: RunCommandOptions = {}
 ): Promise<CommandResult | void> {
+  let inputFileName = basename(inputFilePath);
   if (serverConfig.USE_DOCKER_GEO_COMMANDS) {
-    await rename(inputFilePath, join(dockerVolumePath, basename(inputFilePath)));
+    const randomPrefix = `input_${Math.random().toString(36).substring(2, 10)}_`;
+    inputFileName = `${randomPrefix}${inputFileName}`;
+    await rename(inputFilePath, join(dockerVolumePath, inputFileName));
   }
   await runOgr2ogr(
     `-f GeoJSON ${serverConfig.USE_DOCKER_GEO_COMMANDS ? 'output.geojson' : outputFilePath} ${serverConfig.USE_DOCKER_GEO_COMMANDS ? basename(inputFilePath) : inputFilePath} -t_srs EPSG:4326`,
@@ -63,7 +73,7 @@ export async function ogr2ogrConvertToGeoJSON(
   );
   if (serverConfig.USE_DOCKER_GEO_COMMANDS) {
     // input
-    await rename(join(dockerVolumePath, basename(inputFilePath)), inputFilePath);
+    await rename(join(dockerVolumePath, inputFileName), inputFilePath);
     // output
     await rename(join(dockerVolumePath, 'output.geojson'), outputFilePath);
   }

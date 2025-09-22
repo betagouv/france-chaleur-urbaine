@@ -2,7 +2,9 @@ import SimplePage from '@/components/shared/page/SimplePage';
 import Alert from '@/components/ui/Alert';
 import Button from '@/components/ui/Button';
 import Heading from '@/components/ui/Heading';
+import { type CommandTestResult } from '@/modules/diagnostic/server/service';
 import trpc from '@/modules/trpc/client';
+import { type CommandResult } from '@/utils/system';
 
 const DiagnosticPage = () => {
   const { data: diagnosticData, error, refetch, isFetching } = trpc.diagnostic.run.useQuery();
@@ -48,22 +50,37 @@ const DiagnosticPage = () => {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               <tr>
-                <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">ogr2ogr</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{getCommandStatus(diagnosticData.geo.ogr2ogr)}</td>
-              </tr>
-              <tr>
-                <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">tippecanoe</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{getCommandStatus(diagnosticData.geo.tippecanoe)}</td>
+                <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Base Airtable</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{getAirtableBaseStatus(diagnosticData.airtable)}</td>
               </tr>
               <tr>
                 <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">USE_DOCKER_GEO_COMMANDS</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                  {diagnosticData.geo.USE_DOCKER_GEO_COMMANDS ? '🐳 Activé' : '🚫 Désactivé'}
+                  <div>{diagnosticData.geo.USE_DOCKER_GEO_COMMANDS ? 'Activé' : 'Désactivé'}</div>
+                  <div className="text-xs text-gray-500 mt-1">
+                    {diagnosticData.geo.USE_DOCKER_GEO_COMMANDS
+                      ? 'Les commandes géographiques utilisent Docker'
+                      : 'Les commandes géographiques utilisent les binaires système'}
+                  </div>
                 </td>
               </tr>
               <tr>
-                <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Base Airtable</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{getAirtableBaseStatus(diagnosticData.airtable)}</td>
+                <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">ogr2ogr</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                  <div className="space-y-1 text-wrap">
+                    <div>{getCommandResultStatus(diagnosticData.geo.ogr2ogr.version)}</div>
+                    <div>{getFunctionalTestStatus(diagnosticData.geo.ogr2ogr.functional)}</div>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">tippecanoe</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                  <div className="space-y-1 text-wrap">
+                    <div>{getCommandResultStatus(diagnosticData.geo.tippecanoe.version)}</div>
+                    <div>{getFunctionalTestStatus(diagnosticData.geo.tippecanoe.functional)}</div>
+                  </div>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -75,8 +92,12 @@ const DiagnosticPage = () => {
 
 export default DiagnosticPage;
 
-const getCommandStatus = (commandResult: { exists: boolean; output: string }) => {
-  return commandResult.exists ? `✅ ${commandResult.output.trim()}` : `❌ ${commandResult.output}`;
+const getCommandResultStatus = (commandResult: CommandResult) => {
+  return `Version : ${commandResult.success ? '' : '❌'} ${commandResult.output}`;
+};
+
+const getFunctionalTestStatus = (functionalResult: CommandTestResult) => {
+  return functionalResult.success ? 'Test fonctionnel : ✅ Réussi' : `Test fonctionnel : ❌ ${functionalResult.error}`;
 };
 
 const getAirtableBaseStatus = (airtableBase: string) => {

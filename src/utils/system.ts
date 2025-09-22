@@ -15,11 +15,6 @@ export type RunCommandOptions = {
   cwd?: string;
 };
 
-export type CommandResult = {
-  output: string;
-  exitCode: number;
-};
-
 /**
  * Exécute une commande avec les arguments fournis.
  *
@@ -28,11 +23,7 @@ export type CommandResult = {
  * @param options - Options d'exécution
  * @returns Une promesse qui se résout avec le résultat de la commande si captureOutput est true, sinon void
  */
-export async function runCommand(
-  executablePath: string,
-  args: string[] = [],
-  options: RunCommandOptions = {}
-): Promise<CommandResult | void> {
+export async function runCommand(executablePath: string, args: string[] = [], options: RunCommandOptions = {}): Promise<CommandResult> {
   const { captureOutput = false, cwd } = options;
 
   logger.info(`Running command: ${executablePath} ${args.join(' ')}`);
@@ -56,12 +47,15 @@ export async function runCommand(
     process.on('close', (code) => {
       if (captureOutput) {
         resolve({
+          success: code === 0,
           output: output.trim(),
-          exitCode: code ?? 0,
         });
       } else {
         if (code === 0) {
-          resolve();
+          resolve({
+            success: true,
+            output: '',
+          });
         } else {
           reject(new Error(`Script exited with code ${code}`));
         }
@@ -74,14 +68,19 @@ export async function runCommand(
   });
 }
 
+export type CommandResult = {
+  success: boolean;
+  output: string;
+};
+
 /**
- * Teste l'existence d'une commande système en exécutant `command --version`
+ * Teste la version d'une commande système en exécutant `command --version`
  * @param command - Le nom de la commande à tester
- * @returns Un objet avec le statut de la commande et la sortie complète
+ * @returns Un objet avec le statut de la commande et la version
  */
-export async function testCommandExists(command: string): Promise<{ exists: boolean; output: string }> {
+export async function testCommand(command: string, args: string[] = []): Promise<CommandResult> {
   return new Promise((resolve) => {
-    const process = spawn(command, ['--version'], {
+    const process = spawn(command, args, {
       stdio: 'pipe',
       shell: true,
     });
@@ -104,22 +103,22 @@ export async function testCommandExists(command: string): Promise<{ exists: bool
       process.kill();
       logger.error(`Timeout lors du test de la commande ${command}`, { command });
       resolve({
-        exists: false,
+        success: false,
         output: 'Timeout lors de la vérification de la commande',
       });
     }, 2000);
 
     process.on('close', (code) => {
       clearTimeout(timeout);
-      const exists = code === 0;
-      logger.info(`Test de la commande ${command}: ${exists ? 'trouvée' : 'non trouvée'}`, {
+      const success = code === 0;
+      logger.info(`Test de la commande ${command}: ${success ? 'trouvée' : 'non trouvée'}`, {
         command,
         exitCode: code,
         hasOutput,
         output: output.substring(0, 100), // Log seulement les 100 premiers caractères
       });
       resolve({
-        exists,
+        success,
         output: output.trim() || `Commande non trouvée (code: ${code})`,
       });
     });
@@ -128,8 +127,8 @@ export async function testCommandExists(command: string): Promise<{ exists: bool
       clearTimeout(timeout);
       logger.error(`Erreur lors du test de la commande ${command}`, { command, error: err.message });
       resolve({
-        exists: false,
-        output: `Erreur: ${err.message}`,
+        success: false,
+        output: err.message,
       });
     });
   });
@@ -142,7 +141,7 @@ export async function testCommandExists(command: string): Promise<{ exists: bool
  * @param options - Options d'exécution
  * @returns Une promesse qui se résout avec le résultat de la commande si captureOutput est true, sinon void
  */
-export function runBash(command: string, options: RunCommandOptions = {}): Promise<CommandResult | void> {
+export function runBash(command: string, options: RunCommandOptions = {}): Promise<CommandResult> {
   return runCommand('bash', ['-c', command], options);
 }
 
@@ -169,9 +168,9 @@ mkdirSync(dockerVolumePath, { recursive: true });
  * @param options - Options d'exécution
  * @returns Une promesse qui se résout avec le résultat de la commande si captureOutput est true, sinon void
  */
-export function runDocker(image: string, command: string, options: RunCommandOptions = {}): Promise<CommandResult | void> {
+export function runDocker(image: string, command: string, options: RunCommandOptions = {}): Promise<CommandResult> {
   return runBash(
-    `docker run -it --rm --network host -v ${dockerVolumePath}:/volume -w /volume --user $(id -u):$(id -g) ${image} ${command}`,
+    `docker run -t --rm --network host -v ${dockerVolumePath}:/volume -w /volume --user $(id -u):$(id -g) ${image} ${command}`,
     options
   );
 }
