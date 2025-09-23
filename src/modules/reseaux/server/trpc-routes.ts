@@ -4,7 +4,6 @@ import {
   zDeleteNetworkInput,
   zUpdateGeomUpdateInput,
   zUpdatePerimetreDeDeveloppementPrioritaireInput,
-  zUpdateReseauDeFroidInput,
   zUpdateReseauEnConstructionInput,
   zUpdateReseauInput,
 } from '@/modules/reseaux/constants';
@@ -35,9 +34,6 @@ const reseauEnConstructionRouter = router({
 const reseauDeFroidRouter = router({
   list: adminRoute.query(async () => {
     return await reseauxService.listReseauxDeFroid();
-  }),
-  updateTags: adminRoute.input(zUpdateReseauDeFroidInput).mutation(async ({ input }) => {
-    return await reseauxService.updateReseauDeFroidTags(input.id, input.tags);
   }),
 });
 

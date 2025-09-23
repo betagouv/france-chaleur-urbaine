@@ -324,10 +324,6 @@ export const listReseauxDeFroid = async () => {
   return reseauxDeFroid;
 };
 
-export const updateReseauDeFroidTags = async (id: number, tags: string[]) => {
-  await kdb.updateTable('reseaux_de_froid').set({ tags }).where('id_fcu', '=', id).execute();
-};
-
 export const listPerimetresDeDeveloppementPrioritaire = async () => {
   const perimetresDeDeveloppementPrioritaire = await kdb
     .selectFrom('zone_de_developpement_prioritaire')
