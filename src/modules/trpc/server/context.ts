@@ -1,3 +1,4 @@
+import { initTRPC } from '@trpc/server';
 import { type CreateNextContextOptions } from '@trpc/server/adapters/next';
 
 import buildContext from '@/modules/config/server/context-builder';
@@ -20,3 +21,17 @@ export async function createContext(opts: CreateNextContextOptions) {
 }
 
 export type Context = Awaited<ReturnType<typeof createContext>>;
+
+export type AuthConfig = {
+  authenticated?: boolean;
+  roles?: Context['user']['role'][];
+  custom?: (ctx: Context, input?: any) => boolean | Promise<boolean>;
+};
+
+export interface Meta {
+  auth?: AuthConfig;
+}
+// Initialize tRPC with context
+export const t = initTRPC.context<Context>().meta<Meta>().create();
+
+export type TRoot = typeof t;
