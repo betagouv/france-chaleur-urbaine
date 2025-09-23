@@ -37,7 +37,7 @@ vi.mock('next/dynamic', () => ({
     const Component = (props: any) => {
       const [C, setC] = React.useState(null);
       React.useEffect(() => {
-        func().then((module) => {
+        void func().then((module) => {
           setC(() => module.default || module);
         });
       }, []);
