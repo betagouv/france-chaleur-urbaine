@@ -52,7 +52,8 @@ export const generateTilesFromGeoJSON = async (config: TippecanoeConfig) => {
     await rename(config.geojsonFilePath, join(dockerVolumePath, inputFileName));
     await runDocker(
       'naxgrp/tippecanoe',
-      `tippecanoe -e ${outputDirectoryName} --layer=layer --force --generate-ids --minimum-zoom=${config.zoomMin} --maximum-zoom=${config.zoomMax} ${config.tippeCanoeArgs ?? ''} ${basename(inputFileName)}`
+      `tippecanoe -e ${outputDirectoryName} --layer=layer --force --generate-ids --minimum-zoom=${config.zoomMin} --maximum-zoom=${config.zoomMax} ${config.tippeCanoeArgs ?? ''} ${basename(inputFileName)}`,
+      { captureOutput: true }
     );
     // input
     await rename(join(dockerVolumePath, inputFileName), config.geojsonFilePath);
@@ -60,7 +61,8 @@ export const generateTilesFromGeoJSON = async (config: TippecanoeConfig) => {
     await rename(join(dockerVolumePath, outputDirectoryName), config.outputDirectory);
   } else {
     await runBash(
-      `tippecanoe -e ${config.outputDirectory} --layer=layer --force --generate-ids --minimum-zoom=${config.zoomMin} --maximum-zoom=${config.zoomMax} ${config.tippeCanoeArgs ?? ''} ${config.geojsonFilePath}`
+      `tippecanoe -e ${config.outputDirectory} --layer=layer --force --generate-ids --minimum-zoom=${config.zoomMin} --maximum-zoom=${config.zoomMax} ${config.tippeCanoeArgs ?? ''} ${config.geojsonFilePath}`,
+      { captureOutput: true }
     );
   }
 };
