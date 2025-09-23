@@ -68,7 +68,7 @@ export async function ogr2ogrConvertToGeoJSON(
     await rename(inputFilePath, join(dockerVolumePath, inputFileName));
   }
   await runOgr2ogr(
-    `-f GeoJSON ${serverConfig.USE_DOCKER_GEO_COMMANDS ? 'output.geojson' : outputFilePath} ${serverConfig.USE_DOCKER_GEO_COMMANDS ? basename(inputFilePath) : inputFilePath} -t_srs EPSG:4326`,
+    `-f GeoJSON ${serverConfig.USE_DOCKER_GEO_COMMANDS ? 'output.geojson' : outputFilePath} ${serverConfig.USE_DOCKER_GEO_COMMANDS ? inputFileName : inputFilePath} -t_srs EPSG:4326`,
     options
   );
   if (serverConfig.USE_DOCKER_GEO_COMMANDS) {
