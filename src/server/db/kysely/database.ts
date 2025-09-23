@@ -3320,6 +3320,7 @@ export interface ReseauxDeFroid {
   departement: string | null;
   fichiers: Json | null;
   geom: string | null;
+  geom_update: string | null;
   Gestionnaire: string | null;
   has_trace: Generated<boolean>;
   id_fcu: number;
