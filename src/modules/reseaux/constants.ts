@@ -9,9 +9,19 @@ export const zUpdateReseauInput = z.object({
 
 export type UpdateReseauInput = z.infer<typeof zUpdateReseauInput>;
 
-const tableNames = ['reseaux_de_chaleur', 'zones_et_reseaux_en_construction', 'zone_de_developpement_prioritaire'] as const;
+const tableNames = [
+  'reseaux_de_chaleur',
+  'zones_et_reseaux_en_construction',
+  'zone_de_developpement_prioritaire',
+  'reseaux_de_froid',
+] as const;
 
 export const zUpdateReseauEnConstructionInput = z.object({
+  id: z.number(),
+  tags: z.array(z.string()),
+});
+
+export const zUpdateReseauDeFroidInput = z.object({
   id: z.number(),
   tags: z.array(z.string()),
 });
@@ -25,6 +35,8 @@ export const zUpdateGeomUpdateInput = z.object({
 export type UpdateGeomUpdateInput = z.infer<typeof zUpdateGeomUpdateInput>;
 
 export type UpdateReseauEnConstructionInput = z.infer<typeof zUpdateReseauEnConstructionInput>;
+
+export type UpdateReseauDeFroidInput = z.infer<typeof zUpdateReseauDeFroidInput>;
 
 export const zUpdatePerimetreDeDeveloppementPrioritaireInput = z.object({
   id: z.number(),

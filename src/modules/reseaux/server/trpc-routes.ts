@@ -4,6 +4,7 @@ import {
   zDeleteNetworkInput,
   zUpdateGeomUpdateInput,
   zUpdatePerimetreDeDeveloppementPrioritaireInput,
+  zUpdateReseauDeFroidInput,
   zUpdateReseauEnConstructionInput,
   zUpdateReseauInput,
 } from '@/modules/reseaux/constants';
@@ -31,6 +32,15 @@ const reseauEnConstructionRouter = router({
   }),
 });
 
+const reseauDeFroidRouter = router({
+  list: adminRoute.query(async () => {
+    return await reseauxService.listReseauxDeFroid();
+  }),
+  updateTags: adminRoute.input(zUpdateReseauDeFroidInput).mutation(async ({ input }) => {
+    return await reseauxService.updateReseauDeFroidTags(input.id, input.tags);
+  }),
+});
+
 const perimetreDeDeveloppementPrioritaireRouter = router({
   list: adminRoute.query(async () => {
     return await reseauxService.listPerimetresDeDeveloppementPrioritaire();
@@ -45,6 +55,7 @@ export const reseauxRouter = router({
   // Sous-routeurs par type
   reseauDeChaleur: reseauDeChaleurRouter,
   reseauEnConstruction: reseauEnConstructionRouter,
+  reseauDeFroid: reseauDeFroidRouter,
   perimetreDeDeveloppementPrioritaire: perimetreDeDeveloppementPrioritaireRouter,
 
   // Opérations communes à tous les types

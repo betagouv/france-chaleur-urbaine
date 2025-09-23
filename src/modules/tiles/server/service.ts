@@ -52,22 +52,35 @@ export const createSyncMetadataFromAirtableJob = async ({ name }: SyncGeometries
 type TableConfig = {
   tableName: NetworkTable;
   internalName: BuildTilesInput['name'];
+  tileName: string;
 };
 
 const tables: TableConfig[] = [
   {
     tableName: 'reseaux_de_chaleur',
     internalName: 'reseaux-de-chaleur',
+    tileName: 'network',
+  },
+  {
+    tableName: 'reseaux_de_froid',
+    internalName: 'reseaux-de-froid',
+    tileName: 'coldNetwork',
   },
   {
     tableName: 'zones_et_reseaux_en_construction',
     internalName: 'reseaux-en-construction',
+    tileName: 'futurNetwork',
   },
   {
     tableName: 'zone_de_developpement_prioritaire',
     internalName: 'perimetres-de-developpement-prioritaire',
+    tileName: 'zoneDP',
   },
 ];
+
+export const getTileNameFromInternalName = (internalName: string) => {
+  return tables.find((table) => table.internalName === internalName)?.tileName;
+};
 
 /**
  * Expression SQL pour calculer les codes INSEE des communes intersectant une géométrie mise à jour
