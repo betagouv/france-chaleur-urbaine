@@ -238,5 +238,11 @@
     "styled-components": "^6",
     "postcss": "^8.2.10",
     "glob-parent": "^6.0.1"
+  },
+  "pnpm": {
+    "supportedArchitectures": "current",
+    "overrides": {
+      "@next/swc-linux-x64-musl": "npm:@next/swc-linux-x64-gnu@*"
+    }
   }
 }
