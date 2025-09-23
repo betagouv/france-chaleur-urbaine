@@ -988,7 +988,7 @@ const GestionDesReseaux = () => {
       description="Tableau d'administration pour gérer les réseaux de chaleur et en construction"
       mode="authenticated"
     >
-      {totalGeomUpdates > 0 && (
+      {totalGeomUpdates > 0 && (!pendingJobs || pendingJobs.length === 0) && (
         <Notice variant="warning" className="mb-4">
           <span className="flex items-center justify-center w-full gap-2">
             <span className="font-medium text-base">
