@@ -85,7 +85,7 @@ const GestionDesReseaux = () => {
 
   const { data: pendingJobsData, isFetching: isFetchingPendingJobs } = trpc.jobs.list.useQuery(
     {
-      types: ['build_tiles', 'syncGeometriesToAirtable', 'syncMetadataFromAirtable'],
+      types: ['build_tiles', 'sync_geometries_to_airtable', 'sync_metadata_from_airtable'],
       statuses: ['pending', 'processing'],
       limit: 100,
     },
@@ -98,7 +98,7 @@ const GestionDesReseaux = () => {
   useEffect(() => {
     if (isPollingJobs && !isFetchingPendingJobs && pendingJobs.length === 0) {
       setIsPollingJobs(false);
-      tabInfo.refetch();
+      void Promise.all(Object.values(tabsInfo).map((tabInfo) => tabInfo.refetch()));
     }
   }, [isPollingJobs, pendingJobs.length, isFetchingPendingJobs]);
 
@@ -122,9 +122,9 @@ const GestionDesReseaux = () => {
       pendingPerimetreJobs.push(job);
     }
 
-    if (job.type === 'syncMetadataFromAirtable') {
+    if (job.type === 'sync_metadata_from_airtable') {
       pendingSyncMetadataJobs.push(job);
-    } else if (job.type === 'syncGeometriesToAirtable') {
+    } else if (job.type === 'sync_geometries_to_airtable') {
       pendingSyncGeometriesJobs.push(job);
     } else if (job.type === 'build_tiles') {
       pendingBuildTilesJobs.push(job);

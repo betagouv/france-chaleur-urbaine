@@ -232,14 +232,12 @@ export const listReseauxDeChaleur = async () => {
       'communes',
       'Gestionnaire',
       'MO',
-      sql<any>`CASE WHEN geom_update IS NOT NULL THEN ST_AsGeoJSON(ST_ForcePolygonCCW(ST_Transform(geom_update, 4326)))::json ELSE NULL END`.as(
-        'geom_update'
+      sql<BoundingBox>`st_transform(ST_Envelope(COALESCE(CASE WHEN ST_IsEmpty(geom_update) THEN NULL ELSE geom_update END, geom)), 4326)::box2d`.as(
+        'bbox'
       ),
+      sql<any>`CASE WHEN geom_update IS NOT NULL THEN ST_AsGeoJSON(ST_Transform(geom_update, 4326))::json ELSE NULL END`.as('geom_update'),
       'tags',
-      sql<BoundingBox>`st_transform(ST_Envelope(COALESCE(geom_update, geom)), 4326)::box2d`.as('bbox'),
-      sql<boolean>`geom_update IS NOT NULL AND GeometryType(geom_update) = 'GEOMETRYCOLLECTION' AND ST_IsEmpty(geom_update)`.as(
-        'geom_delete'
-      ),
+      sql<boolean>`geom_update IS NOT NULL AND ST_IsEmpty(geom_update)`.as('geom_delete'),
       sql<boolean>`geom IS NULL`.as('geom_create'),
     ])
     .orderBy('id_fcu')
@@ -247,9 +245,7 @@ export const listReseauxDeChaleur = async () => {
 
   // transforme les bbox en JS pour être performant
   reseauxDeChaleur.forEach((reseau) => {
-    reseau.bbox = parseBbox(
-      (reseau.bbox as unknown as string) || 'BOX(3.385585947402232 47.35474249860378,3.38691096486787 47.35645923457523)'
-    );
+    reseau.bbox = parseBbox(reseau.bbox as unknown as string);
   });
 
   return reseauxDeChaleur;
@@ -267,14 +263,12 @@ export const listReseauxEnConstruction = async () => {
       'nom_reseau',
       'communes',
       'gestionnaire',
-      sql<any>`CASE WHEN geom_update IS NOT NULL THEN ST_AsGeoJSON(ST_ForcePolygonCCW(ST_Transform(geom_update, 4326)))::json ELSE NULL END`.as(
-        'geom_update'
+      sql<BoundingBox>`st_transform(ST_Envelope(COALESCE(CASE WHEN ST_IsEmpty(geom_update) THEN NULL ELSE geom_update END, geom)), 4326)::box2d`.as(
+        'bbox'
       ),
+      sql<any>`CASE WHEN geom_update IS NOT NULL THEN ST_AsGeoJSON(ST_Transform(geom_update, 4326))::json ELSE NULL END`.as('geom_update'),
       'tags',
-      sql<BoundingBox>`st_transform(ST_Envelope(COALESCE(geom_update, geom)), 4326)::box2d`.as('bbox'),
-      sql<boolean>`geom_update IS NOT NULL AND GeometryType(geom_update) = 'GEOMETRYCOLLECTION' AND ST_IsEmpty(geom_update)`.as(
-        'geom_delete'
-      ),
+      sql<boolean>`geom_update IS NOT NULL AND ST_IsEmpty(geom_update)`.as('geom_delete'),
       sql<boolean>`geom IS NULL`.as('geom_create'),
     ])
     .orderBy('id_fcu')
@@ -302,13 +296,11 @@ export const listReseauxDeFroid = async () => {
       'communes',
       'Gestionnaire',
       'MO',
-      sql<any>`CASE WHEN geom_update IS NOT NULL THEN ST_AsGeoJSON(ST_ForcePolygonCCW(ST_Transform(geom_update, 4326)))::json ELSE NULL END`.as(
-        'geom_update'
+      sql<BoundingBox>`st_transform(ST_Envelope(COALESCE(CASE WHEN ST_IsEmpty(geom_update) THEN NULL ELSE geom_update END, geom)), 4326)::box2d`.as(
+        'bbox'
       ),
-      sql<BoundingBox>`st_transform(ST_Envelope(COALESCE(geom_update, geom)), 4326)::box2d`.as('bbox'),
-      sql<boolean>`geom_update IS NOT NULL AND GeometryType(geom_update) = 'GEOMETRYCOLLECTION' AND ST_IsEmpty(geom_update)`.as(
-        'geom_delete'
-      ),
+      sql<any>`CASE WHEN geom_update IS NOT NULL THEN ST_AsGeoJSON(ST_Transform(geom_update, 4326))::json ELSE NULL END`.as('geom_update'),
+      sql<boolean>`geom_update IS NOT NULL AND ST_IsEmpty(geom_update)`.as('geom_delete'),
       sql<boolean>`geom IS NULL`.as('geom_create'),
     ])
     .orderBy('id_fcu')
@@ -316,9 +308,7 @@ export const listReseauxDeFroid = async () => {
 
   // transforme les bbox en JS pour être performant
   reseauxDeFroid.forEach((reseau) => {
-    reseau.bbox = parseBbox(
-      (reseau.bbox as unknown as string) || 'BOX(3.385585947402232 47.35474249860378,3.38691096486787 47.35645923457523)'
-    );
+    reseau.bbox = parseBbox(reseau.bbox as unknown as string);
   });
 
   return reseauxDeFroid;
@@ -333,11 +323,11 @@ export const listPerimetresDeDeveloppementPrioritaire = async () => {
       'reseau_de_chaleur_ids',
       'reseau_en_construction_ids',
       'communes',
-      sql<BoundingBox>`st_transform(ST_Envelope(COALESCE(geom_update, geom)), 4326)::box2d`.as('bbox'),
-      sql<any>`CASE WHEN geom_update IS NOT NULL THEN ST_AsGeoJSON(ST_Transform(geom_update, 4326))::json ELSE NULL END`.as('geom_update'),
-      sql<boolean>`geom_update IS NOT NULL AND GeometryType(geom_update) = 'GEOMETRYCOLLECTION' AND ST_IsEmpty(geom_update)`.as(
-        'geom_delete'
+      sql<BoundingBox>`st_transform(ST_Envelope(COALESCE(CASE WHEN ST_IsEmpty(geom_update) THEN NULL ELSE geom_update END, geom)), 4326)::box2d`.as(
+        'bbox'
       ),
+      sql<any>`CASE WHEN geom_update IS NOT NULL THEN ST_AsGeoJSON(ST_Transform(geom_update, 4326))::json ELSE NULL END`.as('geom_update'),
+      sql<boolean>`geom_update IS NOT NULL AND ST_IsEmpty(geom_update)`.as('geom_delete'),
       sql<boolean>`geom IS NULL`.as('geom_create'),
     ])
     .orderBy('id_fcu')
@@ -447,7 +437,7 @@ const createReseauEnConstruction = async (id: string, finalGeometry: any) => {
     .values({
       id_fcu,
       geom: null,
-      geom_update: sql`ST_Force2D(${finalGeometry})`,
+      geom_update: sql`ST_ForcePolygonCCW(ST_Force2D(${finalGeometry}))`,
       nom_reseau: `Nouveau réseau en construction ${id_fcu}`,
       tags: [],
     })
@@ -466,7 +456,7 @@ const createPerimetreDeDeveloppementPrioritaire = async (id: string, finalGeomet
     .values({
       id_fcu,
       geom: null,
-      geom_update: sql`ST_Force2D(${finalGeometry})`,
+      geom_update: sql`ST_ForcePolygonCCW(ST_Force2D(${finalGeometry}))`,
       reseau_de_chaleur_ids: [],
       reseau_en_construction_ids: [],
     })

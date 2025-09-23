@@ -15,8 +15,8 @@ type Job = Selectable<Jobs>;
 const jobToHandleFunc = {
   pro_eligibility_test: processProEligibilityTestJob,
   build_tiles: processBuildTilesJob,
-  syncGeometriesToAirtable: processSyncGeometriesToAirtableJob,
-  syncMetadataFromAirtable: processSyncMetadataFromAirtableJob,
+  sync_geometries_to_airtable: processSyncGeometriesToAirtableJob,
+  sync_metadata_from_airtable: processSyncMetadataFromAirtableJob,
 } as const;
 
 export async function processJobById(jobId: string) {

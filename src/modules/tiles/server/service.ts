@@ -24,7 +24,7 @@ export const createSyncGeometriesToAirtableJob = async ({ name }: SyncGeometries
   return await kdb
     .insertInto('jobs')
     .values({
-      type: 'syncGeometriesToAirtable',
+      type: 'sync_geometries_to_airtable',
       data: { name },
       status: 'pending',
       user_id: context.user.id,
@@ -37,7 +37,7 @@ export const createSyncMetadataFromAirtableJob = async ({ name }: SyncGeometries
   return await kdb
     .insertInto('jobs')
     .values({
-      type: 'syncMetadataFromAirtable',
+      type: 'sync_metadata_from_airtable',
       data: { name },
       status: 'pending',
       user_id: context.user.id,
