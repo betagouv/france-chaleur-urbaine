@@ -1,8 +1,8 @@
 import type { NextApiRequest } from 'next';
 import { z } from 'zod';
 
+import { getNetwork } from '@/modules/reseaux/server/service';
 import { handleRouteErrors, requireGetMethod, validateObjectSchema } from '@/server/helpers/server';
-import { getNetwork } from '@/server/services/network';
 import { withCors } from '@/services/api/cors';
 
 const eligibilityStatus = handleRouteErrors(async (req: NextApiRequest) => {

@@ -28,7 +28,8 @@ const StyledDSFRCheckbox = styled.div<{
     `}
 
   --data-uri-svg: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3C/svg%3E");
-  background-image: radial-gradient(
+  background-image:
+    radial-gradient(
       at 5px 4px,
       transparent 4px,
       var(--border-action-high-blue-france) 4px,

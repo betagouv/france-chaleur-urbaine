@@ -9,11 +9,22 @@ export type GeometryWithSrid = {
 };
 
 /**
- * Read a GeoJSON file and return the unique geometry with its detected SRID.
- * Throws an error if the file contains multiple features or geometries.
+ * Crée une expression SQL pour transformer une géométrie GeoJSON en géométrie PostGIS
  */
-export async function readFileGeometry(fileName: string): Promise<GeometryWithSrid> {
-  let geom = JSON.parse(await readFile(fileName, 'utf8')) as GeoJSON.FeatureCollection | GeoJSON.GeometryCollection | GeoJSON.Geometry;
+export function createGeometryExpression(geom: GeoJSON.Geometry, srid: number) {
+  return srid === 4326
+    ? sql<any>`st_transform(ST_GeomFromGeoJSON(${sql.lit(JSON.stringify(geom))}), 2154)`
+    : sql<any>`st_setsrid(ST_GeomFromGeoJSON(${sql.lit(JSON.stringify(geom))}), 2154)`;
+}
+
+/**
+ * Process a GeoJSON geometry and return it with its detected SRID.
+ * Handles FeatureCollection, GeometryCollection, and converts single geometries to multi-geometries.
+ */
+export async function processGeometry(
+  geometry: GeoJSON.FeatureCollection | GeoJSON.GeometryCollection | GeoJSON.Geometry
+): Promise<GeometryWithSrid> {
+  let geom = geometry;
 
   if (geom.type === 'FeatureCollection') {
     if (geom.features.length > 1) {
@@ -52,6 +63,18 @@ export async function readFileGeometry(fileName: string): Promise<GeometryWithSr
     geom,
     srid,
   };
+}
+
+/**
+ * Read a GeoJSON file and return the unique geometry with its detected SRID.
+ * Throws an error if the file contains multiple features or geometries.
+ */
+export async function readFileGeometry(fileName: string): Promise<GeometryWithSrid> {
+  const geometry = JSON.parse(await readFile(fileName, 'utf8')) as
+    | GeoJSON.FeatureCollection
+    | GeoJSON.GeometryCollection
+    | GeoJSON.Geometry;
+  return processGeometry(geometry);
 }
 
 /**

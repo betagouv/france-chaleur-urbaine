@@ -1,13 +1,13 @@
 import { existsSync } from 'fs';
-import { readFile, unlink, writeFile } from 'fs/promises';
+import { readFile } from 'fs/promises';
 
 import { createCommand, InvalidArgumentError } from '@commander-js/extra-typings';
 import { genSalt, hash } from 'bcryptjs';
-import camelcase from 'camelcase';
 import prompts from 'prompts';
 import XLSX from 'xlsx';
 import { z } from 'zod';
 
+import { createTilesCommands } from '@/modules/tiles/server/commands';
 import { getApiHandler } from '@/server/api/users';
 import { serverConfig } from '@/server/config';
 import { saveStatsInDB } from '@/server/cron/saveStatsInDB';
@@ -16,10 +16,11 @@ import { kdb, sql } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
 import { syncComptesProFromUsers } from '@/server/services/airtable';
 import { processJobById, processJobsIndefinitely } from '@/server/services/jobs/processor';
-import { type DatabaseSourceId, type DatabaseTileInfo, tilesInfo, zDatabaseSourceId } from '@/server/services/tiles.config';
+import { type DatabaseSourceId, tilesInfo } from '@/server/services/tiles.config';
 import { APIDataGouvService } from '@/services/api-data-gouv';
 import { userRoles } from '@/types/enum/UserRole';
 import { fetchJSON } from '@/utils/network';
+import { runBash, runCommand } from '@/utils/system';
 import { sleep } from '@/utils/time';
 import { nonEmptyArray } from '@/utils/typescript';
 import { allDatabaseTables } from '@cli/bootstrap/tables';
@@ -33,11 +34,8 @@ import { type KnownAirtableBase, knownAirtableBases } from './airtable/bases';
 import { createModificationsReseau } from './airtable/create-modifications-reseau';
 import { fetchBaseSchema } from './airtable/dump-schema';
 import dataImportManager, { dataImportAdapters, type DataImportName } from './data-import';
-import { runBash, runCommand } from './helpers/shell';
 import { downloadAndUpdateNetwork, downloadNetwork } from './networks/download-network';
 import { upsertFixedSimulateurData } from './simulateur/import';
-import tilesManager, { tilesAdapters, type TilesName } from './tiles';
-import { fillTiles, importGeoJSONToTable, importTilesDirectoryToTable } from './tiles/utils';
 
 const program = createCommand();
 
@@ -93,41 +91,6 @@ program
   .argument('<network-id>', 'Network id', validateNetworkId)
   .action(async (table) => {
     await downloadAndUpdateNetwork(table);
-  });
-
-program
-  .command('tiles:fill')
-  .description("Regénère les tuiles d'une table en base")
-  .argument('<network-id>', 'Network id', (v) => zDatabaseSourceId.parse(v))
-  .argument('[zoomMin]', 'Minimum zoom', (v) => parseInt(v), 0)
-  .argument('[zoomMax]', 'Maximum zoom', (v) => parseInt(v), 17)
-  .argument('[withIndex]', 'With index', (v) => !!v, false)
-  .action(async (table, zoomMin, zoomMax, withIndex) => {
-    await db((tilesInfo[table] as DatabaseTileInfo).tiles).delete();
-    await fillTiles(table, zoomMin, zoomMax, withIndex);
-  });
-
-program
-  .command('tiles:import-tiles-directory')
-  .description(
-    'Importe en base une arborescence de tuiles vectorielles. A utiliser typiquement après avoir utilisé tippecanoe. Exemple : `pnpm cli tiles:import-mvt-directory tiles/zone_a_potentiel_fort_chaud zone_a_potentiel_fort_chaud_tiles`'
-  )
-  .argument('<tilesDirectory>', 'Tiles directory root for MVT (Mapbox Vector Tiles)')
-  .argument('<destinationTable>', 'Destination table')
-  .action(async (tilesDirectory, destinationTable) => {
-    await importTilesDirectoryToTable(tilesDirectory, destinationTable);
-  });
-
-program
-  .command('update-networks')
-  .argument('<network-id>', 'Network id', (v) => zDatabaseSourceId.parse(v))
-  .argument('[zoomMin]', 'Minimum zoom', (v) => parseInt(v), 0)
-  .argument('[zoomMax]', 'Maximum zoom', (v) => parseInt(v), 17)
-  .argument('[withIndex]', 'With index', (v) => !!v, false)
-  .action(async (table, zoomMin, zoomMax, withIndex) => {
-    await downloadAndUpdateNetwork(table);
-    await db((tilesInfo[table] as DatabaseTileInfo).tiles).delete();
-    await fillTiles(table, zoomMin, zoomMax, withIndex);
   });
 
 program
@@ -214,127 +177,7 @@ program
     console.info(`${ept.length} EPT importés`);
   });
 
-program
-  .command('tiles:generate-geojson')
-  .description('Generate GeoJSON file for a given resource')
-  .argument('<type>', `Type of resource you want to generate for - ${Object.keys(tilesAdapters).join(', ')}`)
-  .option('--input <file>', 'Path of the file to import from')
-  .option('--output <file>', 'Path of the file to export to')
-  .action(async (type, options) => {
-    logger.info(`Generating GeoJSON file for ${type}`);
-    const tileManager = tilesManager(type as TilesName);
-
-    const filepath = await tileManager.generateGeoJSON(options);
-    console.info(`GeoJSON generated in ${filepath}`);
-  });
-
-program
-  .command('tiles:import-geojson-legacy')
-  .description(
-    "Génère des tuiles vectorielles à partir d'un fichier GeoJSON et les enregistre dans postgres. Exemple : `pnpm cli tiles:import-geojson-legacy reseaux_de_chaleur.geojson reseaux_de_chaleur_tiles 0 14`"
-  )
-  .argument('<fileName>', 'input file (format GeoJSON)')
-  .argument('<destinationTable>', 'Destination table')
-  .argument('[zoomMin]', 'Minimum zoom', (v) => parseInt(v), 0)
-  .argument('[zoomMax]', 'Maximum zoom', (v) => parseInt(v), 17)
-  .action(async (fileName, destinationTable, zoomMin, zoomMax) => {
-    await importGeoJSONToTable(fileName, destinationTable, zoomMin, zoomMax);
-  });
-
-program
-  .command('tiles:import-geojson')
-  .description(
-    "Génère des tuiles vectorielles à partir d'un fichier GeoJSON et les enregistre dans postgres. Exemple : `pnpm cli tiles:import-geojson etudes-en-cours etude_en_cours.geojson`"
-  )
-  .argument('<type>', `Type of resource you want to generate for - ${Object.keys(tilesAdapters).join(', ')}`)
-  .argument('<file>', 'Path of the GeoJSON file')
-  .action(async (type, file) => {
-    const tileManager = tilesManager(type as TilesName);
-    const tilesDatabaseName = await tileManager.importGeoJSON(file);
-    logger.info(`Imported GeoJSON ${file} to ${tilesDatabaseName}`);
-  });
-
-program
-  .command('tiles:generate')
-  .description(
-    "Génère des tuiles vectorielles à partir d'une ressource en passant par un fichier GeoJSON temporaire. Exemple : `pnpm cli tiles:generate reseaux_de_chaleur`"
-  )
-  .argument('<type>', `Type de ressource à générer - ${Object.keys(tilesAdapters).join(', ')}`)
-  .option('--input <file>', 'Path of the file to import from')
-  .action(async (type, options) => {
-    logger.info(`Génération du fichier GeoJSON pour ${type}`);
-    const tileManager = tilesManager(type as TilesName);
-
-    const filepath = await tileManager.generateGeoJSON(options);
-    if (!filepath) {
-      throw new Error("Le fichier GeoJSON n'a pas été généré.");
-    }
-
-    logger.info(`GeoJSON généré: ${filepath}`);
-
-    const tilesDatabaseName = `${tileManager.databaseName}_tiles`;
-
-    logger.info(`Importation dans la table: ${tilesDatabaseName}`);
-    await tileManager.importGeoJSON(filepath);
-
-    logger.info(`Suppression du fichier temporaire ${filepath}`);
-    await unlink(filepath);
-
-    logger.info(`La table ${tilesDatabaseName} a été populée avec les données pour ${type}.`);
-    logger.warn(`N'oubliez pas`);
-    logger.warn(`- de l'ajouter à la carte pnpm cli tiles:add-to-map ${type}`);
-    logger.warn(`- de copier la table sur dev et prod`);
-    logger.warn(`pnpm db:push:dev --data-only ${tilesDatabaseName}`);
-    logger.warn(`pnpm db:push:prod --data-only ${tilesDatabaseName}`);
-  });
-
-program
-  .command('tiles:add-to-map')
-  .description('Quand les tiles sont en BDD, il faut les afficher sur la carte. Voici une description des actions à faire')
-  .argument('<type>', `Type de ressource à générer - ${Object.keys(tilesAdapters).join(', ')}`)
-  .action(async (type) => {
-    logger.info(
-      `Plusieurs actions manuelles à faire pour générer la couche ${type}. Vous pouvez voir https://github.com/betagouv/france-chaleur-urbaine/pull/991/files pour référence`
-    );
-
-    const typeCamelCase = camelcase(type);
-    const layerFilePath = `src/components/Map/layers/${typeCamelCase}.tsx`;
-    const mapConfigurationFilePath = `src/components/Map/map-configuration.ts`;
-    const mapLayersFilePath = `src/components/Map/map-layers.ts`;
-    const mapFilePath = `src/pages/carte.tsx`;
-    const tilesConfigFilePath = `src/server/services/tiles.config.ts`;
-    const analyticsFilePath = `src/services/analytics.ts`;
-    const simpleMapLegendFilePath = `src/components/Map/components/SimpleMapLegend.tsx`;
-    logger.info(`Dans ${mapConfigurationFilePath}`);
-    logger.warn(`  🚧 Ajouter la config au type MapConfiguration -> "${typeCamelCase}: boolean"`);
-    logger.warn(`  🚧 Ajouter la config à emptyMapConfiguration -> "${typeCamelCase}: false"`);
-    logger.info(`Dans ${tilesConfigFilePath}`);
-    logger.warn(`  🚧 Ajouter la config à databaseSourceIds -> "${typeCamelCase}"`);
-    logger.warn(`  🚧 Ajouter la config à tilesInfo`);
-    logger.info(`Dans ${layerFilePath}`);
-    if (!existsSync(layerFilePath)) {
-      await writeFile(
-        layerFilePath,
-        `// Check in other layers for the structure
-    export const ${typeCamelCase}VilleLayersSpec = [];`
-      );
-      logger.info(`✅ Fichier layer créé dans ${layerFilePath}`);
-    }
-    logger.warn(`  🚧 Modifier le fichier layer`);
-    logger.info(`Dans ${mapLayersFilePath}`);
-    logger.warn(`  🚧 Importer dans mapLayers -> "...${typeCamelCase}LayersSpec,"`);
-    logger.info(`Dans ${mapFilePath}`);
-    logger.warn(`  🚧 Ajouter la config à layerURLKeysToMapConfigPath -> "${typeCamelCase}: '${typeCamelCase}.show'"`);
-    logger.info(`Dans ${analyticsFilePath}`);
-    logger.warn(`  🚧 Ajouter les events analytics`);
-    logger.info(`Dans ${simpleMapLegendFilePath}`);
-    logger.warn(`  🚧 Ajouter une nouvelle checkbox`);
-    logger.info('');
-    logger.info('Pour ouvrir tous les fichiers, vous pouvez faire :');
-    logger.info(
-      `code ${[layerFilePath, mapConfigurationFilePath, mapLayersFilePath, mapFilePath, tilesConfigFilePath, analyticsFilePath].join(' ')}`
-    );
-  });
+program.addCommand(createTilesCommands());
 
 program
   .command('opendata:create-archive')
@@ -640,7 +483,7 @@ program
     })) as { selectedTables: string[] };
 
     if (!selectedTables || selectedTables.length === 0) {
-      console.log('Aucune table sélectionnée. Opération annulée.');
+      console.warn('Aucune table sélectionnée. Opération annulée.');
       return;
     }
 
@@ -724,7 +567,7 @@ program
   });
 });
 
-(async () => {
+void (async () => {
   try {
     await warnOnProdDatabase();
 

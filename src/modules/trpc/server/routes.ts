@@ -1,4 +1,8 @@
+import { diagnosticRouter } from '@/modules/diagnostic/server/trpc-routes';
+import { jobsRouter } from '@/modules/jobs/server/trpc-routes';
 import { proEligibilityTestsRouter } from '@/modules/pro-eligibility-tests/server/trpc-routes';
+import { reseauxRouter } from '@/modules/reseaux/server/trpc-routes';
+import { tilesRouter } from '@/modules/tiles/server/trpc-routes';
 
 import { route, router } from './connection';
 
@@ -16,7 +20,11 @@ export const appRouter = router({
       message: 'tRPC server is running!',
     };
   }),
+  diagnostic: diagnosticRouter,
+  jobs: jobsRouter,
   proEligibilityTests: proEligibilityTestsRouter,
+  reseaux: reseauxRouter,
+  tiles: tilesRouter,
 });
 
 // Export type definition of API

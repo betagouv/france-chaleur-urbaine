@@ -7,8 +7,8 @@ import { z } from 'zod';
 import { kdb, sql } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
 import { type TrelloCard, type TrelloLabel, TrelloService } from '@/services/TrelloService';
+import { runBash } from '@/utils/system';
 import { readFileGeometry } from '@cli/helpers/geo';
-import { runBash } from '@cli/helpers/shell';
 
 import {
   createPDPFromCommune,
@@ -86,8 +86,8 @@ export function registerNetworkCommands(parentProgram: Command) {
         process.exit(1);
       }
 
-      runBash('open http://localhost:3000/carte');
-      runBash('open .');
+      void runBash('open http://localhost:3000/carte');
+      void runBash('open .');
 
       try {
         const trelloService = new TrelloService(TRELLO_API_KEY, TRELLO_TOKEN, TRELLO_BOARD_ID);

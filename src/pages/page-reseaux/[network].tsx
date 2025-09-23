@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 
 import NetworkPanel from '@/components/Network/Network';
 import SEO from '@/components/SEO';
-import { getColdNetwork, getNetwork } from '@/server/services/network';
+import { getColdNetwork, getNetwork } from '@/modules/reseaux/server/service';
 import { type Network } from '@/types/Summary/Network';
 
 const PageReseau = ({ network }: { network: Network }) => {

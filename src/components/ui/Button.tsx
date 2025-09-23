@@ -40,7 +40,7 @@ export const variantClassNames = {
   },
   destructive: {
     primary: '!bg-destructive !text-white !hover:bg-destructive/90',
-    secondary: '!border-destructive !text-destructive shadow-destructive',
+    secondary: '!border-destructive !text-destructive !shadow-destructive',
     tertiary: '!text-destructive',
     'tertiary no outline': '',
   },
@@ -48,6 +48,12 @@ export const variantClassNames = {
     primary: '!bg-info !text-white !hover:bg-info/90',
     secondary: '!border-info !text-info shadow-info',
     tertiary: '!text-info',
+    'tertiary no outline': '',
+  },
+  warning: {
+    primary: '!bg-warning !text-white !hover:bg-warning/90',
+    secondary: '!border-warning !text-warning shadow-warning',
+    tertiary: '!text-warning',
     'tertiary no outline': '',
   },
   faded: {

@@ -54,7 +54,7 @@ const SimplePage = ({
       />
       <PageHeader mode={mode ?? 'public'} currentPage={currentPage} />
 
-      <main id="main-content" className={cx(layout === 'center' ? 'fr-container fr-mt-2w' : '', className)}>
+      <main id="main-content" className={cx(layout === 'center' ? 'fr-container fr-my-2w' : '', className)}>
         {children}
       </main>
       {includeFooter && <PageFooter />}
@@ -394,6 +394,12 @@ const adminNavigationMenu: MainNavigationProps.Item[] = [
         text: 'Test de coordonnées géographiques',
         linkProps: {
           href: '/admin/test-coordonnees-geographiques',
+        },
+      },
+      {
+        text: 'Diagnostic',
+        linkProps: {
+          href: '/admin/diagnostic',
         },
       },
     ],

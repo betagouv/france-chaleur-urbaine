@@ -92,6 +92,27 @@ const eventLabelRenderers: Record<EventType, (event: AdminEvent, updateFilters: 
       </FilterButton>
     </>
   ),
+  build_tiles: (event) => (
+    <>
+      <span>
+        a reconstruit les tuiles <strong>{(event.data as any)?.name}</strong>
+      </span>
+    </>
+  ),
+  sync_geometries_to_airtable: (event) => (
+    <>
+      <span>
+        a synchronisé les géométries vers Airtable pour la table <strong>{(event.data as any)?.name}</strong>
+      </span>
+    </>
+  ),
+  sync_metadata_from_airtable: (event) => (
+    <>
+      <span>
+        a synchronisé les métadonnées depuis Airtable pour la table <strong>{(event.data as any)?.name}</strong>
+      </span>
+    </>
+  ),
 };
 
 export default function AdminEventsPage() {

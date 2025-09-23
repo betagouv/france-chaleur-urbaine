@@ -80,7 +80,8 @@ export type InternalSourceId =
   | typeof linearHeatDensityLabelsSourceId
   | typeof buildingsDataExtractionPolygonsSourceId
   | 'adressesEligibles'
-  | 'customGeojson';
+  | 'customGeojson'
+  | 'geomUpdate';
 export type SourceId = DatabaseSourceId | InternalSourceId;
 
 const bnbFields = `

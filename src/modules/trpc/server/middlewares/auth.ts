@@ -1,28 +1,14 @@
 import { TRPCError } from '@trpc/server';
 
-import { type Context } from '../context';
-
-// Define auth metadata types
-export type AuthConfig = {
-  authenticated?: boolean;
-  roles?: Context['user']['role'][];
-  custom?: (ctx: Context, input?: any) => boolean | Promise<boolean>;
-};
-
-// Extend tRPC's meta to include our auth config
-declare module '@trpc/server' {
-  interface Meta {
-    auth?: AuthConfig;
-  }
-}
+import { type TRoot } from '../context';
 
 /**
- * Auth middleware that reads .auth() metadata
+ * Auth middleware that reads .auth metadata
  * Checks authentication, roles, and custom authorization functions
  */
-export function createAuthMiddleware(t: any) {
-  return t.middleware(async ({ meta, ctx, next, input }: { meta: any; ctx: Context; next: () => Promise<any>; input: any }) => {
-    const authConfig = meta?.auth as AuthConfig | undefined;
+export function createAuthMiddleware(t: TRoot) {
+  return t.middleware(async ({ meta, ctx, next, input }) => {
+    const authConfig = meta?.auth;
 
     if (!authConfig) return next(); // No auth config = allow
 

@@ -2,7 +2,7 @@ import geoViewport from '@mapbox/geo-viewport';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import { useDebouncedEffect, useLocalStorageValue } from '@react-hookz/web';
-import { type LayerSpecification, type MapGeoJSONFeature, type MapLibreEvent } from 'maplibre-gl';
+import { type GeoJSONSource, type LayerSpecification, type MapGeoJSONFeature, type MapLibreEvent } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useRouter } from 'next/router';
 import { parseAsJson, parseAsString, useQueryStates } from 'nuqs';
@@ -129,6 +129,8 @@ type MapProps = {
   adressesEligibles?: AdresseEligible[];
   adressesEligiblesAutoFit?: boolean;
   onFeatureClick?: (feature: MapGeoJSONFeature) => void;
+  onGeomDrop?: (geojson: any) => void;
+  geomUpdateFeatures?: GeoJSON.Feature[];
   children?: ReactNode;
 };
 
@@ -165,6 +167,8 @@ export const FullyFeaturedMap = ({
   adressesEligibles,
   adressesEligiblesAutoFit = true,
   onFeatureClick,
+  onGeomDrop,
+  geomUpdateFeatures,
   children,
   ...props
 }: MapProps & React.HTMLAttributes<HTMLDivElement>) => {
@@ -625,7 +629,7 @@ export const FullyFeaturedMap = ({
   useEffect(() => {
     if (!mapRef.current || !mapLayersLoaded || !adressesEligibles) return;
 
-    (mapRef.current.getSource('adressesEligibles') as maplibregl.GeoJSONSource)?.setData({
+    (mapRef.current.getSource('adressesEligibles') as GeoJSONSource)?.setData({
       type: 'FeatureCollection',
       features: adressesEligibles.map((address) => ({
         type: 'Feature',
@@ -640,6 +644,16 @@ export const FullyFeaturedMap = ({
       })),
     });
   }, [mapRef.current, mapLayersLoaded, adressesEligibles]);
+
+  // Update geomUpdate source when it changes
+  useEffect(() => {
+    if (!mapRef.current || !mapLayersLoaded || !geomUpdateFeatures) return;
+
+    (mapRef.current.getSource('geomUpdate') as GeoJSONSource)?.setData({
+      type: 'FeatureCollection',
+      features: geomUpdateFeatures,
+    });
+  }, [mapRef.current, mapLayersLoaded, geomUpdateFeatures]);
 
   const mapMarkers = useMemo(() => {
     if (markersList.length === 0) {
@@ -751,6 +765,7 @@ export const FullyFeaturedMap = ({
             </LegendSideBar>
           </>
         )}
+        {children}
         <MapProvider>
           <MapReactGL
             initialViewState={initialViewState}
@@ -778,7 +793,7 @@ export const FullyFeaturedMap = ({
             {Popup}
             {children}
             {mapMarkers}
-            <FileDragNDrop />
+            <FileDragNDrop onDrop={onGeomDrop} />
           </MapReactGL>
           {withLegend && (
             <MapSearchWrapper $legendCollapsed={legendCollapsed}>

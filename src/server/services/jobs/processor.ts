@@ -1,6 +1,7 @@
 import { type Selectable } from 'kysely';
 
 import { processProEligibilityTestJob } from '@/modules/pro-eligibility-tests/server/jobs';
+import { processBuildTilesJob, processSyncGeometriesToAirtableJob, processSyncMetadataFromAirtableJob } from '@/modules/tiles/server/jobs';
 import { type Jobs, kdb } from '@/server/db/kysely';
 import { parentLogger } from '@/server/helpers/logger';
 import { sleep } from '@/utils/time';
@@ -13,6 +14,9 @@ type Job = Selectable<Jobs>;
 
 const jobToHandleFunc = {
   pro_eligibility_test: processProEligibilityTestJob,
+  build_tiles: processBuildTilesJob,
+  sync_geometries_to_airtable: processSyncGeometriesToAirtableJob,
+  sync_metadata_from_airtable: processSyncMetadataFromAirtableJob,
 } as const;
 
 export async function processJobById(jobId: string) {

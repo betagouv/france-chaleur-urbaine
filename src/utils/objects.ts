@@ -84,3 +84,14 @@ export const sortKeys = (obj: Record<string, any>) => {
       {} as Record<string, any>
     );
 };
+
+/**
+ * Stringify an object and sort the keys.
+ * @param obj - The object to stringify.
+ * @returns The stringified object.
+ */
+export function stringifySorted(obj: any): string {
+  return JSON.stringify(obj, (_, v) =>
+    v && typeof v === 'object' && !Array.isArray(v) ? Object.fromEntries(Object.entries(v).sort(([a], [b]) => a.localeCompare(b))) : v
+  );
+}

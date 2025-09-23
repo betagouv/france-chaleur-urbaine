@@ -1,16 +1,7 @@
 import { kdb, sql } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
 import { formatAsISODate } from '@/utils/date';
-import { type GeometryWithSrid } from '@cli/helpers/geo';
-
-/**
- * Crée une expression SQL pour transformer une géométrie GeoJSON en géométrie PostGIS
- */
-function createGeometryExpression(geom: GeoJSON.Geometry, srid: number) {
-  return srid === 4326
-    ? sql<any>`st_transform(ST_GeomFromGeoJSON(${sql.lit(JSON.stringify(geom))}), 2154)`
-    : sql<any>`st_setsrid(ST_GeomFromGeoJSON(${sql.lit(JSON.stringify(geom))}), 2154)`;
-}
+import { createGeometryExpression, type GeometryWithSrid } from '@cli/helpers/geo';
 
 /**
  * Expression SQL pour calculer les codes INSEE des communes intersectant une géométrie

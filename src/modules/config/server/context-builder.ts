@@ -17,8 +17,10 @@ const buildContext = async (req: NextApiRequest, res?: NextApiResponse) => {
     return req.user?.role === role;
   };
 
+  // Attention le contexte est partagé parmi toutes les requêtes trpc batchées
   const logger = parentLogger.child({
     user: process.env.LOG_REQUEST_USER ? req.user?.id : undefined,
+    ip: process.env.LOG_REQUEST_IP ? (req.headers['x-forwarded-for'] ?? req.socket.remoteAddress) : undefined,
   });
 
   return {

@@ -159,7 +159,7 @@ const conversionConfigReseauxEnConstruction = {
 export const downloadNetwork = async (table: DatabaseSourceId) => {
   const tileInfo = tilesInfo[table] as DatabaseTileInfo;
   if (!tileInfo || !tileInfo.airtable) {
-    throw new Error(`${table} not managed`);
+    throw new Error(`Can't download network: ${table} not managed`);
   }
   const networksAirtable = await base(tileInfo.airtable).select().all();
 
@@ -188,7 +188,7 @@ export const downloadNetwork = async (table: DatabaseSourceId) => {
 export const downloadAndUpdateNetwork = async (table: DatabaseSourceId) => {
   const tileInfo = tilesInfo[table] as DatabaseTileInfo;
   if (!tileInfo || !tileInfo.airtable) {
-    throw new Error(`${table} not managed`);
+    throw new Error(`Can't download and update network: ${table} not managed`);
   }
   const networksAirtable = await base(tileInfo.airtable).select().all();
 

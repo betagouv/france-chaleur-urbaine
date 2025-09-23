@@ -112,6 +112,7 @@ export type TableSimpleProps<T> = {
   loadingEmptyMessage?: string;
   height?: string;
   virtualizerRef?: RefObject<Virtualizer<HTMLDivElement, Element>>;
+  topRightActions?: React.ReactNode;
 };
 
 const cellCustomClasses = cva('', {
@@ -396,6 +397,7 @@ const TableSimple = <T extends RowData>({
   loadingEmptyMessage = 'Aucun résultat',
   height = '600px',
   virtualizerRef,
+  topRightActions,
 }: TableSimpleProps<T>) => {
   const [globalFilter, setGlobalFilter] = React.useState<string>('');
   const [sortingState, setSortingState] = React.useState<SortingState>(initialSortingState ?? []);
@@ -558,17 +560,21 @@ const TableSimple = <T extends RowData>({
 
   return (
     <section className={wrapperClassName}>
-      {enableGlobalFilter && (
-        <Input
-          label=""
-          nativeInputProps={{
-            value: globalFilter,
-            onChange: (e) => table.setGlobalFilter(e.target.value),
-            placeholder: 'Recherche...',
-            className: 'mb-2',
-          }}
-        />
-      )}
+      <div className="flex items-center space-x-6">
+        {enableGlobalFilter && (
+          <Input
+            label=""
+            className="flex-1"
+            nativeInputProps={{
+              value: globalFilter,
+              onChange: (e) => table.setGlobalFilter(e.target.value),
+              placeholder: 'Recherche...',
+              className: 'mb-2',
+            }}
+          />
+        )}
+        <div className={cx(enableGlobalFilter && 'mb-6' /** mb-6 to be aligned with the input */)}>{topRightActions}</div>
+      </div>
       {caption && <div className="text-2xl leading-8 font-bold mb-5">{caption}</div>}
       <div
         className={cx(fr.cx('fr-table', 'fr-table--no-scroll'), 'scrollbar-visible !my-0')}

@@ -1,6 +1,8 @@
 import { Button } from '@codegouvfr/react-dsfr/Button';
 import { useMemo } from 'react';
 
+import { customGeojsonColor, customGeojsonOpacity } from '@/components/Map/layers/customGeojson';
+import { geomUpdateColor, geomUpdateOpacity } from '@/components/Map/layers/geomUpdate';
 import { type MapLegendFeature, mapLegendFeatures } from '@/components/Map/map-layers';
 import useFCUMap from '@/components/Map/MapProvider';
 import ReseauxDeChaleurFilters from '@/components/ReseauxDeChaleurFilters';
@@ -11,6 +13,7 @@ import Icon from '@/components/ui/Icon';
 import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
 import Tooltip from '@/components/ui/Tooltip';
+import { useAuthentication } from '@/services/authentication';
 
 import { LegendFilters, SingleCheckbox, TabScrollablePart, Title } from './SimpleMapLegend.style';
 import {
@@ -31,10 +34,12 @@ import { reseauxEnConstructionColor, reseauxEnConstructionOpacity } from '../lay
 interface SimpleMapLegendProps {
   enabledFeatures?: MapLegendFeature[];
   legendTitle?: string;
+  showFilters?: boolean;
   filtersVisible: boolean;
   setFiltersVisible: (visible: boolean) => void;
   isIframeContext?: boolean;
   withComptePro?: boolean;
+  showHeader?: boolean;
 }
 
 const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
@@ -43,15 +48,18 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
   legendTitle,
   isIframeContext,
   withComptePro,
+  showFilters = true,
+  showHeader = true,
   ...props
 }) => {
   const { mapConfiguration, toggleLayer, nbFilters } = useFCUMap();
+  const { hasRole } = useAuthentication();
 
   const enabledFeatures = useMemo(() => {
     return props.enabledFeatures ?? mapLegendFeatures;
   }, [props.enabledFeatures]);
 
-  if (filtersVisible) {
+  if (filtersVisible && showFilters) {
     return (
       <LegendFilters>
         <Button
@@ -77,10 +85,14 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
 
   return (
     <Box mt="2v" px="1w" style={{ overflow: 'auto' }}>
-      <Title>{legendTitle || 'Réseaux de chaleur et de froid'}</Title>
-      <Text fontSize="13px" lineHeight="18px" mb="2w">
-        Cliquez sur un réseau pour connaître ses caractéristiques
-      </Text>
+      {showHeader && (
+        <>
+          <Title>{legendTitle || 'Réseaux de chaleur et de froid'}</Title>
+          <Text fontSize="13px" lineHeight="18px" mb="2w">
+            Cliquez sur un réseau pour connaître ses caractéristiques
+          </Text>
+        </>
+      )}
 
       {enabledFeatures.includes('reseauxDeChaleur') && (
         <>
@@ -132,7 +144,7 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
               }}
             />
           </Box>
-          {!isIframeContext && (
+          {!isIframeContext && showFilters && (
             <Button
               onClick={() => setFiltersVisible(true)}
               priority="tertiary"
@@ -333,6 +345,46 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
             </Text>
           </Box>
         </>
+      )}
+
+      {hasRole('admin') && (
+        <div className="my-2">
+          <Title className="mb-1">Admin</Title>
+          <Box display="flex">
+            <SingleCheckbox name="customGeojson" checked={mapConfiguration.customGeojson} onChange={() => toggleLayer('customGeojson')} />
+
+            <Box backgroundColor={customGeojsonColor} opacity={customGeojsonOpacity} height="16px" width="16px" mt="1v" mr="3v" />
+
+            <Text
+              as="label"
+              htmlFor="customGeojson"
+              fontSize="14px"
+              lineHeight="18px"
+              className="fr-col"
+              cursor="pointer"
+              style={{ marginTop: '2px' }}
+            >
+              Fichier déposé sur la carte
+            </Text>
+          </Box>
+          <Box display="flex">
+            <SingleCheckbox name="geomUpdate" checked={mapConfiguration.geomUpdate} onChange={() => toggleLayer('geomUpdate')} />
+
+            <Box backgroundColor={geomUpdateColor} opacity={geomUpdateOpacity} height="16px" width="16px" mt="1v" mr="3v" />
+
+            <Text
+              as="label"
+              htmlFor="geomUpdate"
+              fontSize="14px"
+              lineHeight="18px"
+              className="fr-col"
+              cursor="pointer"
+              style={{ marginTop: '2px' }}
+            >
+              Géométrie modifiée
+            </Text>
+          </Box>
+        </div>
       )}
       {withComptePro && (
         <>

@@ -1,17 +1,12 @@
 import Airtable, { type FieldSet, type Table } from 'airtable';
-import dotenv from 'dotenv';
 
+import { serverConfig } from '@/server/config';
 import { type Airtable as AirtableTableEnum } from '@/types/enum/Airtable';
 
 export type { FieldSet } from 'airtable';
 export type { QueryParams } from 'airtable/lib/query_params';
 
-dotenv.config({ path: '.env.local' });
-dotenv.config();
-
-const airtableBase = process.env.AIRTABLE_BASE || '';
-
-const base = new Airtable({ apiKey: process.env.AIRTABLE_KEY_API }).base(airtableBase);
+const base = new Airtable({ apiKey: serverConfig.AIRTABLE_KEY_API }).base(serverConfig.AIRTABLE_BASE);
 
 export default base;
 
@@ -24,7 +19,7 @@ export const AirtableDB = (table: AirtableTable): Table<FieldSet> => {
 export const listTables = async (baseId: string): Promise<any[]> => {
   const res = await fetch(`https://api.airtable.com/v0/meta/bases/${baseId}/tables`, {
     headers: {
-      Authorization: `Bearer ${process.env.AIRTABLE_KEY_API}`,
+      Authorization: `Bearer ${serverConfig.AIRTABLE_KEY_API}`,
     },
   });
   if (res.status !== 200) {
@@ -88,7 +83,7 @@ export const createTable = async (baseId: string, name: string, fields: Airtable
   const res = await fetch(`https://api.airtable.com/v0/meta/bases/${baseId}/tables`, {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${process.env.AIRTABLE_KEY_API}`,
+      Authorization: `Bearer ${serverConfig.AIRTABLE_KEY_API}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
@@ -117,14 +112,17 @@ type AttachementContent = {
  * See https://airtable.com/developers/web/api/upload-attachment
  */
 export const uploadAttachment = async (recordId: string, attachementsFieldName: string, content: AttachementContent) => {
-  const res = await fetch(`https://content.airtable.com/v0/${airtableBase}/${recordId}/${attachementsFieldName}/uploadAttachment`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${process.env.AIRTABLE_KEY_API}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(content),
-  });
+  const res = await fetch(
+    `https://content.airtable.com/v0/${serverConfig.AIRTABLE_BASE}/${recordId}/${attachementsFieldName}/uploadAttachment`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${serverConfig.AIRTABLE_KEY_API}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(content),
+    }
+  );
   if (!res.ok) {
     if (res.headers.get('content-type') === 'application/json') {
       console.error(await res.json());

@@ -3014,11 +3014,11 @@ export interface InstallationsGeothermieSurfaceEchangeursOuvertsTiles {
 export interface Jobs {
   created_at: Generated<Timestamp>;
   data: Json;
-  entity_id: string;
+  entity_id: string | null;
   id: Generated<string>;
   status: 'pending' | 'processing' | 'finished' | 'error';
   result: Json | null;
-  type: 'pro_eligibility_test';
+  type: 'pro_eligibility_test' | 'build_tiles' | 'sync_geometries_to_airtable' | 'sync_metadata_from_airtable';
   updated_at: Generated<Timestamp>;
   user_id: string;
 }
@@ -3229,6 +3229,7 @@ export interface ReseauxDeChaleur {
   eau_surchauffee: string | null;
   fichiers: Json | null;
   geom: string | null;
+  geom_update: string | null;
   Gestionnaire: string | null;
   has_PDP: Generated<boolean>;
   has_trace: Generated<boolean>;
@@ -3319,6 +3320,7 @@ export interface ReseauxDeFroid {
   departement: string | null;
   fichiers: Json | null;
   geom: string | null;
+  geom_update: string | null;
   Gestionnaire: string | null;
   has_trace: Generated<boolean>;
   id_fcu: number;
@@ -3528,6 +3530,7 @@ export interface ZoneDeDeveloppementPrioritaire {
   date_actualisation_trace: Timestamp | null;
   departement: string | null;
   geom: string | null;
+  geom_update: string | null;
   'Identifiant reseau': string | null;
   region: string | null;
   reseau_de_chaleur_ids: number[];
@@ -3546,7 +3549,8 @@ export interface ZonesEtReseauxEnConstruction {
   communes_insee: string[] | null;
   date_actualisation_trace: Timestamp | null;
   departement: string | null;
-  geom: string;
+  geom: string | null;
+  geom_update: string | null;
   gestionnaire: string | null;
   id_fcu: number;
   is_zone: Generated<boolean>;

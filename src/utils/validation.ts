@@ -1,10 +1,10 @@
-import z, { ZodEffects, ZodObject, type ZodRawShape, type ZodTypeAny } from 'zod';
+import { z, ZodObject, type ZodRawShape, type ZodTypeAny } from 'zod';
 
 /**
  * Recursively unwraps ZodEffects to get the base schema.
  */
 const unwrapSchema = (schema: ZodTypeAny): ZodTypeAny => {
-  while (schema instanceof ZodEffects) {
+  while (schema instanceof z.ZodEffects) {
     schema = schema._def.schema;
   }
   return schema;
@@ -59,3 +59,24 @@ export const envBooleanSchema = z
   .enum(['0', '1', 'true', 'false'])
   .catch('false')
   .transform((value) => value == 'true' || value == '1');
+
+export type AllowedGeometry = GeoJSON.Feature<GeoJSON.Point | GeoJSON.LineString | GeoJSON.Polygon>;
+
+// Simple geometry validation - actual processing is done in processGeometry
+export const zGeometry = z.any().refine(
+  (val) => {
+    if (!val || typeof val !== 'object') return false;
+    const type = (val as any).type;
+    return (
+      type === 'FeatureCollection' ||
+      type === 'GeometryCollection' ||
+      type === 'Point' ||
+      type === 'LineString' ||
+      type === 'Polygon' ||
+      type === 'MultiPoint' ||
+      type === 'MultiLineString' ||
+      type === 'MultiPolygon'
+    );
+  },
+  { message: 'Invalid GeoJSON geometry' }
+);

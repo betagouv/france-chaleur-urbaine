@@ -4,8 +4,8 @@ import { type GetStaticPaths, type GetStaticProps, type InferGetStaticPropsType 
 import NetworkPanel from '@/components/Network/Network';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Slice from '@/components/Slice/Slice';
+import { getColdNetwork, getNetwork } from '@/modules/reseaux/server/service';
 import { db } from '@/server/db/kysely';
-import { getColdNetwork, getNetwork } from '@/server/services/network';
 import { type Network } from '@/types/Summary/Network';
 
 const PageReseau = ({ network }: InferGetStaticPropsType<typeof getStaticProps>) => {
