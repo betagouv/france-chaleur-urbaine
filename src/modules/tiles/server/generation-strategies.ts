@@ -2,10 +2,8 @@ import { mkdtemp, readdir, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { sql } from 'kysely';
-
 import { defineTilesGenerationStrategy } from '@/modules/tiles/server/generation';
-import { type DB, kdb } from '@/server/db/kysely';
+import { type DB, kdb, sql } from '@/server/db/kysely';
 import { fetchJSON } from '@/utils/network';
 import { ogr2ogrConvertToGeoJSON, ogr2ogrExtractGeoJSONFromDatabaseTable } from '@/utils/ogr2ogr';
 import { runBash } from '@/utils/system';
@@ -117,7 +115,7 @@ export const generateGeoJSONFromSQLQuery = (
   featureMapFunction?: (feature: GeoJSON.Feature) => GeoJSON.Feature
 ) =>
   defineTilesGenerationStrategy(async ({ tempDirectory, logger }) => {
-    const result = await sql<any>`${featureCollectionQuery}`.execute(kdb);
+    const result = await sql.raw<any>(`${featureCollectionQuery}`).execute(kdb);
 
     const geojson = result.rows[0].geojson as GeoJSON.FeatureCollection;
     if (!geojson) {
