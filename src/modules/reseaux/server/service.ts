@@ -232,14 +232,12 @@ export const listReseauxDeChaleur = async () => {
       'communes',
       'Gestionnaire',
       'MO',
-      sql<any>`CASE WHEN geom_update IS NOT NULL THEN ST_AsGeoJSON(ST_ForcePolygonCCW(ST_Transform(geom_update, 4326)))::json ELSE NULL END`.as(
-        'geom_update'
+      sql<BoundingBox>`st_transform(ST_Envelope(COALESCE(CASE WHEN ST_IsEmpty(geom_update) THEN NULL ELSE geom_update END, geom)), 4326)::box2d`.as(
+        'bbox'
       ),
+      sql<any>`CASE WHEN geom_update IS NOT NULL THEN ST_AsGeoJSON(ST_Transform(geom_update, 4326))::json ELSE NULL END`.as('geom_update'),
       'tags',
-      sql<BoundingBox>`st_transform(ST_Envelope(COALESCE(geom_update, geom)), 4326)::box2d`.as('bbox'),
-      sql<boolean>`geom_update IS NOT NULL AND GeometryType(geom_update) = 'GEOMETRYCOLLECTION' AND ST_IsEmpty(geom_update)`.as(
-        'geom_delete'
-      ),
+      sql<boolean>`geom_update IS NOT NULL AND ST_IsEmpty(geom_update)`.as('geom_delete'),
       sql<boolean>`geom IS NULL`.as('geom_create'),
     ])
     .orderBy('id_fcu')
@@ -247,9 +245,7 @@ export const listReseauxDeChaleur = async () => {
 
   // transforme les bbox en JS pour être performant
   reseauxDeChaleur.forEach((reseau) => {
-    reseau.bbox = parseBbox(
-      (reseau.bbox as unknown as string) || 'BOX(3.385585947402232 47.35474249860378,3.38691096486787 47.35645923457523)'
-    );
+    reseau.bbox = parseBbox(reseau.bbox as unknown as string);
   });
 
   return reseauxDeChaleur;
@@ -267,14 +263,12 @@ export const listReseauxEnConstruction = async () => {
       'nom_reseau',
       'communes',
       'gestionnaire',
-      sql<any>`CASE WHEN geom_update IS NOT NULL THEN ST_AsGeoJSON(ST_ForcePolygonCCW(ST_Transform(geom_update, 4326)))::json ELSE NULL END`.as(
-        'geom_update'
+      sql<BoundingBox>`st_transform(ST_Envelope(COALESCE(CASE WHEN ST_IsEmpty(geom_update) THEN NULL ELSE geom_update END, geom)), 4326)::box2d`.as(
+        'bbox'
       ),
+      sql<any>`CASE WHEN geom_update IS NOT NULL THEN ST_AsGeoJSON(ST_Transform(geom_update, 4326))::json ELSE NULL END`.as('geom_update'),
       'tags',
-      sql<BoundingBox>`st_transform(ST_Envelope(COALESCE(geom_update, geom)), 4326)::box2d`.as('bbox'),
-      sql<boolean>`geom_update IS NOT NULL AND GeometryType(geom_update) = 'GEOMETRYCOLLECTION' AND ST_IsEmpty(geom_update)`.as(
-        'geom_delete'
-      ),
+      sql<boolean>`geom_update IS NOT NULL AND ST_IsEmpty(geom_update)`.as('geom_delete'),
       sql<boolean>`geom IS NULL`.as('geom_create'),
     ])
     .orderBy('id_fcu')
@@ -292,6 +286,34 @@ export const updateReseauEnConstruction = async (id: number, tags: string[]) => 
   await kdb.updateTable('zones_et_reseaux_en_construction').set({ tags }).where('id_fcu', '=', id).execute();
 };
 
+export const listReseauxDeFroid = async () => {
+  const reseauxDeFroid = await kdb
+    .selectFrom('reseaux_de_froid')
+    .select([
+      'id_fcu',
+      'Identifiant reseau',
+      'nom_reseau',
+      'communes',
+      'Gestionnaire',
+      'MO',
+      sql<BoundingBox>`st_transform(ST_Envelope(COALESCE(CASE WHEN ST_IsEmpty(geom_update) THEN NULL ELSE geom_update END, geom)), 4326)::box2d`.as(
+        'bbox'
+      ),
+      sql<any>`CASE WHEN geom_update IS NOT NULL THEN ST_AsGeoJSON(ST_Transform(geom_update, 4326))::json ELSE NULL END`.as('geom_update'),
+      sql<boolean>`geom_update IS NOT NULL AND ST_IsEmpty(geom_update)`.as('geom_delete'),
+      sql<boolean>`geom IS NULL`.as('geom_create'),
+    ])
+    .orderBy('id_fcu')
+    .execute();
+
+  // transforme les bbox en JS pour être performant
+  reseauxDeFroid.forEach((reseau) => {
+    reseau.bbox = parseBbox(reseau.bbox as unknown as string);
+  });
+
+  return reseauxDeFroid;
+};
+
 export const listPerimetresDeDeveloppementPrioritaire = async () => {
   const perimetresDeDeveloppementPrioritaire = await kdb
     .selectFrom('zone_de_developpement_prioritaire')
@@ -301,11 +323,11 @@ export const listPerimetresDeDeveloppementPrioritaire = async () => {
       'reseau_de_chaleur_ids',
       'reseau_en_construction_ids',
       'communes',
-      sql<BoundingBox>`st_transform(ST_Envelope(COALESCE(geom_update, geom)), 4326)::box2d`.as('bbox'),
-      sql<any>`CASE WHEN geom_update IS NOT NULL THEN ST_AsGeoJSON(ST_Transform(geom_update, 4326))::json ELSE NULL END`.as('geom_update'),
-      sql<boolean>`geom_update IS NOT NULL AND GeometryType(geom_update) = 'GEOMETRYCOLLECTION' AND ST_IsEmpty(geom_update)`.as(
-        'geom_delete'
+      sql<BoundingBox>`st_transform(ST_Envelope(COALESCE(CASE WHEN ST_IsEmpty(geom_update) THEN NULL ELSE geom_update END, geom)), 4326)::box2d`.as(
+        'bbox'
       ),
+      sql<any>`CASE WHEN geom_update IS NOT NULL THEN ST_AsGeoJSON(ST_Transform(geom_update, 4326))::json ELSE NULL END`.as('geom_update'),
+      sql<boolean>`geom_update IS NOT NULL AND ST_IsEmpty(geom_update)`.as('geom_delete'),
       sql<boolean>`geom IS NULL`.as('geom_create'),
     ])
     .orderBy('id_fcu')
@@ -329,7 +351,7 @@ export const updatePerimetreDeDeveloppementPrioritaire = async (
 export const updateGeomUpdate = async (
   id_fcu: number,
   geometry: any,
-  dbName: 'reseaux_de_chaleur' | 'zones_et_reseaux_en_construction' | 'zone_de_developpement_prioritaire'
+  dbName: 'reseaux_de_chaleur' | 'zones_et_reseaux_en_construction' | 'zone_de_developpement_prioritaire' | 'reseaux_de_froid'
 ) => {
   const processedGeometry = await processGeometry(geometry);
   const finalGeometry = createGeometryExpression(processedGeometry.geom, processedGeometry.srid);
@@ -346,7 +368,7 @@ export const updateGeomUpdate = async (
 
 export const deleteGeomUpdate = async (
   id_fcu: number,
-  dbName: 'reseaux_de_chaleur' | 'zones_et_reseaux_en_construction' | 'zone_de_developpement_prioritaire'
+  dbName: 'reseaux_de_chaleur' | 'zones_et_reseaux_en_construction' | 'zone_de_developpement_prioritaire' | 'reseaux_de_froid'
 ) => {
   await kdb
     .updateTable(dbName)
@@ -359,7 +381,7 @@ export const deleteGeomUpdate = async (
 
 export const deleteNetwork = async (
   id_fcu: number,
-  dbName: 'reseaux_de_chaleur' | 'zones_et_reseaux_en_construction' | 'zone_de_developpement_prioritaire'
+  dbName: 'reseaux_de_chaleur' | 'zones_et_reseaux_en_construction' | 'zone_de_developpement_prioritaire' | 'reseaux_de_froid'
 ) => {
   const existingCreation = await kdb.selectFrom(dbName).where('id_fcu', '=', id_fcu).where('geom', 'is', null).executeTakeFirst();
 
@@ -415,7 +437,7 @@ const createReseauEnConstruction = async (id: string, finalGeometry: any) => {
     .values({
       id_fcu,
       geom: null,
-      geom_update: sql`ST_Force2D(${finalGeometry})`,
+      geom_update: sql`ST_ForcePolygonCCW(ST_Force2D(${finalGeometry}))`,
       nom_reseau: `Nouveau réseau en construction ${id_fcu}`,
       tags: [],
     })
@@ -434,9 +456,31 @@ const createPerimetreDeDeveloppementPrioritaire = async (id: string, finalGeomet
     .values({
       id_fcu,
       geom: null,
-      geom_update: sql`ST_Force2D(${finalGeometry})`,
+      geom_update: sql`ST_ForcePolygonCCW(ST_Force2D(${finalGeometry}))`,
       reseau_de_chaleur_ids: [],
       reseau_en_construction_ids: [],
+    })
+    .returningAll()
+    .executeTakeFirstOrThrow();
+};
+
+const createReseauDeFroid = async (id: string, finalGeometry: any) => {
+  const id_sncu = id.includes('C') || id.includes('F') ? id : null;
+
+  // Pour les réseaux de froid, l'ID est l'identifiant réseau (string)
+  const maxIdResult = await kdb
+    .selectFrom('reseaux_de_froid')
+    .select(sql<number>`COALESCE(MAX(id_fcu), 0) + 1`.as('next_id'))
+    .executeTakeFirstOrThrow();
+
+  return await kdb
+    .insertInto('reseaux_de_froid')
+    .values({
+      ...(id_sncu ? { 'Identifiant reseau': id_sncu, id_fcu: maxIdResult.next_id } : { id_fcu: parseInt(id) }),
+      geom: null,
+      geom_update: sql`ST_Force2D(${finalGeometry})`,
+      'reseaux classes': false,
+      fichiers: [],
     })
     .returningAll()
     .executeTakeFirstOrThrow();
@@ -445,7 +489,7 @@ const createPerimetreDeDeveloppementPrioritaire = async (id: string, finalGeomet
 export const createNetwork = async (
   id: string,
   geometry: any,
-  dbName: 'reseaux_de_chaleur' | 'zones_et_reseaux_en_construction' | 'zone_de_developpement_prioritaire'
+  dbName: 'reseaux_de_chaleur' | 'zones_et_reseaux_en_construction' | 'zone_de_developpement_prioritaire' | 'reseaux_de_froid'
 ) => {
   const processedGeometry = await processGeometry(geometry);
   const finalGeometry = createGeometryExpression(processedGeometry.geom, processedGeometry.srid);
@@ -457,6 +501,8 @@ export const createNetwork = async (
       return await createReseauEnConstruction(id, finalGeometry);
     case 'zone_de_developpement_prioritaire':
       return await createPerimetreDeDeveloppementPrioritaire(id, finalGeometry);
+    case 'reseaux_de_froid':
+      return await createReseauDeFroid(id, finalGeometry);
     default:
       throw new Error(`Type de réseau non supporté: ${dbName}`);
   }

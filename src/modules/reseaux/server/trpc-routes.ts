@@ -31,6 +31,12 @@ const reseauEnConstructionRouter = router({
   }),
 });
 
+const reseauDeFroidRouter = router({
+  list: adminRoute.query(async () => {
+    return await reseauxService.listReseauxDeFroid();
+  }),
+});
+
 const perimetreDeDeveloppementPrioritaireRouter = router({
   list: adminRoute.query(async () => {
     return await reseauxService.listPerimetresDeDeveloppementPrioritaire();
@@ -45,6 +51,7 @@ export const reseauxRouter = router({
   // Sous-routeurs par type
   reseauDeChaleur: reseauDeChaleurRouter,
   reseauEnConstruction: reseauEnConstructionRouter,
+  reseauDeFroid: reseauDeFroidRouter,
   perimetreDeDeveloppementPrioritaire: perimetreDeDeveloppementPrioritaireRouter,
 
   // Opérations communes à tous les types

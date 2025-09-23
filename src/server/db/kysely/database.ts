@@ -3014,11 +3014,11 @@ export interface InstallationsGeothermieSurfaceEchangeursOuvertsTiles {
 export interface Jobs {
   created_at: Generated<Timestamp>;
   data: Json;
-  entity_id: string;
+  entity_id: string | null;
   id: Generated<string>;
   status: 'pending' | 'processing' | 'finished' | 'error';
   result: Json | null;
-  type: 'pro_eligibility_test';
+  type: 'pro_eligibility_test' | 'build_tiles' | 'sync_geometries_to_airtable' | 'sync_metadata_from_airtable';
   updated_at: Generated<Timestamp>;
   user_id: string;
 }
@@ -3320,6 +3320,7 @@ export interface ReseauxDeFroid {
   departement: string | null;
   fichiers: Json | null;
   geom: string | null;
+  geom_update: string | null;
   Gestionnaire: string | null;
   has_trace: Generated<boolean>;
   id_fcu: number;

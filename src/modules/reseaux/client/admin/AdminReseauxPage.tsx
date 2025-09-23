@@ -1,6 +1,6 @@
 import Tabs from '@codegouvfr/react-dsfr/Tabs';
 import { parseAsStringLiteral, useQueryState } from 'nuqs';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import TableFieldInput from '@/components/Admin/TableFieldInput';
 import Input from '@/components/form/dsfr/Input';
@@ -18,13 +18,14 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/componen
 import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
 import Tag from '@/components/ui/Tag';
 import trpc, { type RouterOutput } from '@/modules/trpc/client';
-import { toastErrors } from '@/services/notification';
+import { notify, toastErrors } from '@/services/notification';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
 
-const tabIds = ['reseaux-de-chaleur', 'reseaux-en-construction', 'perimetres-de-developpement-prioritaire'] as const;
+const tabIds = ['reseaux-de-chaleur', 'reseaux-de-froid', 'reseaux-en-construction', 'perimetres-de-developpement-prioritaire'] as const;
 
 type ReseauDeChaleur = RouterOutput['reseaux']['reseauDeChaleur']['list'][number];
+type ReseauDeFroid = RouterOutput['reseaux']['reseauDeFroid']['list'][number];
 type ReseauEnConstruction = RouterOutput['reseaux']['reseauEnConstruction']['list'][number];
 type PerimetreDeDeveloppementPrioritaire = RouterOutput['reseaux']['perimetreDeDeveloppementPrioritaire']['list'][number];
 
@@ -52,16 +53,23 @@ const GestionDesReseaux = () => {
   const [selectedTab, setSelectedTab] = useQueryState('tab', parseAsStringLiteral(tabIds).withDefault('reseaux-de-chaleur'));
 
   const [selectedNetwork, setSelectedNetwork] = useState<
-    ReseauDeChaleur | ReseauEnConstruction | PerimetreDeDeveloppementPrioritaire | null
+    ReseauDeChaleur | ReseauDeFroid | ReseauEnConstruction | PerimetreDeDeveloppementPrioritaire | null
   >(null);
   const [editingId, setEditingId] = useState<string | number | null>(null);
   const [updatedGeom, setUpdatedGeom] = useState<any>(null);
+  const [isPollingJobs, setIsPollingJobs] = useState(true);
 
   const {
     data: reseauxDeChaleur,
     isFetching: isFetchingReseauxDeChaleur,
     isLoading: isLoadingReseauxDeChaleur,
   } = trpc.reseaux.reseauDeChaleur.list.useQuery();
+
+  const {
+    data: reseauxDeFroid,
+    isFetching: isFetchingReseauxDeFroid,
+    isLoading: isLoadingReseauxDeFroid,
+  } = trpc.reseaux.reseauDeFroid.list.useQuery();
 
   const {
     data: reseauxEnConstruction,
@@ -75,20 +83,78 @@ const GestionDesReseaux = () => {
     isLoading: isLoadingPerimetresDeDeveloppementPrioritaire,
   } = trpc.reseaux.perimetreDeDeveloppementPrioritaire.list.useQuery();
 
+  const { data: pendingJobsData, isFetching: isFetchingPendingJobs } = trpc.jobs.list.useQuery(
+    {
+      types: ['build_tiles', 'sync_geometries_to_airtable', 'sync_metadata_from_airtable'],
+      statuses: ['pending', 'processing'],
+      limit: 100,
+    },
+    {
+      refetchInterval: isPollingJobs ? 5000 : false,
+    }
+  );
+
+  const pendingJobs = pendingJobsData?.jobs || [];
+  useEffect(() => {
+    if (isPollingJobs && !isFetchingPendingJobs && pendingJobs.length === 0) {
+      setIsPollingJobs(false);
+      void Promise.all(Object.values(tabsInfo).map((tabInfo) => tabInfo.refetch()));
+    }
+  }, [isPollingJobs, pendingJobs.length, isFetchingPendingJobs]);
+
+  const pendingReseauDeChaleurJobs = [];
+  const pendingReseauDeFroidJobs = [];
+  const pendingReseauEnConstructionJobs = [];
+  const pendingPerimetreJobs = [];
+  const pendingSyncMetadataJobs = [];
+  const pendingSyncGeometriesJobs = [];
+  const pendingBuildTilesJobs = [];
+
+  for (const job of pendingJobs) {
+    const jobDataName = (job as any).data?.name as string;
+    if (jobDataName === 'reseaux-de-chaleur') {
+      pendingReseauDeChaleurJobs.push(job);
+    } else if (jobDataName === 'reseaux-de-froid') {
+      pendingReseauDeFroidJobs.push(job);
+    } else if (jobDataName === 'reseaux-en-construction') {
+      pendingReseauEnConstructionJobs.push(job);
+    } else if (jobDataName === 'perimetres-de-developpement-prioritaire') {
+      pendingPerimetreJobs.push(job);
+    }
+
+    if (job.type === 'sync_metadata_from_airtable') {
+      pendingSyncMetadataJobs.push(job);
+    } else if (job.type === 'sync_geometries_to_airtable') {
+      pendingSyncGeometriesJobs.push(job);
+    } else if (job.type === 'build_tiles') {
+      pendingBuildTilesJobs.push(job);
+    }
+  }
+
+  const hasPendingReseauDeChaleurJobs = pendingReseauDeChaleurJobs.length > 0;
+  const hasPendingReseauDeFroidJobs = pendingReseauDeFroidJobs.length > 0;
+  const hasPendingReseauEnConstructionJobs = pendingReseauEnConstructionJobs.length > 0;
+  const hasPendingPerimetreJobs = pendingPerimetreJobs.length > 0;
+  const hasPendingSyncMetadataJobs = pendingSyncMetadataJobs.length > 0;
+  const hasPendingSyncGeometriesJobs = pendingSyncGeometriesJobs.length > 0;
+  const hasPendingBuildTilesJobs = pendingBuildTilesJobs.length > 0;
+
   const onTableRowClick = useCallback(
     (idFCU: number) => {
       setSelectedNetwork(
         (selectedTab === 'reseaux-de-chaleur'
           ? reseauxDeChaleur
-          : selectedTab === 'reseaux-en-construction'
-            ? reseauxEnConstruction
-            : perimetresDeDeveloppementPrioritaire
+          : selectedTab === 'reseaux-de-froid'
+            ? reseauxDeFroid
+            : selectedTab === 'reseaux-en-construction'
+              ? reseauxEnConstruction
+              : perimetresDeDeveloppementPrioritaire
         )?.find((reseau) => reseau.id_fcu === idFCU) ?? null
       );
       setEditingId(null);
       setUpdatedGeom(null);
     },
-    [reseauxDeChaleur, reseauxEnConstruction, perimetresDeDeveloppementPrioritaire, selectedTab]
+    [reseauxDeChaleur, reseauxDeFroid, reseauxEnConstruction, perimetresDeDeveloppementPrioritaire, selectedTab]
   );
   const trpcUtils = trpc.useUtils();
 
@@ -97,7 +163,7 @@ const GestionDesReseaux = () => {
     {
       enabledFeatures: React.ComponentProps<typeof AdminEditLegend>['enabledFeatures'];
       title: string;
-      type: 'reseaux_de_chaleur' | 'zones_et_reseaux_en_construction' | 'zone_de_developpement_prioritaire';
+      type: 'reseaux_de_chaleur' | 'reseaux_de_froid' | 'zones_et_reseaux_en_construction' | 'zone_de_developpement_prioritaire';
       refetch: () => void;
     }
   > = {
@@ -106,6 +172,12 @@ const GestionDesReseaux = () => {
       title: 'Réseaux de chaleur',
       type: 'reseaux_de_chaleur',
       refetch: () => void trpcUtils.reseaux.reseauDeChaleur.list.invalidate(),
+    },
+    'reseaux-de-froid': {
+      enabledFeatures: ['reseauxDeFroid'],
+      title: 'Réseaux de froid',
+      type: 'reseaux_de_froid',
+      refetch: () => void trpcUtils.reseaux.reseauDeFroid.list.invalidate(),
     },
     'reseaux-en-construction': {
       enabledFeatures: ['reseauxEnConstruction'],
@@ -138,6 +210,19 @@ const GestionDesReseaux = () => {
 
   const { mutateAsync: updateReseauEnConstruction } = trpc.reseaux.reseauEnConstruction.updateTags.useMutation({
     onSuccess: () => void tabInfo.refetch(),
+  });
+
+  const { mutateAsync: applyGeometriesUpdates } = trpc.tiles.applyGeometriesUpdates.useMutation({
+    onSuccess: async (result) => {
+      try {
+        notify('success', `Synchronisation lancée. ${result.jobIds.length} jobs créés.`);
+        await trpcUtils.jobs.list.invalidate();
+        setIsPollingJobs(true);
+      } catch (error) {
+        notify('error', 'Erreur lors du lancement de la synchronisation');
+        console.error('Erreur synchronisation:', error);
+      }
+    },
   });
 
   const handleUpdateReseauEnConstruction = useCallback(
@@ -231,7 +316,7 @@ const GestionDesReseaux = () => {
     toastErrors(
       async (
         id: number,
-        type: 'reseaux_de_chaleur' | 'zones_et_reseaux_en_construction' | 'zone_de_developpement_prioritaire',
+        type: 'reseaux_de_chaleur' | 'reseaux_de_froid' | 'zones_et_reseaux_en_construction' | 'zone_de_developpement_prioritaire',
         name: string
       ) => {
         if (
@@ -358,6 +443,85 @@ const GestionDesReseaux = () => {
       },
     ],
     [updateReseauDeChaleur]
+  );
+
+  const reseauxDeFroidColumns = useMemo<ColumnDef<ReseauDeFroid>[]>(
+    () => [
+      {
+        id: 'actions',
+        cell: ({ row }) => (
+          <div className="flex gap-2">
+            <Button
+              size="small"
+              priority="secondary"
+              iconId="fr-icon-edit-line"
+              title="Modifier le tag"
+              stopPropagation
+              onClick={() => {
+                setEditingId(row.original.id_fcu);
+                setSelectedNetwork(row.original);
+              }}
+            />
+            <Button
+              size="small"
+              priority="secondary"
+              variant="destructive"
+              iconId="fr-icon-delete-line"
+              title="Supprimer le réseau (géométrie vide)"
+              loading={isDeletingNetwork}
+              disabled={row.original.geom_delete}
+              stopPropagation
+              onClick={() => {
+                void handleDeleteNetwork(row.original.id_fcu, 'reseaux_de_froid', row.original.nom_reseau || `ID ${row.original.id_fcu}`);
+              }}
+            />
+            <ModifiedIcon {...row.original} />
+          </div>
+        ),
+        width: '120px',
+      },
+      {
+        accessorKey: 'id_fcu',
+        header: 'id_fcu',
+        width: '100px',
+      },
+      {
+        accessorKey: 'Identifiant reseau',
+        header: 'ID SNCU',
+        width: '140px',
+      },
+      {
+        accessorKey: 'nom_reseau',
+        header: 'Nom',
+        width: '300px',
+        cell: ({ row }) =>
+          isDefined(row.original['Identifiant reseau']) ? (
+            <div>
+              <Link className="" href={`/reseaux/${row.original['Identifiant reseau']}`} isExternal>
+                {row.original.nom_reseau}
+              </Link>
+            </div>
+          ) : (
+            row.original.nom_reseau
+          ),
+      },
+      {
+        accessorKey: 'Gestionnaire',
+        header: 'Gestionnaire',
+        width: '150px',
+      },
+      {
+        accessorKey: 'MO',
+        header: "Maître d'ouvrage",
+        width: '150px',
+      },
+      {
+        accessorFn: (row) => row.communes?.join(', '),
+        header: 'Communes',
+        width: '200px',
+      },
+    ],
+    []
   );
 
   const reseauxEnConstructionColumns = useMemo<ColumnDef<ReseauEnConstruction>[]>(
@@ -547,17 +711,21 @@ const GestionDesReseaux = () => {
   );
 
   const reseauxDeChaleurWithGeomUpdate = reseauxDeChaleur?.filter((reseau) => reseau.geom_update);
+  const reseauxDeFroidWithGeomUpdate = reseauxDeFroid?.filter((reseau) => reseau.geom_update);
   const reseauxEnConstructionWithGeomUpdate = reseauxEnConstruction?.filter((reseau) => reseau.geom_update);
   const perimetresDeDeveloppementPrioritaireWithGeomUpdate = perimetresDeDeveloppementPrioritaire?.filter((pdp) => pdp.geom_update);
 
   const totalGeomUpdates =
     (reseauxDeChaleurWithGeomUpdate?.length ?? 0) +
+    (reseauxDeFroidWithGeomUpdate?.length ?? 0) +
     (reseauxEnConstructionWithGeomUpdate?.length ?? 0) +
     (perimetresDeDeveloppementPrioritaireWithGeomUpdate?.length ?? 0);
 
-  const handleSyncGeomUpdates = () => {
-    alert('Super, demande à Martin ou Maxime de recréer les tuiles');
-  };
+  const handleSyncGeomUpdates = toastErrors(
+    async (name: 'reseaux-de-chaleur' | 'reseaux-de-froid' | 'reseaux-en-construction' | 'perimetres-de-developpement-prioritaire') => {
+      await applyGeometriesUpdates({ name });
+    }
+  );
 
   // Prepare geomUpdate features for the map
   const geomUpdateFeatures: GeoJSON.Feature[] = useMemo(() => {
@@ -572,6 +740,19 @@ const GestionDesReseaux = () => {
             ...(reseau.geom_update.properties || {}),
             nom_reseau: reseau.nom_reseau,
             type: 'reseau_de_chaleur',
+            id_fcu: reseau.id_fcu,
+          },
+        })) ?? []),
+      ...(reseauxDeFroidWithGeomUpdate
+        ?.filter((reseau) => reseau.geom_update)
+        .map((reseau) => ({
+          id: `${reseau.id_fcu}-reseau-de-froid`,
+          type: 'Feature' as const,
+          geometry: reseau.geom_update,
+          properties: {
+            ...(reseau.geom_update.properties || {}),
+            nom_reseau: reseau.nom_reseau,
+            type: 'reseau_de_froid',
             id_fcu: reseau.id_fcu,
           },
         })) ?? []),
@@ -601,7 +782,12 @@ const GestionDesReseaux = () => {
           },
         })) ?? []),
     ];
-  }, [reseauxDeChaleurWithGeomUpdate, reseauxEnConstructionWithGeomUpdate, perimetresDeDeveloppementPrioritaireWithGeomUpdate]);
+  }, [
+    reseauxDeChaleurWithGeomUpdate,
+    reseauxDeFroidWithGeomUpdate,
+    reseauxEnConstructionWithGeomUpdate,
+    perimetresDeDeveloppementPrioritaireWithGeomUpdate,
+  ]);
 
   const tabs = [
     {
@@ -630,11 +816,17 @@ const GestionDesReseaux = () => {
           rowSelection={selectedTab === 'reseaux-de-chaleur' ? rowSelection : {}}
           topRightActions={
             <div className="flex gap-2">
-              {(reseauxDeChaleurWithGeomUpdate || []).length > 0 && (
-                <Button size="small" priority="primary" variant="warning" iconId="fr-icon-refresh-line" onClick={handleSyncGeomUpdates}>
-                  Sync ({reseauxDeChaleurWithGeomUpdate?.length})
-                </Button>
-              )}
+              <Button
+                size="small"
+                priority="primary"
+                variant="warning"
+                disabled={hasPendingReseauDeChaleurJobs || isFetchingPendingJobs}
+                iconId="fr-icon-refresh-line"
+                onClick={() => handleSyncGeomUpdates('reseaux-de-chaleur')}
+                loading={isUpdatingGeometry || hasPendingReseauDeChaleurJobs}
+              >
+                Sync ({reseauxDeChaleurWithGeomUpdate?.length})
+              </Button>
               <Button size="small" priority="secondary" iconId="fr-icon-add-line" onClick={handleAddNewNetwork}>
                 Ajouter un réseau
               </Button>
@@ -643,6 +835,52 @@ const GestionDesReseaux = () => {
         />
       ),
       isDefault: selectedTab === 'reseaux-de-chaleur',
+    },
+    {
+      label: (
+        <>
+          Réseaux de froid
+          <Tag variant="default" size="sm" className="ml-2">
+            {(reseauxDeFroidWithGeomUpdate || []).length > 0 && <Icon name="fr-icon-warning-line" size="sm" color="warning" />}
+            {isFetchingReseauxDeFroid ? <Loader size="sm" className="mx-1" /> : (reseauxDeFroid?.length ?? 0)}
+          </Tag>
+        </>
+      ),
+      content: (
+        <TableSimple
+          columns={reseauxDeFroidColumns}
+          data={reseauxDeFroid ?? []}
+          loading={isLoadingReseauxDeFroid}
+          fluid
+          controlsLayout="block"
+          padding="sm"
+          loadingEmptyMessage="Aucun réseau de froid à afficher"
+          height="calc(100dvh - 194px)"
+          onRowClick={onTableRowClick}
+          rowIdKey="id_fcu"
+          enableGlobalFilter
+          rowSelection={selectedTab === 'reseaux-de-froid' ? rowSelection : {}}
+          topRightActions={
+            <div className="flex gap-2">
+              <Button
+                size="small"
+                priority="primary"
+                variant="warning"
+                disabled={hasPendingReseauDeFroidJobs || isFetchingPendingJobs}
+                iconId="fr-icon-refresh-line"
+                onClick={() => handleSyncGeomUpdates('reseaux-de-froid')}
+                loading={isUpdatingGeometry || hasPendingReseauDeFroidJobs}
+              >
+                Sync ({reseauxDeFroidWithGeomUpdate?.length})
+              </Button>
+              <Button size="small" priority="secondary" iconId="fr-icon-add-line" onClick={handleAddNewNetwork}>
+                Ajouter un réseau
+              </Button>
+            </div>
+          }
+        />
+      ),
+      isDefault: selectedTab === 'reseaux-de-froid',
     },
     {
       label: (
@@ -670,11 +908,16 @@ const GestionDesReseaux = () => {
           rowSelection={selectedTab === 'reseaux-en-construction' ? rowSelection : {}}
           topRightActions={
             <div className="flex gap-2">
-              {(reseauxEnConstructionWithGeomUpdate || []).length > 0 && (
-                <Button size="small" priority="primary" variant="warning" iconId="fr-icon-refresh-line" onClick={handleSyncGeomUpdates}>
-                  Sync ({reseauxEnConstructionWithGeomUpdate?.length})
-                </Button>
-              )}
+              <Button
+                size="small"
+                priority="primary"
+                variant="warning"
+                iconId="fr-icon-refresh-line"
+                onClick={() => handleSyncGeomUpdates('reseaux-en-construction')}
+                loading={isUpdatingGeometry || hasPendingReseauEnConstructionJobs}
+              >
+                Sync ({reseauxEnConstructionWithGeomUpdate?.length})
+              </Button>
               <Button size="small" priority="secondary" iconId="fr-icon-add-line" onClick={handleAddNewNetwork}>
                 Ajouter un réseau
               </Button>
@@ -716,11 +959,16 @@ const GestionDesReseaux = () => {
           rowSelection={selectedTab === 'perimetres-de-developpement-prioritaire' ? rowSelection : {}}
           topRightActions={
             <div className="flex gap-2">
-              {(perimetresDeDeveloppementPrioritaireWithGeomUpdate || []).length > 0 && (
-                <Button size="small" priority="primary" variant="warning" iconId="fr-icon-refresh-line" onClick={handleSyncGeomUpdates}>
-                  Sync ({perimetresDeDeveloppementPrioritaireWithGeomUpdate?.length})
-                </Button>
-              )}
+              <Button
+                size="small"
+                priority="primary"
+                variant="warning"
+                iconId="fr-icon-refresh-line"
+                onClick={() => handleSyncGeomUpdates('perimetres-de-developpement-prioritaire')}
+                loading={isUpdatingGeometry || hasPendingPerimetreJobs}
+              >
+                Sync ({perimetresDeDeveloppementPrioritaireWithGeomUpdate?.length})
+              </Button>
               <Button size="small" priority="secondary" iconId="fr-icon-add-line" onClick={handleAddNewNetwork}>
                 Ajouter un périmètre
               </Button>
@@ -740,7 +988,7 @@ const GestionDesReseaux = () => {
       description="Tableau d'administration pour gérer les réseaux de chaleur et en construction"
       mode="authenticated"
     >
-      {totalGeomUpdates > 0 && (
+      {totalGeomUpdates > 0 && (!pendingJobs || pendingJobs.length === 0) && (
         <Notice variant="warning" className="mb-4">
           <span className="flex items-center justify-center w-full gap-2">
             <span className="font-medium text-base">
@@ -748,8 +996,29 @@ const GestionDesReseaux = () => {
             </span>
             <span className="text-sm text-gray-700 font-normal">
               <strong>({reseauxDeChaleurWithGeomUpdate?.length ?? 0}</strong> réseaux de chaleur,{' '}
+              <strong>{reseauxDeFroidWithGeomUpdate?.length ?? 0}</strong> réseaux de froid,{' '}
               <strong>{reseauxEnConstructionWithGeomUpdate?.length ?? 0}</strong> réseaux en construction,{' '}
               <strong>{perimetresDeDeveloppementPrioritaireWithGeomUpdate?.length ?? 0}</strong> périmètres)
+            </span>
+          </span>
+        </Notice>
+      )}
+      {pendingJobs && pendingJobs.length > 0 && (
+        <Notice variant="info" className="mb-4">
+          <span className="flex items-center justify-center w-full gap-2">
+            {isPollingJobs && <Loader size="sm" />}
+            <span className="font-medium text-base">
+              {pendingJobs.length} job{pendingJobs.length > 1 ? 's' : ''} en cours d'exécution
+            </span>
+            <span className="text-sm text-gray-700 font-normal">
+              {[
+                hasPendingSyncMetadataJobs && `${pendingSyncMetadataJobs.length} sync métadonnées`,
+                hasPendingBuildTilesJobs &&
+                  `${pendingBuildTilesJobs.length} génération${pendingBuildTilesJobs.length > 1 ? 's' : ''} de tuiles`,
+                hasPendingSyncGeometriesJobs && `${pendingSyncGeometriesJobs.length} sync géométries`,
+              ]
+                .filter(Boolean)
+                .join(', ')}
             </span>
           </span>
         </Notice>
@@ -776,6 +1045,7 @@ const GestionDesReseaux = () => {
                   reseauxDeChaleur: {
                     show: true,
                   },
+                  reseauxDeFroid: true,
                   reseauxEnConstruction: true,
                   zonesDeDeveloppementPrioritaire: true,
                   geomUpdate: true,
@@ -795,7 +1065,8 @@ const GestionDesReseaux = () => {
                         <div className="text-center text-sm mt-2">
                           Suppression du tracé de{' '}
                           <strong>
-                            {(selectedNetwork as ReseauDeChaleur | ReseauEnConstruction)?.nom_reseau || selectedNetwork?.id_fcu}
+                            {(selectedNetwork as ReseauDeChaleur | ReseauDeFroid | ReseauEnConstruction)?.nom_reseau ||
+                              selectedNetwork?.id_fcu}
                           </strong>
                         </div>
                         <Notice variant="warning" size="sm" className="mx-2">
@@ -839,7 +1110,9 @@ const GestionDesReseaux = () => {
                             <div className="m-2">
                               <Input
                                 label={
-                                  selectedTab === 'reseaux-de-chaleur' ? 'ID SNCU ou ID FCU du nouveau réseau' : 'ID du nouveau réseau'
+                                  selectedTab === 'reseaux-de-chaleur' || selectedTab === 'reseaux-de-froid'
+                                    ? 'ID SNCU ou ID FCU du nouveau réseau'
+                                    : 'ID du nouveau réseau'
                                 }
                                 nativeInputProps={{
                                   value: editingId?.toString() || '',
@@ -847,7 +1120,10 @@ const GestionDesReseaux = () => {
                                     setEditingId(e.target.value);
                                   },
                                   required: true,
-                                  placeholder: selectedTab === 'reseaux-de-chaleur' ? 'Ex: 7412A ou 123' : 'Ex: 123',
+                                  placeholder:
+                                    selectedTab === 'reseaux-de-chaleur' || selectedTab === 'reseaux-de-froid'
+                                      ? 'Ex: 7412A ou 123'
+                                      : 'Ex: 123',
                                 }}
                               />
                             </div>
@@ -856,7 +1132,8 @@ const GestionDesReseaux = () => {
                           <div className="text-center text-sm mt-2">
                             Modification du tracé de{' '}
                             <strong>
-                              {(selectedNetwork as ReseauDeChaleur | ReseauEnConstruction)?.nom_reseau || selectedNetwork?.id_fcu}
+                              {(selectedNetwork as ReseauDeChaleur | ReseauDeFroid | ReseauEnConstruction)?.nom_reseau ||
+                                selectedNetwork?.id_fcu}
                             </strong>
                           </div>
                         )}
@@ -901,7 +1178,9 @@ const GestionDesReseaux = () => {
                               disabled={
                                 !updatedGeom ||
                                 (!selectedNetwork && !editingId) ||
-                                (!selectedNetwork && selectedTab === 'reseaux-de-chaleur' && !editingId?.toString().trim())
+                                (!selectedNetwork &&
+                                  (selectedTab === 'reseaux-de-chaleur' || selectedTab === 'reseaux-de-froid') &&
+                                  !editingId?.toString().trim())
                               }
                               stopPropagation
                               onClick={() => {

@@ -6,6 +6,9 @@ dotenv.config({ path: '.env.local' });
 dotenv.config();
 
 const serverConfigSchema = {
+  AIRTABLE_BASE: z.string(),
+  AIRTABLE_KEY_API: z.string(),
+  DATABASE_URL: z.string(),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   IS_REVIEW_APP: z.boolean().default(false),
   GITHUB_CI: z.boolean().default(false),
@@ -19,6 +22,7 @@ const serverConfigSchema = {
   DATA_GOUV_FR_DATASET_ID: z.string().optional(),
   PIPEDRIVE_BASE_URL: z.string().default('https://api.pipedrive.com/v1'),
   PIPEDRIVE_API_KEY: z.string().optional(),
+  USE_DOCKER_GEO_COMMANDS: z.boolean().default(false),
 };
 
 export const serverConfig = parseEnv(process.env, serverConfigSchema);

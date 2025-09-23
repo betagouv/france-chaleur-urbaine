@@ -1,21 +1,9 @@
-import { initTRPC } from '@trpc/server';
+import { type AuthConfig, type Context, t } from './context';
+import { createAuthMiddleware } from './middlewares/auth';
+import { createLoggingMiddleware } from './middlewares/logging';
 
-import { type Context } from './context';
-import { type AuthConfig, createAuthMiddleware } from './middlewares/auth';
-
-// Initialize tRPC with context
-const t = initTRPC.context<Context>().create({
-  errorFormatter({ shape, error }) {
-    console.error('🔴 TRPC Error:', {
-      code: error.code,
-      message: error.message,
-      path: (shape as any).path,
-    });
-    return shape;
-  },
-});
-
-// Create auth middleware instance
+// Create middleware instances
+const loggingMiddleware = createLoggingMiddleware(t);
 const authMiddleware = createAuthMiddleware(t);
 
 // Create a new procedure type that includes the auth method
@@ -32,5 +20,5 @@ function createProcedureWithAuth<T extends ReturnType<typeof t.procedure.use>>(b
 
 export const router = t.router;
 
-export const route = createProcedureWithAuth(t.procedure.use(authMiddleware));
+export const route = createProcedureWithAuth(t.procedure.use(loggingMiddleware).use(authMiddleware));
 export const routeRole = (roles: Context['user']['role'][]) => route.meta({ auth: { roles } });

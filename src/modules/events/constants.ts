@@ -12,6 +12,9 @@ export const eventTypes = [
   'pro_eligibility_test_renamed',
   'pro_eligibility_test_updated',
   'pro_eligibility_test_deleted',
+  'build_tiles',
+  'sync_metadata_from_airtable',
+  'sync_geometries_to_airtable',
 ] as const;
 
 export type EventType = (typeof eventTypes)[number];

@@ -1,4 +1,4 @@
-import { runBash } from '@cli/helpers/shell';
+import { ogr2ogrImportGeoJSONToDatabaseTable } from '@/utils/ogr2ogr';
 
 import { BaseAdapter } from '../base';
 
@@ -10,8 +10,6 @@ export default class ZonesOpportuniteFroidAdapter extends BaseAdapter {
     if (!shapefilePath) {
       throw new Error('Vous devez fournir un fichier shapefile');
     }
-    await runBash(
-      `ogr2ogr -f "PostgreSQL" PG:"host=localhost user=postgres dbname=postgres password=postgres_fcu" ${shapefilePath} -nln zone_a_potentiel_froid -lco GEOMETRY_NAME=geom -nlt MULTIPOLYGON -t_srs EPSG:2154 -overwrite`
-    );
+    await ogr2ogrImportGeoJSONToDatabaseTable(shapefilePath, 'zone_a_potentiel_froid', ' -nlt MULTIPOLYGON');
   }
 }

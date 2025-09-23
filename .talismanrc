@@ -4,6 +4,8 @@ fileignoreconfig:
   ignore_detectors:
   - filename
   - filesize
+- filename: .github/workflows/ci.yml
+  checksum: e229be0744f71907a12616b38fa3730caba6aa8f96ed5178b63283d3d03b3558
 - filename: docs/import_qpv.md
   checksum: c1d6b94bb550a972f1d97490a39dc3dc234b03c9ac5c7426cc85b5518a39966d
 - filename: docs/mise_a_jour_donnees_fcu.md
@@ -51,6 +53,8 @@ fileignoreconfig:
   - filesize
 - filename: src/environment.ts
   checksum: 709d0cbd7d8fa33bd9b7db0d90000c1eb6adb9fbf878e40dc956d1cb5ba6cc50
+- filename: src/modules/tiles/server/generation-config.ts
+  checksum: 1e868451ec93db7743e0604aa9be6390275f1850f411d4145b46e86e6d0ff224
 - filename: src/server/email/react-email/templates/reset-password.tsx
   checksum: ce24c239f7ded12411bc26d68dee01a10be5878b092415b3ee30a9094591ee5d
 - filename: src/services/password.ts

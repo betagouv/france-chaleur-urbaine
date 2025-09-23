@@ -1,23 +1,12 @@
-import { unlink, writeFile } from 'fs/promises';
+import { generateGeoJSONFromSQLQuery } from '@/modules/tiles/server/generation-strategies';
 
-import { kdb, sql } from '@/server/db/kysely';
-
-import { BaseAdapter } from '../base';
-
-export default class ReseauxDeChaleurAdapter extends BaseAdapter {
-  public databaseName = 'reseaux_de_chaleur';
-  public tilesGenerationMethod: 'legacy' | 'compressed' = 'legacy';
-
-  async generateGeoJSON(options?: { input?: string; output?: string }) {
-    const filepathToExport = options?.output || `/tmp/${this.databaseName}.geojson`;
-    await unlink(filepathToExport).catch(() => {});
-
-    const result = await sql<any>`
+export const reseauxDeChaleurGeoJSONQuery = generateGeoJSONFromSQLQuery(
+  `
 SELECT
   json_build_object(
     'type', 'FeatureCollection',
     'features', json_agg(feature)
-  )
+  ) as geojson
 FROM (
   SELECT
     json_build_object(
@@ -73,12 +62,5 @@ FROM (
     ) row
   ) row2
 ) features
-    `.execute(kdb);
-
-    const geojson = result.rows[0].json_build_object;
-
-    await writeFile(filepathToExport, JSON.stringify(geojson));
-
-    return filepathToExport;
-  }
-}
+  `
+);

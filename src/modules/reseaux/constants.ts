@@ -9,7 +9,12 @@ export const zUpdateReseauInput = z.object({
 
 export type UpdateReseauInput = z.infer<typeof zUpdateReseauInput>;
 
-const tableNames = ['reseaux_de_chaleur', 'zones_et_reseaux_en_construction', 'zone_de_developpement_prioritaire'] as const;
+const tableNames = [
+  'reseaux_de_chaleur',
+  'zones_et_reseaux_en_construction',
+  'zone_de_developpement_prioritaire',
+  'reseaux_de_froid',
+] as const;
 
 export const zUpdateReseauEnConstructionInput = z.object({
   id: z.number(),
