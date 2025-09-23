@@ -99,6 +99,20 @@ const eventLabelRenderers: Record<EventType, (event: AdminEvent, updateFilters: 
       </span>
     </>
   ),
+  syncGeometriesToAirtable: (event) => (
+    <>
+      <span>
+        a synchronisé les géométries vers Airtable pour la table <strong>{(event.data as any)?.name}</strong>
+      </span>
+    </>
+  ),
+  syncMetadataFromAirtable: (event) => (
+    <>
+      <span>
+        a synchronisé les métadonnées depuis Airtable pour la table <strong>{(event.data as any)?.name}</strong>
+      </span>
+    </>
+  ),
 };
 
 export default function AdminEventsPage() {

@@ -3018,7 +3018,7 @@ export interface Jobs {
   id: Generated<string>;
   status: 'pending' | 'processing' | 'finished' | 'error';
   result: Json | null;
-  type: 'pro_eligibility_test' | 'build_tiles';
+  type: 'pro_eligibility_test' | 'build_tiles' | 'syncGeometriesToAirtable' | 'syncMetadataFromAirtable';
   updated_at: Generated<Timestamp>;
   user_id: string;
 }

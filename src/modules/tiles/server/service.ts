@@ -1,12 +1,9 @@
 import { type ExpressionBuilder } from 'kysely';
 
-import { type BuildTilesInput } from '@/modules/tiles/constants';
+import { type BuildTilesInput, type SyncGeometriesInput } from '@/modules/tiles/constants';
 import { type DB, kdb, sql } from '@/server/db/kysely';
 import { type ApiContext } from '@/server/db/kysely/base-model';
-import { type DatabaseSourceId } from '@/server/services/tiles.config';
-import { downloadNetwork } from '@cli/networks/download-network';
 import { type NetworkTable } from '@cli/networks/geometry-operations';
-import { syncPostgresToAirtable } from '@cli/networks/sync-pg-to-airtable';
 
 export const createBuildTilesJob = async ({ name }: BuildTilesInput, context: ApiContext) => {
   return await kdb
@@ -18,6 +15,35 @@ export const createBuildTilesJob = async ({ name }: BuildTilesInput, context: Ap
       },
       status: 'pending',
       user_id: context.user.id,
+      entity_id: context.user.id,
+    })
+    .returningAll()
+    .executeTakeFirstOrThrow();
+};
+
+export const createSyncGeometriesToAirtableJob = async ({ name }: SyncGeometriesInput, context: ApiContext) => {
+  return await kdb
+    .insertInto('jobs')
+    .values({
+      type: 'syncGeometriesToAirtable',
+      data: { name },
+      status: 'pending',
+      user_id: context.user.id,
+      entity_id: context.user.id,
+    })
+    .returningAll()
+    .executeTakeFirstOrThrow();
+};
+
+export const createSyncMetadataFromAirtableJob = async ({ name }: SyncGeometriesInput, context: ApiContext) => {
+  return await kdb
+    .insertInto('jobs')
+    .values({
+      type: 'syncMetadataFromAirtable',
+      data: { name },
+      status: 'pending',
+      user_id: context.user.id,
+      entity_id: context.user.id,
     })
     .returningAll()
     .executeTakeFirstOrThrow();
@@ -166,61 +192,30 @@ const processTableGeometryUpdates = async (config: TableConfig) => {
   };
 };
 
-export const applyGeometriesUpdates = async (context: ApiContext) => {
-  const updateResults = await Promise.all(tables.map((table) => processTableGeometryUpdates(table)));
+export const applyGeometriesUpdates = async ({ name }: SyncGeometriesInput, context: ApiContext) => {
+  const updateResult = tables.find((table) => table.internalName === name);
+  if (!updateResult) {
+    throw new Error(`Table ${name} not found`);
+  }
+
+  const updateResults = await processTableGeometryUpdates(updateResult);
 
   // Récupère les statistiques
-  const processed = updateResults.reduce<Record<string, { created: number; updated: number; deleted: number; total: number }>>(
-    (acc, result) => {
-      acc[result.config.internalName] = {
-        created: result.created,
-        updated: result.updated,
-        deleted: result.deleted,
-        total: result.total,
-      };
-      return acc;
-    },
-    {}
-  );
+  const processed = {
+    created: updateResults.created,
+    updated: updateResults.updated,
+    deleted: updateResults.deleted,
+    total: updateResults.total,
+  };
 
-  const updatedEntities = updateResults.filter((result) => result.total > 0).map((result) => result.config.internalName);
+  const syncMetadataJob = await createSyncMetadataFromAirtableJob({ name }, context);
+  const tileJob = await createBuildTilesJob({ name }, context);
+  const syncGeometriesJob = await createSyncGeometriesToAirtableJob({ name }, context);
 
-  // Lance les jobs pour rafraichir les tuiles
-  await Promise.all(updatedEntities.map((entityType) => createBuildTilesJob({ name: entityType }, context)));
+  const allJobIds = [tileJob.id, syncGeometriesJob.id, syncMetadataJob.id];
 
   return {
     processed,
-    jobsCreated: updatedEntities,
-  };
-};
-
-/**
- * Synchronise les géométries mises à jour vers Airtable.
- * Équivalent de la CLI sync-postgres-to-airtable.
- */
-export const syncGeometriesToAirtable = async (_context: ApiContext) => {
-  await syncPostgresToAirtable(false); // false = pas de dry run
-
-  return {
-    message: 'Synchronisation vers Airtable terminée avec succès',
-  };
-};
-
-/**
- * Synchronise les métadonnées depuis Airtable vers Postgres.
- * Équivalent de la CLI download-network pour toutes les tables.
- */
-export const syncMetadataFromAirtable = async (_context: ApiContext) => {
-  const networkTables: DatabaseSourceId[] = ['network', 'coldNetwork', 'futurNetwork'];
-
-  await Promise.all(
-    networkTables.map(async (table) => {
-      await downloadNetwork(table);
-    })
-  );
-
-  return {
-    message: 'Synchronisation depuis Airtable terminée avec succès',
-    tables: networkTables,
+    jobIds: allJobIds,
   };
 };

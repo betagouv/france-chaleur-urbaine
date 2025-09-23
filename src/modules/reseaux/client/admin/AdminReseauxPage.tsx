@@ -1,6 +1,6 @@
 import Tabs from '@codegouvfr/react-dsfr/Tabs';
 import { parseAsStringLiteral, useQueryState } from 'nuqs';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import TableFieldInput from '@/components/Admin/TableFieldInput';
 import Input from '@/components/form/dsfr/Input';
@@ -56,6 +56,7 @@ const GestionDesReseaux = () => {
   >(null);
   const [editingId, setEditingId] = useState<string | number | null>(null);
   const [updatedGeom, setUpdatedGeom] = useState<any>(null);
+  const [isPollingJobs, setIsPollingJobs] = useState(true);
 
   const {
     data: reseauxDeChaleur,
@@ -74,6 +75,58 @@ const GestionDesReseaux = () => {
     isFetching: isFetchingPerimetresDeDeveloppementPrioritaire,
     isLoading: isLoadingPerimetresDeDeveloppementPrioritaire,
   } = trpc.reseaux.perimetreDeDeveloppementPrioritaire.list.useQuery();
+
+  const { data: pendingJobsData, isFetching: isFetchingPendingJobs } = trpc.jobs.list.useQuery(
+    {
+      types: ['build_tiles', 'syncGeometriesToAirtable', 'syncMetadataFromAirtable'],
+      statuses: ['pending', 'processing'],
+      limit: 100,
+    },
+    {
+      refetchInterval: isPollingJobs ? 5000 : false,
+    }
+  );
+
+  const pendingJobs = pendingJobsData?.jobs || [];
+  useEffect(() => {
+    if (isPollingJobs && !isFetchingPendingJobs && pendingJobs.length === 0) {
+      setIsPollingJobs(false);
+      tabInfo.refetch();
+    }
+  }, [isPollingJobs, pendingJobs.length, isFetchingPendingJobs]);
+
+  const pendingReseauDeChaleurJobs = [];
+  const pendingReseauEnConstructionJobs = [];
+  const pendingPerimetreJobs = [];
+  const pendingSyncMetadataJobs = [];
+  const pendingSyncGeometriesJobs = [];
+  const pendingBuildTilesJobs = [];
+
+  for (const job of pendingJobs) {
+    const jobDataName = (job as any).data?.name as string;
+    if (jobDataName === 'reseaux-de-chaleur') {
+      pendingReseauDeChaleurJobs.push(job);
+    } else if (jobDataName === 'reseaux-en-construction') {
+      pendingReseauEnConstructionJobs.push(job);
+    } else if (jobDataName === 'perimetres-de-developpement-prioritaire') {
+      pendingPerimetreJobs.push(job);
+    }
+
+    if (job.type === 'syncMetadataFromAirtable') {
+      pendingSyncMetadataJobs.push(job);
+    } else if (job.type === 'syncGeometriesToAirtable') {
+      pendingSyncGeometriesJobs.push(job);
+    } else if (job.type === 'build_tiles') {
+      pendingBuildTilesJobs.push(job);
+    }
+  }
+
+  const hasPendingReseauDeChaleurJobs = pendingReseauDeChaleurJobs.length > 0;
+  const hasPendingReseauEnConstructionJobs = pendingReseauEnConstructionJobs.length > 0;
+  const hasPendingPerimetreJobs = pendingPerimetreJobs.length > 0;
+  const hasPendingSyncMetadataJobs = pendingSyncMetadataJobs.length > 0;
+  const hasPendingSyncGeometriesJobs = pendingSyncGeometriesJobs.length > 0;
+  const hasPendingBuildTilesJobs = pendingBuildTilesJobs.length > 0;
 
   const onTableRowClick = useCallback(
     (idFCU: number) => {
@@ -140,33 +193,14 @@ const GestionDesReseaux = () => {
     onSuccess: () => void tabInfo.refetch(),
   });
 
-  const { mutateAsync: syncGeometriesToAirtable } = trpc.tiles.syncGeometriesToAirtable.useMutation();
-  const { mutateAsync: syncMetadataFromAirtable } = trpc.tiles.syncMetadataFromAirtable.useMutation();
-
   const { mutateAsync: applyGeometriesUpdates } = trpc.tiles.applyGeometriesUpdates.useMutation({
-    onSuccess: async () => {
+    onSuccess: async (result) => {
       try {
-        notify('success', 'Synchronisation vers Airtable en cours...');
-
-        // Étape 2: Synchroniser les géométries vers Airtable
-        await syncGeometriesToAirtable();
-        notify('success', 'Synchronisation des métadonnées depuis Airtable en cours...');
-
-        // Étape 3: Synchroniser les métadonnées depuis Airtable
-        await syncMetadataFromAirtable();
-
-        notify(
-          'success',
-          "Toutes les synchronisations ont été effectuées avec succès. Les tuiles seront regénérées d'ici quelques minutes"
-        );
-
-        await Promise.all([
-          trpcUtils.reseaux.reseauDeChaleur.list.invalidate(),
-          trpcUtils.reseaux.reseauEnConstruction.list.invalidate(),
-          trpcUtils.reseaux.perimetreDeDeveloppementPrioritaire.list.invalidate(),
-        ]);
+        notify('success', `Synchronisation lancée. ${result.jobIds.length} jobs créés.`);
+        await trpcUtils.jobs.list.invalidate();
+        setIsPollingJobs(true);
       } catch (error) {
-        notify('error', 'Erreur lors de la synchronisation avec Airtable');
+        notify('error', 'Erreur lors du lancement de la synchronisation');
         console.error('Erreur synchronisation:', error);
       }
     },
@@ -587,9 +621,11 @@ const GestionDesReseaux = () => {
     (reseauxEnConstructionWithGeomUpdate?.length ?? 0) +
     (perimetresDeDeveloppementPrioritaireWithGeomUpdate?.length ?? 0);
 
-  const handleSyncGeomUpdates = toastErrors(async () => {
-    await applyGeometriesUpdates();
-  });
+  const handleSyncGeomUpdates = toastErrors(
+    async (name: 'reseaux-de-chaleur' | 'reseaux-en-construction' | 'perimetres-de-developpement-prioritaire') => {
+      await applyGeometriesUpdates({ name });
+    }
+  );
 
   // Prepare geomUpdate features for the map
   const geomUpdateFeatures: GeoJSON.Feature[] = useMemo(() => {
@@ -662,11 +698,17 @@ const GestionDesReseaux = () => {
           rowSelection={selectedTab === 'reseaux-de-chaleur' ? rowSelection : {}}
           topRightActions={
             <div className="flex gap-2">
-              {(reseauxDeChaleurWithGeomUpdate || []).length > 0 && (
-                <Button size="small" priority="primary" variant="warning" iconId="fr-icon-refresh-line" onClick={handleSyncGeomUpdates}>
-                  Sync ({reseauxDeChaleurWithGeomUpdate?.length})
-                </Button>
-              )}
+              <Button
+                size="small"
+                priority="primary"
+                variant="warning"
+                disabled={hasPendingReseauDeChaleurJobs || isFetchingPendingJobs}
+                iconId="fr-icon-refresh-line"
+                onClick={() => handleSyncGeomUpdates('reseaux-de-chaleur')}
+                loading={isUpdatingGeometry || hasPendingReseauDeChaleurJobs}
+              >
+                Sync ({reseauxDeChaleurWithGeomUpdate?.length})
+              </Button>
               <Button size="small" priority="secondary" iconId="fr-icon-add-line" onClick={handleAddNewNetwork}>
                 Ajouter un réseau
               </Button>
@@ -702,11 +744,16 @@ const GestionDesReseaux = () => {
           rowSelection={selectedTab === 'reseaux-en-construction' ? rowSelection : {}}
           topRightActions={
             <div className="flex gap-2">
-              {(reseauxEnConstructionWithGeomUpdate || []).length > 0 && (
-                <Button size="small" priority="primary" variant="warning" iconId="fr-icon-refresh-line" onClick={handleSyncGeomUpdates}>
-                  Sync ({reseauxEnConstructionWithGeomUpdate?.length})
-                </Button>
-              )}
+              <Button
+                size="small"
+                priority="primary"
+                variant="warning"
+                iconId="fr-icon-refresh-line"
+                onClick={() => handleSyncGeomUpdates('reseaux-en-construction')}
+                loading={isUpdatingGeometry || hasPendingReseauEnConstructionJobs}
+              >
+                Sync ({reseauxEnConstructionWithGeomUpdate?.length})
+              </Button>
               <Button size="small" priority="secondary" iconId="fr-icon-add-line" onClick={handleAddNewNetwork}>
                 Ajouter un réseau
               </Button>
@@ -748,11 +795,16 @@ const GestionDesReseaux = () => {
           rowSelection={selectedTab === 'perimetres-de-developpement-prioritaire' ? rowSelection : {}}
           topRightActions={
             <div className="flex gap-2">
-              {(perimetresDeDeveloppementPrioritaireWithGeomUpdate || []).length > 0 && (
-                <Button size="small" priority="primary" variant="warning" iconId="fr-icon-refresh-line" onClick={handleSyncGeomUpdates}>
-                  Sync ({perimetresDeDeveloppementPrioritaireWithGeomUpdate?.length})
-                </Button>
-              )}
+              <Button
+                size="small"
+                priority="primary"
+                variant="warning"
+                iconId="fr-icon-refresh-line"
+                onClick={() => handleSyncGeomUpdates('perimetres-de-developpement-prioritaire')}
+                loading={isUpdatingGeometry || hasPendingPerimetreJobs}
+              >
+                Sync ({perimetresDeDeveloppementPrioritaireWithGeomUpdate?.length})
+              </Button>
               <Button size="small" priority="secondary" iconId="fr-icon-add-line" onClick={handleAddNewNetwork}>
                 Ajouter un périmètre
               </Button>
@@ -782,6 +834,26 @@ const GestionDesReseaux = () => {
               <strong>({reseauxDeChaleurWithGeomUpdate?.length ?? 0}</strong> réseaux de chaleur,{' '}
               <strong>{reseauxEnConstructionWithGeomUpdate?.length ?? 0}</strong> réseaux en construction,{' '}
               <strong>{perimetresDeDeveloppementPrioritaireWithGeomUpdate?.length ?? 0}</strong> périmètres)
+            </span>
+          </span>
+        </Notice>
+      )}
+      {pendingJobs && pendingJobs.length > 0 && (
+        <Notice variant="info" className="mb-4">
+          <span className="flex items-center justify-center w-full gap-2">
+            {isPollingJobs && <Loader size="sm" />}
+            <span className="font-medium text-base">
+              {pendingJobs.length} job{pendingJobs.length > 1 ? 's' : ''} en cours d'exécution
+            </span>
+            <span className="text-sm text-gray-700 font-normal">
+              {[
+                hasPendingSyncMetadataJobs && `${pendingSyncMetadataJobs.length} sync métadonnées`,
+                hasPendingBuildTilesJobs &&
+                  `${pendingBuildTilesJobs.length} génération${pendingBuildTilesJobs.length > 1 ? 's' : ''} de tuiles`,
+                hasPendingSyncGeometriesJobs && `${pendingSyncGeometriesJobs.length} sync géométries`,
+              ]
+                .filter(Boolean)
+                .join(', ')}
             </span>
           </span>
         </Notice>
