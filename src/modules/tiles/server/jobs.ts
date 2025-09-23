@@ -4,6 +4,7 @@ import { type Logger } from 'winston';
 import { createUserEvent } from '@/modules/events/server/service';
 import { type BuildTilesInput, type SyncGeometriesInput } from '@/modules/tiles/constants';
 import { runTilesGeneration } from '@/modules/tiles/server/generation-run';
+import { getTileNameFromInternalName } from '@/modules/tiles/server/service';
 import { type Jobs } from '@/server/db/kysely';
 import { type DatabaseSourceId } from '@/server/services/tiles.config';
 import { downloadNetwork } from '@cli/networks/download-network';
@@ -40,8 +41,8 @@ export type SyncMetadataFromAirtableJob = Omit<Selectable<Jobs>, 'data'> & {
  */
 export async function processSyncMetadataFromAirtableJob(job: SyncMetadataFromAirtableJob, logger: Logger) {
   const { name } = job.data;
-  await downloadNetwork(name as DatabaseSourceId);
-  logger.info(`Les données ont été récupérées depuis Airtable et ont été insérées dans la table ${name}.`);
+  await downloadNetwork(getTileNameFromInternalName(name) as DatabaseSourceId);
+  logger.info(`Les données ont été récupérées depuis Airtable et ont été insérées pour ${name}.`);
   await createUserEvent({
     type: 'syncMetadataFromAirtable',
     data: { name },
