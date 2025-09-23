@@ -15,7 +15,6 @@ export const createBuildTilesJob = async ({ name }: BuildTilesInput, context: Ap
       },
       status: 'pending',
       user_id: context.user.id,
-      entity_id: context.user.id,
     })
     .returningAll()
     .executeTakeFirstOrThrow();
@@ -29,7 +28,6 @@ export const createSyncGeometriesToAirtableJob = async ({ name }: SyncGeometries
       data: { name },
       status: 'pending',
       user_id: context.user.id,
-      entity_id: context.user.id,
     })
     .returningAll()
     .executeTakeFirstOrThrow();
@@ -43,7 +41,6 @@ export const createSyncMetadataFromAirtableJob = async ({ name }: SyncGeometries
       data: { name },
       status: 'pending',
       user_id: context.user.id,
-      entity_id: context.user.id,
     })
     .returningAll()
     .executeTakeFirstOrThrow();

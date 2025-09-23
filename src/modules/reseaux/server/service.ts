@@ -492,7 +492,6 @@ const createReseauDeFroid = async (id: string, finalGeometry: any) => {
     .values({
       ...(id_sncu ? { 'Identifiant reseau': id_sncu, id_fcu: maxIdResult.next_id } : { id_fcu: parseInt(id) }),
       geom: null,
-      tags: [],
       geom_update: sql`ST_Force2D(${finalGeometry})`,
       'reseaux classes': false,
       fichiers: [],

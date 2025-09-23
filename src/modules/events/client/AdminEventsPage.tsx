@@ -99,14 +99,14 @@ const eventLabelRenderers: Record<EventType, (event: AdminEvent, updateFilters: 
       </span>
     </>
   ),
-  syncGeometriesToAirtable: (event) => (
+  sync_geometries_to_airtable: (event) => (
     <>
       <span>
         a synchronisé les géométries vers Airtable pour la table <strong>{(event.data as any)?.name}</strong>
       </span>
     </>
   ),
-  syncMetadataFromAirtable: (event) => (
+  sync_metadata_from_airtable: (event) => (
     <>
       <span>
         a synchronisé les métadonnées depuis Airtable pour la table <strong>{(event.data as any)?.name}</strong>

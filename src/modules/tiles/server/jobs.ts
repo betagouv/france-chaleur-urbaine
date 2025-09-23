@@ -29,7 +29,7 @@ export async function processBuildTilesJob(job: BuildTilesJob, logger: Logger) {
 }
 
 export type SyncMetadataFromAirtableJob = Omit<Selectable<Jobs>, 'data'> & {
-  type: 'syncMetadataFromAirtable';
+  type: 'sync_metadata_from_airtable';
   data: {
     name: SyncGeometriesInput['name'];
   };
@@ -44,14 +44,14 @@ export async function processSyncMetadataFromAirtableJob(job: SyncMetadataFromAi
   await downloadNetwork(getTileNameFromInternalName(name) as DatabaseSourceId);
   logger.info(`Les données ont été récupérées depuis Airtable et ont été insérées pour ${name}.`);
   await createUserEvent({
-    type: 'syncMetadataFromAirtable',
+    type: 'sync_metadata_from_airtable',
     data: { name },
     author_id: job.user_id,
   });
 }
 
 export type SyncGeometriesToAirtableJob = Omit<Selectable<Jobs>, 'data'> & {
-  type: 'syncGeometriesToAirtable';
+  type: 'sync_geometries_to_airtable';
   data: {
     name: SyncGeometriesInput['name'];
   };
@@ -66,7 +66,7 @@ export async function processSyncGeometriesToAirtableJob(job: SyncGeometriesToAi
   await syncPostgresToAirtable(false); // false = pas de dry run
   logger.info(`Les géométries ont été envoyées sur Airtable depuis la table ${name}.`);
   await createUserEvent({
-    type: 'syncGeometriesToAirtable',
+    type: 'sync_geometries_to_airtable',
     data: { name },
     author_id: job.user_id,
   });
