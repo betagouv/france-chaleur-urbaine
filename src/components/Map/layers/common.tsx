@@ -5,7 +5,7 @@ import { type MapLayerSpecification } from '@/components/Map/map-layers';
 import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
 import Heading from '@/components/ui/Heading';
-import type { SourceId } from '@/server/services/tiles.config';
+import type { SourceId } from '@/modules/tiles/tiles.config';
 import { type useAuthentication } from '@/services/authentication';
 import { isDefined } from '@/utils/core';
 import { createEventBus, createEventBusHook } from '@/utils/event-bus';

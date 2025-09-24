@@ -28,8 +28,6 @@ fileignoreconfig:
   checksum: e23e852383c7fabc2b0a1d89e63a8595cdb4b4c6959fdc8cea4491b6d292aef3
 - filename: scripts/opendata/create-opendata-archive.sh
   checksum: 5b248229f5f5ea92e1ab4b9d6156b3ecdaaf94ab3f8e7adc41728151c67a87d1
-- filename: scripts/tiles/adapters/ressources-geothermales-nappes.ts
-  checksum: 5f9ac2951bc336323f5415e25249998bf0f012c3443833fa4ae751fc78ce1827
 - filename: src/components/ComparateurPublicodes/DebugDrawer.tsx
   checksum: 5e675d6da8d48880b27b4f45242dfb2ee0e30c93cf2f59f4f1795ddbef87b83f
 - filename: src/components/Map/Map.tsx
@@ -55,12 +53,12 @@ fileignoreconfig:
   checksum: 709d0cbd7d8fa33bd9b7db0d90000c1eb6adb9fbf878e40dc956d1cb5ba6cc50
 - filename: src/modules/tiles/server/generation-config.ts
   checksum: 1e868451ec93db7743e0604aa9be6390275f1850f411d4145b46e86e6d0ff224
+- filename: src/modules/tiles/tiles.config.ts
+  checksum: 89f40d731f653c30750c61467b1d4727965805280e2d2888dd0cc29e8accf6cf
 - filename: src/server/email/react-email/templates/reset-password.tsx
   checksum: ce24c239f7ded12411bc26d68dee01a10be5878b092415b3ee30a9094591ee5d
 - filename: src/services/password.ts
   checksum: c5568af3b6c4162bc2ecbc78e8efc9abff9c852b774e8e60830db8a0777766b9
-- filename: src/services/tiles.config.ts
-  checksum: 89f40d731f653c30750c61467b1d4727965805280e2d2888dd0cc29e8accf6cf
 scopeconfig:
 - scope: node
 allowed_patterns:

@@ -13,6 +13,7 @@ import { downloadAndUpdateNetwork, downloadNetwork } from '@/modules/reseaux/ser
 import { applyGeometryUpdates } from '@/modules/reseaux/server/geometry-updates';
 import { syncPostgresToAirtable } from '@/modules/reseaux/server/sync-pg-to-airtable';
 import { createTilesCommands } from '@/modules/tiles/server/commands';
+import { type DatabaseSourceId, tilesInfo } from '@/modules/tiles/tiles.config';
 import { getApiHandler } from '@/server/api/users';
 import { serverConfig } from '@/server/config';
 import { saveStatsInDB } from '@/server/cron/saveStatsInDB';
@@ -20,7 +21,6 @@ import db from '@/server/db';
 import { kdb, sql } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
 import { syncComptesProFromUsers } from '@/server/services/airtable';
-import { type DatabaseSourceId, tilesInfo } from '@/server/services/tiles.config';
 import { APIDataGouvService } from '@/services/api-data-gouv';
 import { userRoles } from '@/types/enum/UserRole';
 import { fetchJSON } from '@/utils/network';

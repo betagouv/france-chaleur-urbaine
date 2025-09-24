@@ -11,7 +11,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { type MapMouseEvent, type MapRef, Popup } from 'react-map-gl/maplibre';
 
 import { isDevModeEnabled } from '@/hooks/useDevMode';
-import { type SourceId } from '@/server/services/tiles.config';
+import { type SourceId } from '@/modules/tiles/tiles.config';
 import { useAuthentication } from '@/services/authentication';
 import { isDefined } from '@/utils/core';
 
