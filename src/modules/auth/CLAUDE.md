@@ -1,46 +1,50 @@
-# Module Auth
+# Auth Module
 
-Gestion de l'authentification et de l'autorisation des utilisateurs.
+Authentication and authorization management for the application.
 
-## Structure du Module
+## Structure
 
 ```
 auth/
-├── CLAUDE.md            # Ce fichier
+├── CLAUDE.md           # This file
 ├── server/
-│   ├── service.ts      # Logique d'authentification (migré depuis /src/server/services/auth.ts)
-│   └── trpc-routes.ts  # 🚧 À créer - Routes TRPC publiques
+│   └── service.ts     # Authentication logic
+├── client/
+│   └── hooks.ts       # Client-side auth hooks
 ```
 
-## Responsabilités
+## Responsibilities
 
-Ce module gère :
+This module handles:
 
-- **Inscription** (`register`) - Création de compte avec validation email
-- **Connexion** (`login`) - Authentification par email/password
-- **Activation** (`activateUser`) - Validation d'email via token
-- **Réinitialisation mot de passe** - Demande et validation de reset
-- **Sessions** - Gestion via NextAuth
+- **Registration** (`register`) - Account creation with email validation
+- **Login** (`login`) - Email/password authentication
+- **Activation** (`activateUser`) - Email validation via token
+- **Password Reset** - Request and validation
+- **Sessions** - Management via NextAuth
+- **User Preferences** - User settings storage
 
-## Séparation Auth vs Users
+## Auth vs Users Separation
 
-| Module Auth | Module Users |
+| Auth Module | Users Module |
 |-------------|--------------|
-| Inscription, connexion, logout | CRUD utilisateurs |
-| Validation email, reset password | Gestion des rôles et permissions |
-| Sessions et tokens | Profil utilisateur |
-| Routes **publiques** | Routes **authentifiées** |
+| Registration, login, logout | User CRUD operations |
+| Email validation, password reset | Role and permission management |
+| Sessions and tokens | User profiles |
+| **Public** routes | **Authenticated** routes |
 
-## API TRPC
+## Server API
 
-### Routes Publiques
+### Authentication Functions
 
-#### `trpc.auth.register`
+#### `register(data)`
 
-Inscription d'un nouvel utilisateur avec envoi d'email de confirmation.
+Creates a new user account with email confirmation.
 
 ```typescript
-await trpc.auth.register.mutate({
+import { register } from '@/modules/auth/server/service';
+
+const userId = await register({
   email: 'user@example.com',
   password: 'SecurePass123!',
   first_name: 'John',
@@ -51,35 +55,89 @@ await trpc.auth.register.mutate({
 });
 ```
 
-#### `trpc.auth.login`
+#### `login(email, password)`
 
-Connexion utilisateur (utilisé par NextAuth).
+Authenticates a user (used by NextAuth).
 
 ```typescript
-const user = await trpc.auth.login.mutate({
-  email: 'user@example.com',
-  password: 'SecurePass123!',
-});
+import { login } from '@/modules/auth/server/service';
+
+const user = await login('user@example.com', 'SecurePass123!');
 ```
 
-#### `trpc.auth.activate`
+#### `activateUser(token)`
 
-Activation du compte via token d'email.
+Activates account via email token.
 
 ```typescript
-await trpc.auth.activate.mutate({
-  token: 'activation-token-from-email',
-});
+import { activateUser } from '@/modules/auth/server/service';
+
+await activateUser('activation-token-from-email');
 ```
 
-## Intégration NextAuth
+## Client API
 
-Le module auth s'intègre avec NextAuth pour la gestion des sessions :
+### Hooks
 
-**Fichier :** `/src/pages/api/auth/[...nextauth].ts`
+#### `useAuthentication()`
+
+Main authentication hook for client components.
 
 ```typescript
-import { login } from '@/modules/auth/server/service'; // ✅ Migré
+import { useAuthentication } from '@/modules/auth/client/hooks';
+
+function MyComponent() {
+  const { user, isAuthenticated, hasRole, signIn, signOut } = useAuthentication();
+  
+  if (!isAuthenticated) {
+    return <button onClick={() => signIn()}>Login</button>;
+  }
+  
+  return (
+    <div>
+      <p>Welcome {user.email}</p>
+      {hasRole('admin') && <AdminPanel />}
+      <button onClick={() => signOut()}>Logout</button>
+    </div>
+  );
+}
+```
+
+#### `useInitAuthentication(serverSession)`
+
+Initializes authentication state from server session. Use in `_app.tsx`.
+
+```typescript
+import { useInitAuthentication } from '@/modules/auth/client/hooks';
+
+function App({ Component, pageProps: { session, ...pageProps } }) {
+  useInitAuthentication(session);
+  return <Component {...pageProps} />;
+}
+```
+
+#### `useUserPreferences()`
+
+Manages user preferences.
+
+```typescript
+import { useUserPreferences } from '@/modules/auth/client/hooks';
+
+function Settings() {
+  const { userPreferences, updateUserPreferences } = useUserPreferences();
+  
+  const handleUpdate = async () => {
+    await updateUserPreferences({ theme: 'dark' });
+  };
+}
+```
+
+## NextAuth Integration
+
+**File:** `/src/pages/api/auth/[...nextauth].ts`
+
+```typescript
+import { login } from '@/modules/auth/server/service';
 
 providers: [
   CredentialsProvider({
@@ -91,109 +149,57 @@ providers: [
 ]
 ```
 
-## Sécurité
+## Security
 
-### Hashage des mots de passe
+### Password Hashing
 
-- **Algorithme** : bcrypt avec salt de 10 rounds
-- **Stockage** : Hash uniquement, jamais le mot de passe en clair
+- **Algorithm**: bcrypt with 10 rounds salt
+- **Storage**: Hash only, never plain text
 
 ### Tokens
 
-- **Activation** : Token aléatoire généré via `generateRandomToken()`
-- **Reset password** : Token temporaire stocké en base
-- **Expiration** : Les tokens ont une durée de vie limitée
+- **Activation**: Random token via `generateRandomToken()`
+- **Password Reset**: Temporary token stored in database
+- **Expiration**: Tokens have limited lifetime
 
 ### Validation
 
-- **Email** : Normalisation lowercase + trim
-- **Password** : Minimum 10 caractères (via Zod)
-- **Rate limiting** : À implémenter (TODO)
+- **Email**: Lowercase + trim normalization
+- **Password**: Minimum 10 characters (via Zod)
 
-## Événements
+## Registration Flow
 
-Le module auth émet des événements dans le module `events` :
+1. **User fills form** → Zod validation
+2. **`register()`** → Email uniqueness check
+3. **Create user** → Status `pending_email_confirmation`
+4. **Send email** → `activation` template with token
+5. **Click link** → Route `/api/auth/activate?token=...`
+6. **`activateUser()`** → Status → `valid`
+7. **Redirect** → Login page
 
-- `user_created` - Lors de l'inscription
-- `user_activated` - Lors de la validation email
-- `user_login` - À chaque connexion réussie
-- `password_reset_requested` - Demande de reset
-- `password_changed` - Changement de mot de passe
+## Login Flow
 
-## Emails
+1. **Login form** → Email + password
+2. **NextAuth CredentialsProvider** → Call `login()`
+3. **Password verification** → bcrypt.compare()
+4. **Create session** → JWT via NextAuth
+5. **Redirect** → Protected page
 
-Templates d'emails envoyés (via `/src/server/email`) :
+## Redirection After Login
 
-- `activation` - Email de confirmation avec lien d'activation
-- `password_reset` - Lien de réinitialisation du mot de passe
-- `password_changed` - Confirmation de changement
+The module handles automatic redirection after login:
 
-## Utilisation
+1. Unauthenticated user visits protected page with `?callbackUrl=/dashboard`
+2. URL param saved to cookie
+3. After successful login, user is redirected to `/dashboard`
+4. Cookie is cleared
 
-### Côté Client
+Managed by `useRedirectionAfterLogin()` hook.
 
-```typescript
-import trpc from '@/modules/trpc/client';
+## Email Templates
 
-// Inscription
-const handleRegister = async (data: RegistrationSchema) => {
-  try {
-    await trpc.auth.register.mutate(data);
-    // Rediriger vers page de confirmation
-  } catch (err) {
-    // Gérer l'erreur (email déjà existant, etc.)
-  }
-};
+Sent via `/src/server/email`:
 
-// NextAuth pour connexion
-import { signIn } from 'next-auth/react';
-
-await signIn('credentials', {
-  email,
-  password,
-  redirect: false,
-});
-```
-
-### Côté Serveur
-
-```typescript
-import { register, login, activateUser } from '@/modules/auth/server/service';
-
-// Inscription programmatique
-const userId = await register({
-  email: 'admin@example.com',
-  password: 'SecurePass123!',
-  role: 'admin',
-  // ...
-});
-
-// Activation
-await activateUser('token-from-email');
-```
-
-## Flux d'inscription
-
-1. **Utilisateur remplit le formulaire** → Validation Zod
-2. **`trpc.auth.register`** → Vérification email unique
-3. **Création utilisateur** → Statut `pending_email_confirmation`
-4. **Envoi email** → Template `activation` avec token
-5. **Clic sur le lien** → Route `/api/auth/activate?token=...`
-6. **`trpc.auth.activate`** → Statut → `valid`
-7. **Redirection** → Page de connexion
-
-## Flux de connexion
-
-1. **Formulaire de login** → Email + password
-2. **NextAuth CredentialsProvider** → Appel `login()`
-3. **Vérification password** → bcrypt.compare()
-4. **Création session** → JWT via NextAuth
-5. **Redirection** → Page protégée
-
-## TODO
-
-- [ ] Rate limiting sur les routes d'auth
-- [ ] 2FA (Two-Factor Authentication)
-- [ ] Gestion des tentatives de connexion échouées
-- [ ] OAuth providers (Google, etc.)
-- [ ] Refresh tokens pour sessions longues
+- `activation` - Email confirmation with activation link
+- `password_reset` - Password reset link
+- `password_changed` - Change confirmation
