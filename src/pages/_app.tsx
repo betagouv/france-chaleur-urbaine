@@ -19,7 +19,6 @@ import { NotifierContainer } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
 import { type AuthSSRPageProps } from '@/server/authentication';
 import { HeatNetworkService, ServicesContext, SuggestionService } from '@/services';
-import { AdminService } from '@/services/admin';
 import { useAnalytics } from '@/services/analytics';
 import { useInitAuthentication } from '@/services/authentication';
 import { DemandsService } from '@/services/demands';
@@ -55,7 +54,6 @@ const AppInner = ({ Component, pageProps }: AppProps<AuthSSRPageProps>) => {
           heatNetworkService: new HeatNetworkService(axiosHttpClient),
           demandsService: new DemandsService(axiosHttpClient),
           passwordService: new PasswordService(axiosHttpClient),
-          adminService: new AdminService(axiosHttpClient),
           networksService: new NetworksService(axiosHttpClient),
           exportService: new ExportService(axiosHttpClient),
         }}

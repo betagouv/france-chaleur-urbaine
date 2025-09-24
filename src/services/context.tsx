@@ -1,6 +1,5 @@
 import React from 'react';
 
-import { type AdminService } from './admin';
 import { type DemandsService } from './demands';
 import { type ExportService } from './export';
 import { type HeatNetworkService } from './heatNetwork';
@@ -13,7 +12,6 @@ type ServiceContextProps = {
   heatNetworkService: HeatNetworkService;
   demandsService: DemandsService;
   passwordService: PasswordService;
-  adminService: AdminService;
   networksService: NetworksService;
   exportService: ExportService;
 };
