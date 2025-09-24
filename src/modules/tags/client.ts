@@ -2,8 +2,8 @@ import { useMemo } from 'react';
 
 import { type ChipOption } from '@/components/ui/ChipAutoComplete';
 import { useFetch } from '@/hooks/useApi';
-import { type TagsResponse } from '@/pages/api/admin/tags/[[...slug]]';
-import { type TagWithUsers } from '@/server/services/tags';
+
+import { type TagsResponse, type TagWithUsers } from './types';
 
 export const tagsGestionnairesStyleByType = {
   ville: { title: 'Ville', className: '[&:not(:hover)]:!bg-[#42a835] hover:!bg-[#348029] !text-white' },
