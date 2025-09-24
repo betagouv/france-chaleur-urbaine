@@ -1,8 +1,8 @@
 import nextAuth, { type AuthOptions, type Session } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 
+import { login } from '@/modules/auth/server/service';
 import { kdb } from '@/server/db/kysely';
-import { login } from '@/server/services/auth';
 
 export const nextAuthOptions: AuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,

@@ -10,3 +10,4 @@ All modules should be orginized the same way
 - `client` folder to hold all client files
 - `constants.ts` for zod validation and other data shared by client and server
 - `<moduleName>.config.ts` for information that developer will for sure have to make changes to (routes, jobs, etc...)
+- `types.ts` to re-export types and/or share them

@@ -1,9 +1,9 @@
 import { z } from 'zod';
 
 import cliConfig from '@/cli-config';
+import { create } from '@/modules/users/server/service';
 import { type ApiAccounts, kdb } from '@/server/db/kysely';
 import { parentLogger } from '@/server/helpers/logger';
-import { create } from '@/server/services/user';
 import { sanitizeEmail } from '@/utils/validation';
 
 const logger = parentLogger.child({

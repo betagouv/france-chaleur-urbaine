@@ -15,18 +15,12 @@ Ce module est actuellement en cours de migration depuis l'architecture legacy ve
   - `createUserAdminSchema` - Création admin
   - `updateUserAdminSchema` - Mise à jour admin
   - `structureTypes` - Types de structures professionnelles
+- **`server/service.ts`** : Services CRUD utilisateurs (migré depuis `/src/server/services/user.ts`)
 
 ### 🚧 Ce qui reste à migrer
 
-**Services (actuellement dans `/src/server/services/`):**
-- `user.ts` - CRUD utilisateurs, gestion des permissions
-- `auth.ts` - Authentification, sessions, tokens
-
 **API Routes (actuellement dans `/src/pages/api/`):**
-- `/auth/register` - Inscription utilisateur
-- `/auth/[...nextauth]` - NextAuth
 - `/user/preferences` - Préférences utilisateur
-- `/password/*` - Réinitialisation mot de passe
 - `/admin/users-stats` - Statistiques admin
 - `/admin/exportObsoleteUsers` - Export utilisateurs obsolètes
 - `/v1/users/[key]` - API publique utilisateurs
@@ -40,8 +34,7 @@ Ce module est actuellement en cours de migration depuis l'architecture legacy ve
 users/
 ├── constants.ts              # ✅ Fait - Schémas Zod
 ├── server/
-│   ├── service.ts           # 🚧 À créer - Logique métier
-│   ├── auth.service.ts      # 🚧 À créer - Authentification
+│   ├── service.ts           # ✅ Fait - Logique métier (migré)
 │   └── trpc-routes.ts       # 🚧 À créer - Routes TRPC
 └── client/
     └── admin/
@@ -50,15 +43,15 @@ users/
 
 ## Plan de Migration
 
-### Phase 1 : Services Backend
-1. Créer `server/service.ts` en migrant depuis `/src/server/services/user.ts`
-2. Créer `server/auth.service.ts` en migrant depuis `/src/server/services/auth.ts`
-3. Créer `server/trpc-routes.ts` pour remplacer les API routes
+### Phase 1 : Services Backend ✅
+1. ✅ Migrer `server/service.ts` depuis `/src/server/services/user.ts`
+2. ✅ Migrer `auth` vers module séparé `/src/modules/auth`
+3. 🚧 Créer `server/trpc-routes.ts` pour remplacer les API routes
 
-### Phase 2 : API & Authentification
-1. Migrer les routes d'authentification vers TRPC
-2. Adapter NextAuth pour utiliser les nouveaux services
-3. Migrer les routes de gestion du mot de passe
+### Phase 2 : API Routes
+1. Migrer `/api/user/preferences` vers TRPC
+2. Migrer `/api/admin/users-stats` vers TRPC
+3. Migrer `/api/admin/exportObsoleteUsers` vers TRPC
 
 ### Phase 3 : Interface Admin
 1. Migrer `pages/admin/users.tsx` vers `client/admin/UsersPage.tsx`
@@ -82,9 +75,9 @@ import {
   updateUserAdminSchema 
 } from '@/modules/users/constants';
 
-// Services (encore en legacy)
-import * as userService from '@/server/services/user';
-import * as authService from '@/server/services/auth';
+// Services (migré dans les modules)
+import * as userService from '@/modules/users/server/service';
+import * as authService from '@/modules/auth/server/service';
 
 // API Routes (encore en legacy)
 // POST /api/auth/register
