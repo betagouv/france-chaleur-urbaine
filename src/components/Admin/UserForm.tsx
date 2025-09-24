@@ -3,10 +3,10 @@ import useForm from '@/components/form/react-form/useForm';
 import Badge from '@/components/ui/Badge';
 import Tag from '@/components/ui/Tag';
 import Tooltip from '@/components/ui/Tooltip';
+import { createUserAdminSchema, structureTypes, updateUserAdminSchema } from '@/modules/users/constants';
 import { type UsersResponse } from '@/pages/api/admin/users/[[...slug]]';
 import { userRoles } from '@/types/enum/UserRole';
 import cx from '@/utils/cx';
-import { createUserAdminSchema, structureTypes, updateUserAdminSchema } from '@/validation/user';
 
 export type OnCreate = (data: UsersResponse['createInput']) => Promise<void> | void;
 export type OnUpdate = (data: UsersResponse['updateInput']) => Promise<void> | void;
