@@ -78,5 +78,6 @@ allowed_patterns:
 - (?i)https:\/\/docs\.google\.com\/.*
 - resetPasswordSchema
 - (?i)https:\/\/airtable\.com\/app9opX8gRAtBqkan.*
+- actions/.*@.*
 threshold: medium
 version: "1.0"
