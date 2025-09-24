@@ -7,6 +7,10 @@ import prompts from 'prompts';
 import XLSX from 'xlsx';
 import { z } from 'zod';
 
+import { registerNetworkCommands } from '@/modules/reseaux/server/commands';
+import { downloadAndUpdateNetwork, downloadNetwork } from '@/modules/reseaux/server/download-network';
+import { applyGeometryUpdates } from '@/modules/reseaux/server/geometry-updates';
+import { syncPostgresToAirtable } from '@/modules/reseaux/server/sync-pg-to-airtable';
 import { createTilesCommands } from '@/modules/tiles/server/commands';
 import { getApiHandler } from '@/server/api/users';
 import { serverConfig } from '@/server/config';
@@ -25,16 +29,12 @@ import { sleep } from '@/utils/time';
 import { nonEmptyArray } from '@/utils/typescript';
 import { allDatabaseTables } from '@cli/bootstrap/tables';
 import { optimisationProfiles, optimizeImage } from '@cli/images/optimize';
-import { registerNetworkCommands } from '@cli/networks/commands';
-import { applyGeometryUpdates } from '@cli/networks/geometry-updates';
-import { syncPostgresToAirtable } from '@cli/networks/sync-pg-to-airtable';
 import { refreshStatistics } from '@cli/stats/refresh';
 
 import { type KnownAirtableBase, knownAirtableBases } from './airtable/bases';
 import { createModificationsReseau } from './airtable/create-modifications-reseau';
 import { fetchBaseSchema } from './airtable/dump-schema';
 import dataImportManager, { dataImportAdapters, type DataImportName } from './data-import';
-import { downloadAndUpdateNetwork, downloadNetwork } from './networks/download-network';
 import { upsertFixedSimulateurData } from './simulateur/import';
 
 const program = createCommand();

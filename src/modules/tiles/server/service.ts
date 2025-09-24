@@ -1,9 +1,9 @@
 import { type ExpressionBuilder } from 'kysely';
 
+import { type NetworkTable } from '@/modules/reseaux/server/geometry-operations';
 import { type BuildTilesInput, type SyncGeometriesInput } from '@/modules/tiles/constants';
 import { type DB, kdb, sql } from '@/server/db/kysely';
 import { type ApiContext } from '@/server/db/kysely/base-model';
-import { type NetworkTable } from '@cli/networks/geometry-operations';
 
 export const createBuildTilesJob = async ({ name }: BuildTilesInput, context: ApiContext) => {
   return await kdb
