@@ -1,8 +1,8 @@
 import useForm from '@/components/form/react-form/useForm';
 import Button from '@/components/ui/Button';
 import { useModal } from '@/components/ui/ModalSimple';
+import { notify, toastErrors } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
-import { notify, toastErrors } from '@/services/notification';
 
 import { type RenameProEligibilityTestRequest, zRenameProEligibilityTestRequest } from '../constants';
 

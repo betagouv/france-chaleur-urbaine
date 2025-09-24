@@ -29,8 +29,8 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/componen
 import TableSimple, { type ColumnDef, type QuickFilterPreset } from '@/components/ui/TableSimple';
 import Tooltip from '@/components/ui/Tooltip';
 import { useFetch } from '@/hooks/useApi';
+import { notify, toastErrors } from '@/modules/notification';
 import { withAuthentication } from '@/server/authentication';
-import { notify, toastErrors } from '@/services/notification';
 import { type Point } from '@/types/Point';
 import { type AdminDemand, type Demand } from '@/types/Summary/Demand';
 import { defaultEmptyNumberValue, defaultEmptyStringValue } from '@/utils/airtable';

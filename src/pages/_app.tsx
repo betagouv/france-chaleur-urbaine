@@ -15,6 +15,7 @@ import SEO from '@/components/SEO';
 import ThemeProvider, { dsfrDocumentApi } from '@/components/Theme/ThemeProvider';
 import useHtmlAttributes from '@/hooks/useHtmlAttributes';
 import { usePreserveScroll } from '@/hooks/usePreserveScroll';
+import { NotifierContainer } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
 import { type AuthSSRPageProps } from '@/server/authentication';
 import { HeatNetworkService, ServicesContext, SuggestionService } from '@/services';
@@ -25,7 +26,6 @@ import { DemandsService } from '@/services/demands';
 import { ExportService } from '@/services/export';
 import { axiosHttpClient } from '@/services/http';
 import { NetworksService } from '@/services/networks';
-import { NotifierContainer } from '@/services/notification';
 import { PasswordService } from '@/services/password';
 
 const ConsentBanner = dynamic(

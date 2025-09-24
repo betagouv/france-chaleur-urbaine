@@ -10,7 +10,7 @@ import Upload from '@/components/form/dsfr/Upload';
 import { getInputErrorStates } from '@/components/form/react-form/useForm';
 import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
-import { toastErrors } from '@/services/notification';
+import { toastErrors } from '@/modules/notification';
 import { postFormDataFetchJSON } from '@/utils/network';
 import { formatFileSize } from '@/utils/strings';
 import { nonEmptyArray, ObjectKeys } from '@/utils/typescript';

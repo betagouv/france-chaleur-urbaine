@@ -30,9 +30,9 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/componen
 import TableSimple, { type ColumnDef, type QuickFilterPreset } from '@/components/ui/TableSimple';
 import Tooltip from '@/components/ui/Tooltip';
 import { useFetch } from '@/hooks/useApi';
+import { toastErrors } from '@/modules/notification';
 import { withAuthentication } from '@/server/authentication';
 import { useServices } from '@/services';
-import { toastErrors } from '@/services/notification';
 import { DEMANDE_STATUS, type DemandStatus } from '@/types/enum/DemandSatus';
 import { type Point } from '@/types/Point';
 import { type Demand } from '@/types/Summary/Demand';

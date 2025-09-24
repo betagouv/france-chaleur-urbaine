@@ -6,8 +6,8 @@ import useForm from '@/components/form/react-form/useForm';
 import CenterLayout from '@/components/shared/page/CenterLayout';
 import Alert from '@/components/ui/Alert';
 import Heading from '@/components/ui/Heading';
+import { toastErrors } from '@/modules/notification';
 import { useServices } from '@/services';
-import { toastErrors } from '@/services/notification';
 const resetPasswordSchema = z.object({
   email: z.string().email('Veuillez entrer une adresse email valide'),
 });

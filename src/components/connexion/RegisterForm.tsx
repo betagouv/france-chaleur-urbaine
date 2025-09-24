@@ -7,7 +7,7 @@ import Alert from '@/components/ui/Alert';
 import Button from '@/components/ui/Button';
 import Highlight from '@/components/ui/Highlight';
 import Link from '@/components/ui/Link';
-import { toastErrors } from '@/services/notification';
+import { toastErrors } from '@/modules/notification';
 import { userRolesInscription } from '@/types/enum/UserRole';
 import { postFetchJSON } from '@/utils/network';
 import { upperCaseFirstChar } from '@/utils/strings';

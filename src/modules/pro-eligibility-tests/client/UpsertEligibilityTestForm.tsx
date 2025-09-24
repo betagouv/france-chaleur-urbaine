@@ -4,8 +4,8 @@ import DSFRSelect from '@/components/form/dsfr/Select';
 import Upload from '@/components/form/dsfr/Upload';
 import useForm from '@/components/form/react-form/useForm';
 import Notice, { type NoticeProps } from '@/components/ui/Notice';
+import { toastErrors } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
-import { toastErrors } from '@/services/notification';
 import { parseUnknownCharsetText } from '@/utils/strings';
 
 import CSVImportTable from './CSVImportTable';

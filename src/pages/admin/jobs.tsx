@@ -9,10 +9,10 @@ import Heading from '@/components/ui/Heading';
 import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
 import Text from '@/components/ui/Text';
 import { useDelete, useFetch, usePost } from '@/hooks/useApi';
+import { toastErrors } from '@/modules/notification';
 import { type AdminJobItem } from '@/pages/api/admin/jobs';
 import { type JobDownload } from '@/pages/api/admin/jobs/[id]/download';
 import { withAuthentication } from '@/server/authentication';
-import { toastErrors } from '@/services/notification';
 import { downloadString } from '@/utils/browser';
 import { fetchJSON } from '@/utils/network';
 

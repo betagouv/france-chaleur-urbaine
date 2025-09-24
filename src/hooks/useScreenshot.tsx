@@ -1,7 +1,7 @@
 import domtoimage from 'dom-to-image';
 import React, { useState } from 'react';
 
-import { notify } from '@/services/notification';
+import { notify } from '@/modules/notification';
 import { downloadFile } from '@/utils/browser';
 
 const dataUrlToBlob = (dataUrl: string): Blob => {
