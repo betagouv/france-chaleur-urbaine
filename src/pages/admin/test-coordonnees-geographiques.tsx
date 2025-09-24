@@ -9,10 +9,10 @@ import Heading from '@/components/ui/Heading';
 import { isDevModeEnabled } from '@/hooks/useDevMode';
 import { notify, toastErrors } from '@/modules/notification';
 import { withAuthentication } from '@/server/authentication';
-import { latitudeColumnNameCandidates, longitudeColumnNameCandidates } from '@/shared/bulk-eligibility-coordinates';
 import { chunk } from '@/utils/array';
 import { downloadFile } from '@/utils/browser';
 import { isDefined } from '@/utils/core';
+import { latitudeColumnNameCandidates, longitudeColumnNameCandidates } from '@/utils/geo';
 import { postFetchJSON } from '@/utils/network';
 
 function TestCoordinatesPage() {

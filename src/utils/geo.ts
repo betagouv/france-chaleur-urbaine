@@ -3,6 +3,9 @@ import kinks from '@turf/kinks';
 
 import { type BoundingBox } from '@/types/Coords';
 
+export const longitudeColumnNameCandidates = ['x', 'lon', 'longitude'] as const;
+export const latitudeColumnNameCandidates = ['y', 'lat', 'latitude'] as const;
+
 /**
  * Pretty format a distance in meters or kilometers.
  */

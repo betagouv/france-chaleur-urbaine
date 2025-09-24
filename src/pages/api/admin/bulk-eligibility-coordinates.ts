@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { logger } from '@/server/helpers/logger';
 import { BadRequestError, handleRouteErrors, requirePostMethod } from '@/server/helpers/server';
 import { getEligilityStatus } from '@/server/services/addresseInformation';
-import { latitudeColumnNameCandidates, longitudeColumnNameCandidates } from '@/shared/bulk-eligibility-coordinates';
+import { latitudeColumnNameCandidates, longitudeColumnNameCandidates } from '@/utils/geo';
 
 export const config = {
   api: {
