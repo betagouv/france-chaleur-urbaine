@@ -41,3 +41,32 @@ export const listJobs = async (input: JobListInput, _context: ApiContext) => {
     },
   };
 };
+
+/**
+ * Récupère le prochain job en attente et le passe en statut "processing". Renvoi null si aucun job n'est à traiter.
+ *
+ * Cette fonction sélectionne un job avec le statut `"pending"` en utilisant `FOR UPDATE SKIP LOCKED`
+ * pour éviter que plusieurs instances du worker ne traitent le même job simultanément.
+ * Une fois sélectionné, le job est immédiatement mis à jour en `"processing"`, ce qui le verrouille
+ * pour les autres workers.
+ */
+export async function getNextJob() {
+  return await kdb.transaction().execute(async (trx) => {
+    const job = await trx
+      .selectFrom('jobs')
+      .selectAll()
+      .where('status', '=', 'pending')
+      .orderBy('created_at')
+      .forUpdate()
+      .skipLocked()
+      .limit(1)
+      .executeTakeFirst();
+
+    if (!job) {
+      return null;
+    }
+
+    await trx.updateTable('jobs').set({ status: 'processing', updated_at: new Date(), result: null }).where('id', '=', job.id).execute();
+    return job;
+  });
+}

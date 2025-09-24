@@ -7,6 +7,7 @@ import prompts from 'prompts';
 import XLSX from 'xlsx';
 import { z } from 'zod';
 
+import { processJobById, processJobsIndefinitely } from '@/modules/jobs/server/processor';
 import { registerNetworkCommands } from '@/modules/reseaux/server/commands';
 import { downloadAndUpdateNetwork, downloadNetwork } from '@/modules/reseaux/server/download-network';
 import { applyGeometryUpdates } from '@/modules/reseaux/server/geometry-updates';
@@ -19,7 +20,6 @@ import db from '@/server/db';
 import { kdb, sql } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
 import { syncComptesProFromUsers } from '@/server/services/airtable';
-import { processJobById, processJobsIndefinitely } from '@/server/services/jobs/processor';
 import { type DatabaseSourceId, tilesInfo } from '@/server/services/tiles.config';
 import { APIDataGouvService } from '@/services/api-data-gouv';
 import { userRoles } from '@/types/enum/UserRole';

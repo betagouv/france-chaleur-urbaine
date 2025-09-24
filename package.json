@@ -26,7 +26,7 @@
     "deadcode": "npx knip",
     "clean": "rm -Rf node_modules && rm -Rf .next && pnpm i",
     "start": "next start -p $PORT",
-    "start:clock": "tsx src/server/clock.ts",
+    "start:clock": "tsx modules/jobs/server/clock.ts",
     "prepare": "husky",
     "prettier-check": "prettier --log-level warn --write scripts src",
     "prelint": "pnpm prettier-check",
