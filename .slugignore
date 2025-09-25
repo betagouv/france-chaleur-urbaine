@@ -1,8 +1,6 @@
-# Documentation (pas nécessaire en production)
 docs/
 ARCHITECTURE.md
 
-# IDE et outils de développement (pas utilisés par le serveur)
 .github/
 .vscode/
 .cursor/
@@ -10,15 +8,12 @@ ARCHITECTURE.md
 .husky/
 
 
-# Environnements de dev seulement
 .env.test
 .env.local
 .envrc
 
-# Tests (pas exécutés en production)
 src/tests/
 src/server/email/react-email/templates/tests/*
 
-# Cache de développement
 .next/cache
 

@@ -1,1 +1,1 @@
-clock: tsx modules/jobs/server/clock.ts
+clock: pnpm start:clock
