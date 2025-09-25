@@ -358,9 +358,6 @@ dependencies:
   xlsx:
     specifier: https://cdn.sheetjs.com/xlsx-0.20.1/xlsx-0.20.1.tgz
     version: '@cdn.sheetjs.com/xlsx-0.20.1/xlsx-0.20.1.tgz'
-  znv:
-    specifier: ^0.4.0
-    version: 0.4.0(zod@4.1.11)
   zod:
     specifier: ^4.1.11
     version: 4.1.11
@@ -6967,6 +6964,7 @@ packages:
 
   /colorette@2.0.20:
     resolution: {integrity: sha512-IfEDxwoWIjkeXL1eXcDiow4UbKjhLdq6/EuSVR9GMN7KVH3r9gQ83e73hsz1Nd1T3ijd5xv1wcWRYO+D6kCI2w==}
+    dev: true
 
   /colorspace@1.1.4:
     resolution: {integrity: sha512-BgvKJiuVu1igBUF2kEjRCZXol6wiiGbY5ipL/oVPwm0BL9sIpMIzM8IK7vwuxIIzOXMV3Ey5w+vxhm0rR/TN8w==}
@@ -15074,15 +15072,6 @@ packages:
       archiver-utils: 3.0.4
       compress-commons: 4.1.2
       readable-stream: 3.6.2
-    dev: false
-
-  /znv@0.4.0(zod@4.1.11):
-    resolution: {integrity: sha512-6/pGsQhBisLzKdyC90mUCRgYDtCfQ4aQ68sDybexq3GMzqqkp662GH6qIyuCHJC1i72hJPHbWAhccTJVuZUQfA==}
-    peerDependencies:
-      zod: ^3.13.2
-    dependencies:
-      colorette: 2.0.20
-      zod: 4.1.11
     dev: false
 
   /zod-to-json-schema@3.24.6(zod@4.1.11):
