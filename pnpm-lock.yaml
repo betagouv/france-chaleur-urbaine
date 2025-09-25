@@ -360,10 +360,10 @@ dependencies:
     version: '@cdn.sheetjs.com/xlsx-0.20.1/xlsx-0.20.1.tgz'
   znv:
     specifier: ^0.4.0
-    version: 0.4.0(zod@3.25.76)
+    version: 0.4.0(zod@4.1.11)
   zod:
-    specifier: ^3.25.76
-    version: 3.25.76
+    specifier: ^4.1.11
+    version: 4.1.11
 
 devDependencies:
   '@svgr/webpack':
@@ -524,7 +524,7 @@ devDependencies:
     version: 1.0.7(tailwindcss@3.4.17)
   trpc-ui:
     specifier: ^1.0.15
-    version: 1.0.15(@emotion/react@11.14.0)(@emotion/styled@11.14.1)(@mui/material@5.18.0)(@trpc/server@11.5.0)(@types/react@19.1.5)(monaco-editor@0.52.2)(next@15.3.3)(react-dom@19.1.0)(react@19.1.0)(zod@3.25.76)
+    version: 1.0.15(@emotion/react@11.14.0)(@emotion/styled@11.14.1)(@mui/material@5.18.0)(@trpc/server@11.5.0)(@types/react@19.1.5)(monaco-editor@0.52.2)(next@15.3.3)(react-dom@19.1.0)(react@19.1.0)(zod@4.1.11)
   typescript:
     specifier: ^5.8.3
     version: 5.8.3
@@ -6445,7 +6445,7 @@ packages:
     engines: {node: ^10 || ^12 || >=14}
     hasBin: true
     peerDependencies:
-      postcss: ^8.1.0
+      postcss: ^8.2.10
     dependencies:
       browserslist: 4.25.1
       caniuse-lite: 1.0.30001727
@@ -11886,7 +11886,7 @@ packages:
     resolution: {integrity: sha512-hpr+J05B2FVYUAXHeK1YyI267J/dDDhMU6B6civm8hSY1jYJnBXxzKDKDswzJmtLHryrjhnDjqqp/49t8FALew==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
-      postcss: ^8.0.0
+      postcss: ^8.2.10
     dependencies:
       postcss: 8.5.6
       postcss-value-parser: 4.2.0
@@ -11898,7 +11898,7 @@ packages:
     resolution: {integrity: sha512-7hsAZ4xGXl4MW+OKEWCnF6T5jqBw80/EE9aXg1r2yyn1RsVEU8EtKXbijEODa+rg7iih4bKf7vlvTGYR4CnPNg==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
-      postcss: ^8.0.0
+      postcss: ^8.2.10
     dependencies:
       postcss: 8.5.6
       postcss-value-parser: 4.2.0
@@ -11910,7 +11910,7 @@ packages:
     resolution: {integrity: sha512-dDLF8pEO191hJMtlHFPRa8xsizHaM82MLfNkUHdUtVEV3tgTp5oj+8qbEqYM57SLfc74KSbw//4SeJma2LRVIw==}
     engines: {node: ^12 || ^14 || >= 16}
     peerDependencies:
-      postcss: ^8.4.21
+      postcss: ^8.2.10
     dependencies:
       camelcase-css: 2.0.1
       postcss: 8.5.6
@@ -11920,7 +11920,7 @@ packages:
     resolution: {integrity: sha512-bSVhyJGL00wMVoPUzAVAnbEoWyqRxkjv64tUl427SKnPrENtq6hJwUojroMz2VB+Q1edmi4IfrAPpami5VVgMQ==}
     engines: {node: '>= 14'}
     peerDependencies:
-      postcss: '>=8.0.9'
+      postcss: ^8.2.10
       ts-node: '>=9.0.0'
     peerDependenciesMeta:
       postcss:
@@ -11937,7 +11937,7 @@ packages:
     resolution: {integrity: sha512-HQbt28KulC5AJzG+cZtj9kvKB93CFCdLvog1WFLf1D+xmMvPGlBstkpTEZfK5+AN9hfJocyBFCNiqyS48bpgzQ==}
     engines: {node: '>=12.0'}
     peerDependencies:
-      postcss: ^8.2.14
+      postcss: ^8.2.10
     dependencies:
       postcss: 8.5.6
       postcss-selector-parser: 6.1.2
@@ -13992,7 +13992,7 @@ packages:
   /trough@2.1.0:
     resolution: {integrity: sha512-AqTiAOLcj85xS7vQ8QkAV41hPDIJ71XJB4RCUrzo/1GM2CQwhkJGaf9Hgr7BOugMRpgGUrqRg/DrBDl4H40+8g==}
 
-  /trpc-ui@1.0.15(@emotion/react@11.14.0)(@emotion/styled@11.14.1)(@mui/material@5.18.0)(@trpc/server@11.5.0)(@types/react@19.1.5)(monaco-editor@0.52.2)(next@15.3.3)(react-dom@19.1.0)(react@19.1.0)(zod@3.25.76):
+  /trpc-ui@1.0.15(@emotion/react@11.14.0)(@emotion/styled@11.14.1)(@mui/material@5.18.0)(@trpc/server@11.5.0)(@types/react@19.1.5)(monaco-editor@0.52.2)(next@15.3.3)(react-dom@19.1.0)(react@19.1.0)(zod@4.1.11):
     resolution: {integrity: sha512-bM+cBeQgFFrDD1TNuvbsre+WXuLYbxsEoI6W4Zg402dqpMdeWD9NxEr/K4ZVaZGzbV+RAUqUZSlS4X8AMmbUpA==}
     peerDependencies:
       '@trpc/server': ^11.0.0-next-beta.264
@@ -14012,8 +14012,8 @@ packages:
       string-byte-length: 1.6.0
       tailwind-merge: 2.6.0
       url: 0.11.4
-      zod: 3.25.76
-      zod-to-json-schema: 3.24.6(zod@3.25.76)
+      zod: 4.1.11
+      zod-to-json-schema: 3.24.6(zod@4.1.11)
     transitivePeerDependencies:
       - '@emotion/react'
       - '@emotion/styled'
@@ -15076,25 +15076,25 @@ packages:
       readable-stream: 3.6.2
     dev: false
 
-  /znv@0.4.0(zod@3.25.76):
+  /znv@0.4.0(zod@4.1.11):
     resolution: {integrity: sha512-6/pGsQhBisLzKdyC90mUCRgYDtCfQ4aQ68sDybexq3GMzqqkp662GH6qIyuCHJC1i72hJPHbWAhccTJVuZUQfA==}
     peerDependencies:
       zod: ^3.13.2
     dependencies:
       colorette: 2.0.20
-      zod: 3.25.76
+      zod: 4.1.11
     dev: false
 
-  /zod-to-json-schema@3.24.6(zod@3.25.76):
+  /zod-to-json-schema@3.24.6(zod@4.1.11):
     resolution: {integrity: sha512-h/z3PKvcTcTetyjl1fkj79MHNEjm+HpD6NXheWjzOekY7kV+lwDYnHw+ivHkijnCSMz1yJaWBD9vu/Fcmk+vEg==}
     peerDependencies:
       zod: ^3.24.1
     dependencies:
-      zod: 3.25.76
+      zod: 4.1.11
     dev: true
 
-  /zod@3.25.76:
-    resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
+  /zod@4.1.11:
+    resolution: {integrity: sha512-WPsqwxITS2tzx1bzhIKsEs19ABD5vmCVa4xBo2tq/SrV4RNZtfws1EnCWQXM6yh8bD08a1idvkB5MZSBiZsjwg==}
 
   /zustand@4.5.7(@types/react@19.1.5)(react@19.1.0):
     resolution: {integrity: sha512-CHOUy7mu3lbD6o6LJLfllpjkzhHXSBlX8B9+qPddUsIfeF5S/UZ5q0kmCsnRqT1UHFQZchNFDDzMbQsuesHWlw==}

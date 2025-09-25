@@ -4,8 +4,8 @@ import { z, ZodObject, type ZodRawShape, type ZodTypeAny } from 'zod';
  * Recursively unwraps ZodEffects to get the base schema.
  */
 const unwrapSchema = (schema: ZodTypeAny): ZodTypeAny => {
-  while (schema instanceof z.ZodEffects) {
-    schema = schema._def.schema;
+  while ((schema._def as any).typeName === 'ZodEffects') {
+    schema = (schema as any)._def.schema;
   }
   return schema;
 };
