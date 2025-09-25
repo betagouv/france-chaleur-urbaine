@@ -12,6 +12,7 @@ import { useFetch, usePost } from '@/hooks/useApi';
 import useCookie from '@/hooks/useCookie';
 import { type UserPreferences, type UserPreferencesInput } from '@/pages/api/user/preferences';
 import { type UserRole } from '@/types/enum/UserRole';
+import { stripDomainFromURL } from '@/utils/url';
 
 const authenticationAtom = atom<Session | null>(null);
 
@@ -28,7 +29,7 @@ export const useRedirectionAfterLogin = (session?: Session | null) => {
 
     if (session && callbackUrlCookie) {
       removeCookie();
-      router.push(callbackUrlCookie);
+      router.push(stripDomainFromURL(callbackUrlCookie) ?? '/pro/tableau-de-bord');
     }
   }, [session, callbackUrlQueryParam, setCallbackUrlCookie, setCallbackUrlQueryParam, removeCookie, router, callbackUrlCookie]);
 };
