@@ -228,7 +228,7 @@
     "tailwindcss": "^3.4.17",
     "tailwindcss-animate": "^1.0.7",
     "trpc-ui": "^1.0.15",
-    "typescript": "^5.8.3",
+    "typescript": "^5.9.2",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.2.4"
   },
