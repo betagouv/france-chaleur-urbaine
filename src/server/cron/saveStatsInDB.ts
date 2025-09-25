@@ -1,12 +1,9 @@
-import * as Sentry from '@sentry/node';
-
 import base from '@/server/db/airtable';
 import { kdb, sql } from '@/server/db/kysely';
 import { bulkFetchRangeFromMatomo } from '@/server/services/matomo';
 import { type MatomoActionMetrics, type MatomoPageMetrics, type MatomoUniqueVisitorsMetrics } from '@/server/services/matomo_types';
 import { Airtable } from '@/types/enum/Airtable';
 import { STAT_COMMUNES_SANS_RESEAU, STAT_KEY, STAT_LABEL, STAT_METHOD, STAT_PARAMS, STAT_PERIOD } from '@/types/enum/MatomoStats';
-import '@root/sentry.node.config';
 import { USER_ROLE } from '@/types/enum/UserRole';
 
 const DATA_ACTION_STATS: string[] = [
@@ -570,7 +567,6 @@ export const saveStatsInDB = async (start?: string, end?: string) => {
       saveCommunesSansReseauStats(stringStartDate, stringEndAirtableDate),
     ]);
   } catch (e) {
-    Sentry.captureException(e);
     console.error(`CRON JOB ERROR: saveStatsInDB`, e);
   }
   console.info('CRON JOB STOP: saveStatsInDB');

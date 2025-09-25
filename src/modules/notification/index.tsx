@@ -1,5 +1,4 @@
 'use client';
-import { captureException } from '@sentry/browser';
 import { useQueryState } from 'nuqs';
 import React, { type ReactNode } from 'react';
 import originalToast, { Toaster } from 'react-hot-toast';
@@ -55,7 +54,6 @@ export const toastErrors = <Func extends (...args: any[]) => void | Promise<void
       await func(...args);
     } catch (err: any) {
       notify('error', customError ? customError(err) : err?.message || err);
-      captureException(err);
     }
   };
 };

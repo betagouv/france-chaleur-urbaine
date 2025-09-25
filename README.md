@@ -154,7 +154,6 @@ graph LR;
       N-->A("Airtable (SaaS)");
       N-->B("SMTP Brevo (SaaS)");
       N-->M("Matomo (stats.beta.gouv.fr)");
-      N-->S("Sentry (sentry.beta.gouv.fr)");
     end
 ```
 

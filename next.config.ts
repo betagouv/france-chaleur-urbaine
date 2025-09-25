@@ -3,7 +3,6 @@ import createMDX from '@next/mdx';
 import type { NextConfig } from 'next';
 
 import withSecurityHeaders from './src/config/withSecurityHeaders';
-import withSentry from './src/config/withSentry';
 
 const isGithubCI = process.env.NODE_ENV === 'production' && process.env.GITHUB_CI === 'true';
 
@@ -11,44 +10,6 @@ const configFunctions = [
   createMDX({
     // Add markdown plugins here, as desired
   }),
-  withSentry(
-    {
-      // For all available options, see:
-      // https://github.com/getsentry/sentry-webpack-plugin#options
-      dryRun: !process.env.NEXT_PUBLIC_SENTRY_DSN,
-      // Suppresses source map uploading logs during build
-      silent: true,
-      org: 'betagouv',
-      project: 'fcu-prod',
-      url: 'https://sentry.incubateur.net/',
-      // do not exit if the build fails to interact with the sentry server
-      errorHandler: (err, invokeErr, compilation) => {
-        compilation.warnings.push('Sentry CLI Plugin: ' + err.message);
-      },
-    },
-    {
-      // For all available options, see:
-      // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
-
-      // Upload a larger set of source maps for prettier stack traces (increases build time)
-      widenClientFileUpload: false,
-
-      // Transpiles SDK to be compatible with IE11 (increases bundle size)
-      transpileClientSDK: false,
-
-      // Hides source maps from generated client bundles
-      hideSourceMaps: true,
-
-      // Automatically tree-shake Sentry logger statements to reduce bundle size
-      disableLogger: true,
-
-      // Enables automatic instrumentation of Vercel Cron Monitors.
-      // See the following for more information:
-      // https://docs.sentry.io/product/crons/
-      // https://vercel.com/docs/cron-jobs
-      automaticVercelMonitors: true,
-    }
-  ),
   withBundleAnalyzer({
     enabled: process.env.ANALYZE === 'true',
   }),
@@ -115,7 +76,6 @@ const configFunctions = [
         'https://px.ads.linkedin.com',
         'https://data.geopf.fr',
         'https://api.mapbox.com/',
-        'https://sentry.incubateur.net',
         'https://*.hotjar.com https://*.hotjar.io wss://*.hotjar.com',
         'https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com',
       ],
@@ -312,7 +272,7 @@ const nextConfig: NextConfig = {
     // This is done to prevent DSFR Display component to fail with undefined URL for SVG See https://github.com/betagouv/france-chaleur-urbaine/pull/882
     // In order to load a SVG, you will need to suffix it with ?icon
     // example: `import IconPotentiel from '@/public/icons/potentiel.svg?icon';`
-    const nextImageLoaderRule = config.module.rules.find((rule) => rule.test?.test?.('.svg'));
+    const nextImageLoaderRule = config.module.rules.find((rule: any) => rule.test?.test?.('.svg'));
 
     if (nextImageLoaderRule) {
       nextImageLoaderRule.resourceQuery = {
