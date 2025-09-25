@@ -2,13 +2,14 @@ import { type Selectable } from 'kysely';
 import { type Logger } from 'winston';
 
 import { createUserEvent } from '@/modules/events/server/service';
+import { downloadNetwork } from '@/modules/reseaux/server/download-network';
+import { syncPostgresToAirtable } from '@/modules/reseaux/server/sync-pg-to-airtable';
 import { type BuildTilesInput, type SyncGeometriesInput } from '@/modules/tiles/constants';
-import { runTilesGeneration } from '@/modules/tiles/server/generation-run';
-import { getTileNameFromInternalName } from '@/modules/tiles/server/service';
 import { type Jobs } from '@/server/db/kysely';
-import { type DatabaseSourceId } from '@/server/services/tiles.config';
-import { downloadNetwork } from '@cli/networks/download-network';
-import { syncPostgresToAirtable } from '@cli/networks/sync-pg-to-airtable';
+
+import { type DatabaseSourceId } from '../tiles.config';
+import { runTilesGeneration } from './generation-run';
+import { getTileNameFromInternalName } from './service';
 
 export type BuildTilesJob = Omit<Selectable<Jobs>, 'data'> & {
   type: 'build_tiles';

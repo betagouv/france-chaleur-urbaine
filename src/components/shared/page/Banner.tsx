@@ -5,7 +5,7 @@ import styled from 'styled-components';
 
 import Link from '@/components/ui/Link';
 import NoticeRemovable from '@/components/ui/NoticeRemovable';
-import { useAuthentication } from '@/services/authentication';
+import { useAuthentication } from '@/modules/auth/client/hooks';
 
 const NoticeRemovableSticky = styled(NoticeRemovable)`
   position: sticky;

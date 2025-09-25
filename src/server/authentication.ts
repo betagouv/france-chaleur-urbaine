@@ -29,7 +29,7 @@ export const getServerSession = async ({ req, res }: Pick<ServerSessionContext, 
  * export const getServerSideProps = withServerSession;
  *
  * Or:
- * import { withServerSession, type Session } from '@/server/services/authentication';
+ * import { withServerSession, type Session } from '@/modules/auth/server/serviceentication';
  * export const getServerSideProps<{ session: Session }> = async (context: GetServerSidePropsContext) => {
  *   const { props } = await withServerSession(context);
  *

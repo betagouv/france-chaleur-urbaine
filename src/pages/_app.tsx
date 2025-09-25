@@ -15,17 +15,16 @@ import SEO from '@/components/SEO';
 import ThemeProvider, { dsfrDocumentApi } from '@/components/Theme/ThemeProvider';
 import useHtmlAttributes from '@/hooks/useHtmlAttributes';
 import { usePreserveScroll } from '@/hooks/usePreserveScroll';
+import { useAnalytics } from '@/modules/analytics/client';
+import { useInitAuthentication } from '@/modules/auth/client/hooks';
+import { NotifierContainer } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
 import { type AuthSSRPageProps } from '@/server/authentication';
 import { HeatNetworkService, ServicesContext, SuggestionService } from '@/services';
-import { AdminService } from '@/services/admin';
-import { useAnalytics } from '@/services/analytics';
-import { useInitAuthentication } from '@/services/authentication';
 import { DemandsService } from '@/services/demands';
 import { ExportService } from '@/services/export';
 import { axiosHttpClient } from '@/services/http';
 import { NetworksService } from '@/services/networks';
-import { NotifierContainer } from '@/services/notification';
 import { PasswordService } from '@/services/password';
 
 const ConsentBanner = dynamic(
@@ -55,7 +54,6 @@ const AppInner = ({ Component, pageProps }: AppProps<AuthSSRPageProps>) => {
           heatNetworkService: new HeatNetworkService(axiosHttpClient),
           demandsService: new DemandsService(axiosHttpClient),
           passwordService: new PasswordService(axiosHttpClient),
-          adminService: new AdminService(axiosHttpClient),
           networksService: new NetworksService(axiosHttpClient),
           exportService: new ExportService(axiosHttpClient),
         }}

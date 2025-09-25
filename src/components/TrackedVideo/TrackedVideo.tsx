@@ -2,7 +2,7 @@ import { useRouter } from 'next/router';
 import { useState } from 'react';
 
 import Box from '@/components/ui/Box';
-import { trackEvent } from '@/services/analytics';
+import { trackEvent } from '@/modules/analytics/client';
 
 const TrackedVideo = ({
   height,

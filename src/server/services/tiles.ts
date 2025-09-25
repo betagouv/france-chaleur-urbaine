@@ -2,11 +2,10 @@ import geojsonvt from 'geojson-vt';
 import vtpbf from 'vt-pbf';
 
 import { tileSourcesMaxZoom } from '@/components/Map/layers/common';
+import { type AirtableTileInfo, type DatabaseSourceId, tilesInfo } from '@/modules/tiles/tiles.config';
 import db from '@/server/db';
 import base from '@/server/db/airtable';
 import { isDefined } from '@/utils/core';
-
-import { type AirtableTileInfo, type DatabaseSourceId, tilesInfo } from './tiles.config';
 
 const debug = !!(process.env.API_DEBUG_MODE || null);
 

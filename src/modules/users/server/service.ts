@@ -1,10 +1,10 @@
 import bcrypt from 'bcryptjs';
 import { type UpdateObject } from 'kysely';
 
+import { createUserAdminSchema, updateUserAdminSchema } from '@/modules/users/constants';
 import { type DB, kdb, sql } from '@/server/db/kysely';
 import { createBaseModel } from '@/server/db/kysely/base-model';
 import { sendEmailTemplate } from '@/server/email';
-import { createUserAdminSchema, updateUserAdminSchema } from '@/validation/user';
 
 export const tableName = 'users';
 

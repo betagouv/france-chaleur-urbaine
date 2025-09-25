@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 
 import useFCUMap from '@/components/Map/MapProvider';
 import Box from '@/components/ui/Box';
-import { toastErrors } from '@/services/notification';
+import { toastErrors } from '@/modules/notification';
 import { convertLambert93GeoJSONToWGS84, hasLambert93Projection } from '@/utils/geo';
 
 export type FileDragNDropProps = {

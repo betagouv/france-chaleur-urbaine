@@ -4,7 +4,7 @@ import { cva } from 'class-variance-authority';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 
-import { trackEvent, type TrackingEvent } from '@/services/analytics';
+import { trackEvent, type TrackingEvent } from '@/modules/analytics/client';
 
 type TileSize = 'sm' | 'md' | 'lg';
 

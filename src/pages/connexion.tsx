@@ -4,9 +4,9 @@ import { LoginForm, type LoginFormProps } from '@/components/connexion/LoginForm
 import CenterLayout from '@/components/shared/page/CenterLayout';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Heading from '@/components/ui/Heading';
+import { activateUser } from '@/modules/auth/server/service';
 import { withServerSession } from '@/server/authentication';
 import { logger } from '@/server/helpers/logger';
-import { activateUser } from '@/server/services/auth';
 
 function ConnectionPage(props: LoginFormProps): JSX.Element {
   return (

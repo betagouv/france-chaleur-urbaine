@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import React, { useState } from 'react';
 
 import useQueryFlag from '@/hooks/useQueryFlag';
-import { trackEvent } from '@/services/analytics';
+import { trackEvent } from '@/modules/analytics/client';
 
 import Button from './Button';
 import Icon from './Icon';

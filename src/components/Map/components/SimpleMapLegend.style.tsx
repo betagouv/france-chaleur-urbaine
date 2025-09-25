@@ -8,7 +8,7 @@ import { type MapConfiguration, type MapConfigurationProperty } from '@/componen
 import Box from '@/components/ui/Box';
 import CheckableAccordion, { type CheckableAccordionProps } from '@/components/ui/CheckableAccordion';
 import Heading from '@/components/ui/Heading';
-import { type LegendTrackingEvent, trackEvent } from '@/services/analytics';
+import { type LegendTrackingEvent, trackEvent } from '@/modules/analytics/client';
 import cx from '@/utils/cx';
 import IconEnrr from '@root/public/icons/enrr.svgr';
 import IconOutils from '@root/public/icons/outils.svgr';

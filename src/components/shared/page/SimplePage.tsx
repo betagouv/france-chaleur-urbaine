@@ -14,7 +14,7 @@ import Box from '@/components/ui/Box';
 import Image from '@/components/ui/Image';
 import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
-import { useAuthentication } from '@/services/authentication';
+import { useAuthentication } from '@/modules/auth/client/hooks';
 import cx from '@/utils/cx';
 import { deleteFetchJSON } from '@/utils/network';
 

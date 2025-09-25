@@ -1,10 +1,10 @@
 import { type Record } from 'airtable';
 import { type FieldSet } from 'airtable/lib/field_set';
 
+import { type DatabaseSourceId, type DatabaseTileInfo, tilesInfo } from '@/modules/tiles/tiles.config';
 import db from '@/server/db';
 import base from '@/server/db/airtable';
 import { parentLogger } from '@/server/helpers/logger';
-import { type DatabaseSourceId, type DatabaseTileInfo, tilesInfo } from '@/server/services/tiles.config';
 
 export const TypeArray: unique symbol = Symbol('array');
 export const TypeBool: unique symbol = Symbol('bool');

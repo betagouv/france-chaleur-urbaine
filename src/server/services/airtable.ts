@@ -1,9 +1,9 @@
+import { structureTypes } from '@/modules/users/constants';
 import base from '@/server/db/airtable';
 import { kdb, sql } from '@/server/db/kysely';
 import { parentLogger } from '@/server/helpers/logger';
 import { Airtable } from '@/types/enum/Airtable';
 import { USER_ROLE } from '@/types/enum/UserRole';
-import { structureTypes } from '@/validation/user';
 
 const DRY_RUN = process.env.DRY_RUN === 'true';
 

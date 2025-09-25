@@ -1,17 +1,1 @@
-import crud from '@/server/api/crud';
-import { handleRouteErrors } from '@/server/helpers/server';
-import * as tagsService from '@/server/services/tags';
-
-const { GET, POST, PUT, DELETE, _types } = crud<typeof tagsService.tableName, typeof tagsService.validation>({
-  ...tagsService,
-  list: tagsService.listWithUsers as any,
-});
-
-export type TagsResponse = typeof _types;
-
-export default handleRouteErrors(
-  { GET, POST, PUT, DELETE },
-  {
-    requireAuthentication: ['admin'],
-  }
-);
+export { default } from '@/modules/tags/server/api-admin';

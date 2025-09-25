@@ -5,7 +5,7 @@ import { z } from 'zod';
 
 import useForm from '@/components/form/react-form/useForm';
 import Alert from '@/components/ui/Alert';
-import { AnalyticsFormId } from '@/services/analytics';
+import { AnalyticsFormId } from '@/modules/analytics/client';
 import { type ContactFormInfos } from '@/types/Summary/Demand';
 
 type ContactFormProps = {

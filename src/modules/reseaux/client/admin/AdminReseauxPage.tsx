@@ -17,8 +17,8 @@ import Notice from '@/components/ui/Notice';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/Resizable';
 import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
 import Tag from '@/components/ui/Tag';
+import { notify, toastErrors } from '@/modules/notification';
 import trpc, { type RouterOutput } from '@/modules/trpc/client';
-import { notify, toastErrors } from '@/services/notification';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
 

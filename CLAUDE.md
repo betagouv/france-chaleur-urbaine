@@ -210,7 +210,7 @@ export default MyComponent;
 - Path aliases configured: `@/` → `src/`, `@cli/` → `scripts/`
 - French government design system (DSFR) must be used for UI
 - All geographic data uses PostGIS and Turf.js for calculations
-- Authentication uses custom session management (see `src/server/services/auth.ts`)
+- Authentication uses custom session management (see `src/modules/auth/server/service.ts`)
 - Environment variables documented in `.env.example`
 
 ## Deployment

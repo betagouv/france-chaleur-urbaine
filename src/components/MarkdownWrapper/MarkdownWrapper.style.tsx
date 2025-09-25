@@ -2,7 +2,7 @@ import Link from 'next/link';
 import styled, { css } from 'styled-components';
 
 import { legacyColors } from '@/components/ui/helpers/colors';
-import { trackEvent, type TrackingEvent } from '@/services/analytics';
+import { trackEvent, type TrackingEvent } from '@/modules/analytics/client';
 
 export const isExternalLink = (href: string) => href && href.search(/(^http)|(^mailto)|(^\/documentation)/) >= 0;
 

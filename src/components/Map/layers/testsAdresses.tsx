@@ -1,8 +1,8 @@
 import dayjs from 'dayjs';
 
 import Tooltip from '@/components/ui/Tooltip';
+import { structureTypes } from '@/modules/users/constants';
 import { upperCaseFirstChar } from '@/utils/strings';
-import { structureTypes } from '@/validation/user';
 
 import { type MapSourceLayersSpecification, type PopupStyleHelpers } from './common';
 

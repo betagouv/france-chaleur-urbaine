@@ -3,7 +3,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { useRouter } from 'next/router';
 import styled, { css } from 'styled-components';
 
-import { trackEvent, type TrackingEvent } from '@/services/analytics';
+import { trackEvent, type TrackingEvent } from '@/modules/analytics/client';
 import cx from '@/utils/cx';
 import { stopPropagation as stopPropagationHandler } from '@/utils/events';
 

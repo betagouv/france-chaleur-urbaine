@@ -1,5 +1,5 @@
 import { type NextApiRequest, type NextApiResponse } from 'next/types';
-import * as yup from 'yup';
+import { z } from 'zod';
 
 import { handleRouteErrors, requireAuthentication, requirePostMethod } from '@/server/helpers/server';
 import { getSpreadSheet } from '@/server/services/export';
@@ -10,17 +10,21 @@ import { exportsParams } from '@/types/Export';
 
 import { getObsoleteUsers } from './admin/exportObsoleteUsers';
 
-const schema = yup.object().shape({
-  exportType: yup.string().required(),
-  params: yup.object().optional(),
+const schema = z.object({
+  exportType: z.string(),
+  params: z.record(z.any()).optional(),
 });
 
 export default handleRouteErrors(async (req: NextApiRequest, res: NextApiResponse) => {
   //Only export in XLSX format
   requirePostMethod(req);
 
-  if (!(await schema.isValid(req.body))) {
-    return res.status(400).send('Error');
+  const result = schema.safeParse(req.body);
+  if (!result.success) {
+    return res.status(400).json({
+      error: 'Validation failed',
+      details: result.error.issues,
+    });
   }
 
   const { exportType } = req.body;

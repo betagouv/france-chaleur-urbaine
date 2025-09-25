@@ -13,7 +13,7 @@ import Icon from '@/components/ui/Icon';
 import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
 import Tooltip from '@/components/ui/Tooltip';
-import { useAuthentication } from '@/services/authentication';
+import { useAuthentication } from '@/modules/auth/client/hooks';
 
 import { LegendFilters, SingleCheckbox, TabScrollablePart, Title } from './SimpleMapLegend.style';
 import {

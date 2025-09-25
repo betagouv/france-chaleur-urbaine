@@ -1,1 +1,1 @@
-clock: tsx src/server/clock.ts
+clock: tsx modules/jobs/server/clock.ts

@@ -1,23 +1,17 @@
 import { type Selectable } from 'kysely';
 
-import { processProEligibilityTestJob } from '@/modules/pro-eligibility-tests/server/jobs';
-import { processBuildTilesJob, processSyncGeometriesToAirtableJob, processSyncMetadataFromAirtableJob } from '@/modules/tiles/server/jobs';
+import { jobHandlers } from '@/modules/jobs/jobs.config';
 import { type Jobs, kdb } from '@/server/db/kysely';
 import { parentLogger } from '@/server/helpers/logger';
 import { sleep } from '@/utils/time';
+
+import { getNextJob } from './service';
 
 const logger = parentLogger.child({
   module: 'jobs',
 });
 
 type Job = Selectable<Jobs>;
-
-const jobToHandleFunc = {
-  pro_eligibility_test: processProEligibilityTestJob,
-  build_tiles: processBuildTilesJob,
-  sync_geometries_to_airtable: processSyncGeometriesToAirtableJob,
-  sync_metadata_from_airtable: processSyncMetadataFromAirtableJob,
-} as const;
 
 export async function processJobById(jobId: string) {
   const job = await kdb.selectFrom('jobs').selectAll().where('id', '=', jobId).executeTakeFirstOrThrow();
@@ -33,7 +27,7 @@ async function processJob(job: Job) {
   jobLogger.info('processing job');
 
   try {
-    const handleFunc = jobToHandleFunc[job.type];
+    const handleFunc = jobHandlers[job.type];
     if (!handleFunc) {
       throw new Error(`no processor found for the job type ${job.type}`);
     }
@@ -95,33 +89,4 @@ export async function shutdownProcessor() {
     })
     .where('id', '=', currentJobId)
     .execute();
-}
-
-/**
- * Récupère le prochain job en attente et le passe en statut "processing". Renvoi null si aucun job n'est à traiter.
- *
- * Cette fonction sélectionne un job avec le statut `"pending"` en utilisant `FOR UPDATE SKIP LOCKED`
- * pour éviter que plusieurs instances du worker ne traitent le même job simultanément.
- * Une fois sélectionné, le job est immédiatement mis à jour en `"processing"`, ce qui le verrouille
- * pour les autres workers.
- */
-async function getNextJob() {
-  return await kdb.transaction().execute(async (trx) => {
-    const job = await trx
-      .selectFrom('jobs')
-      .selectAll()
-      .where('status', '=', 'pending')
-      .orderBy('created_at')
-      .forUpdate()
-      .skipLocked()
-      .limit(1)
-      .executeTakeFirst();
-
-    if (!job) {
-      return null;
-    }
-
-    await trx.updateTable('jobs').set({ status: 'processing', updated_at: new Date(), result: null }).where('id', '=', job.id).execute();
-    return job;
-  });
 }

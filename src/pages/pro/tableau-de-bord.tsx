@@ -4,8 +4,8 @@ import DashboardProfessionnel from '@/components/dashboard/DashboardProfessionne
 import SimplePage from '@/components/shared/page/SimplePage';
 import Box from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
+import { useAuthentication } from '@/modules/auth/client/hooks';
 import { withAuthentication } from '@/server/authentication';
-import { useAuthentication } from '@/services/authentication';
 
 export default function DashboardPage() {
   const { hasRole } = useAuthentication();

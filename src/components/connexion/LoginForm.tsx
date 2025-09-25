@@ -4,8 +4,8 @@ import { type FormEvent, useState } from 'react';
 import Input from '@/components/form/dsfr/Input';
 import PasswordInput from '@/components/form/dsfr/PasswordInput';
 import Button from '@/components/ui/Button';
-import { useAuthentication, useRedirectionAfterLogin } from '@/services/authentication';
-import { toastErrors } from '@/services/notification';
+import { useAuthentication, useRedirectionAfterLogin } from '@/modules/auth/client/hooks';
+import { toastErrors } from '@/modules/notification';
 
 export interface LoginFormProps {
   callbackUrl: string;

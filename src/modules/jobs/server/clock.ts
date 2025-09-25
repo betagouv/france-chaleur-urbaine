@@ -2,7 +2,8 @@ import { serverConfig } from '@/server/config';
 import { registerCrons } from '@/server/cron/cron';
 import { shutdownKyselyDatabase } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
-import { processJobsIndefinitely, shutdownProcessor } from '@/server/services/jobs/processor';
+
+import { processJobsIndefinitely, shutdownProcessor } from './processor';
 
 let isShuttingDown = false;
 

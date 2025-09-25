@@ -7,11 +7,17 @@ import Alert from '@/components/ui/Alert';
 import Button from '@/components/ui/Button';
 import Highlight from '@/components/ui/Highlight';
 import Link from '@/components/ui/Link';
-import { toastErrors } from '@/services/notification';
+import { toastErrors } from '@/modules/notification';
+import {
+  type CredentialsSchema,
+  type IdentitySchema,
+  structureTypes,
+  zCredentialsSchema,
+  zIdentitySchema,
+} from '@/modules/users/constants';
 import { userRolesInscription } from '@/types/enum/UserRole';
 import { postFetchJSON } from '@/utils/network';
 import { upperCaseFirstChar } from '@/utils/strings';
-import { type CredentialsSchema, type IdentitySchema, structureTypes, zCredentialsSchema, zIdentitySchema } from '@/validation/user';
 
 type FormStep = {
   label: string;

@@ -4,8 +4,8 @@ import { z } from 'zod';
 import useForm from '@/components/form/react-form/useForm';
 import CenterLayout from '@/components/shared/page/CenterLayout';
 import Heading from '@/components/ui/Heading';
+import { toastErrors } from '@/modules/notification';
 import { useServices } from '@/services';
-import { toastErrors } from '@/services/notification';
 const passwordSchema = z
   .object({
     password: z

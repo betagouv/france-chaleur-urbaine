@@ -17,8 +17,8 @@ import Image from '@/components/ui/Image';
 import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
 import Tooltip from '@/components/ui/Tooltip';
-import { trackEvent } from '@/services/analytics';
-import { useAuthentication } from '@/services/authentication';
+import { trackEvent } from '@/modules/analytics/client';
+import { useAuthentication } from '@/modules/auth/client/hooks';
 
 import IconPolygon from './IconPolygon';
 import MapLegendReseaux from './MapLegendReseaux';
