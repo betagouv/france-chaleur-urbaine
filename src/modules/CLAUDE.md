@@ -21,6 +21,7 @@ All modules should be orginized the same way
 # <moduleName> module
 NEXT_MODULE_API_KEY=string
 NEXT_PUBLIC_MODULE_SOMETHING=string
+```
 
 2. Rules
 
