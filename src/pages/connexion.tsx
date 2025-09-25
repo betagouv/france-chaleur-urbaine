@@ -7,6 +7,7 @@ import Heading from '@/components/ui/Heading';
 import { activateUser } from '@/modules/auth/server/service';
 import { withServerSession } from '@/server/authentication';
 import { logger } from '@/server/helpers/logger';
+import { stripDomainFromURL } from '@/utils/url';
 
 function ConnectionPage(props: LoginFormProps): JSX.Element {
   return (
@@ -67,7 +68,7 @@ export const getServerSideProps = withServerSession(async ({ context, session })
 
   return {
     props: {
-      callbackUrl: (context.query.callbackUrl as string) || '/pro/tableau-de-bord',
+      callbackUrl: stripDomainFromURL(context.query.callbackUrl as string) || '/pro/tableau-de-bord',
     },
   };
 });
