@@ -5,10 +5,10 @@ import prompts from 'prompts';
 import { z } from 'zod';
 
 import { kdb, sql } from '@/server/db/kysely';
+import { readFileGeometry } from '@/server/helpers/geo';
 import { logger } from '@/server/helpers/logger';
 import { type TrelloCard, type TrelloLabel, TrelloService } from '@/services/TrelloService';
 import { runBash } from '@/utils/system';
-import { readFileGeometry } from '@cli/helpers/geo';
 
 import {
   createPDPFromCommune,

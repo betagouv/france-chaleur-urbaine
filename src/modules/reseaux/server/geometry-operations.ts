@@ -1,7 +1,7 @@
 import { kdb, sql } from '@/server/db/kysely';
+import { createGeometryExpression, type GeometryWithSrid } from '@/server/helpers/geo';
 import { logger } from '@/server/helpers/logger';
 import { formatAsISODate } from '@/utils/date';
-import { createGeometryExpression, type GeometryWithSrid } from '@cli/helpers/geo';
 
 /**
  * Expression SQL pour calculer les codes INSEE des communes intersectant une géométrie
