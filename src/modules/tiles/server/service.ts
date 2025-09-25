@@ -304,7 +304,12 @@ if (!isDefined(process.env.DISABLE_AIRTABLE_TILES_CACHE)) {
   cacheAirtableTiles();
 }
 
-const getTile = async (type: DatabaseSourceId, x: number, y: number, z: number): Promise<{ data: any; compressed: boolean } | null> => {
+export const getTile = async (
+  type: DatabaseSourceId,
+  x: number,
+  y: number,
+  z: number
+): Promise<{ data: any; compressed: boolean } | null> => {
   const tileInfo = tilesInfo[type];
   if (tileInfo.source === 'database') {
     const result = await db(tileInfo.tiles).where('x', x).andWhere('y', y).andWhere('z', z).first();
@@ -330,5 +335,3 @@ const getTile = async (type: DatabaseSourceId, x: number, y: number, z: number):
       }
     : null;
 };
-
-export default getTile;

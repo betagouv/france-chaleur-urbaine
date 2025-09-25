@@ -1,7 +1,7 @@
 import { type NextApiRequest, type NextApiResponse } from 'next';
 import zod from 'zod';
 
-import getTile from '@/modules/tiles/server/service';
+import { getTile } from '@/modules/tiles/server/service';
 import { zDatabaseSourceId } from '@/modules/tiles/tiles.config';
 import { handleRouteErrors, validateObjectSchema } from '@/server/helpers/server';
 
