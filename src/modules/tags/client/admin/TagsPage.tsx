@@ -13,12 +13,12 @@ import Heading from '@/components/ui/Heading';
 import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
 import useCrud from '@/hooks/useCrud';
 import { toastErrors } from '@/modules/notification';
-import { withAuthentication } from '@/server/authentication';
 import cx from '@/utils/cx';
 import { compareFrenchStrings } from '@/utils/strings';
 
-import { tagsGestionnairesStyleByType } from '../../client';
-import { type TagsResponse, type TagWithUsers } from '../../types';
+import { tagsGestionnairesStyleByType } from '../../constants';
+import { type TagsResponse } from '../../server/api-admin';
+import { type TagWithUsers } from '../../server/service';
 
 const initialSortingState = [{ id: 'name', desc: false }];
 
@@ -280,5 +280,3 @@ export default function ManageTags() {
     </SimplePage>
   );
 }
-
-export const getServerSideProps = withAuthentication(['admin']);

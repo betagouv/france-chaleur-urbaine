@@ -3,7 +3,8 @@ import React, { useMemo } from 'react';
 import Badge from '@/components/ui/Badge';
 import ChipAutoComplete, { type ChipAutoCompleteProps } from '@/components/ui/ChipAutoComplete';
 
-import { defaultTagChipOption, useFCUTags } from '../index';
+import { defaultTagChipOption } from '../constants';
+import useFCUTags from './useFCUTags';
 
 export type FCUTagAutocompleteProps = Omit<ChipAutoCompleteProps, 'options' | 'defaultOption'> & { undismissibles?: string[] };
 
