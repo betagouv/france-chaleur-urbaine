@@ -7,7 +7,7 @@ Ready-to-use notification system with toast notifications, error handling, and U
 ### 1. Install Dependencies
 ```bash
 # Install dependencies
-pnpm add react-hot-toast nuqs @sentry/browser
+pnpm add react-hot-toast nuqs
 ```
 
 ### 2. Integrate with _app.tsx
