@@ -8,7 +8,7 @@ import { applyFilters, type DB, type InsertObject, kdb } from '@/server/db/kysel
 
 const filterSchema = z.record(
   z.string(),
-  z.any().refine((val) => !(Array.isArray(val) && val[0] === 'raw'), { message: "Operators like 'raw' are not allowed in filters" })
+  z.any().refine((val) => !(Array.isArray(val) && val[0] === 'raw'), { error: "Operators like 'raw' are not allowed in filters" })
 );
 
 export type { ApiContext, ListConfig };

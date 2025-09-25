@@ -45,7 +45,7 @@ const GET = async (req: NextApiRequest) => {
 const zManagerEmail = {
   emailContent: z.object({
     object: z.string(),
-    to: z.string().email().trim(),
+    to: z.email().trim(),
     body: z.string().transform((v) => {
       return v.replace(/(?:\r\n|\r|\n)/g, '<br />');
     }),
@@ -53,7 +53,7 @@ const zManagerEmail = {
     cc: z.preprocess((v) => {
       const str = String(v);
       return str ? str.split(',') : [];
-    }, z.array(z.string().email().trim())),
+    }, z.array(z.email().trim())),
     replyTo: z.string().trim(),
   }),
   demand_id: z.string(),

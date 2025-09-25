@@ -6,7 +6,7 @@ import { listEvents } from '@/modules/events/server/service';
 import { handleRouteErrors, validateObjectSchema } from '@/server/helpers/server';
 
 const querySchema = {
-  authorId: z.string().uuid().optional(),
+  authorId: z.uuid().optional(),
   type: z.enum(eventTypes).optional(),
   contextType: z.string().optional(),
   contextId: z.string().optional(),
