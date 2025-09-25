@@ -4,7 +4,7 @@ import Hero, { HeroSubtitle, HeroTitle } from '@/components/ui/Hero';
 import Link from '@/components/ui/Link';
 import Section, { SectionContent, SectionTitle } from '@/components/ui/Section';
 import Text from '@/components/ui/Text';
-import { type TrackingEvent } from '@/services/analytics';
+import { type TrackingEvent } from '@/modules/analytics/client';
 
 const infographies: InfographieItemProps[] = [
   {

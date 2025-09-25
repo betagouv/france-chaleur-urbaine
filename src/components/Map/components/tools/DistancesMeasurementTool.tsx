@@ -12,7 +12,7 @@ import useFCUMap from '@/components/Map/MapProvider';
 import Box from '@/components/ui/Box';
 import Divider from '@/components/ui/Divider';
 import Text from '@/components/ui/Text';
-import { trackEvent } from '@/services/analytics';
+import { trackEvent } from '@/modules/analytics/client';
 import { formatDistance } from '@/utils/geo';
 
 import { type MeasureFeature, type MeasureLabelFeature } from './measure';

@@ -57,7 +57,7 @@ async function generateAddToMapInstructions(type: TilesType): Promise<void> {
   const mapLayersFilePath = `src/components/Map/map-layers.ts`;
   const mapFilePath = `src/pages/carte.tsx`;
   const tilesConfigFilePath = `src/modules/tiles/tiles.config.ts`;
-  const analyticsFilePath = `src/services/analytics.ts`;
+  const analyticsFilePath = `src/modules/analytics/analytics.config.ts`;
   const simpleMapLegendFilePath = `src/components/Map/components/SimpleMapLegend.tsx`;
 
   // Instructions pour chaque fichier

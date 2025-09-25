@@ -8,7 +8,7 @@ import Heading from '@/components/ui/Heading';
 import Icon from '@/components/ui/Icon';
 import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
-import { trackEvent } from '@/services/analytics';
+import { trackEvent } from '@/modules/analytics/client';
 import { isDefined } from '@/utils/core';
 
 import { prixSpotCEE } from './Simulator';

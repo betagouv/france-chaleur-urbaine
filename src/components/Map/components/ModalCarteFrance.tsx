@@ -9,7 +9,7 @@ import Modal from '@/components/ui/Modal';
 import Text from '@/components/ui/Text';
 import Tooltip from '@/components/ui/Tooltip';
 import useQueryFlag from '@/hooks/useQueryFlag';
-import { trackEvent } from '@/services/analytics';
+import { trackEvent } from '@/modules/analytics/client';
 import { fetchJSON } from '@/utils/network';
 import { prettyFormatNumber } from '@/utils/strings';
 

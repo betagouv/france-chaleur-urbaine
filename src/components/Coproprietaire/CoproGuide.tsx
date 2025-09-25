@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-import { trackEvent } from '@/services/analytics';
+import { trackEvent } from '@/modules/analytics/client';
 
 import { Guide } from './CoproGuide.styles';
 

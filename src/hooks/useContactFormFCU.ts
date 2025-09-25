@@ -1,8 +1,8 @@
 import { useCallback, useState } from 'react';
 
 import useURLParamOrLocalStorage, { parseAsString } from '@/hooks/useURLParamOrLocalStorage';
+import { trackEvent } from '@/modules/analytics/client';
 import { formatDataToAirtable, submitToAirtable } from '@/services/airtable';
-import { trackEvent } from '@/services/analytics';
 import { type AddressDataType } from '@/types/AddressData';
 import { Airtable } from '@/types/enum/Airtable';
 import { type FormDemandCreation } from '@/types/Summary/Demand';

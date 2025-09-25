@@ -8,9 +8,9 @@ import { type SimulatorEngine } from '@/components/ComparateurPublicodes/useSimu
 import labels from '@/components/form/publicodes/labels';
 import Button from '@/components/ui/Button';
 import CrudDropdown from '@/components/ui/CrudDropdown';
+import { trackEvent } from '@/modules/analytics/client';
 import { notify } from '@/modules/notification';
 import { type ProComparateurConfigurationResponse } from '@/pages/api/pro/comparateur/configurations/[[...slug]]';
-import { trackEvent } from '@/services/analytics';
 import { pick } from '@/utils/core';
 import cx from '@/utils/cx';
 import { sortKeys } from '@/utils/objects';

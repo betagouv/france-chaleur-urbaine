@@ -1,6 +1,6 @@
 import { Button } from '@codegouvfr/react-dsfr/Button';
 
-import { trackEvent } from '@/services/analytics';
+import { trackEvent } from '@/modules/analytics/client';
 
 import { Container, Content, GuideImage, TopLeft } from './Guide.styles';
 
