@@ -16,6 +16,11 @@ All modules should be orginized the same way
 - `constants.ts` for zod validation and other data shared by client and server
 - `<moduleName>.config.ts` for information that developer will for sure have to make changes to (routes, jobs, etc...)
 - `types.ts` to re-export types and/or share them
+- `.env.example` to let user know which .env variables he needs to add. 
+```
+# <moduleName> module
+NEXT_MODULE_API_KEY=string
+NEXT_PUBLIC_MODULE_SOMETHING=string
 
 2. Rules
 
