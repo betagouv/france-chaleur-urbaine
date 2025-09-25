@@ -56,7 +56,7 @@
   },
   "dependencies": {
     "@betagouv/france-chaleur-urbaine-publicodes": "^1.1.0",
-    "@codegouvfr/react-dsfr": "^1.26.0",
+    "@codegouvfr/react-dsfr": "^1.27.0",
     "@commander-js/extra-typings": "^12.1.0",
     "@emotion/is-prop-valid": "1.2.2",
     "@faker-js/faker": "^8.0.2",

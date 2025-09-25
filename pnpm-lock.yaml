@@ -14,8 +14,8 @@ dependencies:
     specifier: ^1.1.0
     version: 1.1.0(publicodes@1.9.0)
   '@codegouvfr/react-dsfr':
-    specifier: ^1.26.0
-    version: 1.26.0
+    specifier: ^1.27.0
+    version: 1.27.0
   '@commander-js/extra-typings':
     specifier: ^12.1.0
     version: 12.1.0(commander@12.1.0)
@@ -1913,8 +1913,8 @@ packages:
       publicodes: 1.9.0
     dev: false
 
-  /@codegouvfr/react-dsfr@1.26.0:
-    resolution: {integrity: sha512-yfevs/blAVDqw03/w7Gb/rumTlFC2i//ly0SHwrs6ZXmxRayc+UiKoou71uZSAwu1lZ9J9wyCYUbvQug57uStg==}
+  /@codegouvfr/react-dsfr@1.27.0:
+    resolution: {integrity: sha512-/E3KfGMNpYWLelf807d1T8ek7fbZs7DqI/nWaGS2g1dBKxb3piFbTpATp2nf/Z0LUhliZbhPdvhfxhsJspgHhQ==}
     hasBin: true
     peerDependencies:
       '@gouvfr/dsfr-chart': ^1.0.0
