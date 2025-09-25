@@ -257,7 +257,12 @@ export const markAsSeen = async (testId: string, context: ApiContext) => {
 };
 
 export async function ensureValidPermissions(context: ApiContext, testId: string) {
-  const test = await kdb.selectFrom('pro_eligibility_tests').select('user_id').where('id', '=', testId).executeTakeFirstOrThrow();
+  const test = await kdb
+    .selectFrom('pro_eligibility_tests')
+    .select('user_id')
+    .where('id', '=', testId)
+    .where('deleted_at', 'is', null)
+    .executeTakeFirstOrThrow();
 
   if (test.user_id !== context.user.id) {
     throw new Error('permissions invalides');
