@@ -24,7 +24,7 @@ const opacity = 0.65;
 const dpeWithColorPairs = ObjectEntries(caracteristiquesBatimentsLayerStyle).flatMap(([dpeCode, dpeColor]) => [
   dpeCode,
   ifHoverElse(darken(dpeColor, 40), dpeColor),
-]) as [ExpressionInputType, ExpressionInputType, ...ExpressionInputType[]];
+]) as [string, ExpressionInputType, ...ExpressionInputType[]];
 
 export const caracteristiquesBatimentsLayersSpec = [
   {

@@ -22,7 +22,7 @@ const GAS_PROPERTY_TYPE_GAS: keyof GasSummary = 'code_grand';
 const typeWithColorPairs = ObjectEntries(consommationsGazLayerStyle).flatMap(([TypeGasName, styleObject]) => [
   TypeGasName,
   styleObject,
-]) as [ExpressionInputType, ExpressionInputType, ...ExpressionInputType[]];
+]) as [string, ExpressionInputType, ...ExpressionInputType[]];
 
 export const consommationsGazInterval = {
   min: 50,
