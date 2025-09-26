@@ -698,7 +698,9 @@ const Graph: React.FC<GraphProps> = ({
                 {
                   eventName: 'select',
                   callback: ({ chartWrapper }) => {
-                    (chartWrapper.getChart() as any).setSelection();
+                    if (chartWrapper) {
+                      (chartWrapper.getChart() as any).setSelection();
+                    }
                   },
                 },
               ]}
@@ -750,7 +752,9 @@ const Graph: React.FC<GraphProps> = ({
                 {
                   eventName: 'select',
                   callback: ({ chartWrapper }) => {
-                    (chartWrapper.getChart() as any).setSelection();
+                    if (chartWrapper) {
+                      (chartWrapper.getChart() as any).setSelection();
+                    }
                   },
                 },
               ]}
