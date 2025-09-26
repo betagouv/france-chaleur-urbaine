@@ -57,7 +57,7 @@
   },
   "dependencies": {
     "@betagouv/france-chaleur-urbaine-publicodes": "^1.1.0",
-    "@codegouvfr/react-dsfr": "^1.27.0",
+    "@codegouvfr/react-dsfr": "^1.28.0",
     "@commander-js/extra-typings": "^14.0.0",
     "@emotion/is-prop-valid": "1.4.0",
     "@faker-js/faker": "^10.0.0",
@@ -226,7 +226,7 @@
     "postcss-import": "^16.1.1",
     "prettier": "^3.6.2",
     "raw-loader": "^4.0.2",
-    "react-email": "4.2.11",
+    "react-email": "4.2.12",
     "tailwindcss": "^4.1.13",
     "tailwindcss-animate": "^1.0.7",
     "trpc-ui": "^1.0.15",

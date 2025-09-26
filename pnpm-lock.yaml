@@ -14,8 +14,8 @@ dependencies:
     specifier: ^1.1.0
     version: 1.1.0(publicodes@1.9.1)
   '@codegouvfr/react-dsfr':
-    specifier: ^1.27.0
-    version: 1.27.0
+    specifier: ^1.28.0
+    version: 1.28.0
   '@commander-js/extra-typings':
     specifier: ^14.0.0
     version: 14.0.0(commander@14.0.1)
@@ -213,7 +213,7 @@ dependencies:
     version: 8.1.0
   jotai:
     specifier: ^2.15.0
-    version: 2.15.0(@babel/core@7.25.2)(@types/react@19.1.13)(react@19.1.1)
+    version: 2.15.0(@babel/core@7.28.4)(@types/react@19.1.13)(react@19.1.1)
   js-cookie:
     specifier: ^3.0.5
     version: 3.0.5
@@ -240,7 +240,7 @@ dependencies:
     version: 12.23.22(@emotion/is-prop-valid@1.4.0)(react-dom@19.1.1)(react@19.1.1)
   next:
     specifier: ^15.3.3
-    version: 15.3.3(@babel/core@7.25.2)(react-dom@19.1.1)(react@19.1.1)
+    version: 15.3.3(@babel/core@7.28.4)(react-dom@19.1.1)(react@19.1.1)
   next-auth:
     specifier: ^4.24.11
     version: 4.24.11(next@15.3.3)(nodemailer@7.0.6)(react-dom@19.1.1)(react@19.1.1)
@@ -517,8 +517,8 @@ devDependencies:
     specifier: ^4.0.2
     version: 4.0.2(webpack@5.101.3)
   react-email:
-    specifier: 4.2.11
-    version: 4.2.11
+    specifier: 4.2.12
+    version: 4.2.12
   tailwindcss:
     specifier: ^4.1.13
     version: 4.1.13
@@ -556,6 +556,7 @@ packages:
     dependencies:
       '@jridgewell/gen-mapping': 0.3.12
       '@jridgewell/trace-mapping': 0.3.29
+    dev: true
 
   /@aws-crypto/sha256-browser@5.2.0:
     resolution: {integrity: sha512-AXfN/lGotSQwu6HNcEsIASo7kWXZ5HYWvfOmSNKDsEqC4OashTp8alTmaz+F7TC2L083SFv5RdB+qU3Vs1kZqw==}
@@ -1047,11 +1048,11 @@ packages:
   /@babel/compat-data@7.25.4:
     resolution: {integrity: sha512-+LGRog6RAsCJrrrg/IO6LGmpphNe5DiK30dGjCoxxeGv49B10/3XYGxPsAwrDlMFcFEvdAUavDT8r9k/hSyQqQ==}
     engines: {node: '>=6.9.0'}
+    dev: true
 
   /@babel/compat-data@7.28.4:
     resolution: {integrity: sha512-YsmSKC29MJwf0gF8Rjjrg5LQCmyh+j/nD8/eP7f+BeoQTKYqs9RoWbjGOdy0+1Ekr68RJZMUOPVQaQisnIo4Rw==}
     engines: {node: '>=6.9.0'}
-    dev: true
 
   /@babel/core@7.25.2:
     resolution: {integrity: sha512-BBt3opiCOxUr9euZ5/ro/Xv8/V7yJ5bjYMqG/C1YAo8MIKAnumZalCN+msbci3Pigy4lIQfPUpfMM27HMGaYEA==}
@@ -1074,6 +1075,7 @@ packages:
       semver: 6.3.1
     transitivePeerDependencies:
       - supports-color
+    dev: true
 
   /@babel/core@7.28.4:
     resolution: {integrity: sha512-2BCOP7TN8M+gVDj7/ht3hsaO/B/n5oDbiAyyvnRlNOs+u1o+JWNYTQrmpuNp1/Wq2gcFrI01JAW+paEKDMx/CA==}
@@ -1096,7 +1098,6 @@ packages:
       semver: 6.3.1
     transitivePeerDependencies:
       - supports-color
-    dev: true
 
   /@babel/generator@7.28.0:
     resolution: {integrity: sha512-lJjzvrbEeWrhB4P3QBsH7tey117PjLZnDbLiQEKjQ/fNJTjuq4HSqgFA+UNSwZT8D7dxxbnuSBMsa1lrWzKlQg==}
@@ -1117,7 +1118,6 @@ packages:
       '@jridgewell/gen-mapping': 0.3.13
       '@jridgewell/trace-mapping': 0.3.31
       jsesc: 3.1.0
-    dev: true
 
   /@babel/helper-annotate-as-pure@7.24.7:
     resolution: {integrity: sha512-BaDeOonYvhdKw+JoMVkAixAAJzG2jVPIwWoKBPdYuY9b452e2rPuI9QPYh3KpofZ3pW2akOmwZLOiOsHMiqRAg==}
@@ -1145,6 +1145,7 @@ packages:
       browserslist: 4.25.1
       lru-cache: 5.1.1
       semver: 6.3.1
+    dev: true
 
   /@babel/helper-compilation-targets@7.27.2:
     resolution: {integrity: sha512-2+1thGUUWWjLTYTHZWK1n8Yga0ijBz1XAhUXcKy81rd5g6yh7hGqMp45v7cadSbEHc9G3OTv45SyneRN3ps4DQ==}
@@ -1155,7 +1156,6 @@ packages:
       browserslist: 4.26.2
       lru-cache: 5.1.1
       semver: 6.3.1
-    dev: true
 
   /@babel/helper-create-class-features-plugin@7.25.4(@babel/core@7.25.2):
     resolution: {integrity: sha512-ro/bFs3/84MDgDmMwbcHgDa8/E6J3QKNTk4xJJnVeFtGE+tL0K26E3pNxhYz2b67fJpt7Aphw5XcploKXuCvCQ==}
@@ -1238,6 +1238,7 @@ packages:
       '@babel/traverse': 7.28.0
     transitivePeerDependencies:
       - supports-color
+    dev: true
 
   /@babel/helper-module-transforms@7.28.3(@babel/core@7.28.4):
     resolution: {integrity: sha512-gytXUbs8k2sXS9PnQptz5o0QnpLL51SwASIORY6XaBKF88nsOT0Zw9szLqlSGQDP/4TljBAD5y98p2U1fqkdsw==}
@@ -1251,7 +1252,6 @@ packages:
       '@babel/traverse': 7.28.4
     transitivePeerDependencies:
       - supports-color
-    dev: true
 
   /@babel/helper-optimise-call-expression@7.24.7:
     resolution: {integrity: sha512-jKiTsW2xmWwxT1ixIdfXUZp+P5yURx2suzLZr5Hi64rURpDYdMW0pv+Uf17EYk2Rd428Lx4tLsnjGJzYKDM/6A==}
@@ -1306,6 +1306,7 @@ packages:
       '@babel/types': 7.28.1
     transitivePeerDependencies:
       - supports-color
+    dev: true
 
   /@babel/helper-skip-transparent-expression-wrappers@7.24.7:
     resolution: {integrity: sha512-IO+DLT3LQUElMbpzlatRASEyQtfhSE0+m465v++3jyyXeBTBUjtVZg28/gHeV5mrTJqvEKhKroBGAvhW+qPHiQ==}
@@ -1328,11 +1329,11 @@ packages:
   /@babel/helper-validator-option@7.24.8:
     resolution: {integrity: sha512-xb8t9tD1MHLungh/AIoWYN+gVHaB9kwlu8gffXGSt3FFEIT7RjS+xWbc2vUD1UTZdIpKj/ab3rdqJ7ufngyi2Q==}
     engines: {node: '>=6.9.0'}
+    dev: true
 
   /@babel/helper-validator-option@7.27.1:
     resolution: {integrity: sha512-YvjJow9FxbhFFKDSuFnVCe2WxXk1zWc22fFePVNEaWJEu8IrZVlda6N0uHwzZrUM1il7NC9Mlp4MaJYbYd9JSg==}
     engines: {node: '>=6.9.0'}
-    dev: true
 
   /@babel/helper-wrap-function@7.25.0:
     resolution: {integrity: sha512-s6Q1ebqutSiZnEjaofc/UKDyC4SbzV5n5SrA2Gq8UawLycr3i04f1dX4OzoQVnexm6aOCh37SQNYlJ/8Ku+PMQ==}
@@ -1351,6 +1352,7 @@ packages:
     dependencies:
       '@babel/template': 7.27.2
       '@babel/types': 7.28.1
+    dev: true
 
   /@babel/helpers@7.28.4:
     resolution: {integrity: sha512-HFN59MmQXGHVyYadKLVumYsA9dBFun/ldYxipEjzA4196jpLZd8UjEEBLkbEkvfYreDqJhZxYAWFPtrfhNpj4w==}
@@ -1358,7 +1360,6 @@ packages:
     dependencies:
       '@babel/template': 7.27.2
       '@babel/types': 7.28.4
-    dev: true
 
   /@babel/parser@7.28.0:
     resolution: {integrity: sha512-jVZGvOxOuNSsuQuLRTh13nU0AogFlw32w/MT+LV6D3sP5WdbW61E77RnkbaO2dUvmPAYrBDJXGn5gGS6tH4j8g==}
@@ -1373,7 +1374,6 @@ packages:
     hasBin: true
     dependencies:
       '@babel/types': 7.28.4
-    dev: true
 
   /@babel/plugin-bugfix-firefox-class-in-computed-class-key@7.25.3(@babel/core@7.25.2):
     resolution: {integrity: sha512-wUrcsxZg6rqBXG05HG1FPYgsP6EvwF4WpBbxIpWIIYnH8wG0gzx3yZY3dtEHas4sTAOGkbTsc9EGPxwff8lRoA==}
@@ -2488,7 +2488,6 @@ packages:
       debug: 4.4.3
     transitivePeerDependencies:
       - supports-color
-    dev: true
 
   /@babel/types@7.28.1:
     resolution: {integrity: sha512-x0LvFTekgSX+83TI28Y9wYPUfzrnl2aT5+5QLnO6v7mSJYtEEevuDRN0F0uSHRk1G1IWZC43o00Y0xDDrpBGPQ==}
@@ -2503,7 +2502,6 @@ packages:
     dependencies:
       '@babel/helper-string-parser': 7.27.1
       '@babel/helper-validator-identifier': 7.27.1
-    dev: true
 
   /@betagouv/france-chaleur-urbaine-publicodes@1.1.0(publicodes@1.9.1):
     resolution: {integrity: sha512-JoX7FgZH4/tRqL5+nHbOj7UcmYiCMzfrNsdNYiAI/dSn5kOsrhJQNpNbsVk3D1bO+I8tGSKaqx9V3YS1T1sJ7A==}
@@ -2513,8 +2511,8 @@ packages:
       publicodes: 1.9.1
     dev: false
 
-  /@codegouvfr/react-dsfr@1.27.0:
-    resolution: {integrity: sha512-/E3KfGMNpYWLelf807d1T8ek7fbZs7DqI/nWaGS2g1dBKxb3piFbTpATp2nf/Z0LUhliZbhPdvhfxhsJspgHhQ==}
+  /@codegouvfr/react-dsfr@1.28.0:
+    resolution: {integrity: sha512-/RnN9KcBPrye/gfd6eK0M8f/Mj/6x+6rmVDE4f5qvPtxeICRX2IuJtkUu6VcMroQLBwtk8uypfjQdSKd5uiuAA==}
     hasBin: true
     peerDependencies:
       '@gouvfr/dsfr-chart': ^1.0.0
@@ -3513,7 +3511,6 @@ packages:
     dependencies:
       '@jridgewell/gen-mapping': 0.3.13
       '@jridgewell/trace-mapping': 0.3.31
-    dev: true
 
   /@jridgewell/resolve-uri@3.1.2:
     resolution: {integrity: sha512-bRISgCIjP20/tbWSPWMEi54QVPRZExkuD9lJL+UIxUKtwVJA8wW1Trb1jMs1RFXo1CBTNZ/5hpC9QvmKWdopKw==}
@@ -4829,7 +4826,7 @@ packages:
       react-dom: ^16 || ^17 || ^18 || ^19
     dependencies:
       formdata-node: 4.4.1
-      next: 15.3.3(@babel/core@7.25.2)(react-dom@19.1.1)(react@19.1.1)
+      next: 15.3.3(@babel/core@7.28.4)(react-dom@19.1.1)(react@19.1.1)
       react: 19.1.1
       react-dom: 19.1.1(react@19.1.1)
       universal-cookie: 4.0.4
@@ -5322,7 +5319,7 @@ packages:
       '@sentry/vercel-edge': 7.119.2
       '@sentry/webpack-plugin': 1.21.0
       chalk: 3.0.0
-      next: 15.3.3(@babel/core@7.25.2)(react-dom@19.1.1)(react@19.1.1)
+      next: 15.3.3(@babel/core@7.28.4)(react-dom@19.1.1)(react@19.1.1)
       react: 19.1.1
       resolve: 1.22.8
       rollup: 2.79.2
@@ -5810,7 +5807,7 @@ packages:
     peerDependencies:
       next: '>= 9.5.5'
     dependencies:
-      next: 15.3.3(@babel/core@7.25.2)(react-dom@19.1.1)(react@19.1.1)
+      next: 15.3.3(@babel/core@7.28.4)(react-dom@19.1.1)(react@19.1.1)
     dev: false
 
   /@socket.io/component-emitter@3.1.2:
@@ -6362,7 +6359,7 @@ packages:
       '@trpc/client': 11.6.0(@trpc/server@11.6.0)(typescript@5.9.2)
       '@trpc/react-query': 11.6.0(@tanstack/react-query@5.90.2)(@trpc/client@11.6.0)(@trpc/server@11.6.0)(react-dom@19.1.1)(react@19.1.1)(typescript@5.9.2)
       '@trpc/server': 11.6.0(typescript@5.9.2)
-      next: 15.3.3(@babel/core@7.25.2)(react-dom@19.1.1)(react@19.1.1)
+      next: 15.3.3(@babel/core@7.28.4)(react-dom@19.1.1)(react@19.1.1)
       react: 19.1.1
       react-dom: 19.1.1(react@19.1.1)
       typescript: 5.9.2
@@ -7874,6 +7871,7 @@ packages:
       electron-to-chromium: 1.5.187
       node-releases: 2.0.19
       update-browserslist-db: 1.1.3(browserslist@4.25.1)
+    dev: true
 
   /browserslist@4.26.2:
     resolution: {integrity: sha512-ECFzp6uFOSB+dcZ5BK/IBaGWssbSYBHvuMeMt3MMFyhI0Z8SqGgEkBLARgpRH3hutIgPVsALcMwbDrJqPxQ65A==}
@@ -8771,6 +8769,7 @@ packages:
 
   /electron-to-chromium@1.5.187:
     resolution: {integrity: sha512-cl5Jc9I0KGUoOoSbxvTywTa40uspGJt/BDBoDLoxJRSBpWh4FFXBsjNRHfQrONsV/OoEjDfHUmZQa2d6Ze4YgA==}
+    dev: true
 
   /electron-to-chromium@1.5.224:
     resolution: {integrity: sha512-kWAoUu/bwzvnhpdZSIc6KUyvkI1rbRXMT0Eq8pKReyOyaPZcctMli+EgvcN1PAvwVc7Tdo4Fxi2PsLNDU05mdg==}
@@ -11028,7 +11027,7 @@ packages:
     resolution: {integrity: sha512-1vUQX+IdDMVPj4k8kOxgUqlcK518yluMuGZwqlr44FS1ppZB/5GWh4rZG89erpOBOJjU/OBsnCVFfapsRz6nEA==}
     dev: false
 
-  /jotai@2.15.0(@babel/core@7.25.2)(@types/react@19.1.13)(react@19.1.1):
+  /jotai@2.15.0(@babel/core@7.28.4)(@types/react@19.1.13)(react@19.1.1):
     resolution: {integrity: sha512-nbp/6jN2Ftxgw0VwoVnOg0m5qYM1rVcfvij+MZx99Z5IK13eGve9FJoCwGv+17JvVthTjhSmNtT5e1coJnr6aw==}
     engines: {node: '>=12.20.0'}
     peerDependencies:
@@ -11046,7 +11045,7 @@ packages:
       react:
         optional: true
     dependencies:
-      '@babel/core': 7.25.2
+      '@babel/core': 7.28.4
       '@types/react': 19.1.13
       react: 19.1.1
     dev: false
@@ -12433,7 +12432,7 @@ packages:
       '@panva/hkdf': 1.2.1
       cookie: 0.7.2
       jose: 4.15.9
-      next: 15.3.3(@babel/core@7.25.2)(react-dom@19.1.1)(react@19.1.1)
+      next: 15.3.3(@babel/core@7.28.4)(react-dom@19.1.1)(react@19.1.1)
       nodemailer: 7.0.6
       oauth: 0.9.15
       openid-client: 5.7.1
@@ -12461,10 +12460,10 @@ packages:
       '@next/env': 13.5.6
       fast-glob: 3.3.2
       minimist: 1.2.8
-      next: 15.3.3(@babel/core@7.25.2)(react-dom@19.1.1)(react@19.1.1)
+      next: 15.3.3(@babel/core@7.28.4)(react-dom@19.1.1)(react@19.1.1)
     dev: false
 
-  /next@15.3.3(@babel/core@7.25.2)(react-dom@19.1.1)(react@19.1.1):
+  /next@15.3.3(@babel/core@7.28.4)(react-dom@19.1.1)(react@19.1.1):
     resolution: {integrity: sha512-JqNj29hHNmCLtNvd090SyRbXJiivQ+58XjCcrC50Crb5g5u2zi7Y2YivbsEfzk6AtVI80akdOQbaMZwWB1Hthw==}
     engines: {node: ^18.18.0 || ^19.8.0 || >= 20.0.0}
     hasBin: true
@@ -12493,7 +12492,7 @@ packages:
       postcss: 8.5.6
       react: 19.1.1
       react-dom: 19.1.1(react@19.1.1)
-      styled-jsx: 5.1.6(@babel/core@7.25.2)(react@19.1.1)
+      styled-jsx: 5.1.6(@babel/core@7.28.4)(react@19.1.1)
     optionalDependencies:
       '@next/swc-darwin-arm64': 15.3.3
       '@next/swc-darwin-x64': 15.3.3
@@ -12560,6 +12559,7 @@ packages:
 
   /node-releases@2.0.19:
     resolution: {integrity: sha512-xxOWJsBKtzAq7DY0J+DTzuz58K8e7sJbdgwkbMWQe8UYB6ekmsQ45q0M/tJDsGaZmbC+l7n57UV8Hl5tHxO9uw==}
+    dev: true
 
   /node-releases@2.0.21:
     resolution: {integrity: sha512-5b0pgg78U3hwXkCM8Z9b2FJdPZlr9Psr9V2gQPESdGHqbntyFJKFW4r5TeWGFzafGY3hzs1JC62VEQMbl1JFkw==}
@@ -12616,7 +12616,7 @@ packages:
         optional: true
     dependencies:
       '@standard-schema/spec': 1.0.0
-      next: 15.3.3(@babel/core@7.25.2)(react-dom@19.1.1)(react@19.1.1)
+      next: 15.3.3(@babel/core@7.28.4)(react-dom@19.1.1)(react@19.1.1)
       react: 19.1.1
 
   /nypm@0.6.0:
@@ -13340,8 +13340,8 @@ packages:
       react: 19.1.1
       scheduler: 0.26.0
 
-  /react-email@4.2.11:
-    resolution: {integrity: sha512-/7TXRgsTrXcV1u7kc5ZXDVlPvZqEBaYcflMhE2FgWIJh3OHLjj2FqctFTgYcp0iwzbR59a7gzJLmSKyD0wYJEQ==}
+  /react-email@4.2.12:
+    resolution: {integrity: sha512-Cp6nYAG9uL4//X/96wDSKxGqVTXsaRMuD1ub0G0iBcfTqLel4VVre3kicq7RraplDuj+ATlqSZu47d7P2ULP5w==}
     engines: {node: '>=18.0.0'}
     hasBin: true
     dependencies:
@@ -13397,8 +13397,8 @@ packages:
     resolution: {integrity: sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==}
     dev: true
 
-  /react-is@18.2.0:
-    resolution: {integrity: sha512-xWGDIW6x921xtzPkhiULtthJHoJvBbF3q26fzloPCK0hsvxtPVelvftw3zjbHWSkR2km9Z+4uxbDDK/6Zw9B8w==}
+  /react-is@18.3.1:
+    resolution: {integrity: sha512-/LLMVyas0ljjAtoYiPqYiL8VWXzUUdThrmU5+n20DZv+a+ClRoevUzw5JxU+Ieh5/c87ytoTBV9G1FiKfNJdmg==}
     dev: false
 
   /react-is@19.1.1:
@@ -13414,7 +13414,7 @@ packages:
     dependencies:
       react: 19.1.1
       react-dom: 19.1.1(react@19.1.1)
-      react-is: 18.2.0
+      react-is: 18.3.1
       styled-components: 6.1.19(react-dom@19.1.1)(react@19.1.1)
     dev: false
 
@@ -14750,7 +14750,7 @@ packages:
       tslib: 2.6.2
     dev: false
 
-  /styled-jsx@5.1.6(@babel/core@7.25.2)(react@19.1.1):
+  /styled-jsx@5.1.6(@babel/core@7.28.4)(react@19.1.1):
     resolution: {integrity: sha512-qSVyDTeMotdvQYoHWLNGwRFJHC+i+ZvdBRYosOFgC+Wg1vx4frN2/RG/NA7SYqqvKNLf39P2LSRA2pu6n0XYZA==}
     engines: {node: '>= 12.0.0'}
     peerDependencies:
@@ -14763,7 +14763,7 @@ packages:
       babel-plugin-macros:
         optional: true
     dependencies:
-      '@babel/core': 7.25.2
+      '@babel/core': 7.28.4
       client-only: 0.0.1
       react: 19.1.1
 
@@ -15391,6 +15391,7 @@ packages:
       browserslist: 4.25.1
       escalade: 3.2.0
       picocolors: 1.1.1
+    dev: true
 
   /update-browserslist-db@1.1.3(browserslist@4.26.2):
     resolution: {integrity: sha512-UxhIZQ+QInVdunkDAaiazvvT/+fXL5Osr0JZlJulepYu6Jd7qJtDZjlur0emRlT71EN3ScPoE7gvsuIKKNavKw==}
