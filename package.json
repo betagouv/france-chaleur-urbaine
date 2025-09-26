@@ -59,7 +59,7 @@
     "@codegouvfr/react-dsfr": "^1.27.0",
     "@commander-js/extra-typings": "^14.0.0",
     "@emotion/is-prop-valid": "1.4.0",
-    "@faker-js/faker": "^8.0.2",
+    "@faker-js/faker": "^10.0.0",
     "@incubateur-ademe/legal-pages-react": "0.4.0-next-client.0",
     "@mapbox/geo-viewport": "^0.5.0",
     "@mapbox/mapbox-gl-draw": "^1.5.0",

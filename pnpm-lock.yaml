@@ -23,8 +23,8 @@ dependencies:
     specifier: 1.4.0
     version: 1.4.0
   '@faker-js/faker':
-    specifier: ^8.0.2
-    version: 8.3.1
+    specifier: ^10.0.0
+    version: 10.0.0
   '@incubateur-ademe/legal-pages-react':
     specifier: 0.4.0-next-client.0
     version: 0.4.0-next-client.0(react-dom@19.1.1)(react@19.1.1)
@@ -3298,10 +3298,9 @@ packages:
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     dev: true
 
-  /@faker-js/faker@8.3.1:
-    resolution: {integrity: sha512-FdgpFxY6V6rLZE9mmIBb9hM0xpfvQOSNOLnzolzKwsE1DH+gC7lEKV1p1IbR0lAYyvYd5a4u3qWJzowUkw1bIw==}
-    engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0, npm: '>=6.14.13'}
-    deprecated: Please update to a newer version
+  /@faker-js/faker@10.0.0:
+    resolution: {integrity: sha512-UollFEUkVXutsaP+Vndjxar40Gs5JL2HeLcl8xO1QAjJgOdhc3OmBFWyEylS+RddWaaBiAzH+5/17PLQJwDiLw==}
+    engines: {node: ^20.19.0 || ^22.13.0 || ^23.5.0 || >=24.0.0, npm: '>=10'}
     dev: false
 
   /@floating-ui/core@1.7.3:
