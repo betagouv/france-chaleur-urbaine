@@ -22,7 +22,6 @@ export default [
   // Global ignores
   {
     ignores: [
-      '.eslintrc.json',
       'package.json',
       'src/data/map/*.json',
       '**/*.geojson',
