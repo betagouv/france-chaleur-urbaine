@@ -31,7 +31,7 @@ const ChauffageUrbain = () => {
       <StickyForm />
       <StickyWrapper>
         <Slice>
-          <Heading as="h1" className="!mt-12">
+          <Heading as="h1" className="mt-12!">
             Tout savoir sur le chauffage urbain
           </Heading>
           <div className="my-8 [&_li]:cursor-pointer">

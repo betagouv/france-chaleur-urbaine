@@ -118,9 +118,9 @@ export type TableSimpleProps<T> = {
 const cellCustomClasses = cva('', {
   variants: {
     padding: {
-      sm: '!p-2 !leading-tight',
+      sm: 'p-2! leading-tight!',
       md: '',
-      lg: '!p-6',
+      lg: 'p-6!',
     },
   },
   defaultVariants: {
@@ -162,8 +162,8 @@ const TableRow = <T extends RowData>({
       className={cx(
         'grid absolute w-full',
         canSelectRow && 'cursor-pointer transition-colors duration-100',
-        !isSelected && 'hover:!bg-gray-200',
-        isSelected ? '!bg-[#e1f1f5] hover:!bg-[#d2eaf1]' : virtualRow.index % 2 === 0 ? '!bg-white' : '!bg-stripe'
+        !isSelected && 'hover:bg-gray-200!',
+        isSelected ? 'bg-[#e1f1f5]! hover:bg-[#d2eaf1]!' : virtualRow.index % 2 === 0 ? 'bg-white!' : 'bg-stripe!'
       )}
       style={{
         transform: `translateY(${virtualRow.start}px)`,
@@ -210,7 +210,7 @@ const TableRow = <T extends RowData>({
               `${cell.id}_${(cell.row.original as any).id ?? ''}`
             }
             className={cx(
-              '!flex items-center',
+              'flex! items-center',
               {
                 'overflow-auto': !React.isValidElement(cell.getValue()),
                 'fr-cell--fixed': columnDef.id === 'selection',
@@ -283,7 +283,7 @@ const TableTH = <T extends RowData>({
       key={header.id}
       colSpan={header.colSpan}
       className={cx(
-        '!flex flex-nowrap items-between overflow-auto gap-1',
+        'flex! flex-nowrap items-between overflow-auto gap-1',
         'hover:shadow-[-5px_0_5px_-5px_rgba(0,0,0,0.05),5px_0_5px_-5px_rgba(0,0,0,0.05)]',
         isInlineLayout ? 'items-center' : 'items-between',
         columnClassName(columnDef),
@@ -410,9 +410,9 @@ const TableSimple = <T extends RowData>({
   const columnClassName = React.useCallback(({ align, className }: ColumnDef<T>) => {
     const classNames = [];
 
-    if (align === 'left') classNames.push('!text-left justify-start'); // need the ! to bypass DSFR
-    if (align === 'right') classNames.push('!text-right justify-end');
-    if (align === 'center') classNames.push('!text-center justify-center');
+    if (align === 'left') classNames.push('text-left! justify-start'); // need the ! to bypass DSFR
+    if (align === 'right') classNames.push('text-right! justify-end');
+    if (align === 'center') classNames.push('text-center! justify-center');
 
     if (className) classNames.push(className);
 
@@ -577,7 +577,7 @@ const TableSimple = <T extends RowData>({
       </div>
       {caption && <div className="text-2xl leading-8 font-bold mb-5">{caption}</div>}
       <div
-        className={cx(fr.cx('fr-table', 'fr-table--no-scroll'), 'scrollbar-visible !my-0')}
+        className={cx(fr.cx('fr-table', 'fr-table--no-scroll'), 'scrollbar-visible my-0!')}
         ref={tableContainerRef}
         style={{
           overflow: 'auto', // our scrollable table container
@@ -587,7 +587,7 @@ const TableSimple = <T extends RowData>({
       >
         {/* Even though we're still using sematic table tags, we must use CSS grid and flexbox for dynamic row heights */}
         <table
-          className={cx(fluid ? '!w-[max-content]' : '', tableClassName)}
+          className={cx(fluid ? 'w-max!' : '', tableClassName)}
           style={{
             display: 'grid',
             overflow: 'unset', // overwrite the dsfr
@@ -638,7 +638,7 @@ const TableSimple = <T extends RowData>({
                   style={{ gridTemplateColumns, transform: `translateY(${value * rowHeight}px)`, height: rowHeight }}
                 >
                   {columns.map((column, index) => (
-                    <td key={`loading_${value}_${index}`} className={cx('!flex items-center', columnClassName(column))}>
+                    <td key={`loading_${value}_${index}`} className={cx('flex! items-center', columnClassName(column))}>
                       <div role="status" className="animate-pulse text-center w-[90%]">
                         <div className="mx-auto my-2 h-3.5 rounded-full bg-gray-200"></div>
                       </div>

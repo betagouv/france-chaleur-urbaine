@@ -291,7 +291,7 @@ function DemandEmailForm(props: Props) {
                                       setEmailContentValue('body', `${emailContent.body} ${templateKey}`);
                                       void navigator.clipboard.writeText(templateKey).catch();
                                     }}
-                                    className="cursor-pointer hover:bg-gray-200 rounded-sm p-1"
+                                    className="cursor-pointer hover:bg-gray-200 rounded-xs p-1"
                                   >
                                     &#123;&#123;{authorizedTemplateKey}&#125;&#125;
                                   </strong>

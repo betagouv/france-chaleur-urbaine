@@ -91,7 +91,7 @@ const TableFieldInput = forwardRef<HTMLInputElement, TableFieldInputProps>((rawP
           </Tooltip>
         ) : (
           <Tooltip title={`Revoir la suggestion (${props.suggestedValue})`}>
-            <button onClick={resetValue} className="-mt-1 p-0.5 hover:bg-gray-100 rounded">
+            <button onClick={resetValue} className="-mt-1 p-0.5 hover:bg-gray-100 rounded-sm">
               <Icon name="fr-icon-refresh-line" size="xs" color="warning" />
             </button>
           </Tooltip>

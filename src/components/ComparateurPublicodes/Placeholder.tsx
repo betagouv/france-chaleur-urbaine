@@ -51,7 +51,7 @@ export const Explanations = ({ className, advancedMode, ...props }: React.HTMLAt
         voir l’explication détaillée
       </a>
       ), et ne se substitue en aucun cas à une étude de faisabilité technico-économique. <DataYearDisclaimer advancedMode={advancedMode} />
-      <p className="fr-text--sm font-bold !mt-2">
+      <p className="fr-text--sm font-bold mt-2!">
         Pour une étude plus poussée (prix actualisés, prise en compte des spécificités de votre bâtiment), nous vous invitons à vous
         rapprocher du gestionnaire du réseau de chaleur le plus proche de chez vous ou d'un bureau d'études.
       </p>
@@ -205,9 +205,9 @@ export const DisclaimerButton: React.FC<React.HTMLAttributes<HTMLDivElement> & {
   return (
     <>
       <DisclaimerModal />
-      <p className={cx('fr-text--xs text-warning !mb-0', withBouclierTarifaire ? '' : '!mb-5')}>
+      <p className={cx('fr-text--xs text-warning mb-0!', withBouclierTarifaire ? '' : 'mb-5!')}>
         <Icon name="fr-icon-info-line" size="xs" /> Tous les modes de chauffage ne sont pas interchangeables.{' '}
-        <a href="#" onClick={() => modalDisclaimer.open()} className="fr-link fr-text--xs !text-warning">
+        <a href="#" onClick={() => modalDisclaimer.open()} className="fr-link fr-text--xs text-warning!">
           En savoir plus
         </a>
       </p>
@@ -217,7 +217,7 @@ export const DisclaimerButton: React.FC<React.HTMLAttributes<HTMLDivElement> & {
           <Link
             href="/documentation/comparateur/prise-en-compte_bouclier-tarifaire.pdf"
             isExternal
-            className="fr-link fr-text--xs !text-warning"
+            className="fr-link fr-text--xs text-warning!"
           >
             En savoir plus
           </Link>

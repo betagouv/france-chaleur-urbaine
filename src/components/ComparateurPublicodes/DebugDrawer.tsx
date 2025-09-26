@@ -38,7 +38,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
             variant="tertiaryNoOutline"
             href={`${clientConfig.publicodesDocumentationURL}/doc/${utils.encodeRuleName(key)}?situation=${serializedSituation}`}
             isExternal
-            className="reset-external !px-0.5 ml-auto"
+            className="reset-external px-0.5! ml-auto"
           >
             <Icon name="fr-icon-article-line" />
           </Link>
@@ -59,7 +59,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
             variant="tertiaryNoOutline"
             href={`${clientConfig.publicodesDocumentationURL}/doc/${utils.encodeRuleName(key)}?situation=${serializedSituation}`}
             isExternal
-            className="reset-external !px-0.5 ml-auto"
+            className="reset-external px-0.5! ml-auto"
           >
             <Icon name="fr-icon-article-line" />
           </Link>
@@ -77,7 +77,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
             variant="tertiaryNoOutline"
             href={`${clientConfig.publicodesDocumentationURL}/doc/${utils.encodeRuleName(key)}?situation=${serializedSituation}`}
             isExternal
-            className="reset-external !px-0.5 ml-auto"
+            className="reset-external px-0.5! ml-auto"
           >
             <Icon name="fr-icon-article-line" />
           </Link>

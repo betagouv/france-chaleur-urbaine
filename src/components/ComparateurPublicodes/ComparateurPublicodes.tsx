@@ -632,7 +632,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
           <SectionHeading size="h3">Une suggestion ou une remarque&nbsp;?</SectionHeading>
           <SectionContent className="flex items-center gap-2">
             <FCUArrowIcon />
-            <div className="fr-text--lg !mb-0">Faites nous part de vos retours et suggestions sur ce comparateur</div>
+            <div className="fr-text--lg mb-0!">Faites nous part de vos retours et suggestions sur ce comparateur</div>
           </SectionContent>
           <Link variant="secondary" href="/contact?reason=comparateur" className="fr-mt-2w">
             Nous contacter

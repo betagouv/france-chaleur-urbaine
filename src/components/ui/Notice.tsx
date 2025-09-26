@@ -12,13 +12,13 @@ export type NoticeProps = Omit<DSFRNoticeProps, 'isClosable' | 'title' | 'severi
 
 const classNames: { titles: { [key: string]: string }; root: { [key: string]: string } } = {
   titles: {
-    xs: '!text-xs',
-    sm: '!text-sm',
+    xs: 'text-xs!',
+    sm: 'text-sm!',
     md: '',
   },
   root: {
-    xs: '!py-0.5 [&>div]:px-1.5',
-    sm: '!py-2 [&>div]:px-2',
+    xs: 'py-0.5! [&>div]:px-1.5',
+    sm: 'py-2! [&>div]:px-2',
     md: '',
   },
 };
@@ -35,7 +35,7 @@ const Notice: React.FC<NoticeProps> = ({ children, className, onClose, variant, 
     <StyledDSFRNotice
       title={<span>{children || title}</span>}
       classes={{
-        title: cx('!inline-flex !items-center', classNames.titles[size]),
+        title: cx('inline-flex! items-center!', classNames.titles[size]),
         root: cx(classNames.root[size], className),
       }}
       severity={variant}
