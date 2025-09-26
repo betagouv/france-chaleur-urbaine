@@ -17,8 +17,8 @@ dependencies:
     specifier: ^1.27.0
     version: 1.27.0
   '@commander-js/extra-typings':
-    specifier: ^12.1.0
-    version: 12.1.0(commander@12.1.0)
+    specifier: ^14.0.0
+    version: 14.0.0(commander@14.0.1)
   '@emotion/is-prop-valid':
     specifier: 1.4.0
     version: 1.4.0
@@ -176,8 +176,8 @@ dependencies:
     specifier: ^0.7.1
     version: 0.7.1
   commander:
-    specifier: ^12.1.0
-    version: 12.1.0
+    specifier: ^14.0.1
+    version: 14.0.1
   cors:
     specifier: ^2.8.5
     version: 2.8.5
@@ -2445,12 +2445,12 @@ packages:
     engines: {node: '>=0.1.90'}
     dev: false
 
-  /@commander-js/extra-typings@12.1.0(commander@12.1.0):
-    resolution: {integrity: sha512-wf/lwQvWAA0goIghcb91dQYpkLBcyhOhQNqG/VgWhnKzgt+UOMvra7EX/2fv70arm5RW+PUHoQHHDa6/p77Eqg==}
+  /@commander-js/extra-typings@14.0.0(commander@14.0.1):
+    resolution: {integrity: sha512-hIn0ncNaJRLkZrxBIp5AsW/eXEHNKYQBh0aPdoUqNgD+Io3NIykQqpKFyKcuasZhicGaEZJX/JBSIkZ4e5x8Dg==}
     peerDependencies:
-      commander: ~12.1.0
+      commander: ~14.0.0
     dependencies:
-      commander: 12.1.0
+      commander: 14.0.1
     dev: false
 
   /@corex/deepmerge@4.0.43:
@@ -8179,11 +8179,6 @@ packages:
     engines: {node: '>=14'}
     dev: false
 
-  /commander@12.1.0:
-    resolution: {integrity: sha512-Vw8qHK3bZM9y/P10u3Vib8o/DdkvA2OtPtZvD871QKjy74Wj1WSKFILMPRPSdUSx5RFK1arlJzEtA4PkFgnbuA==}
-    engines: {node: '>=18'}
-    dev: false
-
   /commander@13.1.0:
     resolution: {integrity: sha512-/rFeCpNJQbhSZjGVwO9RFV3xPqbnERS8MmIQzCtD/zl6gpJuV/bMLuN92oG3F7d8oDEHHRrujSXNUr8fpjntKw==}
     engines: {node: '>=18'}
@@ -8192,7 +8187,6 @@ packages:
   /commander@14.0.1:
     resolution: {integrity: sha512-2JkV3gUZUVrbNA+1sjBOYLsMZ5cEEl8GTFP2a4AVz5hvasAMCQ1D2l2le/cX+pV4N6ZU17zjUahLpIXRrnWL8A==}
     engines: {node: '>=20'}
-    dev: true
 
   /commander@2.20.3:
     resolution: {integrity: sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==}
