@@ -1,4 +1,4 @@
-interface SVGIcon extends React.FunctionComponent<React.SVGAttributes<HTMLOrSVGElement>> {}
+type SVGIcon = React.FunctionComponent<React.SVGAttributes<HTMLOrSVGElement>>;
 
 declare module '*.svg?icon' {
   const content: SVGIcon;

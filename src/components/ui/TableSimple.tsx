@@ -302,7 +302,6 @@ const TableTH = <T extends RowData>({
         </span>
         <div className={cx('flex gap-1', isInlineLayout ? 'flex-1' : '', className)}>
           {canSort && (
-            /* eslint-disable-next-line jsx-a11y/role-supports-aria-props */
             <Button
               priority={isSorted ? 'secondary' : 'tertiary'}
               className={'fr-btn--sort relative min-w-8 border'}

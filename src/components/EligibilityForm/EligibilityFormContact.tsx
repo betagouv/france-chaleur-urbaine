@@ -102,7 +102,7 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
             setContactFormLoading(false);
           });
         }
-      } catch (err: any) {
+      } catch (_err: any) {
         setContactFormError(true);
       }
     },

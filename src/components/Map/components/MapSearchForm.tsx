@@ -27,7 +27,7 @@ const MapSearchForm = ({ onAddressSelect }: { onAddressSelect?: HandleAddressSel
       if (onAddressSelect) {
         onAddressSelect(geoAddress.properties.label, geoAddress.geometry.coordinates, addressDetail);
       }
-    } catch (err) {
+    } catch (_err) {
       setEligibilityError(true);
     }
   };

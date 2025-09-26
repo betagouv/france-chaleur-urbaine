@@ -114,7 +114,7 @@ const HeadSliceForm = ({
         geoAddress,
         eligibility: networkData,
       });
-    } catch (err: any) {
+    } catch (_err: any) {
       setEligibilityError(true);
     }
     setLoadingStatus('idle');

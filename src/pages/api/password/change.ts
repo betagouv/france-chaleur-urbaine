@@ -18,7 +18,7 @@ const changePasswordRequest = handleRouteErrors(async (req: NextApiRequest) => {
         const decodedToken = jwt.verify(token, process.env.NEXTAUTH_SECRET as string) as { email: string; resetToken: string };
 
         return decodedToken;
-      } catch (err) {
+      } catch (_err) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: 'Lien invalide. Veuillez réinitialiser votre mot de passe.',

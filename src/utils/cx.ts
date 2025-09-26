@@ -25,7 +25,7 @@ const cx = (...args: CxArg[]): string => {
           toAdd = '';
           for (const k in arg) {
             if (arg[k as string] && k) {
-              toAdd && (toAdd += ' ');
+              if (toAdd) toAdd += ' ';
               toAdd += k;
             }
           }
@@ -37,7 +37,7 @@ const cx = (...args: CxArg[]): string => {
       }
     }
     if (toAdd) {
-      cls && (cls += ' ');
+      if (cls) cls += ' ';
       cls += toAdd;
     }
   }

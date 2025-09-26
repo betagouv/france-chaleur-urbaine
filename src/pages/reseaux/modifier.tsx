@@ -122,7 +122,7 @@ function ModifierReseauxPage() {
         throw new Error(`invalid status ${res.status}`);
       }
       setFormSent(true);
-    } catch (err: any) {
+    } catch (_err: any) {
       setAPIError(true);
     } finally {
       await sleep(300); // improve UX by not showing an instant loading

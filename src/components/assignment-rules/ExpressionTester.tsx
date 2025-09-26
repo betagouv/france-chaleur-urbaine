@@ -147,7 +147,7 @@ const ExpressionTester = ({ expression, className, onPropertySelect }: Expressio
 
       const filter = searchFilter.toLowerCase();
       return flattened.filter((prop) => prop.path.toLowerCase().includes(filter) || String(prop.value).toLowerCase().includes(filter));
-    } catch (error) {
+    } catch (_error) {
       return [];
     }
   };
@@ -183,7 +183,7 @@ const ExpressionTester = ({ expression, className, onPropertySelect }: Expressio
       try {
         const currentData = getCurrentEligibilityData();
         setJsonData(JSON.stringify(currentData, null, 2));
-      } catch (error) {
+      } catch (_error) {
         // Garder le JSON actuel en cas d'erreur
       }
     }

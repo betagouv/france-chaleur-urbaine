@@ -156,7 +156,7 @@ function DemandEmailForm(props: Props) {
       }
 
       setSent(true);
-    } catch (err: any) {
+    } catch (_err: any) {
       setSentError(true);
     } finally {
       setIsSending(false);

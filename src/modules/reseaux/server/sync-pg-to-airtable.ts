@@ -60,7 +60,7 @@ export const syncPostgresToAirtable = async (dryRun: boolean) => {
           pick(oldAirtableValues, Object.keys(objDiff))
         )})`
       );
-      !dryRun && (await AirtableDB(tableConfig.airtable.tableName).update(airtableEntity.id, newAirtableValues));
+      if (!dryRun) await AirtableDB(tableConfig.airtable.tableName).update(airtableEntity.id, newAirtableValues);
     }
   }
 
