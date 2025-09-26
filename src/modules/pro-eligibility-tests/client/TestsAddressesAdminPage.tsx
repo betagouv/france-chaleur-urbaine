@@ -46,7 +46,9 @@ export default function TestAddressesAdminPage() {
           <Loader size="lg" variant="section" />
         ) : (
           <div className="space-y-4">
-            {filteredTests?.map((test) => <ProEligibilityTestItem key={test.id} test={test as any} readOnly />)}
+            {filteredTests?.map((test) => (
+              <ProEligibilityTestItem key={test.id} test={test as any} readOnly />
+            ))}
           </div>
         )}
       </Box>

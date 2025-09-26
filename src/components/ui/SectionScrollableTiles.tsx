@@ -72,9 +72,9 @@ function SectionScrollableTiles({ title, tiles, size = 'md', className, ...props
 
   return (
     <Section size={size} className={cx(className)} {...props}>
-      <SectionContent className="!mt-0 !py-0">
+      <SectionContent className="mt-0! py-0!">
         <div className="flex items-center justify-between mb-6">
-          <SectionHeading as="h2" size="h2" className="!mb-0">
+          <SectionHeading as="h2" size="h2" className="mb-0!">
             {title}
           </SectionHeading>
           <div className="flex gap-2">
@@ -107,7 +107,7 @@ function SectionScrollableTiles({ title, tiles, size = 'md', className, ...props
                 <>
                   <Link
                     key={`${tile.title}-${index}`}
-                    className="flex-shrink-0 text-center hover:!bg-gray-50 cursor-pointer rounded-md p-0.5 py-5 flex flex-col gap-2 tracking-tight"
+                    className="shrink-0 text-center hover:bg-gray-50! cursor-pointer rounded-md p-0.5 py-5 flex flex-col gap-2 tracking-tight"
                     style={{ width: `${tileWidth}px`, backgroundImage: 'none' }}
                     href={tile.href ?? '#'}
                     onClick={(e) => {
@@ -126,7 +126,7 @@ function SectionScrollableTiles({ title, tiles, size = 'md', className, ...props
                   </Link>
                   {index < tiles.length - 1 && (
                     <div className="flex items-center justify-center">
-                      <div className="w-[1px] h-1/2 bg-[#E3E4FD]" />
+                      <div className="w-px h-1/2 bg-[#E3E4FD]" />
                     </div>
                   )}
                 </>

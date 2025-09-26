@@ -31,12 +31,12 @@ export const LayoutTwoColumns = styled.div`
 
 export const FirstColumn = styled.div`
   flex: 1;
-  flex-grow: 3;
+  grow: 3;
 `;
 
 export const SecondColumn = styled.div`
   flex: 1;
-  flex-grow: 5;
+  grow: 5;
 `;
 
 export const BlackNumbersLine = styled.div`

@@ -12,12 +12,12 @@ export const allowedExtensions = ['.csv', '.txt'] as const;
 export const NO_SEPARATOR_VALUE = '__NO_SEPARATOR__';
 
 export const zAddressesFile = z
-  .instanceof(File, { message: 'Veuillez choisir un fichier' })
+  .instanceof(File, { error: 'Veuillez choisir un fichier' })
   .refine((file) => file.size <= filesLimits.maxFileSize, {
-    message: `La taille du fichier doit être inférieure à ${formatFileSize(filesLimits.maxFileSize)}.`,
+    error: `La taille du fichier doit être inférieure à ${formatFileSize(filesLimits.maxFileSize)}.`,
   })
   .refine((file) => allowedExtensions.some((extension) => file.name.endsWith(extension)), {
-    message: `Le format du fichier n'est pas supporté (attendu : ${allowedExtensions.join(', ')})`,
+    error: `Le format du fichier n'est pas supporté (attendu : ${allowedExtensions.join(', ')})`,
   });
 
 export const zColumnMapping = z
@@ -34,7 +34,7 @@ export const zColumnMapping = z
       return hasAddress || hasCoordinates;
     },
     {
-      message: 'Vous devez sélectionner soit une adresse, soit les coordonnées latitude/longitude',
+      error: 'Vous devez sélectionner soit une adresse, soit les coordonnées latitude/longitude',
       path: ['addressColumn'],
     }
   )
@@ -46,7 +46,7 @@ export const zColumnMapping = z
       return hasLat === hasLng; // Both true or both false
     },
     {
-      message: 'Les colonnes latitude et longitude doivent être sélectionnées ensemble',
+      error: 'Les colonnes latitude et longitude doivent être sélectionnées ensemble',
       path: ['longitudeColumn'],
     }
   )
@@ -58,7 +58,7 @@ export const zColumnMapping = z
       return !(hasAddress && hasCoordinates);
     },
     {
-      message: 'Vous devez choisir soit une adresse, soit des coordonnées (pas les deux)',
+      error: 'Vous devez choisir soit une adresse, soit des coordonnées (pas les deux)',
       path: ['addressColumn'],
     }
   );
@@ -71,9 +71,9 @@ export const zCreateEligibilityTestInput = z.strictObject({
   dataType: z.enum(['address', 'coordinates']),
   columnMapping: zColumnMapping.optional(),
   name: z
-    .string({ message: 'Le nom du test est obligatoire' })
-    .min(1, { message: 'Le nom du test est obligatoire' })
-    .max(100, { message: 'Le nom du test ne doit pas dépasser 100 caractères' }),
+    .string({ error: 'Le nom du test est obligatoire' })
+    .min(1, { error: 'Le nom du test est obligatoire' })
+    .max(100, { error: 'Le nom du test ne doit pas dépasser 100 caractères' }),
 });
 
 export type CreateEligibilityTestInput = z.infer<typeof zCreateEligibilityTestInput>;
@@ -91,9 +91,9 @@ export const zUpdateEligibilityTestInput = z.strictObject({
 export const zRenameEligibilityTestInput = z.strictObject({
   id: z.string(),
   name: z
-    .string({ message: 'Le nom du test est obligatoire' })
-    .min(1, { message: 'Le nom du test est obligatoire' })
-    .max(100, { message: 'Le nom du test ne doit pas dépasser 100 caractères' }),
+    .string({ error: 'Le nom du test est obligatoire' })
+    .min(1, { error: 'Le nom du test est obligatoire' })
+    .max(100, { error: 'Le nom du test ne doit pas dépasser 100 caractères' }),
 });
 
 export type UpdateEligibilityTestInput = z.infer<typeof zUpdateEligibilityTestInput>;

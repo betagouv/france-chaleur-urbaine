@@ -94,7 +94,7 @@ const AddressTestForm: React.FC<CheckEligibilityFormProps> = ({
           eligibility: networkData,
         });
         setStatus('success');
-      } catch (e) {
+      } catch (_e) {
         setStatus('eligibilitySubmissionError');
       }
     },

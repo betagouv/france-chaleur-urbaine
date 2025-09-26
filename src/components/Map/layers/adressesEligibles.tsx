@@ -10,7 +10,7 @@ export const adressesEligiblesLayersSpec = [
     sourceId: 'adressesEligibles',
     source: {
       type: 'geojson',
-      data: '',
+      data: { type: 'FeatureCollection', features: [] },
       promoteId: 'id', // obligatoire car maplibre ne semble pas prendre l'id des features, seulement celui des properties
     },
     layers: [

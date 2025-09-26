@@ -94,9 +94,8 @@ export const validation = {
           const validation = validateExpression(pattern);
           return validation.isValid;
         },
-        (pattern) => {
-          const validation = validateExpression(pattern);
-          return { message: `Expression invalide: ${validation.error}` };
+        {
+          message: 'Expression invalide',
         }
       ),
     result: z
@@ -107,9 +106,8 @@ export const validation = {
           const validation = validateResult(result);
           return validation.isValid;
         },
-        (result) => {
-          const validation = validateResult(result);
-          return { message: `Format de résultat invalide: ${validation.error}` };
+        {
+          message: 'Format de résultat invalide',
         }
       ),
     active: z.boolean().optional(),
@@ -123,9 +121,8 @@ export const validation = {
           const validation = validateExpression(pattern);
           return validation.isValid;
         },
-        (pattern) => {
-          const validation = validateExpression(pattern);
-          return { message: `Expression invalide: ${validation.error}` };
+        {
+          message: 'Expression invalide',
         }
       )
       .optional(),
@@ -137,9 +134,8 @@ export const validation = {
           const validation = validateResult(result);
           return validation.isValid;
         },
-        (result) => {
-          const validation = validateResult(result);
-          return { message: `Format de résultat invalide: ${validation.error}` };
+        {
+          message: 'Format de résultat invalide',
         }
       )
       .optional(),

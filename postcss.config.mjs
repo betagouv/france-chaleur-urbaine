@@ -6,7 +6,6 @@ export default {
         return !path.includes('dsfr');
       },
     },
-    tailwindcss: {},
-    autoprefixer: {},
+    '@tailwindcss/postcss': {},
   },
 };

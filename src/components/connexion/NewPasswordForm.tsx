@@ -17,7 +17,7 @@ const passwordSchema = z
     confirmation: z.string(),
   })
   .refine((data) => data.password === data.confirmation, {
-    message: 'Les mots de passe sont différents',
+    error: 'Les mots de passe sont différents',
     path: ['confirmation'],
   });
 

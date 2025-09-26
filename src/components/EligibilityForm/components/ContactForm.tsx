@@ -36,7 +36,7 @@ const validationSchema = z
     demandCompanyName: z.string().optional(),
     demandArea: z.number().optional(),
     termOfUse: z.boolean().refine((val) => val, {
-      message: 'Ce champ est requis',
+      error: 'Ce champ est requis',
     }),
   })
   .superRefine(({ structure, company, companyType, demandCompanyType, demandCompanyName }, ctx) => {

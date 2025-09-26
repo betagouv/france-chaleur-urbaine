@@ -60,7 +60,7 @@ const Filter = ({ value, type, onChange, filterProps, facetedUniqueValues, facet
     return (
       <Checkboxes
         small
-        className="!mb-0"
+        className="mb-0!"
         options={entries.map(([facetKey, nbOccurences]) => ({
           label: (
             <span className="flex items-center gap-1">

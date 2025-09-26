@@ -31,11 +31,11 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ items, trigger, className
           <ul className="flex flex-col pl-0 list-none" role="menu">
             {items.map((item, index) => (
               <>
-                <li key={item.id} className="!pb-0">
+                <li key={item.id} className="pb-0!">
                   {item.href ? (
                     <a
                       href={item.href}
-                      className={cx('!bg-none flex items-center w-full px-3 py-2 text-xs text-gray-700 no-underline cursor-pointer')}
+                      className={cx('bg-none! flex items-center w-full px-3 py-2 text-xs text-gray-700 no-underline cursor-pointer')}
                       role="menuitem"
                       onClick={(e) => {
                         if (item.disabled) {
@@ -45,7 +45,7 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ items, trigger, className
                         item.onClick?.();
                       }}
                     >
-                      {item.icon && <i className={cx(item.icon, 'mr-2 flex-shrink-0 text-sm')} aria-hidden="true" />}
+                      {item.icon && <i className={cx(item.icon, 'mr-2 shrink-0 text-sm')} aria-hidden="true" />}
                       <span className="whitespace-nowrap">{item.label}</span>
                     </a>
                   ) : (
@@ -62,13 +62,13 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ items, trigger, className
                         item.onClick?.();
                       }}
                     >
-                      {item.icon && <i className={cx(item.icon, 'mr-2 flex-shrink-0 text-sm')} aria-hidden="true" />}
+                      {item.icon && <i className={cx(item.icon, 'mr-2 shrink-0 text-sm')} aria-hidden="true" />}
                       <span className="whitespace-nowrap">{item.label}</span>
                     </button>
                   )}
                 </li>
                 {index < items.length - 1 && (
-                  <li key={`separator-${item.id}`} role="none" className="!pb-0 h-[1px]">
+                  <li key={`separator-${item.id}`} role="none" className="pb-0! h-px">
                     <hr className="border-t border-gray-200" role="separator" />
                   </li>
                 )}

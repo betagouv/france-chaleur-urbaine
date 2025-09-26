@@ -532,7 +532,7 @@ const PageHeader = (props: PageHeaderProps) => {
             <Box display="flex">
               <Link
                 href="/"
-                className="fcu-navigation-logo min-w-[3rem] max-w-[5rem]"
+                className="fcu-navigation-logo min-w-12 max-w-20"
                 variant="tertiaryNoOutline"
                 title="Revenir à la page d'accueil"
                 p="0"

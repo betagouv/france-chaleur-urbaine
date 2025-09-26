@@ -35,7 +35,7 @@ export const WithImage = styled.div`
   }
 
   > div:first-child {
-    flex-grow: 1;
+    grow: 1;
     width: calc(50% - 16px);
   }
 `;

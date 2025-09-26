@@ -329,7 +329,9 @@ export function SingleCheckbox({ name, checked, onChange, trackingEvent }: Singl
         checked={checked}
         onChange={(event) => {
           onChange(event.target.checked);
-          trackingEvent && trackEvent(`${trackingEvent}|${checked ? 'Active' : 'Désactive'}`);
+          if (trackingEvent) {
+            trackEvent(`${trackingEvent}|${checked ? 'Active' : 'Désactive'}`);
+          }
         }}
         className="opacity-0"
       />

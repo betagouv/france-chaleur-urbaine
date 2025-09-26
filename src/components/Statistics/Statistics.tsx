@@ -69,7 +69,7 @@ const graphOptions = {
 const getFormattedDataSum = (formatedData: number[][], startYear?: number, startMonth?: number) => {
   //Month : 1 to 12
   let nbTotal = 0;
-  formatedData &&
+  if (formatedData) {
     formatedData.map((data, key: number) => {
       if (key !== 0) {
         for (let i = 1; i <= yearsList.length; i++) {
@@ -83,6 +83,7 @@ const getFormattedDataSum = (formatedData: number[][], startYear?: number, start
         }
       }
     });
+  }
   return nbTotal;
 };
 
@@ -236,7 +237,7 @@ const Statistics = () => {
   const percentAddressPossible = useMemo(() => {
     let nbTotal = 0;
     let nbTotalEligible = 0;
-    dataActions &&
+    if (dataActions) {
       dataActions.forEach((entry) => {
         if (entry) {
           nbTotal +=
@@ -255,6 +256,7 @@ const Statistics = () => {
             (entry[STAT_LABEL.FORM_TEST_COMPARATEUR_ELIGIBLE] ?? 0);
         }
       });
+    }
     if (nbTotalEligible && nbTotal) {
       return (nbTotalEligible / nbTotal) * 100;
     }
@@ -263,12 +265,13 @@ const Statistics = () => {
 
   const totalDownload = useMemo(() => {
     let nbTotal = 0;
-    dataActions &&
+    if (dataActions) {
       dataActions.forEach((entry) => {
         if (entry) {
           nbTotal += entry['Tracés'] ? entry['Tracés'] : 0;
         }
       });
+    }
     return nbTotal;
   }, [dataActions]);
 

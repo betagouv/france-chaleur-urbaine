@@ -13,9 +13,9 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     ),
     li: ({ children }: any) => (
       <li
-        className="mb-2 pl-6 list-none bg-[url('/img/ressources-list.svg')] bg-no-repeat bg-[left_2px]"
+        className="mb-2 pl-6 list-none bg-[url('/img/ressources-list.svg')] bg-no-repeat bg-position-[left_2px]"
         style={{
-          backgroundSize: '20px', // Could not find a way to add both bg-[left_2px] and this with tailwind custom config
+          backgroundSize: '20px', // Could not find a way to add both bg-position-[left_2px] and this with tailwind custom config
         }}
       >
         {children}

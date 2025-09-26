@@ -10,7 +10,7 @@ const ExpressionValidator = ({ expression, className }: ExpressionValidatorProps
   const validation = validateExpression(expression);
 
   return (
-    <div className={cx('mt-2 p-3 rounded border', className)}>
+    <div className={cx('mt-2 p-3 rounded-sm border', className)}>
       <div className="flex items-center gap-2 mb-2">
         <div className={cx('w-3 h-3 rounded-full', validation.isValid ? 'bg-green-500' : 'bg-error')} />
         <span className="text-sm font-medium">{validation.isValid ? 'Expression valide' : 'Expression invalide'}</span>
@@ -22,16 +22,16 @@ const ExpressionValidator = ({ expression, className }: ExpressionValidatorProps
         </div>
         <div className="space-y-1">
           <div>
-            • <code className="bg-gray-100 px-1 rounded">&&</code> : ET logique
+            • <code className="bg-gray-100 px-1 rounded-sm">&&</code> : ET logique
           </div>
           <div>
-            • <code className="bg-gray-100 px-1 rounded">||</code> : OU logique
+            • <code className="bg-gray-100 px-1 rounded-sm">||</code> : OU logique
           </div>
           <div>
-            • <code className="bg-gray-100 px-1 rounded">!</code> : NON logique
+            • <code className="bg-gray-100 px-1 rounded-sm">!</code> : NON logique
           </div>
           <div>
-            • <code className="bg-gray-100 px-1 rounded">()</code> : Parenthèses pour la priorité
+            • <code className="bg-gray-100 px-1 rounded-sm">()</code> : Parenthèses pour la priorité
           </div>
         </div>
       </div>

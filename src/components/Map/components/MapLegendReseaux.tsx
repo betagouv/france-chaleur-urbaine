@@ -411,7 +411,7 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
               Télécharger les tracés
             </Link>
           </Box>
-          <CallOut title="Vous êtes professionnel ?" variant="info" size="md" className="!mt-5" image="/icons/picto-compte-pro.svg">
+          <CallOut title="Vous êtes professionnel ?" variant="info" size="md" className="mt-5!" image="/icons/picto-compte-pro.svg">
             <ul>
               <li>Retrouvez vos listes d’adresses</li>
               <li>Comparez les coûts et les émissions de CO2</li>

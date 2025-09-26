@@ -229,7 +229,7 @@ const UpsertEligibilityTestForm = ({ testId, onComplete }: UpsertEligibilityTest
                   <DSFRSelect
                     label={
                       <span className="flex items-center gap-2">
-                        <span className="inline-block w-3 h-3 rounded bg-purple-100 border border-purple-300"></span>
+                        <span className="inline-block w-3 h-3 rounded-sm bg-purple-100 border border-purple-300"></span>
                         Adresse
                       </span>
                     }
@@ -252,7 +252,7 @@ const UpsertEligibilityTestForm = ({ testId, onComplete }: UpsertEligibilityTest
                     <DSFRSelect
                       label={
                         <span className="flex items-center gap-2">
-                          <span className="inline-block w-3 h-3 rounded bg-green-100 border border-green-300"></span>
+                          <span className="inline-block w-3 h-3 rounded-sm bg-green-100 border border-green-300"></span>
                           Latitude
                         </span>
                       }
@@ -270,7 +270,7 @@ const UpsertEligibilityTestForm = ({ testId, onComplete }: UpsertEligibilityTest
                     <DSFRSelect
                       label={
                         <span className="flex items-center gap-2">
-                          <span className="inline-block w-3 h-3 rounded bg-amber-100 border border-amber-300"></span>
+                          <span className="inline-block w-3 h-3 rounded-sm bg-amber-100 border border-amber-300"></span>
                           Longitude
                         </span>
                       }

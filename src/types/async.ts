@@ -12,6 +12,7 @@ export async function processInParallel<T>(
   const asyncLimit = pLimit(maxParallel);
 
   const asyncIterator = iterable[Symbol.iterator]();
+  // Array of promises that are intentionally managed manually
   const pendingPromises: Promise<void>[] = [];
 
   // Fonction pour ajouter une nouvelle opération en cours
@@ -24,7 +25,7 @@ export async function processInParallel<T>(
         // remove the promise
         const index = pendingPromises.indexOf(operationPromise);
         if (index !== -1) {
-          pendingPromises.splice(index, 1);
+          void pendingPromises.splice(index, 1);
         }
         void tryProcessNextOperation();
       });

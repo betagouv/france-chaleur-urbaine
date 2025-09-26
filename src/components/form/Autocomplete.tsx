@@ -167,7 +167,7 @@ const Autocomplete = <Option extends DefaultOption>({
           name={inputValue ? 'fr-icon-close-line' : 'fr-icon-search-line'}
           onClick={() => {
             setSelectedValue('');
-            inputValue ? setInputValue('') : undefined;
+            if (inputValue) setInputValue('');
             setOptions([]);
             onClear?.();
           }}

@@ -93,7 +93,6 @@ export class HeatNetworkService {
     if (contentDisposition) {
       const content = contentDisposition.split('filename=');
       if (content.length > 1) {
-        // eslint-disable-next-line prefer-destructuring
         fileName = content[1];
       }
     }

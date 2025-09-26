@@ -39,7 +39,7 @@ const EligibilityContactForm: React.FC<EligibilityContactFormProps> = ({ fullAdd
       await handleOnSubmitContact(data, context);
       onSubmit?.(data);
       setFormIsSend(true);
-    } catch (err) {
+    } catch (_err) {
       setContactFormError(true);
     }
   };

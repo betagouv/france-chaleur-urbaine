@@ -3,15 +3,15 @@ import Badge from '@codegouvfr/react-dsfr/Badge';
 const procheReseauConfig = {
   aucun: {
     label: 'Non',
-    className: '!bg-destructive !text-white',
+    className: 'bg-destructive! text-white!',
   },
   existant: {
     label: 'Existant',
-    className: '!bg-[#079067] !text-white',
+    className: 'bg-[#079067]! text-white!',
   },
   en_construction: {
     label: 'À venir',
-    className: '!bg-[#DA5DD5] !text-white',
+    className: 'bg-[#DA5DD5]! text-white!',
   },
 } satisfies Record<
   string,

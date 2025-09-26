@@ -385,17 +385,17 @@ async function logAirtableQuery(
 ): Promise<any> {
   if (operation === 'create') {
     queriesLogger.debug(`- Airtable: ${operation} ${table} ${JSON.stringify(recordIdOrData)}`);
-    !globalDryRun && (await AirtableDB(table).create(recordIdOrData as object));
+    if (!globalDryRun) await AirtableDB(table).create(recordIdOrData as object);
     return;
   }
   if (operation === 'update') {
     queriesLogger.debug(`- Airtable: ${operation} ${table} ${recordIdOrData}: ${JSON.stringify(data)}`);
-    !globalDryRun && (await AirtableDB(table).update(recordIdOrData as string, data as object));
+    if (!globalDryRun) await AirtableDB(table).update(recordIdOrData as string, data as object);
     return;
   }
   if (operation === 'destroy') {
     queriesLogger.debug(`- Airtable: ${operation} ${table} ${recordIdOrData}`);
-    !globalDryRun && (await AirtableDB(table).destroy(recordIdOrData as string));
+    if (!globalDryRun) await AirtableDB(table).destroy(recordIdOrData as string);
     return;
   }
   throw new Error(`Invalid operation '${operation}'`);

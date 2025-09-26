@@ -21,7 +21,7 @@ const IFrameLink = ({ link, withBacklink = true, ...props }: { link: string; wit
       )}
       <div
         onClick={onCopy}
-        className="text-left bg-faded-light cursor-pointer font-mono text-xs !border !border-gray-300 rounded-md px-4 py-3 fr-btn--icon-right fr-icon-clipboard-line"
+        className="text-left bg-faded-light cursor-pointer font-mono text-xs border! border-gray-300! rounded-md px-4 py-3 fr-btn--icon-right fr-icon-clipboard-line"
       >
         {linkWithBacklink}
       </div>

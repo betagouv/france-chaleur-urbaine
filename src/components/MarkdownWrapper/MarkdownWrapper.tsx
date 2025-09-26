@@ -1,6 +1,7 @@
 import { Highlight } from '@codegouvfr/react-dsfr/Highlight';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
+import * as jsxRuntime from 'react/jsx-runtime';
 import rehypeRaw from 'rehype-raw';
 import rehypeReact from 'rehype-react';
 import remarkBreaks from 'remark-breaks';
@@ -57,8 +58,9 @@ const processor = (extender: Record<string, unknown> = {}) =>
     .use(remarkRehype, { allowDangerousHtml: true })
     .use(rehypeRaw)
     .use(rehypeReact, {
-      createElement: React.createElement,
-      Fragment: React.Fragment,
+      jsx: jsxRuntime.jsx,
+      jsxs: jsxRuntime.jsxs,
+      Fragment: jsxRuntime.Fragment,
       components: {
         a: RoutedLink,
         ...extender,
@@ -106,7 +108,7 @@ const MarkdownWrapper: React.FC<{
           'know-more-link': KnowMoreLink,
           'strong-inherit': (props: any) => <strong style={{ fontSize: 'inherit' }} {...props} />,
           small: SmallText,
-        }).processSync(md).result
+        }).processSync(md).result as React.ReactNode
       }
     </MarkdownWrapperStyled>
   );

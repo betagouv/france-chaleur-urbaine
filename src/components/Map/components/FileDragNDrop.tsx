@@ -157,7 +157,7 @@ async function detectCrsFromProj(projText: string) {
   try {
     const proj4 = (await import('proj4')).default;
     return (proj4(projText) as any).oProj;
-  } catch (error) {
+  } catch (_error) {
     console.warn("Impossible d'analyser le .prj, utilisation de EPSG:4326");
     return undefined;
   }

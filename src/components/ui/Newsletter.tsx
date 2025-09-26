@@ -190,7 +190,7 @@ export const Newsletter: React.FC<NewsletterProps> = ({ onSignUp, children, with
     try {
       await onSignUp(email);
       setError(null);
-    } catch (err) {
+    } catch (_err) {
       setError('Une erreur est survenue lors de l’inscription.');
     }
   }, [email, onSignUp]);

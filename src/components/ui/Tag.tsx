@@ -7,10 +7,10 @@ const tagVariants = cva('', {
   variants: {
     variant: {
       default: '',
-      success: '!bg-success !text-white border-success',
-      warning: '!bg-warning !text-white border-warning',
-      error: '!bg-error !text-white border-error',
-      info: '!bg-info !text-white border-info',
+      success: 'bg-success! text-white! border-success',
+      warning: 'bg-warning! text-white! border-warning',
+      error: 'bg-error! text-white! border-error',
+      info: 'bg-info! text-white! border-info',
     },
     outline: {
       true: '',
@@ -27,22 +27,22 @@ const tagVariants = cva('', {
     {
       variant: 'success',
       outline: true,
-      class: '[&&]:!bg-white [&&]:!text-success border border-success',
+      class: '[&&]:bg-white! [&&]:text-success! border border-success',
     },
     {
       variant: 'warning',
       outline: true,
-      class: '[&&]:!bg-white [&&]:!text-warning border border-warning',
+      class: '[&&]:bg-white! [&&]:text-warning! border border-warning',
     },
     {
       variant: 'error',
       outline: true,
-      class: '[&&]:!bg-white [&&]:!text-error border border-error',
+      class: '[&&]:bg-white! [&&]:text-error! border border-error',
     },
     {
       variant: 'info',
       outline: true,
-      class: '[&&]:!bg-white [&&]:!text-info border border-info',
+      class: '[&&]:bg-white! [&&]:text-info! border border-info',
     },
   ],
   defaultVariants: {

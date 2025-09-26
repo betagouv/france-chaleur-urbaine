@@ -8,7 +8,7 @@ export const PartnerImages = styled.div`
   display: flex;
   gap: 48px;
   overflow: hidden;
-  flex-shrink: 1;
+  shrink: 1;
   a[target='_blank'] {
     &::after {
       display: none;

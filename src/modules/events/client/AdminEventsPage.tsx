@@ -24,7 +24,7 @@ type Filters = {
 };
 
 const FilterButton = ({ onClick, children }: { onClick: () => void; children: ReactNode }) => (
-  <Button size="small" priority="tertiary no outline" className="!px-1" onClick={onClick}>
+  <Button size="small" priority="tertiary no outline" className="px-1!" onClick={onClick}>
     {children}
   </Button>
 );

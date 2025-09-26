@@ -102,7 +102,7 @@ export const GlobalStyle: any = createGlobalStyle` /* TODO: Wait Fix from @types
     }
 
     .rcu-comparatif-image {
-      flex-grow: 1;
+      grow: 1;
       background-color: white;
 
     }

@@ -17,9 +17,9 @@ const CrudButton = ({ className, disabled, ...props }: ButtonProps) => (
     size="small"
     priority="tertiary"
     className={cx(
-      '!p-[3px] [&:before]:!mr-0 transition-all',
-      !disabled && 'hover:scale-150 hover:!py-[1px] hover:rounded-sm hover:shadow-md',
-      disabled && '!shadow-none [&:before]:opacity-40',
+      'p-[3px]! [&:before]:mr-0! transition-all',
+      !disabled && 'hover:scale-150 hover:py-px! hover:rounded-xs hover:shadow-md',
+      disabled && 'shadow-none! [&:before]:opacity-40',
       className
     )}
     disabled={disabled}
@@ -162,7 +162,7 @@ function CrudDropdown<T extends CrudResponse<keyof DB, any>>({
         <span className={'text-gray-900 whitespace-nowrap overflow-hidden text-ellipsis text-sm'}>
           {isLoading ? <Loader /> : !selectedItem && dataEmpty ? loadLabel : (selectedItem?.[nameKey] as React.ReactNode) || saveLabel}
         </span>
-        <Icon name={isOpen ? 'ri-arrow-drop-up-line' : 'ri-arrow-drop-down-line'} className="text-gray-500 flex-shrink-0" size="md" />
+        <Icon name={isOpen ? 'ri-arrow-drop-up-line' : 'ri-arrow-drop-down-line'} className="text-gray-500 shrink-0" size="md" />
       </div>
       {isOpen && (
         <div className="absolute w-full mt-2 bg-white border rounded-md z-10">
@@ -188,7 +188,7 @@ function CrudDropdown<T extends CrudResponse<keyof DB, any>>({
                         type="text"
                         value={renameValue}
                         onChange={(e) => setRenameValue(e.target.value)}
-                        className="w-full px-2 py-1 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue text-sm"
+                        className="w-full px-2 py-1 border rounded-md focus:outline-hidden focus:ring-1 focus:ring-blue text-sm"
                         autoFocus
                         onKeyDown={(e) => {
                           e.stopPropagation();
@@ -253,7 +253,7 @@ function CrudDropdown<T extends CrudResponse<keyof DB, any>>({
                           variant="destructive"
                           title="Supprimer"
                           loading={isDeletingId === itemValue}
-                          className="!p-[3px] hover:scale-150 hover:!py-[1px] hover:rounded-sm hover:shadow-sm [&:before]:!mr-0 transition-all"
+                          className="p-[3px]! hover:scale-150 hover:py-px! hover:rounded-xs hover:shadow-xs [&:before]:mr-0! transition-all"
                         />
                       </div>
                     )}
@@ -270,7 +270,7 @@ function CrudDropdown<T extends CrudResponse<keyof DB, any>>({
                   type="text"
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
-                  className="w-full px-2 py-1 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm shadcn-border"
+                  className="w-full px-2 py-1 border rounded-md focus:outline-hidden focus:ring-1 focus:ring-blue-500 text-sm shadcn-border"
                   placeholder={addPlaceholderLabel}
                   autoFocus
                   onKeyDown={(e) => {
@@ -294,7 +294,7 @@ function CrudDropdown<T extends CrudResponse<keyof DB, any>>({
                 size="small"
                 priority="tertiary"
                 full
-                className="!justify-start px-4 py-2 text-primary"
+                className="justify-start! px-4 py-2 text-primary"
                 disabled={dataEmpty || !!selectedItem}
               >
                 {addLabel}

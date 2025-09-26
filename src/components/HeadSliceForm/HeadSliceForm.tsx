@@ -114,7 +114,7 @@ const HeadSliceForm = ({
         geoAddress,
         eligibility: networkData,
       });
-    } catch (err: any) {
+    } catch (_err: any) {
       setEligibilityError(true);
     }
     setLoadingStatus('idle');
@@ -160,7 +160,7 @@ const HeadSliceForm = ({
               />
             </CheckEligibilityFormLabel>
             <AddressAutocomplete
-              className="!mb-2"
+              className="mb-2!"
               defaultValue={address}
               nativeInputProps={{ placeholder: 'Tapez ici votre adresse' }}
               onSelect={(geoAddress?: SuggestionItem) => {
@@ -203,11 +203,11 @@ const HeadSliceForm = ({
               {withBulkEligibility && (
                 <>
                   <span>ou</span>
-                  <span className="!text-green-700 flex items-center gap-0.5">
+                  <span className="text-green-700! flex items-center gap-0.5">
                     <Icon name="ri-file-excel-2-line" />
                     <Link
                       href="/pro/tests-adresses"
-                      className="!text-green-700 hover:!bg-transparent hover:opacity-80 !shadow-none !pr-0 !pl-0"
+                      className="text-green-700! hover:bg-transparent! hover:opacity-80 shadow-none! pr-0! pl-0!"
                     >
                       Tester une liste d’adresses
                     </Link>

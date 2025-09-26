@@ -24,7 +24,7 @@ const CSVImportTable = ({ analysis, hasHeaders, mapping, dataType, className }: 
   return (
     <section className={cx('space-y-2 border-t border-gray-200 pt-4', className)}>
       <div className="overflow-x-auto">
-        <table className="fr-table fr-table--bordered min-w-full !mb-0">
+        <table className="fr-table fr-table--bordered min-w-full mb-0!">
           <thead>
             <tr>
               {headers.map((headerName, index) => {

@@ -130,7 +130,7 @@ const Hero = ({
                     className={cx(
                       'w-full h-full',
                       imageType === 'inline-cover' ? 'object-cover' : 'object-contain',
-                      imagePosition === 'right' ? 'object-right !left-auto' : 'object-left !right-auto',
+                      imagePosition === 'right' ? 'object-right left-auto!' : 'object-left right-auto!',
                       imageClassName
                     )}
                     priority
@@ -147,15 +147,15 @@ const Hero = ({
   );
 };
 
-const headingVariants = cva('!my-0', {
+const headingVariants = cva('my-0!', {
   variants: {
     variant: {
-      normal: '!text-blue',
-      light: '!text-black',
-      accent: '!text-white',
-      city: '!text-black',
-      ressource: '!text-black',
-      transparent: '!text-black',
+      normal: 'text-blue!',
+      light: 'text-black!',
+      accent: 'text-white!',
+      city: 'text-black!',
+      ressource: 'text-black!',
+      transparent: 'text-black!',
     },
   },
   defaultVariants: {
@@ -186,7 +186,7 @@ export const HeroTitle = ({ children, className, ...props }: React.ComponentProp
   );
 };
 
-const subtitleVariants = cva('!my-0', {
+const subtitleVariants = cva('my-0!', {
   variants: {
     size: {
       sm: 'text-sm',
@@ -194,12 +194,12 @@ const subtitleVariants = cva('!my-0', {
       lg: 'text-lg',
     },
     variant: {
-      normal: '!text-gray-900',
-      light: '!text-gray-900',
-      accent: '!text-gray-100',
-      city: '!text-gray-900',
-      ressource: '!text-gray-900',
-      transparent: '!text-gray-900',
+      normal: 'text-gray-900!',
+      light: 'text-gray-900!',
+      accent: 'text-gray-100!',
+      city: 'text-gray-900!',
+      ressource: 'text-gray-900!',
+      transparent: 'text-gray-900!',
     },
   },
   defaultVariants: {
@@ -242,12 +242,12 @@ export const HeroContent = ({ children, className, ...props }: React.HTMLAttribu
 const metaVariants = cva('uppercase text-sm font-bold tracking-tighter', {
   variants: {
     variant: {
-      normal: '!text-gray-700',
-      light: '!text-gray-700',
-      accent: '!text-gray-100',
-      city: '!text-gray-700',
-      ressource: '!text-gray-700',
-      transparent: '!text-gray-700',
+      normal: 'text-gray-700!',
+      light: 'text-gray-700!',
+      accent: 'text-gray-100!',
+      city: 'text-gray-700!',
+      ressource: 'text-gray-700!',
+      transparent: 'text-gray-700!',
     },
   },
   defaultVariants: {

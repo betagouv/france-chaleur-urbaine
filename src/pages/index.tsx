@@ -337,7 +337,7 @@ Ce système contribue à la transition énergétique des villes en mutualisant l
       <Partners />
 
       <Section id="obligation-raccordement" variant="accent">
-        <SectionContent className="!mt-0 flex flex-col gap-2">
+        <SectionContent className="mt-0! flex flex-col gap-2">
           <SectionHeading as="h2" size="h5">
             Réduire l'impact écologique et économique de son chauffage
           </SectionHeading>

@@ -59,11 +59,11 @@ const useAction = <TVariables extends object, TOutput = unknown, TError = Error,
 
   const result = useMutation<TOutput, TError, TVariables, TContext>({
     mutationKey: mutationKey || ([`${method.toLowerCase()} ${typeof url === 'string' ? url : 'dynamic-url'}`] as unknown as MutationKey),
-    onSuccess: (data, variables, context) => {
+    onSuccess: (data, variables, context, mutationContext) => {
       if (invalidate) {
         invalidate.forEach((key) => queryClient.invalidateQueries({ queryKey: [key] }));
       }
-      onSuccess?.(data, variables, context);
+      onSuccess?.(data, variables, context, mutationContext);
     },
     mutationFn:
       mutationFn ??

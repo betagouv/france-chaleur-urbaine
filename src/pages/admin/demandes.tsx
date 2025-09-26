@@ -230,7 +230,7 @@ function DemandesAdmin(): React.ReactElement {
               <div className="flex items-center gap-2" onClick={stopPropagation} onDoubleClick={stopPropagation}>
                 <EligibilityHelpDialog detailedEligibilityStatus={demand.detailedEligibilityStatus}>
                   <Button
-                    className="!text-gray-700 !font-normal italic"
+                    className="text-gray-700! font-normal! italic"
                     title="Voir le détail de l'éligibilité"
                     priority="tertiary no outline"
                     size="small"
@@ -542,7 +542,7 @@ function DemandesAdmin(): React.ReactElement {
               value: globalFilter,
               onChange: (e) => setGlobalFilter(e.target.value),
             }}
-            className="p-2w !mb-0 w-[350px]"
+            className="p-2w mb-0! w-[350px]"
           />
           {ObjectEntries(quickFilterPresets).map(([key, preset], index) => (
             <Fragment key={key}>

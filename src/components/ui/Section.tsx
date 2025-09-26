@@ -62,13 +62,13 @@ const Section = ({ children, className, size, variant, ...props }: SectionProps)
 const headingVariants = cva('', {
   variants: {
     variant: {
-      normal: '!text-black',
-      light: '!text-black',
-      gray: '!text-black',
-      bordered: '!text-black',
-      lightaccent: '!text-black',
-      accent: '!text-white',
-      empty: '!text-black !text-base',
+      normal: 'text-black!',
+      light: 'text-black!',
+      gray: 'text-black!',
+      bordered: 'text-black!',
+      lightaccent: 'text-black!',
+      accent: 'text-white!',
+      empty: 'text-black! text-base!',
     },
   },
   defaultVariants: {
@@ -76,7 +76,7 @@ const headingVariants = cva('', {
   },
 });
 
-const titleVariants = (props: VariantProps<typeof headingVariants>) => cx('text-center max-w-[640px] !mx-auto', headingVariants(props));
+const titleVariants = (props: VariantProps<typeof headingVariants>) => cx('text-center max-w-[640px] mx-auto!', headingVariants(props));
 
 export type SectionTitleProps = React.ComponentProps<typeof Heading> & VariantProps<typeof titleVariants>;
 
@@ -98,13 +98,13 @@ const subtitleVariants = cva('text-center max-w-[640px] mx-auto', {
       lg: 'text-lg',
     },
     variant: {
-      normal: '!text-gray-900',
-      light: '!text-gray-900',
-      gray: '!text-gray-900',
-      bordered: '!text-gray-900',
-      lightaccent: '!text-gray-100',
-      accent: '!text-gray-100',
-      empty: '!text-gray-500',
+      normal: 'text-gray-900!',
+      light: 'text-gray-900!',
+      gray: 'text-gray-900!',
+      bordered: 'text-gray-900!',
+      lightaccent: 'text-gray-100!',
+      accent: 'text-gray-100!',
+      empty: 'text-gray-500!',
     },
   },
   defaultVariants: {
@@ -153,7 +153,7 @@ export const SectionContent = ({ children, className, ...props }: React.HTMLAttr
   );
 };
 
-const twoColumnsVariants = cva('flex flex-col lg:flex-row [&>*]:flex-1', {
+const twoColumnsVariants = cva('flex flex-col lg:flex-row *:flex-1', {
   variants: {
     size: {
       sm: '',

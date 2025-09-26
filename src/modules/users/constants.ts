@@ -20,7 +20,7 @@ export const zCredentialsSchema = z.object({
     .min(10, 'Le mot de passe doit contenir au minimum 10 caractères')
     .max(100, 'Le mot de passe ne peut pas dépasser 100 caractères'),
   accept_cgu: z.boolean().refine((val) => val === true, {
-    message: "Veuillez accepter les conditions générales d'utilisation",
+    error: "Veuillez accepter les conditions générales d'utilisation",
   }),
   optin_newsletter: z.boolean(),
 });
@@ -41,19 +41,19 @@ export const zIdentitySchema = z
       .nullable()
       .optional()
       .refine((val) => !val || /^(?:(?:\+|00)33|0)\s*[1-9](?:[\s.-]*\d{2}){4}$/.test(val), {
-        message: "Le numéro de téléphone n'est pas valide",
+        error: "Le numéro de téléphone n'est pas valide",
       }),
   })
   .refine((data) => !(data.structure_type === 'autre' && !data.structure_other), {
-    message: "Le type de structure 'Autre' doit être précisé",
+    error: "Le type de structure 'Autre' doit être précisé",
     path: ['structure_other'],
   })
   .refine((data) => data.role === 'particulier' || !!data.structure_name, {
-    message: 'La structure est obligatoire',
+    error: 'La structure est obligatoire',
     path: ['structure_name'],
   })
   .refine((data) => data.role === 'particulier' || !!data.structure_type, {
-    message: 'Le type de structure est obligatoire',
+    error: 'Le type de structure est obligatoire',
     path: ['structure_type'],
   });
 
@@ -65,7 +65,7 @@ export const registrationSchema = z.intersection(zCredentialsSchema, zIdentitySc
 export type RegistrationSchema = z.infer<typeof registrationSchema>;
 
 export const createUserAdminSchema = z.object({
-  email: z.string().email(),
+  email: z.email(),
   first_name: z.string().optional().nullable(),
   last_name: z.string().optional().nullable(),
   structure_name: z.string().optional().nullable(),
@@ -82,7 +82,7 @@ export const updateUserAdminSchema = z
   .object({
     status: z.enum(['pending_email_confirmation', 'valid']),
     active: z.boolean(),
-    email: z.string().email().optional(),
+    email: z.email().optional(),
     first_name: z.string().optional(),
     last_name: z.string().optional(),
     gestionnaires: z.array(z.string()).optional(),

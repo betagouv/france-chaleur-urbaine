@@ -637,7 +637,7 @@ function ChoixChauffageResults({ typeLogement, addressDetail }: ChoixChauffageRe
               )}
             </>
           }
-          className="[&>.fr-collapse]:bg-gray-100 [&>.fr-collapse]:!mx-0 [&_.fr-accordion\\_\\_btn]:py-5"
+          className="[&>.fr-collapse]:bg-gray-100 [&>.fr-collapse]:mx-0! [&_.fr-accordion\\_\\_btn]:py-5"
           key={key}
         >
           <Heading as="h3">{modeDeChauffage.label}</Heading>
@@ -676,7 +676,7 @@ function ChoixChauffageResults({ typeLogement, addressDetail }: ChoixChauffageRe
                 <li className="leading-7">
                   Émissions de CO2&nbsp;:{' '}
                   {modeDeChauffage.gainsPotentielsCO2.map((gain, key) => (
-                    <PageBadge className="!bg-success" key={key}>
+                    <PageBadge className="bg-success!" key={key}>
                       {gain}
                     </PageBadge>
                   ))}
@@ -684,7 +684,7 @@ function ChoixChauffageResults({ typeLogement, addressDetail }: ChoixChauffageRe
                 <li className="leading-7">
                   Coût global annuel&nbsp;:{' '}
                   {modeDeChauffage.gainsPotentielsCout.map((gain, key) => (
-                    <PageBadge className="!bg-fcu-purple" key={key}>
+                    <PageBadge className="bg-fcu-purple!" key={key}>
                       {gain}
                     </PageBadge>
                   ))}
@@ -725,22 +725,22 @@ export default ChoixChauffageResults;
 
 const ResultSection = ({ children, color = 'blue', title }: { children: ReactNode; color?: 'orange' | 'blue'; title?: string }) => (
   <div className={cx('fr-p-2w', color === 'orange' ? 'bg-[#FFE8E5]' : 'bg-[#E3E3FD]')}>
-    <p className="text-lg font-bold !fr-mb-2w">{title}</p>
+    <p className="text-lg font-bold fr-mb-2w!">{title}</p>
     {children}
   </div>
 );
 
 const PertinenceBadge = ({ pertinence }: { pertinence: number | 'unavailable' }) =>
   pertinence === 'unavailable' ? (
-    <PageBadge className="!bg-[#ef8347]">Non disponible à cette adresse</PageBadge>
+    <PageBadge className="bg-[#ef8347]!">Non disponible à cette adresse</PageBadge>
   ) : pertinence > 0 ? (
-    <PageBadge className="!bg-success">Pertinence {Array(pertinence).fill('⭐').join('')}</PageBadge>
+    <PageBadge className="bg-success!">Pertinence {Array(pertinence).fill('⭐').join('')}</PageBadge>
   ) : pertinence === -1 ? (
-    <PageBadge className="!bg-error">Non conseillé</PageBadge>
+    <PageBadge className="bg-error!">Non conseillé</PageBadge>
   ) : null;
 
 const PageBadge = ({ children, className, ...props }: React.HTMLAttributes<HTMLDivElement> & { children: NonNullable<ReactNode> }) => (
-  <Badge className={cx(' !text-white !normal-case fr-mx-1w', className)} {...props}>
+  <Badge className={cx(' text-white! normal-case! fr-mx-1w', className)} {...props}>
     {children}
   </Badge>
 );

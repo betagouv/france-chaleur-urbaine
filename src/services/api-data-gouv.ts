@@ -90,7 +90,7 @@ export class APIDataGouvService {
     const fileBuffer = await readFile(filePath);
 
     // Crée un Blob à partir du buffer pour pouvoir l'ajouter au FormData
-    const blob = new Blob([fileBuffer], { type: 'application/zip' });
+    const blob = new Blob([new Uint8Array(fileBuffer)], { type: 'application/zip' });
     formData.append('file', blob, resourceInfo.title);
 
     // Ajoute les métadonnées de la ressource si fournies
@@ -143,7 +143,7 @@ export class APIDataGouvService {
     const fileBuffer = await readFile(filePath);
 
     // Crée un Blob à partir du buffer pour pouvoir l'ajouter au FormData
-    const blob = new Blob([fileBuffer], { type: 'application/zip' });
+    const blob = new Blob([new Uint8Array(fileBuffer)], { type: 'application/zip' });
     formData.append('file', blob, fileName);
 
     const response = await fetch(url, {

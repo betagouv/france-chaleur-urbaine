@@ -35,14 +35,14 @@ export default function ManageAssignmentRules() {
     {
       accessorKey: 'search_pattern',
       header: 'Conditions',
-      cell: (info) => <div className="bg-zinc-50 px-1 py-[0.1rem] rounded-sm font-mono text-sm">{info.getValue()}</div>,
+      cell: (info) => <div className="bg-zinc-50 px-1 py-[0.1rem] rounded-xs font-mono text-sm">{info.getValue()}</div>,
       className: 'break-words',
       flex: 2,
     },
     {
       accessorKey: 'result',
       header: 'Actions',
-      cell: (info) => <div className="font-mono bg-blue-50 px-2 py-1 rounded text-sm">{info.getValue()}</div>,
+      cell: (info) => <div className="font-mono bg-blue-50 px-2 py-1 rounded-sm text-sm">{info.getValue()}</div>,
       className: 'break-words',
     },
     {
@@ -51,7 +51,7 @@ export default function ManageAssignmentRules() {
       cell: (info) => (
         <span
           className={cx(
-            'px-2 py-1 rounded text-xs font-medium',
+            'px-2 py-1 rounded-sm text-xs font-medium',
             info.getValue() ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
           )}
         >
@@ -133,7 +133,7 @@ export default function ManageAssignmentRules() {
           <div className="space-y-3">
             <div>
               <h4 className="font-medium mb-2">Conditions disponibles :</h4>
-              <ul className="mb-0 text-sm space-y-1 [&_code]:bg-zinc-300 [&_code]:px-1 [&_code]:py-[0.1rem] [&_code]:rounded-sm [&_code]:font-mono">
+              <ul className="mb-0 text-sm space-y-1 [&_code]:bg-zinc-300 [&_code]:px-1 [&_code]:py-[0.1rem] [&_code]:rounded-xs [&_code]:font-mono">
                 <li>
                   <code>tags:"pattern"</code> : cherche dans les tags gestionnaires
                 </li>
@@ -178,7 +178,7 @@ export default function ManageAssignmentRules() {
 
             <div>
               <h4 className="font-medium mb-2">Opérateurs logiques :</h4>
-              <ul className="mb-0 text-sm space-y-1 [&_code]:bg-zinc-300 [&_code]:px-1 [&_code]:py-[0.1rem] [&_code]:rounded-sm [&_code]:font-mono">
+              <ul className="mb-0 text-sm space-y-1 [&_code]:bg-zinc-300 [&_code]:px-1 [&_code]:py-[0.1rem] [&_code]:rounded-xs [&_code]:font-mono">
                 <li>
                   <code>&&</code> (ET), <code>||</code> (OU), <code>!</code> (NON), parenthèses <code>()</code>
                 </li>
@@ -190,7 +190,7 @@ export default function ManageAssignmentRules() {
 
             <div>
               <h4 className="font-medium mb-2">Actions disponibles :</h4>
-              <ul className="mb-0 text-sm space-y-1 [&_code]:bg-zinc-300 [&_code]:px-1 [&_code]:py-[0.1rem] [&_code]:rounded-sm [&_code]:font-mono">
+              <ul className="mb-0 text-sm space-y-1 [&_code]:bg-zinc-300 [&_code]:px-1 [&_code]:py-[0.1rem] [&_code]:rounded-xs [&_code]:font-mono">
                 <li>
                   <code>tag:"MonTag"</code> : ajoute un tag
                 </li>
@@ -205,7 +205,7 @@ export default function ManageAssignmentRules() {
 
             <div>
               <h4 className="font-medium mb-2">Exemples :</h4>
-              <ul className="mb-0 text-sm space-y-1 [&_code]:bg-zinc-300 [&_code]:px-1 [&_code]:py-[0.1rem] [&_code]:rounded-sm [&_code]:font-mono">
+              <ul className="mb-0 text-sm space-y-1 [&_code]:bg-zinc-300 [&_code]:px-1 [&_code]:py-[0.1rem] [&_code]:rounded-xs [&_code]:font-mono">
                 <li>
                   <code>commune.insee_dep:"94"</code> → <code>tag:"Val-de-Marne"</code>
                 </li>

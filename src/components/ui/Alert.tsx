@@ -11,7 +11,7 @@ export type AlertProps = Omit<DSFRAlertProps, 'small' | 'description' | 'severit
 
 const classNames = {
   sizes: {
-    sm: 'text-sm !py-2 !pr-2',
+    sm: 'text-sm py-2! pr-2!',
     md: '',
   },
 };

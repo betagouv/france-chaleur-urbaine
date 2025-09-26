@@ -22,7 +22,7 @@ export type TileProps = BaseTileProps & {
 const tileVariants = cva('', {
   variants: {
     size: {
-      sm: '!pt-[1rem] !px-[1rem] !pb-[1.25rem]',
+      sm: 'pt-4! px-4! pb-5!',
       md: '',
       lg: '',
     },
@@ -35,7 +35,7 @@ const tileVariants = cva('', {
 const headerVariants = cva('', {
   variants: {
     size: {
-      sm: '!mr-1',
+      sm: 'mr-1!',
       md: '',
       lg: '',
     },
@@ -48,7 +48,7 @@ const headerVariants = cva('', {
 const imgVariants = cva('', {
   variants: {
     size: {
-      sm: '!mr-0',
+      sm: 'mr-0!',
       md: '',
       lg: '',
     },
@@ -61,7 +61,7 @@ const imgVariants = cva('', {
 const contentVariants = cva('', {
   variants: {
     size: {
-      sm: '!pb-[1.5rem]',
+      sm: 'pb-6!',
       md: '',
       lg: '',
     },

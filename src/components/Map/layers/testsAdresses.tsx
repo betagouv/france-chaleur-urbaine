@@ -127,7 +127,7 @@ function Popup(
   return (
     <>
       <Title>{ban_address}</Title>
-      <h6 className="text-lg !mb-0">Utilisateurs interessés ({users.length})</h6>
+      <h6 className="text-lg mb-0!">Utilisateurs interessés ({users.length})</h6>
       <TwoColumns>
         {users
           .sort((a, b) => a.first_name?.toLowerCase().localeCompare(b.first_name?.toLowerCase() || '') || 0)
@@ -166,7 +166,7 @@ function Popup(
             );
           })}
       </TwoColumns>
-      <h6 className="text-lg !mb-0">Éligibilité</h6>
+      <h6 className="text-lg mb-0!">Éligibilité</h6>
 
       {eligibilityStatus.id ? (
         <TwoColumns>

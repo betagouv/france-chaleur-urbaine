@@ -12,7 +12,7 @@ import { getObsoleteUsers } from './admin/exportObsoleteUsers';
 
 const schema = z.object({
   exportType: z.string(),
-  params: z.record(z.any()).optional(),
+  params: z.record(z.string(), z.any()).optional(),
 });
 
 export default handleRouteErrors(async (req: NextApiRequest, res: NextApiResponse) => {

@@ -532,7 +532,7 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false, className }:
         (addresses.length > 0 ? (
           <>
             <Tabs
-              className="[&_[role='tabpanel']]:!p-2w" // decrease the default big padding of tabs panels
+              className="[&_[role='tabpanel']]:p-2w!" // decrease the default big padding of tabs panels
               tabs={[
                 {
                   label: `Liste (${filteredAddresses.length})`,
@@ -564,7 +564,7 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false, className }:
                   ),
                   iconId: 'fr-icon-map-pin-2-line',
                   content: (
-                    <div className="min-h-[50vh] aspect-[4/3]">
+                    <div className="min-h-[50vh] aspect-4/3">
                       <Map
                         initialMapConfiguration={createMapConfiguration({
                           reseauxDeChaleur: {

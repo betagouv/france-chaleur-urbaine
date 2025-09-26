@@ -13,7 +13,7 @@ const reset = handleRouteErrors(async (req: NextApiRequest) => {
   requirePostMethod(req);
 
   const { email } = await validateObjectSchema(req.body, {
-    email: z.string().email().toLowerCase().trim(),
+    email: z.email().toLowerCase().trim(),
   });
 
   const user = await db('users').where('email', email).andWhere('active', true).first();

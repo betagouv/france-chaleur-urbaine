@@ -28,7 +28,7 @@ export const Container = styled.div`
   .fr-input-group {
     margin-bottom: 0 !important;
     width: 350px;
-    flex-grow: 1;
+    grow: 1;
   }
 `;
 

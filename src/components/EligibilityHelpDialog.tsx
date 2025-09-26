@@ -140,7 +140,7 @@ const EligibilityHelpDialog = ({ children, detailedEligibilityStatus }: Eligibil
                           </div>
                           <details className="mt-2">
                             <summary className="cursor-pointer font-medium">Voir les données brutes</summary>
-                            <pre className="text-xs bg-gray-100 rounded p-2 mt-2 overflow-x-auto">
+                            <pre className="text-xs bg-gray-100 rounded-sm p-2 mt-2 overflow-x-auto">
                               {JSON.stringify(detailedEligibilityStatus, null, 2)}
                             </pre>
                           </details>
@@ -149,7 +149,7 @@ const EligibilityHelpDialog = ({ children, detailedEligibilityStatus }: Eligibil
                     </div>
                     <div
                       className={
-                        'ml-4 text-xs font-mono px-2 py-1 rounded ' +
+                        'ml-4 text-xs font-mono px-2 py-1 rounded-sm ' +
                         (isCurrent ? 'bg-blue-200 text-blue-900 border border-blue-600' : 'bg-gray-200 text-gray-500')
                       }
                     >

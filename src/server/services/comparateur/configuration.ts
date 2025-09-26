@@ -15,12 +15,12 @@ export const remove = baseModel.removeMine;
 export const validation = {
   create: z.object({
     name: z.string(),
-    situation: z.record(z.any()),
+    situation: z.record(z.string(), z.any()),
     address: z.string().optional(),
   }),
   update: z.object({
     name: z.string().optional(),
-    situation: z.record(z.any()).optional(),
+    situation: z.record(z.string(), z.any()).optional(),
     address: z.string().optional(),
   }),
 };

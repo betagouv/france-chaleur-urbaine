@@ -63,7 +63,7 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
       }
       {/* This is because the Text component has a weird 0 bottom border */}
       <div className="fr-mt-4w" />
-      <DisclaimerButton className="!mb-5" withBouclierTarifaire={false} />
+      <DisclaimerButton className="mb-5!" withBouclierTarifaire={false} />
       <Heading as="h3" size="h6">
         Chauffage collectif
       </Heading>
@@ -73,7 +73,7 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
           createOptionProps(!advancedMode && !nearestReseauDeChaleur ? '(Non disponible)' : undefined)
         )}
         state={nearestReseauDeChaleur ? 'success' : 'default'}
-        className="[&_label]:!mb-4"
+        className="[&_label]:mb-4!"
         disabled={!advancedMode && !nearestReseauDeChaleur}
         stateRelatedMessage={
           nearestReseauDeChaleur ? (

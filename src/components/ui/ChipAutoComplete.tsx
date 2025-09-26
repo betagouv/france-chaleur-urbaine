@@ -160,7 +160,7 @@ const ChipAutoComplete = (rawProps: ChipAutoCompleteProps) => {
             className={cx(
               'flex flex-wrap items-center gap-1 focus-within:ring-2 ring-blue-00 cursor-text',
               disabled && 'opacity-60 pointer-events-none',
-              classNames?.wrapper || 'border rounded pl-2 pr-4 py-1 min-h-[2.5rem] bg-white'
+              classNames?.wrapper || 'border rounded-sm pl-2 pr-4 py-1 min-h-10 bg-white'
             )}
             onClick={() => inputRef.current?.focus()}
           >
@@ -187,7 +187,7 @@ const ChipAutoComplete = (rawProps: ChipAutoCompleteProps) => {
             <input
               ref={inputRef}
               type="text"
-              className={cx('flex-1 w-full !outline-none border-none bg-transparent text-sm min-w-[6ch]', classNames?.input || ' py-1')}
+              className={cx('flex-1 w-full outline-hidden! border-none bg-transparent text-sm min-w-[6ch]', classNames?.input || ' py-1')}
               value={inputValue}
               onClick={(e) => {
                 e.stopPropagation();
@@ -248,7 +248,7 @@ const ChipAutoComplete = (rawProps: ChipAutoCompleteProps) => {
           </Tooltip>
         ) : (
           <Tooltip title={`Revoir la suggestion (${props.suggestedValue})`}>
-            <button onClick={resetValue} className="-mt-0.5 p-0.5 hover:bg-gray-100 rounded">
+            <button onClick={resetValue} className="-mt-0.5 p-0.5 hover:bg-gray-100 rounded-sm">
               <Icon name="fr-icon-refresh-line" size="xs" color="warning" />
             </button>
           </Tooltip>
