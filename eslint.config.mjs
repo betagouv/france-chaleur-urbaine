@@ -1,6 +1,6 @@
 import react from 'eslint-plugin-react';
 import typescriptEslint from '@typescript-eslint/eslint-plugin';
-import prettier from 'eslint-plugin-prettier';
+import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 import betterStyledComponents from 'eslint-plugin-better-styled-components';
 import importPlugin from 'eslint-plugin-import';
 import globals from 'globals';
@@ -53,7 +53,7 @@ export default [
     plugins: {
       react,
       '@typescript-eslint': typescriptEslint,
-      prettier,
+      eslintPluginPrettierRecommended,
       'better-styled-components': betterStyledComponents,
       import: importPlugin,
     },
