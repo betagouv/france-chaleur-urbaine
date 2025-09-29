@@ -2,6 +2,8 @@
 
 @config '../../tailwind.config.ts';
 
+@source inline("flex-{2..12}");
+
 /*
   The default border color has changed to `currentcolor` in Tailwind CSS v4,
   so we've added these compatibility styles to make sure everything still

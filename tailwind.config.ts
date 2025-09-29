@@ -5,11 +5,6 @@ import colors from './src/components/ui/helpers/colors';
 
 const config = {
   content: ['./src/**/*.{js,ts,jsx,tsx,mdx}'],
-  safelist: [
-    {
-      pattern: /^flex-[2-9]$|^flex-1[0-2]$/,
-    },
-  ],
   theme: {
     extend: {
       // Use breakpoints from DSFR https://www.systeme-de-design.gouv.fr/fondamentaux/grille-et-points-de-rupture
