@@ -63,3 +63,19 @@ Un token a été généré sur https://francechaleururbaine.pipedrive.com/settin
   - Name : Notification déploiement Mattermost
   - URL of the webhook : https://mattermost.incubateur.net/hooks/zsw9wcg5at8r98f9o8c9fe4imr (le lien obtenu à l'étape précédente)
   - Events : sélectionner tous
+
+
+## Buildpack Scalingo
+
+Un buildpack custom Scalingo est nécessaire pour pouvoir utiliser `ogr2ogr` et `tippecanoe` sur Scalingo. Ces outils géographiques nécessitent des bibliothèques système spécifiques qui ne sont pas disponibles par défaut.
+
+Configuré via le fichier .buildpacks :
+- https://github.com/Scalingo/apt-buildpack.git : permet d'installer des paquets Apt, dans notre cas gdal et ses bibliothèques
+- https://github.com/betagouv/france-chaleur-urbaine-scalingo-buildpack.git : notre buildpack qui permet de compiler et rendre disponible le binaire tippecanoe [source](https://github.com/betagouv/france-chaleur-urbaine-scalingo-buildpack)
+- https://github.com/Scalingo/nodejs-buildpack.git : contient l'environnement Node
+
+Aussi, il est nécessaire de configurer les variables d'environnement suivantes sur Scalingo afin que les commandes ogr2ogr trouvent la lib `libblas.so` (voir doc Scalingo [Deploy an Application Including the GDAL Library](https://doc.scalingo.com/platform/app/app-with-gdal)) :
+```sh
+LD_LIBRARY_PATH=/app/.apt/usr/lib/x86_64-linux-gnu/blas/:/app/.apt/usr/lib/x86_64-linux-gnu/lapack/
+PROJ_LIB=/app/.apt/usr/share/proj
+```
