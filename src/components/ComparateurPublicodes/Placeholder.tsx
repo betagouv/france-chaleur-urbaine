@@ -25,13 +25,13 @@ export const DataYearDisclaimer: React.FC<{ advancedMode?: boolean }> = ({ advan
 export const title = 'Comparateur de coûts et d’émissions de CO2';
 
 export const Logos = ({ size, withFCU = true, ...props }: React.ComponentProps<typeof Box> & { size?: 'sm'; withFCU?: boolean }) => {
-  const height = size === 'sm' ? '32px' : '40px';
+  const itemClasses = size === 'sm' ? 'h-[32px]' : 'h-[40px]';
   return (
     <Box display="flex" gap={size === 'sm' ? '16px' : '32px'} flexDirection="row" alignItems="center" flexWrap="wrap" my="2w" {...props}>
-      <img src="/logo-HEAT_COOL.png" alt="logo life Heat & Cool" height={height} className="reset-height fr-mr-2w" />
-      <img src="/logo-amorce.svg" alt="logo amorce" height={height} className="reset-height" />
-      <img src="/logo-elcimai.png" alt="logo elcimaï" height={height} className="reset-height fr-mr-2w" />
-      {withFCU && <img src="/logo-fcu-with-typo-tight.webp" alt="logo france chaleur urbaine" height={height} className="reset-height" />}
+      <img src="/logo-HEAT_COOL.png" alt="logo life Heat & Cool" className={itemClasses} />
+      <img src="/logo-amorce.svg" alt="logo amorce" className={itemClasses} />
+      <img src="/logo-elcimai.png" alt="logo elcimaï" className={itemClasses} />
+      {withFCU && <img src="/logo-fcu-with-typo-tight.webp" alt="logo france chaleur urbaine" className={itemClasses} />}
     </Box>
   );
 };
