@@ -1,0 +1,66 @@
+@import 'tailwindcss';
+
+@config '../../tailwind.config.ts';
+
+@source inline("flex-{2..12}");
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
+
+a[target='_blank'].reset-external {
+  &:after {
+    display: none;
+  }
+}
+
+html[data-browser='firefox'] .scrollbar-visible {
+  scrollbar-width: auto;
+  scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
+
+  &:hover {
+    scrollbar-color: rgba(0, 0, 0, 0.4) transparent;
+  }
+}
+
+html[data-os='mac'] .scrollbar-visible {
+  /* Generated with https://scrollbar.app/ and ChatGPT*/
+  &::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 6px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+    transition: background-color 0.2s ease-in-out;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0, 0, 0, 0.4);
+  }
+
+  &::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+}

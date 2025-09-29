@@ -21,8 +21,22 @@
       "@cli/*": ["scripts/*"],
       "@root/*": ["*"]
     },
-    "incremental": true
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
   },
-  "include": ["next-env.d.ts", "src/**/*.d.ts", "src/**/*.ts", "src/**/*.tsx", "knexfile.ts", "scripts/**/*.ts", "**/*.svgr"],
+  "include": [
+    "**/*.svgr",
+    "knexfile.ts",
+    "next-env.d.ts",
+    "scripts/**/*.ts",
+    "src/**/*.d.ts",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    ".next/types/**/*.ts"
+  ],
   "exclude": ["node_modules", "__tests__", "*.backUp", "**/*.backUp/*", ".next"]
 }

@@ -553,7 +553,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
                 className="whitespace-nowrap"
                 priority="secondary"
                 size="small"
-                href={`/pro/comparateur-couts-performances?${searchParams.toString()}`}
+                href={`/pro/comparateur-couts-performances?${searchParams?.toString() ?? ''}`}
               >
                 Accéder au mode avancé
               </Button>
