@@ -225,7 +225,9 @@ const EventRow = ({ item: event, updateFilters, showDetails }: EventRowProps) =>
           <FilterButton onClick={() => updateFilters({ authorId: event.author_id })}>{event.author.email}</FilterButton>
         </>
       ) : null}
-      <div className="text-sm">{eventLabelRenderers[event.type](event, updateFilters)}</div>
+      <div className="text-sm">
+        {eventLabelRenderers[event.type] ? eventLabelRenderers[event.type](event, updateFilters) : `${event.type} - Event type not found`}
+      </div>
       {showDetails && event.data && typeof event.data === 'object' && Object.keys(event.data).length > 0 && (
         <pre className="text-xs whitespace-pre-wrap">{JSON.stringify(event.data, null, 2).slice(2, -2)}</pre>
       )}
