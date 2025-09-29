@@ -30,6 +30,7 @@ export default [
       'node_modules/**/*',
       'dist/**/*',
       'build/**/*',
+      'tailwind.config.ts',
     ],
   },
 
