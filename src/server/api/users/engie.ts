@@ -16,7 +16,7 @@ export const validation = z.array(
     id_sncu: z.string(),
     full_url: z.string(),
     public_name: z.string(),
-    contacts: z.array(z.string().email().toLowerCase().trim()),
+    contacts: z.array(z.email().toLowerCase().trim()),
   })
 );
 

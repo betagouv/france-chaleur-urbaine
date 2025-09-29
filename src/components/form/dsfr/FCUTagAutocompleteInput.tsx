@@ -24,7 +24,7 @@ const FCUTagAutocompleteInput = ({
     >
       <FCUTagAutocomplete
         classNames={{
-          input: 'fr-input !px-0 !py-0 !shadow-none',
+          input: 'fr-input px-0! py-0! shadow-none!',
           wrapper: 'bg-input shadow-[inset_0_-2px_0_0_#3a3a3a] px-4 py-2',
         }}
         {...props}

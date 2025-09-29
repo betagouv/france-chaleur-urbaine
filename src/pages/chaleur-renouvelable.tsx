@@ -26,7 +26,7 @@ function ChaleurRenouvelablePage() {
       <ChoixChauffageForm />
 
       <Section variant="lightaccent">
-        <SectionContent className="!mt-0">
+        <SectionContent className="mt-0!">
           <ResponsiveRow>
             <div className="flex-1">
               <div className="fr-h5 fr-mb-1w">Je me renseigne sur les performances thermiques de mon bâtiment.</div>
@@ -53,7 +53,7 @@ function ChaleurRenouvelablePage() {
       </Section>
 
       <Section variant="light">
-        <SectionContent className="!mt-0">
+        <SectionContent className="mt-0!">
           <SectionHeading as="h2">Bien choisir son chauffage c’est important&nbsp;!</SectionHeading>
           <p className="text-lg">
             75% des Français restreignent leur chauffage pour limiter le montant de leurs factures. Le chauffage est aussi responsable de
@@ -80,9 +80,9 @@ function ChaleurRenouvelablePage() {
       </Section>
 
       <Section>
-        <SectionContent className="!mt-0">
-          <SectionTwoColumns className="!mt-0">
-            <div className="!flex-[2]">
+        <SectionContent className="mt-0!">
+          <SectionTwoColumns className="mt-0!">
+            <div className="flex-[2]!">
               <SectionHeading as="h2">Affinez votre projet avec notre comparateur</SectionHeading>
               <p className="text-lg">Comparez les coûts et les émissions de CO2 pour chaque mode de chauffage.</p>
               <ul className="text-lg font-bold">
@@ -95,7 +95,7 @@ function ChaleurRenouvelablePage() {
                 Accéder au comparateur
               </Link>
             </div>
-            <div className="!flex-1">
+            <div className="flex-1!">
               <img src="/img/preview_comparateur.webp" alt="Comparateur de coûts et performances des équipements de chauffage" />
             </div>
           </SectionTwoColumns>

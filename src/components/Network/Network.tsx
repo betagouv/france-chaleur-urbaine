@@ -548,8 +548,8 @@ const NetworkPanel = ({
             <li>Données 2021 : ViaSeva.</li>
           </ul>
 
-          <img src="/logo-fedene.svg" alt="logo fedene" height="50px" className="reset-height inline-block fr-mr-2w" />
-          <img src="/logo-amorce.svg" alt="logo amorce" height="50px" className="reset-height inline-block" />
+          <img src="/logo-fedene.svg" alt="logo fedene" className="h-[50px] inline-block fr-mr-2w" />
+          <img src="/logo-amorce.svg" alt="logo amorce" className="h-[50px] inline-block" />
         </Box>
       )}
     </>

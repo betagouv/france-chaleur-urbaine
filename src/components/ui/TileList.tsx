@@ -89,7 +89,11 @@ const TileList: React.FC<TileListProps> = ({
         <div className="flex justify-center mt-6">
           <Button
             onClick={() => {
-              !showAll ? eventKeyExpanded && trackEvent(eventKeyExpanded) : eventKeyCollapsed && trackEvent(eventKeyCollapsed);
+              if (!showAll) {
+                if (eventKeyExpanded) trackEvent(eventKeyExpanded);
+              } else {
+                if (eventKeyCollapsed) trackEvent(eventKeyCollapsed);
+              }
               setShowAll(!showAll);
             }}
             priority="secondary"

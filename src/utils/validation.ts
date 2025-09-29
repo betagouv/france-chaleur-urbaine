@@ -4,8 +4,8 @@ import { z, ZodObject, type ZodRawShape, type ZodTypeAny } from 'zod';
  * Recursively unwraps ZodEffects to get the base schema.
  */
 const unwrapSchema = (schema: ZodTypeAny): ZodTypeAny => {
-  while (schema instanceof z.ZodEffects) {
-    schema = schema._def.schema;
+  while ((schema._def as any).typeName === 'ZodEffects') {
+    schema = (schema as any)._def.schema;
   }
   return schema;
 };
@@ -38,7 +38,7 @@ export const zPassword = z.string().refine(
     return true;
   },
   {
-    message: 'Le mot de passe doit contenir au moins 8 caractères, une lettre minuscule, une lettre majuscule et un chiffre.',
+    error: 'Le mot de passe doit contenir au moins 8 caractères, une lettre minuscule, une lettre majuscule et un chiffre.',
   }
 );
 
@@ -78,5 +78,5 @@ export const zGeometry = z.any().refine(
       type === 'MultiPolygon'
     );
   },
-  { message: 'Invalid GeoJSON geometry' }
+  { error: 'Invalid GeoJSON geometry' }
 );

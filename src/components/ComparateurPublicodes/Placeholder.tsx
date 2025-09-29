@@ -25,13 +25,13 @@ export const DataYearDisclaimer: React.FC<{ advancedMode?: boolean }> = ({ advan
 export const title = 'Comparateur de coûts et d’émissions de CO2';
 
 export const Logos = ({ size, withFCU = true, ...props }: React.ComponentProps<typeof Box> & { size?: 'sm'; withFCU?: boolean }) => {
-  const height = size === 'sm' ? '32px' : '40px';
+  const itemClasses = size === 'sm' ? 'h-[32px]' : 'h-[40px]';
   return (
     <Box display="flex" gap={size === 'sm' ? '16px' : '32px'} flexDirection="row" alignItems="center" flexWrap="wrap" my="2w" {...props}>
-      <img src="/logo-HEAT_COOL.png" alt="logo life Heat & Cool" height={height} className="reset-height fr-mr-2w" />
-      <img src="/logo-amorce.svg" alt="logo amorce" height={height} className="reset-height" />
-      <img src="/logo-elcimai.png" alt="logo elcimaï" height={height} className="reset-height fr-mr-2w" />
-      {withFCU && <img src="/logo-fcu-with-typo-tight.webp" alt="logo france chaleur urbaine" height={height} className="reset-height" />}
+      <img src="/logo-HEAT_COOL.png" alt="logo life Heat & Cool" className={itemClasses} />
+      <img src="/logo-amorce.svg" alt="logo amorce" className={itemClasses} />
+      <img src="/logo-elcimai.png" alt="logo elcimaï" className={itemClasses} />
+      {withFCU && <img src="/logo-fcu-with-typo-tight.webp" alt="logo france chaleur urbaine" className={itemClasses} />}
     </Box>
   );
 };
@@ -51,7 +51,7 @@ export const Explanations = ({ className, advancedMode, ...props }: React.HTMLAt
         voir l’explication détaillée
       </a>
       ), et ne se substitue en aucun cas à une étude de faisabilité technico-économique. <DataYearDisclaimer advancedMode={advancedMode} />
-      <p className="fr-text--sm font-bold !mt-2">
+      <p className="fr-text--sm font-bold mt-2!">
         Pour une étude plus poussée (prix actualisés, prise en compte des spécificités de votre bâtiment), nous vous invitons à vous
         rapprocher du gestionnaire du réseau de chaleur le plus proche de chez vous ou d'un bureau d'études.
       </p>
@@ -205,9 +205,9 @@ export const DisclaimerButton: React.FC<React.HTMLAttributes<HTMLDivElement> & {
   return (
     <>
       <DisclaimerModal />
-      <p className={cx('fr-text--xs text-warning !mb-0', withBouclierTarifaire ? '' : '!mb-5')}>
+      <p className={cx('fr-text--xs text-warning mb-0!', withBouclierTarifaire ? '' : 'mb-5!')}>
         <Icon name="fr-icon-info-line" size="xs" /> Tous les modes de chauffage ne sont pas interchangeables.{' '}
-        <a href="#" onClick={() => modalDisclaimer.open()} className="fr-link fr-text--xs !text-warning">
+        <a href="#" onClick={() => modalDisclaimer.open()} className="fr-link fr-text--xs text-warning!">
           En savoir plus
         </a>
       </p>
@@ -217,7 +217,7 @@ export const DisclaimerButton: React.FC<React.HTMLAttributes<HTMLDivElement> & {
           <Link
             href="/documentation/comparateur/prise-en-compte_bouclier-tarifaire.pdf"
             isExternal
-            className="fr-link fr-text--xs !text-warning"
+            className="fr-link fr-text--xs text-warning!"
           >
             En savoir plus
           </Link>

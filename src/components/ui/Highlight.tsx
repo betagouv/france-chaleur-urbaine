@@ -5,11 +5,11 @@ const highlightVariants = cva('', {
   variants: {
     variant: {
       default: '',
-      blue: '!bg-[image:linear-gradient(0deg,var(--border-action-high-blue-france),var(--border-action-high-blue-france))]',
-      info: '!bg-[image:linear-gradient(0deg,var(--border-action-high-info),var(--border-action-high-info))]',
-      success: '!bg-[image:linear-gradient(0deg,var(--border-action-high-success),var(--border-action-high-success))]',
-      warning: '!bg-[image:linear-gradient(0deg,var(--border-action-high-warning),var(--border-action-high-warning))]',
-      error: '!bg-[image:linear-gradient(0deg,var(--border-action-high-error),var(--border-action-high-error))]',
+      blue: 'bg-[linear-gradient(0deg,var(--border-action-high-blue-france),var(--border-action-high-blue-france))]!',
+      info: 'bg-[linear-gradient(0deg,var(--border-action-high-info),var(--border-action-high-info))]!',
+      success: 'bg-[linear-gradient(0deg,var(--border-action-high-success),var(--border-action-high-success))]!',
+      warning: 'bg-[linear-gradient(0deg,var(--border-action-high-warning),var(--border-action-high-warning))]!',
+      error: 'bg-[linear-gradient(0deg,var(--border-action-high-error),var(--border-action-high-error))]!',
     },
   },
   defaultVariants: {

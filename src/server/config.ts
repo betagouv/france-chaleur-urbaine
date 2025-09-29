@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
-import { parseEnv } from 'znv';
 import { z } from 'zod';
+
+import { parseEnv } from '@/utils/env';
 
 dotenv.config({ path: '.env.local' });
 dotenv.config();

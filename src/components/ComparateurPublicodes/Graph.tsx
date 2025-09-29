@@ -525,9 +525,9 @@ const Graph: React.FC<GraphProps> = ({
               Coût global et émissions de CO2 annuels
               {typeDeBatiment === 'tertiaire' ? '' : ` (par ${perBuilding ? 'bâtiment' : 'logement'})`} - {titleItemsString} ({dataYear})
             </Heading>
-            <DisclaimerButton className="!mb-5" />
+            <DisclaimerButton className="mb-5!" />
             <div className="relative mt-2 pb-8">
-              <div className="absolute inset-0 -z-10 flex h-full w-full [&>*]:flex-1">
+              <div className="absolute inset-0 -z-10 flex h-full w-full *:flex-1">
                 <div
                   className="ml-12 mr-3"
                   style={{
@@ -596,7 +596,7 @@ const Graph: React.FC<GraphProps> = ({
                         >
                           <span className="pr-0.5 absolute right-[12px]">{advancedMode ? co2UpperBoundString : ''}</span>
                           {advancedMode && (
-                            <div className="border-solid border-l-fcu-orange-light border-l-[12px] border-y-transparent border-y-[5px] my-1 border-r-0"></div>
+                            <div className="border-solid border-l-fcu-orange-light border-l-12 border-y-transparent border-y-[5px] my-1 border-r-0"></div>
                           )}
                         </div>
                         <div className="relative bg-fcu-orange-light" style={{ flex: co2Width }}></div>
@@ -605,7 +605,7 @@ const Graph: React.FC<GraphProps> = ({
                           style={{ flex: co2LowerPercent }}
                         >
                           {advancedMode && (
-                            <div className="border-solid border-r-fcu-orange-light border-r-[12px] border-y-transparent border-y-[5px] my-1 border-l-0"></div>
+                            <div className="border-solid border-r-fcu-orange-light border-r-12 border-y-transparent border-y-[5px] my-1 border-l-0"></div>
                           )}
                           <span className="absolute left-[12px] pl-0.5">{advancedMode ? co2LowerBoundString : ''}</span>
                         </div>
@@ -617,7 +617,7 @@ const Graph: React.FC<GraphProps> = ({
                         >
                           <span className="pr-0.5 absolute right-[12px]">{advancedMode ? lowerBoundString : ''}</span>
                           {advancedMode && (
-                            <div className="border-solid border-l-fcu-purple border-l-[12px] border-y-transparent border-y-[5px] my-1 border-r-0"></div>
+                            <div className="border-solid border-l-fcu-purple border-l-12 border-y-transparent border-y-[5px] my-1 border-r-0"></div>
                           )}
                         </div>
                         <div className="relative bg-fcu-purple" style={{ flex: costWidth }}></div>
@@ -626,7 +626,7 @@ const Graph: React.FC<GraphProps> = ({
                           style={{ flex: 100 - costUpperPercent }}
                         >
                           {advancedMode && (
-                            <div className="border-solid border-r-fcu-purple border-r-[12px] border-y-transparent border-y-[5px] my-1 border-l-0"></div>
+                            <div className="border-solid border-r-fcu-purple border-r-12 border-y-transparent border-y-[5px] my-1 border-l-0"></div>
                           )}
                           <span className="pl-0.5 absolute left-[12px]">{advancedMode ? upperBoundString : ''}</span>
                         </div>
@@ -669,7 +669,7 @@ const Graph: React.FC<GraphProps> = ({
                 {Array.from({ length: Math.floor(100 / getGridRepeatPercentage(scaleCostMaxValue)) }).map((_, i) => (
                   <div className="relative flex-1" key={`scale_cost_${i}-${scaleCostMaxValue}`}>
                     &nbsp;
-                    <span className="absolute origin-bottom-right -rotate-45 w-[100%] translate-x-[5px] whitespace-nowrap text-right">
+                    <span className="absolute origin-bottom-right -rotate-45 w-full translate-x-[5px] whitespace-nowrap text-right">
                       {formatCost(scaleCostMaxValue * (((i + 1) * getGridRepeatPercentage(scaleCostMaxValue)) / 100), false)}
                     </span>
                   </div>
@@ -688,7 +688,7 @@ const Graph: React.FC<GraphProps> = ({
               Coût global annuel - {titleItemsString}
               {typeDeBatiment === 'tertiaire' ? '' : ' (par logement)'} ({dataYear})
             </Heading>
-            <DisclaimerButton className="!mb-5" />
+            <DisclaimerButton className="mb-5!" />
             <Chart
               chartType="BarChart"
               height="100%"
@@ -698,7 +698,9 @@ const Graph: React.FC<GraphProps> = ({
                 {
                   eventName: 'select',
                   callback: ({ chartWrapper }) => {
-                    (chartWrapper.getChart() as any).setSelection();
+                    if (chartWrapper) {
+                      (chartWrapper.getChart() as any).setSelection();
+                    }
                   },
                 },
               ]}
@@ -717,10 +719,10 @@ const Graph: React.FC<GraphProps> = ({
               Émissions annuelles de CO2{perBuilding ? ' (par bâtiment)' : typeDeBatiment === 'tertiaire' ? '' : ' (par logement)'} (
               {dataYear})
             </Heading>
-            <DisclaimerButton className="!mb-5" />
+            <DisclaimerButton className="mb-5!" />
             {typeDeBatiment === 'résidentiel' && (
               <SegmentedControl
-                className="!mt-2"
+                className="mt-2!"
                 hideLegend
                 small
                 segments={[
@@ -750,7 +752,9 @@ const Graph: React.FC<GraphProps> = ({
                 {
                   eventName: 'select',
                   callback: ({ chartWrapper }) => {
-                    (chartWrapper.getChart() as any).setSelection();
+                    if (chartWrapper) {
+                      (chartWrapper.getChart() as any).setSelection();
+                    }
                   },
                 },
               ]}
@@ -783,7 +787,7 @@ const Graph: React.FC<GraphProps> = ({
             </ButtonExport>
           )}
         </div>
-        <Notice size="sm" classes={{ title: '!font-normal !text-sm' }}>
+        <Notice size="sm" classes={{ title: 'font-normal! text-sm!' }}>
           {exportSheets ? (
             <>
               En cas d’utilisation de l’image ou des données exportées, un lien vers le comparateur en ligne doit obligatoirement être

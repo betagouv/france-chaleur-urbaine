@@ -4,19 +4,19 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import Tooltip from '@/components/ui/Tooltip';
 import cx from '@/utils/cx';
 
-const badgeCva = cva('!block', {
+const badgeCva = cva('block!', {
   variants: {
     type: {
-      haut_potentiel: '!bg-green-600 !text-white',
-      pdp: '!bg-[#FFDA8F] !text-[#454B58]',
-      warning_ville_differente: '!bg-[#FFDA8F] !text-[#454B58]',
-      api_user: '!bg-[#FFDA8F] !text-[#454B58]',
+      haut_potentiel: 'bg-green-600! text-white!',
+      pdp: 'bg-[#FFDA8F]! text-[#454B58]!',
+      warning_ville_differente: 'bg-[#FFDA8F]! text-[#454B58]!',
+      api_user: 'bg-[#FFDA8F]! text-[#454B58]!',
     },
     size: {
-      xs: '!text-[10px] !py-0.5 !px-1 !leading-none !min-h-min',
+      xs: 'text-[10px]! py-0.5! px-1! leading-none! min-h-min!',
       sm: '',
-      md: '!text-base !py-1.5 !px-3',
-      lg: '!text-lg !py-2 !px-4',
+      md: 'text-base! py-1.5! px-3!',
+      lg: 'text-lg! py-2! px-4!',
     },
   },
   defaultVariants: {

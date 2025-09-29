@@ -58,7 +58,7 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
         `Eligibilité|Formulaire de test - Fiche réseau - Adresse ${eligibilityStatus?.isEligible ? 'É' : 'Iné'}ligible`,
         geoAddress.properties.label
       );
-    } catch (err) {
+    } catch (_err) {
       setFormState('eligibilitySubmissionError');
     }
   };
@@ -112,7 +112,7 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
         `Eligibilité|Formulaire de contact ${eligibilityStatus?.isEligible ? 'é' : 'iné'}ligible - Fiche réseau - Envoi`,
         selectedGeoAddress?.properties.label
       );
-    } catch (err) {
+    } catch (_err) {
       setFormState('demandSubmissionError');
     }
   };

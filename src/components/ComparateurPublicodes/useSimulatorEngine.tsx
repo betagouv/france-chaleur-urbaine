@@ -10,7 +10,7 @@ const useSimulatorEngine = () => {
       log: console.info,
       error: console.error,
       // hide all warnings about conversions
-      warn: () => {}, // eslint-disable-line @typescript-eslint/no-empty-function
+      warn: () => {},
     },
   });
 };

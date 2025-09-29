@@ -29,12 +29,9 @@ const zModificationReseau = {
   fonction: z.preprocess((val: any) => val[0], z.string()),
   email: z.preprocess(
     (val: any) => val[0],
-    z
-      .string()
-      .email()
-      .refine((email) => !emailNotAllowed.includes(email), {
-        message: emailNotAllowedMessage,
-      })
+    z.email().refine((email) => !emailNotAllowed.includes(email), {
+      error: emailNotAllowedMessage,
+    })
   ),
   reseauClasse: z.preprocess((val: any) => parseValue(val[0]), z.boolean()),
   maitreOuvrage: z.preprocess((val: any) => val[0], z.string()),

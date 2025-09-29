@@ -15,8 +15,8 @@ export const TooltipContent = React.forwardRef<React.ElementRef<typeof Content>,
         ref={ref}
         sideOffset={sideOffset}
         className={cx(
-          'z-[1751]', // one more than modal
-          'overflow-hidden shadow-lg rounded-sm bg-white px-3 py-1.5 text-xs text-black animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2',
+          'z-1751', // one more than modal
+          'overflow-hidden shadow-lg rounded-xs bg-white px-3 py-1.5 text-xs text-black animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2',
           'max-w-[300px]',
           className
         )}
@@ -99,7 +99,7 @@ type TooltipProps = Pick<TooltipContentProps, 'side' | 'sideOffset'> & {
  */
 
 const Arrow = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({ className, ...props }, ref) => (
-  <div ref={ref} className={cx('absolute h-2 w-4 rotate-[45deg]', className)} {...props} />
+  <div ref={ref} className={cx('absolute h-2 w-4 rotate-45', className)} {...props} />
 ));
 Arrow.displayName = 'TooltipArrow';
 

@@ -1,6 +1,7 @@
 import { Highlight } from '@codegouvfr/react-dsfr/Highlight';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
+import * as jsxRuntime from 'react/jsx-runtime';
 import rehypeRaw from 'rehype-raw';
 import rehypeReact from 'rehype-react';
 import remarkBreaks from 'remark-breaks';
@@ -9,6 +10,26 @@ import remarkDirectiveRehype from 'remark-directive-rehype';
 import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
 import { unified } from 'unified';
+
+/**
+ * MarkdownWrapper - A React component that processes markdown with custom directives
+ *
+ * Processing pipeline:
+ * 1. Markdown text → remark-parse → Markdown AST
+ * 2. Markdown AST → remark-rehype → HTML AST
+ * 3. HTML AST → rehype-react → React elements
+ *
+ * Ecosystems:
+ * - remark: Processes markdown (mdast - markdown abstract syntax tree)
+ * - rehype: Processes HTML (hast - hypertext abstract syntax tree)
+ * - unified: Connects both ecosystems through plugins
+ *
+ * Custom directives supported:
+ * - ::check-item, ::arrow-item, ::thumb-item - Custom list items
+ * - ::highlight - DSFR highlight component
+ * - ::cartridge - Custom cartridge component
+ * - ::button-link, ::extra-link - Custom link components
+ */
 
 import {
   ArrowItem,
@@ -50,15 +71,24 @@ const ConsentLink: React.FC<{
 
 const processor = (extender: Record<string, unknown> = {}) =>
   unified()
-    .use(remarkBreaks)
+    // 1. Parses markdown text to AST
     .use(remarkParse)
+    // 2-4. All markdown AST transformations MUST happen before remarkRehype (step 5)
+    // 2. Converts line breaks to <br> tags (modifies markdown AST)
+    .use(remarkBreaks)
+    // 3. Enables custom directives (::highlight, ::cartridge, etc.)
     .use(remarkDirective)
+    // 4. Converts directive nodes to HTML elements for remark-rehype
     .use(remarkDirectiveRehype)
+    // 5. Converts markdown AST to HTML AST (after this, no more markdown transformations possible)
     .use(remarkRehype, { allowDangerousHtml: true })
+    // 6. Allows raw HTML in markdown (works on HTML AST)
     .use(rehypeRaw)
+    // 7. Converts HTML AST to React elements
     .use(rehypeReact, {
-      createElement: React.createElement,
-      Fragment: React.Fragment,
+      jsx: jsxRuntime.jsx,
+      jsxs: jsxRuntime.jsxs,
+      Fragment: jsxRuntime.Fragment,
       components: {
         a: RoutedLink,
         ...extender,
@@ -106,7 +136,7 @@ const MarkdownWrapper: React.FC<{
           'know-more-link': KnowMoreLink,
           'strong-inherit': (props: any) => <strong style={{ fontSize: 'inherit' }} {...props} />,
           small: SmallText,
-        }).processSync(md).result
+        }).processSync(md).result as React.ReactNode
       }
     </MarkdownWrapperStyled>
   );

@@ -8,7 +8,7 @@ import { applyFilters, type DB, type InsertObject, kdb } from '@/server/db/kysel
 
 const filterSchema = z.record(
   z.string(),
-  z.any().refine((val) => !(Array.isArray(val) && val[0] === 'raw'), { message: "Operators like 'raw' are not allowed in filters" })
+  z.any().refine((val) => !(Array.isArray(val) && val[0] === 'raw'), { error: "Operators like 'raw' are not allowed in filters" })
 );
 
 export type { ApiContext, ListConfig };
@@ -32,7 +32,7 @@ export function createBaseModel<T extends keyof DB>(tableName: T) {
 
   const get = async (id: string, _config: ListConfig<T>, _context: ApiContext) => {
     const query = kdb
-      .selectFrom(tableName)
+      .selectFrom(kdb.dynamic.table(tableName).as(tableName))
       .where('id' as any, '=', id)
       .selectAll();
 
@@ -107,8 +107,8 @@ export function createBaseModel<T extends keyof DB>(tableName: T) {
     _context: ApiContext
   ) => {
     let query = kdb
-      .updateTable(tableName)
-      .set(data)
+      .updateTable(kdb.dynamic.table(tableName).as(tableName))
+      .set(data as any)
       .where('id' as any, '=', id);
 
     query = applyConfig(query, config);
@@ -128,14 +128,14 @@ export function createBaseModel<T extends keyof DB>(tableName: T) {
   };
 
   const remove = async (id: string, config: ListConfig<T>, _context: ApiContext) => {
-    let getQuery = kdb.selectFrom(tableName).where('id' as any, '=', id);
+    let getQuery = kdb.selectFrom(kdb.dynamic.table(tableName).as(tableName)).where('id' as any, '=', id);
 
     if (config) {
       getQuery = applyConfig(getQuery, config);
     }
     const record = await getQuery.executeTakeFirstOrThrow();
 
-    let deleteQuery = kdb.deleteFrom(tableName).where('id' as any, '=', id);
+    let deleteQuery = kdb.deleteFrom(kdb.dynamic.table(tableName).as(tableName)).where('id' as any, '=', id);
 
     if (config) {
       deleteQuery = applyConfig(deleteQuery, config);

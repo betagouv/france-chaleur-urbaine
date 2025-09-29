@@ -5,19 +5,19 @@ import { upperCaseFirstChar } from '@/utils/strings';
 
 const roleConfig = {
   admin: {
-    className: '!bg-destructive !text-white',
+    className: 'bg-destructive! text-white!',
   },
   demo: {
-    className: '!bg-yellow-300 !text-black',
+    className: 'bg-yellow-300! text-black!',
   },
   gestionnaire: {
-    className: '!bg-purple-700 !text-white',
+    className: 'bg-purple-700! text-white!',
   },
   professionnel: {
-    className: '!bg-[#0d49fb] !text-white',
+    className: 'bg-[#0d49fb]! text-white!',
   },
   particulier: {
-    className: '!bg-[#2ca892] !text-white',
+    className: 'bg-[#2ca892]! text-white!',
   },
 } satisfies Record<
   UserRole,

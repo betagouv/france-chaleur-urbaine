@@ -42,7 +42,7 @@ const Comment = ({
     <TextAreaInput
       label=""
       size="sm"
-      className="w-full [&>textarea]:!leading-4"
+      className="w-full [&>textarea]:leading-4!"
       nativeTextAreaProps={{
         value,
         onChange: onChangeHandler,

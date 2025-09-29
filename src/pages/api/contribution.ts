@@ -28,13 +28,13 @@ const serverSideFilesSchema = z
     })
   )
   .refine((files) => files.length <= filesLimits.maxFiles, {
-    message: `Vous devez choisir au maximum ${filesLimits.maxFiles} fichiers.`,
+    error: `Vous devez choisir au maximum ${filesLimits.maxFiles} fichiers.`,
   })
   .refine((files) => files.every((file) => file.size <= filesLimits.maxFileSize), {
-    message: `Chaque fichier doit être inférieur à ${formatFileSize(filesLimits.maxFileSize)}.`,
+    error: `Chaque fichier doit être inférieur à ${formatFileSize(filesLimits.maxFileSize)}.`,
   })
   .refine((files) => files.reduce((acc, file) => acc + file.size, 0) <= filesLimits.maxTotalFileSize, {
-    message: `Le total des fichier doit être inférieur à ${formatFileSize(filesLimits.maxTotalFileSize)}.`,
+    error: `Le total des fichier doit être inférieur à ${formatFileSize(filesLimits.maxTotalFileSize)}.`,
   })
   .superRefine((files, ctx) => {
     files.forEach((file) => {

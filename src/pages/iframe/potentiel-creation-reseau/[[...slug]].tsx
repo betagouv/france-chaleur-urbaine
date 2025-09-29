@@ -19,9 +19,9 @@ const Logo = ({ className }: { className: string }) => (
   <a
     href={clientConfig.websiteOrigin}
     target="_blank"
-    className={cx('items-center !bg-none gap-2 justify-end font text-sm text-faded italic fr-px-2w reset-external', className)}
+    className={cx('items-center bg-none! gap-2 justify-end font text-sm text-faded italic fr-px-2w reset-external', className)}
   >
-    <img src="/logo-fcu-with-typo-tight.webp" alt="logo france chaleur urbaine" height={'40px'} className="reset-height" />
+    <img src="/logo-fcu-with-typo-tight.webp" alt="logo france chaleur urbaine" className="h-[40px]" />
   </a>
 );
 

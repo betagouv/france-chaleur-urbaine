@@ -152,7 +152,7 @@ export const tilesInfo: Record<DatabaseSourceId, TileInfo> = {
       'PM',
       'annee_creation',
     ],
-    sourceLayer: 'outline',
+    sourceLayer: 'outline-solid',
   },
   futurNetwork: {
     source: 'database',

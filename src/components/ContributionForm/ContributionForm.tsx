@@ -119,15 +119,15 @@ export const riskyExtensions = [
 ];
 
 const filesSchema = z
-  .array(z.instanceof(File), { message: 'Veuillez choisir un ou plusieurs fichiers' })
+  .array(z.instanceof(File), { error: 'Veuillez choisir un ou plusieurs fichiers' })
   .refine((files) => files.length <= filesLimits.maxFiles, {
-    message: `Vous devez choisir au maximum ${filesLimits.maxFiles} fichiers.`,
+    error: `Vous devez choisir au maximum ${filesLimits.maxFiles} fichiers.`,
   })
   .refine((files) => files.every((file) => file.size <= filesLimits.maxFileSize), {
-    message: `Chaque fichier doit être inférieur à ${formatFileSize(filesLimits.maxFileSize)}.`,
+    error: `Chaque fichier doit être inférieur à ${formatFileSize(filesLimits.maxFileSize)}.`,
   })
   .refine((files) => files.reduce((acc, file) => acc + file.size, 0) <= filesLimits.maxTotalFileSize, {
-    message: `Le total des fichier doit être inférieur à ${formatFileSize(filesLimits.maxTotalFileSize)}.`,
+    error: `Le total des fichier doit être inférieur à ${formatFileSize(filesLimits.maxTotalFileSize)}.`,
   })
   .superRefine((files, ctx) => {
     files.forEach((file) => {
@@ -142,7 +142,7 @@ const filesSchema = z
     });
   });
 
-const stringSchema = z.string({ message: 'Ce champ est obligatoire' });
+const stringSchema = z.string({ error: 'Ce champ est obligatoire' });
 
 const typeDemandeFields = {
   'ajout tracé réseau existant': [
@@ -265,12 +265,12 @@ const typeDemandeFields = {
 } as const satisfies Record<TypeDemande, FieldConfig[]>;
 
 export const zCommonFormData = z.object({
-  typeUtilisateur: z.enum(nonEmptyArray(typesUtilisateur.map((w) => w.key)), { message: 'Ce choix est obligatoire' }),
+  typeUtilisateur: z.enum(nonEmptyArray(typesUtilisateur.map((w) => w.key)), { error: 'Ce choix est obligatoire' }),
   typeUtilisateurAutre: stringSchema,
-  nom: z.string({ message: 'Ce champ est obligatoire' }),
-  prenom: z.string({ message: 'Ce champ est obligatoire' }),
-  email: z.string().email("L'adresse email n'est pas valide"),
-  dansCadreDemandeADEME: z.boolean({ message: 'Ce choix est obligatoire' }),
+  nom: z.string({ error: 'Ce champ est obligatoire' }),
+  prenom: z.string({ error: 'Ce champ est obligatoire' }),
+  email: z.email("L'adresse email n'est pas valide"),
+  dansCadreDemandeADEME: z.boolean({ error: 'Ce choix est obligatoire' }),
 });
 
 const zodSchemasByTypeDemande = ObjectKeys(typeDemandeFields).reduce(
@@ -555,7 +555,7 @@ const ContributionForm = () => {
               }
               // when changing typeDemande, the form remembers its old fields so we must remove them manually
               const fieldsToDelete = new Set(ObjectKeys(form.state.fieldMeta))
-                .difference(new Set([...ObjectKeys(zCommonFormData.shape), zContributionFormData.discriminator]))
+                .difference(new Set([...ObjectKeys(zCommonFormData.shape), 'typeDemande']))
                 .difference(new Set(typeDemandeFields[value].map((f) => f.name)));
               fieldsToDelete.forEach((field) => {
                 form.deleteField(field);

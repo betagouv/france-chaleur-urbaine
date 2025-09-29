@@ -70,6 +70,8 @@ function useForm<
   TOnBlurAsync extends undefined | FormAsyncValidateOrFn<TFormData> = undefined,
   TOnSubmit extends undefined | FormValidateOrFn<TFormData> = undefined,
   TOnSubmitAsync extends undefined | FormAsyncValidateOrFn<TFormData> = undefined,
+  TOnDynamic extends undefined | FormValidateOrFn<TFormData> = undefined,
+  TOnDynamicAsync extends undefined | FormAsyncValidateOrFn<TFormData> = undefined,
   TOnServer extends undefined | FormAsyncValidateOrFn<TFormData> = undefined,
   TSubmitMeta = unknown,
 >(
@@ -87,6 +89,8 @@ function useForm<
           TOnBlurAsync,
           TOnSubmit,
           TOnSubmitAsync,
+          TOnDynamic,
+          TOnDynamicAsync,
           TOnServer,
           TSubmitMeta
         >['validators'],
@@ -94,7 +98,20 @@ function useForm<
       >
     >;
   } & Omit<
-    FormOptions<TFormData, TOnMount, TOnChange, TOnChangeAsync, TOnBlur, TOnBlurAsync, TOnSubmit, TOnSubmitAsync, TOnServer, TSubmitMeta>,
+    FormOptions<
+      TFormData,
+      TOnMount,
+      TOnChange,
+      TOnChangeAsync,
+      TOnBlur,
+      TOnBlurAsync,
+      TOnSubmit,
+      TOnSubmitAsync,
+      TOnDynamic,
+      TOnDynamicAsync,
+      TOnServer,
+      TSubmitMeta
+    >,
     'validators' | 'onSubmit'
   >
 ): ReturnType<typeof useFormInternal<TFormData>>;
@@ -109,6 +126,8 @@ function useForm<
   TOnBlurAsync extends undefined | FormAsyncValidateOrFn<TFormData> = undefined,
   TOnSubmit extends undefined | FormValidateOrFn<TFormData> = undefined,
   TOnSubmitAsync extends undefined | FormAsyncValidateOrFn<TFormData> = undefined,
+  TOnDynamic extends undefined | FormValidateOrFn<TFormData> = undefined,
+  TOnDynamicAsync extends undefined | FormAsyncValidateOrFn<TFormData> = undefined,
   TOnServer extends undefined | FormAsyncValidateOrFn<TFormData> = undefined,
   TSubmitMeta = unknown,
 >(
@@ -121,6 +140,8 @@ function useForm<
     TOnBlurAsync,
     TOnSubmit,
     TOnSubmitAsync,
+    TOnDynamic,
+    TOnDynamicAsync,
     TOnServer,
     TSubmitMeta
   > & {
@@ -142,6 +163,8 @@ function useFormInternal<
   TOnBlurAsync extends undefined | FormAsyncValidateOrFn<TFormData> = undefined,
   TOnSubmit extends undefined | FormValidateOrFn<TFormData> = undefined,
   TOnSubmitAsync extends undefined | FormAsyncValidateOrFn<TFormData> = undefined,
+  TOnDynamic extends undefined | FormValidateOrFn<TFormData> = undefined,
+  TOnDynamicAsync extends undefined | FormAsyncValidateOrFn<TFormData> = undefined,
   TOnServer extends undefined | FormAsyncValidateOrFn<TFormData> = undefined,
   TSubmitMeta = unknown,
 >(
@@ -154,6 +177,8 @@ function useFormInternal<
     TOnBlurAsync,
     TOnSubmit,
     TOnSubmitAsync,
+    TOnDynamic,
+    TOnDynamicAsync,
     TOnServer,
     TSubmitMeta
   > & {

@@ -147,7 +147,7 @@ const ExpressionTester = ({ expression, className, onPropertySelect }: Expressio
 
       const filter = searchFilter.toLowerCase();
       return flattened.filter((prop) => prop.path.toLowerCase().includes(filter) || String(prop.value).toLowerCase().includes(filter));
-    } catch (error) {
+    } catch (_error) {
       return [];
     }
   };
@@ -183,7 +183,7 @@ const ExpressionTester = ({ expression, className, onPropertySelect }: Expressio
       try {
         const currentData = getCurrentEligibilityData();
         setJsonData(JSON.stringify(currentData, null, 2));
-      } catch (error) {
+      } catch (_error) {
         // Garder le JSON actuel en cas d'erreur
       }
     }
@@ -237,7 +237,7 @@ const ExpressionTester = ({ expression, className, onPropertySelect }: Expressio
   const renderResult = (): ReactNode => {
     if (jsonError) {
       return (
-        <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded">
+        <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-sm">
           <div className="text-sm text-red-800">
             <strong>Erreur JSON :</strong> {jsonError}
           </div>
@@ -249,7 +249,7 @@ const ExpressionTester = ({ expression, className, onPropertySelect }: Expressio
 
     if (!testResult.isValid) {
       return (
-        <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded">
+        <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-sm">
           <div className="text-sm text-red-800">
             <strong>Erreur d'expression :</strong> {testResult.error}
           </div>
@@ -258,7 +258,7 @@ const ExpressionTester = ({ expression, className, onPropertySelect }: Expressio
     }
 
     return (
-      <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded">
+      <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-sm">
         <div className="text-sm">
           <strong>Résultat :</strong>{' '}
           <span className={testResult.result ? 'text-green-600' : 'text-red-600'}>{testResult.result ? 'Vrai' : 'Faux'}</span>
@@ -271,7 +271,7 @@ const ExpressionTester = ({ expression, className, onPropertySelect }: Expressio
   };
 
   return (
-    <div className={cx('mt-3 p-3 bg-gray-50 border rounded', className)}>
+    <div className={cx('mt-3 p-3 bg-gray-50 border rounded-sm', className)}>
       <div className="text-sm font-medium mb-2">Tester l'expression</div>
 
       <div className="space-y-3">
@@ -297,11 +297,11 @@ const ExpressionTester = ({ expression, className, onPropertySelect }: Expressio
                 value={searchFilter}
                 onChange={(e) => setSearchFilter(e.target.value)}
                 placeholder="Rechercher dans les propriétés..."
-                className="fr-input w-full px-2 py-1 text-sm border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="fr-input w-full px-2 py-1 text-sm border rounded-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
-            <div className="border rounded max-h-80 overflow-y-auto bg-white">
+            <div className="border rounded-sm max-h-80 overflow-y-auto bg-white">
               <div className="text-xs text-gray-500 p-2 border-b bg-gray-50">Cliquez sur une propriété pour l'ajouter à votre règle</div>
               {getFilteredProperties().map((prop, index) => (
                 <div
@@ -312,7 +312,7 @@ const ExpressionTester = ({ expression, className, onPropertySelect }: Expressio
                   <div className="flex items-center gap-2">
                     <span className="font-mono text-sm text-blue-700 flex-1 truncate">{prop.path}</span>
                     <span className="text-xs text-gray-500">{formatValue(prop.value)}</span>
-                    <span className={cx('text-xs px-1 rounded', getTypeColor(prop.type))}>{prop.type}</span>
+                    <span className={cx('text-xs px-1 rounded-sm', getTypeColor(prop.type))}>{prop.type}</span>
                   </div>
                 </div>
               ))}
@@ -329,7 +329,7 @@ const ExpressionTester = ({ expression, className, onPropertySelect }: Expressio
             <textarea
               value={jsonData}
               onChange={(e) => handleJsonChange(e.target.value)}
-              className="w-full px-2 py-1 text-xs font-mono border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-2 py-1 text-xs font-mono border rounded-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
               rows={12}
               placeholder="Entrez les données d'éligibilité au format JSON..."
             />
@@ -345,7 +345,7 @@ const ExpressionTester = ({ expression, className, onPropertySelect }: Expressio
               value={testTags}
               onChange={(e) => setTestTags(e.target.value)}
               placeholder="Ex: ENGIE, ENGIE_IDF, DALKIA"
-              className="w-full px-2 py-1 text-sm border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-2 py-1 text-sm border rounded-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
               onKeyDown={(e) => e.key === 'Enter' && handleTest()}
             />
             <div className="text-xs text-gray-500 mt-1">

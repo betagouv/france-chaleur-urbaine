@@ -483,7 +483,7 @@ function DemandesNew(): React.ReactElement {
               value: globalFilter,
               onChange: (e) => setGlobalFilter(e.target.value),
             }}
-            className="p-2w !mb-0 w-[350px]"
+            className="p-2w mb-0! w-[350px]"
           />
           {ObjectEntries(quickFilterPresets).map(([key, preset], index) => (
             <Fragment key={key}>

@@ -14,6 +14,7 @@ import Box from '@/components/ui/Box';
 import Image from '@/components/ui/Image';
 import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
+import useRouterReady from '@/hooks/useRouterReady';
 import { useAuthentication } from '@/modules/auth/client/hooks';
 import cx from '@/utils/cx';
 import { deleteFetchJSON } from '@/utils/network';
@@ -391,12 +392,6 @@ const adminNavigationMenu: MainNavigationProps.Item[] = [
         },
       },
       {
-        text: 'Test de coordonnées géographiques',
-        linkProps: {
-          href: '/admin/test-coordonnees-geographiques',
-        },
-      },
-      {
         text: 'Diagnostic',
         linkProps: {
           href: '/admin/diagnostic',
@@ -444,6 +439,7 @@ interface PageHeaderProps {
  */
 const PageHeader = (props: PageHeaderProps) => {
   const router = useRouter();
+  const isRouterReady = useRouterReady();
   const { session, hasRole, signOut, isAuthenticated } = useAuthentication();
 
   const isFullScreenMode = props.mode === 'public-fullscreen' || props.mode === 'authenticated';
@@ -458,8 +454,8 @@ const PageHeader = (props: PageHeaderProps) => {
         ]
       : publicNavigationMenu;
 
-  // Use router.isReady to ensure stable path during hydration
-  const currentPath = props.currentPage ?? (router.isReady ? router.pathname : '');
+  // Use useRouterReady hook to ensure stable path during hydration
+  const currentPath = props.currentPage ?? (isRouterReady ? router.pathname : '');
 
   const quickAccessItems =
     props.mode === 'authenticated'
@@ -532,7 +528,7 @@ const PageHeader = (props: PageHeaderProps) => {
             <Box display="flex">
               <Link
                 href="/"
-                className="fcu-navigation-logo min-w-[3rem] max-w-[5rem]"
+                className="fcu-navigation-logo min-w-12 max-w-20"
                 variant="tertiaryNoOutline"
                 title="Revenir à la page d'accueil"
                 p="0"

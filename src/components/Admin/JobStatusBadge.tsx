@@ -5,19 +5,19 @@ import { type Jobs } from '@/server/db/kysely';
 const jobStatusConfig = {
   pending: {
     label: 'En attente',
-    className: '!bg-gray-500 !text-white',
+    className: 'bg-gray-500! text-white!',
   },
   processing: {
     label: 'En cours',
-    className: '!bg-[#0d49fb] !text-white',
+    className: 'bg-[#0d49fb]! text-white!',
   },
   finished: {
     label: 'Terminée',
-    className: '!bg-success !text-white',
+    className: 'bg-success! text-white!',
   },
   error: {
     label: 'Erreur',
-    className: '!bg-destructive !text-white',
+    className: 'bg-destructive! text-white!',
   },
 } satisfies Record<
   Jobs['status'],

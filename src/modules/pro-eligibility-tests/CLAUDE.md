@@ -75,7 +75,7 @@ return hasAddress || hasCoordinates && !(hasAddress && hasCoordinates);
 const { create } = useCrud('/api/pro-eligibility-tests');
 
 const testData = {
-  name: "Quartier résidentiel Nord",
+  name: "Quartier rÃ©sidentiel Nord",
   content: "adresse,code_postal\n123 Rue de la Paix,75001\n456 Avenue Victor Hugo,75002",
   hasHeaders: true,
   separator: ",",

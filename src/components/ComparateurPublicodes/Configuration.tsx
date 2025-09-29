@@ -81,9 +81,9 @@ const Configuration: React.FC<ConfigurationProps> = ({ engine, address, onChange
   const hasToBeDisplayedSituation = Object.keys(toBeDisplayedSituation).length > 0;
 
   return (
-    <div className={cx(fr.cx('fr-container'), 'sticky top-0 bg-white z-10 py-2 shadow-sm')}>
+    <div className={cx(fr.cx('fr-container'), 'sticky top-0 bg-white z-10 py-2 shadow-xs')}>
       <div className="flex items-center justify-between">
-        <h4 className="!mb-0">Configuration</h4>
+        <h4 className="mb-0!">Configuration</h4>
         <CrudDropdown<ProComparateurConfigurationResponse>
           url="/api/pro/comparateur/configurations"
           data={Object.keys(toBeDisplayedSituation).length > 0 ? { situation: toBeDisplayedSituation, address } : ({} as any)}
@@ -169,7 +169,7 @@ const Configuration: React.FC<ConfigurationProps> = ({ engine, address, onChange
                   size="small"
                   title={`Supprimer ${key}`}
                   onClick={() => deleteSituationConfig(key as RuleName)}
-                  className="!min-h-2"
+                  className="min-h-2!"
                 />
               </motion.div>
             );

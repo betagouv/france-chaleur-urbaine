@@ -1,15 +1,11 @@
 import { spacingTokenByValue } from '@codegouvfr/react-dsfr/fr/generatedFromCss/spacing';
 import type { Config } from 'tailwindcss';
+import animate from 'tailwindcss-animate';
 
 import colors from './src/components/ui/helpers/colors';
 
 const config = {
   content: ['./src/**/*.{js,ts,jsx,tsx,mdx}'],
-  safelist: [
-    {
-      pattern: /^flex-[2-9]$|^flex-1[0-2]$/,
-    },
-  ],
   theme: {
     extend: {
       // Use breakpoints from DSFR https://www.systeme-de-design.gouv.fr/fondamentaux/grille-et-points-de-rupture
@@ -36,7 +32,7 @@ const config = {
     },
   },
   plugins: [
-    require('tailwindcss-animate'),
+    animate,
     function ({ addUtilities }) {
       // Make spacing from DSFR available with hover and md: https://www.systeme-de-design.gouv.fr/fondamentaux/espacement
       Object.entries(spacingTokenByValue).forEach(([token, value]) => {
@@ -59,6 +55,7 @@ const config = {
       addUtilities(flexRatios, ['responsive']);
     },
   ],
+  important: true, // surcharge toujours le DSFR qui n'utilise pas les layers
 } satisfies Config;
 
 export default config;

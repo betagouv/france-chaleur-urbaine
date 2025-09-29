@@ -47,7 +47,7 @@ export const objTypeEnergy = Object.entries(typeEnergy).reduce((acc: any, [key, 
 const typeWithColorPairs = ObjectEntries(typeChauffageBatimentsCollectifsStyle).flatMap(([energyName, styleObject]) => [
   objTypeEnergy[energyName],
   styleObject,
-]) as [ExpressionInputType, ExpressionInputType, ...ExpressionInputType[]];
+]) as [string, ExpressionInputType, ...ExpressionInputType[]];
 
 export const energyFilterInterval = {
   min: 10,
