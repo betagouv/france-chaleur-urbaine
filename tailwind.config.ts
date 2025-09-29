@@ -55,6 +55,7 @@ const config = {
       addUtilities(flexRatios, ['responsive']);
     },
   ],
+  important: true, // surcharge toujours le DSFR qui n'utilise pas les layers
 } satisfies Config;
 
 export default config;
