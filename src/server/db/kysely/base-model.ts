@@ -32,7 +32,7 @@ export function createBaseModel<T extends keyof DB>(tableName: T) {
 
   const get = async (id: string, _config: ListConfig<T>, _context: ApiContext) => {
     const query = kdb
-      .selectFrom(kdb.dynamic.table(tableName).as('t'))
+      .selectFrom(kdb.dynamic.table(tableName).as(tableName))
       .where('id' as any, '=', id)
       .selectAll();
 
@@ -107,7 +107,7 @@ export function createBaseModel<T extends keyof DB>(tableName: T) {
     _context: ApiContext
   ) => {
     let query = kdb
-      .updateTable(kdb.dynamic.table(tableName).as('t'))
+      .updateTable(kdb.dynamic.table(tableName).as(tableName))
       .set(data as any)
       .where('id' as any, '=', id);
 
@@ -128,14 +128,14 @@ export function createBaseModel<T extends keyof DB>(tableName: T) {
   };
 
   const remove = async (id: string, config: ListConfig<T>, _context: ApiContext) => {
-    let getQuery = kdb.selectFrom(kdb.dynamic.table(tableName).as('t')).where('id' as any, '=', id);
+    let getQuery = kdb.selectFrom(kdb.dynamic.table(tableName).as(tableName)).where('id' as any, '=', id);
 
     if (config) {
       getQuery = applyConfig(getQuery, config);
     }
     const record = await getQuery.executeTakeFirstOrThrow();
 
-    let deleteQuery = kdb.deleteFrom(kdb.dynamic.table(tableName).as('t')).where('id' as any, '=', id);
+    let deleteQuery = kdb.deleteFrom(kdb.dynamic.table(tableName).as(tableName)).where('id' as any, '=', id);
 
     if (config) {
       deleteQuery = applyConfig(deleteQuery, config);
