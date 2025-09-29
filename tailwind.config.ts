@@ -1,5 +1,6 @@
 import { spacingTokenByValue } from '@codegouvfr/react-dsfr/fr/generatedFromCss/spacing';
 import type { Config } from 'tailwindcss';
+import animate from 'tailwindcss-animate';
 
 import colors from './src/components/ui/helpers/colors';
 
@@ -31,7 +32,7 @@ const config = {
     },
   },
   plugins: [
-    require('tailwindcss-animate'),
+    animate,
     function ({ addUtilities }) {
       // Make spacing from DSFR available with hover and md: https://www.systeme-de-design.gouv.fr/fondamentaux/espacement
       Object.entries(spacingTokenByValue).forEach(([token, value]) => {
