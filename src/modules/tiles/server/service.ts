@@ -232,11 +232,11 @@ export const applyGeometriesUpdates = async ({ name }: SyncGeometriesInput, cont
     total: updateResults.total,
   };
 
+  const syncGeometriesJob = await createSyncGeometriesToAirtableJob({ name }, context);
   const syncMetadataJob = await createSyncMetadataFromAirtableJob({ name }, context);
   const tileJob = await createBuildTilesJob({ name }, context);
-  const syncGeometriesJob = await createSyncGeometriesToAirtableJob({ name }, context);
 
-  const allJobIds = [tileJob.id, syncGeometriesJob.id, syncMetadataJob.id];
+  const allJobIds = [syncGeometriesJob.id, syncMetadataJob.id, tileJob.id];
 
   return {
     processed,
