@@ -42,11 +42,21 @@ const columns: ColumnDef<AdminJobItem>[] = [
         return <Text color="error">{result.error}</Text>;
       }
 
+      const type = info.row.original.type;
+
+      if (type === 'pro_eligibility_test') {
+        return (
+          <Box>
+            <Text>Durée : {Math.round(result.duration / 100) / 10}s</Text>
+            <Text>Adresses créées : {result.stats?.insertedCount ?? 0}</Text>
+            <Text>Adresses mises à jour : {result.stats?.updatedCount ?? 0}</Text>
+          </Box>
+        );
+      }
+
       return (
         <Box>
           <Text>Durée : {Math.round(result.duration / 100) / 10}s</Text>
-          <Text>Adresses créées : {result.stats?.insertedCount}</Text>
-          <Text>Adresses mises à jour : {result.stats?.updatedCount}</Text>
         </Box>
       );
     },
