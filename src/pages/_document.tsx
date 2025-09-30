@@ -39,7 +39,16 @@ class MyDocument extends Document {
   render() {
     return (
       <Html lang="fr" data-fr-scheme="light" data-fr-theme="light" prefix="og: http://ogp.me/ns#">
-        <Head />
+        <Head>
+          {/* Preconnect to external domains for faster resource loading */}
+          <link rel="preconnect" href="https://stats.data.gouv.fr" />
+          <link rel="preconnect" href="https://stats.beta.gouv.fr" />
+          <link rel="preconnect" href="https://openmaptiles.geo.data.gouv.fr" />
+          <link rel="preconnect" href="https://openmaptiles.data.gouv.fr" />
+          <link rel="preconnect" href="https://api-adresse.data.gouv.fr" />
+          <link rel="preconnect" href="https://data.geopf.fr" />
+          <link rel="preconnect" href="https://sentry.incubateur.net" />
+        </Head>
         <body>
           <Main />
           <NextScript />
