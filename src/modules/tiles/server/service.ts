@@ -239,11 +239,13 @@ export const applyGeometriesUpdates = async ({ name }: SyncGeometriesInput, cont
     total: updateResults.total,
   };
 
-  const syncGeometriesJob = await createSyncGeometriesToAirtableJob({ name }, context);
-  const syncMetadataJob = await createSyncMetadataFromAirtableJob({ name }, context);
-  const tileJob = await createBuildTilesJob({ name }, context);
-
-  const allJobIds = [syncGeometriesJob.id, syncMetadataJob.id, tileJob.id];
+  const allJobIds = [
+    // pas d'onglet airtable pour les PDP
+    ...(name !== 'perimetres-de-developpement-prioritaire'
+      ? [(await createSyncGeometriesToAirtableJob({ name }, context)).id, (await createSyncMetadataFromAirtableJob({ name }, context)).id]
+      : []),
+    (await createBuildTilesJob({ name }, context)).id,
+  ];
 
   return {
     processed,
