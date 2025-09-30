@@ -549,6 +549,7 @@ program
           - les thèmes (visibles dans le ticket Trello)
 
       3. Enfin, supprime le frontmatter des nouveaux articles et les urls absolues avec ./scripts/clean-gitbook-actus.sh
+      4. Enfin, optimise les images avec pnpm image:optimize
     `);
   });
 

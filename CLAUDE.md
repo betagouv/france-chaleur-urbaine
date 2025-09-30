@@ -32,6 +32,9 @@ pnpm db:sync               # Regenerate Kysely types (after schema changes)
 # Build
 pnpm build                 # Production build
 pnpm build:analyze         # Analyze bundle size
+
+# Images
+pnpm image:optimize  # Optimize all images in public/ directory (uses src/modules/optimization/scripts/image-optimize.sh)
 ```
 
 ## Architecture & Key Patterns
