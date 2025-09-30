@@ -172,6 +172,15 @@ export default defineConfig([
           },
         },
       ],
+
+      // Enforce object property shorthand: { features: features } -> { features }
+      'object-shorthand': [
+        'error',
+        'always',
+        {
+          avoidQuotes: true,
+        },
+      ],
     },
   },
 ]);

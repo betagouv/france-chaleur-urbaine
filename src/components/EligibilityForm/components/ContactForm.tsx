@@ -182,9 +182,9 @@ export const ContactForm = ({ onSubmit, isLoading, cardMode, city, heatingTypeIn
         className={fr.cx(`fr-mt-${cardMode ? '1' : '3'}w`)}
         orientation={cardMode ? 'vertical' : 'horizontal'}
         options={fieldLabelInformation.structure.inputs.map(({ value, label }) => ({
-          label: label,
+          label,
           nativeInputProps: {
-            value: value,
+            value,
           },
         }))}
       />

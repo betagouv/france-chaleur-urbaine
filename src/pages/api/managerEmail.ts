@@ -69,7 +69,7 @@ const POST = async (req: NextApiRequest) => {
     [
       {
         fields: {
-          demand_id: demand_id,
+          demand_id,
           user_email: req.user.email,
           email_key: key,
           object: emailContent.object,

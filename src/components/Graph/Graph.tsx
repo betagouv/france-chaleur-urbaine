@@ -48,7 +48,7 @@ const Graph = ({
             data={formatedData}
             options={{
               title: withSum ? `${title} - ${total} au total` : title,
-              titleTextStyle: titleTextStyle,
+              titleTextStyle,
               colors: colors || ['#0078f3', '#f60700', '#1f8d49', '#009099'],
               hAxis: {
                 slantedText: true,

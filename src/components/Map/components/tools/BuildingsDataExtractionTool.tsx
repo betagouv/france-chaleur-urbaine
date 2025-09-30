@@ -361,7 +361,7 @@ export function useBuildingsDataExtractionLayers() {
 
     (mapRef.getSource(buildingsDataExtractionPolygonsSourceId) as GeoJSONSource).setData({
       type: 'FeatureCollection',
-      features: features,
+      features,
     });
   }, [mapLayersLoaded, features]);
 }

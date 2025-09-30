@@ -63,12 +63,12 @@ function Text({
     lineHeight: lineHeight ?? 'inherit',
     fontStyle: fontStyle ?? 'inherit',
     color: color ? `var(--text-default-${color})` : legacyColor ? legacyColors[legacyColor] : undefined,
-    textAlign: textAlign,
-    cursor: cursor,
-    display: display,
+    textAlign,
+    cursor,
+    display,
     textDecoration: underline ? 'underline' : undefined,
     maxWidth: maxWidth ? `${parseInt(maxWidth.slice(0, -1)) * 8}px` : undefined,
-    textTransform: textTransform,
+    textTransform,
     ...style,
   };
 

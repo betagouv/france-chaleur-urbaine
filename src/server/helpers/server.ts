@@ -133,7 +133,7 @@ export function handleRouteErrors<HandlersConfig extends Partial<Record<RequestM
           });
           return res.status(400).json({
             message: 'Paramètres incorrects',
-            error: error,
+            error,
           });
         }
         if (error instanceof BadRequestError) {
@@ -142,7 +142,7 @@ export function handleRouteErrors<HandlersConfig extends Partial<Record<RequestM
           });
           return res.status(400).json({
             message: error.message,
-            error: error,
+            error,
           });
         }
 
@@ -150,7 +150,7 @@ export function handleRouteErrors<HandlersConfig extends Partial<Record<RequestM
           // Check for unique constraint violation (error code 23505)
           if ((error as any).code === '23505') {
             logger.error('unique constraint violation', {
-              error: error,
+              error,
               query: error.message,
             });
             return res.status(400).json({
@@ -161,7 +161,7 @@ export function handleRouteErrors<HandlersConfig extends Partial<Record<RequestM
           }
 
           logger.error('database error', {
-            error: error,
+            error,
             query: error.message,
           });
           return res.status(500).json({

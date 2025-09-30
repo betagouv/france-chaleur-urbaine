@@ -74,8 +74,8 @@ export const getCommunePotentiel = async (codeInsee: string) => {
       chauffage: zonesAPotentiel.reduce((sum, zone) => sum + (zone.chauf_mwh ?? 0), 0),
       ecs: zonesAPotentiel.reduce((sum, zone) => sum + (zone.ecs_mwh ?? 0), 0),
     },
-    nbReseauxExistants: nbReseauxExistants,
-    nbReseauxFuturs: nbReseauxFuturs,
+    nbReseauxExistants,
+    nbReseauxFuturs,
     bounds: commune?.bounds,
   };
 

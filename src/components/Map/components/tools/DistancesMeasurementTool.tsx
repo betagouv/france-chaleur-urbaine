@@ -255,7 +255,7 @@ export function useDistancesMeasurementLayers() {
 
     (mapRef.getSource(distancesMeasurementLinesSourceId) as GeoJSONSource).setData({
       type: 'FeatureCollection',
-      features: features,
+      features,
     });
 
     // build the labels source with points at the center of each segment

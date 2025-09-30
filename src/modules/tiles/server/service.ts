@@ -283,7 +283,7 @@ const getObjectIndexFromAirtable = async (tileInfo: AirtableTileInfo) => {
       return geojsonvt(
         {
           type: 'FeatureCollection',
-          features: features,
+          features,
         },
         {
           maxZoom: tileSourcesMaxZoom,

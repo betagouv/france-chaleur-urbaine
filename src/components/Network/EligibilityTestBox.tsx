@@ -88,7 +88,7 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
         ...contactFormInfos,
         company: contactFormInfos.structure === 'Tertiaire' ? contactFormInfos.company : '',
 
-        heatingType: heatingType,
+        heatingType,
 
         eligibility: eligibilityStatus,
 

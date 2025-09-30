@@ -414,7 +414,7 @@ export function useLinearHeatDensityLayers() {
 
     (mapRef.getSource(linearHeatDensityLinesSourceId) as GeoJSONSource).setData({
       type: 'FeatureCollection',
-      features: features,
+      features,
     });
 
     // build the labels source with points at the center of each segment

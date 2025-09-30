@@ -22,8 +22,8 @@ export default handleRouteErrors(async function PostRecords(req: NextApiRequest)
       values,
     });
     return {
-      type: type,
-      values: values,
+      type,
+      values,
       ids: [{ id: uuidv4() }],
     };
   }

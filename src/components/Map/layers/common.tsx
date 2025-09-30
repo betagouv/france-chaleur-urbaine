@@ -103,7 +103,7 @@ function TwoColumns({ children }: PropsWithChildren) {
 export const buildPopupStyleHelpers = (close: () => void) => ({
   Title: buildPopupTitle(close),
   Property: PopupProperty,
-  TwoColumns: TwoColumns,
+  TwoColumns,
   close,
 });
 export const buildPopupTitle = (close: () => void) => {

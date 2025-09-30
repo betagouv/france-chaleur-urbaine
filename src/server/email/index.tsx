@@ -45,7 +45,7 @@ export async function sendEmailTemplate<Type extends EmailType>(
   });
 
   logger.info(`send email ${type}`, {
-    type: type,
+    type,
     recipient: recipient.id,
     messageId: info.messageId,
   });

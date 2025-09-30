@@ -104,7 +104,7 @@ export const ExtraLink = styled(Link).attrs<ExtraEventType>((props) => {
   return {
     ...rest,
     ...trackEventProps,
-    className: className,
+    className,
   };
 })<ExtraEventType>``;
 

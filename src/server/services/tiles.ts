@@ -46,7 +46,7 @@ const getObjectIndexFromAirtable = async (tileInfo: AirtableTileInfo) => {
           type: 'FeatureCollection',
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore: Create proper type
-          features: features,
+          features,
         },
         {
           maxZoom: tileSourcesMaxZoom,

@@ -164,7 +164,7 @@ export const downloadNetwork = async (table: DatabaseSourceId) => {
   const networksAirtable = await base(tileInfo.airtable).select().all();
 
   const logger = parentLogger.child({
-    table: table,
+    table,
     count: networksAirtable.length,
   });
   const startTime = Date.now();
@@ -193,7 +193,7 @@ export const downloadAndUpdateNetwork = async (table: DatabaseSourceId) => {
   const networksAirtable = await base(tileInfo.airtable).select().all();
 
   const logger = parentLogger.child({
-    table: table,
+    table,
     count: networksAirtable.length,
   });
   const startTime = Date.now();

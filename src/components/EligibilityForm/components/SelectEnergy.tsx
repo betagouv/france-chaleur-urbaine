@@ -23,7 +23,7 @@ const SelectEnergy = ({ children, label, name, cardMode, selectOptions = {}, val
         className={className}
         orientation={cardMode ? 'vertical' : 'horizontal'}
         options={Object.entries(selectOptions).map(([optionValue, label]) => ({
-          label: label,
+          label,
           nativeInputProps: {
             checked: value === optionValue,
             onChange: () => {
