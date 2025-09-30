@@ -789,6 +789,23 @@ const GestionDesReseaux = () => {
     perimetresDeDeveloppementPrioritaireWithGeomUpdate,
   ]);
 
+  const networkMarkedForDeletion = selectedNetwork?.geom_delete;
+
+  const hasPendingGeomUpdates = totalGeomUpdates > 0 && (!pendingJobs || pendingJobs.length === 0);
+  const hasPendingJobs = pendingJobs && pendingJobs.length > 0;
+
+  // +/- approximatif, et pas responsive
+  const navHeaderSize = 56;
+  const noticeSize = 56;
+  const contentVerticalMargin = 32;
+
+  const tableVerticalMargin = 32;
+  const tableTabsSize = 48;
+  const tableFilterHeaderSize = 64;
+  const tableHeight = `calc(100dvh - ${navHeaderSize + contentVerticalMargin + (hasPendingGeomUpdates ? noticeSize : 0) + (hasPendingJobs ? noticeSize : 0) + tableTabsSize + tableVerticalMargin + tableFilterHeaderSize}px)`;
+
+  const mapContainerHeight = `${navHeaderSize + contentVerticalMargin + (hasPendingGeomUpdates ? noticeSize : 0) + (hasPendingJobs ? noticeSize : 0)}px`;
+
   const tabs = [
     {
       label: (
@@ -809,7 +826,7 @@ const GestionDesReseaux = () => {
           controlsLayout="block"
           padding="sm"
           loadingEmptyMessage="Aucun réseau de chaleur à afficher"
-          height="calc(100dvh - 194px)"
+          height={tableHeight}
           onRowClick={onTableRowClick}
           rowIdKey="id_fcu"
           enableGlobalFilter
@@ -855,7 +872,7 @@ const GestionDesReseaux = () => {
           controlsLayout="block"
           padding="sm"
           loadingEmptyMessage="Aucun réseau de froid à afficher"
-          height="calc(100dvh - 194px)"
+          height={tableHeight}
           onRowClick={onTableRowClick}
           rowIdKey="id_fcu"
           enableGlobalFilter
@@ -901,7 +918,7 @@ const GestionDesReseaux = () => {
           controlsLayout="block"
           padding="sm"
           loadingEmptyMessage="Aucun réseau en construction à afficher"
-          height="calc(100dvh - 194px)"
+          height={tableHeight}
           onRowClick={onTableRowClick}
           rowIdKey="id_fcu"
           enableGlobalFilter
@@ -952,7 +969,7 @@ const GestionDesReseaux = () => {
           controlsLayout="block"
           padding="sm"
           loadingEmptyMessage="Aucun périmètre de développement prioritaire à afficher"
-          height="calc(100dvh - 194px)"
+          height={tableHeight}
           onRowClick={onTableRowClick}
           rowIdKey="id_fcu"
           enableGlobalFilter
@@ -980,15 +997,13 @@ const GestionDesReseaux = () => {
     },
   ];
 
-  const networkMarkedForDeletion = selectedNetwork?.geom_delete;
-
   return (
     <SimplePage
       title="Gestion des réseaux"
       description="Tableau d'administration pour gérer les réseaux de chaleur et en construction"
       mode="authenticated"
     >
-      {totalGeomUpdates > 0 && (!pendingJobs || pendingJobs.length === 0) && (
+      {hasPendingGeomUpdates && (
         <Notice variant="warning" className="mb-4">
           <span className="flex items-center justify-center w-full gap-2">
             <span className="font-medium text-base">
@@ -1003,7 +1018,7 @@ const GestionDesReseaux = () => {
           </span>
         </Notice>
       )}
-      {pendingJobs && pendingJobs.length > 0 && (
+      {hasPendingJobs && (
         <Notice variant="info" className="mb-4">
           <span className="flex items-center justify-center w-full gap-2">
             {isPollingJobs && <Loader size="sm" />}
@@ -1027,6 +1042,7 @@ const GestionDesReseaux = () => {
         <ResizablePanelGroup direction="horizontal" className="gap-4">
           <ResizablePanel defaultSize={66}>
             <Tabs
+              classes={{ panel: 'p-4' }}
               tabs={tabs}
               onTabChange={(event) => {
                 const newTab = tabIds[event.tabIndex];
@@ -1037,7 +1053,10 @@ const GestionDesReseaux = () => {
           </ResizablePanel>
           <ResizableHandle />
           <ResizablePanel defaultSize={34}>
-            <div className={cx('max-md:h-[700px] md:h-[calc(100dvh-56px)] bg-[#F8F4F0]')}>
+            <div
+              className={cx('max-md:h-[700px] md:h-[calc(100dvh-var(--height))] bg-[#F8F4F0]')}
+              style={{ '--height': mapContainerHeight } as any}
+            >
               <Map
                 noPopup
                 withoutLogo
