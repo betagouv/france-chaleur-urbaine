@@ -48,19 +48,8 @@ const AppInner = ({ Component, pageProps }: AppProps<AuthSSRPageProps>) => {
       <SEO />
       <ConsentBanner />
       <NotifierContainer />
-      <ServicesContext.Provider
-        value={{
-          suggestionService: new SuggestionService(axiosHttpClient),
-          heatNetworkService: new HeatNetworkService(axiosHttpClient),
-          demandsService: new DemandsService(axiosHttpClient),
-          passwordService: new PasswordService(axiosHttpClient),
-          networksService: new NetworksService(axiosHttpClient),
-          exportService: new ExportService(axiosHttpClient),
-        }}
-      >
-        <ProgressBar height="4px" color={fr.colors.decisions.background.active.blueFrance.default} />
-        <Component {...pageProps} />
-      </ServicesContext.Provider>
+      <ProgressBar height="4px" color={fr.colors.decisions.background.active.blueFrance.default} />
+      <Component {...pageProps} />
     </ThemeProvider>
   );
 };
@@ -79,10 +68,22 @@ const AppProvider = (props: AppProps<AuthSSRPageProps>) => {
         },
       })
   );
+
+  const [services] = useState(() => ({
+    suggestionService: new SuggestionService(axiosHttpClient),
+    heatNetworkService: new HeatNetworkService(axiosHttpClient),
+    demandsService: new DemandsService(axiosHttpClient),
+    passwordService: new PasswordService(axiosHttpClient),
+    networksService: new NetworksService(axiosHttpClient),
+    exportService: new ExportService(axiosHttpClient),
+  }));
+
   return (
     <QueryClientProvider client={queryClient}>
       <NuqsAdapter>
-        <AppInner {...props} />
+        <ServicesContext.Provider value={services}>
+          <AppInner {...props} />
+        </ServicesContext.Provider>
       </NuqsAdapter>
     </QueryClientProvider>
   );
