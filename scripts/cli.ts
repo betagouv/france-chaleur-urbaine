@@ -7,6 +7,7 @@ import prompts from 'prompts';
 import XLSX from 'xlsx';
 import { z } from 'zod';
 
+import { registerAppCommands } from '@/modules/app/commands';
 import { processJobById, processJobsIndefinitely } from '@/modules/jobs/server/processor';
 import { registerNetworkCommands } from '@/modules/reseaux/server/commands';
 import { downloadAndUpdateNetwork, downloadNetwork } from '@/modules/reseaux/server/download-network';
@@ -26,9 +27,7 @@ import { userRoles } from '@/types/enum/UserRole';
 import { fetchJSON } from '@/utils/network';
 import { runBash, runCommand } from '@/utils/system';
 import { sleep } from '@/utils/time';
-import { nonEmptyArray } from '@/utils/typescript';
 import { allDatabaseTables } from '@cli/bootstrap/tables';
-import { optimisationProfiles, optimizeImage } from '@cli/images/optimize';
 import { refreshStatistics } from '@cli/stats/refresh';
 
 import { type KnownAirtableBase, knownAirtableBases } from './airtable/bases';
@@ -212,6 +211,7 @@ program
     logger.info(`URL du dataset: https://www.data.gouv.fr/datasets/${serverConfig.DATA_GOUV_FR_DATASET_ID}/`);
   });
 
+registerAppCommands(program);
 registerNetworkCommands(program);
 
 program
@@ -508,17 +508,6 @@ program
     if (!single) {
       await runBash('pnpm prettier --write ./src/server/db/kysely/database.ts');
     }
-  });
-
-program
-  .command('image:optimize')
-  .description(
-    "Permet d'optimiser les images à introduire dans FCU, comme les infographies. Exemple : `pnpm cli image:optimize infographie public/img/FCU_chiffres-cles_reseaux-chaleur.jpg`"
-  )
-  .argument('<profile>', 'optimization profile', (v) => z.enum(nonEmptyArray(optimisationProfiles)).parse(v))
-  .argument('<fileName>', 'input image input file')
-  .action(async (profile, fileName) => {
-    await optimizeImage(fileName, profile);
   });
 
 program
