@@ -257,8 +257,8 @@ const getObjectIndexFromAirtable = async (tileInfo: AirtableTileInfo) => {
     .all()
     .then((records) => {
       const features = records.map((record) => {
-        const longitude = record.get('Longitude') as string;
-        const latitude = record.get('Latitude') as string;
+        const longitude = record.get('Longitude') as number;
+        const latitude = record.get('Latitude') as number;
         return {
           type: 'Feature',
           geometry: {
@@ -275,14 +275,12 @@ const getObjectIndexFromAirtable = async (tileInfo: AirtableTileInfo) => {
             },
             { id: record.id }
           ),
-        };
+        } satisfies GeoJSON.Feature<GeoJSON.Point>;
       });
 
       return geojsonvt(
         {
           type: 'FeatureCollection',
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore: Create proper type
           features: features,
         },
         {
