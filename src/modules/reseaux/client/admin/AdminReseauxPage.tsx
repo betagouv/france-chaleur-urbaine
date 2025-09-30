@@ -357,7 +357,7 @@ const GestionDesReseaux = () => {
               size="small"
               priority="secondary"
               iconId="fr-icon-edit-line"
-              title="Modifier le tag"
+              title="Modifier la géométrie"
               // For an unknown reason, if we don't prevent the default behavior, the row click event is triggered
               // and editing is not triggered
               stopPropagation
@@ -455,7 +455,7 @@ const GestionDesReseaux = () => {
               size="small"
               priority="secondary"
               iconId="fr-icon-edit-line"
-              title="Modifier le tag"
+              title="Modifier la géométrie"
               stopPropagation
               onClick={() => {
                 setEditingId(row.original.id_fcu);
@@ -534,7 +534,7 @@ const GestionDesReseaux = () => {
               size="small"
               priority="secondary"
               iconId="fr-icon-edit-line"
-              title="Modifier le tag"
+              title="Modifier la géométrie"
               stopPropagation
               onClick={() => {
                 setEditingId(row.original.id_fcu);
@@ -614,7 +614,7 @@ const GestionDesReseaux = () => {
               size="small"
               priority="secondary"
               iconId="fr-icon-edit-line"
-              title="Modifier le tag"
+              title="Modifier la géométrie"
               stopPropagation
               onClick={() => {
                 setEditingId(row.original.id_fcu);
