@@ -3,7 +3,7 @@ import { type ExpressionBuilder } from 'kysely';
 import vtpbf from 'vt-pbf';
 
 import { tileSourcesMaxZoom } from '@/components/Map/layers/common';
-import { type NetworkTable } from '@/modules/reseaux/server/geometry-operations';
+import { type NetworkTable, updateNetworkHasPDP } from '@/modules/reseaux/server/geometry-operations';
 import { type BuildTilesInput, type SyncGeometriesInput } from '@/modules/tiles/constants';
 import { type AirtableTileInfo, type DatabaseSourceId, tilesInfo } from '@/modules/tiles/tiles.config';
 import db from '@/server/db';
@@ -175,7 +175,7 @@ const processTableGeometryUpdates = async (config: TableConfig) => {
       .where('geom', 'is', null)
       .where('geom_update', 'is not', null)
       .where(sql<boolean>`NOT ST_IsEmpty(geom_update)`)
-      .returning('id_fcu')
+      .returning(['id_fcu', 'Identifiant reseau'])
       .execute(),
 
     // Mises à jour (geom && geom_update)
@@ -206,6 +206,13 @@ const processTableGeometryUpdates = async (config: TableConfig) => {
   // Met à jour les labels pour les entités créées et modifiées
   const allUpdatedIds = [...created, ...updated];
   await Promise.all(allUpdatedIds.map((entity) => updateLabelsCommunesDepartementAndRegion(config.tableName, entity.id_fcu)));
+
+  // Cas particulier : on doit mettre à jour has_PDP des réseaux de chaleur associés
+  if (config.internalName === 'perimetres-de-developpement-prioritaire') {
+    await Promise.all(
+      created.map((createdPDP) => createdPDP['Identifiant reseau'] && updateNetworkHasPDP(createdPDP['Identifiant reseau']))
+    );
+  }
 
   return {
     config,
