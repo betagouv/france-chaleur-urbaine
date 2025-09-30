@@ -3,6 +3,7 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 
 import { login } from '@/modules/auth/server/service';
 import { kdb } from '@/server/db/kysely';
+import { stripDomainFromURL } from '@/utils/url';
 
 export const nextAuthOptions: AuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
@@ -11,7 +12,7 @@ export const nextAuthOptions: AuthOptions = {
     error: '/connexion',
   },
   callbacks: {
-    redirect: ({ url, baseUrl }) => url || baseUrl,
+    redirect: ({ url, baseUrl }) => stripDomainFromURL(url) ?? baseUrl,
     async jwt({ token, user }) {
       if (user) {
         return {
