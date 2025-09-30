@@ -175,7 +175,7 @@ const processTableGeometryUpdates = async (config: TableConfig) => {
       .where('geom', 'is', null)
       .where('geom_update', 'is not', null)
       .where(sql<boolean>`NOT ST_IsEmpty(geom_update)`)
-      .returning(['id_fcu', 'Identifiant reseau'])
+      .returning(config.internalName === 'perimetres-de-developpement-prioritaire' ? ['id_fcu', 'Identifiant reseau'] : ['id_fcu'])
       .execute(),
 
     // Mises à jour (geom && geom_update)
