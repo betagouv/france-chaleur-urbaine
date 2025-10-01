@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 import { logger } from '@/server/helpers/logger';
 
-import { formatImage, formatProfiles } from './server/image-format';
+import { formatImage, formatProfiles } from './commands/image-format';
 
 export function registerAppCommands(parentProgram: Command) {
   const program = parentProgram.command('app').description("Commandes pour l'application");
