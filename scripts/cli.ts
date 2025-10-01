@@ -8,7 +8,7 @@ import XLSX from 'xlsx';
 import { z } from 'zod';
 
 import { registerAppCommands } from '@/modules/app/commands';
-import { processJobById, processJobsIndefinitely } from '@/modules/jobs/server/processor';
+import { registerJobsCommands } from '@/modules/jobs/commands';
 import { registerNetworkCommands } from '@/modules/reseaux/commands';
 import { downloadAndUpdateNetwork, downloadNetwork } from '@/modules/reseaux/server/download-network';
 import { applyGeometryUpdates } from '@/modules/reseaux/server/geometry-updates';
@@ -64,6 +64,7 @@ program
   });
 
 registerAppCommands(program);
+registerJobsCommands(program);
 registerNetworkCommands(program);
 registerTilesCommands(program);
 
@@ -433,21 +434,6 @@ program
       process.exit(1);
     }
     await syncComptesProFromUsers();
-  });
-
-program
-  .command('jobs:start')
-  .description('Start the jobs worker')
-  .action(async () => {
-    await processJobsIndefinitely();
-  });
-
-program
-  .command('jobs:process')
-  .description('Process a specific job by ID')
-  .argument('<jobId>', 'Job ID to process')
-  .action(async (jobId) => {
-    await processJobById(jobId);
   });
 
 program
