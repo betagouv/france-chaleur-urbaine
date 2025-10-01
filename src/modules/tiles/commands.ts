@@ -1,20 +1,21 @@
 import { existsSync } from 'fs';
 import { writeFile } from 'fs/promises';
 
-import { createCommand } from '@commander-js/extra-typings';
+import { type Command } from '@commander-js/extra-typings';
 import camelcase from 'camelcase';
 import { z } from 'zod';
 
-import { type TilesType, tilesTypes } from '@/modules/tiles/server/generation-config';
-import { runTilesGeneration } from '@/modules/tiles/server/generation-run';
 import { logger } from '@/server/helpers/logger';
 import { nonEmptyArray } from '@/utils/typescript';
 
+import { type TilesType, tilesTypes } from './server/generation-config';
+import { runTilesGeneration } from './server/generation-run';
+
 /**
- * Crée les commandes CLI pour la gestion des tuiles vectorielles
+ * Enregistre les commandes CLI pour la gestion des tuiles vectorielles
  */
-export function createTilesCommands() {
-  const tilesCommand = createCommand('tiles').description('Commandes pour la gestion des tuiles vectorielles');
+export function registerTilesCommands(parentProgram: Command) {
+  const tilesCommand = parentProgram.command('tiles').description('Commandes pour la gestion des tuiles vectorielles');
 
   tilesCommand
     .command('generate')
@@ -39,8 +40,6 @@ export function createTilesCommands() {
     .action(async (type: TilesType) => {
       await generateAddToMapInstructions(type);
     });
-
-  return tilesCommand;
 }
 
 /**

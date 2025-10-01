@@ -14,6 +14,7 @@ Ce module gère la génération de tuiles vectorielles pour les cartes de France
 ```
 src/modules/tiles/
 ├── constants.tsx              # Types et validation Zod
+├── commands.ts                # CLI commands (pnpm cli tiles)
 ├── server/
 │   ├── generation-config.ts   # Configurations de toutes les tuiles
 │   ├── generation-strategies.ts # Stratégies (DB, URL, fichiers)

@@ -13,7 +13,7 @@ import { registerNetworkCommands } from '@/modules/reseaux/server/commands';
 import { downloadAndUpdateNetwork, downloadNetwork } from '@/modules/reseaux/server/download-network';
 import { applyGeometryUpdates } from '@/modules/reseaux/server/geometry-updates';
 import { syncPostgresToAirtable } from '@/modules/reseaux/server/sync-pg-to-airtable';
-import { createTilesCommands } from '@/modules/tiles/server/commands';
+import { registerTilesCommands } from '@/modules/tiles/commands';
 import { type DatabaseSourceId, tilesInfo } from '@/modules/tiles/tiles.config';
 import { getApiHandler } from '@/server/api/users';
 import { serverConfig } from '@/server/config';
@@ -62,6 +62,8 @@ program
   .hook('postAction', async () => {
     await db.destroy();
   });
+
+registerTilesCommands(program);
 
 program
   .command('create-modifications-reseau')
@@ -175,8 +177,6 @@ program
     });
     console.info(`${ept.length} EPT importés`);
   });
-
-program.addCommand(createTilesCommands());
 
 program
   .command('opendata:create-archive')
