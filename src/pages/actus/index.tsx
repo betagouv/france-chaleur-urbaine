@@ -1,6 +1,7 @@
 import Card from '@codegouvfr/react-dsfr/Card';
+import { Pagination } from '@codegouvfr/react-dsfr/Pagination';
 import Tag from '@codegouvfr/react-dsfr/Tag';
-import { parseAsArrayOf, parseAsString, useQueryState } from 'nuqs';
+import { parseAsArrayOf, parseAsInteger, parseAsString, useQueryState } from 'nuqs';
 import { useMemo } from 'react';
 
 import SimplePage from '@/components/shared/page/SimplePage';
@@ -9,6 +10,8 @@ import Heading from '@/components/ui/Heading';
 import Hero, { HeroSubtitle, HeroTitle } from '@/components/ui/Hero';
 import { articles } from '@/data/contents';
 import { formatFrenchSpacing } from '@/utils/strings';
+
+const ARTICLES_PER_PAGE = 24;
 
 const themes = [
   ...articles
@@ -23,9 +26,11 @@ const themes = [
 
 const ActualitesPage = () => {
   const [selectedThemes, setSelectedThemes] = useQueryState('themes', parseAsArrayOf(parseAsString).withDefault([]));
+  const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1));
 
   function toggleTheme(theme: string) {
     void setSelectedThemes(selectedThemes?.includes(theme) ? selectedThemes?.filter((t) => t !== theme) : [...selectedThemes, theme]);
+    void setPage(1); // Reset to page 1 when filtering
   }
 
   const filteredActus = useMemo(() => {
@@ -33,6 +38,12 @@ const ActualitesPage = () => {
       ? articles
       : articles.filter((article) => article.themes.some((articleTheme) => selectedThemes.includes(articleTheme)));
   }, [selectedThemes]);
+
+  const totalPages = Math.ceil(filteredActus.length / ARTICLES_PER_PAGE);
+  const paginatedActus = useMemo(() => {
+    const startIndex = (page - 1) * ARTICLES_PER_PAGE;
+    return filteredActus.slice(startIndex, startIndex + ARTICLES_PER_PAGE);
+  }, [filteredActus, page]);
 
   return (
     <SimplePage
@@ -61,15 +72,17 @@ const ActualitesPage = () => {
 
             <ul className="fr-tags-group">
               {themes.map((theme, index) => (
-                <button className="fr-tag" aria-pressed={selectedThemes?.includes(theme)} onClick={() => toggleTheme(theme)} key={index}>
-                  {theme}
-                </button>
+                <li key={index}>
+                  <button className="fr-tag" aria-pressed={selectedThemes?.includes(theme)} onClick={() => toggleTheme(theme)}>
+                    {theme}
+                  </button>
+                </li>
               ))}
             </ul>
           </Box>
 
           <Box className="fr-col fr-grid-row fr-grid-row--gutters">
-            {filteredActus.map((article) => (
+            {paginatedActus.map((article, index) => (
               <div className="fr-col-12 fr-col-sm-6 fr-col-md-6 fr-col-lg-4" key={article.slug}>
                 <Card
                   background
@@ -82,7 +95,7 @@ const ActualitesPage = () => {
                     href: `/actus/${article.slug}`,
                   }}
                   nativeImgProps={{
-                    loading: 'lazy',
+                    loading: index < 6 ? 'eager' : 'lazy',
                   }}
                   size="medium"
                   start={
@@ -104,6 +117,22 @@ const ActualitesPage = () => {
                 />
               </div>
             ))}
+
+            {totalPages > 1 && (
+              <Pagination
+                count={totalPages}
+                defaultPage={page}
+                getPageLinkProps={(pageNumber) => ({
+                  onClick: (e) => {
+                    e.preventDefault();
+                    void setPage(pageNumber);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  },
+                  href: '#',
+                })}
+                className="fr-mt-4w mx-auto"
+              />
+            )}
           </Box>
         </Box>
       </Box>

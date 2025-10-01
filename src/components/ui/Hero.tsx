@@ -114,6 +114,7 @@ const Hero = ({
               priority
               width={400}
               height={500}
+              fetchPriority="high"
             />
           </div>
         )}
@@ -135,6 +136,7 @@ const Hero = ({
                     )}
                     priority
                     fill
+                    fetchPriority="high"
                   />
                 </div>
               )}

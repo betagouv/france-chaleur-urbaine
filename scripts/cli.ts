@@ -7,12 +7,14 @@ import prompts from 'prompts';
 import XLSX from 'xlsx';
 import { z } from 'zod';
 
-import { processJobById, processJobsIndefinitely } from '@/modules/jobs/server/processor';
-import { registerNetworkCommands } from '@/modules/reseaux/server/commands';
+import { registerAppCommands } from '@/modules/app/commands';
+import { registerJobsCommands } from '@/modules/jobs/commands';
+import { registerOptimizationCommands } from '@/modules/optimization/commands';
+import { registerNetworkCommands } from '@/modules/reseaux/commands';
 import { downloadAndUpdateNetwork, downloadNetwork } from '@/modules/reseaux/server/download-network';
 import { applyGeometryUpdates } from '@/modules/reseaux/server/geometry-updates';
 import { syncPostgresToAirtable } from '@/modules/reseaux/server/sync-pg-to-airtable';
-import { createTilesCommands } from '@/modules/tiles/server/commands';
+import { registerTilesCommands } from '@/modules/tiles/commands';
 import { type DatabaseSourceId, tilesInfo } from '@/modules/tiles/tiles.config';
 import { getApiHandler } from '@/server/api/users';
 import { serverConfig } from '@/server/config';
@@ -26,9 +28,7 @@ import { userRoles } from '@/types/enum/UserRole';
 import { fetchJSON } from '@/utils/network';
 import { runBash, runCommand } from '@/utils/system';
 import { sleep } from '@/utils/time';
-import { nonEmptyArray } from '@/utils/typescript';
 import { allDatabaseTables } from '@cli/bootstrap/tables';
-import { optimisationProfiles, optimizeImage } from '@cli/images/optimize';
 import { refreshStatistics } from '@cli/stats/refresh';
 
 import { type KnownAirtableBase, knownAirtableBases } from './airtable/bases';
@@ -63,6 +63,12 @@ program
   .hook('postAction', async () => {
     await db.destroy();
   });
+
+registerAppCommands(program);
+registerJobsCommands(program);
+registerOptimizationCommands(program);
+registerNetworkCommands(program);
+registerTilesCommands(program);
 
 program
   .command('create-modifications-reseau')
@@ -177,8 +183,6 @@ program
     console.info(`${ept.length} EPT importés`);
   });
 
-program.addCommand(createTilesCommands());
-
 program
   .command('opendata:create-archive')
   .description(
@@ -211,8 +215,6 @@ program
     logger.info('✅ Publication réussie !');
     logger.info(`URL du dataset: https://www.data.gouv.fr/datasets/${serverConfig.DATA_GOUV_FR_DATASET_ID}/`);
   });
-
-registerNetworkCommands(program);
 
 program
   .command('communes:search')
@@ -437,21 +439,6 @@ program
   });
 
 program
-  .command('jobs:start')
-  .description('Start the jobs worker')
-  .action(async () => {
-    await processJobsIndefinitely();
-  });
-
-program
-  .command('jobs:process')
-  .description('Process a specific job by ID')
-  .argument('<jobId>', 'Job ID to process')
-  .action(async (jobId) => {
-    await processJobById(jobId);
-  });
-
-program
   .command('bdnd:export')
   .description('')
   .action(async () => {
@@ -511,17 +498,6 @@ program
   });
 
 program
-  .command('image:optimize')
-  .description(
-    "Permet d'optimiser les images à introduire dans FCU, comme les infographies. Exemple : `pnpm cli image:optimize infographie public/img/FCU_chiffres-cles_reseaux-chaleur.jpg`"
-  )
-  .argument('<profile>', 'optimization profile', (v) => z.enum(nonEmptyArray(optimisationProfiles)).parse(v))
-  .argument('<fileName>', 'input image input file')
-  .action(async (profile, fileName) => {
-    await optimizeImage(fileName, profile);
-  });
-
-program
   .command('gitbook:import')
   .description('Etapes à suivre pour mettre à jour les actualités depuis GitBook')
   .action(async () => {
@@ -549,6 +525,7 @@ program
           - les thèmes (visibles dans le ticket Trello)
 
       3. Enfin, supprime le frontmatter des nouveaux articles et les urls absolues avec ./scripts/clean-gitbook-actus.sh
+      4. Enfin, optimise les images avec pnpm cli optimize images
     `);
   });
 

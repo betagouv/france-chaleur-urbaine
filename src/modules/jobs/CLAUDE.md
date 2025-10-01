@@ -7,6 +7,7 @@ Système de gestion de jobs asynchrones basé sur une file d'attente PostgreSQL 
 ```
 jobs/
 ├── constants.ts          # Types et schémas Zod
+├── commands.ts           # CLI commands (pnpm cli jobs)
 ├── jobs.config.ts        # Configuration des handlers de jobs
 ├── server/
 │   ├── service.ts       # Logique métier (CRUD jobs)
@@ -135,7 +136,12 @@ export async function shutdownProcessor() {
 
 ### Démarrage
 
-Le processeur est démarré par `server/clock.ts` via la commande `pnpm start:clock`.
+Le processeur peut être démarré de deux façons :
+
+1. **En production** : Via `server/clock.ts` avec la commande `pnpm start:clock`
+2. **En développement/debug** : Via CLI avec `pnpm cli jobs start`
+
+Pour traiter un job spécifique : `pnpm cli jobs process <jobId>`
 
 ## Création de Jobs
 

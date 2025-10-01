@@ -17,7 +17,7 @@ import {
   updateEntityGeometry,
   updateEntityWithoutGeometry,
   updateNetworkHasPDP,
-} from './geometry-operations';
+} from './server/geometry-operations';
 
 const entityTypes = ['rdc', 'rdf', 'pdp', 'futur'] as const;
 type EntityType = (typeof entityTypes)[number];

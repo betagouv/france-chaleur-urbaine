@@ -86,6 +86,7 @@ const Carte = () => {
       description="Découvrez la carte de référence des réseaux de chaleur et de froid, identifiez les opportunités de raccordement pour votre bâtiment."
       includeFooter={false}
     >
+      <h1 className="fr-sr-only">Carte nationale des réseaux de chaleur et de froid en France</h1>
       <MapWrapper>
         <Map withoutLogo withLegend initialMapConfiguration={initialMapConfiguration} persistViewStateInURL />
       </MapWrapper>

@@ -234,20 +234,24 @@ const NetworksList = () => {
   const [searchValue, setSearchValue] = useState<string>('');
   const { filters: objectFilters, nbFilters } = useReseauxDeChaleurFilters();
 
-  let filteredNetworks = filterReseauxDeChaleur(allNetworks, objectFilters || ({} as NonNullable<typeof objectFilters>));
+  const filteredNetworks = useMemo(() => {
+    let networks = filterReseauxDeChaleur(allNetworks, objectFilters || ({} as NonNullable<typeof objectFilters>));
 
-  if (searchValue) {
-    const searchValueLowerCase = searchValue.toLocaleLowerCase();
+    if (searchValue) {
+      const searchValueLowerCase = searchValue.toLocaleLowerCase();
 
-    filteredNetworks = filteredNetworks.filter(
-      (network: NetworkToCompare) =>
-        (network.nom_reseau && network.nom_reseau.toLocaleLowerCase().includes(searchValueLowerCase)) ||
-        (network.Gestionnaire && network.Gestionnaire.toLocaleLowerCase().includes(searchValueLowerCase)) ||
-        (network.region && network.region.toLocaleLowerCase().includes(searchValueLowerCase)) ||
-        (network.communes && network.communes.join(', ').toLocaleLowerCase().includes(searchValueLowerCase)) ||
-        (network['Identifiant reseau'] && network['Identifiant reseau'].toLocaleLowerCase().includes(searchValueLowerCase))
-    );
-  }
+      networks = networks.filter(
+        (network: NetworkToCompare) =>
+          (network.nom_reseau && network.nom_reseau.toLocaleLowerCase().includes(searchValueLowerCase)) ||
+          (network.Gestionnaire && network.Gestionnaire.toLocaleLowerCase().includes(searchValueLowerCase)) ||
+          (network.region && network.region.toLocaleLowerCase().includes(searchValueLowerCase)) ||
+          (network.communes && network.communes.join(', ').toLocaleLowerCase().includes(searchValueLowerCase)) ||
+          (network['Identifiant reseau'] && network['Identifiant reseau'].toLocaleLowerCase().includes(searchValueLowerCase))
+      );
+    }
+
+    return networks;
+  }, [allNetworks, objectFilters, searchValue]);
 
   const [dataToDisplay, setDataToDisplay] = useState<DataToDisplay>('general');
   const [loaded, setLoaded] = useState(false);
@@ -436,7 +440,7 @@ const NetworksList = () => {
 
       return dataToDisplay === 'general' ? inGeneralList : inMixEnergetiqueList;
     });
-  }, [dataToDisplay, allNetworkColumns, GeneralFieldsList, MixEnergetiqueFieldsList]);
+  }, [dataToDisplay, allNetworkColumns]);
 
   useEffect(() => {
     if (loaded) {

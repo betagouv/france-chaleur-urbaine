@@ -6,7 +6,7 @@ import { ObjectKeys, type RequiredFields } from '@/utils/typescript';
 
 const webpQuality = 90;
 
-type ImageOptimisationConfig = {
+type ImageFormatConfig = {
   extension: string;
   resize?: RequiredFields<ResizeOptions, 'width'>;
   cropHeight?: number;
@@ -25,14 +25,14 @@ const configByProfile = {
       cropHeight: 370,
     },
   ],
-} as const satisfies Record<string, ImageOptimisationConfig[]>;
+} as const satisfies Record<string, ImageFormatConfig[]>;
 
-export const optimisationProfiles = ObjectKeys(configByProfile);
-type OptimisationProfile = (typeof optimisationProfiles)[number];
+export const formatProfiles = ObjectKeys(configByProfile);
+type FormatProfile = (typeof formatProfiles)[number];
 
-export async function optimizeImage(inputPath: string, profile: OptimisationProfile): Promise<void> {
+export async function formatImage(inputPath: string, profile: FormatProfile): Promise<void> {
   await Promise.all(
-    configByProfile[profile].map(async (config: ImageOptimisationConfig) => {
+    configByProfile[profile].map(async (config: ImageFormatConfig) => {
       const outputPath = inputPath.replace(extname(inputPath), config.extension);
       let image = sharp(inputPath);
 

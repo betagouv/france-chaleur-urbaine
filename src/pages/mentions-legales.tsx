@@ -14,6 +14,7 @@ function MentionsLegalesPage() {
       description="France Chaleur Urbaine est un service du Ministère de la transition écologique qui vise à faciliter et multiplier les raccordements aux réseaux de chaleur."
       layout="center"
     >
+      <h1 className="fr-sr-only">Mentions légales</h1>
       <LegalNoticeComponent
         includeBetaGouv
         siteName="France Chaleur Urbaine"
