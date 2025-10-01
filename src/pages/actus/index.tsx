@@ -72,9 +72,11 @@ const ActualitesPage = () => {
 
             <ul className="fr-tags-group">
               {themes.map((theme, index) => (
-                <button className="fr-tag" aria-pressed={selectedThemes?.includes(theme)} onClick={() => toggleTheme(theme)} key={index}>
-                  {theme}
-                </button>
+                <li key={index}>
+                  <button className="fr-tag" aria-pressed={selectedThemes?.includes(theme)} onClick={() => toggleTheme(theme)}>
+                    {theme}
+                  </button>
+                </li>
               ))}
             </ul>
           </Box>
