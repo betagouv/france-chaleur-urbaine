@@ -78,3 +78,8 @@ export type Partialize<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 export function hasProperty<T extends object>(obj: T, key: string | number | symbol): key is keyof T {
   return Object.prototype.hasOwnProperty.call(obj, key);
 }
+
+/**
+ * Exclude keys from an object
+ */
+export type ExcludeKeys<T, U> = { [K in keyof T]?: never } & Record<string, U>;
