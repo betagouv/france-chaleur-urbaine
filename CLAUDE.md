@@ -34,7 +34,7 @@ pnpm build                 # Production build
 pnpm build:analyze         # Analyze bundle size
 
 # Images
-pnpm image:optimize  # Optimize all images in public/ directory (uses src/modules/optimization/scripts/image-optimize.sh)
+pnpm cli optimize images  # Optimize all images in public/ directory
 ```
 
 ## Architecture & Key Patterns

@@ -26,14 +26,14 @@ Automated image optimization for the public directory:
 ### Image Optimization
 
 ```bash
-pnpm image:optimize
+pnpm cli optimize images
 ```
 
-This will:
+This command will:
 1. Find all JPEG and PNG images in the `public/` directory
 2. Only process images modified since last optimization
 3. Create optimized versions and replace originals if smaller
-4. Update timestamp file `src/modules/optimization/scripts/image-optimize-last-date.txt`
+4. Update timestamp file `src/modules/optimization/commands/image-optimize-last-date.txt`
 
 #### How it works
 
@@ -43,7 +43,7 @@ The script:
 - PNG: compression level 9, strip metadata
 - Creates temporary files to compare sizes before replacing
 - Updates file modification times to track processed images
-- Stores last optimization timestamp in `src/modules/optimization/scripts/image-optimize-last-date.txt`
+- Stores last optimization timestamp in `src/modules/optimization/commands/image-optimize-last-date.txt`
 
 #### Output
 
@@ -58,7 +58,8 @@ The script provides:
 ```
 optimization/
 ├── CLAUDE.md
-└── scripts/
+├── commands.ts                        # CLI commands (pnpm cli optimize)
+└── commands/
     ├── image-optimize.sh              # Image optimization script
     └── image-optimize-last-date.txt   # Timestamp tracking file
 ```

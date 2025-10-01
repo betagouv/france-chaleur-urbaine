@@ -29,7 +29,7 @@ if ! command -v mogrify &> /dev/null; then
 fi
 
 # Get last optimization timestamp
-LAST_OPTIMIZE_FILE="src/modules/optimization/scripts/image-optimize-last-date.txt"
+LAST_OPTIMIZE_FILE="src/modules/optimization/commands/image-optimize-last-date.txt"
 LAST_OPTIMIZE_TIME=""
 if [ -f "$LAST_OPTIMIZE_FILE" ]; then
     LAST_OPTIMIZE_TIME=$(cat "$LAST_OPTIMIZE_FILE")

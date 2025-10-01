@@ -36,7 +36,6 @@
     "test": "vitest run",
     "test:watch": "vitest dev",
     "cli": "tsx scripts/cli.ts",
-    "image:optimize": "./src/modules/optimization/scripts/image-optimize.sh",
     "knexts": "tsx ./node_modules/knex/bin/cli.js",
     "db:migrate": "pnpm knexts migrate:latest",
     "db:bootstrap": "pnpm cli db:bootstrap",

@@ -9,6 +9,7 @@ import { z } from 'zod';
 
 import { registerAppCommands } from '@/modules/app/commands';
 import { registerJobsCommands } from '@/modules/jobs/commands';
+import { registerOptimizationCommands } from '@/modules/optimization/commands';
 import { registerNetworkCommands } from '@/modules/reseaux/commands';
 import { downloadAndUpdateNetwork, downloadNetwork } from '@/modules/reseaux/server/download-network';
 import { applyGeometryUpdates } from '@/modules/reseaux/server/geometry-updates';
@@ -65,6 +66,7 @@ program
 
 registerAppCommands(program);
 registerJobsCommands(program);
+registerOptimizationCommands(program);
 registerNetworkCommands(program);
 registerTilesCommands(program);
 
@@ -523,7 +525,7 @@ program
           - les thèmes (visibles dans le ticket Trello)
 
       3. Enfin, supprime le frontmatter des nouveaux articles et les urls absolues avec ./scripts/clean-gitbook-actus.sh
-      4. Enfin, optimise les images avec pnpm image:optimize
+      4. Enfin, optimise les images avec pnpm cli optimize images
     `);
   });
 
