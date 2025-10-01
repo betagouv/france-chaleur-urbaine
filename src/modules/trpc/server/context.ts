@@ -28,8 +28,15 @@ export type AuthConfig = {
   custom?: (ctx: Context, input?: any) => boolean | Promise<boolean>;
 };
 
+export type RateLimitConfig = {
+  windowMs: number;
+  max: number;
+  message?: string;
+};
+
 export interface Meta {
   auth?: AuthConfig;
+  rateLimit?: RateLimitConfig;
 }
 // Initialize tRPC with context
 export const t = initTRPC.context<Context>().meta<Meta>().create();
