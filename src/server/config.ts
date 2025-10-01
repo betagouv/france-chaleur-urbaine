@@ -28,7 +28,12 @@ const serverConfigSchema = {
   USE_DOCKER_GEO_COMMANDS: z.boolean().default(false),
 };
 
-const onlyServerConfig = {} satisfies ExcludeKeys<typeof clientConfig, any>;
+const onlyServerConfig = {
+  email: {
+    notAllowed: ['sample@tst.com', 'sample@email.tst'], // Liste des emails interdits pour les formulaires publics (spam/test)
+    notAllowedMessage: 'Une erreur est survenue lors de la validation de votre demande', // Message d'erreur vague pour ne pas aider les spammeurs
+  },
+} satisfies ExcludeKeys<typeof clientConfig, any>;
 
 export const serverConfig = {
   ...parseEnv(process.env, serverConfigSchema),

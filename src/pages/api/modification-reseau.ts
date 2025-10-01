@@ -3,8 +3,8 @@ import { readFile } from 'node:fs/promises';
 import formidable from 'formidable';
 import { z } from 'zod';
 
-import { clientConfig } from '@/client-config';
 import { createRateLimiter } from '@/modules/security/server/rate-limit';
+import { serverConfig } from '@/server/config';
 import { AirtableDB, uploadAttachment } from '@/server/db/airtable';
 import { logger } from '@/server/helpers/logger';
 import { handleRouteErrors, requirePostMethod, validateObjectSchema } from '@/server/helpers/server';
@@ -16,9 +16,6 @@ export const config = {
   },
 };
 
-const emailNotAllowed = ['sample@tst.com', 'sample@email.tst'];
-const emailNotAllowedMessage = 'Une erreur est survenue lors de la validation de votre demande'; // This one needs to be vague so that hackers don't know exactly what to do
-
 // multipart form data may contain one field multiple times so we get the first element
 const zModificationReseau = {
   idReseau: z.preprocess((val: any) => val[0], z.string()),
@@ -29,8 +26,8 @@ const zModificationReseau = {
   fonction: z.preprocess((val: any) => val[0], z.string()),
   email: z.preprocess(
     (val: any) => val[0],
-    z.email().refine((email) => !emailNotAllowed.includes(email), {
-      error: emailNotAllowedMessage,
+    z.email().refine((email) => !serverConfig.email.notAllowed.includes(email), {
+      error: serverConfig.email.notAllowedMessage,
     })
   ),
   reseauClasse: z.preprocess((val: any) => parseValue(val[0]), z.boolean()),
@@ -43,7 +40,7 @@ const zModificationReseau = {
     }
     return val[0];
   }, z.string().optional()),
-  informationsComplementaires: z.preprocess((val: any) => val[0], z.string().max(clientConfig.networkInfoFieldMaxCharacters)),
+  informationsComplementaires: z.preprocess((val: any) => val[0], z.string().max(serverConfig.networkInfoFieldMaxCharacters)),
   fichiers: z.optional(
     z.array(
       // formidable.File
