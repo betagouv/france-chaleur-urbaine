@@ -9,7 +9,7 @@ import { z } from 'zod';
 
 import { registerAppCommands } from '@/modules/app/commands';
 import { processJobById, processJobsIndefinitely } from '@/modules/jobs/server/processor';
-import { registerNetworkCommands } from '@/modules/reseaux/server/commands';
+import { registerNetworkCommands } from '@/modules/reseaux/commands';
 import { downloadAndUpdateNetwork, downloadNetwork } from '@/modules/reseaux/server/download-network';
 import { applyGeometryUpdates } from '@/modules/reseaux/server/geometry-updates';
 import { syncPostgresToAirtable } from '@/modules/reseaux/server/sync-pg-to-airtable';
@@ -63,6 +63,8 @@ program
     await db.destroy();
   });
 
+registerAppCommands(program);
+registerNetworkCommands(program);
 registerTilesCommands(program);
 
 program
@@ -210,9 +212,6 @@ program
     logger.info('✅ Publication réussie !');
     logger.info(`URL du dataset: https://www.data.gouv.fr/datasets/${serverConfig.DATA_GOUV_FR_DATASET_ID}/`);
   });
-
-registerAppCommands(program);
-registerNetworkCommands(program);
 
 program
   .command('communes:search')
