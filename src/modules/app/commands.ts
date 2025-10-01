@@ -14,13 +14,8 @@ export function registerAppCommands(parentProgram: Command) {
     .argument('<inputPath>', "Chemin vers l'image source")
     .argument('<profile>', 'Profil de formatage', (v) => z.enum(formatProfiles).parse(v))
     .action(async (inputPath, profile) => {
-      try {
-        logger.info(`📸 Formatage de l'image ${inputPath} avec le profil "${profile}"...`);
-        await formatImage(inputPath, profile);
-        logger.info(`✅ Image formatée avec succès`);
-      } catch (error) {
-        logger.error(`❌ Erreur lors du formatage de l'image:`, error);
-        process.exit(1);
-      }
+      logger.info(`📸 Formatage de l'image ${inputPath} avec le profil "${profile}"...`);
+      await formatImage(inputPath, profile);
+      logger.info(`✅ Image formatée avec succès`);
     });
 }
