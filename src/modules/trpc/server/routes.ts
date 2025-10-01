@@ -1,3 +1,4 @@
+import { appRouter as appModuleRouter } from '@/modules/app/server/trpc-routes';
 import { diagnosticRouter } from '@/modules/diagnostic/server/trpc-routes';
 import { jobsRouter } from '@/modules/jobs/server/trpc-routes';
 import { proEligibilityTestsRouter } from '@/modules/pro-eligibility-tests/server/trpc-routes';
@@ -20,6 +21,7 @@ export const appRouter = router({
       message: 'tRPC server is running!',
     };
   }),
+  app: appModuleRouter,
   diagnostic: diagnosticRouter,
   jobs: jobsRouter,
   proEligibilityTests: proEligibilityTestsRouter,
