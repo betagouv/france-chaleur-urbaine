@@ -1,8 +1,10 @@
 import { Alert } from '@codegouvfr/react-dsfr/Alert';
+import { Button } from '@codegouvfr/react-dsfr/Button';
 import { useQueryState } from 'nuqs';
 import React from 'react';
 
 import useForm from '@/components/form/react-form/useForm';
+import { toastErrors } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
 
 import { contactFormSchema, contactReasonOptions } from '../../constants';
@@ -17,25 +19,37 @@ const ContactForm = () => {
     },
   });
 
-  const { Form, Field, FieldWrapper, Submit } = useForm({
+  const defaultValues = {
+    lastName: '',
+    firstName: '',
+    email: '',
+    phone: '',
+    subject: defaultReason || '',
+    message: '',
+  };
+
+  const { Form, Field, FieldWrapper, Submit, form } = useForm({
     schema: contactFormSchema,
-    defaultValues: {
-      lastName: '',
-      firstName: '',
-      email: '',
-      phone: '',
-      subject: defaultReason || '',
-      message: '',
-    },
-    onSubmit: async ({ value }) => {
+    defaultValues,
+    onSubmit: toastErrors(async ({ value }) => {
       await submitContactMutation.mutateAsync(value);
-    },
+    }),
   });
+
+  const handleNewMessage = () => {
+    setSent(false);
+    form.reset(defaultValues);
+  };
 
   return (
     <>
       {sent ? (
-        <Alert severity="success" title="Merci pour votre message" description="Nous reviendrons rapidement vers vous." />
+        <div className="max-w-xl">
+          <Alert severity="success" title="Merci pour votre message" description="Nous reviendrons rapidement vers vous." />
+          <Button className="fr-mt-2w" onClick={handleNewMessage}>
+            Envoyer un nouveau message
+          </Button>
+        </div>
       ) : (
         <Form className="max-w-xl">
           <FieldWrapper>
