@@ -56,7 +56,7 @@ const Dialog = ({ children, trigger, title, description, size = 'md', open, onOp
         <DialogPrimitive.Content asChild>
           <motion.div
             className={cx(
-              'fixed left-1/2 top-1/2 z-50 max-h-[85vh] w-full transform overflow-auto bg-white p-8 shadow-xl',
+              'fixed left-1/2 top-1/2 z-50 max-h-[85vh] w-full overflow-auto bg-white p-8 shadow-xl',
               size === 'sm' && 'max-w-sm',
               size === 'md' && 'max-w-lg',
               size === 'lg' && 'max-w-4xl'
