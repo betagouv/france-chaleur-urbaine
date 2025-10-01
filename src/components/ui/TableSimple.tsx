@@ -289,6 +289,16 @@ const TableTH = <T extends RowData>({
         columnClassName(columnDef),
         cellCustomClasses({ padding })
       )}
+      aria-sort={
+        canSort
+          ? ((
+              {
+                asc: 'ascending',
+                desc: 'descending',
+              } as const
+            )[isSorted as string] ?? 'none')
+          : undefined
+      }
     >
       <div className={cx('flex gap-1', isInlineLayout ? 'flex-row items-center' : 'flex-col')}>
         {/* mt-[5px] to be aligned  */}
@@ -306,14 +316,6 @@ const TableTH = <T extends RowData>({
               priority={isSorted ? 'secondary' : 'tertiary'}
               className={'fr-btn--sort relative min-w-8 border'}
               loading={loading}
-              aria-sort={
-                (
-                  {
-                    asc: 'ascending',
-                    desc: 'descending',
-                  } as const
-                )[isSorted as string] ?? undefined
-              }
               onClick={onClickSort}
               title="Cliquer pour trier"
             >
