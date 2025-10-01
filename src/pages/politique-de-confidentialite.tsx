@@ -12,6 +12,7 @@ function PolitiqueDeConfidentialitePage() {
       description="Politique de protection des données personnelles de la plateforme France Chaleur Urbaine"
       layout="center"
     >
+      <h1 className="fr-sr-only">Politique de confidentialité</h1>
       <PrivacyPolicyComponent
         cookieConsentButton={<button>CLICK</button>}
         siteName="France Chaleur Urbaine"
