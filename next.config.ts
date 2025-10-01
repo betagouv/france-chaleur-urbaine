@@ -22,8 +22,8 @@ const configFunctions = [
       project: 'fcu-prod',
       url: 'https://sentry.incubateur.net/',
       // do not exit if the build fails to interact with the sentry server
-      errorHandler: (err, invokeErr, compilation) => {
-        compilation.warnings.push('Sentry CLI Plugin: ' + err.message);
+      errorHandler: (err, _invokeErr, compilation) => {
+        compilation.warnings.push(`Sentry CLI Plugin: ${err.message}`);
       },
     },
     {
@@ -134,9 +134,6 @@ const nextConfig: NextConfig = {
   },
   assetPrefix: isGithubCI ? '/france-chaleur-urbaine/' : undefined,
   basePath: isGithubCI ? '/france-chaleur-urbaine' : undefined,
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
   turbopack: {
     rules: {

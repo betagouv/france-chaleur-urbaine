@@ -1,12 +1,12 @@
-import { existsSync } from 'fs';
-import { readFile } from 'fs/promises';
-
+import { existsSync } from 'node:fs';
+import { readFile } from 'node:fs/promises';
+import { allDatabaseTables } from '@cli/bootstrap/tables';
+import { refreshStatistics } from '@cli/stats/refresh';
 import { createCommand, InvalidArgumentError } from '@commander-js/extra-typings';
 import { genSalt, hash } from 'bcryptjs';
 import prompts from 'prompts';
 import XLSX from 'xlsx';
 import { z } from 'zod';
-
 import { registerAppCommands } from '@/modules/app/commands';
 import { registerJobsCommands } from '@/modules/jobs/commands';
 import { registerOptimizationCommands } from '@/modules/optimization/commands';
@@ -28,13 +28,11 @@ import { userRoles } from '@/types/enum/UserRole';
 import { fetchJSON } from '@/utils/network';
 import { runBash, runCommand } from '@/utils/system';
 import { sleep } from '@/utils/time';
-import { allDatabaseTables } from '@cli/bootstrap/tables';
-import { refreshStatistics } from '@cli/stats/refresh';
 
 import { type KnownAirtableBase, knownAirtableBases } from './airtable/bases';
 import { createModificationsReseau } from './airtable/create-modifications-reseau';
 import { fetchBaseSchema } from './airtable/dump-schema';
-import dataImportManager, { dataImportAdapters, type DataImportName } from './data-import';
+import dataImportManager, { type DataImportName, dataImportAdapters } from './data-import';
 import { upsertFixedSimulateurData } from './simulateur/import';
 
 const program = createCommand();
@@ -234,7 +232,9 @@ program
     logger.info(`${res.length} résultats:`);
     logger.info('Code INSEE | Nom');
     logger.info('-----------|------------------');
-    res.forEach((r) => logger.info(`${r.insee_com?.padEnd(10)} | ${r.nom}`));
+    res.forEach((r) => {
+      logger.info(`${r.insee_com?.padEnd(10)} | ${r.nom}`);
+    });
   });
 
 program
@@ -327,12 +327,12 @@ program
 
     // maj réseaux de chaleur selon id fcu
     for (const [id_fcu, tags] of Object.entries(tagsByIDFCU)) {
-      await kdb.updateTable('reseaux_de_chaleur').set({ tags }).where('id_fcu', '=', parseInt(id_fcu)).execute();
+      await kdb.updateTable('reseaux_de_chaleur').set({ tags }).where('id_fcu', '=', parseInt(id_fcu, 10)).execute();
     }
 
     // maj réseaux en construction selon id fcu
     for (const [id_fcu_futur, tags] of Object.entries(tagsByIDFCUFutur)) {
-      await kdb.updateTable('zones_et_reseaux_en_construction').set({ tags }).where('id_fcu', '=', parseInt(id_fcu_futur)).execute();
+      await kdb.updateTable('zones_et_reseaux_en_construction').set({ tags }).where('id_fcu', '=', parseInt(id_fcu_futur, 10)).execute();
     }
     console.info('Tags importés avec succès');
   });
@@ -493,7 +493,7 @@ program
       : '--out-file ./src/server/db/kysely/database.ts --exclude-pattern="(public.spatial_ref_sys|topology.*|tiger.*|public.geography_columns|public.geometry_columns)"';
     await runBash(`pnpm kysely-codegen --numeric-parser number --env-file="./.env.local" --log-level=error ${patternOptions}`);
     if (!single) {
-      await runBash('pnpm prettier --write ./src/server/db/kysely/database.ts');
+      await runBash('pnpm lint:fix:file ./src/server/db/kysely/database.ts');
     }
   });
 
