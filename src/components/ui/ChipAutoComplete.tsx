@@ -247,7 +247,7 @@ const ChipAutoComplete = (rawProps: ChipAutoCompleteProps) => {
           </Tooltip>
         ) : (
           <Tooltip title={`Revoir la suggestion (${props.suggestedValue})`}>
-            <button onClick={resetValue} className="-mt-0.5 p-0.5 hover:bg-gray-100 rounded-sm">
+            <button type="button" onClick={resetValue} className="-mt-0.5 p-0.5 hover:bg-gray-100 rounded-sm">
               <Icon name="fr-icon-refresh-line" size="xs" color="warning" />
             </button>
           </Tooltip>

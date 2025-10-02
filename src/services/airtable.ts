@@ -45,7 +45,6 @@ const formatStructureToAirtable: (structure: string, companyType?: string, deman
           default:
             return structure;
         }
-        break;
       default:
         return structure;
     }

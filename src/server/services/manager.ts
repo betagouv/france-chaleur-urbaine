@@ -220,8 +220,7 @@ const newDemands = async (users: FullUser[]) => {
 
   for (const gestionnaire in groupedDemands) {
     const gestionnaireUsers = groupedUsers[gestionnaire] || [];
-    for (let i = 0; i < gestionnaireUsers.length; i++) {
-      const email = gestionnaireUsers[i];
+    for (const email of gestionnaireUsers) {
       if (!sent.includes(email)) {
         await sendEmailTemplate('new-demands', { email, id: 'unknown' }, { demands: groupedDemands[gestionnaire].length });
         sent.push(email);
@@ -249,8 +248,7 @@ const oldDemands = async (users: FullUser[]) => {
 
   for (const gestionnaire in groupedDemands) {
     const gestionnaireUsers = groupedUsers[gestionnaire] || [];
-    for (let i = 0; i < gestionnaireUsers.length; i++) {
-      const email = gestionnaireUsers[i];
+    for (const email of gestionnaireUsers) {
       if (!sent.includes(email)) {
         await sendEmailTemplate('old-demands', { email, id: 'unknown' });
         sent.push(email);
@@ -300,8 +298,7 @@ export const updateRelanceAnswer = async (id: string, relanced: boolean) => {
  */
 export const dailyRelanceMail = async () => {
   const demands = await getAllToRelanceDemands();
-  for (let i = 0; i < demands.length; i++) {
-    const demand = demands[i];
+  for (const demand of demands) {
     const relanced = demand['Relance envoyée'];
     const uuid = uuidv4();
     await base(Airtable.DEMANDES).update(demand.id, {
