@@ -789,8 +789,10 @@ const Graph: React.FC<GraphProps> = ({
         </div>
         <Notice size="sm" classes={{ title: 'font-normal! text-sm!' }}>
           {exportSheets ? (
-            <>En cas d'utilisation de l'image ou des données exportées, un lien vers le comparateur en ligne doit obligatoirement être
-              apposé à proximité de l'image ou des données utilisées.</>
+            <>
+              En cas d'utilisation de l'image ou des données exportées, un lien vers le comparateur en ligne doit obligatoirement être
+              apposé à proximité de l'image ou des données utilisées.
+            </>
           ) : (
             <>
               En cas d’utilisation de l’<strong>image exportée</strong>, un lien vers le comparateur en ligne doit obligatoirement être

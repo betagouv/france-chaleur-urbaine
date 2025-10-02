@@ -27,9 +27,9 @@ const layersConf = [
   {
     iconColor: batimentsRaccordesReseauxDeFroidColor,
     id: 'batimentsRaccordesReseauxFroid',
-  layerConfKey: 'batimentsRaccordesReseauxFroid',
-  sourceLayer: 'batiments_raccordes_reseaux_froid',
-},
+    layerConfKey: 'batimentsRaccordesReseauxFroid',
+    sourceLayer: 'batiments_raccordes_reseaux_froid',
+  },
 ] as const satisfies readonly LayerConf[];
 
 export const batimentsRaccordesReseauxChaleurFroidLayersSpec = [
@@ -85,9 +85,9 @@ function buildLayerAndHoverLayer<LayerId extends string>(
       },
       'source-layer': conf.sourceLayer,
       type: 'symbol',
-    unselectable: true,
-  },
-] as const satisfies readonly MapLayerSpecification[];
+      unselectable: true,
+    },
+  ] as const satisfies readonly MapLayerSpecification[];
 }
 
 const secteurBatimentRaccordeToLabels = {

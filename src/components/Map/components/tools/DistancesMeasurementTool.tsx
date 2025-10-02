@@ -192,46 +192,46 @@ const DistancesMeasurementTool: React.FC = () => {
 
   return (
     <Box display="flex" flexDirection="column" gap="16px">
-        <Box>
-          <Title>Mesurer une distance</Title>
+      <Box>
+        <Title>Mesurer une distance</Title>
 
-          <Text size="xs" fontStyle="italic">
-            Pour mesurer une distance, cliquez sur 2 points ou plus sur la carte, puis <strong>double-cliquez</strong> sur le dernier point
-            ou <strong>appuyez sur la touche entrée</strong> pour finaliser le tracé.
-          </Text>
-        </Box>
+        <Text size="xs" fontStyle="italic">
+          Pour mesurer une distance, cliquez sur 2 points ou plus sur la carte, puis <strong>double-cliquez</strong> sur le dernier point ou{' '}
+          <strong>appuyez sur la touche entrée</strong> pour finaliser le tracé.
+        </Text>
+      </Box>
 
-        {displayedFeatures.length > 0 && <Divider my="1v" />}
-        {displayedFeatures.map((feature) => (
-          <Fragment key={feature.id}>
-            <MesureFeatureListItem
-              feature={feature}
-              onColorUpdate={(color) => updateMeasurementColor(feature.id, color)}
-              onDelete={() => deleteMeasurement(feature.id)}
-              disableDeleteButton={isDrawing}
-            />
-            <Divider my="1v" />
-          </Fragment>
-        ))}
+      {displayedFeatures.length > 0 && <Divider my="1v" />}
+      {displayedFeatures.map((feature) => (
+        <Fragment key={feature.id}>
+          <MesureFeatureListItem
+            feature={feature}
+            onColorUpdate={(color) => updateMeasurementColor(feature.id, color)}
+            onDelete={() => deleteMeasurement(feature.id)}
+            disableDeleteButton={isDrawing}
+          />
+          <Divider my="1v" />
+        </Fragment>
+      ))}
 
-        {showCancelButton && (
-          <Button priority="secondary" iconId="fr-icon-close-line" onClick={cancelMeasurement}>
-            Annuler le tracé
-          </Button>
-        )}
-        {showAddButton && (
-          <Button
-            priority="secondary"
-            iconId="fr-icon-add-line"
-            onClick={() => {
-              trackEvent('Carto|Mesure de distance|Ajouter un tracé');
-              startMeasurement();
-            }}
-            disabled={!mapLayersLoaded}
-          >
-            Ajouter un tracé
-          </Button>
-        )}
+      {showCancelButton && (
+        <Button priority="secondary" iconId="fr-icon-close-line" onClick={cancelMeasurement}>
+          Annuler le tracé
+        </Button>
+      )}
+      {showAddButton && (
+        <Button
+          priority="secondary"
+          iconId="fr-icon-add-line"
+          onClick={() => {
+            trackEvent('Carto|Mesure de distance|Ajouter un tracé');
+            startMeasurement();
+          }}
+          disabled={!mapLayersLoaded}
+        >
+          Ajouter un tracé
+        </Button>
+      )}
     </Box>
   );
 };
@@ -333,7 +333,7 @@ export const distancesMeasurementLayers = [
         type: 'FeatureCollection',
       },
       type: 'geojson',
+    },
+    sourceId: distancesMeasurementLabelsSourceId,
   },
-  sourceId: distancesMeasurementLabelsSourceId,
-},
 ] as const satisfies readonly MapSourceLayersSpecification[];

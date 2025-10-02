@@ -119,6 +119,7 @@
         "useExhaustiveDependencies": "off",
         "useHookAtTopLevel": "error",
         "useIsNan": "error",
+        "useUniqueElementIds": "off", // désactivé car souvent utile
         "useValidForDirection": "error",
         "useValidTypeof": "error",
         "useYield": "error"

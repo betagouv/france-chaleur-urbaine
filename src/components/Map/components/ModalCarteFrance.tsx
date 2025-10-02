@@ -17,12 +17,12 @@ import CarteFrance, { type DataByArea } from './CarteFrance';
 import {
   BigBlueNumber,
   BigGreyNumber,
+  Bin as BinComponent,
   BlackNumber,
   BlackNumbersLine,
   BlackText,
   BlueNumber,
   BlueText,
-  Bin as BinComponent,
   DataLink,
   DistanceLineText,
   ExtraBigBlueText,

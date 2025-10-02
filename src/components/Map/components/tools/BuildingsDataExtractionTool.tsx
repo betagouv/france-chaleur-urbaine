@@ -215,121 +215,121 @@ const BuildingsDataExtractionTool: React.FC = () => {
 
   return (
     <Box display="flex" flexDirection="column" gap="16px">
-        <Box>
-          <Title>Extraire des données sur les bâtiments</Title>
+      <Box>
+        <Title>Extraire des données sur les bâtiments</Title>
 
-          <Text size="xs" fontStyle="italic">
-            Vous pouvez extraire les adresses et nombre de logements des bâtiments à chauffage collectif gaz ou fioul, ainsi que les
-            consommations de gaz à l'adresse, sur la zone de votre choix.
-          </Text>
-          <Text size="xs" fontStyle="italic" mt="1w">
-            Pour définir une zone, cliquez sur au moins 3 points sur la carte. <strong>Double-cliquez</strong> sur le dernier point ou{' '}
-            <strong>appuyez sur la touche entrée</strong> pour finaliser la zone.
-          </Text>
+        <Text size="xs" fontStyle="italic">
+          Vous pouvez extraire les adresses et nombre de logements des bâtiments à chauffage collectif gaz ou fioul, ainsi que les
+          consommations de gaz à l'adresse, sur la zone de votre choix.
+        </Text>
+        <Text size="xs" fontStyle="italic" mt="1w">
+          Pour définir une zone, cliquez sur au moins 3 points sur la carte. <strong>Double-cliquez</strong> sur le dernier point ou{' '}
+          <strong>appuyez sur la touche entrée</strong> pour finaliser la zone.
+        </Text>
+      </Box>
+
+      {areaHasSelfIntersections && (
+        <Alert
+          severity="error"
+          small
+          description="La zone que vous avez dessinée n'est pas valide car elle présente des intersections (les segments se croisent). Veuillez ajuster la zone pour éviter que les segments ne se croisent."
+        />
+      )}
+
+      {areaSize > clientConfig.summaryAreaSizeLimit && (
+        <Alert
+          severity="error"
+          small
+          description={
+            <>
+              La zone définie est trop grande ({areaSize.toFixed(2)} km²), veuillez réduire la taille de recherche (maximum{' '}
+              {clientConfig.summaryAreaSizeLimit} km²). Si vous avez besoin de statistiques sur une zone élargie ou plus précise, n'hésitez
+              pas à{' '}
+              <a href={`mailto:${clientConfig.contactEmail}`} target="_blank" rel="noopener noreferrer">
+                nous contacter
+              </a>
+            </>
+          }
+        />
+      )}
+
+      {isLoading && (
+        <Box display="grid" placeContent="center">
+          <Oval height={60} width={60} color="#000091" secondaryColor="#0000ee" />
         </Box>
+      )}
 
-        {areaHasSelfIntersections && (
-          <Alert
-            severity="error"
-            small
-            description="La zone que vous avez dessinée n'est pas valide car elle présente des intersections (les segments se croisent). Veuillez ajuster la zone pour éviter que les segments ne se croisent."
-          />
-        )}
-
-        {areaSize > clientConfig.summaryAreaSizeLimit && (
-          <Alert
-            severity="error"
-            small
-            description={
-              <>
-                La zone définie est trop grande ({areaSize.toFixed(2)} km²), veuillez réduire la taille de recherche (maximum{' '}
-                {clientConfig.summaryAreaSizeLimit} km²). Si vous avez besoin de statistiques sur une zone élargie ou plus précise,
-                n'hésitez pas à{' '}
-                <a href={`mailto:${clientConfig.contactEmail}`} target="_blank" rel="noopener noreferrer">
-                  nous contacter
-                </a>
-              </>
-            }
-          />
-        )}
-
-        {isLoading && (
-          <Box display="grid" placeContent="center">
-            <Oval height={60} width={60} color="#000091" secondaryColor="#0000ee" />
+      {summary && (
+        <Box fontSize="14px" display="flex" flexDirection="column" gap="12px">
+          <Box display="flex">
+            <img src="/icons/picto-fioul-noir.svg" alt="" />
+            <Text ml="1w">Bâtiments à chauffage collectif fioul</Text>
           </Box>
-        )}
-
-        {summary && (
-          <Box fontSize="14px" display="flex" flexDirection="column" gap="12px">
-            <Box display="flex">
-              <img src="/icons/picto-fioul-noir.svg" alt="" />
-              <Text ml="1w">Bâtiments à chauffage collectif fioul</Text>
+          <Box pl="4w">
+            <Box>
+              <strong>{summary.batimentsChauffageCollectifFioul.nbTotal}</strong> Total
             </Box>
-            <Box pl="4w">
-              <Box>
-                <strong>{summary.batimentsChauffageCollectifFioul.nbTotal}</strong> Total
-              </Box>
-              <Box>
-                <strong>{summary.batimentsChauffageCollectifFioul.nbProchesRéseau}</strong> Proche réseau (&lt;50m)
-              </Box>
-            </Box>
-
-            <Box display="flex">
-              <img src="/icons/picto-gaz-bleu.svg" alt="" />
-              <Text ml="1w">Bâtiments à chauffage collectif gaz</Text>
-            </Box>
-            <Box pl="4w">
-              <Box>
-                <strong>{summary.batimentsChauffageCollectifGaz.nbTotal}</strong> Total
-              </Box>
-              <Box>
-                <strong>{summary.batimentsChauffageCollectifGaz.nbProchesRéseau}</strong> Proche réseau (&lt;50m)
-              </Box>
-            </Box>
-
-            <Box display="flex">
-              <img src="/icons/picto-gaz-bleu.svg" alt="" />
-              <Text ml="1w">Consommations de gaz</Text>
-            </Box>
-            <Box pl="4w">
-              <Box>
-                <strong>{summary.consommationGaz.cumulTotal}</strong> Total
-              </Box>
-              <Box>
-                <strong>{summary.consommationGaz.cumulProchesRéseau}</strong> Proche réseau (&lt;50m)
-              </Box>
-            </Box>
-
-            <Box display="flex">
-              <img src="/icons/picto-reseaux-vert.svg" alt="" />
-              <Text ml="1w">Réseaux de chaleur</Text>
-            </Box>
-            <Box pl="4w">
-              <Box>
-                <strong>{summary.longueurRéseauxDeChaleur.toFixed(2)}</strong> km
-              </Box>
+            <Box>
+              <strong>{summary.batimentsChauffageCollectifFioul.nbProchesRéseau}</strong> Proche réseau (&lt;50m)
             </Box>
           </Box>
-        )}
 
-        {showClearButton && (
-          <Button
-            priority="secondary"
-            iconId="fr-icon-delete-bin-line"
-            className="btn-full-width"
-            onClick={() => {
-              trackEvent('Carto|Extraction données batiments|Effacer');
-              clearSummary();
-            }}
-          >
-            Effacer
-          </Button>
-        )}
-        {summary && (
-          <Button priority="tertiary" iconId="fr-icon-download-line" className="btn-full-width" onClick={exportSummary}>
-            Exporter les données
-          </Button>
-        )}
+          <Box display="flex">
+            <img src="/icons/picto-gaz-bleu.svg" alt="" />
+            <Text ml="1w">Bâtiments à chauffage collectif gaz</Text>
+          </Box>
+          <Box pl="4w">
+            <Box>
+              <strong>{summary.batimentsChauffageCollectifGaz.nbTotal}</strong> Total
+            </Box>
+            <Box>
+              <strong>{summary.batimentsChauffageCollectifGaz.nbProchesRéseau}</strong> Proche réseau (&lt;50m)
+            </Box>
+          </Box>
+
+          <Box display="flex">
+            <img src="/icons/picto-gaz-bleu.svg" alt="" />
+            <Text ml="1w">Consommations de gaz</Text>
+          </Box>
+          <Box pl="4w">
+            <Box>
+              <strong>{summary.consommationGaz.cumulTotal}</strong> Total
+            </Box>
+            <Box>
+              <strong>{summary.consommationGaz.cumulProchesRéseau}</strong> Proche réseau (&lt;50m)
+            </Box>
+          </Box>
+
+          <Box display="flex">
+            <img src="/icons/picto-reseaux-vert.svg" alt="" />
+            <Text ml="1w">Réseaux de chaleur</Text>
+          </Box>
+          <Box pl="4w">
+            <Box>
+              <strong>{summary.longueurRéseauxDeChaleur.toFixed(2)}</strong> km
+            </Box>
+          </Box>
+        </Box>
+      )}
+
+      {showClearButton && (
+        <Button
+          priority="secondary"
+          iconId="fr-icon-delete-bin-line"
+          className="btn-full-width"
+          onClick={() => {
+            trackEvent('Carto|Extraction données batiments|Effacer');
+            clearSummary();
+          }}
+        >
+          Effacer
+        </Button>
+      )}
+      {summary && (
+        <Button priority="tertiary" iconId="fr-icon-download-line" className="btn-full-width" onClick={exportSummary}>
+          Exporter les données
+        </Button>
+      )}
     </Box>
   );
 };
