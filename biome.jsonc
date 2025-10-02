@@ -158,7 +158,7 @@
         "noDuplicateParameters": "error",
         "noEmptyBlockStatements": "error",
         "noEmptyInterface": "error",
-        "noExplicitAny": "warn",
+        "noExplicitAny": "off", // désactivé car trop contraignant (surtout pour la migration)
         "noFallthroughSwitchClause": "error",
         "noFunctionAssign": "error",
         "noGlobalAssign": "error",
