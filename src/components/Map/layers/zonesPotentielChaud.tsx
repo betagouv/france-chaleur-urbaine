@@ -71,7 +71,7 @@ export const zonesPotentielChaudLayersSpec = [
     },
     sourceId: 'zonesPotentielFortChaud',
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];
 
 type ZonePotentielChaud = {
   fid: number;

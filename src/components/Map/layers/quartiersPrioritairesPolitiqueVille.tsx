@@ -72,7 +72,7 @@ export const quartiersPrioritairesPolitiqueVilleLayersSpec = [
     },
     sourceId: 'quartiersPrioritairesPolitiqueVille2024',
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];
 
 // données 2015 adaptées pour correspondre au format 2024
 type QuartierPrioritairePolitiqueVille2024 = {

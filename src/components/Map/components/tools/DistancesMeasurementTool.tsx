@@ -335,7 +335,7 @@ export const distancesMeasurementLayers = [
         type: 'FeatureCollection',
       },
       type: 'geojson',
-    },
-    sourceId: distancesMeasurementLabelsSourceId,
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+  sourceId: distancesMeasurementLabelsSourceId,
+},
+] as const satisfies readonly MapSourceLayersSpecification[];

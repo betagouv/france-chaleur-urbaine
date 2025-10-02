@@ -31,7 +31,7 @@ export const demandesEligibiliteLayersSpec = [
     },
     sourceId: 'demands',
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];
 
 export type DemandeEligibilite = {
   id: string;

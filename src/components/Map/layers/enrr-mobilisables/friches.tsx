@@ -36,7 +36,7 @@ export const enrrMobilisablesFrichesLayersSpec = [
     },
     sourceId: 'enrrMobilisables-friches',
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];
 
 export type SolaireThermiqueFriche = {
   GmlID: string;

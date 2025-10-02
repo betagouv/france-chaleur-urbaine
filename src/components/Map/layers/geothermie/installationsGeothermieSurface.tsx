@@ -122,7 +122,7 @@ export const installationsGeothermieSurfaceLayersSpec = [
     },
     sourceId: 'installationsGeothermieSurfaceEchangeursOuverts',
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];
 
 type InstallationGeothermieSurfaceEchangeursOuverts = {
   bss_rel: number;

@@ -71,7 +71,7 @@ export const zonesPotentielFroidLayersSpec = [
     },
     sourceId: 'zonesPotentielFortFroid',
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];
 
 type ZonePotentielFroid = {
   fid: number;

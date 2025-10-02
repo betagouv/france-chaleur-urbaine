@@ -72,7 +72,7 @@ const ReseauxDeChaleurFilters: React.FC<ReseauxDeChaleurFiltersProps> = ({ regio
             });
             return acc;
           },
-          [] as Array<{ label: string; nativeInputProps: { checked: boolean; onChange: () => void } }>
+          [] as { label: string; nativeInputProps: { checked: boolean; onChange: () => void } }[]
         )}
       />
       <UrlStateAccordion
@@ -125,7 +125,7 @@ const ReseauxDeChaleurFilters: React.FC<ReseauxDeChaleurFiltersProps> = ({ regio
                   });
                   return acc;
                 },
-                [] as Array<{ label: string; nativeInputProps: { checked: boolean; onChange: () => void } }>
+                [] as { label: string; nativeInputProps: { checked: boolean; onChange: () => void } }[]
               )}
           />
         </>
@@ -156,7 +156,7 @@ const ReseauxDeChaleurFilters: React.FC<ReseauxDeChaleurFiltersProps> = ({ regio
                 });
                 return acc;
               },
-              [] as Array<{ label: string; nativeInputProps: { checked: boolean; onChange: () => void } }>
+              [] as { label: string; nativeInputProps: { checked: boolean; onChange: () => void } }[]
             )}
           />
         </>
@@ -240,7 +240,7 @@ const ReseauxDeChaleurFilters: React.FC<ReseauxDeChaleurFiltersProps> = ({ regio
               router.push(
                 `/carte?rdc_filters=${filtersQueryParam}&tabId=reseaux/filtres${
                   filters.regions.length && regionsList
-                    ? `&zoom=${bestZoomForRegions}&coord=` + regionsList.find(({ name }) => name === filters.regions[0])?.coord
+                    ? `&zoom=${bestZoomForRegions}&coord=${regionsList.find(({ name }) => name === filters.regions[0])?.coord}`
                     : ''
                 }`
               )

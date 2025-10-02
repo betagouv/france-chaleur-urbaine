@@ -95,7 +95,7 @@ export const adressesEligiblesLayersSpec = [
     },
     sourceId: 'adressesEligibles',
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];
 
 export type AdresseEligible = {
   id: string;

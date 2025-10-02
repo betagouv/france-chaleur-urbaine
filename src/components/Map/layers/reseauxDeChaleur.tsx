@@ -1,5 +1,4 @@
 import Tag from '@codegouvfr/react-dsfr/Tag';
-import React from 'react';
 
 import Button from '@/components/ui/Button';
 import Tooltip from '@/components/ui/Tooltip';
@@ -143,4 +142,4 @@ export const reseauxDeChaleurLayersSpec = [
     },
     sourceId: 'network',
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];

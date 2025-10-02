@@ -13,12 +13,12 @@ export type TrelloCard = {
   due: string | null;
   dateLastActivity: string;
   labels: TrelloLabel[];
-  attachments: Array<{
+  attachments: {
     id: string;
     name: string;
     url: string;
     fileName: string;
-  }>;
+  }[];
 };
 
 export type TrelloLabel = {

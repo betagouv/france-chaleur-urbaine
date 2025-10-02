@@ -36,7 +36,7 @@ export const enrrMobilisablesParkingsLayersSpec = [
     },
     sourceId: 'enrrMobilisables-parkings',
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];
 
 type SolaireThermiqueParking = {
   GmlID: string;

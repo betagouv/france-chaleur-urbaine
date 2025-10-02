@@ -74,7 +74,7 @@ export const testsAdressesLayersSpec = [
     },
     sourceId: 'testsAdresses',
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];
 
 export type TestAdresse = {
   id: string;

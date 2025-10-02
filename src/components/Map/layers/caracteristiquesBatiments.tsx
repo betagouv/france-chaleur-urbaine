@@ -82,7 +82,7 @@ export const caracteristiquesBatimentsLayersSpec = [
     },
     sourceId: 'buildings',
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];
 
 function Popup(caracteristiqueBatiment: EnergySummary, { Property, Title, TwoColumns }: PopupStyleHelpers) {
   return (

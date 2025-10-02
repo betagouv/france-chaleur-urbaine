@@ -689,8 +689,8 @@ export type QuickFilterPreset<Data> = {
   label: React.ReactNode;
   valueSuffix?: React.ReactNode;
   getStat?: (data: Data[]) => number;
-  filters: Array<{
+  filters: {
     id: DotToUnderscore<FlattenKeys<Data>>;
     value: boolean | number | [number, number] | Record<string, boolean>;
-  }>;
+  }[];
 };

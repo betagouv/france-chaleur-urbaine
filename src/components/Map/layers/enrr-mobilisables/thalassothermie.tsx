@@ -27,7 +27,7 @@ export const enrrMobilisablesThalassothermieLayersSpec = [
     },
     sourceId: 'enrrMobilisables-thalassothermie',
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];
 
 type Thalassothermie = {
   fid: number;

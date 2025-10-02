@@ -108,4 +108,4 @@ export const reseauxEnConstructionLayersSpec = [
     },
     sourceId: 'futurNetwork',
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];

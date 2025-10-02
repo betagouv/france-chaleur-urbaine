@@ -60,7 +60,7 @@ export const reseauxDeFroidLayersSpec = [
     },
     sourceId: 'coldNetwork',
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];
 
 function Popup(reseauDeFroid: NetworkSummary, { Property, Title, TwoColumns }: PopupStyleHelpers) {
   return (

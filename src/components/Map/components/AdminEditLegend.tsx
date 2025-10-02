@@ -24,7 +24,9 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, children }: SimpleMapLe
           legendTitle={legendTitle}
           showFilters={false}
           filtersVisible={false}
-          setFiltersVisible={() => {}}
+          setFiltersVisible={() => {
+            // No-op in admin edit mode
+          }}
           withComptePro={false}
           showHeader={false}
         />

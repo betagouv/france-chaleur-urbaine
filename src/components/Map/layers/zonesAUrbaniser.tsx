@@ -57,4 +57,4 @@ export const zonesAUrbaniserLayersSpec = [
     },
     sourceId: 'zonesAUrbaniser',
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];

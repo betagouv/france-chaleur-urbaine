@@ -60,4 +60,4 @@ export const ressourcesGeothermalesNappesLayersSpec = [
     },
     sourceId: 'ressourcesGeothermalesNappes',
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];

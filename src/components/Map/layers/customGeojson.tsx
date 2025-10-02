@@ -65,7 +65,7 @@ export const customGeojsonLayersSpec = [
     },
     sourceId: 'customGeojson',
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];
 
 function Popup(data: any, { Property, Title, TwoColumns }: PopupStyleHelpers) {
   return (

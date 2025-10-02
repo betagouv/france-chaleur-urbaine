@@ -66,7 +66,7 @@ export const installationsGeothermieProfondeLayersSpec = [
     },
     sourceId: 'installationsGeothermieProfonde',
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];
 
 // generated with pnpm cli utils:geojson-to-ts mon-fichier-source.geojson
 type InstallationGeothermieProfonde = {

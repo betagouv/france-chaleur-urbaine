@@ -31,7 +31,7 @@ export const enrrMobilisablesChaleurFataleLayerSymbols = [
     key: 'enrr_mobilisables_unites_incineration',
     url: '/icons/enrr_mobilisables_unites_incineration.png',
   },
-] as const satisfies ReadonlyArray<LayerSymbolSpecification>;
+] as const satisfies readonly LayerSymbolSpecification[];
 
 type EnrrMobilisablesChaleurFataleImage = (typeof enrrMobilisablesChaleurFataleLayerSymbols)[number]['key'];
 
@@ -79,7 +79,7 @@ const layersConf = [
     layerConfKey: 'showUnitesDIncineration',
     popup: PopupUniteDIncineration,
   },
-] as const satisfies ReadonlyArray<ChaleurFataleLayerConf>;
+] as const satisfies readonly ChaleurFataleLayerConf[];
 
 export const enrrMobilisablesChaleurFataleLayersSpec = [
   {
@@ -94,7 +94,7 @@ export const enrrMobilisablesChaleurFataleLayersSpec = [
     },
     sourceId: 'enrrMobilisables',
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];
 
 /**
  * Pour chaque layer, construit 2 couches identiques, une pour voir les données,
@@ -136,7 +136,7 @@ function buildLayerAndHoverLayer<LayerId extends string>(
       type: 'symbol',
       unselectable: true,
     },
-  ] as const satisfies ReadonlyArray<MapLayerSpecification>;
+  ] as const satisfies readonly MapLayerSpecification[];
 }
 
 export interface Datacenter {

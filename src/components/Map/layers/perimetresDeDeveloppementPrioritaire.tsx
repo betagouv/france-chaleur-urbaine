@@ -25,4 +25,4 @@ export const perimetresDeDeveloppementPrioritaireLayersSpec = [
     },
     sourceId: 'zoneDP',
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];

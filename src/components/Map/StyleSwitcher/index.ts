@@ -75,7 +75,7 @@ export class MapboxStyleSwitcherControl implements IControl {
         if (srcElement.classList.contains('active')) {
           return;
         }
-        if (this.events && this.events.onOpen && this.events.onOpen(event)) {
+        if (this.events?.onOpen?.(event)) {
           return;
         }
         const style = JSON.parse(srcElement.dataset.uri!);
@@ -85,7 +85,7 @@ export class MapboxStyleSwitcherControl implements IControl {
           elms[0].classList.remove('active');
         }
         srcElement.classList.add('active');
-        if (this.events && this.events.onChange && this.events.onChange(event, style)) {
+        if (this.events?.onChange?.(event, style)) {
           return;
         }
       });
@@ -97,7 +97,7 @@ export class MapboxStyleSwitcherControl implements IControl {
     this.styleButton.classList.add('maplibregl-ctrl-icon');
     this.styleButton.classList.add('maplibregl-style-switcher');
     this.styleButton.addEventListener('click', (event) => {
-      if (this.events && this.events.onSelect && this.events.onSelect(event)) {
+      if (this.events?.onSelect?.(event)) {
         return;
       }
       this.openModal();

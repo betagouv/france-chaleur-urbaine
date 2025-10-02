@@ -47,7 +47,7 @@ export const communesFortPotentielPourCreationReseauxChaleurLayersSpec = [
     },
     sourceId: 'communesFortPotentielPourCreationReseauxChaleur',
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];
 
 type CommuneFortPotentielPourCreationReseauxChaleur = {
   id: number;

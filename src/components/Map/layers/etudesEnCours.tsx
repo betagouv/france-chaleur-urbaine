@@ -40,7 +40,7 @@ export const etudesEnCoursLayersSpec = [
     },
     sourceId: 'etudesEnCours',
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];
 
 function Popup(
   { status, maitre_ouvrage, launched_at, communes }: FrontendType<EtudesEnCours>,

@@ -160,7 +160,7 @@ export const typeChauffageBatimentsCollectifsLayersSpec = [
     },
     sourceId: 'energy',
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];
 
 /**
  * Construit 2 couches identiques, une pour voir les données,

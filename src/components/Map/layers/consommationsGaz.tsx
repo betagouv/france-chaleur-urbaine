@@ -109,7 +109,7 @@ export const consommationsGazLayersSpec = [
     },
     sourceId: 'gas',
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];
 
 function Popup(consommationGaz: GasSummary, { Property, Title, TwoColumns }: PopupStyleHelpers) {
   return (

@@ -146,7 +146,7 @@ export const besoinsEnChaleurLayersSpec = [
     },
     sourceId: 'besoinsEnChaleur',
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];
 
 // used by the legend
 export const besoinsEnChaleurIntervals: LegendInterval[] = [

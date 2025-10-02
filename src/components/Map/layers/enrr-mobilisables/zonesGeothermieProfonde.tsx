@@ -25,4 +25,4 @@ export const enrrMobilisablesZonesGeothermieProfondeLayersSpec = [
     },
     sourceId: 'enrrMobilisables-zonesGeothermieProfonde',
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];

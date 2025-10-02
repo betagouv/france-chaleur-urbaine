@@ -3,7 +3,7 @@ import type { Timestamp } from '@/server/db/kysely';
 /**
  * Get all keys and nested keys of an object separated by dots, filtered by value type.
  */
-export type FlattenKeys<Type, ValueType = any> = Type extends Array<any>
+export type FlattenKeys<Type, ValueType = any> = Type extends any[]
   ? never
   : Type extends Record<string, any>
     ? InternalFlattenKeys<Type, ValueType>
