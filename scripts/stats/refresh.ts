@@ -96,5 +96,5 @@ const getPourcentageLivraisonsChaleur = async () => {
   const totalAll = Number(totalLivraisonsAll.total) || 0;
   const totalWithTrace = Number(totalLivraisonsWithTrace.total) || 0;
 
-  return totalAll != 0 ? Math.round((totalWithTrace / totalAll) * 100) : 0;
+  return totalAll !== 0 ? Math.round((totalWithTrace / totalAll) * 100) : 0;
 };
