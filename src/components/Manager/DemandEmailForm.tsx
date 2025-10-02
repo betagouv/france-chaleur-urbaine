@@ -38,7 +38,7 @@ function processPlaceholders(value: string, demand: Demand): string {
 
   Object.entries(demand).forEach(([key, val]) => {
     if (processedValue.includes(`{{${key}}}`)) {
-      let formattedValue;
+      let formattedValue: string;
       if (typeof val === 'string') {
         // Check if the string looks like a date
         if (val.match(/^\d{4}-\d{2}-\d{2}/) || val.match(/^\d{2}\/\d{2}\/\d{4}/)) {
@@ -193,10 +193,10 @@ function DemandEmailForm(props: Props) {
                   <Loader size="sm" />
                 </li>
               ) : sentHistory && sentHistory.length > 0 ? (
-                sentHistory.map((item, index) => {
+                sentHistory.map((item) => {
                   const object = item.object;
                   return (
-                    <li key={index} onClick={() => onSelectedEmailChanged(item.email_key as string)} className="cursor-pointer">
+                    <li key={item.email_key} onClick={() => onSelectedEmailChanged(item.email_key as string)} className="cursor-pointer">
                       <Tooltip
                         className="max-w-[600px] min-w-[300px]"
                         title={

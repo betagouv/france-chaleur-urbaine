@@ -22,7 +22,7 @@ import {
   BlackText,
   BlueNumber,
   BlueText,
-  Bin as DataBin,
+  Bin as BinComponent,
   DataLink,
   DistanceLineText,
   ExtraBigBlueText,
@@ -335,11 +335,11 @@ function ModalCarteFrance() {
                       raccordables
                     </LegendTitle>
                     {dataBins?.map((bin, i) => (
-                      <DataBin key={i} color={bin.color}>
+                      <BinComponent key={i} color={bin.color}>
                         {i === 0
                           ? `≥ ${prettyFormatNumber(bin.minValue)}`
                           : `de ${prettyFormatNumber(bin.minValue)} à ${prettyFormatNumber(bin.maxValue)}`}
-                      </DataBin>
+                      </BinComponent>
                     ))}
                   </div>
                   <DataLink href="/data/potentiel_identifie_FCU.xlsx" isExternal>
