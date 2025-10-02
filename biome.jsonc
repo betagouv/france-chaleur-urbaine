@@ -114,7 +114,8 @@
         "noUnusedLabels": "error",
         "noUnusedPrivateClassMembers": "error",
         "noUnusedVariables": "error",
-        "useExhaustiveDependencies": "warn",
+        // Désactivé car trop de faux positifs et corrections manuelles nécessaires pour gérer les cas complexes
+        "useExhaustiveDependencies": "off",
         "useHookAtTopLevel": "error",
         "useIsNan": "error",
         "useValidForDirection": "error",
