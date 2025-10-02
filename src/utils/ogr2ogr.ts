@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/suspicious/noConfusingVoidType: false positive, typescript prefers void */
 import { rename } from 'node:fs/promises';
 import { basename, join } from 'node:path';
 
@@ -25,7 +26,7 @@ export async function ogr2ogrImportGeoJSONToDatabaseTable(
   tableName: keyof DB,
   ogr2ogrOptions: string,
   options: RunCommandOptions = {}
-): Promise<CommandResult | undefined> {
+): Promise<CommandResult | void> {
   let inputFileName = basename(inputFilePath);
   if (serverConfig.USE_DOCKER_GEO_COMMANDS) {
     const randomPrefix = `input_${Math.random().toString(36).substring(2, 10)}_`;
@@ -46,7 +47,7 @@ export async function ogr2ogrExtractGeoJSONFromDatabaseTable(
   tableName: keyof DB,
   outputFilePath: string,
   options: RunCommandOptions = {}
-): Promise<CommandResult | undefined> {
+): Promise<CommandResult | void> {
   await runOgr2ogr(
     `-f GeoJSON ${serverConfig.USE_DOCKER_GEO_COMMANDS ? 'output.geojson' : outputFilePath} ${pgUrlToGdal(serverConfig.DATABASE_URL)} ${tableName} -t_srs EPSG:4326`,
     options
@@ -60,7 +61,7 @@ export async function ogr2ogrConvertToGeoJSON(
   inputFilePath: string,
   outputFilePath: string,
   options: RunCommandOptions = {}
-): Promise<CommandResult | undefined> {
+): Promise<CommandResult | void> {
   let inputFileName = basename(inputFilePath);
   if (serverConfig.USE_DOCKER_GEO_COMMANDS) {
     const randomPrefix = `input_${Math.random().toString(36).substring(2, 10)}_`;

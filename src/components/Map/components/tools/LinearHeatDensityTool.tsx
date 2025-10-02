@@ -83,7 +83,7 @@ const LinearHeatDensityTool: React.FC = () => {
       {
         ...feature,
         properties: {
-          ...features.at(-1)?.properties,
+          ...features.at(-1)!.properties,
           distance: length(feature, { units: 'meters' }),
         },
       },
@@ -144,7 +144,7 @@ const LinearHeatDensityTool: React.FC = () => {
             properties: {
               color: defaultColor,
               distance: length(featureBeingDrawn, { units: 'meters' }),
-            },
+            } as any,
           },
         ];
       }

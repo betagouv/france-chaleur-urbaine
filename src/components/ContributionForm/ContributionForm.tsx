@@ -275,7 +275,7 @@ export const zCommonFormData = z.object({
 
 const zodSchemasByTypeDemande = ObjectKeys(typeDemandeFields).reduce(
   (acc, key) => {
-    acc[key] = typeDemandeFields[key].reduce(
+    (acc[key] as any) = typeDemandeFields[key].reduce(
       (acc2, field) => {
         acc2[field.name] = (field as FieldConfig).schema;
         return acc2;

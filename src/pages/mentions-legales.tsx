@@ -1,5 +1,4 @@
 import type { LegalNotice } from '@incubateur-ademe/legal-pages-react';
-// @ts-expect-error LegalNoticeClient is not exported
 import LegalNoticeClient from '@incubateur-ademe/legal-pages-react/LegalNoticeClient';
 
 const LegalNoticeComponent = LegalNoticeClient as unknown as typeof LegalNotice;

@@ -1,5 +1,4 @@
 import type { PrivacyPolicy } from '@incubateur-ademe/legal-pages-react';
-// @ts-expect-error PrivacyPolicyClient is not exported
 import PrivacyPolicyClient from '@incubateur-ademe/legal-pages-react/PrivacyPolicyClient';
 
 import SimplePage from '@/components/shared/page/SimplePage';

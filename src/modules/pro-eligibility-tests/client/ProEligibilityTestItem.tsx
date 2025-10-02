@@ -393,8 +393,8 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false, className }:
             address: address.ban_address ?? '',
             id: address.id,
             isEligible: address.eligibility_status?.isEligible ?? false,
-            latitude: address.geom?.coordinates[1],
-            longitude: address.geom?.coordinates[0],
+            latitude: address.geom!.coordinates[1],
+            longitude: address.geom!.coordinates[0],
           }) satisfies AdresseEligible
       );
   }, [filteredAddresses]);

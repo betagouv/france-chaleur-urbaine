@@ -241,7 +241,7 @@ const HeadSliceForm = ({
     <>
       <SliceContactFormStyle />
       {withWrapper ? (
-        withWrapper(WrappedChild)
+        withWrapper(WrappedChild as any)
       ) : (
         <Slice theme="grey" bg={bg} bgPos={bgPos} bgColor="#CDE3F0" padding={8}>
           <HeadSliceContainer needGradient={needGradient}>

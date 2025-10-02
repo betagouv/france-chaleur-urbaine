@@ -93,7 +93,6 @@
       "complexity": {
         "noBannedTypes": "error",
         "noUselessCatch": "error",
-        "noUselessConstructor": "error",
         "noUselessEmptyExport": "error",
         "noUselessFragments": "error",
         "noUselessLabel": "error",
