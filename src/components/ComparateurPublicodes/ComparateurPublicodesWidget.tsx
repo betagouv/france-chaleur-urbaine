@@ -44,11 +44,11 @@ const ComparateurPublicodesWidget: React.FC<ComparateurPublicodesWidgetProps> = 
 
       engine.setSituation(
         ObjectEntries(addresseToPublicodesRules).reduce(
-          (acc, [key, infoGetter]) => ({
-            ...acc,
-            [key]: infoGetter(infos) ?? null,
-          }),
-          {}
+          (acc, [key, infoGetter]) => {
+            acc[key] = infoGetter(infos) ?? null;
+            return acc;
+          },
+          {} as Record<string, any>
         )
       );
     };

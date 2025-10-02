@@ -60,24 +60,32 @@ const Configuration: React.FC<ConfigurationProps> = ({ engine, address, onChange
     return null;
   }
 
-  const customSituation = Object.entries(situation).reduce((acc, [key, value]) => {
-    if (engine.isDefaultValue(key as RuleName, value)) {
+  const customSituation = Object.entries(situation).reduce(
+    (acc, [key, value]) => {
+      if (engine.isDefaultValue(key as RuleName, value)) {
+        return acc;
+      }
+
+      acc[key] = value;
       return acc;
-    }
+    },
+    {} as Record<string, any>
+  );
 
-    return { ...acc, [key]: value };
-  }, {});
+  const toBeDisplayedSituation = Object.entries(customSituation).reduce(
+    (acc, [key, situationValue]) => {
+      const label = labels[key];
+      const value = situationValue;
 
-  const toBeDisplayedSituation = Object.entries(customSituation).reduce((acc, [key, situationValue]) => {
-    const label = labels[key];
-    const value = situationValue;
+      if (!label || addresseToPublicodesRulesKeys.includes(key as RuleName)) {
+        return acc;
+      }
 
-    if (!label || addresseToPublicodesRulesKeys.includes(key as RuleName)) {
+      acc[key] = value;
       return acc;
-    }
-
-    return { ...acc, [key]: value };
-  }, {});
+    },
+    {} as Record<string, any>
+  );
 
   const hasToBeDisplayedSituation = Object.keys(toBeDisplayedSituation).length > 0;
 
