@@ -219,7 +219,7 @@ const HeadSliceForm = ({
           </form>
         </>
       ) : (
-        <>{child}</>
+        child
       ),
     [
       address,

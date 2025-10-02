@@ -112,31 +112,29 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
   return (
     <ContactFormWrapper cardMode={cardMode} className={className}>
       {addressData.eligibility?.basedOnCity && !cardMode ? (
-        <>
-          <ContactFormContentWrapper>
-            <ContactFormResultMessage eligible={addressData.eligibility?.cityHasNetwork || addressData.eligibility?.cityHasFuturNetwork}>
-              {addressData.eligibility?.cityHasNetwork
-                ? 'Un réseau de chaleur passe dans cette ville : renseignez une adresse pour pouvoir être mis en relation avec le gestionnaire du réseau.'
-                : addressData.eligibility?.cityHasFuturNetwork
-                  ? 'Un réseau de chaleur passera bientôt dans cette ville : renseignez une adresse pour pouvoir être mis en relation avec le gestionnaire du réseau.'
-                  : "Il n'y a pour le moment pas de réseau de chaleur dans cette ville"}
-            </ContactFormResultMessage>
-            <ContactMapResult>
-              <Map
-                withCenterPin
-                withoutLogo
-                initialCenter={addressData.geoAddress?.geometry.coordinates}
-                initialMapConfiguration={createMapConfiguration({
-                  reseauxDeChaleur: {
-                    show: true,
-                  },
-                  reseauxEnConstruction: true,
-                  zonesDeDeveloppementPrioritaire: true,
-                })}
-              />
-            </ContactMapResult>
-          </ContactFormContentWrapper>
-        </>
+        <ContactFormContentWrapper>
+          <ContactFormResultMessage eligible={addressData.eligibility?.cityHasNetwork || addressData.eligibility?.cityHasFuturNetwork}>
+            {addressData.eligibility?.cityHasNetwork
+              ? 'Un réseau de chaleur passe dans cette ville : renseignez une adresse pour pouvoir être mis en relation avec le gestionnaire du réseau.'
+              : addressData.eligibility?.cityHasFuturNetwork
+                ? 'Un réseau de chaleur passera bientôt dans cette ville : renseignez une adresse pour pouvoir être mis en relation avec le gestionnaire du réseau.'
+                : "Il n'y a pour le moment pas de réseau de chaleur dans cette ville"}
+          </ContactFormResultMessage>
+          <ContactMapResult>
+            <Map
+              withCenterPin
+              withoutLogo
+              initialCenter={addressData.geoAddress?.geometry.coordinates}
+              initialMapConfiguration={createMapConfiguration({
+                reseauxDeChaleur: {
+                  show: true,
+                },
+                reseauxEnConstruction: true,
+                zonesDeDeveloppementPrioritaire: true,
+              })}
+            />
+          </ContactMapResult>
+        </ContactFormContentWrapper>
       ) : (
         <>
           <ContactFormContentWrapper>
