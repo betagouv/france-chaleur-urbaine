@@ -36,7 +36,7 @@ const getAltitudeRange = (departmentId: keyof typeof temperaturesExterieuresDeBa
 };
 
 const upsertAndFixCity = async (city: any, { codesINSEE }: { codesINSEE: any }) => {
-  const departmentId = `${city['Département']}`.padStart(2, '0') as keyof typeof temperaturesExterieuresDeBaseAuNiveauDeLaMer;
+  const departmentId = `${city.Département}`.padStart(2, '0') as keyof typeof temperaturesExterieuresDeBaseAuNiveauDeLaMer;
   const postalCode = `${city['Code postal']}`.padStart(5, '0');
 
   const cityWithCorrectInseeCode = codesINSEE.find((c: any) => c.nom_comm === city.Commune && `${c.code_dept}` === departmentId);
@@ -101,7 +101,7 @@ const upsertDepartments = async (departmentData: any) => {
   for (const dept of departmentData.filter((d: any) => d['Code département'] !== undefined)) {
     const departement_id = `${dept['Code département']}`.padStart(2, '0');
     const dataToInsert = {
-      annee: dept['Année'],
+      annee: dept.Année,
       dju_chaud_moyen: dept['DJU chaud moyen'],
       dju_froid_moyen: dept['DJU froid moyen'],
       id: departement_id,
