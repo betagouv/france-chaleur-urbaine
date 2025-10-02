@@ -74,6 +74,11 @@
   "linter": {
     "enabled": true,
     "rules": {
+      "a11y": {
+        // désactivé pour la migration car trop complexe à implémenter
+        "noStaticElementInteractions": "off",
+        "useKeyWithClickEvents": "off"
+      },
       "complexity": {
         "noBannedTypes": "error",
         "noUselessCatch": "error",
@@ -121,7 +126,8 @@
       },
       "performance": {
         "noAccumulatingSpread": "warn",
-        "noDelete": "error"
+        "noDelete": "error",
+        "noImgElement": "off" // trop contraignant pour le moment (est-ce que <Image fill /> fonctionne comme img ?)
       },
       "recommended": true,
       "security": {

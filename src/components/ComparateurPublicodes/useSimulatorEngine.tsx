@@ -9,7 +9,7 @@ const useSimulatorEngine = () => {
     logger: {
       error: console.error,
       log: console.info,
-      // hide all warnings about conversions
+      // biome-ignore lint/suspicious/noEmptyBlockStatements: hide all warnings about conversions
       warn: () => {},
     },
   });
