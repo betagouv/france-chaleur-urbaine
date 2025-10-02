@@ -145,11 +145,13 @@ The `rateLimit` meta property accepts:
 
 ```typescript
 {
-  windowMs: number;     // Time window in milliseconds
-  max: number;          // Maximum requests per window
-  message?: string;     // Custom error message
+  windowMs?: number;    // Time window in milliseconds (default: 15 minutes)
+  max?: number;         // Maximum requests per window (default: 20)
+  message?: string;     // Custom error message for TRPCError
 }
 ```
+
+**Note**: Le paramètre `path` est automatiquement ajouté par le middleware et ne doit pas être spécifié dans la config.
 
 ### Common Patterns
 
@@ -160,7 +162,32 @@ The `rateLimit` meta property accepts:
 
 **Note**: If no `rateLimit` is specified in meta, no rate limiting is applied to the route.
 
-**Implementation**: Rate limiting uses `express-rate-limit` from the security module with IP-based identification (supports `x-forwarded-for` headers). See `src/modules/trpc/server/middlewares/rate-limit.ts` for implementation details.
+### Implementation Details
+
+Rate limiting uses `express-rate-limit` from the security module:
+
+- **Shared Store**: Un `MemoryStore` global partagé entre toutes les routes
+- **Isolation**: Clés préfixées par `path:ip` pour isoler les compteurs par route
+- **IPv6 Support**: Utilise `ipKeyGenerator` pour support IPv6
+- **Automatic**: Le middleware lit automatiquement `meta.rateLimit` et applique les limites
+
+Le middleware tRPC (`src/modules/trpc/server/middlewares/rate-limit.ts`) :
+1. Vérifie si `meta.rateLimit` est défini
+2. Crée un rate limiter avec `createRateLimiter({ ...config, path })`
+3. Le path tRPC est automatiquement ajouté pour isoler les compteurs
+4. Rejette avec `TRPCError` code `TOO_MANY_REQUESTS` si limite atteinte
+
+### Type Safety
+
+Le type `Meta['rateLimit']` est défini dans `src/modules/trpc/server/context.ts`:
+
+```typescript
+{
+  rateLimit?: Omit<RateLimiterOptions, 'path'> & { message?: string };
+}
+```
+
+Le type exclut automatiquement `path` (géré par le middleware) et ajoute le champ optionnel `message` pour personnaliser l'erreur.
 
 ### Invalidate queries or update cache
 

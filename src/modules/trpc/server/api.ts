@@ -1,7 +1,6 @@
 import * as trpcNext from '@trpc/server/adapters/next';
 
-import { createContext } from './context';
-import { appRouter } from './routes';
+import { appRouter, createContext } from '../trpc.config';
 
 export default trpcNext.createNextApiHandler({
   router: appRouter,
