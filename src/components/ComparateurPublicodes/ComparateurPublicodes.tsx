@@ -447,7 +447,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
 
         engine.setSituation(
           ObjectEntries(addresseToPublicodesRules).reduce((acc, [key]) => {
-            acc[key] = null;
+            acc[key] = null as any;
             return acc;
           }, engine.getSituation())
         );
