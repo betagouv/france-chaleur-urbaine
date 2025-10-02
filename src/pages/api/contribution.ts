@@ -2,9 +2,9 @@ import formidable from 'formidable';
 import { z } from 'zod';
 
 import { filesLimits, riskyExtensions, zContributionFormData } from '@/components/ContributionForm/ContributionForm';
+import { createNextApiRateLimiter } from '@/modules/security/server/rate-limit/next-pages';
 import { AirtableDB } from '@/server/db/airtable';
 import { logger } from '@/server/helpers/logger';
-import { createRateLimiter } from '@/server/helpers/rate-limit';
 import { handleRouteErrors, requirePostMethod } from '@/server/helpers/server';
 import { uploadTempFile } from '@/server/services/upload';
 import { flattenMultipartData } from '@/utils/form-utils';
@@ -62,7 +62,7 @@ const zServerContributionFormData = z.discriminatedUnion(
   )
 );
 
-const contributionRateLimiter = createRateLimiter();
+const contributionRateLimiter = createNextApiRateLimiter();
 
 export default handleRouteErrors(async (req, res) => {
   requirePostMethod(req);

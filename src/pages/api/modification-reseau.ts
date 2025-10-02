@@ -3,7 +3,7 @@ import { readFile } from 'node:fs/promises';
 import formidable from 'formidable';
 import { z } from 'zod';
 
-import { createRateLimiter } from '@/modules/security/server/rate-limit';
+import { createNextApiRateLimiter } from '@/modules/security/server/rate-limit/next-pages';
 import { serverConfig } from '@/server/config';
 import { AirtableDB, uploadAttachment } from '@/server/db/airtable';
 import { logger } from '@/server/helpers/logger';
@@ -55,7 +55,7 @@ const zModificationReseau = {
 
 export type ModificationReseau = z.infer<z.ZodObject<typeof zModificationReseau>>;
 
-const rateLimiter = createRateLimiter();
+const rateLimiter = createNextApiRateLimiter();
 
 export default handleRouteErrors(async (req, res) => {
   requirePostMethod(req);

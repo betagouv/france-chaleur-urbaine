@@ -15,13 +15,27 @@ security/
 
 ### Pour API Next.js (`rate-limit.ts`)
 
-Wrapper autour de `express-rate-limit` adapté pour Next.js API routes.
+Le module exporte :
+
+#### `sharedStore`
+MemoryStore global partagé entre toutes les routes pour optimiser la mémoire et permettre l'isolation par préfixe.
+
+#### `rateLimitError`
+Erreur standard utilisée pour signaler un dépassement de limite.
+
+#### `createRateLimiter(options)`
+Fonction de base qui crée un rate limiter `express-rate-limit`. Utilisée en interne par `createNextApiRateLimiter` et par le module tRPC.
+
+**Note**: Utilise `sharedStore` par défaut si aucun store n'est spécifié dans les options.
+
+#### `createNextApiRateLimiter(options)`
+Wrapper adapté pour Next.js API routes.
 
 **Usage** :
 ```typescript
-import { createRateLimiter } from '@/modules/security/server/rate-limit';
+import { createNextApiRateLimiter } from '@/modules/security/server/rate-limit';
 
-const rateLimiter = createRateLimiter({
+const rateLimiter = createNextApiRateLimiter({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 20, // 20 requêtes max
 });
@@ -93,7 +107,7 @@ Le rate limiting utilise l'IP client avec support de :
 ### Rate Limit Standard (API Next.js)
 
 ```typescript
-const rateLimiter = createRateLimiter({
+const rateLimiter = createNextApiRateLimiter({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 20,
 });
@@ -107,7 +121,7 @@ export default handleRouteErrors(async (req, res) => {
 ### Rate Limit Personnalisé
 
 ```typescript
-const rateLimiter = createRateLimiter({
+const rateLimiter = createNextApiRateLimiter({
   windowMs: 60 * 60 * 1000, // 1 heure
   max: 10,
 });
@@ -124,8 +138,16 @@ Le module suit le pattern de séparation server/client du projet :
 - **server/** : Code backend uniquement (rate limiting, validation)
 - Pas de code client dans ce module (sécurité côté serveur uniquement)
 
+### Store Partagé
+
+Un `MemoryStore` global unique (`sharedStore`) est utilisé par défaut pour optimiser la mémoire :
+- **Isolation par préfixe** : Chaque route peut utiliser un `keyGenerator` personnalisé pour créer des clés uniques
+- **Optimisation mémoire** : Un seul store au lieu d'un par route
+- **Module tRPC** : Utilise automatiquement le store partagé avec préfixes basés sur le path
+
 ## Notes Importantes
 
-- **Store en mémoire** : `express-rate-limit` utilise un store mémoire par défaut, adapté pour instance unique
-- **Production multi-instance** : Utiliser Redis store si déploiement multi-instances
+- **Store en mémoire partagé** : Un `sharedStore` global est utilisé pour optimiser la mémoire
+- **Isolation des routes** : Utilisez un `keyGenerator` avec préfixe pour isoler les compteurs par route
+- **Production multi-instance** : Utiliser Redis store si déploiement multi-instances/cluster
 - **Headers HTTP** : Les headers `RateLimit-*` sont exposés automatiquement pour debugging
