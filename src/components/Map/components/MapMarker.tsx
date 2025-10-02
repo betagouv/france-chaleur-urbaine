@@ -27,7 +27,7 @@ const MapMarker = ({
   const [showPopup, setShowPopup] = useState<boolean>(false);
 
   useEffect(() => {
-    if (popup && popupContent != '') {
+    if (popup && popupContent !== '') {
       setShow(showPopup);
     } else {
       setShow(false);
@@ -45,6 +45,7 @@ const MapMarker = ({
   return (
     <Marker longitude={longitude} latitude={latitude} offset={markerOffset} onClick={onClickMarker}>
       <svg display="block" height="41px" width="27px" viewBox="0 0 27 41">
+        <title>Marqueur de localisation</title>
         <g fillRule="nonzero">
           <g transform="translate(3.0, 29.0)" fill="#000000">
             <ellipse opacity="0.04" cx="10.5" cy="5.80029008" rx="10.5" ry="5.25002273" />
@@ -69,7 +70,7 @@ const MapMarker = ({
           </g>
         </g>
       </svg>
-      {show && popup && popupContent != '' && (
+      {show && popup && popupContent !== '' && (
         <Popup
           longitude={longitude}
           latitude={latitude}
