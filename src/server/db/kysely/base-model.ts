@@ -1,6 +1,4 @@
 import type { ExpressionBuilder } from 'kysely';
-import type { ExtractTableAlias } from 'kysely/dist/cjs/parser/table-parser';
-import type { UpdateObjectExpression } from 'kysely/dist/cjs/parser/update-set-parser';
 import { z } from 'zod';
 
 import type { Context as ApiContext, ListConfig } from '@/server/api/crud';
@@ -79,7 +77,7 @@ export function createBaseModel<T extends keyof DB>(tableName: T) {
 
     const countQuery = applyConfigFilters(baseQuery, config);
     const countResult = await countQuery
-      .select((eb: ExpressionBuilder<DB, ExtractTableAlias<DB, T>>) => eb.fn.countAll().as('total_count'))
+      .select((eb: ExpressionBuilder<DB, keyof DB>) => eb.fn.countAll().as('total_count'))
       .executeTakeFirstOrThrow();
     const count = parseInt(countResult.total_count as string, 10); // Parse count to number (handle string/bigint cases)
 
@@ -100,12 +98,7 @@ export function createBaseModel<T extends keyof DB>(tableName: T) {
     return list({ ...config, filters: { ...config.filters, user_id: context.user.id } }, context);
   };
 
-  const update = async (
-    id: string,
-    data: UpdateObjectExpression<DB, ExtractTableAlias<DB, T>, ExtractTableAlias<DB, T>>,
-    config: ListConfig<T>,
-    _context: ApiContext
-  ) => {
+  const update = async (id: string, data: any, config: ListConfig<T>, _context: ApiContext) => {
     let query = kdb
       .updateTable(kdb.dynamic.table(tableName).as(tableName))
       .set(data as any)
@@ -121,7 +114,7 @@ export function createBaseModel<T extends keyof DB>(tableName: T) {
   const updateMine = async (id: string, data: Partial<InsertObject<DB, T>>, config: ListConfig<T>, context: ApiContext) => {
     return update(
       id,
-      { ...data, user_id: context.user.id } as UpdateObjectExpression<DB, ExtractTableAlias<DB, T>, ExtractTableAlias<DB, T>>,
+      { ...data, user_id: context.user.id } as any,
       { ...config, filters: { ...config.filters, user_id: context.user.id } },
       context
     );
