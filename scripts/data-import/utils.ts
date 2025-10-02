@@ -1,6 +1,6 @@
-import fs from 'fs';
+import fs from 'node:fs';
+import path from 'node:path';
 import Papa from 'papaparse';
-import path from 'path';
 
 type PapaParseOptions = Parameters<typeof Papa.parse>[1];
 
