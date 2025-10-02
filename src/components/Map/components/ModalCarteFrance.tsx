@@ -335,7 +335,7 @@ function ModalCarteFrance() {
                       raccordables
                     </LegendTitle>
                     {dataBins?.map((bin, i) => (
-                      <BinComponent key={i} color={bin.color}>
+                      <BinComponent key={bin.color} color={bin.color}>
                         {i === 0
                           ? `≥ ${prettyFormatNumber(bin.minValue)}`
                           : `de ${prettyFormatNumber(bin.minValue)} à ${prettyFormatNumber(bin.maxValue)}`}

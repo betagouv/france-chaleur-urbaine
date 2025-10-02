@@ -214,8 +214,7 @@ const BuildingsDataExtractionTool: React.FC = () => {
   const showClearButton = features[0]?.geometry.coordinates[0]?.length > 2 && !isLoading;
 
   return (
-    <>
-      <Box display="flex" flexDirection="column" gap="16px">
+    <Box display="flex" flexDirection="column" gap="16px">
         <Box>
           <Title>Extraire des données sur les bâtiments</Title>
 
@@ -331,8 +330,7 @@ const BuildingsDataExtractionTool: React.FC = () => {
             Exporter les données
           </Button>
         )}
-      </Box>
-    </>
+    </Box>
   );
 };
 
@@ -398,4 +396,4 @@ export const buildingsDataExtractionLayers = [
     },
     sourceId: buildingsDataExtractionPolygonsSourceId,
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];
