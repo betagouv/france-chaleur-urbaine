@@ -10,7 +10,7 @@ export const config = {
   },
 };
 
-const rateLimiter = createNextApiRateLimiter();
+const rateLimiter = createNextApiRateLimiter({ path: '/api/v1/networks' });
 
 export default handleRouteErrors(async (req, res) => {
   requireGetMethod(req);

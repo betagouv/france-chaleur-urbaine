@@ -1,13 +1,15 @@
 import { TRPCError } from '@trpc/server';
 
-import { createRateLimiter, ipKeyGenerator, rateLimitError, sharedStore } from '@/modules/security/server/rate-limit';
+import { createRateLimiter, type RateLimiterOptions, rateLimitError } from '@/modules/security/server/rate-limit';
 
 import { type TRoot } from '../context';
 
+export { type RateLimiterOptions };
 /**
  * Rate limiting middleware pour tRPC - lit la config depuis les meta
  * Utilise express-rate-limit avec un store partagé et préfixes par route
  *
+ * @example
  * @example
  * route.meta({
  *   rateLimit: {
@@ -28,15 +30,7 @@ export function createRateLimitMiddleware(t: TRoot) {
     const rateLimiter = createRateLimiter({
       windowMs: config.windowMs,
       max: config.max,
-      store: sharedStore,
-      // Préfixe basé sur le path tRPC pour isoler les routes
-      keyGenerator: (req) => {
-        const ip = ipKeyGenerator(req.ip || '');
-        return `${path}:${ip}`;
-      },
-      handler: (_req, _res, next) => {
-        next(rateLimitError);
-      },
+      path,
     });
 
     // Exécuter le rate limiter

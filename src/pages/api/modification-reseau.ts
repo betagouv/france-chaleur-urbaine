@@ -55,7 +55,7 @@ const zModificationReseau = {
 
 export type ModificationReseau = z.infer<z.ZodObject<typeof zModificationReseau>>;
 
-const rateLimiter = createNextApiRateLimiter();
+const rateLimiter = createNextApiRateLimiter({ path: '/api/modification-reseau' });
 
 export default handleRouteErrors(async (req, res) => {
   requirePostMethod(req);

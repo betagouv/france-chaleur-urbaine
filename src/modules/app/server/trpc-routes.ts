@@ -9,7 +9,7 @@ export const contactRouter = router({
       rateLimit: {
         windowMs: 60 * 1000, // 1 minute
         max: 1,
-        message: "Vous ne pouvez envoyer qu'un message par minute. Veuillez patienter avant de soumettre un nouveau message.",
+        message: 'Veuillez patienter quelques minutes avant de soumettre un nouveau message.',
       },
     })
     .input(contactFormSchema)

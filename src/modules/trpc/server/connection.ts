@@ -1,4 +1,4 @@
-import { type AuthConfig, type Context, type RateLimitConfig, t } from './context';
+import { type AuthConfig, type Context, t } from './context';
 import { createAuthMiddleware } from './middlewares/auth';
 import { createLoggingMiddleware } from './middlewares/logging';
 import { createRateLimitMiddleware } from './middlewares/rate-limit';
@@ -22,7 +22,5 @@ function createProcedureWithAuth<T extends ReturnType<typeof t.procedure.use>>(b
 
 export const router = t.router;
 
-// Route avec tous les middlewares (logging, rate-limit, auth)
 export const route = createProcedureWithAuth(t.procedure.use(loggingMiddleware).use(rateLimitMiddleware).use(authMiddleware));
 export const routeRole = (roles: Context['user']['role'][]) => route.meta({ auth: { roles } });
-export const routeRateLimit = (config: RateLimitConfig) => route.meta({ rateLimit: config });

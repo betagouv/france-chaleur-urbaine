@@ -62,7 +62,7 @@ const zServerContributionFormData = z.discriminatedUnion(
   )
 );
 
-const contributionRateLimiter = createNextApiRateLimiter();
+const contributionRateLimiter = createNextApiRateLimiter({ path: '/api/contribution' });
 
 export default handleRouteErrors(async (req, res) => {
   requirePostMethod(req);
