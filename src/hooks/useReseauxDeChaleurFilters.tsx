@@ -93,7 +93,7 @@ const useReseauxDeChaleurFilters = ({ queryParamName = 'rdc_filters' }: { queryP
     updateFilter,
     nbFilters: Object.keys(urlFilters).length,
     loading: !loaded,
-    filtersQueryParam: searchParams.get(queryParamName),
+    filtersQueryParam: searchParams?.get(queryParamName),
   };
 };
 
