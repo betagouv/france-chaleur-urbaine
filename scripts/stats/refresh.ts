@@ -1,12 +1,11 @@
 import { writeFile } from 'node:fs/promises';
-
+import { getDealsCountByStage } from '@cli/stats/pipedrive';
 import { AirtableDB } from '@/server/db/airtable';
 import { kdb } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
 import { Airtable } from '@/types/enum/Airtable';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import { prettyFormatNumber } from '@/utils/strings';
-import { getDealsCountByStage } from '@cli/stats/pipedrive';
 
 const ratioTonnesCO2ParRaccordement = 108212 / 2017; // moyenne de 30 logements par raccordement. calcué initialement avec l'ancien simulateur de CO2.
 
@@ -77,8 +76,8 @@ const getDemandesEnCoursStats = async () => {
 
   return {
     totalDemandes,
-    totalRaccordements: demandesEnCours.length,
     totalLogements,
+    totalRaccordements: demandesEnCours.length,
   };
 };
 

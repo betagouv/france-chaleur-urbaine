@@ -21,13 +21,13 @@ async function main() {
             }
             console.log('maj commune', codeInsee);
             await AirtableDB('FCU - Formulaire communes sans reseau').update(record.id, {
-              Type: commune.type,
-              NbZonesFortPotentiel: commune.zonesAFortPotentiel.nb,
               BesoinsEnChauffageZonesFortPotentiel: commune.zonesAFortPotentiel.chauffage,
-              BesoinsEnECSZonesFortPotentiel: commune.zonesAFortPotentiel.ecs,
-              NbZonesPotentiel: commune.zonesAPotentiel.nb,
               BesoinsEnChauffageZonesPotentiel: commune.zonesAPotentiel.chauffage,
+              BesoinsEnECSZonesFortPotentiel: commune.zonesAFortPotentiel.ecs,
               BesoinsEnECSZonesPotentiel: commune.zonesAPotentiel.ecs,
+              NbZonesFortPotentiel: commune.zonesAFortPotentiel.nb,
+              NbZonesPotentiel: commune.zonesAPotentiel.nb,
+              Type: commune.type,
             });
           })
         );

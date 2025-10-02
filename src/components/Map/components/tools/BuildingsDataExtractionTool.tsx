@@ -1,10 +1,10 @@
 import Alert from '@codegouvfr/react-dsfr/Alert';
 import Button from '@codegouvfr/react-dsfr/Button';
-import { type DrawCreateEvent } from '@mapbox/mapbox-gl-draw';
+import type { DrawCreateEvent } from '@mapbox/mapbox-gl-draw';
 import { useKeyboardEvent } from '@react-hookz/web';
 import turfArea from '@turf/area';
 import { atom, useAtom } from 'jotai';
-import { type GeoJSONSource } from 'maplibre-gl';
+import type { GeoJSONSource } from 'maplibre-gl';
 import { useEffect, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
 
@@ -15,10 +15,10 @@ import Text from '@/components/ui/Text';
 import { trackEvent } from '@/modules/analytics/client';
 import { useServices } from '@/services';
 import { EXPORT_FORMAT } from '@/types/enum/ExportFormat';
-import { type GasSummary } from '@/types/Summary/Gas';
+import type { GasSummary } from '@/types/Summary/Gas';
 import { validatePolygonGeometry } from '@/utils/geo';
 
-import { type MapSourceLayersSpecification } from '../../layers/common';
+import type { MapSourceLayersSpecification } from '../../layers/common';
 import { Title } from '../SimpleMapLegend.style';
 
 export const buildingsDataExtractionPolygonsSourceId = 'buildings-data-extraction-polygons';
@@ -127,9 +127,9 @@ const BuildingsDataExtractionTool: React.FC = () => {
       {
         ...featureBeingDrawn,
         properties: {
-          isValid: areaSize <= clientConfig.summaryAreaSizeLimit && isGeometryValid,
-          areaSize,
           areaHasSelfIntersections: !isGeometryValid,
+          areaSize,
+          isValid: areaSize <= clientConfig.summaryAreaSizeLimit && isGeometryValid,
         },
       },
     ]);
@@ -149,14 +149,14 @@ const BuildingsDataExtractionTool: React.FC = () => {
     // because the polygon with 2 points is not rendered
     map.addLayer(
       {
-        source: 'mapbox-gl-draw-hot',
-        id: buildingsDataExtractionDrawHotSourceLayerId,
-        type: 'line',
         filter: ['==', '$type', 'LineString'],
+        id: buildingsDataExtractionDrawHotSourceLayerId,
         paint: {
           'line-color': '#000091',
           'line-width': 4,
         },
+        source: 'mapbox-gl-draw-hot',
+        type: 'line',
       },
       'buildings-data-extraction-outline'
     );
@@ -360,42 +360,42 @@ export function useBuildingsDataExtractionLayers() {
     }
 
     (mapRef.getSource(buildingsDataExtractionPolygonsSourceId) as GeoJSONSource).setData({
-      type: 'FeatureCollection',
       features,
+      type: 'FeatureCollection',
     });
   }, [mapLayersLoaded, features]);
 }
 
 export const buildingsDataExtractionLayers = [
   {
-    sourceId: buildingsDataExtractionPolygonsSourceId,
-    source: {
-      type: 'geojson',
-      data: {
-        type: 'FeatureCollection',
-        features: [],
-      },
-    },
     layers: [
       {
         id: 'buildings-data-extraction-fill',
-        type: 'fill',
+        isVisible: (config) => config.extractionDonneesBatiment,
         paint: {
           'fill-color': ['case', ['get', 'isValid'], '#0000911A', '#f538381A'],
         },
-        isVisible: (config) => config.extractionDonneesBatiment,
+        type: 'fill',
         unselectable: true,
       },
       {
         id: 'buildings-data-extraction-outline',
-        type: 'line',
+        isVisible: (config) => config.extractionDonneesBatiment,
         paint: {
           'line-color': ['case', ['get', 'isValid'], '#000091', '#f53838'],
           'line-width': 4,
         },
-        isVisible: (config) => config.extractionDonneesBatiment,
+        type: 'line',
         unselectable: true,
       },
     ],
+    source: {
+      data: {
+        features: [],
+        type: 'FeatureCollection',
+      },
+      type: 'geojson',
+    },
+    sourceId: buildingsDataExtractionPolygonsSourceId,
   },
 ] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;

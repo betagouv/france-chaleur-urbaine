@@ -28,17 +28,17 @@ type Measurements = {
 };
 
 const PopoverMeasurementsContext = createContext<Measurements>({
-  width: undefined,
   height: undefined,
-  setWidth: () => void 0,
   setHeight: () => void 0,
+  setWidth: () => void 0,
+  width: undefined,
 });
 
 const Popover = ({ children, ...props }: PopoverPrimitive.PopoverProps) => {
   const [width, setWidth] = useState<number>();
   const [height, setHeight] = useState<number>();
 
-  const value = { width, height, setWidth, setHeight };
+  const value = { height, setHeight, setWidth, width };
 
   return (
     <PopoverMeasurementsContext.Provider value={value}>

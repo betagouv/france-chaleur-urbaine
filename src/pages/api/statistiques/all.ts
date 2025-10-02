@@ -65,13 +65,13 @@ const statistiques = async () => {
   );
 
   return {
-    comptes: {
-      professionnels: { total: nbComptesPro },
-      particuliers: { total: nbComptesParticulier },
-    },
     communesSansReseau: {
-      testees: { total: nbCommunesSansReseauTestees },
       accompagnees: { total: nbCommunesSansReseauAccompagnees },
+      testees: { total: nbCommunesSansReseauTestees },
+    },
+    comptes: {
+      particuliers: { total: nbComptesParticulier },
+      professionnels: { total: nbComptesPro },
     },
   };
 };

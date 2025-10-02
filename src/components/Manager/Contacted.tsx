@@ -1,4 +1,4 @@
-import { type Demand } from '@/types/Summary/Demand';
+import type { Demand } from '@/types/Summary/Demand';
 
 import { Checkbox } from './Contacted.styles';
 
@@ -21,13 +21,13 @@ const Contacted = ({
         {
           label: '',
           nativeInputProps: {
-            value: 'Prise de contact',
             defaultChecked: demand['Prise de contact'],
             onChange: handleCheckboxChange,
+            value: 'Prise de contact',
           },
         },
       ]}
-    ></Checkbox>
+    />
   );
 };
 

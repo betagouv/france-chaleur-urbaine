@@ -7,48 +7,48 @@ import cx from '@/utils/cx';
 import Heading from './Heading';
 
 const heroContainerVariants = cva('relative', {
-  variants: {
-    size: {
-      sm: '',
-      md: '',
-      lg: '',
-    },
-    variant: {
-      normal: 'bg-[#C3E4E1] [&_article]:bg-[#C3E4E1]/90',
-      light: 'bg-light [&_article]:bg-light/90',
-      accent: 'bg-accent text-white [&_article]:bg-accent/90',
-      city: 'bg-blue-light',
-      ressource: 'bg-blueCumulus-_950_100',
-      transparent: 'bg-transparent',
-    },
-  },
   defaultVariants: {
     size: 'md',
     variant: 'normal',
   },
-});
-const heroVariants = cva('relative', {
   variants: {
     size: {
-      sm: '',
-      md: '',
       lg: '',
+      md: '',
+      sm: '',
+    },
+    variant: {
+      accent: 'bg-accent text-white [&_article]:bg-accent/90',
+      city: 'bg-blue-light',
+      light: 'bg-light [&_article]:bg-light/90',
+      normal: 'bg-[#C3E4E1] [&_article]:bg-[#C3E4E1]/90',
+      ressource: 'bg-blueCumulus-_950_100',
+      transparent: 'bg-transparent',
     },
   },
+});
+const heroVariants = cva('relative', {
   defaultVariants: {
     size: 'md',
+  },
+  variants: {
+    size: {
+      lg: '',
+      md: '',
+      sm: '',
+    },
   },
 });
 const articleVariants = cva('flex-1 flex flex-col', {
-  variants: {
-    size: {
-      sm: 'gap-2',
-      md: 'gap-4 py-4w 2xl:py-6w',
-      lg: 'gap-8 py-6w 2xl:py-8w',
-    },
-  },
   defaultVariants: {
     size: 'md',
+  },
+  variants: {
+    size: {
+      lg: 'gap-8 py-6w 2xl:py-8w',
+      md: 'gap-4 py-4w 2xl:py-6w',
+      sm: 'gap-2',
+    },
   },
 });
 
@@ -102,7 +102,7 @@ const Hero = ({
   const titleFlex = allFlex - imageFlex;
 
   return (
-    <HeroContext.Provider value={{ size, variant, bigTitle }}>
+    <HeroContext.Provider value={{ bigTitle, size, variant }}>
       <section className={cx(heroContainerVariants({ variant }), className)} {...props}>
         {image && imageType === 'floating' && (
           <div className="absolute top-0 left-0 right-0 bottom-0 hidden lg:block">
@@ -150,18 +150,18 @@ const Hero = ({
 };
 
 const headingVariants = cva('my-0!', {
+  defaultVariants: {
+    variant: 'normal',
+  },
   variants: {
     variant: {
-      normal: 'text-blue!',
-      light: 'text-black!',
       accent: 'text-white!',
       city: 'text-black!',
+      light: 'text-black!',
+      normal: 'text-blue!',
       ressource: 'text-black!',
       transparent: 'text-black!',
     },
-  },
-  defaultVariants: {
-    variant: 'normal',
   },
 });
 
@@ -189,24 +189,24 @@ export const HeroTitle = ({ children, className, ...props }: React.ComponentProp
 };
 
 const subtitleVariants = cva('my-0!', {
+  defaultVariants: {
+    size: 'md',
+    variant: 'normal',
+  },
   variants: {
     size: {
-      sm: 'text-sm',
-      md: 'text-base',
       lg: 'text-lg',
+      md: 'text-base',
+      sm: 'text-sm',
     },
     variant: {
-      normal: 'text-gray-900!',
-      light: 'text-gray-900!',
       accent: 'text-gray-100!',
       city: 'text-gray-900!',
+      light: 'text-gray-900!',
+      normal: 'text-gray-900!',
       ressource: 'text-gray-900!',
       transparent: 'text-gray-900!',
     },
-  },
-  defaultVariants: {
-    variant: 'normal',
-    size: 'md',
   },
 });
 
@@ -220,15 +220,15 @@ export const HeroSubtitle = ({ children, className, ...props }: React.HTMLAttrib
 };
 
 const contentVariants = cva('', {
-  variants: {
-    size: {
-      sm: '',
-      md: '',
-      lg: '',
-    },
-  },
   defaultVariants: {
     size: 'md',
+  },
+  variants: {
+    size: {
+      lg: '',
+      md: '',
+      sm: '',
+    },
   },
 });
 
@@ -242,18 +242,18 @@ export const HeroContent = ({ children, className, ...props }: React.HTMLAttribu
 };
 
 const metaVariants = cva('uppercase text-sm font-bold tracking-tighter', {
+  defaultVariants: {
+    variant: 'normal',
+  },
   variants: {
     variant: {
-      normal: 'text-gray-700!',
-      light: 'text-gray-700!',
       accent: 'text-gray-100!',
       city: 'text-gray-700!',
+      light: 'text-gray-700!',
+      normal: 'text-gray-700!',
       ressource: 'text-gray-700!',
       transparent: 'text-gray-700!',
     },
-  },
-  defaultVariants: {
-    variant: 'normal',
   },
 });
 export const HeroMeta = ({ children, className, ...props }: React.HTMLAttributes<HTMLDivElement>) => {

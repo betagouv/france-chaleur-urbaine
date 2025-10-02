@@ -1,6 +1,6 @@
 import { fr } from '@codegouvfr/react-dsfr';
 import { useRouter } from 'next/navigation';
-import React from 'react';
+import type React from 'react';
 import styled from 'styled-components';
 
 import Checkboxes from '@/components/form/dsfr/Checkboxes';

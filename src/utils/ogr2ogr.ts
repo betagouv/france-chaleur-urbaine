@@ -2,8 +2,8 @@ import { rename } from 'node:fs/promises';
 import { basename, join } from 'node:path';
 
 import { serverConfig } from '@/server/config';
-import { type DB } from '@/server/db/kysely';
-import { type CommandResult, dockerImageArch, dockerVolumePath, runBash, type RunCommandOptions, runDocker } from '@/utils/system';
+import type { DB } from '@/server/db/kysely';
+import { type CommandResult, dockerImageArch, dockerVolumePath, type RunCommandOptions, runBash, runDocker } from '@/utils/system';
 
 /**
  * Exécute une commande ogr2ogr avec support Docker

@@ -7,17 +7,17 @@ const IdexMap = () => {
     <IframeWrapper>
       <Map
         initialMapConfiguration={createMapConfiguration({
+          filtreGestionnaire: ['idex', 'mixéner'],
           reseauxDeChaleur: {
             show: true,
           },
-          filtreGestionnaire: ['idex', 'mixéner'],
         })}
         enabledLegendFeatures={['reseauxDeChaleur', 'reseauxDeFroid', 'reseauxEnConstruction', 'zonesDeDeveloppementPrioritaire']}
         withLegend
         withBorder
         legendLogoOpt={{
-          src: '/logo-IDEX.jpg',
           alt: 'logo Idex',
+          src: '/logo-IDEX.jpg',
         }}
         withFCUAttribution
       />

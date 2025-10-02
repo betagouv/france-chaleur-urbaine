@@ -1,4 +1,4 @@
-import { type ApiAccounts } from '@/server/db/kysely';
+import type { ApiAccounts } from '@/server/db/kysely';
 
 import * as engie from './users/engie';
 

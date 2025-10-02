@@ -1,7 +1,7 @@
 import { round } from '@turf/helpers';
 import kinks from '@turf/kinks';
 
-import { type BoundingBox } from '@/types/Coords';
+import type { BoundingBox } from '@/types/Coords';
 
 export const longitudeColumnNameCandidates = ['x', 'lon', 'longitude'] as const;
 export const latitudeColumnNameCandidates = ['y', 'lat', 'latitude'] as const;
@@ -44,8 +44,8 @@ export function validatePolygonGeometry(coordinates: GeoJSON.Position[]): boolea
     coordinates.splice(n - 2, 1);
   }
   const { features: selfIntersections } = kinks({
-    type: 'Polygon',
     coordinates: [coordinates],
+    type: 'Polygon',
   });
   return selfIntersections.length === 0;
 }
@@ -95,7 +95,7 @@ export const convertLambert93GeoJSONToWGS84 = async (geojson: any): Promise<any>
 
   return {
     ...geojson,
-    crs: { type: 'name', properties: { name: 'EPSG:4326' } },
+    crs: { properties: { name: 'EPSG:4326' }, type: 'name' },
     features: geojson.features
       .filter((feature: any) => feature.geometry !== null)
       .map((feature: any) => ({

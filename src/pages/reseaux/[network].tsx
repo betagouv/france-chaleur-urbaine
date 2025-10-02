@@ -1,12 +1,12 @@
 import { Breadcrumb } from '@codegouvfr/react-dsfr/Breadcrumb';
-import { type GetStaticPaths, type GetStaticProps, type InferGetStaticPropsType } from 'next';
+import type { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from 'next';
 
 import NetworkPanel from '@/components/Network/Network';
-import SimplePage from '@/components/shared/page/SimplePage';
 import Slice from '@/components/Slice/Slice';
+import SimplePage from '@/components/shared/page/SimplePage';
 import { getColdNetwork, getNetwork } from '@/modules/reseaux/server/service';
 import { db } from '@/server/db/kysely';
-import { type Network } from '@/types/Summary/Network';
+import type { Network } from '@/types/Summary/Network';
 
 const PageReseau = ({ network }: InferGetStaticPropsType<typeof getStaticProps>) => {
   return (
@@ -52,8 +52,8 @@ export const getStaticPaths: GetStaticPaths = async () => {
         .execute();
 
   return {
-    paths: networks.map((network) => ({ params: { network: network['Identifiant reseau'] ?? undefined } })),
     fallback: false,
+    paths: networks.map((network) => ({ params: { network: network['Identifiant reseau'] ?? undefined } })),
   };
 };
 
@@ -65,8 +65,8 @@ export const getStaticProps: GetStaticProps<{
   if (!networkId) {
     return {
       redirect: {
-        permanent: false,
         destination: '/reseaux',
+        permanent: false,
       },
     };
   }

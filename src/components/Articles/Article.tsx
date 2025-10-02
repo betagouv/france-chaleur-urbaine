@@ -1,6 +1,6 @@
 import { Card } from '@codegouvfr/react-dsfr/Card';
 
-import { type Article as ArticleType } from '@/types/Article';
+import type { Article as ArticleType } from '@/types/Article';
 
 const Article = ({ article, isHorizontal, titleAs = 'h3' }: { article: ArticleType; isHorizontal?: boolean; titleAs?: 'h4' | 'h3' }) => {
   return (

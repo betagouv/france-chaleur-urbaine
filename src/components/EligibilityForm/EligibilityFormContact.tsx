@@ -10,15 +10,14 @@ import Box from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
 import Image from '@/components/ui/Image';
 import Link from '@/components/ui/Link';
-import { type AddressDataType } from '@/types/AddressData';
-import { type ContactFormInfos } from '@/types/Summary/Demand';
+import type { AddressDataType } from '@/types/AddressData';
+import type { ContactFormInfos } from '@/types/Summary/Demand';
 import { getReadableDistance } from '@/utils/geo';
 
 import { ContactForm, ContactFormContentWrapper, ContactFormResultMessage, ContactFormWrapper, ContactMapResult } from './components';
 import { bordeauxMetropoleCityCodes, getEligibilityResult } from './EligibilityResults';
 
 const ComparateurPublicodesWidget = dynamic(() => import('@/components/ComparateurPublicodes/ComparateurPublicodesWidget'), {
-  ssr: false,
   loading: () => (
     <div className="fr-mt-5w">
       <Heading as="h2" size="h4">
@@ -29,6 +28,7 @@ const ComparateurPublicodesWidget = dynamic(() => import('@/components/Comparate
       </Box>
     </div>
   ),
+  ssr: false,
 });
 
 type EligibilityFormContactType = {
@@ -57,13 +57,13 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
       addressData.geoAddress?.properties.citycode && bordeauxMetropoleCityCodes.includes(addressData.geoAddress?.properties.citycode);
     const computedBody = body
       ? body({
-          distance: getReadableDistance(addressData.eligibility.distance),
-          inPDP: addressData.eligibility.inPDP,
-          gestionnaire: addressData.eligibility.gestionnaire?.trim() || null,
-          tauxENRR: addressData.eligibility.tauxENRR,
-          isClasse: addressData.eligibility.isClasse,
-          hasPDP: addressData.eligibility.hasPDP,
           city: addressData.geoAddress?.properties.city,
+          distance: getReadableDistance(addressData.eligibility.distance),
+          gestionnaire: addressData.eligibility.gestionnaire?.trim() || null,
+          hasPDP: addressData.eligibility.hasPDP,
+          inPDP: addressData.eligibility.inPDP,
+          isClasse: addressData.eligibility.isClasse,
+          tauxENRR: addressData.eligibility.tauxENRR,
         })
       : '';
 

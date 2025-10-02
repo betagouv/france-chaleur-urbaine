@@ -1,4 +1,4 @@
-import { type PrivacyPolicy } from '@incubateur-ademe/legal-pages-react';
+import type { PrivacyPolicy } from '@incubateur-ademe/legal-pages-react';
 // @ts-expect-error PrivacyPolicyClient is not exported
 import PrivacyPolicyClient from '@incubateur-ademe/legal-pages-react/PrivacyPolicyClient';
 
@@ -20,34 +20,34 @@ function PolitiqueDeConfidentialitePage() {
         cookies={[
           {
             category: 'Mesure d’audience anonymisée',
-            name: 'Matomo',
+            destination: 'France',
+            editor: 'Matomo & ADEME',
             expiration: '13 mois',
             finalities: 'Mesure d’audience',
-            editor: 'Matomo & ADEME',
-            destination: 'France',
+            name: 'Matomo',
           },
         ]}
         thirdParties={[
           {
-            name: 'Scalingo',
             country: 'France',
             hostingCountry: 'France',
+            name: 'Scalingo',
+            policyUrl: 'https://scalingo.com/fr/informations-legales',
             serviceType: 'Hébergement site',
-            policyUrl: 'https://scalingo.com/fr/informations-legales',
           },
           {
-            name: 'Scalingo',
             country: 'France',
             hostingCountry: 'France',
-            serviceType: 'Base de données',
+            name: 'Scalingo',
             policyUrl: 'https://scalingo.com/fr/informations-legales',
+            serviceType: 'Base de données',
           },
           {
-            name: 'Airtable',
             country: 'États-Unis',
             hostingCountry: 'États-Unis',
-            serviceType: 'Base de données',
+            name: 'Airtable',
             policyUrl: 'https://www.airtable.com/company/tos/fr',
+            serviceType: 'Base de données',
           },
         ]}
       />

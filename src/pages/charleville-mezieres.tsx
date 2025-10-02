@@ -19,8 +19,8 @@ const CharlevilleMezieresMap = () => {
         initialZoom={12}
         legendTitle="Réseaux de chaleur"
         legendLogoOpt={{
-          src: '/logo-CM.svg',
           alt: 'logo Charleville Mezieres',
+          src: '/logo-CM.svg',
         }}
         withFCUAttribution
       />

@@ -1,4 +1,4 @@
-import { type Command } from '@commander-js/extra-typings';
+import type { Command } from '@commander-js/extra-typings';
 
 import { processJobById, processJobsIndefinitely } from './server/processor';
 

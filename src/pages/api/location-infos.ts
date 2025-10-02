@@ -1,15 +1,15 @@
 import * as Sentry from '@sentry/node';
-import { type NextApiRequest } from 'next';
+import type { NextApiRequest } from 'next';
 import { z } from 'zod';
 
 import db from '@/server/db';
 import { handleRouteErrors, requirePostMethod, validateObjectSchema } from '@/server/helpers/server';
 
 const zLocationInfos = {
-  lon: z.number(),
-  lat: z.number(),
   city: z.string(),
   cityCode: z.string(),
+  lat: z.number(),
+  lon: z.number(),
 };
 
 const maxDistanceThreshold = 1000;
@@ -121,8 +121,8 @@ export default handleRouteErrors(async (req: NextApiRequest) => {
   }
 
   return {
+    infosVille,
     nearestReseauDeChaleur,
     nearestReseauDeFroid,
-    infosVille,
   };
 });

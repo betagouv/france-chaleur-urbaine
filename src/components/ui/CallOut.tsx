@@ -4,53 +4,53 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import cx from '@/utils/cx';
 
 const callOutVariants = cva('relative', {
+  defaultVariants: {
+    size: 'md',
+    variant: 'default',
+  },
   variants: {
+    size: {
+      lg: '',
+      md: '',
+      sm: 'px-8! py-6!',
+    },
     variant: {
-      default: '',
       blue: 'bg-[linear-gradient(0deg,var(--border-action-high-blue-france),var(--border-action-high-blue-france))]!',
+      default: '',
+      error: 'bg-[linear-gradient(0deg,var(--border-action-high-error),var(--border-action-high-error))]!',
       info: 'bg-[linear-gradient(0deg,var(--border-action-high-info),var(--border-action-high-info))]!',
       success: 'bg-[linear-gradient(0deg,var(--border-action-high-success),var(--border-action-high-success))]!',
       warning: 'bg-[linear-gradient(0deg,var(--border-action-high-warning),var(--border-action-high-warning))]!',
-      error: 'bg-[linear-gradient(0deg,var(--border-action-high-error),var(--border-action-high-error))]!',
-    },
-    size: {
-      sm: 'px-8! py-6!',
-      md: '',
-      lg: '',
     },
     withImage: {
       true: 'pl-28! pr-4!',
     },
   },
-  defaultVariants: {
-    variant: 'default',
-    size: 'md',
-  },
 });
 
 const titleVariants = cva('', {
-  variants: {
-    size: {
-      sm: 'text-base!',
-      md: 'text-lg!',
-      lg: 'text-2xl!',
-    },
-  },
   defaultVariants: {
     size: 'md',
+  },
+  variants: {
+    size: {
+      lg: 'text-2xl!',
+      md: 'text-lg!',
+      sm: 'text-base!',
+    },
   },
 });
 
 const textVariants = cva('', {
-  variants: {
-    size: {
-      sm: 'text-sm!',
-      md: 'text-base!',
-      lg: 'text-lg!',
-    },
-  },
   defaultVariants: {
     size: 'md',
+  },
+  variants: {
+    size: {
+      lg: 'text-lg!',
+      md: 'text-base!',
+      sm: 'text-sm!',
+    },
   },
 });
 
@@ -61,10 +61,10 @@ const CallOut = ({ children, className, variant, size, image, bodyAs, ...props }
     <DSFRCallOut
       bodyAs={bodyAs || (typeof children !== 'string' ? 'div' : undefined)}
       classes={{
-        root: cx(callOutVariants({ variant, size, withImage: !!image }), className),
-        title: titleVariants({ size }),
-        text: textVariants({ size }),
         button: undefined,
+        root: cx(callOutVariants({ size, variant, withImage: !!image }), className),
+        text: textVariants({ size }),
+        title: titleVariants({ size }),
       }}
       {...props}
     >

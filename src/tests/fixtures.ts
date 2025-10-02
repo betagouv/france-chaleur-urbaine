@@ -1,4 +1,4 @@
-import { type InsertObject } from 'kysely';
+import type { InsertObject } from 'kysely';
 
 import { type DB, kdb, sql } from '@/server/db/kysely';
 
@@ -13,13 +13,13 @@ export async function seedTableUser(users: ReadonlyArray<Partial<InsertObject<DB
       users.map((user) => {
         const id = user.id ?? crypto.randomUUID();
         return {
-          id,
+          active: true,
           email: `user-${id}@test.local`,
+          id,
+          last_connection: sql`NOW()`,
           password: 'hashed_password',
           role: 'professionnel' as const,
-          last_connection: sql`NOW()`,
           status: 'valid' as const,
-          active: true,
           ...user,
         };
       })

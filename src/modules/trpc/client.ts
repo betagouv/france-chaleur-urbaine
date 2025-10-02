@@ -1,6 +1,6 @@
-import { type inferRouterInputs, type inferRouterOutputs } from '@trpc/server';
+import type { inferRouterInputs, inferRouterOutputs } from '@trpc/server';
 
-import { type AppRouter } from './types';
+import type { AppRouter } from './types';
 
 export { default } from './client/next';
 

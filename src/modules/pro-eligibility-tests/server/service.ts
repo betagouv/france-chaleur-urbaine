@@ -6,7 +6,7 @@ import {
   zUpdateEligibilityTestInput,
 } from '@/modules/pro-eligibility-tests/constants';
 import { kdb, sql } from '@/server/db/kysely';
-import { type ApiContext, type ListConfig } from '@/server/db/kysely/base-model';
+import type { ApiContext, ListConfig } from '@/server/db/kysely/base-model';
 
 export const tableName = 'pro_eligibility_tests';
 
@@ -39,8 +39,8 @@ export const listAdmin = async () => {
     .execute();
 
   return {
-    items: tests,
     count: tests.length,
+    items: tests,
   };
 };
 
@@ -72,8 +72,8 @@ export const list = async (_: ListConfig<typeof tableName>, context: ApiContext)
     .execute();
 
   return {
-    items: eligibilityTests,
     count: eligibilityTests.length,
+    items: eligibilityTests,
   };
 };
 
@@ -136,9 +136,9 @@ export const create = async ({ name, ...input }: CreateEligibilityTestInput, con
     const createdEligibilityTest = await trx
       .insertInto('pro_eligibility_tests')
       .values({
+        has_unseen_results: false,
         name,
         user_id: context.user.id,
-        has_unseen_results: false,
       })
       .returningAll()
       .executeTakeFirstOrThrow();
@@ -146,10 +146,10 @@ export const create = async ({ name, ...input }: CreateEligibilityTestInput, con
     await trx
       .insertInto('jobs')
       .values({
-        type: 'pro_eligibility_test',
         data: input,
-        status: 'pending',
         entity_id: createdEligibilityTest.id,
+        status: 'pending',
+        type: 'pro_eligibility_test',
         user_id: context.user.id,
       })
       .executeTakeFirstOrThrow();
@@ -158,11 +158,11 @@ export const create = async ({ name, ...input }: CreateEligibilityTestInput, con
   });
 
   await createUserEvent({
-    type: 'pro_eligibility_test_created',
-    context_type: 'pro_eligibility_test',
-    context_id: createdItem.id,
-    data: { name },
     author_id: context.user.id,
+    context_id: createdItem.id,
+    context_type: 'pro_eligibility_test',
+    data: { name },
+    type: 'pro_eligibility_test_created',
   });
 
   return createdItem;
@@ -184,10 +184,10 @@ export const rename = async (
     .executeTakeFirstOrThrow();
 
   await createUserEvent({
-    type: 'pro_eligibility_test_renamed',
-    context_type: 'pro_eligibility_test',
-    context_id: testId,
     author_id: context.user.id,
+    context_id: testId,
+    context_type: 'pro_eligibility_test',
+    type: 'pro_eligibility_test_renamed',
   });
 
   return updatedItem;
@@ -211,20 +211,20 @@ export const update = async (
   await kdb
     .insertInto('jobs')
     .values({
-      type: 'pro_eligibility_test',
       data: updatedData,
-      status: 'pending',
       entity_id: testId,
+      status: 'pending',
+      type: 'pro_eligibility_test',
       user_id: context.user.id,
     })
     .returning('id')
     .executeTakeFirstOrThrow();
 
   await createUserEvent({
-    type: 'pro_eligibility_test_updated',
-    context_type: 'pro_eligibility_test',
-    context_id: testId,
     author_id: context.user.id,
+    context_id: testId,
+    context_type: 'pro_eligibility_test',
+    type: 'pro_eligibility_test_updated',
   });
 
   return updatedItem;
@@ -242,10 +242,10 @@ export const remove = async (testId: string, _config: ListConfig<typeof tableNam
     .executeTakeFirstOrThrow();
 
   await createUserEvent({
-    type: 'pro_eligibility_test_deleted',
-    context_type: 'pro_eligibility_test',
-    context_id: testId,
     author_id: context.user.id,
+    context_id: testId,
+    context_type: 'pro_eligibility_test',
+    type: 'pro_eligibility_test_deleted',
   });
 
   return removedItem;

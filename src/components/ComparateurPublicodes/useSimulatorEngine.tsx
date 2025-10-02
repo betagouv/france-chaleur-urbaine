@@ -7,8 +7,8 @@ export type SimulatorEngine = ReturnType<typeof useSimulatorEngine>;
 const useSimulatorEngine = () => {
   return usePublicodesEngine(rules, {
     logger: {
-      log: console.info,
       error: console.error,
+      log: console.info,
       // hide all warnings about conversions
       warn: () => {},
     },

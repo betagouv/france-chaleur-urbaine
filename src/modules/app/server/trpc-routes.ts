@@ -7,9 +7,9 @@ export const contactRouter = router({
   create: route
     .meta({
       rateLimit: {
-        windowMs: 60 * 1000, // 1 minute
         max: 1,
         message: 'Veuillez patienter quelques minutes avant de soumettre un nouveau message.',
+        windowMs: 60 * 1000, // 1 minute
       },
     })
     .input(contactFormSchema)

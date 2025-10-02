@@ -3,9 +3,9 @@ import { useRef } from 'react';
 import HeatNetwork from '@/components/Ressources/Contents/HeatNetwork';
 import Header from '@/components/Ressources/Header';
 import { StickyWrapper } from '@/components/Ressources/Ressource.styles';
-import SimplePage from '@/components/shared/page/SimplePage';
 import Slice from '@/components/Slice';
 import StickyForm from '@/components/StickyForm/StickyForm';
+import SimplePage from '@/components/shared/page/SimplePage';
 import Heading from '@/components/ui/Heading';
 
 const ChauffageUrbain = () => {

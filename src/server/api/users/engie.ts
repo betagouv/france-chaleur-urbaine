@@ -7,16 +7,16 @@ import { parentLogger } from '@/server/helpers/logger';
 import { sanitizeEmail } from '@/utils/validation';
 
 const logger = parentLogger.child({
-  module: 'engie',
   dry_run: cliConfig.dryRun,
+  module: 'engie',
 });
 
 export const validation = z.array(
   z.object({
-    id_sncu: z.string(),
-    full_url: z.string(),
-    public_name: z.string(),
     contacts: z.array(z.email().toLowerCase().trim()),
+    full_url: z.string(),
+    id_sncu: z.string(),
+    public_name: z.string(),
   })
 );
 
@@ -73,15 +73,15 @@ export const handleData = async (account: ApiAccounts, networks: EngieApiNetwork
         if (!cliConfig.dryRun) {
           await create(
             {
-              status: 'valid',
-              role: 'gestionnaire',
-              password: '',
               active: true,
-              structure_name: account.name,
               email: sanitizedEmail,
+              from_api: account.key,
               gestionnaires: apiTags,
               gestionnaires_from_api: apiTags,
-              from_api: account.key,
+              password: '',
+              role: 'gestionnaire',
+              status: 'valid',
+              structure_name: account.name,
             },
             {} as any
           );
@@ -104,9 +104,9 @@ export const handleData = async (account: ApiAccounts, networks: EngieApiNetwork
         await kdb
           .updateTable('users')
           .set({
+            active: true,
             gestionnaires: allTags,
             gestionnaires_from_api: apiTags,
-            active: true,
           })
           .where('id', '=', user.id)
           .execute();

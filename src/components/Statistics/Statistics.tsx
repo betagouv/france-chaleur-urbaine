@@ -8,8 +8,8 @@ import Loader from '@/components/ui/Loader';
 import Tooltip from '@/components/ui/Tooltip';
 import statistics from '@/data/statistics';
 import { useFetch } from '@/hooks/useApi';
-import { type Statistiques } from '@/pages/api/statistiques/all';
-import { type MatomoMonthStat } from '@/server/services/matomo_types';
+import type { Statistiques } from '@/pages/api/statistiques/all';
+import type { MatomoMonthStat } from '@/server/services/matomo_types';
 import { STAT_LABEL } from '@/types/enum/MatomoStats';
 import { dayjs } from '@/utils/date';
 
@@ -57,13 +57,13 @@ const monthToString = [
 const today = new Date();
 
 const graphOptions = {
-  large: true,
-  legendPosition: 'top',
-  legendAlignment: 'end',
-  titleTextStyle: { fontSize: 16, bold: false },
-  hAxisTextStyle: { color: '7C8DB5' },
-  vAxisTextStyle: { color: '7C8DB5' },
   colors: ['#83B0F3', '#64B847', '#1f8d49', '#009099'],
+  hAxisTextStyle: { color: '7C8DB5' },
+  large: true,
+  legendAlignment: 'end',
+  legendPosition: 'top',
+  titleTextStyle: { bold: false, fontSize: 16 },
+  vAxisTextStyle: { color: '7C8DB5' },
 };
 
 const getFormattedDataSum = (formatedData: number[][], startYear?: number, startMonth?: number) => {

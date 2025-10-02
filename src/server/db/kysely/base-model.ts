@@ -1,9 +1,9 @@
-import { type ExpressionBuilder } from 'kysely';
-import { type ExtractTableAlias } from 'kysely/dist/cjs/parser/table-parser';
-import { type UpdateObjectExpression } from 'kysely/dist/cjs/parser/update-set-parser';
+import type { ExpressionBuilder } from 'kysely';
+import type { ExtractTableAlias } from 'kysely/dist/cjs/parser/table-parser';
+import type { UpdateObjectExpression } from 'kysely/dist/cjs/parser/update-set-parser';
 import { z } from 'zod';
 
-import { type Context as ApiContext, type ListConfig } from '@/server/api/crud';
+import type { Context as ApiContext, ListConfig } from '@/server/api/crud';
 import { applyFilters, type DB, type InsertObject, kdb } from '@/server/db/kysely';
 
 const filterSchema = z.record(
@@ -91,8 +91,8 @@ export function createBaseModel<T extends keyof DB>(tableName: T) {
     const records = await query.execute();
 
     return {
-      items: records as unknown as DB[T][], // TODO return the correct fields in select
       count,
+      items: records as unknown as DB[T][], // TODO return the correct fields in select
     };
   };
 
@@ -151,15 +151,15 @@ export function createBaseModel<T extends keyof DB>(tableName: T) {
   };
 
   return {
+    create,
+    createMine,
     get,
     getMine,
     list,
     listMine,
-    create,
-    createMine,
-    update,
-    updateMine,
     remove,
     removeMine,
+    update,
+    updateMine,
   };
 }

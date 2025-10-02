@@ -27,7 +27,7 @@ export const RelanceEmail = ({ firstName, date, adresse, id, ...props }: Relance
         avancer.
       </Text>
       <Text>Avez-vous été contacté(e) par le gestionnaire du réseau de chaleur ?</Text>
-      <Section style={{ padding: '8px 0', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <Section style={{ alignItems: 'center', display: 'flex', justifyContent: 'center', padding: '8px 0' }}>
         <Button href={`${url}true`} style={{ marginRight: '8px' }}>
           👍 Oui
         </Button>

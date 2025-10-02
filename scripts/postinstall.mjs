@@ -1,4 +1,4 @@
-import { rmSync, readdirSync, existsSync } from 'node:fs';
+import { existsSync, readdirSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 
 // ce script supprime les fichiers non compatibles avec le système d'exploitation pour diminuer la taille de node_modules
@@ -29,7 +29,7 @@ function cleanNativeBinaries(baseDir, packagePrefix) {
         if (!isCurrentPlatform || !isCurrentArch || shouldBeRemoved) {
           const fullPath = join(baseDir, name);
           console.info(`=> [supprimé] ${name}`);
-          rmSync(fullPath, { recursive: true, force: true });
+          rmSync(fullPath, { force: true, recursive: true });
           removed++;
         } else {
           console.info(`=> [conservé] ${name}`);

@@ -1,5 +1,5 @@
 import { db, sql } from '@/server/db/kysely';
-import { type BoundingBox } from '@/types/Coords';
+import type { BoundingBox } from '@/types/Coords';
 
 type TypeCommune = 'Réseau Existant' | 'Réseau Futur' | 'Fort Potentiel' | 'Potentiel' | 'Sans Potentiel';
 
@@ -64,19 +64,19 @@ export const getCommunePotentiel = async (codeInsee: string) => {
 
   const result = {
     ...commune,
-    zonesAFortPotentiel: {
-      nb: zonesAFortPotentiel.length,
-      chauffage: zonesAFortPotentiel.reduce((sum, zone) => sum + (zone.chauf_mwh ?? 0), 0),
-      ecs: zonesAFortPotentiel.reduce((sum, zone) => sum + (zone.ecs_mwh ?? 0), 0),
-    },
-    zonesAPotentiel: {
-      nb: zonesAPotentiel.length,
-      chauffage: zonesAPotentiel.reduce((sum, zone) => sum + (zone.chauf_mwh ?? 0), 0),
-      ecs: zonesAPotentiel.reduce((sum, zone) => sum + (zone.ecs_mwh ?? 0), 0),
-    },
+    bounds: commune?.bounds,
     nbReseauxExistants,
     nbReseauxFuturs,
-    bounds: commune?.bounds,
+    zonesAFortPotentiel: {
+      chauffage: zonesAFortPotentiel.reduce((sum, zone) => sum + (zone.chauf_mwh ?? 0), 0),
+      ecs: zonesAFortPotentiel.reduce((sum, zone) => sum + (zone.ecs_mwh ?? 0), 0),
+      nb: zonesAFortPotentiel.length,
+    },
+    zonesAPotentiel: {
+      chauffage: zonesAPotentiel.reduce((sum, zone) => sum + (zone.chauf_mwh ?? 0), 0),
+      ecs: zonesAPotentiel.reduce((sum, zone) => sum + (zone.ecs_mwh ?? 0), 0),
+      nb: zonesAPotentiel.length,
+    },
   };
 
   const type: TypeCommune =

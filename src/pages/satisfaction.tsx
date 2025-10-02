@@ -1,12 +1,12 @@
 import { Alert } from '@codegouvfr/react-dsfr/Alert';
 import { Button } from '@codegouvfr/react-dsfr/Button';
-import { type GetServerSidePropsContext } from 'next';
+import type { GetServerSidePropsContext } from 'next';
 import { useRouter } from 'next/router';
 import { type FormEvent, useEffect, useState } from 'react';
 
 import TextArea from '@/components/form/dsfr/TextArea';
-import SimplePage from '@/components/shared/page/SimplePage';
 import Slice from '@/components/Slice';
+import SimplePage from '@/components/shared/page/SimplePage';
 import { updateRelanceAnswer } from '@/server/services/manager';
 import { submitToAirtable } from '@/services/airtable';
 import { Airtable } from '@/types/enum/Airtable';
@@ -30,7 +30,7 @@ function Satisfaction() {
   const send = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSent(true);
-    await submitToAirtable({ id, comment }, Airtable.RELANCE);
+    await submitToAirtable({ comment, id }, Airtable.RELANCE);
   };
 
   return (
@@ -61,10 +61,10 @@ function Satisfaction() {
             <TextArea
               label="Commentaire"
               nativeTextAreaProps={{
-                value: comment,
                 onChange: (e) => setComment(e.target.value),
                 placeholder: 'Je laisse un commentaire',
                 required: true,
+                value: comment,
               }}
             />
             <Button type="submit">Envoyer</Button>

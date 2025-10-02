@@ -1,10 +1,10 @@
-import { type RegisteredLinkProps } from '@codegouvfr/react-dsfr/link';
+import type { RegisteredLinkProps } from '@codegouvfr/react-dsfr/link';
 import { Tile as DSFRTile, type TileProps as DSFRTileProps } from '@codegouvfr/react-dsfr/Tile';
 import { cva } from 'class-variance-authority';
 import { useRouter } from 'next/navigation';
-import React from 'react';
+import type React from 'react';
 
-import { trackEvent, type TrackingEvent } from '@/modules/analytics/client';
+import { type TrackingEvent, trackEvent } from '@/modules/analytics/client';
 
 type TileSize = 'sm' | 'md' | 'lg';
 
@@ -20,54 +20,54 @@ export type TileProps = BaseTileProps & {
 };
 
 const tileVariants = cva('', {
-  variants: {
-    size: {
-      sm: 'pt-4! px-4! pb-5!',
-      md: '',
-      lg: '',
-    },
-  },
   defaultVariants: {
     size: 'md',
+  },
+  variants: {
+    size: {
+      lg: '',
+      md: '',
+      sm: 'pt-4! px-4! pb-5!',
+    },
   },
 });
 
 const headerVariants = cva('', {
-  variants: {
-    size: {
-      sm: 'mr-1!',
-      md: '',
-      lg: '',
-    },
-  },
   defaultVariants: {
     size: 'md',
+  },
+  variants: {
+    size: {
+      lg: '',
+      md: '',
+      sm: 'mr-1!',
+    },
   },
 });
 
 const imgVariants = cva('', {
-  variants: {
-    size: {
-      sm: 'mr-0!',
-      md: '',
-      lg: '',
-    },
-  },
   defaultVariants: {
     size: 'md',
+  },
+  variants: {
+    size: {
+      lg: '',
+      md: '',
+      sm: 'mr-0!',
+    },
   },
 });
 
 const contentVariants = cva('', {
-  variants: {
-    size: {
-      sm: 'pb-6!',
-      md: '',
-      lg: '',
-    },
-  },
   defaultVariants: {
     size: 'md',
+  },
+  variants: {
+    size: {
+      lg: '',
+      md: '',
+      sm: 'pb-6!',
+    },
   },
 });
 
@@ -98,11 +98,11 @@ const Tile: React.FC<TileProps> = ({ size = 'md', className, image, linkProps, e
   return (
     <DSFRTile
       classes={{
+        content: contentVariants({ size }),
         header: headerVariants({ size }),
         img: imgVariants({ size }),
-        content: contentVariants({ size }),
       }}
-      className={tileVariants({ size, className })}
+      className={tileVariants({ className, size })}
       small={size === 'sm'}
       imageUrl={imageUrl}
       linkProps={{

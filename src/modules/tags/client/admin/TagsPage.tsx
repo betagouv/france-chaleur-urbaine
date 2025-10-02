@@ -1,6 +1,6 @@
 import { Input } from '@codegouvfr/react-dsfr/Input';
 import Tag from '@codegouvfr/react-dsfr/Tag';
-import { type Row } from '@tanstack/react-table';
+import type { Row } from '@tanstack/react-table';
 import { useState } from 'react';
 
 import Select, { type SelectOption } from '@/components/form/dsfr/Select';
@@ -17,10 +17,10 @@ import cx from '@/utils/cx';
 import { compareFrenchStrings } from '@/utils/strings';
 
 import { tagsGestionnairesStyleByType } from '../../constants';
-import { type TagsResponse } from '../../server/api-admin';
-import { type TagWithUsers } from '../../server/service';
+import type { TagsResponse } from '../../server/api-admin';
+import type { TagWithUsers } from '../../server/service';
 
-const initialSortingState = [{ id: 'name', desc: false }];
+const initialSortingState = [{ desc: false, id: 'name' }];
 
 const tagTypeOptions: SelectOption[] = [
   { label: 'Sélectionner un type', value: '' },
@@ -52,31 +52,28 @@ export default function ManageTags() {
   const tableColumns: ColumnDef<TagWithUsers>[] = [
     {
       accessorKey: 'name',
-      header: 'Nom',
-      sortingFn: (rowA: Row<TagWithUsers>, rowB: Row<TagWithUsers>) => compareFrenchStrings(rowA.original.name, rowB.original.name),
       cell: (info) => (
         <Tag className={cx(tagsGestionnairesStyleByType[info.row.original.type as keyof typeof tagsGestionnairesStyleByType]?.className)}>
           {info.getValue()}
         </Tag>
       ),
       className: 'break-words break-all',
+      header: 'Nom',
+      sortingFn: (rowA: Row<TagWithUsers>, rowB: Row<TagWithUsers>) => compareFrenchStrings(rowA.original.name, rowB.original.name),
     },
     {
       accessorKey: 'type',
-      header: 'Type',
       cell: (info) => {
         const type = info.getValue() as string;
         const typeInfo = tagsGestionnairesStyleByType[type as keyof typeof tagsGestionnairesStyleByType];
         return type && typeInfo ? typeInfo.title : '';
       },
       filterType: 'Facets',
+      header: 'Type',
       width: '150px',
     },
     {
       accessorFn: (row) => row.users.map((u) => u.email.toLowerCase()).join(' '),
-      id: 'users',
-      header: 'Gestionnaires associés',
-      flex: 3,
       cell: ({ row }) => (
         <div className="flex flex-wrap gap-1">
           {row.original.users.map((user) => (
@@ -85,15 +82,16 @@ export default function ManageTags() {
         </div>
       ),
       enableSorting: false,
+      flex: 3,
+      header: 'Gestionnaires associés',
+      id: 'users',
     },
     {
       accessorKey: 'created_at',
-      header: 'Créé le',
       cellType: 'Date',
+      header: 'Créé le',
     },
     {
-      id: 'actions',
-      header: 'Actions',
       cell: ({ row }) => (
         <div className="flex gap-2">
           <Button
@@ -121,6 +119,8 @@ export default function ManageTags() {
           />
         </div>
       ),
+      header: 'Actions',
+      id: 'actions',
       width: '120px',
     },
   ];
@@ -213,17 +213,17 @@ export default function ManageTags() {
           <Input
             label="Nom du tag"
             nativeInputProps={{
-              value: newTagName,
               onChange: (e) => setNewTagName(e.target.value),
               onKeyDown: (e) => e.key === 'Enter' && handleCreate(),
+              value: newTagName,
             }}
           />
           <Select
             label="Type du tag"
             options={tagTypeOptions}
             nativeSelectProps={{
-              value: newTagType,
               onChange: (e) => setNewTagType(e.target.value),
+              value: newTagType,
             }}
           />
           <div className="flex justify-end gap-2">
@@ -241,17 +241,17 @@ export default function ManageTags() {
           <Input
             label="Nom"
             nativeInputProps={{
-              value: editTagName,
               onChange: (e) => setEditTagName(e.target.value),
               onKeyDown: (e) => e.key === 'Enter' && handleEdit(),
+              value: editTagName,
             }}
           />
           <Select
             label="Type"
             options={tagTypeOptions}
             nativeSelectProps={{
-              value: editTagType,
               onChange: (e) => setEditTagType(e.target.value),
+              value: editTagType,
             }}
           />
           <div className="flex justify-end gap-2">

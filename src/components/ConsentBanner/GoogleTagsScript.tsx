@@ -1,5 +1,6 @@
 import Script from 'next/script';
-import React from 'react';
+import type React from 'react';
+
 type GoogleTagsScriptProps = React.ComponentProps<typeof Script> & {
   tagIds: string[];
 };

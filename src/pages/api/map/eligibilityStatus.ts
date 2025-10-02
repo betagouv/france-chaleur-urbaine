@@ -9,9 +9,9 @@ const eligibilityStatus = handleRouteErrors(async (req: NextApiRequest) => {
   requireGetMethod(req);
 
   const { lat, lon, city } = await validateObjectSchema(req.query, {
+    city: z.string(),
     lat: z.coerce.number(),
     lon: z.coerce.number(),
-    city: z.string(),
   });
   return await getEligilityStatus(lat, lon, city);
 });

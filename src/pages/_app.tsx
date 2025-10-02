@@ -19,7 +19,7 @@ import { useAnalytics } from '@/modules/analytics/client';
 import { useInitAuthentication } from '@/modules/auth/client/hooks';
 import { NotifierContainer } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
-import { type AuthSSRPageProps } from '@/server/authentication';
+import type { AuthSSRPageProps } from '@/server/authentication';
 import { HeatNetworkService, ServicesContext, SuggestionService } from '@/services';
 import { DemandsService } from '@/services/demands';
 import { ExportService } from '@/services/export';
@@ -60,22 +60,22 @@ const AppProvider = (props: AppProps<AuthSSRPageProps>) => {
       new QueryClient({
         defaultOptions: {
           queries: {
+            refetchOnReconnect: false,
+            refetchOnWindowFocus: false, // see https://react-query.tanstack.com/guides/important-defaults
             retry: 1, // retry failing requests just once, see https://react-query.tanstack.com/guides/query-retries
             retryDelay: 3000, // retry failing requests after 3 seconds
-            refetchOnWindowFocus: false, // see https://react-query.tanstack.com/guides/important-defaults
-            refetchOnReconnect: false,
           },
         },
       })
   );
 
   const [services] = useState(() => ({
-    suggestionService: new SuggestionService(axiosHttpClient),
-    heatNetworkService: new HeatNetworkService(axiosHttpClient),
     demandsService: new DemandsService(axiosHttpClient),
-    passwordService: new PasswordService(axiosHttpClient),
-    networksService: new NetworksService(axiosHttpClient),
     exportService: new ExportService(axiosHttpClient),
+    heatNetworkService: new HeatNetworkService(axiosHttpClient),
+    networksService: new NetworksService(axiosHttpClient),
+    passwordService: new PasswordService(axiosHttpClient),
+    suggestionService: new SuggestionService(axiosHttpClient),
   }));
 
   return (

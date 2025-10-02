@@ -6,22 +6,11 @@ import ExpressionValidator from '@/components/assignment-rules/ExpressionValidat
 import useForm from '@/components/form/react-form/useForm';
 import Button from '@/components/ui/Button';
 import Dialog from '@/components/ui/Dialog';
-import { type AssignmentRule } from '@/server/services/assignment-rules';
+import type { AssignmentRule } from '@/server/services/assignment-rules';
 import { validateExpression, validateResult } from '@/utils/expression-parser';
 
 const assignmentRuleSchema = z.object({
-  search_pattern: z
-    .string()
-    .min(1, 'Le motif de recherche est obligatoire')
-    .superRefine((value, ctx) => {
-      const validation = validateExpression(value.trim());
-      if (!validation.isValid) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: validation.error,
-        });
-      }
-    }),
+  active: z.boolean(),
   result: z
     .string()
     .min(1, 'Le résultat est obligatoire')
@@ -34,7 +23,18 @@ const assignmentRuleSchema = z.object({
         });
       }
     }),
-  active: z.boolean(),
+  search_pattern: z
+    .string()
+    .min(1, 'Le motif de recherche est obligatoire')
+    .superRefine((value, ctx) => {
+      const validation = validateExpression(value.trim());
+      if (!validation.isValid) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: validation.error,
+        });
+      }
+    }),
 });
 
 type AssignmentRuleFormData = z.infer<typeof assignmentRuleSchema>;
@@ -51,31 +51,31 @@ const AssignmentRuleDialog = ({ open, onOpenChange, rule, onSubmit }: Assignment
   const title = isEditing ? 'Modifier la règle' : 'Ajouter une règle';
 
   const { Form, Field, Submit, form } = useForm({
-    schema: assignmentRuleSchema,
     defaultValues: {
-      search_pattern: rule?.search_pattern ?? '',
-      result: rule?.result ?? '',
       active: rule?.active ?? true,
+      result: rule?.result ?? '',
+      search_pattern: rule?.search_pattern ?? '',
     },
     onSubmit: async ({ value }) => {
       await onSubmit(value);
       handleClose();
     },
+    schema: assignmentRuleSchema,
   });
 
   // Réinitialiser les valeurs quand la règle change ou quand on ouvre/ferme
   useEffect(() => {
     if (open && rule) {
       form.reset({
-        search_pattern: rule.search_pattern,
-        result: rule.result,
         active: rule.active,
+        result: rule.result,
+        search_pattern: rule.search_pattern,
       });
     } else if (open && !rule) {
       form.reset({
-        search_pattern: '',
-        result: '',
         active: true,
+        result: '',
+        search_pattern: '',
       });
     }
   }, [open, rule, form]);

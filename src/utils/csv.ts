@@ -50,7 +50,7 @@ export const CSVToArray = (strData: string, strDelimiter: string) => {
     if (arrMatches[2]) {
       // We found a quoted value. When we capture
       // this value, unescape any double quotes.
-      strMatchedValue = arrMatches[2].replace(new RegExp('""', 'g'), '"');
+      strMatchedValue = arrMatches[2].replace(/""/g, '"');
     } else {
       // We found a non-quoted value.
       strMatchedValue = arrMatches[3];

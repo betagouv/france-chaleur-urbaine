@@ -2,11 +2,11 @@ import HeadSliceForm from '@/components/HeadSliceForm';
 import MarkdownWrapper from '@/components/MarkdownWrapper';
 import { growths, issues, understandings } from '@/components/Ressources/config';
 import Understanding from '@/components/Ressources/Understanding';
-import { GlobalStyle } from '@/components/shared/layout/Global.style';
 import Simulator from '@/components/SimulatorCO2';
 import { TypeSurf } from '@/components/SimulatorCO2/SimulatorCO2.businessRule';
 import Slice from '@/components/Slice';
 import SliceForm from '@/components/SliceForm';
+import { GlobalStyle } from '@/components/shared/layout/Global.style';
 import { legacyColors } from '@/components/ui/helpers/colors';
 import WrappedBlock from '@/components/WrappedBlock';
 import WrappedText from '@/components/WrappedText';
@@ -16,10 +16,10 @@ import { TertiaireStyle } from './index.styles';
 import Owner from './Owner';
 
 const tertiaireCards = {
-  'energies-vertes': issues['energies-vertes'],
+  acteurs: growths.acteurs,
   aides: understandings.aides,
   avantages: understandings.avantages,
-  acteurs: growths.acteurs,
+  'energies-vertes': issues['energies-vertes'],
 };
 
 function Tertiaire({ alt }: { alt?: boolean }) {

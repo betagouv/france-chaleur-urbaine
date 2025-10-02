@@ -1,6 +1,6 @@
-import { type AxiosResponse } from 'axios';
+import type { AxiosResponse } from 'axios';
 
-import { type HttpClient } from '@/services/http';
+import type { HttpClient } from '@/services/http';
 
 export class PasswordService {
   httpClient: HttpClient;
@@ -11,6 +11,6 @@ export class PasswordService {
     return this.httpClient.post(`/api/password/reset`, { email });
   }
   async changePassword(token: string, password: string): Promise<AxiosResponse<void>> {
-    return this.httpClient.post(`/api/password/change`, { token, password });
+    return this.httpClient.post(`/api/password/change`, { password, token });
   }
 }

@@ -94,14 +94,14 @@ FROM (
 
     const interestedUsers = tests.reduce((acc: any, { user, ...test }: any) => {
       acc[user.id] = acc[user.id] || {
-        id: user.id,
         first_name: user.first_name,
-        last_name: user.last_name,
-        role: user.role,
         gestionnaires: user.gestionnaires,
+        id: user.id,
+        last_name: user.last_name,
+        phone: user.phone,
+        role: user.role,
         structure_name: user.structure_name,
         structure_type: user.structure_type,
-        phone: user.phone,
         tests: [],
       };
 

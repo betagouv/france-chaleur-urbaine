@@ -16,10 +16,10 @@ import { serverConfig } from '@/server/config';
 import { parentLogger } from '@/server/helpers/logger';
 import { sleep } from '@/utils/time';
 
-import { type DB as Database } from './database';
+import type { DB as Database } from './database';
 
 export * from './database';
-export { Insertable, InsertObject, sql };
+export { type Insertable, type InsertObject, sql };
 
 // Automatically convert postgres number fields from string to javascript numbers.
 types.setTypeParser(types.builtins.INT2, (value) => parseInt(value));
@@ -47,8 +47,8 @@ export const db = new Kysely<Database>({
     ? (event) => {
         logger.debug(`query ${event.level === 'error' ? 'failed' : 'completed'}`, {
           durationMs: Math.round(event.queryDurationMillis),
-          sql: event.query.sql,
           params: event.query.parameters,
+          sql: event.query.sql,
           ...(event.level === 'error' ? { error: event.error } : {}),
         });
       }

@@ -61,20 +61,20 @@ const ScaleLegend = ({
             hideMinMax
             nativeInputProps={[
               {
-                value: valueMin,
                 onChange: (e) => {
                   const newValueMin = +e.target.value;
                   setValueMin(newValueMin);
                   onChange([newValueMin, valueMax]);
                 },
+                value: valueMin,
               },
               {
-                value: valueMax,
                 onChange: (e) => {
                   const newValueMax = +e.target.value;
                   setValueMax(newValueMax);
                   onChange([valueMin, newValueMax]);
                 },
+                value: valueMax,
               },
             ]}
             {...props}

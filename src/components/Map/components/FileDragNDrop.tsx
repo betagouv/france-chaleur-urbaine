@@ -50,7 +50,7 @@ const FileDragNDrop = ({ onDrop }: FileDragNDropProps) => {
         throw new Error('Source customGeojson not found');
       }
       (mapRef.getSource('customGeojson') as maplibregl.GeoJSONSource).setData(wgs84GeoJsonData);
-      mapRef.fitBounds(bbox(wgs84GeoJsonData) as [number, number, number, number], { maxZoom: 17, duration: 3000 });
+      mapRef.fitBounds(bbox(wgs84GeoJsonData) as [number, number, number, number], { duration: 3000, maxZoom: 17 });
     });
 
     mapRef.getContainer().addEventListener('dragover', onDragOver);
@@ -84,15 +84,14 @@ type FileConversionStrategy = {
 const fileConversionStrategy = [
   // manque fichiers gpkg (= base sqlite), mais pas réussi à importer le module qui avait besoin de 'fs'
   {
-    extensions: ['kml'],
     async convert(file) {
       const text = await file.text();
       const kml = new DOMParser().parseFromString(text, 'text/xml');
       return (await import('@tmcw/togeojson')).kml(kml);
     },
+    extensions: ['kml'],
   },
   {
-    extensions: ['kmz'],
     async convert(file) {
       const zip = await file.arrayBuffer();
       const zipData = await (await import('jszip')).default.loadAsync(zip);
@@ -103,13 +102,14 @@ const fileConversionStrategy = [
         return (await import('@tmcw/togeojson')).kml(kml);
       }
     },
+    extensions: ['kmz'],
   },
   {
-    extensions: ['json', 'geojson'],
     async convert(file) {
       const geoJsonData = JSON.parse(await file.text());
       return hasLambert93Projection(geoJsonData) ? await convertLambert93GeoJSONToWGS84(geoJsonData) : geoJsonData;
     },
+    extensions: ['json', 'geojson'],
   },
 ] satisfies FileConversionStrategy[];
 
@@ -143,7 +143,7 @@ async function readShapefileWithProjection(files: File[]) {
     result = await source.read();
   }
 
-  const geojson = { type: 'FeatureCollection', features };
+  const geojson = { features, type: 'FeatureCollection' };
   const sourceCrs = prj ? await detectCrsFromProj(new TextDecoder().decode(prj)) : undefined;
   return convertToWGS84(geojson, sourceCrs);
 }

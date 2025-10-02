@@ -182,9 +182,9 @@ export class TrelloService {
 
   async downloadAttachment(attachment: TrelloCard['attachments'][number]): Promise<string> {
     return await downloadFile({
-      url: `${attachment.url}?${this.getAuthParams()}`,
       fileName: attachment.fileName,
       headers: { Authorization: `OAuth oauth_consumer_key="${this.apiKey}", oauth_token="${this.token}"` } as AxiosRequestHeaders,
+      url: `${attachment.url}?${this.getAuthParams()}`,
     });
   }
 

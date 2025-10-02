@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Chart from 'react-google-charts';
 
-import { type Network } from '@/types/Summary/Network';
+import type { Network } from '@/types/Summary/Network';
 
 type GraphLegend = {
   position?: string;
@@ -36,9 +36,9 @@ const EnergiesChart = ({ network, width, height }: { network: Network; width?: s
   const updateChartOptions = () => {
     if (window.innerWidth >= 1100) {
       setLegendOptions({
-        position: 'labeled',
         alignment: 'center',
         labeledValueText: 'percent',
+        position: 'labeled',
       });
       setChartAreaWidth('100%');
     } else {
@@ -66,19 +66,19 @@ const EnergiesChart = ({ network, width, height }: { network: Network; width?: s
       loader={<div>Chargement du graphe...</div>}
       data={graphOptions.map((mix, index) => (index === 0 ? mix : [mix[0], mix[1]]))}
       options={{
+        chartArea: { height: '90%', width: chartAreaWidth },
         colors: graphOptions.slice(1).map((option) => option[2] as string),
-        chartArea: { width: chartAreaWidth, height: '90%' },
-        pieHole: 0.6,
         legend: legendOptions,
+        pieHole: 0.6,
         pieSliceText: 'none',
       }}
       formatters={[
         {
-          type: 'NumberFormat',
           column: 1,
           options: {
             pattern: '# MWh',
           },
+          type: 'NumberFormat',
         },
       ]}
     />

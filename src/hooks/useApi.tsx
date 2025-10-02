@@ -2,18 +2,18 @@ import {
   type InvalidateQueryFilters,
   type MutationKey,
   type QueryKey,
-  useMutation,
   type UseMutationOptions,
   type UseMutationResult,
-  useQuery,
-  useQueryClient,
   type UseQueryOptions,
   type UseQueryResult,
+  useMutation,
+  useQuery,
+  useQueryClient,
 } from '@tanstack/react-query';
 import React from 'react';
 
 import { deleteFetchJSON, fetchJSON, postFetchJSON, putFetchJSON } from '@/utils/network';
-import { type OmitFirst, type Partialize } from '@/utils/typescript';
+import type { OmitFirst, Partialize } from '@/utils/typescript';
 
 type UseQueryParams = Parameters<typeof useQuery>;
 
@@ -25,8 +25,8 @@ export const useFetch = <TQueryFnData, TError = Error, TData = TQueryFnData, TQu
 ): UseQueryResult<TData, TError> => {
   return useQuery<TQueryFnData, TError, TData, TQueryKey>(
     {
-      queryKey: queryKey || ([url] as unknown as TQueryKey),
       queryFn: queryFn ?? (() => fetchJSON<TQueryFnData>(url, fetchVariables ? { params: fetchVariables } : undefined)),
+      queryKey: queryKey || ([url] as unknown as TQueryKey),
       ...options,
     },
     queryClient
@@ -52,19 +52,12 @@ const useAction = <TVariables extends object, TOutput = unknown, TError = Error,
   const [isLoadingId, setIsLoadingId] = React.useState<string | undefined>(undefined);
 
   const fetchMethod = {
+    DELETE: deleteFetchJSON,
     POST: postFetchJSON,
     PUT: putFetchJSON,
-    DELETE: deleteFetchJSON,
   }[method];
 
   const result = useMutation<TOutput, TError, TVariables, TContext>({
-    mutationKey: mutationKey || ([`${method.toLowerCase()} ${typeof url === 'string' ? url : 'dynamic-url'}`] as unknown as MutationKey),
-    onSuccess: (data, variables, context, mutationContext) => {
-      if (invalidate) {
-        invalidate.forEach((key) => queryClient.invalidateQueries({ queryKey: [key] }));
-      }
-      onSuccess?.(data, variables, context, mutationContext);
-    },
     mutationFn:
       mutationFn ??
       (async (variables: TVariables | string) => {
@@ -83,6 +76,13 @@ const useAction = <TVariables extends object, TOutput = unknown, TError = Error,
         setIsLoadingId(undefined);
         return result;
       }),
+    mutationKey: mutationKey || ([`${method.toLowerCase()} ${typeof url === 'string' ? url : 'dynamic-url'}`] as unknown as MutationKey),
+    onSuccess: (data, variables, context, mutationContext) => {
+      if (invalidate) {
+        invalidate.forEach((key) => queryClient.invalidateQueries({ queryKey: [key] }));
+      }
+      onSuccess?.(data, variables, context, mutationContext);
+    },
     ...options,
   });
 

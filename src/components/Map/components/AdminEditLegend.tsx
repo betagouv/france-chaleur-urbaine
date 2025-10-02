@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { type MapLegendFeature } from '@/components/Map/map-layers';
+import type { MapLegendFeature } from '@/components/Map/map-layers';
 import Accordion from '@/components/ui/Accordion';
 import Button from '@/components/ui/Button';
 

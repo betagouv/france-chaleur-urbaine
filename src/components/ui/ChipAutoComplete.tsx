@@ -173,11 +173,11 @@ const ChipAutoComplete = (rawProps: ChipAutoCompleteProps) => {
                   small
                   className={chipOption?.className}
                   nativeButtonProps={{
-                    title: chipOption?.title,
                     onClick: (e: React.MouseEvent<HTMLButtonElement>) => {
                       e.stopPropagation();
                       handleChipRemove(tagName);
                     },
+                    title: chipOption?.title,
                   }}
                 >
                   {chipOption.label || tagName}

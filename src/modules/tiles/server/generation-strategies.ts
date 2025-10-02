@@ -89,8 +89,8 @@ export const extractZippedShapefileToGeoJSON = defineTilesGenerationStrategy(asy
     }
 
     logger.info('Conversion du shapefile en GeoJSON', {
-      shapefile: shapefilePath,
       output: targetTilesFilePath,
+      shapefile: shapefilePath,
     });
 
     await ogr2ogrConvertToGeoJSON(targetTilesFilePath, shapefilePath);
@@ -99,7 +99,7 @@ export const extractZippedShapefileToGeoJSON = defineTilesGenerationStrategy(asy
   } finally {
     // Nettoie le répertoire temporaire
     await runBash(`rm -rf "${tempDir}"`).catch((err) => {
-      logger.warn('Erreur lors du nettoyage du répertoire temporaire', { tempDir, error: err });
+      logger.warn('Erreur lors du nettoyage du répertoire temporaire', { error: err, tempDir });
     });
   }
 });

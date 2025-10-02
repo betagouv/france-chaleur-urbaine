@@ -1,6 +1,5 @@
-import { writeFile } from 'fs/promises';
-
 import camelCase from 'camelcase';
+import { writeFile } from 'fs/promises';
 
 import { listTables } from '@/server/db/airtable';
 

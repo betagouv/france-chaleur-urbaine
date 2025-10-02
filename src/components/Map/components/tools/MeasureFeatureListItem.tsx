@@ -5,7 +5,7 @@ import Button from '@/components/ui/Button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover';
 import { formatDistance } from '@/utils/geo';
 
-import { type MeasureFeature } from './measure';
+import type { MeasureFeature } from './measure';
 
 type MesureFeatureListItemProps = {
   feature: MeasureFeature;

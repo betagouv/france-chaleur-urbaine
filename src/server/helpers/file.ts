@@ -1,6 +1,5 @@
-import fs from 'fs';
-
 import axios, { type AxiosRequestHeaders } from 'axios';
+import fs from 'fs';
 
 import { logger } from '@/server/helpers/logger';
 
@@ -15,7 +14,7 @@ export async function downloadFile({ url, fileName, headers }: DownloadFileOptio
   logger.debug(`📥 Téléchargement de ${url} dans ${filePath}`);
 
   try {
-    const response = await axios.get(url, { responseType: 'stream', headers });
+    const response = await axios.get(url, { headers, responseType: 'stream' });
     const writeStream = fs.createWriteStream(filePath);
 
     response.data.pipe(writeStream);
@@ -41,7 +40,7 @@ export async function downloadFiles(urls: string[] | DownloadFileOptions[]): Pro
     const fileName = typeof urlOrObject === 'string' ? undefined : urlOrObject.fileName;
     const headers = typeof urlOrObject === 'string' ? undefined : urlOrObject.headers;
 
-    const filePath = await downloadFile({ url, fileName, headers });
+    const filePath = await downloadFile({ fileName, headers, url });
     localPaths.push(filePath);
   }
 

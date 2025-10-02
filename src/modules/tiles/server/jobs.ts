@@ -1,13 +1,13 @@
-import { type Selectable } from 'kysely';
-import { type Logger } from 'winston';
+import type { Selectable } from 'kysely';
+import type { Logger } from 'winston';
 
 import { createUserEvent } from '@/modules/events/server/service';
 import { downloadNetwork } from '@/modules/reseaux/server/download-network';
 import { syncPostgresToAirtable } from '@/modules/reseaux/server/sync-pg-to-airtable';
-import { type BuildTilesInput, type SyncGeometriesInput } from '@/modules/tiles/constants';
-import { type Jobs } from '@/server/db/kysely';
+import type { BuildTilesInput, SyncGeometriesInput } from '@/modules/tiles/constants';
+import type { Jobs } from '@/server/db/kysely';
 
-import { type DatabaseSourceId } from '../tiles.config';
+import type { DatabaseSourceId } from '../tiles.config';
 import { runTilesGeneration } from './generation-run';
 import { getTileNameFromInternalName } from './service';
 
@@ -23,9 +23,9 @@ export async function processBuildTilesJob(job: BuildTilesJob, logger: Logger) {
   const config = await runTilesGeneration(name);
   logger.info(`La table ${config.tilesTableName} a été populée avec les données pour ${name}.`);
   await createUserEvent({
-    type: 'build_tiles',
-    data: { name },
     author_id: job.user_id,
+    data: { name },
+    type: 'build_tiles',
   });
 }
 
@@ -45,9 +45,9 @@ export async function processSyncMetadataFromAirtableJob(job: SyncMetadataFromAi
   await downloadNetwork(getTileNameFromInternalName(name) as DatabaseSourceId);
   logger.info(`Les données ont été récupérées depuis Airtable et ont été insérées pour ${name}.`);
   await createUserEvent({
-    type: 'sync_metadata_from_airtable',
-    data: { name },
     author_id: job.user_id,
+    data: { name },
+    type: 'sync_metadata_from_airtable',
   });
 }
 
@@ -67,8 +67,8 @@ export async function processSyncGeometriesToAirtableJob(job: SyncGeometriesToAi
   await syncPostgresToAirtable(false); // false = pas de dry run
   logger.info(`Les géométries ont été envoyées sur Airtable depuis la table ${name}.`);
   await createUserEvent({
-    type: 'sync_geometries_to_airtable',
-    data: { name },
     author_id: job.user_id,
+    data: { name },
+    type: 'sync_geometries_to_airtable',
   });
 }

@@ -1,4 +1,4 @@
-import React from 'react';
+import type React from 'react';
 
 import Tooltip from '@/components/ui/Tooltip';
 import { upperCaseFirstChar } from '@/utils/strings';
@@ -15,7 +15,7 @@ const Label: React.FC<LabelProps> = ({ label, unit, help }) => {
   const displayLabel = typeof label === 'string' ? labels[label] || label : label;
 
   return (
-    <span style={{ display: 'flex', alignItems: 'start', justifyContent: 'space-between', gap: '2px' }}>
+    <span style={{ alignItems: 'start', display: 'flex', gap: '2px', justifyContent: 'space-between' }}>
       <span>
         {typeof displayLabel === 'string' ? upperCaseFirstChar(displayLabel) : displayLabel}
         {unit ? (
@@ -31,7 +31,7 @@ const Label: React.FC<LabelProps> = ({ label, unit, help }) => {
           ''
         )}
       </span>
-      {help && <Tooltip title={help}></Tooltip>}
+      {help && <Tooltip title={help} />}
     </span>
   );
 };

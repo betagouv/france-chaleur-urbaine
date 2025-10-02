@@ -20,8 +20,8 @@ function useHtmlAttributes(additionalAttributes: Record<string, string> = {}) {
     const html = document.documentElement;
 
     const attributes = {
-      'data-os': getOsFromUserAgent(navigator.userAgent),
       'data-browser': getBrowserFromUserAgent(navigator.userAgent),
+      'data-os': getOsFromUserAgent(navigator.userAgent),
       ...additionalAttributes,
     };
 

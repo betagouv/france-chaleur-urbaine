@@ -14,8 +14,8 @@ export default handleRouteErrors(async (req: NextApiRequest) => {
   });
   // would be best with the type in the URL
   const { type, ...values } = await validateObjectSchema(req.body, {
-    type: z.enum([Airtable.DEMANDES]),
     sondage: z.array(z.string().max(300)), // may contain an unknown string as the last value if Other is included
+    type: z.enum([Airtable.DEMANDES]),
   });
 
   switch (type) {

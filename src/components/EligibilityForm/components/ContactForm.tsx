@@ -6,7 +6,7 @@ import { z } from 'zod';
 import useForm from '@/components/form/react-form/useForm';
 import Alert from '@/components/ui/Alert';
 import { AnalyticsFormId } from '@/modules/analytics/client';
-import { type ContactFormInfos } from '@/types/Summary/Demand';
+import type { ContactFormInfos } from '@/types/Summary/Demand';
 
 type ContactFormProps = {
   onSubmit: (values: ContactFormInfos) => void;
@@ -18,23 +18,23 @@ type ContactFormProps = {
 
 const validationSchema = z
   .object({
-    structure: z.string().min(1, 'Veuillez renseigner votre type de bâtiment'),
-    lastName: z.string().min(1, 'Veuillez renseigner votre nom'),
-    firstName: z.string().min(1, 'Veuillez renseigner votre prénom'),
     company: z.string().optional(),
     companyType: z.string().optional(),
+    demandArea: z.number().optional(),
+    demandCompanyName: z.string().optional(),
+    demandCompanyType: z.string().optional(),
+    email: z.string().email("Votre adresse email n'est pas valide").min(1, 'Veuillez renseigner votre adresse email'),
+    firstName: z.string().min(1, 'Veuillez renseigner votre prénom'),
+    heatingEnergy: z
+      .string()
+      .refine((val) => fieldLabelInformation.heatingEnergy.inputs.some((input) => input.value === val), 'Ce champ est requis'),
+    lastName: z.string().min(1, 'Veuillez renseigner votre nom'),
+    nbLogements: z.number().optional(),
     phone: z
       .string()
       .regex(/^(?:(?:\+|00)33|0)\s*[1-9]\d{8}$|^$/, 'Veuillez renseigner votre numéro de téléphone sous le format 0605040302')
       .optional(),
-    email: z.string().email("Votre adresse email n'est pas valide").min(1, 'Veuillez renseigner votre adresse email'),
-    heatingEnergy: z
-      .string()
-      .refine((val) => fieldLabelInformation.heatingEnergy.inputs.some((input) => input.value === val), 'Ce champ est requis'),
-    nbLogements: z.number().optional(),
-    demandCompanyType: z.string().optional(),
-    demandCompanyName: z.string().optional(),
-    demandArea: z.number().optional(),
+    structure: z.string().min(1, 'Veuillez renseigner votre type de bâtiment'),
     termOfUse: z.boolean().refine((val) => val, {
       error: 'Ce champ est requis',
     }),
@@ -43,9 +43,9 @@ const validationSchema = z
     const displayIssue = (field: string, message: string) => {
       console.error(field, message);
       ctx.addIssue({
-        path: [field],
         code: z.ZodIssueCode.custom,
         message,
+        path: [field],
       });
     };
 
@@ -73,56 +73,56 @@ const validationSchema = z
   });
 
 export const fieldLabelInformation = {
-  structure: {
-    label: 'Vous êtes...',
-    inputs: [
-      { value: 'Copropriété', label: 'Copropriétaire', id: 'copropriete' },
-      {
-        value: 'Maison individuelle',
-        label: 'Propriétaire de maison individuelle',
-        id: 'maison',
-      },
-      { value: 'Tertiaire', label: 'Professionnel', id: 'tertiaire' },
-    ],
-  },
-  companyTitle: 'Votre structure',
   company: 'Nom de votre structure',
+  companyTitle: 'Votre structure',
   companyType: {
-    label: 'Type de structure',
     inputs: [
-      { value: 'Syndic de copropriété', label: 'Syndic de copropriété', id: 'syndic' },
-      { value: 'Bailleur social', label: 'Bailleur social', id: 'bailleur' },
-      { value: 'Gestionnaire de parc tertiaire', label: 'Gestionnaire de parc tertiaire', id: 'gestionnaire' },
-      { value: "Bureau d'études ou AMO", label: "Bureau d'études ou AMO", id: 'bureau' },
-      { value: 'Mandataire / délégataire CEE', label: 'Mandataire / délégataire CEE', id: 'mandataire' },
+      { id: 'syndic', label: 'Syndic de copropriété', value: 'Syndic de copropriété' },
+      { id: 'bailleur', label: 'Bailleur social', value: 'Bailleur social' },
+      { id: 'gestionnaire', label: 'Gestionnaire de parc tertiaire', value: 'Gestionnaire de parc tertiaire' },
+      { id: 'bureau', label: "Bureau d'études ou AMO", value: "Bureau d'études ou AMO" },
+      { id: 'mandataire', label: 'Mandataire / délégataire CEE', value: 'Mandataire / délégataire CEE' },
     ],
+    label: 'Type de structure',
   },
   contactDetailsTitle: 'Vos coordonnées',
-  lastName: 'Nom',
-  firstName: 'Prénom',
-  email: 'Email',
-  phone: 'Téléphone',
-  nbLogements: 'Nombre de logements',
-  demandCompanyType: {
-    label: 'Votre demande concerne',
-    inputs: [
-      { value: 'Copropriété', label: 'une copropriété', id: 'copro' },
-      { value: 'Maison individuelle', label: 'une maison individuelle', id: 'maison' },
-      { value: 'Bâtiment tertiaire', label: 'un bâtiment tertiaire', id: 'batiment' },
-      { value: 'Bailleur social', label: 'du logement social', id: 'bailleur' },
-      { value: 'Autre', label: 'autre', id: 'autre' },
-    ],
-  },
-  demandCompanyName: 'Nom de la structure accompagnée',
   demandArea: 'Surface en m2',
-  heatingEnergy: {
-    label: 'Mode de chauffage',
+  demandCompanyName: 'Nom de la structure accompagnée',
+  demandCompanyType: {
     inputs: [
-      { value: 'électricité', label: 'Électricité', id: 'electricite' },
-      { value: 'gaz', label: 'Gaz', id: 'gaz' },
-      { value: 'fioul', label: 'Fioul', id: 'fioul' },
-      { value: 'autre', label: 'Autre / Je ne sais pas', id: 'autre' },
+      { id: 'copro', label: 'une copropriété', value: 'Copropriété' },
+      { id: 'maison', label: 'une maison individuelle', value: 'Maison individuelle' },
+      { id: 'batiment', label: 'un bâtiment tertiaire', value: 'Bâtiment tertiaire' },
+      { id: 'bailleur', label: 'du logement social', value: 'Bailleur social' },
+      { id: 'autre', label: 'autre', value: 'Autre' },
     ],
+    label: 'Votre demande concerne',
+  },
+  email: 'Email',
+  firstName: 'Prénom',
+  heatingEnergy: {
+    inputs: [
+      { id: 'electricite', label: 'Électricité', value: 'électricité' },
+      { id: 'gaz', label: 'Gaz', value: 'gaz' },
+      { id: 'fioul', label: 'Fioul', value: 'fioul' },
+      { id: 'autre', label: 'Autre / Je ne sais pas', value: 'autre' },
+    ],
+    label: 'Mode de chauffage',
+  },
+  lastName: 'Nom',
+  nbLogements: 'Nombre de logements',
+  phone: 'Téléphone',
+  structure: {
+    inputs: [
+      { id: 'copropriete', label: 'Copropriétaire', value: 'Copropriété' },
+      {
+        id: 'maison',
+        label: 'Propriétaire de maison individuelle',
+        value: 'Maison individuelle',
+      },
+      { id: 'tertiaire', label: 'Professionnel', value: 'Tertiaire' },
+    ],
+    label: 'Vous êtes...',
   },
 };
 
@@ -141,26 +141,26 @@ export const ContactForm = ({ onSubmit, isLoading, cardMode, city, heatingTypeIn
   };
 
   const initialValues = {
-    lastName: '',
-    firstName: '',
     company: '',
     companyType: '',
-    email: '',
-    phone: '',
-    nbLogements: undefined as unknown as number,
-    demandCompanyType: '',
-    demandCompanyName: '',
     demandArea: undefined as unknown as number,
+    demandCompanyName: '',
+    demandCompanyType: '',
+    email: '',
+    firstName: '',
     heatingEnergy: '',
-    termOfUse: false,
+    lastName: '',
+    nbLogements: undefined as unknown as number,
+    phone: '',
     structure: getDefaultStructure(),
+    termOfUse: false,
   };
   const { form, Form, Field, Fieldset, FieldsetLegend, FieldWrapper, Submit, useValue } = useForm({
     defaultValues: initialValues,
-    schema: validationSchema,
     onSubmit: async ({ value }) => {
       onSubmit(value);
     },
+    schema: validationSchema,
   });
 
   const structure = useValue('structure');
@@ -205,7 +205,7 @@ export const ContactForm = ({ onSubmit, isLoading, cardMode, city, heatingTypeIn
               nativeSelectProps={{
                 required: true,
               }}
-            ></Field.Select>
+            />
           </FieldWrapper>
           <FieldWrapper>
             <Field.Input name="company" hideOptionalLabel label={fieldLabelInformation.company} />

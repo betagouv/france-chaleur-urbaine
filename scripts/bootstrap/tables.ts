@@ -1,4 +1,4 @@
-import { type DB } from '@/server/db/kysely';
+import type { DB } from '@/server/db/kysely';
 
 type TableInfo = {
   name: keyof DB;
@@ -8,381 +8,381 @@ type TableInfo = {
 export const allDatabaseTables: TableInfo[] = [
   // données utilisateur FCU
   {
-    name: 'users',
     description: 'Utilisateurs de la plateforme',
+    name: 'users',
   },
   {
-    name: 'email_templates',
     description: "Templates d'emails",
+    name: 'email_templates',
   },
   {
-    name: 'jobs',
     description: 'Tâches planifiées',
+    name: 'jobs',
   },
   {
-    name: 'pro_comparateur_configurations',
     description: 'Configurations du comparateur professionnel',
+    name: 'pro_comparateur_configurations',
   },
   {
-    name: 'pro_eligibility_tests',
     description: "Tests d'éligibilité professionnels",
+    name: 'pro_eligibility_tests',
   },
   {
-    name: 'pro_eligibility_tests_addresses',
     description: "Adresses des tests d'éligibilité professionnels",
+    name: 'pro_eligibility_tests_addresses',
   },
   {
-    name: 'eligibility_tests',
     description: "Tests d'éligibilité (obsolète, date d'avant le compte professionnel)",
+    name: 'eligibility_tests',
   },
   {
-    name: 'eligibility_demands',
     description: "Demandes d'éligibilité (obsolète, date d'avant le compte professionnel)",
+    name: 'eligibility_demands',
   },
   {
-    name: 'assignment_rules',
     description: "Règles d'affectation pour l'application automatique de tags",
+    name: 'assignment_rules',
   },
   {
-    name: 'events',
     description: "Événements pour le suivi de l'activité des utilisateurs",
+    name: 'events',
   },
 
   // données de référence FCU
   {
-    name: 'api_accounts',
     description: "Comptes API pour l'accès aux services (Engie uniquement)",
+    name: 'api_accounts',
   },
   {
-    name: 'matomo_stats',
     description: 'Statistiques mensuelles générales et principalement en provenance de Matomo',
+    name: 'matomo_stats',
   },
   {
-    name: 'reseaux_de_chaleur',
     description: 'Réseaux de chaleur',
+    name: 'reseaux_de_chaleur',
   },
   {
-    name: 'reseaux_de_chaleur_tiles',
     description: 'Tuiles vectorielles des réseaux de chaleur',
+    name: 'reseaux_de_chaleur_tiles',
   },
   {
-    name: 'reseaux_de_froid',
     description: 'Réseaux de froid',
+    name: 'reseaux_de_froid',
   },
   {
-    name: 'reseaux_de_froid_tiles',
     description: 'Tuiles vectorielles des réseaux de froid',
+    name: 'reseaux_de_froid_tiles',
   },
   {
-    name: 'tags',
     description: 'Tags utilisés pour la mise en relation gestionnaires <-> demandes',
+    name: 'tags',
   },
   {
-    name: 'zone_de_developpement_prioritaire',
     description: 'Zones de développement prioritaire',
+    name: 'zone_de_developpement_prioritaire',
   },
   {
-    name: 'zone_de_developpement_prioritaire_tiles',
     description: 'Tuiles vectorielles des zones de développement prioritaire',
+    name: 'zone_de_developpement_prioritaire_tiles',
   },
   {
-    name: 'zones_et_reseaux_en_construction',
     description: 'Zones et réseaux en construction',
+    name: 'zones_et_reseaux_en_construction',
   },
   {
-    name: 'zones_et_reseaux_en_construction_tiles',
     description: 'Tuiles vectorielles des zones et réseaux en construction',
+    name: 'zones_et_reseaux_en_construction_tiles',
   },
 
   // données de référence / tuiles seules
   {
-    name: 'regions',
     description: 'Liste des régions françaises (obsolète)',
+    name: 'regions',
   },
   {
-    name: 'departements',
     description: 'Liste des départements français',
+    name: 'departements',
   },
   {
-    name: 'communes',
     description: 'Liste des communes françaises (utilisées pour le comparateur des modes de chauffage)',
+    name: 'communes',
     // différent de ign_communes qui elle est plus à jour, mais ne contient pas les altitudes moyennes ni les températures de référence
   },
   {
-    name: 'epci',
     description: 'EPCI français (utilisé pour les tags)',
+    name: 'epci',
   },
   {
-    name: 'ign_communes',
     description: 'Données IGN des communes',
+    name: 'ign_communes',
   },
   {
-    name: 'ign_departements',
     description: 'Données IGN des départements',
+    name: 'ign_departements',
   },
   {
-    name: 'ign_regions',
     description: 'Données IGN des régions',
+    name: 'ign_regions',
   },
   {
-    name: 'registre_copro_r11_220125',
     description: 'Registre des copropriétés R11 du 25/01/2022',
+    name: 'registre_copro_r11_220125',
   },
   {
-    name: 'donnees_de_consos',
     description: 'Données de consommation énergétique',
+    name: 'donnees_de_consos',
   },
   {
-    name: 'donnees_de_consos_tiles',
     description: 'Tuiles vectorielles des données de consommation',
+    name: 'donnees_de_consos_tiles',
   },
   {
-    name: 'communes_fort_potentiel_pour_creation_reseaux_chaleur_tiles',
     description: 'Tuiles vectorielles des communes à fort potentiel pour la création de réseaux de chaleur',
+    name: 'communes_fort_potentiel_pour_creation_reseaux_chaleur_tiles',
   },
   {
-    name: 'raccordements_tiles',
     description: 'Tuiles vectorielles des raccordements',
+    name: 'raccordements_tiles',
   },
   {
-    name: 'zone_a_potentiel_chaud',
     description: 'Zones à potentiel chaud',
+    name: 'zone_a_potentiel_chaud',
   },
   {
-    name: 'zone_a_potentiel_chaud_tiles',
     description: 'Tuiles vectorielles des zones à potentiel chaud',
+    name: 'zone_a_potentiel_chaud_tiles',
   },
   {
-    name: 'zone_a_potentiel_fort_chaud',
     description: 'Zones à fort potentiel chaud',
+    name: 'zone_a_potentiel_fort_chaud',
   },
   {
-    name: 'zone_a_potentiel_fort_chaud_tiles',
     description: 'Tuiles vectorielles des zones à fort potentiel chaud',
+    name: 'zone_a_potentiel_fort_chaud_tiles',
   },
   {
-    name: 'zone_a_potentiel_froid',
     description: 'Zones à potentiel froid',
+    name: 'zone_a_potentiel_froid',
   },
   {
-    name: 'zone_a_potentiel_froid_tiles',
     description: 'Tuiles vectorielles des zones à potentiel froid',
+    name: 'zone_a_potentiel_froid_tiles',
   },
   {
-    name: 'zone_a_potentiel_fort_froid',
     description: 'Zones à fort potentiel froid',
+    name: 'zone_a_potentiel_fort_froid',
   },
   {
-    name: 'zone_a_potentiel_fort_froid_tiles',
     description: 'Tuiles vectorielles des zones à fort potentiel froid',
+    name: 'zone_a_potentiel_fort_froid_tiles',
   },
   {
-    name: 'batiments_raccordes_rdc',
     description: 'Bâtiments raccordés au réseau de chaleur au rez-de-chaussée',
+    name: 'batiments_raccordes_rdc',
   },
   {
-    name: 'batiments_raccordes_reseaux_chaleur_froid_tiles',
     description: 'Tuiles vectorielles des bâtiments raccordés aux réseaux de chaleur et froid',
+    name: 'batiments_raccordes_reseaux_chaleur_froid_tiles',
   },
   {
-    name: 'besoins_en_chaleur_industrie_communes_tiles',
     description: "Tuiles vectorielles des besoins en chaleur de l'industrie par commune",
+    name: 'besoins_en_chaleur_industrie_communes_tiles',
   },
   {
-    name: 'besoins_en_chaleur_batiments',
     description: 'Besoins en chaleur des bâtiments',
+    name: 'besoins_en_chaleur_batiments',
   },
   {
-    name: 'besoins_en_chaleur_tiles',
     description: 'Tuiles vectorielles des besoins en chaleur',
+    name: 'besoins_en_chaleur_tiles',
   },
   {
-    name: 'enrr_mobilisables_friches_tiles',
     description: 'Tuiles vectorielles des friches mobilisables pour les ENR',
+    name: 'enrr_mobilisables_friches_tiles',
   },
   {
-    name: 'enrr_mobilisables_parkings_tiles',
     description: 'Tuiles vectorielles des parkings mobilisables pour les ENR',
+    name: 'enrr_mobilisables_parkings_tiles',
   },
   {
-    name: 'enrr_mobilisables_thalassothermie_tiles',
     description: 'Tuiles des thalassothermies mobilisables pour les ENRR',
+    name: 'enrr_mobilisables_thalassothermie_tiles',
   },
   {
-    name: 'enrr_mobilisables_tiles',
     description: 'Tuiles vectorielles des sites mobilisables pour les ENR',
+    name: 'enrr_mobilisables_tiles',
   },
   {
-    name: 'enrr_mobilisables_zones_geothermie_profonde_tiles',
     description: 'Tuiles des zones de géothermie profonde mobilisables pour les ENR',
+    name: 'enrr_mobilisables_zones_geothermie_profonde_tiles',
   },
   {
-    name: 'etudes_en_cours_tiles',
     description: 'Tuiles vectorielles des études en cours',
+    name: 'etudes_en_cours_tiles',
   },
   {
-    name: 'pro_eligibility_tests_addresses_tiles',
     description: "Tuiles vectorielles des tests d'adresses",
+    name: 'pro_eligibility_tests_addresses_tiles',
   },
   {
-    name: 'quartiers_prioritaires_politique_ville_2015_anru_tiles',
     description: "Tuiles des QPV 2015 de l'ANRU",
+    name: 'quartiers_prioritaires_politique_ville_2015_anru_tiles',
   },
   {
-    name: 'quartiers_prioritaires_politique_ville_2024_tiles',
     description: 'Tuiles des QPV 2024',
+    name: 'quartiers_prioritaires_politique_ville_2024_tiles',
   },
   {
-    name: 'Donnees_de_conso_et_pdl_gaz_nat_2020',
     description: 'Données de consommation et PDL gaz naturel 2020 (obsolète)',
+    name: 'Donnees_de_conso_et_pdl_gaz_nat_2020',
   },
   {
-    name: 'Donnees_de_conso_et_pdl_gaz_nat_2020_tiles',
     description: 'Tuiles des données de consommation et PDL gaz naturel 2020 (obsolète)',
+    name: 'Donnees_de_conso_et_pdl_gaz_nat_2020_tiles',
   },
   {
-    name: 'installations_geothermie_profonde_tiles',
     description: 'Tuiles des installations de géothermie profonde',
+    name: 'installations_geothermie_profonde_tiles',
   },
   {
-    name: 'perimetres_geothermie_profonde_tiles',
     description: 'Tuiles des périmètres de géothermie profonde',
+    name: 'perimetres_geothermie_profonde_tiles',
   },
   {
-    name: 'installations_geothermie_surface_echangeurs_fermes_tiles',
     description: 'Tuiles des installations de géothermie en surface avec échangeurs fermés',
+    name: 'installations_geothermie_surface_echangeurs_fermes_tiles',
   },
   {
-    name: 'installations_geothermie_surface_echangeurs_ouverts_tiles',
     description: 'Tuiles des installations de géothermie en surface avec échangeurs ouverts',
+    name: 'installations_geothermie_surface_echangeurs_ouverts_tiles',
   },
   {
-    name: 'ouvrages_geothermie_surface_echangeurs_fermes_tiles',
     description: 'Tuiles des ouvrages de géothermie en surface avec échangeurs fermés',
+    name: 'ouvrages_geothermie_surface_echangeurs_fermes_tiles',
   },
   {
-    name: 'ouvrages_geothermie_surface_echangeurs_ouverts_tiles',
     description: 'Tuiles des ouvrages de géothermie en surface avec échangeurs ouverts',
+    name: 'ouvrages_geothermie_surface_echangeurs_ouverts_tiles',
   },
   {
-    name: 'ressources_geothermales_nappes_tiles',
     description: 'Tuiles des ressources géothermales en nappes',
+    name: 'ressources_geothermales_nappes_tiles',
   },
 
   // données BDNB (Base de données nationale des bâtiments)
   // découpées historiquement par région pour résoudre des problèmes de performance et de taille d'indexes
   // la prochaine fois, n'avoir qu'une seule
   {
-    name: 'bdnb_registre2022_aura',
     description: 'BDNB complétée avec le registre des copropriétés 2022 pour la région Auvergne-Rhône-Alpes',
+    name: 'bdnb_registre2022_aura',
   },
   {
-    name: 'bdnb_registre2022_bourgogne-franche-comte',
     description: 'BDNB complétée avec le registre des copropriétés 2022 pour la région Bourgogne-Franche-Comté',
+    name: 'bdnb_registre2022_bourgogne-franche-comte',
   },
   {
-    name: 'bdnb_registre2022_bretagne',
     description: 'BDNB complétée avec le registre des copropriétés 2022 pour la région Bretagne',
+    name: 'bdnb_registre2022_bretagne',
   },
   {
-    name: 'bdnb_registre2022_centre-val_de_loire',
     description: 'BDNB complétée avec le registre des copropriétés 2022 pour la région Centre-Val de Loire',
+    name: 'bdnb_registre2022_centre-val_de_loire',
   },
   {
-    name: 'bdnb_registre2022_corse',
     description: 'BDNB complétée avec le registre des copropriétés 2022 pour la région Corse',
+    name: 'bdnb_registre2022_corse',
   },
   {
-    name: 'bdnb_registre2022_grand_est',
     description: 'BDNB complétée avec le registre des copropriétés 2022 pour la région Grand Est',
+    name: 'bdnb_registre2022_grand_est',
   },
   {
-    name: 'bdnb_registre2022_hauts-de-france',
     description: 'BDNB complétée avec le registre des copropriétés 2022 pour la région Hauts-de-France',
+    name: 'bdnb_registre2022_hauts-de-france',
   },
   {
-    name: 'bdnb_registre2022_ile-de-france',
     description: 'BDNB complétée avec le registre des copropriétés 2022 pour la région Île-de-France',
+    name: 'bdnb_registre2022_ile-de-france',
   },
   {
-    name: 'bdnb_registre2022_normandie',
     description: 'BDNB complétée avec le registre des copropriétés 2022 pour la région Normandie',
+    name: 'bdnb_registre2022_normandie',
   },
   {
-    name: 'bdnb_registre2022_nouvelle-aquitaine',
     description: 'BDNB complétée avec le registre des copropriétés 2022 pour la région Nouvelle-Aquitaine',
+    name: 'bdnb_registre2022_nouvelle-aquitaine',
   },
   {
-    name: 'bdnb_registre2022_occitanie',
     description: 'BDNB complétée avec le registre des copropriétés 2022 pour la région Occitanie',
+    name: 'bdnb_registre2022_occitanie',
   },
   {
-    name: 'bdnb_registre2022_paca',
     description: "BDNB complétée avec le registre des copropriétés 2022 pour la région Provence-Alpes-Côte d'Azur",
+    name: 'bdnb_registre2022_paca',
   },
   {
-    name: 'bdnb_registre2022_pays-de-la-loire',
     description: 'BDNB complétée avec le registre des copropriétés 2022 pour la région Pays de la Loire',
+    name: 'bdnb_registre2022_pays-de-la-loire',
   },
   {
-    name: 'bnb_auvergne-rhone-alpes-batiment_adresse',
     description: 'Relation bâtiment-adresse BDNB pour Auvergne-Rhône-Alpes',
+    name: 'bnb_auvergne-rhone-alpes-batiment_adresse',
   },
   {
-    name: 'bnb_bourgogne-franche-comte-batiment_adresse',
     description: 'Relation bâtiment-adresse BDNB pour Bourgogne-Franche-Comté',
+    name: 'bnb_bourgogne-franche-comte-batiment_adresse',
   },
   {
-    name: 'bnb_bretagne-batiment_adresse',
     description: 'Relation bâtiment-adresse BDNB pour Bretagne',
+    name: 'bnb_bretagne-batiment_adresse',
   },
   {
-    name: 'bnb_centre-val-de-loire-batiment_adresse',
     description: 'Relation bâtiment-adresse BDNB pour Centre-Val de Loire',
+    name: 'bnb_centre-val-de-loire-batiment_adresse',
   },
   {
-    name: 'bnb_corse-batiment_adresse',
     description: 'Relation bâtiment-adresse BDNB pour Corse',
+    name: 'bnb_corse-batiment_adresse',
   },
   {
-    name: 'bnb_grand-est-batiment_adresse',
     description: 'Relation bâtiment-adresse BDNB pour Grand Est',
+    name: 'bnb_grand-est-batiment_adresse',
   },
   {
-    name: 'bnb_hauts-de-france-batiment_adresse',
     description: 'Relation bâtiment-adresse BDNB pour Hauts-de-France',
+    name: 'bnb_hauts-de-france-batiment_adresse',
   },
   {
-    name: 'bnb_idf - batiment_adresse',
     description: 'Relation bâtiment-adresse BDNB pour Île-de-France',
+    name: 'bnb_idf - batiment_adresse',
   },
   {
-    name: 'bnb_normandie-batiment_adresse',
     description: 'Relation bâtiment-adresse BDNB pour Normandie',
+    name: 'bnb_normandie-batiment_adresse',
   },
   {
-    name: 'bnb_nouvelle-aquitaine-batiment_adresse',
     description: 'Relation bâtiment-adresse BDNB pour Nouvelle-Aquitaine',
+    name: 'bnb_nouvelle-aquitaine-batiment_adresse',
   },
   {
-    name: 'bnb_occitanie-batiment_adresse',
     description: 'Relation bâtiment-adresse BDNB pour Occitanie',
+    name: 'bnb_occitanie-batiment_adresse',
   },
   {
-    name: 'bnb_pays-de-la-loire-batiment_adresse',
     description: 'Relation bâtiment-adresse BDNB pour Pays de la Loire',
+    name: 'bnb_pays-de-la-loire-batiment_adresse',
   },
   {
-    name: 'bnb_provence-alpes-cote-d_azur-batiment_adresse',
     description: "Relation bâtiment-adresse BDNB pour Provence-Alpes-Côte d'Azur",
+    name: 'bnb_provence-alpes-cote-d_azur-batiment_adresse',
   },
 
   {
-    name: 'bnb - adresse_tiles',
     description: 'Tuiles vectorielles des adresses BDNB',
+    name: 'bnb - adresse_tiles',
   },
   {
-    name: 'bnb - batiment_tiles',
     description: 'Tuiles vectorielles des bâtiments BDNB',
+    name: 'bnb - batiment_tiles',
   },
 ];

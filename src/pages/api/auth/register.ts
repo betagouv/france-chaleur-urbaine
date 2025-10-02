@@ -1,4 +1,4 @@
-import { type NextApiRequest } from 'next';
+import type { NextApiRequest } from 'next';
 
 import { register } from '@/modules/auth/server/service';
 import { registrationSchema } from '@/modules/users/constants';

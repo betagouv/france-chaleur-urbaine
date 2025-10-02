@@ -1,5 +1,5 @@
-import SimplePage from '@/components/shared/page/SimplePage';
 import Statistics from '@/components/Statistics/Statistics';
+import SimplePage from '@/components/shared/page/SimplePage';
 
 function Statistiques() {
   return (

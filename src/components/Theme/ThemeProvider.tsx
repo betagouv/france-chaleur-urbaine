@@ -4,7 +4,7 @@ import isPropValid from '@emotion/is-prop-valid';
 import { useLocalStorageValue } from '@react-hookz/web';
 import Link from 'next/link';
 import React from 'react';
-import { createGlobalStyle, StyleSheetManager, ThemeProvider as StyledComponentsThemeProvider } from 'styled-components';
+import { createGlobalStyle, ThemeProvider as StyledComponentsThemeProvider, StyleSheetManager } from 'styled-components';
 
 import theme from './theme';
 

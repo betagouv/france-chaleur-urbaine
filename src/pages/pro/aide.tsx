@@ -11,7 +11,6 @@ type FaqItem = {
 };
 const faqItems: FaqItem[] = [
   {
-    title: 'À qui est ouvert l’espace gestionnaire ?',
     content: (
       <>
         <p className="fr-mb-0">L’espace gestionnaire est ouvert aux collectivités et exploitants</p>
@@ -35,35 +34,35 @@ const faqItems: FaqItem[] = [
         </ul>
       </>
     ),
+    title: 'À qui est ouvert l’espace gestionnaire ?',
   },
   {
-    title: 'Comment savoir qui a accès aux demandes déposées sur mes réseaux ?',
     content: (
       <p>
         Cette information n’est à ce jour pas directement visible depuis l’espace gestionnaire, mais peut être obtenue par un simple mail
         adressé à <a href={`mailto:${clientConfig.contactEmail}`}>{clientConfig.contactEmail}</a>.
       </p>
     ),
+    title: 'Comment savoir qui a accès aux demandes déposées sur mes réseaux ?',
   },
   {
-    title: 'Comment ouvrir un accès à l’espace gestionnaire à un membre de mon équipe ?',
     content: (
       <p>
         Il suffit pour cela d’envoyer un mail à l’adresse <a href={`mailto:${clientConfig.contactEmail}`}>{clientConfig.contactEmail}</a>.
       </p>
     ),
+    title: 'Comment ouvrir un accès à l’espace gestionnaire à un membre de mon équipe ?',
   },
   {
-    title: 'Qui doit modifier le statut des demandes ?',
     content: (
       <p>
         C’est l’exploitant du réseau, excepté pour les réseaux en régie ou pour les demandes « non affectées », pour lesquels c’est la
         collectivité.
       </p>
     ),
+    title: 'Qui doit modifier le statut des demandes ?',
   },
   {
-    title: 'Pourquoi compléter la colonne statut ?',
     content: (
       <>
         <p className="fr-mb-0">Il est important de renseigner le statut des demandes pour permettre à France Chaleur Urbaine :</p>
@@ -83,13 +82,13 @@ const faqItems: FaqItem[] = [
         </p>
       </>
     ),
+    title: 'Pourquoi compléter la colonne statut ?',
   },
   {
-    title: 'La modification du statut d’une demande génère-t-il l’envoi d’une notification au demandeur ?',
     content: <p>Non, la modification du statut d’une demande ne génère l’envoi d’aucune notification.</p>,
+    title: 'La modification du statut d’une demande génère-t-il l’envoi d’une notification au demandeur ?',
   },
   {
-    title: 'Qui doit répondre aux demandes visibles sur mon espace gestionnaire ?',
     content: (
       <p>
         Il appartient à l’opérateur à qui a été affectée une demande de reprendre contact avec le prospect pour y donner suite (demande de
@@ -102,9 +101,9 @@ const faqItems: FaqItem[] = [
         venait à se déployer dans son quartier.{' '}
       </p>
     ),
+    title: 'Qui doit répondre aux demandes visibles sur mon espace gestionnaire ?',
   },
   {
-    title: 'Comment répondre aux demandes / envoyer un mail de réponse à une demande depuis mon espace gestionnaire ?',
     content: (
       <p>
         Si vous le souhaitez, vous pouvez répondre aux demandes directement depuis votre espace gestionnaire à partir de la colonne
@@ -115,10 +114,9 @@ const faqItems: FaqItem[] = [
         accès aux demandes (à noter que seul le type de message est indiqué, sans accès au message complet).
       </p>
     ),
+    title: 'Comment répondre aux demandes / envoyer un mail de réponse à une demande depuis mon espace gestionnaire ?',
   },
   {
-    title:
-      'D’où proviennent les données qui figurent dans mon espace gestionnaire ? / À quoi correspondent les différents champs du tableau ?',
     content: (
       <>
         <p className="fr-mb-0">Informations renseignées par le demandeur lors du dépôt de formulaire :</p>
@@ -142,11 +140,11 @@ const faqItems: FaqItem[] = [
           </li>
           <li>
             <b>Nb logements (lots) :</b> information provenant de la{' '}
-            <a href="https://www.data.gouv.fr/fr/datasets/base-de-donnees-nationale-des-batiments/" target="_blank">
+            <a href="https://www.data.gouv.fr/fr/datasets/base-de-donnees-nationale-des-batiments/" target="_blank" rel="noopener">
               Base Nationale Des Bâtiments
             </a>{' '}
             du CSTB ou du{' '}
-            <a href="https://www.registre-coproprietes.gouv.fr/" target="_blank">
+            <a href="https://www.registre-coproprietes.gouv.fr/" target="_blank" rel="noopener">
               Registre National d'Immatriculation des Copropriétés
             </a>{' '}
             de l'ANAH (lorsque disponible pour l’adresse concernée).
@@ -163,9 +161,10 @@ const faqItems: FaqItem[] = [
         </ul>
       </>
     ),
+    title:
+      'D’où proviennent les données qui figurent dans mon espace gestionnaire ? / À quoi correspondent les différents champs du tableau ?',
   },
   {
-    title: 'Quelles informations puis-je modifier/compléter ?',
     content: (
       <>
         <p>
@@ -185,34 +184,35 @@ const faqItems: FaqItem[] = [
         </p>
       </>
     ),
+    title: 'Quelles informations puis-je modifier/compléter ?',
   },
   {
-    title: 'Puis-je exporter les données de mon espace gestionnaire ?',
     content: (
       <p>
         Oui, le bouton « exporter » situé en haut à gauche de la carte génère un export en format excel de l’ensemble des informations
         visibles sur l’espace.
       </p>
     ),
+    title: 'Puis-je exporter les données de mon espace gestionnaire ?',
   },
   {
-    title: 'Puis-je filtrer les demandes visibles dans mon espace ?',
     content: (
       <p>
         Il est possible de filtrer les demandes par nom/adresse mail du demandeur, adresse, statut, mode et type de chauffage, ainsi que
         gestionnaire. Pour cela, il suffit d’utiliser les champs et listes déroulantes situées en haut de l’espace.
       </p>
     ),
+    title: 'Puis-je filtrer les demandes visibles dans mon espace ?',
   },
   {
-    title: 'Comment visualiser une demande sur la carte de mon espace gestionnaire ?',
     content: (
       <p>Il suffit de cliquer sur la ligne concernée dans le tableau : la demande apparaît alors avec un repère rouge sur la carte.</p>
     ),
+    title: 'Comment visualiser une demande sur la carte de mon espace gestionnaire ?',
   },
   {
-    title: 'Puis-je faire disparaître la carte, qui réduit la largeur visible du tableau ?',
     content: <p>Oui, la carte peut être repliée et dépliée grâce au bouton flèche visible à gauche de la carte.</p>,
+    title: 'Puis-je faire disparaître la carte, qui réduit la largeur visible du tableau ?',
   },
 ];
 

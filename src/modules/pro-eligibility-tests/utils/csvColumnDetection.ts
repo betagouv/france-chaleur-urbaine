@@ -39,10 +39,10 @@ export function analyzeCSV(content: string, separator?: string) {
     const confidence = calculateConfidence(header, columnData, type);
 
     return {
+      confidence,
       index,
       name: header,
       type,
-      confidence,
     };
   });
 
@@ -52,15 +52,15 @@ export function analyzeCSV(content: string, separator?: string) {
   const suggestedLongitudeColumn = findBestLongitudeColumn(columns);
 
   return {
-    headers,
     columns,
+    hasCoordinateColumns: suggestedLatitudeColumn !== undefined && suggestedLongitudeColumn !== undefined,
+    headers,
     nbRows: rows.length,
     rows: rows.slice(0, 10),
     separator: separator || papaResult.meta.delimiter,
     suggestedAddressColumn,
     suggestedLatitudeColumn,
     suggestedLongitudeColumn,
-    hasCoordinateColumns: suggestedLatitudeColumn !== undefined && suggestedLongitudeColumn !== undefined,
   };
 }
 

@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import { type UpdateObject } from 'kysely';
+import type { UpdateObject } from 'kysely';
 
 import { createUserAdminSchema, updateUserAdminSchema } from '@/modules/users/constants';
 import { type DB, kdb, sql } from '@/server/db/kysely';
@@ -38,8 +38,8 @@ export const list = async () => {
     .execute();
 
   return {
-    items: records,
     count: records.length,
+    items: records,
   };
 };
 export type User = Awaited<ReturnType<typeof list>>['items'][number];
@@ -51,7 +51,7 @@ export const create: typeof baseModel.create = async ({ optin_at, ...data }, _co
   const record = await baseModel.create({ ...data, optin_at: optin_at ? new Date() : null, password, status: 'valid' }, _context);
 
   if (data.active && data.role === 'gestionnaire') {
-    await sendEmailTemplate('inscription', { id: (record as any).id, email: data.email as string });
+    await sendEmailTemplate('inscription', { email: data.email as string, id: (record as any).id });
   }
 
   return record;

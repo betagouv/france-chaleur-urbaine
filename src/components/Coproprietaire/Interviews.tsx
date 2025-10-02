@@ -2,15 +2,15 @@ import { Author, Container, Icon, Logo, Quote } from './Interviews.styles';
 import InterviewsVideos from './InterviewsVideos';
 
 const quotes = {
-  henry: {
-    name: 'Henry Hostein',
-    title: 'Président de conseil syndical',
-    quote: 'Je conseille vivement le raccordement à un réseau de chaleur pour des raisons économiques et écologiques.',
-  },
   florence: {
     name: 'Florence Osman',
-    title: 'Présidente de conseil syndical',
     quote: 'Cela fait une économie de 60% de gaz et au niveau économique de 40% !',
+    title: 'Présidente de conseil syndical',
+  },
+  henry: {
+    name: 'Henry Hostein',
+    quote: 'Je conseille vivement le raccordement à un réseau de chaleur pour des raisons économiques et écologiques.',
+    title: 'Président de conseil syndical',
   },
 };
 

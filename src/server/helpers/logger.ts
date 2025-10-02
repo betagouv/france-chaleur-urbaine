@@ -2,7 +2,7 @@ import { createLogger as createWinstonLogger, format, transports } from 'winston
 
 import { serverConfig } from '@/server/config';
 
-export { type Logger } from 'winston';
+export type { Logger } from 'winston';
 
 /**
  * Colorize inside of the message and display objects as stringified JSON.
@@ -50,7 +50,6 @@ const prettyLogsInDev = format((info) => {
 });
 
 export const logger = createWinstonLogger({
-  level: serverConfig.LOG_LEVEL,
   format:
     process.env.LOGS_PRETTY === 'true'
       ? format.combine(
@@ -60,6 +59,7 @@ export const logger = createWinstonLogger({
           format.cli() // Apply CLI colorization to other parts of the log
         )
       : format.combine(format.timestamp(), format((info) => ({ ...info, pid: process.pid }))(), format.json()),
+  level: serverConfig.LOG_LEVEL,
   transports: [new transports.Console({})],
 });
 

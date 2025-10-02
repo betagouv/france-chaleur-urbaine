@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { type RefObject } from 'react';
+import type { RefObject } from 'react';
 
 import Infographie from '@/components/Infographie';
 import TrackedVideo from '@/components/TrackedVideo/TrackedVideo';
@@ -139,23 +139,22 @@ const HeatNetwork = ({
       <br />
       <br />
       Entre les années 1950 et 1970,{' '}
-      <b>l’urbanisation est forte en France et le déploiement des réseaux de chaleur accompagne celui de nouvelles zones d’habitation</b>
-      . Les réseaux de chaleur sont alors généralement alimentés par du fioul ou du charbon.
+      <b>l’urbanisation est forte en France et le déploiement des réseaux de chaleur accompagne celui de nouvelles zones d’habitation</b>.
+      Les réseaux de chaleur sont alors généralement alimentés par du fioul ou du charbon.
       <br />
       <br />
-      <b>Les chocs pétroliers de 1973 et 1981 amènent les pouvoirs publics à chercher une diversification du mix énergétique national</b>
-      . Les pistes explorées en s’appuyant sur des réseaux de chaleur sont le recours à la géothermie profonde (au Dogger) et la chaleur
-      issue de l’incinération des ordures ménagères, notamment en Île-de-France, où la ressource est disponible et la densité de
-      construction élevée. De nouveaux réseaux de chaleur font appel à ces sources de chaleur, d’anciens réseaux modifient leur mix
-      énergétique. La compétence des collectivités en matière d’établissement de réseaux de chaleur est consacrée dans la loi chaleur du 15
-      juillet 1980.
+      <b>Les chocs pétroliers de 1973 et 1981 amènent les pouvoirs publics à chercher une diversification du mix énergétique national</b>.
+      Les pistes explorées en s’appuyant sur des réseaux de chaleur sont le recours à la géothermie profonde (au Dogger) et la chaleur issue
+      de l’incinération des ordures ménagères, notamment en Île-de-France, où la ressource est disponible et la densité de construction
+      élevée. De nouveaux réseaux de chaleur font appel à ces sources de chaleur, d’anciens réseaux modifient leur mix énergétique. La
+      compétence des collectivités en matière d’établissement de réseaux de chaleur est consacrée dans la loi chaleur du 15 juillet 1980.
       <br />
       <br />
-      <b>Le contre-choc pétrolier de 1986 se conjugue à une vague de libéralisme et le sujet énergie devient moins prioritaire</b>
-      . Le baril de pétrole s’effondre puis va demeurer dans une fourchette de bas prix (entre 15 à 25 $/baril) pendant presque une
-      vingtaine d’années. C’est le coup d’arrêt des investissements dans les énergies renouvelables qui ne sont plus rentables par rapport
-      au fioul ou au gaz dont les prix sont indexés sur ceux du pétrole. Peu de nouveaux réseaux de chaleur sont mis en place, hormis de
-      petits réseaux ruraux alimentés par la biomasse, dans le cadre de plans régionaux visant à développer le bois-énergie.
+      <b>Le contre-choc pétrolier de 1986 se conjugue à une vague de libéralisme et le sujet énergie devient moins prioritaire</b>. Le baril
+      de pétrole s’effondre puis va demeurer dans une fourchette de bas prix (entre 15 à 25 $/baril) pendant presque une vingtaine d’années.
+      C’est le coup d’arrêt des investissements dans les énergies renouvelables qui ne sont plus rentables par rapport au fioul ou au gaz
+      dont les prix sont indexés sur ceux du pétrole. Peu de nouveaux réseaux de chaleur sont mis en place, hormis de petits réseaux ruraux
+      alimentés par la biomasse, dans le cadre de plans régionaux visant à développer le bois-énergie.
       <br />
       <br />
       <b>
@@ -378,8 +377,8 @@ const HeatNetwork = ({
           <b>le type de bâtiment</b>
         </li>
       </ul>
-      Dans le cas de <b>bâtiments résidentiels collectifs (copropriété, logement social…) et tertiaires d’une taille suffisante</b>
-      , les coûts fixes liés au raccordement vont pouvoir être mutualisés, et donc plus facilement amortis. Le raccordement des maisons
+      Dans le cas de <b>bâtiments résidentiels collectifs (copropriété, logement social…) et tertiaires d’une taille suffisante</b>, les
+      coûts fixes liés au raccordement vont pouvoir être mutualisés, et donc plus facilement amortis. Le raccordement des maisons
       individuelles reste possible dans certains cas, mais il est plus rare. La sous-station dessert alors souvent un groupe de maisons
       (lotissement par exemple).
       <br />
@@ -443,9 +442,9 @@ const HeatNetwork = ({
         <Infographie height={294} src="/img/FCU_Infographie_Classement_small.jpg" alt="Classement des réseaux de chaleur" />
       </WithImage>
       <br />
-      <b>C’est la collectivité qui définit le périmètre de développement prioritaire de son réseau, par délibération</b>
-      . Si ce périmètre n’est pas défini avant le 1er juillet 2025, un périmètre par défaut s’appliquera (périmètre du contrat de
-      concession, ou en l’absence de concession au périmètre du territoire de la ou des communes desservies par le réseau).
+      <b>C’est la collectivité qui définit le périmètre de développement prioritaire de son réseau, par délibération</b>. Si ce périmètre
+      n’est pas défini avant le 1er juillet 2025, un périmètre par défaut s’appliquera (périmètre du contrat de concession, ou en l’absence
+      de concession au périmètre du territoire de la ou des communes desservies par le réseau).
       <br />
       <br />À noter que les collectivités ont la possibilité de délibérer pour s’opposer au classement, si ce refus est justifié.
       <br />
@@ -549,11 +548,11 @@ const HeatNetwork = ({
         </li>
       </ul>
       <br />
-      <b>Le poids relatif de ces deux parts est très variable d’un réseau de chaleur à l’autre</b>
-      . Chacune peut représenter 30 à 70 % de la facture. Cette variabilité reflète la diversité des sources de chaleur utilisées. À titre
-      d’exemple, pour un réseau alimenté par de la géothermie, la part d’achat de combustible sera très faible voire nulle : le gros de la
-      dépense réside dans le forage (financement de la création de l’installation), et donc dans le terme R2. Au contraire, la part R1 sera
-      plus importante pour un réseau achetant de la chaleur à une unité d’incinération des ordures ménagères.
+      <b>Le poids relatif de ces deux parts est très variable d’un réseau de chaleur à l’autre</b>. Chacune peut représenter 30 à 70 % de la
+      facture. Cette variabilité reflète la diversité des sources de chaleur utilisées. À titre d’exemple, pour un réseau alimenté par de la
+      géothermie, la part d’achat de combustible sera très faible voire nulle : le gros de la dépense réside dans le forage (financement de
+      la création de l’installation), et donc dans le terme R2. Au contraire, la part R1 sera plus importante pour un réseau achetant de la
+      chaleur à une unité d’incinération des ordures ménagères.
       <br />
       <br />
       <b>

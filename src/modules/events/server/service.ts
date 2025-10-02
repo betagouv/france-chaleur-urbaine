@@ -25,7 +25,7 @@ export async function listEvents(options: ListEventsOptions) {
       eb
         .case()
         .when('users.id', 'is not', null)
-        .then(jsonBuildObject({ id: eb.ref('users.id'), email: eb.ref('users.email'), role: eb.ref('users.role') }))
+        .then(jsonBuildObject({ email: eb.ref('users.email'), id: eb.ref('users.id'), role: eb.ref('users.role') }))
         .else(null)
         .end()
         .as('author'),

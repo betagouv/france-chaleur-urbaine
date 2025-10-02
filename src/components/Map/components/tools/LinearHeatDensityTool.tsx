@@ -1,11 +1,11 @@
 import Button from '@codegouvfr/react-dsfr/Button';
-import { type DrawCreateEvent } from '@mapbox/mapbox-gl-draw';
+import type { DrawCreateEvent } from '@mapbox/mapbox-gl-draw';
 import { useKeyboardEvent } from '@react-hookz/web';
 import center from '@turf/center';
 import { lineString, points } from '@turf/helpers';
 import length from '@turf/length';
 import { atom, useAtom } from 'jotai';
-import { type GeoJSONSource } from 'maplibre-gl';
+import type { GeoJSONSource } from 'maplibre-gl';
 import { useEffect, useRef, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
 
@@ -15,15 +15,14 @@ import Divider from '@/components/ui/Divider';
 import Text from '@/components/ui/Text';
 import Tooltip from '@/components/ui/Tooltip';
 import { trackEvent } from '@/modules/analytics/client';
-import { type PointDeConsommation } from '@/pages/api/linear-heat-density';
+import type { PointDeConsommation } from '@/pages/api/linear-heat-density';
 import { useServices } from '@/services';
 import { downloadObject } from '@/utils/browser';
 import { formatAsISODateMinutes } from '@/utils/date';
 import { formatDistance } from '@/utils/geo';
-
-import { type MeasureFeature, type MeasureLabelFeature } from './measure';
-import { type MapSourceLayersSpecification } from '../../layers/common';
+import type { MapSourceLayersSpecification } from '../../layers/common';
 import { Title } from '../SimpleMapLegend.style';
+import type { MeasureFeature, MeasureLabelFeature } from './measure';
 
 export const linearHeatDensityLinesSourceId = 'linear-heat-density-lines';
 export const linearHeatDensityLabelsSourceId = 'linear-heat-density-labels';
@@ -95,17 +94,6 @@ const LinearHeatDensityTool: React.FC = () => {
       trackEvent('Carto|Densité thermique linéaire|Tracé terminé');
       const rawDensite = await heatNetworkService.getLinearHeatDensity(features.map((feature) => feature.geometry.coordinates));
       const densite: LinearHeatDensity = {
-        longueurTotale: Math.round(rawDensite.longueurTotale * 1000),
-        consommationGaz: {
-          cumul: {
-            '10m': getConso(rawDensite.consommationGaz['10m']),
-            '50m': getConso(rawDensite.consommationGaz['50m']),
-          },
-          densitéThermiqueLinéaire: {
-            '10m': getDensite(rawDensite.longueurTotale, rawDensite.consommationGaz['10m']),
-            '50m': getDensite(rawDensite.longueurTotale, rawDensite.consommationGaz['50m']),
-          },
-        },
         besoinsEnChaleur: {
           cumul: {
             '10m': getConso(rawDensite.besoinsEnChaleur['10m']),
@@ -116,6 +104,17 @@ const LinearHeatDensityTool: React.FC = () => {
             '50m': getDensite(rawDensite.longueurTotale, rawDensite.besoinsEnChaleur['50m']),
           },
         },
+        consommationGaz: {
+          cumul: {
+            '10m': getConso(rawDensite.consommationGaz['10m']),
+            '50m': getConso(rawDensite.consommationGaz['50m']),
+          },
+          densitéThermiqueLinéaire: {
+            '10m': getDensite(rawDensite.longueurTotale, rawDensite.consommationGaz['10m']),
+            '50m': getDensite(rawDensite.longueurTotale, rawDensite.consommationGaz['50m']),
+          },
+        },
+        longueurTotale: Math.round(rawDensite.longueurTotale * 1000),
       };
       setDensite(densite);
     } finally {
@@ -237,8 +236,8 @@ const LinearHeatDensityTool: React.FC = () => {
     }
     downloadObject(
       {
-        type: 'FeatureCollection',
         features,
+        type: 'FeatureCollection',
       },
       `FCU_export_tracé_${formatAsISODateMinutes(new Date())}.geojson`,
       'application/geo+json'
@@ -413,89 +412,89 @@ export function useLinearHeatDensityLayers() {
     }
 
     (mapRef.getSource(linearHeatDensityLinesSourceId) as GeoJSONSource).setData({
-      type: 'FeatureCollection',
       features,
+      type: 'FeatureCollection',
     });
 
     // build the labels source with points at the center of each segment
     (mapRef.getSource(linearHeatDensityLabelsSourceId) as GeoJSONSource).setData({
-      type: 'FeatureCollection',
       features: features.flatMap((feature) => {
         return feature.geometry.coordinates.slice(0, -1).map(
           (coordinates, index) =>
             ({
-              id: `${feature.id}-${index}`,
-              type: 'Feature',
               geometry: {
-                type: 'Point',
                 coordinates: center(points([coordinates, feature.geometry.coordinates[index + 1]])).geometry.coordinates,
+                type: 'Point',
               },
+              id: `${feature.id}-${index}`,
               properties: {
                 color: feature.properties.color,
                 distanceLabel: formatDistance(
                   length(lineString([coordinates, feature.geometry.coordinates[index + 1]]), { units: 'meters' })
                 ),
               },
+              type: 'Feature',
             }) satisfies MeasureLabelFeature
         );
       }),
+      type: 'FeatureCollection',
     });
   }, [mapLayersLoaded, features]);
 }
 
 export const linearHeatDensityLayers = [
   {
-    sourceId: linearHeatDensityLinesSourceId,
-    source: {
-      type: 'geojson',
-      data: {
-        type: 'FeatureCollection',
-        features: [],
-      },
-    },
     layers: [
       {
         id: 'linear-heat-density-lines',
-        type: 'line',
+        isVisible: (config) => config.densiteThermiqueLineaire,
         paint: {
           'line-color': ['get', 'color'],
           'line-width': 3,
         },
-        isVisible: (config) => config.densiteThermiqueLineaire,
+        type: 'line',
         unselectable: true,
       },
     ],
+    source: {
+      data: {
+        features: [],
+        type: 'FeatureCollection',
+      },
+      type: 'geojson',
+    },
+    sourceId: linearHeatDensityLinesSourceId,
   },
   {
-    sourceId: linearHeatDensityLabelsSourceId,
-    source: {
-      type: 'geojson',
-      data: {
-        type: 'FeatureCollection',
-        features: [],
-      },
-    },
     layers: [
       {
         id: 'linear-heat-density-labels',
-        type: 'symbol',
+        isVisible: (config) => config.densiteThermiqueLineaire,
         layout: {
           'symbol-placement': 'point',
+          'text-allow-overlap': true,
+          'text-anchor': 'center',
           'text-field': ['get', 'distanceLabel'],
           'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
-          'text-size': 16,
-          'text-anchor': 'center',
-          'text-allow-overlap': true,
           'text-offset': [0, 0],
+          'text-size': 16,
         },
         paint: {
           'text-color': ['get', 'color'],
           'text-halo-color': '#ffffff',
           'text-halo-width': 2,
         },
-        isVisible: (config) => config.densiteThermiqueLineaire,
+        type: 'symbol',
         unselectable: true,
       },
     ],
+    source: {
+      data: {
+        features: [],
+        type: 'FeatureCollection',
+      },
+      type: 'geojson',
+    },
+    sourceId: linearHeatDensityLabelsSourceId,
   },
 ] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;

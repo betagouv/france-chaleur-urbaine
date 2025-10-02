@@ -1,8 +1,7 @@
+import type { Command } from '@commander-js/extra-typings';
+import camelcase from 'camelcase';
 import { existsSync } from 'fs';
 import { writeFile } from 'fs/promises';
-
-import { type Command } from '@commander-js/extra-typings';
-import camelcase from 'camelcase';
 import { z } from 'zod';
 
 import { logger } from '@/server/helpers/logger';

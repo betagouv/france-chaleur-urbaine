@@ -1,9 +1,9 @@
 import db from '@/server/db';
-import { type EXPORT_FORMAT } from '@/types/enum/ExportFormat';
-import { type Summary } from '@/types/Summary';
-import { type EnergySummary } from '@/types/Summary/Energy';
-import { type GasSummary } from '@/types/Summary/Gas';
-import { type NetworkSummary } from '@/types/Summary/Network';
+import type { EXPORT_FORMAT } from '@/types/enum/ExportFormat';
+import type { Summary } from '@/types/Summary';
+import type { EnergySummary } from '@/types/Summary/Energy';
+import type { GasSummary } from '@/types/Summary/Gas';
+import type { NetworkSummary } from '@/types/Summary/Network';
 
 import { getSpreadSheet, zip } from './export';
 import { consoColumns, fioulColumns, gasColumns } from './export.config';
@@ -193,8 +193,8 @@ export const getPolygonSummary = async (coordinates: number[][]): Promise<Summar
   ]);
 
   return {
-    gas,
     energy,
+    gas,
     network,
   };
 };
@@ -210,16 +210,16 @@ export const exportPolygonSummary = async (coordinates: number[][], exportType: 
   return zip(
     [
       {
-        sheet: getSpreadSheet(consoColumns, gas, exportType),
         name: `consos_gaz.${exportType}`,
+        sheet: getSpreadSheet(consoColumns, gas, exportType),
       },
       {
-        sheet: getSpreadSheet(fioulColumns, energyFioul, exportType),
         name: `chauffage_collectif_fioul.${exportType}`,
+        sheet: getSpreadSheet(fioulColumns, energyFioul, exportType),
       },
       {
-        sheet: getSpreadSheet(gasColumns, energyGas, exportType),
         name: `chauffage_collectif_gaz.${exportType}`,
+        sheet: getSpreadSheet(gasColumns, energyGas, exportType),
       },
     ],
     'export_fcu'

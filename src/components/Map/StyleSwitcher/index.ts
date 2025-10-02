@@ -1,4 +1,4 @@
-import { type ControlPosition, type IControl, type Map } from 'maplibre-gl';
+import type { ControlPosition, IControl, Map } from 'maplibre-gl';
 
 /*
 Lib CSS not compatible with v3 of maplibre

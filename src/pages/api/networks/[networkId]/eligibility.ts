@@ -10,9 +10,9 @@ export default withCors(
     requireGetMethod(req);
 
     const { networkId, lat, lon } = await validateObjectSchema(req.query, {
-      networkId: z.string(),
       lat: z.coerce.number(),
       lon: z.coerce.number(),
+      networkId: z.string(),
     });
     return await getNetworkEligilityStatus(networkId, lat, lon);
   })

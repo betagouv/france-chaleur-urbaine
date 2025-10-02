@@ -23,8 +23,8 @@ const CeremaMap = () => {
           withLegend
           withBorder
           legendLogoOpt={{
-            src: '/logo-CEREMA.jpg',
             alt: 'logo CEREMA',
+            src: '/logo-CEREMA.jpg',
           }}
           withFCUAttribution
           withComptePro={false}

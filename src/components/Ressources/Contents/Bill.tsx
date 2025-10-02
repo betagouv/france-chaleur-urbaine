@@ -25,8 +25,8 @@ const Bill = () => {
           travaux.
         </li>
       </List>
-      Le <b>poids respectif des parts R1 et R2 varie selon les réseaux, notamment en fonction du type d’énergie majoritaire</b>
-      . Par exemple, pour un réseau alimenté par de la géothermie, le plus gros de la dépense résidera dans le forage et donc dans le R2.
+      Le <b>poids respectif des parts R1 et R2 varie selon les réseaux, notamment en fonction du type d’énergie majoritaire</b>. Par
+      exemple, pour un réseau alimenté par de la géothermie, le plus gros de la dépense résidera dans le forage et donc dans le R2.
       <br />
       <br />
       <b>
@@ -36,8 +36,8 @@ const Bill = () => {
       . Ce taux réduit s’applique uniquement sur la part fixe R2 (abonnement) pour les autres réseaux.
       <br />
       <br />À noter qu’en plus de ce que l’exploitant facture à l’abonné,{' '}
-      <b>un coût est à prévoir pour l’entretien et l’exploitation du réseau secondaire</b>
-      , c’est-à-dire celui qui passe au sein de l’immeuble.
+      <b>un coût est à prévoir pour l’entretien et l’exploitation du réseau secondaire</b>, c’est-à-dire celui qui passe au sein de
+      l’immeuble.
       <br />
       <br />
       <br />

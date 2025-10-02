@@ -1,7 +1,6 @@
-import { type PropsWithChildren } from 'react';
-
-import SimplePage from '@/components/shared/page/SimplePage';
+import type { PropsWithChildren } from 'react';
 import Slideshow from '@/components/Slideshow';
+import SimplePage from '@/components/shared/page/SimplePage';
 import Box from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
 import Hero, { HeroSubtitle, HeroTitle } from '@/components/ui/Hero';

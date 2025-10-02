@@ -3,8 +3,8 @@ import { useMemo } from 'react';
 
 import { customGeojsonColor, customGeojsonOpacity } from '@/components/Map/layers/customGeojson';
 import { geomUpdateColor, geomUpdateOpacity } from '@/components/Map/layers/geomUpdate';
-import { type MapLegendFeature, mapLegendFeatures } from '@/components/Map/map-layers';
 import useFCUMap from '@/components/Map/MapProvider';
+import { type MapLegendFeature, mapLegendFeatures } from '@/components/Map/map-layers';
 import ReseauxDeChaleurFilters from '@/components/ReseauxDeChaleurFilters';
 import Box from '@/components/ui/Box';
 import CallOut from '@/components/ui/CallOut';
@@ -14,8 +14,6 @@ import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
 import Tooltip from '@/components/ui/Tooltip';
 import { useAuthentication } from '@/modules/auth/client/hooks';
-
-import { LegendFilters, SingleCheckbox, TabScrollablePart, Title } from './SimpleMapLegend.style';
 import {
   batimentsRaccordesReseauxChaleurFroidOpacity,
   batimentsRaccordesReseauxDeChaleurColor,
@@ -28,6 +26,7 @@ import {
 import { reseauDeChaleurClasseColor, reseauDeChaleurNonClasseColor } from '../layers/reseauxDeChaleur';
 import { reseauxDeFroidColor } from '../layers/reseauxDeFroid';
 import { reseauxEnConstructionColor, reseauxEnConstructionOpacity } from '../layers/reseauxEnConstruction';
+import { LegendFilters, SingleCheckbox, TabScrollablePart, Title } from './SimpleMapLegend.style';
 
 // TODO thos should be fine tuned to decouple more the map configuration from the legend
 // but for now it's enough
@@ -68,7 +67,7 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
           size="small"
           iconId="fr-icon-arrow-left-line"
           className="fr-mb-2w"
-          style={{ position: 'sticky', top: '0', background: 'white' }}
+          style={{ background: 'white', position: 'sticky', top: '0' }}
         >
           Retour
         </Button>
@@ -393,7 +392,7 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
               variant="primary"
               href="/contribution"
               className="fr-btn--tertiary d-flex"
-              style={{ width: '100%', justifyContent: 'center' }}
+              style={{ justifyContent: 'center', width: '100%' }}
             >
               <Icon name="fr-icon-heart-line" size="sm" mr="1v" />
               Contribuer
@@ -406,7 +405,7 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
               eventKey="Téléchargement|Tracés|carte"
               className="fr-btn--tertiary d-flex"
               mx="auto"
-              style={{ width: '100%', justifyContent: 'center' }}
+              style={{ justifyContent: 'center', width: '100%' }}
             >
               Télécharger les tracés
             </Link>

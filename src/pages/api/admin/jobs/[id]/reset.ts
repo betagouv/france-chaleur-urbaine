@@ -1,4 +1,4 @@
-import { type NextApiRequest } from 'next';
+import type { NextApiRequest } from 'next';
 
 import { kdb } from '@/server/db/kysely';
 import { handleRouteErrors } from '@/server/helpers/server';
@@ -8,8 +8,8 @@ const POST = async (req: NextApiRequest) => {
   await kdb
     .updateTable('jobs')
     .set({
-      status: 'pending',
       result: null,
+      status: 'pending',
       updated_at: new Date(),
     })
     .where('id', '=', jobId)

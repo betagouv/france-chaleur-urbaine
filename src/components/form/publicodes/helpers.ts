@@ -1,6 +1,6 @@
-import { type RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
+import type { RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
 
-import { type usePublicodesFormContext } from './FormProvider';
+import type { usePublicodesFormContext } from './FormProvider';
 
 export const getOptions = (engine: ReturnType<typeof usePublicodesFormContext>['engine'], name: RuleName): string[] => {
   const rule = engine.getRule(name);

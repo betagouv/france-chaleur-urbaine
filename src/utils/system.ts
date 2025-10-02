@@ -30,7 +30,7 @@ export async function runCommand(executablePath: string, args: string[] = [], op
 
   return new Promise((resolve, reject) => {
     const stdio = captureOutput ? 'pipe' : 'inherit';
-    const process = spawn(executablePath, args, { stdio, cwd });
+    const process = spawn(executablePath, args, { cwd, stdio });
 
     let output = '';
 
@@ -47,14 +47,14 @@ export async function runCommand(executablePath: string, args: string[] = [], op
     process.on('close', (code) => {
       if (captureOutput) {
         resolve({
-          success: code === 0,
           output: output.trim(),
+          success: code === 0,
         });
       } else {
         if (code === 0) {
           resolve({
-            success: true,
             output: '',
+            success: true,
           });
         } else {
           reject(new Error(`Script exited with code ${code}`));
@@ -81,8 +81,8 @@ export type CommandResult = {
 export async function testCommand(command: string, args: string[] = []): Promise<CommandResult> {
   return new Promise((resolve) => {
     const process = spawn(command, args, {
-      stdio: 'pipe',
       shell: true,
+      stdio: 'pipe',
     });
 
     let hasOutput = false;
@@ -103,8 +103,8 @@ export async function testCommand(command: string, args: string[] = []): Promise
       process.kill();
       logger.error(`Timeout lors du test de la commande ${command}`, { command });
       resolve({
-        success: false,
         output: 'Timeout lors de la vérification de la commande',
+        success: false,
       });
     }, 2000);
 
@@ -118,8 +118,8 @@ export async function testCommand(command: string, args: string[] = []): Promise
         output: output.substring(0, 100), // Log seulement les 100 premiers caractères
       });
       resolve({
-        success,
         output: output.trim() || `Commande non trouvée (code: ${code})`,
+        success,
       });
     });
 
@@ -127,8 +127,8 @@ export async function testCommand(command: string, args: string[] = []): Promise
       clearTimeout(timeout);
       logger.error(`Erreur lors du test de la commande ${command}`, { command, error: err.message });
       resolve({
-        success: false,
         output: err.message,
+        success: false,
       });
     });
   });

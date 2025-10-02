@@ -5,7 +5,7 @@ import { type ReactNode, useCallback, useEffect, useRef } from 'react';
 import Box from '@/components/ui/Box';
 import Loader from '@/components/ui/Loader';
 import Tooltip from '@/components/ui/Tooltip';
-import { type Interval } from '@/utils/interval';
+import type { Interval } from '@/utils/interval';
 
 export function roundNumberProgressively(v: number): number {
   return v > 2 ? Math.round(v) : v > 1 ? Math.round(v * 10) / 10 : Math.round(v * 100) / 100;
@@ -125,12 +125,12 @@ const RangeFilter = ({
         hideMinMax={hideMinMax}
         nativeInputProps={[
           {
-            value: valueMin,
             onChange: handleChangeMin,
+            value: valueMin,
           },
           {
-            value: valueMax,
             onChange: handleChangeMax,
+            value: valueMax,
           },
         ]}
         suffix={unit}

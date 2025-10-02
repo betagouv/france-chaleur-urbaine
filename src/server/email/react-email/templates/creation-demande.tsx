@@ -1,9 +1,9 @@
 import * as React from 'react';
 
 import { clientConfig } from '@/client-config';
-import { type formatHeatingTypeToAirtable } from '@/services/airtable';
-import { type AvailableStructure } from '@/types/AddressData';
-import { type Demand } from '@/types/Summary/Demand';
+import type { formatHeatingTypeToAirtable } from '@/services/airtable';
+import type { AvailableStructure } from '@/types/AddressData';
+import type { Demand } from '@/types/Summary/Demand';
 
 import { Layout, Link, Text } from '../components';
 

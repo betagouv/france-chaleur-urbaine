@@ -1,23 +1,23 @@
 import Badge from '@codegouvfr/react-dsfr/Badge';
 
-import { type Jobs } from '@/server/db/kysely';
+import type { Jobs } from '@/server/db/kysely';
 
 const jobStatusConfig = {
-  pending: {
-    label: 'En attente',
-    className: 'bg-gray-500! text-white!',
-  },
-  processing: {
-    label: 'En cours',
-    className: 'bg-[#0d49fb]! text-white!',
+  error: {
+    className: 'bg-destructive! text-white!',
+    label: 'Erreur',
   },
   finished: {
-    label: 'Terminée',
     className: 'bg-success! text-white!',
+    label: 'Terminée',
   },
-  error: {
-    label: 'Erreur',
-    className: 'bg-destructive! text-white!',
+  pending: {
+    className: 'bg-gray-500! text-white!',
+    label: 'En attente',
+  },
+  processing: {
+    className: 'bg-[#0d49fb]! text-white!',
+    label: 'En cours',
   },
 } satisfies Record<
   Jobs['status'],

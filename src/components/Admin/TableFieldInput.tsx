@@ -1,6 +1,6 @@
 import React, { type ChangeEvent, forwardRef, useCallback, useMemo, useState } from 'react';
 
-import { type InputProps } from '@/components/form/dsfr/Input';
+import type { InputProps } from '@/components/form/dsfr/Input';
 import { Input } from '@/components/form/dsfr/Input.styles';
 import Icon from '@/components/ui/Icon';
 import Tooltip from '@/components/ui/Tooltip';
@@ -70,10 +70,10 @@ const TableFieldInput = forwardRef<HTMLInputElement, TableFieldInputProps>((rawP
       label=""
       {...restProps}
       nativeInputProps={{
-        value: value ?? undefined,
         onChange,
         title,
         type,
+        value: value ?? undefined,
         ...nativeInputProps,
         onClick,
         onDoubleClick: stopPropagation,

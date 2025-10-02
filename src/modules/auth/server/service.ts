@@ -5,7 +5,7 @@ import { kdb } from '@/server/db/kysely';
 import { sendEmailTemplate } from '@/server/email';
 import { logger } from '@/server/helpers/logger';
 import { BadRequestError } from '@/server/helpers/server';
-import { type UserRole } from '@/types/enum/UserRole';
+import type { UserRole } from '@/types/enum/UserRole';
 import { generateRandomToken } from '@/utils/random';
 
 export const register = async ({
@@ -38,27 +38,27 @@ export const register = async ({
   const insertedUser = await kdb
     .insertInto('users')
     .values({
+      accepted_cgu_at: accept_cgu ? new Date() : null,
+      activation_token: activationToken,
       email: lowerCaseEmail,
+      gestionnaires: [],
+      optin_at: optin_newsletter ? new Date() : null,
       password: await hash(password, await genSalt(10)),
       role,
       status: 'pending_email_confirmation',
-      activation_token: activationToken,
-      gestionnaires: [],
-      accepted_cgu_at: accept_cgu ? new Date() : null,
-      optin_at: optin_newsletter ? new Date() : null,
       ...userData,
     })
     .returning(['id', 'email'])
     .executeTakeFirstOrThrow();
 
-  logger.info('account register', { user_id: insertedUser.id, role });
+  logger.info('account register', { role, user_id: insertedUser.id });
   await sendEmailTemplate('activation', insertedUser, { activationToken });
 
   await createUserEvent({
-    type: 'user_created',
-    context_type: 'user',
-    context_id: insertedUser.id,
     author_id: insertedUser.id,
+    context_id: insertedUser.id,
+    context_type: 'user',
+    type: 'user_created',
   });
   return insertedUser.id;
 };
@@ -86,17 +86,17 @@ export const login = async (email: string, password: string) => {
 
   logger.info('account login', { user_id: user.id });
   await createUserEvent({
-    type: 'user_login',
-    context_type: 'user',
-    context_id: user.id,
     author_id: user.id,
+    context_id: user.id,
+    context_type: 'user',
+    type: 'user_login',
   });
   return {
-    id: user.id,
-    email: user.email,
-    role: user.role,
     active: !!user.active,
+    email: user.email,
     gestionnaires: user.gestionnaires,
+    id: user.id,
+    role: user.role,
     signature: user.signature,
   };
 };
@@ -110,8 +110,8 @@ export const activateUser = async (activationToken: string) => {
   await kdb
     .updateTable('users')
     .set({
-      activation_token: null,
       activated_at: new Date(),
+      activation_token: null,
       status: 'valid',
     })
     .where('id', '=', existingUser.id)
@@ -120,9 +120,9 @@ export const activateUser = async (activationToken: string) => {
 
   logger.info('account activate', { user_id: existingUser.id });
   await createUserEvent({
-    type: 'user_activated',
-    context_type: 'user',
-    context_id: existingUser.id,
     author_id: existingUser.id,
+    context_id: existingUser.id,
+    context_type: 'user',
+    type: 'user_activated',
   });
 };

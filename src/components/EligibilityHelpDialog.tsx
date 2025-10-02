@@ -3,8 +3,8 @@ import { type ReactNode, useState } from 'react';
 import Button from '@/components/ui/Button';
 import Dialog from '@/components/ui/Dialog';
 import Icon from '@/components/ui/Icon';
-import { type DetailedEligibilityStatus, type EligibilityType } from '@/server/services/addresseInformation';
-import { type ExtractKeys } from '@/utils/typescript';
+import type { DetailedEligibilityStatus, EligibilityType } from '@/server/services/addresseInformation';
+import type { ExtractKeys } from '@/utils/typescript';
 
 type EligibilityCase = {
   type: EligibilityType;
@@ -15,56 +15,56 @@ type EligibilityCase = {
 // Crée un type qui vérifie que le tableau contient tous les cas
 const eligibilityCases = [
   {
-    type: 'dans_pdp',
-    title: 'Dans un PDP',
     description: "L'adresse se trouve dans un Périmètre de Développement Prioritaire (PDP) où un réseau de chaleur est prévu.",
+    title: 'Dans un PDP',
+    type: 'dans_pdp',
   },
   {
-    type: 'reseau_existant_tres_proche',
-    title: 'Réseau existant très proche',
     description: "Un réseau de chaleur existant se trouve à moins de 100m (60m sur Paris) de l'adresse.",
+    title: 'Réseau existant très proche',
+    type: 'reseau_existant_tres_proche',
   },
   {
-    type: 'reseau_futur_tres_proche',
-    title: 'Réseau futur très proche',
     description: "Un réseau de chaleur en construction se trouve à moins de 100m (60m sur Paris) de l'adresse.",
+    title: 'Réseau futur très proche',
+    type: 'reseau_futur_tres_proche',
   },
   {
-    type: 'dans_zone_reseau_futur',
-    title: 'Dans une zone de réseau futur',
     description: "L'adresse se trouve dans une zone où un réseau de chaleur est en cours de construction.",
+    title: 'Dans une zone de réseau futur',
+    type: 'dans_zone_reseau_futur',
   },
   {
-    type: 'reseau_existant_proche',
-    title: 'Réseau existant proche',
     description: "Un réseau de chaleur existant se trouve entre 100 et 200m (60 et 100m sur Paris) de l'adresse.",
+    title: 'Réseau existant proche',
+    type: 'reseau_existant_proche',
   },
   {
-    type: 'reseau_futur_proche',
-    title: 'Réseau futur proche',
     description: "Un réseau de chaleur en construction se trouve entre 100 et 200m (60 et 100m sur Paris) de l'adresse.",
+    title: 'Réseau futur proche',
+    type: 'reseau_futur_proche',
   },
   {
-    type: 'reseau_existant_loin',
-    title: 'Réseau existant éloigné',
     description:
       "Un réseau de chaleur existant se trouve entre 200 et 1000m de l'adresse. Les tags gestionnaires sont automatiquement ajoutés si la distance est inférieure à 500m.",
+    title: 'Réseau existant éloigné',
+    type: 'reseau_existant_loin',
   },
   {
-    type: 'reseau_futur_loin',
-    title: 'Réseau futur éloigné',
     description:
       "Un réseau de chaleur en construction se trouve entre 200 et 1000m de l'adresse. Les tags gestionnaires sont automatiquement ajoutés si la distance est inférieure à 500m.",
+    title: 'Réseau futur éloigné',
+    type: 'reseau_futur_loin',
   },
   {
-    type: 'dans_ville_reseau_existant_sans_trace',
-    title: 'Dans une ville avec réseau existant sans tracé',
     description: "L'adresse se trouve dans une ville où un réseau de chaleur existe mais dont le tracé n'est pas disponible.",
+    title: 'Dans une ville avec réseau existant sans tracé',
+    type: 'dans_ville_reseau_existant_sans_trace',
   },
   {
-    type: 'trop_eloigne',
-    title: 'Trop éloigné',
     description: "Aucun réseau de chaleur (existant ou en construction) ne se trouve à moins de 1000m de l'adresse.",
+    title: 'Trop éloigné',
+    type: 'trop_eloigne',
   },
 ] as const satisfies EligibilityCase[];
 

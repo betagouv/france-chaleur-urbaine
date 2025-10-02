@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @config '../../tailwind.config.ts';
 
@@ -22,13 +22,13 @@
   }
 }
 
-a[target='_blank'].reset-external {
+a[target="_blank"].reset-external {
   &:after {
     display: none;
   }
 }
 
-html[data-browser='firefox'] .scrollbar-visible {
+html[data-browser="firefox"] .scrollbar-visible {
   scrollbar-width: auto;
   scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
 
@@ -37,7 +37,7 @@ html[data-browser='firefox'] .scrollbar-visible {
   }
 }
 
-html[data-os='mac'] .scrollbar-visible {
+html[data-os="mac"] .scrollbar-visible {
   /* Generated with https://scrollbar.app/ and ChatGPT*/
   &::-webkit-scrollbar {
     width: 12px;

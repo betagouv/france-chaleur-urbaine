@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { type User } from 'next-auth';
+import type { User } from 'next-auth';
 import { v4 as uuidv4 } from 'uuid';
 
 import { createUserEvent } from '@/modules/events/server/service';
@@ -10,12 +10,12 @@ import { logger } from '@/server/helpers/logger';
 import { invalidPermissionsError } from '@/server/helpers/server';
 import { Airtable } from '@/types/enum/Airtable';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
-import { type Demand } from '@/types/Summary/Demand';
-import { type User as FullUser } from '@/types/User';
+import type { Demand } from '@/types/Summary/Demand';
+import type { User as FullUser } from '@/types/User';
 
 export const getAllDemands = async (): Promise<Demand[]> => {
   const records = await base(Airtable.DEMANDES)
-    .select({ sort: [{ field: 'Date demandes', direction: 'desc' }] })
+    .select({ sort: [{ direction: 'desc', field: 'Date demandes' }] })
     .all();
   return records.map((record) => ({ id: record.id, ...record.fields }) as Demand);
 };
@@ -79,7 +79,7 @@ export const getGestionnairesDemands = async (gestionnaires: string[]): Promise<
   const records = await base(Airtable.DEMANDES)
     .select({
       filterByFormula: `{Gestionnaires validés} = TRUE()`,
-      sort: [{ field: 'Date demandes', direction: 'desc' }],
+      sort: [{ direction: 'desc', field: 'Date demandes' }],
     })
     .all();
 
@@ -109,14 +109,14 @@ export const getDemands = async (user: User): Promise<Demand[]> => {
   const records = await base(Airtable.DEMANDES)
     .select({
       filterByFormula: filterFormula,
-      sort: [{ field: 'Date demandes', direction: 'desc' }],
+      sort: [{ direction: 'desc', field: 'Date demandes' }],
     })
     .all();
 
   logger.info('airtable.getDemands', {
+    duration: Date.now() - startTime,
     recordsCount: records.length,
     tagsCounts: user.gestionnaires.length,
-    duration: Date.now() - startTime,
   });
 
   records.forEach((record) => {
@@ -139,9 +139,9 @@ export const getDemands = async (user: User): Promise<Demand[]> => {
           ({
             id: record.id,
             ...record.fields,
+            Mail: faker.internet.email(),
             Nom: faker.person.lastName(),
             Prénom: faker.person.firstName(),
-            Mail: faker.internet.email(),
             Téléphone: `0${faker.string.numeric(9)}`,
           }) as Demand
       )
@@ -169,11 +169,11 @@ export const updateDemand = async (user: User, demandId: string, updateData: Par
     throw new Error(error);
   }
   await createUserEvent({
-    type: 'demand_updated',
-    context_type: 'demand',
-    context_id: demandId,
-    data: updateData,
     author_id: user.id,
+    context_id: demandId,
+    context_type: 'demand',
+    data: updateData,
+    type: 'demand_updated',
   });
   return { id: record.id, ...record.fields } as Demand;
 };
@@ -223,7 +223,7 @@ const newDemands = async (users: FullUser[]) => {
     for (let i = 0; i < gestionnaireUsers.length; i++) {
       const email = gestionnaireUsers[i];
       if (!sent.includes(email)) {
-        await sendEmailTemplate('new-demands', { id: 'unknown', email }, { demands: groupedDemands[gestionnaire].length });
+        await sendEmailTemplate('new-demands', { email, id: 'unknown' }, { demands: groupedDemands[gestionnaire].length });
         sent.push(email);
       }
       if (process.env.NEXT_PUBLIC_MOCK_USER_CREATION !== 'true') {
@@ -252,7 +252,7 @@ const oldDemands = async (users: FullUser[]) => {
     for (let i = 0; i < gestionnaireUsers.length; i++) {
       const email = gestionnaireUsers[i];
       if (!sent.includes(email)) {
-        await sendEmailTemplate('old-demands', { id: 'unknown', email });
+        await sendEmailTemplate('old-demands', { email, id: 'unknown' });
         sent.push(email);
       }
     }
@@ -310,16 +310,16 @@ export const dailyRelanceMail = async () => {
     });
     await sendEmailTemplate(
       'relance',
-      { id: demand.id, email: demand.Mail },
+      { email: demand.Mail, id: demand.id },
       {
+        adresse: demand.Adresse,
+        date: new Date(demand['Date demandes']).toLocaleDateString('fr-FR', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+        }),
         firstName: demand.Prénom ?? '',
         id: uuid,
-        date: new Date(demand['Date demandes']).toLocaleDateString('fr-FR', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-        }),
-        adresse: demand.Adresse,
       }
     );
   }

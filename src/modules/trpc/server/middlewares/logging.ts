@@ -1,6 +1,6 @@
 import { captureException } from '@sentry/nextjs';
 
-import { type TRoot } from '../context';
+import type { TRoot } from '../context';
 
 /**
  * Middleware de logging pour tRPC qui reproduit le comportement de handleRouteErrors
@@ -10,8 +10,8 @@ export function createLoggingMiddleware(t: TRoot) {
     const startTime = Date.now();
     // Attention le contexte est partagé parmi toutes les requêtes batchées. Ne pas réutiliser ctx.logger après
     const logger = ctx.logger.child({
-      name: 'trpc',
       method: type,
+      name: 'trpc',
       url: `trpc.${path}`,
     });
 
@@ -25,8 +25,8 @@ export function createLoggingMiddleware(t: TRoot) {
     } else {
       captureException(result.error);
       logger.error('request failed', {
-        duration,
         code: result.error?.code,
+        duration,
         error: result.error?.message,
         stack: result.error?.stack,
       });

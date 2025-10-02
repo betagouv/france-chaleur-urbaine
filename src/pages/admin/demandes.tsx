@@ -1,9 +1,8 @@
 import { usePrevious } from '@react-hookz/web';
 import { useQueryClient } from '@tanstack/react-query';
-import { type Virtualizer } from '@tanstack/react-virtual';
-import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { type RefObject } from 'react';
-import { type MapGeoJSONFeature } from 'react-map-gl/maplibre';
+import type { Virtualizer } from '@tanstack/react-virtual';
+import { Fragment, type RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import type { MapGeoJSONFeature } from 'react-map-gl/maplibre';
 
 import TableFieldInput from '@/components/Admin/TableFieldInput';
 import EligibilityHelpDialog, { eligibilityTitleByType } from '@/components/EligibilityHelpDialog';
@@ -12,7 +11,7 @@ import FCUTagAutocomplete from '@/components/form/FCUTagAutocomplete';
 import Comment from '@/components/Manager/Comment';
 import Contact from '@/components/Manager/Contact';
 import Tag from '@/components/Manager/Tag';
-import { type AdresseEligible } from '@/components/Map/layers/adressesEligibles';
+import type { AdresseEligible } from '@/components/Map/layers/adressesEligibles';
 import { useMapEventBus } from '@/components/Map/layers/common';
 import Map from '@/components/Map/Map';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
@@ -31,8 +30,8 @@ import Tooltip from '@/components/ui/Tooltip';
 import { useFetch } from '@/hooks/useApi';
 import { notify, toastErrors } from '@/modules/notification';
 import { withAuthentication } from '@/server/authentication';
-import { type Point } from '@/types/Point';
-import { type AdminDemand, type Demand } from '@/types/Summary/Demand';
+import type { Point } from '@/types/Point';
+import type { AdminDemand, Demand } from '@/types/Summary/Demand';
 import { defaultEmptyNumberValue, defaultEmptyStringValue } from '@/utils/airtable';
 import { arrayEquals } from '@/utils/array';
 import { isDefined } from '@/utils/core';
@@ -58,6 +57,8 @@ const displayModeDeChauffage = (demand: Demand) => {
 
 const quickFilterPresets = {
   demandesAAffecter: {
+    filters: [],
+    getStat: (demands) => demands.length,
     label: (
       <>
         demandes à affecter&nbsp;
@@ -65,15 +66,13 @@ const quickFilterPresets = {
       </>
     ),
     valueSuffix: <Icon name="fr-icon-flag-fill" size="sm" color="red" />,
-    getStat: (demands) => demands.length,
-    filters: [],
   },
 } satisfies Record<string, QuickFilterPreset<AdminDemand>>;
 type QuickFilterPresetKey = keyof typeof quickFilterPresets;
 
-const initialSortingState = [{ id: 'Date de la demande', desc: true }];
+const initialSortingState = [{ desc: true, id: 'Date de la demande' }];
 
-const defaultAssignmentChipOption: ChipOption = { title: '', key: 'Non affecté', label: 'Non affecté', className: 'bg-gray-200' };
+const defaultAssignmentChipOption: ChipOption = { className: 'bg-gray-200', key: 'Non affecté', label: 'Non affecté', title: '' };
 
 /**
  * Permet de savoir quand la table est rafraichie par un changement de valeur et donc de ne pas centrer la carte sur la première demande quand les demandes changent.
@@ -138,12 +137,12 @@ function DemandesAdmin(): React.ReactElement {
     return filteredDemands.map(
       (demand) =>
         ({
-          id: demand.id,
-          longitude: demand.Longitude,
-          latitude: demand.Latitude,
           address: demand.Adresse,
-          selected: demand.id === selectedDemandId,
+          id: demand.id,
+          latitude: demand.Latitude,
+          longitude: demand.Longitude,
           modeDeChauffage: displayModeDeChauffage(demand),
+          selected: demand.id === selectedDemandId,
           typeDeLogement: demand.Structure,
         }) satisfies AdresseEligible
     );
@@ -195,8 +194,6 @@ function DemandesAdmin(): React.ReactElement {
   const tableColumns: ColumnDef<AdminDemand>[] = useMemo(
     () => [
       {
-        id: 'indicators',
-        header: '',
         align: 'center',
         cell: ({ row }) => (
           <div className="flex flex-col gap-2">
@@ -207,11 +204,12 @@ function DemandesAdmin(): React.ReactElement {
             )}
           </div>
         ),
+        header: '',
+        id: 'indicators',
         width: '46px',
       },
       {
         accessorKey: 'Gestionnaires',
-        header: 'Gestionnaires',
         cell: (info) => {
           const demand = info.row.original;
 
@@ -251,12 +249,12 @@ function DemandesAdmin(): React.ReactElement {
             </div>
           );
         },
-        width: '400px',
         enableSorting: false,
+        header: 'Gestionnaires',
+        width: '400px',
       },
       {
         accessorKey: 'Affecté à',
-        header: 'Affecté à',
         cell: (info) => {
           const demand = info.row.original;
           return (
@@ -269,12 +267,12 @@ function DemandesAdmin(): React.ReactElement {
             />
           );
         },
-        width: '200px',
         enableSorting: false,
+        header: 'Affecté à',
+        width: '200px',
       },
       {
         accessorKey: 'Gestionnaires validés',
-        header: 'Gestionnaire validé',
         align: 'center',
         cell: (info) => {
           const demand = info.row.original;
@@ -287,23 +285,23 @@ function DemandesAdmin(): React.ReactElement {
                 size="small"
                 onClick={async () => {
                   void updateDemand(demand.id, {
-                    'Gestionnaires validés': true,
+                    'Affecté à': demand['Affecté à'] === defaultEmptyStringValue ? demand.recommendedAssignment : demand['Affecté à'],
+                    'Distance au réseau':
+                      demand['Distance au réseau'] === defaultEmptyNumberValue
+                        ? demand.detailedEligibilityStatus.distance
+                        : demand['Distance au réseau'],
 
                     // assign recommended tags, assignment, and network infos if not are set
                     Gestionnaires: arrayEquals(demand.Gestionnaires ?? [], [defaultEmptyStringValue])
                       ? demand.recommendedTags
                       : (demand.Gestionnaires ?? []),
-                    'Affecté à': demand['Affecté à'] === defaultEmptyStringValue ? demand.recommendedAssignment : demand['Affecté à'],
-                    'Nom réseau':
-                      demand['Nom réseau'] === defaultEmptyStringValue ? demand.detailedEligibilityStatus.nom : demand['Nom réseau'],
+                    'Gestionnaires validés': true,
                     'Identifiant réseau':
                       demand['Identifiant réseau'] === defaultEmptyStringValue
                         ? demand.detailedEligibilityStatus.id_sncu
                         : demand['Identifiant réseau'],
-                    'Distance au réseau':
-                      demand['Distance au réseau'] === defaultEmptyNumberValue
-                        ? demand.detailedEligibilityStatus.distance
-                        : demand['Distance au réseau'],
+                    'Nom réseau':
+                      demand['Nom réseau'] === defaultEmptyStringValue ? demand.detailedEligibilityStatus.nom : demand['Nom réseau'],
                     'Relance à activer': demand.detailedEligibilityStatus.distance < 200 && demand['Type de chauffage'] === 'Collectif',
                   });
                 }}
@@ -326,59 +324,49 @@ function DemandesAdmin(): React.ReactElement {
             </div>
           );
         },
-        width: '120px',
         enableSorting: false,
+        header: 'Gestionnaire validé',
+        width: '120px',
       },
       {
         accessorFn: (row) => `${row.Nom} ${row.Prénom} ${row.Mail}`,
-        header: 'Contact',
         cell: ({ row }) => <Contact demand={row.original} onEmailClick={() => {}} />,
-        width: '280px',
         enableSorting: false,
+        header: 'Contact',
+        width: '280px',
       },
       {
         accessorKey: 'Structure',
-        header: 'Type',
         cell: ({ row }) => <Tag text={row.original.Structure} />,
-        width: '130px',
         enableGlobalFilter: false,
         enableSorting: false,
+        header: 'Type',
+        width: '130px',
       },
       {
         accessorFn: (row) => displayModeDeChauffage(row),
-        header: 'Mode de chauffage',
         cell: ({ row }) => <Tag text={displayModeDeChauffage(row.original)} />,
-        width: '134px',
         enableGlobalFilter: false,
         enableSorting: false,
+        header: 'Mode de chauffage',
+        width: '134px',
       },
       {
         accessorKey: 'Adresse',
-        header: 'Adresse',
         cell: ({ row }) => <div className="whitespace-normal">{row.original.Adresse}</div>,
-        width: '220px',
         enableSorting: false,
+        header: 'Adresse',
+        width: '220px',
       },
       {
         accessorKey: 'Date de la demande',
-        header: 'Date de la demande',
         cellType: 'DateTime',
-        width: '94px',
         enableGlobalFilter: false,
+        header: 'Date de la demande',
+        width: '94px',
       },
       {
         accessorKey: 'Distance au réseau',
-        header: () => (
-          <div className="flex items-center">
-            Distance au réseau (m)
-            <Tooltip
-              iconProps={{
-                className: 'ml-1',
-              }}
-              title="Distance à vol d'oiseau"
-            />
-          </div>
-        ),
         cell: (info) => {
           const demand = info.row.original;
           return (
@@ -391,13 +379,23 @@ function DemandesAdmin(): React.ReactElement {
             />
           );
         },
-        width: '120px',
         enableGlobalFilter: false,
         enableSorting: false,
+        header: () => (
+          <div className="flex items-center">
+            Distance au réseau (m)
+            <Tooltip
+              iconProps={{
+                className: 'ml-1',
+              }}
+              title="Distance à vol d'oiseau"
+            />
+          </div>
+        ),
+        width: '120px',
       },
       {
         accessorKey: 'Identifiant réseau',
-        header: 'ID réseau le plus proche',
         cell: (info) => {
           const demand = info.row.original;
           return (
@@ -409,12 +407,12 @@ function DemandesAdmin(): React.ReactElement {
             />
           );
         },
-        width: '85px',
         enableSorting: false,
+        header: 'ID réseau le plus proche',
+        width: '85px',
       },
       {
         accessorKey: 'Nom réseau',
-        header: 'Nom du réseau le plus proche',
         cell: (info) => {
           const demand = info.row.original;
           return (
@@ -426,46 +424,47 @@ function DemandesAdmin(): React.ReactElement {
             />
           );
         },
-        width: '250px',
         enableSorting: false,
+        header: 'Nom du réseau le plus proche',
+        width: '250px',
       },
       {
         accessorKey: 'Logement',
-        header: 'Nb logements (lots)',
         cell: (info) => info.getValue<number>() && <>{info.getValue<number>()}&nbsp;</>,
-        width: '120px',
         enableGlobalFilter: false,
         enableSorting: false,
+        header: 'Nb logements (lots)',
+        width: '120px',
       },
       {
         accessorKey: 'Surface en m2',
-        header: 'Surface en m2',
         cell: (info) => info.getValue<number>() && <>{info.getValue<number>()}&nbsp;m²</>,
-        width: '120px',
         enableGlobalFilter: false,
         enableSorting: false,
+        header: 'Surface en m2',
+        width: '120px',
       },
       {
         accessorKey: 'Conso',
-        header: 'Conso gaz (MWh)',
         cell: (info) => info.getValue<number>() && formatMWh(info.getValue<number>()),
-        width: '120px',
         enableGlobalFilter: false,
         enableSorting: false,
+        header: 'Conso gaz (MWh)',
+        width: '120px',
       },
       {
         accessorKey: 'Commentaire',
-        header: 'Commentaire',
         cell: ({ row }) => <Comment demand={row.original} field="Commentaire" updateDemand={updateDemand} />,
-        width: '280px',
         enableSorting: false,
+        header: 'Commentaire',
+        width: '280px',
       },
       {
         accessorKey: 'Commentaires_internes_FCU',
-        header: 'Commentaires internes FCU',
         cell: ({ row }) => <Comment demand={row.original} field="Commentaires_internes_FCU" updateDemand={updateDemand} />,
-        width: '280px',
         enableSorting: false,
+        header: 'Commentaires internes FCU',
+        width: '280px',
       },
     ],
     [updateDemand, assignmentRulesResultsOptions]
@@ -490,8 +489,8 @@ function DemandesAdmin(): React.ReactElement {
       if (selectedDemand) {
         setMapCenterLocation({
           center: [selectedDemand.Longitude, selectedDemand.Latitude],
-          zoom,
           flyTo: true,
+          zoom,
         });
       }
     },
@@ -518,8 +517,8 @@ function DemandesAdmin(): React.ReactElement {
     if (firstDemand && !isUpdatingDemandField) {
       setMapCenterLocation({
         center: [firstDemand.Longitude, firstDemand.Latitude],
-        zoom: 8,
         flyTo: true,
+        zoom: 8,
       });
     }
     isUpdatingDemandField = false;
@@ -537,10 +536,10 @@ function DemandesAdmin(): React.ReactElement {
             label=""
             nativeInputProps={{
               'aria-label': 'rechercher',
-              required: true,
-              placeholder: 'Rechercher par nom, email, adresse...',
-              value: globalFilter,
               onChange: (e) => setGlobalFilter(e.target.value),
+              placeholder: 'Rechercher par nom, email, adresse...',
+              required: true,
+              value: globalFilter,
             }}
             className="p-2w mb-0! w-[350px]"
           />

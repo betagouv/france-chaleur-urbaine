@@ -1,6 +1,6 @@
 import cx from '@/utils/cx';
 
-import { type CSVAnalysis } from '../utils/csvColumnDetection';
+import type { CSVAnalysis } from '../utils/csvColumnDetection';
 
 export interface ColumnMapping {
   addressColumn?: number;

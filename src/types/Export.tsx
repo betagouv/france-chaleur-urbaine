@@ -1,8 +1,8 @@
-import { type User } from '@/types/User';
+import type { User } from '@/types/User';
 
-import { type ExportColumn } from './ExportColumn';
-import { type Demand } from './Summary/Demand';
-import { type NetworkToCompare } from './Summary/Network';
+import type { ExportColumn } from './ExportColumn';
+import type { Demand } from './Summary/Demand';
+import type { NetworkToCompare } from './Summary/Network';
 
 export const networksToCompareExportColumns: ExportColumn<NetworkToCompare>[] = [
   {
@@ -163,16 +163,16 @@ interface ExportConfListFormat {
 }
 
 export const exportsParams: ExportConfListFormat = {
-  networksToCompare: {
-    filename: 'liste_reseaux',
-    columns: networksToCompareExportColumns,
-  },
   demands: {
-    filename: 'demandes_fcu',
     columns: demandsExportColumns,
+    filename: 'demandes_fcu',
+  },
+  networksToCompare: {
+    columns: networksToCompareExportColumns,
+    filename: 'liste_reseaux',
   },
   obsoleteUsers: {
-    filename: 'comptes_obsoletes',
     columns: usersExportColumns,
+    filename: 'comptes_obsoletes',
   },
 };

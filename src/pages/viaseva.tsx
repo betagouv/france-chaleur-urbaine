@@ -11,8 +11,8 @@ const ViasevaMap = () => {
         withLegend
         withBorder
         legendLogoOpt={{
-          src: '/logo-viaseva.svg',
           alt: 'logo viaseva',
+          src: '/logo-viaseva.svg',
         }}
         withFCUAttribution
       />

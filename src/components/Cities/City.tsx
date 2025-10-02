@@ -11,7 +11,7 @@ import Text from '@/components/ui/Text';
 import WrappedText from '@/components/WrappedText';
 import userExperience from '@/data/villes/user-experience';
 import citiesData from '@/data/villes/villes';
-import { type Network } from '@/types/Summary/Network';
+import type { Network } from '@/types/Summary/Network';
 
 import { CityContainer, VideoGuideColumn } from './City.styles';
 import ClassedNetworks from './ClassedNetworks';
@@ -50,7 +50,7 @@ const City = ({ citySlug, network }: { citySlug: keyof typeof citiesData; networ
             </Box>
             {cityData.networksData && (
               <Box p="2w">
-                <Networks networksData={cityData.networksData} network={network} cityCoord={cityData.coord as [number, number]}></Networks>
+                <Networks networksData={cityData.networksData} network={network} cityCoord={cityData.coord as [number, number]} />
               </Box>
             )}
           </Box>

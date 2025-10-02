@@ -1,5 +1,5 @@
 import Script from 'next/script';
-import React from 'react';
+import type React from 'react';
 
 type LinkedInScriptProps = React.ComponentProps<typeof Script> & {
   partnerId: string;

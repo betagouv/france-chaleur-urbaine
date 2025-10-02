@@ -3,7 +3,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import db from '@/server/db';
 import { getExport } from '@/server/services/addresseInformation';
 import { withCors } from '@/services/api/cors';
-import { type ErrorResponse } from '@/types/ErrorResponse';
+import type { ErrorResponse } from '@/types/ErrorResponse';
 
 const bulkEligibilitygibilityStatus = async (
   req: NextApiRequest,
@@ -15,8 +15,8 @@ const bulkEligibilitygibilityStatus = async (
   if (req.method === 'GET') {
     if (existingValue) {
       return res.status(200).json({
-        id: existingValue.id,
         error: existingValue.in_error,
+        id: existingValue.id,
         progress: existingValue.progress / existingValue.addresses_count,
         result: JSON.parse(existingValue.result),
       });

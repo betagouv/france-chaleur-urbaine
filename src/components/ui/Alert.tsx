@@ -1,5 +1,5 @@
 import DSFRAlert, { type AlertProps as DSFRAlertProps } from '@codegouvfr/react-dsfr/Alert';
-import React from 'react';
+import type React from 'react';
 
 import cx from '@/utils/cx';
 
@@ -11,8 +11,8 @@ export type AlertProps = Omit<DSFRAlertProps, 'small' | 'description' | 'severit
 
 const classNames = {
   sizes: {
-    sm: 'text-sm py-2! pr-2!',
     md: '',
+    sm: 'text-sm py-2! pr-2!',
   },
 };
 

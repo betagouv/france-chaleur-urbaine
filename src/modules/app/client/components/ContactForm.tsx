@@ -21,20 +21,20 @@ const ContactForm = () => {
   });
 
   const defaultValues = {
-    lastName: '',
-    firstName: '',
     email: '',
+    firstName: '',
+    lastName: '',
+    message: '',
     phone: '',
     subject: defaultReason || '',
-    message: '',
   };
 
   const { Form, Field, FieldWrapper, Submit, form } = useForm({
-    schema: contactFormSchema,
     defaultValues,
     onSubmit: toastErrors(async ({ value }) => {
       await submitContactMutation.mutateAsync(value);
     }),
+    schema: contactFormSchema,
   });
 
   const handleNewMessage = () => {

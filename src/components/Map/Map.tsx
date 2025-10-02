@@ -2,7 +2,7 @@ import geoViewport from '@mapbox/geo-viewport';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import { useDebouncedEffect, useLocalStorageValue } from '@react-hookz/web';
-import { type GeoJSONSource, type LayerSpecification, type MapGeoJSONFeature, type MapLibreEvent } from 'maplibre-gl';
+import type { GeoJSONSource, LayerSpecification, MapGeoJSONFeature, MapLibreEvent } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useRouter } from 'next/router';
 import { parseAsJson, parseAsString, useQueryStates } from 'nuqs';
@@ -20,7 +20,7 @@ import MapReactGL, {
 import { z } from 'zod';
 
 import FileDragNDrop from '@/components/Map/components/FileDragNDrop';
-import { type AdresseEligible } from '@/components/Map/layers/adressesEligibles';
+import type { AdresseEligible } from '@/components/Map/layers/adressesEligibles';
 import { isMapConfigurationInitialized, type MapConfiguration } from '@/components/Map/map-configuration';
 import Accordion from '@/components/ui/Accordion';
 import Box from '@/components/ui/Box';
@@ -33,12 +33,12 @@ import useRouterReady from '@/hooks/useRouterReady';
 import { trackEvent } from '@/modules/analytics/client';
 import { notify } from '@/modules/notification';
 import { useServices } from '@/services';
-import { type BoundingBox } from '@/types/Coords';
-import { type AddressDetail, type HandleAddressSelect } from '@/types/HeatNetworksResponse';
-import { type MapMarkerInfos } from '@/types/MapComponentsInfos';
-import { type Point } from '@/types/Point';
-import { type StoredAddress } from '@/types/StoredAddress';
-import { type TypeLegendLogo } from '@/types/TypeLegendLogo';
+import type { BoundingBox } from '@/types/Coords';
+import type { AddressDetail, HandleAddressSelect } from '@/types/HeatNetworksResponse';
+import type { MapMarkerInfos } from '@/types/MapComponentsInfos';
+import type { Point } from '@/types/Point';
+import type { StoredAddress } from '@/types/StoredAddress';
+import type { TypeLegendLogo } from '@/types/TypeLegendLogo';
 import cx from '@/utils/cx';
 
 import CardSearchDetails from './components/CardSearchDetails';
@@ -49,8 +49,6 @@ import { Title } from './components/SimpleMapLegend.style';
 import { useBuildingsDataExtractionLayers } from './components/tools/BuildingsDataExtractionTool';
 import { useDistancesMeasurementLayers } from './components/tools/DistancesMeasurementTool';
 import { useLinearHeatDensityLayers } from './components/tools/LinearHeatDensityTool';
-import { useMapEvents } from './map-events';
-import { applyMapConfigurationToLayers, layerSymbolsImagesURLs, loadMapLayers, type MapLegendFeature } from './map-layers';
 import {
   CollapseLegend,
   CollapseLegendLabel,
@@ -65,18 +63,20 @@ import {
   MapSearchWrapper,
 } from './Map.style';
 import useFCUMap, { FCUMapContextProvider } from './MapProvider';
+import { useMapEvents } from './map-events';
+import { applyMapConfigurationToLayers, layerSymbolsImagesURLs, loadMapLayers, type MapLegendFeature } from './map-layers';
 // https://openmaptiles.geo.data.gouv.fr/styles/osm-bright/style.json
 import rawOsmConfig from './osm.config.json';
-import rawSatelliteConfig from './satellite.config.json';
 import { type MapboxStyleDefinition, MapboxStyleSwitcherControl } from './StyleSwitcher';
+import rawSatelliteConfig from './satellite.config.json';
 
-export { AdresseEligible };
+export type { AdresseEligible };
 const mapSettings = {
-  defaultLongitude: 2.3,
   defaultLatitude: 47,
+  defaultLongitude: 2.3,
   defaultZoom: 5,
-  minZoom: 5,
   maxZoom: 20,
+  minZoom: 5,
 };
 
 const getAddressId = (LatLng: Point) => `${LatLng.join('--')}`;
@@ -229,7 +229,7 @@ export const FullyFeaturedMap = ({
   const jumpTo = useCallback(({ coordinates, zoom }: { coordinates: [number, number]; zoom?: number }) => {
     if (mapRef.current) {
       mapRef.current.jumpTo({
-        center: { lon: coordinates[0], lat: coordinates[1] },
+        center: { lat: coordinates[1], lon: coordinates[0] },
         zoom: zoom || 16,
       });
     }
@@ -252,18 +252,18 @@ export const FullyFeaturedMap = ({
 
       if (existingAddressIndex === -1) {
         const newAddress = {
-          id,
-          coordinates,
           address,
           addressDetails,
+          coordinates,
+          id,
           search,
         };
         handleOnFetchAddress({ address }, 'carte');
         handleOnSuccessAddress(
           {
             address,
-            geoAddress: addressDetails.geoAddress,
             eligibility: addressDetails.network,
+            geoAddress: addressDetails.geoAddress,
           },
           'carte'
         );
@@ -321,10 +321,10 @@ export const FullyFeaturedMap = ({
         // we must define an empty layer otherwise the library tries to add its own layers
         {
           id: 'draw-empty-layer',
-          type: 'background',
           paint: {
             'background-opacity': 0,
           },
+          type: 'background',
         } satisfies LayerSpecification,
       ],
     });
@@ -362,8 +362,8 @@ export const FullyFeaturedMap = ({
         if (persistViewStateInURL) {
           map.on('move', () => {
             const newViewState = {
-              longitude: map.getMap().getCenter().lng,
               latitude: map.getMap().getCenter().lat,
+              longitude: map.getMap().getCenter().lng,
               zoom: map.getMap().getZoom(),
             };
             if (
@@ -397,7 +397,7 @@ export const FullyFeaturedMap = ({
     setMapLayersLoaded(true);
   };
 
-  const { Popup } = useMapEvents({ mapLayersLoaded, isDrawing, mapRef: mapRef.current, onFeatureClick });
+  const { Popup } = useMapEvents({ isDrawing, mapLayersLoaded, mapRef: mapRef.current, onFeatureClick });
 
   // disable the switcher control as it conflicts with map layers and drawing interactions
   useEffect(() => {
@@ -422,10 +422,10 @@ export const FullyFeaturedMap = ({
             !newMarkersList.some((marker) => marker.id === id && marker.popupContent === address.label)
           ) {
             const newMarker = {
+              color: address.isEligible ? 'green' : 'red',
               id: getAddressId([address.lon, address.lat]),
               latitude: address.lat,
               longitude: address.lon,
-              color: address.isEligible ? 'green' : 'red',
               popup: true,
               popupContent: address.label,
             };
@@ -457,7 +457,7 @@ export const FullyFeaturedMap = ({
         return;
       }
 
-      mapRef.current?.getMap()?.flyTo({ center: initialCenter, zoom: initialZoom, essential: true, duration: 1000 });
+      mapRef.current?.getMap()?.flyTo({ center: initialCenter, duration: 1000, essential: true, zoom: initialZoom });
     } else {
       jumpTo({ coordinates: initialCenter, zoom: initialZoom });
     }
@@ -542,17 +542,17 @@ export const FullyFeaturedMap = ({
     if (persistViewStateInURL && router.query.coord) {
       const [lng, lat] = (router.query.coord as string).split(',');
       setViewState({
-        longitude: parseFloat(lng) || mapSettings.defaultLongitude,
         latitude: parseFloat(lat) || mapSettings.defaultLatitude,
+        longitude: parseFloat(lng) || mapSettings.defaultLongitude,
         zoom: parseFloat(router.query.zoom as string) || mapSettings.defaultZoom,
       });
     }
   }, []);
 
   const [{ bounds: boundsInQuery }, setQuery] = useQueryStates({
+    bounds: parseAsJson(boundingBoxSchema.parse),
     coord: parseAsString,
     zoom: parseAsString,
-    bounds: parseAsJson(boundingBoxSchema.parse),
   });
   const bounds = boundsInQuery || defaultBounds;
   // store the view state in the URL (e.g. /carte?coord=2.3429253,48.7998120&zoom=11.36)
@@ -563,9 +563,9 @@ export const FullyFeaturedMap = ({
       }
       void setQuery(
         {
+          bounds: null, // reset bounds as they are just meant to be used on load of the map
           coord: `${viewState.longitude.toFixed(7)},${viewState.latitude.toFixed(7)}`,
           zoom: viewState.zoom.toFixed(2),
-          bounds: null, // reset bounds as they are just meant to be used on load of the map
         },
         {
           shallow: true,
@@ -592,7 +592,7 @@ export const FullyFeaturedMap = ({
       true // allow decimals in zoom
     );
 
-    map.flyTo({ center, zoom, essential: true, duration: 1000 });
+    map.flyTo({ center, duration: 1000, essential: true, zoom });
   }, [JSON.stringify(bounds), mapRef.current]);
 
   // This effect fits the map on the bounds of the adressesEligibles when they change
@@ -622,7 +622,7 @@ export const FullyFeaturedMap = ({
       true
     );
 
-    map.flyTo({ center, zoom, essential: true, duration: 1000 });
+    map.flyTo({ center, duration: 1000, essential: true, zoom });
   }, [adressesEligiblesAutoFit, adressesEligibles, mapRef.current]);
 
   // Update adressesEligibles source when it changes
@@ -630,18 +630,18 @@ export const FullyFeaturedMap = ({
     if (!mapRef.current || !mapLayersLoaded || !adressesEligibles) return;
 
     (mapRef.current.getSource('adressesEligibles') as GeoJSONSource)?.setData({
-      type: 'FeatureCollection',
       features: adressesEligibles.map((address) => ({
-        type: 'Feature',
         geometry: {
-          type: 'Point',
           coordinates: [address.longitude, address.latitude],
+          type: 'Point',
         },
         id: address.id,
         properties: {
           ...address,
         },
+        type: 'Feature',
       })),
+      type: 'FeatureCollection',
     });
   }, [mapRef.current, mapLayersLoaded, adressesEligibles]);
 
@@ -650,8 +650,8 @@ export const FullyFeaturedMap = ({
     if (!mapRef.current || !mapLayersLoaded || !geomUpdateFeatures) return;
 
     (mapRef.current.getSource('geomUpdate') as GeoJSONSource)?.setData({
-      type: 'FeatureCollection',
       features: geomUpdateFeatures,
+      type: 'FeatureCollection',
     });
   }, [mapRef.current, mapLayersLoaded, geomUpdateFeatures]);
 
@@ -680,8 +680,8 @@ export const FullyFeaturedMap = ({
   }
 
   const initialViewState: ViewState = {
-    longitude: initialCenter ? initialCenter[0] : mapSettings.defaultLongitude,
     latitude: initialCenter ? initialCenter[1] : mapSettings.defaultLatitude,
+    longitude: initialCenter ? initialCenter[0] : mapSettings.defaultLongitude,
     zoom: initialZoom || mapSettings.defaultZoom,
   };
 

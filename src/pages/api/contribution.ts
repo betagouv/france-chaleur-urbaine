@@ -41,8 +41,8 @@ const serverSideFilesSchema = z
       if (riskyExtensions.some((extension) => file.originalFilename.endsWith(extension))) {
         ctx.addIssue({
           code: 'custom',
-          message: `L'extension du fichier "${file.originalFilename}" n'est pas autorisée.`,
           fatal: true,
+          message: `L'extension du fichier "${file.originalFilename}" n'est pas autorisée.`,
         });
         return z.NEVER;
       }
@@ -73,18 +73,9 @@ export default handleRouteErrors(async (req, res) => {
   const formValues = await zServerContributionFormData.parseAsync({ ...fields, fichiers: files.fichiers });
 
   const record = await AirtableDB('FCU - Contribution').create({
-    Utilisateur: formValues.typeUtilisateur === 'Autre' ? formValues.typeUtilisateurAutre : formValues.typeUtilisateur,
-    Nom: formValues.nom,
-    Prénom: formValues.prenom,
-    Email: formValues.email,
     'Cadre subvention ADEME': formValues.dansCadreDemandeADEME,
-    Souhait: formValues.typeDemande,
-    'Réseau(x)': (formValues as any).nomReseau,
-    Localisation: (formValues as any).localisation,
-    'Nom gestionnaire': (formValues as any).gestionnaire,
     'Date mise en service': (formValues as any).dateMiseEnServicePrevisionnelle,
-    'Référent commercial': (formValues as any).emailReferentCommercial,
-    Précisions: (formValues as any).precisions ?? (formValues as any).commentaire,
+    Email: formValues.email,
     Fichiers: await Promise.all(
       (files.fichiers ?? []).map(async (fichier, index) => {
         const externalURL = await uploadTempFile(fichier.filepath, fichier.originalFilename ?? `Fichier ${index + 1}`);
@@ -94,6 +85,15 @@ export default handleRouteErrors(async (req, res) => {
         } as any; // bypass wrong typing
       })
     ),
+    Localisation: (formValues as any).localisation,
+    Nom: formValues.nom,
+    'Nom gestionnaire': (formValues as any).gestionnaire,
+    Précisions: (formValues as any).precisions ?? (formValues as any).commentaire,
+    Prénom: formValues.prenom,
+    'Référent commercial': (formValues as any).emailReferentCommercial,
+    'Réseau(x)': (formValues as any).nomReseau,
+    Souhait: formValues.typeDemande,
+    Utilisateur: formValues.typeUtilisateur === 'Autre' ? formValues.typeUtilisateurAutre : formValues.typeUtilisateur,
   });
 
   logger.info('create airtable record contribution', {

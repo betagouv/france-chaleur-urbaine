@@ -16,7 +16,7 @@ const Understanding = ({ cards }: { cards?: Record<string, Document> }) => {
             enlargeLink
             size="small"
             titleAs="h3"
-          ></UnderstandingCard>
+          />
         </CardContainer>
       ))}
     </UnderstandingCards>

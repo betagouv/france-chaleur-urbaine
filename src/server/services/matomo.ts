@@ -1,4 +1,4 @@
-import { type MatomoErrorResult } from './matomo_types';
+import type { MatomoErrorResult } from './matomo_types';
 
 const MATOMO_URL = process.env.NEXT_PUBLIC_MATOMO_URL;
 const MATOMO_TOKEN = process.env.MATOMO_TOKEN;
@@ -13,11 +13,11 @@ const configToURI = (config: ConfigType) =>
 
 const buildMatomoURL = (config: ConfigType = {}, bulkConfig: ConfigType[] = []) => {
   const queryParams = {
-    token_auth: MATOMO_TOKEN,
-    idSite: MATOMO_ID_SITE,
     format: 'JSON',
-    module: 'API',
+    idSite: MATOMO_ID_SITE,
     method: 'API.getBulkRequest',
+    module: 'API',
+    token_auth: MATOMO_TOKEN,
     ...bulkConfig.reduce(
       (acc, configEntry: ConfigType, i: number) => ({
         ...acc,
