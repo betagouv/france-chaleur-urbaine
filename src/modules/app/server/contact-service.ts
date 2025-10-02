@@ -17,7 +17,6 @@ export const createContact = async (data: ContactFormData) => {
     throw new Error(serverConfig.email.notAllowedMessage);
   }
 
-  // TODO: replace with own database
   const { id }: any = await AirtableDB(Airtable.CONTACT).create({
     Nom: data.lastName,
     Prenom: data.firstName,

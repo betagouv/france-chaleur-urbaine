@@ -10,7 +10,6 @@ export { type RateLimiterOptions };
  * Utilise express-rate-limit avec un store partagé et préfixes par route
  *
  * @example
- * @example
  * route.meta({
  *   rateLimit: {
  *     windowMs: 60 * 1000,
@@ -33,7 +32,6 @@ export function createRateLimitMiddleware(t: TRoot) {
       path,
     });
 
-    // Exécuter le rate limiter
     await new Promise<void>((resolve, reject) => {
       rateLimiter(ctx.req as any, ctx.res as any, (error?: Error) => {
         if (error === rateLimitError) {
