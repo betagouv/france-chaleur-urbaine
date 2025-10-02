@@ -48,7 +48,7 @@ const ScaleLegend = ({
       <ScaleLegendHeader>{label}</ScaleLegendHeader>
 
       <ScaleLegendBody>
-        {showColor && <ScaleLabelLegend bgColor={defaultColor + '88'} size={minIconSize} circle={circle} />}
+        {showColor && <ScaleLabelLegend bgColor={`${defaultColor}88`} size={minIconSize} circle={circle} />}
 
         <ScaleSlider>
           <Range
@@ -88,7 +88,7 @@ const ScaleLegend = ({
             </span>
           </Box>
         </ScaleSlider>
-        {showColor && <ScaleLabelLegend bgColor={defaultColor + '88'} size={maxIconSize} circle={circle} />}
+        {showColor && <ScaleLabelLegend bgColor={`${defaultColor}88`} size={maxIconSize} circle={circle} />}
       </ScaleLegendBody>
     </ScaleLegendWrapper>
   );

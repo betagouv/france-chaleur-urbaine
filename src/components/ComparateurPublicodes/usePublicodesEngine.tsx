@@ -24,7 +24,7 @@ export const formatUnit = ({ numerators, denominators }: Unit): string => {
   };
   const nums = format(numerators);
   const dens = format(denominators, '/');
-  return nums + (dens ? ' / ' + dens : '');
+  return nums + (dens ? ` / ${dens}` : '');
 };
 
 const usePublicodesEngine = (rules: Rules, options?: Options) => {
