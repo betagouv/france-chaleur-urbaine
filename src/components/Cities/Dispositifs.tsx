@@ -37,8 +37,8 @@ const Dispositifs = ({
             </Heading>
           )}
           <ResponsiveRow>
-            {dispositifs.map((dispositif: any, i) => (
-              <Box flex key={`${city}'-'+${i}`}>
+            {dispositifs.map((dispositif: any) => (
+              <Box flex key={`${city}-${dispositif.title || dispositif.description.slice(0, 50)}`}>
                 {dispositif.title && (
                   <Heading as="h4" legacyColor="white">
                     {dispositif.title}

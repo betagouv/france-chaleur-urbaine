@@ -134,16 +134,16 @@ const City = ({ citySlug, network }: { citySlug: keyof typeof citiesData; networ
               Les différentes étapes en copropriété :
             </Heading>
             <Box display="flex" flexDirection="column" className="fr-container">
-              {userExperience.map((props, i) => (
+              {userExperience.map((props) => (
                 <Box
-                  key={`box-user-experience-${i}`}
+                  key={`box-user-experience-${props.imgSrc}`}
                   display="flex"
                   flexDirection="row"
                   alignItems="center"
                   justifyContent="space-between"
                   position="relative"
                 >
-                  <WrappedText textClassName="user-experience-description" key={`user-experience-${i}`} center {...props} />
+                  <WrappedText textClassName="user-experience-description" key={`user-experience-${props.imgSrc}`} center {...props} />
                 </Box>
               ))}
             </Box>
