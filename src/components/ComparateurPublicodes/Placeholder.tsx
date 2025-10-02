@@ -237,15 +237,13 @@ const ComparateurPublicodesPlaceholder: React.FC<ComparateurPublicodesPlaceholde
     <div className={cx(fr.cx('fr-container'), className)} {...props}>
       <Simulator $loading={true}>
         <Box display="flex" gap="16px" flexDirection="column">
-          {advancedMode ? (
-            simulatorTabs.map((tab) => (
-              <Accordion key={tab.tabId} bordered label={tab.label}>
-                Chargement...
-              </Accordion>
-            ))
-          ) : (
-            <>Chargement...</>
-          )}
+          {advancedMode
+            ? simulatorTabs.map((tab) => (
+                <Accordion key={tab.tabId} bordered label={tab.label}>
+                  Chargement...
+                </Accordion>
+              ))
+            : 'Chargement...'}
         </Box>
         <Results>
           <ResultsNotAvailable advancedMode={advancedMode} />

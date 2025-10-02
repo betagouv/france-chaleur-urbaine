@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import Button from '@/components/ui/Button';
 import Icon from '@/components/ui/Icon';
 import Video from '@/components/ui/Video';
 
@@ -24,13 +24,12 @@ const InterviewsVideos = () => {
     <>
       <Video {...video} altText={`Le transcript de cette vidéo est disponible sur YouTube.`} />
 
-      <nav role="navigation" className="fr-pagination" aria-label="Pagination">
+      <nav className="fr-pagination" aria-label="Pagination">
         <ul className="fr-pagination__list">
           <li>
-            <a
+            <Button
+              priority="tertiary no outline"
               className="fr-pagination__link"
-              role="link"
-              href="#"
               onClick={(e) => {
                 e.preventDefault();
                 setVideoIndex((videoIndex - 1 + videos.length) % videos.length);
@@ -38,14 +37,13 @@ const InterviewsVideos = () => {
             >
               <Icon name="ri-arrow-left-s-line" size="sm" />
               Précédent
-            </a>
+            </Button>
           </li>
           <li className="fr-col" aria-hidden />
           <li>
-            <a
+            <Button
+              priority="tertiary no outline"
               className="fr-pagination__link"
-              role="link"
-              href="#"
               onClick={(e) => {
                 e.preventDefault();
                 setVideoIndex((videoIndex + 1) % videos.length);
@@ -53,7 +51,7 @@ const InterviewsVideos = () => {
             >
               Suivant
               <Icon name="ri-arrow-right-s-line" size="sm" />
-            </a>
+            </Button>
           </li>
         </ul>
       </nav>

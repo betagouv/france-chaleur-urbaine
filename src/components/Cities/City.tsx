@@ -80,7 +80,7 @@ const City = ({ citySlug, network }: { citySlug: keyof typeof citiesData; networ
               </VideoGuideColumn>
             </ResponsiveRow>
           </Box>
-          {cityData.networksData && cityData.networksData.isClassed && (
+          {cityData.networksData?.isClassed && (
             <Box p="8w" backgroundColor="#f9f8f6">
               <ResponsiveRow className="fr-container">
                 <ClassedNetworks

@@ -48,7 +48,7 @@ const Dispositifs = ({
                 <Box flexDirection="column">{dispositif.description}</Box>
                 {dispositif.link && (
                   <Box className="fr-btn fr-mt-2w fr-ml-4w">
-                    <Link href={dispositif.link.href} isExternal={dispositif.link.target === '_blank' ? true : false}>
+                    <Link href={dispositif.link.href} isExternal={dispositif.link.target === '_blank'}>
                       {dispositif.link.title}
                     </Link>
                   </Box>

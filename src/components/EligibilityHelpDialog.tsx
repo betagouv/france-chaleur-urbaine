@@ -4,6 +4,7 @@ import Button from '@/components/ui/Button';
 import Dialog from '@/components/ui/Dialog';
 import Icon from '@/components/ui/Icon';
 import type { DetailedEligibilityStatus, EligibilityType } from '@/server/services/addresseInformation';
+import cx from '@/utils/cx';
 import type { ExtractKeys } from '@/utils/typescript';
 
 type EligibilityCase = {
@@ -118,12 +119,12 @@ const EligibilityHelpDialog = ({ children, detailedEligibilityStatus }: Eligibil
               return (
                 <div
                   key={eligibilityCase.type}
-                  className={'border rounded-lg p-4 ' + (isCurrent ? 'bg-blue-50 border-blue-600 shadow-md' : 'bg-gray-50 border-gray-200')}
+                  className={cx('border rounded-lg p-4', isCurrent ? 'bg-blue-50 border-blue-600 shadow-md' : 'bg-gray-50 border-gray-200')}
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <h4 className={'font-semibold mb-1 ' + (isCurrent ? 'text-blue-900' : 'text-gray-900')}>{eligibilityCase.title}</h4>
-                      <p className={'text-sm mb-2 ' + (isCurrent ? 'text-blue-800' : 'text-gray-700')}>{eligibilityCase.description}</p>
+                      <h4 className={cx('font-semibold mb-1', isCurrent ? 'text-blue-900' : 'text-gray-900')}>{eligibilityCase.title}</h4>
+                      <p className={cx('text-sm mb-2', isCurrent ? 'text-blue-800' : 'text-gray-700')}>{eligibilityCase.description}</p>
                       {isCurrent && detailedEligibilityStatus && (
                         <div className="mt-2 space-y-1">
                           <div>

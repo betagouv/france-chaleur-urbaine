@@ -200,7 +200,7 @@ const updateDemands = async () => {
     const demands = await base(Airtable.DEMANDES).select().all();
     await Promise.all(
       demands
-        .filter((demand: any) => demand.get('Gestionnaires') && demand.get('Gestionnaires').includes('Dalkia'))
+        .filter((demand: any) => demand.get('Gestionnaires')?.includes('Dalkia'))
         .map(async (demand) => {
           const network: string = demand.get('Identifiant réseau') as string;
           if (network) {

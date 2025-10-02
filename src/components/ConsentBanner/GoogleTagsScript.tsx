@@ -8,7 +8,7 @@ type GoogleTagsScriptProps = React.ComponentProps<typeof Script> & {
 const GoogleTagsScript: React.FC<GoogleTagsScriptProps> = ({ tagIds, ...props }) => {
   return (
     <>
-      <Script id={`google-ads-tags`}>
+      <Script id={'google-ads-tags'}>
         {`
         "use strict";
         window.dataLayer = window.dataLayer || [];
