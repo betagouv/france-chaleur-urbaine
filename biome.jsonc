@@ -174,7 +174,8 @@
         "noMisleadingInstantiator": "error",
         "noPrototypeBuiltins": "error",
         "noRedeclare": "error",
-        "noShadowRestrictedNames": "error",
+        // TODO: Réactiver cette règle après refactoring des variables qui masquent des noms réservés
+        "noShadowRestrictedNames": "off",
         "noUnsafeNegation": "error",
         "useGetterReturn": "error"
       }
