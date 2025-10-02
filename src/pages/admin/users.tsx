@@ -188,15 +188,20 @@ export default function ManageUsers() {
               onClick: () => startImpersonation(row.original),
             },
             {
+              id: '',
+              label: row.original.active ? "Désactiver l'utilisateur" : "Réactiver l'utilisateur",
+              icon: row.original.active ? 'ri-delete-back-2-line' : 'ri-refresh-line',
+              variant: row.original.active ? 'destructive' : undefined,
+              onClick: () => {
+                void handleUpdateUser(row.original.id)({ active: !row.original.active });
+              },
+            },
+            {
               id: 'delete',
-              label: row.original.active ? "Désactiver l'utilisateur" : "Supprimer l'utilisateur",
-              icon: row.original.active ? 'ri-delete-back-2-line' : 'ri-delete-bin-line',
+              label: "Supprimer l'utilisateur",
+              icon: 'ri-delete-bin-line',
               variant: 'destructive',
               onClick: () => {
-                if (row.original.active) {
-                  void handleUpdateUser(row.original.id)({ active: false });
-                  return;
-                }
                 if (window.confirm('Voulez-vous vraiment supprimer cet utilisateur ? Cette action est irréversible.')) {
                   alert("Cette fonctionnalité n'est pas encore implémentée, demandez à l'équipe technique");
                 }
