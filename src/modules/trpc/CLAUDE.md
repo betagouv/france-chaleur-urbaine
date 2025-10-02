@@ -112,6 +112,56 @@ import trpc, { type RouterOutput } from '@/modules/trpc/client';
 const { data: testDetails, isLoading, refetch } = trpc.moduleName.get.useQuery({ id: test.id }, { enabled: viewDetail });
 ```
 
+## Rate Limiting
+
+tRPC routes can be protected with rate limiting via the `security` module. Rate limiting is configured per-route using the `meta` property.
+
+**See the full [Security Module documentation](../security/CLAUDE.md) for details.**
+
+### Quick Example
+
+Add rate limiting to any route using `.meta()`:
+
+```typescript
+export const contactRouter = router({
+  create: route
+    .meta({
+      rateLimit: {
+        windowMs: 60 * 1000, // 1 minute
+        max: 1,
+        message: "Vous ne pouvez envoyer qu'un message par minute",
+      },
+    })
+    .input(contactFormSchema)
+    .mutation(async ({ input }) => {
+      return await createContact(input);
+    }),
+});
+```
+
+### Rate Limit Configuration
+
+The `rateLimit` meta property accepts:
+
+```typescript
+{
+  windowMs: number;     // Time window in milliseconds
+  max: number;          // Maximum requests per window
+  message?: string;     // Custom error message
+}
+```
+
+### Common Patterns
+
+- **Contact forms**: 1 request/minute (strict anti-spam)
+- **Search/List endpoints**: 100 requests/minute
+- **Auth endpoints**: 5 attempts/15 minutes
+- **Upload endpoints**: 10 uploads/hour
+
+**Note**: If no `rateLimit` is specified in meta, no rate limiting is applied to the route.
+
+**Implementation**: Rate limiting uses `express-rate-limit` from the security module with IP-based identification (supports `x-forwarded-for` headers). See `src/modules/trpc/server/middlewares/rate-limit.ts` for implementation details.
+
 ### Invalidate queries or update cache
 
 Based on the situation, if new data has been received, 2 options can be used:

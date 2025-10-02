@@ -6,6 +6,7 @@ import React from 'react';
 import useForm from '@/components/form/react-form/useForm';
 import { toastErrors } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
+import cx from '@/utils/cx';
 
 import { contactFormSchema, contactReasonOptions } from '../../constants';
 
@@ -37,60 +38,60 @@ const ContactForm = () => {
   });
 
   const handleNewMessage = () => {
+    form.setFieldValue('subject', defaultReason || '');
+    form.setFieldValue('message', '');
     setSent(false);
-    form.reset(defaultValues);
   };
 
   return (
     <>
-      {sent ? (
+      {sent && (
         <div className="max-w-xl">
           <Alert severity="success" title="Merci pour votre message" description="Nous reviendrons rapidement vers vous." />
           <Button className="fr-mt-2w" onClick={handleNewMessage}>
             Envoyer un nouveau message
           </Button>
         </div>
-      ) : (
-        <Form className="max-w-xl">
-          <FieldWrapper>
-            <Field.Input name="lastName" label="Votre nom :" />
-          </FieldWrapper>
-
-          <FieldWrapper>
-            <Field.Input name="firstName" label="Votre prénom :" />
-          </FieldWrapper>
-
-          <FieldWrapper>
-            <Field.EmailInput name="email" label="Votre adresse e-mail :" />
-          </FieldWrapper>
-
-          <FieldWrapper>
-            <Field.PhoneInput name="phone" label="Votre numéro de téléphone :" />
-          </FieldWrapper>
-
-          <FieldWrapper>
-            <Field.Select
-              name="subject"
-              label="Objet du message :"
-              options={contactReasonOptions}
-              placeholder="- Sélectionner l'objet de votre message -"
-            />
-          </FieldWrapper>
-
-          <FieldWrapper>
-            <Field.Textarea
-              name="message"
-              label="Votre message :"
-              nativeTextAreaProps={{
-                rows: 5,
-              }}
-            />
-          </FieldWrapper>
-          <FieldWrapper>
-            <Submit loading={submitContactMutation.isPending}>Envoyer</Submit>
-          </FieldWrapper>
-        </Form>
       )}
+      <Form className={cx('max-w-xl', sent && 'hidden')}>
+        <FieldWrapper>
+          <Field.Input name="lastName" label="Votre nom :" />
+        </FieldWrapper>
+
+        <FieldWrapper>
+          <Field.Input name="firstName" label="Votre prénom :" />
+        </FieldWrapper>
+
+        <FieldWrapper>
+          <Field.EmailInput name="email" label="Votre adresse e-mail :" />
+        </FieldWrapper>
+
+        <FieldWrapper>
+          <Field.PhoneInput name="phone" label="Votre numéro de téléphone :" />
+        </FieldWrapper>
+
+        <FieldWrapper>
+          <Field.Select
+            name="subject"
+            label="Objet du message :"
+            options={contactReasonOptions}
+            placeholder="- Sélectionner l'objet de votre message -"
+          />
+        </FieldWrapper>
+
+        <FieldWrapper>
+          <Field.Textarea
+            name="message"
+            label="Votre message :"
+            nativeTextAreaProps={{
+              rows: 5,
+            }}
+          />
+        </FieldWrapper>
+        <FieldWrapper>
+          <Submit loading={submitContactMutation.isPending}>Envoyer</Submit>
+        </FieldWrapper>
+      </Form>
     </>
   );
 };

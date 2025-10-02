@@ -1,14 +1,12 @@
 import { TRPCError } from '@trpc/server';
 
+import { createRateLimiter, ipKeyGenerator, rateLimitError, sharedStore } from '@/modules/security/server/rate-limit';
+
 import { type TRoot } from '../context';
-
-type RateLimitStore = Map<string, { count: number; resetTime: number }>;
-
-const store: RateLimitStore = new Map();
 
 /**
  * Rate limiting middleware pour tRPC - lit la config depuis les meta
- * Utilise une store en mémoire (adapté pour single instance, sinon utiliser Redis/Upstash)
+ * Utilise express-rate-limit avec un store partagé et préfixes par route
  *
  * @example
  * route.meta({
@@ -20,59 +18,45 @@ const store: RateLimitStore = new Map();
  * }).mutation(...)
  */
 export function createRateLimitMiddleware(t: TRoot) {
-  return t.middleware(async ({ ctx, path, meta, next }) => {
+  return t.middleware(async ({ meta, ctx, path, next }) => {
     const config = meta?.rateLimit;
 
     // Si pas de config, pas de rate limiting
     if (!config) return next();
 
-    // Créer un identifiant unique combinant IP + route pour isoler les limites par endpoint
-    const ip = getIdentifier(ctx);
-    const identifier = `${ip}:${path}`;
-    const now = Date.now();
-    const record = store.get(identifier);
+    // Créer un rate limiter avec store partagé et préfixe par route
+    const rateLimiter = createRateLimiter({
+      windowMs: config.windowMs,
+      max: config.max,
+      store: sharedStore,
+      // Préfixe basé sur le path tRPC pour isoler les routes
+      keyGenerator: (req) => {
+        const ip = ipKeyGenerator(req.ip || '');
+        return `${path}:${ip}`;
+      },
+      handler: (_req, _res, next) => {
+        next(rateLimitError);
+      },
+    });
 
-    // Nettoyer les anciennes entrées périodiquement
-    if (Math.random() < 0.01) {
-      cleanupExpiredRecords(now);
-    }
-
-    if (!record || now > record.resetTime) {
-      // Nouvelle fenêtre
-      store.set(identifier, {
-        count: 1,
-        resetTime: now + config.windowMs,
+    // Exécuter le rate limiter
+    await new Promise<void>((resolve, reject) => {
+      rateLimiter(ctx.req as any, ctx.res as any, (error?: Error) => {
+        if (error === rateLimitError) {
+          reject(
+            new TRPCError({
+              code: 'TOO_MANY_REQUESTS',
+              message: config.message || 'Trop de requêtes. Veuillez réessayer plus tard.',
+            })
+          );
+        } else if (error) {
+          reject(error);
+        } else {
+          resolve();
+        }
       });
-      return next();
-    }
-
-    if (record.count >= config.max) {
-      const retryAfter = Math.ceil((record.resetTime - now) / 1000);
-      throw new TRPCError({
-        code: 'TOO_MANY_REQUESTS',
-        message: config.message || `Trop de requêtes. Réessayez dans ${retryAfter} secondes.`,
-      });
-    }
-
-    // Incrémenter le compteur
-    record.count++;
-    store.set(identifier, record);
+    });
 
     return next();
   });
-}
-
-function getIdentifier(ctx: any): string {
-  // Utiliser l'IP du client comme identifiant
-  const forwarded = ctx.req?.headers?.['x-forwarded-for'];
-  const ip = typeof forwarded === 'string' ? forwarded.split(',')[0] : ctx.req?.socket?.remoteAddress || 'unknown';
-  return ip;
-}
-
-function cleanupExpiredRecords(now: number) {
-  for (const [key, record] of store.entries()) {
-    if (now > record.resetTime) {
-      store.delete(key);
-    }
-  }
 }
