@@ -15,7 +15,7 @@ const IFrameMapIntegrationForm = ({ label }: { label?: ReactNode }) => {
 
   const url = `legend=true${coords ? `&coord=${coords.lon},${coords.lat}&zoom=12` : ''}&displayLegend=${selectedLayers.join(',')}`;
 
-  const onAddressSelected = async (address: string, geoAddress?: SuggestionItem) => {
+  const onAddressSelected = async (_address: string, geoAddress?: SuggestionItem) => {
     if (!geoAddress) {
       setCoords(null);
       return;

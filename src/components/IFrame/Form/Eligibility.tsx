@@ -32,7 +32,7 @@ const Eligibility = () => {
         </CheckEligibilityFormLabel>
         <AddressAutocomplete
           placeholder="Tapez ici votre adresse"
-          onAddressSelected={(address, suggestionItem) => {
+          onAddressSelected={(_address, suggestionItem) => {
             setAddress(suggestionItem);
           }}
         />

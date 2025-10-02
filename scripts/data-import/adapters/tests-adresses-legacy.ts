@@ -59,7 +59,7 @@ export default class TestsAdressesLegacyAdapter extends BaseAdapter {
           this.logger.error('Error parsing addresses', { err });
           if (file === 'Not available' || !file) {
             this.logger.error(`No result for eligibilityTest ${id}`);
-            addressesNotValid = addressesNotValid + (addresses_count || 0);
+            addressesNotValid += addresses_count || 0;
             // Use a transaction for DB updates
             await kdb.transaction().execute(async (trx) => {
               await trx.updateTable('eligibility_tests').set({ status: 'error' }).where('id', '=', id).execute();
@@ -119,7 +119,7 @@ export default class TestsAdressesLegacyAdapter extends BaseAdapter {
                 test_id: id as string,
               } satisfies Parameters<ReturnType<typeof kdb.insertInto<'eligibility_demands_addresses'>>['values']>[0];
               addressRows.push(addressData);
-              processedAddresses = processedAddresses + 1;
+              processedAddresses += 1;
             },
             { concurrency: ADDRESS_CONCURRENCY }
           );
