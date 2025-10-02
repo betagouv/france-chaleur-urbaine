@@ -217,7 +217,7 @@ export const listNetworks = async (): Promise<NetworkToCompare[]> => {
       ...network,
       'contenu CO2': isDefined(network['contenu CO2']) ? network['contenu CO2'] * 1000 : null,
       'contenu CO2 ACV': isDefined(network['contenu CO2 ACV']) ? network['contenu CO2 ACV'] * 1000 : null,
-      livraisons_totale_MWh: isDefined(network['livraisons_totale_MWh']) ? network['livraisons_totale_MWh'] / 1000 : null,
+      livraisons_totale_MWh: isDefined(network.livraisons_totale_MWh) ? network.livraisons_totale_MWh / 1000 : null,
     } as NetworkToCompare;
   });
 };
@@ -414,7 +414,7 @@ const createReseauDeChaleur = async (id: string, finalGeometry: any) => {
   return await kdb
     .insertInto('reseaux_de_chaleur')
     .values({
-      ...(id_sncu ? { 'Identifiant reseau': id_sncu, id_fcu: maxIdResult.next_id } : { id_fcu: parseInt(id) }),
+      ...(id_sncu ? { 'Identifiant reseau': id_sncu, id_fcu: maxIdResult.next_id } : { id_fcu: parseInt(id, 10) }),
       fichiers: [],
       geom: null,
       geom_update: sql`ST_Force2D(${finalGeometry})`,
@@ -427,8 +427,8 @@ const createReseauDeChaleur = async (id: string, finalGeometry: any) => {
 };
 
 const createReseauEnConstruction = async (id: string, finalGeometry: any) => {
-  const id_fcu = parseInt(id);
-  if (isNaN(id_fcu)) {
+  const id_fcu = parseInt(id, 10);
+  if (Number.isNaN(id_fcu)) {
     throw new Error('ID FCU invalide');
   }
 
@@ -446,8 +446,8 @@ const createReseauEnConstruction = async (id: string, finalGeometry: any) => {
 };
 
 const createPerimetreDeDeveloppementPrioritaire = async (id: string, finalGeometry: any) => {
-  const id_fcu = parseInt(id);
-  if (isNaN(id_fcu)) {
+  const id_fcu = parseInt(id, 10);
+  if (Number.isNaN(id_fcu)) {
     throw new Error('ID FCU invalide');
   }
 
@@ -476,7 +476,7 @@ const createReseauDeFroid = async (id: string, finalGeometry: any) => {
   return await kdb
     .insertInto('reseaux_de_froid')
     .values({
-      ...(id_sncu ? { 'Identifiant reseau': id_sncu, id_fcu: maxIdResult.next_id } : { id_fcu: parseInt(id) }),
+      ...(id_sncu ? { 'Identifiant reseau': id_sncu, id_fcu: maxIdResult.next_id } : { id_fcu: parseInt(id, 10) }),
       fichiers: [],
       geom: null,
       geom_update: sql`ST_Force2D(${finalGeometry})`,

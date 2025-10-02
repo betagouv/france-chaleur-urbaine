@@ -4,7 +4,7 @@ import React from 'react';
 export type VirtualListRowProps<T> = { item: T };
 
 type VirtualListProps<T> = {
-  items: ReadonlyArray<T>;
+  items: readonly T[];
   renderRow: React.ComponentType<VirtualListRowProps<T>>;
   estimateSize?: number;
   height?: number | string;

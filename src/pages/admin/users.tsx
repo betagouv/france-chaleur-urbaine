@@ -234,16 +234,12 @@ export default function ManageUsers() {
         title={editingUser ? 'Modifier un utilisateur' : 'Créer un utilisateur'}
         loading={isLoading}
       >
-        {isLoading ? null : (
-          <>
-            {editingUser ? (
-              <UserForm loading={!!updatingUserId} onSubmit={handleUpdateUser(userId as string)} user={editingUser} />
-            ) : userId === 'new' ? (
-              <UserForm loading={creatingUser} onSubmit={handleCreateUser} />
-            ) : (
-              <span>Utilisateur non trouvé</span>
-            )}
-          </>
+        {isLoading ? null : editingUser ? (
+          <UserForm loading={!!updatingUserId} onSubmit={handleUpdateUser(userId as string)} user={editingUser} />
+        ) : userId === 'new' ? (
+          <UserForm loading={creatingUser} onSubmit={handleCreateUser} />
+        ) : (
+          <span>Utilisateur non trouvé</span>
         )}
       </ModalSimple>
       <Box py="4w" className="fr-container">

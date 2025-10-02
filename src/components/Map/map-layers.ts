@@ -65,7 +65,7 @@ export const layerSymbolsImagesURLs = [
     url: '/icons/marker-blue.png',
   },
   ...enrrMobilisablesChaleurFataleLayerSymbols,
-] as const satisfies ReadonlyArray<LayerSymbolSpecification>;
+] as const satisfies readonly LayerSymbolSpecification[];
 
 type LayerSymbolImage = (typeof layerSymbolsImagesURLs)[number]['key'];
 
@@ -170,7 +170,7 @@ export const mapLayers = [
   ...distancesMeasurementLayers,
   ...linearHeatDensityLayers,
   ...buildingsDataExtractionLayers,
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];
 
 export type LayerId = (typeof mapLayers)[number]['layers'][number]['id'];
 
@@ -226,7 +226,7 @@ export function loadMapLayers(map: FCUMap, config: MapConfiguration) {
  */
 export function applyMapConfigurationToLayers(map: FCUMap, config: MapConfiguration) {
   mapLayers
-    .flatMap((source) => source.layers as ReadonlyArray<(typeof mapLayers)[number]['layers'][number]>)
+    .flatMap((source) => source.layers as readonly (typeof mapLayers)[number]['layers'][number][])
     .forEach((layer) => {
       if (!map.getLayer(layer.id)) {
         console.warn(`Layer '${layer.id}' is not set on map`);

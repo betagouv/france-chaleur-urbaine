@@ -225,7 +225,6 @@ const ChipAutoComplete = (rawProps: ChipAutoCompleteProps) => {
                 onMouseDown={() => handleOptionSelect(option)}
                 onMouseEnter={() => setHighlightedIndex(index)}
                 aria-selected={index === highlightedIndex}
-                role="option"
               >
                 <Tag small className={option.className} title={option.title}>
                   {option.label}

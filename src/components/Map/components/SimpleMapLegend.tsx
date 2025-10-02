@@ -392,172 +392,168 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
             </TrackableCheckableAccordion>
           </UrlStateAccordion>
           <UrlStateAccordion label="Caractéristiques des bâtiments et besoins en chaleur et en froid" small>
-            <>
-              <TrackableCheckableAccordion
-                name="besoinsEnChaleur"
-                checked={mapConfiguration.besoinsEnChaleur}
-                layerName="besoinsEnChaleur"
-                trackingEvent="Carto|Besoins en chaleur"
-                label={
-                  <>
-                    <IconPolygon
-                      stroke={
-                        besoinsEnChaleurIntervals[
-                          besoinsEnChaleurIntervals.length - 3 // lighter color
-                        ].color
-                      }
-                      fillOpacity={0.7}
-                      mt="1v"
-                    />
-                    <Box flex>Besoins en chaleur</Box>
-                    <Tooltip
-                      title={
-                        <>
-                          Modélisation réalisée par le Cerema dans le cadre du projet EnRezo.
-                          <br />
-                          <Link href="https://reseaux-chaleur.cerema.fr/cartographie-nationale-besoins-chaleur-froid" isExternal>
-                            Accéder à la méthodologie
-                          </Link>
-                        </>
-                      }
-                    />
-                  </>
-                }
-              >
-                <DeactivatableBox disabled={!mapConfiguration.besoinsEnChaleur} mx="1w">
-                  <Box display="flex" border="1px solid #777" my="1w">
-                    {besoinsEnChaleurIntervals.map((interval, index) => (
-                      <Box
-                        key={index}
-                        height="10px"
-                        flex
-                        cursor="help"
-                        backgroundColor={interval.color}
-                        title={`${interval.min} - ${interval.max}`}
-                      />
-                    ))}
-                  </Box>
-                  <Box display="flex" justifyContent="space-between">
-                    <Text size="xs">{besoinsEnChaleurIntervals[0].min}</Text>
-                    <Text size="xs">{besoinsEnChaleurIntervals[besoinsEnChaleurIntervals.length - 1].max}</Text>
-                  </Box>
-                </DeactivatableBox>
-              </TrackableCheckableAccordion>
-
-              {mapConfiguration.besoinsEnChaleur && nbCouchesFondBatiments >= 2 && (
-                <Text color="error" size="xs" m="1w">
-                  Les caractéristiques des bâtiments et besoins en chaleur et froid ne peuvent être affichés simultanément.
-                </Text>
-              )}
-            </>
-            <>
-              <TrackableCheckableAccordion
-                name="besoinsEnFroid"
-                checked={mapConfiguration.besoinsEnFroid}
-                layerName="besoinsEnFroid"
-                trackingEvent="Carto|Besoins en froid"
-                label={
-                  <>
-                    <IconPolygon
-                      stroke={
-                        besoinsEnFroidIntervals[
-                          besoinsEnFroidIntervals.length - 3 // lighter color
-                        ].color
-                      }
-                      fillOpacity={0.7}
-                      mt="1v"
-                    />
-
-                    <Box flex>Besoins en froid</Box>
-                    <Tooltip
-                      title={
-                        <>
-                          Modélisation réalisée par le Cerema dans le cadre du projet EnRezo.
-                          <br />
-                          <Link href="https://reseaux-chaleur.cerema.fr/cartographie-nationale-besoins-chaleur-froid" isExternal>
-                            Accéder à la méthodologie
-                          </Link>
-                        </>
-                      }
-                    />
-                  </>
-                }
-              >
-                <DeactivatableBox disabled={!mapConfiguration.besoinsEnFroid} mx="1w">
-                  <Box display="flex" border="1px solid #777" my="1w">
-                    {besoinsEnFroidIntervals.map((interval, index) => (
-                      <Box
-                        key={index}
-                        height="10px"
-                        flex
-                        cursor="help"
-                        backgroundColor={interval.color}
-                        title={`${interval.min} - ${interval.max}`}
-                      />
-                    ))}
-                  </Box>
-                  <Box display="flex" justifyContent="space-between">
-                    <Text size="xs">{besoinsEnFroidIntervals[0].min}</Text>
-                    <Text size="xs">{besoinsEnFroidIntervals[besoinsEnFroidIntervals.length - 1].max}</Text>
-                  </Box>
-                </DeactivatableBox>
-              </TrackableCheckableAccordion>
-              {mapConfiguration.besoinsEnFroid && nbCouchesFondBatiments >= 2 && (
-                <Text color="error" size="xs" m="1w">
-                  Les caractéristiques des bâtiments et besoins en chaleur et froid ne peuvent être affichés simultanément.
-                </Text>
-              )}
-            </>
-            <>
-              <TrackableCheckableAccordion
-                name="caracteristiquesBatiments"
-                checked={mapConfiguration.caracteristiquesBatiments}
-                layerName="caracteristiquesBatiments"
-                trackingEvent="Carto|DPE"
-                label={
-                  <>
+            <TrackableCheckableAccordion
+              name="besoinsEnChaleur"
+              checked={mapConfiguration.besoinsEnChaleur}
+              layerName="besoinsEnChaleur"
+              trackingEvent="Carto|Besoins en chaleur"
+              label={
+                <>
+                  <IconPolygon
+                    stroke={
+                      besoinsEnChaleurIntervals[
+                        besoinsEnChaleurIntervals.length - 3 // lighter color
+                      ].color
+                    }
+                    fillOpacity={0.7}
+                    mt="1v"
+                  />
+                  <Box flex>Besoins en chaleur</Box>
+                  <Tooltip
+                    title={
+                      <>
+                        Modélisation réalisée par le Cerema dans le cadre du projet EnRezo.
+                        <br />
+                        <Link href="https://reseaux-chaleur.cerema.fr/cartographie-nationale-besoins-chaleur-froid" isExternal>
+                          Accéder à la méthodologie
+                        </Link>
+                      </>
+                    }
+                  />
+                </>
+              }
+            >
+              <DeactivatableBox disabled={!mapConfiguration.besoinsEnChaleur} mx="1w">
+                <Box display="flex" border="1px solid #777" my="1w">
+                  {besoinsEnChaleurIntervals.map((interval, index) => (
                     <Box
-                      backgroundColor={caracteristiquesBatimentsLayerStyle.c}
-                      height="16px"
-                      width="16px"
-                      mt="1v"
-                      display="grid"
-                      placeContent="center"
-                      fontSize="12px"
-                      textColor="white"
-                    >
-                      C
-                    </Box>
-                    <Box flex>Caractéristiques des bâtiments</Box>
-                    <Tooltip
-                      title={
-                        <>
-                          Les DPE affichés par bâtiment résultent d'un extrapolation des DPE par logement ancienne définition. Ils sont
-                          donnés à titre informatif et non-officiel, sans aucune valeur légale.
-                        </>
-                      }
+                      key={index}
+                      height="10px"
+                      flex
+                      cursor="help"
+                      backgroundColor={interval.color}
+                      title={`${interval.min} - ${interval.max}`}
                     />
-                  </>
-                }
-              >
-                <DeactivatableBox disabled={!mapConfiguration.caracteristiquesBatiments} ml="1w" mr="1w">
-                  <Text fontSize="13px" lineHeight="18px" fontWeight="lightbold" fontStyle="italic">
-                    Cliquer sur le bâtiment souhaité
-                  </Text>
-                  <Text fontSize="13px">Diagnostic de performance énergétique</Text>
-                  <Box display="flex" gap="4px">
-                    {Object.entries(caracteristiquesBatimentsLayerStyle).map(([letter]) => (
-                      <DPE classe={letter} key={letter} />
-                    ))}
+                  ))}
+                </Box>
+                <Box display="flex" justifyContent="space-between">
+                  <Text size="xs">{besoinsEnChaleurIntervals[0].min}</Text>
+                  <Text size="xs">{besoinsEnChaleurIntervals[besoinsEnChaleurIntervals.length - 1].max}</Text>
+                </Box>
+              </DeactivatableBox>
+            </TrackableCheckableAccordion>
+
+            {mapConfiguration.besoinsEnChaleur && nbCouchesFondBatiments >= 2 && (
+              <Text color="error" size="xs" m="1w">
+                Les caractéristiques des bâtiments et besoins en chaleur et froid ne peuvent être affichés simultanément.
+              </Text>
+            )}
+
+            <TrackableCheckableAccordion
+              name="besoinsEnFroid"
+              checked={mapConfiguration.besoinsEnFroid}
+              layerName="besoinsEnFroid"
+              trackingEvent="Carto|Besoins en froid"
+              label={
+                <>
+                  <IconPolygon
+                    stroke={
+                      besoinsEnFroidIntervals[
+                        besoinsEnFroidIntervals.length - 3 // lighter color
+                      ].color
+                    }
+                    fillOpacity={0.7}
+                    mt="1v"
+                  />
+
+                  <Box flex>Besoins en froid</Box>
+                  <Tooltip
+                    title={
+                      <>
+                        Modélisation réalisée par le Cerema dans le cadre du projet EnRezo.
+                        <br />
+                        <Link href="https://reseaux-chaleur.cerema.fr/cartographie-nationale-besoins-chaleur-froid" isExternal>
+                          Accéder à la méthodologie
+                        </Link>
+                      </>
+                    }
+                  />
+                </>
+              }
+            >
+              <DeactivatableBox disabled={!mapConfiguration.besoinsEnFroid} mx="1w">
+                <Box display="flex" border="1px solid #777" my="1w">
+                  {besoinsEnFroidIntervals.map((interval, index) => (
+                    <Box
+                      key={index}
+                      height="10px"
+                      flex
+                      cursor="help"
+                      backgroundColor={interval.color}
+                      title={`${interval.min} - ${interval.max}`}
+                    />
+                  ))}
+                </Box>
+                <Box display="flex" justifyContent="space-between">
+                  <Text size="xs">{besoinsEnFroidIntervals[0].min}</Text>
+                  <Text size="xs">{besoinsEnFroidIntervals[besoinsEnFroidIntervals.length - 1].max}</Text>
+                </Box>
+              </DeactivatableBox>
+            </TrackableCheckableAccordion>
+            {mapConfiguration.besoinsEnFroid && nbCouchesFondBatiments >= 2 && (
+              <Text color="error" size="xs" m="1w">
+                Les caractéristiques des bâtiments et besoins en chaleur et froid ne peuvent être affichés simultanément.
+              </Text>
+            )}
+
+            <TrackableCheckableAccordion
+              name="caracteristiquesBatiments"
+              checked={mapConfiguration.caracteristiquesBatiments}
+              layerName="caracteristiquesBatiments"
+              trackingEvent="Carto|DPE"
+              label={
+                <>
+                  <Box
+                    backgroundColor={caracteristiquesBatimentsLayerStyle.c}
+                    height="16px"
+                    width="16px"
+                    mt="1v"
+                    display="grid"
+                    placeContent="center"
+                    fontSize="12px"
+                    textColor="white"
+                  >
+                    C
                   </Box>
-                </DeactivatableBox>
-              </TrackableCheckableAccordion>
-              {mapConfiguration.caracteristiquesBatiments && nbCouchesFondBatiments >= 2 && (
-                <Text color="error" size="xs" m="1w">
-                  Les caractéristiques des bâtiments et besoins en chaleur et froid ne peuvent être affichés simultanément.
+                  <Box flex>Caractéristiques des bâtiments</Box>
+                  <Tooltip
+                    title={
+                      <>
+                        Les DPE affichés par bâtiment résultent d'un extrapolation des DPE par logement ancienne définition. Ils sont donnés
+                        à titre informatif et non-officiel, sans aucune valeur légale.
+                      </>
+                    }
+                  />
+                </>
+              }
+            >
+              <DeactivatableBox disabled={!mapConfiguration.caracteristiquesBatiments} ml="1w" mr="1w">
+                <Text fontSize="13px" lineHeight="18px" fontWeight="lightbold" fontStyle="italic">
+                  Cliquer sur le bâtiment souhaité
                 </Text>
-              )}
-            </>
+                <Text fontSize="13px">Diagnostic de performance énergétique</Text>
+                <Box display="flex" gap="4px">
+                  {Object.entries(caracteristiquesBatimentsLayerStyle).map(([letter]) => (
+                    <DPE classe={letter} key={letter} />
+                  ))}
+                </Box>
+              </DeactivatableBox>
+            </TrackableCheckableAccordion>
+            {mapConfiguration.caracteristiquesBatiments && nbCouchesFondBatiments >= 2 && (
+              <Text color="error" size="xs" m="1w">
+                Les caractéristiques des bâtiments et besoins en chaleur et froid ne peuvent être affichés simultanément.
+              </Text>
+            )}
           </UrlStateAccordion>
           <UrlStateAccordion label="Potentiel par territoire" small>
             <TrackableCheckableAccordion

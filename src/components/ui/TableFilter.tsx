@@ -94,7 +94,7 @@ const Filter = ({ value, type, onChange, filterProps, facetedUniqueValues, facet
     );
   }
 
-  return <>TODO</>;
+  return 'TODO';
 };
 
 export default Filter;

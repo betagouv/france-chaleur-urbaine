@@ -242,11 +242,11 @@ const NetworksList = () => {
 
       networks = networks.filter(
         (network: NetworkToCompare) =>
-          (network.nom_reseau && network.nom_reseau.toLocaleLowerCase().includes(searchValueLowerCase)) ||
-          (network.Gestionnaire && network.Gestionnaire.toLocaleLowerCase().includes(searchValueLowerCase)) ||
-          (network.region && network.region.toLocaleLowerCase().includes(searchValueLowerCase)) ||
-          (network.communes && network.communes.join(', ').toLocaleLowerCase().includes(searchValueLowerCase)) ||
-          (network['Identifiant reseau'] && network['Identifiant reseau'].toLocaleLowerCase().includes(searchValueLowerCase))
+          network.nom_reseau?.toLocaleLowerCase().includes(searchValueLowerCase) ||
+          network.Gestionnaire?.toLocaleLowerCase().includes(searchValueLowerCase) ||
+          network.region?.toLocaleLowerCase().includes(searchValueLowerCase) ||
+          network.communes?.join(', ').toLocaleLowerCase().includes(searchValueLowerCase) ||
+          network['Identifiant reseau']?.toLocaleLowerCase().includes(searchValueLowerCase)
       );
     }
 

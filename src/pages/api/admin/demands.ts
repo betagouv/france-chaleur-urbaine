@@ -86,8 +86,8 @@ const GET = async () => {
       records.map(async (record) => {
         const demand = { id: record.id, ...record.fields } as AdminDemand;
         demand['Gestionnaires validés'] ??= false;
-        demand['Commentaire'] ??= '';
-        demand['Commentaires_internes_FCU'] ??= '';
+        demand.Commentaire ??= '';
+        demand.Commentaires_internes_FCU ??= '';
         demand['Relance à activer'] ??= false;
 
         if (!demand.Latitude || !demand.Longitude || !demand.Ville) {

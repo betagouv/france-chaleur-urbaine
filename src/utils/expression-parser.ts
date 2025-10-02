@@ -297,7 +297,7 @@ export function evaluateAST(ast: ASTNode, eligibilityData: any): boolean {
         const operator = ast.value.charAt(0);
         const comparisonValue = parseFloat(ast.value.substring(1));
 
-        if (isNaN(comparisonValue)) {
+        if (Number.isNaN(comparisonValue)) {
           return false;
         }
 

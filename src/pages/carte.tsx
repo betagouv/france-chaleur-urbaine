@@ -58,7 +58,7 @@ export const layerURLKeysToMapConfigPath = {
 
 export type LayerURLKey = keyof typeof layerURLKeysToMapConfigPath;
 
-export const layerURLKeys = Object.keys(layerURLKeysToMapConfigPath) as ReadonlyArray<LayerURLKey>;
+export const layerURLKeys = Object.keys(layerURLKeysToMapConfigPath) as readonly LayerURLKey[];
 
 const Carte = () => {
   // amend the initial map configuration with additional layers

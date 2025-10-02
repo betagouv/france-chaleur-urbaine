@@ -161,7 +161,7 @@ function getArticleAbstract(content: string): string {
       .slice(1)
       .find((line) => line !== '' && !line.startsWith('#')) ?? ''
   )
-    .replaceAll(markdownLinksRegex, (match, title) => title)
+    .replaceAll(markdownLinksRegex, (_match, title) => title)
     .replaceAll(/[\\_*]/g, '');
   return line.length < 150 ? line : `${line.substring(0, 150)}...`;
 }

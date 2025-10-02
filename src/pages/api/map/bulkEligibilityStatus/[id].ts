@@ -26,7 +26,7 @@ const bulkEligibilitygibilityStatus = async (
       progress: 0,
     });
   } else if (req.method === 'POST') {
-    if (existingValue && existingValue.result) {
+    if (existingValue?.result) {
       return res.send(getExport(JSON.parse(existingValue.result)));
     } else {
       return res.send(existingValue.file);

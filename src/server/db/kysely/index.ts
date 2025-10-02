@@ -22,9 +22,9 @@ export * from './database';
 export { type Insertable, type InsertObject, sql };
 
 // Automatically convert postgres number fields from string to javascript numbers.
-types.setTypeParser(types.builtins.INT2, (value) => parseInt(value));
-types.setTypeParser(types.builtins.INT4, (value) => parseInt(value));
-types.setTypeParser(types.builtins.INT8, (value) => parseInt(value));
+types.setTypeParser(types.builtins.INT2, (value) => parseInt(value, 10));
+types.setTypeParser(types.builtins.INT4, (value) => parseInt(value, 10));
+types.setTypeParser(types.builtins.INT8, (value) => parseInt(value, 10));
 types.setTypeParser(types.builtins.FLOAT4, (value) => parseFloat(value));
 types.setTypeParser(types.builtins.FLOAT8, (value) => parseFloat(value));
 types.setTypeParser(types.builtins.NUMERIC, (value) => parseFloat(value));

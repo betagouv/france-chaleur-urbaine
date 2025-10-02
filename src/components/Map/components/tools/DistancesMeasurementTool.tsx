@@ -50,7 +50,7 @@ const DistancesMeasurementTool: React.FC = () => {
         {
           ...feature,
           properties: {
-            ...features.at(-1)!.properties,
+            ...features.at(-1)?.properties,
             distance: length(feature, { units: 'meters' }),
           },
         },
@@ -91,7 +91,7 @@ const DistancesMeasurementTool: React.FC = () => {
         {
           ...featureBeingDrawn,
           properties: {
-            color: features.at(-1)!.properties.color,
+            color: features.at(-1)?.properties.color,
             distance: length(featureBeingDrawn, { units: 'meters' }),
           },
         },

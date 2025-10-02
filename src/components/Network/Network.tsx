@@ -605,7 +605,11 @@ const Property = <T,>({
   );
 
 function numberBooleanFormatter(value: string): string | ReactElement {
-  return !isNaN(Number.parseFloat(value)) ? `${Math.round(Number.parseFloat(value))} %` : value.toLowerCase() === 'oui' ? 'Oui' : 'Non';
+  return !Number.isNaN(Number.parseFloat(value))
+    ? `${Math.round(Number.parseFloat(value))} %`
+    : value.toLowerCase() === 'oui'
+      ? 'Oui'
+      : 'Non';
 }
 
 function formatCO2(co2kg: number): string {

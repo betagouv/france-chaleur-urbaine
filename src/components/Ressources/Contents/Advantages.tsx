@@ -48,15 +48,9 @@ const contents = [
   {
     highlight: 'Les réseaux de chaleur constituent en moyenne la solution de chauffage la plus compétitive pour les logements collectifs !',
     list: [
-      <>
-        <b>Emissions de gaz à effet de serre et particules fines limitées</b>
-      </>,
-      <>
-        <b>Absence de chaudière et de stockage au sein de l’immeuble - sécurité assurée</b>
-      </>,
-      <>
-        <b>Garantie d’un service public</b>
-      </>,
+      <b>Emissions de gaz à effet de serre et particules fines limitées</b>,
+      <b>Absence de chaudière et de stockage au sein de l’immeuble - sécurité assurée</b>,
+      <b>Garantie d’un service public</b>,
       <>
         <b>Tarifs compétitifs et moins fluctuants que ceux des énergies purement fossiles</b>
         ,

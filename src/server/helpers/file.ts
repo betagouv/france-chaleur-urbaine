@@ -1,5 +1,5 @@
+import fs from 'node:fs';
 import axios, { type AxiosRequestHeaders } from 'axios';
-import fs from 'fs';
 
 import { logger } from '@/server/helpers/logger';
 

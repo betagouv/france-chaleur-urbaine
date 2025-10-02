@@ -41,7 +41,7 @@ export const filtresEnergies = [
     confKey: 'fioul',
     label: 'Fioul',
   },
-] as const satisfies ReadonlyArray<FiltreEnergie>;
+] as const satisfies readonly FiltreEnergie[];
 
 export type FiltreEnergieConfKey = (typeof filtresEnergies)[number]['confKey'];
 

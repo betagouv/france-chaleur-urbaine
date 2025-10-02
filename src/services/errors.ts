@@ -1,5 +1,1 @@
-export class ServiceError extends Error {
-  constructor(reason: any) {
-    super(reason);
-  }
-}
+export class ServiceError extends Error {}

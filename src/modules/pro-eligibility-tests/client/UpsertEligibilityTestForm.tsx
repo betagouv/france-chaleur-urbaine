@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import DSFRSelect from '@/components/form/dsfr/Select';
 import Upload from '@/components/form/dsfr/Upload';

@@ -59,7 +59,7 @@ async function makeAPIRequest(url: string, form: FormData, contextLogger?: Logge
       });
 
       if (results.errors.length > 0) {
-        throw new Error('CSV parsing errors: ' + JSON.stringify(results.errors));
+        throw new Error(`CSV parsing errors: ${JSON.stringify(results.errors)}`);
       }
 
       const data = results.data as APIAdresseResult[];

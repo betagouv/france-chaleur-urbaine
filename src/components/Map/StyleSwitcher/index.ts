@@ -79,8 +79,8 @@ export class MapboxStyleSwitcherControl implements IControl {
           return;
         }
         const style = JSON.parse(srcElement.dataset.uri!);
-        this.map!.setStyle(style);
-        const elms = this.mapStyleContainer!.getElementsByClassName('active');
+        this.map?.setStyle(style);
+        const elms = this.mapStyleContainer?.getElementsByClassName('active');
         while (elms[0]) {
           elms[0].classList.remove('active');
         }

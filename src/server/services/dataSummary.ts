@@ -188,7 +188,7 @@ export const getPolygonSummary = async (coordinates: number[][]): Promise<Summar
   const regions = await getRegions(coordinates);
   const [gas, energy, network] = await Promise.all([
     getGasSummary(coordinates),
-    Promise.all(regions.map((region) => getEnergySummary(coordinates, region))).then((results) => results.flatMap((x) => x)),
+    Promise.all(regions.map((region) => getEnergySummary(coordinates, region))).then((results) => results.flat()),
     getNetworkSummary(coordinates),
   ]);
 
@@ -203,8 +203,8 @@ export const exportPolygonSummary = async (coordinates: number[][], exportType: 
   const regions = await getRegions(coordinates);
   const [gas, energyGas, energyFioul] = await Promise.all([
     exportGasSummary(coordinates),
-    Promise.all(regions.map((region) => exportEnergyGasSummary(coordinates, region))).then((results) => results.flatMap((x) => x)),
-    Promise.all(regions.map((region) => exportEnergyFioulSummary(coordinates, region))).then((results) => results.flatMap((x) => x)),
+    Promise.all(regions.map((region) => exportEnergyGasSummary(coordinates, region))).then((results) => results.flat()),
+    Promise.all(regions.map((region) => exportEnergyFioulSummary(coordinates, region))).then((results) => results.flat()),
   ]);
 
   return zip(

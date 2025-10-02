@@ -219,7 +219,7 @@ export function requireAuthentication(user: User, configOrRoles: boolean | UserR
   if (!user.active) {
     throw invalidPermissionsError;
   }
-  if (configOrRoles instanceof Array && !(configOrRoles.some((routeRole) => user.role === routeRole) || user.role === 'admin')) {
+  if (Array.isArray(configOrRoles) && !(configOrRoles.some((routeRole) => user.role === routeRole) || user.role === 'admin')) {
     throw invalidPermissionsError;
   }
 }

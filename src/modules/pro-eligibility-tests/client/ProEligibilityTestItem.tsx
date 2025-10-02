@@ -2,7 +2,7 @@ import Badge from '@codegouvfr/react-dsfr/Badge';
 import Tabs from '@codegouvfr/react-dsfr/Tabs';
 import type { ColumnFiltersState, SortingState } from '@tanstack/react-table';
 import { useQueryState } from 'nuqs';
-import React, { Fragment, useEffect, useMemo, useState } from 'react';
+import { Fragment, useEffect, useMemo, useState } from 'react';
 
 import { clientConfig } from '@/client-config';
 import Map, { type AdresseEligible } from '@/components/Map/Map';
@@ -252,7 +252,7 @@ const quickFilterPresets = {
         value: { false: false, true: true },
       },
     ],
-    getStat: (addresses) => addresses.filter((address) => address.eligibility_status && address.eligibility_status.inPDP).length,
+    getStat: (addresses) => addresses.filter((address) => address.eligibility_status?.inPDP).length,
     label: (
       <>
         dans un périmètre de développement prioritaire&nbsp;
@@ -271,7 +271,7 @@ const quickFilterPresets = {
   },
   adressesEligibles: {
     filters: [{ id: 'eligibility_status_etat_reseau', value: { aucun: false, en_construction: true, existant: true } }],
-    getStat: (addresses) => addresses.filter((address) => address.eligibility_status && address.eligibility_status.isEligible).length,
+    getStat: (addresses) => addresses.filter((address) => address.eligibility_status?.isEligible).length,
     label: (
       <>
         potentiellement raccordables&nbsp;
@@ -294,8 +294,7 @@ const quickFilterPresets = {
     getStat: (addresses) =>
       addresses.filter(
         (address) =>
-          address.eligibility_status &&
-          address.eligibility_status.distance &&
+          address.eligibility_status?.distance &&
           address.eligibility_status.distance <= 100 &&
           address.eligibility_status.tauxENRR &&
           address.eligibility_status.tauxENRR >= 50
@@ -394,8 +393,8 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false, className }:
             address: address.ban_address ?? '',
             id: address.id,
             isEligible: address.eligibility_status?.isEligible ?? false,
-            latitude: address.geom!.coordinates[1],
-            longitude: address.geom!.coordinates[0],
+            latitude: address.geom?.coordinates[1],
+            longitude: address.geom?.coordinates[0],
           }) satisfies AdresseEligible
       );
   }, [filteredAddresses]);

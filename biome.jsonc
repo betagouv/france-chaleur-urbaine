@@ -76,6 +76,8 @@
     "rules": {
       "a11y": {
         // désactivé pour la migration car trop complexe à implémenter
+        "noAutofocus": "off",
+        "noNoninteractiveElementToInteractiveRole": "off", // utiliser nav à la place pour les ul menu
         "noStaticElementInteractions": "off",
         "useKeyWithClickEvents": "off"
       },

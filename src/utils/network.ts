@@ -78,7 +78,7 @@ export const deleteFetchJSON = fetchMethod('DELETE');
 export const postFormDataFetchJSON = async <Data = any>(url: string, formState: object): Promise<Data> => {
   const formData = new FormData();
   for (const [key, value] of Object.entries(formState)) {
-    if (value instanceof Array) {
+    if (Array.isArray(value)) {
       for (const part of Array.from(value)) {
         formData.append(key, part);
       }

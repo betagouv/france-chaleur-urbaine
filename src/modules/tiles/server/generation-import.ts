@@ -115,9 +115,9 @@ const importTilesDirectory = async (basePath: string, destinationTable: string) 
           rows.forEach((row) => {
             tiles.push({
               path: join(basePath, zoomLevel, column, row),
-              x: Number.parseInt(column),
-              y: Number.parseInt(row),
-              z: Number.parseInt(zoomLevel),
+              x: Number.parseInt(column, 10),
+              y: Number.parseInt(row, 10),
+              z: Number.parseInt(zoomLevel, 10),
             });
           });
         })

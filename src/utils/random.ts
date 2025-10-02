@@ -1,4 +1,4 @@
-import { randomBytes } from 'crypto';
+import { randomBytes } from 'node:crypto';
 
 /**
  * Generage a random v4 UUID. Do not use in secure contexts, only for good enough randomness.

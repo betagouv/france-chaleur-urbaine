@@ -38,7 +38,7 @@ export const downloadGeoJSONFromURL = (url: string) =>
     const featuresCount = geojson.features?.length || 0;
     logger.info(`Features downloaded`, { count: featuresCount });
     geojson.features.forEach((feature: any) => {
-      delete feature.id; // remove string id so that tippecanoe can generate a unique numeric id
+      feature.id = undefined; // remove string id so that tippecanoe can generate a unique numeric id
     });
     const targetTilesFilePath = join(tempDirectory, 'tiles-features.geojson');
     await writeFile(targetTilesFilePath, JSON.stringify(geojson));

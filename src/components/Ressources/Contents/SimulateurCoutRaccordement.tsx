@@ -76,14 +76,14 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
   }, [formState]);
 
   const montantCoutsApresAide = useMemo(() => {
-    if (montantCouts instanceof Array && isDefined(montantAide)) {
+    if (Array.isArray(montantCouts) && isDefined(montantAide)) {
       return [Math.max(0, montantCouts[0] - montantAide), Math.max(0, montantCouts[1] - montantAide)];
     }
     return null;
   }, [montantCouts, montantAide]);
 
   const montantCoutsParLogementApresAide = useMemo(() => {
-    if (montantCoutsApresAide instanceof Array && isDefined(formState.nbLogements)) {
+    if (Array.isArray(montantCoutsApresAide) && isDefined(formState.nbLogements)) {
       return [montantCoutsApresAide[0] / formState.nbLogements, montantCoutsApresAide[1] / formState.nbLogements];
     }
     return null;
@@ -128,7 +128,7 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
               label="Nombre de logements"
               nativeInputProps={{
                 min: 0,
-                onChange: (e) => updateState('nbLogements', parseInt(e.target.value)),
+                onChange: (e) => updateState('nbLogements', parseInt(e.target.value, 10)),
                 type: 'number',
               }}
             />
@@ -138,7 +138,7 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
               label="Surface (m²)"
               nativeInputProps={{
                 min: 0,
-                onChange: (e) => updateState('surface', parseInt(e.target.value)),
+                onChange: (e) => updateState('surface', parseInt(e.target.value, 10)),
                 type: 'number',
               }}
             />
@@ -188,7 +188,7 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
                 )}
               </Heading>
 
-              {formState.typeBatiment === 'residentiel' && montantCoutsParLogementApresAide instanceof Array && (
+              {formState.typeBatiment === 'residentiel' && Array.isArray(montantCoutsParLogementApresAide) && (
                 <Text mt="1w">
                   Soit {prettyPrintCout(montantCoutsParLogementApresAide[0])} à {prettyPrintCout(montantCoutsParLogementApresAide[1])} par
                   logement

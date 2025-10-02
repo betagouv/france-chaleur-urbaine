@@ -83,7 +83,7 @@ const LinearHeatDensityTool: React.FC = () => {
       {
         ...feature,
         properties: {
-          ...features.at(-1)!.properties,
+          ...features.at(-1)?.properties,
           distance: length(feature, { units: 'meters' }),
         },
       },
@@ -154,7 +154,7 @@ const LinearHeatDensityTool: React.FC = () => {
         {
           ...featureBeingDrawn,
           properties: {
-            color: features.at(-1)!.properties.color,
+            color: features.at(-1)?.properties.color,
             distance: length(featureBeingDrawn, { units: 'meters' }),
           },
         },
@@ -250,129 +250,126 @@ const LinearHeatDensityTool: React.FC = () => {
   const showAddButton = features.length > 0 && !isDrawing;
 
   return (
-    <>
-      <Box display="flex" flexDirection="column" gap="16px">
-        <Box>
-          <Title>Calculer une densité thermique linéaire</Title>
+    <Box display="flex" flexDirection="column" gap="16px">
+      <Box>
+        <Title>Calculer une densité thermique linéaire</Title>
 
-          <Text size="xs" fontStyle="italic" mb="1w">
-            Vous pouvez calculer la densité thermique linéaire sur le tracé de votre choix.
-          </Text>
-          <Text size="xs" fontStyle="italic">
-            Pour définir un tracé, cliquez sur 2 points ou plus sur la carte, puis <strong>double-cliquez</strong> sur le dernier point ou{' '}
-            <strong>appuyez sur la touche entrée</strong> pour finaliser le tracé. Vous avez la possibilité d'ajouter des segments à ce
-            tracé.
-          </Text>
+        <Text size="xs" fontStyle="italic" mb="1w">
+          Vous pouvez calculer la densité thermique linéaire sur le tracé de votre choix.
+        </Text>
+        <Text size="xs" fontStyle="italic">
+          Pour définir un tracé, cliquez sur 2 points ou plus sur la carte, puis <strong>double-cliquez</strong> sur le dernier point ou{' '}
+          <strong>appuyez sur la touche entrée</strong> pour finaliser le tracé. Vous avez la possibilité d'ajouter des segments à ce tracé.
+        </Text>
+      </Box>
+      <Divider my="1v" />
+      {isLoading && (
+        <Box display="grid" placeContent="center">
+          <Oval height={60} width={60} color="#000091" secondaryColor="#0000ee" />
         </Box>
-        <Divider my="1v" />
-        {isLoading && (
-          <Box display="grid" placeContent="center">
-            <Oval height={60} width={60} color="#000091" secondaryColor="#0000ee" />
+      )}
+      {densite && (
+        <Box fontSize="14px" display="flex" flexDirection="column" gap="12px">
+          <Box display="flex" justifyContent="space-between">
+            <Box>Longueur totale</Box>
+            <strong>{formatDistance(densite.longueurTotale)}</strong>
           </Box>
-        )}
-        {densite && (
-          <Box fontSize="14px" display="flex" flexDirection="column" gap="12px">
-            <Box display="flex" justifyContent="space-between">
-              <Box>Longueur totale</Box>
-              <strong>{formatDistance(densite.longueurTotale)}</strong>
-            </Box>
-            <Text fontWeight="bold">Sur la base des consommations de gaz&nbsp;:</Text>
-            <Text>Consommation de gaz</Text>
-            <Box display="flex" justifyContent="space-between" pl="2w">
-              <Box>À 10 mètres</Box>
-              <strong>{densite.consommationGaz.cumul['10m']}</strong>
-            </Box>
-            <Box display="flex" justifyContent="space-between" pl="2w">
-              <Box>À 50 mètres</Box>
-              <strong>{densite.consommationGaz.cumul['50m']}</strong>
-            </Box>
-            <Text>
-              Densité thermique linéaire
-              <Tooltip
-                title="Densité thermique calculée sur la base des consommations de gaz à l'adresse situées à une distance de 10 ou 50 m du tracé
-                  défini"
-                iconProps={{
-                  className: 'fr-ml-1w',
-                }}
-              />
-            </Text>
-            <Box display="flex" justifyContent="space-between" pl="2w">
-              <Box>À 10 mètres</Box>
-              <strong>{densite.consommationGaz.densitéThermiqueLinéaire['10m']}</strong>
-            </Box>
-            <Box display="flex" justifyContent="space-between" pl="2w">
-              <Box>À 50 mètres</Box>
-              <strong>{densite.consommationGaz.densitéThermiqueLinéaire['50m']}</strong>
-            </Box>
-
-            <Text fontWeight="bold">Sur la base des besoins en chaleur (modélisés par le Cerema)&nbsp;:</Text>
-            <Text>Besoins en chaleur</Text>
-            <Box display="flex" justifyContent="space-between" pl="2w">
-              <Box>À 10 mètres</Box>
-              <strong>{densite.besoinsEnChaleur.cumul['10m']}</strong>
-            </Box>
-            <Box display="flex" justifyContent="space-between" pl="2w">
-              <Box>À 50 mètres</Box>
-              <strong>{densite.besoinsEnChaleur.cumul['50m']}</strong>
-            </Box>
-            <Text>
-              Densité thermique linéaire
-              <Tooltip
-                title="Densité thermique calculée sur la base des besoins en chaleur des bâtiments situés à une distance de 10 ou 50 m du tracé
-                  défini"
-                iconProps={{
-                  className: 'fr-ml-1w',
-                }}
-              />
-            </Text>
-            <Box display="flex" justifyContent="space-between" pl="2w">
-              <Box>À 10 mètres</Box>
-              <strong>{densite.besoinsEnChaleur.densitéThermiqueLinéaire['10m']}</strong>
-            </Box>
-            <Box display="flex" justifyContent="space-between" pl="2w">
-              <Box>À 50 mètres</Box>
-              <strong>{densite.besoinsEnChaleur.densitéThermiqueLinéaire['50m']}</strong>
-            </Box>
+          <Text fontWeight="bold">Sur la base des consommations de gaz&nbsp;:</Text>
+          <Text>Consommation de gaz</Text>
+          <Box display="flex" justifyContent="space-between" pl="2w">
+            <Box>À 10 mètres</Box>
+            <strong>{densite.consommationGaz.cumul['10m']}</strong>
           </Box>
-        )}
+          <Box display="flex" justifyContent="space-between" pl="2w">
+            <Box>À 50 mètres</Box>
+            <strong>{densite.consommationGaz.cumul['50m']}</strong>
+          </Box>
+          <Text>
+            Densité thermique linéaire
+            <Tooltip
+              title="Densité thermique calculée sur la base des consommations de gaz à l'adresse situées à une distance de 10 ou 50 m du tracé
+                  défini"
+              iconProps={{
+                className: 'fr-ml-1w',
+              }}
+            />
+          </Text>
+          <Box display="flex" justifyContent="space-between" pl="2w">
+            <Box>À 10 mètres</Box>
+            <strong>{densite.consommationGaz.densitéThermiqueLinéaire['10m']}</strong>
+          </Box>
+          <Box display="flex" justifyContent="space-between" pl="2w">
+            <Box>À 50 mètres</Box>
+            <strong>{densite.consommationGaz.densitéThermiqueLinéaire['50m']}</strong>
+          </Box>
 
-        {showCancelButton && (
-          <Button priority="secondary" iconId="fr-icon-close-line" onClick={cancelMeasurement}>
-            Annuler le {densite ? 'segment' : 'tracé'}
-          </Button>
-        )}
-        {showAddButton && (
+          <Text fontWeight="bold">Sur la base des besoins en chaleur (modélisés par le Cerema)&nbsp;:</Text>
+          <Text>Besoins en chaleur</Text>
+          <Box display="flex" justifyContent="space-between" pl="2w">
+            <Box>À 10 mètres</Box>
+            <strong>{densite.besoinsEnChaleur.cumul['10m']}</strong>
+          </Box>
+          <Box display="flex" justifyContent="space-between" pl="2w">
+            <Box>À 50 mètres</Box>
+            <strong>{densite.besoinsEnChaleur.cumul['50m']}</strong>
+          </Box>
+          <Text>
+            Densité thermique linéaire
+            <Tooltip
+              title="Densité thermique calculée sur la base des besoins en chaleur des bâtiments situés à une distance de 10 ou 50 m du tracé
+                  défini"
+              iconProps={{
+                className: 'fr-ml-1w',
+              }}
+            />
+          </Text>
+          <Box display="flex" justifyContent="space-between" pl="2w">
+            <Box>À 10 mètres</Box>
+            <strong>{densite.besoinsEnChaleur.densitéThermiqueLinéaire['10m']}</strong>
+          </Box>
+          <Box display="flex" justifyContent="space-between" pl="2w">
+            <Box>À 50 mètres</Box>
+            <strong>{densite.besoinsEnChaleur.densitéThermiqueLinéaire['50m']}</strong>
+          </Box>
+        </Box>
+      )}
+
+      {showCancelButton && (
+        <Button priority="secondary" iconId="fr-icon-close-line" onClick={cancelMeasurement}>
+          Annuler le {densite ? 'segment' : 'tracé'}
+        </Button>
+      )}
+      {showAddButton && (
+        <Button
+          priority="secondary"
+          iconId="fr-icon-add-line"
+          onClick={() => {
+            trackEvent('Carto|Densité thermique linéaire|Ajouter un segment');
+            startMeasurement();
+          }}
+          disabled={!mapLayersLoaded || isLoading}
+        >
+          Ajouter un segment
+        </Button>
+      )}
+
+      {densite && (
+        <>
           <Button
             priority="secondary"
-            iconId="fr-icon-add-line"
-            onClick={() => {
-              trackEvent('Carto|Densité thermique linéaire|Ajouter un segment');
-              startMeasurement();
-            }}
-            disabled={!mapLayersLoaded || isLoading}
+            iconId="fr-icon-delete-bin-line"
+            className="btn-full-width"
+            onClick={clearDensity}
+            disabled={isLoading}
           >
-            Ajouter un segment
+            Effacer
           </Button>
-        )}
-
-        {densite && (
-          <>
-            <Button
-              priority="secondary"
-              iconId="fr-icon-delete-bin-line"
-              className="btn-full-width"
-              onClick={clearDensity}
-              disabled={isLoading}
-            >
-              Effacer
-            </Button>
-            <Button priority="tertiary" iconId="fr-icon-download-line" className="btn-full-width" onClick={exportDrawing}>
-              Exporter le tracé
-            </Button>
-          </>
-        )}
-      </Box>
-    </>
+          <Button priority="tertiary" iconId="fr-icon-download-line" className="btn-full-width" onClick={exportDrawing}>
+            Exporter le tracé
+          </Button>
+        </>
+      )}
+    </Box>
   );
 };
 
@@ -497,4 +494,4 @@ export const linearHeatDensityLayers = [
     },
     sourceId: linearHeatDensityLabelsSourceId,
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];

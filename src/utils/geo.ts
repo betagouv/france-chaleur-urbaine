@@ -69,8 +69,7 @@ export const getReadableDistance = (distance?: number | null) => {
  * @param geojson - L'objet GeoJSON à vérifier.
  * @returns `true` si la projection est Lambert-93, sinon `false`.
  */
-export const hasLambert93Projection = (geojson: any): boolean =>
-  geojson.crs?.properties?.name && geojson.crs.properties.name.includes('2154');
+export const hasLambert93Projection = (geojson: any): boolean => geojson.crs?.properties?.name?.includes('2154');
 
 /**
  * Convertit un objet GeoJSON de la projection Lambert-93 (EPSG:2154) vers WGS84 (EPSG:4326).

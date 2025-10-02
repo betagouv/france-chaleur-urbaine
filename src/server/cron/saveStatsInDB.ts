@@ -226,7 +226,7 @@ const countRecordsFromMatomo =
   async <T extends string[]>(startDate: string, endDate: string, categoryKeys: T) => {
     const rawNumberEvents = await bulkFetchRangeFromMatomo<MatomoActionMetrics>(
       {
-        date: startDate + ',' + endDate,
+        date: `${startDate},${endDate}`,
         method,
         period: 'range',
       },
@@ -273,7 +273,7 @@ const saveDemandsStats = async (startDate: string, endDate: string) => {
   };
   records.map((record: any) => {
     monthValue.nbTotal++;
-    if (record.fields['Éligibilité'] && (!record.fields['Distance au réseau'] || record.fields['Distance au réseau'] <= 100)) {
+    if (record.fields.Éligibilité && (!record.fields['Distance au réseau'] || record.fields['Distance au réseau'] <= 100)) {
       monthValue.nbEligible++;
     } else {
       monthValue.nbUneligible++;
@@ -310,7 +310,7 @@ const saveActionsStats = async (startDate: string, endDate: string) => {
   console.info(`saveStatsInDB START : saveActionsStats`);
   const results = await bulkFetchRangeFromMatomo<MatomoActionMetrics>(
     {
-      date: startDate + ',' + endDate,
+      date: `${startDate},${endDate}`,
       method: 'Events.getAction',
       period: 'range',
     },
@@ -339,7 +339,7 @@ const saveActionsStats = async (startDate: string, endDate: string) => {
 const saveVisitsStats = async (startDate: string, endDate: string) => {
   console.info(`saveStatsInDB START : saveVisitsStats`);
   const results = await bulkFetchRangeFromMatomo<MatomoUniqueVisitorsMetrics>({
-    date: startDate + ',' + endDate,
+    date: `${startDate},${endDate}`,
     method: 'VisitsSummary.getUniqueVisitors',
     period: 'range',
   });
@@ -359,7 +359,7 @@ const saveVisitsMapStats = async (startDate: string, endDate: string) => {
   console.info(`saveStatsInDB START : saveVisitsMapStats`);
   const results = await bulkFetchRangeFromMatomo<MatomoPageMetrics>(
     {
-      date: startDate + ',' + endDate,
+      date: `${startDate},${endDate}`,
       method: 'Actions.getPageUrl',
       pageUrl: '/carte',
       period: 'range',

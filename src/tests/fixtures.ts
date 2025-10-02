@@ -6,7 +6,7 @@ export async function cleanDatabase() {
   await kdb.deleteFrom('users').execute();
 }
 
-export async function seedTableUser(users: ReadonlyArray<Partial<InsertObject<DB, 'users'>>>) {
+export async function seedTableUser(users: readonly Partial<InsertObject<DB, 'users'>>[]) {
   await kdb
     .insertInto('users')
     .values(

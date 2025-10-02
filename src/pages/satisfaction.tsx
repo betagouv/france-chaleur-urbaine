@@ -37,9 +37,7 @@ function Satisfaction() {
     <SimplePage noIndex>
       <Slice padding={8}>
         {satisfaction ? (
-          <>
-            <h5>Merci pour votre retour ! Vous souhaitez nous en dire plus ?</h5>
-          </>
+          <h5>Merci pour votre retour ! Vous souhaitez nous en dire plus ?</h5>
         ) : (
           <>
             <h5>Merci pour votre retour !</h5>

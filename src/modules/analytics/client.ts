@@ -175,8 +175,8 @@ const performTracking = (trackingConfig: TrackingConfiguration, eventPayload?: a
 type MatomoABTestingExperiment = {
   name: string;
   percentage: number;
-  includedTargets: ReadonlyArray<any>;
-  excludedTargets: ReadonlyArray<any>;
+  includedTargets: readonly any[];
+  excludedTargets: readonly any[];
   variations: ReadonlyArray<{
     name: string;
     percentage?: number;
@@ -203,7 +203,7 @@ const matomoABTestingExperiments = [
     ],
   },
   // add the experiments below
-] as const satisfies ReadonlyArray<MatomoABTestingExperiment>;
+] as const satisfies readonly MatomoABTestingExperiment[];
 
 type MatomoABTestingExperimentName = (typeof matomoABTestingExperiments)[number]['name'];
 

@@ -1,4 +1,4 @@
-import { readFile } from 'fs/promises';
+import { readFile } from 'node:fs/promises';
 
 import { serverConfig } from '@/server/config';
 import { dayjs } from '@/utils/date';

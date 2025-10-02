@@ -370,7 +370,7 @@ async function deleteAirtable(airtableConfig: AirtableConfig, changement: Change
 // fonctions utilitaires pour logger les requêtes
 
 function logPGQuery(query: Knex.QueryBuilder<any, number>): Promise<any> {
-  queriesLogger.debug('- PG: ' + truncateGeomCoordinates(query.toQuery()));
+  queriesLogger.debug(`- PG: ${truncateGeomCoordinates(query.toQuery())}`);
   return !globalDryRun ? query : Promise.resolve();
 }
 

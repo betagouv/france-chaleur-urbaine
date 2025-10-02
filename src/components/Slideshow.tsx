@@ -1,5 +1,5 @@
 import { fr } from '@codegouvfr/react-dsfr';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Button from '@/components/ui/Button';
 import cx from '@/utils/cx';
 import Box from './ui/Box';

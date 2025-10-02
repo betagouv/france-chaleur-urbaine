@@ -150,7 +150,7 @@ export default function ManageJobs() {
   });
 
   useEffect(() => {
-    setHasPendingJobs(jobs?.some((job) => job.status == 'pending' || job.status == 'processing') ?? false);
+    setHasPendingJobs(jobs?.some((job) => job.status === 'pending' || job.status === 'processing') ?? false);
   }, [jobs]);
 
   return (

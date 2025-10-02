@@ -1,5 +1,5 @@
+import fs from 'node:fs';
 import type { Command } from '@commander-js/extra-typings';
-import fs from 'fs';
 import prompts from 'prompts';
 import { z } from 'zod';
 
@@ -290,7 +290,7 @@ export function registerNetworkCommands(parentProgram: Command) {
     .action(async (type, fileName, id_fcu_or_sncu) => {
       const isIdSNCU = id_fcu_or_sncu.endsWith('C') || id_fcu_or_sncu.endsWith('F');
       const idField = isIdSNCU ? 'Identifiant reseau' : 'id_fcu';
-      const idValue = isIdSNCU ? id_fcu_or_sncu : parseInt(id_fcu_or_sncu);
+      const idValue = isIdSNCU ? id_fcu_or_sncu : parseInt(id_fcu_or_sncu, 10);
       const geometryConfig = await readFileGeometry(fileName);
       await updateEntityGeometry(entityTypeToTable[type], idField, idValue, geometryConfig, { extend: true });
     });
@@ -304,7 +304,7 @@ export function registerNetworkCommands(parentProgram: Command) {
     .action(async (type, fileName, id_fcu_or_sncu) => {
       const isIdSNCU = id_fcu_or_sncu.endsWith('C') || id_fcu_or_sncu.endsWith('F');
       const idField = isIdSNCU ? 'Identifiant reseau' : 'id_fcu';
-      const idValue = isIdSNCU ? id_fcu_or_sncu : parseInt(id_fcu_or_sncu);
+      const idValue = isIdSNCU ? id_fcu_or_sncu : parseInt(id_fcu_or_sncu, 10);
       const geometryConfig = await readFileGeometry(fileName);
       await updateEntityGeometry(entityTypeToTable[type], idField, idValue, geometryConfig);
     });
@@ -317,7 +317,7 @@ export function registerNetworkCommands(parentProgram: Command) {
     .action(async (type, id_fcu_or_sncu) => {
       const isIdSNCU = id_fcu_or_sncu.endsWith('C') || id_fcu_or_sncu.endsWith('F');
       const idField = isIdSNCU ? 'Identifiant reseau' : 'id_fcu';
-      const idValue = isIdSNCU ? id_fcu_or_sncu : parseInt(id_fcu_or_sncu);
+      const idValue = isIdSNCU ? id_fcu_or_sncu : parseInt(id_fcu_or_sncu, 10);
       await updateEntityWithoutGeometry(entityTypeToTable[type], idField, idValue);
     });
 

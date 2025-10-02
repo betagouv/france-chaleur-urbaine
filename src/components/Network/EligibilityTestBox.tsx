@@ -166,7 +166,7 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
                 <Box backgroundColor="#C1C1C1" width="1px" />
                 <Text>
                   {!eligibilityStatus.isEligible ? (
-                    <>Votre adresse n'est pas située à proximité de ce réseau.</>
+                    "Votre adresse n'est pas située à proximité de ce réseau."
                   ) : eligibilityStatus.isVeryEligible ? (
                     <>
                       Votre adresse est <strong>à proximité immédiate</strong> de ce réseau (

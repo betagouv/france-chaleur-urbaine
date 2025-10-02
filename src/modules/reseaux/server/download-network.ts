@@ -206,24 +206,24 @@ export const downloadAndUpdateNetwork = async (table: DatabaseSourceId) => {
     const networksDB = await db(tileInfo.table).select('id_fcu', 'communes', 'Identifiant reseau', 'has_trace');
     await Promise.all(
       networksDB.map(async (network) => {
-        const networkAirtable = networksAirtable.find((row) => row.get('id_fcu') === network['id_fcu']);
+        const networkAirtable = networksAirtable.find((row) => row.get('id_fcu') === network.id_fcu);
         if (networkAirtable) {
-          if (network['has_trace'] !== convertAirtableValue(networkAirtable.get('has_trace'), TypeBool)) {
+          if (network.has_trace !== convertAirtableValue(networkAirtable.get('has_trace'), TypeBool)) {
             updateCount++;
             await base(tileInfo.airtable as string).update(networkAirtable.id, {
-              has_trace: network['has_trace'],
+              has_trace: network.has_trace,
             });
           }
         } else {
-          addIds.push(network['id_fcu']);
+          addIds.push(network.id_fcu);
           await base(tileInfo.airtable as string).create(
             [
               {
                 fields: {
-                  communes: network['communes'] && network['communes'].toString(),
-                  has_trace: network['has_trace'],
+                  communes: network.communes?.toString(),
+                  has_trace: network.has_trace,
                   'Identifiant reseau': network['Identifiant reseau'],
-                  id_fcu: network['id_fcu'],
+                  id_fcu: network.id_fcu,
                 },
               },
             ],
@@ -244,15 +244,15 @@ export const downloadAndUpdateNetwork = async (table: DatabaseSourceId) => {
     const networksDB = await db(tileInfo.table).select('id_fcu');
     await Promise.all(
       networksDB.map(async (network) => {
-        const networkAirtable = networksAirtable.find((row) => row.get('id_fcu') === network['id_fcu']);
+        const networkAirtable = networksAirtable.find((row) => row.get('id_fcu') === network.id_fcu);
         if (!networkAirtable) {
-          addIds.push(network['id_fcu']);
+          addIds.push(network.id_fcu);
           await base(tileInfo.airtable as string).create(
             [
               {
                 fields: {
-                  communes: network['communes'],
-                  id_fcu: network['id_fcu'],
+                  communes: network.communes,
+                  id_fcu: network.id_fcu,
                 },
               },
             ],
@@ -305,7 +305,7 @@ function convertEntityFromAirtableToPostgres(type: DatabaseSourceId, airtableNet
 export function convertAirtableValue(value: any, type: Type) {
   switch (type) {
     case TypeArray:
-      return value instanceof Array ? value : [];
+      return Array.isArray(value) ? value : [];
     case TypeBool:
       return value !== undefined && value !== null ? !!value : false;
     case TypeJSONArray:

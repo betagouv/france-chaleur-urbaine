@@ -1,4 +1,4 @@
-import React, { forwardRef } from 'react';
+import { forwardRef } from 'react';
 
 import { type InputProps as InputPropsStyled, type InputSize, Input as StyledDSFRInput } from './Input.styles';
 

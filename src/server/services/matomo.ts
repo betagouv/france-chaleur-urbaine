@@ -82,7 +82,7 @@ export function generateMonthsToNow(): string[] {
   currentDate.setDate(1);
   const months = Array(display)
     .fill(null)
-    .map((v, i) => {
+    .map((_v, i) => {
       const baseDate = new Date(currentDate.toDateString());
       baseDate.setMonth(baseDate.getMonth() - i);
       const date = `${baseDate.getFullYear()}-${(baseDate.getMonth() + 1).toString().padStart(2, '0')}-${baseDate

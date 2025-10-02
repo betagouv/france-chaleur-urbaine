@@ -192,11 +192,9 @@ function ThemeProvider({ children }: { children: React.ReactNode }) {
   return (
     <StyledComponentsThemeProvider theme={theme}>
       <StyleSheetManager shouldForwardProp={shouldForwardProp} enableVendorPrefixes>
-        <>
-          <AppGlobalStyle />
-          <DsfrFixUp />
-          {children}
-        </>
+        <AppGlobalStyle />
+        <DsfrFixUp />
+        {children}
       </StyleSheetManager>
     </StyledComponentsThemeProvider>
   );

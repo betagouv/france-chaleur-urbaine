@@ -81,7 +81,7 @@ function ModifierReseauxPage() {
         if (network) {
           void onNetworkSelect(network);
           // download existing files as if they were uploaded by the user
-          if (network.fichiers instanceof Array) {
+          if (Array.isArray(network.fichiers)) {
             const existingFiles = (
               await Promise.all(
                 network.fichiers.map(
@@ -104,7 +104,7 @@ function ModifierReseauxPage() {
 
     const formData = new FormData();
     for (const [key, value] of Object.entries(formState)) {
-      if (value instanceof Array) {
+      if (Array.isArray(value)) {
         for (const part of Array.from(value)) {
           formData.append(key, part);
         }
@@ -365,7 +365,7 @@ function ModifierReseauxPage() {
               aria-hidden
             />
             <div className="fr-grid-row fr-grid-row--top">
-              <Button onClick={() => fileUploadInputRef.current!.click()} priority="secondary">
+              <Button onClick={() => fileUploadInputRef.current?.click()} priority="secondary">
                 Choisir un fichier
               </Button>
               <Box ml="2w">
@@ -427,7 +427,7 @@ function ModifierReseauxPage() {
 export default ModifierReseauxPage;
 
 function stripBadAirtableValues(value: string): string {
-  return value && value !== '0' && value != '00000' ? value : '';
+  return value && value !== '0' && value !== '00000' ? value : '';
 }
 
 /**

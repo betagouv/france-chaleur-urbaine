@@ -123,7 +123,7 @@ export const demandsExportColumns: ExportColumn<Demand>[] = [
   { header: 'Nom du réseau le plus proche', value: 'Nom réseau' },
   {
     header: 'Nb logements',
-    value: (demand) => (demand['Gestionnaire Logement'] === undefined ? demand['Logement'] : demand['Gestionnaire Logement']),
+    value: (demand) => (demand['Gestionnaire Logement'] === undefined ? demand.Logement : demand['Gestionnaire Logement']),
   },
   {
     header: 'Surface en m2',
@@ -131,7 +131,7 @@ export const demandsExportColumns: ExportColumn<Demand>[] = [
   },
   {
     header: 'Conso gaz (MWh)',
-    value: (demand) => (demand['Gestionnaire Conso'] === undefined ? demand['Conso'] : demand['Gestionnaire Conso']),
+    value: (demand) => (demand['Gestionnaire Conso'] === undefined ? demand.Conso : demand['Gestionnaire Conso']),
   },
   { header: 'Commentaires', value: 'Commentaire' },
   {

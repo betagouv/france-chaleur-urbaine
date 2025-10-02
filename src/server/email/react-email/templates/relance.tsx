@@ -1,5 +1,3 @@
-import * as React from 'react';
-
 import { clientConfig } from '@/client-config';
 
 const { websiteOrigin, linkedInUrl, calendarLink } = clientConfig;

@@ -65,7 +65,7 @@ function Text({
     fontSize: fontSize ?? 'inherit',
     fontStyle: fontStyle ?? 'inherit',
     lineHeight: lineHeight ?? 'inherit',
-    maxWidth: maxWidth ? `${parseInt(maxWidth.slice(0, -1)) * 8}px` : undefined,
+    maxWidth: maxWidth ? `${parseInt(maxWidth.slice(0, -1), 10) * 8}px` : undefined,
     textAlign,
     textDecoration: underline ? 'underline' : undefined,
     textTransform,

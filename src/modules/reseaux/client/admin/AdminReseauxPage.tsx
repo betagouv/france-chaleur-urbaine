@@ -294,7 +294,7 @@ const GestionDesReseaux = () => {
       } else {
         await updateGeomUpdate({
           geometry: updatedGeom,
-          id: typeof editingId === 'number' ? editingId : parseInt(editingId || '0'),
+          id: typeof editingId === 'number' ? editingId : parseInt(editingId || '0', 10),
           type: tabInfo.type,
         });
       }

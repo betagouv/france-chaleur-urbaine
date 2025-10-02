@@ -13,19 +13,19 @@ const Fundings = () => {
     <>
       <div className="my-8 [&_li]:cursor-pointer">
         <ul>
-          <li onClick={() => maPrimeRenovCoproRef.current && maPrimeRenovCoproRef.current.scrollIntoView()}>
+          <li onClick={() => maPrimeRenovCoproRef.current?.scrollIntoView()}>
             <u>MaPrimeRénov’Copropriétés</u>
           </li>
-          <li onClick={() => maPrimeRenovSereRef.current && maPrimeRenovSereRef.current.scrollIntoView()}>
+          <li onClick={() => maPrimeRenovSereRef.current?.scrollIntoView()}>
             <u>MaPrimeRénov’Sérénité</u>
           </li>
-          <li onClick={() => coupDePouceRef.current && coupDePouceRef.current.scrollIntoView()}>
+          <li onClick={() => coupDePouceRef.current?.scrollIntoView()}>
             <u>Le coup de pouce "rénovation performante de bâtiment résidentiel collectif"</u>
           </li>
-          <li onClick={() => ecoPretIndiRef.current && ecoPretIndiRef.current.scrollIntoView()}>
+          <li onClick={() => ecoPretIndiRef.current?.scrollIntoView()}>
             <u>L’Éco-prêt à taux zéro "individuel"</u>
           </li>
-          <li onClick={() => ecoPretCoproRef.current && ecoPretCoproRef.current.scrollIntoView()}>
+          <li onClick={() => ecoPretCoproRef.current?.scrollIntoView()}>
             <u>L’Éco-prêt à taux zéro "copropriétés"</u>
           </li>
         </ul>
