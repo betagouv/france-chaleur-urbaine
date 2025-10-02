@@ -41,31 +41,8 @@ const PopupInstallationGeothermieSurface = defineLayerPopup<
 
 export const installationsGeothermieSurfaceLayersSpec = [
   {
-    sourceId: 'installationsGeothermieSurfaceEchangeursFermes',
-    source: {
-      type: 'vector',
-      tiles: ['/api/map/installationsGeothermieSurfaceEchangeursFermes/{z}/{x}/{y}'],
-      minzoom: 5,
-      maxzoom: 10,
-    },
     layers: [
       {
-        id: 'installationsGeothermieSurfaceEchangeursFermes',
-        type: 'circle',
-        paint: {
-          'circle-color': [
-            'case',
-            ['==', ['get', 'statut_inst'], 'Déclaré'],
-            installationsGeothermieSurfaceEchangeursFermesDeclareeColor,
-            installationsGeothermieSurfaceEchangeursFermesRealiseeColor,
-          ],
-          'circle-radius': ifHoverElse(10, 8),
-          'circle-opacity': installationsGeothermieSurfaceEchangeursFermesOpacity,
-        },
-        isVisible: (config) =>
-          config.geothermieSurfaceEchangeursFermes.show &&
-          (config.geothermieSurfaceEchangeursFermes.showInstallationsDeclarees ||
-            config.geothermieSurfaceEchangeursFermes.showInstallationsRealisees),
         filter: (config) => [
           'in',
           ['get', 'statut_inst'],
@@ -77,36 +54,36 @@ export const installationsGeothermieSurfaceLayersSpec = [
             ].filter(Boolean),
           ],
         ],
-        popup: PopupInstallationGeothermieSurface,
-      },
-    ],
-  },
-  {
-    sourceId: 'installationsGeothermieSurfaceEchangeursOuverts',
-    source: {
-      type: 'vector',
-      tiles: ['/api/map/installationsGeothermieSurfaceEchangeursOuverts/{z}/{x}/{y}'],
-      minzoom: 5,
-      maxzoom: 10,
-    },
-    layers: [
-      {
-        id: 'installationsGeothermieSurfaceEchangeursOuverts',
-        type: 'circle',
+        id: 'installationsGeothermieSurfaceEchangeursFermes',
+        isVisible: (config) =>
+          config.geothermieSurfaceEchangeursFermes.show &&
+          (config.geothermieSurfaceEchangeursFermes.showInstallationsDeclarees ||
+            config.geothermieSurfaceEchangeursFermes.showInstallationsRealisees),
         paint: {
           'circle-color': [
             'case',
             ['==', ['get', 'statut_inst'], 'Déclaré'],
-            installationsGeothermieSurfaceEchangeursOuvertsDeclareeColor,
-            installationsGeothermieSurfaceEchangeursOuvertsRealiseeColor,
+            installationsGeothermieSurfaceEchangeursFermesDeclareeColor,
+            installationsGeothermieSurfaceEchangeursFermesRealiseeColor,
           ],
+          'circle-opacity': installationsGeothermieSurfaceEchangeursFermesOpacity,
           'circle-radius': ifHoverElse(10, 8),
-          'circle-opacity': installationsGeothermieSurfaceEchangeursOuvertsOpacity,
         },
-        isVisible: (config) =>
-          config.geothermieSurfaceEchangeursOuverts.show &&
-          (config.geothermieSurfaceEchangeursOuverts.showInstallationsDeclarees ||
-            config.geothermieSurfaceEchangeursOuverts.showInstallationsRealisees),
+        popup: PopupInstallationGeothermieSurface,
+        type: 'circle',
+      },
+    ],
+    source: {
+      maxzoom: 10,
+      minzoom: 5,
+      tiles: ['/api/map/installationsGeothermieSurfaceEchangeursFermes/{z}/{x}/{y}'],
+      type: 'vector',
+    },
+    sourceId: 'installationsGeothermieSurfaceEchangeursFermes',
+  },
+  {
+    layers: [
+      {
         filter: (config) => [
           'in',
           ['get', 'statut_inst'],
@@ -118,11 +95,34 @@ export const installationsGeothermieSurfaceLayersSpec = [
             ].filter(Boolean),
           ],
         ],
+        id: 'installationsGeothermieSurfaceEchangeursOuverts',
+        isVisible: (config) =>
+          config.geothermieSurfaceEchangeursOuverts.show &&
+          (config.geothermieSurfaceEchangeursOuverts.showInstallationsDeclarees ||
+            config.geothermieSurfaceEchangeursOuverts.showInstallationsRealisees),
+        paint: {
+          'circle-color': [
+            'case',
+            ['==', ['get', 'statut_inst'], 'Déclaré'],
+            installationsGeothermieSurfaceEchangeursOuvertsDeclareeColor,
+            installationsGeothermieSurfaceEchangeursOuvertsRealiseeColor,
+          ],
+          'circle-opacity': installationsGeothermieSurfaceEchangeursOuvertsOpacity,
+          'circle-radius': ifHoverElse(10, 8),
+        },
         popup: PopupInstallationGeothermieSurface,
+        type: 'circle',
       },
     ],
+    source: {
+      maxzoom: 10,
+      minzoom: 5,
+      tiles: ['/api/map/installationsGeothermieSurfaceEchangeursOuverts/{z}/{x}/{y}'],
+      type: 'vector',
+    },
+    sourceId: 'installationsGeothermieSurfaceEchangeursOuverts',
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];
 
 type InstallationGeothermieSurfaceEchangeursOuverts = {
   bss_rel: number;

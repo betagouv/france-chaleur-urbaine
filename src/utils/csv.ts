@@ -37,7 +37,7 @@ export const CSVToArray = (strData: string, strDelimiter: string) => {
     // (is not the start of string) and if it matches
     // field delimiter. If id does not, then we know
     // that this delimiter is a row delimiter.
-    if (strMatchedDelimiter.length && strMatchedDelimiter != strDelimiter) {
+    if (strMatchedDelimiter.length && strMatchedDelimiter !== strDelimiter) {
       // Since we have reached a new row of data,
       // add an empty row to our data array.
       arrData.push([]);
@@ -50,7 +50,7 @@ export const CSVToArray = (strData: string, strDelimiter: string) => {
     if (arrMatches[2]) {
       // We found a quoted value. When we capture
       // this value, unescape any double quotes.
-      strMatchedValue = arrMatches[2].replace(new RegExp('""', 'g'), '"');
+      strMatchedValue = arrMatches[2].replace(/""/g, '"');
     } else {
       // We found a non-quoted value.
       strMatchedValue = arrMatches[3];

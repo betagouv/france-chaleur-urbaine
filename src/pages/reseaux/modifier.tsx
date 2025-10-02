@@ -14,8 +14,8 @@ import Button from '@/components/ui/Button';
 import Heading from '@/components/ui/Heading';
 import Icon from '@/components/ui/Icon';
 import Text from '@/components/ui/Text';
-import { type ModificationReseau } from '@/pages/api/modification-reseau';
-import { type NetworkSearchResult } from '@/pages/api/networks/search';
+import type { ModificationReseau } from '@/pages/api/modification-reseau';
+import type { NetworkSearchResult } from '@/pages/api/networks/search';
 import { postFetchJSON } from '@/utils/network';
 import { sleep } from '@/utils/time';
 
@@ -24,21 +24,21 @@ type FormState = Omit<ModificationReseau, 'fichiers'> & {
 };
 
 const initialFormState: FormState = {
+  email: '',
+  fichiers: [],
+  fonction: '',
+  gestionnaire: '',
   idReseau: '',
-  type: undefined as any,
+  informationsComplementaires: '',
+  maitreOuvrage: '',
 
   nom: '',
   prenom: '',
-  structure: '',
-  fonction: '',
-  email: '',
 
   reseauClasse: undefined as any,
-  maitreOuvrage: '',
-  gestionnaire: '',
   siteInternet: '',
-  informationsComplementaires: '',
-  fichiers: [],
+  structure: '',
+  type: undefined as any,
 };
 
 type FichiersError = 'file_size_exceeded' | 'files_count_exceeded' | 'invalid_file_type';
@@ -81,7 +81,7 @@ function ModifierReseauxPage() {
         if (network) {
           void onNetworkSelect(network);
           // download existing files as if they were uploaded by the user
-          if (network.fichiers instanceof Array) {
+          if (Array.isArray(network.fichiers)) {
             const existingFiles = (
               await Promise.all(
                 network.fichiers.map(
@@ -104,7 +104,7 @@ function ModifierReseauxPage() {
 
     const formData = new FormData();
     for (const [key, value] of Object.entries(formState)) {
-      if (value instanceof Array) {
+      if (Array.isArray(value)) {
         for (const part of Array.from(value)) {
           formData.append(key, part);
         }
@@ -115,8 +115,8 @@ function ModifierReseauxPage() {
 
     try {
       const res = await fetch('/api/modification-reseau', {
-        method: 'POST',
         body: formData,
+        method: 'POST',
       });
       if (res.status !== 200) {
         throw new Error(`invalid status ${res.status}`);
@@ -223,19 +223,19 @@ function ModifierReseauxPage() {
                 {
                   label: 'Collectivité',
                   nativeInputProps: {
-                    required: true,
-                    value: 'collectivite',
                     checked: formState.type === 'collectivite',
                     onChange: () => void setFormValue('type', 'collectivite'),
+                    required: true,
+                    value: 'collectivite',
                   },
                 },
                 {
                   label: 'Exploitant',
                   nativeInputProps: {
-                    required: true,
-                    value: 'exploitant',
                     checked: formState.type === 'exploitant',
                     onChange: () => void setFormValue('type', 'exploitant'),
+                    required: true,
+                    value: 'exploitant',
                   },
                 },
               ]}
@@ -245,42 +245,42 @@ function ModifierReseauxPage() {
             <Input
               label="Votre nom"
               nativeInputProps={{
+                onChange: (e) => void setFormValue('nom', e.target.value),
                 required: true,
                 value: formState.nom,
-                onChange: (e) => void setFormValue('nom', e.target.value),
               }}
             />
             <Input
               label="Votre prénom"
               nativeInputProps={{
+                onChange: (e) => void setFormValue('prenom', e.target.value),
                 required: true,
                 value: formState.prenom,
-                onChange: (e) => void setFormValue('prenom', e.target.value),
               }}
             />
             <Input
               label="Votre structure"
               nativeInputProps={{
+                onChange: (e) => void setFormValue('structure', e.target.value),
                 required: true,
                 value: formState.structure,
-                onChange: (e) => void setFormValue('structure', e.target.value),
               }}
             />
             <Input
               label="Votre fonction"
               nativeInputProps={{
+                onChange: (e) => void setFormValue('fonction', e.target.value),
                 required: true,
                 value: formState.fonction,
-                onChange: (e) => void setFormValue('fonction', e.target.value),
               }}
             />
             <Input
               label="Votre email"
               nativeInputProps={{
+                onChange: (e) => void setFormValue('email', e.target.value),
                 required: true,
                 type: 'email',
                 value: formState.email,
-                onChange: (e) => void setFormValue('email', e.target.value),
               }}
             />
 
@@ -295,17 +295,17 @@ function ModifierReseauxPage() {
                 {
                   label: 'Réseau classé',
                   nativeInputProps: {
-                    value: 'classe',
                     checked: formState.reseauClasse === true,
                     onChange: () => void setFormValue('reseauClasse', true),
+                    value: 'classe',
                   },
                 },
                 {
                   label: 'Réseau non classé',
                   nativeInputProps: {
-                    value: 'nonClasse',
                     checked: formState.reseauClasse === false,
                     onChange: () => void setFormValue('reseauClasse', false),
+                    value: 'nonClasse',
                   },
                 },
               ]}
@@ -313,26 +313,26 @@ function ModifierReseauxPage() {
             <Input
               label="Maître d’ouvrage"
               nativeInputProps={{
+                onChange: (e) => void setFormValue('maitreOuvrage', e.target.value),
                 required: true,
                 value: formState.maitreOuvrage,
-                onChange: (e) => void setFormValue('maitreOuvrage', e.target.value),
               }}
             />
             <Input
               label="Gestionnaire"
               nativeInputProps={{
+                onChange: (e) => void setFormValue('gestionnaire', e.target.value),
                 required: true,
                 value: formState.gestionnaire,
-                onChange: (e) => void setFormValue('gestionnaire', e.target.value),
               }}
             />
             <Input
               label="Site internet du réseau"
               nativeInputProps={{
+                onChange: (e) => void setFormValue('siteInternet', e.target.value),
                 placeholder: 'https://www.monreseau.fr',
                 // type: 'url', uncomment when all data has been cleaned from airtable
                 value: formState.siteInternet,
-                onChange: (e) => void setFormValue('siteInternet', e.target.value),
               }}
             />
 
@@ -343,12 +343,12 @@ function ModifierReseauxPage() {
             <TextArea
               label=""
               nativeTextAreaProps={{
+                maxLength: clientConfig.networkInfoFieldMaxCharacters,
+                onChange: (e) => void setFormValue('informationsComplementaires', e.target.value),
                 placeholder:
                   'Projets de verdissement ou de développement du réseau, puissance minimale requise pour le raccordement, ou toute autre information utile (cible grand public et professionnels)',
-                value: formState.informationsComplementaires,
-                onChange: (e) => void setFormValue('informationsComplementaires', e.target.value),
                 rows: 5,
-                maxLength: clientConfig.networkInfoFieldMaxCharacters,
+                value: formState.informationsComplementaires,
               }}
             />
             <Text mt="4w" mb="1w" fontWeight="bold">
@@ -365,7 +365,7 @@ function ModifierReseauxPage() {
               aria-hidden
             />
             <div className="fr-grid-row fr-grid-row--top">
-              <Button onClick={() => fileUploadInputRef.current!.click()} priority="secondary">
+              <Button onClick={() => fileUploadInputRef.current?.click()} priority="secondary">
                 Choisir un fichier
               </Button>
               <Box ml="2w">
@@ -427,7 +427,7 @@ function ModifierReseauxPage() {
 export default ModifierReseauxPage;
 
 function stripBadAirtableValues(value: string): string {
-  return value && value !== '0' && value != '00000' ? value : '';
+  return value && value !== '0' && value !== '00000' ? value : '';
 }
 
 /**

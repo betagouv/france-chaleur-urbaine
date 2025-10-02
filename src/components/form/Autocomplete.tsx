@@ -4,6 +4,7 @@ import { Oval } from 'react-loader-spinner';
 
 import { Combobox, ComboboxInput, ComboboxList, ComboboxOption, ComboboxOptionText, ComboboxPopover } from '@/components/ui/Combobox';
 import Icon from '@/components/ui/Icon';
+
 type DefaultOption = Record<string, any>;
 
 export type AutocompleteProps<Option extends DefaultOption> = Omit<React.ComponentProps<typeof Combobox>, 'children' | 'onSelect'> & {
@@ -117,8 +118,8 @@ const Autocomplete = <Option extends DefaultOption>({
           {...nativeInputProps}
           style={{
             ...nativeInputProps?.style,
-            textOverflow: 'ellipsis',
             paddingRight: '2.5rem',
+            textOverflow: 'ellipsis',
           }}
           autoComplete="off"
         />
@@ -129,12 +130,12 @@ const Autocomplete = <Option extends DefaultOption>({
             color="var(--text-default-grey)"
             secondaryColor="var(--text-default-grey)"
             wrapperStyle={{
-              position: 'absolute',
-              color: 'var(--text-default-grey)',
-              top: '0.75rem',
               bottom: '0.75rem',
+              color: 'var(--text-default-grey)',
               margin: 'auto',
+              position: 'absolute',
               right: 'calc(16px + 1.5rem)',
+              top: '0.75rem',
             }}
           />
         )}
@@ -145,24 +146,24 @@ const Autocomplete = <Option extends DefaultOption>({
             color="var(--text-default-error)"
             title={error}
             style={{
-              position: 'absolute',
-              top: '0.75rem',
               bottom: '0.75rem',
               margin: 'auto',
+              position: 'absolute',
               right: 'calc(16px + 1.5rem)',
+              top: '0.75rem',
             }}
           />
         )}
         <Icon
           size="sm"
           style={{
-            position: 'absolute',
-            top: '0.75rem',
-            right: '1rem',
             bottom: '0.75rem',
+            cursor: inputValue ? 'pointer' : 'default',
             margin: 'auto',
             pointerEvents: inputValue ? 'all' : 'none',
-            cursor: inputValue ? 'pointer' : 'default',
+            position: 'absolute',
+            right: '1rem',
+            top: '0.75rem',
           }}
           name={inputValue ? 'fr-icon-close-line' : 'fr-icon-search-line'}
           onClick={() => {

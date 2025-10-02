@@ -1,4 +1,4 @@
-import { type RuleName, type Situation } from '@betagouv/france-chaleur-urbaine-publicodes';
+import type { RuleName, Situation } from '@betagouv/france-chaleur-urbaine-publicodes';
 import Engine from 'publicodes';
 import React from 'react';
 
@@ -24,7 +24,7 @@ export const formatUnit = ({ numerators, denominators }: Unit): string => {
   };
   const nums = format(numerators);
   const dens = format(denominators, '/');
-  return nums + (dens ? ' / ' + dens : '');
+  return nums + (dens ? ` / ${dens}` : '');
 };
 
 const usePublicodesEngine = (rules: Rules, options?: Options) => {
@@ -85,10 +85,10 @@ const usePublicodesEngine = (rules: Rules, options?: Options) => {
 
   const getFieldDefaultValue = (key: RuleName) => {
     return engine.evaluate({
-      valeur: key,
       contexte: {
         [key]: 'non défini', // règle spéciale qui n'a pas de valeur
       },
+      valeur: key,
     })?.nodeValue;
   };
 
@@ -126,20 +126,20 @@ const usePublicodesEngine = (rules: Rules, options?: Options) => {
   };
 
   return {
-    loaded,
-    internalEngine: engine,
     getField,
-    getRule: getParsedRule,
+    getFieldAsNumber,
     getFieldDefaultValue,
+    getNode,
+    getRule: getParsedRule,
+    getSituation,
+    getUnit,
+    internalEngine: engine,
+    isDefaultValue,
+    loaded,
+    resetField,
     setField,
     setSituation,
     setStringField,
-    getNode,
-    getUnit,
-    isDefaultValue,
-    resetField,
-    getFieldAsNumber,
-    getSituation,
   };
 };
 

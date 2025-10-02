@@ -47,21 +47,21 @@ const Graph = ({
             loader={<div>Chargement du graphe...</div>}
             data={formatedData}
             options={{
-              title: withSum ? `${title} - ${total} au total` : title,
-              titleTextStyle,
               colors: colors || ['#0078f3', '#f60700', '#1f8d49', '#009099'],
               hAxis: {
+                format: 'MMMM YYYY',
                 slantedText: true,
                 slantedTextAngle: 30,
-                format: 'MMMM YYYY',
                 textStyle: hAxisTextStyle,
               },
+              legend: {
+                alignment: legendAlignment,
+                position: legendPosition ? legendPosition : 'right',
+              },
+              title: withSum ? `${title} - ${total} au total` : title,
+              titleTextStyle,
               vAxis: {
                 textStyle: vAxisTextStyle,
-              },
-              legend: {
-                position: legendPosition ? legendPosition : 'right',
-                alignment: legendAlignment,
               },
             }}
           />

@@ -4,7 +4,7 @@ import React from 'react';
 export type VirtualListRowProps<T> = { item: T };
 
 type VirtualListProps<T> = {
-  items: ReadonlyArray<T>;
+  items: readonly T[];
   renderRow: React.ComponentType<VirtualListRowProps<T>>;
   estimateSize?: number;
   height?: number | string;
@@ -16,8 +16,8 @@ function VirtualList<T>({ items, renderRow: RenderRow, estimateSize = 35, height
 
   const virtualizer = useVirtualizer({
     count: items.length,
-    getScrollElement: () => parentRef.current,
     estimateSize: () => estimateSize,
+    getScrollElement: () => parentRef.current,
   });
 
   const virtualItems = virtualizer.getVirtualItems();
@@ -26,26 +26,26 @@ function VirtualList<T>({ items, renderRow: RenderRow, estimateSize = 35, height
     <div
       ref={parentRef}
       style={{
-        height,
-        width: '100%',
-        overflowY: 'auto',
         contain: 'strict',
+        height,
+        overflowY: 'auto',
+        width: '100%',
       }}
     >
       <div
         style={{
           height: virtualizer.getTotalSize(),
-          width: '100%',
           position: 'relative',
+          width: '100%',
         }}
       >
         <div
           style={{
+            left: 0,
             position: 'absolute',
             top: 0,
-            left: 0,
-            width: '100%',
             transform: `translateY(${virtualItems[0]?.start ?? 0}px)`,
+            width: '100%',
           }}
         >
           {virtualItems.map((virtualItem) => {

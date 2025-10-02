@@ -15,9 +15,7 @@ export async function createModificationsReseau(base: KnownAirtableBase) {
     {
       // the API doesn't support types createdTime or formula with CREATED_TIME()...
       name: 'createdAt',
-      type: 'dateTime',
       options: {
-        timeZone: 'Europe/Paris',
         dateFormat: {
           name: 'european',
         },
@@ -25,14 +23,16 @@ export async function createModificationsReseau(base: KnownAirtableBase) {
           format: 'HH:mm',
           name: '24hour',
         },
+        timeZone: 'Europe/Paris',
       },
+      type: 'dateTime',
     },
     {
       name: 'type',
-      type: 'singleSelect',
       options: {
         choices: [{ name: 'collectivite' }, { name: 'exploitant' }],
       },
+      type: 'singleSelect',
     },
     {
       name: 'nom',
@@ -56,11 +56,11 @@ export async function createModificationsReseau(base: KnownAirtableBase) {
     },
     {
       name: 'reseauClasse',
-      type: 'checkbox',
       options: {
         color: 'blueBright',
         icon: 'check',
       },
+      type: 'checkbox',
     },
     {
       name: 'maitreOuvrage',

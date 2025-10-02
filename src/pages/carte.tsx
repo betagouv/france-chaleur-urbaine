@@ -18,47 +18,47 @@ const MapWrapper = styled.div`
 `;
 
 export const layerURLKeysToMapConfigPath = {
-  reseauxDeChaleur: 'reseauxDeChaleur.show',
-  reseauxDeFroid: 'reseauxDeFroid',
-  reseauxEnConstruction: 'reseauxEnConstruction',
-  zonesDeDeveloppementPrioritaire: 'zonesDeDeveloppementPrioritaire',
-  demandesEligibilite: 'demandesEligibilite',
-  consommationsGaz: 'consommationsGaz.show',
-  batimentsGazCollectif: 'batimentsGazCollectif.show',
   batimentsFioulCollectif: 'batimentsFioulCollectif.show',
+  batimentsGazCollectif: 'batimentsGazCollectif.show',
   batimentsRaccordesReseauxChaleur: 'batimentsRaccordesReseauxChaleur',
   batimentsRaccordesReseauxFroid: 'batimentsRaccordesReseauxFroid',
-  zonesOpportunite: 'zonesOpportunite.show',
-  zonesOpportuniteFroid: 'zonesOpportuniteFroid.show',
+  besoinsEnChaleur: 'besoinsEnChaleur',
+  besoinsEnChaleurIndustrieCommunes: 'besoinsEnChaleurIndustrieCommunes',
+  besoinsEnFroid: 'besoinsEnFroid',
+  caracteristiquesBatiments: 'caracteristiquesBatiments',
+  communesFortPotentielPourCreationReseauxChaleur: 'communesFortPotentielPourCreationReseauxChaleur.show',
+  consommationsGaz: 'consommationsGaz.show',
+  demandesEligibilite: 'demandesEligibilite',
   enrrMobilisablesChaleurFatale: 'enrrMobilisablesChaleurFatale.show',
   enrrMobilisablesGeothermieProfonde: 'enrrMobilisablesGeothermieProfonde',
   enrrMobilisablesSolaireThermique: 'enrrMobilisablesSolaireThermique.show',
   enrrMobilisablesThalassothermie: 'enrrMobilisablesThalassothermie',
-  geothermieProfonde: 'geothermieProfonde.show',
-  geothermieSurfaceEchangeursOuverts: 'geothermieSurfaceEchangeursOuverts.show',
-  geothermieSurfaceEchangeursFermes: 'geothermieSurfaceEchangeursFermes.show',
-  installationsGeothermieSurfaceEchangeursOuvertsRealisees: 'geothermieSurfaceEchangeursOuverts.showInstallationsRealisees',
-  installationsGeothermieSurfaceEchangeursOuvertsDeclarees: 'geothermieSurfaceEchangeursOuverts.showInstallationsDeclarees',
-  ouvragesGeothermieSurfaceEchangeursOuvertsRealises: 'geothermieSurfaceEchangeursOuverts.showOuvragesRealises',
-  ouvragesGeothermieSurfaceEchangeursOuvertsDeclares: 'geothermieSurfaceEchangeursOuverts.showOuvragesDeclares',
-  installationsGeothermieSurfaceEchangeursFermesRealisees: 'geothermieSurfaceEchangeursFermes.showInstallationsRealisees',
-  installationsGeothermieSurfaceEchangeursFermesDeclarees: 'geothermieSurfaceEchangeursFermes.showInstallationsDeclarees',
-  ouvragesGeothermieSurfaceEchangeursFermesRealises: 'geothermieSurfaceEchangeursFermes.showOuvragesRealises',
-  ouvragesGeothermieSurfaceEchangeursFermesDeclares: 'geothermieSurfaceEchangeursFermes.showOuvragesDeclares',
-  caracteristiquesBatiments: 'caracteristiquesBatiments',
-  besoinsEnChaleur: 'besoinsEnChaleur',
-  besoinsEnFroid: 'besoinsEnFroid',
-  besoinsEnChaleurIndustrieCommunes: 'besoinsEnChaleurIndustrieCommunes',
-  communesFortPotentielPourCreationReseauxChaleur: 'communesFortPotentielPourCreationReseauxChaleur.show',
-  quartiersPrioritairesPolitiqueVille: 'quartiersPrioritairesPolitiqueVille.show',
   etudesEnCours: 'etudesEnCours',
-  testsAdresses: 'testsAdresses',
+  geothermieProfonde: 'geothermieProfonde.show',
+  geothermieSurfaceEchangeursFermes: 'geothermieSurfaceEchangeursFermes.show',
+  geothermieSurfaceEchangeursOuverts: 'geothermieSurfaceEchangeursOuverts.show',
+  installationsGeothermieSurfaceEchangeursFermesDeclarees: 'geothermieSurfaceEchangeursFermes.showInstallationsDeclarees',
+  installationsGeothermieSurfaceEchangeursFermesRealisees: 'geothermieSurfaceEchangeursFermes.showInstallationsRealisees',
+  installationsGeothermieSurfaceEchangeursOuvertsDeclarees: 'geothermieSurfaceEchangeursOuverts.showInstallationsDeclarees',
+  installationsGeothermieSurfaceEchangeursOuvertsRealisees: 'geothermieSurfaceEchangeursOuverts.showInstallationsRealisees',
+  ouvragesGeothermieSurfaceEchangeursFermesDeclares: 'geothermieSurfaceEchangeursFermes.showOuvragesDeclares',
+  ouvragesGeothermieSurfaceEchangeursFermesRealises: 'geothermieSurfaceEchangeursFermes.showOuvragesRealises',
+  ouvragesGeothermieSurfaceEchangeursOuvertsDeclares: 'geothermieSurfaceEchangeursOuverts.showOuvragesDeclares',
+  ouvragesGeothermieSurfaceEchangeursOuvertsRealises: 'geothermieSurfaceEchangeursOuverts.showOuvragesRealises',
+  quartiersPrioritairesPolitiqueVille: 'quartiersPrioritairesPolitiqueVille.show',
+  reseauxDeChaleur: 'reseauxDeChaleur.show',
+  reseauxDeFroid: 'reseauxDeFroid',
+  reseauxEnConstruction: 'reseauxEnConstruction',
   ressourcesGeothermalesNappes: 'ressourcesGeothermalesNappes',
+  testsAdresses: 'testsAdresses',
+  zonesDeDeveloppementPrioritaire: 'zonesDeDeveloppementPrioritaire',
+  zonesOpportunite: 'zonesOpportunite.show',
+  zonesOpportuniteFroid: 'zonesOpportuniteFroid.show',
 } as const satisfies { [key: string]: MapConfigurationProperty<boolean> };
 
 export type LayerURLKey = keyof typeof layerURLKeysToMapConfigPath;
 
-export const layerURLKeys = Object.keys(layerURLKeysToMapConfigPath) as ReadonlyArray<LayerURLKey>;
+export const layerURLKeys = Object.keys(layerURLKeysToMapConfigPath) as readonly LayerURLKey[];
 
 const Carte = () => {
   // amend the initial map configuration with additional layers
@@ -72,8 +72,8 @@ const Carte = () => {
   const initialMapConfiguration = createMapConfiguration({
     ...defaultMapConfiguration,
     densiteThermiqueLineaire: true,
-    mesureDistance: true,
     extractionDonneesBatiment: true,
+    mesureDistance: true,
   });
   additionalLayers.forEach((updateKey) => {
     setProperty(initialMapConfiguration, updateKey, true);

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import AddressAutocomplete, { type AddressAutocompleteInputProps } from '@/components/form/dsfr/AddressAutocompleteInput';
 import Link from '@/components/ui/Link';
 import { useServices } from '@/services';
-import { type HandleAddressSelect } from '@/types/HeatNetworksResponse';
+import type { HandleAddressSelect } from '@/types/HeatNetworksResponse';
 
 const MapSearchForm = ({ onAddressSelect }: { onAddressSelect?: HandleAddressSelect }) => {
   const [eligibilityError, setEligibilityError] = useState(false);
@@ -20,8 +20,8 @@ const MapSearchForm = ({ onAddressSelect }: { onAddressSelect?: HandleAddressSel
       setEligibilityError(false);
       const network = await heatNetworkService.findByCoords(geoAddress);
       const addressDetail = {
-        network,
         geoAddress,
+        network,
       };
 
       if (onAddressSelect) {

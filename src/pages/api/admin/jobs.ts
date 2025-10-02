@@ -2,7 +2,7 @@ import { jsonBuildObject } from 'kysely/helpers/postgres';
 
 import { kdb } from '@/server/db/kysely';
 import { handleRouteErrors } from '@/server/helpers/server';
-import { type FrontendType } from '@/utils/typescript';
+import type { FrontendType } from '@/utils/typescript';
 
 const GET = async () => {
   const jobs = await kdb
@@ -19,8 +19,8 @@ const GET = async () => {
       'jobs.updated_at',
       (eb) =>
         jsonBuildObject({
-          id: eb.ref('users.id'),
           email: eb.ref('users.email'),
+          id: eb.ref('users.id'),
         }).as('user'),
     ])
     .orderBy('jobs.updated_at desc')

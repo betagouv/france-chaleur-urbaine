@@ -12,22 +12,22 @@ type DrawerProps = DialogProps & {
 };
 
 const drawerContentVariants = cva('bg-white h-full fixed outline-hidden z-1750 flex flex-col ', {
-  // 1750 is same as modal
-  variants: {
-    direction: {
-      left: 'top-0 left-0 bottom-0 max-w-[80vw] h-full',
-      right: 'top-0 right-0 bottom-0 max-w-[80vw] h-full',
-      top: 'top-0 left-0 right-0 max-h-[80vh] w-full',
-      bottom: 'bottom-0 left-0 right-0 max-h-[80vh] w-full',
-    },
-    full: {
-      true: 'w-full max-w-none',
-      false: 'h-full max-h-none',
-    },
-  },
   defaultVariants: {
     direction: 'right',
     full: false,
+  },
+  // 1750 is same as modal
+  variants: {
+    direction: {
+      bottom: 'bottom-0 left-0 right-0 max-h-[80vh] w-full',
+      left: 'top-0 left-0 bottom-0 max-w-[80vw] h-full',
+      right: 'top-0 right-0 bottom-0 max-w-[80vw] h-full',
+      top: 'top-0 left-0 right-0 max-h-[80vh] w-full',
+    },
+    full: {
+      false: 'h-full max-h-none',
+      true: 'w-full max-w-none',
+    },
   },
 });
 

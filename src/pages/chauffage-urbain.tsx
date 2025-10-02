@@ -3,9 +3,9 @@ import { useRef } from 'react';
 import Heating from '@/components/Ressources/Contents/DistrictHeating';
 import Header from '@/components/Ressources/Header';
 import { StickyWrapper } from '@/components/Ressources/Ressource.styles';
-import SimplePage from '@/components/shared/page/SimplePage';
 import Slice from '@/components/Slice';
 import StickyForm from '@/components/StickyForm/StickyForm';
+import SimplePage from '@/components/shared/page/SimplePage';
 import Heading from '@/components/ui/Heading';
 
 const ChauffageUrbain = () => {
@@ -36,25 +36,25 @@ const ChauffageUrbain = () => {
           </Heading>
           <div className="my-8 [&_li]:cursor-pointer">
             <ul>
-              <li onClick={() => chauffageUrbainRef.current && chauffageUrbainRef.current.scrollIntoView()}>
+              <li onClick={() => chauffageUrbainRef.current?.scrollIntoView()}>
                 <u>Qu’est-ce que le chauffage urbain ?</u>
               </li>
-              <li onClick={() => avantagesRef.current && avantagesRef.current.scrollIntoView()}>
+              <li onClick={() => avantagesRef.current?.scrollIntoView()}>
                 <u>Quels sont les avantages du chauffage urbain ?</u>
               </li>
-              <li onClick={() => chargeRef.current && chargeRef.current.scrollIntoView()}>
+              <li onClick={() => chargeRef.current?.scrollIntoView()}>
                 <u>Qui est en charge du chauffage urbain ?</u>
               </li>
-              <li onClick={() => critereRef.current && critereRef.current.scrollIntoView()}>
+              <li onClick={() => critereRef.current?.scrollIntoView()}>
                 <u>Quels critères faut-il satisfaire pour être raccordable ?</u>
               </li>
-              <li onClick={() => obligationRef.current && obligationRef.current.scrollIntoView()}>
+              <li onClick={() => obligationRef.current?.scrollIntoView()}>
                 <u>Existe-t-il des obligations de raccordement au chauffage urbain ?</u>
               </li>
-              <li onClick={() => accompagnementRef.current && accompagnementRef.current.scrollIntoView()}>
+              <li onClick={() => accompagnementRef.current?.scrollIntoView()}>
                 <u>Comment être accompagné dans mon projet de raccordement ?</u>
               </li>
-              <li onClick={() => aidesRef.current && aidesRef.current.scrollIntoView()}>
+              <li onClick={() => aidesRef.current?.scrollIntoView()}>
                 <u>Quelles sont les aides financières disponibles ?</u>
               </li>
             </ul>

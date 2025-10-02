@@ -1,5 +1,5 @@
-import { type DB } from '@/server/db/kysely';
-import { type Logger } from '@/server/helpers/logger';
+import type { DB } from '@/server/db/kysely';
+import type { Logger } from '@/server/helpers/logger';
 
 /**
  * Tables tuiles
@@ -52,9 +52,9 @@ export type GenerateGeoJSONConfig = {
 export function defineTilesConfig(config: TilesGenerationConfig): TilesGenerationConfigWithDefaults {
   return {
     tilesGenerationMethod: 'legacy',
-    zoomMin: 5,
-    zoomMax: 14,
     tippeCanoeArgs: '',
+    zoomMax: 14,
+    zoomMin: 5,
     ...config,
   };
 }

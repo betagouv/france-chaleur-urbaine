@@ -2,9 +2,8 @@ import archiver from 'archiver';
 import base64 from 'base64-stream';
 import getStream from 'get-stream';
 import XLSX from 'xlsx';
-
+import type { ExportColumn } from '@/types/ExportColumn';
 import { EXPORT_FORMAT } from '@/types/enum/ExportFormat';
-import { type ExportColumn } from '@/types/ExportColumn';
 
 const convertToStringArray = (columns: ExportColumn<any>[], data: any[]): string[][] => {
   return [columns.map((column) => column.header)].concat(

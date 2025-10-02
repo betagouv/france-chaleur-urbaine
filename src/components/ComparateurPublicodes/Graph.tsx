@@ -13,12 +13,12 @@ import useArrayQueryState from '@/hooks/useArrayQueryState';
 import useScreenshot from '@/hooks/useScreenshot';
 import { deepMergeObjects } from '@/utils/core';
 import cx from '@/utils/cx';
-import { type exportAsXLSX } from '@/utils/export';
+import type { exportAsXLSX } from '@/utils/export';
 
 import { ChartPlaceholder, GraphTooltip } from './ComparateurPublicodes.style';
 import { modesDeChauffage } from './mappings';
 import { DataYearDisclaimer, DisclaimerButton, Logos } from './Placeholder';
-import { type SimulatorEngine } from './useSimulatorEngine';
+import type { SimulatorEngine } from './useSimulatorEngine';
 
 const ButtonExport = dynamic(() => import('@/components/ui/ButtonExport'), { ssr: false });
 const COST_PRECISION = 10;
@@ -42,29 +42,29 @@ const estimatedRowHeightPx = 24;
 const estimatedLegendAndUnitsHeightPx = 140;
 
 const commonGraphOptions: React.ComponentProps<typeof Chart>['options'] = {
-  chartArea: {
-    width: '100%',
-    top: 80, // espace pour afficher la légende
-    bottom: 60, // espace pour afficher les abscisses
-  },
   annotations: {
-    textStyle: {
-      color: 'black',
-      fontSize: 16,
-      bold: true,
-    },
     alwaysOutside: false,
     stem: {
       color: 'transparent',
     },
+    textStyle: {
+      bold: true,
+      color: 'black',
+      fontSize: 16,
+    },
+  },
+  chartArea: {
+    bottom: 60, // espace pour afficher les abscisses
+    top: 80, // espace pour afficher la légende
+    width: '100%',
   },
   isStacked: true,
+  legend: { maxLines: 3, position: 'top' },
+  tooltip: { isHtml: true },
   vAxis: {
     // cache les modes de chauffage
     textPosition: 'none',
   },
-  tooltip: { isHtml: true },
-  legend: { position: 'top', maxLines: 3 },
 };
 
 const dataYear = 2023;
@@ -99,18 +99,18 @@ interface TooltipProps {
 const getTooltip = ({ title, amount, color, bordered, valueFormatter }: TooltipProps) =>
   ReactDOMServer.renderToString(
     <GraphTooltip>
-      <span style={bordered ? { border: `2px solid ${color}` } : { backgroundColor: color }}></span>
-      <div style={{ maxWidth: '300px', lineHeight: '1.25rem', fontSize: '0.875rem', margin: '2px 0' }}>{title}</div>
+      <span style={bordered ? { border: `2px solid ${color}` } : { backgroundColor: color }} />
+      <div style={{ fontSize: '0.875rem', lineHeight: '1.25rem', margin: '2px 0', maxWidth: '300px' }}>{title}</div>
       <strong style={{ whiteSpace: 'nowrap' }}>{valueFormatter(amount)}</strong>
     </GraphTooltip>
   );
 
-const getColumn = (title: string) => [title, { role: 'style' }, { type: 'string', role: 'tooltip', p: { html: true } }];
+const getColumn = (title: string) => [title, { role: 'style' }, { p: { html: true }, role: 'tooltip', type: 'string' }];
 
 const getRow = ({ title, amount, color, bordered, valueFormatter }: TooltipProps) => [
   amount,
   getBarStyle(color, { bordered }),
-  getTooltip({ title, amount, color, bordered, valueFormatter }),
+  getTooltip({ amount, bordered, color, title, valueFormatter }),
 ];
 
 const popupTexts = {
@@ -125,7 +125,7 @@ const emissionsCO2GraphColumnNames = [
   `Émissions indirectes (production d'énergie) - ${popupTexts.scope2}`,
   `Émissions indirectes (matériel) - ${popupTexts.scope3}`,
 ];
-const emissionsCO2GraphColumns = emissionsCO2GraphColumnNames.map(getColumn).flat();
+const emissionsCO2GraphColumns = emissionsCO2GraphColumnNames.flatMap(getColumn);
 
 const useFixLegendOpacity = (coutsRef?: React.RefObject<HTMLDivElement | null>) => {
   React.useEffect(() => {
@@ -189,9 +189,9 @@ const getCostPrecisionRange = (value: number) => {
   const lowerBound = Math.round((value * (1 - costPrecisionPercentage)) / 10) * 10;
   const upperBound = Math.round((value * (1 + costPrecisionPercentage)) / 10) * 10;
 
-  const lowerBoundString = lowerBound.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
-  const upperBoundString = upperBound.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
-  return { lowerBound, upperBound, lowerBoundString, upperBoundString };
+  const lowerBoundString = lowerBound.toLocaleString('fr-FR', { currency: 'EUR', maximumFractionDigits: 0, style: 'currency' });
+  const upperBoundString = upperBound.toLocaleString('fr-FR', { currency: 'EUR', maximumFractionDigits: 0, style: 'currency' });
+  return { lowerBound, lowerBoundString, upperBound, upperBoundString };
 };
 
 const formatCostPrecisionRange = (value: number) => {
@@ -215,7 +215,7 @@ const formatEmissionsCO2 = (value: number, suffix = 'tCO2e') => {
   return [`${roundedValue.toLocaleString('fr-FR', { maximumFractionDigits })}`, suffix].filter(Boolean).join(' ');
 };
 const formatCost = (value: number, suffix = true) =>
-  `${(Math.round(value / 10) * 10).toLocaleString('fr-FR', { ...(!suffix ? {} : { style: 'currency', currency: 'EUR' }), maximumFractionDigits: 0 })}`;
+  `${(Math.round(value / 10) * 10).toLocaleString('fr-FR', { ...(!suffix ? {} : { currency: 'EUR', style: 'currency' }), maximumFractionDigits: 0 })}`;
 
 const Graph: React.FC<GraphProps> = ({
   advancedMode,
@@ -239,7 +239,7 @@ const Graph: React.FC<GraphProps> = ({
     ? ['P1 abonnement', 'P1 consommation', 'P1 ECS', "P1'", 'P1 consommation froid', 'P2', 'P3', 'P4 moins aides', 'Aides']
     : ['Abonnement', 'Consommation', 'Maintenance', 'Investissement', 'Aides'];
 
-  const coutGraphColumns = coutGraphColumnNames.map(getColumn).flat();
+  const coutGraphColumns = coutGraphColumnNames.flatMap(getColumn);
 
   const coutGraphColors = advancedMode
     ? [colorP1Abo, colorP1Conso, colorP1ECS, colorP1prime, colorP1Consofroid, colorP2, colorP3, colorP4SansAides, colorP4Aides]
@@ -295,71 +295,71 @@ const Graph: React.FC<GraphProps> = ({
       const amounts = advancedMode
         ? [
             ...getRow({
-              title: `P1 abonnement${typeInstallation.label === 'Réseau de chaleur' ? ' (R2 du réseau de chaleur)' : ''}`,
               amount: amountP1Abo,
               color: colorP1Abo,
+              title: `P1 abonnement${typeInstallation.label === 'Réseau de chaleur' ? ' (R2 du réseau de chaleur)' : ''}`,
               valueFormatter,
             }),
             ...getRow({
-              title: `P1 consommation${typeInstallation.label === 'Réseau de chaleur' ? ' (R1 du réseau de chaleur)' : ''}`,
               amount: amountP1Conso,
               color: colorP1Conso,
+              title: `P1 consommation${typeInstallation.label === 'Réseau de chaleur' ? ' (R1 du réseau de chaleur)' : ''}`,
               valueFormatter,
             }),
-            ...getRow({ title: 'P1 ECS', amount: amountP1ECS, color: colorP1ECS, valueFormatter }),
-            ...getRow({ title: "P1'", amount: amountP1prime, color: colorP1prime, valueFormatter }),
+            ...getRow({ amount: amountP1ECS, color: colorP1ECS, title: 'P1 ECS', valueFormatter }),
+            ...getRow({ amount: amountP1prime, color: colorP1prime, title: "P1'", valueFormatter }),
             ...getRow({
-              title: 'P1 consommation froid',
               amount: amountP1Consofroid,
               color: colorP1Consofroid,
+              title: 'P1 consommation froid',
               valueFormatter,
             }),
-            ...getRow({ title: 'P2', amount: amountP2, color: colorP2, valueFormatter }),
-            ...getRow({ title: 'P3', amount: amountP3, color: colorP3, valueFormatter }),
+            ...getRow({ amount: amountP2, color: colorP2, title: 'P2', valueFormatter }),
+            ...getRow({ amount: amountP3, color: colorP3, title: 'P3', valueFormatter }),
             ...getRow({
-              title: 'P4 moins aides',
               amount: amountP4SansAides,
               color: colorP4SansAides,
+              title: 'P4 moins aides',
               valueFormatter,
             }),
             ...getRow({
-              title: tooltipAides,
               amount: amountAides,
-              color: colorP4Aides,
               bordered: true,
+              color: colorP4Aides,
+              title: tooltipAides,
               valueFormatter,
             }),
           ]
         : [
             ...getRow({
-              title: `Abonnement${typeInstallation.label === 'Réseau de chaleur' ? ' (R2 du réseau de chaleur)' : ''}`,
               amount: amountP1Abo,
               color: colorP1Abo,
+              title: `Abonnement${typeInstallation.label === 'Réseau de chaleur' ? ' (R2 du réseau de chaleur)' : ''}`,
               valueFormatter,
             }),
             ...getRow({
-              title: `Consommation${typeInstallation.label === 'Réseau de chaleur' ? ' (R1 du réseau de chaleur)' : ''}`,
               amount: amountP1Conso + amountP1ECS,
               color: colorP1Conso,
+              title: `Consommation${typeInstallation.label === 'Réseau de chaleur' ? ' (R1 du réseau de chaleur)' : ''}`,
               valueFormatter,
             }),
             ...getRow({
-              title: 'Maintenance',
               amount: amountP1prime + amountP2 + amountP3,
               color: colorP1prime,
+              title: 'Maintenance',
               valueFormatter,
             }),
             ...getRow({
-              title: 'Investissement',
               amount: amountP4SansAides,
               color: colorP4SansAides,
+              title: 'Investissement',
               valueFormatter,
             }),
             ...getRow({
-              title: tooltipAides,
               amount: amountAides,
-              color: colorP4Aides,
               bordered: true,
+              color: colorP4Aides,
+              title: tooltipAides,
               valueFormatter,
             }),
           ];
@@ -397,13 +397,13 @@ const Graph: React.FC<GraphProps> = ({
     chartArea: {
       right: 130, // to display the total price without being cut (4 digits + unit)
     },
+    colors: coutGraphColors,
     hAxis: {
-      title: 'Coût €TTC',
-      minValue: 0,
       maxValue: maxCoutValue,
+      minValue: 0,
+      title: 'Coût €TTC',
     },
     stacked: false,
-    colors: coutGraphColors,
     vAxis: {
       textPosition: 'right',
     },
@@ -415,26 +415,26 @@ const Graph: React.FC<GraphProps> = ({
 
   graphSectionTitle = '';
   const emissionsCO2GraphData = [
-    ['Mode de chauffage', { role: 'annotation' }, ...emissionsCO2GraphColumns, { type: 'string', role: 'annotation' }],
+    ['Mode de chauffage', { role: 'annotation' }, ...emissionsCO2GraphColumns, { role: 'annotation', type: 'string' }],
     ...modesDeChauffageFiltres.flatMap((typeInstallation, index) => {
       const amounts = [
         ...getRow({
-          title:
-            "Émissions liées aux combustibles utilisés pour la production d'énergie, et réalisées directement sur le lieu de la consommation (scope 1)",
           amount: engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 1`) * nbAppartements,
           color: colorScope1,
+          title:
+            "Émissions liées aux combustibles utilisés pour la production d'énergie, et réalisées directement sur le lieu de la consommation (scope 1)",
           valueFormatter: formatEmissionsCO2,
         }),
         ...getRow({
-          title: "Émissions liées à l'utilisation d'énergie non produite sur le site de consommation (scope 2)",
           amount: engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 2`) * nbAppartements,
           color: colorScope2,
+          title: "Émissions liées à l'utilisation d'énergie non produite sur le site de consommation (scope 2)",
           valueFormatter: formatEmissionsCO2,
         }),
         ...getRow({
-          title: "Émissions liées à la fabrication des équipements, et non directement à la production d'énergie (scope 3)",
           amount: engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 3`) * nbAppartements,
           color: colorScope3,
+          title: "Émissions liées à la fabrication des équipements, et non directement à la production d'énergie (scope 3)",
           valueFormatter: formatEmissionsCO2,
         }),
       ];
@@ -468,9 +468,9 @@ const Graph: React.FC<GraphProps> = ({
     },
     colors: [colorScope1, colorScope2, colorScope3],
     hAxis: {
-      title: 'Émissions (kgCO2e)',
-      minValue: 0,
       maxValue: maxEmissionsCO2Value,
+      minValue: 0,
+      title: 'Émissions (kgCO2e)',
     },
   });
 
@@ -483,7 +483,7 @@ const Graph: React.FC<GraphProps> = ({
 
   const titleItems = ['chauffage', inclusClimatisation && 'froid', inclusECS && 'ECS'].filter(Boolean);
   const titleItemsString =
-    titleItems.length > 1 ? titleItems.slice(0, -1).join(', ') + ' et ' + titleItems[titleItems.length - 1] : titleItems[0] || '';
+    titleItems.length > 1 ? `${titleItems.slice(0, -1).join(', ')} et ${titleItems[titleItems.length - 1]}` : titleItems[0] || '';
 
   graphSectionTitle = '';
 
@@ -536,14 +536,14 @@ const Graph: React.FC<GraphProps> = ({
                     // when % is infinite (16.666666% for example), grid might appear inaccurate and we rather display only one understandable line instead
                     borderRight: '1px solid #CCC',
                   }}
-                ></div>
+                />
                 <div
                   className="ml-3 mr-12"
                   style={{
                     backgroundImage: `repeating-linear-gradient(to right,#CCC 0,#CCC 1px,transparent 1px,transparent  ${getGridRepeatPercentage(scaleCostMaxValue)}%)`,
                     borderRight: '1px solid #CCC',
                   }}
-                ></div>
+                />
               </div>
               {totalCoutsEtEmissions.map(([name, cost, co2], i) => {
                 const {
@@ -596,16 +596,16 @@ const Graph: React.FC<GraphProps> = ({
                         >
                           <span className="pr-0.5 absolute right-[12px]">{advancedMode ? co2UpperBoundString : ''}</span>
                           {advancedMode && (
-                            <div className="border-solid border-l-fcu-orange-light border-l-12 border-y-transparent border-y-[5px] my-1 border-r-0"></div>
+                            <div className="border-solid border-l-fcu-orange-light border-l-12 border-y-transparent border-y-[5px] my-1 border-r-0" />
                           )}
                         </div>
-                        <div className="relative bg-fcu-orange-light" style={{ flex: co2Width }}></div>
+                        <div className="relative bg-fcu-orange-light" style={{ flex: co2Width }} />
                         <div
                           className="relative bg-fcu-orange-light/30 whitespace-nowrap tracking-tight py-0.5 text-right font-extrabold text-fcu-orange-light sm:text-xs md:text-sm flex items-center justify-start"
                           style={{ flex: co2LowerPercent }}
                         >
                           {advancedMode && (
-                            <div className="border-solid border-r-fcu-orange-light border-r-12 border-y-transparent border-y-[5px] my-1 border-l-0"></div>
+                            <div className="border-solid border-r-fcu-orange-light border-r-12 border-y-transparent border-y-[5px] my-1 border-l-0" />
                           )}
                           <span className="absolute left-[12px] pl-0.5">{advancedMode ? co2LowerBoundString : ''}</span>
                         </div>
@@ -617,16 +617,16 @@ const Graph: React.FC<GraphProps> = ({
                         >
                           <span className="pr-0.5 absolute right-[12px]">{advancedMode ? lowerBoundString : ''}</span>
                           {advancedMode && (
-                            <div className="border-solid border-l-fcu-purple border-l-12 border-y-transparent border-y-[5px] my-1 border-r-0"></div>
+                            <div className="border-solid border-l-fcu-purple border-l-12 border-y-transparent border-y-[5px] my-1 border-r-0" />
                           )}
                         </div>
-                        <div className="relative bg-fcu-purple" style={{ flex: costWidth }}></div>
+                        <div className="relative bg-fcu-purple" style={{ flex: costWidth }} />
                         <div
                           className="relative bg-fcu-purple/10 whitespace-nowrap py-0.5 tracking-tight text-left font-extrabold text-fcu-purple sm:text-xs md:text-sm flex items-center justify-start"
                           style={{ flex: 100 - costUpperPercent }}
                         >
                           {advancedMode && (
-                            <div className="border-solid border-r-fcu-purple border-r-12 border-y-transparent border-y-[5px] my-1 border-l-0"></div>
+                            <div className="border-solid border-r-fcu-purple border-r-12 border-y-transparent border-y-[5px] my-1 border-l-0" />
                           )}
                           <span className="pl-0.5 absolute left-[12px]">{advancedMode ? upperBoundString : ''}</span>
                         </div>
@@ -634,7 +634,7 @@ const Graph: React.FC<GraphProps> = ({
                     </div>
                     {isReseauDeChaleurMoyenForCost && (
                       <span className="flex text-xs italic mt-1">
-                        <span className="flex-1"></span>
+                        <span className="flex-1" />
                         <span className="flex-1 pl-8 tracking-tighter leading-tight text-warning">
                           Prix moyen français, faute de données tarifaires pour ce réseau.
                         </span>
@@ -696,12 +696,12 @@ const Graph: React.FC<GraphProps> = ({
               // désactive le clic sur la légende qui masque les barres + le style sélection
               chartEvents={[
                 {
-                  eventName: 'select',
                   callback: ({ chartWrapper }) => {
                     if (chartWrapper) {
                       (chartWrapper.getChart() as any).setSelection();
                     }
                   },
+                  eventName: 'select',
                 },
               ]}
               loader={<ChartPlaceholder>Chargement du graphe...</ChartPlaceholder>}
@@ -750,12 +750,12 @@ const Graph: React.FC<GraphProps> = ({
               // désactive le clic sur la légende qui masque les barres + le style sélection
               chartEvents={[
                 {
-                  eventName: 'select',
                   callback: ({ chartWrapper }) => {
                     if (chartWrapper) {
                       (chartWrapper.getChart() as any).setSelection();
                     }
                   },
+                  eventName: 'select',
                 },
               ]}
               loader={<ChartPlaceholder>Chargement du graphe...</ChartPlaceholder>}
@@ -776,7 +776,7 @@ const Graph: React.FC<GraphProps> = ({
         <div className="text-center flex gap-2 justify-center">
           <Button
             priority="secondary"
-            onClick={async () => await captureNodeAndDownload(ref, { padding: 20, filename: `${captureImageName}-${graphType}.png` })}
+            onClick={async () => await captureNodeAndDownload(ref, { filename: `${captureImageName}-${graphType}.png`, padding: 20 })}
             loading={capturing}
           >
             Sauvegarder l'image
@@ -789,10 +789,7 @@ const Graph: React.FC<GraphProps> = ({
         </div>
         <Notice size="sm" classes={{ title: 'font-normal! text-sm!' }}>
           {exportSheets ? (
-            <>
-              En cas d’utilisation de l’image ou des données exportées, un lien vers le comparateur en ligne doit obligatoirement être
-              apposé à proximité de l’image ou des données utilisées.
-            </>
+            "En cas d'utilisation de l'image ou des données exportées, un lien vers le comparateur en ligne doit obligatoirement être apposé à proximité de l'image ou des données utilisées."
           ) : (
             <>
               En cas d’utilisation de l’<strong>image exportée</strong>, un lien vers le comparateur en ligne doit obligatoirement être

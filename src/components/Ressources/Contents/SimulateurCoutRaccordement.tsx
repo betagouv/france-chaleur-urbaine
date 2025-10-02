@@ -76,14 +76,14 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
   }, [formState]);
 
   const montantCoutsApresAide = useMemo(() => {
-    if (montantCouts instanceof Array && isDefined(montantAide)) {
+    if (Array.isArray(montantCouts) && isDefined(montantAide)) {
       return [Math.max(0, montantCouts[0] - montantAide), Math.max(0, montantCouts[1] - montantAide)];
     }
     return null;
   }, [montantCouts, montantAide]);
 
   const montantCoutsParLogementApresAide = useMemo(() => {
-    if (montantCoutsApresAide instanceof Array && isDefined(formState.nbLogements)) {
+    if (Array.isArray(montantCoutsApresAide) && isDefined(formState.nbLogements)) {
       return [montantCoutsApresAide[0] / formState.nbLogements, montantCoutsApresAide[1] / formState.nbLogements];
     }
     return null;
@@ -115,11 +115,11 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
               },
             ]}
             nativeSelectProps={{
-              value: formState.typeBatiment,
               onChange: (e) => {
                 updateState('typeBatiment', e.target.value as TypeBatiment);
                 updateState(e.target.value === 'residentiel' ? 'nbLogements' : 'surface', undefined);
               },
+              value: formState.typeBatiment,
             }}
           />
           {formState.typeBatiment === 'residentiel' ? (
@@ -127,9 +127,9 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
               key="nbLogements"
               label="Nombre de logements"
               nativeInputProps={{
-                type: 'number',
                 min: 0,
-                onChange: (e) => updateState('nbLogements', parseInt(e.target.value)),
+                onChange: (e) => updateState('nbLogements', parseInt(e.target.value, 10)),
+                type: 'number',
               }}
             />
           ) : (
@@ -137,9 +137,9 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
               key="surface"
               label="Surface (m²)"
               nativeInputProps={{
-                type: 'number',
                 min: 0,
-                onChange: (e) => updateState('surface', parseInt(e.target.value)),
+                onChange: (e) => updateState('surface', parseInt(e.target.value, 10)),
+                type: 'number',
               }}
             />
           )}
@@ -188,7 +188,7 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
                 )}
               </Heading>
 
-              {formState.typeBatiment === 'residentiel' && montantCoutsParLogementApresAide instanceof Array && (
+              {formState.typeBatiment === 'residentiel' && Array.isArray(montantCoutsParLogementApresAide) && (
                 <Text mt="1w">
                   Soit {prettyPrintCout(montantCoutsParLogementApresAide[0])} à {prettyPrintCout(montantCoutsParLogementApresAide[1])} par
                   logement
@@ -207,9 +207,9 @@ export default SimulateurCoutRaccordement;
 function prettyPrintCout(v: number | undefined | null) {
   if (isDefined(v)) {
     return v.toLocaleString('fr-FR', {
-      style: 'currency',
       currency: 'EUR',
       maximumFractionDigits: 0,
+      style: 'currency',
     });
   }
   return '- €';
@@ -230,139 +230,139 @@ interface IntervalleCoutRaccordement {
 // données provenant du fichier coef_couts.xlsx https://trello.com/c/Kni8TTuQ/1201-int%C3%A9gration-co%C3%BBt-raccordement
 const intervallesCoutsRaccordementResidentiel: IntervalleCoutRaccordement[] = [
   {
-    min: 0,
-    max: 0,
-    lowRange: { a: 0, b: 0 },
     highRange: { a: 0, b: 0 },
+    lowRange: { a: 0, b: 0 },
+    max: 0,
+    min: 0,
   },
   {
-    min: 1,
+    highRange: { a: 0, b: 111269.4 },
+    lowRange: { a: 0, b: 74179.6 },
     max: 10,
-    lowRange: { a: 0, b: 74179.6 },
-    highRange: { a: 0, b: 111269.4 },
+    min: 1,
   },
   {
-    min: 10,
+    highRange: { a: 0, b: 111269.4 },
+    lowRange: { a: 0, b: 74179.6 },
     max: 25,
-    lowRange: { a: 0, b: 74179.6 },
-    highRange: { a: 0, b: 111269.4 },
+    min: 10,
   },
   {
-    min: 25,
-    max: 42,
-    lowRange: { a: 315.744, b: 66286 },
     highRange: { a: 473.616, b: 99429 },
+    lowRange: { a: 315.744, b: 66286 },
+    max: 42,
+    min: 25,
   },
   {
-    min: 42,
-    max: 58,
-    lowRange: { a: 376.464, b: 63756 },
     highRange: { a: 564.696, b: 95634 },
+    lowRange: { a: 376.464, b: 63756 },
+    max: 58,
+    min: 42,
   },
   {
-    min: 58,
-    max: 83,
-    lowRange: { a: 271.216, b: 69895.47 },
     highRange: { a: 406.824, b: 104843.2 },
+    lowRange: { a: 271.216, b: 69895.47 },
+    max: 83,
+    min: 58,
   },
   {
-    min: 83,
-    max: 125,
-    lowRange: { a: 245.3088, b: 72054.4 },
     highRange: { a: 367.9632, b: 108081.6 },
+    lowRange: { a: 245.3088, b: 72054.4 },
+    max: 125,
+    min: 83,
   },
   {
-    min: 125,
-    max: 167,
-    lowRange: { a: 281.7408, b: 67500.4 },
     highRange: { a: 422.6112, b: 101250.6 },
+    lowRange: { a: 281.7408, b: 67500.4 },
+    max: 167,
+    min: 125,
   },
   {
-    min: 167,
-    max: 250,
-    lowRange: { a: 308.4576, b: 63047.6 },
     highRange: { a: 462.6864, b: 94571.4 },
+    lowRange: { a: 308.4576, b: 63047.6 },
+    max: 250,
+    min: 167,
   },
   {
-    min: 250,
-    max: 333,
-    lowRange: { a: 261.096, b: 74888 },
     highRange: { a: 391.644, b: 112332 },
+    lowRange: { a: 261.096, b: 74888 },
+    max: 333,
+    min: 250,
   },
 ];
 
 const intervallesCoutsRaccordementTertiaire: IntervalleCoutRaccordement[] = [
   {
-    min: 0,
-    max: 0,
-    lowRange: { a: 0, b: 0 },
     highRange: { a: 0, b: 0 },
+    lowRange: { a: 0, b: 0 },
+    max: 0,
+    min: 0,
   },
   {
-    min: 1,
+    highRange: { a: 0, b: 111269.4 },
+    lowRange: { a: 0, b: 74179.6 },
     max: 200,
-    lowRange: { a: 0, b: 74179.6 },
-    highRange: { a: 0, b: 111269.4 },
+    min: 1,
   },
   {
-    min: 200,
+    highRange: { a: 0, b: 111269.4 },
+    lowRange: { a: 0, b: 74179.6 },
     max: 600,
-    lowRange: { a: 0, b: 74179.6 },
-    highRange: { a: 0, b: 111269.4 },
+    min: 200,
   },
   {
-    min: 600,
+    highRange: { a: 0, b: 111269.4 },
+    lowRange: { a: 0, b: 74179.6 },
     max: 1000,
-    lowRange: { a: 0, b: 74179.6 },
-    highRange: { a: 0, b: 111269.4 },
+    min: 600,
   },
   {
-    min: 1000,
+    highRange: { a: 0, b: 111269.4 },
+    lowRange: { a: 0, b: 74179.6 },
     max: 1500,
-    lowRange: { a: 0, b: 74179.6 },
-    highRange: { a: 0, b: 111269.4 },
+    min: 1000,
   },
   {
-    min: 1500,
-    max: 2500,
-    lowRange: { a: 5.2624, b: 66286 },
     highRange: { a: 7.8936, b: 99429 },
+    lowRange: { a: 5.2624, b: 66286 },
+    max: 2500,
+    min: 1500,
   },
   {
-    min: 2500,
-    max: 3500,
-    lowRange: { a: 6.2744, b: 63756 },
     highRange: { a: 9.4116, b: 95634 },
+    lowRange: { a: 6.2744, b: 63756 },
+    max: 3500,
+    min: 2500,
   },
   {
-    min: 3500,
-    max: 5000,
-    lowRange: { a: 4.52027, b: 69895.47 },
     highRange: { a: 6.7804, b: 104843.2 },
+    lowRange: { a: 4.52027, b: 69895.47 },
+    max: 5000,
+    min: 3500,
   },
   {
-    min: 5000,
-    max: 7500,
-    lowRange: { a: 4.08848, b: 72054.4 },
     highRange: { a: 6.13272, b: 108081.6 },
+    lowRange: { a: 4.08848, b: 72054.4 },
+    max: 7500,
+    min: 5000,
   },
   {
-    min: 7500,
-    max: 10000,
-    lowRange: { a: 4.69568, b: 67500.4 },
     highRange: { a: 7.04352, b: 101250.6 },
+    lowRange: { a: 4.69568, b: 67500.4 },
+    max: 10000,
+    min: 7500,
   },
   {
-    min: 10000,
-    max: 15000,
-    lowRange: { a: 5.14096, b: 63047.6 },
     highRange: { a: 7.71144, b: 94571.4 },
+    lowRange: { a: 5.14096, b: 63047.6 },
+    max: 15000,
+    min: 10000,
   },
   {
-    min: 15000,
-    max: 20000,
-    lowRange: { a: 4.3516, b: 74888 },
     highRange: { a: 6.5274, b: 112332 },
+    lowRange: { a: 4.3516, b: 74888 },
+    max: 20000,
+    min: 15000,
   },
 ];
 

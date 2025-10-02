@@ -6,15 +6,16 @@ import CenterLayout from '@/components/shared/page/CenterLayout';
 import Heading from '@/components/ui/Heading';
 import { toastErrors } from '@/modules/notification';
 import { useServices } from '@/services';
+
 const passwordSchema = z
   .object({
+    confirmation: z.string(),
     password: z
       .string()
       .min(8, 'Votre mot de passe doit avoir au moins 8 caractères')
       .regex(/[a-z]/, 'Votre mot de passe doit contenir au moins une lettre minuscule')
       .regex(/[A-Z]/, 'Votre mot de passe doit contenir au moins une lettre majuscule')
       .regex(/[0-9]/, 'Votre mot de passe doit contenir au moins un chiffre'),
-    confirmation: z.string(),
   })
   .refine((data) => data.password === data.confirmation, {
     error: 'Les mots de passe sont différents',
@@ -26,7 +27,6 @@ const NewPasswordForm = ({ token }: { token: string }) => {
   const router = useRouter();
 
   const { Form, PasswordInput, Submit } = useForm({
-    schema: passwordSchema,
     onSubmit: toastErrors(async ({ value }) => {
       try {
         await passwordService.changePassword(token, value.password);
@@ -37,6 +37,7 @@ const NewPasswordForm = ({ token }: { token: string }) => {
         throw new Error(e.response.data.error?.issues?.[0]?.message ?? e.response.data.message);
       }
     }),
+    schema: passwordSchema,
   });
 
   return (

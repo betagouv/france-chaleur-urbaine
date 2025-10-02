@@ -22,13 +22,13 @@ const GET = async (req: NextApiRequest) => {
     .all();
 
   const emailsList = rawEmailsList.map((record) => ({
+    body: record.get('body'),
+    cc: record.get('cc'),
+    date: record.get('sent_at'),
     email_key: record.get('email_key'),
     object: record.get('object'),
-    body: record.get('body'),
-    date: record.get('sent_at'),
-    to: record.get('to'),
-    cc: record.get('cc'),
     reply_to: record.get('reply_to'),
+    to: record.get('to'),
   }));
 
   return emailsList as {
@@ -43,20 +43,20 @@ const GET = async (req: NextApiRequest) => {
 };
 
 const zManagerEmail = {
+  demand_id: z.string(),
   emailContent: z.object({
-    object: z.string(),
-    to: z.email().trim(),
     body: z.string().transform((v) => {
       return v.replace(/(?:\r\n|\r|\n)/g, '<br />');
     }),
-    signature: z.string(),
     cc: z.preprocess((v) => {
       const str = String(v);
       return str ? str.split(',') : [];
     }, z.array(z.email().trim())),
+    object: z.string(),
     replyTo: z.string().trim(),
+    signature: z.string(),
+    to: z.email().trim(),
   }),
-  demand_id: z.string(),
   key: z.string(),
 };
 
@@ -69,15 +69,15 @@ const POST = async (req: NextApiRequest) => {
     [
       {
         fields: {
-          demand_id,
-          user_email: req.user.email,
-          email_key: key,
-          object: emailContent.object,
           body: emailContent.body,
           cc: emailContent.cc.join(',') || '',
+          demand_id,
+          email_key: key,
+          object: emailContent.object,
           reply_to: emailContent.replyTo,
-          to: emailContent.to,
           signature: emailContent.signature,
+          to: emailContent.to,
+          user_email: req.user.email,
         },
       },
     ],
@@ -97,7 +97,7 @@ const POST = async (req: NextApiRequest) => {
 
   await sendEmailTemplate(
     'manager-email',
-    { id: req.user.id, email: emailContent.to },
+    { email: emailContent.to, id: req.user.id },
     {
       content: emailContent.body,
       signature: emailContent.signature,

@@ -2,32 +2,32 @@ import { useSearchParams } from 'next/navigation';
 import { parseAsJson, useQueryState } from 'nuqs';
 import { useEffect, useMemo, useState } from 'react';
 
-import { type ReseauxDeChaleurLimits } from '@/components/Map/layers/filters';
+import type { ReseauxDeChaleurLimits } from '@/components/Map/layers/filters';
 import { defaultInterval, type FiltreEnergieConfKey, percentageMaxInterval } from '@/components/Map/map-configuration';
 import { deepMergeObjects, setProperty } from '@/utils/core';
 import { fetchJSON } from '@/utils/network';
 import { deepIntersection } from '@/utils/objects';
-import { type FlattenKeys } from '@/utils/typescript';
+import type { FlattenKeys } from '@/utils/typescript';
 
 export const emptyFilterLimits = {
-  energieMobilisee: [] as FiltreEnergieConfKey[],
-  energie_ratio_biomasse: percentageMaxInterval,
-  energie_ratio_geothermie: percentageMaxInterval,
-  energie_ratio_uve: percentageMaxInterval,
-  energie_ratio_chaleurIndustrielle: percentageMaxInterval,
-  energie_ratio_solaireThermique: percentageMaxInterval,
-  energie_ratio_pompeAChaleur: percentageMaxInterval,
-  energie_ratio_gaz: percentageMaxInterval,
-  energie_ratio_fioul: percentageMaxInterval,
-  tauxENRR: percentageMaxInterval,
-  emissionsCO2: defaultInterval,
-  contenuCO2: defaultInterval,
-  prixMoyen: defaultInterval,
-  livraisonsAnnuelles: defaultInterval,
   anneeConstruction: defaultInterval,
+  contenuCO2: defaultInterval,
+  emissionsCO2: defaultInterval,
+  energie_ratio_biomasse: percentageMaxInterval,
+  energie_ratio_chaleurIndustrielle: percentageMaxInterval,
+  energie_ratio_fioul: percentageMaxInterval,
+  energie_ratio_gaz: percentageMaxInterval,
+  energie_ratio_geothermie: percentageMaxInterval,
+  energie_ratio_pompeAChaleur: percentageMaxInterval,
+  energie_ratio_solaireThermique: percentageMaxInterval,
+  energie_ratio_uve: percentageMaxInterval,
+  energieMobilisee: [] as FiltreEnergieConfKey[],
   gestionnaires: [] as string[],
   isClassed: false,
+  livraisonsAnnuelles: defaultInterval,
+  prixMoyen: defaultInterval,
   regions: [] as string[],
+  tauxENRR: percentageMaxInterval,
 };
 
 export type Filters = typeof emptyFilterLimits;
@@ -87,13 +87,13 @@ const useReseauxDeChaleurFilters = ({ queryParamName = 'rdc_filters' }: { queryP
   const resetFilters = () => setUrlFilters(null);
 
   return {
-    limits: defaultFilters,
     filters,
+    filtersQueryParam: searchParams.get(queryParamName),
+    limits: defaultFilters,
+    loading: !loaded,
+    nbFilters: Object.keys(urlFilters).length,
     resetFilters,
     updateFilter,
-    nbFilters: Object.keys(urlFilters).length,
-    loading: !loaded,
-    filtersQueryParam: searchParams.get(queryParamName),
   };
 };
 

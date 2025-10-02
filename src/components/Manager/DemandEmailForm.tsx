@@ -10,10 +10,10 @@ import Loader from '@/components/ui/Loader';
 import Tooltip, { TooltipIcon } from '@/components/ui/Tooltip';
 import { useFetch } from '@/hooks/useApi';
 import { useUserPreferences } from '@/modules/auth/client/hooks';
-import { type ManagerEmailResponse } from '@/pages/api/managerEmail';
-import { type EmailTemplatesResponse } from '@/pages/api/user/email-templates/[[...slug]]';
+import type { ManagerEmailResponse } from '@/pages/api/managerEmail';
+import type { EmailTemplatesResponse } from '@/pages/api/user/email-templates/[[...slug]]';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
-import { type Demand } from '@/types/Summary/Demand';
+import type { Demand } from '@/types/Summary/Demand';
 import { isUUID } from '@/utils/core';
 
 type Props = {
@@ -38,12 +38,12 @@ function processPlaceholders(value: string, demand: Demand): string {
 
   Object.entries(demand).forEach(([key, val]) => {
     if (processedValue.includes(`{{${key}}}`)) {
-      let formattedValue;
+      let formattedValue: string;
       if (typeof val === 'string') {
         // Check if the string looks like a date
         if (val.match(/^\d{4}-\d{2}-\d{2}/) || val.match(/^\d{2}\/\d{2}\/\d{4}/)) {
           // Format date strings to a human-readable format
-          formattedValue = dayjs(val).format('D MMMM YYYY' + (val.includes('T') ? ' [à] HH[h]mm' : ''));
+          formattedValue = dayjs(val).format(`D MMMM YYYY${val.includes('T') ? ' [à] HH[h]mm' : ''}`);
         } else {
           formattedValue = val.trim();
         }
@@ -62,12 +62,12 @@ function DemandEmailForm(props: Props) {
 
   const getDefaultEmailContent = () => {
     return {
-      object: '',
-      to: props.currentDemand.Mail,
       body: '',
-      signature: userPreferences?.signature || '',
       cc: userPreferences?.email || '',
+      object: '',
       replyTo: userPreferences?.email || '',
+      signature: userPreferences?.signature || '',
+      to: props.currentDemand.Mail,
     };
   };
 
@@ -120,16 +120,16 @@ function DemandEmailForm(props: Props) {
     //Save content in DB
     try {
       const res = await fetch(`/api/managerEmail`, {
-        method: 'POST',
         body: JSON.stringify({
+          demand_id: props.currentDemand.id,
           emailContent: {
             ...emailContent,
-            object: processPlaceholders(emailContent.object, props.currentDemand),
             body: processPlaceholders(emailContent.body, props.currentDemand),
+            object: processPlaceholders(emailContent.object, props.currentDemand),
           },
-          demand_id: props.currentDemand.id,
           key: emailKey,
         }),
+        method: 'POST',
       });
       if (res.status !== 200) {
         throw new Error(`invalid status ${res.status}`);
@@ -193,10 +193,10 @@ function DemandEmailForm(props: Props) {
                   <Loader size="sm" />
                 </li>
               ) : sentHistory && sentHistory.length > 0 ? (
-                sentHistory.map((item, index) => {
+                sentHistory.map((item) => {
                   const object = item.object;
                   return (
-                    <li key={index} onClick={() => onSelectedEmailChanged(item.email_key as string)} className="cursor-pointer">
+                    <li key={item.email_key} onClick={() => onSelectedEmailChanged(item.email_key as string)} className="cursor-pointer">
                       <Tooltip
                         className="max-w-[600px] min-w-[300px]"
                         title={
@@ -240,27 +240,27 @@ function DemandEmailForm(props: Props) {
               label="À"
               disabled
               nativeInputProps={{
-                type: 'email',
-                required: true,
                 defaultValue: emailContent.to,
+                required: true,
+                type: 'email',
               }}
             />
             <Input
               label="Répondre à"
               nativeInputProps={{
-                type: 'email',
-                required: true,
-                value: emailContent.replyTo,
                 onChange: (e) => setEmailContentValue('replyTo', e.target.value),
+                required: true,
+                type: 'email',
+                value: emailContent.replyTo,
               }}
             />
             <Input
               label="Copie à"
               hintText="Les adresses emails doivent être séparées par des virgules"
               nativeInputProps={{
+                onChange: (e) => setEmailContentValue('cc', e.target.value),
                 type: 'email',
                 value: emailContent.cc,
-                onChange: (e) => setEmailContentValue('cc', e.target.value),
               }}
             />
             <Input
@@ -323,40 +323,40 @@ function DemandEmailForm(props: Props) {
                       onSelect={(item) => onSelectedEmailChanged(item.id)}
                       preprocessItem={(item) => ({
                         ...item,
-                        editable: isUUID(item.id),
                         disabled: !!(
                           sentHistory &&
                           Array.isArray(sentHistory) &&
                           sentHistory.some((email: any) => email.email_key === item.id)
                         ),
+                        editable: isUUID(item.id),
                       })}
                     />
                   </div>
                 </div>
               }
               nativeInputProps={{
-                type: 'text',
-                required: true,
-                value: emailContent.object,
                 onChange: (e) => setEmailContentValue('object', e.target.value),
+                required: true,
+                type: 'text',
+                value: emailContent.object,
               }}
             />
             <TextArea
               label="Corps"
               nativeTextAreaProps={{
+                onChange: (e) => setEmailContentValue('body', e.target.value),
                 required: true,
                 rows: 10,
                 value: emailContent.body,
-                onChange: (e) => setEmailContentValue('body', e.target.value),
               }}
             />
             <Input
               label="Signature"
               hintText="La signature sera sauvegardée pour le prochain envoi"
               nativeInputProps={{
+                onChange: (e) => setEmailContentValue('signature', e.target.value),
                 required: true,
                 value: emailContent.signature,
-                onChange: (e) => setEmailContentValue('signature', e.target.value),
               }}
             />
             <div className="flex items-center gap-2 fr-mt-2w">
@@ -386,18 +386,14 @@ function DemandEmailForm(props: Props) {
             </div>
           </form>
         </>
+      ) : sentError ? (
+        <span>
+          Il y a eu une erreur au cours de votre envoi.
+          <br />
+          Veuillez ré-essayer.
+        </span>
       ) : (
-        <>
-          {sentError ? (
-            <span>
-              Il y a eu une erreur au cours de votre envoi.
-              <br />
-              Veuillez ré-essayer.
-            </span>
-          ) : (
-            <span>Votre courriel a bien été envoyé !</span>
-          )}
-        </>
+        <span>Votre courriel a bien été envoyé !</span>
       )}
     </div>
   );

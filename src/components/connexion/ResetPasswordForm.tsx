@@ -8,6 +8,7 @@ import Alert from '@/components/ui/Alert';
 import Heading from '@/components/ui/Heading';
 import { toastErrors } from '@/modules/notification';
 import { useServices } from '@/services';
+
 const resetPasswordSchema = z.object({
   email: z.string().email('Veuillez entrer une adresse email valide'),
 });
@@ -17,11 +18,11 @@ const ResetPasswordForm = () => {
   const [success, setSuccess] = React.useState(false);
 
   const { Form, EmailInput, Submit } = useForm({
-    schema: resetPasswordSchema,
     onSubmit: toastErrors(async ({ value }) => {
       await passwordService.resetPassword(value.email);
       setSuccess(true);
     }),
+    schema: resetPasswordSchema,
   });
 
   if (success) {

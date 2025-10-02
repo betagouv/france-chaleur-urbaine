@@ -22,39 +22,39 @@ const consentConfig: FinalityDescription = {};
 
 if (facebookEnabled) {
   consentConfig.facebook_pixel = {
-    title: 'Facebook Pixel',
     description: "Mesure d'audience",
+    title: 'Facebook Pixel',
   };
 }
 if (linkedinEnabled) {
   consentConfig.linkedin_insights = {
-    title: 'LinkedIn Insights',
     description: "Mesure d'audience",
+    title: 'LinkedIn Insights',
   };
 }
 if (googleEnabled) {
   consentConfig.google_analytics = {
-    title: 'Google Analytics (gtag.js)',
     description: "Mesure d'audience",
+    title: 'Google Analytics (gtag.js)',
   };
 }
 if (hotjarEnabled) {
   consentConfig.hotjar = {
-    title: 'Hotjar',
     description: "Mesure d'audience",
+    title: 'Hotjar',
   };
 }
 
 export const { ConsentBannerAndConsentManagement, FooterConsentManagementItem, FooterPersonalDataPolicyItem, useConsent } =
   createConsentManagement({
-    finalityDescription: () => consentConfig,
-    personalDataPolicyLinkProps: {
-      href: '/politique-de-confidentialite',
-    },
     consentCallback: async ({ finalityConsent_prev, finalityConsent }) => {
       if (finalityConsent_prev === undefined && !finalityConsent.isFullConsent) {
         location.reload();
       }
+    },
+    finalityDescription: () => consentConfig,
+    personalDataPolicyLinkProps: {
+      href: '/politique-de-confidentialite',
     },
   });
 

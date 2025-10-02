@@ -1,19 +1,36 @@
 {
-  "editor.tabSize": 2,
-  "editor.formatOnSave": true,
-  // Utilise Prettier pour le formatage
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
-  // Configure ESLint comme linter par défaut
-  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
-  // Active la correction automatique des erreurs à la sauvegarde pour ESLint
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
-    // eslint import/order s'occupe des imports
-    // "source.organizeImports": "explicit"
+  "[css]": {
+    "editor.defaultFormatter": "biomejs.biome"
   },
+  "[javascript]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "biome.lspBin": "./node_modules/@biomejs/biome/bin/biome",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.biome": "explicit",
+    "source.organizeImports.biome": "explicit"
+  },
+  "editor.defaultFormatter": "biomejs.biome",
+  "editor.formatOnSave": true,
+  "editor.tabSize": 2,
   "files.exclude": {
-    "**/.git": true,
-    "**/.DS_Store": true
+    "**/.DS_Store": true,
+    "**/.git": true
   },
   "tailwindCSS.experimental.classRegex": [
     ["cva\\(((?:[^()]|\\([^()]*\\))*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],

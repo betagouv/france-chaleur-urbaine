@@ -1,7 +1,7 @@
 import { communesFortPotentielPourCreationReseauxChaleurInterval } from '@/components/Map/layers/communesFortPotentielPourCreationReseauxChaleur';
 import { deepMergeObjects } from '@/utils/core';
-import { type Interval } from '@/utils/interval';
-import { type DeepPartial, type FlattenKeys } from '@/utils/typescript';
+import type { Interval } from '@/utils/interval';
+import type { DeepPartial, FlattenKeys } from '@/utils/typescript';
 
 type FiltreEnergie = {
   label: string;
@@ -10,38 +10,38 @@ type FiltreEnergie = {
 
 export const filtresEnergies = [
   {
-    label: 'Biomasse',
     confKey: 'biomasse',
+    label: 'Biomasse',
   },
   {
-    label: 'Géothermie',
     confKey: 'geothermie',
+    label: 'Géothermie',
   },
   {
-    label: 'UVE',
     confKey: 'uve',
+    label: 'UVE',
   },
   {
-    label: 'Chaleur industrielle',
     confKey: 'chaleurIndustrielle',
+    label: 'Chaleur industrielle',
   },
   {
-    label: 'Solaire thermique',
     confKey: 'solaireThermique',
+    label: 'Solaire thermique',
   },
   {
-    label: 'Pompe à chaleur',
     confKey: 'pompeAChaleur',
+    label: 'Pompe à chaleur',
   },
   {
-    label: 'Gaz',
     confKey: 'gaz',
+    label: 'Gaz',
   },
   {
-    label: 'Fioul',
     confKey: 'fioul',
+    label: 'Fioul',
   },
-] as const satisfies ReadonlyArray<FiltreEnergie>;
+] as const satisfies readonly FiltreEnergie[];
 
 export type FiltreEnergieConfKey = (typeof filtresEnergies)[number]['confKey'];
 
@@ -181,50 +181,34 @@ export const percentageMaxInterval: Interval = [0, 100];
 export const defaultInterval: Interval = [Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER];
 
 export const emptyMapConfiguration: EmptyMapConfiguration = {
-  filtreIdentifiantReseau: [],
-  filtreGestionnaire: [],
-  reseauxDeChaleur: {
+  batimentsFioulCollectif: {
+    interval: [50, Number.MAX_VALUE],
     show: false,
-    energieMobilisee: [],
-    isClassed: false,
-    energie_ratio_biomasse: percentageMaxInterval,
-    energie_ratio_geothermie: percentageMaxInterval,
-    energie_ratio_uve: percentageMaxInterval,
-    energie_ratio_chaleurIndustrielle: percentageMaxInterval,
-    energie_ratio_solaireThermique: percentageMaxInterval,
-    energie_ratio_pompeAChaleur: percentageMaxInterval,
-    energie_ratio_gaz: percentageMaxInterval,
-    energie_ratio_fioul: percentageMaxInterval,
-    tauxENRR: percentageMaxInterval,
-    emissionsCO2: defaultInterval,
-    contenuCO2: defaultInterval,
-    prixMoyen: defaultInterval,
-    livraisonsAnnuelles: defaultInterval,
-    anneeConstruction: defaultInterval,
-    gestionnaires: [],
-    limits: null, // fetched dynamically from the API
-  },
-  reseauxDeFroid: false,
-  reseauxEnConstruction: false,
-  zonesDeDeveloppementPrioritaire: false,
-  demandesEligibilite: false,
-  consommationsGaz: {
-    show: false,
-    logements: true,
-    tertiaire: true,
-    industrie: true,
-    interval: [1000, Number.MAX_VALUE],
   },
   batimentsGazCollectif: {
-    show: false,
     interval: [50, Number.MAX_VALUE],
-  },
-  batimentsFioulCollectif: {
     show: false,
-    interval: [50, Number.MAX_VALUE],
   },
   batimentsRaccordesReseauxChaleur: false,
   batimentsRaccordesReseauxFroid: false,
+  besoinsEnChaleur: false,
+  besoinsEnChaleurIndustrieCommunes: false,
+  besoinsEnFroid: false,
+  caracteristiquesBatiments: false,
+  communesFortPotentielPourCreationReseauxChaleur: {
+    population: communesFortPotentielPourCreationReseauxChaleurInterval,
+    show: false,
+  },
+  consommationsGaz: {
+    industrie: true,
+    interval: [1000, Number.MAX_VALUE],
+    logements: true,
+    show: false,
+    tertiaire: true,
+  },
+  customGeojson: false,
+  demandesEligibilite: false,
+  densiteThermiqueLineaire: false,
   enrrMobilisablesChaleurFatale: {
     show: false,
     showDatacenters: true,
@@ -240,25 +224,63 @@ export const emptyMapConfiguration: EmptyMapConfiguration = {
     showParkings: true,
   },
   enrrMobilisablesThalassothermie: false,
+  etudesEnCours: false,
+  extractionDonneesBatiment: false,
+  filtreGestionnaire: [],
+  filtreIdentifiantReseau: [],
+  geomUpdate: false,
   geothermieProfonde: {
     show: false,
     showInstallations: true,
     showPerimetres: true,
   },
-  geothermieSurfaceEchangeursOuverts: {
-    show: false,
-    showInstallationsRealisees: true,
-    showInstallationsDeclarees: true,
-    showOuvragesRealises: false,
-    showOuvragesDeclares: false,
-  },
   geothermieSurfaceEchangeursFermes: {
     show: false,
-    showInstallationsRealisees: true,
     showInstallationsDeclarees: true,
-    showOuvragesRealises: false,
+    showInstallationsRealisees: true,
     showOuvragesDeclares: false,
+    showOuvragesRealises: false,
   },
+  geothermieSurfaceEchangeursOuverts: {
+    show: false,
+    showInstallationsDeclarees: true,
+    showInstallationsRealisees: true,
+    showOuvragesDeclares: false,
+    showOuvragesRealises: false,
+  },
+  mesureDistance: false,
+  quartiersPrioritairesPolitiqueVille: {
+    qpv2015anru: true,
+    qpv2024: true,
+    show: false,
+  },
+  reseauxDeChaleur: {
+    anneeConstruction: defaultInterval,
+    contenuCO2: defaultInterval,
+    emissionsCO2: defaultInterval,
+    energie_ratio_biomasse: percentageMaxInterval,
+    energie_ratio_chaleurIndustrielle: percentageMaxInterval,
+    energie_ratio_fioul: percentageMaxInterval,
+    energie_ratio_gaz: percentageMaxInterval,
+    energie_ratio_geothermie: percentageMaxInterval,
+    energie_ratio_pompeAChaleur: percentageMaxInterval,
+    energie_ratio_solaireThermique: percentageMaxInterval,
+    energie_ratio_uve: percentageMaxInterval,
+    energieMobilisee: [],
+    gestionnaires: [],
+    isClassed: false,
+    limits: null, // fetched dynamically from the API
+    livraisonsAnnuelles: defaultInterval,
+    prixMoyen: defaultInterval,
+    show: false,
+    tauxENRR: percentageMaxInterval,
+  },
+  reseauxDeFroid: false,
+  reseauxEnConstruction: false,
+  ressourcesGeothermalesNappes: false,
+  testsAdresses: false,
+  zonesAUrbaniser: false,
+  zonesDeDeveloppementPrioritaire: false,
   zonesOpportunite: {
     show: false,
     zonesPotentielChaud: true,
@@ -266,39 +288,17 @@ export const emptyMapConfiguration: EmptyMapConfiguration = {
   },
   zonesOpportuniteFroid: {
     show: false,
-    zonesPotentielFroid: true,
     zonesPotentielFortFroid: true,
+    zonesPotentielFroid: true,
   },
-  caracteristiquesBatiments: false,
-  besoinsEnChaleur: false,
-  besoinsEnFroid: false,
-  besoinsEnChaleurIndustrieCommunes: false,
-  communesFortPotentielPourCreationReseauxChaleur: {
-    show: false,
-    population: communesFortPotentielPourCreationReseauxChaleurInterval,
-  },
-  quartiersPrioritairesPolitiqueVille: {
-    show: false,
-    qpv2015anru: true,
-    qpv2024: true,
-  },
-  zonesAUrbaniser: false,
-  ressourcesGeothermalesNappes: false,
-  densiteThermiqueLineaire: false,
-  mesureDistance: false,
-  extractionDonneesBatiment: false,
-  testsAdresses: false,
-  etudesEnCours: false,
-  customGeojson: false,
-  geomUpdate: false,
 };
 
 export const defaultMapConfiguration = createMapConfiguration({
+  customGeojson: true,
   reseauxDeChaleur: {
     show: true,
   },
   reseauxEnConstruction: true,
-  customGeojson: true,
 });
 
 export const iframeSimpleMapConfiguration = createMapConfiguration({

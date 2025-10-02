@@ -1,6 +1,5 @@
-import path from 'path';
-
-import { type Command } from '@commander-js/extra-typings';
+import path from 'node:path';
+import type { Command } from '@commander-js/extra-typings';
 
 import { runCommand } from '@/utils/system';
 

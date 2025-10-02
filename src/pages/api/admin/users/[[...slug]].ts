@@ -7,7 +7,7 @@ const { GET, POST, PUT, DELETE, _types } = crud<typeof userService.tableName, ty
 export type UsersResponse = typeof _types;
 
 export default handleRouteErrors(
-  { GET, POST, PUT, DELETE },
+  { DELETE, GET, POST, PUT },
   {
     requireAuthentication: ['admin'],
   }

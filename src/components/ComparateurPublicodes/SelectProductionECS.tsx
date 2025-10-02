@@ -1,5 +1,5 @@
 import { Select } from '@codegouvfr/react-dsfr/SelectNext';
-import React from 'react';
+import type React from 'react';
 
 import { usePublicodesFormContext } from '@/components/form/publicodes/FormProvider';
 import Label from '@/components/form/publicodes/Label';
@@ -51,13 +51,6 @@ const SelectProductionECS = ({ ...props }: SelectProductionECS) => {
         },
       ]}
       nativeSelectProps={{
-        value: !inclureProdECS
-          ? 'non'
-          : typeDeProductionECS === 'Avec équipement chauffage'
-            ? 'equipement-chauffage'
-            : typeDeProductionECS === 'Chauffe-eau électrique'
-              ? 'chauffe-eau-electrique'
-              : 'solaire-thermique',
         onChange: (e) => {
           const newValue = e.target.value;
 
@@ -77,6 +70,13 @@ const SelectProductionECS = ({ ...props }: SelectProductionECS) => {
             );
           }
         },
+        value: !inclureProdECS
+          ? 'non'
+          : typeDeProductionECS === 'Avec équipement chauffage'
+            ? 'equipement-chauffage'
+            : typeDeProductionECS === 'Chauffe-eau électrique'
+              ? 'chauffe-eau-electrique'
+              : 'solaire-thermique',
       }}
       {...props}
     />

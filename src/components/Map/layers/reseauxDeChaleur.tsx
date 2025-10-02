@@ -1,9 +1,8 @@
 import Tag from '@codegouvfr/react-dsfr/Tag';
-import React from 'react';
 
 import Button from '@/components/ui/Button';
 import Tooltip from '@/components/ui/Tooltip';
-import { type NetworkSummary } from '@/types/Summary/Network';
+import type { NetworkSummary } from '@/types/Summary/Network';
 import { isDefined } from '@/utils/core';
 import { prettyFormatNumber } from '@/utils/strings';
 
@@ -74,7 +73,7 @@ const Popup = defineLayerPopup<NetworkSummary>((reseauDeChaleur, { Property, Tit
           priority="secondary"
           full
           iconId="fr-icon-eye-line"
-          linkProps={{ href: `/reseaux/${reseauDeChaleur['Identifiant reseau']}`, target: '_blank', rel: 'noopener noreferrer' }}
+          linkProps={{ href: `/reseaux/${reseauDeChaleur['Identifiant reseau']}`, rel: 'noopener noreferrer', target: '_blank' }}
         >
           Voir la fiche du réseau
         </Button>
@@ -88,25 +87,8 @@ export const reseauDeChaleurNonClasseColor = '#48A21A';
 
 export const reseauxDeChaleurLayersSpec = [
   {
-    sourceId: 'network',
-    source: {
-      type: 'vector',
-      tiles: ['/api/map/network/{z}/{x}/{y}'],
-      maxzoom: 14,
-    },
     layers: [
       {
-        id: 'reseauxDeChaleur-avec-trace',
-        type: 'line',
-        layout: {
-          'line-join': 'round',
-          'line-cap': 'round',
-        },
-        paint: {
-          'line-color': ['case', ['boolean', ['get', 'reseaux classes']], reseauDeChaleurClasseColor, reseauDeChaleurNonClasseColor],
-          'line-width': ifHoverElse(3, 2),
-          'line-opacity': ['interpolate', ['linear'], ['zoom'], 11, 0.75, 15, 1],
-        },
         filter: (config) => [
           'all',
           ['==', ['get', 'has_trace'], true],
@@ -114,23 +96,21 @@ export const reseauxDeChaleurLayersSpec = [
           ...buildFiltreGestionnaire(config.filtreGestionnaire),
           ...buildFiltreIdentifiantReseau(config.filtreIdentifiantReseau),
         ],
+        id: 'reseauxDeChaleur-avec-trace',
         isVisible: (config) => config.reseauxDeChaleur.show,
+        layout: {
+          'line-cap': 'round',
+          'line-join': 'round',
+        },
+        paint: {
+          'line-color': ['case', ['boolean', ['get', 'reseaux classes']], reseauDeChaleurClasseColor, reseauDeChaleurNonClasseColor],
+          'line-opacity': ['interpolate', ['linear'], ['zoom'], 11, 0.75, 15, 1],
+          'line-width': ifHoverElse(3, 2),
+        },
         popup: Popup,
+        type: 'line',
       },
       {
-        id: 'reseauxDeChaleur-sans-trace',
-        type: 'circle',
-        paint: {
-          'circle-stroke-color': [
-            'case',
-            ['boolean', ['get', 'reseaux classes']],
-            reseauDeChaleurClasseColor,
-            reseauDeChaleurNonClasseColor,
-          ],
-          'circle-stroke-width': ['interpolate', ['linear'], ['zoom'], 5, 2, 8, 2, 9, 3, 15, 4],
-          'circle-color': '#fff',
-          'circle-radius': ['interpolate', ['linear'], ['zoom'], 8, 0, 9, ifHoverElse(6, 4), 15, ifHoverElse(12, 10)],
-        },
         filter: (config) => [
           'all',
           ['==', ['get', 'has_trace'], false],
@@ -138,9 +118,28 @@ export const reseauxDeChaleurLayersSpec = [
           ...buildFiltreGestionnaire(config.filtreGestionnaire),
           ...buildFiltreIdentifiantReseau(config.filtreIdentifiantReseau),
         ],
+        id: 'reseauxDeChaleur-sans-trace',
         isVisible: (config) => config.reseauxDeChaleur.show,
+        paint: {
+          'circle-color': '#fff',
+          'circle-radius': ['interpolate', ['linear'], ['zoom'], 8, 0, 9, ifHoverElse(6, 4), 15, ifHoverElse(12, 10)],
+          'circle-stroke-color': [
+            'case',
+            ['boolean', ['get', 'reseaux classes']],
+            reseauDeChaleurClasseColor,
+            reseauDeChaleurNonClasseColor,
+          ],
+          'circle-stroke-width': ['interpolate', ['linear'], ['zoom'], 5, 2, 8, 2, 9, 3, 15, 4],
+        },
         popup: Popup,
+        type: 'circle',
       },
     ],
+    source: {
+      maxzoom: 14,
+      tiles: ['/api/map/network/{z}/{x}/{y}'],
+      type: 'vector',
+    },
+    sourceId: 'network',
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];

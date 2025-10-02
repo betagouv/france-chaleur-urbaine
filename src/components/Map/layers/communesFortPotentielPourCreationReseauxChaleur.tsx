@@ -1,4 +1,4 @@
-import { type Interval } from '@/utils/interval';
+import type { Interval } from '@/utils/interval';
 import { formatMWhAn } from '@/utils/strings';
 
 import { ifHoverElse, type MapSourceLayersSpecification, type PopupStyleHelpers } from './common';
@@ -10,22 +10,21 @@ export const communesFortPotentielPourCreationReseauxChaleurInterval: Interval =
 
 export const communesFortPotentielPourCreationReseauxChaleurLayersSpec = [
   {
-    sourceId: 'communesFortPotentielPourCreationReseauxChaleur',
-    source: {
-      type: 'vector',
-      tiles: ['/api/map/communesFortPotentielPourCreationReseauxChaleur/{z}/{x}/{y}'],
-      minzoom: 5,
-      maxzoom: 6,
-    },
     layers: [
       {
+        filter: (config) => [
+          'all',
+          ['>=', ['get', 'population'], config.communesFortPotentielPourCreationReseauxChaleur.population[0]],
+          ['<=', ['get', 'population'], config.communesFortPotentielPourCreationReseauxChaleur.population[1]],
+        ],
         id: 'communesFortPotentielPourCreationReseauxChaleur',
-        type: 'circle',
+        isVisible: (config) => config.communesFortPotentielPourCreationReseauxChaleur.show,
         layout: {
           'circle-sort-key': ['-', ['get', 'population']],
         },
         paint: {
           'circle-color': communesFortPotentielPourCreationReseauxChaleurLayerColor,
+          'circle-opacity': communesFortPotentielPourCreationReseauxChaleurLayerOpacity,
           'circle-radius': [
             'interpolate',
             ['linear'],
@@ -35,19 +34,20 @@ export const communesFortPotentielPourCreationReseauxChaleurLayersSpec = [
             160_000, // ~ max value
             ifHoverElse(24, 20),
           ],
-          'circle-opacity': communesFortPotentielPourCreationReseauxChaleurLayerOpacity,
         },
-        filter: (config) => [
-          'all',
-          ['>=', ['get', 'population'], config.communesFortPotentielPourCreationReseauxChaleur.population[0]],
-          ['<=', ['get', 'population'], config.communesFortPotentielPourCreationReseauxChaleur.population[1]],
-        ],
-        isVisible: (config) => config.communesFortPotentielPourCreationReseauxChaleur.show,
         popup: Popup,
+        type: 'circle',
       },
     ],
+    source: {
+      maxzoom: 6,
+      minzoom: 5,
+      tiles: ['/api/map/communesFortPotentielPourCreationReseauxChaleur/{z}/{x}/{y}'],
+      type: 'vector',
+    },
+    sourceId: 'communesFortPotentielPourCreationReseauxChaleur',
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];
 
 type CommuneFortPotentielPourCreationReseauxChaleur = {
   id: number;

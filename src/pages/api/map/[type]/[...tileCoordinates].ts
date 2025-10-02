@@ -1,4 +1,4 @@
-import { type NextApiRequest, type NextApiResponse } from 'next';
+import type { NextApiRequest, NextApiResponse } from 'next';
 import zod from 'zod';
 
 import { getTile } from '@/modules/tiles/server/service';
@@ -18,8 +18,8 @@ export default handleRouteErrors(
       type,
       tileCoordinates: [z, x, y],
     } = await validateObjectSchema(req.query, {
-      type: zDatabaseSourceId,
       tileCoordinates: zod.array(zod.coerce.number()).length(3),
+      type: zDatabaseSourceId,
     });
     const tile = await getTile(type, x, y, z);
     if (!tile) {

@@ -1,4 +1,4 @@
-import { type DataDrivenPropertyValueSpecification } from 'maplibre-gl';
+import type { DataDrivenPropertyValueSpecification } from 'maplibre-gl';
 
 import { darken } from '@/utils/color';
 import { formatMWhAn, formatMWhString } from '@/utils/strings';
@@ -10,75 +10,75 @@ const besoinsEnChaleurMaxValue = 6_000;
 const besoinsEnChaleurOpacity = 0.65;
 const besoinsEnChaleurColorThresholds: ColorThreshold[] = [
   {
-    value: 20,
     color: '#ffffe5',
+    value: 20,
   },
   {
-    value: 30,
     color: '#fff7bc',
+    value: 30,
   },
   {
-    value: 50,
     color: '#fee391',
+    value: 50,
   },
   {
-    value: 75,
     color: '#fec44f',
+    value: 75,
   },
   {
-    value: 150,
     color: '#fe9929',
+    value: 150,
   },
   {
-    value: 300,
     color: '#ec7014',
+    value: 300,
   },
   {
-    value: 600,
     color: '#cc4c02',
+    value: 600,
   },
   {
-    value: 900,
     color: '#993404',
+    value: 900,
   },
   {
-    value: 1200,
     color: '#662506',
+    value: 1200,
   },
 ];
 const besoinsEnFroidMaxValue = 5_000;
 const besoinsEnFroidColorThresholds: ColorThreshold[] = [
   {
-    value: 5,
     color: '#deebf7',
+    value: 5,
   },
   {
-    value: 10,
     color: '#c6dbef',
+    value: 10,
   },
   {
-    value: 15,
     color: '#9ecae1',
+    value: 15,
   },
   {
-    value: 30,
     color: '#6baed6',
+    value: 30,
   },
   {
-    value: 50,
     color: '#4292c6',
+    value: 50,
   },
   {
-    value: 70,
     color: '#2171b5',
+    value: 70,
   },
   {
-    value: 100,
     color: '#08519c',
+    value: 100,
   },
   {
-    value: 300,
     color: '#08306b',
+    value: 300,
   },
 ];
 
@@ -94,18 +94,10 @@ export const zoomOpacityTransitionAt10: DataDrivenPropertyValueSpecification<num
 
 export const besoinsEnChaleurLayersSpec = [
   {
-    sourceId: 'besoinsEnChaleur',
-    source: {
-      type: 'vector',
-      tiles: ['/api/map/besoinsEnChaleur/{z}/{x}/{y}'],
-      minzoom: 10,
-      maxzoom: 14,
-      promoteId: 'IDBATIMENT',
-    },
     layers: [
       {
         id: 'besoinsEnFroid',
-        type: 'fill',
+        isVisible: (config) => config.besoinsEnFroid,
         paint: {
           'fill-color': [
             'step',
@@ -115,12 +107,12 @@ export const besoinsEnChaleurLayersSpec = [
           ],
           'fill-opacity': zoomOpacityTransitionAt10,
         },
-        isVisible: (config) => config.besoinsEnFroid,
         popup: Popup,
+        type: 'fill',
       },
       {
         id: 'besoinsEnChaleur',
-        type: 'fill',
+        isVisible: (config) => config.besoinsEnChaleur,
         paint: {
           'fill-color': [
             'step',
@@ -130,51 +122,59 @@ export const besoinsEnChaleurLayersSpec = [
           ],
           'fill-opacity': zoomOpacityTransitionAt10,
         },
-        isVisible: (config) => config.besoinsEnChaleur,
         popup: Popup,
+        type: 'fill',
       },
       {
         id: 'besoinsEnChaleurFroid-contour',
-        type: 'line',
+        isVisible: (config) => config.besoinsEnChaleur || config.besoinsEnFroid,
         paint: {
           'line-color': ifHoverElse('#333', '#777'),
-          'line-width': ifHoverElse(2, 0.5),
           'line-opacity': zoomOpacityTransitionAt10,
+          'line-width': ifHoverElse(2, 0.5),
         },
-        isVisible: (config) => config.besoinsEnChaleur || config.besoinsEnFroid,
+        type: 'line',
         unselectable: true,
       },
     ],
+    source: {
+      maxzoom: 14,
+      minzoom: 10,
+      promoteId: 'IDBATIMENT',
+      tiles: ['/api/map/besoinsEnChaleur/{z}/{x}/{y}'],
+      type: 'vector',
+    },
+    sourceId: 'besoinsEnChaleur',
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];
 
 // used by the legend
 export const besoinsEnChaleurIntervals: LegendInterval[] = [
   {
-    min: formatMWhString(0),
-    max: formatMWhString(besoinsEnChaleurColorThresholds[0].value),
     color: besoinsBatimentsDefaultColor,
+    max: formatMWhString(besoinsEnChaleurColorThresholds[0].value),
+    min: formatMWhString(0),
   },
   ...besoinsEnChaleurColorThresholds.map((threshold, index, array) => {
     return {
-      min: formatMWhString(threshold.value),
-      max: formatMWhString(array[index + 1]?.value ?? besoinsEnChaleurMaxValue),
       color: threshold.color,
+      max: formatMWhString(array[index + 1]?.value ?? besoinsEnChaleurMaxValue),
+      min: formatMWhString(threshold.value),
     };
   }),
 ];
 
 export const besoinsEnFroidIntervals: LegendInterval[] = [
   {
-    min: formatMWhString(0),
-    max: formatMWhString(besoinsEnFroidColorThresholds[0].value),
     color: besoinsBatimentsDefaultColor,
+    max: formatMWhString(besoinsEnFroidColorThresholds[0].value),
+    min: formatMWhString(0),
   },
   ...besoinsEnFroidColorThresholds.map((threshold, index, array) => {
     return {
-      min: formatMWhString(threshold.value),
-      max: formatMWhString(array[index + 1]?.value ?? besoinsEnFroidMaxValue),
       color: threshold.color,
+      max: formatMWhString(array[index + 1]?.value ?? besoinsEnFroidMaxValue),
+      min: formatMWhString(threshold.value),
     };
   }),
 ];

@@ -4,7 +4,7 @@ import styled, { css } from 'styled-components';
 
 import Tooltip from '@/components/ui/Tooltip';
 import useArrayQueryState from '@/hooks/useArrayQueryState';
-import { type Partialize } from '@/utils/typescript';
+import type { Partialize } from '@/utils/typescript';
 
 import Icon from './Icon';
 
@@ -17,13 +17,16 @@ const StyledAccordion = styled(DsfrAccordion)<{
 }>`
   ${({ $small, $simple, $bordered, $closeable, $disabled }) => css`
     overflow: visible;
-    ${$disabled &&
-    css`
+    ${
+      $disabled &&
+      css`
       opacity: 0.5;
       pointer-events: none;
-    `}
-    ${$small &&
-    css`
+    `
+    }
+    ${
+      $small &&
+      css`
       .fr-collapse--expanded {
         padding: 0.5rem;
       }
@@ -35,17 +38,21 @@ const StyledAccordion = styled(DsfrAccordion)<{
           padding: 0.75rem 0.5rem;
         }
       }
-    `}
-    ${$bordered &&
-    css`
+    `
+    }
+    ${
+      $bordered &&
+      css`
       &:before {
         box-shadow: none;
       }
       border: 1px solid var(--border-default-grey);
       padding: 0.75rem 0.5rem;
-    `}
-    ${$closeable &&
-    css`
+    `
+    }
+    ${
+      $closeable &&
+      css`
       .fr-icon-close-line {
         padding: 0.25rem 0.5rem;
 
@@ -58,9 +65,11 @@ const StyledAccordion = styled(DsfrAccordion)<{
           margin-left: 0;
         }
       }
-    `}
-    ${$simple &&
-    css`
+    `
+    }
+    ${
+      $simple &&
+      css`
       border: none;
       &:before {
         box-shadow: none;
@@ -75,7 +84,8 @@ const StyledAccordion = styled(DsfrAccordion)<{
         padding: 0.75rem 0.1rem;
         margin: 0;
       }
-    `}
+    `
+    }
   `}
 `;
 
@@ -107,7 +117,7 @@ const Accordion: React.FC<AccordionProps> = ({ children, small, label, help, sim
           {label}
           {(help || onClose) && (
             <AccordionTitleHelp>
-              {help && <Tooltip title={help}></Tooltip>}
+              {help && <Tooltip title={help} />}
               {onClose && (
                 <Icon
                   name="fr-icon-close-line"

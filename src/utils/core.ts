@@ -1,4 +1,4 @@
-import { type FlattenKeys } from './typescript';
+import type { FlattenKeys } from './typescript';
 
 export function isDefined<Type>(value: Type | undefined | null): value is Type {
   return value !== undefined && value !== null;
@@ -111,7 +111,7 @@ export function cloneDeep<T>(value: T): T {
 
   const clone: Record<string, any> = {};
   for (const key in value) {
-    if (Object.prototype.hasOwnProperty.call(value, key)) {
+    if (Object.hasOwn(value, key)) {
       clone[key] = cloneDeep(value[key]);
     }
   }

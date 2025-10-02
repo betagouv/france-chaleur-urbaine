@@ -15,12 +15,12 @@ const demands = handleRouteErrors(async (req: NextApiRequest, res: NextApiRespon
 
   const demands = await getGestionnairesDemands(account.gestionnaires || []);
   return demands.map((demand) => ({
-    id: demand.id,
-    distance: demand['Distance au réseau'],
-    network: demand['Identifiant réseau'],
-    address: demand['Adresse'],
-    buildingType: demand['Structure'],
+    address: demand.Adresse,
+    buildingType: demand.Structure,
     date: demand['Date demandes'],
+    distance: demand['Distance au réseau'],
+    id: demand.id,
+    network: demand['Identifiant réseau'],
   }));
 });
 

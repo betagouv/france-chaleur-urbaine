@@ -44,7 +44,6 @@ const RenameEligibilityTestForm = ({ testId, currentName }: RenameEligibilityTes
     defaultValues: {
       name: currentName,
     },
-    schema: zRenameProEligibilityTestRequest,
     onSubmit: toastErrors(
       async ({ value }: { value: RenameProEligibilityTestRequest }) => {
         await renameTest({
@@ -55,6 +54,7 @@ const RenameEligibilityTestForm = ({ testId, currentName }: RenameEligibilityTes
       },
       (err) => `Une erreur est survenue lors du renommage du test: ${err.message}`
     ),
+    schema: zRenameProEligibilityTestRequest,
   });
 
   return (

@@ -48,7 +48,6 @@ const Modal = ({ modal, size, onOpen, loading, onClose, open, lazy = false, chil
   const [isFirstLoad, setIsFirstLoad] = React.useState(true);
   const previousOpen = usePrevious(open);
   const isOpened = useIsModalOpen(modal, {
-    onDisclose: onOpen,
     onConceal: () => {
       // On first load, React DSFR is launching an onConceal event
       // This is incompatible with the onClose event when modal is opened by default
@@ -59,6 +58,7 @@ const Modal = ({ modal, size, onOpen, loading, onClose, open, lazy = false, chil
       setIsFirstLoad(false);
       onClose?.();
     },
+    onDisclose: onOpen,
   });
 
   React.useEffect(() => {

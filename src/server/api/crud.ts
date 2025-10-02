@@ -1,8 +1,8 @@
-import { type NextApiRequest } from 'next';
-import { type z } from 'zod';
+import type { NextApiRequest } from 'next';
+import type { z } from 'zod';
 
 import buildContext, { type Context } from '@/modules/config/server/context-builder';
-import { type DB } from '@/server/db/kysely';
+import type { DB } from '@/server/db/kysely';
 import { invalidRouteError } from '@/server/helpers/server';
 
 export type FilterConfig<_T extends keyof DB> = {
@@ -27,7 +27,7 @@ type CrudHandlers<T extends keyof DB> = {
   get: (id: string, config: GetConfig<T>, context: Context) => Promise<DB[T]>;
 };
 
-export { type Context };
+export type { Context };
 
 type ApiResponseCommon =
   | {
@@ -107,24 +107,24 @@ const crud = <T extends keyof DB, Validation extends CrudValidation>({
     const { select, filters, page, pageSize, orderBy } = req.query;
 
     const listConfig: ListConfig<T> = {
-      select: select ? (typeof select === 'string' ? JSON.parse(select) : select) : undefined,
       filters: filters ? (typeof filters === 'string' ? JSON.parse(filters) : filters) : undefined,
+      orderBy: orderBy as Record<string, 'asc' | 'desc'> | undefined,
       page: page ? Number(page) : undefined,
       pageSize: pageSize ? Number(pageSize) : undefined,
-      orderBy: orderBy as Record<string, 'asc' | 'desc'> | undefined,
+      select: select ? (typeof select === 'string' ? JSON.parse(select) : select) : undefined,
     };
 
     if (!id && handlers.list) {
       const data = await handlers.list(listConfig, context);
       const { items, count } = data;
       return {
-        status: 'success',
         items,
         pageInfo: {
           count,
           page: listConfig.page,
           pageSize: listConfig.pageSize,
         },
+        status: 'success',
       } as ApiResponseQueryList<DB[T]>;
     }
 
@@ -139,15 +139,15 @@ const crud = <T extends keyof DB, Validation extends CrudValidation>({
     const { select, filters } = req.query;
 
     const getConfig: GetConfig<T> = {
-      select: select ? ((Array.isArray(select) ? select : [select]) as (keyof DB[T])[]) : undefined,
       filters: filters ? (typeof filters === 'string' ? JSON.parse(filters) : filters) : undefined,
+      select: select ? ((Array.isArray(select) ? select : [select]) as (keyof DB[T])[]) : undefined,
     };
 
     if (id && handlers.get) {
       const item = await handlers.get(id, getConfig, context);
       return {
-        status: 'success',
         item,
+        status: 'success',
       } as ApiResponseQueryGet<DB[T]>;
     }
 
@@ -173,8 +173,8 @@ const crud = <T extends keyof DB, Validation extends CrudValidation>({
     if (!id && handlers.create) {
       const item = await handlers.create(req.body as Parameters<typeof handlers.create>[0], context);
       return {
-        status: 'success',
         item,
+        status: 'success',
       };
     }
 
@@ -190,8 +190,8 @@ const crud = <T extends keyof DB, Validation extends CrudValidation>({
     if (id && handlers.update) {
       const item = await handlers.update(id, req.body as Parameters<typeof handlers.update>[0], {}, context);
       return {
-        status: 'success',
         item,
+        status: 'success',
       };
     }
 
@@ -207,8 +207,8 @@ const crud = <T extends keyof DB, Validation extends CrudValidation>({
     if (id && handlers.remove) {
       const result = await handlers.remove(id, {}, context);
       return {
-        status: 'success',
         item: result,
+        status: 'success',
       };
     }
 
@@ -216,12 +216,6 @@ const crud = <T extends keyof DB, Validation extends CrudValidation>({
   };
 
   return {
-    GET,
-    POST,
-    PUT,
-    DELETE,
-    GET_LIST,
-    GET_ONE,
     _types: null as unknown as {
       list: Awaited<ReturnType<typeof GET_LIST>>;
       listItem: NonNullable<Awaited<ReturnType<typeof GET_LIST>>['items']>[number];
@@ -232,6 +226,12 @@ const crud = <T extends keyof DB, Validation extends CrudValidation>({
       createInput: z.infer<NonNullable<NonNullable<typeof validation>['create']>>;
       updateInput: z.infer<NonNullable<NonNullable<typeof validation>['update']>>;
     },
+    DELETE,
+    GET,
+    GET_LIST,
+    GET_ONE,
+    POST,
+    PUT,
   };
 };
 

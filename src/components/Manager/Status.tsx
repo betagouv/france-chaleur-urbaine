@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 import Select from '@/components/form/dsfr/Select';
 import { DEMANDE_STATUS, type DemandStatus } from '@/types/enum/DemandSatus';
-import { type Demand } from '@/types/Summary/Demand';
+import type { Demand } from '@/types/Summary/Demand';
 
 const statusOptions = Object.values(DEMANDE_STATUS).map((status) => ({
   label: status,

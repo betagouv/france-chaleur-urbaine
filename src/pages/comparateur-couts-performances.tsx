@@ -1,15 +1,15 @@
-import { type GetServerSideProps, type InferGetServerSidePropsType } from 'next';
+import type { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import dynamic from 'next/dynamic';
-import React from 'react';
+import type React from 'react';
 
 import Placeholder, { Explanations, Logos, title } from '@/components/ComparateurPublicodes/Placeholder';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Hero, { HeroContent, HeroTitle } from '@/components/ui/Hero';
 
 const ComparateurPublicodes = dynamic(() => import('@/components/ComparateurPublicodes'), {
+  loading: () => <Placeholder advancedMode={false} />,
   // Publicode engine takes 2s to load and is unnecessary on the server side
   ssr: false,
-  loading: () => <Placeholder advancedMode={false} />,
 });
 
 const SimulateurPage: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = ({ query }) => {

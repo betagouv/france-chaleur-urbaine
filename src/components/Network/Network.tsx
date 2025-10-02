@@ -1,5 +1,5 @@
 import { fr } from '@codegouvfr/react-dsfr';
-import { type ReactElement } from 'react';
+import type { ReactElement } from 'react';
 
 import Map from '@/components/Map/Map';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
@@ -10,7 +10,7 @@ import Icon from '@/components/ui/Icon';
 import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
 import Tooltip from '@/components/ui/Tooltip';
-import { type Network } from '@/types/Summary/Network';
+import type { Network } from '@/types/Summary/Network';
 import { isDefined } from '@/utils/core';
 import { formatMW, formatMWh, prettyFormatNumber } from '@/utils/strings';
 
@@ -358,7 +358,7 @@ const NetworkPanel = ({
                   <Tooltip
                     title="La comparaison avec le prix des autres énergies n’est pertinente qu’en coût global annuel, en intégrant les coûts
                     d’exploitation, de maintenance et d’investissement, amortis sur la durée de vie des installations."
-                    iconProps={{ size: 'sm', className: 'fr-ml-1w' }}
+                    iconProps={{ className: 'fr-ml-1w', size: 'sm' }}
                   />
                 </Heading>
 
@@ -506,10 +506,10 @@ const NetworkPanel = ({
                   initialCenter={[network.lon, network.lat]}
                   initialZoom={13}
                   initialMapConfiguration={createMapConfiguration({
+                    filtreIdentifiantReseau: [network['Identifiant reseau']],
                     reseauxDeChaleur: {
                       show: true,
                     },
-                    filtreIdentifiantReseau: [network['Identifiant reseau']],
                     reseauxDeFroid: true,
                   })}
                 />
@@ -605,7 +605,11 @@ const Property = <T,>({
   );
 
 function numberBooleanFormatter(value: string): string | ReactElement {
-  return !isNaN(Number.parseFloat(value)) ? `${Math.round(Number.parseFloat(value))} %` : value.toLowerCase() === 'oui' ? 'Oui' : 'Non';
+  return !Number.isNaN(Number.parseFloat(value))
+    ? `${Math.round(Number.parseFloat(value))} %`
+    : value.toLowerCase() === 'oui'
+      ? 'Oui'
+      : 'Non';
 }
 
 function formatCO2(co2kg: number): string {

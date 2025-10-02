@@ -1,9 +1,7 @@
-import * as React from 'react';
-
 import { clientConfig } from '@/client-config';
-import { type formatHeatingTypeToAirtable } from '@/services/airtable';
-import { type AvailableStructure } from '@/types/AddressData';
-import { type Demand } from '@/types/Summary/Demand';
+import type { formatHeatingTypeToAirtable } from '@/services/airtable';
+import type { AvailableStructure } from '@/types/AddressData';
+import type { Demand } from '@/types/Summary/Demand';
 
 import { Layout, Link, Text } from '../components';
 
@@ -15,8 +13,8 @@ type CreationDemandeEmailProps = {
 };
 
 const CreationDemandeEmail = ({ demand }: CreationDemandeEmailProps) => {
-  const distanceThreshold = demand['Departement'] === 'Paris' ? 60 : 100;
-  const intermediateDistanceThreshold = demand['Departement'] === 'Paris' ? 100 : 200;
+  const distanceThreshold = demand.Departement === 'Paris' ? 60 : 100;
+  const intermediateDistanceThreshold = demand.Departement === 'Paris' ? 100 : 200;
   return (
     <Layout>
       {process.env.NODE_ENV === 'test' && <pre>Paramètres (affiché seulement sur mailpit) : {JSON.stringify(demand, null, 2)}</pre>}
@@ -194,13 +192,11 @@ const CreationDemandeEmail = ({ demand }: CreationDemandeEmailProps) => {
       {demand.Structure === 'Maison individuelle' && (
         <>
           {demand['Distance au réseau'] < intermediateDistanceThreshold ? (
-            <>
-              <Text>
-                Votre adresse se situe à proximité d'un réseau de chaleur. Cependant, le raccordement des maisons individuelles aux réseaux
-                de chaleur reste rare à ce jour, pour des raisons techniques et économiques. Nous transmettons tout de même votre demande au
-                gestionnaire du réseau, mais il est probable qu'il ne puisse y donner suite.
-              </Text>
-            </>
+            <Text>
+              Votre adresse se situe à proximité d'un réseau de chaleur. Cependant, le raccordement des maisons individuelles aux réseaux de
+              chaleur reste rare à ce jour, pour des raisons techniques et économiques. Nous transmettons tout de même votre demande au
+              gestionnaire du réseau, mais il est probable qu'il ne puisse y donner suite.
+            </Text>
           ) : (
             <>
               <Text>

@@ -7,36 +7,36 @@ export const enrrMobilisablesFrichesLayerOpacity = 0.7;
 
 export const enrrMobilisablesFrichesLayersSpec = [
   {
-    sourceId: 'enrrMobilisables-friches',
-    source: {
-      type: 'vector',
-      tiles: ['/api/map/enrrMobilisables-friches/{z}/{x}/{y}'],
-      promoteId: 'GmlID',
-    },
     layers: [
       {
         id: 'enrrMobilisables-friches',
-        type: 'fill',
+        isVisible: (config) => config.enrrMobilisablesSolaireThermique.show && config.enrrMobilisablesSolaireThermique.showFriches,
         paint: {
           'fill-color': ifHoverElse(darken(enrrMobilisablesFrichesLayerColor, 30), enrrMobilisablesFrichesLayerColor),
           'fill-opacity': enrrMobilisablesFrichesLayerOpacity,
         },
-        isVisible: (config) => config.enrrMobilisablesSolaireThermique.show && config.enrrMobilisablesSolaireThermique.showFriches,
         popup: Popup,
+        type: 'fill',
       },
       {
         id: 'enrrMobilisables-friches-contour',
-        type: 'line',
+        isVisible: (config) => config.enrrMobilisablesSolaireThermique.show && config.enrrMobilisablesSolaireThermique.showFriches,
         paint: {
           'line-color': ifHoverElse(darken(enrrMobilisablesFrichesLayerColor, 30), enrrMobilisablesFrichesLayerColor),
           'line-width': ifHoverElse(3, 2),
         },
-        isVisible: (config) => config.enrrMobilisablesSolaireThermique.show && config.enrrMobilisablesSolaireThermique.showFriches,
+        type: 'line',
         unselectable: true,
       },
     ],
+    source: {
+      promoteId: 'GmlID',
+      tiles: ['/api/map/enrrMobilisables-friches/{z}/{x}/{y}'],
+      type: 'vector',
+    },
+    sourceId: 'enrrMobilisables-friches',
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];
 
 export type SolaireThermiqueFriche = {
   GmlID: string;

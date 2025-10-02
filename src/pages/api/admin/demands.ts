@@ -3,7 +3,7 @@ import { kdb } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
 import { handleRouteErrors } from '@/server/helpers/server';
 import { type DetailedEligibilityStatus, getDetailedEligibilityStatus } from '@/server/services/addresseInformation';
-import { type AdminDemand } from '@/types/Summary/Demand';
+import type { AdminDemand } from '@/types/Summary/Demand';
 import { evaluateAST, parseExpressionToAST, parseResultActions } from '@/utils/expression-parser';
 
 const GET = async () => {
@@ -11,13 +11,13 @@ const GET = async () => {
   const records = await AirtableDB('FCU - Utilisateurs')
     .select({
       filterByFormula: '{Gestionnaires validés} = FALSE()',
-      sort: [{ field: 'Date de la demande', direction: 'desc' }],
+      sort: [{ direction: 'desc', field: 'Date de la demande' }],
     })
     .all();
 
   logger.info('airtable.getAdminDemands', {
-    recordsCount: records.length,
     duration: Date.now() - startTime,
+    recordsCount: records.length,
   });
 
   // Récupére et parse les règles et leurs résultats
@@ -31,14 +31,14 @@ const GET = async () => {
     .map((rule) => {
       try {
         return {
-          ast: parseExpressionToAST(rule.search_pattern),
           actions: parseResultActions(rule.result),
+          ast: parseExpressionToAST(rule.search_pattern),
           search_pattern: rule.search_pattern,
         };
       } catch (error) {
         logger.warn('Failed to parse assignment rule', {
-          rule: rule.search_pattern,
           error: error instanceof Error ? error.message : 'Unknown error',
+          rule: rule.search_pattern,
         });
         return null;
       }
@@ -68,15 +68,15 @@ const GET = async () => {
         }
       } catch (error) {
         logger.warn('Failed to evaluate assignment rule', {
-          rule: rule.search_pattern,
           error: error instanceof Error ? error.message : 'Unknown error',
+          rule: rule.search_pattern,
         });
       }
     }
 
     return {
-      tags: [...new Set(appliedTags)],
       assignment,
+      tags: [...new Set(appliedTags)],
     };
   }
 
@@ -86,8 +86,8 @@ const GET = async () => {
       records.map(async (record) => {
         const demand = { id: record.id, ...record.fields } as AdminDemand;
         demand['Gestionnaires validés'] ??= false;
-        demand['Commentaire'] ??= '';
-        demand['Commentaires_internes_FCU'] ??= '';
+        demand.Commentaire ??= '';
+        demand.Commentaires_internes_FCU ??= '';
         demand['Relance à activer'] ??= false;
 
         if (!demand.Latitude || !demand.Longitude || !demand.Ville) {
@@ -104,15 +104,15 @@ const GET = async () => {
         return {
           ...demand,
           detailedEligibilityStatus,
-          recommendedTags: [...detailedEligibilityStatus.tags, ...rulesResult.tags],
           recommendedAssignment: rulesResult.assignment ?? 'Non affecté',
+          recommendedTags: [...detailedEligibilityStatus.tags, ...rulesResult.tags],
         } satisfies AdminDemand;
       })
     )
   ).filter((v) => v !== null);
   logger.info('getDetailedEligilityStatus', {
-    recordsCount: records.length,
     duration: Date.now() - startTime,
+    recordsCount: records.length,
   });
   return demands;
 };

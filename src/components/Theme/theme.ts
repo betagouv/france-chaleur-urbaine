@@ -1,13 +1,13 @@
 import { css } from 'styled-components';
-import { type Interpolation } from 'styled-components/dist/types';
+import type { Interpolation } from 'styled-components/dist/types';
 
 const breakpoints = {
-  xs: 320,
-  sm: 576,
-  md: 768,
-  lg: 992,
-  xl: 1200,
   '2xl': 1400,
+  lg: 992,
+  md: 768,
+  sm: 576,
+  xl: 1200,
+  xs: 320,
 };
 
 export type Breakpoint = keyof typeof breakpoints;

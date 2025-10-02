@@ -1,12 +1,12 @@
-import { existsSync } from 'fs';
-import { readFile } from 'fs/promises';
-
+import { existsSync } from 'node:fs';
+import { readFile } from 'node:fs/promises';
+import { allDatabaseTables } from '@cli/bootstrap/tables';
+import { refreshStatistics } from '@cli/stats/refresh';
 import { createCommand, InvalidArgumentError } from '@commander-js/extra-typings';
 import { genSalt, hash } from 'bcryptjs';
 import prompts from 'prompts';
 import XLSX from 'xlsx';
 import { z } from 'zod';
-
 import { registerAppCommands } from '@/modules/app/commands';
 import { registerJobsCommands } from '@/modules/jobs/commands';
 import { registerOptimizationCommands } from '@/modules/optimization/commands';
@@ -28,13 +28,11 @@ import { userRoles } from '@/types/enum/UserRole';
 import { fetchJSON } from '@/utils/network';
 import { runBash, runCommand } from '@/utils/system';
 import { sleep } from '@/utils/time';
-import { allDatabaseTables } from '@cli/bootstrap/tables';
-import { refreshStatistics } from '@cli/stats/refresh';
 
 import { type KnownAirtableBase, knownAirtableBases } from './airtable/bases';
 import { createModificationsReseau } from './airtable/create-modifications-reseau';
 import { fetchBaseSchema } from './airtable/dump-schema';
-import dataImportManager, { dataImportAdapters, type DataImportName } from './data-import';
+import dataImportManager, { type DataImportName, dataImportAdapters } from './data-import';
 import { upsertFixedSimulateurData } from './simulateur/import';
 
 const program = createCommand();
@@ -44,10 +42,10 @@ async function warnOnProdDatabase(): Promise<void> {
     return;
   }
   const response = await prompts({
-    type: 'confirm',
-    name: 'agree',
-    message: 'Vous allez lancer la commande sur une base non locale, êtes-vous sûr de vouloir continuer ?',
     initial: true,
+    message: 'Vous allez lancer la commande sur une base non locale, êtes-vous sûr de vouloir continuer ?',
+    name: 'agree',
+    type: 'confirm',
   });
 
   if (!response.agree) {
@@ -136,9 +134,9 @@ program
       .filter((epci) => ['CA', 'CU', 'METRO', 'MET69'].includes(epci.type))
       .map((metropole) => ({
         code: metropole.code,
+        membres: JSON.stringify(metropole.membres.map((membre) => ({ code: membre.code, nom: membre.nom }))),
         nom: metropole.nom,
         type: metropole.type,
-        membres: JSON.stringify(metropole.membres.map((membre) => ({ code: membre.code, nom: membre.nom }))),
       }));
 
     await kdb.transaction().execute(async (tx) => {
@@ -171,9 +169,9 @@ program
     const allEPT = await fetchJSON<EPT[]>('https://unpkg.com/@etalab/decoupage-administratif@5.2.0/data/ept.json');
     const ept = allEPT.map((etablissement) => ({
       code: etablissement.code,
+      membres: JSON.stringify(etablissement.membres.map((membre) => ({ code: membre.code, nom: membre.nom }))),
       nom: etablissement.nom,
       type: etablissement.type,
-      membres: JSON.stringify(etablissement.membres.map((membre) => ({ code: membre.code, nom: membre.nom }))),
     }));
 
     await kdb.transaction().execute(async (tx) => {
@@ -234,7 +232,9 @@ program
     logger.info(`${res.length} résultats:`);
     logger.info('Code INSEE | Nom');
     logger.info('-----------|------------------');
-    res.forEach((r) => logger.info(`${r.insee_com?.padEnd(10)} | ${r.nom}`));
+    res.forEach((r) => {
+      logger.info(`${r.insee_com?.padEnd(10)} | ${r.nom}`);
+    });
   });
 
 program
@@ -272,10 +272,10 @@ program
     const workbook = XLSX.readFile(file);
     const sheet = workbook.Sheets[workbook.SheetNames[0]];
     const data: XlsxRow[] = XLSX.utils.sheet_to_json(sheet, {
-      header: ['tag', 'id_sncu', 'id_fcu', 'id_fcu_futur'],
-      raw: false,
       defval: null,
+      header: ['tag', 'id_sncu', 'id_fcu', 'id_fcu_futur'],
       range: 1, // Skip header row
+      raw: false,
     });
 
     const tagsByIDSNCU = data.reduce<Output>((acc, { tag, id_sncu }) => {
@@ -327,12 +327,12 @@ program
 
     // maj réseaux de chaleur selon id fcu
     for (const [id_fcu, tags] of Object.entries(tagsByIDFCU)) {
-      await kdb.updateTable('reseaux_de_chaleur').set({ tags }).where('id_fcu', '=', parseInt(id_fcu)).execute();
+      await kdb.updateTable('reseaux_de_chaleur').set({ tags }).where('id_fcu', '=', parseInt(id_fcu, 10)).execute();
     }
 
     // maj réseaux en construction selon id fcu
     for (const [id_fcu_futur, tags] of Object.entries(tagsByIDFCUFutur)) {
-      await kdb.updateTable('zones_et_reseaux_en_construction').set({ tags }).where('id_fcu', '=', parseInt(id_fcu_futur)).execute();
+      await kdb.updateTable('zones_et_reseaux_en_construction').set({ tags }).where('id_fcu', '=', parseInt(id_fcu_futur, 10)).execute();
     }
     console.info('Tags importés avec succès');
   });
@@ -416,10 +416,10 @@ program
       .insertInto('users')
       .values({
         email,
+        gestionnaires: tags_gestionnaires,
         password: await hash(password, await genSalt(10)),
         role,
         status: 'valid',
-        gestionnaires: tags_gestionnaires,
       })
       .execute();
     logger.info(`Utilisateur ${email} créé avec succès.`);
@@ -458,15 +458,15 @@ program
   .option('--sequential', 'Télécharge les tables une par une', false)
   .action(async ({ sequential }) => {
     const { selectedTables } = (await prompts({
-      type: 'multiselect',
-      name: 'selectedTables',
-      message: 'Sélectionnez les tables à télécharger :',
       choices: allDatabaseTables.map((table) => ({
+        selected: true,
         title: `${table.name} - ${table.description}`,
         value: table.name,
-        selected: true,
       })),
       hint: '- Espace pour sélectionner/désélectionner, Entrée pour valider',
+      message: 'Sélectionnez les tables à télécharger :',
+      name: 'selectedTables',
+      type: 'multiselect',
     })) as { selectedTables: string[] };
 
     if (!selectedTables || selectedTables.length === 0) {
@@ -493,7 +493,7 @@ program
       : '--out-file ./src/server/db/kysely/database.ts --exclude-pattern="(public.spatial_ref_sys|topology.*|tiger.*|public.geography_columns|public.geometry_columns)"';
     await runBash(`pnpm kysely-codegen --numeric-parser number --env-file="./.env.local" --log-level=error ${patternOptions}`);
     if (!single) {
-      await runBash('pnpm prettier --write ./src/server/db/kysely/database.ts');
+      await runBash('pnpm lint:fix:file ./src/server/db/kysely/database.ts');
     }
   });
 

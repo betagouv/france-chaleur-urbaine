@@ -11,8 +11,8 @@ export default async function handler(_req: NextApiRequest, res: NextApiResponse
   const { renderTrpcPanel } = await import('trpc-ui');
 
   const html = renderTrpcPanel(appRouter, {
-    url: '/api/trpc', // Default trpc route in nextjs
     transformer: 'superjson', // Enabled by default with create-t3-app
+    url: '/api/trpc', // Default trpc route in nextjs
   });
 
   res.setHeader('Content-Type', 'text/html; charset=utf-8');

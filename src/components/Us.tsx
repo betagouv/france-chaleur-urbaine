@@ -6,6 +6,7 @@ import Link from '@/components/ui/Link';
 import Section, { SectionContent, SectionHeading, SectionTitle } from '@/components/ui/Section';
 import TableSimple from '@/components/ui/TableSimple';
 import dataNumberFcu from '@/data/home/data-number-fcu';
+
 const Us = () => {
   return (
     <>
@@ -113,17 +114,17 @@ const Us = () => {
           <TableSimple
             className="mx-auto max-w-[500px]"
             columns={[
-              { accessorKey: 'poste', header: 'Poste', flex: 1 },
-              { accessorKey: '2023', header: '2023', width: '120px', cellType: 'Percent' },
-              { accessorKey: '2024', header: '2024', width: '120px', cellType: 'Percent' },
+              { accessorKey: 'poste', flex: 1, header: 'Poste' },
+              { accessorKey: '2023', cellType: 'Percent', header: '2023', width: '120px' },
+              { accessorKey: '2024', cellType: 'Percent', header: '2024', width: '120px' },
             ]}
             data={[
-              { id: 1, poste: 'Développement web', '2023': 0.25, '2024': 0.4 },
-              { id: 2, poste: 'Déploiement et animation', '2023': 0.33, '2024': 0.32 },
-              { id: 3, poste: 'Coaching et design', '2023': 0.15, '2024': 0.13 },
-              { id: 4, poste: 'Géomatique', '2023': 0.13, '2024': 0.08 },
-              { id: 5, poste: 'Référencement (SEO/SEA)', '2023': 0.05, '2024': 0.04 },
-              { id: 6, poste: 'Frais (publicité, salons…)', '2023': 0.09, '2024': 0.04 },
+              { '2023': 0.25, '2024': 0.4, id: 1, poste: 'Développement web' },
+              { '2023': 0.33, '2024': 0.32, id: 2, poste: 'Déploiement et animation' },
+              { '2023': 0.15, '2024': 0.13, id: 3, poste: 'Coaching et design' },
+              { '2023': 0.13, '2024': 0.08, id: 4, poste: 'Géomatique' },
+              { '2023': 0.05, '2024': 0.04, id: 5, poste: 'Référencement (SEO/SEA)' },
+              { '2023': 0.09, '2024': 0.04, id: 6, poste: 'Frais (publicité, salons…)' },
             ]}
           />
         </SectionContent>

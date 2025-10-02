@@ -1,5 +1,5 @@
 import Papa from 'papaparse';
-import { type Logger } from 'winston';
+import type { Logger } from 'winston';
 
 import { serverConfig } from '@/server/config';
 import { parentLogger } from '@/server/helpers/logger';
@@ -43,8 +43,8 @@ async function makeAPIRequest(url: string, form: FormData, contextLogger?: Logge
   for (;;) {
     try {
       const res = await fetch(url, {
-        method: 'post',
         body: form,
+        method: 'post',
       });
 
       if (!res.ok) {
@@ -53,13 +53,13 @@ async function makeAPIRequest(url: string, form: FormData, contextLogger?: Logge
 
       const responseBody = await res.text();
       const results = Papa.parse(responseBody, {
-        header: true,
         dynamicTyping: true,
+        header: true,
         skipEmptyLines: true,
       });
 
       if (results.errors.length > 0) {
-        throw new Error('CSV parsing errors: ' + JSON.stringify(results.errors));
+        throw new Error(`CSV parsing errors: ${JSON.stringify(results.errors)}`);
       }
 
       const data = results.data as APIAdresseResult[];
@@ -83,7 +83,7 @@ async function makeAPIRequest(url: string, form: FormData, contextLogger?: Logge
       }
 
       // Exponential backoff
-      const delay = Math.min(Math.max(MINIMUM_RETRY_DELAY, MINIMUM_RETRY_DELAY * Math.pow(1.5, attempt)), MAXIMUM_RETRY_DELAY);
+      const delay = Math.min(Math.max(MINIMUM_RETRY_DELAY, MINIMUM_RETRY_DELAY * 1.5 ** attempt), MAXIMUM_RETRY_DELAY);
       logger.error(`results error retrying in ${delay}ms`, { err: err.message });
       await sleep(delay);
     }

@@ -1,4 +1,4 @@
-import { type ColumnFiltersState, type SortingState } from '@tanstack/react-table';
+import type { ColumnFiltersState, SortingState } from '@tanstack/react-table';
 import { useQueryState } from 'nuqs';
 import { useCallback, useMemo, useState } from 'react';
 
@@ -18,14 +18,14 @@ import Text from '@/components/ui/Text';
 import { useFetch } from '@/hooks/useApi';
 import useCrud from '@/hooks/useCrud';
 import { notify, toastErrors } from '@/modules/notification';
-import { type UsersResponse } from '@/pages/api/admin/users/[[...slug]]';
+import type { UsersResponse } from '@/pages/api/admin/users/[[...slug]]';
 import { withAuthentication } from '@/server/authentication';
 import { useServices } from '@/services';
-import { type UserRole } from '@/types/enum/UserRole';
+import type { UserRole } from '@/types/enum/UserRole';
 import { postFetchJSON } from '@/utils/network';
 import { compareFrenchStrings } from '@/utils/strings';
 
-import { type AdminUsersStats } from '../api/admin/users-stats';
+import type { AdminUsersStats } from '../api/admin/users-stats';
 
 const startImpersonation = toastErrors(async (impersonateConfig: { role: UserRole; gestionnaires?: string[] | null }) => {
   await postFetchJSON('/api/admin/impersonate', {
@@ -38,15 +38,15 @@ const startImpersonation = toastErrors(async (impersonateConfig: { role: UserRol
 
 const initialSortingState: SortingState = [
   {
-    id: 'created_at',
     desc: true,
+    id: 'created_at',
   },
 ];
 
 const initialColumnFilters: ColumnFiltersState = [
   {
     id: 'active',
-    value: { true: true, false: false },
+    value: { false: false, true: true },
   },
 ];
 
@@ -85,8 +85,6 @@ export default function ManageUsers() {
     () => [
       {
         accessorKey: 'email',
-        header: 'Email',
-        sortingFn: (rowA, rowB) => compareFrenchStrings(rowA.original.email, rowB.original.email),
         cell: (info) => (
           <div>
             <div>
@@ -100,22 +98,21 @@ export default function ManageUsers() {
             )}
           </div>
         ),
-        flex: 2.5,
         className: 'break-words break-all',
+        flex: 2.5,
+        header: 'Email',
+        sortingFn: (rowA, rowB) => compareFrenchStrings(rowA.original.email, rowB.original.email),
       },
       {
         accessorKey: 'role',
-        header: 'Role',
         align: 'center',
-        flex: 1.5,
         cell: (info) => <UserRoleBadge role={info.getValue<UserRole>()} />,
         filterType: 'Facets',
+        flex: 1.5,
+        header: 'Role',
       },
       {
         accessorFn: (row) => row.gestionnaires?.map((u) => u.toLowerCase()).join(' ') ?? '',
-        id: 'gestionnaires',
-        header: 'Tags gestionnaire',
-        flex: 3,
         cell: (info) => {
           return (
             info.row.original.role === 'gestionnaire' && (
@@ -130,87 +127,90 @@ export default function ManageUsers() {
             )
           );
         },
+        flex: 3,
+        header: 'Tags gestionnaire',
+        id: 'gestionnaires',
         sortingFn: (rowA, rowB) => compareFrenchStrings(rowA.original.gestionnaires?.[0], rowB.original.gestionnaires?.[0]),
       },
       {
         accessorKey: 'receive_new_demands',
-        header: 'Notif nouvelle demande',
-        cellType: 'Boolean',
         align: 'center',
+        cellType: 'Boolean',
         filterType: 'Facets',
+        header: 'Notif nouvelle demande',
       },
       {
         accessorKey: 'receive_old_demands',
-        header: 'Notif relance',
-        cellType: 'Boolean',
         align: 'center',
+        cellType: 'Boolean',
         filterType: 'Facets',
+        header: 'Notif relance',
       },
       {
         accessorKey: 'last_connection',
-        header: 'Dernière activité',
         cellType: 'DateTime',
+        header: 'Dernière activité',
       },
       {
         accessorKey: 'active',
-        header: 'Actif',
-        cellType: 'Boolean',
         align: 'center',
+        cellType: 'Boolean',
         filterType: 'Facets',
+        header: 'Actif',
       },
       {
         accessorKey: 'created_at',
-        header: 'Créé le',
         cellType: 'Date',
+        header: 'Créé le',
       },
       {
-        id: 'actions',
-        header: 'Actions',
         align: 'right',
         cell: ({ row }) => {
           const menuItems: HamburgerMenuItem[] = [
             {
+              icon: 'ri-edit-line',
               id: 'edit',
               label: "Modifier l'utilisateur",
-              icon: 'ri-edit-line',
               onClick: () => setUserId(row.original.id),
             },
             {
+              href: `/admin/events?authorId=${row.original.id}`,
+              icon: 'ri-history-line',
               id: 'history',
               label: "Voir l'historique des événements",
-              icon: 'ri-history-line',
-              href: `/admin/events?authorId=${row.original.id}`,
             },
             {
+              icon: 'ri-spy-line',
               id: 'impersonate',
               label: 'Adopter le profil',
-              icon: 'ri-spy-line',
               onClick: () => startImpersonation(row.original),
             },
             {
+              icon: row.original.active ? 'ri-delete-back-2-line' : 'ri-refresh-line',
               id: '',
               label: row.original.active ? "Désactiver l'utilisateur" : "Réactiver l'utilisateur",
-              icon: row.original.active ? 'ri-delete-back-2-line' : 'ri-refresh-line',
-              variant: row.original.active ? 'destructive' : undefined,
               onClick: () => {
                 void handleUpdateUser(row.original.id)({ active: !row.original.active });
               },
+              variant: row.original.active ? 'destructive' : undefined,
             },
             {
+              icon: 'ri-delete-bin-line',
               id: 'delete',
               label: "Supprimer l'utilisateur",
-              icon: 'ri-delete-bin-line',
-              variant: 'destructive',
               onClick: () => {
                 if (window.confirm('Voulez-vous vraiment supprimer cet utilisateur ? Cette action est irréversible.')) {
                   alert("Cette fonctionnalité n'est pas encore implémentée, demandez à l'équipe technique");
                 }
               },
+              variant: 'destructive',
             },
           ];
 
           return <HamburgerMenu items={menuItems} />;
         },
+        header: 'Actions',
+        id: 'actions',
         width: '50px',
       },
     ],
@@ -234,16 +234,12 @@ export default function ManageUsers() {
         title={editingUser ? 'Modifier un utilisateur' : 'Créer un utilisateur'}
         loading={isLoading}
       >
-        {isLoading ? null : (
-          <>
-            {editingUser ? (
-              <UserForm loading={!!updatingUserId} onSubmit={handleUpdateUser(userId as string)} user={editingUser} />
-            ) : userId === 'new' ? (
-              <UserForm loading={creatingUser} onSubmit={handleCreateUser} />
-            ) : (
-              <span>Utilisateur non trouvé</span>
-            )}
-          </>
+        {isLoading ? null : editingUser ? (
+          <UserForm loading={!!updatingUserId} onSubmit={handleUpdateUser(userId as string)} user={editingUser} />
+        ) : userId === 'new' ? (
+          <UserForm loading={creatingUser} onSubmit={handleCreateUser} />
+        ) : (
+          <span>Utilisateur non trouvé</span>
         )}
       </ModalSimple>
       <Box py="4w" className="fr-container">

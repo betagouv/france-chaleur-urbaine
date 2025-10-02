@@ -7,7 +7,7 @@ import db from '@/server/db';
 import { kdb } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
 import { processInParallel } from '@/types/async';
-import { type CommandResult, dockerVolumePath, listDirectoryEntries, runBash, type RunCommandOptions, runDocker } from '@/utils/system';
+import { type CommandResult, dockerVolumePath, listDirectoryEntries, type RunCommandOptions, runBash, runDocker } from '@/utils/system';
 
 /**
  * Importe un fichier GeoJSON en base avec tippecanoe.
@@ -19,9 +19,9 @@ export const importGeoJSONWithTipeeCanoe = defineTilesImportStrategy(
     await generateTilesFromGeoJSON({
       geojsonFilePath,
       outputDirectory: targetTilesDirPath,
-      zoomMin,
-      zoomMax,
       tippeCanoeArgs,
+      zoomMax,
+      zoomMin,
     });
     await importTilesDirectoryToTable(targetTilesDirPath, tilesTableName);
   }
@@ -114,10 +114,10 @@ const importTilesDirectory = async (basePath: string, destinationTable: string) 
           const rows = await listDirectoryEntries(join(basePath, zoomLevel, column), 'file');
           rows.forEach((row) => {
             tiles.push({
-              x: Number.parseInt(column),
-              y: Number.parseInt(row),
-              z: Number.parseInt(zoomLevel),
               path: join(basePath, zoomLevel, column, row),
+              x: Number.parseInt(column, 10),
+              y: Number.parseInt(row, 10),
+              z: Number.parseInt(zoomLevel, 10),
             });
           });
         })
@@ -134,10 +134,10 @@ const importTilesDirectory = async (basePath: string, destinationTable: string) 
       const tileData = await readFile(tile.path);
       await db(destinationTable)
         .insert({
+          tile: tileData,
           x: tile.x,
           y: tile.y,
           z: tile.z,
-          tile: tileData,
         })
         .onConflict(['x', 'y', 'z'])
         .merge();

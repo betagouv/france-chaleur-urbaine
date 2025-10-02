@@ -48,7 +48,7 @@ const ScaleLegend = ({
       <ScaleLegendHeader>{label}</ScaleLegendHeader>
 
       <ScaleLegendBody>
-        {showColor && <ScaleLabelLegend bgColor={defaultColor + '88'} size={minIconSize} circle={circle} />}
+        {showColor && <ScaleLabelLegend bgColor={`${defaultColor}88`} size={minIconSize} circle={circle} />}
 
         <ScaleSlider>
           <Range
@@ -61,20 +61,20 @@ const ScaleLegend = ({
             hideMinMax
             nativeInputProps={[
               {
-                value: valueMin,
                 onChange: (e) => {
                   const newValueMin = +e.target.value;
                   setValueMin(newValueMin);
                   onChange([newValueMin, valueMax]);
                 },
+                value: valueMin,
               },
               {
-                value: valueMax,
                 onChange: (e) => {
                   const newValueMax = +e.target.value;
                   setValueMax(newValueMax);
                   onChange([valueMin, newValueMax]);
                 },
+                value: valueMax,
               },
             ]}
             {...props}
@@ -88,7 +88,7 @@ const ScaleLegend = ({
             </span>
           </Box>
         </ScaleSlider>
-        {showColor && <ScaleLabelLegend bgColor={defaultColor + '88'} size={maxIconSize} circle={circle} />}
+        {showColor && <ScaleLabelLegend bgColor={`${defaultColor}88`} size={maxIconSize} circle={circle} />}
       </ScaleLegendBody>
     </ScaleLegendWrapper>
   );

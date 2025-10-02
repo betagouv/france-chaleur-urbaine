@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
+    "target": "ES2017",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
@@ -8,12 +8,13 @@
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
     "esModuleInterop": true,
-    "module": "CommonJS",
-    "moduleResolution": "node",
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "importHelpers": true,
     "removeComments": true,
     "isolatedModules": true,
+    "verbatimModuleSyntax": true,
     "jsx": "preserve",
     "baseUrl": ".",
     "paths": {
@@ -21,6 +22,11 @@
       "@cli/*": ["scripts/*"],
       "@root/*": ["*"]
     },
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
     "incremental": true
   },
   "include": ["next-env.d.ts", "src/**/*.d.ts", "src/**/*.ts", "src/**/*.tsx", "knexfile.ts", "scripts/**/*.ts", "**/*.svgr"],

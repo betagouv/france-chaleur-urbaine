@@ -1,5 +1,5 @@
 import Script from 'next/script';
-import React from 'react';
+import type React from 'react';
 
 type HotjarScriptProps = React.ComponentProps<typeof Script> & {
   hjid: string;
@@ -8,7 +8,7 @@ type HotjarScriptProps = React.ComponentProps<typeof Script> & {
 
 const HotjarScript: React.FC<HotjarScriptProps> = ({ hjid, hjsv, ...props }) => {
   return (
-    <Script id="hotjar-snippet" {...props}>
+    <Script id={'hotjar-snippet'} {...props}>
       {`(function(h,o,t,j,a,r){
     h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
     h._hjSettings={hjid:${hjid},hjsv:${hjsv}};

@@ -3,18 +3,18 @@ import { useCallback, useState } from 'react';
 import useURLParamOrLocalStorage, { parseAsString } from '@/hooks/useURLParamOrLocalStorage';
 import { trackEvent } from '@/modules/analytics/client';
 import { formatDataToAirtable, submitToAirtable } from '@/services/airtable';
-import { type AddressDataType } from '@/types/AddressData';
+import type { AddressDataType } from '@/types/AddressData';
 import { Airtable } from '@/types/enum/Airtable';
-import { type FormDemandCreation } from '@/types/Summary/Demand';
+import type { FormDemandCreation } from '@/types/Summary/Demand';
 
 const warningMessage = "N'oubliez pas d'indiquer votre type de chauffage.";
 
 export type ContactFormContext = 'comparateur' | 'carte' | 'choix-chauffage';
 
 const contextToAnalyticsPrefix = {
-  comparateur: 'Comparateur',
   carte: 'Carte',
   'choix-chauffage': 'Choix chauffage',
+  comparateur: 'Comparateur',
 } as const;
 
 function getContextPrefix(context?: ContactFormContext) {
@@ -157,17 +157,17 @@ const useContactFormFCU = () => {
   return {
     addressData,
     contactReady,
-    showWarning,
-    messageSent,
-    messageReceived,
-    loadingStatus,
-    warningMessage,
-    setLoadingStatus,
     handleOnChangeAddress,
     handleOnFetchAddress,
-    handleOnSuccessAddress,
     handleOnSubmitContact,
+    handleOnSuccessAddress,
     handleResetFormContact,
+    loadingStatus,
+    messageReceived,
+    messageSent,
+    setLoadingStatus,
+    showWarning,
+    warningMessage,
   };
 };
 

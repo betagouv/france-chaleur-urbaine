@@ -1,18 +1,18 @@
 [
   {
-    "value": "6529 km",
-    "description": "Longueur cumulée des réseaux de chaleur en France"
+    "description": "Longueur cumulée des réseaux de chaleur en France",
+    "value": "6529 km"
   },
   {
-    "value": "62,6%",
-    "description": "Taux moyen d'énergies renouvelables et de récupération"
+    "description": "Taux moyen d'énergies renouvelables et de récupération",
+    "value": "62,6%"
   },
   {
-    "value": "6,6 millions",
-    "description": "Tonnes de CO2 évitées en 2021 grâce à l'utilisation des réseaux de chaleur"
+    "description": "Tonnes de CO2 évitées en 2021 grâce à l'utilisation des réseaux de chaleur",
+    "value": "6,6 millions"
   },
   {
-    "value": "44 945",
-    "description": "Bâtiments raccordés"
+    "description": "Bâtiments raccordés",
+    "value": "44 945"
   }
 ]

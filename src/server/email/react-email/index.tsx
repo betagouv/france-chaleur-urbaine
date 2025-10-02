@@ -1,5 +1,5 @@
 import { render } from '@react-email/components';
-import React from 'react';
+import type React from 'react';
 
 import CreationDemandeEmail from '@/server/email/react-email/templates/creation-demande';
 
@@ -13,44 +13,44 @@ import ResetPasswordEmail from './templates/reset-password';
 
 export const emails = {
   activation: {
-    subject: '[France Chaleur Urbaine] Confirmez votre email',
-    preview: 'Finalisez votre inscription en confirmant votre adresse email',
     Component: ActivationEmail,
-  },
-  inscription: {
-    subject: '[France Chaleur Urbaine] Ouverture de votre espace gestionnaire',
-    preview: 'Votre espace gestionnaire est prêt - Accédez à vos demandes dès maintenant',
-    Component: InscriptionEmail,
-  },
-  'manager-email': {
-    subject: '',
-    preview: 'Message important concernant votre demande de raccordement',
-    Component: ManagerEmail,
-  },
-  'reset-password': {
-    subject: '[France Chaleur Urbaine] Réinitialisation de votre mot de passe',
-    preview: 'Sécurisez votre compte en réinitialisant votre mot de passe',
-    Component: ResetPasswordEmail,
-  },
-  'new-demands': {
-    subject: '[France Chaleur Urbaine] Nouvelle(s) demande(s) dans votre espace gestionnaire',
-    preview: 'Nouvelles demandes de raccordement à traiter dans votre espace',
-    Component: NewDemandsEmail,
-  },
-  'old-demands': {
-    subject: '[France Chaleur Urbaine] Vous avez des demandes en attente de prise en charge',
-    preview: 'Action requise : Des demandes nécessitent votre attention',
-    Component: OldDemandsEmail,
-  },
-  relance: {
-    subject: '[France Chaleur Urbaine] Votre demande',
-    preview: 'Mise à jour importante concernant votre demande de raccordement',
-    Component: RelanceEmail,
+    preview: 'Finalisez votre inscription en confirmant votre adresse email',
+    subject: '[France Chaleur Urbaine] Confirmez votre email',
   },
   'creation-demande': {
-    subject: '[France Chaleur Urbaine] Votre demande de contact',
-    preview: 'Votre demande de contact',
     Component: CreationDemandeEmail,
+    preview: 'Votre demande de contact',
+    subject: '[France Chaleur Urbaine] Votre demande de contact',
+  },
+  inscription: {
+    Component: InscriptionEmail,
+    preview: 'Votre espace gestionnaire est prêt - Accédez à vos demandes dès maintenant',
+    subject: '[France Chaleur Urbaine] Ouverture de votre espace gestionnaire',
+  },
+  'manager-email': {
+    Component: ManagerEmail,
+    preview: 'Message important concernant votre demande de raccordement',
+    subject: '',
+  },
+  'new-demands': {
+    Component: NewDemandsEmail,
+    preview: 'Nouvelles demandes de raccordement à traiter dans votre espace',
+    subject: '[France Chaleur Urbaine] Nouvelle(s) demande(s) dans votre espace gestionnaire',
+  },
+  'old-demands': {
+    Component: OldDemandsEmail,
+    preview: 'Action requise : Des demandes nécessitent votre attention',
+    subject: '[France Chaleur Urbaine] Vous avez des demandes en attente de prise en charge',
+  },
+  relance: {
+    Component: RelanceEmail,
+    preview: 'Mise à jour importante concernant votre demande de raccordement',
+    subject: '[France Chaleur Urbaine] Votre demande',
+  },
+  'reset-password': {
+    Component: ResetPasswordEmail,
+    preview: 'Sécurisez votre compte en réinitialisant votre mot de passe',
+    subject: '[France Chaleur Urbaine] Réinitialisation de votre mot de passe',
   },
 } as const;
 
@@ -66,8 +66,8 @@ export async function renderEmail<T extends EmailType>(type: T, templateParams: 
   const [html, text] = await Promise.all([render(email), render(email, { plainText: true })]);
 
   return {
-    subject,
     html,
+    subject,
     text,
   };
 }

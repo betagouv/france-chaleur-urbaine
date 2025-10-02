@@ -1,19 +1,20 @@
 import { useSearchParams } from 'next/navigation';
-import React from 'react';
+import type React from 'react';
 
 import Checkboxes from '@/components/form/dsfr/Checkboxes';
 import Heading from '@/components/ui/Heading';
 import Link from '@/components/ui/Link';
 import Notice from '@/components/ui/Notice';
 import useArrayQueryState from '@/hooks/useArrayQueryState';
-import { type LocationInfoResponse } from '@/pages/api/location-infos';
+import type { LocationInfoResponse } from '@/pages/api/location-infos';
 
 import { Title } from './ComparateurPublicodes.style';
 import { type ModeDeChauffage, modesDeChauffage } from './mappings';
 import { DisclaimerButton } from './Placeholder';
 import SelectClimatisation from './SelectClimatisation';
 import SelectProductionECS from './SelectProductionECS';
-import { type SimulatorEngine } from './useSimulatorEngine';
+import type { SimulatorEngine } from './useSimulatorEngine';
+
 type ModesDeChauffageAComparerFormProps = React.HTMLAttributes<HTMLDivElement> & {
   engine: SimulatorEngine;
   nearestReseauDeChaleur?: LocationInfoResponse['nearestReseauDeChaleur'];

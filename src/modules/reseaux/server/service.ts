@@ -2,8 +2,8 @@ import db from '@/server/db';
 import { kdb, sql, type ZoneDeDeveloppementPrioritaire } from '@/server/db/kysely';
 import { createGeometryExpression, processGeometry } from '@/server/helpers/geo';
 import { parentLogger } from '@/server/helpers/logger';
-import { type BoundingBox } from '@/types/Coords';
-import { type Network, type NetworkToCompare } from '@/types/Summary/Network';
+import type { BoundingBox } from '@/types/Coords';
+import type { Network, NetworkToCompare } from '@/types/Summary/Network';
 import { isDefined } from '@/utils/core';
 import { parseBbox } from '@/utils/geo';
 
@@ -215,9 +215,9 @@ export const listNetworks = async (): Promise<NetworkToCompare[]> => {
     return {
       id: network.id_fcu,
       ...network,
-      livraisons_totale_MWh: isDefined(network['livraisons_totale_MWh']) ? network['livraisons_totale_MWh'] / 1000 : null,
-      'contenu CO2 ACV': isDefined(network['contenu CO2 ACV']) ? network['contenu CO2 ACV'] * 1000 : null,
       'contenu CO2': isDefined(network['contenu CO2']) ? network['contenu CO2'] * 1000 : null,
+      'contenu CO2 ACV': isDefined(network['contenu CO2 ACV']) ? network['contenu CO2 ACV'] * 1000 : null,
+      livraisons_totale_MWh: isDefined(network.livraisons_totale_MWh) ? network.livraisons_totale_MWh / 1000 : null,
     } as NetworkToCompare;
   });
 };
@@ -414,30 +414,30 @@ const createReseauDeChaleur = async (id: string, finalGeometry: any) => {
   return await kdb
     .insertInto('reseaux_de_chaleur')
     .values({
-      ...(id_sncu ? { 'Identifiant reseau': id_sncu, id_fcu: maxIdResult.next_id } : { id_fcu: parseInt(id) }),
+      ...(id_sncu ? { 'Identifiant reseau': id_sncu, id_fcu: maxIdResult.next_id } : { id_fcu: parseInt(id, 10) }),
+      fichiers: [],
       geom: null,
-      tags: [],
       geom_update: sql`ST_Force2D(${finalGeometry})`,
       'reseaux classes': false,
       reseaux_techniques: false,
-      fichiers: [],
+      tags: [],
     })
     .returningAll()
     .executeTakeFirstOrThrow();
 };
 
 const createReseauEnConstruction = async (id: string, finalGeometry: any) => {
-  const id_fcu = parseInt(id);
-  if (isNaN(id_fcu)) {
+  const id_fcu = parseInt(id, 10);
+  if (Number.isNaN(id_fcu)) {
     throw new Error('ID FCU invalide');
   }
 
   return await kdb
     .insertInto('zones_et_reseaux_en_construction')
     .values({
-      id_fcu,
       geom: null,
       geom_update: sql`ST_ForcePolygonCCW(ST_Force2D(${finalGeometry}))`,
+      id_fcu,
       nom_reseau: `Nouveau réseau en construction ${id_fcu}`,
       tags: [],
     })
@@ -446,17 +446,17 @@ const createReseauEnConstruction = async (id: string, finalGeometry: any) => {
 };
 
 const createPerimetreDeDeveloppementPrioritaire = async (id: string, finalGeometry: any) => {
-  const id_fcu = parseInt(id);
-  if (isNaN(id_fcu)) {
+  const id_fcu = parseInt(id, 10);
+  if (Number.isNaN(id_fcu)) {
     throw new Error('ID FCU invalide');
   }
 
   return await kdb
     .insertInto('zone_de_developpement_prioritaire')
     .values({
-      id_fcu,
       geom: null,
       geom_update: sql`ST_ForcePolygonCCW(ST_Force2D(${finalGeometry}))`,
+      id_fcu,
       reseau_de_chaleur_ids: [],
       reseau_en_construction_ids: [],
     })
@@ -476,11 +476,11 @@ const createReseauDeFroid = async (id: string, finalGeometry: any) => {
   return await kdb
     .insertInto('reseaux_de_froid')
     .values({
-      ...(id_sncu ? { 'Identifiant reseau': id_sncu, id_fcu: maxIdResult.next_id } : { id_fcu: parseInt(id) }),
+      ...(id_sncu ? { 'Identifiant reseau': id_sncu, id_fcu: maxIdResult.next_id } : { id_fcu: parseInt(id, 10) }),
+      fichiers: [],
       geom: null,
       geom_update: sql`ST_Force2D(${finalGeometry})`,
       'reseaux classes': false,
-      fichiers: [],
     })
     .returningAll()
     .executeTakeFirstOrThrow();

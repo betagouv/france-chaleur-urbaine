@@ -6,8 +6,8 @@ import Box from '@/components/ui/Box';
 import Icon from '@/components/ui/Icon';
 import Image from '@/components/ui/Image';
 import useEligibilityForm from '@/hooks/useEligibilityForm';
-import { type Point } from '@/types/Point';
-import { type StoredAddress } from '@/types/StoredAddress';
+import type { Point } from '@/types/Point';
+import type { StoredAddress } from '@/types/StoredAddress';
 import { getReadableDistance } from '@/utils/geo';
 
 import { ContactFormButtonWrapper, ContactFormWrapper, MessageConfirmBox, SearchedAddress } from './CardSearchDetails.style';
@@ -39,9 +39,9 @@ const CardSearchDetails = memo(
       open: displayContactForm,
       EligibilityFormModal,
     } = useEligibilityForm({
-      id: `contact-form-modal-${storedAddress.id}`,
-      context: 'carte',
       address: storedAddress,
+      context: 'carte',
+      id: `contact-form-modal-${storedAddress.id}`,
       onSubmit: markAddressAsContacted,
     });
 
@@ -91,7 +91,7 @@ const CardSearchDetails = memo(
         );
       }
       if (hasNoTraceNetwork) {
-        return <>Il existe un réseau de chaleur sur cette commune, mais nous ne disposons d’aucune information sur sa localisation.</>;
+        return "Il existe un réseau de chaleur sur cette commune, mais nous ne disposons d'aucune information sur sa localisation.";
       }
       {
         const baseMessage = "D'après nos données, il n'y a pour le moment pas de réseau de chaleur à proximité de cette adresse.";

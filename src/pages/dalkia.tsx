@@ -7,17 +7,17 @@ const DalkiaMap = () => {
     <IframeWrapper>
       <Map
         initialMapConfiguration={createMapConfiguration({
+          filtreGestionnaire: ['dalkia'],
           reseauxDeChaleur: {
             show: true,
           },
-          filtreGestionnaire: ['dalkia'],
         })}
         enabledLegendFeatures={['reseauxDeChaleur', 'reseauxDeFroid', 'reseauxEnConstruction', 'zonesDeDeveloppementPrioritaire']}
         withLegend
         withBorder
         legendLogoOpt={{
-          src: '/logo-DALKIA.png',
           alt: 'logo Dalkia',
+          src: '/logo-DALKIA.png',
         }}
         withFCUAttribution
       />

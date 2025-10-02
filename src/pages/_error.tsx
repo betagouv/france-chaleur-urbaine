@@ -1,5 +1,5 @@
 import { captureUnderscoreErrorException } from '@sentry/nextjs';
-import { type NextPageContext } from 'next';
+import type { NextPageContext } from 'next';
 import Error, { type ErrorProps } from 'next/error';
 
 type CustomErrorComponentProps = ErrorProps;

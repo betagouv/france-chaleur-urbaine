@@ -1,4 +1,4 @@
-import { type RefObject } from 'react';
+import type { RefObject } from 'react';
 
 import Infographie from '@/components/Infographie';
 import TrackedVideo from '@/components/TrackedVideo/TrackedVideo';
@@ -150,10 +150,10 @@ const DistrictHeating = ({
       <br />
       <br />
       La collectivité (ou groupement de collectivités) peut par ailleurs{' '}
-      <b>déléguer une part plus ou moins grande de ses responsabilités à un opérateur</b>
-      , aussi qualifié d’exploitant : Engie, Dalkia, Idex, Coriance, ou tout autre. La collectivité reste toutefois responsable du contrôle
-      du service assuré par l’opérateur. Ainsi, si l’opérateur a pris des engagements sur les tarifs de la chaleur ou sur la proportion
-      d’énergies renouvelables utilisées (par exemple), il appartient à la collectivité de s’assurer qu’ils sont bien respectés.
+      <b>déléguer une part plus ou moins grande de ses responsabilités à un opérateur</b>, aussi qualifié d’exploitant : Engie, Dalkia,
+      Idex, Coriance, ou tout autre. La collectivité reste toutefois responsable du contrôle du service assuré par l’opérateur. Ainsi, si
+      l’opérateur a pris des engagements sur les tarifs de la chaleur ou sur la proportion d’énergies renouvelables utilisées (par exemple),
+      il appartient à la collectivité de s’assurer qu’ils sont bien respectés.
       <br />
       <br />
       La majorité des réseaux de chaleur de taille importante sont ainsi concédés par les collectivités à des opérateurs, via des
@@ -201,9 +201,9 @@ const DistrictHeating = ({
         </li>
       </ul>
       Le raccordement s’envisage surtout pour des{' '}
-      <b>bâtiments résidentiels collectifs (copropriété, logement social…) et tertiaires d’une taille suffisante</b>
-      , ce qui permet de mutualiser et amortir les coûts fixes. Le raccordement des maisons individuelles est possible dans certains cas,
-      mais reste plus rare. La sous-station dessert alors souvent un groupe de maisons (lotissement par exemple).
+      <b>bâtiments résidentiels collectifs (copropriété, logement social…) et tertiaires d’une taille suffisante</b>, ce qui permet de
+      mutualiser et amortir les coûts fixes. Le raccordement des maisons individuelles est possible dans certains cas, mais reste plus rare.
+      La sous-station dessert alors souvent un groupe de maisons (lotissement par exemple).
       <br />
       <br />
       <ul>
@@ -328,8 +328,8 @@ const DistrictHeating = ({
         service France Chaleur Urbaine met à disposition toutes les informations utiles pour envisager un raccordement au chauffage urbain
       </b>{' '}
       (atouts, aides financières disponibles, étapes d’un raccordement…) et{' '}
-      <b>assure la mise en relation avec les gestionnaires des réseaux de chaleur</b>
-      . Ces derniers sont les seuls à pouvoir confirmer la faisabilité du raccordement et à fournir un devis pour le raccordement.
+      <b>assure la mise en relation avec les gestionnaires des réseaux de chaleur</b>. Ces derniers sont les seuls à pouvoir confirmer la
+      faisabilité du raccordement et à fournir un devis pour le raccordement.
       <br />
       <br />
       <br />
@@ -361,10 +361,10 @@ const DistrictHeating = ({
       <br />
       <br />
       <Link href="/ressources/financement#contenu">D’autres aides peuvent être mobilisées</Link>{' '}
-      <b>lorsque le raccordement au chauffage urbain s’inscrit dans le cadre d’une rénovation plus globale</b>
-      , par exemple MaPrimeRénov’Copropriétés, MaPrimeRénov’Sérénité pour les ménages modestes, ou encore le « coup de pouce rénovation
-      performante de bâtiment résidentiel collectif ». Le raccordement au chauffage urbain est obligatoire pour bénéficier de ce dernier,
-      dès lors qu’il est techniquement possible.
+      <b>lorsque le raccordement au chauffage urbain s’inscrit dans le cadre d’une rénovation plus globale</b>, par exemple
+      MaPrimeRénov’Copropriétés, MaPrimeRénov’Sérénité pour les ménages modestes, ou encore le « coup de pouce rénovation performante de
+      bâtiment résidentiel collectif ». Le raccordement au chauffage urbain est obligatoire pour bénéficier de ce dernier, dès lors qu’il
+      est techniquement possible.
       <br />
       <br />
     </Container>

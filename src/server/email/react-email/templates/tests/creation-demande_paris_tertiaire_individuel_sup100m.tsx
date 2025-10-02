@@ -6,9 +6,9 @@ const CreationDemandeEmailDebug = () => {
       demand={{
         Adresse: '123 Rue de la Paix, 75000 Paris',
         Departement: 'Paris',
+        'Distance au réseau': 150,
         Structure: 'Tertiaire',
         'Type de chauffage': 'Individuel',
-        'Distance au réseau': 150,
       }}
     />
   );

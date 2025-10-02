@@ -1,4 +1,4 @@
-import { type Knex } from 'knex';
+import type { Knex } from 'knex';
 
 // This creates an index on the nom column of the ign_communes table.
 // - It applies the unaccent function to remove accents before indexing.

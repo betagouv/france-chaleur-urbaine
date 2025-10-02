@@ -1,8 +1,7 @@
 import Badge from '@codegouvfr/react-dsfr/Badge';
 import Tabs from '@codegouvfr/react-dsfr/Tabs';
-import { type ColumnFiltersState, type SortingState } from '@tanstack/react-table';
+import type { ColumnFiltersState, SortingState } from '@tanstack/react-table';
 import { useQueryState } from 'nuqs';
-import React from 'react';
 import { Fragment, useEffect, useMemo, useState } from 'react';
 
 import { clientConfig } from '@/client-config';
@@ -27,12 +26,27 @@ import { downloadString } from '@/utils/browser';
 import { formatAsISODateMinutes, formatFrenchDate, formatFrenchDateTime } from '@/utils/date';
 import { compareFrenchStrings } from '@/utils/strings';
 import { ObjectEntries, ObjectKeys } from '@/utils/typescript';
-
-import ProcheReseauBadge, { type ProcheReseauBadgeProps } from './ProcheReseauBadge';
 import { getProEligibilityTestAsXlsx } from '../utils/xlsx';
+import ProcheReseauBadge, { type ProcheReseauBadgeProps } from './ProcheReseauBadge';
 
 const columns: ColumnDef<RouterOutput['proEligibilityTests']['get']['addresses'][number]>[] = [
   {
+    accessorFn: (row) => `${row.ban_address} ${row.source_address}`,
+    accessorKey: 'ban_address',
+    cell: (info) => (
+      <div>
+        <div>
+          <div className="leading-none tracking-tight">{info.row.original.ban_address}</div>
+          {!info.row.original.ban_valid && (
+            <Badge severity="error" small>
+              Adresse invalide
+            </Badge>
+          )}
+        </div>
+        <div className=" text-xs italic text-gray-500 tracking-tighter">{info.row.original.source_address}</div>
+      </div>
+    ),
+    enableSorting: false,
     header: () => (
       <>
         Adresse
@@ -49,26 +63,17 @@ const columns: ColumnDef<RouterOutput['proEligibilityTests']['get']['addresses']
         />
       </>
     ),
-    accessorKey: 'ban_address',
-    accessorFn: (row) => `${row.ban_address} ${row.source_address}`,
     sortingFn: (rowA, rowB) => compareFrenchStrings(rowA.original.ban_address, rowB.original.ban_address),
-    cell: (info) => (
-      <div>
-        <div>
-          <div className="leading-none tracking-tight">{info.row.original.ban_address}</div>
-          {!info.row.original.ban_valid && (
-            <Badge severity="error" small>
-              Adresse invalide
-            </Badge>
-          )}
-        </div>
-        <div className=" text-xs italic text-gray-500 tracking-tighter">{info.row.original.source_address}</div>
-      </div>
-    ),
     width: 'minmax(200px, 1fr)',
-    enableSorting: false,
   },
   {
+    accessorKey: 'ban_score',
+    align: 'right',
+    enableSorting: false,
+    filterProps: {
+      unit: '%',
+    },
+    filterType: 'Range',
     header: () => (
       <>
         Indice de fiabilité
@@ -85,17 +90,18 @@ const columns: ColumnDef<RouterOutput['proEligibilityTests']['get']['addresses']
         />
       </>
     ),
-    accessorKey: 'ban_score',
-    width: '90px',
     suffix: '%',
-    align: 'right',
-    enableSorting: false,
-    filterType: 'Range',
-    filterProps: {
-      unit: '%',
-    },
+    width: '90px',
   },
   {
+    accessorKey: 'eligibility_status.etat_reseau',
+    align: 'center',
+    cell: (info) => <ProcheReseauBadge type={info.getValue()} />,
+    enableSorting: false,
+    filterProps: {
+      Component: ({ value }) => <ProcheReseauBadge type={value as ProcheReseauBadgeProps['type']} />,
+    },
+    filterType: 'Facets',
     header: () => (
       <>
         Proche réseau
@@ -113,16 +119,14 @@ const columns: ColumnDef<RouterOutput['proEligibilityTests']['get']['addresses']
       </>
     ),
     width: '130px',
-    accessorKey: 'eligibility_status.etat_reseau',
-    cell: (info) => <ProcheReseauBadge type={info.getValue()} />,
-    align: 'center',
-    enableSorting: false,
-    filterType: 'Facets',
-    filterProps: {
-      Component: ({ value }) => <ProcheReseauBadge type={value as ProcheReseauBadgeProps['type']} />,
-    },
   },
   {
+    accessorKey: 'eligibility_status.distance',
+    align: 'right',
+    filterProps: {
+      unit: 'm',
+    },
+    filterType: 'Range',
     header: () => (
       <>
         Distance au réseau
@@ -134,17 +138,16 @@ const columns: ColumnDef<RouterOutput['proEligibilityTests']['get']['addresses']
         />
       </>
     ),
-    width: '130px',
-    accessorKey: 'eligibility_status.distance',
-    suffix: 'm',
-    align: 'right',
     sortUndefined: 'last',
-    filterType: 'Range',
-    filterProps: {
-      unit: 'm',
-    },
+    suffix: 'm',
+    width: '130px',
   },
   {
+    accessorKey: 'eligibility_status.inPDP',
+    align: 'center',
+    cellType: 'Boolean',
+    enableSorting: false,
+    filterType: 'Facets',
     header: () => (
       <>
         PDP
@@ -162,13 +165,15 @@ const columns: ColumnDef<RouterOutput['proEligibilityTests']['get']['addresses']
       </>
     ),
     width: '70px',
-    accessorKey: 'eligibility_status.inPDP',
-    cellType: 'Boolean',
-    align: 'center',
-    enableSorting: false,
-    filterType: 'Facets',
   },
   {
+    accessorKey: 'eligibility_status.tauxENRR',
+    align: 'right',
+    filterProps: {
+      domain: [0, 100],
+      unit: '%',
+    },
+    filterType: 'Range',
     header: () => (
       <>
         Taux EnR&R
@@ -180,18 +185,19 @@ const columns: ColumnDef<RouterOutput['proEligibilityTests']['get']['addresses']
         />
       </>
     ),
-    width: '100px',
-    accessorKey: 'eligibility_status.tauxENRR',
-    suffix: '%',
-    align: 'right',
     sortUndefined: 'last',
-    filterType: 'Range',
-    filterProps: {
-      domain: [0, 100],
-      unit: '%',
-    },
+    suffix: '%',
+    width: '100px',
   },
   {
+    accessorKey: 'eligibility_status.co2',
+    align: 'right',
+    cell: (info) => (info.getValue() ? `${info.getValue() * 1000}` : ''),
+    filterProps: {
+      step: 0.001,
+      unit: 'g/kWh',
+    },
+    filterType: 'Range',
     header: () => (
       <>
         Contenu CO2 ACV (g/kWh)
@@ -203,18 +209,19 @@ const columns: ColumnDef<RouterOutput['proEligibilityTests']['get']['addresses']
         />
       </>
     ),
-    cell: (info) => (info.getValue() ? `${info.getValue() * 1000}` : ''),
-    width: '130px',
-    accessorKey: 'eligibility_status.co2',
-    align: 'right',
     sortUndefined: 'last',
-    filterType: 'Range',
-    filterProps: {
-      unit: 'g/kWh',
-      step: 0.001,
-    },
+    width: '130px',
   },
   {
+    accessorKey: 'eligibility_status.id',
+    align: 'right',
+    cell: (info) =>
+      info.row.original.eligibility_status?.id && (
+        <Link href={`/reseaux/${info.row.original.eligibility_status.id}`} isExternal title="Ouvrir la fiche réseau">
+          {info.row.original.eligibility_status.id}
+        </Link>
+      ),
+    enableSorting: false,
     header: () => (
       <>
         Identifiant
@@ -227,65 +234,25 @@ const columns: ColumnDef<RouterOutput['proEligibilityTests']['get']['addresses']
       </>
     ),
     width: '130px',
-    accessorKey: 'eligibility_status.id',
-    cell: (info) =>
-      info.row.original.eligibility_status?.id && (
-        <Link href={`/reseaux/${info.row.original.eligibility_status.id}`} isExternal title="Ouvrir la fiche réseau">
-          {info.row.original.eligibility_status.id}
-        </Link>
-      ),
-    align: 'right',
-    enableSorting: false,
   },
 ];
 
 const initialSortingState: SortingState = [
   {
-    id: 'eligibility_status_distance',
     desc: false,
+    id: 'eligibility_status_distance',
   },
 ];
 
 const quickFilterPresets = {
-  all: {
-    label: 'adresses',
-    getStat: (addresses) => addresses.length,
-    filters: [],
-  },
-  adressesEligibles: {
-    label: (
-      <>
-        potentiellement raccordables&nbsp;
-        <Tooltip
-          title={
-            <>
-              Le bâtiment est jugé potentiellement raccordable s'il se situe à moins de 200 m d'un réseau existant, sauf sur Paris où ce
-              seuil est réduit à 100 m. Attention, le mode de chauffage n'est pas pris en compte.
-            </>
-          }
-        />
-      </>
-    ),
-    getStat: (addresses) => addresses.filter((address) => address.eligibility_status && address.eligibility_status.isEligible).length,
-    filters: [{ id: 'eligibility_status_etat_reseau', value: { en_construction: true, existant: true, aucun: false } }],
-  },
-  adressesMoins100mPlus50ENRR: {
-    label: "à moins de 100m d'un réseau à plus de 50% d'ENR&R",
-    getStat: (addresses) =>
-      addresses.filter(
-        (address) =>
-          address.eligibility_status &&
-          address.eligibility_status.distance &&
-          address.eligibility_status.distance <= 100 &&
-          address.eligibility_status.tauxENRR &&
-          address.eligibility_status.tauxENRR >= 50
-      ).length,
-    filters: [
-      { id: 'eligibility_status_distance', value: [0, 100] },
-      { id: 'eligibility_status_tauxENRR', value: [50, 100] },
-    ],
-  },
   adressesDansPDP: {
+    filters: [
+      {
+        id: 'eligibility_status_inPDP',
+        value: { false: false, true: true },
+      },
+    ],
+    getStat: (addresses) => addresses.filter((address) => address.eligibility_status?.inPDP).length,
     label: (
       <>
         dans un périmètre de développement prioritaire&nbsp;
@@ -301,13 +268,43 @@ const quickFilterPresets = {
         />
       </>
     ),
-    getStat: (addresses) => addresses.filter((address) => address.eligibility_status && address.eligibility_status.inPDP).length,
+  },
+  adressesEligibles: {
+    filters: [{ id: 'eligibility_status_etat_reseau', value: { aucun: false, en_construction: true, existant: true } }],
+    getStat: (addresses) => addresses.filter((address) => address.eligibility_status?.isEligible).length,
+    label: (
+      <>
+        potentiellement raccordables&nbsp;
+        <Tooltip
+          title={
+            <>
+              Le bâtiment est jugé potentiellement raccordable s'il se situe à moins de 200 m d'un réseau existant, sauf sur Paris où ce
+              seuil est réduit à 100 m. Attention, le mode de chauffage n'est pas pris en compte.
+            </>
+          }
+        />
+      </>
+    ),
+  },
+  adressesMoins100mPlus50ENRR: {
     filters: [
-      {
-        id: 'eligibility_status_inPDP',
-        value: { true: true, false: false },
-      },
+      { id: 'eligibility_status_distance', value: [0, 100] },
+      { id: 'eligibility_status_tauxENRR', value: [50, 100] },
     ],
+    getStat: (addresses) =>
+      addresses.filter(
+        (address) =>
+          address.eligibility_status?.distance &&
+          address.eligibility_status.distance <= 100 &&
+          address.eligibility_status.tauxENRR &&
+          address.eligibility_status.tauxENRR >= 50
+      ).length,
+    label: "à moins de 100m d'un réseau à plus de 50% d'ENR&R",
+  },
+  all: {
+    filters: [],
+    getStat: (addresses) => addresses.length,
+    label: 'adresses',
   },
 } satisfies Record<string, QuickFilterPreset<RouterOutput['proEligibilityTests']['get']['addresses'][number]>>;
 type QuickFilterPresetKey = keyof typeof quickFilterPresets;
@@ -332,12 +329,12 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false, className }:
   const utils = trpc.useUtils();
 
   const { mutateAsync: markAsSeen, isPending: isMarkAsSeenLoading } = trpc.proEligibilityTests.markAsSeen.useMutation({
-    onSuccess: async () => {
+    onError: () => {
+      // Invalidate queries on error to refetch the correct state
       void utils.proEligibilityTests.list.invalidate();
       void utils.proEligibilityTests.get.invalidate({ id: test.id });
     },
-    onError: () => {
-      // Invalidate queries on error to refetch the correct state
+    onSuccess: async () => {
       void utils.proEligibilityTests.list.invalidate();
       void utils.proEligibilityTests.get.invalidate({ id: test.id });
     },
@@ -393,11 +390,11 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false, className }:
       .map(
         (address) =>
           ({
-            id: address.id,
-            longitude: address.geom!.coordinates[0],
-            latitude: address.geom!.coordinates[1],
             address: address.ban_address ?? '',
+            id: address.id,
             isEligible: address.eligibility_status?.isEligible ?? false,
+            latitude: address.geom!.coordinates[1],
+            longitude: address.geom!.coordinates[0],
           }) satisfies AdresseEligible
       );
   }, [filteredAddresses]);
@@ -420,10 +417,10 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false, className }:
         ...address,
         eligibility_status: {
           ...address.eligibility_status,
+          co2: address.eligibility_status?.co2 === null ? undefined : address.eligibility_status?.co2,
           // This can't be done on the backend because undefined are stripped from the json
           distance: address.eligibility_status?.distance === null ? undefined : address.eligibility_status?.distance,
           tauxENRR: address.eligibility_status?.tauxENRR === null ? undefined : address.eligibility_status?.tauxENRR,
-          co2: address.eligibility_status?.co2 === null ? undefined : address.eligibility_status?.co2,
         },
       })),
     [addresses]
@@ -535,8 +532,6 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false, className }:
               className="[&_[role='tabpanel']]:p-2w!" // decrease the default big padding of tabs panels
               tabs={[
                 {
-                  label: `Liste (${filteredAddresses.length})`,
-                  iconId: 'fr-icon-list-unordered',
                   content: (
                     <TableSimple
                       controlsLayout="block"
@@ -550,19 +545,11 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false, className }:
                       onFilterChange={setFilteredAddresses}
                     />
                   ),
+                  iconId: 'fr-icon-list-unordered',
                   isDefault: true,
+                  label: `Liste (${filteredAddresses.length})`,
                 },
                 {
-                  label: (
-                    <>
-                      Carte ({filteredAddressesMapData.length}){' '}
-                      <Tooltip
-                        iconProps={{ color: 'var(--text-default-grey)', className: 'ml-1' }}
-                        title="Une différence de nombre de résultats peut exister si la requête à la Base d'Adresse Nationale n'as pas fonctionné ou si les coordonnées géographiques ne sont pas disponibles."
-                      />
-                    </>
-                  ),
-                  iconId: 'fr-icon-map-pin-2-line',
                   content: (
                     <div className="min-h-[50vh] aspect-4/3">
                       <Map
@@ -579,6 +566,16 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false, className }:
                         adressesEligibles={filteredAddressesMapData}
                       />
                     </div>
+                  ),
+                  iconId: 'fr-icon-map-pin-2-line',
+                  label: (
+                    <>
+                      Carte ({filteredAddressesMapData.length}){' '}
+                      <Tooltip
+                        iconProps={{ className: 'ml-1', color: 'var(--text-default-grey)' }}
+                        title="Une différence de nombre de résultats peut exister si la requête à la Base d'Adresse Nationale n'as pas fonctionné ou si les coordonnées géographiques ne sont pas disponibles."
+                      />
+                    </>
                   ),
                 },
               ]}

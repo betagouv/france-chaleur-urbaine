@@ -11,99 +11,99 @@ import { ObjectKeys } from '@/utils/typescript';
 
 export const tilesConfigs = {
   'etudes-en-cours': defineTilesConfig({
-    tilesTableName: 'etudes_en_cours_tiles',
     generateGeoJSON: extractGeoJSONFromDatabaseTable('etudes_en_cours'),
-  }),
-  'perimetres-geothermie-profonde': defineTilesConfig({
-    tilesTableName: 'perimetres_geothermie_profonde_tiles',
-    zoomMax: 11,
-    // Attention, il faut avoir corrigé le format du fichier au préalable
-    // sed -i 's/tableauFeature/Feature/g' gelules_geoth.geojson
-    generateGeoJSON: getInputFilePath,
-  }),
-  'tests-adresses': defineTilesConfig({
-    tilesTableName: 'pro_eligibility_tests_addresses_tiles',
-    zoomMax: 12,
-    tippeCanoeArgs: '--drop-rate=0 --no-tile-size-limit --no-feature-limit',
-    generateGeoJSON: testsAdressesGeoJSONQuery,
-  }),
-  'reseaux-de-chaleur': defineTilesConfig({
-    tilesTableName: 'reseaux_de_chaleur_tiles',
-    tippeCanoeArgs: '--no-tile-compression', // legacy
-    generateGeoJSON: reseauxDeChaleurGeoJSONQuery,
-  }),
-  'reseaux-de-froid': defineTilesConfig({
-    tilesTableName: 'reseaux_de_froid_tiles',
-    tippeCanoeArgs: '--no-tile-compression --layer=coldOutline', // legacy
-    generateGeoJSON: extractGeoJSONFromDatabaseTable('reseaux_de_froid'),
-  }),
-  'reseaux-en-construction': defineTilesConfig({
-    tilesTableName: 'zones_et_reseaux_en_construction_tiles',
-    tippeCanoeArgs: '--no-tile-compression --layer=futurOutline', // legacy
-    generateGeoJSON: extractGeoJSONFromDatabaseTable('zones_et_reseaux_en_construction'),
-  }),
-  'perimetres-de-developpement-prioritaire': defineTilesConfig({
-    tilesTableName: 'zone_de_developpement_prioritaire_tiles',
-    tippeCanoeArgs: '--no-tile-compression --layer=zoneDP', // legacy
-    generateGeoJSON: extractGeoJSONFromDatabaseTable('zone_de_developpement_prioritaire'),
+    tilesTableName: 'etudes_en_cours_tiles',
   }),
   'installations-geothermie-surface-echangeurs-fermes': defineTilesConfig({
-    tilesTableName: 'installations_geothermie_surface_echangeurs_fermes_tiles',
-    zoomMax: 10,
-    tippeCanoeArgs: '-r1.3',
     // Source : https://www.geothermies.fr/outils/guides/services-web-cartographiques-des-installations-de-geothermie-de-surface-ademe-brgm
     generateGeoJSON: downloadGeoJSONFromURL(
       'https://data.geoscience.fr/api/geothermyInstallationClosedLoopWXS?service=wfs&version=2.0.0&request=GetFeature&typenames=vue_gthsurf_diff_install_sonde:vue_gthsurf_diff_install_sonde&outputFormat=application/json&srsName=EPSG:4326'
     ),
+    tilesTableName: 'installations_geothermie_surface_echangeurs_fermes_tiles',
+    tippeCanoeArgs: '-r1.3',
+    zoomMax: 10,
   }),
   'installations-geothermie-surface-echangeurs-ouverts': defineTilesConfig({
-    tilesTableName: 'installations_geothermie_surface_echangeurs_ouverts_tiles',
-    zoomMax: 10,
-    tippeCanoeArgs: '-r1.3',
     // Source : https://www.geothermies.fr/outils/guides/services-web-cartographiques-des-installations-de-geothermie-de-surface-ademe-brgm
     generateGeoJSON: downloadGeoJSONFromURL(
       'https://data.geoscience.fr/api/geothermyInstallationOpenLoopWXS?service=wfs&version=2.0.0&request=GetFeature&typenames=installation_geothermie_aquif:vue_gthsurf_diff_install_aquif&outputFormat=application/json&srsName=EPSG:4326'
     ),
+    tilesTableName: 'installations_geothermie_surface_echangeurs_ouverts_tiles',
+    tippeCanoeArgs: '-r1.3',
+    zoomMax: 10,
   }),
   'ouvrages-geothermie-surface-echangeurs-fermes': defineTilesConfig({
-    tilesTableName: 'ouvrages_geothermie_surface_echangeurs_fermes_tiles',
-    zoomMax: 10,
-    tippeCanoeArgs: '-r1.8',
     // Source : https://www.geothermies.fr/outils/guides/services-web-cartographiques-des-installations-de-geothermie-de-surface-ademe-brgm
     generateGeoJSON: downloadGeoJSONFromURL(
       'https://data.geoscience.fr/api/geothermyInstallationPartClosedLoopWXS?service=wfs&version=2.0.0&request=GetFeature&typenames=ouvrage_geothermie_sonde:vue_gthsurf_diff_ouvrage_sonde&outputFormat=application/json&srsName=EPSG:4326'
     ),
+    tilesTableName: 'ouvrages_geothermie_surface_echangeurs_fermes_tiles',
+    tippeCanoeArgs: '-r1.8',
+    zoomMax: 10,
   }),
   'ouvrages-geothermie-surface-echangeurs-ouverts': defineTilesConfig({
-    tilesTableName: 'ouvrages_geothermie_surface_echangeurs_ouverts_tiles',
-    zoomMax: 10,
-    tippeCanoeArgs: '-r1.3',
     // Source : https://www.geothermies.fr/outils/guides/services-web-cartographiques-des-installations-de-geothermie-de-surface-ademe-brgm
     generateGeoJSON: downloadGeoJSONFromURL(
       'https://data.geoscience.fr/api/geothermyInstallationPartOpenLoopWXS?service=wfs&version=2.0.0&request=GetFeature&typenames=ouvrage_geothermie_aquif:vue_gthsurf_diff_ouvrage_aquif&outputFormat=application/json&srsName=EPSG:4326'
     ),
+    tilesTableName: 'ouvrages_geothermie_surface_echangeurs_ouverts_tiles',
+    tippeCanoeArgs: '-r1.3',
+    zoomMax: 10,
   }),
-  'zones-opportunite-froid': defineTilesConfig({
-    tilesTableName: 'zone_a_potentiel_froid_tiles',
-    zoomMax: 12,
-    generateGeoJSON: extractGeoJSONFromDatabaseTable('zone_a_potentiel_froid'),
+  'perimetres-de-developpement-prioritaire': defineTilesConfig({
+    generateGeoJSON: extractGeoJSONFromDatabaseTable('zone_de_developpement_prioritaire'),
+    tilesTableName: 'zone_de_developpement_prioritaire_tiles',
+    tippeCanoeArgs: '--no-tile-compression --layer=zoneDP', // legacy
   }),
-  'zones-opportunite-fort-froid': defineTilesConfig({
-    tilesTableName: 'zone_a_potentiel_fort_froid_tiles',
-    zoomMax: 12,
-    generateGeoJSON: extractGeoJSONFromDatabaseTable('zone_a_potentiel_fort_froid'),
+  'perimetres-geothermie-profonde': defineTilesConfig({
+    // Attention, il faut avoir corrigé le format du fichier au préalable
+    // sed -i 's/tableauFeature/Feature/g' gelules_geoth.geojson
+    generateGeoJSON: getInputFilePath,
+    tilesTableName: 'perimetres_geothermie_profonde_tiles',
+    zoomMax: 11,
   }),
-  'zones-a-urbaniser': defineTilesConfig({
-    tilesTableName: 'zone_a_urbaniser_tiles',
-    zoomMax: 12,
-    // Source : https://cerema.app.box.com/s/0jiohobsodkj2lnoplfoziz7hn5wgc0z
-    generateGeoJSON: extractZippedShapefileToGeoJSON,
+  'reseaux-de-chaleur': defineTilesConfig({
+    generateGeoJSON: reseauxDeChaleurGeoJSONQuery,
+    tilesTableName: 'reseaux_de_chaleur_tiles',
+    tippeCanoeArgs: '--no-tile-compression', // legacy
+  }),
+  'reseaux-de-froid': defineTilesConfig({
+    generateGeoJSON: extractGeoJSONFromDatabaseTable('reseaux_de_froid'),
+    tilesTableName: 'reseaux_de_froid_tiles',
+    tippeCanoeArgs: '--no-tile-compression --layer=coldOutline', // legacy
+  }),
+  'reseaux-en-construction': defineTilesConfig({
+    generateGeoJSON: extractGeoJSONFromDatabaseTable('zones_et_reseaux_en_construction'),
+    tilesTableName: 'zones_et_reseaux_en_construction_tiles',
+    tippeCanoeArgs: '--no-tile-compression --layer=futurOutline', // legacy
   }),
   'ressources-geothermales-nappes': defineTilesConfig({
-    tilesTableName: 'zone_a_urbaniser_tiles',
-    zoomMax: 12,
     // Source : https://drive.google.com/file/d/1w4lLWQCW1nMoRuIyZvVO5dMLMELo-YD3/view?usp=drive_link
     generateGeoJSON: extractZippedShapefileToGeoJSON,
+    tilesTableName: 'zone_a_urbaniser_tiles',
+    zoomMax: 12,
+  }),
+  'tests-adresses': defineTilesConfig({
+    generateGeoJSON: testsAdressesGeoJSONQuery,
+    tilesTableName: 'pro_eligibility_tests_addresses_tiles',
+    tippeCanoeArgs: '--drop-rate=0 --no-tile-size-limit --no-feature-limit',
+    zoomMax: 12,
+  }),
+  'zones-a-urbaniser': defineTilesConfig({
+    // Source : https://cerema.app.box.com/s/0jiohobsodkj2lnoplfoziz7hn5wgc0z
+    generateGeoJSON: extractZippedShapefileToGeoJSON,
+    tilesTableName: 'zone_a_urbaniser_tiles',
+    zoomMax: 12,
+  }),
+  'zones-opportunite-fort-froid': defineTilesConfig({
+    generateGeoJSON: extractGeoJSONFromDatabaseTable('zone_a_potentiel_fort_froid'),
+    tilesTableName: 'zone_a_potentiel_fort_froid_tiles',
+    zoomMax: 12,
+  }),
+  'zones-opportunite-froid': defineTilesConfig({
+    generateGeoJSON: extractGeoJSONFromDatabaseTable('zone_a_potentiel_froid'),
+    tilesTableName: 'zone_a_potentiel_froid_tiles',
+    zoomMax: 12,
   }),
 };
 

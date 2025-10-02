@@ -6,8 +6,8 @@ import ZonesOpportuniteFroidAdapter from './adapters/zones-opportunite-froid';
 export const dataImportAdapters = {
   'etudes-en-cours': EtudeEnCoursAdapter,
   'tests-adresses-legacy': TestsAdressesLegacyAdapter,
-  'zones-opportunite-froid': ZonesOpportuniteFroidAdapter,
   'zones-opportunite-fort-froid': ZonesOpportuniteFortFroidAdapter,
+  'zones-opportunite-froid': ZonesOpportuniteFroidAdapter,
 };
 
 export type DataImportName = keyof typeof dataImportAdapters;

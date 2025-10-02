@@ -1,6 +1,6 @@
 import Heading from '@/components/ui/Heading';
 
-import { type Document } from './config';
+import type { Document } from './config';
 
 const RessourceContent = ({ content }: { content: Document }) => {
   return content ? (

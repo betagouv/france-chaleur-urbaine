@@ -11,7 +11,7 @@ import Text from '@/components/ui/Text';
 import WrappedText from '@/components/WrappedText';
 import userExperience from '@/data/villes/user-experience';
 import citiesData from '@/data/villes/villes';
-import { type Network } from '@/types/Summary/Network';
+import type { Network } from '@/types/Summary/Network';
 
 import { CityContainer, VideoGuideColumn } from './City.styles';
 import ClassedNetworks from './ClassedNetworks';
@@ -50,7 +50,7 @@ const City = ({ citySlug, network }: { citySlug: keyof typeof citiesData; networ
             </Box>
             {cityData.networksData && (
               <Box p="2w">
-                <Networks networksData={cityData.networksData} network={network} cityCoord={cityData.coord as [number, number]}></Networks>
+                <Networks networksData={cityData.networksData} network={network} cityCoord={cityData.coord as [number, number]} />
               </Box>
             )}
           </Box>
@@ -80,7 +80,7 @@ const City = ({ citySlug, network }: { citySlug: keyof typeof citiesData; networ
               </VideoGuideColumn>
             </ResponsiveRow>
           </Box>
-          {cityData.networksData && cityData.networksData.isClassed && (
+          {cityData.networksData?.isClassed && (
             <Box p="8w" backgroundColor="#f9f8f6">
               <ResponsiveRow className="fr-container">
                 <ClassedNetworks
@@ -134,16 +134,16 @@ const City = ({ citySlug, network }: { citySlug: keyof typeof citiesData; networ
               Les différentes étapes en copropriété :
             </Heading>
             <Box display="flex" flexDirection="column" className="fr-container">
-              {userExperience.map((props, i) => (
+              {userExperience.map((props) => (
                 <Box
-                  key={`box-user-experience-${i}`}
+                  key={`box-user-experience-${props.imgSrc}`}
                   display="flex"
                   flexDirection="row"
                   alignItems="center"
                   justifyContent="space-between"
                   position="relative"
                 >
-                  <WrappedText textClassName="user-experience-description" key={`user-experience-${i}`} center {...props} />
+                  <WrappedText textClassName="user-experience-description" key={`user-experience-${props.imgSrc}`} center {...props} />
                 </Box>
               ))}
             </Box>

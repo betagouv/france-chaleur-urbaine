@@ -1,7 +1,7 @@
 import Alert from '@codegouvfr/react-dsfr/Alert';
 import { useForm } from '@tanstack/react-form';
 import { useEffect, useState } from 'react';
-import { z, type ZodSchema } from 'zod';
+import { type ZodSchema, z } from 'zod';
 
 import { clientConfig } from '@/client-config';
 import Input from '@/components/form/dsfr/Input';
@@ -17,16 +17,16 @@ import { nonEmptyArray, ObjectKeys } from '@/utils/typescript';
 
 const typesUtilisateur = [
   {
-    label: 'une collectivité',
     key: 'Collectivité',
+    label: 'une collectivité',
   },
   {
-    label: 'un exploitant',
     key: 'Exploitant',
+    label: 'un exploitant',
   },
   {
-    label: 'autre',
     key: 'Autre',
+    label: 'autre',
   },
 ] as const;
 
@@ -34,24 +34,24 @@ type TypeUtilisateur = (typeof typesUtilisateur)[number]['key'];
 
 const typesDemande = [
   {
-    label: 'ajouter le tracé d’un réseau existant',
     key: 'ajout tracé réseau existant',
+    label: 'ajouter le tracé d’un réseau existant',
   },
   {
-    label: 'ajouter le tracé d’un réseau en construction (nouveau réseau ou extension)',
     key: 'ajout tracé réseau en construction',
+    label: 'ajouter le tracé d’un réseau en construction (nouveau réseau ou extension)',
   },
   {
-    label: 'ajouter un périmètre de développement prioritaire',
     key: 'ajout périmètre développement prioritaire',
+    label: 'ajouter un périmètre de développement prioritaire',
   },
   {
-    label: 'ajouter un schéma directeur',
     key: 'ajout schéma directeur',
+    label: 'ajouter un schéma directeur',
   },
   {
-    label: 'autre',
     key: 'autre',
+    label: 'autre',
   },
 ] as const;
 
@@ -73,8 +73,8 @@ type FieldConfig = {
 );
 
 export const filesLimits = {
-  maxFiles: 10,
   maxFileSize: 50 * 1024 * 1024,
+  maxFiles: 10,
   maxTotalFileSize: 250 * 1024 * 1024,
 };
 
@@ -130,160 +130,160 @@ const filesSchema = z
     error: `Le total des fichier doit être inférieur à ${formatFileSize(filesLimits.maxTotalFileSize)}.`,
   })
   .superRefine((files, ctx) => {
-    files.forEach((file) => {
+    for (const file of files) {
       if (riskyExtensions.some((extension) => file.name.endsWith(extension))) {
         ctx.addIssue({
           code: 'custom',
-          message: `L'extension du fichier "${file.name}" n'est pas autorisée.`,
           fatal: true,
+          message: `L'extension du fichier "${file.name}" n'est pas autorisée.`,
         });
         return z.NEVER;
       }
-    });
+    }
   });
 
 const stringSchema = z.string({ error: 'Ce champ est obligatoire' });
 
 const typeDemandeFields = {
-  'ajout tracé réseau existant': [
-    {
-      name: 'nomReseau',
-      label: 'Nom du réseau :',
-      schema: stringSchema,
-    },
-    {
-      name: 'localisation',
-      label: 'Localisation :',
-      schema: stringSchema,
-    },
-    {
-      name: 'gestionnaire',
-      label: 'Gestionnaire :',
-      schema: stringSchema,
-    },
-    {
-      name: 'emailReferentCommercial',
-      label: 'Email du référent commercial à qui transmettre les demandes de raccordement',
-      optional: true,
-      schema: z.string().optional(),
-    },
-    {
-      name: 'commentaire',
-      label: 'Commentaire :',
-      optional: true,
-      schema: z.string().optional(),
-    },
-    {
-      name: 'fichiers',
-      label: 'Téléverser vos fichiers :',
-      type: 'file',
-      schema: filesSchema,
-      hint: 'Formats préférentiels : GeoJSON, Shapefile (shp, shx, prj, cpg, dbf à fournir), KML, GeoPackage.',
-    },
-  ],
-  'ajout tracé réseau en construction': [
-    {
-      name: 'nomReseau',
-      label: 'Nom du réseau :',
-      schema: stringSchema,
-    },
-    {
-      name: 'localisation',
-      label: 'Localisation :',
-      schema: stringSchema,
-    },
-    {
-      name: 'gestionnaire',
-      label: 'Gestionnaire :',
-      schema: stringSchema,
-    },
-    {
-      name: 'dateMiseEnServicePrevisionnelle',
-      label: 'Date de mise en service prévisionnelle :',
-      schema: stringSchema,
-    },
-    {
-      name: 'emailReferentCommercial',
-      label: 'Email du référent commercial à qui transmettre les demandes de raccordement',
-      optional: true,
-      schema: z.string().optional(),
-    },
-    {
-      name: 'commentaire',
-      label: 'Commentaire :',
-      optional: true,
-      schema: z.string().optional(),
-    },
-    {
-      name: 'fichiers',
-      label: 'Téléverser vos fichiers :',
-      type: 'file',
-      schema: filesSchema,
-      hint: 'Formats préférentiels : GeoJSON, Shapefile, KML, GeoPackage.',
-    },
-  ],
   'ajout périmètre développement prioritaire': [
     {
-      name: 'nomReseau',
       label: 'Nom du réseau :',
+      name: 'nomReseau',
       schema: stringSchema,
     },
     {
-      name: 'localisation',
       label: 'Localisation :',
+      name: 'localisation',
       schema: stringSchema,
     },
     {
-      name: 'fichiers',
-      label: 'Téléverser vos fichiers :',
-      type: 'file',
-      schema: filesSchema,
       hint: 'Formats préférentiels : GeoJSON, Shapefile, KML, GeoPackage.',
+      label: 'Téléverser vos fichiers :',
+      name: 'fichiers',
+      schema: filesSchema,
+      type: 'file',
     },
   ],
   'ajout schéma directeur': [
     {
-      name: 'nomReseau',
       label: 'Nom du réseau ou du territoire concerné :',
+      name: 'nomReseau',
       schema: stringSchema,
     },
     {
-      name: 'fichiers',
-      label: 'Téléverser vos fichiers :',
-      type: 'file',
-      schema: filesSchema,
       hint: 'Formats préférentiels : PDF, Word.',
+      label: 'Téléverser vos fichiers :',
+      name: 'fichiers',
+      schema: filesSchema,
+      type: 'file',
+    },
+  ],
+  'ajout tracé réseau en construction': [
+    {
+      label: 'Nom du réseau :',
+      name: 'nomReseau',
+      schema: stringSchema,
+    },
+    {
+      label: 'Localisation :',
+      name: 'localisation',
+      schema: stringSchema,
+    },
+    {
+      label: 'Gestionnaire :',
+      name: 'gestionnaire',
+      schema: stringSchema,
+    },
+    {
+      label: 'Date de mise en service prévisionnelle :',
+      name: 'dateMiseEnServicePrevisionnelle',
+      schema: stringSchema,
+    },
+    {
+      label: 'Email du référent commercial à qui transmettre les demandes de raccordement',
+      name: 'emailReferentCommercial',
+      optional: true,
+      schema: z.string().optional(),
+    },
+    {
+      label: 'Commentaire :',
+      name: 'commentaire',
+      optional: true,
+      schema: z.string().optional(),
+    },
+    {
+      hint: 'Formats préférentiels : GeoJSON, Shapefile, KML, GeoPackage.',
+      label: 'Téléverser vos fichiers :',
+      name: 'fichiers',
+      schema: filesSchema,
+      type: 'file',
+    },
+  ],
+  'ajout tracé réseau existant': [
+    {
+      label: 'Nom du réseau :',
+      name: 'nomReseau',
+      schema: stringSchema,
+    },
+    {
+      label: 'Localisation :',
+      name: 'localisation',
+      schema: stringSchema,
+    },
+    {
+      label: 'Gestionnaire :',
+      name: 'gestionnaire',
+      schema: stringSchema,
+    },
+    {
+      label: 'Email du référent commercial à qui transmettre les demandes de raccordement',
+      name: 'emailReferentCommercial',
+      optional: true,
+      schema: z.string().optional(),
+    },
+    {
+      label: 'Commentaire :',
+      name: 'commentaire',
+      optional: true,
+      schema: z.string().optional(),
+    },
+    {
+      hint: 'Formats préférentiels : GeoJSON, Shapefile (shp, shx, prj, cpg, dbf à fournir), KML, GeoPackage.',
+      label: 'Téléverser vos fichiers :',
+      name: 'fichiers',
+      schema: filesSchema,
+      type: 'file',
     },
   ],
   autre: [
     {
-      name: 'precisions',
       label: 'Précisez :',
+      name: 'precisions',
       schema: stringSchema,
     },
   ],
 } as const satisfies Record<TypeDemande, FieldConfig[]>;
 
 export const zCommonFormData = z.object({
-  typeUtilisateur: z.enum(nonEmptyArray(typesUtilisateur.map((w) => w.key)), { error: 'Ce choix est obligatoire' }),
-  typeUtilisateurAutre: stringSchema,
+  dansCadreDemandeADEME: z.boolean({ error: 'Ce choix est obligatoire' }),
+  email: z.email("L'adresse email n'est pas valide"),
   nom: z.string({ error: 'Ce champ est obligatoire' }),
   prenom: z.string({ error: 'Ce champ est obligatoire' }),
-  email: z.email("L'adresse email n'est pas valide"),
-  dansCadreDemandeADEME: z.boolean({ error: 'Ce choix est obligatoire' }),
+  typeUtilisateur: z.enum(nonEmptyArray(typesUtilisateur.map((w) => w.key)), { error: 'Ce choix est obligatoire' }),
+  typeUtilisateurAutre: stringSchema,
 });
 
 const zodSchemasByTypeDemande = ObjectKeys(typeDemandeFields).reduce(
-  (acc, key) => ({
-    ...acc,
-    [key]: typeDemandeFields[key].reduce(
-      (acc2, field) => ({
-        ...acc2,
-        [field.name]: (field as FieldConfig).schema,
-      }),
-      {}
-    ),
-  }),
+  (acc, key) => {
+    (acc[key] as any) = typeDemandeFields[key].reduce(
+      (acc2, field) => {
+        acc2[field.name] = (field as FieldConfig).schema;
+        return acc2;
+      },
+      {} as Record<string, any>
+    );
+    return acc;
+  },
   {} as {
     [TypeDemande in keyof typeof typeDemandeFields]: {
       [Name in (typeof typeDemandeFields)[TypeDemande][number]['name']]: Extract<
@@ -325,7 +325,7 @@ export const zContributionFormData = z.discriminatedUnion(
     zCommonFormData.merge(
       z.object({
         typeDemande: z.literal('autre'),
-        ...zodSchemasByTypeDemande['autre'],
+        ...zodSchemasByTypeDemande.autre,
       })
     ),
   ]
@@ -341,17 +341,14 @@ const ContributionForm = () => {
 
   const form = useForm({
     defaultValues: {
-      typeUtilisateur: '',
-      typeUtilisateurAutre: '',
+      dansCadreDemandeADEME: '',
+      email: '',
       nom: '',
       prenom: '',
-      email: '',
       typeDemande: '',
-      dansCadreDemandeADEME: '',
+      typeUtilisateur: '',
+      typeUtilisateurAutre: '',
     } satisfies Record<keyof FormData, ''> as unknown as FormData,
-    validators: {
-      onChange: zContributionFormData,
-    },
     onSubmit: toastErrors(
       async ({ value }: { value: FormData }) => {
         await postFormDataFetchJSON('/api/contribution', zContributionFormData.parse(value));
@@ -364,6 +361,9 @@ const ContributionForm = () => {
         </span>
       )
     ),
+    validators: {
+      onChange: zContributionFormData,
+    },
   });
 
   // ensure the state is invalid when loaded
@@ -410,11 +410,11 @@ const ContributionForm = () => {
             options={typesUtilisateur.map((option) => ({
               label: option.label,
               nativeInputProps: {
-                required: true,
                 checked: field.state.value === option.key,
-                value: option.key,
-                onChange: (e) => field.handleChange(e.target.value as TypeUtilisateur),
                 onBlur: field.handleBlur,
+                onChange: (e) => field.handleChange(e.target.value as TypeUtilisateur),
+                required: true,
+                value: option.key,
               },
             }))}
             {...getInputErrorStates(field)}
@@ -431,12 +431,12 @@ const ContributionForm = () => {
                 <Input
                   label="Précisez :"
                   nativeInputProps={{
-                    required: true,
                     id: field.name,
                     name: field.name,
-                    value: field.state.value,
-                    onChange: (e) => field.handleChange(e.target.value),
                     onBlur: field.handleBlur,
+                    onChange: (e) => field.handleChange(e.target.value),
+                    required: true,
+                    value: field.state.value,
                   }}
                   {...getInputErrorStates(field)}
                 />
@@ -452,14 +452,14 @@ const ContributionForm = () => {
           <Input
             label="Votre nom :"
             nativeInputProps={{
-              required: true,
+              autoComplete: 'nom',
               id: field.name,
               name: field.name,
-              placeholder: 'Saisir votre nom',
-              autoComplete: 'nom',
-              value: field.state.value,
-              onChange: (e) => field.handleChange(e.target.value),
               onBlur: field.handleBlur,
+              onChange: (e) => field.handleChange(e.target.value),
+              placeholder: 'Saisir votre nom',
+              required: true,
+              value: field.state.value,
             }}
             {...getInputErrorStates(field)}
           />
@@ -472,14 +472,14 @@ const ContributionForm = () => {
           <Input
             label="Votre prénom :"
             nativeInputProps={{
-              required: true,
+              autoComplete: 'prenom',
               id: field.name,
               name: field.name,
-              placeholder: 'Saisir votre prénom',
-              autoComplete: 'prenom',
-              value: field.state.value,
-              onChange: (e) => field.handleChange(e.target.value),
               onBlur: field.handleBlur,
+              onChange: (e) => field.handleChange(e.target.value),
+              placeholder: 'Saisir votre prénom',
+              required: true,
+              value: field.state.value,
             }}
             {...getInputErrorStates(field)}
           />
@@ -492,14 +492,14 @@ const ContributionForm = () => {
           <Input
             label="Votre adresse email :"
             nativeInputProps={{
-              required: true,
+              autoComplete: 'email',
               id: field.name,
               name: field.name,
-              placeholder: 'Saisir votre email',
-              autoComplete: 'email',
-              value: field.state.value,
-              onChange: (e) => field.handleChange(e.target.value),
               onBlur: field.handleBlur,
+              onChange: (e) => field.handleChange(e.target.value),
+              placeholder: 'Saisir votre email',
+              required: true,
+              value: field.state.value,
             }}
             {...getInputErrorStates(field)}
           />
@@ -518,16 +518,16 @@ const ContributionForm = () => {
                   label: 'oui',
                   nativeInputProps: {
                     checked: field.state.value === true,
-                    onChange: () => field.handleChange(true),
                     onBlur: field.handleBlur,
+                    onChange: () => field.handleChange(true),
                   },
                 },
                 {
                   label: 'non',
                   nativeInputProps: {
                     checked: field.state.value === false,
-                    onChange: () => field.handleChange(false),
                     onBlur: field.handleBlur,
+                    onChange: () => field.handleChange(false),
                   },
                 },
               ]}
@@ -570,11 +570,11 @@ const ContributionForm = () => {
             options={typesDemande.map((option) => ({
               label: option.label,
               nativeInputProps: {
-                required: true,
                 checked: field.state.value === option.key,
-                value: option.key,
-                onChange: (e) => field.handleChange(e.target.value as TypeDemande),
                 onBlur: field.handleBlur,
+                onChange: (e) => field.handleChange(e.target.value as TypeDemande),
+                required: true,
+                value: option.key,
               },
             }))}
             {...getInputErrorStates(field)}
@@ -608,6 +608,7 @@ const ContributionForm = () => {
                       }
                       multiple
                       nativeInputProps={{
+                        onBlur: field.handleBlur,
                         onChange: (e) => {
                           const files = e.target.files;
                           if (!files || files.length === 0) {
@@ -615,15 +616,14 @@ const ContributionForm = () => {
                           }
                           field.handleChange([...files]);
                         },
-                        onBlur: field.handleBlur,
                       }}
                       {...getInputErrorStates(field)}
                     />
                     {((field.state.value as File[]) ?? []).length > 0 && (
                       <Box mb="2w">
                         Fichier(s) sélectionné(s) :{' '}
-                        {((field.state.value as File[]) ?? []).map((file, index) => (
-                          <Box key={index}>- {file.name}</Box>
+                        {((field.state.value as File[]) ?? []).map((file) => (
+                          <Box key={file.name}>- {file.name}</Box>
                         ))}
                       </Box>
                     )}
@@ -632,12 +632,12 @@ const ContributionForm = () => {
                   <Input
                     label={option.label}
                     nativeInputProps={{
-                      required: !(option as FieldConfig).optional,
                       id: field.name,
                       name: field.name,
-                      value: field.state.value as string,
-                      onChange: (e) => field.handleChange(e.target.value),
                       onBlur: field.handleBlur,
+                      onChange: (e) => field.handleChange(e.target.value),
+                      required: !(option as FieldConfig).optional,
+                      value: field.state.value as string,
                     }}
                     {...getInputErrorStates(field)}
                   />

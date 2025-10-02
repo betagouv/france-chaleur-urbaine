@@ -9,7 +9,7 @@ import React, { type CSSProperties, forwardRef, memo, type ReactNode, useEffect,
 import styled from 'styled-components';
 import type { Equals } from 'tsafe';
 import { assert } from 'tsafe/assert';
-import { type Parameters } from 'tsafe/Parameters';
+import type { Parameters } from 'tsafe/Parameters';
 import { symToStr } from 'tsafe/symToStr';
 
 import Box from '@/components/ui/Box';
@@ -179,7 +179,7 @@ export const CheckableAccordion = memo(
               title="Déplier/replier la section"
               type="button"
               id={`${id}__toggle-btn`}
-            ></StyledToggleButton>
+            />
           )}
         </Box>
 

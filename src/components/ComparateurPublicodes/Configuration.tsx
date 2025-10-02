@@ -1,21 +1,22 @@
-import { type RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
+import type { RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
 import { fr } from '@codegouvfr/react-dsfr';
 import { motion } from 'motion/react';
-import React from 'react';
+import type React from 'react';
 
 import { addresseToPublicodesRulesKeys } from '@/components/ComparateurPublicodes/mappings';
-import { type SimulatorEngine } from '@/components/ComparateurPublicodes/useSimulatorEngine';
+import type { SimulatorEngine } from '@/components/ComparateurPublicodes/useSimulatorEngine';
 import labels from '@/components/form/publicodes/labels';
 import Button from '@/components/ui/Button';
 import CrudDropdown from '@/components/ui/CrudDropdown';
 import { trackEvent } from '@/modules/analytics/client';
 import { notify } from '@/modules/notification';
-import { type ProComparateurConfigurationResponse } from '@/pages/api/pro/comparateur/configurations/[[...slug]]';
+import type { ProComparateurConfigurationResponse } from '@/pages/api/pro/comparateur/configurations/[[...slug]]';
 import { pick } from '@/utils/core';
 import cx from '@/utils/cx';
 import { sortKeys } from '@/utils/objects';
 import { upperCaseFirstChar } from '@/utils/strings';
 import { hasProperty } from '@/utils/typescript';
+
 interface ConfigurationProps {
   engine: SimulatorEngine;
   address?: string;
@@ -59,24 +60,32 @@ const Configuration: React.FC<ConfigurationProps> = ({ engine, address, onChange
     return null;
   }
 
-  const customSituation = Object.entries(situation).reduce((acc, [key, value]) => {
-    if (engine.isDefaultValue(key as RuleName, value)) {
+  const customSituation = Object.entries(situation).reduce(
+    (acc, [key, value]) => {
+      if (engine.isDefaultValue(key as RuleName, value)) {
+        return acc;
+      }
+
+      acc[key] = value;
       return acc;
-    }
+    },
+    {} as Record<string, any>
+  );
 
-    return { ...acc, [key]: value };
-  }, {});
+  const toBeDisplayedSituation = Object.entries(customSituation).reduce(
+    (acc, [key, situationValue]) => {
+      const label = labels[key];
+      const value = situationValue;
 
-  const toBeDisplayedSituation = Object.entries(customSituation).reduce((acc, [key, situationValue]) => {
-    const label = labels[key];
-    const value = situationValue;
+      if (!label || addresseToPublicodesRulesKeys.includes(key as RuleName)) {
+        return acc;
+      }
 
-    if (!label || addresseToPublicodesRulesKeys.includes(key as RuleName)) {
+      acc[key] = value;
       return acc;
-    }
-
-    return { ...acc, [key]: value };
-  }, {});
+    },
+    {} as Record<string, any>
+  );
 
   const hasToBeDisplayedSituation = Object.keys(toBeDisplayedSituation).length > 0;
 
@@ -86,7 +95,7 @@ const Configuration: React.FC<ConfigurationProps> = ({ engine, address, onChange
         <h4 className="mb-0!">Configuration</h4>
         <CrudDropdown<ProComparateurConfigurationResponse>
           url="/api/pro/comparateur/configurations"
-          data={Object.keys(toBeDisplayedSituation).length > 0 ? { situation: toBeDisplayedSituation, address } : ({} as any)}
+          data={Object.keys(toBeDisplayedSituation).length > 0 ? { address, situation: toBeDisplayedSituation } : ({} as any)}
           valueKey="id"
           nameKey="name"
           loadLabel="Charger une configuration"

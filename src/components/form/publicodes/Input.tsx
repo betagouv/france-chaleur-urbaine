@@ -1,14 +1,13 @@
-import { type RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
+import type { RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
 import { useDebouncedEffect } from '@react-hookz/web';
 import React from 'react';
 
 import useInViewport from '@/hooks/useInViewport';
 import { isDefined } from '@/utils/core';
-
-import Label from './Label';
-import labels from './labels';
 import DSFRInput from '../dsfr/Input';
 import { usePublicodesFormContext } from '../publicodes/FormProvider';
+import Label from './Label';
+import labels from './labels';
 export type DSFRInputProps = React.ComponentProps<typeof DSFRInput>;
 
 type InputProps = Omit<DSFRInputProps, 'nativeTextAreaProps' | 'label'> & {
@@ -62,13 +61,6 @@ const Input = ({ name, placeholderPrecision, textArea, nativeInputProps, label, 
       hideOptionalLabel
       nativeInputProps={{
         ...nativeInputProps,
-        type: 'number',
-        value: value ?? '',
-        placeholder: isDefined(placeholder)
-          ? `${
-              isDefined(placeholderPrecision) && typeof placeholder === 'number' ? placeholder.toFixed(placeholderPrecision) : placeholder
-            }`
-          : '',
         onChange: (e) => {
           setError(undefined);
           e.stopPropagation();
@@ -79,8 +71,8 @@ const Input = ({ name, placeholderPrecision, textArea, nativeInputProps, label, 
             return;
           }
 
-          const minString = unit === '%' && min ? min.toLocaleString('fr-FR', { style: 'percent', maximumFractionDigits: 2 }) : min;
-          const maxString = unit === '%' && max ? max.toLocaleString('fr-FR', { style: 'percent', maximumFractionDigits: 2 }) : max;
+          const minString = unit === '%' && min ? min.toLocaleString('fr-FR', { maximumFractionDigits: 2, style: 'percent' }) : min;
+          const maxString = unit === '%' && max ? max.toLocaleString('fr-FR', { maximumFractionDigits: 2, style: 'percent' }) : max;
 
           if (isDefined(min) && isDefined(max) && (+newValue < +min || +newValue > +max)) {
             setError(`Veuillez saisir une valeur comprise entre ${minString} et ${maxString}`);
@@ -91,6 +83,13 @@ const Input = ({ name, placeholderPrecision, textArea, nativeInputProps, label, 
           }
           setValue(newValue);
         },
+        placeholder: isDefined(placeholder)
+          ? `${
+              isDefined(placeholderPrecision) && typeof placeholder === 'number' ? placeholder.toFixed(placeholderPrecision) : placeholder
+            }`
+          : '',
+        type: 'number',
+        value: value ?? '',
       }}
       state={(props.state ?? error) ? 'error' : 'default'}
       stateRelatedMessage={props.stateRelatedMessage ?? (error || 'Sélectionnez une valeur')}

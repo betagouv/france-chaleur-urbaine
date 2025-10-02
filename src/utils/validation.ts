@@ -1,4 +1,4 @@
-import { z, ZodObject, type ZodRawShape, type ZodTypeAny } from 'zod';
+import { ZodObject, type ZodRawShape, type ZodTypeAny, z } from 'zod';
 
 /**
  * Recursively unwraps ZodEffects to get the base schema.
@@ -58,7 +58,7 @@ export const sanitizeEmail = (email: string): string => emailSchema.safeParse(em
 export const envBooleanSchema = z
   .enum(['0', '1', 'true', 'false'])
   .catch('false')
-  .transform((value) => value == 'true' || value == '1');
+  .transform((value) => value === 'true' || value === '1');
 
 export type AllowedGeometry = GeoJSON.Feature<GeoJSON.Point | GeoJSON.LineString | GeoJSON.Polygon>;
 

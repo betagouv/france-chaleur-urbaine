@@ -1,4 +1,4 @@
-import { type CSSProperties, type HTMLAttributes, type PropsWithChildren } from 'react';
+import type { CSSProperties, HTMLAttributes, PropsWithChildren } from 'react';
 
 import { type LegacyColor, legacyColors } from './helpers/colors';
 import { type SpacingProperties, spacingsToClasses } from './helpers/spacings';
@@ -59,15 +59,15 @@ function Text({
     throw new Error('cannot use color and legacyColor at the same time');
   }
   const computedStyle: CSSProperties = {
-    fontSize: fontSize ?? 'inherit',
-    lineHeight: lineHeight ?? 'inherit',
-    fontStyle: fontStyle ?? 'inherit',
     color: color ? `var(--text-default-${color})` : legacyColor ? legacyColors[legacyColor] : undefined,
-    textAlign,
     cursor,
     display,
+    fontSize: fontSize ?? 'inherit',
+    fontStyle: fontStyle ?? 'inherit',
+    lineHeight: lineHeight ?? 'inherit',
+    maxWidth: maxWidth ? `${parseInt(maxWidth.slice(0, -1), 10) * 8}px` : undefined,
+    textAlign,
     textDecoration: underline ? 'underline' : undefined,
-    maxWidth: maxWidth ? `${parseInt(maxWidth.slice(0, -1)) * 8}px` : undefined,
     textTransform,
     ...style,
   };

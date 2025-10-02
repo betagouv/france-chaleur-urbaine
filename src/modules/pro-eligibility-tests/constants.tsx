@@ -64,28 +64,28 @@ export const zColumnMapping = z
   );
 
 export const zCreateEligibilityTestInput = z.strictObject({
+  columnMapping: zColumnMapping.optional(),
+  content: z.string(),
+  dataType: z.enum(['address', 'coordinates']),
   // file: zAddressesFile, // TODO: uncomment this when we have a way to handle files
   hasHeaders: z.boolean(),
-  content: z.string(),
-  separator: z.string().optional().nullable(),
-  dataType: z.enum(['address', 'coordinates']),
-  columnMapping: zColumnMapping.optional(),
   name: z
     .string({ error: 'Le nom du test est obligatoire' })
     .min(1, { error: 'Le nom du test est obligatoire' })
     .max(100, { error: 'Le nom du test ne doit pas dépasser 100 caractères' }),
+  separator: z.string().optional().nullable(),
 });
 
 export type CreateEligibilityTestInput = z.infer<typeof zCreateEligibilityTestInput>;
 
 export const zUpdateEligibilityTestInput = z.strictObject({
+  columnMapping: zColumnMapping.optional(),
+  content: z.string().optional(),
+  dataType: z.enum(['address', 'coordinates']).optional(),
+  hasHeaders: z.boolean().optional(),
   // file: zAddressesFile, // TODO: uncomment this when we have a way to handle files
   id: z.string(),
-  hasHeaders: z.boolean().optional(),
-  content: z.string().optional(),
   separator: z.string().optional().nullable(),
-  dataType: z.enum(['address', 'coordinates']).optional(),
-  columnMapping: zColumnMapping.optional(),
 });
 
 export const zRenameEligibilityTestInput = z.strictObject({

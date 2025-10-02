@@ -6,15 +6,15 @@ import { updateDemand } from '@/server/services/manager';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 
 const zDemandUpdate = {
-  Status: z.nativeEnum(DEMANDE_STATUS).optional(),
-  'Prise de contact': z.boolean().optional(),
-  'Gestionnaire Distance au réseau': z.number().optional(),
-  'Surface en m2': z.number().optional(),
-  'Gestionnaire Logement': z.number().optional(),
-  'Gestionnaire Conso': z.number().optional(),
   Commentaire: z.string().optional(),
-  'Gestionnaire Affecté à': z.string().optional(),
   'Emails envoyés': z.string().optional(),
+  'Gestionnaire Affecté à': z.string().optional(),
+  'Gestionnaire Conso': z.number().optional(),
+  'Gestionnaire Distance au réseau': z.number().optional(),
+  'Gestionnaire Logement': z.number().optional(),
+  'Prise de contact': z.boolean().optional(),
+  Status: z.nativeEnum(DEMANDE_STATUS).optional(),
+  'Surface en m2': z.number().optional(),
 };
 
 export type DemandUpdate = z.infer<z.ZodObject<typeof zDemandUpdate>>;

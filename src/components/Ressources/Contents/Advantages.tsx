@@ -4,7 +4,6 @@ import { List, Subtitle } from './Contents.styles';
 
 const contents = [
   {
-    title: 'Chauffage collectif au fioul :',
     highlight: 'Depuis le 1er juillet 2022, l’installation de nouvelles chaudières au fioul est interdite !',
     list: [
       <>
@@ -24,9 +23,9 @@ const contents = [
         <b>approvisionnement est sensible au contexte géopolitique</b>
       </>,
     ],
+    title: 'Chauffage collectif au fioul :',
   },
   {
-    title: 'Chauffage collectif au gaz :',
     highlight:
       "Les seuils d'émissions autorisées par la RE2020 imposent désormais l'hybridation des chaudières à gaz (avec une EnR complémentaire ou une pompe à chaleur) dans les bâtiments neufs.",
     list: [
@@ -44,20 +43,14 @@ const contents = [
         <b>approvisionnement est sensible au contexte géopolitique</b>
       </>,
     ],
+    title: 'Chauffage collectif au gaz :',
   },
   {
-    title: 'Raccordement à un réseau de chaleur :',
     highlight: 'Les réseaux de chaleur constituent en moyenne la solution de chauffage la plus compétitive pour les logements collectifs !',
     list: [
-      <>
-        <b>Emissions de gaz à effet de serre et particules fines limitées</b>
-      </>,
-      <>
-        <b>Absence de chaudière et de stockage au sein de l’immeuble - sécurité assurée</b>
-      </>,
-      <>
-        <b>Garantie d’un service public</b>
-      </>,
+      <b>Emissions de gaz à effet de serre et particules fines limitées</b>,
+      <b>Absence de chaudière et de stockage au sein de l’immeuble - sécurité assurée</b>,
+      <b>Garantie d’un service public</b>,
       <>
         <b>Tarifs compétitifs et moins fluctuants que ceux des énergies purement fossiles</b>
         ,
@@ -69,6 +62,7 @@ const contents = [
         vérifier si un réseau passe près de chez vous !
       </>,
     ],
+    title: 'Raccordement à un réseau de chaleur :',
   },
 ];
 const Advantages = () => {

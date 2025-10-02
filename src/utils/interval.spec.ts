@@ -3,7 +3,7 @@ import { expect, test } from 'vitest';
 import { type Interval, intervalsEqual } from './interval';
 
 test('intervalsEqual()', () => {
-  const tests: Array<{ a: Interval; b: Interval; expectedResult: boolean }> = [
+  const tests: { a: Interval; b: Interval; expectedResult: boolean }[] = [
     {
       a: [1, 2],
       b: [1, 2],

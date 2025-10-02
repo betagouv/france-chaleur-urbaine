@@ -66,11 +66,11 @@ const Partners: React.FC<SectionProps> = (props) => {
           },
           {
             children: 'Notre dossier de présentation',
-            priority: 'secondary',
             linkProps: {
               href: '/documentation/dossier-presse.pdf',
               target: '_blank',
             },
+            priority: 'secondary',
           },
         ]}
       />

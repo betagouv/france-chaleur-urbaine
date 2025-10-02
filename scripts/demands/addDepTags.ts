@@ -6,7 +6,7 @@ const updateDemands = async () => {
     const demands = await base(Airtable.DEMANDES).select().all();
     await Promise.all(
       demands
-        .filter((demand: any) => demand.get('Departement') && demand.get('Departement').includes('Puy-de-Dôme'))
+        .filter((demand: any) => demand.get('Departement')?.includes('Puy-de-Dôme'))
         .map(async (demand) => {
           const gestionnaires = demand.get('Gestionnaires') as [string];
           if (gestionnaires) {

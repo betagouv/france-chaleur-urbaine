@@ -1,6 +1,6 @@
 import { defineLayerPopup, ifHoverElse } from '@/components/Map/layers/common';
 
-import { type MapSourceLayersSpecification } from '../common';
+import type { MapSourceLayersSpecification } from '../common';
 
 export const perimetresGeothermieProfondeLayerColor = '#b084cc';
 export const perimetresGeothermieProfondeLayerOpacity = 0.5;
@@ -39,50 +39,50 @@ export const statutColorMap = {
 
 export const perimetresGeothermieProfondeLayersSpec = [
   {
-    sourceId: 'perimetresGeothermieProfonde',
-    source: {
-      type: 'vector',
-      tiles: ['/api/map/perimetresGeothermieProfonde/{z}/{x}/{y}'],
-      minzoom: 5,
-      maxzoom: 11,
-    },
     layers: [
       {
         id: 'perimetresGeothermieProfonde',
-        type: 'fill',
+        isVisible: (config) => config.geothermieProfonde.show && config.geothermieProfonde.showPerimetres,
         paint: {
           'fill-color': [
             'match',
             ['get', 'aquifere'],
             'Lutétien',
-            aquifereColorMap['Lutétien'],
+            aquifereColorMap.Lutétien,
             'Yprésien',
-            aquifereColorMap['Yprésien'],
+            aquifereColorMap.Yprésien,
             'Craie',
-            aquifereColorMap['Craie'],
+            aquifereColorMap.Craie,
             'Albien',
-            aquifereColorMap['Albien'],
+            aquifereColorMap.Albien,
             'Néocomien',
-            aquifereColorMap['Néocomien'],
+            aquifereColorMap.Néocomien,
             'Dogger',
-            aquifereColorMap['Dogger'],
+            aquifereColorMap.Dogger,
             perimetresGeothermieProfondeLayerColor,
           ],
           'fill-opacity': ifHoverElse(perimetresGeothermieProfondeLayerOpacity + 0.1, perimetresGeothermieProfondeLayerOpacity),
         },
-        isVisible: (config) => config.geothermieProfonde.show && config.geothermieProfonde.showPerimetres,
         popup: Popup,
+        type: 'fill',
       },
       {
         id: 'perimetresGeothermieProfonde-contour',
-        type: 'line',
+        isVisible: (config) => config.geothermieProfonde.show && config.geothermieProfonde.showPerimetres,
         paint: {
           'line-color': ['match', ['get', 'statut'], 'AR', statutColorMap.AR, statutColorMap.Existant],
           'line-width': ifHoverElse(4, 3),
         },
-        isVisible: (config) => config.geothermieProfonde.show && config.geothermieProfonde.showPerimetres,
+        type: 'line',
         unselectable: true,
       },
     ],
+    source: {
+      maxzoom: 11,
+      minzoom: 5,
+      tiles: ['/api/map/perimetresGeothermieProfonde/{z}/{x}/{y}'],
+      type: 'vector',
+    },
+    sourceId: 'perimetresGeothermieProfonde',
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];

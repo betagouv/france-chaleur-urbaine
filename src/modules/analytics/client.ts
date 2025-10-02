@@ -20,8 +20,8 @@ const onRouteChange = (url: string) => {
   // see https://developers.google.com/analytics/devguides/collection/ga4/views?client_type=gtag&hl=fr#manually_send_page_view_events
   if (clientConfig.tracking.googleTagIds.length > 0 && typeof window?.gtag === 'function') {
     window.gtag('event', 'page_view', {
-      page_title: document.title,
       page_location: url,
+      page_title: document.title,
     });
   }
   // see https://help.hotjar.com/hc/en-us/articles/115011805428-Hotjar-on-Single-Page-Apps
@@ -46,13 +46,13 @@ export const useAnalytics = () => {
       hookInitialized = true;
 
       initMatomo({
-        url: clientConfig.tracking.matomoServerURL,
-        siteId: clientConfig.tracking.matomoSiteId,
         disableCookies: true,
         excludeUrlsPatterns: [/\/carte\?.+/], // do not track query params for this URL
         onScriptLoadingError() {
           setMatomoAnalyticsLoadedState('error');
         },
+        siteId: clientConfig.tracking.matomoSiteId,
+        url: clientConfig.tracking.matomoServerURL,
       });
 
       // handle the case where matomo does not respond
@@ -153,8 +153,8 @@ const performTracking = (trackingConfig: TrackingConfiguration, eventPayload?: a
     // use standard pixel and conversion api
     // see https://github.com/RivercodeAB/facebook-conversion-api-nextjs/blob/7279e607b0f07a841d695406f47c7782b623973a/src/conversion-api.ts#L28
     fbEvent({
-      eventName: trackingConfig.facebook,
       enableStandardPixel: true,
+      eventName: trackingConfig.facebook,
     });
   }
   if (trackingConfig.google && typeof window?.gtag === 'function') {
@@ -175,8 +175,8 @@ const performTracking = (trackingConfig: TrackingConfiguration, eventPayload?: a
 type MatomoABTestingExperiment = {
   name: string;
   percentage: number;
-  includedTargets: ReadonlyArray<any>;
-  excludedTargets: ReadonlyArray<any>;
+  includedTargets: readonly any[];
+  excludedTargets: readonly any[];
   variations: ReadonlyArray<{
     name: string;
     percentage?: number;
@@ -191,19 +191,19 @@ const emptyActivateMethod = () => {
 const matomoABTestingExperiments = [
   // placeholder to make types work
   {
+    excludedTargets: [],
+    includedTargets: [],
     name: '_internal',
     percentage: 100,
-    includedTargets: [],
-    excludedTargets: [],
     variations: [
       {
-        name: 'original',
         activate: emptyActivateMethod,
+        name: 'original',
       },
     ],
   },
   // add the experiments below
-] as const satisfies ReadonlyArray<MatomoABTestingExperiment>;
+] as const satisfies readonly MatomoABTestingExperiment[];
 
 type MatomoABTestingExperimentName = (typeof matomoABTestingExperiments)[number]['name'];
 

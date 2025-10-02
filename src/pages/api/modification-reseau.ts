@@ -18,29 +18,12 @@ export const config = {
 
 // multipart form data may contain one field multiple times so we get the first element
 const zModificationReseau = {
-  idReseau: z.preprocess((val: any) => val[0], z.string()),
-  type: z.preprocess((val: any) => val[0], z.enum(['collectivite', 'exploitant'])),
-  nom: z.preprocess((val: any) => val[0], z.string()),
-  prenom: z.preprocess((val: any) => val[0], z.string()),
-  structure: z.preprocess((val: any) => val[0], z.string()),
-  fonction: z.preprocess((val: any) => val[0], z.string()),
   email: z.preprocess(
     (val: any) => val[0],
     z.email().refine((email) => !serverConfig.email.notAllowed.includes(email), {
       error: serverConfig.email.notAllowedMessage,
     })
   ),
-  reseauClasse: z.preprocess((val: any) => parseValue(val[0]), z.boolean()),
-  maitreOuvrage: z.preprocess((val: any) => val[0], z.string()),
-  gestionnaire: z.preprocess((val: any) => val[0], z.string()),
-  siteInternet: z.preprocess((val: any) => {
-    if (val[0]) {
-      const link: string = String(val[0]).trim();
-      return link.startsWith('http://') || link.startsWith('https://') ? link : `https://${link}`;
-    }
-    return val[0];
-  }, z.string().optional()),
-  informationsComplementaires: z.preprocess((val: any) => val[0], z.string().max(serverConfig.networkInfoFieldMaxCharacters)),
   fichiers: z.optional(
     z.array(
       // formidable.File
@@ -51,6 +34,23 @@ const zModificationReseau = {
       })
     )
   ),
+  fonction: z.preprocess((val: any) => val[0], z.string()),
+  gestionnaire: z.preprocess((val: any) => val[0], z.string()),
+  idReseau: z.preprocess((val: any) => val[0], z.string()),
+  informationsComplementaires: z.preprocess((val: any) => val[0], z.string().max(serverConfig.networkInfoFieldMaxCharacters)),
+  maitreOuvrage: z.preprocess((val: any) => val[0], z.string()),
+  nom: z.preprocess((val: any) => val[0], z.string()),
+  prenom: z.preprocess((val: any) => val[0], z.string()),
+  reseauClasse: z.preprocess((val: any) => parseValue(val[0]), z.boolean()),
+  siteInternet: z.preprocess((val: any) => {
+    if (val[0]) {
+      const link: string = String(val[0]).trim();
+      return link.startsWith('http://') || link.startsWith('https://') ? link : `https://${link}`;
+    }
+    return val[0];
+  }, z.string().optional()),
+  structure: z.preprocess((val: any) => val[0], z.string()),
+  type: z.preprocess((val: any) => val[0], z.enum(['collectivite', 'exploitant'])),
 };
 
 export type ModificationReseau = z.infer<z.ZodObject<typeof zModificationReseau>>;
@@ -62,8 +62,8 @@ export default handleRouteErrors(async (req, res) => {
   await rateLimiter(req, res);
 
   const form = formidable({
-    maxFiles: 3,
     maxFileSize: 5 * 1024 * 1024,
+    maxFiles: 3,
     maxTotalFileSize: 20 * 1024 * 1024,
   });
 
@@ -74,8 +74,8 @@ export default handleRouteErrors(async (req, res) => {
   const record = await AirtableDB('FCU - Modifications réseau').create(
     {
       ...formValues,
-      fichiers: [],
       createdAt: new Date().toISOString(),
+      fichiers: [],
     },
     {
       typecast: true,
@@ -87,8 +87,8 @@ export default handleRouteErrors(async (req, res) => {
     (files.fichiers ?? []).map(async (fichier, index) => {
       await uploadAttachment(record.id, 'fichiers', {
         contentType: fichier.mimetype ?? 'text/plain',
-        filename: fichier.originalFilename ?? `Fichier ${index + 1}`,
         file: (await readFile(fichier.filepath)).toString('base64'),
+        filename: fichier.originalFilename ?? `Fichier ${index + 1}`,
       });
     })
   );

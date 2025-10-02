@@ -2,7 +2,7 @@ import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { tilesConfigs, type TilesType } from '@/modules/tiles/server/generation-config';
+import { type TilesType, tilesConfigs } from '@/modules/tiles/server/generation-config';
 import { importGeoJSONWithTipeeCanoe } from '@/modules/tiles/server/generation-import';
 import { parentLogger } from '@/server/helpers/logger';
 
@@ -26,9 +26,9 @@ export async function runTilesGeneration(name: TilesType, inputFilePath?: string
     logger,
     tempDirectory,
     tilesTableName: config.tilesTableName,
-    zoomMin: config.zoomMin,
-    zoomMax: config.zoomMax,
     tippeCanoeArgs: config.tippeCanoeArgs,
+    zoomMax: config.zoomMax,
+    zoomMin: config.zoomMin,
   });
   logger.info(`GeoJSON importée dans la table ${config.tilesTableName}`);
   await rm(tempDirectory, { recursive: true });

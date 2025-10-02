@@ -1,10 +1,10 @@
 import Alert from '@codegouvfr/react-dsfr/Alert';
 import Button from '@codegouvfr/react-dsfr/Button';
-import { type DrawCreateEvent } from '@mapbox/mapbox-gl-draw';
+import type { DrawCreateEvent } from '@mapbox/mapbox-gl-draw';
 import { useKeyboardEvent } from '@react-hookz/web';
 import turfArea from '@turf/area';
 import { atom, useAtom } from 'jotai';
-import { type GeoJSONSource } from 'maplibre-gl';
+import type { GeoJSONSource } from 'maplibre-gl';
 import { useEffect, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
 
@@ -15,10 +15,10 @@ import Text from '@/components/ui/Text';
 import { trackEvent } from '@/modules/analytics/client';
 import { useServices } from '@/services';
 import { EXPORT_FORMAT } from '@/types/enum/ExportFormat';
-import { type GasSummary } from '@/types/Summary/Gas';
+import type { GasSummary } from '@/types/Summary/Gas';
 import { validatePolygonGeometry } from '@/utils/geo';
 
-import { type MapSourceLayersSpecification } from '../../layers/common';
+import type { MapSourceLayersSpecification } from '../../layers/common';
 import { Title } from '../SimpleMapLegend.style';
 
 export const buildingsDataExtractionPolygonsSourceId = 'buildings-data-extraction-polygons';
@@ -127,9 +127,9 @@ const BuildingsDataExtractionTool: React.FC = () => {
       {
         ...featureBeingDrawn,
         properties: {
-          isValid: areaSize <= clientConfig.summaryAreaSizeLimit && isGeometryValid,
-          areaSize,
           areaHasSelfIntersections: !isGeometryValid,
+          areaSize,
+          isValid: areaSize <= clientConfig.summaryAreaSizeLimit && isGeometryValid,
         },
       },
     ]);
@@ -149,14 +149,14 @@ const BuildingsDataExtractionTool: React.FC = () => {
     // because the polygon with 2 points is not rendered
     map.addLayer(
       {
-        source: 'mapbox-gl-draw-hot',
-        id: buildingsDataExtractionDrawHotSourceLayerId,
-        type: 'line',
         filter: ['==', '$type', 'LineString'],
+        id: buildingsDataExtractionDrawHotSourceLayerId,
         paint: {
           'line-color': '#000091',
           'line-width': 4,
         },
+        source: 'mapbox-gl-draw-hot',
+        type: 'line',
       },
       'buildings-data-extraction-outline'
     );
@@ -214,125 +214,123 @@ const BuildingsDataExtractionTool: React.FC = () => {
   const showClearButton = features[0]?.geometry.coordinates[0]?.length > 2 && !isLoading;
 
   return (
-    <>
-      <Box display="flex" flexDirection="column" gap="16px">
-        <Box>
-          <Title>Extraire des données sur les bâtiments</Title>
+    <Box display="flex" flexDirection="column" gap="16px">
+      <Box>
+        <Title>Extraire des données sur les bâtiments</Title>
 
-          <Text size="xs" fontStyle="italic">
-            Vous pouvez extraire les adresses et nombre de logements des bâtiments à chauffage collectif gaz ou fioul, ainsi que les
-            consommations de gaz à l'adresse, sur la zone de votre choix.
-          </Text>
-          <Text size="xs" fontStyle="italic" mt="1w">
-            Pour définir une zone, cliquez sur au moins 3 points sur la carte. <strong>Double-cliquez</strong> sur le dernier point ou{' '}
-            <strong>appuyez sur la touche entrée</strong> pour finaliser la zone.
-          </Text>
-        </Box>
-
-        {areaHasSelfIntersections && (
-          <Alert
-            severity="error"
-            small
-            description="La zone que vous avez dessinée n'est pas valide car elle présente des intersections (les segments se croisent). Veuillez ajuster la zone pour éviter que les segments ne se croisent."
-          />
-        )}
-
-        {areaSize > clientConfig.summaryAreaSizeLimit && (
-          <Alert
-            severity="error"
-            small
-            description={
-              <>
-                La zone définie est trop grande ({areaSize.toFixed(2)} km²), veuillez réduire la taille de recherche (maximum{' '}
-                {clientConfig.summaryAreaSizeLimit} km²). Si vous avez besoin de statistiques sur une zone élargie ou plus précise,
-                n'hésitez pas à{' '}
-                <a href={`mailto:${clientConfig.contactEmail}`} target="_blank" rel="noopener noreferrer">
-                  nous contacter
-                </a>
-              </>
-            }
-          />
-        )}
-
-        {isLoading && (
-          <Box display="grid" placeContent="center">
-            <Oval height={60} width={60} color="#000091" secondaryColor="#0000ee" />
-          </Box>
-        )}
-
-        {summary && (
-          <Box fontSize="14px" display="flex" flexDirection="column" gap="12px">
-            <Box display="flex">
-              <img src="/icons/picto-fioul-noir.svg" alt="" />
-              <Text ml="1w">Bâtiments à chauffage collectif fioul</Text>
-            </Box>
-            <Box pl="4w">
-              <Box>
-                <strong>{summary.batimentsChauffageCollectifFioul.nbTotal}</strong> Total
-              </Box>
-              <Box>
-                <strong>{summary.batimentsChauffageCollectifFioul.nbProchesRéseau}</strong> Proche réseau (&lt;50m)
-              </Box>
-            </Box>
-
-            <Box display="flex">
-              <img src="/icons/picto-gaz-bleu.svg" alt="" />
-              <Text ml="1w">Bâtiments à chauffage collectif gaz</Text>
-            </Box>
-            <Box pl="4w">
-              <Box>
-                <strong>{summary.batimentsChauffageCollectifGaz.nbTotal}</strong> Total
-              </Box>
-              <Box>
-                <strong>{summary.batimentsChauffageCollectifGaz.nbProchesRéseau}</strong> Proche réseau (&lt;50m)
-              </Box>
-            </Box>
-
-            <Box display="flex">
-              <img src="/icons/picto-gaz-bleu.svg" alt="" />
-              <Text ml="1w">Consommations de gaz</Text>
-            </Box>
-            <Box pl="4w">
-              <Box>
-                <strong>{summary.consommationGaz.cumulTotal}</strong> Total
-              </Box>
-              <Box>
-                <strong>{summary.consommationGaz.cumulProchesRéseau}</strong> Proche réseau (&lt;50m)
-              </Box>
-            </Box>
-
-            <Box display="flex">
-              <img src="/icons/picto-reseaux-vert.svg" alt="" />
-              <Text ml="1w">Réseaux de chaleur</Text>
-            </Box>
-            <Box pl="4w">
-              <Box>
-                <strong>{summary.longueurRéseauxDeChaleur.toFixed(2)}</strong> km
-              </Box>
-            </Box>
-          </Box>
-        )}
-
-        {showClearButton && (
-          <Button
-            priority="secondary"
-            iconId="fr-icon-delete-bin-line"
-            className="btn-full-width"
-            onClick={() => {
-              trackEvent('Carto|Extraction données batiments|Effacer');
-              clearSummary();
-            }}
-          >
-            Effacer
-          </Button>
-        )}
-        {summary && (
-          <Button priority="tertiary" iconId="fr-icon-download-line" className="btn-full-width" onClick={exportSummary}>
-            Exporter les données
-          </Button>
-        )}
+        <Text size="xs" fontStyle="italic">
+          Vous pouvez extraire les adresses et nombre de logements des bâtiments à chauffage collectif gaz ou fioul, ainsi que les
+          consommations de gaz à l'adresse, sur la zone de votre choix.
+        </Text>
+        <Text size="xs" fontStyle="italic" mt="1w">
+          Pour définir une zone, cliquez sur au moins 3 points sur la carte. <strong>Double-cliquez</strong> sur le dernier point ou{' '}
+          <strong>appuyez sur la touche entrée</strong> pour finaliser la zone.
+        </Text>
       </Box>
-    </>
+
+      {areaHasSelfIntersections && (
+        <Alert
+          severity="error"
+          small
+          description="La zone que vous avez dessinée n'est pas valide car elle présente des intersections (les segments se croisent). Veuillez ajuster la zone pour éviter que les segments ne se croisent."
+        />
+      )}
+
+      {areaSize > clientConfig.summaryAreaSizeLimit && (
+        <Alert
+          severity="error"
+          small
+          description={
+            <>
+              La zone définie est trop grande ({areaSize.toFixed(2)} km²), veuillez réduire la taille de recherche (maximum{' '}
+              {clientConfig.summaryAreaSizeLimit} km²). Si vous avez besoin de statistiques sur une zone élargie ou plus précise, n'hésitez
+              pas à{' '}
+              <a href={`mailto:${clientConfig.contactEmail}`} target="_blank" rel="noopener noreferrer">
+                nous contacter
+              </a>
+            </>
+          }
+        />
+      )}
+
+      {isLoading && (
+        <Box display="grid" placeContent="center">
+          <Oval height={60} width={60} color="#000091" secondaryColor="#0000ee" />
+        </Box>
+      )}
+
+      {summary && (
+        <Box fontSize="14px" display="flex" flexDirection="column" gap="12px">
+          <Box display="flex">
+            <img src="/icons/picto-fioul-noir.svg" alt="" />
+            <Text ml="1w">Bâtiments à chauffage collectif fioul</Text>
+          </Box>
+          <Box pl="4w">
+            <Box>
+              <strong>{summary.batimentsChauffageCollectifFioul.nbTotal}</strong> Total
+            </Box>
+            <Box>
+              <strong>{summary.batimentsChauffageCollectifFioul.nbProchesRéseau}</strong> Proche réseau (&lt;50m)
+            </Box>
+          </Box>
+
+          <Box display="flex">
+            <img src="/icons/picto-gaz-bleu.svg" alt="" />
+            <Text ml="1w">Bâtiments à chauffage collectif gaz</Text>
+          </Box>
+          <Box pl="4w">
+            <Box>
+              <strong>{summary.batimentsChauffageCollectifGaz.nbTotal}</strong> Total
+            </Box>
+            <Box>
+              <strong>{summary.batimentsChauffageCollectifGaz.nbProchesRéseau}</strong> Proche réseau (&lt;50m)
+            </Box>
+          </Box>
+
+          <Box display="flex">
+            <img src="/icons/picto-gaz-bleu.svg" alt="" />
+            <Text ml="1w">Consommations de gaz</Text>
+          </Box>
+          <Box pl="4w">
+            <Box>
+              <strong>{summary.consommationGaz.cumulTotal}</strong> Total
+            </Box>
+            <Box>
+              <strong>{summary.consommationGaz.cumulProchesRéseau}</strong> Proche réseau (&lt;50m)
+            </Box>
+          </Box>
+
+          <Box display="flex">
+            <img src="/icons/picto-reseaux-vert.svg" alt="" />
+            <Text ml="1w">Réseaux de chaleur</Text>
+          </Box>
+          <Box pl="4w">
+            <Box>
+              <strong>{summary.longueurRéseauxDeChaleur.toFixed(2)}</strong> km
+            </Box>
+          </Box>
+        </Box>
+      )}
+
+      {showClearButton && (
+        <Button
+          priority="secondary"
+          iconId="fr-icon-delete-bin-line"
+          className="btn-full-width"
+          onClick={() => {
+            trackEvent('Carto|Extraction données batiments|Effacer');
+            clearSummary();
+          }}
+        >
+          Effacer
+        </Button>
+      )}
+      {summary && (
+        <Button priority="tertiary" iconId="fr-icon-download-line" className="btn-full-width" onClick={exportSummary}>
+          Exporter les données
+        </Button>
+      )}
+    </Box>
   );
 };
 
@@ -360,42 +358,42 @@ export function useBuildingsDataExtractionLayers() {
     }
 
     (mapRef.getSource(buildingsDataExtractionPolygonsSourceId) as GeoJSONSource).setData({
-      type: 'FeatureCollection',
       features,
+      type: 'FeatureCollection',
     });
   }, [mapLayersLoaded, features]);
 }
 
 export const buildingsDataExtractionLayers = [
   {
-    sourceId: buildingsDataExtractionPolygonsSourceId,
-    source: {
-      type: 'geojson',
-      data: {
-        type: 'FeatureCollection',
-        features: [],
-      },
-    },
     layers: [
       {
         id: 'buildings-data-extraction-fill',
-        type: 'fill',
+        isVisible: (config) => config.extractionDonneesBatiment,
         paint: {
           'fill-color': ['case', ['get', 'isValid'], '#0000911A', '#f538381A'],
         },
-        isVisible: (config) => config.extractionDonneesBatiment,
+        type: 'fill',
         unselectable: true,
       },
       {
         id: 'buildings-data-extraction-outline',
-        type: 'line',
+        isVisible: (config) => config.extractionDonneesBatiment,
         paint: {
           'line-color': ['case', ['get', 'isValid'], '#000091', '#f53838'],
           'line-width': 4,
         },
-        isVisible: (config) => config.extractionDonneesBatiment,
+        type: 'line',
         unselectable: true,
       },
     ],
+    source: {
+      data: {
+        features: [],
+        type: 'FeatureCollection',
+      },
+      type: 'geojson',
+    },
+    sourceId: buildingsDataExtractionPolygonsSourceId,
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];

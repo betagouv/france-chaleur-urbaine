@@ -64,15 +64,15 @@ const excludedPages = [
 
 /** @type {import('next-sitemap').IConfig} */
 module.exports = {
-  siteUrl: process.env.NEXTAUTH_URL || 'https://example.com',
-  generateRobotsTxt: true, // (optional)
   exclude: excludedPages,
+  generateRobotsTxt: true, // (optional)
+  siteUrl: process.env.NEXTAUTH_URL || 'https://example.com',
   transform: (config, path) => {
     return {
-      loc: path,
       changefreq: config.changefreq,
-      priority: getPagePriority(path),
       lastmod: config.autoLastmod ? new Date().toISOString() : undefined,
+      loc: path,
+      priority: getPagePriority(path),
     };
   },
 };

@@ -1,6 +1,6 @@
 import { multiLineString } from '@turf/helpers';
 import turfLength from '@turf/length';
-import { type NextApiRequest } from 'next';
+import type { NextApiRequest } from 'next';
 import { z } from 'zod';
 
 import db from '@/server/db';
@@ -61,11 +61,11 @@ export default handleRouteErrors(async (req: NextApiRequest) => {
       .where(db.raw(buildNearbyGeometriesFilter(coordinates, 50))),
   ]);
   return {
-    longueurTotale: turfLength(multiLineString(coordinates)),
+    besoinsEnChaleur: { '10m': besoinsEnChaleurA10m, '50m': besoinsEnChaleurA50m },
     consommationGaz: {
       '10m': consommationGazA10m,
       '50m': consommationGazA50m,
     },
-    besoinsEnChaleur: { '10m': besoinsEnChaleurA10m, '50m': besoinsEnChaleurA50m },
+    longueurTotale: turfLength(multiLineString(coordinates)),
   } satisfies RawLinearHeatDensity;
 });

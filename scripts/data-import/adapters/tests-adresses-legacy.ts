@@ -59,7 +59,7 @@ export default class TestsAdressesLegacyAdapter extends BaseAdapter {
           this.logger.error('Error parsing addresses', { err });
           if (file === 'Not available' || !file) {
             this.logger.error(`No result for eligibilityTest ${id}`);
-            addressesNotValid = addressesNotValid + (addresses_count || 0);
+            addressesNotValid += addresses_count || 0;
             // Use a transaction for DB updates
             await kdb.transaction().execute(async (trx) => {
               await trx.updateTable('eligibility_tests').set({ status: 'error' }).where('id', '=', id).execute();
@@ -83,9 +83,9 @@ export default class TestsAdressesLegacyAdapter extends BaseAdapter {
             async ([chunkIndex, chunk]: [number, string[]]) => {
               this.logger.info('processing chunk', {
                 current: chunkIndex + 1,
+                progress: `${Math.round(((chunkIndex + 1) / totalChunks) * 100)}%`,
                 size: chunk.length,
                 total: totalChunks,
-                progress: `${Math.round(((chunkIndex + 1) / totalChunks) * 100)}%`,
               });
               const lines = chunk
                 .filter((line) => line) // remove empty lines
@@ -110,16 +110,16 @@ export default class TestsAdressesLegacyAdapter extends BaseAdapter {
                 addressItem.result_status === 'ok' ? await getEligilityStatus(addressItem.latitude, addressItem.longitude) : null;
 
               const addressData = {
-                test_id: id as string,
-                source_address: addressItem.address || '',
-                ban_valid: addressItem.result_status === 'ok',
                 ban_address: addressItem.result_label,
                 ban_score: isDefined(addressItem.result_score) ? Math.round(addressItem.result_score * 100) : null,
-                geom: sql`st_transform(st_point(${addressItem.longitude}, ${addressItem.latitude}, 4326), 2154)`,
+                ban_valid: addressItem.result_status === 'ok',
                 eligibility_status: eligibilityStatus ?? undefined,
+                geom: sql`st_transform(st_point(${addressItem.longitude}, ${addressItem.latitude}, 4326), 2154)`,
+                source_address: addressItem.address || '',
+                test_id: id as string,
               } satisfies Parameters<ReturnType<typeof kdb.insertInto<'eligibility_demands_addresses'>>['values']>[0];
               addressRows.push(addressData);
-              processedAddresses = processedAddresses + 1;
+              processedAddresses += 1;
             },
             { concurrency: ADDRESS_CONCURRENCY }
           );

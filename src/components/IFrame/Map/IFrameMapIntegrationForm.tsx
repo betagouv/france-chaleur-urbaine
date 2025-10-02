@@ -4,8 +4,8 @@ import { type ReactNode, useState } from 'react';
 import AddressAutocomplete from '@/components/addressAutocomplete/AddressAutocomplete';
 import { type LegendURLKey, selectableLayers } from '@/components/Map/map-layers';
 import Notice from '@/components/ui/Notice';
-import { type Coords } from '@/types/Coords';
-import { type SuggestionItem } from '@/types/Suggestions';
+import type { Coords } from '@/types/Coords';
+import type { SuggestionItem } from '@/types/Suggestions';
 
 import { StyledIFrameLink } from './IFrameMapIntegrationForm.styles';
 
@@ -15,15 +15,15 @@ const IFrameMapIntegrationForm = ({ label }: { label?: ReactNode }) => {
 
   const url = `legend=true${coords ? `&coord=${coords.lon},${coords.lat}&zoom=12` : ''}&displayLegend=${selectedLayers.join(',')}`;
 
-  const onAddressSelected = async (address: string, geoAddress?: SuggestionItem) => {
+  const onAddressSelected = async (_address: string, geoAddress?: SuggestionItem) => {
     if (!geoAddress) {
       setCoords(null);
       return;
     }
 
     setCoords({
-      lon: geoAddress.geometry.coordinates[0],
       lat: geoAddress.geometry.coordinates[1],
+      lon: geoAddress.geometry.coordinates[0],
     });
   };
 

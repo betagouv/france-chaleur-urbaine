@@ -1,10 +1,10 @@
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 
 import { z } from 'zod';
 
 import { AirtableDB } from '@/server/db/airtable';
 import { handleRouteErrors, requireGetMethod, validateObjectSchema } from '@/server/helpers/server';
-import { type NetworkAttachment } from '@/types/Summary/Network';
+import type { NetworkAttachment } from '@/types/Summary/Network';
 
 export const config = {
   api: {
@@ -15,8 +15,8 @@ export const config = {
 export default handleRouteErrors(async (req, res) => {
   requireGetMethod(req);
   const { networkId, fileId } = await validateObjectSchema(req.query, {
-    networkId: z.string(),
     fileId: z.string(),
+    networkId: z.string(),
   });
 
   const [network] = await AirtableDB('FCU - Réseaux de chaleur')
@@ -40,9 +40,9 @@ export default handleRouteErrors(async (req, res) => {
     throw new Error(`no body`);
   }
   res.writeHead(200, {
-    'Content-Type': fichier.type,
-    'Content-Length': fichier.size,
     'Content-Disposition': `inline; filename="${fichier.filename}"`,
+    'Content-Length': fichier.size,
+    'Content-Type': fichier.type,
   });
 
   // stream the file to the client and convert web stream (fetch body) to node stream (used by http Response)

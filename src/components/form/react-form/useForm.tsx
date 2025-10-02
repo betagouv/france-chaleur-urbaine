@@ -1,14 +1,14 @@
-import { type SelectProps as DSFRSelectProps } from '@codegouvfr/react-dsfr/SelectNext';
+import type { SelectProps as DSFRSelectProps } from '@codegouvfr/react-dsfr/SelectNext';
 import {
   type AnyFieldApi,
   type FormAsyncValidateOrFn,
   type FormOptions,
   type FormValidateOrFn,
-  useForm as useTanStackForm,
   useStore,
+  useForm as useTanStackForm,
 } from '@tanstack/react-form';
 import { type ComponentType, useEffect, useState } from 'react';
-import { type z } from 'zod';
+import type { z } from 'zod';
 
 import DsfrCheckbox, { type CheckboxProps as DsfrCheckboxProps } from '@/components/form/dsfr/Checkbox';
 import DsfrCheckboxes, { type CheckboxesProps as DsfrCheckboxesProps } from '@/components/form/dsfr/Checkboxes';
@@ -196,8 +196,8 @@ function useFormInternal<
 
   const form = useTanStackForm({
     ...tanStackConfig,
-    validators: combinedValidators,
     onSubmit,
+    validators: combinedValidators,
   });
 
   type OriginalFieldProps = React.ComponentProps<typeof form.Field>;
@@ -224,10 +224,9 @@ function useFormInternal<
         <DsfrInput
           label={label}
           nativeInputProps={{
-            required: isRequiredField(name as keyof TFormData),
             id: nativeInputProps?.id || `${name}`,
             name: nativeInputProps?.name || `${name}`,
-            value: field.state.value as any,
+            onBlur: field.handleBlur,
             onChange: (e: any) => {
               const value = e.target.value;
 
@@ -238,7 +237,8 @@ function useFormInternal<
 
               return field.handleChange(value);
             },
-            onBlur: field.handleBlur,
+            required: isRequiredField(name as keyof TFormData),
+            value: field.state.value as any,
             ...nativeInputProps,
           }}
           {...getInputErrorStates(field)}
@@ -262,12 +262,12 @@ function useFormInternal<
         <DsfrTextArea
           label={label}
           nativeTextAreaProps={{
-            required: isRequiredField(name as keyof TFormData),
             id: nativeTextAreaProps?.id || `${name}`,
             name: nativeTextAreaProps?.name || `${name}`,
-            value: field.state.value as any,
-            onChange: (e: any) => field.handleChange(e.target.value as any),
             onBlur: field.handleBlur,
+            onChange: (e: any) => field.handleChange(e.target.value as any),
+            required: isRequiredField(name as keyof TFormData),
+            value: field.state.value as any,
             ...nativeTextAreaProps,
           }}
           {...getInputErrorStates(field)}
@@ -291,14 +291,14 @@ function useFormInternal<
         <DsfrPasswordInput
           label={label}
           nativeInputProps={{
-            required: isRequiredField(name as keyof TFormData),
-            type: 'password',
             autoComplete: 'password',
             id: nativeInputProps?.id || `${name}`,
             name: nativeInputProps?.name || `${name}`,
-            value: field.state.value as any,
-            onChange: (e: any) => field.handleChange(e.target.value as any),
             onBlur: field.handleBlur,
+            onChange: (e: any) => field.handleChange(e.target.value as any),
+            required: isRequiredField(name as keyof TFormData),
+            type: 'password',
+            value: field.state.value as any,
             ...nativeInputProps,
           }}
           messages={
@@ -316,7 +316,7 @@ function useFormInternal<
   );
 
   const EmailInput: typeof Input = ({ nativeInputProps, ...props }) => (
-    <Input nativeInputProps={{ type: 'email', autoComplete: 'email', ...nativeInputProps }} {...props} />
+    <Input nativeInputProps={{ autoComplete: 'email', type: 'email', ...nativeInputProps }} {...props} />
   );
 
   const NumberInput: typeof Input = ({ nativeInputProps, ...props }) => (
@@ -326,16 +326,16 @@ function useFormInternal<
   const PhoneInput: typeof Input = ({ nativeInputProps, ...props }) => (
     <Input
       nativeInputProps={{
-        type: 'tel',
         autoComplete: 'tel',
         placeholder: '0123456789',
+        type: 'tel',
         ...nativeInputProps,
       }}
       {...props}
     />
   );
   const UrlInput: typeof Input = ({ nativeInputProps, iconId = 'fr-icon-link', ...props }) => (
-    <Input nativeInputProps={{ type: 'url', autoComplete: 'url', ...nativeInputProps }} iconId={iconId} {...props} />
+    <Input nativeInputProps={{ autoComplete: 'url', type: 'url', ...nativeInputProps }} iconId={iconId} {...props} />
   );
 
   const Checkbox = ({
@@ -354,9 +354,9 @@ function useFormInternal<
           small
           label={label}
           nativeInputProps={{
+            checked: field.state.value as any,
             name: nativeInputProps?.name || `${name}`,
             onChange: (e) => field.handleChange(e.target.checked as any),
-            checked: field.state.value as any,
             ...nativeInputProps,
           }}
           {...getInputErrorStates(field)}
@@ -388,6 +388,7 @@ function useFormInternal<
           options={options.map((option) => ({
             ...option,
             nativeInputProps: {
+              checked: Array.isArray(field.state.value) && field.state.value.includes(option.nativeInputProps?.value || option.label),
               name: `${name}`,
               onChange: (e) => {
                 const value = (field.state.value as string[]) || [];
@@ -399,7 +400,6 @@ function useFormInternal<
                   field.handleChange(value.filter((v) => v !== optionValue) as any);
                 }
               },
-              checked: Array.isArray(field.state.value) && field.state.value.includes(option.nativeInputProps?.value || option.label),
               ...option.nativeInputProps,
             },
           }))}
@@ -432,6 +432,7 @@ function useFormInternal<
           options={options.map((option) => ({
             ...option,
             nativeInputProps: {
+              checked: Array.isArray(field.state.value) && field.state.value.includes(option.nativeInputProps?.value || option.label),
               name: `${name}`,
               onChange: (e) => {
                 const value = (field.state.value as string[]) || [];
@@ -443,7 +444,6 @@ function useFormInternal<
                   field.handleChange(value.filter((v) => v !== optionValue) as any);
                 }
               },
-              checked: Array.isArray(field.state.value) && field.state.value.includes(option.nativeInputProps?.value || option.label),
               ...option.nativeInputProps,
             },
           }))}
@@ -475,10 +475,10 @@ function useFormInternal<
           nativeSelectProps={{
             id: `${name}`,
             name: `${name}`,
+            onBlur: field.handleBlur,
+            onChange: (e) => field.handleChange(e.target.value as any),
             required: isRequiredField(name as keyof TFormData),
             value: field.state.value as any,
-            onChange: (e) => field.handleChange(e.target.value as any),
-            onBlur: field.handleBlur,
             ...nativeSelectProps,
           }}
           {...getInputErrorStates(field)}
@@ -507,10 +507,10 @@ function useFormInternal<
             ...option,
             nativeInputProps: {
               ...option.nativeInputProps,
-              required: isRequiredField(name as keyof TFormData),
               checked: field.state.value && field.state.value === option.nativeInputProps.value,
-              onChange: (e) => field.handleChange(e.target.value as any),
               onBlur: field.handleBlur,
+              onChange: (e) => field.handleChange(e.target.value as any),
+              required: isRequiredField(name as keyof TFormData),
             },
           }))}
           {...getInputErrorStates(field)}
@@ -622,11 +622,10 @@ function useFormInternal<
   const useValue = <T,>(fieldName: keyof TFormData) => useStore(form.store, (state) => state.values[fieldName] as T);
 
   return {
-    form,
-    useValue,
-    Submit,
-    Form,
-    FormDebug,
+    // deprecated
+    Checkbox,
+    Checkboxes,
+    EmailInput,
     Field: {
       Checkbox,
       Checkboxes,
@@ -642,11 +641,6 @@ function useFormInternal<
       Textarea,
       UrlInput,
     },
-    FieldWrapper: ({ children, className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-      <div className={cx('fr-fieldset__element', className)} {...props}>
-        {children}
-      </div>
-    ),
     Fieldset: ({ children, className, ...props }: React.HTMLAttributes<HTMLFieldSetElement>) => (
       <fieldset className={cx('fr-fieldset', className)} {...props}>
         {children}
@@ -657,11 +651,14 @@ function useFormInternal<
         {children}
       </legend>
     ),
-
-    // deprecated
-    Checkbox,
-    Checkboxes,
-    EmailInput,
+    FieldWrapper: ({ children, className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
+      <div className={cx('fr-fieldset__element', className)} {...props}>
+        {children}
+      </div>
+    ),
+    Form,
+    FormDebug,
+    form,
     Input,
     NumberInput,
     PasswordInput,
@@ -669,8 +666,10 @@ function useFormInternal<
     Radio,
     Select,
     SelectCheckboxes,
+    Submit,
     Textarea,
     UrlInput,
+    useValue,
   };
 }
 

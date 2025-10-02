@@ -15,12 +15,12 @@ export const fetchMethod =
   <Method extends 'POST' | 'PUT' | 'PATCH' | 'DELETE'>(method: Method) =>
   async <Data = any, Body = any>(url: string, body?: Body, headers?: Record<string, string>): Promise<Data> => {
     const res = await fetch(url, {
-      method,
+      body: body ? JSON.stringify(body) : undefined,
       headers: {
         'Content-Type': 'application/json',
         ...headers,
       },
-      body: body ? JSON.stringify(body) : undefined,
+      method,
     });
     if (!res.ok) {
       await handleError(res, url);
@@ -78,7 +78,7 @@ export const deleteFetchJSON = fetchMethod('DELETE');
 export const postFormDataFetchJSON = async <Data = any>(url: string, formState: object): Promise<Data> => {
   const formData = new FormData();
   for (const [key, value] of Object.entries(formState)) {
-    if (value instanceof Array) {
+    if (Array.isArray(value)) {
       for (const part of Array.from(value)) {
         formData.append(key, part);
       }
@@ -88,8 +88,8 @@ export const postFormDataFetchJSON = async <Data = any>(url: string, formState: 
   }
 
   const res = await fetch(url, {
-    method: 'POST',
     body: formData,
+    method: 'POST',
   });
   if (!res.ok) {
     await handleError(res, url);

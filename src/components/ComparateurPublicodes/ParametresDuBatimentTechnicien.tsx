@@ -1,4 +1,4 @@
-import React from 'react';
+import type React from 'react';
 
 import Input from '@/components/form/publicodes/Input';
 import RadioInput from '@/components/form/publicodes/Radio';
@@ -9,7 +9,7 @@ import Link from '@/components/ui/Link';
 import { Title } from './ComparateurPublicodes.style';
 import SelectClimatisation from './SelectClimatisation';
 import SelectProductionECS from './SelectProductionECS';
-import { type SimulatorEngine } from './useSimulatorEngine';
+import type { SimulatorEngine } from './useSimulatorEngine';
 
 type ParametresDuBatimentTechnicienFormProps = React.HTMLAttributes<HTMLDivElement> & {
   engine: SimulatorEngine;
@@ -107,11 +107,11 @@ const ParametresDuBatimentTechnicienForm: React.FC<ParametresDuBatimentTechnicie
           help="% de la surface du logement climatisé, par exemple lorsqu'uniquement le salon d'un logement est refroidi."
           nativeInputProps={{
             inputMode: 'numeric',
-            maxLength: 3,
-            type: 'number',
-            min: 1,
             max: 100,
+            maxLength: 3,
+            min: 1,
             step: 1,
+            type: 'number',
           }}
         />
         <Select

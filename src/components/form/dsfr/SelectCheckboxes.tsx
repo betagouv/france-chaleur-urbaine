@@ -19,11 +19,13 @@ const StyledCheckboxes = styled(Checkboxes)`
 
 const StyledButton = styled.button<{ $small?: boolean }>`
   ${({ $small }) => css`
-    ${$small &&
-    css`
+    ${
+      $small &&
+      css`
       padding: 0.35rem 2rem 0.35rem 0.5rem;
       font-size: 0.875rem;
-    `}
+    `
+    }
   `}
 `;
 

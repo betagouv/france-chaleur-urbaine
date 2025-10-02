@@ -45,10 +45,12 @@ export const ScaleLabelLegend = styled.span<{
       width: ${size}px;
       height: ${size}px;
       background-color: ${bgColor || 'grey'};
-      ${circle &&
-      css`
+      ${
+        circle &&
+        css`
         border-radius: 50%;
-      `}
+      `
+      }
     }
   `};
 `;

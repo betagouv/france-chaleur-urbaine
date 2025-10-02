@@ -1,17 +1,17 @@
 import NextLink from 'next/link';
-import { type PropsWithChildren } from 'react';
+import type { PropsWithChildren } from 'react';
 
-import { trackEvent, type TrackingEvent } from '@/modules/analytics/client';
+import { type TrackingEvent, trackEvent } from '@/modules/analytics/client';
 
 import { type SpacingProperties, spacingsToClasses } from './helpers/spacings';
 
 const linkVariantToClass = {
+  link: 'fr-link d-inline-block',
   primary: 'fr-btn',
   secondary: 'fr-btn fr-btn--secondary',
   tertiary: 'fr-btn fr-btn--tertiary',
   tertiaryNoOutline: 'fr-btn fr-btn--tertiary-no-outline',
   text: '',
-  link: 'fr-link d-inline-block',
 } as const;
 
 interface LinkProps extends SpacingProperties {

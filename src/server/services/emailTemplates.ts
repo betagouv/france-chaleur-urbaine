@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { type EmailTemplates } from '@/server/db/kysely';
+import type { EmailTemplates } from '@/server/db/kysely';
 import { createBaseModel } from '@/server/db/kysely/base-model';
 
 export const tableName = 'email_templates';
@@ -9,9 +9,6 @@ const baseModel = createBaseModel(tableName);
 
 const emailTemplateList = [
   {
-    id: 'askForPieces',
-    name: 'Demande d’éléments complémentaires',
-    subject: 'Votre demande de raccordement au réseau de chaleur',
     body: `Bonjour,
 
 Vous avez réalisé une demande de raccordement au réseau de chaleur pour le {{Adresse}} sur France Chaleur Urbaine.
@@ -22,11 +19,11 @@ Nous vous remercions pour l’intérêt que vous portez à ce mode de chauffage.
 -
 
 Cordialement,`,
+    id: 'askForPieces',
+    name: 'Demande d’éléments complémentaires',
+    subject: 'Votre demande de raccordement au réseau de chaleur',
   },
   {
-    id: 'koFarFromNetwok',
-    name: 'Non réalisable – éloignement au réseau',
-    subject: 'Votre demande de raccordement au réseau de chaleur',
     body: `Bonjour,
 
 Vous avez réalisé une demande de raccordement au réseau de chaleur pour le {{Adresse}} sur France Chaleur Urbaine.
@@ -36,11 +33,11 @@ Nous vous remercions pour l’intérêt que vous portez à ce mode de chauffage.
 Des développements du réseau sont possibles dans les années à venir. Nous conservons donc votre demande afin que vous puissiez être recontacté si le raccordement de votre bâtiment devenait réalisable.
 
 Cordialement,`,
+    id: 'koFarFromNetwok',
+    name: 'Non réalisable – éloignement au réseau',
+    subject: 'Votre demande de raccordement au réseau de chaleur',
   },
   {
-    id: 'koIndividualHeat',
-    name: 'Non réalisable – chauffage individuel',
-    subject: 'Votre demande de raccordement au réseau de chaleur',
     body: `Bonjour,
 
 Vous avez réalisé une demande de raccordement au réseau de chaleur pour le {{Adresse}} sur France Chaleur Urbaine.
@@ -48,11 +45,11 @@ Vous avez réalisé une demande de raccordement au réseau de chaleur pour le {{
 Nous vous remercions pour l’intérêt que vous portez à ce mode de chauffage. Néanmoins, le raccordement de votre bâtiment n’est pas réalisable au vu de votre chauffage actuel individuel : il nécessiterait des travaux extrêmement conséquents et coûteux pour mettre en place un système de canalisations internes à l’immeuble permettant de distribuer la chaleur aux différents logements.
 
 Cordialement,`,
+    id: 'koIndividualHeat',
+    name: 'Non réalisable – chauffage individuel',
+    subject: 'Votre demande de raccordement au réseau de chaleur',
   },
   {
-    id: 'koOther',
-    name: 'Non réalisable – autre motif',
-    subject: 'Votre demande de raccordement au réseau de chaleur',
     body: `Bonjour,
 
 Vous avez réalisé une demande de raccordement au réseau de chaleur pour le {{Adresse}} sur France Chaleur Urbaine.
@@ -60,11 +57,11 @@ Vous avez réalisé une demande de raccordement au réseau de chaleur pour le {{
 Nous vous remercions pour l’intérêt que vous portez à ce mode de chauffage. Néanmoins, suite à l’analyse de votre demande, nous sommes au regret de vous informer que le raccordement de votre bâtiment ne peut être réalisé.
 
 Cordialement,`,
+    id: 'koOther',
+    name: 'Non réalisable – autre motif',
+    subject: 'Votre demande de raccordement au réseau de chaleur',
   },
   {
-    id: 'receipt',
-    name: 'Accusé réception',
-    subject: 'Votre demande de raccordement au réseau de chaleur',
     body: `Bonjour,
 
 Vous avez réalisé une demande de raccordement au réseau de chaleur pour le {{Adresse}} sur France Chaleur Urbaine.
@@ -72,6 +69,9 @@ Vous avez réalisé une demande de raccordement au réseau de chaleur pour le {{
 Nous vous remercions pour l’intérêt que vous portez à ce mode de chauffage. Votre demande est bien prise en compte, nous reviendrons vers vous dans les meilleurs délais.
 
 Cordialement,`,
+    id: 'receipt',
+    name: 'Accusé réception',
+    subject: 'Votre demande de raccordement au réseau de chaleur',
   },
 ] as const;
 
@@ -80,8 +80,8 @@ export const list: typeof baseModel.listMine = async (config, context) => {
   const mine = await baseModel.listMine(config, context);
 
   return {
-    items: [...(emailTemplateList as unknown as EmailTemplates[]), ...mine.items],
     count: mine.count + emailTemplateList.length,
+    items: [...(emailTemplateList as unknown as EmailTemplates[]), ...mine.items],
   };
 };
 
@@ -91,13 +91,13 @@ export const remove = baseModel.removeMine;
 
 export const validation = {
   create: z.object({
+    body: z.string(),
     name: z.string(),
     subject: z.string(),
-    body: z.string(),
   }),
   update: z.object({
+    body: z.string().optional(),
     name: z.string().optional(),
     subject: z.string().optional(),
-    body: z.string().optional(),
   }),
 };

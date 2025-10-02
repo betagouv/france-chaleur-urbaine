@@ -3,12 +3,12 @@ import styled, { css } from 'styled-components';
 import Accordion from '@/components/ui/Accordion';
 
 const eligibleStyle = {
-  color: '#000000',
   bgColor: '#78EB7B',
+  color: '#000000',
 };
 const ineligibleStyle = {
-  color: '#000000',
   bgColor: '#ea7c3f',
+  color: '#000000',
 };
 
 type MapCardType = {

@@ -1,6 +1,6 @@
 import type MapboxDraw from '@mapbox/mapbox-gl-draw';
 import React, { createContext, useContext } from 'react';
-import { type MapRef } from 'react-map-gl/maplibre';
+import type { MapRef } from 'react-map-gl/maplibre';
 
 import {
   defaultMapConfiguration,
@@ -11,7 +11,7 @@ import {
 import { isDevModeEnabled } from '@/hooks/useDevMode';
 import useReseauxDeChaleurFilters from '@/hooks/useReseauxDeChaleurFilters';
 import { deepMergeObjects, isDefined, setProperty, toggleBoolean } from '@/utils/core';
-import { type Interval } from '@/utils/interval';
+import type { Interval } from '@/utils/interval';
 
 type UseFCUMapResult = {
   setMapRef: React.Dispatch<React.SetStateAction<MapRef | null>>;
@@ -85,12 +85,12 @@ export const FCUMapContextProvider: React.FC<React.PropsWithChildren<{ initialMa
   };
 
   const commonValues = {
-    setMapRef,
-    setMapDraw,
-    setIsDrawing,
-    setMapLayersLoaded,
     mapConfiguration,
+    setIsDrawing,
     setMapConfiguration,
+    setMapDraw,
+    setMapLayersLoaded,
+    setMapRef,
     toggleLayer,
     updateProperty,
     updateScaleInterval,
@@ -101,19 +101,19 @@ export const FCUMapContextProvider: React.FC<React.PropsWithChildren<{ initialMa
     !isDefined(mapRef) || !isDefined(mapDraw)
       ? {
           ...commonValues,
-          mapLoaded: false,
-          mapLayersLoaded: false,
-          mapRef: null,
-          mapDraw: null,
           isDrawing: false,
+          mapDraw: null,
+          mapLayersLoaded: false,
+          mapLoaded: false,
+          mapRef: null,
         }
       : {
           ...commonValues,
-          mapLoaded: true,
-          mapLayersLoaded,
-          mapRef,
-          mapDraw,
           isDrawing,
+          mapDraw,
+          mapLayersLoaded,
+          mapLoaded: true,
+          mapRef,
         };
 
   return <MapContext.Provider value={contextValue}>{children}</MapContext.Provider>;

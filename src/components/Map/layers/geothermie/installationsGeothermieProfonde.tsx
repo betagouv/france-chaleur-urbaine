@@ -31,8 +31,8 @@ const PopupInstallationGeothermieProfonde = defineLayerPopup<InstallationGeother
           iconId="fr-icon-eye-line"
           linkProps={{
             href: `https://sybase.brgm.fr/fiche-operation/${installationGeothermieProfonde.Id_du_site}`,
-            target: '_blank',
             rel: 'noopener noreferrer',
+            target: '_blank',
           }}
         >
           Fiche technique de l'installation
@@ -44,29 +44,29 @@ const PopupInstallationGeothermieProfonde = defineLayerPopup<InstallationGeother
 
 export const installationsGeothermieProfondeLayersSpec = [
   {
-    sourceId: 'installationsGeothermieProfonde',
-    source: {
-      type: 'vector',
-      tiles: ['/api/map/installationsGeothermieProfonde/{z}/{x}/{y}'],
-      minzoom: 5,
-      maxzoom: 6,
-      promoteId: 'gid',
-    },
     layers: [
       {
         id: 'installationsGeothermieProfonde',
-        type: 'circle',
+        isVisible: (config) => config.geothermieProfonde.show && config.geothermieProfonde.showInstallations,
         paint: {
           'circle-color': installationsGeothermieProfondeLayerColor,
-          'circle-radius': ifHoverElse(10, 8),
           'circle-opacity': installationsGeothermieProfondeLayerOpacity,
+          'circle-radius': ifHoverElse(10, 8),
         },
-        isVisible: (config) => config.geothermieProfonde.show && config.geothermieProfonde.showInstallations,
         popup: PopupInstallationGeothermieProfonde,
+        type: 'circle',
       },
     ],
+    source: {
+      maxzoom: 6,
+      minzoom: 5,
+      promoteId: 'gid',
+      tiles: ['/api/map/installationsGeothermieProfonde/{z}/{x}/{y}'],
+      type: 'vector',
+    },
+    sourceId: 'installationsGeothermieProfonde',
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];
 
 // generated with pnpm cli utils:geojson-to-ts mon-fichier-source.geojson
 type InstallationGeothermieProfonde = {

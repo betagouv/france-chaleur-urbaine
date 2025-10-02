@@ -1,12 +1,12 @@
-import { type NextApiRequest, type NextApiResponse } from 'next/types';
+import type { NextApiRequest, NextApiResponse } from 'next/types';
 import { z } from 'zod';
 
 import { handleRouteErrors, requireAuthentication, requirePostMethod } from '@/server/helpers/server';
 import { getSpreadSheet } from '@/server/services/export';
 import { getDemands } from '@/server/services/manager';
+import { exportsParams } from '@/types/Export';
 import { EXPORT_FORMAT } from '@/types/enum/ExportFormat';
 import { USER_ROLE } from '@/types/enum/UserRole';
-import { exportsParams } from '@/types/Export';
 
 import { getObsoleteUsers } from './admin/exportObsoleteUsers';
 
@@ -22,8 +22,8 @@ export default handleRouteErrors(async (req: NextApiRequest, res: NextApiRespons
   const result = schema.safeParse(req.body);
   if (!result.success) {
     return res.status(400).json({
-      error: 'Validation failed',
       details: result.error.issues,
+      error: 'Validation failed',
     });
   }
 

@@ -1,5 +1,3 @@
-import * as React from 'react';
-
 import { Layout, type LayoutModifiableProps, Note, Section, Text } from '../components';
 
 type ManagerEmailProps = {

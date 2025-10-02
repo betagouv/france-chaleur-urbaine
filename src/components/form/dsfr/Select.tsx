@@ -7,13 +7,15 @@ type AdditionalSelectProps = {
 
 const StyledDSFRSelect = styled(DSFRSelect)<AdditionalSelectProps>`
   ${({ $size }) => css`
-    ${$size === 'sm' &&
-    css`
+    ${
+      $size === 'sm' &&
+      css`
       .fr-select {
         padding: 0.35rem 2rem 0.35rem 0.5rem;
         font-size: 0.875rem;
       }
-    `}
+    `
+    }
   `}
 `;
 

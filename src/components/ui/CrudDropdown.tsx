@@ -6,8 +6,8 @@ import Icon from '@/components/ui/Icon';
 import Loader from '@/components/ui/Loader';
 import useCrud from '@/hooks/useCrud';
 import { notify } from '@/modules/notification';
-import { type CrudResponse } from '@/server/api/crud';
-import { type DB } from '@/server/db/kysely';
+import type { CrudResponse } from '@/server/api/crud';
+import type { DB } from '@/server/db/kysely';
 import { pick } from '@/utils/core';
 import cx from '@/utils/cx';
 import { sortKeys } from '@/utils/objects';
@@ -41,7 +41,7 @@ function CrudDropdown<T extends CrudResponse<keyof DB, any>>({
   onAdd,
   onShare,
   loadWhenOnlyOneConfig,
-  preprocessItem = (item) => ({ ...item, editable: true, disabled: false }),
+  preprocessItem = (item) => ({ ...item, disabled: false, editable: true }),
   isSameObject = (obj1, obj2) =>
     !!(Object.keys(obj1).length && Object.keys(obj2).length && JSON.stringify(sortKeys(obj1)) === JSON.stringify(sortKeys(obj2))),
   url,

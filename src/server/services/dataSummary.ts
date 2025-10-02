@@ -1,9 +1,9 @@
 import db from '@/server/db';
-import { type EXPORT_FORMAT } from '@/types/enum/ExportFormat';
-import { type Summary } from '@/types/Summary';
-import { type EnergySummary } from '@/types/Summary/Energy';
-import { type GasSummary } from '@/types/Summary/Gas';
-import { type NetworkSummary } from '@/types/Summary/Network';
+import type { EXPORT_FORMAT } from '@/types/enum/ExportFormat';
+import type { Summary } from '@/types/Summary';
+import type { EnergySummary } from '@/types/Summary/Energy';
+import type { GasSummary } from '@/types/Summary/Gas';
+import type { NetworkSummary } from '@/types/Summary/Network';
 
 import { getSpreadSheet, zip } from './export';
 import { consoColumns, fioulColumns, gasColumns } from './export.config';
@@ -188,13 +188,13 @@ export const getPolygonSummary = async (coordinates: number[][]): Promise<Summar
   const regions = await getRegions(coordinates);
   const [gas, energy, network] = await Promise.all([
     getGasSummary(coordinates),
-    Promise.all(regions.map((region) => getEnergySummary(coordinates, region))).then((results) => results.flatMap((x) => x)),
+    Promise.all(regions.map((region) => getEnergySummary(coordinates, region))).then((results) => results.flat()),
     getNetworkSummary(coordinates),
   ]);
 
   return {
-    gas,
     energy,
+    gas,
     network,
   };
 };
@@ -203,23 +203,23 @@ export const exportPolygonSummary = async (coordinates: number[][], exportType: 
   const regions = await getRegions(coordinates);
   const [gas, energyGas, energyFioul] = await Promise.all([
     exportGasSummary(coordinates),
-    Promise.all(regions.map((region) => exportEnergyGasSummary(coordinates, region))).then((results) => results.flatMap((x) => x)),
-    Promise.all(regions.map((region) => exportEnergyFioulSummary(coordinates, region))).then((results) => results.flatMap((x) => x)),
+    Promise.all(regions.map((region) => exportEnergyGasSummary(coordinates, region))).then((results) => results.flat()),
+    Promise.all(regions.map((region) => exportEnergyFioulSummary(coordinates, region))).then((results) => results.flat()),
   ]);
 
   return zip(
     [
       {
-        sheet: getSpreadSheet(consoColumns, gas, exportType),
         name: `consos_gaz.${exportType}`,
+        sheet: getSpreadSheet(consoColumns, gas, exportType),
       },
       {
-        sheet: getSpreadSheet(fioulColumns, energyFioul, exportType),
         name: `chauffage_collectif_fioul.${exportType}`,
+        sheet: getSpreadSheet(fioulColumns, energyFioul, exportType),
       },
       {
-        sheet: getSpreadSheet(gasColumns, energyGas, exportType),
         name: `chauffage_collectif_gaz.${exportType}`,
+        sheet: getSpreadSheet(gasColumns, energyGas, exportType),
       },
     ],
     'export_fcu'

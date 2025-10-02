@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 
 import EligibilityContactForm, { type EligibilityContactFormProps } from '@/components/EligibilityForm/EligibilityContactForm';
 import Modal, { createModal, useIsModalOpen } from '@/components/ui/Modal';
-import { type ContactFormContext } from '@/hooks/useContactFormFCU';
+import type { ContactFormContext } from '@/hooks/useContactFormFCU';
 
 type EligibilityFormProps = {
   id: string;

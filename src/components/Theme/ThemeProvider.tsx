@@ -4,7 +4,7 @@ import isPropValid from '@emotion/is-prop-valid';
 import { useLocalStorageValue } from '@react-hookz/web';
 import Link from 'next/link';
 import React from 'react';
-import { createGlobalStyle, StyleSheetManager, ThemeProvider as StyledComponentsThemeProvider } from 'styled-components';
+import { createGlobalStyle, ThemeProvider as StyledComponentsThemeProvider, StyleSheetManager } from 'styled-components';
 
 import theme from './theme';
 
@@ -192,11 +192,9 @@ function ThemeProvider({ children }: { children: React.ReactNode }) {
   return (
     <StyledComponentsThemeProvider theme={theme}>
       <StyleSheetManager shouldForwardProp={shouldForwardProp} enableVendorPrefixes>
-        <>
-          <AppGlobalStyle />
-          <DsfrFixUp />
-          {children}
-        </>
+        <AppGlobalStyle />
+        <DsfrFixUp />
+        {children}
       </StyleSheetManager>
     </StyledComponentsThemeProvider>
   );

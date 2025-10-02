@@ -17,7 +17,7 @@ import CarteFrance, { type DataByArea } from './CarteFrance';
 import {
   BigBlueNumber,
   BigGreyNumber,
-  Bin as DataBin,
+  Bin as BinComponent,
   BlackNumber,
   BlackNumbersLine,
   BlackText,
@@ -73,9 +73,9 @@ function ModalCarteFrance() {
         fetchJSON<BDNBStatsParDepartement[]>('/data/stats-bdnb-2022-departements.json'),
       ]);
       setStatsData({
+        departemental: statsParDepartement,
         national: statsNational,
         regional: statsParRegion,
-        departemental: statsParDepartement,
       });
     }
     if (modalOpened && !statsData) {
@@ -102,8 +102,8 @@ function ModalCarteFrance() {
       return {
         ...acc,
         [(statsByArea as any)[areaIdPropertyName]]: {
-          value,
           color: (dataBins.find((bin) => bin.minValue <= value && value <= bin.maxValue) as DataBin)?.color,
+          value,
         },
       };
     }, {} as DataByArea);
@@ -150,15 +150,14 @@ function ModalCarteFrance() {
               buttons={[
                 {
                   children: 'National',
-                  priority: area !== 'national' ? 'secondary' : 'primary',
                   onClick: () => {
                     setArea('national');
                     setSelectedData(statsData.national);
                   },
+                  priority: area !== 'national' ? 'secondary' : 'primary',
                 },
                 {
                   children: 'Régional',
-                  priority: area !== 'regional' ? 'secondary' : 'primary',
                   onClick: () => {
                     setArea('regional');
 
@@ -173,10 +172,10 @@ function ModalCarteFrance() {
                       setSelectedData(null);
                     }
                   },
+                  priority: area !== 'regional' ? 'secondary' : 'primary',
                 },
                 {
                   children: 'Départemental',
-                  priority: area !== 'departemental' ? 'secondary' : 'primary',
                   onClick: () => {
                     setArea('departemental');
 
@@ -185,6 +184,7 @@ function ModalCarteFrance() {
                       setSelectedData(null);
                     }
                   },
+                  priority: area !== 'departemental' ? 'secondary' : 'primary',
                 },
               ]}
             />
@@ -230,18 +230,18 @@ function ModalCarteFrance() {
                   buttons={[
                     {
                       children: '< 50 m',
-                      priority: distanceReseau !== '50m' ? 'secondary' : 'primary',
                       onClick: () => setDistanceReseau('50m'),
+                      priority: distanceReseau !== '50m' ? 'secondary' : 'primary',
                     },
                     {
                       children: '< 100 m',
-                      priority: distanceReseau !== '100m' ? 'secondary' : 'primary',
                       onClick: () => setDistanceReseau('100m'),
+                      priority: distanceReseau !== '100m' ? 'secondary' : 'primary',
                     },
                     {
                       children: '< 150 m',
-                      priority: distanceReseau !== '150m' ? 'secondary' : 'primary',
                       onClick: () => setDistanceReseau('150m'),
+                      priority: distanceReseau !== '150m' ? 'secondary' : 'primary',
                     },
                   ]}
                 />
@@ -252,13 +252,13 @@ function ModalCarteFrance() {
                   buttons={[
                     {
                       children: 'Bâtiments',
-                      priority: modeBatimentLogement !== 'batiments' ? 'secondary' : 'primary',
                       onClick: () => setModeBatimentLogement('batiments'),
+                      priority: modeBatimentLogement !== 'batiments' ? 'secondary' : 'primary',
                     },
                     {
                       children: 'Logements',
-                      priority: modeBatimentLogement !== 'logements' ? 'secondary' : 'primary',
                       onClick: () => setModeBatimentLogement('logements'),
+                      priority: modeBatimentLogement !== 'logements' ? 'secondary' : 'primary',
                     },
                   ]}
                 />
@@ -335,11 +335,11 @@ function ModalCarteFrance() {
                       raccordables
                     </LegendTitle>
                     {dataBins?.map((bin, i) => (
-                      <DataBin key={i} color={bin.color}>
+                      <BinComponent key={bin.color} color={bin.color}>
                         {i === 0
                           ? `≥ ${prettyFormatNumber(bin.minValue)}`
                           : `de ${prettyFormatNumber(bin.minValue)} à ${prettyFormatNumber(bin.maxValue)}`}
-                      </DataBin>
+                      </BinComponent>
                     ))}
                   </div>
                   <DataLink href="/data/potentiel_identifie_FCU.xlsx" isExternal>
@@ -415,9 +415,9 @@ export function calculateBins(data: number[], numberOfBins: number, minColor: st
   const bins = Array.from({ length: numberOfBins }, (_, i) => {
     const colorRatio = i / (numberOfBins - 1);
     return {
-      minValue: sortedData[i * binSize],
-      maxValue: sortedData[Math.min((i + 1) * binSize, sortedData.length) - 1],
       color: interpolateColor(minColor, maxColor, colorRatio),
+      maxValue: sortedData[Math.min((i + 1) * binSize, sortedData.length) - 1],
+      minValue: sortedData[i * binSize],
     };
   });
   // borne min à zéro pour un meilleur affichage
@@ -462,14 +462,14 @@ function getAreaToMapConfig(area: Area, stats: BDNBStats | null) {
     case 'national':
     case 'regional':
       return {
-        areaMode: 'regional',
         areaIdPropertyName: 'region_code',
+        areaMode: 'regional',
         mapSourceData: stats.regional,
       } as const;
     case 'departemental':
       return {
-        areaMode: 'departemental',
         areaIdPropertyName: 'departement_code',
+        areaMode: 'departemental',
         mapSourceData: stats.departemental,
       } as const;
   }

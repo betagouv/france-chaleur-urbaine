@@ -1,5 +1,5 @@
 import { Breadcrumb } from '@codegouvfr/react-dsfr/Breadcrumb';
-import { type GetStaticPaths, type GetStaticProps } from 'next';
+import type { GetStaticPaths, GetStaticProps } from 'next';
 import styled from 'styled-components';
 
 import MarkdownWrapper from '@/components/MarkdownWrapper';
@@ -8,7 +8,7 @@ import Box from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
 import { articles, getArticle } from '@/data/contents';
-import { type Article } from '@/types/Article';
+import type { Article } from '@/types/Article';
 import { deepCloneJSON } from '@/utils/objects';
 import { formatFrenchSpacing } from '@/utils/strings';
 
@@ -44,10 +44,10 @@ const ActualitePage: React.FC<{ article: Article }> = ({ article }) => {
       microdata={[
         {
           '@type': 'NewsArticle',
-          headline: title,
-          description: article.abstract,
-          image: [article.image],
           datePublished: new Date(article?.publishedDate).toISOString(),
+          description: article.abstract,
+          headline: title,
+          image: [article.image],
         },
       ]}
     >
@@ -121,8 +121,8 @@ export const getStaticPaths: GetStaticPaths = async () => {
   }));
 
   return {
-    paths,
     fallback: 'blocking',
+    paths,
   };
 };
 

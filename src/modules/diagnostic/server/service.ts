@@ -1,20 +1,19 @@
 import { access, constants, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-
+import { knownAirtableBases } from '@cli/airtable/bases';
 import { generateTilesFromGeoJSON, runTippecanoe } from '@/modules/tiles/server/generation-import';
 import { serverConfig } from '@/server/config';
 import { createLogger } from '@/server/helpers/logger';
 import { stringifySorted } from '@/utils/objects';
 import { ogr2ogrConvertToGeoJSON, runOgr2ogr } from '@/utils/ogr2ogr';
-import { knownAirtableBases } from '@cli/airtable/bases';
 
 const logger = createLogger('diagnostic');
 
 export async function runDiagnostic() {
   return {
-    geo: await checkGeoCommands(),
     airtable: getAirtableBase(),
+    geo: await checkGeoCommands(),
   };
 }
 
@@ -29,32 +28,32 @@ async function checkGeoCommands() {
   ]);
 
   return {
-    USE_DOCKER_GEO_COMMANDS: serverConfig.USE_DOCKER_GEO_COMMANDS,
     ogr2ogr: {
-      version: ogr2ogrVersion,
       functional: ogr2ogrFunctional,
+      version: ogr2ogrVersion,
     },
     tippecanoe: {
-      version: tippecanoeVersion,
       functional: tippecanoeFunctional,
+      version: tippecanoeVersion,
     },
+    USE_DOCKER_GEO_COMMANDS: serverConfig.USE_DOCKER_GEO_COMMANDS,
   };
 }
 
 const testGeoJSON = {
-  type: 'FeatureCollection',
   features: [
     {
-      type: 'Feature',
       geometry: {
-        type: 'Point',
         coordinates: [2.3522, 48.8566], // Paris
+        type: 'Point',
       },
       properties: {
         name: 'Test Point',
       },
+      type: 'Feature',
     },
   ],
+  type: 'FeatureCollection',
 };
 
 export type CommandTestResult =
@@ -99,10 +98,10 @@ async function testOgr2ogrFunctional(): Promise<CommandTestResult> {
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue lors du test ogr2ogr';
     logger.error('Échec du test fonctionnel ogr2ogr', { error: errorMessage });
-    return { success: false, error: errorMessage };
+    return { error: errorMessage, success: false };
   } finally {
     // cleanup
-    await rm(tempDir, { recursive: true, force: true });
+    await rm(tempDir, { force: true, recursive: true });
   }
 }
 
@@ -120,8 +119,8 @@ async function testTippecanoeFunctional(): Promise<CommandTestResult> {
     await generateTilesFromGeoJSON({
       geojsonFilePath: inputFile,
       outputDirectory: outputDir,
-      zoomMin: 5,
       zoomMax: 6, // Limité pour le test
+      zoomMin: 5,
     });
 
     try {
@@ -143,10 +142,10 @@ async function testTippecanoeFunctional(): Promise<CommandTestResult> {
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue lors du test tippecanoe';
     logger.error('Échec du test fonctionnel tippecanoe', { error: errorMessage });
-    return { success: false, error: errorMessage };
+    return { error: errorMessage, success: false };
   } finally {
     // cleanup
-    await rm(tempDir, { recursive: true, force: true });
+    await rm(tempDir, { force: true, recursive: true });
   }
 }
 

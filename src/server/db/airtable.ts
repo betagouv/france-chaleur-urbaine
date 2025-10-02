@@ -1,7 +1,7 @@
 import Airtable, { type FieldSet, type Table } from 'airtable';
 
 import { serverConfig } from '@/server/config';
-import { type Airtable as AirtableTableEnum } from '@/types/enum/Airtable';
+import type { Airtable as AirtableTableEnum } from '@/types/enum/Airtable';
 
 export type { FieldSet } from 'airtable';
 export type { QueryParams } from 'airtable/lib/query_params';
@@ -29,13 +29,13 @@ export const listTables = async (baseId: string): Promise<any[]> => {
   return tables
     .filter((table: any) => table.name.startsWith('FCU - '))
     .map((table: any) => ({
-      id: table.id,
-      name: table.name,
       fields: table.fields.map((field: any) => ({
         id: field.id,
-        type: field.type,
         name: field.name,
+        type: field.type,
       })),
+      id: table.id,
+      name: table.name,
     }));
 };
 
@@ -81,15 +81,15 @@ type AirtableField = {
 
 export const createTable = async (baseId: string, name: string, fields: AirtableField[]) => {
   const res = await fetch(`https://api.airtable.com/v0/meta/bases/${baseId}/tables`, {
-    method: 'POST',
+    body: JSON.stringify({
+      fields,
+      name,
+    }),
     headers: {
       Authorization: `Bearer ${serverConfig.AIRTABLE_KEY_API}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({
-      name,
-      fields,
-    }),
+    method: 'POST',
   });
   if (res.status !== 200) {
     if (res.headers.get('content-type') === 'application/json') {
@@ -115,12 +115,12 @@ export const uploadAttachment = async (recordId: string, attachementsFieldName: 
   const res = await fetch(
     `https://content.airtable.com/v0/${serverConfig.AIRTABLE_BASE}/${recordId}/${attachementsFieldName}/uploadAttachment`,
     {
-      method: 'POST',
+      body: JSON.stringify(content),
       headers: {
         Authorization: `Bearer ${serverConfig.AIRTABLE_KEY_API}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(content),
+      method: 'POST',
     }
   );
   if (!res.ok) {

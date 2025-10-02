@@ -1,8 +1,8 @@
 import Badge from '@codegouvfr/react-dsfr/Badge';
 
-import { type EtudesEnCours } from '@/server/db/kysely';
+import type { EtudesEnCours } from '@/server/db/kysely';
 import { darken } from '@/utils/color';
-import { type FrontendType } from '@/utils/typescript';
+import type { FrontendType } from '@/utils/typescript';
 
 import { ifHoverElse, type MapSourceLayersSpecification, type PopupStyleHelpers } from './common';
 
@@ -11,36 +11,36 @@ export const etudesEnCoursOpacity = 0.3;
 
 export const etudesEnCoursLayersSpec = [
   {
-    sourceId: 'etudesEnCours',
-    source: {
-      type: 'vector',
-      tiles: ['/api/map/etudesEnCours/{z}/{x}/{y}'],
-      maxzoom: 14,
-    },
     layers: [
       {
         id: 'etudesEnCours',
-        type: 'fill',
+        isVisible: (config) => config.etudesEnCours,
         paint: {
           'fill-color': ifHoverElse(darken(etudesEnCoursColor, 40), etudesEnCoursColor),
           'fill-opacity': etudesEnCoursOpacity,
         },
-        isVisible: (config) => config.etudesEnCours,
         popup: Popup,
+        type: 'fill',
       },
       {
         id: 'etudesEnCours-contour',
-        type: 'line',
+        isVisible: (config) => config.etudesEnCours,
         paint: {
           'line-color': etudesEnCoursColor,
           'line-width': ifHoverElse(4, 2),
         },
-        isVisible: (config) => config.etudesEnCours,
+        type: 'line',
         unselectable: true,
       },
     ],
+    source: {
+      maxzoom: 14,
+      tiles: ['/api/map/etudesEnCours/{z}/{x}/{y}'],
+      type: 'vector',
+    },
+    sourceId: 'etudesEnCours',
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];
 
 function Popup(
   { status, maitre_ouvrage, launched_at, communes }: FrontendType<EtudesEnCours>,

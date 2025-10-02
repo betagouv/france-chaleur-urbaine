@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 import { clientConfig } from '@/client-config';
 import { parseEnv } from '@/utils/env';
-import { type ExcludeKeys } from '@/utils/typescript';
+import type { ExcludeKeys } from '@/utils/typescript';
 
 dotenv.config({ path: '.env.local' });
 dotenv.config();
@@ -11,20 +11,20 @@ dotenv.config();
 const serverConfigSchema = {
   AIRTABLE_BASE: z.string(),
   AIRTABLE_KEY_API: z.string(),
-  DATABASE_URL: z.string(),
-  NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
-  IS_REVIEW_APP: z.boolean().default(false),
-  GITHUB_CI: z.boolean().default(false),
-  LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
   API_ADRESSE_URL: z.string().default('https://api-adresse.data.gouv.fr/'),
   CLOCK_CRONS_ENABLE: z.boolean().default(true),
   CLOCK_JOBS_PROCESSOR_ENABLE: z.boolean().default(true),
-  LOG_SQL_QUERIES: z.boolean().default(false),
-  DATA_GOUV_FR_API_URL: z.string().default('https://www.data.gouv.fr/api/1'),
   DATA_GOUV_FR_API_KEY: z.string().optional(),
+  DATA_GOUV_FR_API_URL: z.string().default('https://www.data.gouv.fr/api/1'),
   DATA_GOUV_FR_DATASET_ID: z.string().optional(),
-  PIPEDRIVE_BASE_URL: z.string().default('https://api.pipedrive.com/v1'),
+  DATABASE_URL: z.string(),
+  GITHUB_CI: z.boolean().default(false),
+  IS_REVIEW_APP: z.boolean().default(false),
+  LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
+  LOG_SQL_QUERIES: z.boolean().default(false),
+  NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   PIPEDRIVE_API_KEY: z.string().optional(),
+  PIPEDRIVE_BASE_URL: z.string().default('https://api.pipedrive.com/v1'),
   USE_DOCKER_GEO_COMMANDS: z.boolean().default(false),
 };
 

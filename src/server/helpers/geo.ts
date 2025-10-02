@@ -45,19 +45,19 @@ export async function processGeometry(
   // convert to multi-geometry if needed
   if (geom.type === 'LineString') {
     geom = {
-      type: 'MultiLineString',
       coordinates: [geom.coordinates],
+      type: 'MultiLineString',
     };
   } else if (geom.type === 'Polygon') {
     geom = {
-      type: 'MultiPolygon',
       coordinates: [geom.coordinates],
+      type: 'MultiPolygon',
     };
   }
 
   const srid = detectSrid(geom);
 
-  logger.debug('Geometry type', { type: geom.type, srid });
+  logger.debug('Geometry type', { srid, type: geom.type });
 
   return {
     geom,

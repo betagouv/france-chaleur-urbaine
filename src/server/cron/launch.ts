@@ -7,9 +7,9 @@ import '@root/sentry.node.config';
 
 export const jobs: Record<string, any> = {
   dailyNewManagerMail,
-  weeklyOldManagerMail,
   dailyRelanceMail,
   syncComptesProFromUsers,
+  weeklyOldManagerMail,
 };
 
 export const launchJob = async (job: string, ...params: any) => {

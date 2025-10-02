@@ -1,5 +1,5 @@
 import { fr } from '@codegouvfr/react-dsfr';
-import React from 'react';
+import type React from 'react';
 
 import Accordion from '@/components/ui/Accordion';
 import Box from '@/components/ui/Box';
@@ -61,16 +61,16 @@ export const Explanations = ({ className, advancedMode, ...props }: React.HTMLAt
 
 export const simulatorTabs = [
   {
-    tabId: 'batiment',
     label: '1. Paramètres du bâtiment',
+    tabId: 'batiment',
   },
   {
-    tabId: 'modes-de-chauffage',
     label: '2. Modes de chauffage et de refroidissement à comparer',
+    tabId: 'modes-de-chauffage',
   },
   {
-    tabId: 'parametres-modes-de-chauffage',
     label: '3. Paramètres des modes de chauffage et de refroidissement',
+    tabId: 'parametres-modes-de-chauffage',
   },
 ] as const;
 
@@ -237,15 +237,13 @@ const ComparateurPublicodesPlaceholder: React.FC<ComparateurPublicodesPlaceholde
     <div className={cx(fr.cx('fr-container'), className)} {...props}>
       <Simulator $loading={true}>
         <Box display="flex" gap="16px" flexDirection="column">
-          {advancedMode ? (
-            simulatorTabs.map((tab) => (
-              <Accordion key={tab.tabId} bordered label={tab.label}>
-                Chargement...
-              </Accordion>
-            ))
-          ) : (
-            <>Chargement...</>
-          )}
+          {advancedMode
+            ? simulatorTabs.map((tab) => (
+                <Accordion key={tab.tabId} bordered label={tab.label}>
+                  Chargement...
+                </Accordion>
+              ))
+            : 'Chargement...'}
         </Box>
         <Results>
           <ResultsNotAvailable advancedMode={advancedMode} />

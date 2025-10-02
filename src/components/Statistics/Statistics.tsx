@@ -8,8 +8,8 @@ import Loader from '@/components/ui/Loader';
 import Tooltip from '@/components/ui/Tooltip';
 import statistics from '@/data/statistics';
 import { useFetch } from '@/hooks/useApi';
-import { type Statistiques } from '@/pages/api/statistiques/all';
-import { type MatomoMonthStat } from '@/server/services/matomo_types';
+import type { Statistiques } from '@/pages/api/statistiques/all';
+import type { MatomoMonthStat } from '@/server/services/matomo_types';
 import { STAT_LABEL } from '@/types/enum/MatomoStats';
 import { dayjs } from '@/utils/date';
 
@@ -57,13 +57,13 @@ const monthToString = [
 const today = new Date();
 
 const graphOptions = {
-  large: true,
-  legendPosition: 'top',
-  legendAlignment: 'end',
-  titleTextStyle: { fontSize: 16, bold: false },
-  hAxisTextStyle: { color: '7C8DB5' },
-  vAxisTextStyle: { color: '7C8DB5' },
   colors: ['#83B0F3', '#64B847', '#1f8d49', '#009099'],
+  hAxisTextStyle: { color: '7C8DB5' },
+  large: true,
+  legendAlignment: 'end',
+  legendPosition: 'top',
+  titleTextStyle: { bold: false, fontSize: 16 },
+  vAxisTextStyle: { color: '7C8DB5' },
 };
 
 const getFormattedDataSum = (formatedData: number[][], startYear?: number, startMonth?: number) => {
@@ -74,7 +74,7 @@ const getFormattedDataSum = (formatedData: number[][], startYear?: number, start
       if (key !== 0) {
         for (let i = 1; i <= yearsList.length; i++) {
           if (startYear && startMonth) {
-            if (parseInt(yearsList[i - 1]) >= startYear && key >= startMonth) {
+            if (parseInt(yearsList[i - 1], 10) >= startYear && key >= startMonth) {
               nbTotal += data[i];
             }
           } else {
@@ -94,10 +94,10 @@ const getFormattedData = <Data,>(
   if (!data) {
     return [];
   }
-  const returnData = Array.from({ length: 12 }, (n, i) => [monthToString[i], ...new Array(yearsList.length).fill(null)]);
+  const returnData = Array.from({ length: 12 }, (_n, i) => [monthToString[i], ...new Array(yearsList.length).fill(null)]);
   let notEmpty = false;
   yearsList.forEach((year: string, i) => {
-    monthToString.forEach((month: string, j) => {
+    monthToString.forEach((_month: string, j) => {
       data.find((entry) => {
         const value = getValueFonction(year, j, entry);
         if (value) {
@@ -134,7 +134,7 @@ const Statistics = () => {
 
   const formatedDataEligibilityTest = getFormattedData(dataActions, (year: string, monthIndex: number, entry) => {
     const [entryYear, entryMonth] = entry?.date?.split('-') || ['YYYY', 'MM'];
-    if (parseInt(entryMonth) - 1 === monthIndex && entryYear === year) {
+    if (parseInt(entryMonth, 10) - 1 === monthIndex && entryYear === year) {
       return (
         (entry[STAT_LABEL.FORM_TEST_UNELIGIBLE] ?? 0) +
         (entry[STAT_LABEL.FORM_TEST_ELIGIBLE] ?? 0) +
@@ -154,7 +154,7 @@ const Statistics = () => {
 
   const formatedDataVisits = getFormattedData(dataVisits, (year: string, monthIndex: number, entry) => {
     const [entryYear, entryMonth] = entry?.date?.split('-') || ['YYYY', 'MM'];
-    if (parseInt(entryMonth) - 1 === monthIndex && entryYear === year) {
+    if (parseInt(entryMonth, 10) - 1 === monthIndex && entryYear === year) {
       return entry.value;
     }
   });
@@ -169,9 +169,9 @@ const Statistics = () => {
   const formatedDataCountContact = getFormattedData(dataCountContact, (year: string, monthIndex: number, entry: any) => {
     const [entryYear, entryMonth] = entry?.date?.split('-') || ['YYYY', 'MM'];
     if (
-      parseInt(entryMonth) - 1 === monthIndex &&
+      parseInt(entryMonth, 10) - 1 === monthIndex &&
       entryYear === year &&
-      (entryYear !== today.getFullYear().toString() || parseInt(entryMonth) - 1 !== today.getMonth())
+      (entryYear !== today.getFullYear().toString() || parseInt(entryMonth, 10) - 1 !== today.getMonth())
     ) {
       return entry.nbTotal;
     }
@@ -186,9 +186,9 @@ const Statistics = () => {
   const formatedDataCountBulkContact = getFormattedData(dataCountBulkContact, (year: string, monthIndex: number, entry: any) => {
     const [entryYear, entryMonth] = entry?.date?.split('-') || ['YYYY', 'MM'];
     if (
-      parseInt(entryMonth) - 1 === monthIndex &&
+      parseInt(entryMonth, 10) - 1 === monthIndex &&
       entryYear === year &&
-      (entryYear !== today.getFullYear().toString() || parseInt(entryMonth) - 1 !== today.getMonth())
+      (entryYear !== today.getFullYear().toString() || parseInt(entryMonth, 10) - 1 !== today.getMonth())
     ) {
       return entry.nbTotal;
     }
@@ -198,7 +198,7 @@ const Statistics = () => {
 
   const formatedDataVisitsMap = getFormattedData(dataVisitsMap, (year: string, monthIndex: number, entry) => {
     const [entryYear, entryMonth] = entry?.date?.split('-') || ['YYYY', 'MM'];
-    if (parseInt(entryMonth) - 1 === monthIndex && entryYear === year) {
+    if (parseInt(entryMonth, 10) - 1 === monthIndex && entryYear === year) {
       return entry.value;
     }
   });
@@ -268,7 +268,7 @@ const Statistics = () => {
     if (dataActions) {
       dataActions.forEach((entry) => {
         if (entry) {
-          nbTotal += entry['Tracés'] ? entry['Tracés'] : 0;
+          nbTotal += entry.Tracés ? entry.Tracés : 0;
         }
       });
     }

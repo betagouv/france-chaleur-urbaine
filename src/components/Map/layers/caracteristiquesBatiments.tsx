@@ -1,7 +1,7 @@
-import { type ExpressionInputType } from 'maplibre-gl';
+import type { ExpressionInputType } from 'maplibre-gl';
 
 import DPE from '@/components/DPE';
-import { type EnergySummary } from '@/types/Summary/Energy';
+import type { EnergySummary } from '@/types/Summary/Energy';
 import { darken } from '@/utils/color';
 import { formatTypeEnergieChauffage } from '@/utils/format';
 import { ObjectEntries } from '@/utils/typescript';
@@ -28,17 +28,11 @@ const dpeWithColorPairs = ObjectEntries(caracteristiquesBatimentsLayerStyle).fla
 
 export const caracteristiquesBatimentsLayersSpec = [
   {
-    sourceId: 'buildings',
-    source: {
-      type: 'vector',
-      tiles: ['/api/map/buildings/{z}/{x}/{y}'],
-    },
     layers: [
       {
         id: 'caracteristiquesBatiments',
-        'source-layer': 'buildings',
+        isVisible: (config) => config.caracteristiquesBatiments,
         minzoom: intermediateTileLayersMinZoom,
-        type: 'fill',
         paint: {
           'fill-color': [
             'match',
@@ -56,17 +50,16 @@ export const caracteristiquesBatimentsLayersSpec = [
             opacity,
           ],
         },
-        isVisible: (config) => config.caracteristiquesBatiments,
         popup: Popup,
+        'source-layer': 'buildings',
+        type: 'fill',
       },
       {
         id: 'caracteristiquesBatiments-contour',
-        'source-layer': 'buildings',
-        type: 'line',
+        isVisible: (config) => config.caracteristiquesBatiments,
         minzoom: intermediateTileLayersMinZoom,
         paint: {
           'line-color': ifHoverElse('#333', '#777'),
-          'line-width': ifHoverElse(2, 0.5),
           'line-opacity': [
             'interpolate',
             ['linear'],
@@ -76,13 +69,20 @@ export const caracteristiquesBatimentsLayersSpec = [
             intermediateTileLayersMinZoom + 0.2 + 1,
             opacity,
           ],
+          'line-width': ifHoverElse(2, 0.5),
         },
-        isVisible: (config) => config.caracteristiquesBatiments,
+        'source-layer': 'buildings',
+        type: 'line',
         unselectable: true,
       },
     ],
+    source: {
+      tiles: ['/api/map/buildings/{z}/{x}/{y}'],
+      type: 'vector',
+    },
+    sourceId: 'buildings',
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];
 
 function Popup(caracteristiqueBatiment: EnergySummary, { Property, Title, TwoColumns }: PopupStyleHelpers) {
   return (

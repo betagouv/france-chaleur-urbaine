@@ -1,5 +1,3 @@
-import * as React from 'react';
-
 import { clientConfig } from '@/client-config';
 
 import { Layout, type LayoutModifiableProps, Link, Note, Text } from '../components';

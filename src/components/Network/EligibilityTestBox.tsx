@@ -13,12 +13,12 @@ import Link from '@/components/ui/Link';
 import Modal, { createModal } from '@/components/ui/Modal';
 import Text from '@/components/ui/Text';
 import { trackEvent } from '@/modules/analytics/client';
-import { type NetworkEligibilityStatus } from '@/server/services/addresseInformation';
+import type { NetworkEligibilityStatus } from '@/server/services/addresseInformation';
 import { useServices } from '@/services';
 import { formatDataToAirtable, submitToAirtable } from '@/services/airtable';
 import { Airtable } from '@/types/enum/Airtable';
-import { type SuggestionItem } from '@/types/Suggestions';
-import { type ContactFormInfos, type FormDemandCreation } from '@/types/Summary/Demand';
+import type { SuggestionItem } from '@/types/Suggestions';
+import type { ContactFormInfos, FormDemandCreation } from '@/types/Summary/Demand';
 import { getReadableDistance } from '@/utils/geo';
 import { runWithMinimumDelay } from '@/utils/time';
 
@@ -86,24 +86,24 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
       const demandCreation: FormDemandCreation = {
         // contact
         ...contactFormInfos,
-        company: contactFormInfos.structure === 'Tertiaire' ? contactFormInfos.company : '',
-
-        heatingType,
-
-        eligibility: eligibilityStatus,
 
         // adresse
         address: selectedGeoAddress.properties.label,
-        coords: {
-          lon: selectedGeoAddress.geometry.coordinates[0],
-          lat: selectedGeoAddress.geometry.coordinates[1],
-        },
         city: selectedGeoAddress.properties.city,
-        postcode: selectedGeoAddress.properties.postcode,
+        company: contactFormInfos.structure === 'Tertiaire' ? contactFormInfos.company : '',
+        coords: {
+          lat: selectedGeoAddress.geometry.coordinates[1],
+          lon: selectedGeoAddress.geometry.coordinates[0],
+        },
         department: (addressContext[1] || '').trim(),
-        region: (addressContext[2] || '').trim(),
+
+        eligibility: eligibilityStatus,
+
+        heatingType,
 
         networkId,
+        postcode: selectedGeoAddress.properties.postcode,
+        region: (addressContext[2] || '').trim(),
       };
       setFormState('sendingDemand');
       await submitToAirtable(formatDataToAirtable(demandCreation), Airtable.DEMANDES);
@@ -166,7 +166,7 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
                 <Box backgroundColor="#C1C1C1" width="1px" />
                 <Text>
                   {!eligibilityStatus.isEligible ? (
-                    <>Votre adresse n'est pas située à proximité de ce réseau.</>
+                    "Votre adresse n'est pas située à proximité de ce réseau."
                   ) : eligibilityStatus.isVeryEligible ? (
                     <>
                       Votre adresse est <strong>à proximité immédiate</strong> de ce réseau (

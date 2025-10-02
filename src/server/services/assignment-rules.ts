@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import { kdb } from '@/server/db/kysely';
 import { createBaseModel } from '@/server/db/kysely/base-model';
-import { type DetailedEligibilityStatus } from '@/server/services/addresseInformation';
+import type { DetailedEligibilityStatus } from '@/server/services/addresseInformation';
 import { evaluateAST, parseExpressionToAST, parseResultActions, validateExpression, validateResult } from '@/utils/expression-parser';
 
 export const tableName = 'assignment_rules';
@@ -17,8 +17,8 @@ export const list = async () => {
     .execute();
 
   return {
-    items: records,
     count: records.length,
+    items: records,
   };
 };
 export type AssignmentRule = Awaited<ReturnType<typeof list>>['items'][number];
@@ -72,32 +72,21 @@ export const applyRulesToEligibilityData = async (
     } catch (error) {
       // Logger l'erreur mais continuer avec les autres règles
       console.warn('Failed to apply assignment rule', {
-        rule: rule.search_pattern,
         error: error instanceof Error ? error.message : 'Unknown error',
+        rule: rule.search_pattern,
       });
     }
   }
 
   return {
-    tags: [...new Set(appliedTags)], // Dédupliquer les tags
     assignment,
+    tags: [...new Set(appliedTags)], // Dédupliquer les tags
   };
 };
 
 export const validation = {
   create: z.object({
-    search_pattern: z
-      .string()
-      .min(1, 'La règle est requise')
-      .refine(
-        (pattern) => {
-          const validation = validateExpression(pattern);
-          return validation.isValid;
-        },
-        {
-          message: 'Expression invalide',
-        }
-      ),
+    active: z.boolean().optional(),
     result: z
       .string()
       .min(1, 'Le résultat est requis')
@@ -110,22 +99,21 @@ export const validation = {
           message: 'Format de résultat invalide',
         }
       ),
-    active: z.boolean().optional(),
+    search_pattern: z
+      .string()
+      .min(1, 'La règle est requise')
+      .refine(
+        (pattern) => {
+          const validation = validateExpression(pattern);
+          return validation.isValid;
+        },
+        {
+          message: 'Expression invalide',
+        }
+      ),
   }),
   update: z.object({
-    search_pattern: z
-      .string()
-      .min(1, 'La règle est requise')
-      .refine(
-        (pattern) => {
-          const validation = validateExpression(pattern);
-          return validation.isValid;
-        },
-        {
-          message: 'Expression invalide',
-        }
-      )
-      .optional(),
+    active: z.boolean().optional(),
     result: z
       .string()
       .min(1, 'Le résultat est requis')
@@ -139,6 +127,18 @@ export const validation = {
         }
       )
       .optional(),
-    active: z.boolean().optional(),
+    search_pattern: z
+      .string()
+      .min(1, 'La règle est requise')
+      .refine(
+        (pattern) => {
+          const validation = validateExpression(pattern);
+          return validation.isValid;
+        },
+        {
+          message: 'Expression invalide',
+        }
+      )
+      .optional(),
   }),
 };

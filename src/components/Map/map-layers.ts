@@ -1,16 +1,10 @@
-import {
-  type FilterSpecification,
-  type LayerSpecification,
-  type Map,
-  type StyleSetterOptions,
-  type VectorSourceSpecification,
-} from 'maplibre-gl';
+import type { FilterSpecification, LayerSpecification, Map, StyleSetterOptions, VectorSourceSpecification } from 'maplibre-gl';
 
 import { clientConfig } from '@/client-config';
 import { customGeojsonLayersSpec } from '@/components/Map/layers/customGeojson';
 import { geomUpdateLayersSpec } from '@/components/Map/layers/geomUpdate';
 import { quartiersPrioritairesPolitiqueVilleLayersSpec } from '@/components/Map/layers/quartiersPrioritairesPolitiqueVille';
-import { type MapConfiguration } from '@/components/Map/map-configuration';
+import type { MapConfiguration } from '@/components/Map/map-configuration';
 import { deepMergeObjects, isDefined } from '@/utils/core';
 
 import { buildingsDataExtractionLayers } from './components/tools/BuildingsDataExtractionTool';
@@ -26,8 +20,8 @@ import { communesFortPotentielPourCreationReseauxChaleurLayersSpec } from './lay
 import { consommationsGazLayersSpec } from './layers/consommationsGaz';
 import { demandesEligibiliteLayersSpec } from './layers/demandesEligibilite';
 import {
-  enrrMobilisablesChaleurFataleLayersSpec,
   enrrMobilisablesChaleurFataleLayerSymbols,
+  enrrMobilisablesChaleurFataleLayersSpec,
 } from './layers/enrr-mobilisables/chaleurFatale';
 import { enrrMobilisablesFrichesLayersSpec } from './layers/enrr-mobilisables/friches';
 import { enrrMobilisablesParkingsLayersSpec } from './layers/enrr-mobilisables/parkings';
@@ -55,8 +49,8 @@ import { zonesPotentielFroidLayersSpec } from './layers/zonesPotentielFroid';
 export const layerSymbolsImagesURLs = [
   {
     key: 'square',
-    url: '/icons/square.png',
     sdf: true,
+    url: '/icons/square.png',
   },
   {
     key: 'marker-red',
@@ -71,26 +65,26 @@ export const layerSymbolsImagesURLs = [
     url: '/icons/marker-blue.png',
   },
   ...enrrMobilisablesChaleurFataleLayerSymbols,
-] as const satisfies ReadonlyArray<LayerSymbolSpecification>;
+] as const satisfies readonly LayerSymbolSpecification[];
 
 type LayerSymbolImage = (typeof layerSymbolsImagesURLs)[number]['key'];
 
 export const selectableLayers = [
   {
-    label: 'Les réseaux de chaleur existants',
     key: 'reseau_chaleur',
+    label: 'Les réseaux de chaleur existants',
   },
   {
-    label: 'Les réseaux de chaleur en construction',
     key: 'futur_reseau',
+    label: 'Les réseaux de chaleur en construction',
   },
   {
-    label: 'Les périmètres de développement prioritaire',
     key: 'pdp',
+    label: 'Les périmètres de développement prioritaire',
   },
   {
-    label: 'Les réseaux de froid',
     key: 'reseau_froid',
+    label: 'Les réseaux de froid',
   },
 ] as const;
 
@@ -110,12 +104,12 @@ export const mapLegendFeatures = [
 export type MapLegendFeature = (typeof mapLegendFeatures)[number];
 
 export const legendURLKeyToLegendFeature: Record<LegendURLKey | string, MapLegendFeature> = {
-  reseau_chaleur: 'reseauxDeChaleur',
   futur_reseau: 'reseauxEnConstruction',
-  reseau_froid: 'reseauxDeFroid',
   pdp: 'zonesDeDeveloppementPrioritaire',
   raccordementsChaud: 'batimentsRaccordesReseauxChaleur',
   raccordementsFroid: 'batimentsRaccordesReseauxFroid',
+  reseau_chaleur: 'reseauxDeChaleur',
+  reseau_froid: 'reseauxDeFroid',
 };
 
 export type MapLayerSpecification<ILayerId = string> = Omit<LayerSpecification, 'source' | 'source-layer' | 'filter'> & {
@@ -176,7 +170,7 @@ export const mapLayers = [
   ...distancesMeasurementLayers,
   ...linearHeatDensityLayers,
   ...buildingsDataExtractionLayers,
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];
 
 export type LayerId = (typeof mapLayers)[number]['layers'][number]['id'];
 
@@ -198,9 +192,9 @@ export function loadMapLayers(map: FCUMap, config: MapConfiguration) {
       ...spec.source,
       ...(spec.source.type === 'vector'
         ? {
+            maxzoom: (spec.source as VectorSourceSpecification).maxzoom ?? tileSourcesMaxZoom,
             // prepend the website origin to the tiles as we need the full url for tiles
             tiles: spec.source.tiles.map((url) => `${clientConfig.websiteOrigin}${url}`),
-            maxzoom: (spec.source as VectorSourceSpecification).maxzoom ?? tileSourcesMaxZoom,
           }
         : {}),
     });
@@ -232,7 +226,7 @@ export function loadMapLayers(map: FCUMap, config: MapConfiguration) {
  */
 export function applyMapConfigurationToLayers(map: FCUMap, config: MapConfiguration) {
   mapLayers
-    .flatMap((source) => source.layers as ReadonlyArray<(typeof mapLayers)[number]['layers'][number]>)
+    .flatMap((source) => source.layers as readonly (typeof mapLayers)[number]['layers'][number][])
     .forEach((layer) => {
       if (!map.getLayer(layer.id)) {
         console.warn(`Layer '${layer.id}' is not set on map`);

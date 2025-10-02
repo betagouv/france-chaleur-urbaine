@@ -34,7 +34,7 @@ const useArrayQueryState = <Type extends string>(name: string) => {
 
   const toggle = (name: Type) => (has(name) ? remove(name) : add(name));
 
-  return { add, remove, has, toggle, set, items };
+  return { add, has, items, remove, set, toggle };
 };
 
 export default useArrayQueryState;

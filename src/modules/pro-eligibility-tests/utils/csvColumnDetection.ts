@@ -39,10 +39,10 @@ export function analyzeCSV(content: string, separator?: string) {
     const confidence = calculateConfidence(header, columnData, type);
 
     return {
+      confidence,
       index,
       name: header,
       type,
-      confidence,
     };
   });
 
@@ -52,15 +52,15 @@ export function analyzeCSV(content: string, separator?: string) {
   const suggestedLongitudeColumn = findBestLongitudeColumn(columns);
 
   return {
-    headers,
     columns,
+    hasCoordinateColumns: suggestedLatitudeColumn !== undefined && suggestedLongitudeColumn !== undefined,
+    headers,
     nbRows: rows.length,
     rows: rows.slice(0, 10),
     separator: separator || papaResult.meta.delimiter,
     suggestedAddressColumn,
     suggestedLatitudeColumn,
     suggestedLongitudeColumn,
-    hasCoordinateColumns: suggestedLatitudeColumn !== undefined && suggestedLongitudeColumn !== undefined,
   };
 }
 
@@ -98,7 +98,7 @@ function detectColumnType(header: string, values: string[]): ColumnType {
 
   // If mostly numeric and values look like coordinates
   if (numericRatio > 0.8 && numericValues.length > 0) {
-    const floatValues = numericValues.map(parseFloat).filter((v) => !isNaN(v));
+    const floatValues = numericValues.map(parseFloat).filter((v) => !Number.isNaN(v));
 
     if (floatValues.length > 0) {
       const minVal = Math.min(...floatValues);
@@ -171,7 +171,7 @@ function calculateConfidence(header: string, values: string[], detectedType: Col
  */
 function isNumericValue(value: string): boolean {
   const trimmed = value.trim();
-  return trimmed !== '' && !isNaN(parseFloat(trimmed)) && isFinite(parseFloat(trimmed));
+  return trimmed !== '' && !Number.isNaN(parseFloat(trimmed)) && Number.isFinite(parseFloat(trimmed));
 }
 
 /**

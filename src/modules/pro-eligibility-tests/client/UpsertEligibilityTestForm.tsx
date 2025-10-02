@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import DSFRSelect from '@/components/form/dsfr/Select';
 import Upload from '@/components/form/dsfr/Upload';
@@ -7,8 +7,6 @@ import Notice, { type NoticeProps } from '@/components/ui/Notice';
 import { toastErrors } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
 import { parseUnknownCharsetText } from '@/utils/strings';
-
-import CSVImportTable from './CSVImportTable';
 import {
   allowedExtensions,
   FormErrorMessage,
@@ -17,6 +15,7 @@ import {
   zUpdateEligibilityTestInput,
 } from '../constants';
 import { analyzeCSV, type ColumnMapping } from '../utils/csvColumnDetection';
+import CSVImportTable from './CSVImportTable';
 
 type UpsertEligibilityTestFormProps = {
   testId?: string;
@@ -33,14 +32,13 @@ const UpsertEligibilityTestForm = ({ testId, onComplete }: UpsertEligibilityTest
   const [analysis, setAnalysis] = useState<ReturnType<typeof analyzeCSV> | null>(null);
 
   const { form, Form, Field, Radio, Submit, FieldWrapper, Checkbox, useValue, Select } = useForm({
-    schema: isUpdate ? zUpdateEligibilityTestInput : zCreateEligibilityTestInput,
     defaultValues: {
       ...(isUpdate ? { id: testId } : { name: '' }),
-      content: '',
-      hasHeaders: true,
-      dataType: 'address',
-      separator: ',',
       columnMapping: {} as ColumnMapping,
+      content: '',
+      dataType: 'address',
+      hasHeaders: true,
+      separator: ',',
     },
     onSubmit: toastErrors(async ({ value }) => {
       if (isUpdate) {
@@ -52,6 +50,7 @@ const UpsertEligibilityTestForm = ({ testId, onComplete }: UpsertEligibilityTest
       void utils.proEligibilityTests.list.invalidate();
       onComplete?.();
     }, FormErrorMessage),
+    schema: isUpdate ? zUpdateEligibilityTestInput : zCreateEligibilityTestInput,
   });
 
   const processContent = useCallback(
@@ -64,9 +63,9 @@ const UpsertEligibilityTestForm = ({ testId, onComplete }: UpsertEligibilityTest
 
       const newColumnMapping = fileAnalysis.hasCoordinateColumns
         ? {
+            addressColumn: undefined,
             latitudeColumn: fileAnalysis.suggestedLatitudeColumn,
             longitudeColumn: fileAnalysis.suggestedLongitudeColumn,
-            addressColumn: undefined,
           }
         : {
             addressColumn: fileAnalysis.suggestedAddressColumn || 0,
@@ -110,10 +109,10 @@ const UpsertEligibilityTestForm = ({ testId, onComplete }: UpsertEligibilityTest
     hasHeaders && analysis?.headers[index] ? analysis?.headers[index] : String.fromCharCode(65 + index);
 
   const columnOptions = [
-    { value: '', label: 'Aucune colonne' },
+    { label: 'Aucune colonne', value: '' },
     ...(analysis?.headers || []).map((_, index) => ({
-      value: index.toString(),
       label: getColumnLabel(index),
+      value: index.toString(),
     })),
   ];
 
@@ -162,13 +161,13 @@ const UpsertEligibilityTestForm = ({ testId, onComplete }: UpsertEligibilityTest
             label="Choisissez un fichier .txt ou .csv (une adresse par ligne) :"
             hint="Si le fichier est un .csv, les colonnes seront découpées pour déduire l'adresse ou les coordonnées géographiques."
             nativeInputProps={{
-              required: true,
               accept: allowedExtensions.join(','),
               onChange: async (e) => {
                 const file = e.target.files?.[0];
                 // onChange(file);
                 await handleFileChange(file);
               },
+              required: true,
             }}
           />
           {/* )}
@@ -229,12 +228,11 @@ const UpsertEligibilityTestForm = ({ testId, onComplete }: UpsertEligibilityTest
                   <DSFRSelect
                     label={
                       <span className="flex items-center gap-2">
-                        <span className="inline-block w-3 h-3 rounded-sm bg-purple-100 border border-purple-300"></span>
+                        <span className="inline-block w-3 h-3 rounded-sm bg-purple-100 border border-purple-300" />
                         Adresse
                       </span>
                     }
                     nativeSelectProps={{
-                      value: columnMapping.addressColumn?.toString() ?? '',
                       onChange: (e) => {
                         form.setFieldValue('columnMapping', {
                           addressColumn: e.target.value ? Number(e.target.value) : undefined,
@@ -242,6 +240,7 @@ const UpsertEligibilityTestForm = ({ testId, onComplete }: UpsertEligibilityTest
                           longitudeColumn: undefined,
                         });
                       },
+                      value: columnMapping.addressColumn?.toString() ?? '',
                     }}
                     options={columnOptions}
                   />
@@ -252,16 +251,16 @@ const UpsertEligibilityTestForm = ({ testId, onComplete }: UpsertEligibilityTest
                     <DSFRSelect
                       label={
                         <span className="flex items-center gap-2">
-                          <span className="inline-block w-3 h-3 rounded-sm bg-green-100 border border-green-300"></span>
+                          <span className="inline-block w-3 h-3 rounded-sm bg-green-100 border border-green-300" />
                           Latitude
                         </span>
                       }
                       nativeSelectProps={{
-                        value: columnMapping.latitudeColumn?.toString() || '',
                         onChange: (e) => {
                           form.setFieldValue('columnMapping.addressColumn', undefined);
                           form.setFieldValue('columnMapping.latitudeColumn', e.target.value ? Number(e.target.value) : undefined);
                         },
+                        value: columnMapping.latitudeColumn?.toString() || '',
                       }}
                       options={columnOptions}
                     />
@@ -270,16 +269,16 @@ const UpsertEligibilityTestForm = ({ testId, onComplete }: UpsertEligibilityTest
                     <DSFRSelect
                       label={
                         <span className="flex items-center gap-2">
-                          <span className="inline-block w-3 h-3 rounded-sm bg-amber-100 border border-amber-300"></span>
+                          <span className="inline-block w-3 h-3 rounded-sm bg-amber-100 border border-amber-300" />
                           Longitude
                         </span>
                       }
                       nativeSelectProps={{
-                        value: columnMapping.longitudeColumn?.toString() || '',
                         onChange: (e) => {
                           form.setFieldValue('columnMapping.addressColumn', undefined);
                           form.setFieldValue('columnMapping.longitudeColumn', e.target.value ? Number(e.target.value) : undefined);
                         },
+                        value: columnMapping.longitudeColumn?.toString() || '',
                       }}
                       options={columnOptions}
                     />

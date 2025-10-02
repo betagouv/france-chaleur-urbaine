@@ -129,10 +129,10 @@ function tokenize(expression: string): Token[] {
 
           current++; // Consommer le guillemet fermant
           tokens.push({
-            type: 'condition',
             field,
-            value,
             hasWildcard: value.includes('*'),
+            type: 'condition',
+            value,
           });
           continue;
         } else {
@@ -159,7 +159,7 @@ function parseExpression(tokens: Token[], index: { value: number }): ASTNode {
   while (index.value < tokens.length && tokens[index.value]?.type === 'operator' && (tokens[index.value] as any)?.value === '||') {
     index.value++; // Consommer '||'
     const right = parseTerm(tokens, index);
-    left = { type: 'or', left, right };
+    left = { left, right, type: 'or' };
   }
 
   return left;
@@ -171,7 +171,7 @@ function parseTerm(tokens: Token[], index: { value: number }): ASTNode {
   while (index.value < tokens.length && tokens[index.value]?.type === 'operator' && (tokens[index.value] as any)?.value === '&&') {
     index.value++; // Consommer '&&'
     const right = parseFactor(tokens, index);
-    left = { type: 'and', left, right };
+    left = { left, right, type: 'and' };
   }
 
   return left;
@@ -187,7 +187,7 @@ function parseFactor(tokens: Token[], index: { value: number }): ASTNode {
   if (token.type === 'operator' && (token as any).value === '!') {
     index.value++; // Consommer '!'
     const operand = parseFactor(tokens, index);
-    return { type: 'not', operand };
+    return { operand, type: 'not' };
   }
 
   if (token.type === 'paren' && (token as any).value === '(') {
@@ -206,10 +206,10 @@ function parseFactor(tokens: Token[], index: { value: number }): ASTNode {
     const conditionToken = token as any;
     index.value++; // Consommer la condition
     return {
-      type: 'condition',
       field: conditionToken.field,
-      value: conditionToken.value,
       hasWildcard: conditionToken.hasWildcard,
+      type: 'condition',
+      value: conditionToken.value,
     };
   }
 
@@ -297,7 +297,7 @@ export function evaluateAST(ast: ASTNode, eligibilityData: any): boolean {
         const operator = ast.value.charAt(0);
         const comparisonValue = parseFloat(ast.value.substring(1));
 
-        if (isNaN(comparisonValue)) {
+        if (Number.isNaN(comparisonValue)) {
           return false;
         }
 
@@ -342,11 +342,11 @@ export function evaluateAST(ast: ASTNode, eligibilityData: any): boolean {
 export function validateExpression(expression: string): { isValid: boolean; error?: string; ast?: ASTNode } {
   try {
     const ast = parseExpressionToAST(expression);
-    return { isValid: true, ast };
+    return { ast, isValid: true };
   } catch (error) {
     return {
-      isValid: false,
       error: error instanceof Error ? error.message : 'Erreur de validation inconnue',
+      isValid: false,
     };
   }
 }
@@ -357,11 +357,11 @@ export function validateExpression(expression: string): { isValid: boolean; erro
 export function validateResult(result: string): { isValid: boolean; error?: string; actions?: ResultAction[] } {
   try {
     const actions = parseResultActions(result);
-    return { isValid: true, actions };
+    return { actions, isValid: true };
   } catch (error) {
     return {
-      isValid: false,
       error: error instanceof Error ? error.message : 'Erreur de validation inconnue',
+      isValid: false,
     };
   }
 }
@@ -380,8 +380,8 @@ export function testExpression(expression: string, eligibilityData: any): { isVa
     return { isValid: true, result };
   } catch (error) {
     return {
-      isValid: false,
       error: error instanceof Error ? error.message : "Erreur d'évaluation inconnue",
+      isValid: false,
     };
   }
 }

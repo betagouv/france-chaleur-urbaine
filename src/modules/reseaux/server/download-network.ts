@@ -1,5 +1,5 @@
-import { type Record } from 'airtable';
-import { type FieldSet } from 'airtable/lib/field_set';
+import type { Record } from 'airtable';
+import type { FieldSet } from 'airtable/lib/field_set';
 
 import { type DatabaseSourceId, type DatabaseTileInfo, tilesInfo } from '@/modules/tiles/tiles.config';
 import db from '@/server/db';
@@ -24,130 +24,130 @@ export type Type =
   | typeof TypeStringToArray;
 
 const conversionConfigReseauxDeChaleur = {
+  // departement: TypeString,
+  // region: TypeString,
+  adresse_mo: TypeString,
+  annee_creation: TypeNumber,
+  CP_MO: TypeString,
+  'contenu CO2': TypeNumber,
+  'contenu CO2 ACV': TypeNumber,
+  'Dev_reseau%': TypeNumber,
+  eau_chaude: TypeString,
+  eau_surchauffee: TypeString,
+  fichiers: TypeJSONArray,
+  Gestionnaire: TypeString,
+  has_PDP: TypeBool,
   // id_fcu: TypeNumber,
   // id: TypeNumber,
   'Identifiant reseau': TypeString,
+  informationsComplementaires: TypeString,
+  livraisons_agriculture_MWh: TypeNumber,
+  livraisons_autre_MWh: TypeNumber,
+  livraisons_industrie_MWh: TypeNumber,
+  livraisons_residentiel_MWh: TypeNumber,
+  livraisons_tertiaire_MWh: TypeNumber,
+  livraisons_totale_MWh: TypeNumber,
+  longueur_reseau: TypeNumber,
+  // communes: TypeStringToArray,
+  MO: TypeString,
+  'Moyenne-annee-DPE': TypeString,
+  nb_pdl: TypeNumber,
+  nom_reseau: TypeString,
+  'PF%': TypeNumber,
+  PM: TypeNumber,
+  PM_L: TypeNumber,
+  PM_T: TypeNumber,
+  'PV%': TypeNumber,
+  prod_MWh_autre_chaleur_recuperee: TypeNumber,
+  prod_MWh_autres: TypeNumber,
+  prod_MWh_autres_ENR: TypeNumber,
+  prod_MWh_biogaz: TypeNumber,
+  prod_MWh_biomasse_solide: TypeNumber,
+  prod_MWh_chaleur_industiel: TypeNumber,
+  prod_MWh_charbon: TypeNumber,
+  prod_MWh_chaudieres_electriques: TypeNumber,
+  prod_MWh_dechets_internes: TypeNumber,
+  prod_MWh_fioul_domestique: TypeNumber,
+  prod_MWh_fioul_lourd: TypeNumber,
+  prod_MWh_GPL: TypeNumber,
+  prod_MWh_gaz_naturel: TypeNumber,
+  prod_MWh_geothermie: TypeNumber,
+  prod_MWh_PAC: TypeNumber,
+  prod_MWh_solaire_thermique: TypeNumber,
+  prod_MWh_UIOM: TypeNumber,
+  production_totale_MWh: TypeNumber,
+  puissance_MW_autre_chaleur_recuperee: TypeNumber,
+  puissance_MW_autres: TypeNumber,
+  puissance_MW_autres_ENR: TypeNumber,
+  puissance_MW_biogaz: TypeNumber,
+  puissance_MW_biomasse_solide: TypeNumber,
+  puissance_MW_chaleur_industiel: TypeNumber,
+  puissance_MW_charbon: TypeNumber,
+  puissance_MW_chaudieres_electriques: TypeNumber,
+  puissance_MW_dechets_internes: TypeNumber,
+  puissance_MW_fioul_domestique: TypeNumber,
+  puissance_MW_fioul_lourd: TypeNumber,
+  puissance_MW_GPL: TypeNumber,
+  puissance_MW_gaz_naturel: TypeNumber,
+  puissance_MW_geothermie: TypeNumber,
+  puissance_MW_PAC: TypeNumber,
+  puissance_MW_solaire_thermique: TypeNumber,
+  puissance_MW_UIOM: TypeNumber,
+  puissance_totale_MW: TypeNumber,
+  'Rend%': TypeNumber,
   //has_trace: TypeBool,
   // date_actualisation_trace: TypeString,
   // date_actualisation_pdp: TypeString,
   //'non ref 2022': TypeBool,
   'reseaux classes': TypeBool,
-  has_PDP: TypeBool,
-  nom_reseau: TypeString,
-  // communes: TypeStringToArray,
-  MO: TypeString,
-  Gestionnaire: TypeString,
-  'Taux EnR&R': TypeNumber,
-  'contenu CO2': TypeNumber,
-  'contenu CO2 ACV': TypeNumber,
-  'Moyenne-annee-DPE': TypeString,
-  PM: TypeNumber,
-  'PV%': TypeNumber,
-  'PF%': TypeNumber,
-  PM_L: TypeNumber,
-  PM_T: TypeNumber,
-  'Dev_reseau%': TypeNumber,
-  'Rend%': TypeNumber,
   reseaux_techniques: TypeBool,
-  // departement: TypeString,
-  // region: TypeString,
-  adresse_mo: TypeString,
-  CP_MO: TypeString,
-  ville_mo: TypeString,
-  annee_creation: TypeNumber,
-  longueur_reseau: TypeNumber,
-  nb_pdl: TypeNumber,
-  prod_MWh_gaz_naturel: TypeNumber,
-  prod_MWh_charbon: TypeNumber,
-  prod_MWh_fioul_domestique: TypeNumber,
-  prod_MWh_fioul_lourd: TypeNumber,
-  prod_MWh_GPL: TypeNumber,
-  prod_MWh_biomasse_solide: TypeNumber,
-  prod_MWh_dechets_internes: TypeNumber,
-  prod_MWh_UIOM: TypeNumber,
-  prod_MWh_biogaz: TypeNumber,
-  prod_MWh_geothermie: TypeNumber,
-  prod_MWh_PAC: TypeNumber,
-  prod_MWh_solaire_thermique: TypeNumber,
-  prod_MWh_chaleur_industiel: TypeNumber,
-  prod_MWh_autre_chaleur_recuperee: TypeNumber,
-  prod_MWh_autres_ENR: TypeNumber,
-  prod_MWh_chaudieres_electriques: TypeNumber,
-  prod_MWh_autres: TypeNumber,
-  production_totale_MWh: TypeNumber,
-  livraisons_totale_MWh: TypeNumber,
-  livraisons_residentiel_MWh: TypeNumber,
-  livraisons_tertiaire_MWh: TypeNumber,
-  livraisons_industrie_MWh: TypeNumber,
-  livraisons_agriculture_MWh: TypeNumber,
-  livraisons_autre_MWh: TypeNumber,
-  puissance_totale_MW: TypeNumber,
-  puissance_MW_gaz_naturel: TypeNumber,
-  puissance_MW_charbon: TypeNumber,
-  puissance_MW_fioul_domestique: TypeNumber,
-  puissance_MW_fioul_lourd: TypeNumber,
-  puissance_MW_GPL: TypeNumber,
-  puissance_MW_biomasse_solide: TypeNumber,
-  puissance_MW_dechets_internes: TypeNumber,
-  puissance_MW_UIOM: TypeNumber,
-  puissance_MW_biogaz: TypeNumber,
-  puissance_MW_geothermie: TypeNumber,
-  puissance_MW_PAC: TypeNumber,
-  puissance_MW_solaire_thermique: TypeNumber,
-  puissance_MW_chaleur_industiel: TypeNumber,
-  puissance_MW_autre_chaleur_recuperee: TypeNumber,
-  puissance_MW_chaudieres_electriques: TypeNumber,
-  puissance_MW_autres: TypeNumber,
-  puissance_MW_autres_ENR: TypeNumber,
-  eau_chaude: TypeString,
-  eau_surchauffee: TypeString,
+  'Taux EnR&R': TypeNumber,
   vapeur: TypeString,
+  ville_mo: TypeString,
   website_gestionnaire: TypeString,
-  informationsComplementaires: TypeString,
-  fichiers: TypeJSONArray,
 } as const;
 
 const conversionConfigReseauxDeFroid = {
+  adresse_mo: TypeString,
+  annee_creation: TypeNumber,
+  CP_MO: TypeString,
+  // communes: TypeStringToArray,
+  'contenu CO2': TypeNumber,
+  'contenu CO2 ACV': TypeNumber,
+  fichiers: TypeJSONArray,
+  Gestionnaire: TypeString,
   // id_fcu: TypeNumber,
   'Identifiant reseau': TypeString,
+  informationsComplementaires: TypeString,
+  livraisons_agriculture_MWh: TypeNumber,
+  livraisons_autre_MWh: TypeNumber,
+  livraisons_industrie_MWh: TypeNumber,
+  livraisons_residentiel_MWh: TypeNumber,
+  livraisons_tertiaire_MWh: TypeNumber,
+  livraisons_totale_MWh: TypeNumber,
+  longueur_reseau: TypeNumber,
+  // departement: TypeString,
+  // region: TypeString,
+  MO: TypeString,
+  'Moyenne-annee-DPE': TypeString,
+  nb_pdl: TypeNumber,
   nom_reseau: TypeString,
+  production_totale_MWh: TypeNumber,
+  puissance_totale_MW: TypeNumber,
+  'Rend%': TypeNumber,
+  'reseaux classes': TypeBool,
   //'non ref 2022': TypeBool,
   //has_trace: TypeBool,
   // date_actualisation_trace: TypeString,
   'Taux EnR&R': TypeNumber,
-  Gestionnaire: TypeString,
-  // communes: TypeStringToArray,
-  'contenu CO2': TypeNumber,
-  'contenu CO2 ACV': TypeNumber,
-  'Moyenne-annee-DPE': TypeString,
-  // departement: TypeString,
-  // region: TypeString,
-  MO: TypeString,
-  adresse_mo: TypeString,
-  annee_creation: TypeNumber,
   ville_mo: TypeString,
-  CP_MO: TypeString,
-  longueur_reseau: TypeNumber,
-  nb_pdl: TypeNumber,
-  production_totale_MWh: TypeNumber,
-  puissance_totale_MW: TypeNumber,
-  livraisons_totale_MWh: TypeNumber,
-  livraisons_residentiel_MWh: TypeNumber,
-  livraisons_tertiaire_MWh: TypeNumber,
-  livraisons_industrie_MWh: TypeNumber,
-  livraisons_agriculture_MWh: TypeNumber,
-  livraisons_autre_MWh: TypeNumber,
-  'Rend%': TypeNumber,
-  'reseaux classes': TypeBool,
   website_gestionnaire: TypeString,
-  informationsComplementaires: TypeString,
-  fichiers: TypeJSONArray,
 } as const;
 
 const conversionConfigReseauxEnConstruction = {
-  nom_reseau: TypeString,
-  mise_en_service: TypeString,
   gestionnaire: TypeString,
+  mise_en_service: TypeString,
+  nom_reseau: TypeString,
   // date_actualisation_trace: TypeString,
   // communes: TypeStringToArray,
   // is_zone: TypeBool,
@@ -164,8 +164,8 @@ export const downloadNetwork = async (table: DatabaseSourceId) => {
   const networksAirtable = await base(tileInfo.airtable).select().all();
 
   const logger = parentLogger.child({
-    table,
     count: networksAirtable.length,
+    table,
   });
   const startTime = Date.now();
   logger.info('start network update');
@@ -193,8 +193,8 @@ export const downloadAndUpdateNetwork = async (table: DatabaseSourceId) => {
   const networksAirtable = await base(tileInfo.airtable).select().all();
 
   const logger = parentLogger.child({
-    table,
     count: networksAirtable.length,
+    table,
   });
   const startTime = Date.now();
   logger.info('start network update');
@@ -206,24 +206,24 @@ export const downloadAndUpdateNetwork = async (table: DatabaseSourceId) => {
     const networksDB = await db(tileInfo.table).select('id_fcu', 'communes', 'Identifiant reseau', 'has_trace');
     await Promise.all(
       networksDB.map(async (network) => {
-        const networkAirtable = networksAirtable.find((row) => row.get('id_fcu') === network['id_fcu']);
+        const networkAirtable = networksAirtable.find((row) => row.get('id_fcu') === network.id_fcu);
         if (networkAirtable) {
-          if (network['has_trace'] !== convertAirtableValue(networkAirtable.get('has_trace'), TypeBool)) {
+          if (network.has_trace !== convertAirtableValue(networkAirtable.get('has_trace'), TypeBool)) {
             updateCount++;
             await base(tileInfo.airtable as string).update(networkAirtable.id, {
-              has_trace: network['has_trace'],
+              has_trace: network.has_trace,
             });
           }
         } else {
-          addIds.push(network['id_fcu']);
+          addIds.push(network.id_fcu);
           await base(tileInfo.airtable as string).create(
             [
               {
                 fields: {
-                  id_fcu: network['id_fcu'],
+                  communes: network.communes?.toString(),
+                  has_trace: network.has_trace,
                   'Identifiant reseau': network['Identifiant reseau'],
-                  communes: network['communes'] && network['communes'].toString(),
-                  has_trace: network['has_trace'],
+                  id_fcu: network.id_fcu,
                 },
               },
             ],
@@ -244,15 +244,15 @@ export const downloadAndUpdateNetwork = async (table: DatabaseSourceId) => {
     const networksDB = await db(tileInfo.table).select('id_fcu');
     await Promise.all(
       networksDB.map(async (network) => {
-        const networkAirtable = networksAirtable.find((row) => row.get('id_fcu') === network['id_fcu']);
+        const networkAirtable = networksAirtable.find((row) => row.get('id_fcu') === network.id_fcu);
         if (!networkAirtable) {
-          addIds.push(network['id_fcu']);
+          addIds.push(network.id_fcu);
           await base(tileInfo.airtable as string).create(
             [
               {
                 fields: {
-                  id_fcu: network['id_fcu'],
-                  communes: network['communes'],
+                  communes: network.communes,
+                  id_fcu: network.id_fcu,
                 },
               },
             ],
@@ -305,7 +305,7 @@ function convertEntityFromAirtableToPostgres(type: DatabaseSourceId, airtableNet
 export function convertAirtableValue(value: any, type: Type) {
   switch (type) {
     case TypeArray:
-      return value instanceof Array ? value : [];
+      return Array.isArray(value) ? value : [];
     case TypeBool:
       return value !== undefined && value !== null ? !!value : false;
     case TypeJSONArray:

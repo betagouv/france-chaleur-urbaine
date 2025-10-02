@@ -37,12 +37,14 @@ export const NumberContainer = styled.div<{ $orientation?: 'row' | 'col' }>`
     align-content: flex-start;
     gap: 24px 8px;
     flex-direction: ${$orientation === 'row' ? 'row' : 'column'};
-    ${$orientation === 'row' &&
-    css`
+    ${
+      $orientation === 'row' &&
+      css`
       & > * {
         flex: 1;
       }
-    `}
+    `
+    }
   `}
 `;
 

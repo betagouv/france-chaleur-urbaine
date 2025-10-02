@@ -13,15 +13,10 @@ const IframeIntegration = ({ pageFrom }: { pageFrom?: PageFromType }) => {
     <Box>
       <ResponsiveRow className="fr-container">
         <Box flex>
-          <Heading as="h4" color="blue-france" id="iframe-carte">
-            {pageFrom === 'pro' ? (
-              <>Intégrez notre cartographie ou notre test d’adresses à votre site internet</>
-            ) : (
-              <>
-                Intégrez notre cartographie ou notre test d’adresses à votre site à l’instar de Charleville-Mézières, Strasbourg, Tours,
-                l’ALEC de Lyon...
-              </>
-            )}
+          <Heading as="h4" color="blue-france" id={'iframe-carte'}>
+            {pageFrom === 'pro'
+              ? 'Intégrez notre cartographie ou notre test d’adresses à votre site internet'
+              : 'Intégrez notre cartographie ou notre test d’adresses à votre site à l’instar de Charleville-Mézières, Strasbourg, Tours, l’ALEC de Lyon...'}
           </Heading>
           <Text size="lg">
             Offrez aux visiteurs de votre site la possibilité de vérifier s'ils sont raccordables ou de visualiser les réseaux de chaleur et
@@ -55,7 +50,7 @@ const IframeIntegration = ({ pageFrom }: { pageFrom?: PageFromType }) => {
             src="/img/collectivite-iframe.jpg"
             alt="Visualisation de ce à quoi ressemblerait l'iframe de la carte France Chaleur Urbaine sur un site internet"
           />
-          <Heading size="h6" as="h5" color="blue-france" mt="5w" mb="0" id="iframe">
+          <Heading size="h6" as="h5" color="blue-france" mt="5w" mb="0" id={'iframe'}>
             2- Iframe test d’adresse
           </Heading>
           <hr />

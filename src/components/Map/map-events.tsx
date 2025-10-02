@@ -4,19 +4,19 @@ import { explode } from '@turf/explode';
 import { lineString, point } from '@turf/helpers';
 import { nearestPoint } from '@turf/nearest-point';
 import { nearestPointOnLine } from '@turf/nearest-point-on-line';
-import { type Feature, type Geometry, type GeometryCollection, type Point, type Position } from 'geojson';
-import { type MapGeoJSONFeature } from 'maplibre-gl';
+import type { Feature, Geometry, GeometryCollection, Point, Position } from 'geojson';
+import type { MapGeoJSONFeature } from 'maplibre-gl';
 import { usePathname } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { type MapMouseEvent, type MapRef, Popup } from 'react-map-gl/maplibre';
 
 import { isDevModeEnabled } from '@/hooks/useDevMode';
 import { useAuthentication } from '@/modules/auth/client/hooks';
-import { type SourceId } from '@/modules/tiles/tiles.config';
+import type { SourceId } from '@/modules/tiles/tiles.config';
 import { isDefined } from '@/utils/core';
 
 import { buildPopupStyleHelpers, mapEventBus, type PopupContext } from './layers/common';
-import { mapLayers, type MapLayerSpecification } from './map-layers';
+import { type MapLayerSpecification, mapLayers } from './map-layers';
 
 const selectionBuffer = 15; // pixels
 
@@ -24,9 +24,9 @@ const selectableLayers = mapLayers.flatMap((spec) =>
   spec.layers
     .filter((layer) => !(('unselectable' satisfies keyof MapLayerSpecification) in layer))
     .map((layer) => ({
+      layerId: layer.id,
       sourceId: spec.sourceId,
       sourceLayer: ('source-layer' satisfies keyof MapLayerSpecification) in layer ? layer['source-layer'] : 'layer',
-      layerId: layer.id,
     }))
 );
 
@@ -68,9 +68,9 @@ export function useMapEvents({ mapLayersLoaded, isDrawing, mapRef, onFeatureClic
       if (lastHoveredFeatureRef.current !== null && lastHoveredFeatureRef.current.id !== hoveredFeature?.id) {
         mapRef.setFeatureState(
           {
+            id: lastHoveredFeatureRef.current.id,
             source: lastHoveredFeatureRef.current.source,
             sourceLayer: lastHoveredFeatureRef.current.sourceLayer,
-            id: lastHoveredFeatureRef.current.id,
           },
           { hover: false }
         );
@@ -80,16 +80,16 @@ export function useMapEvents({ mapLayersLoaded, isDrawing, mapRef, onFeatureClic
       if (lastHoveredFeatureRef.current?.id !== hoveredFeature?.id) {
         if (hoveredFeature) {
           mapRef.setFeatureState(
-            { source: hoveredFeature.source, sourceLayer: hoveredFeature.sourceLayer, id: hoveredFeature.id },
+            { id: hoveredFeature.id, source: hoveredFeature.source, sourceLayer: hoveredFeature.sourceLayer },
             { hover: true }
           );
         }
 
         lastHoveredFeatureRef.current = hoveredFeature
           ? {
+              id: hoveredFeature.id,
               source: hoveredFeature.source as SourceId,
               sourceLayer: hoveredFeature.sourceLayer,
-              id: hoveredFeature.id,
             }
           : null;
       }
@@ -157,9 +157,9 @@ export function useMapEvents({ mapLayersLoaded, isDrawing, mapRef, onFeatureClic
       mapRef.getCanvas().style.cursor = '';
       mapRef.setFeatureState(
         {
+          id: lastHoveredFeatureRef.current.id,
           source: lastHoveredFeatureRef.current.source,
           sourceLayer: lastHoveredFeatureRef.current.sourceLayer,
-          id: lastHoveredFeatureRef.current.id,
         },
         { hover: false }
       );
@@ -197,17 +197,17 @@ function findHoveredFeature(
       return priority < closest.priority || (priority === closest.priority && distance < closest.distance)
         ? {
             distance,
-            snapPoint,
             feature,
             priority,
+            snapPoint,
           }
         : closest;
     },
     {
-      feature: null as unknown as MapGeoJSONFeature,
-      snapPoint: null as unknown as Position,
       distance: Infinity,
+      feature: null as unknown as MapGeoJSONFeature,
       priority: Infinity,
+      snapPoint: null as unknown as Position,
     }
   );
   return { feature, snapPoint };
@@ -230,61 +230,32 @@ type ClosestPointResult = {
 };
 
 const geometryNearestPointHandlers: GeometryNearestPointHandlers = {
-  Point: (geometry, point) => {
-    return {
-      snapPoint: geometry.coordinates,
-      distance: distance(point, geometry, { units: 'meters' }),
-    };
-  },
-  MultiPoint: (geometry, point) => {
-    const nearest = nearestPoint(point, explode(geometry), { units: 'meters' });
-    return {
-      snapPoint: nearest.geometry.coordinates,
-      distance: nearest.properties.distanceToPoint,
-    };
-  },
   LineString: (geometry, point) => {
     const snapPoint = nearestPointOnLine(geometry, point, { units: 'meters' });
     return {
-      snapPoint: snapPoint.geometry.coordinates,
       distance: snapPoint.properties.dist,
+      snapPoint: snapPoint.geometry.coordinates,
     };
   },
   MultiLineString: (geometry, point) => {
     const snapPoint = nearestPointOnLine(geometry, point, { units: 'meters' });
     return {
-      snapPoint: snapPoint.geometry.coordinates,
       distance: snapPoint.properties.dist,
+      snapPoint: snapPoint.geometry.coordinates,
     };
   },
-  Polygon: (geometry, point) => {
-    if (booleanPointInPolygon(point, geometry)) {
-      return {
-        snapPoint: point.geometry.coordinates,
-        distance: 0,
-      };
-    }
-
-    const closest = geometry.coordinates.reduce<ClosestPointResult>(
-      (closestSoFar, ring) => {
-        const snapPoint = nearestPointOnLine(lineString(ring), point, { units: 'meters' });
-        const distance = snapPoint.properties.dist;
-        return distance < closestSoFar.distance
-          ? {
-              snapPoint: snapPoint.geometry.coordinates,
-              distance,
-            }
-          : closestSoFar;
-      },
-      { snapPoint: [Infinity, Infinity], distance: Infinity }
-    );
-    return closest;
+  MultiPoint: (geometry, point) => {
+    const nearest = nearestPoint(point, explode(geometry), { units: 'meters' });
+    return {
+      distance: nearest.properties.distanceToPoint,
+      snapPoint: nearest.geometry.coordinates,
+    };
   },
   MultiPolygon: (geometry, point) => {
     if (booleanPointInPolygon(point, geometry)) {
       return {
-        snapPoint: point.geometry.coordinates,
         distance: 0,
+        snapPoint: point.geometry.coordinates,
       };
     }
     const closest = geometry.coordinates.reduce<ClosestPointResult>(
@@ -295,19 +266,48 @@ const geometryNearestPointHandlers: GeometryNearestPointHandlers = {
             const distance = snapPoint.properties.dist;
             return distance < closestPolygon.distance
               ? {
-                  snapPoint: snapPoint.geometry.coordinates,
                   distance,
+                  snapPoint: snapPoint.geometry.coordinates,
                 }
               : closestPolygon;
           },
-          { snapPoint: [Infinity, Infinity], distance: Infinity }
+          { distance: Infinity, snapPoint: [Infinity, Infinity] }
         );
 
         return closestForPolygon.distance < closestSoFar.distance ? closestForPolygon : closestSoFar;
       },
-      { snapPoint: [Infinity, Infinity], distance: Infinity }
+      { distance: Infinity, snapPoint: [Infinity, Infinity] }
     );
 
+    return closest;
+  },
+  Point: (geometry, point) => {
+    return {
+      distance: distance(point, geometry, { units: 'meters' }),
+      snapPoint: geometry.coordinates,
+    };
+  },
+  Polygon: (geometry, point) => {
+    if (booleanPointInPolygon(point, geometry)) {
+      return {
+        distance: 0,
+        snapPoint: point.geometry.coordinates,
+      };
+    }
+
+    const closest = geometry.coordinates.reduce<ClosestPointResult>(
+      (closestSoFar, ring) => {
+        const snapPoint = nearestPointOnLine(lineString(ring), point, { units: 'meters' });
+        const distance = snapPoint.properties.dist;
+        return distance < closestSoFar.distance
+          ? {
+              distance,
+              snapPoint: snapPoint.geometry.coordinates,
+            }
+          : closestSoFar;
+      },
+      { distance: Infinity, snapPoint: [Infinity, Infinity] }
+    );
     return closest;
   },
 };
@@ -323,10 +323,10 @@ const getNearestGeometryPoint = (
 };
 
 const hoverPriority: Record<BasicGeometry['type'], number> = {
-  Point: 1,
-  MultiPoint: 1,
   LineString: 2,
   MultiLineString: 2,
-  Polygon: 3,
+  MultiPoint: 1,
   MultiPolygon: 3,
+  Point: 1,
+  Polygon: 3,
 };

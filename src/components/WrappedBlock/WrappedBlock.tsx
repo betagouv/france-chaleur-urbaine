@@ -1,4 +1,4 @@
-import React from 'react';
+import type React from 'react';
 
 import ImgBlock from './ImgBlock';
 import TextBlock from './TextBlock';
@@ -17,7 +17,6 @@ const WrappedText: React.FC<{
       case 'image': {
         return <ImgBlock {...{ key, ...props }} />;
       }
-      case 'text-block':
       default: {
         return <TextBlock {...{ key, ...props }} />;
       }
@@ -26,7 +25,7 @@ const WrappedText: React.FC<{
   return (
     <Container className={className} reverse={reverse} direction={direction}>
       {children}
-      {data && data.map(mapFunc)}
+      {data?.map(mapFunc)}
     </Container>
   );
 };
