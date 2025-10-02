@@ -5,6 +5,7 @@ import type { NextApiHandler, NextApiRequest, NextApiResponse } from 'next';
 import { type User } from 'next-auth';
 import { z, type ZodRawShape } from 'zod';
 
+import { rateLimitError } from '@/modules/security/server/rate-limit';
 import { getServerSession } from '@/server/authentication';
 import { type UserRole } from '@/types/enum/UserRole';
 
@@ -186,7 +187,6 @@ export function handleRouteErrors<HandlersConfig extends Partial<Record<RequestM
 export const requiredAuthenticationError = new Error('Authentification requise'); // 401
 export const invalidPermissionsError = new Error('Permissions invalides'); // 403
 export const invalidRouteError = new Error('invalid route'); // 404
-export const rateLimitError = new Error('too many requests'); // 429
 
 export function requireGetMethod(req: NextApiRequest) {
   if (req.method !== 'GET') {

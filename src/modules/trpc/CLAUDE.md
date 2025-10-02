@@ -112,6 +112,83 @@ import trpc, { type RouterOutput } from '@/modules/trpc/client';
 const { data: testDetails, isLoading, refetch } = trpc.moduleName.get.useQuery({ id: test.id }, { enabled: viewDetail });
 ```
 
+## Rate Limiting
+
+tRPC routes can be protected with rate limiting via the `security` module. Rate limiting is configured per-route using the `meta` property.
+
+**See the full [Security Module documentation](../security/CLAUDE.md) for details.**
+
+### Quick Example
+
+Add rate limiting to any route using `.meta()`:
+
+```typescript
+export const contactRouter = router({
+  create: route
+    .meta({
+      rateLimit: {
+        windowMs: 60 * 1000, // 1 minute
+        max: 1,
+        message: "Vous ne pouvez envoyer qu'un message par minute",
+      },
+    })
+    .input(contactFormSchema)
+    .mutation(async ({ input }) => {
+      return await createContact(input);
+    }),
+});
+```
+
+### Rate Limit Configuration
+
+The `rateLimit` meta property accepts:
+
+```typescript
+{
+  windowMs?: number;    // Time window in milliseconds (default: 15 minutes)
+  max?: number;         // Maximum requests per window (default: 20)
+  message?: string;     // Custom error message for TRPCError
+}
+```
+
+**Note**: Le paramètre `path` est automatiquement ajouté par le middleware et ne doit pas être spécifié dans la config.
+
+### Common Patterns
+
+- **Contact forms**: 1 request/minute (strict anti-spam)
+- **Search/List endpoints**: 100 requests/minute
+- **Auth endpoints**: 5 attempts/15 minutes
+- **Upload endpoints**: 10 uploads/hour
+
+**Note**: If no `rateLimit` is specified in meta, no rate limiting is applied to the route.
+
+### Implementation Details
+
+Rate limiting uses `express-rate-limit` from the security module:
+
+- **Shared Store**: Un `MemoryStore` global partagé entre toutes les routes
+- **Isolation**: Clés préfixées par `path:ip` pour isoler les compteurs par route
+- **IPv6 Support**: Utilise `ipKeyGenerator` pour support IPv6
+- **Automatic**: Le middleware lit automatiquement `meta.rateLimit` et applique les limites
+
+Le middleware tRPC (`src/modules/trpc/server/middlewares/rate-limit.ts`) :
+1. Vérifie si `meta.rateLimit` est défini
+2. Crée un rate limiter avec `createRateLimiter({ ...config, path })`
+3. Le path tRPC est automatiquement ajouté pour isoler les compteurs
+4. Rejette avec `TRPCError` code `TOO_MANY_REQUESTS` si limite atteinte
+
+### Type Safety
+
+Le type `Meta['rateLimit']` est défini dans `src/modules/trpc/server/context.ts`:
+
+```typescript
+{
+  rateLimit?: Omit<RateLimiterOptions, 'path'> & { message?: string };
+}
+```
+
+Le type exclut automatiquement `path` (géré par le middleware) et ajoute le champ optionnel `message` pour personnaliser l'erreur.
+
 ### Invalidate queries or update cache
 
 Based on the situation, if new data has been received, 2 options can be used:

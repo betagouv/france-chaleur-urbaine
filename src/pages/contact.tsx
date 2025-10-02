@@ -1,8 +1,8 @@
-import ContactForm from '@/components/ContactForm';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Hero, { HeroSubtitle, HeroTitle } from '@/components/ui/Hero';
 import Link from '@/components/ui/Link';
 import Section, { SectionContent } from '@/components/ui/Section';
+import ContactForm from '@/modules/app/client/components/ContactForm';
 
 function contact() {
   return (

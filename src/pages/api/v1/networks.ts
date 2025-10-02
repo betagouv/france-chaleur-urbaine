@@ -1,5 +1,5 @@
+import { createNextApiRateLimiter } from '@/modules/security/server/rate-limit/next-pages';
 import db from '@/server/db';
-import { createRateLimiter } from '@/server/helpers/rate-limit';
 import { handleRouteErrors, requireGetMethod } from '@/server/helpers/server';
 import { type Network } from '@/types/Summary/Network';
 
@@ -10,7 +10,7 @@ export const config = {
   },
 };
 
-const rateLimiter = createRateLimiter();
+const rateLimiter = createNextApiRateLimiter({ path: '/api/v1/networks' });
 
 export default handleRouteErrors(async (req, res) => {
   requireGetMethod(req);

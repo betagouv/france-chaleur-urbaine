@@ -1,7 +1,9 @@
 import dotenv from 'dotenv';
 import { z } from 'zod';
 
+import { clientConfig } from '@/client-config';
 import { parseEnv } from '@/utils/env';
+import { type ExcludeKeys } from '@/utils/typescript';
 
 dotenv.config({ path: '.env.local' });
 dotenv.config();
@@ -26,6 +28,17 @@ const serverConfigSchema = {
   USE_DOCKER_GEO_COMMANDS: z.boolean().default(false),
 };
 
-export const serverConfig = parseEnv(process.env, serverConfigSchema);
+const onlyServerConfig = {
+  email: {
+    notAllowed: ['sample@tst.com', 'sample@email.tst'], // Liste des emails interdits pour les formulaires publics (spam/test)
+    notAllowedMessage: 'Une erreur est survenue lors de la validation de votre demande', // Message d'erreur vague pour ne pas aider les spammeurs
+  },
+} satisfies ExcludeKeys<typeof clientConfig, any>;
+
+export const serverConfig = {
+  ...parseEnv(process.env, serverConfigSchema),
+  ...clientConfig,
+  ...onlyServerConfig,
+};
 
 export type ServerConfig = z.infer<z.ZodObject<typeof serverConfigSchema>>;

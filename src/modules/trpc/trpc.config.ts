@@ -1,11 +1,29 @@
+import { type CreateNextContextOptions } from '@trpc/server/adapters/next';
+
 import { appRouter as appModuleRouter } from '@/modules/app/server/trpc-routes';
+import buildContext from '@/modules/config/server/context-builder';
 import { diagnosticRouter } from '@/modules/diagnostic/server/trpc-routes';
 import { jobsRouter } from '@/modules/jobs/server/trpc-routes';
 import { proEligibilityTestsRouter } from '@/modules/pro-eligibility-tests/server/trpc-routes';
 import { reseauxRouter } from '@/modules/reseaux/server/trpc-routes';
 import { tilesRouter } from '@/modules/tiles/server/trpc-routes';
 
-import { route, router } from './connection';
+import { route, router } from './server/connection';
+
+/**
+ * Creates context for an incoming request
+ * @link https://trpc.io/docs/context
+ */
+export async function createContext(opts: CreateNextContextOptions) {
+  const { req, res } = opts;
+  const baseContext = await buildContext(req, res);
+
+  return {
+    ...baseContext,
+    req,
+    res,
+  };
+}
 
 /**
  * This is the primary router for your server.
@@ -28,6 +46,3 @@ export const appRouter = router({
   reseaux: reseauxRouter,
   tiles: tilesRouter,
 });
-
-// Export type definition of API
-export type AppRouter = typeof appRouter;
