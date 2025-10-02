@@ -340,6 +340,9 @@ dependencies:
   tsx:
     specifier: 4.20.6
     version: 4.20.6
+  typescript:
+    specifier: ^5.9.2
+    version: 5.9.2
   unified:
     specifier: ^11.0.5
     version: 11.0.5
@@ -528,9 +531,6 @@ devDependencies:
   trpc-ui:
     specifier: ^1.0.15
     version: 1.0.15(@emotion/react@11.14.0)(@emotion/styled@11.14.1)(@mui/material@5.18.0)(@trpc/server@11.6.0)(@types/react@19.1.13)(monaco-editor@0.53.0)(next@15.5.4)(react-dom@19.1.1)(react@19.1.1)(zod@4.1.11)
-  typescript:
-    specifier: ^5.9.2
-    version: 5.9.2
   vite-tsconfig-paths:
     specifier: ^5.1.4
     version: 5.1.4(typescript@5.9.2)(vite@7.1.7)
