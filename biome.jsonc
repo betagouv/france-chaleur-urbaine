@@ -93,7 +93,8 @@
         "useArrowFunction": "warn"
       },
       "correctness": {
-        "noChildrenProp": "error",
+        // Désactivé car incompatible avec l'API de @tanstack/react-form qui utilise children comme prop
+        "noChildrenProp": "off",
         "noConstAssign": "error",
         "noConstantCondition": "error",
         "noEmptyCharacterClassInRegex": "error",

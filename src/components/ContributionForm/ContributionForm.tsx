@@ -130,7 +130,7 @@ const filesSchema = z
     error: `Le total des fichier doit être inférieur à ${formatFileSize(filesLimits.maxTotalFileSize)}.`,
   })
   .superRefine((files, ctx) => {
-    files.forEach((file) => {
+    for (const file of files) {
       if (riskyExtensions.some((extension) => file.name.endsWith(extension))) {
         ctx.addIssue({
           code: 'custom',
@@ -139,7 +139,7 @@ const filesSchema = z
         });
         return z.NEVER;
       }
-    });
+    }
   });
 
 const stringSchema = z.string({ error: 'Ce champ est obligatoire' });
@@ -274,16 +274,16 @@ export const zCommonFormData = z.object({
 });
 
 const zodSchemasByTypeDemande = ObjectKeys(typeDemandeFields).reduce(
-  (acc, key) => ({
-    ...acc,
-    [key]: typeDemandeFields[key].reduce(
-      (acc2, field) => ({
-        ...acc2,
-        [field.name]: (field as FieldConfig).schema,
-      }),
-      {}
-    ),
-  }),
+  (acc, key) => {
+    acc[key] = typeDemandeFields[key].reduce(
+      (acc2, field) => {
+        acc2[field.name] = (field as FieldConfig).schema;
+        return acc2;
+      },
+      {} as Record<string, any>
+    );
+    return acc;
+  },
   {} as {
     [TypeDemande in keyof typeof typeDemandeFields]: {
       [Name in (typeof typeDemandeFields)[TypeDemande][number]['name']]: Extract<
@@ -325,7 +325,7 @@ export const zContributionFormData = z.discriminatedUnion(
     zCommonFormData.merge(
       z.object({
         typeDemande: z.literal('autre'),
-        ...zodSchemasByTypeDemande['autre'],
+        ...zodSchemasByTypeDemande.autre,
       })
     ),
   ]
@@ -622,8 +622,8 @@ const ContributionForm = () => {
                     {((field.state.value as File[]) ?? []).length > 0 && (
                       <Box mb="2w">
                         Fichier(s) sélectionné(s) :{' '}
-                        {((field.state.value as File[]) ?? []).map((file, index) => (
-                          <Box key={index}>- {file.name}</Box>
+                        {((field.state.value as File[]) ?? []).map((file) => (
+                          <Box key={file.name}>- {file.name}</Box>
                         ))}
                       </Box>
                     )}
