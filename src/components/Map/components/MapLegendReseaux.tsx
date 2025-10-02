@@ -255,37 +255,35 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
       )}
 
       {enabledFeatures.includes('batimentsRaccordesReseauxChaleur') && (
-        <>
-          <Box display="flex">
-            <SingleCheckbox
-              name="batimentsRaccordesReseauxChaleur"
-              checked={mapConfiguration.batimentsRaccordesReseauxChaleur}
-              onChange={() => toggleLayer('batimentsRaccordesReseauxChaleur')}
-              trackingEvent="Carto|Bâtiments raccordés réseau chaleur"
-            />
+        <Box display="flex">
+          <SingleCheckbox
+            name="batimentsRaccordesReseauxChaleur"
+            checked={mapConfiguration.batimentsRaccordesReseauxChaleur}
+            onChange={() => toggleLayer('batimentsRaccordesReseauxChaleur')}
+            trackingEvent="Carto|Bâtiments raccordés réseau chaleur"
+          />
 
-            <Box
-              backgroundColor={batimentsRaccordesReseauxDeChaleurColor}
-              opacity={batimentsRaccordesReseauxChaleurFroidOpacity}
-              height="16px"
-              width="16px"
-              mt="1v"
-              mr="3v"
-            />
+          <Box
+            backgroundColor={batimentsRaccordesReseauxDeChaleurColor}
+            opacity={batimentsRaccordesReseauxChaleurFroidOpacity}
+            height="16px"
+            width="16px"
+            mt="1v"
+            mr="3v"
+          />
 
-            <Text
-              as="label"
-              htmlFor="batimentsRaccordesReseauxChaleur"
-              fontSize="14px"
-              lineHeight="18px"
-              className="fr-col"
-              cursor="pointer"
-              style={{ marginTop: '2px' }}
-            >
-              Bâtiments raccordés à un réseau de chaleur
-            </Text>
-          </Box>
-        </>
+          <Text
+            as="label"
+            htmlFor="batimentsRaccordesReseauxChaleur"
+            fontSize="14px"
+            lineHeight="18px"
+            className="fr-col"
+            cursor="pointer"
+            style={{ marginTop: '2px' }}
+          >
+            Bâtiments raccordés à un réseau de chaleur
+          </Text>
+        </Box>
       )}
 
       {enabledFeatures.includes('reseauxDeFroid') && (
@@ -313,37 +311,35 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
         </>
       )}
       {enabledFeatures.includes('batimentsRaccordesReseauxFroid') && (
-        <>
-          <Box display="flex">
-            <SingleCheckbox
-              name="batimentsRaccordesReseauxFroid"
-              checked={mapConfiguration.batimentsRaccordesReseauxFroid}
-              onChange={() => toggleLayer('batimentsRaccordesReseauxFroid')}
-              trackingEvent="Carto|Bâtiments raccordés réseau froid"
-            />
+        <Box display="flex">
+          <SingleCheckbox
+            name="batimentsRaccordesReseauxFroid"
+            checked={mapConfiguration.batimentsRaccordesReseauxFroid}
+            onChange={() => toggleLayer('batimentsRaccordesReseauxFroid')}
+            trackingEvent="Carto|Bâtiments raccordés réseau froid"
+          />
 
-            <Box
-              backgroundColor={batimentsRaccordesReseauxDeFroidColor}
-              opacity={batimentsRaccordesReseauxChaleurFroidOpacity}
-              height="16px"
-              width="16px"
-              mt="1v"
-              mr="3v"
-            />
+          <Box
+            backgroundColor={batimentsRaccordesReseauxDeFroidColor}
+            opacity={batimentsRaccordesReseauxChaleurFroidOpacity}
+            height="16px"
+            width="16px"
+            mt="1v"
+            mr="3v"
+          />
 
-            <Text
-              as="label"
-              htmlFor="batimentsRaccordesReseauxFroid"
-              fontSize="14px"
-              lineHeight="18px"
-              className="fr-col"
-              cursor="pointer"
-              style={{ marginTop: '2px' }}
-            >
-              Bâtiments raccordés à un réseau de froid
-            </Text>
-          </Box>
-        </>
+          <Text
+            as="label"
+            htmlFor="batimentsRaccordesReseauxFroid"
+            fontSize="14px"
+            lineHeight="18px"
+            className="fr-col"
+            cursor="pointer"
+            style={{ marginTop: '2px' }}
+          >
+            Bâtiments raccordés à un réseau de froid
+          </Text>
+        </Box>
       )}
 
       {hasRole('admin') && (

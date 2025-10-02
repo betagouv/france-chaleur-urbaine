@@ -43,7 +43,7 @@ function processPlaceholders(value: string, demand: Demand): string {
         // Check if the string looks like a date
         if (val.match(/^\d{4}-\d{2}-\d{2}/) || val.match(/^\d{2}\/\d{2}\/\d{4}/)) {
           // Format date strings to a human-readable format
-          formattedValue = dayjs(val).format('D MMMM YYYY' + (val.includes('T') ? ' [à] HH[h]mm' : ''));
+          formattedValue = dayjs(val).format(`D MMMM YYYY${val.includes('T') ? ' [à] HH[h]mm' : ''}`);
         } else {
           formattedValue = val.trim();
         }
@@ -386,18 +386,14 @@ function DemandEmailForm(props: Props) {
             </div>
           </form>
         </>
+      ) : sentError ? (
+        <span>
+          Il y a eu une erreur au cours de votre envoi.
+          <br />
+          Veuillez ré-essayer.
+        </span>
       ) : (
-        <>
-          {sentError ? (
-            <span>
-              Il y a eu une erreur au cours de votre envoi.
-              <br />
-              Veuillez ré-essayer.
-            </span>
-          ) : (
-            <span>Votre courriel a bien été envoyé !</span>
-          )}
-        </>
+        <span>Votre courriel a bien été envoyé !</span>
       )}
     </div>
   );

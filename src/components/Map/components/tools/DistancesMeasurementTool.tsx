@@ -191,8 +191,7 @@ const DistancesMeasurementTool: React.FC = () => {
   const displayedFeatures = features.filter((f) => f.geometry.coordinates.length > 1);
 
   return (
-    <>
-      <Box display="flex" flexDirection="column" gap="16px">
+    <Box display="flex" flexDirection="column" gap="16px">
         <Box>
           <Title>Mesurer une distance</Title>
 
@@ -233,8 +232,7 @@ const DistancesMeasurementTool: React.FC = () => {
             Ajouter un tracé
           </Button>
         )}
-      </Box>
-    </>
+    </Box>
   );
 };
 
