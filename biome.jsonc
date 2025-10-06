@@ -25,23 +25,12 @@
       "!**/coverage",
       "!**/*.backUp",
       "!**/*.geojson",
-      "!**/src/data/map/**/*.json",
-      "!**/tailwind.config.ts",
-      "!**/next-env.d.ts",
-      "!**/knexfile.ts",
-      "!**/vitest.config.mts",
-      "!**/postcss.config.mjs",
-      "!**/sentry.*.config.ts",
-      "!**/tsconfig.json",
-      "!**/tsconfig.tsbuildinfo",
       "!**/package.json",
       "!**/pnpm-lock.yaml",
       "!**/*.log",
       "!**/*.zip",
       "!**/public",
-      "!**/docs",
-      "!**/docker",
-      "!**/*.md"
+      "!**/docker"
     ]
   },
   "formatter": {
