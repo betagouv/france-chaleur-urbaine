@@ -25,6 +25,7 @@ interface LinkProps extends SpacingProperties {
   title?: string;
   style?: React.CSSProperties;
   onClick?: (e?: any) => void;
+  prefetch?: boolean;
 }
 
 /**
@@ -43,6 +44,7 @@ function Link({
   variant = 'text',
   isExternal = false,
   title,
+  prefetch = false,
   onClick,
   ...props
 }: PropsWithChildren<LinkProps>) {
@@ -64,6 +66,7 @@ function Link({
       className={`${className} ${linkVariantToClass[variant]} ${spacingsToClasses(props)}`}
       target={isExternal ? '_blank' : undefined}
       rel={isExternal ? 'noopener noreferrer' : undefined}
+      {...(Tag === 'a' ? {} : { prefetch })}
       {...props}
     >
       {children}
