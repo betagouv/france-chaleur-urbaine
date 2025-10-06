@@ -25,6 +25,7 @@ export function createRateLimiter(options?: RateLimiterOptions) {
     max: options?.max || 20, // Limit each IP to 20 requests per `window` (here, per 15 minutes)
     standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
     store: sharedStore,
+    validate: { unsharedStore: false },
     windowMs: options?.windowMs || 15 * 60 * 1000, // 15 minutes
     ...options,
   });
