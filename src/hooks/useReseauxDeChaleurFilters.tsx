@@ -88,7 +88,7 @@ const useReseauxDeChaleurFilters = ({ queryParamName = 'rdc_filters' }: { queryP
 
   return {
     filters,
-    filtersQueryParam: searchParams.get(queryParamName),
+    filtersQueryParam: searchParams?.get(queryParamName),
     limits: defaultFilters,
     loading: !loaded,
     nbFilters: Object.keys(urlFilters).length,

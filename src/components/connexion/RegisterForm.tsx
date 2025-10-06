@@ -174,7 +174,7 @@ function RegisterForm() {
                 Précedent
               </Button>
             ) : (
-              <Button priority="tertiary" href={`/connexion?${searchParams.toString()}`}>
+              <Button priority="tertiary" href={`/connexion?${searchParams?.toString() ?? ''}`}>
                 Se connecter
               </Button>
             )}

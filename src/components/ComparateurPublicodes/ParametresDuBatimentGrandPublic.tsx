@@ -82,7 +82,7 @@ const ParametresDuBatimentGrandPublicForm: React.FC<ParametresDuBatimentGrandPub
                     <span>
                       Le mode grand public du comparateur est limité aux bâtiments collectifs (copropriétés, logement social...). Pour une
                       maison individuelle, rendez-vous sur le{' '}
-                      <Link href={`/pro/comparateur-couts-performances?${searchParams.toString()}`}>mode avancé</Link>.
+                      <Link href={`/pro/comparateur-couts-performances?${searchParams?.toString() ?? ''}`}>mode avancé</Link>.
                     </span>
                   ),
                 }
