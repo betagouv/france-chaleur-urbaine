@@ -5,26 +5,18 @@ import { evaluateAST, parseExpressionToAST, parseResultActions, testExpression }
 describe('expression-parser', () => {
   // Données d'éligibilité de test
   const sampleEligibilityData = {
-    type: 'dans_pdp',
-    distance: 0,
-    id_sncu: '9402C',
-    nom: 'Réseaux de Créteil - Scuc',
-    tags: ['ENGIE', 'ENGIE_IDF', 'DALKIA', 'Dalkia', 'Dalkia_IDF', 'Dalkia_9402C'],
-    communes: ['Créteil'],
     commune: {
-      nom: 'Créteil',
       insee_com: '94028',
       insee_dep: '94',
       insee_reg: '11',
+      nom: 'Créteil',
     },
+    communes: ['Créteil'],
     departement: {
-      nom: 'Val-de-Marne',
       insee_dep: '94',
+      nom: 'Val-de-Marne',
     },
-    region: {
-      nom: 'Île-de-France',
-      insee_reg: '11',
-    },
+    distance: 0,
     epci: {
       code: '200054781',
       nom: 'Métropole du Grand Paris',
@@ -34,42 +26,50 @@ describe('expression-parser', () => {
       code: '200057958',
       nom: 'Établissement public territorial Grand-Orly Seine Bièvre',
     },
-    reseauDeChaleur: {
-      id_fcu: 296,
+    id_sncu: '9402C',
+    nom: 'Réseaux de Créteil - Scuc',
+    pdp: {
+      communes: ['Créteil'],
       'Identifiant reseau': '9402C',
-      nom_reseau: 'Réseaux de Créteil - Scuc',
-      tags: ['Dalkia', 'Dalkia_IDF', 'Dalkia_9402C'],
+      id_fcu: 162,
+      reseau_de_chaleur_ids: [],
+      reseau_en_construction_ids: [9, 71, 72],
+    },
+    region: {
+      insee_reg: '11',
+      nom: 'Île-de-France',
+    },
+    reseauDeChaleur: {
       communes: ['Créteil'],
       distance: 29,
+      'Identifiant reseau': '9402C',
+      id_fcu: 296,
+      nom_reseau: 'Réseaux de Créteil - Scuc',
+      tags: ['Dalkia', 'Dalkia_IDF', 'Dalkia_9402C'],
     },
     reseauDeChaleurSansTrace: {
-      id_fcu: 1076,
-      'Identifiant reseau': '9403C',
-      nom_reseau: 'Réseau Créteil Village',
-      nom: 'Créteil',
-      tags: ['Dalkia', 'Dalkia_IDF'],
       communes: ['Créteil'],
+      'Identifiant reseau': '9403C',
+      id_fcu: 1076,
+      nom: 'Créteil',
+      nom_reseau: 'Réseau Créteil Village',
+      tags: ['Dalkia', 'Dalkia_IDF'],
     },
     reseauEnConstruction: {
+      communes: ['Bourg-la-Reine'],
+      distance: 8752,
       id_fcu: 158,
       nom_reseau: null,
       tags: ['SIPPEREC', 'SIPPEREC_BLR'],
-      communes: ['Bourg-la-Reine'],
-      distance: 8752,
     },
+    tags: ['ENGIE', 'ENGIE_IDF', 'DALKIA', 'Dalkia', 'Dalkia_IDF', 'Dalkia_9402C'],
+    type: 'dans_pdp',
     zoneEnConstruction: {
+      communes: ['Créteil'],
+      distance: 0,
       id_fcu: 71,
       nom_reseau: 'Réseaux de Créteil - Scuc',
       tags: ['Dalkia', 'Dalkia_IDF', 'Dalkia_9402C'],
-      communes: ['Créteil'],
-      distance: 0,
-    },
-    pdp: {
-      id_fcu: 162,
-      'Identifiant reseau': '9402C',
-      communes: ['Créteil'],
-      reseau_de_chaleur_ids: [],
-      reseau_en_construction_ids: [9, 71, 72],
     },
   };
 
@@ -77,240 +77,240 @@ describe('expression-parser', () => {
   const testCases = [
     // Tests tags
     {
-      expr: 'tag:"ENGIE"',
       data: sampleEligibilityData,
-      expected: true,
       desc: 'Tag simple présent',
-    },
-    {
-      expr: 'tag:"ABSENT"',
-      data: sampleEligibilityData,
-      expected: false,
-      desc: 'Tag simple absent',
-    },
-    {
-      expr: 'tag:"ENGIE*"',
-      data: sampleEligibilityData,
       expected: true,
-      desc: 'Tag avec wildcard présent',
+      expr: 'tag:"ENGIE"',
     },
     {
-      expr: 'tag:"ABSENT*"',
       data: sampleEligibilityData,
+      desc: 'Tag simple absent',
       expected: false,
+      expr: 'tag:"ABSENT"',
+    },
+    {
+      data: sampleEligibilityData,
+      desc: 'Tag avec wildcard présent',
+      expected: true,
+      expr: 'tag:"ENGIE*"',
+    },
+    {
+      data: sampleEligibilityData,
       desc: 'Tag avec wildcard absent',
+      expected: false,
+      expr: 'tag:"ABSENT*"',
     },
 
     // Tests commune
     {
-      expr: 'commune.nom:"Créteil"',
       data: sampleEligibilityData,
-      expected: true,
       desc: 'Nom de commune exact',
+      expected: true,
+      expr: 'commune.nom:"Créteil"',
     },
     {
-      expr: 'commune.nom:"Paris"',
       data: sampleEligibilityData,
-      expected: false,
       desc: 'Nom de commune différent',
-    },
-    {
-      expr: 'commune.insee_dep:"94"',
-      data: sampleEligibilityData,
-      expected: true,
-      desc: 'Code département correct',
-    },
-    {
-      expr: 'commune.insee_dep:"75"',
-      data: sampleEligibilityData,
       expected: false,
-      desc: 'Code département incorrect',
+      expr: 'commune.nom:"Paris"',
     },
     {
-      expr: 'commune.insee_com:"94028"',
       data: sampleEligibilityData,
+      desc: 'Code département correct',
       expected: true,
+      expr: 'commune.insee_dep:"94"',
+    },
+    {
+      data: sampleEligibilityData,
+      desc: 'Code département incorrect',
+      expected: false,
+      expr: 'commune.insee_dep:"75"',
+    },
+    {
+      data: sampleEligibilityData,
       desc: 'Code commune correct',
+      expected: true,
+      expr: 'commune.insee_com:"94028"',
     },
 
     // Tests département
     {
-      expr: 'departement.nom:"Val-de-Marne"',
       data: sampleEligibilityData,
-      expected: true,
       desc: 'Nom de département correct',
-    },
-    {
-      expr: 'departement.nom:"Seine-et-Marne"',
-      data: sampleEligibilityData,
-      expected: false,
-      desc: 'Nom de département incorrect',
-    },
-    {
-      expr: 'departement.insee_dep:"94"',
-      data: sampleEligibilityData,
       expected: true,
+      expr: 'departement.nom:"Val-de-Marne"',
+    },
+    {
+      data: sampleEligibilityData,
+      desc: 'Nom de département incorrect',
+      expected: false,
+      expr: 'departement.nom:"Seine-et-Marne"',
+    },
+    {
+      data: sampleEligibilityData,
       desc: 'Code département par propriété departement',
+      expected: true,
+      expr: 'departement.insee_dep:"94"',
     },
 
     // Tests région
     {
-      expr: 'region.nom:"Île-de-France"',
       data: sampleEligibilityData,
-      expected: true,
       desc: 'Nom de région correct',
-    },
-    {
-      expr: 'region.nom:"Auvergne-Rhône-Alpes"',
-      data: sampleEligibilityData,
-      expected: false,
-      desc: 'Nom de région incorrect',
-    },
-    {
-      expr: 'region.insee_reg:"11"',
-      data: sampleEligibilityData,
       expected: true,
+      expr: 'region.nom:"Île-de-France"',
+    },
+    {
+      data: sampleEligibilityData,
+      desc: 'Nom de région incorrect',
+      expected: false,
+      expr: 'region.nom:"Auvergne-Rhône-Alpes"',
+    },
+    {
+      data: sampleEligibilityData,
       desc: 'Code région correct',
+      expected: true,
+      expr: 'region.insee_reg:"11"',
     },
 
     // Tests EPCI
     {
-      expr: 'epci.nom:"Métropole du Grand Paris"',
       data: sampleEligibilityData,
-      expected: true,
       desc: 'Nom EPCI correct',
+      expected: true,
+      expr: 'epci.nom:"Métropole du Grand Paris"',
     },
     {
-      expr: 'epci.code:"200054781"',
       data: sampleEligibilityData,
-      expected: true,
       desc: 'Code EPCI correct',
+      expected: true,
+      expr: 'epci.code:"200054781"',
     },
     {
-      expr: 'epci.type:"METRO"',
       data: sampleEligibilityData,
-      expected: true,
       desc: 'Type EPCI correct',
+      expected: true,
+      expr: 'epci.type:"METRO"',
     },
 
     // Tests EPT
     {
-      expr: 'ept.nom:"Établissement public territorial Grand-Orly Seine Bièvre"',
       data: sampleEligibilityData,
-      expected: true,
       desc: 'Nom EPT correct',
+      expected: true,
+      expr: 'ept.nom:"Établissement public territorial Grand-Orly Seine Bièvre"',
     },
     {
-      expr: 'ept.code:"200057958"',
       data: sampleEligibilityData,
-      expected: true,
       desc: 'Code EPT correct',
+      expected: true,
+      expr: 'ept.code:"200057958"',
     },
 
     // Tests type
     {
-      expr: 'type:"dans_pdp"',
       data: sampleEligibilityData,
-      expected: true,
       desc: 'Type correct',
+      expected: true,
+      expr: 'type:"dans_pdp"',
     },
     {
-      expr: 'type:"hors_zone"',
       data: sampleEligibilityData,
-      expected: false,
       desc: 'Type incorrect',
+      expected: false,
+      expr: 'type:"hors_zone"',
     },
 
     // Tests distance (format corrigé)
     {
-      expr: 'distance:"0"',
       data: sampleEligibilityData,
-      expected: true,
       desc: 'Distance exacte',
-    },
-    {
-      expr: 'distance:"<100"',
-      data: sampleEligibilityData,
       expected: true,
-      desc: 'Distance inférieure à',
+      expr: 'distance:"0"',
     },
     {
-      expr: 'distance:">100"',
       data: sampleEligibilityData,
-      expected: false,
+      desc: 'Distance inférieure à',
+      expected: true,
+      expr: 'distance:"<100"',
+    },
+    {
+      data: sampleEligibilityData,
       desc: 'Distance supérieure à (faux)',
+      expected: false,
+      expr: 'distance:">100"',
     },
 
     // Tests réseau de chaleur
     {
-      expr: 'reseauDeChaleur.nom_reseau:"Réseaux de Créteil - Scuc"',
       data: sampleEligibilityData,
-      expected: true,
       desc: 'Nom réseau de chaleur correct',
+      expected: true,
+      expr: 'reseauDeChaleur.nom_reseau:"Réseaux de Créteil - Scuc"',
     },
     {
-      expr: 'reseauDeChaleur.distance:"<50"',
       data: sampleEligibilityData,
-      expected: true,
       desc: 'Distance réseau de chaleur',
+      expected: true,
+      expr: 'reseauDeChaleur.distance:"<50"',
     },
 
     // Opérateurs logiques
     {
-      expr: 'tag:"ENGIE" && commune.insee_dep:"94"',
       data: sampleEligibilityData,
-      expected: true,
       desc: 'ET logique vrai',
+      expected: true,
+      expr: 'tag:"ENGIE" && commune.insee_dep:"94"',
     },
     {
-      expr: 'tag:"ENGIE" && commune.insee_dep:"75"',
       data: sampleEligibilityData,
-      expected: false,
       desc: 'ET logique faux',
+      expected: false,
+      expr: 'tag:"ENGIE" && commune.insee_dep:"75"',
     },
     {
-      expr: 'tag:"ABSENT" || commune.insee_dep:"94"',
       data: sampleEligibilityData,
-      expected: true,
       desc: 'OU logique vrai',
-    },
-    {
-      expr: 'tag:"ABSENT" || commune.insee_dep:"75"',
-      data: sampleEligibilityData,
-      expected: false,
-      desc: 'OU logique faux',
-    },
-    {
-      expr: '!tag:"ABSENT"',
-      data: sampleEligibilityData,
       expected: true,
-      desc: 'NON logique vrai',
+      expr: 'tag:"ABSENT" || commune.insee_dep:"94"',
     },
     {
-      expr: '!tag:"ENGIE"',
       data: sampleEligibilityData,
+      desc: 'OU logique faux',
       expected: false,
+      expr: 'tag:"ABSENT" || commune.insee_dep:"75"',
+    },
+    {
+      data: sampleEligibilityData,
+      desc: 'NON logique vrai',
+      expected: true,
+      expr: '!tag:"ABSENT"',
+    },
+    {
+      data: sampleEligibilityData,
       desc: 'NON logique faux',
+      expected: false,
+      expr: '!tag:"ENGIE"',
     },
 
     // Expressions complexes
     {
-      expr: '(tag:"ENGIE*" || tag:"DALKIA*") && commune.insee_dep:"94"',
       data: sampleEligibilityData,
-      expected: true,
       desc: 'Expression complexe avec parenthèses',
+      expected: true,
+      expr: '(tag:"ENGIE*" || tag:"DALKIA*") && commune.insee_dep:"94"',
     },
     {
-      expr: 'type:"dans_pdp" && distance:"<100" && commune.insee_dep:"94"',
       data: sampleEligibilityData,
-      expected: true,
       desc: 'Expression complexe multiple conditions',
+      expected: true,
+      expr: 'type:"dans_pdp" && distance:"<100" && commune.insee_dep:"94"',
     },
     {
-      expr: 'region.nom:"Île-de-France" && epci.type:"METRO" && departement.insee_dep:"94"',
       data: sampleEligibilityData,
-      expected: true,
       desc: 'Expression complexe avec nouvelles propriétés territoriales',
+      expected: true,
+      expr: 'region.nom:"Île-de-France" && epci.type:"METRO" && departement.insee_dep:"94"',
     },
   ];
 
@@ -325,24 +325,24 @@ describe('expression-parser', () => {
   // Tests de validation via testExpression
   const validationCases = [
     {
-      expr: 'tag:"ENGIE"',
       data: sampleEligibilityData,
-      expectedValid: true,
-      expectedResult: true,
       desc: 'Expression valide avec résultat vrai',
-    },
-    {
-      expr: 'tag:"ABSENT"',
-      data: sampleEligibilityData,
+      expectedResult: true,
       expectedValid: true,
-      expectedResult: false,
-      desc: 'Expression valide avec résultat faux',
+      expr: 'tag:"ENGIE"',
     },
     {
-      expr: 'tag:"ENGIE" &&',
       data: sampleEligibilityData,
-      expectedValid: false,
+      desc: 'Expression valide avec résultat faux',
+      expectedResult: false,
+      expectedValid: true,
+      expr: 'tag:"ABSENT"',
+    },
+    {
+      data: sampleEligibilityData,
       desc: 'Expression invalide',
+      expectedValid: false,
+      expr: 'tag:"ENGIE" &&',
     },
   ];
 
@@ -383,12 +383,12 @@ describe('expression-parser', () => {
 
   // Tests d'erreur de parsing des conditions
   const errorCases = [
-    { expr: 'tag:"ENGIE" &&', desc: 'Erreur: opérateur sans second opérande' },
-    { expr: 'tag:"ENGIE" && && tag:"DALKIA"', desc: 'Erreur: opérateurs consécutifs' },
-    { expr: '(tag:"ENGIE" || tag:"DALKIA"', desc: 'Erreur: parenthèse ouvrante non fermée' },
-    { expr: 'tag:"ENGIE" || tag:"DALKIA")', desc: 'Erreur: parenthèse fermante non ouverte' },
-    { expr: 'tag:"ENGIE" && !', desc: 'Erreur: NON sans opérande' },
-    { expr: 'tag:"ENGIE', desc: 'Erreur: guillemet non fermé' },
+    { desc: 'Erreur: opérateur sans second opérande', expr: 'tag:"ENGIE" &&' },
+    { desc: 'Erreur: opérateurs consécutifs', expr: 'tag:"ENGIE" && && tag:"DALKIA"' },
+    { desc: 'Erreur: parenthèse ouvrante non fermée', expr: '(tag:"ENGIE" || tag:"DALKIA"' },
+    { desc: 'Erreur: parenthèse fermante non ouverte', expr: 'tag:"ENGIE" || tag:"DALKIA")' },
+    { desc: 'Erreur: NON sans opérande', expr: 'tag:"ENGIE" && !' },
+    { desc: 'Erreur: guillemet non fermé', expr: 'tag:"ENGIE' },
   ];
 
   errorCases.forEach(({ expr, desc }) => {

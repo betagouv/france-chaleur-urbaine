@@ -11,35 +11,35 @@ type TestCase = {
 const testCases: TestCase[] = [
   {
     description: 'WGS84 Point geometry (Paris coordinates)',
-    input: {
-      type: 'Point',
-      coordinates: [2.3522, 48.8566],
-    },
     expected: 4326,
+    input: {
+      coordinates: [2.3522, 48.8566],
+      type: 'Point',
+    },
   },
   {
     description: 'non-WGS84 Point geometry (Lambert 93 coordinates)',
-    input: {
-      type: 'Point',
-      coordinates: [652123.45, 6862725.23],
-    },
     expected: 2154,
+    input: {
+      coordinates: [652123.45, 6862725.23],
+      type: 'Point',
+    },
   },
   {
     description: 'WGS84 LineString geometry (Paris area)',
+    expected: 4326,
     input: {
-      type: 'LineString',
       coordinates: [
         [2.3522, 48.8566],
         [2.2945, 48.8582],
       ],
+      type: 'LineString',
     },
-    expected: 4326,
   },
   {
     description: 'WGS84 Polygon geometry (Paris area)',
+    expected: 4326,
     input: {
-      type: 'Polygon',
       coordinates: [
         [
           [2.3522, 48.8566],
@@ -49,13 +49,13 @@ const testCases: TestCase[] = [
           [2.3522, 48.8566],
         ],
       ],
+      type: 'Polygon',
     },
-    expected: 4326,
   },
   {
     description: 'WGS84 MultiLineString geometry (Normandy coordinates)',
+    expected: 4326,
     input: {
-      type: 'MultiLineString',
       coordinates: [
         [
           [0.591683, 49.098489],
@@ -67,13 +67,13 @@ const testCases: TestCase[] = [
           [0.595, 49.106],
         ],
       ],
+      type: 'MultiLineString',
     },
-    expected: 4326,
   },
   {
     description: 'WGS84 MultiPolygon geometry (Paris region)',
+    expected: 4326,
     input: {
-      type: 'MultiPolygon',
       coordinates: [
         [
           [
@@ -94,13 +94,13 @@ const testCases: TestCase[] = [
           ],
         ],
       ],
+      type: 'MultiPolygon',
     },
-    expected: 4326,
   },
   {
     description: 'non-WGS84 MultiPolygon geometry (Lambert 93 coordinates)',
+    expected: 2154,
     input: {
-      type: 'MultiPolygon',
       coordinates: [
         [
           [
@@ -112,8 +112,8 @@ const testCases: TestCase[] = [
           ],
         ],
       ],
+      type: 'MultiPolygon',
     },
-    expected: 2154,
   },
 ];
 

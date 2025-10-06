@@ -1,7 +1,7 @@
 import { kdb } from '@/server/db/kysely';
-import { type ApiContext } from '@/server/db/kysely/base-model';
+import type { ApiContext } from '@/server/db/kysely/base-model';
 
-import { type JobListInput } from '../constants';
+import type { JobListInput } from '../constants';
 
 /**
  * Liste les jobs selon les critères spécifiés
@@ -34,10 +34,10 @@ export const listJobs = async (input: JobListInput, _context: ApiContext) => {
   return {
     jobs,
     pagination: {
-      total: Number(total),
-      offset: input.offset,
-      limit: input.limit,
       hasNext: input.offset + input.limit < Number(total),
+      limit: input.limit,
+      offset: input.offset,
+      total: Number(total),
     },
   };
 };
@@ -66,7 +66,7 @@ export async function getNextJob() {
       return null;
     }
 
-    await trx.updateTable('jobs').set({ status: 'processing', updated_at: new Date(), result: null }).where('id', '=', job.id).execute();
+    await trx.updateTable('jobs').set({ result: null, status: 'processing', updated_at: new Date() }).where('id', '=', job.id).execute();
     return job;
   });
 }

@@ -1,5 +1,5 @@
 import Highlight from '@codegouvfr/react-dsfr/Highlight';
-import { type ComponentProps } from 'react';
+import type { ComponentProps } from 'react';
 import Chart from 'react-google-charts';
 
 import Box from '@/components/ui/Box';
@@ -22,56 +22,56 @@ type ChartOptions = ComponentProps<typeof Chart>['options'];
 
 const commonGraphOptions: ComponentProps<typeof Chart>['options'] = {
   chartArea: {
+    bottom: 40,
     left: 85,
     right: 0,
     top: 40,
-    bottom: 40,
   },
   hAxis: {
     title: 'Nombre de logements',
   },
-  vAxis: {
-    title: 'Coût de raccordement',
-    format: '#,### €',
-  },
-  legend: 'none',
-
-  // controls the area between the 2 lines
-  intervals: { style: 'area', color: 'series-color' },
   interval: {
     i0: {
       fillOpacity: 0.1,
     },
   },
+
+  // controls the area between the 2 lines
+  intervals: { color: 'series-color', style: 'area' },
+  legend: 'none',
+  vAxis: {
+    format: '#,### €',
+    title: 'Coût de raccordement',
+  },
 };
 
 export const graphCoutRaccordementBatimentResidentielOptions = deepMergeObjects<any, ChartOptions>(commonGraphOptions, {
-  title: 'Coût de raccordement - bâtiment résidentiel',
-  hAxis: {
-    title: 'Nombre de logements',
-    ticks: [100, 200, 300], // manuel sinon seulement 1 seul tick si largeur réduite
-  },
   colors: ['#000091'],
+  hAxis: {
+    ticks: [100, 200, 300], // manuel sinon seulement 1 seul tick si largeur réduite
+    title: 'Nombre de logements',
+  },
+  title: 'Coût de raccordement - bâtiment résidentiel',
 });
 
 export const graphCoutRaccordementBatimentTertiaireOptions = deepMergeObjects<any, ChartOptions>(commonGraphOptions, {
-  title: 'Coût de raccordement - bâtiment tertiaire',
-  hAxis: {
-    title: 'Surface en m²',
-    ticks: [5000, 10000, 15000], // manuel sinon seulement 1 seul si largeur réduite
-  },
   colors: ['#f95c5e'],
+  hAxis: {
+    ticks: [5000, 10000, 15000], // manuel sinon seulement 1 seul si largeur réduite
+    title: 'Surface en m²',
+  },
+  title: 'Coût de raccordement - bâtiment tertiaire',
 });
 
 export const graphCoutRaccordementBatimentResidentielData = [
   [
-    { type: 'number', label: 'x' },
-    { type: 'number', label: 'Fourchette basse' },
+    { label: 'x', type: 'number' },
+    { label: 'Fourchette basse', type: 'number' },
     { role: 'tooltip', type: 'string' },
-    { type: 'number', label: 'Fourchette haute' },
+    { label: 'Fourchette haute', type: 'number' },
     { role: 'tooltip', type: 'string' },
-    { id: 'i0', type: 'number', role: 'interval' },
-    { id: 'i1', type: 'number', role: 'interval' },
+    { id: 'i0', role: 'interval', type: 'number' },
+    { id: 'i1', role: 'interval', type: 'number' },
   ],
   [0, 74_180, `Fourchette basse : 74 180 €`, 111_269, `Fourchette haute : 111 269 €`, 74_180, 111_269],
   [10, 74_180, `Fourchette basse : 74 180 €`, 111_269, `Fourchette haute : 111 269 €`, 74_180, 111_269],
@@ -87,13 +87,13 @@ export const graphCoutRaccordementBatimentResidentielData = [
 
 export const graphCoutRaccordementBatimentTertiaireData = [
   [
-    { type: 'number', label: 'x' },
-    { type: 'number', label: 'Fourchette basse' },
+    { label: 'x', type: 'number' },
+    { label: 'Fourchette basse', type: 'number' },
     { role: 'tooltip', type: 'string' },
-    { type: 'number', label: 'Fourchette haute' },
+    { label: 'Fourchette haute', type: 'number' },
     { role: 'tooltip', type: 'string' },
-    { id: 'i0', type: 'number', role: 'interval' },
-    { id: 'i1', type: 'number', role: 'interval' },
+    { id: 'i0', role: 'interval', type: 'number' },
+    { id: 'i1', role: 'interval', type: 'number' },
   ],
   [0, 74_180, `Fourchette basse : 74 180 €`, 111_269, `Fourchette haute : 111 269 €`, 74_180, 111_269],
   [200, 74_180, `Fourchette basse : 74 180 €`, 111_269, `Fourchette haute : 111 269 €`, 74_180, 111_269],

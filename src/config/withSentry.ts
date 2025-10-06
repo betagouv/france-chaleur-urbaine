@@ -14,9 +14,9 @@ const withSentry =
     return withSentryConfig(
       nextConfig,
       {
-        errorHandler: (err: Error, invokeErr: () => void, compilation: unknown) => {
+        errorHandler: (err: Error, _invokeErr: () => void, compilation: unknown) => {
           if (compilation && typeof compilation === 'object' && 'warnings' in compilation && Array.isArray(compilation.warnings)) {
-            compilation.warnings.push('Sentry CLI Plugin: ' + err.message);
+            compilation.warnings.push(`Sentry CLI Plugin: ${err.message}`);
           }
         },
         ...webpackPluginOptions,

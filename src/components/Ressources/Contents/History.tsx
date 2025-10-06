@@ -19,9 +19,7 @@ const History = () => {
       s’accompagne souvent de la construction d’un réseau de chauffage urbain, alors généralement alimenté par du gaz ou du fioul.
       <br />
       <br />
-      <b>
-        Les chocs pétroliers de 1973 et 1981 amènent les pouvoirs publics à chercher une diversification du mix énergétique national.
-      </b>{' '}
+      <b>Les chocs pétroliers de 1973 et 1981 amènent les pouvoirs publics à chercher une diversification du mix énergétique national.</b>{' '}
       Les pistes explorées en s’appuyant sur des réseaux de chaleur sont alors le recours à la <b>géothermie profonde</b> (au Dogger) et{' '}
       <b>la chaleur issue de l’incinération des ordures ménagères</b>, notamment en Île-de-France, où la ressource est disponible et la
       densité de construction élevée. De nouveaux réseaux de chaleur font appel à ces sources de chaleur, d’anciens réseaux modifient leur
@@ -37,9 +35,9 @@ const History = () => {
       <br />
       <b>Il faut attendre 2005 avec la loi POPE</b> (première loi de Programmation des Orientations de la Politique Energétique) puis{' '}
       <b>les lois Grenelle de 2009 et 2010</b> pour que{' '}
-      <b>les réseaux de chaleur reconquièrent une place importante dans la politique énergétique nationale</b>
-      . Il leur est confié la mission de se développer et de contribuer de façon importante à l’augmentation des énergies renouvelables dans
-      le mix énergétique national.
+      <b>les réseaux de chaleur reconquièrent une place importante dans la politique énergétique nationale</b>. Il leur est confié la
+      mission de se développer et de contribuer de façon importante à l’augmentation des énergies renouvelables dans le mix énergétique
+      national.
       <br />
       <br />
       <b>

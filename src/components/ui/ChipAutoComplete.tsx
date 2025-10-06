@@ -173,11 +173,11 @@ const ChipAutoComplete = (rawProps: ChipAutoCompleteProps) => {
                   small
                   className={chipOption?.className}
                   nativeButtonProps={{
-                    title: chipOption?.title,
                     onClick: (e: React.MouseEvent<HTMLButtonElement>) => {
                       e.stopPropagation();
                       handleChipRemove(tagName);
                     },
+                    title: chipOption?.title,
                   }}
                 >
                   {chipOption.label || tagName}
@@ -225,7 +225,6 @@ const ChipAutoComplete = (rawProps: ChipAutoCompleteProps) => {
                 onMouseDown={() => handleOptionSelect(option)}
                 onMouseEnter={() => setHighlightedIndex(index)}
                 aria-selected={index === highlightedIndex}
-                role="option"
               >
                 <Tag small className={option.className} title={option.title}>
                   {option.label}
@@ -248,7 +247,7 @@ const ChipAutoComplete = (rawProps: ChipAutoCompleteProps) => {
           </Tooltip>
         ) : (
           <Tooltip title={`Revoir la suggestion (${props.suggestedValue})`}>
-            <button onClick={resetValue} className="-mt-0.5 p-0.5 hover:bg-gray-100 rounded-sm">
+            <button type="button" onClick={resetValue} className="-mt-0.5 p-0.5 hover:bg-gray-100 rounded-sm">
               <Icon name="fr-icon-refresh-line" size="xs" color="warning" />
             </button>
           </Tooltip>

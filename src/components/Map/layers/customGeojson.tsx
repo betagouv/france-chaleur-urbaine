@@ -8,64 +8,64 @@ export const customGeojsonOpacity = 0.7;
 
 export const customGeojsonLayersSpec = [
   {
-    sourceId: 'customGeojson',
-    source: {
-      type: 'geojson',
-      data: {
-        type: 'FeatureCollection',
-        features: [],
-      },
-    },
     layers: [
       {
+        filter: () => ['==', '$type', 'Polygon'],
         id: 'customGeojson-polygons',
-        type: 'fill',
+        isVisible: (config) => config.customGeojson,
         paint: {
           'fill-color': customGeojsonColor,
           'fill-opacity': customGeojsonOpacity,
         },
-        filter: () => ['==', '$type', 'Polygon'],
-        isVisible: (config) => config.customGeojson,
         popup: Popup,
+        type: 'fill',
       },
       {
-        id: 'customGeojson-polygons-outline',
-        type: 'line',
         filter: () => ['==', '$type', 'Polygon'],
+        id: 'customGeojson-polygons-outline',
+        isVisible: (config) => config.customGeojson,
         paint: {
           'line-color': customGeojsonColor,
           'line-width': ifHoverElse(4, 2),
         },
-        isVisible: (config) => config.customGeojson,
+        type: 'line',
         unselectable: true,
       },
       {
-        id: 'customGeojson-lines',
-        type: 'line',
         filter: () => ['==', '$type', 'LineString'],
+        id: 'customGeojson-lines',
+        isVisible: (config) => config.customGeojson,
         paint: {
           'line-color': customGeojsonColor,
           'line-width': ifHoverElse(4, 2),
         },
-        isVisible: (config) => config.customGeojson,
         popup: Popup,
+        type: 'line',
       },
       {
-        id: 'customGeojson-points',
-        type: 'circle',
         filter: () => ['==', '$type', 'Point'],
-        paint: {
-          'circle-radius': ifHoverElse(10, 8),
-          'circle-color': customGeojsonHoverColor,
-          'circle-stroke-width': 2,
-          'circle-stroke-color': customGeojsonColor,
-        },
+        id: 'customGeojson-points',
         isVisible: (config) => config.customGeojson,
+        paint: {
+          'circle-color': customGeojsonHoverColor,
+          'circle-radius': ifHoverElse(10, 8),
+          'circle-stroke-color': customGeojsonColor,
+          'circle-stroke-width': 2,
+        },
         popup: Popup,
+        type: 'circle',
       },
     ],
+    source: {
+      data: {
+        features: [],
+        type: 'FeatureCollection',
+      },
+      type: 'geojson',
+    },
+    sourceId: 'customGeojson',
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];
 
 function Popup(data: any, { Property, Title, TwoColumns }: PopupStyleHelpers) {
   return (

@@ -3,7 +3,7 @@ import { Select } from '@codegouvfr/react-dsfr/SelectNext';
 import Link from 'next/link';
 import { type ReactNode, useEffect, useState } from 'react';
 
-import { type LegacyColor } from '@/components/ui/helpers/colors';
+import type { LegacyColor } from '@/components/ui/helpers/colors';
 import Text from '@/components/ui/Text';
 
 import { Container, Disclaimer, Form, Inputs, RedirectionButton, Result, ResultValue, Title } from './Simulator.styles';
@@ -71,20 +71,20 @@ const Simulator = ({
               { label: 'Tertiaire', value: 'Tertiaire' },
             ]}
             nativeSelectProps={{
+              onChange: (e) => setStructure(e.target.value),
               required: true,
               value: structure,
-              onChange: (e) => setStructure(e.target.value),
             }}
           />
           <Input
             label=""
             nativeInputProps={{
-              type: 'number',
               min: 1,
-              placeholder: structure === 'Résidentiel' ? 'Nombre de logements' : 'Surface (m²)',
-              pattern: '[0-9]*',
-              value,
               onChange: (e) => setValue(e.target.value),
+              pattern: '[0-9]*',
+              placeholder: structure === 'Résidentiel' ? 'Nombre de logements' : 'Surface (m²)',
+              type: 'number',
+              value,
             }}
           />
         </Inputs>
@@ -92,9 +92,9 @@ const Simulator = ({
           <Result cartridge={cartridge} className="simulator-result" color={resultColor} backgroundColor={resultBackgroundColor}>
             <ResultValue>
               {help.toLocaleString('fr-FR', {
-                style: 'currency',
                 currency: 'EUR',
                 maximumFractionDigits: 0,
+                style: 'currency',
               })}
               *
             </ResultValue>
@@ -102,9 +102,9 @@ const Simulator = ({
               <span>
                 soit{' '}
                 {(intValue ? help / intValue : 0).toLocaleString('fr-FR', {
-                  style: 'currency',
                   currency: 'EUR',
                   maximumFractionDigits: 0,
+                  style: 'currency',
                 })}{' '}
                 d’aide/logement
               </span>

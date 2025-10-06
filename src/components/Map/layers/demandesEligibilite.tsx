@@ -9,29 +9,29 @@ export const demandesEligibiliteLayerStyle = {
 
 export const demandesEligibiliteLayersSpec = [
   {
-    sourceId: 'demands',
-    source: {
-      type: 'vector',
-      tiles: [`/api/map/demands/{z}/{x}/{y}`],
-      promoteId: 'id',
-    },
     layers: [
       {
         id: 'demandesEligibilite',
-        'source-layer': 'demands',
-        type: 'circle',
+        isVisible: (config) => config.demandesEligibilite,
         paint: {
           'circle-color': demandesEligibiliteLayerStyle.fill.color,
-          'circle-stroke-color': demandesEligibiliteLayerStyle.stroke.color,
           'circle-radius': ifHoverElse(demandesEligibiliteLayerStyle.fill.size + 2, demandesEligibiliteLayerStyle.fill.size),
+          'circle-stroke-color': demandesEligibiliteLayerStyle.stroke.color,
           'circle-stroke-width': demandesEligibiliteLayerStyle.stroke.size,
         },
-        isVisible: (config) => config.demandesEligibilite,
         popup: Popup,
+        'source-layer': 'demands',
+        type: 'circle',
       },
     ],
+    source: {
+      promoteId: 'id',
+      tiles: [`/api/map/demands/{z}/{x}/{y}`],
+      type: 'vector',
+    },
+    sourceId: 'demands',
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];
 
 export type DemandeEligibilite = {
   id: string;

@@ -4,12 +4,12 @@ import React from 'react';
 import { FormProvider } from '@/components/form/publicodes/FormProvider';
 import Heading from '@/components/ui/Heading';
 import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
-import { type LocationInfoResponse } from '@/pages/api/location-infos';
+import type { LocationInfoResponse } from '@/pages/api/location-infos';
 import { postFetchJSON } from '@/utils/network';
 import { ObjectEntries } from '@/utils/typescript';
 
 import { addresseToPublicodesRules, modesDeChauffage } from './mappings';
-import { type simulatorTabs } from './Placeholder';
+import type { simulatorTabs } from './Placeholder';
 import useSimulatorEngine from './useSimulatorEngine';
 
 type ComparateurPublicodesWidgetProps = React.HTMLAttributes<HTMLDivElement> & {
@@ -36,19 +36,19 @@ const ComparateurPublicodesWidget: React.FC<ComparateurPublicodesWidgetProps> = 
     }
     const loadInfos = async () => {
       const infos: LocationInfoResponse = await postFetchJSON('/api/location-infos', {
-        lon: coords[0],
-        lat: coords[1],
         city,
         cityCode,
+        lat: coords[1],
+        lon: coords[0],
       });
 
       engine.setSituation(
         ObjectEntries(addresseToPublicodesRules).reduce(
-          (acc, [key, infoGetter]) => ({
-            ...acc,
-            [key]: infoGetter(infos) ?? null,
-          }),
-          {}
+          (acc, [key, infoGetter]) => {
+            acc[key] = infoGetter(infos) ?? null;
+            return acc;
+          },
+          {} as Record<string, any>
         )
       );
     };
@@ -58,36 +58,36 @@ const ComparateurPublicodesWidget: React.FC<ComparateurPublicodesWidgetProps> = 
   const modesDeChauffageToDisplay = modesDeChauffage
     .filter(({ type, label }) => (type as any).includes('collectif') && !label.includes('PAC'))
     .map((typeInstallation) => ({
-      id: typeInstallation.label,
-      label: typeInstallation.label,
       bilan: engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . total avec aides`),
       emissionsCO2: engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Total`),
+      id: typeInstallation.label,
+      label: typeInstallation.label,
     }))
     .sort((a, b) => a.bilan - b.bilan);
 
   const columns: ColumnDef<{ label: string; bilan: number }>[] = [
     {
-      header: 'Mode de chauffage',
       accessorKey: 'label',
       flex: 3,
+      header: 'Mode de chauffage',
     },
     {
-      header: 'Coût annuel chauffage',
-      flex: 2,
       accessorKey: 'bilan',
-      cellType: 'Price',
       cellProps: {
         maximumFractionDigits: 0,
       },
+      cellType: 'Price',
+      flex: 2,
+      header: 'Coût annuel chauffage',
     },
     {
-      header: 'Émissions CO2 (kgCO2e)',
-      flex: 2,
       accessorKey: 'emissionsCO2',
-      cellType: 'Number',
       cellProps: {
         maximumFractionDigits: 0,
       },
+      cellType: 'Number',
+      flex: 2,
+      header: 'Émissions CO2 (kgCO2e)',
     },
   ];
 
@@ -98,7 +98,7 @@ const ComparateurPublicodesWidget: React.FC<ComparateurPublicodesWidgetProps> = 
           Comparaison des modes de chauffage
         </Heading>
         <TableSimple columns={columns} data={modesDeChauffageToDisplay} />
-        <div className={fr.cx('fr-text--sm', 'fr-mt-2w')} style={{ textAlign: 'right', fontStyle: 'italic' }}>
+        <div className={fr.cx('fr-text--sm', 'fr-mt-2w')} style={{ fontStyle: 'italic', textAlign: 'right' }}>
           Accéder au{' '}
           <a
             href={`/comparateur-couts-performances?address=${encodeURIComponent(address as string)}&modes-de-chauffage=${encodeURIComponent(

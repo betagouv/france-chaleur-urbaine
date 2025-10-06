@@ -75,34 +75,30 @@ export default function TestsAdressesPage(): JSX.Element {
         </div>
         {isLoading ? (
           <Loader size="lg" variant="section" />
+        ) : eligibilityTests?.length ? (
+          <AnimatePresence>
+            {eligibilityTests?.map((test) => (
+              <motion.div
+                key={test.id}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3 }}
+              >
+                <ProEligibilityTestItem
+                  test={test}
+                  onDelete={() => deleteTest({ id: test.id })}
+                  className={isDeleteTestPending && deleteTestVariables?.id === test.id ? 'opacity-50' : ''}
+                />
+              </motion.div>
+            ))}
+          </AnimatePresence>
         ) : (
-          <>
-            {eligibilityTests?.length ? (
-              <AnimatePresence>
-                {eligibilityTests?.map((test) => (
-                  <motion.div
-                    key={test.id}
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <ProEligibilityTestItem
-                      test={test}
-                      onDelete={() => deleteTest({ id: test.id })}
-                      className={isDeleteTestPending && deleteTestVariables?.id === test.id ? 'opacity-50' : ''}
-                    />
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-            ) : (
-              <Section variant="empty">
-                <SectionTitle>Vous n'avez effectué aucun test d'adresses pour le moment</SectionTitle>
-                <SectionSubtitle>Pour réaliser un test, cliquez sur "Nouveau test" et téléchargez votre liste d'adresses.</SectionSubtitle>
-                <SectionContent className="flex justify-center">{newTestButton}</SectionContent>
-              </Section>
-            )}
-          </>
+          <Section variant="empty">
+            <SectionTitle>Vous n'avez effectué aucun test d'adresses pour le moment</SectionTitle>
+            <SectionSubtitle>Pour réaliser un test, cliquez sur "Nouveau test" et téléchargez votre liste d'adresses.</SectionSubtitle>
+            <SectionContent className="flex justify-center">{newTestButton}</SectionContent>
+          </Section>
         )}
       </Box>
     </SimplePage>

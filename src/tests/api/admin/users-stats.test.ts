@@ -1,25 +1,25 @@
 import { type InsertObject, sql } from 'kysely';
-import { type NextApiRequest, type NextApiResponse } from 'next';
+import type { NextApiRequest, NextApiResponse } from 'next';
 import { createMocks } from 'node-mocks-http';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import usersStatsHandler from '@/pages/api/admin/users-stats';
-import { type DB } from '@/server/db/kysely';
+import type { DB } from '@/server/db/kysely';
 import { cleanDatabase, seedTableUser } from '@/tests/fixtures';
 import { mockUserSession, uuid } from '@/tests/helpers';
 
 const adminUser = {
+  active: true,
+  email: `user-${uuid(1)}@test.local`,
   id: uuid(1),
   role: 'admin' as const,
-  email: `user-${uuid(1)}@test.local`,
-  active: true,
 } satisfies Partial<InsertObject<DB, 'users'>>;
 
 const particulierUser = {
+  active: true,
+  email: `user-${uuid(2)}@test.local`,
   id: uuid(2),
   role: 'particulier' as const,
-  email: `user-${uuid(2)}@test.local`,
-  active: true,
 } satisfies Partial<InsertObject<DB, 'users'>>;
 
 describe('API /admin/users-stats', () => {
@@ -36,18 +36,18 @@ describe('API /admin/users-stats', () => {
       },
       {
         id: uuid(3),
-        role: 'professionnel',
         last_connection: sql`NOW() - INTERVAL '12 HOUR'`,
+        role: 'professionnel',
       },
       {
         id: uuid(4),
-        role: 'gestionnaire',
         last_connection: sql`NOW() - INTERVAL '3 DAY'`,
+        role: 'gestionnaire',
       },
       {
         id: uuid(5),
-        role: 'particulier',
         last_connection: sql`NOW() - INTERVAL '10 DAY'`,
+        role: 'particulier',
       },
     ]);
   });
@@ -57,29 +57,29 @@ describe('API /admin/users-stats', () => {
       it.each([
         {
           description: 'utilisateur non authentifié',
-          user: null,
-          expectedStatus: 401,
           expectedBody: {
             message: 'Authentification requise',
           },
+          expectedStatus: 401,
+          user: null,
         },
         {
           description: 'utilisateur non admin',
-          user: particulierUser,
-          expectedStatus: 403,
           expectedBody: {
             message: 'Permissions invalides',
           },
+          expectedStatus: 403,
+          user: particulierUser,
         },
         {
           description: 'utilisateur admin',
-          user: adminUser,
-          expectedStatus: 200,
           expectedBody: {
             last3h: 1,
-            last24h: 2,
             last7d: 3,
+            last24h: 2,
           },
+          expectedStatus: 200,
+          user: adminUser,
         },
       ])('devrait retourner $expectedStatus pour $description', async ({ user, expectedStatus, expectedBody }) => {
         const { req, res } = createMocks<NextApiRequest, NextApiResponse>({ method: 'GET' });

@@ -1,15 +1,15 @@
 import geojsonvt from 'geojson-vt';
-import { type ExpressionBuilder } from 'kysely';
+import type { ExpressionBuilder } from 'kysely';
 import vtpbf from 'vt-pbf';
 
 import { tileSourcesMaxZoom } from '@/components/Map/layers/common';
 import { type NetworkTable, updateNetworkHasPDP } from '@/modules/reseaux/server/geometry-operations';
-import { type BuildTilesInput, type SyncGeometriesInput } from '@/modules/tiles/constants';
+import type { BuildTilesInput, SyncGeometriesInput } from '@/modules/tiles/constants';
 import { type AirtableTileInfo, type DatabaseSourceId, tilesInfo } from '@/modules/tiles/tiles.config';
 import db from '@/server/db';
 import base from '@/server/db/airtable';
 import { type DB, kdb, sql } from '@/server/db/kysely';
-import { type ApiContext } from '@/server/db/kysely/base-model';
+import type { ApiContext } from '@/server/db/kysely/base-model';
 import { isDefined } from '@/utils/core';
 
 const debug = !!(process.env.API_DEBUG_MODE || null);
@@ -23,11 +23,11 @@ export const createBuildTilesJob = async ({ name }: BuildTilesInput, context: Ap
   return await kdb
     .insertInto('jobs')
     .values({
-      type: 'build_tiles',
       data: {
         name,
       },
       status: 'pending',
+      type: 'build_tiles',
       user_id: context.user.id,
     })
     .returningAll()
@@ -38,9 +38,9 @@ export const createSyncGeometriesToAirtableJob = async ({ name }: SyncGeometries
   return await kdb
     .insertInto('jobs')
     .values({
-      type: 'sync_geometries_to_airtable',
       data: { name },
       status: 'pending',
+      type: 'sync_geometries_to_airtable',
       user_id: context.user.id,
     })
     .returningAll()
@@ -51,9 +51,9 @@ export const createSyncMetadataFromAirtableJob = async ({ name }: SyncGeometries
   return await kdb
     .insertInto('jobs')
     .values({
-      type: 'sync_metadata_from_airtable',
       data: { name },
       status: 'pending',
+      type: 'sync_metadata_from_airtable',
       user_id: context.user.id,
     })
     .returningAll()
@@ -68,23 +68,23 @@ type TableConfig = {
 
 const tables: TableConfig[] = [
   {
-    tableName: 'reseaux_de_chaleur',
     internalName: 'reseaux-de-chaleur',
+    tableName: 'reseaux_de_chaleur',
     tileName: 'network',
   },
   {
-    tableName: 'reseaux_de_froid',
     internalName: 'reseaux-de-froid',
+    tableName: 'reseaux_de_froid',
     tileName: 'coldNetwork',
   },
   {
-    tableName: 'zones_et_reseaux_en_construction',
     internalName: 'reseaux-en-construction',
+    tableName: 'zones_et_reseaux_en_construction',
     tileName: 'futurNetwork',
   },
   {
-    tableName: 'zone_de_developpement_prioritaire',
     internalName: 'perimetres-de-developpement-prioritaire',
+    tableName: 'zone_de_developpement_prioritaire',
     tileName: 'zoneDP',
   },
 ];
@@ -166,10 +166,10 @@ const processTableGeometryUpdates = async (config: TableConfig) => {
     kdb
       .updateTable(config.tableName)
       .set((eb) => ({
-        geom: eb.ref('geom_update'),
-        geom_update: null,
         communes_insee: communesInseeExpressionGeomUpdate,
         date_actualisation_trace: eb.val(new Date()),
+        geom: eb.ref('geom_update'),
+        geom_update: null,
         ...networkTablesGeomFields[config.tableName](eb),
       }))
       .where('geom', 'is', null)
@@ -182,10 +182,10 @@ const processTableGeometryUpdates = async (config: TableConfig) => {
     kdb
       .updateTable(config.tableName)
       .set((eb) => ({
-        geom: eb.ref('geom_update'),
-        geom_update: null,
         communes_insee: communesInseeExpressionGeomUpdate,
         date_actualisation_trace: eb.val(new Date()),
+        geom: eb.ref('geom_update'),
+        geom_update: null,
         ...networkTablesGeomFields[config.tableName](eb),
       }))
       .where('geom', 'is not', null)
@@ -217,9 +217,9 @@ const processTableGeometryUpdates = async (config: TableConfig) => {
   return {
     config,
     created: created.length,
-    updated: updated.length,
     deleted: deleted.length,
     total: created.length + updated.length + deleted.length,
+    updated: updated.length,
   };
 };
 
@@ -234,9 +234,9 @@ export const applyGeometriesUpdates = async ({ name }: SyncGeometriesInput, cont
   // Récupère les statistiques
   const processed = {
     created: updateResults.created,
-    updated: updateResults.updated,
     deleted: updateResults.deleted,
     total: updateResults.total,
+    updated: updateResults.updated,
   };
 
   const allJobIds = [
@@ -248,8 +248,8 @@ export const applyGeometriesUpdates = async ({ name }: SyncGeometriesInput, cont
   ];
 
   return {
-    processed,
     jobIds: allJobIds,
+    processed,
   };
 };
 
@@ -262,13 +262,12 @@ const getObjectIndexFromAirtable = async (tileInfo: AirtableTileInfo) => {
         const longitude = record.get('Longitude') as number;
         const latitude = record.get('Latitude') as number;
         return {
-          type: 'Feature',
           geometry: {
-            type: 'Point',
             coordinates: [longitude, latitude],
+            type: 'Point',
           },
           properties: tileInfo.properties.reduce(
-            function (acc: any, key: string) {
+            (acc: any, key: string) => {
               const value = record.get(key);
               if (value) {
                 acc[key] = value;
@@ -277,13 +276,14 @@ const getObjectIndexFromAirtable = async (tileInfo: AirtableTileInfo) => {
             },
             { id: record.id }
           ),
+          type: 'Feature',
         } satisfies GeoJSON.Feature<GeoJSON.Point>;
       });
 
       return geojsonvt(
         {
-          type: 'FeatureCollection',
           features,
+          type: 'FeatureCollection',
         },
         {
           maxZoom: tileSourcesMaxZoom,
@@ -321,7 +321,7 @@ export const getTile = async (
   if (tileInfo.source === 'database') {
     const result = await db(tileInfo.tiles).where('x', x).andWhere('y', y).andWhere('z', z).first();
 
-    return result?.tile ? { data: result?.tile, compressed: !!tileInfo.compressedTiles } : null;
+    return result?.tile ? { compressed: !!tileInfo.compressedTiles, data: result?.tile } : null;
   }
 
   if (airtableDayCached !== new Date().getDate()) {
@@ -337,8 +337,8 @@ export const getTile = async (
 
   return tile
     ? {
-        data: Buffer.from(vtpbf.fromGeojsonVt({ [tileInfo.sourceLayer]: tile }, { version: 2 })),
         compressed: false,
+        data: Buffer.from(vtpbf.fromGeojsonVt({ [tileInfo.sourceLayer]: tile }, { version: 2 })),
       }
     : null;
 };

@@ -1,4 +1,4 @@
-import { type SortingState } from '@tanstack/react-table';
+import type { SortingState } from '@tanstack/react-table';
 import { useEffect, useState } from 'react';
 
 import JobStatusBadge from '@/components/Admin/JobStatusBadge';
@@ -10,8 +10,8 @@ import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
 import Text from '@/components/ui/Text';
 import { useDelete, useFetch, usePost } from '@/hooks/useApi';
 import { toastErrors } from '@/modules/notification';
-import { type AdminJobItem } from '@/pages/api/admin/jobs';
-import { type JobDownload } from '@/pages/api/admin/jobs/[id]/download';
+import type { AdminJobItem } from '@/pages/api/admin/jobs';
+import type { JobDownload } from '@/pages/api/admin/jobs/[id]/download';
 import { withAuthentication } from '@/server/authentication';
 import { downloadString } from '@/utils/browser';
 import { fetchJSON } from '@/utils/network';
@@ -19,8 +19,8 @@ import { fetchJSON } from '@/utils/network';
 const columns: ColumnDef<AdminJobItem>[] = [
   {
     accessorKey: 'id',
-    header: 'ID',
     enableSorting: false,
+    header: 'ID',
   },
   {
     accessorKey: 'type',
@@ -28,12 +28,11 @@ const columns: ColumnDef<AdminJobItem>[] = [
   },
   {
     accessorKey: 'status',
-    header: 'Statut',
     cell: (info) => <JobStatusBadge status={info.getValue()} />,
+    header: 'Statut',
   },
   {
     accessorKey: 'result',
-    header: 'Résultat',
     cell: (info) => {
       const result = info.getValue();
       if (!result) return null;
@@ -60,8 +59,9 @@ const columns: ColumnDef<AdminJobItem>[] = [
         </Box>
       );
     },
-    flex: 2,
     enableSorting: false,
+    flex: 2,
+    header: 'Résultat',
   },
   {
     accessorKey: 'user.email',
@@ -69,17 +69,16 @@ const columns: ColumnDef<AdminJobItem>[] = [
   },
   {
     accessorKey: 'created_at',
-    header: 'Créée le',
     cellType: 'DateTime',
+    header: 'Créée le',
   },
   {
     accessorKey: 'updated_at',
-    header: 'Mise à jour le',
     cellType: 'DateTime',
+    header: 'Mise à jour le',
   },
   {
     accessorKey: '_id',
-    header: '',
     align: 'right',
     cell: (info) => {
       // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -133,13 +132,14 @@ const columns: ColumnDef<AdminJobItem>[] = [
       );
     },
     enableSorting: false,
+    header: '',
   },
 ];
 
 const initialSortingState: SortingState = [
   {
-    id: 'updated_at',
     desc: true,
+    id: 'updated_at',
   },
 ];
 
@@ -150,7 +150,7 @@ export default function ManageJobs() {
   });
 
   useEffect(() => {
-    setHasPendingJobs(jobs?.some((job) => job.status == 'pending' || job.status == 'processing') ?? false);
+    setHasPendingJobs(jobs?.some((job) => job.status === 'pending' || job.status === 'processing') ?? false);
   }, [jobs]);
 
   return (

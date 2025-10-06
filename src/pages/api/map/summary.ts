@@ -1,7 +1,7 @@
 import turfArea from '@turf/area';
 import { lineString, polygon } from '@turf/helpers';
 import turfLength from '@turf/length';
-import { type NextApiRequest, type NextApiResponse } from 'next';
+import type { NextApiRequest, NextApiResponse } from 'next';
 import { z } from 'zod';
 
 import { clientConfig } from '@/client-config';
@@ -56,19 +56,19 @@ const lineSummary = async (coordinates: number[][][], req: NextApiRequest, res: 
     },
     { '10': [], '50': [] } as { '10': any[]; '50': any[] }
   );
-  res.json({ size, data });
+  res.json({ data, size });
 };
 
 const summary = handleRouteErrors(async (req: NextApiRequest, res: NextApiResponse) => {
   const { type, coordinates } = await z
     .discriminatedUnion('type', [
       z.object({
-        type: z.literal('line'),
         coordinates: z.preprocess((v) => JSON.parse(decodeURIComponent(v as string)), z.array(z.array(z.array(z.number())))),
+        type: z.literal('line'),
       }),
       z.object({
-        type: z.literal('polygon'),
         coordinates: z.preprocess((v) => JSON.parse(decodeURIComponent(v as string)), z.array(z.array(z.number()))),
+        type: z.literal('polygon'),
       }),
     ])
     .parseAsync(req.query);

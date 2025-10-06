@@ -6,6 +6,7 @@ import Checkboxes from '@/components/form/dsfr/Checkboxes';
 import cx from '@/utils/cx';
 
 import AsyncButton, { type AsyncButtonProps } from './AsyncButton';
+
 type NewsletterContextType = {
   email: string;
   setEmail: React.Dispatch<React.SetStateAction<string>>;
@@ -18,14 +19,14 @@ type NewsletterContextType = {
 };
 
 const NewsletterContext = React.createContext<NewsletterContextType>({
+  checked: false,
   email: '',
+  error: null,
+  handleSignUp: async () => null,
   setEmail: () => '',
   setError: () => '',
-  error: null,
-  checked: false,
-  withCheckbox: false,
   toggleChecked: () => null,
-  handleSignUp: async () => null,
+  withCheckbox: false,
 });
 
 export const NewsletterInput = ({ className }: { className?: string }) => {
@@ -196,7 +197,7 @@ export const Newsletter: React.FC<NewsletterProps> = ({ onSignUp, children, with
   }, [email, onSignUp]);
 
   return (
-    <NewsletterContext.Provider value={{ email, setEmail, error, checked, withCheckbox, toggleChecked, handleSignUp, setError }}>
+    <NewsletterContext.Provider value={{ checked, email, error, handleSignUp, setEmail, setError, toggleChecked, withCheckbox }}>
       {children}
     </NewsletterContext.Provider>
   );

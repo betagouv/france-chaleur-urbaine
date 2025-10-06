@@ -28,33 +28,33 @@ const Popup = defineLayerPopup<ZoneAUrbaniser>((zone, { Property, Title, TwoColu
 
 export const zonesAUrbaniserLayersSpec = [
   {
-    sourceId: 'zonesAUrbaniser',
-    source: {
-      type: 'vector',
-      tiles: ['/api/map/zonesAUrbaniser/{z}/{x}/{y}'],
-      maxzoom: 12,
-    },
     layers: [
       {
         id: 'zonesAUrbaniser',
-        type: 'fill',
+        isVisible: (config) => config.zonesAUrbaniser,
         paint: {
           'fill-color': ifHoverElse(darken(zonesAUrbaniserColor, 40), zonesAUrbaniserColor),
           'fill-opacity': zonesAUrbaniserOpacity,
         },
-        isVisible: (config) => config.zonesAUrbaniser,
         popup: Popup,
+        type: 'fill',
       },
       {
         id: 'zonesAUrbaniser-contour',
-        type: 'line',
+        isVisible: (config) => config.zonesAUrbaniser,
         paint: {
           'line-color': zonesAUrbaniserColor,
           'line-width': ifHoverElse(3, 1),
         },
-        isVisible: (config) => config.zonesAUrbaniser,
+        type: 'line',
         unselectable: true,
       },
     ],
+    source: {
+      maxzoom: 12,
+      tiles: ['/api/map/zonesAUrbaniser/{z}/{x}/{y}'],
+      type: 'vector',
+    },
+    sourceId: 'zonesAUrbaniser',
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];

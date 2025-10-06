@@ -1,4 +1,4 @@
-import { type CSSProperties, type PropsWithChildren } from 'react';
+import type { CSSProperties, PropsWithChildren } from 'react';
 
 import { type LegacyColor, legacyColors } from './helpers/colors';
 import { type SpacingProperties, spacingsToClasses } from './helpers/spacings';
@@ -33,8 +33,8 @@ function Heading(props: PropsWithChildren<HeadingProps>) {
   }
   const style: CSSProperties = {
     color: props.color ? `var(--text-title-${props.color})` : props.legacyColor ? legacyColors[props.legacyColor] : undefined,
-    textAlign: props.center ? 'center' : undefined,
     maxWidth: props.maxWidth,
+    textAlign: props.center ? 'center' : undefined,
   };
 
   return (

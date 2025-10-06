@@ -43,7 +43,7 @@ export const syncComptesProFromUsers = async (interval?: string) => {
 
   const users = await query.execute();
 
-  const stats = { totalCreated: 0, totalUpdated: 0, totalUnchanged: 0 };
+  const stats = { totalCreated: 0, totalUnchanged: 0, totalUpdated: 0 };
 
   logger.info(`Found ${users.length} users which were created ${interval ? `in the last ${interval}` : 'in the'}`);
 
@@ -57,24 +57,24 @@ export const syncComptesProFromUsers = async (interval?: string) => {
       logger.info(`${index + 1}/${users.length} updating compte pro for ${user.email}`);
 
       const data = {
-        Email: user.email,
         Actif: !!user.active,
+        'CGU acceptées': user.accepted_cgu_at?.toISOString(),
+        'Créé le': user.created_at?.toISOString(),
         'Dernière connexion': user.last_connection?.toISOString(),
-        Role: user.role,
-        Prénom: user.first_name,
+        Email: user.email,
         Nom: user.last_name,
+        'Nom de la structure': user.structure_name,
+        'Optin Newsletter': !!user.optin_at,
+        Prénom: user.first_name,
+        Role: user.role,
+        Statut: user.status,
+        'Type de structure': user.structure_other || structureTypes[user.structure_type as keyof typeof structureTypes],
         Téléphone: user.phone
           ? user.phone
               .replace(/\s/g, '')
               .replace(/^\+33/, '0')
               .replace(/(\d{2})(?=\d)/g, '$1 ')
           : null,
-        Statut: user.status,
-        'Nom de la structure': user.structure_name,
-        'Type de structure': user.structure_other || structureTypes[user.structure_type as keyof typeof structureTypes],
-        'CGU acceptées': user.accepted_cgu_at?.toISOString(),
-        'Créé le': user.created_at?.toISOString(),
-        'Optin Newsletter': !!user.optin_at,
       };
 
       const comptePro = comptesPro.find((comptePro) => comptePro.get('Email') === user.email);

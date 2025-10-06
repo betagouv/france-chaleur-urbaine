@@ -4,7 +4,7 @@ import Tooltip from '@/components/ui/Tooltip';
 import { structureTypes } from '@/modules/users/constants';
 import { upperCaseFirstChar } from '@/utils/strings';
 
-import { type MapSourceLayersSpecification, type PopupStyleHelpers } from './common';
+import type { MapSourceLayersSpecification, PopupStyleHelpers } from './common';
 
 export const testsAdressesLayerStyle = {
   eligible: {
@@ -23,20 +23,13 @@ const getSizesArray = (size: number) => {
 
 export const testsAdressesLayersSpec = [
   {
-    sourceId: 'testsAdresses',
-    source: {
-      type: 'vector',
-      tiles: [`/api/map/testsAdresses/{z}/{x}/{y}`],
-      maxzoom: 12,
-    },
     layers: [
       {
-        id: 'testsAdresses-notEligible',
-        type: 'circle',
         filter: () => ['==', ['get', 'isEligible'], false],
+        id: 'testsAdresses-notEligible',
+        isVisible: (config) => config.testsAdresses,
         paint: {
           'circle-color': testsAdressesLayerStyle.notEligible.fill.color,
-          'circle-stroke-color': testsAdressesLayerStyle.notEligible.stroke.color,
           'circle-radius': [
             'interpolate',
             ['linear'],
@@ -46,18 +39,18 @@ export const testsAdressesLayersSpec = [
             14,
             ['interpolate', ['linear'], ['get', 'nbUsers'], ...getSizesArray(testsAdressesLayerStyle.notEligible.fill.size * 4)],
           ],
+          'circle-stroke-color': testsAdressesLayerStyle.notEligible.stroke.color,
           'circle-stroke-width': testsAdressesLayerStyle.notEligible.stroke.size,
         },
-        isVisible: (config) => config.testsAdresses,
         popup: Popup,
+        type: 'circle',
       },
       {
-        id: 'testsAdresses-eligible',
-        type: 'circle',
         filter: () => ['==', ['get', 'isEligible'], true],
+        id: 'testsAdresses-eligible',
+        isVisible: (config) => config.testsAdresses,
         paint: {
           'circle-color': testsAdressesLayerStyle.eligible.fill.color,
-          'circle-stroke-color': testsAdressesLayerStyle.eligible.stroke.color,
           'circle-radius': [
             'interpolate',
             ['linear'],
@@ -67,14 +60,21 @@ export const testsAdressesLayersSpec = [
             14,
             ['interpolate', ['linear'], ['get', 'nbUsers'], ...getSizesArray(testsAdressesLayerStyle.eligible.fill.size * 4)],
           ],
+          'circle-stroke-color': testsAdressesLayerStyle.eligible.stroke.color,
           'circle-stroke-width': testsAdressesLayerStyle.eligible.stroke.size,
         },
-        isVisible: (config) => config.testsAdresses,
         popup: Popup,
+        type: 'circle',
       },
     ],
+    source: {
+      maxzoom: 12,
+      tiles: [`/api/map/testsAdresses/{z}/{x}/{y}`],
+      type: 'vector',
+    },
+    sourceId: 'testsAdresses',
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];
 
 export type TestAdresse = {
   id: string;

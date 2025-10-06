@@ -18,11 +18,11 @@ const configByProfile = {
       extension: '.webp',
     },
     {
+      cropHeight: 370,
       extension: '.preview.webp',
       resize: {
         width: 150,
       },
-      cropHeight: 370,
     },
   ],
 } as const satisfies Record<string, ImageFormatConfig[]>;
@@ -48,10 +48,10 @@ export async function formatImage(inputPath: string, profile: FormatProfile): Pr
           const newHeight = Math.round(config.resize.width * aspectRatio);
           if (newHeight > config.cropHeight) {
             image = image.extract({
-              top: 0,
-              left: 0,
-              width: config.resize.width,
               height: config.cropHeight,
+              left: 0,
+              top: 0,
+              width: config.resize.width,
             });
           }
         }

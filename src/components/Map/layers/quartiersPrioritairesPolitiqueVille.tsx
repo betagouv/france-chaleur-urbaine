@@ -10,16 +10,10 @@ export const quartiersPrioritairesPolitiqueVilleOpacity = 0.3;
 
 export const quartiersPrioritairesPolitiqueVilleLayersSpec = [
   {
-    sourceId: 'quartiersPrioritairesPolitiqueVille2015anru',
-    source: {
-      type: 'vector',
-      tiles: ['/api/map/quartiersPrioritairesPolitiqueVille2015anru/{z}/{x}/{y}'],
-      maxzoom: 14,
-    },
     layers: [
       {
         id: 'quartiersPrioritairesPolitiqueVille2015anru',
-        type: 'fill',
+        isVisible: (config) => config.quartiersPrioritairesPolitiqueVille.show && config.quartiersPrioritairesPolitiqueVille.qpv2015anru,
         paint: {
           'fill-color': ifHoverElse(
             darken(quartiersPrioritairesPolitiqueVille2015anruColor, 40),
@@ -27,52 +21,58 @@ export const quartiersPrioritairesPolitiqueVilleLayersSpec = [
           ),
           'fill-opacity': quartiersPrioritairesPolitiqueVilleOpacity,
         },
-        isVisible: (config) => config.quartiersPrioritairesPolitiqueVille.show && config.quartiersPrioritairesPolitiqueVille.qpv2015anru,
         popup: Popup,
+        type: 'fill',
       },
       {
         id: 'quartiersPrioritairesPolitiqueVille2015anru-contour',
-        type: 'line',
+        isVisible: (config) => config.quartiersPrioritairesPolitiqueVille.show && config.quartiersPrioritairesPolitiqueVille.qpv2015anru,
         paint: {
           'line-color': quartiersPrioritairesPolitiqueVille2015anruColor,
           'line-width': ifHoverElse(4, 2),
         },
-        isVisible: (config) => config.quartiersPrioritairesPolitiqueVille.show && config.quartiersPrioritairesPolitiqueVille.qpv2015anru,
+        type: 'line',
         unselectable: true,
       },
     ],
+    source: {
+      maxzoom: 14,
+      tiles: ['/api/map/quartiersPrioritairesPolitiqueVille2015anru/{z}/{x}/{y}'],
+      type: 'vector',
+    },
+    sourceId: 'quartiersPrioritairesPolitiqueVille2015anru',
   },
   {
-    sourceId: 'quartiersPrioritairesPolitiqueVille2024',
-    source: {
-      type: 'vector',
-      tiles: ['/api/map/quartiersPrioritairesPolitiqueVille2024/{z}/{x}/{y}'],
-      maxzoom: 14,
-    },
     layers: [
       {
         id: 'quartiersPrioritairesPolitiqueVille2024',
-        type: 'fill',
+        isVisible: (config) => config.quartiersPrioritairesPolitiqueVille.show && config.quartiersPrioritairesPolitiqueVille.qpv2024,
         paint: {
           'fill-color': ifHoverElse(darken(quartiersPrioritairesPolitiqueVille2024Color, 40), quartiersPrioritairesPolitiqueVille2024Color),
           'fill-opacity': quartiersPrioritairesPolitiqueVilleOpacity,
         },
-        isVisible: (config) => config.quartiersPrioritairesPolitiqueVille.show && config.quartiersPrioritairesPolitiqueVille.qpv2024,
         popup: Popup,
+        type: 'fill',
       },
       {
         id: 'quartiersPrioritairesPolitiqueVille2024-contour',
-        type: 'line',
+        isVisible: (config) => config.quartiersPrioritairesPolitiqueVille.show && config.quartiersPrioritairesPolitiqueVille.qpv2024,
         paint: {
           'line-color': quartiersPrioritairesPolitiqueVille2024Color,
           'line-width': ifHoverElse(4, 2),
         },
-        isVisible: (config) => config.quartiersPrioritairesPolitiqueVille.show && config.quartiersPrioritairesPolitiqueVille.qpv2024,
+        type: 'line',
         unselectable: true,
       },
     ],
+    source: {
+      maxzoom: 14,
+      tiles: ['/api/map/quartiersPrioritairesPolitiqueVille2024/{z}/{x}/{y}'],
+      type: 'vector',
+    },
+    sourceId: 'quartiersPrioritairesPolitiqueVille2024',
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];
 
 // données 2015 adaptées pour correspondre au format 2024
 type QuartierPrioritairePolitiqueVille2024 = {
@@ -114,7 +114,7 @@ function Popup(qpv: QuartierPrioritairePolitiqueVille2024, { Property, Title, Tw
         className="fr-mt-1w"
         full
         iconId="fr-icon-eye-line"
-        linkProps={{ href: `https://sig.ville.gouv.fr/territoire/${qpv.code_quartier}`, target: '_blank', rel: 'noopener noreferrer' }}
+        linkProps={{ href: `https://sig.ville.gouv.fr/territoire/${qpv.code_quartier}`, rel: 'noopener noreferrer', target: '_blank' }}
       >
         Voir la fiche SIG-ville
       </Button>

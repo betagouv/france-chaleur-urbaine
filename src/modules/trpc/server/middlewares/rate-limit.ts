@@ -2,9 +2,9 @@ import { TRPCError } from '@trpc/server';
 
 import { createRateLimiter, type RateLimiterOptions, rateLimitError } from '@/modules/security/server/rate-limit';
 
-import { type TRoot } from '../context';
+import type { TRoot } from '../context';
 
-export { type RateLimiterOptions };
+export type { RateLimiterOptions };
 /**
  * Rate limiting middleware pour tRPC - lit la config depuis les meta
  * Utilise express-rate-limit avec un store partagé et préfixes par route
@@ -27,9 +27,9 @@ export function createRateLimitMiddleware(t: TRoot) {
 
     // Créer un rate limiter avec store partagé et préfixe par route
     const rateLimiter = createRateLimiter({
-      windowMs: config.windowMs,
       max: config.max,
       path,
+      windowMs: config.windowMs,
     });
 
     await new Promise<void>((resolve, reject) => {

@@ -1,5 +1,5 @@
-import { type MapConfiguration } from '@/components/Map/map-configuration';
-import { type MapLayerSpecification } from '@/components/Map/map-layers';
+import type { MapConfiguration } from '@/components/Map/map-configuration';
+import type { MapLayerSpecification } from '@/components/Map/map-layers';
 import Text from '@/components/ui/Text';
 
 import {
@@ -31,7 +31,7 @@ export const enrrMobilisablesChaleurFataleLayerSymbols = [
     key: 'enrr_mobilisables_unites_incineration',
     url: '/icons/enrr_mobilisables_unites_incineration.png',
   },
-] as const satisfies ReadonlyArray<LayerSymbolSpecification>;
+] as const satisfies readonly LayerSymbolSpecification[];
 
 type EnrrMobilisablesChaleurFataleImage = (typeof enrrMobilisablesChaleurFataleLayerSymbols)[number]['key'];
 
@@ -45,57 +45,56 @@ type ChaleurFataleLayerConf<LayerId = string> = {
 
 const layersConf = [
   {
-    id: 'enrrMobilisables-stations-d-epuration',
-    iconImage: 'enrr_mobilisables_stations_epuration',
     featureType: 'stations_d_epuration',
+    iconImage: 'enrr_mobilisables_stations_epuration',
+    id: 'enrrMobilisables-stations-d-epuration',
     layerConfKey: 'showStationsDEpuration',
     popup: PopupStationsDEpuration,
   },
   {
-    id: 'enrrMobilisables-datacenter',
-    iconImage: 'enrr_mobilisables_datacenter',
     featureType: 'datacenter',
+    iconImage: 'enrr_mobilisables_datacenter',
+    id: 'enrrMobilisables-datacenter',
     layerConfKey: 'showDatacenters',
     popup: PopupDatacenter,
   },
   {
-    id: 'enrrMobilisables-industrie',
-    iconImage: 'enrr_mobilisables_industrie',
     featureType: 'industrie',
+    iconImage: 'enrr_mobilisables_industrie',
+    id: 'enrrMobilisables-industrie',
     layerConfKey: 'showIndustrie',
     popup: PopupIndustrie,
   },
   {
-    id: 'enrrMobilisables-installations-electrogenes',
-    iconImage: 'enrr_mobilisables_installations_electrogenes',
     featureType: 'installations_electrogenes',
+    iconImage: 'enrr_mobilisables_installations_electrogenes',
+    id: 'enrrMobilisables-installations-electrogenes',
     layerConfKey: 'showInstallationsElectrogenes',
     popup: PopupInstallationElectrogene,
   },
   {
-    id: 'enrrMobilisables-unites-d-incineration',
-    iconImage: 'enrr_mobilisables_unites_incineration',
     featureType: 'unites_d_incineration',
+    iconImage: 'enrr_mobilisables_unites_incineration',
+    id: 'enrrMobilisables-unites-d-incineration',
     layerConfKey: 'showUnitesDIncineration',
     popup: PopupUniteDIncineration,
   },
-] as const satisfies ReadonlyArray<ChaleurFataleLayerConf>;
+] as const satisfies readonly ChaleurFataleLayerConf[];
 
 export const enrrMobilisablesChaleurFataleLayersSpec = [
   {
-    sourceId: 'enrrMobilisables',
-    source: {
-      type: 'vector',
-      tiles: ['/api/map/enrrMobilisables/{z}/{x}/{y}'],
-      promoteId: 'GmlID',
-    },
-
     // the source contains one layer that contains all features
     // we know the kind of one feature using the GmlID (e.g. datacenter.1)
     // we have 5 layers, one for each kind of features to simplify show/hide code
     layers: layersConf.flatMap((conf) => buildLayerAndHoverLayer(conf)),
+    source: {
+      promoteId: 'GmlID',
+      tiles: ['/api/map/enrrMobilisables/{z}/{x}/{y}'],
+      type: 'vector',
+    },
+    sourceId: 'enrrMobilisables',
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];
 
 /**
  * Pour chaque layer, construit 2 couches identiques, une pour voir les données,
@@ -106,8 +105,9 @@ function buildLayerAndHoverLayer<LayerId extends string>(
 ): readonly [MapLayerSpecification<LayerId>, MapLayerSpecification<`${LayerId}-hover`>] {
   return [
     {
+      filter: () => ['in', conf.featureType, ['get', 'GmlID']],
       id: conf.id,
-      type: 'symbol',
+      isVisible: (config) => config.enrrMobilisablesChaleurFatale.show && config.enrrMobilisablesChaleurFatale[conf.layerConfKey],
       layout: {
         'icon-image': conf.iconImage,
         'icon-overlap': 'always',
@@ -117,13 +117,13 @@ function buildLayerAndHoverLayer<LayerId extends string>(
         // display all features except the hovered one
         'icon-opacity': ifHoverElse(0, 1),
       },
-      filter: () => ['in', conf.featureType, ['get', 'GmlID']],
-      isVisible: (config) => config.enrrMobilisablesChaleurFatale.show && config.enrrMobilisablesChaleurFatale[conf.layerConfKey],
       popup: conf.popup,
+      type: 'symbol',
     },
     {
+      filter: () => ['in', conf.featureType, ['get', 'GmlID']],
       id: `${conf.id}-hover`,
-      type: 'symbol',
+      isVisible: (config) => config.enrrMobilisablesChaleurFatale.show && config.enrrMobilisablesChaleurFatale[conf.layerConfKey],
       layout: {
         'icon-image': conf.iconImage,
         'icon-overlap': 'always',
@@ -133,11 +133,10 @@ function buildLayerAndHoverLayer<LayerId extends string>(
         // only display the hovered feature
         'icon-opacity': ifHoverElse(1, 0),
       },
-      filter: () => ['in', conf.featureType, ['get', 'GmlID']],
-      isVisible: (config) => config.enrrMobilisablesChaleurFatale.show && config.enrrMobilisablesChaleurFatale[conf.layerConfKey],
+      type: 'symbol',
       unselectable: true,
     },
-  ] as const satisfies ReadonlyArray<MapLayerSpecification>;
+  ] as const satisfies readonly MapLayerSpecification[];
 }
 
 export interface Datacenter {

@@ -1,6 +1,5 @@
-import fs from 'fs';
-
-import { type Command } from '@commander-js/extra-typings';
+import fs from 'node:fs';
+import type { Command } from '@commander-js/extra-typings';
 import prompts from 'prompts';
 import { z } from 'zod';
 
@@ -23,10 +22,10 @@ const entityTypes = ['rdc', 'rdf', 'pdp', 'futur'] as const;
 type EntityType = (typeof entityTypes)[number];
 
 const entityTypeToTable = {
+  futur: 'zones_et_reseaux_en_construction',
+  pdp: 'zone_de_developpement_prioritaire',
   rdc: 'reseaux_de_chaleur',
   rdf: 'reseaux_de_froid',
-  pdp: 'zone_de_developpement_prioritaire',
-  futur: 'zones_et_reseaux_en_construction',
 } as const satisfies Record<EntityType, NetworkTable>;
 
 const getCardPriority = (card: TrelloCard): number => {
@@ -110,8 +109,8 @@ export function registerNetworkCommands(parentProgram: Command) {
 
         const colorizeLabel = (label: TrelloLabel): string => {
           const colorMap: Record<string, string> = {
-            green_dark: '\x1b[32m', // réseaux de chaleur
             blue_dark: '\x1b[34m', // réseaux de froid
+            green_dark: '\x1b[32m', // réseaux de chaleur
             pink: '\x1b[95m', // réseaux en construction
             yellow: '\x1b[33m', // PDP
           };
@@ -170,10 +169,6 @@ export function registerNetworkCommands(parentProgram: Command) {
             try {
               logger.info(`Drag n drop le fichier ${localPath} dans la carte`);
               const { entityType } = await prompts({
-                type: 'select',
-                name: 'entityType',
-                message: "Sélectionnez le type d'entité :",
-                hint: suggestedEntityType,
                 choices: [
                   { title: 'Réseau de chaleur (rdc)', value: 'rdc' },
                   { title: 'Réseau de froid (rdf)', value: 'rdf' },
@@ -181,6 +176,10 @@ export function registerNetworkCommands(parentProgram: Command) {
                   { title: 'Réseau futur (futur)', value: 'futur' },
                   { title: 'Passer', value: 'skip' },
                 ],
+                hint: suggestedEntityType,
+                message: "Sélectionnez le type d'entité :",
+                name: 'entityType',
+                type: 'select',
               });
               if (entityType === 'skip') {
                 logger.info('👌 Action passée');
@@ -190,23 +189,23 @@ export function registerNetworkCommands(parentProgram: Command) {
               }
 
               const { action } = await prompts({
-                type: 'select',
-                name: 'action',
-                message: "Sélectionnez l'action à effectuer :",
-                hint: suggestedAction,
                 choices: [
                   { title: 'Insérer une nouvelle entité', value: 'insert' },
                   { title: 'Mettre à jour la géométrie', value: 'update' },
                   { title: 'Étendre la géométrie', value: 'extend' },
                   { title: "Supprimer l'entité", value: 'remove' },
                 ],
+                hint: suggestedAction,
+                message: "Sélectionnez l'action à effectuer :",
+                name: 'action',
+                type: 'select',
               });
 
               const { id_fcu_or_sncu } = await prompts({
-                type: 'text',
-                name: 'id_fcu_or_sncu',
                 hint: suggestedId,
                 message: "Entrez l'ID FCU ou SNCU :",
+                name: 'id_fcu_or_sncu',
+                type: 'text',
                 validate: (value) => (value.length > 0 ? true : "L'ID est requis"),
               });
 
@@ -291,7 +290,7 @@ export function registerNetworkCommands(parentProgram: Command) {
     .action(async (type, fileName, id_fcu_or_sncu) => {
       const isIdSNCU = id_fcu_or_sncu.endsWith('C') || id_fcu_or_sncu.endsWith('F');
       const idField = isIdSNCU ? 'Identifiant reseau' : 'id_fcu';
-      const idValue = isIdSNCU ? id_fcu_or_sncu : parseInt(id_fcu_or_sncu);
+      const idValue = isIdSNCU ? id_fcu_or_sncu : parseInt(id_fcu_or_sncu, 10);
       const geometryConfig = await readFileGeometry(fileName);
       await updateEntityGeometry(entityTypeToTable[type], idField, idValue, geometryConfig, { extend: true });
     });
@@ -305,7 +304,7 @@ export function registerNetworkCommands(parentProgram: Command) {
     .action(async (type, fileName, id_fcu_or_sncu) => {
       const isIdSNCU = id_fcu_or_sncu.endsWith('C') || id_fcu_or_sncu.endsWith('F');
       const idField = isIdSNCU ? 'Identifiant reseau' : 'id_fcu';
-      const idValue = isIdSNCU ? id_fcu_or_sncu : parseInt(id_fcu_or_sncu);
+      const idValue = isIdSNCU ? id_fcu_or_sncu : parseInt(id_fcu_or_sncu, 10);
       const geometryConfig = await readFileGeometry(fileName);
       await updateEntityGeometry(entityTypeToTable[type], idField, idValue, geometryConfig);
     });
@@ -318,7 +317,7 @@ export function registerNetworkCommands(parentProgram: Command) {
     .action(async (type, id_fcu_or_sncu) => {
       const isIdSNCU = id_fcu_or_sncu.endsWith('C') || id_fcu_or_sncu.endsWith('F');
       const idField = isIdSNCU ? 'Identifiant reseau' : 'id_fcu';
-      const idValue = isIdSNCU ? id_fcu_or_sncu : parseInt(id_fcu_or_sncu);
+      const idValue = isIdSNCU ? id_fcu_or_sncu : parseInt(id_fcu_or_sncu, 10);
       await updateEntityWithoutGeometry(entityTypeToTable[type], idField, idValue);
     });
 

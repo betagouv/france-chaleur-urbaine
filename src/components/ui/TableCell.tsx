@@ -4,6 +4,7 @@ import React, { memo } from 'react';
 import Image from '@/components/ui/Image';
 import Link from '@/components/ui/Link';
 import { isDefined } from '@/utils/core';
+
 // import ContentEditable from './ContentEditable';
 
 type CellProps<T> = {
@@ -103,8 +104,8 @@ const Cell = <T,>({ value, children: defaultValue, data, type, cellProps = {} }:
     });
   } else if (type === 'Price') {
     return (value as number).toLocaleString('fr-FR', {
-      style: 'currency',
       currency: 'EUR',
+      style: 'currency',
       ...(cellProps as Intl.NumberFormatOptions),
     });
   } else if (type === 'Image') {

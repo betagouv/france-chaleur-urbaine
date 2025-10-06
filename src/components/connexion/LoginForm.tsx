@@ -37,20 +37,20 @@ export const LoginForm = ({ callbackUrl }: LoginFormProps) => {
       <Input
         label="Email"
         nativeInputProps={{
-          required: true,
-          placeholder: 'Saisir votre email',
           autoComplete: 'email',
-          value: email,
           onChange: (e) => setEmail(e.target.value),
+          placeholder: 'Saisir votre email',
+          required: true,
+          value: email,
         }}
       />
       <PasswordInput
         label="Mot de passe"
         nativeInputProps={{
-          required: true,
           autoComplete: 'password',
-          value: password,
           onChange: (e) => setPassword(e.target.value),
+          required: true,
+          value: password,
         }}
       />
       <div className="flex justify-between flex-row-reverse text-sm mb-8">

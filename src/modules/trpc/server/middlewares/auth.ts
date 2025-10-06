@@ -1,6 +1,6 @@
 import { TRPCError } from '@trpc/server';
 
-import { type TRoot } from '../context';
+import type { TRoot } from '../context';
 
 /**
  * Auth middleware that reads .auth metadata

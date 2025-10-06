@@ -3,7 +3,7 @@ import * as Sentry from '@sentry/node';
 import base from '@/server/db/airtable';
 import { kdb, sql } from '@/server/db/kysely';
 import { bulkFetchRangeFromMatomo } from '@/server/services/matomo';
-import { type MatomoActionMetrics, type MatomoPageMetrics, type MatomoUniqueVisitorsMetrics } from '@/server/services/matomo_types';
+import type { MatomoActionMetrics, MatomoPageMetrics, MatomoUniqueVisitorsMetrics } from '@/server/services/matomo_types';
 import { Airtable } from '@/types/enum/Airtable';
 import { STAT_COMMUNES_SANS_RESEAU, STAT_KEY, STAT_LABEL, STAT_METHOD, STAT_PARAMS, STAT_PERIOD } from '@/types/enum/MatomoStats';
 import '@root/sentry.node.config';
@@ -51,8 +51,8 @@ const getFullMonthsBetweenDates = (startDate: string, endDate: string): { startD
     // Only include the month if it's fully within the range
     if (lastDay <= end && currentMonth >= start) {
       months.push({
-        startDate: currentMonth.toISOString().slice(0, 10),
         endDate: lastDay.toISOString().slice(0, 10),
+        startDate: currentMonth.toISOString().slice(0, 10),
       });
     }
 
@@ -142,13 +142,13 @@ const addStat =
       const result = await kdb
         .insertInto('matomo_stats')
         .values({
-          value,
-          period,
-          stat_key,
-          stat_label,
           date,
           method,
           method_params,
+          period,
+          stat_key,
+          stat_label,
+          value,
         })
         .onConflict(
           (oc) =>
@@ -226,9 +226,9 @@ const countRecordsFromMatomo =
   async <T extends string[]>(startDate: string, endDate: string, categoryKeys: T) => {
     const rawNumberEvents = await bulkFetchRangeFromMatomo<MatomoActionMetrics>(
       {
+        date: `${startDate},${endDate}`,
         method,
         period: 'range',
-        date: startDate + ',' + endDate,
       },
       (entry) => ({ [entry.label]: entry.nb_events })
     );
@@ -267,13 +267,13 @@ const saveDemandsStats = async (startDate: string, endDate: string) => {
     .all();
 
   const monthValue = {
-    nbTotal: 0,
     nbEligible: 0,
+    nbTotal: 0,
     nbUneligible: 0,
   };
   records.map((record: any) => {
     monthValue.nbTotal++;
-    if (record.fields['Éligibilité'] && (!record.fields['Distance au réseau'] || record.fields['Distance au réseau'] <= 100)) {
+    if (record.fields.Éligibilité && (!record.fields['Distance au réseau'] || record.fields['Distance au réseau'] <= 100)) {
       monthValue.nbEligible++;
     } else {
       monthValue.nbUneligible++;
@@ -281,25 +281,25 @@ const saveDemandsStats = async (startDate: string, endDate: string) => {
   });
   await Promise.all([
     addStatFromAirtable({
-      stat_key: STAT_KEY.NB_CONTACTS,
       date: startDate,
       period: STAT_PERIOD.MONTHLY,
-      value: monthValue.nbEligible,
+      stat_key: STAT_KEY.NB_CONTACTS,
       stat_label: STAT_LABEL.NB_ELIGIBLE,
+      value: monthValue.nbEligible,
     }),
     addStatFromAirtable({
-      stat_key: STAT_KEY.NB_CONTACTS,
       date: startDate,
       period: STAT_PERIOD.MONTHLY,
-      value: monthValue.nbUneligible,
+      stat_key: STAT_KEY.NB_CONTACTS,
       stat_label: STAT_LABEL.NB_UNELIGIBLE,
+      value: monthValue.nbUneligible,
     }),
     addStatFromAirtable({
-      stat_key: STAT_KEY.NB_CONTACTS,
       date: startDate,
       period: STAT_PERIOD.MONTHLY,
-      value: monthValue.nbTotal,
+      stat_key: STAT_KEY.NB_CONTACTS,
       stat_label: STAT_LABEL.NB_TOTAL,
+      value: monthValue.nbTotal,
     }),
   ]);
   console.info(`saveStatsInDB END : saveDemandsStats`);
@@ -310,9 +310,9 @@ const saveActionsStats = async (startDate: string, endDate: string) => {
   console.info(`saveStatsInDB START : saveActionsStats`);
   const results = await bulkFetchRangeFromMatomo<MatomoActionMetrics>(
     {
+      date: `${startDate},${endDate}`,
       method: 'Events.getAction',
       period: 'range',
-      date: startDate + ',' + endDate,
     },
     (entry) => ({ [entry.label]: entry.nb_events })
   );
@@ -322,11 +322,11 @@ const saveActionsStats = async (startDate: string, endDate: string) => {
       DATA_ACTION_STATS.map(async (action: any) => {
         if (data[action]) {
           await addStatFromActions({
-            stat_key: STAT_KEY.NB_EVENTS,
             date: startDate,
             period: STAT_PERIOD.MONTHLY,
-            value: +data[action],
+            stat_key: STAT_KEY.NB_EVENTS,
             stat_label: action,
+            value: +data[action],
           });
         }
       })
@@ -339,15 +339,15 @@ const saveActionsStats = async (startDate: string, endDate: string) => {
 const saveVisitsStats = async (startDate: string, endDate: string) => {
   console.info(`saveStatsInDB START : saveVisitsStats`);
   const results = await bulkFetchRangeFromMatomo<MatomoUniqueVisitorsMetrics>({
+    date: `${startDate},${endDate}`,
     method: 'VisitsSummary.getUniqueVisitors',
     period: 'range',
-    date: startDate + ',' + endDate,
   });
   if (results[0].value) {
     await addStatFromVisitsSummary({
-      stat_key: STAT_KEY.NB_UNIQ_VISITORS,
       date: startDate,
       period: STAT_PERIOD.MONTHLY,
+      stat_key: STAT_KEY.NB_UNIQ_VISITORS,
       value: results[0].value,
     });
   }
@@ -359,10 +359,10 @@ const saveVisitsMapStats = async (startDate: string, endDate: string) => {
   console.info(`saveStatsInDB START : saveVisitsMapStats`);
   const results = await bulkFetchRangeFromMatomo<MatomoPageMetrics>(
     {
+      date: `${startDate},${endDate}`,
       method: 'Actions.getPageUrl',
       pageUrl: '/carte',
       period: 'range',
-      date: startDate + ',' + endDate,
     },
     (entry) => ({ value: entry.nb_visits })
   );
@@ -370,10 +370,10 @@ const saveVisitsMapStats = async (startDate: string, endDate: string) => {
     const data: any = results[0];
     if (data.value) {
       await addStatFromMapVisitSummary({
-        method_params: STAT_PARAMS.URL,
-        stat_key: STAT_KEY.NB_VISITS,
         date: startDate,
+        method_params: STAT_PARAMS.URL,
         period: STAT_PERIOD.MONTHLY,
+        stat_key: STAT_KEY.NB_VISITS,
         value: data.value,
       });
     }
@@ -413,33 +413,33 @@ const saveBulkContactStats = async (startDate: string, endDate: string) => {
   ]);
 
   const monthValue = {
-    nbTotal: (legacyEligibilityTestsStats?.total ?? 0) + (proEligibilityTestsStats?.total ?? 0),
     nbEligible: (legacyEligibilityTestsStats?.nbEligible ?? 0) + (proEligibilityTestsStats?.nbEligible ?? 0),
+    nbTotal: (legacyEligibilityTestsStats?.total ?? 0) + (proEligibilityTestsStats?.total ?? 0),
     nbUneligible: 0,
   };
   monthValue.nbUneligible = monthValue.nbTotal - monthValue.nbEligible;
 
   await Promise.all([
     addStatFromDB({
-      stat_key: STAT_KEY.BULK_CONTACTS,
       date: startDate,
       period: STAT_PERIOD.MONTHLY,
-      value: monthValue.nbEligible,
+      stat_key: STAT_KEY.BULK_CONTACTS,
       stat_label: STAT_LABEL.NB_ELIGIBLE,
+      value: monthValue.nbEligible,
     }),
     addStatFromDB({
-      stat_key: STAT_KEY.BULK_CONTACTS,
       date: startDate,
       period: STAT_PERIOD.MONTHLY,
-      value: monthValue.nbUneligible,
+      stat_key: STAT_KEY.BULK_CONTACTS,
       stat_label: STAT_LABEL.NB_UNELIGIBLE,
+      value: monthValue.nbUneligible,
     }),
     addStatFromDB({
-      stat_key: STAT_KEY.BULK_CONTACTS,
       date: startDate,
       period: STAT_PERIOD.MONTHLY,
-      value: monthValue.nbTotal,
+      stat_key: STAT_KEY.BULK_CONTACTS,
       stat_label: STAT_LABEL.NB_TOTAL,
+      value: monthValue.nbTotal,
     }),
   ]);
   console.info(`saveStatsInDB END : saveBulkContactStats`);
@@ -475,15 +475,15 @@ const saveComptesProCreatedStats = async (startDate: string, endDate: string) =>
 
     return [
       addStatFromDB({
-        stat_key: STAT_KEY.NB_ACCOUNTS_PRO_CREATED,
         date: dayData.date,
         period: STAT_PERIOD.DAILY,
+        stat_key: STAT_KEY.NB_ACCOUNTS_PRO_CREATED,
         value: dayData.professionnels,
       }),
       addStatFromDB({
-        stat_key: STAT_KEY.NB_ACCOUNTS_PARTICULIER_CREATED,
         date: dayData.date,
         period: STAT_PERIOD.DAILY,
+        stat_key: STAT_KEY.NB_ACCOUNTS_PARTICULIER_CREATED,
         value: dayData.particuliers,
       }),
     ];
@@ -509,9 +509,9 @@ const saveCommunesSansReseauStats = async (startDate: string, endDate: string) =
       await Promise.all(
         Object.entries(results).map(async ([stat_key, value]) => {
           await addStatFromActionsCategory({
-            stat_key,
             date: month.startDate,
             period: STAT_PERIOD.MONTHLY,
+            stat_key,
             value,
           });
         })
@@ -521,17 +521,17 @@ const saveCommunesSansReseauStats = async (startDate: string, endDate: string) =
 
   // Those stats are retrieved from Airtable and not matomo as there are discrepancies between the two
   const results = await countRecordsFromAirtable(startDate, endDate, {
-    table: Airtable.COMMUNES_SANS_RESEAU,
     dateField: 'Date de création',
     period: STAT_PERIOD.MONTHLY,
+    table: Airtable.COMMUNES_SANS_RESEAU,
   });
 
   await Promise.all(
     Object.entries(results).map(([stat_date, value]) =>
       addStatFromAirtable({
-        stat_key: STAT_COMMUNES_SANS_RESEAU.NB_DEMANDES,
         date: stat_date,
         period: STAT_PERIOD.MONTHLY,
+        stat_key: STAT_COMMUNES_SANS_RESEAU.NB_DEMANDES,
         value,
       })
     )

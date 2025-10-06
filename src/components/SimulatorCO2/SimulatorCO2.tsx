@@ -26,7 +26,7 @@ import {
 const numberToString = (num: number, precision = 0) => `${parseFloat(num.toFixed(precision))}`.replace('.', ',');
 
 const buildingTypeSelectOptions = [
-  { label: 'Type de bâtiment', value: '', disabled: true },
+  { disabled: true, label: 'Type de bâtiment', value: '' },
   {
     label: 'Copropriété',
     value: TypeSurf.copropriete,
@@ -67,14 +67,14 @@ const SimulatorCO2: React.FC<{
         <Input
           label=""
           nativeInputProps={{
-            value: conso || '',
-            type: 'number',
-            placeholder: data.label.conso,
             onChange: (e) => {
               setConso(parseFloat(e.target.value));
               setSurf(0);
               setLog(0);
             },
+            placeholder: data.label.conso,
+            type: 'number',
+            value: conso || '',
           }}
         />
       </fieldset>
@@ -83,14 +83,14 @@ const SimulatorCO2: React.FC<{
         <Input
           label=""
           nativeInputProps={{
-            value: surf || '',
-            type: 'number',
-            placeholder: data.label.surf,
             onChange: (e) => {
               setSurf(parseFloat(e.target.value));
               setConso(0);
               setLog(0);
             },
+            placeholder: data.label.surf,
+            type: 'number',
+            value: surf || '',
           }}
         />
       </fieldset>
@@ -99,14 +99,14 @@ const SimulatorCO2: React.FC<{
         <Input
           label=""
           nativeInputProps={{
-            value: log || '',
-            type: 'number',
-            placeholder: data.label.log,
             onChange: (e) => {
               setLog(parseFloat(e.target.value));
               setSurf(0);
               setConso(0);
             },
+            placeholder: data.label.log,
+            type: 'number',
+            value: log || '',
           }}
         />
       </fieldset>
@@ -123,9 +123,9 @@ const SimulatorCO2: React.FC<{
               .map(([key, { label }]) => ({ label, value: key })),
           ]}
           nativeSelectProps={{
+            onChange: selectHandleChange,
             required: true,
             value: energy,
-            onChange: selectHandleChange,
           }}
         />
       </fieldset>
@@ -139,9 +139,9 @@ const SimulatorCO2: React.FC<{
           label=""
           options={buildingTypeSelectOptions}
           nativeSelectProps={{
+            onChange: (e: any) => setSimulatorType(e.target.value),
             required: true,
             value: simulatorType,
-            onChange: (e: any) => setSimulatorType(e.target.value),
           }}
         />
       )}

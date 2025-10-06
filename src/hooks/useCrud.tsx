@@ -1,10 +1,10 @@
 import { useCallback } from 'react';
 
 import { useDeleteId, useFetch, usePost, usePutId } from '@/hooks/useApi';
-import { type CrudResponse } from '@/server/api/crud';
-import { type DB } from '@/server/db/kysely';
+import type { CrudResponse } from '@/server/api/crud';
+import type { DB } from '@/server/db/kysely';
 import { fetchJSON } from '@/utils/network';
-import { type OmitFirst } from '@/utils/typescript';
+import type { OmitFirst } from '@/utils/typescript';
 
 const useCrud = <T extends CrudResponse<keyof DB, any>, TListItem = T['list']['items']>(
   url: string,
@@ -32,16 +32,16 @@ const useCrud = <T extends CrudResponse<keyof DB, any>, TListItem = T['list']['i
   const items = (data?.items || []) as NonNullable<TListItem>;
 
   return {
-    items,
-    isLoading,
-    refetch,
     create,
-    isCreating,
-    update,
-    isUpdatingId,
     delete: remove,
-    isDeletingId,
     get,
+    isCreating,
+    isDeletingId,
+    isLoading,
+    isUpdatingId,
+    items,
+    refetch,
+    update,
   };
 };
 

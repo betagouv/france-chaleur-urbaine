@@ -1,13 +1,13 @@
-import { type AxiosResponse } from 'axios';
+import type { AxiosResponse } from 'axios';
 
-import { type RawLinearHeatDensity } from '@/pages/api/linear-heat-density';
-import { type NetworkEligibilityStatus } from '@/server/services/addresseInformation';
-import { type HttpClient } from '@/services/http';
-import { type EXPORT_FORMAT } from '@/types/enum/ExportFormat';
-import { type HeatNetworksResponse } from '@/types/HeatNetworksResponse';
-import { type SuggestionItem } from '@/types/Suggestions';
-import { type Summary } from '@/types/Summary';
-import { type Network } from '@/types/Summary/Network';
+import type { RawLinearHeatDensity } from '@/pages/api/linear-heat-density';
+import type { NetworkEligibilityStatus } from '@/server/services/addresseInformation';
+import type { HttpClient } from '@/services/http';
+import type { EXPORT_FORMAT } from '@/types/enum/ExportFormat';
+import type { HeatNetworksResponse } from '@/types/HeatNetworksResponse';
+import type { SuggestionItem } from '@/types/Suggestions';
+import type { Summary } from '@/types/Summary';
+import type { Network } from '@/types/Summary/Network';
 
 import { ServiceError } from './errors';
 
@@ -107,7 +107,7 @@ export class HeatNetworkService {
       type: contentType,
     });
 
-    return { fileName, blob };
+    return { blob, fileName };
   };
 
   async downloadSummary(bounds: number[][], format: EXPORT_FORMAT): Promise<any> {

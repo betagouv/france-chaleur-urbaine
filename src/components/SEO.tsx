@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import { usePathname } from 'next/navigation';
-import React from 'react';
+import type React from 'react';
 import type { Graph, Thing } from 'schema-dts';
 
 import colors from './ui/helpers/colors';
@@ -110,10 +110,10 @@ const SEO: React.FC<SEOProps> = ({
     '@graph': [
       {
         '@type': 'Organization',
-        url: websiteUrl,
-        name: websiteName,
         logo: `${websiteUrl}${defaultLogoPath}`,
+        name: websiteName,
         sameAs,
+        url: websiteUrl,
       },
       {
         '@type': 'WebSite',

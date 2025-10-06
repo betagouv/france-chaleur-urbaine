@@ -52,8 +52,8 @@ import {
 export const RoutedLink = (props: any) => {
   const { href, target } = props;
   const extProps = {
-    target: target || (href && isExternalLink(href) ? '_blank' : undefined),
     rel: href && isExternalLink(href) ? ['nofollow', 'noopener', 'noreferrer'].join(' ') : '',
+    target: target || (href && isExternalLink(href) ? '_blank' : undefined),
   };
   return <Link {...props} {...extProps} />;
 };
@@ -86,13 +86,13 @@ const processor = (extender: Record<string, unknown> = {}) =>
     .use(rehypeRaw)
     // 7. Converts HTML AST to React elements
     .use(rehypeReact, {
-      jsx: jsxRuntime.jsx,
-      jsxs: jsxRuntime.jsxs,
-      Fragment: jsxRuntime.Fragment,
       components: {
         a: RoutedLink,
         ...extender,
       },
+      Fragment: jsxRuntime.Fragment,
+      jsx: jsxRuntime.jsx,
+      jsxs: jsxRuntime.jsxs,
     });
 
 const MarkdownWrapper: React.FC<{
@@ -120,22 +120,22 @@ const MarkdownWrapper: React.FC<{
     <MarkdownWrapperStyled className={className} id={id && String(id)} {...props}>
       {
         processor({
-          'check-item': CheckItem,
-          'count-item': CountItem,
           'arrow-item': ArrowItem,
-          'white-arrow-item': WhiteArrowItem,
-          'counter-item': CounterItem,
-          'thumb-item': ThumbItem,
-          'white-check-item': WhiteCheckItem,
-          'consent-link': ConsentLink,
-          cartridge: Cartridge,
-          'puce-icon': PuceIcon,
-          highlight: Highlight,
           'button-link': ButtonLink,
+          cartridge: Cartridge,
+          'check-item': CheckItem,
+          'consent-link': ConsentLink,
+          'count-item': CountItem,
+          'counter-item': CounterItem,
           'extra-link': ExtraLink,
+          highlight: Highlight,
           'know-more-link': KnowMoreLink,
-          'strong-inherit': (props: any) => <strong style={{ fontSize: 'inherit' }} {...props} />,
+          'puce-icon': PuceIcon,
           small: SmallText,
+          'strong-inherit': (props: any) => <strong style={{ fontSize: 'inherit' }} {...props} />,
+          'thumb-item': ThumbItem,
+          'white-arrow-item': WhiteArrowItem,
+          'white-check-item': WhiteCheckItem,
         }).processSync(md).result as React.ReactNode
       }
     </MarkdownWrapperStyled>

@@ -10,12 +10,12 @@ import Heading from '@/components/ui/Heading';
 import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
 import useCrud from '@/hooks/useCrud';
 import { toastErrors } from '@/modules/notification';
-import { type AssignmentRulesResponse } from '@/pages/api/admin/assignment-rules/[[...slug]]';
+import type { AssignmentRulesResponse } from '@/pages/api/admin/assignment-rules/[[...slug]]';
 import { withAuthentication } from '@/server/authentication';
-import { type AssignmentRule } from '@/server/services/assignment-rules';
+import type { AssignmentRule } from '@/server/services/assignment-rules';
 import cx from '@/utils/cx';
 
-const initialSortingState = [{ id: 'search_pattern', desc: false }];
+const initialSortingState = [{ desc: false, id: 'search_pattern' }];
 
 export default function ManageAssignmentRules() {
   const {
@@ -34,20 +34,20 @@ export default function ManageAssignmentRules() {
   const tableColumns: ColumnDef<AssignmentRule>[] = [
     {
       accessorKey: 'search_pattern',
-      header: 'Conditions',
       cell: (info) => <div className="bg-zinc-50 px-1 py-[0.1rem] rounded-xs font-mono text-sm">{info.getValue()}</div>,
       className: 'break-words',
       flex: 2,
+      header: 'Conditions',
     },
     {
       accessorKey: 'result',
-      header: 'Actions',
       cell: (info) => <div className="font-mono bg-blue-50 px-2 py-1 rounded-sm text-sm">{info.getValue()}</div>,
       className: 'break-words',
+      header: 'Actions',
     },
     {
       accessorKey: 'active',
-      header: 'Statut',
+      align: 'center',
       cell: (info) => (
         <span
           className={cx(
@@ -58,19 +58,17 @@ export default function ManageAssignmentRules() {
           {info.getValue() ? 'Actif' : 'Inactif'}
         </span>
       ),
-      width: '100px',
       filterType: 'Facets',
-      align: 'center',
+      header: 'Statut',
+      width: '100px',
     },
     {
       accessorKey: 'created_at',
-      header: 'Créé le',
       cellType: 'Date',
+      header: 'Créé le',
       width: '100px',
     },
     {
-      id: 'actions',
-      header: 'Actions',
       align: 'right',
       cell: ({ row }) => (
         <div className="flex gap-2">
@@ -97,6 +95,8 @@ export default function ManageAssignmentRules() {
           />
         </div>
       ),
+      header: 'Actions',
+      id: 'actions',
       width: '120px',
     },
   ];

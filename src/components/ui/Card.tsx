@@ -1,23 +1,23 @@
 import DSFRCard, { type CardProps as DSFRCardProps } from '@codegouvfr/react-dsfr/Card';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { type ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 import cx from '@/utils/cx';
 
 const cardVariants = cva('', {
+  defaultVariants: {
+    size: 'md',
+    variant: 'default',
+  },
   variants: {
+    size: {
+      lg: '',
+      md: '',
+      sm: '',
+    },
     variant: {
       default: '',
     },
-    size: {
-      sm: '',
-      md: '',
-      lg: '',
-    },
-  },
-  defaultVariants: {
-    variant: 'default',
-    size: 'md',
   },
 });
 
@@ -35,7 +35,7 @@ export type CardProps = DSFRCardProps &
  * - Additional className support for custom styling
  */
 const Card: React.FC<CardProps> = ({ description, variant, size, className, ...props }) => {
-  return <DSFRCard desc={description as DSFRCardProps['desc']} className={cx(cardVariants({ variant, size }), className)} {...props} />;
+  return <DSFRCard desc={description as DSFRCardProps['desc']} className={cx(cardVariants({ size, variant }), className)} {...props} />;
 };
 
 export default Card;

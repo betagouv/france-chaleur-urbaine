@@ -85,9 +85,9 @@ const GestionDesReseaux = () => {
 
   const { data: pendingJobsData, isFetching: isFetchingPendingJobs } = trpc.jobs.list.useQuery(
     {
-      types: ['build_tiles', 'sync_geometries_to_airtable', 'sync_metadata_from_airtable'],
-      statuses: ['pending', 'processing'],
       limit: 100,
+      statuses: ['pending', 'processing'],
+      types: ['build_tiles', 'sync_geometries_to_airtable', 'sync_metadata_from_airtable'],
     },
     {
       refetchInterval: isPollingJobs ? 5000 : false,
@@ -167,29 +167,29 @@ const GestionDesReseaux = () => {
       refetch: () => void;
     }
   > = {
+    'perimetres-de-developpement-prioritaire': {
+      enabledFeatures: ['zonesDeDeveloppementPrioritaire'],
+      refetch: () => void trpcUtils.reseaux.perimetreDeDeveloppementPrioritaire.list.invalidate(),
+      title: 'Périmètres de développement prioritaire',
+      type: 'zone_de_developpement_prioritaire',
+    },
     'reseaux-de-chaleur': {
       enabledFeatures: ['reseauxDeChaleur'],
+      refetch: () => void trpcUtils.reseaux.reseauDeChaleur.list.invalidate(),
       title: 'Réseaux de chaleur',
       type: 'reseaux_de_chaleur',
-      refetch: () => void trpcUtils.reseaux.reseauDeChaleur.list.invalidate(),
     },
     'reseaux-de-froid': {
       enabledFeatures: ['reseauxDeFroid'],
+      refetch: () => void trpcUtils.reseaux.reseauDeFroid.list.invalidate(),
       title: 'Réseaux de froid',
       type: 'reseaux_de_froid',
-      refetch: () => void trpcUtils.reseaux.reseauDeFroid.list.invalidate(),
     },
     'reseaux-en-construction': {
       enabledFeatures: ['reseauxEnConstruction'],
+      refetch: () => void trpcUtils.reseaux.reseauEnConstruction.list.invalidate(),
       title: 'Réseaux en construction',
       type: 'zones_et_reseaux_en_construction',
-      refetch: () => void trpcUtils.reseaux.reseauEnConstruction.list.invalidate(),
-    },
-    'perimetres-de-developpement-prioritaire': {
-      enabledFeatures: ['zonesDeDeveloppementPrioritaire'],
-      title: 'Périmètres de développement prioritaire',
-      type: 'zone_de_developpement_prioritaire',
-      refetch: () => void trpcUtils.reseaux.perimetreDeDeveloppementPrioritaire.list.invalidate(),
     },
   };
 
@@ -287,14 +287,14 @@ const GestionDesReseaux = () => {
 
       if (!selectedNetwork) {
         await createNetwork({
-          id: editingId?.toString() || '',
           geometry: updatedGeom,
+          id: editingId?.toString() || '',
           type: tabInfo.type,
         });
       } else {
         await updateGeomUpdate({
-          id: typeof editingId === 'number' ? editingId : parseInt(editingId || '0'),
           geometry: updatedGeom,
+          id: typeof editingId === 'number' ? editingId : parseInt(editingId || '0', 10),
           type: tabInfo.type,
         });
       }
@@ -350,7 +350,6 @@ const GestionDesReseaux = () => {
   const reseauxDeChaleurColumns = useMemo<ColumnDef<ReseauDeChaleur>[]>(
     () => [
       {
-        id: 'actions',
         cell: ({ row }) => (
           <div className="flex gap-2">
             <Button
@@ -382,6 +381,7 @@ const GestionDesReseaux = () => {
             <ModifiedIcon {...row.original} />
           </div>
         ),
+        id: 'actions',
         width: '120px',
       },
       {
@@ -396,8 +396,6 @@ const GestionDesReseaux = () => {
       },
       {
         accessorKey: 'nom_reseau',
-        header: 'Nom',
-        width: '300px',
         cell: ({ row }) =>
           isDefined(row.original['Identifiant reseau']) ? (
             <div>
@@ -408,6 +406,8 @@ const GestionDesReseaux = () => {
           ) : (
             row.original.nom_reseau
           ),
+        header: 'Nom',
+        width: '300px',
       },
       {
         accessorKey: 'Gestionnaire',
@@ -426,7 +426,6 @@ const GestionDesReseaux = () => {
       },
       {
         accessorFn: (row) => row.tags?.join(', '),
-        header: 'Tags',
         cell: (info) => (
           <div className="block">
             <FCUTagAutocomplete
@@ -438,8 +437,9 @@ const GestionDesReseaux = () => {
             />
           </div>
         ),
-        width: '400px',
         enableSorting: false,
+        header: 'Tags',
+        width: '400px',
       },
     ],
     [updateReseauDeChaleur]
@@ -448,7 +448,6 @@ const GestionDesReseaux = () => {
   const reseauxDeFroidColumns = useMemo<ColumnDef<ReseauDeFroid>[]>(
     () => [
       {
-        id: 'actions',
         cell: ({ row }) => (
           <div className="flex gap-2">
             <Button
@@ -478,6 +477,7 @@ const GestionDesReseaux = () => {
             <ModifiedIcon {...row.original} />
           </div>
         ),
+        id: 'actions',
         width: '120px',
       },
       {
@@ -492,8 +492,6 @@ const GestionDesReseaux = () => {
       },
       {
         accessorKey: 'nom_reseau',
-        header: 'Nom',
-        width: '300px',
         cell: ({ row }) =>
           isDefined(row.original['Identifiant reseau']) ? (
             <div>
@@ -504,6 +502,8 @@ const GestionDesReseaux = () => {
           ) : (
             row.original.nom_reseau
           ),
+        header: 'Nom',
+        width: '300px',
       },
       {
         accessorKey: 'Gestionnaire',
@@ -527,7 +527,6 @@ const GestionDesReseaux = () => {
   const reseauxEnConstructionColumns = useMemo<ColumnDef<ReseauEnConstruction>[]>(
     () => [
       {
-        id: 'actions',
         cell: ({ row }) => (
           <div className="flex gap-2 items-center">
             <Button
@@ -561,6 +560,7 @@ const GestionDesReseaux = () => {
             <ModifiedIcon {...row.original} />
           </div>
         ),
+        id: 'actions',
         width: '120px',
       },
       {
@@ -585,7 +585,6 @@ const GestionDesReseaux = () => {
       },
       {
         accessorFn: (row) => row.tags?.join(', '),
-        header: 'Tags',
         cell: (info) => (
           <div className="block">
             <FCUTagAutocomplete
@@ -597,8 +596,9 @@ const GestionDesReseaux = () => {
             />
           </div>
         ),
-        width: '400px',
         enableSorting: false,
+        header: 'Tags',
+        width: '400px',
       },
     ],
     [handleUpdateReseauEnConstruction]
@@ -607,7 +607,6 @@ const GestionDesReseaux = () => {
   const perimetresDeDeveloppementPrioritaireColumns = useMemo<ColumnDef<PerimetreDeDeveloppementPrioritaire>[]>(
     () => [
       {
-        id: 'actions',
         cell: ({ row }) => (
           <div className="flex gap-2">
             <Button
@@ -637,6 +636,7 @@ const GestionDesReseaux = () => {
             <ModifiedIcon {...row.original} />
           </div>
         ),
+        id: 'actions',
         width: '120px',
       },
       {
@@ -651,8 +651,6 @@ const GestionDesReseaux = () => {
       },
       {
         accessorKey: 'Identifiant reseau',
-        header: 'ID SNCU',
-        width: '100px',
         cell: (info) => {
           const network = info.row.original;
           return (
@@ -667,11 +665,11 @@ const GestionDesReseaux = () => {
             />
           );
         },
+        header: 'ID SNCU',
+        width: '100px',
       },
       {
         accessorKey: 'reseau_de_chaleur_ids',
-        header: 'IDs Réseaux de chaleur',
-        width: '140px',
         cell: (info) => {
           const network = info.row.original;
           return (
@@ -686,11 +684,11 @@ const GestionDesReseaux = () => {
             />
           );
         },
+        header: 'IDs Réseaux de chaleur',
+        width: '140px',
       },
       {
         accessorKey: 'reseau_en_construction_ids',
-        header: 'IDs Réseaux en construction',
-        width: '140px',
         cell: (info) => {
           const network = info.row.original;
           return (
@@ -705,6 +703,8 @@ const GestionDesReseaux = () => {
             />
           );
         },
+        header: 'IDs Réseaux en construction',
+        width: '140px',
       },
     ],
     [handleUpdatePerimetreDeDeveloppementPrioritaire]
@@ -733,53 +733,53 @@ const GestionDesReseaux = () => {
       ...(reseauxDeChaleurWithGeomUpdate
         ?.filter((reseau) => reseau.geom_update)
         .map((reseau) => ({
-          id: `${reseau.id_fcu}-reseau-de-chaleur`,
-          type: 'Feature' as const,
           geometry: reseau.geom_update,
+          id: `${reseau.id_fcu}-reseau-de-chaleur`,
           properties: {
             ...(reseau.geom_update.properties || {}),
+            id_fcu: reseau.id_fcu,
             nom_reseau: reseau.nom_reseau,
             type: 'reseau_de_chaleur',
-            id_fcu: reseau.id_fcu,
           },
+          type: 'Feature' as const,
         })) ?? []),
       ...(reseauxDeFroidWithGeomUpdate
         ?.filter((reseau) => reseau.geom_update)
         .map((reseau) => ({
-          id: `${reseau.id_fcu}-reseau-de-froid`,
-          type: 'Feature' as const,
           geometry: reseau.geom_update,
+          id: `${reseau.id_fcu}-reseau-de-froid`,
           properties: {
             ...(reseau.geom_update.properties || {}),
+            id_fcu: reseau.id_fcu,
             nom_reseau: reseau.nom_reseau,
             type: 'reseau_de_froid',
-            id_fcu: reseau.id_fcu,
           },
+          type: 'Feature' as const,
         })) ?? []),
       ...(reseauxEnConstructionWithGeomUpdate
         ?.filter((reseau) => reseau.geom_update)
         .map((reseau) => ({
-          id: `${reseau.id_fcu}-reseau-en-construction`,
-          type: 'Feature' as const,
           geometry: reseau.geom_update,
+          id: `${reseau.id_fcu}-reseau-en-construction`,
           properties: {
             ...(reseau.geom_update.properties || {}),
+            id_fcu: reseau.id_fcu,
             nom_reseau: reseau.nom_reseau,
             type: 'reseau_en_construction',
-            id_fcu: reseau.id_fcu,
           },
+          type: 'Feature' as const,
         })) ?? []),
       ...(perimetresDeDeveloppementPrioritaireWithGeomUpdate
         ?.filter((pdp) => pdp.geom_update)
         .map((pdp) => ({
-          id: `${pdp.id_fcu}-perimetre-de-developpement-prioritaire`,
-          type: 'Feature' as const,
           geometry: pdp.geom_update,
+          id: `${pdp.id_fcu}-perimetre-de-developpement-prioritaire`,
           properties: {
             ...(pdp.geom_update.properties || {}),
-            type: 'perimetres_de_developpement_prioritaire',
             id_fcu: pdp.id_fcu,
+            type: 'perimetres_de_developpement_prioritaire',
           },
+          type: 'Feature' as const,
         })) ?? []),
     ];
   }, [
@@ -808,15 +808,6 @@ const GestionDesReseaux = () => {
 
   const tabs = [
     {
-      label: (
-        <>
-          Réseaux de chaleur
-          <Tag variant="default" size="sm" className="ml-2">
-            {(reseauxDeChaleurWithGeomUpdate || []).length > 0 && <Icon name="fr-icon-warning-line" size="sm" color="warning" />}
-            {isFetchingReseauxDeChaleur ? <Loader size="sm" className="mx-1" /> : (reseauxDeChaleur?.length ?? 0)}
-          </Tag>
-        </>
-      ),
       content: (
         <TableSimple
           columns={reseauxDeChaleurColumns}
@@ -852,17 +843,17 @@ const GestionDesReseaux = () => {
         />
       ),
       isDefault: selectedTab === 'reseaux-de-chaleur',
-    },
-    {
       label: (
         <>
-          Réseaux de froid
+          Réseaux de chaleur
           <Tag variant="default" size="sm" className="ml-2">
-            {(reseauxDeFroidWithGeomUpdate || []).length > 0 && <Icon name="fr-icon-warning-line" size="sm" color="warning" />}
-            {isFetchingReseauxDeFroid ? <Loader size="sm" className="mx-1" /> : (reseauxDeFroid?.length ?? 0)}
+            {(reseauxDeChaleurWithGeomUpdate || []).length > 0 && <Icon name="fr-icon-warning-line" size="sm" color="warning" />}
+            {isFetchingReseauxDeChaleur ? <Loader size="sm" className="mx-1" /> : (reseauxDeChaleur?.length ?? 0)}
           </Tag>
         </>
       ),
+    },
+    {
       content: (
         <TableSimple
           columns={reseauxDeFroidColumns}
@@ -898,17 +889,17 @@ const GestionDesReseaux = () => {
         />
       ),
       isDefault: selectedTab === 'reseaux-de-froid',
-    },
-    {
       label: (
         <>
-          Réseaux en construction
+          Réseaux de froid
           <Tag variant="default" size="sm" className="ml-2">
-            {(reseauxEnConstructionWithGeomUpdate || []).length > 0 && <Icon name="fr-icon-warning-line" size="sm" color="warning" />}
-            {isFetchingReseauxEnConstruction ? <Loader size="sm" className="mx-1" /> : (reseauxEnConstruction?.length ?? 0)}
+            {(reseauxDeFroidWithGeomUpdate || []).length > 0 && <Icon name="fr-icon-warning-line" size="sm" color="warning" />}
+            {isFetchingReseauxDeFroid ? <Loader size="sm" className="mx-1" /> : (reseauxDeFroid?.length ?? 0)}
           </Tag>
         </>
       ),
+    },
+    {
       content: (
         <TableSimple
           columns={reseauxEnConstructionColumns}
@@ -943,23 +934,17 @@ const GestionDesReseaux = () => {
         />
       ),
       isDefault: selectedTab === 'reseaux-en-construction',
-    },
-    {
       label: (
         <>
-          Périmètres de développement prioritaire
+          Réseaux en construction
           <Tag variant="default" size="sm" className="ml-2">
-            {(perimetresDeDeveloppementPrioritaireWithGeomUpdate || []).length > 0 && (
-              <Icon name="fr-icon-warning-line" size="sm" color="warning" />
-            )}
-            {isFetchingPerimetresDeDeveloppementPrioritaire ? (
-              <Loader size="sm" className="mx-1" />
-            ) : (
-              (perimetresDeDeveloppementPrioritaire?.length ?? 0)
-            )}
+            {(reseauxEnConstructionWithGeomUpdate || []).length > 0 && <Icon name="fr-icon-warning-line" size="sm" color="warning" />}
+            {isFetchingReseauxEnConstruction ? <Loader size="sm" className="mx-1" /> : (reseauxEnConstruction?.length ?? 0)}
           </Tag>
         </>
       ),
+    },
+    {
       content: (
         <TableSimple
           columns={perimetresDeDeveloppementPrioritaireColumns}
@@ -994,6 +979,21 @@ const GestionDesReseaux = () => {
         />
       ),
       isDefault: selectedTab === 'perimetres-de-developpement-prioritaire',
+      label: (
+        <>
+          Périmètres de développement prioritaire
+          <Tag variant="default" size="sm" className="ml-2">
+            {(perimetresDeDeveloppementPrioritaireWithGeomUpdate || []).length > 0 && (
+              <Icon name="fr-icon-warning-line" size="sm" color="warning" />
+            )}
+            {isFetchingPerimetresDeDeveloppementPrioritaire ? (
+              <Loader size="sm" className="mx-1" />
+            ) : (
+              (perimetresDeDeveloppementPrioritaire?.length ?? 0)
+            )}
+          </Tag>
+        </>
+      ),
     },
   ];
 
@@ -1061,14 +1061,14 @@ const GestionDesReseaux = () => {
                 noPopup
                 withoutLogo
                 initialMapConfiguration={createMapConfiguration({
+                  customGeojson: true,
+                  geomUpdate: true,
                   reseauxDeChaleur: {
                     show: true,
                   },
                   reseauxDeFroid: true,
                   reseauxEnConstruction: true,
                   zonesDeDeveloppementPrioritaire: true,
-                  geomUpdate: true,
-                  customGeojson: true,
                 })}
                 geolocDisabled
                 withSoughtAddresses={false}
@@ -1134,15 +1134,15 @@ const GestionDesReseaux = () => {
                                     : 'ID du nouveau réseau'
                                 }
                                 nativeInputProps={{
-                                  value: editingId?.toString() || '',
                                   onChange: (e) => {
                                     setEditingId(e.target.value);
                                   },
-                                  required: true,
                                   placeholder:
                                     selectedTab === 'reseaux-de-chaleur' || selectedTab === 'reseaux-de-froid'
                                       ? 'Ex: 7412A ou 123'
                                       : 'Ex: 123',
+                                  required: true,
+                                  value: editingId?.toString() || '',
                                 }}
                               />
                             </div>

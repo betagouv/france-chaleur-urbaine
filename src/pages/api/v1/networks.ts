@@ -1,7 +1,7 @@
 import { createNextApiRateLimiter } from '@/modules/security/server/rate-limit/next-pages';
 import db from '@/server/db';
 import { handleRouteErrors, requireGetMethod } from '@/server/helpers/server';
-import { type Network } from '@/types/Summary/Network';
+import type { Network } from '@/types/Summary/Network';
 
 // disable the warning for this route as the result is big > 50MB
 export const config = {

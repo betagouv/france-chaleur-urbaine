@@ -42,12 +42,12 @@ const Actors = () => {
       <br />
       <br />
       <Subtitle>Les syndicats, fédérations et associations d’acteurs</Subtitle>
-      <b>Le SNCU, Syndicat national du chauffage urbain et de la climatisation urbaine</b>
-      , regroupe des gestionnaires publics et privés de réseaux de chaleur et de froid. Ses adhérents sont en charge de plus de 90 % de
-      l’activité du secteur. Le SNCU est membre de la Fédération des services énergie environnement (FEDENE). Il a pour mission la promotion
-      des réseaux de chaleur et de froid ainsi que le développement et la représentation des intérêts de la profession auprès des décideurs,
-      des acteurs institutionnels et des parties prenantes. Le SNCU réalise une enquête annuelle sur les réseaux de chaleur et de froid pour
-      le compte du ministère de la transition écologique, à caractère obligatoire pour les gestionnaires des réseaux.
+      <b>Le SNCU, Syndicat national du chauffage urbain et de la climatisation urbaine</b>, regroupe des gestionnaires publics et privés de
+      réseaux de chaleur et de froid. Ses adhérents sont en charge de plus de 90 % de l’activité du secteur. Le SNCU est membre de la
+      Fédération des services énergie environnement (FEDENE). Il a pour mission la promotion des réseaux de chaleur et de froid ainsi que le
+      développement et la représentation des intérêts de la profession auprès des décideurs, des acteurs institutionnels et des parties
+      prenantes. Le SNCU réalise une enquête annuelle sur les réseaux de chaleur et de froid pour le compte du ministère de la transition
+      écologique, à caractère obligatoire pour les gestionnaires des réseaux.
       <br />
       <br />
       <b>Amorce</b> est une association qui vise à informer et accompagner les collectivités et acteurs locaux en matière de transition

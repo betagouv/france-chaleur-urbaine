@@ -9,7 +9,7 @@ const { GET, POST, PUT, DELETE, _types } = crud<typeof emailTemplatesService.tab
 export type EmailTemplatesResponse = typeof _types;
 
 export default handleRouteErrors(
-  { GET, POST, PUT, DELETE },
+  { DELETE, GET, POST, PUT },
   {
     requireAuthentication: ['gestionnaire', 'admin', 'demo'],
   }

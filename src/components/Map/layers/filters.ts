@@ -1,8 +1,8 @@
-import { type ExpressionSpecification } from 'maplibre-gl';
+import type { ExpressionSpecification } from 'maplibre-gl';
 
 import { filtresEnergies, type MapConfiguration, percentageMaxInterval } from '@/components/Map/map-configuration';
 import { gestionnairesFilters } from '@/services';
-import { type Network } from '@/types/Summary/Network';
+import type { Network } from '@/types/Summary/Network';
 import { type Interval, intervalsEqual } from '@/utils/interval';
 
 type ReseauxDeChaleurFilter = {
@@ -18,13 +18,13 @@ export const reseauxDeChaleurFilters = [
   },
   {
     confKey: 'emissionsCO2',
-    valueKey: 'contenu CO2 ACV',
     filterPreprocess: (v: number) => v / 1000,
+    valueKey: 'contenu CO2 ACV',
   },
   {
     confKey: 'contenuCO2',
-    valueKey: 'contenu CO2',
     filterPreprocess: (v: number) => v / 1000,
+    valueKey: 'contenu CO2',
   },
   {
     confKey: 'prixMoyen',
@@ -32,8 +32,8 @@ export const reseauxDeChaleurFilters = [
   },
   {
     confKey: 'livraisonsAnnuelles',
-    valueKey: 'livraisons_totale_MWh',
     filterPreprocess: (v: number) => v * 1000,
+    valueKey: 'livraisons_totale_MWh',
   },
   {
     confKey: 'anneeConstruction',

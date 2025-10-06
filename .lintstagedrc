@@ -1,4 +1,3 @@
 {
-  "*.{js,jsx,ts,tsx}": "eslint --fix",
-  "*.{mjs,js,jsx,ts,tsx}": ["prettier --write", "git add -A"]
+  "*.{mjs,js,jsx,ts,tsx}": ["pnpm lint:fix:file", "git add -A"]
 }

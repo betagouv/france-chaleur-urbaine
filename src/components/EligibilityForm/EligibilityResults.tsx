@@ -1,5 +1,5 @@
-import { type AvailableHeating } from '@/types/AddressData';
-import { type HeatNetworksResponse } from '@/types/HeatNetworksResponse';
+import type { AvailableHeating } from '@/types/AddressData';
+import type { HeatNetworksResponse } from '@/types/HeatNetworksResponse';
 
 type EligibilityResult = {
   eligibility?: boolean;
@@ -78,7 +78,6 @@ export const getEligibilityResult = (
 
   // 3 rue du petit bois 78370 Plaisir
   const closeCollectif: EligibilityResult = {
-    eligibility: true,
     body: ({ distance, inPDP, gestionnaire, tauxENRR, isClasse, hasPDP, city }) => `
 ### Bonne nouvelle !
 
@@ -103,6 +102,7 @@ ${
 }
 ${city === 'Paris' ? '::small[A noter: sur Paris, la puissance souscrite doit être d’au moins 100 kW.]' : ''}
 `,
+    eligibility: true,
     text: '#### Recevez plus d’informations adaptées à votre bâtiment de la part du gestionnaire du réseau',
   };
 
@@ -122,7 +122,6 @@ Votre situation n’est pas favorable **pour un raccordement, mais si vous souha
 
   // 1 rue du berry 78370 Plaisir
   const intermediateCollectif: EligibilityResult = {
-    eligibility: true,
     body: ({ distance, inPDP, gestionnaire, tauxENRR, isClasse, hasPDP, city }) => `
 ::arrow-item[**Il n’existe pour le moment pas de réseau de chaleur** à proximité immédiate de votre adresse, toutefois, le réseau n’est pas très loin ${
       distance ? `(${distance})` : ''
@@ -147,6 +146,7 @@ ${
 }
 ${city === 'Paris' ? '::small[A noter: sur Paris, la puissance souscrite doit être d’au moins 100 kW.]' : ''}
   `,
+    eligibility: true,
     text: `
 **France Chaleur Urbaine** est un service gratuit du Ministère de la transition écologique qui vous permet d’être **mis en relation avec le gestionnaire** du réseau le plus proche **afin de vérifier la faisabilité du raccordement et de bénéficier d’une première estimation tarifaire gratuite et sans engagement.**
 **Il vous suffit pour cela de déposer vos coordonnées ci-dessous.**
@@ -182,7 +182,6 @@ Votre situation n’est pas favorable **pour un raccordement, mais si vous souha
 
   // Rue pablo neruda 76610 Le havre
   const closeFuturCollectif: EligibilityResult = {
-    eligibility: true,
     body: ({ distance, inPDP, gestionnaire, tauxENRR, city }) => `
 ### Bonne nouvelle !
 
@@ -205,6 +204,7 @@ ${
 }
 ${city === 'Paris' ? '::small[A noter: sur Paris, la puissance souscrite doit être d’au moins 100 kW.]' : ''}
 `,
+    eligibility: true,
     text: `
 **France Chaleur Urbaine est un service public de mise en relation avec les gestionnaires des réseaux.**
 #### Bénéficiez d'une première étude de faisabilité gratuite et sans engagement.
@@ -232,7 +232,6 @@ ${
 
   // rue des hirondelles 76610 le havre
   const intermediateFuturCollectif: EligibilityResult = {
-    eligibility: true,
     body: ({ distance, inPDP, gestionnaire, tauxENRR, city }) => `
 ::arrow-item[**Votre immeuble n’est pas à proximité immédiate d’un réseau de chaleur, toutefois un réseau passera prochainement dans les environs** ${
       distance ? `(${distance})` : ''
@@ -252,6 +251,7 @@ ${
 }
 ${city === 'Paris' ? '::small[A noter: sur Paris, la puissance souscrite doit être d’au moins 100 kW.]' : ''}
   `,
+    eligibility: true,
     text: `
 **France Chaleur Urbaine** est un service gratuit du Ministère de la transition écologique qui vous permet d’être **mis en relation avec le gestionnaire** du réseau le plus proche **afin de vérifier la faisabilité du raccordement et de bénéficier d’une première estimation tarifaire gratuite et sans engagement.**
 **Il vous suffit pour cela de déposer vos coordonnées ci-dessous.**

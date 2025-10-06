@@ -1,4 +1,4 @@
-import { type PBoolean, type RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
+import type { PBoolean, RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
 
 import Radio from '@/components/form/dsfr/Radio';
 import useInViewport from '@/hooks/useInViewport';
@@ -37,7 +37,6 @@ const RadioInput = ({
         label: optionValue,
         nativeInputProps: {
           checked: optionValue === valueInEngine,
-          value: optionValue,
           onChange: (e) => {
             e.stopPropagation();
             const value = e.target.value;
@@ -47,6 +46,7 @@ const RadioInput = ({
               engine.setStringField(name, value);
             }
           },
+          value: optionValue,
         },
       }))}
       label={<Label label={displayLabel} help={help} />}

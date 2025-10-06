@@ -1,5 +1,5 @@
 import NextImage, { type ImageProps as NextImageProps } from 'next/image';
-import React from 'react';
+import type React from 'react';
 
 import Markdown from '@/components/ui/Markdown';
 

@@ -18,13 +18,13 @@ export const createContact = async (data: ContactFormData) => {
   }
 
   const { id }: any = await AirtableDB(Airtable.CONTACT).create({
-    Nom: data.lastName,
-    Prenom: data.firstName,
-    Email: data.email,
-    Telephone: data.phone,
-    Objet: data.subject,
-    Message: data.message,
     Date: new Date().toISOString(),
+    Email: data.email,
+    Message: data.message,
+    Nom: data.lastName,
+    Objet: data.subject,
+    Prenom: data.firstName,
+    Telephone: data.phone,
   });
 
   logger.info('contact form submitted', {

@@ -1,4 +1,4 @@
-import { readFile } from 'fs/promises';
+import { readFile } from 'node:fs/promises';
 
 import { serverConfig } from '@/server/config';
 import { dayjs } from '@/utils/date';
@@ -99,9 +99,9 @@ export class APIDataGouvService {
     );
 
     const response = await fetch(url, {
-      method: 'POST',
-      headers: this.getHeaders(),
       body: formData,
+      headers: this.getHeaders(),
+      method: 'POST',
     });
 
     if (!response.ok) {
@@ -118,15 +118,15 @@ export class APIDataGouvService {
   async createUpdateResourceWithFile(datasetId: string, filePath: string, title: string, description?: string): Promise<DataGouvResource> {
     // 1. Crée la ressource avec le fichier (utilise l'endpoint /upload/)
     const resource = await this.uploadFileAndCreateResource(datasetId, filePath, {
-      title,
       description,
       format: 'zip',
+      title,
     });
 
     // 2. Met à jour les métadonnées pour marquer comme type "update"
     const updatedResource = await this.updateResourceMetadata(datasetId, resource.id, {
-      title,
       description,
+      title,
       type: 'update',
     });
 
@@ -147,9 +147,9 @@ export class APIDataGouvService {
     formData.append('file', blob, fileName);
 
     const response = await fetch(url, {
-      method: 'POST',
-      headers: this.getHeaders(),
       body: formData,
+      headers: this.getHeaders(),
+      method: 'POST',
     });
 
     if (!response.ok) {

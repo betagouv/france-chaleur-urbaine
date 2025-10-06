@@ -97,8 +97,7 @@ pnpm dev
 
 ## Lint
 
-- [Prettier](https://prettier.io/) est utilisé comme formatteur de code.
-- [ESLint](https://eslint.org/) est utilisé pour détecter les erreurs de programmation.
+- [Biome](https://biomejs.dev/fr/) est utilisé comme formatteur de code et linter.
 
 ```sh
 pnpm lint

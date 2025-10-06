@@ -1,17 +1,17 @@
 import { atom, useAtom, useSetAtom } from 'jotai';
 import { useHydrateAtoms } from 'jotai/utils';
-import { type Session } from 'next-auth';
+import { useRouter } from 'next/navigation';
+import type { Session } from 'next-auth';
 /* eslint-disable import/order */
 import { signIn, signOut, useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
 /* eslint-enable import/order */
 import { useQueryState } from 'nuqs';
 import { useEffect } from 'react';
 
 import { useFetch, usePost } from '@/hooks/useApi';
 import useCookie from '@/hooks/useCookie';
-import { type UserPreferences, type UserPreferencesInput } from '@/pages/api/user/preferences';
-import { type UserRole } from '@/types/enum/UserRole';
+import type { UserPreferences, UserPreferencesInput } from '@/pages/api/user/preferences';
+import type { UserRole } from '@/types/enum/UserRole';
 import { stripDomainFromURL } from '@/utils/url';
 
 const authenticationAtom = atom<Session | null>(null);
@@ -56,12 +56,12 @@ export const useInitAuthentication = (serverSession: Session | undefined) => {
 export const useAuthentication = () => {
   const [session] = useAtom(authenticationAtom);
   return {
-    session: session ?? null,
-    user: session?.user ?? null,
-    isAuthenticated: !!session,
     hasRole: (role: UserRole) => session?.user && session?.user.role === role,
+    isAuthenticated: !!session,
+    session: session ?? null,
     signIn,
     signOut,
+    user: session?.user ?? null,
   };
 };
 
@@ -74,5 +74,5 @@ export const useUserPreferences = () => {
   const { mutateAsync: updateUserPreferences } = usePost<UserPreferencesInput>('/api/user/preferences', {
     invalidate: ['/api/user/preferences'],
   });
-  return { userPreferences, updateUserPreferences };
+  return { updateUserPreferences, userPreferences };
 };

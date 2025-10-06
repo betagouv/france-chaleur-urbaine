@@ -2,7 +2,7 @@ import Link from 'next/link';
 import styled, { css } from 'styled-components';
 
 import { legacyColors } from '@/components/ui/helpers/colors';
-import { trackEvent, type TrackingEvent } from '@/modules/analytics/client';
+import { type TrackingEvent, trackEvent } from '@/modules/analytics/client';
 
 export const isExternalLink = (href: string) => href && href.search(/(^http)|(^mailto)|(^\/documentation)/) >= 0;
 
@@ -344,8 +344,8 @@ export const PuceIcon = styled.div<PuceIconType>`
 `;
 
 export const KnowMoreLink = styled.a.attrs(({ href }) => ({
-  className: 'fr-fi-arrow-right-s-line list-item',
   children: 'En savoir plus',
+  className: 'fr-fi-arrow-right-s-line list-item',
   target: href && isExternalLink(href) ? '_blank' : undefined,
 }))`
   --link-underline: none;

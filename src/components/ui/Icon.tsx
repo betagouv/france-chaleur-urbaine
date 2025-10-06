@@ -1,4 +1,4 @@
-import { type FrIconClassName, type RiIconClassName } from '@codegouvfr/react-dsfr';
+import type { FrIconClassName, RiIconClassName } from '@codegouvfr/react-dsfr';
 import { type CSSProperties, forwardRef, type HTMLAttributes, type Ref } from 'react';
 import styled, { css } from 'styled-components';
 

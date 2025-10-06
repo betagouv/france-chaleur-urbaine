@@ -1,0 +1,208 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.2.4/schema.json",
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "on",
+        "useSortedKeys": "on"
+      }
+    },
+    "enabled": true
+  },
+  "css": {
+    "formatter": {
+      "quoteStyle": "double"
+    }
+  },
+  "files": {
+    "ignoreUnknown": false,
+    "includes": [
+      "**",
+      "!**/node_modules",
+      "!**/.next",
+      "!**/dist",
+      "!**/build",
+      "!**/coverage",
+      "!**/*.backUp",
+      "!**/*.geojson",
+      "!**/src/data/map/**/*.json",
+      "!**/tailwind.config.ts",
+      "!**/next-env.d.ts",
+      "!**/knexfile.ts",
+      "!**/vitest.config.mts",
+      "!**/postcss.config.mjs",
+      "!**/sentry.*.config.ts",
+      "!**/tsconfig.json",
+      "!**/tsconfig.tsbuildinfo",
+      "!**/package.json",
+      "!**/pnpm-lock.yaml",
+      "!**/*.log",
+      "!**/*.zip",
+      "!**/public",
+      "!**/docs",
+      "!**/docker",
+      "!**/*.md"
+    ]
+  },
+  "formatter": {
+    "attributePosition": "auto",
+    "enabled": true,
+    "formatWithErrors": false,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineEnding": "lf",
+    "lineWidth": 140
+  },
+  "javascript": {
+    "formatter": {
+      "arrowParentheses": "always",
+      "attributePosition": "auto",
+      "bracketSameLine": false,
+      "bracketSpacing": true,
+      "jsxQuoteStyle": "double",
+      "quoteProperties": "asNeeded",
+      "quoteStyle": "single",
+      "semicolons": "always",
+      "trailingCommas": "es5"
+    }
+  },
+  "json": {
+    "formatter": {
+      "trailingCommas": "none"
+    }
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "a11y": {
+        // désactivé pour la migration car trop complexe à implémenter
+        "noAutofocus": "off",
+        "noLabelWithoutControl": "off", // désactivé car trop de cas complexes avec les composants DSFR
+        "noNoninteractiveElementToInteractiveRole": "off", // utiliser nav à la place pour les ul menu
+        "noRedundantRoles": "off", // désactivé car parfois nécessaire pour l'accessibilité
+        "noStaticElementInteractions": "off",
+        "noSvgWithoutTitle": "off", // désactivé car trop de SVGs décoratifs
+        "useAriaPropsForRole": "off", // désactivé car trop complexe
+        "useAriaPropsSupportedByRole": "off", // désactivé car trop complexe à implémenter
+        "useButtonType": "off", // désactivé car les boutons sans type sont courants
+        "useKeyWithClickEvents": "off",
+        "useMediaCaption": "off", // désactivé car pas de sous-titres disponibles
+        "useSemanticElements": "off", // désactivé car trop contraignant
+        "useValidAnchor": "off" // désactivé car les liens avec onClick sont courants dans l'app
+      },
+      "complexity": {
+        "noBannedTypes": "error",
+        "noUselessCatch": "error",
+        "noUselessEmptyExport": "error",
+        "noUselessFragments": "error",
+        "noUselessLabel": "error",
+        "noUselessRename": "error",
+        "noUselessSwitchCase": "error",
+        "noUselessTernary": "error",
+        "noUselessTypeConstraint": "error",
+        "useArrowFunction": "warn"
+      },
+      "correctness": {
+        // Désactivé car incompatible avec l'API de @tanstack/react-form qui utilise children comme prop
+        "noChildrenProp": "off",
+        "noConstAssign": "error",
+        "noConstantCondition": "error",
+        "noEmptyCharacterClassInRegex": "error",
+        "noEmptyPattern": "error",
+        "noGlobalObjectCalls": "error",
+        "noInvalidBuiltinInstantiation": "error",
+        "noInvalidConstructorSuper": "error",
+        "noNestedComponentDefinitions": "off", // désactivé car trop contraignant pour les composants inline
+        "noNonoctalDecimalEscape": "error",
+        "noPrecisionLoss": "error",
+        "noSelfAssign": "error",
+        "noSetterReturn": "error",
+        "noSwitchDeclarations": "error",
+        "noUndeclaredVariables": "error",
+        "noUnreachable": "error",
+        "noUnreachableSuper": "error",
+        "noUnsafeFinally": "error",
+        "noUnsafeOptionalChaining": "error",
+        "noUnusedLabels": "error",
+        "noUnusedPrivateClassMembers": "error",
+        "noUnusedVariables": "off", // désactivé car trop de variables non utilisées dans destructuring
+        // Désactivé car trop de faux positifs et corrections manuelles nécessaires pour gérer les cas complexes
+        "useExhaustiveDependencies": "off",
+        "useHookAtTopLevel": "error",
+        "useIsNan": "error",
+        "useJsxKeyInIterable": "off",
+        "useUniqueElementIds": "off", // désactivé car souvent utile
+        "useValidForDirection": "error",
+        "useValidTypeof": "error",
+        "useYield": "error"
+      },
+      "nursery": {
+        "useSortedClasses": "off"
+      },
+      "performance": {
+        "noAccumulatingSpread": "off", // désactivé car trop de cas où c'est acceptable
+        "noDelete": "error",
+        "noImgElement": "off" // trop contraignant pour le moment (est-ce que <Image fill /> fonctionne comme img ?)
+      },
+      "recommended": true,
+      "security": {
+        "noDangerouslySetInnerHtml": "off", // désactivé car nécessaire pour JSON-LD et emails
+        "noGlobalEval": "error"
+      },
+      "style": {
+        "noDescendingSpecificity": "off", // désactivé car trop de cas complexes avec CSS
+        "noNonNullAssertion": "off", // désactivé car souvent nécessaire avec TypeScript strict
+        "useConsistentArrayType": {
+          "level": "error",
+          "options": {
+            "syntax": "shorthand"
+          }
+        },
+        "useConst": "error",
+        "useExponentiationOperator": "error",
+        "useForOf": "error",
+        "useSelfClosingElements": "error",
+        "useShorthandAssign": "error",
+        "useSingleVarDeclarator": "error",
+        "useTemplate": "error"
+      },
+      "suspicious": {
+        "noArrayIndexKey": "off", // désactivé car souvent acceptable pour les listes statiques
+        "noAssignInExpressions": "off", // désactivé car nécessaire pour les boucles while
+        "noAsyncPromiseExecutor": "error",
+        "noCatchAssign": "error",
+        "noClassAssign": "error",
+        "noCompareNegZero": "error",
+        "noControlCharactersInRegex": "error",
+        "noDebugger": "error",
+        "noDuplicateCase": "error",
+        "noDuplicateClassMembers": "error",
+        "noDuplicateObjectKeys": "error",
+        "noDuplicateParameters": "error",
+        "noEmptyBlockStatements": "off", // désactivé car trop de blocs vides intentionnels
+        "noEmptyInterface": "error",
+        "noExplicitAny": "off", // désactivé car trop contraignant (surtout pour la migration)
+        "noFallthroughSwitchClause": "error",
+        "noFunctionAssign": "error",
+        "noGlobalAssign": "error",
+        "noImplicitAnyLet": "off", // désactivé car trop contraignant pour la migration
+        "noImportAssign": "error",
+        "noMisleadingCharacterClass": "error",
+        "noMisleadingInstantiator": "error",
+        "noPrototypeBuiltins": "error",
+        "noRedeclare": "error",
+        // TODO: Réactiver cette règle après refactoring des variables qui masquent des noms réservés
+        "noShadowRestrictedNames": "off",
+        "noUnknownAtRules": "off", // désactivé car directives tailwind non reconnues en CSS
+        "noUnsafeNegation": "error",
+        "useGetterReturn": "error",
+        "useIterableCallbackReturn": "off" // désactivé car trop de cas où c'est acceptable
+      }
+    }
+  },
+  "vcs": {
+    "clientKind": "git",
+    "enabled": true,
+    "useIgnoreFile": true
+  }
+}

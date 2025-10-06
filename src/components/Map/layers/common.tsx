@@ -1,11 +1,11 @@
-import { type DataDrivenPropertyValueSpecification, type SourceSpecification } from 'maplibre-gl';
+import type { DataDrivenPropertyValueSpecification, SourceSpecification } from 'maplibre-gl';
 import { type ComponentProps, isValidElement, type PropsWithChildren } from 'react';
 
-import { type MapLayerSpecification } from '@/components/Map/map-layers';
+import type { MapLayerSpecification } from '@/components/Map/map-layers';
 import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
 import Heading from '@/components/ui/Heading';
-import { type useAuthentication } from '@/modules/auth/client/hooks';
+import type { useAuthentication } from '@/modules/auth/client/hooks';
 import type { SourceId } from '@/modules/tiles/tiles.config';
 import { isDefined } from '@/utils/core';
 import { createEventBus, createEventBusHook } from '@/utils/event-bus';
@@ -101,10 +101,10 @@ function TwoColumns({ children }: PropsWithChildren) {
  * Fournit des composants utilisables par chaque popup pour l'aider à se construire.
  */
 export const buildPopupStyleHelpers = (close: () => void) => ({
-  Title: buildPopupTitle(close),
-  Property: PopupProperty,
-  TwoColumns,
   close,
+  Property: PopupProperty,
+  Title: buildPopupTitle(close),
+  TwoColumns,
 });
 export const buildPopupTitle = (close: () => void) => {
   const CloseableTitle = (props: Omit<ComponentProps<typeof PopupTitle>, 'close'>) => <PopupTitle close={close} {...props} />;

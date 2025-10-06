@@ -2,9 +2,9 @@ import SimplePage from '@/components/shared/page/SimplePage';
 import Alert from '@/components/ui/Alert';
 import Button from '@/components/ui/Button';
 import Heading from '@/components/ui/Heading';
-import { type CommandTestResult } from '@/modules/diagnostic/server/service';
+import type { CommandTestResult } from '@/modules/diagnostic/server/service';
 import trpc from '@/modules/trpc/client';
-import { type CommandResult } from '@/utils/system';
+import type { CommandResult } from '@/utils/system';
 
 const DiagnosticPage = () => {
   const { data: diagnosticData, error, refetch, isFetching } = trpc.diagnostic.run.useQuery();
@@ -31,7 +31,7 @@ const DiagnosticPage = () => {
       {isFetching ? (
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4" />
             <p className="text-gray-600">Diagnostic en cours...</p>
           </div>
         </div>
@@ -106,8 +106,8 @@ const getAirtableBaseStatus = (airtableBase: string) => {
   }
 
   const statusMap = {
-    prod: '🟢 Production',
     dev: '🟡 Développement',
+    prod: '🟢 Production',
   } as const;
 
   return statusMap[airtableBase as keyof typeof statusMap] || `❓ ${airtableBase}`;

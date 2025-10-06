@@ -1,2 +1,2 @@
-export * from './HttpClient';
 export * from './axiosHttpClient';
+export * from './HttpClient';

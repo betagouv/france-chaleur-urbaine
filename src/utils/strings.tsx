@@ -1,4 +1,4 @@
-import { type ReactElement } from 'react';
+import type { ReactElement } from 'react';
 
 /**
  * Formate un nombre pour l'affichage en ajoutant des espaces comme séparateurs de milliers.

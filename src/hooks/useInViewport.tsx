@@ -1,4 +1,4 @@
-import { useIntersectionObserver, type UseIntersectionObserverOptions } from '@react-hookz/web';
+import { type UseIntersectionObserverOptions, useIntersectionObserver } from '@react-hookz/web';
 import { useRef } from 'react';
 
 const useInViewport = <T extends HTMLElement>(options?: UseIntersectionObserverOptions) => {

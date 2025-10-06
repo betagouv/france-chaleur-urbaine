@@ -1,4 +1,4 @@
-import { type CreateNextContextOptions } from '@trpc/server/adapters/next';
+import type { CreateNextContextOptions } from '@trpc/server/adapters/next';
 
 import { appRouter as appModuleRouter } from '@/modules/app/server/trpc-routes';
 import buildContext from '@/modules/config/server/context-builder';
@@ -31,16 +31,16 @@ export async function createContext(opts: CreateNextContextOptions) {
  * All routers added in /modules/trpc/routers should be manually added here.
  */
 export const appRouter = router({
+  app: appModuleRouter,
+  diagnostic: diagnosticRouter,
   // Health check endpoint - no auth required
   healthCheck: route.query(() => {
     return {
+      message: 'tRPC server is running!',
       status: 'ok',
       timestamp: new Date().toISOString(),
-      message: 'tRPC server is running!',
     };
   }),
-  app: appModuleRouter,
-  diagnostic: diagnosticRouter,
   jobs: jobsRouter,
   proEligibilityTests: proEligibilityTestsRouter,
   reseaux: reseauxRouter,

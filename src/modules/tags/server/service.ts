@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import { kdb, sql } from '@/server/db/kysely';
 import { createBaseModel } from '@/server/db/kysely/base-model';
-import { type User } from '@/types/User';
+import type { User } from '@/types/User';
 
 export const tableName = 'tags';
 
@@ -16,8 +16,8 @@ export const list = async () => {
     .execute();
 
   return {
-    items: records,
     count: records.length,
+    items: records,
   };
 };
 export type Tag = Awaited<ReturnType<typeof list>>['items'][number];
@@ -55,8 +55,8 @@ export const listWithUsers = async () => {
     .execute();
 
   return {
-    items: records,
     count: records.length,
+    items: records,
   };
 };
 export type TagWithUsers = Awaited<ReturnType<typeof listWithUsers>>['items'][number];

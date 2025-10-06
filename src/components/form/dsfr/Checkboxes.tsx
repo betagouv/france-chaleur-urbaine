@@ -6,8 +6,9 @@ const StyledCheckbox = styled(DsfrCheckbox)<{
   $fullWidth?: boolean;
 }>`
   ${({ small, $fullWidth }) => css`
-    ${small &&
-    css`
+    ${
+      small &&
+      css`
       .fr-fieldset__content .fr-radio-group label,
       .fr-fieldset__content .fr-checkbox-group label {
         padding: 0.25rem 0;
@@ -19,13 +20,16 @@ const StyledCheckbox = styled(DsfrCheckbox)<{
       .fr-label {
         font-size: 0.875rem;
       }
-    `}
-    ${!$fullWidth &&
-    css`
+    `
+    }
+    ${
+      !$fullWidth &&
+      css`
       .fr-label {
         display: inline-flex !important; /* Prevent label to be clickable on the whole line even when label is small */
       }
-    `}
+    `
+    }
   `}
 `;
 

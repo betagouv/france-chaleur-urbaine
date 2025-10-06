@@ -22,10 +22,10 @@ interface CarteFranceProps {
 }
 
 const defaultTooltipInfos = {
+  content: <></>,
+  visible: false,
   x: 0,
   y: 0,
-  visible: false,
-  content: <></>,
 };
 
 /**
@@ -43,19 +43,19 @@ function CarteFrance(props: CarteFranceProps) {
     const target = event.target as HTMLElement;
     const offset = 10;
     setTooltipInfos({
+      content: <div>{target.dataset.nom}</div>,
+      visible: true,
       x: event.pageX + offset,
       y: event.pageY + offset,
-      visible: true,
-      content: <div>{target.dataset.nom}</div>,
     });
   };
 
   const onMouseOut: MouseEventHandler = () => {
     setTooltipInfos({
+      content: <></>,
+      visible: false,
       x: 0,
       y: 0,
-      visible: false,
-      content: <></>,
     });
   };
 

@@ -27,11 +27,11 @@ const Newsletter = () => {
             label="Email"
             hideLabel
             nativeInputProps={{
-              type: 'email',
-              required: true,
-              placeholder: 'Paris@villedeparis.fr',
-              value: email,
               onChange: (e) => setEmail(e.target.value),
+              placeholder: 'Paris@villedeparis.fr',
+              required: true,
+              type: 'email',
+              value: email,
             }}
           />
           <Button type="submit" priority="primary" loading={sending}>

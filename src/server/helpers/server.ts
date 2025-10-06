@@ -2,12 +2,12 @@ import { captureException } from '@sentry/nextjs';
 import { HttpStatusCode } from 'axios';
 import { errors as formidableErrors } from 'formidable';
 import type { NextApiHandler, NextApiRequest, NextApiResponse } from 'next';
-import { type User } from 'next-auth';
-import { z, type ZodRawShape } from 'zod';
+import type { User } from 'next-auth';
+import { type ZodRawShape, z } from 'zod';
 
 import { rateLimitError } from '@/modules/security/server/rate-limit';
 import { getServerSession } from '@/server/authentication';
-import { type UserRole } from '@/types/enum/UserRole';
+import type { UserRole } from '@/types/enum/UserRole';
 
 import { parentLogger } from './logger';
 
@@ -55,9 +55,9 @@ export function handleRouteErrors<HandlersConfig extends Partial<Record<RequestM
   return async (req: NextApiRequest, res: NextApiResponse) => {
     const startTime = Date.now();
     let logger = parentLogger.child({
+      ip: process.env.LOG_REQUEST_IP ? (req.headers['x-forwarded-for'] ?? req.socket.remoteAddress) : undefined,
       method: req.method,
       url: req.url,
-      ip: process.env.LOG_REQUEST_IP ? (req.headers['x-forwarded-for'] ?? req.socket.remoteAddress) : undefined,
     });
     try {
       req.session = await getServerSession({ req, res });
@@ -93,13 +93,13 @@ export function handleRouteErrors<HandlersConfig extends Partial<Record<RequestM
       captureException(error);
       if (error instanceof FormidableError) {
         logger.error('formidable error', {
-          error: error.message,
           code: error.code,
+          error: error.message,
           httpCode: error.httpCode,
         });
         return res.status(error.httpCode ?? 400).json({
-          message: 'Paramètres incorrects',
           error: error.message,
+          message: 'Paramètres incorrects',
         });
       }
       let errorMessage = error;
@@ -133,8 +133,8 @@ export function handleRouteErrors<HandlersConfig extends Partial<Record<RequestM
             error,
           });
           return res.status(400).json({
-            message: 'Paramètres incorrects',
             error,
+            message: 'Paramètres incorrects',
           });
         }
         if (error instanceof BadRequestError) {
@@ -142,8 +142,8 @@ export function handleRouteErrors<HandlersConfig extends Partial<Record<RequestM
             error,
           });
           return res.status(400).json({
-            message: error.message,
             error,
+            message: error.message,
           });
         }
 
@@ -156,8 +156,8 @@ export function handleRouteErrors<HandlersConfig extends Partial<Record<RequestM
             });
             return res.status(400).json({
               code: 'unique_constraint_violation',
-              message: 'Cette entrée existe déjà',
               error: error.message,
+              message: 'Cette entrée existe déjà',
             });
           }
 
@@ -166,8 +166,8 @@ export function handleRouteErrors<HandlersConfig extends Partial<Record<RequestM
             query: error.message,
           });
           return res.status(500).json({
-            message: 'Une erreur inconnue est survenue',
             error: error.message,
+            message: 'Une erreur inconnue est survenue',
           });
         }
         errorMessage = error.message;
@@ -177,8 +177,8 @@ export function handleRouteErrors<HandlersConfig extends Partial<Record<RequestM
         stack: (error as any).stack,
       });
       return res.status(500).json({
-        message: 'Une erreur inconnue est survenue',
         error: errorMessage,
+        message: 'Une erreur inconnue est survenue',
       });
     }
   };
@@ -219,7 +219,7 @@ export function requireAuthentication(user: User, configOrRoles: boolean | UserR
   if (!user.active) {
     throw invalidPermissionsError;
   }
-  if (configOrRoles instanceof Array && !(configOrRoles.some((routeRole) => user.role === routeRole) || user.role === 'admin')) {
+  if (Array.isArray(configOrRoles) && !(configOrRoles.some((routeRole) => user.role === routeRole) || user.role === 'admin')) {
     throw invalidPermissionsError;
   }
 }

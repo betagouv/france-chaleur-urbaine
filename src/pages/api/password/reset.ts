@@ -22,8 +22,8 @@ const reset = handleRouteErrors(async (req: NextApiRequest) => {
     await AirtableDB(Airtable.CONNEXION).create([
       {
         fields: {
-          Email: email,
           Date: new Date().toISOString(),
+          Email: email,
         },
       },
     ]);
@@ -33,8 +33,8 @@ const reset = handleRouteErrors(async (req: NextApiRequest) => {
   const resetToken = Math.random().toString(36);
   const payload = {
     email,
-    resetToken,
     exp: Math.round(Date.now() / 1000) + 60 * 60 * 3, // 3 hour expiration
+    resetToken,
   };
 
   const token = jwt.sign(payload, process.env.NEXTAUTH_SECRET as string);

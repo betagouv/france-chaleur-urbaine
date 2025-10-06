@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { type MapLegendFeature } from '@/components/Map/map-layers';
+import type { MapLegendFeature } from '@/components/Map/map-layers';
 import Accordion from '@/components/ui/Accordion';
 import Button from '@/components/ui/Button';
 
@@ -24,7 +24,9 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, children }: SimpleMapLe
           legendTitle={legendTitle}
           showFilters={false}
           filtersVisible={false}
-          setFiltersVisible={() => {}}
+          setFiltersVisible={() => {
+            // No-op in admin edit mode
+          }}
           withComptePro={false}
           showHeader={false}
         />

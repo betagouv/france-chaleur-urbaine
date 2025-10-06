@@ -1,4 +1,4 @@
-import { type NextApiRequest } from 'next';
+import type { NextApiRequest } from 'next';
 import { z } from 'zod';
 
 import { kdb } from '@/server/db/kysely';

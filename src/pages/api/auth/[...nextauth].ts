@@ -6,25 +6,20 @@ import { kdb } from '@/server/db/kysely';
 import { stripDomainFromURL } from '@/utils/url';
 
 export const nextAuthOptions: AuthOptions = {
-  secret: process.env.NEXTAUTH_SECRET,
-  pages: {
-    signIn: '/connexion',
-    error: '/connexion',
-  },
   callbacks: {
-    redirect: ({ url, baseUrl }) => stripDomainFromURL(url) ?? baseUrl,
     async jwt({ token, user }) {
       if (user) {
         return {
           ...token,
-          role: user.role,
           email: user.email,
           gestionnaires: user.gestionnaires,
+          role: user.role,
           signature: user.signature,
         };
       }
       return token;
     },
+    redirect: ({ url, baseUrl }) => stripDomainFromURL(url) ?? baseUrl,
     async session({ session, token }) {
       // update the last_connection date and return the latest user data
       const user = await kdb
@@ -61,18 +56,23 @@ export const nextAuthOptions: AuthOptions = {
       return session;
     },
   },
+  pages: {
+    error: '/connexion',
+    signIn: '/connexion',
+  },
   providers: [
     CredentialsProvider({
-      name: 'Credentials',
+      authorize: async (credentials) => {
+        return credentials ? await login(credentials.email, credentials.password) : null;
+      },
       credentials: {
         email: { label: 'Email', type: 'email' },
         password: { label: 'Mot de passe', type: 'password' },
       },
-      authorize: async (credentials) => {
-        return credentials ? await login(credentials.email, credentials.password) : null;
-      },
+      name: 'Credentials',
     }),
   ],
+  secret: process.env.NEXTAUTH_SECRET,
 };
 
 export default nextAuth(nextAuthOptions);

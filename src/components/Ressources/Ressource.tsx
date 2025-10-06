@@ -37,10 +37,10 @@ const Ressource = ({ ressourceKey }: { ressourceKey: string }) => {
   }, [router, ressourceKey]);
 
   const selected = {
+    coldNetworks: Object.keys(coldNetworks).includes(ressourceKey),
+    growths: Object.keys(growths).includes(ressourceKey),
     issues: Object.keys(issues).includes(ressourceKey),
     understandings: Object.keys(understandings).includes(ressourceKey),
-    growths: Object.keys(growths).includes(ressourceKey),
-    coldNetworks: Object.keys(coldNetworks).includes(ressourceKey),
   };
 
   return (
@@ -59,56 +59,56 @@ const Ressource = ({ ressourceKey }: { ressourceKey: string }) => {
               title="Aller plus loin :"
               items={[
                 {
-                  text: 'Les enjeux de la transition énergétique avec les réseaux de chaleur',
-                  isActive: selected.issues,
                   expandedByDefault: selected.issues,
+                  isActive: selected.issues,
                   items: Object.entries(issues).map(([key, issue]) => ({
-                    text: issue.title,
                     isActive: ressourceKey === key,
                     linkProps: {
                       href: `/ressources/${key}#contenu`,
                       scroll: false,
                     },
+                    text: issue.title,
                   })),
+                  text: 'Les enjeux de la transition énergétique avec les réseaux de chaleur',
                 },
                 {
-                  text: 'Les réseaux de chaleur en pratique : tout comprendre pour se raccorder',
-                  isActive: selected.understandings,
                   expandedByDefault: selected.understandings,
+                  isActive: selected.understandings,
                   items: Object.entries(understandings).map(([key, issue]) => ({
-                    text: issue.title,
                     isActive: ressourceKey === key,
                     linkProps: {
                       href: `/ressources/${key}#contenu`,
                       scroll: false,
                     },
+                    text: issue.title,
                   })),
+                  text: 'Les réseaux de chaleur en pratique : tout comprendre pour se raccorder',
                 },
                 {
-                  text: 'Une filière en pleine croissance',
-                  isActive: selected.growths,
                   expandedByDefault: selected.growths,
+                  isActive: selected.growths,
                   items: Object.entries(growths).map(([key, issue]) => ({
-                    text: issue.title,
                     isActive: ressourceKey === key,
                     linkProps: {
                       href: `/ressources/${key}#contenu`,
                       scroll: false,
                     },
+                    text: issue.title,
                   })),
+                  text: 'Une filière en pleine croissance',
                 },
                 {
-                  text: "Les réseaux de froid, un enjeu pour l'avenir",
-                  isActive: selected.coldNetworks,
                   expandedByDefault: selected.coldNetworks,
+                  isActive: selected.coldNetworks,
                   items: Object.entries(coldNetworks).map(([key, issue]) => ({
-                    text: issue.title,
                     isActive: ressourceKey === key,
                     linkProps: {
                       href: `/ressources/${key}#contenu`,
                       scroll: false,
                     },
+                    text: issue.title,
                   })),
+                  text: "Les réseaux de froid, un enjeu pour l'avenir",
                 },
               ]}
             />

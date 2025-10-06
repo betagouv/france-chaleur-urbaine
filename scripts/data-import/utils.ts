@@ -1,6 +1,5 @@
-import fs from 'fs';
-import path from 'path';
-
+import fs from 'node:fs';
+import path from 'node:path';
 import Papa from 'papaparse';
 
 type PapaParseOptions = Parameters<typeof Papa.parse>[1];
@@ -11,8 +10,8 @@ const loadCsvFile = async (filePath: string, options: PapaParseOptions = {}): Pr
 
     return new Promise((resolve, reject) => {
       Papa.parse(data, {
-        header: true, // Si le CSV a une ligne d'en-tête
         dynamicTyping: true, // Convertir les valeurs en types JavaScript (nombre, booléen, etc.)
+        header: true, // Si le CSV a une ligne d'en-tête
         ...options,
         complete: (result) => {
           resolve(result.data); // Retourne les données extraites

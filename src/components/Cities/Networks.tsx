@@ -6,7 +6,7 @@ import ClassedNetwork from '@/components/Network/ClassedNetwork';
 import EnergiesChart from '@/components/Network/EnergiesChart';
 import Slice from '@/components/Slice';
 import WrappedText from '@/components/WrappedText/WrappedText';
-import { type Network } from '@/types/Summary/Network';
+import type { Network } from '@/types/Summary/Network';
 
 import { NetworkContainer } from './Networks.styles';
 
@@ -61,10 +61,10 @@ const Networks = ({ networksData, network, cityCoord }: { networksData: Networks
           initialCenter={cityCoord}
           initialZoom={11}
           initialMapConfiguration={createMapConfiguration({
+            filtreIdentifiantReseau: networksData.identifiant ? [networksData.identifiant] : [],
             reseauxDeChaleur: {
               show: true,
             },
-            filtreIdentifiantReseau: networksData.identifiant ? [networksData.identifiant] : [],
           })}
         />
       </div>

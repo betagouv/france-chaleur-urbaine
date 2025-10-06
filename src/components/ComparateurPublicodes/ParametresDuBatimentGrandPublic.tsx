@@ -1,12 +1,12 @@
 import { useSearchParams } from 'next/navigation';
-import React from 'react';
+import type React from 'react';
 
 import Input from '@/components/form/publicodes/Input';
 import RadioInput from '@/components/form/publicodes/Radio';
 import Select from '@/components/form/publicodes/Select';
 import Link from '@/components/ui/Link';
 
-import { type SimulatorEngine } from './useSimulatorEngine';
+import type { SimulatorEngine } from './useSimulatorEngine';
 
 type ParametresDuBatimentGrandPublicFormProps = React.HTMLAttributes<HTMLDivElement> & {
   engine: SimulatorEngine;

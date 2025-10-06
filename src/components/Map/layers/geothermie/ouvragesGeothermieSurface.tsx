@@ -43,8 +43,8 @@ const PopupOuvrageGeothermieSurface = defineLayerPopup<
           iconId="fr-icon-eye-line"
           linkProps={{
             href: `http://ficheinfoterre.brgm.fr/InfoterreFiche/ficheBss.action?id=${ouvrageGeothermieSurface.bss_id}`,
-            target: '_blank',
             rel: 'noopener noreferrer',
+            target: '_blank',
           }}
         >
           Fiche technique de l'ouvrage
@@ -56,17 +56,23 @@ const PopupOuvrageGeothermieSurface = defineLayerPopup<
 
 export const ouvragesGeothermieSurfaceLayersSpec = [
   {
-    sourceId: 'ouvragesGeothermieSurfaceEchangeursFermes',
-    source: {
-      type: 'vector',
-      tiles: ['/api/map/ouvragesGeothermieSurfaceEchangeursFermes/{z}/{x}/{y}'],
-      minzoom: 5,
-      maxzoom: 10,
-    },
     layers: [
       {
+        filter: (config) => [
+          'in',
+          ['get', 'statut_bss'],
+          [
+            'literal',
+            [
+              config.geothermieSurfaceEchangeursFermes.showOuvragesDeclares && 'Déclaré',
+              config.geothermieSurfaceEchangeursFermes.showOuvragesRealises && 'Réalisé',
+            ].filter(Boolean),
+          ],
+        ],
         id: 'ouvragesGeothermieSurfaceEchangeursFermes',
-        type: 'symbol',
+        isVisible: (config) =>
+          config.geothermieSurfaceEchangeursFermes.show &&
+          (config.geothermieSurfaceEchangeursFermes.showOuvragesDeclares || config.geothermieSurfaceEchangeursFermes.showOuvragesRealises),
         layout: {
           'icon-image': 'square',
           'icon-overlap': 'always',
@@ -81,9 +87,10 @@ export const ouvragesGeothermieSurfaceLayersSpec = [
           ],
           'icon-opacity': ifHoverElse(0, ouvragesGeothermieSurfaceEchangeursFermesOpacity),
         },
-        isVisible: (config) =>
-          config.geothermieSurfaceEchangeursFermes.show &&
-          (config.geothermieSurfaceEchangeursFermes.showOuvragesDeclares || config.geothermieSurfaceEchangeursFermes.showOuvragesRealises),
+        popup: PopupOuvrageGeothermieSurface,
+        type: 'symbol',
+      },
+      {
         filter: (config) => [
           'in',
           ['get', 'statut_bss'],
@@ -95,11 +102,10 @@ export const ouvragesGeothermieSurfaceLayersSpec = [
             ].filter(Boolean),
           ],
         ],
-        popup: PopupOuvrageGeothermieSurface,
-      },
-      {
         id: 'ouvragesGeothermieSurfaceEchangeursFermes-hover',
-        type: 'symbol',
+        isVisible: (config) =>
+          config.geothermieSurfaceEchangeursFermes.show &&
+          (config.geothermieSurfaceEchangeursFermes.showOuvragesDeclares || config.geothermieSurfaceEchangeursFermes.showOuvragesRealises),
         layout: {
           'icon-image': 'square',
           'icon-overlap': 'always',
@@ -114,36 +120,37 @@ export const ouvragesGeothermieSurfaceLayersSpec = [
           ],
           'icon-opacity': ifHoverElse(ouvragesGeothermieSurfaceEchangeursFermesOpacity, 0),
         },
-        isVisible: (config) =>
-          config.geothermieSurfaceEchangeursFermes.show &&
-          (config.geothermieSurfaceEchangeursFermes.showOuvragesDeclares || config.geothermieSurfaceEchangeursFermes.showOuvragesRealises),
+        type: 'symbol',
+        unselectable: true,
+      },
+    ],
+    source: {
+      maxzoom: 10,
+      minzoom: 5,
+      tiles: ['/api/map/ouvragesGeothermieSurfaceEchangeursFermes/{z}/{x}/{y}'],
+      type: 'vector',
+    },
+    sourceId: 'ouvragesGeothermieSurfaceEchangeursFermes',
+  },
+  {
+    layers: [
+      {
         filter: (config) => [
           'in',
           ['get', 'statut_bss'],
           [
             'literal',
             [
-              config.geothermieSurfaceEchangeursFermes.showOuvragesDeclares && 'Déclaré',
-              config.geothermieSurfaceEchangeursFermes.showOuvragesRealises && 'Réalisé',
+              config.geothermieSurfaceEchangeursOuverts.showOuvragesDeclares && 'Déclaré',
+              config.geothermieSurfaceEchangeursOuverts.showOuvragesRealises && 'Réalisé',
             ].filter(Boolean),
           ],
         ],
-        unselectable: true,
-      },
-    ],
-  },
-  {
-    sourceId: 'ouvragesGeothermieSurfaceEchangeursOuverts',
-    source: {
-      type: 'vector',
-      tiles: ['/api/map/ouvragesGeothermieSurfaceEchangeursOuverts/{z}/{x}/{y}'],
-      minzoom: 5,
-      maxzoom: 10,
-    },
-    layers: [
-      {
         id: 'ouvragesGeothermieSurfaceEchangeursOuverts',
-        type: 'symbol',
+        isVisible: (config) =>
+          config.geothermieSurfaceEchangeursOuverts.show &&
+          (config.geothermieSurfaceEchangeursOuverts.showOuvragesDeclares ||
+            config.geothermieSurfaceEchangeursOuverts.showOuvragesRealises),
         layout: {
           'icon-image': 'square',
           'icon-overlap': 'always',
@@ -158,10 +165,10 @@ export const ouvragesGeothermieSurfaceLayersSpec = [
           ],
           'icon-opacity': ifHoverElse(0, ouvragesGeothermieSurfaceEchangeursOuvertsOpacity),
         },
-        isVisible: (config) =>
-          config.geothermieSurfaceEchangeursOuverts.show &&
-          (config.geothermieSurfaceEchangeursOuverts.showOuvragesDeclares ||
-            config.geothermieSurfaceEchangeursOuverts.showOuvragesRealises),
+        popup: PopupOuvrageGeothermieSurface,
+        type: 'symbol',
+      },
+      {
         filter: (config) => [
           'in',
           ['get', 'statut_bss'],
@@ -173,11 +180,11 @@ export const ouvragesGeothermieSurfaceLayersSpec = [
             ].filter(Boolean),
           ],
         ],
-        popup: PopupOuvrageGeothermieSurface,
-      },
-      {
         id: 'ouvragesGeothermieSurfaceEchangeursOuverts-hover',
-        type: 'symbol',
+        isVisible: (config) =>
+          config.geothermieSurfaceEchangeursOuverts.show &&
+          (config.geothermieSurfaceEchangeursOuverts.showOuvragesDeclares ||
+            config.geothermieSurfaceEchangeursOuverts.showOuvragesRealises),
         layout: {
           'icon-image': 'square',
           'icon-overlap': 'always',
@@ -192,26 +199,19 @@ export const ouvragesGeothermieSurfaceLayersSpec = [
           ],
           'icon-opacity': ifHoverElse(ouvragesGeothermieSurfaceEchangeursOuvertsOpacity, 0),
         },
-        isVisible: (config) =>
-          config.geothermieSurfaceEchangeursOuverts.show &&
-          (config.geothermieSurfaceEchangeursOuverts.showOuvragesDeclares ||
-            config.geothermieSurfaceEchangeursOuverts.showOuvragesRealises),
-        filter: (config) => [
-          'in',
-          ['get', 'statut_bss'],
-          [
-            'literal',
-            [
-              config.geothermieSurfaceEchangeursOuverts.showOuvragesDeclares && 'Déclaré',
-              config.geothermieSurfaceEchangeursOuverts.showOuvragesRealises && 'Réalisé',
-            ].filter(Boolean),
-          ],
-        ],
+        type: 'symbol',
         unselectable: true,
       },
     ],
+    source: {
+      maxzoom: 10,
+      minzoom: 5,
+      tiles: ['/api/map/ouvragesGeothermieSurfaceEchangeursOuverts/{z}/{x}/{y}'],
+      type: 'vector',
+    },
+    sourceId: 'ouvragesGeothermieSurfaceEchangeursOuverts',
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];
 
 type OuvrageGeothermieSurfaceEchangeursFermes = {
   code_bss: string;

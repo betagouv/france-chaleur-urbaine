@@ -38,7 +38,7 @@ export const downloadGeoJSONFromURL = (url: string) =>
     const featuresCount = geojson.features?.length || 0;
     logger.info(`Features downloaded`, { count: featuresCount });
     geojson.features.forEach((feature: any) => {
-      delete feature.id; // remove string id so that tippecanoe can generate a unique numeric id
+      feature.id = undefined; // remove string id so that tippecanoe can generate a unique numeric id
     });
     const targetTilesFilePath = join(tempDirectory, 'tiles-features.geojson');
     await writeFile(targetTilesFilePath, JSON.stringify(geojson));
@@ -89,8 +89,8 @@ export const extractZippedShapefileToGeoJSON = defineTilesGenerationStrategy(asy
     }
 
     logger.info('Conversion du shapefile en GeoJSON', {
-      shapefile: shapefilePath,
       output: targetTilesFilePath,
+      shapefile: shapefilePath,
     });
 
     await ogr2ogrConvertToGeoJSON(targetTilesFilePath, shapefilePath);
@@ -99,7 +99,7 @@ export const extractZippedShapefileToGeoJSON = defineTilesGenerationStrategy(asy
   } finally {
     // Nettoie le répertoire temporaire
     await runBash(`rm -rf "${tempDir}"`).catch((err) => {
-      logger.warn('Erreur lors du nettoyage du répertoire temporaire', { tempDir, error: err });
+      logger.warn('Erreur lors du nettoyage du répertoire temporaire', { error: err, tempDir });
     });
   }
 });

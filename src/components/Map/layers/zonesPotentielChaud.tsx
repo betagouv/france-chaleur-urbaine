@@ -9,69 +9,69 @@ export const zonePotentielChaudOpacity = 0.3;
 
 export const zonesPotentielChaudLayersSpec = [
   {
-    sourceId: 'zonesPotentielChaud',
-    source: {
-      type: 'vector',
-      tiles: ['/api/map/zonesPotentielChaud/{z}/{x}/{y}'],
-      maxzoom: 12,
-      promoteId: 'id_zone',
-    },
     layers: [
       {
         id: 'zonesPotentielChaud',
-        type: 'fill',
+        isVisible: (config) => config.zonesOpportunite.show && config.zonesOpportunite.zonesPotentielChaud,
         paint: {
           'fill-color': ifHoverElse(darken(zonePotentielChaudColor, 40), zonePotentielChaudColor),
           'fill-opacity': zonePotentielChaudOpacity,
         },
-        isVisible: (config) => config.zonesOpportunite.show && config.zonesOpportunite.zonesPotentielChaud,
         popup: buildPopup(false),
+        type: 'fill',
       },
       {
         id: 'zonesPotentielChaud-contour',
-        type: 'line',
+        isVisible: (config) => config.zonesOpportunite.show && config.zonesOpportunite.zonesPotentielChaud,
         paint: {
           'line-color': zonePotentielChaudColor,
           'line-width': ifHoverElse(4, 2),
         },
-        isVisible: (config) => config.zonesOpportunite.show && config.zonesOpportunite.zonesPotentielChaud,
+        type: 'line',
         unselectable: true,
       },
     ],
+    source: {
+      maxzoom: 12,
+      promoteId: 'id_zone',
+      tiles: ['/api/map/zonesPotentielChaud/{z}/{x}/{y}'],
+      type: 'vector',
+    },
+    sourceId: 'zonesPotentielChaud',
   },
 
   {
-    sourceId: 'zonesPotentielFortChaud',
-    source: {
-      type: 'vector',
-      tiles: ['/api/map/zonesPotentielFortChaud/{z}/{x}/{y}'],
-      maxzoom: 12,
-      promoteId: 'id_zone',
-    },
     layers: [
       {
         id: 'zonesPotentielFortChaud',
-        type: 'fill',
+        isVisible: (config) => config.zonesOpportunite.show && config.zonesOpportunite.zonesPotentielFortChaud,
         paint: {
           'fill-color': ifHoverElse(darken(zonePotentielFortChaudColor, 40), zonePotentielFortChaudColor),
           'fill-opacity': zonePotentielChaudOpacity,
         },
-        isVisible: (config) => config.zonesOpportunite.show && config.zonesOpportunite.zonesPotentielFortChaud,
         popup: buildPopup(true),
+        type: 'fill',
       },
       {
         id: 'zonesPotentielFortChaud-contour',
-        type: 'line',
+        isVisible: (config) => config.zonesOpportunite.show && config.zonesOpportunite.zonesPotentielFortChaud,
         paint: {
           'line-color': zonePotentielFortChaudColor,
           'line-width': ifHoverElse(4, 2),
         },
-        isVisible: (config) => config.zonesOpportunite.show && config.zonesOpportunite.zonesPotentielFortChaud,
+        type: 'line',
         unselectable: true,
       },
     ],
+    source: {
+      maxzoom: 12,
+      promoteId: 'id_zone',
+      tiles: ['/api/map/zonesPotentielFortChaud/{z}/{x}/{y}'],
+      type: 'vector',
+    },
+    sourceId: 'zonesPotentielFortChaud',
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];
 
 type ZonePotentielChaud = {
   fid: number;

@@ -1,5 +1,4 @@
-import { type LegalNotice } from '@incubateur-ademe/legal-pages-react';
-// @ts-expect-error LegalNoticeClient is not exported
+import type { LegalNotice } from '@incubateur-ademe/legal-pages-react';
 import LegalNoticeClient from '@incubateur-ademe/legal-pages-react/LegalNoticeClient';
 
 const LegalNoticeComponent = LegalNoticeClient as unknown as typeof LegalNotice;
@@ -22,10 +21,10 @@ function MentionsLegalesPage() {
         licenceUrl="https://www.etalab.gouv.fr/licence-ouverte-open-licence/"
         date="08/09/2025"
         siteHost={{
-          name: 'Scalingo',
           address: '13 rue Jacques Peirotes<br/>67000 Strasbourg',
           country: 'France',
           email: 'support@scalingo.com',
+          name: 'Scalingo',
         }}
         contactEmail={clientConfig.contactEmail}
       />

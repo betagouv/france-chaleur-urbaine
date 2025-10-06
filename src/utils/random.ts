@@ -1,3 +1,4 @@
+// biome-ignore lint/style/useNodejsImportProtocol: fait planter la page sinon
 import { randomBytes } from 'crypto';
 
 /**

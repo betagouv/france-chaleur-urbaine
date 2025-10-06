@@ -1,25 +1,24 @@
-import { type DataDrivenPropertyValueSpecification, type ExpressionInputType } from 'maplibre-gl';
+import type { DataDrivenPropertyValueSpecification, ExpressionInputType } from 'maplibre-gl';
 
 import DPE from '@/components/DPE';
 import { ENERGY_TYPE, ENERGY_USED } from '@/types/enum/EnergyType';
-import { type EnergySummary } from '@/types/Summary/Energy';
+import type { EnergySummary } from '@/types/Summary/Energy';
 import { deepMergeObjects } from '@/utils/core';
 import { formatTypeEnergieChauffage } from '@/utils/format';
 import { ObjectEntries } from '@/utils/typescript';
-
+import type { MapLayerSpecification } from '../map-layers';
 import { ifHoverElse, intermediateTileLayersMinZoom, type MapSourceLayersSpecification, type PopupStyleHelpers } from './common';
-import { type MapLayerSpecification } from '../map-layers';
 
 export const minIconSize = 12;
 export const maxIconSize = 30;
 export const typeChauffageBatimentsOpacity = 0.65;
 
 export const typeChauffageBatimentsCollectifsStyle = {
+  electric: '#4cd362',
   fuelOil: '#F07300',
   gas: '#9181F4',
-  wood: '#955e15',
-  electric: '#4cd362',
   unknown: '#818181',
+  wood: '#955e15',
 };
 
 const typeEnergy = {
@@ -50,8 +49,8 @@ const typeWithColorPairs = ObjectEntries(typeChauffageBatimentsCollectifsStyle).
 ]) as [string, ExpressionInputType, ...ExpressionInputType[]];
 
 export const energyFilterInterval = {
-  min: 10,
   max: 150,
+  min: 10,
 };
 
 const iconSize = 31;
@@ -64,55 +63,8 @@ const ENERGY_PROPERTY_TYPE_ENERGY: keyof EnergySummary = 'energie_utilisee';
 
 export const typeChauffageBatimentsCollectifsLayersSpec = [
   {
-    sourceId: 'energy',
-    source: {
-      type: 'vector',
-      tiles: [`/api/map/energy/{z}/{x}/{y}`],
-    },
     layers: [
       ...buildLayerAndHoverLayer({
-        id: 'energy',
-        'source-layer': 'energy',
-        minzoom: intermediateTileLayersMinZoom,
-        type: 'symbol',
-        layout: {
-          'icon-image': 'square',
-          'icon-overlap': 'always',
-          'symbol-sort-key': ['-', ['coalesce', ['get', ENERGY_PROPERTY_NB_LOT], 0]],
-          'icon-size': [
-            'case',
-            ['<', ['get', ENERGY_PROPERTY_NB_LOT], energyFilterInterval.min],
-            getSymbolRatio(minIconSize),
-            ['<', ['get', ENERGY_PROPERTY_NB_LOT], energyFilterInterval.max],
-            [
-              'interpolate',
-              ['linear'],
-              ['get', ENERGY_PROPERTY_NB_LOT],
-              energyFilterInterval.min,
-              getSymbolRatio(minIconSize),
-              energyFilterInterval.max,
-              getSymbolRatio(maxIconSize),
-            ],
-            getSymbolRatio(maxIconSize),
-          ],
-        },
-        paint: {
-          'icon-color': [
-            'match',
-            ['get', ENERGY_PROPERTY_TYPE_ENERGY],
-            ...typeWithColorPairs,
-            typeChauffageBatimentsCollectifsStyle.unknown,
-          ],
-          'icon-opacity': [
-            'interpolate',
-            ['linear'],
-            ['zoom'],
-            intermediateTileLayersMinZoom + 0.2,
-            0,
-            intermediateTileLayersMinZoom + 0.5 + 1,
-            typeChauffageBatimentsOpacity,
-          ],
-        },
         filter: (config) => {
           const batimentsFioulCollectifMin =
             config.batimentsFioulCollectif.interval[0] === energyFilterInterval.min
@@ -156,12 +108,59 @@ export const typeChauffageBatimentsCollectifsLayersSpec = [
               : ['literal', false],
           ];
         },
+        id: 'energy',
         isVisible: (config) => config.batimentsFioulCollectif.show || config.batimentsGazCollectif.show,
+        layout: {
+          'icon-image': 'square',
+          'icon-overlap': 'always',
+          'icon-size': [
+            'case',
+            ['<', ['get', ENERGY_PROPERTY_NB_LOT], energyFilterInterval.min],
+            getSymbolRatio(minIconSize),
+            ['<', ['get', ENERGY_PROPERTY_NB_LOT], energyFilterInterval.max],
+            [
+              'interpolate',
+              ['linear'],
+              ['get', ENERGY_PROPERTY_NB_LOT],
+              energyFilterInterval.min,
+              getSymbolRatio(minIconSize),
+              energyFilterInterval.max,
+              getSymbolRatio(maxIconSize),
+            ],
+            getSymbolRatio(maxIconSize),
+          ],
+          'symbol-sort-key': ['-', ['coalesce', ['get', ENERGY_PROPERTY_NB_LOT], 0]],
+        },
+        minzoom: intermediateTileLayersMinZoom,
+        paint: {
+          'icon-color': [
+            'match',
+            ['get', ENERGY_PROPERTY_TYPE_ENERGY],
+            ...typeWithColorPairs,
+            typeChauffageBatimentsCollectifsStyle.unknown,
+          ],
+          'icon-opacity': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            intermediateTileLayersMinZoom + 0.2,
+            0,
+            intermediateTileLayersMinZoom + 0.5 + 1,
+            typeChauffageBatimentsOpacity,
+          ],
+        },
         popup: Popup,
+        'source-layer': 'energy',
+        type: 'symbol',
       }),
     ],
+    source: {
+      tiles: [`/api/map/energy/{z}/{x}/{y}`],
+      type: 'vector',
+    },
+    sourceId: 'energy',
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];
 
 /**
  * Construit 2 couches identiques, une pour voir les données,
@@ -226,8 +225,8 @@ function buildLayerAndHoverLayer<LayerId extends string>(
         ifHoverElse(typeChauffageBatimentsOpacity, 0),
       ],
     },
-    unselectable: true as const,
     popup: undefined,
+    unselectable: true as const,
   };
 
   return [baseLayer, hoverLayer] as const;

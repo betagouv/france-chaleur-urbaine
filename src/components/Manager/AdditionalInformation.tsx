@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 
 import Input from '@/components/form/dsfr/Input';
-import { type Demand } from '@/types/Summary/Demand';
+import type { Demand } from '@/types/Summary/Demand';
 import debounce from '@/utils/debounce';
 
 import { Container } from './AdditionalInformation.styles';
@@ -59,14 +59,14 @@ const AdditionalInformation = ({
         label=""
         size="sm"
         nativeInputProps={{
-          type,
-          value,
           onChange: (e) => {
             // @ts-expect-error: force type
             demand[simpleField ? field : getFieldName(field)] = type === 'number' ? parseFloat(e.target.value) : e.target.value;
             setValue(e.target.value);
             onChangeHandler(e);
           },
+          type,
+          value,
         }}
       />
     </Container>

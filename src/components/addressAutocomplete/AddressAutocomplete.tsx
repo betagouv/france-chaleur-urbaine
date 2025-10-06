@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { Combobox, ComboboxPopover } from '@/components/ui/Combobox';
-import { type SuggestionItem } from '@/types/Suggestions';
+import type { SuggestionItem } from '@/types/Suggestions';
 
 import AddressAutocompleteGlobalStyle, { EmptySuggestion } from './AddressAutocomplete.style';
 import { AddressAutocompleteLabel, AddressInput, Suggestions } from './components';
@@ -50,9 +50,9 @@ const AddressAutocomplete = ({
 
   const { suggestions, fetchSuggestions, status } = useSuggestions({
     debounceTime,
+    excludeCities,
     limit: 5,
     minCharactersLength,
-    excludeCities,
   });
 
   const handleSelect = useCallback(

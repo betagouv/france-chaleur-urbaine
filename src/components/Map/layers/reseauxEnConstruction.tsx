@@ -1,7 +1,7 @@
 import Tag from '@codegouvfr/react-dsfr/Tag';
 
 import Tooltip from '@/components/ui/Tooltip';
-import { type FuturNetworkSummary } from '@/types/Summary/FuturNetwork';
+import type { FuturNetworkSummary } from '@/types/Summary/FuturNetwork';
 
 import { defineLayerPopup, ifHoverElse, type MapSourceLayersSpecification } from './common';
 import { buildFiltreGestionnaire } from './filters';
@@ -70,42 +70,42 @@ export const reseauxEnConstructionOpacity = 0.47;
 
 export const reseauxEnConstructionLayersSpec = [
   {
-    sourceId: 'futurNetwork',
-    source: {
-      type: 'vector',
-      tiles: ['/api/map/futurNetwork/{z}/{x}/{y}'],
-      maxzoom: 14,
-    },
     layers: [
       {
+        filter: (config) => ['all', ['==', ['get', 'is_zone'], true], ...buildFiltreGestionnaire(config.filtreGestionnaire)],
         id: 'reseauxEnConstruction-zone',
-        'source-layer': 'futurOutline',
-        type: 'fill',
+        isVisible: (config) => config.reseauxEnConstruction,
         paint: {
           'fill-color': reseauxEnConstructionColor,
           'fill-opacity': ifHoverElse(reseauxEnConstructionOpacity + 0.1, reseauxEnConstructionOpacity),
         },
-        filter: (config) => ['all', ['==', ['get', 'is_zone'], true], ...buildFiltreGestionnaire(config.filtreGestionnaire)],
-        isVisible: (config) => config.reseauxEnConstruction,
         popup: Popup,
+        'source-layer': 'futurOutline',
+        type: 'fill',
       },
       {
+        filter: (config) => ['all', ['==', ['get', 'is_zone'], false], ...buildFiltreGestionnaire(config.filtreGestionnaire)],
         id: 'reseauxEnConstruction-trace',
-        'source-layer': 'futurOutline',
-        type: 'line',
+        isVisible: (config) => config.reseauxEnConstruction,
         layout: {
-          'line-join': 'round',
           'line-cap': 'round',
+          'line-join': 'round',
         },
         paint: {
           'line-color': reseauxEnConstructionColor,
           'line-opacity': ['interpolate', ['linear'], ['zoom'], 11, 0.75, 15, 1],
           'line-width': ifHoverElse(3, 2),
         },
-        filter: (config) => ['all', ['==', ['get', 'is_zone'], false], ...buildFiltreGestionnaire(config.filtreGestionnaire)],
-        isVisible: (config) => config.reseauxEnConstruction,
         popup: Popup,
+        'source-layer': 'futurOutline',
+        type: 'line',
       },
     ],
+    source: {
+      maxzoom: 14,
+      tiles: ['/api/map/futurNetwork/{z}/{x}/{y}'],
+      type: 'vector',
+    },
+    sourceId: 'futurNetwork',
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];

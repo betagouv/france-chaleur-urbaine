@@ -6,25 +6,25 @@ import cx from '@/utils/cx';
 import Heading from './Heading';
 
 const sectionVariants = cva('', {
-  variants: {
-    size: {
-      sm: 'py-1w md:py-2w',
-      md: 'py-6w md:py-10w',
-      lg: '',
-    },
-    variant: {
-      normal: '',
-      light: 'bg-light',
-      gray: 'bg-gray-100',
-      bordered: 'border-b border-light',
-      lightaccent: 'bg-[#E3E3FD]',
-      accent: 'bg-accent text-white',
-      empty: 'border border-dashed border-gray-300',
-    },
-  },
   defaultVariants: {
     size: 'md',
     variant: 'normal',
+  },
+  variants: {
+    size: {
+      lg: '',
+      md: 'py-6w md:py-10w',
+      sm: 'py-1w md:py-2w',
+    },
+    variant: {
+      accent: 'bg-accent text-white',
+      bordered: 'border-b border-light',
+      empty: 'border border-dashed border-gray-300',
+      gray: 'bg-gray-100',
+      light: 'bg-light',
+      lightaccent: 'bg-[#E3E3FD]',
+      normal: '',
+    },
   },
 });
 
@@ -60,19 +60,19 @@ const Section = ({ children, className, size, variant, ...props }: SectionProps)
 };
 
 const headingVariants = cva('', {
-  variants: {
-    variant: {
-      normal: 'text-black!',
-      light: 'text-black!',
-      gray: 'text-black!',
-      bordered: 'text-black!',
-      lightaccent: 'text-black!',
-      accent: 'text-white!',
-      empty: 'text-black! text-base!',
-    },
-  },
   defaultVariants: {
     variant: 'normal',
+  },
+  variants: {
+    variant: {
+      accent: 'text-white!',
+      bordered: 'text-black!',
+      empty: 'text-black! text-base!',
+      gray: 'text-black!',
+      light: 'text-black!',
+      lightaccent: 'text-black!',
+      normal: 'text-black!',
+    },
   },
 });
 
@@ -91,25 +91,25 @@ export const SectionTitle = ({ children, className, ...props }: React.ComponentP
 };
 
 const subtitleVariants = cva('text-center max-w-[640px] mx-auto', {
+  defaultVariants: {
+    size: 'md',
+    variant: 'normal',
+  },
   variants: {
     size: {
-      sm: 'text-sm',
-      md: 'text-base',
       lg: 'text-lg',
+      md: 'text-base',
+      sm: 'text-sm',
     },
     variant: {
-      normal: 'text-gray-900!',
-      light: 'text-gray-900!',
-      gray: 'text-gray-900!',
-      bordered: 'text-gray-900!',
-      lightaccent: 'text-gray-100!',
       accent: 'text-gray-100!',
+      bordered: 'text-gray-900!',
       empty: 'text-gray-500!',
+      gray: 'text-gray-900!',
+      light: 'text-gray-900!',
+      lightaccent: 'text-gray-100!',
+      normal: 'text-gray-900!',
     },
-  },
-  defaultVariants: {
-    variant: 'normal',
-    size: 'md',
   },
 });
 
@@ -132,15 +132,15 @@ export const SectionHeading = ({ children, className, ...props }: React.Componen
 };
 
 const contentVariants = cva('', {
-  variants: {
-    size: {
-      sm: 'mt-2w',
-      md: 'mt-6w',
-      lg: 'mt-8w',
-    },
-  },
   defaultVariants: {
     size: 'md',
+  },
+  variants: {
+    size: {
+      lg: 'mt-8w',
+      md: 'mt-6w',
+      sm: 'mt-2w',
+    },
   },
 });
 
@@ -154,15 +154,15 @@ export const SectionContent = ({ children, className, ...props }: React.HTMLAttr
 };
 
 const twoColumnsVariants = cva('flex flex-col lg:flex-row *:flex-1', {
-  variants: {
-    size: {
-      sm: '',
-      md: 'gap-8',
-      lg: '',
-    },
-  },
   defaultVariants: {
     size: 'md',
+  },
+  variants: {
+    size: {
+      lg: '',
+      md: 'gap-8',
+      sm: '',
+    },
   },
 });
 

@@ -4,51 +4,51 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import cx from '@/utils/cx';
 
 const tagVariants = cva('', {
-  variants: {
-    variant: {
-      default: '',
-      success: 'bg-success! text-white! border-success',
-      warning: 'bg-warning! text-white! border-warning',
-      error: 'bg-error! text-white! border-error',
-      info: 'bg-info! text-white! border-info',
-    },
-    outline: {
-      true: '',
-      false: '',
-    },
-    size: {
-      sm: '',
-      md: '',
-      lg: 'text-lg px-3 py-1',
-    },
-  },
   compoundVariants: [
     // Outline variants
     {
-      variant: 'success',
-      outline: true,
       class: '[&&]:bg-white! [&&]:text-success! border border-success',
+      outline: true,
+      variant: 'success',
     },
     {
-      variant: 'warning',
-      outline: true,
       class: '[&&]:bg-white! [&&]:text-warning! border border-warning',
+      outline: true,
+      variant: 'warning',
     },
     {
-      variant: 'error',
-      outline: true,
       class: '[&&]:bg-white! [&&]:text-error! border border-error',
+      outline: true,
+      variant: 'error',
     },
     {
-      variant: 'info',
-      outline: true,
       class: '[&&]:bg-white! [&&]:text-info! border border-info',
+      outline: true,
+      variant: 'info',
     },
   ],
   defaultVariants: {
-    variant: 'default',
     outline: false,
     size: 'md',
+    variant: 'default',
+  },
+  variants: {
+    outline: {
+      false: '',
+      true: '',
+    },
+    size: {
+      lg: 'text-lg px-3 py-1',
+      md: '',
+      sm: '',
+    },
+    variant: {
+      default: '',
+      error: 'bg-error! text-white! border-error',
+      info: 'bg-info! text-white! border-info',
+      success: 'bg-success! text-white! border-success',
+      warning: 'bg-warning! text-white! border-warning',
+    },
   },
 });
 
@@ -60,7 +60,7 @@ export type TagProps = VariantProps<typeof tagVariants> &
 
 const Tag = ({ children, className, variant, size = 'md', outline = false, as = 'span', ...props }: TagProps) => {
   return (
-    <DSFRTag as={as} small={size === 'sm'} className={cx(tagVariants({ variant, size, outline }), className)} {...(props as any)}>
+    <DSFRTag as={as} small={size === 'sm'} className={cx(tagVariants({ outline, size, variant }), className)} {...(props as any)}>
       {children}
     </DSFRTag>
   );

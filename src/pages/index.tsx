@@ -10,8 +10,8 @@ import { issues, understandings } from '@/components/Ressources/config';
 import Understanding from '@/components/Ressources/Understanding';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Box from '@/components/ui/Box';
-import colors from '@/components/ui/helpers/colors';
 import Hero, { HeroContent, HeroSubtitle, HeroTitle } from '@/components/ui/Hero';
+import colors from '@/components/ui/helpers/colors';
 import Icon from '@/components/ui/Icon';
 import Image from '@/components/ui/Image';
 import Link from '@/components/ui/Link';
@@ -20,75 +20,75 @@ import SectionScrollableTiles, { type SectionScrollableTilesItem } from '@/compo
 import Text from '@/components/ui/Text';
 
 const coproprietaireCards = {
-  reseau: issues.reseau,
   atouts: issues.atouts,
   'energies-vertes': issues['energies-vertes'],
   faisabilite: understandings.faisabilite,
+  reseau: issues.reseau,
 };
 
 const tools: SectionScrollableTilesItem[] = [
   {
-    title: 'Carte',
+    eventKey: 'Outil|Carte des réseaux et potentiels',
     excerpt: 'Visualisez les données des réseaux de chaleur.',
     href: '/carte',
     image: '/icons/tools/v2/carte.svg',
-    eventKey: 'Outil|Carte des réseaux et potentiels',
+    title: 'Carte',
   },
   {
-    title: 'Réseau d’avenir',
+    eventKey: 'Outil|Potentiel des communes sans réseau',
     excerpt: 'Identifiez le potentiel des communes sans réseau.',
     href: '/collectivites-et-exploitants/potentiel-creation-reseau',
     image: '/icons/tools/v2/reseau_avenir.svg',
-    eventKey: 'Outil|Potentiel des communes sans réseau',
+    title: 'Réseau d’avenir',
   },
   {
-    title: 'Comparateur',
+    eventKey: "Outil|Comparateur de coûts et d'émissions de CO2",
     excerpt: 'Comparez les coûts et émissions des modes de chauffage.',
     href: '/comparateur-couts-performances',
     image: '/icons/tools/v2/comparateur.svg',
-    eventKey: "Outil|Comparateur de coûts et d'émissions de CO2",
+    title: 'Comparateur',
   },
   {
-    title: 'Chauffage écologique',
+    eventKey: 'Outil|Compatibilité des modes de chauffage' as const,
     excerpt: 'Quel chauffage écologique pour votre bâtiment ?',
     href: '/chaleur-renouvelable',
     image: '/icons/tools/v2/chauffage_ecologique.svg',
-    eventKey: 'Outil|Compatibilité des modes de chauffage' as const,
+    title: 'Chauffage écologique',
   },
   {
-    title: 'Raccordement',
+    eventKey: 'Outil|Coûts de raccordement et aides',
     excerpt: 'Calculez le coût du raccordement et les aides.',
     href: '/ressources/cout-raccordement#contenu',
     image: '/icons/tools/v2/raccordement.svg',
-    eventKey: 'Outil|Coûts de raccordement et aides',
+    title: 'Raccordement',
   },
   {
-    title: 'Obligations',
+    eventKey: 'Outil|Obligations de raccordement',
     excerpt: 'Êtes-vous concerné par une obligation de raccordement ?',
     href: '/ressources/obligations-raccordement#contenu',
     image: '/icons/tools/v2/obligations.svg',
-    eventKey: 'Outil|Obligations de raccordement',
+    title: 'Obligations',
   },
 
   {
-    title: 'Test en masse',
+    eventKey: "Outil|Test d'adresses en masse",
     excerpt: 'Testez instantanément une liste d’adresses.',
     href: '/pro/tests-adresses',
     image: '/icons/tools/v2/test_en_masse.svg',
-    eventKey: "Outil|Test d'adresses en masse",
+    title: 'Test en masse',
   },
   {
-    title: 'Décret tertiaire',
     excerpt: 'Découvrez le dispositif Éco-Énergie Tertiaire.',
     href: '/ressources/dispositif-eco-energie-tertiaire#contenu',
     image: '/icons/tools/v2/decret_tertiaire.svg',
+    title: 'Décret tertiaire',
   },
   {
-    title: 'Liste des réseaux',
+    eventKey: 'Outil|Liste des réseaux de chaleur',
     excerpt: 'Comparez les caractéristiques des réseaux.',
     href: '/reseaux',
     image: '/icons/tools/v2/liste_reseaux.svg',
-    eventKey: 'Outil|Liste des réseaux de chaleur',
+    title: 'Liste des réseaux',
   },
 
   // {
@@ -307,7 +307,7 @@ Ce système contribue à la transition énergétique des villes en mutualisant l
               Je conseille vivement le raccordement à un réseau de chaleur pour des raisons économiques et écologiques.
               <span className="block text-right mt-2">— Henry Hostein Président du conseil syndical</span>
             </Highlight>
-            <Text size="sm" mt="2w"></Text>
+            <Text size="sm" mt="2w" />
 
             <Box mt="3w">
               <InterviewsVideos />

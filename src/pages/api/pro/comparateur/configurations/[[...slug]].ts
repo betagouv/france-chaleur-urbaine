@@ -9,7 +9,7 @@ const { GET, POST, PUT, DELETE, _types } = crud<typeof configurationService.tabl
 export type ProComparateurConfigurationResponse = typeof _types;
 
 export default handleRouteErrors(
-  { GET, POST, PUT, DELETE },
+  { DELETE, GET, POST, PUT },
   {
     requireAuthentication: ['particulier', 'professionnel', 'gestionnaire', 'admin', 'demo'],
   }

@@ -1,6 +1,6 @@
 import { fr } from '@codegouvfr/react-dsfr';
 import { cva } from 'class-variance-authority';
-import React from 'react';
+import type React from 'react';
 import { Oval } from 'react-loader-spinner';
 
 import cx from '@/utils/cx';
@@ -15,11 +15,11 @@ type LoaderProps = Omit<OvalProps, 'wrapperClass' | 'wrapperStyle'> & {
 };
 
 const sizeMap = {
-  xs: 8,
-  sm: 16,
-  md: 24,
   lg: 40,
+  md: 24,
+  sm: 16,
   xl: 60,
+  xs: 8,
 };
 
 const loaderVariants = cva('[&_svg]:animate-spin', {
