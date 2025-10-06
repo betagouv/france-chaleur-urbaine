@@ -23,7 +23,6 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-.history
 
 # local env files
 .env.local
@@ -45,6 +44,10 @@ yarn-error.log*
 
 # idea
 /.idea
+
+# VS Code
+.history
+.history/*
 
 # Working tools
 *.backUp
