@@ -15,16 +15,16 @@ const equiSurfTertiaire = 78; // --> Consommation moyenne par m² de surface ter
 
 export const dataEnergy = {
   [TypeEnergy.fioul]: {
-    label: 'Fioul',
     eco2: 0.281,
+    label: 'Fioul',
   },
   [TypeEnergy.gaz]: {
-    label: 'Gaz',
     eco2: 0.205,
+    label: 'Gaz',
   },
   [TypeEnergy.rdc]: {
-    label: 'Réseau de chaleur',
     eco2: 0.101,
+    label: 'Réseau de chaleur',
   },
 };
 

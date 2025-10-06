@@ -1,8 +1,8 @@
 import { httpBatchLink, loggerLink } from '@trpc/client';
 import { createTRPCNext } from '@trpc/next';
-import { type NextPageContext } from 'next';
+import type { NextPageContext } from 'next';
 
-import { type AppRouter } from '../types';
+import type { AppRouter } from '../types';
 
 /**
  * Extend `NextPageContext` with meta data that can be picked up by `responseMeta()` when server-side rendering
@@ -31,7 +31,6 @@ const trpc = createTRPCNext<AppRouter>({
     });
 
     const trpcHttpBatchLink = httpBatchLink({
-      url: `${typeof window !== 'undefined' ? '' : process.env.SITE_URL || 'http://localhost:3000'}/api/trpc`,
       /**
        * Set custom request headers on every request from tRPC
        * @link https://trpc.io/docs/ssr
@@ -49,6 +48,7 @@ const trpc = createTRPCNext<AppRouter>({
           'x-ssr': '1',
         };
       },
+      url: `${typeof window !== 'undefined' ? '' : process.env.SITE_URL || 'http://localhost:3000'}/api/trpc`,
     });
 
     return {

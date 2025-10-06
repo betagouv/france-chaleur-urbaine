@@ -4,7 +4,6 @@ import { List, Subtitle } from './Contents.styles';
 
 const contents = [
   {
-    title: 'Comment réduire les émissions de gaz à effet de serre des bâtiments ?',
     description: 'Pour réduire les émissions de gaz à effet de serre des bâtiments, trois leviers existent :',
     list: [
       <>
@@ -21,9 +20,9 @@ const contents = [
         renouvelables et de récupération.
       </>,
     ],
+    title: 'Comment réduire les émissions de gaz à effet de serre des bâtiments ?',
   },
   {
-    title: 'Des objectifs ambitieux fixés par la loi',
     description: (
       <>
         La loi énergie climat fixe un objectif de <b>neutralité carbone en 2050</b>, ce qui implique de diviser par 6 nos émissions de gaz à
@@ -49,9 +48,9 @@ const contents = [
         <b>Créer de nouveaux réseaux</b> ou des extensions de réseaux.
       </>,
     ],
+    title: 'Des objectifs ambitieux fixés par la loi',
   },
   {
-    title: 'Plusieurs mesures et dispositifs mis en place pour atteindre ces objectifs',
     description: 'La dynamique de raccordement aux réseaux de chaleur devrait s’accélérer suite à la mise en place des mesures suivantes :',
     list: [
       <>
@@ -76,6 +75,7 @@ const contents = [
         un réseu de chaleur permet de comptabiliser jusqu’à 23% de réduction des consommations d’énergie.
       </>,
     ],
+    title: 'Plusieurs mesures et dispositifs mis en place pour atteindre ces objectifs',
   },
 ];
 

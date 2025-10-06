@@ -3,7 +3,7 @@ import React from 'react';
 
 import Checkboxes, { type CheckboxesProps } from '@/components/form/dsfr/Checkboxes';
 import RangeFilter, { type RangeFilterProps } from '@/components/form/dsfr/RangeFilter';
-import { type Interval } from '@/utils/interval';
+import type { Interval } from '@/utils/interval';
 
 export type TableFilterType = 'Range' | 'Facets';
 
@@ -25,8 +25,8 @@ export type TableFilterProps = {
 );
 
 export const defaultTableFilterFns = {
-  Range: 'inNumberRangeNotNull',
   Facets: 'includesAny',
+  Range: 'inNumberRangeNotNull',
 } as const;
 
 const Filter = ({ value, type, onChange, filterProps, facetedUniqueValues, facetedMinMaxValues }: TableFilterProps) => {
@@ -94,7 +94,7 @@ const Filter = ({ value, type, onChange, filterProps, facetedUniqueValues, facet
     );
   }
 
-  return <>TODO</>;
+  return 'TODO';
 };
 
 export default Filter;

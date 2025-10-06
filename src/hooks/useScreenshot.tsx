@@ -1,5 +1,6 @@
 import domtoimage from 'dom-to-image';
-import React, { useState } from 'react';
+import type React from 'react';
+import { useState } from 'react';
 
 import { notify } from '@/modules/notification';
 import { downloadFile } from '@/utils/browser';
@@ -98,8 +99,8 @@ const useScreenshot = () => {
   return {
     captureNode,
     captureNodeAndDownload,
-    screenshot,
     capturing: loading,
+    screenshot,
   };
 };
 

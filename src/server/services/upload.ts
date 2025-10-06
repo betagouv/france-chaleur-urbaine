@@ -16,17 +16,17 @@ axiosRetry(httpClient);
 export async function uploadTempFile(filepath: string, filename: string): Promise<string> {
   const response = await httpClient.put(`/${filename}`, createReadStream(filepath), {
     headers: {
-      'Max-Downloads': '1',
-      'Max-Days': '1',
       'Content-Type': 'application/octet-stream',
+      'Max-Days': '1',
+      'Max-Downloads': '1',
     },
-    maxContentLength: Infinity,
     maxBodyLength: Infinity,
+    maxContentLength: Infinity,
   });
 
   logger.info('upload temp file', {
-    status: response.status,
     downloadURL: response.data,
+    status: response.status,
   });
   if (response.status !== 200) {
     throw new Error(`upload failed: status ${response.status}`);

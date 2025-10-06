@@ -37,8 +37,8 @@ const Dispositifs = ({
             </Heading>
           )}
           <ResponsiveRow>
-            {dispositifs.map((dispositif: any, i) => (
-              <Box flex key={`${city}'-'+${i}`}>
+            {dispositifs.map((dispositif) => (
+              <Box flex key={`${city}-${dispositif.title}`}>
                 {dispositif.title && (
                   <Heading as="h4" legacyColor="white">
                     {dispositif.title}
@@ -48,7 +48,7 @@ const Dispositifs = ({
                 <Box flexDirection="column">{dispositif.description}</Box>
                 {dispositif.link && (
                   <Box className="fr-btn fr-mt-2w fr-ml-4w">
-                    <Link href={dispositif.link.href} isExternal={dispositif.link.target === '_blank' ? true : false}>
+                    <Link href={dispositif.link.href} isExternal={dispositif.link.target === '_blank'}>
                       {dispositif.link.title}
                     </Link>
                   </Box>

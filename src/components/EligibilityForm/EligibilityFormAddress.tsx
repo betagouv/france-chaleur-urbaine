@@ -1,12 +1,13 @@
 import { useRouter } from 'next/router';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import type React from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import AddressAutocomplete, { type AddressAutocompleteInputProps } from '@/components/form/dsfr/AddressAutocompleteInput';
 import Box from '@/components/ui/Box';
 import Link from '@/components/ui/Link';
 import { useServices } from '@/services';
-import { type AddressDataType } from '@/types/AddressData';
-import { type SuggestionItem } from '@/types/Suggestions';
+import type { AddressDataType } from '@/types/AddressData';
+import type { SuggestionItem } from '@/types/Suggestions';
 
 import { CheckEligibilityFormLabel, SelectEnergy } from './components';
 
@@ -47,14 +48,14 @@ const AddressTestForm: React.FC<CheckEligibilityFormProps> = ({
   const router = useRouter();
   const coords = useMemo(() => {
     const [lon, lat] = fullAddress?.addressDetails?.geoAddress?.geometry?.coordinates || [null, null];
-    return (lon ?? lat) && { lon, lat };
+    return (lon ?? lat) && { lat, lon };
   }, [fullAddress]);
 
   const defaultData: AddressDataType = {
     address: fullAddress?.address,
+    coords,
     eligibility: fullAddress?.addressDetails?.network,
     geoAddress: fullAddress?.addressDetails?.geoAddress,
-    coords,
   };
 
   const [status, setStatus] = useState(!coords ? 'idle' : 'success');
@@ -84,14 +85,14 @@ const AddressTestForm: React.FC<CheckEligibilityFormProps> = ({
       try {
         setStatus('loading');
         const [lon, lat] = geoAddress.geometry.coordinates;
-        const coords = { lon, lat };
+        const coords = { lat, lon };
         const networkData = await heatNetworkService.findByCoords(geoAddress);
         setData({
           ...data,
           address,
           coords,
-          geoAddress,
           eligibility: networkData,
+          geoAddress,
         });
         setStatus('success');
       } catch (_e) {

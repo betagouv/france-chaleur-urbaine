@@ -22,9 +22,9 @@ export default handleRouteErrors(async function PostRecords(req: NextApiRequest)
       values,
     });
     return {
+      ids: [{ id: uuidv4() }],
       type,
       values,
-      ids: [{ id: uuidv4() }],
     };
   }
 
@@ -44,9 +44,9 @@ export default handleRouteErrors(async function PostRecords(req: NextApiRequest)
       const { id: demandId }: any = await base(Airtable.DEMANDES).create(
         {
           ...values,
-          Gestionnaires: [defaultEmptyStringValue],
           'Affecté à': defaultEmptyStringValue,
           'Distance au réseau': defaultEmptyNumberValue,
+          Gestionnaires: [defaultEmptyStringValue],
           'Identifiant réseau': defaultEmptyStringValue,
           'Nom réseau': defaultEmptyStringValue,
         },
@@ -60,28 +60,28 @@ export default handleRouteErrors(async function PostRecords(req: NextApiRequest)
       ]);
 
       logger.info('create eligibility demand', {
+        conso,
         id: demandId,
         nbLogement,
-        conso,
       });
 
       await AirtableDB(Airtable.DEMANDES).update(
         demandId,
         {
           Conso: conso ? conso.conso_nb : undefined,
+          'ID BNB': nbLogement ? `${nbLogement.id}` : undefined,
           'ID Conso': conso ? conso.rownum : undefined,
           Logement: nbLogement ? nbLogement.nb_logements : undefined,
-          'ID BNB': nbLogement ? `${nbLogement.id}` : undefined,
         },
         { typecast: true }
       );
 
       await Promise.all([
         createEvent({
-          type: 'demand_created',
-          context_type: 'demand',
           context_id: demandId,
+          context_type: 'demand',
           data: values,
+          type: 'demand_created',
         }),
         sendEmailTemplate(
           'creation-demande',

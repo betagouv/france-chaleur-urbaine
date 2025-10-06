@@ -1,11 +1,11 @@
-import fs from 'fs';
+import fs from 'node:fs';
 
 import db from '@/server/db';
 
 import AmorceFileReader from './AmorceFileReader';
 import sousZoneClimatiques from './sous-zones-climatiques.json';
-import temperaturesExterieuresDeBaseAuNiveauDeLaMer from './temperature-exterieure-de-base-au-niveau-de-la-mer.json';
 import temperatureExterieureDeBase from './temperature-exterieure-de-base.json';
+import temperaturesExterieuresDeBaseAuNiveauDeLaMer from './temperature-exterieure-de-base-au-niveau-de-la-mer.json';
 
 // Ce fichier permet de recalculer correctement les code insee, faux dans le fichier Amorce
 const codesINSEEUrl =
@@ -14,9 +14,9 @@ const codesINSEEFilePath = './scripts/simulateur/codes-insee.json';
 
 // Certaines valeurs du fichier amorce sont fausses, on les corrige ici
 const altitudesFixes = {
-  YEBLES: 90,
-  'PALAVAS-LES-FLOTS': 0,
   'LES MOERES': 0,
+  'PALAVAS-LES-FLOTS': 0,
+  YEBLES: 90,
 };
 
 // cette formule est tiré du site suivant https://www.thermexcel.com/french/energie/Calcul_deperditions_thermiques_NF_EN_12831.htm
@@ -36,7 +36,7 @@ const getAltitudeRange = (departmentId: keyof typeof temperaturesExterieuresDeBa
 };
 
 const upsertAndFixCity = async (city: any, { codesINSEE }: { codesINSEE: any }) => {
-  const departmentId = `${city['Département']}`.padStart(2, '0') as keyof typeof temperaturesExterieuresDeBaseAuNiveauDeLaMer;
+  const departmentId = `${city.Département}`.padStart(2, '0') as keyof typeof temperaturesExterieuresDeBaseAuNiveauDeLaMer;
   const postalCode = `${city['Code postal']}`.padStart(5, '0');
 
   const cityWithCorrectInseeCode = codesINSEE.find((c: any) => c.nom_comm === city.Commune && `${c.code_dept}` === departmentId);
@@ -67,13 +67,13 @@ const upsertAndFixCity = async (city: any, { codesINSEE }: { codesINSEE: any }) 
   const temperature_ref_altitude_moyenne = getAltitudeRange(departmentId, altitude_moyenne);
 
   const correctedCityData = {
-    id: cityWithCorrectInseeCode.insee_com,
+    altitude_moyenne,
     code_postal: postalCode,
     commune: city.Commune,
     departement_id: departmentId,
-    altitude_moyenne,
-    temperature_ref_altitude_moyenne, // recalculé à la place de "T°C réf / altitude_moyenne" qui semble être faux
+    id: cityWithCorrectInseeCode.insee_com,
     source: city['Source '],
+    temperature_ref_altitude_moyenne, // recalculé à la place de "T°C réf / altitude_moyenne" qui semble être faux
   };
 
   try {
@@ -101,14 +101,14 @@ const upsertDepartments = async (departmentData: any) => {
   for (const dept of departmentData.filter((d: any) => d['Code département'] !== undefined)) {
     const departement_id = `${dept['Code département']}`.padStart(2, '0');
     const dataToInsert = {
-      nom_departement: dept['Nom département'],
-      id: departement_id,
+      annee: dept.Année,
       dju_chaud_moyen: dept['DJU chaud moyen'],
       dju_froid_moyen: dept['DJU froid moyen'],
-      zone_climatique: dept['Zone climatique'],
-      sous_zone_climatique: sousZoneClimatiques[departement_id as keyof typeof sousZoneClimatiques],
+      id: departement_id,
+      nom_departement: dept['Nom département'],
       source: dept['Source '],
-      annee: dept['Année'],
+      sous_zone_climatique: sousZoneClimatiques[departement_id as keyof typeof sousZoneClimatiques],
+      zone_climatique: dept['Zone climatique'],
     };
     try {
       await db('departements').insert(dataToInsert).onConflict('id').merge(dataToInsert);

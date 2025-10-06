@@ -1,4 +1,4 @@
-import { type PropsWithChildren } from 'react';
+import type { PropsWithChildren } from 'react';
 
 import Box, { type BoxProps } from '@/components/ui/Box';
 

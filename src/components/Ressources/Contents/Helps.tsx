@@ -8,9 +8,8 @@ const Helps = () => {
     <>
       <Subtitle> De quoi parle-t-on ?</Subtitle>
       Ce « coup de pouce » est une{' '}
-      <b>prime mise en place par l’État dans le cadre du dispositif des Certificats d’économies d’énergie (CEE)*</b>
-      . Elle est versée par des entreprises signataires de la charte coup de pouce « Chauffage des bâtiments résidentiels collectifs et
-      tertiaires ».
+      <b>prime mise en place par l’État dans le cadre du dispositif des Certificats d’économies d’énergie (CEE)*</b>. Elle est versée par
+      des entreprises signataires de la charte coup de pouce « Chauffage des bâtiments résidentiels collectifs et tertiaires ».
       <br />
       <br />
       <Highlight>

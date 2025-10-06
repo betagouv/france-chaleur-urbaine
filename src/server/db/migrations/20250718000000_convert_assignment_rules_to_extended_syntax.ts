@@ -14,8 +14,8 @@ export async function up(knex: Knex): Promise<void> {
 
     // Mettre à jour la règle
     await knex('assignment_rules').where('id', rule.id).update({
-      search_pattern: convertedSearchPattern,
       result: convertedResult,
+      search_pattern: convertedSearchPattern,
     });
   }
 }
@@ -35,8 +35,8 @@ export async function down(knex: Knex): Promise<void> {
 
     // Mettre à jour la règle
     await knex('assignment_rules').where('id', rule.id).update({
-      search_pattern: revertedSearchPattern,
       result: revertedResult,
+      search_pattern: revertedSearchPattern,
     });
   }
 }

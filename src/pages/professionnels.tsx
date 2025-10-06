@@ -4,12 +4,12 @@ import ObligationRaccordement from '@/components/GenericContent/ObligationRaccor
 import ReduireImpact from '@/components/GenericContent/ReduireImpact';
 import HeadSliceForm from '@/components/HeadSliceForm';
 import Partners from '@/components/Partners/Partners';
-import { issues, understandings } from '@/components/Ressources/config';
 import SimulateurCoutRaccordement from '@/components/Ressources/Contents/SimulateurCoutRaccordement';
+import { issues, understandings } from '@/components/Ressources/config';
 import Understanding from '@/components/Ressources/Understanding';
-import SimplePage from '@/components/shared/page/SimplePage';
 import SimulatorCO2 from '@/components/SimulatorCO2';
 import { TypeSurf } from '@/components/SimulatorCO2/SimulatorCO2.businessRule';
+import SimplePage from '@/components/shared/page/SimplePage';
 import Owner from '@/components/Tertiaire/Owner';
 import Box, { ResponsiveRow } from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
@@ -18,9 +18,9 @@ import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
 
 const conseillerCards = {
-  'energies-vertes': issues['energies-vertes'],
-  avantages: understandings.avantages,
   aides: understandings.aides,
+  avantages: understandings.avantages,
+  'energies-vertes': issues['energies-vertes'],
   'obligations-raccordement': understandings['obligations-raccordement'],
 };
 

@@ -30,7 +30,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover
 import { isDevModeEnabled } from '@/hooks/useDevMode';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
-import { type FlattenKeys } from '@/utils/typescript';
+import type { FlattenKeys } from '@/utils/typescript';
 
 import TableCell, { type TableCellProps } from './TableCell';
 import TableFilter, { defaultTableFilterFns, type TableFilterProps } from './TableFilter';
@@ -46,19 +46,6 @@ export const customSortingFn = <T extends RowData>(): Record<string, SortingFn<T
 });
 
 export const customFilterFn = <T extends RowData>(): Record<string, FilterFn<T>> => ({
-  notNullAndGreaterThanOrEqual: (row, columnId, filterValue: number) => {
-    const value = row.getValue<number>(columnId);
-    return value != null && value >= filterValue;
-  },
-  notNullAndLessThanOrEqual: (row, columnId, filterValue: number) => {
-    const value = row.getValue<number>(columnId);
-    return value != null && value <= filterValue;
-  },
-  inNumberRangeNotNull: (row, columnId, filterValue: [number, number]) => {
-    const [min, max] = filterValue;
-    const value = row.getValue<number>(columnId);
-    return value != null && value >= min && value <= max;
-  },
   includesAny: (row, columnId, filterValue: Record<string, boolean>) => {
     let value = row.getValue<any>(columnId);
     if (value === true) value = 'true';
@@ -69,6 +56,19 @@ export const customFilterFn = <T extends RowData>(): Record<string, FilterFn<T>>
     return Object.entries(filterValue)
       .filter(([, isSelected]) => isSelected)
       .some(([key]) => value.includes(key));
+  },
+  inNumberRangeNotNull: (row, columnId, filterValue: [number, number]) => {
+    const [min, max] = filterValue;
+    const value = row.getValue<number>(columnId);
+    return value != null && value >= min && value <= max;
+  },
+  notNullAndGreaterThanOrEqual: (row, columnId, filterValue: number) => {
+    const value = row.getValue<number>(columnId);
+    return value != null && value >= filterValue;
+  },
+  notNullAndLessThanOrEqual: (row, columnId, filterValue: number) => {
+    const value = row.getValue<number>(columnId);
+    return value != null && value <= filterValue;
   },
 });
 
@@ -116,15 +116,15 @@ export type TableSimpleProps<T> = {
 };
 
 const cellCustomClasses = cva('', {
-  variants: {
-    padding: {
-      sm: 'p-2! leading-tight!',
-      md: '',
-      lg: 'p-6!',
-    },
-  },
   defaultVariants: {
     padding: 'md',
+  },
+  variants: {
+    padding: {
+      lg: 'p-6!',
+      md: '',
+      sm: 'p-2! leading-tight!',
+    },
   },
 });
 
@@ -166,8 +166,8 @@ const TableRow = <T extends RowData>({
         isSelected ? 'bg-[#e1f1f5]! hover:bg-[#d2eaf1]!' : virtualRow.index % 2 === 0 ? 'bg-white!' : 'bg-stripe!'
       )}
       style={{
-        transform: `translateY(${virtualRow.start}px)`,
         gridTemplateColumns,
+        transform: `translateY(${virtualRow.start}px)`,
       }}
       onClick={
         onRowClick
@@ -212,8 +212,8 @@ const TableRow = <T extends RowData>({
             className={cx(
               'flex! items-center',
               {
-                'overflow-auto': !React.isValidElement(cell.getValue()),
                 'fr-cell--fixed': columnDef.id === 'selection',
+                'overflow-auto': !React.isValidElement(cell.getValue()),
               },
               columnClassName(columnDef),
               cellCustomClasses({ padding })
@@ -335,7 +335,7 @@ const TableTH = <T extends RowData>({
                   iconId={header.column.getIsFiltered() ? 'ri-filter-2-fill' : 'ri-filter-2-line'}
                   size="small"
                   className={cx('min-w-8', header.column.getIsFiltered() && 'animate-[puff_0.2s_ease-in-out]')}
-                ></Button>
+                />
               </PopoverTrigger>
               <PopoverContent className="px-5 pb-2 py-8 w-[300px]" side="top">
                 <TableFilter
@@ -421,19 +421,6 @@ const TableSimple = <T extends RowData>({
   }, []);
 
   const selectionColumn: ColumnDef<T> = {
-    id: 'selection',
-    header: ({ table }) => (
-      <div className="fr-checkbox-group fr-checkbox-group--sm">
-        <input
-          type="checkbox"
-          id="select-all"
-          checked={table.getIsAllRowsSelected()}
-          onChange={table.getToggleAllRowsSelectedHandler()}
-          title="Tout sélectionner"
-        />
-        <label className="fr-label" htmlFor="select-all" />
-      </div>
-    ),
     cell: ({ row }) => (
       <div className="fr-checkbox-group fr-checkbox-group--sm">
         <input
@@ -448,6 +435,19 @@ const TableSimple = <T extends RowData>({
       </div>
     ),
     flex: 0,
+    header: ({ table }) => (
+      <div className="fr-checkbox-group fr-checkbox-group--sm">
+        <input
+          type="checkbox"
+          id="select-all"
+          checked={table.getIsAllRowsSelected()}
+          onChange={table.getToggleAllRowsSelectedHandler()}
+          title="Tout sélectionner"
+        />
+        <label className="fr-label" htmlFor="select-all" />
+      </div>
+    ),
+    id: 'selection',
   };
 
   const tableColumns = React.useMemo(() => {
@@ -484,26 +484,26 @@ const TableSimple = <T extends RowData>({
   }, [tableColumns]);
 
   const table = useReactTable({
-    data,
     columns: tableColumns,
-    state: {
-      sorting: sortingState,
-      globalFilter: externalGlobalFilter ?? globalFilter,
-      columnFilters,
-      rowSelection,
-      columnVisibility,
-    },
+    data,
+    debugTable: isDevModeEnabled(),
     enableRowSelection,
-    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
+    getFacetedMinMaxValues: getFacetedMinMaxValues(), //if you need min/max values
+    getFacetedRowModel: getFacetedRowModel(), //if you need a list of values for a column (other faceted row models depend on this one)
+    getFacetedUniqueValues: getFacetedUniqueValues(), //if you need a list of unique values
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    onColumnFiltersChange: setColumnFilters,
     onGlobalFilterChange: isDefined(externalGlobalFilter) ? undefined : setGlobalFilter,
     onSortingChange: setSortingState,
-    getFacetedRowModel: getFacetedRowModel(), //if you need a list of values for a column (other faceted row models depend on this one)
-    getFacetedMinMaxValues: getFacetedMinMaxValues(), //if you need min/max values
-    getFacetedUniqueValues: getFacetedUniqueValues(), //if you need a list of unique values
-    debugTable: isDevModeEnabled(),
+    state: {
+      columnFilters,
+      columnVisibility,
+      globalFilter: externalGlobalFilter ?? globalFilter,
+      rowSelection,
+      sorting: sortingState,
+    },
   });
 
   React.useEffect(() => {
@@ -567,10 +567,10 @@ const TableSimple = <T extends RowData>({
             label=""
             className="flex-1"
             nativeInputProps={{
-              value: globalFilter,
+              className: 'mb-2',
               onChange: (e) => table.setGlobalFilter(e.target.value),
               placeholder: 'Recherche...',
-              className: 'mb-2',
+              value: globalFilter,
             }}
           />
         )}
@@ -581,9 +581,9 @@ const TableSimple = <T extends RowData>({
         className={cx(fr.cx('fr-table', 'fr-table--no-scroll'), 'scrollbar-visible my-0!')}
         ref={tableContainerRef}
         style={{
+          maxHeight: height, // should be a fixed height
           overflow: 'auto', // our scrollable table container
           position: 'relative', // needed for sticky header
-          maxHeight: height, // should be a fixed height
         }}
       >
         {/* Even though we're still using sematic table tags, we must use CSS grid and flexbox for dynamic row heights */}
@@ -591,8 +591,8 @@ const TableSimple = <T extends RowData>({
           className={cx(fluid ? 'w-max!' : '', tableClassName)}
           style={{
             display: 'grid',
-            overflow: 'unset', // overwrite the dsfr
             marginTop: '1px', // make top border visible as overflow hides it
+            overflow: 'unset', // overwrite the dsfr
           }}
         >
           <thead
@@ -636,12 +636,12 @@ const TableSimple = <T extends RowData>({
                 <tr
                   key={`loading_${value}`}
                   className="grid absolute w-full"
-                  style={{ gridTemplateColumns, transform: `translateY(${value * rowHeight}px)`, height: rowHeight }}
+                  style={{ gridTemplateColumns, height: rowHeight, transform: `translateY(${value * rowHeight}px)` }}
                 >
                   {columns.map((column, index) => (
                     <td key={`loading_${value}_${index}`} className={cx('flex! items-center', columnClassName(column))}>
                       <div role="status" className="animate-pulse text-center w-[90%]">
-                        <div className="mx-auto my-2 h-3.5 rounded-full bg-gray-200"></div>
+                        <div className="mx-auto my-2 h-3.5 rounded-full bg-gray-200" />
                       </div>
                     </td>
                   ))}
@@ -689,8 +689,8 @@ export type QuickFilterPreset<Data> = {
   label: React.ReactNode;
   valueSuffix?: React.ReactNode;
   getStat?: (data: Data[]) => number;
-  filters: Array<{
+  filters: {
     id: DotToUnderscore<FlattenKeys<Data>>;
     value: boolean | number | [number, number] | Record<string, boolean>;
-  }>;
+  }[];
 };

@@ -3,7 +3,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { useRouter } from 'next/router';
 import styled, { css } from 'styled-components';
 
-import { trackEvent, type TrackingEvent } from '@/modules/analytics/client';
+import { type TrackingEvent, trackEvent } from '@/modules/analytics/client';
 import cx from '@/utils/cx';
 import { stopPropagation as stopPropagationHandler } from '@/utils/events';
 
@@ -17,17 +17,21 @@ type StyledButtonProps = {
 
 const StyledButton = styled(DsfrButton)<DsfrButtonProps & StyledButtonProps>`
   ${({ $loading, $full }) => css`
-    ${$loading &&
-    css`
+    ${
+      $loading &&
+      css`
       &:before {
         animation: spin 1s linear infinite;
       }
-    `}
-    ${$full &&
-    css`
+    `
+    }
+    ${
+      $full &&
+      css`
       width: 100%;
       justify-content: center;
-    `}
+    `
+    }
   `}
 `;
 
@@ -42,6 +46,11 @@ export const variantClassNames = {
     secondary: 'border-destructive! text-destructive! shadow-destructive!',
     tertiary: 'text-destructive!',
   },
+  faded: {
+    primary: 'bg-faded! text-white! !hover:bg-faded/90',
+    secondary: 'border-faded! text-faded! shadow-faded',
+    tertiary: 'text-faded!',
+  },
   info: {
     primary: 'bg-info! text-white! !hover:bg-info/90',
     secondary: 'border-info! text-info! shadow-info',
@@ -52,16 +61,11 @@ export const variantClassNames = {
     secondary: 'border-warning! text-warning! shadow-warning',
     tertiary: 'text-warning!',
   },
-  faded: {
-    primary: 'bg-faded! text-white! !hover:bg-faded/90',
-    secondary: 'border-faded! text-faded! shadow-faded',
-    tertiary: 'text-faded!',
-  },
 };
 
 const buttonVariants = cva('', {
-  variants: {},
   defaultVariants: {},
+  variants: {},
 });
 
 export type ButtonProps = Omit<DsfrButtonProps, 'children'> &

@@ -4,7 +4,7 @@ import { type HeaderProps, HeaderQuickAccessItem } from '@codegouvfr/react-dsfr/
 import UnstyledMainNavigation, { type MainNavigationProps } from '@codegouvfr/react-dsfr/MainNavigation';
 import { SkipLinks } from '@codegouvfr/react-dsfr/SkipLinks';
 import { useRouter } from 'next/router';
-import React from 'react';
+import type React from 'react';
 import styled, { css } from 'styled-components';
 
 import { clientConfig } from '@/client-config';
@@ -48,9 +48,9 @@ const SimplePage = ({
       <SEO noIndex={mode === 'authenticated' ? true : noIndex} {...props} />
       <SkipLinks
         links={[
-          { label: 'Contenu', anchor: '#main-content' },
-          { label: 'Navigation', anchor: '#main-header' },
-          { label: 'Pied de page', anchor: '#main-footer' },
+          { anchor: '#main-content', label: 'Contenu' },
+          { anchor: '#main-header', label: 'Navigation' },
+          { anchor: '#main-footer', label: 'Pied de page' },
         ]}
       />
       <PageHeader mode={mode ?? 'public'} currentPage={currentPage} />
@@ -85,106 +85,106 @@ export default SimplePage;
 
 export const publicNavigationMenu: MainNavigationProps.Item[] = [
   {
-    text: 'Accueil',
     linkProps: {
       href: '/',
     },
+    text: 'Accueil',
   },
   {
-    text: 'Combien ça coûte ?',
     linkProps: {
       href: '/comparateur-couts-performances',
     },
+    text: 'Combien ça coûte ?',
   },
   {
-    text: 'Carte des réseaux',
     linkProps: {
       href: '/carte',
     },
+    text: 'Carte des réseaux',
   },
 
   {
-    text: 'Ressources et outils',
     menuLinks: [
       {
-        text: 'Liste des réseaux de chaleur',
         linkProps: {
           href: '/reseaux',
         },
+        text: 'Liste des réseaux de chaleur',
       },
       {
-        text: 'Actualités',
         linkProps: {
           href: '/actus',
         },
+        text: 'Actualités',
       },
       {
-        text: 'Articles sur le chauffage urbain',
         linkProps: {
           href: '/ressources/articles',
         },
+        text: 'Articles sur le chauffage urbain',
       },
       {
-        text: 'Supports pédagogiques',
         linkProps: {
           href: '/ressources/supports',
         },
+        text: 'Supports pédagogiques',
       },
       {
-        text: 'Actions de communication',
         linkProps: {
           href: '/ressources/actions-de-communication',
         },
+        text: 'Actions de communication',
       },
       {
-        text: 'Nos replays et présentations',
         linkProps: {
           href: '/webinaires',
         },
+        text: 'Nos replays et présentations',
       },
       {
-        text: 'Outils',
         linkProps: {
           href: '/ressources/outils',
         },
+        text: 'Outils',
       },
     ],
+    text: 'Ressources et outils',
   },
 
   {
-    text: 'Collectivités, exploitants',
     menuLinks: [
       {
-        text: 'France Chaleur Urbaine à votre service',
         linkProps: {
           href: '/collectivites-et-exploitants',
         },
+        text: 'France Chaleur Urbaine à votre service',
       },
       {
-        text: 'Communiquez sur votre réseau',
         linkProps: {
           href: '/collectivites-et-exploitants#communiquer',
         },
+        text: 'Communiquez sur votre réseau',
       },
       {
-        text: 'Trouvez des prospects',
         linkProps: {
           href: '/collectivites-et-exploitants#prospecter',
         },
+        text: 'Trouvez des prospects',
       },
       {
-        text: 'Développez votre réseau grâce aux données',
         linkProps: {
           href: '/collectivites-et-exploitants#developper',
         },
+        text: 'Développez votre réseau grâce aux données',
       },
       {
-        text: 'Pas encore de réseau ? Testez votre potentiel',
         linkProps: {
           href: '/collectivites-et-exploitants/potentiel-creation-reseau',
         },
+        text: 'Pas encore de réseau ? Testez votre potentiel',
       },
     ],
+    text: 'Collectivités, exploitants',
   },
   // {
   //   text: 'Professionnels',
@@ -234,170 +234,170 @@ export const publicNavigationMenu: MainNavigationProps.Item[] = [
   //   ],
   // },
   {
-    text: 'Notre service',
     menuLinks: [
       {
-        text: 'Qui sommes-nous ?',
         linkProps: {
           href: '/qui-sommes-nous',
         },
+        text: 'Qui sommes-nous ?',
       },
       {
-        text: 'Nous contacter',
         linkProps: {
           href: '/contact',
         },
+        text: 'Nous contacter',
       },
       {
-        text: 'Nos statistiques',
         linkProps: {
           href: '/stats',
         },
+        text: 'Nos statistiques',
       },
     ],
+    text: 'Notre service',
   },
 ];
 
 const authenticatedNavigationMenu: MainNavigationProps.Item[] = [
   {
-    text: 'Retour au site',
     linkProps: {
       href: '/',
     },
+    text: 'Retour au site',
   },
 ];
 
 const professionnelNavigationMenu: MainNavigationProps.Item[] = [
   {
-    text: 'Tableau de bord',
     linkProps: {
       href: '/pro/tableau-de-bord',
     },
+    text: 'Tableau de bord',
   },
   {
-    text: 'Comparateur de coûts et CO2',
     linkProps: {
       href: '/pro/comparateur-couts-performances',
     },
+    text: 'Comparateur de coûts et CO2',
   },
   {
-    text: "Test d'adresses",
     linkProps: {
       href: '/pro/tests-adresses',
     },
+    text: "Test d'adresses",
   },
 ];
 
 const gestionnaireNavigationMenu: MainNavigationProps.Item[] = [
   {
-    text: 'Demandes',
     linkProps: {
       href: '/pro/demandes',
     },
+    text: 'Demandes',
   },
   {
-    text: 'Comparateur de coûts et CO2',
     linkProps: {
       href: '/pro/comparateur-couts-performances',
     },
+    text: 'Comparateur de coûts et CO2',
   },
   {
-    text: "Test d'adresses",
     linkProps: {
       href: '/pro/tests-adresses',
     },
+    text: "Test d'adresses",
   },
   {
-    text: 'Aide',
     linkProps: {
       href: '/pro/aide',
     },
+    text: 'Aide',
   },
 ];
 
 const adminNavigationMenu: MainNavigationProps.Item[] = [
   {
-    text: 'Tableau de bord',
     linkProps: {
       href: '/pro/tableau-de-bord',
     },
+    text: 'Tableau de bord',
   },
   {
-    text: 'Comparateur de coûts et CO2',
     linkProps: {
       href: '/pro/comparateur-couts-performances',
     },
+    text: 'Comparateur de coûts et CO2',
   },
   {
-    text: "Test d'adresses",
     linkProps: {
       href: '/pro/tests-adresses',
     },
+    text: "Test d'adresses",
   },
   {
-    text: 'Administration',
     menuLinks: [
       {
-        text: 'Activité du site',
         linkProps: {
           href: '/admin/events',
         },
+        text: 'Activité du site',
       },
       {
-        text: 'Gestion des utilisateurs',
         linkProps: {
           href: '/admin/users',
         },
+        text: 'Gestion des utilisateurs',
       },
       {
-        text: 'Gestion des demandes',
         linkProps: {
           href: '/admin/demandes',
         },
+        text: 'Gestion des demandes',
       },
       {
-        text: 'Gestion des tags gestionnaires',
         linkProps: {
           href: '/admin/tags',
         },
+        text: 'Gestion des tags gestionnaires',
       },
       {
-        text: "Gestion des règles d'affectation",
         linkProps: {
           href: '/admin/assignment-rules',
         },
+        text: "Gestion des règles d'affectation",
       },
       {
-        text: 'Gestion des réseaux',
         linkProps: {
           href: '/admin/reseaux',
         },
+        text: 'Gestion des réseaux',
       },
       {
-        text: 'Suivi des tâches',
         linkProps: {
           href: '/admin/jobs',
         },
+        text: 'Suivi des tâches',
       },
       {
-        text: "Tests d'adresses",
         linkProps: {
           href: '/admin/tests-adresses',
         },
+        text: "Tests d'adresses",
       },
       {
-        text: 'Impostures',
         linkProps: {
           href: '/admin/impostures',
         },
+        text: 'Impostures',
       },
       {
-        text: 'Diagnostic',
         linkProps: {
           href: '/admin/diagnostic',
         },
+        text: 'Diagnostic',
       },
     ],
+    text: 'Administration',
   },
 ];
 
@@ -410,8 +410,8 @@ function markCurrentPageActive(menuItems: MainNavigationProps.Item[], currentUrl
     if (item.menuLinks) {
       return {
         ...item,
-        menuLinks: subMenu,
         isActive: subMenuItemActive,
+        menuLinks: subMenu,
       };
     }
     return {
@@ -463,37 +463,37 @@ const PageHeader = (props: PageHeaderProps) => {
           ...(session?.impersonating
             ? [
                 {
-                  text: 'Imposture en cours',
-                  iconId: 'fr-icon-logout-box-r-line',
                   buttonProps: {
                     onClick: async () => {
                       await deleteFetchJSON('/api/admin/impersonate');
                       location.href = '/admin/impostures';
                     },
                     style: {
-                      color: 'white',
                       backgroundColor: 'var(--background-flat-error)',
                       borderRadius: '6px',
+                      color: 'white',
                     },
                   },
+                  iconId: 'fr-icon-logout-box-r-line',
+                  text: 'Imposture en cours',
                 } satisfies HeaderProps.QuickAccessItem,
               ]
             : []),
           {
-            text: 'Se déconnecter',
-            iconId: 'fr-icon-logout-box-r-line',
             buttonProps: {
               onClick: () => signOut({ callbackUrl: '/' }),
             },
+            iconId: 'fr-icon-logout-box-r-line',
+            text: 'Se déconnecter',
           },
         ] satisfies HeaderProps.QuickAccessItem[])
       : [
           {
-            text: isAuthenticated ? 'Espace connecté' : 'Connectez-vous',
             iconId: isAuthenticated ? 'fr-icon-account-circle-fill' : 'fr-icon-account-circle-line',
             linkProps: {
               href: '/connexion',
             },
+            text: isAuthenticated ? 'Espace connecté' : 'Connectez-vous',
           } satisfies HeaderProps.QuickAccessItem,
         ];
 
@@ -516,9 +516,9 @@ const PageHeader = (props: PageHeaderProps) => {
           title: "Revenir à l'accueil",
         }}
         operatorLogo={{
+          alt: 'Logo France Chaleur Urbaine',
           imgUrl: '/FCU_logo_Monogramme.svg',
           orientation: 'horizontal',
-          alt: 'Logo France Chaleur Urbaine',
         }}
         serviceTagline="Faciliter les raccordements aux réseaux de chaleur"
         serviceTitle="France Chaleur Urbaine"
@@ -576,9 +576,9 @@ const PageFooter = () => (
     }
     domains={[]}
     operatorLogo={{
+      alt: 'Logo France Chaleur Urbaine',
       imgUrl: '/logo-fcu-with-typo.jpg',
       orientation: 'horizontal',
-      alt: 'Logo France Chaleur Urbaine',
     }}
     license=""
     partnersLogos={{
@@ -618,42 +618,42 @@ const PageFooter = () => (
     }}
     bottomItems={[
       {
-        text: 'CGU',
         linkProps: {
           href: '/cgu',
         },
+        text: 'CGU',
       },
       {
-        text: 'Données personnelles',
         linkProps: {
           href: '/politique-de-confidentialite',
         },
+        text: 'Données personnelles',
       },
       <FooterConsentManagementItem key="consent-management" />,
       {
-        text: 'Statistiques',
         linkProps: {
           href: '/stats',
         },
+        text: 'Statistiques',
       },
       {
-        text: 'Contact',
         linkProps: {
           href: '/contact',
         },
+        text: 'Contact',
       },
       {
-        text: 'Plan du site',
         linkProps: {
           href: '/plan-du-site',
         },
+        text: 'Plan du site',
       },
       {
-        text: 'Code source',
         iconId: 'fr-icon-github-fill',
         linkProps: {
           href: 'https://github.com/betagouv/france-chaleur-urbaine',
         },
+        text: 'Code source',
       },
     ]}
   />

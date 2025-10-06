@@ -1,5 +1,5 @@
 import { Select } from '@codegouvfr/react-dsfr/SelectNext';
-import React from 'react';
+import type React from 'react';
 
 import { usePublicodesFormContext } from '@/components/form/publicodes/FormProvider';
 
@@ -28,7 +28,6 @@ const SelectClimatisation = ({ ...props }: SelectClimatisation) => {
         },
       ]}
       nativeSelectProps={{
-        value: !inclureLaClimatisation ? 'non' : typeDeProductionDeFroid === 'Groupe froid' ? 'groupe-froid' : 'reseau-de-froid',
         onChange: (e) => {
           const newValue = e.target.value;
           if (newValue === 'non') {
@@ -40,6 +39,7 @@ const SelectClimatisation = ({ ...props }: SelectClimatisation) => {
           engine.setField('Inclure la climatisation', 'oui');
           engine.setStringField('type de production de froid', newValue === 'groupe-froid' ? 'Groupe froid' : 'Réseau de froid');
         },
+        value: !inclureLaClimatisation ? 'non' : typeDeProductionDeFroid === 'Groupe froid' ? 'groupe-froid' : 'reseau-de-froid',
       }}
       {...props}
     />

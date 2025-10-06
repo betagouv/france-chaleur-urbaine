@@ -1,6 +1,6 @@
 import Badge from '@codegouvfr/react-dsfr/Badge';
 
-import { type UserRole } from '@/types/enum/UserRole';
+import type { UserRole } from '@/types/enum/UserRole';
 import { upperCaseFirstChar } from '@/utils/strings';
 
 const roleConfig = {
@@ -13,11 +13,11 @@ const roleConfig = {
   gestionnaire: {
     className: 'bg-purple-700! text-white!',
   },
-  professionnel: {
-    className: 'bg-[#0d49fb]! text-white!',
-  },
   particulier: {
     className: 'bg-[#2ca892]! text-white!',
+  },
+  professionnel: {
+    className: 'bg-[#0d49fb]! text-white!',
   },
 } satisfies Record<
   UserRole,

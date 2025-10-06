@@ -5,7 +5,7 @@ export type CheckboxProps = Omit<CheckboxesProps, 'options'> &
   Omit<CheckboxOption, 'nativeInputProps'> & { nativeInputProps?: CheckboxOption['nativeInputProps'] & { name: string } };
 
 const Checkbox: React.FC<CheckboxProps> = ({ label, hintText, nativeInputProps, ...props }) => {
-  return <Checkboxes options={[{ label, hintText, nativeInputProps: nativeInputProps || {} }]} {...props} />;
+  return <Checkboxes options={[{ hintText, label, nativeInputProps: nativeInputProps || {} }]} {...props} />;
 };
 
 export default Checkbox;

@@ -5,7 +5,7 @@ import db from '@/server/db';
 import { handleRouteErrors, requireGetMethod, validateObjectSchema } from '@/server/helpers/server';
 import { getAllDemands } from '@/server/services/manager';
 import { STAT_KEY, STAT_LABEL, STAT_METHOD, STAT_PERIOD } from '@/types/enum/MatomoStats';
-import { type Demand } from '@/types/Summary/Demand';
+import type { Demand } from '@/types/Summary/Demand';
 
 type CalcResult = {
   date?: string;
@@ -22,7 +22,7 @@ const reducer = () => {
     const key = fields['Date demandes'];
 
     nbTotal++;
-    if (fields['Éligibilité'] && (!fields['Distance au réseau'] || fields['Distance au réseau'] <= 100)) {
+    if (fields.Éligibilité && (!fields['Distance au réseau'] || fields['Distance au réseau'] <= 100)) {
       nbEligible++;
     } else {
       nbUneligible++;
@@ -34,8 +34,8 @@ const reducer = () => {
           ...acc,
           [key]: {
             date: key,
-            nbTotal,
             nbEligible,
+            nbTotal,
             nbUneligible,
           },
         };

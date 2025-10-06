@@ -1,4 +1,4 @@
-import { type HttpClient } from '@/services/http';
+import type { HttpClient } from '@/services/http';
 import { exportsParams } from '@/types/Export';
 import { downloadFile } from '@/utils/browser';
 

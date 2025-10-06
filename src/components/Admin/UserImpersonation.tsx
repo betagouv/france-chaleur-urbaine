@@ -3,7 +3,7 @@ import { Select } from '@codegouvfr/react-dsfr/SelectNext';
 import Tag from '@codegouvfr/react-dsfr/Tag';
 import { useEffect, useMemo, useState } from 'react';
 
-import { type UserRole } from '@/types/enum/UserRole';
+import type { UserRole } from '@/types/enum/UserRole';
 import { fetchJSON, postFetchJSON } from '@/utils/network';
 import { normalize } from '@/utils/strings';
 
@@ -33,8 +33,8 @@ const UserImpersonation = () => {
       setAllTagsGestionnaires(
         tags.sort(Intl.Collator().compare).map((tag) => ({
           label: tag,
-          value: tag,
           searchValue: normalize(tag),
+          value: tag,
         }))
       );
     })();
@@ -43,10 +43,10 @@ const UserImpersonation = () => {
   const selectTagsOptions = useMemo(() => {
     return [
       {
-        label: 'Sélectionner les tags gestionnaires',
-        value: '',
-        searchValue: '',
         disabled: true,
+        label: 'Sélectionner les tags gestionnaires',
+        searchValue: '',
+        value: '',
       },
       ...allTagsGestionnaires,
     ];
@@ -80,8 +80,8 @@ const UserImpersonation = () => {
         label="Rôle"
         className="fr-col-xl-4 fr-col-md-6 fr-mb-2w"
         nativeSelectProps={{
-          value: selectedRole,
           onChange: (e) => handleRoleChange(e.target.value),
+          value: selectedRole,
         }}
         options={roles}
       />

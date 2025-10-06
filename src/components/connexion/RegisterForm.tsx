@@ -1,6 +1,6 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
-import { type z } from 'zod';
+import type { z } from 'zod';
 
 import useForm from '@/components/form/react-form/useForm';
 import Alert from '@/components/ui/Alert';
@@ -27,28 +27,28 @@ type FormStep = {
 
 const steps: FormStep[] = [
   {
+    defaultValues: {
+      accept_cgu: false,
+      email: '',
+      optin_newsletter: false,
+      password: '',
+    } satisfies CredentialsSchema,
     label: 'Choisir un identifiant',
     schema: zCredentialsSchema,
-    defaultValues: {
-      email: '',
-      password: '',
-      accept_cgu: false,
-      optin_newsletter: false,
-    } satisfies CredentialsSchema,
   },
   {
-    label: 'Votre profil',
-    schema: zIdentitySchema,
     defaultValues: {
+      email: '',
       first_name: '',
       last_name: '',
+      phone: null,
       role: 'professionnel',
       structure_name: '',
-      structure_type: '',
       structure_other: '',
-      email: '',
-      phone: null,
+      structure_type: '',
     } satisfies IdentitySchema,
+    label: 'Votre profil',
+    schema: zIdentitySchema,
   },
 ] as const;
 
@@ -67,7 +67,6 @@ function RegisterForm() {
 
   const { EmailInput, PasswordInput, Checkbox, Submit, Form, Input, Radio, useValue, Select, PhoneInput } = useForm({
     defaultValues: formData,
-    schema: step.schema,
     onSubmit: toastErrors(async ({ value }) => {
       const newFormData = { ...formData, ...value };
       setFormData(newFormData);
@@ -79,6 +78,7 @@ function RegisterForm() {
         router.push('/inscription/bravo');
       }
     }),
+    schema: step.schema,
   });
 
   const structureType = useValue('structure_type');

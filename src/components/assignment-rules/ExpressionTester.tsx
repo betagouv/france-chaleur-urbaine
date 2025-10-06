@@ -26,11 +26,11 @@ const flattenObject = (
         flattenObject(value, path, result);
       } else if (Array.isArray(value)) {
         // Tableau : ajouter la propriété
-        result.push({ path, value, type: 'array' });
+        result.push({ path, type: 'array', value });
       } else {
         // Valeur primitive
         const type = typeof value;
-        result.push({ path, value, type });
+        result.push({ path, type, value });
       }
     }
   }
@@ -39,26 +39,18 @@ const flattenObject = (
 
 // Données d'éligibilité par défaut pour les tests
 const getDefaultEligibilityData = () => ({
-  type: 'dans_pdp',
-  distance: 0,
-  id_sncu: '9402C',
-  nom: 'Réseaux de Créteil - Scuc',
-  tags: ['ENGIE', 'ENGIE_IDF', 'DALKIA'],
-  communes: ['Créteil'],
   commune: {
-    nom: 'Créteil',
     insee_com: '94028',
     insee_dep: '94',
     insee_reg: '11',
+    nom: 'Créteil',
   },
+  communes: ['Créteil'],
   departement: {
-    nom: 'Val-de-Marne',
     insee_dep: '94',
+    nom: 'Val-de-Marne',
   },
-  region: {
-    nom: 'Île-de-France',
-    insee_reg: '11',
-  },
+  distance: 0,
   epci: {
     code: '200054781',
     nom: 'Métropole du Grand Paris',
@@ -68,42 +60,50 @@ const getDefaultEligibilityData = () => ({
     code: '200057958',
     nom: 'Établissement public territorial Grand-Orly Seine Bièvre',
   },
-  reseauDeChaleur: {
-    id_fcu: 296,
+  id_sncu: '9402C',
+  nom: 'Réseaux de Créteil - Scuc',
+  pdp: {
+    communes: ['Créteil'],
     'Identifiant reseau': '9402C',
-    nom_reseau: 'Réseaux de Créteil - Scuc',
-    tags: ['Dalkia', 'Dalkia_IDF', 'Dalkia_9402C'],
+    id_fcu: 162,
+    reseau_de_chaleur_ids: [],
+    reseau_en_construction_ids: [9, 71, 72],
+  },
+  region: {
+    insee_reg: '11',
+    nom: 'Île-de-France',
+  },
+  reseauDeChaleur: {
     communes: ['Créteil'],
     distance: 29,
+    'Identifiant reseau': '9402C',
+    id_fcu: 296,
+    nom_reseau: 'Réseaux de Créteil - Scuc',
+    tags: ['Dalkia', 'Dalkia_IDF', 'Dalkia_9402C'],
   },
   reseauDeChaleurSansTrace: {
-    id_fcu: 1076,
-    'Identifiant reseau': '9403C',
-    nom_reseau: 'Réseau Créteil Village',
-    nom: 'Créteil',
-    tags: ['Dalkia', 'Dalkia_IDF'],
     communes: ['Créteil'],
+    'Identifiant reseau': '9403C',
+    id_fcu: 1076,
+    nom: 'Créteil',
+    nom_reseau: 'Réseau Créteil Village',
+    tags: ['Dalkia', 'Dalkia_IDF'],
   },
   reseauEnConstruction: {
+    communes: ['Bourg-la-Reine', 'Fontenay-aux-Roses', 'Sceaux'],
+    distance: 8752,
     id_fcu: 158,
     nom_reseau: null,
     tags: ['SIPPEREC', 'SIPPEREC_BLR'],
-    communes: ['Bourg-la-Reine', 'Fontenay-aux-Roses', 'Sceaux'],
-    distance: 8752,
   },
+  tags: ['ENGIE', 'ENGIE_IDF', 'DALKIA'],
+  type: 'dans_pdp',
   zoneEnConstruction: {
+    communes: ['Créteil'],
+    distance: 0,
     id_fcu: 71,
     nom_reseau: 'Réseaux de Créteil - Scuc',
     tags: ['Dalkia', 'Dalkia_IDF', 'Dalkia_9402C'],
-    communes: ['Créteil'],
-    distance: 0,
-  },
-  pdp: {
-    id_fcu: 162,
-    'Identifiant reseau': '9402C',
-    communes: ['Créteil'],
-    reseau_de_chaleur_ids: [],
-    reseau_en_construction_ids: [9, 71, 72],
   },
 });
 

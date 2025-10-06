@@ -1,9 +1,10 @@
 import { useRouter } from 'next/router';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import type React from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { EligibilityFormContact, EligibilityFormMessageConfirmation } from '@/components/EligibilityForm';
 import { CheckEligibilityFormLabel, SelectEnergy } from '@/components/EligibilityForm/components';
-import { energyInputsDefaultLabels, type EnergyInputsLabelsType } from '@/components/EligibilityForm/EligibilityFormAddress';
+import { type EnergyInputsLabelsType, energyInputsDefaultLabels } from '@/components/EligibilityForm/EligibilityFormAddress';
 import AddressAutocomplete from '@/components/form/dsfr/AddressAutocompleteInput';
 import MarkdownWrapper from '@/components/MarkdownWrapper';
 import Slice from '@/components/Slice';
@@ -14,8 +15,8 @@ import Modal, { createModal } from '@/components/ui/Modal';
 import useContactFormFCU from '@/hooks/useContactFormFCU';
 import { AnalyticsFormId } from '@/modules/analytics/client';
 import { useServices } from '@/services';
-import { type AvailableHeating } from '@/types/AddressData';
-import { type SuggestionItem } from '@/types/Suggestions';
+import type { AvailableHeating } from '@/types/AddressData';
+import type { SuggestionItem } from '@/types/Suggestions';
 import cx from '@/utils/cx';
 
 import { Container, FormLabel, HeadSliceContainer, PageBody, PageTitle, SliceContactFormStyle } from './HeadSliceForm.style';
@@ -103,16 +104,16 @@ const HeadSliceForm = ({
       handleOnFetchAddress({ address });
     }
     const [lon, lat] = geoAddress.geometry.coordinates;
-    const coords = { lon, lat };
+    const coords = { lat, lon };
 
     try {
       const networkData = await heatNetworkService.findByCoords(geoAddress);
       handleOnSuccessAddress({
         address,
-        heatingType,
         coords,
-        geoAddress,
         eligibility: networkData,
+        geoAddress,
+        heatingType,
       });
     } catch (_err: any) {
       setEligibilityError(true);
@@ -218,7 +219,7 @@ const HeadSliceForm = ({
           </form>
         </>
       ) : (
-        <>{child}</>
+        child
       ),
     [
       address,
@@ -240,7 +241,7 @@ const HeadSliceForm = ({
     <>
       <SliceContactFormStyle />
       {withWrapper ? (
-        withWrapper(WrappedChild)
+        withWrapper(WrappedChild as any)
       ) : (
         <Slice theme="grey" bg={bg} bgPos={bgPos} bgColor="#CDE3F0" padding={8}>
           <HeadSliceContainer needGradient={needGradient}>

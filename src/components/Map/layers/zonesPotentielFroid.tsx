@@ -9,69 +9,69 @@ export const zonePotentielFroidOpacity = 0.3;
 
 export const zonesPotentielFroidLayersSpec = [
   {
-    sourceId: 'zonesPotentielFroid',
-    source: {
-      type: 'vector',
-      tiles: ['/api/map/zonesPotentielFroid/{z}/{x}/{y}'],
-      maxzoom: 12,
-      promoteId: 'id_zone',
-    },
     layers: [
       {
         id: 'zonesPotentielFroid',
-        type: 'fill',
+        isVisible: (config) => config.zonesOpportuniteFroid.show && config.zonesOpportuniteFroid.zonesPotentielFroid,
         paint: {
           'fill-color': ifHoverElse(darken(zonePotentielFroidColor, 40), zonePotentielFroidColor),
           'fill-opacity': zonePotentielFroidOpacity,
         },
-        isVisible: (config) => config.zonesOpportuniteFroid.show && config.zonesOpportuniteFroid.zonesPotentielFroid,
         popup: buildPopup(false),
+        type: 'fill',
       },
       {
         id: 'zonesPotentielFroid-contour',
-        type: 'line',
+        isVisible: (config) => config.zonesOpportuniteFroid.show && config.zonesOpportuniteFroid.zonesPotentielFroid,
         paint: {
           'line-color': zonePotentielFroidColor,
           'line-width': ifHoverElse(4, 2),
         },
-        isVisible: (config) => config.zonesOpportuniteFroid.show && config.zonesOpportuniteFroid.zonesPotentielFroid,
+        type: 'line',
         unselectable: true,
       },
     ],
+    source: {
+      maxzoom: 12,
+      promoteId: 'id_zone',
+      tiles: ['/api/map/zonesPotentielFroid/{z}/{x}/{y}'],
+      type: 'vector',
+    },
+    sourceId: 'zonesPotentielFroid',
   },
 
   {
-    sourceId: 'zonesPotentielFortFroid',
-    source: {
-      type: 'vector',
-      tiles: ['/api/map/zonesPotentielFortFroid/{z}/{x}/{y}'],
-      maxzoom: 12,
-      promoteId: 'id_zone',
-    },
     layers: [
       {
         id: 'zonesPotentielFortFroid',
-        type: 'fill',
+        isVisible: (config) => config.zonesOpportuniteFroid.show && config.zonesOpportuniteFroid.zonesPotentielFortFroid,
         paint: {
           'fill-color': ifHoverElse(darken(zonePotentielFortFroidColor, 40), zonePotentielFortFroidColor),
           'fill-opacity': zonePotentielFroidOpacity,
         },
-        isVisible: (config) => config.zonesOpportuniteFroid.show && config.zonesOpportuniteFroid.zonesPotentielFortFroid,
         popup: buildPopup(true),
+        type: 'fill',
       },
       {
         id: 'zonesPotentielFortFroid-contour',
-        type: 'line',
+        isVisible: (config) => config.zonesOpportuniteFroid.show && config.zonesOpportuniteFroid.zonesPotentielFortFroid,
         paint: {
           'line-color': zonePotentielFortFroidColor,
           'line-width': ifHoverElse(4, 2),
         },
-        isVisible: (config) => config.zonesOpportuniteFroid.show && config.zonesOpportuniteFroid.zonesPotentielFortFroid,
+        type: 'line',
         unselectable: true,
       },
     ],
+    source: {
+      maxzoom: 12,
+      promoteId: 'id_zone',
+      tiles: ['/api/map/zonesPotentielFortFroid/{z}/{x}/{y}'],
+      type: 'vector',
+    },
+    sourceId: 'zonesPotentielFortFroid',
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];
 
 type ZonePotentielFroid = {
   fid: number;

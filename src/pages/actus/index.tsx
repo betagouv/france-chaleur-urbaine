@@ -123,12 +123,12 @@ const ActualitesPage = () => {
                 count={totalPages}
                 defaultPage={page}
                 getPageLinkProps={(pageNumber) => ({
+                  href: '#',
                   onClick: (e) => {
                     e.preventDefault();
                     void setPage(pageNumber);
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    window.scrollTo({ behavior: 'smooth', top: 0 });
                   },
-                  href: '#',
                 })}
                 className="fr-mt-4w mx-auto"
               />

@@ -4,7 +4,7 @@ import Badge from '@/components/ui/Badge';
 import Tag from '@/components/ui/Tag';
 import Tooltip from '@/components/ui/Tooltip';
 import { createUserAdminSchema, structureTypes, updateUserAdminSchema } from '@/modules/users/constants';
-import { type UsersResponse } from '@/pages/api/admin/users/[[...slug]]';
+import type { UsersResponse } from '@/pages/api/admin/users/[[...slug]]';
 import { userRoles } from '@/types/enum/UserRole';
 import cx from '@/utils/cx';
 
@@ -25,24 +25,24 @@ type UserFormProps = {
 const UserForm = ({ user, onSubmit, loading }: UserFormProps) => {
   const isNew = !user?.id;
   const { Form, Field, Submit, FieldWrapper, useValue } = useForm({
-    schema: isNew ? createUserAdminSchema : updateUserAdminSchema,
     defaultValues: {
-      status: user?.status || 'pending_email_confirmation',
-      role: user?.role || 'gestionnaire',
       active: user?.active ?? true,
+      email: user?.email ?? '',
+      first_name: user?.first_name ?? '',
+      gestionnaires: user?.gestionnaires ?? [],
+      last_name: user?.last_name ?? '',
       optin_at: !!user?.optin_at,
+      phone: user?.phone ?? '',
       receive_new_demands: user?.receive_new_demands ?? true,
       receive_old_demands: user?.receive_old_demands ?? true,
-      first_name: user?.first_name ?? '',
-      last_name: user?.last_name ?? '',
-      phone: user?.phone ?? '',
-      email: user?.email ?? '',
-      gestionnaires: user?.gestionnaires ?? [],
+      role: user?.role || 'gestionnaire',
+      status: user?.status || 'pending_email_confirmation',
       structure_name: user?.structure_name ?? '',
-      structure_type: user?.structure_type ?? '',
       structure_other: user?.structure_other ?? '',
+      structure_type: user?.structure_type ?? '',
     },
     onSubmit: async ({ value }) => onSubmit(value as any),
+    schema: isNew ? createUserAdminSchema : updateUserAdminSchema,
   });
 
   const role = useValue('role');

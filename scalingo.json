@@ -1,20 +1,20 @@
 {
-  "name": "fcu",
-  "copy_parent_database_urls": true,
-  "formation": {
-    "web": {
-      "amount": 1,
-      "size": "M"
-    },
-    "cron": {
-      "amount": 0,
-      "size": "S"
-    }
-  },
   "addons": [],
+  "copy_parent_database_urls": true,
   "env": {
     "IS_REVIEW_APP": {
       "value": "true"
     }
-  }
+  },
+  "formation": {
+    "cron": {
+      "amount": 0,
+      "size": "S"
+    },
+    "web": {
+      "amount": 1,
+      "size": "M"
+    }
+  },
+  "name": "fcu"
 }

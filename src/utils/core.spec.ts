@@ -27,39 +27,39 @@ describe('deepMergeObjects()', () => {
       deepMergeObjects(
         {
           sub: {
+            keep: {
+              d: 1,
+            },
             subsub: {
               a: 1,
               b: 1,
-            },
-            keep: {
-              d: 1,
             },
           },
         },
         {
           sub: {
+            new: {
+              e: 1,
+            },
             subsub: {
               a: 2,
               c: 1,
-            },
-            new: {
-              e: 1,
             },
           },
         }
       )
     ).toStrictEqual({
       sub: {
-        subsub: {
-          a: 2,
-          b: 1,
-          c: 1,
-        },
         keep: {
           d: 1,
         },
         new: {
           e: 1,
+        },
+        subsub: {
+          a: 2,
+          b: 1,
+          c: 1,
         },
       },
     });

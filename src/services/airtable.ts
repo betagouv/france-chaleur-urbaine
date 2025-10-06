@@ -1,5 +1,5 @@
-import { type Airtable } from '@/types/enum/Airtable';
-import { type AirtableDemandCreation, type FormDemandCreation } from '@/types/Summary/Demand';
+import type { Airtable } from '@/types/enum/Airtable';
+import type { AirtableDemandCreation, FormDemandCreation } from '@/types/Summary/Demand';
 
 const formatHeatingEnergyToAirtable = (heatingEnergy: string) => {
   switch (heatingEnergy) {
@@ -45,7 +45,6 @@ const formatStructureToAirtable: (structure: string, companyType?: string, deman
           default:
             return structure;
         }
-        break;
       default:
         return structure;
     }
@@ -112,10 +111,25 @@ export const formatDataToAirtable: (values: FormDemandCreation) => AirtableDeman
   } = values;
 
   return {
+    Adresse: address,
+    'Campagne keywords': mtm_kwd,
+    'Campagne matomo': mtm_campaign,
+    'Campagne source': mtm_source,
+    'Code Postal': postcode,
+    Departement: department,
+    'Distance au réseau': eligibility?.distance,
+    'en PDP': eligibility.inPDP ? 'Oui' : 'Non',
+    Latitude: coords.lat,
+    Logement: nbLogements,
+    Longitude: coords.lon,
+    Mail: email,
+    'Mode de chauffage': formatHeatingEnergyToAirtable(heatingEnergy),
     Nom: lastName,
+    'Nom de la structure accompagnante': formatNomStructureAccompagnanteToAirtable(structure, company, companyType),
+    networkId,
     Prénom: firstName,
+    Region: region,
     Structure: formatStructureToAirtable(structure, companyType, demandCompanyType),
-    Établissement: formatEtablissementToAirtable(structure, company, companyType, demandCompanyType, demandCompanyName),
     'Structure accompagnante':
       structure === 'Tertiaire' &&
       (companyType === "Bureau d'études ou AMO" ||
@@ -123,37 +137,22 @@ export const formatDataToAirtable: (values: FormDemandCreation) => AirtableDeman
         companyType === 'Syndic de copropriété')
         ? companyType
         : undefined,
-    Éligibilité: eligibility.isEligible,
-    Adresse: address,
-    Latitude: coords.lat,
-    Longitude: coords.lon,
-    Mail: email,
-    Téléphone: phone,
-    'Mode de chauffage': formatHeatingEnergyToAirtable(heatingEnergy),
-    'Type de chauffage': formatHeatingTypeToAirtable(heatingType),
-    'Distance au réseau': eligibility?.distance,
-    'en PDP': eligibility.inPDP ? 'Oui' : 'Non',
-    Ville: city,
-    'Code Postal': postcode,
-    Departement: department,
-    Region: region,
-    'Campagne matomo': mtm_campaign,
-    'Campagne keywords': mtm_kwd,
-    'Campagne source': mtm_source,
-    'Nom de la structure accompagnante': formatNomStructureAccompagnanteToAirtable(structure, company, companyType),
     'Surface en m2': demandArea,
-    Logement: nbLogements,
-    networkId,
+    'Type de chauffage': formatHeatingTypeToAirtable(heatingType),
+    Téléphone: phone,
+    Ville: city,
+    Éligibilité: eligibility.isEligible,
+    Établissement: formatEtablissementToAirtable(structure, company, companyType, demandCompanyType, demandCompanyName),
   };
 };
 
 export const submitToAirtable = async (values: any, type: Airtable): Promise<Response> => {
   const res = await fetch('/api/airtable/records', {
-    method: 'POST',
+    body: JSON.stringify({ ...values, type }),
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ ...values, type }),
+    method: 'POST',
   });
   if (!res.ok) {
     throw new Error(`wrong status ${res.status}`);
@@ -163,10 +162,10 @@ export const submitToAirtable = async (values: any, type: Airtable): Promise<Res
 
 export const updateAirtable = async (recordId: string, values: any, type: string): Promise<Response> => {
   return fetch(`./api/airtable/records/${recordId}`, {
-    method: 'PUT',
+    body: JSON.stringify({ ...values, type }),
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ ...values, type }),
+    method: 'PUT',
   });
 };

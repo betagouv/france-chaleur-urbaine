@@ -1,14 +1,14 @@
-import React from 'react';
+import type React from 'react';
 
 import Input from '@/components/form/publicodes/Input';
 import RadioInput from '@/components/form/publicodes/Radio';
 import Select from '@/components/form/publicodes/Select';
-import { UrlStateAccordion, UrlStateAccordion as Accordion } from '@/components/ui/Accordion';
+import { UrlStateAccordion as Accordion, UrlStateAccordion } from '@/components/ui/Accordion';
 import useArrayQueryState from '@/hooks/useArrayQueryState';
 
 import { Title } from './ComparateurPublicodes.style';
-import { type ModeDeChauffage } from './mappings';
-import { type SimulatorEngine } from './useSimulatorEngine';
+import type { ModeDeChauffage } from './mappings';
+import type { SimulatorEngine } from './useSimulatorEngine';
 
 type ParametresDesModesDeChauffageFormProps = React.HTMLAttributes<HTMLDivElement> & {
   engine: SimulatorEngine;

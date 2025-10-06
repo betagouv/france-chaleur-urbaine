@@ -1,4 +1,4 @@
-import { type Knex } from 'knex';
+import type { Knex } from 'knex';
 import { createLogger, format, transports } from 'winston';
 
 import db from '@/server/db';
@@ -13,10 +13,10 @@ let globalDryRun = false;
 // 2 loggers pour conserver la traces sur la console et dans des fichiers
 
 const logger = createLogger({
-  level: 'debug',
   format: format.printf(({ level, message }) => {
     return (level === 'error' ? `*** ERROR ***: ${message}` : level === 'warn' ? `* WARN *: ${message}` : message) as string;
   }),
+  level: 'debug',
   transports: [
     new transports.Console(),
     new transports.File({
@@ -27,10 +27,10 @@ const logger = createLogger({
 });
 
 const queriesLogger = createLogger({
-  level: 'debug',
   format: format.printf(({ level, message }) => {
     return (level === 'error' ? `*** ERROR ***: ${message}` : message) as string;
   }),
+  level: 'debug',
   transports: [
     new transports.Console(),
     new transports.File({
@@ -65,142 +65,142 @@ type TableConfig = {
 // Cette configuration permet de mettre à jour chaque type de données avec ses spécificités
 export const tableConfigs: TableConfig[] = [
   {
-    tableCible: 'public.reseaux_de_chaleur',
-    tableChangements: 'wip_traces.changements_reseaux_de_chaleur',
-    tableChangementsSelectFields: ['id_sncu_new as id_sncu'],
-    pgToAirtableSyncAdditionalFields: ['has_PDP', 'date_actualisation_trace', 'date_actualisation_pdp'],
-    postgres: {
-      getCreateProps: (changement) => ({
-        'Identifiant reseau': changement.id_sncu,
-        has_trace: changement.is_line,
-        communes: changement.ign_communes,
-      }),
-      getUpdateProps: (changement) => ({
-        has_trace: changement.is_line,
-        communes: changement.ign_communes,
-      }),
-    },
     airtable: {
-      tableName: 'FCU - Réseaux de chaleur',
       createSearchFormula: (changement) => `OR(
         FIND(${changement.id_fcu}, {id_fcu}) ${changement.id_sncu ? `, FIND("${changement.id_sncu}", {Identifiant reseau})` : ''}
       )`,
+      fieldsConversion: {
+        communes: TypeString,
+        date_actualisation_pdp: TypeString,
+        date_actualisation_trace: TypeString,
+        departement: TypeString,
+        has_PDP: TypeBool,
+        has_trace: TypeBool,
+        id_fcu: TypeString,
+        region: TypeString,
+      },
       getCreateProps: (changement) => ({
-        id_fcu: changement.id_fcu,
-        'Identifiant reseau': changement.id_sncu,
-        has_trace: changement.is_line,
         communes: changement.ign_communes.join(','),
+        has_trace: changement.is_line,
+        'Identifiant reseau': changement.id_sncu,
+        id_fcu: changement.id_fcu,
       }),
       getUpdateProps: (changement) => ({
-        id_fcu: changement.id_fcu,
-        has_trace: changement.is_line,
         communes: changement.ign_communes.join(','),
-        has_PDP: changement.has_PDP,
-        departement: changement.departement,
-        region: changement.region,
-        date_actualisation_trace: changement.date_actualisation_trace ? formatAsISODate(changement.date_actualisation_trace) : null,
         date_actualisation_pdp: changement.date_actualisation_pdp ? formatAsISODate(changement.date_actualisation_pdp) : null,
+        date_actualisation_trace: changement.date_actualisation_trace ? formatAsISODate(changement.date_actualisation_trace) : null,
+        departement: changement.departement,
+        has_PDP: changement.has_PDP,
+        has_trace: changement.is_line,
+        id_fcu: changement.id_fcu,
+        region: changement.region,
       }),
-      fieldsConversion: {
-        id_fcu: TypeString,
-        has_trace: TypeBool,
-        communes: TypeString,
-        departement: TypeString,
-        region: TypeString,
-        has_PDP: TypeBool,
-        date_actualisation_trace: TypeString,
-        date_actualisation_pdp: TypeString,
-      },
+      tableName: 'FCU - Réseaux de chaleur',
     },
-  },
-  {
-    tableCible: 'public.reseaux_de_froid',
-    tableChangements: 'wip_traces.changements_reseaux_de_froid',
-    tableChangementsSelectFields: ['id_sncu_new as id_sncu'],
-    pgToAirtableSyncAdditionalFields: ['date_actualisation_trace'],
+    pgToAirtableSyncAdditionalFields: ['has_PDP', 'date_actualisation_trace', 'date_actualisation_pdp'],
     postgres: {
       getCreateProps: (changement) => ({
-        'Identifiant reseau': changement.id_sncu,
-        has_trace: changement.is_line,
         communes: changement.ign_communes,
+        has_trace: changement.is_line,
+        'Identifiant reseau': changement.id_sncu,
       }),
       getUpdateProps: (changement) => ({
-        has_trace: changement.is_line,
         communes: changement.ign_communes,
+        has_trace: changement.is_line,
       }),
     },
+    tableChangements: 'wip_traces.changements_reseaux_de_chaleur',
+    tableChangementsSelectFields: ['id_sncu_new as id_sncu'],
+    tableCible: 'public.reseaux_de_chaleur',
+  },
+  {
     airtable: {
-      tableName: 'FCU - Réseaux de froid',
       createSearchFormula: (changement) => `OR(
         FIND(${changement.id_fcu}, {id_fcu}),
         FIND("${changement.id_sncu}", {Identifiant reseau})
       )`,
+      fieldsConversion: {
+        communes: TypeString,
+        date_actualisation_trace: TypeString,
+        departement: TypeString,
+        has_trace: TypeBool,
+        id_fcu: TypeString,
+        region: TypeString,
+      },
       getCreateProps: (changement) => ({
-        id_fcu: changement.id_fcu,
-        'Identifiant reseau': changement.id_sncu,
-        has_trace: changement.is_line,
         communes: changement.ign_communes.join(','),
+        has_trace: changement.is_line,
+        'Identifiant reseau': changement.id_sncu,
+        id_fcu: changement.id_fcu,
       }),
       getUpdateProps: (changement) => ({
-        id_fcu: changement.id_fcu,
-        has_trace: changement.is_line,
         communes: changement.ign_communes.join(','),
-        departement: changement.departement,
-        region: changement.region,
         date_actualisation_trace: changement.date_actualisation_trace ? formatAsISODate(changement.date_actualisation_trace) : null,
+        departement: changement.departement,
+        has_trace: changement.is_line,
+        id_fcu: changement.id_fcu,
+        region: changement.region,
       }),
-      fieldsConversion: {
-        id_fcu: TypeString,
-        has_trace: TypeBool,
-        communes: TypeString,
-        departement: TypeString,
-        region: TypeString,
-        date_actualisation_trace: TypeString,
-      },
+      tableName: 'FCU - Réseaux de froid',
     },
+    pgToAirtableSyncAdditionalFields: ['date_actualisation_trace'],
+    postgres: {
+      getCreateProps: (changement) => ({
+        communes: changement.ign_communes,
+        has_trace: changement.is_line,
+        'Identifiant reseau': changement.id_sncu,
+      }),
+      getUpdateProps: (changement) => ({
+        communes: changement.ign_communes,
+        has_trace: changement.is_line,
+      }),
+    },
+    tableChangements: 'wip_traces.changements_reseaux_de_froid',
+    tableChangementsSelectFields: ['id_sncu_new as id_sncu'],
+    tableCible: 'public.reseaux_de_froid',
   },
   {
-    tableCible: 'public.zone_de_developpement_prioritaire', // attention pas de pluriel ici
     tableChangements: 'wip_traces.changements_zones_de_developpement_prioritaire',
+    tableCible: 'public.zone_de_developpement_prioritaire', // attention pas de pluriel ici
   },
   {
-    tableCible: 'public.zones_et_reseaux_en_construction',
-    tableChangements: 'wip_traces.changements_zones_et_reseaux_en_construction',
+    airtable: {
+      fieldsConversion: {
+        communes: TypeString,
+        date_actualisation_trace: TypeString,
+        departement: TypeString,
+        id_fcu: TypeString,
+        is_zone: TypeBool,
+        region: TypeString,
+      },
+      getCreateProps: (changement) => ({
+        communes: changement.ign_communes.join(','),
+        id_fcu: changement.id_fcu,
+        is_zone: changement.is_zone,
+      }),
+      getUpdateProps: (changement) => ({
+        communes: changement.ign_communes.join(','),
+        date_actualisation_trace: changement.date_actualisation_trace ? formatAsISODate(changement.date_actualisation_trace) : null,
+        departement: changement.departement,
+        id_fcu: changement.id_fcu,
+        is_zone: changement.is_zone,
+        region: changement.region,
+      }),
+      tableName: 'FCU - Futurs réseaux de chaleur',
+    },
     pgToAirtableSyncAdditionalFields: ['is_zone', 'date_actualisation_trace'],
     postgres: {
       getCreateProps: (changement) => ({
-        is_zone: !changement.is_line,
         communes: changement.ign_communes,
+        is_zone: !changement.is_line,
       }),
       getUpdateProps: (changement) => ({
-        is_zone: !changement.is_line,
         communes: changement.ign_communes,
+        is_zone: !changement.is_line,
       }),
     },
-    airtable: {
-      tableName: 'FCU - Futurs réseaux de chaleur',
-      getCreateProps: (changement) => ({
-        id_fcu: changement.id_fcu,
-        is_zone: changement.is_zone,
-        communes: changement.ign_communes.join(','),
-      }),
-      getUpdateProps: (changement) => ({
-        id_fcu: changement.id_fcu,
-        is_zone: changement.is_zone,
-        communes: changement.ign_communes.join(','),
-        departement: changement.departement,
-        region: changement.region,
-        date_actualisation_trace: changement.date_actualisation_trace ? formatAsISODate(changement.date_actualisation_trace) : null,
-      }),
-      fieldsConversion: {
-        id_fcu: TypeString,
-        is_zone: TypeBool,
-        communes: TypeString,
-        departement: TypeString,
-        region: TypeString,
-        date_actualisation_trace: TypeString,
-      },
-    },
+    tableChangements: 'wip_traces.changements_zones_et_reseaux_en_construction',
+    tableCible: 'public.zones_et_reseaux_en_construction',
   },
 ];
 
@@ -273,8 +273,8 @@ export const applyGeometryUpdates = async (dryRun: boolean) => {
         case 'Ajouté': {
           await logPGQuery(
             db(tableConfig.tableCible).insert({
-              id_fcu: changement.id_fcu,
               geom: changement.geom,
+              id_fcu: changement.id_fcu,
               ...(tableConfig.postgres?.getCreateProps ? tableConfig.postgres?.getCreateProps(changement) : {}),
             })
           );
@@ -370,7 +370,7 @@ async function deleteAirtable(airtableConfig: AirtableConfig, changement: Change
 // fonctions utilitaires pour logger les requêtes
 
 function logPGQuery(query: Knex.QueryBuilder<any, number>): Promise<any> {
-  queriesLogger.debug('- PG: ' + truncateGeomCoordinates(query.toQuery()));
+  queriesLogger.debug(`- PG: ${truncateGeomCoordinates(query.toQuery())}`);
   return !globalDryRun ? query : Promise.resolve();
 }
 

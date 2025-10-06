@@ -76,10 +76,10 @@ export default class EtudesEnCoursAdapter extends BaseAdapter {
 
         logger.info(`🚀 Handling ${row.EtudeId}`, { row });
         acc[row.EtudeId].push({
-          maitre_ouvrage: row["Maître d'ouvrage  "] || '',
           code_insee: row['Code INSEE'],
-          status,
           launched_at: formattedDate,
+          maitre_ouvrage: row["Maître d'ouvrage  "] || '',
+          status,
         });
         return acc;
       },
@@ -141,13 +141,13 @@ export default class EtudesEnCoursAdapter extends BaseAdapter {
           await kdb
             .insertInto('etudes_en_cours')
             .values({
-              id: +etudeId,
-              maitre_ouvrage: maitres_ouvrage,
-              status: status || '',
-              geom: result?.geom as string,
               commune_ids,
               communes: communeNames.map(({ nom }) => nom).join(', '),
+              geom: result?.geom as string,
+              id: +etudeId,
               launched_at: launched_at ? launched_at.toISOString() : '',
+              maitre_ouvrage: maitres_ouvrage,
+              status: status || '',
             })
             .execute();
           logger.info(`✅ Inserted successfully ${etudeId}`);

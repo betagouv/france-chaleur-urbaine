@@ -4,15 +4,15 @@ export const ressourcesGeothermalesNappesOpacity = 0.25;
 
 // ordonné selon la légende
 export const ressourcesGeothermalesNappesConfig = [
-  { value: 9, label: 'Très fort', color: '#5ad45a' }, // vert foncé
-  { value: 8, label: 'Fort', color: '#8be04e' }, // vert
-  { value: 7, label: 'Moyen', color: '#c5d96d' }, // vert clair
-  { value: 6, label: 'Faible', color: '#1a53ff' }, // bleu
-  { value: 5, label: 'Très faible', color: '#0d88e6' }, // bleu clair
-  { value: 3, label: 'Aléatoire', color: '#00b7c7' }, // cyan
-  { value: 4, label: 'Non connu précisément', color: '#4421af' }, // mauve
-  { value: 1, label: "Zones non étudiées, non connu précisément ou d'absence de potentiel", color: '#7c1158' }, // rose pâle
-  { value: 2, label: 'Absence de potentiel', color: '#b30000' }, // rouge
+  { color: '#5ad45a', label: 'Très fort', value: 9 }, // vert foncé
+  { color: '#8be04e', label: 'Fort', value: 8 }, // vert
+  { color: '#c5d96d', label: 'Moyen', value: 7 }, // vert clair
+  { color: '#1a53ff', label: 'Faible', value: 6 }, // bleu
+  { color: '#0d88e6', label: 'Très faible', value: 5 }, // bleu clair
+  { color: '#00b7c7', label: 'Aléatoire', value: 3 }, // cyan
+  { color: '#4421af', label: 'Non connu précisément', value: 4 }, // mauve
+  { color: '#7c1158', label: "Zones non étudiées, non connu précisément ou d'absence de potentiel", value: 1 }, // rose pâle
+  { color: '#b30000', label: 'Absence de potentiel', value: 2 }, // rouge
 ] as const;
 
 type RessourceGeothermaleNappe = {
@@ -36,17 +36,10 @@ const Popup = defineLayerPopup<RessourceGeothermaleNappe>((ressource, { Property
 
 export const ressourcesGeothermalesNappesLayersSpec = [
   {
-    sourceId: 'ressourcesGeothermalesNappes',
-    source: {
-      type: 'vector',
-      tiles: ['/api/map/ressourcesGeothermalesNappes/{z}/{x}/{y}'],
-      minzoom: 5,
-      maxzoom: 12,
-    },
     layers: [
       {
         id: 'ressourcesGeothermalesNappes',
-        type: 'fill',
+        isVisible: (config) => config.ressourcesGeothermalesNappes,
         paint: {
           'fill-color': [
             'case',
@@ -55,9 +48,16 @@ export const ressourcesGeothermalesNappesLayersSpec = [
           ] as any, // Expression MapLibre complexe
           'fill-opacity': ressourcesGeothermalesNappesOpacity,
         },
-        isVisible: (config) => config.ressourcesGeothermalesNappes,
         popup: Popup,
+        type: 'fill',
       },
     ],
+    source: {
+      maxzoom: 12,
+      minzoom: 5,
+      tiles: ['/api/map/ressourcesGeothermalesNappes/{z}/{x}/{y}'],
+      type: 'vector',
+    },
+    sourceId: 'ressourcesGeothermalesNappes',
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];

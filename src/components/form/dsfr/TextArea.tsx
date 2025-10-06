@@ -1,6 +1,6 @@
-import React, { forwardRef } from 'react';
+import { forwardRef } from 'react';
 
-import { Input as StyledDSFRInput, type InputSize, type TextAreaProps } from './Input.styles';
+import { type InputSize, Input as StyledDSFRInput, type TextAreaProps } from './Input.styles';
 
 export type InputProps = Omit<TextAreaProps, 'textArea'> & {
   size?: InputSize;

@@ -7,7 +7,7 @@ import {
   zUpdateReseauEnConstructionInput,
   zUpdateReseauInput,
 } from '@/modules/reseaux/constants';
-import { router, routeRole } from '@/modules/trpc/server';
+import { routeRole, router } from '@/modules/trpc/server';
 
 import * as reseauxService from './service';
 
@@ -48,15 +48,8 @@ const perimetreDeDeveloppementPrioritaireRouter = router({
 });
 
 export const reseauxRouter = router({
-  // Sous-routeurs par type
-  reseauDeChaleur: reseauDeChaleurRouter,
-  reseauEnConstruction: reseauEnConstructionRouter,
-  reseauDeFroid: reseauDeFroidRouter,
-  perimetreDeDeveloppementPrioritaire: perimetreDeDeveloppementPrioritaireRouter,
-
-  // Opérations communes à tous les types
-  updateGeomUpdate: adminRoute.input(zUpdateGeomUpdateInput).mutation(async ({ input }) => {
-    return await reseauxService.updateGeomUpdate(input.id as number, input.geometry, input.type);
+  createNetwork: adminRoute.input(zCreateNetworkInput).mutation(async ({ input }) => {
+    return await reseauxService.createNetwork(input.id as string, input.geometry, input.type);
   }),
   deleteGeomUpdate: adminRoute.input(zDeleteGeomUpdateInput).mutation(async ({ input }) => {
     return await reseauxService.deleteGeomUpdate(input.id as number, input.type);
@@ -64,7 +57,14 @@ export const reseauxRouter = router({
   deleteNetwork: adminRoute.input(zDeleteNetworkInput).mutation(async ({ input }) => {
     return await reseauxService.deleteNetwork(input.id as number, input.type);
   }),
-  createNetwork: adminRoute.input(zCreateNetworkInput).mutation(async ({ input }) => {
-    return await reseauxService.createNetwork(input.id as string, input.geometry, input.type);
+  perimetreDeDeveloppementPrioritaire: perimetreDeDeveloppementPrioritaireRouter,
+  // Sous-routeurs par type
+  reseauDeChaleur: reseauDeChaleurRouter,
+  reseauDeFroid: reseauDeFroidRouter,
+  reseauEnConstruction: reseauEnConstructionRouter,
+
+  // Opérations communes à tous les types
+  updateGeomUpdate: adminRoute.input(zUpdateGeomUpdateInput).mutation(async ({ input }) => {
+    return await reseauxService.updateGeomUpdate(input.id as number, input.geometry, input.type);
   }),
 });

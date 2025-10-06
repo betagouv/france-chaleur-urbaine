@@ -1,5 +1,5 @@
 import Script from 'next/script';
-import React from 'react';
+import type React from 'react';
 
 type LinkedInScriptProps = React.ComponentProps<typeof Script> & {
   partnerId: string;
@@ -8,9 +8,8 @@ type LinkedInScriptProps = React.ComponentProps<typeof Script> & {
 // https://www.linkedin.com/help/lms/answer/a415868
 const LinkedInScript: React.FC<LinkedInScriptProps> = ({ partnerId, ...props }) => {
   return (
-    <>
-      <Script id="linkedin-snippet" {...props}>
-        {`_linkedin_partner_id = "${partnerId}";
+    <Script id={'linkedin-snippet'} {...props}>
+      {`_linkedin_partner_id = "${partnerId}";
 window._linkedin_data_partner_ids = window._linkedin_data_partner_ids || [];
 window._linkedin_data_partner_ids.push(_linkedin_partner_id);
 (function(l) {
@@ -27,8 +26,7 @@ window._linkedin_data_partner_ids.push(_linkedin_partner_id);
   b.src = "https://snap.licdn.com/li.lms-analytics/insight.min.js";
   s.parentNode.insertBefore(b, s);
 })(window.lintrk);`}
-      </Script>
-    </>
+    </Script>
   );
 };
 

@@ -1,13 +1,13 @@
-import { type GetServerSideProps, type GetServerSidePropsContext, type GetServerSidePropsResult } from 'next';
-import { type Session } from 'next-auth';
+import type { GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
+import type { Session } from 'next-auth';
 import { getServerSession as getNextAuthServerSession } from 'next-auth/next';
 
 import { nextAuthOptions } from '@/pages/api/auth/[...nextauth]';
-import { type UserRole } from '@/types/enum/UserRole';
+import type { UserRole } from '@/types/enum/UserRole';
 import { deepMergeObjects } from '@/utils/core';
 import { deepCloneJSON } from '@/utils/objects';
 
-export { type Session };
+export type { Session };
 
 type ServerSessionContext = {
   req: GetServerSidePropsContext['req'];

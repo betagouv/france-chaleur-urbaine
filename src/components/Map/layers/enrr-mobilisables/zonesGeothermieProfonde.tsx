@@ -1,28 +1,28 @@
-import { type MapSourceLayersSpecification } from '../common';
+import type { MapSourceLayersSpecification } from '../common';
 
 export const enrrMobilisablesZonesGeothermieProfondeLayerColor = '#65a3d6';
 export const enrrMobilisablesZonesGeothermieProfondeLayerOpacity = 0.5;
 
 export const enrrMobilisablesZonesGeothermieProfondeLayersSpec = [
   {
-    sourceId: 'enrrMobilisables-zonesGeothermieProfonde',
-    source: {
-      type: 'vector',
-      tiles: ['/api/map/enrrMobilisables-zonesGeothermieProfonde/{z}/{x}/{y}'],
-      minzoom: 5,
-      maxzoom: 11,
-    },
     layers: [
       {
         id: 'enrrMobilisables-zonesGeothermieProfonde',
-        type: 'fill',
+        isVisible: (config) => config.enrrMobilisablesGeothermieProfonde,
         paint: {
           'fill-color': enrrMobilisablesZonesGeothermieProfondeLayerColor,
           'fill-opacity': enrrMobilisablesZonesGeothermieProfondeLayerOpacity,
         },
-        isVisible: (config) => config.enrrMobilisablesGeothermieProfonde,
+        type: 'fill',
         unselectable: true,
       },
     ],
+    source: {
+      maxzoom: 11,
+      minzoom: 5,
+      tiles: ['/api/map/enrrMobilisables-zonesGeothermieProfonde/{z}/{x}/{y}'],
+      type: 'vector',
+    },
+    sourceId: 'enrrMobilisables-zonesGeothermieProfonde',
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];

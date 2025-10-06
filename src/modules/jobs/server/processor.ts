@@ -1,4 +1,4 @@
-import { type Selectable } from 'kysely';
+import type { Selectable } from 'kysely';
 
 import { jobHandlers } from '@/modules/jobs/jobs.config';
 import { type Jobs, kdb } from '@/server/db/kysely';
@@ -15,7 +15,7 @@ type Job = Selectable<Jobs>;
 
 export async function processJobById(jobId: string) {
   const job = await kdb.selectFrom('jobs').selectAll().where('id', '=', jobId).executeTakeFirstOrThrow();
-  await kdb.updateTable('jobs').set({ status: 'processing', updated_at: new Date(), result: null }).where('id', '=', job.id).execute();
+  await kdb.updateTable('jobs').set({ result: null, status: 'processing', updated_at: new Date() }).where('id', '=', job.id).execute();
   await processJob(job);
 }
 
@@ -35,15 +35,15 @@ async function processJob(job: Job) {
 
     await kdb
       .updateTable('jobs')
-      .set({ status: 'finished', updated_at: new Date(), result: { ...jobResult, duration: Date.now() - startTime } })
+      .set({ result: { ...jobResult, duration: Date.now() - startTime }, status: 'finished', updated_at: new Date() })
       .where('id', '=', job.id)
       .execute();
     jobLogger.info('finished job', { ...jobResult, duration: Date.now() - startTime });
   } catch (err: any) {
-    jobLogger.error('error processing job', { err: err.message, duration: Date.now() - startTime });
+    jobLogger.error('error processing job', { duration: Date.now() - startTime, err: err.message });
     await kdb
       .updateTable('jobs')
-      .set({ status: 'error', result: { error: err.message, duration: Date.now() - startTime }, updated_at: new Date() })
+      .set({ result: { duration: Date.now() - startTime, error: err.message }, status: 'error', updated_at: new Date() })
       .where('id', '=', job.id)
       .execute();
   }
@@ -83,9 +83,9 @@ export async function shutdownProcessor() {
   await kdb
     .updateTable('jobs')
     .set({
+      result: null,
       status: 'pending',
       updated_at: new Date(),
-      result: null,
     })
     .where('id', '=', currentJobId)
     .execute();

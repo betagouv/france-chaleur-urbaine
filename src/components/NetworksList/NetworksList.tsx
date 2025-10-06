@@ -1,6 +1,6 @@
 import Button from '@codegouvfr/react-dsfr/Button';
 import Input from '@codegouvfr/react-dsfr/Input';
-import { type CellContext, type ColumnDefTemplate } from '@tanstack/react-table';
+import type { CellContext, ColumnDefTemplate } from '@tanstack/react-table';
 import dynamic from 'next/dynamic';
 import { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
@@ -16,7 +16,7 @@ import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
 import Text from '@/components/ui/Text';
 import useReseauxDeChaleurFilters, { type FilterWithLimits } from '@/hooks/useReseauxDeChaleurFilters';
 import { gestionnairesFilters, useServices } from '@/services';
-import { type NetworkToCompare } from '@/types/Summary/Network';
+import type { NetworkToCompare } from '@/types/Summary/Network';
 import { isDefined } from '@/utils/core';
 import { type Interval, intervalsEqual } from '@/utils/interval';
 import { compareFrenchStrings } from '@/utils/strings';
@@ -223,7 +223,7 @@ export function filterReseauxDeChaleur(reseauxDeChaleur: NetworkToCompare[], fil
 }
 
 const PercentageCell: ColumnDefTemplate<CellContext<NetworkToCompare, any>> = ({ getValue }) => {
-  return (getValue() / 100).toLocaleString(undefined, { style: 'percent', maximumFractionDigits: 1 });
+  return (getValue() / 100).toLocaleString(undefined, { maximumFractionDigits: 1, style: 'percent' });
 };
 
 const NetworksList = () => {
@@ -242,11 +242,11 @@ const NetworksList = () => {
 
       networks = networks.filter(
         (network: NetworkToCompare) =>
-          (network.nom_reseau && network.nom_reseau.toLocaleLowerCase().includes(searchValueLowerCase)) ||
-          (network.Gestionnaire && network.Gestionnaire.toLocaleLowerCase().includes(searchValueLowerCase)) ||
-          (network.region && network.region.toLocaleLowerCase().includes(searchValueLowerCase)) ||
-          (network.communes && network.communes.join(', ').toLocaleLowerCase().includes(searchValueLowerCase)) ||
-          (network['Identifiant reseau'] && network['Identifiant reseau'].toLocaleLowerCase().includes(searchValueLowerCase))
+          network.nom_reseau?.toLocaleLowerCase().includes(searchValueLowerCase) ||
+          network.Gestionnaire?.toLocaleLowerCase().includes(searchValueLowerCase) ||
+          network.region?.toLocaleLowerCase().includes(searchValueLowerCase) ||
+          network.communes?.join(', ').toLocaleLowerCase().includes(searchValueLowerCase) ||
+          network['Identifiant reseau']?.toLocaleLowerCase().includes(searchValueLowerCase)
       );
     }
 
@@ -260,14 +260,6 @@ const NetworksList = () => {
     () => [
       {
         accessorKey: 'nom_reseau',
-        header: 'Nom du réseau',
-        width: '250px',
-        filterFn: (row, _, filterValue) => {
-          return (
-            row.original.nom_reseau?.toLocaleLowerCase().includes(filterValue.toLocaleLowerCase()) ||
-            row.original['Identifiant reseau']?.toLocaleLowerCase().includes(filterValue.toLocaleLowerCase())
-          );
-        },
         cell: (params) => (
           <NetworkName
             name={params.row.original.nom_reseau}
@@ -275,6 +267,14 @@ const NetworksList = () => {
             identifiant={params.row.original['Identifiant reseau']}
           />
         ),
+        filterFn: (row, _, filterValue) => {
+          return (
+            row.original.nom_reseau?.toLocaleLowerCase().includes(filterValue.toLocaleLowerCase()) ||
+            row.original['Identifiant reseau']?.toLocaleLowerCase().includes(filterValue.toLocaleLowerCase())
+          );
+        },
+        header: 'Nom du réseau',
+        width: '250px',
       },
       {
         accessorKey: 'Identifiant reseau',
@@ -283,10 +283,10 @@ const NetworksList = () => {
       },
       {
         accessorKey: 'communes',
-        header: 'Communes',
-        width: '250px',
-        sortingFn: (rowA, rowB) => compareFrenchStrings(rowA.original.communes.join(', '), rowB.original.communes.join(', ')),
         cell: ({ getValue }) => <Text>{getValue() ? getValue().join(', ') : undefined}</Text>,
+        header: 'Communes',
+        sortingFn: (rowA, rowB) => compareFrenchStrings(rowA.original.communes.join(', '), rowB.original.communes.join(', ')),
+        width: '250px',
       },
       {
         accessorKey: 'Gestionnaire',
@@ -295,13 +295,14 @@ const NetworksList = () => {
       },
       {
         accessorKey: 'Taux EnR&R',
-        header: 'Taux EnR&R',
-        width: '110px',
         align: 'right',
         cell: ({ getValue }) => <Text>{isDefined(getValue()) ? `${getValue()}%` : undefined}</Text>,
+        header: 'Taux EnR&R',
+        width: '110px',
       },
       {
         accessorKey: 'contenu CO2 ACV',
+        align: 'right',
         header: () => (
           <Box>
             Contenu CO2 ACV
@@ -311,10 +312,10 @@ const NetworksList = () => {
           </Box>
         ),
         width: '175px',
-        align: 'right',
       },
       {
         accessorKey: 'contenu CO2',
+        align: 'right',
         header: () => (
           <Box>
             Contenu CO2
@@ -324,10 +325,14 @@ const NetworksList = () => {
           </Box>
         ),
         width: '140px',
-        align: 'right',
       },
       {
         accessorKey: 'PM',
+        align: 'right',
+        cellProps: {
+          maximumFractionDigits: 0,
+        },
+        cellType: 'Price',
         header: () => (
           <Box>
             Prix moyen
@@ -337,20 +342,21 @@ const NetworksList = () => {
           </Box>
         ),
         width: '130px',
-        align: 'right',
-        cellType: 'Price',
-        cellProps: {
-          maximumFractionDigits: 0,
-        },
       },
       {
         accessorKey: 'annee_creation',
+        align: 'right',
         header: 'Année de construction',
         width: '130px',
-        align: 'right',
       },
       {
         accessorKey: 'livraisons_totale_MWh',
+        align: 'right',
+        cellProps: {
+          maximumFractionDigits: 1,
+          minimumFractionDigits: 1,
+        },
+        cellType: 'Number',
         header: () => (
           <Box>
             Livraisons de chaleur
@@ -362,68 +368,62 @@ const NetworksList = () => {
           </Box>
         ),
         width: '180px',
-        align: 'right',
-        cellType: 'Number',
-        cellProps: {
-          minimumFractionDigits: 1,
-          maximumFractionDigits: 1,
-        },
       },
       {
         accessorKey: 'energie_ratio_biomasse',
-        header: 'Biomasse',
-        width: '110px',
         align: 'right',
         cell: PercentageCell,
+        header: 'Biomasse',
+        width: '110px',
       },
       {
         accessorKey: 'energie_ratio_geothermie',
-        header: 'Géothermie',
-        width: '110px',
         align: 'right',
         cell: PercentageCell,
+        header: 'Géothermie',
+        width: '110px',
       },
       {
         accessorKey: 'energie_ratio_uve',
-        header: 'UVE',
-        width: '110px',
         align: 'right',
         cell: PercentageCell,
+        header: 'UVE',
+        width: '110px',
       },
       {
         accessorKey: 'energie_ratio_chaleurIndustrielle',
-        header: 'Chaleur industrielle',
-        width: '110px',
         align: 'right',
         cell: PercentageCell,
+        header: 'Chaleur industrielle',
+        width: '110px',
       },
       {
         accessorKey: 'energie_ratio_solaireThermique',
-        header: 'Solaire thermique',
-        width: '110px',
         align: 'right',
         cell: PercentageCell,
+        header: 'Solaire thermique',
+        width: '110px',
       },
       {
         accessorKey: 'energie_ratio_pompeAChaleur',
-        header: 'Pompe à chaleur',
-        width: '110px',
         align: 'right',
         cell: PercentageCell,
+        header: 'Pompe à chaleur',
+        width: '110px',
       },
       {
         accessorKey: 'energie_ratio_gaz',
-        header: 'Gaz',
-        width: '110px',
         align: 'right',
         cell: PercentageCell,
+        header: 'Gaz',
+        width: '110px',
       },
       {
         accessorKey: 'energie_ratio_fioul',
-        header: 'Fioul',
-        width: '110px',
         align: 'right',
         cell: PercentageCell,
+        header: 'Fioul',
+        width: '110px',
       },
     ],
     []
@@ -454,7 +454,7 @@ const NetworksList = () => {
         const newRegionsList: ReseauxDeChaleurFiltersProps['regionsList'] = [];
         networks.forEach((network) => {
           if (!newRegionsList.find(({ name }) => name === network.region.trim())) {
-            newRegionsList.push({ name: network.region.trim(), coord: `${network.lon},${network.lat}` });
+            newRegionsList.push({ coord: `${network.lon},${network.lat}`, name: network.region.trim() });
           } else {
             const index = newRegionsList.findIndex(({ name }) => name === network.region.trim());
             const existingCoords = newRegionsList[index].coord.split(',');
@@ -501,9 +501,9 @@ const NetworksList = () => {
               filename={`${new Date().toISOString().split('T')[0]}_reseauxDeChaleur.xlsx`}
               sheets={[
                 {
+                  columns: exportColumns,
                   data: filteredNetworks,
                   name: 'Général et Mix Énergétique',
-                  columns: exportColumns,
                 },
               ]}
               iconId="fr-icon-file-download-line"
@@ -521,9 +521,9 @@ const NetworksList = () => {
               }
               aria-label="Rechercher"
               nativeInputProps={{
+                onChange: (e) => setSearchValue(e.target.value),
                 placeholder: 'Rechercher',
                 value: searchValue,
-                onChange: (e) => setSearchValue(e.target.value),
               }}
             />
           </Box>
@@ -553,7 +553,7 @@ const NetworksList = () => {
             loading={!loaded}
             padding="sm"
             rowHeight={124}
-            initialSortingState={[{ id: 'Identifiant reseau', desc: false }]}
+            initialSortingState={[{ desc: false, id: 'Identifiant reseau' }]}
           />
         </Box>
         <Text size="xs" className="fr-hint-text" mt="2w">

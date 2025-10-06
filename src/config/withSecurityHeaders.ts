@@ -63,13 +63,13 @@ const withSecurityHeaders = (config: SecurityHeadersConfig = {}) => {
         return [
           ...existingHeaders,
           {
-            source: '/:path*',
             headers: securityHeaders,
+            source: '/:path*',
           },
           // Attention: keep in sync with src/services/iframe.ts
           ...(iframes || []).map((source) => ({
-            source,
             headers: securityHeadersIFramable,
+            source,
           })),
         ];
       },

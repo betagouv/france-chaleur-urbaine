@@ -38,105 +38,146 @@ export type CityData = {
 };
 
 const citiesData: Record<City, CityData> = {
-  paris: {
-    slug: 'paris',
-    name: 'Paris',
-    nameNetwork: 'Paris',
-    preposition: 'de ',
+  'aix-en-provence': {
+    coord: [5.406124, 43.541369],
     description: (
       <>
-        Mis en service en 1927, le réseau de chaleur parisien est l'un des premiers réseaux créés en France. Il s'est progressivement étendu
-        et modernisé.
+        <strong>
+          Le réseau de chaleur d’Aix-en-Provence permet d’éviter le rejet de 18 750 tonnes de CO2 par an grâce au recours à la biomasse.
+        </strong>
         <br />
-        <strong>Aujourd'hui, 6000 bâtiments sont desservis par le réseau</strong>: des copropriétés, des entreprises, la quasi-totalité des
-        hôpitaux parisiens, des monuments historiques... Parmi les bâtiments emblématiques raccordés, on peut par exemple mentionner Le
-        Grand Palais, le musée d’Orsay ou encore l’Opéra Garnier. Le raccordement de la cathédrale Notre-Dame de Paris est également en
-        cours. <strong>Le réseau de chaleur de Paris assure ainsi le chauffage d’1/4 des bâtiments de la capitale.</strong>
         <br />
-        Le réseau de la capitale alimente également en énergie <strong>16 réseaux de chaleur de la métropole du Grand Paris</strong> :{' '}
-        <Link href="https://collectivite.fr/asnieres" isExternal>
-          Asnières
-        </Link>
-        ,{' '}
-        <Link href="https://collectivite.fr/aubervilliers" isExternal>
-          Aubervilliers
-        </Link>
-        ,{' '}
-        <Link href="https://collectivite.fr/boulogne-billancourt" isExternal>
-          Boulogne-Billancourt
-        </Link>
-        , Charenton-le-Pont, Choisy-le-Roi, Clichy, Gennevilliers, Gentilly, L’Île-Saint-Denis, Issy-les-Moulineaux, Ivry-sur-Seine, Le
-        Kremlin-Bicêtre, Levallois Perret, Saint-Denis, Saint-Ouen et Vitry-sur-Seine.
+        C’est en 1967 que le réseau de chaleur aixois est né, initialement pour chauffer les habitants d’Encagnane par une petite chaufferie
+        installée dans le quartier qui fonctionnait alors au fioul. Celle-ci a progressivement laissé place en 2014 à une chaufferie
+        biomasse qui fournit aujourd’hui, grâce à deux chaudières bois de 8,8 MWh et 111 GWh consommés, le chauffage et l’eau chaude
+        sanitaire de 9500 foyers, soit un peu plus de 28 000 Aixois.
+        <br />
+        <br />
+        La chaufferie bois aixoise ayant atteint sa capacité maximale de production, un nouveau schéma directeur a été validé en 2021. Il
+        porte essentiellement sur l’
+        <strong>
+          extension du réseau de chaleur urbain à l’ensemble de la ville ainsi que sur la possibilité d’implanter une nouvelle unité de
+          production, à l’ouest
+        </strong>
+        . Cette dernière comprendrait une chaufferie biomasse et une centrale solaire thermique : le Jas de Bouffan serait ainsi décarboné.
+        <br />
         <br />
         <strong>
-          La Ville de Paris a l’ambition de développer fortement son réseau de chaleur dans les prochaines années et d’augmenter
-          significativement la part d’énergies renouvelables et de récupération qui l’alimentent
-        </strong>{' '}
-        (à hauteur de 75% dès 2030, et de 100% en 2050).
+          Dans les prochaines années, le réseau sera donc étendu à l’ouest et à l’est de la ville et verra son taux d’énergies renouvelables
+          porté à 80%.
+        </strong>
       </>
     ),
-    coord: [2.347, 48.859],
+    name: 'Aix-en-Provence',
+    nameNetwork: 'Aix-en-Provence',
     networksData: {
-      isClassed: true,
       allClassed: true,
-      hasDevelopmentPerimeter: true,
-      identifiant: '7501C',
-      heatedPlaces: '425 000',
+      heatedPlaces: '9500',
+      identifiant: '1317C',
+      isClassed: true,
     },
+    preposition: 'd’',
+    slug: 'aix-en-provence',
+  },
+  bordeaux: {
+    coord: [-0.587877, 44.851895],
+    description: (
+      <>
+        La Métropole bordelaise compte de nombreux réseaux de chaleur, qui desservent notamment <strong>les Hauts de Garonne</strong> (
+        <Link href="https://collectivite.fr/lormont" isExternal>
+          Lormont
+        </Link>
+        ,{' '}
+        <Link href="https://collectivite.fr/cenon" isExternal>
+          Cenon
+        </Link>
+        ,{' '}
+        <Link href="https://collectivite.fr/floirac-33271" isExternal>
+          Floirac
+        </Link>
+        ), le quartier <strong>Ginko à Bordeaux</strong>, les quartiers <strong>Bacalan</strong> et <strong>Bassins à flots</strong> à
+        Bordeaux, les hôpitaux <strong>Pellegrin</strong> et <strong>Charles Perrens</strong> à Bordeaux, le quartier{' '}
+        <strong>Mériadeck</strong> à Bordeaux, <strong>l’Université de Bordeaux</strong>, le quartier de <strong>Pessac–Saige</strong>, la{' '}
+        <strong>Base Aérienne 106</strong> à Mérignac, le quartier <strong>Bordeaux-Saint Jean Belcier</strong> (en cours de construction),
+        le quartier du Grand-Parc...
+        <br />
+        <br />
+        La chaleur distribuée par les réseaux de la métropole est <strong>produite sur différents sites</strong>, à partir de différentes
+        sources d’énergie : des chaufferies biomasse, des forages géothermiques (par exemple sur le réseau de Plaine de Garonne énergies ou
+        à Mériadeck), la chaleur récupérée de l’incinération des ordures ménagères comme à Cenon ou Bègles, ou encore la récupération des
+        calories issues des eaux usées, comme au niveau de la station d’épuration Louis Fargue.
+        <br />
+        <br />
+        La métropole bordelaise souhaite <strong>doubler le nombre d’habitants raccordés aux divers réseaux de chaleur d’ici 2035</strong>.
+        La création de nouveaux réseaux de chaleur est envisagée, avec notamment un projet de réseau Métropole Sud qui concerne Bordeaux,
+        Gradignan, Pessac et Talence avec une extension possible vers Bègles, Villenave-d'Ornon et Mérignac
+      </>
+    ),
     dispositifs: [
       {
-        title: 'Le barème de raccordement au réseau',
         description: (
-          <>
-            <WhiteArrowPuce>
-              <Text>
-                Le Conseil de Paris a adopté le 1er barème de raccordement au réseau réduisant fortement les coûts de raccordement.
-              </Text>
-            </WhiteArrowPuce>
-            <WhiteArrowPuce>
-              <Text>
-                Ce barème améliore fortement les conditions d’accès au réseau de chaleur parisien via une réduction très importante des
-                coûts de raccordements pour les bâtiment situés à proximité du réseau, mais aussi via un cadre clair, transparent et
-                prévisible pour le demandeur d’un raccordement.
-              </Text>
-            </WhiteArrowPuce>
-          </>
+          <WhiteArrowPuce>
+            <Text>
+              <strong>Bordeaux Métropole vous accompagne dans la rénovation énergétique de votre logement.</strong> Obtenez jusqu'à 50 %
+              d'aides pour la réalisation du Diagnostic Technique Général de votre copropriété et d'une assistance à la maîtrise d'ouvrage
+              jusqu'à la réception des travaux.
+            </Text>
+          </WhiteArrowPuce>
         ),
         link: {
-          title: 'Tout savoir sur ce dispositif',
-          href: 'https://www.cpcu.fr/article/un-bareme-simple-et-attractif-de-raccordement-au-reseau-de-chaleur-parisien/',
+          href: 'https://marenov.bordeaux-metropole.fr/',
           target: '_blank',
-        },
-      },
-      {
-        description: (
-          <>
-            <WhiteArrowPuce>
-              <Text>
-                L’application du barême est cumulable avec le coup de pouce chauffage des bâtiments résidentiels collectifs et tertiaires,
-                qui permet de réduire encore les coûts de raccordement.
-              </Text>
-            </WhiteArrowPuce>
-            <WhiteArrowPuce>
-              <Text>
-                Sur Paris, un coût supplémentaire est à prévoir pour l’installation de la sous-station qui assure le transfert entre le
-                réseau de chaleur et les canalisations internes à l’immeuble.
-              </Text>
-            </WhiteArrowPuce>
-          </>
-        ),
-        img: {
-          alt: 'Icone barème',
-          src: '/icons/picto-warning.svg',
+          title: 'Voir le site',
         },
       },
     ],
+    dispositifsTitle: 'Ma Rénov Bordeaux Métropole',
+    name: 'Bordeaux',
+    nameNetwork: 'Bordeaux Métropole',
+    networksData: {
+      allClassed: true,
+      gestionnaires: `Les réseaux sont gérés **soit directement en régie** par la Métropole, **soit par des opérateurs privés** dans le cadre de délégations de service public (**Mixéner, ENGIE, Dalkia...**)`,
+      hasDevelopmentPerimeter: true,
+      isClassed: true,
+    },
+    preposition: 'de ',
+    slug: 'bordeaux',
+  },
+  dijon: {
+    coord: [5.034852, 47.331938],
+    description: (
+      <>
+        Dijon comporte <strong>2 réseaux de chaleur interconnectés</strong> :
+        <ul>
+          <li>
+            l’un est géré par Dijon énergies (Dalkia) et alimenté à 76% par des énergies renouvelables et de récupération locales :
+            chaufferies bois , unité de valorisation des déchets
+          </li>
+          <li>
+            l’autre est géré par Sodien (Coriance) et approvisionné par la chaufferie biomasse de Valendons, avec un taux d’énergies
+            renouvelables de l’ordre de 60%.
+          </li>
+        </ul>
+        <strong>Le raccordement au réseau de chaleur se substitue progressivement aux chaufferies collectives gaz et fioul</strong> : 33 %
+        de l’énergie que la ville consomme est aujourd’hui issue de ces réseaux de chaleur, contre 6 % il y a 10 ans.{' '}
+        <strong>55 000 équivalent-logements sont aujourd’hui raccordés.</strong> Les réseaux de chaleur alimentent des bâtiments
+        résidentiels, mais également la Cité internationale de la gastronomie et du vin, le CHU, le campus de l’université de Bourgogne, la
+        gendarmerie Deflandre, les quatre piscines (Olympique, Carrousel, Fontaine-d’Ouche et Grésilles), le stade Gaston-Gérard,
+        l’Auditorium, le parc des expositions et le palais des Congrès, La Vapeur, 10 collèges et 23 groupes scolaires....
+      </>
+    ),
+    name: 'Dijon',
+    nameNetwork: 'Dijon',
+    networksData: {
+      allClassed: false,
+      gestionnaires: `Les réseaux sont gérés par **Dijon Energies (Dalkia)** et **Sodien (Coriance)**`,
+      isClassed: false,
+    },
+    preposition: 'de ',
+    slug: 'dijon',
   },
   grenoble: {
-    slug: 'grenoble',
-    name: 'Grenoble',
-    nameNetwork: 'Grenoble-Alpes Métropole',
-    preposition: 'de ',
+    coord: [5.7243, 45.182081],
     description: (
       <>
         Le réseau de chauffage urbain de Grenoble-Alpes Métropole est l’un des réseaux les plus importants en France et présente un taux
@@ -163,20 +204,20 @@ const citiesData: Record<City, CityData> = {
         <strong>ambition de tendre vers 100 % d’énergies renouvelables et de récupération fin 2033</strong>.
       </>
     ),
-    coord: [5.7243, 45.182081],
+    name: 'Grenoble',
+    nameNetwork: 'Grenoble-Alpes Métropole',
     networksData: {
-      isClassed: true,
       allClassed: true,
       hasDevelopmentPerimeter: true,
-      identifiant: '3802C',
       heatedPlaces: '100 000',
+      identifiant: '3802C',
+      isClassed: true,
     },
+    preposition: 'de ',
+    slug: 'grenoble',
   },
   lyon: {
-    slug: 'lyon',
-    name: 'Lyon',
-    nameNetwork: 'Lyon',
-    preposition: 'de ',
+    coord: [4.835, 45.758],
     description: (
       <>
         <strong>
@@ -212,15 +253,6 @@ const citiesData: Record<City, CityData> = {
         permet de rafraîchir plus d’un million de m2 de bureaux et commerces dans le quartier d’affaire de la Part-Dieu.
       </>
     ),
-    coord: [4.835, 45.758],
-    networksData: {
-      isClassed: true,
-      allClassed: true,
-      hasDevelopmentPerimeter: true,
-      identifiant: '6905C',
-      heatedPlaces: '45 000',
-    },
-    dispositifsTitle: `Écoréno'v`,
     dispositifs: [
       {
         description: (
@@ -232,9 +264,9 @@ const citiesData: Record<City, CityData> = {
           </WhiteArrowPuce>
         ),
         link: {
-          title: 'Voir le site',
           href: 'https://www.alec-lyon.org/services/aides-et-accompagnements/ecorenov-service-aide-eco-renovation-des-logements/',
           target: '_blank',
+          title: 'Voir le site',
         },
       },
       {
@@ -246,67 +278,34 @@ const citiesData: Record<City, CityData> = {
           </WhiteArrowPuce>
         ),
         link: {
-          title: 'En savoir plus',
           href: 'https://seafile.alte69.org/f/8cb90e13900c4d3fb299/',
           target: '_blank',
+          title: 'En savoir plus',
         },
       },
     ],
-  },
-  'aix-en-provence': {
-    slug: 'aix-en-provence',
-    name: 'Aix-en-Provence',
-    nameNetwork: 'Aix-en-Provence',
-    preposition: 'd’',
-    description: (
-      <>
-        <strong>
-          Le réseau de chaleur d’Aix-en-Provence permet d’éviter le rejet de 18 750 tonnes de CO2 par an grâce au recours à la biomasse.
-        </strong>
-        <br />
-        <br />
-        C’est en 1967 que le réseau de chaleur aixois est né, initialement pour chauffer les habitants d’Encagnane par une petite chaufferie
-        installée dans le quartier qui fonctionnait alors au fioul. Celle-ci a progressivement laissé place en 2014 à une chaufferie
-        biomasse qui fournit aujourd’hui, grâce à deux chaudières bois de 8,8 MWh et 111 GWh consommés, le chauffage et l’eau chaude
-        sanitaire de 9500 foyers, soit un peu plus de 28 000 Aixois.
-        <br />
-        <br />
-        La chaufferie bois aixoise ayant atteint sa capacité maximale de production, un nouveau schéma directeur a été validé en 2021. Il
-        porte essentiellement sur l’
-        <strong>
-          extension du réseau de chaleur urbain à l’ensemble de la ville ainsi que sur la possibilité d’implanter une nouvelle unité de
-          production, à l’ouest
-        </strong>
-        . Cette dernière comprendrait une chaufferie biomasse et une centrale solaire thermique : le Jas de Bouffan serait ainsi décarboné.
-        <br />
-        <br />
-        <strong>
-          Dans les prochaines années, le réseau sera donc étendu à l’ouest et à l’est de la ville et verra son taux d’énergies renouvelables
-          porté à 80%.
-        </strong>
-      </>
-    ),
-    coord: [5.406124, 43.541369],
+    dispositifsTitle: `Écoréno'v`,
+    name: 'Lyon',
+    nameNetwork: 'Lyon',
     networksData: {
-      isClassed: true,
       allClassed: true,
-      identifiant: '1317C',
-      heatedPlaces: '9500',
+      hasDevelopmentPerimeter: true,
+      heatedPlaces: '45 000',
+      identifiant: '6905C',
+      isClassed: true,
     },
+    preposition: 'de ',
+    slug: 'lyon',
   },
   metz: {
-    slug: 'metz',
-    name: 'Metz',
-    nameNetwork: 'Metz',
-    preposition: 'de ',
+    coord: [6.194897, 49.108385],
     description: (
       <>
         <strong>Le réseau de chauffage urbain de l’Eurométropole de Metz est l’un des plus importants de France.</strong> Il représente
         aujourd’hui une longueur de 140 kilomètres couvrant une grande partie de la ville de Metz et de sa périphérie. En 2021, plus de 483
         GWh de chaleur ont été livrés aux clients, soit l‘équivalent de <strong>plus de 48 000 logements</strong> de type T3 alimentés.{' '}
-        <strong>Le réseau bénéficie d’un taux d’énergies renouvelables et de récupération de plus de 65%</strong>
-        , grâce à la valorisation de la chaleur issue de l’incinération des ordures ménagères et à une centrale biomasse utilisant les
-        ressources en bois locales.
+        <strong>Le réseau bénéficie d’un taux d’énergies renouvelables et de récupération de plus de 65%</strong>, grâce à la valorisation
+        de la chaleur issue de l’incinération des ordures ménagères et à une centrale biomasse utilisant les ressources en bois locales.
         <br />
         <br />
         Le réseau est né en 1956 : il exploitait alors les installations de production thermique de Pontiffroy. En 1961, une centrale dédiée
@@ -324,29 +323,29 @@ const citiesData: Record<City, CityData> = {
         ), …).
       </>
     ),
-    coord: [6.194897, 49.108385],
+    name: 'Metz',
+    nameNetwork: 'Metz',
     networksData: {
-      isClassed: true,
       allClassed: true,
       hasDevelopmentPerimeter: true,
-      identifiant: '5701C',
       heatedPlaces: '48 000',
+      identifiant: '5701C',
+      isClassed: true,
     },
+    preposition: 'de ',
+    slug: 'metz',
   },
   nantes: {
-    slug: 'nantes',
-    name: 'Nantes',
-    nameNetwork: 'Nantes Métropole',
-    preposition: 'de ',
+    coord: [-1.555335, 47.239367],
     description: (
       <>
         La métropole compte à ce jour{' '}
-        <strong>7 réseaux de chaleur, les principaux étant ceux de Nantes, Nord-Chézine et Bellevue Saint-Herblain</strong>
-        . Au total, 145 km de réseaux chauffent 37 700 logements, soit 12% des logements de la métropole. Sont également raccordés de
-        nombreux équipements publics : CHU, palais de justice, musées, piscine Jules-Verne, Lycée Mandela, campus Tertre et Lombarderie...
-        La chaleur distribuée par les réseaux de la métropole est produite au niveau de différents sites de production : des chaufferies
-        biomasse comme celles de Rezé et Malakoff, qui utilisent principalement des déchets forestiers, mais aussi des centrales
-        d’incinération des ordures ménagères dont la chaleur est récupérée, comme celles de Couëron et de la Prairie de Mauves.
+        <strong>7 réseaux de chaleur, les principaux étant ceux de Nantes, Nord-Chézine et Bellevue Saint-Herblain</strong>. Au total, 145
+        km de réseaux chauffent 37 700 logements, soit 12% des logements de la métropole. Sont également raccordés de nombreux équipements
+        publics : CHU, palais de justice, musées, piscine Jules-Verne, Lycée Mandela, campus Tertre et Lombarderie... La chaleur distribuée
+        par les réseaux de la métropole est produite au niveau de différents sites de production : des chaufferies biomasse comme celles de
+        Rezé et Malakoff, qui utilisent principalement des déchets forestiers, mais aussi des centrales d’incinération des ordures ménagères
+        dont la chaleur est récupérée, comme celles de Couëron et de la Prairie de Mauves.
         <br />
         <strong>Les réseaux de la métropole nantaise poursuivent leur développement.</strong> Une nouvelle branche a par exemple été créé au
         réseau de Nord-Chézine en 2022, permettant d’alimenter 860 logements supplémentaires ainsi que des bureaux et commerces, et d’éviter
@@ -358,119 +357,112 @@ const citiesData: Record<City, CityData> = {
         </strong>
       </>
     ),
-    coord: [-1.555335, 47.239367],
+    name: 'Nantes',
+    nameNetwork: 'Nantes Métropole',
     networksData: {
-      isClassed: true,
       allClassed: true,
       gestionnaires: `Les réseaux sont gérés par **Idex** et **Engie**`,
+      isClassed: true,
     },
-  },
-  bordeaux: {
-    slug: 'bordeaux',
-    name: 'Bordeaux',
-    nameNetwork: 'Bordeaux Métropole',
     preposition: 'de ',
+    slug: 'nantes',
+  },
+  paris: {
+    coord: [2.347, 48.859],
     description: (
       <>
-        La Métropole bordelaise compte de nombreux réseaux de chaleur, qui desservent notamment <strong>les Hauts de Garonne</strong> (
-        <Link href="https://collectivite.fr/lormont" isExternal>
-          Lormont
+        Mis en service en 1927, le réseau de chaleur parisien est l'un des premiers réseaux créés en France. Il s'est progressivement étendu
+        et modernisé.
+        <br />
+        <strong>Aujourd'hui, 6000 bâtiments sont desservis par le réseau</strong>: des copropriétés, des entreprises, la quasi-totalité des
+        hôpitaux parisiens, des monuments historiques... Parmi les bâtiments emblématiques raccordés, on peut par exemple mentionner Le
+        Grand Palais, le musée d’Orsay ou encore l’Opéra Garnier. Le raccordement de la cathédrale Notre-Dame de Paris est également en
+        cours. <strong>Le réseau de chaleur de Paris assure ainsi le chauffage d’1/4 des bâtiments de la capitale.</strong>
+        <br />
+        Le réseau de la capitale alimente également en énergie <strong>16 réseaux de chaleur de la métropole du Grand Paris</strong> :{' '}
+        <Link href="https://collectivite.fr/asnieres" isExternal>
+          Asnières
         </Link>
         ,{' '}
-        <Link href="https://collectivite.fr/cenon" isExternal>
-          Cenon
+        <Link href="https://collectivite.fr/aubervilliers" isExternal>
+          Aubervilliers
         </Link>
         ,{' '}
-        <Link href="https://collectivite.fr/floirac-33271" isExternal>
-          Floirac
+        <Link href="https://collectivite.fr/boulogne-billancourt" isExternal>
+          Boulogne-Billancourt
         </Link>
-        ), le quartier <strong>Ginko à Bordeaux</strong>, les quartiers <strong>Bacalan</strong> et <strong>Bassins à flots</strong> à
-        Bordeaux, les hôpitaux <strong>Pellegrin</strong> et <strong>Charles Perrens</strong> à Bordeaux, le quartier{' '}
-        <strong>Mériadeck</strong> à Bordeaux, <strong>l’Université de Bordeaux</strong>, le quartier de <strong>Pessac–Saige</strong>, la{' '}
-        <strong>Base Aérienne 106</strong> à Mérignac, le quartier <strong>Bordeaux-Saint Jean Belcier</strong> (en cours de construction),
-        le quartier du Grand-Parc...
+        , Charenton-le-Pont, Choisy-le-Roi, Clichy, Gennevilliers, Gentilly, L’Île-Saint-Denis, Issy-les-Moulineaux, Ivry-sur-Seine, Le
+        Kremlin-Bicêtre, Levallois Perret, Saint-Denis, Saint-Ouen et Vitry-sur-Seine.
         <br />
-        <br />
-        La chaleur distribuée par les réseaux de la métropole est <strong>produite sur différents sites</strong>, à partir de différentes
-        sources d’énergie : des chaufferies biomasse, des forages géothermiques (par exemple sur le réseau de Plaine de Garonne énergies ou
-        à Mériadeck), la chaleur récupérée de l’incinération des ordures ménagères comme à Cenon ou Bègles, ou encore la récupération des
-        calories issues des eaux usées, comme au niveau de la station d’épuration Louis Fargue.
-        <br />
-        <br />
-        La métropole bordelaise souhaite <strong>doubler le nombre d’habitants raccordés aux divers réseaux de chaleur d’ici 2035</strong>.
-        La création de nouveaux réseaux de chaleur est envisagée, avec notamment un projet de réseau Métropole Sud qui concerne Bordeaux,
-        Gradignan, Pessac et Talence avec une extension possible vers Bègles, Villenave-d'Ornon et Mérignac
+        <strong>
+          La Ville de Paris a l’ambition de développer fortement son réseau de chaleur dans les prochaines années et d’augmenter
+          significativement la part d’énergies renouvelables et de récupération qui l’alimentent
+        </strong>{' '}
+        (à hauteur de 75% dès 2030, et de 100% en 2050).
       </>
     ),
-    coord: [-0.587877, 44.851895],
-    networksData: {
-      isClassed: true,
-      allClassed: true,
-      hasDevelopmentPerimeter: true,
-      gestionnaires: `Les réseaux sont gérés **soit directement en régie** par la Métropole, **soit par des opérateurs privés** dans le cadre de délégations de service public (**Mixéner, ENGIE, Dalkia...**)`,
-    },
-    dispositifsTitle: 'Ma Rénov Bordeaux Métropole',
     dispositifs: [
       {
         description: (
-          <WhiteArrowPuce>
-            <Text>
-              <strong>Bordeaux Métropole vous accompagne dans la rénovation énergétique de votre logement.</strong> Obtenez jusqu'à 50 %
-              d'aides pour la réalisation du Diagnostic Technique Général de votre copropriété et d'une assistance à la maîtrise d'ouvrage
-              jusqu'à la réception des travaux.
-            </Text>
-          </WhiteArrowPuce>
+          <>
+            <WhiteArrowPuce>
+              <Text>
+                Le Conseil de Paris a adopté le 1er barème de raccordement au réseau réduisant fortement les coûts de raccordement.
+              </Text>
+            </WhiteArrowPuce>
+            <WhiteArrowPuce>
+              <Text>
+                Ce barème améliore fortement les conditions d’accès au réseau de chaleur parisien via une réduction très importante des
+                coûts de raccordements pour les bâtiment situés à proximité du réseau, mais aussi via un cadre clair, transparent et
+                prévisible pour le demandeur d’un raccordement.
+              </Text>
+            </WhiteArrowPuce>
+          </>
         ),
         link: {
-          title: 'Voir le site',
-          href: 'https://marenov.bordeaux-metropole.fr/',
+          href: 'https://www.cpcu.fr/article/un-bareme-simple-et-attractif-de-raccordement-au-reseau-de-chaleur-parisien/',
           target: '_blank',
+          title: 'Tout savoir sur ce dispositif',
+        },
+        title: 'Le barème de raccordement au réseau',
+      },
+      {
+        description: (
+          <>
+            <WhiteArrowPuce>
+              <Text>
+                L’application du barême est cumulable avec le coup de pouce chauffage des bâtiments résidentiels collectifs et tertiaires,
+                qui permet de réduire encore les coûts de raccordement.
+              </Text>
+            </WhiteArrowPuce>
+            <WhiteArrowPuce>
+              <Text>
+                Sur Paris, un coût supplémentaire est à prévoir pour l’installation de la sous-station qui assure le transfert entre le
+                réseau de chaleur et les canalisations internes à l’immeuble.
+              </Text>
+            </WhiteArrowPuce>
+          </>
+        ),
+        img: {
+          alt: 'Icone barème',
+          src: '/icons/picto-warning.svg',
         },
       },
     ],
-  },
-  strasbourg: {
-    slug: 'strasbourg',
-    name: 'Strasbourg',
-    nameNetwork: "l'Eurométropole de Strasbourg",
-    preposition: 'de ',
-    description: (
-      <>
-        Le territoire de l’Eurométropole de Strasbourg comporte plusieurs réseaux de chaleur.{' '}
-        <strong>
-          Les réseaux publics de l’Eurométropole alimentent l’équivalent de 50000 logements grâce à 130 km de canalisations. L’énergie
-          qu’ils distribuent est d’origine renouvelable à plus de 50 % (essentiellement bois et ordures ménagères).
-        </strong>{' '}
-        Plusieurs quartiers de la métropole sont desservis par ces réseaux, en particulier : Elsau, L’Esplanade, Hautepierre, Wacken...
-        <br />
-        <br />
-        <strong>
-          Dans le cadre de son Plan Climat 2030, l’Eurométropole de Strasbourg s’est fixé des objectifs importants pour le développement de
-          ses réseaux : un doublement de la quantité d’énergie distribuée et un taux d’énergies renouvelables de 75% d’ici 2030.
-        </strong>
-        <br />
-        <br />
-        Pour verdir les réseaux de chaleur de la métropole, différentes sources d’énergies sont utilisées. La biomasse et la valorisation de
-        l’énergie de récupération des groupes froid des Hôpitaux universitaires permettront par exemple de décarboner le réseau de
-        Hautepierre-Poteries, jusqu’à présent 100% fossile, avec un taux d’énergies renouvelables supérieur à 65% attendu dès 2028. Le
-        réseau Strasbourg-Centre, actuellement alimenté par l’énergie récupérée auprès de Sénerval, l’unité de valorisation énergétique qui
-        incinère des déchets sur le Rohrschollen, et par la chaufferie biomasse du Port Autonome, sera également verdi pour atteindre un
-        taux d’énergies renouvelables de plus de 80%. Pour cela, l’approvisionnement en chaleur sera complété par l’énergie récupérée auprès
-        de l’aciérie BSW et des industriels du Port Autonome.
-      </>
-    ),
-    coord: [7.761454, 48.579831],
+    name: 'Paris',
+    nameNetwork: 'Paris',
     networksData: {
-      isClassed: true,
       allClassed: true,
-      gestionnaires: `Les réseaux présents sur la métropole sont gérés par différents opérateurs : **ENGIE, Strasbourg Centre Energies, R-CUA...**`,
+      hasDevelopmentPerimeter: true,
+      heatedPlaces: '425 000',
+      identifiant: '7501C',
+      isClassed: true,
     },
+    preposition: 'de ',
+    slug: 'paris',
   },
   rennes: {
-    slug: 'rennes',
-    name: 'Rennes',
-    nameNetwork: 'Rennes Métropole',
-    preposition: 'de ',
+    coord: [-1.68365, 48.110899],
     description: (
       <>
         Cinq réseaux de chauffage urbain sont en service sur le territoire de Rennes Métropole :
@@ -516,14 +508,6 @@ const citiesData: Record<City, CityData> = {
         Construction ou encore celui desservant le campus de Beaulieu de l'université Rennes 1.
       </>
     ),
-    coord: [-1.68365, 48.110899],
-    networksData: {
-      isClassed: true,
-      allClassed: true,
-      hasDevelopmentPerimeter: true,
-      gestionnaires: `Les réseaux sont gérés **soit directement en régie** par la Métropole, **soit par des opérateurs privés** dans le cadre de délégations de service public (**Dalkia, ENGIE, SOGEX**)`,
-    },
-    dispositifsTitle: 'ÉcoTravo',
     dispositifs: [
       {
         description: (
@@ -535,45 +519,60 @@ const citiesData: Record<City, CityData> = {
           </WhiteArrowPuce>
         ),
         link: {
-          title: 'Voir le site',
           href: 'https://ecotravo.rennesmetropole.fr/',
           target: '_blank',
+          title: 'Voir le site',
         },
       },
     ],
-  },
-  dijon: {
-    slug: 'dijon',
-    name: 'Dijon',
-    nameNetwork: 'Dijon',
+    dispositifsTitle: 'ÉcoTravo',
+    name: 'Rennes',
+    nameNetwork: 'Rennes Métropole',
+    networksData: {
+      allClassed: true,
+      gestionnaires: `Les réseaux sont gérés **soit directement en régie** par la Métropole, **soit par des opérateurs privés** dans le cadre de délégations de service public (**Dalkia, ENGIE, SOGEX**)`,
+      hasDevelopmentPerimeter: true,
+      isClassed: true,
+    },
     preposition: 'de ',
+    slug: 'rennes',
+  },
+  strasbourg: {
+    coord: [7.761454, 48.579831],
     description: (
       <>
-        Dijon comporte <strong>2 réseaux de chaleur interconnectés</strong> :
-        <ul>
-          <li>
-            l’un est géré par Dijon énergies (Dalkia) et alimenté à 76% par des énergies renouvelables et de récupération locales :
-            chaufferies bois , unité de valorisation des déchets
-          </li>
-          <li>
-            l’autre est géré par Sodien (Coriance) et approvisionné par la chaufferie biomasse de Valendons, avec un taux d’énergies
-            renouvelables de l’ordre de 60%.
-          </li>
-        </ul>
-        <strong>Le raccordement au réseau de chaleur se substitue progressivement aux chaufferies collectives gaz et fioul</strong> : 33 %
-        de l’énergie que la ville consomme est aujourd’hui issue de ces réseaux de chaleur, contre 6 % il y a 10 ans.{' '}
-        <strong>55 000 équivalent-logements sont aujourd’hui raccordés.</strong> Les réseaux de chaleur alimentent des bâtiments
-        résidentiels, mais également la Cité internationale de la gastronomie et du vin, le CHU, le campus de l’université de Bourgogne, la
-        gendarmerie Deflandre, les quatre piscines (Olympique, Carrousel, Fontaine-d’Ouche et Grésilles), le stade Gaston-Gérard,
-        l’Auditorium, le parc des expositions et le palais des Congrès, La Vapeur, 10 collèges et 23 groupes scolaires....
+        Le territoire de l’Eurométropole de Strasbourg comporte plusieurs réseaux de chaleur.{' '}
+        <strong>
+          Les réseaux publics de l’Eurométropole alimentent l’équivalent de 50000 logements grâce à 130 km de canalisations. L’énergie
+          qu’ils distribuent est d’origine renouvelable à plus de 50 % (essentiellement bois et ordures ménagères).
+        </strong>{' '}
+        Plusieurs quartiers de la métropole sont desservis par ces réseaux, en particulier : Elsau, L’Esplanade, Hautepierre, Wacken...
+        <br />
+        <br />
+        <strong>
+          Dans le cadre de son Plan Climat 2030, l’Eurométropole de Strasbourg s’est fixé des objectifs importants pour le développement de
+          ses réseaux : un doublement de la quantité d’énergie distribuée et un taux d’énergies renouvelables de 75% d’ici 2030.
+        </strong>
+        <br />
+        <br />
+        Pour verdir les réseaux de chaleur de la métropole, différentes sources d’énergies sont utilisées. La biomasse et la valorisation de
+        l’énergie de récupération des groupes froid des Hôpitaux universitaires permettront par exemple de décarboner le réseau de
+        Hautepierre-Poteries, jusqu’à présent 100% fossile, avec un taux d’énergies renouvelables supérieur à 65% attendu dès 2028. Le
+        réseau Strasbourg-Centre, actuellement alimenté par l’énergie récupérée auprès de Sénerval, l’unité de valorisation énergétique qui
+        incinère des déchets sur le Rohrschollen, et par la chaufferie biomasse du Port Autonome, sera également verdi pour atteindre un
+        taux d’énergies renouvelables de plus de 80%. Pour cela, l’approvisionnement en chaleur sera complété par l’énergie récupérée auprès
+        de l’aciérie BSW et des industriels du Port Autonome.
       </>
     ),
-    coord: [5.034852, 47.331938],
+    name: 'Strasbourg',
+    nameNetwork: "l'Eurométropole de Strasbourg",
     networksData: {
-      allClassed: false,
-      isClassed: false,
-      gestionnaires: `Les réseaux sont gérés par **Dijon Energies (Dalkia)** et **Sodien (Coriance)**`,
+      allClassed: true,
+      gestionnaires: `Les réseaux présents sur la métropole sont gérés par différents opérateurs : **ENGIE, Strasbourg Centre Energies, R-CUA...**`,
+      isClassed: true,
     },
+    preposition: 'de ',
+    slug: 'strasbourg',
   },
 };
 

@@ -1,9 +1,9 @@
-import { type HTMLAttributes } from 'react';
+import type { HTMLAttributes } from 'react';
 
 import cx from '@/utils/cx';
 
 import Box from './Box';
-import { type SpacingProperties } from './helpers/spacings';
+import type { SpacingProperties } from './helpers/spacings';
 
 interface DividerProps extends SpacingProperties, HTMLAttributes<HTMLDivElement> {
   vertical?: string;
@@ -12,7 +12,7 @@ interface DividerProps extends SpacingProperties, HTMLAttributes<HTMLDivElement>
 function Divider({ vertical, ...props }: DividerProps) {
   return (
     <Box
-      {...(vertical ? { minWidth: '1px', mx: '2w', height: vertical } : { minHeight: '1px', my: '2w' })}
+      {...(vertical ? { height: vertical, minWidth: '1px', mx: '2w' } : { minHeight: '1px', my: '2w' })}
       backgroundColor="#dddddd"
       {...props}
     />

@@ -1,8 +1,8 @@
-import { type NextApiRequest } from 'next';
+import type { NextApiRequest } from 'next';
 
 import { kdb } from '@/server/db/kysely';
 import { handleRouteErrors } from '@/server/helpers/server';
-import { type FrontendType } from '@/utils/typescript';
+import type { FrontendType } from '@/utils/typescript';
 
 const GET = async (req: NextApiRequest) => {
   const jobId = req.query.id as string;

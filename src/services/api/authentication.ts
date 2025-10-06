@@ -1,4 +1,4 @@
-import { type NextApiRequest, type NextApiResponse } from 'next';
+import type { NextApiRequest, NextApiResponse } from 'next';
 
 import { kdb } from '@/server/db/kysely';
 
@@ -7,8 +7,8 @@ export const apiUser = async (req: NextApiRequest, res: NextApiResponse) => {
 
   if (!key) {
     res.status(400).json({
-      message: 'Parameter key is required',
       code: 'Bad Arguments',
+      message: 'Parameter key is required',
     });
     return null;
   }

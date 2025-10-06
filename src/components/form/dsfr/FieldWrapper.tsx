@@ -1,5 +1,6 @@
 import { fr } from '@codegouvfr/react-dsfr';
-import React, { useId } from 'react';
+import type React from 'react';
+import { useId } from 'react';
 
 import cx from '@/utils/cx';
 
@@ -30,9 +31,9 @@ const FieldWrapper = ({
     <div
       className={cx(
         fr.cx('fr-input-group', {
+          'fr-input-group--disabled': disabled,
           'fr-input-group--error': state === 'error',
           'fr-input-group--valid': state === 'success',
-          'fr-input-group--disabled': disabled,
         }),
         className
       )}

@@ -1,4 +1,4 @@
-import { type Command } from '@commander-js/extra-typings';
+import type { Command } from '@commander-js/extra-typings';
 import { z } from 'zod';
 
 import { logger } from '@/server/helpers/logger';

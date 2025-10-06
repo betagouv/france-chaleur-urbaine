@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { type NextApiRequest } from 'next';
+import type { NextApiRequest } from 'next';
 import { z } from 'zod';
 
 import { activateUser } from '@/modules/auth/server/service';
@@ -44,7 +44,7 @@ const changePasswordRequest = handleRouteErrors(async (req: NextApiRequest) => {
 
   const salt = await bcrypt.genSalt(10);
   await db('users')
-    .update({ reset_token: null, password: bcrypt.hashSync(password, salt) })
+    .update({ password: bcrypt.hashSync(password, salt), reset_token: null })
     .where('id', user.id);
 
   if (user.activation_token) {

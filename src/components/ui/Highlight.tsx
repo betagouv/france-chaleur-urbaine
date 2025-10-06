@@ -2,18 +2,18 @@ import { Highlight as DSFRHighlight, type HighlightProps as DSFRHighlightProps }
 import { cva, type VariantProps } from 'class-variance-authority';
 
 const highlightVariants = cva('', {
+  defaultVariants: {
+    variant: 'default',
+  },
   variants: {
     variant: {
-      default: '',
       blue: 'bg-[linear-gradient(0deg,var(--border-action-high-blue-france),var(--border-action-high-blue-france))]!',
+      default: '',
+      error: 'bg-[linear-gradient(0deg,var(--border-action-high-error),var(--border-action-high-error))]!',
       info: 'bg-[linear-gradient(0deg,var(--border-action-high-info),var(--border-action-high-info))]!',
       success: 'bg-[linear-gradient(0deg,var(--border-action-high-success),var(--border-action-high-success))]!',
       warning: 'bg-[linear-gradient(0deg,var(--border-action-high-warning),var(--border-action-high-warning))]!',
-      error: 'bg-[linear-gradient(0deg,var(--border-action-high-error),var(--border-action-high-error))]!',
     },
-  },
-  defaultVariants: {
-    variant: 'default',
   },
 });
 
@@ -24,7 +24,7 @@ const Highlight = ({ children, className, variant, size }: HighlightProps) => {
     <DSFRHighlight
       size={size}
       classes={{
-        root: highlightVariants({ variant, className }),
+        root: highlightVariants({ className, variant }),
       }}
     >
       {children}

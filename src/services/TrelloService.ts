@@ -13,12 +13,12 @@ export type TrelloCard = {
   due: string | null;
   dateLastActivity: string;
   labels: TrelloLabel[];
-  attachments: Array<{
+  attachments: {
     id: string;
     name: string;
     url: string;
     fileName: string;
-  }>;
+  }[];
 };
 
 export type TrelloLabel = {
@@ -182,9 +182,9 @@ export class TrelloService {
 
   async downloadAttachment(attachment: TrelloCard['attachments'][number]): Promise<string> {
     return await downloadFile({
-      url: `${attachment.url}?${this.getAuthParams()}`,
       fileName: attachment.fileName,
       headers: { Authorization: `OAuth oauth_consumer_key="${this.apiKey}", oauth_token="${this.token}"` } as AxiosRequestHeaders,
+      url: `${attachment.url}?${this.getAuthParams()}`,
     });
   }
 

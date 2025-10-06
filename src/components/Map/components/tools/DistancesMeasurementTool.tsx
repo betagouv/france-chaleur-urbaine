@@ -1,11 +1,11 @@
 import Button from '@codegouvfr/react-dsfr/Button';
-import { type DrawCreateEvent } from '@mapbox/mapbox-gl-draw';
+import type { DrawCreateEvent } from '@mapbox/mapbox-gl-draw';
 import { useKeyboardEvent } from '@react-hookz/web';
 import center from '@turf/center';
 import { lineString, points } from '@turf/helpers';
 import length from '@turf/length';
 import { atom, useAtom } from 'jotai';
-import { type GeoJSONSource } from 'maplibre-gl';
+import type { GeoJSONSource } from 'maplibre-gl';
 import { Fragment, useEffect, useRef } from 'react';
 
 import useFCUMap from '@/components/Map/MapProvider';
@@ -14,11 +14,10 @@ import Divider from '@/components/ui/Divider';
 import Text from '@/components/ui/Text';
 import { trackEvent } from '@/modules/analytics/client';
 import { formatDistance } from '@/utils/geo';
-
-import { type MeasureFeature, type MeasureLabelFeature } from './measure';
-import MesureFeatureListItem from './MeasureFeatureListItem';
-import { type MapSourceLayersSpecification } from '../../layers/common';
+import type { MapSourceLayersSpecification } from '../../layers/common';
 import { Title } from '../SimpleMapLegend.style';
+import MesureFeatureListItem from './MeasureFeatureListItem';
+import type { MeasureFeature, MeasureLabelFeature } from './measure';
 
 export const distancesMeasurementLinesSourceId = 'distance-measurements-lines';
 export const distancesMeasurementLabelsSourceId = 'distance-measurements-labels';
@@ -51,9 +50,9 @@ const DistancesMeasurementTool: React.FC = () => {
         {
           ...feature,
           properties: {
-            ...features.at(-1)!.properties,
+            ...features.at(-1)?.properties,
             distance: length(feature, { units: 'meters' }),
-          },
+          } as any,
         },
       ];
     });
@@ -82,7 +81,7 @@ const DistancesMeasurementTool: React.FC = () => {
             properties: {
               color: featureColorPalette[features.length % featureColorPalette.length],
               distance: length(featureBeingDrawn, { units: 'meters' }),
-            },
+            } as any,
           },
         ];
       }
@@ -92,7 +91,7 @@ const DistancesMeasurementTool: React.FC = () => {
         {
           ...featureBeingDrawn,
           properties: {
-            color: features.at(-1)!.properties.color,
+            color: features.at(-1)?.properties.color,
             distance: length(featureBeingDrawn, { units: 'meters' }),
           },
         },
@@ -192,50 +191,48 @@ const DistancesMeasurementTool: React.FC = () => {
   const displayedFeatures = features.filter((f) => f.geometry.coordinates.length > 1);
 
   return (
-    <>
-      <Box display="flex" flexDirection="column" gap="16px">
-        <Box>
-          <Title>Mesurer une distance</Title>
+    <Box display="flex" flexDirection="column" gap="16px">
+      <Box>
+        <Title>Mesurer une distance</Title>
 
-          <Text size="xs" fontStyle="italic">
-            Pour mesurer une distance, cliquez sur 2 points ou plus sur la carte, puis <strong>double-cliquez</strong> sur le dernier point
-            ou <strong>appuyez sur la touche entrée</strong> pour finaliser le tracé.
-          </Text>
-        </Box>
-
-        {displayedFeatures.length > 0 && <Divider my="1v" />}
-        {displayedFeatures.map((feature) => (
-          <Fragment key={feature.id}>
-            <MesureFeatureListItem
-              feature={feature}
-              onColorUpdate={(color) => updateMeasurementColor(feature.id, color)}
-              onDelete={() => deleteMeasurement(feature.id)}
-              disableDeleteButton={isDrawing}
-            />
-            <Divider my="1v" />
-          </Fragment>
-        ))}
-
-        {showCancelButton && (
-          <Button priority="secondary" iconId="fr-icon-close-line" onClick={cancelMeasurement}>
-            Annuler le tracé
-          </Button>
-        )}
-        {showAddButton && (
-          <Button
-            priority="secondary"
-            iconId="fr-icon-add-line"
-            onClick={() => {
-              trackEvent('Carto|Mesure de distance|Ajouter un tracé');
-              startMeasurement();
-            }}
-            disabled={!mapLayersLoaded}
-          >
-            Ajouter un tracé
-          </Button>
-        )}
+        <Text size="xs" fontStyle="italic">
+          Pour mesurer une distance, cliquez sur 2 points ou plus sur la carte, puis <strong>double-cliquez</strong> sur le dernier point ou{' '}
+          <strong>appuyez sur la touche entrée</strong> pour finaliser le tracé.
+        </Text>
       </Box>
-    </>
+
+      {displayedFeatures.length > 0 && <Divider my="1v" />}
+      {displayedFeatures.map((feature) => (
+        <Fragment key={feature.id}>
+          <MesureFeatureListItem
+            feature={feature}
+            onColorUpdate={(color) => updateMeasurementColor(feature.id, color)}
+            onDelete={() => deleteMeasurement(feature.id)}
+            disableDeleteButton={isDrawing}
+          />
+          <Divider my="1v" />
+        </Fragment>
+      ))}
+
+      {showCancelButton && (
+        <Button priority="secondary" iconId="fr-icon-close-line" onClick={cancelMeasurement}>
+          Annuler le tracé
+        </Button>
+      )}
+      {showAddButton && (
+        <Button
+          priority="secondary"
+          iconId="fr-icon-add-line"
+          onClick={() => {
+            trackEvent('Carto|Mesure de distance|Ajouter un tracé');
+            startMeasurement();
+          }}
+          disabled={!mapLayersLoaded}
+        >
+          Ajouter un tracé
+        </Button>
+      )}
+    </Box>
   );
 };
 
@@ -254,89 +251,89 @@ export function useDistancesMeasurementLayers() {
     }
 
     (mapRef.getSource(distancesMeasurementLinesSourceId) as GeoJSONSource).setData({
-      type: 'FeatureCollection',
       features,
+      type: 'FeatureCollection',
     });
 
     // build the labels source with points at the center of each segment
     (mapRef.getSource(distancesMeasurementLabelsSourceId) as GeoJSONSource).setData({
-      type: 'FeatureCollection',
       features: features.flatMap((feature) => {
         return feature.geometry.coordinates.slice(0, -1).map(
           (coordinates, index) =>
             ({
-              id: `${feature.id}-${index}`,
-              type: 'Feature',
               geometry: {
-                type: 'Point',
                 coordinates: center(points([coordinates, feature.geometry.coordinates[index + 1]])).geometry.coordinates,
+                type: 'Point',
               },
+              id: `${feature.id}-${index}`,
               properties: {
                 color: feature.properties.color,
                 distanceLabel: formatDistance(
                   length(lineString([coordinates, feature.geometry.coordinates[index + 1]]), { units: 'meters' })
                 ),
               },
+              type: 'Feature',
             }) satisfies MeasureLabelFeature
         );
       }),
+      type: 'FeatureCollection',
     });
   }, [mapLayersLoaded, features]);
 }
 
 export const distancesMeasurementLayers = [
   {
-    sourceId: distancesMeasurementLinesSourceId,
-    source: {
-      type: 'geojson',
-      data: {
-        type: 'FeatureCollection',
-        features: [],
-      },
-    },
     layers: [
       {
         id: 'distance-measurements-lines',
-        type: 'line',
+        isVisible: (config) => config.mesureDistance,
         paint: {
           'line-color': ['get', 'color'],
           'line-width': 3,
         },
-        isVisible: (config) => config.mesureDistance,
+        type: 'line',
         unselectable: true,
       },
     ],
+    source: {
+      data: {
+        features: [],
+        type: 'FeatureCollection',
+      },
+      type: 'geojson',
+    },
+    sourceId: distancesMeasurementLinesSourceId,
   },
   {
-    sourceId: distancesMeasurementLabelsSourceId,
-    source: {
-      type: 'geojson',
-      data: {
-        type: 'FeatureCollection',
-        features: [],
-      },
-    },
     layers: [
       {
         id: 'distance-measurements-labels',
-        type: 'symbol',
+        isVisible: (config) => config.mesureDistance,
         layout: {
           'symbol-placement': 'point',
+          'text-allow-overlap': true,
+          'text-anchor': 'center',
           'text-field': ['get', 'distanceLabel'],
           'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
-          'text-size': 16,
-          'text-anchor': 'center',
-          'text-allow-overlap': true,
           'text-offset': [0, 0],
+          'text-size': 16,
         },
         paint: {
           'text-color': ['get', 'color'],
           'text-halo-color': '#ffffff',
           'text-halo-width': 2,
         },
-        isVisible: (config) => config.mesureDistance,
+        type: 'symbol',
         unselectable: true,
       },
     ],
+    source: {
+      data: {
+        features: [],
+        type: 'FeatureCollection',
+      },
+      type: 'geojson',
+    },
+    sourceId: distancesMeasurementLabelsSourceId,
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];

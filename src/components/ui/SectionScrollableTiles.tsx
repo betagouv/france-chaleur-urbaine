@@ -1,14 +1,14 @@
 'use client';
 
 import { AnimatePresence } from 'motion/react';
-import React from 'react';
+import type React from 'react';
 import { useCallback, useRef, useState } from 'react';
 
 import Button from '@/components/ui/Button';
 import Image from '@/components/ui/Image';
 import Link from '@/components/ui/Link';
 import Section, { SectionContent, SectionHeading } from '@/components/ui/Section';
-import { trackEvent, type TrackingEvent } from '@/modules/analytics/client';
+import { type TrackingEvent, trackEvent } from '@/modules/analytics/client';
 import cx from '@/utils/cx';
 
 export interface SectionScrollableTilesItem {
@@ -43,8 +43,8 @@ function SectionScrollableTiles({ title, tiles, size = 'md', className, ...props
     (index: number) => {
       if (scrollContainerRef.current) {
         scrollContainerRef.current.scrollTo({
-          left: index * (tileWidth + gap),
           behavior: 'smooth',
+          left: index * (tileWidth + gap),
         });
       }
     },
@@ -99,7 +99,7 @@ function SectionScrollableTiles({ title, tiles, size = 'md', className, ...props
           <div
             ref={scrollContainerRef}
             className={cx('flex items-stretch gap-2 transition-all duration-300', 'overflow-x-auto scrollbar-hide scroll-smooth')}
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            style={{ msOverflowStyle: 'none', scrollbarWidth: 'none' }}
             onScroll={handleScroll}
           >
             <AnimatePresence mode="popLayout">
@@ -108,7 +108,7 @@ function SectionScrollableTiles({ title, tiles, size = 'md', className, ...props
                   <Link
                     key={`${tile.title}-${index}`}
                     className="shrink-0 text-center hover:bg-gray-50! cursor-pointer rounded-md p-0.5 py-5 flex flex-col gap-2 tracking-tight"
-                    style={{ width: `${tileWidth}px`, backgroundImage: 'none' }}
+                    style={{ backgroundImage: 'none', width: `${tileWidth}px` }}
                     href={tile.href ?? '#'}
                     onClick={(e) => {
                       e.stopPropagation();

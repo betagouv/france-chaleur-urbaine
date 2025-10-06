@@ -11,23 +11,23 @@ import {
   Section as ReactEmailSection,
   Text as ReactEmailText,
 } from '@react-email/components';
-import React from 'react';
+import type React from 'react';
 
 const colors = {
-  primary: '#000091', // can't import from components/ui/helpers/colors because it gives a css class
   background: '#f5f5ff',
   border: '#f0f0f0',
   dark: '#333333',
+  primary: '#000091', // can't import from components/ui/helpers/colors because it gives a css class
 };
 
 export const Button = ({ style, ...props }: React.ComponentProps<typeof ReactEmailButton>) => (
   <ReactEmailButton
     style={{
-      padding: '8px 16px',
       backgroundColor: colors.primary,
       color: 'white',
-      fontSize: '16px',
       cursor: 'pointer',
+      fontSize: '16px',
+      padding: '8px 16px',
       textDecoration: 'none',
       ...style,
     }}
@@ -39,10 +39,10 @@ export const Container = ({ style, ...props }: React.ComponentProps<typeof React
   <ReactEmailContainer
     style={{
       backgroundColor: '#FFFFFF',
-      margin: 'auto',
-      padding: '16px 32px',
-      maxWidth: '800px',
       boxShadow: '0 2px 7px 0 rgb(0 0 0 / 21%)',
+      margin: 'auto',
+      maxWidth: '800px',
+      padding: '16px 32px',
       ...style,
     }}
     {...props}
@@ -53,8 +53,8 @@ export const Section = ({ style, ...props }: React.ComponentProps<typeof ReactEm
   <ReactEmailSection
     style={{
       boxSizing: 'border-box',
-      padding: '16px 0',
       overflowWrap: 'break-word',
+      padding: '16px 0',
       ...style,
     }}
     {...props}
@@ -65,9 +65,9 @@ export const Text = ({ style, ...props }: React.ComponentProps<typeof ReactEmail
   <ReactEmailText
     style={{
       fontSize: '16px',
-      padding: 0,
-      marginBottom: '16px',
       lineHeight: '1.5',
+      marginBottom: '16px',
+      padding: 0,
       ...style,
     }}
     {...props}
@@ -77,10 +77,10 @@ export const Text = ({ style, ...props }: React.ComponentProps<typeof ReactEmail
 export const Url = ({ style, ...props }: React.ComponentProps<typeof Text>) => (
   <Text
     style={{
-      wordBreak: 'break-all',
-      overflowWrap: 'anywhere',
       color: colors.dark,
       fontStyle: 'italic',
+      overflowWrap: 'anywhere',
+      wordBreak: 'break-all',
       ...style,
     }}
     {...props}

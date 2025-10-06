@@ -10,9 +10,9 @@ export default handleRouteErrors(async (req: NextApiRequest) => {
   requireGetMethod(req);
 
   const { lat, lon, distance } = await validateObjectSchema(req.query, {
+    distance: z.coerce.number().default(10000),
     lat: z.coerce.number(),
     lon: z.coerce.number(),
-    distance: z.coerce.number().default(10000),
   });
 
   const regions = (await db('regions')
@@ -25,7 +25,7 @@ export default handleRouteErrors(async (req: NextApiRequest) => {
       :distance
     )
   `,
-      { lon, lat, distance }
+      { distance, lat, lon }
     )) as { bnb_nom: string }[];
 
   const dpes = {
@@ -66,7 +66,7 @@ export default handleRouteErrors(async (req: NextApiRequest) => {
                 :distance
               )
             `,
-          { lon, lat, distance }
+          { distance, lat, lon }
         );
       dpeRegion.forEach((dpe) => {
         dpes.count++;

@@ -1,9 +1,9 @@
 const presentationRcu = {
-  title: 'Remplaçons vertueusement le fioul et le gaz',
   body: `## Une énergie d’avenir, propre et économique
 
   Le chauffage urbain permet de **relier les bâtiments d’un quartier par des canalisations ([réseaux de chaleur](/ressources/reseau#contenu)) qui distribuent de la chaleur** produite avec **des [sources d’énergies](/ressources/energies-vertes#contenu) renouvelables, locales et durables** (géothermie, biomasse, chaleur issue de l'incinération des déchets...).
   `,
+  imgAlt: 'Réseau de chaleur urbaine',
   listing: `
   :::puce-icon{icon="./icons/picto-planet.svg"}
   **Agissez pour la planète**, en réduisant vos émissions de gaz à effet de serre.
@@ -17,6 +17,6 @@ const presentationRcu = {
   **Choisissez la sérénité** avec des énergies locales et bénéficiez de la garantie d’un service public. 
   :::
   `,
-  imgAlt: 'Réseau de chaleur urbaine',
+  title: 'Remplaçons vertueusement le fioul et le gaz',
 };
 export default presentationRcu;

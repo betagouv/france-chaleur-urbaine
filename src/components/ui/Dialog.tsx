@@ -61,9 +61,9 @@ const Dialog = ({ children, trigger, title, description, size = 'md', open, onOp
               size === 'md' && 'max-w-lg',
               size === 'lg' && 'max-w-4xl'
             )}
-            initial={{ opacity: 0, y: -10, x: '-50%', translateY: '-50%' }}
-            animate={{ opacity: 1, y: 0, x: '-50%', translateY: '-50%' }}
-            exit={{ opacity: 0, y: -10, x: '-50%', translateY: '-50%' }}
+            initial={{ opacity: 0, translateY: '-50%', x: '-50%', y: -10 }}
+            animate={{ opacity: 1, translateY: '-50%', x: '-50%', y: 0 }}
+            exit={{ opacity: 0, translateY: '-50%', x: '-50%', y: -10 }}
             transition={{ duration: 0.3 }}
           >
             <div className="flex flex-col gap-4">

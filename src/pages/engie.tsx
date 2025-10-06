@@ -7,17 +7,17 @@ const EngieMap = () => {
     <IframeWrapper>
       <Map
         initialMapConfiguration={createMapConfiguration({
+          filtreGestionnaire: ['engie'],
           reseauxDeChaleur: {
             show: true,
           },
-          filtreGestionnaire: ['engie'],
         })}
         enabledLegendFeatures={['reseauxDeChaleur', 'reseauxDeFroid', 'reseauxEnConstruction', 'zonesDeDeveloppementPrioritaire']}
         withLegend
         withBorder
         legendLogoOpt={{
-          src: '/logo-ENGIE.jpg',
           alt: 'logo ENGIE',
+          src: '/logo-ENGIE.jpg',
         }}
         withFCUAttribution
       />

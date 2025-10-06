@@ -7,24 +7,24 @@ process.env.DATABASE_URL = process.env.DATABASE_URL ?? 'postgres://fcu_test:fcu_
 
 vi.mock('next/router', () => ({
   useRouter: () => ({
-    route: '/',
-    pathname: '/',
-    query: {},
     asPath: '/',
-    push: vi.fn(),
-    pull: vi.fn(),
     back: vi.fn(),
-    prefetch: vi.fn(),
     beforePopState: vi.fn(),
     events: {
-      on: vi.fn(),
-      off: vi.fn(),
       emit: vi.fn(),
+      off: vi.fn(),
+      on: vi.fn(),
     },
     isFallback: false,
     isLocaleDomain: true,
-    isReady: true,
     isPreview: false,
+    isReady: true,
+    pathname: '/',
+    prefetch: vi.fn(),
+    pull: vi.fn(),
+    push: vi.fn(),
+    query: {},
+    route: '/',
   }),
 }));
 
@@ -50,22 +50,22 @@ vi.mock('next/dynamic', () => ({
 // Mock Services Context
 vi.mock('@/services/context', () => ({
   ServicesContext: React.createContext({}),
+  ServicesProvider: ({ children }: { children: React.ReactNode }) => children,
   useServices: () => ({
     apiService: {},
-    trackingService: {
-      trackEvent: vi.fn(),
-      trackAcquisition: vi.fn(),
-    },
     heatNetworkService: {
       findByCoords: vi.fn().mockResolvedValue({
-        isEligible: false,
         distance: 1000,
+        isEligible: false,
         networks: [],
       }),
       findById: vi.fn().mockResolvedValue(null),
     },
+    trackingService: {
+      trackAcquisition: vi.fn(),
+      trackEvent: vi.fn(),
+    },
   }),
-  ServicesProvider: ({ children }: { children: React.ReactNode }) => children,
 }));
 
 // Mock fetch with proper responses
@@ -76,33 +76,33 @@ global.fetch = vi.fn().mockImplementation((url: string) => {
   }
 
   return Promise.resolve({
-    ok: true,
-    status: 200,
-    json: () => Promise.resolve({}),
-    text: () => Promise.resolve(''),
-    blob: () => Promise.resolve(new Blob()),
     arrayBuffer: () => Promise.resolve(new ArrayBuffer(0)),
-    headers: new Headers(),
-    redirected: false,
-    statusText: 'OK',
-    type: 'basic',
-    url: url || '',
-    clone: () => ({ ok: true }),
+    blob: () => Promise.resolve(new Blob()),
     body: null,
     bodyUsed: false,
+    clone: () => ({ ok: true }),
+    headers: new Headers(),
+    json: () => Promise.resolve({}),
+    ok: true,
+    redirected: false,
+    status: 200,
+    statusText: 'OK',
+    text: () => Promise.resolve(''),
+    type: 'basic',
+    url: url || '',
   } as Response);
 });
 
 global.ResizeObserver = vi.fn().mockImplementation(() => ({
+  disconnect: vi.fn(),
   observe: vi.fn(),
   unobserve: vi.fn(),
-  disconnect: vi.fn(),
 }));
 
 global.IntersectionObserver = vi.fn().mockImplementation(() => ({
+  disconnect: vi.fn(),
   observe: vi.fn(),
   unobserve: vi.fn(),
-  disconnect: vi.fn(),
 }));
 
 // Mock console methods to suppress warnings in tests
@@ -165,9 +165,9 @@ process.stderr.write = ((chunk: any, encoding?: any, callback?: any) => {
 
 // Mock API utility functions
 vi.mock('@/utils/api', () => ({
+  getFetchJSON: vi.fn().mockResolvedValue({}),
   postFetchJSON: vi.fn().mockResolvedValue({}),
   postFormDataFetchJSON: vi.fn().mockResolvedValue({}),
-  getFetchJSON: vi.fn().mockResolvedValue({}),
 }));
 
 // Mock authentication
@@ -181,20 +181,20 @@ vi.mock('@/components/addressAutocomplete/AddressAutocomplete', () => ({
   default: ({ onSelect, ...props }: any) => {
     return React.createElement('input', {
       'data-testid': 'address-autocomplete',
-      placeholder: 'Rechercher une adresse',
       onChange: (e: any) => {
         // Simulate address selection
         if (e.target.value && onSelect) {
           onSelect({
             geometry: { coordinates: [2.3522, 48.8566] },
             properties: {
-              label: e.target.value,
               city: 'Paris',
               citycode: '75001',
+              label: e.target.value,
             },
           });
         }
       },
+      placeholder: 'Rechercher une adresse',
       ...props,
     });
   },
@@ -202,8 +202,8 @@ vi.mock('@/components/addressAutocomplete/AddressAutocomplete', () => ({
 
 // Mock iframe to prevent external content loading
 Object.defineProperty(window.HTMLIFrameElement.prototype, 'src', {
-  set: vi.fn(),
   get: vi.fn(() => ''),
+  set: vi.fn(),
 });
 
 // Mock window.open and other window methods

@@ -40,35 +40,34 @@ type NetworkTableColumns = {
 
 const networkTables: NetworkTableColumns = {
   reseaux_de_chaleur: {
-    idField: 'id_fcu',
-    geomDependentFields: (eb) => ({
-      has_trace: eb.selectFrom('geometry').select(sql<boolean>`st_geometrytype(geometry.geom) = 'ST_MultiLineString'`.as('has_trace')),
-    }),
+    additionalFields: (id_sncu?: string) => (id_sncu ? { 'Identifiant reseau': id_sncu } : {}),
     createFields: (eb) => ({
+      fichiers: eb.val([]),
       'reseaux classes': false,
       reseaux_techniques: false,
-      fichiers: eb.val([]),
     }),
-    additionalFields: (id_sncu?: string) => (id_sncu ? { 'Identifiant reseau': id_sncu } : {}),
-  },
-  reseaux_de_froid: {
-    idField: 'id_fcu',
     geomDependentFields: (eb) => ({
       has_trace: eb.selectFrom('geometry').select(sql<boolean>`st_geometrytype(geometry.geom) = 'ST_MultiLineString'`.as('has_trace')),
     }),
-    createFields: (eb) => ({
-      'reseaux classes': false,
-      fichiers: eb.val([]),
-    }),
+    idField: 'id_fcu',
+  },
+  reseaux_de_froid: {
     additionalFields: (id_sncu?: string) => (id_sncu ? { 'Identifiant reseau': id_sncu } : {}),
+    createFields: (eb) => ({
+      fichiers: eb.val([]),
+      'reseaux classes': false,
+    }),
+    geomDependentFields: (eb) => ({
+      has_trace: eb.selectFrom('geometry').select(sql<boolean>`st_geometrytype(geometry.geom) = 'ST_MultiLineString'`.as('has_trace')),
+    }),
+    idField: 'id_fcu',
   },
   zone_de_developpement_prioritaire: {
-    idField: 'id_fcu',
-    geomDependentFields: () => ({}),
     additionalFields: (id_sncu?: string) => (id_sncu ? { 'Identifiant reseau': id_sncu } : {}),
+    geomDependentFields: () => ({}),
+    idField: 'id_fcu',
   },
   zones_et_reseaux_en_construction: {
-    idField: 'id_fcu',
     geomDependentFields: (eb) => ({
       is_zone: eb
         .selectFrom('geometry')
@@ -76,6 +75,7 @@ const networkTables: NetworkTableColumns = {
           sql<boolean>`st_geometrytype(geometry.geom) = 'ST_MultiPolygon' or st_geometrytype(geometry.geom) = 'ST_Polygon'`.as('is_zone')
         ),
     }),
+    idField: 'id_fcu',
   },
 };
 
@@ -130,10 +130,10 @@ export async function insertEntityWithGeometry(
     .with('geometry', (db) => db.selectNoFrom(createGeometryExpression(geometryConfig.geom, geometryConfig.srid).as('geom')))
     .insertInto(tableName as any)
     .values((eb) => ({
-      id_fcu: id_fcu ? eb.lit(id_fcu) : sql<number>`(SELECT COALESCE(max(id_fcu), 0) + 1 FROM ${sql.raw(tableName)})`,
-      geom: sql`ST_Force2D(${eb.selectFrom('geometry').select('geometry.geom')})`,
       communes_insee: communesInseeExpressionGeom,
       date_actualisation_trace: eb.val(new Date()),
+      geom: sql`ST_Force2D(${eb.selectFrom('geometry').select('geometry.geom')})`,
+      id_fcu: id_fcu ? eb.lit(id_fcu) : sql<number>`(SELECT COALESCE(max(id_fcu), 0) + 1 FROM ${sql.raw(tableName)})`,
       ...networkTables[tableName].geomDependentFields(eb),
       ...networkTables[tableName].createFields?.(eb),
       ...networkTables[tableName].additionalFields?.(id_sncu),
@@ -192,9 +192,9 @@ export async function updateEntityGeometry(
     .updateTable(tableName as any)
     .where('id_fcu', '=', id_fcu)
     .set((eb) => ({
-      geom: sql`ST_Force2D(${eb.selectFrom('geometry').select('geometry.geom')})`,
       communes_insee: communesInseeExpressionGeom,
       date_actualisation_trace: eb.val(new Date()),
+      geom: sql`ST_Force2D(${eb.selectFrom('geometry').select('geometry.geom')})`,
       ...networkTables[tableName].geomDependentFields(eb),
     }))
     .execute();
@@ -245,8 +245,8 @@ export async function updateNetworkHasPDP(id_sncu: string): Promise<void> {
     .updateTable('reseaux_de_chaleur')
     .where('Identifiant reseau', '=', id_sncu)
     .set({
-      has_PDP: true,
       date_actualisation_pdp: formatAsISODate(new Date()),
+      has_PDP: true,
     })
     .returning('id_fcu')
     .executeTakeFirst();

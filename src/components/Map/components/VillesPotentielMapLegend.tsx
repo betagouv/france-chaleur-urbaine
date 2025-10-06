@@ -6,10 +6,9 @@ import useFCUMap from '@/components/Map/MapProvider';
 import Accordion from '@/components/ui/Accordion';
 import Box, { type BoxProps } from '@/components/ui/Box';
 import Text from '@/components/ui/Text';
-
-import IconPolygon from './IconPolygon';
 import { besoinsEnChaleurIntervals } from '../layers/besoinsEnChaleur';
 import { zonePotentielChaudColor, zonePotentielChaudOpacity, zonePotentielFortChaudColor } from '../layers/zonesPotentielChaud';
+import IconPolygon from './IconPolygon';
 
 const StyledBox = styled(Box)`
   .fr-fieldset {
@@ -55,8 +54,8 @@ function VillesPotentielMapLegend(props?: BoxProps) {
                 </Box>
               ),
               nativeInputProps: {
-                name: 'besoinsEnChaleur',
                 checked: mapConfiguration.besoinsEnChaleur,
+                name: 'besoinsEnChaleur',
                 onChange: () => toggleLayer('besoinsEnChaleur'),
               },
             },
@@ -71,8 +70,8 @@ function VillesPotentielMapLegend(props?: BoxProps) {
                 </Box>
               ),
               nativeInputProps: {
-                name: 'zonesPotentielFortChaud',
                 checked: mapConfiguration.zonesOpportunite.zonesPotentielFortChaud,
+                name: 'zonesPotentielFortChaud',
                 onChange: () => toggleLayer('zonesOpportunite.zonesPotentielFortChaud'),
               },
             },
@@ -86,8 +85,8 @@ function VillesPotentielMapLegend(props?: BoxProps) {
                 </Box>
               ),
               nativeInputProps: {
-                name: 'zonesPotentielChaud',
                 checked: mapConfiguration.zonesOpportunite.zonesPotentielChaud,
+                name: 'zonesPotentielChaud',
                 onChange: () => toggleLayer('zonesOpportunite.zonesPotentielChaud'),
               },
             },

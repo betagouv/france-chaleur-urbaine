@@ -13,15 +13,15 @@ const GET = async (req: NextApiRequest) => {
 
   const result = await getEligilityStatus(lat, lon);
   return {
-    isEligible: result.isEligible,
     distance: result.distance,
-    inPDP: result.inPDP,
     futurNetwork: result.futurNetwork,
-    id: result.id,
-    name: result.name,
     gestionnaire: result.gestionnaire,
-    rateENRR: result.tauxENRR,
+    id: result.id,
+    inPDP: result.inPDP,
+    isEligible: result.isEligible,
+    name: result.name,
     rateCO2: result.co2,
+    rateENRR: result.tauxENRR,
   };
 };
 

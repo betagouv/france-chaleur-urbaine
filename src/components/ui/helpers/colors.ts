@@ -23,29 +23,29 @@ const replaceKeyDeep = <T extends DeepRecord>(obj: T, search: string, replacemen
 };
 
 export const palette = {
-  'blue-50': '#e6e6f4',
-  'blue-lighter': '#cccce9',
-  'blue-200': '#9999d3',
-  'blue-light': '#6666bd',
-  'blue-400': '#3333a7',
   blue: fr.colors.decisions.background.active.blueFrance.default,
+  'blue-50': '#e6e6f4',
+  'blue-200': '#9999d3',
+  'blue-400': '#3333a7',
   'blue-600': '#000074',
-  'blue-dark': '#000057',
   'blue-800': '#00003a',
+  'blue-dark': '#000057',
   'blue-darker': '#00001d',
-
-  'red-50': '#fae8e9',
-  'red-lighter': '#f4d1d2',
-  'red-200': '#e9a3a5',
-  'red-light': '#df7578',
-  'red-400': '#d4474b',
-  red: fr.colors.decisions.background.active.redMarianne.default,
-  'red-600': '#a11418',
-  'red-dark': '#790f12',
-  'red-800': '#500a0c',
-  'red-darker': '#280506',
+  'blue-light': '#6666bd',
+  'blue-lighter': '#cccce9',
 
   grey: 'var(--text-default-grey)',
+  red: fr.colors.decisions.background.active.redMarianne.default,
+
+  'red-50': '#fae8e9',
+  'red-200': '#e9a3a5',
+  'red-400': '#d4474b',
+  'red-600': '#a11418',
+  'red-800': '#500a0c',
+  'red-dark': '#790f12',
+  'red-darker': '#280506',
+  'red-light': '#df7578',
+  'red-lighter': '#f4d1d2',
 };
 
 type DSFRColors = typeof fr.colors.options;
@@ -56,44 +56,44 @@ const colors = {
 
   ...palette,
 
-  'info-light': fr.colors.decisions.background.contrast.info.default,
-  info: fr.colors.decisions.text.default.info.default,
+  accent: '#6060ff',
 
-  'faded-light': fr.colors.decisions.background.contrast.grey.default,
-  faded: fr.colors.decisions.text.default.grey.default,
-
-  'success-light': fr.colors.decisions.background.contrast.success.default,
-  success: fr.colors.decisions.text.default.success.default,
-
-  error: fr.colors.decisions.text.default.error.default,
-  'error-light': fr.colors.decisions.background.contrast.error.default,
+  border: '#d1d5db',
 
   destructive: fr.colors.decisions.text.default.error.default,
   'destructive-light': fr.colors.decisions.background.contrast.error.default,
 
-  warning: fr.colors.decisions.text.default.warning.default,
-  'warning-light': fr.colors.decisions.background.contrast.warning.default,
+  error: fr.colors.decisions.text.default.error.default,
+  'error-light': fr.colors.decisions.background.contrast.error.default,
+  faded: fr.colors.decisions.text.default.grey.default,
 
-  light: fr.colors.decisions.background.alt.blueFrance.default,
+  'faded-light': fr.colors.decisions.background.contrast.grey.default,
+  'fcu-blue': '#00B1F8',
 
-  accent: '#6060ff',
+  'fcu-green': '#009364',
+  'fcu-orange': '#FF692F',
+  'fcu-orange-light': '#F89389',
+  'fcu-purple': '#8585F6',
+  'fcu-purple-dark': '#6060ff',
+  'fcu-yellow': '#F9F21A',
+  info: fr.colors.decisions.text.default.info.default,
 
-  primary: palette.blue,
-
-  border: '#d1d5db',
-
-  stripe: '#F6F6F6',
+  'info-light': fr.colors.decisions.background.contrast.info.default,
 
   input: '#EEE', // fr.colors.options.grey._950_100.default,
   'input-border': '#3A3A3A', // fr.colors.decisions.border.plain.grey,
 
-  'fcu-green': '#009364',
-  'fcu-blue': '#00B1F8',
-  'fcu-purple': '#8585F6',
-  'fcu-purple-dark': '#6060ff',
-  'fcu-yellow': '#F9F21A',
-  'fcu-orange': '#FF692F',
-  'fcu-orange-light': '#F89389',
+  light: fr.colors.decisions.background.alt.blueFrance.default,
+
+  primary: palette.blue,
+
+  stripe: '#F6F6F6',
+  success: fr.colors.decisions.text.default.success.default,
+
+  'success-light': fr.colors.decisions.background.contrast.success.default,
+
+  warning: fr.colors.decisions.text.default.warning.default,
+  'warning-light': fr.colors.decisions.background.contrast.warning.default,
 } as const;
 
 export type Color = keyof typeof colors;
@@ -101,13 +101,13 @@ export type Color = keyof typeof colors;
 export default colors;
 
 export const legacyColors = {
-  lightblue: '#6060ff',
-  purple: 'var(--blue-france-main-525)',
+  black: 'var(--grey-50-1000)',
   darkblue: 'var(--blue-france-sun-113-625)',
   darkerblue: 'var(--legacy-darker-blue)',
+  lightblue: '#6060ff',
   lightgrey: '#78818D',
+  purple: 'var(--blue-france-main-525)',
   white: '#FFF',
-  black: 'var(--grey-50-1000)',
 } as const;
 
 export type LegacyColor = keyof typeof legacyColors;

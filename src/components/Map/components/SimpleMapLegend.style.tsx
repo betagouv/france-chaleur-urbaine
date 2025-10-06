@@ -1,19 +1,18 @@
 import { fr } from '@codegouvfr/react-dsfr';
 import DsfrTabs, { type TabsProps } from '@codegouvfr/react-dsfr/Tabs';
+import IconEnrr from '@root/public/icons/enrr.svgr';
+import IconOutils from '@root/public/icons/outils.svgr';
+import IconPotentiel from '@root/public/icons/potentiel.svgr';
+import IconReseaux from '@root/public/icons/reseaux.svgr';
 import { createParser } from 'nuqs';
-import React from 'react';
+import type React from 'react';
 import styled, { css } from 'styled-components';
-
-import { type MapConfiguration, type MapConfigurationProperty } from '@/components/Map/map-configuration';
+import type { MapConfiguration, MapConfigurationProperty } from '@/components/Map/map-configuration';
 import Box from '@/components/ui/Box';
 import CheckableAccordion, { type CheckableAccordionProps } from '@/components/ui/CheckableAccordion';
 import Heading from '@/components/ui/Heading';
 import { type LegendTrackingEvent, trackEvent } from '@/modules/analytics/client';
 import cx from '@/utils/cx';
-import IconEnrr from '@root/public/icons/enrr.svgr';
-import IconOutils from '@root/public/icons/outils.svgr';
-import IconPotentiel from '@root/public/icons/potentiel.svgr';
-import IconReseaux from '@root/public/icons/reseaux.svgr';
 
 import useFCUMap from '../MapProvider';
 
@@ -125,7 +124,6 @@ type UrlTabDef = {
 
 const tabsDefinition = [
   {
-    tabId: 'reseaux',
     label: (
       <>
         <IconReseaux height="22" width="22" />
@@ -133,27 +131,27 @@ const tabsDefinition = [
       </>
     ),
     subTabs: ['filtres'],
+    tabId: 'reseaux',
   },
   {
-    tabId: 'potentiel',
     label: (
       <>
         <IconPotentiel height="22" width="22" />
         Potentiel
       </>
     ),
+    tabId: 'potentiel',
   },
   {
-    tabId: 'enrr',
     label: (
       <>
         <IconEnrr height="22" width="22" />
         EnR&R
       </>
     ),
+    tabId: 'enrr',
   },
   {
-    tabId: 'outils',
     label: (
       <>
         <IconOutils height="22" width="22" />
@@ -161,6 +159,7 @@ const tabsDefinition = [
       </>
     ),
     subTabs: ['mesure-distance', 'extraire-données-batiment', 'densité-thermique-linéaire'],
+    tabId: 'outils',
   },
 ] as const satisfies ReadonlyArray<TabsProps.Controlled['tabs'][number] & UrlTabDef>;
 
@@ -184,6 +183,7 @@ export type TabObject = GenerateTabsObjects<typeof tabsDefinition>;
 
 export function parseURLTabs(validValues: readonly UrlTabDef[]) {
   return createParser({
+    eq: (a, b) => a === b || JSON.stringify(a) === JSON.stringify(b),
     parse: (query: string) => {
       const [urlTabId, urlSubTabId] = query.split('/');
 
@@ -197,17 +197,16 @@ export function parseURLTabs(validValues: readonly UrlTabDef[]) {
           return null;
         }
         return {
-          tabId: urlTabId,
           subTabId: urlSubTabId,
+          tabId: urlTabId,
         } as TabObject;
       }
       return {
-        tabId: urlTabId,
         subTabId: null,
+        tabId: urlTabId,
       } as TabObject;
     },
     serialize: ({ tabId, subTabId }: TabObject) => `${tabId}${subTabId ? `/${subTabId}` : ''}` as TabUrlId,
-    eq: (a, b) => a === b || JSON.stringify(a) === JSON.stringify(b),
   });
 }
 

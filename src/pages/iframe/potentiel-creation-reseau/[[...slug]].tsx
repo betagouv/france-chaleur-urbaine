@@ -1,8 +1,8 @@
-import { type GetStaticPaths } from 'next';
+import type { GetStaticPaths } from 'next';
 
 import { clientConfig } from '@/client-config';
-import { createMapConfiguration } from '@/components/Map/map-configuration';
 import { FCUMapContextProvider } from '@/components/Map/MapProvider';
+import { createMapConfiguration } from '@/components/Map/map-configuration';
 import Newsletter from '@/components/ui/Newsletter';
 import {
   DetailsCommune,
@@ -43,16 +43,16 @@ const Page: React.FC<PotentielCreationReseauPageProps> = ({ commune }) => {
             {/* This div is made so that a user can still scroll on mobile */}
             <FCUMapContextProvider
               initialMapConfiguration={createMapConfiguration({
+                besoinsEnChaleur: !!commune,
+                communesFortPotentielPourCreationReseauxChaleur: {
+                  show: !commune,
+                },
                 reseauxDeChaleur: {
                   show: !!commune,
                 },
+                reseauxEnConstruction: !!commune,
                 zonesOpportunite: {
                   show: !!commune,
-                },
-                besoinsEnChaleur: !!commune,
-                reseauxEnConstruction: !!commune,
-                communesFortPotentielPourCreationReseauxChaleur: {
-                  show: !commune,
                 },
               })}
             >
@@ -91,8 +91,8 @@ export const getStaticProps = async ({ params }: { params: { slug?: string } }) 
 
 export const getStaticPaths: GetStaticPaths = async () => {
   return {
-    paths: [],
     fallback: 'blocking',
+    paths: [],
   };
 };
 

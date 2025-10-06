@@ -1,8 +1,7 @@
 import { fr } from '@codegouvfr/react-dsfr';
-import React, { useState } from 'react';
-
+import { useState } from 'react';
+import Button from '@/components/ui/Button';
 import cx from '@/utils/cx';
-
 import Box from './ui/Box';
 import Icon from './ui/Icon';
 
@@ -29,13 +28,12 @@ const Slideshow = ({ images }: SlideshowProps) => {
         }}
       />
 
-      <nav role="navigation" className={cx(fr.cx('fr-pagination', 'fr-mt-1w'), { invisible: images.length <= 1 })} aria-label="Pagination">
+      <nav className={cx(fr.cx('fr-pagination', 'fr-mt-1w'), { invisible: images.length <= 1 })} aria-label="Pagination">
         <ul className={fr.cx('fr-pagination__list')}>
           <li>
-            <a
+            <Button
+              priority="tertiary no outline"
               className={fr.cx('fr-pagination__link')}
-              role="link"
-              href="#"
               onClick={(e) => {
                 e.preventDefault();
                 setVisibleSlideIndex((visibleSlideIndex - 1 + images.length) % images.length);
@@ -43,14 +41,13 @@ const Slideshow = ({ images }: SlideshowProps) => {
             >
               <Icon name="ri-arrow-left-s-line" size="sm" />
               Précédent
-            </a>
+            </Button>
           </li>
           <li className={fr.cx('fr-col')} aria-hidden />
           <li>
-            <a
+            <Button
+              priority="tertiary no outline"
               className={fr.cx('fr-pagination__link')}
-              role="link"
-              href="#"
               onClick={(e) => {
                 e.preventDefault();
                 setVisibleSlideIndex((visibleSlideIndex + 1) % images.length);
@@ -58,7 +55,7 @@ const Slideshow = ({ images }: SlideshowProps) => {
             >
               Suivant
               <Icon name="ri-arrow-right-s-line" size="sm" />
-            </a>
+            </Button>
           </li>
         </ul>
       </nav>

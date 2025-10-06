@@ -1,7 +1,7 @@
 import { type Selectable, sql } from 'kysely';
 import { limitFunction } from 'p-limit';
 import Papa from 'papaparse';
-import { type Logger } from 'winston';
+import type { Logger } from 'winston';
 
 import { type Jobs, kdb } from '@/server/db/kysely';
 import { getEligilityStatus } from '@/server/services/addresseInformation';
@@ -87,9 +87,9 @@ export async function processProEligibilityTestJob(job: ProEligibilityTestJob, l
     for (const [index, chunk] of chunks.entries()) {
       logger.info('processing chunk', {
         current: index + 1,
+        progress: `${Math.round(((index + 1) / totalChunks) * 100)}%`,
         size: chunk.length,
         total: totalChunks,
-        progress: `${Math.round(((index + 1) / totalChunks) * 100)}%`,
       });
       const chunkResults = await getAddressesCoordinates(chunk.join('\n'), logger);
       addresses.push(...chunkResults);
@@ -107,9 +107,9 @@ export async function processProEligibilityTestJob(job: ProEligibilityTestJob, l
     for (const [index, chunk] of chunks.entries()) {
       logger.info('processing chunk', {
         current: index + 1,
+        progress: `${Math.round(((index + 1) / totalChunks) * 100)}%`,
         size: chunk.length,
         total: totalChunks,
-        progress: `${Math.round(((index + 1) / totalChunks) * 100)}%`,
       });
       const chunkResults = await getCoordinatesAddresses(chunk.join('\n'), logger);
       addresses.push(...chunkResults);
@@ -117,8 +117,8 @@ export async function processProEligibilityTestJob(job: ProEligibilityTestJob, l
     logger.info('API Adresse reverse geocoding', { duration: Date.now() - startTime });
   }
   const jobStats: JobStats = {
-    updatedCount: 0,
     insertedCount: 0,
+    updatedCount: 0,
   };
   {
     const startTime = Date.now();
@@ -141,13 +141,13 @@ export async function processProEligibilityTestJob(job: ProEligibilityTestJob, l
             addressItem.result_status === 'ok' ? await getEligilityStatus(addressItem.latitude, addressItem.longitude) : null;
 
           const addressData = {
-            test_id: job.entity_id!,
-            source_address: addressItem.address as string,
-            ban_valid: addressItem.result_status === 'ok',
             ban_address: addressItem.result_label,
             ban_score: isDefined(addressItem.result_score) ? Math.round(addressItem.result_score * 100) : null,
-            geom: sql`st_transform(st_point(${addressItem.longitude}, ${addressItem.latitude}, 4326), 2154)`,
+            ban_valid: addressItem.result_status === 'ok',
             eligibility_status: eligibilityStatus ?? undefined,
+            geom: sql`st_transform(st_point(${addressItem.longitude}, ${addressItem.latitude}, 4326), 2154)`,
+            source_address: addressItem.address as string,
+            test_id: job.entity_id!,
           } satisfies Parameters<ReturnType<typeof kdb.insertInto<'pro_eligibility_tests_addresses'>>['values']>[0];
 
           const existingAddressId = existingAddressesMap.get(addressItem.address as string);
@@ -163,8 +163,8 @@ export async function processProEligibilityTestJob(job: ProEligibilityTestJob, l
           if (processedCount % 100 === 0) {
             logger.info('processing addresses', {
               processed: processedCount,
-              total: totalAddresses,
               progress: `${Math.round((processedCount / totalAddresses) * 100)}%`,
+              total: totalAddresses,
             });
           }
         },

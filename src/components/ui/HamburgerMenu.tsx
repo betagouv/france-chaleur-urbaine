@@ -1,4 +1,5 @@
-import React, { type ReactNode } from 'react';
+import type React from 'react';
+import type { ReactNode } from 'react';
 
 import Button from '@/components/ui/Button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover';

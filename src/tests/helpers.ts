@@ -1,4 +1,4 @@
-import { type User } from 'next-auth';
+import type { User } from 'next-auth';
 
 import { mockGetServerSession } from './setup-mocks';
 
@@ -18,8 +18,8 @@ export function mockUserSession(user: Partial<User> | null) {
   mockGetServerSession.mockResolvedValue(
     user
       ? {
-          user,
           expires: new Date(Date.now() + 86400000).toISOString(), // 24h
+          user,
         }
       : null
   );

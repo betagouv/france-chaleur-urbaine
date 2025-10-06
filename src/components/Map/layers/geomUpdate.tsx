@@ -1,4 +1,4 @@
-import { type MapSourceLayersSpecification, type PopupStyleHelpers } from './common';
+import type { MapSourceLayersSpecification, PopupStyleHelpers } from './common';
 
 export const geomUpdateColor = '#ff9800';
 export const geomUpdateHoverColor = '#ffb84d';
@@ -6,64 +6,64 @@ export const geomUpdateOpacity = 0.5;
 
 export const geomUpdateLayersSpec = [
   {
-    sourceId: 'geomUpdate',
-    source: {
-      type: 'geojson',
-      data: {
-        type: 'FeatureCollection',
-        features: [],
-      },
-    },
     layers: [
       {
+        filter: () => ['==', '$type', 'Polygon'],
         id: 'geomUpdate-polygons',
-        type: 'fill',
+        isVisible: (config) => config.geomUpdate,
         paint: {
           'fill-color': geomUpdateColor,
           'fill-opacity': 0.5,
         },
-        filter: () => ['==', '$type', 'Polygon'],
-        isVisible: (config) => config.geomUpdate,
         popup: Popup,
+        type: 'fill',
       },
       {
-        id: 'geomUpdate-polygons-outline',
-        type: 'line',
         filter: () => ['==', '$type', 'Polygon'],
+        id: 'geomUpdate-polygons-outline',
+        isVisible: (config) => config.geomUpdate,
         paint: {
           'line-color': geomUpdateColor,
           'line-width': 3,
         },
-        isVisible: (config) => config.geomUpdate,
+        type: 'line',
         unselectable: true,
       },
       {
-        id: 'geomUpdate-lines',
-        type: 'line',
         filter: () => ['==', '$type', 'LineString'],
+        id: 'geomUpdate-lines',
+        isVisible: (config) => config.geomUpdate,
         paint: {
           'line-color': geomUpdateColor,
           'line-width': 3,
         },
-        isVisible: (config) => config.geomUpdate,
         popup: Popup,
+        type: 'line',
       },
       {
-        id: 'geomUpdate-points',
-        type: 'circle',
         filter: () => ['==', '$type', 'Point'],
-        paint: {
-          'circle-radius': 8,
-          'circle-color': geomUpdateHoverColor,
-          'circle-stroke-width': 2,
-          'circle-stroke-color': geomUpdateColor,
-        },
+        id: 'geomUpdate-points',
         isVisible: (config) => config.geomUpdate,
+        paint: {
+          'circle-color': geomUpdateHoverColor,
+          'circle-radius': 8,
+          'circle-stroke-color': geomUpdateColor,
+          'circle-stroke-width': 2,
+        },
         popup: Popup,
+        type: 'circle',
       },
     ],
+    source: {
+      data: {
+        features: [],
+        type: 'FeatureCollection',
+      },
+      type: 'geojson',
+    },
+    sourceId: 'geomUpdate',
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];
 
 function Popup(data: any, { Property, Title, TwoColumns }: PopupStyleHelpers) {
   return (

@@ -7,27 +7,27 @@ export const enrrMobilisablesThalassothermieLayerOpacity = 0.6;
 
 export const enrrMobilisablesThalassothermieLayersSpec = [
   {
-    sourceId: 'enrrMobilisables-thalassothermie',
-    source: {
-      type: 'vector',
-      tiles: ['/api/map/enrrMobilisables-thalassothermie/{z}/{x}/{y}'],
-      minzoom: 5,
-      maxzoom: 12,
-    },
     layers: [
       {
         id: 'enrrMobilisables-thalassothermie',
-        type: 'fill',
+        isVisible: (config) => config.enrrMobilisablesThalassothermie,
         paint: {
           'fill-color': ifHoverElse(darken(enrrMobilisablesThalassothermieLayerColor, 30), enrrMobilisablesThalassothermieLayerColor),
           'fill-opacity': enrrMobilisablesThalassothermieLayerOpacity,
         },
-        isVisible: (config) => config.enrrMobilisablesThalassothermie,
         popup: Popup,
+        type: 'fill',
       },
     ],
+    source: {
+      maxzoom: 12,
+      minzoom: 5,
+      tiles: ['/api/map/enrrMobilisables-thalassothermie/{z}/{x}/{y}'],
+      type: 'vector',
+    },
+    sourceId: 'enrrMobilisables-thalassothermie',
   },
-] as const satisfies ReadonlyArray<MapSourceLayersSpecification>;
+] as const satisfies readonly MapSourceLayersSpecification[];
 
 type Thalassothermie = {
   fid: number;

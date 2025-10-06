@@ -1,6 +1,6 @@
-import { type RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
+import type { RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
 import { Select as DSFRSelect } from '@codegouvfr/react-dsfr/SelectNext';
-import React from 'react';
+import type React from 'react';
 
 import useInViewport from '@/hooks/useInViewport';
 import { isDefined } from '@/utils/core';
@@ -53,12 +53,12 @@ const Select = ({
       label={<Label label={displayLabel} unit={!hideUnit ? unit : undefined} help={help} />}
       nativeSelectProps={{
         ...nativeSelectProps,
-        value,
         onChange: (e) => {
           const value = e.target.value;
           engine.setStringField(name, value);
           onExternalChange?.(value);
         },
+        value,
       }}
       options={[
         ...(withDefaultOption

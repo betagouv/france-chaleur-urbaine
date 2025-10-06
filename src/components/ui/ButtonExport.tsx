@@ -1,4 +1,4 @@
-import React from 'react';
+import type React from 'react';
 
 import Button, { type ButtonProps } from '@/components/ui/Button';
 import { exportAsXLSX, type SheetData } from '@/utils/export';
