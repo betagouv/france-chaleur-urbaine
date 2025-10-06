@@ -127,7 +127,7 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
       {!advancedMode && (
         <Notice variant="info" size="xs">
           Comparez d'autres modes de chauffage sur le{' '}
-          <Link href={`/pro/comparateur-couts-performances?${searchParams.toString()}`}>mode avancé</Link>, accessible sur connexion
+          <Link href={`/pro/comparateur-couts-performances?${searchParams?.toString() ?? ''}`}>mode avancé</Link>, accessible sur connexion
         </Notice>
       )}
     </div>

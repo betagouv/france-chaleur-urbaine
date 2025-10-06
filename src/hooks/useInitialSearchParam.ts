@@ -10,7 +10,7 @@ function useInitialSearchParam(key: string) {
   return (
     (typeof location !== 'object'
       ? // SSR
-        initialSearchParams.get(key)
+        initialSearchParams?.get(key)
       : // Components mounted after page load must use the current URL value
         new URLSearchParams(location.search).get(key)) ?? null
   );
