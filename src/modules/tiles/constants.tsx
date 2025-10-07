@@ -7,4 +7,3 @@ export const zBuildTilesInput = z.strictObject({
 });
 
 export type BuildTilesInput = z.infer<typeof zBuildTilesInput>;
-export type SyncGeometriesInput = z.infer<typeof zSyncGeometriesInput>;

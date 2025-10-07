@@ -3080,6 +3080,7 @@ export interface ProComparateurConfigurations {
 export interface ProEligibilityTests {
   created_at: Generated<Timestamp>;
   deleted_at: Timestamp | null;
+  has_address_changes: Generated<boolean>;
   has_unseen_results: boolean;
   id: Generated<string>;
   name: string;
@@ -3093,6 +3094,12 @@ export interface ProEligibilityTestsAddresses {
   ban_valid: boolean;
   eligibility_status: HeatNetwork | null; // pas ouf comme nom
   geom: GeoJSON.Point | null;
+  change_viewed_at: Timestamp | null;
+  /**
+   * JSON array storing full history of eligibility status changes. Format: [{"calculated_at": "ISO8601", "eligibility": {...getDetailedEligibilityStatus result...}}]
+   */
+  eligibility_history: Generated<Json>;
+  has_eligibility_change: Generated<boolean>;
   id: Generated<string>;
   source_address: string;
   test_id: string;

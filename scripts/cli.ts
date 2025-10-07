@@ -10,6 +10,7 @@ import { z } from 'zod';
 import { registerAppCommands } from '@/modules/app/commands';
 import { registerJobsCommands } from '@/modules/jobs/commands';
 import { registerOptimizationCommands } from '@/modules/optimization/commands';
+import { registerProEligibilityTestsCommands } from '@/modules/pro-eligibility-tests/commands';
 import { registerNetworkCommands } from '@/modules/reseaux/commands';
 import { downloadAndUpdateNetwork, downloadNetwork } from '@/modules/reseaux/server/download-network';
 import { applyGeometryUpdates } from '@/modules/reseaux/server/geometry-updates';
@@ -65,6 +66,7 @@ program
 registerAppCommands(program);
 registerJobsCommands(program);
 registerOptimizationCommands(program);
+registerProEligibilityTestsCommands(program);
 registerNetworkCommands(program);
 registerTilesCommands(program);
 

@@ -2,7 +2,9 @@ import geojsonvt from 'geojson-vt';
 import vtpbf from 'vt-pbf';
 
 import { tileSourcesMaxZoom } from '@/components/Map/layers/common';
-import type { BuildTilesInput, SyncGeometriesInput } from '@/modules/tiles/constants';
+import type { ApplyGeometriesUpdatesInput } from '@/modules/reseaux/constants';
+import type { BuildTilesInput } from '@/modules/tiles/constants';
+
 import { type AirtableTileInfo, type DatabaseSourceId, tilesInfo } from '@/modules/tiles/tiles.config';
 import db from '@/server/db';
 import base from '@/server/db/airtable';
@@ -32,7 +34,7 @@ export const createBuildTilesJob = async ({ name }: BuildTilesInput, context: Ap
     .executeTakeFirstOrThrow();
 };
 
-export const createSyncGeometriesToAirtableJob = async ({ name }: SyncGeometriesInput, context: ApiContext) => {
+export const createSyncGeometriesToAirtableJob = async ({ name }: ApplyGeometriesUpdatesInput, context: ApiContext) => {
   return await kdb
     .insertInto('jobs')
     .values({
@@ -45,7 +47,7 @@ export const createSyncGeometriesToAirtableJob = async ({ name }: SyncGeometries
     .executeTakeFirstOrThrow();
 };
 
-export const createSyncMetadataFromAirtableJob = async ({ name }: SyncGeometriesInput, context: ApiContext) => {
+export const createSyncMetadataFromAirtableJob = async ({ name }: ApplyGeometriesUpdatesInput, context: ApiContext) => {
   return await kdb
     .insertInto('jobs')
     .values({

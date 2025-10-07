@@ -5,10 +5,72 @@ import {
   zCreateEligibilityTestInput,
   zUpdateEligibilityTestInput,
 } from '@/modules/pro-eligibility-tests/constants';
+import type { ProEligibilityTestEligibility, ProEligibilityTestHistoryEntry } from '@/modules/pro-eligibility-tests/types';
 import { kdb, sql } from '@/server/db/kysely';
 import type { ApiContext, ListConfig } from '@/server/db/kysely/base-model';
+import { getDetailedEligibilityStatus } from '@/server/services/addresseInformation';
 
 export const tableName = 'pro_eligibility_tests';
+
+const getTransition = (oldEligibility: ProEligibilityTestEligibility | undefined, newEligibility: ProEligibilityTestEligibility) => {
+  if (!oldEligibility) {
+    return 'initial';
+  }
+  if (JSON.stringify(oldEligibility) === JSON.stringify(newEligibility)) {
+    return 'none';
+  }
+  return 'unknown';
+};
+
+/**
+ * Calcule et met à jour l'historique d'éligibilité pour une adresse donnée
+ */
+export const updateAddressEligibilityHistory = async (addressId: string, latitude: number, longitude: number) => {
+  // Récupérer l'historique existant
+  const address = await kdb
+    .selectFrom('pro_eligibility_tests_addresses')
+    .select(['eligibility_history'])
+    .where('id', '=', addressId)
+    .executeTakeFirstOrThrow();
+
+  const existingHistory = (address.eligibility_history as ProEligibilityTestHistoryEntry[]) || [];
+
+  // Calculer la nouvelle éligibilité
+  const eligibility = await getDetailedEligibilityStatus(latitude, longitude);
+
+  const newEligibility: ProEligibilityTestEligibility = {
+    distance: eligibility.distance,
+    id_fcu: eligibility.id_fcu,
+    id_sncu: eligibility.id_sncu,
+    nom: eligibility.nom,
+    type: eligibility.type,
+  };
+
+  // Déterminer la transition
+  const lastEligibility = existingHistory[existingHistory.length - 1];
+  const transition = getTransition(lastEligibility?.eligibility, newEligibility);
+
+  // Créer la nouvelle entrée d'historique
+  const historyEntry: ProEligibilityTestHistoryEntry = {
+    calculated_at: new Date().toISOString(),
+    eligibility: newEligibility,
+    transition,
+  };
+
+  // Ajouter à l'historique
+  const updatedHistory = [...existingHistory, historyEntry];
+
+  // Mettre à jour en base
+  await kdb
+    .updateTable('pro_eligibility_tests_addresses')
+    .set({
+      eligibility_history: JSON.stringify(updatedHistory),
+    })
+    .where('id', '=', addressId)
+    .execute();
+
+  return historyEntry;
+};
 
 export const listAdmin = async () => {
   const tests = await kdb
