@@ -12,14 +12,121 @@ import { getDetailedEligibilityStatus } from '@/server/services/addresseInformat
 
 export const tableName = 'pro_eligibility_tests';
 
-const getTransition = (oldEligibility: ProEligibilityTestEligibility | undefined, newEligibility: ProEligibilityTestEligibility) => {
+/**
+ * Détermine le type de transition entre deux états d'éligibilité
+ * Description des transitions dans le fichier TRANSITION_TYPES.md
+ *
+ * @param oldEligibility - État précédent (undefined si premier calcul)
+ * @param newEligibility - Nouvel état
+ * @returns Type de transition détaillé
+ */
+export const getTransition = (oldEligibility: ProEligibilityTestEligibility | undefined, newEligibility: ProEligibilityTestEligibility) => {
+  // Premier calcul
   if (!oldEligibility) {
     return 'initial';
   }
-  if (JSON.stringify(oldEligibility) === JSON.stringify(newEligibility)) {
+
+  // Aucun changement
+  if (
+    oldEligibility.type === newEligibility.type &&
+    oldEligibility.id_fcu === newEligibility.id_fcu &&
+    oldEligibility.id_sncu === newEligibility.id_sncu &&
+    Math.abs(oldEligibility.distance - newEligibility.distance) < 5 // Tolérance de 5m pour éviter les variations GPS
+  ) {
     return 'none';
   }
-  return 'unknown';
+
+  const isExistingNetwork = (type: string) => type.includes('reseau_existant');
+  const isFutureNetwork = (type: string) => type.includes('reseau_futur');
+  const isPDP = (type: string) => type === 'dans_pdp';
+  const isInCity = (type: string) => type === 'dans_ville_reseau_existant_sans_trace';
+  const isTooFar = (type: string) => type === 'trop_eloigne';
+
+  const oldType = oldEligibility.type;
+  const newType = newEligibility.type;
+
+  // Entrée dans un PDP
+  if (!isPDP(oldType) && isPDP(newType)) {
+    return 'entree_pdp';
+  }
+
+  // Sortie d'un PDP
+  if (isPDP(oldType) && !isPDP(newType)) {
+    return 'sortie_pdp';
+  }
+
+  // Réseau futur devient existant (construction terminée)
+  if (isFutureNetwork(oldType) && isExistingNetwork(newType)) {
+    return 'futur_vers_existant';
+  }
+
+  // Passage de trop éloigné vers un réseau
+  if (isTooFar(oldType) && !isTooFar(newType)) {
+    if (isFutureNetwork(newType)) {
+      return 'nouveau_reseau_futur';
+    }
+    if (isExistingNetwork(newType)) {
+      return 'nouveau_reseau_existant';
+    }
+    return 'nouveau_reseau';
+  }
+
+  // Passage d'un réseau vers trop éloigné
+  if (!isTooFar(oldType) && isTooFar(newType)) {
+    return 'reseau_supprime';
+  }
+
+  // Changement de réseau (id_fcu différent)
+  if (oldEligibility.id_fcu !== newEligibility.id_fcu) {
+    return 'changement_reseau';
+  }
+
+  // Changement de distance significatif (>50m) avec même type
+  const distanceChange = newEligibility.distance - oldEligibility.distance;
+  if (oldType === newType && Math.abs(distanceChange) >= 50) {
+    if (distanceChange > 0) {
+      return 'eloignement';
+    }
+    return 'rapprochement';
+  }
+
+  // Changement de type (proche -> tres_proche, loin -> proche, etc.)
+  if (oldType !== newType) {
+    // Amélioration de proximité
+    if (
+      (oldType === 'reseau_existant_loin' && newType === 'reseau_existant_proche') ||
+      (oldType === 'reseau_existant_proche' && newType === 'reseau_existant_tres_proche') ||
+      (oldType === 'reseau_futur_loin' && newType === 'reseau_futur_proche') ||
+      (oldType === 'reseau_futur_proche' && newType === 'reseau_futur_tres_proche') ||
+      newType === 'dans_zone_reseau_futur'
+    ) {
+      return 'amelioration_proximite';
+    }
+
+    // Dégradation de proximité
+    if (
+      (oldType === 'reseau_existant_tres_proche' && newType === 'reseau_existant_proche') ||
+      (oldType === 'reseau_existant_proche' && newType === 'reseau_existant_loin') ||
+      (oldType === 'reseau_futur_tres_proche' && newType === 'reseau_futur_proche') ||
+      (oldType === 'reseau_futur_proche' && newType === 'reseau_futur_loin') ||
+      (oldType === 'dans_zone_reseau_futur' && isFutureNetwork(newType))
+    ) {
+      return 'degradation_proximite';
+    }
+
+    // Entrée/sortie de ville avec réseau sans trace
+    if (!isInCity(oldType) && isInCity(newType)) {
+      return 'entree_ville_reseau_sans_trace';
+    }
+    if (isInCity(oldType) && !isInCity(newType)) {
+      return 'sortie_ville_reseau_sans_trace';
+    }
+
+    return 'changement_type';
+  }
+
+  // Cas par défaut pour changements mineurs
+  return 'modification_mineure';
 };
 
 /**

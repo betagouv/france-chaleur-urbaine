@@ -34,6 +34,7 @@
     "lint:ci": "biome ci --diagnostic-level error .",
     "test": "vitest run",
     "test:watch": "vitest dev",
+    "test:db:migrate": "DATABASE_URL=postgres://fcu_test:fcu_test_pass@localhost:5433/fcu_test pnpm db:migrate",
     "cli": "tsx scripts/cli.ts",
     "knexts": "tsx ./node_modules/knex/bin/cli.js",
     "db:migrate": "pnpm knexts migrate:latest",
