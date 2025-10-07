@@ -1,17 +1,16 @@
 import type { ExpressionBuilder } from 'kysely';
-
+import { parseBbox } from '@/modules/geo/client/helpers';
+import { createGeometryExpression, processGeometry } from '@/modules/geo/server/helpers';
+import type { BoundingBox } from '@/modules/geo/types';
 import type { ApplyGeometriesUpdatesInput } from '@/modules/reseaux/constants';
 import { type NetworkTable, updateNetworkHasPDP } from '@/modules/reseaux/server/geometry-operations';
 import { createBuildTilesJob, createSyncGeometriesToAirtableJob, createSyncMetadataFromAirtableJob } from '@/modules/tiles/server/service';
 import db from '@/server/db';
 import { type DB, kdb, sql, type ZoneDeDeveloppementPrioritaire } from '@/server/db/kysely';
 import type { ApiContext } from '@/server/db/kysely/base-model';
-import { createGeometryExpression, processGeometry } from '@/server/helpers/geo';
 import { parentLogger } from '@/server/helpers/logger';
-import type { BoundingBox } from '@/types/Coords';
 import type { Network, NetworkToCompare } from '@/types/Summary/Network';
 import { isDefined } from '@/utils/core';
-import { parseBbox } from '@/utils/geo';
 
 const logger = parentLogger.child({
   module: 'reseaux',

@@ -1,4 +1,4 @@
-import type { Coords } from '@/types/Coords';
+import type { Coords } from '@/modules/geo/types';
 import type { Point } from '@/types/Point';
 
 const convertPointToCoordinates = (point: Point): Coords => ({

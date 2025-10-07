@@ -10,9 +10,9 @@ import Box from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
 import Image from '@/components/ui/Image';
 import Link from '@/components/ui/Link';
+import { getReadableDistance } from '@/modules/geo/client/helpers';
 import type { AddressDataType } from '@/types/AddressData';
 import type { ContactFormInfos } from '@/types/Summary/Demand';
-import { getReadableDistance } from '@/utils/geo';
 
 import { ContactForm, ContactFormContentWrapper, ContactFormResultMessage, ContactFormWrapper, ContactMapResult } from './components';
 import { bordeauxMetropoleCityCodes, getEligibilityResult } from './EligibilityResults';

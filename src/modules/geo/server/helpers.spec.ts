@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 
-import { detectSrid } from './geo';
+import { detectSrid } from './helpers';
 
 type TestCase = {
   description: string;

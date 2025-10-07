@@ -4,7 +4,7 @@ import { type ReactNode, useState } from 'react';
 import AddressAutocomplete from '@/components/addressAutocomplete/AddressAutocomplete';
 import { type LegendURLKey, selectableLayers } from '@/components/Map/map-layers';
 import Notice from '@/components/ui/Notice';
-import type { Coords } from '@/types/Coords';
+import type { Coords } from '@/modules/geo/types';
 import type { SuggestionItem } from '@/types/Suggestions';
 
 import { StyledIFrameLink } from './IFrameMapIntegrationForm.styles';

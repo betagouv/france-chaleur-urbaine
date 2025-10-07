@@ -1,7 +1,7 @@
 import { round } from '@turf/helpers';
 import kinks from '@turf/kinks';
 
-import type { BoundingBox } from '@/types/Coords';
+import type { BoundingBox } from '../types';
 
 export const longitudeColumnNameCandidates = ['x', 'lon', 'longitude'] as const;
 export const latitudeColumnNameCandidates = ['y', 'lat', 'latitude'] as const;

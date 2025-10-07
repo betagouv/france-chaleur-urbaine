@@ -5,11 +5,11 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { z } from 'zod';
 
 import { clientConfig } from '@/client-config';
+import { validatePolygonGeometry } from '@/modules/geo/client/helpers';
 import { handleRouteErrors, invalidRouteError, requireGetMethod, validateObjectSchema } from '@/server/helpers/server';
 import { exportPolygonSummary, getLineSummary, getPolygonSummary } from '@/server/services/dataSummary';
 import { withCors } from '@/services/api/cors';
 import { EXPORT_FORMAT } from '@/types/enum/ExportFormat';
-import { validatePolygonGeometry } from '@/utils/geo';
 
 const polygonSummary = async (coordinates: GeoJSON.Position[], req: NextApiRequest, res: NextApiResponse) => {
   const size = turfArea(polygon([coordinates])) / 1_000_000;
