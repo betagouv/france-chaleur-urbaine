@@ -464,31 +464,6 @@ export const FullyFeaturedMap = ({
   }, [initialCenter, jumpTo, withCenterPin, mapRef.current]);
 
   useEffect(() => {
-    if (!router.isReady) {
-      return;
-    }
-
-    const { coord, id } = router.query;
-    if (!geolocDisabled && !coord && !initialCenter && !id && navigator.geolocation) {
-      if (navigator.permissions) {
-        void navigator.permissions.query({ name: 'geolocation' }).then(({ state }) => {
-          if (state === 'granted' || state === 'prompt') {
-            navigator.geolocation.getCurrentPosition((pos) => {
-              const { longitude, latitude } = pos.coords;
-              jumpTo({ coordinates: [longitude, latitude], zoom: 13 });
-            });
-          }
-        });
-      } else {
-        navigator.geolocation.getCurrentPosition((pos) => {
-          const { longitude, latitude } = pos.coords;
-          jumpTo({ coordinates: [longitude, latitude], zoom: 13 });
-        });
-      }
-    }
-  }, [jumpTo, initialCenter, router, geolocDisabled]);
-
-  useEffect(() => {
     if ((pinsList && pinsList?.length > 0) || !withSoughtAddresses) {
       //The pin to display are only those on the pinsList
       return;
