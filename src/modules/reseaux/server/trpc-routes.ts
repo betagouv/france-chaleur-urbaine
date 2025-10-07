@@ -1,4 +1,5 @@
 import {
+  zApplyGeometriesUpdatesInput,
   zCreateNetworkInput,
   zDeleteGeomUpdateInput,
   zDeleteNetworkInput,
@@ -48,6 +49,9 @@ const perimetreDeDeveloppementPrioritaireRouter = router({
 });
 
 export const reseauxRouter = router({
+  applyGeometriesUpdates: adminRoute
+    .input(zApplyGeometriesUpdatesInput)
+    .mutation(async ({ input, ctx }) => await reseauxService.applyGeometriesUpdates(input, ctx)),
   createNetwork: adminRoute.input(zCreateNetworkInput).mutation(async ({ input }) => {
     return await reseauxService.createNetwork(input.id as string, input.geometry, input.type);
   }),

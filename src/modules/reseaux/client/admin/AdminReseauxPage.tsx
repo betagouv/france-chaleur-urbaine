@@ -212,7 +212,7 @@ const GestionDesReseaux = () => {
     onSuccess: () => void tabInfo.refetch(),
   });
 
-  const { mutateAsync: applyGeometriesUpdates } = trpc.tiles.applyGeometriesUpdates.useMutation({
+  const { mutateAsync: applyGeometriesUpdates } = trpc.reseaux.applyGeometriesUpdates.useMutation({
     onSuccess: async (result) => {
       try {
         notify('success', `Synchronisation lancée. ${result.jobIds.length} jobs créés.`);
