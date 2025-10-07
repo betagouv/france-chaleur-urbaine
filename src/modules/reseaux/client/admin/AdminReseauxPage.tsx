@@ -212,7 +212,7 @@ const GestionDesReseaux = () => {
     onSuccess: () => void tabInfo.refetch(),
   });
 
-  const { mutateAsync: applyGeometriesUpdates } = trpc.reseaux.applyGeometriesUpdates.useMutation({
+  const { mutateAsync: applyGeometriesUpdates, isPending: isApplyingGeometriesUpdates } = trpc.reseaux.applyGeometriesUpdates.useMutation({
     onSuccess: async (result) => {
       try {
         notify('success', `Synchronisation lancée. ${result.jobIds.length} jobs créés.`);
@@ -831,7 +831,7 @@ const GestionDesReseaux = () => {
                 disabled={hasPendingReseauDeChaleurJobs || isFetchingPendingJobs}
                 iconId="fr-icon-refresh-line"
                 onClick={() => handleSyncGeomUpdates('reseaux-de-chaleur')}
-                loading={isUpdatingGeometry || hasPendingReseauDeChaleurJobs}
+                loading={isUpdatingGeometry || hasPendingReseauDeChaleurJobs || isApplyingGeometriesUpdates}
               >
                 Sync ({reseauxDeChaleurWithGeomUpdate?.length})
               </Button>
@@ -877,7 +877,7 @@ const GestionDesReseaux = () => {
                 disabled={hasPendingReseauDeFroidJobs || isFetchingPendingJobs}
                 iconId="fr-icon-refresh-line"
                 onClick={() => handleSyncGeomUpdates('reseaux-de-froid')}
-                loading={isUpdatingGeometry || hasPendingReseauDeFroidJobs}
+                loading={isUpdatingGeometry || hasPendingReseauDeFroidJobs || isApplyingGeometriesUpdates}
               >
                 Sync ({reseauxDeFroidWithGeomUpdate?.length})
               </Button>
@@ -922,7 +922,7 @@ const GestionDesReseaux = () => {
                 variant="warning"
                 iconId="fr-icon-refresh-line"
                 onClick={() => handleSyncGeomUpdates('reseaux-en-construction')}
-                loading={isUpdatingGeometry || hasPendingReseauEnConstructionJobs}
+                loading={isUpdatingGeometry || hasPendingReseauEnConstructionJobs || isApplyingGeometriesUpdates}
               >
                 Sync ({reseauxEnConstructionWithGeomUpdate?.length})
               </Button>
