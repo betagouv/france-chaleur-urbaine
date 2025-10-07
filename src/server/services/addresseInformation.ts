@@ -607,6 +607,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
       return {
         communes: pdp.communes ?? [],
         distance: networkInfos?.distance ?? 0,
+        id_fcu: pdp.id_fcu,
         id_sncu: pdp['Identifiant reseau'] ?? '',
         nom: networkInfos?.nom_reseau ?? '',
         tags: networkInfos?.tags ?? [],
@@ -619,6 +620,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
       return {
         communes: reseauDeChaleur.communes ?? [],
         distance: reseauDeChaleur.distance,
+        id_fcu: reseauDeChaleur.id_fcu ?? '',
         id_sncu: reseauDeChaleur['Identifiant reseau'] ?? '',
         nom: reseauDeChaleur.nom_reseau ?? '',
         tags: reseauDeChaleur.distance <= tagsDistanceThreshold ? (reseauDeChaleur.tags ?? []) : [],
@@ -631,6 +633,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
       return {
         communes: reseauEnConstruction.communes ?? [],
         distance: reseauEnConstruction.distance,
+        id_fcu: reseauEnConstruction.id_fcu,
         id_sncu: '',
         nom: reseauEnConstruction.nom_reseau ?? '',
         tags: reseauEnConstruction.distance <= tagsDistanceThreshold ? (reseauEnConstruction.tags ?? []) : [],
@@ -643,6 +646,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
       return {
         communes: zoneEnConstruction.communes ?? [],
         distance: 0,
+        id_fcu: zoneEnConstruction.id_fcu,
         id_sncu: '',
         nom: zoneEnConstruction.nom_reseau ?? '',
         tags: zoneEnConstruction.distance <= tagsDistanceThreshold ? (zoneEnConstruction.tags ?? []) : [],
@@ -655,6 +659,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
       return {
         communes: reseauDeChaleur.communes ?? [],
         distance: reseauDeChaleur.distance,
+        id_fcu: reseauDeChaleur.id_fcu,
         id_sncu: reseauDeChaleur['Identifiant reseau'] ?? '',
         nom: reseauDeChaleur.nom_reseau ?? '',
         tags: reseauDeChaleur.distance <= tagsDistanceThreshold ? (reseauDeChaleur.tags ?? []) : [],
@@ -667,6 +672,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
       return {
         communes: reseauEnConstruction.communes ?? [],
         distance: reseauEnConstruction.distance,
+        id_fcu: reseauEnConstruction.id_fcu,
         id_sncu: '',
         nom: reseauEnConstruction.nom_reseau ?? '',
         tags: reseauEnConstruction.distance <= tagsDistanceThreshold ? (reseauEnConstruction.tags ?? []) : [],
@@ -679,6 +685,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
       return {
         communes: reseauDeChaleur.communes ?? [],
         distance: reseauDeChaleur.distance,
+        id_fcu: reseauDeChaleur.id_fcu,
         id_sncu: reseauDeChaleur['Identifiant reseau'] ?? '',
         nom: reseauDeChaleur.nom_reseau ?? '',
         tags: reseauDeChaleur.distance <= tagsDistanceThreshold ? (reseauDeChaleur.tags ?? []) : [],
@@ -691,6 +698,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
       return {
         communes: reseauEnConstruction.communes ?? [],
         distance: reseauEnConstruction.distance,
+        id_fcu: reseauEnConstruction.id_fcu,
         id_sncu: '',
         nom: reseauEnConstruction.nom_reseau ?? '',
         tags: reseauEnConstruction.distance <= tagsDistanceThreshold ? (reseauEnConstruction.tags ?? []) : [],
@@ -703,6 +711,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
       return {
         communes: [reseauDeChaleurSansTrace.nom ?? ''],
         distance: 0,
+        id_fcu: reseauDeChaleurSansTrace.id_fcu,
         id_sncu: reseauDeChaleurSansTrace['Identifiant reseau'] ?? '',
         nom: reseauDeChaleurSansTrace.nom_reseau ?? '',
         tags: reseauDeChaleurSansTrace.tags ?? [],
@@ -714,6 +723,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
     return {
       communes: [],
       distance: 0,
+      id_fcu: 0,
       id_sncu: '',
       nom: '',
       tags: [],
@@ -755,6 +765,7 @@ export type EligibilityType =
   | 'trop_eloigne';
 
 type EligibilityResult = {
+  id_fcu: number;
   type: EligibilityType;
   distance: number;
   id_sncu: string;
