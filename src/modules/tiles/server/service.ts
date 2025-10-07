@@ -114,13 +114,24 @@ const cacheAirtableTiles = () => {
   airtableDayCached = new Date().getDate();
   Object.entries(tilesInfo).forEach(([type, tileInfo]) => {
     if (tileInfo.source === 'airtable') {
-      if (debug) console.info(`Indexing tiles for ${type} from airtable ${tileInfo.table}...`);
+      const timerLabel = `⏱️  Indexing tiles for ${type} from airtable ${tileInfo.table}`;
+      if (debug) {
+        console.info(`${timerLabel}...`);
+        console.time(timerLabel);
+      }
       getObjectIndexFromAirtable(tileInfo)
         .then((result) => {
           airtableTiles[type as DatabaseSourceId] = result;
-          if (debug) console.info(`Indexing tiles for ${type} from airtable ${tileInfo.table} done`);
+          if (debug) {
+            console.timeEnd(timerLabel);
+          }
         })
-        .catch((e) => debug && console.error(`Indexing tiles for ${type} from airtable ${tileInfo.table} failed`, e));
+        .catch((e) => {
+          if (debug) {
+            console.timeEnd(timerLabel);
+            console.error(`${timerLabel} failed`, e);
+          }
+        });
     }
   });
 };
