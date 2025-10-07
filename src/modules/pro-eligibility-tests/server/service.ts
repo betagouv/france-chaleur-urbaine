@@ -1,4 +1,5 @@
 import { createUserEvent } from '@/modules/events/server/service';
+import type { BoundingBox } from '@/modules/geo/types';
 import {
   type CreateEligibilityTestInput,
   type UpdateEligibilityTestInput,
@@ -441,4 +442,23 @@ export async function ensureValidPermissions(context: ApiContext, testId: string
 export const validation = {
   create: zCreateEligibilityTestInput,
   update: zUpdateEligibilityTestInput,
+};
+
+/**
+ * Crée un job pour vérifier les changements d'éligibilité dans les zones affectées
+ * Ce job sera traité en arrière-plan et vérifiera toutes les adresses dans les bboxes données
+ */
+export const createWarnEligibilityChangesJob = async (bboxes: BoundingBox[], context: ApiContext) => {
+  return await kdb
+    .insertInto('jobs')
+    .values({
+      data: {
+        bboxes,
+      },
+      status: 'pending',
+      type: 'warn_eligibility_changes',
+      user_id: context.user.id,
+    })
+    .returningAll()
+    .executeTakeFirstOrThrow();
 };

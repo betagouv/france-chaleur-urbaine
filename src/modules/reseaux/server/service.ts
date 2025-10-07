@@ -2,6 +2,7 @@ import type { ExpressionBuilder } from 'kysely';
 import { parseBbox } from '@/modules/geo/client/helpers';
 import { createGeometryExpression, processGeometry } from '@/modules/geo/server/helpers';
 import type { BoundingBox } from '@/modules/geo/types';
+import { createWarnEligibilityChangesJob } from '@/modules/pro-eligibility-tests/server/service';
 import type { ApplyGeometriesUpdatesInput } from '@/modules/reseaux/constants';
 import { type NetworkTable, updateNetworkHasPDP } from '@/modules/reseaux/server/geometry-operations';
 import { createBuildTilesJob, createSyncGeometriesToAirtableJob, createSyncMetadataFromAirtableJob } from '@/modules/tiles/server/service';
@@ -523,6 +524,33 @@ type TableConfig = {
   tileName: string;
 };
 
+/**
+ * Extrait les bounding boxes des géométries mises à jour avec un buffer
+ * Optimisé avec ST_Expand qui est plus rapide que ST_Buffer pour les bbox
+ * @param config Configuration de la table
+ * @param bufferMeters Buffer en mètres (défaut: 1000m = 1km)
+ * @returns Array de bounding boxes avec buffer appliqué
+ */
+async function getUpdatedNetworkBboxes(config: TableConfig, bufferMeters = 1000): Promise<BoundingBox[]> {
+  const bboxes = await kdb
+    .selectFrom(config.tableName)
+    .select([
+      sql<BoundingBox>`ST_Transform(
+        ST_Expand(
+          ST_Envelope(geom_update),
+          ${bufferMeters}
+        ),
+        4326
+      )::box2d`.as('bbox'),
+    ])
+    .where('geom_update', 'is not', null)
+    .where(sql<boolean>`NOT ST_IsEmpty(geom_update)`)
+    .execute();
+
+  // Transformer les bbox en JS
+  return bboxes.map((row) => parseBbox(row.bbox as unknown as string));
+}
+
 const tables: TableConfig[] = [
   {
     internalName: 'reseaux-de-chaleur',
@@ -675,12 +703,17 @@ const processTableGeometryUpdates = async (config: TableConfig) => {
 };
 
 export const applyGeometriesUpdates = async ({ name }: ApplyGeometriesUpdatesInput, context: ApiContext) => {
-  const updateResult = tables.find((table) => table.internalName === name);
-  if (!updateResult) {
+  const networkTableConfig = tables.find((table) => table.internalName === name);
+  if (!networkTableConfig) {
     throw new Error(`Table ${name} not found`);
   }
 
-  const updateResults = await processTableGeometryUpdates(updateResult);
+  // Récupérer les bboxes des géométries modifiées AVANT le traitement
+  // Ces bboxes incluent un buffer de 1km pour détecter les adresses affectées
+  const affectedBboxes = await getUpdatedNetworkBboxes(networkTableConfig, 1000);
+  logger.info(`Detected ${affectedBboxes.length} geometry updates with 1km buffer for eligibility checks`);
+
+  const updateResults = await processTableGeometryUpdates(networkTableConfig);
 
   // Récupère les statistiques
   const processed = {
@@ -690,7 +723,7 @@ export const applyGeometriesUpdates = async ({ name }: ApplyGeometriesUpdatesInp
     updated: updateResults.updated,
   };
 
-  const allJobIds = [
+  const rebuildingJobIds = [
     // pas d'onglet airtable pour les PDP
     ...(name !== 'perimetres-de-developpement-prioritaire'
       ? [(await createSyncGeometriesToAirtableJob({ name }, context)).id, (await createSyncMetadataFromAirtableJob({ name }, context)).id]
@@ -698,8 +731,14 @@ export const applyGeometriesUpdates = async ({ name }: ApplyGeometriesUpdatesInp
     (await createBuildTilesJob({ name }, context)).id,
   ];
 
+  // Step 4: Créer un job pour vérifier l'éligibilité dans les zones affectées
+  if (affectedBboxes.length > 0) {
+    const eligibilityCheckJob = await createWarnEligibilityChangesJob(affectedBboxes, context);
+    logger.info(`Created eligibility check job ${eligibilityCheckJob.id} for ${affectedBboxes.length} affected zones`);
+  }
+
   return {
-    jobIds: allJobIds,
+    jobIds: rebuildingJobIds,
     processed,
   };
 };
