@@ -28,6 +28,7 @@
     "clean": "rm -Rf node_modules && rm -Rf .next && pnpm i",
     "start": "next start -p $PORT",
     "start:clock": "tsx src/modules/jobs/server/clock.ts",
+    "dev:clock": "tsx --watch src/modules/jobs/server/clock.ts",
     "prepare": "husky",
     "lint": "biome check --max-diagnostics 50 .",
     "lint:fix": "biome check --max-diagnostics 50 --write .",
