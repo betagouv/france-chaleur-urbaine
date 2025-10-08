@@ -5,17 +5,17 @@ dotenv.config({ path: '.env.local' });
 dotenv.config();
 
 export default {
+  acquireConnectionTimeout: 30000,
   client: 'pg',
   connection: addApplicationName(process.env.DATABASE_URL as string),
   migrations: {
-    tableName: 'knex_migrations',
     directory: './src/server/db/migrations',
+    tableName: 'knex_migrations',
   },
-  acquireConnectionTimeout: 30000,
   pool: {
     idleTimeoutMillis: 10000,
-    min: 0,
     max: 60,
+    min: 0,
   },
 } satisfies Knex.Config;
 
