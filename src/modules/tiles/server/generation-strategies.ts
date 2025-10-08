@@ -6,7 +6,7 @@ import { defineTilesGenerationStrategy } from '@/modules/tiles/server/generation
 import { type DB, kdb, sql } from '@/server/db/kysely';
 import { fetchJSON } from '@/utils/network';
 import { ogr2ogrConvertToGeoJSON, ogr2ogrExtractGeoJSONFromDatabaseTable } from '@/utils/ogr2ogr';
-import { runBash } from '@/utils/system';
+import { runBash, writeLargeFile } from '@/utils/system';
 
 export const getInputFilePath = defineTilesGenerationStrategy(async ({ inputFilePath }) => {
   if (!inputFilePath) {
@@ -127,6 +127,11 @@ export const generateGeoJSONFromSQLQuery = (
       geojson.features = geojson.features.map(featureMapFunction);
     }
     const targetTilesFilePath = join(tempDirectory, 'tiles-features.geojson');
-    await writeFile(targetTilesFilePath, JSON.stringify(geojson));
+    logger.info(`Writing ${geojson.features.length} features to ${targetTilesFilePath}`);
+
+    // Write GeoJSON in streaming mode to avoid memory issues with large files
+    const { sizeMB } = await writeLargeFile(targetTilesFilePath, geojson);
+
+    logger.info(`Wrote ${targetTilesFilePath}`, { size: `${sizeMB} MB` });
     return targetTilesFilePath;
   });
