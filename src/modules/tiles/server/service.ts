@@ -1,5 +1,5 @@
 import geojsonvt from 'geojson-vt';
-import type { Transaction } from 'kysely';
+import { sql, type Transaction } from 'kysely';
 import vtpbf from 'vt-pbf';
 import { tileSourcesMaxZoom } from '@/components/Map/layers/common';
 import type { ApplyGeometriesUpdatesInput } from '@/modules/reseaux/constants';
@@ -18,7 +18,20 @@ const airtableTiles: Partial<Record<DatabaseSourceId, any>> = {
   demands: null,
 };
 
-export const createBuildTilesJob = async ({ name }: BuildTilesInput, context?: ApiContext, options?: { trx?: Transaction<DB> }) => {
+export const createBuildTilesJob = async (
+  { name }: BuildTilesInput,
+  context?: ApiContext,
+  options?: { trx?: Transaction<DB>; replace?: boolean }
+) => {
+  if (options?.replace) {
+    await (options?.trx || kdb)
+      .deleteFrom('jobs')
+      .where('type', '=', 'build_tiles')
+      .where(sql`data->>'name'`, '=', name)
+      .where('status', '=', 'pending')
+      .execute();
+  }
+
   return await (options?.trx || kdb)
     .insertInto('jobs')
     .values({
