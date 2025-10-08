@@ -52,7 +52,8 @@ export function registerProEligibilityTestsCommands(parentProgram: Command) {
         return;
       }
 
-      logger.info(`${addresses.length} adresses à traiter (batch size: ${batchSize})`);
+      const totalAddresses = addresses.length;
+      logger.info(`${totalAddresses} adresses à traiter (batch size: ${batchSize})`);
 
       let processedCount = 0;
       let skippedCount = 0;
@@ -62,10 +63,17 @@ export function registerProEligibilityTestsCommands(parentProgram: Command) {
       // Traiter les adresses par batch
       for (let i = 0; i < addresses.length; i += batchSize) {
         const batch = addresses.slice(i, i + batchSize);
+        const batchNumber = Math.floor(i / batchSize) + 1;
+        const totalBatches = Math.ceil(totalAddresses / batchSize);
+        const remaining = totalAddresses - processedCount;
+        const progress = Math.round((processedCount / totalAddresses) * 100);
 
-        logger.info(
-          `Traitement du batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(addresses.length / batchSize)} (${i + 1}-${Math.min(i + batchSize, addresses.length)}/${addresses.length})`
-        );
+        logger.info(`Traitement du batch ${batchNumber}/${totalBatches}`, {
+          processed: processedCount,
+          progress: `${progress}%`,
+          remaining,
+          total: totalAddresses,
+        });
 
         await Promise.all(
           batch.map(async (address) => {
@@ -79,10 +87,6 @@ export function registerProEligibilityTestsCommands(parentProgram: Command) {
               }
 
               if (!dryRun) {
-                logger.info(
-                  `Calcul de l'éligibilité pour l'adresse ${address.id} latitude: ${address.latitude} longitude: ${address.longitude}`
-                );
-
                 // Calculer et mettre à jour l'éligibilité via le service
                 await updateAddressEligibilityHistory(address.id, address.latitude as number, address.longitude as number);
 
@@ -99,6 +103,16 @@ export function registerProEligibilityTestsCommands(parentProgram: Command) {
             }
           })
         );
+
+        // Afficher la progression après chaque batch
+        const remainingAfterBatch = totalAddresses - processedCount;
+        const progressAfterBatch = Math.round((processedCount / totalAddresses) * 100);
+        logger.info(`Batch ${batchNumber}/${totalBatches} terminé`, {
+          processed: processedCount,
+          progress: `${progressAfterBatch}%`,
+          remaining: remainingAfterBatch,
+          total: totalAddresses,
+        });
       }
 
       // Afficher le résumé
