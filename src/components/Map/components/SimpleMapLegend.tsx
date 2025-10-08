@@ -66,7 +66,6 @@ import {
   statutColorMap,
 } from '../layers/geothermie/perimetresGeothermieProfonde';
 import { ressourcesGeothermalesNappesConfig, ressourcesGeothermalesNappesOpacity } from '../layers/ressourcesGeothermalesNappes';
-import { testsAdressesLayerStyle } from '../layers/testsAdresses';
 import {
   energyFilterInterval,
   typeChauffageBatimentsCollectifsStyle,
@@ -188,47 +187,6 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
             </Text>
           </Box>
 
-          {hasRole('admin') && (
-            <Box display="flex" alignItems="start" mb="2w">
-              <SingleCheckbox
-                name="testsAdresses"
-                checked={mapConfiguration.testsAdresses}
-                onChange={() => toggleLayer('testsAdresses')}
-                trackingEvent="Carto|Adresses testées"
-              />
-
-              <Box
-                backgroundColor={testsAdressesLayerStyle.eligible.fill.color}
-                border={`2px solid ${testsAdressesLayerStyle.eligible.stroke.color}`}
-                borderRadius="50%"
-                minHeight="16px"
-                minWidth="16px"
-                mt="1v"
-              />
-              <Box
-                backgroundColor={testsAdressesLayerStyle.notEligible.fill.color}
-                border={`2px solid ${testsAdressesLayerStyle.notEligible.stroke.color}`}
-                borderRadius="50%"
-                minHeight="16px"
-                minWidth="16px"
-                ml="1v"
-                mt="1v"
-              />
-
-              <Text
-                as="label"
-                htmlFor="testsAdresses"
-                fontSize="14px"
-                lineHeight="18px"
-                className="fr-col"
-                cursor="pointer"
-                pl="1w"
-                style={{ marginTop: '2px' }}
-              >
-                Adresses testées
-              </Text>
-            </Box>
-          )}
           <UrlStateAccordion label="Bâtiments consommateurs gaz et fioul" small>
             <TrackableCheckableAccordion
               name="consommationsGaz"

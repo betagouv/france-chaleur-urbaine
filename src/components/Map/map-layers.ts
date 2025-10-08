@@ -99,6 +99,7 @@ export const mapLegendFeatures = [
   'batimentsRaccordesReseauxFroid',
   'customGeojson',
   'geomUpdate',
+  'testsAdresses',
 ] as const;
 
 export type MapLegendFeature = (typeof mapLegendFeatures)[number];

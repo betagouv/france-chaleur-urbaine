@@ -168,25 +168,25 @@ const GestionDesReseaux = () => {
     }
   > = {
     'perimetres-de-developpement-prioritaire': {
-      enabledFeatures: ['zonesDeDeveloppementPrioritaire'],
+      enabledFeatures: ['zonesDeDeveloppementPrioritaire', 'testsAdresses'],
       refetch: () => void trpcUtils.reseaux.perimetreDeDeveloppementPrioritaire.list.invalidate(),
       title: 'Périmètres de développement prioritaire',
       type: 'zone_de_developpement_prioritaire',
     },
     'reseaux-de-chaleur': {
-      enabledFeatures: ['reseauxDeChaleur'],
+      enabledFeatures: ['reseauxDeChaleur', 'testsAdresses'],
       refetch: () => void trpcUtils.reseaux.reseauDeChaleur.list.invalidate(),
       title: 'Réseaux de chaleur',
       type: 'reseaux_de_chaleur',
     },
     'reseaux-de-froid': {
-      enabledFeatures: ['reseauxDeFroid'],
+      enabledFeatures: ['reseauxDeFroid', 'testsAdresses'],
       refetch: () => void trpcUtils.reseaux.reseauDeFroid.list.invalidate(),
       title: 'Réseaux de froid',
       type: 'reseaux_de_froid',
     },
     'reseaux-en-construction': {
-      enabledFeatures: ['reseauxEnConstruction'],
+      enabledFeatures: ['reseauxEnConstruction', 'testsAdresses'],
       refetch: () => void trpcUtils.reseaux.reseauEnConstruction.list.invalidate(),
       title: 'Réseaux en construction',
       type: 'zones_et_reseaux_en_construction',
@@ -1068,6 +1068,7 @@ const GestionDesReseaux = () => {
                   },
                   reseauxDeFroid: true,
                   reseauxEnConstruction: true,
+                  testsAdresses: true,
                   zonesDeDeveloppementPrioritaire: true,
                 })}
                 geolocDisabled
