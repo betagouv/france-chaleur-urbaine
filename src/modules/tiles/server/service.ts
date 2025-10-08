@@ -1,14 +1,13 @@
 import geojsonvt from 'geojson-vt';
+import type { Transaction } from 'kysely';
 import vtpbf from 'vt-pbf';
-
 import { tileSourcesMaxZoom } from '@/components/Map/layers/common';
 import type { ApplyGeometriesUpdatesInput } from '@/modules/reseaux/constants';
 import type { BuildTilesInput } from '@/modules/tiles/constants';
-
 import { type AirtableTileInfo, type DatabaseSourceId, tilesInfo } from '@/modules/tiles/tiles.config';
 import db from '@/server/db';
 import base from '@/server/db/airtable';
-import { kdb } from '@/server/db/kysely';
+import { type DB, kdb } from '@/server/db/kysely';
 import type { ApiContext } from '@/server/db/kysely/base-model';
 import { isDefined } from '@/utils/core';
 
@@ -19,8 +18,8 @@ const airtableTiles: Partial<Record<DatabaseSourceId, any>> = {
   demands: null,
 };
 
-export const createBuildTilesJob = async ({ name }: BuildTilesInput, context: ApiContext) => {
-  return await kdb
+export const createBuildTilesJob = async ({ name }: BuildTilesInput, context?: ApiContext, options?: { trx?: Transaction<DB> }) => {
+  return await (options?.trx || kdb)
     .insertInto('jobs')
     .values({
       data: {
@@ -28,7 +27,7 @@ export const createBuildTilesJob = async ({ name }: BuildTilesInput, context: Ap
       },
       status: 'pending',
       type: 'build_tiles',
-      user_id: context.user.id,
+      user_id: context?.user?.id,
     })
     .returningAll()
     .executeTakeFirstOrThrow();
