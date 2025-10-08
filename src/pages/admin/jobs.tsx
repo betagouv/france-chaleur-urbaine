@@ -65,6 +65,10 @@ const columns: ColumnDef<AdminJobItem>[] = [
   },
   {
     accessorKey: 'user.email',
+    cell: (info) => {
+      const email = info.getValue();
+      return email || <Text color="disabled">Système</Text>;
+    },
     header: 'Utilisateur',
   },
   {

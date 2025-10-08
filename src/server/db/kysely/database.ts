@@ -3021,7 +3021,7 @@ export interface Jobs {
   result: Json | null;
   type: 'pro_eligibility_test' | 'build_tiles' | 'sync_geometries_to_airtable' | 'sync_metadata_from_airtable' | 'warn_eligibility_changes';
   updated_at: Generated<Timestamp>;
-  user_id: string;
+  user_id: string | null;
 }
 
 export interface KnexMigrations {
