@@ -55,6 +55,79 @@ export interface BatimentsRaccordesReseauxChaleurFroidTiles {
   z: Int8;
 }
 
+export interface BdnbBatiments {
+  adresse_cle_interop_adr_principale_ban: string | null;
+  adresse_libelle_adr_principale_ban: string | null;
+  constructions: { construction_id: string; rnb_id: string }[] | null;
+  batiment_groupe_id: string;
+  code_commune_insee: string | null;
+  dle_elec_multimillesime_conso_pro: Numeric | null;
+  dle_elec_multimillesime_conso_res: Numeric | null;
+  dle_elec_multimillesime_conso_tot: Numeric | null;
+  dle_gaz_multimillesime_conso_pro: Numeric | null;
+  dle_gaz_multimillesime_conso_res: Numeric | null;
+  dle_gaz_multimillesime_conso_tot: Numeric | null;
+  dle_reseaux_multimillesime_conso_pro: Numeric | null;
+  dle_reseaux_multimillesime_conso_res: Numeric | null;
+  dle_reseaux_multimillesime_conso_tot: Numeric | null;
+  dle_reseaux_multimillesime_type_reseau: string[] | null;
+  dpe_representatif_logement_classe_bilan_dpe: 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | null;
+  dpe_representatif_logement_classe_emission_ges: 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | null;
+  dpe_representatif_logement_surface_habitable_immeuble: number | null;
+  dpe_representatif_logement_type_batiment_dpe: 'appartement' | 'immeuble' | 'maison' | null;
+  dpe_representatif_logement_type_dpe:
+    | 'dpe arrêté 2012 3cl immeuble'
+    | 'dpe arrêté 2012 3cl logement'
+    | 'dpe arrêté 2012 facture immeuble'
+    | 'dpe arrêté 2012 facture logement'
+    | 'dpe arrêté 2021 3cl immeuble'
+    | 'dpe arrêté 2021 3cl logement'
+    | 'dpe arrêté 2021 re2020 immeuble'
+    | 'dpe arrêté 2021 re2020 logement'
+    | 'dpe arrêté 2021 rt2012 immeuble'
+    | 'dpe arrêté 2021 rt2012 logement'
+    | null;
+  dpe_representatif_logement_type_energie_chauffage:
+    | 'bois'
+    | 'charbon'
+    | 'electricite'
+    | 'fioul'
+    | 'gaz'
+    | 'gpl/butane/propane'
+    | 'reseau de chaleur'
+    | 'solaire'
+    | null;
+  dpe_representatif_logement_type_generateur_chauffage: string | null; // chaudiere*, chauffage*, generateur*, pac*, poele*, radiateurs*, reseau*
+  dpe_representatif_logement_type_installation_chauffage: 'collectif' | 'individuel' | null;
+  ffo_bat_annee_construction: number | null;
+  ffo_bat_nb_log: number | null;
+  ffo_bat_usage_niveau_1_txt:
+    | 'Dépendance'
+    | 'Résidentiel collectif'
+    | 'Résidentiel individuel'
+    | 'Secondaire'
+    | 'Tertiaire & Autres'
+    | null;
+  geom: string | null;
+  id: number | null;
+  rnc_l_nom_copro: string[] | null;
+  synthese_propriete_usage:
+    | 'Dépendance'
+    | 'Indifférencié'
+    | 'Résidentiel collectif'
+    | 'Résidentiel individuel'
+    | 'Secondaire'
+    | 'Tertiaire'
+    | null;
+}
+
+export interface BdnbBatimentsTiles {
+  tile: Buffer;
+  x: Int8;
+  y: Int8;
+  z: Int8;
+}
+
 export interface BdnbRegistre2022Aura {
   batiment_groupe_id: string | null;
   cle_interop_adr_principale_ban: string | null;
@@ -2812,7 +2885,7 @@ export interface DonneesDeConsoEtPdlGazNat2020Tiles {
 export interface DonneesDeConsos {
   adresse: string | null;
   code_grand: string | null;
-  conso_nb: number | null;
+  conso_nb: number;
   geom: string | null;
   nom_commun: string | null;
   pdl_nb: number | null;
@@ -3582,37 +3655,11 @@ export interface DB {
   assignment_rules: AssignmentRules;
   batiments_raccordes_rdc: BatimentsRaccordesRdc;
   batiments_raccordes_reseaux_chaleur_froid_tiles: BatimentsRaccordesReseauxChaleurFroidTiles;
-  bdnb_registre2022_aura: BdnbRegistre2022Aura;
-  'bdnb_registre2022_bourgogne-franche-comte': BdnbRegistre2022BourgogneFrancheComte;
-  bdnb_registre2022_bretagne: BdnbRegistre2022Bretagne;
-  'bdnb_registre2022_centre-val_de_loire': BdnbRegistre2022CentreValDeLoire;
-  bdnb_registre2022_corse: BdnbRegistre2022Corse;
-  bdnb_registre2022_grand_est: BdnbRegistre2022GrandEst;
-  'bdnb_registre2022_hauts-de-france': BdnbRegistre2022HautsDeFrance;
-  'bdnb_registre2022_ile-de-france': BdnbRegistre2022IleDeFrance;
-  bdnb_registre2022_normandie: BdnbRegistre2022Normandie;
-  'bdnb_registre2022_nouvelle-aquitaine': BdnbRegistre2022NouvelleAquitaine;
-  bdnb_registre2022_occitanie: BdnbRegistre2022Occitanie;
-  bdnb_registre2022_paca: BdnbRegistre2022Paca;
-  'bdnb_registre2022_pays-de-la-loire': BdnbRegistre2022PaysDeLaLoire;
+  bdnb_batiments: BdnbBatiments;
+  bdnb_batiments_tiles: BdnbBatimentsTiles;
   besoins_en_chaleur_batiments: BesoinsEnChaleurBatiments;
   besoins_en_chaleur_industrie_communes_tiles: BesoinsEnChaleurIndustrieCommunesTiles;
   besoins_en_chaleur_tiles: BesoinsEnChaleurTiles;
-  'bnb - adresse_tiles': BnbAdresseTiles;
-  'bnb - batiment_tiles': BnbBatimentTiles;
-  'bnb_auvergne-rhone-alpes-batiment_adresse': BnbAuvergneRhoneAlpesBatimentAdresse;
-  'bnb_bourgogne-franche-comte-batiment_adresse': BnbBourgogneFrancheComteBatimentAdresse;
-  'bnb_bretagne-batiment_adresse': BnbBretagneBatimentAdresse;
-  'bnb_centre-val-de-loire-batiment_adresse': BnbCentreValDeLoireBatimentAdresse;
-  'bnb_corse-batiment_adresse': BnbCorseBatimentAdresse;
-  'bnb_grand-est-batiment_adresse': BnbGrandEstBatimentAdresse;
-  'bnb_hauts-de-france-batiment_adresse': BnbHautsDeFranceBatimentAdresse;
-  'bnb_idf - batiment_adresse': BnbIdfBatimentAdresse;
-  'bnb_normandie-batiment_adresse': BnbNormandieBatimentAdresse;
-  'bnb_nouvelle-aquitaine-batiment_adresse': BnbNouvelleAquitaineBatimentAdresse;
-  'bnb_occitanie-batiment_adresse': BnbOccitanieBatimentAdresse;
-  'bnb_pays-de-la-loire-batiment_adresse': BnbPaysDeLaLoireBatimentAdresse;
-  'bnb_provence-alpes-cote-d_azur-batiment_adresse': BnbProvenceAlpesCoteDAzurBatimentAdresse;
   communes: Communes;
   communes_fort_potentiel_pour_creation_reseaux_chaleur_tiles: CommunesFortPotentielPourCreationReseauxChaleurTiles;
   departements: Departements;
@@ -3654,7 +3701,6 @@ export interface DB {
   quartiers_prioritaires_politique_ville_2015_anru_tiles: QuartiersPrioritairesPolitiqueVille2015AnruTiles;
   quartiers_prioritaires_politique_ville_2024_tiles: QuartiersPrioritairesPolitiqueVille2024Tiles;
   raccordements_tiles: RaccordementsTiles;
-  regions: Regions;
   registre_copro_r11_220125: RegistreCoproR11220125;
   reseaux_de_chaleur: ReseauxDeChaleur;
   reseaux_de_chaleur_tiles: ReseauxDeChaleurTiles;
@@ -3677,3 +3723,5 @@ export interface DB {
   zones_et_reseaux_en_construction: ZonesEtReseauxEnConstruction;
   zones_et_reseaux_en_construction_tiles: ZonesEtReseauxEnConstructionTiles;
 }
+
+export type DBTableName = keyof DB;

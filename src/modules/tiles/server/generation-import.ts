@@ -53,7 +53,7 @@ export const generateTilesFromGeoJSON = async (config: TippecanoeConfig) => {
     await runDocker(
       'naxgrp/tippecanoe',
       `tippecanoe -e ${outputDirectoryName} --layer=layer --force --generate-ids --minimum-zoom=${config.zoomMin} --maximum-zoom=${config.zoomMax} ${config.tippeCanoeArgs ?? ''} ${basename(inputFileName)}`,
-      { captureOutput: true }
+      { captureOutput: !serverConfig.PRINT_TIPPECANOE_OUTPUT_TO_LOGS }
     );
     // input
     await rename(join(dockerVolumePath, inputFileName), config.geojsonFilePath);
@@ -62,7 +62,7 @@ export const generateTilesFromGeoJSON = async (config: TippecanoeConfig) => {
   } else {
     await runBash(
       `tippecanoe -e ${config.outputDirectory} --layer=layer --force --generate-ids --minimum-zoom=${config.zoomMin} --maximum-zoom=${config.zoomMax} ${config.tippeCanoeArgs ?? ''} ${config.geojsonFilePath}`,
-      { captureOutput: true }
+      { captureOutput: !serverConfig.PRINT_TIPPECANOE_OUTPUT_TO_LOGS }
     );
   }
 };

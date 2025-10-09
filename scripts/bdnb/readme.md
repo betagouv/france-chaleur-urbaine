@@ -8,7 +8,7 @@ Prérequis :
   - Donnees_de_conso_et_pdl_gaz_nat_2022 (provenance Sébastien)
   - reseaux_de_chaleur
 - psql (CLI postgresql)
-- [parallel](https://www.gnu.org/software/parallel/) (Pour macOS : `brew install parallel`)
+- [parallel](https://www.gnu.org/software/parallel/) (Pour macOS : `brew install parallel`, Pour ubuntu : `apt install parallel`)
 - probablement avoir tuné la configuration postgresql pour augmenter la taille des buffers
 
 Note : Idéalement, les étapes sont faites avec une grosse configuration postgres.

@@ -68,6 +68,7 @@ export const databaseSourceIds = [
   'testsAdresses',
   'zonesAUrbaniser',
   'ressourcesGeothermalesNappes',
+  'bdnbBatiments', // nouvelle couche BDNB
 ] as const;
 
 export const zDatabaseSourceId = z.enum(databaseSourceIds);
@@ -124,6 +125,16 @@ export const tilesInfo: Record<DatabaseSourceId, TileInfo> = {
     sourceLayer: '', // useless
     table: '', // useless
     tiles: 'batiments_raccordes_reseaux_chaleur_froid_tiles', // contient 2 layers batiments_raccordes_reseaux_chaleur et batiments_raccordes_reseaux_froid
+  },
+  bdnbBatiments: {
+    compressedTiles: true,
+    extraWhere: (query) => query, // useless
+    id: '', // useless
+    properties: [], // useless
+    source: 'database',
+    sourceLayer: '', // useless
+    table: '', // useless
+    tiles: 'bdnb_batiments_tiles',
   },
   besoinsEnChaleur: {
     compressedTiles: true,

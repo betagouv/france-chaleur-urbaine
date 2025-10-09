@@ -4,12 +4,38 @@ import { testsAdressesGeoJSONQuery } from '@/modules/tiles/server/generation-con
 import {
   downloadGeoJSONFromURL,
   extractGeoJSONFromDatabaseTable,
+  extractNDJSONFromDatabaseTable,
   extractZippedShapefileToGeoJSON,
   getInputFilePath,
 } from '@/modules/tiles/server/generation-strategies';
+import type { BdnbBatiments } from '@/server/db/kysely/database';
 import { ObjectKeys } from '@/utils/typescript';
 
+const bdnbBatimentsFields = [
+  'batiment_groupe_id',
+  'geom',
+
+  'ffo_bat_annee_construction',
+  'ffo_bat_nb_log',
+  'synthese_propriete_usage',
+
+  'dpe_representatif_logement_classe_bilan_dpe',
+  'dpe_representatif_logement_classe_emission_ges',
+  'dpe_representatif_logement_surface_habitable_immeuble',
+  'dpe_representatif_logement_type_energie_chauffage',
+  'dpe_representatif_logement_type_installation_chauffage',
+] as const satisfies (keyof BdnbBatiments)[];
+
 export const tilesConfigs = {
+  'bdnb-batiments': defineTilesConfig({
+    generateGeoJSON: extractNDJSONFromDatabaseTable('bdnb_batiments', {
+      fields: bdnbBatimentsFields,
+    }),
+    tilesTableName: 'bdnb_batiments_tiles',
+    tippeCanoeArgs: '--read-parallel --drop-rate=1.3 --drop-densest-as-needed --drop-smallest-as-needed --maximum-tile-bytes=1000000',
+    zoomMax: 15, // pour avoir des bons contours, mais le fond de carte ne semble pas précis pour les batiments
+    zoomMin: 12,
+  }),
   'etudes-en-cours': defineTilesConfig({
     generateGeoJSON: extractGeoJSONFromDatabaseTable('etudes_en_cours'),
     tilesTableName: 'etudes_en_cours_tiles',
@@ -109,3 +135,5 @@ export const tilesConfigs = {
 
 export const tilesTypes = ObjectKeys(tilesConfigs);
 export type TilesType = (typeof tilesTypes)[number];
+
+export type BdnbBatimentTile = Required<Pick<BdnbBatiments, (typeof bdnbBatimentsFields)[number]>>;

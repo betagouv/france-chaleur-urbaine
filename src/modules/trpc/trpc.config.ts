@@ -2,12 +2,12 @@ import type { CreateNextContextOptions } from '@trpc/server/adapters/next';
 
 import { appRouter as appModuleRouter } from '@/modules/app/server/trpc-routes';
 import buildContext from '@/modules/config/server/context-builder';
+import { dataRouter } from '@/modules/data/server/trpc-routes';
 import { diagnosticRouter } from '@/modules/diagnostic/server/trpc-routes';
 import { jobsRouter } from '@/modules/jobs/server/trpc-routes';
 import { proEligibilityTestsRouter } from '@/modules/pro-eligibility-tests/server/trpc-routes';
 import { reseauxRouter } from '@/modules/reseaux/server/trpc-routes';
 import { tilesRouter } from '@/modules/tiles/server/trpc-routes';
-
 import { route, router } from './server/connection';
 
 /**
@@ -32,6 +32,7 @@ export async function createContext(opts: CreateNextContextOptions) {
  */
 export const appRouter = router({
   app: appModuleRouter,
+  data: dataRouter,
   diagnostic: diagnosticRouter,
   // Health check endpoint - no auth required
   healthCheck: route.query(() => {
