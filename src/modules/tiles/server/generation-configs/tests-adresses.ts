@@ -51,41 +51,6 @@ FROM (
     AND addr.ban_score > 60
 
     GROUP BY addr.ban_address, addr.eligibility_status
-
-    UNION ALL
-
-    SELECT
-      addr.ban_address,
-      -- centroids will be merged later
-      array_agg(addr.geom) AS geom,
-      addr.eligibility_status,
-
-      json_agg(
-        DISTINCT jsonb_build_object(
-          'id', t.id,
-          'name', t.id,
-          'created_at', t.created_at,
-          'user', jsonb_build_object(
-            'id', COALESCE(u.id::text, t.email),
-            'role', u.role,
-            'gestionnaires', u.gestionnaires,
-            'first_name', COALESCE(u.first_name, t.email),
-            'last_name', COALESCE(u.last_name, ''),
-            'structure_name', u.structure_name,
-            'structure_type', u.structure_type,
-            'phone', u.phone
-          )
-        )
-      ) AS tests
-
-    FROM eligibility_demands_addresses addr
-    LEFT JOIN eligibility_demands t ON t.eligibility_test_id = addr.test_id
-    LEFT JOIN users u ON t.email = u.email
-
-    WHERE addr.ban_address IS NOT NULL
-    AND addr.ban_score > 60
-
-    GROUP BY addr.ban_address, addr.eligibility_status
   ) a
 ) features;
   `,
