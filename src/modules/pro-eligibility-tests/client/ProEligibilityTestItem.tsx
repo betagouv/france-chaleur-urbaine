@@ -19,10 +19,13 @@ import Notice from '@/components/ui/Notice';
 import TableSimple, { type ColumnDef, type QuickFilterPreset } from '@/components/ui/TableSimple';
 import Tooltip from '@/components/ui/Tooltip';
 import { toastErrors } from '@/modules/notification';
+import EligibilityChangeTooltip from '@/modules/pro-eligibility-tests/client/EligibilityChangeTooltip';
 import RenameEligibilityTestForm from '@/modules/pro-eligibility-tests/client/RenameEligibilityTestForm';
 import UpsertEligibilityTestForm from '@/modules/pro-eligibility-tests/client/UpsertEligibilityTestForm';
+import type { ProEligibilityTestHistoryEntry } from '@/modules/pro-eligibility-tests/types';
 import trpc, { type RouterOutput } from '@/modules/trpc/client';
 import { downloadString } from '@/utils/browser';
+import cx from '@/utils/cx';
 import { formatAsISODateMinutes, formatFrenchDate, formatFrenchDateTime } from '@/utils/date';
 import { compareFrenchStrings } from '@/utils/strings';
 import { ObjectEntries, ObjectKeys } from '@/utils/typescript';
@@ -123,6 +126,47 @@ const columns: ColumnDef<RouterOutput['proEligibilityTests']['get']['addresses']
   {
     accessorKey: 'eligibility_status.distance',
     align: 'right',
+    cell: (info) => {
+      const distance = info.getValue();
+      const history = info.row.original.eligibility_history;
+
+      // Calculer le changement de distance si possible
+      let changeIndicator: { text: string; isPositive: boolean } | null = null;
+      if (history && history.length >= 2) {
+        const mostRecent = history[history.length - 1];
+        const previous = history[history.length - 2];
+        const recentDistance = mostRecent.eligibility.distance;
+        const previousDistance = previous.eligibility.distance;
+
+        if (recentDistance !== previousDistance) {
+          // Réseau apparu
+          if (previousDistance === 0 && recentDistance > 0) {
+            changeIndicator = { isPositive: true, text: '★ nouveau' };
+          }
+          // Réseau disparu
+          else if (recentDistance === 0 && previousDistance > 0) {
+            changeIndicator = { isPositive: false, text: '✕ disparu' };
+          }
+          // Rapprochement
+          else if (recentDistance < previousDistance) {
+            changeIndicator = { isPositive: true, text: `${recentDistance - previousDistance}` };
+          }
+          // Éloignement
+          else {
+            changeIndicator = { isPositive: false, text: `+${recentDistance - previousDistance}` };
+          }
+        }
+      }
+
+      return (
+        <div className="flex flex-col items-end">
+          <span>{distance}m</span>
+          {changeIndicator && (
+            <span className={cx('text-xs', changeIndicator.isPositive ? 'text-success' : 'text-error')}>{changeIndicator.text}</span>
+          )}
+        </div>
+      );
+    },
     filterProps: {
       unit: 'm',
     },
@@ -139,8 +183,22 @@ const columns: ColumnDef<RouterOutput['proEligibilityTests']['get']['addresses']
       </>
     ),
     sortUndefined: 'last',
-    suffix: 'm',
     width: '130px',
+  },
+  {
+    accessorKey: 'eligibility_history.calculated_at',
+    align: 'center',
+    cell: (info) => {
+      const history = info.row.original.eligibility_history;
+
+      return (
+        <div className="flex items-center justify-center gap-1">
+          <Tooltip title={<EligibilityChangeTooltip history={history} />} side="left" />
+        </div>
+      );
+    },
+    header: () => 'Mises à jour',
+    width: '100px',
   },
   {
     accessorKey: 'eligibility_status.inPDP',
@@ -447,6 +505,11 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false, className }:
             </ModalSimple>
           )}
           <div className="flex-auto" />
+          {test.has_address_changes && (
+            <Badge severity="warning" small className="fr-mx-1w">
+              🚀 Mises à jour
+            </Badge>
+          )}
           {test.last_job_has_error && (
             <Badge severity="error" small className="fr-mx-1w">
               Erreur

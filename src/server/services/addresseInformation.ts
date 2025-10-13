@@ -486,6 +486,8 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
         'nom_reseau',
         'tags',
         'communes',
+        'Taux EnR&R',
+        'contenu CO2 ACV',
         sql<number>`round(ST_Distance(geom, ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)))`.as(
           'distance'
         ),

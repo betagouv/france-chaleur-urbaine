@@ -6,6 +6,8 @@ export type ProEligibilityTestEligibility = {
   type: EligibilityType;
   distance: number;
   nom: string;
+  contenuCO2ACV?: number;
+  tauxENRR?: number;
 };
 
 export type ProEligibilityTestHistoryEntry = {

@@ -132,6 +132,41 @@ export const getTransition = (oldEligibility: ProEligibilityTestEligibility | un
 };
 
 /**
+ * Crée une entrée d'historique d'éligibilité pour une adresse
+ * @param latitude - Latitude de l'adresse
+ * @param longitude - Longitude de l'adresse
+ * @param previousEligibility - État d'éligibilité précédent (undefined pour le calcul initial)
+ * @returns Nouvelle entrée d'historique
+ */
+export const getAddressEligibilityHistoryEntry = async (
+  latitude: number,
+  longitude: number,
+  previousEligibility?: ProEligibilityTestEligibility
+): Promise<ProEligibilityTestHistoryEntry> => {
+  const eligibility = await getDetailedEligibilityStatus(latitude, longitude);
+
+  const newEligibility: ProEligibilityTestEligibility = {
+    contenuCO2ACV: eligibility.reseauDeChaleur?.['contenu CO2 ACV'] ?? undefined,
+    distance: eligibility.distance,
+    id_fcu: eligibility.id_fcu,
+    id_sncu: eligibility.id_sncu,
+    nom: eligibility.nom,
+    tauxENRR: eligibility.reseauDeChaleur?.['Taux EnR&R'] ?? undefined,
+    type: eligibility.type,
+  };
+
+  const transition = getTransition(previousEligibility, newEligibility);
+
+  const historyEntry: ProEligibilityTestHistoryEntry = {
+    calculated_at: new Date().toISOString(),
+    eligibility: newEligibility,
+    transition,
+  };
+
+  return historyEntry;
+};
+
+/**
  * Calcule et met à jour l'historique d'éligibilité pour une adresse donnée
  */
 export const updateAddressEligibilityHistory = async (addressId: string, latitude: number, longitude: number) => {
@@ -144,27 +179,9 @@ export const updateAddressEligibilityHistory = async (addressId: string, latitud
 
   const existingHistory = (address.eligibility_history as ProEligibilityTestHistoryEntry[]) || [];
 
-  // Calculer la nouvelle éligibilité
-  const eligibility = await getDetailedEligibilityStatus(latitude, longitude);
-
-  const newEligibility: ProEligibilityTestEligibility = {
-    distance: eligibility.distance,
-    id_fcu: eligibility.id_fcu,
-    id_sncu: eligibility.id_sncu,
-    nom: eligibility.nom,
-    type: eligibility.type,
-  };
-
-  // Déterminer la transition
+  // Calculer la nouvelle entrée d'historique
   const lastEligibility = existingHistory[existingHistory.length - 1];
-  const transition = getTransition(lastEligibility?.eligibility, newEligibility);
-
-  // Créer la nouvelle entrée d'historique
-  const historyEntry: ProEligibilityTestHistoryEntry = {
-    calculated_at: new Date().toISOString(),
-    eligibility: newEligibility,
-    transition,
-  };
+  const historyEntry = await getAddressEligibilityHistoryEntry(latitude, longitude, lastEligibility?.eligibility);
 
   // Ajouter à l'historique
   const updatedHistory = [...existingHistory, historyEntry];
@@ -289,6 +306,7 @@ export const get = async (testId: string, _config: ListConfig<typeof tableName>,
     ...eligibilityTest,
     addresses: addresses.map((address) => ({
       ...address,
+      eligibility_history: address.eligibility_history as ProEligibilityTestHistoryEntry[],
       eligibility_status: {
         ...address.eligibility_status,
         etat_reseau:
