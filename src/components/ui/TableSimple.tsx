@@ -313,13 +313,18 @@ const TableTH = <T extends RowData>({
         <div className={cx('flex gap-1', isInlineLayout ? 'flex-1' : '', className)}>
           {canSort && (
             <Button
+              size="small"
               priority={isSorted ? 'secondary' : 'tertiary'}
-              className={'fr-btn--sort relative min-w-8 border'}
+              className={cx(
+                'w-8 relative [&:before]:mr-0 [&:before]:-ml-1', // for an unknown reason, the margin is not applied correctly in the button
+                header.column.getIsSorted() && 'animate-[puff_0.2s_ease-in-out]'
+              )}
               loading={loading}
+              iconId={isSorted === 'asc' ? 'fr-icon-sort-asc' : isSorted === 'desc' ? 'fr-icon-sort-desc' : 'fr-icon-arrow-up-down-fill'}
               onClick={onClickSort}
               title="Cliquer pour trier"
             >
-              Trier
+              <span className="fr-sr-only">Trier</span>
               {isSorted && sorting.length > 1 && (
                 <span className="absolute bottom-[2px] right-1 text-xs">
                   {sorting.findIndex((sort) => sort.id === header.column.id) + 1}
