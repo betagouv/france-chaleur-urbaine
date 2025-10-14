@@ -285,13 +285,12 @@ const columns: ColumnDef<RouterOutput['proEligibilityTests']['get']['addresses']
   {
     accessorKey: 'eligibility.id_sncu',
     align: 'right',
-    cell: (info) => {
+    cell: (info) =>
       info.row.original.eligibility?.id_sncu && (
         <Link href={`/reseaux/${info.row.original.eligibility.id_sncu}`} isExternal title="Ouvrir la fiche réseau">
           {info.row.original.eligibility.id_sncu}
         </Link>
-      );
-    },
+      ),
     enableSorting: false,
     header: () => (
       <>
