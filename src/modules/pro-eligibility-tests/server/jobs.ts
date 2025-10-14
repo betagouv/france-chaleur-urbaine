@@ -4,11 +4,10 @@ import Papa from 'papaparse';
 import type { Logger } from 'winston';
 import type { BoundingBox } from '@/modules/geo/types';
 import { type Jobs, kdb } from '@/server/db/kysely';
-import { getDetailedEligibilityStatus, getEligilityStatus } from '@/server/services/addresseInformation';
 import { type APIAdresseResult, getAddressesCoordinates, getCoordinatesAddresses } from '@/server/services/api-adresse';
 import { chunk } from '@/utils/array';
 import { isDefined } from '@/utils/core';
-import type { ProEligibilityTestEligibility, ProEligibilityTestHistoryEntry } from '../types';
+import type { ProEligibilityTestHistoryEntry } from '../types';
 import { getAddressEligibilityHistoryEntry } from './service';
 
 export type ProEligibilityTestJob = Omit<Selectable<Jobs>, 'data'> & {
@@ -146,8 +145,6 @@ export async function processProEligibilityTestJob(job: ProEligibilityTestJob, l
 
       const processAddress = limitFunction(
         async (addressItem: (typeof addresses)[number]) => {
-          const eligibilityStatus =
-            addressItem.result_status === 'ok' ? await getEligilityStatus(addressItem.latitude, addressItem.longitude) : null;
           const historyEntry = await getAddressEligibilityHistoryEntry(addressItem.latitude, addressItem.longitude);
 
           const addressData = {
@@ -155,7 +152,6 @@ export async function processProEligibilityTestJob(job: ProEligibilityTestJob, l
             ban_score: isDefined(addressItem.result_score) ? Math.round(addressItem.result_score * 100) : null,
             ban_valid: addressItem.result_status === 'ok',
             eligibility_history: JSON.stringify([historyEntry]),
-            eligibility_status: eligibilityStatus ?? undefined,
             geom: sql`st_transform(st_point(${addressItem.longitude}, ${addressItem.latitude}, 4326), 2154)`,
             has_eligibility_change: false,
             source_address: addressItem.address as string,
@@ -230,7 +226,6 @@ export async function processWarnEligibilityChangesJob(job: WarnEligibilityChang
       'id',
       sql<GeoJSON.Point>`ST_AsGeoJSON(ST_Transform(geom, 4326))::json`.as('geom'),
       'eligibility_history',
-      'eligibility_status',
       'ban_address',
       'ban_score',
       'test_id',
@@ -270,8 +265,6 @@ export async function processWarnEligibilityChangesJob(job: WarnEligibilityChang
     );
 
     if (newHistoryEntry.transition !== 'none') {
-      const eligibilityStatus = await getEligilityStatus(address.geom.coordinates[1], address.geom.coordinates[0]);
-
       stats.addressesChanged++;
 
       const updatedHistory = [...existingHistory, newHistoryEntry];
@@ -279,22 +272,12 @@ export async function processWarnEligibilityChangesJob(job: WarnEligibilityChang
       // Mettre à jour l'adresse
       await kdb
         .updateTable('pro_eligibility_tests_addresses')
-        .set({
-          eligibility_history: JSON.stringify(updatedHistory),
-          eligibility_status: eligibilityStatus,
-          has_eligibility_change: true,
-        })
+        .set({ eligibility_history: JSON.stringify(updatedHistory) })
         .where('id', '=', address.id)
         .execute();
 
       // Marquer le test parent comme ayant des changements
-      await kdb
-        .updateTable('pro_eligibility_tests')
-        .set({
-          has_address_changes: true,
-        })
-        .where('id', '=', address.test_id)
-        .execute();
+      await kdb.updateTable('pro_eligibility_tests').set({ has_unseen_changes: true }).where('id', '=', address.test_id).execute();
 
       logger.info('Eligibility changed', {
         addressId: address.id,
@@ -306,7 +289,7 @@ export async function processWarnEligibilityChangesJob(job: WarnEligibilityChang
   const testsWithChanges = await kdb
     .selectFrom('pro_eligibility_tests')
     .select(kdb.fn.countAll<number>().as('count'))
-    .where('has_address_changes', '=', true)
+    .where('has_unseen_changes', '=', true)
     .executeTakeFirstOrThrow();
 
   stats.testsUpdated = Number(testsWithChanges.count);

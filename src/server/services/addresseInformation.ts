@@ -282,6 +282,10 @@ export const getNetworkEligilityStatus = async (networkId: string, lat: number, 
   };
 };
 
+/**
+ * Deprecated in favor of getDetailedEligibilityStatus
+ * @deprecated
+ */
 export const getEligilityStatus = async (lat: number, lon: number, city?: string): Promise<HeatNetwork> => {
   const [inPDP, inFuturNetwork, futurNetwork, network, noTraceNetwork] = await Promise.all([
     isInPDP(lat, lon),
@@ -740,6 +744,14 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
     departement,
     epci,
     ept,
+    isEligible: [
+      'dans_pdp',
+      'reseau_existant_tres_proche',
+      'reseau_futur_tres_proche',
+      'dans_zone_reseau_futur',
+      'reseau_existant_proche',
+      'reseau_futur_proche',
+    ].includes(eligibilityResult.type),
     pdp,
     region,
     reseauDeChaleur,

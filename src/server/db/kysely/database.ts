@@ -3080,7 +3080,7 @@ export interface ProComparateurConfigurations {
 export interface ProEligibilityTests {
   created_at: Generated<Timestamp>;
   deleted_at: Timestamp | null;
-  has_address_changes: Generated<boolean>;
+  has_unseen_changes: Generated<boolean>;
   has_unseen_results: boolean;
   id: Generated<string>;
   name: string;

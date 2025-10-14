@@ -150,6 +150,7 @@ export const getAddressEligibilityHistoryEntry = async (
     distance: eligibility.distance,
     id_fcu: eligibility.id_fcu,
     id_sncu: eligibility.id_sncu,
+    isEligible: eligibility.isEligible,
     nom: eligibility.nom,
     tauxENRR: eligibility.reseauDeChaleur?.['Taux EnR&R'] ?? undefined,
     type: eligibility.type,
@@ -304,19 +305,32 @@ export const get = async (testId: string, _config: ListConfig<typeof tableName>,
 
   return {
     ...eligibilityTest,
-    addresses: addresses.map((address) => ({
-      ...address,
-      eligibility_history: address.eligibility_history as ProEligibilityTestHistoryEntry[],
-      eligibility_status: {
-        ...address.eligibility_status,
+    addresses: addresses.map(({ eligibility_status, ...address }) => {
+      const history = address.eligibility_history as ProEligibilityTestHistoryEntry[] | null;
+      const lastEligibility = history?.[history.length - 1] as ProEligibilityTestHistoryEntry;
+      return {
+        ...address,
+        eligibility: lastEligibility?.eligibility,
+        eligibility_history: history,
         etat_reseau:
-          address.eligibility_status === null || !address.eligibility_status || !address.eligibility_status?.isEligible
-            ? 'aucun'
-            : address.eligibility_status.futurNetwork
+          lastEligibility?.eligibility.type &&
+          [
+            'dans_pdp',
+            'reseau_existant_tres_proche',
+            'reseau_existant_proche',
+            'reseau_existant_loin',
+            'dans_ville_reseau_existant_sans_trace',
+          ].includes(lastEligibility.eligibility.type)
+            ? 'existant'
+            : lastEligibility?.eligibility.type &&
+                ['reseau_futur_tres_proche', 'dans_zone_reseau_futur', 'reseau_futur_proche', 'reseau_futur_loin'].includes(
+                  lastEligibility.eligibility.type
+                )
               ? 'en_construction'
-              : 'existant',
-      },
-    })),
+              : 'aucun',
+        in_pdp: lastEligibility?.eligibility.type === 'dans_pdp',
+      };
+    }),
   };
 };
 
@@ -444,7 +458,14 @@ export const remove = async (testId: string, _config: ListConfig<typeof tableNam
 
 export const markAsSeen = async (testId: string, context: ApiContext) => {
   await ensureValidPermissions(context, testId);
-  await kdb.updateTable('pro_eligibility_tests').where('id', '=', testId).set({ has_unseen_results: false }).execute();
+  await kdb
+    .updateTable('pro_eligibility_tests')
+    .where('id', '=', testId)
+    .set({
+      has_unseen_changes: false,
+      has_unseen_results: false,
+    })
+    .execute();
 };
 
 export async function ensureValidPermissions(context: ApiContext, testId: string) {

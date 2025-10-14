@@ -8,6 +8,7 @@ describe('getTransition()', () => {
     distance: 150,
     id_fcu: 1,
     id_sncu: 'RCU-001',
+    isEligible: true,
     nom: 'Réseau Test',
     type: 'reseau_existant_proche',
     ...overrides,

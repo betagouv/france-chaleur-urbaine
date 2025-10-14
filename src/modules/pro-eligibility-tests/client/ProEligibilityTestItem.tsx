@@ -22,7 +22,6 @@ import { toastErrors } from '@/modules/notification';
 import EligibilityChangeTooltip from '@/modules/pro-eligibility-tests/client/EligibilityChangeTooltip';
 import RenameEligibilityTestForm from '@/modules/pro-eligibility-tests/client/RenameEligibilityTestForm';
 import UpsertEligibilityTestForm from '@/modules/pro-eligibility-tests/client/UpsertEligibilityTestForm';
-import type { ProEligibilityTestHistoryEntry } from '@/modules/pro-eligibility-tests/types';
 import trpc, { type RouterOutput } from '@/modules/trpc/client';
 import { downloadString } from '@/utils/browser';
 import cx from '@/utils/cx';
@@ -97,7 +96,7 @@ const columns: ColumnDef<RouterOutput['proEligibilityTests']['get']['addresses']
     width: '90px',
   },
   {
-    accessorKey: 'eligibility_status.etat_reseau',
+    accessorKey: 'etat_reseau',
     align: 'center',
     cell: (info) => <ProcheReseauBadge type={info.getValue()} />,
     enableSorting: false,
@@ -124,7 +123,7 @@ const columns: ColumnDef<RouterOutput['proEligibilityTests']['get']['addresses']
     width: '130px',
   },
   {
-    accessorKey: 'eligibility_status.distance',
+    accessorKey: 'eligibility.distance',
     align: 'right',
     cell: (info) => {
       const distance = info.getValue();
@@ -186,7 +185,7 @@ const columns: ColumnDef<RouterOutput['proEligibilityTests']['get']['addresses']
     width: '130px',
   },
   {
-    accessorKey: 'eligibility_history.calculated_at',
+    accessorKey: 'eligibility.calculated_at',
     align: 'center',
     cell: (info) => {
       const history = info.row.original.eligibility_history;
@@ -214,7 +213,7 @@ const columns: ColumnDef<RouterOutput['proEligibilityTests']['get']['addresses']
     width: '100px',
   },
   {
-    accessorKey: 'eligibility_status.inPDP',
+    accessorKey: 'in_pdp',
     align: 'center',
     cellType: 'Boolean',
     enableSorting: false,
@@ -238,7 +237,7 @@ const columns: ColumnDef<RouterOutput['proEligibilityTests']['get']['addresses']
     width: '70px',
   },
   {
-    accessorKey: 'eligibility_status.tauxENRR',
+    accessorKey: 'eligibility.tauxENRR',
     align: 'right',
     filterProps: {
       domain: [0, 100],
@@ -261,7 +260,7 @@ const columns: ColumnDef<RouterOutput['proEligibilityTests']['get']['addresses']
     width: '100px',
   },
   {
-    accessorKey: 'eligibility_status.co2',
+    accessorKey: 'eligibility.contenuCO2ACV',
     align: 'right',
     cell: (info) => (info.getValue() ? `${info.getValue() * 1000}` : ''),
     filterProps: {
@@ -284,14 +283,15 @@ const columns: ColumnDef<RouterOutput['proEligibilityTests']['get']['addresses']
     width: '130px',
   },
   {
-    accessorKey: 'eligibility_status.id',
+    accessorKey: 'eligibility.id_sncu',
     align: 'right',
-    cell: (info) =>
-      info.row.original.eligibility_status?.id && (
-        <Link href={`/reseaux/${info.row.original.eligibility_status.id}`} isExternal title="Ouvrir la fiche réseau">
-          {info.row.original.eligibility_status.id}
+    cell: (info) => {
+      info.row.original.eligibility?.id_sncu && (
+        <Link href={`/reseaux/${info.row.original.eligibility.id_sncu}`} isExternal title="Ouvrir la fiche réseau">
+          {info.row.original.eligibility.id_sncu}
         </Link>
-      ),
+      );
+    },
     enableSorting: false,
     header: () => (
       <>
@@ -311,7 +311,7 @@ const columns: ColumnDef<RouterOutput['proEligibilityTests']['get']['addresses']
 const initialSortingState: SortingState = [
   {
     desc: false,
-    id: 'eligibility_status_distance',
+    id: 'eligibility_distance',
   },
 ];
 
@@ -319,11 +319,11 @@ const quickFilterPresets = {
   adressesDansPDP: {
     filters: [
       {
-        id: 'eligibility_status_inPDP',
+        id: 'in_pdp',
         value: { false: false, true: true },
       },
     ],
-    getStat: (addresses) => addresses.filter((address) => address.eligibility_status?.inPDP).length,
+    getStat: (addresses) => addresses.filter((address) => address.in_pdp).length,
     label: (
       <>
         dans un périmètre de développement prioritaire&nbsp;
@@ -341,8 +341,8 @@ const quickFilterPresets = {
     ),
   },
   adressesEligibles: {
-    filters: [{ id: 'eligibility_status_etat_reseau', value: { aucun: false, en_construction: true, existant: true } }],
-    getStat: (addresses) => addresses.filter((address) => address.eligibility_status?.isEligible).length,
+    filters: [{ id: 'eligibility_type', value: { aucun: false, en_construction: true, existant: true } }],
+    getStat: (addresses) => addresses.filter((address) => address.eligibility?.isEligible).length,
     label: (
       <>
         potentiellement raccordables&nbsp;
@@ -359,16 +359,16 @@ const quickFilterPresets = {
   },
   adressesMoins100mPlus50ENRR: {
     filters: [
-      { id: 'eligibility_status_distance', value: [0, 100] },
-      { id: 'eligibility_status_tauxENRR', value: [50, 100] },
+      { id: 'eligibility_distance', value: [0, 100] },
+      { id: 'eligibility_tauxENRR', value: [50, 100] },
     ],
     getStat: (addresses) =>
       addresses.filter(
         (address) =>
-          address.eligibility_status?.distance &&
-          address.eligibility_status.distance <= 100 &&
-          address.eligibility_status.tauxENRR &&
-          address.eligibility_status.tauxENRR >= 50
+          address.eligibility?.distance &&
+          address.eligibility.distance <= 100 &&
+          address.eligibility.tauxENRR &&
+          address.eligibility.tauxENRR >= 50
       ).length,
     label: "à moins de 100m d'un réseau à plus de 50% d'ENR&R",
   },
@@ -463,7 +463,7 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false, className }:
           ({
             address: address.ban_address ?? '',
             id: address.id,
-            isEligible: address.eligibility_status?.isEligible ?? false,
+            isEligible: address.eligibility?.isEligible ?? false,
             latitude: address.geom!.coordinates[1],
             longitude: address.geom!.coordinates[0],
           }) satisfies AdresseEligible
@@ -486,12 +486,12 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false, className }:
     () =>
       (addresses || []).map((address) => ({
         ...address,
-        eligibility_status: {
-          ...address.eligibility_status,
-          co2: address.eligibility_status?.co2 === null ? undefined : address.eligibility_status?.co2,
+        eligibility: {
+          ...address.eligibility,
+          contenuCO2ACV: address.eligibility?.contenuCO2ACV === null ? undefined : address.eligibility?.contenuCO2ACV,
           // This can't be done on the backend because undefined are stripped from the json
-          distance: address.eligibility_status?.distance === null ? undefined : address.eligibility_status?.distance,
-          tauxENRR: address.eligibility_status?.tauxENRR === null ? undefined : address.eligibility_status?.tauxENRR,
+          distance: address.eligibility?.distance === null ? 0 : address.eligibility?.distance,
+          tauxENRR: address.eligibility?.tauxENRR === null ? undefined : address.eligibility?.tauxENRR,
         },
       })),
     [addresses]
@@ -518,7 +518,7 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false, className }:
             </ModalSimple>
           )}
           <div className="flex-auto" />
-          {test.has_address_changes && (
+          {test.has_unseen_changes && (
             <Badge severity="warning" small className="fr-mx-1w">
               🚀 Mises à jour
             </Badge>

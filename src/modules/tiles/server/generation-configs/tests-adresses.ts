@@ -14,8 +14,8 @@ FROM (
     'properties', jsonb_build_object(
       'ban_address', a.ban_address,
       'tests', a.tests,
-      'eligibility_status', a.eligibility_status,
-      'isEligible', (a.eligibility_status->>'isEligible')::boolean
+      'eligibility', a.eligibility,
+      'isEligible', (a.eligibility->>'isEligible')::boolean
     )
   ) AS feature
   FROM (
@@ -23,7 +23,8 @@ FROM (
       addr.ban_address,
       -- centroids will be merged later
       array_agg(addr.geom) AS geom,
-      addr.eligibility_status,
+      -- Get the eligibility from the last item in eligibility_history
+      (addr.eligibility_history->-1->'eligibility') AS eligibility,
 
       json_agg(
         DISTINCT jsonb_build_object(
@@ -49,8 +50,9 @@ FROM (
 
     WHERE addr.ban_address IS NOT NULL
     AND addr.ban_score > 60
+    AND jsonb_array_length(addr.eligibility_history) > 0
 
-    GROUP BY addr.ban_address, addr.eligibility_status
+    GROUP BY addr.ban_address, addr.eligibility_history
   ) a
 ) features;
   `,

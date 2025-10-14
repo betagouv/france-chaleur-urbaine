@@ -404,7 +404,7 @@ const saveBulkContactStats = async (startDate: string, endDate: string) => {
       .leftJoin('pro_eligibility_tests_addresses', 'pro_eligibility_tests.id', 'pro_eligibility_tests_addresses.test_id')
       .select([
         sql<number>`count(pro_eligibility_tests_addresses.id)`.as('total'),
-        sql<number>`count(case when eligibility_status->'isEligible' = 'true' then 1 end)`.as('nbEligible'),
+        sql<number>`count(case when (eligibility_history->-1->'eligibility'->>'isEligible')::boolean = true then 1 end)`.as('nbEligible'),
       ])
       .where('ban_valid', 'is', true)
       .where('pro_eligibility_tests.created_at', '>=', start)

@@ -8,6 +8,7 @@ export type ProEligibilityTestEligibility = {
   nom: string;
   contenuCO2ACV?: number;
   tauxENRR?: number;
+  isEligible: boolean;
 };
 
 export type ProEligibilityTestHistoryEntry = {
