@@ -447,12 +447,12 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false, className }:
   };
 
   useEffect(() => {
-    if (viewDetail && test.has_unseen_results && !readOnly && !isMarkAsSeenLoading) {
+    if (viewDetail && (test.has_unseen_results || test.has_unseen_changes) && !readOnly && !isMarkAsSeenLoading) {
       void (async () => {
         await markAsSeen({ id: test.id });
       })();
     }
-  }, [viewDetail, test.has_unseen_results, markAsSeen, refetch, readOnly, isMarkAsSeenLoading]);
+  }, [viewDetail, test.has_unseen_results, test.has_unseen_changes, markAsSeen, refetch, readOnly, isMarkAsSeenLoading]);
 
   const filteredAddressesMapData = useMemo(() => {
     return filteredAddresses
