@@ -153,7 +153,6 @@ export async function processProEligibilityTestJob(job: ProEligibilityTestJob, l
             ban_valid: addressItem.result_status === 'ok',
             eligibility_history: JSON.stringify([historyEntry]),
             geom: sql`st_transform(st_point(${addressItem.longitude}, ${addressItem.latitude}, 4326), 2154)`,
-            has_eligibility_change: false,
             source_address: addressItem.address as string,
             test_id: job.entity_id!,
           } satisfies Parameters<ReturnType<typeof kdb.insertInto<'pro_eligibility_tests_addresses'>>['values']>[0];

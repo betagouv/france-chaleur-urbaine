@@ -146,13 +146,13 @@ export const getAddressEligibilityHistoryEntry = async (
   const eligibility = await getDetailedEligibilityStatus(latitude, longitude);
 
   const newEligibility: ProEligibilityTestEligibility = {
-    contenu_co2_acv: eligibility.reseauDeChaleur?.['contenu CO2 ACV'] ?? undefined,
+    contenu_co2_acv: eligibility.eligible ? (eligibility.reseauDeChaleur?.['contenu CO2 ACV'] ?? undefined) : undefined,
     distance: eligibility.distance,
     eligible: eligibility.eligible,
     id_fcu: eligibility.id_fcu,
     id_sncu: eligibility.id_sncu,
     nom: eligibility.nom,
-    taux_enrr: eligibility.reseauDeChaleur?.['Taux EnR&R'] ?? undefined,
+    taux_enrr: eligibility.eligible ? (eligibility.reseauDeChaleur?.['Taux EnR&R'] ?? undefined) : undefined,
     type: eligibility.type,
   };
 
