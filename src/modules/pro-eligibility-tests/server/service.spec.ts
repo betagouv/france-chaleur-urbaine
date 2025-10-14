@@ -6,9 +6,9 @@ import { getTransition } from './service';
 describe('getTransition()', () => {
   const createEligibility = (overrides: Partial<ProEligibilityTestEligibility> = {}): ProEligibilityTestEligibility => ({
     distance: 150,
+    eligible: true,
     id_fcu: 1,
     id_sncu: 'RCU-001',
-    isEligible: true,
     nom: 'Réseau Test',
     type: 'reseau_existant_proche',
     ...overrides,

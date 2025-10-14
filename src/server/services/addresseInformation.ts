@@ -742,9 +742,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
     ...eligibilityResult,
     commune,
     departement,
-    epci,
-    ept,
-    isEligible: [
+    eligible: [
       'dans_pdp',
       'reseau_existant_tres_proche',
       'reseau_futur_tres_proche',
@@ -752,6 +750,8 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
       'reseau_existant_proche',
       'reseau_futur_proche',
     ].includes(eligibilityResult.type),
+    epci,
+    ept,
     pdp,
     region,
     reseauDeChaleur,

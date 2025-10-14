@@ -15,7 +15,7 @@ FROM (
       'ban_address', a.ban_address,
       'tests', a.tests,
       'eligibility', a.eligibility,
-      'isEligible', (a.eligibility->>'isEligible')::boolean
+      'eligible', (a.eligibility->>'eligible')::boolean
     )
   ) AS feature
   FROM (

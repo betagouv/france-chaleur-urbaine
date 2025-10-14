@@ -36,7 +36,6 @@ const EligibilityChangeTooltip: React.FC<EligibilityChangeTooltipProps> = ({ his
   // Reverse to show most recent first, skip initial entry
   const changes = [...history].reverse().filter((entry) => entry.transition !== 'initial');
   const initialEntry = history.find((entry) => entry.transition === 'initial');
-  const mostRecent = changes[0];
 
   return (
     <div className="text-xs space-y-3 max-w-[600px] max-h-[500px] overflow-y-auto">
@@ -68,10 +67,10 @@ const EligibilityChangeTooltip: React.FC<EligibilityChangeTooltipProps> = ({ his
                   <div className={cx('text-xs', isRecent ? 'text-blue-700' : 'text-gray-600')}>
                     <div>Réseau : {entry.eligibility.nom}</div>
                     <div>Distance : {entry.eligibility.distance}m</div>
-                    {entry.eligibility.contenuCO2ACV !== undefined && (
-                      <div>CO2 ACV : {(entry.eligibility.contenuCO2ACV * 1000).toFixed(0)} g/kWh</div>
+                    {entry.eligibility.contenu_co2_acv !== undefined && (
+                      <div>CO2 ACV : {(entry.eligibility.contenu_co2_acv * 1000).toFixed(0)} g/kWh</div>
                     )}
-                    {entry.eligibility.tauxENRR !== undefined && <div>Taux EnR&R : {entry.eligibility.tauxENRR}%</div>}
+                    {entry.eligibility.taux_enrr !== undefined && <div>Taux EnR&R : {entry.eligibility.taux_enrr}%</div>}
                   </div>
                   <div className={cx('text-[10px] mt-1', isRecent ? 'text-blue-600' : 'text-gray-500')}>
                     {formatFrenchDateTime(new Date(entry.calculated_at))}
@@ -91,10 +90,10 @@ const EligibilityChangeTooltip: React.FC<EligibilityChangeTooltipProps> = ({ his
             <div className="text-xs text-gray-600">
               <div>Réseau : {initialEntry.eligibility.nom}</div>
               <div>Distance : {initialEntry.eligibility.distance}m</div>
-              {initialEntry.eligibility.contenuCO2ACV !== undefined && (
-                <div>CO2 ACV : {(initialEntry.eligibility.contenuCO2ACV * 1000).toFixed(0)} g/kWh</div>
+              {initialEntry.eligibility.contenu_co2_acv !== undefined && (
+                <div>CO2 ACV : {(initialEntry.eligibility.contenu_co2_acv * 1000).toFixed(0)} g/kWh</div>
               )}
-              {initialEntry.eligibility.tauxENRR !== undefined && <div>Taux EnR&R : {initialEntry.eligibility.tauxENRR}%</div>}
+              {initialEntry.eligibility.taux_enrr !== undefined && <div>Taux EnR&R : {initialEntry.eligibility.taux_enrr}%</div>}
             </div>
             <div className="text-[10px] text-gray-500 mt-1">{formatFrenchDateTime(new Date(initialEntry.calculated_at))}</div>
           </div>

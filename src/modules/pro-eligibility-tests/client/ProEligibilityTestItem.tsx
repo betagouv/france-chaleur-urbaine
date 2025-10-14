@@ -237,7 +237,7 @@ const columns: ColumnDef<RouterOutput['proEligibilityTests']['get']['addresses']
     width: '70px',
   },
   {
-    accessorKey: 'eligibility.tauxENRR',
+    accessorKey: 'eligibility.taux_enrr',
     align: 'right',
     filterProps: {
       domain: [0, 100],
@@ -260,7 +260,7 @@ const columns: ColumnDef<RouterOutput['proEligibilityTests']['get']['addresses']
     width: '100px',
   },
   {
-    accessorKey: 'eligibility.contenuCO2ACV',
+    accessorKey: 'eligibility.contenu_co2_acv',
     align: 'right',
     cell: (info) => (info.getValue() ? `${info.getValue() * 1000}` : ''),
     filterProps: {
@@ -342,7 +342,7 @@ const quickFilterPresets = {
   },
   adressesEligibles: {
     filters: [{ id: 'eligibility_type', value: { aucun: false, en_construction: true, existant: true } }],
-    getStat: (addresses) => addresses.filter((address) => address.eligibility?.isEligible).length,
+    getStat: (addresses) => addresses.filter((address) => address.eligibility?.eligible).length,
     label: (
       <>
         potentiellement raccordables&nbsp;
@@ -360,15 +360,15 @@ const quickFilterPresets = {
   adressesMoins100mPlus50ENRR: {
     filters: [
       { id: 'eligibility_distance', value: [0, 100] },
-      { id: 'eligibility_tauxENRR', value: [50, 100] },
+      { id: 'eligibility_taux_enrr', value: [50, 100] },
     ],
     getStat: (addresses) =>
       addresses.filter(
         (address) =>
           address.eligibility?.distance &&
           address.eligibility.distance <= 100 &&
-          address.eligibility.tauxENRR &&
-          address.eligibility.tauxENRR >= 50
+          address.eligibility.taux_enrr &&
+          address.eligibility.taux_enrr >= 50
       ).length,
     label: "à moins de 100m d'un réseau à plus de 50% d'ENR&R",
   },
@@ -463,7 +463,7 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false, className }:
           ({
             address: address.ban_address ?? '',
             id: address.id,
-            isEligible: address.eligibility?.isEligible ?? false,
+            isEligible: address.eligibility?.eligible ?? false,
             latitude: address.geom!.coordinates[1],
             longitude: address.geom!.coordinates[0],
           }) satisfies AdresseEligible
@@ -488,10 +488,10 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false, className }:
         ...address,
         eligibility: {
           ...address.eligibility,
-          contenuCO2ACV: address.eligibility?.contenuCO2ACV === null ? undefined : address.eligibility?.contenuCO2ACV,
+          contenu_co2_acv: address.eligibility?.contenu_co2_acv === null ? undefined : address.eligibility?.contenu_co2_acv,
           // This can't be done on the backend because undefined are stripped from the json
           distance: address.eligibility?.distance === null ? 0 : address.eligibility?.distance,
-          tauxENRR: address.eligibility?.tauxENRR === null ? undefined : address.eligibility?.tauxENRR,
+          taux_enrr: address.eligibility?.taux_enrr === null ? undefined : address.eligibility?.taux_enrr,
         },
       })),
     [addresses]

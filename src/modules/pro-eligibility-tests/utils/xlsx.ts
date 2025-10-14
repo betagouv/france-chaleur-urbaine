@@ -34,7 +34,7 @@ const columns: CSVColumn[] = [
   },
   {
     accessor: (address) =>
-      address.eligibility?.isEligible && !address.eligibility?.type.includes('futur')
+      address.eligibility?.eligible && !address.eligibility?.type.includes('futur')
         ? 'Oui'
         : address.eligibility?.type.includes('sans_trace')
           ? 'A confirmer'
@@ -58,7 +58,7 @@ const columns: CSVColumn[] = [
     minWidth: 50,
   },
   {
-    accessor: (address) => (address.eligibility?.isEligible && address.eligibility?.type.includes('futur') ? 'Oui' : 'Non'),
+    accessor: (address) => (address.eligibility?.eligible && address.eligibility?.type.includes('futur') ? 'Oui' : 'Non'),
     description:
       "Le bâtiment est situé à moins de 200 m du tracé d'un réseau en construction, ou situé dans une zone sur laquelle nous avons connaissance d'un réseau en construction ou en cours de mise en service",
     header: 'Bâtiment potentiellement raccordable à un réseau en construction',
@@ -71,13 +71,13 @@ const columns: CSVColumn[] = [
     minWidth: 40,
   },
   {
-    accessor: (address) => `${address.eligibility?.tauxENRR ?? ''}`,
+    accessor: (address) => `${address.eligibility?.taux_enrr ?? ''}`,
     description: "Taux d'énergies renouvelables et de récupération issu de l'arrêté DPE du 11 avril 2025",
     header: 'Taux EnR&R du réseau le plus proche',
     minWidth: 40,
   },
   {
-    accessor: (address) => (address.eligibility?.contenuCO2ACV ? `${Math.round(address.eligibility.contenuCO2ACV * 1000)}` : ''),
+    accessor: (address) => (address.eligibility?.contenu_co2_acv ? `${Math.round(address.eligibility.contenu_co2_acv * 1000)}` : ''),
     description: "Contenu CO2 en analyse du cycle de vie issu de l'arrêté DPE du 11 avril 2025",
     header: 'Contenu CO2 ACV (g/kWh)',
     minWidth: 30,

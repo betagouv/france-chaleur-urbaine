@@ -25,7 +25,7 @@ export const testsAdressesLayersSpec = [
   {
     layers: [
       {
-        filter: () => ['==', ['get', 'isEligible'], false],
+        filter: () => ['==', ['get', 'eligible'], false],
         id: 'testsAdresses-notEligible',
         isVisible: (config) => config.testsAdresses,
         paint: {
@@ -46,7 +46,7 @@ export const testsAdressesLayersSpec = [
         type: 'circle',
       },
       {
-        filter: () => ['==', ['get', 'isEligible'], true],
+        filter: () => ['==', ['get', 'eligible'], true],
         id: 'testsAdresses-eligible',
         isVisible: (config) => config.testsAdresses,
         paint: {
@@ -160,11 +160,11 @@ function Popup(
           <Property label="Nom" value={currentEligibility.nom} />
           <Property label="Type" value={currentEligibility.type} />
           <Property label="Distance" value={`${currentEligibility.distance}m`} />
-          {currentEligibility.contenuCO2ACV !== undefined && (
-            <Property label="CO2 ACV" value={`${(currentEligibility.contenuCO2ACV * 1000).toFixed(0)} g/kWh`} />
+          {currentEligibility.contenu_co2_acv !== undefined && (
+            <Property label="CO2 ACV" value={`${(currentEligibility.contenu_co2_acv * 1000).toFixed(0)} g/kWh`} />
           )}
-          {currentEligibility.tauxENRR !== undefined && <Property label="Taux EnR&R" value={`${currentEligibility.tauxENRR}%`} />}
-          <Property label="Éligible" value={currentEligibility.isEligible ? 'Oui' : 'Non'} />
+          {currentEligibility.taux_enrr !== undefined && <Property label="Taux EnR&R" value={`${currentEligibility.taux_enrr}%`} />}
+          <Property label="Éligible" value={currentEligibility.eligible ? 'Oui' : 'Non'} />
         </TwoColumns>
       ) : (
         <TwoColumns>
