@@ -617,7 +617,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
         id_sncu: pdp['Identifiant reseau'] ?? '',
         nom: networkInfos?.nom_reseau ?? '',
         tags: networkInfos?.tags ?? [],
-        type: 'dans_pdp',
+        type: networkInfos?.type === 'existant' ? 'dans_pdp_reseau_existant' : 'dans_pdp_reseau_futur',
       };
     }
 
@@ -743,7 +743,8 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
     commune,
     departement,
     eligible: [
-      'dans_pdp',
+      'dans_pdp_reseau_existant',
+      'dans_pdp_reseau_futur',
       'reseau_existant_tres_proche',
       'reseau_futur_tres_proche',
       'dans_zone_reseau_futur',
@@ -767,7 +768,8 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
 };
 
 export type EligibilityType =
-  | 'dans_pdp'
+  | 'dans_pdp_reseau_existant'
+  | 'dans_pdp_reseau_futur'
   | 'reseau_existant_tres_proche'
   | 'reseau_futur_tres_proche'
   | 'dans_zone_reseau_futur'
@@ -868,10 +870,12 @@ const findPDPAssociatedNetwork = async (
   ]);
 
   return zoneEnConstruction?.distance === 0
-    ? zoneEnConstruction
+    ? { ...zoneEnConstruction, type: 'futur' }
     : reseauDeChaleur && reseauEnConstruction
       ? reseauDeChaleur.distance <= reseauEnConstruction.distance
-        ? reseauDeChaleur
-        : reseauEnConstruction
-      : (reseauDeChaleur ?? reseauEnConstruction);
+        ? { ...reseauDeChaleur, type: 'existant' }
+        : { ...reseauEnConstruction, type: 'futur' }
+      : reseauDeChaleur
+        ? { ...reseauDeChaleur, type: 'existant' }
+        : { ...reseauEnConstruction, type: 'futur' };
 };

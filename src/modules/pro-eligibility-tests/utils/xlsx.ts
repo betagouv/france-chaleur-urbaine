@@ -51,7 +51,8 @@ const columns: CSVColumn[] = [
     minWidth: 40,
   },
   {
-    accessor: (address) => (address.eligibility?.type === 'dans_pdp' ? 'Oui' : 'Non'),
+    accessor: (address) =>
+      address.eligibility?.type === 'dans_pdp_reseau_existant' || address.eligibility?.type === 'dans_pdp_reseau_futur' ? 'Oui' : 'Non',
     description:
       "Positif si l'adresse se situe dans le périmètre de développement prioritaire d'un réseau classé (d'après les données dont nous disposons). Une obligation de raccordement peut alors s'appliquer.",
     header: 'PDP (périmètre de développement prioritaire)',

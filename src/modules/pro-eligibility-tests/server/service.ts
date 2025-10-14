@@ -10,7 +10,7 @@ import type { ProEligibilityTestEligibility, ProEligibilityTestHistoryEntry } fr
 import { createBuildTilesJob } from '@/modules/tiles/server/service';
 import { kdb, sql } from '@/server/db/kysely';
 import type { ApiContext, ListConfig } from '@/server/db/kysely/base-model';
-import { getDetailedEligibilityStatus } from '@/server/services/addresseInformation';
+import { type EligibilityType, getDetailedEligibilityStatus } from '@/server/services/addresseInformation';
 
 export const tableName = 'pro_eligibility_tests';
 
@@ -38,11 +38,11 @@ export const getTransition = (oldEligibility: ProEligibilityTestEligibility | un
     return 'none';
   }
 
-  const isExistingNetwork = (type: string) => type.includes('reseau_existant');
-  const isFutureNetwork = (type: string) => type.includes('reseau_futur');
-  const isPDP = (type: string) => type === 'dans_pdp';
-  const isInCity = (type: string) => type === 'dans_ville_reseau_existant_sans_trace';
-  const isTooFar = (type: string) => type === 'trop_eloigne';
+  const isExistingNetwork = (type: EligibilityType) => type.includes('reseau_existant');
+  const isFutureNetwork = (type: EligibilityType) => type.includes('reseau_futur');
+  const isPDP = (type: EligibilityType) => type === 'dans_pdp_reseau_existant' || type === 'dans_pdp_reseau_futur';
+  const isInCity = (type: EligibilityType) => type === 'dans_ville_reseau_existant_sans_trace';
+  const isTooFar = (type: EligibilityType) => type === 'trop_eloigne';
 
   const oldType = oldEligibility.type;
   const newType = newEligibility.type;
@@ -314,21 +314,30 @@ export const get = async (testId: string, _config: ListConfig<typeof tableName>,
         eligibility_history: history,
         etat_reseau:
           lastEligibility?.eligibility.type &&
-          [
-            'dans_pdp',
-            'reseau_existant_tres_proche',
-            'reseau_existant_proche',
-            'reseau_existant_loin',
-            'dans_ville_reseau_existant_sans_trace',
-          ].includes(lastEligibility.eligibility.type)
+          (
+            [
+              'dans_pdp_reseau_existant',
+              'reseau_existant_tres_proche',
+              'reseau_existant_proche',
+              'reseau_existant_loin',
+              'dans_ville_reseau_existant_sans_trace',
+            ] as EligibilityType[]
+          ).includes(lastEligibility.eligibility.type)
             ? 'existant'
             : lastEligibility?.eligibility.type &&
-                ['reseau_futur_tres_proche', 'dans_zone_reseau_futur', 'reseau_futur_proche', 'reseau_futur_loin'].includes(
-                  lastEligibility.eligibility.type
-                )
+                (
+                  [
+                    'dans_pdp_reseau_futur',
+                    'reseau_futur_tres_proche',
+                    'dans_zone_reseau_futur',
+                    'reseau_futur_proche',
+                    'reseau_futur_loin',
+                  ] as EligibilityType[]
+                ).includes(lastEligibility.eligibility.type)
               ? 'en_construction'
               : 'aucun',
-        in_pdp: lastEligibility?.eligibility.type === 'dans_pdp',
+        in_pdp:
+          lastEligibility?.eligibility.type === 'dans_pdp_reseau_existant' || lastEligibility?.eligibility.type === 'dans_pdp_reseau_futur',
       };
     }),
   };

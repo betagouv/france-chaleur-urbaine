@@ -97,7 +97,7 @@ const getDefaultEligibilityData = () => ({
     tags: ['SIPPEREC', 'SIPPEREC_BLR'],
   },
   tags: ['ENGIE', 'ENGIE_IDF', 'DALKIA'],
-  type: 'dans_pdp',
+  type: 'dans_pdp_reseau_existant',
   zoneEnConstruction: {
     communes: ['Créteil'],
     distance: 0,

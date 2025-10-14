@@ -37,12 +37,12 @@ describe('getTransition()', () => {
   describe('PDP transitions', () => {
     it('returns "entree_pdp" when entering a PDP', () => {
       const old = createEligibility({ type: 'reseau_existant_proche' });
-      const current = createEligibility({ type: 'dans_pdp' });
+      const current = createEligibility({ type: 'dans_pdp_reseau_existant' });
       expect(getTransition(old, current)).toBe('entree_pdp');
     });
 
     it('returns "sortie_pdp" when leaving a PDP', () => {
-      const old = createEligibility({ type: 'dans_pdp' });
+      const old = createEligibility({ type: 'dans_pdp_reseau_existant' });
       const current = createEligibility({ type: 'reseau_existant_proche' });
       expect(getTransition(old, current)).toBe('sortie_pdp');
     });
@@ -206,7 +206,7 @@ describe('getTransition()', () => {
 
     it('handles PDP with proximity change', () => {
       const step1 = createEligibility({ distance: 500, type: 'reseau_existant_loin' });
-      const step2 = createEligibility({ distance: 500, type: 'dans_pdp' });
+      const step2 = createEligibility({ distance: 500, type: 'dans_pdp_reseau_existant' });
       const step3 = createEligibility({ distance: 150, type: 'reseau_existant_proche' });
 
       expect(getTransition(step1, step2)).toBe('entree_pdp');
@@ -223,7 +223,7 @@ describe('getTransition()', () => {
 
     it('prioritizes PDP transitions over proximity changes', () => {
       const old = createEligibility({ distance: 500, type: 'reseau_existant_loin' });
-      const current = createEligibility({ distance: 50, type: 'dans_pdp' });
+      const current = createEligibility({ distance: 50, type: 'dans_pdp_reseau_existant' });
       expect(getTransition(old, current)).toBe('entree_pdp');
     });
 
