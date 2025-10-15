@@ -233,9 +233,12 @@ export async function processWarnEligibilityChangesJob(job: WarnEligibilityChang
     .where(
       sql<boolean>`st_within(
       geom,
-      ST_Union(ARRAY[${sql.join(
-        bboxes.map((bbox) => sql`ST_Transform(ST_MakeEnvelope(${bbox[0]}, ${bbox[1]}, ${bbox[2]}, ${bbox[3]}, 4326), 2154)`)
-      )}]::geometry[])
+      ST_Transform(
+        ST_Union(ARRAY[${sql.join(
+          bboxes.map((bbox) => sql`ST_MakeEnvelope(${bbox[0]}, ${bbox[1]}, ${bbox[2]}, ${bbox[3]}, 4326)`)
+        )}]::geometry[]),
+        2154
+      )
     )`
     )
     .where('ban_address', 'is not', null)
