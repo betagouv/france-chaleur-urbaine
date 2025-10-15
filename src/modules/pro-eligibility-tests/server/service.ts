@@ -309,7 +309,7 @@ export const get = async (testId: string, _config: ListConfig<typeof tableName>,
 
   return {
     ...eligibilityTest,
-    addresses: addresses.map(({ eligibility_status, ...address }) => {
+    addresses: addresses.map((address) => {
       const history = address.eligibility_history as ProEligibilityTestHistoryEntry[] | null;
       const lastEligibility = history?.[history.length - 1] as ProEligibilityTestHistoryEntry;
       return {
