@@ -1,4 +1,5 @@
 import type { EligibilityType } from '@/server/services/addresseInformation';
+import type { TransitionType } from './constants';
 
 export type ProEligibilityTestEligibility = {
   id_fcu: number;
@@ -14,5 +15,5 @@ export type ProEligibilityTestEligibility = {
 export type ProEligibilityTestHistoryEntry = {
   calculated_at: string;
   eligibility: ProEligibilityTestEligibility;
-  transition: string;
+  transition: TransitionType;
 };

@@ -109,3 +109,30 @@ export const FormErrorMessage = () => (
     <a href={`mailto:${clientConfig.contactEmail}`}>{clientConfig.contactEmail}</a>
   </span>
 );
+
+/**
+ * Labels des types de transition d'éligibilité
+ * Partagé entre le client et le serveur pour garantir la cohérence
+ */
+export const transitionLabels = {
+  amelioration_proximite: 'Amélioration de la proximité',
+  changement_reseau: 'Changement de réseau',
+  changement_type: 'Changement de type',
+  degradation_proximite: 'Dégradation de la proximité',
+  eloignement: 'Éloignement du réseau',
+  entree_pdp: 'Entrée dans un PDP',
+  entree_ville_reseau_sans_trace: 'Entrée dans une ville avec réseau sans tracé',
+  futur_vers_existant: 'Réseau futur devenu existant',
+  initial: 'Calcul initial',
+  modification_mineure: 'Modification mineure',
+  none: 'Aucun changement',
+  nouveau_reseau: 'Nouveau réseau',
+  nouveau_reseau_existant: 'Nouveau réseau existant',
+  nouveau_reseau_futur: 'Nouveau réseau futur',
+  rapprochement: 'Rapprochement du réseau',
+  reseau_supprime: 'Réseau supprimé',
+  sortie_pdp: "Sortie d'un PDP",
+  sortie_ville_reseau_sans_trace: "Sortie d'une ville avec réseau sans tracé",
+} as const satisfies Record<string, string>;
+
+export type TransitionType = keyof typeof transitionLabels;

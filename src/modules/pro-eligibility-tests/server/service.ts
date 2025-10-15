@@ -2,6 +2,7 @@ import { createUserEvent } from '@/modules/events/server/service';
 import type { BoundingBox } from '@/modules/geo/types';
 import {
   type CreateEligibilityTestInput,
+  type TransitionType,
   type UpdateEligibilityTestInput,
   zCreateEligibilityTestInput,
   zUpdateEligibilityTestInput,
@@ -22,7 +23,10 @@ export const tableName = 'pro_eligibility_tests';
  * @param newEligibility - Nouvel état
  * @returns Type de transition détaillé
  */
-export const getTransition = (oldEligibility: ProEligibilityTestEligibility | undefined, newEligibility: ProEligibilityTestEligibility) => {
+export const getTransition = (
+  oldEligibility: ProEligibilityTestEligibility | undefined,
+  newEligibility: ProEligibilityTestEligibility
+): TransitionType => {
   // Premier calcul
   if (!oldEligibility) {
     return 'initial';
