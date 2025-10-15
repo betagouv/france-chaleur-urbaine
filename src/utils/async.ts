@@ -15,7 +15,7 @@ export async function processInParallel<T>(
   // Array of promises that are intentionally managed manually
   const pendingPromises: Promise<void>[] = [];
 
-  // Fonction pour ajouter une nouvelle opération en cours
+  // Ajoute une nouvelle opération en cours
   const tryProcessNextOperation = async () => {
     const nextItem = asyncIterator.next();
     if (!nextItem.done) {
