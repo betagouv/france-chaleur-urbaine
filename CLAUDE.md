@@ -146,6 +146,9 @@ Take all information from .cursor/rules folder
 
 **Comments**
 - Use comments ONLY when the complexity is strong
+- Always use the indicative mood (present tense) in comments, not infinitive
+  - ✅ Good: `// Calcule la distance` (describes what the code does)
+  - ❌ Bad: `// Calculer la distance` (sounds like an instruction)
 
 **Form**
 - Always use src/components/form/react-form/useForm.tsx when creating a form

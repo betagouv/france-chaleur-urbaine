@@ -175,7 +175,7 @@ export const getAddressEligibilityHistoryEntry = async (
  * Calcule et met à jour l'historique d'éligibilité pour une adresse donnée
  */
 export const updateAddressEligibilityHistory = async (addressId: string, latitude: number, longitude: number) => {
-  // Récupérer l'historique existant
+  // Récupère l'historique existant
   const address = await kdb
     .selectFrom('pro_eligibility_tests_addresses')
     .select(['eligibility_history'])
@@ -184,11 +184,11 @@ export const updateAddressEligibilityHistory = async (addressId: string, latitud
 
   const existingHistory = (address.eligibility_history as ProEligibilityTestHistoryEntry[]) || [];
 
-  // Calculer la nouvelle entrée d'historique
+  // Calcule la nouvelle entrée d'historique
   const lastEligibility = existingHistory[existingHistory.length - 1];
   const historyEntry = await getAddressEligibilityHistoryEntry(latitude, longitude, lastEligibility?.eligibility);
 
-  // Ajouter à l'historique
+  // Ajoute à l'historique
   const updatedHistory = [...existingHistory, historyEntry];
 
   // Mettre à jour en base

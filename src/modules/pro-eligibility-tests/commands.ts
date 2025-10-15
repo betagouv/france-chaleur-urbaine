@@ -29,7 +29,7 @@ export function registerProEligibilityTestsCommands(parentProgram: Command) {
         logger.info(`Limite définie: ${limit} adresses maximum`);
       }
 
-      // Récupérer toutes les adresses qui ont des coordonnées et pas d'historique
+      // Récupère toutes les adresses qui ont des coordonnées et pas d'historique
       let query = kdb
         .selectFrom('pro_eligibility_tests_addresses')
         .select([
@@ -60,7 +60,7 @@ export function registerProEligibilityTestsCommands(parentProgram: Command) {
       let errorCount = 0;
       let updatedCount = 0;
 
-      // Traiter les adresses par batch
+      // Traite les adresses par batch
       for (let i = 0; i < addresses.length; i += batchSize) {
         const batch = addresses.slice(i, i + batchSize);
         const batchNumber = Math.floor(i / batchSize) + 1;
@@ -78,7 +78,7 @@ export function registerProEligibilityTestsCommands(parentProgram: Command) {
         await Promise.all(
           batch.map(async (address) => {
             try {
-              // Vérifier si l'historique existe déjà
+              // Vérifie si l'historique existe déjà
               const existingHistory = address.eligibility_history as ProEligibilityTestHistoryEntry[];
               if (existingHistory && existingHistory.length > 0) {
                 skippedCount++;
@@ -87,7 +87,7 @@ export function registerProEligibilityTestsCommands(parentProgram: Command) {
               }
 
               if (!dryRun) {
-                // Calculer et mettre à jour l'éligibilité via le service
+                // Calcule et met à jour l'éligibilité via le service
                 await updateAddressEligibilityHistory(address.id, address.latitude as number, address.longitude as number);
 
                 updatedCount++;
@@ -104,7 +104,7 @@ export function registerProEligibilityTestsCommands(parentProgram: Command) {
           })
         );
 
-        // Afficher la progression après chaque batch
+        // Affiche la progression après chaque batch
         const remainingAfterBatch = totalAddresses - processedCount;
         const progressAfterBatch = Math.round((processedCount / totalAddresses) * 100);
         logger.info(`Batch ${batchNumber}/${totalBatches} terminé`, {
@@ -115,7 +115,7 @@ export function registerProEligibilityTestsCommands(parentProgram: Command) {
         });
       }
 
-      // Afficher le résumé
+      // Affiche le résumé
       logger.info('═══════════════════════════════════════');
       logger.info("Résumé de l'exécution:");
       logger.info(`  Total traité:      ${processedCount}`);

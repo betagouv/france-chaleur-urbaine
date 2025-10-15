@@ -251,15 +251,15 @@ export async function processWarnEligibilityChangesJob(job: WarnEligibilityChang
 
   logger.info(`Found ${addressesToCheck.length} addresses in all bboxes`, { count: addressesToCheck.length });
 
-  // Vérifier chaque adresse
+  // Vérifie chaque adresse
   for (const address of addressesToCheck) {
     stats.addressesChecked++;
 
-    // Récupérer l'historique existant
+    // Récupère l'historique existant
     const existingHistory = (address.eligibility_history as ProEligibilityTestHistoryEntry[]) || [];
     const lastEntry = existingHistory[existingHistory.length - 1];
 
-    // Calculer la nouvelle entrée d'historique
+    // Calcule la nouvelle entrée d'historique
     const newHistoryEntry = await getAddressEligibilityHistoryEntry(
       address.geom.coordinates[1],
       address.geom.coordinates[0],
@@ -278,7 +278,7 @@ export async function processWarnEligibilityChangesJob(job: WarnEligibilityChang
         .where('id', '=', address.id)
         .execute();
 
-      // Marquer le test parent comme ayant des changements
+      // Marque le test parent comme ayant des changements
       await kdb.updateTable('pro_eligibility_tests').set({ has_unseen_changes: true }).where('id', '=', address.test_id).execute();
 
       logger.info('Eligibility changed', {
@@ -287,14 +287,14 @@ export async function processWarnEligibilityChangesJob(job: WarnEligibilityChang
       });
     }
   }
-  // Compter le nombre de tests mis à jour
+  // Compte le nombre de tests mis à jour
   const testsWithChanges = await kdb
     .selectFrom('pro_eligibility_tests')
     .select(kdb.fn.countAll<number>().as('count'))
     .where('has_unseen_changes', '=', true)
     .executeTakeFirstOrThrow();
 
-  stats.testsUpdated = Number(testsWithChanges.count);
+  stats.testsUpdated = testsWithChanges.count;
 
   const duration = Date.now() - startTime;
   logger.info('Eligibility check completed', {

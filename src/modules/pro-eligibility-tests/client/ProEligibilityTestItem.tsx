@@ -129,7 +129,7 @@ const columns: ColumnDef<RouterOutput['proEligibilityTests']['get']['addresses']
       const distance = info.getValue();
       const history = info.row.original.eligibility_history;
       const eligibility = info.row.original.eligibility;
-      // Calculer le changement de distance si possible
+      // Calcule le changement de distance si possible
       let changeIndicator: { text: string; isPositive: boolean } | null = null;
       if (history && history.length >= 2) {
         const previous = history[history.length - 2];
