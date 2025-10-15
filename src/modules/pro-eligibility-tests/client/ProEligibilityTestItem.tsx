@@ -19,7 +19,7 @@ import Notice from '@/components/ui/Notice';
 import TableSimple, { type ColumnDef, type QuickFilterPreset } from '@/components/ui/TableSimple';
 import Tooltip from '@/components/ui/Tooltip';
 import { toastErrors } from '@/modules/notification';
-import EligibilityChangeTooltip from '@/modules/pro-eligibility-tests/client/EligibilityChangeTooltip';
+import EligibilityHistoryTooltip from '@/modules/pro-eligibility-tests/client/EligibilityHistoryTooltip';
 import RenameEligibilityTestForm from '@/modules/pro-eligibility-tests/client/RenameEligibilityTestForm';
 import UpsertEligibilityTestForm from '@/modules/pro-eligibility-tests/client/UpsertEligibilityTestForm';
 import trpc, { type RouterOutput } from '@/modules/trpc/client';
@@ -192,7 +192,7 @@ const columns: ColumnDef<RouterOutput['proEligibilityTests']['get']['addresses']
 
       return (
         <div className="flex items-center justify-center gap-1">
-          <Tooltip title={<EligibilityChangeTooltip history={history} />} side="left" />
+          <Tooltip title={<EligibilityHistoryTooltip history={history} />} side="left" />
         </div>
       );
     },
