@@ -128,31 +128,30 @@ const columns: ColumnDef<RouterOutput['proEligibilityTests']['get']['addresses']
     cell: (info) => {
       const distance = info.getValue();
       const history = info.row.original.eligibility_history;
-
+      const eligibility = info.row.original.eligibility;
       // Calculer le changement de distance si possible
       let changeIndicator: { text: string; isPositive: boolean } | null = null;
       if (history && history.length >= 2) {
-        const mostRecent = history[history.length - 1];
         const previous = history[history.length - 2];
-        const recentDistance = mostRecent.eligibility.distance;
+        const newDistance = eligibility.distance;
         const previousDistance = previous.eligibility.distance;
 
-        if (recentDistance !== previousDistance) {
+        if (newDistance !== previousDistance) {
           // Réseau apparu
-          if (previousDistance === 0 && recentDistance > 0) {
+          if (previousDistance === 0 && newDistance > 0) {
             changeIndicator = { isPositive: true, text: '★ nouveau' };
           }
           // Réseau disparu
-          else if (recentDistance === 0 && previousDistance > 0) {
+          else if (newDistance === 0 && previousDistance > 0) {
             changeIndicator = { isPositive: false, text: '✕ disparu' };
           }
           // Rapprochement
-          else if (recentDistance < previousDistance) {
-            changeIndicator = { isPositive: true, text: `${recentDistance - previousDistance}` };
+          else if (newDistance < previousDistance) {
+            changeIndicator = { isPositive: true, text: `${newDistance - previousDistance}` };
           }
           // Éloignement
           else {
-            changeIndicator = { isPositive: false, text: `+${recentDistance - previousDistance}` };
+            changeIndicator = { isPositive: false, text: `+${newDistance - previousDistance}` };
           }
         }
       }
@@ -519,7 +518,7 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false, className }:
           <div className="flex-auto" />
           {test.has_unseen_changes && (
             <Badge severity="warning" small className="fr-mx-1w">
-              🚀 Mises à jour
+              Mises à jour
             </Badge>
           )}
           {test.last_job_has_error && (
