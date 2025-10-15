@@ -30,6 +30,13 @@ export function registerProEligibilityTestsCommands(parentProgram: Command) {
         logger.info(`Limite définie: ${limit} adresses maximum`);
       }
 
+      const updated = await kdb
+        .updateTable('pro_eligibility_tests_addresses')
+        .set('eligibility_history', null)
+        .where('ban_valid', 'is', false)
+        .executeTakeFirstOrThrow();
+      logger.info(`${updated.numUpdatedRows} adresses non valides dont eligibility_history est mis à null`);
+
       // Récupère toutes les adresses qui ont des coordonnées et pas d'historique
       let query = kdb
         .selectFrom('pro_eligibility_tests_addresses')
@@ -41,7 +48,7 @@ export function registerProEligibilityTestsCommands(parentProgram: Command) {
         ])
         .where('geom', 'is not', null)
         .where('ban_valid', 'is', true)
-        .where((eb) => eb('eligibility_history', '=', '[]'));
+        .where('eligibility_history', '=', '[]');
 
       if (limit) {
         query = query.limit(limit);
