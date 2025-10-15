@@ -1,11 +1,17 @@
+import type { ExpressionBuilder } from 'kysely';
+import { parseBbox } from '@/modules/geo/client/helpers';
+import { createGeometryExpression, processGeometry } from '@/modules/geo/server/helpers';
+import type { BoundingBox } from '@/modules/geo/types';
+import { createWarnEligibilityChangesJob } from '@/modules/pro-eligibility-tests/server/service';
+import type { ApplyGeometriesUpdatesInput } from '@/modules/reseaux/constants';
+import { type NetworkTable, updateNetworkHasPDP } from '@/modules/reseaux/server/geometry-operations';
+import { createBuildTilesJob, createSyncGeometriesToAirtableJob, createSyncMetadataFromAirtableJob } from '@/modules/tiles/server/service';
 import db from '@/server/db';
-import { kdb, sql, type ZoneDeDeveloppementPrioritaire } from '@/server/db/kysely';
-import { createGeometryExpression, processGeometry } from '@/server/helpers/geo';
+import { type DB, kdb, sql, type ZoneDeDeveloppementPrioritaire } from '@/server/db/kysely';
+import type { ApiContext } from '@/server/db/kysely/base-model';
 import { parentLogger } from '@/server/helpers/logger';
-import type { BoundingBox } from '@/types/Coords';
 import type { Network, NetworkToCompare } from '@/types/Summary/Network';
 import { isDefined } from '@/utils/core';
-import { parseBbox } from '@/utils/geo';
 
 const logger = parentLogger.child({
   module: 'reseaux',
@@ -506,4 +512,233 @@ export const createNetwork = async (
     default:
       throw new Error(`Type de réseau non supporté: ${dbName}`);
   }
+};
+
+// ========================================
+// Geometry Updates Processing
+// ========================================
+
+type TableConfig = {
+  tableName: NetworkTable;
+  internalName: ApplyGeometriesUpdatesInput['name'];
+  tileName: string;
+};
+
+/**
+ * Extrait les bounding boxes des géométries mises à jour avec un buffer
+ * Optimisé avec ST_Expand qui est plus rapide que ST_Buffer pour les bbox
+ * @param config Configuration de la table
+ * @param bufferMeters Buffer en mètres (défaut: 1000m = 1km)
+ * @returns Array de bounding boxes avec buffer appliqué
+ */
+async function getUpdatedNetworkBboxes(config: TableConfig, bufferMeters = 1000): Promise<BoundingBox[]> {
+  const bboxes = await kdb
+    .selectFrom(config.tableName)
+    .select([
+      sql<BoundingBox>`ST_Transform(
+        ST_Expand(
+          ST_Envelope(geom_update),
+          ${bufferMeters}
+        ),
+        4326
+      )::box2d`.as('bbox'),
+    ])
+    .where('geom_update', 'is not', null)
+    .where(sql<boolean>`NOT ST_IsEmpty(geom_update)`)
+    .execute();
+
+  // Transformer les bbox en JS
+  return bboxes.map((row) => parseBbox(row.bbox as unknown as string));
+}
+
+const tables: TableConfig[] = [
+  {
+    internalName: 'reseaux-de-chaleur',
+    tableName: 'reseaux_de_chaleur',
+    tileName: 'network',
+  },
+  {
+    internalName: 'reseaux-de-froid',
+    tableName: 'reseaux_de_froid',
+    tileName: 'coldNetwork',
+  },
+  {
+    internalName: 'reseaux-en-construction',
+    tableName: 'zones_et_reseaux_en_construction',
+    tileName: 'futurNetwork',
+  },
+  {
+    internalName: 'perimetres-de-developpement-prioritaire',
+    tableName: 'zone_de_developpement_prioritaire',
+    tileName: 'zoneDP',
+  },
+];
+
+/**
+ * Expression SQL pour calculer les codes INSEE des communes intersectant une géométrie mise à jour
+ */
+const communesInseeExpressionGeomUpdate = sql<string[]>`COALESCE(
+  (
+    SELECT array_agg(insee_com order by insee_com)
+    FROM ign_communes
+    WHERE ST_Intersects(geom_update, ign_communes.geom_150m)
+  ),
+  (
+    SELECT array_agg(insee_com order by insee_com)
+    FROM ign_communes
+    WHERE ST_Intersects(geom_update, ign_communes.geom)
+  ),
+  '{}'
+)::text[]`;
+
+/**
+ * Définition des champs dépendants de la géométrie pour chaque table
+ */
+const networkTablesGeomFields: {
+  [K in NetworkTable]: (eb: ExpressionBuilder<DB, K>) => Record<string, any>;
+} = {
+  reseaux_de_chaleur: (eb) => ({
+    has_trace: sql<boolean>`st_geometrytype(${eb.ref('geom_update')}) = 'ST_MultiLineString'`,
+  }),
+  reseaux_de_froid: () => ({}),
+  zone_de_developpement_prioritaire: () => ({}),
+  zones_et_reseaux_en_construction: (eb) => ({
+    is_zone: sql<boolean>`st_geometrytype(${eb.ref('geom_update')}) = 'ST_MultiPolygon' or st_geometrytype(geom_update) = 'ST_Polygon'`,
+  }),
+};
+
+/**
+ * Met à jour les champs département et région pour une entité
+ */
+async function updateLabelsCommunesDepartementAndRegion(tableName: NetworkTable, id_fcu: number): Promise<void> {
+  await kdb
+    .updateTable(tableName)
+    .where('id_fcu', '=', id_fcu)
+    .set({
+      communes: sql<string[]>`(
+        SELECT array_agg(ic.nom ORDER BY ic.nom)
+        FROM unnest(${sql.raw(tableName)}.communes_insee) as ci
+        JOIN ign_communes ic ON ic.insee_com = ci
+        WHERE ${sql.raw(tableName)}.id_fcu = ${id_fcu}
+      )`,
+      departement: sql<string>`(
+        SELECT string_agg(DISTINCT id.nom, ', ' ORDER BY id.nom)
+        FROM unnest(${sql.raw(tableName)}.communes_insee) as ci
+        JOIN ign_communes ic ON ic.insee_com = ci
+        JOIN ign_departements id ON id.insee_dep = ic.insee_dep
+        WHERE ${sql.raw(tableName)}.id_fcu = ${id_fcu}
+      )`,
+      region: sql<string>`(
+        SELECT string_agg(DISTINCT ir.nom, ', ' ORDER BY ir.nom)
+        FROM unnest(${sql.raw(tableName)}.communes_insee) as ci
+        JOIN ign_communes ic ON ic.insee_com = ci
+        JOIN ign_regions ir ON ir.insee_reg = ic.insee_reg
+        WHERE ${sql.raw(tableName)}.id_fcu = ${id_fcu}
+      )`,
+    })
+    .execute();
+}
+
+const processTableGeometryUpdates = async (config: TableConfig) => {
+  const [created, updated, deleted] = await Promise.all([
+    // Créations (!geom && geom_update)
+    kdb
+      .updateTable(config.tableName)
+      .set((eb) => ({
+        communes_insee: communesInseeExpressionGeomUpdate,
+        date_actualisation_trace: eb.val(new Date()),
+        geom: eb.ref('geom_update'),
+        geom_update: null,
+        ...networkTablesGeomFields[config.tableName](eb),
+      }))
+      .where('geom', 'is', null)
+      .where('geom_update', 'is not', null)
+      .where(sql<boolean>`NOT ST_IsEmpty(geom_update)`)
+      .returning(config.internalName === 'perimetres-de-developpement-prioritaire' ? ['id_fcu', 'Identifiant reseau'] : ['id_fcu'])
+      .execute(),
+
+    // Mises à jour (geom && geom_update)
+    kdb
+      .updateTable(config.tableName)
+      .set((eb) => ({
+        communes_insee: communesInseeExpressionGeomUpdate,
+        date_actualisation_trace: eb.val(new Date()),
+        geom: eb.ref('geom_update'),
+        geom_update: null,
+        ...networkTablesGeomFields[config.tableName](eb),
+      }))
+      .where('geom', 'is not', null)
+      .where('geom_update', 'is not', null)
+      .where(sql<boolean>`NOT ST_IsEmpty(geom_update)`)
+      .returning('id_fcu')
+      .execute(),
+
+    // Suppressions (geom_update vide)
+    kdb
+      .deleteFrom(config.tableName)
+      .where('geom_update', 'is not', null)
+      .where(sql<boolean>`ST_IsEmpty(geom_update)`)
+      .returning('id_fcu')
+      .execute(),
+  ]);
+
+  // Met à jour les labels pour les entités créées et modifiées
+  const allUpdatedIds = [...created, ...updated];
+  await Promise.all(allUpdatedIds.map((entity) => updateLabelsCommunesDepartementAndRegion(config.tableName, entity.id_fcu)));
+
+  // Cas particulier : on doit mettre à jour has_PDP des réseaux de chaleur associés
+  if (config.internalName === 'perimetres-de-developpement-prioritaire') {
+    await Promise.all(
+      created.map((createdPDP) => createdPDP['Identifiant reseau'] && updateNetworkHasPDP(createdPDP['Identifiant reseau']))
+    );
+  }
+
+  return {
+    config,
+    created: created.length,
+    deleted: deleted.length,
+    total: created.length + updated.length + deleted.length,
+    updated: updated.length,
+  };
+};
+
+export const applyGeometriesUpdates = async ({ name }: ApplyGeometriesUpdatesInput, context: ApiContext) => {
+  const networkTableConfig = tables.find((table) => table.internalName === name);
+  if (!networkTableConfig) {
+    throw new Error(`Table ${name} not found`);
+  }
+
+  // Récupérer les bboxes des géométries modifiées AVANT le traitement
+  // Ces bboxes incluent un buffer de 1km pour détecter les adresses affectées
+  const affectedBboxes = await getUpdatedNetworkBboxes(networkTableConfig, 1000);
+  logger.info(`Detected ${affectedBboxes.length} geometry updates with 1km buffer for eligibility checks`);
+
+  const updateResults = await processTableGeometryUpdates(networkTableConfig);
+
+  // Récupère les statistiques
+  const processed = {
+    created: updateResults.created,
+    deleted: updateResults.deleted,
+    total: updateResults.total,
+    updated: updateResults.updated,
+  };
+
+  const rebuildingJobIds = [
+    // pas d'onglet airtable pour les PDP
+    ...(name !== 'perimetres-de-developpement-prioritaire'
+      ? [(await createSyncGeometriesToAirtableJob({ name }, context)).id, (await createSyncMetadataFromAirtableJob({ name }, context)).id]
+      : []),
+    (await createBuildTilesJob({ name }, context)).id,
+  ];
+
+  // Step 4: Créer un job pour vérifier l'éligibilité dans les zones affectées
+  if (affectedBboxes.length > 0) {
+    const eligibilityCheckJob = await createWarnEligibilityChangesJob(affectedBboxes, context);
+    logger.info(`Created eligibility check job ${eligibilityCheckJob.id} for ${affectedBboxes.length} affected zones`);
+  }
+
+  return {
+    jobIds: rebuildingJobIds,
+    processed,
+  };
 };

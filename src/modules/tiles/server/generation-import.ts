@@ -6,7 +6,7 @@ import { serverConfig } from '@/server/config';
 import db from '@/server/db';
 import { kdb } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
-import { processInParallel } from '@/types/async';
+import { processInParallel } from '@/utils/async';
 import { type CommandResult, dockerVolumePath, listDirectoryEntries, type RunCommandOptions, runBash, runDocker } from '@/utils/system';
 
 /**

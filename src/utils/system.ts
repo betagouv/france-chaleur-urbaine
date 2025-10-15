@@ -211,3 +211,53 @@ export async function listDirectoryEntries(basePath: string, type: 'dir' | 'file
   );
   return subEntries;
 }
+
+/**
+ * Écrit un fichier JSON volumineux en streaming pour éviter les problèmes de mémoire
+ * Utile pour les gros GeoJSON qui dépassent la limite de taille de string de Node.js
+ *
+ * @param filePath - Chemin du fichier à écrire
+ * @param data - Objet à sérialiser en JSON (doit avoir une propriété itérable)
+ * @param options - Options d'écriture
+ * @returns Statistiques sur le fichier écrit (taille en MB)
+ */
+export async function writeLargeFile(
+  filePath: string,
+  data: { type: string; features: any[] },
+  options: { itemsKey?: string } = {}
+): Promise<{ sizeMB: string }> {
+  const { itemsKey = 'features' } = options;
+
+  await new Promise<void>((resolve, reject) => {
+    const { createWriteStream } = require('node:fs');
+    const stream = createWriteStream(filePath);
+
+    stream.on('error', reject);
+    stream.on('finish', resolve);
+
+    // Construire l'objet sans la clé des items
+    const { [itemsKey]: items, ...rest } = data as any;
+
+    // Écrire l'ouverture de l'objet JSON avec toutes les propriétés sauf les items
+    const opening = JSON.stringify(rest).slice(0, -1); // Enlever la dernière accolade
+    stream.write(`${opening},"${itemsKey}":[`);
+
+    // Écrire chaque item un par un
+    items.forEach((item: any, index: number) => {
+      if (index > 0) {
+        stream.write(',');
+      }
+      stream.write(JSON.stringify(item));
+    });
+
+    // Fermer le JSON
+    stream.write(']}');
+    stream.end();
+  });
+
+  // Retourner les stats du fichier
+  const fileStats = await stat(filePath);
+  const sizeMB = (fileStats.size / (1024 * 1024)).toFixed(2);
+
+  return { sizeMB };
+}

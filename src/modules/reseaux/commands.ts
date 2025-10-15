@@ -2,9 +2,8 @@ import fs from 'node:fs';
 import type { Command } from '@commander-js/extra-typings';
 import prompts from 'prompts';
 import { z } from 'zod';
-
+import { readFileGeometry } from '@/modules/geo/server/helpers';
 import { kdb, sql } from '@/server/db/kysely';
-import { readFileGeometry } from '@/server/helpers/geo';
 import { logger } from '@/server/helpers/logger';
 import { type TrelloCard, type TrelloLabel, TrelloService } from '@/services/TrelloService';
 import { runBash } from '@/utils/system';

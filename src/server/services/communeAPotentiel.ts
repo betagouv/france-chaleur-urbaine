@@ -1,5 +1,5 @@
+import type { BoundingBox } from '@/modules/geo/types';
 import { db, sql } from '@/server/db/kysely';
-import type { BoundingBox } from '@/types/Coords';
 
 type TypeCommune = 'Réseau Existant' | 'Réseau Futur' | 'Fort Potentiel' | 'Potentiel' | 'Sans Potentiel';
 

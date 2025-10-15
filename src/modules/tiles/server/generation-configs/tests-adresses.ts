@@ -14,8 +14,8 @@ FROM (
     'properties', jsonb_build_object(
       'ban_address', a.ban_address,
       'tests', a.tests,
-      'eligibility_status', a.eligibility_status,
-      'isEligible', (a.eligibility_status->>'isEligible')::boolean
+      'eligibility', a.eligibility,
+      'eligible', (a.eligibility->>'eligible')::boolean
     )
   ) AS feature
   FROM (
@@ -23,7 +23,8 @@ FROM (
       addr.ban_address,
       -- centroids will be merged later
       array_agg(addr.geom) AS geom,
-      addr.eligibility_status,
+      -- Get the eligibility from the last item in eligibility_history
+      (addr.eligibility_history->-1->'eligibility') AS eligibility,
 
       json_agg(
         DISTINCT jsonb_build_object(
@@ -49,43 +50,9 @@ FROM (
 
     WHERE addr.ban_address IS NOT NULL
     AND addr.ban_score > 60
+    AND jsonb_array_length(addr.eligibility_history) > 0
 
-    GROUP BY addr.ban_address, addr.eligibility_status
-
-    UNION ALL
-
-    SELECT
-      addr.ban_address,
-      -- centroids will be merged later
-      array_agg(addr.geom) AS geom,
-      addr.eligibility_status,
-
-      json_agg(
-        DISTINCT jsonb_build_object(
-          'id', t.id,
-          'name', t.id,
-          'created_at', t.created_at,
-          'user', jsonb_build_object(
-            'id', COALESCE(u.id::text, t.email),
-            'role', u.role,
-            'gestionnaires', u.gestionnaires,
-            'first_name', COALESCE(u.first_name, t.email),
-            'last_name', COALESCE(u.last_name, ''),
-            'structure_name', u.structure_name,
-            'structure_type', u.structure_type,
-            'phone', u.phone
-          )
-        )
-      ) AS tests
-
-    FROM eligibility_demands_addresses addr
-    LEFT JOIN eligibility_demands t ON t.eligibility_test_id = addr.test_id
-    LEFT JOIN users u ON t.email = u.email
-
-    WHERE addr.ban_address IS NOT NULL
-    AND addr.ban_score > 60
-
-    GROUP BY addr.ban_address, addr.eligibility_status
+    GROUP BY addr.ban_address, addr.eligibility_history
   ) a
 ) features;
   `,

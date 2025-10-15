@@ -16,9 +16,14 @@ type EligibilityCase = {
 // Crée un type qui vérifie que le tableau contient tous les cas
 const eligibilityCases = [
   {
+    description: "L'adresse se trouve dans un Périmètre de Développement Prioritaire (PDP) où un réseau de chaleur existe.",
+    title: 'Dans un PDP',
+    type: 'dans_pdp_reseau_existant',
+  },
+  {
     description: "L'adresse se trouve dans un Périmètre de Développement Prioritaire (PDP) où un réseau de chaleur est prévu.",
     title: 'Dans un PDP',
-    type: 'dans_pdp',
+    type: 'dans_pdp_reseau_futur',
   },
   {
     description: "Un réseau de chaleur existant se trouve à moins de 100m (60m sur Paris) de l'adresse.",

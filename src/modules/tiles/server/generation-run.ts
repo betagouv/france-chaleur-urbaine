@@ -17,7 +17,7 @@ export async function runTilesGeneration(name: TilesType, inputFilePath?: string
     logger,
     tempDirectory,
   };
-  logger.info(`Génération des tuiles`);
+  logger.info(`Génération des tuiles`, { config });
   const geojsonPath = await config.generateGeoJSON({ ...jobConfig, inputFilePath });
 
   logger.info(`Importation du GeoJSON dans la table ${config.tilesTableName}`);

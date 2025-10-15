@@ -13,13 +13,13 @@ import Link from '@/components/ui/Link';
 import Modal, { createModal } from '@/components/ui/Modal';
 import Text from '@/components/ui/Text';
 import { trackEvent } from '@/modules/analytics/client';
+import { getReadableDistance } from '@/modules/geo/client/helpers';
 import type { NetworkEligibilityStatus } from '@/server/services/addresseInformation';
 import { useServices } from '@/services';
 import { formatDataToAirtable, submitToAirtable } from '@/services/airtable';
 import { Airtable } from '@/types/enum/Airtable';
 import type { SuggestionItem } from '@/types/Suggestions';
 import type { ContactFormInfos, FormDemandCreation } from '@/types/Summary/Demand';
-import { getReadableDistance } from '@/utils/geo';
 import { runWithMinimumDelay } from '@/utils/time';
 
 type FormState = 'idle' | 'loadingEligibility' | 'eligibilitySubmissionError' | 'sendingDemand' | 'demandCreated' | 'demandSubmissionError';

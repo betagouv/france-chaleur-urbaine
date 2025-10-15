@@ -1,5 +1,5 @@
+import { createGeometryExpression, type GeometryWithSrid } from '@/modules/geo/server/helpers';
 import { kdb, sql } from '@/server/db/kysely';
-import { createGeometryExpression, type GeometryWithSrid } from '@/server/helpers/geo';
 import { logger } from '@/server/helpers/logger';
 import { formatAsISODate } from '@/utils/date';
 

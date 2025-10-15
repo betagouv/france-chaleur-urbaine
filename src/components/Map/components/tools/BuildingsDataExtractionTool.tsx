@@ -13,10 +13,10 @@ import useFCUMap from '@/components/Map/MapProvider';
 import Box from '@/components/ui/Box';
 import Text from '@/components/ui/Text';
 import { trackEvent } from '@/modules/analytics/client';
+import { validatePolygonGeometry } from '@/modules/geo/client/helpers';
 import { useServices } from '@/services';
 import { EXPORT_FORMAT } from '@/types/enum/ExportFormat';
 import type { GasSummary } from '@/types/Summary/Gas';
-import { validatePolygonGeometry } from '@/utils/geo';
 
 import type { MapSourceLayersSpecification } from '../../layers/common';
 import { Title } from '../SimpleMapLegend.style';

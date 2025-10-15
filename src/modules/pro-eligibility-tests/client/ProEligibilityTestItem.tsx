@@ -19,10 +19,12 @@ import Notice from '@/components/ui/Notice';
 import TableSimple, { type ColumnDef, type QuickFilterPreset } from '@/components/ui/TableSimple';
 import Tooltip from '@/components/ui/Tooltip';
 import { toastErrors } from '@/modules/notification';
+import EligibilityHistoryTooltip from '@/modules/pro-eligibility-tests/client/EligibilityHistoryTooltip';
 import RenameEligibilityTestForm from '@/modules/pro-eligibility-tests/client/RenameEligibilityTestForm';
 import UpsertEligibilityTestForm from '@/modules/pro-eligibility-tests/client/UpsertEligibilityTestForm';
 import trpc, { type RouterOutput } from '@/modules/trpc/client';
 import { downloadString } from '@/utils/browser';
+import cx from '@/utils/cx';
 import { formatAsISODateMinutes, formatFrenchDate, formatFrenchDateTime } from '@/utils/date';
 import { compareFrenchStrings } from '@/utils/strings';
 import { ObjectEntries, ObjectKeys } from '@/utils/typescript';
@@ -94,7 +96,7 @@ const columns: ColumnDef<RouterOutput['proEligibilityTests']['get']['addresses']
     width: '90px',
   },
   {
-    accessorKey: 'eligibility_status.etat_reseau',
+    accessorKey: 'etat_reseau',
     align: 'center',
     cell: (info) => <ProcheReseauBadge type={info.getValue()} />,
     enableSorting: false,
@@ -121,8 +123,48 @@ const columns: ColumnDef<RouterOutput['proEligibilityTests']['get']['addresses']
     width: '130px',
   },
   {
-    accessorKey: 'eligibility_status.distance',
+    accessorKey: 'eligibility.distance',
     align: 'right',
+    cell: (info) => {
+      const distance = info.getValue();
+      const history = info.row.original.eligibility_history;
+      const eligibility = info.row.original.eligibility;
+      // Calcule le changement de distance si possible
+      let changeIndicator: { text: string; isPositive: boolean } | null = null;
+      if (history && history.length >= 2) {
+        const previous = history[history.length - 2];
+        const newDistance = eligibility.distance;
+        const previousDistance = previous.eligibility.distance;
+
+        if (newDistance !== previousDistance) {
+          // Réseau apparu
+          if (previousDistance === 0 && newDistance > 0) {
+            changeIndicator = { isPositive: true, text: '★ nouveau' };
+          }
+          // Réseau disparu
+          else if (newDistance === 0 && previousDistance > 0) {
+            changeIndicator = { isPositive: false, text: '✕ disparu' };
+          }
+          // Rapprochement
+          else if (newDistance < previousDistance) {
+            changeIndicator = { isPositive: true, text: `${newDistance - previousDistance}` };
+          }
+          // Éloignement
+          else {
+            changeIndicator = { isPositive: false, text: `+${newDistance - previousDistance}` };
+          }
+        }
+      }
+
+      return (
+        <div className="flex flex-col items-end">
+          <span>{distance}m</span>
+          {changeIndicator && (
+            <span className={cx('text-xs', changeIndicator.isPositive ? 'text-success' : 'text-error')}>{changeIndicator.text}</span>
+          )}
+        </div>
+      );
+    },
     filterProps: {
       unit: 'm',
     },
@@ -139,11 +181,38 @@ const columns: ColumnDef<RouterOutput['proEligibilityTests']['get']['addresses']
       </>
     ),
     sortUndefined: 'last',
-    suffix: 'm',
     width: '130px',
   },
   {
-    accessorKey: 'eligibility_status.inPDP',
+    accessorKey: 'eligibility.calculated_at',
+    align: 'center',
+    cell: (info) => {
+      const history = info.row.original.eligibility_history;
+
+      return (
+        <div className="flex items-center justify-center gap-1">
+          <Tooltip title={<EligibilityHistoryTooltip history={history} />} side="left" />
+        </div>
+      );
+    },
+    header: () => 'Mises à jour',
+    sortingFn: (rowA, rowB) => {
+      const aHistory = rowA.original.eligibility_history;
+      const bHistory = rowB.original.eligibility_history;
+      const aDate = aHistory?.length ? new Date(aHistory[aHistory.length - 1].calculated_at) : null;
+      const bDate = bHistory?.length ? new Date(bHistory[bHistory.length - 1].calculated_at) : null;
+
+      if (aDate === null && bDate === null) return 0;
+      if (aDate === null) return 1;
+      if (bDate === null) return -1;
+
+      // Most recent date first (descending)
+      return bDate.getTime() - aDate.getTime();
+    },
+    width: '100px',
+  },
+  {
+    accessorKey: 'in_pdp',
     align: 'center',
     cellType: 'Boolean',
     enableSorting: false,
@@ -167,7 +236,7 @@ const columns: ColumnDef<RouterOutput['proEligibilityTests']['get']['addresses']
     width: '70px',
   },
   {
-    accessorKey: 'eligibility_status.tauxENRR',
+    accessorKey: 'eligibility.taux_enrr',
     align: 'right',
     filterProps: {
       domain: [0, 100],
@@ -190,7 +259,7 @@ const columns: ColumnDef<RouterOutput['proEligibilityTests']['get']['addresses']
     width: '100px',
   },
   {
-    accessorKey: 'eligibility_status.co2',
+    accessorKey: 'eligibility.contenu_co2_acv',
     align: 'right',
     cell: (info) => (info.getValue() ? `${info.getValue() * 1000}` : ''),
     filterProps: {
@@ -213,12 +282,12 @@ const columns: ColumnDef<RouterOutput['proEligibilityTests']['get']['addresses']
     width: '130px',
   },
   {
-    accessorKey: 'eligibility_status.id',
+    accessorKey: 'eligibility.id_sncu',
     align: 'right',
     cell: (info) =>
-      info.row.original.eligibility_status?.id && (
-        <Link href={`/reseaux/${info.row.original.eligibility_status.id}`} isExternal title="Ouvrir la fiche réseau">
-          {info.row.original.eligibility_status.id}
+      info.row.original.eligibility?.id_sncu && (
+        <Link href={`/reseaux/${info.row.original.eligibility.id_sncu}`} isExternal title="Ouvrir la fiche réseau">
+          {info.row.original.eligibility.id_sncu}
         </Link>
       ),
     enableSorting: false,
@@ -240,7 +309,7 @@ const columns: ColumnDef<RouterOutput['proEligibilityTests']['get']['addresses']
 const initialSortingState: SortingState = [
   {
     desc: false,
-    id: 'eligibility_status_distance',
+    id: 'eligibility_distance',
   },
 ];
 
@@ -248,11 +317,11 @@ const quickFilterPresets = {
   adressesDansPDP: {
     filters: [
       {
-        id: 'eligibility_status_inPDP',
+        id: 'in_pdp',
         value: { false: false, true: true },
       },
     ],
-    getStat: (addresses) => addresses.filter((address) => address.eligibility_status?.inPDP).length,
+    getStat: (addresses) => addresses.filter((address) => address.in_pdp).length,
     label: (
       <>
         dans un périmètre de développement prioritaire&nbsp;
@@ -270,8 +339,8 @@ const quickFilterPresets = {
     ),
   },
   adressesEligibles: {
-    filters: [{ id: 'eligibility_status_etat_reseau', value: { aucun: false, en_construction: true, existant: true } }],
-    getStat: (addresses) => addresses.filter((address) => address.eligibility_status?.isEligible).length,
+    filters: [{ id: 'eligibility_type', value: { aucun: false, en_construction: true, existant: true } }],
+    getStat: (addresses) => addresses.filter((address) => address.eligibility?.eligible).length,
     label: (
       <>
         potentiellement raccordables&nbsp;
@@ -288,16 +357,16 @@ const quickFilterPresets = {
   },
   adressesMoins100mPlus50ENRR: {
     filters: [
-      { id: 'eligibility_status_distance', value: [0, 100] },
-      { id: 'eligibility_status_tauxENRR', value: [50, 100] },
+      { id: 'eligibility_distance', value: [0, 100] },
+      { id: 'eligibility_taux_enrr', value: [50, 100] },
     ],
     getStat: (addresses) =>
       addresses.filter(
         (address) =>
-          address.eligibility_status?.distance &&
-          address.eligibility_status.distance <= 100 &&
-          address.eligibility_status.tauxENRR &&
-          address.eligibility_status.tauxENRR >= 50
+          address.eligibility?.distance &&
+          address.eligibility.distance <= 100 &&
+          address.eligibility.taux_enrr &&
+          address.eligibility.taux_enrr >= 50
       ).length,
     label: "à moins de 100m d'un réseau à plus de 50% d'ENR&R",
   },
@@ -377,12 +446,12 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false, className }:
   };
 
   useEffect(() => {
-    if (viewDetail && test.has_unseen_results && !readOnly && !isMarkAsSeenLoading) {
+    if (viewDetail && (test.has_unseen_results || test.has_unseen_changes) && !readOnly && !isMarkAsSeenLoading) {
       void (async () => {
         await markAsSeen({ id: test.id });
       })();
     }
-  }, [viewDetail, test.has_unseen_results, markAsSeen, refetch, readOnly, isMarkAsSeenLoading]);
+  }, [viewDetail, test.has_unseen_results, test.has_unseen_changes, markAsSeen, refetch, readOnly, isMarkAsSeenLoading]);
 
   const filteredAddressesMapData = useMemo(() => {
     return filteredAddresses
@@ -392,7 +461,7 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false, className }:
           ({
             address: address.ban_address ?? '',
             id: address.id,
-            isEligible: address.eligibility_status?.isEligible ?? false,
+            isEligible: address.eligibility?.eligible ?? false,
             latitude: address.geom!.coordinates[1],
             longitude: address.geom!.coordinates[0],
           }) satisfies AdresseEligible
@@ -415,12 +484,12 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false, className }:
     () =>
       (addresses || []).map((address) => ({
         ...address,
-        eligibility_status: {
-          ...address.eligibility_status,
-          co2: address.eligibility_status?.co2 === null ? undefined : address.eligibility_status?.co2,
+        eligibility: {
+          ...address.eligibility,
+          contenu_co2_acv: address.eligibility?.contenu_co2_acv === null ? undefined : address.eligibility?.contenu_co2_acv,
           // This can't be done on the backend because undefined are stripped from the json
-          distance: address.eligibility_status?.distance === null ? undefined : address.eligibility_status?.distance,
-          tauxENRR: address.eligibility_status?.tauxENRR === null ? undefined : address.eligibility_status?.tauxENRR,
+          distance: address.eligibility?.distance === null ? 0 : address.eligibility?.distance,
+          taux_enrr: address.eligibility?.taux_enrr === null ? undefined : address.eligibility?.taux_enrr,
         },
       })),
     [addresses]
@@ -447,6 +516,11 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false, className }:
             </ModalSimple>
           )}
           <div className="flex-auto" />
+          {test.has_unseen_changes && (
+            <Badge severity="warning" small className="fr-mx-1w">
+              Mises à jour
+            </Badge>
+          )}
           {test.last_job_has_error && (
             <Badge severity="error" small className="fr-mx-1w">
               Erreur

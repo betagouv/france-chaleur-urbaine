@@ -2,12 +2,14 @@ import { type Selectable, sql } from 'kysely';
 import { limitFunction } from 'p-limit';
 import Papa from 'papaparse';
 import type { Logger } from 'winston';
-
+import type { BoundingBox } from '@/modules/geo/types';
 import { type Jobs, kdb } from '@/server/db/kysely';
-import { getEligilityStatus } from '@/server/services/addresseInformation';
 import { type APIAdresseResult, getAddressesCoordinates, getCoordinatesAddresses } from '@/server/services/api-adresse';
 import { chunk } from '@/utils/array';
+import { processInParallel } from '@/utils/async';
 import { isDefined } from '@/utils/core';
+import type { ProEligibilityTestHistoryEntry } from '../types';
+import { getAddressEligibilityHistoryEntry } from './service';
 
 export type ProEligibilityTestJob = Omit<Selectable<Jobs>, 'data'> & {
   type: 'pro_eligibility_test';
@@ -27,6 +29,13 @@ export type ProEligibilityTestJobDeprecated = Omit<Selectable<Jobs>, 'data'> & {
   type: 'pro_eligibility_test';
   data: {
     csvContent: string;
+  };
+};
+
+export type WarnEligibilityChangesJob = Omit<Selectable<Jobs>, 'data'> & {
+  type: 'pro_eligibility_test_notify_changes';
+  data: {
+    bboxes: BoundingBox[];
   };
 };
 
@@ -137,14 +146,13 @@ export async function processProEligibilityTestJob(job: ProEligibilityTestJob, l
 
       const processAddress = limitFunction(
         async (addressItem: (typeof addresses)[number]) => {
-          const eligibilityStatus =
-            addressItem.result_status === 'ok' ? await getEligilityStatus(addressItem.latitude, addressItem.longitude) : null;
+          const historyEntry = await getAddressEligibilityHistoryEntry(addressItem.latitude, addressItem.longitude);
 
           const addressData = {
             ban_address: addressItem.result_label,
             ban_score: isDefined(addressItem.result_score) ? Math.round(addressItem.result_score * 100) : null,
             ban_valid: addressItem.result_status === 'ok',
-            eligibility_status: eligibilityStatus ?? undefined,
+            eligibility_history: JSON.stringify([historyEntry]),
             geom: sql`st_transform(st_point(${addressItem.longitude}, ${addressItem.latitude}, 4326), 2154)`,
             source_address: addressItem.address as string,
             test_id: job.entity_id!,
@@ -187,5 +195,117 @@ export async function processProEligibilityTestJob(job: ProEligibilityTestJob, l
 
   return {
     stats: jobStats,
+  };
+}
+
+type WarnEligibilityChangesJobStats = {
+  addressesChecked: number;
+  addressesChanged: number;
+  testsUpdated: number;
+};
+
+/**
+ * Traite un job de vérification des changements d'éligibilité
+ * Pour chaque bbox affectée, vérifie toutes les adresses de tests et met à jour l'historique si changement
+ */
+export async function processWarnEligibilityChangesJob(job: WarnEligibilityChangesJob, logger: Logger) {
+  const startTime = Date.now();
+  const { bboxes } = job.data;
+
+  logger.info('Starting eligibility check', { bboxCount: bboxes.length });
+
+  const stats: WarnEligibilityChangesJobStats = {
+    addressesChanged: 0,
+    addressesChecked: 0,
+    testsUpdated: 0,
+  };
+
+  const query = kdb
+    .selectFrom('pro_eligibility_tests_addresses')
+    .select([
+      'id',
+      sql<GeoJSON.Point>`ST_AsGeoJSON(ST_Transform(geom, 4326))::json`.as('geom'),
+      'eligibility_history',
+      'ban_address',
+      'ban_score',
+      'test_id',
+    ])
+
+    .where(
+      sql<boolean>`st_within(
+      geom,
+      ST_Transform(
+        ST_Union(ARRAY[${sql.join(
+          bboxes.map((bbox) => sql`ST_MakeEnvelope(${bbox[0]}, ${bbox[1]}, ${bbox[2]}, ${bbox[3]}, 4326)`)
+        )}]::geometry[]),
+        2154
+      )
+    )`
+    )
+    .where('ban_address', 'is not', null)
+    .where('ban_score', '>', 60);
+
+  // Trouve toutes les adresses qui intersectent avec au moins une des bboxes
+  // Utilise un tableau de géométries avec l'opérateur && (bounding box overlap)
+  // Les bboxes sont en WGS84 (4326) et doivent être transformées en Lambert 93 (2154)
+  const addressesToCheck = await query.execute();
+
+  logger.info(`Found ${addressesToCheck.length} addresses in all bboxes`, { count: addressesToCheck.length });
+
+  // Vérifie chaque adresse en parallèle
+  await processInParallel(addressesToCheck, 10, async (address) => {
+    stats.addressesChecked++;
+
+    // Récupère l'historique existant
+    const existingHistory = (address.eligibility_history as ProEligibilityTestHistoryEntry[]) || [];
+    const lastEntry = existingHistory[existingHistory.length - 1];
+
+    // Calcule la nouvelle entrée d'historique
+    const newHistoryEntry = await getAddressEligibilityHistoryEntry(
+      address.geom.coordinates[1],
+      address.geom.coordinates[0],
+      lastEntry?.eligibility
+    );
+
+    if (newHistoryEntry.transition !== 'none') {
+      stats.addressesChanged++;
+
+      const updatedHistory = [...existingHistory, newHistoryEntry];
+
+      // Met à jour l'adresse
+      await kdb
+        .updateTable('pro_eligibility_tests_addresses')
+        .set({ eligibility_history: JSON.stringify(updatedHistory) })
+        .where('id', '=', address.id)
+        .execute();
+
+      // Marque le test parent comme ayant des changements
+      await kdb.updateTable('pro_eligibility_tests').set({ has_unseen_changes: true }).where('id', '=', address.test_id).execute();
+
+      logger.info('Eligibility changed', {
+        addressId: address.id,
+        transition: newHistoryEntry.transition,
+      });
+    }
+  });
+  // Compte le nombre de tests mis à jour
+  const testsWithChanges = await kdb
+    .selectFrom('pro_eligibility_tests')
+    .select(kdb.fn.countAll<number>().as('count'))
+    .where('has_unseen_changes', '=', true)
+    .executeTakeFirstOrThrow();
+
+  stats.testsUpdated = testsWithChanges.count;
+
+  const duration = Date.now() - startTime;
+  logger.info('Eligibility check completed', {
+    addressesChanged: stats.addressesChanged,
+    addressesChecked: stats.addressesChecked,
+    duration,
+    testsUpdated: stats.testsUpdated,
+  });
+
+  return {
+    stats,
   };
 }

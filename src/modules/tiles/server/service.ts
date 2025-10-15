@@ -1,14 +1,13 @@
 import geojsonvt from 'geojson-vt';
-import type { ExpressionBuilder } from 'kysely';
+import { sql, type Transaction } from 'kysely';
 import vtpbf from 'vt-pbf';
-
 import { tileSourcesMaxZoom } from '@/components/Map/layers/common';
-import { type NetworkTable, updateNetworkHasPDP } from '@/modules/reseaux/server/geometry-operations';
-import type { BuildTilesInput, SyncGeometriesInput } from '@/modules/tiles/constants';
+import type { ApplyGeometriesUpdatesInput } from '@/modules/reseaux/constants';
+import type { BuildTilesInput } from '@/modules/tiles/constants';
 import { type AirtableTileInfo, type DatabaseSourceId, tilesInfo } from '@/modules/tiles/tiles.config';
 import db from '@/server/db';
 import base from '@/server/db/airtable';
-import { type DB, kdb, sql } from '@/server/db/kysely';
+import { type DB, kdb } from '@/server/db/kysely';
 import type { ApiContext } from '@/server/db/kysely/base-model';
 import { isDefined } from '@/utils/core';
 
@@ -19,8 +18,21 @@ const airtableTiles: Partial<Record<DatabaseSourceId, any>> = {
   demands: null,
 };
 
-export const createBuildTilesJob = async ({ name }: BuildTilesInput, context: ApiContext) => {
-  return await kdb
+export const createBuildTilesJob = async (
+  { name }: BuildTilesInput,
+  context?: ApiContext,
+  options?: { trx?: Transaction<DB>; replace?: boolean }
+) => {
+  if (options?.replace) {
+    await (options?.trx || kdb)
+      .deleteFrom('jobs')
+      .where('type', '=', 'build_tiles')
+      .where(sql`data->>'name'`, '=', name)
+      .where('status', '=', 'pending')
+      .execute();
+  }
+
+  return await (options?.trx || kdb)
     .insertInto('jobs')
     .values({
       data: {
@@ -28,13 +40,13 @@ export const createBuildTilesJob = async ({ name }: BuildTilesInput, context: Ap
       },
       status: 'pending',
       type: 'build_tiles',
-      user_id: context.user.id,
+      user_id: context?.user?.id,
     })
     .returningAll()
     .executeTakeFirstOrThrow();
 };
 
-export const createSyncGeometriesToAirtableJob = async ({ name }: SyncGeometriesInput, context: ApiContext) => {
+export const createSyncGeometriesToAirtableJob = async ({ name }: ApplyGeometriesUpdatesInput, context: ApiContext) => {
   return await kdb
     .insertInto('jobs')
     .values({
@@ -47,7 +59,7 @@ export const createSyncGeometriesToAirtableJob = async ({ name }: SyncGeometries
     .executeTakeFirstOrThrow();
 };
 
-export const createSyncMetadataFromAirtableJob = async ({ name }: SyncGeometriesInput, context: ApiContext) => {
+export const createSyncMetadataFromAirtableJob = async ({ name }: ApplyGeometriesUpdatesInput, context: ApiContext) => {
   return await kdb
     .insertInto('jobs')
     .values({
@@ -60,197 +72,15 @@ export const createSyncMetadataFromAirtableJob = async ({ name }: SyncGeometries
     .executeTakeFirstOrThrow();
 };
 
-type TableConfig = {
-  tableName: NetworkTable;
-  internalName: BuildTilesInput['name'];
-  tileName: string;
-};
-
-const tables: TableConfig[] = [
-  {
-    internalName: 'reseaux-de-chaleur',
-    tableName: 'reseaux_de_chaleur',
-    tileName: 'network',
-  },
-  {
-    internalName: 'reseaux-de-froid',
-    tableName: 'reseaux_de_froid',
-    tileName: 'coldNetwork',
-  },
-  {
-    internalName: 'reseaux-en-construction',
-    tableName: 'zones_et_reseaux_en_construction',
-    tileName: 'futurNetwork',
-  },
-  {
-    internalName: 'perimetres-de-developpement-prioritaire',
-    tableName: 'zone_de_developpement_prioritaire',
-    tileName: 'zoneDP',
-  },
-];
+const tilesMapping = [
+  { internalName: 'reseaux-de-chaleur', tileName: 'network' },
+  { internalName: 'reseaux-de-froid', tileName: 'coldNetwork' },
+  { internalName: 'reseaux-en-construction', tileName: 'futurNetwork' },
+  { internalName: 'perimetres-de-developpement-prioritaire', tileName: 'zoneDP' },
+] as const;
 
 export const getTileNameFromInternalName = (internalName: string) => {
-  return tables.find((table) => table.internalName === internalName)?.tileName;
-};
-
-/**
- * Expression SQL pour calculer les codes INSEE des communes intersectant une géométrie mise à jour
- */
-const communesInseeExpressionGeomUpdate = sql<string[]>`COALESCE(
-  (
-    SELECT array_agg(insee_com order by insee_com)
-    FROM ign_communes
-    WHERE ST_Intersects(geom_update, ign_communes.geom_150m)
-  ),
-  (
-    SELECT array_agg(insee_com order by insee_com)
-    FROM ign_communes
-    WHERE ST_Intersects(geom_update, ign_communes.geom)
-  ),
-  '{}'
-)::text[]`;
-
-/**
- * Définition des champs dépendants de la géométrie pour chaque table
- */
-const networkTablesGeomFields: {
-  [K in NetworkTable]: (eb: ExpressionBuilder<DB, K>) => Record<string, any>;
-} = {
-  reseaux_de_chaleur: (eb) => ({
-    has_trace: sql<boolean>`st_geometrytype(${eb.ref('geom_update')}) = 'ST_MultiLineString'`,
-  }),
-  reseaux_de_froid: () => ({
-    // has_trace: sql<boolean>`st_geometrytype(${eb.ref('geom_update')}) = 'ST_MultiLineString'`,
-  }),
-  zone_de_developpement_prioritaire: () => ({}),
-  zones_et_reseaux_en_construction: (eb) => ({
-    is_zone: sql<boolean>`st_geometrytype(${eb.ref('geom_update')}) = 'ST_MultiPolygon' or st_geometrytype(geom_update) = 'ST_Polygon'`,
-  }),
-};
-
-/**
- * Met à jour les champs département et région pour une entité
- */
-async function updateLabelsCommunesDepartementAndRegion(tableName: NetworkTable, id_fcu: number): Promise<void> {
-  await kdb
-    .updateTable(tableName)
-    .where('id_fcu', '=', id_fcu)
-    .set({
-      communes: sql<string[]>`(
-        SELECT array_agg(ic.nom ORDER BY ic.nom)
-        FROM unnest(${sql.raw(tableName)}.communes_insee) as ci
-        JOIN ign_communes ic ON ic.insee_com = ci
-        WHERE ${sql.raw(tableName)}.id_fcu = ${id_fcu}
-      )`,
-      departement: sql<string>`(
-        SELECT string_agg(DISTINCT id.nom, ', ' ORDER BY id.nom)
-        FROM unnest(${sql.raw(tableName)}.communes_insee) as ci
-        JOIN ign_communes ic ON ic.insee_com = ci
-        JOIN ign_departements id ON id.insee_dep = ic.insee_dep
-        WHERE ${sql.raw(tableName)}.id_fcu = ${id_fcu}
-      )`,
-      region: sql<string>`(
-        SELECT string_agg(DISTINCT ir.nom, ', ' ORDER BY ir.nom)
-        FROM unnest(${sql.raw(tableName)}.communes_insee) as ci
-        JOIN ign_communes ic ON ic.insee_com = ci
-        JOIN ign_regions ir ON ir.insee_reg = ic.insee_reg
-        WHERE ${sql.raw(tableName)}.id_fcu = ${id_fcu}
-      )`,
-    })
-    .execute();
-}
-
-const processTableGeometryUpdates = async (config: TableConfig) => {
-  const [created, updated, deleted] = await Promise.all([
-    // Créations (!geom && geom_update)
-    kdb
-      .updateTable(config.tableName)
-      .set((eb) => ({
-        communes_insee: communesInseeExpressionGeomUpdate,
-        date_actualisation_trace: eb.val(new Date()),
-        geom: eb.ref('geom_update'),
-        geom_update: null,
-        ...networkTablesGeomFields[config.tableName](eb),
-      }))
-      .where('geom', 'is', null)
-      .where('geom_update', 'is not', null)
-      .where(sql<boolean>`NOT ST_IsEmpty(geom_update)`)
-      .returning(config.internalName === 'perimetres-de-developpement-prioritaire' ? ['id_fcu', 'Identifiant reseau'] : ['id_fcu'])
-      .execute(),
-
-    // Mises à jour (geom && geom_update)
-    kdb
-      .updateTable(config.tableName)
-      .set((eb) => ({
-        communes_insee: communesInseeExpressionGeomUpdate,
-        date_actualisation_trace: eb.val(new Date()),
-        geom: eb.ref('geom_update'),
-        geom_update: null,
-        ...networkTablesGeomFields[config.tableName](eb),
-      }))
-      .where('geom', 'is not', null)
-      .where('geom_update', 'is not', null)
-      .where(sql<boolean>`NOT ST_IsEmpty(geom_update)`)
-      .returning('id_fcu')
-      .execute(),
-
-    // Suppressions (geom_update vide)
-    kdb
-      .deleteFrom(config.tableName)
-      .where('geom_update', 'is not', null)
-      .where(sql<boolean>`ST_IsEmpty(geom_update)`)
-      .returning('id_fcu')
-      .execute(),
-  ]);
-
-  // Met à jour les labels pour les entités créées et modifiées
-  const allUpdatedIds = [...created, ...updated];
-  await Promise.all(allUpdatedIds.map((entity) => updateLabelsCommunesDepartementAndRegion(config.tableName, entity.id_fcu)));
-
-  // Cas particulier : on doit mettre à jour has_PDP des réseaux de chaleur associés
-  if (config.internalName === 'perimetres-de-developpement-prioritaire') {
-    await Promise.all(
-      created.map((createdPDP) => createdPDP['Identifiant reseau'] && updateNetworkHasPDP(createdPDP['Identifiant reseau']))
-    );
-  }
-
-  return {
-    config,
-    created: created.length,
-    deleted: deleted.length,
-    total: created.length + updated.length + deleted.length,
-    updated: updated.length,
-  };
-};
-
-export const applyGeometriesUpdates = async ({ name }: SyncGeometriesInput, context: ApiContext) => {
-  const updateResult = tables.find((table) => table.internalName === name);
-  if (!updateResult) {
-    throw new Error(`Table ${name} not found`);
-  }
-
-  const updateResults = await processTableGeometryUpdates(updateResult);
-
-  // Récupère les statistiques
-  const processed = {
-    created: updateResults.created,
-    deleted: updateResults.deleted,
-    total: updateResults.total,
-    updated: updateResults.updated,
-  };
-
-  const allJobIds = [
-    // pas d'onglet airtable pour les PDP
-    ...(name !== 'perimetres-de-developpement-prioritaire'
-      ? [(await createSyncGeometriesToAirtableJob({ name }, context)).id, (await createSyncMetadataFromAirtableJob({ name }, context)).id]
-      : []),
-    (await createBuildTilesJob({ name }, context)).id,
-  ];
-
-  return {
-    jobIds: allJobIds,
-    processed,
-  };
+  return tilesMapping.find((item) => item.internalName === internalName)?.tileName;
 };
 
 const getObjectIndexFromAirtable = async (tileInfo: AirtableTileInfo) => {
@@ -296,13 +126,24 @@ const cacheAirtableTiles = () => {
   airtableDayCached = new Date().getDate();
   Object.entries(tilesInfo).forEach(([type, tileInfo]) => {
     if (tileInfo.source === 'airtable') {
-      if (debug) console.info(`Indexing tiles for ${type} from airtable ${tileInfo.table}...`);
+      const timerLabel = `⏱️  Indexing tiles for ${type} from airtable ${tileInfo.table}`;
+      if (debug) {
+        console.info(`${timerLabel}...`);
+        console.time(timerLabel);
+      }
       getObjectIndexFromAirtable(tileInfo)
         .then((result) => {
           airtableTiles[type as DatabaseSourceId] = result;
-          if (debug) console.info(`Indexing tiles for ${type} from airtable ${tileInfo.table} done`);
+          if (debug) {
+            console.timeEnd(timerLabel);
+          }
         })
-        .catch((e) => debug && console.error(`Indexing tiles for ${type} from airtable ${tileInfo.table} failed`, e));
+        .catch((e) => {
+          if (debug) {
+            console.timeEnd(timerLabel);
+            console.error(`${timerLabel} failed`, e);
+          }
+        });
     }
   });
 };

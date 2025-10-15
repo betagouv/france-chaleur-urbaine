@@ -3019,9 +3019,14 @@ export interface Jobs {
   id: Generated<string>;
   status: 'pending' | 'processing' | 'finished' | 'error';
   result: Json | null;
-  type: 'pro_eligibility_test' | 'build_tiles' | 'sync_geometries_to_airtable' | 'sync_metadata_from_airtable';
+  type:
+    | 'pro_eligibility_test'
+    | 'build_tiles'
+    | 'sync_geometries_to_airtable'
+    | 'sync_metadata_from_airtable'
+    | 'pro_eligibility_test_notify_changes';
   updated_at: Generated<Timestamp>;
-  user_id: string;
+  user_id: string | null;
 }
 
 export interface KnexMigrations {
@@ -3080,6 +3085,7 @@ export interface ProComparateurConfigurations {
 export interface ProEligibilityTests {
   created_at: Generated<Timestamp>;
   deleted_at: Timestamp | null;
+  has_unseen_changes: Generated<boolean>;
   has_unseen_results: boolean;
   id: Generated<string>;
   name: string;
@@ -3091,8 +3097,12 @@ export interface ProEligibilityTestsAddresses {
   ban_address: string | null;
   ban_score: number | null;
   ban_valid: boolean;
-  eligibility_status: HeatNetwork | null; // pas ouf comme nom
   geom: GeoJSON.Point | null;
+  change_viewed_at: Timestamp | null;
+  /**
+   * JSON array storing full history of eligibility status changes. Format: [{"calculated_at": "ISO8601", "eligibility": {...getDetailedEligibilityStatus result...}}]
+   */
+  eligibility_history: Generated<Json>;
   id: Generated<string>;
   source_address: string;
   test_id: string;

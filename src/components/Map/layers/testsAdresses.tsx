@@ -1,9 +1,9 @@
 import dayjs from 'dayjs';
 
 import Tooltip from '@/components/ui/Tooltip';
+import type { ProEligibilityTestHistoryEntry } from '@/modules/pro-eligibility-tests/types';
 import { structureTypes } from '@/modules/users/constants';
 import { upperCaseFirstChar } from '@/utils/strings';
-
 import type { MapSourceLayersSpecification, PopupStyleHelpers } from './common';
 
 export const testsAdressesLayerStyle = {
@@ -25,7 +25,7 @@ export const testsAdressesLayersSpec = [
   {
     layers: [
       {
-        filter: () => ['==', ['get', 'isEligible'], false],
+        filter: () => ['==', ['get', 'eligible'], false],
         id: 'testsAdresses-notEligible',
         isVisible: (config) => config.testsAdresses,
         paint: {
@@ -46,7 +46,7 @@ export const testsAdressesLayersSpec = [
         type: 'circle',
       },
       {
-        filter: () => ['==', ['get', 'isEligible'], true],
+        filter: () => ['==', ['get', 'eligible'], true],
         id: 'testsAdresses-eligible',
         isVisible: (config) => config.testsAdresses,
         paint: {
@@ -79,7 +79,7 @@ export const testsAdressesLayersSpec = [
 export type TestAdresse = {
   id: string;
   ban_address: string;
-  eligibility_status: string;
+  eligibility_history: string;
   users: string;
 };
 
@@ -101,27 +101,12 @@ export type TestUser = {
   tests: Test[];
 };
 
-export type EligibilityStatus = {
-  id: string | null;
-  co2: number | null;
-  name: string | null;
-  inPDP: boolean;
-  hasPDP: boolean;
-  distance: number | null;
-  isClasse: boolean;
-  tauxENRR: number | null;
-  isEligible: boolean;
-  futurNetwork: boolean;
-  gestionnaire: string | null;
-  hasNoTraceNetwork: boolean;
-  veryEligibleDistance: number | null;
-};
-
 function Popup(
-  { ban_address, eligibility_status: eligibility_status_string, users: users_string }: TestAdresse,
+  { ban_address, eligibility_history: eligibility_history_string, users: users_string }: TestAdresse,
   { Property, Title, TwoColumns }: PopupStyleHelpers
 ) {
-  const eligibilityStatus = JSON.parse(eligibility_status_string) as EligibilityStatus;
+  const eligibilityHistory = JSON.parse(eligibility_history_string) as ProEligibilityTestHistoryEntry[];
+  const currentEligibility = eligibilityHistory[eligibilityHistory.length - 1]?.eligibility;
   const users: TestUser[] = users_string ? JSON.parse(users_string) : [];
 
   return (
@@ -168,25 +153,22 @@ function Popup(
       </TwoColumns>
       <h6 className="text-lg mb-0!">Éligibilité</h6>
 
-      {eligibilityStatus.id ? (
+      {currentEligibility?.id_fcu ? (
         <TwoColumns>
-          <Property label="ID" value={eligibilityStatus.id} />
-          <Property label="CO2" value={eligibilityStatus.co2} />
-          <Property label="Nom" value={eligibilityStatus.name} />
-          <Property label="Dans un PDP" value={eligibilityStatus.inPDP ? 'Oui' : 'Non'} />
-          <Property label="A un PDP" value={eligibilityStatus.hasPDP ? 'Oui' : 'Non'} />
-          <Property label="Distance" value={eligibilityStatus.distance} />
-          <Property label="Classe" value={eligibilityStatus.isClasse ? 'Oui' : 'Non'} />
-          <Property label="Taux ENRR" value={eligibilityStatus.tauxENRR} />
-          <Property label="Éligibilité" value={eligibilityStatus.isEligible ? 'Oui' : 'Non'} />
-          <Property label="Réseau futur" value={eligibilityStatus.futurNetwork ? 'Oui' : 'Non'} />
-          <Property label="Gestionnaire" value={eligibilityStatus.gestionnaire} />
-          <Property label="Réseau sans tracé" value={eligibilityStatus.hasNoTraceNetwork ? 'Oui' : 'Non'} />
-          <Property label="Distance très éligible" value={eligibilityStatus.veryEligibleDistance} />
+          <Property label="ID FCU" value={currentEligibility.id_fcu} />
+          <Property label="ID SNCU" value={currentEligibility.id_sncu} />
+          <Property label="Nom" value={currentEligibility.nom} />
+          <Property label="Type" value={currentEligibility.type} />
+          <Property label="Distance" value={`${currentEligibility.distance}m`} />
+          {currentEligibility.contenu_co2_acv !== undefined && (
+            <Property label="CO2 ACV" value={`${(currentEligibility.contenu_co2_acv * 1000).toFixed(0)} g/kWh`} />
+          )}
+          {currentEligibility.taux_enrr !== undefined && <Property label="Taux EnR&R" value={`${currentEligibility.taux_enrr}%`} />}
+          <Property label="Éligible" value={currentEligibility.eligible ? 'Oui' : 'Non'} />
         </TwoColumns>
       ) : (
         <TwoColumns>
-          <Property label="Non éligible" value="Aucun réseau à proximité " />
+          <Property label="Non éligible" value="Aucun réseau à proximité" />
         </TwoColumns>
       )}
     </>

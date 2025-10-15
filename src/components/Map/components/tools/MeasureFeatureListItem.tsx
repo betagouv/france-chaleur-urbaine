@@ -3,7 +3,7 @@ import Colorful from '@uiw/react-color-colorful';
 import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover';
-import { formatDistance } from '@/utils/geo';
+import { formatDistance } from '@/modules/geo/client/helpers';
 
 import type { MeasureFeature } from './measure';
 

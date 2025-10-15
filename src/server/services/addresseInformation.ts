@@ -282,6 +282,10 @@ export const getNetworkEligilityStatus = async (networkId: string, lat: number, 
   };
 };
 
+/**
+ * Deprecated in favor of getDetailedEligibilityStatus
+ * @deprecated
+ */
 export const getEligilityStatus = async (lat: number, lon: number, city?: string): Promise<HeatNetwork> => {
   const [inPDP, inFuturNetwork, futurNetwork, network, noTraceNetwork] = await Promise.all([
     isInPDP(lat, lon),
@@ -486,6 +490,8 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
         'nom_reseau',
         'tags',
         'communes',
+        'Taux EnR&R',
+        'contenu CO2 ACV',
         sql<number>`round(ST_Distance(geom, ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)))`.as(
           'distance'
         ),
@@ -607,10 +613,11 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
       return {
         communes: pdp.communes ?? [],
         distance: networkInfos?.distance ?? 0,
+        id_fcu: pdp.id_fcu,
         id_sncu: pdp['Identifiant reseau'] ?? '',
         nom: networkInfos?.nom_reseau ?? '',
         tags: networkInfos?.tags ?? [],
-        type: 'dans_pdp',
+        type: networkInfos?.type === 'existant' ? 'dans_pdp_reseau_existant' : 'dans_pdp_reseau_futur',
       };
     }
 
@@ -619,6 +626,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
       return {
         communes: reseauDeChaleur.communes ?? [],
         distance: reseauDeChaleur.distance,
+        id_fcu: reseauDeChaleur.id_fcu ?? '',
         id_sncu: reseauDeChaleur['Identifiant reseau'] ?? '',
         nom: reseauDeChaleur.nom_reseau ?? '',
         tags: reseauDeChaleur.distance <= tagsDistanceThreshold ? (reseauDeChaleur.tags ?? []) : [],
@@ -631,6 +639,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
       return {
         communes: reseauEnConstruction.communes ?? [],
         distance: reseauEnConstruction.distance,
+        id_fcu: reseauEnConstruction.id_fcu,
         id_sncu: '',
         nom: reseauEnConstruction.nom_reseau ?? '',
         tags: reseauEnConstruction.distance <= tagsDistanceThreshold ? (reseauEnConstruction.tags ?? []) : [],
@@ -643,6 +652,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
       return {
         communes: zoneEnConstruction.communes ?? [],
         distance: 0,
+        id_fcu: zoneEnConstruction.id_fcu,
         id_sncu: '',
         nom: zoneEnConstruction.nom_reseau ?? '',
         tags: zoneEnConstruction.distance <= tagsDistanceThreshold ? (zoneEnConstruction.tags ?? []) : [],
@@ -655,6 +665,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
       return {
         communes: reseauDeChaleur.communes ?? [],
         distance: reseauDeChaleur.distance,
+        id_fcu: reseauDeChaleur.id_fcu,
         id_sncu: reseauDeChaleur['Identifiant reseau'] ?? '',
         nom: reseauDeChaleur.nom_reseau ?? '',
         tags: reseauDeChaleur.distance <= tagsDistanceThreshold ? (reseauDeChaleur.tags ?? []) : [],
@@ -667,6 +678,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
       return {
         communes: reseauEnConstruction.communes ?? [],
         distance: reseauEnConstruction.distance,
+        id_fcu: reseauEnConstruction.id_fcu,
         id_sncu: '',
         nom: reseauEnConstruction.nom_reseau ?? '',
         tags: reseauEnConstruction.distance <= tagsDistanceThreshold ? (reseauEnConstruction.tags ?? []) : [],
@@ -679,6 +691,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
       return {
         communes: reseauDeChaleur.communes ?? [],
         distance: reseauDeChaleur.distance,
+        id_fcu: reseauDeChaleur.id_fcu,
         id_sncu: reseauDeChaleur['Identifiant reseau'] ?? '',
         nom: reseauDeChaleur.nom_reseau ?? '',
         tags: reseauDeChaleur.distance <= tagsDistanceThreshold ? (reseauDeChaleur.tags ?? []) : [],
@@ -691,6 +704,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
       return {
         communes: reseauEnConstruction.communes ?? [],
         distance: reseauEnConstruction.distance,
+        id_fcu: reseauEnConstruction.id_fcu,
         id_sncu: '',
         nom: reseauEnConstruction.nom_reseau ?? '',
         tags: reseauEnConstruction.distance <= tagsDistanceThreshold ? (reseauEnConstruction.tags ?? []) : [],
@@ -703,6 +717,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
       return {
         communes: [reseauDeChaleurSansTrace.nom ?? ''],
         distance: 0,
+        id_fcu: reseauDeChaleurSansTrace.id_fcu,
         id_sncu: reseauDeChaleurSansTrace['Identifiant reseau'] ?? '',
         nom: reseauDeChaleurSansTrace.nom_reseau ?? '',
         tags: reseauDeChaleurSansTrace.tags ?? [],
@@ -714,6 +729,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
     return {
       communes: [],
       distance: 0,
+      id_fcu: 0,
       id_sncu: '',
       nom: '',
       tags: [],
@@ -726,6 +742,15 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
     ...eligibilityResult,
     commune,
     departement,
+    eligible: [
+      'dans_pdp_reseau_existant',
+      'dans_pdp_reseau_futur',
+      'reseau_existant_tres_proche',
+      'reseau_futur_tres_proche',
+      'dans_zone_reseau_futur',
+      'reseau_existant_proche',
+      'reseau_futur_proche',
+    ].includes(eligibilityResult.type),
     epci,
     ept,
     pdp,
@@ -743,7 +768,8 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
 };
 
 export type EligibilityType =
-  | 'dans_pdp'
+  | 'dans_pdp_reseau_existant'
+  | 'dans_pdp_reseau_futur'
   | 'reseau_existant_tres_proche'
   | 'reseau_futur_tres_proche'
   | 'dans_zone_reseau_futur'
@@ -755,6 +781,7 @@ export type EligibilityType =
   | 'trop_eloigne';
 
 type EligibilityResult = {
+  id_fcu: number;
   type: EligibilityType;
   distance: number;
   id_sncu: string;
@@ -843,10 +870,12 @@ const findPDPAssociatedNetwork = async (
   ]);
 
   return zoneEnConstruction?.distance === 0
-    ? zoneEnConstruction
+    ? { ...zoneEnConstruction, type: 'futur' }
     : reseauDeChaleur && reseauEnConstruction
       ? reseauDeChaleur.distance <= reseauEnConstruction.distance
-        ? reseauDeChaleur
-        : reseauEnConstruction
-      : (reseauDeChaleur ?? reseauEnConstruction);
+        ? { ...reseauDeChaleur, type: 'existant' }
+        : { ...reseauEnConstruction, type: 'futur' }
+      : reseauDeChaleur
+        ? { ...reseauDeChaleur, type: 'existant' }
+        : { ...reseauEnConstruction, type: 'futur' };
 };

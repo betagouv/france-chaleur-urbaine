@@ -2,9 +2,10 @@ import type { Selectable } from 'kysely';
 import type { Logger } from 'winston';
 
 import { createUserEvent } from '@/modules/events/server/service';
+import type { ApplyGeometriesUpdatesInput } from '@/modules/reseaux/constants';
 import { downloadNetwork } from '@/modules/reseaux/server/download-network';
 import { syncPostgresToAirtable } from '@/modules/reseaux/server/sync-pg-to-airtable';
-import type { BuildTilesInput, SyncGeometriesInput } from '@/modules/tiles/constants';
+import type { BuildTilesInput } from '@/modules/tiles/constants';
 import type { Jobs } from '@/server/db/kysely';
 
 import type { DatabaseSourceId } from '../tiles.config';
@@ -32,7 +33,7 @@ export async function processBuildTilesJob(job: BuildTilesJob, logger: Logger) {
 export type SyncMetadataFromAirtableJob = Omit<Selectable<Jobs>, 'data'> & {
   type: 'sync_metadata_from_airtable';
   data: {
-    name: SyncGeometriesInput['name'];
+    name: ApplyGeometriesUpdatesInput['name'];
   };
 };
 
@@ -54,7 +55,7 @@ export async function processSyncMetadataFromAirtableJob(job: SyncMetadataFromAi
 export type SyncGeometriesToAirtableJob = Omit<Selectable<Jobs>, 'data'> & {
   type: 'sync_geometries_to_airtable';
   data: {
-    name: SyncGeometriesInput['name'];
+    name: ApplyGeometriesUpdatesInput['name'];
   };
 };
 

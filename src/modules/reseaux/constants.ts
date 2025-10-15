@@ -16,6 +16,15 @@ const tableNames = [
   'reseaux_de_froid',
 ] as const;
 
+// Geometry updates types
+export const zApplyGeometriesUpdatesInput = z.strictObject({
+  name: z.enum(['reseaux-de-chaleur', 'reseaux-de-froid', 'reseaux-en-construction', 'perimetres-de-developpement-prioritaire'], {
+    message: 'Le nom de la table est invalide',
+  }),
+});
+
+export type ApplyGeometriesUpdatesInput = z.infer<typeof zApplyGeometriesUpdatesInput>;
+
 export const zUpdateReseauEnConstructionInput = z.object({
   id: z.number(),
   tags: z.array(z.string()),

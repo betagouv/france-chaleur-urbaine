@@ -34,9 +34,9 @@ const columns: CSVColumn[] = [
   },
   {
     accessor: (address) =>
-      address.eligibility_status?.isEligible && !address.eligibility_status?.futurNetwork
+      address.eligibility?.eligible && !address.eligibility?.type.includes('futur')
         ? 'Oui'
-        : address.eligibility_status?.hasNoTraceNetwork
+        : address.eligibility?.type.includes('sans_trace')
           ? 'A confirmer'
           : 'Non',
     description:
@@ -45,45 +45,46 @@ const columns: CSVColumn[] = [
     minWidth: 60,
   },
   {
-    accessor: (address) => `${address.eligibility_status?.distance ?? ''}`,
+    accessor: (address) => `${address.eligibility?.distance ?? ''}`,
     description: 'Distance au réseau le plus proche, fournie uniquement si elle est de moins de 1000m',
     header: 'Distance au réseau (m) si < 1000 m',
     minWidth: 40,
   },
   {
-    accessor: (address) => (address.eligibility_status?.inPDP ? 'Oui' : 'Non'),
+    accessor: (address) =>
+      address.eligibility?.type === 'dans_pdp_reseau_existant' || address.eligibility?.type === 'dans_pdp_reseau_futur' ? 'Oui' : 'Non',
     description:
       "Positif si l'adresse se situe dans le périmètre de développement prioritaire d'un réseau classé (d'après les données dont nous disposons). Une obligation de raccordement peut alors s'appliquer.",
     header: 'PDP (périmètre de développement prioritaire)',
     minWidth: 50,
   },
   {
-    accessor: (address) => (address.eligibility_status?.isEligible && address.eligibility_status?.futurNetwork ? 'Oui' : 'Non'),
+    accessor: (address) => (address.eligibility?.eligible && address.eligibility?.type.includes('futur') ? 'Oui' : 'Non'),
     description:
       "Le bâtiment est situé à moins de 200 m du tracé d'un réseau en construction, ou situé dans une zone sur laquelle nous avons connaissance d'un réseau en construction ou en cours de mise en service",
     header: 'Bâtiment potentiellement raccordable à un réseau en construction',
     minWidth: 70,
   },
   {
-    accessor: (address) => address.eligibility_status?.id ?? '',
+    accessor: (address) => address.eligibility?.id_sncu ?? '',
     description: 'Identifiant réseau national',
     header: 'Identifiant du réseau le plus proche',
     minWidth: 40,
   },
   {
-    accessor: (address) => `${address.eligibility_status?.tauxENRR ?? ''}`,
+    accessor: (address) => `${address.eligibility?.taux_enrr ?? ''}`,
     description: "Taux d'énergies renouvelables et de récupération issu de l'arrêté DPE du 11 avril 2025",
     header: 'Taux EnR&R du réseau le plus proche',
     minWidth: 40,
   },
   {
-    accessor: (address) => (address.eligibility_status?.co2 ? `${Math.round(address.eligibility_status.co2 * 1000)}` : ''),
+    accessor: (address) => (address.eligibility?.contenu_co2_acv ? `${Math.round(address.eligibility.contenu_co2_acv * 1000)}` : ''),
     description: "Contenu CO2 en analyse du cycle de vie issu de l'arrêté DPE du 11 avril 2025",
     header: 'Contenu CO2 ACV (g/kWh)',
     minWidth: 30,
   },
   {
-    accessor: (address) => (address.eligibility_status?.hasNoTraceNetwork ? 'Oui' : 'Non'),
+    accessor: (address) => (address.eligibility?.type.includes('sans_trace') ? 'Oui' : 'Non'),
     description: 'Un réseau existe dans cette commune, mais nous ne disposons pas de son tracé.',
     header: "Présence d'un réseau non localisé sur la commune",
     minWidth: 50,
