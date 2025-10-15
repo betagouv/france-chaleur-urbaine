@@ -40,6 +40,7 @@ export function registerProEligibilityTestsCommands(parentProgram: Command) {
           sql<number>`ST_X(ST_Transform(geom, 4326))`.as('longitude'),
         ])
         .where('geom', 'is not', null)
+        .where('ban_valid', 'is', true)
         .where((eb) => eb('eligibility_history', '=', '[]'));
 
       if (limit) {
