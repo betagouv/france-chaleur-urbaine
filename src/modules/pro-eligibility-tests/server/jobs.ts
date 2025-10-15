@@ -6,6 +6,7 @@ import type { BoundingBox } from '@/modules/geo/types';
 import { type Jobs, kdb } from '@/server/db/kysely';
 import { type APIAdresseResult, getAddressesCoordinates, getCoordinatesAddresses } from '@/server/services/api-adresse';
 import { chunk } from '@/utils/array';
+import { processInParallel } from '@/utils/async';
 import { isDefined } from '@/utils/core';
 import type { ProEligibilityTestHistoryEntry } from '../types';
 import { getAddressEligibilityHistoryEntry } from './service';
@@ -251,8 +252,8 @@ export async function processWarnEligibilityChangesJob(job: WarnEligibilityChang
 
   logger.info(`Found ${addressesToCheck.length} addresses in all bboxes`, { count: addressesToCheck.length });
 
-  // Vérifie chaque adresse
-  for (const address of addressesToCheck) {
+  // Vérifie chaque adresse en parallèle
+  await processInParallel(addressesToCheck, 10, async (address) => {
     stats.addressesChecked++;
 
     // Récupère l'historique existant
@@ -271,7 +272,7 @@ export async function processWarnEligibilityChangesJob(job: WarnEligibilityChang
 
       const updatedHistory = [...existingHistory, newHistoryEntry];
 
-      // Mettre à jour l'adresse
+      // Met à jour l'adresse
       await kdb
         .updateTable('pro_eligibility_tests_addresses')
         .set({ eligibility_history: JSON.stringify(updatedHistory) })
@@ -286,7 +287,7 @@ export async function processWarnEligibilityChangesJob(job: WarnEligibilityChang
         transition: newHistoryEntry.transition,
       });
     }
-  }
+  });
   // Compte le nombre de tests mis à jour
   const testsWithChanges = await kdb
     .selectFrom('pro_eligibility_tests')
