@@ -4,7 +4,7 @@ import { processBuildTilesJob, processSyncGeometriesToAirtableJob, processSyncMe
 export const jobHandlers = {
   build_tiles: processBuildTilesJob,
   pro_eligibility_test: processProEligibilityTestJob,
+  pro_eligibility_test_notify_changes: processWarnEligibilityChangesJob,
   sync_geometries_to_airtable: processSyncGeometriesToAirtableJob,
   sync_metadata_from_airtable: processSyncMetadataFromAirtableJob,
-  warn_eligibility_changes: processWarnEligibilityChangesJob,
 } as const;

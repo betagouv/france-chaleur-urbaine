@@ -32,7 +32,7 @@ export type ProEligibilityTestJobDeprecated = Omit<Selectable<Jobs>, 'data'> & {
 };
 
 export type WarnEligibilityChangesJob = Omit<Selectable<Jobs>, 'data'> & {
-  type: 'warn_eligibility_changes';
+  type: 'pro_eligibility_test_notify_changes';
   data: {
     bboxes: BoundingBox[];
   };

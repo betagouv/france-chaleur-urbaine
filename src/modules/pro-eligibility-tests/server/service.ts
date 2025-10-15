@@ -507,7 +507,7 @@ export const createWarnEligibilityChangesJob = async (bboxes: BoundingBox[], con
         bboxes,
       },
       status: 'pending',
-      type: 'warn_eligibility_changes',
+      type: 'pro_eligibility_test_notify_changes',
       user_id: context.user.id,
     })
     .returningAll()
