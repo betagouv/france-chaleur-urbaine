@@ -80,3 +80,9 @@ scripts/simulateur/codes-insee.json
 *.log
 
 .tmp
+
+# =============================================================================
+# cursor - Auto-generated symlinks
+# Generated from templates/ides/cursor/.gitignore
+# =============================================================================
+.cursor/

@@ -1,16 +1,8 @@
-# France Chaleur Urbaine
+# Setup and Installation
 
-> Le site officiel de france-chaleur-urbaine.beta.gouv.fr
-
-Ce dépôt regroupe le code relatif au site france-chaleur-urbaine.beta.gouv.fr.
-
-Il utilise, entre autre, [Docker](https://www.docker.com), [React](https://reactjs.org), [Next.js](https://nextjs.org), [PostgreSQL](https://www.postgresql.org/) et [MapLibre](https://maplibre.org).
+<!-- Source: /README.md -->
 
 ## Installation de l'environnement de développement
-
-<!-- This section has been moved to .ai/context/SETUP.md -->
-
-Voir [.ai/context/SETUP.md](.ai/context/SETUP.md) pour les instructions détaillées d'installation.
 
 Pré-requis :
 - Node.js version 20
@@ -66,14 +58,6 @@ Une partie des données est stockées dans [Airtable](https://airtable.com/), l'
 1. Copier la base de données `FCU Prod` vers `FCU Dev <ton prenom>` (Cocher uniquement `Duplicate records`)
 2. Récupérer les API Keys et les modifier dans le fichier `.env.local`
 
-### Kysely
-
-Certaines requêtes à la base de données sont générées par [Kysely](https://github.com/koskimas/kysely) à partir du [fichier `src/server/db/kysely/database.ts`](src/server/db/kysely/database.ts).
-Celui-ci doit être généré à partir de la base de données à chaque fois que celle-ci est modifiée.
-
-- `pnpm db:verify` pour voir si des modifications ont été faites à la base de données sans avoir été incluses dans le fichier `src/db/kysely/database.ts`
-- `pnpm db:sync` pour générer le fichier `src/db/kysely/database.ts` à partir de la base de données
-
 ## Développement avec Publicodes
 
 Les commandes ci-dessous sont à réaliser une fois pour lier la dépendance [@betagouv/france-chaleur-urbaine-publicodes](https://github.com/betagouv/france-chaleur-urbaine-publicodes) directement au répertoire local `france-chaleur-urbaine-publicodes` pour faciliter le développement sans avoir besoin de publier une version sur le registre NPM.
@@ -98,6 +82,29 @@ sudo chown -R $USER: .next node_modules
 pnpm dev
 ```
 
+<!-- Source: /CLAUDE.md -->
+
+## Essential Commands
+
+```bash
+# Development
+pnpm dev                   # Start dev server (port 3000)
+pnpm dev:email             # Email template development
+
+# Code Quality (ALWAYS run before committing)
+pnpm lint                  # ESLint check
+pnpm lint:fix              # Fix linting issues
+pnpm prettier-check        # Code formatting
+pnpm lint:file             # Lint specific file
+pnpm ts                    # Run typescript on all codebase
+
+# Build
+pnpm build                 # Production build
+pnpm build:analyze         # Analyze bundle size
+
+# Images
+pnpm cli optimize images  # Optimize all images in public/ directory
+```
 
 ## Lint
 
@@ -107,40 +114,18 @@ pnpm dev
 pnpm lint
 ```
 
-
-## Tests
-
-[Vitest](https://vitest.dev/) est le framework utilisé pour les tests unitaires.
-
-```sh
-pnpm test
-```
-
-
 ## Build
 
 ```sh
 pnpm build
 ```
 
+## Important Notes
 
-## Hook pre-commit
+- **Node.js 20** and **pnpm 8** are required
+- Path aliases configured: `@/` → `src/`, `@cli/` → `scripts/`
+- French government design system (DSFR) must be used for UI
+- All geographic data uses PostGIS and Turf.js for calculations
+- Authentication uses custom session management (see `src/modules/auth/server/service.ts`)
+- Environment variables documented in `.env.example`
 
-Un hook pre-commit Git permet de vérifier que le code est correctement linté avec [lint-staged](https://github.com/lint-staged/lint-staged), et [talisman](https://github.com/thoughtworks/talisman/) est un outil qui permet de détecter les fuites de secrets dans les commits.
-À noter que [GitGuardian](https://www.gitguardian.com/) est configuré sur l'organisation beta.gouv et fait la même chose, mais le secret a alors été rendu public et il faut alors l'invalider.
-
-
-Si talisman détecte une erreur au moment d'un commit, 2 options sont possibles :
-- soit corriger l'erreur pour supprimer l'alerte ;
-- soit ajouter une exception via la commande `pnpm talisman:add-exception`.
-
-
-## Architecture de déploiement et outils
-
-<!-- This section has been moved to .ai/context/DEPLOYMENT.md -->
-
-Voir [.ai/context/DEPLOYMENT.md](.ai/context/DEPLOYMENT.md) pour les détails.
-
-# Licence
-
-Le code de ce logiciel est soumis à la licence [Etalab 2.0](https://www.etalab.gouv.fr/licence-ouverte-open-licence/).
