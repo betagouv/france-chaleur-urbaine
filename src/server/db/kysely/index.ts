@@ -30,7 +30,13 @@ types.setTypeParser(types.builtins.FLOAT8, (value) => parseFloat(value));
 types.setTypeParser(types.builtins.NUMERIC, (value) => parseFloat(value));
 
 const dialect = new PostgresDialect({
-  pool: new Pool({ connectionString: process.env.DATABASE_URL }),
+  pool: new Pool({
+    application_name: 'FCU-API',
+    connectionString: process.env.DATABASE_URL,
+    connectionTimeoutMillis: 30000,
+    max: 60,
+    min: 5,
+  }),
 });
 
 const logger = parentLogger.child({

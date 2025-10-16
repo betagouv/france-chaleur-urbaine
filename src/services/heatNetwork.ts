@@ -1,13 +1,7 @@
-import type { AxiosResponse } from 'axios';
-
-import type { RawLinearHeatDensity } from '@/pages/api/linear-heat-density';
 import type { NetworkEligibilityStatus } from '@/server/services/addresseInformation';
 import type { HttpClient } from '@/services/http';
-import type { EXPORT_FORMAT } from '@/types/enum/ExportFormat';
 import type { HeatNetworksResponse } from '@/types/HeatNetworksResponse';
 import type { SuggestionItem } from '@/types/Suggestions';
-import type { Summary } from '@/types/Summary';
-import type { Network } from '@/types/Summary/Network';
 
 import { ServiceError } from './errors';
 
@@ -49,14 +43,6 @@ export class HeatNetworkService {
     }
   }
 
-  async findByIdentifiant(identifiant: string): Promise<Network> {
-    try {
-      return await this.httpClient.get<Network>(`/api/map/network?&identifiant=${identifiant}`);
-    } catch (e) {
-      throw new ServiceError(e);
-    }
-  }
-
   async bulkEligibilityValues(id: string): Promise<{
     id: string;
     progress: number;
@@ -64,70 +50,5 @@ export class HeatNetworkService {
     error?: boolean;
   }> {
     return this.httpClient.get(`/api/map/bulkEligibilityStatus/${id}`);
-  }
-
-  async getLinearHeatDensity(line: number[][][]): Promise<RawLinearHeatDensity> {
-    try {
-      return await this.httpClient.get<RawLinearHeatDensity>(
-        `/api/linear-heat-density?coordinates=${encodeURIComponent(JSON.stringify(line))}`
-      );
-    } catch (e) {
-      throw new ServiceError(e);
-    }
-  }
-
-  async summary(bounds: number[][]): Promise<Summary> {
-    try {
-      return await this.httpClient.get<Summary>(`/api/map/summary?type=polygon&coordinates=${encodeURIComponent(JSON.stringify(bounds))}`);
-    } catch (e) {
-      throw new ServiceError(e);
-    }
-  }
-
-  getFileToDownload = async (response: AxiosResponse): Promise<{ fileName: string; blob: Blob }> => {
-    let fileName = `export.xlsx`;
-
-    const contentDisposition = response.headers['content-disposition'];
-    const contentType = response.headers['content-type'];
-
-    if (contentDisposition) {
-      const content = contentDisposition.split('filename=');
-      if (content.length > 1) {
-        fileName = content[1];
-      }
-    }
-
-    const byteCharacters = window.atob(await response.data);
-    const byteNumbers = new Array(byteCharacters.length);
-    for (let i = 0; i < byteCharacters.length; i++) {
-      byteNumbers[i] = byteCharacters.charCodeAt(i);
-    }
-    const byteArray = new Uint8Array(byteNumbers);
-    const blob = new Blob([byteArray], {
-      type: contentType,
-    });
-
-    return { blob, fileName };
-  };
-
-  async downloadSummary(bounds: number[][], format: EXPORT_FORMAT): Promise<any> {
-    try {
-      return await this.httpClient
-        .post(`/api/map/summary?type=polygon&format=${format}&coordinates=${encodeURIComponent(JSON.stringify(bounds))}`)
-        .then(async (response) => {
-          const { fileName, blob } = await this.getFileToDownload(response);
-
-          // https://web.dev/browser-fs-access/
-          const a = document.createElement('a');
-          a.download = fileName;
-          a.href = URL.createObjectURL(blob);
-          a.addEventListener('click', () => {
-            setTimeout(() => URL.revokeObjectURL(a.href), 30 * 1000);
-          });
-          a.click();
-        });
-    } catch (e) {
-      throw new ServiceError(e);
-    }
   }
 }

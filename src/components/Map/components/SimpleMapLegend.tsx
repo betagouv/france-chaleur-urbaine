@@ -19,6 +19,7 @@ import Text from '@/components/ui/Text';
 import Tooltip from '@/components/ui/Tooltip';
 import { trackEvent } from '@/modules/analytics/client';
 import { useAuthentication } from '@/modules/auth/client/hooks';
+import { ObjectEntries } from '@/utils/typescript';
 import { besoinsEnChaleurIntervals, besoinsEnFroidIntervals } from '../layers/besoinsEnChaleur';
 import { besoinsEnChaleurIndustrieCommunesIntervals } from '../layers/besoinsEnChaleurIndustrieCommunes';
 import { caracteristiquesBatimentsLayerStyle } from '../layers/caracteristiquesBatiments';
@@ -204,6 +205,21 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
                     mt="1v"
                   />
                   <span>Consommations globales de gaz</span>
+                  <Tooltip
+                    title={
+                      <>
+                        Données locales de consommation de gaz naturel de l'année 2024
+                        <br />
+                        Données :{' '}
+                        <Link
+                          href="https://www.statistiques.developpement-durable.gouv.fr/donnees-locales-de-consommation-denergie"
+                          isExternal
+                        >
+                          SDES
+                        </Link>
+                      </>
+                    }
+                  />
                 </>
               }
             >
@@ -472,7 +488,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
               label={
                 <>
                   <Box
-                    backgroundColor={caracteristiquesBatimentsLayerStyle.c}
+                    backgroundColor={caracteristiquesBatimentsLayerStyle.C}
                     height="16px"
                     width="16px"
                     mt="1v"
@@ -489,6 +505,8 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
                       <>
                         Les DPE affichés par bâtiment résultent d'un extrapolation des DPE par logement ancienne définition. Ils sont donnés
                         à titre informatif et non-officiel, sans aucune valeur légale.
+                        <br />
+                        Données : BDNB 2024-10.a
                       </>
                     }
                   />
@@ -501,7 +519,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
                 </Text>
                 <Text fontSize="13px">Diagnostic de performance énergétique</Text>
                 <Box display="flex" gap="4px">
-                  {Object.entries(caracteristiquesBatimentsLayerStyle).map(([letter]) => (
+                  {ObjectEntries(caracteristiquesBatimentsLayerStyle).map(([letter]) => (
                     <DPE classe={letter} key={letter} />
                   ))}
                 </Box>

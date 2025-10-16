@@ -39,7 +39,7 @@ split_table_query() {
   fi
   local maxId="$4"
   if [[ -z $maxId ]]; then
-    echo "Missing param query" >&2
+    echo "Missing param maxId" >&2
     return 1
   fi
   local query="$5"
@@ -79,7 +79,9 @@ EOF
   local queries=$(
     $sql -F SEPARATOR <<EOF
   SELECT
-    'create unlogged table ${outputTable}_' || row_number() over () || ' as ($escapedQuery AND ${idField} BETWEEN ' || start_id || ' AND ' || end_id || '); select ''${outputTable}_' || row_number() over () || '''; SEPARATOR'
+    'create unlogged table ${outputTable}_' || row_number() over () || ' as ($escapedQuery AND ${idField} BETWEEN ' || start_id || ' AND ' || end_id || ');
+    alter table ${outputTable}_' || row_number() over () || ' SET (autovacuum_enabled = false, toast.autovacuum_enabled = false);
+    select ''${outputTable}_' || row_number() over () || '''; SEPARATOR'
   FROM (
     $seriesQueryPart
   ) as sub;

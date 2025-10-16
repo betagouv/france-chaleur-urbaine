@@ -80,6 +80,26 @@ export async function ogr2ogrConvertToGeoJSON(
   }
 }
 
+export async function ogr2ogrExtractNDJSONFromDatabaseTable(
+  tableName: keyof DB,
+  outputFilePath: string,
+  sqlWhereClause: string,
+  sqlSelectClause: string,
+  options: RunCommandOptions = {}
+): Promise<CommandResult | void> {
+  let dockerOutputFileName = 'output.json';
+  if (serverConfig.USE_DOCKER_GEO_COMMANDS) {
+    dockerOutputFileName = `output_${Math.random().toString(36).substring(2, 10)}.json`;
+  }
+  await runOgr2ogr(
+    `-f GeoJSONSeq ${serverConfig.USE_DOCKER_GEO_COMMANDS ? dockerOutputFileName : outputFilePath} ${pgUrlToGdal(serverConfig.DATABASE_URL)} -t_srs EPSG:4326 -sql 'select ${sqlSelectClause} from ${tableName} where ${sqlWhereClause}'`,
+    options
+  );
+  if (serverConfig.USE_DOCKER_GEO_COMMANDS) {
+    await rename(join(dockerVolumePath, dockerOutputFileName), outputFilePath);
+  }
+}
+
 /**
  * Convert a PostgreSQL URL to a GDAL URL
  * @param url - The PostgreSQL URL to convert

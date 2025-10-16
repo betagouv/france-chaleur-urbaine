@@ -13,7 +13,6 @@ export default {
   },
   acquireConnectionTimeout: 30000,
   pool: {
-    idleTimeoutMillis: 10000,
     min: 0,
     max: 60,
   },

@@ -107,6 +107,19 @@ export const convertLambert93GeoJSONToWGS84 = async (geojson: any): Promise<any>
   };
 };
 
+/**
+ * Create a function to convert Lambert 93 coordinates to WGS84.
+ * @returns A function that takes an array of [x, y] coordinates and returns an array of [longitude, latitude] coordinates.
+ */
+export const createLambert93ToWGS84Converter = async () => {
+  const proj4 = (await import('proj4')).default;
+  proj4.defs(
+    'EPSG:2154',
+    '+proj=lcc +lat_1=49.000000000 +lat_2=44.000000000 +lat_0=46.500000000 +lon_0=3.000000000 +x_0=700000.000 +y_0=6600000.000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs'
+  );
+  return (coords: [number, number]) => proj4('EPSG:2154', 'EPSG:4326', coords) as [number, number];
+};
+
 // Format: "BOX(3.385585947402232 47.35474249860378,3.38691096486787 47.35645923457523)"
 export const parseBbox = (bbox: string): BoundingBox => {
   const [min, max] = bbox.slice(4, -1).split(',');

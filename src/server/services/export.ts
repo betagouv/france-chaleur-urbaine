@@ -2,8 +2,8 @@ import archiver from 'archiver';
 import base64 from 'base64-stream';
 import getStream from 'get-stream';
 import XLSX from 'xlsx';
+import type { ExportFormat } from '@/modules/data/constants';
 import type { ExportColumn } from '@/types/ExportColumn';
-import { EXPORT_FORMAT } from '@/types/enum/ExportFormat';
 
 const convertToStringArray = (columns: ExportColumn<any>[], data: any[]): string[][] => {
   return [columns.map((column) => column.header)].concat(
@@ -11,18 +11,18 @@ const convertToStringArray = (columns: ExportColumn<any>[], data: any[]): string
   );
 };
 
-export const getSpreadSheet = <T>(columns: ExportColumn<T>[], data: T[], format: EXPORT_FORMAT): any => {
+export const getSpreadSheet = <T>(columns: ExportColumn<T>[], data: T[], format: ExportFormat): any => {
   const wb = XLSX.utils.book_new();
   const ws = XLSX.utils.aoa_to_sheet(convertToStringArray(columns, data));
   XLSX.utils.book_append_sheet(wb, ws);
 
   return XLSX.write(wb, {
     bookType: format,
-    type: format === EXPORT_FORMAT.CSV ? 'string' : 'buffer',
+    type: format === 'csv' ? 'string' : 'buffer',
   });
 };
 
-export const zip = async (files: any[], name: string): Promise<any> => {
+export const zip = async (files: any[], name: string) => {
   const archive = archiver('zip', {
     zlib: { level: 9 },
   });

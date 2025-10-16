@@ -6,7 +6,7 @@ type PapaParseOptions = Parameters<typeof Papa.parse>[1];
 
 const loadCsvFile = async (filePath: string, options: PapaParseOptions = {}): Promise<any[]> => {
   try {
-    const data = await fs.promises.readFile(filePath, 'utf8'); // Utilisation de la version promesse de readFile
+    const data = await fs.promises.readFile(filePath, 'utf8');
 
     return new Promise((resolve, reject) => {
       Papa.parse(data, {

@@ -245,12 +245,12 @@ function Popup(caracteristiqueBatiment: EnergySummary, { Property, Title, TwoCol
         <Property
           label="DPE consommations énergétiques"
           value={caracteristiqueBatiment.dpe_energie}
-          formatter={(v) => <DPE classe={v} />}
+          formatter={(v) => <DPE classe={v as any} />}
         />
         <Property
           label="DPE émissions de gaz à effet de serre"
           value={caracteristiqueBatiment.dpe_ges}
-          formatter={(v) => <DPE classe={v} />}
+          formatter={(v) => <DPE classe={v as any} />}
         />
       </TwoColumns>
     </>

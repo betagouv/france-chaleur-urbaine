@@ -32,3 +32,12 @@ export function downloadFile(url: string, filename: string) {
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
 }
+
+/**
+ * Make the browser download a base64-encoded content.
+ */
+export function downloadBaseEncoded64File(base64Content: string, filename: string, type: string) {
+  const byteCharacters = Buffer.from(base64Content, 'base64');
+  const blob = new Blob([byteCharacters], { type });
+  downloadFile(URL.createObjectURL(blob), filename);
+}

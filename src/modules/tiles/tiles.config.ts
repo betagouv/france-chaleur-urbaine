@@ -40,7 +40,7 @@ export const databaseSourceIds = [
   'futurNetwork', // réseaux de chaleur en construction
   'coldNetwork', // réseaux de froid
   'demands', // demandes d'éligibilité
-  'gas', // consommations de gaz
+  'consommationsGaz',
   'energy', // batiments collectifs chauffés au fioul / gas
   'batimentsRaccordesReseauxChaleurFroid',
   'enrrMobilisables',
@@ -68,6 +68,7 @@ export const databaseSourceIds = [
   'testsAdresses',
   'zonesAUrbaniser',
   'ressourcesGeothermalesNappes',
+  'bdnbBatiments', // nouvelle couche BDNB
 ] as const;
 
 export const zDatabaseSourceId = z.enum(databaseSourceIds);
@@ -124,6 +125,16 @@ export const tilesInfo: Record<DatabaseSourceId, TileInfo> = {
     sourceLayer: '', // useless
     table: '', // useless
     tiles: 'batiments_raccordes_reseaux_chaleur_froid_tiles', // contient 2 layers batiments_raccordes_reseaux_chaleur et batiments_raccordes_reseaux_froid
+  },
+  bdnbBatiments: {
+    compressedTiles: true,
+    extraWhere: (query) => query, // useless
+    id: '', // useless
+    properties: [], // useless
+    source: 'database',
+    sourceLayer: '', // useless
+    table: '', // useless
+    tiles: 'bdnb_batiments_tiles',
   },
   besoinsEnChaleur: {
     compressedTiles: true,
@@ -194,6 +205,16 @@ export const tilesInfo: Record<DatabaseSourceId, TileInfo> = {
     sourceLayer: '', // useless
     table: '', // useless
     tiles: 'communes_fort_potentiel_pour_creation_reseaux_chaleur_tiles',
+  },
+  consommationsGaz: {
+    compressedTiles: true,
+    extraWhere: (query) => query, // useless
+    id: '', // useless
+    properties: [], // useless
+    source: 'database',
+    sourceLayer: '', // useless
+    table: '', // useless
+    tiles: 'donnees_de_consos_tiles',
   },
   demands: {
     properties: ['Mode de chauffage', 'Adresse', 'Type de chauffage', 'Structure'],
@@ -286,15 +307,6 @@ export const tilesInfo: Record<DatabaseSourceId, TileInfo> = {
     sourceLayer: 'futurOutline',
     table: 'zones_et_reseaux_en_construction',
     tiles: 'zones_et_reseaux_en_construction_tiles',
-  },
-  gas: {
-    extraWhere: (query) => query.whereIn('code_grand', ['R', 'T', 'I']),
-    id: 'rownum',
-    properties: ['rownum', 'code_grand', 'conso_nb', 'adresse', 'nom_commun', 'pdl_nb'],
-    source: 'database',
-    sourceLayer: 'gasUsage',
-    table: 'donnees_de_consos',
-    tiles: 'donnees_de_consos_tiles',
   },
   installationsGeothermieProfonde: {
     compressedTiles: true,

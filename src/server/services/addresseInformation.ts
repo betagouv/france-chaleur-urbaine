@@ -114,66 +114,45 @@ const closestInFuturNetwork = async (
   return network;
 };
 
-export const getConso = async (lat: number, lon: number): Promise<{ conso_nb: number; rownum: string } | null> => {
-  const result = await db('donnees_de_consos')
-    .select('rownum', 'conso_nb')
+export const getConsommationGazAdresse = async (lat: number, lon: number) => {
+  const result = await kdb
+    .selectFrom('donnees_de_consos')
+    .select('conso_nb')
     .where(
-      db.raw(`
+      sql<boolean>`
         ST_INTERSECTS(
-          ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154),
-          ST_BUFFER(ST_Transform(geom, 2154), 3.5)
+          ST_Transform(${sql.raw(`'SRID=4326;POINT(${lon} ${lat})'::geometry`)}, 2154),
+          ST_BUFFER(geom, 3.5)
         )
-      `)
+      `
     )
-    .first();
+    .executeTakeFirst();
   return result;
 };
 
-export const getConsoById = async (id: string): Promise<{ conso_nb: number; rownum: string } | null> => {
-  const result = await db('donnees_de_consos').select('rownum', 'conso_nb').where('rownum', id).first();
-  return result;
-};
-
-export const getNbLogement = async (lat: number, lon: number): Promise<{ nb_logements: number; id: string } | null> => {
-  const region = await db('regions')
-    .select('bnb_nom')
+export const getNbLogement = async (lat: number, lon: number) => {
+  const result = await kdb
+    .selectFrom('bdnb_batiments')
+    .select(['batiment_groupe_id', 'ffo_bat_nb_log as nb_logements'])
     .where(
-      db.raw(`
-      ST_Intersects(
-        ST_Transform(geom, 2154),
-        ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154)
-        )
+      sql.raw<boolean>(`
+      ST_DWithin(
+        geom,
+        ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154),
+        3.5
+      )
     `)
     )
-    .first();
-  const result = await db(region.bnb_nom)
-    .select('id', 'ffo_bat_nb_log as nb_logements')
-    .where(
-      db.raw(`
-        ST_INTERSECTS(
-          ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154),
-          ST_BUFFER(ST_Transform(geom_adresse, 2154), 3.5)
-        )
-      `)
-    )
-    .first();
+    .executeTakeFirst();
   return result;
 };
 
-export const getNbLogementById = async (id: string, lat: number, lon: number): Promise<{ nb_logements: number; id: string } | null> => {
-  const region = await db('regions')
-    .select('bnb_nom')
-    .where(
-      db.raw(`
-      ST_Intersects(
-        ST_Transform(geom, 2154),
-        ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154)
-        )
-    `)
-    )
-    .first();
-
-  const result = await db(region.bnb_nom).select('id', 'ffo_bat_nb_log as nb_logements').where('id', id).first();
+export const getNbLogementById = async (id: string) => {
+  const result = await kdb
+    .selectFrom('bdnb_batiments')
+    .select(['batiment_groupe_id', 'ffo_bat_nb_log as nb_logements'])
+    .where('batiment_groupe_id', '=', id)
+    .executeTakeFirst();
   return result;
 };
 

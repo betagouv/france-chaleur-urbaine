@@ -15,9 +15,9 @@ import Divider from '@/components/ui/Divider';
 import Text from '@/components/ui/Text';
 import Tooltip from '@/components/ui/Tooltip';
 import { trackEvent } from '@/modules/analytics/client';
+import type { LinearHeatDensity } from '@/modules/data/constants';
 import { formatDistance } from '@/modules/geo/client/helpers';
-import type { PointDeConsommation } from '@/pages/api/linear-heat-density';
-import { useServices } from '@/services';
+import trpc from '@/modules/trpc/client';
 import { downloadObject } from '@/utils/browser';
 import { formatAsISODateMinutes } from '@/utils/date';
 import type { MapSourceLayersSpecification } from '../../layers/common';
@@ -28,40 +28,16 @@ export const linearHeatDensityLinesSourceId = 'linear-heat-density-lines';
 export const linearHeatDensityLabelsSourceId = 'linear-heat-density-labels';
 const defaultColor = '#000091';
 
-type LinearHeatDensity = {
-  longueurTotale: number;
-  consommationGaz: {
-    cumul: {
-      '10m': string;
-      '50m': string;
-    };
-    densitéThermiqueLinéaire: {
-      '10m': string;
-      '50m': string;
-    };
-  };
-  besoinsEnChaleur: {
-    cumul: {
-      '10m': string;
-      '50m': string;
-    };
-    densitéThermiqueLinéaire: {
-      '10m': string;
-      '50m': string;
-    };
-  };
-};
-
 const featuresAtom = atom<MeasureFeature[]>([]);
 const densiteAtom = atom<LinearHeatDensity | null>(null);
 
 const LinearHeatDensityTool: React.FC = () => {
-  const { heatNetworkService } = useServices();
   const { mapLayersLoaded, mapRef, mapDraw, isDrawing, setIsDrawing } = useFCUMap();
   const [features, setFeatures] = useAtom(featuresAtom);
   const featuresRef = useRef(features);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [densite, setDensite] = useAtom(densiteAtom);
+  const trpcUtils = trpc.useUtils();
 
   useEffect(() => {
     featuresRef.current = features;
@@ -92,30 +68,9 @@ const LinearHeatDensityTool: React.FC = () => {
     try {
       setIsLoading(true);
       trackEvent('Carto|Densité thermique linéaire|Tracé terminé');
-      const rawDensite = await heatNetworkService.getLinearHeatDensity(features.map((feature) => feature.geometry.coordinates));
-      const densite: LinearHeatDensity = {
-        besoinsEnChaleur: {
-          cumul: {
-            '10m': getConso(rawDensite.besoinsEnChaleur['10m']),
-            '50m': getConso(rawDensite.besoinsEnChaleur['50m']),
-          },
-          densitéThermiqueLinéaire: {
-            '10m': getDensite(rawDensite.longueurTotale, rawDensite.besoinsEnChaleur['10m']),
-            '50m': getDensite(rawDensite.longueurTotale, rawDensite.besoinsEnChaleur['50m']),
-          },
-        },
-        consommationGaz: {
-          cumul: {
-            '10m': getConso(rawDensite.consommationGaz['10m']),
-            '50m': getConso(rawDensite.consommationGaz['50m']),
-          },
-          densitéThermiqueLinéaire: {
-            '10m': getDensite(rawDensite.longueurTotale, rawDensite.consommationGaz['10m']),
-            '50m': getDensite(rawDensite.longueurTotale, rawDensite.consommationGaz['50m']),
-          },
-        },
-        longueurTotale: Math.round(rawDensite.longueurTotale * 1000),
-      };
+      const densite = await trpcUtils.client.data.getDensiteThermiqueLineaire.query({
+        coordinates: features.map((feature) => feature.geometry.coordinates),
+      });
       setDensite(densite);
     } finally {
       setIsLoading(false);
@@ -374,27 +329,6 @@ const LinearHeatDensityTool: React.FC = () => {
 };
 
 export default LinearHeatDensityTool;
-
-const getConso = (consos: PointDeConsommation[]) => {
-  const sum = consos.reduce((acc, current) => acc + current.conso_nb, 0);
-  if (sum > 1000) {
-    return `${(sum / 1000).toFixed(2)} GWh`;
-  }
-
-  return `${sum.toFixed(2)} MWh`;
-};
-
-const getDensite = (size: number, densite: PointDeConsommation[]) => {
-  if (densite.length === 0) {
-    return '0 MWh/m';
-  }
-  const value = densite.reduce((acc, value) => acc + value.conso_nb, 0) / (size * 1000);
-  if (value > 1000) {
-    return `${(value / 1000).toFixed(2)} GWh/m`;
-  }
-
-  return `${value.toFixed(2)} MWh/m`;
-};
 
 /**
  * Synchronise the features with the map

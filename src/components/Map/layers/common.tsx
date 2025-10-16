@@ -5,6 +5,7 @@ import type { MapLayerSpecification } from '@/components/Map/map-layers';
 import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
 import Heading from '@/components/ui/Heading';
+import Tooltip from '@/components/ui/Tooltip';
 import type { useAuthentication } from '@/modules/auth/client/hooks';
 import type { SourceId } from '@/modules/tiles/tiles.config';
 import { isDefined } from '@/utils/core';
@@ -67,15 +68,19 @@ const PopupTitle = ({ subtitle, close, children, title }: PropsWithChildren<Popu
 
 type PopupPropertyProps<T> = {
   label: React.ReactNode;
-  value: T | undefined;
+  value: T | undefined | null;
   unit?: string; // overridden by the formatter if present
   formatter?: (value: T) => React.ReactNode;
+  tooltip?: React.ReactNode;
 } & (T extends number ? { raw?: boolean } : object);
 
-function PopupProperty<T>({ label, value, unit, formatter, ...props }: PopupPropertyProps<T>) {
+function PopupProperty<T>({ label, value, unit, formatter, tooltip, ...props }: PopupPropertyProps<T>) {
   return (
     <>
-      <Box>{label}</Box>
+      <Box display="flex" alignItems="center" gap="4px">
+        {label}
+        {isDefined(tooltip) && <Tooltip title={tooltip} />}
+      </Box>
       <Box fontWeight="bold">
         {isDefined(value)
           ? isDefined(formatter)
