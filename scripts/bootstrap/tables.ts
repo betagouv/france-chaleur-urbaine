@@ -173,10 +173,6 @@ export const allDatabaseTables: TableInfo[] = [
     name: 'zone_a_potentiel_fort_froid_tiles',
   },
   {
-    description: 'Bâtiments raccordés au réseau de chaleur au rez-de-chaussée',
-    name: 'batiments_raccordes_rdc',
-  },
-  {
     description: 'Tuiles vectorielles des bâtiments raccordés aux réseaux de chaleur et froid',
     name: 'batiments_raccordes_reseaux_chaleur_froid_tiles',
   },
@@ -227,14 +223,6 @@ export const allDatabaseTables: TableInfo[] = [
   {
     description: 'Tuiles des QPV 2024',
     name: 'quartiers_prioritaires_politique_ville_2024_tiles',
-  },
-  {
-    description: 'Données de consommation et PDL gaz naturel 2020 (obsolète)',
-    name: 'Donnees_de_conso_et_pdl_gaz_nat_2020',
-  },
-  {
-    description: 'Tuiles des données de consommation et PDL gaz naturel 2020 (obsolète)',
-    name: 'Donnees_de_conso_et_pdl_gaz_nat_2020_tiles',
   },
   {
     description: 'Tuiles des installations de géothermie profonde',

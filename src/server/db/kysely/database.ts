@@ -38,16 +38,6 @@ export interface ApiAccounts {
   token: string;
 }
 
-export interface BatimentsRaccordesRdc {
-  ADRESSE: string | null;
-  code_grand_secteur: string | null;
-  CONSO: string | null;
-  fid: Int8;
-  geom: string | null;
-  ID: string | null;
-  PDL: string | null;
-}
-
 export interface BatimentsRaccordesReseauxChaleurFroidTiles {
   tile: Buffer;
   x: Int8;
@@ -2843,45 +2833,6 @@ export interface Departements {
   zone_climatique: string | null;
 }
 
-export interface DonneesDeConsoEtPdlGazNat2020 {
-  adresse: string | null;
-  annee: string | null;
-  code_eic: string | null;
-  code_grand: string | null;
-  conso: string | null;
-  conso_nb: number | null;
-  filiere: string | null;
-  geom: string | null;
-  iris_code: string | null;
-  iris_libel: string | null;
-  latitude: string | null;
-  layer: string | null;
-  longitude: string | null;
-  nom_commun: string | null;
-  ogc_fid: Int8 | null;
-  operateur: string | null;
-  pdl: string | null;
-  pdl_nb: number | null;
-  result_cit: string | null;
-  result_con: string | null;
-  result_hou: string | null;
-  result_id: string | null;
-  result_lab: string | null;
-  result_nam: string | null;
-  result_pos: string | null;
-  result_sco: string | null;
-  result_str: string | null;
-  result_typ: string | null;
-  rownum: string;
-}
-
-export interface DonneesDeConsoEtPdlGazNat2020Tiles {
-  tile: Buffer;
-  x: Int8;
-  y: Int8;
-  z: Int8;
-}
-
 export interface DonneesDeConsos {
   adresse: string;
   code_grand: 'R' | 'T' | 'I' | 'A' | 'X';
@@ -3651,7 +3602,6 @@ export interface ZonesEtReseauxEnConstructionTiles {
 export interface DB {
   api_accounts: ApiAccounts;
   assignment_rules: AssignmentRules;
-  batiments_raccordes_rdc: BatimentsRaccordesRdc;
   batiments_raccordes_reseaux_chaleur_froid_tiles: BatimentsRaccordesReseauxChaleurFroidTiles;
   bdnb_batiments: BdnbBatiments;
   bdnb_batiments_tiles: BdnbBatimentsTiles;
@@ -3661,8 +3611,6 @@ export interface DB {
   communes: Communes;
   communes_fort_potentiel_pour_creation_reseaux_chaleur_tiles: CommunesFortPotentielPourCreationReseauxChaleurTiles;
   departements: Departements;
-  Donnees_de_conso_et_pdl_gaz_nat_2020: DonneesDeConsoEtPdlGazNat2020;
-  Donnees_de_conso_et_pdl_gaz_nat_2020_tiles: DonneesDeConsoEtPdlGazNat2020Tiles;
   donnees_de_consos: DonneesDeConsos;
   donnees_de_consos_tiles: DonneesDeConsosTiles;
   eligibility_demands: EligibilityDemands;

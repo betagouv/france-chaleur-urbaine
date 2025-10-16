@@ -10,6 +10,10 @@ export async function up(knex: Knex): Promise<void> {
       ALTER COLUMN conso_nb SET NOT NULL,
       ALTER COLUMN geom SET NOT NULL,
       ALTER COLUMN pdl_nb SET NOT NULL;
+
+    DROP TABLE IF EXISTS "Donnees_de_conso_et_pdl_gaz_nat_2020";
+    DROP TABLE IF EXISTS "Donnees_de_conso_et_pdl_gaz_nat_2020";
+    DROP TABLE IF EXISTS "batiments_raccordes_rdc";
   `);
 }
 
