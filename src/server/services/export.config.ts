@@ -1,8 +1,8 @@
+import type { DonneesDeConsos } from '@/server/db/kysely';
 import type { ExportColumn } from '@/types/ExportColumn';
 import type { EnergySummary } from '@/types/Summary/Energy';
-import type { GasSummary } from '@/types/Summary/Gas';
 
-export const consoColumns: ExportColumn<GasSummary>[] = [
+export const consoColumns: ExportColumn<DonneesDeConsos & { is_close: boolean }>[] = [
   {
     header: 'Adresse',
     value: (conso) => `${conso.adresse}`,

@@ -205,6 +205,21 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
                     mt="1v"
                   />
                   <span>Consommations globales de gaz</span>
+                  <Tooltip
+                    title={
+                      <>
+                        Données locales de consommation de gaz naturel de l'année 2024
+                        <br />
+                        Données :{' '}
+                        <Link
+                          href="https://www.statistiques.developpement-durable.gouv.fr/donnees-locales-de-consommation-denergie"
+                          isExternal
+                        >
+                          SDES
+                        </Link>
+                      </>
+                    }
+                  />
                 </>
               }
             >

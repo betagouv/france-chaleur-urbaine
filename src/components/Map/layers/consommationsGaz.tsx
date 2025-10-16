@@ -1,9 +1,8 @@
 import type { ExpressionInputType } from 'maplibre-gl';
-
-import type { GasSummary } from '@/types/Summary/Gas';
+import Link from '@/components/ui/Link';
+import type { DonneesDeConsos } from '@/server/db/kysely';
 import { formatMWhAn } from '@/utils/strings';
 import { ObjectEntries } from '@/utils/typescript';
-
 import { ifHoverElse, intermediateTileLayersMinZoom, type MapSourceLayersSpecification, type PopupStyleHelpers } from './common';
 
 export const consommationsGazLayerStyle = {
@@ -17,8 +16,8 @@ const minIconSize = 12;
 const maxIconSize = 30;
 export const consommationsGazLayerMaxOpacity = 0.55;
 
-const GAS_PROPERTY_CONSO: keyof GasSummary = 'conso_nb';
-const GAS_PROPERTY_TYPE_GAS: keyof GasSummary = 'code_grand';
+const GAS_PROPERTY_CONSO: keyof DonneesDeConsos = 'conso_nb';
+const GAS_PROPERTY_TYPE_GAS: keyof DonneesDeConsos = 'code_grand';
 const typeWithColorPairs = ObjectEntries(consommationsGazLayerStyle).flatMap(([TypeGasName, styleObject]) => [
   TypeGasName,
   styleObject,
@@ -99,42 +98,45 @@ export const consommationsGazLayersSpec = [
           'circle-stroke-opacity': 0,
         },
         popup: Popup,
-        'source-layer': 'gasUsage',
         type: 'circle',
       },
     ],
     source: {
-      tiles: [`/api/map/gas/{z}/{x}/{y}`],
+      maxzoom: 14,
+      minzoom: 12,
+      tiles: ['/api/map/consommationsGaz/{z}/{x}/{y}'],
       type: 'vector',
     },
-    sourceId: 'gas',
+    sourceId: 'consommationsGaz',
   },
 ] as const satisfies readonly MapSourceLayersSpecification[];
 
-function Popup(consommationGaz: GasSummary, { Property, Title, TwoColumns }: PopupStyleHelpers) {
+const codeGrandToLabel = {
+  A: 'Agriculture',
+  I: 'Industrie',
+  R: 'Logement',
+  T: 'Établissement tertiaire',
+  X: 'Autre',
+} as const satisfies Record<DonneesDeConsos['code_grand'], string>;
+
+function Popup(consommationGaz: DonneesDeConsos, { Property, Title, TwoColumns }: PopupStyleHelpers) {
   return (
     <>
-      <Title subtitle={writeTypeConso(consommationGaz.code_grand)}>
-        {consommationGaz.adresse} {consommationGaz.nom_commun}
-      </Title>
+      <Title subtitle={codeGrandToLabel[consommationGaz.code_grand]}>{consommationGaz.adresse}</Title>
       <TwoColumns>
         <Property label="Conso. gaz" value={consommationGaz.conso_nb} formatter={formatMWhAn} />
+        <Property
+          label="Source"
+          value={
+            <>
+              Données locales de consommation de gaz naturel{' '}
+              <Link href="https://www.statistiques.developpement-durable.gouv.fr/donnees-locales-de-consommation-denergie" isExternal>
+                SDES 2024
+              </Link>
+            </>
+          }
+        />
       </TwoColumns>
     </>
   );
 }
-
-const writeTypeConso = (typeConso: GasSummary['code_grand'] | unknown) => {
-  switch (typeConso) {
-    case 'R': {
-      return 'Logement';
-    }
-    case 'T': {
-      return 'Établissement tertiaire';
-    }
-    case 'I': {
-      return 'Industrie';
-    }
-  }
-  return '';
-};

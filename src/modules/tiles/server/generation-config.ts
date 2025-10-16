@@ -36,6 +36,12 @@ export const tilesConfigs = {
     zoomMax: 15, // pour avoir des bons contours, mais le fond de carte ne semble pas précis pour les batiments
     zoomMin: 12,
   }),
+  'consommations-gaz': defineTilesConfig({
+    generateGeoJSON: extractGeoJSONFromDatabaseTable('donnees_de_consos'),
+    tilesTableName: 'donnees_de_consos_tiles',
+    tippeCanoeArgs: '-r1.0', // Do not automatically drop a fraction of points at low zoom levels
+    zoomMin: 12,
+  }),
   'etudes-en-cours': defineTilesConfig({
     generateGeoJSON: extractGeoJSONFromDatabaseTable('etudes_en_cours'),
     tilesTableName: 'etudes_en_cours_tiles',
