@@ -156,6 +156,10 @@ const columns: ColumnDef<RouterOutput['proEligibilityTests']['get']['addresses']
         }
       }
 
+      if ((!distance || distance === 0) && eligibility.type === 'trop_eloigne') {
+        return null;
+      }
+
       return (
         <div className="flex flex-col items-end">
           <span>{distance}m</span>
