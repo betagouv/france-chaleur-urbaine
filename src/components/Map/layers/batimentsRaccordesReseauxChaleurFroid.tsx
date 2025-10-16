@@ -121,7 +121,7 @@ function Popup(
         />
         <Property label="Secteur" value={secteurBatimentRaccordeToLabels[batimentRaccordeReseauxChaleurFroid.code_grand_secteur]} />
         <Property label="Identifiant du réseau" value={batimentRaccordeReseauxChaleurFroid.id_reseau} />
-        <Property label="Source" value="SDES pour 2023" />
+        <Property label="Source" value="SDES pour 2024" />
       </TwoColumns>
       <Button
         priority="secondary"

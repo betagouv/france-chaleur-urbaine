@@ -1,5 +1,4 @@
 import type { ExpressionInputType } from 'maplibre-gl';
-import Link from '@/components/ui/Link';
 import type { DonneesDeConsos } from '@/server/db/kysely';
 import { formatMWhAn } from '@/utils/strings';
 import { ObjectEntries } from '@/utils/typescript';
@@ -125,17 +124,7 @@ function Popup(consommationGaz: DonneesDeConsos, { Property, Title, TwoColumns }
       <Title subtitle={codeGrandToLabel[consommationGaz.code_grand]}>{consommationGaz.adresse}</Title>
       <TwoColumns>
         <Property label="Conso. gaz" value={consommationGaz.conso_nb} formatter={formatMWhAn} />
-        <Property
-          label="Source"
-          value={
-            <>
-              Données locales de consommation de gaz naturel{' '}
-              <Link href="https://www.statistiques.developpement-durable.gouv.fr/donnees-locales-de-consommation-denergie" isExternal>
-                SDES 2024
-              </Link>
-            </>
-          }
-        />
+        <Property label="Source" value="SDES pour 2024" />
       </TwoColumns>
     </>
   );
