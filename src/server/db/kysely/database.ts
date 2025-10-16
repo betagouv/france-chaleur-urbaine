@@ -2883,13 +2883,11 @@ export interface DonneesDeConsoEtPdlGazNat2020Tiles {
 }
 
 export interface DonneesDeConsos {
-  adresse: string | null;
-  code_grand: string | null;
+  adresse: string;
+  code_grand: 'R' | 'T' | 'I' | 'A' | 'X';
   conso_nb: number;
-  geom: string | null;
-  nom_commun: string | null;
-  pdl_nb: number | null;
-  rownum: Int8;
+  geom: string;
+  pdl_nb: number;
 }
 
 export interface DonneesDeConsosTiles {

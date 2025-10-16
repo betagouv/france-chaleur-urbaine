@@ -5,7 +5,7 @@ import { getEligilityStatus } from '@/server/services/addresseInformation';
 import { type APIAdresseResult, getAddressesCoordinates } from '@/server/services/api-adresse';
 import { chunk } from '@/utils/array';
 import { isDefined } from '@/utils/core';
-import { defineImportFunc } from '../import-config';
+import { defineImportFunc } from '../import';
 
 // Lower concurrency for DB operations to avoid pool exhaustion
 const TEST_CONCURRENCY = 2;

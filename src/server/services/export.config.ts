@@ -5,7 +5,7 @@ import type { GasSummary } from '@/types/Summary/Gas';
 export const consoColumns: ExportColumn<GasSummary>[] = [
   {
     header: 'Adresse',
-    value: (conso) => `${conso.adresse} ${conso.nom_commun}`,
+    value: (conso) => `${conso.adresse}`,
   },
   {
     header: 'Type',

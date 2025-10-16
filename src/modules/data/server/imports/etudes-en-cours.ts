@@ -1,5 +1,5 @@
 import { kdb, sql } from '@/server/db/kysely';
-import { defineImportFunc } from '../import-config';
+import { defineFileImportFunc } from '../import';
 import { loadDataFromFile } from '../import-utils';
 
 // Types pour les études en cours
@@ -34,7 +34,7 @@ export interface PreformattedEtudeEnCours {
 }
 
 // Fonction d'import pour les études en cours
-export const importEtudesEnCours = defineImportFunc(async ({ filepath, logger }) => {
+export const importEtudesEnCours = defineFileImportFunc(async ({ filepath, logger }) => {
   const data: CSVEtudeEnCours[] = await loadDataFromFile(filepath);
 
   const etudesEnCours = data.reduce(

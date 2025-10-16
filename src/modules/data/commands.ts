@@ -1,5 +1,5 @@
 import type { Command } from '@commander-js/extra-typings';
-
+import { ObjectKeys } from '@/utils/typescript';
 import { type DataImportType, dataImportConfigs, executeDataImport } from './server/import-config';
 
 export function registerDataCommands(parentProgram: Command) {
@@ -18,9 +18,9 @@ export function registerDataCommands(parentProgram: Command) {
     .command('list')
     .description("Lister les types d'import disponibles")
     .action(() => {
-      console.log("Types d'import disponibles:");
-      Object.entries(dataImportConfigs).forEach(([key, config]) => {
-        console.log(`  ${key}: ${config.description}`);
+      console.info("Types d'import disponibles:");
+      ObjectKeys(dataImportConfigs).forEach((key) => {
+        console.info(`  ${key}`);
       });
     });
 

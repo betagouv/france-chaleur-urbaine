@@ -114,23 +114,19 @@ const closestInFuturNetwork = async (
   return network;
 };
 
-export const getConso = async (lat: number, lon: number): Promise<{ conso_nb: number; rownum: string } | null> => {
-  const result = await db('donnees_de_consos')
-    .select('rownum', 'conso_nb')
+export const getConsommationGazAdresse = async (lat: number, lon: number) => {
+  const result = await kdb
+    .selectFrom('donnees_de_consos')
+    .select('conso_nb')
     .where(
-      db.raw(`
+      sql<boolean>`
         ST_INTERSECTS(
-          ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154),
-          ST_BUFFER(ST_Transform(geom, 2154), 3.5)
+          ST_Transform(${sql.raw(`'SRID=4326;POINT(${lon} ${lat})'::geometry`)}, 2154),
+          ST_BUFFER(geom, 3.5)
         )
-      `)
+      `
     )
-    .first();
-  return result;
-};
-
-export const getConsoById = async (id: string): Promise<{ conso_nb: number; rownum: string } | null> => {
-  const result = await db('donnees_de_consos').select('rownum', 'conso_nb').where('rownum', id).first();
+    .executeTakeFirst();
   return result;
 };
 

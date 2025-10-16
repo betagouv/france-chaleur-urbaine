@@ -54,11 +54,9 @@ const exportDonneesDeConsoGaz = async (coordinates: number[][]) =>
     .selectFrom('donnees_de_consos')
     .select([
       'adresse',
-      'nom_commun',
       'code_grand',
       'conso_nb',
       'pdl_nb',
-      sql<number>`rownum::int`.as('rownum'),
       sql<boolean>`
         EXISTS (
           SELECT 1
