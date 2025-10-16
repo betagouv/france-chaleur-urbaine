@@ -1,7 +1,7 @@
 import { mkdir, mkdtemp, readdir, writeFile } from 'node:fs/promises';
 import { availableParallelism, tmpdir } from 'node:os';
 import { join } from 'node:path';
-
+import { createLambert93ToWGS84Converter } from '@/modules/geo/client/helpers';
 import { defineTilesGenerationStrategy } from '@/modules/tiles/server/generation';
 import { type DB, type DBTableName, kdb, sql } from '@/server/db/kysely';
 import { processInParallel } from '@/utils/async';
@@ -41,6 +41,41 @@ export const downloadGeoJSONFromURL = (url: string) =>
     geojson.features.forEach((feature: any) => {
       feature.id = undefined; // remove string id so that tippecanoe can generate a unique numeric id
     });
+    const targetTilesFilePath = join(tempDirectory, 'tiles-features.geojson');
+    await writeFile(targetTilesFilePath, JSON.stringify(geojson));
+    return targetTilesFilePath;
+  });
+
+/**
+ * Download JSON data from a URL, transform it to GeoJSON features with mapping
+ * @param url - The URL to fetch the JSON data from
+ * @param mapFilterFeature - Function to transform each JSON item to a GeoJSON Feature
+ * @returns a function that will download, transform and save the GeoJSON file
+ */
+export const downloadJSONAndTransformToGeoJSON = <T>({
+  url,
+  mapFilterFeature,
+}: {
+  url: string;
+  mapFilterFeature: (
+    item: T,
+    helpers: { convertLambert93ToWGS84: Awaited<ReturnType<typeof createLambert93ToWGS84Converter>> }
+  ) => GeoJSON.Feature | null;
+}) =>
+  defineTilesGenerationStrategy(async ({ logger, tempDirectory }) => {
+    const items = await fetchJSON<T[]>(url);
+    logger.info(`Items downloaded`, { count: items.length });
+
+    const convertLambert93ToWGS84 = await createLambert93ToWGS84Converter();
+
+    const features = items.map((feature) => mapFilterFeature(feature, { convertLambert93ToWGS84 })).filter((feature) => feature !== null);
+    logger.info(`Items mapped to features`, { count: features.length });
+
+    const geojson: GeoJSON.FeatureCollection = {
+      features,
+      type: 'FeatureCollection',
+    };
+
     const targetTilesFilePath = join(tempDirectory, 'tiles-features.geojson');
     await writeFile(targetTilesFilePath, JSON.stringify(geojson));
     return targetTilesFilePath;

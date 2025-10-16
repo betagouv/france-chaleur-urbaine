@@ -3,6 +3,7 @@ import { reseauxDeChaleurGeoJSONQuery } from '@/modules/tiles/server/generation-
 import { testsAdressesGeoJSONQuery } from '@/modules/tiles/server/generation-configs/tests-adresses';
 import {
   downloadGeoJSONFromURL,
+  downloadJSONAndTransformToGeoJSON,
   extractGeoJSONFromDatabaseTable,
   extractNDJSONFromDatabaseTable,
   extractZippedShapefileToGeoJSON,
@@ -26,7 +27,56 @@ const bdnbBatimentsFields = [
   'dpe_representatif_logement_type_installation_chauffage',
 ] as const satisfies (keyof BdnbBatiments)[];
 
+type DonneesBrutes = {
+  ID: string;
+  OPERATEUR: string;
+  IRIS: string;
+  IRIS_LIBELLE: string;
+  FILIERE: 'C' | 'F' | 'NA';
+  LAMBERT_93_X: number | 'secret' | 'nd';
+  LAMBERT_93_Y: number | 'secret' | 'nd';
+  ADRESSE: string;
+  NOM_COMMUNE: string;
+  CODE_GRAND_SECTEUR: 'A' | 'I' | 'R' | 'T' | 'X';
+  CONSO: number | 'secret' | 'nd';
+  PDL: number | 'secret' | 'nd';
+  ANNEE: string;
+};
+
 export const tilesConfigs = {
+  'batiments-raccordes-reseaux-chaleur-froid': defineTilesConfig({
+    generateGeoJSON: downloadJSONAndTransformToGeoJSON<DonneesBrutes>({
+      mapFilterFeature: (item, { convertLambert93ToWGS84 }) => {
+        // Skip items with invalid coordinates
+        if ([item.LAMBERT_93_X, item.LAMBERT_93_Y].some((coord) => ['secret', 'nd'].some((v) => v === coord))) {
+          return null;
+        }
+
+        return {
+          geometry: {
+            coordinates: convertLambert93ToWGS84([item.LAMBERT_93_X as number, item.LAMBERT_93_Y as number]),
+            type: 'Point',
+          },
+          properties: {
+            adresse: item.ADRESSE,
+            code_grand_secteur: item.CODE_GRAND_SECTEUR,
+            conso: typeof item.CONSO === 'number' ? item.CONSO : null,
+            filiere: item.FILIERE,
+            id_reseau: item.ID !== 'NA' ? item.ID : null,
+          },
+          type: 'Feature',
+        };
+      },
+      url: 'https://data.statistiques.developpement-durable.gouv.fr/dido/api/v1/datafiles/49ec6b39-cf3b-4280-b25e-2a19f5dc0cfa/json?millesime=2024-09',
+    }),
+    tilesTableName: 'batiments_raccordes_reseaux_chaleur_froid_tiles',
+    tippeCanoeArgs:
+      // 2 layers
+      '-L batiments_raccordes_reseaux_chaleur:temp_batiments_raccordes_reseaux_chaleur.geojson -L batiments_raccordes_reseaux_froid:temp_batiments_raccordes_reseaux_froid.geojson -r1.0',
+    zoomMax: 13,
+    zoomMin: 9,
+  }),
+
   'bdnb-batiments': defineTilesConfig({
     generateGeoJSON: extractNDJSONFromDatabaseTable('bdnb_batiments', {
       fields: bdnbBatimentsFields,
