@@ -45,8 +45,8 @@ const EligibilityHistoryTooltip: React.FC<EligibilityHistoryTooltipProps> = ({ h
                     {eligibilityTitleByType[entry.eligibility.type]}
                   </div>
                   <div className={cx('text-xs', isRecent ? 'text-blue-700' : 'text-gray-600')}>
-                    <div>Réseau : {entry.eligibility.nom}</div>
-                    <div>Distance : {entry.eligibility.distance}m</div>
+                    {entry.eligibility.nom && <div>Réseau : {entry.eligibility.nom}</div>}
+                    {entry.eligibility.distance && <div>Distance : {entry.eligibility.distance}m</div>}
                     {entry.eligibility.contenu_co2_acv !== undefined && (
                       <div>CO2 ACV : {(entry.eligibility.contenu_co2_acv * 1000).toFixed(0)} g/kWh</div>
                     )}
