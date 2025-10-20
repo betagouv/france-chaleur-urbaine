@@ -314,13 +314,23 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
               label={
                 <>
                   <Box
-                    backgroundColor={typeChauffageBatimentsCollectifsStyle.gas}
+                    backgroundColor={typeChauffageBatimentsCollectifsStyle.gaz}
                     opacity={typeChauffageBatimentsOpacity}
                     height="16px"
                     width="16px"
                     mt="1v"
                   />
                   <span>Bâtiments chauffés au gaz collectif</span>
+                  <Tooltip
+                    title={
+                      <>
+                        Données :{' '}
+                        <Link href="https://www.data.gouv.fr/datasets/base-de-donnees-nationale-des-batiments/" isExternal>
+                          BDNB 2024-10.a
+                        </Link>
+                      </>
+                    }
+                  />
                 </>
               }
             >
@@ -328,7 +338,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
                 <ScaleLegend
                   className="fr-ml-1w fr-mr-1w"
                   label="Nombre de lots d'habitation"
-                  color={typeChauffageBatimentsCollectifsStyle.gas}
+                  color={typeChauffageBatimentsCollectifsStyle.gaz}
                   domain={[energyFilterInterval.min, energyFilterInterval.max]}
                   defaultValues={defaultMapConfiguration.batimentsGazCollectif.interval}
                   onChange={updateScaleInterval('batimentsGazCollectif.interval')}
@@ -343,13 +353,23 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
               label={
                 <>
                   <Box
-                    backgroundColor={typeChauffageBatimentsCollectifsStyle.fuelOil}
+                    backgroundColor={typeChauffageBatimentsCollectifsStyle.fioul}
                     opacity={typeChauffageBatimentsOpacity}
                     height="16px"
                     width="16px"
                     mt="1v"
                   />
                   <span>Bâtiments chauffés au fioul collectif</span>
+                  <Tooltip
+                    title={
+                      <>
+                        Données :{' '}
+                        <Link href="https://www.data.gouv.fr/datasets/base-de-donnees-nationale-des-batiments/" isExternal>
+                          BDNB 2024-10.a
+                        </Link>
+                      </>
+                    }
+                  />
                 </>
               }
             >
@@ -357,7 +377,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
                 <ScaleLegend
                   className="fr-ml-1w fr-mr-1w"
                   label="Nombre de lots d'habitation"
-                  color={typeChauffageBatimentsCollectifsStyle.fuelOil}
+                  color={typeChauffageBatimentsCollectifsStyle.fioul}
                   domain={[energyFilterInterval.min, energyFilterInterval.max]}
                   defaultValues={defaultMapConfiguration.batimentsFioulCollectif.interval}
                   onChange={updateScaleInterval('batimentsFioulCollectif.interval')}
@@ -503,10 +523,13 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
                   <Tooltip
                     title={
                       <>
-                        Les DPE affichés par bâtiment résultent d'un extrapolation des DPE par logement ancienne définition. Ils sont donnés
-                        à titre informatif et non-officiel, sans aucune valeur légale.
+                        Les DPE affichés par bâtiment résultent d'une extrapolation des DPE par logement ancienne définition. Ils sont
+                        donnés à titre informatif et non-officiel, sans aucune valeur légale.
                         <br />
-                        Données : BDNB 2024-10.a
+                        Données :{' '}
+                        <Link href="https://www.data.gouv.fr/datasets/base-de-donnees-nationale-des-batiments/" isExternal>
+                          BDNB 2024-10.a
+                        </Link>
                       </>
                     }
                   />
