@@ -242,16 +242,18 @@ function BdnbBatimentPopupContent({
 
         <strong>Constructions</strong>
         <div className="flex flex-col gap-2 py-2">
-          {batimentDetails.constructions?.map((construction) => (
-            <Link
-              variant="secondary"
-              href={`https://rnb.beta.gouv.fr/carte?q=${construction.rnb_id}`}
-              key={construction.construction_id}
-              isExternal
-            >
-              Fiche RNB {construction.rnb_id ?? construction.construction_id}
-            </Link>
-          ))}
+          {batimentDetails.constructions
+            ?.filter((construction) => construction.rnb_id)
+            .map((construction) => (
+              <Link
+                variant="secondary"
+                href={`https://rnb.beta.gouv.fr/carte?q=${construction.rnb_id}`}
+                key={construction.rnb_id}
+                isExternal
+              >
+                Fiche RNB {construction.rnb_id}
+              </Link>
+            ))}
         </div>
       </Accordion>
     </>
