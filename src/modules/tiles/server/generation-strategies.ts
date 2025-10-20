@@ -2,7 +2,7 @@ import { mkdir, mkdtemp, readdir, writeFile } from 'node:fs/promises';
 import { availableParallelism, tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { createLambert93ToWGS84Converter } from '@/modules/geo/client/helpers';
-import { defineTilesGenerationStrategy } from '@/modules/tiles/server/generation';
+import { defineTilesGenerationStrategy, type ImportLayerConfig } from '@/modules/tiles/server/generation';
 import { type DB, type DBTableName, kdb, sql } from '@/server/db/kysely';
 import { processInParallel } from '@/utils/async';
 import { fetchJSON } from '@/utils/network';
@@ -262,4 +262,53 @@ export const extractNDJSONFromDatabaseTable = <TableName extends DBTableName, Fi
     });
 
     return targetTilesFilePath;
+  });
+
+/**
+ * Download JSON data from a URL, transform it to multiple GeoJSON files for different layers
+ * @param url - The URL to fetch the JSON data from
+ * @param layerConfigs - Array of layer configurations with their respective mapping functions
+ * @returns a function that will download, transform and save multiple GeoJSON files
+ */
+export const downloadJSONAndTransformToMultipleGeoJSON = <T>({
+  url,
+  layerConfigs,
+}: {
+  url: string;
+  layerConfigs: Array<{
+    layerName: string;
+    mapFilterFeature: (
+      item: T,
+      helpers: { convertLambert93ToWGS84: Awaited<ReturnType<typeof createLambert93ToWGS84Converter>> }
+    ) => GeoJSON.Feature | null;
+  }>;
+}) =>
+  defineTilesGenerationStrategy(async ({ logger, tempDirectory }) => {
+    const items = await fetchJSON<T[]>(url);
+    logger.info(`Items downloaded`, { count: items.length });
+
+    const convertLambert93ToWGS84 = await createLambert93ToWGS84Converter();
+
+    const layerFiles: ImportLayerConfig[] = [];
+
+    for (const { layerName, mapFilterFeature } of layerConfigs) {
+      const features = items
+        .map((item) => mapFilterFeature(item, { convertLambert93ToWGS84 }))
+        .filter((feature): feature is GeoJSON.Feature => feature !== null);
+
+      logger.info(`Layer ${layerName}`, { featuresCount: features.length });
+
+      const geojson: GeoJSON.FeatureCollection = {
+        features,
+        type: 'FeatureCollection',
+      };
+
+      const filePath = join(tempDirectory, `temp_${layerName}.geojson`);
+      await writeFile(filePath, JSON.stringify(geojson));
+      logger.info(`Wrote ${filePath}`, { featuresCount: features.length });
+
+      layerFiles.push({ filePath, layerName });
+    }
+
+    return layerFiles;
   });

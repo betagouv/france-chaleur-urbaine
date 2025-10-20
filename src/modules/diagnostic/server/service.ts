@@ -2,7 +2,7 @@ import { access, constants, mkdtemp, readFile, rm, writeFile } from 'node:fs/pro
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { knownAirtableBases } from '@cli/airtable/bases';
-import { generateTilesFromGeoJSON, runTippecanoe } from '@/modules/tiles/server/generation-import';
+import { generateTilesFromGeoJSONDockerLegacy, runTippecanoe } from '@/modules/tiles/server/generation-import';
 import { serverConfig } from '@/server/config';
 import { createLogger } from '@/server/helpers/logger';
 import { stringifySorted } from '@/utils/objects';
@@ -116,8 +116,8 @@ async function testTippecanoeFunctional(): Promise<CommandTestResult> {
 
     await writeFile(inputFile, JSON.stringify(testGeoJSON));
 
-    await generateTilesFromGeoJSON({
-      geojsonFilePath: inputFile,
+    await generateTilesFromGeoJSONDockerLegacy({
+      geojsonConfig: inputFile,
       outputDirectory: outputDir,
       zoomMax: 6, // Limité pour le test
       zoomMin: 5,
