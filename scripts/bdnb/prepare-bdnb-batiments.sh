@@ -6,12 +6,6 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # Décommenter pour écrire dans un fichier en plus de la sortie standard
 # exec &> >(tee bdnb-batiments.log)
 
-
-# Au préalable il faut avoir ajouté un id serial sur les bdnb afin de pouvoir découper plus facilement
-# ALTER TABLE bdnb_2024_10_a_open_data.batiment_groupe ADD COLUMN id SERIAL;
-# CREATE INDEX CONCURRENTLY batiment_groupe_id_idx ON bdnb_2024_10_a_open_data.batiment_groupe(id);
-
-
 # Construit une table bdnb_batiments avec les données intéressantes pour FCU
 split_table_query bdnb_batiments id 50000 32300000 "
 SELECT
