@@ -16,7 +16,7 @@ This security system automatically validates all Bash commands before execution,
 ## Components
 
 ### 1. Validation Script
-- **File:** `validate-command.js`
+- **File:** `validate-command.mjs`
 - **Function:** Bun script that validates commands against comprehensive security rules
 - **Dependencies:** None (standalone bun script)
 - **Exit Codes:** 0 = allow, 1 = block
@@ -60,7 +60,7 @@ The system is already installed and active in your Claude Code configuration:
         "hooks": [
           {
             "type": "command", 
-            "command": "bun /Users/melvynx/.claude/validate-command.js"
+            "command": "node /Users/<user>/.claude/validate-command.mjs"
           }
         ]
       }
@@ -77,13 +77,13 @@ Use the `/before-tools` command in Claude Code for interactive testing, or run t
 
 ```bash
 # Test safe command (should pass)
-echo '{"tool_name":"Bash","tool_input":{"command":"ls -la"}}' | bun validate-command.js
+echo '{"tool_name":"Bash","tool_input":{"command":"ls -la"}}' | node validate-command.mjs
 
 # Test dangerous command (should be blocked) 
-echo '{"tool_name":"Bash","tool_input":{"command":"rm -rf /"}}' | bun validate-command.js
+echo '{"tool_name":"Bash","tool_input":{"command":"rm -rf /"}}' | node validate-command.mjs
 
 # Test command injection (should be blocked)
-echo '{"tool_name":"Bash","tool_input":{"command":"ls; rm -rf *"}}' | bun validate-command.js
+echo '{"tool_name":"Bash","tool_input":{"command":"ls; rm -rf *"}}' | node validate-command.mjs
 ```
 
 ### Test Results
@@ -171,7 +171,7 @@ mv security.log security-$(date +%Y%m).log
 ```
 
 ### Rule Updates
-Edit `validate-command.js` to modify security rules:
+Edit `validate-command.mjs` to modify security rules:
 - Add new dangerous commands to `SECURITY_RULES.CRITICAL_COMMANDS`
 - Add new regex patterns to `SECURITY_RULES.DANGEROUS_PATTERNS`
 - Modify severity levels or validation logic
@@ -223,13 +223,13 @@ The validation script can be extended to integrate with:
 
 2. **Verify script permissions:**
    ```bash
-   ls -la validate-command.js
-   chmod +x validate-command.js  # If needed
+   ls -la validate-command.mjs
+   chmod +x validate-command.mjs  # If needed
    ```
 
 3. **Test script directly:**
    ```bash
-   echo '{"tool_name":"Bash","tool_input":{"command":"ls"}}' | bun validate-command.js
+   echo '{"tool_name":"Bash","tool_input":{"command":"ls"}}' | node validate-command.mjs
    ```
 
 ### Performance Issues
