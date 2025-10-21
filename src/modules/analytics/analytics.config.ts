@@ -531,7 +531,6 @@ export const trackingEvents = {
   'Lien|Choix chauffage vers comparateur': {
     matomo: ['Lien', 'Choix chauffage vers comparateur'],
   },
-
   'Outil|Carte des réseaux et potentiels': {
     matomo: ['Outil', 'Carte des réseaux et potentiels'],
   },
@@ -543,6 +542,9 @@ export const trackingEvents = {
   },
   'Outil|Coûts de raccordement et aides': {
     matomo: ['Outil', 'Coûts de raccordement et aides'],
+  },
+  'Outil|Décret tertiaire': {
+    matomo: ['Outil', 'Décret tertiaire'],
   },
   'Outil|Liste des réseaux de chaleur': {
     matomo: ['Outil', 'Liste des réseaux de chaleur'],

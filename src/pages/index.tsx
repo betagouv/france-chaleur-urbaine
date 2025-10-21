@@ -1,5 +1,5 @@
 import Highlight from '@codegouvfr/react-dsfr/Highlight';
-
+import { AnimatePresence } from 'motion/react';
 import { clientConfig } from '@/client-config';
 import LastArticles from '@/components/Articles/LastArticles';
 import InterviewsVideos from '@/components/Coproprietaire/InterviewsVideos';
@@ -10,14 +10,17 @@ import { issues, understandings } from '@/components/Ressources/config';
 import Understanding from '@/components/Ressources/Understanding';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Box from '@/components/ui/Box';
+import Card from '@/components/ui/Card';
 import Hero, { HeroContent, HeroSubtitle, HeroTitle } from '@/components/ui/Hero';
 import colors from '@/components/ui/helpers/colors';
 import Icon from '@/components/ui/Icon';
 import Image from '@/components/ui/Image';
 import Link from '@/components/ui/Link';
+import Markdown from '@/components/ui/Markdown';
 import Section, { SectionContent, SectionHeading, SectionTitle, SectionTwoColumns } from '@/components/ui/Section';
-import SectionScrollableTiles, { type SectionScrollableTilesItem } from '@/components/ui/SectionScrollableTiles';
 import Text from '@/components/ui/Text';
+import type { TrackingEvent } from '@/modules/analytics/client';
+import cx from '@/utils/cx';
 
 const coproprietaireCards = {
   atouts: issues.atouts,
@@ -26,7 +29,7 @@ const coproprietaireCards = {
   reseau: issues.reseau,
 };
 
-const tools: SectionScrollableTilesItem[] = [
+const tools: { eventKey: TrackingEvent; excerpt: string; href: string; image: string; title: string }[] = [
   {
     eventKey: 'Outil|Carte des réseaux et potentiels',
     excerpt: 'Visualisez les données des réseaux de chaleur.',
@@ -40,20 +43,6 @@ const tools: SectionScrollableTilesItem[] = [
     href: '/collectivites-et-exploitants/potentiel-creation-reseau',
     image: '/icons/tools/v2/reseau_avenir.svg',
     title: 'Réseau d’avenir',
-  },
-  {
-    eventKey: "Outil|Comparateur de coûts et d'émissions de CO2",
-    excerpt: 'Comparez les coûts et émissions des modes de chauffage.',
-    href: '/comparateur-couts-performances',
-    image: '/icons/tools/v2/comparateur.svg',
-    title: 'Comparateur',
-  },
-  {
-    eventKey: 'Outil|Compatibilité des modes de chauffage' as const,
-    excerpt: 'Quel chauffage écologique pour votre bâtiment ?',
-    href: '/chaleur-renouvelable',
-    image: '/icons/tools/v2/chauffage_ecologique.svg',
-    title: 'Chauffage écologique',
   },
   {
     eventKey: 'Outil|Coûts de raccordement et aides',
@@ -78,6 +67,7 @@ const tools: SectionScrollableTilesItem[] = [
     title: 'Test en masse',
   },
   {
+    eventKey: 'Outil|Décret tertiaire',
     excerpt: 'Découvrez le dispositif Éco-Énergie Tertiaire.',
     href: '/ressources/dispositif-eco-energie-tertiaire#contenu',
     image: '/icons/tools/v2/decret_tertiaire.svg',
@@ -107,6 +97,31 @@ const tools: SectionScrollableTilesItem[] = [
   // },
 ];
 
+const benefits = [
+  '::arrow-item[**Bénéficiez de tarifs plus stables** grâce à des énergies locales]',
+  "::arrow-item[**Profitez de subventions** pour le raccordement et d'une TVA à 5,5%]",
+  "::arrow-item[**Améliorez l'étiquette DPE** de votre copropriété]",
+  "::arrow-item[**Valorisez les émissions de gaz à effet de serre** d'en moyenne 50%]",
+];
+
+const mainTools = [
+  {
+    description: 'Comparez les coûts de la chaleur et les émissions de tous les modes de chauffage.',
+    eventKey: "Outil|Comparateur de coûts et d'émissions de CO2" as TrackingEvent,
+    href: '/comparateur-couts-performances',
+    imageAlt: 'Illustration comparateur de coûts et émissions',
+    imageUrl: '/img/illustrations/benefices-comparateur.svg',
+    title: "Comparez les coûts et d'émissions de CO₂",
+  },
+  {
+    description: 'Comparez en 2 clics les différents prix des chauffages écologiques.',
+    eventKey: 'Outil|Compatibilité des modes de chauffage' as TrackingEvent,
+    href: '/chaleur-renouvelable',
+    imageAlt: 'Illustration chauffage écologique',
+    imageUrl: '/img/illustrations/benefices-chauffage.svg',
+    title: 'Quel chauffage convient le mieux à votre copropriété ?',
+  },
+];
 function Home() {
   return (
     <SimplePage
@@ -129,22 +144,66 @@ function Home() {
         </HeroContent>
       </Hero>
 
-      <SectionScrollableTiles title="Accès direct à tous nos outils" tiles={tools} />
-
-      <Section variant="light" id="avantages-du-chauffage-urbain">
-        <SectionTitle>Les avantages du chauffage urbain</SectionTitle>
-        <SectionContent>
-          <AvantagesChauffageUrbain />
-          <div className="flex items-center justify-center mt-12">
-            <Link
-              variant="primary"
-              href="/documentation/guide-france-chaleur-urbaine.pdf"
-              eventKey="Téléchargement|Guide FCU|coproprietaire"
-              isExternal
-            >
-              Télécharger le guide de raccordement
-            </Link>
+      <Section>
+        <SectionTwoColumns>
+          <div className="flex flex-col justify-between h-full flex-[2]!">
+            <Markdown color="#333" className="">
+              {benefits.join('\n')}
+            </Markdown>
+            <div className="mt-8">
+              <Link
+                variant="primary"
+                href="/documentation/guide-france-chaleur-urbaine.pdf"
+                eventKey="Téléchargement|Guide FCU|professionnels"
+                isExternal
+              >
+                Télécharger le guide de raccordement
+              </Link>
+            </div>
           </div>
+          <div className="flex flex-col sm:flex-row gap-4 flex-[3]! mx-auto max-w-xl">
+            {mainTools.map((mainTool) => (
+              <Card
+                size="sm"
+                imageAspect="square"
+                className="flex-1"
+                imageUrl={mainTool.imageUrl}
+                imageAlt={mainTool.imageAlt}
+                key={mainTool.href}
+                title={mainTool.title}
+                desc={mainTool.description}
+                linkProps={{
+                  href: mainTool.href,
+                }}
+                enlargeLink
+              />
+            ))}
+          </div>
+        </SectionTwoColumns>
+      </Section>
+      <Section variant="light" size="sm">
+        <SectionContent className={cx('flex flex-wrap items-stretch justify-center gap-2 transition-all duration-300')}>
+          <AnimatePresence mode="popLayout">
+            {tools.map((tile, index) => (
+              <>
+                <Link
+                  key={`${tile.title}-${index}`}
+                  className="shrink-0 text-center hover:bg-gray-50! cursor-pointer rounded-md p-0.5 py-5 flex flex-col gap-2 tracking-tight flex-1 min-w-[150px] max-w-[150px] bg-none"
+                  href={tile.href ?? '#'}
+                  eventKey={tile.eventKey}
+                >
+                  <Image src={tile.image} alt="" width={64} height={64} className="mx-auto" />
+                  <h2 className="text-base font-semibold text-gray-900 mb-0">{tile.title}</h2>
+                  <p className="text-sm text-gray-500 mb-0">{tile.excerpt}</p>
+                </Link>
+                {index < tools.length - 1 && (
+                  <div className="flex items-center justify-center">
+                    <div className="w-px h-1/2 bg-[#E3E4FD]" />
+                  </div>
+                )}
+              </>
+            ))}
+          </AnimatePresence>
         </SectionContent>
       </Section>
 
