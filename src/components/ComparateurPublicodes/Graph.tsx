@@ -502,22 +502,22 @@ const Graph: React.FC<GraphProps> = ({
         onChange: () => setGraphType('couts'),
       },
     },
-  ];
-  if (advancedMode) {
-    segments.push({
+    {
       label: 'Émissions de CO2',
       nativeInputProps: {
         checked: graphType === 'emissions',
         onChange: () => setGraphType('emissions'),
       },
-    });
-  }
+    },
+  ];
 
   return (
     <>
-      <Box textAlign="right" my="4w">
-        <SegmentedControl hideLegend segments={segments} />
-      </Box>
+      {advancedMode && (
+        <Box textAlign="right" my="4w">
+          <SegmentedControl hideLegend segments={segments} />
+        </Box>
+      )}
       <div ref={ref} className={cx(className)} {...props}>
         {graphType === 'couts-emissions' && (
           <div>
