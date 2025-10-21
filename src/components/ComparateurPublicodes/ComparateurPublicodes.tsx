@@ -164,7 +164,8 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
             : 'Renseignez une adresse'}
         </CallOut>
       )}
-      {!loading && address && (
+
+      {displayGraph && !loading && address && (
         <Alert size="sm" className="mb-5" variant={nearestReseauDeChaleur ? 'info' : 'warning'}>
           {nearestReseauDeChaleur ? (
             <>
@@ -226,7 +227,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
           )}
         </Alert>
       )}
-      {!loading && inclureLaClimatisation && address && (
+      {displayGraph && !loading && inclureLaClimatisation && address && (
         <Alert size="sm" className="mb-5" variant={nearestReseauDeFroid ? 'info' : 'warning'}>
           {nearestReseauDeFroid ? (
             <>

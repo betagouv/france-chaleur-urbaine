@@ -67,6 +67,7 @@ const Autocomplete = <Option extends DefaultOption>({
         if (!(inputValue?.length >= minCharThreshold && !selectedValue && !error)) {
           return;
         }
+        setLoading(true);
         try {
           const results = await fetchFn(inputValue);
           if (results.length > 0 && defaultValue && !defaultValueSet) {
