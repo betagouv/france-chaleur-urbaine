@@ -6,10 +6,15 @@ import cx from '@/utils/cx';
 
 const cardVariants = cva('', {
   defaultVariants: {
+    imageAspect: 'default',
     size: 'md',
     variant: 'default',
   },
   variants: {
+    imageAspect: {
+      default: '',
+      square: '[.fr-card__img>img]:aspect-square',
+    },
     size: {
       lg: '',
       md: '',
@@ -17,11 +22,12 @@ const cardVariants = cva('', {
     },
     variant: {
       default: '',
+      size: 'md',
     },
   },
 });
 
-export type CardProps = DSFRCardProps &
+export type CardProps = Omit<DSFRCardProps, 'size'> &
   VariantProps<typeof cardVariants> & {
     description?: string | ReactNode;
     className?: string;
@@ -35,7 +41,14 @@ export type CardProps = DSFRCardProps &
  * - Additional className support for custom styling
  */
 const Card: React.FC<CardProps> = ({ description, variant, size, className, ...props }) => {
-  return <DSFRCard desc={description as DSFRCardProps['desc']} className={cx(cardVariants({ size, variant }), className)} {...props} />;
+  return (
+    <DSFRCard
+      size={size === 'sm' ? 'small' : size === 'md' ? 'medium' : 'large'}
+      desc={description as DSFRCardProps['desc']}
+      className={cx(cardVariants({ size, variant }), className)}
+      {...(props as any)}
+    />
+  );
 };
 
 export default Card;
