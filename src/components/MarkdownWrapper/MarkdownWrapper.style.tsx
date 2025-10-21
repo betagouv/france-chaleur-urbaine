@@ -39,14 +39,18 @@ export const MarkdownWrapperStyled = styled.div.attrs<MarkdownWrapperStyledProps
     h6 + h6 {
       margin-top: calc(-1rem + 0.25rem);
     }
-
     p {
       font-size: inherit;
       line-height: inherit;
     }
 
+    div {
+      color: ${color || legacyColors.lightblue};
+    }
+
     em {
       color: ${color || legacyColors.lightblue};
+
       font-style: normal;
       strong {
         font-size: 14px;
