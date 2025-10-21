@@ -12,9 +12,10 @@ import { distancesMeasurementLayers } from './components/tools/DistancesMeasurem
 import { linearHeatDensityLayers } from './components/tools/LinearHeatDensityTool';
 import { adressesEligiblesLayersSpec } from './layers/adressesEligibles';
 import { batimentsRaccordesReseauxChaleurFroidLayersSpec } from './layers/batimentsRaccordesReseauxChaleurFroid';
+import { caracteristiquesBatimentsLayersSpec } from './layers/bdnb/caracteristiquesBatiments';
+import { typeChauffageBatimentsCollectifsLayersSpec } from './layers/bdnb/typeChauffageBatimentsCollectifs';
 import { besoinsEnChaleurLayersSpec } from './layers/besoinsEnChaleur';
 import { besoinsEnChaleurIndustrieCommunesLayersSpec } from './layers/besoinsEnChaleurIndustrieCommunes';
-import { caracteristiquesBatimentsLayersSpec } from './layers/caracteristiquesBatiments';
 import { type LayerSymbolSpecification, type MapSourceLayersSpecification, type PopupHandler, tileSourcesMaxZoom } from './layers/common';
 import { communesFortPotentielPourCreationReseauxChaleurLayersSpec } from './layers/communesFortPotentielPourCreationReseauxChaleur';
 import { consommationsGazLayersSpec } from './layers/consommationsGaz';
@@ -38,7 +39,6 @@ import { reseauxDeFroidLayersSpec } from './layers/reseauxDeFroid';
 import { reseauxEnConstructionLayersSpec } from './layers/reseauxEnConstruction';
 import { ressourcesGeothermalesNappesLayersSpec } from './layers/ressourcesGeothermalesNappes';
 import { testsAdressesLayersSpec } from './layers/testsAdresses';
-import { typeChauffageBatimentsCollectifsLayersSpec } from './layers/typeChauffageBatimentsCollectifs';
 import { zonesAUrbaniserLayersSpec } from './layers/zonesAUrbaniser';
 import { zonesPotentielChaudLayersSpec } from './layers/zonesPotentielChaud';
 import { zonesPotentielFroidLayersSpec } from './layers/zonesPotentielFroid';
@@ -185,20 +185,20 @@ interface FCUMap extends Map {
 
 export function loadMapLayers(map: FCUMap, config: MapConfiguration) {
   mapLayers.forEach((spec) => {
-    if (map.getSource(spec.sourceId)) {
-      return;
+    // sometimes the same source is used by multiple layers, so we need to add it only once
+    if (!map.getSource(spec.sourceId)) {
+      map.addSource(spec.sourceId, {
+        ...spec.source,
+        ...(spec.source.type === 'vector'
+          ? {
+              maxzoom: (spec.source as VectorSourceSpecification).maxzoom ?? tileSourcesMaxZoom,
+              // prepend the website origin to the tiles as we need the full url for tiles
+              tiles: spec.source.tiles.map((url) => `${clientConfig.websiteOrigin}${url}`),
+            }
+          : {}),
+      });
     }
 
-    map.addSource(spec.sourceId, {
-      ...spec.source,
-      ...(spec.source.type === 'vector'
-        ? {
-            maxzoom: (spec.source as VectorSourceSpecification).maxzoom ?? tileSourcesMaxZoom,
-            // prepend the website origin to the tiles as we need the full url for tiles
-            tiles: spec.source.tiles.map((url) => `${clientConfig.websiteOrigin}${url}`),
-          }
-        : {}),
-    });
     spec.layers.forEach((layer) => {
       const filterFunc = (layer as MapLayerSpecification).filter;
       map.addLayer({

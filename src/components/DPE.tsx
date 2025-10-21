@@ -1,4 +1,4 @@
-import { caracteristiquesBatimentsLayerStyle } from '@/components/Map/layers/caracteristiquesBatiments';
+import { caracteristiquesBatimentsLayerStyle } from '@/components/Map/layers/bdnb/caracteristiquesBatiments';
 
 type DPEProps = {
   classe: keyof typeof caracteristiquesBatimentsLayerStyle;

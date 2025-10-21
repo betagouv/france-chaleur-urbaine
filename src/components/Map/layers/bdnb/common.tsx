@@ -1,97 +1,25 @@
-import type { ExpressionInputType } from 'maplibre-gl';
-
+import type { SourceSpecification } from 'maplibre-gl';
 import DPE from '@/components/DPE';
+import type { PopupStyleHelpers } from '@/components/Map/layers/common';
 import Accordion from '@/components/ui/Accordion';
 import Link from '@/components/ui/Link';
 import Loader from '@/components/ui/Loader';
 import Tooltip from '@/components/ui/Tooltip';
 import type { BdnbBatimentTile } from '@/modules/tiles/server/generation-config';
 import trpc from '@/modules/trpc/client';
-import { darken } from '@/utils/color';
 import { isDefined } from '@/utils/core';
 import { formatTypeEnergieChauffage } from '@/utils/format';
-import { ObjectEntries } from '@/utils/typescript';
-import { ifHoverElse, intermediateTileLayersMinZoom, type MapSourceLayersSpecification, type PopupStyleHelpers } from './common';
 
-export const caracteristiquesBatimentsLayerStyle = {
-  A: '#0D8A61',
-  B: '#42A548',
-  C: '#6CB36E',
-  D: '#EBDE2D',
-  E: '#E0A736',
-  F: '#E66E31',
-  G: '#C5171D',
-  null: '#999999',
-};
-
-const opacity = 0.65;
-
-const dpeWithColorPairs = ObjectEntries(caracteristiquesBatimentsLayerStyle).flatMap(([dpeCode, dpeColor]) => [
-  dpeCode,
-  ifHoverElse(darken(dpeColor, 40), dpeColor),
-]) as [string, ExpressionInputType, ...ExpressionInputType[]];
-
-export const caracteristiquesBatimentsLayersSpec = [
-  {
-    layers: [
-      {
-        id: 'caracteristiquesBatiments',
-        isVisible: (config) => config.caracteristiquesBatiments,
-        minzoom: intermediateTileLayersMinZoom,
-        paint: {
-          'fill-color': [
-            'match',
-            ['coalesce', ['get', 'dpe_representatif_logement_classe_bilan_dpe'], 'null'],
-            ...dpeWithColorPairs,
-            ifHoverElse(darken(caracteristiquesBatimentsLayerStyle.null, 40), caracteristiquesBatimentsLayerStyle.null),
-          ],
-          'fill-opacity': [
-            'interpolate',
-            ['linear'],
-            ['zoom'],
-            intermediateTileLayersMinZoom + 0.2,
-            0,
-            intermediateTileLayersMinZoom + 0.2 + 1,
-            opacity,
-          ],
-        },
-        popup: Popup,
-        type: 'fill',
-      },
-      {
-        id: 'caracteristiquesBatiments-contour',
-        isVisible: (config) => config.caracteristiquesBatiments,
-        minzoom: intermediateTileLayersMinZoom,
-        paint: {
-          'line-color': ifHoverElse('#333', '#777'),
-          'line-opacity': [
-            'interpolate',
-            ['linear'],
-            ['zoom'],
-            intermediateTileLayersMinZoom + 0.2,
-            0,
-            intermediateTileLayersMinZoom + 0.2 + 1,
-            opacity,
-          ],
-          'line-width': ifHoverElse(2, 0.5),
-        },
-        type: 'line',
-        unselectable: true,
-      },
-    ],
-    source: {
-      maxzoom: 15,
-      minzoom: 12, // inutile en dessous et beaucoup trop gros
-      promoteId: 'batiment_groupe_id',
-      tiles: ['/api/map/bdnbBatiments/{z}/{x}/{y}'],
-      type: 'vector',
-    },
-    sourceId: 'bdnbBatiments',
-  },
-] as const satisfies readonly MapSourceLayersSpecification[];
+export const bdnbBatimentsTilesSource = {
+  maxzoom: 15,
+  minzoom: 12, // inutile en dessous et beaucoup trop gros
+  promoteId: 'batiment_groupe_id',
+  tiles: ['/api/map/bdnbBatiments/{z}/{x}/{y}'],
+  type: 'vector',
+} as const satisfies SourceSpecification;
 
 // Fonction wrapper qui ne peut pas utiliser de hook, le composant interne est normal et peut utiliser des hooks
-export function Popup(caracteristiqueBatiment: BdnbBatimentTile, helpers: PopupStyleHelpers) {
+export function BdnbBatimentPopup(caracteristiqueBatiment: BdnbBatimentTile, helpers: PopupStyleHelpers) {
   return <BdnbBatimentPopupContent caracteristiqueBatiment={caracteristiqueBatiment} {...helpers} />;
 }
 

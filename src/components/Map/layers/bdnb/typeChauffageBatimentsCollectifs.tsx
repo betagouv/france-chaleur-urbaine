@@ -1,11 +1,10 @@
 import type { DataDrivenPropertyValueSpecification, ExpressionInputType } from 'maplibre-gl';
-
-import { Popup } from '@/components/Map/layers/caracteristiquesBatiments';
+import { BdnbBatimentPopup, bdnbBatimentsTilesSource } from '@/components/Map/layers/bdnb/common';
 import type { BdnbBatimentTile } from '@/modules/tiles/server/generation-config';
 import { deepMergeObjects } from '@/utils/core';
 import { ObjectEntries } from '@/utils/typescript';
-import type { MapLayerSpecification } from '../map-layers';
-import { ifHoverElse, intermediateTileLayersMinZoom, type MapSourceLayersSpecification } from './common';
+import type { MapLayerSpecification } from '../../map-layers';
+import { ifHoverElse, intermediateTileLayersMinZoom, type MapSourceLayersSpecification } from '../common';
 
 export const minIconSize = 12;
 export const maxIconSize = 30;
@@ -123,18 +122,12 @@ export const typeChauffageBatimentsCollectifsLayersSpec = [
             typeChauffageBatimentsOpacity,
           ],
         },
-        popup: Popup,
+        popup: BdnbBatimentPopup,
         type: 'symbol',
       }),
     ],
-    source: {
-      maxzoom: 14,
-      minzoom: 12,
-      promoteId: 'batiment_groupe_id',
-      tiles: [`/api/map/bdnbBatiments/{z}/{x}/{y}`],
-      type: 'vector',
-    },
-    sourceId: 'bdnbBatimentsTypeChauffage',
+    source: bdnbBatimentsTilesSource,
+    sourceId: 'bdnbBatiments',
   },
 ] as const satisfies readonly MapSourceLayersSpecification[];
 

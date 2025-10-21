@@ -20,9 +20,14 @@ import Tooltip from '@/components/ui/Tooltip';
 import { trackEvent } from '@/modules/analytics/client';
 import { useAuthentication } from '@/modules/auth/client/hooks';
 import { ObjectEntries } from '@/utils/typescript';
+import { caracteristiquesBatimentsLayerStyle } from '../layers/bdnb/caracteristiquesBatiments';
+import {
+  energyFilterInterval,
+  typeChauffageBatimentsCollectifsStyle,
+  typeChauffageBatimentsOpacity,
+} from '../layers/bdnb/typeChauffageBatimentsCollectifs';
 import { besoinsEnChaleurIntervals, besoinsEnFroidIntervals } from '../layers/besoinsEnChaleur';
 import { besoinsEnChaleurIndustrieCommunesIntervals } from '../layers/besoinsEnChaleurIndustrieCommunes';
-import { caracteristiquesBatimentsLayerStyle } from '../layers/caracteristiquesBatiments';
 import {
   communesFortPotentielPourCreationReseauxChaleurInterval,
   communesFortPotentielPourCreationReseauxChaleurLayerColor,
@@ -67,11 +72,6 @@ import {
   statutColorMap,
 } from '../layers/geothermie/perimetresGeothermieProfonde';
 import { ressourcesGeothermalesNappesConfig, ressourcesGeothermalesNappesOpacity } from '../layers/ressourcesGeothermalesNappes';
-import {
-  energyFilterInterval,
-  typeChauffageBatimentsCollectifsStyle,
-  typeChauffageBatimentsOpacity,
-} from '../layers/typeChauffageBatimentsCollectifs';
 import { zonesAUrbaniserColor, zonesAUrbaniserOpacity } from '../layers/zonesAUrbaniser';
 import { zonePotentielChaudColor, zonePotentielChaudOpacity, zonePotentielFortChaudColor } from '../layers/zonesPotentielChaud';
 import { zonePotentielFortFroidColor, zonePotentielFroidColor, zonePotentielFroidOpacity } from '../layers/zonesPotentielFroid';
