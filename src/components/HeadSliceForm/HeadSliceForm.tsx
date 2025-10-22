@@ -14,11 +14,11 @@ import Link from '@/components/ui/Link';
 import Modal, { createModal } from '@/components/ui/Modal';
 import useContactFormFCU from '@/hooks/useContactFormFCU';
 import { AnalyticsFormId } from '@/modules/analytics/client';
+import useUserInfo from '@/modules/app/client/hooks/useUserInfo';
+import type { AvailableHeating } from '@/modules/app/types';
 import { useServices } from '@/services';
-import type { AvailableHeating } from '@/types/AddressData';
 import type { SuggestionItem } from '@/types/Suggestions';
 import cx from '@/utils/cx';
-
 import { Container, FormLabel, HeadSliceContainer, PageBody, PageTitle, SliceContactFormStyle } from './HeadSliceForm.style';
 
 type HeadBannerType = {
@@ -72,9 +72,8 @@ const HeadSliceForm = ({
   const { heatNetworkService } = useServices();
   const router = useRouter();
 
-  const [heatingType, setHeatingType] = useState<AvailableHeating>();
   const [geoAddress, setGeoAddress] = useState<SuggestionItem>();
-  const [address, setAddress] = useState('');
+  const { address, heatingType, setAddress, setHeatingType } = useUserInfo();
   const [autoValidate, setAutoValidate] = useState(false);
   const [eligibilityError, setEligibilityError] = useState(false);
 
@@ -113,7 +112,7 @@ const HeadSliceForm = ({
         coords,
         eligibility: networkData,
         geoAddress,
-        heatingType,
+        heatingType: heatingType as AvailableHeating,
       });
     } catch (_err: any) {
       setEligibilityError(true);
@@ -128,7 +127,7 @@ const HeadSliceForm = ({
     }
 
     if (heating) {
-      setHeatingType(heating as AvailableHeating);
+      setHeatingType(heating as Parameters<typeof setHeatingType>[0]);
     }
     if (address) {
       setAddress(address as string);
@@ -154,9 +153,7 @@ const HeadSliceForm = ({
                 label="Mode de chauffage actuel :"
                 name="heatingType"
                 selectOptions={energyInputsDefaultLabels}
-                onChange={(val) => {
-                  setHeatingType(val as AvailableHeating);
-                }}
+                onChange={(val) => setHeatingType(val)}
                 value={heatingType || ''}
               />
             </CheckEligibilityFormLabel>
@@ -164,6 +161,10 @@ const HeadSliceForm = ({
               className="mb-2!"
               defaultValue={address}
               nativeInputProps={{ placeholder: 'Tapez ici votre adresse' }}
+              onClear={() => {
+                setAddress('');
+                setGeoAddress(undefined);
+              }}
               onSelect={(geoAddress?: SuggestionItem) => {
                 const address = geoAddress?.properties?.label;
                 setAddress(address ?? '');
@@ -181,7 +182,6 @@ const HeadSliceForm = ({
             >
               {warningMessage}
             </div>
-
             <div className="mb-1">
               {eligibilityError ? (
                 <span className="text-error">
@@ -191,7 +191,6 @@ const HeadSliceForm = ({
                 <>&nbsp;</>
               )}
             </div>
-
             <div className="flex justify-between gap-2 items-center">
               <Button
                 size="medium"

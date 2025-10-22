@@ -18,6 +18,7 @@ import Notice from '@/components/ui/Notice';
 import Section, { SectionContent, SectionHeading } from '@/components/ui/Section';
 import useEligibilityForm from '@/hooks/useEligibilityForm';
 import { trackEvent } from '@/modules/analytics/client';
+import useUserInfo from '@/modules/app/client/hooks/useUserInfo';
 import type { LocationInfoResponse } from '@/pages/api/location-infos';
 import { useServices } from '@/services';
 import { getNetworkEligibilityDistances } from '@/services/eligibility';
@@ -26,7 +27,6 @@ import cx from '@/utils/cx';
 import { postFetchJSON } from '@/utils/network';
 import { slugify } from '@/utils/strings';
 import { ObjectEntries } from '@/utils/typescript';
-
 import { FloatingButton, Results, Simulator } from './ComparateurPublicodes.style';
 import DebugDrawer from './DebugDrawer';
 import Graph from './Graph';
@@ -57,8 +57,9 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
   const searchParams = useSearchParams();
 
   const [graphDrawerOpen, setGraphDrawerOpen] = React.useState(false);
+  const [addressInUrl, setAddressInUrl] = useQueryState('address');
 
-  const [address, setAddress] = useQueryState('address');
+  const { address, setAddress } = useUserInfo();
   const [addressDetail, setAddressDetail] = React.useState<AddressDetail>();
   const [lngLat, setLngLat] = React.useState<[number, number]>();
   const [modesDeChauffageQueryParam] = useQueryState('modes-de-chauffage');
@@ -282,6 +283,9 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
             hasPriceData: !!nearestReseauDeChaleur?.PM,
             hide: !advancedMode && !nearestReseauDeChaleur,
             label: nearestReseauDeChaleur?.nom_reseau,
+            url: nearestReseauDeChaleur?.['Identifiant reseau']
+              ? `/reseaux/${nearestReseauDeChaleur['Identifiant reseau']}?address=${address}`
+              : undefined,
           }}
           captureImageName={fileName}
           export={
@@ -432,7 +436,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
         addressError ? 'Désolé, nous n’avons pas trouvé la ville associée à cette adresse, essayez avec une autre' : undefined
       }
       forceReload={forceReload}
-      defaultValue={address || ''}
+      defaultValue={addressInUrl || address || ''}
       onLoadingChange={(loading) => {
         if (loading) {
           setAddressLoading(true);
@@ -443,7 +447,8 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
         setNearestReseauDeFroid(undefined);
         setAddressError(false);
         setAddressLoading(false);
-        void setAddress(null);
+        void setAddress('');
+        void setAddressInUrl(null);
         setLngLat(undefined);
 
         engine.setSituation(
@@ -461,7 +466,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
           const [lon, lat] = selectedAddress.geometry.coordinates;
           const addressLabel = selectedAddress.properties.label;
           if (addressLabel !== address) {
-            void setAddress(null);
+            void setAddress('');
           }
           const network = await heatNetworkService.findByCoords(selectedAddress);
           setAddressDetail({
@@ -494,6 +499,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
           }
 
           void setAddress(addressLabel);
+          void setAddressInUrl(addressLabel);
 
           if (infos.nearestReseauDeChaleur || infos.nearestReseauDeFroid) {
             setLngLat(selectedAddress.geometry.coordinates);
@@ -527,6 +533,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
             if (newAddress !== address) {
               setForceReload(true);
               void setAddress(newAddress);
+              void setAddressInUrl(newAddress);
             }
           }}
         />

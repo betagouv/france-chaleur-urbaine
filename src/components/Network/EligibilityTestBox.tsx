@@ -13,6 +13,7 @@ import Link from '@/components/ui/Link';
 import Modal, { createModal } from '@/components/ui/Modal';
 import Text from '@/components/ui/Text';
 import { trackEvent } from '@/modules/analytics/client';
+import useUserInfo from '@/modules/app/client/hooks/useUserInfo';
 import { getReadableDistance } from '@/modules/geo/client/helpers';
 import type { NetworkEligibilityStatus } from '@/server/services/addresseInformation';
 import { useServices } from '@/services';
@@ -38,10 +39,10 @@ const eligibilityTestModal = createModal({
  */
 const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
   const { heatNetworkService } = useServices();
-  const [defaultAddress, setDefaultAddress] = useQueryState('address');
+  const [addressInUrl, setAddressInUrl] = useQueryState('address');
   const [selectedGeoAddress, setSelectedGeoAddress] = useState<SuggestionItem>();
   const [eligibilityStatus, setEligibilityStatus] = useState<NetworkEligibilityStatus>();
-  const [heatingType, setHeatingType] = useState('');
+  const { heatingType, setHeatingType, address: userAddress, setAddress: setUserAddress } = useUserInfo();
   const [formState, setFormState] = useState<FormState>('idle');
 
   // appelé au clic sur Tester l'adresse, pour récupérer l'éligibilité et les informations du réseau
@@ -64,15 +65,15 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
   };
 
   const onAddressSelected = (geoAddress?: SuggestionItem) => {
-    void setDefaultAddress(null);
+    void setAddressInUrl(null);
     // beware, this function gets called every time the address changes
     // and we only need the result when the address is complete
     if (!geoAddress) {
       return;
     }
+    void setUserAddress(geoAddress.properties.label);
     setSelectedGeoAddress(geoAddress);
     setEligibilityStatus(undefined);
-    setHeatingType('');
     void testAddressEligibility(geoAddress);
   };
 
@@ -129,8 +130,9 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
         <AddressAutocomplete
           label=""
           nativeInputProps={{ placeholder: 'Tapez ici votre adresse' }}
-          defaultValue={defaultAddress || ''}
+          defaultValue={addressInUrl || userAddress || ''}
           onClear={() => {
+            setUserAddress('');
             setSelectedGeoAddress(undefined);
           }}
           onSelect={onAddressSelected}
@@ -231,7 +233,7 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
                         className="fr-my-2w"
                         selectOptions={energyInputsDefaultLabels}
                         onChange={setHeatingType}
-                        value={heatingType}
+                        value={heatingType || ''}
                       />
                       {heatingType === 'individuel' && (
                         <Alert className="fr-mt-2w" variant="warning" size="sm">
