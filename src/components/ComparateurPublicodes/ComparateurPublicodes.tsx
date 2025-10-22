@@ -308,9 +308,6 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
             hasPriceData: !!nearestReseauDeChaleur?.PM,
             hide: !advancedMode && !nearestReseauDeChaleur,
             label: nearestReseauDeChaleur?.nom_reseau,
-            url: nearestReseauDeChaleur?.['Identifiant reseau']
-              ? `/reseaux/${nearestReseauDeChaleur['Identifiant reseau']}?address=${address}`
-              : undefined,
           }}
           captureImageName={fileName}
           export={
