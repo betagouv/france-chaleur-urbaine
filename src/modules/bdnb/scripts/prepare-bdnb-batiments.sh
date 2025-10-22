@@ -96,7 +96,6 @@ LEFT JOIN bdnb_2024_10_a_open_data.batiment_groupe_dpe_representatif_logement dp
 LEFT JOIN bdnb_2024_10_a_open_data.batiment_groupe_bdtopo_bat bdtopo ON bdtopo.batiment_groupe_id = bg.batiment_groupe_id
 LEFT JOIN bdnb_2024_10_a_open_data.batiment_groupe_synthese_propriete_usage synthese ON synthese.batiment_groupe_id = bg.batiment_groupe_id
 WHERE contient_fictive_geom_groupe is false -- supprime toutes les geom hexagones
-  AND true -- WHERE obligatoire pour split_table_query
 "
 
 echo -e "\nReste à faire : 

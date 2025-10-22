@@ -1,5 +1,9 @@
 # Procédure pour exporter les batiments et logements à proximité pour les quartiers prioritaires de la ville (QPV)
 
+# /!\\
+# /!\\ Non à jour car bdnb_registre_2022 a été remplacé par bdnb_batiments
+# /!\\
+
 [Ticket trello](https://trello.com/c/RY9S6K8Q/1414-extraction-de-donn%C3%A9es-pour-lanru)
 
 Ce script reprend globalement les étapes de la [1ère extraction des données BDNB](../readme.md), mais le format est meilleur car on récupère les distances.
@@ -23,7 +27,7 @@ Prérequis :
 - probablement avoir tuné la configuration postgresql pour augmenter la taille des buffers
 
 ```sh
-cd scripts/bdnb/qpv
+cd src/modules/bdnb/scripts/qpv
 
 # précalcul de toutes les données de proximité dans des tables prêtes à être exploitées
 # noter que tous les batiments ne sont pas pris en compte, ils sont préfiltrés selon leur mode de chauffage + proximité aux QPV
