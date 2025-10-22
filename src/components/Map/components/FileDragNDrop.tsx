@@ -30,6 +30,19 @@ const FileDragNDrop = ({ onDrop }: FileDragNDropProps) => {
       setDragging(false);
     };
 
+    const updateSource = (geojson: any) => {
+      // Call the provided onDrop callback if available
+      if (onDrop) {
+        onDrop(geojson);
+      }
+
+      if (!mapRef?.getSource('customGeojson')) {
+        throw new Error('Source customGeojson not found');
+      }
+      (mapRef.getSource('customGeojson') as maplibregl.GeoJSONSource).setData(geojson);
+      mapRef.fitBounds(bbox(geojson) as [number, number, number, number], { duration: 3000, maxZoom: 17 });
+    };
+
     const handleDrop = toastErrors(async (event: DragEvent) => {
       event.preventDefault();
       const files = event.dataTransfer?.files;
@@ -40,26 +53,34 @@ const FileDragNDrop = ({ onDrop }: FileDragNDropProps) => {
       const wgs84GeoJsonData = Array.from(files).some((f) => f.name.endsWith('.shp'))
         ? await readShapefileWithProjection(Array.from(files))
         : await convertFileToGeoJSON(files[0]);
+      updateSource(wgs84GeoJsonData);
+    });
 
-      // Call the provided onDrop callback if available
-      if (onDrop) {
-        onDrop(wgs84GeoJsonData);
+    const handlePaste = toastErrors(async (event: ClipboardEvent) => {
+      event.preventDefault();
+      const text = event.clipboardData?.getData('text');
+      if (!text) {
+        return;
       }
-
-      if (!mapRef?.getSource('customGeojson')) {
-        throw new Error('Source customGeojson not found');
+      try {
+        const geojsonData = JSON.parse(text);
+        const wgs84GeoJsonData = hasLambert93Projection(geojsonData) ? await convertLambert93GeoJSONToWGS84(geojsonData) : geojsonData;
+        updateSource(wgs84GeoJsonData);
+      } catch (error) {
+        throw new Error("Le contenu collé n'est pas un GeoJSON valide");
       }
-      (mapRef.getSource('customGeojson') as maplibregl.GeoJSONSource).setData(wgs84GeoJsonData);
-      mapRef.fitBounds(bbox(wgs84GeoJsonData) as [number, number, number, number], { duration: 3000, maxZoom: 17 });
     });
 
     mapRef.getContainer().addEventListener('dragover', onDragOver);
     mapRef.getContainer().addEventListener('dragleave', onDragLeave);
     mapRef.getContainer().addEventListener('drop', handleDrop);
+    mapRef.getContainer().addEventListener('paste', handlePaste);
+
     return () => {
       mapRef.getContainer().removeEventListener('dragover', onDragOver);
       mapRef.getContainer().removeEventListener('dragleave', onDragLeave);
       mapRef.getContainer().removeEventListener('drop', handleDrop);
+      mapRef.getContainer().removeEventListener('paste', handlePaste);
     };
   }, [mapRef, onDrop]);
 
