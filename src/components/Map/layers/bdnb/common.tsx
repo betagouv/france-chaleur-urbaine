@@ -35,7 +35,7 @@ function BdnbBatimentPopupContent({
     data: batimentDetails,
     isLoading,
     error,
-  } = trpc.tiles.getBdnbBatimentDetails.useQuery({
+  } = trpc.bdnb.getBdnbBatimentDetails.useQuery({
     batiment_groupe_id: caracteristiqueBatiment.batiment_groupe_id!,
   });
 
