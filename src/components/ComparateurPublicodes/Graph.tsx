@@ -569,6 +569,8 @@ const Graph: React.FC<GraphProps> = ({
                   ? 'Chauffage individuel'
                   : 'Chauffage collectif';
 
+                const isReseauDeChaleur = name.includes('Réseau de chaleur');
+
                 let showSectionTitle = false;
                 if (graphSectionTitle !== (graphSectionType as string)) {
                   showSectionTitle = true;
@@ -577,6 +579,44 @@ const Graph: React.FC<GraphProps> = ({
 
                 const isReseauDeChaleurMoyenForCost =
                   reseauDeChaleur.label && name.includes('Réseau de chaleur') && !reseauDeChaleur.hasPriceData;
+
+                const taints = {
+                  common: {
+                    co2: [
+                      'bg-fcu-orange-light/10 text-fcu-orange-light',
+                      'border-l-fcu-orange-light',
+                      'bg-fcu-orange-light',
+                      'bg-fcu-orange-light/30 text-fcu-orange-light',
+                      'border-r-fcu-orange-light',
+                    ],
+                    cost: [
+                      'bg-fcu-purple/30 text-fcu-purple',
+                      'border-l-fcu-purple-light',
+                      'bg-fcu-purple',
+                      'bg-fcu-purple/30 text-fcu-purple',
+                      'border-r-fcu-purple',
+                    ],
+                  },
+                  rdc: {
+                    co2: [
+                      'bg-fcu-green-light/20 text-fcu-green-light',
+                      'border-l-fcu-green-light',
+                      'bg-fcu-green-light',
+                      'bg-fcu-green-light/30 text-fcu-green-light',
+                      'border-r-fcu-green-light',
+                    ],
+                    cost: [
+                      'bg-fcu-green/30 text-fcu-green',
+                      'border-l-fcu-green-light',
+                      'bg-fcu-green',
+                      'bg-fcu-green/30 text-fcu-green',
+                      'border-r-fcu-green',
+                    ],
+                  },
+                };
+                const taint = isReseauDeChaleur ? 'rdc' : 'common';
+
+                const taintClasses = taints[taint] || [];
 
                 return (
                   <Fragment key={name}>
@@ -591,42 +631,74 @@ const Graph: React.FC<GraphProps> = ({
                     <div className="group stretch flex items-center">
                       <div className="h-[22px] pl-12 pr-3 flex flex-1 border-r border-solid border-white">
                         <div
-                          className="relative bg-fcu-orange-light/10 whitespace-nowrap py-0.5 tracking-tight text-left font-extrabold text-fcu-orange-light sm:text-xs md:text-sm flex items-center justify-end"
+                          className={cx(
+                            'relative whitespace-nowrap py-0.5 tracking-tight text-left font-extrabold  sm:text-xs md:text-sm flex items-center justify-end',
+                            taintClasses.co2[0]
+                          )}
                           style={{ flex: 100 - co2UpperPercent }}
                         >
                           <span className="pr-0.5 absolute right-[12px]">{advancedMode ? co2UpperBoundString : ''}</span>
                           {advancedMode && (
-                            <div className="border-solid border-l-fcu-orange-light border-l-12 border-y-transparent border-y-[5px] my-1 border-r-0" />
+                            <div
+                              className={cx(
+                                'border-solid border-l-12 border-y-transparent border-y-[5px] my-1 border-r-0',
+                                taintClasses.co2[1]
+                              )}
+                            />
                           )}
                         </div>
-                        <div className="relative bg-fcu-orange-light" style={{ flex: co2Width }} />
+                        <div className={cx('relative ', taintClasses.co2[2])} style={{ flex: co2Width }} />
                         <div
-                          className="relative bg-fcu-orange-light/30 whitespace-nowrap tracking-tight py-0.5 text-right font-extrabold text-fcu-orange-light sm:text-xs md:text-sm flex items-center justify-start"
+                          className={cx(
+                            'relative  whitespace-nowrap tracking-tight py-0.5 text-right font-extrabold  sm:text-xs md:text-sm flex items-center justify-start',
+                            taintClasses.co2[3]
+                          )}
                           style={{ flex: co2LowerPercent }}
                         >
                           {advancedMode && (
-                            <div className="border-solid border-r-fcu-orange-light border-r-12 border-y-transparent border-y-[5px] my-1 border-l-0" />
+                            <div
+                              className={cx(
+                                'border-solid  border-r-12 border-y-transparent border-y-[5px] my-1 border-l-0',
+                                taintClasses.co2[4]
+                              )}
+                            />
                           )}
                           <span className="absolute left-[12px] pl-0.5">{advancedMode ? co2LowerBoundString : ''}</span>
                         </div>
                       </div>
                       <div className="h-[22px] pr-12 pl-3 flex flex-1 border-l border-solid border-white">
                         <div
-                          className="relative bg-fcu-purple/30 whitespace-nowrap tracking-tight py-0.5 text-right font-extrabold text-fcu-purple sm:text-xs md:text-sm flex items-center justify-end"
+                          className={cx(
+                            'relative  whitespace-nowrap tracking-tight py-0.5 text-right font-extrabold  sm:text-xs md:text-sm flex items-center justify-end',
+                            taintClasses.cost[0]
+                          )}
                           style={{ flex: costLowerPercent }}
                         >
                           <span className="pr-0.5 absolute right-[12px]">{advancedMode ? lowerBoundString : ''}</span>
                           {advancedMode && (
-                            <div className="border-solid border-l-fcu-purple border-l-12 border-y-transparent border-y-[5px] my-1 border-r-0" />
+                            <div
+                              className={cx(
+                                'border-solid  border-l-12 border-y-transparent border-y-[5px] my-1 border-r-0',
+                                taintClasses.cost[1]
+                              )}
+                            />
                           )}
                         </div>
-                        <div className="relative bg-fcu-purple" style={{ flex: costWidth }} />
+                        <div className={cx('relative ', taintClasses.cost[2])} style={{ flex: costWidth }} />
                         <div
-                          className="relative bg-fcu-purple/10 whitespace-nowrap py-0.5 tracking-tight text-left font-extrabold text-fcu-purple sm:text-xs md:text-sm flex items-center justify-start"
+                          className={cx(
+                            'relative  whitespace-nowrap py-0.5 tracking-tight text-left font-extrabold  sm:text-xs md:text-sm flex items-center justify-start',
+                            taintClasses.cost[3]
+                          )}
                           style={{ flex: 100 - costUpperPercent }}
                         >
                           {advancedMode && (
-                            <div className="border-solid border-r-fcu-purple border-r-12 border-y-transparent border-y-[5px] my-1 border-l-0" />
+                            <div
+                              className={cx(
+                                'border-solid  border-r-12 border-y-transparent border-y-[5px] my-1 border-l-0',
+                                taintClasses.cost[4]
+                              )}
+                            />
                           )}
                           <span className="pl-0.5 absolute left-[12px]">{advancedMode ? upperBoundString : ''}</span>
                         </div>

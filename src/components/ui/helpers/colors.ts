@@ -71,6 +71,7 @@ const colors = {
   'fcu-blue': '#00B1F8',
 
   'fcu-green': '#009364',
+  'fcu-green-light': '#81b39b',
   'fcu-orange': '#FF692F',
   'fcu-orange-light': '#F89389',
   'fcu-purple': '#8585F6',
