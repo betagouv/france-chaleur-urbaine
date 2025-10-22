@@ -1,15 +1,52 @@
 import { defineTilesConfig } from '@/modules/tiles/server/generation';
+import { downloadBatimentsRaccordesReseauxChaleurFroidJSON } from '@/modules/tiles/server/generation-configs/batiments-raccordes-reseaux-chaleur-froid';
 import { reseauxDeChaleurGeoJSONQuery } from '@/modules/tiles/server/generation-configs/reseaux-de-chaleur';
 import { testsAdressesGeoJSONQuery } from '@/modules/tiles/server/generation-configs/tests-adresses';
 import {
   downloadGeoJSONFromURL,
   extractGeoJSONFromDatabaseTable,
+  extractNDJSONFromDatabaseTable,
   extractZippedShapefileToGeoJSON,
   getInputFilePath,
 } from '@/modules/tiles/server/generation-strategies';
+import type { BdnbBatiments } from '@/server/db/kysely/database';
 import { ObjectKeys } from '@/utils/typescript';
 
+const bdnbBatimentsFields = [
+  'batiment_groupe_id',
+  'geom',
+
+  'ffo_bat_nb_log',
+
+  'dpe_representatif_logement_classe_bilan_dpe',
+  'dpe_representatif_logement_type_energie_chauffage',
+  'dpe_representatif_logement_type_installation_chauffage',
+] as const satisfies (keyof BdnbBatiments)[];
+
 export const tilesConfigs = {
+  'batiments-raccordes-reseaux-chaleur-froid': defineTilesConfig({
+    generateGeoJSON: downloadBatimentsRaccordesReseauxChaleurFroidJSON,
+    tilesTableName: 'batiments_raccordes_reseaux_chaleur_froid_tiles',
+    tippeCanoeArgs: '-r1.0',
+    zoomMax: 13,
+    zoomMin: 9,
+  }),
+
+  'bdnb-batiments': defineTilesConfig({
+    generateGeoJSON: extractNDJSONFromDatabaseTable('bdnb_batiments', {
+      fields: bdnbBatimentsFields,
+    }),
+    tilesTableName: 'bdnb_batiments_tiles',
+    tippeCanoeArgs: '--read-parallel --drop-rate=1.3 --drop-densest-as-needed --drop-smallest-as-needed --maximum-tile-bytes=1000000',
+    zoomMax: 15, // pour avoir des bons contours, mais le fond de carte ne semble pas précis pour les batiments
+    zoomMin: 12,
+  }),
+  'consommations-gaz': defineTilesConfig({
+    generateGeoJSON: extractGeoJSONFromDatabaseTable('donnees_de_consos'),
+    tilesTableName: 'donnees_de_consos_tiles',
+    tippeCanoeArgs: '-r1.0', // Do not automatically drop a fraction of points at low zoom levels
+    zoomMin: 12,
+  }),
   'etudes-en-cours': defineTilesConfig({
     generateGeoJSON: extractGeoJSONFromDatabaseTable('etudes_en_cours'),
     tilesTableName: 'etudes_en_cours_tiles',
@@ -109,3 +146,5 @@ export const tilesConfigs = {
 
 export const tilesTypes = ObjectKeys(tilesConfigs);
 export type TilesType = (typeof tilesTypes)[number];
+
+export type BdnbBatimentTile = Required<Pick<BdnbBatiments, (typeof bdnbBatimentsFields)[number]>>;

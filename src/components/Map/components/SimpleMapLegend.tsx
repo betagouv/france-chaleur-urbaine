@@ -18,10 +18,17 @@ import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
 import Tooltip from '@/components/ui/Tooltip';
 import { trackEvent } from '@/modules/analytics/client';
+import { dataSourcesVersions } from '@/modules/app/constants';
 import { useAuthentication } from '@/modules/auth/client/hooks';
+import { ObjectEntries } from '@/utils/typescript';
+import { caracteristiquesBatimentsLayerStyle } from '../layers/bdnb/caracteristiquesBatiments';
+import {
+  energyFilterInterval,
+  typeChauffageBatimentsCollectifsStyle,
+  typeChauffageBatimentsOpacity,
+} from '../layers/bdnb/typeChauffageBatimentsCollectifs';
 import { besoinsEnChaleurIntervals, besoinsEnFroidIntervals } from '../layers/besoinsEnChaleur';
 import { besoinsEnChaleurIndustrieCommunesIntervals } from '../layers/besoinsEnChaleurIndustrieCommunes';
-import { caracteristiquesBatimentsLayerStyle } from '../layers/caracteristiquesBatiments';
 import {
   communesFortPotentielPourCreationReseauxChaleurInterval,
   communesFortPotentielPourCreationReseauxChaleurLayerColor,
@@ -66,11 +73,6 @@ import {
   statutColorMap,
 } from '../layers/geothermie/perimetresGeothermieProfonde';
 import { ressourcesGeothermalesNappesConfig, ressourcesGeothermalesNappesOpacity } from '../layers/ressourcesGeothermalesNappes';
-import {
-  energyFilterInterval,
-  typeChauffageBatimentsCollectifsStyle,
-  typeChauffageBatimentsOpacity,
-} from '../layers/typeChauffageBatimentsCollectifs';
 import { zonesAUrbaniserColor, zonesAUrbaniserOpacity } from '../layers/zonesAUrbaniser';
 import { zonePotentielChaudColor, zonePotentielChaudOpacity, zonePotentielFortChaudColor } from '../layers/zonesPotentielChaud';
 import { zonePotentielFortFroidColor, zonePotentielFroidColor, zonePotentielFroidOpacity } from '../layers/zonesPotentielFroid';
@@ -204,6 +206,19 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
                     mt="1v"
                   />
                   <span>Consommations globales de gaz</span>
+                  <Tooltip
+                    title={
+                      <>
+                        Données locales de consommation de gaz naturel de l'année{' '}
+                        {dataSourcesVersions.donneesLocalesConsommationEnergieAdresse.year}
+                        <br />
+                        Données :{' '}
+                        <Link href={dataSourcesVersions.donneesLocalesConsommationEnergieAdresse.link} isExternal>
+                          SDES
+                        </Link>
+                      </>
+                    }
+                  />
                 </>
               }
             >
@@ -298,13 +313,23 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
               label={
                 <>
                   <Box
-                    backgroundColor={typeChauffageBatimentsCollectifsStyle.gas}
+                    backgroundColor={typeChauffageBatimentsCollectifsStyle.gaz}
                     opacity={typeChauffageBatimentsOpacity}
                     height="16px"
                     width="16px"
                     mt="1v"
                   />
                   <span>Bâtiments chauffés au gaz collectif</span>
+                  <Tooltip
+                    title={
+                      <>
+                        Données :{' '}
+                        <Link href={dataSourcesVersions.bdnb.link} isExternal>
+                          {dataSourcesVersions.bdnb.version}
+                        </Link>
+                      </>
+                    }
+                  />
                 </>
               }
             >
@@ -312,7 +337,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
                 <ScaleLegend
                   className="fr-ml-1w fr-mr-1w"
                   label="Nombre de lots d'habitation"
-                  color={typeChauffageBatimentsCollectifsStyle.gas}
+                  color={typeChauffageBatimentsCollectifsStyle.gaz}
                   domain={[energyFilterInterval.min, energyFilterInterval.max]}
                   defaultValues={defaultMapConfiguration.batimentsGazCollectif.interval}
                   onChange={updateScaleInterval('batimentsGazCollectif.interval')}
@@ -327,13 +352,23 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
               label={
                 <>
                   <Box
-                    backgroundColor={typeChauffageBatimentsCollectifsStyle.fuelOil}
+                    backgroundColor={typeChauffageBatimentsCollectifsStyle.fioul}
                     opacity={typeChauffageBatimentsOpacity}
                     height="16px"
                     width="16px"
                     mt="1v"
                   />
                   <span>Bâtiments chauffés au fioul collectif</span>
+                  <Tooltip
+                    title={
+                      <>
+                        Données :{' '}
+                        <Link href={dataSourcesVersions.bdnb.link} isExternal>
+                          {dataSourcesVersions.bdnb.version}
+                        </Link>
+                      </>
+                    }
+                  />
                 </>
               }
             >
@@ -341,7 +376,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
                 <ScaleLegend
                   className="fr-ml-1w fr-mr-1w"
                   label="Nombre de lots d'habitation"
-                  color={typeChauffageBatimentsCollectifsStyle.fuelOil}
+                  color={typeChauffageBatimentsCollectifsStyle.fioul}
                   domain={[energyFilterInterval.min, energyFilterInterval.max]}
                   defaultValues={defaultMapConfiguration.batimentsFioulCollectif.interval}
                   onChange={updateScaleInterval('batimentsFioulCollectif.interval')}
@@ -472,7 +507,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
               label={
                 <>
                   <Box
-                    backgroundColor={caracteristiquesBatimentsLayerStyle.c}
+                    backgroundColor={caracteristiquesBatimentsLayerStyle.C}
                     height="16px"
                     width="16px"
                     mt="1v"
@@ -487,8 +522,13 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
                   <Tooltip
                     title={
                       <>
-                        Les DPE affichés par bâtiment résultent d'un extrapolation des DPE par logement ancienne définition. Ils sont donnés
-                        à titre informatif et non-officiel, sans aucune valeur légale.
+                        Les DPE affichés par bâtiment résultent d'une extrapolation des DPE par logement ancienne définition. Ils sont
+                        donnés à titre informatif et non-officiel, sans aucune valeur légale.
+                        <br />
+                        Données :{' '}
+                        <Link href={dataSourcesVersions.bdnb.link} isExternal>
+                          {dataSourcesVersions.bdnb.version}
+                        </Link>
                       </>
                     }
                   />
@@ -501,7 +541,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
                 </Text>
                 <Text fontSize="13px">Diagnostic de performance énergétique</Text>
                 <Box display="flex" gap="4px">
-                  {Object.entries(caracteristiquesBatimentsLayerStyle).map(([letter]) => (
+                  {ObjectEntries(caracteristiquesBatimentsLayerStyle).map(([letter]) => (
                     <DPE classe={letter} key={letter} />
                   ))}
                 </Box>

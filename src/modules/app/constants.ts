@@ -30,3 +30,15 @@ export const contactFormSchema = z.object({
   phone: z.string().optional(),
   subject: z.string().min(1, 'Veuillez sélectionner un objet'),
 });
+
+export const dataSourcesVersions = {
+  bdnb: {
+    link: 'https://www.data.gouv.fr/datasets/base-de-donnees-nationale-des-batiments/',
+    version: 'BDNB 2024-10.a',
+  },
+  donneesLocalesConsommationEnergieAdresse: {
+    link: 'https://www.statistiques.developpement-durable.gouv.fr/donnees-locales-de-consommation-denergie',
+    title: 'SDES pour 2024',
+    year: '2024',
+  },
+};

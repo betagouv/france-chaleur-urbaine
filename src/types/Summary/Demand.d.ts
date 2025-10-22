@@ -1,7 +1,7 @@
-import { type DetailedEligibilityStatus } from '@/server/services/addresseInformation';
-import { type DemandStatus } from '@/types/enum/DemandSatus';
+import type { DetailedEligibilityStatus } from '@/server/services/addresseInformation';
+import type { DemandStatus } from '@/types/enum/DemandSatus';
 
-import { type Coords } from '../Coords';
+import type { Coords } from '../Coords';
 
 export type DemandSummary = {
   id: string;

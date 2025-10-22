@@ -1,17 +1,15 @@
-import { caracteristiquesBatimentsLayerStyle } from '@/components/Map/layers/caracteristiquesBatiments';
-
-import Box from './ui/Box';
+import { caracteristiquesBatimentsLayerStyle } from '@/components/Map/layers/bdnb/caracteristiquesBatiments';
 
 type DPEProps = {
-  classe: string; // no type yet because there are mixed upper and lower case values...
+  classe: keyof typeof caracteristiquesBatimentsLayerStyle;
 };
 
 function DPE({ classe }: DPEProps) {
-  const color = (caracteristiquesBatimentsLayerStyle as any)[classe.toLowerCase()];
+  const color = caracteristiquesBatimentsLayerStyle[classe];
   return (
-    <Box width="24px" height="24px" fontSize="18px" backgroundColor={color} textColor="white" textAlign="center">
-      {classe.toUpperCase()}
-    </Box>
+    <div style={{ backgroundColor: color }} className="w-6 h-6 flex items-center justify-center text-white text-[18px]">
+      {classe}
+    </div>
   );
 }
 

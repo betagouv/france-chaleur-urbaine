@@ -5,7 +5,7 @@ Ce document contient les 3 requêtes permettant de construire les 3 fichiers sta
 - public/data/stats-bdnb-2022-national.json
 - public/data/stats-bdnb-2022-regions.json
 
-Les requêtes nécessitent la présence des tables `batiments_summary_reseaux_de_chaleur` et `departements`, créées par les scripts dans `/scripts/bdnb/`.
+Les requêtes nécessitent la présence des tables `batiments_summary_reseaux_de_chaleur` et `departements`, créées par les scripts dans `/src/modules/bdnb/scripts/`.
 
 
 ## Requêtes

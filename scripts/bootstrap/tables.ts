@@ -96,10 +96,6 @@ export const allDatabaseTables: TableInfo[] = [
 
   // données de référence / tuiles seules
   {
-    description: 'Liste des régions françaises (obsolète)',
-    name: 'regions',
-  },
-  {
     description: 'Liste des départements français',
     name: 'departements',
   },
@@ -177,10 +173,6 @@ export const allDatabaseTables: TableInfo[] = [
     name: 'zone_a_potentiel_fort_froid_tiles',
   },
   {
-    description: 'Bâtiments raccordés au réseau de chaleur au rez-de-chaussée',
-    name: 'batiments_raccordes_rdc',
-  },
-  {
     description: 'Tuiles vectorielles des bâtiments raccordés aux réseaux de chaleur et froid',
     name: 'batiments_raccordes_reseaux_chaleur_froid_tiles',
   },
@@ -233,14 +225,6 @@ export const allDatabaseTables: TableInfo[] = [
     name: 'quartiers_prioritaires_politique_ville_2024_tiles',
   },
   {
-    description: 'Données de consommation et PDL gaz naturel 2020 (obsolète)',
-    name: 'Donnees_de_conso_et_pdl_gaz_nat_2020',
-  },
-  {
-    description: 'Tuiles des données de consommation et PDL gaz naturel 2020 (obsolète)',
-    name: 'Donnees_de_conso_et_pdl_gaz_nat_2020_tiles',
-  },
-  {
     description: 'Tuiles des installations de géothermie profonde',
     name: 'installations_geothermie_profonde_tiles',
   },
@@ -270,119 +254,12 @@ export const allDatabaseTables: TableInfo[] = [
   },
 
   // données BDNB (Base de données nationale des bâtiments)
-  // découpées historiquement par région pour résoudre des problèmes de performance et de taille d'indexes
-  // la prochaine fois, n'avoir qu'une seule
   {
-    description: 'BDNB complétée avec le registre des copropriétés 2022 pour la région Auvergne-Rhône-Alpes',
-    name: 'bdnb_registre2022_aura',
+    description: 'Bâtiments issus de la BDNB',
+    name: 'bdnb_batiments',
   },
   {
-    description: 'BDNB complétée avec le registre des copropriétés 2022 pour la région Bourgogne-Franche-Comté',
-    name: 'bdnb_registre2022_bourgogne-franche-comte',
-  },
-  {
-    description: 'BDNB complétée avec le registre des copropriétés 2022 pour la région Bretagne',
-    name: 'bdnb_registre2022_bretagne',
-  },
-  {
-    description: 'BDNB complétée avec le registre des copropriétés 2022 pour la région Centre-Val de Loire',
-    name: 'bdnb_registre2022_centre-val_de_loire',
-  },
-  {
-    description: 'BDNB complétée avec le registre des copropriétés 2022 pour la région Corse',
-    name: 'bdnb_registre2022_corse',
-  },
-  {
-    description: 'BDNB complétée avec le registre des copropriétés 2022 pour la région Grand Est',
-    name: 'bdnb_registre2022_grand_est',
-  },
-  {
-    description: 'BDNB complétée avec le registre des copropriétés 2022 pour la région Hauts-de-France',
-    name: 'bdnb_registre2022_hauts-de-france',
-  },
-  {
-    description: 'BDNB complétée avec le registre des copropriétés 2022 pour la région Île-de-France',
-    name: 'bdnb_registre2022_ile-de-france',
-  },
-  {
-    description: 'BDNB complétée avec le registre des copropriétés 2022 pour la région Normandie',
-    name: 'bdnb_registre2022_normandie',
-  },
-  {
-    description: 'BDNB complétée avec le registre des copropriétés 2022 pour la région Nouvelle-Aquitaine',
-    name: 'bdnb_registre2022_nouvelle-aquitaine',
-  },
-  {
-    description: 'BDNB complétée avec le registre des copropriétés 2022 pour la région Occitanie',
-    name: 'bdnb_registre2022_occitanie',
-  },
-  {
-    description: "BDNB complétée avec le registre des copropriétés 2022 pour la région Provence-Alpes-Côte d'Azur",
-    name: 'bdnb_registre2022_paca',
-  },
-  {
-    description: 'BDNB complétée avec le registre des copropriétés 2022 pour la région Pays de la Loire',
-    name: 'bdnb_registre2022_pays-de-la-loire',
-  },
-  {
-    description: 'Relation bâtiment-adresse BDNB pour Auvergne-Rhône-Alpes',
-    name: 'bnb_auvergne-rhone-alpes-batiment_adresse',
-  },
-  {
-    description: 'Relation bâtiment-adresse BDNB pour Bourgogne-Franche-Comté',
-    name: 'bnb_bourgogne-franche-comte-batiment_adresse',
-  },
-  {
-    description: 'Relation bâtiment-adresse BDNB pour Bretagne',
-    name: 'bnb_bretagne-batiment_adresse',
-  },
-  {
-    description: 'Relation bâtiment-adresse BDNB pour Centre-Val de Loire',
-    name: 'bnb_centre-val-de-loire-batiment_adresse',
-  },
-  {
-    description: 'Relation bâtiment-adresse BDNB pour Corse',
-    name: 'bnb_corse-batiment_adresse',
-  },
-  {
-    description: 'Relation bâtiment-adresse BDNB pour Grand Est',
-    name: 'bnb_grand-est-batiment_adresse',
-  },
-  {
-    description: 'Relation bâtiment-adresse BDNB pour Hauts-de-France',
-    name: 'bnb_hauts-de-france-batiment_adresse',
-  },
-  {
-    description: 'Relation bâtiment-adresse BDNB pour Île-de-France',
-    name: 'bnb_idf - batiment_adresse',
-  },
-  {
-    description: 'Relation bâtiment-adresse BDNB pour Normandie',
-    name: 'bnb_normandie-batiment_adresse',
-  },
-  {
-    description: 'Relation bâtiment-adresse BDNB pour Nouvelle-Aquitaine',
-    name: 'bnb_nouvelle-aquitaine-batiment_adresse',
-  },
-  {
-    description: 'Relation bâtiment-adresse BDNB pour Occitanie',
-    name: 'bnb_occitanie-batiment_adresse',
-  },
-  {
-    description: 'Relation bâtiment-adresse BDNB pour Pays de la Loire',
-    name: 'bnb_pays-de-la-loire-batiment_adresse',
-  },
-  {
-    description: "Relation bâtiment-adresse BDNB pour Provence-Alpes-Côte d'Azur",
-    name: 'bnb_provence-alpes-cote-d_azur-batiment_adresse',
-  },
-
-  {
-    description: 'Tuiles vectorielles des adresses BDNB',
-    name: 'bnb - adresse_tiles',
-  },
-  {
-    description: 'Tuiles vectorielles des bâtiments BDNB',
-    name: 'bnb - batiment_tiles',
+    description: 'Tuiles des bâtiments issus de la BDNB',
+    name: 'bdnb_batiments_tiles',
   },
 ];

@@ -8,6 +8,8 @@ import prompts from 'prompts';
 import XLSX from 'xlsx';
 import { z } from 'zod';
 import { registerAppCommands } from '@/modules/app/commands';
+import { registerBdnbCommands } from '@/modules/bdnb/commands';
+import { registerDataCommands } from '@/modules/data/commands';
 import { registerJobsCommands } from '@/modules/jobs/commands';
 import { registerOptimizationCommands } from '@/modules/optimization/commands';
 import { registerProEligibilityTestsCommands } from '@/modules/pro-eligibility-tests/commands';
@@ -33,7 +35,6 @@ import { sleep } from '@/utils/time';
 import { type KnownAirtableBase, knownAirtableBases } from './airtable/bases';
 import { createModificationsReseau } from './airtable/create-modifications-reseau';
 import { fetchBaseSchema } from './airtable/dump-schema';
-import dataImportManager, { type DataImportName, dataImportAdapters } from './data-import';
 import { upsertFixedSimulateurData } from './simulateur/import';
 
 const program = createCommand();
@@ -64,6 +65,8 @@ program
   });
 
 registerAppCommands(program);
+registerBdnbCommands(program);
+registerDataCommands(program);
 registerJobsCommands(program);
 registerOptimizationCommands(program);
 registerProEligibilityTestsCommands(program);
@@ -97,17 +100,6 @@ program
   .argument('<network-id>', 'Network id', validateNetworkId)
   .action(async (table) => {
     await downloadAndUpdateNetwork(table);
-  });
-
-program
-  .command('data:import')
-  .description('Import data based on type')
-  .argument('<type>', `Type of data you want to import - ${Object.keys(dataImportAdapters).join(', ')}`)
-  .option('--file <FILE>', 'Path to the file to import', '')
-  .action(async (type, options) => {
-    logger.info(`Importing data for ${type}`);
-    const importer = dataImportManager(type as DataImportName);
-    await importer.importData(options.file);
   });
 
 type EPCI = {
@@ -438,20 +430,6 @@ program
       process.exit(1);
     }
     await syncComptesProFromUsers();
-  });
-
-program
-  .command('bdnd:export')
-  .description('')
-  .action(async () => {
-    console.info('Veuillez regarder les étapes dans scripts/bdnb/README.md');
-  });
-
-program
-  .command('bdnd:export-qpv')
-  .description('')
-  .action(async () => {
-    console.info('Veuillez regarder les étapes dans scripts/bdnb/qpv/README.md');
   });
 
 program

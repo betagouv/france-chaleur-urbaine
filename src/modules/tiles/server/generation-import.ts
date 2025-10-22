@@ -13,11 +13,11 @@ import { type CommandResult, dockerVolumePath, listDirectoryEntries, type RunCom
  * Importe un fichier GeoJSON en base avec tippecanoe.
  */
 export const importGeoJSONWithTipeeCanoe = defineTilesImportStrategy(
-  async ({ tempDirectory, geojsonFilePath, tilesTableName, zoomMin, zoomMax, tippeCanoeArgs }) => {
+  async ({ tempDirectory, geojsonConfig, tilesTableName, zoomMin, zoomMax, tippeCanoeArgs }) => {
     const targetTilesDirPath = join(tempDirectory, 'tiles');
 
     await generateTilesFromGeoJSON({
-      geojsonFilePath,
+      geojsonConfig,
       outputDirectory: targetTilesDirPath,
       tippeCanoeArgs,
       zoomMax,
@@ -27,8 +27,13 @@ export const importGeoJSONWithTipeeCanoe = defineTilesImportStrategy(
   }
 );
 
+type TippecanoeLayer = {
+  layerName: string;
+  filePath: string;
+};
+
 type TippecanoeConfig = {
-  geojsonFilePath: string;
+  geojsonConfig: string | TippecanoeLayer[];
   outputDirectory: string;
   zoomMin: number;
   zoomMax: number;
@@ -44,27 +49,44 @@ export const runTippecanoe = async (command: string, options: RunCommandOptions 
 /**
  * Génère les tuiles sous forme de répertoire à partir d'un fichier GeoJSON.
  * @param config - Configuration des tuiles
+ * @deprecated Trop compliqué à gérer pour plusieurs fichiers. utiliser generateTilesFromGeoJSON()
  */
-export const generateTilesFromGeoJSON = async (config: TippecanoeConfig) => {
+export const generateTilesFromGeoJSONDockerLegacy = async (config: TippecanoeConfig) => {
   if (serverConfig.USE_DOCKER_GEO_COMMANDS) {
-    const inputFileName = basename(config.geojsonFilePath);
+    const inputFileName = basename(config.geojsonConfig as string);
     const outputDirectoryName = 'output_tiles';
-    await rename(config.geojsonFilePath, join(dockerVolumePath, inputFileName));
+    await rename(config.geojsonConfig as string, join(dockerVolumePath, inputFileName));
     await runDocker(
       'naxgrp/tippecanoe',
       `tippecanoe -e ${outputDirectoryName} --layer=layer --force --generate-ids --minimum-zoom=${config.zoomMin} --maximum-zoom=${config.zoomMax} ${config.tippeCanoeArgs ?? ''} ${basename(inputFileName)}`,
-      { captureOutput: true }
+      { captureOutput: !serverConfig.PRINT_TIPPECANOE_OUTPUT_TO_LOGS }
     );
     // input
-    await rename(join(dockerVolumePath, inputFileName), config.geojsonFilePath);
+    await rename(join(dockerVolumePath, inputFileName), config.geojsonConfig as string);
     // output
     await rename(join(dockerVolumePath, outputDirectoryName), config.outputDirectory);
   } else {
     await runBash(
-      `tippecanoe -e ${config.outputDirectory} --layer=layer --force --generate-ids --minimum-zoom=${config.zoomMin} --maximum-zoom=${config.zoomMax} ${config.tippeCanoeArgs ?? ''} ${config.geojsonFilePath}`,
-      { captureOutput: true }
+      `tippecanoe -e ${config.outputDirectory} --layer=layer --force --generate-ids --minimum-zoom=${config.zoomMin} --maximum-zoom=${config.zoomMax} ${config.tippeCanoeArgs ?? ''} ${config.geojsonConfig}`,
+      { captureOutput: !serverConfig.PRINT_TIPPECANOE_OUTPUT_TO_LOGS }
     );
   }
+};
+
+/**
+ * Génère les tuiles sous forme de répertoire à partir d'un ou plusieurs fichiers GeoJSON.
+ * Non compatible Docker pour simplifier les choses
+ * @param config - Configuration des tuiles
+ */
+export const generateTilesFromGeoJSON = async (config: TippecanoeConfig) => {
+  const inputArgs =
+    typeof config.geojsonConfig === 'string'
+      ? `--layer=layer ${config.geojsonConfig}`
+      : config.geojsonConfig.map((c) => `-L${c.layerName}:${c.filePath}`).join(' ');
+  await runBash(
+    `tippecanoe -e ${config.outputDirectory} --force --generate-ids --minimum-zoom=${config.zoomMin} --maximum-zoom=${config.zoomMax} ${inputArgs} ${config.tippeCanoeArgs ?? ''}`,
+    { captureOutput: !serverConfig.PRINT_TIPPECANOE_OUTPUT_TO_LOGS }
+  );
 };
 
 /**

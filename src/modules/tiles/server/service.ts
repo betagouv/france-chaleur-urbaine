@@ -5,7 +5,6 @@ import { tileSourcesMaxZoom } from '@/components/Map/layers/common';
 import type { ApplyGeometriesUpdatesInput } from '@/modules/reseaux/constants';
 import type { BuildTilesInput } from '@/modules/tiles/constants';
 import { type AirtableTileInfo, type DatabaseSourceId, tilesInfo } from '@/modules/tiles/tiles.config';
-import db from '@/server/db';
 import base from '@/server/db/airtable';
 import { type DB, kdb } from '@/server/db/kysely';
 import type { ApiContext } from '@/server/db/kysely/base-model';
@@ -96,7 +95,7 @@ const getObjectIndexFromAirtable = async (tileInfo: AirtableTileInfo) => {
             coordinates: [longitude, latitude],
             type: 'Point',
           },
-          properties: tileInfo.properties.reduce(
+          properties: tileInfo.properties!.reduce(
             (acc: any, key: string) => {
               const value = record.get(key);
               if (value) {
@@ -160,7 +159,17 @@ export const getTile = async (
 ): Promise<{ data: any; compressed: boolean } | null> => {
   const tileInfo = tilesInfo[type];
   if (tileInfo.source === 'database') {
-    const result = await db(tileInfo.tiles).where('x', x).andWhere('y', y).andWhere('z', z).first();
+    const result = await kdb
+      .selectFrom(tileInfo.tiles as any)
+      .select('tile')
+      .where((eb) =>
+        eb.and({
+          x,
+          y,
+          z,
+        })
+      )
+      .executeTakeFirst();
 
     return result?.tile ? { compressed: !!tileInfo.compressedTiles, data: result?.tile } : null;
   }
@@ -179,7 +188,7 @@ export const getTile = async (
   return tile
     ? {
         compressed: false,
-        data: Buffer.from(vtpbf.fromGeojsonVt({ [tileInfo.sourceLayer]: tile }, { version: 2 })),
+        data: Buffer.from(vtpbf.fromGeojsonVt({ [tileInfo.sourceLayer!]: tile }, { version: 2 })),
       }
     : null;
 };

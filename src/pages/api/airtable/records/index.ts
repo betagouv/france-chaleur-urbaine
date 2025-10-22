@@ -6,7 +6,7 @@ import base, { AirtableDB } from '@/server/db/airtable';
 import { sendEmailTemplate } from '@/server/email';
 import { logger } from '@/server/helpers/logger';
 import { BadRequestError, handleRouteErrors, requirePostMethod } from '@/server/helpers/server';
-import { getConso, getNbLogement } from '@/server/services/addresseInformation';
+import { getConsommationGazAdresse, getNbLogement } from '@/server/services/addresseInformation';
 import { getToRelanceDemand } from '@/server/services/manager';
 import { Airtable } from '@/types/enum/Airtable';
 import { defaultEmptyNumberValue, defaultEmptyStringValue } from '@/utils/airtable';
@@ -55,7 +55,7 @@ export default handleRouteErrors(async function PostRecords(req: NextApiRequest)
         }
       );
       const [conso, nbLogement] = await Promise.all([
-        getConso(values.Latitude, values.Longitude),
+        getConsommationGazAdresse(values.Latitude, values.Longitude),
         values.Logement ? values.Logement : getNbLogement(values.Latitude, values.Longitude),
       ]);
 
@@ -70,7 +70,6 @@ export default handleRouteErrors(async function PostRecords(req: NextApiRequest)
         {
           Conso: conso ? conso.conso_nb : undefined,
           'ID BNB': nbLogement ? `${nbLogement.id}` : undefined,
-          'ID Conso': conso ? conso.rownum : undefined,
           Logement: nbLogement ? nbLogement.nb_logements : undefined,
         },
         { typecast: true }

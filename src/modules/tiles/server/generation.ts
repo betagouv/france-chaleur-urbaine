@@ -30,11 +30,11 @@ type TilesGenerationConfig = {
    */
   tippeCanoeArgs?: string;
   /**
-   * Fonction ayant pour but de générer un fichier GeoJSON et de retourner son chemin, afin qu'il soit importé dans la base de données.
+   * Fonction ayant pour but de générer un ou plusieurs fichiers GeoJSON et de retourner leur(s) chemin(s), afin qu'ils soient importés dans la base de données.
    * @param config
-   * @returns path to the generated GeoJSON file
+   * @returns path(s) to the generated GeoJSON file(s)
    */
-  generateGeoJSON: (config: GenerateGeoJSONConfig) => Promise<string>;
+  generateGeoJSON: (config: GenerateGeoJSONConfig) => Promise<string | ImportLayerConfig[]>;
 };
 type TilesGenerationConfigWithDefaults = Required<TilesGenerationConfig>;
 
@@ -59,12 +59,17 @@ export function defineTilesConfig(config: TilesGenerationConfig): TilesGeneratio
   };
 }
 
-export const defineTilesGenerationStrategy = (fn: (config: GenerateGeoJSONConfig) => Promise<string>) => {
+export const defineTilesGenerationStrategy = (fn: (config: GenerateGeoJSONConfig) => Promise<string | ImportLayerConfig[]>) => {
   return fn;
 };
 
+export type ImportLayerConfig = {
+  layerName: string;
+  filePath: string;
+};
+
 export type ImportGeoJSONConfig = {
-  geojsonFilePath: string;
+  geojsonConfig: string | ImportLayerConfig[];
   logger: Logger;
   tempDirectory: string;
   tilesTableName: TilesTable;

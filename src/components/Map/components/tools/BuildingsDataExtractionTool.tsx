@@ -14,10 +14,10 @@ import Box from '@/components/ui/Box';
 import Text from '@/components/ui/Text';
 import { trackEvent } from '@/modules/analytics/client';
 import { validatePolygonGeometry } from '@/modules/geo/client/helpers';
+import trpc from '@/modules/trpc/client';
 import { useServices } from '@/services';
-import { EXPORT_FORMAT } from '@/types/enum/ExportFormat';
-import type { GasSummary } from '@/types/Summary/Gas';
 
+import { downloadBaseEncoded64File } from '@/utils/browser';
 import type { MapSourceLayersSpecification } from '../../layers/common';
 import { Title } from '../SimpleMapLegend.style';
 
@@ -59,6 +59,8 @@ const BuildingsDataExtractionTool: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [summary, setSummary] = useAtom(summaryAtom);
 
+  const trpcUtils = trpc.useUtils();
+
   const areaSize = features[0]?.properties.areaSize ?? 0;
   const areaHasSelfIntersections = features[0]?.properties.areaHasSelfIntersections ?? false;
 
@@ -79,7 +81,8 @@ const BuildingsDataExtractionTool: React.FC = () => {
     try {
       setIsLoading(true);
       trackEvent('Carto|Extraction données batiments|Zone terminée');
-      const rawSummary = await heatNetworkService.summary(area);
+      const rawSummary = await trpcUtils.client.data.getPolygonSummary.query({ coordinates: area });
+
       const summary: BuildingsDataExtractSummary = {
         batimentsChauffageCollectifFioul: {
           nbProchesRéseau: rawSummary.energy
@@ -208,7 +211,11 @@ const BuildingsDataExtractionTool: React.FC = () => {
 
   const exportSummary = async () => {
     trackEvent('Carto|Extraction données batiments|Exporter les données');
-    await heatNetworkService.downloadSummary(features[0].geometry.coordinates[0], EXPORT_FORMAT.CSV);
+    const file = await trpcUtils.client.data.exportPolygonSummary.query({
+      coordinates: features[0].geometry.coordinates[0],
+      format: 'csv',
+    });
+    downloadBaseEncoded64File(file.content, file.name, 'application/zip');
   };
 
   const showClearButton = features[0]?.geometry.coordinates[0]?.length > 2 && !isLoading;
@@ -336,7 +343,7 @@ const BuildingsDataExtractionTool: React.FC = () => {
 
 export default BuildingsDataExtractionTool;
 
-const getConso = (consos: GasSummary[]) => {
+const getConso = (consos: { conso_nb: number }[]) => {
   const sum = consos.reduce((acc, current) => acc + current.conso_nb, 0);
   if (sum > 1000) {
     return `${(sum / 1000).toFixed(2)} GWh`;

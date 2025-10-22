@@ -1,4 +1,6 @@
 import { appRouter as appModuleRouter } from '@/modules/app/server/trpc-routes';
+import { bdnbRouter } from '@/modules/bdnb/server/trpc-routes';
+import { dataRouter } from '@/modules/data/server/trpc-routes';
 import { diagnosticRouter } from '@/modules/diagnostic/server/trpc-routes';
 import { jobsRouter } from '@/modules/jobs/server/trpc-routes';
 import { proEligibilityTestsRouter } from '@/modules/pro-eligibility-tests/server/trpc-routes';
@@ -14,6 +16,8 @@ import { route, router } from './connection';
  */
 export const appRouter = router({
   app: appModuleRouter,
+  bdnb: bdnbRouter,
+  data: dataRouter,
   diagnostic: diagnosticRouter,
   // Health check endpoint - no auth required
   healthCheck: route.query(() => {

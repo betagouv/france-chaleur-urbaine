@@ -29,7 +29,7 @@ src/
 
 ## 🏛️ Module-Based Architecture
 
-### ✅ Existing Modules (14)
+### ✅ Existing Modules (15)
 
 | Module | Purpose | Status | CLAUDE.md |
 |--------|---------|--------|-----------|
@@ -47,6 +47,7 @@ src/
 | **diagnostic** | System diagnostics | ✅ Active | ❓ Check |
 | **notification** | Notifications | ✅ Active | ❓ Check |
 | **media-kit** | Media resources | ✅ Active | ❓ Check |
+| **data** | Data extraction & summary | ✅ Active | ✅ Complete |
 
 ### 🏗️ Standard Module Structure
 

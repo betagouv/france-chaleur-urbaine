@@ -18,11 +18,11 @@ export async function runTilesGeneration(name: TilesType, inputFilePath?: string
     tempDirectory,
   };
   logger.info(`Génération des tuiles`, { config });
-  const geojsonPath = await config.generateGeoJSON({ ...jobConfig, inputFilePath });
+  const geojsonResult = await config.generateGeoJSON({ ...jobConfig, inputFilePath });
 
   logger.info(`Importation du GeoJSON dans la table ${config.tilesTableName}`);
   await importGeoJSONWithTipeeCanoe({
-    geojsonFilePath: geojsonPath,
+    geojsonConfig: geojsonResult,
     logger,
     tempDirectory,
     tilesTableName: config.tilesTableName,
@@ -30,6 +30,7 @@ export async function runTilesGeneration(name: TilesType, inputFilePath?: string
     zoomMax: config.zoomMax,
     zoomMin: config.zoomMin,
   });
+
   logger.info(`GeoJSON importée dans la table ${config.tilesTableName}`);
   await rm(tempDirectory, { recursive: true });
   return config;

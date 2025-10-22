@@ -1,7 +1,7 @@
 services:
   db:
     image: postgis/postgis:16-3.5-alpine
-    shm_size: 256m
+    shm_size: 1gb
     platform: linux/amd64
     command: postgres -c config_file=/etc/postgresql/postgresql.conf
     environment:
