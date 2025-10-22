@@ -19,25 +19,24 @@ SELECT
   bga.libelle_adr_principale_ban as adresse_libelle_adr_principale_ban,
   
   -- Informations FFO
-  ffo.nb_log as ffo_bat_nb_log,
-  ffo.annee_construction as ffo_bat_annee_construction,
+  ffo.nb_log::smallint as ffo_bat_nb_log,
+  ffo.annee_construction::smallint as ffo_bat_annee_construction,
   ffo.usage_niveau_1_txt as ffo_bat_usage_niveau_1_txt,
 
   -- Consommation électrique
-  elec.conso_pro as dle_elec_multimillesime_conso_pro,
-  elec.conso_res as dle_elec_multimillesime_conso_res,
-  elec.conso_tot as dle_elec_multimillesime_conso_tot,
+  elec.conso_pro::real as dle_elec_multimillesime_conso_pro,
+  elec.conso_res::real as dle_elec_multimillesime_conso_res,
+  elec.conso_tot::real as dle_elec_multimillesime_conso_tot,
 
   -- Consommation gaz
-  gaz.conso_pro as dle_gaz_multimillesime_conso_pro,
-  gaz.conso_res as dle_gaz_multimillesime_conso_res,
-  gaz.conso_tot as dle_gaz_multimillesime_conso_tot,
+  gaz.conso_pro::real as dle_gaz_multimillesime_conso_pro,
+  gaz.conso_res::real as dle_gaz_multimillesime_conso_res,
+  gaz.conso_tot::real as dle_gaz_multimillesime_conso_tot,
 
   -- Consommation réseaux
-  reseaux.conso_pro as dle_reseaux_multimillesime_conso_pro,
-  reseaux.conso_res as dle_reseaux_multimillesime_conso_res,
-  reseaux.conso_tot as dle_reseaux_multimillesime_conso_tot,
-  reseaux.type_reseau as dle_reseaux_multimillesime_type_reseau,
+  reseaux.conso_pro::real as dle_reseaux_multimillesime_conso_pro,
+  reseaux.conso_res::real as dle_reseaux_multimillesime_conso_res,
+  reseaux.conso_tot::real as dle_reseaux_multimillesime_conso_tot,
 
   -- RNC
   -- rnc.nb_log as rnc_nb_log,
@@ -60,7 +59,7 @@ SELECT
   dpe.type_batiment_dpe as dpe_representatif_logement_type_batiment_dpe,
   dpe.type_dpe as dpe_representatif_logement_type_dpe,
   dpe.type_generateur_chauffage as dpe_representatif_logement_type_generateur_chauffage,
-  dpe.surface_habitable_immeuble as dpe_representatif_logement_surface_habitable_immeuble,
+  dpe.surface_habitable_immeuble::real as dpe_representatif_logement_surface_habitable_immeuble,
   -- dpe.surface_habitable_logement as dpe_representatif_logement_surface_habitable_logement,
   dpe.type_installation_chauffage as dpe_representatif_logement_type_installation_chauffage,
 

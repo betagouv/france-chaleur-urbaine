@@ -19,7 +19,6 @@ export const getBdnbBatimentDetails = async ({ batiment_groupe_id }: GetBdnbBati
       'dle_reseaux_multimillesime_conso_pro',
       'dle_reseaux_multimillesime_conso_res',
       'dle_reseaux_multimillesime_conso_tot',
-      'dle_reseaux_multimillesime_type_reseau',
       'dpe_representatif_logement_classe_bilan_dpe',
       'dpe_representatif_logement_classe_emission_ges',
       'dpe_representatif_logement_surface_habitable_immeuble',

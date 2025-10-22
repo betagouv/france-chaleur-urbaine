@@ -16,13 +16,9 @@ const bdnbBatimentsFields = [
   'batiment_groupe_id',
   'geom',
 
-  'ffo_bat_annee_construction',
   'ffo_bat_nb_log',
-  'synthese_propriete_usage',
 
   'dpe_representatif_logement_classe_bilan_dpe',
-  'dpe_representatif_logement_classe_emission_ges',
-  'dpe_representatif_logement_surface_habitable_immeuble',
   'dpe_representatif_logement_type_energie_chauffage',
   'dpe_representatif_logement_type_installation_chauffage',
 ] as const satisfies (keyof BdnbBatiments)[];

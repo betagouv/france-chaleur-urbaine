@@ -60,7 +60,6 @@ export interface BdnbBatiments {
   dle_reseaux_multimillesime_conso_pro: Numeric | null;
   dle_reseaux_multimillesime_conso_res: Numeric | null;
   dle_reseaux_multimillesime_conso_tot: Numeric | null;
-  dle_reseaux_multimillesime_type_reseau: string[] | null;
   dpe_representatif_logement_classe_bilan_dpe: 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | null;
   dpe_representatif_logement_classe_emission_ges: 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | null;
   dpe_representatif_logement_surface_habitable_immeuble: number | null;

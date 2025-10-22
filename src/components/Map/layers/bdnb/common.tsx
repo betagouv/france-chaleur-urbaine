@@ -66,12 +66,12 @@ function BdnbBatimentPopupContent({
         <Property label="Mode de chauffage" value={batimentDetails.dpe_representatif_logement_type_installation_chauffage} />
         <Property
           label="DPE consommations énergétiques"
-          value={caracteristiqueBatiment.dpe_representatif_logement_classe_bilan_dpe}
+          value={batimentDetails.dpe_representatif_logement_classe_bilan_dpe}
           formatter={(v) => <DPE classe={`${v}`} />}
         />
         <Property
           label="DPE émissions de gaz à effet de serre"
-          value={caracteristiqueBatiment.dpe_representatif_logement_classe_emission_ges}
+          value={batimentDetails.dpe_representatif_logement_classe_emission_ges}
           formatter={(v) => <DPE classe={`${v}`} />}
         />
         <Property
