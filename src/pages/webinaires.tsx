@@ -91,7 +91,7 @@ const webinaires = [
     ),
     imageAlt: "Page de garde de la présentation de la mise en place d'un projet de réseau de chaleur",
     imageUrl: '/img/webinaires/vignette_initier.png',
-    linkProps: { href: '/webinaire/2025/presentation-initier' },
+    linkProps: { href: '/webinaire/2025/presentation-initier-un-reseau' },
     start: 'Janvier 2025',
     title: 'Initier un projet de réseau de chaleur',
   },
