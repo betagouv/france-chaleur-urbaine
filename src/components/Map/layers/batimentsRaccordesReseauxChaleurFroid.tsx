@@ -1,4 +1,5 @@
 import Button from '@/components/ui/Button';
+import { dataSourcesVersions } from '@/modules/app/constants';
 import { formatMWhAn } from '@/utils/strings';
 import type { ExtractKeysOfType } from '@/utils/typescript';
 import type { MapConfiguration } from '../map-configuration';
@@ -121,7 +122,7 @@ function Popup(
         />
         <Property label="Secteur" value={secteurBatimentRaccordeToLabels[batimentRaccordeReseauxChaleurFroid.code_grand_secteur]} />
         <Property label="Identifiant du réseau" value={batimentRaccordeReseauxChaleurFroid.id_reseau} />
-        <Property label="Source" value="SDES pour 2024" />
+        <Property label="Source" value={dataSourcesVersions.donneesLocalesConsommationEnergieAdresse.title} />
       </TwoColumns>
       <Button
         priority="secondary"

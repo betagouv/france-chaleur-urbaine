@@ -1,4 +1,5 @@
 import type { ExpressionInputType } from 'maplibre-gl';
+import { dataSourcesVersions } from '@/modules/app/constants';
 import type { DonneesDeConsos } from '@/server/db/kysely';
 import { formatMWhAn } from '@/utils/strings';
 import { ObjectEntries } from '@/utils/typescript';
@@ -124,7 +125,7 @@ function Popup(consommationGaz: DonneesDeConsos, { Property, Title, TwoColumns }
       <Title subtitle={codeGrandToLabel[consommationGaz.code_grand]}>{consommationGaz.adresse}</Title>
       <TwoColumns>
         <Property label="Conso. gaz" value={consommationGaz.conso_nb} formatter={formatMWhAn} />
-        <Property label="Source" value="SDES pour 2024" />
+        <Property label="Source" value={dataSourcesVersions.donneesLocalesConsommationEnergieAdresse.title} />
       </TwoColumns>
     </>
   );

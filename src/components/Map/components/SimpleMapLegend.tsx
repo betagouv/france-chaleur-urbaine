@@ -18,6 +18,7 @@ import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
 import Tooltip from '@/components/ui/Tooltip';
 import { trackEvent } from '@/modules/analytics/client';
+import { dataSourcesVersions } from '@/modules/app/constants';
 import { useAuthentication } from '@/modules/auth/client/hooks';
 import { ObjectEntries } from '@/utils/typescript';
 import { caracteristiquesBatimentsLayerStyle } from '../layers/bdnb/caracteristiquesBatiments';
@@ -208,13 +209,11 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
                   <Tooltip
                     title={
                       <>
-                        Données locales de consommation de gaz naturel de l'année 2024
+                        Données locales de consommation de gaz naturel de l'année{' '}
+                        {dataSourcesVersions.donneesLocalesConsommationEnergieAdresse.year}
                         <br />
                         Données :{' '}
-                        <Link
-                          href="https://www.statistiques.developpement-durable.gouv.fr/donnees-locales-de-consommation-denergie"
-                          isExternal
-                        >
+                        <Link href={dataSourcesVersions.donneesLocalesConsommationEnergieAdresse.link} isExternal>
                           SDES
                         </Link>
                       </>
@@ -325,8 +324,8 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
                     title={
                       <>
                         Données :{' '}
-                        <Link href="https://www.data.gouv.fr/datasets/base-de-donnees-nationale-des-batiments/" isExternal>
-                          BDNB 2024-10.a
+                        <Link href={dataSourcesVersions.bdnb.link} isExternal>
+                          {dataSourcesVersions.bdnb.version}
                         </Link>
                       </>
                     }
@@ -364,8 +363,8 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
                     title={
                       <>
                         Données :{' '}
-                        <Link href="https://www.data.gouv.fr/datasets/base-de-donnees-nationale-des-batiments/" isExternal>
-                          BDNB 2024-10.a
+                        <Link href={dataSourcesVersions.bdnb.link} isExternal>
+                          {dataSourcesVersions.bdnb.version}
                         </Link>
                       </>
                     }
@@ -527,8 +526,8 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
                         donnés à titre informatif et non-officiel, sans aucune valeur légale.
                         <br />
                         Données :{' '}
-                        <Link href="https://www.data.gouv.fr/datasets/base-de-donnees-nationale-des-batiments/" isExternal>
-                          BDNB 2024-10.a
+                        <Link href={dataSourcesVersions.bdnb.link} isExternal>
+                          {dataSourcesVersions.bdnb.version}
                         </Link>
                       </>
                     }
