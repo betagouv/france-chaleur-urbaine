@@ -264,13 +264,33 @@ const Graph: React.FC<GraphProps> = ({
     return `${typeInstallation.label}${suffix}`;
   };
 
-  const modesDeChauffageFiltres = modesDeChauffage.filter(
-    (modeDeChauffage) =>
-      (advancedMode
-        ? hasModeDeChauffage(modeDeChauffage.label)
-        : modeDeChauffage.grandPublicMode && !(reseauDeChaleur?.hide && modeDeChauffage.label === 'Réseau de chaleur')) &&
-      (typeDeBatiment === 'tertiaire' ? modeDeChauffage.tertiaire : true)
-  );
+  const modesDeChauffageFiltres = modesDeChauffage
+    .filter(
+      (modeDeChauffage) =>
+        (advancedMode
+          ? hasModeDeChauffage(modeDeChauffage.label)
+          : modeDeChauffage.grandPublicMode && !(reseauDeChaleur?.hide && modeDeChauffage.label === 'Réseau de chaleur')) &&
+        (typeDeBatiment === 'tertiaire' ? modeDeChauffage.tertiaire : true)
+    )
+    .sort((a, b) => {
+      if (advancedMode) {
+        return 0;
+      }
+      // Define explicit order mapping
+      const ordre = ['Réseaux de chaleur', 'Gaz', 'Fioul', 'Granulés', 'PAC', 'Radiateur électrique'];
+      const idxA = ordre.indexOf(a.categorie);
+      const idxB = ordre.indexOf(b.categorie);
+
+      // Items in the ordre array come first, then others follow original order
+      if (idxA !== -1 && idxB !== -1) {
+        return idxA - idxB;
+      }
+      if (idxA !== -1) return -1;
+      if (idxB !== -1) return 1;
+
+      // Neither found: default to original order
+      return 0;
+    });
 
   const totalCoutsEtEmissions: [string, number, number][] = [];
 
@@ -565,9 +585,12 @@ const Graph: React.FC<GraphProps> = ({
                 const costLowerPercent = Math.max(0, Math.round((costLowerBound / scaleCostMaxValue) * 100));
                 const costUpperPercent = Math.min(100, Math.round((costUpperBound / scaleCostMaxValue) * 100));
                 const costWidth = costUpperPercent - costLowerPercent;
-                const graphSectionType: string = name.includes(' individuel') // Check within the name as there is no other easy way to find this information
-                  ? 'Chauffage individuel'
-                  : 'Chauffage collectif';
+
+                const graphSectionType: string = advancedMode
+                  ? name.includes(' individuel')
+                    ? 'Chauffage individuel'
+                    : 'Chauffage collectif'
+                  : modesDeChauffageFiltres.find((modeDeChauffage) => modeDeChauffage.label === name)?.categorie || '';
 
                 const isReseauDeChaleur = name.includes('Réseau de chaleur');
 
