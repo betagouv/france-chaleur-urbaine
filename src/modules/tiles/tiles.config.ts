@@ -40,7 +40,6 @@ export const databaseSourceIds = [
   'coldNetwork', // réseaux de froid
   'demands', // demandes d'éligibilité
   'consommationsGaz',
-  'energy', // batiments collectifs chauffés au fioul / gas
   'batimentsRaccordesReseauxChaleurFroid',
   'enrrMobilisables',
   'enrrMobilisables-friches',
@@ -62,13 +61,11 @@ export const databaseSourceIds = [
   'communesFortPotentielPourCreationReseauxChaleur',
   'quartiersPrioritairesPolitiqueVille2015anru',
   'quartiersPrioritairesPolitiqueVille2024',
-  'buildings', // caractéristiques des bâtiments
   'etudesEnCours',
   'testsAdresses',
   'zonesAUrbaniser',
   'ressourcesGeothermalesNappes',
-  'bdnbBatiments', // nouvelle couche BDNB
-  'bdnbBatimentsTypeChauffage',
+  'bdnbBatiments', // caractéristiques des bâtiments et types de chauffage des bâtiments
 ] as const;
 
 export const zDatabaseSourceId = z.enum(databaseSourceIds);
@@ -97,11 +94,6 @@ export const tilesInfo: Record<DatabaseSourceId, TileInfo> = {
     source: 'database',
     tiles: 'bdnb_batiments_tiles',
   },
-  bdnbBatimentsTypeChauffage: {
-    compressedTiles: true,
-    source: 'database',
-    tiles: 'bdnb_batiments_tiles',
-  },
   besoinsEnChaleur: {
     compressedTiles: true,
     source: 'database',
@@ -111,11 +103,6 @@ export const tilesInfo: Record<DatabaseSourceId, TileInfo> = {
     compressedTiles: true,
     source: 'database',
     tiles: 'besoins_en_chaleur_industrie_communes_tiles',
-  },
-  // TODO à supprimer après déploiement en prod de bdnb_batiments_tiles
-  buildings: {
-    source: 'database',
-    tiles: 'bnb - batiment_tiles',
   },
   coldNetwork: {
     airtable: Airtable.COLD_NETWORKS,
@@ -150,24 +137,6 @@ export const tilesInfo: Record<DatabaseSourceId, TileInfo> = {
     source: 'airtable',
     sourceLayer: 'demands',
     table: Airtable.DEMANDES,
-  },
-  // TODO à supprimer après déploiement en prod de bdnb_batiments_tiles
-  energy: {
-    id: 'id',
-    properties: [
-      'id',
-      'nb_logements',
-      'annee_construction',
-      'type_usage',
-      'energie_utilisee',
-      'type_chauffage',
-      'addr_label',
-      'dpe_energie',
-      'dpe_ges',
-    ],
-    source: 'database',
-    sourceLayer: 'energy',
-    tiles: 'bnb - adresse_tiles',
   },
   enrrMobilisables: {
     source: 'database',
