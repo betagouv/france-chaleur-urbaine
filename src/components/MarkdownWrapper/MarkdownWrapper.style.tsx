@@ -207,7 +207,7 @@ const CheckItemFCU = css`
     padding: 0;
     line-height: 1;
 
-    background-image: url('./icons/check.svg');
+    background-image: url('/icons/check.svg');
     background-repeat: no-repeat;
     background-position: 0 0.5em;
     background-size: 1em;
