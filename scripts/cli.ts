@@ -8,6 +8,7 @@ import prompts from 'prompts';
 import XLSX from 'xlsx';
 import { z } from 'zod';
 import { registerAppCommands } from '@/modules/app/commands';
+import { registerBdnbCommands } from '@/modules/bdnb/commands';
 import { registerDataCommands } from '@/modules/data/commands';
 import { registerJobsCommands } from '@/modules/jobs/commands';
 import { registerOptimizationCommands } from '@/modules/optimization/commands';
@@ -64,6 +65,7 @@ program
   });
 
 registerAppCommands(program);
+registerBdnbCommands(program);
 registerDataCommands(program);
 registerJobsCommands(program);
 registerOptimizationCommands(program);
@@ -428,20 +430,6 @@ program
       process.exit(1);
     }
     await syncComptesProFromUsers();
-  });
-
-program
-  .command('bdnd:export')
-  .description('')
-  .action(async () => {
-    console.info('Veuillez regarder les étapes dans scripts/bdnb/README.md');
-  });
-
-program
-  .command('bdnd:export-qpv')
-  .description('')
-  .action(async () => {
-    console.info('Veuillez regarder les étapes dans scripts/bdnb/qpv/README.md');
   });
 
 program
