@@ -1,6 +1,6 @@
 import { fr } from '@codegouvfr/react-dsfr';
 import { useQueryState } from 'nuqs';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
 
 import { ContactForm, SelectEnergy } from '@/components/EligibilityForm/components';
@@ -8,6 +8,7 @@ import { energyInputsDefaultLabels } from '@/components/EligibilityForm/Eligibil
 import AddressAutocomplete from '@/components/form/dsfr/AddressAutocompleteInput';
 import Alert from '@/components/ui/Alert';
 import Box from '@/components/ui/Box';
+import Button from '@/components/ui/Button';
 import Heading from '@/components/ui/Heading';
 import Link from '@/components/ui/Link';
 import Modal, { createModal } from '@/components/ui/Modal';
@@ -117,6 +118,9 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
       setFormState('demandSubmissionError');
     }
   };
+  const defaultAddress = addressInUrl || userAddress || '';
+  const [addressDefaultValue, setAddressDefaultValue] = useState<string>();
+  const [defaultAddressButtonVisible, setDefaultAddressButtonVisible] = useState<boolean>(true);
 
   return (
     <>
@@ -130,12 +134,16 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
         <AddressAutocomplete
           label=""
           nativeInputProps={{ placeholder: 'Tapez ici votre adresse' }}
-          defaultValue={addressInUrl || userAddress || ''}
+          defaultValue={addressDefaultValue}
           onClear={() => {
             setUserAddress('');
             setSelectedGeoAddress(undefined);
+            setDefaultAddressButtonVisible(true);
           }}
-          onSelect={onAddressSelected}
+          onSelect={(geoAddress) => {
+            onAddressSelected(geoAddress);
+            setDefaultAddressButtonVisible(false);
+          }}
           excludeCities
         />
         {formState === 'eligibilitySubmissionError' && (
@@ -143,6 +151,9 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
             Une erreur est survenue. Veuillez réessayer ou bien <Link href="/contact">contacter le support</Link>.
           </div>
         )}
+        {defaultAddress && defaultAddressButtonVisible ? (
+          <Button onClick={() => setAddressDefaultValue(defaultAddress)}>Testez {defaultAddress}</Button>
+        ) : null}
       </Box>
 
       <Modal
