@@ -134,7 +134,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
   );
 
   const noticePDP = (
-    <Notice variant="warning" size="xs" className="mt-2">
+    <Notice variant="warning" size="sm" className="mt-2">
       Votre adresse est dans le périmètre de développement prioritaire du réseau. Une obligation de raccordement peut exister{' '}
       <Link isExternal href="/ressources/obligations-raccordement#contenu">
         (en savoir plus)
@@ -143,7 +143,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
     </Notice>
   );
   const noticeClasse = (
-    <Notice variant="warning" size="xs" className="mt-2">
+    <Notice variant="warning" size="sm" className="mt-2">
       Ce réseau est classé, ce qui signifie qu’une obligation de raccordement peut exister{' '}
       <Link isExternal href="/ressources/obligations-raccordement#contenu">
         (en savoir plus)
@@ -156,18 +156,22 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
 
   const results = (
     <div className="p-2 lg:p-0">
-      {!displayGraph && (
-        <CallOut className="mb-5 font-bold">
-          {advancedMode
-            ? !isAddressSelected
-              ? '1. Commencez par renseigner une adresse'
-              : '2. Maintenant, sélectionnez au moins un mode de chauffage'
-            : 'Renseignez une adresse'}
-        </CallOut>
-      )}
-
       {displayGraph && !loading && address && (
-        <Alert size="sm" className="mb-5" variant={nearestReseauDeChaleur ? 'info' : 'warning'}>
+        <Accordion
+          className="mb-5"
+          small
+          bordered
+          label={
+            nearestReseauDeChaleur ? (
+              <span>
+                Réseau de chaleur : <strong>{nearestReseauDeChaleur.nom_reseau}</strong> à{' '}
+                <strong>{nearestReseauDeChaleur.distance}m</strong>
+              </span>
+            ) : (
+              <span>Réseau de chaleur : aucun réseau à proximité</span>
+            )
+          }
+        >
           {nearestReseauDeChaleur ? (
             <>
               Le réseau de chaleur{' '}
@@ -176,13 +180,13 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
               </Link>{' '}
               est à <strong>{nearestReseauDeChaleur.distance}m</strong> de votre adresse.
               {!nearestReseauDeChaleur?.PM && (
-                <p className="fr-text--sm font-bold fr-my-1v">
-                  À noter qu’en l'absence de données tarifaires pour ce réseau, les simulations se basent sur le prix de la chaleur moyen
+                <p className="font-bold fr-my-1v">
+                  À noter qu'en l'absence de données tarifaires pour ce réseau, les simulations se basent sur le prix de la chaleur moyen
                   des réseaux français.
                 </p>
               )}
               {addressDetail?.network.inPDP ? noticePDP : addressDetail?.network.isClasse ? noticeClasse : undefined}
-              <p className="text-sm my-5">
+              <p className="my-2">
                 Vous souhaitez recevoir des informations adaptées à votre bâtiment de la part du gestionnaire du réseau ? Nous assurons
                 votre mise en relation !
               </p>
@@ -226,10 +230,23 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
               </div>
             </div>
           )}
-        </Alert>
+        </Accordion>
       )}
       {displayGraph && !loading && inclureLaClimatisation && address && (
-        <Alert size="sm" className="mb-5" variant={nearestReseauDeFroid ? 'info' : 'warning'}>
+        <Accordion
+          className="mb-5"
+          small
+          bordered
+          label={
+            nearestReseauDeFroid ? (
+              <span>
+                Réseau de froid : <strong>{nearestReseauDeFroid.nom_reseau}</strong> à <strong>{nearestReseauDeFroid.distance}m</strong>
+              </span>
+            ) : (
+              <span>Réseau de froid : aucun réseau à proximité</span>
+            )
+          }
+        >
           {nearestReseauDeFroid ? (
             <>
               Le réseau de froid{' '}
@@ -238,20 +255,18 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
               </Link>{' '}
               est à <strong>{nearestReseauDeFroid.distance}m</strong> de votre adresse.
               <p className="fr-text--sm font-bold fr-my-1v">
-                À noter qu’en l'absence de données tarifaires pour ce réseau, les simulations se basent sur le prix du froid moyen des
+                À noter qu'en l'absence de données tarifaires pour ce réseau, les simulations se basent sur le prix du froid moyen des
                 réseaux français.
               </p>
               {addressDetail?.network.inPDP ? noticePDP : addressDetail?.network.isClasse ? noticeClasse : undefined}
               {lngLat && (
-                <div className="fr-text--xs">
-                  <Link
-                    isExternal
-                    href={`/carte?coord=${lngLat.join(',')}&zoom=17&address=${encodeURIComponent(address as string)}`}
-                    className="fr-block"
-                  >
-                    <strong>Visualiser sur la carte</strong>
-                  </Link>
-                </div>
+                <Link
+                  isExternal
+                  href={`/carte?coord=${lngLat.join(',')}&zoom=17&address=${encodeURIComponent(address as string)}`}
+                  className="fr-block text-sm"
+                >
+                  <strong>Visualiser sur la carte</strong>
+                </Link>
               )}
             </>
           ) : (
@@ -273,8 +288,18 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
               </div>
             </div>
           )}
-        </Alert>
+        </Accordion>
       )}
+      {!displayGraph && (
+        <CallOut className="mb-5 font-bold">
+          {advancedMode
+            ? !isAddressSelected
+              ? '1. Commencez par renseigner une adresse'
+              : '2. Maintenant, sélectionnez au moins un mode de chauffage'
+            : 'Renseignez une adresse'}
+        </CallOut>
+      )}
+
       {displayGraph ? (
         <Graph
           engine={engine}
