@@ -12,7 +12,7 @@ export const caracteristiquesBatimentsLayerStyle = {
   E: '#E0A736',
   F: '#E66E31',
   G: '#C5171D',
-  null: '#999999',
+  N: '#999999',
 };
 
 const opacity = 0.65;
@@ -32,9 +32,9 @@ export const caracteristiquesBatimentsLayersSpec = [
         paint: {
           'fill-color': [
             'match',
-            ['coalesce', ['get', 'dpe_representatif_logement_classe_bilan_dpe'], 'null'],
+            ['coalesce', ['get', 'dpe_representatif_logement_classe_bilan_dpe'], 'N'],
             ...dpeWithColorPairs,
-            ifHoverElse(darken(caracteristiquesBatimentsLayerStyle.null, 40), caracteristiquesBatimentsLayerStyle.null),
+            ifHoverElse(darken(caracteristiquesBatimentsLayerStyle.N, 40), caracteristiquesBatimentsLayerStyle.N),
           ],
           'fill-opacity': [
             'interpolate',
