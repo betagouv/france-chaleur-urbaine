@@ -500,92 +500,6 @@ export interface RaccordementsTiles {
   z: Int8;
 }
 
-export interface Regions {
-  bnb_nom: string | null;
-  fid: Int8 | null;
-  geom: string | null;
-  id: Generated<number>;
-  'R�gION': string | null;
-}
-
-export interface RegistreCoproR11220125 {
-  a: number | null;
-  administration_provisioire: string | null;
-  adresse_complementaire_1: string | null;
-  adresse_complementaire_2: string | null;
-  adresse_complementaire_3: string | null;
-  adresse_reference: string | null;
-  annee_achevement_construction: number | null;
-  b: number | null;
-  c: number | null;
-  charges_courantes: string | null;
-  charges_eceptionnelles: string | null;
-  chauffage_urbain: string | null;
-  code_ape: string | null;
-  code_insee: string | null;
-  code_insee_1: string | null;
-  code_insee_2: string | null;
-  commune: string | null;
-  commune_representant_legal: string | null;
-  d: number | null;
-  date_assemblee_generale_comptes: string | null;
-  date_debut_exercice_compable: string | null;
-  date_fin_exercice_compable: string | null;
-  date_fin_mandat: string | null;
-  date_reglement_copropriete: string | null;
-  e: number | null;
-  energie_utilisee: string | null;
-  epci: string | null;
-  f: number | null;
-  g: number | null;
-  geom: string | null;
-  id: Int8;
-  identifiant_ign: string | null;
-  identification_representant_legal: string | null;
-  mandat: string | null;
-  mandat_ad_hoc: string | null;
-  montant_dette_remuneration_autre: string | null;
-  montant_du_coproprietaire: string | null;
-  montant_fonds_travaux: string | null;
-  nb_adresse_complementaire: number | null;
-  nb_aful: number | null;
-  nb_arrete_code_sante_publique: number | null;
-  nb_arrete_equipement: number | null;
-  nb_arrete_peril: number | null;
-  nb_ascenceur: number | null;
-  nb_asl: number | null;
-  nb_coproprietaire_debiteur_sup300: number | null;
-  nb_lot: number | null;
-  nb_lot_habitation: number | null;
-  nb_lot_habitation_bureau_commerce: number | null;
-  nb_lot_stationnement: number | null;
-  nb_parcelle: number | null;
-  nb_union_syndic: number | null;
-  nom_usage_copropriete: string | null;
-  non_determine: number | null;
-  numero_identification_syndicat_principal: string | null;
-  numero_immatriculation: string | null;
-  ordonnance_carence: string | null;
-  parcelle: string | null;
-  parcelle_1: string | null;
-  parcelle_2: string | null;
-  periode_construction: string | null;
-  prefixe: string | null;
-  prefixe_1: string | null;
-  prefixe_2: string | null;
-  premier_exercice_comptable: string | null;
-  presence_personnel: string | null;
-  residence_service: string | null;
-  section: string | null;
-  section_1: string | null;
-  section_2: string | null;
-  syndic_principal_secondaire: string | null;
-  syndic_provisoire: string | null;
-  syndicat_cooperatif: string | null;
-  type_chauffage: string | null;
-  type_syndic: string | null;
-}
-
 export interface ReseauxDeChaleur {
   adresse_mo: string | null;
   annee_creation: number | null;
@@ -990,7 +904,6 @@ export interface DB {
   quartiers_prioritaires_politique_ville_2015_anru_tiles: QuartiersPrioritairesPolitiqueVille2015AnruTiles;
   quartiers_prioritaires_politique_ville_2024_tiles: QuartiersPrioritairesPolitiqueVille2024Tiles;
   raccordements_tiles: RaccordementsTiles;
-  registre_copro_r11_220125: RegistreCoproR11220125;
   reseaux_de_chaleur: ReseauxDeChaleur;
   reseaux_de_chaleur_tiles: ReseauxDeChaleurTiles;
   reseaux_de_froid: ReseauxDeFroid;

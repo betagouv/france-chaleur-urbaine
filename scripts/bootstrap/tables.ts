@@ -121,10 +121,6 @@ export const allDatabaseTables: TableInfo[] = [
     name: 'ign_regions',
   },
   {
-    description: 'Registre des copropriétés R11 du 25/01/2022',
-    name: 'registre_copro_r11_220125',
-  },
-  {
     description: 'Données de consommation énergétique',
     name: 'donnees_de_consos',
   },
