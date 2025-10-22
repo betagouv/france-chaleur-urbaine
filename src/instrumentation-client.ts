@@ -1,10 +1,10 @@
-// This file configures the initialization of Sentry on the server.
-// The config you add here will be used whenever the server handles a request.
+// This file configures the initialization of Sentry on the client.
+// The added config here will be used whenever a users loads a page in their browser.
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
-import { init } from '@sentry/nextjs';
+import * as Sentry from '@sentry/nextjs';
 
-init({
+Sentry.init({
   dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
 
   // Enable sending user PII (Personally Identifiable Information)
@@ -14,3 +14,5 @@ init({
   // Define how likely traces are sampled. Adjust this value in production, or use tracesSampler for greater control.
   tracesSampleRate: 0.1,
 });
+
+export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;

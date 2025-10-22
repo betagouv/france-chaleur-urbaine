@@ -11,43 +11,38 @@ const configFunctions = [
   createMDX({
     // Add markdown plugins here, as desired
   }),
-  withSentry(
-    {
-      // For all available options, see:
-      // https://github.com/getsentry/sentry-webpack-plugin#options
-      dryRun: !process.env.NEXT_PUBLIC_SENTRY_DSN,
-      // do not exit if the build fails to interact with the sentry server
-      errorHandler: (err, _invokeErr, compilation) => {
-        compilation.warnings.push(`Sentry CLI Plugin: ${err.message}`);
-      },
-      org: 'betagouv',
-      project: 'fcu-prod',
-      // Suppresses source map uploading logs during build
-      silent: true,
-      url: 'https://sentry.incubateur.net/',
+  withSentry({
+    // Uncomment to route browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers.
+    // This can increase your server load as well as your hosting bill.
+    // Note: Check that the configured route will not match with your Next.js middleware, otherwise reporting of client-
+    // side errors will fail.
+    // tunnelRoute: "/monitoring",
+
+    // Automatically tree-shake Sentry logger statements to reduce bundle size
+    disableLogger: true,
+
+    // do not exit if the build fails to interact with the sentry server
+    errorHandler: (err) => {
+      console.warn(`Sentry CLI Plugin: ${err.message}`);
     },
-    {
-      // Enables automatic instrumentation of Vercel Cron Monitors.
-      // See the following for more information:
-      // https://docs.sentry.io/product/crons/
-      // https://vercel.com/docs/cron-jobs
-      automaticVercelMonitors: true,
+    // For all available options, see:
+    // https://www.npmjs.com/package/@sentry/webpack-plugin#options
 
-      // Automatically tree-shake Sentry logger statements to reduce bundle size
-      disableLogger: true,
+    org: 'betagouv',
+    project: 'fcu-prod',
+    sentryUrl: 'https://sentry.incubateur.net/',
 
-      // Hides source maps from generated client bundles
-      hideSourceMaps: true,
+    // Only print logs for uploading source maps in CI
+    silent: !process.env.CI,
 
-      // Transpiles SDK to be compatible with IE11 (increases bundle size)
-      transpileClientSDK: false,
-      // For all available options, see:
-      // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
+    telemetry: false,
 
-      // Upload a larger set of source maps for prettier stack traces (increases build time)
-      widenClientFileUpload: false,
-    }
-  ),
+    // For all available options, see:
+    // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
+
+    // Upload a larger set of source maps for prettier stack traces (increases build time)
+    widenClientFileUpload: true,
+  }),
   withBundleAnalyzer({
     enabled: process.env.ANALYZE === 'true',
   }),

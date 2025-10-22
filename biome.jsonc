@@ -30,7 +30,8 @@
       "!**/*.log",
       "!**/*.zip",
       "!**/public",
-      "!**/docker"
+      "!**/docker",
+      "!next-env.d.ts"
     ]
   },
   "formatter": {

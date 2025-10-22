@@ -80,3 +80,6 @@ scripts/simulateur/codes-insee.json
 *.log
 
 .tmp
+
+# Sentry Config File
+.env.sentry-build-plugin
