@@ -13,22 +13,21 @@ This template should be filled by analyzing:
 
 ## 🧪 Testing Stack
 
+<!-- Source: README.md, CLAUDE.md -->
+
 ### Test Frameworks
 
-<!-- Detect from devDependencies and test files:
-- Jest, Vitest, Mocha, AVA, tape
-- Pytest, unittest
-- Go testing, testify
-- RSpec, minitest
--->
+**Primary Framework**: Vitest
+**Version**: [From package.json]
 
-**Primary Framework**: [Jest / Vitest / Pytest / etc.]
-**Version**: [From package.json or equivalent]
+[Vitest](https://vitest.dev/) est le framework utilisé pour les tests unitaires.
 
-**Additional Tools**:
-- **Assertions**: [Expect / Chai / Assert / etc. from imports]
-- **Mocking**: [Jest mocks / Sinon / unittest.mock / etc.]
-- **Test Runners**: [From package.json scripts]
+**Test Commands**:
+```bash
+pnpm test                  # Run all tests
+pnpm test:watch            # Watch mode
+pnpm test src/utils/file.spec.ts  # Run single test
+```
 
 ### Testing Libraries
 

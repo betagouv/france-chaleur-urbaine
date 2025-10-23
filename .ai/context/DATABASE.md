@@ -14,18 +14,28 @@ This template should be filled by analyzing:
 
 ## 📊 Database Technology
 
+<!-- Source: CLAUDE.md, README.md -->
+
 ### Primary Database
 
-<!-- Detect from:
-- docker-compose.yml database service
-- Connection strings in env.example
-- ORM configuration
-- Database driver dependencies
--->
+**Type**: PostgreSQL + PostGIS
+**Version**: [From docker-compose.yml]
+**ORM/Query Builder**: Kysely for type-safe SQL queries
 
-**Type**: [PostgreSQL / MySQL / MongoDB / SQLite / etc.]
-**Version**: [From docker-compose.yml or docs]
-**ORM/Query Builder**: [Prisma / TypeORM / Sequelize / Drizzle / etc.]
+### Kysely Type Generation
+
+<!-- Source: README.md -->
+
+Certaines requêtes à la base de données sont générées par [Kysely](https://github.com/koskimas/kysely) à partir du [fichier `src/server/db/kysely/database.ts`](src/server/db/kysely/database.ts).
+Celui-ci doit être généré à partir de la base de données à chaque fois que celle-ci est modifiée.
+
+```bash
+# Verify if database schema is in sync with types
+pnpm db:verify
+
+# Regenerate Kysely types from database
+pnpm db:sync
+```
 
 ### Additional Data Stores
 
@@ -156,36 +166,52 @@ This template should be filled by analyzing:
 
 ## 🔄 Migrations
 
+<!-- Source: CLAUDE.md, README.md -->
+
 ### Migration Tool
 
-<!-- Detect from:
-- migrations/ folder structure
-- Migration files
-- ORM migration commands in package.json
--->
+**Tool**: Custom migration system
+**Location**: `migrations/`
 
-**Tool**: [Prisma Migrate / TypeORM / Knex / Flyway / etc.]
-**Location**: [Path to migrations folder]
+### Database Changes Workflow
 
-### Migration Patterns
+<!-- Source: CLAUDE.md -->
 
-<!-- Analyze migration files:
-- Naming convention
-- Reversibility (up/down migrations)
-- Data migrations vs schema migrations
--->
+**Database changes:**
+1. Create migration in `migrations/`
+2. Run `pnpm db:migrate`
+3. Run `pnpm db:sync` to update types
+4. Update relevant services
 
-**Naming**: [timestamp_description pattern detected]
-**Reversible**: [Yes/No - do down migrations exist?]
-**Count**: [Number of migrations]
+### Migration Commands
 
-### Recent Schema Changes
+```bash
+# Run migrations
+pnpm db:migrate
 
-<!-- List last 5 migrations or major changes -->
+# Regenerate Kysely types (after schema changes)
+pnpm db:sync
 
-1. [Migration 1]: [Description from filename or content]
-2. [Migration 2]: [Description from filename or content]
-3. [Migration 3]: [Description from filename or content]
+# Verify database schema is in sync
+pnpm db:verify
+```
+
+### Database Bootstrap
+
+<!-- Source: README.md -->
+
+Peupler la base de données locale à partir de la base de production:
+
+```bash
+pnpm db:bootstrap
+```
+
+Si l'étape de bootstrap est trop lente, essayer de récupérer un dump depuis le dashboard Scalingo:
+
+```bash
+tar -xzvf 20240XXXXXXXXXX_france_chal_3098.tar.gz
+pg_restore --clean --if-exists --no-owner --no-privileges --verbose --no-comments --dbname postgres://postgres:postgres_fcu@localhost:5432/postgres 20240XXXXXXXXXX_france_chal_3098.pgsql
+```
 
 ## 🗑️ Soft Deletes
 

@@ -13,9 +13,13 @@ This template should be filled by analyzing:
 
 ## 📋 What is france-chaleur-urbaine?
 
-<!-- Extract from README.md first paragraph or "About" section -->
+<!-- Source: CLAUDE.md, README.md -->
 
-[1-2 paragraph description of what the project does]
+France Chaleur Urbaine is a public service platform for connecting to district heating networks in France. It's a Next.js application with geospatial features, built to French government standards (DSFR).
+
+Ce dépôt regroupe le code relatif au site france-chaleur-urbaine.beta.gouv.fr.
+
+Il utilise, entre autre, [Docker](https://www.docker.com), [React](https://reactjs.org), [Next.js](https://nextjs.org), [PostgreSQL](https://www.postgresql.org/) et [MapLibre](https://maplibre.org).
 
 ## 🎯 Goals and Objectives
 
@@ -44,33 +48,24 @@ This template should be filled by analyzing:
 
 ## 🛠️ Technical Stack
 
+<!-- Source: CLAUDE.md -->
+
 ### Core Technologies
 
-<!-- Extract from package.json, go.mod, requirements.txt, Cargo.toml, etc. -->
-
-**Language**: Core
+**Language**: TypeScript
 
 **Runtime/Framework**:
-<!-- Detect from main dependencies:
-- React, Next.js, Vue, Nuxt
-- Express, Fastify, Koa
-- Django, Flask, FastAPI
-- Rails, Sinatra
-- etc.
--->
+- **Next.js 15** with Pages Router (not App Router)
+- **React**
+- **TypeScript** with strict mode
 
 **Database**:
-<!-- Detect from:
-- docker-compose.yml database services
-- ORM/Database libraries (prisma, typeorm, sequelize, etc.)
-- Connection strings in env.example
--->
+- **PostgreSQL + PostGIS** for spatial data
+- **Kysely** for type-safe SQL queries
 
-**Cache/Queue**:
-<!-- Detect from:
-- Redis, Memcached in dependencies or docker-compose
-- Bull, BullMQ, Sidekiq, Celery in dependencies
--->
+**UI Components**:
+- **@codegouvfr/react-dsfr** for French government design system
+- **MapLibre GL** for map rendering
 
 ### Key Dependencies
 
@@ -94,31 +89,28 @@ This template should be filled by analyzing:
 
 ## 📁 Project Structure
 
-<!-- Analyze actual directory structure -->
+<!-- Source: CLAUDE.md -->
 
 ```
-france-chaleur-urbaine/
-├── src/                    # [Main source code]
-│   ├── [feature1]/         # [Auto-detect top-level folders]
-│   ├── [feature2]/         # [Auto-detect top-level folders]
-│   └── [feature3]/         # [Auto-detect top-level folders]
-├── tests/                  # [If exists]
-├── docs/                   # [If exists]
-├── public/                 # [If exists]
-└── [config files]          # [List key config files]
+src/
+├── components/         # React components by feature
+├── pages/              # Next.js pages & API routes
+├── modules/            # Code separated in modules for separation of concerns
+├── server/             # Server-side services
+├── services/           # Client-side services
+├── utils/              # Shared utilities
+└── types/              # TypeScript definitions
 ```
 
 ### Key Directories
 
-<!-- For each major folder, infer purpose from:
-- Folder name
-- Files inside
-- Imports/exports
--->
-
-- **`src/[folder]/`**: [Purpose]
-- **`tests/`**: [Type of tests]
-- **`docs/`**: [Documentation structure]
+- **`src/components/`**: React components organized by feature
+- **`src/pages/`**: Next.js pages and API routes
+- **`src/modules/`**: Code separated in modules for separation of concerns
+- **`src/server/`**: Server-side services
+- **`src/services/`**: Client-side services
+- **`src/utils/`**: Shared utilities
+- **`src/types/`**: TypeScript definitions
 
 ## ✨ Key Features
 
@@ -298,27 +290,61 @@ france-chaleur-urbaine/
 
 ## 🚀 Getting Started
 
-<!-- Extract from README.md "Getting Started" or "Installation" section -->
+<!-- Source: CLAUDE.md -->
 
 ### Prerequisites
 
-- [Prerequisite 1 from README]
-- [Prerequisite 2 from README]
+- **Node.js 20** and **pnpm 8** are required
+- Docker
+- Posséder un compte Scalingo et avoir accès aux applications FCU
+- Récupérer le fichier `.env.local` auprès d'un membre de l'équipe
 
 ### Quick Start
 
 ```bash
-# [Commands from README.md]
+# Development
+pnpm dev                   # Start dev server (port 3000)
+pnpm dev:email             # Email template development
+
+# Code Quality (ALWAYS run before committing)
+pnpm lint                  # ESLint check
+pnpm lint:fix              # Fix linting issues
+pnpm prettier-check        # Code formatting
+pnpm lint:file             # Lint specific file
+pnpm ts                    # Run typescript on all codebase
+
+# Testing
+pnpm test                  # Run all tests
+pnpm test:watch            # Watch mode
+pnpm test src/utils/file.spec.ts  # Run single test
+
+# Database
+pnpm db:migrate            # Run migrations
+pnpm db:sync               # Regenerate Kysely types (after schema changes)
+
+# Build
+pnpm build                 # Production build
+pnpm build:analyze         # Analyze bundle size
+
+# Images
+pnpm cli optimize images  # Optimize all images in public/ directory
 ```
+
+### Important Notes
+
+<!-- Source: CLAUDE.md -->
+
+- **Node.js 20** and **pnpm 8** are required
+- Path aliases configured: `@/` → `src/`, `@cli/` → `scripts/`
+- French government design system (DSFR) must be used for UI
+- All geographic data uses PostGIS and Turf.js for calculations
+- Authentication uses custom session management (see `src/modules/auth/server/service.ts`)
+- Environment variables documented in `.env.example`
 
 ### Resources
 
-<!-- Extract from README.md links section -->
-
-- **Documentation**: [Link if available]
-- **API Docs**: [Link if available]
-- **Examples**: [Link to examples folder if exists]
-- **Demos**: [Link to live demo if mentioned]
+- **Website**: https://france-chaleur-urbaine.beta.gouv.fr
+- **Repository**: https://github.com/betagouv/france-chaleur-urbaine
 
 ---
 
