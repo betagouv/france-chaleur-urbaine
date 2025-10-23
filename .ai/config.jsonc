@@ -1,0 +1,9 @@
+{
+  // AI CLI Configuration
+  // This file is committed to git and shared across the team
+
+  "version": "1.0.0",
+
+  // Installed plugins
+  "plugins": ["core"]
+}
