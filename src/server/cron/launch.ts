@@ -3,7 +3,7 @@ import { captureException } from '@sentry/nextjs';
 import { syncComptesProFromUsers } from '@/server/services/airtable';
 import { dailyNewManagerMail, dailyRelanceMail, weeklyOldManagerMail } from '@/server/services/manager';
 
-import '@root/sentry.node.config';
+import '@root/sentry.server.config';
 
 export const jobs: Record<string, any> = {
   dailyNewManagerMail,
