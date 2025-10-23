@@ -1,5 +1,5 @@
 'use client';
-import { captureException } from '@sentry/browser';
+import { captureException } from '@sentry/nextjs';
 import { useQueryState } from 'nuqs';
 import React, { type ReactNode } from 'react';
 import originalToast, { Toaster } from 'react-hot-toast';

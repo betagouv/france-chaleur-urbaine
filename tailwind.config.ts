@@ -6,34 +6,10 @@ import colors from './src/components/ui/helpers/colors';
 
 const config = {
   content: ['./src/**/*.{js,ts,jsx,tsx,mdx}'],
-  theme: {
-    extend: {
-      // Use breakpoints from DSFR https://www.systeme-de-design.gouv.fr/fondamentaux/grille-et-points-de-rupture
-      screens: {
-        xs: '320px',
-        sm: '576px',
-        md: '768px',
-        lg: '992px',
-        xl: '1200px',
-      },
-      // Use spacing from DSFR through md:my-10w https://www.systeme-de-design.gouv.fr/fondamentaux/couleurs-palette
-      spacing: spacingTokenByValue,
-      colors,
-      keyframes: {
-        puff: {
-          '0%': { transform: 'scale(1)', opacity: '1' },
-          '50%': { transform: 'scale(1.1)', opacity: '0.8' },
-          '100%': { transform: 'scale(1)', opacity: '1' },
-        },
-      },
-      animation: {
-        puff: 'puff 0.2s ease-in-out',
-      },
-    },
-  },
+  important: true, // surcharge toujours le DSFR qui n'utilise pas les layers
   plugins: [
     animate,
-    function ({ addUtilities }) {
+    ({ addUtilities }) => {
       // Make spacing from DSFR available with hover and md: https://www.systeme-de-design.gouv.fr/fondamentaux/espacement
       Object.entries(spacingTokenByValue).forEach(([token, value]) => {
         const utilities = {
@@ -55,7 +31,31 @@ const config = {
       addUtilities(flexRatios, ['responsive']);
     },
   ],
-  important: true, // surcharge toujours le DSFR qui n'utilise pas les layers
+  theme: {
+    extend: {
+      animation: {
+        puff: 'puff 0.2s ease-in-out',
+      },
+      colors,
+      keyframes: {
+        puff: {
+          '0%': { opacity: '1', transform: 'scale(1)' },
+          '50%': { opacity: '0.8', transform: 'scale(1.1)' },
+          '100%': { opacity: '1', transform: 'scale(1)' },
+        },
+      },
+      // Use breakpoints from DSFR https://www.systeme-de-design.gouv.fr/fondamentaux/grille-et-points-de-rupture
+      screens: {
+        lg: '992px',
+        md: '768px',
+        sm: '576px',
+        xl: '1200px',
+        xs: '320px',
+      },
+      // Use spacing from DSFR through md:my-10w https://www.systeme-de-design.gouv.fr/fondamentaux/couleurs-palette
+      spacing: spacingTokenByValue,
+    },
+  },
 } satisfies Config;
 
 export default config;

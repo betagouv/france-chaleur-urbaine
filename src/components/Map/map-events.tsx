@@ -45,7 +45,10 @@ export function useMapEvents({ mapLayersLoaded, isDrawing, mapRef, onFeatureClic
   const { hasRole, isAuthenticated } = useAuthentication();
   const pathname = usePathname();
 
-  const popupContext: PopupContext = useMemo(() => ({ hasRole, isAuthenticated, mapEventBus, pathname }), [hasRole, isAuthenticated]);
+  const popupContext: PopupContext = useMemo(
+    () => ({ hasRole, isAuthenticated, mapEventBus, pathname: pathname ?? '__UNDEFINED_YET__' }),
+    [hasRole, isAuthenticated]
+  );
 
   const lastHoveredFeatureRef = useRef<{
     source: SourceId;

@@ -1,22 +1,17 @@
 {
   "compilerOptions": {
-    "target": "ES2017",
-    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
+    "baseUrl": ".",
     "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "importHelpers": true,
+    "incremental": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "lib": ["dom", "dom.iterable", "esnext"],
     "module": "esnext",
     "moduleResolution": "bundler",
-    "resolveJsonModule": true,
-    "importHelpers": true,
-    "removeComments": true,
-    "isolatedModules": true,
-    "verbatimModuleSyntax": true,
-    "jsx": "preserve",
-    "baseUrl": ".",
+    "noEmit": true,
     "paths": {
       "@/*": ["src/*"],
       "@cli/*": ["scripts/*"],
@@ -27,8 +22,23 @@
         "name": "next"
       }
     ],
-    "incremental": true
+    "removeComments": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "ES2017",
+    "verbatimModuleSyntax": true
   },
-  "include": ["next-env.d.ts", "src/**/*.d.ts", "src/**/*.ts", "src/**/*.tsx", "knexfile.ts", "scripts/**/*.ts", "**/*.svgr"],
-  "exclude": ["node_modules", "__tests__", "*.backUp", "**/*.backUp/*", ".next"]
+  "exclude": ["node_modules", "__tests__", "*.backUp", "**/*.backUp/*", ".next"],
+  "include": [
+    "**/*.svgr",
+    "knexfile.ts",
+    "next-env.d.ts",
+    "scripts/**/*.ts",
+    "src/**/*.d.ts",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts"
+  ]
 }
