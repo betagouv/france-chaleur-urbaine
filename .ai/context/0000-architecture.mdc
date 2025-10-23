@@ -1,0 +1,56 @@
+---
+description: Architecture documentation reading requirements
+globs:
+alwaysApply: true
+---
+
+# 🏗️ ARCHITECTURE DOCUMENTATION REQUIREMENTS
+
+## 📋 MANDATORY READING BEFORE ANY CODE CHANGES
+
+🚨 **CRITICAL RULE - ALWAYS FOLLOW THIS** 🚨
+
+**BEFORE making any code changes, you MUST:**
+
+1. **Read ARCHITECTURE.md at project root** to understand the current codebase structure
+2. **Identify relevant modules** for your changes
+3. **Read the specific module's CLAUDE.md file** to understand its conventions and architecture
+4. **Read at least 2-3 similar existing files** in the same area to follow established patterns
+
+This is **NON-NEGOTIABLE** and ensures:
+- ✅ Code consistency with project patterns
+- ✅ Proper understanding of module-based architecture  
+- ✅ Following established conventions
+- ✅ Avoiding breaking changes
+- ✅ Maintaining backward compatibility during migration
+
+## 📁 Architecture Overview
+
+- **Modern Structure**: Code in `src/modules/` following standardized patterns
+- **Legacy Code**: Code in `src/pages/api/`, `src/server/services/`, `src/services/` needs migration
+- **Well-Organized**: `src/components/`, `src/hooks/`, `src/config/`, `src/data/`, `src/styles/`, `src/utils/` (keep current structure)
+
+## 🔧 Module Standards
+
+Each module has:
+- **CLAUDE.md**: Complete documentation (READ THIS FIRST for any module work)
+- **Standard structure**: server/, client/, constants.ts, types.ts
+- **Internal imports**: Use `./` or `../` within modules, NEVER `@/modules/`
+- **Client/Server separation**: Client code NEVER imports from server
+
+## 📚 Documentation Priority
+
+1. **ARCHITECTURE.md** (root) - Overall codebase structure
+2. **Module CLAUDE.md** - Specific module architecture and conventions  
+3. **Similar files** - Existing patterns to follow
+
+## 🎯 Migration Strategy
+
+- **Prefer modules** over editing legacy code
+- **Create new modules** for new features following standard structure
+- **Update ARCHITECTURE.md** when creating new modules
+- **Maintain re-exports** for backward compatibility during transition
+
+---
+
+**⚡ Action Required**: Always demonstrate you've read the relevant documentation by mentioning specific conventions or patterns from ARCHITECTURE.md and module CLAUDE.md files in your implementation.

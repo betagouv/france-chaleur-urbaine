@@ -1,0 +1,9 @@
+{
+  // Unified AI Configuration
+  // This file is committed to git and shared across the team and all AI tools
+
+  "version": "1.0.0",
+
+  // Installed plugins
+  "plugins": ["core"]
+}
