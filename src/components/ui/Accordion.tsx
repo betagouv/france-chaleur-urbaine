@@ -51,6 +51,9 @@ const StyledAccordion = styled(DsfrAccordion)<{
         $small
           ? css`
             padding: 0;
+            .fr-accordion__btn {
+              padding: 0.5rem 0.5rem;
+            }
           `
           : css`
           padding: 0.75rem 0.5rem;
