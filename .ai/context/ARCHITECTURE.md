@@ -8,11 +8,13 @@
 
 <!-- Describe the business problem this software solves -->
 
-**What**: {{PROJECT_DESC}}
+<!-- Source: CLAUDE.md and README.md -->
 
-**Why**: [Why does this software exist? What business value does it provide?]
+**What**: France Chaleur Urbaine is a public service platform for connecting to district heating networks in France.
 
-**For whom**: [Target users, stakeholders]
+**Why**: Provide a centralized platform for French citizens and organizations to connect to district heating networks, supporting France's energy transition goals.
+
+**For whom**: French citizens, heating network operators, and government agencies
 
 ### Quality Goals
 
@@ -26,10 +28,12 @@
 
 ### Technical Constraints
 
-- **Framework/Language**: Core
-- **Deployment**: [Cloud provider, hosting environment]
-- **Databases**: [PostgreSQL, MongoDB, Redis, etc.]
-- **External APIs**: [Third-party services]
+<!-- Source: CLAUDE.md and README.md -->
+
+- **Framework/Language**: Next.js 15 with TypeScript, Pages Router
+- **Deployment**: Scalingo hosting platform
+- **Databases**: PostgreSQL + PostGIS for spatial data
+- **External APIs**: Airtable, Brevo (SMTP), Matomo, Sentry
 
 ### Organizational Constraints
 
@@ -85,31 +89,40 @@
 
 ## 🧱 Building Block View
 
+<!-- Source: CLAUDE.md -->
+
 ### High-Level Structure
 
 ```
-project/
-├── src/
-│   ├── [module1]/          # [Description]
-│   ├── [module2]/          # [Description]
-│   ├── components/         # Shared UI components
-│   ├── utils/              # Utility functions
-│   └── config/             # Configuration
-├── tests/
-└── docs/
+src/
+├── components/         # React components by feature
+├── pages/              # Next.js pages & API routes
+├── modules/            # Code separated in modules for separation of concerns
+├── server/             # Server-side services
+├── services/           # Client-side services
+├── utils/              # Shared utilities
+└── types/              # TypeScript definitions
 ```
 
 ### Module Organization
 
-#### Module: [Module Name]
+<!-- Source: CLAUDE.md -->
 
-**Purpose**: [What does this module do?]
+#### Module Structure Standard
 
-**Dependencies**: [What does it depend on?]
+**Purpose**: Each module contains feature-specific code with clear separation of concerns
 
-**Public API**: [What does it expose?]
+**Structure**:
+```
+modules/
+├── feature-name/     # All feature code
+  ├── client/         # React components by feature
+  ├── server/         # Server files (logic, apis, services)
+  ├── constants       # If needed, constants
+  ├── README.md       # Description of feature and possible dependencies
+```
 
-**Location**: `src/[module-name]/`
+**Location**: `src/modules/[module-name]/`
 
 ## ⚡ Runtime View
 
@@ -136,34 +149,40 @@ User → Frontend → API → Service → Database
 
 ## 🚀 Deployment View
 
+<!-- Source: README.md -->
+
 ### Infrastructure
 
-[Describe hosting, CI/CD, monitoring]
+Le site de France Chaleur Urbaine est hébergé chez Scalingo, sous le compte du MTE (tristan-robert).
+2 applications sont créées et branchées aux branches *main* et *dev* du dépôt GitHub.
 
+```mermaid
+graph LR;
+    subgraph Scalingo
+        N("Next.js - france-chaleur-urbaine.beta.gouv.fr")-->BDD@{shape: cyl, label: "PostgreSQL"};
+        C[[Clock]]-->BDD;
+    end
+    subgraph Services externes
+      C-->A;
+      N-->A("Airtable (SaaS)");
+      N-->B("SMTP Brevo (SaaS)");
+      N-->M("Matomo (stats.beta.gouv.fr)");
+      N-->S("Sentry (sentry.beta.gouv.fr)");
+    end
 ```
-┌─────────────────┐
-│   CDN/Edge      │
-└────────┬────────┘
-         │
-┌────────▼────────┐
-│  Load Balancer  │
-└────────┬────────┘
-         │
-    ┌────┴────┐
-┌───▼──┐  ┌───▼──┐
-│ App1 │  │ App2 │
-└───┬──┘  └───┬──┘
-    └────┬────┘
-    ┌────▼────┐
-    │   DB    │
-    └─────────┘
-```
+
+Chaque application contient :
+- un conteneur Next.js pour l'application web
+- un conteneur clock qui est utilisé pour faire tourner des tâches récurrentes et de synchronisation
+- une BDD PostgreSQL
+
+<!-- Source: README.md and CLAUDE.md -->
 
 ### Environments
 
-- **Development**: [Description]
-- **Staging**: [Description]
-- **Production**: [Description]
+- **Development**: Local Docker setup with PostgreSQL and Mailpit
+- **Dev Branch**: Development environment on Scalingo with review apps for pull requests
+- **Production**: Main branch deployed to france-chaleur-urbaine.beta.gouv.fr on Scalingo
 
 ## 🔧 Cross-Cutting Concepts
 

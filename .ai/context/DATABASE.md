@@ -23,9 +23,11 @@ This template should be filled by analyzing:
 - Database driver dependencies
 -->
 
-**Type**: [PostgreSQL / MySQL / MongoDB / SQLite / etc.]
-**Version**: [From docker-compose.yml or docs]
-**ORM/Query Builder**: [Prisma / TypeORM / Sequelize / Drizzle / etc.]
+<!-- Source: CLAUDE.md and README.md -->
+
+**Type**: PostgreSQL + PostGIS
+**Version**: Not specified in documentation
+**ORM/Query Builder**: Kysely for type-safe SQL queries
 
 ### Additional Data Stores
 
@@ -164,8 +166,10 @@ This template should be filled by analyzing:
 - ORM migration commands in package.json
 -->
 
-**Tool**: [Prisma Migrate / TypeORM / Knex / Flyway / etc.]
-**Location**: [Path to migrations folder]
+<!-- Source: .ai/context/0006-data-layer.mdc and CLAUDE.md -->
+
+**Tool**: Knex.js
+**Location**: src/server/db/migrations/
 
 ### Migration Patterns
 
@@ -175,9 +179,11 @@ This template should be filled by analyzing:
 - Data migrations vs schema migrations
 -->
 
-**Naming**: [timestamp_description pattern detected]
-**Reversible**: [Yes/No - do down migrations exist?]
-**Count**: [Number of migrations]
+<!-- Source: .ai/context/0006-data-layer.mdc -->
+
+**Naming**: YYYYMMDDXXXXXXN_synthetic_name.ts format
+**Reversible**: Migration system uses knex.js
+**Count**: Not specified in documentation
 
 ### Recent Schema Changes
 

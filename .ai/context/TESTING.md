@@ -22,8 +22,10 @@ This template should be filled by analyzing:
 - RSpec, minitest
 -->
 
-**Primary Framework**: [Jest / Vitest / Pytest / etc.]
-**Version**: [From package.json or equivalent]
+<!-- Source: README.md -->
+
+**Primary Framework**: Vitest
+**Version**: Not specified in documentation
 
 **Additional Tools**:
 - **Assertions**: [Expect / Chai / Assert / etc. from imports]
@@ -391,13 +393,15 @@ This template should be filled by analyzing:
 - [Hook 1 from husky or pre-commit config]
 - [Hook 2 from husky or pre-commit config]
 
-### Test Scripts
+<!-- Source: README.md and CLAUDE.md -->
 
-<!-- Extract from package.json scripts or Makefile -->
+### Test Scripts
 
 ```bash
 # From package.json scripts
-[Test scripts]
+pnpm test                  # Run all tests
+pnpm test:watch            # Watch mode
+pnpm test src/utils/file.spec.ts  # Run single test
 ```
 
 ## 🐛 Debugging Tests

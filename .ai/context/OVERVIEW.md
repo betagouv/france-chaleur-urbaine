@@ -13,9 +13,15 @@ This template should be filled by analyzing:
 
 ## 📋 What is france-chaleur-urbaine?
 
-<!-- Extract from README.md first paragraph or "About" section -->
+<!-- Source: CLAUDE.md -->
 
-[1-2 paragraph description of what the project does]
+France Chaleur Urbaine is a public service platform for connecting to district heating networks in France. It's a Next.js application with geospatial features, built to French government standards (DSFR).
+
+<!-- Source: README.md -->
+
+Ce dépôt regroupe le code relatif au site france-chaleur-urbaine.beta.gouv.fr.
+
+Il utilise, entre autre, [Docker](https://www.docker.com), [React](https://reactjs.org), [Next.js](https://nextjs.org), [PostgreSQL](https://www.postgresql.org/) et [MapLibre](https://maplibre.org).
 
 ## 🎯 Goals and Objectives
 
@@ -48,29 +54,15 @@ This template should be filled by analyzing:
 
 <!-- Extract from package.json, go.mod, requirements.txt, Cargo.toml, etc. -->
 
-**Language**: Core
+<!-- Source: CLAUDE.md -->
 
-**Runtime/Framework**:
-<!-- Detect from main dependencies:
-- React, Next.js, Vue, Nuxt
-- Express, Fastify, Koa
-- Django, Flask, FastAPI
-- Rails, Sinatra
-- etc.
--->
+**Language**: TypeScript
 
-**Database**:
-<!-- Detect from:
-- docker-compose.yml database services
-- ORM/Database libraries (prisma, typeorm, sequelize, etc.)
-- Connection strings in env.example
--->
+**Runtime/Framework**: Next.js 15 with Pages Router (not App Router)
 
-**Cache/Queue**:
-<!-- Detect from:
-- Redis, Memcached in dependencies or docker-compose
-- Bull, BullMQ, Sidekiq, Celery in dependencies
--->
+**Database**: PostgreSQL + PostGIS for spatial data
+
+**Cache/Queue**: Not specified in documentation
 
 ### Key Dependencies
 
@@ -300,15 +292,30 @@ france-chaleur-urbaine/
 
 <!-- Extract from README.md "Getting Started" or "Installation" section -->
 
+<!-- Source: README.md -->
+
 ### Prerequisites
 
-- [Prerequisite 1 from README]
-- [Prerequisite 2 from README]
+- Node.js version 20
+- pnpm
+- Docker
+- Posséder un compte Scalingo et avois accès aux applications FCU
+- Récupérer le fichier `.env.local` auprès d'un membre de l'équipe
 
 ### Quick Start
 
 ```bash
-# [Commands from README.md]
+# Install dependencies
+pnpm i
+
+# Launch Docker containers
+docker compose up -d
+
+# Prepare database structure
+pnpm db:migrate
+
+# Populate local database
+pnpm db:bootstrap
 ```
 
 ### Resources
