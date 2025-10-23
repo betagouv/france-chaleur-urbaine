@@ -76,20 +76,20 @@ export const testsAdressesLayersSpec = [
   },
 ] as const satisfies readonly MapSourceLayersSpecification[];
 
-export type TestAdresse = {
+type TestAdresse = {
   id: string;
   ban_address: string;
-  eligibility_history: string;
+  eligibility: string;
   users: string;
 };
 
-export type Test = {
+type Test = {
   id: string;
   name: string;
   created_at: string;
 };
 
-export type TestUser = {
+type TestUser = {
   id: string;
   role: string;
   first_name: string;
@@ -102,10 +102,10 @@ export type TestUser = {
 };
 
 function Popup(
-  { ban_address, eligibility_history: eligibility_history_string, users: users_string }: TestAdresse,
+  { ban_address, eligibility: eligibility_string, users: users_string }: TestAdresse,
   { Property, Title, TwoColumns }: PopupStyleHelpers
 ) {
-  const eligibilityHistory = JSON.parse(eligibility_history_string) as ProEligibilityTestHistoryEntry[];
+  const eligibilityHistory = JSON.parse(eligibility_string) as ProEligibilityTestHistoryEntry[];
   const currentEligibility = eligibilityHistory[eligibilityHistory.length - 1]?.eligibility;
   const users: TestUser[] = users_string ? JSON.parse(users_string) : [];
 
