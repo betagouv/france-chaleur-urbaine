@@ -9,7 +9,6 @@ import AddressAutocomplete from '@/components/form/dsfr/AddressAutocompleteInput
 import { FormProvider } from '@/components/form/publicodes/FormProvider';
 import Label from '@/components/form/publicodes/Label';
 import Accordion from '@/components/ui/Accordion';
-import Alert from '@/components/ui/Alert';
 import Button from '@/components/ui/Button';
 import Drawer from '@/components/ui/Drawer';
 import { FCUArrowIcon } from '@/components/ui/Icon';

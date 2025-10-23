@@ -1,6 +1,6 @@
 import { fr } from '@codegouvfr/react-dsfr';
 import { useQueryState } from 'nuqs';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Oval } from 'react-loader-spinner';
 
 import { ContactForm, SelectEnergy } from '@/components/EligibilityForm/components';
