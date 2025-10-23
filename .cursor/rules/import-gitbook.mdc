@@ -1,16 +1,1 @@
----
-description:
-globs:
-alwaysApply: false
----
-# Importer les nouveaux articles ajoutés dans Git mais pas encore committés et remplir correctement les informations suivantes :
-
-En plus il faudra les trier du plus récent au plus vieux
-
-- **image** : Utiliser l'image du frontmatter du fichier `.md`.
-- **title** : Extraire le titre (`h1`) du contenu `.md`.
-- **slug** : Utiliser le nom du fichier `.md`.
-- **publishedDate** et **themes** : Extraire les informations de publication et les tags dans ce format particulier :
-
-
-Une fois cela fait, vérifie les noms des fichiers dans les imports en regardant dans le filesystem ainsi que les chemins des fichiers image pour être sur que tout foncitonne correctement. Garde la bonne casse. Ne change pas de contenu autre que pour les articles en question.
+../../.ai/context/import-gitbook.mdc

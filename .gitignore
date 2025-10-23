@@ -84,3 +84,18 @@ scripts/simulateur/codes-insee.json
 
 # Sentry Config File
 .env.sentry-build-plugin
+
+# =============================================================================
+# claude - Auto-generated symlinks
+# ⚠️  Auto-generated - Do not edit manually
+# =============================================================================
+.claude/commands
+.claude/agents
+.claude/output-styles
+.claude/settings.json
+
+# =============================================================================
+# cursor - Auto-generated symlinks
+# ⚠️  Auto-generated - Do not edit manually
+# =============================================================================
+.cursor/
