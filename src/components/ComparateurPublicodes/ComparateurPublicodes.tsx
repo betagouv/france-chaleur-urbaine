@@ -18,6 +18,7 @@ import Notice from '@/components/ui/Notice';
 import Section, { SectionContent, SectionHeading } from '@/components/ui/Section';
 import useEligibilityForm from '@/hooks/useEligibilityForm';
 import { trackEvent } from '@/modules/analytics/client';
+import useUserInfo from '@/modules/app/client/hooks/useUserInfo';
 import type { LocationInfoResponse } from '@/pages/api/location-infos';
 import { useServices } from '@/services';
 import { getNetworkEligibilityDistances } from '@/services/eligibility';
@@ -26,7 +27,6 @@ import cx from '@/utils/cx';
 import { postFetchJSON } from '@/utils/network';
 import { slugify } from '@/utils/strings';
 import { ObjectEntries } from '@/utils/typescript';
-
 import { FloatingButton, Results, Simulator } from './ComparateurPublicodes.style';
 import DebugDrawer from './DebugDrawer';
 import Graph from './Graph';
@@ -57,8 +57,9 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
   const searchParams = useSearchParams();
 
   const [graphDrawerOpen, setGraphDrawerOpen] = React.useState(false);
+  const [addressInUrl, setAddressInUrl] = useQueryState('address');
 
-  const [address, setAddress] = useQueryState('address');
+  const { address, setAddress } = useUserInfo();
   const [addressDetail, setAddressDetail] = React.useState<AddressDetail>();
   const [lngLat, setLngLat] = React.useState<[number, number]>();
   const [modesDeChauffageQueryParam] = useQueryState('modes-de-chauffage');
@@ -133,7 +134,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
   );
 
   const noticePDP = (
-    <Notice variant="warning" size="xs" className="mt-2">
+    <Notice variant="warning" size="sm" className="mt-2">
       Votre adresse est dans le périmètre de développement prioritaire du réseau. Une obligation de raccordement peut exister{' '}
       <Link isExternal href="/ressources/obligations-raccordement#contenu">
         (en savoir plus)
@@ -142,7 +143,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
     </Notice>
   );
   const noticeClasse = (
-    <Notice variant="warning" size="xs" className="mt-2">
+    <Notice variant="warning" size="sm" className="mt-2">
       Ce réseau est classé, ce qui signifie qu’une obligation de raccordement peut exister{' '}
       <Link isExternal href="/ressources/obligations-raccordement#contenu">
         (en savoir plus)
@@ -155,17 +156,22 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
 
   const results = (
     <div className="p-2 lg:p-0">
-      {!displayGraph && (
-        <CallOut className="mb-5 font-bold">
-          {advancedMode
-            ? !isAddressSelected
-              ? '1. Commencez par renseigner une adresse'
-              : '2. Maintenant, sélectionnez au moins un mode de chauffage'
-            : 'Renseignez une adresse'}
-        </CallOut>
-      )}
-      {!loading && address && (
-        <Alert size="sm" className="mb-5" variant={nearestReseauDeChaleur ? 'info' : 'warning'}>
+      {displayGraph && !loading && address && (
+        <Accordion
+          className="mb-5"
+          small
+          bordered
+          label={
+            nearestReseauDeChaleur ? (
+              <span>
+                Réseau de chaleur : <strong>{nearestReseauDeChaleur.nom_reseau}</strong> à{' '}
+                <strong>{nearestReseauDeChaleur.distance}m</strong>
+              </span>
+            ) : (
+              <span>Réseau de chaleur : aucun réseau à proximité</span>
+            )
+          }
+        >
           {nearestReseauDeChaleur ? (
             <>
               Le réseau de chaleur{' '}
@@ -174,13 +180,13 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
               </Link>{' '}
               est à <strong>{nearestReseauDeChaleur.distance}m</strong> de votre adresse.
               {!nearestReseauDeChaleur?.PM && (
-                <p className="fr-text--sm font-bold fr-my-1v">
-                  À noter qu’en l'absence de données tarifaires pour ce réseau, les simulations se basent sur le prix de la chaleur moyen
+                <p className="font-bold fr-my-1v">
+                  À noter qu'en l'absence de données tarifaires pour ce réseau, les simulations se basent sur le prix de la chaleur moyen
                   des réseaux français.
                 </p>
               )}
               {addressDetail?.network.inPDP ? noticePDP : addressDetail?.network.isClasse ? noticeClasse : undefined}
-              <p className="text-sm my-5">
+              <p className="my-2">
                 Vous souhaitez recevoir des informations adaptées à votre bâtiment de la part du gestionnaire du réseau ? Nous assurons
                 votre mise en relation !
               </p>
@@ -224,10 +230,23 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
               </div>
             </div>
           )}
-        </Alert>
+        </Accordion>
       )}
-      {!loading && inclureLaClimatisation && address && (
-        <Alert size="sm" className="mb-5" variant={nearestReseauDeFroid ? 'info' : 'warning'}>
+      {displayGraph && !loading && inclureLaClimatisation && address && (
+        <Accordion
+          className="mb-5"
+          small
+          bordered
+          label={
+            nearestReseauDeFroid ? (
+              <span>
+                Réseau de froid : <strong>{nearestReseauDeFroid.nom_reseau}</strong> à <strong>{nearestReseauDeFroid.distance}m</strong>
+              </span>
+            ) : (
+              <span>Réseau de froid : aucun réseau à proximité</span>
+            )
+          }
+        >
           {nearestReseauDeFroid ? (
             <>
               Le réseau de froid{' '}
@@ -236,20 +255,18 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
               </Link>{' '}
               est à <strong>{nearestReseauDeFroid.distance}m</strong> de votre adresse.
               <p className="fr-text--sm font-bold fr-my-1v">
-                À noter qu’en l'absence de données tarifaires pour ce réseau, les simulations se basent sur le prix du froid moyen des
+                À noter qu'en l'absence de données tarifaires pour ce réseau, les simulations se basent sur le prix du froid moyen des
                 réseaux français.
               </p>
               {addressDetail?.network.inPDP ? noticePDP : addressDetail?.network.isClasse ? noticeClasse : undefined}
               {lngLat && (
-                <div className="fr-text--xs">
-                  <Link
-                    isExternal
-                    href={`/carte?coord=${lngLat.join(',')}&zoom=17&address=${encodeURIComponent(address as string)}`}
-                    className="fr-block"
-                  >
-                    <strong>Visualiser sur la carte</strong>
-                  </Link>
-                </div>
+                <Link
+                  isExternal
+                  href={`/carte?coord=${lngLat.join(',')}&zoom=17&address=${encodeURIComponent(address as string)}`}
+                  className="fr-block text-sm"
+                >
+                  <strong>Visualiser sur la carte</strong>
+                </Link>
               )}
             </>
           ) : (
@@ -271,8 +288,18 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
               </div>
             </div>
           )}
-        </Alert>
+        </Accordion>
       )}
+      {!displayGraph && (
+        <CallOut className="mb-5 font-bold">
+          {advancedMode
+            ? !isAddressSelected
+              ? '1. Commencez par renseigner une adresse'
+              : '2. Maintenant, sélectionnez au moins un mode de chauffage'
+            : 'Renseignez une adresse'}
+        </CallOut>
+      )}
+
       {displayGraph ? (
         <Graph
           engine={engine}
@@ -431,7 +458,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
         addressError ? 'Désolé, nous n’avons pas trouvé la ville associée à cette adresse, essayez avec une autre' : undefined
       }
       forceReload={forceReload}
-      defaultValue={address || ''}
+      defaultValue={addressInUrl || address || ''}
       onLoadingChange={(loading) => {
         if (loading) {
           setAddressLoading(true);
@@ -442,7 +469,8 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
         setNearestReseauDeFroid(undefined);
         setAddressError(false);
         setAddressLoading(false);
-        void setAddress(null);
+        void setAddress('');
+        void setAddressInUrl(null);
         setLngLat(undefined);
 
         engine.setSituation(
@@ -460,7 +488,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
           const [lon, lat] = selectedAddress.geometry.coordinates;
           const addressLabel = selectedAddress.properties.label;
           if (addressLabel !== address) {
-            void setAddress(null);
+            void setAddress('');
           }
           const network = await heatNetworkService.findByCoords(selectedAddress);
           setAddressDetail({
@@ -493,6 +521,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
           }
 
           void setAddress(addressLabel);
+          void setAddressInUrl(addressLabel);
 
           if (infos.nearestReseauDeChaleur || infos.nearestReseauDeFroid) {
             setLngLat(selectedAddress.geometry.coordinates);
@@ -526,6 +555,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
             if (newAddress !== address) {
               setForceReload(true);
               void setAddress(newAddress);
+              void setAddressInUrl(newAddress);
             }
           }}
         />

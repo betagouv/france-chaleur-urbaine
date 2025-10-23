@@ -6,6 +6,7 @@ export type ModeDeChauffageType = ('individuel' | 'collectif')[];
 
 export const modesDeChauffage = [
   {
+    categorie: 'Réseaux de chaleur',
     coutPublicodeKey: 'Réseaux de chaleur',
     emissionsCO2PublicodesKey: 'Réseaux de chaleur x Collectif',
     grandPublicMode: true,
@@ -15,6 +16,7 @@ export const modesDeChauffage = [
     type: ['individuel', 'collectif'] as ModeDeChauffageType,
   },
   {
+    categorie: 'Granulés',
     coutPublicodeKey: 'Chaudière à granulés coll',
     emissionsCO2PublicodesKey: 'Chaudière à granulés coll x Collectif',
     grandPublicMode: false,
@@ -24,6 +26,7 @@ export const modesDeChauffage = [
     type: ['collectif'] as ModeDeChauffageType,
   },
   {
+    categorie: 'Gaz',
     coutPublicodeKey: 'Gaz coll avec cond',
     emissionsCO2PublicodesKey: 'Gaz coll avec cond x Collectif',
     grandPublicMode: true,
@@ -33,6 +36,7 @@ export const modesDeChauffage = [
     type: ['collectif'] as ModeDeChauffageType,
   },
   {
+    categorie: 'Gaz',
     coutPublicodeKey: 'Gaz coll sans cond',
     emissionsCO2PublicodesKey: 'Gaz coll sans cond x Collectif',
     grandPublicMode: true,
@@ -42,6 +46,7 @@ export const modesDeChauffage = [
     type: ['collectif'] as ModeDeChauffageType,
   },
   {
+    categorie: 'Fioul',
     coutPublicodeKey: 'Fioul coll',
     emissionsCO2PublicodesKey: 'Fioul coll x Collectif',
     grandPublicMode: true,
@@ -51,6 +56,7 @@ export const modesDeChauffage = [
     type: ['collectif'] as ModeDeChauffageType,
   },
   {
+    categorie: 'PAC',
     coutPublicodeKey: 'PAC air-air coll',
     emissionsCO2PublicodesKey: 'PAC air-air x Collectif',
     grandPublicMode: false,
@@ -60,6 +66,7 @@ export const modesDeChauffage = [
     type: ['collectif'] as ModeDeChauffageType,
   },
   {
+    categorie: 'PAC',
     coutPublicodeKey: 'PAC air-eau coll',
     emissionsCO2PublicodesKey: 'PAC air-eau x Collectif',
     grandPublicMode: false,
@@ -69,6 +76,7 @@ export const modesDeChauffage = [
     type: ['collectif'] as ModeDeChauffageType,
   },
   {
+    categorie: 'PAC',
     coutPublicodeKey: 'PAC eau-eau coll',
     emissionsCO2PublicodesKey: 'PAC eau-eau x Collectif',
     grandPublicMode: false,
@@ -78,6 +86,7 @@ export const modesDeChauffage = [
     type: ['collectif'] as ModeDeChauffageType,
   },
   {
+    categorie: 'Granulés',
     coutPublicodeKey: 'Poêle à granulés indiv',
     emissionsCO2PublicodesKey: 'Poêle à granulés indiv x Individuel',
     grandPublicMode: false,
@@ -87,6 +96,7 @@ export const modesDeChauffage = [
     type: ['individuel'] as ModeDeChauffageType,
   },
   {
+    categorie: 'Gaz',
     coutPublicodeKey: 'Gaz indiv avec cond',
     emissionsCO2PublicodesKey: 'Gaz indiv avec cond x Individuel',
     grandPublicMode: true,
@@ -96,6 +106,7 @@ export const modesDeChauffage = [
     type: ['individuel'] as ModeDeChauffageType,
   },
   {
+    categorie: 'Gaz',
     coutPublicodeKey: 'Gaz indiv sans cond',
     emissionsCO2PublicodesKey: 'Gaz indiv sans cond x Individuel',
     grandPublicMode: true,
@@ -106,6 +117,7 @@ export const modesDeChauffage = [
   },
 
   {
+    categorie: 'Fioul',
     coutPublicodeKey: 'Fioul indiv',
     emissionsCO2PublicodesKey: 'Fioul indiv x Individuel',
     grandPublicMode: true,
@@ -116,6 +128,7 @@ export const modesDeChauffage = [
   },
 
   {
+    categorie: 'PAC',
     coutPublicodeKey: 'PAC air-air indiv',
     emissionsCO2PublicodesKey: 'PAC air-air x Individuel',
     grandPublicMode: false,
@@ -126,6 +139,7 @@ export const modesDeChauffage = [
   },
 
   {
+    categorie: 'PAC',
     coutPublicodeKey: 'PAC air-eau indiv',
     emissionsCO2PublicodesKey: 'PAC air-eau x Individuel',
     grandPublicMode: false,
@@ -136,6 +150,7 @@ export const modesDeChauffage = [
   },
 
   {
+    categorie: 'PAC',
     coutPublicodeKey: 'PAC eau-eau indiv',
     emissionsCO2PublicodesKey: 'PAC eau-eau x Individuel',
     grandPublicMode: false,
@@ -144,8 +159,8 @@ export const modesDeChauffage = [
     tertiaire: false,
     type: ['individuel'] as ModeDeChauffageType,
   },
-
   {
+    categorie: 'Radiateur électrique',
     coutPublicodeKey: 'Radiateur électrique',
     emissionsCO2PublicodesKey: 'Radiateur électrique x Individuel',
     grandPublicMode: false,

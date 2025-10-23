@@ -774,7 +774,10 @@ export const FullyFeaturedMap = ({
             <MapSearchWrapper $legendCollapsed={legendCollapsed}>
               <MapSearchInputWrapper>
                 <Title>Rechercher une adresse</Title>
-                <MapSearchForm onAddressSelect={onAddressSelectHandle} />
+                <MapSearchForm
+                  onAddressSelect={onAddressSelectHandle}
+                  withDefaultAddress={withSoughtAddresses && soughtAddresses.length === 0}
+                />
               </MapSearchInputWrapper>
 
               {withSoughtAddresses && soughtAddresses.length > 0 && (

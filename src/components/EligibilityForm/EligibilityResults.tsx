@@ -1,4 +1,4 @@
-import type { AvailableHeating } from '@/types/AddressData';
+import type { AvailableHeating } from '@/modules/app/types';
 import type { HeatNetworksResponse } from '@/types/HeatNetworksResponse';
 
 type EligibilityResult = {

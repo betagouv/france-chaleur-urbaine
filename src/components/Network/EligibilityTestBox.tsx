@@ -1,6 +1,6 @@
 import { fr } from '@codegouvfr/react-dsfr';
 import { useQueryState } from 'nuqs';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
 
 import { ContactForm, SelectEnergy } from '@/components/EligibilityForm/components';
@@ -8,11 +8,13 @@ import { energyInputsDefaultLabels } from '@/components/EligibilityForm/Eligibil
 import AddressAutocomplete from '@/components/form/dsfr/AddressAutocompleteInput';
 import Alert from '@/components/ui/Alert';
 import Box from '@/components/ui/Box';
+import Button from '@/components/ui/Button';
 import Heading from '@/components/ui/Heading';
 import Link from '@/components/ui/Link';
 import Modal, { createModal } from '@/components/ui/Modal';
 import Text from '@/components/ui/Text';
 import { trackEvent } from '@/modules/analytics/client';
+import useUserInfo from '@/modules/app/client/hooks/useUserInfo';
 import { getReadableDistance } from '@/modules/geo/client/helpers';
 import type { NetworkEligibilityStatus } from '@/server/services/addresseInformation';
 import { useServices } from '@/services';
@@ -38,10 +40,10 @@ const eligibilityTestModal = createModal({
  */
 const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
   const { heatNetworkService } = useServices();
-  const [defaultAddress, setDefaultAddress] = useQueryState('address');
+  const [addressInUrl, setAddressInUrl] = useQueryState('address');
   const [selectedGeoAddress, setSelectedGeoAddress] = useState<SuggestionItem>();
   const [eligibilityStatus, setEligibilityStatus] = useState<NetworkEligibilityStatus>();
-  const [heatingType, setHeatingType] = useState('');
+  const { heatingType, setHeatingType, address: userAddress, setAddress: setUserAddress } = useUserInfo();
   const [formState, setFormState] = useState<FormState>('idle');
 
   // appelé au clic sur Tester l'adresse, pour récupérer l'éligibilité et les informations du réseau
@@ -64,15 +66,15 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
   };
 
   const onAddressSelected = (geoAddress?: SuggestionItem) => {
-    void setDefaultAddress(null);
+    void setAddressInUrl(null);
     // beware, this function gets called every time the address changes
     // and we only need the result when the address is complete
     if (!geoAddress) {
       return;
     }
+    void setUserAddress(geoAddress.properties.label);
     setSelectedGeoAddress(geoAddress);
     setEligibilityStatus(undefined);
-    setHeatingType('');
     void testAddressEligibility(geoAddress);
   };
 
@@ -116,6 +118,9 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
       setFormState('demandSubmissionError');
     }
   };
+  const defaultAddress = addressInUrl || userAddress || '';
+  const [addressDefaultValue, setAddressDefaultValue] = useState<string>();
+  const [defaultAddressButtonVisible, setDefaultAddressButtonVisible] = useState<boolean>(true);
 
   return (
     <>
@@ -129,11 +134,16 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
         <AddressAutocomplete
           label=""
           nativeInputProps={{ placeholder: 'Tapez ici votre adresse' }}
-          defaultValue={defaultAddress || ''}
+          defaultValue={addressDefaultValue}
           onClear={() => {
+            setUserAddress('');
             setSelectedGeoAddress(undefined);
+            setDefaultAddressButtonVisible(true);
           }}
-          onSelect={onAddressSelected}
+          onSelect={(geoAddress) => {
+            onAddressSelected(geoAddress);
+            setDefaultAddressButtonVisible(false);
+          }}
           excludeCities
         />
         {formState === 'eligibilitySubmissionError' && (
@@ -141,6 +151,9 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
             Une erreur est survenue. Veuillez réessayer ou bien <Link href="/contact">contacter le support</Link>.
           </div>
         )}
+        {defaultAddress && defaultAddressButtonVisible ? (
+          <Button onClick={() => setAddressDefaultValue(defaultAddress)}>Tester {defaultAddress}</Button>
+        ) : null}
       </Box>
 
       <Modal
@@ -231,7 +244,7 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
                         className="fr-my-2w"
                         selectOptions={energyInputsDefaultLabels}
                         onChange={setHeatingType}
-                        value={heatingType}
+                        value={heatingType || ''}
                       />
                       {heatingType === 'individuel' && (
                         <Alert className="fr-mt-2w" variant="warning" size="sm">

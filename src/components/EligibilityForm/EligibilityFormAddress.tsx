@@ -32,7 +32,7 @@ export const energyInputsDefaultLabels = {
   individuel: 'Individuel',
 };
 
-const AddressTestForm: React.FC<CheckEligibilityFormProps> = ({
+const EligibilityFormAddress: React.FC<CheckEligibilityFormProps> = ({
   children,
   fullAddress,
   formLabel,
@@ -146,4 +146,4 @@ const AddressTestForm: React.FC<CheckEligibilityFormProps> = ({
   );
 };
 
-export default AddressTestForm;
+export default EligibilityFormAddress;

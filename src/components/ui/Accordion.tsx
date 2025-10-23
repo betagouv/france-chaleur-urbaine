@@ -47,7 +47,18 @@ const StyledAccordion = styled(DsfrAccordion)<{
         box-shadow: none;
       }
       border: 1px solid var(--border-default-grey);
-      padding: 0.75rem 0.5rem;
+      ${
+        $small
+          ? css`
+            padding: 0;
+            .fr-accordion__btn {
+              padding: 0.5rem 0.5rem;
+            }
+          `
+          : css`
+          padding: 0.75rem 0.5rem;
+          `
+      }
     `
     }
     ${

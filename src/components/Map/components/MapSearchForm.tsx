@@ -3,13 +3,21 @@ import { useState } from 'react';
 
 import AddressAutocomplete, { type AddressAutocompleteInputProps } from '@/components/form/dsfr/AddressAutocompleteInput';
 import Link from '@/components/ui/Link';
+import useUserInfo from '@/modules/app/client/hooks/useUserInfo';
 import { useServices } from '@/services';
 import type { HandleAddressSelect } from '@/types/HeatNetworksResponse';
 
-const MapSearchForm = ({ onAddressSelect }: { onAddressSelect?: HandleAddressSelect }) => {
+const MapSearchForm = ({
+  onAddressSelect,
+  withDefaultAddress,
+}: {
+  onAddressSelect?: HandleAddressSelect;
+  withDefaultAddress?: boolean;
+}) => {
   const [eligibilityError, setEligibilityError] = useState(false);
   const { heatNetworkService } = useServices();
   const [defaultAddress, setDefaultAddress] = useQueryState('address');
+  const { address } = useUserInfo();
 
   const handleAddressSelected: AddressAutocompleteInputProps['onSelect'] = async (geoAddress) => {
     if (!geoAddress) {
@@ -44,7 +52,7 @@ const MapSearchForm = ({ onAddressSelect }: { onAddressSelect?: HandleAddressSel
           </div>
         ) : undefined
       }
-      defaultValue={defaultAddress || ''}
+      defaultValue={defaultAddress || (withDefaultAddress ? address : undefined) || ''}
       onClear={() => {
         setEligibilityError(false);
       }}
