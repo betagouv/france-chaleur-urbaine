@@ -846,7 +846,7 @@ const GestionDesReseaux = () => {
       label: (
         <>
           Réseaux de chaleur
-          <Tag variant="default" size="sm" className="ml-2">
+          <Tag size="sm" className="ml-2">
             {(reseauxDeChaleurWithGeomUpdate || []).length > 0 && <Icon name="fr-icon-warning-line" size="sm" color="warning" />}
             {isFetchingReseauxDeChaleur ? <Loader size="sm" className="mx-1" /> : (reseauxDeChaleur?.length ?? 0)}
           </Tag>
@@ -892,7 +892,7 @@ const GestionDesReseaux = () => {
       label: (
         <>
           Réseaux de froid
-          <Tag variant="default" size="sm" className="ml-2">
+          <Tag size="sm" className="ml-2">
             {(reseauxDeFroidWithGeomUpdate || []).length > 0 && <Icon name="fr-icon-warning-line" size="sm" color="warning" />}
             {isFetchingReseauxDeFroid ? <Loader size="sm" className="mx-1" /> : (reseauxDeFroid?.length ?? 0)}
           </Tag>
@@ -937,7 +937,7 @@ const GestionDesReseaux = () => {
       label: (
         <>
           Réseaux en construction
-          <Tag variant="default" size="sm" className="ml-2">
+          <Tag size="sm" className="ml-2">
             {(reseauxEnConstructionWithGeomUpdate || []).length > 0 && <Icon name="fr-icon-warning-line" size="sm" color="warning" />}
             {isFetchingReseauxEnConstruction ? <Loader size="sm" className="mx-1" /> : (reseauxEnConstruction?.length ?? 0)}
           </Tag>
@@ -982,7 +982,7 @@ const GestionDesReseaux = () => {
       label: (
         <>
           Périmètres de développement prioritaire
-          <Tag variant="default" size="sm" className="ml-2">
+          <Tag size="sm" className="ml-2">
             {(perimetresDeDeveloppementPrioritaireWithGeomUpdate || []).length > 0 && (
               <Icon name="fr-icon-warning-line" size="sm" color="warning" />
             )}
@@ -1190,7 +1190,6 @@ const GestionDesReseaux = () => {
                           ) : (
                             <Button
                               size="small"
-                              variant="default"
                               priority="primary"
                               iconId="fr-icon-check-line"
                               title={!selectedNetwork ? 'Créer le réseau' : 'Valider la modification'}

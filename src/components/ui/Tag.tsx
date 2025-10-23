@@ -30,7 +30,6 @@ const tagVariants = cva('', {
   defaultVariants: {
     outline: false,
     size: 'md',
-    variant: 'default',
   },
   variants: {
     outline: {
@@ -43,7 +42,6 @@ const tagVariants = cva('', {
       sm: '',
     },
     variant: {
-      default: '',
       error: 'bg-error! text-white! border-error',
       info: 'bg-info! text-white! border-info',
       success: 'bg-success! text-white! border-success',
