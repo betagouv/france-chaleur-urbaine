@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { AirtableDB } from '@/server/db/airtable';
 import { handleRouteErrors, requireGetMethod, validateObjectSchema } from '@/server/helpers/server';
 import type { NetworkAttachment } from '@/types/Summary/Network';
+import { sanitizeFilename } from '@/utils/strings';
 
 export const config = {
   api: {
@@ -40,7 +41,7 @@ export default handleRouteErrors(async (req, res) => {
     throw new Error(`no body`);
   }
   res.writeHead(200, {
-    'Content-Disposition': `inline; filename="${fichier.filename}"`,
+    'Content-Disposition': `inline; filename="${sanitizeFilename(fichier.filename)}"`,
     'Content-Length': fichier.size,
     'Content-Type': fichier.type,
   });

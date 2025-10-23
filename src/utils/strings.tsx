@@ -117,6 +117,18 @@ export function formatFrenchSpacing(text: string): string {
 }
 
 /**
+ * Sanitize a filename for use in HTTP headers like Content-Disposition.
+ * Removes or replaces characters that are invalid in HTTP headers.
+ */
+export function sanitizeFilename(filename: string): string {
+  return filename
+    .replace(/[\r\n\t]/g, ' ') // Replace control characters with spaces
+    .replace(/["\\]/g, '_') // Replace quotes and backslashes with underscores
+    .replace(/[^\x20-\x7E]/g, '_') // Replace non-ASCII characters with underscores
+    .trim();
+}
+
+/**
  * Parse an unknown charset text buffer to a string.
  * Allows fixing the encoding of a text buffer that is not UTF-8 (e.g. ISO-8859-1).
  * @param textBuffer - The text buffer to parse.
