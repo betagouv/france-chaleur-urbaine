@@ -164,6 +164,7 @@ function Home() {
           <div className="flex flex-col sm:flex-row gap-4 flex-[3]! mx-auto max-w-xl">
             {mainTools.map((mainTool) => (
               <Card
+                eventKey={mainTool.eventKey}
                 size="sm"
                 imageAspect="square"
                 className="flex-1"

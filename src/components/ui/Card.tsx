@@ -1,7 +1,7 @@
 import DSFRCard, { type CardProps as DSFRCardProps } from '@codegouvfr/react-dsfr/Card';
 import { cva, type VariantProps } from 'class-variance-authority';
 import type { ReactNode } from 'react';
-
+import { type TrackingEvent, trackEvent } from '@/modules/analytics/client';
 import cx from '@/utils/cx';
 
 const cardVariants = cva('', {
@@ -31,6 +31,8 @@ export type CardProps = Omit<DSFRCardProps, 'size'> &
   VariantProps<typeof cardVariants> & {
     description?: string | ReactNode;
     className?: string;
+    eventKey?: TrackingEvent;
+    eventPayload?: string;
   };
 
 /**
@@ -40,12 +42,21 @@ export type CardProps = Omit<DSFRCardProps, 'size'> &
  * - Support for ReactNode content in title and description
  * - Additional className support for custom styling
  */
-const Card: React.FC<CardProps> = ({ description, variant, size, className, ...props }) => {
+const Card: React.FC<CardProps> = ({ description, variant, size, className, eventKey, eventPayload, onClick, ...props }) => {
   return (
     <DSFRCard
       size={size === 'sm' ? 'small' : size === 'md' ? 'medium' : 'large'}
       desc={description as DSFRCardProps['desc']}
       className={cx(cardVariants({ size, variant }), className)}
+      onClick={(e) => {
+        if (eventKey) {
+          trackEvent(
+            eventKey,
+            eventPayload?.split(',').map((v) => v.trim())
+          );
+        }
+        onClick?.(e);
+      }}
       {...(props as any)}
     />
   );
