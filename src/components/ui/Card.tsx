@@ -33,6 +33,7 @@ export type CardProps = Omit<DSFRCardProps, 'size'> &
     className?: string;
     eventKey?: TrackingEvent;
     eventPayload?: string;
+    onClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
   };
 
 /**
@@ -48,7 +49,7 @@ const Card: React.FC<CardProps> = ({ description, variant, size, className, even
       size={size === 'sm' ? 'small' : size === 'md' ? 'medium' : 'large'}
       desc={description as DSFRCardProps['desc']}
       className={cx(cardVariants({ size, variant }), className)}
-      onClick={(e) => {
+      onClick={(e: React.MouseEvent<HTMLDivElement>) => {
         if (eventKey) {
           trackEvent(
             eventKey,
