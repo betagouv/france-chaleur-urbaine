@@ -655,7 +655,7 @@ const Graph: React.FC<GraphProps> = ({
                       <div className="h-[22px] pl-12 pr-3 flex flex-1 border-r border-solid border-white">
                         <div
                           className={cx(
-                            'relative whitespace-nowrap py-0.5 tracking-tight text-left font-extrabold  sm:text-xs md:text-sm flex items-center justify-end',
+                            'relative whitespace-nowrap py-0.5 tracking-tight text-left font-extrabold sm:text-xs md:text-sm flex items-center justify-end',
                             taintClasses.co2[0]
                           )}
                           style={{ flex: 100 - co2UpperPercent }}
@@ -673,7 +673,7 @@ const Graph: React.FC<GraphProps> = ({
                         <div className={cx('relative ', taintClasses.co2[2])} style={{ flex: co2Width }} />
                         <div
                           className={cx(
-                            'relative  whitespace-nowrap tracking-tight py-0.5 text-right font-extrabold  sm:text-xs md:text-sm flex items-center justify-start',
+                            'relative whitespace-nowrap tracking-tight py-0.5 text-right font-extrabold sm:text-xs md:text-sm flex items-center justify-start',
                             taintClasses.co2[3]
                           )}
                           style={{ flex: co2LowerPercent }}
@@ -692,7 +692,7 @@ const Graph: React.FC<GraphProps> = ({
                       <div className="h-[22px] pr-12 pl-3 flex flex-1 border-l border-solid border-white">
                         <div
                           className={cx(
-                            'relative  whitespace-nowrap tracking-tight py-0.5 text-right font-extrabold  sm:text-xs md:text-sm flex items-center justify-end',
+                            'relative whitespace-nowrap tracking-tight py-0.5 text-right font-extrabold sm:text-xs md:text-sm flex items-center justify-end',
                             taintClasses.cost[0]
                           )}
                           style={{ flex: costLowerPercent }}
@@ -710,7 +710,7 @@ const Graph: React.FC<GraphProps> = ({
                         <div className={cx('relative ', taintClasses.cost[2])} style={{ flex: costWidth }} />
                         <div
                           className={cx(
-                            'relative  whitespace-nowrap py-0.5 tracking-tight text-left font-extrabold  sm:text-xs md:text-sm flex items-center justify-start',
+                            'relative whitespace-nowrap py-0.5 tracking-tight text-left font-extrabold sm:text-xs md:text-sm flex items-center justify-start',
                             taintClasses.cost[3]
                           )}
                           style={{ flex: 100 - costUpperPercent }}

@@ -3,7 +3,6 @@ import { AnimatePresence } from 'motion/react';
 import { clientConfig } from '@/client-config';
 import LastArticles from '@/components/Articles/LastArticles';
 import InterviewsVideos from '@/components/Coproprietaire/InterviewsVideos';
-import AvantagesChauffageUrbain from '@/components/GenericContent/AvantagesChauffageUrbain';
 import HeadSliceForm from '@/components/HeadSliceForm';
 import Partners from '@/components/Partners/Partners';
 import { issues, understandings } from '@/components/Ressources/config';
@@ -190,7 +189,7 @@ function Home() {
                 <Link
                   key={`${tile.title}-${index}`}
                   className="shrink-0 text-center hover:bg-gray-50! cursor-pointer rounded-md p-0.5 py-5 flex flex-col gap-2 tracking-tight flex-1 min-w-[150px] max-w-[150px] bg-none"
-                  href={tile.href ?? '#'}
+                  href={tile.href}
                   eventKey={tile.eventKey}
                 >
                   <Image src={tile.image} alt="" width={64} height={64} className="mx-auto" />

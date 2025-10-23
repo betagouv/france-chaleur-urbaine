@@ -152,7 +152,7 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
           </div>
         )}
         {defaultAddress && defaultAddressButtonVisible ? (
-          <Button onClick={() => setAddressDefaultValue(defaultAddress)}>Testez {defaultAddress}</Button>
+          <Button onClick={() => setAddressDefaultValue(defaultAddress)}>Tester {defaultAddress}</Button>
         ) : null}
       </Box>
 
