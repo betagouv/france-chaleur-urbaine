@@ -391,26 +391,32 @@ configure() {
         fi
     done
 
-    # Copy IDE configurations (including MCP configs)
-    echo -e "${BLUE}📋 Installing IDE configurations...${NC}"
-    if [ -d "$templates_dir/.ai/ides" ]; then
-        mkdir -p "$AI_ROOT/ides"
-        cp -r "$templates_dir/.ai/ides"/* "$AI_ROOT/ides/" 2>/dev/null || true
-        echo -e "${GREEN}✓${NC} Copied IDE configurations to .ai/ides/"
-    fi
-    echo ""
-
-    # Create config.local.jsonc with selected IDEs
+    # Create config.local.jsonc with selected IDEs and embedded MCP configs
     local config_local="$AI_ROOT/config.local.jsonc"
-    local ides_json=$(printf '%s\n' "${selected_ides[@]}" | jq -R . | jq -s .)
+    local new_config='{"ides":{}}'
 
+    for ide in "${selected_ides[@]}"; do
+        local mcp_template="$templates_dir/ides/$ide/mcp-config.jsonc"
+
+        if [ -f "$mcp_template" ]; then
+            # Read mcp-config template and embed it
+            local mcp_json=$(grep -v '^\s*//' "$mcp_template" | sed 's|//.*||g' | jq -c '.')
+            new_config=$(echo "$new_config" | jq --arg ide "$ide" --argjson mcp "$mcp_json" '.ides[$ide] = {"mcp-config": $mcp}')
+            echo -e "${GREEN}✓${NC} Loaded MCP config for $ide"
+        else
+            # No mcp-config template, just add IDE name
+            new_config=$(echo "$new_config" | jq --arg ide "$ide" '.ides[$ide] = {}')
+        fi
+    done
+
+    # Write new format with comments
     cat > "$config_local" <<EOF
 {
   // Local IDE configuration (gitignored)
-  // Defines which IDEs are installed and configured
-  "ides": $ides_json
-}
+  // Defines which IDEs are installed and configured with their MCP settings
 EOF
+    echo "  \"ides\": $(echo "$new_config" | jq '.ides')" >> "$config_local"
+    echo "}" >> "$config_local"
 
     echo -e "${GREEN}✓${NC} Created .ai/config.local.jsonc"
     echo ""
@@ -528,10 +534,11 @@ get_configured_ides() {
     fi
 
     # Strip comments and parse
-    local config_json=$(grep -v '^\s*//' "$config_local")
+    local config_json=$(grep -v '^\s*//' "$config_local" | sed 's|//.*||g')
 
     if command -v jq &> /dev/null; then
-        echo "$config_json" | jq -r '.ides[]' 2>/dev/null || echo ""
+        # New format: object with IDE keys
+        echo "$config_json" | jq -r '.ides | keys[]' 2>/dev/null || echo ""
     else
         echo ""
     fi
@@ -542,18 +549,29 @@ write_ide_mcp_config() {
     local ide="$1"
     local mcp_json="$2"
 
-    # Load IDE-specific MCP config
-    local mcp_config_file="$AI_ROOT/ides/$ide/mcp-config.json"
+    # Load IDE-specific MCP config from config.local.jsonc
+    local config_local="$AI_ROOT/config.local.jsonc"
 
-    if [ ! -f "$mcp_config_file" ]; then
-        echo -e "${RED}❌ MCP not supported for IDE: $ide${NC}"
-        echo "   Missing: $mcp_config_file"
+    if [ ! -f "$config_local" ]; then
+        echo -e "${RED}❌ config.local.jsonc not found${NC}"
+        return 1
+    fi
+
+    # Strip comments and parse
+    local config_json=$(grep -v '^\s*//' "$config_local" | sed 's|//.*||g')
+
+    # Read IDE MCP config
+    local mcp_config=$(echo "$config_json" | jq -c ".ides.\"$ide\".\"mcp-config\"" 2>/dev/null)
+
+    if [ "$mcp_config" = "null" ] || [ -z "$mcp_config" ]; then
+        echo -e "${RED}❌ MCP not configured for IDE: $ide${NC}"
+        echo "   Run '.ai/cli configure' to set up MCP config"
         return 1
     fi
 
     # Read IDE config
-    local location=$(jq -r '.location' "$mcp_config_file")
-    local strategy=$(jq -r '.strategy' "$mcp_config_file")
+    local location=$(echo "$mcp_config" | jq -r '.location')
+    local strategy=$(echo "$mcp_config" | jq -r '.strategy')
 
     if [ "$location" = "null" ] || [ -z "$location" ]; then
         echo -e "${RED}❌ Invalid MCP config for $ide${NC}"
@@ -571,7 +589,7 @@ write_ide_mcp_config() {
             echo -e "${GREEN}✓${NC} $ide: $location"
             ;;
         merge-key)
-            local key=$(jq -r '.key' "$mcp_config_file")
+            local key=$(echo "$mcp_config" | jq -r '.key')
 
             if [ ! -f "$location" ]; then
                 echo -e "${RED}❌ Config file not found: $location${NC}"
@@ -826,8 +844,16 @@ mcp_unuse() {
 
     # Get currently active servers from first IDE
     local first_ide="${ides[0]}"
-    local mcp_config_file="$AI_ROOT/ides/$first_ide/mcp-config.json"
-    local location=$(jq -r '.location' "$mcp_config_file")
+    local config_local="$AI_ROOT/config.local.jsonc"
+    local config_json=$(grep -v '^\s*//' "$config_local" | sed 's|//.*||g')
+    local mcp_config=$(echo "$config_json" | jq -c ".ides.\"$first_ide\".\"mcp-config\"" 2>/dev/null)
+
+    if [ "$mcp_config" = "null" ] || [ -z "$mcp_config" ]; then
+        echo -e "${RED}❌ MCP not configured for IDE: $first_ide${NC}"
+        exit 1
+    fi
+
+    local location=$(echo "$mcp_config" | jq -r '.location')
     location="${location/#\~/$HOME}"
 
     if [ ! -f "$location" ]; then
@@ -835,11 +861,11 @@ mcp_unuse() {
         exit 0
     fi
 
-    local strategy=$(jq -r '.strategy' "$mcp_config_file")
+    local strategy=$(echo "$mcp_config" | jq -r '.strategy')
     local active_servers=()
 
     if [ "$strategy" = "merge-key" ]; then
-        local key=$(jq -r '.key' "$mcp_config_file")
+        local key=$(echo "$mcp_config" | jq -r '.key')
         active_servers=($(jq -r ".$key | keys[]" "$location" 2>/dev/null))
     else
         active_servers=($(jq -r '.mcpServers | keys[]' "$location" 2>/dev/null))

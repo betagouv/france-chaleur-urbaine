@@ -1,0 +1,83 @@
+{
+  // Model Context Protocol (MCP) Server Configurations
+  // Define available MCP servers here with their commands and environment variables
+  //
+  // Single source of truth for all IDE MCP configurations
+  // Use: ./ai/cli mcp use <server-name> to enable servers
+  // Use: ./ai/cli mcp unuse <server-name> to disable servers
+
+  "mcpServers": {
+    "airtable": {
+      "args": ["-y", "airtable-mcp-server"],
+      "command": "npx",
+      "description": "Airtable integration for database operations",
+      "env": {
+        "AIRTABLE_API_KEY": ".env.AIRTABLE_KEY_API"
+      }
+    },
+    "context7": {
+      "args": ["-y", "@upstash/context7-mcp"],
+      "command": "npx",
+      "description": "Up-to-date library documentation and code examples",
+      "env": {
+        "CONTEXT7_API_KEY": ".env.CONTEXT7_API_KEY"
+      }
+    },
+    "filesystem": {
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "."],
+      "command": "npx",
+      "description": "File system operations with security constraints",
+      "env": {}
+    },
+    "github": {
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "command": "npx",
+      "description": "GitHub API integration for repositories and issues",
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": ".env.GITHUB_PERSONAL_ACCESS_TOKEN"
+      }
+    },
+    "next-devtools": {
+      "args": ["-y", "next-devtools-mcp@latest"],
+      "command": "npx",
+      "description": "Next.js development tools and utilities",
+      "env": {}
+    },
+    "notion": {
+      "args": ["-y", "@notionhq/notion-mcp-server"],
+      "command": "npx",
+      "description": "Official Notion integration for AI assistants",
+      "env": {
+        "NOTION_TOKEN": ".env.NOTION_TOKEN"
+      }
+    },
+    "postgres": {
+      "args": ["-y", "@modelcontextprotocol/server-postgres"],
+      "command": "npx",
+      "env": {
+        "POSTGRES_URL": "postgresql://localhost/mydb"
+      }
+    },
+    "postgres-dev": {
+      "args": ["-y", "@modelcontextprotocol/server-postgres", ".env.DATABASE_URL_DEV"],
+      "command": "npx",
+      "description": "DEV database access",
+      "env": {}
+    },
+    "postgres-local": {
+      "args": ["-y", "@modelcontextprotocol/server-postgres", ".env.DATABASE_URL"],
+      "command": "npx",
+      "description": "LOCAL database access",
+      "env": {}
+    },
+    "trello": {
+      "args": ["-y", "@modelcontextprotocol/server-trello"],
+      "command": "npx",
+      "description": "Manage Trello boards, lists, and cards",
+      "env": {
+        "TRELLO_API_KEY": ".env.TRELLO_API_KEY",
+        "TRELLO_TOKEN": ".env.TRELLO_TOKEN"
+      }
+    }
+  }
+}

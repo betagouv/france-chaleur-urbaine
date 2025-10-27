@@ -93,9 +93,16 @@ scripts/simulateur/codes-insee.json
 .claude/agents
 .claude/output-styles
 .claude/settings.json
+.claude/context
 
 # =============================================================================
 # cursor - Auto-generated symlinks
 # ⚠️  Auto-generated - Do not edit manually
 # =============================================================================
 .cursor/
+
+# Local IDE configuration
+.ai/config.local.jsonc
+
+# Version check cache
+.ai/.version-check
