@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+# Version
+VERSION="1.1.0"
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -15,6 +18,7 @@ PROJECT_ROOT="$(dirname "$AI_ROOT")"
 
 # Repository information
 REPO_URL="https://github.com/betagouv/agnostic-ai"
+VERSION_CHECK_FILE="$AI_ROOT/.version-check"
 
 # Detect if running from agnostic-ai repo or from a project
 # Check if we're in the agnostic-ai repo by looking for templates/plugins in parent directories
@@ -387,7 +391,102 @@ configure() {
         fi
     done
 
+    # Copy IDE configurations (including MCP configs)
+    echo -e "${BLUE}📋 Installing IDE configurations...${NC}"
+    if [ -d "$templates_dir/.ai/ides" ]; then
+        mkdir -p "$AI_ROOT/ides"
+        cp -r "$templates_dir/.ai/ides"/* "$AI_ROOT/ides/" 2>/dev/null || true
+        echo -e "${GREEN}✓${NC} Copied IDE configurations to .ai/ides/"
+    fi
+    echo ""
+
+    # Create config.local.jsonc with selected IDEs
+    local config_local="$AI_ROOT/config.local.jsonc"
+    local ides_json=$(printf '%s\n' "${selected_ides[@]}" | jq -R . | jq -s .)
+
+    cat > "$config_local" <<EOF
+{
+  // Local IDE configuration (gitignored)
+  // Defines which IDEs are installed and configured
+  "ides": $ides_json
+}
+EOF
+
+    echo -e "${GREEN}✓${NC} Created .ai/config.local.jsonc"
+    echo ""
+
+    # Ensure config.local.jsonc is in .gitignore
+    if [ -f "$PROJECT_ROOT/.gitignore" ]; then
+        if ! grep -q "^\.ai/config\.local\.jsonc$" "$PROJECT_ROOT/.gitignore"; then
+            echo "" >> "$PROJECT_ROOT/.gitignore"
+            echo "# Local IDE configuration" >> "$PROJECT_ROOT/.gitignore"
+            echo ".ai/config.local.jsonc" >> "$PROJECT_ROOT/.gitignore"
+        fi
+    fi
+
     echo -e "${GREEN}✅ IDE configuration complete!${NC}"
+    echo ""
+}
+
+# Validate and sync IDE gitignore entries
+validate_and_sync_gitignore() {
+    local ides=($(get_configured_ides))
+
+    if [ ${#ides[@]} -eq 0 ]; then
+        # No IDEs configured, skip validation
+        return 0
+    fi
+
+    echo -e "${BLUE}Validating .gitignore entries...${NC}"
+
+    local templates_dir
+    if [ -d "$PROJECT_ROOT/templates/ides" ]; then
+        templates_dir="$PROJECT_ROOT/templates/ides"
+    else
+        if [ -z "$TEMP_PLUGINS_DIR" ]; then
+            TEMP_PLUGINS_DIR=$(mktemp -d)
+            git clone --depth 1 --quiet "$REPO_URL" "$TEMP_PLUGINS_DIR" 2>/dev/null || {
+                echo -e "${YELLOW}⚠️  Could not download templates for validation${NC}"
+                return 0
+            }
+        fi
+        templates_dir="$TEMP_PLUGINS_DIR/templates/ides"
+    fi
+
+    touch "$PROJECT_ROOT/.gitignore"
+    local missing_entries=()
+
+    for ide in "${ides[@]}"; do
+        local ide_gitignore="$templates_dir/$ide/.gitignore"
+
+        if [ ! -f "$ide_gitignore" ]; then
+            continue
+        fi
+
+        # Check each line from template exists in project .gitignore
+        while IFS= read -r line; do
+            # Skip empty lines and comments
+            if [[ -n "$line" ]] && [[ ! "$line" =~ ^# ]]; then
+                if ! grep -Fxq "$line" "$PROJECT_ROOT/.gitignore"; then
+                    missing_entries+=("$line")
+                fi
+            fi
+        done < "$ide_gitignore"
+    done
+
+    if [ ${#missing_entries[@]} -gt 0 ]; then
+        echo -e "${YELLOW}⚠️  Missing ${#missing_entries[@]} .gitignore entries${NC}"
+        echo "   Adding missing entries..."
+
+        for entry in "${missing_entries[@]}"; do
+            echo "$entry" >> "$PROJECT_ROOT/.gitignore"
+        done
+
+        echo -e "${GREEN}✓${NC} Added missing .gitignore entries"
+    else
+        echo -e "${GREEN}✓${NC} All .gitignore entries are up to date"
+    fi
+
     echo ""
 }
 
@@ -396,6 +495,10 @@ update() {
     check_config
 
     echo -e "${BLUE}Updating unified AI configuration...${NC}"
+    echo ""
+
+    # Validate and sync .gitignore entries for configured IDEs
+    validate_and_sync_gitignore
 
     # Download update.sh from GitHub
     UPDATE_SCRIPT_URL="https://raw.githubusercontent.com/betagouv/agnostic-ai/main/update.sh"
@@ -411,6 +514,416 @@ update() {
     fi
 }
 
+# ==============================================================================
+# MCP Functions
+# ==============================================================================
+
+# Get configured IDEs from config.local.jsonc
+get_configured_ides() {
+    local config_local="$AI_ROOT/config.local.jsonc"
+
+    if [ ! -f "$config_local" ]; then
+        echo ""
+        return
+    fi
+
+    # Strip comments and parse
+    local config_json=$(grep -v '^\s*//' "$config_local")
+
+    if command -v jq &> /dev/null; then
+        echo "$config_json" | jq -r '.ides[]' 2>/dev/null || echo ""
+    else
+        echo ""
+    fi
+}
+
+# Write MCP config to IDE-specific location
+write_ide_mcp_config() {
+    local ide="$1"
+    local mcp_json="$2"
+
+    # Load IDE-specific MCP config
+    local mcp_config_file="$AI_ROOT/ides/$ide/mcp-config.json"
+
+    if [ ! -f "$mcp_config_file" ]; then
+        echo -e "${RED}❌ MCP not supported for IDE: $ide${NC}"
+        echo "   Missing: $mcp_config_file"
+        return 1
+    fi
+
+    # Read IDE config
+    local location=$(jq -r '.location' "$mcp_config_file")
+    local strategy=$(jq -r '.strategy' "$mcp_config_file")
+
+    if [ "$location" = "null" ] || [ -z "$location" ]; then
+        echo -e "${RED}❌ Invalid MCP config for $ide${NC}"
+        return 1
+    fi
+
+    # Expand ~ in location
+    location="${location/#\~/$HOME}"
+
+    # Apply strategy
+    case $strategy in
+        overwrite)
+            mkdir -p "$(dirname "$location")"
+            echo "$mcp_json" > "$location"
+            echo -e "${GREEN}✓${NC} $ide: $location"
+            ;;
+        merge-key)
+            local key=$(jq -r '.key' "$mcp_config_file")
+
+            if [ ! -f "$location" ]; then
+                echo -e "${RED}❌ Config file not found: $location${NC}"
+                return 1
+            fi
+
+            # Extract mcpServers from input JSON
+            local mcp_servers=$(echo "$mcp_json" | jq '.mcpServers')
+
+            # Merge into existing config
+            local updated_config=$(jq --argjson servers "$mcp_servers" ".$key = \$servers" "$location")
+            echo "$updated_config" > "$location"
+            echo -e "${GREEN}✓${NC} $ide: $location"
+            ;;
+        *)
+            echo -e "${RED}❌ Unknown strategy: $strategy${NC}"
+            return 1
+            ;;
+    esac
+}
+
+# Replace environment variables in JSON string
+replace_env_vars() {
+    local json_str="$1"
+    local env_file="$PROJECT_ROOT/.env.local"
+
+    if [ ! -f "$env_file" ]; then
+        echo "$json_str"
+        return
+    fi
+
+    while IFS= read -r line; do
+        if [[ "$line" =~ ^([A-Z_][A-Z0-9_]*)=(.*)$ ]]; then
+            local key="${BASH_REMATCH[1]}"
+            local value="${BASH_REMATCH[2]}"
+            json_str=$(echo "$json_str" | sed "s|.env.$key|$value|g")
+        fi
+    done < "$env_file"
+
+    echo "$json_str"
+}
+
+# Install MCP templates
+mcp_install() {
+    echo -e "${BLUE}📥 Installing MCP templates...${NC}"
+    echo ""
+
+    local templates_dir
+    if [ -d "$PROJECT_ROOT/templates/.ai/mcps" ]; then
+        templates_dir="$PROJECT_ROOT/templates/.ai/mcps"
+    else
+        if [ -z "$TEMP_PLUGINS_DIR" ]; then
+            TEMP_PLUGINS_DIR=$(mktemp -d)
+            git clone --depth 1 --quiet "$REPO_URL" "$TEMP_PLUGINS_DIR" 2>/dev/null || {
+                echo -e "${RED}❌ Failed to download MCP templates${NC}"
+                exit 1
+            }
+        fi
+        templates_dir="$TEMP_PLUGINS_DIR/templates/.ai/mcps"
+    fi
+
+    if [ ! -d "$templates_dir" ]; then
+        echo -e "${RED}❌ MCP templates not found${NC}"
+        exit 1
+    fi
+
+    # Copy templates
+    mkdir -p "$AI_ROOT/mcps"
+    (cd "$templates_dir" && cp -r . "$AI_ROOT/mcps/")
+
+    echo -e "${GREEN}✅ MCP templates installed to .ai/mcps/${NC}"
+    echo ""
+
+    # Create .env.local if it doesn't exist
+    if [ ! -f "$PROJECT_ROOT/.env.local" ]; then
+        if [ -f "$AI_ROOT/mcps/.env.example" ]; then
+            cp "$AI_ROOT/mcps/.env.example" "$PROJECT_ROOT/.env.local"
+            echo -e "${GREEN}✓${NC} Created .env.local from .env.example"
+            echo ""
+        fi
+    fi
+
+    # Add .env.local to .gitignore if needed
+    if [ -f "$PROJECT_ROOT/.gitignore" ]; then
+        if ! grep -q "^\.env\.local$" "$PROJECT_ROOT/.gitignore"; then
+            echo "" >> "$PROJECT_ROOT/.gitignore"
+            echo "# MCP environment variables" >> "$PROJECT_ROOT/.gitignore"
+            echo ".env.local" >> "$PROJECT_ROOT/.gitignore"
+        fi
+    fi
+
+    echo "Next steps:"
+    echo "  1. Edit .env.local with your API keys and credentials"
+    echo "  2. Customize .ai/mcps/config.jsonc if needed"
+    echo "  3. Run: ./ai/cli mcp use <server-name>"
+    echo ""
+}
+
+# List available MCP servers
+mcp_list() {
+    local mcp_config="$AI_ROOT/mcps/config.jsonc"
+
+    if [ ! -f "$mcp_config" ]; then
+        echo -e "${YELLOW}⚠️  No MCP configuration found${NC}"
+        echo "   Run '.ai/cli mcp install' first"
+        exit 1
+    fi
+
+    echo -e "${BLUE}Available MCP servers:${NC}"
+    echo ""
+
+    # Strip comments from JSONC
+    local config_json=$(grep -v '^\s*//' "$mcp_config")
+
+    # Get all server names and descriptions
+    echo "$config_json" | jq -r '.mcpServers | to_entries[] | "    \(.key)\n      \(.value.description)"'
+}
+
+# Enable MCP server(s)
+mcp_use() {
+    local server_names=("$@")
+
+    if [ ${#server_names[@]} -eq 0 ]; then
+        echo -e "${RED}❌ Server name(s) required${NC}"
+        echo "   Usage: .ai/cli mcp use <server-name> [server-name2 ...]"
+        exit 1
+    fi
+
+    local mcp_config="$AI_ROOT/mcps/config.jsonc"
+
+    if [ ! -f "$mcp_config" ]; then
+        echo -e "${YELLOW}⚠️  No MCP configuration found${NC}"
+        echo "   Run '.ai/cli mcp install' first"
+        exit 1
+    fi
+
+    local ides=($(get_configured_ides))
+
+    if [ ${#ides[@]} -eq 0 ]; then
+        echo -e "${RED}❌ No IDE configured yet${NC}"
+        echo "   Run '.ai/cli configure' first to set up an IDE"
+        exit 1
+    fi
+
+    local config_json=$(grep -v '^\s*//' "$mcp_config")
+
+    # Check if jq is available
+    if ! command -v jq &> /dev/null; then
+        echo -e "${RED}❌ 'jq' is required for MCP management${NC}"
+        exit 1
+    fi
+
+    # Build new MCP configuration with selected servers
+    local new_mcp_config='{"mcpServers":{}}'
+
+    for server_name in "${server_names[@]}"; do
+        # Check if server exists
+        local server_exists=$(echo "$config_json" | jq -e ".mcpServers.\"$server_name\"" > /dev/null 2>&1 && echo "true" || echo "false")
+
+        if [ "$server_exists" = "false" ]; then
+            echo -e "${RED}❌ MCP server '$server_name' not found in config.jsonc${NC}"
+            echo ""
+            echo "   Run '.ai/cli mcp list' to see configured servers"
+            echo "   Or search for it at: ${BLUE}https://mcpservers.org/search?query=$server_name${NC}"
+            echo ""
+            echo "   To add a new MCP server:"
+            echo "   1. Find it at https://mcpservers.org/"
+            echo "   2. Add configuration to .ai/mcps/config.jsonc"
+            echo "   3. Add environment variables to .env.local"
+            echo "   4. Run '.ai/cli mcp use $server_name'"
+            exit 1
+        fi
+
+        # Extract server config
+        local server_config=$(echo "$config_json" | jq ".mcpServers.\"$server_name\"")
+
+        # Check for required env variables
+        local env_keys=$(echo "$server_config" | jq -r '.env // {} | keys[]' 2>/dev/null)
+
+        if [ -n "$env_keys" ]; then
+            while IFS= read -r env_key; do
+                # Get the value placeholder
+                local env_value=$(echo "$server_config" | jq -r ".env.\"$env_key\"")
+
+                # Check if it's a .env.KEY placeholder
+                if [[ "$env_value" =~ ^\.env\.(.+)$ ]]; then
+                    local actual_key="${BASH_REMATCH[1]}"
+
+                    # Check if variable exists in .env.local
+                    if [ -f "$PROJECT_ROOT/.env.local" ]; then
+                        # Check if key exists and has a non-empty value
+                        local actual_value=$(grep "^$actual_key=" "$PROJECT_ROOT/.env.local" | cut -d'=' -f2-)
+
+                        if [ -z "$actual_value" ]; then
+                            echo -e "${RED}❌ Missing or empty environment variable: $actual_key${NC}"
+                            echo "   Add a value in .env.local: $actual_key=<your-value>"
+                            echo ""
+                            echo "   Example for $server_name:"
+                            echo "   $actual_key=your_actual_api_key_here"
+                            exit 1
+                        fi
+                    else
+                        echo -e "${RED}❌ .env.local not found${NC}"
+                        echo "   Run '.ai/cli mcp install' first"
+                        exit 1
+                    fi
+                fi
+            done <<< "$env_keys"
+        fi
+
+        new_mcp_config=$(echo "$new_mcp_config" | jq --arg name "$server_name" --argjson config "$server_config" '.mcpServers[$name] = $config')
+    done
+
+    new_mcp_config=$(replace_env_vars "$new_mcp_config")
+
+    local formatted_config=$(echo "$new_mcp_config" | jq '.')
+
+    echo -e "${BLUE}Enabling MCP servers: ${server_names[*]}${NC}"
+    echo ""
+
+    for ide in "${ides[@]}"; do
+        write_ide_mcp_config "$ide" "$formatted_config"
+    done
+
+    echo ""
+    echo -e "${GREEN}✅ MCP servers enabled successfully${NC}"
+    echo "   Restart your IDE(s) to apply changes"
+    echo ""
+}
+
+# Disable MCP server(s)
+mcp_unuse() {
+    local servers_to_remove=("$@")
+
+    if [ ${#servers_to_remove[@]} -eq 0 ]; then
+        echo -e "${RED}❌ Server name(s) required${NC}"
+        echo "   Usage: .ai/cli mcp unuse <server-name> [server-name2 ...]"
+        exit 1
+    fi
+
+    local ides=($(get_configured_ides))
+
+    if [ ${#ides[@]} -eq 0 ]; then
+        echo -e "${RED}❌ No IDE configured yet${NC}"
+        exit 1
+    fi
+
+    if ! command -v jq &> /dev/null; then
+        echo -e "${RED}❌ 'jq' is required for MCP management${NC}"
+        exit 1
+    fi
+
+    # Get currently active servers from first IDE
+    local first_ide="${ides[0]}"
+    local mcp_config_file="$AI_ROOT/ides/$first_ide/mcp-config.json"
+    local location=$(jq -r '.location' "$mcp_config_file")
+    location="${location/#\~/$HOME}"
+
+    if [ ! -f "$location" ]; then
+        echo -e "${YELLOW}⚠️  No active MCP servers${NC}"
+        exit 0
+    fi
+
+    local strategy=$(jq -r '.strategy' "$mcp_config_file")
+    local active_servers=()
+
+    if [ "$strategy" = "merge-key" ]; then
+        local key=$(jq -r '.key' "$mcp_config_file")
+        active_servers=($(jq -r ".$key | keys[]" "$location" 2>/dev/null))
+    else
+        active_servers=($(jq -r '.mcpServers | keys[]' "$location" 2>/dev/null))
+    fi
+
+    # Remove specified servers
+    local remaining_servers=()
+    for active in "${active_servers[@]}"; do
+        local should_remove=false
+        for remove in "${servers_to_remove[@]}"; do
+            if [ "$active" = "$remove" ]; then
+                should_remove=true
+                break
+            fi
+        done
+
+        if [ "$should_remove" = false ]; then
+            remaining_servers+=("$active")
+        fi
+    done
+
+    if [ ${#remaining_servers[@]} -eq 0 ]; then
+        echo -e "${BLUE}Disabling all MCP servers${NC}"
+        echo ""
+
+        local empty_config='{"mcpServers":{}}'
+        local formatted_config=$(echo "$empty_config" | jq '.')
+
+        for ide in "${ides[@]}"; do
+            write_ide_mcp_config "$ide" "$formatted_config"
+        done
+    else
+        mcp_use "${remaining_servers[@]}"
+        return
+    fi
+
+    echo ""
+    echo -e "${GREEN}✅ MCP servers disabled successfully${NC}"
+    echo "   Restart your IDE(s) to apply changes"
+    echo ""
+}
+
+# Check for new version (cached, once per day)
+check_version_update() {
+    # Only check if not in dev mode
+    if [ -n "$PLUGINS_DIR" ]; then
+        return 0
+    fi
+
+    # Check if we should check (once per day)
+    if [ -f "$VERSION_CHECK_FILE" ]; then
+        local last_check=$(cat "$VERSION_CHECK_FILE")
+        local now=$(date +%s)
+        local day_ago=$((now - 86400))
+
+        if [ "$last_check" -gt "$day_ago" ]; then
+            # Checked recently, skip
+            return 0
+        fi
+    fi
+
+    # Fetch latest version from GitHub (timeout after 2 seconds)
+    local latest_version=$(curl -s --max-time 2 "https://raw.githubusercontent.com/betagouv/agnostic-ai/main/templates/.ai/cli" 2>/dev/null | grep '^VERSION=' | head -1 | cut -d'"' -f2)
+
+    # Save check timestamp
+    date +%s > "$VERSION_CHECK_FILE"
+
+    # Compare versions
+    if [ -n "$latest_version" ] && [ "$latest_version" != "$VERSION" ]; then
+        echo -e "${YELLOW}⚠️  New version available: $latest_version (current: $VERSION)${NC}"
+        echo "   Run '.ai/cli update' to upgrade"
+        echo ""
+    fi
+}
+
+# Show version
+show_version() {
+    echo "agnostic-ai CLI version $VERSION"
+    echo ""
+    echo "Repository: $REPO_URL"
+    echo "Local path: $AI_ROOT"
+    echo ""
+}
+
 # Show help
 show_help() {
     echo "agnostic-ai - Unified AI Configuration Tool"
@@ -422,10 +935,18 @@ show_help() {
     echo "  .ai/cli configure                Configure IDE symlinks"
     echo "  .ai/cli plugins list             List available plugins"
     echo "  .ai/cli plugins add <plugin>     Install a plugin"
+    echo "  .ai/cli mcp install              Install/update MCP templates"
+    echo "  .ai/cli mcp list                 List available MCP servers"
+    echo "  .ai/cli mcp use <server...>      Enable MCP server(s)"
+    echo "  .ai/cli mcp unuse <server...>    Disable MCP server(s)"
     echo "  .ai/cli update                   Update configuration and plugins"
+    echo "  .ai/cli --version                Show version information"
     echo "  .ai/cli help                     Show this help"
     echo ""
 }
+
+# Check for updates (async, cached)
+check_version_update
 
 # Main command dispatcher
 case "${1:-}" in
@@ -450,8 +971,34 @@ case "${1:-}" in
                 ;;
         esac
         ;;
+    mcp)
+        case "${2:-}" in
+            install)
+                mcp_install
+                ;;
+            list)
+                mcp_list
+                ;;
+            use)
+                shift 2
+                mcp_use "$@"
+                ;;
+            unuse)
+                shift 2
+                mcp_unuse "$@"
+                ;;
+            *)
+                echo -e "${RED}❌ Unknown mcp command: ${2:-}${NC}"
+                echo "   Usage: .ai/cli mcp [install|list|use|unuse]"
+                exit 1
+                ;;
+        esac
+        ;;
     update)
         update
+        ;;
+    --version|-v|version)
+        show_version
         ;;
     help|--help|-h)
         show_help
