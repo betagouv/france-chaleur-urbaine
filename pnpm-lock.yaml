@@ -61,14 +61,14 @@ dependencies:
     specifier: ^0.18.0
     version: 0.18.0(react-dom@19.2.0)(react@19.2.0)
   '@react-email/components':
-    specifier: 0.5.5
-    version: 0.5.5(react-dom@19.2.0)(react@19.2.0)
+    specifier: 0.5.7
+    version: 0.5.7(react-dom@19.2.0)(react@19.2.0)
   '@react-email/markdown':
-    specifier: 0.0.15
-    version: 0.0.15(react@19.2.0)
+    specifier: 0.0.16
+    version: 0.0.16(react@19.2.0)
   '@react-email/render':
-    specifier: 1.3.1
-    version: 1.3.1(react-dom@19.2.0)(react@19.2.0)
+    specifier: 1.4.0
+    version: 1.4.0(react-dom@19.2.0)(react@19.2.0)
   '@react-hookz/web':
     specifier: ^25.1.1
     version: 25.1.1(js-cookie@3.0.5)(react-dom@19.2.0)(react@19.2.0)
@@ -5003,8 +5003,8 @@ packages:
       react: 19.2.0
     dev: false
 
-  /@react-email/components@0.5.5(react-dom@19.2.0)(react@19.2.0):
-    resolution: {integrity: sha512-+utnip1DiXTq5TQKvL8qztWy0EC3L+qdRIeJkBZXJA4WGIukbaqimWCTBGIMW19Pj+1iKvDYk2JQHEQDLiq7uQ==}
+  /@react-email/components@0.5.7(react-dom@19.2.0)(react@19.2.0):
+    resolution: {integrity: sha512-ECyVoyDcev2FSQ7C0buXaIJ0+6MRDXNUbCOZwBRrlLdCCRjap2b4+MHrYSTXFzo5kqfjjRoyo/2PbJXFQni67g==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       react: ^18.0 || ^19.0 || ^19.0.0-rc
@@ -5022,9 +5022,9 @@ packages:
       '@react-email/html': 0.0.11(react@19.2.0)
       '@react-email/img': 0.0.11(react@19.2.0)
       '@react-email/link': 0.0.12(react@19.2.0)
-      '@react-email/markdown': 0.0.15(react@19.2.0)
+      '@react-email/markdown': 0.0.16(react@19.2.0)
       '@react-email/preview': 0.0.13(react@19.2.0)
-      '@react-email/render': 1.3.1(react-dom@19.2.0)(react@19.2.0)
+      '@react-email/render': 1.4.0(react-dom@19.2.0)(react@19.2.0)
       '@react-email/row': 0.0.12(react@19.2.0)
       '@react-email/section': 0.0.16(react@19.2.0)
       '@react-email/tailwind': 1.2.2(react@19.2.0)
@@ -5105,13 +5105,13 @@ packages:
       react: 19.2.0
     dev: false
 
-  /@react-email/markdown@0.0.15(react@19.2.0):
-    resolution: {integrity: sha512-UQA9pVm5sbflgtg3EX3FquUP4aMBzmLReLbGJ6DZQZnAskBF36aI56cRykDq1o+1jT+CKIK1CducPYziaXliag==}
+  /@react-email/markdown@0.0.16(react@19.2.0):
+    resolution: {integrity: sha512-KSUHmoBMYhvc6iGwlIDkm0DRGbGQ824iNjLMCJsBVUoKHGQYs7F/N3b1tnS1YzRUX+GwHIexSsHuIUEi1m+8OQ==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       react: ^18.0 || ^19.0 || ^19.0.0-rc
     dependencies:
-      md-to-react-email: 5.0.5(react@19.2.0)
+      marked: 15.0.12
       react: 19.2.0
     dev: false
 
@@ -5124,8 +5124,8 @@ packages:
       react: 19.2.0
     dev: false
 
-  /@react-email/render@1.3.1(react-dom@19.2.0)(react@19.2.0):
-    resolution: {integrity: sha512-BOc/kanieEVyiuldFFvceriiBGBBVhe4JWWXCXE2ehLIqz+gSWD4rgCoXAGbJRnnVyyp4joPqK62bSfa88yonA==}
+  /@react-email/render@1.4.0(react-dom@19.2.0)(react@19.2.0):
+    resolution: {integrity: sha512-ZtJ3noggIvW1ZAryoui95KJENKdCzLmN5F7hyZY1F/17B1vwzuxHB7YkuCg0QqHjDivc5axqYEYdIOw4JIQdUw==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       react: ^18.0 || ^19.0 || ^19.0.0-rc
@@ -10873,24 +10873,15 @@ packages:
     hasBin: true
     dev: true
 
-  /marked@7.0.4:
-    resolution: {integrity: sha512-t8eP0dXRJMtMvBojtkcsA7n48BkauktUKzfkPSCq85ZMTJ0v76Rke4DYz01omYpPTUh4p/f7HePgRo3ebG8+QQ==}
-    engines: {node: '>= 16'}
+  /marked@15.0.12:
+    resolution: {integrity: sha512-8dD6FusOQSrpv9Z1rdNMdlSgQOIP880DHqnohobOmYLElGEqAL/JvxvuxZO16r4HtjTlfPRDC1hbvxC9dPN2nA==}
+    engines: {node: '>= 18'}
     hasBin: true
     dev: false
 
   /math-intrinsics@1.1.0:
     resolution: {integrity: sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==}
     engines: {node: '>= 0.4'}
-
-  /md-to-react-email@5.0.5(react@19.2.0):
-    resolution: {integrity: sha512-OvAXqwq57uOk+WZqFFNCMZz8yDp8BD3WazW1wAKHUrPbbdr89K9DWS6JXY09vd9xNdPNeurI8DU/X4flcfaD8A==}
-    peerDependencies:
-      react: ^18.0 || ^19.0
-    dependencies:
-      marked: 7.0.4
-      react: 19.2.0
-    dev: false
 
   /mdast-util-directive@3.1.0:
     resolution: {integrity: sha512-I3fNFt+DHmpWCYAT7quoM6lHf9wuqtI+oCOfvILnoicNIqjh5E3dEJWiXuYME2gNe8vl1iMQwyUHa7bgFmak6Q==}
