@@ -3,6 +3,7 @@ import { limitFunction } from 'p-limit';
 import Papa from 'papaparse';
 import type { Logger } from 'winston';
 import type { BoundingBox } from '@/modules/geo/types';
+import { createBuildTilesJob } from '@/modules/tiles/server/service';
 import { type Jobs, kdb } from '@/server/db/kysely';
 import { type APIAdresseResult, getAddressesCoordinates, getCoordinatesAddresses } from '@/server/services/api-adresse';
 import { chunk } from '@/utils/array';
@@ -192,6 +193,13 @@ export async function processProEligibilityTestJob(job: ProEligibilityTestJob, l
       updated_at: new Date(),
     })
     .execute();
+
+  // Create build_tiles job now that eligibility has been calculated for all addresses
+  // This ensures tiles are built with complete eligibility data
+  logger.info('Creating build_tiles job after eligibility calculation');
+  await createBuildTilesJob({ name: 'tests-adresses' }, job.user_id ? ({ user: { id: job.user_id } } as any) : undefined, {
+    replace: true,
+  });
 
   return {
     stats: jobStats,

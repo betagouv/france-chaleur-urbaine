@@ -1,46 +1,41 @@
-import { generateGeoJSONFromSQLQuery } from '@/modules/tiles/server/generation-strategies';
+import { defineTilesGenerationStrategy } from '@/modules/tiles/server/generation';
+import { extractNDJSONFromDatabaseTable } from '@/modules/tiles/server/generation-strategies';
+import { kdb, sql } from '@/server/db/kysely';
 
-export const testsAdressesGeoJSONQuery = generateGeoJSONFromSQLQuery(
-  `
-SELECT json_build_object(
-  'type', 'FeatureCollection',
-  'features', json_agg(feature)
-) as geojson
-FROM (
-  SELECT json_build_object(
-    'id', row_number() OVER (),
-    'type', 'Feature',
-    'geometry', ST_AsGeoJSON(ST_ForcePolygonCCW(ST_Transform(ST_Centroid(ST_Collect(a.geom)), 4326)))::json,
-    'properties', jsonb_build_object(
-      'ban_address', a.ban_address,
-      'tests', a.tests,
-      'eligibility', a.eligibility,
-      'eligible', (a.eligibility->>'eligible')::boolean
-    )
-  ) AS feature
-  FROM (
+/**
+ * Generate tiles for test addresses using streaming approach.
+ */
+export const testsAdressesGeoJSONQuery = defineTilesGenerationStrategy(async (context) => {
+  const { logger } = context;
+
+  logger.info('Creating temporary table for streaming extraction');
+
+  await sql.raw('DROP TABLE IF EXISTS tests_adresses_tiles_features').execute(kdb);
+
+  await sql
+    .raw(
+      `
+    CREATE UNLOGGED TABLE tests_adresses_tiles_features AS
     SELECT
+      row_number() OVER () as id,
       addr.ban_address,
-      -- centroids will be merged later
-      array_agg(addr.geom) AS geom,
-      -- Get the eligibility from the last item in eligibility_history
+      ST_Centroid(ST_Collect(addr.geom)) as geom,
       (addr.eligibility_history->-1->'eligibility') AS eligibility,
+      (addr.eligibility_history->-1->'eligibility'->>'eligible')::boolean as eligible,
 
       json_agg(
         DISTINCT jsonb_build_object(
-          'id', t.id,
-          'name', t.name,
-          'created_at', t.created_at,
-          'user', jsonb_build_object(
-            'id', u.id,
-            'role', u.role,
-            'gestionnaires', u.gestionnaires,
-            'first_name', u.first_name,
-            'last_name', u.last_name,
-            'structure_name', u.structure_name,
-            'structure_type', u.structure_type,
-            'phone', u.phone
-          )
+          'test_id', t.id,
+          'test_name', t.name,
+          'test_created_at', t.created_at,
+          'user_id', u.id,
+          'user_role', u.role,
+          'user_gestionnaires', u.gestionnaires,
+          'user_first_name', u.first_name,
+          'user_last_name', u.last_name,
+          'user_structure_name', u.structure_name,
+          'user_structure_type', u.structure_type,
+          'user_phone', u.phone
         )
       ) AS tests
 
@@ -49,37 +44,22 @@ FROM (
     LEFT JOIN users u ON t.user_id = u.id
 
     WHERE addr.ban_address IS NOT NULL
-    AND addr.ban_score > 60
-    AND jsonb_array_length(addr.eligibility_history) > 0
+      AND addr.ban_score > 60
+      AND jsonb_array_length(addr.eligibility_history) > 0
 
     GROUP BY addr.ban_address, addr.eligibility_history
-  ) a
-) features;
-  `,
-  ({ properties, ...feature }) => {
-    const { tests, ...rest } = properties as any;
+  `
+    )
+    .execute(kdb);
 
-    const interestedUsers = tests.reduce((acc: any, { user, ...test }: any) => {
-      acc[user.id] = acc[user.id] || {
-        first_name: user.first_name,
-        gestionnaires: user.gestionnaires,
-        id: user.id,
-        last_name: user.last_name,
-        phone: user.phone,
-        role: user.role,
-        structure_name: user.structure_name,
-        structure_type: user.structure_type,
-        tests: [],
-      };
+  logger.info('Starting chunked extraction');
 
-      acc[user.id].tests.push(test);
-      return acc;
-    }, {} as any);
+  const result = await extractNDJSONFromDatabaseTable('tests_adresses_tiles_features' as any, {
+    chunkSize: 10000,
+    fields: ['id', 'ban_address', 'geom', 'eligibility', 'eligible', 'tests'],
+    idField: 'id',
+  })(context);
 
-    return {
-      ...feature,
-      // TODO vérifier, car auparavant ...features.properties (vide)
-      properties: { ...properties, nbUsers: Object.keys(interestedUsers).length, users: Object.values(interestedUsers), ...rest },
-    };
-  }
-);
+  logger.info('Extraction complete');
+  return result;
+});
