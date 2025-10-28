@@ -196,7 +196,7 @@ function DemandEmailForm(props: Props) {
                 sentHistory.map((item) => {
                   const object = item.object;
                   return (
-                    <li key={item.email_key} onClick={() => onSelectedEmailChanged(item.email_key as string)} className="cursor-pointer">
+                    <li key={item.email_key} onClick={() => onSelectedEmailChanged(item.email_key)} className="cursor-pointer">
                       <Tooltip
                         className="max-w-[600px] min-w-[300px]"
                         title={
