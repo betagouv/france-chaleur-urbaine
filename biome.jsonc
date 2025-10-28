@@ -149,6 +149,7 @@
             "syntax": "shorthand"
           }
         },
+        "useConsistentObjectDefinitions": "error",
         "useConst": "error",
         "useExponentiationOperator": "error",
         "useForOf": "error",
