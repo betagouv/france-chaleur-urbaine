@@ -1,6 +1,6 @@
 import { jsonBuildObject } from 'kysely/helpers/postgres';
 
-import { kdb } from '@/server/db/kysely';
+import { kdb, sql } from '@/server/db/kysely';
 import { handleRouteErrors } from '@/server/helpers/server';
 import type { FrontendType } from '@/utils/typescript';
 
@@ -17,7 +17,7 @@ const GET = async () => {
       'jobs.result',
       'jobs.created_at',
       'jobs.updated_at',
-      'jobs.data',
+      sql<string>`jobs.data->>'name'`.as('data_name'),
       (eb) =>
         jsonBuildObject({
           email: eb.ref('users.email'),
@@ -29,11 +29,7 @@ const GET = async () => {
   return jobs;
 };
 
-export type AdminJobItem = FrontendType<Awaited<ReturnType<typeof GET>>[number]> & {
-  data: {
-    name?: string;
-  };
-};
+export type AdminJobItem = FrontendType<Awaited<ReturnType<typeof GET>>[number]>;
 
 export default handleRouteErrors(
   { GET },
