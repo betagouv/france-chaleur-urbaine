@@ -24,6 +24,14 @@ const columns: ColumnDef<AdminJobItem>[] = [
   },
   {
     accessorKey: 'type',
+    cell: (info) => {
+      return (
+        <div className="flex flex-col gap-1">
+          <span>{info.getValue()}</span>
+          {info.row.original.data?.name && <span className="text-xs text-faded">{info.row.original.data.name}</span>}
+        </div>
+      );
+    },
     header: 'Type',
   },
   {

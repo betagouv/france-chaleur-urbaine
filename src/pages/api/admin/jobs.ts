@@ -17,6 +17,7 @@ const GET = async () => {
       'jobs.result',
       'jobs.created_at',
       'jobs.updated_at',
+      'jobs.data',
       (eb) =>
         jsonBuildObject({
           email: eb.ref('users.email'),
@@ -28,7 +29,11 @@ const GET = async () => {
   return jobs;
 };
 
-export type AdminJobItem = FrontendType<Awaited<ReturnType<typeof GET>>[number]>;
+export type AdminJobItem = FrontendType<Awaited<ReturnType<typeof GET>>[number]> & {
+  data: {
+    name?: string;
+  };
+};
 
 export default handleRouteErrors(
   { GET },
