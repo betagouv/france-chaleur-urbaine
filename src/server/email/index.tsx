@@ -32,7 +32,7 @@ export async function sendEmailTemplate<Type extends EmailType>(
   const { subject: defaultSubject, html, text } = await renderEmail(type, templateProps);
 
   const info = await mailTransport.sendMail({
-    cc: cc,
+    cc,
     from: from || serverConfig.MAIL_FROM,
     html,
     replyTo: replyTo || serverConfig.MAIL_REPLYTO,
