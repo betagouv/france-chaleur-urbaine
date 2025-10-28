@@ -8,7 +8,6 @@ import {
   zUpdateEligibilityTestInput,
 } from '@/modules/pro-eligibility-tests/constants';
 import type { ProEligibilityTestEligibility, ProEligibilityTestHistoryEntry } from '@/modules/pro-eligibility-tests/types';
-import { createBuildTilesJob } from '@/modules/tiles/server/service';
 import { kdb, sql } from '@/server/db/kysely';
 import type { ApiContext, ListConfig } from '@/server/db/kysely/base-model';
 import { type EligibilityType, getDetailedEligibilityStatus } from '@/server/services/addresseInformation';
@@ -369,8 +368,6 @@ export const create = async ({ name, ...input }: CreateEligibilityTestInput, con
         user_id: context.user.id,
       })
       .executeTakeFirstOrThrow();
-
-    await createBuildTilesJob({ name: 'tests-adresses' }, context, { replace: true, trx });
 
     return createdEligibilityTest;
   });
