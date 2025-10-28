@@ -137,7 +137,7 @@
     "next-auth": "^4.24.11",
     "next-sitemap": "^4.2.3",
     "nodemailer": "^7.0.6",
-    "nuqs": "^2.6.0",
+    "nuqs": "^2.7.2",
     "p-limit": "^7.1.1",
     "papaparse": "^5.5.3",
     "pg": "^8.16.3",

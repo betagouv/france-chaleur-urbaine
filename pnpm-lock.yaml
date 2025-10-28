@@ -250,8 +250,8 @@ dependencies:
     specifier: ^7.0.6
     version: 7.0.6
   nuqs:
-    specifier: ^2.6.0
-    version: 2.6.0(next@16.0.0)(react@19.2.0)
+    specifier: ^2.7.2
+    version: 2.7.2(next@16.0.0)(react@19.2.0)
   p-limit:
     specifier: ^7.1.1
     version: 7.1.1
@@ -13853,7 +13853,7 @@ packages:
       '@trpc/server': 11.6.0(typescript@5.9.2)
       clsx: 2.1.1
       fuzzysort: 2.0.4
-      nuqs: 2.6.0(next@16.0.0)(react@19.2.0)
+      nuqs: 2.7.2(next@16.0.0)(react@19.2.0)
       path: 0.12.7
       pretty-bytes: 6.1.1
       pretty-ms: 8.0.0
