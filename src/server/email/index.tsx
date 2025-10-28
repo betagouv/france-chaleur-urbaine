@@ -1,5 +1,6 @@
 import nodemailer from 'nodemailer';
 
+import { serverConfig } from '@/server/config';
 import { logger } from '@/server/helpers/logger';
 
 import { type EmailType, renderEmail } from './react-email';
@@ -10,13 +11,13 @@ type EmailParams = Parameters<typeof mailTransport.sendMail>[0];
 
 export const mailTransport = nodemailer.createTransport({
   auth: {
-    pass: process.env.MAIL_PASS,
-    user: process.env.MAIL_USER,
+    pass: serverConfig.MAIL_PASS,
+    user: serverConfig.MAIL_USER,
   },
-  host: process.env.MAIL_HOST,
-  port: process.env.MAIL_PORT,
-  secure: process.env.MAIL_SECURE === 'true',
-} as any); // TODO trouver le bon typage
+  host: serverConfig.MAIL_HOST,
+  port: serverConfig.MAIL_PORT,
+  secure: false, // upgrade later with STARTTLS
+});
 
 export async function sendEmailTemplate<Type extends EmailType>(
   type: Type,
@@ -28,9 +29,9 @@ export async function sendEmailTemplate<Type extends EmailType>(
 
   const info = await mailTransport.sendMail({
     cc: cc,
-    from: from || process.env.SENDING_EMAIL,
+    from: from || serverConfig.MAIL_FROM,
     html,
-    replyTo: replyTo || process.env.REPLYTO_EMAIL,
+    replyTo: replyTo || serverConfig.MAIL_REPLYTO,
     subject: subject ?? defaultSubject,
     text,
     to: recipient.email,
