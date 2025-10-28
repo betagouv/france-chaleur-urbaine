@@ -14,9 +14,13 @@ export const mailTransport = nodemailer.createTransport({
     pass: serverConfig.MAIL_PASS,
     user: serverConfig.MAIL_USER,
   },
+  connectionTimeout: 30000,
+  dnsTimeout: 30000,
+  greetingTimeout: 30000,
   host: serverConfig.MAIL_HOST,
   port: serverConfig.MAIL_PORT,
   secure: false, // upgrade later with STARTTLS
+  socketTimeout: 30000,
 });
 
 export async function sendEmailTemplate<Type extends EmailType>(
