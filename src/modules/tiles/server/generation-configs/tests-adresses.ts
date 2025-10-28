@@ -3,26 +3,23 @@ import { extractNDJSONFromDatabaseTable } from '@/modules/tiles/server/generatio
 import { kdb, sql } from '@/server/db/kysely';
 
 /**
- * Generate tiles for test addresses using streaming approach (same as bdnb-batiments).
- * Uses a materialized view that can be chunked by ID, exactly like a real table.
+ * Generate tiles for test addresses using streaming approach.
  */
 export const testsAdressesGeoJSONQuery = defineTilesGenerationStrategy(async (context) => {
   const { logger } = context;
 
-  // Create a MATERIALIZED VIEW (cached table) with pre-aggregated data
-  // This allows ogr2ogr to chunk by ID, exactly like bdnb-batiments does
-  logger.info('Creating/refreshing materialized view for streaming');
+  logger.info('Creating temporary table for streaming extraction');
+
+  await sql.raw('DROP TABLE IF EXISTS tests_adresses_tiles_features').execute(kdb);
 
   await sql
     .raw(
       `
-    CREATE MATERIALIZED VIEW IF NOT EXISTS tests_adresses_tiles_mat AS
+    CREATE UNLOGGED TABLE tests_adresses_tiles_features AS
     SELECT
       row_number() OVER () as id,
       addr.ban_address,
-      -- Merge geometries and transform to WGS84
-      ST_Transform(ST_Centroid(ST_Collect(addr.geom)), 4326) as geom,
-      -- Get the eligibility from the last item in eligibility_history
+      ST_Centroid(ST_Collect(addr.geom)) as geom,
       (addr.eligibility_history->-1->'eligibility') AS eligibility,
       (addr.eligibility_history->-1->'eligibility'->>'eligible')::boolean as eligible,
 
@@ -55,16 +52,10 @@ export const testsAdressesGeoJSONQuery = defineTilesGenerationStrategy(async (co
     )
     .execute(kdb);
 
-  // Refresh the materialized view to get latest data
-  logger.info('Refreshing materialized view data');
-  await sql.raw('REFRESH MATERIALIZED VIEW tests_adresses_tiles_mat').execute(kdb);
+  logger.info('Starting chunked extraction');
 
-  // Now use extractNDJSONFromDatabaseTable exactly like bdnb-batiments does!
-  // The materialized view acts like a real table with an 'id' column
-  logger.info('Starting chunked extraction (same as bdnb-batiments)');
-
-  const result = await extractNDJSONFromDatabaseTable('tests_adresses_tiles_mat' as any, {
-    chunkSize: 10000, // Same as bdnb default
+  const result = await extractNDJSONFromDatabaseTable('tests_adresses_tiles_features' as any, {
+    chunkSize: 10000,
     fields: ['id', 'ban_address', 'geom', 'eligibility', 'eligible', 'tests'],
     idField: 'id',
   })(context);
