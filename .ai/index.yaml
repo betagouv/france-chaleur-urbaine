@@ -1,0 +1,46 @@
+version: 1
+description: >
+  Central index of AI contexts and rules for the Next.js project.
+  Helps AIs navigate to the most relevant files by topic.
+
+files:
+  - path: ".ai/context/architecture.md"
+    type: "context"
+    topic: "Architecture"
+    summary: "Project structure, Pages Router conventions, modules vs legacy."
+
+  - path: ".ai/context/frontend.md"
+    type: "rules"
+    topic: "Frontend"
+    summary: "React + DSFR, forms, state (React Query/Jotai), accessibility."
+
+  - path: ".ai/context/backend.md"
+    type: "rules"
+    topic: "Backend"
+    summary: "APIs via /api or TRPC modules, client/server separation, errors."
+
+  - path: ".ai/context/database.md"
+    type: "rules"
+    topic: "Database"
+    summary: "Kysely, Postgres/PostGIS, migrations, typed performant queries."
+
+  - path: ".ai/context/coding-style.md"
+    type: "rules"
+    topic: "Coding Style"
+    summary: "Strict TypeScript, explicit names, error handling, formatting."
+
+  - path: ".ai/context/security.md"
+    type: "rules"
+    topic: "Security"
+    summary: "Inputs, secrets, permissions, HTTP headers, logging."
+
+  - path: ".ai/context/docs.md"
+    type: "docs"
+    topic: "Documentation"
+    summary: "Concise modular docs, link to ARCHITECTURE and module guides."
+
+  - path: ".ai/context/ai.md"
+    type: "docs"
+    topic: "AI Ops"
+    summary: "How AIs use the index and apply rules correctly."
+
