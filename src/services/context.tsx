@@ -1,6 +1,5 @@
 import React from 'react';
 
-import type { DemandsService } from './demands';
 import type { ExportService } from './export';
 import type { HeatNetworkService } from './heatNetwork';
 import type { NetworksService } from './networks';
@@ -10,7 +9,6 @@ import type { SuggestionService } from './suggestion';
 type ServiceContextProps = {
   suggestionService: SuggestionService;
   heatNetworkService: HeatNetworkService;
-  demandsService: DemandsService;
   passwordService: PasswordService;
   networksService: NetworksService;
   exportService: ExportService;
