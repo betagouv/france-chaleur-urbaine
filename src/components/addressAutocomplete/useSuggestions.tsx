@@ -1,9 +1,8 @@
 import { useIsMounted } from '@react-hookz/web';
 import { useState } from 'react';
-
-import { useServices } from '@/services';
-import type { SuggestionItem } from '@/types/Suggestions';
+import type { SuggestionItem, SuggestionResponse } from '@/types/Suggestions';
 import debounce from '@/utils/debounce';
+import { fetchJSON } from '@/utils/network';
 
 enum Status {
   Idle = 'idle',
@@ -25,7 +24,6 @@ const useSuggestions = ({ limit = 5, debounceTime = 300, minCharactersLength = 3
   const [status, setStatus] = useState<ValueOf<Status>>(Status.Idle);
   const isMounted = useIsMounted();
   const DIGITS_THRESHOLD = 3;
-  const { suggestionService } = useServices();
   const debounceFetch = debounce(async (query: string) => {
     try {
       const searchTerm = query.trim();
@@ -33,8 +31,12 @@ const useSuggestions = ({ limit = 5, debounceTime = 300, minCharactersLength = 3
         return;
       }
       setStatus(Status.Loading);
-      const fetchedSuggestions = await suggestionService.fetchSuggestions(searchTerm, {
-        limit: limit.toString(),
+      const baseURL = process.env.NEXT_PUBLIC_BAN_API_BASE_URL as string;
+      const fetchedSuggestions = await fetchJSON<SuggestionResponse>(baseURL, {
+        params: {
+          limit: limit.toString(),
+          q: searchTerm,
+        },
       });
 
       const features = excludeCities

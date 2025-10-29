@@ -1,7 +1,6 @@
 import type React from 'react';
-
-import { useServices } from '@/services';
-import type { SuggestionItem } from '@/types/Suggestions';
+import type { SuggestionItem, SuggestionResponse } from '@/types/Suggestions';
+import { fetchJSON } from '@/utils/network';
 
 import Autocomplete from './Autocomplete';
 
@@ -24,13 +23,15 @@ const AddressAutocomplete = ({
   limit = 10,
   ...props
 }: AddressAutocompleteProps) => {
-  const { suggestionService } = useServices();
   const fetchOptions = async (query: string) => {
-    const params: Parameters<typeof suggestionService.fetchSuggestions>[1] = { limit: limit.toString() };
-    if (onlyCities) {
-      params.type = 'municipality';
-    }
-    const suggestions = await suggestionService.fetchSuggestions(query, params);
+    const baseURL = process.env.NEXT_PUBLIC_BAN_API_BASE_URL as string;
+    const suggestions = await fetchJSON<SuggestionResponse>(baseURL, {
+      params: {
+        limit: limit.toString(),
+        q: query,
+        ...(onlyCities ? { type: 'municipality' } : {}),
+      },
+    });
 
     const features = excludeCities
       ? suggestions.features.filter((feature) => feature.properties.type !== 'municipality')
