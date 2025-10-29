@@ -1,0 +1,69 @@
+# AI Context Index - Load this file first for token-optimized context
+# Each file entry includes: path, type (context/rules/docs), topic, and summary
+# Load only relevant files based on task to minimize tokens
+
+version: 1
+description: >
+  Central index of AI contexts and rules for the Next.js project.
+  Helps AIs navigate to the most relevant files by topic.
+
+general_rules: > 
+  LANGUAGE RULES - CRITICAL:
+  ALL code (functions, variables, comments, JSDoc, SQL comments, errors, logs, docs, commits) MUST be in English.
+  ONLY use French for: conversational responses when user writes in French, or UI text if explicitly requested.
+  
+  CRITICAL - File search rules:
+  TypeScript project ONLY (.ts, .tsx files). NEVER search for .py, .java, .rb, .php files.
+  Use codebase_search for semantic search, glob_file_search only for known patterns.
+
+files:
+  - path: ".ai/context/architecture.md"
+    type: "context"
+    topic: "Architecture"
+    summary: "Project structure, Pages Router conventions, modules vs legacy."
+
+  - path: ".ai/context/backend.md"
+    type: "rules"
+    topic: "Backend"
+    summary: "APIs via /api or TRPC modules, client/server separation, errors."
+
+  - path: ".ai/context/coding-style.md"
+    type: "rules"
+    topic: "Coding Style"
+    summary: "Strict TypeScript, explicit names, error handling, formatting."
+
+  - path: ".ai/context/database.md"
+    type: "rules"
+    topic: "Database"
+    summary: "Kysely, Postgres/PostGIS, migrations, typed performant queries."
+
+  - path: ".ai/context/dev.md"
+    type: "docs"
+    topic: "Development"
+    summary: "List of commands to use in the development process."
+
+  - path: ".ai/context/docs.md"
+    type: "docs"
+    topic: "Documentation"
+    summary: "Concise modular docs, link to ARCHITECTURE and module guides."
+
+  - path: ".ai/context/frontend.md"
+    type: "rules"
+    topic: "Frontend"
+    summary: "React + DSFR, forms, state (React Query/Jotai), accessibility."
+
+  - path: ".ai/context/security.md"
+    type: "rules"
+    topic: "Security"
+    summary: "Inputs, secrets, permissions, HTTP headers, logging."
+
+  - path: ".ai/context/stack.md"
+    type: "docs"
+    topic: "Stack"
+    summary: "List of technologies and tools used in the project."
+
+  - path: ".ai/context/testing.md"
+    type: "rules"
+    topic: "Tests"
+    summary: "Testing guidelines, patterns, helpers, best practices."
+

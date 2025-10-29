@@ -11,9 +11,11 @@ France Chaleur Urbaine is a Next.js application helping French citizens connect 
 ## 📁 Directory Structure
 
 ```
+docs/                    # Legacy documentations (do not use)
 src/
-├── 🟢 modules/           # Modern module-based architecture (16 modules)
-├── 🟢 components/        # UI components (keep current structure)
+├── 🟢 app/global.css    # Only used for global CSS
+├── 🟢 modules/          # Modern module-based architecture (16 modules)
+├── 🟢 components/       # UI components (keep current structure)
 ├── 🟢 hooks/            # React hooks (keep current structure)  
 ├── 🟢 config/           # Configuration files (keep current structure)
 ├── 🟢 data/             # Static data (keep current structure)
