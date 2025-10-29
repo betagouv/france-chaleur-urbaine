@@ -45,9 +45,6 @@ dependencies:
   '@mdx-js/react':
     specifier: ^3.1.1
     version: 3.1.1(@types/react@19.2.2)(react@19.2.0)
-  '@next/bundle-analyzer':
-    specifier: 16.0.0
-    version: 16.0.0
   '@next/mdx':
     specifier: 16.0.0
     version: 16.0.0(@mdx-js/loader@3.1.1)(@mdx-js/react@3.1.1)
@@ -3862,15 +3859,6 @@ packages:
       react: 19.2.0
       react-is: 19.2.0
     dev: true
-
-  /@next/bundle-analyzer@16.0.0:
-    resolution: {integrity: sha512-OYufQoNm/Im2fYQBdXu9fqUrXaP3lPuPnryW0XNGG7kJiGxH/VWS8zc2/x4aW2LQGn+opqIJYNRXy7k5qV/09g==}
-    dependencies:
-      webpack-bundle-analyzer: 4.10.1
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
-    dev: false
 
   /@next/env@13.5.6:
     resolution: {integrity: sha512-Yac/bV5sBGkkEXmAX5FWPS9Mmo2rthrOPRQQNfycJPkjUAUclomCPH7QFVCDQ4Mp2k2K1SSM6m0zrxYrOwtFQw==}

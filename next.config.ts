@@ -1,4 +1,3 @@
-import withBundleAnalyzer from '@next/bundle-analyzer';
 import createMDX from '@next/mdx';
 import type { NextConfig } from 'next';
 
@@ -42,9 +41,6 @@ const configFunctions = [
 
     // Upload a larger set of source maps for prettier stack traces (increases build time)
     widenClientFileUpload: true,
-  }),
-  withBundleAnalyzer({
-    enabled: process.env.ANALYZE === 'true',
   }),
   withSecurityHeaders({
     csp: {
