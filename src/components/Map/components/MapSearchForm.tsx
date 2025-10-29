@@ -28,12 +28,13 @@ const MapSearchForm = ({
       setEligibilityError(false);
       const [lon, lat] = geoAddress.geometry.coordinates;
       const isCity = geoAddress.properties.label === geoAddress.properties.city;
-      const network = await trpcUtils.client.reseaux.findByCoords.query({
-        city: geoAddress.properties.city,
-        isCity,
-        lat,
-        lon,
-      });
+      const network = isCity
+        ? await trpcUtils.client.reseaux.cityNetwork.query({ city: geoAddress.properties.city })
+        : await trpcUtils.client.reseaux.eligibilityStatus.query({
+            city: geoAddress.properties.city,
+            lat,
+            lon,
+          });
       const addressDetail = {
         geoAddress,
         network,

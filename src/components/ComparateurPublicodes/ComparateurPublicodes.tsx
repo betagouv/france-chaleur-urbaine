@@ -490,12 +490,13 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
             void setAddress('');
           }
           const isCity = selectedAddress.properties.label === selectedAddress.properties.city;
-          const network = await trpcUtils.client.reseaux.findByCoords.query({
-            city: selectedAddress.properties.city,
-            isCity,
-            lat,
-            lon,
-          });
+          const network = isCity
+            ? await trpcUtils.client.reseaux.cityNetwork.query({ city: selectedAddress.properties.city })
+            : await trpcUtils.client.reseaux.eligibilityStatus.query({
+                city: selectedAddress.properties.city,
+                lat,
+                lon,
+              });
           setAddressDetail({
             geoAddress: selectedAddress,
             network,

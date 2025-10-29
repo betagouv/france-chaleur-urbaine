@@ -33,12 +33,13 @@ function ChoixChauffageForm() {
     const isCity = geoAddress.properties.label === geoAddress.properties.city;
     const eligibilityStatus = await runWithMinimumDelay(
       () =>
-        trpcUtils.client.reseaux.findByCoords.query({
-          city: geoAddress.properties.city,
-          isCity,
-          lat,
-          lon,
-        }),
+        isCity
+          ? trpcUtils.client.reseaux.cityNetwork.query({ city: geoAddress.properties.city })
+          : trpcUtils.client.reseaux.eligibilityStatus.query({
+              city: geoAddress.properties.city,
+              lat,
+              lon,
+            }),
       500
     );
     setAddressDetail({

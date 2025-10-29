@@ -107,12 +107,13 @@ const HeadSliceForm = ({
 
     try {
       const isCity = geoAddress.properties.label === geoAddress.properties.city;
-      const networkData = await trpcUtils.client.reseaux.findByCoords.query({
-        city: geoAddress.properties.city,
-        isCity,
-        lat,
-        lon,
-      });
+      const networkData = isCity
+        ? await trpcUtils.client.reseaux.cityNetwork.query({ city: geoAddress.properties.city })
+        : await trpcUtils.client.reseaux.eligibilityStatus.query({
+            city: geoAddress.properties.city,
+            lat,
+            lon,
+          });
       handleOnSuccessAddress({
         address,
         coords,
