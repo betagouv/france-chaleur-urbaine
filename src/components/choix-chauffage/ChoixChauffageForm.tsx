@@ -6,7 +6,7 @@ import AddressAutocompleteInput from '@/components/form/dsfr/AddressAutocomplete
 import Radio from '@/components/form/dsfr/Radio';
 import Section, { SectionContent, SectionHeading, SectionTwoColumns } from '@/components/ui/Section';
 import { toastErrors } from '@/modules/notification';
-import { useServices } from '@/services';
+import trpc from '@/modules/trpc/client';
 import type { AddressDetail } from '@/types/HeatNetworksResponse';
 import type { SuggestionItem } from '@/types/Suggestions';
 import { isDefined } from '@/utils/core';
@@ -15,7 +15,7 @@ import { runWithMinimumDelay } from '@/utils/time';
 import ChoixChauffageResults from './ChoixChauffageResults';
 
 function ChoixChauffageForm() {
-  const { heatNetworkService } = useServices();
+  const trpcUtils = trpc.useUtils();
   const [typeLogement, setTypeLogement] = useQueryState(
     'type',
     parseAsStringLiteral([
@@ -29,7 +29,18 @@ function ChoixChauffageForm() {
 
   const testAddressEligibility = toastErrors(async (geoAddress: SuggestionItem) => {
     void setAddress(geoAddress?.properties?.label ?? '');
-    const eligibilityStatus = await runWithMinimumDelay(() => heatNetworkService.findByCoords(geoAddress), 500);
+    const [lon, lat] = geoAddress.geometry.coordinates;
+    const isCity = geoAddress.properties.label === geoAddress.properties.city;
+    const eligibilityStatus = await runWithMinimumDelay(
+      () =>
+        trpcUtils.client.reseaux.findByCoords.query({
+          city: geoAddress.properties.city,
+          isCity,
+          lat,
+          lon,
+        }),
+      500
+    );
     setAddressDetail({
       geoAddress,
       network: eligibilityStatus,

@@ -18,8 +18,8 @@ import Section, { SectionContent, SectionHeading } from '@/components/ui/Section
 import useEligibilityForm from '@/hooks/useEligibilityForm';
 import { trackEvent } from '@/modules/analytics/client';
 import useUserInfo from '@/modules/app/client/hooks/useUserInfo';
+import trpc from '@/modules/trpc/client';
 import type { LocationInfoResponse } from '@/pages/api/location-infos';
-import { useServices } from '@/services';
 import { getNetworkEligibilityDistances } from '@/services/eligibility';
 import type { AddressDetail } from '@/types/HeatNetworksResponse';
 import cx from '@/utils/cx';
@@ -67,7 +67,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
   const [addressLoading, setAddressLoading] = React.useState<boolean>(false);
   const [nearestReseauDeFroid, setNearestReseauDeFroid] = React.useState<LocationInfoResponse['nearestReseauDeFroid']>();
   const inclureLaClimatisation = engine.getField('Inclure la climatisation');
-  const { heatNetworkService } = useServices();
+  const trpcUtils = trpc.useUtils();
   const [selectedTabId, setSelectedTabId] = useQueryState(
     'tabId',
     parseAsStringLiteral(simulatorTabs.map((tab) => tab.tabId)).withDefault(defaultTabId ?? 'batiment')
@@ -489,7 +489,13 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
           if (addressLabel !== address) {
             void setAddress('');
           }
-          const network = await heatNetworkService.findByCoords(selectedAddress);
+          const isCity = selectedAddress.properties.label === selectedAddress.properties.city;
+          const network = await trpcUtils.client.reseaux.findByCoords.query({
+            city: selectedAddress.properties.city,
+            isCity,
+            lat,
+            lon,
+          });
           setAddressDetail({
             geoAddress: selectedAddress,
             network,

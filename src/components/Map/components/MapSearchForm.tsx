@@ -4,7 +4,7 @@ import { useState } from 'react';
 import AddressAutocomplete, { type AddressAutocompleteInputProps } from '@/components/form/dsfr/AddressAutocompleteInput';
 import Link from '@/components/ui/Link';
 import useUserInfo from '@/modules/app/client/hooks/useUserInfo';
-import { useServices } from '@/services';
+import trpc from '@/modules/trpc/client';
 import type { HandleAddressSelect } from '@/types/HeatNetworksResponse';
 
 const MapSearchForm = ({
@@ -15,7 +15,7 @@ const MapSearchForm = ({
   withDefaultAddress?: boolean;
 }) => {
   const [eligibilityError, setEligibilityError] = useState(false);
-  const { heatNetworkService } = useServices();
+  const trpcUtils = trpc.useUtils();
   const [defaultAddress, setDefaultAddress] = useQueryState('address');
   const { address } = useUserInfo();
 
@@ -26,7 +26,14 @@ const MapSearchForm = ({
     void setDefaultAddress(null);
     try {
       setEligibilityError(false);
-      const network = await heatNetworkService.findByCoords(geoAddress);
+      const [lon, lat] = geoAddress.geometry.coordinates;
+      const isCity = geoAddress.properties.label === geoAddress.properties.city;
+      const network = await trpcUtils.client.reseaux.findByCoords.query({
+        city: geoAddress.properties.city,
+        isCity,
+        lat,
+        lon,
+      });
       const addressDetail = {
         geoAddress,
         network,

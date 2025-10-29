@@ -16,7 +16,7 @@ import useContactFormFCU from '@/hooks/useContactFormFCU';
 import { AnalyticsFormId } from '@/modules/analytics/client';
 import useUserInfo from '@/modules/app/client/hooks/useUserInfo';
 import type { AvailableHeating } from '@/modules/app/types';
-import { useServices } from '@/services';
+import trpc from '@/modules/trpc/client';
 import type { SuggestionItem } from '@/types/Suggestions';
 import cx from '@/utils/cx';
 import { Container, FormLabel, HeadSliceContainer, PageBody, PageTitle, SliceContactFormStyle } from './HeadSliceForm.style';
@@ -69,7 +69,7 @@ const HeadSliceForm = ({
     handleResetFormContact,
   } = useContactFormFCU();
 
-  const { heatNetworkService } = useServices();
+  const trpcUtils = trpc.useUtils();
   const router = useRouter();
 
   const [geoAddress, setGeoAddress] = useState<SuggestionItem>();
@@ -106,7 +106,13 @@ const HeadSliceForm = ({
     const coords = { lat, lon };
 
     try {
-      const networkData = await heatNetworkService.findByCoords(geoAddress);
+      const isCity = geoAddress.properties.label === geoAddress.properties.city;
+      const networkData = await trpcUtils.client.reseaux.findByCoords.query({
+        city: geoAddress.properties.city,
+        isCity,
+        lat,
+        lon,
+      });
       handleOnSuccessAddress({
         address,
         coords,
@@ -118,7 +124,7 @@ const HeadSliceForm = ({
       setEligibilityError(true);
     }
     setLoadingStatus('idle');
-  }, [address, geoAddress, heatingType, heatNetworkService, handleOnFetchAddress, handleOnSuccessAddress]);
+  }, [address, geoAddress, heatingType, trpcUtils, handleOnFetchAddress, handleOnSuccessAddress]);
 
   useEffect(() => {
     const { heating, address } = router.query;

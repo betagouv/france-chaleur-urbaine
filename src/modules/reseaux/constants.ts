@@ -49,6 +49,23 @@ export const zUpdatePerimetreDeDeveloppementPrioritaireInput = z.object({
 
 export type UpdatePerimetreDeDeveloppementPrioritaireInput = z.infer<typeof zUpdatePerimetreDeDeveloppementPrioritaireInput>;
 
+export const zGetNetworkEligibilityStatusInput = z.object({
+  lat: z.number(),
+  lon: z.number(),
+  networkId: z.string(),
+});
+
+export type GetNetworkEligibilityStatusInput = z.infer<typeof zGetNetworkEligibilityStatusInput>;
+
+export const zFindByCoordsInput = z.object({
+  city: z.string(),
+  isCity: z.boolean(),
+  lat: z.number(),
+  lon: z.number(),
+});
+
+export type FindByCoordsInput = z.infer<typeof zFindByCoordsInput>;
+
 export const zDeleteGeomUpdateInput = z.object({
   id: z.number(),
   type: z.enum(tableNames),

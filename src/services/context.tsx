@@ -1,13 +1,11 @@
 import React from 'react';
 
 import type { ExportService } from './export';
-import type { HeatNetworkService } from './heatNetwork';
 import type { PasswordService } from './password';
 import type { SuggestionService } from './suggestion';
 
 type ServiceContextProps = {
   suggestionService: SuggestionService;
-  heatNetworkService: HeatNetworkService;
   passwordService: PasswordService;
   exportService: ExportService;
 };
