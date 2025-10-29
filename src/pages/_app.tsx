@@ -1,12 +1,11 @@
 import '@/app/globals.css';
+import { PagesProgressProvider as ProgressProvider } from '@bprogress/next';
 import { fr } from '@codegouvfr/react-dsfr';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { AppProps } from 'next/app';
 import dynamic from 'next/dynamic';
 import type Link from 'next/link';
-// use AppProgressBar instead of PagesProgressBar on purpose as it handles better the query params ignoring
 import { SessionProvider } from 'next-auth/react';
-import { AppProgressBar as ProgressBar } from 'next-nprogress-bar';
 import { NuqsAdapter } from 'nuqs/adapters/next/pages';
 import { useState } from 'react';
 
@@ -48,7 +47,6 @@ const AppInner = ({ Component, pageProps }: AppProps<AuthSSRPageProps>) => {
       <SEO />
       <ConsentBanner />
       <NotifierContainer />
-      <ProgressBar height="4px" color={fr.colors.decisions.background.active.blueFrance.default} />
       <Component {...pageProps} />
     </ThemeProvider>
   );
@@ -79,13 +77,15 @@ const AppProvider = (props: AppProps<AuthSSRPageProps>) => {
   }));
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <NuqsAdapter>
-        <ServicesContext.Provider value={services}>
-          <AppInner {...props} />
-        </ServicesContext.Provider>
-      </NuqsAdapter>
-    </QueryClientProvider>
+    <ProgressProvider height="4px" color={fr.colors.decisions.background.active.blueFrance.default} shallowRouting>
+      <QueryClientProvider client={queryClient}>
+        <NuqsAdapter>
+          <ServicesContext.Provider value={services}>
+            <AppInner {...props} />
+          </ServicesContext.Provider>
+        </NuqsAdapter>
+      </QueryClientProvider>
+    </ProgressProvider>
   );
 };
 
