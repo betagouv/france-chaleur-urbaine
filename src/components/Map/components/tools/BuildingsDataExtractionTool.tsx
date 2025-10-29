@@ -15,7 +15,6 @@ import Text from '@/components/ui/Text';
 import { trackEvent } from '@/modules/analytics/client';
 import { validatePolygonGeometry } from '@/modules/geo/client/helpers';
 import trpc from '@/modules/trpc/client';
-import { useServices } from '@/services';
 
 import { downloadBaseEncoded64File } from '@/utils/browser';
 import type { MapSourceLayersSpecification } from '../../layers/common';
@@ -53,7 +52,6 @@ const featuresAtom = atom<AreaSummaryFeature[]>([]);
 const summaryAtom = atom<BuildingsDataExtractSummary | null>(null);
 
 const BuildingsDataExtractionTool: React.FC = () => {
-  const { heatNetworkService } = useServices();
   const { mapLoaded, mapRef, mapDraw, isDrawing, setIsDrawing } = useFCUMap();
   const [features, setFeatures] = useAtom(featuresAtom);
   const [isLoading, setIsLoading] = useState<boolean>(false);

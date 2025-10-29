@@ -19,8 +19,6 @@ import { useInitAuthentication } from '@/modules/auth/client/hooks';
 import { NotifierContainer } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
 import type { AuthSSRPageProps } from '@/server/authentication';
-import { ServicesContext } from '@/services';
-import { legacyServices } from '@/services/legacy-services';
 
 const ConsentBanner = dynamic(
   () => import('@/components/ConsentBanner').then((module) => module.ConsentBanner),
@@ -67,9 +65,7 @@ const AppProvider = (props: AppProps<AuthSSRPageProps>) => {
     <ProgressProvider height="4px" color={fr.colors.decisions.background.active.blueFrance.default} shallowRouting>
       <QueryClientProvider client={queryClient}>
         <NuqsAdapter>
-          <ServicesContext.Provider value={legacyServices}>
-            <AppInner {...props} />
-          </ServicesContext.Provider>
+          <AppInner {...props} />
         </NuqsAdapter>
       </QueryClientProvider>
     </ProgressProvider>
