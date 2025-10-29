@@ -13,7 +13,7 @@ import Contact from '@/components/Manager/Contact';
 import Tag from '@/components/Manager/Tag';
 import type { AdresseEligible } from '@/components/Map/layers/adressesEligibles';
 import { useMapEventBus } from '@/components/Map/layers/common';
-import Map from '@/components/Map/Map';
+import { Map } from '@/components/Map/Map.lazy';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import SimplePage from '@/components/shared/page/SimplePage';
 import AsyncButton from '@/components/ui/AsyncButton';

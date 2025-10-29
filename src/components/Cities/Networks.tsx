@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-import Map from '@/components/Map/Map';
+import { Map } from '@/components/Map/Map.lazy';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import ClassedNetwork from '@/components/Network/ClassedNetwork';
 import EnergiesChart from '@/components/Network/EnergiesChart';

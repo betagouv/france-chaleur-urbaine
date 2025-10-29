@@ -1,7 +1,7 @@
 import { fr } from '@codegouvfr/react-dsfr';
 import type { ReactElement } from 'react';
 
-import Map from '@/components/Map/Map';
+import { Map } from '@/components/Map/Map.lazy';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import Accordion from '@/components/ui/Accordion';
 import Box, { type BoxProps } from '@/components/ui/Box';

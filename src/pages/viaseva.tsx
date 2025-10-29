@@ -1,5 +1,5 @@
 import IframeWrapper from '@/components/IframeWrapper';
-import Map from '@/components/Map/Map';
+import { Map } from '@/components/Map/Map.lazy';
 import { iframeSimpleMapConfiguration } from '@/components/Map/map-configuration';
 
 const ViasevaMap = () => {

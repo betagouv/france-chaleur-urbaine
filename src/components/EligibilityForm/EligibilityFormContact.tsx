@@ -3,7 +3,7 @@ import dynamic from 'next/dynamic';
 import { useCallback, useMemo, useState } from 'react';
 
 import { clientConfig } from '@/client-config';
-import Map from '@/components/Map/Map';
+import { Map } from '@/components/Map/Map.lazy';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import MarkdownWrapper from '@/components/MarkdownWrapper';
 import Box from '@/components/ui/Box';

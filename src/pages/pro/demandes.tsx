@@ -14,7 +14,7 @@ import DemandStatusBadge from '@/components/Manager/DemandStatusBadge';
 import Status from '@/components/Manager/Status';
 import Tag from '@/components/Manager/Tag';
 import type { AdresseEligible } from '@/components/Map/layers/adressesEligibles';
-import Map from '@/components/Map/Map';
+import { Map } from '@/components/Map/Map.lazy';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import SimplePage from '@/components/shared/page/SimplePage';
 import AsyncButton from '@/components/ui/AsyncButton';

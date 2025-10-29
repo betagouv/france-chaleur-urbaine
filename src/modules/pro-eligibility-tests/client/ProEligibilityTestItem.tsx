@@ -5,7 +5,7 @@ import { useQueryState } from 'nuqs';
 import { Fragment, useEffect, useMemo, useState } from 'react';
 
 import { clientConfig } from '@/client-config';
-import Map, { type AdresseEligible } from '@/components/Map/Map';
+import { type AdresseEligible, Map } from '@/components/Map/Map.lazy';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import { UrlStateAccordion } from '@/components/ui/Accordion';
 import Button from '@/components/ui/Button';

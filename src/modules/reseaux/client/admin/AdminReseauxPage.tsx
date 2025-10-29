@@ -6,7 +6,7 @@ import TableFieldInput from '@/components/Admin/TableFieldInput';
 import Input from '@/components/form/dsfr/Input';
 import FCUTagAutocomplete from '@/components/form/FCUTagAutocomplete';
 import AdminEditLegend from '@/components/Map/components/AdminEditLegend';
-import Map from '@/components/Map/Map';
+import { Map } from '@/components/Map/Map.lazy';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Button from '@/components/ui/Button';
