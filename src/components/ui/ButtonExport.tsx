@@ -5,7 +5,7 @@ import { exportAsXLSX, type SheetData } from '@/utils/export';
 
 type ButtonExportProps = {
   filename: string;
-  sheets: SheetData<any>[];
+  sheets: SheetData<any>[] | (() => SheetData<any>[]);
 };
 
 // This component should be imported dynamically to reduce initial bundle size
@@ -14,7 +14,7 @@ type ButtonExportProps = {
 
 const ButtonExport: React.FC<ButtonExportProps & ButtonProps> = ({ filename, sheets, children, ...props }) => {
   return (
-    <Button onClick={() => exportAsXLSX(filename, sheets)} {...props}>
+    <Button onClick={() => exportAsXLSX(filename, typeof sheets === 'function' ? sheets() : sheets)} {...props}>
       {children}
     </Button>
   );

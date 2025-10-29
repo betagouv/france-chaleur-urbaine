@@ -47,27 +47,6 @@ vi.mock('next/dynamic', () => ({
   },
 }));
 
-// Mock Services Context
-vi.mock('@/services/context', () => ({
-  ServicesContext: React.createContext({}),
-  ServicesProvider: ({ children }: { children: React.ReactNode }) => children,
-  useServices: () => ({
-    apiService: {},
-    heatNetworkService: {
-      findByCoords: vi.fn().mockResolvedValue({
-        distance: 1000,
-        isEligible: false,
-        networks: [],
-      }),
-      findById: vi.fn().mockResolvedValue(null),
-    },
-    trackingService: {
-      trackAcquisition: vi.fn(),
-      trackEvent: vi.fn(),
-    },
-  }),
-}));
-
 // Mock fetch with proper responses
 global.fetch = vi.fn().mockImplementation((url: string) => {
   // Block external URLs to prevent real requests

@@ -78,3 +78,14 @@ export const zCreateNetworkInput = z.object({
 });
 
 export type CreateNetworkInput = z.infer<typeof zCreateNetworkInput>;
+
+export const gestionnairesFilters = [
+  {
+    label: 'Coriance',
+    value: 'coriance',
+  },
+  { label: 'Dalkia', value: 'dalkia' },
+  { label: 'ENGIE Solutions', value: 'engie' },
+  { label: 'IDEX', value: 'idex' },
+  { label: 'Autre', value: 'autre' },
+];

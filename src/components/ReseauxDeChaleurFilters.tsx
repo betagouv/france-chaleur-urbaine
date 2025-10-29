@@ -10,7 +10,7 @@ import { filtresEnergies } from '@/components/Map/map-configuration';
 import { UrlStateAccordion } from '@/components/ui/Accordion';
 import Button from '@/components/ui/Button';
 import useReseauxDeChaleurFilters from '@/hooks/useReseauxDeChaleurFilters';
-import { gestionnairesFilters } from '@/services';
+import { gestionnairesFilters } from '@/modules/reseaux/constants';
 
 export type ReseauxDeChaleurFiltersProps = React.HTMLAttributes<HTMLDivElement> & {
   regionsList?: { name: string; coord: string }[];

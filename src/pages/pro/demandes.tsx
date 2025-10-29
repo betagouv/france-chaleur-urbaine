@@ -31,12 +31,12 @@ import Tooltip from '@/components/ui/Tooltip';
 import { useFetch } from '@/hooks/useApi';
 import { toastErrors } from '@/modules/notification';
 import { withAuthentication } from '@/server/authentication';
-import { demandsExportColumns, exportsParams } from '@/types/Export';
 import { DEMANDE_STATUS, type DemandStatus } from '@/types/enum/DemandSatus';
 import type { Point } from '@/types/Point';
 import type { Demand } from '@/types/Summary/Demand';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
+import type { ExportColumn } from '@/utils/export';
 import { putFetchJSON } from '@/utils/network';
 import { upperCaseFirstChar } from '@/utils/strings';
 import { ObjectEntries, ObjectKeys } from '@/utils/typescript';
@@ -46,6 +46,63 @@ type MapCenterLocation = {
   zoom: number;
   flyTo?: boolean;
 };
+
+export const demandsExportColumns: ExportColumn<Demand>[] = [
+  {
+    accessorKey: 'Status',
+    name: 'Statut',
+  },
+  {
+    accessorFn: (demand) => (demand['Prise de contact'] ? 'Oui' : 'Non'),
+    name: 'Prospect recontacté',
+  },
+  {
+    accessorFn: (demand) => `${demand.Prénom ? demand.Prénom : ''} ${demand.Nom}`,
+    name: 'Nom',
+  },
+  { accessorKey: 'Mail', name: 'Mail' },
+  { accessorKey: 'Téléphone', name: 'Téléphone' },
+  { accessorKey: 'Adresse', name: 'Adresse' },
+  {
+    accessorKey: 'en PDP',
+    name: 'En PDP',
+  },
+  { accessorKey: 'Date demandes', name: 'Date de demande' },
+  { accessorKey: 'Structure', name: 'Type' },
+  { accessorKey: 'Établissement', name: 'Structure' },
+  {
+    accessorKey: 'Mode de chauffage',
+    name: 'Mode de chauffage',
+  },
+  {
+    accessorKey: 'Type de chauffage',
+    name: 'Type de chauffage',
+  },
+  {
+    accessorFn: (demand) =>
+      demand['Gestionnaire Distance au réseau'] === undefined ? demand['Distance au réseau'] : demand['Gestionnaire Distance au réseau'],
+    name: 'Distance au réseau (m)',
+  },
+  { accessorKey: 'Identifiant réseau', name: 'ID réseau le plus proche' },
+  { accessorKey: 'Nom réseau', name: 'Nom du réseau le plus proche' },
+  {
+    accessorFn: (demand) => (demand['Gestionnaire Logement'] === undefined ? demand.Logement : demand['Gestionnaire Logement']),
+    name: 'Nb logements',
+  },
+  {
+    accessorKey: 'Surface en m2',
+    name: 'Surface en m2',
+  },
+  {
+    accessorFn: (demand) => (demand['Gestionnaire Conso'] === undefined ? demand.Conso : demand['Gestionnaire Conso']),
+    name: 'Conso gaz (MWh)',
+  },
+  { accessorKey: 'Commentaire', name: 'Commentaires' },
+  {
+    accessorKey: 'Affecté à',
+    name: 'Affecté à',
+  },
+];
 
 const displayModeDeChauffage = (demand: Demand) => {
   const modeDeChauffage = demand['Mode de chauffage']?.toLowerCase()?.trim();
@@ -457,6 +514,17 @@ function DemandesNew(): React.ReactElement {
     );
   };
 
+  const buildSheetData = useCallback(
+    () => [
+      {
+        columns: demandsExportColumns,
+        data: demands,
+        name: 'demandes',
+      },
+    ],
+    [demands]
+  );
+
   return (
     <SimplePage
       title="Suivi des demandes"
@@ -497,25 +565,7 @@ function DemandesNew(): React.ReactElement {
               {index < Object.keys(quickFilterPresets).length - 1 && <VerticalDivider className="hidden md:block" />}
             </Fragment>
           ))}
-          <ButtonExport
-            filename={`${exportsParams.demands.filename}.xlsx`}
-            sheets={[
-              {
-                data: demands.map((demand) => {
-                  const row: Record<string, any> = {};
-                  demandsExportColumns.forEach((col) => {
-                    const header = col.header.replace(/<[^>]*>/g, '');
-                    const value = typeof col.value === 'function' ? (col.value as any)(demand) : (demand as any)[col.value];
-                    row[header] = value;
-                  });
-                  return row;
-                }),
-                name: 'demandes',
-              },
-            ]}
-            className="ml-auto mr-2w"
-            priority="secondary"
-          >
+          <ButtonExport filename="demandes_fcu.xlsx" sheets={buildSheetData} className="ml-auto mr-2w" priority="secondary">
             Exporter
           </ButtonExport>
         </div>
