@@ -9,6 +9,7 @@ This project uses a unified `.ai/` folder to configure all AI tools (Claude Code
 ```
 .ai/
 ├── AGENTS.md              # This file - main configuration
+├── index.yaml             # AI context index (load this first)
 ├── config.jsonc           # Configuration (committed, supports comments)
 ├── cli                    # Plugin manager CLI
 ├── context/               # Project knowledge and guidelines
@@ -33,11 +34,11 @@ Run `.ai/cli plugins add lang-node` to add Node.js context, for example.
 
 When working on this codebase, you should:
 
-1. **Read this file first** - It contains the main project directives
-2. **Check context folders** - Language/framework-specific guidelines are in `.ai/context/<language>/`
-3. **Look for local documentation** - Each module may have:
-   - `README.md` - Module overview and usage
-   - `AGENTS.md` or `CLAUDE.md` - AI-specific directives for that module
+1. **Load `.ai/index.yaml` first** - Contains token-optimized context index
+2. **Check context files** - Load relevant files from `.ai/context/` based on task
+3. **Look for module docs** - Each module may have:
+   - `README.md` - Module overview
+   - `AGENTS.md` - AI-specific directives
 
 **Example**: When working in a Node.js module:
 - Read `.ai/context/node/` for Node.js best practices
