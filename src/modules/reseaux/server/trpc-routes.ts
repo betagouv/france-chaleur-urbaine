@@ -8,7 +8,7 @@ import {
   zUpdateReseauEnConstructionInput,
   zUpdateReseauInput,
 } from '@/modules/reseaux/constants';
-import { routeRole, router } from '@/modules/trpc/server';
+import { route, routeRole, router } from '@/modules/trpc/server';
 
 import * as reseauxService from './service';
 
@@ -60,6 +60,10 @@ export const reseauxRouter = router({
   }),
   deleteNetwork: adminRoute.input(zDeleteNetworkInput).mutation(async ({ input }) => {
     return await reseauxService.deleteNetwork(input.id as number, input.type);
+  }),
+  // Route publique pour lister tous les réseaux (utilisé pour la comparaison)
+  listNetworks: route.query(async () => {
+    return await reseauxService.listNetworks();
   }),
   perimetreDeDeveloppementPrioritaire: perimetreDeDeveloppementPrioritaireRouter,
   // Sous-routeurs par type

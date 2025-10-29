@@ -15,7 +15,8 @@ import Link from '@/components/ui/Link';
 import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
 import Text from '@/components/ui/Text';
 import useReseauxDeChaleurFilters, { type FilterWithLimits } from '@/hooks/useReseauxDeChaleurFilters';
-import { gestionnairesFilters, useServices } from '@/services';
+import trpc from '@/modules/trpc/client';
+import { gestionnairesFilters } from '@/services';
 import type { NetworkToCompare } from '@/types/Summary/Network';
 import { isDefined } from '@/utils/core';
 import { type Interval, intervalsEqual } from '@/utils/interval';
@@ -227,10 +228,9 @@ const PercentageCell: ColumnDefTemplate<CellContext<NetworkToCompare, any>> = ({
 };
 
 const NetworksList = () => {
-  const { networksService } = useServices();
+  const { data: allNetworks = [], isLoading } = trpc.reseaux.listNetworks.useQuery();
   const [isDrawerOpened, toggleDrawer] = useState<boolean>(false);
   const [regionsList, setRegionsList] = useState<ReseauxDeChaleurFiltersProps['regionsList']>([]);
-  const [allNetworks, setAllNetworks] = useState<NetworkToCompare[]>([]);
   const [searchValue, setSearchValue] = useState<string>('');
   const { filters: objectFilters, nbFilters } = useReseauxDeChaleurFilters();
 
@@ -254,7 +254,29 @@ const NetworksList = () => {
   }, [allNetworks, objectFilters, searchValue]);
 
   const [dataToDisplay, setDataToDisplay] = useState<DataToDisplay>('general');
-  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    if (!allNetworks.length) {
+      return;
+    }
+
+    const newRegionsList: ReseauxDeChaleurFiltersProps['regionsList'] = [];
+    allNetworks.forEach((network) => {
+      if (!newRegionsList.find(({ name }) => name === network.region.trim())) {
+        newRegionsList.push({ coord: `${network.lon},${network.lat}`, name: network.region.trim() });
+      } else {
+        const index = newRegionsList.findIndex(({ name }) => name === network.region.trim());
+        const existingCoords = newRegionsList[index].coord.split(',');
+        // Calculate average position between existing and new coordinates
+        const avgLon = (parseFloat(existingCoords[0]) + network.lon) / 2;
+        const avgLat = (parseFloat(existingCoords[1]) + network.lat) / 2;
+        newRegionsList[index].coord = `${avgLon},${avgLat}`;
+      }
+    });
+
+    newRegionsList.sort((a, b) => a.name.localeCompare(b.name));
+    setRegionsList(newRegionsList);
+  }, [allNetworks]);
 
   const allNetworkColumns: ColumnDef<NetworkToCompare>[] = useMemo(
     () => [
@@ -442,41 +464,6 @@ const NetworksList = () => {
     });
   }, [dataToDisplay, allNetworkColumns]);
 
-  useEffect(() => {
-    if (loaded) {
-      return;
-    }
-    void (async () => {
-      try {
-        const networks: NetworkToCompare[] = await networksService.fetch();
-        setAllNetworks(networks);
-
-        const newRegionsList: ReseauxDeChaleurFiltersProps['regionsList'] = [];
-        networks.forEach((network) => {
-          if (!newRegionsList.find(({ name }) => name === network.region.trim())) {
-            newRegionsList.push({ coord: `${network.lon},${network.lat}`, name: network.region.trim() });
-          } else {
-            const index = newRegionsList.findIndex(({ name }) => name === network.region.trim());
-            const existingCoords = newRegionsList[index].coord.split(',');
-            // Calculate average position between existing and new coordinates
-            const avgLon = (parseFloat(existingCoords[0]) + network.lon) / 2;
-            const avgLat = (parseFloat(existingCoords[1]) + network.lat) / 2;
-            newRegionsList[index].coord = `${avgLon},${avgLat}`;
-          }
-        });
-
-        newRegionsList.sort((a, b) => a.name.localeCompare(b.name));
-        setRegionsList(newRegionsList);
-
-        setLoaded(true);
-      } finally {
-        setTimeout(() => {
-          setLoaded(true);
-        });
-      }
-    })();
-  }, []);
-
   return (
     <NetworksListContainer>
       <Drawer open={isDrawerOpened} onClose={() => toggleDrawer(false)} direction="right" handleOnly={true}>
@@ -490,7 +477,7 @@ const NetworksList = () => {
       </Drawer>
       <Box py="10w" className="fr-container">
         <Box display="flex" gap="16px" flexWrap="wrap" flexDirection="row" alignItems="center" justifyContent="space-between" pb="4w">
-          <Text fontWeight="bold">{loaded ? filteredNetworks.length : '-'}&nbsp;réseaux</Text>
+          <Text fontWeight="bold">{isLoading ? '-' : filteredNetworks.length}&nbsp;réseaux</Text>
           <Box display="flex" flexWrap="wrap" flexDirection="row" alignItems="flex-end" gap="16px">
             <Button priority="secondary" size="medium" onClick={() => toggleDrawer(true)}>
               <Icon size="md" name="fr-icon-filter-line" color="var(--text-action-high-blue-france)" />
@@ -550,7 +537,7 @@ const NetworksList = () => {
           <TableSimple
             columns={networkColumns}
             data={filteredNetworks}
-            loading={!loaded}
+            loading={isLoading}
             padding="sm"
             rowHeight={124}
             initialSortingState={[{ desc: false, id: 'Identifiant reseau' }]}
