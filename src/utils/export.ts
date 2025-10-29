@@ -12,7 +12,7 @@ interface ExportColumn<T extends Record<string, any>> {
 interface SheetData<T extends Record<string, any>> {
   data: T[];
   name: string;
-  columns: ExportColumn<T>[];
+  columns?: ExportColumn<T>[];
 }
 
 const processData = <T extends Record<string, any>>(items: T[], columns: ExportColumn<T>[]): Record<string, any>[] => {

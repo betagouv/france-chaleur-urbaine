@@ -1,4 +1,5 @@
 import type { ColumnFiltersState, SortingState } from '@tanstack/react-table';
+import dynamic from 'next/dynamic';
 import { useQueryState } from 'nuqs';
 import { useCallback, useMemo, useState } from 'react';
 
@@ -6,7 +7,6 @@ import UserForm from '@/components/Admin/UserForm';
 import UserRoleBadge from '@/components/Admin/UserRoleBadge';
 import FCUTagAutocomplete from '@/components/form/FCUTagAutocomplete';
 import SimplePage from '@/components/shared/page/SimplePage';
-import AsyncButton from '@/components/ui/AsyncButton';
 import Badge from '@/components/ui/Badge';
 import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
@@ -20,7 +20,7 @@ import useCrud from '@/hooks/useCrud';
 import { notify, toastErrors } from '@/modules/notification';
 import type { UsersResponse } from '@/pages/api/admin/users/[[...slug]]';
 import { withAuthentication } from '@/server/authentication';
-import { useServices } from '@/services';
+import { exportsParams, usersExportColumns } from '@/types/Export';
 import type { UserRole } from '@/types/enum/UserRole';
 import { postFetchJSON } from '@/utils/network';
 import { compareFrenchStrings } from '@/utils/strings';
@@ -51,7 +51,7 @@ const initialColumnFilters: ColumnFiltersState = [
 ];
 
 export default function ManageUsers() {
-  const { exportService } = useServices();
+  const ButtonExport = useMemo(() => dynamic(() => import('@/components/ui/ButtonExport'), { ssr: false }), []);
   const [userId, setUserId] = useQueryState('userId');
   const [nbUsersFilter, setNbUsersFilter] = useState<number>(0);
 
@@ -283,9 +283,32 @@ export default function ManageUsers() {
           padding="sm"
           loading={isLoading}
         />
-        <AsyncButton size="small" onClick={async () => exportService.exportXLSX('obsoleteUsers')}>
+        <ButtonExport
+          size="small"
+          filename={`${exportsParams.obsoleteUsers.filename}.xlsx`}
+          sheets={[
+            {
+              data: (users || [])
+                .filter((u) => {
+                  const sixMonthsAgo = new Date();
+                  sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+                  return !u.last_connection || new Date(u.created_at as any) < sixMonthsAgo;
+                })
+                .map((user) => {
+                  const row: Record<string, any> = {};
+                  usersExportColumns.forEach((col) => {
+                    const header = col.header.replace(/<[^>]*>/g, '');
+                    const value = typeof col.value === 'function' ? (col.value as any)(user) : (user as any)[col.value];
+                    row[header] = value;
+                  });
+                  return row;
+                }),
+              name: 'utilisateurs_obsoletes',
+            },
+          ]}
+        >
           Exporter la liste des comptes obsolètes (connexion de plus de 6 mois ou nulle)
-        </AsyncButton>
+        </ButtonExport>
       </Box>
     </SimplePage>
   );

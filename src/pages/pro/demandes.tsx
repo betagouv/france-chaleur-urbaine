@@ -1,6 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import type { ColumnFiltersState } from '@tanstack/react-table';
 import type { Virtualizer } from '@tanstack/react-virtual';
+import dynamic from 'next/dynamic';
 import { Fragment, type RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { MapGeoJSONFeature, MapRef } from 'react-map-gl/maplibre';
 
@@ -17,7 +18,6 @@ import type { AdresseEligible } from '@/components/Map/layers/adressesEligibles'
 import { Map } from '@/components/Map/Map.lazy';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import SimplePage from '@/components/shared/page/SimplePage';
-import AsyncButton from '@/components/ui/AsyncButton';
 import Badge from '@/components/ui/Badge';
 import { VerticalDivider } from '@/components/ui/Divider';
 import Icon from '@/components/ui/Icon';
@@ -31,7 +31,7 @@ import Tooltip from '@/components/ui/Tooltip';
 import { useFetch } from '@/hooks/useApi';
 import { toastErrors } from '@/modules/notification';
 import { withAuthentication } from '@/server/authentication';
-import { useServices } from '@/services';
+import { demandsExportColumns, exportsParams } from '@/types/Export';
 import { DEMANDE_STATUS, type DemandStatus } from '@/types/enum/DemandSatus';
 import type { Point } from '@/types/Point';
 import type { Demand } from '@/types/Summary/Demand';
@@ -130,7 +130,7 @@ function DemandesNew(): React.ReactElement {
   const queryClient = useQueryClient();
   const mapRef = useRef<MapRef>(null) as RefObject<MapRef>;
   const virtualizerRef = useRef<Virtualizer<HTMLDivElement, Element>>(null) as RefObject<Virtualizer<HTMLDivElement, Element>>;
-  const { exportService } = useServices();
+  const ButtonExport = useMemo(() => dynamic(() => import('@/components/ui/ButtonExport'), { ssr: false }), []);
   const [selectedDemandId, setSelectedDemandId] = useState<string | null>(null);
   const [modalDemand, setModalDemand] = useState<Demand | null>(null);
   const tableRowSelection = useMemo(() => {
@@ -497,9 +497,27 @@ function DemandesNew(): React.ReactElement {
               {index < Object.keys(quickFilterPresets).length - 1 && <VerticalDivider className="hidden md:block" />}
             </Fragment>
           ))}
-          <AsyncButton onClick={async () => exportService.exportXLSX('demands')} className="ml-auto mr-2w">
+          <ButtonExport
+            filename={`${exportsParams.demands.filename}.xlsx`}
+            sheets={[
+              {
+                data: demands.map((demand) => {
+                  const row: Record<string, any> = {};
+                  demandsExportColumns.forEach((col) => {
+                    const header = col.header.replace(/<[^>]*>/g, '');
+                    const value = typeof col.value === 'function' ? (col.value as any)(demand) : (demand as any)[col.value];
+                    row[header] = value;
+                  });
+                  return row;
+                }),
+                name: 'demandes',
+              },
+            ]}
+            className="ml-auto mr-2w"
+            priority="secondary"
+          >
             Exporter
-          </AsyncButton>
+          </ButtonExport>
         </div>
         <ResizablePanelGroup direction="horizontal" className="gap-4">
           <ResizablePanel defaultSize={66}>
