@@ -1,4 +1,5 @@
 import { appRouter as appModuleRouter } from '@/modules/app/server/trpc-routes';
+import { authRouter } from '@/modules/auth/server/trpc-routes';
 import { bdnbRouter } from '@/modules/bdnb/server/trpc-routes';
 import { dataRouter } from '@/modules/data/server/trpc-routes';
 import { diagnosticRouter } from '@/modules/diagnostic/server/trpc-routes';
@@ -16,6 +17,7 @@ import { route, router } from './connection';
  */
 export const appRouter = router({
   app: appModuleRouter,
+  auth: authRouter,
   bdnb: bdnbRouter,
   data: dataRouter,
   diagnostic: diagnosticRouter,

@@ -7,19 +7,19 @@ import CenterLayout from '@/components/shared/page/CenterLayout';
 import Alert from '@/components/ui/Alert';
 import Heading from '@/components/ui/Heading';
 import { toastErrors } from '@/modules/notification';
-import { useServices } from '@/services';
+import trpc from '@/modules/trpc/client';
 
 const resetPasswordSchema = z.object({
   email: z.string().email('Veuillez entrer une adresse email valide'),
 });
 
 const ResetPasswordForm = () => {
-  const { passwordService } = useServices();
+  const resetPasswordMutation = trpc.auth.resetPassword.useMutation();
   const [success, setSuccess] = React.useState(false);
 
   const { Form, EmailInput, Submit } = useForm({
     onSubmit: toastErrors(async ({ value }) => {
-      await passwordService.resetPassword(value.email);
+      await resetPasswordMutation.mutateAsync({ email: value.email });
       setSuccess(true);
     }),
     schema: resetPasswordSchema,

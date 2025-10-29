@@ -5,7 +5,7 @@ import useForm from '@/components/form/react-form/useForm';
 import CenterLayout from '@/components/shared/page/CenterLayout';
 import Heading from '@/components/ui/Heading';
 import { toastErrors } from '@/modules/notification';
-import { useServices } from '@/services';
+import trpc from '@/modules/trpc/client';
 
 const passwordSchema = z
   .object({
@@ -23,19 +23,15 @@ const passwordSchema = z
   });
 
 const NewPasswordForm = ({ token }: { token: string }) => {
-  const { passwordService } = useServices();
+  const changePasswordMutation = trpc.auth.changePassword.useMutation();
   const router = useRouter();
 
   const { Form, PasswordInput, Submit } = useForm({
     onSubmit: toastErrors(async ({ value }) => {
-      try {
-        await passwordService.changePassword(token, value.password);
-        void router.push(
-          `/connexion?notify=success:${encodeURIComponent('Mot de passe réinitialisé avec succès. Vous pouvez maintenant vous connecter.')}`
-        );
-      } catch (e: any) {
-        throw new Error(e.response.data.error?.issues?.[0]?.message ?? e.response.data.message);
-      }
+      await changePasswordMutation.mutateAsync({ password: value.password, token });
+      void router.push(
+        `/connexion?notify=success:${encodeURIComponent('Mot de passe réinitialisé avec succès. Vous pouvez maintenant vous connecter.')}`
+      );
     }),
     schema: passwordSchema,
   });

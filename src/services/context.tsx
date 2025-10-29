@@ -1,12 +1,10 @@
 import React from 'react';
 
 import type { ExportService } from './export';
-import type { PasswordService } from './password';
 import type { SuggestionService } from './suggestion';
 
 type ServiceContextProps = {
   suggestionService: SuggestionService;
-  passwordService: PasswordService;
   exportService: ExportService;
 };
 export const ServicesContext = React.createContext<ServiceContextProps | undefined>(undefined);
