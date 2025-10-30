@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 
 import IframeWrapper from '@/components/IframeWrapper';
-import { Map } from '@/components/Map/Map.lazy';
+import Map from '@/components/Map/Map';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import { legendURLKeyToLegendFeature } from '@/components/Map/map-layers';
 import useRouterReady from '@/hooks/useRouterReady';

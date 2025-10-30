@@ -1,6 +1,7 @@
 import { usePrevious } from '@react-hookz/web';
 import { useQueryClient } from '@tanstack/react-query';
 import type { Virtualizer } from '@tanstack/react-virtual';
+import dynamic from 'next/dynamic';
 import { Fragment, type RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { MapGeoJSONFeature } from 'react-map-gl/maplibre';
 
@@ -13,7 +14,6 @@ import Contact from '@/components/Manager/Contact';
 import Tag from '@/components/Manager/Tag';
 import type { AdresseEligible } from '@/components/Map/layers/adressesEligibles';
 import { useMapEventBus } from '@/components/Map/layers/common';
-import { Map } from '@/components/Map/Map.lazy';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import SimplePage from '@/components/shared/page/SimplePage';
 import AsyncButton from '@/components/ui/AsyncButton';
@@ -40,6 +40,8 @@ import { stopPropagation } from '@/utils/events';
 import { deleteFetchJSON, putFetchJSON } from '@/utils/network';
 import { formatMWh, upperCaseFirstChar } from '@/utils/strings';
 import { ObjectEntries, ObjectKeys } from '@/utils/typescript';
+
+const Map = dynamic(() => import('@/components/Map/Map'), { ssr: false });
 
 type MapCenterLocation = {
   center: Point;

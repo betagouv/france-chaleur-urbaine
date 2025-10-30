@@ -1,7 +1,7 @@
 import { fr } from '@codegouvfr/react-dsfr';
+import dynamic from 'next/dynamic';
 import type { ReactElement } from 'react';
 
-import { Map } from '@/components/Map/Map.lazy';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import Accordion from '@/components/ui/Accordion';
 import Box, { type BoxProps } from '@/components/ui/Box';
@@ -13,12 +13,13 @@ import Tooltip from '@/components/ui/Tooltip';
 import type { Network } from '@/types/Summary/Network';
 import { isDefined } from '@/utils/core';
 import { formatMW, formatMWh, prettyFormatNumber } from '@/utils/strings';
-
 import ClassedNetwork from './ClassedNetwork';
 import ColdNetwork from './ColdNetwork';
 import EligibilityTestBox from './EligibilityTestBox';
 import EnergiesChart from './EnergiesChart';
 import { BoxSection, InformationsComplementairesBox } from './Network.styles';
+
+const Map = dynamic(() => import('@/components/Map/Map'), { ssr: false });
 
 const getFullURL = (link: string) => {
   return link.startsWith('http://') || link.startsWith('https://') ? link : `https://${link}`;
