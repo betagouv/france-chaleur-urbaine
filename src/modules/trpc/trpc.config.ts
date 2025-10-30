@@ -30,7 +30,7 @@ export async function createContext(opts: CreateNextContextOptions) {
 /**
  * This is the primary router for your server.
  *
- * All routers added in /modules/trpc/routers should be manually added here.
+ * All routers added in /modules/[name]/server/trpc-routes.ts should be manually added here.
  */
 export const appRouter = router({
   app: appModuleRouter,
@@ -51,6 +51,3 @@ export const appRouter = router({
   reseaux: reseauxRouter,
   tiles: tilesRouter,
 });
-
-// Export type definition of API
-export type AppRouter = typeof appRouter;
