@@ -103,19 +103,6 @@ const configFunctions = [
       'style-src': ["'self'", 'https:', "'unsafe-inline'", 'https://*.hotjar.com'],
       'worker-src': ["'self'", 'blob:'],
     },
-    iframes: [
-      // Attention: keep in sync with src/services/iframe.ts
-      '/carte-collectivite',
-      '/charleville-mezieres',
-      '/dalkia',
-      '/engie',
-      '/form',
-      '/idex',
-      '/map',
-      '/page-reseaux/:network',
-      '/viaseva',
-      '/iframe/potentiel-creation-reseau',
-    ],
   }),
 ];
 
@@ -169,6 +156,52 @@ const nextConfig: NextConfig = {
   // reactStrictMode: true,
   async redirects() {
     return [
+      // iframe pages moved under /iframe/*
+      {
+        destination: '/iframe/carte-collectivite',
+        permanent: true,
+        source: '/carte-collectivite',
+      },
+      {
+        destination: '/iframe/charleville-mezieres',
+        permanent: true,
+        source: '/charleville-mezieres',
+      },
+      {
+        destination: '/iframe/dalkia',
+        permanent: true,
+        source: '/dalkia',
+      },
+      {
+        destination: '/iframe/engie',
+        permanent: true,
+        source: '/engie',
+      },
+      {
+        destination: '/iframe/form',
+        permanent: true,
+        source: '/form',
+      },
+      {
+        destination: '/iframe/idex',
+        permanent: true,
+        source: '/idex',
+      },
+      {
+        destination: '/iframe/map',
+        permanent: true,
+        source: '/map',
+      },
+      {
+        destination: '/iframe/page-reseaux/:network',
+        permanent: true,
+        source: '/page-reseaux/:network',
+      },
+      {
+        destination: '/iframe/viaseva',
+        permanent: true,
+        source: '/viaseva',
+      },
       {
         destination: '/documentation/guide-france-chaleur-urbaine.pdf',
         permanent: false,
