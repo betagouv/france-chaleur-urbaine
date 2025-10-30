@@ -118,6 +118,7 @@ const packagesSet = new Set<string>([
 const excludedOptimizeImports = new Set<string>([
   // Known to pull native optional deps and break with native dependencies like "better-sqlite3"
   'knex',
+  'pg', // panic with scalingo only : Error [TurbopackInternalError]: The packages specified in the 'transpilePackages' conflict with the 'serverExternalPackages': ["pg"]
 ]);
 
 const optimizePackageImports = Array.from(packagesSet).filter((name) => !excludedOptimizeImports.has(name));
