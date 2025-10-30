@@ -17,7 +17,7 @@ export const zCredentialsSchema = z.object({
   accept_cgu: z.boolean().refine((val) => val === true, {
     error: "Veuillez accepter les conditions générales d'utilisation",
   }),
-  email: z.string().email("L'adresse email n'est pas valide").max(100, "L'email ne peut pas dépasser 100 caractères"),
+  email: z.email("L'adresse email n'est pas valide").max(100, "L'email ne peut pas dépasser 100 caractères"),
   optin_newsletter: z.boolean(),
   password: z
     .string()
@@ -29,7 +29,7 @@ export type CredentialsSchema = z.infer<typeof zCredentialsSchema>;
 
 export const zIdentitySchema = z
   .object({
-    email: z.string().email("L'adresse email n'est pas valide"),
+    email: z.email("L'adresse email n'est pas valide"),
     first_name: z.string().min(1, 'Le prénom est obligatoire'),
     last_name: z.string().min(1, 'Le nom de famille est obligatoire'),
     phone: z

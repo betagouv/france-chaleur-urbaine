@@ -23,7 +23,7 @@ const validationSchema = z
     demandArea: z.number().optional(),
     demandCompanyName: z.string().optional(),
     demandCompanyType: z.string().optional(),
-    email: z.string().email("Votre adresse email n'est pas valide").min(1, 'Veuillez renseigner votre adresse email'),
+    email: z.email("Votre adresse email n'est pas valide").min(1, 'Veuillez renseigner votre adresse email'),
     firstName: z.string().min(1, 'Veuillez renseigner votre prénom'),
     heatingEnergy: z
       .string()
