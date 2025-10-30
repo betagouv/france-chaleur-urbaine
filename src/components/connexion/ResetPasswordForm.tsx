@@ -10,16 +10,16 @@ import { toastErrors } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
 
 const resetPasswordSchema = z.object({
-  email: z.string().email('Veuillez entrer une adresse email valide'),
+  email: z.email('Veuillez entrer une adresse email valide'),
 });
 
 const ResetPasswordForm = () => {
-  const resetPasswordMutation = trpc.auth.resetPassword.useMutation();
+  const { mutateAsync: requestPassword } = trpc.auth.resetPassword.useMutation();
   const [success, setSuccess] = React.useState(false);
 
   const { Form, EmailInput, Submit } = useForm({
     onSubmit: toastErrors(async ({ value }) => {
-      await resetPasswordMutation.mutateAsync({ email: value.email });
+      await requestPassword({ email: value.email });
       setSuccess(true);
     }),
     schema: resetPasswordSchema,

@@ -23,12 +23,12 @@ const passwordSchema = z
   });
 
 const NewPasswordForm = ({ token }: { token: string }) => {
-  const changePasswordMutation = trpc.auth.changePassword.useMutation();
+  const { mutateAsync: changePassword } = trpc.auth.changePassword.useMutation();
   const router = useRouter();
 
   const { Form, PasswordInput, Submit } = useForm({
     onSubmit: toastErrors(async ({ value }) => {
-      await changePasswordMutation.mutateAsync({ password: value.password, token });
+      await changePassword({ password: value.password, token });
       void router.push(
         `/connexion?notify=success:${encodeURIComponent('Mot de passe réinitialisé avec succès. Vous pouvez maintenant vous connecter.')}`
       );

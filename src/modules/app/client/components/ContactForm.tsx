@@ -14,7 +14,7 @@ const ContactForm = () => {
   const [defaultReason] = useQueryState('reason');
   const [sent, setSent] = React.useState(false);
 
-  const submitContactMutation = trpc.app.contact.create.useMutation({
+  const { mutateAsync: submitContactForm, isPending } = trpc.app.contact.create.useMutation({
     onSuccess: () => {
       setSent(true);
     },
@@ -32,7 +32,7 @@ const ContactForm = () => {
   const { Form, Field, FieldWrapper, Submit, form } = useForm({
     defaultValues,
     onSubmit: toastErrors(async ({ value }) => {
-      await submitContactMutation.mutateAsync(value);
+      await submitContactForm(value);
     }),
     schema: contactFormSchema,
   });
@@ -89,7 +89,7 @@ const ContactForm = () => {
           />
         </FieldWrapper>
         <FieldWrapper>
-          <Submit loading={submitContactMutation.isPending}>Envoyer</Submit>
+          <Submit loading={isPending}>Envoyer</Submit>
         </FieldWrapper>
       </Form>
     </>
