@@ -47,6 +47,26 @@ vi.mock('next/dynamic', () => ({
   },
 }));
 
+// Mock tRPC client to avoid provider requirements in tests
+vi.mock('@/modules/trpc/client', () => ({
+  __esModule: true,
+  default: {
+    // Minimal context hook to satisfy consumers that read it
+    useContext: () => ({}),
+    // Provide utils with a minimal client shape used in components
+    useUtils: () => ({
+      client: {
+        reseaux: {
+          cityNetwork: { query: vi.fn().mockResolvedValue({}) },
+          eligibilityStatus: { query: vi.fn().mockResolvedValue({}) },
+        },
+      },
+    }),
+    // No-op HOC: returns the component unchanged
+    withTRPC: (App: any) => (props: any) => React.createElement(App, props),
+  },
+}));
+
 // Mock fetch with proper responses
 global.fetch = vi.fn().mockImplementation((url: string) => {
   // Block external URLs to prevent real requests
