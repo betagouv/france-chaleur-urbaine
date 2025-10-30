@@ -158,6 +158,11 @@ const nextConfig: NextConfig = {
     return [
       // iframe pages moved under /iframe/*
       {
+        destination: '/iframe/carte-reseaux-de-chaleur-et-froid',
+        permanent: true,
+        source: '/carte-reseaux-de-chaleur-et-froid',
+      },
+      {
         destination: '/iframe/carte-collectivite',
         permanent: true,
         source: '/carte-collectivite',

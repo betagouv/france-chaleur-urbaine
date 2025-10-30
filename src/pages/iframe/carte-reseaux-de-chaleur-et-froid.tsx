@@ -1,5 +1,5 @@
 import IframeWrapper from '@/components/IframeWrapper';
-import { Map } from '@/components/Map/Map.lazy';
+import Map from '@/components/Map/Map';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import SEO from '@/components/SEO';
 
