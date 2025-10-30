@@ -43,7 +43,7 @@ const validationSchema = z
     const displayIssue = (field: string, message: string) => {
       console.error(field, message);
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         message,
         path: [field],
       });

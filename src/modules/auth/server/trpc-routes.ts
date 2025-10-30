@@ -20,7 +20,7 @@ export const authRouter = router({
             return decodedToken;
           } catch (_err) {
             ctx.addIssue({
-              code: z.ZodIssueCode.custom,
+              code: 'custom',
               message: 'Lien invalide. Veuillez réinitialiser votre mot de passe.',
             });
 
