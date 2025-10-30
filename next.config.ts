@@ -131,7 +131,8 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     // https://nextjs.org/docs/app/api-reference/config/next-config-js/optimizePackageImports
-    optimizePackageImports,
+    // disabled because it adds 480 MB to the Scalingo image size by putting lots of .map files in .next ...
+    // optimizePackageImports,
   },
   async headers() {
     return [
