@@ -41,6 +41,8 @@ import { putFetchJSON } from '@/utils/network';
 import { upperCaseFirstChar } from '@/utils/strings';
 import { ObjectEntries, ObjectKeys } from '@/utils/typescript';
 
+const ButtonExport = dynamic(() => import('@/components/ui/ButtonExport'), { ssr: false });
+
 type MapCenterLocation = {
   center: Point;
   zoom: number;
@@ -187,7 +189,6 @@ function DemandesNew(): React.ReactElement {
   const queryClient = useQueryClient();
   const mapRef = useRef<MapRef>(null) as RefObject<MapRef>;
   const virtualizerRef = useRef<Virtualizer<HTMLDivElement, Element>>(null) as RefObject<Virtualizer<HTMLDivElement, Element>>;
-  const ButtonExport = useMemo(() => dynamic(() => import('@/components/ui/ButtonExport'), { ssr: false }), []);
   const [selectedDemandId, setSelectedDemandId] = useState<string | null>(null);
   const [modalDemand, setModalDemand] = useState<Demand | null>(null);
   const tableRowSelection = useMemo(() => {

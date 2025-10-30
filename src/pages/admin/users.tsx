@@ -26,6 +26,8 @@ import { postFetchJSON } from '@/utils/network';
 import { compareFrenchStrings } from '@/utils/strings';
 import type { AdminUsersStats } from '../api/admin/users-stats';
 
+const ButtonExport = dynamic(() => import('@/components/ui/ButtonExport'), { ssr: false });
+
 const startImpersonation = toastErrors(async (impersonateConfig: { role: UserRole; gestionnaires?: string[] | null }) => {
   await postFetchJSON('/api/admin/impersonate', {
     role: impersonateConfig.role,
@@ -65,7 +67,6 @@ const usersExportColumns: ExportColumn<UsersResponse['listItem']>[] = [
 ];
 
 export default function ManageUsers() {
-  const ButtonExport = useMemo(() => dynamic(() => import('@/components/ui/ButtonExport'), { ssr: false }), []);
   const [userId, setUserId] = useQueryState('userId');
   const [nbUsersFilter, setNbUsersFilter] = useState<number>(0);
 
