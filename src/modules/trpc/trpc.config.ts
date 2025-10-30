@@ -1,6 +1,7 @@
 import type { CreateNextContextOptions } from '@trpc/server/adapters/next';
 
 import { appRouter as appModuleRouter } from '@/modules/app/server/trpc-routes';
+import { authRouter } from '@/modules/auth/server/trpc-routes';
 import { bdnbRouter } from '@/modules/bdnb/server/trpc-routes';
 import buildContext from '@/modules/config/server/context-builder';
 import { dataRouter } from '@/modules/data/server/trpc-routes';
@@ -33,6 +34,7 @@ export async function createContext(opts: CreateNextContextOptions) {
  */
 export const appRouter = router({
   app: appModuleRouter,
+  auth: authRouter,
   bdnb: bdnbRouter,
   data: dataRouter,
   diagnostic: diagnosticRouter,
@@ -49,3 +51,6 @@ export const appRouter = router({
   reseaux: reseauxRouter,
   tiles: tilesRouter,
 });
+
+// Export type definition of API
+export type AppRouter = typeof appRouter;
