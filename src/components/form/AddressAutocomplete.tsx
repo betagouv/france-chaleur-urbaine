@@ -1,7 +1,7 @@
 import type React from 'react';
+import { clientConfig } from '@/client-config';
 import type { SuggestionItem, SuggestionResponse } from '@/types/Suggestions';
 import { fetchJSON } from '@/utils/network';
-
 import Autocomplete from './Autocomplete';
 
 export type AddressAutocompleteProps = Omit<
@@ -24,8 +24,7 @@ const AddressAutocomplete = ({
   ...props
 }: AddressAutocompleteProps) => {
   const fetchOptions = async (query: string) => {
-    const baseURL = process.env.NEXT_PUBLIC_BAN_API_BASE_URL as string;
-    const suggestions = await fetchJSON<SuggestionResponse>(baseURL, {
+    const suggestions = await fetchJSON<SuggestionResponse>(clientConfig.banApiBaseUrl, {
       params: {
         limit: limit.toString(),
         q: query,

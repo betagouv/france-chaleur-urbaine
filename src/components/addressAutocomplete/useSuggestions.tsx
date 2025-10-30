@@ -1,5 +1,6 @@
 import { useIsMounted } from '@react-hookz/web';
 import { useState } from 'react';
+import { clientConfig } from '@/client-config';
 import type { SuggestionItem, SuggestionResponse } from '@/types/Suggestions';
 import debounce from '@/utils/debounce';
 import { fetchJSON } from '@/utils/network';
@@ -31,8 +32,7 @@ const useSuggestions = ({ limit = 5, debounceTime = 300, minCharactersLength = 3
         return;
       }
       setStatus(Status.Loading);
-      const baseURL = process.env.NEXT_PUBLIC_BAN_API_BASE_URL as string;
-      const fetchedSuggestions = await fetchJSON<SuggestionResponse>(baseURL, {
+      const fetchedSuggestions = await fetchJSON<SuggestionResponse>(clientConfig.banApiBaseUrl, {
         params: {
           limit: limit.toString(),
           q: searchTerm,
