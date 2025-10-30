@@ -54,8 +54,17 @@ export const toastErrors = <Func extends (...args: any[]) => void | Promise<void
     try {
       await func(...args);
     } catch (err: any) {
-      notify('error', customError ? customError(err) : err?.message || err);
+      console.log('err', err?.data?.zodError);
+      const displayedMessage = customError
+        ? customError(err)
+        : getFirstZodError(err?.data?.zodError?.properties) || err?.message || String(err);
+      notify('error', displayedMessage);
       captureException(err);
     }
   };
+};
+
+const getFirstZodError = (properties?: any): string | undefined => {
+  if (!properties || typeof properties !== 'object') return undefined;
+  return Object.values<any>(properties)[0]?.errors[0];
 };
