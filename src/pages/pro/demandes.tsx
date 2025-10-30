@@ -1,6 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import type { ColumnFiltersState } from '@tanstack/react-table';
 import type { Virtualizer } from '@tanstack/react-virtual';
+import dynamic from 'next/dynamic';
 import { Fragment, type RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { MapGeoJSONFeature, MapRef } from 'react-map-gl/maplibre';
 
@@ -14,10 +15,8 @@ import DemandStatusBadge from '@/components/Manager/DemandStatusBadge';
 import Status from '@/components/Manager/Status';
 import Tag from '@/components/Manager/Tag';
 import type { AdresseEligible } from '@/components/Map/layers/adressesEligibles';
-import Map from '@/components/Map/Map';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import SimplePage from '@/components/shared/page/SimplePage';
-import AsyncButton from '@/components/ui/AsyncButton';
 import Badge from '@/components/ui/Badge';
 import { VerticalDivider } from '@/components/ui/Divider';
 import Icon from '@/components/ui/Icon';
@@ -31,21 +30,81 @@ import Tooltip from '@/components/ui/Tooltip';
 import { useFetch } from '@/hooks/useApi';
 import { toastErrors } from '@/modules/notification';
 import { withAuthentication } from '@/server/authentication';
-import { useServices } from '@/services';
 import { DEMANDE_STATUS, type DemandStatus } from '@/types/enum/DemandSatus';
 import type { Point } from '@/types/Point';
 import type { Demand } from '@/types/Summary/Demand';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
+import type { ExportColumn } from '@/utils/export';
 import { putFetchJSON } from '@/utils/network';
 import { upperCaseFirstChar } from '@/utils/strings';
 import { ObjectEntries, ObjectKeys } from '@/utils/typescript';
+
+const Map = dynamic(() => import('@/components/Map/Map'), { ssr: false });
+const ButtonExport = dynamic(() => import('@/components/ui/ButtonExport'), { ssr: false });
 
 type MapCenterLocation = {
   center: Point;
   zoom: number;
   flyTo?: boolean;
 };
+
+export const demandsExportColumns: ExportColumn<Demand>[] = [
+  {
+    accessorKey: 'Status',
+    name: 'Statut',
+  },
+  {
+    accessorFn: (demand) => (demand['Prise de contact'] ? 'Oui' : 'Non'),
+    name: 'Prospect recontacté',
+  },
+  {
+    accessorFn: (demand) => `${demand.Prénom ? demand.Prénom : ''} ${demand.Nom}`,
+    name: 'Nom',
+  },
+  { accessorKey: 'Mail', name: 'Mail' },
+  { accessorKey: 'Téléphone', name: 'Téléphone' },
+  { accessorKey: 'Adresse', name: 'Adresse' },
+  {
+    accessorKey: 'en PDP',
+    name: 'En PDP',
+  },
+  { accessorKey: 'Date demandes', name: 'Date de demande' },
+  { accessorKey: 'Structure', name: 'Type' },
+  { accessorKey: 'Établissement', name: 'Structure' },
+  {
+    accessorKey: 'Mode de chauffage',
+    name: 'Mode de chauffage',
+  },
+  {
+    accessorKey: 'Type de chauffage',
+    name: 'Type de chauffage',
+  },
+  {
+    accessorFn: (demand) =>
+      demand['Gestionnaire Distance au réseau'] === undefined ? demand['Distance au réseau'] : demand['Gestionnaire Distance au réseau'],
+    name: 'Distance au réseau (m)',
+  },
+  { accessorKey: 'Identifiant réseau', name: 'ID réseau le plus proche' },
+  { accessorKey: 'Nom réseau', name: 'Nom du réseau le plus proche' },
+  {
+    accessorFn: (demand) => (demand['Gestionnaire Logement'] === undefined ? demand.Logement : demand['Gestionnaire Logement']),
+    name: 'Nb logements',
+  },
+  {
+    accessorKey: 'Surface en m2',
+    name: 'Surface en m2',
+  },
+  {
+    accessorFn: (demand) => (demand['Gestionnaire Conso'] === undefined ? demand.Conso : demand['Gestionnaire Conso']),
+    name: 'Conso gaz (MWh)',
+  },
+  { accessorKey: 'Commentaire', name: 'Commentaires' },
+  {
+    accessorKey: 'Affecté à',
+    name: 'Affecté à',
+  },
+];
 
 const displayModeDeChauffage = (demand: Demand) => {
   const modeDeChauffage = demand['Mode de chauffage']?.toLowerCase()?.trim();
@@ -130,7 +189,6 @@ function DemandesNew(): React.ReactElement {
   const queryClient = useQueryClient();
   const mapRef = useRef<MapRef>(null) as RefObject<MapRef>;
   const virtualizerRef = useRef<Virtualizer<HTMLDivElement, Element>>(null) as RefObject<Virtualizer<HTMLDivElement, Element>>;
-  const { exportService } = useServices();
   const [selectedDemandId, setSelectedDemandId] = useState<string | null>(null);
   const [modalDemand, setModalDemand] = useState<Demand | null>(null);
   const tableRowSelection = useMemo(() => {
@@ -457,6 +515,17 @@ function DemandesNew(): React.ReactElement {
     );
   };
 
+  const buildSheetData = useCallback(
+    () => [
+      {
+        columns: demandsExportColumns,
+        data: demands,
+        name: 'demandes',
+      },
+    ],
+    [demands]
+  );
+
   return (
     <SimplePage
       title="Suivi des demandes"
@@ -497,9 +566,9 @@ function DemandesNew(): React.ReactElement {
               {index < Object.keys(quickFilterPresets).length - 1 && <VerticalDivider className="hidden md:block" />}
             </Fragment>
           ))}
-          <AsyncButton onClick={async () => exportService.exportXLSX('demands')} className="ml-auto mr-2w">
+          <ButtonExport filename="demandes_fcu.xlsx" sheets={buildSheetData} className="ml-auto mr-2w" priority="secondary">
             Exporter
-          </AsyncButton>
+          </ButtonExport>
         </div>
         <ResizablePanelGroup direction="horizontal" className="gap-4">
           <ResizablePanel defaultSize={66}>

@@ -1,4 +1,4 @@
-import withBundleAnalyzer from '@next/bundle-analyzer';
+import { createRequire } from 'node:module';
 import createMDX from '@next/mdx';
 import type { NextConfig } from 'next';
 
@@ -42,9 +42,6 @@ const configFunctions = [
 
     // Upload a larger set of source maps for prettier stack traces (increases build time)
     widenClientFileUpload: true,
-  }),
-  withBundleAnalyzer({
-    enabled: process.env.ANALYZE === 'true',
   }),
   withSecurityHeaders({
     csp: {
@@ -106,27 +103,36 @@ const configFunctions = [
       'style-src': ["'self'", 'https:', "'unsafe-inline'", 'https://*.hotjar.com'],
       'worker-src': ["'self'", 'blob:'],
     },
-    iframes: [
-      // Attention: keep in sync with src/services/iframe.ts
-      '/carte-collectivite',
-      '/charleville-mezieres',
-      '/dalkia',
-      '/engie',
-      '/form',
-      '/idex',
-      '/map',
-      '/page-reseaux/:network',
-      '/viaseva',
-      '/iframe/potentiel-creation-reseau',
-    ],
   }),
 ];
+
+// Build optimizePackageImports dynamically from package.json deps
+const requireFromHere = createRequire(import.meta.url);
+const pkgJson = requireFromHere('./package.json');
+const packagesSet = new Set<string>([
+  ...Object.keys(pkgJson.dependencies || {}),
+  ...Object.keys(pkgJson.optionalDependencies || {}),
+  ...Object.keys(pkgJson.peerDependencies || {}),
+]);
+
+const excludedOptimizeImports = new Set<string>([
+  // Known to pull native optional deps and break with native dependencies like "better-sqlite3"
+  'knex',
+  'pg', // panic with scalingo only : Error [TurbopackInternalError]: The packages specified in the 'transpilePackages' conflict with the 'serverExternalPackages': ["pg"]
+]);
+
+const optimizePackageImports = Array.from(packagesSet).filter((name) => !excludedOptimizeImports.has(name));
 
 const nextConfig: NextConfig = {
   assetPrefix: isGithubCI ? '/france-chaleur-urbaine/' : undefined,
   basePath: isGithubCI ? '/france-chaleur-urbaine' : undefined,
   compiler: {
     styledComponents: true,
+  },
+  experimental: {
+    // https://nextjs.org/docs/app/api-reference/config/next-config-js/optimizePackageImports
+    // disabled because it adds 480 MB to the Scalingo image size by putting lots of .map files in .next ...
+    // optimizePackageImports,
   },
   async headers() {
     return [
@@ -146,10 +152,63 @@ const nextConfig: NextConfig = {
     ];
   },
   pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
+  // https://nextjs.org/docs/app/api-reference/config/next-config-js/reactCompiler
+  reactCompiler: true,
   // too many conflicts with map draw listeners
   // reactStrictMode: true,
   async redirects() {
     return [
+      // iframe pages moved under /iframe/*
+      {
+        destination: '/iframe/carte-reseaux-de-chaleur-et-froid',
+        permanent: true,
+        source: '/carte-reseaux-de-chaleur-et-froid',
+      },
+      {
+        destination: '/iframe/carte-collectivite',
+        permanent: true,
+        source: '/carte-collectivite',
+      },
+      {
+        destination: '/iframe/charleville-mezieres',
+        permanent: true,
+        source: '/charleville-mezieres',
+      },
+      {
+        destination: '/iframe/dalkia',
+        permanent: true,
+        source: '/dalkia',
+      },
+      {
+        destination: '/iframe/engie',
+        permanent: true,
+        source: '/engie',
+      },
+      {
+        destination: '/iframe/form',
+        permanent: true,
+        source: '/form',
+      },
+      {
+        destination: '/iframe/idex',
+        permanent: true,
+        source: '/idex',
+      },
+      {
+        destination: '/iframe/map',
+        permanent: true,
+        source: '/map',
+      },
+      {
+        destination: '/iframe/page-reseaux/:network',
+        permanent: true,
+        source: '/page-reseaux/:network',
+      },
+      {
+        destination: '/iframe/viaseva',
+        permanent: true,
+        source: '/viaseva',
+      },
       {
         destination: '/documentation/guide-france-chaleur-urbaine.pdf',
         permanent: false,

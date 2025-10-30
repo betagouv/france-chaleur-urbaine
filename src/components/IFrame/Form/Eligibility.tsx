@@ -7,7 +7,7 @@ import { CheckEligibilityFormLabel, SelectEnergy } from '@/components/Eligibilit
 import { energyInputsDefaultLabels } from '@/components/EligibilityForm/EligibilityFormAddress';
 import Image from '@/components/ui/Image';
 import { AnalyticsFormId } from '@/modules/analytics/client';
-import type { SuggestionItem } from '@/types/Suggestions';
+import type { SuggestionItem } from '@/modules/ban/types';
 
 import { Container, Form, Header } from './Eligibility.styles';
 

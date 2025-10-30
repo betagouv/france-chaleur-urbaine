@@ -4,6 +4,7 @@ import { envBooleanSchema } from '@/utils/validation';
 
 // exemple: ENABLE_INSCRIPTIONS: envBooleanSchema.default(false).parse(process.env.NEXT_PUBLIC_FLAG_ENABLE_INSCRIPTIONS),
 export const clientConfig = {
+  banApiBaseUrl: process.env.NEXT_PUBLIC_BAN_API_BASE_URL ?? 'https://api-adresse.data.gouv.fr/search/',
   calendarLink: 'https://cal.com/erwangravez/15min',
   contactEmail: 'france.chaleur.urbaine@ademe.fr', // changer également dans openapi-schema.yaml
   flags: {

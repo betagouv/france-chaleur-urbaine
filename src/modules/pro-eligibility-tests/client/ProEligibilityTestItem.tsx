@@ -1,11 +1,12 @@
 import Badge from '@codegouvfr/react-dsfr/Badge';
 import Tabs from '@codegouvfr/react-dsfr/Tabs';
 import type { ColumnFiltersState, SortingState } from '@tanstack/react-table';
+import dynamic from 'next/dynamic';
 import { useQueryState } from 'nuqs';
 import { Fragment, useEffect, useMemo, useState } from 'react';
 
 import { clientConfig } from '@/client-config';
-import Map, { type AdresseEligible } from '@/components/Map/Map';
+import type { AdresseEligible } from '@/components/Map/Map';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import { UrlStateAccordion } from '@/components/ui/Accordion';
 import Button from '@/components/ui/Button';
@@ -30,6 +31,8 @@ import { compareFrenchStrings } from '@/utils/strings';
 import { ObjectEntries, ObjectKeys } from '@/utils/typescript';
 import { getProEligibilityTestAsXlsx } from '../utils/xlsx';
 import ProcheReseauBadge, { type ProcheReseauBadgeProps } from './ProcheReseauBadge';
+
+const Map = dynamic(() => import('@/components/Map/Map'), { ssr: false });
 
 const columns: ColumnDef<RouterOutput['proEligibilityTests']['get']['addresses'][number]>[] = [
   {

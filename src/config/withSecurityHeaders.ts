@@ -4,12 +4,11 @@ import type { NextConfig } from 'next';
 type CSPDirectives = Record<string, string[]>;
 
 type SecurityHeadersConfig = {
-  iframes?: string[];
   csp?: CSPDirectives;
 };
 
 const withSecurityHeaders = (config: SecurityHeadersConfig = {}) => {
-  const { iframes, csp: customCsp } = config;
+  const { csp: customCsp } = config;
 
   return (nextConfig: NextConfig) => {
     const csp = {
@@ -36,22 +35,20 @@ const withSecurityHeaders = (config: SecurityHeadersConfig = {}) => {
       },
       {
         key: 'Content-Security-Policy',
-        value: Object.keys(csp)
-          .map((key) => `${key} ${csp[key].join(' ')}`)
+        value: Object.entries(csp)
+          .map(([key, value]) => `${key} ${value.join(' ')}`)
           .join(';'),
       },
     ];
 
     const securityHeadersIFramable = [
       {
-        key: 'X-Frame-Options',
-        value: '',
-      },
-      {
         key: 'Content-Security-Policy',
-        value: Object.keys(csp)
-          .filter((key) => key !== 'frame-ancestors')
-          .map((key) => `${key} ${csp[key].join(' ')}`)
+        value: Object.entries({
+          ...csp,
+          'frame-ancestors': ['*'],
+        })
+          .map(([key, value]) => `${key} ${value.join(' ')}`)
           .join(';'),
       },
     ];
@@ -66,11 +63,10 @@ const withSecurityHeaders = (config: SecurityHeadersConfig = {}) => {
             headers: securityHeaders,
             source: '/:path*',
           },
-          // Attention: keep in sync with src/services/iframe.ts
-          ...(iframes || []).map((source) => ({
+          {
             headers: securityHeadersIFramable,
-            source,
-          })),
+            source: '/iframe/:path*',
+          },
         ];
       },
     };

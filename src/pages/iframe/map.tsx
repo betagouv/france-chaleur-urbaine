@@ -22,7 +22,6 @@ const MapPage = () => {
         .filter((v) => !!v)
     : [];
 
-  // uniquement pour ces 2 couches, on les affiche directement si affichées dans la légende
   const initialMapConfiguration = createMapConfiguration({
     reseauxDeChaleur: {
       show: legendFeatures.includes('reseauxDeChaleur'),

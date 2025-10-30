@@ -2,12 +2,11 @@ import XLSX from 'xlsx';
 
 import { downloadFile } from '@/utils/browser';
 
-interface ExportColumn<T extends Record<string, any>> {
-  accessorKey: keyof T;
+type ExportColumn<T extends Record<string, any>> = {
   name: string;
   precision?: number;
   minWidth?: number;
-}
+} & ({ accessorKey: keyof T } | { accessorFn: (item: T) => string | number | boolean });
 
 interface SheetData<T extends Record<string, any>> {
   data: T[];
@@ -15,14 +14,12 @@ interface SheetData<T extends Record<string, any>> {
   columns: ExportColumn<T>[];
 }
 
-const processData = <T extends Record<string, any>>(items: T[], columns: ExportColumn<T>[]): Record<string, any>[] => {
-  const data: Record<string, any>[] = [];
-
-  items.forEach((item) => {
+const processData = <T extends Record<string, any>>(items: T[], columns: ExportColumn<T>[]) => {
+  return items.map((item) => {
     const row: Record<string, any> = {};
 
     columns.forEach((col) => {
-      let value: string | string[] | number[] | number | boolean = item[col.accessorKey];
+      let value: string | string[] | number[] | number | boolean = 'accessorKey' in col ? item[col.accessorKey] : col.accessorFn(item);
       if (Array.isArray(value)) {
         value = value.join(',');
       } else if (typeof value === 'boolean') {
@@ -36,10 +33,8 @@ const processData = <T extends Record<string, any>>(items: T[], columns: ExportC
       row[col.name] = value;
     });
 
-    data.push(row);
+    return row;
   });
-
-  return data;
 };
 
 const exportAsXLSX = <T extends any[]>(

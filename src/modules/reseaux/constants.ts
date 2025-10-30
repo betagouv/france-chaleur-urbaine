@@ -49,6 +49,14 @@ export const zUpdatePerimetreDeDeveloppementPrioritaireInput = z.object({
 
 export type UpdatePerimetreDeDeveloppementPrioritaireInput = z.infer<typeof zUpdatePerimetreDeDeveloppementPrioritaireInput>;
 
+export const zGetNetworkEligibilityStatusInput = z.object({
+  lat: z.number(),
+  lon: z.number(),
+  networkId: z.string(),
+});
+
+export type GetNetworkEligibilityStatusInput = z.infer<typeof zGetNetworkEligibilityStatusInput>;
+
 export const zDeleteGeomUpdateInput = z.object({
   id: z.number(),
   type: z.enum(tableNames),
@@ -70,3 +78,14 @@ export const zCreateNetworkInput = z.object({
 });
 
 export type CreateNetworkInput = z.infer<typeof zCreateNetworkInput>;
+
+export const gestionnairesFilters = [
+  {
+    label: 'Coriance',
+    value: 'coriance',
+  },
+  { label: 'Dalkia', value: 'dalkia' },
+  { label: 'ENGIE Solutions', value: 'engie' },
+  { label: 'IDEX', value: 'idex' },
+  { label: 'Autre', value: 'autre' },
+];

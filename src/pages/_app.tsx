@@ -19,12 +19,6 @@ import { useInitAuthentication } from '@/modules/auth/client/hooks';
 import { NotifierContainer } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
 import type { AuthSSRPageProps } from '@/server/authentication';
-import { HeatNetworkService, ServicesContext, SuggestionService } from '@/services';
-import { DemandsService } from '@/services/demands';
-import { ExportService } from '@/services/export';
-import { axiosHttpClient } from '@/services/http';
-import { NetworksService } from '@/services/networks';
-import { PasswordService } from '@/services/password';
 
 const ConsentBanner = dynamic(
   () => import('@/components/ConsentBanner').then((module) => module.ConsentBanner),
@@ -67,22 +61,11 @@ const AppProvider = (props: AppProps<AuthSSRPageProps>) => {
       })
   );
 
-  const [services] = useState(() => ({
-    demandsService: new DemandsService(axiosHttpClient),
-    exportService: new ExportService(axiosHttpClient),
-    heatNetworkService: new HeatNetworkService(axiosHttpClient),
-    networksService: new NetworksService(axiosHttpClient),
-    passwordService: new PasswordService(axiosHttpClient),
-    suggestionService: new SuggestionService(axiosHttpClient),
-  }));
-
   return (
     <ProgressProvider height="4px" color={fr.colors.decisions.background.active.blueFrance.default} shallowRouting>
       <QueryClientProvider client={queryClient}>
         <NuqsAdapter>
-          <ServicesContext.Provider value={services}>
-            <AppInner {...props} />
-          </ServicesContext.Provider>
+          <AppInner {...props} />
         </NuqsAdapter>
       </QueryClientProvider>
     </ProgressProvider>

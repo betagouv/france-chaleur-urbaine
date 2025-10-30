@@ -1,4 +1,5 @@
 import Tabs from '@codegouvfr/react-dsfr/Tabs';
+import dynamic from 'next/dynamic';
 import { parseAsStringLiteral, useQueryState } from 'nuqs';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -6,7 +7,6 @@ import TableFieldInput from '@/components/Admin/TableFieldInput';
 import Input from '@/components/form/dsfr/Input';
 import FCUTagAutocomplete from '@/components/form/FCUTagAutocomplete';
 import AdminEditLegend from '@/components/Map/components/AdminEditLegend';
-import Map from '@/components/Map/Map';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Button from '@/components/ui/Button';
@@ -21,6 +21,8 @@ import { notify, toastErrors } from '@/modules/notification';
 import trpc, { type RouterOutput } from '@/modules/trpc/client';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
+
+const Map = dynamic(() => import('@/components/Map/Map'), { ssr: false });
 
 const tabIds = ['reseaux-de-chaleur', 'reseaux-de-froid', 'reseaux-en-construction', 'perimetres-de-developpement-prioritaire'] as const;
 

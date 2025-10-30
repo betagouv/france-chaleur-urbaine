@@ -12,7 +12,7 @@ France Chaleur Urbaine is a Next.js application helping French citizens connect 
 
 ```
 src/
-├── 🟢 modules/           # Modern module-based architecture (14 modules)
+├── 🟢 modules/           # Modern module-based architecture (16 modules)
 ├── 🟢 components/        # UI components (keep current structure)
 ├── 🟢 hooks/            # React hooks (keep current structure)  
 ├── 🟢 config/           # Configuration files (keep current structure)
@@ -29,7 +29,7 @@ src/
 
 ## 🏛️ Module-Based Architecture
 
-### ✅ Existing Modules (15)
+### ✅ Existing Modules (16)
 
 | Module | Purpose | Status | CLAUDE.md |
 |--------|---------|--------|-----------|
@@ -48,6 +48,7 @@ src/
 | **notification** | Notifications | ✅ Active | ❓ Check |
 | **media-kit** | Media resources | ✅ Active | ❓ Check |
 | **data** | Data extraction & summary | ✅ Active | ✅ Complete |
+| **ban** | Base Adresse Nationale (client API & types) | ✅ Active | ❓ Check |
 
 ### 🏗️ Standard Module Structure
 

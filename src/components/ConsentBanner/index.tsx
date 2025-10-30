@@ -4,7 +4,6 @@ import { createConsentManagement } from '@codegouvfr/react-dsfr/consentManagemen
 import { useRouter } from 'next/router';
 
 import { clientConfig } from '@/client-config';
-import { iframedPaths } from '@/services/iframe';
 
 import FacebookScript from './FacebookScript';
 import GoogleTagsScript from './GoogleTagsScript';
@@ -63,7 +62,7 @@ export const ConsentBanner = () => {
   const router = useRouter();
   return (
     <>
-      {!iframedPaths.some((path) => router.pathname.match(path)) && (
+      {!router.pathname.startsWith('/iframe/') && (
         <>
           <ConsentBannerAndConsentManagement />
 

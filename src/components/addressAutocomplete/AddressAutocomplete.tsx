@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { Combobox, ComboboxPopover } from '@/components/ui/Combobox';
-import type { SuggestionItem } from '@/types/Suggestions';
+import type { SuggestionItem } from '@/modules/ban/types';
 
 import AddressAutocompleteGlobalStyle, { EmptySuggestion } from './AddressAutocomplete.style';
 import { AddressAutocompleteLabel, AddressInput, Suggestions } from './components';

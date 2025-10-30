@@ -1,14 +1,15 @@
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
 
-import Map from '@/components/Map/Map';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import ClassedNetwork from '@/components/Network/ClassedNetwork';
 import EnergiesChart from '@/components/Network/EnergiesChart';
 import Slice from '@/components/Slice';
 import WrappedText from '@/components/WrappedText/WrappedText';
 import type { Network } from '@/types/Summary/Network';
-
 import { NetworkContainer } from './Networks.styles';
+
+const Map = dynamic(() => import('@/components/Map/Map'), { ssr: false });
 
 type NetworksData = {
   isClassed: boolean;

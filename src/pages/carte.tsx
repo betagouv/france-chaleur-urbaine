@@ -1,11 +1,13 @@
+import dynamic from 'next/dynamic';
 import styled from 'styled-components';
 
-import Map from '@/components/Map/Map';
 import { createMapConfiguration, defaultMapConfiguration, type MapConfigurationProperty } from '@/components/Map/map-configuration';
 import { fullscreenHeaderHeight, tabHeaderHeight } from '@/components/shared/layout/MainLayout.data';
 import SimplePage from '@/components/shared/page/SimplePage';
 import useInitialSearchParam from '@/hooks/useInitialSearchParam';
 import { setProperty } from '@/utils/core';
+
+const Map = dynamic(() => import('@/components/Map/Map'), { ssr: false });
 
 const MapWrapper = styled.div`
   height: calc(100vh - ${tabHeaderHeight});

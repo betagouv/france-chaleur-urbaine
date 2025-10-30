@@ -3,7 +3,6 @@ import dynamic from 'next/dynamic';
 import { useCallback, useMemo, useState } from 'react';
 
 import { clientConfig } from '@/client-config';
-import Map from '@/components/Map/Map';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import MarkdownWrapper from '@/components/MarkdownWrapper';
 import Box from '@/components/ui/Box';
@@ -17,6 +16,7 @@ import type { ContactFormInfos } from '@/types/Summary/Demand';
 import { ContactForm, ContactFormContentWrapper, ContactFormResultMessage, ContactFormWrapper, ContactMapResult } from './components';
 import { bordeauxMetropoleCityCodes, getEligibilityResult } from './EligibilityResults';
 
+const Map = dynamic(() => import('@/components/Map/Map'), { ssr: false });
 const ComparateurPublicodesWidget = dynamic(() => import('@/components/ComparateurPublicodes/ComparateurPublicodesWidget'), {
   loading: () => (
     <div className="fr-mt-5w">

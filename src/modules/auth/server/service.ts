@@ -1,10 +1,13 @@
 import bcrypt, { genSalt, hash } from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 import { createUserEvent } from '@/modules/events/server/service';
+import { AirtableDB } from '@/server/db/airtable';
 import { kdb } from '@/server/db/kysely';
 import { sendEmailTemplate } from '@/server/email';
 import { logger } from '@/server/helpers/logger';
 import { BadRequestError } from '@/server/helpers/server';
+import { Airtable } from '@/types/enum/Airtable';
 import type { UserRole } from '@/types/enum/UserRole';
 import { generateRandomToken } from '@/utils/random';
 
@@ -125,4 +128,64 @@ export const activateUser = async (activationToken: string) => {
     context_type: 'user',
     type: 'user_activated',
   });
+};
+
+export const requestPassword = async (email: string) => {
+  const lowerCaseEmail = email.trim().toLowerCase();
+  const user = await kdb.selectFrom('users').selectAll().where('email', '=', lowerCaseEmail).where('active', 'is', true).executeTakeFirst();
+
+  if (!user) {
+    logger.warn('reset-password: missing user', { email: lowerCaseEmail });
+    await AirtableDB(Airtable.CONNEXION).create([
+      {
+        fields: {
+          Date: new Date().toISOString(),
+          Email: lowerCaseEmail,
+        },
+      },
+    ]);
+    return;
+  }
+
+  const resetToken = generateRandomToken();
+  const payload = {
+    email: lowerCaseEmail,
+    exp: Math.round(Date.now() / 1000) + 60 * 60 * 3, // 3 hour expiration
+    resetToken,
+  } as const;
+
+  const token = jwt.sign(payload, process.env.NEXTAUTH_SECRET as string);
+  await kdb.updateTable('users').set({ reset_token: resetToken }).where('id', '=', user.id).execute();
+  await sendEmailTemplate('reset-password', user, { token });
+};
+
+export const changePasswordWithResetToken = async (params: { password: string; token: { email: string; resetToken: string } }) => {
+  const { password, token } = params;
+
+  const user = await kdb.selectFrom('users').selectAll().where('email', '=', token.email).where('active', 'is', true).executeTakeFirst();
+
+  if (!user) {
+    throw new BadRequestError('Email incorrect');
+  }
+
+  if (!user.reset_token) {
+    throw new BadRequestError('Ce lien a déjà été utilisé. Veuillez refaire une demande de réinitialisation de votre mot de passe.');
+  }
+
+  if (user.reset_token !== token.resetToken) {
+    throw new BadRequestError('Lien invalide. Veuillez réinitialiser votre mot de passe.');
+  }
+
+  await kdb
+    .updateTable('users')
+    .set({
+      password: await hash(password, await genSalt(10)),
+      reset_token: null,
+    })
+    .where('id', '=', user.id)
+    .execute();
+
+  if (user.activation_token) {
+    await activateUser(user.activation_token);
+  }
 };

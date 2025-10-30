@@ -1,4 +1,5 @@
 import type { ColumnFiltersState, SortingState } from '@tanstack/react-table';
+import dynamic from 'next/dynamic';
 import { useQueryState } from 'nuqs';
 import { useCallback, useMemo, useState } from 'react';
 
@@ -6,7 +7,6 @@ import UserForm from '@/components/Admin/UserForm';
 import UserRoleBadge from '@/components/Admin/UserRoleBadge';
 import FCUTagAutocomplete from '@/components/form/FCUTagAutocomplete';
 import SimplePage from '@/components/shared/page/SimplePage';
-import AsyncButton from '@/components/ui/AsyncButton';
 import Badge from '@/components/ui/Badge';
 import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
@@ -20,12 +20,13 @@ import useCrud from '@/hooks/useCrud';
 import { notify, toastErrors } from '@/modules/notification';
 import type { UsersResponse } from '@/pages/api/admin/users/[[...slug]]';
 import { withAuthentication } from '@/server/authentication';
-import { useServices } from '@/services';
 import type { UserRole } from '@/types/enum/UserRole';
+import type { ExportColumn } from '@/utils/export';
 import { postFetchJSON } from '@/utils/network';
 import { compareFrenchStrings } from '@/utils/strings';
-
 import type { AdminUsersStats } from '../api/admin/users-stats';
+
+const ButtonExport = dynamic(() => import('@/components/ui/ButtonExport'), { ssr: false });
 
 const startImpersonation = toastErrors(async (impersonateConfig: { role: UserRole; gestionnaires?: string[] | null }) => {
   await postFetchJSON('/api/admin/impersonate', {
@@ -50,8 +51,22 @@ const initialColumnFilters: ColumnFiltersState = [
   },
 ];
 
+const usersExportColumns: ExportColumn<UsersResponse['listItem']>[] = [
+  {
+    accessorKey: 'email',
+    name: 'Email',
+  },
+  {
+    accessorFn: (user) => new Date(user.created_at as any).toLocaleDateString('fr-FR'),
+    name: 'Date de création du compte',
+  },
+  {
+    accessorKey: 'active',
+    name: 'Compte actif',
+  },
+];
+
 export default function ManageUsers() {
-  const { exportService } = useServices();
   const [userId, setUserId] = useQueryState('userId');
   const [nbUsersFilter, setNbUsersFilter] = useState<number>(0);
 
@@ -226,6 +241,21 @@ export default function ManageUsers() {
     [setNbUsersFilter]
   );
 
+  const buildSheetData = useCallback(
+    () => [
+      {
+        columns: usersExportColumns,
+        data: users.filter((u) => {
+          const sixMonthsAgo = new Date();
+          sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+          return !u.last_connection || new Date(u.created_at as any) < sixMonthsAgo;
+        }),
+        name: 'utilisateurs_obsoletes',
+      },
+    ],
+    [users]
+  );
+
   return (
     <SimplePage title="Gestion des utilisateurs" mode="authenticated">
       <ModalSimple
@@ -283,9 +313,9 @@ export default function ManageUsers() {
           padding="sm"
           loading={isLoading}
         />
-        <AsyncButton size="small" onClick={async () => exportService.exportXLSX('obsoleteUsers')}>
+        <ButtonExport size="small" filename="utilisateurs_obsoletes.xlsx" sheets={buildSheetData}>
           Exporter la liste des comptes obsolètes (connexion de plus de 6 mois ou nulle)
-        </AsyncButton>
+        </ButtonExport>
       </Box>
     </SimplePage>
   );

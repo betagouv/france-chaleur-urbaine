@@ -15,12 +15,12 @@ import Modal, { createModal } from '@/components/ui/Modal';
 import Text from '@/components/ui/Text';
 import { trackEvent } from '@/modules/analytics/client';
 import useUserInfo from '@/modules/app/client/hooks/useUserInfo';
+import type { SuggestionItem } from '@/modules/ban/types';
 import { getReadableDistance } from '@/modules/geo/client/helpers';
+import trpc from '@/modules/trpc/client';
 import type { NetworkEligibilityStatus } from '@/server/services/addresseInformation';
-import { useServices } from '@/services';
 import { formatDataToAirtable, submitToAirtable } from '@/services/airtable';
 import { Airtable } from '@/types/enum/Airtable';
-import type { SuggestionItem } from '@/types/Suggestions';
 import type { ContactFormInfos, FormDemandCreation } from '@/types/Summary/Demand';
 import { runWithMinimumDelay } from '@/utils/time';
 
@@ -39,7 +39,7 @@ const eligibilityTestModal = createModal({
  * Formulaire simplifié de test d'adresse + création d'une demande pour un réseau de chaleur.
  */
 const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
-  const { heatNetworkService } = useServices();
+  const trpcUtils = trpc.useUtils();
   const [addressInUrl, setAddressInUrl] = useQueryState('address');
   const [selectedGeoAddress, setSelectedGeoAddress] = useState<SuggestionItem>();
   const [eligibilityStatus, setEligibilityStatus] = useState<NetworkEligibilityStatus>();
@@ -52,7 +52,11 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
       trackEvent(`Eligibilité|Formulaire de test - Fiche réseau - Envoi`, geoAddress.properties.label);
 
       setFormState('loadingEligibility');
-      const eligibilityStatus = await runWithMinimumDelay(() => heatNetworkService.getNetworkEligibilityStatus(networkId, geoAddress), 500);
+      const [lon, lat] = geoAddress.geometry.coordinates;
+      const eligibilityStatus = await runWithMinimumDelay(
+        () => trpcUtils.client.reseaux.getNetworkEligibilityStatus.query({ lat, lon, networkId }),
+        500
+      );
       setFormState('idle');
       setEligibilityStatus(eligibilityStatus);
 

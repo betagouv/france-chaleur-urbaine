@@ -47,25 +47,24 @@ vi.mock('next/dynamic', () => ({
   },
 }));
 
-// Mock Services Context
-vi.mock('@/services/context', () => ({
-  ServicesContext: React.createContext({}),
-  ServicesProvider: ({ children }: { children: React.ReactNode }) => children,
-  useServices: () => ({
-    apiService: {},
-    heatNetworkService: {
-      findByCoords: vi.fn().mockResolvedValue({
-        distance: 1000,
-        isEligible: false,
-        networks: [],
-      }),
-      findById: vi.fn().mockResolvedValue(null),
-    },
-    trackingService: {
-      trackAcquisition: vi.fn(),
-      trackEvent: vi.fn(),
-    },
-  }),
+// Mock tRPC client to avoid provider requirements in tests
+vi.mock('@/modules/trpc/client', () => ({
+  __esModule: true,
+  default: {
+    // Minimal context hook to satisfy consumers that read it
+    useContext: () => ({}),
+    // Provide utils with a minimal client shape used in components
+    useUtils: () => ({
+      client: {
+        reseaux: {
+          cityNetwork: { query: vi.fn().mockResolvedValue({}) },
+          eligibilityStatus: { query: vi.fn().mockResolvedValue({}) },
+        },
+      },
+    }),
+    // No-op HOC: returns the component unchanged
+    withTRPC: (App: any) => (props: any) => React.createElement(App, props),
+  },
 }));
 
 // Mock fetch with proper responses

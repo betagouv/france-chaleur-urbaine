@@ -5,9 +5,9 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import AddressAutocomplete, { type AddressAutocompleteInputProps } from '@/components/form/dsfr/AddressAutocompleteInput';
 import Box from '@/components/ui/Box';
 import Link from '@/components/ui/Link';
-import { useServices } from '@/services';
+import type { SuggestionItem } from '@/modules/ban/types';
+import trpc from '@/modules/trpc/client';
 import type { AddressDataType } from '@/types/AddressData';
-import type { SuggestionItem } from '@/types/Suggestions';
 
 import { CheckEligibilityFormLabel, SelectEnergy } from './components';
 
@@ -61,7 +61,7 @@ const EligibilityFormAddress: React.FC<CheckEligibilityFormProps> = ({
   const [status, setStatus] = useState(!coords ? 'idle' : 'success');
   const [data, setData] = useState<AddressDataType>(defaultData);
   const [heatingType, setHeatingType] = useState(initialHeatingType ?? '');
-  const { heatNetworkService } = useServices();
+  const trpcUtils = trpc.useUtils();
 
   useEffect(() => {
     const { heating } = router.query;
@@ -86,7 +86,14 @@ const EligibilityFormAddress: React.FC<CheckEligibilityFormProps> = ({
         setStatus('loading');
         const [lon, lat] = geoAddress.geometry.coordinates;
         const coords = { lat, lon };
-        const networkData = await heatNetworkService.findByCoords(geoAddress);
+        const isCity = geoAddress.properties.label === geoAddress.properties.city;
+        const networkData = isCity
+          ? await trpcUtils.client.reseaux.cityNetwork.query({ city: geoAddress.properties.city })
+          : await trpcUtils.client.reseaux.eligibilityStatus.query({
+              city: geoAddress.properties.city,
+              lat,
+              lon,
+            });
         setData({
           ...data,
           address,
@@ -99,7 +106,7 @@ const EligibilityFormAddress: React.FC<CheckEligibilityFormProps> = ({
         setStatus('eligibilitySubmissionError');
       }
     },
-    [heatNetworkService, coords, data, onFetch]
+    [trpcUtils, coords, data, onFetch]
   );
 
   useEffect(() => {

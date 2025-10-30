@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-import { appRouter } from './routes';
+import { appRouter } from '../trpc.config';
 
 export default async function handler(_req: NextApiRequest, res: NextApiResponse) {
   if (process.env.NODE_ENV !== 'development') {
