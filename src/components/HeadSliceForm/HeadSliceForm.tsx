@@ -16,8 +16,8 @@ import useContactFormFCU from '@/hooks/useContactFormFCU';
 import { AnalyticsFormId } from '@/modules/analytics/client';
 import useUserInfo from '@/modules/app/client/hooks/useUserInfo';
 import type { AvailableHeating } from '@/modules/app/types';
+import type { SuggestionItem } from '@/modules/ban/types';
 import trpc from '@/modules/trpc/client';
-import type { SuggestionItem } from '@/types/Suggestions';
 import cx from '@/utils/cx';
 import { Container, FormLabel, HeadSliceContainer, PageBody, PageTitle, SliceContactFormStyle } from './HeadSliceForm.style';
 

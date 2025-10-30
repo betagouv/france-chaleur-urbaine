@@ -5,9 +5,9 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import AddressAutocomplete, { type AddressAutocompleteInputProps } from '@/components/form/dsfr/AddressAutocompleteInput';
 import Box from '@/components/ui/Box';
 import Link from '@/components/ui/Link';
+import type { SuggestionItem } from '@/modules/ban/types';
 import trpc from '@/modules/trpc/client';
 import type { AddressDataType } from '@/types/AddressData';
-import type { SuggestionItem } from '@/types/Suggestions';
 
 import { CheckEligibilityFormLabel, SelectEnergy } from './components';
 

@@ -5,10 +5,10 @@ import type { TypeLogement } from '@/components/choix-chauffage/type-logement';
 import AddressAutocompleteInput from '@/components/form/dsfr/AddressAutocompleteInput';
 import Radio from '@/components/form/dsfr/Radio';
 import Section, { SectionContent, SectionHeading, SectionTwoColumns } from '@/components/ui/Section';
+import type { SuggestionItem } from '@/modules/ban/types';
 import { toastErrors } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
 import type { AddressDetail } from '@/types/HeatNetworksResponse';
-import type { SuggestionItem } from '@/types/Suggestions';
 import { isDefined } from '@/utils/core';
 import { runWithMinimumDelay } from '@/utils/time';
 

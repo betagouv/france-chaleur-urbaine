@@ -15,12 +15,12 @@ import Modal, { createModal } from '@/components/ui/Modal';
 import Text from '@/components/ui/Text';
 import { trackEvent } from '@/modules/analytics/client';
 import useUserInfo from '@/modules/app/client/hooks/useUserInfo';
+import type { SuggestionItem } from '@/modules/ban/types';
 import { getReadableDistance } from '@/modules/geo/client/helpers';
 import trpc from '@/modules/trpc/client';
 import type { NetworkEligibilityStatus } from '@/server/services/addresseInformation';
 import { formatDataToAirtable, submitToAirtable } from '@/services/airtable';
 import { Airtable } from '@/types/enum/Airtable';
-import type { SuggestionItem } from '@/types/Suggestions';
 import type { ContactFormInfos, FormDemandCreation } from '@/types/Summary/Demand';
 import { runWithMinimumDelay } from '@/utils/time';
 

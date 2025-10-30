@@ -1,9 +1,8 @@
 import { useIsMounted } from '@react-hookz/web';
 import { useState } from 'react';
-import { clientConfig } from '@/client-config';
-import type { SuggestionItem, SuggestionResponse } from '@/types/Suggestions';
+import { searchBANAddresses } from '@/modules/ban/client';
+import type { SuggestionItem } from '@/modules/ban/types';
 import debounce from '@/utils/debounce';
-import { fetchJSON } from '@/utils/network';
 
 enum Status {
   Idle = 'idle',
@@ -32,16 +31,7 @@ const useSuggestions = ({ limit = 5, debounceTime = 300, minCharactersLength = 3
         return;
       }
       setStatus(Status.Loading);
-      const fetchedSuggestions = await fetchJSON<SuggestionResponse>(clientConfig.banApiBaseUrl, {
-        params: {
-          limit: limit.toString(),
-          q: searchTerm,
-        },
-      });
-
-      const features = excludeCities
-        ? fetchedSuggestions.features.filter((feature) => feature.properties.type !== 'municipality')
-        : fetchedSuggestions.features;
+      const features = await searchBANAddresses({ excludeCities, limit, query: searchTerm });
       setSuggestions(features);
       setStatus(Status.Success);
     } catch (e) {

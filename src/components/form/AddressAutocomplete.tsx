@@ -1,7 +1,6 @@
 import type React from 'react';
-import { clientConfig } from '@/client-config';
-import type { SuggestionItem, SuggestionResponse } from '@/types/Suggestions';
-import { fetchJSON } from '@/utils/network';
+import { searchBANAddresses } from '@/modules/ban/client';
+import type { SuggestionItem } from '@/modules/ban/types';
 import Autocomplete from './Autocomplete';
 
 export type AddressAutocompleteProps = Omit<
@@ -23,21 +22,7 @@ const AddressAutocomplete = ({
   limit = 10,
   ...props
 }: AddressAutocompleteProps) => {
-  const fetchOptions = async (query: string) => {
-    const suggestions = await fetchJSON<SuggestionResponse>(clientConfig.banApiBaseUrl, {
-      params: {
-        limit: limit.toString(),
-        q: query,
-        ...(onlyCities ? { type: 'municipality' } : {}),
-      },
-    });
-
-    const features = excludeCities
-      ? suggestions.features.filter((feature) => feature.properties.type !== 'municipality')
-      : suggestions.features;
-
-    return features;
-  };
+  const fetchOptions = async (query: string) => searchBANAddresses({ excludeCities, limit, onlyCities, query });
 
   return (
     <Autocomplete
