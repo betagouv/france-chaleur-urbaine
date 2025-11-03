@@ -26,14 +26,14 @@ export async function refreshStatistics() {
   await writeFile(
     statisticsFilePath,
     `const statistics = {
-  connection: '${prettyFormatNumber(totalRaccordements)}', // nombre de demandes pour lesquelles le statut est étude en cours, réalisé, travaux en cours ou voté en ag.
-  logements: '${prettyFormatNumber(totalLogements)}', // logements concernés par les raccordements
   CO2Tons: '${prettyFormatNumber(Math.round(ratioTonnesCO2ParRaccordement * totalRaccordements))}', // tonnes de CO2 potentiellement économisées par an
-  networks: '${prettyFormatNumber(totalReseaux)}', // somme des réseaux de chaleur et de froid pour lesquels has_trace est coché.
-  heatPercent: '${pourcentageLivraisonsChaleur}', // se base uniquement sur les réseaux de chaleur, et est calculé en prenant les livraisons totales pour les réseaux où has_trace est coché / livraisons totales pourr tous les réseaux
+  connection: '${prettyFormatNumber(totalRaccordements)}', // nombre de demandes pour lesquelles le statut est étude en cours, réalisé, travaux en cours ou voté en ag.
   connectionPercent: '${Math.round((totalRaccordements / totalDemandes) * 100)}', // ratio connection/total des demandes de mise en contact avec un gestionnaire
+  heatPercent: '${pourcentageLivraisonsChaleur}', // se base uniquement sur les réseaux de chaleur, et est calculé en prenant les livraisons totales pour les réseaux où has_trace est coché / livraisons totales pourr tous les réseaux
   iFrameIntegration: '${nbIframes}', // prendre le chiffre indiqué sur Pipedrive dans affaires Iframe / intégrés
   lastActu: '${lastActu}',
+  logements: '${prettyFormatNumber(totalLogements)}', // logements concernés par les raccordements
+  networks: '${prettyFormatNumber(totalReseaux)}', // somme des réseaux de chaleur et de froid pour lesquels has_trace est coché.
 };
 
 export default statistics;
