@@ -1,4 +1,4 @@
-import type { ExpressionBuilder } from 'kysely';
+import type { ExpressionBuilder, RawBuilder } from 'kysely';
 import { parseBbox } from '@/modules/geo/client/helpers';
 import { createGeometryExpression, processGeometry } from '@/modules/geo/server/helpers';
 import type { BoundingBox } from '@/modules/geo/types';
@@ -363,12 +363,11 @@ export const updateGeomUpdate = async (
   const finalGeometry = createGeometryExpression(processedGeometry.geom, processedGeometry.srid);
 
   await kdb
-    .with('geometry', (db) => db.selectNoFrom(finalGeometry.as('geom')))
     .updateTable(dbName)
     .where('id_fcu', '=', id_fcu)
-    .set((eb) => ({
-      geom_update: sql`ST_Force2D(${eb.selectFrom('geometry').select('geometry.geom')})`,
-    }))
+    .set({
+      geom_update: finalGeometry,
+    })
     .execute();
 };
 
@@ -408,7 +407,7 @@ export const deleteNetwork = async (
   logger.info(`Le réseau ${id_fcu} a été mis en attente de suppression`);
 };
 
-const createReseauDeChaleur = async (id: string, finalGeometry: any) => {
+const createReseauDeChaleur = async (id: string, finalGeometry: RawBuilder<any>) => {
   const id_sncu = id.includes('C') || id.includes('F') ? id : null;
 
   // Pour les réseaux de chaleur, l'ID est l'identifiant réseau (string)
@@ -423,7 +422,7 @@ const createReseauDeChaleur = async (id: string, finalGeometry: any) => {
       ...(id_sncu ? { 'Identifiant reseau': id_sncu, id_fcu: maxIdResult.next_id } : { id_fcu: parseInt(id, 10) }),
       fichiers: [],
       geom: null,
-      geom_update: sql`ST_Force2D(${finalGeometry})`,
+      geom_update: finalGeometry,
       'reseaux classes': false,
       reseaux_techniques: false,
       tags: [],
@@ -432,7 +431,7 @@ const createReseauDeChaleur = async (id: string, finalGeometry: any) => {
     .executeTakeFirstOrThrow();
 };
 
-const createReseauEnConstruction = async (id: string, finalGeometry: any) => {
+const createReseauEnConstruction = async (id: string, finalGeometry: RawBuilder<any>) => {
   const id_fcu = parseInt(id, 10);
   if (Number.isNaN(id_fcu)) {
     throw new Error('ID FCU invalide');
@@ -442,7 +441,7 @@ const createReseauEnConstruction = async (id: string, finalGeometry: any) => {
     .insertInto('zones_et_reseaux_en_construction')
     .values({
       geom: null,
-      geom_update: sql`ST_ForcePolygonCCW(ST_Force2D(${finalGeometry}))`,
+      geom_update: sql`ST_ForcePolygonCCW(${finalGeometry})`,
       id_fcu,
       nom_reseau: `Nouveau réseau en construction ${id_fcu}`,
       tags: [],
@@ -451,7 +450,7 @@ const createReseauEnConstruction = async (id: string, finalGeometry: any) => {
     .executeTakeFirstOrThrow();
 };
 
-const createPerimetreDeDeveloppementPrioritaire = async (id: string, finalGeometry: any) => {
+const createPerimetreDeDeveloppementPrioritaire = async (id: string, finalGeometry: RawBuilder<any>) => {
   const id_fcu = parseInt(id, 10);
   if (Number.isNaN(id_fcu)) {
     throw new Error('ID FCU invalide');
@@ -461,7 +460,7 @@ const createPerimetreDeDeveloppementPrioritaire = async (id: string, finalGeomet
     .insertInto('zone_de_developpement_prioritaire')
     .values({
       geom: null,
-      geom_update: sql`ST_ForcePolygonCCW(ST_Force2D(${finalGeometry}))`,
+      geom_update: sql`ST_ForcePolygonCCW(${finalGeometry})`,
       id_fcu,
       reseau_de_chaleur_ids: [],
       reseau_en_construction_ids: [],
@@ -470,7 +469,7 @@ const createPerimetreDeDeveloppementPrioritaire = async (id: string, finalGeomet
     .executeTakeFirstOrThrow();
 };
 
-const createReseauDeFroid = async (id: string, finalGeometry: any) => {
+const createReseauDeFroid = async (id: string, finalGeometry: RawBuilder<any>) => {
   const id_sncu = id.includes('C') || id.includes('F') ? id : null;
 
   // Pour les réseaux de froid, l'ID est l'identifiant réseau (string)
@@ -485,7 +484,7 @@ const createReseauDeFroid = async (id: string, finalGeometry: any) => {
       ...(id_sncu ? { 'Identifiant reseau': id_sncu, id_fcu: maxIdResult.next_id } : { id_fcu: parseInt(id, 10) }),
       fichiers: [],
       geom: null,
-      geom_update: sql`ST_Force2D(${finalGeometry})`,
+      geom_update: finalGeometry,
       'reseaux classes': false,
     })
     .returningAll()
