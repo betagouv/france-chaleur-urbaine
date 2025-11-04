@@ -1,66 +1,107 @@
-# AI Context Index - Load this file first for token-optimized context
-# Each file entry includes: path, type (context/rules/docs), topic, and summary
-# Load only relevant files based on task to minimize tokens
+# AI Context Index
+# Purpose: Help AI agents find and load the right context files for any task
+# Usage: Match task keywords with file keywords, load 2-4 most relevant files
 
-version: 1
-description: >
-  Central index of AI contexts and rules for the Next.js project.
-  Helps AIs navigate to the most relevant files by topic.
-
-general_rules: > 
-  LANGUAGE RULES - CRITICAL:
-  ALL code (functions, variables, comments, JSDoc, SQL comments, errors, logs, docs, commits) MUST be in English.
-  ONLY use French for: conversational responses when user writes in French, or UI text if explicitly requested.
+instructions: |
+  HOW TO USE THIS INDEX:
   
-  CRITICAL - File search rules:
-  TypeScript project ONLY (.ts, .tsx files). NEVER search for .py, .java, .rb, .php files.
-  Use codebase_search for semantic search, glob_file_search only for known patterns.
+  1. EXTRACT keywords from the task (e.g., "form", "database", "test")
+  2. MATCH task keywords with file keywords below
+  3. LOAD files with most keyword matches (2-4 files max)
+  4. SPECIAL CASES:
+     - Big task/refactor/new feature → ALWAYS load ARCHITECTURE.md
+     - Working in src/modules/X/ → ALWAYS load src/modules/X/AGENTS.md
+  
+  LANGUAGE: All code in English (functions, variables, comments, logs, docs, commits)
+  French only for: UI text if requested, or conversational responses
+  
+  FILE TYPES: TypeScript only (.ts, .tsx). Never search .py, .java, .rb, .php
 
 files:
+  # ARCHITECTURE (project specifics: modules, legacy, migration)
+  - path: "ARCHITECTURE.md"
+    topic: "Project Architecture"
+    summary: "FCU project specifics: modules list, legacy areas, migration plan, directory structure"
+    keywords: ["architecture", "modules", "legacy", "migration", "structure", "overview", "organization", "refactor"]
+
   - path: ".ai/context/architecture.md"
-    type: "context"
-    topic: "Architecture"
-    summary: "Project structure, Pages Router conventions, modules vs legacy."
+    topic: "Architecture Principles"
+    summary: "General principles: module system, Pages Router, client/server separation, imports rules"
+    keywords: ["principles", "conventions", "Pages Router", "client/server", "imports", "module rules"]
 
+  - path: ".ai/context/modules.md"
+    topic: "Module System"
+    summary: "Module structure, AGENTS.md requirement, CLI commands, internal imports"
+    keywords: ["module", "src/modules", "AGENTS.md", "CLI", "commands.ts", "server.ts", "client.ts", "structure"]
+
+  # BACKEND
   - path: ".ai/context/backend.md"
-    type: "rules"
-    topic: "Backend"
-    summary: "APIs via /api or TRPC modules, client/server separation, errors."
-
-  - path: ".ai/context/coding-style.md"
-    type: "rules"
-    topic: "Coding Style"
-    summary: "Strict TypeScript, explicit names, error handling, formatting."
+    topic: "Backend/APIs"
+    summary: "TRPC preferred, business logic in services, logging, error handling"
+    keywords: ["API", "TRPC", "endpoint", "server", "service", "backend", "route", "logic"]
 
   - path: ".ai/context/database.md"
-    type: "rules"
-    topic: "Database"
-    summary: "Kysely, Postgres/PostGIS, migrations, typed performant queries."
+    topic: "Database Queries"
+    summary: "Kysely typed queries, PostGIS, performance (columns, indexes)"
+    keywords: ["database", "Kysely", "PostgreSQL", "PostGIS", "query", "SQL", "kdb", "geometry", "spatial"]
 
-  - path: ".ai/context/dev.md"
-    type: "docs"
-    topic: "Development"
-    summary: "List of commands to use in the development process."
+  - path: ".ai/context/migrations.md"
+    topic: "Database Migrations"
+    summary: "Knex migrations, schema changes, PostGIS, pnpm db:sync workflow"
+    keywords: ["migration", "schema", "table", "column", "ALTER", "CREATE", "db:migrate", "db:sync"]
 
-  - path: ".ai/context/docs.md"
-    type: "docs"
-    topic: "Documentation"
-    summary: "Concise modular docs, link to ARCHITECTURE and module guides."
+  - path: ".ai/context/errors.md"
+    topic: "Error Handling"
+    summary: "TRPCError, toastErrors, logger, no PII in logs"
+    keywords: ["error", "exception", "TRPCError", "logger", "logging", "throw", "catch", "toastErrors"]
 
+  # FRONTEND
   - path: ".ai/context/frontend.md"
-    type: "rules"
-    topic: "Frontend"
-    summary: "React + DSFR, forms, state (React Query/Jotai), accessibility."
+    topic: "Frontend/React"
+    summary: "React patterns, DSFR, state (tRPC/Jotai/nuqs), UI components"
+    keywords: ["React", "component", "frontend", "UI", "DSFR", "client", "state", "Jotai", "nuqs", "style"]
+
+  - path: ".ai/context/forms.md"
+    topic: "Forms"
+    summary: "Tanstack React Form + Zod, DSFR form components, validation"
+    keywords: ["form", "input", "validation", "Zod", "useForm", "submit", "field", "schema", "Tanstack"]
+
+  - path: ".ai/context/map.md"
+    topic: "Maps"
+    summary: "MapLibre GL layers, tiles generation, map configuration"
+    keywords: ["map", "MapLibre", "layer", "tiles", "geospatial", "GeoJSON", "coordinates", "marker"]
+
+  # CODE QUALITY
+  - path: ".ai/context/coding-style.md"
+    topic: "Code Style"
+    summary: "TypeScript conventions: names, types, guard clauses, no default exports"
+    keywords: ["style", "convention", "TypeScript", "naming", "types", "interfaces", "export", "format"]
+
+  - path: ".ai/context/testing.md"
+    topic: "Testing"
+    summary: "Vitest patterns, *.spec.ts vs *.test.ts, coverage, Testing Library"
+    keywords: ["test", "spec", "Vitest", "testing", "coverage", "expect", "describe", "it", "unit"]
 
   - path: ".ai/context/security.md"
-    type: "rules"
     topic: "Security"
-    summary: "Inputs, secrets, permissions, HTTP headers, logging."
+    summary: "Zod validation, env secrets, permissions, no PII"
+    keywords: ["security", "validation", "auth", "permissions", "secrets", "env", "PII", "sanitize"]
+
+  # REFERENCE
+  - path: ".ai/context/dev.md"
+    topic: "Commands"
+    summary: "pnpm commands: dev, lint, test, db:migrate, db:sync, build"
+    keywords: ["command", "pnpm", "dev", "build", "test", "lint", "migrate", "workflow"]
 
   - path: ".ai/context/stack.md"
-    type: "docs"
-    topic: "Stack"
-    summary: "List of technologies and tools used in the project."
+    topic: "Tech Stack"
+    summary: "Next.js 16, TypeScript 5, DSFR, tRPC, Kysely, PostgreSQL, MapLibre"
+    keywords: ["stack", "technology", "version", "dependencies", "tools", "framework", "Next.js"]
+
+  - path: ".ai/context/docs.md"
+    topic: "Documentation"
+    summary: "Doc standards: ≤600 tokens, modular, links to ARCHITECTURE/AGENTS.md"
+    keywords: ["documentation", "docs", "README", "AGENTS.md", "comments", "writing", "standards"]
 
   - path: ".ai/context/testing.md"
     type: "rules"
