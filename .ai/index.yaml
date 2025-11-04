@@ -17,6 +17,9 @@ instructions: |
   
   FILE TYPES: TypeScript only (.ts, .tsx). Never search .py, .java, .rb, .php
 
+  CRITICAL:
+    - Always load the developer avatar from `.ai/avatars/developer.md` unless otherwise specified
+
 files:
   # ARCHITECTURE (project specifics: modules, legacy, migration)
   - path: "ARCHITECTURE.md"
