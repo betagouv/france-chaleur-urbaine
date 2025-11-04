@@ -6,7 +6,7 @@ Authentication and authorization management for the application.
 
 ```
 auth/
-├── CLAUDE.md           # This file
+├── AGENTS.md           # This file
 ├── server/
 │   └── service.ts     # Authentication logic
 ├── client/
