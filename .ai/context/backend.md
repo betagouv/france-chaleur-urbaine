@@ -1,13 +1,33 @@
 ## Backend (API & TRPC)
 
-- Use legacy `/api` routes only when necessary; prefer TRPC routers in modules
-- Error handling: concise, actionable messages; no swallowed exceptions
-- Logging: contextual, minimal, no sensitive data
-- Logging: use winston logger as `@/server/helpers/logger`
+## API Strategy
 
-Separation:
-- `server/` (Node, DB, services) vs `client/` (React)
-- Keep business logic out of `src/pages/api/*`; delegate to module services
+- **Preferred**: TRPC routes in modules (`module/server/trpc-routes.ts`)
+- **Legacy**: REST in `src/pages/api/*` (migrate to TRPC when touching)
+- **Pattern**: Business logic in `module/server/service.ts`, NOT in API routes
 
-Testing:
-- Add vitest unit tests for critical services, utility functions and APIs
+## Error Handling
+
+See `.ai/context/errors.md` for error patterns.
+
+## Logging
+
+```typescript
+import { logger } from '@/server/helpers/logger';
+
+logger.info('message', { context });
+logger.error('error', { error, userId });
+```
+
+Rules: contextual, minimal, no PII.
+
+## Architecture
+
+- **Separation**: `server/` (Node, DB, services) vs `client/` (React)
+- **Modules**: See `.ai/context/modules.md` for structure
+- **Database**: See `.ai/context/database.md` for Kysely patterns
+
+## Testing
+
+- Add vitest tests for critical services, utilities, APIs
+- See `.ai/context/testing.md` for patterns
