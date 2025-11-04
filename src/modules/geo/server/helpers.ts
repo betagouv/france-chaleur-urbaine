@@ -9,12 +9,48 @@ export type GeometryWithSrid = {
 };
 
 /**
- * Crée une expression SQL pour transformer une géométrie GeoJSON en géométrie PostGIS
+ * Maps GeoJSON geometry type to PostGIS dimension for ST_CollectionExtract.
+ * See https://postgis.net/docs/ST_CollectionExtract.html
+ * @param geometryType - The GeoJSON geometry type
+ * @returns The dimension (1 for Point, 2 for LineString, 3 for Polygon)
+ */
+function getGeometryDimension(geometryType: GeoJSON.Geometry['type']): 1 | 2 | 3 {
+  switch (geometryType) {
+    case 'Point':
+    case 'MultiPoint':
+      return 1;
+    case 'LineString':
+    case 'MultiLineString':
+      return 2;
+    case 'Polygon':
+    case 'MultiPolygon':
+      return 3;
+    default:
+      throw new Error(`Unsupported geometry type: ${geometryType}`);
+  }
+}
+
+/**
+ * Create a SQL expression to transform a GeoJSON geometry into a PostGIS geometry.
+ * Also validates and fixes the geometry using ST_MakeValid with ST_CollectionExtract based on the geometry type.
+ * Applies ST_Force2D to ensure 2D geometries.
+ * @param geom - The GeoJSON geometry
+ * @param srid - The SRID (4326 or 2154)
+ * @returns A SQL expression that creates a valid, properly extracted, and 2D PostGIS geometry
  */
 export function createGeometryExpression(geom: GeoJSON.Geometry, srid: number) {
-  return srid === 4326
-    ? sql<any>`st_transform(ST_GeomFromGeoJSON(${sql.lit(JSON.stringify(geom))}), 2154)`
-    : sql<any>`st_setsrid(ST_GeomFromGeoJSON(${sql.lit(JSON.stringify(geom))}), 2154)`;
+  const dim = getGeometryDimension(geom.type);
+  const fixed2dExtract = sql<string>`
+    ST_CollectionExtract(
+      ST_MakeValid(
+        ST_Force2D(
+          ST_GeomFromGeoJSON(${sql.lit(JSON.stringify(geom))})
+        )
+      ),
+      ${dim}
+    )
+  `;
+  return srid === 4326 ? sql<any>`st_transform(${fixed2dExtract}, 2154)` : sql<any>`st_setsrid(${fixed2dExtract}, 2154)`;
 }
 
 /**
