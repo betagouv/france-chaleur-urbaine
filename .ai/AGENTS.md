@@ -72,7 +72,7 @@ src/
 **Tech Stack**: Core
 
 ### Architecture and Overview
-- Read from `.ai/context/ARCHITECTURE.md` and `.ai/context/OVERVIEW.md`
+- Read from `.ai/context/architecture.md`
 
 
 ## 💡 Development Guidelines
@@ -83,7 +83,7 @@ src/
 - Read from `.ai/context/CODING-STYLE.md`
 
 ### Testing
-- Read from `.ai/context/TESTING.md`
+- Read from `.ai/context/testing.md`
 
 ### Documentation
 - Update AGENTS.md when adding features
