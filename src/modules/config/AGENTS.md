@@ -6,7 +6,7 @@ Module de configuration pour la construction du contexte des requêtes et la ges
 
 ```
 config/
-├── CLAUDE.md                    # Ce fichier
+├── AGENTS.md                    # Ce fichier
 └── server/
     └── context-builder.ts       # Construction du contexte TRPC et API
 ```

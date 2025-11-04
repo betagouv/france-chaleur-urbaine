@@ -6,7 +6,7 @@ Module de diagnostic système pour vérifier l'état des outils et configuration
 
 ```
 diagnostic/
-├── CLAUDE.md                    # Ce fichier
+├── AGENTS.md                    # Ce fichier
 ├── client/
 │   └── DiagnosticPage.tsx       # Interface admin de diagnostic
 └── server/
