@@ -77,27 +77,8 @@ export const reseauxRouter = router({
       progress: 0,
     };
   }),
-  cityNetwork: route.input(z.object({ city: z.string() })).query(async ({ input }): Promise<HeatNetworksResponse> => {
-    const cityNetwork = await getCityEligilityStatus(input.city);
-    // Convertir CityNetwork en HeatNetworksResponse
-    return {
-      basedOnCity: true,
-      cityHasFuturNetwork: cityNetwork.cityHasFuturNetwork,
-      cityHasNetwork: cityNetwork.cityHasNetwork,
-      co2: null,
-      distance: null,
-      futurNetwork: false,
-      gestionnaire: null,
-      hasNoTraceNetwork: null,
-      hasPDP: null,
-      id: null,
-      inPDP: false,
-      isClasse: null,
-      isEligible: false,
-      name: null,
-      tauxENRR: null,
-      veryEligibleDistance: null,
-    };
+  cityNetwork: route.input(z.object({ city: z.string() })).query(async ({ input }) => {
+    return (await getCityEligilityStatus(input.city)) as HeatNetworksResponse; // legacy type for compatibility
   }),
   createNetwork: adminRoute.input(zCreateNetworkInput).mutation(async ({ input }) => {
     return await reseauxService.createNetwork(input.id as string, input.geometry, input.type);
@@ -108,32 +89,9 @@ export const reseauxRouter = router({
   deleteNetwork: adminRoute.input(zDeleteNetworkInput).mutation(async ({ input }) => {
     return await reseauxService.deleteNetwork(input.id as number, input.type);
   }),
-  eligibilityStatus: route
-    .input(z.object({ city: z.string(), lat: z.number(), lon: z.number() }))
-    .query(async ({ input }): Promise<HeatNetworksResponse> => {
-      const heatNetwork = await getEligilityStatus(input.lat, input.lon, input.city);
-      // Convertir HeatNetwork en HeatNetworksResponse
-      // Note: Le type HeatNetworksResponse force basedOnCity: true, mais ici on a un HeatNetwork
-      // On utilise une assertion de type pour gérer ce cas
-      return {
-        basedOnCity: true,
-        cityHasFuturNetwork: false,
-        cityHasNetwork: false,
-        co2: heatNetwork.co2,
-        distance: heatNetwork.distance,
-        futurNetwork: heatNetwork.futurNetwork,
-        gestionnaire: heatNetwork.gestionnaire,
-        hasNoTraceNetwork: heatNetwork.hasNoTraceNetwork,
-        hasPDP: heatNetwork.hasPDP,
-        id: heatNetwork.id,
-        inPDP: heatNetwork.inPDP,
-        isClasse: heatNetwork.isClasse,
-        isEligible: heatNetwork.isEligible,
-        name: heatNetwork.name,
-        tauxENRR: heatNetwork.tauxENRR,
-        veryEligibleDistance: heatNetwork.veryEligibleDistance,
-      } as HeatNetworksResponse;
-    }),
+  eligibilityStatus: route.input(z.object({ city: z.string(), lat: z.number(), lon: z.number() })).query(async ({ input }) => {
+    return (await getEligilityStatus(input.lat, input.lon, input.city)) as HeatNetworksResponse; // legacy type for compatibility
+  }),
   // Routes publiques pour l'éligibilité et la recherche de réseaux
   getNetworkEligibilityStatus: route.input(zGetNetworkEligibilityStatusInput).query(async ({ input }) => {
     return await getNetworkEligilityStatus(input.networkId, input.lat, input.lon);
