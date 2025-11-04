@@ -14,6 +14,6 @@ Data flow:
 - DB: PostgreSQL + PostGIS via Kysely (`import { kdb, sql } from '@/server/db/kysely'`)
 
 Edit rules (always):
-1) Read `ARCHITECTURE.md` and the module's `CLAUDE.md`
+1) Read `ARCHITECTURE.md` and the module's `AGENTS.md`
 2) Follow patterns of 2–3 similar files
 3) Prefer TRPC + Kysely over legacy services

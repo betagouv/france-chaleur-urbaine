@@ -116,7 +116,7 @@ const { data: testDetails, isLoading, refetch } = trpc.moduleName.get.useQuery({
 
 tRPC routes can be protected with rate limiting via the `security` module. Rate limiting is configured per-route using the `meta` property.
 
-**See the full [Security Module documentation](../security/CLAUDE.md) for details.**
+**See the full [Security Module documentation](../security/AGENTS.md) for details.**
 
 ### Quick Example
 

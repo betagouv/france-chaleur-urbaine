@@ -6,7 +6,7 @@ Module centralisé pour toutes les fonctionnalités de sécurité du projet : ra
 
 ```
 security/
-├── CLAUDE.md                      # Documentation
+├── AGENTS.md                      # Documentation
 └── server/
     └── rate-limit.ts              # Rate limiter pour API Next.js (express-rate-limit)
 ```
@@ -54,7 +54,7 @@ export default handleRouteErrors(async (req, res) => {
 
 ### Pour tRPC
 
-Le rate limiting pour tRPC est géré par le module `trpc` lui-même. Voir la [documentation du module tRPC](../trpc/CLAUDE.md#rate-limiting) pour les détails d'utilisation.
+Le rate limiting pour tRPC est géré par le module `trpc` lui-même. Voir la [documentation du module tRPC](../trpc/AGENTS.md#rate-limiting) pour les détails d'utilisation.
 
 ## Validation d'Emails
 

@@ -1,6 +1,6 @@
 # Architecture Documentation
 
-> **📋 READ THIS FIRST**: This file provides a comprehensive overview of the France Chaleur Urbaine codebase architecture. Always consult this file and relevant module CLAUDE.md files before making changes.
+> **📋 READ THIS FIRST**: This file provides a comprehensive overview of the France Chaleur Urbaine codebase architecture. Always consult this file and relevant module AGENTS.md files before making changes.
 
 ## Project Overview
 
@@ -33,7 +33,7 @@ src/
 
 ### ✅ Existing Modules (16)
 
-| Module | Purpose | Status | CLAUDE.md |
+| Module | Purpose | Status | AGENTS.md |
 |--------|---------|--------|-----------|
 | **auth** | Authentication (NextAuth) | ✅ Active | ✅ Complete |
 | **jobs** | Async job processing | ✅ Active | ✅ Complete |
@@ -54,7 +54,7 @@ src/
 
 ### 🏗️ Standard Module Structure
 
-Each module follows a consistent structure. See `src/modules/CLAUDE.md` for complete details and rules.
+Each module follows a consistent structure. See `src/modules/AGENTS.md` for complete details and rules.
 
 ### 🚫 Module Rules (CRITICAL)
 
@@ -112,20 +112,20 @@ Each module follows a consistent structure. See `src/modules/CLAUDE.md` for comp
 
 **BEFORE editing any files, you MUST:**
 1. **Read ARCHITECTURE.md** (this file) to understand the current structure
-2. **Read the relevant module's CLAUDE.md** file to understand conventions
+2. **Read the relevant module's AGENTS.md** file to understand conventions
 3. **Read at least 2-3 similar existing files** to follow patterns
 
 ### Making Changes
 
 #### Working with Existing Modules
-1. Check if module has `CLAUDE.md` - follow its specific conventions
+1. Check if module has `AGENTS.md` - follow its specific conventions
 2. Use relative imports (`./`, `../`) within modules
 3. Never import server code in client code
 4. Add types to `types.ts` if shared between client/server
 
 #### Creating New Modules
 1. Follow standard module structure above
-2. Create comprehensive `CLAUDE.md` documentation
+2. Create comprehensive `AGENTS.md` documentation
 3. Add `.env.example` for environment variables
 4. Update this ARCHITECTURE.md file
 
@@ -156,8 +156,8 @@ Each module follows a consistent structure. See `src/modules/CLAUDE.md` for comp
 
 ## 📝 Documentation Standards
 
-### CLAUDE.md Files
-Every module MUST have a `CLAUDE.md` file containing:
+### AGENTS.md Files
+Every module MUST have a `AGENTS.md` file containing:
 - **Structure** - File organization
 - **API documentation** - Hooks, components, services
 - **Database schema** - If applicable
@@ -191,7 +191,7 @@ Every module MUST have a `CLAUDE.md` file containing:
 
 ### For New Features
 1. Determine if feature belongs in existing module or needs new one
-2. Read relevant CLAUDE.md files for patterns
+2. Read relevant AGENTS.md files for patterns
 3. Follow module structure conventions
 4. Create TRPC routes instead of REST APIs
 5. Update this ARCHITECTURE.md if creating new module
@@ -203,7 +203,7 @@ Every module MUST have a `CLAUDE.md` file containing:
 4. Run `pnpm lint` and `pnpm ts` before committing
 
 ### For Code Review
-1. Verify ARCHITECTURE.md and CLAUDE.md files were consulted
+1. Verify ARCHITECTURE.md and AGENTS.md files were consulted
 2. Check module structure compliance
 3. Ensure no server imports in client code
 4. Confirm legacy code migration strategy if applicable
