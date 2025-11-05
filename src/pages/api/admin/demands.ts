@@ -1,4 +1,4 @@
-import { AirtableDB } from '@/server/db/airtable';
+import { sql } from 'kysely';
 import { kdb } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
 import { handleRouteErrors } from '@/server/helpers/server';
@@ -8,14 +8,25 @@ import { evaluateAST, parseExpressionToAST, parseResultActions } from '@/utils/e
 
 const GET = async () => {
   let startTime = Date.now();
-  const records = await AirtableDB('FCU - Utilisateurs')
-    .select({
-      filterByFormula: '{Gestionnaires validés} = FALSE()',
-      sort: [{ direction: 'desc', field: 'Date de la demande' }],
-    })
-    .all();
 
-  logger.info('airtable.getAdminDemands', {
+  const records = (
+    await kdb
+      .selectFrom('demands')
+      .selectAll()
+      .where((eb) =>
+        eb.or([
+          eb(sql`airtable_legacy_values->>'Gestionnaires validés'`, '=', 'false'),
+          eb(sql`airtable_legacy_values->>'Gestionnaires validés'`, 'is', null),
+        ])
+      )
+      .orderBy(sql`airtable_legacy_values->>'AirtableDate de la demande'`, 'desc')
+      .execute()
+  ).map(({ id, airtable_legacy_values }) => ({
+    fields: airtable_legacy_values,
+    id,
+  }));
+
+  logger.info('kdb.getAdminDemands', {
     duration: Date.now() - startTime,
     recordsCount: records.length,
   });
