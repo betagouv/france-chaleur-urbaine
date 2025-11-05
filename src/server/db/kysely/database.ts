@@ -168,7 +168,7 @@ export interface CommunesFortPotentielPourCreationReseauxChaleurTiles {
 export interface Demands {
   airtable_id: string | null;
   created_at: Generated<Timestamp>;
-  deleted_at: Timestamp | null;
+  deleted_at?: Timestamp | null;
   id: Generated<string>;
   legacy_values: JSONColumnType<AirtableLegacyRecord>;
   updated_at: Generated<Timestamp>;
@@ -179,12 +179,13 @@ export interface DemandEmails {
   body: string;
   cc: string | null;
   created_at: Generated<Timestamp>;
-  deleted_at: Timestamp | null;
+  deleted_at?: Timestamp | null;
   demand_id: string;
   email_key: string;
   id: Generated<string>;
   object: string;
   reply_to: string | null;
+  sent_at: Timestamp | string | null;
   signature: string | null;
   to: string;
   updated_at: Generated<Timestamp>;

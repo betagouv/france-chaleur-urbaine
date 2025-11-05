@@ -1,8 +1,10 @@
+import type { Insertable } from 'kysely';
 import type { AirtableLegacyRecord } from '@/modules/demands/types';
-import { kdb, sql } from '@/server/db/kysely';
+import { type DemandEmails, kdb, sql } from '@/server/db/kysely';
 import { createBaseModel } from '@/server/db/kysely/base-model';
 
 export const tableName = 'demands';
+export const emailsTableName = 'demand_emails';
 const baseModel = createBaseModel(tableName);
 
 export const update = async (recordId: string, values: Partial<AirtableLegacyRecord>) => {
@@ -29,8 +31,21 @@ export const create = async (values: Partial<AirtableLegacyRecord>) => {
     .returningAll()
     .execute();
 
-  // returningAll returns an array. We'll return the created doc (first result).
   return { id: createdDemand.id, ...createdDemand.legacy_values };
 };
 
 export const remove = baseModel.remove;
+
+export const listEmails = async (demandId: string) => {
+  const emails = await kdb.selectFrom('demand_emails').selectAll().where('demand_id', '=', demandId).execute();
+  return emails;
+};
+
+export const createEmail = async (values: Omit<Insertable<DemandEmails>, 'created_at' | 'updated_at' | 'id'>) => {
+  const [createdEmail] = await kdb
+    .insertInto('demand_emails')
+    .values({ ...values, created_at: new Date(), updated_at: new Date() })
+    .returningAll()
+    .execute();
+  return createdEmail;
+};

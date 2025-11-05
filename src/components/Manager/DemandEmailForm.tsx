@@ -222,7 +222,8 @@ function DemandEmailForm(props: Props) {
                         <span>
                           <span className="underline cursor-help">{object}</span> -{' '}
                           <small className="text-faded italic">
-                            envoyé le <time dateTime={item.date}>{dayjs(item.date).format('dddd D MMMM YYYY')}</time>
+                            envoyé le{' '}
+                            <time dateTime={dayjs(item.sent_at).toISOString()}>{dayjs(item.sent_at).format('dddd D MMMM YYYY')}</time>
                           </small>
                         </span>
                       </Tooltip>

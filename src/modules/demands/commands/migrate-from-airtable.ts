@@ -140,6 +140,7 @@ export const importDemandEmails = async (options: { batchSize?: string; dryRun?:
           email_key: fields.email_key || '',
           object: fields.object || '',
           reply_to: fields.reply_to || fields.replyTo || '',
+          sent_at: fields.sent_at ? new Date(fields.sent_at as string) : null,
           signature: fields.signature || '',
           to: fields.to || '',
           user_email: fields.user_email || '',
@@ -150,10 +151,10 @@ export const importDemandEmails = async (options: { batchSize?: string; dryRun?:
 
           updated++;
         } else {
-          // await kdb
-          //   .insertInto('demand_emails')
-          //   .values(emailData as any)
-          //   .execute();
+          await kdb
+            .insertInto('demand_emails')
+            .values(emailData as any)
+            .execute();
 
           inserted++;
         }

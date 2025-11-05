@@ -31,6 +31,7 @@ export async function up(knex: Knex): Promise<void> {
       body TEXT NOT NULL,
       signature TEXT,
       user_email TEXT NOT NULL,
+      sent_at TIMESTAMP WITH TIME ZONE,
       created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
       updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
       deleted_at TIMESTAMP WITH TIME ZONE
