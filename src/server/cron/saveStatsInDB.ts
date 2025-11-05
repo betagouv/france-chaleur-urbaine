@@ -262,11 +262,11 @@ const saveDemandsStats = async (startDate: string, endDate: string) => {
     await kdb
       .selectFrom('demands')
       .selectAll()
-      .where(sql`airtable_legacy_values->>'Date de la demande'`, '<', endDate)
-      .where(sql`airtable_legacy_values->>'Date de la demande'`, '>', startDate)
+      .where(sql`legacy_values->>'Date de la demande'`, '<', endDate)
+      .where(sql`legacy_values->>'Date de la demande'`, '>', startDate)
       .execute()
-  ).map(({ id, airtable_legacy_values }) => ({
-    fields: airtable_legacy_values,
+  ).map(({ id, legacy_values }) => ({
+    fields: legacy_values,
     id,
   }));
 

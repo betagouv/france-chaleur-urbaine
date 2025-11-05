@@ -15,14 +15,14 @@ const GET = async () => {
       .selectAll()
       .where((eb) =>
         eb.or([
-          eb(sql`airtable_legacy_values->>'Gestionnaires validés'`, '=', 'false'),
-          eb(sql`airtable_legacy_values->>'Gestionnaires validés'`, 'is', null),
+          eb(sql`legacy_values->>'Gestionnaires validés'`, '=', 'false'),
+          eb(sql`legacy_values->>'Gestionnaires validés'`, 'is', null),
         ])
       )
-      .orderBy(sql`airtable_legacy_values->>'AirtableDate de la demande'`, 'desc')
+      .orderBy(sql`legacy_values->>'AirtableDate de la demande'`, 'desc')
       .execute()
-  ).map(({ id, airtable_legacy_values }) => ({
-    fields: airtable_legacy_values,
+  ).map(({ id, legacy_values }) => ({
+    fields: legacy_values,
     id,
   }));
 

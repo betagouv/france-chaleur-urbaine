@@ -3,8 +3,8 @@ import { kdb } from '@/server/db/kysely';
 
 const updateDemands = async () => {
   try {
-    const demands = (await kdb.selectFrom('demands').selectAll().execute()).map(({ id, airtable_legacy_values }) => ({
-      fields: airtable_legacy_values,
+    const demands = (await kdb.selectFrom('demands').selectAll().execute()).map(({ id, legacy_values }) => ({
+      fields: legacy_values,
       id,
     }));
 
