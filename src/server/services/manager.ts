@@ -1,87 +1,133 @@
 import { faker } from '@faker-js/faker';
+import { sql } from 'kysely';
 import type { User } from 'next-auth';
 import { v4 as uuidv4 } from 'uuid';
-
+import * as demandsService from '@/modules/demands/server/demands-service';
 import { createUserEvent } from '@/modules/events/server/service';
 import db from '@/server/db';
-import base from '@/server/db/airtable';
+import { kdb } from '@/server/db/kysely';
 import { sendEmailTemplate } from '@/server/email';
 import { logger } from '@/server/helpers/logger';
 import { invalidPermissionsError } from '@/server/helpers/server';
-import { Airtable } from '@/types/enum/Airtable';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import type { Demand } from '@/types/Summary/Demand';
 import type { User as FullUser } from '@/types/User';
 
 export const getAllDemands = async (): Promise<Demand[]> => {
-  const records = await base(Airtable.DEMANDES)
-    .select({ sort: [{ direction: 'desc', field: 'Date demandes' }] })
-    .all();
+  const records = (
+    await kdb.selectFrom('demands').selectAll().orderBy(sql`airtable_legacy_values->>'Date demandes'`, 'desc').execute()
+  ).map(({ id, airtable_legacy_values }) => ({
+    fields: airtable_legacy_values,
+    id,
+  }));
   return records.map((record) => ({ id: record.id, ...record.fields }) as Demand);
 };
 
 export const getAllNewDemands = async (): Promise<Demand[]> => {
-  const records = await base(Airtable.DEMANDES)
-    .select({
-      filterByFormula: `AND(
-        {Gestionnaires validés} = TRUE(),
-        {Notification envoyé} = ""
-        )`,
-    })
-    .all();
+  const records = (
+    await kdb
+      .selectFrom('demands')
+      .selectAll()
+      .where(sql`airtable_legacy_values->>'Gestionnaires validés'`, '=', 'true')
+      .where((eb) =>
+        eb.or([
+          eb(sql`airtable_legacy_values->>'Notification envoyé'`, '=', ''),
+          eb(sql`airtable_legacy_values->>'Notification envoyé'`, 'is', null),
+        ])
+      )
+      .execute()
+  ).map(({ id, airtable_legacy_values }) => ({
+    fields: airtable_legacy_values,
+    id,
+  }));
   return records.map((record) => ({ id: record.id, ...record.fields }) as Demand);
 };
 
 export const getAllToRelanceDemands = async (): Promise<Demand[]> => {
-  const records = await base(Airtable.DEMANDES)
-    .select({
-      filterByFormula: `OR(
-        AND(
-          IS_BEFORE({Date de la demande}, DATEADD(TODAY(), -1, "months")),
-          {Relance à activer} = TRUE(),
-          {Recontacté par le gestionnaire} = "",
-          {Relance envoyée} = ""
-        ),
-        AND(
-          IS_BEFORE({Date de la demande}, DATEADD(TODAY(), -45, "days")),
-          {Recontacté par le gestionnaire} = "",
-          {Relance à activer} = TRUE(),
-          {Relance envoyée} != "",
-          {Seconde relance envoyée} = ""
-        )
-      )`,
-    })
-    .all();
+  const records = (
+    await kdb
+      .selectFrom('demands')
+      .selectAll()
+      .where((eb) =>
+        eb.or([
+          eb.and([
+            eb(sql`(airtable_legacy_values->>'Date de la demande')::date`, '<', sql`NOW() - INTERVAL '1 month'`),
+            eb(sql`airtable_legacy_values->>'Relance à activer'`, '=', 'true'),
+            eb.or([
+              eb(sql`airtable_legacy_values->>'Recontacté par le gestionnaire'`, '=', ''),
+              eb(sql`airtable_legacy_values->>'Recontacté par le gestionnaire'`, 'is', null),
+            ]),
+            eb.or([
+              eb(sql`airtable_legacy_values->>'Relance envoyée'`, '=', ''),
+              eb(sql`airtable_legacy_values->>'Relance envoyée'`, 'is', null),
+            ]),
+          ]),
+          eb.and([
+            eb(sql`(airtable_legacy_values->>'Date de la demande')::date`, '<', sql`NOW() - INTERVAL '45 days'`),
+            eb.or([
+              eb(sql`airtable_legacy_values->>'Recontacté par le gestionnaire'`, '=', ''),
+              eb(sql`airtable_legacy_values->>'Recontacté par le gestionnaire'`, 'is', null),
+            ]),
+            eb(sql`airtable_legacy_values->>'Relance à activer'`, '=', 'true'),
+            eb(sql`airtable_legacy_values->>'Relance envoyée'`, '!=', ''),
+            eb(sql`airtable_legacy_values->>'Relance envoyée'`, 'is not', null),
+            eb.or([
+              eb(sql`airtable_legacy_values->>'Seconde relance envoyée'`, '=', ''),
+              eb(sql`airtable_legacy_values->>'Seconde relance envoyée'`, 'is', null),
+            ]),
+          ]),
+        ])
+      )
+      .execute()
+  ).map(({ id, airtable_legacy_values }) => ({
+    fields: airtable_legacy_values,
+    id,
+  }));
   return records.map((record) => ({ id: record.id, ...record.fields }) as Demand);
 };
 
 export const getToRelanceDemand = async (id: string): Promise<Demand | undefined> => {
-  const records = await base(Airtable.DEMANDES)
-    .select({
-      filterByFormula: `{Relance ID} = "${id}"`,
+  const records = (await kdb.selectFrom('demands').selectAll().where(sql`airtable_legacy_values->>'Relance ID'`, '=', id).execute()).map(
+    ({ id, airtable_legacy_values }) => ({
+      fields: airtable_legacy_values,
+      id,
     })
-    .all();
+  );
   return records.map((record) => ({ id: record.id, ...record.fields }) as Demand)[0];
 };
 export const getAllStaledDemandsSince = async (dateDiff: number): Promise<Demand[]> => {
-  const records = await base(Airtable.DEMANDES)
-    .select({
-      filterByFormula: `AND(
-        IS_BEFORE({Notification envoyé}, DATEADD(TODAY(), ${dateDiff}, "days")),
-        OR({Status} = "", {Status} = "En attente de prise en charge")
-        )`,
-    })
-    .all();
+  const records = (
+    await kdb
+      .selectFrom('demands')
+      .selectAll()
+      .where(sql`(airtable_legacy_values->>'Notification envoyé')::date`, '<', sql`NOW() + INTERVAL '${sql.raw(dateDiff.toString())} days'`)
+      .where((eb) =>
+        eb.or([
+          eb(sql`airtable_legacy_values->>'Status'`, '=', ''),
+          eb(sql`airtable_legacy_values->>'Status'`, 'is', null),
+          eb(sql`airtable_legacy_values->>'Status'`, '=', 'En attente de prise en charge'),
+        ])
+      )
+      .execute()
+  ).map(({ id, airtable_legacy_values }) => ({
+    fields: airtable_legacy_values,
+    id,
+  }));
   return records.map((record) => ({ id: record.id, ...record.fields }) as Demand);
 };
 
 export const getGestionnairesDemands = async (gestionnaires: string[]): Promise<Demand[]> => {
-  const records = await base(Airtable.DEMANDES)
-    .select({
-      filterByFormula: `{Gestionnaires validés} = TRUE()`,
-      sort: [{ direction: 'desc', field: 'Date demandes' }],
-    })
-    .all();
+  const records = (
+    await kdb
+      .selectFrom('demands')
+      .selectAll()
+      .where(sql`airtable_legacy_values->>'Gestionnaires validés'`, '=', 'true')
+      .orderBy(sql`airtable_legacy_values->>'Date demandes'`, 'desc')
+      .execute()
+  ).map(({ id, airtable_legacy_values }) => ({
+    fields: airtable_legacy_values,
+    id,
+  }));
 
   return records
     .map((record) => ({ id: record.id, ...record.fields }) as Demand)
@@ -95,25 +141,30 @@ export const getDemands = async (user: User): Promise<Demand[]> => {
 
   const startTime = Date.now();
 
-  // Build filter formula based on user role and gestionnaires
-  let filterFormula = '';
+  // Build query based on user role and gestionnaires
+  let query = kdb.selectFrom('demands').selectAll();
+
   if (user.role === 'admin') {
-    filterFormula = '';
+    // No filter for admin
   } else if (user.role === 'demo') {
-    filterFormula = `AND({Gestionnaires validés} = TRUE(), REGEX_MATCH({Gestionnaires}, "(\\A|, )Paris(\\z|, )"))`;
+    query = query
+      .where(sql`airtable_legacy_values->>'Gestionnaires validés'`, '=', 'true')
+      .where(sql`airtable_legacy_values->>'Gestionnaires'`, '~', '(^|, )Paris($|, )');
   } else if (user.role === 'gestionnaire') {
     const regexPattern = user.gestionnaires.join('|');
-    filterFormula = `AND({Gestionnaires validés} = TRUE(), REGEX_MATCH({Gestionnaires}, "(\\A|, )(${regexPattern})(\\z|, )"))`;
+    query = query
+      .where(sql`airtable_legacy_values->>'Gestionnaires validés'`, '=', 'true')
+      .where(sql`airtable_legacy_values->>'Gestionnaires'`, '~', `(^|, )(${regexPattern})($|, )`);
   }
 
-  const records = await base(Airtable.DEMANDES)
-    .select({
-      filterByFormula: filterFormula,
-      sort: [{ direction: 'desc', field: 'Date demandes' }],
+  const records = (await query.orderBy(sql`airtable_legacy_values->>'Date demandes'`, 'desc').execute()).map(
+    ({ id, airtable_legacy_values }) => ({
+      fields: airtable_legacy_values,
+      id,
     })
-    .all();
+  );
 
-  logger.info('airtable.getDemands', {
+  logger.info('kdb.getDemands', {
     duration: Date.now() - startTime,
     recordsCount: records.length,
     tagsCounts: user.gestionnaires.length,
@@ -145,23 +196,26 @@ export const getDemands = async (user: User): Promise<Demand[]> => {
             Téléphone: `0${faker.string.numeric(9)}`,
           }) as Demand
       )
-    : records.map((record) => ({ id: record.id, ...record.fields }) as Demand);
+    : (records as unknown as Demand[]);
 };
 
 const getDemand = async (user: User, demandId: string): Promise<Demand> => {
-  const record = await base(Airtable.DEMANDES).find(demandId);
-  const gestionnaires = record.get('Gestionnaires') as string[];
+  const record = await kdb.selectFrom('demands').selectAll().where('id', '=', demandId).executeTakeFirst();
+  if (!record) {
+    throw new Error('Demand not found');
+  }
+  const gestionnaires = (record.airtable_legacy_values as any).Gestionnaires as string[];
   if (user.role !== 'admin' && !gestionnaires.some((gestionnaire) => user.gestionnaires?.includes(gestionnaire))) {
     throw invalidPermissionsError;
   }
-  return { id: record.id, ...record.fields } as Demand;
+  return { id: record.id, ...record.airtable_legacy_values } as Demand;
 };
 
 export const updateDemand = async (user: User, demandId: string, updateData: Partial<Demand>): Promise<Demand | null> => {
   // check permissions
   await getDemand(user, demandId);
 
-  const record = await base(Airtable.DEMANDES).update(demandId, updateData, { typecast: true });
+  const record = await demandsService.update(demandId, updateData);
 
   // legacy check, may be obsolete as errors seem to be thrown by the Airtable API
   const error = (record as any)?.error;
@@ -175,7 +229,7 @@ export const updateDemand = async (user: User, demandId: string, updateData: Par
     data: updateData,
     type: 'demand_updated',
   });
-  return { id: record.id, ...record.fields } as Demand;
+  return record;
 };
 
 const groupDemands = (demands: Demand[]): Record<string, Demand[]> => {
@@ -228,7 +282,7 @@ const newDemands = async (users: FullUser[]) => {
       if (process.env.NEXT_PUBLIC_MOCK_USER_CREATION !== 'true') {
         await Promise.all(
           groupedDemands[gestionnaire].map((demand) =>
-            base(Airtable.DEMANDES).update(demand.id, {
+            demandsService.update(demand.id, {
               'Notification envoyé': new Date().toDateString(),
             })
           )
@@ -285,7 +339,7 @@ export const dailyNewManagerMail = async () => {
 export const updateRelanceAnswer = async (id: string, relanced: boolean) => {
   const demand = await getToRelanceDemand(id);
   if (demand) {
-    await base(Airtable.DEMANDES).update(demand.id, {
+    await demandsService.update(demand.id, {
       'Recontacté par le gestionnaire': relanced ? 'Oui' : 'Non',
     });
   }
@@ -301,7 +355,7 @@ export const dailyRelanceMail = async () => {
   for (const demand of demands) {
     const relanced = demand['Relance envoyée'];
     const uuid = uuidv4();
-    await base(Airtable.DEMANDES).update(demand.id, {
+    await demandsService.update(demand.id, {
       [relanced ? 'Seconde relance envoyée' : 'Relance envoyée']: new Date().toDateString(),
       'Relance ID': uuid,
     });

@@ -1,3 +1,4 @@
+// NOT USED ANYMORE
 export enum ENERGY_TYPE {
   Fuel = 'fuelOil',
   Gas = 'gas',

@@ -4,7 +4,7 @@
  */
 
 import type { ColumnType, JSONColumnType } from 'kysely';
-
+import type { AirtableLegacyRecord } from '@/modules/demands/types';
 import type { EventType } from '@/modules/events/constants';
 import type { UserRole } from '@/types/enum/UserRole';
 
@@ -163,6 +163,11 @@ export interface CommunesFortPotentielPourCreationReseauxChaleurTiles {
   x: Int8;
   y: Int8;
   z: Int8;
+}
+
+export interface Demands {
+  airtable_legacy_values: JSONColumnType<AirtableLegacyRecord>;
+  id: Generated<string>;
 }
 
 export interface Departements {
@@ -867,6 +872,7 @@ export interface DB {
   besoins_en_chaleur_tiles: BesoinsEnChaleurTiles;
   communes: Communes;
   communes_fort_potentiel_pour_creation_reseaux_chaleur_tiles: CommunesFortPotentielPourCreationReseauxChaleurTiles;
+  demands: Demands;
   departements: Departements;
   donnees_de_consos: DonneesDeConsos;
   donnees_de_consos_tiles: DonneesDeConsosTiles;

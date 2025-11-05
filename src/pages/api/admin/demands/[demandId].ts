@@ -1,8 +1,7 @@
 import type { NextApiRequest } from 'next';
 import { z } from 'zod';
-
+import * as demandsService from '@/modules/demands/server/demands-service';
 import { createUserEvent } from '@/modules/events/server/service';
-import { AirtableDB } from '@/server/db/airtable';
 import { handleRouteErrors, validateObjectSchema } from '@/server/helpers/server';
 import type { AdminDemand } from '@/types/Summary/Demand';
 
@@ -24,7 +23,7 @@ const PUT = async (req: NextApiRequest) => {
   const demandUpdate = await validateObjectSchema(req.body, zDemandUpdate);
 
   // airtable types don't support null values but the API does
-  await AirtableDB('FCU - Utilisateurs').update(req.query.demandId as string, demandUpdate as any, { typecast: true });
+  await demandsService.update(req.query.demandId as string, demandUpdate as any);
   await createUserEvent({
     author_id: req.user.id,
     context_id: req.query.demandId as string,
@@ -35,7 +34,7 @@ const PUT = async (req: NextApiRequest) => {
 };
 
 const DELETE = async (req: NextApiRequest) => {
-  await AirtableDB('FCU - Utilisateurs').destroy(req.query.demandId as string);
+  await demandsService.remove(req.query.demandId as string);
   await createUserEvent({
     author_id: req.user.id,
     context_id: req.query.demandId as string,

@@ -1,23 +1,21 @@
-import base from '@/server/db/airtable';
-import { Airtable } from '@/types/enum/Airtable';
+import * as demandsService from '@/modules/demands/server/demands-service';
+import { kdb } from '@/server/db/kysely';
 
 const updateDemands = async () => {
   try {
-    const demands = await base(Airtable.DEMANDES).select().all();
+    const demands = (await kdb.selectFrom('demands').selectAll().execute()).map(({ id, airtable_legacy_values }) => ({
+      fields: airtable_legacy_values,
+      id,
+    }));
+
     await Promise.all(
       demands
-        .filter((demand: any) => demand.get('Departement')?.includes('Puy-de-Dôme'))
+        .filter((demand: any) => demand.fields?.Departement?.includes('Puy-de-Dôme'))
         .map(async (demand) => {
-          const gestionnaires = demand.get('Gestionnaires') as [string];
+          const gestionnaires = demand.fields.Gestionnaires as [string];
           if (gestionnaires) {
             gestionnaires.push('ADUHME');
-            await base(Airtable.DEMANDES).update(
-              demand.id,
-              {
-                Gestionnaires: gestionnaires,
-              },
-              { typecast: true }
-            );
+            await demandsService.update(demand.id, { Gestionnaires: gestionnaires });
           }
         })
     );
