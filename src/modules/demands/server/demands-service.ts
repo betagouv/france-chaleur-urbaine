@@ -9,25 +9,28 @@ export const update = async (recordId: string, values: Partial<AirtableLegacyRec
   const [updatedDemand] = await kdb
     .updateTable(tableName)
     .set({
-      airtable_legacy_values: sql`airtable_legacy_values || ${JSON.stringify(values)}::jsonb`, // The || operator merges the two JSONB objects, with the new values overwriting any matching keys.
+      legacy_values: sql`legacy_values || ${JSON.stringify(values)}::jsonb`, // The || operator merges the two JSONB objects, with the new values overwriting any matching keys.
+      updated_at: new Date(),
     })
     .where('id', '=', recordId)
     .returningAll()
     .execute();
-  return { id: updatedDemand.id, ...updatedDemand.airtable_legacy_values };
+  return { id: updatedDemand.id, ...updatedDemand.legacy_values };
 };
 
 export const create = async (values: Partial<AirtableLegacyRecord>) => {
   const [createdDemand] = await kdb
     .insertInto(tableName)
     .values({
-      airtable_legacy_values: sql<string>`${JSON.stringify(values)}::jsonb`,
+      created_at: new Date(),
+      legacy_values: sql<string>`${JSON.stringify(values)}::jsonb`,
+      updated_at: new Date(),
     })
     .returningAll()
     .execute();
 
   // returningAll returns an array. We'll return the created doc (first result).
-  return { id: createdDemand.id, ...createdDemand.airtable_legacy_values };
+  return { id: createdDemand.id, ...createdDemand.legacy_values };
 };
 
 export const remove = baseModel.remove;

@@ -166,8 +166,29 @@ export interface CommunesFortPotentielPourCreationReseauxChaleurTiles {
 }
 
 export interface Demands {
-  airtable_legacy_values: JSONColumnType<AirtableLegacyRecord>;
+  airtable_id: string | null;
+  created_at: Generated<Timestamp>;
+  deleted_at: Timestamp | null;
   id: Generated<string>;
+  legacy_values: JSONColumnType<AirtableLegacyRecord>;
+  updated_at: Generated<Timestamp>;
+}
+
+export interface DemandEmails {
+  airtable_id: string | null;
+  body: string;
+  cc: string | null;
+  created_at: Generated<Timestamp>;
+  deleted_at: Timestamp | null;
+  demand_id: string;
+  email_key: string;
+  id: Generated<string>;
+  object: string;
+  reply_to: string | null;
+  signature: string | null;
+  to: string;
+  updated_at: Generated<Timestamp>;
+  user_email: string;
 }
 
 export interface Departements {
@@ -873,6 +894,7 @@ export interface DB {
   communes: Communes;
   communes_fort_potentiel_pour_creation_reseaux_chaleur_tiles: CommunesFortPotentielPourCreationReseauxChaleurTiles;
   demands: Demands;
+  demand_emails: DemandEmails;
   departements: Departements;
   donnees_de_consos: DonneesDeConsos;
   donnees_de_consos_tiles: DonneesDeConsosTiles;

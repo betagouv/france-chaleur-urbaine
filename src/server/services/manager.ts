@@ -14,12 +14,12 @@ import type { Demand } from '@/types/Summary/Demand';
 import type { User as FullUser } from '@/types/User';
 
 export const getAllDemands = async (): Promise<Demand[]> => {
-  const records = (
-    await kdb.selectFrom('demands').selectAll().orderBy(sql`airtable_legacy_values->>'Date demandes'`, 'desc').execute()
-  ).map(({ id, airtable_legacy_values }) => ({
-    fields: airtable_legacy_values,
-    id,
-  }));
+  const records = (await kdb.selectFrom('demands').selectAll().orderBy(sql`legacy_values->>'Date demandes'`, 'desc').execute()).map(
+    ({ id, legacy_values }) => ({
+      fields: legacy_values,
+      id,
+    })
+  );
   return records.map((record) => ({ id: record.id, ...record.fields }) as Demand);
 };
 
@@ -28,16 +28,13 @@ export const getAllNewDemands = async (): Promise<Demand[]> => {
     await kdb
       .selectFrom('demands')
       .selectAll()
-      .where(sql`airtable_legacy_values->>'Gestionnaires validés'`, '=', 'true')
+      .where(sql`legacy_values->>'Gestionnaires validés'`, '=', 'true')
       .where((eb) =>
-        eb.or([
-          eb(sql`airtable_legacy_values->>'Notification envoyé'`, '=', ''),
-          eb(sql`airtable_legacy_values->>'Notification envoyé'`, 'is', null),
-        ])
+        eb.or([eb(sql`legacy_values->>'Notification envoyé'`, '=', ''), eb(sql`legacy_values->>'Notification envoyé'`, 'is', null)])
       )
       .execute()
-  ).map(({ id, airtable_legacy_values }) => ({
-    fields: airtable_legacy_values,
+  ).map(({ id, legacy_values }) => ({
+    fields: legacy_values,
     id,
   }));
   return records.map((record) => ({ id: record.id, ...record.fields }) as Demand);
@@ -51,45 +48,42 @@ export const getAllToRelanceDemands = async (): Promise<Demand[]> => {
       .where((eb) =>
         eb.or([
           eb.and([
-            eb(sql`(airtable_legacy_values->>'Date de la demande')::date`, '<', sql`NOW() - INTERVAL '1 month'`),
-            eb(sql`airtable_legacy_values->>'Relance à activer'`, '=', 'true'),
+            eb(sql`(legacy_values->>'Date de la demande')::date`, '<', sql`NOW() - INTERVAL '1 month'`),
+            eb(sql`legacy_values->>'Relance à activer'`, '=', 'true'),
             eb.or([
-              eb(sql`airtable_legacy_values->>'Recontacté par le gestionnaire'`, '=', ''),
-              eb(sql`airtable_legacy_values->>'Recontacté par le gestionnaire'`, 'is', null),
+              eb(sql`legacy_values->>'Recontacté par le gestionnaire'`, '=', ''),
+              eb(sql`legacy_values->>'Recontacté par le gestionnaire'`, 'is', null),
             ]),
-            eb.or([
-              eb(sql`airtable_legacy_values->>'Relance envoyée'`, '=', ''),
-              eb(sql`airtable_legacy_values->>'Relance envoyée'`, 'is', null),
-            ]),
+            eb.or([eb(sql`legacy_values->>'Relance envoyée'`, '=', ''), eb(sql`legacy_values->>'Relance envoyée'`, 'is', null)]),
           ]),
           eb.and([
-            eb(sql`(airtable_legacy_values->>'Date de la demande')::date`, '<', sql`NOW() - INTERVAL '45 days'`),
+            eb(sql`(legacy_values->>'Date de la demande')::date`, '<', sql`NOW() - INTERVAL '45 days'`),
             eb.or([
-              eb(sql`airtable_legacy_values->>'Recontacté par le gestionnaire'`, '=', ''),
-              eb(sql`airtable_legacy_values->>'Recontacté par le gestionnaire'`, 'is', null),
+              eb(sql`legacy_values->>'Recontacté par le gestionnaire'`, '=', ''),
+              eb(sql`legacy_values->>'Recontacté par le gestionnaire'`, 'is', null),
             ]),
-            eb(sql`airtable_legacy_values->>'Relance à activer'`, '=', 'true'),
-            eb(sql`airtable_legacy_values->>'Relance envoyée'`, '!=', ''),
-            eb(sql`airtable_legacy_values->>'Relance envoyée'`, 'is not', null),
+            eb(sql`legacy_values->>'Relance à activer'`, '=', 'true'),
+            eb(sql`legacy_values->>'Relance envoyée'`, '!=', ''),
+            eb(sql`legacy_values->>'Relance envoyée'`, 'is not', null),
             eb.or([
-              eb(sql`airtable_legacy_values->>'Seconde relance envoyée'`, '=', ''),
-              eb(sql`airtable_legacy_values->>'Seconde relance envoyée'`, 'is', null),
+              eb(sql`legacy_values->>'Seconde relance envoyée'`, '=', ''),
+              eb(sql`legacy_values->>'Seconde relance envoyée'`, 'is', null),
             ]),
           ]),
         ])
       )
       .execute()
-  ).map(({ id, airtable_legacy_values }) => ({
-    fields: airtable_legacy_values,
+  ).map(({ id, legacy_values }) => ({
+    fields: legacy_values,
     id,
   }));
   return records.map((record) => ({ id: record.id, ...record.fields }) as Demand);
 };
 
 export const getToRelanceDemand = async (id: string): Promise<Demand | undefined> => {
-  const records = (await kdb.selectFrom('demands').selectAll().where(sql`airtable_legacy_values->>'Relance ID'`, '=', id).execute()).map(
-    ({ id, airtable_legacy_values }) => ({
-      fields: airtable_legacy_values,
+  const records = (await kdb.selectFrom('demands').selectAll().where(sql`legacy_values->>'Relance ID'`, '=', id).execute()).map(
+    ({ id, legacy_values }) => ({
+      fields: legacy_values,
       id,
     })
   );
@@ -100,17 +94,17 @@ export const getAllStaledDemandsSince = async (dateDiff: number): Promise<Demand
     await kdb
       .selectFrom('demands')
       .selectAll()
-      .where(sql`(airtable_legacy_values->>'Notification envoyé')::date`, '<', sql`NOW() + INTERVAL '${sql.raw(dateDiff.toString())} days'`)
+      .where(sql`(legacy_values->>'Notification envoyé')::date`, '<', sql`NOW() + INTERVAL '${sql.raw(dateDiff.toString())} days'`)
       .where((eb) =>
         eb.or([
-          eb(sql`airtable_legacy_values->>'Status'`, '=', ''),
-          eb(sql`airtable_legacy_values->>'Status'`, 'is', null),
-          eb(sql`airtable_legacy_values->>'Status'`, '=', 'En attente de prise en charge'),
+          eb(sql`legacy_values->>'Status'`, '=', ''),
+          eb(sql`legacy_values->>'Status'`, 'is', null),
+          eb(sql`legacy_values->>'Status'`, '=', 'En attente de prise en charge'),
         ])
       )
       .execute()
-  ).map(({ id, airtable_legacy_values }) => ({
-    fields: airtable_legacy_values,
+  ).map(({ id, legacy_values }) => ({
+    fields: legacy_values,
     id,
   }));
   return records.map((record) => ({ id: record.id, ...record.fields }) as Demand);
@@ -121,11 +115,11 @@ export const getGestionnairesDemands = async (gestionnaires: string[]): Promise<
     await kdb
       .selectFrom('demands')
       .selectAll()
-      .where(sql`airtable_legacy_values->>'Gestionnaires validés'`, '=', 'true')
-      .orderBy(sql`airtable_legacy_values->>'Date demandes'`, 'desc')
+      .where(sql`legacy_values->>'Gestionnaires validés'`, '=', 'true')
+      .orderBy(sql`legacy_values->>'Date demandes'`, 'desc')
       .execute()
-  ).map(({ id, airtable_legacy_values }) => ({
-    fields: airtable_legacy_values,
+  ).map(({ id, legacy_values }) => ({
+    fields: legacy_values,
     id,
   }));
 
@@ -148,21 +142,19 @@ export const getDemands = async (user: User): Promise<Demand[]> => {
     // No filter for admin
   } else if (user.role === 'demo') {
     query = query
-      .where(sql`airtable_legacy_values->>'Gestionnaires validés'`, '=', 'true')
-      .where(sql`airtable_legacy_values->>'Gestionnaires'`, '~', '(^|, )Paris($|, )');
+      .where(sql`legacy_values->>'Gestionnaires validés'`, '=', 'true')
+      .where(sql`legacy_values->>'Gestionnaires'`, '~', '(^|, )Paris($|, )');
   } else if (user.role === 'gestionnaire') {
     const regexPattern = user.gestionnaires.join('|');
     query = query
-      .where(sql`airtable_legacy_values->>'Gestionnaires validés'`, '=', 'true')
-      .where(sql`airtable_legacy_values->>'Gestionnaires'`, '~', `(^|, )(${regexPattern})($|, )`);
+      .where(sql`legacy_values->>'Gestionnaires validés'`, '=', 'true')
+      .where(sql`legacy_values->>'Gestionnaires'`, '~', `(^|, )(${regexPattern})($|, )`);
   }
 
-  const records = (await query.orderBy(sql`airtable_legacy_values->>'Date demandes'`, 'desc').execute()).map(
-    ({ id, airtable_legacy_values }) => ({
-      fields: airtable_legacy_values,
-      id,
-    })
-  );
+  const records = (await query.orderBy(sql`legacy_values->>'Date demandes'`, 'desc').execute()).map(({ id, legacy_values }) => ({
+    fields: legacy_values,
+    id,
+  }));
 
   logger.info('kdb.getDemands', {
     duration: Date.now() - startTime,
@@ -204,11 +196,11 @@ const getDemand = async (user: User, demandId: string): Promise<Demand> => {
   if (!record) {
     throw new Error('Demand not found');
   }
-  const gestionnaires = (record.airtable_legacy_values as any).Gestionnaires as string[];
+  const gestionnaires = (record.legacy_values as any).Gestionnaires as string[];
   if (user.role !== 'admin' && !gestionnaires.some((gestionnaire) => user.gestionnaires?.includes(gestionnaire))) {
     throw invalidPermissionsError;
   }
-  return { id: record.id, ...record.airtable_legacy_values } as Demand;
+  return { id: record.id, ...record.legacy_values } as Demand;
 };
 
 export const updateDemand = async (user: User, demandId: string, updateData: Partial<Demand>): Promise<Demand | null> => {
