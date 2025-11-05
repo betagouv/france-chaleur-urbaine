@@ -1,4 +1,4 @@
-import { ComboboxList, ComboboxOption } from '@/components/ui/Combobox';
+import { ComboboxList, ComboboxOption } from '@/components/ui/ComboboxText';
 import type { SuggestionItem } from '@/modules/ban/types';
 
 type SuggestionListProps = {

@@ -4,7 +4,7 @@ import styled from 'styled-components';
 
 import { clientConfig } from '@/client-config';
 import Box from '@/components/ui/Box';
-import { Combobox, ComboboxInput, ComboboxList, ComboboxOption, ComboboxPopover } from '@/components/ui/Combobox';
+import { Combobox, ComboboxInput, ComboboxList, ComboboxOption, ComboboxPopover } from '@/components/ui/ComboboxText';
 import type { NetworkSearchResult } from '@/pages/api/networks/search';
 import debounce from '@/utils/debounce';
 import { postFetchJSON } from '@/utils/network';

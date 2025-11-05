@@ -1,4 +1,4 @@
-import { ComboboxInput } from '@/components/ui/Combobox';
+import { ComboboxInput } from '@/components/ui/ComboboxText';
 
 type AddressInputProps = {
   placeholder?: string;
