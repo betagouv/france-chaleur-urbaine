@@ -189,6 +189,7 @@ const ComboBox = (rawProps: ComboBoxProps) => {
         </PopoverTrigger>
         <PopoverContent
           sideOffset={0}
+          align="start"
           onOpenAutoFocus={(e) => e.preventDefault()}
           className="border border-solid border-gray-300 shadow-lg"
         >
