@@ -85,7 +85,7 @@ export async function processProEligibilityTestJob(job: ProEligibilityTestJob, l
     .replace(/\r\n/g, '\n')
     .replace(/"/g, '')
     .split('\n')
-    .filter((line) => line) // remove empty lines
+    .filter((line) => line.trim().length > 0) // remove empty or whitespace-only lines
     .map((line) => `"${line}"`); // add quotes to get a single column address
   logger.info('infos', { addressesCount: lines.length });
 
