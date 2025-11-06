@@ -143,12 +143,15 @@ export const getDemands = async (user: User): Promise<Demand[]> => {
   } else if (user.role === 'demo') {
     query = query
       .where(sql`legacy_values->>'Gestionnaires validés'`, '=', 'true')
-      .where(sql`legacy_values->>'Gestionnaires'`, '~', '(^|, )Paris($|, )');
+      .where(sql`legacy_values->'Gestionnaires'`, '?|', sql.raw(`ARRAY['Paris']`));
   } else if (user.role === 'gestionnaire') {
-    const regexPattern = user.gestionnaires.join('|');
     query = query
       .where(sql`legacy_values->>'Gestionnaires validés'`, '=', 'true')
-      .where(sql`legacy_values->>'Gestionnaires'`, '~', `(^|, )(${regexPattern})($|, )`);
+      .where(
+        sql`legacy_values->'Gestionnaires'`,
+        '?|',
+        sql.raw(`ARRAY[${user.gestionnaires.map((gestionnaire) => `'${gestionnaire.replace(/'/g, "''")}'`).join(',')}]`)
+      );
   }
 
   const records = (await query.orderBy(sql`legacy_values->>'Date demandes'`, 'desc').execute()).map(({ id, legacy_values }) => ({
@@ -188,7 +191,13 @@ export const getDemands = async (user: User): Promise<Demand[]> => {
             Téléphone: `0${faker.string.numeric(9)}`,
           }) as Demand
       )
-    : (records as unknown as Demand[]);
+    : records.map(
+        (record) =>
+          ({
+            id: record.id,
+            ...record.fields,
+          }) as Demand
+      );
 };
 
 const getDemand = async (user: User, demandId: string): Promise<Demand> => {
