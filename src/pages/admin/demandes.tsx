@@ -72,7 +72,12 @@ type QuickFilterPresetKey = keyof typeof quickFilterPresets;
 
 const initialSortingState = [{ desc: true, id: 'Date de la demande' }];
 
-const defaultAssignmentChipOption: ChipOption = { className: 'bg-gray-200', key: 'Non affecté', label: 'Non affecté', title: '' };
+const defaultAssignmentChipOption: ChipOption = {
+  className: 'bg-gray-200 text-gray-900',
+  key: 'Non affecté',
+  label: 'Non affecté',
+  title: '',
+};
 
 /**
  * Permet de savoir quand la table est rafraichie par un changement de valeur et donc de ne pas centrer la carte sur la première demande quand les demandes changent.
