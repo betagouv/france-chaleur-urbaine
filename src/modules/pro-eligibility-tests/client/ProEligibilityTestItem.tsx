@@ -25,6 +25,7 @@ import RenameEligibilityTestForm from '@/modules/pro-eligibility-tests/client/Re
 import UpsertEligibilityTestForm from '@/modules/pro-eligibility-tests/client/UpsertEligibilityTestForm';
 import trpc, { type RouterOutput } from '@/modules/trpc/client';
 import { downloadString } from '@/utils/browser';
+import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
 import { formatAsISODateMinutes, formatFrenchDate, formatFrenchDateTime } from '@/utils/date';
 import { compareFrenchStrings } from '@/utils/strings';
@@ -165,7 +166,7 @@ const columns: ColumnDef<RouterOutput['proEligibilityTests']['get']['addresses']
 
       return (
         <div className="flex flex-col items-end">
-          <span>{distance}m</span>
+          <span>{isDefined(distance) ? `${distance}m` : ''}</span>
           {changeIndicator && (
             <span className={cx('text-xs', changeIndicator.isPositive ? 'text-success' : 'text-error')}>{changeIndicator.text}</span>
           )}
