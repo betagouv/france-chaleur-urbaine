@@ -1,7 +1,7 @@
 import { Button } from '@codegouvfr/react-dsfr/Button';
 import { Select } from '@codegouvfr/react-dsfr/SelectNext';
-import Tag from '@codegouvfr/react-dsfr/Tag';
 import { useEffect, useMemo, useState } from 'react';
+import ComboBox, { type ComboBoxOption } from '@/components/ui/ComboBox';
 
 import type { UserRole } from '@/types/enum/UserRole';
 import { fetchJSON, postFetchJSON } from '@/utils/network';
@@ -40,16 +40,8 @@ const UserImpersonation = () => {
     })();
   }, []);
 
-  const selectTagsOptions = useMemo(() => {
-    return [
-      {
-        disabled: true,
-        label: 'Sélectionner les tags gestionnaires',
-        searchValue: '',
-        value: '',
-      },
-      ...allTagsGestionnaires,
-    ];
+  const comboTagsOptions: ComboBoxOption[] = useMemo(() => {
+    return allTagsGestionnaires.map((opt) => ({ key: opt.value, label: opt.label }));
   }, [allTagsGestionnaires]);
 
   const handleRoleChange = (newRole: ImpersonateUserRole) => {
@@ -87,34 +79,16 @@ const UserImpersonation = () => {
       />
 
       {selectedRole === 'gestionnaire' && (
-        <>
-          {selectedTagsGestionnaires.map((tag, index) => (
-            <Tag
-              key={tag}
-              dismissible
-              small
-              className="fr-mr-1v fr-mb-1w"
-              nativeButtonProps={{
-                onClick: () => {
-                  selectedTagsGestionnaires.splice(index, 1);
-                  setSelectedTagsGestionnaires([...selectedTagsGestionnaires]);
-                },
-              }}
-            >
-              {tag}
-            </Tag>
-          ))}
-
-          <div className="fr-col-xl-4 fr-col-md-6">
-            <Select
-              label="Tags gestionnaires"
-              options={selectTagsOptions.map(({ searchValue, ...option }) => option)}
-              nativeSelectProps={{
-                onChange: (e) => setSelectedTagsGestionnaires([...selectedTagsGestionnaires, e.target.value]),
-              }}
-            />
-          </div>
-        </>
+        <div className="fr-col-xl-4 fr-col-md-6 fr-mb-2w">
+          <ComboBox
+            label="Tags gestionnaires"
+            options={comboTagsOptions}
+            multiple
+            value={selectedTagsGestionnaires}
+            onChange={setSelectedTagsGestionnaires}
+            placeholder="Sélectionner…"
+          />
+        </div>
       )}
 
       <Button className="fr-mt-2w" onClick={() => startImpersonation()}>

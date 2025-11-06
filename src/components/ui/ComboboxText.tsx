@@ -1,6 +1,9 @@
 import { ComboboxPopover as ReachComboboxPopover } from '@reach/combobox';
 import styled from 'styled-components';
 
+/**
+ * This file is used to create a combobox with text options, without checkboxes.
+ */
 export { Combobox, ComboboxInput, ComboboxList, ComboboxOption, ComboboxOptionText } from '@reach/combobox';
 
 export const ComboboxPopover = styled(ReachComboboxPopover)`

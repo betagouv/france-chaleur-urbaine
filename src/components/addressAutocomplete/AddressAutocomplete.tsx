@@ -2,7 +2,7 @@ import { fr } from '@codegouvfr/react-dsfr';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { Combobox, ComboboxPopover } from '@/components/ui/Combobox';
+import { Combobox, ComboboxPopover } from '@/components/ui/ComboboxText';
 import type { SuggestionItem } from '@/modules/ban/types';
 
 import AddressAutocompleteGlobalStyle, { EmptySuggestion } from './AddressAutocomplete.style';
