@@ -32,8 +32,6 @@ import { notify, toastErrors } from '@/modules/notification';
 import { withAuthentication } from '@/server/authentication';
 import type { Point } from '@/types/Point';
 import type { AdminDemand, Demand } from '@/types/Summary/Demand';
-import { defaultEmptyNumberValue, defaultEmptyStringValue } from '@/utils/airtable';
-import { arrayEquals } from '@/utils/array';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
 import { stopPropagation } from '@/utils/events';
@@ -184,9 +182,7 @@ function DemandesAdmin(): React.ReactElement {
       notify('error', 'Aucune demande n‘est sélectionnée');
       return;
     }
-    const currentTags = arrayEquals(selectedDemand.Gestionnaires ?? [], [defaultEmptyStringValue])
-      ? selectedDemand.recommendedTags
-      : (selectedDemand.Gestionnaires ?? []);
+    const currentTags = selectedDemand.Gestionnaires === null ? selectedDemand.recommendedTags : (selectedDemand.Gestionnaires ?? []);
 
     void updateDemand(selectedDemandId, {
       Gestionnaires: [...new Set([...currentTags, event.tag])],
@@ -218,10 +214,10 @@ function DemandesAdmin(): React.ReactElement {
           return (
             <div className="block w-full">
               <FCUTagAutocomplete
-                value={demand.Gestionnaires ?? []}
-                onChange={(newGestionnaires: string[] /* TODO should be handled by typescript */) => {
+                value={demand.Gestionnaires}
+                onChange={(newGestionnaires: string[] | null /* TODO should be handled by typescript */) => {
                   void updateDemand(demand.id, {
-                    Gestionnaires: newGestionnaires,
+                    Gestionnaires: newGestionnaires as string[],
                   });
                 }}
                 multiple
@@ -263,7 +259,7 @@ function DemandesAdmin(): React.ReactElement {
             <ChipAutoComplete
               options={assignmentRulesResultsOptions}
               defaultOption={defaultAssignmentChipOption}
-              value={demand['Affecté à'] ?? ''}
+              value={demand['Affecté à']}
               onChange={(value) => updateDemand(demand.id, { 'Affecté à': value || (null as any) })} // null allows a truly empty field (not an empty tag)
               suggestedValue={demand.recommendedAssignment}
             />
@@ -287,23 +283,16 @@ function DemandesAdmin(): React.ReactElement {
                 size="small"
                 onClick={async () => {
                   void updateDemand(demand.id, {
-                    'Affecté à': demand['Affecté à'] === defaultEmptyStringValue ? demand.recommendedAssignment : demand['Affecté à'],
+                    'Affecté à': demand['Affecté à'] === null ? demand.recommendedAssignment : demand['Affecté à'],
                     'Distance au réseau':
-                      demand['Distance au réseau'] === defaultEmptyNumberValue
-                        ? demand.detailedEligibilityStatus.distance
-                        : demand['Distance au réseau'],
+                      demand['Distance au réseau'] === null ? demand.detailedEligibilityStatus.distance : demand['Distance au réseau'],
 
                     // assign recommended tags, assignment, and network infos if not are set
-                    Gestionnaires: arrayEquals(demand.Gestionnaires ?? [], [defaultEmptyStringValue])
-                      ? demand.recommendedTags
-                      : (demand.Gestionnaires ?? []),
+                    Gestionnaires: demand.Gestionnaires === null ? demand.recommendedTags : (demand.Gestionnaires ?? []),
                     'Gestionnaires validés': true,
                     'Identifiant réseau':
-                      demand['Identifiant réseau'] === defaultEmptyStringValue
-                        ? demand.detailedEligibilityStatus.id_sncu
-                        : demand['Identifiant réseau'],
-                    'Nom réseau':
-                      demand['Nom réseau'] === defaultEmptyStringValue ? demand.detailedEligibilityStatus.nom : demand['Nom réseau'],
+                      demand['Identifiant réseau'] === null ? demand.detailedEligibilityStatus.id_sncu : demand['Identifiant réseau'],
+                    'Nom réseau': demand['Nom réseau'] === null ? demand.detailedEligibilityStatus.nom : demand['Nom réseau'],
                     'Relance à activer': demand.detailedEligibilityStatus.distance < 200 && demand['Type de chauffage'] === 'Collectif',
                   });
                 }}

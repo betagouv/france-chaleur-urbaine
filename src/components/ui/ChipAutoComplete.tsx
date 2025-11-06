@@ -4,7 +4,6 @@ import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } fro
 import Icon from '@/components/ui/Icon';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover';
 import Tooltip from '@/components/ui/Tooltip';
-import { defaultEmptyStringValue } from '@/utils/airtable';
 import { arrayEquals } from '@/utils/array';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
@@ -34,14 +33,26 @@ type ChipAutoCompletePropsBase = {
 export type ChipAutoCompleteProps =
   | (ChipAutoCompletePropsBase & {
       multiple: true;
+      suggestedValue: string[];
+      value: string[] | null;
+      onChange: (value: string[] | null) => void;
+    })
+  | (ChipAutoCompletePropsBase & {
+      multiple: true;
+      suggestedValue?: undefined;
       value: string[];
-      suggestedValue?: string[];
       onChange: (value: string[]) => void;
     })
   | (ChipAutoCompletePropsBase & {
       multiple?: false;
+      suggestedValue: string;
+      value: string | null;
+      onChange: (value: string | null) => void;
+    })
+  | (ChipAutoCompletePropsBase & {
+      multiple?: false;
+      suggestedValue?: undefined;
       value: string;
-      suggestedValue?: string;
       onChange: (value: string) => void;
     });
 
@@ -51,7 +62,7 @@ const ChipAutoComplete = (rawProps: ChipAutoCompleteProps) => {
   const { options, defaultOption, value: valueExternal, label, placeholder = 'Ajouter…', disabled = false, className, classNames } = props;
   const valueExternalArray = Array.isArray(valueExternal) ? valueExternal : [valueExternal];
   const [valueArray, setValueArray] = useState(
-    arrayEquals(valueExternalArray, [defaultEmptyStringValue]) && isDefined(props.suggestedValue)
+    valueExternal === null && isDefined(props.suggestedValue)
       ? props.multiple
         ? props.suggestedValue
         : [props.suggestedValue]
@@ -66,7 +77,7 @@ const ChipAutoComplete = (rawProps: ChipAutoCompleteProps) => {
     // Update the valueArray when the valueExternalArray changes
     if (!arrayEquals(valueExternalArray, valueArray)) {
       setValueArray(
-        arrayEquals(valueExternalArray, [defaultEmptyStringValue]) && isDefined(props.suggestedValue)
+        valueExternal === null && isDefined(props.suggestedValue)
           ? props.multiple
             ? props.suggestedValue
             : [props.suggestedValue]
@@ -101,8 +112,8 @@ const ChipAutoComplete = (rawProps: ChipAutoCompleteProps) => {
     setIsOpen(false);
 
     if (props.multiple) {
-      setValueArray([...valueArray, option.key]);
-      props.onChange([...valueArray, option.key]);
+      setValueArray([...(valueArray || []), option.key]);
+      props.onChange([...((valueArray as string[]) || []), option.key]);
     } else {
       setValueArray([option.key]);
       props.onChange(option.key);
@@ -113,7 +124,7 @@ const ChipAutoComplete = (rawProps: ChipAutoCompleteProps) => {
     if (props.multiple) {
       const newValue = valueArray.filter((v) => v !== chipName);
       setValueArray(newValue);
-      props.onChange(newValue);
+      props.onChange(newValue as string[]);
     } else {
       setValueArray([]);
       props.onChange('');
@@ -131,7 +142,7 @@ const ChipAutoComplete = (rawProps: ChipAutoCompleteProps) => {
       e.preventDefault();
       handleOptionSelect(filteredOptions[highlightedIndex]);
     } else if (e.key === 'Backspace' && inputValue === '' && valueArray.length > 0) {
-      handleChipRemove(valueArray[valueArray.length - 1]);
+      handleChipRemove((valueArray as string[])[valueArray.length - 1]);
     }
   };
 
@@ -139,10 +150,10 @@ const ChipAutoComplete = (rawProps: ChipAutoCompleteProps) => {
     setInputValue('');
     if (props.multiple) {
       setValueArray(props.suggestedValue ?? []);
-      props.onChange([defaultEmptyStringValue]);
+      (props.onChange as (value: string[] | null) => void)(props.suggestedValue ? null : []);
     } else {
-      setValueArray(props.suggestedValue ? [props.suggestedValue] : [defaultEmptyStringValue]);
-      props.onChange(defaultEmptyStringValue);
+      setValueArray(props.suggestedValue ? [props.suggestedValue] : []);
+      (props.onChange as (value: string | null) => void)(null);
     }
   }, [props.suggestedValue, props.onChange]);
 
@@ -175,7 +186,7 @@ const ChipAutoComplete = (rawProps: ChipAutoCompleteProps) => {
                   nativeButtonProps={{
                     onClick: (e: React.MouseEvent<HTMLButtonElement>) => {
                       e.stopPropagation();
-                      handleChipRemove(tagName);
+                      handleChipRemove(tagName as string);
                     },
                     title: chipOption?.title,
                   }}
@@ -243,7 +254,7 @@ const ChipAutoComplete = (rawProps: ChipAutoCompleteProps) => {
     <div className="block relative w-full" onClick={stopPropagation} onDoubleClick={stopPropagation}>
       <div className="absolute top-0.5 right-0.5 z-10 flex gap-1">
         {/* visual indicator that the value is suggested */}
-        {arrayEquals(valueExternalArray, [defaultEmptyStringValue]) ? (
+        {valueArray === null ? (
           <Tooltip title="Valeur suggérée automatiquement">
             <Icon name="fr-icon-sparkling-2-line" size="xs" color="info" className="p-0.5 cursor-help" />
           </Tooltip>
