@@ -49,3 +49,30 @@ export const createEmail = async (values: Omit<Insertable<DemandEmails>, 'create
     .execute();
   return createdEmail;
 };
+
+export const buildFeatures = async (properties: string[]) => {
+  const records = await kdb.selectFrom('demands').selectAll().execute();
+
+  const features = records.map((record) => {
+    const longitude = record.legacy_values.Longitude;
+    const latitude = record.legacy_values.Latitude;
+    return {
+      geometry: {
+        coordinates: [longitude, latitude],
+        type: 'Point',
+      },
+      properties: properties!.reduce(
+        (acc: any, key) => {
+          const value = record.legacy_values[key as keyof AirtableLegacyRecord];
+          if (value) {
+            acc[key] = value;
+          }
+          return acc;
+        },
+        { id: record.id }
+      ),
+      type: 'Feature',
+    } satisfies GeoJSON.Feature<GeoJSON.Geometry>;
+  });
+  return features;
+};
