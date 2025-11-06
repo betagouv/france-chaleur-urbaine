@@ -85,7 +85,7 @@ export async function processProEligibilityTestJob(job: ProEligibilityTestJob, l
     .replace(/\r\n/g, '\n')
     .replace(/"/g, '')
     .split('\n')
-    .filter((line) => line) // remove empty lines
+    .filter((line) => line.trim().length > 0) // remove empty or whitespace-only lines
     .map((line) => `"${line}"`); // add quotes to get a single column address
   logger.info('infos', { addressesCount: lines.length });
 
@@ -147,14 +147,16 @@ export async function processProEligibilityTestJob(job: ProEligibilityTestJob, l
 
       const processAddress = limitFunction(
         async (addressItem: (typeof addresses)[number]) => {
-          const historyEntry = await getAddressEligibilityHistoryEntry(addressItem.latitude, addressItem.longitude);
-
+          const historyEntry =
+            addressItem.result_status === 'ok'
+              ? await getAddressEligibilityHistoryEntry(addressItem.latitude, addressItem.longitude)
+              : null;
           const addressData = {
             ban_address: addressItem.result_label,
             ban_score: isDefined(addressItem.result_score) ? Math.round(addressItem.result_score * 100) : null,
             ban_valid: addressItem.result_status === 'ok',
-            eligibility_history: JSON.stringify([historyEntry]),
-            geom: sql`st_transform(st_point(${addressItem.longitude}, ${addressItem.latitude}, 4326), 2154)`,
+            eligibility_history: historyEntry ? JSON.stringify([historyEntry]) : null,
+            geom: historyEntry ? sql`st_transform(st_point(${addressItem.longitude}, ${addressItem.latitude}, 4326), 2154)` : null,
             source_address: addressItem.address as string,
             test_id: job.entity_id!,
           } satisfies Parameters<ReturnType<typeof kdb.insertInto<'pro_eligibility_tests_addresses'>>['values']>[0];

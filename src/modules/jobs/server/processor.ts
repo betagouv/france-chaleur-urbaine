@@ -40,7 +40,7 @@ async function processJob(job: Job) {
       .execute();
     jobLogger.info('finished job', { ...jobResult, duration: Date.now() - startTime });
   } catch (err: any) {
-    jobLogger.error('error processing job', { duration: Date.now() - startTime, err: err.message });
+    jobLogger.error('error processing job', { duration: Date.now() - startTime, err: err.message, error: err });
     await kdb
       .updateTable('jobs')
       .set({ result: { duration: Date.now() - startTime, error: err.message }, status: 'error', updated_at: new Date() })
