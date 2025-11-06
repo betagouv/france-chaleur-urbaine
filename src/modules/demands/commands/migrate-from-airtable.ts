@@ -1,5 +1,3 @@
-import { sql } from 'kysely';
-import type { AirtableLegacyRecord } from '@/modules/demands/types';
 import base from '@/server/db/airtable';
 import { kdb } from '@/server/db/kysely';
 import { Airtable } from '@/types/enum/Airtable';
@@ -28,8 +26,13 @@ export const importDemands = async (options: { batchSize?: string; dryRun?: bool
         const airtableId = record.id;
         const fields = record.fields as Demand;
 
-        const airtableLegacyValues: AirtableLegacyRecord = {
+        const airtableLegacyValues = {
           ...fields,
+          'Affecté à': fields['Affecté à'] === 'DEFAULT_VALUE' ? null : fields['Affecté à'],
+          'Distance au réseau': fields['Distance au réseau'] === 123456789 ? null : fields['Distance au réseau'],
+          Gestionnaires: fields.Gestionnaires?.includes('DEFAULT_VALUE') ? null : (fields.Gestionnaires ?? []),
+          'Identifiant réseau': fields['Identifiant réseau'] === 'DEFAULT_VALUE' ? null : fields['Identifiant réseau'],
+          'Nom réseau': fields['Nom réseau'] === 'DEFAULT_VALUE' ? null : fields['Nom réseau'],
         };
 
         if (dryRun) {
@@ -38,7 +41,7 @@ export const importDemands = async (options: { batchSize?: string; dryRun?: bool
         }
 
         // Check if record already exists
-        const existing = await kdb.selectFrom('demands').selectAll().where(sql`legacy_values->>'id'`, '=', airtableId).executeTakeFirst();
+        const existing = await kdb.selectFrom('demands').selectAll().where('airtable_id', '=', airtableId).executeTakeFirst();
 
         const demandData = {
           airtable_id: airtableId,
@@ -46,7 +49,7 @@ export const importDemands = async (options: { batchSize?: string; dryRun?: bool
         };
 
         if (existing) {
-          await kdb.updateTable('demands').set(demandData).where(sql`legacy_values->>'id'`, '=', airtableId).execute();
+          await kdb.updateTable('demands').set(demandData).where('airtable_id', '=', airtableId).execute();
 
           updated++;
         } else {
@@ -119,7 +122,11 @@ export const importDemandEmails = async (options: { batchSize?: string; dryRun?:
         }
 
         // Find the corresponding demand in PostgreSQL
-        const demand = await kdb.selectFrom('demands').select('id').where('airtable_id', '=', fields.demand_id).executeTakeFirst();
+        const demand = await kdb
+          .selectFrom('demands')
+          .select('id')
+          .where('airtable_id', '=', fields.demand_id as string)
+          .executeTakeFirst();
 
         if (!demand) {
           console.warn(`Demand ${fields.demand_id} not found for email ${airtableId}, skipping`);
@@ -134,16 +141,16 @@ export const importDemandEmails = async (options: { batchSize?: string; dryRun?:
 
         const emailData = {
           airtable_id: airtableId,
-          body: fields.body || '',
-          cc: fields.cc || '',
+          body: (fields.body as string) || '',
+          cc: (fields.cc as string) || '',
           demand_id: demand.id,
-          email_key: fields.email_key || '',
-          object: fields.object || '',
-          reply_to: fields.reply_to || fields.replyTo || '',
+          email_key: (fields.email_key as string) || '',
+          object: (fields.object as string) || '',
+          reply_to: (fields.reply_to as string) || (fields.replyTo as string) || '',
           sent_at: fields.sent_at ? new Date(fields.sent_at as string) : null,
-          signature: fields.signature || '',
-          to: fields.to || '',
-          user_email: fields.user_email || '',
+          signature: (fields.signature as string) || '',
+          to: (fields.to as string) || '',
+          user_email: (fields.user_email as string) || '',
         };
 
         if (existing) {

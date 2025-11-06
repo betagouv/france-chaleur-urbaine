@@ -9,7 +9,6 @@ import { BadRequestError, handleRouteErrors, requirePostMethod } from '@/server/
 import { getConsommationGazAdresse, getNbLogement } from '@/server/services/addresseInformation';
 import { getToRelanceDemand } from '@/server/services/manager';
 import { Airtable } from '@/types/enum/Airtable';
-import { defaultEmptyNumberValue, defaultEmptyStringValue } from '@/utils/airtable';
 
 export default handleRouteErrors(async function PostRecords(req: NextApiRequest) {
   requirePostMethod(req);
@@ -42,11 +41,11 @@ export default handleRouteErrors(async function PostRecords(req: NextApiRequest)
     case Airtable.DEMANDES: {
       const { id: demandId } = await demandsService.create({
         ...values,
-        'Affecté à': defaultEmptyStringValue,
-        'Distance au réseau': defaultEmptyNumberValue,
-        Gestionnaires: [defaultEmptyStringValue],
-        'Identifiant réseau': defaultEmptyStringValue,
-        'Nom réseau': defaultEmptyStringValue,
+        'Affecté à': null,
+        'Distance au réseau': null,
+        Gestionnaires: null,
+        'Identifiant réseau': null,
+        'Nom réseau': null,
       });
       const [conso, nbLogement] = await Promise.all([
         getConsommationGazAdresse(values.Latitude, values.Longitude),

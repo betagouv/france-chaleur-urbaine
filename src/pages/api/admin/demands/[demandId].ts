@@ -10,10 +10,10 @@ const zDemandUpdate = {
   Commentaire: z.string().optional(),
   Commentaires_internes_FCU: z.string().optional(),
   'Distance au réseau': z.number().nullable().optional(),
-  Gestionnaires: z.array(z.string()).optional(),
+  Gestionnaires: z.array(z.string()).nullable().optional(),
   'Gestionnaires validés': z.boolean().optional(),
-  'Identifiant réseau': z.string().optional(),
-  'Nom réseau': z.string().optional(),
+  'Identifiant réseau': z.string().nullable().optional(),
+  'Nom réseau': z.string().nullable().optional(),
   'Relance à activer': z.boolean().optional(),
 } satisfies Partial<Record<keyof AdminDemand, z.ZodType<any>>>;
 
