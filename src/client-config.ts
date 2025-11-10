@@ -7,6 +7,19 @@ export const clientConfig = {
   banApiBaseUrl: process.env.NEXT_PUBLIC_BAN_API_BASE_URL ?? 'https://api-adresse.data.gouv.fr/search/',
   calendarLink: 'https://cal.com/erwangravez/15min',
   contactEmail: 'france.chaleur.urbaine@ademe.fr', // changer également dans openapi-schema.yaml
+  destinationEmails: Object.entries({
+    carto: 'laetitia.gabreau@beta.gouv.fr',
+    comparateur: 'rbeaulieu@amorce.asso.fr,dponcet@elcimai.com',
+    contact: 'erwan.gravez@beta.gouv.fr,laetitia.gabreau@beta.gouv.fr',
+    contribution: 'laetitia.gabreau@beta.gouv.fr',
+    pro: 'erwan.gravez@beta.gouv.fr',
+  }).reduce(
+    (acc, [key, value]) => ({
+      ...acc,
+      [key]: `${value},france-chaleur-urbaine@developpement-durable.gouv.fr,france.chaleur.urbaine@ademe.fr`,
+    }),
+    {} as Record<string, string>
+  ),
   flags: {
     enableComparateurWidget: envBooleanSchema.default(false).parse(process.env.NEXT_PUBLIC_FLAG_ENABLE_COMPARATEUR_WIDGET),
   },
