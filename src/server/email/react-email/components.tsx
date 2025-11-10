@@ -1,13 +1,16 @@
 import {
   Body as ReactEmailBody,
   Button as ReactEmailButton,
+  Column as ReactEmailColumn,
   Container as ReactEmailContainer,
   Head as ReactEmailHead,
+  Hr as ReactEmailHr,
   Html as ReactEmailHtml,
   Img as ReactEmailImg,
   Link as ReactEmailLink,
   Markdown as ReactEmailMarkdown,
   Preview as ReactEmailPreview,
+  Row as ReactEmailRow,
   Section as ReactEmailSection,
   Text as ReactEmailText,
 } from '@react-email/components';
@@ -144,6 +147,76 @@ export const Markdown = ({ children }: React.ComponentProps<typeof ReactEmailMar
   >
     {children}
   </ReactEmailMarkdown>
+);
+
+export const Row = ({ children, style }: React.ComponentProps<typeof ReactEmailRow>) => (
+  <ReactEmailRow
+    style={{
+      backgroundColor: 'white',
+      padding: '16px 0',
+      ...style,
+    }}
+  >
+    {children}
+  </ReactEmailRow>
+);
+
+export const Column = ({ children, style }: React.ComponentProps<typeof ReactEmailColumn>) => (
+  <ReactEmailColumn
+    style={{
+      backgroundColor: 'white',
+      padding: '16px 0',
+      ...style,
+    }}
+  >
+    {children}
+  </ReactEmailColumn>
+);
+
+export const Hr = ReactEmailHr;
+
+export const Table = ({ children, style }: React.TableHTMLAttributes<HTMLTableElement>) => (
+  <table
+    style={{
+      backgroundColor: 'white',
+      padding: '16px 0',
+      ...style,
+    }}
+  >
+    {children}
+  </table>
+);
+
+export const TableRow = ({ children, style }: React.TableHTMLAttributes<HTMLTableRowElement>) => (
+  <tr
+    style={{
+      backgroundColor: 'white',
+      padding: '8px 0',
+      ...style,
+    }}
+  >
+    {children}
+  </tr>
+);
+
+export const TableColumn = ({ children, style }: React.TableHTMLAttributes<HTMLTableCellElement>) => (
+  <td
+    style={{
+      backgroundColor: 'white',
+      padding: '8px 0',
+      ...style,
+    }}
+  >
+    {children}
+  </td>
+);
+
+export const Title = ({ children, style }: React.ComponentProps<typeof ReactEmailText>) => (
+  <Text style={{ fontSize: '18px', fontWeight: 'bold', ...style }}>{children}</Text>
+);
+
+export const TextFaded = ({ children, style }: React.ComponentProps<typeof ReactEmailText>) => (
+  <Text style={{ color: '#666', fontSize: '12px', fontStyle: 'italic', marginTop: '20px', ...style }}>{children}</Text>
 );
 
 export type LayoutModifiableProps = { preview?: string };
