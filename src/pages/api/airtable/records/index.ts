@@ -2,9 +2,9 @@ import type { NextApiRequest } from 'next';
 import { v4 as uuidv4 } from 'uuid';
 import { clientConfig } from '@/client-config';
 import * as demandsService from '@/modules/demands/server/demands-service';
+import { sendEmailTemplate } from '@/modules/email';
 import { createEvent } from '@/modules/events/server/service';
 import { AirtableDB } from '@/server/db/airtable';
-import { sendEmailTemplate } from '@/server/email';
 import { logger } from '@/server/helpers/logger';
 import { BadRequestError, handleRouteErrors, requirePostMethod } from '@/server/helpers/server';
 import { getConsommationGazAdresse, getNbLogement } from '@/server/services/addresseInformation';
@@ -73,11 +73,11 @@ export default handleRouteErrors(async function PostRecords(req: NextApiRequest)
           type: 'demand_created',
         }),
         sendEmailTemplate(
-          'creation-demande',
+          'demands.user-new',
           { email: values.Mail },
           { demand: { ...values, 'Distance au réseau': values['Distance au réseau'] ?? 9999 } } // si > 1000m la distance est null, or le template veut une distance
         ),
-        sendEmailTemplate('demands-admin-new', { email: clientConfig.destinationEmails.contact }, { demand: values }),
+        sendEmailTemplate('demands.admin-new', { email: clientConfig.destinationEmails.contact }, { demand: values }),
       ]);
 
       return { id: demandId };

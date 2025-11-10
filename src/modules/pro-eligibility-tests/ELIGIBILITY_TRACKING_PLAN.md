@@ -205,7 +205,7 @@ return {
 
 ## 6. Email Template
 
-**File:** `src/server/email/react-email/templates/NetworkEligibilityChangeEmail.tsx`
+**File:** `src/modules/email/react-email/templates/NetworkEligibilityChangeEmail.tsx`
 
 **Content:**
 - Friendly greeting
@@ -313,7 +313,7 @@ Add routes:
 
 ### New Files
 - `src/modules/pro-eligibility-tests/commands.ts` (if doesn't exist)
-- `src/server/email/react-email/templates/NetworkEligibilityChangeEmail.tsx`
+- `src/modules/email/react-email/templates/NetworkEligibilityChangeEmail.tsx`
 - `migrations/XXX-add-eligibility-tracking.ts`
 
 ### Modified Files

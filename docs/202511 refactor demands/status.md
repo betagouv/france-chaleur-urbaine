@@ -423,7 +423,7 @@ Voir section “Notifications Email” ci-dessus.
 - `getConsommationGazAdresse(lat, lon)` : Données conso gaz
 - `getNbLogement(lat, lon)` : Nombre de logements
 
-**Service Email** (`src/server/email`) :
+**Service Email** (`src/modules/email`) :
 - `sendEmailTemplate()` : Envoi emails modèles
 - Modèles : `creation-demande`, `new-demands`, `old-demands`, `relance`
 

@@ -3,10 +3,10 @@ import { sql } from 'kysely';
 import type { User } from 'next-auth';
 import { v4 as uuidv4 } from 'uuid';
 import * as demandsService from '@/modules/demands/server/demands-service';
+import { sendEmailTemplate } from '@/modules/email';
 import { createUserEvent } from '@/modules/events/server/service';
 import db from '@/server/db';
 import { kdb } from '@/server/db/kysely';
-import { sendEmailTemplate } from '@/server/email';
 import { logger } from '@/server/helpers/logger';
 import { invalidPermissionsError } from '@/server/helpers/server';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
@@ -227,7 +227,7 @@ export const updateDemand = async (user: User, demandId: string, updateData: Par
     data: updateData,
     type: 'demand_updated',
   });
-  return record;
+  return record as Demand;
 };
 
 const groupDemands = (demands: Demand[]): Record<string, Demand[]> => {
@@ -274,7 +274,7 @@ const newDemands = async (users: FullUser[]) => {
     const gestionnaireUsers = groupedUsers[gestionnaire] || [];
     for (const email of gestionnaireUsers) {
       if (!sent.includes(email)) {
-        await sendEmailTemplate('new-demands', { email, id: 'unknown' }, { demands: groupedDemands[gestionnaire].length });
+        await sendEmailTemplate('demands.gestionnaire-new', { email, id: 'unknown' }, { nbDemands: groupedDemands[gestionnaire].length });
         sent.push(email);
       }
       if (process.env.NEXT_PUBLIC_MOCK_USER_CREATION !== 'true') {
@@ -302,7 +302,7 @@ const oldDemands = async (users: FullUser[]) => {
     const gestionnaireUsers = groupedUsers[gestionnaire] || [];
     for (const email of gestionnaireUsers) {
       if (!sent.includes(email)) {
-        await sendEmailTemplate('old-demands', { email, id: 'unknown' });
+        await sendEmailTemplate('demands.gestionnaire-old', { email, id: 'unknown' });
         sent.push(email);
       }
     }
@@ -358,7 +358,7 @@ export const dailyRelanceMail = async () => {
       'Relance ID': uuid,
     });
     await sendEmailTemplate(
-      'relance',
+      'demands.user-relance',
       { email: demand.Mail, id: demand.id },
       {
         adresse: demand.Adresse,
