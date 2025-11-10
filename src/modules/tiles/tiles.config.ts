@@ -25,8 +25,8 @@ export type AirtableTileInfo = BasicTileInfo & {
 };
 
 export type DatabaseTileInfo = BasicTileInfo & {
-  source: 'database';
-  tiles: string;
+  source?: 'database';
+  tiles?: string;
   compressedTiles?: boolean;
   airtable?: string;
   table?: string;
@@ -119,9 +119,6 @@ export const tilesInfo: Record<DatabaseSourceId, TileInfo> = {
   demands: {
     cache: demandsService.buildFeatures,
     properties: ['Mode de chauffage', 'Adresse', 'Type de chauffage', 'Structure'],
-    source: 'database',
-    sourceLayer: 'demands',
-    tiles: 'demands_tiles',
   },
   enrrMobilisables: {
     source: 'database',
