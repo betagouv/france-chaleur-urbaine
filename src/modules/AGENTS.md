@@ -36,6 +36,7 @@ If your module provides CLI commands:
 - Create `commands.ts` at module root that exports a `register<ModuleName>Commands(parentProgram: Command)` function
 - Register commands under a module-specific namespace: `parentProgram.command('<moduleName>')`
 - Import and call the register function in `scripts/cli.ts`
+- If function is too big and needs to be put in a separate file, put it in commands folder
 
 Example:
 

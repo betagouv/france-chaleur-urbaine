@@ -1,15 +1,14 @@
 import type { NextApiRequest } from 'next';
 import { v4 as uuidv4 } from 'uuid';
-
+import * as demandsService from '@/modules/demands/server/demands-service';
 import { createEvent } from '@/modules/events/server/service';
-import base, { AirtableDB } from '@/server/db/airtable';
+import { AirtableDB } from '@/server/db/airtable';
 import { sendEmailTemplate } from '@/server/email';
 import { logger } from '@/server/helpers/logger';
 import { BadRequestError, handleRouteErrors, requirePostMethod } from '@/server/helpers/server';
 import { getConsommationGazAdresse, getNbLogement } from '@/server/services/addresseInformation';
 import { getToRelanceDemand } from '@/server/services/manager';
 import { Airtable } from '@/types/enum/Airtable';
-import { defaultEmptyNumberValue, defaultEmptyStringValue } from '@/utils/airtable';
 
 export default handleRouteErrors(async function PostRecords(req: NextApiRequest) {
   requirePostMethod(req);
@@ -32,7 +31,7 @@ export default handleRouteErrors(async function PostRecords(req: NextApiRequest)
     case Airtable.RELANCE: {
       const demand = await getToRelanceDemand(values.id);
       if (demand) {
-        await AirtableDB(Airtable.DEMANDES).update(demand.id, {
+        await demandsService.update(demand.id, {
           'Commentaire relance': values.comment,
         });
       }
@@ -40,20 +39,14 @@ export default handleRouteErrors(async function PostRecords(req: NextApiRequest)
     }
 
     case Airtable.DEMANDES: {
-      // bad airtable type
-      const { id: demandId }: any = await base(Airtable.DEMANDES).create(
-        {
-          ...values,
-          'Affecté à': defaultEmptyStringValue,
-          'Distance au réseau': defaultEmptyNumberValue,
-          Gestionnaires: [defaultEmptyStringValue],
-          'Identifiant réseau': defaultEmptyStringValue,
-          'Nom réseau': defaultEmptyStringValue,
-        },
-        {
-          typecast: true,
-        }
-      );
+      const { id: demandId } = await demandsService.create({
+        ...values,
+        'Affecté à': null,
+        'Distance au réseau': null,
+        Gestionnaires: null,
+        'Identifiant réseau': null,
+        'Nom réseau': null,
+      });
       const [conso, nbLogement] = await Promise.all([
         getConsommationGazAdresse(values.Latitude, values.Longitude),
         values.Logement ? values.Logement : getNbLogement(values.Latitude, values.Longitude),
@@ -65,15 +58,11 @@ export default handleRouteErrors(async function PostRecords(req: NextApiRequest)
         nbLogement,
       });
 
-      await AirtableDB(Airtable.DEMANDES).update(
-        demandId,
-        {
-          Conso: conso ? conso.conso_nb : undefined,
-          'ID BNB': nbLogement ? `${nbLogement.id}` : undefined,
-          Logement: nbLogement ? nbLogement.nb_logements : undefined,
-        },
-        { typecast: true }
-      );
+      await demandsService.update(demandId, {
+        Conso: conso ? conso.conso_nb : undefined,
+        'ID BNB': nbLogement ? `${nbLogement.id}` : undefined,
+        Logement: nbLogement ? nbLogement.nb_logements : undefined,
+      });
 
       await Promise.all([
         createEvent({

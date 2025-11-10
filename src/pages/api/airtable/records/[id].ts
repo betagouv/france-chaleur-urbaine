@@ -1,7 +1,6 @@
 import type { NextApiRequest } from 'next';
 import { z } from 'zod';
-
-import base from '@/server/db/airtable';
+import * as demandsService from '@/modules/demands/server/demands-service';
 import { handleRouteErrors, requirePutMethod, validateObjectSchema } from '@/server/helpers/server';
 import { Airtable } from '@/types/enum/Airtable';
 import { zAirtableRecordId } from '@/utils/validation';
@@ -20,7 +19,7 @@ export default handleRouteErrors(async (req: NextApiRequest) => {
 
   switch (type) {
     case Airtable.DEMANDES: {
-      await base(Airtable.DEMANDES).update(id, { Sondage: values.sondage }, { typecast: true });
+      await demandsService.update(id, { Sondage: values.sondage });
     }
   }
 });

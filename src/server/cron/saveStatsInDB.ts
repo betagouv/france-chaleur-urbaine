@@ -257,14 +257,18 @@ const countEventCategoriesFromMatomo = countRecordsFromMatomo(STAT_METHOD.ACTION
 
 const saveDemandsStats = async (startDate: string, endDate: string) => {
   console.info(`saveStatsInDB START : saveDemandsStats`);
-  const records = await base(Airtable.DEMANDES)
-    .select({
-      filterByFormula: `AND(
-          IS_BEFORE({Date de la demande}, "${endDate}"),
-          IS_AFTER({Date de la demande}, "${startDate}")
-        )`,
-    })
-    .all();
+
+  const records = (
+    await kdb
+      .selectFrom('demands')
+      .selectAll()
+      .where(sql`legacy_values->>'Date de la demande'`, '<', endDate)
+      .where(sql`legacy_values->>'Date de la demande'`, '>', startDate)
+      .execute()
+  ).map(({ id, legacy_values }) => ({
+    fields: legacy_values,
+    id,
+  }));
 
   const monthValue = {
     nbEligible: 0,

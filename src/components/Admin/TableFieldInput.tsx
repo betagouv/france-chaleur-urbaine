@@ -4,7 +4,6 @@ import type { InputProps } from '@/components/form/dsfr/Input';
 import { Input } from '@/components/form/dsfr/Input.styles';
 import Icon from '@/components/ui/Icon';
 import Tooltip from '@/components/ui/Tooltip';
-import { defaultEmptyNumberValue, defaultEmptyStringValue } from '@/utils/airtable';
 import { isDefined } from '@/utils/core';
 import debounce from '@/utils/debounce';
 import { stopPropagation } from '@/utils/events';
@@ -31,8 +30,7 @@ const TableFieldInput = forwardRef<HTMLInputElement, TableFieldInputProps>((rawP
   const props = { type: 'text', ...rawProps } satisfies TableFieldInputProps;
   const { value: valueExternal, onChange: onChangeExternal, title, debounceMs = 500, nativeInputProps, type, ...restProps } = props;
 
-  const defaultEmptyValue = props.type === 'number' ? defaultEmptyNumberValue : defaultEmptyStringValue;
-  const [value, setValue] = useState(valueExternal === defaultEmptyValue ? props.suggestedValue : valueExternal);
+  const [value, setValue] = useState(valueExternal === null ? props.suggestedValue : valueExternal);
 
   const debouncedUpdateDemand = useMemo(
     () => debounce((value: string | number) => (onChangeExternal as any)(value), debounceMs),
@@ -51,7 +49,7 @@ const TableFieldInput = forwardRef<HTMLInputElement, TableFieldInputProps>((rawP
 
   const resetValue = useCallback(() => {
     setValue(props.suggestedValue);
-    (onChangeExternal as any)(defaultEmptyValue);
+    (onChangeExternal as any)(null);
   }, [onChangeExternal, props.type]);
 
   const onClick = useCallback(
@@ -85,7 +83,7 @@ const TableFieldInput = forwardRef<HTMLInputElement, TableFieldInputProps>((rawP
     <div className="block relative w-full" onClick={stopPropagation} onDoubleClick={stopPropagation}>
       <div className="absolute top-0.5 right-0.5 z-10 flex gap-1">
         {/* visual indicator that the value is suggested */}
-        {valueExternal === defaultEmptyValue ? (
+        {valueExternal === null ? (
           <Tooltip title="Valeur suggérée automatiquement">
             <Icon name="fr-icon-sparkling-2-line" size="xs" color="info" className="p-0.5 cursor-help" />
           </Tooltip>

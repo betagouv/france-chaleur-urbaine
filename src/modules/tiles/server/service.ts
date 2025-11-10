@@ -4,18 +4,17 @@ import vtpbf from 'vt-pbf';
 import { tileSourcesMaxZoom } from '@/components/Map/layers/common';
 import type { ApplyGeometriesUpdatesInput } from '@/modules/reseaux/constants';
 import type { BuildTilesInput } from '@/modules/tiles/constants';
-import { type AirtableTileInfo, type DatabaseSourceId, tilesInfo } from '@/modules/tiles/tiles.config';
-import base from '@/server/db/airtable';
+import { type DatabaseSourceId, tilesInfo } from '@/modules/tiles/tiles.config';
 import { type DB, kdb } from '@/server/db/kysely';
 import type { ApiContext } from '@/server/db/kysely/base-model';
 import { isDefined } from '@/utils/core';
 
 const debug = !!(process.env.API_DEBUG_MODE || null);
 
-let airtableDayCached = 0;
-const airtableTiles: Partial<Record<DatabaseSourceId, any>> = {
-  demands: null,
-};
+let tilesCached = 0;
+const cachedTiles: Partial<Record<DatabaseSourceId, any>> = Object.entries(tilesInfo)
+  .filter(([_, tileInfo]) => tileInfo.source === 'database' && !!tileInfo.cache)
+  .reduce((acc, [type]) => ({ ...acc, [type as DatabaseSourceId]: null }), {} as Partial<Record<DatabaseSourceId, any>>);
 
 export const createBuildTilesJob = async (
   { name }: BuildTilesInput,
@@ -82,73 +81,48 @@ export const getTileNameFromInternalName = (internalName: string) => {
   return tilesMapping.find((item) => item.internalName === internalName)?.tileName;
 };
 
-const getObjectIndexFromAirtable = async (tileInfo: AirtableTileInfo) => {
-  return base(tileInfo.table)
-    .select()
-    .all()
-    .then((records) => {
-      const features = records.map((record) => {
-        const longitude = record.get('Longitude') as number;
-        const latitude = record.get('Latitude') as number;
-        return {
-          geometry: {
-            coordinates: [longitude, latitude],
-            type: 'Point',
-          },
-          properties: tileInfo.properties!.reduce(
-            (acc: any, key: string) => {
-              const value = record.get(key);
-              if (value) {
-                acc[key] = value;
-              }
-              return acc;
-            },
-            { id: record.id }
-          ),
-          type: 'Feature',
-        } satisfies GeoJSON.Feature<GeoJSON.Point>;
-      });
-
-      return geojsonvt(
-        {
-          features,
-          type: 'FeatureCollection',
-        },
-        {
-          maxZoom: tileSourcesMaxZoom,
+const populateTilesCache = () => {
+  tilesCached = new Date().getDate();
+  Promise.all(
+    Object.entries(tilesInfo)
+      .filter(([_, tileInfo]) => !!tileInfo.cache)
+      .map(async ([type, tileInfo]) => {
+        const timerLabel = `⏱️  Indexing tiles for ${type} sourceLayer ${tileInfo.sourceLayer}`;
+        if (debug) {
+          console.info(`${timerLabel}...`);
+          console.time(timerLabel);
         }
-      );
-    });
-};
+        try {
+          const features = await tileInfo.cache?.(tileInfo.properties ?? []);
 
-const cacheAirtableTiles = () => {
-  airtableDayCached = new Date().getDate();
-  Object.entries(tilesInfo).forEach(([type, tileInfo]) => {
-    if (tileInfo.source === 'airtable') {
-      const timerLabel = `⏱️  Indexing tiles for ${type} from airtable ${tileInfo.table}`;
-      if (debug) {
-        console.info(`${timerLabel}...`);
-        console.time(timerLabel);
-      }
-      getObjectIndexFromAirtable(tileInfo)
-        .then((result) => {
-          airtableTiles[type as DatabaseSourceId] = result;
+          if (!features) {
+            throw new Error(`No features found for ${type} sourceLayer ${tileInfo.sourceLayer}`);
+          }
+
+          cachedTiles[type as DatabaseSourceId] = geojsonvt(
+            {
+              features: (features as any) ?? [],
+              type: 'FeatureCollection',
+            },
+            {
+              maxZoom: tileSourcesMaxZoom,
+            }
+          );
           if (debug) {
             console.timeEnd(timerLabel);
           }
-        })
-        .catch((e) => {
+        } catch (e) {
           if (debug) {
             console.timeEnd(timerLabel);
             console.error(`${timerLabel} failed`, e);
           }
-        });
-    }
-  });
+        }
+      })
+  );
 };
 
-if (!isDefined(process.env.DISABLE_AIRTABLE_TILES_CACHE)) {
-  cacheAirtableTiles();
+if (!isDefined(process.env.DISABLE_TILES_CACHE)) {
+  populateTilesCache();
 }
 
 export const getTile = async (
@@ -174,11 +148,11 @@ export const getTile = async (
     return result?.tile ? { compressed: !!tileInfo.compressedTiles, data: result?.tile } : null;
   }
 
-  if (airtableDayCached !== new Date().getDate()) {
-    cacheAirtableTiles();
+  if (tilesCached !== new Date().getDate()) {
+    populateTilesCache();
   }
 
-  const tiles = airtableTiles[type];
+  const tiles = cachedTiles[type];
   if (!tiles) {
     return null;
   }

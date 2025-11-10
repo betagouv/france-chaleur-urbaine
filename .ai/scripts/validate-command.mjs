@@ -109,7 +109,6 @@ const SECURITY_RULES = {
 
   // Safe paths where rm -rf is allowed
   SAFE_RM_PATHS: [
-    '/Users/melvynx/Developer/',
     '/tmp/',
     '/var/tmp/',
     `${process.cwd()}/`, // Current working directory

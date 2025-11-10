@@ -120,7 +120,7 @@ export function createBaseModel<T extends keyof DB>(tableName: T) {
     );
   };
 
-  const remove = async (id: string, config: ListConfig<T>, _context: ApiContext) => {
+  const remove = async (id: string, config?: ListConfig<T>, _context?: ApiContext) => {
     let getQuery = kdb.selectFrom(kdb.dynamic.table(tableName).as(tableName)).where('id' as any, '=', id);
 
     if (config) {
