@@ -14,7 +14,7 @@ import type { Demand } from '@/types/Summary/Demand';
 import type { User as FullUser } from '@/types/User';
 
 export const getAllDemands = async (): Promise<Demand[]> => {
-  const records = (await kdb.selectFrom('demands').selectAll().orderBy(sql`legacy_values->>'Date demandes'`, 'desc').execute()).map(
+  const records = (await kdb.selectFrom('demands').selectAll().orderBy(sql`legacy_values->>'Date de la demande'`, 'desc').execute()).map(
     ({ id, legacy_values }) => ({
       fields: legacy_values,
       id,
@@ -116,7 +116,7 @@ export const getGestionnairesDemands = async (gestionnaires: string[]): Promise<
       .selectFrom('demands')
       .selectAll()
       .where(sql`legacy_values->>'Gestionnaires validés'`, '=', 'true')
-      .orderBy(sql`legacy_values->>'Date demandes'`, 'desc')
+      .orderBy(sql`legacy_values->>'Date de la demande'`, 'desc')
       .execute()
   ).map(({ id, legacy_values }) => ({
     fields: legacy_values,
@@ -154,7 +154,7 @@ export const getDemands = async (user: User): Promise<Demand[]> => {
       );
   }
 
-  const records = (await query.orderBy(sql`legacy_values->>'Date demandes'`, 'desc').execute()).map(({ id, legacy_values }) => ({
+  const records = (await query.orderBy(sql`legacy_values->>'Date de la demande'`, 'desc').execute()).map(({ id, legacy_values }) => ({
     fields: legacy_values,
     id,
   }));
