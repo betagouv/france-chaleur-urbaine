@@ -30,6 +30,11 @@ type ChipAutoCompletePropsBase = {
   };
 };
 
+/**
+ * Discriminated union: 4 variants based on `multiple` and `suggestedValue` presence.
+ * - With suggestedValue: null allowed (to clear suggestions)
+ * - Without suggestedValue: null disallowed (no suggestions to clear)
+ */
 export type ChipAutoCompleteProps =
   | (ChipAutoCompletePropsBase & {
       multiple: true;

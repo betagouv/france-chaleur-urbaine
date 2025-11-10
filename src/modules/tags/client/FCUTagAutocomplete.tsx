@@ -37,6 +37,8 @@ const FCUTagAutocomplete: React.FC<FCUTagAutocompleteProps> = ({ undismissibles 
         multiple={true}
         value={value as string[] | null}
         suggestedValue={suggestedValue as string[]}
+        // Type assertion: TS can't narrow discriminated union after runtime 'isMultiple' check.
+        // onChange signature depends on suggestedValue: undefined → string[], defined → string[] | null
         onChange={onChange as (value: typeof suggestedValue extends undefined ? string[] : string[] | null) => void}
         {...(props as Omit<typeof props, 'multiple' | 'value' | 'suggestedValue' | 'onChange'>)}
       />
