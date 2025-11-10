@@ -595,11 +595,11 @@ function DemandesAdmin(): React.ReactElement {
                   adressesEligiblesAutoFit={false}
                   onFeatureClick={onFeatureClick}
                 />
-              ) : (
+              ) : isLoading ? (
                 <div className="absolute inset-0 flex justify-center items-center animate-pulse">
                   <Loader size="lg" />
                 </div>
-              )}
+              ) : null}
             </div>
           </ResizablePanel>
         </ResizablePanelGroup>
