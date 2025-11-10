@@ -1,635 +1,634 @@
-# Demands Management System Analysis
+# Analyse du Système de Gestion des Demandes
 
-**Subject**: Comprehensive analysis of the current demands (demandes) management system
+**Sujet** : Analyse complète du système actuel de gestion des demandes (raccordement)
 
-**Date**: 2025-11-03
+**Date** : 2025-11-03
 
-## Executive Summary
+## Résumé Exécutif
 
-The demands system is currently a fully Airtable-based solution that manages user requests for district heating network connections. It features two distinct user interfaces (admin and gestionnaire/pro), automated assignment rules, email notifications, and periodic synchronization jobs.
+Le système de gestion des demandes est actuellement une solution entièrement basée sur Airtable qui gère les sollicitations des usagers pour le raccordement aux réseaux de chaleur urbains. Il propose deux interfaces distinctes (admin et gestionnaire/pro), des règles d’attribution automatiques, des notifications par email, ainsi que des tâches de synchronisation périodiques.
 
 ---
 
-## System Architecture
+## Architecture du Système
 
-### Data Storage
+### Stockage des Données
 
-**Primary Database**: Airtable
+**Base de Données Principale** : Airtable
 
-**Main Tables**:
+**Tables Principales** :
 1. **`FCU - Utilisateurs`** (Airtable.DEMANDES_UNUSED)
-   - Core demands data
-   - Access pattern: REST API via Airtable SDK
-   - Configuration: `src/server/db/airtable.ts:9`
+   - Données principales des demandes
+   - Accès via l’API REST grâce au SDK Airtable
+   - Configuration : `src/server/db/airtable.ts:9`
 
 2. **`FCU - Utilisateurs relance`** (Airtable.RELANCE)
-   - User feedback from relance (follow-up) emails
-   - Stores comments when users respond to follow-up emails
-   - Linked to demands via `Relance ID`
+   - Retours utilisateurs suite aux emails de relance
+   - Stocke les commentaires lorsque les utilisateurs répondent aux relances
+   - Liée aux demandes par le champ `Relance ID`
 
 3. **`FCU - Utilisateurs emails`** (Airtable.UTILISATEURS_EMAILS)
-   - Complete history of all emails sent by gestionnaires to prospects
-   - Tracks: subject, body, recipients, CC, reply-to, timestamps
-   - Linked to demands via `demand_id`
+   - Historique complet des emails envoyés par les gestionnaires aux prospects
+   - Suivi : objet, corps du mail, destinataires, CC, reply-to, horodatages
+   - Lié aux demandes via `demand_id`
 
-**Supporting PostgreSQL Tables**:
-- `assignment_rules`: Stores pattern-based rules for auto-assignment of demands to gestionnaires
-- `users`: Contains user accounts (gestionnaires, admins, pros)
-- `events`: Audit trail for demand-related actions
-- `email_templates`: User-created email templates for common responses
+**Tables PostgreSQL associées** :
+- `assignment_rules` : Stocke les règles d'attribution automatique des demandes aux gestionnaires
+- `users` : Comptes utilisateurs (gestionnaires, admins, pros)
+- `events` : Journal d’audit des actions liées aux demandes
+- `email_templates` : Modèles d’emails enregistrés par les utilisateurs
 
-### Type Definitions
+### Définitions Typescript
 
-**Core Types** (`src/types/Summary/Demand.d.ts`):
-- `DemandSummary`: Base demand with id, Nom, Prénom, Adresse, Mode de chauffage, Type de chauffage, Structure, Gestionnaires
-- `EditableDemandSummary`: Editable fields for gestionnaires (Prise de contact, Commentaire, Status)
-- `Demand`: Full demand object with 30+ fields including contact info, location, network info, building details, assignment, tracking
-- `AdminDemand`: Extended demand with recommendedTags, recommendedAssignment, detailedEligibilityStatus, networkTags
+**Types centraux** (`src/types/Summary/Demand.d.ts`) :
+- `DemandSummary` : Demande de base avec id, Nom, Prénom, Adresse, Mode de chauffage, Type de chauffage, Structure, Gestionnaires
+- `EditableDemandSummary` : Champs modifiables par les gestionnaires (Prise de contact, Commentaire, Statut)
+- `Demand` : Objet complet de demande (30+ champs), dont infos de contact, localisation, réseau, bâtiment, attribution, suivi
+- `AdminDemand` : Extension avec recommendedTags, recommendedAssignment, detailedEligibilityStatus, networkTags
 
-**Status Enum** (`src/types/enum/DemandSatus.ts`):
-- EMPTY: 'En attente de prise en charge'
-- UNREALISABLE: 'Non réalisable'
-- WAITING: 'En attente d\'éléments du prospect'
-- IN_PROGRESS: 'Étude en cours'
-- VOTED: 'Voté en AG'
-- WORK_IN_PROGRESS: 'Travaux en cours'
-- DONE: 'Réalisé'
-- ABANDONNED: 'Projet abandonné par le prospect'
-
----
-
-## User Interfaces
-
-### 1. Admin Interface (`/admin/demandes`)
-
-**File**: `src/pages/admin/demandes.tsx`
-**Authentication**: `['admin']` only
-
-**Purpose**: Validate and assign demands to gestionnaires
-
-**Key Features**:
-- **Validation workflow**: Admins review unvalidated demands (`Gestionnaires validés = FALSE`)
-- **Auto-suggestions**: System recommends tags (gestionnaires) and assignments based on assignment rules
-- **Tag assignment**: Multi-select gestionnaire tags using `FCUTagAutocomplete`
-- **Network information**: Edit distance, network ID, and network name
-- **Map integration**: Visual representation of demands on map (right panel)
-- **Bulk validation**: "Valider" button auto-applies recommended values
-- **Delete capability**: Can delete demands before validation
-
-**API Endpoint**: `GET /api/admin/demands`
-- Filters: `{Gestionnaires validés} = FALSE()`
-- Processing:
-  1. Fetches unvalidated demands from Airtable (src/pages/api/admin/demands.ts:11-16)
-  2. Retrieves active assignment rules from PostgreSQL (src/pages/api/admin/demands.ts:24-29)
-  3. For each demand:
-     - Calls `getDetailedEligibilityStatus()` to compute network proximity
-     - Evaluates assignment rules to generate `recommendedTags` and `recommendedAssignment`
-     - Returns enriched `AdminDemand` object
-
-**Update Endpoint**: `PUT /api/admin/demands/[demandId]`
-- File: `src/pages/api/admin/demands/[demandId].ts`
-- Allowed updates: Gestionnaires, Affecté à, Distance au réseau, Nom réseau, etc.
-- Creates audit event: `demand_assigned` or `demand_updated`
-
-### 2. Gestionnaire/Pro Interface (`/pro/demandes`)
-
-**File**: `src/pages/pro/demandes.tsx`
-**Authentication**: `['gestionnaire', 'demo', 'admin']`
-
-**Purpose**: Track and manage assigned demands
-
-**Key Features**:
-- **Filtered view**: Shows only demands assigned to user's gestionnaire tags
-- **Status management**: Update demand status via dropdown
-- **Contact tracking**: Mark "prospect recontacté" checkbox
-- **Email integration**: Send emails to prospects via `DemandEmailForm` modal
-- **Quick filters**: Pre-configured filters for high-priority demands, PDP demands, etc.
-- **Data export**: Export to XLSX via `exportService`
-- **Advanced filters**: Faceted search on Status, Structure, Mode de chauffage, Distance, etc.
-
-**Quick Filter Presets**:
-1. **All demands**: Total count
-2. **High potential** (`haut_potentiel`): Collective heating <100m (60m Paris), or 100+ units, or tertiary
-3. **To process**: Status='En attente de prise en charge' AND NOT contacted
-4. **In PDP**: Demands in priority development perimeter
-
-**API Endpoint**: `GET /api/demands`
-- File: `src/pages/api/demands/index.ts`
-- Service: `getDemands(req.user)` from `src/server/services/manager.ts:91`
-- Filtering logic (src/server/services/manager.ts:99-107):
-  - **Admin**: No filter (all demands)
-  - **Demo**: Paris network only + validated
-  - **Gestionnaire**: Filter by user's gestionnaire tags + validated
-
-**Update Endpoint**: `PUT /api/demands/[demandId]`
-- File: `src/pages/api/demands/[demandId].ts`
-- Allowed fields: Status, 'Prise de contact', Commentaire, surface, logement, consumption
-- Permission check: User must have gestionnaire tag matching demand
+**Enum Statut** (`src/types/enum/DemandSatus.ts`) :
+- EMPTY : 'En attente de prise en charge'
+- UNREALISABLE : 'Non réalisable'
+- WAITING : 'En attente d\'éléments du prospect'
+- IN_PROGRESS : 'Étude en cours'
+- VOTED : 'Voté en AG'
+- WORK_IN_PROGRESS : 'Travaux en cours'
+- DONE : 'Réalisé'
+- ABANDONNED : 'Projet abandonné par le prospect'
 
 ---
 
-## Business Logic & Services
+## Interfaces Utilisateur
 
-### Demand Creation Flow
+### 1. Interface Administrateur (`/admin/demandes`)
 
-**Entry Point**: Contact form submission
-- Hook: `useContactFormFCU` (src/hooks/useContactFormFCU.ts)
-- Service: `formatDataToAirtable()` + `submitToAirtable()` (src/services/airtable.ts)
+**Fichier** : `src/pages/admin/demandes.tsx`
+**Authentification** : réservée à `['admin']`
 
-**API Handler**: `POST /api/airtable/records` (src/pages/api/airtable/records/index.ts)
+**But** : Valider et attribuer les demandes aux gestionnaires
 
-**Creation Process** (src/pages/api/airtable/records/index.ts:42-93):
-1. Create Airtable record with default empty values:
+**Fonctionnalités clés** :
+- **Workflow de validation** : Les administrateurs examinent les demandes non validées (`Gestionnaires validés = FALSE`)
+- **Suggestions automatiques** : Tags et attributions proposés en fonction des règles d’affectation
+- **Attribution de tags** : Sélection multiple grâce à `FCUTagAutocomplete`
+- **Information réseau** : Edition de la distance, de l’ID réseau et du nom réseau
+- **Carte** : Visualisation des demandes sur carte (panneau droit)
+- **Validation en masse** : Bouton "Valider" applique les valeurs recommandées automatiquement
+- **Suppression** : Demandes supprimables tant qu’elles ne sont pas validées
+
+**API GET** : `/api/admin/demands`
+- Filtres : `{Gestionnaires validés} = FALSE()`
+- Traitement :
+  1. Récupère les demandes non validées depuis Airtable (src/pages/api/admin/demands.ts:11-16)
+  2. Charge les règles actives depuis PostgreSQL (src/pages/api/admin/demands.ts:24-29)
+  3. Pour chaque demande :
+     - Appelle `getDetailedEligibilityStatus()` pour calculer la proximité au réseau
+     - Evalue les règles pour générer `recommendedTags` et `recommendedAssignment`
+     - Retourne un objet enrichi `AdminDemand`
+
+**API Mise à jour** : `PUT /api/admin/demands/[demandId]`
+- Fichier : `src/pages/api/admin/demands/[demandId].ts`
+- Champs éditables : Gestionnaires, Affecté à, Distance au réseau, Nom réseau, etc.
+- Audit event créé : `demand_assigned` ou `demand_updated`
+
+### 2. Interface Gestionnaire/Pro (`/pro/demandes`)
+
+**Fichier** : `src/pages/pro/demandes.tsx`
+**Authentification** : `['gestionnaire', 'demo', 'admin']`
+
+**But** : Suivre et gérer les demandes attribuées
+
+**Fonctionnalités clés** :
+- **Vue filtrée** : Affiche uniquement les demandes correspondant aux tags du gestionnaire connecté
+- **Gestion du statut** : Changement du statut via menu déroulant
+- **Suivi du contact** : Case à cocher “prospect recontacté”
+- **Envoi d’emails** : Modal d’envoi via `DemandEmailForm`
+- **Filtres rapides** : Accès direct à certaines listes (haute priorité, PDP, etc.)
+- **Export de données** : Export en XLSX via `exportService`
+- **Filtres avancés** : Recherche par statut, structure, mode de chauffage, distance, etc.
+
+**Préréglages de filtres rapides** :
+1. **Toutes les demandes** : Nombre total
+2. **Haut potentiel** (`haut_potentiel`): Chauffage collectif <100m (60m Paris), ou 100+ logements, ou tertiaire
+3. **À traiter** : Statut = 'En attente de prise en charge' ET non contacté
+4. **En PDP** : Demandes situées dans le périmètre de développement prioritaire
+
+**API GET** : `/api/demands`
+- Fichier : `src/pages/api/demands/index.ts`
+- Service : `getDemands(req.user)` depuis `src/server/services/manager.ts:91`
+- Logique de filtrage (src/server/services/manager.ts:99-107):
+  - **Admin** : Pas de filtre (toutes les demandes)
+  - **Demo** : Réseau Paris uniquement + validées
+  - **Gestionnaire** : Filtres par tags du gestionnaire + validées
+
+**API Mise à jour** : `PUT /api/demands/[demandId]`
+- Fichier : `src/pages/api/demands/[demandId].ts`
+- Champs modifiables : Statut, Prise de contact, Commentaire, surface, logements, consommation
+- Contrôle permissions : L’utilisateur doit avoir le tag de gestionnaire correspondant
+
+---
+
+## Logique Métier & Services
+
+### Création d’une demande
+
+**Entrée** : Soumission du formulaire de contact
+- Hook : `useContactFormFCU` (src/hooks/useContactFormFCU.ts)
+- Service : `formatDataToAirtable()` + `submitToAirtable()` (src/services/airtable.ts)
+
+**Handler API** : `POST /api/airtable/records` (src/pages/api/airtable/records/index.ts)
+
+**Processus** (src/pages/api/airtable/records/index.ts:42-93) :
+1. Créer la fiche Airtable avec valeurs vides par défaut :
    - `Gestionnaires: [defaultEmptyStringValue]`
    - `Affecté à: defaultEmptyStringValue`
    - `Distance au réseau: defaultEmptyNumberValue`
-2. Enrich with external data:
-   - Gas consumption via `getConsommationGazAdresse()`
-   - Number of housing units via `getNbLogement()`
-3. Update record with enriched data
-4. Create audit event: `demand_created`
-5. Send confirmation email to user
+2. Enrichir avec des données externes :
+   - Consommation gaz via `getConsommationGazAdresse()`
+   - Nombre de logements via `getNbLogement()`
+3. Mettre à jour la fiche avec les données enrichies
+4. Créer un événement d’audit : `demand_created`
+5. Envoyer l’email de confirmation à l’utilisateur
 
-**Data Transformation** (src/services/airtable.ts:85-147):
-- Normalizes heating energy/type values
-- Handles complex structure types (Tertiaire with Bureau d'études, Syndic, etc.)
-- Maps company information based on structure type
-- Includes UTM tracking parameters (mtm_campaign, mtm_kwd, mtm_source)
+**Transformation des données** (src/services/airtable.ts:85-147) :
+- Normalisation des valeurs énergie/type de chauffage
+- Gestion des structures complexes (Tertiaire avec BE, Syndic, etc.)
+- Mapping des informations société selon le type de structure
+- Ajout des paramètres UTM de tracking
 
-### Assignment Rules System
+### Système de Règles d’Attribution
 
-**Storage**: PostgreSQL `assignment_rules` table
-- Fields: `id`, `search_pattern`, `result`, `active`, `created_at`
+**Stockage** : Table PostgreSQL `assignment_rules`
+- Champs : `id`, `search_pattern`, `result`, `active`, `created_at`
 
-**Rule Syntax** (src/pages/api/admin/demands.ts:30-46):
-- **Pattern**: Expression AST parsed from search pattern
-- **Actions**: Parsed from result field
-  - `tag:<name>`: Add gestionnaire tag
-  - `affecte:<name>`: Assign to gestionnaire
+**Syntaxe des règles** (src/pages/api/admin/demands.ts:30-46) :
+- **Pattern** : Expression AST parsée
+- **Actions** : Extraction depuis `result`
+  - `tag:<nom>` : Ajoute un tag gestionnaire
+  - `affecte:<nom>` : Attribue à un gestionnaire
 
-**Evaluation** (src/pages/api/admin/demands.ts:48-81):
-1. Parse all active rules' patterns to AST
-2. For each demand's `DetailedEligibilityStatus`:
-   - Evaluate AST against eligibility data
-   - Collect matching tags
-   - Take first matching assignment
-3. Return `{ tags: string[], assignment: string | null }`
+**Évaluation** (src/pages/api/admin/demands.ts:48-81) :
+1. Parser tous les patterns actifs en AST
+2. Pour chaque `DetailedEligibilityStatus` de demande :
+   - Évaluer l’AST selon les données d’éligibilité
+   - Rassembler les tags correspondants
+   - Prendre la première affectation trouvée
+3. Retourne `{ tags: string[], assignment: string | null }`
 
-**Example Flow**:
+**Exemple** :
 ```
-Rule: "network.nom CONTAINS 'Paris' AND distance < 100"
-Action: "tag:Paris, affecte:Gestionnaire Paris"
-→ If demand matches, adds "Paris" to recommendedTags and suggests assignment
+Règle : "network.nom CONTAINS 'Paris' AND distance < 100"
+Action : "tag:Paris, affecte:Gestionnaire Paris"
+→ Si la demande correspond, ajoute "Paris" aux tags recommandés et suggère l’attribution
 ```
 
-### Email Notifications
+### Notifications Email
 
-**Services** (src/server/services/manager.ts):
+**Services** (`src/server/services/manager.ts`) :
 
-#### 1. New Demands Notification (`dailyNewManagerMail`)
-- **Trigger**: Cron daily at 10:00 Mon-Fri (src/server/cron/cron.ts:8-13)
-- **Recipients**: Users with `receive_new_demands = true`
-- **Filter**: `{Gestionnaires validés} = TRUE() AND {Notification envoyé} = ""`
-- **Process**:
-  1. Group demands by gestionnaire tag
-  2. Group users by gestionnaire tag
-  3. Send email per gestionnaire per user
-  4. Mark demands with `Notification envoyé: <date>`
+#### 1. Notification de nouvelles demandes (`dailyNewManagerMail`)
+- **Déclenchement** : Cron, chaque jour ouvré à 10h (src/server/cron/cron.ts:8-13)
+- **Destinataires** : Utilisateurs avec `receive_new_demands = true`
+- **Filtre** : `{Gestionnaires validés} = TRUE() AND {Notification envoyé} = ""`
+- **Processus** :
+  1. Groupement des demandes par tag
+  2. Groupement des utilisateurs par tag
+  3. Envoi d’un mail pour chaque gestionnaire et utlisateur
+  4. Marquage `Notification envoyé: <date>`
 
-#### 2. Stale Demands Reminder (`weeklyOldManagerMail`)
-- **Trigger**: Cron Tuesday 09:55 (src/server/cron/cron.ts:15-20)
-- **Recipients**: Users with `receive_old_demands = true`
-- **Filter**: Status empty/waiting AND notification >7 days ago
-- **Process**: Email reminder for each gestionnaire
+#### 2. Rappel pour demandes en attente (`weeklyOldManagerMail`)
+- **Déclenchement** : Cron chaque mardi à 9h55 (src/server/cron/cron.ts:15-20)
+- **Destinataires** : Utilisateurs avec `receive_old_demands = true`
+- **Filtre** : Statut vide/en attente ET notification il y a plus de 7 jours
+- **Processus** : Envoi d’un rappel email par gestionnaire
 
-#### 3. User Relance (`dailyRelanceMail`)
-- **Trigger**: Cron Monday 10:05 (src/server/cron/cron.ts:22-27)
-- **Recipients**: End users who submitted demands
-- **Filter** (src/server/services/manager.ts:35-56):
-  - First relance: >1 month, `Relance à activer = TRUE`, not contacted, no relance sent
-  - Second relance: >45 days since first relance, still not contacted
-- **Process**:
-  1. Generate unique UUID per demand
-  2. Update `Relance envoyée` or `Seconde relance envoyée` with date
-  3. Store UUID in `Relance ID`
-  4. Send email with UUID link for user response
+#### 3. Relance utilisateur (`dailyRelanceMail`)
+- **Déclenchement** : Cron chaque lundi à 10h05 (src/server/cron/cron.ts:22-27)
+- **Destinataires** : Utilisateurs finaux ayant soumis des demandes
+- **Filtre** (src/server/services/manager.ts:35-56) :
+  - Première relance : >1 mois, `Relance à activer = TRUE`, non contacté, pas de relance déjà envoyée
+  - Seconde relance : >45 jours après la première, toujours non contacté
+- **Processus** :
+  1. Générer un UUID unique par demande
+  2. Mettre à jour `Relance envoyée` ou `Seconde relance envoyée`
+  3. Stocker l’UUID dans `Relance ID`
+  4. Envoyer un email avec lien de retour utilisateur
 
-**Template**: `relance` email includes link for user to indicate if contacted
+**Modèle** : l’email de relance inclut un lien pour indiquer si l’utilisateur a été contacté
 
-### Relance (Follow-up) System
+### Système de Relance
 
-**Purpose**: Track whether users have been contacted by gestionnaires after submitting a demand.
+**But** : Suivre si les usagers ont bien été recontactés par les gestionnaires après soumission d’une demande
 
-**Components**:
+**Composants** :
 
-#### 1. Relance Email Workflow
+#### 1. Workflow Email de Relance
 
-**Trigger**: `dailyRelanceMail` cron (Monday 10:05)
+**Déclenchement** : Cron `dailyRelanceMail` (lundi 10h05)
 
-**Criteria** (src/server/services/manager.ts:35-56):
-- **First relance**:
-  - Demand older than 1 month
+**Critères** (src/server/services/manager.ts:35-56) :
+- **Première relance** :
+  - Demande plus ancienne qu'1 mois
   - `Relance à activer = TRUE`
-  - `Recontacté par le gestionnaire = ""` (empty)
-  - `Relance envoyée = ""` (not sent yet)
-- **Second relance**:
-  - Demand older than 45 days from first relance
-  - Still not contacted by gestionnaire
-  - First relance already sent
+  - `Recontacté par le gestionnaire = ""` (vide)
+  - `Relance envoyée = ""` (jamais envoyée)
+- **Seconde relance** :
+  - Demande plus ancienne de 45j depuis la 1ère relance
+  - Toujours non recontacté
+  - 1ère relance déjà envoyée
 
-**Process** (src/server/services/manager.ts:299-323):
-1. Generate unique UUID for tracking
-2. Update demand fields:
-   - `Relance envoyée` or `Seconde relance envoyée` = current date
+**Processus** (src/server/services/manager.ts:299-323) :
+1. Génère un UUID unique
+2. Met à jour la fiche demande :
+   - `Relance envoyée` ou `Seconde relance envoyée` = date actuelle
    - `Relance ID` = UUID
-3. Send email to user with links:
-   - `/satisfaction?id={uuid}&satisfaction=true` (if contacted)
-   - `/satisfaction?id={uuid}&satisfaction=false` (if not contacted)
+3. Envoie un email à l'utilisateur avec des liens :
+   - `/satisfaction?id={uuid}&satisfaction=true` (contacté)
+   - `/satisfaction?id={uuid}&satisfaction=false` (non contacté)
 
-#### 2. User Response Page (`/satisfaction`)
+#### 2. Page de réponse utilisateur (`/satisfaction`)
 
-**File**: `src/pages/satisfaction.tsx`
+**Fichier** : `src/pages/satisfaction.tsx`
 
-**Server-Side Processing** (src/pages/satisfaction.tsx:84-88):
-- On page load: `updateRelanceAnswer(id, satisfaction)`
-- Updates demand: `Recontacté par le gestionnaire = 'Oui'` or `'Non'`
+**Traitement serveur** (src/pages/satisfaction.tsx:84-88) :
+- Lors de l’accès : `updateRelanceAnswer(id, satisfaction)`
+- Met à jour la demande : `Recontacté par le gestionnaire = 'Oui'` ou `'Non'`
 
-**Client-Side Features**:
-- If `satisfaction=false`: Shows message about delays, promises to re-contact gestionnaire
-- Optional comment form → submitted to `Airtable.RELANCE` table
-- Comment stored with `Relance ID` reference
+**Côté client** :
+- Si `satisfaction=false` : Message d’excuse, promesse de relance gestionnaire
+- Formulaire de commentaire optionnel → envoyé à la table `Airtable.RELANCE`
+- Commentaire référencé via le `Relance ID`
 
-#### 3. Airtable.RELANCE Table
+#### 3. Table Airtable.RELANCE
 
-**Purpose**: Store user feedback/comments from relance responses
+**But** : Stocker l’avis/commentaire utilisateur suite à la relance
 
-**Fields**:
-- `id`: Relance UUID
-- `comment`: User's optional comment about their experience
+**Champs** :
+- `id` : UUID relance
+- `comment` : Commentaire utilisateur
 
-**API Handler** (src/pages/api/airtable/records/index.ts:32-40):
-- Receives comment with relance UUID
-- Finds demand by Relance ID
-- Updates demand's `Commentaire relance` field with user comment
+**Handler API** (src/pages/api/airtable/records/index.ts:32-40) :
+- Reçoit le commentaire avec l’UUID
+- Retrouve la demande par `Relance ID`
+- Met à jour le champ `Commentaire relance` sur la demande
 
-**Flow**:
-1. User receives relance email
-2. Clicks link with UUID
-3. `/satisfaction` page updates `Recontacté par le gestionnaire` field
-4. User optionally leaves comment
-5. Comment saved to RELANCE table AND to demand's `Commentaire relance` field
+**Flux** :
+1. L'utilisateur reçoit la relance par email
+2. Clique le lien avec UUID
+3. La page `/satisfaction` met à jour `Recontacté par le gestionnaire`
+4. L’utilisateur laisse éventuellement un commentaire
+5. Le commentaire est stocké dans la table RELANCE ET sur la demande
 
-### Email Tracking System (UTILISATEURS_EMAILS)
+### Système de Suivi Email (UTILISATEURS_EMAILS)
 
-**Purpose**: Complete audit trail of all gestionnaire-to-user communications
+**But** : Posséder un audit complet de toutes les communications gestionnaire-prospect
 
-**Airtable.UTILISATEURS_EMAILS Table Fields**:
-- `demand_id`: Links to demand (Airtable record ID)
-- `email_key`: Template ID or UUID if custom email
-- `object`: Email subject
-- `body`: Email body (with `<br />` for newlines)
-- `to`: Recipient email
-- `cc`: CC recipients (comma-separated)
-- `reply_to`: Reply-to address
-- `signature`: Gestionnaire's signature
-- `user_email`: Gestionnaire who sent the email
-- `sent_at`: Timestamp (auto-created by Airtable)
+**Champs - Table Airtable.UTILISATEURS_EMAILS** :
+- `demand_id` : Lien vers la demande (Airtable record ID)
+- `email_key` : ID du modèle ou UUID si email libre
+- `object` : Objet de l’email
+- `body` : Corps (avec `<br />` pour les sauts de ligne)
+- `to` : Destinataire
+- `cc` : Copie conforme (liste séparée par virgules)
+- `reply_to` : Adresse de réponse
+- `signature` : Signature du gestionnaire
+- `user_email` : Gestionnaire auteur
+- `sent_at` : Date d’envoi (automatique Airtable)
 
-#### Email Sending Flow
+#### Flux d’envoi d’email
 
-**Component**: `DemandEmailForm` (src/components/Manager/DemandEmailForm.tsx)
+**Composant** : `DemandEmailForm` (src/components/Manager/DemandEmailForm.tsx)
 
-**Triggered From**: `/pro/demandes` page when gestionnaire clicks contact email button
+**Déclenché depuis** : Page `/pro/demandes` lors d’un clic sur bouton email
 
-**Features**:
-1. **Email History Display** (src/components/Manager/DemandEmailForm.tsx:82-236):
+**Fonctionnalités** :
+1. **Affichage historique email** (src/components/Manager/DemandEmailForm.tsx:82-236) :
    - GET `/api/managerEmail?demand_id={id}`
-   - Shows all previously sent emails
-   - Click to reload template
-   - Prevents re-sending same template (marked as disabled)
+   - Liste tous les emails envoyés précédemment
+   - Clique = recharge le modèle
+   - Empêche la réutilisation d’un même modèle pour une demande
 
-2. **Template System**:
-   - User can save/load custom email templates
-   - Templates stored in PostgreSQL `email_templates` table
-   - Support for placeholders: `{{Prénom}}`, `{{Nom}}`, `{{Adresse}}`, etc.
-   - Preview before sending
+2. **Système de modèles** :
+   - Enregistrement et chargement de modèles personnalisés
+   - Modèles stockés dans la table PostgreSQL `email_templates`
+   - Prise en charge des placeholders : `{{Prénom}}`, `{{Nom}}`, `{{Adresse}}`, etc.
+   - Prévisualisation avant envoi
 
-3. **Placeholder Processing** (src/components/Manager/DemandEmailForm.tsx:36-58):
-   - Replaces `{{key}}` with demand field values
-   - Auto-formats dates
-   - Available placeholders: Prénom, Nom, Adresse, Date de la demande, Distance au réseau, etc.
+3. **Gestion des placeholders** (src/components/Manager/DemandEmailForm.tsx:36-58) :
+   - Remplace `{{clé}}` par la valeur de la demande
+   - Formate automatiquement les dates
+   - Placeholders disponibles : Prénom, Nom, Adresse, Date de la demande, Distance au réseau, etc.
 
-4. **Send Process** (src/components/Manager/DemandEmailForm.tsx:117-164):
-   - POST `/api/managerEmail` with email content
-   - Logs to `UTILISATEURS_EMAILS` table
-   - Updates user's signature preference in PostgreSQL
-   - Updates demand fields:
-     - `Emails envoyés`: Appends subject line (newline-separated list)
+4. **Processus d’envoi** (src/components/Manager/DemandEmailForm.tsx:117-164) :
+   - POST `/api/managerEmail` avec le contenu du mail
+   - Enregistre dans la table `UTILISATEURS_EMAILS`
+   - Met à jour la signature de l'utilisateur si modifiée
+   - Met à jour la demande :
+     - `Emails envoyés` : ajoute la ligne d’objet
      - `Prise de contact = true`
-     - Conditional status updates based on template:
-       - `koFarFromNetwork`, `koIndividualHeat`, `koOther` → Status = UNREALISABLE
-       - `askForPieces` → Status = WAITING
+     - Mise à jour du statut conditionnelle selon modèle :
+       - `koFarFromNetwork`, `koIndividualHeat`, `koOther` → Statut = UNREALISABLE
+       - `askForPieces` → Statut = WAITING
 
-#### Email API Handler (`/api/managerEmail`)
+#### Handler API Email (`/api/managerEmail`)
 
-**File**: `src/pages/api/managerEmail.ts`
+**Fichier** : `src/pages/api/managerEmail.ts`
 
-**GET** (src/pages/api/managerEmail.ts:13-43):
-- Fetches email history for a specific demand
-- Returns array of email records with all fields
+**GET** (src/pages/api/managerEmail.ts:13-43) :
+- Récupère l’historique email pour une demande donnée
+- Retourne la liste complète des envois
 
-**POST** (src/pages/api/managerEmail.ts:63-111):
-1. Validate email content (Zod schema)
-2. Log to Airtable `UTILISATEURS_EMAILS` table
-3. Update user's signature in PostgreSQL if changed
-4. Send actual email via `sendEmailTemplate('manager-email', ...)`
+**POST** (src/pages/api/managerEmail.ts:63-111) :
+1. Valide le contenu (Zod schema)
+2. Log dans Airtable `UTILISATEURS_EMAILS`
+3. Mise à jour de la signature PostgreSQL si modifiée
+4. Envoi réel de l’email via `sendEmailTemplate('manager-email', ...)`
 
-**Email Delivery**:
-- Template: `manager-email`
-- Custom subject from gestionnaire
-- Custom body with processed placeholders
-- Custom CC and reply-to headers
+**Envoi effectif** :
+- Modèle : `manager-email`
+- Objet libre défini par le gestionnaire
+- Corps personnalisé avec placeholders traités
+- CC et reply-to personnalisés
 
 ---
 
-## Cron Jobs
+## Tâches Planifiées (Cron)
 
 ### 1. syncComptesProFromUsers
 
-**File**: `src/server/services/airtable.ts:16-119`
-**Schedule**: Hourly (src/server/cron/cron.ts:29-36)
-**Purpose**: Synchronize PostgreSQL users to Airtable `FCU - Comptes pro`
+**Fichier** : `src/server/services/airtable.ts:16-119`
+**Fréquence** : Horaire (src/server/cron/cron.ts:29-36)
+**But** : Synchroniser les utilisateurs PostgreSQL vers la table Airtable `FCU - Comptes pro`
 
-**Process**:
-1. Query PostgreSQL `users` table for PROFESSIONNEL/PARTICULIER roles
-2. Optional interval filter (only users created in last X time)
-3. Fetch all existing `FCU - Comptes pro` records from Airtable
-4. For each user:
-   - If not in Airtable: **CREATE** new record
-   - If exists but unchanged: **SKIP**
-   - If exists and changed: **UPDATE** (based on `last_connection` or `active` fields)
+**Processus** :
+1. Requête sur la table `users` PostgreSQL (rôle PRO/PARTICULIER)
+2. Filtre optionnel sur période (nouveaux utilisateurs seulement)
+3. Récupère tous les comptes existants côté Airtable
+4. Pour chaque user :
+   - S’il n’existe pas : **CREATE**
+   - S’il existe mais inchangé : **PASSER**
+   - S’il existe et a changé : **UPDATE** (sur `last_connection` ou `active`)
 
-**Synced Fields**:
+**Champs synchronisés** :
 - Email, Nom, Prénom, Téléphone
-- Role, Statut, Actif
-- Structure info (Type, Nom)
+- Rôle, Statut, Actif
+- Infos structure (Type, Nom)
 - CGU acceptées, Optin Newsletter
 - Créé le, Dernière connexion
 
-**DRY_RUN mode**: Controlled by `DRY_RUN` env variable
+**Mode DRY_RUN** : Gouverné par la variable d'environnement DRY_RUN
 
-**Note**: This cron is NOT directly related to demands, but syncs user accounts that may become gestionnaires.
+**Note** : Ce cron ne touche pas directement aux demandes, il met à jour les comptes pro susceptibles de recevoir des demandes.
 
-### 2. Daily/Weekly Email Jobs
+### 2. Jobs email quotidiens/hebdo
 
-See "Email Notifications" section above.
+Voir section “Notifications Email” ci-dessus.
 
 ---
 
-## Integration Points
+## Points d’Intégration
 
-### 1. Airtable Integration
+### 1. Intégration Airtable
 
-**Tables Used**:
-- `FCU - Utilisateurs` (DEMANDES): Main demands table
-- `FCU - Comptes pro` (COMPTES_PRO): User accounts sync
-- `FCU - Utilisateurs emails` (UTILISATEURS_EMAILS): Email tracking and history
-- `FCU - Utilisateurs relance` (RELANCE): User feedback from follow-up emails
+**Tables utilisées** :
+- `FCU - Utilisateurs` (DEMANDES) : Table principale des demandes
+- `FCU - Comptes pro` (COMPTES_PRO) : Comptes utilisateurs synchronisés
+- `FCU - Utilisateurs emails` (UTILISATEURS_EMAILS) : Historique & traçabilité email
+- `FCU - Utilisateurs relance` (RELANCE) : Avis/commentaires suite à relance
 
-**Access Pattern**:
-- SDK: `airtable` library via `AirtableDB()` helper
-- Operations: create, update, select with filters, destroy
-- Typecast: Always used for flexible field types
+**Modalités d’accès** :
+- SDK : Librairie `airtable` via helper `AirtableDB()`
+- CRUD, sélections avec filtres, suppressions
+- `typecast` toujours activé pour la souplesse typage
 
-**Usage by Table**:
-- **DEMANDES**: CRUD operations for demands, filtered queries for assignments
-- **UTILISATEURS_EMAILS**: Create (on email send), Read (email history display)
-- **RELANCE**: Create (user comment), Update parent demand's `Commentaire relance`
-- **COMPTES_PRO**: Hourly sync from PostgreSQL users table
+**Utilisation par table** :
+- **DEMANDES** : Opérations CRUD, requêtes filtrées pour attributions
+- **UTILISATEURS_EMAILS** : Création (à l’envoi), lecture (pour afficher historique)
+- **RELANCE** : Création (commentaire utilisateur), update du champ commentaire relance parent
+- **COMPTES_PRO** : Sync horaire depuis PostgreSQL
 
-### 2. PostgreSQL Integration
+### 2. Intégration PostgreSQL
 
-**Tables**:
-- `assignment_rules`: Auto-assignment logic
-- `users`: Authentication, gestionnaire tags, email preferences
-- `events`: Audit trail (demand_created, demand_updated, demand_assigned, demand_deleted)
+**Tables** :
+- `assignment_rules` : Règles auto-attribution
+- `users` : Authentification, tags gestionnaires, préférences email
+- `events` : Audit (demand_created, demand_updated, demand_assigned, demand_deleted)
 
-**ORM**: Kysely query builder
+**ORM** : Kysely query builder
 
-### 3. External Services
+### 3. Services externes
 
-**Address Information** (`src/server/services/addresseInformation`):
-- `getDetailedEligibilityStatus(lat, lon)`: Network proximity, PDP status, commune
-- `getConsommationGazAdresse(lat, lon)`: Gas consumption data
-- `getNbLogement(lat, lon)`: Building unit count
+**Information Adresse** (`src/server/services/addresseInformation`) :
+- `getDetailedEligibilityStatus(lat, lon)` : Proximité réseau, Perimètre PDP, commune
+- `getConsommationGazAdresse(lat, lon)` : Données conso gaz
+- `getNbLogement(lat, lon)` : Nombre de logements
 
-**Email Service** (`src/server/email`):
-- `sendEmailTemplate()`: Template-based emails
-- Templates: `creation-demande`, `new-demands`, `old-demands`, `relance`
+**Service Email** (`src/server/email`) :
+- `sendEmailTemplate()` : Envoi emails modèles
+- Modèles : `creation-demande`, `new-demands`, `old-demands`, `relance`
 
 ### 4. Analytics
 
-**Matomo Tracking**:
-- UTM parameters captured on demand creation
-- Events tracked: address eligibility, form submissions
+**Suivi Matomo** :
+- Paramètres UTM capturés lors de la création de la demande
+- Événements suivis : éligibilité adresse, soumissions formulaire
 
 ---
 
-## User Permissions Model
+## Modèle de Permissions
 
-**Roles**:
-1. **Admin**: Full access to all demands, validation interface, deletion
-2. **Gestionnaire**: Access to demands with matching gestionnaire tags, can update status/comments
-3. **Demo**: Read-only access to Paris demands (fake data shown)
-4. **Particulier/Professionnel**: No access to demand management (only create demands)
+**Rôles** :
+1. **Admin** : Accès complet, interface de validation, suppression
+2. **Gestionnaire** : Accès aux demandes correspondant à leurs tags, MAJ statut/commentaires
+3. **Demo** : Lecture seule des demandes Paris (données fictives)
+4. **Particulier/Professionnel** : Pas d’accès à la gestion (création seulement)
 
-**Access Control**:
-- Server-side: `withAuthentication(['admin', 'gestionnaire'])` HOC
-- Data filtering: Airtable queries filtered by `Gestionnaires` field matching user tags
-- Update validation: Permission check before allowing edits
+**Contrôle d’accès** :
+- Côté serveur : `withAuthentication(['admin', 'gestionnaire'])`
+- Filtrage : Requêtes Airtable filtrées par champ `Gestionnaires` selon tags user
+- Validation des updates : Contrôle permissions avant MAJ
 
 ---
 
-## Key Files Reference
+## Fichiers Clés
 
-### Frontend Pages
-- `src/pages/admin/demandes.tsx`: Admin validation interface
-- `src/pages/pro/demandes.tsx`: Gestionnaire management interface
-- `src/pages/satisfaction.tsx`: User relance response page
+### Pages frontend
+- `src/pages/admin/demandes.tsx` : Interface de validation admin
+- `src/pages/pro/demandes.tsx` : Interface gestionnaire
+- `src/pages/satisfaction.tsx` : Page de retour relance utilisateur
 
-### API Routes
-**Demands**:
-- `src/pages/api/admin/demands.ts`: GET admin demands
-- `src/pages/api/admin/demands/[demandId].ts`: PUT/DELETE admin demand
-- `src/pages/api/demands/index.ts`: GET gestionnaire demands
-- `src/pages/api/demands/[demandId].ts`: PUT gestionnaire demand
-- `src/pages/api/airtable/records/index.ts`: POST create demand/relance
+### API
+**Demandes** :
+- `src/pages/api/admin/demands.ts` : GET admin
+- `src/pages/api/admin/demands/[demandId].ts` : PUT/DELETE admin
+- `src/pages/api/demands/index.ts` : GET gestionnaire
+- `src/pages/api/demands/[demandId].ts` : PUT gestionnaire
+- `src/pages/api/airtable/records/index.ts` : POST création demande/relance
 
-**Email & Communication**:
-- `src/pages/api/managerEmail.ts`: GET email history, POST send email
-- `src/pages/api/user/email-templates/[[...slug]].ts`: CRUD email templates
+**Email & communication** :
+- `src/pages/api/managerEmail.ts` : GET historique, POST envoi email
+- `src/pages/api/user/email-templates/[[...slug]].ts` : CRUD modèles email
 
 ### Services
-- `src/server/services/manager.ts`: Core demand business logic
-- `src/server/services/airtable.ts`: User sync to Airtable
-- `src/server/services/assignment-rules.ts`: Rule management (likely)
-- `src/services/airtable.ts`: Client-side data formatting
+- `src/server/services/manager.ts` : Logique métier demandes
+- `src/server/services/airtable.ts` : Sync utilisateurs → Airtable
+- `src/server/services/assignment-rules.ts` : Gestion règles attribution (présumé)
+- `src/services/airtable.ts` : Formatage données côté client
 
-### Components
-- `src/components/Manager/Status.tsx`: Status dropdown
-- `src/components/Manager/Contact.tsx`: Contact display
-- `src/components/Manager/Contacted.tsx`: Checkbox for contact tracking
-- `src/components/Manager/Comment.tsx`: Comment field
-- `src/components/Manager/DemandEmailForm.tsx`: Email modal
-- `src/components/Manager/DemandStatusBadge.tsx`: Status badge
-- `src/components/Admin/TableFieldInput.tsx`: Editable field input
+### Composants
+- `src/components/Manager/Status.tsx` : Statut dropdown
+- `src/components/Manager/Contact.tsx` : Contact affichage
+- `src/components/Manager/Contacted.tsx` : Case recontacté
+- `src/components/Manager/Comment.tsx` : Zone commentaire
+- `src/components/Manager/DemandEmailForm.tsx` : Modal email
+- `src/components/Manager/DemandStatusBadge.tsx` : Badge statut
+- `src/components/Admin/TableFieldInput.tsx` : Input éditable admin
 
-### Database
-- `src/server/db/airtable.ts`: Airtable connection
-- `src/server/db/kysely/database.ts`: PostgreSQL types
-- `src/server/db/migrations/20250706000003_add_table_assignment_rules.ts`: Assignment rules table
+### Base de données
+- `src/server/db/airtable.ts` : Connexion Airtable
+- `src/server/db/kysely/database.ts` : Types PostgreSQL
+- `src/server/db/migrations/20250706000003_add_table_assignment_rules.ts` : Table règles attribution
 
 ### Types
-- `src/types/Summary/Demand.d.ts`: Demand type definitions
-- `src/types/enum/DemandSatus.ts`: Status enum
-- `src/types/enum/Airtable.ts`: Airtable table names
+- `src/types/Summary/Demand.d.ts` : Types demandes
+- `src/types/enum/DemandSatus.ts` : Enum statuts
+- `src/types/enum/Airtable.ts` : Enum tables Airtable
 
 ### Cron
-- `src/server/cron/cron.ts`: Cron job registration
-- `src/server/cron/launch.ts`: Job launcher
+- `src/server/cron/cron.ts` : Déclaration CRON jobs
+- `src/server/cron/launch.ts` : Lancement CRON
 
 ---
 
-## Data Flow Diagrams
+## Schémas de flux
 
-### Demand Creation Flow
+### Flux de création d’une demande
 ```
-User Form → useContactFormFCU hook
+Formulaire utilisateur → hook useContactFormFCU
   → formatDataToAirtable()
   → POST /api/airtable/records
-    → Create Airtable record with defaults
-    → Enrich: getConsommationGazAdresse(), getNbLogement()
-    → Update Airtable with enriched data
+    → Crée fiche Airtable avec valeurs par défaut
+    → Enrichissement : getConsommationGazAdresse(), getNbLogement()
+    → MAJ fiche avec données enrichies
     → createEvent(demand_created)
     → sendEmailTemplate(creation-demande)
-  → Return demand ID
+  → Retourne l’id de la demande
 ```
 
-### Admin Validation Flow
+### Flux de validation admin
 ```
-Admin opens /admin/demandes
+Admin ouvre /admin/demandes
   → GET /api/admin/demands
-    → Fetch unvalidated from Airtable
-    → Fetch assignment_rules from PostgreSQL
-    → For each demand:
+    → Cherche demandes non validées sur Airtable
+    → Règles assignment_rules depuis PostgreSQL
+    → Pour chaque demande :
       → getDetailedEligibilityStatus()
-      → evaluateAST(rules, eligibilityStatus)
-      → Return AdminDemand with recommendations
-  → Admin reviews, edits tags/assignment
-  → Click "Valider"
+      → evaluateAST(règles, eligibilityStatus)
+      → Retourne AdminDemand avec recommandations
+  → Admin révise, édite tags/attribution
+  → Clique “Valider”
     → PUT /api/admin/demands/[demandId]
-      → Update Airtable: Gestionnaires validés = true
+      → MAJ Airtable: Gestionnaires validés = true
       → createUserEvent(demand_assigned)
 ```
 
-### Gestionnaire Management Flow
+### Flux gestionnaire
 ```
-Gestionnaire opens /pro/demandes
+Gestionnaire ouvre /pro/demandes
   → GET /api/demands
-    → Filter by user's gestionnaire tags
-    → Return validated demands only
-  → Update status/contact/comment
+    → Filtre par tags du gestionnaire
+    → Seules les demandes validées en retour
+  → Met à jour statut/contact/commentaire
     → PUT /api/demands/[demandId]
-      → Permission check: user tag matches demand
-      → Update Airtable
+      → Contrôle permission: tag user = demande
+      → MAJ sur Airtable
       → createUserEvent(demand_updated)
 ```
 
-### Relance (Follow-up) Flow
+### Flux relance (follow-up)
 ```
-Cron: dailyRelanceMail (Monday 10:05)
-  → Fetch demands: >1 month old, Relance à activer = TRUE, not contacted
-  → For each demand:
-    → Generate UUID
-    → Update demand: Relance envoyée = date, Relance ID = UUID
-    → Send email with links:
+Cron: dailyRelanceMail (lundi 10h05)
+  → Recherche demandes: >1 mois, Relance à activer = TRUE, non contacté
+  → Pour chaque :
+    → Génère UUID unique
+    → MAJ demande: Relance envoyée = date, Relance ID = UUID
+    → Envoi email avec liens :
       - /satisfaction?id={UUID}&satisfaction=true
       - /satisfaction?id={UUID}&satisfaction=false
 
-User clicks link
-  → Lands on /satisfaction page
+Utilisateur clique un lien
+  → Arrive sur la page /satisfaction
     → getServerSideProps: updateRelanceAnswer(UUID, true/false)
-      → Find demand by Relance ID
-      → Update: Recontacté par le gestionnaire = 'Oui'/'Non'
-    → Client side: Optional comment form
+      → Trouve par Relance ID
+      → MAJ: Recontacté par le gestionnaire = 'Oui'/'Non'
+    → Côté client: formulaire de commentaire optionnel
       → POST /api/airtable/records (type: RELANCE)
-        → Find demand by Relance ID
-        → Update: Commentaire relance = comment
+        → Cherche demande par Relance ID
+        → MAJ: Commentaire relance = commentaire
 ```
 
-### Email Tracking Flow
+### Flux de suivi email
 ```
-Gestionnaire clicks email icon on /pro/demandes
-  → Modal opens: DemandEmailForm
+Gestionnaire clique email sur /pro/demandes
+  → Modal DemandEmailForm
     → GET /api/managerEmail?demand_id={id}
-      → Fetch from UTILISATEURS_EMAILS table
-      → Return email history array
-    → Display history (clickable to reload templates)
+      → Récupère depuis la table UTILISATEURS_EMAILS
+      → Retourne l’historique email
+    → Affiche l’historique (clic pour recharger template)
 
-  → Gestionnaire composes email:
-    → Select template OR write custom
-    → Fill placeholders: {{Prénom}}, {{Adresse}}, etc.
-    → Preview with processed placeholders
+  → Gestionnaire rédige l’email :
+    → Choisit un template OU rédige
+    → Remplit placeholders: {{Prénom}}, {{Adresse}}, etc.
+    → Prévisualisation personnalisée
 
-  → Click "Envoyer"
+  → Clique 'Envoyer'
     → POST /api/managerEmail
-      → Create record in UTILISATEURS_EMAILS:
+      → Ajout dans UTILISATEURS_EMAILS:
         - demand_id, email_key, object, body, to, cc, reply_to
         - signature, user_email, sent_at (auto)
-      → Update user signature in PostgreSQL if changed
-      → Send actual email via sendEmailTemplate('manager-email')
-      → Update demand in DEMANDES:
-        - Emails envoyés += subject + '\n'
+      → MAJ signature dans PostgreSQL si changée
+      → Envoi réel via sendEmailTemplate('manager-email')
+      → MAJ demande:
+        - Emails envoyés += objet + '\n'
         - Prise de contact = true
-        - Status = UNREALISABLE/WAITING (conditional on template)
+        - Statut = UNREALISABLE/WAITING (selon template)
 ```
 
 ---
 
-## Critical Workflows
+## Workflows Critiques
 
-### 1. Assignment Rule Application
-- **When**: On admin demand list load
-- **Process**: Parse rules → evaluate against eligibility data → suggest tags/assignment
-- **Output**: `recommendedTags`, `recommendedAssignment` fields on AdminDemand
+### 1. Application des règles d’attribution
+- **Quand** : Lors du chargement de la liste admin
+- **Processus** : Parser règles → évaluer sur eligibility data → suggestion tags/attribution
+- **Sortie** : Champs `recommendedTags`, `recommendedAssignment` sur AdminDemand
 
-### 2. Demand Enrichment
-- **When**: On demand creation
-- **External calls**:
-  - Gas consumption API
-  - Building data API (BNB)
-- **Updates**: Conso, Logement fields in Airtable
+### 2. Enrichissement des demandes
+- **Quand** : À la création
+- **Externes** :
+  - API consommation gaz
+  - API bâtiments (BNB)
+- **Mise à jour** : Champs Conso, Logement sur Airtable
 
-### 3. Email Notification Cycles
-- **Daily**: New demands notification (10:00)
-- **Weekly**: Stale demands reminder (Tue 09:55)
-- **Monthly+**: User relance system (Mon 10:05)
+### 3. Cycles de notifications email
+- **Quotidien** : Nouveaux leads (10:00)
+- **Hebdo** : Demandes en attente (mar 09:55)
+- **Mensuel+** : Système de relance utilisateur (lun 10:05)
 
-### 4. User Sync
-- **Frequency**: Hourly
-- **Direction**: PostgreSQL → Airtable
-- **Purpose**: Keep Airtable up-to-date with user account changes
+### 4. Synchronisation des utilisateurs
+- **Fréquence** : Horaire
+- **Sens** : PostgreSQL → Airtable
+- **But** : Garder Airtable à jour côté comptes gestionnaires/pro
 
-### 5. Relance System
-- **When**: Cron Monday 10:05, for demands >1 month old not contacted
-- **Process**: Generate UUID → email with satisfaction links → user response updates demand
-- **Tracking**: Two-tier relance (1 month, then 45 days later)
-- **Data Storage**: Response in demand field, optional comment in RELANCE table
+### 5. Système de relance
+- **Quand** : Cron lundi 10h05, demandes >1 mois, non contactées
+- **Processus** : Génération UUID → emails satisfaction → réponse utilisateur met à jour la demande
+- **Tracking** : Double relance (1 mois, puis 45 jours)
+- **Stockage** : Réponse sur la demande, commentaire éventuel en RELANCE
 
-### 6. Email Communication Tracking
-- **When**: Gestionnaire sends email from /pro/demandes
-- **Process**: Log to UTILISATEURS_EMAILS → send email → update demand fields
-- **Features**: Template system, placeholder replacement, email history, auto-status updates
-- **Audit**: Complete record of all gestionnaire-to-user emails with metadata
-
+### 6. Suivi email gestionnaire/usager
+- **Quand** : Envoi depuis /pro/demandes
+- **Processus** : Log dans UTILISATEURS_EMAILS → envoi → MAJ demande
+- **Fonctionnalités** : Système modèle email, placeholders, historique, MAJ statut auto
+- **Audit** : Archivage exhaustif de tous les emails gestionnaire-usager avec métadonnées
 
