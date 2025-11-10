@@ -201,11 +201,8 @@ export const getDemands = async (user: User): Promise<Demand[]> => {
 };
 
 const getDemand = async (user: User, demandId: string): Promise<Demand> => {
-  const record = await kdb.selectFrom('demands').selectAll().where('id', '=', demandId).executeTakeFirst();
-  if (!record) {
-    throw new Error('Demand not found');
-  }
-  const gestionnaires = (record.legacy_values as any).Gestionnaires as string[];
+  const record = await kdb.selectFrom('demands').selectAll().where('id', '=', demandId).executeTakeFirstOrThrow();
+  const gestionnaires = record.legacy_values.Gestionnaires as string[];
   if (user.role !== 'admin' && !gestionnaires.some((gestionnaire) => user.gestionnaires?.includes(gestionnaire))) {
     throw invalidPermissionsError;
   }
