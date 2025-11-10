@@ -5,7 +5,7 @@ export type AirtableLegacyRecord = Omit<Demand, 'id'> & {
   'Notification envoyé'?: string;
   'Recontacté par le gestionnaire'?: string;
   'Relance ID'?: string;
-  Sondage?: string[];
+  Sondage?: string | string[];
   'Commentaire relance'?: string;
   'Distance au réseau'?: number | null;
 };

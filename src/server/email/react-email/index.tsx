@@ -4,6 +4,7 @@ import type React from 'react';
 import CreationDemandeEmail from '@/server/email/react-email/templates/creation-demande';
 
 import ActivationEmail from './templates/activation';
+import DemandAdminNewEmail from './templates/demands/admin/new';
 import InscriptionEmail from './templates/inscription';
 import ManagerEmail from './templates/manager-email';
 import NewDemandsEmail from './templates/new-demands';
@@ -21,6 +22,11 @@ export const emails = {
     Component: CreationDemandeEmail,
     preview: 'Votre demande de contact',
     subject: '[France Chaleur Urbaine] Votre demande de contact',
+  },
+  'demands-admin-new': {
+    Component: DemandAdminNewEmail,
+    preview: 'Une nouvelle demande de contact a été créée',
+    subject: '[France Chaleur Urbaine] Nouvelle demande de contact',
   },
   inscription: {
     Component: InscriptionEmail,
