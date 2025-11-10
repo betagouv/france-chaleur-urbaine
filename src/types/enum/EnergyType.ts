@@ -1,12 +1,3 @@
-// NOT USED ANYMORE
-export enum ENERGY_TYPE {
-  Fuel = 'fuelOil',
-  Gas = 'gas',
-  Wood = 'wood',
-  Electric = 'electric',
-  Unknown = 'unknown',
-}
-
 export enum ENERGY_USED {
   Fioul = 'fioul',
   FioulDomestique = 'fioul_domestique',
