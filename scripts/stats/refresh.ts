@@ -1,9 +1,7 @@
 import { writeFile } from 'node:fs/promises';
 import { getDealsCountByStage } from '@cli/stats/pipedrive';
-// import { AirtableDB } from '@/server/db/airtable';
 import { kdb } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
-// import { Airtable } from '@/types/enum/Airtable';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import { prettyFormatNumber } from '@/utils/strings';
 
