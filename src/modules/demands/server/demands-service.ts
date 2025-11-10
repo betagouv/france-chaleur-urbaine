@@ -1,13 +1,23 @@
 import type { Insertable } from 'kysely';
+import { clientConfig } from '@/client-config';
 import type { AirtableLegacyRecord } from '@/modules/demands/types';
+import { sendEmailTemplate } from '@/modules/email';
 import { type DemandEmails, kdb, sql } from '@/server/db/kysely';
 import { createBaseModel } from '@/server/db/kysely/base-model';
+import { parentLogger } from '@/server/helpers/logger';
+
+const logger = parentLogger.child({
+  module: 'demands',
+});
 
 export const tableName = 'demands';
 export const emailsTableName = 'demand_emails';
 const baseModel = createBaseModel(tableName);
 
 export const update = async (recordId: string, values: Partial<AirtableLegacyRecord>) => {
+  // Get current demand before update to detect changes
+  const currentDemand = await kdb.selectFrom(tableName).selectAll().where('id', '=', recordId).executeTakeFirst();
+
   const [updatedDemand] = await kdb
     .updateTable(tableName)
     .set({
@@ -17,6 +27,22 @@ export const update = async (recordId: string, values: Partial<AirtableLegacyRec
     .where('id', '=', recordId)
     .returningAll()
     .execute();
+
+  // Check if 'Gestionnaire Affecté à' has changed
+  const oldAssignment = currentDemand?.legacy_values['Gestionnaire Affecté à'];
+  const newAssignment = values['Gestionnaire Affecté à'];
+
+  if (newAssignment && oldAssignment !== newAssignment) {
+    // Automation https://airtable.com/app9opX8gRAtBqkan/wfloOFXhfUKvhL2Qc
+    await sendEmailTemplate(
+      'demands.admin-assignment-change',
+      { email: clientConfig.destinationEmails.pro },
+      { demand: updatedDemand.legacy_values, newAssignment }
+    ).catch((error: unknown) => {
+      logger.error('Failed to send assignment change email:', error);
+    });
+  }
+
   return { id: updatedDemand.id, ...updatedDemand.legacy_values };
 };
 
