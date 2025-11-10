@@ -12,11 +12,28 @@ export async function up(knex: Knex): Promise<void> {
       deleted_at TIMESTAMP WITH TIME ZONE
     );
 
-    -- GIN index on legacy_values for efficient JSONB queries
-    CREATE INDEX IF NOT EXISTS idx_demands_legacy_values ON demands USING gin (legacy_values);
+    -- Targeted indexes on specific JSONB fields (more efficient than a global GIN index)
 
-    -- Index on deleted_at for soft delete queries
-    CREATE INDEX IF NOT EXISTS idx_demands_deleted_at ON demands (deleted_at) WHERE deleted_at IS NULL;
+    -- Date fields (used for sorting and date range filters)
+    CREATE INDEX IF NOT EXISTS idx_demands_date_demande ON demands ((legacy_values->>'Date de la demande'));
+
+    -- Boolean/status fields (used for filtering)
+    CREATE INDEX IF NOT EXISTS idx_demands_gestionnaires_valides ON demands ((legacy_values->>'Gestionnaires validés'))
+      WHERE legacy_values->>'Gestionnaires validés' = 'true';
+    CREATE INDEX IF NOT EXISTS idx_demands_status ON demands ((legacy_values->>'Status'))
+      WHERE legacy_values->>'Status' IS NOT NULL;
+
+    -- Notification fields (used for filtering pending notifications)
+    CREATE INDEX IF NOT EXISTS idx_demands_notification_envoye ON demands ((legacy_values->>'Notification envoyé'));
+    CREATE INDEX IF NOT EXISTS idx_demands_relance_a_activer ON demands ((legacy_values->>'Relance à activer'))
+      WHERE legacy_values->>'Relance à activer' = 'true';
+
+    -- ID field for exact lookups
+    CREATE INDEX IF NOT EXISTS idx_demands_relance_id ON demands ((legacy_values->>'Relance ID'))
+      WHERE legacy_values->>'Relance ID' IS NOT NULL;
+
+    -- GIN index ONLY for the Gestionnaires array field (used with ?| operator)
+    CREATE INDEX IF NOT EXISTS idx_demands_gestionnaires_gin ON demands USING gin ((legacy_values->'Gestionnaires'));
 
     -- Create demand_emails table
     CREATE TABLE IF NOT EXISTS demand_emails (
@@ -40,7 +57,6 @@ export async function up(knex: Knex): Promise<void> {
     -- Create indexes for demand_emails
     CREATE INDEX IF NOT EXISTS idx_demand_emails_demand_id ON demand_emails (demand_id);
     CREATE INDEX IF NOT EXISTS idx_demand_emails_email_key ON demand_emails (email_key);
-    CREATE INDEX IF NOT EXISTS idx_demand_emails_deleted_at ON demand_emails (deleted_at) WHERE deleted_at IS NULL;
   `);
 }
 

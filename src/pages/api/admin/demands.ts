@@ -19,7 +19,7 @@ const GET = async () => {
           eb(sql`legacy_values->>'Gestionnaires validés'`, 'is', null),
         ])
       )
-      .orderBy(sql`legacy_values->>'AirtableDate de la demande'`, 'desc')
+      .orderBy(sql`legacy_values->>'Date de la demande'`, 'desc')
       .execute()
   ).map(({ id, legacy_values }) => ({
     fields: legacy_values,
