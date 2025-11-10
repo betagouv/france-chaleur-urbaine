@@ -1,5 +1,6 @@
 import type { NextApiRequest } from 'next';
 import { v4 as uuidv4 } from 'uuid';
+import { clientConfig } from '@/client-config';
 import * as demandsService from '@/modules/demands/server/demands-service';
 import { createEvent } from '@/modules/events/server/service';
 import { AirtableDB } from '@/server/db/airtable';
@@ -76,6 +77,7 @@ export default handleRouteErrors(async function PostRecords(req: NextApiRequest)
           { email: values.Mail },
           { demand: { ...values, 'Distance au réseau': values['Distance au réseau'] ?? 9999 } } // si > 1000m la distance est null, or le template veut une distance
         ),
+        sendEmailTemplate('demands-admin-new', { email: clientConfig.destinationEmails.contact }, { demand: values }),
       ]);
 
       return { id: demandId };
