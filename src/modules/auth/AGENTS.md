@@ -198,7 +198,7 @@ Managed by `useRedirectionAfterLogin()` hook.
 
 ## Email Templates
 
-Sent via `/src/server/email`:
+Sent via `/src/modules/email`:
 
 - `activation` - Email confirmation with activation link
 - `password_reset` - Password reset link

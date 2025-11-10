@@ -13,7 +13,7 @@ ARCHITECTURE.md
 .envrc
 
 src/tests/
-src/server/email/react-email/templates/tests/*
+src/modules/email/react-email/templates/tests/*
 
 .next/cache
 

@@ -1,8 +1,8 @@
 import type { NextApiRequest } from 'next';
 import z from 'zod';
 import * as demandsService from '@/modules/demands/server/demands-service';
+import { sendEmailTemplate } from '@/modules/email';
 import db from '@/server/db';
-import { sendEmailTemplate } from '@/server/email';
 import { handleRouteErrors, validateObjectSchema } from '@/server/helpers/server';
 
 export type ManagerEmailResponse = Awaited<ReturnType<typeof GET>>;
@@ -59,7 +59,7 @@ const POST = async (req: NextApiRequest) => {
   }
 
   await sendEmailTemplate(
-    'manager-email',
+    'legacy.manager',
     { email: emailContent.to, id: req.user.id },
     {
       content: emailContent.body,

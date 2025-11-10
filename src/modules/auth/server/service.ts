@@ -1,10 +1,9 @@
 import bcrypt, { genSalt, hash } from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-
+import { sendEmailTemplate } from '@/modules/email';
 import { createUserEvent } from '@/modules/events/server/service';
 import { AirtableDB } from '@/server/db/airtable';
 import { kdb } from '@/server/db/kysely';
-import { sendEmailTemplate } from '@/server/email';
 import { logger } from '@/server/helpers/logger';
 import { BadRequestError } from '@/server/helpers/server';
 import { Airtable } from '@/types/enum/Airtable';
@@ -55,7 +54,7 @@ export const register = async ({
     .executeTakeFirstOrThrow();
 
   logger.info('account register', { role, user_id: insertedUser.id });
-  await sendEmailTemplate('activation', insertedUser, { activationToken });
+  await sendEmailTemplate('auth.activation', insertedUser, { activationToken });
 
   await createUserEvent({
     author_id: insertedUser.id,
@@ -156,7 +155,7 @@ export const requestPassword = async (email: string) => {
 
   const token = jwt.sign(payload, process.env.NEXTAUTH_SECRET as string);
   await kdb.updateTable('users').set({ reset_token: resetToken }).where('id', '=', user.id).execute();
-  await sendEmailTemplate('reset-password', user, { token });
+  await sendEmailTemplate('auth.reset-password', user, { token });
 };
 
 export const changePasswordWithResetToken = async (params: { password: string; token: { email: string; resetToken: string } }) => {

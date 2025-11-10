@@ -54,8 +54,8 @@ export const buildFeatures = async (properties: string[]) => {
   const records = await kdb.selectFrom('demands').selectAll().execute();
 
   const features = records.map((record) => {
-    const longitude = record.legacy_values.Longitude;
-    const latitude = record.legacy_values.Latitude;
+    const longitude = record.legacy_values.Longitude ?? 0;
+    const latitude = record.legacy_values.Latitude ?? 0;
     return {
       geometry: {
         coordinates: [longitude, latitude],
