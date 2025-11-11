@@ -449,6 +449,17 @@ function DemandesAdmin(): React.ReactElement {
         width: '120px',
       },
       {
+        accessorKey: 'Recontacté par le gestionnaire',
+        cellType: 'Boolean',
+        header: 'Recontacté par le gestionnaire',
+        width: '280px',
+      },
+      {
+        accessorKey: 'Commentaire relance',
+        header: 'Commentaire relance',
+        width: '280px',
+      },
+      {
         accessorKey: 'Commentaire',
         cell: ({ row }) => <Comment demand={row.original} field="Commentaire" updateDemand={updateDemand} />,
         enableSorting: false,
