@@ -51,7 +51,10 @@ export const create = async (values: Partial<AirtableLegacyRecord>) => {
     .insertInto(tableName)
     .values({
       created_at: new Date(),
-      legacy_values: sql<string>`${JSON.stringify(values)}::jsonb`,
+      legacy_values: sql<string>`${JSON.stringify({
+        ...values,
+        'Date de la demande': new Date().toISOString(),
+      })}::jsonb`,
       updated_at: new Date(),
     })
     .returningAll()
