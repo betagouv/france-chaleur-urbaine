@@ -1,4 +1,5 @@
 import type { Insertable } from 'kysely';
+import { v4 as uuidv4 } from 'uuid';
 import { clientConfig } from '@/client-config';
 import type { AirtableLegacyRecord } from '@/modules/demands/types';
 import { sendEmailTemplate } from '@/modules/email';
@@ -79,8 +80,26 @@ export const createEmail = async (values: Omit<Insertable<DemandEmails>, 'create
   return createdEmail;
 };
 
-export const updateSatisfaction = async (demandId: string, satisfaction: boolean) => {
-  const demand = await update(demandId, { 'Recontacté par le gestionnaire': satisfaction ? 'Oui' : 'Non' });
+export const updateFromRelanceId = async (relanceId: string, values: Partial<AirtableLegacyRecord>) => {
+  const relanceDemand = await kdb
+    .selectFrom(tableName)
+    .selectAll()
+    .where(sql`legacy_values->>'Relance ID'`, '=', relanceId)
+    .executeTakeFirst();
+
+  if (!relanceDemand) {
+    throw new Error(`Relance demand not found for relance ID: ${relanceId}`);
+  }
+
+  return update(relanceDemand.id, values);
+};
+
+export const updateCommentFromRelanceId = async (relanceId: string, comment: string) => {
+  return updateFromRelanceId(relanceId, { 'Commentaire relance': comment });
+};
+
+export const updateSatisfactionFromRelanceId = async (relanceId: string, satisfaction: boolean) => {
+  const demand = await updateFromRelanceId(relanceId, { 'Recontacté par le gestionnaire': satisfaction ? 'Oui' : 'Non' });
 
   // Automation import from  https://airtable.com/app9opX8gRAtBqkan/wfl3jPABYXeIrGeUr/wtrWn0m6O5tXFFdiP
   if (demand.Structure === 'Bailleur social' || demand.Structure === 'Tertiaire') {
@@ -91,6 +110,73 @@ export const updateSatisfaction = async (demandId: string, satisfaction: boolean
     );
   }
   return demand;
+};
+
+export const getAllToRelanceDemands = async () => {
+  const records = await kdb
+    .selectFrom('demands')
+    .selectAll()
+    .where((eb) =>
+      eb.or([
+        eb.and([
+          eb(sql`(legacy_values->>'Date de la demande')::date`, '<', sql`NOW() - INTERVAL '1 month'`),
+          eb(sql`legacy_values->>'Relance à activer'`, '=', true),
+          eb.or([
+            eb(sql`legacy_values->>'Recontacté par le gestionnaire'`, '=', ''),
+            eb(sql`legacy_values->>'Recontacté par le gestionnaire'`, 'is', null),
+          ]),
+          eb.or([eb(sql`legacy_values->>'Relance envoyée'`, '=', ''), eb(sql`legacy_values->>'Relance envoyée'`, 'is', null)]),
+        ]),
+        eb.and([
+          eb(sql`(legacy_values->>'Date de la demande')::date`, '<', sql`NOW() - INTERVAL '45 days'`),
+          eb.or([
+            eb(sql`legacy_values->>'Recontacté par le gestionnaire'`, '=', ''),
+            eb(sql`legacy_values->>'Recontacté par le gestionnaire'`, 'is', null),
+          ]),
+          eb(sql`legacy_values->>'Relance à activer'`, '=', true),
+          eb(sql`legacy_values->>'Relance envoyée'`, '!=', ''),
+          eb(sql`legacy_values->>'Relance envoyée'`, 'is not', null),
+          eb.or([
+            eb(sql`legacy_values->>'Seconde relance envoyée'`, '=', ''),
+            eb(sql`legacy_values->>'Seconde relance envoyée'`, 'is', null),
+          ]),
+        ]),
+      ])
+    )
+    .execute();
+
+  return records.map((record) => ({ id: record.id, ...record.legacy_values }));
+};
+/**
+ * Envoie des relances aux utilisateurs s'ils n'ont pas été recontactés par le gestionnaire
+ * après 1 mois pour la première relance
+ * puis 15 jours plus tard pour la seconde relance
+ */
+export const dailyRelanceMail = async () => {
+  const demands = await getAllToRelanceDemands();
+
+  for (const demand of demands) {
+    const relanced = demand['Relance envoyée'];
+    const uuid = uuidv4();
+    await update(demand.id, {
+      [relanced ? 'Seconde relance envoyée' : 'Relance envoyée']: new Date().toDateString(),
+      'Relance ID': uuid,
+    });
+    await sendEmailTemplate(
+      'demands.user-relance',
+      { email: demand.Mail, id: demand.id },
+      {
+        adresse: demand.Adresse,
+        date: new Date(demand['Date de la demande']).toLocaleDateString('fr-FR', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+        }),
+        firstName: demand.Prénom ?? '',
+        relanceId: uuid,
+      }
+    );
+  }
 };
 
 export const buildFeatures = async (properties: string[]) => {

@@ -1,6 +1,6 @@
-import { clientConfig } from '@/client-config';
+import { serverConfig } from '@/server/config';
 
-const { websiteOrigin, linkedInUrl, calendarLink } = clientConfig;
+const { websiteOrigin, linkedInUrl, calendarLink } = serverConfig;
 
 import { Button, Layout, type LayoutModifiableProps, Link, Note, Section, Text } from '../../components';
 
@@ -8,11 +8,12 @@ type RelanceEmailProps = {
   firstName: string;
   date: string;
   adresse: string;
-  id: string;
+  relanceId: string;
 };
 
-export const RelanceEmail = ({ firstName, date, adresse, id, ...props }: RelanceEmailProps & LayoutModifiableProps) => {
-  const url = `${websiteOrigin}/satisfaction?id=${id}&satisfaction`;
+export const RelanceEmail = ({ firstName, date, adresse, relanceId, ...props }: RelanceEmailProps & LayoutModifiableProps) => {
+  const url = `${websiteOrigin}/satisfaction?id=${relanceId}&satisfaction=`;
+
   return (
     <Layout {...props}>
       <Text>Bonjour {firstName},</Text>

@@ -8,7 +8,6 @@ import { AirtableDB } from '@/server/db/airtable';
 import { logger } from '@/server/helpers/logger';
 import { BadRequestError, handleRouteErrors, requirePostMethod } from '@/server/helpers/server';
 import { getConsommationGazAdresse, getNbLogement } from '@/server/services/addresseInformation';
-import { getToRelanceDemand } from '@/server/services/manager';
 import { Airtable } from '@/types/enum/Airtable';
 
 export default handleRouteErrors(async function PostRecords(req: NextApiRequest) {
@@ -29,16 +28,6 @@ export default handleRouteErrors(async function PostRecords(req: NextApiRequest)
   }
 
   switch (type) {
-    case Airtable.RELANCE: {
-      const demand = await getToRelanceDemand(values.id);
-      if (demand) {
-        await demandsService.update(demand.id, {
-          'Commentaire relance': values.comment,
-        });
-      }
-      return;
-    }
-
     case Airtable.DEMANDES: {
       const { id: demandId } = await demandsService.create({
         ...values,

@@ -1,13 +1,13 @@
 import { captureException } from '@sentry/nextjs';
-
+import { dailyRelanceMail as demandsDailyRelanceMail } from '@/modules/demands/server/demands-service';
 import { syncComptesProFromUsers } from '@/server/services/airtable';
-import { dailyNewManagerMail, dailyRelanceMail, weeklyOldManagerMail } from '@/server/services/manager';
+import { dailyNewManagerMail, weeklyOldManagerMail } from '@/server/services/manager';
 
 import '@root/sentry.server.config';
 
 export const jobs: Record<string, any> = {
   dailyNewManagerMail,
-  dailyRelanceMail,
+  demandsDailyRelanceMail,
   syncComptesProFromUsers,
   weeklyOldManagerMail,
 };

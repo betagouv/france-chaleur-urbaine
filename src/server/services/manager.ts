@@ -1,7 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { sql } from 'kysely';
 import type { User } from 'next-auth';
-import { v4 as uuidv4 } from 'uuid';
 import * as demandsService from '@/modules/demands/server/demands-service';
 import { sendEmailTemplate } from '@/modules/email';
 import { createUserEvent } from '@/modules/events/server/service';
@@ -38,56 +37,6 @@ export const getAllNewDemands = async (): Promise<Demand[]> => {
     id,
   }));
   return records.map((record) => ({ id: record.id, ...record.fields }) as Demand);
-};
-
-export const getAllToRelanceDemands = async (): Promise<Demand[]> => {
-  const records = (
-    await kdb
-      .selectFrom('demands')
-      .selectAll()
-      .where((eb) =>
-        eb.or([
-          eb.and([
-            eb(sql`(legacy_values->>'Date de la demande')::date`, '<', sql`NOW() - INTERVAL '1 month'`),
-            eb(sql`legacy_values->>'Relance à activer'`, '=', 'true'),
-            eb.or([
-              eb(sql`legacy_values->>'Recontacté par le gestionnaire'`, '=', ''),
-              eb(sql`legacy_values->>'Recontacté par le gestionnaire'`, 'is', null),
-            ]),
-            eb.or([eb(sql`legacy_values->>'Relance envoyée'`, '=', ''), eb(sql`legacy_values->>'Relance envoyée'`, 'is', null)]),
-          ]),
-          eb.and([
-            eb(sql`(legacy_values->>'Date de la demande')::date`, '<', sql`NOW() - INTERVAL '45 days'`),
-            eb.or([
-              eb(sql`legacy_values->>'Recontacté par le gestionnaire'`, '=', ''),
-              eb(sql`legacy_values->>'Recontacté par le gestionnaire'`, 'is', null),
-            ]),
-            eb(sql`legacy_values->>'Relance à activer'`, '=', 'true'),
-            eb(sql`legacy_values->>'Relance envoyée'`, '!=', ''),
-            eb(sql`legacy_values->>'Relance envoyée'`, 'is not', null),
-            eb.or([
-              eb(sql`legacy_values->>'Seconde relance envoyée'`, '=', ''),
-              eb(sql`legacy_values->>'Seconde relance envoyée'`, 'is', null),
-            ]),
-          ]),
-        ])
-      )
-      .execute()
-  ).map(({ id, legacy_values }) => ({
-    fields: legacy_values,
-    id,
-  }));
-  return records.map((record) => ({ id: record.id, ...record.fields }) as Demand);
-};
-
-export const getToRelanceDemand = async (id: string): Promise<Demand | undefined> => {
-  const records = (await kdb.selectFrom('demands').selectAll().where(sql`legacy_values->>'Relance ID'`, '=', id).execute()).map(
-    ({ id, legacy_values }) => ({
-      fields: legacy_values,
-      id,
-    })
-  );
-  return records.map((record) => ({ id: record.id, ...record.fields }) as Demand)[0];
 };
 
 export const getAllStaledDemandsSince = async (dateDiff: number): Promise<Demand[]> => {
@@ -333,35 +282,4 @@ export const dailyNewManagerMail = async () => {
     .select('gestionnaires', 'email', 'receive_new_demands', 'receive_old_demands');
 
   await newDemands(users);
-};
-
-/**
- * Envoie des relances aux utilisateurs s'ils n'ont pas été recontactés par le gestionnaire
- * après 1 mois pour la première relance
- * puis 15 jours plus tard pour la seconde relance
- */
-export const dailyRelanceMail = async () => {
-  const demands = await getAllToRelanceDemands();
-  for (const demand of demands) {
-    const relanced = demand['Relance envoyée'];
-    const uuid = uuidv4();
-    await demandsService.update(demand.id, {
-      [relanced ? 'Seconde relance envoyée' : 'Relance envoyée']: new Date().toDateString(),
-      'Relance ID': uuid,
-    });
-    await sendEmailTemplate(
-      'demands.user-relance',
-      { email: demand.Mail, id: demand.id },
-      {
-        adresse: demand.Adresse,
-        date: new Date(demand['Date de la demande']).toLocaleDateString('fr-FR', {
-          day: 'numeric',
-          month: 'long',
-          year: 'numeric',
-        }),
-        firstName: demand.Prénom ?? '',
-        id: uuid,
-      }
-    );
-  }
 };

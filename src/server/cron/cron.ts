@@ -21,7 +21,7 @@ export function registerCrons() {
 
   CronJob.from({
     cronTime: '05 10 * * 1', // le lundi à 10:05
-    onTick: () => launchJob('dailyRelanceMail'),
+    onTick: () => launchJob('demandsDailyRelanceMail'),
     start: true,
     timeZone: 'Europe/Paris',
   });
