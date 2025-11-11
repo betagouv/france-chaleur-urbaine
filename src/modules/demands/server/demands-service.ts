@@ -76,6 +76,20 @@ export const createEmail = async (values: Omit<Insertable<DemandEmails>, 'create
   return createdEmail;
 };
 
+export const updateSatisfaction = async (demandId: string, satisfaction: boolean) => {
+  const demand = await update(demandId, { 'Recontacté par le gestionnaire': satisfaction ? 'Oui' : 'Non' });
+
+  // Automation https://airtable.com/app9opX8gRAtBqkan/wfl3jPABYXeIrGeUr/wtrWn0m6O5tXFFdiP
+  if (demand.Structure === 'Bailleur social' || demand.Structure === 'Tertiaire') {
+    await sendEmailTemplate('demands.admin-gestionnaire-contact', { email: clientConfig.destinationEmails.pro }, { demand }).catch(
+      (error: unknown) => {
+        logger.error('Failed to send gestionnaire contact email:', error);
+      }
+    );
+  }
+  return demand;
+};
+
 export const buildFeatures = async (properties: string[]) => {
   const records = await kdb.selectFrom('demands').selectAll().execute();
 

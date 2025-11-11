@@ -89,6 +89,7 @@ export const getToRelanceDemand = async (id: string): Promise<Demand | undefined
   );
   return records.map((record) => ({ id: record.id, ...record.fields }) as Demand)[0];
 };
+
 export const getAllStaledDemandsSince = async (dateDiff: number): Promise<Demand[]> => {
   const records = (
     await kdb
@@ -332,15 +333,6 @@ export const dailyNewManagerMail = async () => {
     .select('gestionnaires', 'email', 'receive_new_demands', 'receive_old_demands');
 
   await newDemands(users);
-};
-
-export const updateRelanceAnswer = async (id: string, relanced: boolean) => {
-  const demand = await getToRelanceDemand(id);
-  if (demand) {
-    await demandsService.update(demand.id, {
-      'Recontacté par le gestionnaire': relanced ? 'Oui' : 'Non',
-    });
-  }
 };
 
 /**
