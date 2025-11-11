@@ -1,46 +1,44 @@
 import { Alert } from '@codegouvfr/react-dsfr/Alert';
-import { Button } from '@codegouvfr/react-dsfr/Button';
-import type { GetServerSidePropsContext } from 'next';
-import { useRouter } from 'next/router';
-import { type FormEvent, useEffect, useState } from 'react';
+import type { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
+import { useState } from 'react';
 import { clientConfig } from '@/client-config';
-import TextArea from '@/components/form/dsfr/TextArea';
-import Slice from '@/components/Slice';
+import useForm from '@/components/form/react-form/useForm';
 import SimplePage from '@/components/shared/page/SimplePage';
-import { updateSatisfaction } from '@/modules/demands/server/demands-service';
-import { submitToAirtable } from '@/services/airtable';
-import { Airtable } from '@/types/enum/Airtable';
+import { default as Section, SectionContent, SectionTitle } from '@/components/ui/Section';
+import { zAddRelanceCommentInput } from '@/modules/demands/constants';
+import { updateSatisfactionFromRelanceId } from '@/modules/demands/server/demands-service';
+import { toastErrors } from '@/modules/notification';
+import trpc from '@/modules/trpc/client';
 
-function Satisfaction() {
-  const router = useRouter();
-  const [id, setId] = useState('');
-  const [satisfaction, setSatisfaction] = useState<boolean>();
-  const [comment, setComment] = useState('');
-
+function Satisfaction({ relanceId, satisfaction }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const [sent, setSent] = useState(false);
 
-  useEffect(() => {
-    setId(router.query.id as string);
-    setSatisfaction(router.query.satisfaction === 'true');
-  }, [router]);
-  if (satisfaction === undefined) {
-    return null;
-  }
+  const { mutateAsync: addRelanceComment } = trpc.demands.addRelanceComment.useMutation({
+    onSuccess: () => {
+      setSent(true);
+    },
+  });
 
-  const send = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setSent(true);
-    await submitToAirtable({ comment, id }, Airtable.RELANCE);
-  };
+  const { Form, Textarea, Submit, HiddenInput } = useForm({
+    defaultValues: {
+      comment: '',
+      relanceId,
+    },
+    onSubmit: toastErrors(async ({ value }) => {
+      await addRelanceComment({ comment: value.comment, relanceId });
+      setSent(true);
+    }),
+    schema: zAddRelanceCommentInput,
+  });
 
   return (
     <SimplePage noIndex>
-      <Slice padding={8}>
-        {satisfaction ? (
-          <h5>Merci pour votre retour ! Vous souhaitez nous en dire plus ?</h5>
-        ) : (
-          <>
-            <h5>Merci pour votre retour !</h5>
+      <Section>
+        <SectionTitle>
+          {satisfaction ? 'Merci pour votre retour ! Vous souhaitez nous en dire plus ?' : 'Merci pour votre retour !'}
+        </SectionTitle>
+        {!satisfaction && (
+          <SectionContent>
             Les gestionnaires des réseaux de chaleur recevant actuellement un nombre important de demandes, les délais de prise en charge
             peuvent être allongés. N'hésitez pas à vérifier vos spams, les mails de gestionnaires peuvent être considérés comme indésirables
             par votre boîte mail.
@@ -50,23 +48,16 @@ function Satisfaction() {
             <br />
             <br />
             <h5>Vous souhaitez nous en dire plus ?</h5>
-          </>
+          </SectionContent>
         )}
         {sent ? (
           <Alert severity="success" title="Merci pour votre retour." />
         ) : (
-          <form onSubmit={send}>
-            <TextArea
-              label="Commentaire"
-              nativeTextAreaProps={{
-                onChange: (e) => setComment(e.target.value),
-                placeholder: 'Je laisse un commentaire',
-                required: true,
-                value: comment,
-              }}
-            />
-            <Button type="submit">Envoyer</Button>
-          </form>
+          <Form className="flex flex-col gap-4">
+            <HiddenInput name="relanceId" label="" />
+            <Textarea name="comment" label="Commentaire" />
+            <Submit>Envoyer</Submit>
+          </Form>
         )}
         <br />
         <br />
@@ -76,15 +67,23 @@ function Satisfaction() {
             à prendre rendez-vous avec l’équipe France Chaleur Urbaine
           </a>
         </p>
-      </Slice>
+      </Section>
     </SimplePage>
   );
 }
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-  const { id, satisfaction } = context.query;
-  await updateSatisfaction(id as string, satisfaction === 'true');
-  return { props: {} };
+  const { id: relanceId, satisfaction: satisfactionParam } = context.query;
+  const satisfaction = satisfactionParam === 'true';
+
+  await updateSatisfactionFromRelanceId(relanceId as string, satisfaction);
+
+  return {
+    props: {
+      relanceId: relanceId as string,
+      satisfaction,
+    },
+  };
 };
 
 export default Satisfaction;

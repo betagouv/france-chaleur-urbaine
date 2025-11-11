@@ -11,6 +11,7 @@ export const demandStatuses = [
   { label: 'Projet abandonné par le prospect', value: 'ABANDONNED' },
 ];
 
+// Ce type permet de corriger le type Legacy existant avec ce que nous récupérons véritablement de Airtable
 export type AirtableLegacyRecord = Partial<Omit<Demand, 'id' | 'Status'>> & {
   'ID BNB'?: string;
   'Notification envoyé'?: string;
@@ -20,8 +21,10 @@ export type AirtableLegacyRecord = Partial<Omit<Demand, 'id' | 'Status'>> & {
   'Commentaire relance'?: string;
   'Distance au réseau'?: number | null;
   'Code Postal'?: string;
-  'Date de la demande'?: string;
+  'Date de la demande': string;
   'ID Conso'?: number;
   Region?: string;
   Status?: (typeof demandStatuses)[number]['label'] | '';
+  Mail: string;
+  Adresse: string;
 };
