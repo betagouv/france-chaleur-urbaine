@@ -69,7 +69,7 @@ export const demandsExportColumns: ExportColumn<Demand>[] = [
     accessorKey: 'en PDP',
     name: 'En PDP',
   },
-  { accessorKey: 'Date demandes', name: 'Date de demande' },
+  { accessorKey: 'Date de la demande', name: 'Date de demande' },
   { accessorKey: 'Structure', name: 'Type' },
   { accessorKey: 'Établissement', name: 'Structure' },
   {

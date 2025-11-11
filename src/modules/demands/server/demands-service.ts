@@ -33,7 +33,7 @@ export const update = async (recordId: string, values: Partial<AirtableLegacyRec
   const newAssignment = values['Gestionnaire Affecté à'];
 
   if (newAssignment && oldAssignment !== newAssignment) {
-    // Automation https://airtable.com/app9opX8gRAtBqkan/wfloOFXhfUKvhL2Qc
+    // Automation import from https://airtable.com/app9opX8gRAtBqkan/wfloOFXhfUKvhL2Qc
     await sendEmailTemplate(
       'demands.admin-assignment-change',
       { email: clientConfig.destinationEmails.pro },
@@ -79,7 +79,7 @@ export const createEmail = async (values: Omit<Insertable<DemandEmails>, 'create
 export const updateSatisfaction = async (demandId: string, satisfaction: boolean) => {
   const demand = await update(demandId, { 'Recontacté par le gestionnaire': satisfaction ? 'Oui' : 'Non' });
 
-  // Automation https://airtable.com/app9opX8gRAtBqkan/wfl3jPABYXeIrGeUr/wtrWn0m6O5tXFFdiP
+  // Automation import from  https://airtable.com/app9opX8gRAtBqkan/wfl3jPABYXeIrGeUr/wtrWn0m6O5tXFFdiP
   if (demand.Structure === 'Bailleur social' || demand.Structure === 'Tertiaire') {
     await sendEmailTemplate('demands.admin-gestionnaire-contact', { email: clientConfig.destinationEmails.pro }, { demand }).catch(
       (error: unknown) => {

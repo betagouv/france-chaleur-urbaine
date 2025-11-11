@@ -1,4 +1,5 @@
 import type { AirtableLegacyRecord } from '@/modules/demands/types';
+import { dayjs } from '@/utils/date';
 import { Layout, Link, Note, Table, TableColumn, TableRow, Text, Title } from '../../components';
 import { demand as demandData } from './_data';
 
@@ -45,7 +46,7 @@ const DemandAdminNewEmail = ({ demand }: { demand: AirtableLegacyRecord }) => {
         </TableRow>
         <TableRow>
           <TableColumn style={{ fontWeight: 'bold' }}>Date de la demande</TableColumn>
-          <TableColumn>{demand['Date demandes'] || new Date().toLocaleDateString('fr-FR')}</TableColumn>
+          <TableColumn>{dayjs(demand['Date de la demande']).format('DD/MM/YYYY') || 'Non renseignée'}</TableColumn>
         </TableRow>
 
         <TableRow>

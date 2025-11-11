@@ -1,5 +1,6 @@
 import { clientConfig } from '@/client-config';
 import type { AirtableLegacyRecord } from '@/modules/demands/types';
+import { dayjs } from '@/utils/date';
 import { Button, Layout, Link, Table, TableColumn, TableRow, Text, Title } from '../../components';
 import { demand as demandData } from './_data';
 
@@ -41,7 +42,7 @@ const DemandAdminGestionnaireContactEmail = ({ demand }: { demand: AirtableLegac
         </TableRow>
         <TableRow>
           <TableColumn style={{ fontWeight: 'bold' }}>Date de la demande</TableColumn>
-          <TableColumn>{demand['Date demandes'] || 'Non renseignée'}</TableColumn>
+          <TableColumn>{dayjs(demand['Date de la demande']).format('DD/MM/YYYY') || 'Non renseignée'}</TableColumn>
         </TableRow>
         <TableRow>
           <TableColumn style={{ fontWeight: 'bold' }}>Distance au réseau</TableColumn>

@@ -31,6 +31,7 @@ export type Demand = DemandSummary &
     'N° de dossier': number;
     'en PDP': string;
     'Date demandes': string;
+    'Date de la demande': string;
     Établissement: string;
     'Structure accompagnante'?: string[];
     'Nom de la structure accompagnante'?: string;
