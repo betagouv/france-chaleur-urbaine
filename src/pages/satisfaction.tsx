@@ -3,11 +3,11 @@ import { Button } from '@codegouvfr/react-dsfr/Button';
 import type { GetServerSidePropsContext } from 'next';
 import { useRouter } from 'next/router';
 import { type FormEvent, useEffect, useState } from 'react';
-
+import { clientConfig } from '@/client-config';
 import TextArea from '@/components/form/dsfr/TextArea';
 import Slice from '@/components/Slice';
 import SimplePage from '@/components/shared/page/SimplePage';
-import { updateRelanceAnswer } from '@/server/services/manager';
+import { updateSatisfaction } from '@/modules/demands/server/demands-service';
 import { submitToAirtable } from '@/services/airtable';
 import { Airtable } from '@/types/enum/Airtable';
 
@@ -72,7 +72,7 @@ function Satisfaction() {
         <br />
         <p>
           Pour partager votre retour d’expérience de vive voix, n’hésitez pas{' '}
-          <a href="https://cal.com/erwangravez/15min" target="_blank" rel="noreferrer">
+          <a href={clientConfig.calendarLink} target="_blank" rel="noreferrer">
             à prendre rendez-vous avec l’équipe France Chaleur Urbaine
           </a>
         </p>
@@ -83,7 +83,7 @@ function Satisfaction() {
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   const { id, satisfaction } = context.query;
-  await updateRelanceAnswer(id as string, satisfaction === 'true');
+  await updateSatisfaction(id as string, satisfaction === 'true');
   return { props: {} };
 };
 

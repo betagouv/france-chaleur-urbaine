@@ -3,6 +3,7 @@ import AuthActivationEmail from './react-email/templates/auth/activation';
 import AuthInscriptionEmail from './react-email/templates/auth/inscription';
 import AuthResetPasswordEmail from './react-email/templates/auth/reset-password';
 import DemandAdminAssignmentChangeEmail from './react-email/templates/demands/admin-assignment-change';
+import DemandAdminGestionnaireContactEmail from './react-email/templates/demands/admin-gestionnaire-contact';
 import DemandAdminNewEmail from './react-email/templates/demands/admin-new';
 import DemandsGestionnaireNewEmail from './react-email/templates/demands/gestionnaire-new';
 import DemandsOldDemandsEmail from './react-email/templates/demands/gestionnaire-old';
@@ -30,6 +31,11 @@ export const emails = {
     Component: DemandAdminAssignmentChangeEmail,
     preview: 'Une demande a été réaffectée',
     subject: "[France Chaleur Urbaine] Changement d'affectation",
+  },
+  'demands.admin-gestionnaire-contact': {
+    Component: DemandAdminGestionnaireContactEmail,
+    preview: 'Nouveau message HP à traiter',
+    subject: '[France Chaleur Urbaine] Nouveau message HP à traiter',
   },
   'demands.admin-new': {
     Component: DemandAdminNewEmail,
