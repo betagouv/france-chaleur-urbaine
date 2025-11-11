@@ -1,12 +1,17 @@
 import dotenv from 'dotenv';
 import { z } from 'zod';
-
-import { clientConfig } from '@/client-config';
+import type { clientConfig as ClientConfigType } from '@/client-config';
 import { parseEnv } from '@/utils/env';
 import type { ExcludeKeys } from '@/utils/typescript';
 
+// IMPORTANT: Load .env files BEFORE requiring clientConfig
+// Using require() instead of import to avoid hoisting issues
+// Else process.env is not available in clientConfig
 dotenv.config({ path: '.env.local' });
 dotenv.config();
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { clientConfig } = require('@/client-config') as { clientConfig: typeof ClientConfigType };
 
 const serverConfigSchema = {
   AIRTABLE_BASE: z.string(),
