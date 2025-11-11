@@ -6,7 +6,6 @@ export const demand: AirtableLegacyRecord = {
   'Code Postal': '93240',
   Conso: 464.4905,
   'Date de la demande': '2024-07-31T07:54:32.000Z',
-  'Date demandes': '2024-07-31',
   Departement: 'Seine-Saint-Denis',
   'Distance au réseau': 401,
   'Emails envoyés': 'Autre',

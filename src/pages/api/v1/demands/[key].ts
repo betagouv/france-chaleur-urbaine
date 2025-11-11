@@ -17,7 +17,7 @@ const demands = handleRouteErrors(async (req: NextApiRequest, res: NextApiRespon
   return demands.map((demand) => ({
     address: demand.Adresse,
     buildingType: demand.Structure,
-    date: demand['Date demandes'],
+    date: demand['Date de la demande'],
     distance: demand['Distance au réseau'],
     id: demand.id,
     network: demand['Identifiant réseau'],

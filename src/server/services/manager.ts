@@ -354,7 +354,7 @@ export const dailyRelanceMail = async () => {
       { email: demand.Mail, id: demand.id },
       {
         adresse: demand.Adresse,
-        date: new Date(demand['Date demandes']).toLocaleDateString('fr-FR', {
+        date: new Date(demand['Date de la demande']).toLocaleDateString('fr-FR', {
           day: 'numeric',
           month: 'long',
           year: 'numeric',

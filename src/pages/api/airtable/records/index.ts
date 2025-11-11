@@ -77,6 +77,7 @@ export default handleRouteErrors(async function PostRecords(req: NextApiRequest)
           { email: values.Mail },
           { demand: { ...values, 'Distance au réseau': values['Distance au réseau'] ?? 9999 } } // si > 1000m la distance est null, or le template veut une distance
         ),
+        // Automation import from https://airtable.com/app9opX8gRAtBqkan/wflvqEW0CLeXZ2pO0
         sendEmailTemplate('demands.admin-new', { email: clientConfig.destinationEmails.contact }, { demand: values }),
       ]);
 
