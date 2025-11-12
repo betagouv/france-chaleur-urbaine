@@ -1,4 +1,3 @@
-import { faker } from '@faker-js/faker';
 import { sql } from 'kysely';
 import type { User } from 'next-auth';
 import * as demandsService from '@/modules/demands/server/demands-service';
@@ -6,9 +5,7 @@ import { sendEmailTemplate } from '@/modules/email';
 import { createUserEvent } from '@/modules/events/server/service';
 import db from '@/server/db';
 import { kdb } from '@/server/db/kysely';
-import { logger } from '@/server/helpers/logger';
 import { invalidPermissionsError } from '@/server/helpers/server';
-import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import type { Demand } from '@/types/Summary/Demand';
 import type { User as FullUser } from '@/types/User';
 
@@ -76,78 +73,6 @@ export const getGestionnairesDemands = async (gestionnaires: string[]): Promise<
   return records
     .map((record) => ({ id: record.id, ...record.fields }) as Demand)
     .filter((record) => record.Gestionnaires?.some((gestionnaire) => gestionnaires.includes(gestionnaire)));
-};
-
-export const getDemands = async (user: User): Promise<Demand[]> => {
-  if (!user || !user.gestionnaires) {
-    return [];
-  }
-
-  const startTime = Date.now();
-
-  // Build query based on user role and gestionnaires
-  let query = kdb.selectFrom('demands').selectAll();
-
-  if (user.role === 'admin') {
-    // No filter for admin
-  } else if (user.role === 'demo') {
-    query = query
-      .where(sql`legacy_values->>'Gestionnaires validés'`, '=', 'true')
-      .where(sql`legacy_values->'Gestionnaires'`, '?|', sql.raw(`ARRAY['Paris']`));
-  } else if (user.role === 'gestionnaire') {
-    query = query
-      .where(sql`legacy_values->>'Gestionnaires validés'`, '=', 'true')
-      .where(
-        sql`legacy_values->'Gestionnaires'`,
-        '?|',
-        sql.raw(`ARRAY[${user.gestionnaires.map((gestionnaire) => `'${gestionnaire.replace(/'/g, "''")}'`).join(',')}]`)
-      );
-  }
-
-  const records = (await query.orderBy(sql`legacy_values->>'Date de la demande'`, 'desc').execute()).map(({ id, legacy_values }) => ({
-    fields: legacy_values,
-    id,
-  }));
-
-  logger.info('kdb.getDemands', {
-    duration: Date.now() - startTime,
-    recordsCount: records.length,
-    tagsCounts: user.gestionnaires.length,
-  });
-
-  records.forEach((record) => {
-    // ajoute le champ haut_potentiel = en chauffage collectif avec : soit à -100m hors Paris / -60m Paris, soit +100 logements, soit tertiaire.
-    const fields = record.fields as Demand;
-    const isParis = fields.Gestionnaires?.includes('Paris');
-    const distanceThreshold = isParis ? 60 : 100;
-    fields.haut_potentiel =
-      fields['Type de chauffage'] === 'Collectif' &&
-      (fields['Distance au réseau'] < distanceThreshold || fields.Logement >= 100 || fields.Structure === 'Tertiaire');
-
-    // complète les valeurs par défaut pour simplifier l'usage côté UI
-    fields['Prise de contact'] ??= false;
-    fields.Status ??= DEMANDE_STATUS.EMPTY;
-  });
-
-  return user.role === 'demo'
-    ? records.map(
-        (record) =>
-          ({
-            id: record.id,
-            ...record.fields,
-            Mail: faker.internet.email(),
-            Nom: faker.person.lastName(),
-            Prénom: faker.person.firstName(),
-            Téléphone: `0${faker.string.numeric(9)}`,
-          }) as Demand
-      )
-    : records.map(
-        (record) =>
-          ({
-            id: record.id,
-            ...record.fields,
-          }) as Demand
-      );
 };
 
 const getDemand = async (user: User, demandId: string): Promise<Demand> => {

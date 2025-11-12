@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 
 import Icon from '@/components/ui/Icon';
-import type { Demand } from '@/types/Summary/Demand';
+import type { Demand } from '../types';
 
 const Contact = ({ demand, onEmailClick }: { demand: Demand; onEmailClick: (demandId: string) => void }) => {
   const getNomStructure = useCallback(() => {

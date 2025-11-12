@@ -1,17 +1,17 @@
 import { type ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react';
 
 import TextAreaInput from '@/components/form/dsfr/TextArea';
-import type { Demand } from '@/types/Summary/Demand';
 import debounce from '@/utils/debounce';
+import type { Demand } from '../types';
 
-const Comment = ({
+const Comment = <T extends Demand>({
   demand,
   field,
   updateDemand,
 }: {
-  demand: Demand;
+  demand: T;
   field: 'Commentaire' | 'Commentaires_internes_FCU';
-  updateDemand: (demandId: string, demand: Partial<Demand>) => Promise<void>;
+  updateDemand: (demandId: string, demand: Partial<T>) => Promise<void>;
 }) => {
   const [value, setValue] = useState(demand[field]);
 
@@ -21,7 +21,7 @@ const Comment = ({
         (value: string) =>
           updateDemand(demand.id, {
             [field]: value,
-          }),
+          } as Partial<T>),
         500
       ),
     [demand.id, updateDemand]

@@ -14,7 +14,7 @@ const colors: Record<string, { color: string; backgroundColor: string }> = {
   'Électricité individuel': { backgroundColor: '#BFEDFF', color: '#518CBC' },
 };
 
-const Tag = ({ text }: { text: string }) => {
+const Tag = ({ text }: { text?: string | null }) => {
   if (!text) {
     return null;
   }

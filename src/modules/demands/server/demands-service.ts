@@ -1,11 +1,16 @@
+import { faker } from '@faker-js/faker';
 import type { Insertable } from 'kysely';
+import type { User } from 'next-auth';
 import { v4 as uuidv4 } from 'uuid';
 import { clientConfig } from '@/client-config';
+import { demandStatusDefault } from '@/modules/demands/constants';
 import type { AirtableLegacyRecord } from '@/modules/demands/types';
 import { sendEmailTemplate } from '@/modules/email';
 import { type DemandEmails, kdb, sql } from '@/server/db/kysely';
 import { createBaseModel } from '@/server/db/kysely/base-model';
 import { parentLogger } from '@/server/helpers/logger';
+import { getDetailedEligibilityStatus } from '@/server/services/addresseInformation';
+import * as assignmentRulesService from './assignment_rules-service';
 
 const logger = parentLogger.child({
   module: 'demands',
@@ -177,6 +182,139 @@ export const dailyRelanceMail = async () => {
       }
     );
   }
+};
+
+export const listAdmin = async () => {
+  let startTime = Date.now();
+
+  const records = (
+    await kdb
+      .selectFrom('demands')
+      .selectAll()
+      .where((eb) =>
+        eb.or([
+          eb(sql`legacy_values->>'Gestionnaires validés'`, '=', 'false'),
+          eb(sql`legacy_values->>'Gestionnaires validés'`, 'is', null),
+        ])
+      )
+      .orderBy(sql`legacy_values->>'Date de la demande'`, 'desc')
+      .execute()
+  ).map(({ id, legacy_values }) => ({
+    fields: legacy_values,
+    id,
+  }));
+
+  logger.info('kdb.getAdminDemands', {
+    duration: Date.now() - startTime,
+    recordsCount: records.length,
+  });
+
+  // Récupére et parse les règles et leurs résultats
+  const { items: assignmentRules } = await assignmentRulesService.list();
+  const parsedRules = await assignmentRulesService.parseAssignmentRules(assignmentRules);
+
+  startTime = Date.now();
+  const demands = (
+    await Promise.all(
+      records.map(async (record) => {
+        const demand = { id: record.id, ...record.fields };
+        demand['Gestionnaires validés'] ??= false;
+        demand.Commentaire ??= '';
+        demand.Commentaires_internes_FCU ??= '';
+        demand['Relance à activer'] ??= false;
+
+        if (!demand.Latitude || !demand.Longitude || !demand.Ville) {
+          logger.warn('missing demand fields', {
+            demandId: demand.id,
+            missingFields: ['Latitude', 'Longitude', 'Ville'],
+          });
+          return null;
+        }
+
+        const detailedEligibilityStatus = await getDetailedEligibilityStatus(demand.Latitude, demand.Longitude);
+        const rulesResult = assignmentRulesService.applyParsedRulesToEligibilityData(parsedRules, detailedEligibilityStatus);
+
+        return {
+          ...demand,
+          detailedEligibilityStatus,
+          recommendedAssignment: rulesResult.assignment ?? 'Non affecté',
+          recommendedTags: [...detailedEligibilityStatus.tags, ...rulesResult.tags],
+        };
+      })
+    )
+  ).filter((v) => v !== null);
+
+  logger.info('getDetailedEligilityStatus', {
+    duration: Date.now() - startTime,
+    recordsCount: records.length,
+  });
+  return demands;
+};
+
+export const list = async (user: User) => {
+  if (!user || !user.gestionnaires) {
+    return [];
+  }
+
+  const startTime = Date.now();
+
+  // Build query based on user role and gestionnaires
+  let query = kdb.selectFrom('demands').selectAll();
+
+  if (user.role === 'admin') {
+    // No filter for admin
+  } else if (user.role === 'demo') {
+    query = query
+      .where(sql`legacy_values->>'Gestionnaires validés'`, '=', 'true')
+      .where(sql`legacy_values->'Gestionnaires'`, '?|', sql.raw(`ARRAY['Paris']`));
+  } else if (user.role === 'gestionnaire') {
+    query = query
+      .where(sql`legacy_values->>'Gestionnaires validés'`, '=', 'true')
+      .where(
+        sql`legacy_values->'Gestionnaires'`,
+        '?|',
+        sql.raw(`ARRAY[${user.gestionnaires.map((gestionnaire) => `'${gestionnaire.replace(/'/g, "''")}'`).join(',')}]`)
+      );
+  }
+
+  const records = (await query.orderBy(sql`legacy_values->>'Date de la demande'`, 'desc').execute()).map(({ id, legacy_values }) => ({
+    fields: legacy_values,
+    id,
+  }));
+
+  logger.info('kdb.getDemands', {
+    duration: Date.now() - startTime,
+    recordsCount: records.length,
+    tagsCounts: user.gestionnaires.length,
+  });
+
+  records.forEach((record) => {
+    // ajoute le champ haut_potentiel = en chauffage collectif avec : soit à -100m hors Paris / -60m Paris, soit +100 logements, soit tertiaire.
+    const fields = record.fields;
+    const isParis = fields.Gestionnaires?.includes('Paris');
+    const distanceThreshold = isParis ? 60 : 100;
+    fields.haut_potentiel =
+      fields['Type de chauffage'] === 'Collectif' &&
+      ((fields['Distance au réseau'] || 10000000) < distanceThreshold || (fields.Logement || 0) >= 100 || fields.Structure === 'Tertiaire');
+
+    // complète les valeurs par défaut pour simplifier l'usage côté UI
+    fields['Prise de contact'] ??= false;
+    fields.Status ??= demandStatusDefault;
+  });
+
+  return user.role === 'demo'
+    ? records.map((record) => ({
+        id: record.id,
+        ...record.fields,
+        Mail: faker.internet.email(),
+        Nom: faker.person.lastName(),
+        Prénom: faker.person.firstName(),
+        Téléphone: `0${faker.string.numeric(9)}`,
+      }))
+    : records.map((record) => ({
+        id: record.id,
+        ...record.fields,
+      }));
 };
 
 export const buildFeatures = async (properties: string[]) => {

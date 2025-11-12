@@ -1,4 +1,4 @@
-import type { Demand } from '@/types/Summary/Demand';
+import type { Demand } from '@/modules/demands/types';
 
 import { Checkbox } from './Contacted.styles';
 
