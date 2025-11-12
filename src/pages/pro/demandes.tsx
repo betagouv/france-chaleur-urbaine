@@ -1,4 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query';
 import type { ColumnFiltersState } from '@tanstack/react-table';
 import type { Virtualizer } from '@tanstack/react-virtual';
 import dynamic from 'next/dynamic';
@@ -6,13 +5,8 @@ import { Fragment, type RefObject, useCallback, useEffect, useMemo, useRef, useS
 import type { MapGeoJSONFeature, MapRef } from 'react-map-gl/maplibre';
 
 import Input from '@/components/form/dsfr/Input';
-import AdditionalInformation from '@/components/Manager/AdditionalInformation';
-import Comment from '@/components/Manager/Comment';
-import Contact from '@/components/Manager/Contact';
-import Contacted from '@/components/Manager/Contacted';
 import DemandEmailForm from '@/components/Manager/DemandEmailForm';
 import DemandStatusBadge from '@/components/Manager/DemandStatusBadge';
-import Status from '@/components/Manager/Status';
 import Tag from '@/components/Manager/Tag';
 import type { AdresseEligible } from '@/components/Map/layers/adressesEligibles';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
@@ -27,21 +21,28 @@ import ModalSimple from '@/components/ui/ModalSimple';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/Resizable';
 import Tooltip from '@/components/ui/Tooltip';
 import TableSimple, { type ColumnDef, type QuickFilterPreset } from '@/components/ui/table/TableSimple';
-import { useFetch } from '@/hooks/useApi';
+import AdditionalInformation from '@/modules/demands/client/AdditionalInformation';
+import Comment from '@/modules/demands/client/Comment';
+import Contact from '@/modules/demands/client/Contact';
+import Contacted from '@/modules/demands/client/Contacted';
+import Status from '@/modules/demands/client/Status';
+import type { Demand } from '@/modules/demands/types';
 import { toastErrors } from '@/modules/notification';
+import trpc, { type RouterOutput } from '@/modules/trpc/client';
 import { withAuthentication } from '@/server/authentication';
 import { DEMANDE_STATUS, type DemandStatus } from '@/types/enum/DemandSatus';
 import type { Point } from '@/types/Point';
-import type { Demand } from '@/types/Summary/Demand';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
 import type { ExportColumn } from '@/utils/export';
-import { putFetchJSON } from '@/utils/network';
 import { upperCaseFirstChar } from '@/utils/strings';
 import { ObjectEntries, ObjectKeys } from '@/utils/typescript';
 
 const Map = dynamic(() => import('@/components/Map/Map'), { ssr: false });
 const ButtonExport = dynamic(() => import('@/components/ui/ButtonExport'), { ssr: false });
+
+type DemandsList = RouterOutput['demands']['list'];
+type DemandsListItem = DemandsList[number];
 
 type MapCenterLocation = {
   center: Point;
@@ -49,7 +50,7 @@ type MapCenterLocation = {
   flyTo?: boolean;
 };
 
-export const demandsExportColumns: ExportColumn<Demand>[] = [
+export const demandsExportColumns: ExportColumn<DemandsListItem>[] = [
   {
     accessorKey: 'Status',
     name: 'Statut',
@@ -82,13 +83,15 @@ export const demandsExportColumns: ExportColumn<Demand>[] = [
   },
   {
     accessorFn: (demand) =>
-      demand['Gestionnaire Distance au réseau'] === undefined ? demand['Distance au réseau'] : demand['Gestionnaire Distance au réseau'],
+      (demand['Gestionnaire Distance au réseau'] === undefined
+        ? demand['Distance au réseau']
+        : demand['Gestionnaire Distance au réseau']) ?? 0,
     name: 'Distance au réseau (m)',
   },
   { accessorKey: 'Identifiant réseau', name: 'ID réseau le plus proche' },
   { accessorKey: 'Nom réseau', name: 'Nom du réseau le plus proche' },
   {
-    accessorFn: (demand) => (demand['Gestionnaire Logement'] === undefined ? demand.Logement : demand['Gestionnaire Logement']),
+    accessorFn: (demand) => (demand['Gestionnaire Logement'] === undefined ? demand.Logement : demand['Gestionnaire Logement']) ?? 0,
     name: 'Nb logements',
   },
   {
@@ -96,7 +99,7 @@ export const demandsExportColumns: ExportColumn<Demand>[] = [
     name: 'Surface en m2',
   },
   {
-    accessorFn: (demand) => (demand['Gestionnaire Conso'] === undefined ? demand.Conso : demand['Gestionnaire Conso']),
+    accessorFn: (demand) => (demand['Gestionnaire Conso'] === undefined ? demand.Conso : demand['Gestionnaire Conso']) ?? 0,
     name: 'Conso gaz (MWh)',
   },
   { accessorKey: 'Commentaire', name: 'Commentaires' },
@@ -106,7 +109,7 @@ export const demandsExportColumns: ExportColumn<Demand>[] = [
   },
 ];
 
-const displayModeDeChauffage = (demand: Demand) => {
+const displayModeDeChauffage = (demand: DemandsListItem) => {
   const modeDeChauffage = demand['Mode de chauffage']?.toLowerCase()?.trim();
   if (modeDeChauffage && ['gaz', 'fioul', 'électricité'].includes(modeDeChauffage)) {
     return `${upperCaseFirstChar(modeDeChauffage)} ${demand['Type de chauffage'] ? demand['Type de chauffage'].toLowerCase() : ''}`;
@@ -180,17 +183,16 @@ const quickFilterPresets = {
     ),
     valueSuffix: <Badge type="pdp" />,
   },
-} satisfies Record<string, QuickFilterPreset<Demand>>;
+} satisfies Record<string, QuickFilterPreset<DemandsListItem>>;
 type QuickFilterPresetKey = keyof typeof quickFilterPresets;
 
 const initialSortingState = [{ desc: true, id: 'Date de la demande' }];
 
 function DemandesNew(): React.ReactElement {
-  const queryClient = useQueryClient();
   const mapRef = useRef<MapRef>(null) as RefObject<MapRef>;
   const virtualizerRef = useRef<Virtualizer<HTMLDivElement, Element>>(null) as RefObject<Virtualizer<HTMLDivElement, Element>>;
   const [selectedDemandId, setSelectedDemandId] = useState<string | null>(null);
-  const [modalDemand, setModalDemand] = useState<Demand | null>(null);
+  const [modalDemand, setModalDemand] = useState<DemandsListItem | null>(null);
   const tableRowSelection = useMemo(() => {
     return selectedDemandId ? { [selectedDemandId]: true } : {};
   }, [selectedDemandId]);
@@ -198,9 +200,9 @@ function DemandesNew(): React.ReactElement {
   const [mapCenterLocation, setMapCenterLocation] = useState<MapCenterLocation>();
   const [globalFilter, setGlobalFilter] = useState('');
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [filteredDemands, setFilteredDemands] = useState<Demand[]>([]);
+  const [filteredDemands, setFilteredDemands] = useState<DemandsListItem[]>([]);
 
-  const { data: demands = [], isLoading } = useFetch<Demand[]>('/api/demands');
+  const { data: demands = [], isLoading } = trpc.demands.list.useQuery();
 
   const presetStats = ObjectKeys(quickFilterPresets).reduce(
     (acc, key) => ({
@@ -221,8 +223,8 @@ function DemandesNew(): React.ReactElement {
         ({
           address: demand.Adresse,
           id: demand.id,
-          latitude: demand.Latitude,
-          longitude: demand.Longitude,
+          latitude: demand.Latitude ?? 0,
+          longitude: demand.Longitude ?? 0,
           modeDeChauffage: displayModeDeChauffage(demand),
           selected: demand.id === selectedDemandId,
           typeDeLogement: demand.Structure,
@@ -230,23 +232,26 @@ function DemandesNew(): React.ReactElement {
     );
   }, [filteredDemands, selectedDemandId]);
 
+  const utils = trpc.useUtils();
+  const { mutateAsync: updateDemandMutation } = trpc.demands.update.useMutation();
+
   const updateDemand = useCallback(
     toastErrors(async (demandId: string, demandUpdate: Partial<Demand>) => {
-      await putFetchJSON(`/api/demands/${demandId}`, demandUpdate);
+      await updateDemandMutation({ demandId, values: demandUpdate });
 
-      queryClient.setQueryData<Demand[]>(['/api/demands'], (demands) =>
+      utils.demands.list.setData(undefined, (demands) =>
         (demands ?? []).map((demand) => {
           if (demand.id === demandId) {
-            return { ...demand, ...demandUpdate };
+            return { ...demand, ...demandUpdate } as DemandsListItem;
           }
           return demand;
         })
       );
     }),
-    []
+    [utils, updateDemandMutation]
   );
 
-  const tableColumns: ColumnDef<Demand>[] = useMemo(
+  const tableColumns: ColumnDef<DemandsListItem>[] = useMemo(
     () => [
       {
         align: 'center',
@@ -268,7 +273,7 @@ function DemandesNew(): React.ReactElement {
       },
       {
         accessorKey: 'Status',
-        cell: ({ row }) => <Status demand={row.original} updateDemand={updateDemand} />,
+        cell: ({ row }) => <Status demand={row.original as unknown as Demand} updateDemand={updateDemand} />,
         enableGlobalFilter: false,
         filterProps: {
           Component: ({ value }) => <DemandStatusBadge status={value as DemandStatus} />,
@@ -280,7 +285,7 @@ function DemandesNew(): React.ReactElement {
       {
         accessorKey: 'Prise de contact',
         align: 'center',
-        cell: ({ row }) => <Contacted demand={row.original} updateDemand={updateDemand} />,
+        cell: ({ row }) => <Contacted demand={row.original as unknown as Demand} updateDemand={updateDemand} />,
         enableGlobalFilter: false,
         filterType: 'Facets',
         header: 'Prospect recontacté',
@@ -288,7 +293,7 @@ function DemandesNew(): React.ReactElement {
       },
       {
         accessorFn: (row) => `${row.Nom} ${row.Prénom} ${row.Mail}`,
-        cell: ({ row }) => <Contact demand={row.original} onEmailClick={() => setModalDemand(row.original)} />,
+        cell: ({ row }) => <Contact demand={row.original as unknown as Demand} onEmailClick={() => setModalDemand(row.original)} />,
         enableSorting: false,
         header: 'Contact',
         width: '280px',
@@ -341,7 +346,12 @@ function DemandesNew(): React.ReactElement {
       {
         accessorKey: 'Distance au réseau',
         cell: ({ row }) => (
-          <AdditionalInformation demand={row.original} field="Distance au réseau" updateDemand={updateDemand} type="number" />
+          <AdditionalInformation
+            demand={row.original as unknown as Demand}
+            field="Distance au réseau"
+            updateDemand={updateDemand}
+            type="number"
+          />
         ),
         enableGlobalFilter: false,
         filterProps: {
@@ -376,7 +386,9 @@ function DemandesNew(): React.ReactElement {
       },
       {
         accessorKey: 'Logement',
-        cell: ({ row }) => <AdditionalInformation demand={row.original} field="Logement" updateDemand={updateDemand} type="number" />,
+        cell: ({ row }) => (
+          <AdditionalInformation demand={row.original as unknown as Demand} field="Logement" updateDemand={updateDemand} type="number" />
+        ),
         enableGlobalFilter: false,
         filterType: 'Range',
         header: 'Nb logements (lots)',
@@ -385,7 +397,14 @@ function DemandesNew(): React.ReactElement {
       },
       {
         accessorKey: 'Surface en m2',
-        cell: ({ row }) => <AdditionalInformation demand={row.original} field="Surface en m2" updateDemand={updateDemand} type="number" />,
+        cell: ({ row }) => (
+          <AdditionalInformation
+            demand={row.original as unknown as Demand}
+            field="Surface en m2"
+            updateDemand={updateDemand}
+            type="number"
+          />
+        ),
         enableGlobalFilter: false,
         filterProps: {
           unit: 'm2',
@@ -396,7 +415,9 @@ function DemandesNew(): React.ReactElement {
       },
       {
         accessorKey: 'Conso',
-        cell: ({ row }) => <AdditionalInformation demand={row.original} field="Conso" updateDemand={updateDemand} type="number" />,
+        cell: ({ row }) => (
+          <AdditionalInformation demand={row.original as unknown as Demand} field="Conso" updateDemand={updateDemand} type="number" />
+        ),
         enableGlobalFilter: false,
         filterProps: {
           unit: 'MWh',
@@ -407,7 +428,7 @@ function DemandesNew(): React.ReactElement {
       },
       {
         accessorKey: 'Commentaires',
-        cell: ({ row }) => <Comment demand={row.original} field="Commentaire" updateDemand={updateDemand} />,
+        cell: ({ row }) => <Comment demand={row.original as unknown as Demand} field="Commentaire" updateDemand={updateDemand} />,
         enableSorting: false,
         header: 'Commentaires',
         width: '280px',
@@ -415,7 +436,13 @@ function DemandesNew(): React.ReactElement {
       {
         accessorKey: 'Affecté à',
         cell: ({ row }) => (
-          <AdditionalInformation demand={row.original} field="Affecté à" updateDemand={updateDemand} type="text" width={125} />
+          <AdditionalInformation
+            demand={row.original as unknown as Demand}
+            field="Affecté à"
+            updateDemand={updateDemand}
+            type="text"
+            width={125}
+          />
         ),
         enableSorting: false,
         filterType: 'Facets',
@@ -439,7 +466,6 @@ function DemandesNew(): React.ReactElement {
         ),
         width: '150px',
       },
-
       // obligatoire afin d'être utilisables dans les presets
       {
         accessorKey: 'haut_potentiel',
@@ -473,7 +499,7 @@ function DemandesNew(): React.ReactElement {
       const selectedDemand = demands.find((demand) => demand.id === demandId);
       if (selectedDemand) {
         setMapCenterLocation({
-          center: [selectedDemand.Longitude, selectedDemand.Latitude],
+          center: [selectedDemand.Longitude ?? 0, selectedDemand.Latitude ?? 0],
           flyTo: true,
           zoom: 16,
         });
@@ -482,14 +508,14 @@ function DemandesNew(): React.ReactElement {
     [demands]
   );
 
-  const onTableFiltersChange = useCallback((demands: Demand[]) => {
+  const onTableFiltersChange = useCallback((demands: DemandsListItem[]) => {
     setFilteredDemands(demands);
 
     // center on the first demand if any
     const firstDemand = demands[0];
     if (firstDemand) {
       setMapCenterLocation({
-        center: [firstDemand.Longitude, firstDemand.Latitude],
+        center: [firstDemand.Longitude ?? 0, firstDemand.Latitude ?? 0],
         flyTo: true,
         zoom: 8,
       });
@@ -538,7 +564,7 @@ function DemandesNew(): React.ReactElement {
         size="large"
         onOpenChange={(open) => !open && setModalDemand(null)}
       >
-        {modalDemand && <DemandEmailForm currentDemand={modalDemand} updateDemand={updateDemand} />}
+        {modalDemand && <DemandEmailForm currentDemand={modalDemand as unknown as Demand} updateDemand={updateDemand} />}
       </ModalSimple>
       <div className="mb-8">
         <div className="flex items-center flex-wrap">

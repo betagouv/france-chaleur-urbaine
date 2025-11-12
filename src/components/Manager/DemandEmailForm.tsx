@@ -10,10 +10,10 @@ import Loader from '@/components/ui/Loader';
 import Tooltip, { TooltipIcon } from '@/components/ui/Tooltip';
 import { useFetch } from '@/hooks/useApi';
 import { useUserPreferences } from '@/modules/auth/client/hooks';
+import type { Demand } from '@/modules/demands/types';
 import type { ManagerEmailResponse } from '@/pages/api/managerEmail';
 import type { EmailTemplatesResponse } from '@/pages/api/user/email-templates/[[...slug]]';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
-import type { Demand } from '@/types/Summary/Demand';
 import { isUUID } from '@/utils/core';
 
 type Props = {

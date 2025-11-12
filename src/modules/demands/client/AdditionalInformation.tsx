@@ -1,10 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 
 import Input from '@/components/form/dsfr/Input';
-import type { Demand } from '@/types/Summary/Demand';
+import type { Demand } from '@/modules/demands/types';
 import debounce from '@/utils/debounce';
-
-import { Container } from './AdditionalInformation.styles';
 
 const getFieldName = (field: 'Conso' | 'Logement' | 'Surface en m2' | 'Distance au réseau' | 'Affecté à') =>
   field === 'Surface en m2' ? field : `Gestionnaire ${field}`;
@@ -32,7 +30,7 @@ const AdditionalInformation = ({
   useEffect(() => {
     if (demand && value === '') {
       if (!simpleField && field !== 'Surface en m2' && demand[`Gestionnaire ${field}`] !== undefined) {
-        setValue(demand[`Gestionnaire ${field}`].toString());
+        setValue(demand[`Gestionnaire ${field}`]?.toString() ?? '');
       } else if (demand[field]) {
         setValue(demand[field].toString());
       }
@@ -54,7 +52,7 @@ const AdditionalInformation = ({
   useEffect(() => () => onChangeHandler.cancel(), [onChangeHandler]);
 
   return (
-    <Container width={width}>
+    <div style={{ width: `${width || 100}px` }}>
       <Input
         label=""
         size="sm"
@@ -69,7 +67,7 @@ const AdditionalInformation = ({
           value,
         }}
       />
-    </Container>
+    </div>
   );
 };
 

@@ -1,30 +1,31 @@
-import type { Demand } from '@/types/Summary/Demand';
+import type { Demand as LegacyDemand } from '@/types/Summary/Demand';
 
-export const demandStatuses = [
-  { label: 'En attente de prise en charge', value: 'EMPTY' },
-  { label: 'Non réalisable', value: 'UNREALISABLE' },
-  { label: 'En attente d’éléments du prospect', value: 'WAITING' },
-  { label: 'Étude en cours', value: 'IN_PROGRESS' },
-  { label: 'Voté en AG', value: 'VOTED' },
-  { label: 'Travaux en cours', value: 'WORK_IN_PROGRESS' },
-  { label: 'Réalisé', value: 'DONE' },
-  { label: 'Projet abandonné par le prospect', value: 'ABANDONNED' },
-];
-
+import type { DemandStatus } from './constants';
 // Ce type permet de corriger le type Legacy existant avec ce que nous récupérons véritablement de Airtable
-export type AirtableLegacyRecord = Partial<Omit<Demand, 'id' | 'Status'>> & {
+export type AirtableLegacyRecord = Partial<Omit<LegacyDemand, 'id' | 'Status'>> & {
   'ID BNB'?: string;
   'Notification envoyé'?: string;
   'Recontacté par le gestionnaire'?: string;
   'Relance ID'?: string;
-  Sondage?: string | string[];
+  Sondage?: string[];
   'Commentaire relance'?: string;
   'Distance au réseau'?: number | null;
   'Code Postal'?: string;
   'Date de la demande': string;
   'ID Conso'?: number;
   Region?: string;
-  Status?: (typeof demandStatuses)[number]['label'] | '';
+  Status?: DemandStatus | '';
   Mail: string;
   Adresse: string;
+  'Relance à activer'?: boolean;
+  Gestionnaires: string[] | null;
+  'Gestionnaire Distance au réseau'?: number | null;
+  'Affecté à': string | string[] | null;
+  Logement: number;
+};
+
+export type Demand = AirtableLegacyRecord & {
+  id: string;
+  created_at: string;
+  updated_at: string;
 };

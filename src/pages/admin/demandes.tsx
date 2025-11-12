@@ -1,5 +1,4 @@
 import { usePrevious } from '@react-hookz/web';
-import { useQueryClient } from '@tanstack/react-query';
 import type { Virtualizer } from '@tanstack/react-virtual';
 import dynamic from 'next/dynamic';
 import { Fragment, type RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -9,8 +8,6 @@ import TableFieldInput from '@/components/Admin/TableFieldInput';
 import EligibilityHelpDialog, { eligibilityTitleByType } from '@/components/EligibilityHelpDialog';
 import Input from '@/components/form/dsfr/Input';
 import FCUTagAutocomplete from '@/components/form/FCUTagAutocomplete';
-import Comment from '@/components/Manager/Comment';
-import Contact from '@/components/Manager/Contact';
 import Tag from '@/components/Manager/Tag';
 import type { AdresseEligible } from '@/components/Map/layers/adressesEligibles';
 import { useMapEventBus } from '@/components/Map/layers/common';
@@ -28,16 +25,22 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/componen
 import Tooltip from '@/components/ui/Tooltip';
 import TableSimple, { type ColumnDef, type QuickFilterPreset } from '@/components/ui/table/TableSimple';
 import { useFetch } from '@/hooks/useApi';
+import Comment from '@/modules/demands/client/Comment';
+import Contact from '@/modules/demands/client/Contact';
+import type { Demand } from '@/modules/demands/types';
 import { notify, toastErrors } from '@/modules/notification';
+import trpc, { type RouterOutput } from '@/modules/trpc/client';
 import { withAuthentication } from '@/server/authentication';
+import type { DetailedEligibilityStatus } from '@/server/services/addresseInformation';
 import type { Point } from '@/types/Point';
-import type { AdminDemand, Demand } from '@/types/Summary/Demand';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
 import { stopPropagation } from '@/utils/events';
-import { deleteFetchJSON, putFetchJSON } from '@/utils/network';
+import { deleteFetchJSON } from '@/utils/network';
 import { formatMWh, upperCaseFirstChar } from '@/utils/strings';
 import { ObjectEntries, ObjectKeys } from '@/utils/typescript';
+
+type DemandsListAdminItem = RouterOutput['demands']['admin']['list'][number];
 
 const Map = dynamic(() => import('@/components/Map/Map'), { ssr: false });
 
@@ -47,7 +50,7 @@ type MapCenterLocation = {
   flyTo?: boolean;
 };
 
-const displayModeDeChauffage = (demand: Demand) => {
+const displayModeDeChauffage = (demand: DemandsListAdminItem) => {
   const modeDeChauffage = demand['Mode de chauffage']?.toLowerCase()?.trim();
   if (modeDeChauffage && ['gaz', 'fioul', 'électricité'].includes(modeDeChauffage)) {
     return `${upperCaseFirstChar(modeDeChauffage)} ${demand['Type de chauffage'] ? demand['Type de chauffage'].toLowerCase() : ''}`;
@@ -67,7 +70,7 @@ const quickFilterPresets = {
     ),
     valueSuffix: <Icon name="fr-icon-flag-fill" size="sm" color="red" />,
   },
-} satisfies Record<string, QuickFilterPreset<AdminDemand>>;
+} satisfies Record<string, QuickFilterPreset<DemandsListAdminItem>>;
 type QuickFilterPresetKey = keyof typeof quickFilterPresets;
 
 const initialSortingState = [{ desc: true, id: 'Date de la demande' }];
@@ -85,7 +88,6 @@ const defaultAssignmentChipOption: ChipOption = {
 let isUpdatingDemandField = false;
 
 function DemandesAdmin(): React.ReactElement {
-  const queryClient = useQueryClient();
   const virtualizerRef = useRef<Virtualizer<HTMLDivElement, Element>>(null) as RefObject<Virtualizer<HTMLDivElement, Element>>;
   const [selectedDemandId, setSelectedDemandId] = useState<string | null>(null);
   const tableRowSelection = useMemo(() => {
@@ -94,9 +96,9 @@ function DemandesAdmin(): React.ReactElement {
 
   const [mapCenterLocation, setMapCenterLocation] = useState<MapCenterLocation>();
   const [globalFilter, setGlobalFilter] = useState('');
-  const [filteredDemands, setFilteredDemands] = useState<AdminDemand[]>([]);
+  const [filteredDemands, setFilteredDemands] = useState<DemandsListAdminItem[]>([]);
 
-  const { data: demands = [], isLoading } = useFetch<AdminDemand[]>('/api/admin/demands');
+  const { data: demands = [], isLoading } = trpc.demands.admin.list.useQuery();
   const { data: assignmentRulesResults = [] } = useFetch<string[]>('/api/admin/assignment-rules/results');
   const assignmentRulesResultsOptions: ChipOption[] = useMemo(
     () => [
@@ -144,8 +146,8 @@ function DemandesAdmin(): React.ReactElement {
         ({
           address: demand.Adresse,
           id: demand.id,
-          latitude: demand.Latitude,
-          longitude: demand.Longitude,
+          latitude: demand.Latitude ?? 0,
+          longitude: demand.Longitude ?? 0,
           modeDeChauffage: displayModeDeChauffage(demand),
           selected: demand.id === selectedDemandId,
           typeDeLogement: demand.Structure,
@@ -153,10 +155,13 @@ function DemandesAdmin(): React.ReactElement {
     );
   }, [filteredDemands, selectedDemandId]);
 
+  const utils = trpc.useUtils();
+  const { mutateAsync: updateDemandMutation } = trpc.demands.admin.update.useMutation();
+
   const updateDemand = useCallback(
-    toastErrors(async (demandId: string, demandUpdate: Partial<AdminDemand>) => {
+    toastErrors(async (demandId: string, demandUpdate: Partial<DemandsListAdminItem>) => {
       isUpdatingDemandField = true; // prevent the map from being centered on the first demand
-      queryClient.setQueryData<AdminDemand[]>(['/api/admin/demands'], (demands) =>
+      utils.demands.admin.list.setData(undefined, (demands) =>
         (demands ?? []).map((demand) => {
           if (demand.id === demandId) {
             return { ...demand, ...demandUpdate };
@@ -164,25 +169,23 @@ function DemandesAdmin(): React.ReactElement {
           return demand;
         })
       );
-      await putFetchJSON(`/api/admin/demands/${demandId}`, demandUpdate);
+      await updateDemandMutation({ demandId, values: demandUpdate });
     }),
-    []
+    [utils, updateDemandMutation]
   );
 
   const deleteDemand = useCallback(
     toastErrors(async (demandId: string) => {
       await deleteFetchJSON(`/api/admin/demands/${demandId}`);
 
-      queryClient.setQueryData<AdminDemand[]>(['/api/admin/demands'], (demands) =>
-        (demands ?? []).filter((demand) => demand.id !== demandId)
-      );
+      utils.demands.admin.list.setData(undefined, (demands) => (demands ?? []).filter((demand) => demand.id !== demandId));
       notify('success', 'Demande supprimée');
     }),
-    []
+    [utils]
   );
 
   useMapEventBus('rdc-add-tag', (event) => {
-    const selectedDemand = demands.find((demand) => demand.id === selectedDemandId);
+    const selectedDemand = demands.find((demand: DemandsListAdminItem) => demand.id === selectedDemandId);
     if (!selectedDemandId || !selectedDemand) {
       notify('error', 'Aucune demande n‘est sélectionnée');
       return;
@@ -194,7 +197,7 @@ function DemandesAdmin(): React.ReactElement {
     });
   });
 
-  const tableColumns: ColumnDef<AdminDemand>[] = useMemo(
+  const tableColumns: ColumnDef<DemandsListAdminItem>[] = useMemo(
     () => [
       {
         align: 'center',
@@ -229,7 +232,7 @@ function DemandesAdmin(): React.ReactElement {
                 suggestedValue={demand.recommendedTags}
               />
               <div className="flex items-center gap-2" onClick={stopPropagation} onDoubleClick={stopPropagation}>
-                <EligibilityHelpDialog detailedEligibilityStatus={demand.detailedEligibilityStatus}>
+                <EligibilityHelpDialog detailedEligibilityStatus={demand.detailedEligibilityStatus as DetailedEligibilityStatus}>
                   <Button
                     className="text-gray-700! font-normal! italic"
                     title="Voir le détail de l'éligibilité"
@@ -326,7 +329,7 @@ function DemandesAdmin(): React.ReactElement {
       },
       {
         accessorFn: (row) => `${row.Nom} ${row.Prénom} ${row.Mail}`,
-        cell: ({ row }) => <Contact demand={row.original} onEmailClick={() => {}} />,
+        cell: ({ row }) => <Contact demand={row.original as unknown as Demand} onEmailClick={() => {}} />,
         enableSorting: false,
         header: 'Contact',
         width: '280px',
@@ -461,17 +464,22 @@ function DemandesAdmin(): React.ReactElement {
       },
       {
         accessorKey: 'Commentaire',
-        cell: ({ row }) => <Comment demand={row.original} field="Commentaire" updateDemand={updateDemand} />,
-        enableSorting: false,
         header: 'Commentaire',
         width: '280px',
       },
       {
         accessorKey: 'Commentaires_internes_FCU',
-        cell: ({ row }) => <Comment demand={row.original} field="Commentaires_internes_FCU" updateDemand={updateDemand} />,
+        cell: ({ row }) => (
+          <Comment demand={row.original as unknown as Demand} field="Commentaires_internes_FCU" updateDemand={updateDemand} />
+        ),
         enableSorting: false,
         header: 'Commentaires internes FCU',
         width: '280px',
+      },
+      {
+        accessorKey: 'Sondage',
+        cellType: 'Array',
+        filterType: 'Facets',
       },
     ],
     [updateDemand, assignmentRulesResultsOptions]
@@ -492,10 +500,10 @@ function DemandesAdmin(): React.ReactElement {
   const selectAndCenterOnDemand = useCallback(
     (demandId: string, zoom: number) => {
       setSelectedDemandId(demandId);
-      const selectedDemand = demands.find((demand) => demand.id === demandId);
+      const selectedDemand = demands.find((demand: DemandsListAdminItem) => demand.id === demandId);
       if (selectedDemand) {
         setMapCenterLocation({
-          center: [selectedDemand.Longitude, selectedDemand.Latitude],
+          center: [selectedDemand.Longitude ?? 0, selectedDemand.Latitude ?? 0],
           flyTo: true,
           zoom,
         });
@@ -516,14 +524,14 @@ function DemandesAdmin(): React.ReactElement {
     [selectAndCenterOnDemand]
   );
 
-  const onTableFiltersChange = useCallback((demands: AdminDemand[]) => {
+  const onTableFiltersChange = useCallback((demands: DemandsListAdminItem[]) => {
     setFilteredDemands(demands);
 
     // center on the first demand if any
     const firstDemand = demands[0];
     if (firstDemand && !isUpdatingDemandField) {
       setMapCenterLocation({
-        center: [firstDemand.Longitude, firstDemand.Latitude],
+        center: [firstDemand.Longitude ?? 0, firstDemand.Latitude ?? 0],
         flyTo: true,
         zoom: 8,
       });
