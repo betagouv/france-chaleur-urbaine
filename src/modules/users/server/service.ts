@@ -61,6 +61,10 @@ export const update: typeof baseModel.update = async (id, data, config, _context
 
   return baseModel.update(id, { ...userUpdate, optin_at: optin_at ? new Date() : null }, config, _context);
 };
+
+/**
+ * Supprime un utilisateur et toutes ses données associées en cascade.
+ */
 export const remove = baseModel.remove;
 
 export const validation = {
