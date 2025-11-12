@@ -1,11 +1,11 @@
 import Tag from '@codegouvfr/react-dsfr/Tag';
-
+import Accordion from '@/components/ui/Accordion';
 import Button from '@/components/ui/Button';
 import Tooltip from '@/components/ui/Tooltip';
 import type { NetworkSummary } from '@/types/Summary/Network';
 import { isDefined } from '@/utils/core';
 import { prettyFormatNumber } from '@/utils/strings';
-
+import { DownloadNetworkGeometryButton } from '../components/DownloadNetworkGeometryButton';
 import { defineLayerPopup, ifHoverElse, type MapSourceLayersSpecification } from './common';
 import { buildFiltreGestionnaire, buildFiltreIdentifiantReseau, buildReseauxDeChaleurFilters } from './filters';
 
@@ -78,6 +78,13 @@ const Popup = defineLayerPopup<NetworkSummary>((reseauDeChaleur, { Property, Tit
           Voir la fiche du réseau
         </Button>
       )}
+      <Accordion label="Informations supplémentaires" simple small>
+        <DownloadNetworkGeometryButton
+          id_fcu={reseauDeChaleur.id_fcu}
+          type="reseaux_de_chaleur"
+          networkName={reseauDeChaleur.nom_reseau || 'reseau_de_chaleur'}
+        />
+      </Accordion>
     </>
   );
 });

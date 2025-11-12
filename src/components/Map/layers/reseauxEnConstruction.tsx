@@ -1,8 +1,9 @@
 import Tag from '@codegouvfr/react-dsfr/Tag';
 
+import Accordion from '@/components/ui/Accordion';
 import Tooltip from '@/components/ui/Tooltip';
 import type { FuturNetworkSummary } from '@/types/Summary/FuturNetwork';
-
+import { DownloadNetworkGeometryButton } from '../components/DownloadNetworkGeometryButton';
 import { defineLayerPopup, ifHoverElse, type MapSourceLayersSpecification } from './common';
 import { buildFiltreGestionnaire } from './filters';
 
@@ -60,6 +61,13 @@ const Popup = defineLayerPopup<FuturNetworkSummary>(
             />
           )}
         </TwoColumns>
+        <Accordion label="Informations supplémentaires" simple small>
+          <DownloadNetworkGeometryButton
+            id_fcu={reseauEnConstruction.id_fcu}
+            type="zones_et_reseaux_en_construction"
+            networkName={reseauEnConstruction.nom_reseau || 'reseau_en_construction'}
+          />
+        </Accordion>
       </>
     );
   }

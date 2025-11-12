@@ -79,6 +79,13 @@ export const zCreateNetworkInput = z.object({
 
 export type CreateNetworkInput = z.infer<typeof zCreateNetworkInput>;
 
+export const zDownloadNetworkGeometryInput = z.object({
+  id: z.number(),
+  type: z.enum(tableNames),
+});
+
+export type DownloadNetworkGeometryInput = z.infer<typeof zDownloadNetworkGeometryInput>;
+
 export const gestionnairesFilters = [
   {
     label: 'Coriance',

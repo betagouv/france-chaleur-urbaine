@@ -5,6 +5,7 @@ import {
   zCreateNetworkInput,
   zDeleteGeomUpdateInput,
   zDeleteNetworkInput,
+  zDownloadNetworkGeometryInput,
   zGetNetworkEligibilityStatusInput,
   zUpdateGeomUpdateInput,
   zUpdatePerimetreDeDeveloppementPrioritaireInput,
@@ -95,6 +96,9 @@ export const reseauxRouter = router({
   // Routes publiques pour l'éligibilité et la recherche de réseaux
   getNetworkEligibilityStatus: route.input(zGetNetworkEligibilityStatusInput).query(async ({ input }) => {
     return await getNetworkEligilityStatus(input.networkId, input.lat, input.lon);
+  }),
+  getNetworkGeometry: route.input(zDownloadNetworkGeometryInput).query(async ({ input }) => {
+    return await reseauxService.getNetworkGeometry(input.type, input.id);
   }),
   // Route publique pour lister tous les réseaux (utilisé pour la comparaison)
   listNetworks: route.query(async () => {

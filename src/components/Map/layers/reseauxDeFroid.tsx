@@ -1,8 +1,9 @@
+import Accordion from '@/components/ui/Accordion';
 import Button from '@/components/ui/Button';
 import type { NetworkSummary } from '@/types/Summary/Network';
 import { isDefined } from '@/utils/core';
 import { prettyFormatNumber } from '@/utils/strings';
-
+import { DownloadNetworkGeometryButton } from '../components/DownloadNetworkGeometryButton';
 import { ifHoverElse, type MapSourceLayersSpecification, type PopupStyleHelpers } from './common';
 import { buildFiltreGestionnaire, buildFiltreIdentifiantReseau } from './filters';
 
@@ -85,6 +86,13 @@ function Popup(reseauDeFroid: NetworkSummary, { Property, Title, TwoColumns }: P
           Voir la fiche du réseau
         </Button>
       )}
+      <Accordion label="Informations supplémentaires" simple small>
+        <DownloadNetworkGeometryButton
+          id_fcu={Number(reseauDeFroid.id_fcu)}
+          type="reseaux_de_froid"
+          networkName={reseauDeFroid.nom_reseau || 'reseau_de_froid'}
+        />
+      </Accordion>
     </>
   );
 }
