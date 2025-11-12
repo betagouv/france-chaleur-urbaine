@@ -7,12 +7,13 @@ import {
   type FilterFn,
   flexRender,
   getCoreRowModel,
-  getFacetedMinMaxValues,
   getFacetedRowModel,
   getFacetedUniqueValues,
   getFilteredRowModel,
+  getMemoOptions,
   getSortedRowModel,
   type Header,
+  memo,
   type Row,
   type RowData,
   type RowSelectionState,
@@ -56,6 +57,16 @@ export const customFilterFn = <T extends RowData>(): Record<string, FilterFn<T>>
     return Object.entries(filterValue)
       .filter(([, isSelected]) => isSelected)
       .some(([key]) => value.includes(key));
+  },
+  inDateRangeNotNull: (row, columnId, filterValue: [string, string, boolean?]) => {
+    const [minDate, maxDate, includeNull] = filterValue;
+    const value = row.getValue<string | null>(columnId);
+
+    if (value == null) {
+      return includeNull === true;
+    }
+
+    return value >= minDate && value <= maxDate;
   },
   inNumberRangeNotNull: (row, columnId, filterValue: [number, number]) => {
     const [min, max] = filterValue;
@@ -350,6 +361,7 @@ const TableTH = <T extends RowData>({
                   filterProps={columnDef.filterProps as any /* Not working as is for an unknown reason*/}
                   facetedMinMaxValues={header.column.getFacetedMinMaxValues()}
                   facetedUniqueValues={header.column.getFacetedUniqueValues()}
+                  cellType={columnDef.cellType}
                 />
                 <Button
                   priority="tertiary"
@@ -456,10 +468,7 @@ const TableSimple = <T extends RowData>({
   };
 
   const tableColumns = React.useMemo(() => {
-    if (enableRowSelection) {
-      return [selectionColumn, ...columns];
-    }
-    return columns;
+    return enableRowSelection ? [selectionColumn, ...columns] : columns;
   }, [columns, enableRowSelection]);
 
   const customSortingFns = customSortingFn<T>();
@@ -474,7 +483,10 @@ const TableSimple = <T extends RowData>({
     }
     const filterTypeName = defaultTableFilterFns[column.filterType as keyof typeof defaultTableFilterFns];
     if (!column.filter && !column.filterFn && column.filterType && filterTypeName) {
-      column.filterFn = customFilterFns[filterTypeName] || filterTypeName;
+      // Si c'est un Range avec DateTime/Date, utilise inDateRangeNotNull
+      const isDateRange = column.filterType === 'Range' && (column.cellType === 'DateTime' || column.cellType === 'Date');
+      const actualFilterFn = isDateRange ? 'inDateRangeNotNull' : filterTypeName;
+      column.filterFn = customFilterFns[actualFilterFn] || actualFilterFn;
     }
   });
 
@@ -494,7 +506,7 @@ const TableSimple = <T extends RowData>({
     debugTable: isDevModeEnabled(),
     enableRowSelection,
     getCoreRowModel: getCoreRowModel(),
-    getFacetedMinMaxValues: getFacetedMinMaxValues(), //if you need min/max values
+    getFacetedMinMaxValues: getFCUFacetedMinMaxValues() as any, //if you need min/max values. any to handle [string, string]
     getFacetedRowModel: getFacetedRowModel(), //if you need a list of values for a column (other faceted row models depend on this one)
     getFacetedUniqueValues: getFacetedUniqueValues(), //if you need a list of unique values
     getFilteredRowModel: getFilteredRowModel(),
@@ -699,3 +711,33 @@ export type QuickFilterPreset<Data> = {
     value: boolean | number | [number, number] | Record<string, boolean>;
   }[];
 };
+
+// adapted from https://github.com/TanStack/table/blob/02c203afed5865cfec0aa614de9f2861645d6ff9/packages/table-core/src/utils/getFacetedMinMaxValues.ts
+// to handle string dates
+function getFCUFacetedMinMaxValues<TData extends RowData>() {
+  return (table: Table<TData>, columnId: string) =>
+    memo(
+      () => [table.getColumn(columnId)?.getFacetedRowModel(), (table.getColumn(columnId)?.columnDef as any).cellType], // TODO cellType ne devrait pas se retrouver dans tanstack table
+      (facetedRowModel, cellType) => {
+        if (!facetedRowModel) return undefined;
+
+        let uniqueValues = facetedRowModel.flatRows.flatMap((flatRow) => flatRow.getUniqueValues(columnId) ?? []) as string[] | number[];
+        if (cellType !== 'DateTime' && cellType !== 'Date') {
+          uniqueValues = uniqueValues.map(Number).filter((value) => !Number.isNaN(value)) as number[];
+        }
+
+        if (!uniqueValues.length) return;
+
+        let facetedMinValue = uniqueValues[0]!;
+        let facetedMaxValue = uniqueValues[uniqueValues.length - 1]!;
+
+        for (const value of uniqueValues) {
+          if (value < facetedMinValue) facetedMinValue = value;
+          else if (value > facetedMaxValue) facetedMaxValue = value;
+        }
+
+        return [facetedMinValue, facetedMaxValue] as [number, number] | [string, string];
+      },
+      getMemoOptions(table.options, 'debugTable', 'getFacetedMinMaxValues')
+    );
+}

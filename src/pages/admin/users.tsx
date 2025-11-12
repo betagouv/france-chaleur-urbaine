@@ -166,6 +166,7 @@ export default function ManageUsers() {
       {
         accessorKey: 'last_connection',
         cellType: 'DateTime',
+        filterType: 'Range',
         header: 'Dernière activité',
       },
       {
