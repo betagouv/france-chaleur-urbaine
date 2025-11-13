@@ -77,8 +77,10 @@ export default function ManageUsers() {
     isLoading,
     create: createUser,
     update: updateUser,
+    delete: deleteUser,
     isUpdatingId: updatingUserId,
     isCreating: creatingUser,
+    isDeletingId: deletingUserId,
   } = useCrud<UsersResponse>('/api/admin/users');
 
   const handleUpdateUser = (userId: string) =>
@@ -210,12 +212,25 @@ export default function ManageUsers() {
               variant: row.original.active ? 'destructive' : undefined,
             },
             {
+              disabled: deletingUserId === row.original.id,
               icon: 'ri-delete-bin-line',
               id: 'delete',
               label: "Supprimer l'utilisateur",
               onClick: () => {
-                if (window.confirm('Voulez-vous vraiment supprimer cet utilisateur ? Cette action est irréversible.')) {
-                  alert("Cette fonctionnalité n'est pas encore implémentée, demandez à l'équipe technique");
+                if (
+                  window.confirm(
+                    `Voulez-vous vraiment supprimer cet utilisateur et toutes ses données associées ? Cette action est irréversible et supprimera :
+- Les tests d'éligibilité et leurs adresses
+- Les configurations du comparateur
+- Les jobs associés
+- Les templates d'email créés
+- Les événements créés`
+                  )
+                ) {
+                  void toastErrors(async () => {
+                    await deleteUser(row.original.id);
+                    notify('success', 'Utilisateur supprimé avec succès');
+                  })();
                 }
               },
               variant: 'destructive',
