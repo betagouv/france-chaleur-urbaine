@@ -741,3 +741,16 @@ export const applyGeometriesUpdates = async ({ name }: ApplyGeometriesUpdatesInp
     processed,
   };
 };
+
+/**
+ * Récupère la géométrie d'un réseau au format GeoJSON
+ */
+export async function getNetworkGeometry(tableName: NetworkTable, id_fcu: number) {
+  const result = await kdb
+    .selectFrom(tableName)
+    .select(sql<GeoJSON.Geometry>`ST_AsGeoJSON(ST_Transform(geom, 4326))::json`.as('geometry'))
+    .where('id_fcu', '=', id_fcu)
+    .where('geom', 'is not', null)
+    .executeTakeFirstOrThrow();
+  return result.geometry;
+}

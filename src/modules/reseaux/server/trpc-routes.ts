@@ -5,6 +5,7 @@ import {
   zCreateNetworkInput,
   zDeleteGeomUpdateInput,
   zDeleteNetworkInput,
+  zDownloadNetworkGeometryInput,
   zGetNetworkEligibilityStatusInput,
   zUpdateGeomUpdateInput,
   zUpdatePerimetreDeDeveloppementPrioritaireInput,
@@ -81,13 +82,13 @@ export const reseauxRouter = router({
     return (await getCityEligilityStatus(input.city)) as HeatNetworksResponse; // legacy type for compatibility
   }),
   createNetwork: adminRoute.input(zCreateNetworkInput).mutation(async ({ input }) => {
-    return await reseauxService.createNetwork(input.id as string, input.geometry, input.type);
+    return await reseauxService.createNetwork(input.id, input.geometry, input.type);
   }),
   deleteGeomUpdate: adminRoute.input(zDeleteGeomUpdateInput).mutation(async ({ input }) => {
-    return await reseauxService.deleteGeomUpdate(input.id as number, input.type);
+    return await reseauxService.deleteGeomUpdate(input.id, input.type);
   }),
   deleteNetwork: adminRoute.input(zDeleteNetworkInput).mutation(async ({ input }) => {
-    return await reseauxService.deleteNetwork(input.id as number, input.type);
+    return await reseauxService.deleteNetwork(input.id, input.type);
   }),
   eligibilityStatus: route.input(z.object({ city: z.string(), lat: z.number(), lon: z.number() })).query(async ({ input }) => {
     return (await getEligilityStatus(input.lat, input.lon, input.city)) as HeatNetworksResponse; // legacy type for compatibility
@@ -95,6 +96,9 @@ export const reseauxRouter = router({
   // Routes publiques pour l'éligibilité et la recherche de réseaux
   getNetworkEligibilityStatus: route.input(zGetNetworkEligibilityStatusInput).query(async ({ input }) => {
     return await getNetworkEligilityStatus(input.networkId, input.lat, input.lon);
+  }),
+  getNetworkGeometry: route.input(zDownloadNetworkGeometryInput).query(async ({ input }) => {
+    return await reseauxService.getNetworkGeometry(input.type, input.id);
   }),
   // Route publique pour lister tous les réseaux (utilisé pour la comparaison)
   listNetworks: route.query(async () => {
@@ -108,6 +112,6 @@ export const reseauxRouter = router({
 
   // Opérations communes à tous les types
   updateGeomUpdate: adminRoute.input(zUpdateGeomUpdateInput).mutation(async ({ input }) => {
-    return await reseauxService.updateGeomUpdate(input.id as number, input.geometry, input.type);
+    return await reseauxService.updateGeomUpdate(input.id, input.geometry, input.type);
   }),
 });
