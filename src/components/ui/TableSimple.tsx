@@ -2,6 +2,7 @@ import { fr } from '@codegouvfr/react-dsfr';
 import Input from '@codegouvfr/react-dsfr/Input';
 import { usePrevious } from '@react-hookz/web';
 import {
+  type AccessorKeyColumnDefBase,
   type ColumnDef as ColumnDefOriginal,
   type ColumnFiltersState,
   type FilterFn,
@@ -24,7 +25,8 @@ import {
 } from '@tanstack/react-table';
 import { useVirtualizer, type Virtualizer } from '@tanstack/react-virtual';
 import { cva } from 'class-variance-authority';
-import React, { type RefObject, useEffect } from 'react';
+import dynamic from 'next/dynamic';
+import React, { type RefObject, useCallback, useEffect } from 'react';
 
 import Button from '@/components/ui/Button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover';
@@ -32,9 +34,10 @@ import { isDevModeEnabled } from '@/hooks/useDevMode';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
 import type { FlattenKeys } from '@/utils/typescript';
-
 import TableCell, { type TableCellProps } from './TableCell';
 import TableFilter, { defaultTableFilterFns, type TableFilterProps } from './TableFilter';
+
+const ButtonExport = dynamic(() => import('@/components/ui/ButtonExport'), { ssr: false });
 
 export const customSortingFn = <T extends RowData>(): Record<string, SortingFn<T>> => ({
   // nullsLast will be working only when sorting is asc as react-table is just inversing the result of the function
@@ -84,7 +87,6 @@ export const customFilterFn = <T extends RowData>(): Record<string, FilterFn<T>>
 });
 
 export type ColumnDef<T, K = any> = ColumnDefOriginal<T, K> & {
-  accessorKey?: string;
   cellType?: TableCellProps<T>['type'];
   cellProps?: TableCellProps<T>['cellProps'];
   align?: 'center' | 'left' | 'right';
@@ -96,35 +98,6 @@ export type ColumnDef<T, K = any> = ColumnDefOriginal<T, K> & {
   filterProps?: TableFilterProps['filterProps'];
   visible?: boolean;
 } & ({ flex?: number } | { width?: 'auto' | string });
-
-export type TableSimpleProps<T> = {
-  columns: ColumnDef<T>[];
-  data: T[];
-  initialSortingState?: SortingState;
-  columnFilters?: ColumnFiltersState;
-  loading?: boolean;
-  caption?: string;
-  enableRowSelection?: boolean;
-  enableGlobalFilter?: boolean;
-  globalFilter?: string;
-  className?: string;
-  wrapperClassName?: string;
-  fluid?: boolean;
-  padding?: 'sm' | 'md' | 'lg';
-  rowSelection?: RowSelectionState;
-  onSelectionChange?: (selectedRows: T[]) => void;
-  onRowClick?: (rowId: any) => void;
-  onRowDoubleClick?: (rowId: any) => void;
-  rowIdKey?: keyof T;
-  rowHeight?: number;
-  controlsLayout?: 'inline' | 'block';
-  onFilterChange?: (filteredRows: T[]) => void;
-  nbLoadingItems?: number;
-  loadingEmptyMessage?: string;
-  height?: string;
-  virtualizerRef?: RefObject<Virtualizer<HTMLDivElement, Element>>;
-  topRightActions?: React.ReactNode;
-};
 
 const cellCustomClasses = cva('', {
   defaultVariants: {
@@ -389,6 +362,39 @@ const TableTH = <T extends RowData>({
   );
 };
 
+export type TableSimpleProps<T> = {
+  columns: ColumnDef<T>[];
+  data: T[];
+  initialSortingState?: SortingState;
+  columnFilters?: ColumnFiltersState;
+  loading?: boolean;
+  caption?: string;
+  enableRowSelection?: boolean;
+  enableGlobalFilter?: boolean;
+  globalFilter?: string;
+  className?: string;
+  wrapperClassName?: string;
+  fluid?: boolean;
+  padding?: 'sm' | 'md' | 'lg';
+  rowSelection?: RowSelectionState;
+  onSelectionChange?: (selectedRows: T[]) => void;
+  onRowClick?: (rowId: any) => void;
+  onRowDoubleClick?: (rowId: any) => void;
+  rowIdKey?: keyof T;
+  rowHeight?: number;
+  controlsLayout?: 'inline' | 'block';
+  onFilterChange?: (filteredRows: T[]) => void;
+  nbLoadingItems?: number;
+  loadingEmptyMessage?: string;
+  height?: string;
+  virtualizerRef?: RefObject<Virtualizer<HTMLDivElement, Element>>;
+  topRightActions?: React.ReactNode;
+  export?: {
+    fileName: string;
+    sheetName: string;
+  };
+};
+
 const TableSimple = <T extends RowData>({
   data,
   columns,
@@ -416,6 +422,7 @@ const TableSimple = <T extends RowData>({
   height = '600px',
   virtualizerRef,
   topRightActions,
+  export: exportConfig,
 }: TableSimpleProps<T>) => {
   const [globalFilter, setGlobalFilter] = React.useState<string>('');
   const [sortingState, setSortingState] = React.useState<SortingState>(initialSortingState ?? []);
@@ -493,7 +500,7 @@ const TableSimple = <T extends RowData>({
   const columnVisibility = React.useMemo(() => {
     return tableColumns.reduce(
       (acc, column) => {
-        acc[column.id || (column.accessorKey as string)] = column.visible ?? true;
+        acc[column.id ?? (column as any).accessorKey ?? column.header] = column.visible ?? true;
         return acc;
       },
       {} as Record<string, boolean>
@@ -540,6 +547,42 @@ const TableSimple = <T extends RowData>({
       onFilterChange(filteredRows.map((row) => row.original));
     }
   }, [rows, filteredRows, onFilterChange]);
+
+  const buildExportData = useCallback(() => {
+    if (!exportConfig) {
+      return [];
+    }
+    const computedExportColumns = tableColumns
+      .filter((col) => col.visible !== false && col.id !== 'selection' && col.id !== 'actions')
+      .map((col) => {
+        const header = (
+          typeof col.header === 'string' ? col.header : (col as AccessorKeyColumnDefBase<T, any>).accessorKey || col.id || ''
+        ) as string;
+
+        return 'accessorKey' in col
+          ? {
+              accessorKey: col.accessorKey as keyof T,
+              name: header,
+            }
+          : 'accessorFn' in col
+            ? {
+                accessorFn: col.accessorFn as (item: T) => string | number | boolean,
+                name: header,
+              }
+            : null;
+      })
+      .filter((col) => col !== null);
+
+    const filteredData = filteredRows.map((row) => row.original);
+
+    return [
+      {
+        columns: computedExportColumns,
+        data: filteredData,
+        name: exportConfig.sheetName,
+      },
+    ];
+  }, [tableColumns, filteredRows, exportConfig]);
 
   // the virtualizer needs to know the scrollable container element
   const tableContainerRef = React.useRef<HTMLDivElement>(null);
@@ -591,7 +634,20 @@ const TableSimple = <T extends RowData>({
             }}
           />
         )}
-        <div className={cx(enableGlobalFilter && 'mb-6' /** mb-6 to be aligned with the input */)}>{topRightActions}</div>
+        <div className={cx('flex items-center gap-2', enableGlobalFilter && 'mb-6' /** mb-6 to be aligned with the input */)}>
+          {exportConfig && (
+            <ButtonExport
+              size="small"
+              filename={exportConfig.fileName}
+              sheets={buildExportData}
+              iconId="ri-download-line"
+              priority="secondary"
+            >
+              Télécharger les données
+            </ButtonExport>
+          )}
+          {topRightActions}
+        </div>
       </div>
       {caption && <div className="text-2xl leading-8 font-bold mb-5">{caption}</div>}
       <div

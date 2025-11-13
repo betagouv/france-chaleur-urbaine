@@ -325,6 +325,10 @@ export default function ManageUsers() {
           columnFilters={initialColumnFilters}
           onFilterChange={onFilterChange}
           enableGlobalFilter
+          export={{
+            fileName: 'utilisateurs.xlsx',
+            sheetName: 'utilisateurs',
+          }}
           controlsLayout="block"
           padding="sm"
           loading={isLoading}
