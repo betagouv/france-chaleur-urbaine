@@ -13,7 +13,7 @@ export type AddressDataType = {
   heatingType?: AvailableHeating;
   structure?: AvailableStructure;
   eligibility?: HeatNetworksResponse;
-  airtableId?: string;
+  demandId?: string;
   nbLogements?: number;
   demandCompanyType?: string;
   demandCompanyName?: string;

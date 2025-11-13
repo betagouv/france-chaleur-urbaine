@@ -13,7 +13,7 @@ import trpc from '@/modules/trpc/client';
 function Satisfaction({ relanceId, satisfaction }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const [sent, setSent] = useState(false);
 
-  const { mutateAsync: addRelanceComment } = trpc.demands.addRelanceComment.useMutation({
+  const { mutateAsync: addRelanceComment } = trpc.demands.user.addRelanceComment.useMutation({
     onSuccess: () => {
       setSent(true);
     },

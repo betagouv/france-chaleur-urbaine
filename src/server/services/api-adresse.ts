@@ -90,6 +90,16 @@ async function makeAPIRequest(url: string, form: FormData, contextLogger?: Logge
   }
 }
 
+export async function getBANAddressFromCoordinates(latitude: number, longitude: number, contextLogger?: Logger) {
+  const values = await getCoordinatesAddresses(`${latitude},${longitude}`, contextLogger);
+  return values[0];
+}
+
+export async function getBANAddressFromAddress(address: string, contextLogger?: Logger) {
+  const values = await getAddressesCoordinates(address.replaceAll('"', '').replaceAll(',', ' '), contextLogger);
+  return values[0];
+}
+
 export async function getAddressesCoordinates(addressesCSV: string, contextLogger?: Logger) {
   const form = new FormData();
   form.append('data', new Blob([`address\n${addressesCSV}`]), 'file.csv');

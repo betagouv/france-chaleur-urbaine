@@ -2,7 +2,7 @@ import { useRouter } from 'next/router';
 import type React from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { EligibilityFormContact, EligibilityFormMessageConfirmation } from '@/components/EligibilityForm';
+import { EligibilityFormContact } from '@/components/EligibilityForm';
 import { CheckEligibilityFormLabel, SelectEnergy } from '@/components/EligibilityForm/components';
 import { type EnergyInputsLabelsType, energyInputsDefaultLabels } from '@/components/EligibilityForm/EligibilityFormAddress';
 import AddressAutocomplete from '@/components/form/dsfr/AddressAutocompleteInput';
@@ -17,6 +17,7 @@ import { AnalyticsFormId } from '@/modules/analytics/client';
 import useUserInfo from '@/modules/app/client/hooks/useUserInfo';
 import type { AvailableHeating } from '@/modules/app/types';
 import type { SuggestionItem } from '@/modules/ban/types';
+import DemandSondageForm from '@/modules/demands/client/DemandSondageForm';
 import trpc from '@/modules/trpc/client';
 import cx from '@/utils/cx';
 import { Container, FormLabel, HeadSliceContainer, PageBody, PageTitle, SliceContactFormStyle } from './HeadSliceForm.style';
@@ -269,7 +270,7 @@ const HeadSliceForm = ({
           {contactReady && !messageReceived && (
             <EligibilityFormContact addressData={addressData} onSubmit={handleOnSubmitContact} className="p-0" />
           )}
-          {messageReceived && <EligibilityFormMessageConfirmation addressData={addressData} />}
+          {messageReceived && <DemandSondageForm addressData={addressData} cardMode />}
         </div>
       </Modal>
     </>

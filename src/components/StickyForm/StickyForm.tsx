@@ -1,9 +1,10 @@
-import { EligibilityFormAddress, EligibilityFormContact, EligibilityFormMessageConfirmation } from '@/components/EligibilityForm';
+import { EligibilityFormAddress, EligibilityFormContact } from '@/components/EligibilityForm';
 import { FormWarningMessage, SliceContactFormStyle } from '@/components/HeadSliceForm/HeadSliceForm.style';
 import Box from '@/components/ui/Box';
 import Loader from '@/components/ui/Loader';
 import Modal, { createModal } from '@/components/ui/Modal';
 import useContactFormFCU from '@/hooks/useContactFormFCU';
+import DemandSondageForm from '@/modules/demands/client/DemandSondageForm';
 
 import { Container, Title } from './StickyForm.styles';
 
@@ -53,7 +54,7 @@ const StickyForm = ({ title }: { title?: string }) => {
       >
         <Box position="relative" width="100%">
           {contactReady && !messageReceived && <EligibilityFormContact addressData={addressData} onSubmit={handleOnSubmitContact} />}
-          {messageReceived && <EligibilityFormMessageConfirmation addressData={addressData} />}
+          {messageReceived && <DemandSondageForm addressData={addressData} />}
         </Box>
       </Modal>
     </>

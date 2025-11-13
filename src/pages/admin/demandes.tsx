@@ -1,9 +1,9 @@
+import Badge from '@codegouvfr/react-dsfr/Badge';
 import { usePrevious } from '@react-hookz/web';
 import type { Virtualizer } from '@tanstack/react-virtual';
 import dynamic from 'next/dynamic';
 import { Fragment, type RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { MapGeoJSONFeature } from 'react-map-gl/maplibre';
-
 import TableFieldInput from '@/components/Admin/TableFieldInput';
 import EligibilityHelpDialog, { eligibilityTitleByType } from '@/components/EligibilityHelpDialog';
 import Input from '@/components/form/dsfr/Input';
@@ -14,7 +14,6 @@ import { useMapEventBus } from '@/components/Map/layers/common';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import SimplePage from '@/components/shared/page/SimplePage';
 import AsyncButton from '@/components/ui/AsyncButton';
-import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import ChipAutoComplete, { type ChipOption } from '@/components/ui/ChipAutoComplete';
 import { VerticalDivider } from '@/components/ui/Divider';
@@ -40,7 +39,8 @@ import { deleteFetchJSON } from '@/utils/network';
 import { formatMWh, upperCaseFirstChar } from '@/utils/strings';
 import { ObjectEntries, ObjectKeys } from '@/utils/typescript';
 
-type DemandsListAdminItem = RouterOutput['demands']['admin']['list'][number];
+type DemandsListAdminData = RouterOutput['demands']['admin']['list'];
+type DemandsListAdminItem = DemandsListAdminData['items'][number];
 
 const Map = dynamic(() => import('@/components/Map/Map'), { ssr: false });
 
@@ -98,7 +98,8 @@ function DemandesAdmin(): React.ReactElement {
   const [globalFilter, setGlobalFilter] = useState('');
   const [filteredDemands, setFilteredDemands] = useState<DemandsListAdminItem[]>([]);
 
-  const { data: demands = [], isLoading } = trpc.demands.admin.list.useQuery();
+  const { data: demandsData, isLoading } = trpc.demands.admin.list.useQuery();
+  const demands = demandsData?.items ?? [];
   const { data: assignmentRulesResults = [] } = useFetch<string[]>('/api/admin/assignment-rules/results');
   const assignmentRulesResultsOptions: ChipOption[] = useMemo(
     () => [
@@ -161,14 +162,18 @@ function DemandesAdmin(): React.ReactElement {
   const updateDemand = useCallback(
     toastErrors(async (demandId: string, demandUpdate: Partial<DemandsListAdminItem>) => {
       isUpdatingDemandField = true; // prevent the map from being centered on the first demand
-      utils.demands.admin.list.setData(undefined, (demands) =>
-        (demands ?? []).map((demand) => {
-          if (demand.id === demandId) {
-            return { ...demand, ...demandUpdate };
-          }
-          return demand;
-        })
-      );
+      utils.demands.admin.list.setData(undefined, (demandsData) => {
+        if (!demandsData) return demandsData;
+        return {
+          count: demandsData.count,
+          items: demandsData.items.map((demand) => {
+            if (demand.id === demandId) {
+              return { ...demand, ...demandUpdate };
+            }
+            return demand;
+          }),
+        };
+      });
       await updateDemandMutation({ demandId, values: demandUpdate });
     }),
     [utils, updateDemandMutation]
@@ -178,7 +183,13 @@ function DemandesAdmin(): React.ReactElement {
     toastErrors(async (demandId: string) => {
       await deleteFetchJSON(`/api/admin/demands/${demandId}`);
 
-      utils.demands.admin.list.setData(undefined, (demands) => (demands ?? []).filter((demand) => demand.id !== demandId));
+      utils.demands.admin.list.setData(undefined, (demandsData) => {
+        if (!demandsData) return demandsData;
+        return {
+          count: demandsData.count,
+          items: demandsData.items.filter((demand) => demand.id !== demandId),
+        };
+      });
       notify('success', 'Demande supprimée');
     }),
     [utils]
@@ -243,15 +254,15 @@ function DemandesAdmin(): React.ReactElement {
                   </Button>
                 </EligibilityHelpDialog>
               </div>
-              <div className="my-1">
+              {/* <div className="my-1">
                 {demand.detailedEligibilityStatus.type !== 'trop_eloigne' &&
-                  !demand.detailedEligibilityStatus.communes.includes(demand.detailedEligibilityStatus.commune.nom!) && (
+                  !demand.detailedEligibilityStatus?.communes?.includes(demand.detailedEligibilityStatus.commune.nom!) && (
                     <Badge
                       type="warning_ville_differente"
                       title={`La ville de la demande (${demand.detailedEligibilityStatus.commune.nom!}) ne correspond pas à ${demand.detailedEligibilityStatus.communes.length > 1 ? 'aux villes' : 'la ville'} du réseau (${demand.detailedEligibilityStatus.communes.join(', ')})`}
                     />
                   )}
-              </div>
+              </div> */}
             </div>
           );
         },
@@ -351,8 +362,25 @@ function DemandesAdmin(): React.ReactElement {
         width: '134px',
       },
       {
-        accessorKey: 'Adresse',
-        cell: ({ row }) => <div className="whitespace-normal">{row.original.Adresse}</div>,
+        accessorKey: 'testAddress.ban_address',
+        cell: (info) => {
+          const testAddress = info.row.original.testAddress;
+          return (
+            <div>
+              <div>
+                <div className="leading-none tracking-tight">{testAddress.ban_address}</div>
+                {!testAddress.ban_valid && (
+                  <Badge severity="error" small>
+                    Adresse invalide
+                  </Badge>
+                )}
+              </div>
+              {testAddress.source_address !== testAddress.ban_address && (
+                <div className=" text-xs italic text-gray-500 tracking-tighter">{testAddress.source_address}</div>
+              )}
+            </div>
+          );
+        },
         enableSorting: false,
         header: 'Adresse',
         width: '220px',
@@ -363,35 +391,6 @@ function DemandesAdmin(): React.ReactElement {
         enableGlobalFilter: false,
         header: 'Date de la demande',
         width: '94px',
-      },
-      {
-        accessorKey: 'Distance au réseau',
-        cell: (info) => {
-          const demand = info.row.original;
-          return (
-            <TableFieldInput
-              type="number"
-              title="Distance au réseau"
-              value={demand['Distance au réseau']}
-              onChange={(value) => updateDemand(demand.id, { 'Distance au réseau': value })}
-              suggestedValue={demand.detailedEligibilityStatus.distance}
-            />
-          );
-        },
-        enableGlobalFilter: false,
-        enableSorting: false,
-        header: () => (
-          <div className="flex items-center">
-            Distance au réseau (m)
-            <Tooltip
-              iconProps={{
-                className: 'ml-1',
-              }}
-              title="Distance à vol d'oiseau"
-            />
-          </div>
-        ),
-        width: '120px',
       },
       {
         accessorKey: 'Identifiant réseau',
@@ -411,18 +410,26 @@ function DemandesAdmin(): React.ReactElement {
         width: '85px',
       },
       {
-        accessorKey: 'Nom réseau',
-        cell: (info) => {
-          const demand = info.row.original;
-          return (
-            <TableFieldInput
-              title="Nom du réseau"
-              value={demand['Nom réseau']}
-              onChange={(value) => updateDemand(demand.id, { 'Nom réseau': value })}
-              suggestedValue={demand.detailedEligibilityStatus.nom}
+        accessorKey: 'testAddress.eligibility.distance',
+        alig: 'right',
+        enableGlobalFilter: false,
+        enableSorting: false,
+        header: () => (
+          <div className="flex items-center">
+            Distance au réseau (m)
+            <Tooltip
+              iconProps={{
+                className: 'ml-1',
+              }}
+              title="Distance à vol d'oiseau"
             />
-          );
-        },
+          </div>
+        ),
+        suffix: 'm',
+        width: '120px',
+      },
+      {
+        accessorKey: 'testAddress.eligibility.nom',
         enableSorting: false,
         header: 'Nom du réseau le plus proche',
         width: '250px',

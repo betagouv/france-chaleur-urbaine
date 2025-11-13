@@ -3,13 +3,14 @@ import type { Insertable } from 'kysely';
 import type { User } from 'next-auth';
 import { v4 as uuidv4 } from 'uuid';
 import { clientConfig } from '@/client-config';
-import { demandStatusDefault } from '@/modules/demands/constants';
+import { type CreateDemandInput, demandStatusDefault, formatDataToLegacyAirtable } from '@/modules/demands/constants';
 import type { AirtableLegacyRecord } from '@/modules/demands/types';
 import { sendEmailTemplate } from '@/modules/email';
-import { type DemandEmails, kdb, sql } from '@/server/db/kysely';
+import { createEligibilityTestAddress } from '@/modules/pro-eligibility-tests/server/service';
+import type { ProEligibilityTestHistoryEntry } from '@/modules/pro-eligibility-tests/types';
+import { type DemandEmails, kdb, type ProEligibilityTestsAddresses, sql } from '@/server/db/kysely';
 import { createBaseModel } from '@/server/db/kysely/base-model';
 import { parentLogger } from '@/server/helpers/logger';
-import { getDetailedEligibilityStatus } from '@/server/services/addresseInformation';
 import * as assignmentRulesService from './assignment_rules-service';
 
 const logger = parentLogger.child({
@@ -52,20 +53,32 @@ export const update = async (recordId: string, values: Partial<AirtableLegacyRec
   return { id: updatedDemand.id, ...updatedDemand.legacy_values };
 };
 
-export const create = async (values: Partial<AirtableLegacyRecord>) => {
+export const create = async (values: CreateDemandInput) => {
+  const legacyValues = formatDataToLegacyAirtable(values);
   const [createdDemand] = await kdb
     .insertInto(tableName)
     .values({
       created_at: new Date(),
       legacy_values: sql<string>`${JSON.stringify({
-        ...values,
+        ...legacyValues,
+        'Affecté à': null,
         'Date de la demande': new Date().toISOString(),
+        Gestionnaires: null,
+        'Gestionnaires validés': false,
       })}::jsonb`,
       updated_at: new Date(),
     })
     .returningAll()
     .execute();
 
+  if (legacyValues.Latitude && legacyValues.Longitude) {
+    await createEligibilityTestAddress({
+      address: legacyValues.Adresse,
+      demand_id: createdDemand.id,
+      latitude: legacyValues.Latitude,
+      longitude: legacyValues.Longitude,
+    });
+  }
   return { id: createdDemand.id, ...createdDemand.legacy_values };
 };
 
@@ -187,22 +200,17 @@ export const dailyRelanceMail = async () => {
 export const listAdmin = async () => {
   let startTime = Date.now();
 
-  const records = (
-    await kdb
-      .selectFrom('demands')
-      .selectAll()
-      .where((eb) =>
-        eb.or([
-          eb(sql`legacy_values->>'Gestionnaires validés'`, '=', 'false'),
-          eb(sql`legacy_values->>'Gestionnaires validés'`, 'is', null),
-        ])
-      )
-      .orderBy(sql`legacy_values->>'Date de la demande'`, 'desc')
-      .execute()
-  ).map(({ id, legacy_values }) => ({
-    fields: legacy_values,
-    id,
-  }));
+  const records = await kdb
+    .selectFrom('demands')
+    .where((eb) =>
+      eb.or([eb(sql`legacy_values->>'Gestionnaires validés'`, '=', 'false'), eb(sql`legacy_values->>'Gestionnaires validés'`, 'is', null)])
+    )
+    .innerJoin('pro_eligibility_tests_addresses', 'pro_eligibility_tests_addresses.demand_id', 'demands.id')
+    .select(['demands.id', 'demands.legacy_values', sql.raw(`to_jsonb(pro_eligibility_tests_addresses)`).as('testAddress')])
+    .orderBy(sql`legacy_values->>'Date de la demande'`, 'desc')
+    .execute();
+
+  const { count } = await kdb.selectFrom('demands').select(kdb.fn.count<number>('id').as('count')).executeTakeFirstOrThrow();
 
   logger.info('kdb.getAdminDemands', {
     duration: Date.now() - startTime,
@@ -213,11 +221,13 @@ export const listAdmin = async () => {
   const { items: assignmentRules } = await assignmentRulesService.list();
   const parsedRules = await assignmentRulesService.parseAssignmentRules(assignmentRules);
 
+  const reseauxDeChaleur = await kdb.selectFrom('reseaux_de_chaleur').select(['tags', 'id_fcu']).execute();
+
   startTime = Date.now();
   const demands = (
     await Promise.all(
       records.map(async (record) => {
-        const demand = { id: record.id, ...record.fields };
+        const demand = { id: record.id, ...record.legacy_values, testAddress: record.testAddress as ProEligibilityTestsAddresses };
         demand['Gestionnaires validés'] ??= false;
         demand.Commentaire ??= '';
         demand.Commentaires_internes_FCU ??= '';
@@ -230,15 +240,25 @@ export const listAdmin = async () => {
           });
           return null;
         }
+        const testAddress = record.testAddress as ProEligibilityTestsAddresses & { eligibility_history: ProEligibilityTestHistoryEntry[] };
 
-        const detailedEligibilityStatus = await getDetailedEligibilityStatus(demand.Latitude, demand.Longitude);
-        const rulesResult = assignmentRulesService.applyParsedRulesToEligibilityData(parsedRules, detailedEligibilityStatus);
+        const detailedEligibilityStatus = testAddress.eligibility_history?.[testAddress.eligibility_history.length - 1]?.eligibility;
+
+        const tags = reseauxDeChaleur.find((reseau) => reseau.id_fcu === detailedEligibilityStatus.id_fcu)?.tags ?? [];
+        const rulesResult = assignmentRulesService.applyParsedRulesToEligibilityData(parsedRules, { tags });
+
+        const history = testAddress.eligibility_history;
+        const lastEligibility = history?.[history.length - 1];
 
         return {
           ...demand,
           detailedEligibilityStatus,
           recommendedAssignment: rulesResult.assignment ?? 'Non affecté',
-          recommendedTags: [...detailedEligibilityStatus.tags, ...rulesResult.tags],
+          recommendedTags: [...new Set([...tags, ...rulesResult.tags])],
+          testAddress: {
+            ...testAddress,
+            eligibility: lastEligibility?.eligibility,
+          },
         };
       })
     )
@@ -248,7 +268,8 @@ export const listAdmin = async () => {
     duration: Date.now() - startTime,
     recordsCount: records.length,
   });
-  return demands;
+
+  return { count, items: demands };
 };
 
 export const list = async (user: User) => {

@@ -91,22 +91,3 @@ export const ContactFormResultMessage = styled.div<{
     ${(cardMode) => cardMode && 'margin-bottom: 0;'}
   }
 `;
-
-export const ContactFormEligibilityResult = styled.div<{
-  cardMode?: boolean;
-}>`
-  background-color: #eeeeee;
-  padding: 8px 8px 8px 16px;
-  margin-bottom: 8px;
-  font-size: 14px;
-  box-shadow: inset 8px 0 0 0 var(--border-default-blue-france);
-
-  font-size: ${({ cardMode }) => (cardMode ? '14px' : '18px')};
-  line-height: ${({ cardMode }) => (cardMode ? 'inherit' : '1.5')};
-
-  header {
-    font-size: ${({ cardMode }) => (cardMode ? '14px' : '23.5px')};
-    line-height: ${({ cardMode }) => (cardMode ? 'inherit' : '1.5')};
-    font-weight: bold;
-  }
-`;

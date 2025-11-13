@@ -10,7 +10,12 @@ import {
 import type { ProEligibilityTestEligibility, ProEligibilityTestHistoryEntry } from '@/modules/pro-eligibility-tests/types';
 import { kdb, sql } from '@/server/db/kysely';
 import type { ApiContext, ListConfig } from '@/server/db/kysely/base-model';
+import { parentLogger } from '@/server/helpers/logger';
 import { type EligibilityType, getDetailedEligibilityStatus } from '@/server/services/addresseInformation';
+import { getBANAddressFromAddress, getBANAddressFromCoordinates } from '@/server/services/api-adresse';
+import { isDefined } from '@/utils/core';
+
+const logger = parentLogger.child({ module: 'pro-eligibility-tests' });
 
 export const tableName = 'pro_eligibility_tests';
 
@@ -168,6 +173,43 @@ export const getAddressEligibilityHistoryEntry = async (
   };
 
   return historyEntry;
+};
+
+export const createEligibilityTestAddress = async ({
+  test_id,
+  demand_id,
+  ...input
+}: ({ address: string } | { latitude: number; longitude: number }) & { test_id?: string; demand_id?: string }) => {
+  const addressItem =
+    'address' in input
+      ? await getBANAddressFromAddress(input.address, logger)
+      : await getBANAddressFromCoordinates(input.latitude, input.longitude, logger);
+
+  // Use input coordinates if provided, otherwise use BAN result
+  const latitude = 'latitude' in input ? input.latitude : addressItem.latitude;
+  const longitude = 'longitude' in input ? input.longitude : addressItem.longitude;
+
+  // Validate coordinates
+  if (!isDefined(latitude) || !isDefined(longitude) || Number.isNaN(latitude) || Number.isNaN(longitude)) {
+    throw new Error(`Invalid coordinates for address: lat=${latitude}, lon=${longitude}`);
+  }
+
+  const historyEntry = await getAddressEligibilityHistoryEntry(latitude, longitude);
+
+  const addressData = {
+    ban_address: addressItem.result_label,
+    ban_score: isDefined(addressItem.result_score) ? Math.round(addressItem.result_score * 100) : null,
+    ban_valid: addressItem.result_status === 'ok',
+    demand_id,
+    eligibility_history: JSON.stringify([historyEntry]),
+    geom: sql`st_transform(st_point(${longitude}, ${latitude}, 4326), 2154)`,
+    source_address: addressItem.address as string,
+    test_id,
+  } satisfies Parameters<ReturnType<typeof kdb.insertInto<'pro_eligibility_tests_addresses'>>['values']>[0];
+
+  const testAddress = await kdb.insertInto('pro_eligibility_tests_addresses').values(addressData).returningAll().executeTakeFirstOrThrow();
+
+  return testAddress;
 };
 
 /**
