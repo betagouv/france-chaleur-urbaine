@@ -1,11 +1,11 @@
 import type React from 'react';
 import { useCallback, useState } from 'react';
 
-import { EligibilityFormAddress, EligibilityFormContact, EligibilityFormMessageConfirmation } from '@/components/EligibilityForm';
+import { EligibilityFormAddress, EligibilityFormContact } from '@/components/EligibilityForm';
 import Box from '@/components/ui/Box';
 import Link from '@/components/ui/Link';
 import useContactFormFCU, { type ContactFormContext } from '@/hooks/useContactFormFCU';
-
+import DemandSondageForm from '@/modules/demands/client/DemandSondageForm';
 import { ContactFormWrapper, EligibilityContactFormStyle } from './EligibilityContactForm.style';
 
 export type EligibilityContactFormProps = {
@@ -71,7 +71,7 @@ const EligibilityContactForm: React.FC<EligibilityContactFormProps> = ({ fullAdd
         </ContactFormWrapper>
 
         <ContactFormWrapper active={messageReceived}>
-          <EligibilityFormMessageConfirmation addressData={addressData} cardMode />
+          <DemandSondageForm addressData={addressData} cardMode />
         </ContactFormWrapper>
       </div>
     </>

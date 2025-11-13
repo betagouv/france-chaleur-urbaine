@@ -490,13 +490,14 @@ export interface ProEligibilityTestsAddresses {
   ban_valid: boolean;
   geom: GeoJSON.Point | null;
   change_viewed_at: Timestamp | null;
+  demand_id: string | null;
   /**
    * JSON array storing full history of eligibility status changes. Format: [{"calculated_at": "ISO8601", "eligibility": {...getDetailedEligibilityStatus result...}}]
    */
   eligibility_history: Generated<Json>;
   id: Generated<string>;
   source_address: string;
-  test_id: string;
+  test_id: string | null;
 }
 
 export interface ProEligibilityTestsAddressesTiles {

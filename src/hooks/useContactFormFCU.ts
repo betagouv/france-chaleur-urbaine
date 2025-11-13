@@ -2,10 +2,8 @@ import { useCallback, useState } from 'react';
 
 import useURLParamOrLocalStorage, { parseAsString } from '@/hooks/useURLParamOrLocalStorage';
 import { trackEvent } from '@/modules/analytics/client';
-import { formatDataToAirtable, submitToAirtable } from '@/services/airtable';
+import trpc from '@/modules/trpc/client';
 import type { AddressDataType } from '@/types/AddressData';
-import { Airtable } from '@/types/enum/Airtable';
-import type { FormDemandCreation } from '@/types/Summary/Demand';
 
 const warningMessage = "N'oubliez pas d'indiquer votre type de chauffage.";
 
@@ -31,6 +29,7 @@ const useContactFormFCU = () => {
   const [mtm_campaign] = useURLParamOrLocalStorage('mtm_campaign', 'mtm_campaign', null, parseAsString);
   const [mtm_kwd] = useURLParamOrLocalStorage('mtm_kwd', 'mtm_kwd', null, parseAsString);
   const [mtm_source] = useURLParamOrLocalStorage('mtm_source', 'mtm_source', null, parseAsString);
+  const trpcUtils = trpc.useUtils();
 
   const handleOnChangeAddress = useCallback((data: AddressDataType) => {
     const { address, heatingType } = data;
@@ -121,14 +120,14 @@ const useContactFormFCU = () => {
           }
         }
       }
-      const formatData = formatDataToAirtable({
+
+      const result = await trpcUtils.client.demands.user.create.mutate({
         ...data,
-        mtm_campaign,
-        mtm_kwd,
-        mtm_source,
-      } as FormDemandCreation);
-      const response = await submitToAirtable(formatData, Airtable.DEMANDES);
-      const { id } = await response.json();
+        mtm_campaign: mtm_campaign ?? undefined,
+        mtm_kwd: mtm_kwd ?? undefined,
+        mtm_source: mtm_source ?? undefined,
+      } as unknown as CreateDemandInput);
+
       setMessageSent(true);
       const { eligibility, address = '' } = (data as AddressDataType) || {};
       trackEvent(
@@ -138,7 +137,7 @@ const useContactFormFCU = () => {
       setAddressData({
         ...addressData,
         ...data,
-        airtableId: id,
+        demandId: result.id,
       });
       setMessageReceived(true);
     },

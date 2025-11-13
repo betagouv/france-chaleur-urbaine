@@ -1,3 +1,4 @@
+import { createEligibilityTestAddress } from '@/modules/pro-eligibility-tests/server/service';
 import base from '@/server/db/airtable';
 import { kdb } from '@/server/db/kysely';
 import { Airtable } from '@/types/enum/Airtable';
@@ -5,7 +6,7 @@ import type { Demand } from '@/types/Summary/Demand';
 import { processInParallel } from '@/utils/async';
 
 export const importDemands = async (options: { batchSize?: string; dryRun?: boolean }) => {
-  const concurrency = parseInt(options.batchSize || '100', 10);
+  const concurrency = parseInt(options.batchSize || '99', 10);
   const dryRun = options.dryRun || false;
 
   console.log(`Starting demands migration from Airtable (concurrency: ${concurrency}, dry-run: ${dryRun})...`);
@@ -53,10 +54,18 @@ export const importDemands = async (options: { batchSize?: string; dryRun?: bool
 
           updated++;
         } else {
-          await kdb
+          const demand = await kdb
             .insertInto('demands')
             .values(demandData as any)
-            .execute();
+            .returningAll()
+            .executeTakeFirstOrThrow();
+
+          await createEligibilityTestAddress({
+            address: fields.Adresse,
+            demand_id: demand.id,
+            latitude: fields.Latitude,
+            longitude: fields.Longitude,
+          });
 
           inserted++;
         }

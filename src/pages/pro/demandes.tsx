@@ -41,7 +41,7 @@ import { ObjectEntries, ObjectKeys } from '@/utils/typescript';
 const Map = dynamic(() => import('@/components/Map/Map'), { ssr: false });
 const ButtonExport = dynamic(() => import('@/components/ui/ButtonExport'), { ssr: false });
 
-type DemandsList = RouterOutput['demands']['list'];
+type DemandsList = RouterOutput['demands']['gestionnaire']['list'];
 type DemandsListItem = DemandsList[number];
 
 type MapCenterLocation = {
@@ -202,7 +202,7 @@ function DemandesNew(): React.ReactElement {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [filteredDemands, setFilteredDemands] = useState<DemandsListItem[]>([]);
 
-  const { data: demands = [], isLoading } = trpc.demands.list.useQuery();
+  const { data: demands = [], isLoading } = trpc.demands.gestionnaire.list.useQuery();
 
   const presetStats = ObjectKeys(quickFilterPresets).reduce(
     (acc, key) => ({
@@ -233,13 +233,13 @@ function DemandesNew(): React.ReactElement {
   }, [filteredDemands, selectedDemandId]);
 
   const utils = trpc.useUtils();
-  const { mutateAsync: updateDemandMutation } = trpc.demands.update.useMutation();
+  const { mutateAsync: updateDemandMutation } = trpc.demands.gestionnaire.update.useMutation();
 
   const updateDemand = useCallback(
     toastErrors(async (demandId: string, demandUpdate: Partial<Demand>) => {
       await updateDemandMutation({ demandId, values: demandUpdate });
 
-      utils.demands.list.setData(undefined, (demands) =>
+      utils.demands.gestionnaire.list.setData(undefined, (demands) =>
         (demands ?? []).map((demand) => {
           if (demand.id === demandId) {
             return { ...demand, ...demandUpdate } as DemandsListItem;
