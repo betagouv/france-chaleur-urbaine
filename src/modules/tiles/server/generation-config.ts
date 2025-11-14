@@ -9,7 +9,13 @@ import {
   extractZippedShapefileToGeoJSON,
   getInputFilePath,
 } from '@/modules/tiles/server/generation-strategies';
-import type { BdnbBatiments } from '@/server/db/kysely/database';
+import type {
+  BdnbBatiments,
+  ReseauxDeFroid,
+  ZoneDeDeveloppementPrioritaire,
+  ZonesEtReseauxEnConstruction,
+} from '@/server/db/kysely/database';
+import type { SerializeField } from '@/utils/typescript';
 import { ObjectKeys } from '@/utils/typescript';
 
 const bdnbBatimentsFields = [
@@ -22,6 +28,45 @@ const bdnbBatimentsFields = [
   'dpe_representatif_logement_type_energie_chauffage',
   'dpe_representatif_logement_type_installation_chauffage',
 ] as const satisfies (keyof BdnbBatiments)[];
+export type BdnbBatimentTile = AsTile<Required<Pick<BdnbBatiments, (typeof bdnbBatimentsFields)[number]>>>;
+
+const reseauxDeFroidFields = [
+  'id_fcu',
+  'geom',
+
+  'Taux EnR&R',
+  'Gestionnaire',
+  'Identifiant reseau',
+  'reseaux classes',
+  'contenu CO2 ACV',
+  'nom_reseau',
+  'livraisons_totale_MWh',
+  'nb_pdl',
+  'has_trace',
+] as const satisfies (keyof ReseauxDeFroid)[];
+export type ReseauxDeFroidTile = AsTile<Required<Pick<ReseauxDeFroid, (typeof reseauxDeFroidFields)[number]>>>;
+
+const reseauxEnConstructionFields = [
+  'id_fcu',
+  'geom',
+
+  'nom_reseau',
+  'mise_en_service',
+  'gestionnaire',
+  'is_zone',
+  'tags',
+] as const satisfies (keyof ZonesEtReseauxEnConstruction)[];
+export type ReseauxEnConstructionTile = AsTile<Required<Pick<ZonesEtReseauxEnConstruction, (typeof reseauxEnConstructionFields)[number]>>>;
+
+const perimetresDeDeveloppementPrioritaireFields = [
+  'id_fcu',
+  'geom',
+
+  'Identifiant reseau',
+] as const satisfies (keyof ZoneDeDeveloppementPrioritaire)[];
+export type PerimetreDeveloppementPrioritaireTile = AsTile<
+  Required<Pick<ZoneDeDeveloppementPrioritaire, (typeof perimetresDeDeveloppementPrioritaireFields)[number]>>
+>;
 
 export const tilesConfigs = {
   'batiments-raccordes-reseaux-chaleur-froid': defineTilesConfig({
@@ -88,9 +133,12 @@ export const tilesConfigs = {
     zoomMax: 10,
   }),
   'perimetres-de-developpement-prioritaire': defineTilesConfig({
-    generateGeoJSON: extractGeoJSONFromDatabaseTable('zone_de_developpement_prioritaire'),
+    generateGeoJSON: extractNDJSONFromDatabaseTable('zone_de_developpement_prioritaire', {
+      fields: perimetresDeDeveloppementPrioritaireFields,
+      idField: 'id_fcu',
+    }),
     tilesTableName: 'zone_de_developpement_prioritaire_tiles',
-    tippeCanoeArgs: '--no-tile-compression --layer=zoneDP', // legacy
+    tippeCanoeArgs: '-r1',
   }),
   'perimetres-geothermie-profonde': defineTilesConfig({
     // Attention, il faut avoir corrigé le format du fichier au préalable
@@ -102,17 +150,23 @@ export const tilesConfigs = {
   'reseaux-de-chaleur': defineTilesConfig({
     generateGeoJSON: reseauxDeChaleurGeoJSONQuery,
     tilesTableName: 'reseaux_de_chaleur_tiles',
-    tippeCanoeArgs: '--no-tile-compression', // legacy
+    tippeCanoeArgs: '-r1',
   }),
   'reseaux-de-froid': defineTilesConfig({
-    generateGeoJSON: extractGeoJSONFromDatabaseTable('reseaux_de_froid'),
+    generateGeoJSON: extractNDJSONFromDatabaseTable('reseaux_de_froid', {
+      fields: reseauxDeFroidFields,
+      idField: 'id_fcu',
+    }),
     tilesTableName: 'reseaux_de_froid_tiles',
-    tippeCanoeArgs: '--no-tile-compression --layer=coldOutline', // legacy
+    tippeCanoeArgs: '-r1',
   }),
   'reseaux-en-construction': defineTilesConfig({
-    generateGeoJSON: extractGeoJSONFromDatabaseTable('zones_et_reseaux_en_construction'),
+    generateGeoJSON: extractNDJSONFromDatabaseTable('zones_et_reseaux_en_construction', {
+      fields: reseauxEnConstructionFields,
+      idField: 'id_fcu',
+    }),
     tilesTableName: 'zones_et_reseaux_en_construction_tiles',
-    tippeCanoeArgs: '--no-tile-compression --layer=futurOutline', // legacy
+    tippeCanoeArgs: '-r1',
   }),
   'ressources-geothermales-nappes': defineTilesConfig({
     // Source : https://drive.google.com/file/d/1w4lLWQCW1nMoRuIyZvVO5dMLMELo-YD3/view?usp=drive_link
@@ -147,4 +201,10 @@ export const tilesConfigs = {
 export const tilesTypes = ObjectKeys(tilesConfigs);
 export type TilesType = (typeof tilesTypes)[number];
 
-export type BdnbBatimentTile = Required<Pick<BdnbBatiments, (typeof bdnbBatimentsFields)[number]>>;
+/**
+ * Converts a database type to a Tile type by serializing all non-primitive fields (arrays, objects, Json) to string.
+ * Keeps primitive types (string, number, boolean, null, undefined) as-is.
+ */
+export type AsTile<T> = {
+  [K in keyof T]: SerializeField<T[K]>;
+};

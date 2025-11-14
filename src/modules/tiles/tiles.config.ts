@@ -34,10 +34,10 @@ export type TileInfo = AirtableTileInfo | DatabaseTileInfo;
 
 // = id passé en URL de l'API
 export const databaseSourceIds = [
-  'network', // réseaux de chaud
-  'zoneDP', // zones de développement prioritaire
-  'futurNetwork', // réseaux de chaleur en construction
-  'coldNetwork', // réseaux de froid
+  'reseauxDeChaleur',
+  'perimetresDeDeveloppementPrioritaire',
+  'reseauxEnConstruction',
+  'reseauxDeFroid',
   'demands', // demandes d'éligibilité
   'consommationsGaz',
   'batimentsRaccordesReseauxChaleurFroid',
@@ -104,24 +104,6 @@ export const tilesInfo: Record<DatabaseSourceId, TileInfo> = {
     source: 'database',
     tiles: 'besoins_en_chaleur_industrie_communes_tiles',
   },
-  coldNetwork: {
-    airtable: Airtable.COLD_NETWORKS,
-    id: 'id_fcu',
-    properties: [
-      'id_fcu',
-      'Taux EnR&R',
-      'Gestionnaire',
-      'Identifiant reseau',
-      'reseaux classes',
-      'contenu CO2 ACV',
-      'nom_reseau',
-      'livraisons_totale_MWh',
-      'nb_pdl',
-      'has_trace',
-    ],
-    source: 'database',
-    tiles: 'reseaux_de_froid_tiles',
-  },
   communesFortPotentielPourCreationReseauxChaleur: {
     compressedTiles: true,
     source: 'database',
@@ -165,14 +147,6 @@ export const tilesInfo: Record<DatabaseSourceId, TileInfo> = {
     source: 'database',
     tiles: 'etudes_en_cours_tiles',
   },
-  futurNetwork: {
-    airtable: Airtable.FUTUR_NETWORKS,
-    id: 'id_fcu',
-    properties: ['id_fcu', 'nom_reseau', 'mise_en_service', 'gestionnaire', 'is_zone', 'tags'],
-    source: 'database',
-    table: 'zones_et_reseaux_en_construction',
-    tiles: 'zones_et_reseaux_en_construction_tiles',
-  },
   installationsGeothermieProfonde: {
     compressedTiles: true,
     source: 'database',
@@ -188,12 +162,6 @@ export const tilesInfo: Record<DatabaseSourceId, TileInfo> = {
     source: 'database',
     tiles: 'installations_geothermie_surface_echangeurs_ouverts_tiles',
   },
-  network: {
-    airtable: Airtable.NETWORKS,
-    source: 'database',
-    table: 'reseaux_de_chaleur',
-    tiles: 'reseaux_de_chaleur_tiles',
-  },
   ouvragesGeothermieSurfaceEchangeursFermes: {
     compressedTiles: true,
     source: 'database',
@@ -203,6 +171,12 @@ export const tilesInfo: Record<DatabaseSourceId, TileInfo> = {
     compressedTiles: true,
     source: 'database',
     tiles: 'ouvrages_geothermie_surface_echangeurs_ouverts_tiles',
+  },
+  perimetresDeDeveloppementPrioritaire: {
+    compressedTiles: true,
+    source: 'database',
+    table: 'zone_de_developpement_prioritaire',
+    tiles: 'zone_de_developpement_prioritaire_tiles',
   },
   perimetresGeothermieProfonde: {
     compressedTiles: true,
@@ -219,6 +193,26 @@ export const tilesInfo: Record<DatabaseSourceId, TileInfo> = {
     source: 'database',
     tiles: 'quartiers_prioritaires_politique_ville_2024_tiles',
   },
+  reseauxDeChaleur: {
+    airtable: Airtable.NETWORKS,
+    compressedTiles: true,
+    source: 'database',
+    table: 'reseaux_de_chaleur',
+    tiles: 'reseaux_de_chaleur_tiles',
+  },
+  reseauxDeFroid: {
+    airtable: Airtable.COLD_NETWORKS,
+    compressedTiles: true,
+    source: 'database',
+    tiles: 'reseaux_de_froid_tiles',
+  },
+  reseauxEnConstruction: {
+    airtable: Airtable.FUTUR_NETWORKS,
+    compressedTiles: true,
+    source: 'database',
+    table: 'zones_et_reseaux_en_construction',
+    tiles: 'zones_et_reseaux_en_construction_tiles',
+  },
   ressourcesGeothermalesNappes: {
     compressedTiles: true,
     source: 'database',
@@ -228,11 +222,6 @@ export const tilesInfo: Record<DatabaseSourceId, TileInfo> = {
     compressedTiles: true,
     source: 'database',
     tiles: 'pro_eligibility_tests_addresses_tiles',
-  },
-  zoneDP: {
-    source: 'database',
-    table: 'zone_de_developpement_prioritaire',
-    tiles: 'zone_de_developpement_prioritaire_tiles',
   },
   zonesAUrbaniser: {
     compressedTiles: true,
