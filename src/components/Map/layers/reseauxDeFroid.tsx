@@ -1,6 +1,6 @@
 import Accordion from '@/components/ui/Accordion';
 import Button from '@/components/ui/Button';
-import type { NetworkSummary } from '@/types/Summary/Network';
+import type { ReseauxDeFroidTile } from '@/modules/tiles/server/generation-config';
 import { isDefined } from '@/utils/core';
 import { prettyFormatNumber } from '@/utils/strings';
 import { DownloadNetworkGeometryButton } from '../components/DownloadNetworkGeometryButton';
@@ -63,7 +63,7 @@ export const reseauxDeFroidLayersSpec = [
   },
 ] as const satisfies readonly MapSourceLayersSpecification[];
 
-function Popup(reseauDeFroid: NetworkSummary, { Property, Title, TwoColumns }: PopupStyleHelpers) {
+function Popup(reseauDeFroid: ReseauxDeFroidTile, { Property, Title, TwoColumns }: PopupStyleHelpers) {
   return (
     <>
       <Title>{reseauDeFroid.nom_reseau ?? 'Réseau de froid'}</Title>
@@ -88,7 +88,7 @@ function Popup(reseauDeFroid: NetworkSummary, { Property, Title, TwoColumns }: P
       )}
       <Accordion label="Informations supplémentaires" simple small>
         <DownloadNetworkGeometryButton
-          id_fcu={Number(reseauDeFroid.id_fcu)}
+          id_fcu={reseauDeFroid.id_fcu}
           type="reseaux_de_froid"
           networkName={reseauDeFroid.nom_reseau || 'reseau_de_froid'}
         />

@@ -9,7 +9,7 @@ import {
   extractZippedShapefileToGeoJSON,
   getInputFilePath,
 } from '@/modules/tiles/server/generation-strategies';
-import type { BdnbBatiments } from '@/server/db/kysely/database';
+import type { BdnbBatiments, ReseauxDeFroid } from '@/server/db/kysely/database';
 import { ObjectKeys } from '@/utils/typescript';
 
 const bdnbBatimentsFields = [
@@ -22,6 +22,20 @@ const bdnbBatimentsFields = [
   'dpe_representatif_logement_type_energie_chauffage',
   'dpe_representatif_logement_type_installation_chauffage',
 ] as const satisfies (keyof BdnbBatiments)[];
+export type BdnbBatimentTile = Required<Pick<BdnbBatiments, (typeof bdnbBatimentsFields)[number]>>;
+
+const reseauxDeFroidFields = [
+  'id_fcu',
+  'geom',
+
+  'Taux EnR&R',
+  'Gestionnaire',
+  'Identifiant reseau',
+  'reseaux classes',
+  'contenu CO2 ACV',
+  'nom_reseau',
+] as const satisfies (keyof ReseauxDeFroid)[];
+export type ReseauxDeFroidTile = Required<Pick<ReseauxDeFroid, (typeof reseauxDeFroidFields)[number]>>;
 
 export const tilesConfigs = {
   'batiments-raccordes-reseaux-chaleur-froid': defineTilesConfig({
@@ -105,7 +119,10 @@ export const tilesConfigs = {
     tippeCanoeArgs: '--no-tile-compression', // legacy
   }),
   'reseaux-de-froid': defineTilesConfig({
-    generateGeoJSON: extractGeoJSONFromDatabaseTable('reseaux_de_froid'),
+    generateGeoJSON: extractNDJSONFromDatabaseTable('reseaux_de_froid', {
+      fields: reseauxDeFroidFields,
+      idField: 'id_fcu',
+    }),
     tilesTableName: 'reseaux_de_froid_tiles',
     tippeCanoeArgs: '--no-tile-compression --layer=coldOutline', // legacy
   }),
@@ -146,5 +163,3 @@ export const tilesConfigs = {
 
 export const tilesTypes = ObjectKeys(tilesConfigs);
 export type TilesType = (typeof tilesTypes)[number];
-
-export type BdnbBatimentTile = Required<Pick<BdnbBatiments, (typeof bdnbBatimentsFields)[number]>>;

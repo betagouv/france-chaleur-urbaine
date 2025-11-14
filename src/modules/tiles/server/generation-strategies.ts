@@ -240,7 +240,12 @@ export const extractNDJSONFromDatabaseTable = <TableName extends DBTableName, Fi
         if (options.where) {
           whereClause += ` AND ${options.where}`;
         }
-        await ogr2ogrExtractNDJSONFromDatabaseTable(tableName, chunkFilePath, whereClause, options.fields?.join(', ') || '*');
+        await ogr2ogrExtractNDJSONFromDatabaseTable(
+          tableName,
+          chunkFilePath,
+          whereClause,
+          options.fields?.map((field) => `"${field as string}"`).join(', ') || '*'
+        );
 
         logger.info(`Chunk ${chunkIndex + 1} terminé`, { chunkFilePath, duration: Date.now() - start });
       } catch (error) {
