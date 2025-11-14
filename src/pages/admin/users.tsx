@@ -158,7 +158,7 @@ export default function ManageUsers() {
         align: 'center',
         cellType: 'Boolean',
         filterType: 'Facets',
-        header: 'Actif',
+        header: 'Activé',
       },
       {
         accessorKey: 'created_at',
