@@ -51,7 +51,7 @@ export function DownloadNetworkGeometryButton({ id_fcu, type, networkName }: Dow
   });
 
   return (
-    <AsyncButton priority="secondary" iconId="fr-icon-download-line" onClick={handleDownload}>
+    <AsyncButton priority="secondary" size="small" iconId="fr-icon-download-line" onClick={handleDownload}>
       Télécharger le tracé (GeoJSON)
     </AsyncButton>
   );
