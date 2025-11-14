@@ -85,3 +85,17 @@ export function hasProperty<T extends object>(obj: T, key: string | number | sym
  * Exclude keys from an object
  */
 export type ExcludeKeys<T, U> = { [K in keyof T]?: never } & Record<string, U>;
+
+/**
+ * Converts a type to a Tile compatible type by serializing all non-primitive fields (arrays, objects, Json) to string.
+ * Keeps primitive types (string, number, boolean, null, undefined) as-is.
+ */
+export type SerializeField<T> = T extends null | undefined
+  ? T
+  : T extends any[]
+    ? string
+    : T extends Record<string, any>
+      ? string
+      : T extends string | number | boolean
+        ? T
+        : string;
