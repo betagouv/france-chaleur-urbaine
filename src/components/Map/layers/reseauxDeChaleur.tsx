@@ -144,9 +144,9 @@ export const reseauxDeChaleurLayersSpec = [
     ],
     source: {
       maxzoom: 14,
-      tiles: ['/api/map/network/{z}/{x}/{y}'],
+      tiles: ['/api/map/reseauxDeChaleur/{z}/{x}/{y}'],
       type: 'vector',
     },
-    sourceId: 'network',
+    sourceId: 'reseauxDeChaleur',
   },
 ] as const satisfies readonly MapSourceLayersSpecification[];

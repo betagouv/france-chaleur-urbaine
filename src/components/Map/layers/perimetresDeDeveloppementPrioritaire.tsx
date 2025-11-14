@@ -40,9 +40,9 @@ export const perimetresDeDeveloppementPrioritaireLayersSpec = [
     ],
     source: {
       maxzoom: 14,
-      tiles: ['/api/map/zoneDP/{z}/{x}/{y}'],
+      tiles: ['/api/map/perimetresDeDeveloppementPrioritaire/{z}/{x}/{y}'],
       type: 'vector',
     },
-    sourceId: 'zoneDP',
+    sourceId: 'perimetresDeDeveloppementPrioritaire',
   },
 ] as const satisfies readonly MapSourceLayersSpecification[];

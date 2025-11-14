@@ -88,9 +88,9 @@ export const reseauxDeFroidLayersSpec = [
     ],
     source: {
       maxzoom: 14,
-      tiles: ['/api/map/coldNetwork/{z}/{x}/{y}'],
+      tiles: ['/api/map/reseauxDeFroid/{z}/{x}/{y}'],
       type: 'vector',
     },
-    sourceId: 'coldNetwork',
+    sourceId: 'reseauxDeFroid',
   },
 ] as const satisfies readonly MapSourceLayersSpecification[];

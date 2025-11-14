@@ -109,9 +109,9 @@ export const reseauxEnConstructionLayersSpec = [
     ],
     source: {
       maxzoom: 14,
-      tiles: ['/api/map/futurNetwork/{z}/{x}/{y}'],
+      tiles: ['/api/map/reseauxEnConstruction/{z}/{x}/{y}'],
       type: 'vector',
     },
-    sourceId: 'futurNetwork',
+    sourceId: 'reseauxEnConstruction',
   },
 ] as const satisfies readonly MapSourceLayersSpecification[];

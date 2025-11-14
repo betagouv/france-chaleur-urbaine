@@ -199,7 +199,7 @@ export const downloadAndUpdateNetwork = async (table: DatabaseSourceId) => {
   const startTime = Date.now();
   logger.info('start network update');
 
-  if (table === 'network' || table === 'coldNetwork') {
+  if (table === 'reseauxDeChaleur' || table === 'reseauxDeFroid') {
     const addIds: number[] = [];
     let updateCount = 0;
 
@@ -239,7 +239,7 @@ export const downloadAndUpdateNetwork = async (table: DatabaseSourceId) => {
       addIds: addIds.length > 0 ? addIds.toString() : '0',
       update: updateCount,
     });
-  } else if (table === 'futurNetwork') {
+  } else if (table === 'reseauxEnConstruction') {
     const addIds: number[] = [];
     const networksDB = await db(tileInfo.table).select('id_fcu');
     await Promise.all(
@@ -287,9 +287,9 @@ export const downloadAndUpdateNetwork = async (table: DatabaseSourceId) => {
  */
 function convertEntityFromAirtableToPostgres(type: DatabaseSourceId, airtableNetwork: Record<FieldSet>) {
   const conversionConfig =
-    type === 'network'
+    type === 'reseauxDeChaleur'
       ? conversionConfigReseauxDeChaleur
-      : type === 'coldNetwork'
+      : type === 'reseauxDeFroid'
         ? conversionConfigReseauxDeFroid
         : conversionConfigReseauxEnConstruction;
 
