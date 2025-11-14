@@ -217,21 +217,23 @@ const ChipAutoComplete = (rawProps: ChipAutoCompleteProps) => {
             inputRef.current?.focus();
           }}
         >
-          <ul className="max-h-48 overflow-auto p-0 list-none">
-            {filteredOptions.map((option, index) => (
-              <li
-                key={option.key}
-                className={cx('px-3 py-2 text-sm cursor-pointer hover:bg-blue-100', index === highlightedIndex && 'bg-blue-50')}
-                onMouseDown={() => handleOptionSelect(option)}
-                onMouseEnter={() => setHighlightedIndex(index)}
-                aria-selected={index === highlightedIndex}
-              >
-                <Tag small className={option.className} title={option.title}>
-                  {option.label}
-                </Tag>
-              </li>
-            ))}
-          </ul>
+          {isOpen && (
+            <ul className="max-h-48 overflow-auto p-0 list-none">
+              {filteredOptions.map((option, index) => (
+                <li
+                  key={option.key}
+                  className={cx('px-3 py-2 text-sm cursor-pointer hover:bg-blue-100', index === highlightedIndex && 'bg-blue-50')}
+                  onMouseDown={() => handleOptionSelect(option)}
+                  onMouseEnter={() => setHighlightedIndex(index)}
+                  aria-selected={index === highlightedIndex}
+                >
+                  <Tag small className={option.className} title={option.title}>
+                    {option.label}
+                  </Tag>
+                </li>
+              ))}
+            </ul>
+          )}
         </PopoverContent>
       </Popover>
     </div>
