@@ -205,6 +205,6 @@ export type TilesType = (typeof tilesTypes)[number];
  * Converts a database type to a Tile type by serializing all non-primitive fields (arrays, objects, Json) to string.
  * Keeps primitive types (string, number, boolean, null, undefined) as-is.
  */
-type AsTile<T> = {
+export type AsTile<T> = {
   [K in keyof T]: SerializeField<T[K]>;
 };

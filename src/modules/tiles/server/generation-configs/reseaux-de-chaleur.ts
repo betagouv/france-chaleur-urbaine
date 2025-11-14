@@ -1,4 +1,25 @@
+import type { AsTile } from '@/modules/tiles/server/generation-config';
 import { generateGeoJSONFromSQLQuery } from '@/modules/tiles/server/generation-strategies';
+import type { ReseauxDeChaleur } from '@/server/db/kysely/database';
+
+const reseauxDeChaleurFields = [
+  'id_fcu',
+
+  'Taux EnR&R',
+  'Gestionnaire',
+  'Identifiant reseau',
+  'reseaux classes',
+  'contenu CO2',
+  'contenu CO2 ACV',
+  'nom_reseau',
+  'livraisons_totale_MWh',
+  'nb_pdl',
+  'has_trace',
+  'PM',
+  'annee_creation',
+  'tags',
+] as const satisfies (keyof ReseauxDeChaleur)[];
+export type ReseauxDeChaleurTile = AsTile<Required<Pick<ReseauxDeChaleur, (typeof reseauxDeChaleurFields)[number]>>>;
 
 export const reseauxDeChaleurGeoJSONQuery = generateGeoJSONFromSQLQuery(
   `
@@ -14,28 +35,7 @@ FROM (
       'type', 'Feature',
       'geometry', ST_AsGeoJSON(ST_ForcePolygonCCW(ST_Transform(geom, 4326)))::json,
       'properties', json_build_object(
-        'id_fcu', "id_fcu",
-        'Taux EnR&R', "Taux EnR&R",
-        'Gestionnaire', "Gestionnaire",
-        'Identifiant reseau', "Identifiant reseau",
-        'reseaux classes', "reseaux classes",
-        'contenu CO2', "contenu CO2",
-        'contenu CO2 ACV', "contenu CO2 ACV",
-        'nom_reseau', "nom_reseau",
-        'livraisons_totale_MWh', "livraisons_totale_MWh",
-        'nb_pdl', "nb_pdl",
-        'has_trace', "has_trace",
-        'PM', "PM",
-        'annee_creation', "annee_creation",
-        'energie_ratio_biomasse', "energie_ratio_biomasse",
-        'energie_ratio_geothermie', "energie_ratio_geothermie",
-        'energie_ratio_uve', "energie_ratio_uve",
-        'energie_ratio_chaleurIndustrielle', "energie_ratio_chaleurIndustrielle",
-        'energie_ratio_solaireThermique', "energie_ratio_solaireThermique",
-        'energie_ratio_pompeAChaleur', "energie_ratio_pompeAChaleur",
-        'energie_ratio_gaz', "energie_ratio_gaz",
-        'energie_ratio_fioul', "energie_ratio_fioul",
-        'tags', "tags"
+        ${reseauxDeChaleurFields.map((field) => `'${field}', "${field}"`).join(',\n')}
       )
     ) AS feature
   FROM (
