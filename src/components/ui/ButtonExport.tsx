@@ -1,4 +1,5 @@
 import type React from 'react';
+import { useCallback } from 'react';
 
 import Button, { type ButtonProps } from '@/components/ui/Button';
 import { exportAsXLSX, type SheetData } from '@/utils/export';
@@ -13,8 +14,12 @@ type ButtonExportProps = {
 // const ButtonExport = dynamic(() => import('@/components/ui/ButtonExport'), { ssr: false });
 
 const ButtonExport: React.FC<ButtonExportProps & ButtonProps> = ({ filename, sheets, children, ...props }) => {
+  const onClick = useCallback(() => {
+    exportAsXLSX(filename, typeof sheets === 'function' ? sheets() : sheets);
+  }, [filename, sheets]);
+
   return (
-    <Button onClick={() => exportAsXLSX(filename, typeof sheets === 'function' ? sheets() : sheets)} {...props}>
+    <Button onClick={onClick} {...props}>
       {children}
     </Button>
   );
