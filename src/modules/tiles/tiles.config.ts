@@ -106,19 +106,7 @@ export const tilesInfo: Record<DatabaseSourceId, TileInfo> = {
   },
   coldNetwork: {
     airtable: Airtable.COLD_NETWORKS,
-    id: 'id_fcu',
-    properties: [
-      'id_fcu',
-      'Taux EnR&R',
-      'Gestionnaire',
-      'Identifiant reseau',
-      'reseaux classes',
-      'contenu CO2 ACV',
-      'nom_reseau',
-      'livraisons_totale_MWh',
-      'nb_pdl',
-      'has_trace',
-    ],
+    compressedTiles: true,
     source: 'database',
     tiles: 'reseaux_de_froid_tiles',
   },
@@ -167,8 +155,7 @@ export const tilesInfo: Record<DatabaseSourceId, TileInfo> = {
   },
   futurNetwork: {
     airtable: Airtable.FUTUR_NETWORKS,
-    id: 'id_fcu',
-    properties: ['id_fcu', 'nom_reseau', 'mise_en_service', 'gestionnaire', 'is_zone', 'tags'],
+    compressedTiles: true,
     source: 'database',
     table: 'zones_et_reseaux_en_construction',
     tiles: 'zones_et_reseaux_en_construction_tiles',
@@ -190,6 +177,7 @@ export const tilesInfo: Record<DatabaseSourceId, TileInfo> = {
   },
   network: {
     airtable: Airtable.NETWORKS,
+    compressedTiles: true,
     source: 'database',
     table: 'reseaux_de_chaleur',
     tiles: 'reseaux_de_chaleur_tiles',
@@ -230,6 +218,7 @@ export const tilesInfo: Record<DatabaseSourceId, TileInfo> = {
     tiles: 'pro_eligibility_tests_addresses_tiles',
   },
   zoneDP: {
+    compressedTiles: true,
     source: 'database',
     table: 'zone_de_developpement_prioritaire',
     tiles: 'zone_de_developpement_prioritaire_tiles',

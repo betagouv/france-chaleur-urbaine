@@ -2,12 +2,12 @@ import Tag from '@codegouvfr/react-dsfr/Tag';
 
 import Accordion from '@/components/ui/Accordion';
 import Tooltip from '@/components/ui/Tooltip';
-import type { FuturNetworkSummary } from '@/types/Summary/FuturNetwork';
+import type { ReseauxEnConstructionTile } from '@/modules/tiles/server/generation-config';
 import { DownloadNetworkGeometryButton } from '../components/DownloadNetworkGeometryButton';
 import { defineLayerPopup, ifHoverElse, type MapSourceLayersSpecification } from './common';
 import { buildFiltreGestionnaire } from './filters';
 
-const Popup = defineLayerPopup<FuturNetworkSummary>(
+const Popup = defineLayerPopup<ReseauxEnConstructionTile>(
   (reseauEnConstruction, { Property, Title, TwoColumns }, { hasRole, mapEventBus, pathname }) => {
     let tags: string[] = [];
 
@@ -88,7 +88,6 @@ export const reseauxEnConstructionLayersSpec = [
           'fill-opacity': ifHoverElse(reseauxEnConstructionOpacity + 0.1, reseauxEnConstructionOpacity),
         },
         popup: Popup,
-        'source-layer': 'futurOutline',
         type: 'fill',
       },
       {
@@ -105,7 +104,6 @@ export const reseauxEnConstructionLayersSpec = [
           'line-width': ifHoverElse(3, 2),
         },
         popup: Popup,
-        'source-layer': 'futurOutline',
         type: 'line',
       },
     ],

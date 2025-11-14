@@ -1,13 +1,9 @@
 import Accordion from '@/components/ui/Accordion';
+import type { PerimetreDeveloppementPrioritaireTile } from '@/modules/tiles/server/generation-config';
 import { DownloadNetworkGeometryButton } from '../components/DownloadNetworkGeometryButton';
 import { defineLayerPopup, type MapSourceLayersSpecification } from './common';
 
-type PerimetreDeveloppementPrioritaire = {
-  id_fcu: number;
-  'Identifiant reseau'?: string;
-};
-
-const Popup = defineLayerPopup<PerimetreDeveloppementPrioritaire>((perimetre, { Property, Title, TwoColumns }) => {
+const Popup = defineLayerPopup<PerimetreDeveloppementPrioritaireTile>((perimetre, { Property, Title, TwoColumns }) => {
   return (
     <>
       <Title title={`ID FCU: ${perimetre.id_fcu}`}>Périmètre de développement prioritaire</Title>
@@ -39,7 +35,6 @@ export const perimetresDeDeveloppementPrioritaireLayersSpec = [
           'fill-opacity': perimetresDeDeveloppementPrioritaireOpacity,
         },
         popup: Popup,
-        'source-layer': 'zoneDP',
         type: 'fill',
       },
     ],
