@@ -299,6 +299,7 @@ export default function ManageUsers() {
           controlsLayout="block"
           padding="sm"
           loading={isLoading}
+          urlSyncKey="users"
         />
       </Box>
     </SimplePage>
