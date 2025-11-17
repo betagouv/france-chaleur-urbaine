@@ -204,6 +204,11 @@ export default function ManageTags() {
           controlsLayout="block"
           padding="sm"
           loading={isLoading}
+          urlSyncKey="tags"
+          export={{
+            fileName: 'tags.xlsx',
+            sheetName: 'tags',
+          }}
         />
       </Box>
 
