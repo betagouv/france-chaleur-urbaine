@@ -51,7 +51,7 @@
     "db:sync": "pnpm cli db:sync",
     "db:verify": "pnpm db:introspect --verify",
     "postinstall": "node scripts/postinstall.mjs",
-    "scalingo-postbuild": "./scripts/migrate.sh && pnpm build && next-sitemap",
+    "scalingo-postbuild": "pnpm build && next-sitemap",
     "predev": "only-include-used-icons --silent",
     "prebuild": "only-include-used-icons",
     "talisman:add-exception": "node-talisman -i -g pre-commit",
