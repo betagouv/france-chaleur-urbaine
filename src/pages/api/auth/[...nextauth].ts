@@ -2,7 +2,7 @@ import nextAuth, { type AuthOptions, type Session } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 
 import { login } from '@/modules/auth/server/service';
-import { kdb } from '@/server/db/kysely';
+import { getUserSession } from '@/modules/auth/server/session';
 import { stripDomainFromURL } from '@/utils/url';
 
 export const nextAuthOptions: AuthOptions = {
@@ -21,25 +21,7 @@ export const nextAuthOptions: AuthOptions = {
     },
     redirect: ({ url, baseUrl }) => stripDomainFromURL(url) ?? baseUrl,
     async session({ session, token }) {
-      // update the last_connection date and return the latest user data
-      const user = await kdb
-        .updateTable('users')
-        .set({
-          last_connection: new Date(),
-        })
-        .where('id', '=', token.sub as string)
-        .returning([
-          'id',
-          'email',
-          'role',
-          'gestionnaires',
-          'receive_new_demands',
-          'receive_old_demands',
-          'active',
-          'created_at',
-          'signature',
-        ])
-        .executeTakeFirst();
+      const user = token?.sub ? await getUserSession(token.sub) : null;
 
       if (token) {
         return {
