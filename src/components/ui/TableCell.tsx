@@ -39,7 +39,7 @@ const TableCell = <T,>({ value, children: defaultValue, data, type, cellProps = 
       const dateTime = new Date(value);
       return (
         <span className="block" suppressHydrationWarning>
-          <time dateTime={dateTime.toISOString()} className="block whitespace-nowrap">
+          <time dateTime={dateTime.toISOString()} className="block">
             {dateTime.toLocaleDateString(undefined, hasCellProps ? (cellProps as Intl.DateTimeFormatOptions) : { dateStyle: 'medium' })}
           </time>
           <time dateTime={dateTime.toISOString()} className="block font-sans text-xs uppercase text-gray-400">
