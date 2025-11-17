@@ -274,15 +274,13 @@ export default function ManageUsers() {
           </>
         )}
 
-        <header className="flex justify-between items-center">
-          <div>
-            <Heading as="h2" color="blue-france" mt="4w">
-              Liste des comptes{' '}
-              <small className="text-faded text-base">
-                {nbUsersFilter} / {users?.length}
-              </small>
-            </Heading>
-          </div>
+        <header className="flex justify-between items-baseline">
+          <Heading as="h2" color="blue-france" mt="4w">
+            Liste des comptes{' '}
+            <small className="text-faded text-base">
+              {nbUsersFilter} / {users?.length}
+            </small>
+          </Heading>
           <Button size="small" priority="secondary" iconId="ri-add-line" title="Ajouter un utilisateur" onClick={() => setUserId('new')}>
             <span>Ajouter un utilisateur</span>
           </Button>
