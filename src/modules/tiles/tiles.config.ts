@@ -204,6 +204,7 @@ export const tilesInfo: Record<DatabaseSourceId, TileInfo> = {
     airtable: Airtable.COLD_NETWORKS,
     compressedTiles: true,
     source: 'database',
+    table: 'reseaux_de_froid',
     tiles: 'reseaux_de_froid_tiles',
   },
   reseauxEnConstruction: {
