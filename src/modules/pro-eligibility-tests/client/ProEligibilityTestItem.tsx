@@ -3,7 +3,7 @@ import Tabs from '@codegouvfr/react-dsfr/Tabs';
 import type { ColumnFiltersState, SortingState } from '@tanstack/react-table';
 import dynamic from 'next/dynamic';
 import { useQueryState } from 'nuqs';
-import { Fragment, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { clientConfig } from '@/client-config';
 import type { AdresseEligible } from '@/components/Map/Map';
@@ -11,12 +11,11 @@ import { createMapConfiguration } from '@/components/Map/map-configuration';
 import { UrlStateAccordion } from '@/components/ui/Accordion';
 import Button from '@/components/ui/Button';
 import Dialog from '@/components/ui/Dialog';
-import { VerticalDivider } from '@/components/ui/Divider';
-import Indicator from '@/components/ui/Indicator';
 import Link from '@/components/ui/Link';
 import Loader from '@/components/ui/Loader';
 import ModalSimple from '@/components/ui/ModalSimple';
 import Notice from '@/components/ui/Notice';
+import QuickFilterPresets from '@/components/ui/QuickFilterPresets';
 import Tooltip from '@/components/ui/Tooltip';
 import TableSimple, { type ColumnDef, type QuickFilterPreset } from '@/components/ui/table/TableSimple';
 import { toastErrors } from '@/modules/notification';
@@ -29,7 +28,6 @@ import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
 import { formatAsISODateMinutes, formatFrenchDate, formatFrenchDateTime } from '@/utils/date';
 import { compareFrenchStrings } from '@/utils/strings';
-import { ObjectEntries, ObjectKeys } from '@/utils/typescript';
 import { getProEligibilityTestAsXlsx } from '../utils/xlsx';
 import ProcheReseauBadge, { type ProcheReseauBadgeProps } from './ProcheReseauBadge';
 
@@ -419,38 +417,11 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false, className }:
 
   const addresses = testDetails?.addresses ?? [];
 
-  const presetStats = ObjectKeys(quickFilterPresets).reduce(
-    (acc, key) => ({
-      ...acc,
-      [key]: quickFilterPresets[key].getStat(addresses),
-    }),
-    {} as Record<QuickFilterPresetKey, number>
-  );
-
   const handleDelete = async () => {
     if (!confirm('Êtes-vous sûr de vouloir supprimer ce test ?')) {
       return;
     }
     await onDelete?.();
-  };
-
-  const toggleFilterPreset = (presetKey: QuickFilterPresetKey) => {
-    const preset = quickFilterPresets[presetKey];
-    setColumnFilters(isPresetActive(presetKey) ? [] : preset.filters);
-  };
-
-  const isPresetActive = (presetKey: QuickFilterPresetKey) => {
-    const preset = quickFilterPresets[presetKey];
-    if (preset.filters.length === 0) {
-      return columnFilters.length === 0;
-    }
-
-    // Check if all filters in the preset are active
-    return (
-      preset.filters.every((presetFilter) =>
-        columnFilters.some((activeFilter) => activeFilter.id === presetFilter.id && activeFilter.value === presetFilter.value)
-      ) && columnFilters.length === preset.filters.length
-    );
   };
 
   useEffect(() => {
@@ -576,18 +547,14 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false, className }:
     >
       <div className="flex flex-wrap mb-4">
         <div className="flex items-center">
-          {ObjectEntries(quickFilterPresets).map(([key, preset], index) => (
-            <Fragment key={key}>
-              <Indicator
-                loading={isDataLoading}
-                label={preset.label}
-                value={presetStats[key]}
-                onClick={() => toggleFilterPreset(key)}
-                active={isPresetActive(key)}
-              />
-              {index < Object.keys(quickFilterPresets).length - 1 && <VerticalDivider />}
-            </Fragment>
-          ))}
+          <QuickFilterPresets
+            presets={quickFilterPresets}
+            data={addresses}
+            loading={isDataLoading}
+            columnFilters={columnFilters}
+            onFiltersChange={setColumnFilters}
+            hideDividerOnMobile={false}
+          />
         </div>
         <div className="flex items-center gap-2 w-full mt-2">
           <Button iconId="fr-icon-download-line" priority="primary" onClick={downloadCSV} disabled={filteredAddresses.length === 0}>

@@ -1,7 +1,7 @@
 import type { ColumnFiltersState } from '@tanstack/react-table';
 import type { Virtualizer } from '@tanstack/react-virtual';
 import dynamic from 'next/dynamic';
-import { Fragment, type RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { type RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { MapGeoJSONFeature, MapRef } from 'react-map-gl/maplibre';
 
 import Input from '@/components/form/dsfr/Input';
@@ -12,12 +12,11 @@ import type { AdresseEligible } from '@/components/Map/layers/adressesEligibles'
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Badge from '@/components/ui/Badge';
-import { VerticalDivider } from '@/components/ui/Divider';
 import Icon from '@/components/ui/Icon';
-import Indicator from '@/components/ui/Indicator';
 import Link from '@/components/ui/Link';
 import Loader from '@/components/ui/Loader';
 import ModalSimple from '@/components/ui/ModalSimple';
+import QuickFilterPresets from '@/components/ui/QuickFilterPresets';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/Resizable';
 import Tooltip from '@/components/ui/Tooltip';
 import TableSimple, { type ColumnDef, type QuickFilterPreset } from '@/components/ui/table/TableSimple';
@@ -36,7 +35,6 @@ import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
 import type { ExportColumn } from '@/utils/export';
 import { upperCaseFirstChar } from '@/utils/strings';
-import { ObjectEntries, ObjectKeys } from '@/utils/typescript';
 
 const Map = dynamic(() => import('@/components/Map/Map'), { ssr: false });
 const ButtonExport = dynamic(() => import('@/components/ui/ButtonExport'), { ssr: false });
@@ -203,14 +201,6 @@ function DemandesNew(): React.ReactElement {
   const [filteredDemands, setFilteredDemands] = useState<DemandsListItem[]>([]);
 
   const { data: demands = [], isLoading } = trpc.demands.gestionnaire.list.useQuery();
-
-  const presetStats = ObjectKeys(quickFilterPresets).reduce(
-    (acc, key) => ({
-      ...acc,
-      [key]: quickFilterPresets[key].getStat(demands),
-    }),
-    {} as Record<QuickFilterPresetKey, number>
-  );
 
   // reset selection when filters change
   useEffect(() => {
@@ -522,25 +512,6 @@ function DemandesNew(): React.ReactElement {
     }
   }, []);
 
-  const toggleFilterPreset = (presetKey: QuickFilterPresetKey) => {
-    const preset = quickFilterPresets[presetKey];
-    setColumnFilters(isPresetActive(presetKey) ? [] : preset.filters);
-  };
-
-  const isPresetActive = (presetKey: QuickFilterPresetKey) => {
-    const preset = quickFilterPresets[presetKey];
-    if (preset.filters.length === 0) {
-      return columnFilters.length === 0;
-    }
-
-    // Check if all filters in the preset are active
-    return (
-      preset.filters.every((presetFilter) =>
-        columnFilters.some((activeFilter) => activeFilter.id === presetFilter.id && activeFilter.value === presetFilter.value)
-      ) && columnFilters.length === preset.filters.length
-    );
-  };
-
   const buildSheetData = useCallback(
     () => [
       {
@@ -579,19 +550,13 @@ function DemandesNew(): React.ReactElement {
             }}
             className="p-2w mb-0! w-[350px]"
           />
-          {ObjectEntries(quickFilterPresets).map(([key, preset], index) => (
-            <Fragment key={key}>
-              <Indicator
-                loading={isLoading}
-                label={preset.label}
-                value={presetStats[key]}
-                valueSuffix={'valueSuffix' in preset ? preset.valueSuffix : null}
-                onClick={() => toggleFilterPreset(key)}
-                active={isPresetActive(key)}
-              />
-              {index < Object.keys(quickFilterPresets).length - 1 && <VerticalDivider className="hidden md:block" />}
-            </Fragment>
-          ))}
+          <QuickFilterPresets
+            presets={quickFilterPresets as any}
+            data={demands}
+            loading={isLoading}
+            columnFilters={columnFilters}
+            onFiltersChange={setColumnFilters}
+          />
           <ButtonExport filename="demandes_fcu.xlsx" sheets={buildSheetData} className="ml-auto mr-2w" priority="secondary">
             Exporter
           </ButtonExport>
