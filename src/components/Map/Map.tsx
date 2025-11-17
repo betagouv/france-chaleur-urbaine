@@ -31,6 +31,7 @@ import useContactFormFCU from '@/hooks/useContactFormFCU';
 import useDevMode from '@/hooks/useDevMode';
 import useRouterReady from '@/hooks/useRouterReady';
 import { trackEvent } from '@/modules/analytics/client';
+import useUserInfo from '@/modules/app/client/hooks/useUserInfo';
 import type { BoundingBox } from '@/modules/geo/types';
 import { notify } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
@@ -40,7 +41,6 @@ import type { Point } from '@/types/Point';
 import type { StoredAddress } from '@/types/StoredAddress';
 import type { TypeLegendLogo } from '@/types/TypeLegendLogo';
 import cx from '@/utils/cx';
-
 import CardSearchDetails from './components/CardSearchDetails';
 import MapMarker from './components/MapMarker';
 import MapSearchForm from './components/MapSearchForm';
@@ -175,7 +175,7 @@ export const FullyFeaturedMap = ({
   const { devModeEnabled, toggleDevMode } = useDevMode();
   const router = useRouter();
   const { setMapRef, setMapDraw, isDrawing, mapConfiguration, mapLayersLoaded, setMapLayersLoaded } = useFCUMap();
-
+  const { address: userAddress, setAddress: setUserAddress } = useUserInfo();
   const trpcUtils = trpc.useUtils();
   const { handleOnFetchAddress, handleOnSuccessAddress } = useContactFormFCU();
 
@@ -280,7 +280,7 @@ export const FullyFeaturedMap = ({
   );
 
   const removeSoughtAddresses = useCallback(
-    (result: { coordinates?: Point }) => {
+    (result: { coordinates?: Point; address?: string }) => {
       if (!result.coordinates) {
         return;
       }
@@ -294,8 +294,12 @@ export const FullyFeaturedMap = ({
       setSoughtAddresses([...soughtAddresses]);
 
       setMarkersList((current) => current.filter((marker) => marker.id !== id));
+
+      if (userAddress === result.address) {
+        setUserAddress('');
+      }
     },
-    [setSoughtAddresses, soughtAddresses, selectedCardIndex]
+    [setSoughtAddresses, soughtAddresses, selectedCardIndex, userAddress]
   );
 
   const resetSoughtAddresses = useCallback(() => {
