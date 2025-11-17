@@ -72,10 +72,9 @@ export const createSyncMetadataFromAirtableJob = async ({ name }: ApplyGeometrie
 };
 
 const tilesMapping = [
-  { internalName: 'reseaux-de-chaleur', tileName: 'network' },
-  { internalName: 'reseaux-de-froid', tileName: 'coldNetwork' },
-  { internalName: 'reseaux-en-construction', tileName: 'futurNetwork' },
-  { internalName: 'perimetres-de-developpement-prioritaire', tileName: 'zoneDP' },
+  { internalName: 'reseaux-de-chaleur', tileName: 'reseauxDeChaleur' },
+  { internalName: 'reseaux-de-froid', tileName: 'reseauxDeFroid' },
+  { internalName: 'reseaux-en-construction', tileName: 'reseauxEnConstruction' },
 ] as const;
 
 export const getTileNameFromInternalName = (internalName: string) => {

@@ -8,7 +8,6 @@ import { syncPostgresToAirtable } from '@/modules/reseaux/server/sync-pg-to-airt
 import type { BuildTilesInput } from '@/modules/tiles/constants';
 import type { Jobs } from '@/server/db/kysely';
 
-import type { DatabaseSourceId } from '../tiles.config';
 import { runTilesGeneration } from './generation-run';
 import { getTileNameFromInternalName } from './service';
 
@@ -43,7 +42,11 @@ export type SyncMetadataFromAirtableJob = Omit<Selectable<Jobs>, 'data'> & {
  */
 export async function processSyncMetadataFromAirtableJob(job: SyncMetadataFromAirtableJob, logger: Logger) {
   const { name } = job.data;
-  await downloadNetwork(getTileNameFromInternalName(name) as DatabaseSourceId);
+  const tileName = getTileNameFromInternalName(name);
+  if (!tileName) {
+    throw new Error(`Tile name not found for ${name}`);
+  }
+  await downloadNetwork(tileName);
   logger.info(`Les données ont été récupérées depuis Airtable et ont été insérées pour ${name}.`);
   await createUserEvent({
     author_id: job.user_id,
