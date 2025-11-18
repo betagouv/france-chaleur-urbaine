@@ -6,7 +6,7 @@ import dynamic from 'next/dynamic';
 import { type RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { MapGeoJSONFeature } from 'react-map-gl/maplibre';
 import TableFieldInput from '@/components/Admin/TableFieldInput';
-import EligibilityHelpDialog, { eligibilityTitleByType } from '@/components/EligibilityHelpDialog';
+import EligibilityHelpDialog from '@/components/EligibilityHelpDialog';
 import Input from '@/components/form/dsfr/Input';
 import FCUTagAutocomplete from '@/components/form/FCUTagAutocomplete';
 import DemandEmailForm from '@/components/Manager/DemandEmailForm';
@@ -36,6 +36,7 @@ import Status from '@/modules/demands/client/Status';
 import type { DemandStatus } from '@/modules/demands/constants';
 import type { Demand } from '@/modules/demands/types';
 import { notify, toastErrors } from '@/modules/notification';
+import { eligibilityTypes as eligibilityCases, eligibilityTitleByType } from '@/modules/pro-eligibility-tests/constants';
 import trpc, { type RouterOutput } from '@/modules/trpc/client';
 import { withAuthentication } from '@/server/authentication';
 import type { Point } from '@/types/Point';
@@ -82,16 +83,27 @@ const quickFilterPresets = {
     filters: [
       { id: 'Status', value: { 'En attente de prise en charge': true } },
       { id: 'Prise de contact', value: { false: true, true: false } },
+      {
+        id: 'testAddress_eligibility_type' as any, // Filters do not support nested filters
+        value: Object.fromEntries(
+          eligibilityCases.map((eligibilityCase) => [eligibilityCase.type, eligibilityCase.type !== 'trop_eloigne'])
+        ),
+      },
     ],
     getStat: (demands) =>
-      demands.filter((demand) => demand.Status === 'En attente de prise en charge' && !demand['Prise de contact']).length,
+      demands.filter(
+        (demand) =>
+          demand.Status === 'En attente de prise en charge' &&
+          !demand['Prise de contact'] &&
+          demand.testAddress.eligibility?.type !== 'trop_eloigne'
+      ).length,
     label: (
       <>
         demandes en attente
         <br />
         de prise en charge&nbsp;
         <Tooltip
-          title={`Le statut est "en attente de prise en charge" et la case "prospect recontacté" n'est pas cochée. La colonne "Affecté à" du tableau indique le gestionnaire à qui la demande a été transmise pour traitement.`}
+          title={`Le statut est "en attente de prise en charge", la case "prospect recontacté" n'est pas cochée et l'adresse n'est pas trop éloignée d'un réseau. La colonne "Affecté à" du tableau indique le gestionnaire à qui la demande a été transmise pour traitement.`}
         />
       </>
     ),
@@ -535,6 +547,11 @@ function DemandesAdmin(): React.ReactElement {
       },
       {
         accessorKey: 'en PDP',
+        filterType: 'Facets', // obligatoire pour faire fonctionner le filtre
+        visible: false,
+      },
+      {
+        accessorKey: 'testAddress.eligibility.type',
         filterType: 'Facets', // obligatoire pour faire fonctionner le filtre
         visible: false,
       },
