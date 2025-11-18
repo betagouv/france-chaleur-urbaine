@@ -3,7 +3,8 @@ import { type ReactNode, useState } from 'react';
 import Button from '@/components/ui/Button';
 import Dialog from '@/components/ui/Dialog';
 import Icon from '@/components/ui/Icon';
-import type { DetailedEligibilityStatus, EligibilityType } from '@/server/services/addresseInformation';
+import type { ProEligibilityTestHistoryEntry } from '@/modules/pro-eligibility-tests/types';
+import type { EligibilityType } from '@/server/services/addresseInformation';
 import cx from '@/utils/cx';
 import type { ExtractKeys } from '@/utils/typescript';
 
@@ -89,10 +90,11 @@ const _check: AssertAllChoicesPresent = true;
 
 type EligibilityHelpDialogProps = {
   children?: ReactNode;
-  detailedEligibilityStatus?: DetailedEligibilityStatus;
+  detailedEligibilityStatus?: ProEligibilityTestHistoryEntry['eligibility'];
+  tags?: string[];
 };
 
-const EligibilityHelpDialog = ({ children, detailedEligibilityStatus }: EligibilityHelpDialogProps) => {
+const EligibilityHelpDialog = ({ children, detailedEligibilityStatus, tags }: EligibilityHelpDialogProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -132,17 +134,16 @@ const EligibilityHelpDialog = ({ children, detailedEligibilityStatus }: Eligibil
                       <p className={cx('text-sm mb-2', isCurrent ? 'text-blue-800' : 'text-gray-700')}>{eligibilityCase.description}</p>
                       {isCurrent && detailedEligibilityStatus && (
                         <div className="mt-2 space-y-1">
-                          <div>
+                          {/* <div>
                             <span className="font-medium">Communes du réseau :</span>{' '}
                             {detailedEligibilityStatus.communes?.join(', ') || '—'}
-                          </div>
+                          </div> */}
                           <div>
                             <span className="font-medium">Distance au réseau le plus proche :</span>{' '}
                             {detailedEligibilityStatus.distance != null ? `${detailedEligibilityStatus.distance} m` : '—'}
                           </div>
                           <div>
-                            <span className="font-medium">Tags gestionnaires potentiels :</span>{' '}
-                            {detailedEligibilityStatus.tags?.length ? detailedEligibilityStatus.tags.join(', ') : '—'}
+                            <span className="font-medium">Tags gestionnaires potentiels :</span> {tags?.length ? tags?.join(', ') : '—'}
                           </div>
                           <details className="mt-2">
                             <summary className="cursor-pointer font-medium">Voir les données brutes</summary>

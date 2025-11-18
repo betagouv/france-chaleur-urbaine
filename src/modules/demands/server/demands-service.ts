@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import type { Insertable } from 'kysely';
+import type { Insertable, Selectable } from 'kysely';
 import type { User } from 'next-auth';
 import { v4 as uuidv4 } from 'uuid';
 import { clientConfig } from '@/client-config';
@@ -8,7 +8,7 @@ import type { AirtableLegacyRecord } from '@/modules/demands/types';
 import { sendEmailTemplate } from '@/modules/email';
 import { createEligibilityTestAddress } from '@/modules/pro-eligibility-tests/server/service';
 import type { ProEligibilityTestHistoryEntry } from '@/modules/pro-eligibility-tests/types';
-import { type DemandEmails, kdb, type ProEligibilityTestsAddresses, sql } from '@/server/db/kysely';
+import { type DemandEmails, type Demands, kdb, type ProEligibilityTestsAddresses, sql } from '@/server/db/kysely';
 import { createBaseModel } from '@/server/db/kysely/base-model';
 import { parentLogger } from '@/server/helpers/logger';
 import * as assignmentRulesService from './assignment_rules-service';
@@ -21,9 +21,37 @@ export const tableName = 'demands';
 export const emailsTableName = 'demand_emails';
 const baseModel = createBaseModel(tableName);
 
+const augmentDemand = <T extends Selectable<Demands>>({
+  demand: { legacy_values, ...demand },
+  testAddress,
+}: {
+  demand: T;
+  testAddress: Selectable<ProEligibilityTestsAddresses> | null;
+}) => {
+  const history = testAddress?.eligibility_history as ProEligibilityTestHistoryEntry[] | undefined;
+  const lastEligibility = history?.[history.length - 1];
+
+  legacy_values['Gestionnaires validés'] ??= false;
+  legacy_values.Commentaire ??= '';
+  legacy_values.Commentaires_internes_FCU ??= '';
+  legacy_values['Relance à activer'] ??= false;
+
+  return {
+    ...legacy_values,
+    ...demand,
+    testAddress: {
+      ...testAddress,
+      eligibility: lastEligibility?.eligibility,
+    },
+  };
+};
+
 export const update = async (recordId: string, values: Partial<AirtableLegacyRecord>) => {
   // Get current demand before update to detect changes
   const currentDemand = await kdb.selectFrom(tableName).selectAll().where('id', '=', recordId).executeTakeFirst();
+  console.log(''); //eslint-disable-line
+  console.log('╔════START═════update═══════════════════════════════════════════════'); //eslint-disable-line
+  console.log(values); //eslint-disable-line
 
   const [updatedDemand] = await kdb
     .updateTable(tableName)
@@ -50,11 +78,22 @@ export const update = async (recordId: string, values: Partial<AirtableLegacyRec
     });
   }
 
-  return { id: updatedDemand.id, ...updatedDemand.legacy_values };
+  const testAddress = await kdb
+    .selectFrom('pro_eligibility_tests_addresses')
+    .selectAll()
+    .where('demand_id', '=', updatedDemand.id)
+    .executeTakeFirst();
+  console.log(JSON.stringify({ id: updatedDemand.id, ...updatedDemand.legacy_values }, null, 2)); //eslint-disable-line
+  console.log('╚════END══════════════════════════════════════════════════════'); //eslint-disable-line
+
+  return augmentDemand({ demand: updatedDemand, testAddress: testAddress || null });
 };
 
 export const create = async (values: CreateDemandInput) => {
   const legacyValues = formatDataToLegacyAirtable(values);
+  console.log(''); //eslint-disable-line
+  console.log('╔════START══create════════════════════════════════════════════════'); //eslint-disable-line
+  console.log(values); //eslint-disable-line
   const [createdDemand] = await kdb
     .insertInto(tableName)
     .values({
@@ -71,15 +110,17 @@ export const create = async (values: CreateDemandInput) => {
     .returningAll()
     .execute();
 
+  let testAddress: Awaited<ReturnType<typeof createEligibilityTestAddress>> | null = null;
   if (legacyValues.Latitude && legacyValues.Longitude) {
-    await createEligibilityTestAddress({
+    testAddress = await createEligibilityTestAddress({
       address: legacyValues.Adresse,
       demand_id: createdDemand.id,
       latitude: legacyValues.Latitude,
       longitude: legacyValues.Longitude,
     });
   }
-  return { id: createdDemand.id, ...createdDemand.legacy_values };
+
+  return augmentDemand({ demand: createdDemand, testAddress });
 };
 
 export const remove = baseModel.remove;
@@ -202,11 +243,9 @@ export const listAdmin = async () => {
 
   const records = await kdb
     .selectFrom('demands')
-    .where((eb) =>
-      eb.or([eb(sql`legacy_values->>'Gestionnaires validés'`, '=', 'false'), eb(sql`legacy_values->>'Gestionnaires validés'`, 'is', null)])
-    )
     .innerJoin('pro_eligibility_tests_addresses', 'pro_eligibility_tests_addresses.demand_id', 'demands.id')
-    .select(['demands.id', 'demands.legacy_values', sql.raw(`to_jsonb(pro_eligibility_tests_addresses)`).as('testAddress')])
+    .selectAll('demands')
+    .select(sql.raw(`to_jsonb(pro_eligibility_tests_addresses)`).as('testAddress'))
     .orderBy(sql`legacy_values->>'Date de la demande'`, 'desc')
     .execute();
 
@@ -227,38 +266,34 @@ export const listAdmin = async () => {
   const demands = (
     await Promise.all(
       records.map(async (record) => {
-        const demand = { id: record.id, ...record.legacy_values, testAddress: record.testAddress as ProEligibilityTestsAddresses };
-        demand['Gestionnaires validés'] ??= false;
-        demand.Commentaire ??= '';
-        demand.Commentaires_internes_FCU ??= '';
-        demand['Relance à activer'] ??= false;
+        const { testAddress, ...demand } = record;
+        const legacyValues = record.legacy_values;
 
-        if (!demand.Latitude || !demand.Longitude || !demand.Ville) {
+        // demand['Gestionnaires validés'] ??= false;
+        // demand.Commentaire ??= '';
+        // demand.Commentaires_internes_FCU ??= '';
+        // demand['Relance à activer'] ??= false;
+
+        if (!legacyValues.Latitude || !legacyValues.Longitude || !legacyValues.Ville) {
           logger.warn('missing demand fields', {
             demandId: demand.id,
             missingFields: ['Latitude', 'Longitude', 'Ville'],
           });
           return null;
         }
-        const testAddress = record.testAddress as ProEligibilityTestsAddresses & { eligibility_history: ProEligibilityTestHistoryEntry[] };
 
-        const detailedEligibilityStatus = testAddress.eligibility_history?.[testAddress.eligibility_history.length - 1]?.eligibility;
+        const augmentedDemand = augmentDemand({
+          demand,
+          testAddress: testAddress as Selectable<ProEligibilityTestsAddresses> & { eligibility_history: ProEligibilityTestHistoryEntry[] },
+        });
 
-        const tags = reseauxDeChaleur.find((reseau) => reseau.id_fcu === detailedEligibilityStatus.id_fcu)?.tags ?? [];
+        const tags = reseauxDeChaleur.find((reseau) => reseau.id_fcu === augmentedDemand.testAddress.eligibility?.id_fcu)?.tags ?? [];
         const rulesResult = assignmentRulesService.applyParsedRulesToEligibilityData(parsedRules, { tags });
 
-        const history = testAddress.eligibility_history;
-        const lastEligibility = history?.[history.length - 1];
-
         return {
-          ...demand,
-          detailedEligibilityStatus,
+          ...augmentedDemand,
           recommendedAssignment: rulesResult.assignment ?? 'Non affecté',
           recommendedTags: [...new Set([...tags, ...rulesResult.tags])],
-          testAddress: {
-            ...testAddress,
-            eligibility: lastEligibility?.eligibility,
-          },
         };
       })
     )

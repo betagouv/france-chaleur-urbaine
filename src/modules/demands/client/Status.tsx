@@ -7,9 +7,11 @@ import type { Demand } from '@/modules/demands/types';
 const Status = ({
   demand,
   updateDemand,
+  disabled = false,
 }: {
   demand: Demand;
   updateDemand: (demandId: string, demand: Partial<Demand>) => Promise<void>;
+  disabled?: boolean;
 }) => {
   const [status, setStatus] = useState<DemandStatus>(demandStatusDefault);
 
@@ -27,6 +29,7 @@ const Status = ({
       placeholder="Sélectionner un statut"
       size="sm"
       nativeSelectProps={{
+        disabled,
         onChange: (e) => {
           const newStatus = e.target.value;
           setStatus(newStatus);

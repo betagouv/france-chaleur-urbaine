@@ -6,7 +6,6 @@ import type { MapGeoJSONFeature, MapRef } from 'react-map-gl/maplibre';
 
 import Input from '@/components/form/dsfr/Input';
 import DemandEmailForm from '@/components/Manager/DemandEmailForm';
-import DemandStatusBadge from '@/components/Manager/DemandStatusBadge';
 import Tag from '@/components/Manager/Tag';
 import type { AdresseEligible } from '@/components/Map/layers/adressesEligibles';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
@@ -24,6 +23,7 @@ import AdditionalInformation from '@/modules/demands/client/AdditionalInformatio
 import Comment from '@/modules/demands/client/Comment';
 import Contact from '@/modules/demands/client/Contact';
 import Contacted from '@/modules/demands/client/Contacted';
+import DemandStatusBadge from '@/modules/demands/client/DemandStatusBadge';
 import Status from '@/modules/demands/client/Status';
 import type { Demand } from '@/modules/demands/types';
 import { toastErrors } from '@/modules/notification';

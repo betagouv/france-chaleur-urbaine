@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react';
 
 import useURLParamOrLocalStorage, { parseAsString } from '@/hooks/useURLParamOrLocalStorage';
 import { trackEvent } from '@/modules/analytics/client';
+import type { CreateDemandInput } from '@/modules/demands/constants';
 import trpc from '@/modules/trpc/client';
 import type { AddressDataType } from '@/types/AddressData';
 

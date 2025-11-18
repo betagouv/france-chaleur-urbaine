@@ -1,8 +1,9 @@
 import Badge from '@codegouvfr/react-dsfr/Badge';
 import { usePrevious } from '@react-hookz/web';
+import type { ColumnFiltersState } from '@tanstack/react-table';
 import type { Virtualizer } from '@tanstack/react-virtual';
 import dynamic from 'next/dynamic';
-import { Fragment, type RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { type RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { MapGeoJSONFeature } from 'react-map-gl/maplibre';
 import TableFieldInput from '@/components/Admin/TableFieldInput';
 import EligibilityHelpDialog, { eligibilityTitleByType } from '@/components/EligibilityHelpDialog';
@@ -14,30 +15,32 @@ import { useMapEventBus } from '@/components/Map/layers/common';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import SimplePage from '@/components/shared/page/SimplePage';
 import AsyncButton from '@/components/ui/AsyncButton';
+import FCUBadge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import ChipAutoComplete, { type ChipOption } from '@/components/ui/ChipAutoComplete';
-import { VerticalDivider } from '@/components/ui/Divider';
 import Icon from '@/components/ui/Icon';
-import Indicator from '@/components/ui/Indicator';
 import Loader from '@/components/ui/Loader';
+import QuickFilterPresets from '@/components/ui/QuickFilterPresets';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/Resizable';
 import Tooltip from '@/components/ui/Tooltip';
 import TableSimple, { type ColumnDef, type QuickFilterPreset } from '@/components/ui/table/TableSimple';
 import { useFetch } from '@/hooks/useApi';
 import Comment from '@/modules/demands/client/Comment';
 import Contact from '@/modules/demands/client/Contact';
+import Contacted from '@/modules/demands/client/Contacted';
+import DemandStatusBadge from '@/modules/demands/client/DemandStatusBadge';
+import Status from '@/modules/demands/client/Status';
+import type { DemandStatus } from '@/modules/demands/constants';
 import type { Demand } from '@/modules/demands/types';
 import { notify, toastErrors } from '@/modules/notification';
 import trpc, { type RouterOutput } from '@/modules/trpc/client';
 import { withAuthentication } from '@/server/authentication';
-import type { DetailedEligibilityStatus } from '@/server/services/addresseInformation';
 import type { Point } from '@/types/Point';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
 import { stopPropagation } from '@/utils/events';
 import { deleteFetchJSON } from '@/utils/network';
 import { formatMWh, upperCaseFirstChar } from '@/utils/strings';
-import { ObjectEntries, ObjectKeys } from '@/utils/typescript';
 
 type DemandsListAdminData = RouterOutput['demands']['admin']['list'];
 type DemandsListAdminItem = DemandsListAdminData['items'][number];
@@ -59,9 +62,15 @@ const displayModeDeChauffage = (demand: DemandsListAdminItem) => {
 };
 
 const quickFilterPresets = {
-  demandesAAffecter: {
+  all: {
     filters: [],
     getStat: (demands) => demands.length,
+    label: 'demandes totales',
+  },
+  demandesAAffecter: {
+    // @ts-expect-error: Typescript instantiation is too deep error
+    filters: [{ id: 'Gestionnaires validés', value: { false: true, true: false } }],
+    getStat: (demands) => demands.filter((demand) => !demand['Gestionnaires validés']).length,
     label: (
       <>
         demandes à affecter&nbsp;
@@ -70,8 +79,24 @@ const quickFilterPresets = {
     ),
     valueSuffix: <Icon name="fr-icon-flag-fill" size="sm" color="red" />,
   },
+  demandesATraiter: {
+    filters: [
+      { id: 'Status', value: { 'En attente de prise en charge': true } },
+      { id: 'Prise de contact', value: { false: true, true: false } as Record<string, boolean> },
+    ],
+    getStat: (demands) =>
+      demands.filter((demand) => demand.Status === 'En attente de prise en charge' && !demand['Prise de contact']).length,
+    label: (
+      <>
+        demandes en attente de prise en charge&nbsp;
+        <Tooltip
+          title={`Le statut est "en attente de prise en charge" et la case "prospect recontacté" n'est pas cochée. La colonne "Affecté à" du tableau indique le gestionnaire à qui la demande a été transmise pour traitement.`}
+        />
+      </>
+    ),
+    valueSuffix: <Icon name="fr-icon-flag-fill" size="sm" color="red" />,
+  },
 } satisfies Record<string, QuickFilterPreset<DemandsListAdminItem>>;
-type QuickFilterPresetKey = keyof typeof quickFilterPresets;
 
 const initialSortingState = [{ desc: true, id: 'Date de la demande' }];
 
@@ -110,14 +135,6 @@ function DemandesAdmin(): React.ReactElement {
       defaultAssignmentChipOption,
     ],
     [assignmentRulesResults]
-  );
-
-  const presetStats = ObjectKeys(quickFilterPresets).reduce(
-    (acc, key) => ({
-      ...acc,
-      [key]: quickFilterPresets[key].getStat(demands),
-    }),
-    {} as Record<QuickFilterPresetKey, number>
   );
 
   // Only reset selection if the filteredDemands array has changed in content, not just selectedDemandId.
@@ -226,6 +243,26 @@ function DemandesAdmin(): React.ReactElement {
         width: '46px',
       },
       {
+        accessorKey: 'Status',
+        cell: ({ row }) => <Status demand={row.original as unknown as Demand} updateDemand={updateDemand} disabled={true} />,
+        enableGlobalFilter: false,
+        filterProps: {
+          Component: ({ value }) => <DemandStatusBadge status={value as DemandStatus} />,
+        },
+        filterType: 'Facets',
+        header: 'Statut',
+        width: '290px',
+      },
+      {
+        accessorKey: 'Prise de contact',
+        align: 'center',
+        cell: ({ row }) => <Contacted demand={row.original as unknown as Demand} updateDemand={updateDemand} />,
+        enableGlobalFilter: false,
+        filterType: 'Facets',
+        header: 'Prospect recontacté',
+        width: '85px',
+      },
+      {
         accessorKey: 'Gestionnaires',
         cell: (info) => {
           const demand = info.row.original;
@@ -243,14 +280,14 @@ function DemandesAdmin(): React.ReactElement {
                 suggestedValue={demand.recommendedTags}
               />
               <div className="flex items-center gap-2" onClick={stopPropagation} onDoubleClick={stopPropagation}>
-                <EligibilityHelpDialog detailedEligibilityStatus={demand.detailedEligibilityStatus as DetailedEligibilityStatus}>
+                <EligibilityHelpDialog detailedEligibilityStatus={demand.testAddress.eligibility} tags={demand.recommendedTags}>
                   <Button
                     className="text-gray-700! font-normal! italic"
                     title="Voir le détail de l'éligibilité"
                     priority="tertiary no outline"
                     size="small"
                   >
-                    {eligibilityTitleByType[demand.detailedEligibilityStatus.type]}
+                    {demand.testAddress.eligibility?.type ? eligibilityTitleByType[demand.testAddress.eligibility?.type] : 'Non connu'}
                   </Button>
                 </EligibilityHelpDialog>
               </div>
@@ -304,15 +341,16 @@ function DemandesAdmin(): React.ReactElement {
                   void updateDemand(demand.id, {
                     'Affecté à': demand['Affecté à'] === null ? demand.recommendedAssignment : demand['Affecté à'],
                     'Distance au réseau':
-                      demand['Distance au réseau'] === null ? demand.detailedEligibilityStatus.distance : demand['Distance au réseau'],
+                      demand['Distance au réseau'] === null ? demand.testAddress.eligibility?.distance : demand['Distance au réseau'],
 
                     // assign recommended tags, assignment, and network infos if not are set
                     Gestionnaires: demand.Gestionnaires === null ? demand.recommendedTags : (demand.Gestionnaires ?? []),
                     'Gestionnaires validés': true,
                     'Identifiant réseau':
-                      demand['Identifiant réseau'] === null ? demand.detailedEligibilityStatus.id_sncu : demand['Identifiant réseau'],
-                    'Nom réseau': demand['Nom réseau'] === null ? demand.detailedEligibilityStatus.nom : demand['Nom réseau'],
-                    'Relance à activer': demand.detailedEligibilityStatus.distance < 200 && demand['Type de chauffage'] === 'Collectif',
+                      demand['Identifiant réseau'] === null ? demand.testAddress.eligibility?.id_sncu : demand['Identifiant réseau'],
+                    'Nom réseau': demand['Nom réseau'] === null ? demand.testAddress.eligibility?.nom : demand['Nom réseau'],
+                    'Relance à activer':
+                      (demand.testAddress.eligibility?.distance || 999999) < 200 && demand['Type de chauffage'] === 'Collectif',
                   });
                 }}
               >
@@ -334,7 +372,7 @@ function DemandesAdmin(): React.ReactElement {
             </div>
           );
         },
-        enableSorting: false,
+        filterType: 'Facets',
         header: 'Gestionnaire validé',
         width: '120px',
       },
@@ -350,6 +388,7 @@ function DemandesAdmin(): React.ReactElement {
         cell: ({ row }) => <Tag text={row.original.Structure} />,
         enableGlobalFilter: false,
         enableSorting: false,
+        filterType: 'Facets',
         header: 'Type',
         width: '130px',
       },
@@ -358,13 +397,15 @@ function DemandesAdmin(): React.ReactElement {
         cell: ({ row }) => <Tag text={displayModeDeChauffage(row.original)} />,
         enableGlobalFilter: false,
         enableSorting: false,
+        filterType: 'Facets',
         header: 'Mode de chauffage',
         width: '134px',
       },
       {
         accessorKey: 'testAddress.ban_address',
         cell: (info) => {
-          const testAddress = info.row.original.testAddress;
+          const demand = info.row.original;
+          const testAddress = demand.testAddress;
           return (
             <div>
               <div>
@@ -374,16 +415,21 @@ function DemandesAdmin(): React.ReactElement {
                     Adresse invalide
                   </Badge>
                 )}
+                {testAddress.eligibility?.type?.includes('dans_pdp') && <FCUBadge type="pdp" />}
               </div>
               {testAddress.source_address !== testAddress.ban_address && (
-                <div className=" text-xs italic text-gray-500 tracking-tighter">{testAddress.source_address}</div>
+                <div className=" text-xs italic text-gray-400 tracking-tighter">{testAddress.source_address}</div>
               )}
+              {(demand.Logement || demand['Surface en m2'] || demand.Conso) && <div className="border-t border-gray-600 my-2" />}
+              {demand.Logement && <div className="text-xs font-bold">{demand.Logement} logements</div>}
+              {demand['Surface en m2'] && <div className="text-xs font-bold">{demand['Surface en m2']}m²</div>}
+              {demand.Conso && <div className="text-xs font-bold">{formatMWh(demand.Conso)} de gaz</div>}
             </div>
           );
         },
         enableSorting: false,
         header: 'Adresse',
-        width: '220px',
+        width: '240px',
       },
       {
         accessorKey: 'Date de la demande',
@@ -396,67 +442,26 @@ function DemandesAdmin(): React.ReactElement {
         accessorKey: 'Identifiant réseau',
         cell: (info) => {
           const demand = info.row.original;
+          const testAddress = demand.testAddress;
           return (
-            <TableFieldInput
-              title="Identifiant réseau"
-              value={demand['Identifiant réseau']}
-              onChange={(value) => updateDemand(demand.id, { 'Identifiant réseau': value })}
-              suggestedValue={demand.detailedEligibilityStatus.id_sncu}
-            />
+            <div className="flex items-center gap-2 flex-col justify-start">
+              <TableFieldInput
+                title="Identifiant réseau"
+                value={demand['Identifiant réseau']}
+                onChange={(value) => updateDemand(demand.id, { 'Identifiant réseau': value })}
+                suggestedValue={testAddress.eligibility?.id_sncu ?? undefined}
+              />
+              {(testAddress.eligibility?.nom || (testAddress.eligibility?.distance && testAddress.eligibility?.distance > 0)) && (
+                <div className="text-xs text-gray-500">
+                  <strong>{testAddress.eligibility?.distance}m</strong> de {testAddress.eligibility?.nom}
+                </div>
+              )}
+            </div>
           );
         },
         enableSorting: false,
         header: 'ID réseau le plus proche',
-        width: '85px',
-      },
-      {
-        accessorKey: 'testAddress.eligibility.distance',
-        alig: 'right',
-        enableGlobalFilter: false,
-        enableSorting: false,
-        header: () => (
-          <div className="flex items-center">
-            Distance au réseau (m)
-            <Tooltip
-              iconProps={{
-                className: 'ml-1',
-              }}
-              title="Distance à vol d'oiseau"
-            />
-          </div>
-        ),
-        suffix: 'm',
-        width: '120px',
-      },
-      {
-        accessorKey: 'testAddress.eligibility.nom',
-        enableSorting: false,
-        header: 'Nom du réseau le plus proche',
-        width: '250px',
-      },
-      {
-        accessorKey: 'Logement',
-        cell: (info) => info.getValue<number>() && <>{info.getValue<number>()}&nbsp;</>,
-        enableGlobalFilter: false,
-        enableSorting: false,
-        header: 'Nb logements (lots)',
-        width: '120px',
-      },
-      {
-        accessorKey: 'Surface en m2',
-        cell: (info) => info.getValue<number>() && <>{info.getValue<number>()}&nbsp;m²</>,
-        enableGlobalFilter: false,
-        enableSorting: false,
-        header: 'Surface en m2',
-        width: '120px',
-      },
-      {
-        accessorKey: 'Conso',
-        cell: (info) => info.getValue<number>() && formatMWh(info.getValue<number>()),
-        enableGlobalFilter: false,
-        enableSorting: false,
-        header: 'Conso gaz (MWh)',
-        width: '120px',
+        width: '200px',
       },
       {
         accessorKey: 'Recontacté par le gestionnaire',
@@ -476,9 +481,7 @@ function DemandesAdmin(): React.ReactElement {
       },
       {
         accessorKey: 'Commentaires_internes_FCU',
-        cell: ({ row }) => (
-          <Comment demand={row.original as unknown as Demand} field="Commentaires_internes_FCU" updateDemand={updateDemand} />
-        ),
+        cell: ({ row }) => <Comment demand={row.original} field="Commentaires_internes_FCU" updateDemand={updateDemand} />,
         enableSorting: false,
         header: 'Commentaires internes FCU',
         width: '280px',
@@ -545,6 +548,7 @@ function DemandesAdmin(): React.ReactElement {
     }
     isUpdatingDemandField = false;
   }, []);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
   return (
     <SimplePage
@@ -565,17 +569,13 @@ function DemandesAdmin(): React.ReactElement {
             }}
             className="p-2w mb-0! w-[350px]"
           />
-          {ObjectEntries(quickFilterPresets).map(([key, preset], index) => (
-            <Fragment key={key}>
-              <Indicator
-                loading={isLoading}
-                label={preset.label}
-                value={presetStats[key]}
-                valueSuffix={'valueSuffix' in preset ? preset.valueSuffix : null}
-              />
-              {index < Object.keys(quickFilterPresets).length - 1 && <VerticalDivider className="hidden md:block" />}
-            </Fragment>
-          ))}
+          <QuickFilterPresets
+            presets={quickFilterPresets}
+            data={demands}
+            loading={isLoading}
+            columnFilters={columnFilters}
+            onFiltersChange={setColumnFilters}
+          />
           <EligibilityHelpDialog />
         </div>
         <ResizablePanelGroup direction="horizontal" className="gap-4">
@@ -590,6 +590,7 @@ function DemandesAdmin(): React.ReactElement {
               fluid
               controlsLayout="block"
               padding="sm"
+              columnFilters={columnFilters}
               rowSelection={tableRowSelection}
               onRowClick={onTableRowClick}
               onRowDoubleClick={onTableRowDoubleClick}
