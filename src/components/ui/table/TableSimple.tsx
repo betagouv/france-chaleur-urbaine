@@ -776,7 +776,7 @@ export type QuickFilterPreset<Data> = {
   getStat?: (data: Data[]) => number;
   filters: {
     id: DotToUnderscore<FlattenKeys<Data>>;
-    value: boolean | number | [number, number] | Record<string, boolean>;
+    value: boolean | number | [number, number] | Record<string, boolean | undefined>;
   }[];
 };
 

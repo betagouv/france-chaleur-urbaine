@@ -5,6 +5,8 @@ import {
   zAdminUpdateDemandInput,
   zCreateDemandInput,
   zGestionnaireUpdateDemandInput,
+  zListEmailsInput,
+  zSendEmailInput,
   zUserUpdateDemandInput,
 } from '../constants';
 import * as demandsService from './demands-service';
@@ -30,6 +32,23 @@ export const demandsRouter = router({
     list: route.meta({ auth: { roles: ['gestionnaire', 'demo'] } }).query(async ({ ctx }) => {
       return await demandsService.list(ctx.user);
     }),
+    listEmails: route
+      .meta({ auth: { roles: ['gestionnaire', 'admin'] } })
+      .input(zListEmailsInput)
+      .query(async ({ input }) => {
+        return await demandsService.listEmails(input.demand_id);
+      }),
+    sendEmail: route
+      .meta({ auth: { roles: ['gestionnaire', 'admin'] } })
+      .input(zSendEmailInput)
+      .mutation(async ({ input, ctx }) => {
+        await demandsService.sendEmail({
+          demand_id: input.demand_id,
+          emailContent: input.emailContent,
+          key: input.key,
+          user: ctx.user,
+        });
+      }),
     update: route
       .meta({ auth: { roles: ['gestionnaire', 'demo'] } })
       .input(zGestionnaireUpdateDemandInput)

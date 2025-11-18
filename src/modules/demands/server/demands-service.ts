@@ -21,7 +21,24 @@ export const tableName = 'demands';
 export const emailsTableName = 'demand_emails';
 const baseModel = createBaseModel(tableName);
 
-const augmentDemand = <T extends Selectable<Demands>>({
+const augmentAdminDemand = <T extends Selectable<Demands>>({
+  demand,
+  testAddress,
+}: {
+  demand: T;
+  testAddress: Selectable<ProEligibilityTestsAddresses> | null;
+}) => {
+  const augmentedDemand = augmentGestionnaireDemand({ demand, testAddress });
+
+  augmentedDemand['Gestionnaires validés'] ??= false;
+  augmentedDemand.Commentaire ??= '';
+  augmentedDemand.Commentaires_internes_FCU ??= '';
+  augmentedDemand['Relance à activer'] ??= false;
+
+  return augmentedDemand;
+};
+
+const augmentGestionnaireDemand = <T extends Selectable<Demands>>({
   demand: { legacy_values, ...demand },
   testAddress,
 }: {
@@ -30,13 +47,22 @@ const augmentDemand = <T extends Selectable<Demands>>({
 }) => {
   const history = testAddress?.eligibility_history as ProEligibilityTestHistoryEntry[] | undefined;
   const lastEligibility = history?.[history.length - 1];
+  legacy_values['en PDP'] = lastEligibility?.eligibility?.type.includes('dans_pdp') ? 'Oui' : 'Non';
+  legacy_values['Prise de contact'] ??= false;
+  legacy_values.Status ??= demandStatusDefault;
 
-  legacy_values['Gestionnaires validés'] ??= false;
-  legacy_values.Commentaire ??= '';
-  legacy_values.Commentaires_internes_FCU ??= '';
-  legacy_values['Relance à activer'] ??= false;
+  const isParis = legacy_values.Gestionnaires?.includes('Paris');
+  const distanceThreshold = isParis ? 60 : 100;
+  const isHautPotentiel =
+    legacy_values['Type de chauffage'] === 'Collectif' &&
+    ((legacy_values['Distance au réseau'] || 10000000) < distanceThreshold ||
+      (legacy_values.Logement || 0) >= 100 ||
+      legacy_values.Structure === 'Tertiaire');
+
+  // complète les valeurs par défaut pour simplifier l'usage côté UI
 
   return {
+    haut_potentiel: isHautPotentiel,
     ...legacy_values,
     ...demand,
     testAddress: {
@@ -86,7 +112,7 @@ export const update = async (recordId: string, values: Partial<AirtableLegacyRec
   console.log(JSON.stringify({ id: updatedDemand.id, ...updatedDemand.legacy_values }, null, 2)); //eslint-disable-line
   console.log('╚════END══════════════════════════════════════════════════════'); //eslint-disable-line
 
-  return augmentDemand({ demand: updatedDemand, testAddress: testAddress || null });
+  return augmentAdminDemand({ demand: updatedDemand, testAddress: testAddress || null });
 };
 
 export const create = async (values: CreateDemandInput) => {
@@ -120,7 +146,7 @@ export const create = async (values: CreateDemandInput) => {
     });
   }
 
-  return augmentDemand({ demand: createdDemand, testAddress });
+  return augmentAdminDemand({ demand: createdDemand, testAddress });
 };
 
 export const remove = baseModel.remove;
@@ -133,10 +159,59 @@ export const listEmails = async (demandId: string) => {
 export const createEmail = async (values: Omit<Insertable<DemandEmails>, 'created_at' | 'updated_at' | 'id'>) => {
   const [createdEmail] = await kdb
     .insertInto('demand_emails')
-    .values({ ...values, created_at: new Date(), updated_at: new Date() })
+    .values({ ...values, created_at: new Date(), sent_at: new Date(), updated_at: new Date() })
     .returningAll()
     .execute();
   return createdEmail;
+};
+
+export const sendEmail = async (params: {
+  demand_id: string;
+  emailContent: {
+    body: string;
+    cc: string[];
+    object: string;
+    replyTo: string;
+    signature: string;
+    to: string;
+  };
+  key: string;
+  user: User;
+}) => {
+  const { demand_id, emailContent, key, user } = params;
+
+  // Create email record
+  await createEmail({
+    body: emailContent.body,
+    cc: emailContent.cc.join(',') || '',
+    demand_id,
+    email_key: key,
+    object: emailContent.object,
+    reply_to: emailContent.replyTo,
+    signature: emailContent.signature,
+    to: emailContent.to,
+    user_email: user.email,
+  });
+
+  // Update user signature if changed
+  if (user.signature !== emailContent.signature) {
+    await kdb.updateTable('users').set({ signature: emailContent.signature }).where('email', '=', user.email).execute();
+  }
+
+  // Send email
+  await sendEmailTemplate(
+    'legacy.manager',
+    { email: emailContent.to, id: user.id },
+    {
+      content: emailContent.body,
+      signature: emailContent.signature,
+    },
+    {
+      cc: emailContent.cc,
+      replyTo: emailContent.replyTo,
+      subject: emailContent.object,
+    }
+  );
 };
 
 export const updateFromRelanceId = async (relanceId: string, values: Partial<AirtableLegacyRecord>) => {
@@ -282,7 +357,7 @@ export const listAdmin = async () => {
           return null;
         }
 
-        const augmentedDemand = augmentDemand({
+        const augmentedDemand = augmentAdminDemand({
           demand,
           testAddress: testAddress as Selectable<ProEligibilityTestsAddresses> & { eligibility_history: ProEligibilityTestHistoryEntry[] },
         });
@@ -315,7 +390,7 @@ export const list = async (user: User) => {
   const startTime = Date.now();
 
   // Build query based on user role and gestionnaires
-  let query = kdb.selectFrom('demands').selectAll();
+  let query = kdb.selectFrom('demands').selectAll().select(sql.raw(`to_jsonb(pro_eligibility_tests_addresses)`).as('testAddress'));
 
   if (user.role === 'admin') {
     // No filter for admin
@@ -333,44 +408,29 @@ export const list = async (user: User) => {
       );
   }
 
-  const records = (await query.orderBy(sql`legacy_values->>'Date de la demande'`, 'desc').execute()).map(({ id, legacy_values }) => ({
-    fields: legacy_values,
-    id,
-  }));
+  const records = await query.orderBy(sql`legacy_values->>'Date de la demande'`, 'desc').execute();
 
   logger.info('kdb.getDemands', {
     duration: Date.now() - startTime,
     recordsCount: records.length,
     tagsCounts: user.gestionnaires.length,
   });
-
-  records.forEach((record) => {
-    // ajoute le champ haut_potentiel = en chauffage collectif avec : soit à -100m hors Paris / -60m Paris, soit +100 logements, soit tertiaire.
-    const fields = record.fields;
-    const isParis = fields.Gestionnaires?.includes('Paris');
-    const distanceThreshold = isParis ? 60 : 100;
-    fields.haut_potentiel =
-      fields['Type de chauffage'] === 'Collectif' &&
-      ((fields['Distance au réseau'] || 10000000) < distanceThreshold || (fields.Logement || 0) >= 100 || fields.Structure === 'Tertiaire');
-
-    // complète les valeurs par défaut pour simplifier l'usage côté UI
-    fields['Prise de contact'] ??= false;
-    fields.Status ??= demandStatusDefault;
-  });
+  const demands = records.map(({ testAddress, ...demand }) =>
+    augmentGestionnaireDemand({
+      demand,
+      testAddress: testAddress as Selectable<ProEligibilityTestsAddresses> & { eligibility_history: ProEligibilityTestHistoryEntry[] },
+    })
+  );
 
   return user.role === 'demo'
-    ? records.map((record) => ({
-        id: record.id,
-        ...record.fields,
+    ? demands.map((demand) => ({
+        ...demand,
         Mail: faker.internet.email(),
         Nom: faker.person.lastName(),
         Prénom: faker.person.firstName(),
         Téléphone: `0${faker.string.numeric(9)}`,
       }))
-    : records.map((record) => ({
-        id: record.id,
-        ...record.fields,
-      }));
+    : demands;
 };
 
 export const buildFeatures = async (properties: string[]) => {

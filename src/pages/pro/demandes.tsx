@@ -182,7 +182,6 @@ const quickFilterPresets = {
     valueSuffix: <Badge type="pdp" />,
   },
 } satisfies Record<string, QuickFilterPreset<DemandsListItem>>;
-type QuickFilterPresetKey = keyof typeof quickFilterPresets;
 
 const initialSortingState = [{ desc: true, id: 'Date de la demande' }];
 

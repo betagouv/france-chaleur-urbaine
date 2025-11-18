@@ -5,6 +5,28 @@ export const zAddRelanceCommentInput = z.object({
   relanceId: z.string(),
 });
 
+export const zListEmailsInput = z.object({
+  demand_id: z.string(),
+});
+
+export const zSendEmailInput = z.object({
+  demand_id: z.string(),
+  emailContent: z.object({
+    body: z.string().transform((v) => {
+      return v.replace(/(?:\r\n|\r|\n)/g, '<br />');
+    }),
+    cc: z.preprocess((v) => {
+      const str = String(v);
+      return str ? str.split(',') : [];
+    }, z.array(z.string().email().trim())),
+    object: z.string(),
+    replyTo: z.string().trim(),
+    signature: z.string(),
+    to: z.string().email().trim(),
+  }),
+  key: z.string(),
+});
+
 const zUserDemandUpdateValues = z
   .object({
     Sondage: z.array(z.string()).nullable(),

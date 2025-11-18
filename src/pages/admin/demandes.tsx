@@ -9,6 +9,7 @@ import TableFieldInput from '@/components/Admin/TableFieldInput';
 import EligibilityHelpDialog, { eligibilityTitleByType } from '@/components/EligibilityHelpDialog';
 import Input from '@/components/form/dsfr/Input';
 import FCUTagAutocomplete from '@/components/form/FCUTagAutocomplete';
+import DemandEmailForm from '@/components/Manager/DemandEmailForm';
 import Tag from '@/components/Manager/Tag';
 import type { AdresseEligible } from '@/components/Map/layers/adressesEligibles';
 import { useMapEventBus } from '@/components/Map/layers/common';
@@ -19,7 +20,9 @@ import FCUBadge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import ChipAutoComplete, { type ChipOption } from '@/components/ui/ChipAutoComplete';
 import Icon from '@/components/ui/Icon';
+import Link from '@/components/ui/Link';
 import Loader from '@/components/ui/Loader';
+import ModalSimple from '@/components/ui/ModalSimple';
 import QuickFilterPresets from '@/components/ui/QuickFilterPresets';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/Resizable';
 import Tooltip from '@/components/ui/Tooltip';
@@ -61,12 +64,8 @@ const displayModeDeChauffage = (demand: DemandsListAdminItem) => {
   return demand['Type de chauffage'];
 };
 
+// biome-ignore assist/source/useSortedKeys: keep field order as more coherent with most used actions
 const quickFilterPresets = {
-  all: {
-    filters: [],
-    getStat: (demands) => demands.length,
-    label: 'demandes totales',
-  },
   demandesAAffecter: {
     // @ts-expect-error: Typescript instantiation is too deep error
     filters: [{ id: 'Gestionnaires validés', value: { false: true, true: false } }],
@@ -82,19 +81,50 @@ const quickFilterPresets = {
   demandesATraiter: {
     filters: [
       { id: 'Status', value: { 'En attente de prise en charge': true } },
-      { id: 'Prise de contact', value: { false: true, true: false } as Record<string, boolean> },
+      { id: 'Prise de contact', value: { false: true, true: false } },
     ],
     getStat: (demands) =>
       demands.filter((demand) => demand.Status === 'En attente de prise en charge' && !demand['Prise de contact']).length,
     label: (
       <>
-        demandes en attente de prise en charge&nbsp;
+        demandes en attente
+        <br />
+        de prise en charge&nbsp;
         <Tooltip
           title={`Le statut est "en attente de prise en charge" et la case "prospect recontacté" n'est pas cochée. La colonne "Affecté à" du tableau indique le gestionnaire à qui la demande a été transmise pour traitement.`}
         />
       </>
     ),
-    valueSuffix: <Icon name="fr-icon-flag-fill" size="sm" color="red" />,
+  },
+  demandesDansPDP: {
+    filters: [
+      {
+        id: 'en PDP',
+        value: { Non: false, Oui: true },
+      },
+    ],
+    getStat: (demands) => demands.filter((demand) => demand['en PDP'] === 'Oui').length,
+    label: (
+      <>
+        demandes en PDP&nbsp;
+        <Tooltip
+          title={
+            <>
+              Périmètre de développement prioritaire (PDP) d'un réseau classé, dans lequel peut s'appliquer une obligation de raccordement.{' '}
+              <Link href="/ressources/obligations-raccordement#contenu" isExternal>
+                En savoir plus
+              </Link>
+            </>
+          }
+        />
+      </>
+    ),
+    valueSuffix: <FCUBadge type="pdp" />,
+  },
+  all: {
+    filters: [],
+    getStat: (demands) => demands.length,
+    label: 'demandes totales',
   },
 } satisfies Record<string, QuickFilterPreset<DemandsListAdminItem>>;
 
@@ -122,6 +152,8 @@ function DemandesAdmin(): React.ReactElement {
   const [mapCenterLocation, setMapCenterLocation] = useState<MapCenterLocation>();
   const [globalFilter, setGlobalFilter] = useState('');
   const [filteredDemands, setFilteredDemands] = useState<DemandsListAdminItem[]>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(quickFilterPresets.demandesAAffecter.filters);
+  const [modalDemand, setModalDemand] = useState<DemandsListAdminItem | null>(null);
 
   const { data: demandsData, isLoading } = trpc.demands.admin.list.useQuery();
   const demands = demandsData?.items ?? [];
@@ -236,6 +268,7 @@ function DemandesAdmin(): React.ReactElement {
                 <Icon name="fr-icon-flag-fill" size="sm" color="red" />
               </Tooltip>
             )}
+            {row.original.haut_potentiel && <FCUBadge type="haut_potentiel" />}
           </div>
         ),
         header: '',
@@ -378,7 +411,7 @@ function DemandesAdmin(): React.ReactElement {
       },
       {
         accessorFn: (row) => `${row.Nom} ${row.Prénom} ${row.Mail}`,
-        cell: ({ row }) => <Contact demand={row.original as unknown as Demand} onEmailClick={() => {}} />,
+        cell: ({ row }) => <Contact demand={row.original as unknown as Demand} onEmailClick={() => setModalDemand(row.original)} />,
         enableSorting: false,
         header: 'Contact',
         width: '280px',
@@ -548,7 +581,6 @@ function DemandesAdmin(): React.ReactElement {
     }
     isUpdatingDemandField = false;
   }, []);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
   return (
     <SimplePage
@@ -556,6 +588,14 @@ function DemandesAdmin(): React.ReactElement {
       description="Tableau de bord administrateur pour la validation des tags des demandes de raccordement"
       mode="authenticated"
     >
+      <ModalSimple
+        title={`Envoi d'un courriel à ${modalDemand?.Mail}`}
+        open={!!modalDemand}
+        size="large"
+        onOpenChange={(open) => !open && setModalDemand(null)}
+      >
+        {modalDemand && <DemandEmailForm currentDemand={modalDemand as unknown as Demand} updateDemand={updateDemand} />}
+      </ModalSimple>
       <div className="mb-8">
         <div className="flex items-center flex-wrap gap-4">
           <Input
