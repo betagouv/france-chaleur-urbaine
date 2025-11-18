@@ -72,34 +72,32 @@ const TableFilter = ({ value, type, onChange, filterProps, facetedUniqueValues, 
 
     return (
       <div className="space-y-4">
-        <div className="space-y-2">
-          <Input
-            label="Date de début"
-            nativeInputProps={{
-              max: maxDate,
-              min: minDate,
-              onChange: (e) => {
-                const newStart = e.target.value;
-                handleDateChange(newStart, endDate, includeNull);
-              },
-              type: 'date',
-              value: startDate,
-            }}
-          />
-          <Input
-            label="Date de fin"
-            nativeInputProps={{
-              max: maxDate,
-              min: minDate,
-              onChange: (e) => {
-                const newEnd = e.target.value;
-                handleDateChange(startDate, newEnd, includeNull);
-              },
-              type: 'date',
-              value: endDate,
-            }}
-          />
-        </div>
+        <Input
+          label="Date de début"
+          nativeInputProps={{
+            max: maxDate,
+            min: minDate,
+            onChange: (e) => {
+              const newStart = e.target.value;
+              handleDateChange(newStart, endDate, includeNull);
+            },
+            type: 'date',
+            value: startDate,
+          }}
+        />
+        <Input
+          label="Date de fin"
+          nativeInputProps={{
+            max: maxDate,
+            min: minDate,
+            onChange: (e) => {
+              const newEnd = e.target.value;
+              handleDateChange(startDate, newEnd, includeNull);
+            },
+            type: 'date',
+            value: endDate,
+          }}
+        />
         <div className="fr-checkbox-group fr-checkbox-group--sm">
           <input
             type="checkbox"
