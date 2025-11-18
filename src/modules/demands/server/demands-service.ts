@@ -344,11 +344,6 @@ export const listAdmin = async () => {
         const { testAddress, ...demand } = record;
         const legacyValues = record.legacy_values;
 
-        // demand['Gestionnaires validés'] ??= false;
-        // demand.Commentaire ??= '';
-        // demand.Commentaires_internes_FCU ??= '';
-        // demand['Relance à activer'] ??= false;
-
         if (!legacyValues.Latitude || !legacyValues.Longitude || !legacyValues.Ville) {
           logger.warn('missing demand fields', {
             demandId: demand.id,
@@ -390,7 +385,11 @@ export const list = async (user: User) => {
   const startTime = Date.now();
 
   // Build query based on user role and gestionnaires
-  let query = kdb.selectFrom('demands').selectAll().select(sql.raw(`to_jsonb(pro_eligibility_tests_addresses)`).as('testAddress'));
+  let query = kdb
+    .selectFrom('demands')
+    .innerJoin('pro_eligibility_tests_addresses', 'pro_eligibility_tests_addresses.demand_id', 'demands.id')
+    .selectAll('demands')
+    .select(sql.raw(`to_jsonb(pro_eligibility_tests_addresses)`).as('testAddress'));
 
   if (user.role === 'admin') {
     // No filter for admin

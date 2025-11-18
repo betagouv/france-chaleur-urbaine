@@ -277,7 +277,27 @@ function DemandesAdmin(): React.ReactElement {
       },
       {
         accessorKey: 'Status',
-        cell: ({ row }) => <Status demand={row.original as unknown as Demand} updateDemand={updateDemand} disabled={true} />,
+        cell: ({ row }) => {
+          const demand = row.original;
+          return (
+            <div>
+              <Status demand={row.original as unknown as Demand} updateDemand={updateDemand} disabled={true} className="mb-0!" />
+              <div className="" onClick={stopPropagation} onDoubleClick={stopPropagation}>
+                <EligibilityHelpDialog detailedEligibilityStatus={demand.testAddress.eligibility} tags={demand.recommendedTags}>
+                  <Button
+                    className="text-gray-700! font-normal! italic"
+                    title="Voir le détail de l'éligibilité"
+                    priority="tertiary no outline"
+                    size="small"
+                    iconId="fr-icon-info-line"
+                  >
+                    {demand.testAddress.eligibility?.type ? eligibilityTitleByType[demand.testAddress.eligibility?.type] : 'Non connu'}
+                  </Button>
+                </EligibilityHelpDialog>
+              </div>
+            </div>
+          );
+        },
         enableGlobalFilter: false,
         filterProps: {
           Component: ({ value }) => <DemandStatusBadge status={value as DemandStatus} />,
@@ -312,18 +332,7 @@ function DemandesAdmin(): React.ReactElement {
                 multiple
                 suggestedValue={demand.recommendedTags}
               />
-              <div className="flex items-center gap-2" onClick={stopPropagation} onDoubleClick={stopPropagation}>
-                <EligibilityHelpDialog detailedEligibilityStatus={demand.testAddress.eligibility} tags={demand.recommendedTags}>
-                  <Button
-                    className="text-gray-700! font-normal! italic"
-                    title="Voir le détail de l'éligibilité"
-                    priority="tertiary no outline"
-                    size="small"
-                  >
-                    {demand.testAddress.eligibility?.type ? eligibilityTitleByType[demand.testAddress.eligibility?.type] : 'Non connu'}
-                  </Button>
-                </EligibilityHelpDialog>
-              </div>
+
               {/* <div className="my-1">
                 {demand.detailedEligibilityStatus.type !== 'trop_eloigne' &&
                   !demand.detailedEligibilityStatus?.communes?.includes(demand.detailedEligibilityStatus.commune.nom!) && (
@@ -448,10 +457,10 @@ function DemandesAdmin(): React.ReactElement {
                     Adresse invalide
                   </Badge>
                 )}
-                {testAddress.eligibility?.type?.includes('dans_pdp') && <FCUBadge type="pdp" />}
+                {demand['en PDP'] === 'Oui' && <FCUBadge type="pdp" />}
               </div>
               {testAddress.source_address !== testAddress.ban_address && (
-                <div className=" text-xs italic text-gray-400 tracking-tighter">{testAddress.source_address}</div>
+                <div className="text-xs italic text-gray-400 tracking-tighter">{testAddress.source_address}</div>
               )}
               {(demand.Logement || demand['Surface en m2'] || demand.Conso) && <div className="border-t border-gray-600 my-2" />}
               {demand.Logement && <div className="text-xs font-bold">{demand.Logement} logements</div>}
@@ -477,7 +486,7 @@ function DemandesAdmin(): React.ReactElement {
           const demand = info.row.original;
           const testAddress = demand.testAddress;
           return (
-            <div className="flex items-center gap-2 flex-col justify-start">
+            <div className="flex items-start gap-2 flex-col justify-start">
               <TableFieldInput
                 title="Identifiant réseau"
                 value={demand['Identifiant réseau']}
@@ -523,6 +532,11 @@ function DemandesAdmin(): React.ReactElement {
         accessorKey: 'Sondage',
         cellType: 'Array',
         filterType: 'Facets',
+      },
+      {
+        accessorKey: 'en PDP',
+        filterType: 'Facets', // obligatoire pour faire fonctionner le filtre
+        visible: false,
       },
     ],
     [updateDemand, assignmentRulesResultsOptions]

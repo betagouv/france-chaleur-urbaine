@@ -8,10 +8,12 @@ const Status = ({
   demand,
   updateDemand,
   disabled = false,
+  className = '',
 }: {
   demand: Demand;
   updateDemand: (demandId: string, demand: Partial<Demand>) => Promise<void>;
   disabled?: boolean;
+  className?: string;
 }) => {
   const [status, setStatus] = useState<DemandStatus>(demandStatusDefault);
 
@@ -37,6 +39,7 @@ const Status = ({
         },
         value: status || demandStatusDefault,
       }}
+      className={className}
     />
   );
 };

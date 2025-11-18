@@ -1,6 +1,5 @@
+import Checkbox from '@/components/form/dsfr/Checkbox';
 import type { Demand } from '@/modules/demands/types';
-
-import { Checkbox } from './Contacted.styles';
 
 const Contacted = ({
   demand,
@@ -17,16 +16,12 @@ const Contacted = ({
 
   return (
     <Checkbox
-      options={[
-        {
-          label: '',
-          nativeInputProps: {
-            defaultChecked: demand['Prise de contact'],
-            onChange: handleCheckboxChange,
-            value: 'Prise de contact',
-          },
-        },
-      ]}
+      label=""
+      nativeInputProps={{
+        defaultChecked: demand['Prise de contact'],
+        name: 'prise_de_contact',
+        onChange: handleCheckboxChange,
+      }}
     />
   );
 };
