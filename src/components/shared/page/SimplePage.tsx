@@ -30,7 +30,7 @@ type SimplePageProps = {
   mode?: PageMode;
   currentPage?: string;
   includeFooter?: boolean;
-  layout?: 'center' | 'fluid';
+  layout?: 'center' | 'fluid' | 'large';
   className?: string;
 } & SEOProps;
 
@@ -56,7 +56,13 @@ const SimplePage = ({
       />
       <PageHeader mode={mode ?? 'public'} currentPage={currentPage} />
 
-      <main id="main-content" className={cx(layout === 'center' ? 'fr-container fr-my-2w' : '', className)}>
+      <main
+        id="main-content"
+        className={cx(
+          layout === 'center' ? 'fr-container fr-my-2w' : layout === 'large' ? 'fr-mx-4w fr-my-2w flex flex-col items-start' : '',
+          className
+        )}
+      >
         {children}
       </main>
       {includeFooter && <PageFooter />}
@@ -363,9 +369,21 @@ const adminNavigationMenu: MainNavigationProps.Item[] = [
       },
       {
         linkProps: {
+          href: '/admin/reseaux-demandes-stats',
+        },
+        text: 'Suivi réseaux et demandes',
+      },
+      {
+        linkProps: {
           href: '/admin/tags',
         },
         text: 'Gestion des tags gestionnaires',
+      },
+      {
+        linkProps: {
+          href: '/admin/tags-stats',
+        },
+        text: 'Statistiques par tag',
       },
       {
         linkProps: {
