@@ -4,7 +4,7 @@ import Hero, { HeroSubtitle, HeroTitle } from '@/components/ui/Hero';
 import Image from '@/components/ui/Image';
 import Link from '@/components/ui/Link';
 import Section, { SectionContent, SectionHeading, SectionTitle } from '@/components/ui/Section';
-import TableSimple from '@/components/ui/TableSimple';
+import TableSimple from '@/components/ui/table/TableSimple';
 import dataNumberFcu from '@/data/home/data-number-fcu';
 
 const Us = () => {

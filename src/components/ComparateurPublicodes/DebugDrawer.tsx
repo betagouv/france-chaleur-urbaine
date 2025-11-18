@@ -11,8 +11,8 @@ import Drawer from '@/components/ui/Drawer';
 import Heading from '@/components/ui/Heading';
 import Icon from '@/components/ui/Icon';
 import Link from '@/components/ui/Link';
-import TableSimple from '@/components/ui/TableSimple';
 import Tooltip from '@/components/ui/Tooltip';
+import TableSimple from '@/components/ui/table/TableSimple';
 
 import { modesDeChauffage } from './mappings';
 import type { SimulatorEngine } from './useSimulatorEngine';

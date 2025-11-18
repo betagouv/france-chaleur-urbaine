@@ -8,7 +8,7 @@ export type TableUrlState = {
   columnFilters?: ColumnFiltersState;
 };
 
-const useTableUrlState = (prefix: string | undefined, initialValues?: TableUrlState) => {
+export const useTableUrlState = (prefix: string | undefined, initialValues?: TableUrlState) => {
   // Utilise une clé par défaut unique si prefix n'est pas fourni pour éviter les conflits
   // Le hook sera toujours appelé pour respecter les règles de React, mais ne sera pas utilisé si prefix est undefined
   const effectivePrefix = prefix ?? '__internal_unused_table_state__';
@@ -64,5 +64,3 @@ const useTableUrlState = (prefix: string | undefined, initialValues?: TableUrlSt
     state,
   };
 };
-
-export default useTableUrlState;
