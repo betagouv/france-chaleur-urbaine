@@ -13,15 +13,14 @@ import Button from '@/components/ui/Button';
 import HamburgerMenu, { type HamburgerMenuItem } from '@/components/ui/HamburgerMenu';
 import Heading from '@/components/ui/Heading';
 import ModalSimple from '@/components/ui/ModalSimple';
-import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
 import Text from '@/components/ui/Text';
+import TableSimple, { type ColumnDef } from '@/components/ui/table/TableSimple';
 import { useFetch } from '@/hooks/useApi';
 import useCrud from '@/hooks/useCrud';
 import { notify, toastErrors } from '@/modules/notification';
 import type { UsersResponse } from '@/pages/api/admin/users/[[...slug]]';
 import { withAuthentication } from '@/server/authentication';
 import type { UserRole } from '@/types/enum/UserRole';
-import type { ExportColumn } from '@/utils/export';
 import { postFetchJSON } from '@/utils/network';
 import { compareFrenchStrings } from '@/utils/strings';
 import type { AdminUsersStats } from '../api/admin/users-stats';
@@ -48,21 +47,6 @@ const initialColumnFilters: ColumnFiltersState = [
   {
     id: 'active',
     value: { false: false, true: true },
-  },
-];
-
-const usersExportColumns: ExportColumn<UsersResponse['listItem']>[] = [
-  {
-    accessorKey: 'email',
-    name: 'Email',
-  },
-  {
-    accessorFn: (user) => new Date(user.created_at as any).toLocaleDateString('fr-FR'),
-    name: 'Date de création du compte',
-  },
-  {
-    accessorKey: 'active',
-    name: 'Compte actif',
   },
 ];
 
@@ -166,6 +150,7 @@ export default function ManageUsers() {
       {
         accessorKey: 'last_connection',
         cellType: 'DateTime',
+        filterType: 'Range',
         header: 'Dernière activité',
       },
       {
@@ -173,7 +158,7 @@ export default function ManageUsers() {
         align: 'center',
         cellType: 'Boolean',
         filterType: 'Facets',
-        header: 'Actif',
+        header: 'Activé',
       },
       {
         accessorKey: 'created_at',
@@ -256,21 +241,6 @@ export default function ManageUsers() {
     [setNbUsersFilter]
   );
 
-  const buildSheetData = useCallback(
-    () => [
-      {
-        columns: usersExportColumns,
-        data: users.filter((u) => {
-          const sixMonthsAgo = new Date();
-          sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
-          return !u.last_connection || new Date(u.created_at as any) < sixMonthsAgo;
-        }),
-        name: 'utilisateurs_obsoletes',
-      },
-    ],
-    [users]
-  );
-
   return (
     <SimplePage title="Gestion des utilisateurs" mode="authenticated">
       <ModalSimple
@@ -304,15 +274,13 @@ export default function ManageUsers() {
           </>
         )}
 
-        <header className="flex justify-between items-center">
-          <div>
-            <Heading as="h2" color="blue-france" mt="4w">
-              Liste des comptes{' '}
-              <small className="text-faded text-base">
-                {nbUsersFilter} / {users?.length}
-              </small>
-            </Heading>
-          </div>
+        <header className="flex justify-between items-baseline">
+          <Heading as="h2" color="blue-france" mt="4w">
+            Liste des comptes{' '}
+            <small className="text-faded text-base">
+              {nbUsersFilter} / {users?.length}
+            </small>
+          </Heading>
           <Button size="small" priority="secondary" iconId="ri-add-line" title="Ajouter un utilisateur" onClick={() => setUserId('new')}>
             <span>Ajouter un utilisateur</span>
           </Button>
@@ -324,13 +292,15 @@ export default function ManageUsers() {
           columnFilters={initialColumnFilters}
           onFilterChange={onFilterChange}
           enableGlobalFilter
+          export={{
+            fileName: 'utilisateurs.xlsx',
+            sheetName: 'utilisateurs',
+          }}
           controlsLayout="block"
           padding="sm"
           loading={isLoading}
+          urlSyncKey="users"
         />
-        <ButtonExport size="small" filename="utilisateurs_obsoletes.xlsx" sheets={buildSheetData}>
-          Exporter la liste des comptes obsolètes (connexion de plus de 6 mois ou nulle)
-        </ButtonExport>
       </Box>
     </SimplePage>
   );

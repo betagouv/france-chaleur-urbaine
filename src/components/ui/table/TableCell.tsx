@@ -29,7 +29,7 @@ export type TableCellProps<T> = {
   cellProps?: Partial<CellProps<T>[keyof CellProps<T>]>;
 };
 
-const Cell = <T,>({ value, children: defaultValue, data, type, cellProps = {} }: TableCellProps<T>) => {
+const TableCell = <T,>({ value, children: defaultValue, data, type, cellProps = {} }: TableCellProps<T>) => {
   if (!value && type !== 'Boolean') {
     return defaultValue;
   }
@@ -39,7 +39,7 @@ const Cell = <T,>({ value, children: defaultValue, data, type, cellProps = {} }:
       const dateTime = new Date(value);
       return (
         <span className="block" suppressHydrationWarning>
-          <time dateTime={dateTime.toISOString()} className="block whitespace-nowrap">
+          <time dateTime={dateTime.toISOString()} className="block">
             {dateTime.toLocaleDateString(undefined, hasCellProps ? (cellProps as Intl.DateTimeFormatOptions) : { dateStyle: 'medium' })}
           </time>
           <time dateTime={dateTime.toISOString()} className="block font-sans text-xs uppercase text-gray-400">
@@ -130,7 +130,7 @@ const Cell = <T,>({ value, children: defaultValue, data, type, cellProps = {} }:
   return defaultValue;
 };
 
-export default memo(Cell, (prevProps, nextProps) => {
+export default memo(TableCell, (prevProps, nextProps) => {
   // Éviter la sérialisation JSON qui peut causer des erreurs de structure circulaire
   // Comparer directement les types et les valeurs
   return prevProps.type === nextProps.type && isEqual(prevProps.value, nextProps.value) && isEqual(prevProps.data, nextProps.data);

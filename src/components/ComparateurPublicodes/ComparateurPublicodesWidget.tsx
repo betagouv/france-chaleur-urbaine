@@ -3,7 +3,7 @@ import React from 'react';
 
 import { FormProvider } from '@/components/form/publicodes/FormProvider';
 import Heading from '@/components/ui/Heading';
-import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
+import TableSimple, { type ColumnDef } from '@/components/ui/table/TableSimple';
 import type { LocationInfoResponse } from '@/pages/api/location-infos';
 import { postFetchJSON } from '@/utils/network';
 import { ObjectEntries } from '@/utils/typescript';

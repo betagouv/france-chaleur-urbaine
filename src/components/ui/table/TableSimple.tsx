@@ -2,17 +2,19 @@ import { fr } from '@codegouvfr/react-dsfr';
 import Input from '@codegouvfr/react-dsfr/Input';
 import { usePrevious } from '@react-hookz/web';
 import {
+  type AccessorKeyColumnDefBase,
   type ColumnDef as ColumnDefOriginal,
   type ColumnFiltersState,
   type FilterFn,
   flexRender,
   getCoreRowModel,
-  getFacetedMinMaxValues,
   getFacetedRowModel,
   getFacetedUniqueValues,
   getFilteredRowModel,
+  getMemoOptions,
   getSortedRowModel,
   type Header,
+  memo,
   type Row,
   type RowData,
   type RowSelectionState,
@@ -23,17 +25,20 @@ import {
 } from '@tanstack/react-table';
 import { useVirtualizer, type Virtualizer } from '@tanstack/react-virtual';
 import { cva } from 'class-variance-authority';
-import React, { type RefObject, useEffect } from 'react';
+import dynamic from 'next/dynamic';
+import React, { type RefObject, useCallback, useEffect } from 'react';
 
 import Button from '@/components/ui/Button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover';
+import { useTableState } from '@/components/ui/table/useTableState';
 import { isDevModeEnabled } from '@/hooks/useDevMode';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
 import type { FlattenKeys } from '@/utils/typescript';
-
 import TableCell, { type TableCellProps } from './TableCell';
 import TableFilter, { defaultTableFilterFns, type TableFilterProps } from './TableFilter';
+
+const ButtonExport = dynamic(() => import('@/components/ui/ButtonExport'), { ssr: false });
 
 export const customSortingFn = <T extends RowData>(): Record<string, SortingFn<T>> => ({
   // nullsLast will be working only when sorting is asc as react-table is just inversing the result of the function
@@ -57,6 +62,16 @@ export const customFilterFn = <T extends RowData>(): Record<string, FilterFn<T>>
       .filter(([, isSelected]) => isSelected)
       .some(([key]) => value.includes(key));
   },
+  inDateRangeNotNull: (row, columnId, filterValue: [string, string, boolean?]) => {
+    const [minDate, maxDate, includeNull] = filterValue;
+    const value = row.getValue<string | null>(columnId);
+
+    if (value == null) {
+      return includeNull === true;
+    }
+
+    return value >= minDate && value <= maxDate;
+  },
   inNumberRangeNotNull: (row, columnId, filterValue: [number, number]) => {
     const [min, max] = filterValue;
     const value = row.getValue<number>(columnId);
@@ -73,7 +88,6 @@ export const customFilterFn = <T extends RowData>(): Record<string, FilterFn<T>>
 });
 
 export type ColumnDef<T, K = any> = ColumnDefOriginal<T, K> & {
-  accessorKey?: string;
   cellType?: TableCellProps<T>['type'];
   cellProps?: TableCellProps<T>['cellProps'];
   align?: 'center' | 'left' | 'right';
@@ -85,35 +99,6 @@ export type ColumnDef<T, K = any> = ColumnDefOriginal<T, K> & {
   filterProps?: TableFilterProps['filterProps'];
   visible?: boolean;
 } & ({ flex?: number } | { width?: 'auto' | string });
-
-export type TableSimpleProps<T> = {
-  columns: ColumnDef<T>[];
-  data: T[];
-  initialSortingState?: SortingState;
-  columnFilters?: ColumnFiltersState;
-  loading?: boolean;
-  caption?: string;
-  enableRowSelection?: boolean;
-  enableGlobalFilter?: boolean;
-  globalFilter?: string;
-  className?: string;
-  wrapperClassName?: string;
-  fluid?: boolean;
-  padding?: 'sm' | 'md' | 'lg';
-  rowSelection?: RowSelectionState;
-  onSelectionChange?: (selectedRows: T[]) => void;
-  onRowClick?: (rowId: any) => void;
-  onRowDoubleClick?: (rowId: any) => void;
-  rowIdKey?: keyof T;
-  rowHeight?: number;
-  controlsLayout?: 'inline' | 'block';
-  onFilterChange?: (filteredRows: T[]) => void;
-  nbLoadingItems?: number;
-  loadingEmptyMessage?: string;
-  height?: string;
-  virtualizerRef?: RefObject<Virtualizer<HTMLDivElement, Element>>;
-  topRightActions?: React.ReactNode;
-};
 
 const cellCustomClasses = cva('', {
   defaultVariants: {
@@ -350,6 +335,7 @@ const TableTH = <T extends RowData>({
                   filterProps={columnDef.filterProps as any /* Not working as is for an unknown reason*/}
                   facetedMinMaxValues={header.column.getFacetedMinMaxValues()}
                   facetedUniqueValues={header.column.getFacetedUniqueValues()}
+                  cellType={columnDef.cellType}
                 />
                 <Button
                   priority="tertiary"
@@ -375,6 +361,43 @@ const TableTH = <T extends RowData>({
       </div>
     </th>
   );
+};
+
+export type TableSimpleProps<T> = {
+  columns: ColumnDef<T>[];
+  data: T[];
+  initialSortingState?: SortingState;
+  columnFilters?: ColumnFiltersState;
+  loading?: boolean;
+  caption?: string;
+  enableRowSelection?: boolean;
+  enableGlobalFilter?: boolean;
+  globalFilter?: string;
+  className?: string;
+  wrapperClassName?: string;
+  fluid?: boolean;
+  padding?: 'sm' | 'md' | 'lg';
+  rowSelection?: RowSelectionState;
+  onSelectionChange?: (selectedRows: T[]) => void;
+  onRowClick?: (rowId: any) => void;
+  onRowDoubleClick?: (rowId: any) => void;
+  rowIdKey?: keyof T;
+  rowHeight?: number;
+  controlsLayout?: 'inline' | 'block';
+  onFilterChange?: (filteredRows: T[]) => void;
+  nbLoadingItems?: number;
+  loadingEmptyMessage?: string;
+  height?: string;
+  virtualizerRef?: RefObject<Virtualizer<HTMLDivElement, Element>>;
+  topRightActions?: React.ReactNode;
+  export?: {
+    fileName: string;
+    sheetName: string;
+  };
+  /**
+   * Synchronise l'état du tableau avec l'URL avec cette clé comme préfixe.
+   */
+  urlSyncKey?: string;
 };
 
 const TableSimple = <T extends RowData>({
@@ -404,14 +427,17 @@ const TableSimple = <T extends RowData>({
   height = '600px',
   virtualizerRef,
   topRightActions,
+  export: exportConfig,
+  urlSyncKey,
 }: TableSimpleProps<T>) => {
-  const [globalFilter, setGlobalFilter] = React.useState<string>('');
-  const [sortingState, setSortingState] = React.useState<SortingState>(initialSortingState ?? []);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(defaultColumnFilters ?? []);
-
-  React.useEffect(() => {
-    setColumnFilters(defaultColumnFilters ?? []);
-  }, [defaultColumnFilters]);
+  const {
+    columnFilters,
+    globalFilter,
+    setColumnFilters,
+    setGlobalFilter,
+    setSorting,
+    sorting: sortingState,
+  } = useTableState(urlSyncKey, initialSortingState, defaultColumnFilters, externalGlobalFilter);
 
   const columnClassName = React.useCallback(({ align, className }: ColumnDef<T>) => {
     const classNames = [];
@@ -456,10 +482,7 @@ const TableSimple = <T extends RowData>({
   };
 
   const tableColumns = React.useMemo(() => {
-    if (enableRowSelection) {
-      return [selectionColumn, ...columns];
-    }
-    return columns;
+    return enableRowSelection ? [selectionColumn, ...columns] : columns;
   }, [columns, enableRowSelection]);
 
   const customSortingFns = customSortingFn<T>();
@@ -474,19 +497,27 @@ const TableSimple = <T extends RowData>({
     }
     const filterTypeName = defaultTableFilterFns[column.filterType as keyof typeof defaultTableFilterFns];
     if (!column.filter && !column.filterFn && column.filterType && filterTypeName) {
-      column.filterFn = customFilterFns[filterTypeName] || filterTypeName;
+      // Si c'est un Range avec DateTime/Date, utilise inDateRangeNotNull
+      const isDateRange = column.filterType === 'Range' && (column.cellType === 'DateTime' || column.cellType === 'Date');
+      const actualFilterFn = isDateRange ? 'inDateRangeNotNull' : filterTypeName;
+      column.filterFn = customFilterFns[actualFilterFn] || actualFilterFn;
     }
   });
 
   const columnVisibility = React.useMemo(() => {
     return tableColumns.reduce(
       (acc, column) => {
-        acc[column.id || (column.accessorKey as string)] = column.visible ?? true;
+        acc[column.id ?? (column as any).accessorKey ?? column.header] = column.visible ?? true;
         return acc;
       },
       {} as Record<string, boolean>
     );
   }, [tableColumns]);
+
+  // Détermine le filtre global effectif : priorité à externalGlobalFilter si fourni et urlSync désactivé
+  const effectiveGlobalFilter = urlSyncKey ? globalFilter : (externalGlobalFilter ?? globalFilter);
+  // Active la gestion du changement de filtre global uniquement si urlSync est activé ou si externalGlobalFilter n'est pas fourni
+  const shouldHandleGlobalFilterChange = urlSyncKey || !isDefined(externalGlobalFilter);
 
   const table = useReactTable({
     columns: tableColumns,
@@ -494,18 +525,18 @@ const TableSimple = <T extends RowData>({
     debugTable: isDevModeEnabled(),
     enableRowSelection,
     getCoreRowModel: getCoreRowModel(),
-    getFacetedMinMaxValues: getFacetedMinMaxValues(), //if you need min/max values
+    getFacetedMinMaxValues: getFCUFacetedMinMaxValues() as any, //if you need min/max values. any to handle [string, string]
     getFacetedRowModel: getFacetedRowModel(), //if you need a list of values for a column (other faceted row models depend on this one)
     getFacetedUniqueValues: getFacetedUniqueValues(), //if you need a list of unique values
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
     onColumnFiltersChange: setColumnFilters,
-    onGlobalFilterChange: isDefined(externalGlobalFilter) ? undefined : setGlobalFilter,
-    onSortingChange: setSortingState,
+    onGlobalFilterChange: shouldHandleGlobalFilterChange ? setGlobalFilter : undefined,
+    onSortingChange: setSorting,
     state: {
       columnFilters,
       columnVisibility,
-      globalFilter: externalGlobalFilter ?? globalFilter,
+      globalFilter: effectiveGlobalFilter,
       rowSelection,
       sorting: sortingState,
     },
@@ -528,6 +559,42 @@ const TableSimple = <T extends RowData>({
       onFilterChange(filteredRows.map((row) => row.original));
     }
   }, [rows, filteredRows, onFilterChange]);
+
+  const buildExportData = useCallback(() => {
+    if (!exportConfig) {
+      return [];
+    }
+    const computedExportColumns = tableColumns
+      .filter((col) => col.visible !== false && col.id !== 'selection' && col.id !== 'actions')
+      .map((col) => {
+        const header = (
+          typeof col.header === 'string' ? col.header : (col as AccessorKeyColumnDefBase<T, any>).accessorKey || col.id || ''
+        ) as string;
+
+        return 'accessorKey' in col
+          ? {
+              accessorKey: col.accessorKey as keyof T,
+              name: header,
+            }
+          : 'accessorFn' in col
+            ? {
+                accessorFn: col.accessorFn as (item: T) => string | number | boolean,
+                name: header,
+              }
+            : null;
+      })
+      .filter((col) => col !== null);
+
+    const filteredData = filteredRows.map((row) => row.original);
+
+    return [
+      {
+        columns: computedExportColumns,
+        data: filteredData,
+        name: exportConfig.sheetName,
+      },
+    ];
+  }, [tableColumns, filteredRows, exportConfig]);
 
   // the virtualizer needs to know the scrollable container element
   const tableContainerRef = React.useRef<HTMLDivElement>(null);
@@ -579,7 +646,20 @@ const TableSimple = <T extends RowData>({
             }}
           />
         )}
-        <div className={cx(enableGlobalFilter && 'mb-6' /** mb-6 to be aligned with the input */)}>{topRightActions}</div>
+        <div className={cx('flex items-center gap-2', enableGlobalFilter && 'mb-6' /** mb-6 to be aligned with the input */)}>
+          {exportConfig && (
+            <ButtonExport
+              size="small"
+              filename={exportConfig.fileName}
+              sheets={buildExportData}
+              iconId="ri-download-line"
+              priority="secondary"
+            >
+              Télécharger les données
+            </ButtonExport>
+          )}
+          {topRightActions}
+        </div>
       </div>
       {caption && <div className="text-2xl leading-8 font-bold mb-5">{caption}</div>}
       <div
@@ -699,3 +779,33 @@ export type QuickFilterPreset<Data> = {
     value: boolean | number | [number, number] | Record<string, boolean>;
   }[];
 };
+
+// adapted from https://github.com/TanStack/table/blob/02c203afed5865cfec0aa614de9f2861645d6ff9/packages/table-core/src/utils/getFacetedMinMaxValues.ts
+// to handle string dates
+function getFCUFacetedMinMaxValues<TData extends RowData>() {
+  return (table: Table<TData>, columnId: string) =>
+    memo(
+      () => [table.getColumn(columnId)?.getFacetedRowModel(), (table.getColumn(columnId)?.columnDef as any).cellType], // TODO cellType ne devrait pas se retrouver dans tanstack table
+      (facetedRowModel, cellType) => {
+        if (!facetedRowModel) return undefined;
+
+        let uniqueValues = facetedRowModel.flatRows.flatMap((flatRow) => flatRow.getUniqueValues(columnId) ?? []) as string[] | number[];
+        if (cellType !== 'DateTime' && cellType !== 'Date') {
+          uniqueValues = uniqueValues.map(Number).filter((value) => !Number.isNaN(value)) as number[];
+        }
+
+        if (!uniqueValues.length) return;
+
+        let facetedMinValue = uniqueValues[0]!;
+        let facetedMaxValue = uniqueValues[uniqueValues.length - 1]!;
+
+        for (const value of uniqueValues) {
+          if (value < facetedMinValue) facetedMinValue = value;
+          else if (value > facetedMaxValue) facetedMaxValue = value;
+        }
+
+        return [facetedMinValue, facetedMaxValue] as [number, number] | [string, string];
+      },
+      getMemoOptions(table.options, 'debugTable', 'getFacetedMinMaxValues')
+    );
+}
