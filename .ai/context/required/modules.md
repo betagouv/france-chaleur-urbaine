@@ -2,6 +2,11 @@
 
 **Location**: `src/modules/` (16+ modules)
 
+## Module Context Loading
+
+When working in `src/modules/MODULE_NAME/`:
+- Always load `src/modules/MODULE_NAME/AGENTS.md` if it exists
+
 ## Standard Module Structure
 
 ```

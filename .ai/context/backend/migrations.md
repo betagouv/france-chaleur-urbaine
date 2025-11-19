@@ -43,4 +43,3 @@ export async function down(knex: Knex): Promise<void> {
 - Use `timestamp with time zone` for timestamps
 - PostGIS: use `knex.raw()` for geometry columns
 - After migration: **ALWAYS run `pnpm db:sync`** to update types
-
