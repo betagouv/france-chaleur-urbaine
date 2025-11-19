@@ -14,8 +14,8 @@ overrides:
 
 dependencies:
   '@betagouv/france-chaleur-urbaine-publicodes':
-    specifier: ^1.1.0
-    version: 1.1.0(publicodes@1.9.1)
+    specifier: github:betagouv/france-chaleur-urbaine-publicodes#dev
+    version: github.com/betagouv/france-chaleur-urbaine-publicodes/5957f67a212b222594aa96a8e289e155a4e1b515(publicodes@1.9.1)
   '@bprogress/next':
     specifier: ^3.2.12
     version: 3.2.12(next@16.0.0)(react-dom@19.2.0)(react@19.2.0)
@@ -2466,14 +2466,6 @@ packages:
     dependencies:
       '@babel/helper-string-parser': 7.27.1
       '@babel/helper-validator-identifier': 7.27.1
-
-  /@betagouv/france-chaleur-urbaine-publicodes@1.1.0(publicodes@1.9.1):
-    resolution: {integrity: sha512-JoX7FgZH4/tRqL5+nHbOj7UcmYiCMzfrNsdNYiAI/dSn5kOsrhJQNpNbsVk3D1bO+I8tGSKaqx9V3YS1T1sJ7A==}
-    peerDependencies:
-      publicodes: ^1.9.0
-    dependencies:
-      publicodes: 1.9.1
-    dev: false
 
   /@biomejs/biome@2.2.4:
     resolution: {integrity: sha512-TBHU5bUy/Ok6m8c0y3pZiuO/BZoY/OcGxoLlrfQof5s8ISVwbVBdFINPQZyFfKwil8XibYWb7JMwnT8wT4WVPg==}
@@ -14475,4 +14467,15 @@ packages:
     version: 0.20.1
     engines: {node: '>=0.8'}
     hasBin: true
+    dev: false
+
+  github.com/betagouv/france-chaleur-urbaine-publicodes/5957f67a212b222594aa96a8e289e155a4e1b515(publicodes@1.9.1):
+    resolution: {tarball: https://codeload.github.com/betagouv/france-chaleur-urbaine-publicodes/tar.gz/5957f67a212b222594aa96a8e289e155a4e1b515}
+    id: github.com/betagouv/france-chaleur-urbaine-publicodes/5957f67a212b222594aa96a8e289e155a4e1b515
+    name: '@betagouv/france-chaleur-urbaine-publicodes'
+    version: 1.1.0
+    peerDependencies:
+      publicodes: ^1.9.0
+    dependencies:
+      publicodes: 1.9.1
     dev: false
