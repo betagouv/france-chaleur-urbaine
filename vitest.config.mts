@@ -10,6 +10,7 @@ export default defineConfig({
   test: {
     alias: {
       '@': resolve(__dirname, 'src'),
+      '@/client-config': resolve(__dirname, 'src/client-config.ts'),
       '@cli': resolve(__dirname, 'scripts'),
       '@react-hookz/web/useCookieValue': resolve(__dirname, 'node_modules/@react-hookz/web/dist/useCookieValue/index.js'),
       '@root': resolve(__dirname, '.'),
@@ -20,6 +21,11 @@ export default defineConfig({
       if (log.includes('React does not recognize')) {
         return false;
       }
+    },
+    server: {
+      deps: {
+        inline: ['@/client-config'],
+      },
     },
     setupFiles: ['./src/tests/setup-mocks.ts'],
   },
