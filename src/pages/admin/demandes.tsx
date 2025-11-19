@@ -673,13 +673,13 @@ function DemandesAdmin(): React.ReactElement {
               onRowClick={onTableRowClick}
               onRowDoubleClick={onTableRowDoubleClick}
               loadingEmptyMessage="Aucune demande à afficher"
-              height="calc(100dvh - 140px)"
+              height="calc(100dvh - 164px)"
               virtualizerRef={virtualizerRef}
             />
           </ResizablePanel>
           <ResizableHandle />
           <ResizablePanel defaultSize={34}>
-            <div className={cx('max-md:h-[600px] md:h-[calc(100dvh-140px)] bg-[#F8F4F0]')}>
+            <div className={cx('max-md:h-[600px] md:h-[calc(100dvh-164px)] bg-[#F8F4F0]')}>
               {isDefined(mapCenterLocation) ? (
                 <Map
                   noPopup
