@@ -75,9 +75,19 @@ const augmentGestionnaireDemand = <T extends Selectable<Demands>>({
 export const update = async (recordId: string, values: Partial<AirtableLegacyRecord>) => {
   // Get current demand before update to detect changes
   const currentDemand = await kdb.selectFrom(tableName).selectAll().where('id', '=', recordId).executeTakeFirst();
-  console.log(''); //eslint-disable-line
-  console.log('╔════START═════update═══════════════════════════════════════════════'); //eslint-disable-line
-  console.log(values); //eslint-disable-line
+
+  // Check if 'Gestionnaire Affecté à' has changed
+  const oldAssignment = currentDemand?.legacy_values['Gestionnaire Affecté à'];
+  const newAssignment = values['Gestionnaire Affecté à'];
+
+  if (values['Affecté à'] && currentDemand?.legacy_values['Gestionnaire Affecté à']) {
+    // Affectation a changé, on reset le gestionnaire affecté à
+    values['Gestionnaire Affecté à'] = values['Affecté à'];
+  }
+  if (newAssignment && oldAssignment !== newAssignment) {
+    // Affectation a changé, on demande une revalidation des gestionnaires
+    values['Gestionnaires validés'] = false;
+  }
 
   const [updatedDemand] = await kdb
     .updateTable(tableName)
@@ -88,10 +98,6 @@ export const update = async (recordId: string, values: Partial<AirtableLegacyRec
     .where('id', '=', recordId)
     .returningAll()
     .execute();
-
-  // Check if 'Gestionnaire Affecté à' has changed
-  const oldAssignment = currentDemand?.legacy_values['Gestionnaire Affecté à'];
-  const newAssignment = values['Gestionnaire Affecté à'];
 
   if (newAssignment && oldAssignment !== newAssignment) {
     // Automation import from https://airtable.com/app9opX8gRAtBqkan/wfloOFXhfUKvhL2Qc
@@ -109,17 +115,12 @@ export const update = async (recordId: string, values: Partial<AirtableLegacyRec
     .selectAll()
     .where('demand_id', '=', updatedDemand.id)
     .executeTakeFirst();
-  console.log(JSON.stringify({ id: updatedDemand.id, ...updatedDemand.legacy_values }, null, 2)); //eslint-disable-line
-  console.log('╚════END══════════════════════════════════════════════════════'); //eslint-disable-line
 
   return augmentAdminDemand({ demand: updatedDemand, testAddress: testAddress || null });
 };
 
 export const create = async (values: CreateDemandInput) => {
   const legacyValues = formatDataToLegacyAirtable(values);
-  console.log(''); //eslint-disable-line
-  console.log('╔════START══create════════════════════════════════════════════════'); //eslint-disable-line
-  console.log(values); //eslint-disable-line
   const [createdDemand] = await kdb
     .insertInto(tableName)
     .values({
