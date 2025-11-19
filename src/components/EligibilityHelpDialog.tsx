@@ -3,7 +3,7 @@ import { type ReactNode, useState } from 'react';
 import Button from '@/components/ui/Button';
 import Dialog from '@/components/ui/Dialog';
 import Icon from '@/components/ui/Icon';
-import { eligibilityTypes } from '@/modules/pro-eligibility-tests/constants';
+import { eligibilityTypes } from '@/modules/demands/constants';
 import type { ProEligibilityTestHistoryEntry } from '@/modules/pro-eligibility-tests/types';
 import cx from '@/utils/cx';
 
