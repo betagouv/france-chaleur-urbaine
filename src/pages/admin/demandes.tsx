@@ -374,8 +374,8 @@ function DemandesAdmin(): React.ReactElement {
                 onChange={(value) => updateDemand(demand.id, { 'Affecté à': value || (null as any) })} // null allows a truly empty field (not an empty tag)
                 suggestedValue={demand.recommendedAssignment}
               />
-              {demand['Gestionnaire Affecté à'] && (
-                <div className="text-xs text-gray-500">
+              {demand['Gestionnaire Affecté à'] && demand['Gestionnaire Affecté à'] !== demand['Affecté à'] && (
+                <div className="text-xs text-warning">
                   Demande de changement d'affectation: <strong>{demand['Gestionnaire Affecté à']}</strong>
                 </div>
               )}

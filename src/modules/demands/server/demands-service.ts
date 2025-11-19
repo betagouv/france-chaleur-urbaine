@@ -81,7 +81,11 @@ export const update = async (recordId: string, values: Partial<AirtableLegacyRec
   const oldAssignment = currentDemand?.legacy_values['Gestionnaire Affecté à'];
   const newAssignment = values['Gestionnaire Affecté à'];
 
-  if (values['Affecté à'] && currentDemand?.legacy_values['Gestionnaire Affecté à']) {
+  if (
+    values['Affecté à'] &&
+    currentDemand?.legacy_values['Gestionnaire Affecté à'] &&
+    values['Affecté à'] !== currentDemand?.legacy_values['Gestionnaire Affecté à']
+  ) {
     // Affectation a changé, on reset le gestionnaire affecté à
     values['Gestionnaire Affecté à'] = values['Affecté à'];
   }
