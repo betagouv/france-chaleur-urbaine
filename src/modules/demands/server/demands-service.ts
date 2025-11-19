@@ -469,15 +469,11 @@ export const list = async (user: User) => {
   } else if (user.role === 'demo') {
     query = query
       .where(sql`legacy_values->>'Gestionnaires validés'`, '=', 'true')
-      .where(sql`legacy_values->'Gestionnaires'`, '?|', sql.raw(`ARRAY['Paris']`));
+      .where(sql`legacy_values->'Gestionnaires'`, '?|', sql.val(['Paris']));
   } else if (user.role === 'gestionnaire') {
     query = query
       .where(sql`legacy_values->>'Gestionnaires validés'`, '=', 'true')
-      .where(
-        sql`legacy_values->'Gestionnaires'`,
-        '?|',
-        sql.raw(`ARRAY[${user.gestionnaires.map((gestionnaire) => `'${gestionnaire.replace(/'/g, "''")}'`).join(',')}]`)
-      );
+      .where(sql`legacy_values->'Gestionnaires'`, '?|', sql.val(user.gestionnaires));
   }
 
   const records = await query.orderBy(sql`legacy_values->>'Date de la demande'`, 'desc').execute();
