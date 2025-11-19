@@ -154,12 +154,12 @@ export type EligibilityCase = {
 export const eligibilityTypes = [
   {
     description: "L'adresse se trouve dans un Périmètre de Développement Prioritaire (PDP) où un réseau de chaleur existe.",
-    title: 'Dans un PDP',
+    title: 'Dans un PDP réseau existant',
     type: 'dans_pdp_reseau_existant',
   },
   {
     description: "L'adresse se trouve dans un Périmètre de Développement Prioritaire (PDP) où un réseau de chaleur est prévu.",
-    title: 'Dans un PDP',
+    title: 'Dans un PDP réseau futur',
     type: 'dans_pdp_reseau_futur',
   },
   {
