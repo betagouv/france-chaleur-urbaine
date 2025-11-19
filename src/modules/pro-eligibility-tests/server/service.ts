@@ -317,15 +317,9 @@ export const get = async (testId: string, _config: ListConfig<typeof tableName>,
         eligibility_history: history,
         etat_reseau:
           lastEligibility?.eligibility.type &&
-          (
-            [
-              'dans_pdp_reseau_existant',
-              'reseau_existant_tres_proche',
-              'reseau_existant_proche',
-              'reseau_existant_loin',
-              'dans_ville_reseau_existant_sans_trace',
-            ] as EligibilityType[]
-          ).includes(lastEligibility.eligibility.type)
+          (['dans_pdp_reseau_existant', 'reseau_existant_tres_proche', 'reseau_existant_proche'] as EligibilityType[]).includes(
+            lastEligibility.eligibility.type
+          )
             ? 'existant'
             : lastEligibility?.eligibility.type &&
                 (
@@ -334,7 +328,6 @@ export const get = async (testId: string, _config: ListConfig<typeof tableName>,
                     'reseau_futur_tres_proche',
                     'dans_zone_reseau_futur',
                     'reseau_futur_proche',
-                    'reseau_futur_loin',
                   ] as EligibilityType[]
                 ).includes(lastEligibility.eligibility.type)
               ? 'en_construction'
