@@ -4,6 +4,7 @@ import {
   zAddRelanceCommentInput,
   zAdminUpdateDemandInput,
   zCreateDemandInput,
+  zDeleteDemandInput,
   zGestionnaireUpdateDemandInput,
   zListEmailsInput,
   zSendEmailInput,
@@ -13,6 +14,13 @@ import * as demandsService from './demands-service';
 
 export const demandsRouter = router({
   admin: {
+    delete: route
+      .meta({ auth: { roles: ['admin'] } })
+      .input(zDeleteDemandInput)
+      .mutation(async ({ input }) => {
+        const { demandId } = input;
+        await demandsService.remove(demandId);
+      }),
     list: route.meta({ auth: { roles: ['admin'] } }).query(async () => {
       const result = await demandsService.listAdmin();
       return result;

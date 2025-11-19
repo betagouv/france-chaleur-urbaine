@@ -43,7 +43,6 @@ import type { Point } from '@/types/Point';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
 import { stopPropagation } from '@/utils/events';
-import { deleteFetchJSON } from '@/utils/network';
 import { formatMWh, upperCaseFirstChar } from '@/utils/strings';
 
 type DemandsListAdminData = RouterOutput['demands']['admin']['list'];
@@ -219,6 +218,7 @@ function DemandesAdmin(): React.ReactElement {
 
   const utils = trpc.useUtils();
   const { mutateAsync: updateDemandMutation } = trpc.demands.admin.update.useMutation();
+  const { mutateAsync: deleteDemandMutation } = trpc.demands.admin.delete.useMutation();
 
   const updateDemand = useCallback(
     toastErrors(async (demandId: string, demandUpdate: Partial<DemandsListAdminItem>) => {
@@ -242,18 +242,18 @@ function DemandesAdmin(): React.ReactElement {
 
   const deleteDemand = useCallback(
     toastErrors(async (demandId: string) => {
-      await deleteFetchJSON(`/api/admin/demands/${demandId}`);
+      await deleteDemandMutation({ demandId });
 
       utils.demands.admin.list.setData(undefined, (demandsData) => {
         if (!demandsData) return demandsData;
         return {
-          count: demandsData.count,
+          count: demandsData.count - 1,
           items: demandsData.items.filter((demand) => demand.id !== demandId),
         };
       });
       notify('success', 'Demande supprimée');
     }),
-    [utils]
+    [utils, deleteDemandMutation]
   );
 
   useMapEventBus('rdc-add-tag', (event) => {

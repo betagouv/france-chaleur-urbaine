@@ -8,6 +8,10 @@ export const zAddRelanceCommentInput = z.object({
   relanceId: z.string(),
 });
 
+export const zDeleteDemandInput = z.object({
+  demandId: z.string(),
+});
+
 export const zListEmailsInput = z.object({
   demand_id: z.string(),
 });
