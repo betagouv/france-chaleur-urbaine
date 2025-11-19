@@ -3,7 +3,7 @@ import { Fragment, useCallback, useMemo } from 'react';
 
 import { VerticalDivider } from '@/components/ui/Divider';
 import Indicator from '@/components/ui/Indicator';
-import type { QuickFilterPreset } from '@/components/ui/TableSimple';
+import type { QuickFilterPreset } from '@/components/ui/table/TableSimple';
 import { ObjectEntries, ObjectKeys } from '@/utils/typescript';
 
 type QuickFilterPresetsProps<TData, TPresets extends Record<string, QuickFilterPreset<TData>>> = {
