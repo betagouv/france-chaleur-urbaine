@@ -37,4 +37,3 @@ describe('functionName', () => {
 ## Setup
 
 Mock setup in `src/tests/setup-mocks.ts`, auto-loaded by Vitest config.
-

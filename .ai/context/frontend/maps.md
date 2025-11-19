@@ -1,4 +1,4 @@
-## Map (MapLibre GL)
+## Maps (MapLibre GL)
 
 **Stack**: MapLibre GL + react-map-gl + Turf.js + MapboxDraw
 
@@ -53,4 +53,3 @@ Module: `src/modules/tiles/`
 - Generate vector tiles with Tippecanoe
 - Jobs scheduled via `jobs` module
 - Serve via `/api/tiles/*` routes
-

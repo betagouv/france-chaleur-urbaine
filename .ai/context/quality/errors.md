@@ -4,7 +4,7 @@
 
 - **Concise, actionable** error messages
 - **Never swallow** exceptions without logging
-- **No sensitive data** in error messages (PII, credentials)
+- **No sensitive data** in error messages (PII, credentials, tokens)
 - Use **TRPCError** for TRPC routes
 
 ## TRPC Errors
@@ -44,4 +44,3 @@ logger.info('Operation completed');
 
 **Never log**: passwords, tokens, PII (email, phone, address)
 **Always include**: correlation IDs, user ID, resource ID
-

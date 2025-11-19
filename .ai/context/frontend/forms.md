@@ -42,7 +42,6 @@ Error states automatically managed via `getInputErrorStates(field)`.
 
 ## Validation Rules
 
-- Client: `schema` in `useForm({ schema })` validates on change
-- Server: re-validate with same schema for security
-- Schemas in `constants.ts` for reuse across client/server
-
+- **Client**: `schema` in `useForm({ schema })` validates on change
+- **Server**: re-validate with same schema for security
+- **Schemas in `constants.ts`**: For reuse across client/server
