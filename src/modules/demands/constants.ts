@@ -108,7 +108,7 @@ export const zCreateDemandInput = z.object({
   demandCompanyType: z.string(),
   department: z.string(),
   eligibility: z.object({
-    distance: z.number(),
+    distance: z.number().nullable(),
     inPDP: z.boolean(),
     isEligible: z.boolean(),
   }),

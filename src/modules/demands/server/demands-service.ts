@@ -6,6 +6,7 @@ import { clientConfig } from '@/client-config';
 import { type CreateDemandInput, demandStatusDefault, formatDataToLegacyAirtable } from '@/modules/demands/constants';
 import type { AirtableLegacyRecord } from '@/modules/demands/types';
 import { sendEmailTemplate } from '@/modules/email';
+import { createEvent } from '@/modules/events/server/service';
 import { createEligibilityTestAddress } from '@/modules/pro-eligibility-tests/server/service';
 import type { ProEligibilityTestHistoryEntry } from '@/modules/pro-eligibility-tests/types';
 import { type DemandEmails, type Demands, kdb, type ProEligibilityTestsAddresses, sql } from '@/server/db/kysely';
@@ -121,6 +122,14 @@ export const update = async (recordId: string, values: Partial<AirtableLegacyRec
 
 export const create = async (values: CreateDemandInput) => {
   const legacyValues = formatDataToLegacyAirtable(values);
+
+  const [conso, nbLogement] = await Promise.all([
+    getConsommationGazAdresse(legacyValues.Latitude, legacyValues.Longitude),
+    legacyValues.Logement
+      ? { batiment_groupe_id: undefined, nb_logements: legacyValues.Logement }
+      : getNbLogement(legacyValues.Latitude, legacyValues.Longitude),
+  ]);
+
   const [createdDemand] = await kdb
     .insertInto(tableName)
     .values({
@@ -128,9 +137,12 @@ export const create = async (values: CreateDemandInput) => {
       legacy_values: sql<string>`${JSON.stringify({
         ...legacyValues,
         'Affecté à': null,
+        Conso: conso ? conso.conso_nb : undefined,
         'Date de la demande': new Date().toISOString(),
         Gestionnaires: null,
         'Gestionnaires validés': false,
+        'ID BNB': nbLogement?.batiment_groupe_id ? `${nbLogement.batiment_groupe_id}` : undefined,
+        Logement: nbLogement?.nb_logements ? nbLogement.nb_logements : undefined,
       })}::jsonb`,
       updated_at: new Date(),
     })
@@ -146,6 +158,29 @@ export const create = async (values: CreateDemandInput) => {
       longitude: legacyValues.Longitude,
     });
   }
+
+  await Promise.all([
+    createEvent({
+      context_id: createdDemand.id,
+      context_type: 'demand',
+      data: values,
+      type: 'demand_created',
+    }),
+    sendEmailTemplate(
+      'demands.user-new',
+      { email: legacyValues.Mail },
+      {
+        demand: {
+          ...legacyValues,
+          'Distance au réseau': legacyValues['Distance au réseau'] ?? 9999,
+          Structure: legacyValues.Structure as any,
+          'Type de chauffage': legacyValues['Type de chauffage'] as 'Collectif' | 'Autre / Je ne sais pas' | 'Individuel',
+        },
+      } // si > 1000m la distance est null, or le template veut une distance
+    ),
+    // Automation import from https://airtable.com/app9opX8gRAtBqkan/wflvqEW0CLeXZ2pO0
+    sendEmailTemplate('demands.admin-new', { email: clientConfig.destinationEmails.contact }, { demand: legacyValues as any }),
+  ]);
 
   return augmentAdminDemand({ demand: createdDemand, testAddress });
 };
@@ -458,4 +493,37 @@ export const buildFeatures = async (properties: string[]) => {
     } satisfies GeoJSON.Feature<GeoJSON.Geometry>;
   });
   return features;
+};
+
+export const getConsommationGazAdresse = async (lat: number, lon: number) => {
+  const result = await kdb
+    .selectFrom('donnees_de_consos')
+    .select('conso_nb')
+    .where(
+      sql<boolean>`
+        ST_INTERSECTS(
+          ST_Transform(${sql.raw(`'SRID=4326;POINT(${lon} ${lat})'::geometry`)}, 2154),
+          ST_BUFFER(geom, 3.5)
+        )
+      `
+    )
+    .executeTakeFirst();
+  return result;
+};
+
+export const getNbLogement = async (lat: number, lon: number) => {
+  const result = await kdb
+    .selectFrom('bdnb_batiments')
+    .select(['batiment_groupe_id', 'ffo_bat_nb_log as nb_logements'])
+    .where(
+      sql.raw<boolean>(`
+      ST_DWithin(
+        geom,
+        ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154),
+        3.5
+      )
+    `)
+    )
+    .executeTakeFirst();
+  return result;
 };
