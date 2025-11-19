@@ -17,9 +17,9 @@ export const demandsRouter = router({
     delete: route
       .meta({ auth: { roles: ['admin'] } })
       .input(zDeleteDemandInput)
-      .mutation(async ({ input }) => {
+      .mutation(async ({ input, ctx }) => {
         const { demandId } = input;
-        await demandsService.remove(demandId);
+        await demandsService.remove(demandId, ctx.user.id);
       }),
     list: route.meta({ auth: { roles: ['admin'] } }).query(async () => {
       const result = await demandsService.listAdmin();
@@ -28,11 +28,12 @@ export const demandsRouter = router({
     update: route
       .meta({ auth: { roles: ['admin'] } })
       .input(zAdminUpdateDemandInput)
-      .mutation(async ({ input }) => {
+      .mutation(async ({ input, ctx }) => {
         const { demandId, values } = input;
         return await demandsService.update(
           demandId,
-          values as any /* This is a shared route and some fields can be undefined, causing typescript errors*/
+          values as any /* This is a shared route and some fields can be undefined, causing typescript errors*/,
+          ctx.user.id
         );
       }),
   },
@@ -60,25 +61,26 @@ export const demandsRouter = router({
     update: route
       .meta({ auth: { roles: ['gestionnaire', 'demo'] } })
       .input(zGestionnaireUpdateDemandInput)
-      .mutation(async ({ input }) => {
+      .mutation(async ({ input, ctx }) => {
         const { demandId, values } = input;
         return await demandsService.update(
           demandId,
-          values as any /* This is a shared route and some fields can be undefined, causing typescript errors*/
+          values as any /* This is a shared route and some fields can be undefined, causing typescript errors*/,
+          ctx.user.id
         );
       }),
   },
   user: {
-    addRelanceComment: route.input(zAddRelanceCommentInput).mutation(async ({ input }) => {
+    addRelanceComment: route.input(zAddRelanceCommentInput).mutation(async ({ input, ctx }) => {
       const { relanceId, comment } = input;
-      return await demandsService.updateCommentFromRelanceId(relanceId, comment);
+      return await demandsService.updateCommentFromRelanceId(relanceId, comment, ctx.user?.id);
     }),
     create: route.input(zCreateDemandInput).mutation(async ({ input }) => {
       return await demandsService.create(input);
     }),
-    update: route.input(zUserUpdateDemandInput).mutation(async ({ input }) => {
+    update: route.input(zUserUpdateDemandInput).mutation(async ({ input, ctx }) => {
       const { demandId, values } = input;
-      return await demandsService.update(demandId, values as any);
+      return await demandsService.update(demandId, values as any, ctx.user?.id);
     }),
   },
 });

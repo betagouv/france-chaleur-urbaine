@@ -1,11 +1,8 @@
 import { sql } from 'kysely';
-import type { User } from 'next-auth';
 import * as demandsService from '@/modules/demands/server/demands-service';
 import { sendEmailTemplate } from '@/modules/email';
-import { createUserEvent } from '@/modules/events/server/service';
 import db from '@/server/db';
 import { kdb } from '@/server/db/kysely';
-import { invalidPermissionsError } from '@/server/helpers/server';
 import type { Demand } from '@/types/Summary/Demand';
 import type { User as FullUser } from '@/types/User';
 
@@ -73,36 +70,6 @@ export const getGestionnairesDemands = async (gestionnaires: string[]): Promise<
   return records
     .map((record) => ({ id: record.id, ...record.fields }) as Demand)
     .filter((record) => record.Gestionnaires?.some((gestionnaire) => gestionnaires.includes(gestionnaire)));
-};
-
-const getDemand = async (user: User, demandId: string): Promise<Demand> => {
-  const record = await kdb.selectFrom('demands').selectAll().where('id', '=', demandId).executeTakeFirstOrThrow();
-  const gestionnaires = record.legacy_values.Gestionnaires as string[];
-  if (user.role !== 'admin' && !gestionnaires.some((gestionnaire) => user.gestionnaires?.includes(gestionnaire))) {
-    throw invalidPermissionsError;
-  }
-  return { id: record.id, ...record.legacy_values } as Demand;
-};
-
-export const updateDemand = async (user: User, demandId: string, updateData: Partial<Demand>): Promise<Demand | null> => {
-  // check permissions
-  await getDemand(user, demandId);
-
-  const record = await demandsService.update(demandId, updateData);
-
-  // legacy check, may be obsolete as errors seem to be thrown by the Airtable API
-  const error = (record as any)?.error;
-  if (error) {
-    throw new Error(error);
-  }
-  await createUserEvent({
-    author_id: user.id,
-    context_id: demandId,
-    context_type: 'demand',
-    data: updateData,
-    type: 'demand_updated',
-  });
-  return record as Demand;
 };
 
 const groupDemands = (demands: Demand[]): Record<string, Demand[]> => {

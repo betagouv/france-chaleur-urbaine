@@ -6,7 +6,7 @@ import { clientConfig } from '@/client-config';
 import { type CreateDemandInput, demandStatusDefault, formatDataToLegacyAirtable } from '@/modules/demands/constants';
 import type { AirtableLegacyRecord } from '@/modules/demands/types';
 import { sendEmailTemplate } from '@/modules/email';
-import { createEvent } from '@/modules/events/server/service';
+import { createEvent, createUserEvent } from '@/modules/events/server/service';
 import { createEligibilityTestAddress } from '@/modules/pro-eligibility-tests/server/service';
 import type { ProEligibilityTestHistoryEntry } from '@/modules/pro-eligibility-tests/types';
 import { type DemandEmails, type Demands, kdb, type ProEligibilityTestsAddresses, sql } from '@/server/db/kysely';
@@ -73,7 +73,7 @@ const augmentGestionnaireDemand = <T extends Selectable<Demands>>({
   };
 };
 
-export const update = async (recordId: string, values: Partial<AirtableLegacyRecord>) => {
+export const update = async (recordId: string, values: Partial<AirtableLegacyRecord>, userId?: string) => {
   // Get current demand before update to detect changes
   const currentDemand = await kdb.selectFrom(tableName).selectAll().where('id', '=', recordId).executeTakeFirst();
 
@@ -117,6 +117,22 @@ export const update = async (recordId: string, values: Partial<AirtableLegacyRec
     .where('demand_id', '=', updatedDemand.id)
     .executeTakeFirst();
 
+  if (userId) {
+    await createUserEvent({
+      author_id: userId,
+      context_id: recordId,
+      context_type: 'demand',
+      data: values,
+      type: 'demand_updated',
+    });
+  } else {
+    await createEvent({
+      context_id: recordId,
+      context_type: 'demand',
+      data: values,
+      type: 'demand_updated',
+    });
+  }
   return augmentAdminDemand({ demand: updatedDemand, testAddress: testAddress || null });
 };
 
@@ -185,7 +201,24 @@ export const create = async (values: CreateDemandInput) => {
   return augmentAdminDemand({ demand: createdDemand, testAddress });
 };
 
-export const remove = baseModel.remove;
+export const remove = async (demandId: string, userId?: string) => {
+  await baseModel.remove(demandId);
+
+  if (userId) {
+    await createUserEvent({
+      author_id: userId,
+      context_id: demandId,
+      context_type: 'demand',
+      type: 'demand_deleted',
+    });
+  } else {
+    await createEvent({
+      context_id: demandId,
+      context_type: 'demand',
+      type: 'demand_deleted',
+    });
+  }
+};
 
 export const listEmails = async (demandId: string) => {
   const emails = await kdb.selectFrom('demand_emails').selectAll().where('demand_id', '=', demandId).execute();
@@ -250,7 +283,7 @@ export const sendEmail = async (params: {
   );
 };
 
-export const updateFromRelanceId = async (relanceId: string, values: Partial<AirtableLegacyRecord>) => {
+export const updateFromRelanceId = async (relanceId: string, values: Partial<AirtableLegacyRecord>, userId?: string) => {
   const relanceDemand = await kdb
     .selectFrom(tableName)
     .selectAll()
@@ -261,11 +294,11 @@ export const updateFromRelanceId = async (relanceId: string, values: Partial<Air
     throw new Error(`Relance demand not found for relance ID: ${relanceId}`);
   }
 
-  return update(relanceDemand.id, values);
+  return update(relanceDemand.id, values, userId);
 };
 
-export const updateCommentFromRelanceId = async (relanceId: string, comment: string) => {
-  return updateFromRelanceId(relanceId, { 'Commentaire relance': comment });
+export const updateCommentFromRelanceId = async (relanceId: string, comment: string, userId?: string) => {
+  return updateFromRelanceId(relanceId, { 'Commentaire relance': comment }, userId);
 };
 
 export const updateSatisfactionFromRelanceId = async (relanceId: string, satisfaction: boolean) => {
