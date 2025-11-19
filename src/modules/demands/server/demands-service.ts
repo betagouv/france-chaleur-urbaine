@@ -236,7 +236,7 @@ export const sendEmail = async (params: {
 
   // Send email
   await sendEmailTemplate(
-    'legacy.manager',
+    'demands.custom-email',
     { email: emailContent.to, id: user.id },
     {
       content: emailContent.body,

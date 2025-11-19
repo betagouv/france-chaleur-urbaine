@@ -5,11 +5,11 @@ import AuthResetPasswordEmail from './react-email/templates/auth/reset-password'
 import DemandAdminAssignmentChangeEmail from './react-email/templates/demands/admin-assignment-change';
 import DemandAdminGestionnaireContactEmail from './react-email/templates/demands/admin-gestionnaire-contact';
 import DemandAdminNewEmail from './react-email/templates/demands/admin-new';
+import DemandsCustomEmail from './react-email/templates/demands/custom-email';
 import DemandsGestionnaireNewEmail from './react-email/templates/demands/gestionnaire-new';
 import DemandsOldDemandsEmail from './react-email/templates/demands/gestionnaire-old';
 import DemandsUserNewEmail from './react-email/templates/demands/user-new';
 import DemandsUserRelanceEmail from './react-email/templates/demands/user-relance';
-import LegacyManagerEmail from './react-email/templates/legacy/manager-email';
 
 export const emails = {
   'auth.activation': {
@@ -42,6 +42,11 @@ export const emails = {
     preview: 'Une nouvelle demande de contact a été créée',
     subject: '[France Chaleur Urbaine] Nouvelle demande de contact',
   },
+  'demands.custom-email': {
+    Component: DemandsCustomEmail,
+    preview: 'Message important concernant votre demande de raccordement',
+    subject: '',
+  },
   'demands.gestionnaire-new': {
     Component: DemandsGestionnaireNewEmail,
     preview: 'Nouvelles demandes de raccordement à traiter dans votre espace',
@@ -61,11 +66,6 @@ export const emails = {
     Component: DemandsUserRelanceEmail,
     preview: 'Mise à jour importante concernant votre demande de raccordement',
     subject: '[France Chaleur Urbaine] Votre demande',
-  },
-  'legacy.manager': {
-    Component: LegacyManagerEmail,
-    preview: 'Message important concernant votre demande de raccordement',
-    subject: '',
   },
 } as const;
 
