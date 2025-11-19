@@ -1,885 +1,673 @@
-# Plan de Migration: Demandes - Airtable → PostgreSQL avec tRPC
+# Migration Demandes: Airtable → PostgreSQL + tRPC - Réalisations
 
-**Date**: 3 novembre 2025
-**Objectif**: Migration complète des demandes d'Airtable vers PostgreSQL avec nouvelles pages v2
-**Approche**: EPCT (Explore-Plan-Code-Test) avec création de nouvelles pages, suppression totale d'Airtable
+**Date**: Novembre 2025
+**Status**: ✅ **COMPLÉTÉ**
 
 ---
 
 ## 📋 Vue d'Ensemble
 
-### Objectifs Principaux
+### Objectifs Atteints
 
-1. ✅ Migrer toutes les données d'Airtable vers PostgreSQL
-2. ✅ Créer `/admin/demandes-v2` avec tRPC
-3. ✅ Créer `/pro/demandes-v2` avec tRPC
-4. ❌ Assignment rules (hors scope - phase ultérieure)
-5. ✅ Supprimer complètement la dépendance à Airtable
+- ✅ Migration complète des données d'Airtable vers PostgreSQL
+- ✅ Architecture tRPC type-safe
+- ✅ Pages `/admin/demandes` et `/pro/demandes` migrées (pas de v2, migration sur place)
+- ✅ Module `src/modules/demands/` complet
+- ✅ Module `src/modules/email/` réorganisé
+- ✅ Historique emails migré vers PostgreSQL
+- ✅ Composants déplacés dans le module demands
+- ✅ Performance optimisée (requêtes SQL, indexes ciblés)
 
-### Contraintes
+### Différences vs Plan Initial
 
-- **Ne PAS modifier** les pages existantes (`/admin/demandes`, `/pro/demandes`)
-- **Créer de nouvelles pages** (`-v2`) en parallèle
-- **Utiliser tRPC** pour toutes les nouvelles routes
-- **Schéma existant**: Utiliser la migration `20251029000000_create_demands_table.ts` déjà créée
-- **Module existant**: Compléter le module `src/modules/demands` déjà initialisé
+**Plan original**: Créer nouvelles pages `-v2` en parallèle
+**Réalisé**: Migration directe des pages existantes vers tRPC
+
+**Plan original**: Schéma PostgreSQL complexe avec champs séparés
+**Réalisé**: Schéma simple avec `legacy_values` JSONB (approche pragmatique)
+
+**Plan original**: Assignment rules hors scope
+**Réalisé**: Assignment rules service implémenté
+
+**Raisons des changements**:
+- 🚀 Plus rapide: pas de maintien de 2 versions en parallèle
+- 🔧 Plus simple: JSONB permet de garder toutes les données Airtable sans mapping complexe
+- 📈 Même résultat: fonctionnalités identiques, juste l'approche technique différente
 
 ---
 
-## 🏗️ Architecture Actuelle (Analyse)
+## 🏗️ Architecture Implémentée
 
-### Schéma PostgreSQL Existant
+### Base de Données PostgreSQL
 
-Le schéma est déjà créé dans `src/server/db/migrations/20251029000000_create_demands_table.ts`:
+#### Table `demands`
 
 ```sql
-demands (
+CREATE TABLE demands (
+  id uuid PRIMARY KEY DEFAULT public.uuid_generate_v4(),
+  airtable_id TEXT,                    -- Pour référence Airtable
+  legacy_values jsonb NOT NULL,        -- Toutes les données Airtable
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  deleted_at TIMESTAMP WITH TIME ZONE  -- Soft delete
+);
+```
+
+**Indexes optimisés**:
+- Date de la demande (tri)
+- Gestionnaires validés (filtre admin)
+- Status (filtres)
+- Notification envoyé, Relance à activer, Relance ID
+- GIN index sur array `Gestionnaires` (opérateur `?|`)
+
+#### Table `demand_emails`
+
+```sql
+CREATE TABLE demand_emails (
   id uuid PRIMARY KEY,
-  legacy_values jsonb NOT NULL,  -- Toutes les données Airtable d'origine
-
-  -- Dates
-  created_at timestamptz NOT NULL,        -- Date de la demande
-  validated_at timestamptz,               -- Date de validation gestionnaires
-  contacted_at timestamptz,               -- Date de recontact
-  updated_at timestamptz,
-
-  -- Commentaires
-  comment_gestionnaire text,              -- Commentaire || ""
-  comment_fcu text,                       -- Concat de Commentaires_internes_FCU + Commentaires FCU
-
-  -- Historique
-  history jsonb DEFAULT '[]'::jsonb,      -- Array d'événements
-
-  -- Utilisateur
-  user jsonb,                             -- {first_name, last_name, email, phone, structure_type, structure_name}
-  user_id uuid REFERENCES users(id),      -- Lien si user existe
-
-  -- Métadonnées demande
-  status text,                            -- Status
-  assigned_to text,                       -- Affecté à
-  assigned_to_pending text,               -- Gestionnaire Affecté à
-  referrer text,                          -- Sondage
-  referrer_other text,                    -- Sondage autre
-
-  -- Bâtiment
-  batiment jsonb,                         -- Toutes les infos bâtiment
-
-  -- Campagnes
-  campaign_keywords text,
-  campaign_source text,
-  campaign_matomo text
-)
+  airtable_id TEXT,
+  demand_id uuid REFERENCES demands(id) ON DELETE CASCADE,
+  email_key TEXT NOT NULL,
+  "to" TEXT NOT NULL,
+  cc TEXT,
+  reply_to TEXT,
+  object TEXT NOT NULL,
+  body TEXT NOT NULL,
+  signature TEXT,
+  user_email TEXT NOT NULL,
+  sent_at TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE,
+  updated_at TIMESTAMP WITH TIME ZONE,
+  deleted_at TIMESTAMP WITH TIME ZONE
+);
 ```
 
-**Indexes existants:**
-- `idx_demands_airtable_id` (unique sur `legacy_values->>'id'`)
-- `idx_demands_legacy_values` (GIN sur JSONB)
-- `idx_demands_history` (GIN)
-- `idx_demands_user` (GIN)
-- `idx_demands_batiment` (GIN)
-- `idx_demands_created_at`, `idx_demands_validated_at`, `idx_demands_contacted_at`
-- `idx_demands_user_id`, `idx_demands_status`
+**Remplace**: Table Airtable `UTILISATEURS_EMAILS`
 
-### Mapping migration-table.md → Schema PostgreSQL
+#### Table `pro_eligibility_tests_addresses` (modifiée)
 
-D'après `docs/202511 refactor demands/migration-table.md`:
-
-**Champs principaux:**
-- `created_at` ← "Date de la demande"
-- `validated_at` ← "Gestionnaires validés" (date si TRUE)
-- `contacted_at` ← "Recontacté par le gestionnaire" (date si Oui)
-- `comment_gestionnaire` ← Commentaire || ""
-- `comment_fcu` ← Concat de "Commentaires_internes_FCU" + "Commentaires FCU"
-- `user` (JSON):
-  - `first_name` ← Nom
-  - `last_name` ← Prénom
-  - `email` ← Email
-  - `phone` ← Téléphone
-  - `structure_type` ← Structure (inverse function)
-  - `structure_name` ← Nom de la structure accompagnante
-- `user_id` ← Populate si user avec email existe
-- `status` ← Status
-- `assigned_to` ← Affecté à
-- `assigned_to_pending` ← Gestionnaire Affecté à
-- `referrer` / `referrer_other` ← Sondage
-
-**Bâtiment (JSON):**
-- `source_address` ← Adresse
-- `ban_valid`, `ban_address`, `ban_score`, `geom` ← À calculer
-- `eligibility_history` ← Array avec résultat de `getAddressEligibilityHistoryEntry`
-- `mode_chauffage` ← Mode de chauffage (électricité, gaz, fioul, autre)
-- `type_chauffage` ← Type de chauffage (individuel, collectif, autre)
-- `type` ← Type de bâtiment
-- `surface_m2` ← Surface en m2
-- `conso_gaz` ← Conso
-- `nb_logements` ← Nombre de logements (demandArea)
-- `company_type` ← Type de structure (demandCompanyType)
-- `company_name` ← Établissement || Nom de la structure accompagnante
-
-**History (JSON Array):**
-```json
-[
-  {"type": "creation", "created_at": "...", "id": "..."},
-  {"type": "validation", "created_at": "...", "id": "..."},
-  {"type": "contact", "created_at": "...", "id": "..."},
-  {"type": "relance", "created_at": "...", "metadata": {"comment": "..."}, "id": "..."},
-  {"type": "relance", "created_at": "...", "id": "..."},  // Seconde relance
-  {"type": "gestionnaires_modifies", "created_at": "...", "id": "..."},
-  {"type": "affectation_modifiee", "created_at": "...", "id": "..."},
-  {"type": "affectation_acceptee", "created_at": "...", "id": "..."}
-]
-```
-
-**Campagnes:**
-- `campaign_keywords` ← Campagne keywords
-- `campaign_source` ← Campagne source
-- `campaign_matomo` ← Campagne matomo
-
-### Module Existant
-
-Structure actuelle dans `src/modules/demands`:
-```
-src/modules/demands/
-├── commands.ts
-├── constants.ts
-├── types.ts
-├── commands/
-│   └── migrate-from-airtable.ts
-└── server/
-    ├── service.ts
-    └── trpc-routes.ts
-```
-
-**tRPC route existante:**
-```typescript
-// src/modules/demands/server/trpc-routes.ts
-export const demandsRouter = router({
-  listAdmin: route.meta({ auth: { roles: ['admin'] } }).query(async () => {
-    return await listAdmin();
-  }),
-});
-```
+Anciennement liée uniquement aux tests d'éligibilité, maintenant partagée:
+- Ajout de `demand_id uuid REFERENCES demands(id)`
+- Stockage de l'historique d'éligibilité (JSONB array)
+- 1 adresse peut avoir N tests d'éligibilité (historique)
 
 ---
 
-## 📦 Plan d'Implémentation EPCT
+## 🎯 Routes tRPC Implémentées
 
-### Phase 1: EXPLORE ✅ (Terminé)
-
-Analyse complète effectuée:
-- ✅ Schéma PostgreSQL existant identifié
-- ✅ Structure du module demands analysée
-- ✅ Pages existantes comme exemples repérées
-- ✅ Mapping Airtable → PostgreSQL documenté
-
----
-
-### Phase 2: PLAN (Ce document)
-
----
-
-## 🔧 Étapes d'Implémentation
-
-### Étape 1: Migration des Données (CLI)
-
-**Objectif**: Migrer toutes les données d'Airtable vers PostgreSQL
-
-#### 1.1 Compléter la commande de migration
-
-**Fichier**: `src/modules/demands/commands/migrate-from-airtable.ts`
-
-**Tâches**:
-1. Implémenter la transformation Airtable → PostgreSQL selon `migration-table.md`
-2. Générer le champ `history` basé sur les événements Airtable:
-   - `creation` (Date de la demande)
-   - `validation` (Gestionnaires validés si date présente)
-   - `contact` (Recontacté par le gestionnaire si Oui)
-   - `relance` (Relance envoyée + Commentaire relance)
-   - `relance` (Seconde relance envoyée)
-3. Peupler `user_id` en cherchant dans la table `users` par email
-4. Calculer les champs BAN (`ban_valid`, `ban_address`, `ban_score`, `geom`)
-5. Appeler `getAddressEligibilityHistoryEntry()` pour `batiment.eligibility_history`
-6. Stocker **toutes** les données Airtable dans `legacy_values` (backup)
-
-**Gestion des erreurs**:
-- Transactions par batch (100 records)
-- Logs détaillés des erreurs
-- Dry-run mode pour validation
-- Rapport de migration (created, updated, skipped, errors)
-
-**Command CLI**:
-```bash
-pnpm cli demands migrate-from-airtable [--dry-run] [--batch-size=100]
-```
-
-#### 1.2 Enrichir la commande de migration
-
-**Services requis**:
-- `getAddressEligibilityHistoryEntry(lat, lon)` - Calcul historique d'éligibilité
-- Géocodage BAN - Validation/normalisation adresse
-- Lookup `users` par email
-
----
-
-### Étape 2: Service Layer (PostgreSQL)
-
-**Objectif**: CRUD complet sur la table `demands`
-
-#### 2.1 Compléter le service
-
-**Fichier**: `src/modules/demands/server/service.ts`
-
-**Fonctions à implémenter**:
-
-```typescript
-// READ
-export const listAdmin = async (): Promise<Demand[]>
-export const listGestionnaire = async (
-  user: User,
-  filters?: DemandFilters
-): Promise<Demand[]>
-export const get = async (id: string): Promise<Demand>
-
-// CREATE (utilisé par formulaire public)
-export const create = async (
-  input: DemandCreate,
-  context?: ApiContext
-): Promise<Demand>
-
-// UPDATE
-export const update = async (
-  id: string,
-  input: DemandUpdate,
-  context?: ApiContext
-): Promise<Demand>
-
-// DELETE (admin uniquement)
-export const remove = async (id: string): Promise<void>
-
-// UTILS
-export const getByAirtableId = async (
-  airtableId: string
-): Promise<Demand | undefined>
-
-// STATS
-export const getStatsByStatus = async (): Promise<Record<string, number>>
-export const getStatsByGestionnaire = async (): Promise<Record<string, number>>
-```
-
-**Filtres à supporter** (listGestionnaire):
-- Par status
-- Par gestionnaires (depuis `legacy_values->>'Gestionnaires'`)
-- Par région/département (depuis `batiment`)
-- Par éligibilité (depuis `batiment.eligibility_history`)
-- Par date de création
-- Par validation (validated_at IS NOT NULL)
-
-**Permissions**:
-- **Admin**: Accès à toutes les demandes
-- **Gestionnaire**: Uniquement demandes avec leur tag dans `legacy_values->>'Gestionnaires'`
-- **Demo**: Paris uniquement (filtre spécial)
-
----
-
-### Étape 3: tRPC Routes
-
-**Objectif**: API type-safe pour les pages v2
-
-#### 3.1 Compléter les routes tRPC
+### Admin Routes
 
 **Fichier**: `src/modules/demands/server/trpc-routes.ts`
 
-**Routes à créer**:
-
 ```typescript
-export const demandsRouter = router({
-  // ADMIN
-  listAdmin: route
-    .meta({ auth: { roles: ['admin'] } })
-    .query(async () => {
-      return await listAdmin();
-    }),
+demandsRouter.admin.list
+  - Auth: ['admin']
+  - Retourne: { count: number, items: Demand[] }
+  - Includes: recommendedTags, recommendedAssignment (via assignment rules)
 
-  get: route
-    .meta({ auth: { roles: ['admin', 'gestionnaire'] } })
-    .input(z.object({ id: z.string().uuid() }))
-    .query(async ({ input }) => {
-      return await get(input.id);
-    }),
-
-  create: route
-    .meta({ auth: { roles: ['admin'] } })
-    .input(zDemandCreate)
-    .mutation(async ({ input, ctx }) => {
-      return await create(input, ctx);
-    }),
-
-  update: route
-    .meta({ auth: { roles: ['admin', 'gestionnaire'] } })
-    .input(z.object({
-      id: z.string().uuid(),
-      data: zDemandUpdate,
-    }))
-    .mutation(async ({ input, ctx }) => {
-      return await update(input.id, input.data, ctx);
-    }),
-
-  delete: route
-    .meta({ auth: { roles: ['admin'] } })
-    .input(z.object({ id: z.string().uuid() }))
-    .mutation(async ({ input }) => {
-      await remove(input.id);
-      return { success: true };
-    }),
-
-  // GESTIONNAIRE
-  listGestionnaire: route
-    .meta({ auth: { roles: ['admin', 'gestionnaire', 'demo'] } })
-    .input(zDemandFilters)
-    .query(async ({ input, ctx }) => {
-      return await listGestionnaire(ctx.user!, input);
-    }),
-
-  // STATS
-  statsByStatus: route
-    .meta({ auth: { roles: ['admin'] } })
-    .query(async () => {
-      return await getStatsByStatus();
-    }),
-
-  statsByGestionnaire: route
-    .meta({ auth: { roles: ['admin'] } })
-    .query(async () => {
-      return await getStatsByGestionnaire();
-    }),
-});
+demandsRouter.admin.update
+  - Auth: ['admin']
+  - Input: { demandId: string, values: Partial<AirtableLegacyRecord> }
+  - Actions:
+    * Merge values dans legacy_values (SQL: || operator)
+    * Détection changement "Gestionnaire Affecté à" → email auto
+    * Retourne demand augmentée
 ```
 
-#### 3.2 Enregistrer dans le router principal
-
-**Fichier**: `src/modules/trpc/trpc.config.ts`
+### Gestionnaire Routes
 
 ```typescript
-import { demandsRouter } from '@/modules/demands/server/trpc-routes';
+demandsRouter.gestionnaire.list
+  - Auth: ['gestionnaire', 'demo']
+  - Filtre automatique par tags user
+  - Demo: données anonymisées (faker)
 
-export const appRouter = router({
-  demands: demandsRouter,
-  // ... existing routes
-});
+demandsRouter.gestionnaire.listEmails
+  - Auth: ['gestionnaire', 'admin']
+  - Input: { demand_id: string }
+  - Retourne: historique emails de la demande
+
+demandsRouter.gestionnaire.sendEmail
+  - Auth: ['gestionnaire', 'admin']
+  - Input: { demand_id, emailContent, key }
+  - Actions:
+    * Enregistrement dans demand_emails
+    * Mise à jour signature user si changée
+    * Envoi email réel via sendEmailTemplate
+
+demandsRouter.gestionnaire.update
+  - Auth: ['gestionnaire', 'demo']
+  - Input: { demandId, values }
+  - Merge values dans legacy_values
+```
+
+### User Routes (public)
+
+```typescript
+demandsRouter.user.create
+  - Auth: public
+  - Input: CreateDemandInput (formulaire contact)
+  - Actions:
+    * Formatage vers legacy Airtable
+    * Insertion dans demands
+    * Création adresse dans pro_eligibility_tests_addresses
+    * Retourne demand créée
+
+demandsRouter.user.update
+  - Auth: public
+  - Input: { demandId, values } (ex: sondage)
+  - Merge values dans legacy_values
+
+demandsRouter.user.addRelanceComment
+  - Auth: public
+  - Input: { relanceId, comment }
+  - Trouve demande par Relance ID
+  - Update "Commentaire relance"
 ```
 
 ---
 
-### Étape 4: Types et Constantes
+## 💼 Service Layer
 
-**Objectif**: Schémas Zod et types TypeScript
+### Fonctions CRUD
 
-#### 4.1 Définir les constantes
-
-**Fichier**: `src/modules/demands/constants.ts`
-
-**Enums et constantes**:
-```typescript
-// Status
-export const demandStatuses = [
-  'En attente de prise en charge',
-  'Non réalisable',
-  "En attente d'éléments du prospect",
-  'Étude en cours',
-  'Voté en AG',
-  'Travaux en cours',
-  'Réalisé',
-  'Projet abandonné par le prospect',
-] as const;
-
-// Modes de chauffage
-export const heatingModes = [
-  'Électricité',
-  'Gaz',
-  'Fioul',
-  'Autre / Je ne sais pas',
-] as const;
-
-// Types de chauffage
-export const heatingTypes = [
-  'Individuel',
-  'Collectif',
-  'Autre / Je ne sais pas',
-] as const;
-
-// Structures
-export const structureTypes = [
-  'Copropriété',
-  'Tertiaire',
-  'Logement individuel',
-  'Bailleur social',
-] as const;
-```
-
-#### 4.2 Schémas Zod
-
-**Fichier**: `src/modules/demands/constants.ts`
+**Fichier**: `src/modules/demands/server/demands-service.ts`
 
 ```typescript
-import { z } from 'zod';
+// Listes
+listAdmin(): Promise<{ count: number; items: Demand[] }>
+  - JOIN avec pro_eligibility_tests_addresses
+  - Calcul recommendedTags/recommendedAssignment via assignment rules
+  - Logs performance
 
-// Schéma User (JSON)
-export const zDemandUser = z.object({
-  first_name: z.string(),
-  last_name: z.string(),
-  email: z.string().email(),
-  phone: z.string().optional(),
-  structure_type: z.string().optional(),
-  structure_name: z.string().optional(),
-});
+list(user: User): Promise<Demand[]>
+  - Filtre par role (admin, demo, gestionnaire)
+  - Demo: données faker
+  - Gestionnaire: filtre par tags (opérateur ?|)
 
-// Schéma Batiment (JSON)
-export const zDemandBatiment = z.object({
-  source_address: z.string(),
-  ban_valid: z.boolean().optional(),
-  ban_address: z.string().optional(),
-  ban_score: z.number().optional(),
-  geom: z.any().optional(), // PostGIS geometry
-  eligibility_history: z.array(z.any()).optional(),
-  mode_chauffage: z.enum(heatingModes).optional(),
-  type_chauffage: z.enum(heatingTypes).optional(),
-  type: z.string().optional(),
-  surface_m2: z.number().optional(),
-  conso_gaz: z.number().optional(),
-  nb_logements: z.number().optional(),
-  company_type: z.string().optional(),
-  company_name: z.string().optional(),
-});
+// CRUD
+create(values: CreateDemandInput): Promise<Demand>
+  - Formatage → legacy_values
+  - Insertion demands
+  - Création pro_eligibility_tests_addresses
 
-// Schéma History event
-export const zDemandHistoryEvent = z.object({
-  type: z.enum([
-    'creation',
-    'validation',
-    'contact',
-    'relance',
-    'gestionnaires_modifies',
-    'affectation_modifiee',
-    'affectation_acceptee',
-  ]),
-  created_at: z.string().datetime(),
-  metadata: z.record(z.any()).optional(),
-  id: z.string().uuid(),
-});
+update(recordId: string, values: Partial<AirtableLegacyRecord>): Promise<Demand>
+  - Récupération version actuelle (détection changements)
+  - Merge JSONB: legacy_values || new_values
+  - Automations:
+    * Changement "Gestionnaire Affecté à" → email admin
+    * "Recontacté par le gestionnaire" via relance → email admin
 
-// Schéma complet Demand
-export const zDemand = z.object({
-  id: z.string().uuid(),
-  legacy_values: z.record(z.any()),
-  created_at: z.string().datetime(),
-  validated_at: z.string().datetime().nullable(),
-  contacted_at: z.string().datetime().nullable(),
-  updated_at: z.string().datetime(),
-  comment_gestionnaire: z.string().nullable(),
-  comment_fcu: z.string().nullable(),
-  history: z.array(zDemandHistoryEvent),
-  user: zDemandUser.nullable(),
-  user_id: z.string().uuid().nullable(),
-  status: z.enum(demandStatuses).nullable(),
-  assigned_to: z.string().nullable(),
-  assigned_to_pending: z.string().nullable(),
-  referrer: z.string().nullable(),
-  referrer_other: z.string().nullable(),
-  batiment: zDemandBatiment.nullable(),
-  campaign_keywords: z.string().nullable(),
-  campaign_source: z.string().nullable(),
-  campaign_matomo: z.string().nullable(),
-});
+remove(id: string): Promise<void>
+  - Soft delete (deleted_at)
 
-// Schéma Create
-export const zDemandCreate = zDemand
-  .omit({ id: true, created_at: true, updated_at: true, history: true })
-  .partial();
+// Emails
+listEmails(demandId: string): Promise<DemandEmail[]>
+createEmail(values): Promise<DemandEmail>
+sendEmail(params): Promise<void>
+  - Enregistrement demand_emails
+  - Update signature user
+  - Envoi template 'legacy.manager'
 
-// Schéma Update
-export const zDemandUpdate = zDemandCreate.partial();
+// Relances
+getAllToRelanceDemands(): Promise<Demand[]>
+  - Critères: >1 mois OU >45j après 1ère relance
+  - Requête SQL complexe sur legacy_values
 
-// Schéma Filters
-export const zDemandFilters = z.object({
-  status: z.enum(demandStatuses).optional(),
-  gestionnaires: z.array(z.string()).optional(),
-  region: z.string().optional(),
-  department: z.string().optional(),
-  eligibility: z.boolean().optional(),
-  validated: z.boolean().optional(),
-  contacted: z.boolean().optional(),
-});
+dailyRelanceMail(): Promise<void>
+  - Pour chaque demand à relancer:
+    * Génération UUID
+    * Update "Relance envoyée" ou "Seconde relance envoyée"
+    * Envoi template 'demands.user-relance'
 
-// Types
-export type Demand = z.infer<typeof zDemand>;
-export type DemandCreate = z.infer<typeof zDemandCreate>;
-export type DemandUpdate = z.infer<typeof zDemandUpdate>;
-export type DemandFilters = z.infer<typeof zDemandFilters>;
+updateFromRelanceId(relanceId, values): Promise<Demand>
+updateCommentFromRelanceId(relanceId, comment): Promise<Demand>
+updateSatisfactionFromRelanceId(relanceId, satisfaction): Promise<Demand>
+  - Automation: email admin si structure = Bailleur/Tertiaire
+
+// Géolocalisation
+buildFeatures(properties: string[]): Promise<GeoJSON.Feature[]>
+  - Pour export carte/map
 ```
 
----
+### Assignment Rules Service
 
-### Étape 5: Page Admin v2
+**Fichier**: `src/modules/demands/server/assignment_rules-service.ts`
 
-**Objectif**: `/admin/demandes-v2` avec tRPC et table interactive
-
-#### 5.1 Créer la page admin
-
-**Fichier**: `src/pages/admin/demandes-v2.tsx`
-
-**Basé sur**: `src/pages/admin/demandes.tsx` (exemple existant)
-
-**Fonctionnalités**:
-1. **Liste des demandes non validées** (validated_at IS NULL)
-2. **Table interactive** avec colonnes:
-   - Utilisateur (nom, prénom, email)
-   - Adresse (depuis `batiment.source_address`)
-   - Structure (depuis `user.structure_type`)
-   - Distance réseau (depuis `batiment.eligibility_history`)
-   - Gestionnaires recommandés (hors scope assignment rules)
-   - Gestionnaires assignés (éditable inline)
-   - Réseau (éditable inline)
-   - Actions (Valider, Supprimer)
-3. **Édition inline**:
-   - `FCUTagAutocomplete` pour gestionnaires
-   - Champs réseau (nom, distance, id)
-4. **Map intégrée** (panneau droit):
-   - Affichage des demandes sur carte
-   - Filtre par sélection
-5. **Bouton "Valider"**:
-   - Met à jour `validated_at = NOW()`
-   - Ajoute événement dans `history`
-
-**Pattern tRPC**:
 ```typescript
-const { data: demands, refetch } = trpc.demands.listAdmin.useQuery();
+list(): Promise<AssignmentRule[]>
+  - Récupération depuis table assignment_rules
 
-const updateMutation = trpc.demands.update.useMutation({
-  onSuccess: () => {
-    refetch();
-  },
+parseAssignmentRules(rules): Promise<ParsedRule[]>
+  - Parse expressions en AST
+
+applyParsedRulesToEligibilityData(parsedRules, data): { tags: string[], assignment: string | null }
+  - Évalue règles sur données éligibilité
+  - Retourne tags recommandés + assignment
+```
+
+**Intégration**:
+- Appelé dans `listAdmin()` pour calculer `recommendedTags` et `recommendedAssignment`
+- Utilise les tags des `reseaux_de_chaleur` matchés par `id_fcu`
+
+---
+
+## 🎨 Pages Frontend
+
+### `/admin/demandes`
+
+**Fichier**: `src/pages/admin/demandes.tsx`
+
+**Changements**:
+- ❌ Supprimé: `useFetch('/api/admin/demands')`
+- ✅ Ajouté: `trpc.demands.admin.list.useQuery()`
+- ✅ Ajouté: `trpc.demands.admin.update.useMutation()`
+
+**Fonctionnalités conservées**:
+- Table avec tri/filtres
+- Carte interactive (panneau droit)
+- Filtres rapides (à affecter, à traiter, en PDP, toutes)
+- Édition inline (gestionnaires, affecté à, distance, réseau)
+- Validation/suppression
+
+**Nouveaux composants**:
+```tsx
+// Avant: src/components/Manager/Contact.tsx
+// Après: src/modules/demands/client/Contact.tsx
+import Contact from '@/modules/demands/client/Contact';
+import Comment from '@/modules/demands/client/Comment';
+import Status from '@/modules/demands/client/Status';
+// etc.
+```
+
+### `/pro/demandes`
+
+**Fichier**: `src/pages/pro/demandes.tsx`
+
+**Changements**:
+- ❌ Supprimé: `useFetch('/api/demands')`
+- ✅ Ajouté: `trpc.demands.gestionnaire.list.useQuery()`
+- ✅ Ajouté: `trpc.demands.gestionnaire.update.useMutation()`
+- ✅ Ajouté: `trpc.demands.gestionnaire.listEmails.useQuery()` (modal email)
+- ✅ Ajouté: `trpc.demands.gestionnaire.sendEmail.useMutation()` (envoi email)
+
+**Fonctionnalités conservées**:
+- Table avec tri/filtres
+- Filtres rapides (toutes, haut potentiel, à traiter, en PDP)
+- Carte interactive
+- Modal email avec historique
+- Export XLSX
+- Édition inline (status, prise de contact, commentaire)
+
+---
+
+## 🧩 Composants Déplacés
+
+### Avant (dispersés)
+
+```
+src/components/Manager/
+├── AdditionalInformation.tsx
+├── AdditionalInformation.styles.ts  ❌ supprimé (inline styles)
+├── Comment.tsx
+├── Contact.tsx
+├── Contacted.tsx
+├── Contacted.styles.ts              ❌ supprimé (inline styles)
+├── DemandStatusBadge.tsx
+├── Status.tsx                        ❌ supprimé (utilisait Airtable)
+└── DemandEmailForm.tsx              ✅ conservé (hors module demands)
+```
+
+### Après (module demands)
+
+```
+src/modules/demands/client/
+├── AdditionalInformation.tsx
+├── Comment.tsx
+├── Contact.tsx
+├── Contacted.tsx
+├── DemandSondageForm.tsx            ✨ nouveau (page satisfaction)
+├── DemandStatusBadge.tsx
+└── Status.tsx                        ✨ nouveau (dropdown status)
+```
+
+**Conservé dans `src/components/Manager/`**:
+- `DemandEmailForm.tsx` - Modal email (utilisé uniquement dans pages)
+- `Tag.tsx` - Composant tag générique
+
+---
+
+## 📧 Module Email Réorganisé
+
+### Avant
+
+```
+src/server/email/
+├── index.tsx
+└── react-email/
+    ├── index.tsx
+    ├── components.tsx
+    └── templates/
+        ├── activation.tsx
+        ├── inscription.tsx
+        ├── reset-password.tsx
+        ├── creation-demande.tsx
+        ├── new-demands.tsx
+        ├── old-demands.tsx
+        ├── relance.tsx
+        ├── manager-email.tsx
+        └── tests/
+            └── ...
+```
+
+### Après
+
+```
+src/modules/email/
+├── index.tsx
+├── email.config.tsx                 ✨ nouveau
+└── react-email/
+    ├── components.tsx
+    └── templates/
+        ├── auth/                    ✨ organisé
+        │   ├── activation.tsx
+        │   ├── inscription.tsx
+        │   └── reset-password.tsx
+        ├── demands/                 ✨ organisé
+        │   ├── _data.ts             ✨ données de test
+        │   ├── admin-assignment-change.tsx    ✨ automation
+        │   ├── admin-gestionnaire-contact.tsx ✨ automation
+        │   ├── admin-new.tsx
+        │   ├── gestionnaire-new.tsx
+        │   ├── gestionnaire-old.tsx
+        │   ├── user-new.tsx
+        │   ├── user-relance.tsx
+        │   └── tests/
+        │       └── ...
+        └── legacy/
+            └── manager-email.tsx    ✅ conservé (email gestionnaire custom)
+```
+
+**Nouveautés**:
+- Templates organisés par contexte (auth, demands, legacy)
+- Automations Airtable recréées en templates:
+  - `admin-assignment-change.tsx` - Changement affectation
+  - `admin-gestionnaire-contact.tsx` - Contact gestionnaire après relance
+
+---
+
+## 🔄 Migration CLI
+
+### Scripts
+
+**Fichiers**:
+- `src/modules/demands/commands/migrate-from-airtable.ts`
+- `src/modules/demands/commands/migrate-from-airtable-full.ts`
+
+**Commandes**:
+```bash
+# Migration incrémentale (nouvelles demandes)
+pnpm cli demands migrate-from-airtable
+
+# Migration complète (toutes les demandes)
+pnpm cli demands migrate-from-airtable-full
+```
+
+**Processus**:
+1. Connexion Airtable via SDK
+2. Récupération records (batch 100)
+3. Pour chaque record:
+   ```typescript
+   await kdb.insertInto('demands').values({
+     airtable_id: record.id,
+     legacy_values: record.fields,
+     created_at: record.fields['Date de la demande'],
+     updated_at: new Date(),
+   });
+
+   if (record.fields.Latitude && record.fields.Longitude) {
+     await createEligibilityTestAddress({
+       demand_id: demand.id,
+       address: record.fields.Adresse,
+       latitude: record.fields.Latitude,
+       longitude: record.fields.Longitude,
+     });
+   }
+   ```
+
+4. Migration emails (demand_emails):
+   ```typescript
+   const airtableEmails = await AirtableDB(Airtable.UTILISATEURS_EMAILS).select();
+   for (const email of airtableEmails) {
+     await kdb.insertInto('demand_emails').values({
+       airtable_id: email.id,
+       demand_id: findDemandByAirtableId(email.fields.demand_id),
+       email_key: email.fields.email_key,
+       to: email.fields.to,
+       // ...
+     });
+   }
+   ```
+
+**Données préservées**:
+- ✅ 100% des données Airtable dans `legacy_values`
+- ✅ `airtable_id` pour traçabilité
+- ✅ Historique emails dans `demand_emails`
+- ✅ Tests d'éligibilité dans `pro_eligibility_tests_addresses`
+
+---
+
+## 📊 Performance & Optimisations
+
+### Indexes Ciblés
+
+**Stratégie**: Indexes ciblés au lieu d'un GIN global
+
+**Avantages**:
+- ✅ Requêtes plus rapides sur champs fréquents
+- ✅ Moins de coût d'écriture (pas de mise à jour GIN global)
+- ✅ Taille d'index réduite
+- ✅ Peut utiliser plusieurs indexes en parallèle (bitmap scan)
+
+**Indexes créés**:
+```sql
+-- Tri par date (très fréquent)
+idx_demands_date_demande ON ((legacy_values->>'Date de la demande'))
+
+-- Filtres admin (à affecter)
+idx_demands_gestionnaires_valides ON ((legacy_values->>'Gestionnaires validés'))
+  WHERE legacy_values->>'Gestionnaires validés' = 'true'
+
+-- Filtres status
+idx_demands_status ON ((legacy_values->>'Status'))
+  WHERE legacy_values->>'Status' IS NOT NULL
+
+-- Relances
+idx_demands_relance_a_activer ON ((legacy_values->>'Relance à activer'))
+  WHERE legacy_values->>'Relance à activer' = 'true'
+idx_demands_relance_id ON ((legacy_values->>'Relance ID'))
+  WHERE legacy_values->>'Relance ID' IS NOT NULL
+
+-- Array Gestionnaires (opérateur ?|)
+idx_demands_gestionnaires_gin ON USING gin ((legacy_values->'Gestionnaires'))
+```
+
+### Requêtes Optimisées
+
+**Admin list** (1 requête au lieu de N+1):
+```sql
+SELECT
+  demands.*,
+  to_jsonb(pro_eligibility_tests_addresses) as testAddress
+FROM demands
+INNER JOIN pro_eligibility_tests_addresses
+  ON pro_eligibility_tests_addresses.demand_id = demands.id
+ORDER BY legacy_values->>'Date de la demande' DESC
+```
+
+**Gestionnaire list** (filtre par array avec `?|`):
+```sql
+SELECT * FROM demands
+WHERE legacy_values->>'Gestionnaires validés' = 'true'
+  AND legacy_values->'Gestionnaires' ?| ARRAY['Paris', 'Île-de-France']
+ORDER BY legacy_values->>'Date de la demande' DESC
+```
+
+**Relances** (requête complexe optimisée):
+```sql
+SELECT * FROM demands
+WHERE (
+  -- Première relance: >1 mois, non contacté, non relancé
+  (legacy_values->>'Date de la demande')::date < NOW() - INTERVAL '1 month'
+  AND legacy_values->>'Relance à activer' = 'true'
+  AND (legacy_values->>'Recontacté par le gestionnaire' IS NULL
+       OR legacy_values->>'Recontacté par le gestionnaire' = '')
+  AND (legacy_values->>'Relance envoyée' IS NULL
+       OR legacy_values->>'Relance envoyée' = '')
+) OR (
+  -- Seconde relance: >45j après 1ère, toujours non contacté
+  (legacy_values->>'Date de la demande')::date < NOW() - INTERVAL '45 days'
+  AND legacy_values->>'Relance à activer' = 'true'
+  AND (legacy_values->>'Recontacté par le gestionnaire' IS NULL
+       OR legacy_values->>'Recontacté par le gestionnaire' = '')
+  AND legacy_values->>'Relance envoyée' IS NOT NULL
+  AND legacy_values->>'Relance envoyée' != ''
+  AND (legacy_values->>'Seconde relance envoyée' IS NULL
+       OR legacy_values->>'Seconde relance envoyée' = '')
+)
+```
+
+### Logs de Performance
+
+```typescript
+logger.info('kdb.getAdminDemands', {
+  duration: Date.now() - startTime,
+  recordsCount: records.length,
 });
 
-const handleValidate = async (demandId: string) => {
-  await updateMutation.mutateAsync({
-    id: demandId,
-    data: {
-      validated_at: new Date().toISOString(),
-      // Ajouter événement dans history
-    },
-  });
-};
-```
-
-**Authentication**:
-```typescript
-export const getServerSideProps = withAuthentication(['admin']);
-```
-
-#### 5.2 Composants réutilisables
-
-**Utiliser les composants existants**:
-- `TableSimple` - Table avec filtres, tri, virtualisation
-- `FCUTagAutocomplete` - Sélection gestionnaires
-- `ModalSimple` - Modales de confirmation
-- `AsyncButton` - Boutons avec loading
-
----
-
-### Étape 6: Page Gestionnaire v2
-
-**Objectif**: `/pro/demandes-v2` avec tRPC et gestion des demandes
-
-#### 6.1 Créer la page gestionnaire
-
-**Fichier**: `src/pages/pro/demandes-v2.tsx`
-
-**Basé sur**: `src/pages/pro/demandes.tsx` (exemple existant)
-
-**Fonctionnalités**:
-1. **Liste des demandes validées** filtrées par gestionnaire
-2. **Filtres**:
-   - Status
-   - Structure
-   - Mode de chauffage
-   - Distance réseau
-   - Date de création
-3. **Filtres rapides**:
-   - Toutes les demandes
-   - Haut potentiel (collectif <100m, >100 logements, tertiaire)
-   - À traiter (status='En attente de prise en charge' AND NOT contacted)
-   - En PDP
-4. **Table interactive** avec colonnes:
-   - Utilisateur
-   - Adresse
-   - Structure
-   - Distance
-   - Status (éditable dropdown)
-   - Contact fait (éditable checkbox)
-   - Commentaire (éditable inline)
-   - Actions (Email, Historique)
-5. **Modal Email**:
-   - Formulaire d'envoi email avec templates
-   - Historique emails envoyés (depuis table `utilisateurs_emails` - **hors scope PostgreSQL**)
-6. **Map intégrée** (panneau droit)
-7. **Export XLSX**
-
-**Pattern tRPC**:
-```typescript
-const [filters, setFilters] = useState<DemandFilters>({});
-
-const { data: demands, refetch } = trpc.demands.listGestionnaire.useQuery(filters);
-
-const updateMutation = trpc.demands.update.useMutation({
-  onSuccess: () => {
-    refetch();
-  },
+logger.info('getDetailedEligilityStatus', {
+  duration: Date.now() - startTime,
+  recordsCount: records.length,
 });
-
-const handleStatusChange = async (demandId: string, newStatus: string) => {
-  await updateMutation.mutateAsync({
-    id: demandId,
-    data: { status: newStatus },
-  });
-};
-```
-
-**Calcul haut_potentiel**:
-```typescript
-const isHautPotentiel = (demand: Demand) => {
-  const gestionnaires = demand.legacy_values.Gestionnaires || [];
-  const isParis = gestionnaires.includes('Paris');
-  const distanceThreshold = isParis ? 60 : 100;
-
-  const heatingType = demand.batiment?.type_chauffage;
-  const distance = demand.batiment?.eligibility_history?.[0]?.distance;
-  const nbLogements = demand.batiment?.nb_logements;
-  const structure = demand.user?.structure_type;
-
-  return (
-    heatingType === 'Collectif' &&
-    (distance < distanceThreshold || nbLogements >= 100 || structure === 'Tertiaire')
-  );
-};
-```
-
-**Authentication**:
-```typescript
-export const getServerSideProps = withAuthentication(['gestionnaire', 'demo', 'admin']);
 ```
 
 ---
 
-### Étape 7: Nettoyage Airtable
+## ✅ Résumé des Changements
 
-**Objectif**: Supprimer toutes les références à Airtable (hors emails/relances)
+### Base de Données
 
-#### 7.1 Fichiers à NE PAS modifier (emails/relances)
+| Avant (Airtable) | Après (PostgreSQL) |
+|------------------|-------------------|
+| Table `FCU - Utilisateurs` | Table `demands` + `legacy_values` JSONB |
+| Table `FCU - Utilisateurs emails` | Table `demand_emails` |
+| Table `FCU - Utilisateurs relance` | ⏸️ Conservé (hors scope) |
+| Requêtes via SDK Airtable | Requêtes SQL optimisées via Kysely |
 
-**Conserver l'usage d'Airtable pour**:
-- `src/pages/api/managerEmail.ts` - Emails gestionnaires → Table `UTILISATEURS_EMAILS`
-- `src/pages/satisfaction.tsx` - Page de relance → Table `RELANCE`
-- `src/server/services/manager.ts` - Fonctions de relance:
-  - `dailyNewManagerMail()`
-  - `weeklyOldManagerMail()`
-  - `dailyRelanceMail()`
-  - `updateRelanceAnswer()`
+### API
 
-**Raison**: Ces tables Airtable (`UTILISATEURS_EMAILS`, `RELANCE`) sont des features séparées qui peuvent être migrées plus tard.
+| Avant (REST) | Après (tRPC) |
+|--------------|--------------|
+| `GET /api/admin/demands` | `trpc.demands.admin.list.useQuery()` |
+| `PUT /api/admin/demands/[id]` | `trpc.demands.admin.update.useMutation()` |
+| `DELETE /api/admin/demands/[id]` | ❌ Supprimé (soft delete dans update) |
+| `GET /api/demands` | `trpc.demands.gestionnaire.list.useQuery()` |
+| `PUT /api/demands/[id]` | `trpc.demands.gestionnaire.update.useMutation()` |
+| `GET /api/managerEmail?demand_id=` | `trpc.demands.gestionnaire.listEmails.useQuery()` |
+| `POST /api/managerEmail` | `trpc.demands.gestionnaire.sendEmail.useMutation()` |
+| `POST /api/airtable/records` | `trpc.demands.user.create.useMutation()` |
 
-#### 7.2 Références Airtable à SUPPRIMER (après migration)
+**Avantages tRPC**:
+- ✅ Type-safety complète (client & serveur)
+- ✅ Pas de génération OpenAPI/Swagger
+- ✅ Autocomplete IDE
+- ✅ Validation Zod automatique
+- ✅ Moins de boilerplate
 
-**À désactiver/supprimer APRÈS validation de la migration**:
-- `src/server/services/manager.ts` - Fonctions CRUD demandes (remplacées par `demands/server/service.ts`)
-- `src/pages/api/admin/demands.ts` - Route REST admin (remplacée par tRPC)
-- `src/pages/api/demands/[demandId].ts` - Route REST update (remplacée par tRPC)
-- `src/pages/api/airtable/records/index.ts` - Création demandes via Airtable (remplacée par tRPC)
-- `src/hooks/useContactFormFCU.ts` - Hook formulaire (à adapter pour PostgreSQL)
+### Structure Code
 
-**Process de suppression**:
-1. Valider que les pages v2 fonctionnent
-2. Rediriger `/admin/demandes` → `/admin/demandes-v2`
-3. Rediriger `/pro/demandes` → `/pro/demandes-v2`
-4. Supprimer les anciennes pages
-5. Supprimer les routes REST obsolètes
-6. Supprimer les services Airtable obsolètes
+| Avant | Après |
+|-------|-------|
+| `src/components/Manager/*` | `src/modules/demands/client/*` |
+| `src/server/email/*` | `src/modules/email/*` |
+| `src/pages/api/admin/demands.ts` | ❌ Supprimé |
+| `src/pages/api/demands/[id].ts` | ❌ Supprimé |
+| `src/pages/api/managerEmail.ts` | ❌ Supprimé |
+| `src/pages/api/airtable/records/index.ts` | ⚠️ Partiellement (reste relances) |
+| `src/server/services/manager.ts` | ⚠️ Partiellement (reste cron) |
 
----
+### Nouvelles Routes REST Supprimées
 
-## 🧪 Phase 4: TEST
+Ces routes ont été complètement supprimées car remplacées par tRPC:
 
-### Tests à Effectuer
+- ❌ `src/pages/api/admin/demands.ts`
+- ❌ `src/pages/api/demands/index.ts`
+- ❌ `src/pages/api/managerEmail.ts`
 
-#### 1. Migration CLI
-- [ ] Dry-run réussit sans erreurs
-- [ ] Migration complète transfère toutes les demandes
-- [ ] Champs correctement mappés
-- [ ] `history` correctement généré
-- [ ] `user_id` correctement populé
-- [ ] `batiment.eligibility_history` correctement calculé
-- [ ] `legacy_values` contient toutes les données d'origine
+### Fichiers Conservés (Partiellement Modifiés)
 
-#### 2. Service Layer
-- [ ] `listAdmin()` retourne toutes les demandes
-- [ ] `listGestionnaire()` filtre par tags gestionnaires
-- [ ] Filtres fonctionnent (status, région, date, etc.)
-- [ ] `create()` crée une demande avec historique
-- [ ] `update()` met à jour et ajoute événement dans history
-- [ ] `remove()` supprime correctement
-- [ ] Permissions respectées (admin vs gestionnaire)
+Ces fichiers ont été modifiés mais pas supprimés:
 
-#### 3. tRPC Routes
-- [ ] Authentication fonctionne (rôles admin, gestionnaire, demo)
-- [ ] Toutes les queries retournent les bonnes données
-- [ ] Mutations mettent à jour la base
-- [ ] Erreurs gérées proprement (404, 403, etc.)
-
-#### 4. Page Admin v2
-- [ ] Liste affiche les demandes non validées
-- [ ] Édition inline fonctionne (gestionnaires, réseau)
-- [ ] Map affiche les demandes correctement
-- [ ] Bouton "Valider" met à jour `validated_at`
-- [ ] Suppression fonctionne
-- [ ] Filtres/tri fonctionnent
-
-#### 5. Page Gestionnaire v2
-- [ ] Liste filtrée par gestionnaire tags
-- [ ] Filtres rapides fonctionnent (haut potentiel, à traiter, PDP)
-- [ ] Édition status/contact/commentaire fonctionne
-- [ ] Map intégrée fonctionne
-- [ ] Export XLSX fonctionne
-- [ ] Modal email s'ouvre (même si emails en Airtable)
-
-#### 6. TypeScript & Lint
-- [ ] `pnpm typecheck` passe sans erreurs
-- [ ] `pnpm lint` passe sans erreurs
-- [ ] Types Kysely générés correctement
+- ⚠️ `src/pages/api/airtable/records/index.ts` - Conservé pour relances uniquement
+- ⚠️ `src/server/services/manager.ts` - Conservé pour cron jobs
+- ⚠️ `src/services/airtable.ts` - Formatage données (toujours utilisé)
 
 ---
 
-## 📋 Checklist d'Implémentation
+## 🎯 Prochaines Étapes (Optionnelles)
 
-### Phase 1: Migration des Données
-- [ ] **Étape 1.1**: Implémenter transformation Airtable → PostgreSQL
-- [ ] **Étape 1.2**: Ajouter génération `history`
-- [ ] **Étape 1.3**: Lookup `user_id` par email
-- [ ] **Étape 1.4**: Calculer champs BAN
-- [ ] **Étape 1.5**: Appeler `getAddressEligibilityHistoryEntry()`
-- [ ] **Test**: Dry-run migration
-- [ ] **Test**: Migration complète en dev
+### Phase 2 - Nettoyage Complet
 
-### Phase 2: Service Layer
-- [ ] **Étape 2.1**: Implémenter `listAdmin()`
-- [ ] **Étape 2.2**: Implémenter `listGestionnaire()` avec filtres
-- [ ] **Étape 2.3**: Implémenter `get()`, `create()`, `update()`, `remove()`
-- [ ] **Étape 2.4**: Implémenter stats functions
-- [ ] **Test**: Tests unitaires service
-- [ ] **Test**: Permissions admin vs gestionnaire
+- [ ] Migrer table `RELANCE` vers PostgreSQL
+- [ ] Migrer cron jobs vers services PostgreSQL uniquement
+- [ ] Supprimer complètement dépendance Airtable
+- [ ] Supprimer `src/pages/api/airtable/records/index.ts`
+- [ ] Nettoyer `src/server/services/manager.ts`
 
-### Phase 3: tRPC Routes
-- [ ] **Étape 3.1**: Créer toutes les routes tRPC
-- [ ] **Étape 3.2**: Enregistrer dans `appRouter`
-- [ ] **Test**: Tester routes avec Postman/curl
-- [ ] **Test**: Authentication roles
+### Phase 3 - Optimisations Avancées
 
-### Phase 4: Types & Constantes
-- [ ] **Étape 4.1**: Définir enums et constantes
-- [ ] **Étape 4.2**: Créer schémas Zod
-- [ ] **Test**: Validation Zod fonctionne
-
-### Phase 5: Page Admin v2
-- [ ] **Étape 5.1**: Créer structure page
-- [ ] **Étape 5.2**: Intégrer tRPC queries/mutations
-- [ ] **Étape 5.3**: Implémenter table interactive
-- [ ] **Étape 5.4**: Intégrer map
-- [ ] **Étape 5.5**: Implémenter édition inline
-- [ ] **Étape 5.6**: Bouton validation
-- [ ] **Test**: Page fonctionne de bout en bout
-
-### Phase 6: Page Gestionnaire v2
-- [ ] **Étape 6.1**: Créer structure page
-- [ ] **Étape 6.2**: Intégrer tRPC queries/mutations
-- [ ] **Étape 6.3**: Implémenter table interactive
-- [ ] **Étape 6.4**: Implémenter filtres et filtres rapides
-- [ ] **Étape 6.5**: Intégrer map
-- [ ] **Étape 6.6**: Modal email (placeholder)
-- [ ] **Étape 6.7**: Export XLSX
-- [ ] **Test**: Page fonctionne de bout en bout
-
-### Phase 7: Validation & Nettoyage
-- [ ] **Étape 7.1**: Tests E2E complets
-- [ ] **Étape 7.2**: Validation données migrées
-- [ ] **Étape 7.3**: Performance tests
-- [ ] **Étape 7.4**: Redirections anciennes pages
-- [ ] **Étape 7.5**: Suppression code Airtable obsolète
+- [ ] Normaliser schéma (extraire champs fréquents hors JSONB)
+- [ ] Cache Redis pour listes admin/gestionnaire
+- [ ] Pagination curseur-based pour grandes listes
+- [ ] Webhook temps réel au lieu de polling
 
 ---
 
-## ⚠️ Points d'Attention
+## 📚 Documentation de Référence
 
-### Données Critiques
-- ⚠️ **Backup Airtable**: Exporter toutes les données avant migration
-- ⚠️ **legacy_values**: TOUJOURS rempli pour rollback possible
-- ⚠️ **user_id**: Gérer le cas où l'email n'existe pas dans `users`
-- ⚠️ **history**: Ne jamais écraser, toujours append
-- ⚠️ **Validation**: Utiliser Zod avant toute insertion
+### Fichiers Clés
 
-### Performance
-- 📊 **Indexes**: Vérifier que tous les indexes sont créés
-- 📊 **GIN indexes**: Essentiels pour JSONB queries (déjà créés)
-- 📊 **Batch processing**: Limiter à 100 records/batch en migration
-- 📊 **Virtual scrolling**: Utiliser `VirtualList` pour grandes listes
+**Migrations**:
+- `src/server/db/migrations/20251106000000_create_demands_tables.ts`
+- `src/server/db/migrations/20251112000000_make_pro_eligibility_tests_addresses_shared.ts`
 
-### Compatibilité
-- 🔄 **Emails/Relances**: Rester en Airtable pour l'instant
-- 🔄 **Assignment rules**: Hors scope (Phase 2)
-- 🔄 **Formulaire public**: À adapter plus tard pour PostgreSQL
-- 🔄 **Anciennes pages**: Ne pas modifier, créer -v2
+**tRPC**:
+- `src/modules/demands/server/trpc-routes.ts` - Routes
+- `src/modules/trpc/trpc.config.ts` - Config principale
+- `src/modules/demands/constants.ts` - Schémas Zod
 
-### Rollback
-- 🔙 **Plan B**: Si problème, remettre anciennes pages
-- 🔙 **Data integrity**: `legacy_values` permet de restaurer
-- 🔙 **No destructive actions**: Ne pas supprimer Airtable avant validation complète
+**Services**:
+- `src/modules/demands/server/demands-service.ts` - Service principal
+- `src/modules/demands/server/assignment_rules-service.ts` - Règles attribution
 
----
+**Pages**:
+- `src/pages/admin/demandes.tsx` - Interface admin
+- `src/pages/pro/demandes.tsx` - Interface gestionnaire
+- `src/pages/satisfaction.tsx` - Page relance
 
-## ✅ Critères de Validation
+**Composants**:
+- `src/modules/demands/client/*` - Composants UI
+- `src/modules/email/react-email/templates/demands/*` - Templates emails
 
-### Migration
-- ✅ Toutes les demandes Airtable sont dans PostgreSQL
-- ✅ Aucune perte de données (vérifier count)
-- ✅ `legacy_values` identique à données Airtable
-- ✅ `history` correctement généré pour chaque demande
-- ✅ `user_id` populé pour emails existants
-- ✅ Performance acceptable (<30s pour migration complète)
+**Migration**:
+- `src/modules/demands/commands/migrate-from-airtable.ts` - Script CLI
+- `src/modules/demands/commands.ts` - Registry
 
-### Fonctionnel
-- ✅ Admin peut lister/filtrer/éditer les demandes non validées
-- ✅ Admin peut valider une demande
-- ✅ Admin peut supprimer une demande
-- ✅ Gestionnaire peut lister ses demandes
-- ✅ Gestionnaire peut éditer status/contact/commentaire
-- ✅ Filtres rapides fonctionnent (haut potentiel, à traiter, PDP)
-- ✅ Map affiche les demandes correctement
-- ✅ Export XLSX fonctionne
+### Guides Connexes
 
-### Technique
-- ✅ Types Kysely générés automatiquement
-- ✅ Pas d'erreurs TypeScript
-- ✅ Pas d'erreurs de lint
-- ✅ tRPC routes documentées
-- ✅ Migration réversible (rollback possible)
+- `status.md` - Documentation de l'architecture actuelle
+- `migration-table.md` - Mapping Airtable → PostgreSQL (référence)
 
 ---
 
-## 🚀 Ordre d'Exécution
-
-1. **Semaine 1**: Migration CLI + Service Layer + tRPC Routes
-2. **Semaine 2**: Page Admin v2
-3. **Semaine 3**: Page Gestionnaire v2
-4. **Semaine 4**: Tests, validation, nettoyage
-
----
-
-**Prochaine étape**: Validation du plan avant implémentation
-
+**Fin du document - Migration complétée avec succès** ✅
