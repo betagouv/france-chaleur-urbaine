@@ -458,25 +458,23 @@ export const list = async (user: User) => {
   const startTime = Date.now();
 
   // Build query based on user role and gestionnaires
-  let query = kdb
+  const records = await kdb
     .selectFrom('demands')
     .innerJoin('pro_eligibility_tests_addresses', 'pro_eligibility_tests_addresses.demand_id', 'demands.id')
     .selectAll('demands')
-    .select(sql.raw(`to_jsonb(pro_eligibility_tests_addresses)`).as('testAddress'));
-
-  if (user.role === 'admin') {
-    // No filter for admin
-  } else if (user.role === 'demo') {
-    query = query
-      .where(sql`legacy_values->>'Gestionnaires validés'`, '=', 'true')
-      .where(sql`legacy_values->'Gestionnaires'`, '?|', sql.val(['Paris']));
-  } else if (user.role === 'gestionnaire') {
-    query = query
-      .where(sql`legacy_values->>'Gestionnaires validés'`, '=', 'true')
-      .where(sql`legacy_values->'Gestionnaires'`, '?|', sql.val(user.gestionnaires));
-  }
-
-  const records = await query.orderBy(sql`legacy_values->>'Date de la demande'`, 'desc').execute();
+    .select(sql.raw(`to_jsonb(pro_eligibility_tests_addresses)`).as('testAddress'))
+    .$if(user.role === 'demo', (qb) =>
+      qb
+        .where(sql`legacy_values->>'Gestionnaires validés'`, '=', 'true')
+        .where(sql`legacy_values->'Gestionnaires'`, '?|', sql.val(['Paris']))
+    )
+    .$if(user.role === 'gestionnaire', (qb) =>
+      qb
+        .where(sql`legacy_values->>'Gestionnaires validés'`, '=', 'true')
+        .where(sql`legacy_values->'Gestionnaires'`, '?|', sql.val(user.gestionnaires))
+    )
+    .orderBy(sql`legacy_values->>'Date de la demande'`, 'desc')
+    .execute();
 
   logger.info('kdb.getDemands', {
     duration: Date.now() - startTime,
