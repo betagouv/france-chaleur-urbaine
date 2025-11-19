@@ -366,13 +366,20 @@ function DemandesAdmin(): React.ReactElement {
         cell: (info) => {
           const demand = info.row.original;
           return (
-            <ChipAutoComplete
-              options={assignmentRulesResultsOptions}
-              defaultOption={defaultAssignmentChipOption}
-              value={demand['Affecté à']}
-              onChange={(value) => updateDemand(demand.id, { 'Affecté à': value || (null as any) })} // null allows a truly empty field (not an empty tag)
-              suggestedValue={demand.recommendedAssignment}
-            />
+            <div>
+              <ChipAutoComplete
+                options={assignmentRulesResultsOptions}
+                defaultOption={defaultAssignmentChipOption}
+                value={demand['Affecté à']}
+                onChange={(value) => updateDemand(demand.id, { 'Affecté à': value || (null as any) })} // null allows a truly empty field (not an empty tag)
+                suggestedValue={demand.recommendedAssignment}
+              />
+              {demand['Gestionnaire Affecté à'] && (
+                <div className="text-xs text-gray-500">
+                  Demande de changement d'affectation: <strong>{demand['Gestionnaire Affecté à']}</strong>
+                </div>
+              )}
+            </div>
           );
         },
         enableSorting: false,
