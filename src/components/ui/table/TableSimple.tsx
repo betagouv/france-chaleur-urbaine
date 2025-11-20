@@ -637,29 +637,30 @@ const TableSimple = <T extends RowData>({
         {enableGlobalFilter && (
           <Input
             label=""
-            className="flex-1"
+            className="flex-1 mb-2"
             nativeInputProps={{
-              className: 'mb-2',
               onChange: (e) => table.setGlobalFilter(e.target.value),
               placeholder: 'Recherche...',
               value: globalFilter,
             }}
           />
         )}
-        <div className={cx('flex items-center gap-2', enableGlobalFilter && 'mb-6' /** mb-6 to be aligned with the input */)}>
-          {exportConfig && (
-            <ButtonExport
-              size="small"
-              filename={exportConfig.fileName}
-              sheets={buildExportData}
-              iconId="ri-download-line"
-              priority="secondary"
-            >
-              Télécharger les données
-            </ButtonExport>
-          )}
-          {topRightActions}
-        </div>
+        {(exportConfig || topRightActions) && (
+          <div className="flex items-center gap-2">
+            {exportConfig && (
+              <ButtonExport
+                size="small"
+                filename={exportConfig.fileName}
+                sheets={buildExportData}
+                iconId="ri-download-line"
+                priority="secondary"
+              >
+                Télécharger les données
+              </ButtonExport>
+            )}
+            {topRightActions}
+          </div>
+        )}
       </div>
       {caption && <div className="text-2xl leading-8 font-bold mb-5">{caption}</div>}
       <div
