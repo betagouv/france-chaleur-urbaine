@@ -1,46 +1,122 @@
 ## Security
 
-## Input Validation
+## Authentication (NextAuth)
 
-- **Always validate** user input on both client and server
-- Use schema validation (Zod, Yup, etc.) for type safety
-- Sanitize input to prevent injection attacks
+**Provider**: Credentials (email/password)  
+**Roles**: `admin`, `gestionnaire`, `professionnel`, `particulier`, `demo`
 
 ```typescript
-// Example with Zod
-const schema = z.object({
+import { withAuthentication } from '@/server/authentication';
+
+export const getServerSideProps = withAuthentication(['admin', 'gestionnaire']);
+```
+
+**Client-side**:
+```typescript
+import { useAuthentication } from '@/modules/auth/client/hooks';
+
+const { user, isAuthenticated, hasRole } = useAuthentication();
+
+if (hasRole('admin')) {
+  // Admin only
+}
+```
+
+## Authorization (TRPC)
+
+**Role-based**:
+```typescript
+import { route, routeRole } from '@/modules/trpc/server';
+
+// Specific roles
+export const myRouter = router({
+  list: route
+    .meta({ auth: { roles: ['admin', 'gestionnaire'] } })
+    .query(async ({ ctx }) => { ... }),
+  
+  // Shorthand
+  delete: routeRole(['admin']).mutation(async ({ ctx }) => { ... }),
+});
+```
+
+**Custom authorization**:
+```typescript
+.meta({
+  auth: {
+    custom: async (ctx, input) => {
+      // Check resource ownership
+      return ctx.user?.id === input.userId;
+    },
+  },
+})
+```
+
+**Context helpers**:
+- `ctx.user` - Current user or undefined
+- `ctx.userId` - User ID or undefined
+- `ctx.hasRole(role)` - Check if user has role
+- `ctx.isAuthenticated` - Boolean
+
+## Authorization (Legacy API)
+
+```typescript
+import { handleRouteErrors } from '@/server/helpers/server';
+
+export default handleRouteErrors(
+  async (req, res) => { ... },
+  {
+    requireAuthentication: ['admin'],
+  }
+);
+```
+
+## Input Validation
+
+**Always validate on server** (client validation = UX only):
+
+```typescript
+// In constants.ts (shared)
+export const createItemSchema = z.object({
   email: z.string().email(),
   age: z.number().min(0).max(120),
 });
 
-// Validate on server (critical)
-const result = schema.parse(userInput);
+// TRPC route
+route.input(createItemSchema).mutation(async ({ input }) => {
+  // input is validated and typed
+});
 ```
+
+**Zod automatically validates** - No manual `.parse()` needed with TRPC
 
 ## Secrets Management
 
-- Store secrets in environment variables only
-- Never commit secrets to version control
-- Use different secrets for dev/staging/production
-- Rotate secrets regularly
+- **Environment variables only** (`.env.local`)
+- Never commit secrets to git
+- Different secrets per environment (dev/staging/prod)
+- Rotate API keys regularly
 
-## Permissions & Authorization
+```bash
+# .env.local (gitignored)
+DATABASE_URL=postgres://...
+NEXTAUTH_SECRET=...
+```
 
-- Check permissions on server (never trust client)
-- Verify user roles and resource ownership
-- Use middleware for common permission checks
-- Fail securely (deny by default)
+## Role Hierarchy
 
-## HTTP Security
+**Admin** has all permissions (always checked in `requireAuthentication`)
 
-- Use security headers (helmet, etc.)
-- Configure strict CORS policies
-- Use Content Security Policy (CSP)
-- Enable HTTPS in production
+```typescript
+// In server helper
+if (Array.isArray(roles) && !(roles.includes(user.role) || user.role === 'admin')) {
+  throw invalidPermissionsError;
+}
+```
 
-## Data Protection
+## Security Rules
 
-- Minimize personal data collection
-- Encrypt sensitive data at rest
-- Use secure transmission (HTTPS)
-- Follow data retention policies
+1. **Never trust client** - Validate and authorize on server
+2. **Fail securely** - Deny by default (no auth config = public)
+3. **Check ownership** - Verify user owns resource
+4. **Log security events** - Failed auth attempts, permission denials
+5. **No PII in logs** - Never log passwords, tokens, emails

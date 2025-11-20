@@ -1,55 +1,127 @@
 ## Maps (MapLibre GL)
 
-**Stack**: MapLibre GL + react-map-gl + Turf.js + MapboxDraw
+**Stack**: MapLibre GL + react-map-gl + Turf.js + MapboxDraw  
+**Component**: `FullyFeaturedMap` in `src/components/Map/Map.tsx`  
+**Layers System**: `src/components/Map/map-layers.ts` (40+ layers)
 
-## Core Components
+## Layer Architecture
 
-- `Map` (`src/components/Map/Map.tsx`) - Base map component
-- `FullyFeaturedMap` - Main map with all features (search, layers, tools)
+**Location**: `src/components/Map/layers/<layerName>.tsx`
 
-## Map Layers System
+Each layer file exports a `MapSourceLayersSpecification`:
 
-**Location**: `src/components/Map/map-layers.ts`
-
-All layers are defined in `map-layers.ts` and loaded via `loadMapLayers()`:
-- **40+ layer specs** covering networks, buildings, zones, etc.
-- Each spec: `{ sourceId, source, layers, symbols }`
-- Tiles served from `/api/tiles/*` endpoints (vector tiles)
-
-## Adding New Layer
-
-1. Create layer spec in `src/components/Map/layers/myLayer.tsx`:
 ```typescript
+import { defineLayerPopup, type MapSourceLayersSpecification } from './common';
+
+const Popup = defineLayerPopup<TileType>(
+  (data, { Property, Title, TwoColumns }, { hasRole }) => (
+    <>
+      <Title>{data.name}</Title>
+      <TwoColumns>
+        <Property label="Gestionnaire" value={data.gestionnaire} />
+      </TwoColumns>
+    </>
+  )
+);
+
 export const myLayersSpec = {
   sourceId: 'my-source',
-  source: { type: 'vector', tiles: ['/api/tiles/my-layer/{z}/{x}/{y}'] },
-  layers: [{
-    id: 'my-layer',
-    type: 'fill',
-    paint: { 'fill-color': '#FF0000' },
-    isVisible: (config) => config.myLayer,
-  }],
+  source: { 
+    type: 'vector', 
+    tiles: ['/api/tiles/my-layer/{z}/{x}/{y}'] 
+  },
+  layers: [
+    {
+      id: 'my-layer-fill',
+      type: 'fill',
+      paint: { 'fill-color': '#FF0000', 'fill-opacity': 0.6 },
+      isVisible: (config) => config.myLayer,
+      popup: Popup,
+    },
+    {
+      id: 'my-layer-outline',
+      type: 'line',
+      paint: { 'line-color': '#990000', 'line-width': 2 },
+      isVisible: (config) => config.myLayer,
+    },
+  ],
 } satisfies MapSourceLayersSpecification;
 ```
 
-2. Register in `map-layers.ts`:
+**Register in `map-layers.ts`**:
 ```typescript
+import { myLayersSpec } from './layers/myLayer';
+
 export const mapLayers = [
   ...myLayersSpec,
-  // ... other layers
+  // ... 40+ other layers
 ];
 ```
 
+## Layer Properties
+
+- `sourceId` - Unique source identifier
+- `source` - Vector tiles URL or GeoJSON
+- `layers[]` - Array of MapLibre layers:
+  - `id` - Layer ID
+  - `type` - `fill`, `line`, `circle`, `symbol`
+  - `paint` - Style properties
+  - `isVisible(config)` - Visibility function
+  - `filter(config)` - Optional filter expression
+  - `popup` - Click popup component
+
 ## Map Configuration
 
-State managed via `MapConfiguration` type (50+ properties):
-- Layer visibility toggles
-- Filters (energie, building type, etc.)
-- Tools state (drawing, measurement)
+**Type**: `MapConfiguration` (50+ properties)  
+**Managed via**: `useQueryStates` (URL-based state)
 
-## Tile Generation
+Controls:
+- Layer visibility toggles (`reseauxDeChaleur`, `batiments`, etc.)
+- Filters (`energies`, `typesBatiment`, etc.)
+- Tool states (`drawing`, `measurement`)
 
-Module: `src/modules/tiles/`
-- Generate vector tiles with Tippecanoe
-- Jobs scheduled via `jobs` module
-- Serve via `/api/tiles/*` routes
+## Popups
+
+**Helper**: `defineLayerPopup<TileType>()`
+
+```typescript
+const Popup = defineLayerPopup<NetworkTile>(
+  (data, { Property, Title, TwoColumns }, context) => {
+    const { hasRole, pathname, mapEventBus } = context;
+    
+    return (
+      <>
+        <Title>ID: {data.id_fcu}</Title>
+        <Property label="Type" value={data.type} />
+        {hasRole('admin') && <Button>Admin action</Button>}
+      </>
+    );
+  }
+);
+```
+
+## Map Events
+
+**Event bus**: `mapEventBus` (custom events between components)
+
+```typescript
+// Emit
+mapEventBus.emit('rdc-add-tag', { tag });
+
+// Listen
+mapEventBus.on('rdc-add-tag', (data) => { ... });
+```
+
+## Tiles Generation
+
+**Module**: `src/modules/tiles/`  
+**Process**: PostGIS → Tippecanoe → Vector tiles (`.mbtiles`)  
+**Serve**: `/api/tiles/<source>/{z}/{x}/{y}` routes
+
+## Best Practices
+
+- **One file per layer** in `src/components/Map/layers/`
+- **Separate layers** for fill, outline, labels (better control)
+- **Use filters** for dynamic layer visibility
+- **Popup helpers** for consistent styling
+- **Vector tiles** for performance (not GeoJSON)

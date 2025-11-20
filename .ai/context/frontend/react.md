@@ -1,47 +1,114 @@
 ## Frontend (React + DSFR)
 
-**Architecture**: Next.js Pages Router (NOT App Router) - See `.ai/context/required/architecture.md` for details
+**Framework**: Next.js Pages Router (NOT App Router)  
+**Design System**: DSFR (`@codegouvfr/react-dsfr`) + custom UI components
 
-## Design System
+## Component Structure
 
-- **DSFR**: `@codegouvfr/react-dsfr` for French gov standards
-- **UI Components**: Use `@/components/ui/*` wrappers (Box, Button, Text, Heading)
-- **Icons**: DSFR icons (`fr-icon-*`) or Remix icons via DSFR
-- **Colors**: DSFR tokens + FCU custom (`fcu-blue`, `fcu-green`, etc.)
+**Location**:
+- Module components: `src/modules/<module>/client/components/`
+- Shared components: `src/components/`
+- UI primitives: `src/components/ui/`
+
+**Pattern**:
+```typescript
+import trpc from '@/modules/trpc/client';
+import Button from '@/components/ui/Button';
+
+type MyComponentProps = {
+  id: string;
+  onSuccess?: () => void;
+};
+
+export default function MyComponent({ id, onSuccess }: MyComponentProps) {
+  const { data, isLoading } = trpc.module.get.useQuery({ id });
+  
+  if (isLoading) return <Loader />;
+  
+  return <div>{data?.name}</div>;
+}
+```
+
+## TRPC Hooks
+
+### Query (GET)
+```typescript
+const { data, isLoading, error, refetch } = trpc.module.list.useQuery(
+  { filter: 'active' },
+  { 
+    enabled: true,
+    refetchInterval: 5000  // Auto-refresh
+  }
+);
+```
+
+### Mutation (POST/PUT/DELETE)
+```typescript
+const utils = trpc.useUtils();
+
+const { mutateAsync, isPending } = trpc.module.create.useMutation({
+  onSuccess: () => {
+    notify('success', 'Created!');
+    void utils.module.list.invalidate();  // Refresh list
+  },
+});
+
+await mutateAsync({ name: 'New item' });
+```
+
+### Cache Updates
+```typescript
+// Invalidate (refetch)
+void utils.module.list.invalidate();
+void utils.module.get.invalidate({ id });
+
+// Manual cache update
+utils.module.get.setData({ id }, (old) => ({ ...old, name: 'Updated' }));
+```
 
 ## State Management
 
-- **Server state**: tRPC (via `@tanstack/react-query`) - preferred
-- **Client state**: Jotai atoms when needed
-- **URL state**: `nuqs` (use `useQueryFlag` for booleans)
-- **Prefer URL state** when navigating between pages
+- **Server state**: TRPC + React Query (preferred)
+- **URL state**: `nuqs` (`useQueryState` for strings, `useQueryFlag` for booleans)
+- **Client state**: `useState` or Jotai atoms (rarely needed)
 
-## HTTP Client
+## UI Components
 
-- **Preferred**: tRPC hooks (`trpc.module.endpoint.useQuery()`)
-- **Legacy**: `fetch` API (axios deprecated)
+**Use custom wrappers** from `@/components/ui/`:
+- `Button`, `Heading`, `Text` - DSFR wrappers
+- `Dialog`, `Loader`, `Alert` - Common patterns
 
-## Component Patterns
+**DSFR Components**: Import from `@codegouvfr/react-dsfr`
 
-- **Props**: Explicit extracted types for exported components
-- **Imports**: Never import server code in client (use `types.ts` for shared types)
-- **Components**: Break into reusable subcomponents
-- Keep components focused and small
+**❌ Deprecated**:
+- `Box` component - Use Tailwind classes instead (`flex`, `grid`, etc.)
+- `styled-components` - Use Tailwind (except very specific cases)
 
 ## Styling
 
-- **CSS**: Tailwind + DSFR tokens, avoid inline styles
-- Use DSFR design tokens for consistency
+**Preferred**: Tailwind CSS utility classes
+```tsx
+<div className="flex flex-col gap-4 p-6 bg-blue-france text-white">
+  <h1 className="text-2xl font-bold">Title</h1>
+</div>
+```
 
-## Accessibility
+**Design tokens**: Use DSFR/Tailwind tokens for consistency
+- Colors: `bg-blue-france`, `text-grey-425-625`
+- Spacing: `p-4`, `gap-6`, `m-8`
+- Typography: `text-xl`, `font-bold`
 
-- Labels, aria-*, focus management (DSFR handles most)
-- Use semantic HTML
+**❌ Avoid**: `styled-components`, inline styles, `Box` component
 
-## Forms
+## Best Practices
 
-See `.ai/context/frontend/forms.md` for Tanstack React Form + Zod patterns.
+- **Never import server code** in client (use `types.ts` at module root)
+- **Extract prop types** for exported components
+- **Use TRPC** for all server communication
+- **Handle loading states** explicitly
+- **Wrap mutations** with `toastErrors()` for error handling
 
-## Maps
+## Forms & Maps
 
-See `.ai/context/frontend/maps.md` for MapLibre integration.
+- **Forms**: See `.ai/context/frontend/forms.md`
+- **Maps**: See `.ai/context/frontend/maps.md`
