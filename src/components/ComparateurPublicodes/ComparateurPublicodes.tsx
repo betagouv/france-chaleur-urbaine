@@ -193,7 +193,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
                 {lngLat && (
                   <Link
                     isExternal
-                    href={`/carte?coord=${lngLat.join(',')}&zoom=17&address=${encodeURIComponent(userInfo.address as string)}`}
+                    href={`/carte?coord=${lngLat.join(',')}&zoom=17&address=${encodeURIComponent(userInfo.address)}`}
                     className="fr-block"
                   >
                     <strong>Visualiser sur la carte</strong>
@@ -261,7 +261,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
               {lngLat && (
                 <Link
                   isExternal
-                  href={`/carte?coord=${lngLat.join(',')}&zoom=17&address=${encodeURIComponent(userInfo.address as string)}`}
+                  href={`/carte?coord=${lngLat.join(',')}&zoom=17&address=${encodeURIComponent(userInfo.address)}`}
                   className="fr-block text-sm"
                 >
                   <strong>Visualiser sur la carte</strong>

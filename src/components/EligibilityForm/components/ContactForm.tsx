@@ -8,6 +8,7 @@ import Alert from '@/components/ui/Alert';
 import { AnalyticsFormId } from '@/modules/analytics/client';
 import useUserInfo from '@/modules/app/client/hooks/useUserInfo';
 import type { ContactFormInfos } from '@/types/Summary/Demand';
+import { pick } from '@/utils/objects';
 
 type ContactFormProps = {
   onSubmit: (values: ContactFormInfos) => void;
@@ -143,35 +144,37 @@ export const ContactForm = ({ onSubmit, isLoading, cardMode, city, heatingTypeIn
   };
 
   const initialValues = {
-    company: userInfo?.company ?? '',
-    companyType: userInfo?.companyType ?? '',
+    company: userInfo.company ?? '',
+    companyType: userInfo.companyType ?? '',
     demandArea: undefined as unknown as number,
-    demandCompanyName: userInfo?.demandCompanyName ?? '',
-    demandCompanyType: userInfo?.demandCompanyType ?? '',
-    email: userInfo?.email ?? '',
-    firstName: userInfo?.firstName ?? '',
-    heatingEnergy: userInfo?.heatingEnergy ?? '',
-    lastName: userInfo?.lastName ?? '',
+    demandCompanyName: userInfo.demandCompanyName ?? '',
+    demandCompanyType: userInfo.demandCompanyType ?? '',
+    email: userInfo.email ?? '',
+    firstName: userInfo.firstName ?? '',
+    heatingEnergy: userInfo.heatingEnergy ?? '',
+    lastName: userInfo.lastName ?? '',
     nbLogements: undefined as unknown as number,
-    phone: userInfo?.phone ?? '',
-    structure: userInfo?.structure ?? getDefaultStructure(),
+    phone: userInfo.phone ?? '',
+    structure: userInfo.structure ?? getDefaultStructure(),
     termOfUse: false,
   };
   const { form, Form, Field, Fieldset, FieldsetLegend, FieldWrapper, Submit, useValue } = useForm({
     defaultValues: initialValues,
     onSubmit: async ({ value }) => {
-      setUserInfo({
-        company: value.company,
-        companyType: value.companyType,
-        demandCompanyName: value.demandCompanyName,
-        demandCompanyType: value.demandCompanyType,
-        email: value.email,
-        firstName: value.firstName,
-        heatingEnergy: value.heatingEnergy,
-        lastName: value.lastName,
-        phone: value.phone,
-        structure: value.structure,
-      });
+      setUserInfo(
+        pick(value, [
+          'company',
+          'companyType',
+          'demandCompanyName',
+          'demandCompanyType',
+          'email',
+          'firstName',
+          'heatingEnergy',
+          'lastName',
+          'phone',
+          'structure',
+        ])
+      );
       onSubmit(value);
     },
     schema: validationSchema,
