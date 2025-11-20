@@ -74,7 +74,7 @@ const HeadSliceForm = ({
   const router = useRouter();
 
   const [geoAddress, setGeoAddress] = useState<SuggestionItem>();
-  const { address, heatingType, setAddress, setHeatingType } = useUserInfo();
+  const { userInfo, setUserInfo } = useUserInfo();
   const [autoValidate, setAutoValidate] = useState(false);
   const [eligibilityError, setEligibilityError] = useState(false);
 
@@ -101,7 +101,7 @@ const HeadSliceForm = ({
     }
 
     if (handleOnFetchAddress) {
-      handleOnFetchAddress({ address });
+      handleOnFetchAddress({ address: userInfo.address });
     }
     const [lon, lat] = geoAddress.geometry.coordinates;
     const coords = { lat, lon };
@@ -116,17 +116,17 @@ const HeadSliceForm = ({
             lon,
           });
       handleOnSuccessAddress({
-        address,
+        address: userInfo.address,
         coords,
         eligibility: networkData,
         geoAddress,
-        heatingType: heatingType as AvailableHeating,
+        heatingType: userInfo.heatingType as AvailableHeating,
       });
     } catch (_err: any) {
       setEligibilityError(true);
     }
     setLoadingStatus('idle');
-  }, [address, geoAddress, heatingType, trpcUtils, handleOnFetchAddress, handleOnSuccessAddress]);
+  }, [userInfo.address, userInfo.heatingType, geoAddress, trpcUtils, handleOnFetchAddress, handleOnSuccessAddress]);
 
   useEffect(() => {
     const { heating, address } = router.query;
@@ -135,19 +135,19 @@ const HeadSliceForm = ({
     }
 
     if (heating) {
-      setHeatingType(heating as Parameters<typeof setHeatingType>[0]);
+      setUserInfo({ heatingType: heating as AvailableHeating });
     }
     if (address) {
-      setAddress(address as string);
+      setUserInfo({ address: address as string });
     }
-  }, [router.query]);
+  }, [router.query, setUserInfo]);
 
   useEffect(() => {
-    if (autoValidate && heatingType && address && geoAddress) {
+    if (autoValidate && userInfo.heatingType && userInfo.address && geoAddress) {
       setAutoValidate(false);
       void testAddress();
     }
-  }, [heatingType, address, geoAddress, autoValidate, testAddress]);
+  }, [userInfo.heatingType, userInfo.address, geoAddress, autoValidate, testAddress]);
 
   const WrappedChild = useMemo(
     () =>
@@ -161,21 +161,21 @@ const HeadSliceForm = ({
                 label="Mode de chauffage actuel :"
                 name="heatingType"
                 selectOptions={energyInputsDefaultLabels}
-                onChange={(val) => setHeatingType(val)}
-                value={heatingType || ''}
+                onChange={(val) => setUserInfo({ heatingType: val })}
+                value={userInfo.heatingType || ''}
               />
             </CheckEligibilityFormLabel>
             <AddressAutocomplete
               className="mb-2!"
-              defaultValue={address}
+              defaultValue={userInfo.address}
               nativeInputProps={{ placeholder: 'Tapez ici votre adresse' }}
               onClear={() => {
-                setAddress('');
+                setUserInfo({ address: '' });
                 setGeoAddress(undefined);
               }}
               onSelect={(geoAddress?: SuggestionItem) => {
                 const address = geoAddress?.properties?.label;
-                setAddress(address ?? '');
+                setUserInfo({ address: address ?? '' });
                 setGeoAddress(geoAddress);
               }}
               onError={() => {
@@ -185,7 +185,7 @@ const HeadSliceForm = ({
             <div
               className={cx(
                 'fr-mb-2w font-bold pl-4 py-1 border-l-4 border-error bg-white/40',
-                address && geoAddress && !heatingType ? 'block' : 'hidden'
+                userInfo.address && geoAddress && !userInfo.heatingType ? 'block' : 'hidden'
               )}
             >
               {warningMessage}
@@ -203,7 +203,7 @@ const HeadSliceForm = ({
               <Button
                 size="medium"
                 loading={loadingStatus === 'loading'}
-                disabled={!address || !geoAddress || !heatingType || (loadingStatus === 'loading' && !eligibilityError)}
+                disabled={!userInfo.address || !geoAddress || !userInfo.heatingType || (loadingStatus === 'loading' && !eligibilityError)}
                 onClick={testAddress}
               >
                 Tester cette adresse
@@ -229,10 +229,10 @@ const HeadSliceForm = ({
         child
       ),
     [
-      address,
+      userInfo.address,
+      userInfo.heatingType,
       eligibilityError,
       geoAddress,
-      heatingType,
       testAddress,
       checkEligibility,
       child,

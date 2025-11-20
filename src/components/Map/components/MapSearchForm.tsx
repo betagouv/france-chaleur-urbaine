@@ -17,7 +17,7 @@ const MapSearchForm = ({
   const [eligibilityError, setEligibilityError] = useState(false);
   const trpcUtils = trpc.useUtils();
   const [defaultAddress, setDefaultAddress] = useQueryState('address');
-  const { address, setAddress } = useUserInfo();
+  const { userInfo, setUserInfo } = useUserInfo();
 
   const handleAddressSelected: AddressAutocompleteInputProps['onSelect'] = async (geoAddress) => {
     if (!geoAddress) {
@@ -60,10 +60,10 @@ const MapSearchForm = ({
           </div>
         ) : undefined
       }
-      defaultValue={defaultAddress || (withDefaultAddress ? address : undefined) || ''}
+      defaultValue={defaultAddress || (withDefaultAddress ? userInfo.address : undefined) || ''}
       onClear={() => {
         setEligibilityError(false);
-        setAddress('');
+        setUserInfo({ address: '' });
       }}
       nativeInputProps={{ placeholder: 'Ex: 5 Rue Censier 75005 Paris' }}
       onSelect={handleAddressSelected}
