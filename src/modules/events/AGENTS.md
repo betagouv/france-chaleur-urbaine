@@ -6,7 +6,7 @@ Système d'audit et de journalisation des événements utilisateur et système p
 
 ```
 events/
-├── CLAUDE.md                    # Ce fichier
+├── AGENTS.md                    # Ce fichier
 ├── constants.ts                 # Types d'événements et constantes
 ├── client/
 │   └── AdminEventsPage.tsx      # Interface admin de consultation des événements
