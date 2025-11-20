@@ -175,7 +175,7 @@ export const FullyFeaturedMap = ({
   const { devModeEnabled, toggleDevMode } = useDevMode();
   const router = useRouter();
   const { setMapRef, setMapDraw, isDrawing, mapConfiguration, mapLayersLoaded, setMapLayersLoaded } = useFCUMap();
-  const { address: userAddress, setAddress: setUserAddress } = useUserInfo();
+  const { userInfo, setUserInfo } = useUserInfo();
   const trpcUtils = trpc.useUtils();
   const { handleOnFetchAddress, handleOnSuccessAddress } = useContactFormFCU();
 
@@ -295,11 +295,11 @@ export const FullyFeaturedMap = ({
 
       setMarkersList((current) => current.filter((marker) => marker.id !== id));
 
-      if (userAddress === result.address) {
-        setUserAddress('');
+      if (userInfo.address === result.address) {
+        setUserInfo({ address: '' });
       }
     },
-    [setSoughtAddresses, soughtAddresses, selectedCardIndex, userAddress]
+    [setSoughtAddresses, soughtAddresses, selectedCardIndex, userInfo.address, setUserInfo]
   );
 
   const resetSoughtAddresses = useCallback(() => {

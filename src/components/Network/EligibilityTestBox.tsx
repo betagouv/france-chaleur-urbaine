@@ -41,7 +41,7 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
   const [addressInUrl, setAddressInUrl] = useQueryState('address');
   const [selectedGeoAddress, setSelectedGeoAddress] = useState<SuggestionItem>();
   const [eligibilityStatus, setEligibilityStatus] = useState<NetworkEligibilityStatus>();
-  const { heatingType, setHeatingType, address: userAddress, setAddress: setUserAddress } = useUserInfo();
+  const { userInfo, setUserInfo } = useUserInfo();
   const [formState, setFormState] = useState<FormState>('idle');
 
   // appelé au clic sur Tester l'adresse, pour récupérer l'éligibilité et les informations du réseau
@@ -74,7 +74,7 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
     if (!geoAddress) {
       return;
     }
-    void setUserAddress(geoAddress.properties.label);
+    setUserInfo({ address: geoAddress.properties.label });
     setSelectedGeoAddress(geoAddress);
     setEligibilityStatus(undefined);
     void testAddressEligibility(geoAddress);
@@ -103,7 +103,7 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
 
         eligibility: eligibilityStatus,
 
-        heatingType,
+        heatingType: userInfo.heatingType,
 
         networkId,
         postcode: selectedGeoAddress.properties.postcode,
@@ -120,7 +120,7 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
       setFormState('demandSubmissionError');
     }
   };
-  const defaultAddress = addressInUrl || userAddress || '';
+  const defaultAddress = addressInUrl || userInfo.address || '';
   const [addressDefaultValue, setAddressDefaultValue] = useState<string>();
   const [defaultAddressButtonVisible, setDefaultAddressButtonVisible] = useState<boolean>(true);
 
@@ -138,7 +138,7 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
           nativeInputProps={{ placeholder: 'Tapez ici votre adresse' }}
           defaultValue={addressDefaultValue}
           onClear={() => {
-            setUserAddress('');
+            setUserInfo({ address: '' });
             setSelectedGeoAddress(undefined);
             setDefaultAddressButtonVisible(true);
           }}
@@ -211,7 +211,7 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
                   Votre demande de contact est bien prise en compte.
                 </Text>
 
-                {eligibilityStatus.isEligible && heatingType === 'collectif' && (
+                {eligibilityStatus.isEligible && userInfo.heatingType === 'collectif' && (
                   <Box mt="1w">
                     Seul le gestionnaire du réseau pourra vous confirmer la faisabilité technique et les délais du raccordement. Sans
                     attendre,{' '}
@@ -245,10 +245,10 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
                         name="heatingType"
                         className="fr-my-2w"
                         selectOptions={energyInputsDefaultLabels}
-                        onChange={setHeatingType}
-                        value={heatingType || ''}
+                        onChange={(heatingType) => setUserInfo({ heatingType })}
+                        value={userInfo.heatingType || ''}
                       />
-                      {heatingType === 'individuel' && (
+                      {userInfo.heatingType === 'individuel' && (
                         <Alert className="fr-mt-2w" variant="warning" size="sm">
                           Au vu de votre mode de chauffage actuel, le raccordement de votre immeuble nécessiterait des travaux conséquents
                           et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble

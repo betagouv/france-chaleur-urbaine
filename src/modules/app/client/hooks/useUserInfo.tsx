@@ -1,13 +1,24 @@
-import { useLocalStorageValue } from '@react-hookz/web';
+import useLocalStorage from '@/hooks/useLocalStorage';
+import type { ContactFormInfos } from '@/types/Summary/Demand';
 import type { AvailableHeating } from '../../types';
 
+export type UserInfo = {
+  address?: string;
+  heatingType?: AvailableHeating;
+} & Partial<ContactFormInfos>;
+
 export default function useUserInfo() {
-  const { value: address, set: setAddress } = useLocalStorageValue<string>('user-address', {
-    initializeWithValue: false,
-  });
-  const { value: heatingType, set: setHeatingType } = useLocalStorageValue<AvailableHeating>('user-heating-type', {
-    initializeWithValue: false,
+  const { value: userInfo, set } = useLocalStorage<UserInfo>('user-info', {
+    defaultValue: {},
   });
 
-  return { address, heatingType, setAddress, setHeatingType };
+  const setUserInfo = (newUserInfo: UserInfo) => {
+    const updated = { ...userInfo, ...newUserInfo };
+    set(updated);
+  };
+
+  return {
+    setUserInfo,
+    userInfo: userInfo ?? ({} as UserInfo),
+  };
 }
