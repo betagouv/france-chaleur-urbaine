@@ -57,7 +57,7 @@ The script provides:
 
 ```
 optimization/
-├── CLAUDE.md
+├── AGENTS.md
 ├── commands.ts                        # CLI commands (pnpm cli optimize)
 └── commands/
     ├── image-optimize.sh              # Image optimization script

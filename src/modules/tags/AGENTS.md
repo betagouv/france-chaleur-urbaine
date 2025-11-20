@@ -6,7 +6,7 @@ Gestion des tags gestionnaires pour associer les demandes avec les opérateurs.
 
 ```
 tags/
-├── CLAUDE.md                       # Ce fichier
+├── AGENTS.md                       # Ce fichier
 ├── constants.ts                    # Styles et utilitaires partagés
 ├── server/
 │   ├── service.ts                  # Opérations base de données
