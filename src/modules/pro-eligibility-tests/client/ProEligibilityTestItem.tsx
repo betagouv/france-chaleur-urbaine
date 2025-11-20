@@ -158,7 +158,7 @@ const columns: ColumnDef<RouterOutput['proEligibilityTests']['get']['addresses']
         }
       }
 
-      if ((!distance || distance === 0) && eligibility.type === 'trop_eloigne') {
+      if (!eligibility.eligible) {
         return null;
       }
 
