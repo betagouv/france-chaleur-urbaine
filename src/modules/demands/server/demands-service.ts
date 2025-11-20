@@ -162,6 +162,7 @@ export const create = async (values: CreateDemandInput) => {
         Gestionnaires: null,
         'Gestionnaires validés': false,
         'ID BNB': nbLogement?.batiment_groupe_id ? `${nbLogement.batiment_groupe_id}` : undefined,
+        'ID réseau le plus proche': null,
         Logement: nbLogement?.nb_logements ? nbLogement.nb_logements : undefined,
       })}::jsonb`,
       updated_at: new Date(),
