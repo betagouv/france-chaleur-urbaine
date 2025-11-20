@@ -4,44 +4,35 @@ import { useMemo } from 'react';
 import SimplePage from '@/components/shared/page/SimplePage';
 import CallOut from '@/components/ui/CallOut';
 import Heading from '@/components/ui/Heading';
-import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
 import Tooltip from '@/components/ui/Tooltip';
+import TableSimple, { type ColumnDef } from '@/components/ui/table/TableSimple';
 import { tagsGestionnairesStyleByType } from '@/modules/tags/constants';
 import trpc from '@/modules/trpc/client';
-import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import cx from '@/utils/cx';
+import { compareFrenchStrings } from '@/utils/strings';
+import type { TagsStats } from '../../types';
 
-import type { TagStats } from '../../types';
-
-const initialSortingState = [{ desc: true, id: 'oldPendingDemandsCount' }];
+const initialSortingState = [{ desc: true, id: 'lastSixMonths' }];
 
 export default function TagsStatsPage() {
-  const { data, isLoading } = trpc.demandsLegacy.getTagsStats.useQuery();
-  const tagsStats = data?.tags || [];
+  const { data: tagsStats, isLoading } = trpc.demandsLegacy.getTagsStats.useQuery();
 
-  const tableColumns: ColumnDef<TagStats>[] = useMemo(
+  const tableColumns: ColumnDef<TagsStats>[] = useMemo(
     () => [
       {
-        accessorKey: 'tagName',
+        accessorKey: 'name',
         cell: ({ row }) => (
-          <div className="flex items-center gap-2">
-            <Tag className={cx(tagsGestionnairesStyleByType[row.original.tagType as keyof typeof tagsGestionnairesStyleByType]?.className)}>
-              {row.original.tagName}
-            </Tag>
-            {row.original.hasAlert && (
-              <span className="text-red-600 font-bold" title="⚠️ 3 demandes éligibles ou plus en attente depuis plus de 6 mois">
-                ⚠️
-              </span>
-            )}
-          </div>
+          <Tag className={cx(tagsGestionnairesStyleByType[row.original.name as keyof typeof tagsGestionnairesStyleByType]?.className)}>
+            {row.original.name}
+          </Tag>
         ),
         header: 'Tag',
         width: '200px',
       },
       {
-        accessorKey: 'tagType',
+        accessorKey: 'type',
         cell: ({ row }) => {
-          const type = row.original.tagType;
+          const type = row.original.type;
           const typeInfo = tagsGestionnairesStyleByType[type as keyof typeof tagsGestionnairesStyleByType];
           return type && typeInfo ? typeInfo.title : type;
         },
@@ -50,15 +41,24 @@ export default function TagsStatsPage() {
         width: '150px',
       },
       {
-        accessorFn: (row) => row.users.map((u) => u.email).join(' '),
+        accessorFn: (row) => row.users.map((u: { email: string }) => u.email).join(' '),
         cell: ({ row }) => (
           <div className="flex flex-wrap gap-1">
             {row.original.users.length > 0 ? (
-              row.original.users.map((user) => (
-                <Tag key={user.id} className="bg-gray-100 text-gray-800">
-                  {user.email}
-                </Tag>
-              ))
+              row.original.users.map((user: { id: number; email: string; last_connection: string | null }) => {
+                const lastConnection = formatDate(user.last_connection);
+                const lastConnectionClassName = getLastConnectionClassName(user.last_connection);
+                return (
+                  <Tag key={user.id} className="bg-gray-100 text-gray-800">
+                    <div className="flex flex-col leading-tight">
+                      <span>{user.email}</span>
+                      {lastConnection && (
+                        <span className={`text-[11px] ${lastConnectionClassName}`}>Dernière connexion {lastConnection}</span>
+                      )}
+                    </div>
+                  </Tag>
+                );
+              })
             ) : (
               <span className="text-gray-400 text-sm">Aucun utilisateur</span>
             )}
@@ -69,7 +69,8 @@ export default function TagsStatsPage() {
         width: '250px',
       },
       {
-        accessorFn: (row) => row.reseaux.length,
+        accessorFn: (row) =>
+          row.reseaux.map((reseau) => `${reseau.id_fcu}${reseau.nom_reseau || ''}${reseau['Identifiant reseau'] || ''}`).join(' | '),
         cell: ({ row }) => {
           const reseaux = row.original.reseaux;
           if (reseaux.length === 0) {
@@ -81,9 +82,11 @@ export default function TagsStatsPage() {
 
           return (
             <div className="flex flex-wrap gap-1 items-center">
-              {displayedReseaux.map((reseau) => (
+              {displayedReseaux.map((reseau: { id_fcu: number; nom_reseau: string | null; 'Identifiant reseau': string | null }) => (
                 <Tag key={reseau.id_fcu} className="bg-blue-100 text-blue-800">
-                  {reseau.nom_reseau || `Réseau ${reseau.id_fcu}`}
+                  <div className="flex flex-col leading-tight">
+                    <span>{getReseauDisplayLabel(reseau)}</span>
+                  </div>
                 </Tag>
               ))}
               {remainingReseaux.length > 0 && (
@@ -92,12 +95,13 @@ export default function TagsStatsPage() {
                     <div>
                       <div className="font-semibold mb-2">Autres réseaux ({remainingReseaux.length}) :</div>
                       <ul className="list-disc list-inside space-y-1">
-                        {remainingReseaux.map((reseau) => (
-                          <li key={reseau.id_fcu} className="text-sm">
-                            {reseau.nom_reseau || `Réseau ${reseau.id_fcu}`}
-                            {reseau['Identifiant reseau'] && <span className="text-gray-400 ml-1">({reseau['Identifiant reseau']})</span>}
-                          </li>
-                        ))}
+                        {remainingReseaux.map(
+                          (reseau: { id_fcu: number; nom_reseau: string | null; 'Identifiant reseau': string | null }) => (
+                            <li key={reseau.id_fcu} className="text-sm">
+                              <span className="font-medium">{getReseauDisplayLabel(reseau)}</span>
+                            </li>
+                          )
+                        )}
                       </ul>
                     </div>
                   }
@@ -110,120 +114,124 @@ export default function TagsStatsPage() {
             </div>
           );
         },
-        enableSorting: false,
         header: 'Réseaux',
+        id: 'reseaux',
+        sortingFn: (rowA, rowB) => compareFrenchStrings(rowA.getValue('reseaux'), rowB.getValue('reseaux')),
         width: '250px',
       },
       {
-        accessorKey: 'totalDemandes',
-        cell: ({ row }) => <div className="font-semibold">{row.original.totalDemandes}</div>,
-        header: 'Total demandes',
+        accessorFn: (row) => row.lastSixMonths.pending,
+        accessorKey: 'lastSixMonths',
+        cell: ({ row }) => {
+          const { pending, total } = row.original.lastSixMonths;
+          return (
+            <>
+              {pending} / {total}
+            </>
+          );
+        },
+        header: '< 6 mois',
         width: '120px',
       },
       {
-        accessorFn: (row) => row.statsByStatus[DEMANDE_STATUS.EMPTY] || 0,
+        accessorFn: (row) => row.lastThreeMonths.pending,
+        accessorKey: 'lastThreeMonths',
         cell: ({ row }) => {
-          const count = row.original.statsByStatus[DEMANDE_STATUS.EMPTY] || 0;
-          return <div className={cx('font-semibold', count > 0 && 'text-orange-600')}>{count}</div>;
+          const { pending, total } = row.original.lastThreeMonths;
+          return (
+            <>
+              {pending} / {total}
+            </>
+          );
         },
-        header: 'En attente',
+        header: '< 3 mois',
         width: '120px',
       },
       {
-        accessorFn: (row) => row.statsByStatus[DEMANDE_STATUS.IN_PROGRESS] || 0,
+        accessorFn: (row) => row.lastOneMonth.pending,
+        accessorKey: 'lastOneMonth',
         cell: ({ row }) => {
-          const count = row.original.statsByStatus[DEMANDE_STATUS.IN_PROGRESS] || 0;
-          return <div className="font-semibold">{count}</div>;
+          const { pending, total } = row.original.lastOneMonth;
+          return (
+            <>
+              {pending} / {total}
+            </>
+          );
         },
-        header: 'En cours',
+        header: '< 1 mois',
         width: '120px',
-      },
-      {
-        accessorFn: (row) => row.statsByStatus[DEMANDE_STATUS.DONE] || 0,
-        cell: ({ row }) => {
-          const count = row.original.statsByStatus[DEMANDE_STATUS.DONE] || 0;
-          return <div className="font-semibold">{count}</div>;
-        },
-        header: 'Réalisé',
-        width: '120px',
-      },
-      {
-        accessorKey: 'oldPendingDemandsCount',
-        cell: ({ row }) => {
-          const count = row.original.oldPendingDemandsCount;
-          return <div className={cx('font-semibold', count > 0 && 'text-red-600')}>{count > 0 ? `${count} ⚠️` : '0'}</div>;
-        },
-        header: 'En attente > 6 mois',
-        width: '150px',
       },
     ],
     []
   );
 
-  // Calcule les statistiques globales
-  const globalStats = useMemo(() => {
-    const totalTags = tagsStats.length;
-    const totalDemandes = tagsStats.reduce((sum, tag) => sum + tag.totalDemandes, 0);
-    const totalEnAttente = tagsStats.reduce((sum, tag) => sum + (tag.statsByStatus[DEMANDE_STATUS.EMPTY] || 0), 0);
-    const totalEnAttente6Mois = tagsStats.reduce((sum, tag) => sum + tag.oldPendingDemandsCount, 0);
-    const tagsAvecAlerte = tagsStats.filter((tag) => tag.hasAlert).length;
-
-    return {
-      tagsAvecAlerte,
-      totalDemandes,
-      totalEnAttente,
-      totalEnAttente6Mois,
-      totalTags,
-    };
-  }, [tagsStats]);
-
   return (
     <SimplePage title="Statistiques par tag" mode="authenticated" layout="large">
-      <Heading as="h1" color="blue-france" className="mb-4">
+      <Heading as="h1" color="blue-france">
         Statistiques par tag gestionnaire
       </Heading>
 
-      <CallOut title="Objectif" size="sm" className="mb-6">
+      <CallOut size="sm">
         <p>
-          Cet écran permet de voir pour chaque tag : les utilisateurs gestionnaires associés, les réseaux associés, et les statistiques des
-          demandes.
+          Cet écran permet de suivre l'activité des gestionnaires pour chaque tag, afin d'identifier les gestionnaires qui ne traitent pas
+          les demandes.
         </p>
-        <p className="mb-0">Un indicateur ⚠️ apparaît si le tag est lié à au moins 3 demandes éligibles en attente depuis plus de 6 mois.</p>
       </CallOut>
-
-      {/* Statistiques globales */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-        <div className="bg-blue-50 p-4 rounded-lg">
-          <div className="text-sm text-gray-600">Total tags</div>
-          <div className="text-2xl font-bold text-blue-600">{globalStats.totalTags}</div>
-        </div>
-        <div className="bg-gray-50 p-4 rounded-lg">
-          <div className="text-sm text-gray-600">Total demandes</div>
-          <div className="text-2xl font-bold">{globalStats.totalDemandes}</div>
-        </div>
-        <div className="bg-orange-50 p-4 rounded-lg">
-          <div className="text-sm text-gray-600">En attente</div>
-          <div className="text-2xl font-bold text-orange-600">{globalStats.totalEnAttente}</div>
-        </div>
-        <div className="bg-red-50 p-4 rounded-lg">
-          <div className="text-sm text-gray-600">En attente &gt; 6 mois</div>
-          <div className="text-2xl font-bold text-red-600">{globalStats.totalEnAttente6Mois}</div>
-        </div>
-        <div className="bg-yellow-50 p-4 rounded-lg">
-          <div className="text-sm text-gray-600">Tags avec alerte</div>
-          <div className="text-2xl font-bold text-yellow-600">{globalStats.tagsAvecAlerte}</div>
-        </div>
-      </div>
 
       <TableSimple
         columns={tableColumns}
-        data={tagsStats}
+        data={tagsStats || []}
         initialSortingState={initialSortingState}
         enableGlobalFilter
         controlsLayout="block"
         padding="sm"
         loading={isLoading}
+        export={{
+          fileName: 'tags_stats.xlsx',
+          sheetName: 'tags_stats',
+        }}
       />
     </SimplePage>
   );
 }
+
+// Utilitaires
+const formatDate = (value: string | null | undefined) => {
+  if (!value) {
+    return null;
+  }
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+  return new Intl.DateTimeFormat('fr-FR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  }).format(date);
+};
+
+const getLastConnectionClassName = (value: string | null | undefined) => {
+  if (!value) {
+    return 'text-red-600';
+  }
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return 'text-red-600';
+  }
+
+  const diffInMs = Date.now() - date.getTime();
+  const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+
+  if (diffInDays <= 30) {
+    return 'text-green-600';
+  }
+  if (diffInDays <= 90) {
+    return 'text-orange-500';
+  }
+  return 'text-red-600';
+};
+
+const getReseauDisplayLabel = (reseau: TagsStats['reseaux'][number]) => {
+  return `${reseau.nom_reseau || `Réseau ${reseau.id_fcu}`}${reseau['Identifiant reseau'] ? ` (${reseau['Identifiant reseau']})` : ''}`;
+};

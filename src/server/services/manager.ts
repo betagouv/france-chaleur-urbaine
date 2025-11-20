@@ -6,14 +6,14 @@ import { kdb } from '@/server/db/kysely';
 import type { Demand } from '@/types/Summary/Demand';
 import type { User as FullUser } from '@/types/User';
 
-export const getAllDemands = async (): Promise<Demand[]> => {
+export const getAllDemands = async () => {
   const records = (await kdb.selectFrom('demands').selectAll().orderBy(sql`legacy_values->>'Date de la demande'`, 'desc').execute()).map(
     ({ id, legacy_values }) => ({
       fields: legacy_values,
       id,
     })
   );
-  return records.map((record) => ({ id: record.id, ...record.fields }) as Demand);
+  return records.map((record) => ({ id: record.id, ...record.fields }));
 };
 
 export const getAllNewDemands = async (): Promise<Demand[]> => {
