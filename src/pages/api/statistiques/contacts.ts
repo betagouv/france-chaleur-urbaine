@@ -6,6 +6,7 @@ import { handleRouteErrors, requireGetMethod, validateObjectSchema } from '@/ser
 import { getAllDemands } from '@/server/services/manager';
 import { STAT_KEY, STAT_LABEL, STAT_METHOD, STAT_PERIOD } from '@/types/enum/MatomoStats';
 import type { Demand } from '@/types/Summary/Demand';
+import { dayjs } from '@/utils/date';
 
 type CalcResult = {
   date?: string;
@@ -19,7 +20,7 @@ const reducer = () => {
   let nbEligible = 0;
   let nbUneligible = 0;
   return (acc: Record<string, CalcResult>, fields: Demand) => {
-    const key = fields['Date demandes'];
+    const key = dayjs(fields['Date de la demande']).format('YYYY-MM-DD');
 
     nbTotal++;
     if (fields.Éligibilité && (!fields['Distance au réseau'] || fields['Distance au réseau'] <= 100)) {

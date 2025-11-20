@@ -98,6 +98,7 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
 
         if (onSubmit) {
           setContactFormLoading(true);
+
           await onSubmit(sendedValues).finally(() => {
             setContactFormLoading(false);
           });

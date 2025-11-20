@@ -319,6 +319,10 @@ function useFormInternal<
     <Input nativeInputProps={{ autoComplete: 'email', type: 'email', ...nativeInputProps }} {...props} />
   );
 
+  const HiddenInput: typeof Input = ({ nativeInputProps, ...props }) => (
+    <Input nativeInputProps={{ type: 'hidden', ...nativeInputProps }} {...props} />
+  );
+
   const NumberInput: typeof Input = ({ nativeInputProps, ...props }) => (
     <Input nativeInputProps={{ type: 'number', ...nativeInputProps }} {...props} />
   );
@@ -659,6 +663,7 @@ function useFormInternal<
     Form,
     FormDebug,
     form,
+    HiddenInput,
     Input,
     NumberInput,
     PasswordInput,

@@ -4,7 +4,7 @@
  */
 
 import type { ColumnType, JSONColumnType } from 'kysely';
-
+import type { AirtableLegacyRecord } from '@/modules/demands/types';
 import type { EventType } from '@/modules/events/constants';
 import type { UserRole } from '@/types/enum/UserRole';
 
@@ -163,6 +163,33 @@ export interface CommunesFortPotentielPourCreationReseauxChaleurTiles {
   x: Int8;
   y: Int8;
   z: Int8;
+}
+
+export interface Demands {
+  airtable_id: string | null;
+  created_at: Generated<Timestamp>;
+  deleted_at?: Timestamp | null;
+  id: Generated<string>;
+  legacy_values: JSONColumnType<AirtableLegacyRecord>;
+  updated_at: Generated<Timestamp>;
+}
+
+export interface DemandEmails {
+  airtable_id: string | null;
+  body: string;
+  cc: string | null;
+  created_at: Generated<Timestamp>;
+  deleted_at?: Timestamp | null;
+  demand_id: string;
+  email_key: string;
+  id: Generated<string>;
+  object: string;
+  reply_to: string | null;
+  sent_at: Timestamp | string | null;
+  signature: string | null;
+  to: string;
+  updated_at: Generated<Timestamp>;
+  user_email: string;
 }
 
 export interface Departements {
@@ -463,13 +490,14 @@ export interface ProEligibilityTestsAddresses {
   ban_valid: boolean;
   geom: GeoJSON.Point | null;
   change_viewed_at: Timestamp | null;
+  demand_id: string | null;
   /**
    * JSON array storing full history of eligibility status changes. Format: [{"calculated_at": "ISO8601", "eligibility": {...getDetailedEligibilityStatus result...}}]
    */
   eligibility_history: Generated<Json>;
   id: Generated<string>;
   source_address: string;
-  test_id: string;
+  test_id: string | null;
 }
 
 export interface ProEligibilityTestsAddressesTiles {
@@ -867,6 +895,8 @@ export interface DB {
   besoins_en_chaleur_tiles: BesoinsEnChaleurTiles;
   communes: Communes;
   communes_fort_potentiel_pour_creation_reseaux_chaleur_tiles: CommunesFortPotentielPourCreationReseauxChaleurTiles;
+  demands: Demands;
+  demand_emails: DemandEmails;
   departements: Departements;
   donnees_de_consos: DonneesDeConsos;
   donnees_de_consos_tiles: DonneesDeConsosTiles;

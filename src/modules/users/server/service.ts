@@ -1,10 +1,9 @@
 import bcrypt from 'bcryptjs';
 import type { UpdateObject } from 'kysely';
-
+import { sendEmailTemplate } from '@/modules/email';
 import { createUserAdminSchema, updateUserAdminSchema } from '@/modules/users/constants';
 import { type DB, kdb, sql } from '@/server/db/kysely';
 import { createBaseModel } from '@/server/db/kysely/base-model';
-import { sendEmailTemplate } from '@/server/email';
 
 export const tableName = 'users';
 
@@ -51,7 +50,7 @@ export const create: typeof baseModel.create = async ({ optin_at, ...data }, _co
   const record = await baseModel.create({ ...data, optin_at: optin_at ? new Date() : null, password, status: 'valid' }, _context);
 
   if (data.active && data.role === 'gestionnaire') {
-    await sendEmailTemplate('inscription', { email: data.email as string, id: (record as any).id });
+    await sendEmailTemplate('auth.inscription', { email: data.email as string, id: (record as any).id });
   }
 
   return record;

@@ -1,4 +1,4 @@
-import { eligibilityTitleByType } from '@/components/EligibilityHelpDialog';
+import { eligibilityTitleByType } from '@/modules/demands/constants';
 import { transitionLabels } from '@/modules/pro-eligibility-tests/constants';
 import type { RouterOutput } from '@/modules/trpc/client';
 import cx from '@/utils/cx';

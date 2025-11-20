@@ -114,39 +114,6 @@ const closestInFuturNetwork = async (
   return network;
 };
 
-export const getConsommationGazAdresse = async (lat: number, lon: number) => {
-  const result = await kdb
-    .selectFrom('donnees_de_consos')
-    .select('conso_nb')
-    .where(
-      sql<boolean>`
-        ST_INTERSECTS(
-          ST_Transform(${sql.raw(`'SRID=4326;POINT(${lon} ${lat})'::geometry`)}, 2154),
-          ST_BUFFER(geom, 3.5)
-        )
-      `
-    )
-    .executeTakeFirst();
-  return result;
-};
-
-export const getNbLogement = async (lat: number, lon: number) => {
-  const result = await kdb
-    .selectFrom('bdnb_batiments')
-    .select(['batiment_groupe_id', 'ffo_bat_nb_log as nb_logements'])
-    .where(
-      sql.raw<boolean>(`
-      ST_DWithin(
-        geom,
-        ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154),
-        3.5
-      )
-    `)
-    )
-    .executeTakeFirst();
-  return result;
-};
-
 export const getNbLogementById = async (id: string) => {
   const result = await kdb
     .selectFrom('bdnb_batiments')

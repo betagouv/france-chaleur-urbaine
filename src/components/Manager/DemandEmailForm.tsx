@@ -10,10 +10,10 @@ import Loader from '@/components/ui/Loader';
 import Tooltip, { TooltipIcon } from '@/components/ui/Tooltip';
 import { useFetch } from '@/hooks/useApi';
 import { useUserPreferences } from '@/modules/auth/client/hooks';
-import type { ManagerEmailResponse } from '@/pages/api/managerEmail';
+import type { Demand } from '@/modules/demands/types';
+import trpc from '@/modules/trpc/client';
 import type { EmailTemplatesResponse } from '@/pages/api/user/email-templates/[[...slug]]';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
-import type { Demand } from '@/types/Summary/Demand';
 import { isUUID } from '@/utils/core';
 
 type Props = {
@@ -48,7 +48,7 @@ function processPlaceholders(value: string, demand: Demand): string {
           formattedValue = val.trim();
         }
       } else {
-        formattedValue = val.toString();
+        formattedValue = val?.toString() ?? '';
       }
       processedValue = processedValue.replace(new RegExp(`{{${key}}}`, 'gi'), formattedValue);
     }
@@ -82,7 +82,9 @@ function DemandEmailForm(props: Props) {
     data: sentHistory,
     isLoading: isLoadingSentHistory,
     refetch,
-  } = useFetch<ManagerEmailResponse>(`/api/managerEmail?demand_id=${props.currentDemand.id}`);
+  } = trpc.demands.gestionnaire.listEmails.useQuery({ demand_id: props.currentDemand.id });
+
+  const sendEmailMutation = trpc.demands.gestionnaire.sendEmail.useMutation();
 
   useEffect(() => {
     if (userPreferences) {
@@ -119,21 +121,15 @@ function DemandEmailForm(props: Props) {
     setIsSending(true);
     //Save content in DB
     try {
-      const res = await fetch(`/api/managerEmail`, {
-        body: JSON.stringify({
-          demand_id: props.currentDemand.id,
-          emailContent: {
-            ...emailContent,
-            body: processPlaceholders(emailContent.body, props.currentDemand),
-            object: processPlaceholders(emailContent.object, props.currentDemand),
-          },
-          key: emailKey,
-        }),
-        method: 'POST',
+      await sendEmailMutation.mutateAsync({
+        demand_id: props.currentDemand.id,
+        emailContent: {
+          ...emailContent,
+          body: processPlaceholders(emailContent.body, props.currentDemand),
+          object: processPlaceholders(emailContent.object, props.currentDemand),
+        },
+        key: emailKey,
       });
-      if (res.status !== 200) {
-        throw new Error(`invalid status ${res.status}`);
-      }
 
       void refetch();
 
@@ -195,6 +191,7 @@ function DemandEmailForm(props: Props) {
               ) : sentHistory && sentHistory.length > 0 ? (
                 sentHistory.map((item) => {
                   const object = item.object;
+
                   return (
                     <li key={item.email_key} onClick={() => onSelectedEmailChanged(item.email_key)} className="cursor-pointer">
                       <Tooltip
@@ -222,7 +219,8 @@ function DemandEmailForm(props: Props) {
                         <span>
                           <span className="underline cursor-help">{object}</span> -{' '}
                           <small className="text-faded italic">
-                            envoyé le <time dateTime={item.date}>{dayjs(item.date).format('dddd D MMMM YYYY')}</time>
+                            envoyé le{' '}
+                            <time dateTime={dayjs(item.sent_at).toISOString()}>{dayjs(item.sent_at).format('dddd D MMMM YYYY')}</time>
                           </small>
                         </span>
                       </Tooltip>

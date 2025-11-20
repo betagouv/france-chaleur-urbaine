@@ -35,9 +35,11 @@ const FCUTagAutocomplete: React.FC<FCUTagAutocompleteProps> = ({ undismissibles 
         defaultOption={defaultTagChipOption}
         options={options}
         multiple={true}
-        value={value as string[]}
-        suggestedValue={suggestedValue as string[] | undefined}
-        onChange={onChange as (value: string[]) => void}
+        value={value as string[] | null}
+        suggestedValue={suggestedValue as string[]}
+        // Type assertion: TS can't narrow discriminated union after runtime 'isMultiple' check.
+        // onChange signature depends on suggestedValue: undefined → string[], defined → string[] | null
+        onChange={onChange as (value: typeof suggestedValue extends undefined ? string[] : string[] | null) => void}
         {...(props as Omit<typeof props, 'multiple' | 'value' | 'suggestedValue' | 'onChange'>)}
       />
     );
@@ -48,9 +50,9 @@ const FCUTagAutocomplete: React.FC<FCUTagAutocompleteProps> = ({ undismissibles 
       defaultOption={defaultTagChipOption}
       options={options}
       multiple={false}
-      value={value as string}
-      suggestedValue={suggestedValue as string | undefined}
-      onChange={onChange as (value: string) => void}
+      value={value as string | null}
+      suggestedValue={suggestedValue as string}
+      onChange={onChange as (value: string | null) => void}
       {...(props as Omit<typeof props, 'multiple' | 'value' | 'suggestedValue' | 'onChange'>)}
     />
   );

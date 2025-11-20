@@ -19,8 +19,6 @@ import type { SuggestionItem } from '@/modules/ban/types';
 import { getReadableDistance } from '@/modules/geo/client/helpers';
 import trpc from '@/modules/trpc/client';
 import type { NetworkEligibilityStatus } from '@/server/services/addresseInformation';
-import { formatDataToAirtable, submitToAirtable } from '@/services/airtable';
-import { Airtable } from '@/types/enum/Airtable';
 import type { ContactFormInfos, FormDemandCreation } from '@/types/Summary/Demand';
 import { runWithMinimumDelay } from '@/utils/time';
 
@@ -112,7 +110,7 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
         region: (addressContext[2] || '').trim(),
       };
       setFormState('sendingDemand');
-      await submitToAirtable(formatDataToAirtable(demandCreation), Airtable.DEMANDES);
+      await trpcUtils.client.demands.user.create.mutate(demandCreation);
       setFormState('demandCreated');
       trackEvent(
         `Eligibilité|Formulaire de contact ${eligibilityStatus?.isEligible ? 'é' : 'iné'}ligible - Fiche réseau - Envoi`,
