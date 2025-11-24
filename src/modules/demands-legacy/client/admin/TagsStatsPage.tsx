@@ -39,6 +39,7 @@ export default function TagsStatsPage() {
         },
         filterType: 'Facets',
         header: 'Type',
+        visible: false,
         width: '100px',
       },
       {
@@ -116,7 +117,7 @@ export default function TagsStatsPage() {
         header: 'Réseaux',
         id: 'reseaux',
         sortingFn: (rowA, rowB) => compareFrenchStrings(rowA.getValue('reseaux'), rowB.getValue('reseaux')),
-        width: '250px',
+        width: '350px',
       },
       {
         accessorFn: (row) => row.lastSixMonths.pending,
