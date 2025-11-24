@@ -4,6 +4,7 @@ import { type ReactNode, useMemo } from 'react';
 import SimplePage from '@/components/shared/page/SimplePage';
 import CallOut from '@/components/ui/CallOut';
 import Heading from '@/components/ui/Heading';
+import Timeago from '@/components/ui/Timeago';
 import Tooltip from '@/components/ui/Tooltip';
 import TableSimple, { type ColumnDef } from '@/components/ui/table/TableSimple';
 import { tagsGestionnairesStyleByType } from '@/modules/tags/constants';
@@ -49,14 +50,17 @@ export default function TagsStatsPage() {
           <div className="flex flex-wrap gap-1">
             {row.original.users.length > 0 ? (
               row.original.users.map((user) => {
-                const lastConnection = formatDate(user.last_connection);
                 const lastConnectionClassName = getLastConnectionClassName(user.last_connection);
                 return (
                   <Tag key={user.id} className="bg-gray-100 text-gray-800">
-                    <div className="flex flex-col leading-tight">
+                    <div className="flex flex-col leading-tight break-all">
                       <span>{user.email}</span>
-                      {lastConnection && (
-                        <span className={`text-[11px] ${lastConnectionClassName}`}>Dernière connexion {lastConnection}</span>
+                      {user.last_connection && (
+                        <Timeago
+                          date={user.last_connection}
+                          prefix="Dernière connexion "
+                          className={cx('text-xs', lastConnectionClassName)}
+                        />
                       )}
                     </div>
                   </Tag>
@@ -219,21 +223,6 @@ export default function TagsStatsPage() {
 }
 
 // Utilitaires
-const formatDate = (value: string | null | undefined) => {
-  if (!value) {
-    return null;
-  }
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) {
-    return null;
-  }
-  return new Intl.DateTimeFormat('fr-FR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  }).format(date);
-};
-
 const getLastConnectionClassName = (value: string | null | undefined) => {
   if (!value) {
     return 'text-red-600';
