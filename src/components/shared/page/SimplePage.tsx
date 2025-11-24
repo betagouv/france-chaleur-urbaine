@@ -369,12 +369,6 @@ const adminNavigationMenu: MainNavigationProps.Item[] = [
       },
       {
         linkProps: {
-          href: '/admin/reseaux-demandes-stats',
-        },
-        text: 'Suivi réseaux et demandes',
-      },
-      {
-        linkProps: {
           href: '/admin/tags',
         },
         text: 'Gestion des tags gestionnaires',
