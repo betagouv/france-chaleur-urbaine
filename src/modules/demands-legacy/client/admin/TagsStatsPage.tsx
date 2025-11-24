@@ -33,16 +33,9 @@ export default function TagsStatsPage() {
       },
       {
         accessorKey: 'type',
-        cell: ({ row }) => {
-          const type = row.original.type;
-          const typeInfo = tagsGestionnairesStyleByType[type as keyof typeof tagsGestionnairesStyleByType];
-          return type && typeInfo ? typeInfo.title : type;
-        },
         filter: 'equalsAny',
         filterType: 'Facets',
-        header: 'Type',
         visible: false,
-        width: '100px',
       },
       {
         accessorFn: (row) => row.users.map((u) => u.email).join(' '),
