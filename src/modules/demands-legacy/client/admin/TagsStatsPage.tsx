@@ -48,12 +48,14 @@ export default function TagsStatsPage() {
                   <Tag key={user.id} className="bg-gray-100 text-gray-800">
                     <div className="flex flex-col leading-tight break-all">
                       <span>{user.email}</span>
-                      {user.last_connection && (
+                      {user.last_connection ? (
                         <Timeago
                           date={user.last_connection}
                           prefix="Dernière connexion "
                           className={cx('text-xs', lastConnectionClassName)}
                         />
+                      ) : (
+                        <span className="text-red-600 text-xs">Jamais connecté</span>
                       )}
                     </div>
                   </Tag>
