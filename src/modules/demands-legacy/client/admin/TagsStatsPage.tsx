@@ -37,6 +37,7 @@ export default function TagsStatsPage() {
           const typeInfo = tagsGestionnairesStyleByType[type as keyof typeof tagsGestionnairesStyleByType];
           return type && typeInfo ? typeInfo.title : type;
         },
+        filter: 'equalsAny',
         filterType: 'Facets',
         header: 'Type',
         visible: false,
