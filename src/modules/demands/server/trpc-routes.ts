@@ -75,9 +75,18 @@ export const demandsRouter = router({
       const { relanceId, comment } = input;
       return await demandsService.updateCommentFromRelanceId(relanceId, comment, ctx.user?.id);
     }),
-    create: route.input(zCreateDemandInput).mutation(async ({ input }) => {
-      return await demandsService.create(input);
+    create: route.input(zCreateDemandInput).mutation(async ({ input, ctx }) => {
+      return await demandsService.create(input, ctx.user?.id);
     }),
+    list: route
+      .meta({
+        auth: {
+          roles: ['particulier', 'professionnel', 'gestionnaire', 'admin'],
+        },
+      })
+      .query(async ({ ctx }) => {
+        return await demandsService.listByUser(ctx.user.id);
+      }),
     update: route.input(zUserUpdateDemandInput).mutation(async ({ input, ctx }) => {
       const { demandId, values } = input;
       return await demandsService.update(demandId, values as any, ctx.user?.id);

@@ -11,7 +11,7 @@
 
 - ✅ Migration complète des données d'Airtable vers PostgreSQL
 - ✅ Architecture tRPC type-safe
-- ✅ Pages `/admin/demandes` et `/pro/demandes` migrées (pas de v2, migration sur place)
+- ✅ Pages `/admin/demandes` et `/gestionnaire/demandes` migrées (pas de v2, migration sur place)
 - ✅ Module `src/modules/demands/` complet
 - ✅ Module `src/modules/email/` réorganisé
 - ✅ Historique emails migré vers PostgreSQL
@@ -280,9 +280,9 @@ import Status from '@/modules/demands/client/Status';
 // etc.
 ```
 
-### `/pro/demandes`
+### `/gestionnaire/demandes`
 
-**Fichier**: `src/pages/pro/demandes.tsx`
+**Fichier**: `src/pages/gestionnaire/demandes.tsx`
 
 **Changements**:
 - ❌ Supprimé: `useFetch('/api/demands')`
@@ -652,7 +652,7 @@ Ces fichiers ont été modifiés mais pas supprimés:
 
 **Pages**:
 - `src/pages/admin/demandes.tsx` - Interface admin
-- `src/pages/pro/demandes.tsx` - Interface gestionnaire
+- `src/pages/gestionnaire/demandes.tsx` - Interface gestionnaire
 - `src/pages/satisfaction.tsx` - Page relance
 
 **Composants**:

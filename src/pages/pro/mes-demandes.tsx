@@ -3,31 +3,25 @@ import dynamic from 'next/dynamic';
 import { useCallback, useMemo, useState } from 'react';
 
 import Input from '@/components/form/dsfr/Input';
-import DemandEmailForm from '@/components/Manager/DemandEmailForm';
 import Tag from '@/components/Manager/Tag';
 import type { AdresseEligible } from '@/components/Map/layers/adressesEligibles';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Badge from '@/components/ui/Badge';
-import Icon from '@/components/ui/Icon';
 import Link from '@/components/ui/Link';
 import Loader from '@/components/ui/Loader';
-import ModalSimple from '@/components/ui/ModalSimple';
 import QuickFilterPresets from '@/components/ui/QuickFilterPresets';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/Resizable';
 import Tooltip from '@/components/ui/Tooltip';
 import TableSimple, { type ColumnDef, type QuickFilterPreset } from '@/components/ui/table/TableSimple';
 import AdditionalInformation from '@/modules/demands/client/AdditionalInformation';
 import Comment from '@/modules/demands/client/Comment';
-import Contact from '@/modules/demands/client/Contact';
-import Contacted from '@/modules/demands/client/Contacted';
 import DemandStatusBadge from '@/modules/demands/client/DemandStatusBadge';
-import Status from '@/modules/demands/client/Status';
 import type { Demand } from '@/modules/demands/types';
 import { toastErrors } from '@/modules/notification';
 import trpc, { type RouterOutput } from '@/modules/trpc/client';
 import { withAuthentication } from '@/server/authentication';
-import { DEMANDE_STATUS, type DemandStatus } from '@/types/enum/DemandSatus';
+import type { DemandStatus } from '@/types/enum/DemandSatus';
 import type { Point } from '@/types/Point';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
@@ -37,7 +31,7 @@ import { upperCaseFirstChar } from '@/utils/strings';
 const Map = dynamic(() => import('@/components/Map/Map'), { ssr: false });
 const ButtonExport = dynamic(() => import('@/components/ui/ButtonExport'), { ssr: false });
 
-type DemandsList = RouterOutput['demands']['gestionnaire']['list'];
+type DemandsList = RouterOutput['demands']['user']['list'];
 type DemandsListItem = DemandsList[number];
 
 type MapCenterLocation = {
@@ -47,28 +41,17 @@ type MapCenterLocation = {
 };
 
 export const demandsExportColumns: ExportColumn<DemandsListItem>[] = [
-  {
-    accessorKey: 'Status',
-    name: 'Statut',
-  },
-  {
-    accessorFn: (demand) => (demand['Prise de contact'] ? 'Oui' : 'Non'),
-    name: 'Prospect recontacté',
-  },
-  {
-    accessorFn: (demand) => `${demand.Prénom ? demand.Prénom : ''} ${demand.Nom}`,
-    name: 'Nom',
-  },
-  { accessorKey: 'Mail', name: 'Mail' },
-  { accessorKey: 'Téléphone', name: 'Téléphone' },
+  { accessorKey: 'Date de la demande', name: 'Date de demande' },
   { accessorKey: 'Adresse', name: 'Adresse' },
   {
     accessorKey: 'en PDP',
     name: 'En PDP',
   },
-  { accessorKey: 'Date de la demande', name: 'Date de demande' },
+  {
+    accessorKey: 'Status',
+    name: 'Statut',
+  },
   { accessorKey: 'Structure', name: 'Type' },
-  { accessorKey: 'Établissement', name: 'Structure' },
   {
     accessorKey: 'Mode de chauffage',
     name: 'Mode de chauffage',
@@ -99,10 +82,6 @@ export const demandsExportColumns: ExportColumn<DemandsListItem>[] = [
     name: 'Conso gaz (MWh)',
   },
   { accessorKey: 'Commentaire', name: 'Commentaires' },
-  {
-    accessorKey: 'Affecté à',
-    name: 'Affecté à',
-  },
 ];
 
 const displayModeDeChauffage = (demand: DemandsListItem) => {
@@ -128,7 +107,7 @@ const quickFilterPresets = {
         <Tooltip
           title={
             <>
-              Comptabilise les demandes en chauffage collectif à moins de 100m d’un réseau (moins de 60m sur Paris), ou à plus de 100
+              Comptabilise les demandes en chauffage collectif à moins de 100m d'un réseau (moins de 60m sur Paris), ou à plus de 100
               logements, ou tertiaires.
             </>
           }
@@ -136,23 +115,6 @@ const quickFilterPresets = {
       </>
     ),
     valueSuffix: <Badge type="haut_potentiel" />,
-  },
-  demandesATraiter: {
-    filters: [
-      { id: 'Status', value: { 'En attente de prise en charge': true } },
-      { id: 'Prise de contact', value: { false: true, true: false } },
-    ],
-    getStat: (demands) =>
-      demands.filter((demand) => demand.Status === 'En attente de prise en charge' && !demand['Prise de contact']).length,
-    label: (
-      <>
-        demandes à traiter&nbsp;
-        <Tooltip
-          title={`Le statut est "en attente de prise en charge" et la case "prospect recontacté" n'est pas cochée. La colonne "Affecté à" du tableau indique le gestionnaire à qui la demande a été transmise pour traitement.`}
-        />
-      </>
-    ),
-    valueSuffix: <Icon name="fr-icon-flag-fill" size="sm" color="red" />,
   },
   demandesDansPDP: {
     filters: [
@@ -185,7 +147,6 @@ const initialSortingState = [{ desc: true, id: 'Date de la demande' }];
 
 function DemandesNew(): React.ReactElement {
   const [selectedDemandId, setSelectedDemandId] = useState<string | null>(null);
-  const [modalDemand, setModalDemand] = useState<DemandsListItem | null>(null);
   const tableRowSelection = useMemo(() => {
     return selectedDemandId ? { [selectedDemandId]: true } : {};
   }, [selectedDemandId]);
@@ -194,31 +155,33 @@ function DemandesNew(): React.ReactElement {
   const [globalFilter, setGlobalFilter] = useState('');
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
-  const { data: demands = [], isLoading } = trpc.demands.gestionnaire.list.useQuery();
+  const { data: demands = [], isLoading } = trpc.demands.user.list.useQuery();
 
   const demandsMapData = useMemo(() => {
-    return demands.map(
-      (demand) =>
-        ({
-          address: demand.Adresse,
-          id: demand.id,
-          latitude: demand.Latitude ?? 0,
-          longitude: demand.Longitude ?? 0,
-          modeDeChauffage: displayModeDeChauffage(demand),
-          selected: demand.id === selectedDemandId,
-          typeDeLogement: demand.Structure,
-        }) satisfies AdresseEligible
-    );
+    return demands
+      .filter((demand) => isDefined(demand.Latitude) && isDefined(demand.Longitude))
+      .map(
+        (demand) =>
+          ({
+            address: demand.Adresse,
+            id: demand.id,
+            latitude: demand.Latitude ?? 0,
+            longitude: demand.Longitude ?? 0,
+            modeDeChauffage: displayModeDeChauffage(demand),
+            selected: demand.id === selectedDemandId,
+            typeDeLogement: demand.Structure,
+          }) satisfies AdresseEligible
+      );
   }, [demands, selectedDemandId]);
 
   const utils = trpc.useUtils();
-  const { mutateAsync: updateDemandMutation } = trpc.demands.gestionnaire.update.useMutation();
+  const { mutateAsync: updateDemandMutation } = trpc.demands.user.update.useMutation();
 
   const updateDemand = useCallback(
     toastErrors(async (demandId: string, demandUpdate: Partial<Demand>) => {
       await updateDemandMutation({ demandId, values: demandUpdate });
 
-      utils.demands.gestionnaire.list.setData(undefined, (demands) =>
+      utils.demands.user.list.setData(undefined, (demands) =>
         (demands ?? []).map((demand) => {
           if (demand.id === demandId) {
             return { ...demand, ...demandUpdate } as DemandsListItem;
@@ -233,49 +196,11 @@ function DemandesNew(): React.ReactElement {
   const tableColumns: ColumnDef<DemandsListItem>[] = useMemo(
     () => [
       {
-        align: 'center',
-        cell: ({ row }) => (
-          <div className="flex flex-col gap-2">
-            {row.original.Status === DEMANDE_STATUS.EMPTY && !row.original['Prise de contact'] && (
-              <Tooltip
-                title={`Le statut est "en attente de prise en charge" et la case "prospect recontacté" n'est pas cochée. La colonne "Affecté à" du tableau indique le gestionnaire à qui la demande a été transmise pour traitement.`}
-              >
-                <Icon name="fr-icon-flag-fill" size="sm" color="red" />
-              </Tooltip>
-            )}
-            {row.original.haut_potentiel && <Badge type="haut_potentiel" />}
-          </div>
-        ),
-        header: '',
-        id: 'indicators',
-        width: '46px',
-      },
-      {
-        accessorKey: 'Status',
-        cell: ({ row }) => <Status demand={row.original as unknown as Demand} updateDemand={updateDemand} />,
+        accessorKey: 'Date de la demande',
+        cellType: 'Date',
         enableGlobalFilter: false,
-        filterProps: {
-          Component: ({ value }) => <DemandStatusBadge status={value as DemandStatus} />,
-        },
-        filterType: 'Facets',
-        header: 'Statut',
-        width: '290px',
-      },
-      {
-        accessorKey: 'Prise de contact',
-        align: 'center',
-        cell: ({ row }) => <Contacted demand={row.original as unknown as Demand} updateDemand={updateDemand} />,
-        enableGlobalFilter: false,
-        filterType: 'Facets',
-        header: 'Prospect recontacté',
-        width: '85px',
-      },
-      {
-        accessorFn: (row) => `${row.Nom} ${row.Prénom} ${row.Mail}`,
-        cell: ({ row }) => <Contact demand={row.original as unknown as Demand} onEmailClick={() => setModalDemand(row.original)} />,
-        enableSorting: false,
-        header: 'Contact',
-        width: '280px',
+        header: 'Date de la demande',
+        width: '94px',
       },
       {
         accessorKey: 'Adresse',
@@ -300,11 +225,15 @@ function DemandesNew(): React.ReactElement {
         width: '220px',
       },
       {
-        accessorKey: 'Date de la demande',
-        cellType: 'Date',
+        accessorKey: 'Status',
+        cell: ({ row }) => <DemandStatusBadge status={row.original.Status as DemandStatus} />,
         enableGlobalFilter: false,
-        header: 'Date de la demande',
-        width: '94px',
+        filterProps: {
+          Component: ({ value }) => <DemandStatusBadge status={value as DemandStatus} />,
+        },
+        filterType: 'Facets',
+        header: 'Statut',
+        width: '220px',
       },
       {
         accessorKey: 'Structure',
@@ -412,39 +341,6 @@ function DemandesNew(): React.ReactElement {
         header: 'Commentaires',
         width: '280px',
       },
-      {
-        accessorKey: 'Affecté à',
-        cell: ({ row }) => (
-          <AdditionalInformation
-            demand={row.original as unknown as Demand}
-            field="Affecté à"
-            updateDemand={updateDemand}
-            type="text"
-            width={125}
-          />
-        ),
-        enableSorting: false,
-        filterType: 'Facets',
-        header: () => (
-          <div className="flex items-center">
-            Affecté à
-            <Tooltip
-              iconProps={{
-                className: 'ml-1',
-              }}
-              title={
-                <>
-                  "Non affecté" : demande éloignée du réseau non transmise aux opérateurs
-                  <br />
-                  <br />
-                  Vous pouvez ajouter ou modifier une affectation : le changement sera effectif après validation manuelle par l'équipe FCU.
-                </>
-              }
-            />
-          </div>
-        ),
-        width: '150px',
-      },
       // obligatoire afin d'être utilisables dans les presets
       {
         accessorKey: 'haut_potentiel',
@@ -488,18 +384,10 @@ function DemandesNew(): React.ReactElement {
 
   return (
     <SimplePage
-      title="Suivi des demandes"
-      description="Votre tableau de bord pour la gestion des demandes des réseaux de chaleur"
+      title="Mes demandes"
+      description="Consultez et suivez l'ensemble de vos demandes de renseignements concernant les réseaux de chaleur"
       mode="authenticated"
     >
-      <ModalSimple
-        title={`Envoi d'un courriel à ${modalDemand?.Mail}`}
-        open={!!modalDemand}
-        size="large"
-        onOpenChange={(open) => !open && setModalDemand(null)}
-      >
-        {modalDemand && <DemandEmailForm currentDemand={modalDemand as unknown as Demand} updateDemand={updateDemand} />}
-      </ModalSimple>
       <div className="mb-8">
         <div className="flex items-center flex-wrap">
           <Input
@@ -538,7 +426,7 @@ function DemandesNew(): React.ReactElement {
               padding="sm"
               rowSelection={tableRowSelection}
               onRowClick={onTableRowClick}
-              loadingEmptyMessage="Vous n'avez pas encore reçu de demandes"
+              loadingEmptyMessage="Vous n'avez pas encore de demandes"
               height="calc(100dvh - 140px)"
             />
           </ResizablePanel>
@@ -579,4 +467,4 @@ function DemandesNew(): React.ReactElement {
 
 export default DemandesNew;
 
-export const getServerSideProps = withAuthentication(['gestionnaire', 'demo', 'admin']);
+export const getServerSideProps = withAuthentication(['particulier', 'professionnel', 'gestionnaire', 'admin']);

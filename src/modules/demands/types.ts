@@ -26,6 +26,7 @@ export type AirtableLegacyRecord = Partial<Omit<LegacyDemand, 'id' | 'Status'>> 
 
 export type Demand = AirtableLegacyRecord & {
   id: string;
+  user_id: string | null;
   created_at: string;
   updated_at: string;
 };

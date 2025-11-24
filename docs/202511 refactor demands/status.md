@@ -233,9 +233,9 @@ await updateMutation.mutateAsync({
 });
 ```
 
-### 2. Interface Gestionnaire (`/pro/demandes`)
+### 2. Interface Gestionnaire (`/gestionnaire/demandes`)
 
-**Fichier**: `src/pages/pro/demandes.tsx`
+**Fichier**: `src/pages/gestionnaire/demandes.tsx`
 **Authentification**: `['gestionnaire', 'demo', 'admin']`
 **API**: tRPC `demands.gestionnaire.list` et `demands.gestionnaire.update`
 
@@ -640,7 +640,7 @@ logger.info('kdb.getAdminDemands', {
 
 ### Pages
 - `src/pages/admin/demandes.tsx` - Interface admin (tRPC)
-- `src/pages/pro/demandes.tsx` - Interface gestionnaire (tRPC)
+- `src/pages/gestionnaire/demandes.tsx` - Interface gestionnaire (tRPC)
 - `src/pages/satisfaction.tsx` - Page relance utilisateur
 
 ### tRPC & Services

@@ -93,6 +93,25 @@ export const login = async (email: string, password: string) => {
     context_type: 'user',
     type: 'user_login',
   });
+
+  // Link demands by email on every login (dynamic import to avoid bundling in browser)
+  try {
+    const { linkDemandsByEmail } = await import('@/modules/demands/server/demands-service');
+    const linkedCount = await linkDemandsByEmail(user.id, user.email);
+    if (linkedCount > 0) {
+      logger.info('demands linked on login', {
+        count: linkedCount,
+        user_id: user.id,
+      });
+    }
+  } catch (error) {
+    logger.error('failed to link demands on login', {
+      error,
+      user_id: user.id,
+    });
+    // Don't fail login if linking fails
+  }
+
   return {
     active: !!user.active,
     email: user.email,
