@@ -8,7 +8,7 @@ export const OldDemandsEmail = ({ ...props }: LayoutModifiableProps) => {
       <Text>Bonjour,</Text>
       <Text>
         Vous avez une ou plusieurs demandes de raccordement en attente sur votre « 
-        <Link href={`${clientConfig.websiteOrigin}/pro/demandes`}>Espace Gestionnaire</Link> ».
+        <Link href={`${clientConfig.websiteOrigin}/gestionnaire/demandes`}>Espace Gestionnaire</Link> ».
       </Text>
       <Text>
         Pour rappel, le statut par défaut est « En attente de prise en charge ».{' '}

@@ -7,7 +7,7 @@ type NewDemandsEmailProps = {
 };
 
 export const NewDemandsEmail = ({ nbDemands, ...props }: NewDemandsEmailProps & LayoutModifiableProps) => {
-  const url = `${clientConfig.websiteOrigin}/pro/demandes`;
+  const url = `${clientConfig.websiteOrigin}/gestionnaire/demandes`;
   return (
     <Layout {...props}>
       <Text>Bonjour,</Text>

@@ -29,7 +29,7 @@ export const getServerSideProps = withAuthentication(undefined, ({ session }) =>
   if (session.user.role === 'gestionnaire') {
     return {
       redirect: {
-        destination: '/pro/demandes',
+        destination: '/gestionnaire/demandes',
         permanent: false,
       },
     };
