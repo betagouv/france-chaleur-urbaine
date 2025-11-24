@@ -52,12 +52,7 @@ export const customSortingFn = <T extends RowData>(): Record<string, SortingFn<T
 
 export const customFilterFn = <T extends RowData>(): Record<string, FilterFn<T>> => ({
   equalsAny: (row, columnId, filterValue: Record<string, boolean>) => {
-    let value = row.getValue<any>(columnId);
-    if (value === true) value = 'true';
-    if (value === false) value = 'false';
-
-    if (!value) return false;
-
+    const value = row.getValue<any>(columnId);
     return Object.entries(filterValue)
       .filter(([, isSelected]) => isSelected)
       .some(([key]) => value === key);
