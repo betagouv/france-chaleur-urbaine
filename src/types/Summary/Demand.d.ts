@@ -30,6 +30,7 @@ export type Demand = DemandSummary &
     'Gestionnaire Distance au réseau': number;
     'N° de dossier': number;
     'en PDP': string;
+    /** @deprecated use 'Date de la demande' instead */
     'Date demandes': string;
     'Date de la demande': string;
     Établissement: string;

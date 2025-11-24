@@ -1,128 +1,121 @@
-import dayjs from 'dayjs';
-import { kdb, sql } from '@/server/db/kysely';
+import type { Selectable } from 'kysely';
+import { kdb, type ReseauxDeChaleur, sql, type Users } from '@/server/db/kysely';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
+import type { FrontendType } from '@/utils/typescript';
 
-type PeriodStats = {
-  pending: number;
+type Stats = {
   total: number;
-};
-
-const parseDate = (value: unknown): dayjs.Dayjs | null => {
-  if (!value) return null;
-  if (typeof value === 'string' || typeof value === 'number' || value instanceof Date) {
-    const date = dayjs(value);
-    return date.isValid() ? date : null;
-  }
-  return null;
+  pending: number;
 };
 
 /**
- * Calcule les statistiques pour une période donnée.
- * Utilise reduce pour compter les demandes en attente de manière fonctionnelle.
+ * Retourne les informations et stats par tags de gestionnaires : utilisateurs, réseaux, stats de demandes des derniers mois.
  */
-const calculatePeriodStats = (
-  demands: Array<{ Status?: string; 'Date demandes'?: unknown; 'Date de la demande'?: unknown }>,
-  periodStart: dayjs.Dayjs
-): PeriodStats => {
-  const total = demands.length;
-
-  const pending = demands.reduce((count, demand) => {
-    const status = demand.Status || DEMANDE_STATUS.EMPTY;
-    if (status !== DEMANDE_STATUS.EMPTY) return count;
-
-    const dateDemande = parseDate(demand['Date demandes'] || demand['Date de la demande']);
-    if (!dateDemande) return count;
-
-    return dateDemande.isAfter(periodStart) || dateDemande.isSame(periodStart) ? count + 1 : count;
-  }, 0);
-
-  return { pending, total };
-};
-
 export const getTagsStats = async () => {
-  // Récupère tous les tags avec leurs utilisateurs
-  const tagsWithUsers = await kdb
-    .selectFrom('tags as t')
-    .leftJoin('users as u', (join) => join.on(sql.ref('t.name'), '=', sql`ANY(${sql.ref('u.gestionnaires')})`))
-    .select([
-      't.id',
-      't.name',
-      't.type',
-      sql
-        .raw<Array<{ id: number; email: string; last_connection: string | null }>>(
-          `COALESCE(
-          JSON_AGG(
-            json_build_object(
-              'id', u.id,
-              'email', u.email,
-              'last_connection', u.last_connection
+  const tagsStats = await kdb
+    .with('reseaux_par_tag', (eb) =>
+      eb
+        .selectFrom('reseaux_de_chaleur')
+        .select((eb) => [
+          eb.fn('unnest', [eb.ref('tags')]).as('tag'),
+          sql`
+            json_agg(
+              json_build_object(
+                'id_fcu', id_fcu,
+                'Identifiant reseau', "Identifiant reseau",
+                'nom_reseau', nom_reseau
+              )
             )
-          ) FILTER (WHERE u.email IS NOT NULL AND u.active IS TRUE),
+          `.as('json'),
+        ])
+        .groupBy(['tag'])
+    )
+    .selectFrom('tags as t')
+    .leftJoin('reseaux_par_tag as r', (join) => join.onRef('r.tag', '=', 't.name'))
+    .leftJoinLateral(
+      (eb) =>
+        eb
+          .selectFrom('demands')
+          .select(
+            sql
+              .raw<{
+                lastOneMonth: Stats;
+                lastThreeMonths: Stats;
+                lastSixMonths: Stats;
+              }>(`
+                jsonb_build_object(
+                  'lastOneMonth', jsonb_build_object(
+                    'total', COUNT(*) FILTER (WHERE (legacy_values->>'Date de la demande')::date >= NOW() - INTERVAL '1 month'),
+                    'pending', COUNT(*) FILTER (WHERE (legacy_values->>'Date de la demande')::date >= NOW() - INTERVAL '1 month' AND COALESCE(legacy_values->>'Status', '${DEMANDE_STATUS.EMPTY}') = '${DEMANDE_STATUS.EMPTY}')
+                  ),
+                  'lastThreeMonths', jsonb_build_object(
+                    'total', COUNT(*) FILTER (WHERE (legacy_values->>'Date de la demande')::date >= NOW() - INTERVAL '3 months'),
+                    'pending', COUNT(*) FILTER (WHERE (legacy_values->>'Date de la demande')::date >= NOW() - INTERVAL '3 months' AND COALESCE(legacy_values->>'Status', '${DEMANDE_STATUS.EMPTY}') = '${DEMANDE_STATUS.EMPTY}')
+                  ),
+                  'lastSixMonths', jsonb_build_object(
+                    'total', COUNT(*) FILTER (WHERE (legacy_values->>'Date de la demande')::date >= NOW() - INTERVAL '6 months'),
+                    'pending', COUNT(*) FILTER (WHERE (legacy_values->>'Date de la demande')::date >= NOW() - INTERVAL '6 months' AND COALESCE(legacy_values->>'Status', '${DEMANDE_STATUS.EMPTY}') = '${DEMANDE_STATUS.EMPTY}')
+                  )
+                )
+              `)
+              .as('stats')
+          )
+          .where(sql`${sql.ref('legacy_values')}->'Gestionnaires'`, '@>', sql`jsonb_build_array(${sql.ref('t.name')})`)
+          .as('demands_stats'),
+      (join) => join.onTrue()
+    )
+    .select((eb) => [
+      'id',
+      'name',
+      'type',
+
+      // Users
+      sql<FrontendType<Selectable<Pick<Users, 'id' | 'email' | 'last_connection'>>>[]>`
+        COALESCE(
+          (
+            SELECT json_agg(
+              json_build_object(
+                'id', u.id,
+                'email', u.email,
+                'last_connection', u.last_connection
+              )
+            )
+            FROM users u
+            WHERE ${sql.ref('t.name')} = ANY(u.gestionnaires)
+              AND u.email IS NOT NULL
+              AND u.active IS TRUE
+          ),
           '[]'::json
-        )`
         )
-        .as('users'),
+      `.as('users'),
+
+      // Réseaux
+      sql<Pick<ReseauxDeChaleur, 'id_fcu' | 'Identifiant reseau' | 'nom_reseau'>[]>`COALESCE(${eb.ref('r.json')}, '[]'::json)`.as(
+        'reseaux'
+      ),
+
+      // Stats des demandes
+      sql<Stats>`
+        COALESCE(
+          ${eb.ref('demands_stats.stats')}->'lastOneMonth',
+          '{"total": 0, "pending": 0}'::jsonb
+        )
+      `.as('lastOneMonth'),
+      sql<Stats>`
+        COALESCE(
+          ${eb.ref('demands_stats.stats')}->'lastThreeMonths',
+          '{"total": 0, "pending": 0}'::jsonb
+        )
+      `.as('lastThreeMonths'),
+      sql<Stats>`
+        COALESCE(
+          ${eb.ref('demands_stats.stats')}->'lastSixMonths',
+          '{"total": 0, "pending": 0}'::jsonb
+        )
+      `.as('lastSixMonths'),
     ])
-    .groupBy(['t.id', 't.name', 't.type'])
     .orderBy('t.name')
     .execute();
-
-  // Récupère tous les réseaux avec leurs tags
-  const reseaux = await kdb.selectFrom('reseaux_de_chaleur').select(['id_fcu', 'Identifiant reseau', 'nom_reseau', 'tags']).execute();
-
-  // Récupère toutes les demandes
-  const allDemands = (await kdb.selectFrom('demands').selectAll().execute()).map(({ id, legacy_values }) => ({
-    ...legacy_values,
-    id,
-  }));
-
-  // Crée un index des réseaux par tag en utilisant reduce (approche fonctionnelle)
-  const reseauxByTag = reseaux.reduce((acc, reseau) => {
-    const reseauTags = reseau.tags || [];
-    const reseauInfo = {
-      'Identifiant reseau': reseau['Identifiant reseau'],
-      id_fcu: reseau.id_fcu,
-      nom_reseau: reseau.nom_reseau,
-    };
-
-    return reseauTags.reduce((tagAcc, tag) => {
-      if (!tagAcc.has(tag)) {
-        tagAcc.set(tag, []);
-      }
-      tagAcc.get(tag)!.push(reseauInfo);
-      return tagAcc;
-    }, acc);
-  }, new Map<string, Array<{ id_fcu: number; 'Identifiant reseau': string | null; nom_reseau: string | null }>>());
-
-  // Définit les périodes avec dayjs
-  const oneMonthAgo = dayjs().subtract(1, 'month');
-  const threeMonthsAgo = dayjs().subtract(3, 'months');
-  const sixMonthsAgo = dayjs().subtract(6, 'months');
-
-  // Calcule les stats par tag
-  const tagsStats = tagsWithUsers.map((tag) => {
-    const tagName = tag.name;
-    const reseauxForTag = reseauxByTag.get(tagName) || [];
-
-    // Filtre les demandes qui ont ce tag dans leurs gestionnaires
-    const demandsForTag = allDemands.filter((demand) => {
-      const demandGestionnaires = demand.Gestionnaires || [];
-      return demandGestionnaires.includes(tagName);
-    });
-
-    // Calcule les stats par période
-    const lastOneMonth = calculatePeriodStats(demandsForTag, oneMonthAgo);
-    const lastThreeMonths = calculatePeriodStats(demandsForTag, threeMonthsAgo);
-    const lastSixMonths = calculatePeriodStats(demandsForTag, sixMonthsAgo);
-
-    return {
-      ...tag,
-      lastOneMonth,
-      lastSixMonths,
-      lastThreeMonths,
-      reseaux: reseauxForTag,
-    };
-  });
 
   return tagsStats;
 };

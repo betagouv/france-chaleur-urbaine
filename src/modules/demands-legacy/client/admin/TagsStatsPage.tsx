@@ -1,5 +1,5 @@
 import Tag from '@codegouvfr/react-dsfr/Tag';
-import { useMemo } from 'react';
+import { type ReactNode, useMemo } from 'react';
 
 import SimplePage from '@/components/shared/page/SimplePage';
 import CallOut from '@/components/ui/CallOut';
@@ -13,6 +13,7 @@ import { compareFrenchStrings } from '@/utils/strings';
 import type { TagsStats } from '../../types';
 
 const initialSortingState = [{ desc: true, id: 'lastSixMonths' }];
+const initialFilterState = [{ id: 'type', value: { '': true, gestionnaire: false, metropole: true, reseau: true, ville: true } }];
 
 export default function TagsStatsPage() {
   const { data: tagsStats, isLoading } = trpc.demandsLegacy.getTagsStats.useQuery();
@@ -22,7 +23,7 @@ export default function TagsStatsPage() {
       {
         accessorKey: 'name',
         cell: ({ row }) => (
-          <Tag className={cx(tagsGestionnairesStyleByType[row.original.name as keyof typeof tagsGestionnairesStyleByType]?.className)}>
+          <Tag className={cx(tagsGestionnairesStyleByType[row.original.type as keyof typeof tagsGestionnairesStyleByType]?.className)}>
             {row.original.name}
           </Tag>
         ),
@@ -38,14 +39,14 @@ export default function TagsStatsPage() {
         },
         filterType: 'Facets',
         header: 'Type',
-        width: '150px',
+        width: '100px',
       },
       {
-        accessorFn: (row) => row.users.map((u: { email: string }) => u.email).join(' '),
+        accessorFn: (row) => row.users.map((u) => u.email).join(' '),
         cell: ({ row }) => (
           <div className="flex flex-wrap gap-1">
             {row.original.users.length > 0 ? (
-              row.original.users.map((user: { id: number; email: string; last_connection: string | null }) => {
+              row.original.users.map((user) => {
                 const lastConnection = formatDate(user.last_connection);
                 const lastConnectionClassName = getLastConnectionClassName(user.last_connection);
                 return (
@@ -82,7 +83,7 @@ export default function TagsStatsPage() {
 
           return (
             <div className="flex flex-wrap gap-1 items-center">
-              {displayedReseaux.map((reseau: { id_fcu: number; nom_reseau: string | null; 'Identifiant reseau': string | null }) => (
+              {displayedReseaux.map((reseau) => (
                 <Tag key={reseau.id_fcu} className="bg-blue-100 text-blue-800">
                   <div className="flex flex-col leading-tight">
                     <span>{getReseauDisplayLabel(reseau)}</span>
@@ -95,13 +96,11 @@ export default function TagsStatsPage() {
                     <div>
                       <div className="font-semibold mb-2">Autres réseaux ({remainingReseaux.length}) :</div>
                       <ul className="list-disc list-inside space-y-1">
-                        {remainingReseaux.map(
-                          (reseau: { id_fcu: number; nom_reseau: string | null; 'Identifiant reseau': string | null }) => (
-                            <li key={reseau.id_fcu} className="text-sm">
-                              <span className="font-medium">{getReseauDisplayLabel(reseau)}</span>
-                            </li>
-                          )
-                        )}
+                        {remainingReseaux.map((reseau) => (
+                          <li key={reseau.id_fcu} className="text-sm">
+                            <span className="font-medium">{getReseauDisplayLabel(reseau)}</span>
+                          </li>
+                        ))}
                       </ul>
                     </div>
                   }
@@ -126,11 +125,18 @@ export default function TagsStatsPage() {
           const { pending, total } = row.original.lastSixMonths;
           return (
             <>
-              {pending} / {total}
+              <strong className="text-red-600 text-xl">{pending}</strong>
+              <div className="text-xs">&nbsp;/ {total}</div>
             </>
           );
         },
-        header: '< 6 mois',
+        header: () => (
+          <DemandColumnHeader>
+            Demandes en attente / total
+            <br />
+            &lt; 6 mois
+          </DemandColumnHeader>
+        ),
         width: '120px',
       },
       {
@@ -139,12 +145,19 @@ export default function TagsStatsPage() {
         cell: ({ row }) => {
           const { pending, total } = row.original.lastThreeMonths;
           return (
-            <>
-              {pending} / {total}
-            </>
+            <div className="text-right">
+              <strong className="text-red-600 text-xl">{pending}</strong>
+              <div className="text-xs">sur {total}</div>
+            </div>
           );
         },
-        header: '< 3 mois',
+        header: () => (
+          <DemandColumnHeader>
+            Demandes en attente / total
+            <br />
+            &lt; 3 mois
+          </DemandColumnHeader>
+        ),
         width: '120px',
       },
       {
@@ -158,7 +171,13 @@ export default function TagsStatsPage() {
             </>
           );
         },
-        header: '< 1 mois',
+        header: () => (
+          <DemandColumnHeader>
+            Demandes en attente / total
+            <br />
+            &lt; 1 mois
+          </DemandColumnHeader>
+        ),
         width: '120px',
       },
     ],
@@ -166,7 +185,7 @@ export default function TagsStatsPage() {
   );
 
   return (
-    <SimplePage title="Statistiques par tag" mode="authenticated" layout="large">
+    <SimplePage title="Statistiques par tag" mode="authenticated" layout="center">
       <Heading as="h1" color="blue-france">
         Statistiques par tag gestionnaire
       </Heading>
@@ -182,6 +201,7 @@ export default function TagsStatsPage() {
         columns={tableColumns}
         data={tagsStats || []}
         initialSortingState={initialSortingState}
+        columnFilters={initialFilterState}
         enableGlobalFilter
         controlsLayout="block"
         padding="sm"
@@ -190,6 +210,7 @@ export default function TagsStatsPage() {
           fileName: 'tags_stats.xlsx',
           sheetName: 'tags_stats',
         }}
+        urlSyncKey="tags"
       />
     </SimplePage>
   );
@@ -234,4 +255,13 @@ const getLastConnectionClassName = (value: string | null | undefined) => {
 
 const getReseauDisplayLabel = (reseau: TagsStats['reseaux'][number]) => {
   return `${reseau.nom_reseau || `Réseau ${reseau.id_fcu}`}${reseau['Identifiant reseau'] ? ` (${reseau['Identifiant reseau']})` : ''}`;
+};
+
+const DemandColumnHeader = ({ children }: { children: ReactNode }) => {
+  return (
+    <span className="inline-flex items-center gap-1">
+      <span>{children}</span>
+      <Tooltip title="Nombre de demandes en attente sur la période / nombre total de demandes assignées au tag sur la même période." />
+    </span>
+  );
 };
