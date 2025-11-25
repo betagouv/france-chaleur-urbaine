@@ -17,7 +17,7 @@ pnpm db:pull:dev eligibility_demands_addresses
 # Recréer une table eligibility_demands_addresses harmonisée avec pro_eligibility_tests_adresses
 # ⚠️ Il est nécessaire, pour recréer correctement from scratch cette table de passer toutes les adresses de eligibility_tests à 'pending'
 # il y a 1 400 000 adresses qui vont etre recalculées par la BAN donc ca peut etre long
-pnpm cli data:import tests-adresses-legacy
+pnpm cli data import tests-adresses-legacy
 
 # Ces bdd peuvent etre poussées sur dev pour partager avec d'autres membres de l'équipe
 pnpm db:push:dev eligibility_tests
