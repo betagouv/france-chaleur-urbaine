@@ -36,7 +36,7 @@ import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
 import type { FlattenKeys } from '@/utils/typescript';
 import TableCell, { type TableCellProps } from './TableCell';
-import TableFilter, { defaultTableFilterFns, type TableFilterProps } from './TableFilter';
+import TableFilter, { DEFAULT_MAX_DATE, DEFAULT_MIN_DATE, defaultTableFilterFns, type TableFilterProps } from './TableFilter';
 
 const ButtonExport = dynamic(() => import('@/components/ui/ButtonExport'), { ssr: false });
 
@@ -68,7 +68,7 @@ export const customFilterFn = <T extends RowData>(): Record<string, FilterFn<T>>
       .filter(([, isSelected]) => isSelected)
       .some(([key]) => value.includes(key));
   },
-  inDateRangeNotNull: (row, columnId, filterValue: [string, string, boolean?]) => {
+  inDateRangeNotNull: (row, columnId, filterValue: [string | null, string | null, boolean?]) => {
     const [minDate, maxDate, includeNull] = filterValue;
     const value = row.getValue<string | null>(columnId);
 
@@ -76,7 +76,11 @@ export const customFilterFn = <T extends RowData>(): Record<string, FilterFn<T>>
       return includeNull === true;
     }
 
-    return value >= minDate && value <= maxDate;
+    // Use default dates if not specified by user (treat empty strings as null)
+    const effectiveMinDate = minDate?.trim() || DEFAULT_MIN_DATE;
+    const effectiveMaxDate = maxDate?.trim() || DEFAULT_MAX_DATE;
+
+    return value >= effectiveMinDate && value <= effectiveMaxDate;
   },
   inNumberRangeNotNull: (row, columnId, filterValue: [number, number]) => {
     const [min, max] = filterValue;

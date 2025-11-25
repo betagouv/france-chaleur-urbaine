@@ -544,6 +544,7 @@ function DemandesAdmin(): React.ReactElement {
         accessorKey: 'Date de la demande',
         cellType: 'DateTime',
         enableGlobalFilter: false,
+        filterType: 'Range',
         header: 'Date de la demande',
         width: '94px',
       },

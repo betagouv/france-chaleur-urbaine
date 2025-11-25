@@ -18,7 +18,7 @@ export type TableFilterProps = {
   | {
       type: 'Range';
       filterProps: Partial<Pick<RangeFilterProps, 'domain'>> & Omit<RangeFilterProps, 'value' | 'onChange' | 'domain'>;
-      value?: [number, number] | [string, string, boolean?];
+      value?: [number, number] | [string | null, string | null, boolean?];
     }
   | {
       type: 'Facets';
@@ -32,6 +32,10 @@ export const defaultTableFilterFns = {
   Range: 'inNumberRangeNotNull', // Sera remplacé par inDateRangeNotNull si cellType est DateTime/Date
 } as const;
 
+// Default date range values for date filters
+export const DEFAULT_MIN_DATE = '1900-01-01';
+export const DEFAULT_MAX_DATE = '2100-12-31';
+
 const TableFilter = ({ value, type, onChange, filterProps, facetedUniqueValues, facetedMinMaxValues, cellType }: TableFilterProps) => {
   const isDateRange = type === 'Range' && (cellType === 'DateTime' || cellType === 'Date');
 
@@ -41,10 +45,9 @@ const TableFilter = ({ value, type, onChange, filterProps, facetedUniqueValues, 
     }
     // reset filters when they are back to defaults
     if (isDateRange) {
-      const minDate = facetedMinMaxValues?.[0] as unknown as string;
-      const maxDate = facetedMinMaxValues?.[1] as unknown as string;
-      const dateValue = value as [string, string, boolean?];
-      if (minDate && maxDate && dateValue[0] === minDate && dateValue[1] === maxDate && !dateValue[2]) {
+      const dateValue = value as [string | null, string | null, boolean?];
+      // Reset if both dates are null and includeNull is false
+      if (!dateValue[0] && !dateValue[1] && !dateValue[2]) {
         onChange(undefined);
       }
     } else if (type === 'Range') {
@@ -56,17 +59,22 @@ const TableFilter = ({ value, type, onChange, filterProps, facetedUniqueValues, 
   }, [type, value, filterProps, onChange, isDateRange, facetedMinMaxValues]);
 
   if (isDateRange) {
-    const minDate = (facetedMinMaxValues?.[0] as unknown as string) || '';
-    const maxDate = (facetedMinMaxValues?.[1] as unknown as string) || '';
-    const startDate = (value?.[0] as unknown as string) || minDate;
-    const endDate = (value?.[1] as unknown as string) || maxDate;
-    const includeNull = value?.[2] ?? false;
+    const dateValue = value as [string | null, string | null, boolean?] | undefined;
+    // Use default dates for display, but store only user input
+    const startDate = dateValue?.[0] || '';
+    const endDate = dateValue?.[1] || '';
+    const includeNull = dateValue?.[2] ?? false;
 
     const handleDateChange = (newStartDate: string, newEndDate: string, includeNulls: boolean) => {
-      if (newStartDate === minDate && newEndDate === maxDate && !includeNulls) {
+      // Only store what user has entered (empty string becomes null)
+      const storedStart = newStartDate || null;
+      const storedEnd = newEndDate || null;
+
+      // If both dates are null and includeNull is false, clear the filter
+      if (!storedStart && !storedEnd && !includeNulls) {
         onChange(undefined);
       } else {
-        onChange([newStartDate, newEndDate, includeNulls] as any);
+        onChange([storedStart, storedEnd, includeNulls] as any);
       }
     };
 
@@ -75,8 +83,8 @@ const TableFilter = ({ value, type, onChange, filterProps, facetedUniqueValues, 
         <Input
           label="Date de début"
           nativeInputProps={{
-            max: maxDate,
-            min: minDate,
+            max: DEFAULT_MAX_DATE,
+            min: DEFAULT_MIN_DATE,
             onChange: (e) => {
               const newStart = e.target.value;
               handleDateChange(newStart, endDate, includeNull);
@@ -88,8 +96,8 @@ const TableFilter = ({ value, type, onChange, filterProps, facetedUniqueValues, 
         <Input
           label="Date de fin"
           nativeInputProps={{
-            max: maxDate,
-            min: minDate,
+            max: DEFAULT_MAX_DATE,
+            min: DEFAULT_MIN_DATE,
             onChange: (e) => {
               const newEnd = e.target.value;
               handleDateChange(startDate, newEnd, includeNull);

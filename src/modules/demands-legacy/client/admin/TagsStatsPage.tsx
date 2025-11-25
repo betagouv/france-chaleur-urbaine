@@ -340,7 +340,7 @@ const buildDemandFilters = (tagName: string, periodMonths: number | undefined, p
         ]
       : []),
     ...(isDefined(periodMonths)
-      ? [{ id: 'Date de la demande', value: [dayjs().subtract(periodMonths, 'month').format('YYYY-MM-DD'), '', false] }]
+      ? [{ id: 'Date de la demande', value: [dayjs().subtract(periodMonths, 'month').format('YYYY-MM-DD'), null, false] }]
       : []),
   ];
 };
