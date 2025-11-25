@@ -1,5 +1,5 @@
 import type { Selectable } from 'kysely';
-import { kdb, type ReseauxDeChaleur, sql, type Users } from '@/server/db/kysely';
+import { kdb, type ReseauxDeChaleur, sql, type Users, type ZonesEtReseauxEnConstruction } from '@/server/db/kysely';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import type { FrontendType } from '@/utils/typescript';
 
@@ -30,8 +30,26 @@ export const getTagsStats = async () => {
         ])
         .groupBy(['tag'])
     )
+    .with('reseaux_construction_par_tag', (eb) =>
+      eb
+        .selectFrom('zones_et_reseaux_en_construction')
+        .select((eb) => [
+          eb.fn('unnest', [eb.ref('tags')]).as('tag'),
+          sql`
+            json_agg(
+              json_build_object(
+                'id_fcu', id_fcu,
+                'nom_reseau', nom_reseau,
+                'is_zone', is_zone
+              )
+            )
+          `.as('json'),
+        ])
+        .groupBy(['tag'])
+    )
     .selectFrom('tags as t')
     .leftJoin('reseaux_par_tag as r', (join) => join.onRef('r.tag', '=', 't.name'))
+    .leftJoin('reseaux_construction_par_tag as rc', (join) => join.onRef('rc.tag', '=', 't.name'))
     .leftJoinLateral(
       (eb) =>
         eb
@@ -39,22 +57,33 @@ export const getTagsStats = async () => {
           .select(
             sql
               .raw<{
-                lastOneMonth: Stats;
+                total: Stats;
                 lastThreeMonths: Stats;
                 lastSixMonths: Stats;
               }>(`
                 jsonb_build_object(
-                  'lastOneMonth', jsonb_build_object(
-                    'total', COUNT(*) FILTER (WHERE (legacy_values->>'Date de la demande')::date >= NOW() - INTERVAL '1 month'),
-                    'pending', COUNT(*) FILTER (WHERE (legacy_values->>'Date de la demande')::date >= NOW() - INTERVAL '1 month' AND COALESCE(legacy_values->>'Status', '${DEMANDE_STATUS.EMPTY}') = '${DEMANDE_STATUS.EMPTY}')
+                  'total', jsonb_build_object(
+                    'total', COUNT(*),
+                    'pending', COUNT(*) FILTER (
+                      WHERE COALESCE(legacy_values->>'Status', '${DEMANDE_STATUS.EMPTY}') = '${DEMANDE_STATUS.EMPTY}'
+                        AND COALESCE((legacy_values->>'Prise de contact')::boolean, false) = false
+                    )
                   ),
                   'lastThreeMonths', jsonb_build_object(
                     'total', COUNT(*) FILTER (WHERE (legacy_values->>'Date de la demande')::date >= NOW() - INTERVAL '3 months'),
-                    'pending', COUNT(*) FILTER (WHERE (legacy_values->>'Date de la demande')::date >= NOW() - INTERVAL '3 months' AND COALESCE(legacy_values->>'Status', '${DEMANDE_STATUS.EMPTY}') = '${DEMANDE_STATUS.EMPTY}')
+                    'pending', COUNT(*) FILTER (
+                      WHERE (legacy_values->>'Date de la demande')::date >= NOW() - INTERVAL '3 months'
+                        AND COALESCE(legacy_values->>'Status', '${DEMANDE_STATUS.EMPTY}') = '${DEMANDE_STATUS.EMPTY}'
+                        AND COALESCE((legacy_values->>'Prise de contact')::boolean, false) = false
+                    )
                   ),
                   'lastSixMonths', jsonb_build_object(
                     'total', COUNT(*) FILTER (WHERE (legacy_values->>'Date de la demande')::date >= NOW() - INTERVAL '6 months'),
-                    'pending', COUNT(*) FILTER (WHERE (legacy_values->>'Date de la demande')::date >= NOW() - INTERVAL '6 months' AND COALESCE(legacy_values->>'Status', '${DEMANDE_STATUS.EMPTY}') = '${DEMANDE_STATUS.EMPTY}')
+                    'pending', COUNT(*) FILTER (
+                      WHERE (legacy_values->>'Date de la demande')::date >= NOW() - INTERVAL '6 months'
+                        AND COALESCE(legacy_values->>'Status', '${DEMANDE_STATUS.EMPTY}') = '${DEMANDE_STATUS.EMPTY}'
+                        AND COALESCE((legacy_values->>'Prise de contact')::boolean, false) = false
+                    )
                   )
                 )
               `)
@@ -79,6 +108,7 @@ export const getTagsStats = async () => {
                 'email', u.email,
                 'last_connection', u.last_connection
               )
+              ORDER BY u.last_connection DESC NULLS LAST
             )
             FROM users u
             WHERE ${sql.ref('t.name')} = ANY(u.gestionnaires)
@@ -91,16 +121,19 @@ export const getTagsStats = async () => {
 
       // Réseaux
       sql<Pick<ReseauxDeChaleur, 'id_fcu' | 'Identifiant reseau' | 'nom_reseau'>[]>`COALESCE(${eb.ref('r.json')}, '[]'::json)`.as(
-        'reseaux'
+        'reseauxDeChaleur'
       ),
+      sql<Pick<ZonesEtReseauxEnConstruction, 'id_fcu' | 'nom_reseau' | 'is_zone'>[]>`
+        COALESCE(${eb.ref('rc.json')}, '[]'::json)
+      `.as('reseauxEnConstruction'),
 
       // Stats des demandes
       sql<Stats>`
         COALESCE(
-          ${eb.ref('demands_stats.stats')}->'lastOneMonth',
+          ${eb.ref('demands_stats.stats')}->'total',
           '{"total": 0, "pending": 0}'::jsonb
         )
-      `.as('lastOneMonth'),
+      `.as('allTime'),
       sql<Stats>`
         COALESCE(
           ${eb.ref('demands_stats.stats')}->'lastThreeMonths',

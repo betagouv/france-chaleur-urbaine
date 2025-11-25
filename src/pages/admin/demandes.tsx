@@ -718,6 +718,7 @@ function DemandesAdmin(): React.ReactElement {
               loadingEmptyMessage="Aucune demande à afficher"
               height="calc(100dvh - 164px)"
               virtualizerRef={virtualizerRef}
+              urlSyncKey="demands"
             />
           </ResizablePanel>
           <ResizableHandle />

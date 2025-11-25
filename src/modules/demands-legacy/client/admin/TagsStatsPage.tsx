@@ -1,15 +1,23 @@
 import Tag from '@codegouvfr/react-dsfr/Tag';
+import type { ColumnFiltersState } from '@tanstack/react-table';
+import dayjs from 'dayjs';
+import NextLink from 'next/link';
 import { type ReactNode, useMemo } from 'react';
 
 import SimplePage from '@/components/shared/page/SimplePage';
+import Button from '@/components/ui/Button';
 import CallOut from '@/components/ui/CallOut';
 import Heading from '@/components/ui/Heading';
+import Icon from '@/components/ui/Icon';
 import Timeago from '@/components/ui/Timeago';
 import Tooltip from '@/components/ui/Tooltip';
 import TableSimple, { type ColumnDef } from '@/components/ui/table/TableSimple';
+import { notify } from '@/modules/notification';
 import { tagsGestionnairesStyleByType } from '@/modules/tags/constants';
 import trpc from '@/modules/trpc/client';
+import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
+import { objectToURLSearchParams } from '@/utils/network';
 import { compareFrenchStrings } from '@/utils/strings';
 import type { TagsStats } from '../../types';
 
@@ -21,6 +29,21 @@ export default function TagsStatsPage() {
 
   const tableColumns: ColumnDef<TagsStats>[] = useMemo(
     () => [
+      {
+        align: 'center',
+        cell: ({ row }) =>
+          row.original.lastThreeMonths.total > 0 &&
+          row.original.lastThreeMonths.pending === row.original.lastThreeMonths.total && (
+            <Tooltip title="Toutes les demandes < 3 mois sont en attente.">
+              <Icon name="fr-icon-warning-fill" size="sm" className="text-red-600" />
+            </Tooltip>
+          ),
+        enableColumnFilter: false,
+        enableSorting: false,
+        header: () => <span className="sr-only">Alerte</span>,
+        id: 'warning',
+        width: '40px',
+      },
       {
         accessorKey: 'name',
         cell: ({ row }) => (
@@ -39,67 +62,111 @@ export default function TagsStatsPage() {
       },
       {
         accessorFn: (row) => row.users.map((u) => u.email).join(' '),
-        cell: ({ row }) => (
-          <div className="flex flex-wrap gap-1">
-            {row.original.users.length > 0 ? (
-              row.original.users.map((user) => {
-                const lastConnectionClassName = getLastConnectionClassName(user.last_connection);
-                return (
-                  <Tag key={user.id} className="bg-gray-100 text-gray-800">
-                    <div className="flex flex-col leading-tight break-all">
-                      <span>{user.email}</span>
-                      {user.last_connection ? (
-                        <Timeago
-                          date={user.last_connection}
-                          prefix="Dernière connexion "
-                          className={cx('text-xs', lastConnectionClassName)}
-                        />
-                      ) : (
-                        <span className="text-red-600 text-xs">Jamais connecté</span>
-                      )}
-                    </div>
-                  </Tag>
-                );
-              })
-            ) : (
-              <span className="text-gray-400 text-sm">Aucun utilisateur</span>
-            )}
-          </div>
-        ),
+        cell: ({ row }) => {
+          const users = row.original.users;
+          return (
+            <div className="flex flex-col gap-2">
+              {users.length > 0 ? (
+                <>
+                  <div className="flex flex-wrap gap-1">
+                    {users.map((user) => {
+                      const lastConnectionClassName = getLastConnectionClassName(user.last_connection);
+                      return (
+                        <Tag key={user.id} className="bg-gray-100 text-gray-800">
+                          <div className="flex flex-col leading-tight break-all">
+                            <span>{user.email}</span>
+                            {user.last_connection ? (
+                              <Timeago
+                                date={user.last_connection}
+                                className={cx('text-xs', lastConnectionClassName)}
+                                prefix={
+                                  <Icon
+                                    name="fr-icon-time-line"
+                                    size="xs"
+                                    className={cx('mr-1', lastConnectionClassName)}
+                                    title="Dernière connexion"
+                                  />
+                                }
+                              />
+                            ) : (
+                              <span className="text-red-600 text-xs">Jamais connecté</span>
+                            )}
+                          </div>
+                        </Tag>
+                      );
+                    })}
+                  </div>
+                  <div>
+                    <Tooltip title="Copier les adresses e-mail dans le presse-papiers">
+                      <Button
+                        type="button"
+                        className="text-blue-600 hover:text-blue-800 inline-flex items-center gap-1 text-sm"
+                        onClick={() => copyContentToClipboard(users.map((user) => user.email).join(', '))}
+                        iconId="fr-icon-clipboard-line"
+                        priority="tertiary no outline"
+                        size="small"
+                      >
+                        Copier les adresses
+                      </Button>
+                    </Tooltip>
+                  </div>
+                </>
+              ) : (
+                <span className="text-gray-400 text-sm">Aucun utilisateur</span>
+              )}
+            </div>
+          );
+        },
         enableSorting: false,
         header: 'Utilisateurs gestionnaires',
         width: '250px',
       },
       {
-        accessorFn: (row) =>
-          row.reseaux.map((reseau) => `${reseau.id_fcu}${reseau.nom_reseau || ''}${reseau['Identifiant reseau'] || ''}`).join(' | '),
+        accessorFn: (row) => {
+          return [
+            ...row.reseauxDeChaleur.map((reseau) => `${reseau.id_fcu}${reseau.nom_reseau || ''}${reseau['Identifiant reseau'] || ''}`),
+            ...row.reseauxEnConstruction.map((reseau) => `${reseau.id_fcu}${reseau.nom_reseau || ''}`),
+          ].join(' | ');
+        },
         cell: ({ row }) => {
-          const reseaux = row.original.reseaux;
-          if (reseaux.length === 0) {
-            return <span className="text-gray-400 text-sm">Aucun réseau</span>;
+          const networks = [
+            ...row.original.reseauxDeChaleur.map((reseau) => ({
+              className: 'text-white bg-[#0D543F]! hover:bg-[#0D543F]/90!',
+              id: `existing-${reseau.id_fcu}`,
+              label: `${reseau.nom_reseau || `Réseau ${reseau.id_fcu}`}${reseau['Identifiant reseau'] ? ` (${reseau['Identifiant reseau']})` : ''}`,
+            })),
+            ...row.original.reseauxEnConstruction.map((reseau) => ({
+              className: 'text-white bg-[#DA5DD5]! hover:bg-[#DA5DD5]/90!',
+              id: `construction-${reseau.id_fcu}`,
+              label: `${reseau.nom_reseau || `Réseau ${reseau.id_fcu}`}${reseau.is_zone ? ' (zone)' : ''}`,
+            })),
+          ];
+
+          if (networks.length === 0) {
+            return <span className="text-gray-600 text-sm">Aucun réseau</span>;
           }
 
-          const displayedReseaux = reseaux.slice(0, 2);
-          const remainingReseaux = reseaux.slice(2);
+          const displayedNetworks = networks.slice(0, 2);
+          const remainingNetworks = networks.slice(2);
 
           return (
             <div className="flex flex-wrap gap-1 items-center">
-              {displayedReseaux.map((reseau) => (
-                <Tag key={reseau.id_fcu} className="bg-blue-100 text-blue-800">
+              {displayedNetworks.map((network) => (
+                <Tag key={network.id} className={network.className}>
                   <div className="flex flex-col leading-tight">
-                    <span>{getReseauDisplayLabel(reseau)}</span>
+                    <span>{network.label}</span>
                   </div>
                 </Tag>
               ))}
-              {remainingReseaux.length > 0 && (
+              {remainingNetworks.length > 0 && (
                 <Tooltip
                   title={
                     <div>
-                      <div className="font-semibold mb-2">Autres réseaux ({remainingReseaux.length}) :</div>
+                      <div className="font-semibold mb-2">Autres réseaux ({remainingNetworks.length}) :</div>
                       <ul className="list-disc list-inside space-y-1">
-                        {remainingReseaux.map((reseau) => (
-                          <li key={reseau.id_fcu} className="text-sm">
-                            <span className="font-medium">{getReseauDisplayLabel(reseau)}</span>
+                        {remainingNetworks.map((network) => (
+                          <li key={network.id} className="text-sm">
+                            <span className="font-medium">{network.label}</span>
                           </li>
                         ))}
                       </ul>
@@ -107,7 +174,8 @@ export default function TagsStatsPage() {
                   }
                 >
                   <span className="text-blue-600 hover:text-blue-800 underline cursor-help text-sm">
-                    + {remainingReseaux.length} autre{remainingReseaux.length > 1 ? 's' : ''} réseau{remainingReseaux.length > 1 ? 'x' : ''}
+                    + {remainingNetworks.length} autre{remainingNetworks.length > 1 ? 's' : ''} réseau
+                    {remainingNetworks.length > 1 ? 'x' : ''}
                   </span>
                 </Tooltip>
               )}
@@ -117,26 +185,21 @@ export default function TagsStatsPage() {
         header: 'Réseaux',
         id: 'reseaux',
         sortingFn: (rowA, rowB) => compareFrenchStrings(rowA.getValue('reseaux'), rowB.getValue('reseaux')),
-        width: '350px',
+        width: '330px',
       },
       {
         accessorFn: (row) => row.lastSixMonths.pending,
         accessorKey: 'lastSixMonths',
         cell: ({ row }) => {
           const { pending, total } = row.original.lastSixMonths;
-          return (
-            <>
-              <strong className="text-red-600 text-xl">{pending}</strong>
-              <div className="text-xs">&nbsp;/ {total}</div>
-            </>
-          );
+          return <DemandStatsCell pending={pending} total={total} tagName={row.original.name} periodMonths={6} />;
         },
         header: () => (
-          <DemandColumnHeader>
+          <DemandStatColumnHeader>
             Demandes en attente / total
             <br />
             &lt; 6 mois
-          </DemandColumnHeader>
+          </DemandStatColumnHeader>
         ),
         width: '120px',
       },
@@ -145,39 +208,29 @@ export default function TagsStatsPage() {
         accessorKey: 'lastThreeMonths',
         cell: ({ row }) => {
           const { pending, total } = row.original.lastThreeMonths;
-          return (
-            <div className="text-right">
-              <strong className="text-red-600 text-xl">{pending}</strong>
-              <div className="text-xs">sur {total}</div>
-            </div>
-          );
+          return <DemandStatsCell pending={pending} total={total} tagName={row.original.name} periodMonths={3} />;
         },
         header: () => (
-          <DemandColumnHeader>
+          <DemandStatColumnHeader>
             Demandes en attente / total
             <br />
             &lt; 3 mois
-          </DemandColumnHeader>
+          </DemandStatColumnHeader>
         ),
         width: '120px',
       },
       {
-        accessorFn: (row) => row.lastOneMonth.pending,
-        accessorKey: 'lastOneMonth',
+        accessorKey: 'allTime',
         cell: ({ row }) => {
-          const { pending, total } = row.original.lastOneMonth;
-          return (
-            <>
-              {pending} / {total}
-            </>
-          );
+          const { pending, total } = row.original.allTime;
+          return <DemandStatsCell pending={pending} total={total} tagName={row.original.name} />;
         },
         header: () => (
-          <DemandColumnHeader>
+          <DemandStatColumnHeader>
             Demandes en attente / total
             <br />
-            &lt; 1 mois
-          </DemandColumnHeader>
+            Toutes périodes
+          </DemandStatColumnHeader>
         ),
         width: '120px',
       },
@@ -239,15 +292,66 @@ const getLastConnectionClassName = (value: string | null | undefined) => {
   return 'text-red-600';
 };
 
-const getReseauDisplayLabel = (reseau: TagsStats['reseaux'][number]) => {
-  return `${reseau.nom_reseau || `Réseau ${reseau.id_fcu}`}${reseau['Identifiant reseau'] ? ` (${reseau['Identifiant reseau']})` : ''}`;
-};
-
-const DemandColumnHeader = ({ children }: { children: ReactNode }) => {
+const DemandStatColumnHeader = ({ children }: { children: ReactNode }) => {
   return (
     <span className="inline-flex items-center gap-1">
       <span>{children}</span>
       <Tooltip title="Nombre de demandes en attente sur la période / nombre total de demandes assignées au tag sur la même période." />
     </span>
   );
+};
+
+const DemandStatsCell = ({
+  pending,
+  total,
+  tagName,
+  periodMonths,
+}: {
+  pending: number;
+  total: number;
+  tagName: string;
+  periodMonths?: number;
+}) => {
+  return (
+    <span className="inline-flex items-baseline gap-1">
+      <NextLink
+        href={buildAdminDemandsUrl(buildDemandFilters(tagName, periodMonths, true))}
+        className={cx('text-xl font-bold', pending > 0 ? 'text-red-600' : 'text-gray-900')}
+      >
+        {pending}
+      </NextLink>
+      <span className="text-xs">/</span>
+      <NextLink href={buildAdminDemandsUrl(buildDemandFilters(tagName, periodMonths, false))}>{total}</NextLink>
+    </span>
+  );
+};
+
+const buildAdminDemandsUrl = (filters: ColumnFiltersState) => {
+  return `/admin/demandes?${objectToURLSearchParams({ demands_filters: filters }).toString()}`;
+};
+
+const buildDemandFilters = (tagName: string, periodMonths: number | undefined, pendingOnly: boolean): ColumnFiltersState => {
+  return [
+    { id: 'Gestionnaires', value: { [tagName]: true } },
+    ...(pendingOnly
+      ? [
+          { id: 'Status', value: { 'En attente de prise en charge': true } },
+          { id: 'Prise de contact', value: { false: true, true: false } },
+        ]
+      : []),
+    ...(isDefined(periodMonths)
+      ? [{ id: 'Date de la demande', value: [dayjs().subtract(periodMonths, 'month').format('YYYY-MM-DD'), '', false] }]
+      : []),
+  ];
+};
+
+const copyContentToClipboard = (content: string) => {
+  if (typeof navigator === 'undefined' || !navigator.clipboard) {
+    return;
+  }
+
+  void navigator.clipboard
+    .writeText(content)
+    .then(() => notify('success', 'Adresses copiées !'))
+    .catch(() => {});
 };

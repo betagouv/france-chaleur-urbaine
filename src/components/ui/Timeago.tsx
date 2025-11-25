@@ -1,11 +1,12 @@
+import type { ReactNode } from 'react';
 import Tooltip from '@/components/ui/Tooltip';
 import { dayjs, formatFrenchDateTime } from '@/utils/date';
 
 type TimeagoProps = {
   date: string | Date;
   className?: string;
-  prefix?: string;
-  suffix?: string;
+  prefix?: ReactNode;
+  suffix?: ReactNode;
 };
 
 /**
@@ -40,7 +41,11 @@ export default function Timeago({ date, className, prefix, suffix }: TimeagoProp
 
   return (
     <Tooltip title={fullDate}>
-      <span className={className}>{`${prefix ?? ''}${text}${suffix ?? ''}`}</span>
+      <span className={className}>
+        {prefix}
+        {text}
+        {suffix}
+      </span>
     </Tooltip>
   );
 }
