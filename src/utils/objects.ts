@@ -73,6 +73,17 @@ export const omit = (obj: Record<string, any>, keys: string[]) => {
   return Object.fromEntries(Object.entries(obj).filter(([key]) => !keys.includes(key)));
 };
 
+/**
+ * pick(obj, keys) - Crée un nouvel objet ne conservant que les propriétés spécifiées.
+ * @param obj - L'objet source
+ * @param keys - La liste des propriétés à conserver
+ * @returns Un nouvel objet ne contenant que les propriétés demandées
+ */
+export function pick<T extends object, K extends keyof T>(obj: T, keys: readonly K[]): Pick<T, K> {
+  const entries = keys.filter((key) => key in obj).map((key) => [key, obj[key]]);
+  return Object.fromEntries(entries) as Pick<T, K>;
+}
+
 export const sortKeys = (obj: Record<string, any>) => {
   return Object.keys(obj)
     .sort()

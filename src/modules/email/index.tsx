@@ -1,0 +1,49 @@
+import nodemailer from 'nodemailer';
+
+import { serverConfig } from '@/server/config';
+import { logger } from '@/server/helpers/logger';
+
+import { type EmailType, renderEmail } from './email.config';
+
+type EmailUser = { id?: string; email: string };
+
+type EmailParams = Parameters<typeof mailTransport.sendMail>[0];
+
+export const mailTransport = nodemailer.createTransport({
+  auth: {
+    pass: serverConfig.MAIL_PASS,
+    user: serverConfig.MAIL_USER,
+  },
+  connectionTimeout: 30000,
+  dnsTimeout: 30000,
+  greetingTimeout: 30000,
+  host: serverConfig.MAIL_HOST,
+  port: serverConfig.MAIL_PORT,
+  secure: false, // upgrade later with STARTTLS
+  socketTimeout: 30000,
+});
+
+export async function sendEmailTemplate<Type extends EmailType>(
+  type: Type,
+  recipient: EmailUser,
+  templateProps: Parameters<typeof renderEmail<Type>>[1] = {} as any,
+  { subject, from, replyTo, cc }: Omit<EmailParams, 'html' | 'text' | 'to'> = {}
+) {
+  const { subject: defaultSubject, html, text } = await renderEmail(type, templateProps);
+
+  const info = await mailTransport.sendMail({
+    cc,
+    from: from || serverConfig.MAIL_FROM,
+    html,
+    replyTo: replyTo || serverConfig.MAIL_REPLYTO,
+    subject: subject ?? defaultSubject,
+    text,
+    to: recipient.email,
+  });
+
+  logger.info(`send email ${type}`, {
+    messageId: info.messageId,
+    recipient: recipient.id,
+    type,
+  });
+}

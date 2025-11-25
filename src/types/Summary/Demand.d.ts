@@ -28,9 +28,10 @@ export type Demand = DemandSummary &
     Éligibilité: boolean;
     'Distance au réseau': number;
     'Gestionnaire Distance au réseau': number;
-    'N° de dossier': string;
+    'N° de dossier': number;
     'en PDP': string;
     'Date demandes': string;
+    'Date de la demande': string;
     Établissement: string;
     'Structure accompagnante'?: string[];
     'Nom de la structure accompagnante'?: string;

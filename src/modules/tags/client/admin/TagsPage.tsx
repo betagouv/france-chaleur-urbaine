@@ -10,7 +10,7 @@ import Button from '@/components/ui/Button';
 import CallOut from '@/components/ui/CallOut';
 import Dialog from '@/components/ui/Dialog';
 import Heading from '@/components/ui/Heading';
-import TableSimple, { type ColumnDef } from '@/components/ui/TableSimple';
+import TableSimple, { type ColumnDef } from '@/components/ui/table/TableSimple';
 import useCrud from '@/hooks/useCrud';
 import { toastErrors } from '@/modules/notification';
 import cx from '@/utils/cx';
@@ -204,6 +204,11 @@ export default function ManageTags() {
           controlsLayout="block"
           padding="sm"
           loading={isLoading}
+          urlSyncKey="tags"
+          export={{
+            fileName: 'tags.xlsx',
+            sheetName: 'tags',
+          }}
         />
       </Box>
 

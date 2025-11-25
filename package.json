@@ -21,7 +21,7 @@
     "scan": "pnpm dev & npx react-scan@latest localhost:3000",
     "dev:webpack": "next dev",
     "dev:debug": "API_DEBUG_MODE=true pnpm dev",
-    "dev:email": "NODE_ENV=test email dev --dir src/server/email/react-email/templates",
+    "dev:email": "NODE_ENV=test email dev --dir src/modules/email/react-email/templates",
     "build": "NODE_OPTIONS=\"--max-old-space-size=8192\" next build",
     "build:analyze": "TURBOPACK_STATS=1 pnpm build",
     "deadcode": "npx knip",
@@ -176,6 +176,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.2.4",
+    "@react-email/preview-server": "4.2.12",
     "@svgr/webpack": "^8.1.0",
     "@tailwindcss/postcss": "^4.1.13",
     "@testing-library/dom": "^10.4.1",

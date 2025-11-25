@@ -66,7 +66,7 @@ const UserForm = ({ user, onSubmit, loading }: UserFormProps) => {
             name="active"
             label={
               <>
-                Compte actif
+                Compte activé
                 {!isNew && (
                   <Tag className="ml-2" variant={user?.status === 'valid' ? 'success' : 'warning'} outline size="sm">
                     {user?.status === 'valid' ? 'Validé' : 'En attente de confirmation email'}

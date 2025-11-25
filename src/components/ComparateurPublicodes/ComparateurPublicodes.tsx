@@ -58,7 +58,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
   const [graphDrawerOpen, setGraphDrawerOpen] = React.useState(false);
   const [addressInUrl, setAddressInUrl] = useQueryState('address');
 
-  const { address, setAddress } = useUserInfo();
+  const { userInfo, setUserInfo } = useUserInfo();
   const [addressDetail, setAddressDetail] = React.useState<AddressDetail>();
   const [lngLat, setLngLat] = React.useState<[number, number]>();
   const [modesDeChauffageQueryParam] = useQueryState('modes-de-chauffage');
@@ -81,7 +81,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
 
   React.useEffect(() => {
     if (engine.loaded) {
-      if (address) {
+      if (userInfo.address) {
         // if address is set, engine will need to compute the result
         // so we wait a bit to make sure the result is ready
         // TODO this is a hack, we should use a proper state from the engine
@@ -92,7 +92,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
         setLoading(false);
       }
     }
-  }, [engine.loaded, address]);
+  }, [engine.loaded, userInfo.address]);
 
   const isAddressSelected = engine.getField('code département') !== undefined;
 
@@ -106,7 +106,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
 
   const { open: displayContactForm, EligibilityFormModal } = useEligibilityForm({
     address: {
-      address,
+      address: userInfo.address,
       addressDetails: addressDetail,
       coordinates: lngLat,
     },
@@ -151,11 +151,11 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
     </Notice>
   );
 
-  const fileName = `${new Date().getFullYear()}-${slugify(address)}`;
+  const fileName = `${new Date().getFullYear()}-${slugify(userInfo.address)}`;
 
   const results = (
     <div className="p-2 lg:p-0">
-      {displayGraph && !loading && address && (
+      {displayGraph && !loading && userInfo.address && (
         <Accordion
           className="mb-5"
           small
@@ -193,7 +193,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
                 {lngLat && (
                   <Link
                     isExternal
-                    href={`/carte?coord=${lngLat.join(',')}&zoom=17&address=${encodeURIComponent(address as string)}`}
+                    href={`/carte?coord=${lngLat.join(',')}&zoom=17&address=${encodeURIComponent(userInfo.address)}`}
                     className="fr-block"
                   >
                     <strong>Visualiser sur la carte</strong>
@@ -231,7 +231,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
           )}
         </Accordion>
       )}
-      {displayGraph && !loading && inclureLaClimatisation && address && (
+      {displayGraph && !loading && inclureLaClimatisation && userInfo.address && (
         <Accordion
           className="mb-5"
           small
@@ -261,7 +261,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
               {lngLat && (
                 <Link
                   isExternal
-                  href={`/carte?coord=${lngLat.join(',')}&zoom=17&address=${encodeURIComponent(address as string)}`}
+                  href={`/carte?coord=${lngLat.join(',')}&zoom=17&address=${encodeURIComponent(userInfo.address)}`}
                   className="fr-block text-sm"
                 >
                   <strong>Visualiser sur la carte</strong>
@@ -457,7 +457,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
         addressError ? 'Désolé, nous n’avons pas trouvé la ville associée à cette adresse, essayez avec une autre' : undefined
       }
       forceReload={forceReload}
-      defaultValue={addressInUrl || address || ''}
+      defaultValue={addressInUrl || userInfo.address || ''}
       onLoadingChange={(loading) => {
         if (loading) {
           setAddressLoading(true);
@@ -468,7 +468,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
         setNearestReseauDeFroid(undefined);
         setAddressError(false);
         setAddressLoading(false);
-        void setAddress('');
+        setUserInfo({ address: '' });
         void setAddressInUrl(null);
         setLngLat(undefined);
 
@@ -486,8 +486,8 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
 
           const [lon, lat] = selectedAddress.geometry.coordinates;
           const addressLabel = selectedAddress.properties.label;
-          if (addressLabel !== address) {
-            void setAddress('');
+          if (addressLabel !== userInfo.address) {
+            setUserInfo({ address: '' });
           }
           const isCity = selectedAddress.properties.label === selectedAddress.properties.city;
           const network = isCity
@@ -526,7 +526,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
             return;
           }
 
-          void setAddress(addressLabel);
+          setUserInfo({ address: addressLabel });
           void setAddressInUrl(addressLabel);
 
           if (infos.nearestReseauDeChaleur || infos.nearestReseauDeFroid) {
@@ -556,11 +556,11 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
       {advancedMode && (
         <Configuration
           engine={engine}
-          address={address ?? undefined}
+          address={userInfo.address ?? undefined}
           onChangeAddress={(newAddress) => {
-            if (newAddress !== address) {
+            if (newAddress !== userInfo.address) {
               setForceReload(true);
-              void setAddress(newAddress);
+              setUserInfo({ address: newAddress });
               void setAddressInUrl(newAddress);
             }
           }}
@@ -597,8 +597,8 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
                   label={
                     <div>
                       {simulatorTabs[0].label}
-                      {address && selectedTabId !== simulatorTabs[0].tabId && (
-                        <div className={fr.cx('fr-text--xs', 'fr-text--light')}>{address}</div>
+                      {userInfo.address && selectedTabId !== simulatorTabs[0].tabId && (
+                        <div className={fr.cx('fr-text--xs', 'fr-text--light')}>{userInfo.address}</div>
                       )}
                     </div>
                   }

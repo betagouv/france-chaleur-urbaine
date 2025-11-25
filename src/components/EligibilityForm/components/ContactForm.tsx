@@ -6,7 +6,9 @@ import { z } from 'zod';
 import useForm from '@/components/form/react-form/useForm';
 import Alert from '@/components/ui/Alert';
 import { AnalyticsFormId } from '@/modules/analytics/client';
+import useUserInfo from '@/modules/app/client/hooks/useUserInfo';
 import type { ContactFormInfos } from '@/types/Summary/Demand';
+import { pick } from '@/utils/objects';
 
 type ContactFormProps = {
   onSubmit: (values: ContactFormInfos) => void;
@@ -128,6 +130,7 @@ export const fieldLabelInformation = {
 
 export const ContactForm = ({ onSubmit, isLoading, cardMode, city, heatingTypeInput }: ContactFormProps) => {
   const router = useRouter();
+  const { userInfo, setUserInfo } = useUserInfo();
 
   const getDefaultStructure = () => {
     switch (router.pathname) {
@@ -141,23 +144,37 @@ export const ContactForm = ({ onSubmit, isLoading, cardMode, city, heatingTypeIn
   };
 
   const initialValues = {
-    company: '',
-    companyType: '',
+    company: userInfo.company ?? '',
+    companyType: userInfo.companyType ?? '',
     demandArea: undefined as unknown as number,
-    demandCompanyName: '',
-    demandCompanyType: '',
-    email: '',
-    firstName: '',
-    heatingEnergy: '',
-    lastName: '',
+    demandCompanyName: userInfo.demandCompanyName ?? '',
+    demandCompanyType: userInfo.demandCompanyType ?? '',
+    email: userInfo.email ?? '',
+    firstName: userInfo.firstName ?? '',
+    heatingEnergy: userInfo.heatingEnergy ?? '',
+    lastName: userInfo.lastName ?? '',
     nbLogements: undefined as unknown as number,
-    phone: '',
-    structure: getDefaultStructure(),
+    phone: userInfo.phone ?? '',
+    structure: userInfo.structure ?? getDefaultStructure(),
     termOfUse: false,
   };
   const { form, Form, Field, Fieldset, FieldsetLegend, FieldWrapper, Submit, useValue } = useForm({
     defaultValues: initialValues,
     onSubmit: async ({ value }) => {
+      setUserInfo(
+        pick(value, [
+          'company',
+          'companyType',
+          'demandCompanyName',
+          'demandCompanyType',
+          'email',
+          'firstName',
+          'heatingEnergy',
+          'lastName',
+          'phone',
+          'structure',
+        ])
+      );
       onSubmit(value);
     },
     schema: validationSchema,

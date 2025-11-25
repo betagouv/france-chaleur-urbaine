@@ -9,12 +9,14 @@ import type {
   linearHeatDensityLabelsSourceId,
   linearHeatDensityLinesSourceId,
 } from '@/components/Map/components/tools/LinearHeatDensityTool';
+import * as demandsService from '@/modules/demands/server/demands-service';
 import { Airtable } from '@/types/enum/Airtable';
 
 type BasicTileInfo = {
   properties?: string[];
   sourceLayer?: string;
   id?: string;
+  cache?: (properties: string[]) => Promise<GeoJSON.Feature<GeoJSON.Point>[]>;
 };
 
 export type AirtableTileInfo = BasicTileInfo & {
@@ -23,8 +25,8 @@ export type AirtableTileInfo = BasicTileInfo & {
 };
 
 export type DatabaseTileInfo = BasicTileInfo & {
-  source: 'database';
-  tiles: string;
+  source?: 'database';
+  tiles?: string;
   compressedTiles?: boolean;
   airtable?: string;
   table?: string;
@@ -115,10 +117,8 @@ export const tilesInfo: Record<DatabaseSourceId, TileInfo> = {
     tiles: 'donnees_de_consos_tiles',
   },
   demands: {
+    cache: demandsService.buildFeatures,
     properties: ['Mode de chauffage', 'Adresse', 'Type de chauffage', 'Structure'],
-    source: 'airtable',
-    sourceLayer: 'demands',
-    table: Airtable.DEMANDES,
   },
   enrrMobilisables: {
     source: 'database',

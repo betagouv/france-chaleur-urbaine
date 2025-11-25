@@ -5,6 +5,46 @@ import { afterAll, afterEach, vi } from 'vitest';
 // overridden in CI
 process.env.DATABASE_URL = process.env.DATABASE_URL ?? 'postgres://fcu_test:fcu_test_pass@localhost:5433/fcu_test';
 
+// Mock server/config which internally requires client-config
+// This prevents the "Cannot find module '@/client-config'" error in tests
+vi.mock('@/server/config', () => ({
+  clientConfig: {
+    banApiBaseUrl: 'https://api-adresse.data.gouv.fr/search/',
+    calendarLink: 'https://cal.com/test',
+    contactEmail: 'test@example.com',
+    destinationEmails: {
+      carto: 'test@example.com',
+      comparateur: 'test@example.com',
+      contact: 'test@example.com',
+      contribution: 'test@example.com',
+      pro: 'test@example.com',
+    },
+    flags: {
+      enableComparateurWidget: false,
+    },
+    linkedInUrl: 'https://www.linkedin.com/test',
+    networkInfoFieldMaxCharacters: 700,
+    networkSearchMinimumCharactersThreshold: 3,
+    publicodesDocumentationURL: 'https://test.example.com',
+    summaryAreaSizeLimit: 5,
+    tracking: {
+      facebookPixelId: undefined,
+      googleTagIds: [],
+      hotjarId: undefined,
+      hotjarSv: undefined,
+      linkInPartnerId: undefined,
+      matomoServerURL: undefined,
+      matomoSiteId: undefined,
+    },
+    websiteOrigin: undefined,
+  },
+  serverConfig: {
+    apiAdresseUrl: 'https://api-adresse.data.gouv.fr/',
+    contactEmail: 'test@example.com',
+    databaseUrl: process.env.DATABASE_URL ?? 'postgres://fcu_test:fcu_test_pass@localhost:5433/fcu_test',
+  },
+}));
+
 vi.mock('next/router', () => ({
   useRouter: () => ({
     asPath: '/',
