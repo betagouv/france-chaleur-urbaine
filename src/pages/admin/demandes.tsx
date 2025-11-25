@@ -3,6 +3,7 @@ import { usePrevious } from '@react-hookz/web';
 import type { ColumnFiltersState } from '@tanstack/react-table';
 import type { Virtualizer } from '@tanstack/react-virtual';
 import dynamic from 'next/dynamic';
+import { parseAsJson, useQueryState } from 'nuqs';
 import { type RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { MapGeoJSONFeature } from 'react-map-gl/maplibre';
 import TableFieldInput from '@/components/Admin/TableFieldInput';
@@ -39,6 +40,7 @@ import type { DemandStatus } from '@/modules/demands/constants';
 import { eligibilityTypes as eligibilityCases, eligibilityTitleByType } from '@/modules/demands/constants';
 import type { Demand } from '@/modules/demands/types';
 import { notify, toastErrors } from '@/modules/notification';
+import { useFCUTags } from '@/modules/tags/client/useFCUTags';
 import trpc, { type RouterOutput } from '@/modules/trpc/client';
 import { withAuthentication } from '@/server/authentication';
 import type { Point } from '@/types/Point';
@@ -168,7 +170,14 @@ function DemandesAdmin(): React.ReactElement {
   const [mapCenterLocation, setMapCenterLocation] = useState<MapCenterLocation>();
   const [globalFilter, setGlobalFilter] = useState('');
   const [filteredDemands, setFilteredDemands] = useState<DemandsListAdminItem[]>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(quickFilterPresets.demandesAAffecter.filters);
+
+  // Pour le moment, si l'URL contient les filtres, on applique pas les presets.
+  const [urlColumnFilters] = useQueryState(
+    'demands_filters',
+    parseAsJson<ColumnFiltersState>((value) => value as ColumnFiltersState)
+  );
+  const initialColumnFilters = urlColumnFilters !== null ? [] : quickFilterPresets.demandesAAffecter.filters;
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(initialColumnFilters);
   const [modalDemand, setModalDemand] = useState<DemandsListAdminItem | null>(null);
 
   const { data: demandsData, isLoading } = trpc.demands.admin.list.useQuery();
@@ -184,6 +193,8 @@ function DemandesAdmin(): React.ReactElement {
     ],
     [assignmentRulesResults]
   );
+
+  const { tagsOptions } = useFCUTags();
 
   // Only reset selection if the filteredDemands array has changed in content, not just selectedDemandId.
   // Use usePrevious to keep track of the previous filteredDemands for comparison.
@@ -400,7 +411,16 @@ function DemandesAdmin(): React.ReactElement {
           );
         },
         enableSorting: false,
+        filterProps: {
+          label: 'Filtrer par tags',
+          options: tagsOptions,
+          placeholder: 'Sélectionner des tags...',
+        },
+        filtersDialogDescription: 'Sélectionnez un ou plusieurs tags pour filtrer les demandes.',
+        filtersDialogLabel: 'Tags gestionnaires',
+        filterType: 'ComboBox',
         header: 'Gestionnaires',
+        showInFiltersDialog: true,
         width: '400px',
       },
       {

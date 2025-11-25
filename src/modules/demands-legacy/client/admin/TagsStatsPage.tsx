@@ -374,7 +374,7 @@ const buildAdminDemandsUrl = (filters: ColumnFiltersState) => {
 
 const buildDemandFilters = (tagName: string, periodMonths: number | undefined, pendingOnly: boolean): ColumnFiltersState => {
   return [
-    { id: 'Gestionnaires', value: { [tagName]: true } },
+    { id: 'Gestionnaires', value: [tagName] },
     ...(pendingOnly
       ? [
           { id: 'Status', value: { 'En attente de prise en charge': true } },

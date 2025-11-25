@@ -4,10 +4,11 @@ import React from 'react';
 import Checkboxes, { type CheckboxesProps } from '@/components/form/dsfr/Checkboxes';
 import Input from '@/components/form/dsfr/Input';
 import RangeFilter, { type RangeFilterProps } from '@/components/form/dsfr/RangeFilter';
+import ComboBox, { type ComboBoxOption } from '@/components/ui/ComboBox';
 import type { Interval } from '@/utils/interval';
 import type { TableCellProps } from './TableCell';
 
-export type TableFilterType = 'Range' | 'Facets';
+export type TableFilterType = 'Range' | 'Facets' | 'ComboBox';
 
 export type TableFilterProps = {
   onChange: (value: any) => void;
@@ -25,9 +26,15 @@ export type TableFilterProps = {
       filterProps?: Omit<CheckboxesProps, 'options'> & { Component: React.FC<{ value: string }> };
       value?: Record<string, boolean>;
     }
+  | {
+      type: 'ComboBox';
+      filterProps: { options: ComboBoxOption[]; label?: string; placeholder?: string };
+      value?: string[];
+    }
 );
 
 export const defaultTableFilterFns = {
+  ComboBox: 'arrayIncludesAny',
   Facets: 'includesAny',
   Range: 'inNumberRangeNotNull', // Sera remplacé par inDateRangeNotNull si cellType est DateTime/Date
 } as const;
@@ -171,6 +178,24 @@ const TableFilter = ({ value, type, onChange, filterProps, facetedUniqueValues, 
           },
         }))}
         {...facetsFilterProps}
+      />
+    );
+  } else if (type === 'ComboBox') {
+    const { options, label, placeholder } = filterProps || { options: [] };
+    return (
+      <ComboBox
+        multiple
+        options={options}
+        value={value || []}
+        onChange={(newValue) => {
+          if (newValue.length === 0) {
+            onChange(undefined);
+          } else {
+            onChange(newValue);
+          }
+        }}
+        label={label}
+        placeholder={placeholder}
       />
     );
   }

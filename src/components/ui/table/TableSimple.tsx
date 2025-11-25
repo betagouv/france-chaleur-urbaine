@@ -53,6 +53,18 @@ export const customSortingFn = <T extends RowData>(): Record<string, SortingFn<T
 });
 
 export const customFilterFn = <T extends RowData>(): Record<string, FilterFn<T>> => ({
+  arrayIncludesAny: (row, columnId, filterValue: string[]) => {
+    const value = row.getValue<any>(columnId);
+
+    // Si la valeur n'est pas un tableau ou est null/undefined, on retourne false
+    if (!value || !Array.isArray(value)) return false;
+
+    // Si le filtre est vide, on affiche tout
+    if (!filterValue || filterValue.length === 0) return true;
+
+    // Vérifie si au moins un des tags du filtre est présent dans le tableau
+    return filterValue.some((filterTag) => value.includes(filterTag));
+  },
   equalsAny: (row, columnId, filterValue: Record<string, boolean>) => {
     const value = row.getValue<any>(columnId);
     return Object.entries(filterValue)
