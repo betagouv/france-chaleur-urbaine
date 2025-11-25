@@ -188,6 +188,21 @@ export default function TagsStatsPage() {
         width: '330px',
       },
       {
+        accessorKey: 'allTime',
+        cell: ({ row }) => {
+          const { pending, total } = row.original.allTime;
+          return <DemandStatsCell pending={pending} total={total} tagName={row.original.name} />;
+        },
+        header: () => (
+          <DemandStatColumnHeader>
+            Demandes en attente / total
+            <br />
+            Toutes périodes
+          </DemandStatColumnHeader>
+        ),
+        width: '120px',
+      },
+      {
         accessorFn: (row) => row.lastSixMonths.pending,
         accessorKey: 'lastSixMonths',
         cell: ({ row }) => {
@@ -215,21 +230,6 @@ export default function TagsStatsPage() {
             Demandes en attente / total
             <br />
             &lt; 3 mois
-          </DemandStatColumnHeader>
-        ),
-        width: '120px',
-      },
-      {
-        accessorKey: 'allTime',
-        cell: ({ row }) => {
-          const { pending, total } = row.original.allTime;
-          return <DemandStatsCell pending={pending} total={total} tagName={row.original.name} />;
-        },
-        header: () => (
-          <DemandStatColumnHeader>
-            Demandes en attente / total
-            <br />
-            Toutes périodes
           </DemandStatColumnHeader>
         ),
         width: '120px',
