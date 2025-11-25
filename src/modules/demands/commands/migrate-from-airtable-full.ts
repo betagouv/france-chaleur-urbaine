@@ -79,7 +79,7 @@ export type BatimentType = (typeof batimentTypes)[number]['id'];
 const parseAirtableDate = (dateString?: string): Date | null => {
   if (!dateString) return null;
   const date = new Date(dateString);
-  return isNaN(date.getTime()) ? null : date;
+  return Number.isNaN(date.getTime()) ? null : date;
 };
 
 const reverseFormatBatimentModeChauffage = (airtableValue?: string): BatimentModeChauffage => {
@@ -462,7 +462,7 @@ export default async (options: { batchSize?: string; dryRun?: boolean }) => {
               const mappedId = mapReferrerToId(value);
               // Check if format is "Autre: details" or "Autre - details" (single string)
               const autreSeparatorMatch = value.match(/^Autre[\s:;-]+(.+)$/i);
-              if (autreSeparatorMatch && autreSeparatorMatch[1]?.trim()) {
+              if (autreSeparatorMatch?.[1]?.trim()) {
                 mappedReferrers.push('autre');
                 referrerOther = autreSeparatorMatch[1].trim();
               } else {
