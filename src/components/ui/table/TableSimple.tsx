@@ -1,4 +1,5 @@
 import { fr } from '@codegouvfr/react-dsfr';
+import { Badge } from '@codegouvfr/react-dsfr/Badge';
 import Input from '@codegouvfr/react-dsfr/Input';
 import { usePrevious } from '@react-hookz/web';
 import {
@@ -29,6 +30,7 @@ import dynamic from 'next/dynamic';
 import React, { type RefObject, useCallback, useEffect } from 'react';
 
 import Button from '@/components/ui/Button';
+import Dialog from '@/components/ui/Dialog';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover';
 import { useTableState } from '@/components/ui/table/useTableState';
 import { isDevModeEnabled } from '@/hooks/useDevMode';
@@ -107,6 +109,9 @@ export type ColumnDef<T, K = any> = ColumnDefOriginal<T, K> & {
   filter?: keyof ReturnType<typeof customFilterFn<T>>;
   filterType?: TableFilterProps['type'];
   filterProps?: TableFilterProps['filterProps'];
+  filtersDialogLabel?: React.ReactNode;
+  filtersDialogDescription?: React.ReactNode;
+  showInFiltersDialog?: boolean;
   visible?: boolean;
 } & ({ flex?: number } | { width?: 'auto' | string });
 
@@ -408,6 +413,10 @@ export type TableSimpleProps<T> = {
    * Synchronise l'état du tableau avec l'URL avec cette clé comme préfixe.
    */
   urlSyncKey?: string;
+  /**
+   * Affiche le bouton Filtres pour ouvrir la dialog. Par défaut, non affiché.
+   */
+  enableFiltersDialog?: boolean;
 };
 
 const TableSimple = <T extends RowData>({
@@ -439,7 +448,9 @@ const TableSimple = <T extends RowData>({
   topRightActions,
   export: exportConfig,
   urlSyncKey,
+  enableFiltersDialog = false,
 }: TableSimpleProps<T>) => {
+  const [isFiltersDialogOpen, setFiltersDialogOpen] = React.useState(false);
   const {
     columnFilters,
     globalFilter,
@@ -512,6 +523,10 @@ const TableSimple = <T extends RowData>({
       const actualFilterFn = isDateRange ? 'inDateRangeNotNull' : filterTypeName;
       column.filterFn = customFilterFns[actualFilterFn] || actualFilterFn;
     }
+    // Ensure columns exposing filters opt into column filtering
+    if ((column.filterType !== undefined || column.filter !== undefined) && (column as any).enableColumnFilter === undefined) {
+      (column as any).enableColumnFilter = true;
+    }
   });
 
   const columnVisibility = React.useMemo(() => {
@@ -524,9 +539,7 @@ const TableSimple = <T extends RowData>({
     );
   }, [tableColumns]);
 
-  // Détermine le filtre global effectif : priorité à externalGlobalFilter si fourni et urlSync désactivé
   const effectiveGlobalFilter = urlSyncKey ? globalFilter : (externalGlobalFilter ?? globalFilter);
-  // Active la gestion du changement de filtre global uniquement si urlSync est activé ou si externalGlobalFilter n'est pas fourni
   const shouldHandleGlobalFilterChange = urlSyncKey || !isDefined(externalGlobalFilter);
 
   const table = useReactTable({
@@ -551,6 +564,23 @@ const TableSimple = <T extends RowData>({
       sorting: sortingState,
     },
   });
+
+  const filterableColumns = React.useMemo(() => {
+    return table
+      .getAllColumns()
+      .filter((column) => {
+        const columnDef = column.columnDef as ColumnDef<T>;
+        if (columnDef.showInFiltersDialog === false) {
+          return false;
+        }
+        return columnDef.filterType !== undefined || columnDef.filter !== undefined;
+      })
+      .filter((column) => column.id !== undefined && column.id !== '');
+  }, [table]);
+
+  const filterableColumnIds = React.useMemo(() => new Set(filterableColumns.map((column) => column.id)), [filterableColumns]);
+  const activeFiltersCount = table.getState().columnFilters.filter((filter) => filterableColumnIds.has(filter.id as string)).length;
+  const hasFiltersDialog = enableFiltersDialog !== undefined ? enableFiltersDialog : filterableColumns.length > 0;
 
   React.useEffect(() => {
     if (onSelectionChange) {
@@ -655,8 +685,94 @@ const TableSimple = <T extends RowData>({
             }}
           />
         )}
-        {(exportConfig || topRightActions) && (
+        {(hasFiltersDialog || exportConfig || topRightActions) && (
           <div className="flex items-center gap-2">
+            {hasFiltersDialog && (
+              <Dialog
+                title="Filtres"
+                size="lg"
+                open={isFiltersDialogOpen}
+                onOpenChange={setFiltersDialogOpen}
+                trigger={
+                  <Button
+                    size="small"
+                    priority={activeFiltersCount > 0 ? 'secondary' : 'tertiary'}
+                    iconId="ri-filter-2-line"
+                    className={cx(activeFiltersCount > 0 && 'animate-[puff_0.2s_ease-in-out]')}
+                  >
+                    {activeFiltersCount > 0 ? `Filtres (${activeFiltersCount})` : 'Filtres'}
+                  </Button>
+                }
+              >
+                <div className="flex flex-col gap-4">
+                  {filterableColumns.map((column) => {
+                    const columnDef = column.columnDef as ColumnDef<T>;
+                    const label =
+                      columnDef.filtersDialogLabel ??
+                      (typeof columnDef.header === 'string' ? columnDef.header : (column.id ?? columnDef.id ?? 'Filtre'));
+                    const description = columnDef.filtersDialogDescription;
+                    const filterValue = column.getFilterValue();
+                    const facetedUniqueValues = column.getFacetedUniqueValues();
+                    const facetedMinMaxValues = column.getFacetedMinMaxValues();
+
+                    return (
+                      <section key={column.id} className="rounded-lg border border-gray-200 p-4 flex flex-col gap-3">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex-1">
+                            <p className="font-semibold leading-tight">{label}</p>
+                            {description ? <p className="text-sm text-gray-600">{description}</p> : null}
+                          </div>
+                          <div className="flex items-center gap-2 shrink-0">
+                            {column.getIsFiltered() ? (
+                              <>
+                                <Badge small noIcon>
+                                  Actif
+                                </Badge>
+                                <Button
+                                  priority="tertiary no outline"
+                                  iconId="ri-close-line"
+                                  size="small"
+                                  onClick={() => column.setFilterValue(undefined)}
+                                >
+                                  Réinitialiser
+                                </Button>
+                              </>
+                            ) : null}
+                          </div>
+                        </div>
+                        <TableFilter
+                          key={column.id}
+                          type={columnDef.filterType as any}
+                          value={filterValue as any}
+                          onChange={(newValue) => {
+                            column.setFilterValue(newValue);
+                          }}
+                          filterProps={columnDef.filterProps as any}
+                          facetedMinMaxValues={facetedMinMaxValues as any}
+                          facetedUniqueValues={facetedUniqueValues}
+                          cellType={columnDef.cellType}
+                        />
+                      </section>
+                    );
+                  })}
+                  <div className="flex flex-wrap justify-between gap-2 pt-2">
+                    <Button
+                      priority="tertiary"
+                      iconId="ri-refresh-line"
+                      size="small"
+                      onClick={() => {
+                        table.resetColumnFilters();
+                      }}
+                    >
+                      Réinitialiser tout
+                    </Button>
+                    <Button priority="primary" size="small" iconId="ri-check-line" onClick={() => setFiltersDialogOpen(false)}>
+                      Fermer
+                    </Button>
+                  </div>
+                </div>
+              </Dialog>
+            )}
             {exportConfig && (
               <ButtonExport
                 size="small"

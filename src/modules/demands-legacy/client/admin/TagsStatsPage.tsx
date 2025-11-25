@@ -57,7 +57,48 @@ export default function TagsStatsPage() {
       {
         accessorKey: 'type',
         filter: 'equalsAny',
+        filtersDialogLabel: 'Type de tag',
         filterType: 'Facets',
+        id: 'type',
+        visible: false,
+      },
+      {
+        accessorFn: (row) => row.allTime.pending,
+        cellType: 'Number',
+        filterProps: {
+          label: 'Nombre de demandes en attente',
+        },
+        filtersDialogDescription: 'Déplacez le curseur gauche pour fixer un minimum.',
+        filtersDialogLabel: 'Demandes en attente (toutes périodes)',
+        filterType: 'Range',
+        header: 'pendingAllTimeFilter',
+        id: 'pendingAllTimeFilter',
+        visible: false,
+      },
+      {
+        accessorFn: (row) => row.lastSixMonths.pending,
+        cellType: 'Number',
+        filterProps: {
+          label: 'Nombre de demandes en attente',
+        },
+        filtersDialogDescription: 'Sélectionnez un intervalle de demandes en attente sur 6 mois.',
+        filtersDialogLabel: 'Demandes en attente (< 6 mois)',
+        filterType: 'Range',
+        header: 'pendingSixMonthsFilter',
+        id: 'pendingSixMonthsFilter',
+        visible: false,
+      },
+      {
+        accessorFn: (row) => row.lastThreeMonths.pending,
+        cellType: 'Number',
+        filterProps: {
+          label: 'Nombre de demandes en attente',
+        },
+        filtersDialogDescription: 'Sélectionnez un intervalle de demandes en attente sur 3 mois.',
+        filtersDialogLabel: 'Demandes en attente (< 3 mois)',
+        filterType: 'Range',
+        header: 'pendingThreeMonthsFilter',
+        id: 'pendingThreeMonthsFilter',
         visible: false,
       },
       {
@@ -257,6 +298,7 @@ export default function TagsStatsPage() {
         initialSortingState={initialSortingState}
         columnFilters={initialFilterState}
         enableGlobalFilter
+        enableFiltersDialog
         controlsLayout="block"
         padding="sm"
         loading={isLoading}
