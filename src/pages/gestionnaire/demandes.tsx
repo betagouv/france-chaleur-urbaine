@@ -4,6 +4,7 @@ import { useCallback, useMemo, useState } from 'react';
 
 import Input from '@/components/form/dsfr/Input';
 import DemandEmailForm from '@/components/Manager/DemandEmailForm';
+import ModeDeChauffageTag, { getModeDeChauffageDisplay } from '@/components/Manager/ModeDeChauffageTag';
 import Tag from '@/components/Manager/Tag';
 import type { AdresseEligible } from '@/components/Map/layers/adressesEligibles';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
@@ -32,7 +33,6 @@ import type { Point } from '@/types/Point';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
 import type { ExportColumn } from '@/utils/export';
-import { upperCaseFirstChar } from '@/utils/strings';
 
 const Map = dynamic(() => import('@/components/Map/Map'), { ssr: false });
 const ButtonExport = dynamic(() => import('@/components/ui/ButtonExport'), { ssr: false });
@@ -104,14 +104,6 @@ export const demandsExportColumns: ExportColumn<DemandsListItem>[] = [
     name: 'Affecté à',
   },
 ];
-
-const displayModeDeChauffage = (demand: DemandsListItem) => {
-  const modeDeChauffage = demand['Mode de chauffage']?.toLowerCase()?.trim();
-  if (modeDeChauffage && ['gaz', 'fioul', 'électricité'].includes(modeDeChauffage)) {
-    return `${upperCaseFirstChar(modeDeChauffage)} ${demand['Type de chauffage'] ? demand['Type de chauffage'].toLowerCase() : ''}`;
-  }
-  return demand['Type de chauffage'];
-};
 
 const quickFilterPresets = {
   all: {
@@ -204,7 +196,11 @@ function DemandesNew(): React.ReactElement {
           id: demand.id,
           latitude: demand.Latitude ?? 0,
           longitude: demand.Longitude ?? 0,
-          modeDeChauffage: displayModeDeChauffage(demand),
+          modeDeChauffage:
+            getModeDeChauffageDisplay({
+              modeDeChauffage: demand['Mode de chauffage'],
+              typeDeChauffage: demand['Type de chauffage'],
+            }) ?? undefined,
           selected: demand.id === selectedDemandId,
           typeDeLogement: demand.Structure,
         }) satisfies AdresseEligible
@@ -315,8 +311,14 @@ function DemandesNew(): React.ReactElement {
         width: '130px',
       },
       {
-        accessorFn: (row) => displayModeDeChauffage(row),
-        cell: ({ row }) => <Tag text={displayModeDeChauffage(row.original)} />,
+        accessorFn: (row) =>
+          getModeDeChauffageDisplay({
+            modeDeChauffage: row['Mode de chauffage'],
+            typeDeChauffage: row['Type de chauffage'],
+          }),
+        cell: ({ row }) => (
+          <ModeDeChauffageTag modeDeChauffage={row.original['Mode de chauffage']} typeDeChauffage={row.original['Type de chauffage']} />
+        ),
         enableGlobalFilter: false,
         filterType: 'Facets',
         header: 'Mode de chauffage',

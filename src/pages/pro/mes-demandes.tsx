@@ -1,35 +1,39 @@
+import Badge from '@codegouvfr/react-dsfr/Badge';
 import type { ColumnFiltersState } from '@tanstack/react-table';
 import dynamic from 'next/dynamic';
 import { useCallback, useMemo, useState } from 'react';
-
+import EligibilityHelpDialog from '@/components/EligibilityHelpDialog';
 import Input from '@/components/form/dsfr/Input';
+import ModeDeChauffageTag, { getModeDeChauffageDisplay } from '@/components/Manager/ModeDeChauffageTag';
 import Tag from '@/components/Manager/Tag';
 import type { AdresseEligible } from '@/components/Map/layers/adressesEligibles';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import SimplePage from '@/components/shared/page/SimplePage';
-import Badge from '@/components/ui/Badge';
+import FCUBadge from '@/components/ui/Badge';
+import Button from '@/components/ui/Button';
 import Link from '@/components/ui/Link';
 import Loader from '@/components/ui/Loader';
 import QuickFilterPresets from '@/components/ui/QuickFilterPresets';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/Resizable';
 import Tooltip from '@/components/ui/Tooltip';
 import TableSimple, { type ColumnDef, type QuickFilterPreset } from '@/components/ui/table/TableSimple';
-import AdditionalInformation from '@/modules/demands/client/AdditionalInformation';
-import Comment from '@/modules/demands/client/Comment';
 import DemandStatusBadge from '@/modules/demands/client/DemandStatusBadge';
+import Gestionnaire from '@/modules/demands/client/Gestionnaire';
+import Status from '@/modules/demands/client/Status';
+import { eligibilityTitleByType } from '@/modules/demands/constants';
 import type { Demand } from '@/modules/demands/types';
 import { toastErrors } from '@/modules/notification';
+import EligibilityHistoryTooltip from '@/modules/pro-eligibility-tests/client/EligibilityHistoryTooltip';
 import trpc, { type RouterOutput } from '@/modules/trpc/client';
 import { withAuthentication } from '@/server/authentication';
 import type { DemandStatus } from '@/types/enum/DemandSatus';
 import type { Point } from '@/types/Point';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
-import type { ExportColumn } from '@/utils/export';
-import { upperCaseFirstChar } from '@/utils/strings';
+import { stopPropagation } from '@/utils/events';
+import { formatMWh } from '@/utils/strings';
 
 const Map = dynamic(() => import('@/components/Map/Map'), { ssr: false });
-const ButtonExport = dynamic(() => import('@/components/ui/ButtonExport'), { ssr: false });
 
 type DemandsList = RouterOutput['demands']['user']['list'];
 type DemandsListItem = DemandsList[number];
@@ -38,58 +42,6 @@ type MapCenterLocation = {
   center: Point;
   zoom: number;
   flyTo?: boolean;
-};
-
-export const demandsExportColumns: ExportColumn<DemandsListItem>[] = [
-  { accessorKey: 'Date de la demande', name: 'Date de demande' },
-  { accessorKey: 'Adresse', name: 'Adresse' },
-  {
-    accessorKey: 'en PDP',
-    name: 'En PDP',
-  },
-  {
-    accessorKey: 'Status',
-    name: 'Statut',
-  },
-  { accessorKey: 'Structure', name: 'Type' },
-  {
-    accessorKey: 'Mode de chauffage',
-    name: 'Mode de chauffage',
-  },
-  {
-    accessorKey: 'Type de chauffage',
-    name: 'Type de chauffage',
-  },
-  {
-    accessorFn: (demand) =>
-      (demand['Gestionnaire Distance au réseau'] === undefined
-        ? demand['Distance au réseau']
-        : demand['Gestionnaire Distance au réseau']) ?? 0,
-    name: 'Distance au réseau (m)',
-  },
-  { accessorKey: 'Identifiant réseau', name: 'ID réseau le plus proche' },
-  { accessorKey: 'Nom réseau', name: 'Nom du réseau le plus proche' },
-  {
-    accessorFn: (demand) => (demand['Gestionnaire Logement'] === undefined ? demand.Logement : demand['Gestionnaire Logement']) ?? 0,
-    name: 'Nb logements',
-  },
-  {
-    accessorKey: 'Surface en m2',
-    name: 'Surface en m2',
-  },
-  {
-    accessorFn: (demand) => (demand['Gestionnaire Conso'] === undefined ? demand.Conso : demand['Gestionnaire Conso']) ?? 0,
-    name: 'Conso gaz (MWh)',
-  },
-  { accessorKey: 'Commentaire', name: 'Commentaires' },
-];
-
-const displayModeDeChauffage = (demand: DemandsListItem) => {
-  const modeDeChauffage = demand['Mode de chauffage']?.toLowerCase()?.trim();
-  if (modeDeChauffage && ['gaz', 'fioul', 'électricité'].includes(modeDeChauffage)) {
-    return `${upperCaseFirstChar(modeDeChauffage)} ${demand['Type de chauffage'] ? demand['Type de chauffage'].toLowerCase() : ''}`;
-  }
-  return demand['Type de chauffage'];
 };
 
 const quickFilterPresets = {
@@ -114,7 +66,7 @@ const quickFilterPresets = {
         />
       </>
     ),
-    valueSuffix: <Badge type="haut_potentiel" />,
+    valueSuffix: <FCUBadge type="haut_potentiel" />,
   },
   demandesDansPDP: {
     filters: [
@@ -139,7 +91,7 @@ const quickFilterPresets = {
         />
       </>
     ),
-    valueSuffix: <Badge type="pdp" />,
+    valueSuffix: <FCUBadge type="pdp" />,
   },
 } satisfies Record<string, QuickFilterPreset<DemandsListItem>>;
 
@@ -150,6 +102,7 @@ function DemandesNew(): React.ReactElement {
   const tableRowSelection = useMemo(() => {
     return selectedDemandId ? { [selectedDemandId]: true } : {};
   }, [selectedDemandId]);
+  const [modalDemand, setModalDemand] = useState<DemandsListItem | null>(null);
 
   const [mapCenterLocation, setMapCenterLocation] = useState<MapCenterLocation>();
   const [globalFilter, setGlobalFilter] = useState('');
@@ -167,7 +120,11 @@ function DemandesNew(): React.ReactElement {
             id: demand.id,
             latitude: demand.Latitude ?? 0,
             longitude: demand.Longitude ?? 0,
-            modeDeChauffage: displayModeDeChauffage(demand),
+            modeDeChauffage:
+              getModeDeChauffageDisplay({
+                modeDeChauffage: demand['Mode de chauffage'],
+                typeDeChauffage: demand['Type de chauffage'],
+              }) ?? undefined,
             selected: demand.id === selectedDemandId,
             typeDeLogement: demand.Structure,
           }) satisfies AdresseEligible
@@ -196,44 +153,76 @@ function DemandesNew(): React.ReactElement {
   const tableColumns: ColumnDef<DemandsListItem>[] = useMemo(
     () => [
       {
-        accessorKey: 'Date de la demande',
-        cellType: 'Date',
-        enableGlobalFilter: false,
-        header: 'Date de la demande',
-        width: '94px',
-      },
-      {
-        accessorKey: 'Adresse',
-        cell: ({ row }) => (
-          <div className="whitespace-normal">
-            {row.original.Adresse}
-            {row.original['en PDP'] === 'Oui' && <Badge type="pdp" />}
-          </div>
-        ),
+        accessorKey: 'testAddress.ban_address',
+        cell: (info) => {
+          const demand = info.row.original;
+          const testAddress = demand.testAddress;
+          return (
+            <div>
+              <div>
+                <div className="leading-none tracking-tight">{testAddress.ban_address}</div>
+                {!testAddress.ban_valid && (
+                  <Badge severity="error" small>
+                    Adresse invalide
+                  </Badge>
+                )}
+                {demand['en PDP'] === 'Oui' && <FCUBadge type="pdp" />}
+              </div>
+              {testAddress.source_address !== testAddress.ban_address && (
+                <div className="text-xs italic text-gray-400 tracking-tighter">{testAddress.source_address}</div>
+              )}
+              {(demand.Logement || demand['Surface en m2'] || demand.Conso) && <div className="border-t border-gray-600 my-2" />}
+              {demand.Logement && <div className="text-xs font-bold">{demand.Logement} logements</div>}
+              {demand['Surface en m2'] && <div className="text-xs font-bold">{demand['Surface en m2']}m²</div>}
+              {demand.Conso && <div className="text-xs font-bold">{formatMWh(demand.Conso)} de gaz</div>}
+            </div>
+          );
+        },
         enableSorting: false,
-        header: () => (
-          <div className="flex items-center">
-            Adresse
-            <Tooltip
-              iconProps={{
-                className: 'ml-1',
-              }}
-              title="La mention 'PDP' est indiquée pour les adresses situées dans le périmètre de développement prioritaire d'un réseau classé (connu par France Chaleur Urbaine)."
-            />
-          </div>
-        ),
-        width: '220px',
+        header: 'Adresse',
+        width: '240px',
       },
       {
         accessorKey: 'Status',
-        cell: ({ row }) => <DemandStatusBadge status={row.original.Status as DemandStatus} />,
+        cell: ({ row }) => {
+          const demand = row.original;
+          return (
+            <div>
+              <Status demand={row.original as unknown as Demand} updateDemand={updateDemand} disabled={true} className="mb-0!" />
+              <div className="" onClick={stopPropagation} onDoubleClick={stopPropagation}>
+                <EligibilityHelpDialog detailedEligibilityStatus={demand.testAddress.eligibility}>
+                  <Button
+                    className="text-gray-700! font-normal! italic"
+                    title="Voir le détail de l'éligibilité"
+                    priority="tertiary no outline"
+                    size="small"
+                    iconId="fr-icon-info-line"
+                  >
+                    {demand.testAddress.eligibility?.type ? eligibilityTitleByType[demand.testAddress.eligibility?.type] : 'Non connu'}
+                  </Button>
+                </EligibilityHelpDialog>
+              </div>
+            </div>
+          );
+        },
         enableGlobalFilter: false,
         filterProps: {
           Component: ({ value }) => <DemandStatusBadge status={value as DemandStatus} />,
         },
         filterType: 'Facets',
         header: 'Statut',
-        width: '220px',
+        width: '290px',
+      },
+      {
+        accessorFn: (row) => {
+          const gestionnaires = row.Gestionnaires || [];
+          const affectation = row['Affecté à'];
+          return [...gestionnaires, ...(affectation ? [affectation].flat() : [])].join(' ');
+        },
+        cell: ({ row }) => <Gestionnaire demand={row.original as unknown as Demand} />,
+        enableSorting: false,
+        header: 'Gestionnaire',
+        width: '200px',
       },
       {
         accessorKey: 'Structure',
@@ -244,104 +233,68 @@ function DemandesNew(): React.ReactElement {
         width: '130px',
       },
       {
-        accessorFn: (row) => displayModeDeChauffage(row),
-        cell: ({ row }) => <Tag text={displayModeDeChauffage(row.original)} />,
+        accessorFn: (row) =>
+          getModeDeChauffageDisplay({
+            modeDeChauffage: row['Mode de chauffage'],
+            typeDeChauffage: row['Type de chauffage'],
+          }),
+        cell: ({ row }) => (
+          <ModeDeChauffageTag modeDeChauffage={row.original['Mode de chauffage']} typeDeChauffage={row.original['Type de chauffage']} />
+        ),
         enableGlobalFilter: false,
         filterType: 'Facets',
         header: 'Mode de chauffage',
         width: '134px',
       },
       {
-        accessorKey: 'Distance au réseau',
-        cell: ({ row }) => (
-          <AdditionalInformation
-            demand={row.original as unknown as Demand}
-            field="Distance au réseau"
-            updateDemand={updateDemand}
-            type="number"
-          />
-        ),
-        enableGlobalFilter: false,
-        filterProps: {
-          domain: [0, 1000],
-          unit: 'm',
+        accessorKey: 'testAddress.eligibility_history',
+        align: 'center',
+        cell: ({ row }) => {
+          const history = row.original.testAddress?.eligibility_history as any;
+          if (!history || !Array.isArray(history) || history.length === 0) {
+            return null;
+          }
+          return (
+            <div className="flex items-center justify-center gap-1">
+              <Tooltip title={<EligibilityHistoryTooltip history={history} />} side="left" />
+            </div>
+          );
         },
-        filterType: 'Range',
-        header: () => (
-          <div className="flex items-center">
-            Distance au réseau (m)
-            <Tooltip
-              iconProps={{
-                className: 'ml-1',
-              }}
-              title="Distance à vol d'oiseau"
-            />
-          </div>
-        ),
-        width: '120px',
+        enableSorting: false,
+        header: () => 'Mises à jour du réseau',
+        width: '100px',
       },
       {
-        accessorKey: 'Identifiant réseau',
-        filterType: 'Facets',
-        header: 'ID réseau le plus proche',
-        width: '85px',
-      },
-      {
-        accessorKey: 'Nom réseau',
-        cell: ({ row }) => <div className="whitespace-normal">{row.original['Nom réseau']}</div>,
+        accessorKey: 'Réseau le plus proche',
+        cell: ({ row }) => {
+          const nom = row.original['Nom réseau'];
+          const distance = row.original['Distance au réseau'] || 0;
+
+          if (!nom) {
+            return null;
+          }
+          return (
+            <div className="flex flex-col gap-1">
+              <div>
+                <Link href={`/reseaux/${row.original['Identifiant réseau']}`}>
+                  <strong>{nom}</strong>
+                </Link>
+              </div>
+              {distance > 0 && <span>{distance}m</span>}
+            </div>
+          );
+        },
         header: 'Nom du réseau le plus proche',
         width: '200px',
       },
       {
-        accessorKey: 'Logement',
-        cell: ({ row }) => (
-          <AdditionalInformation demand={row.original as unknown as Demand} field="Logement" updateDemand={updateDemand} type="number" />
-        ),
+        accessorKey: 'Date de la demande',
+        align: 'right',
+        cellType: 'Date',
         enableGlobalFilter: false,
-        filterType: 'Range',
-        header: 'Nb logements (lots)',
-        sorting: 'nullsLast',
-        width: '120px',
+        header: 'Date de la demande',
+        width: '94px',
       },
-      {
-        accessorKey: 'Surface en m2',
-        cell: ({ row }) => (
-          <AdditionalInformation
-            demand={row.original as unknown as Demand}
-            field="Surface en m2"
-            updateDemand={updateDemand}
-            type="number"
-          />
-        ),
-        enableGlobalFilter: false,
-        filterProps: {
-          unit: 'm2',
-        },
-        filterType: 'Range',
-        header: 'Surface en m2',
-        width: '120px',
-      },
-      {
-        accessorKey: 'Conso',
-        cell: ({ row }) => (
-          <AdditionalInformation demand={row.original as unknown as Demand} field="Conso" updateDemand={updateDemand} type="number" />
-        ),
-        enableGlobalFilter: false,
-        filterProps: {
-          unit: 'MWh',
-        },
-        filterType: 'Range',
-        header: 'Conso gaz (MWh)',
-        width: '120px',
-      },
-      {
-        accessorKey: 'Commentaires',
-        cell: ({ row }) => <Comment demand={row.original as unknown as Demand} field="Commentaire" updateDemand={updateDemand} />,
-        enableSorting: false,
-        header: 'Commentaires',
-        width: '280px',
-      },
-      // obligatoire afin d'être utilisables dans les presets
       {
         accessorKey: 'haut_potentiel',
         filterType: 'Facets', // obligatoire pour faire fonctionner le filtre
@@ -371,17 +324,6 @@ function DemandesNew(): React.ReactElement {
     [demands]
   );
 
-  const buildSheetData = useCallback(
-    () => [
-      {
-        columns: demandsExportColumns,
-        data: demands,
-        name: 'demandes',
-      },
-    ],
-    [demands]
-  );
-
   return (
     <SimplePage
       title="Mes demandes"
@@ -408,9 +350,6 @@ function DemandesNew(): React.ReactElement {
             columnFilters={columnFilters}
             onFiltersChange={setColumnFilters}
           />
-          <ButtonExport filename="demandes_fcu.xlsx" sheets={buildSheetData} className="ml-auto mr-2w" priority="secondary">
-            Exporter
-          </ButtonExport>
         </div>
         <ResizablePanelGroup direction="horizontal" className="gap-4">
           <ResizablePanel defaultSize={66}>

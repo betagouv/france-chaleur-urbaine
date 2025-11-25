@@ -509,6 +509,13 @@ export const listByUser = async (userId: string) => {
     .leftJoin('pro_eligibility_tests_addresses', 'pro_eligibility_tests_addresses.demand_id', 'demands.id')
     .selectAll('demands')
     .select(sql.raw(`to_jsonb(pro_eligibility_tests_addresses)`).as('testAddress'))
+    .select((eb) =>
+      eb
+        .selectFrom('demand_emails')
+        .select(eb.fn.count<number>('id').as('count'))
+        .whereRef('demand_emails.demand_id', '=', 'demands.id')
+        .as('email_count')
+    )
     .where('user_id', '=', userId)
     .where('deleted_at', 'is', null)
     .orderBy(sql`legacy_values->>'Date de la demande'`, 'desc')
@@ -520,12 +527,13 @@ export const listByUser = async (userId: string) => {
     userId,
   });
 
-  const demands = records.map(({ testAddress, ...demand }) =>
-    augmentGestionnaireDemand({
+  const demands = records.map(({ testAddress, email_count, ...demand }) => ({
+    ...augmentGestionnaireDemand({
       demand,
       testAddress: testAddress as Selectable<ProEligibilityTestsAddresses> & { eligibility_history: ProEligibilityTestHistoryEntry[] },
-    })
-  );
+    }),
+    email_count: Number(email_count) || 0,
+  }));
 
   return demands;
 };

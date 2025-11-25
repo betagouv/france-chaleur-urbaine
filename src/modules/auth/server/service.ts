@@ -1,5 +1,6 @@
 import bcrypt, { genSalt, hash } from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { linkDemandsByEmail } from '@/modules/demands/server/demands-service';
 import { sendEmailTemplate } from '@/modules/email';
 import { createUserEvent } from '@/modules/events/server/service';
 import { AirtableDB } from '@/server/db/airtable';
@@ -94,16 +95,14 @@ export const login = async (email: string, password: string) => {
     type: 'user_login',
   });
 
-  // Link demands by email on every login (dynamic import to avoid bundling in browser)
+  // Link demands by email on every login
   try {
-    const { linkDemandsByEmail } = await import('@/modules/demands/server/demands-service');
+    logger.info('attempting to link demands on login', { email: user.email, user_id: user.id });
     const linkedCount = await linkDemandsByEmail(user.id, user.email);
-    if (linkedCount > 0) {
-      logger.info('demands linked on login', {
-        count: linkedCount,
-        user_id: user.id,
-      });
-    }
+    logger.info('demands linked on login', {
+      count: linkedCount,
+      user_id: user.id,
+    });
   } catch (error) {
     logger.error('failed to link demands on login', {
       error,

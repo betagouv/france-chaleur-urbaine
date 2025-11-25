@@ -276,6 +276,12 @@ const professionnelNavigationMenu: MainNavigationProps.Item[] = [
   },
   {
     linkProps: {
+      href: '/pro/mes-demandes',
+    },
+    text: 'Mes demandes',
+  },
+  {
+    linkProps: {
       href: '/pro/comparateur-couts-performances',
     },
     text: 'Comparateur de coûts et CO2',

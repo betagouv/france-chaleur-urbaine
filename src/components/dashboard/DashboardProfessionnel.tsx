@@ -4,7 +4,7 @@ export default function DashboardProfessionnel() {
   return (
     <div className="grid gap-8 grid-cols-2 items-center justify-between mb-5">
       <Tile
-        title="Suivi des demandes"
+        title="Mes demandes"
         desc="Consultez et suivez l'ensemble de vos demandes de renseignements concernant les réseaux de chaleur."
         linkProps={{
           href: '/pro/mes-demandes',

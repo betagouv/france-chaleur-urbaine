@@ -1,4 +1,5 @@
 import { route, router } from '@/modules/trpc/server';
+import { kdb } from '@/server/db/kysely';
 
 import {
   zAddRelanceCommentInput,
@@ -86,6 +87,21 @@ export const demandsRouter = router({
       })
       .query(async ({ ctx }) => {
         return await demandsService.listByUser(ctx.user.id);
+      }),
+    listEmails: route
+      .meta({
+        auth: {
+          roles: ['particulier', 'professionnel', 'gestionnaire', 'admin'],
+        },
+      })
+      .input(zListEmailsInput)
+      .query(async ({ input, ctx }) => {
+        // Verify the user owns this demand
+        const demand = await kdb.selectFrom('demands').select(['user_id']).where('id', '=', input.demand_id).executeTakeFirst();
+        if (!demand || demand.user_id !== ctx.user.id) {
+          throw new Error('Unauthorized');
+        }
+        return await demandsService.listEmails(input.demand_id);
       }),
     update: route.input(zUserUpdateDemandInput).mutation(async ({ input, ctx }) => {
       const { demandId, values } = input;

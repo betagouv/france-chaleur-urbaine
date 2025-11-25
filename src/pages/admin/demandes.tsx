@@ -10,6 +10,7 @@ import EligibilityHelpDialog from '@/components/EligibilityHelpDialog';
 import Input from '@/components/form/dsfr/Input';
 import FCUTagAutocomplete from '@/components/form/FCUTagAutocomplete';
 import DemandEmailForm from '@/components/Manager/DemandEmailForm';
+import ModeDeChauffageTag, { getModeDeChauffageDisplay } from '@/components/Manager/ModeDeChauffageTag';
 import Tag from '@/components/Manager/Tag';
 import type { AdresseEligible } from '@/components/Map/layers/adressesEligibles';
 import { useMapEventBus } from '@/components/Map/layers/common';
@@ -43,7 +44,7 @@ import type { Point } from '@/types/Point';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
 import { stopPropagation } from '@/utils/events';
-import { formatMWh, upperCaseFirstChar } from '@/utils/strings';
+import { formatMWh } from '@/utils/strings';
 
 type DemandsListAdminData = RouterOutput['demands']['admin']['list'];
 type DemandsListAdminItem = DemandsListAdminData['items'][number];
@@ -54,14 +55,6 @@ type MapCenterLocation = {
   center: Point;
   zoom: number;
   flyTo?: boolean;
-};
-
-const displayModeDeChauffage = (demand: DemandsListAdminItem) => {
-  const modeDeChauffage = demand['Mode de chauffage']?.toLowerCase()?.trim();
-  if (modeDeChauffage && ['gaz', 'fioul', 'électricité'].includes(modeDeChauffage)) {
-    return `${upperCaseFirstChar(modeDeChauffage)} ${demand['Type de chauffage'] ? demand['Type de chauffage'].toLowerCase() : ''}`;
-  }
-  return demand['Type de chauffage'];
 };
 
 // biome-ignore assist/source/useSortedKeys: keep field order as more coherent with most used actions
@@ -209,7 +202,11 @@ function DemandesAdmin(): React.ReactElement {
           id: demand.id,
           latitude: demand.Latitude ?? 0,
           longitude: demand.Longitude ?? 0,
-          modeDeChauffage: displayModeDeChauffage(demand),
+          modeDeChauffage:
+            getModeDeChauffageDisplay({
+              modeDeChauffage: demand['Mode de chauffage'],
+              typeDeChauffage: demand['Type de chauffage'],
+            }) ?? undefined,
           selected: demand.id === selectedDemandId,
           typeDeLogement: demand.Structure,
         }) satisfies AdresseEligible
@@ -454,8 +451,14 @@ function DemandesAdmin(): React.ReactElement {
         width: '130px',
       },
       {
-        accessorFn: (row) => displayModeDeChauffage(row),
-        cell: ({ row }) => <Tag text={displayModeDeChauffage(row.original)} />,
+        accessorFn: (row) =>
+          getModeDeChauffageDisplay({
+            modeDeChauffage: row['Mode de chauffage'],
+            typeDeChauffage: row['Type de chauffage'],
+          }),
+        cell: ({ row }) => (
+          <ModeDeChauffageTag modeDeChauffage={row.original['Mode de chauffage']} typeDeChauffage={row.original['Type de chauffage']} />
+        ),
         enableGlobalFilter: false,
         enableSorting: false,
         filterType: 'Facets',
