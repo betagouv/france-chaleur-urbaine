@@ -250,12 +250,12 @@ export const demandsRouter = router({
 ```typescript
 import { withAuthentication } from '@/server/authentication';
 import trpc from '@/modules/trpc/client';
-// ... other imports following /gestionnaire/demandes.tsx pattern
+// ... other imports following /pro/demandes.tsx pattern
 
 const UserDemandesPage = () => {
   const { data: demands, isLoading } = trpc.demands.user.list.useQuery();
 
-  // Similar structure to /gestionnaire/demandes.tsx but:
+  // Similar structure to /pro/demandes.tsx but:
   // - Read-only mode (no inline editing)
   // - Simplified columns (remove gestionnaire-only fields)
   // - Map view included
@@ -307,7 +307,7 @@ export default withAuthentication([
 
 ### Map View
 
-- Same map configuration as `/gestionnaire/demandes`
+- Same map configuration as `/pro/demandes`
 - Shows demand locations with network proximity
 - Syncs selection with table
 - Fly to selected demand

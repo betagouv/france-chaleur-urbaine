@@ -298,7 +298,7 @@ const professionnelNavigationMenu: MainNavigationProps.Item[] = [
 const gestionnaireNavigationMenu: MainNavigationProps.Item[] = [
   {
     linkProps: {
-      href: '/gestionnaire/demandes',
+      href: '/pro/demandes',
     },
     text: 'Demandes',
   },

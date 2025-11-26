@@ -7,7 +7,7 @@ export default function DashboardGestionnaire() {
         title="Demandes"
         desc="Retrouvez les demandes de raccordement déposées sur vos réseaux"
         linkProps={{
-          href: '/gestionnaire/demandes',
+          href: '/pro/demandes',
         }}
         orientation="horizontal"
         enlargeLinkOrButton
