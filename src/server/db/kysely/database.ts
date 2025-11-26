@@ -172,6 +172,7 @@ export interface Demands {
   id: Generated<string>;
   legacy_values: JSONColumnType<AirtableLegacyRecord>;
   updated_at: Generated<Timestamp>;
+  user_id: string | null;
 }
 
 export interface DemandEmails {

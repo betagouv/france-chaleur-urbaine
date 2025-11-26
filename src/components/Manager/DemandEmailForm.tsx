@@ -6,10 +6,10 @@ import TextArea from '@/components/form/dsfr/TextArea';
 import Button from '@/components/ui/Button';
 import CrudDropdown from '@/components/ui/CrudDropdown';
 import Icon from '@/components/ui/Icon';
-import Loader from '@/components/ui/Loader';
 import Tooltip, { TooltipIcon } from '@/components/ui/Tooltip';
 import { useFetch } from '@/hooks/useApi';
 import { useUserPreferences } from '@/modules/auth/client/hooks';
+import EmailHistory from '@/modules/demands/client/EmailHistory';
 import type { Demand } from '@/modules/demands/types';
 import trpc from '@/modules/trpc/client';
 import type { EmailTemplatesResponse } from '@/pages/api/user/email-templates/[[...slug]]';
@@ -181,57 +181,7 @@ function DemandEmailForm(props: Props) {
       {!sent && !sentError ? (
         <>
           <div className="w-full border border-solid border-gray-200" />
-          <section className="fr-mt-3w fr-mb-3w">
-            <h4>Historique</h4>
-            <ul className="fr-ml-3w">
-              {isLoadingSentHistory ? (
-                <li>
-                  <Loader size="sm" />
-                </li>
-              ) : sentHistory && sentHistory.length > 0 ? (
-                sentHistory.map((item) => {
-                  const object = item.object;
-
-                  return (
-                    <li key={item.email_key} onClick={() => onSelectedEmailChanged(item.email_key)} className="cursor-pointer">
-                      <Tooltip
-                        className="max-w-[600px] min-w-[300px]"
-                        title={
-                          <div className="max-h-96 overflow overflow-auto">
-                            <div className="text-sm mb-1">
-                              À: <strong>{item.to}</strong>
-                            </div>
-                            {item.cc && (
-                              <div className="text-sm mb-1">
-                                Copie à: <strong>{item.cc}</strong>
-                              </div>
-                            )}
-                            <div className="text-sm mb-1">
-                              Répondre à: <strong>{item.reply_to}</strong>
-                            </div>
-                            <div className="p-2 border border-dashed border-gray-200 bg-gray-50">
-                              <h4 className="font-mono text-sm">{item.object}</h4>
-                              <p className="whitespace-pre-line font-mono text-sm">{item.body.replaceAll('<br />', '\n')}</p>
-                            </div>
-                          </div>
-                        }
-                      >
-                        <span>
-                          <span className="underline cursor-help">{object}</span> -{' '}
-                          <small className="text-faded italic">
-                            envoyé le{' '}
-                            <time dateTime={dayjs(item.sent_at).toISOString()}>{dayjs(item.sent_at).format('dddd D MMMM YYYY')}</time>
-                          </small>
-                        </span>
-                      </Tooltip>
-                    </li>
-                  );
-                })
-              ) : (
-                <li>Aucun courriel envoyé</li>
-              )}
-            </ul>
-          </section>
+          <EmailHistory emails={sentHistory ?? null} isLoading={isLoadingSentHistory} onEmailClick={onSelectedEmailChanged} />
           <div className="fr-mb-3w w-full border border-solid border-gray-200" />
           <form onSubmit={submit}>
             <Input

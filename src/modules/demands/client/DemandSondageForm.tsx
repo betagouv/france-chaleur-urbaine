@@ -4,6 +4,8 @@ import { type FormEvent, useState } from 'react';
 import Checkboxes from '@/components/form/dsfr/Checkboxes';
 import Input from '@/components/form/dsfr/Input';
 import MarkdownWrapper from '@/components/MarkdownWrapper';
+import Link from '@/components/ui/Link';
+import { useAuthentication } from '@/modules/auth/client/hooks';
 import { referrers } from '@/modules/demands/constants';
 import { toastErrors } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
@@ -14,6 +16,7 @@ const DemandSondageForm = ({ addressData = {}, cardMode }: { addressData: Addres
   const [other, setOther] = useState('');
   const [sondage, setSondage] = useState<string[]>([]);
   const [sondageAnswered, setSondageAnswered] = useState(false);
+  const { isAuthenticated } = useAuthentication();
   const answer = (choice: (typeof referrers)[number], checked: boolean) => {
     if (!checked) {
       setSondage(sondage.filter((value) => value !== choice.label));
@@ -78,6 +81,23 @@ Sans attendre, :extra-link[téléchargez notre guide pratique]{href="/documentat
           value={structure ? message?.[computedEligibility ? 'eligible' : 'ineligible']?.[cardMode ? 'bodyCardMode' : 'body'] : ''}
         />
       </div>
+      <Alert
+        severity="info"
+        title={isAuthenticated ? 'Suivez vos demandes' : 'Créez un compte pour suivre vos demandes'}
+        description={
+          isAuthenticated ? (
+            <>
+              Retrouvez et suivez toutes vos demandes sur votre <Link href="/pro/mes-demandes">espace personnel</Link>.
+            </>
+          ) : (
+            <>
+              <Link href={`/connexion?callbackUrl=/pro/mes-demandes`}>Créez un compte ou connectez-vous</Link> pour accéder à un espace
+              dédié où vous pourrez retrouver et suivre l'évolution de toutes vos demandes.
+            </>
+          )
+        }
+        className="fr-mt-3w"
+      />
       {addressData.demandId &&
         (sondageAnswered ? (
           <Alert severity="success" title="Merci pour votre contribution" />

@@ -140,7 +140,7 @@ export const update = async (recordId: string, values: Partial<AirtableLegacyRec
   return augmentAdminDemand({ demand: updatedDemand, testAddress: testAddress || null });
 };
 
-export const create = async (values: CreateDemandInput) => {
+export const create = async (values: CreateDemandInput, userId?: string) => {
   const legacyValues = formatDataToLegacyAirtable(values);
 
   const [conso, nbLogement] = await Promise.all([
@@ -166,6 +166,7 @@ export const create = async (values: CreateDemandInput) => {
         Logement: nbLogement?.nb_logements ? nbLogement.nb_logements : undefined,
       })}::jsonb`,
       updated_at: new Date(),
+      user_id: userId ?? null,
     })
     .returningAll()
     .execute();
@@ -225,7 +226,11 @@ export const remove = async (demandId: string, userId?: string) => {
   }
 };
 
-export const listEmails = async (demandId: string) => {
+export const listEmails = async ({ demandId, userId }: { demandId: string; userId: string }) => {
+  const demand = await kdb.selectFrom('demands').select(['user_id']).where('id', '=', demandId).executeTakeFirst();
+  if (!demand || demand.user_id !== userId) {
+    throw new Error('Unauthorized');
+  }
   const emails = await kdb.selectFrom('demand_emails').selectAll().where('demand_id', '=', demandId).execute();
   return emails;
 };
@@ -498,6 +503,55 @@ export const list = async (user: User) => {
         Téléphone: `0${faker.string.numeric(9)}`,
       }))
     : demands;
+};
+
+export const listByUser = async (userId: string) => {
+  const startTime = Date.now();
+
+  const records = await kdb
+    .selectFrom('demands')
+    .leftJoin('pro_eligibility_tests_addresses', 'pro_eligibility_tests_addresses.demand_id', 'demands.id')
+    .selectAll('demands')
+    .select(sql.raw(`to_jsonb(pro_eligibility_tests_addresses)`).as('testAddress'))
+    .select((eb) =>
+      eb
+        .selectFrom('demand_emails')
+        .select(eb.fn.count<number>('id').as('count'))
+        .whereRef('demand_emails.demand_id', '=', 'demands.id')
+        .as('email_count')
+    )
+    .where('user_id', '=', userId)
+    .where('deleted_at', 'is', null)
+    .orderBy(sql`legacy_values->>'Date de la demande'`, 'desc')
+    .execute();
+
+  logger.info('kdb.listByUser', {
+    duration: Date.now() - startTime,
+    recordsCount: records.length,
+    userId,
+  });
+
+  const demands = records.map(({ testAddress, email_count, ...demand }) => ({
+    ...augmentGestionnaireDemand({
+      demand,
+      testAddress: testAddress as Selectable<ProEligibilityTestsAddresses> & { eligibility_history: ProEligibilityTestHistoryEntry[] },
+    }),
+    email_count: Number(email_count) || 0,
+  }));
+
+  return demands;
+};
+
+export const linkDemandsByEmail = async (userId: string, email: string): Promise<number> => {
+  const result = await kdb
+    .updateTable('demands')
+    .set({ user_id: userId })
+    .where('user_id', 'is', null) // Only link unlinked demands
+    .where(sql`LOWER(legacy_values->>'Mail')`, '=', email.toLowerCase())
+    .where('deleted_at', 'is', null)
+    .executeTakeFirst();
+
+  return Number(result.numUpdatedRows ?? 0);
 };
 
 export const buildFeatures = async (properties: string[]) => {
