@@ -732,7 +732,7 @@ const TableSimple = <T extends RowData>({
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex-1">
                             <p className="font-semibold leading-tight">{label}</p>
-                            {description ? <p className="text-sm text-gray-600">{description}</p> : null}
+                            {description ? <div className="text-sm text-gray-600">{description}</div> : null}
                           </div>
                           <div className="flex items-center gap-2 shrink-0">
                             {column.getIsFiltered() ? (
