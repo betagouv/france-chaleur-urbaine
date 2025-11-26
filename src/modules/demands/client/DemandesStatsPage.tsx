@@ -137,7 +137,7 @@ export default function TagsStatsPage() {
                     <Tooltip title="Copier les adresses e-mail dans le presse-papiers">
                       <Button
                         type="button"
-                        className="text-blue-600 hover:text-blue-800 inline-flex items-center gap-1 text-sm"
+                        className="inline-flex items-center gap-1 text-sm"
                         onClick={() => copyContentToClipboard(users.map((user) => user.email).join(', '))}
                         iconId="fr-icon-clipboard-line"
                         priority="tertiary no outline"
