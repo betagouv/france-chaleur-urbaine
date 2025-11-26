@@ -114,23 +114,19 @@ export default function TagsStatsPage() {
                       const lastConnectionClassName = getLastConnectionClassName(user.last_connection);
                       return (
                         <Tag key={user.id} className="bg-gray-100 text-gray-800">
-                          <div className="flex flex-col leading-tight break-all">
+                          <div className="flex flex-col leading-tight break-all text-xs">
                             <span>{user.email}</span>
                             {user.last_connection ? (
                               <TimeAgo
                                 date={user.last_connection}
-                                className={cx('text-xs', lastConnectionClassName)}
-                                prefix={
-                                  <Icon
-                                    name="fr-icon-time-line"
-                                    size="xs"
-                                    className={cx('mr-1', lastConnectionClassName)}
-                                    title="Dernière connexion"
-                                  />
-                                }
+                                className={cx(lastConnectionClassName)}
+                                prefix={<Icon name="fr-icon-time-line" size="xs" className="mr-1" title="Dernière connexion" />}
                               />
                             ) : (
-                              <span className="text-red-600 text-xs">Jamais connecté</span>
+                              <span className={cx(lastConnectionClassName)}>
+                                <Icon name="fr-icon-time-line" size="xs" className="mr-1" title="Dernière connexion" />
+                                Jamais connecté
+                              </span>
                             )}
                           </div>
                         </Tag>
@@ -316,23 +312,23 @@ export default function TagsStatsPage() {
 // Utilitaires
 const getLastConnectionClassName = (value: string | null | undefined) => {
   if (!value) {
-    return 'text-red-600';
+    return 'text-error';
   }
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) {
-    return 'text-red-600';
+    return 'text-error';
   }
 
   const diffInMs = Date.now() - date.getTime();
   const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
 
   if (diffInDays <= 30) {
-    return 'text-green-600';
+    return 'text-success';
   }
   if (diffInDays <= 90) {
-    return 'text-orange-500';
+    return 'text-orange-600';
   }
-  return 'text-red-600';
+  return 'text-error';
 };
 
 const DemandStatColumnHeader = ({ children }: { children: ReactNode }) => {
