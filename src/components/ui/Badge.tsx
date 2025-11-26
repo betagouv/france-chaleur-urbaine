@@ -4,6 +4,8 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import Tooltip from '@/components/ui/Tooltip';
 import cx from '@/utils/cx';
 
+type TypeBadge = 'haut_potentiel' | 'pdp' | 'warning_ville_differente' | 'api_user' | 'actif';
+
 const badgeCva = cva('block!', {
   defaultVariants: {
     size: 'sm',
@@ -16,6 +18,7 @@ const badgeCva = cva('block!', {
       xs: 'text-[10px]! py-0.5! px-1! leading-none! min-h-min!',
     },
     type: {
+      actif: '',
       api_user: 'bg-[#FFDA8F]! text-[#454B58]!',
       haut_potentiel: 'bg-green-600! text-white!',
       pdp: 'bg-[#FFDA8F]! text-[#454B58]!',
@@ -25,6 +28,7 @@ const badgeCva = cva('block!', {
 });
 
 const badgeLabels: Record<TypeBadge, string> = {
+  actif: 'Actif',
   api_user: 'API',
   haut_potentiel: 'HP',
   pdp: 'PDP',
@@ -39,10 +43,9 @@ const badgeTitles: Partial<Record<TypeBadge, string>> = {
 };
 
 const badgeSeverities: Partial<Record<TypeBadge, BadgeProps['severity']>> = {
+  actif: 'info',
   warning_ville_differente: 'warning',
 };
-
-type TypeBadge = 'haut_potentiel' | 'pdp' | 'warning_ville_differente' | 'api_user';
 
 type FCUBadgeProps = VariantProps<typeof badgeCva> & {
   title?: string;

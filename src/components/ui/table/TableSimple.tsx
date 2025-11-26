@@ -1,5 +1,4 @@
 import { fr } from '@codegouvfr/react-dsfr';
-import { Badge } from '@codegouvfr/react-dsfr/Badge';
 import Input from '@codegouvfr/react-dsfr/Input';
 import { usePrevious } from '@react-hookz/web';
 import {
@@ -29,6 +28,7 @@ import { cva } from 'class-variance-authority';
 import dynamic from 'next/dynamic';
 import React, { type RefObject, useCallback, useEffect } from 'react';
 
+import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import Dialog from '@/components/ui/Dialog';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover';
@@ -737,9 +737,7 @@ const TableSimple = <T extends RowData>({
                           <div className="flex items-center gap-2 shrink-0">
                             {column.getIsFiltered() ? (
                               <>
-                                <Badge small noIcon>
-                                  Actif
-                                </Badge>
+                                <Badge size="sm" type="actif" noIcon />
                                 <Button
                                   priority="tertiary no outline"
                                   iconId="ri-close-line"
