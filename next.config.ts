@@ -267,7 +267,7 @@ const nextConfig: NextConfig = {
         source: '/ressources/prioritaire',
       },
       {
-        destination: '/gestionnaire/demandes',
+        destination: '/pro/demandes',
         permanent: true,
         source: '/gestionnaire',
       },
