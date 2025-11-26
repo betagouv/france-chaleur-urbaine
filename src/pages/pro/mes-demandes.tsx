@@ -50,49 +50,6 @@ const quickFilterPresets = {
     getStat: (demands) => demands.length,
     label: 'demandes totales',
   },
-  demandesAHautPotentiel: {
-    filters: [{ id: 'haut_potentiel', value: { false: false, true: true } }],
-    getStat: (demands) => demands.filter((demand) => demand.haut_potentiel).length,
-    label: (
-      <>
-        demandes à haut potentiel&nbsp;
-        <Tooltip
-          title={
-            <>
-              Comptabilise les demandes en chauffage collectif à moins de 100m d'un réseau (moins de 60m sur Paris), ou à plus de 100
-              logements, ou tertiaires.
-            </>
-          }
-        />
-      </>
-    ),
-    valueSuffix: <FCUBadge type="haut_potentiel" />,
-  },
-  demandesDansPDP: {
-    filters: [
-      {
-        id: 'en PDP',
-        value: { Non: false, Oui: true },
-      },
-    ],
-    getStat: (demands) => demands.filter((demand) => demand['en PDP'] === 'Oui').length,
-    label: (
-      <>
-        demandes en PDP&nbsp;
-        <Tooltip
-          title={
-            <>
-              Périmètre de développement prioritaire (PDP) d'un réseau classé, dans lequel peut s'appliquer une obligation de raccordement.{' '}
-              <Link href="/ressources/obligations-raccordement#contenu" isExternal>
-                En savoir plus
-              </Link>
-            </>
-          }
-        />
-      </>
-    ),
-    valueSuffix: <FCUBadge type="pdp" />,
-  },
 } satisfies Record<string, QuickFilterPreset<DemandsListItem>>;
 
 const initialSortingState = [{ desc: true, id: 'Date de la demande' }];
@@ -329,77 +286,76 @@ function DemandesNew(): React.ReactElement {
       title="Mes demandes"
       description="Consultez et suivez l'ensemble de vos demandes de renseignements concernant les réseaux de chaleur"
       mode="authenticated"
+      className="mb-8"
     >
-      <div className="mb-8">
-        <div className="flex items-center flex-wrap">
-          <Input
-            label=""
-            nativeInputProps={{
-              'aria-label': 'rechercher',
-              onChange: (e) => setGlobalFilter(e.target.value),
-              placeholder: 'Rechercher par nom, email, adresse...',
-              required: true,
-              value: globalFilter,
-            }}
-            className="p-2w mb-0! w-[350px]"
-          />
-          <QuickFilterPresets
-            presets={quickFilterPresets as any}
+      <div className="flex items-center flex-wrap">
+        <Input
+          label=""
+          nativeInputProps={{
+            'aria-label': 'rechercher',
+            onChange: (e) => setGlobalFilter(e.target.value),
+            placeholder: 'Rechercher par nom, email, adresse...',
+            required: true,
+            value: globalFilter,
+          }}
+          className="p-2w mb-0! w-[350px]"
+        />
+        <QuickFilterPresets
+          presets={quickFilterPresets as any}
+          data={demands}
+          loading={isLoading}
+          columnFilters={columnFilters}
+          onFiltersChange={setColumnFilters}
+        />
+      </div>
+      <ResizablePanelGroup direction="horizontal" className="gap-4">
+        <ResizablePanel defaultSize={66}>
+          <TableSimple
+            columns={tableColumns}
             data={demands}
             loading={isLoading}
+            initialSortingState={initialSortingState}
+            globalFilter={globalFilter}
             columnFilters={columnFilters}
-            onFiltersChange={setColumnFilters}
+            fluid
+            controlsLayout="block"
+            padding="sm"
+            rowSelection={tableRowSelection}
+            onRowClick={onTableRowClick}
+            loadingEmptyMessage="Vous n'avez pas encore de demandes"
+            height="calc(100dvh - 140px)"
           />
-        </div>
-        <ResizablePanelGroup direction="horizontal" className="gap-4">
-          <ResizablePanel defaultSize={66}>
-            <TableSimple
-              columns={tableColumns}
-              data={demands}
-              loading={isLoading}
-              initialSortingState={initialSortingState}
-              globalFilter={globalFilter}
-              columnFilters={columnFilters}
-              fluid
-              controlsLayout="block"
-              padding="sm"
-              rowSelection={tableRowSelection}
-              onRowClick={onTableRowClick}
-              loadingEmptyMessage="Vous n'avez pas encore de demandes"
-              height="calc(100dvh - 140px)"
-            />
-          </ResizablePanel>
-          <ResizableHandle />
-          <ResizablePanel defaultSize={34}>
-            <div className={cx('max-md:h-[600px] md:h-[calc(100dvh-140px)] bg-[#F8F4F0]')}>
-              {isDefined(mapCenterLocation) ? (
-                <Map
-                  noPopup
-                  withoutLogo
-                  initialCenter={mapCenterLocation.center}
-                  initialZoom={mapCenterLocation.zoom}
-                  enableFlyToCentering
-                  initialMapConfiguration={createMapConfiguration({
-                    reseauxDeChaleur: {
-                      show: true,
-                    },
-                    reseauxEnConstruction: true,
-                    zonesDeDeveloppementPrioritaire: true,
-                  })}
-                  geolocDisabled
-                  withSoughtAddresses={false}
-                  adressesEligibles={demandsMapData}
-                  adressesEligiblesAutoFit={false}
-                />
-              ) : isLoading ? (
-                <div className="absolute inset-0 flex justify-center items-center animate-pulse">
-                  <Loader size="lg" />
-                </div>
-              ) : null}
-            </div>
-          </ResizablePanel>
-        </ResizablePanelGroup>
-      </div>
+        </ResizablePanel>
+        <ResizableHandle />
+        <ResizablePanel defaultSize={34}>
+          <div className={cx('max-md:h-[600px] md:h-[calc(100dvh-140px)] bg-[#F8F4F0]')}>
+            {isDefined(mapCenterLocation) ? (
+              <Map
+                noPopup
+                withoutLogo
+                initialCenter={mapCenterLocation.center}
+                initialZoom={mapCenterLocation.zoom}
+                enableFlyToCentering
+                initialMapConfiguration={createMapConfiguration({
+                  reseauxDeChaleur: {
+                    show: true,
+                  },
+                  reseauxEnConstruction: true,
+                  zonesDeDeveloppementPrioritaire: true,
+                })}
+                geolocDisabled
+                withSoughtAddresses={false}
+                adressesEligibles={demandsMapData}
+                adressesEligiblesAutoFit={false}
+              />
+            ) : isLoading ? (
+              <div className="absolute inset-0 flex justify-center items-center animate-pulse">
+                <Loader size="lg" />
+              </div>
+            ) : null}
+          </div>
+        </ResizablePanel>
+      </ResizablePanelGroup>
     </SimplePage>
   );
 }
