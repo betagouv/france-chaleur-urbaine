@@ -32,3 +32,5 @@ export type Demand = AirtableLegacyRecord & {
   created_at: string;
   updated_at: string;
 };
+
+export type { TagsStats } from './server/demands-service';

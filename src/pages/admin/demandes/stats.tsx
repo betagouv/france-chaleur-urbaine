@@ -1,6 +1,6 @@
-import TagsStatsPage from '@/modules/demands-legacy/client/admin/TagsStatsPage';
+import DemandesStatsPage from '@/modules/demands/client/DemandesStatsPage';
 import { withAuthentication } from '@/server/authentication';
 
-export default TagsStatsPage;
+export default DemandesStatsPage;
 
 export const getServerSideProps = withAuthentication(['admin']);

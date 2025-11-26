@@ -20,6 +20,7 @@ export const demandsRouter = router({
         const { demandId } = input;
         await demandsService.remove(demandId, ctx.user.id);
       }),
+    getTagsStats: routeRole(['admin']).query(async () => demandsService.getTagsStats()),
     list: routeRole(['admin']).query(async () => {
       const result = await demandsService.listAdmin();
       return result;

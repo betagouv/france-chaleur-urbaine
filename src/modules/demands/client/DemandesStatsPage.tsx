@@ -19,13 +19,13 @@ import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
 import { objectToURLSearchParams } from '@/utils/network';
 import { compareFrenchStrings } from '@/utils/strings';
-import type { TagsStats } from '../../types';
+import type { TagsStats } from '../types';
 
 const initialSortingState = [{ desc: true, id: 'lastSixMonths' }];
 const initialFilterState = [{ id: 'type', value: { '': true, gestionnaire: false, metropole: true, reseau: true, ville: true } }];
 
 export default function TagsStatsPage() {
-  const { data: tagsStats, isLoading } = trpc.demandsLegacy.getTagsStats.useQuery();
+  const { data: tagsStats, isLoading } = trpc.demands.admin.getTagsStats.useQuery();
 
   const tableColumns: ColumnDef<TagsStats>[] = useMemo(
     () => [

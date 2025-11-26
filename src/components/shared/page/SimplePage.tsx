@@ -369,15 +369,15 @@ const adminNavigationMenu: MainNavigationProps.Item[] = [
       },
       {
         linkProps: {
-          href: '/admin/tags',
+          href: '/admin/demandes/stats',
         },
-        text: 'Gestion des tags gestionnaires',
+        text: 'Statistiques des demandes',
       },
       {
         linkProps: {
-          href: '/admin/tags-stats',
+          href: '/admin/tags',
         },
-        text: 'Statistiques par tag',
+        text: 'Gestion des tags gestionnaires',
       },
       {
         linkProps: {

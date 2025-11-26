@@ -6,7 +6,6 @@ import { bdnbRouter } from '@/modules/bdnb/server/trpc-routes';
 import buildContext from '@/modules/config/server/context-builder';
 import { dataRouter } from '@/modules/data/server/trpc-routes';
 import { demandsRouter } from '@/modules/demands/server/trpc-routes';
-import { demandsLegacyRouter } from '@/modules/demands-legacy/server/trpc-routes';
 import { diagnosticRouter } from '@/modules/diagnostic/server/trpc-routes';
 import { jobsRouter } from '@/modules/jobs/server/trpc-routes';
 import { proEligibilityTestsRouter } from '@/modules/pro-eligibility-tests/server/trpc-routes';
@@ -40,7 +39,6 @@ export const appRouter = router({
   bdnb: bdnbRouter,
   data: dataRouter,
   demands: demandsRouter,
-  demandsLegacy: demandsLegacyRouter,
   diagnostic: diagnosticRouter,
   // Health check endpoint - no auth required
   healthCheck: route.query(() => {
