@@ -1,6 +1,6 @@
-import DemandesStatsPage from '@/modules/demands/client/DemandesStatsPage';
+import DemandsStatsPage from '@/modules/demands/client/DemandsStatsPage';
 import { withAuthentication } from '@/server/authentication';
 
-export default DemandesStatsPage;
+export default DemandsStatsPage;
 
 export const getServerSideProps = withAuthentication(['admin']);

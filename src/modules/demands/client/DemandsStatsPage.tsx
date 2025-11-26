@@ -24,7 +24,7 @@ import type { TagsStats } from '../types';
 const initialSortingState = [{ desc: true, id: 'lastSixMonths' }];
 const initialFilterState = [{ id: 'type', value: { '': true, gestionnaire: false, metropole: true, reseau: true, ville: true } }];
 
-export default function TagsStatsPage() {
+export default function DemandsStatsPage() {
   const { data: tagsStats, isLoading } = trpc.demands.admin.getTagsStats.useQuery();
 
   const tableColumns: ColumnDef<TagsStats>[] = useMemo(
