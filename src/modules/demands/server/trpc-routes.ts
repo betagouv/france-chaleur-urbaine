@@ -1,5 +1,4 @@
-import { route, router } from '@/modules/trpc/server';
-import { kdb } from '@/server/db/kysely';
+import { routeAuthenticated, routeRole, router } from '@/modules/trpc/server';
 
 import {
   zAddRelanceCommentInput,
@@ -15,19 +14,17 @@ import * as demandsService from './demands-service';
 
 export const demandsRouter = router({
   admin: {
-    delete: route
-      .meta({ auth: { roles: ['admin'] } })
+    delete: routeRole(['admin'])
       .input(zDeleteDemandInput)
       .mutation(async ({ input, ctx }) => {
         const { demandId } = input;
         await demandsService.remove(demandId, ctx.user.id);
       }),
-    list: route.meta({ auth: { roles: ['admin'] } }).query(async () => {
+    list: routeRole(['admin']).query(async () => {
       const result = await demandsService.listAdmin();
       return result;
     }),
-    update: route
-      .meta({ auth: { roles: ['admin'] } })
+    update: routeRole(['admin'])
       .input(zAdminUpdateDemandInput)
       .mutation(async ({ input, ctx }) => {
         const { demandId, values } = input;
@@ -39,17 +36,15 @@ export const demandsRouter = router({
       }),
   },
   gestionnaire: {
-    list: route.meta({ auth: { roles: ['gestionnaire', 'demo'] } }).query(async ({ ctx }) => {
+    list: routeRole(['gestionnaire', 'demo']).query(async ({ ctx }) => {
       return await demandsService.list(ctx.user);
     }),
-    listEmails: route
-      .meta({ auth: { roles: ['gestionnaire', 'admin'] } })
+    listEmails: routeRole(['gestionnaire', 'admin'])
       .input(zListEmailsInput)
       .query(async ({ input }) => {
         return await demandsService.listEmails(input.demand_id);
       }),
-    sendEmail: route
-      .meta({ auth: { roles: ['gestionnaire', 'admin'] } })
+    sendEmail: routeRole(['gestionnaire', 'admin'])
       .input(zSendEmailInput)
       .mutation(async ({ input, ctx }) => {
         await demandsService.sendEmail({
@@ -59,8 +54,7 @@ export const demandsRouter = router({
           user: ctx.user,
         });
       }),
-    update: route
-      .meta({ auth: { roles: ['gestionnaire', 'demo'] } })
+    update: routeRole(['gestionnaire', 'demo'])
       .input(zGestionnaireUpdateDemandInput)
       .mutation(async ({ input, ctx }) => {
         const { demandId, values } = input;
@@ -72,38 +66,22 @@ export const demandsRouter = router({
       }),
   },
   user: {
-    addRelanceComment: route.input(zAddRelanceCommentInput).mutation(async ({ input, ctx }) => {
+    addRelanceComment: routeAuthenticated.input(zAddRelanceCommentInput).mutation(async ({ input, ctx }) => {
       const { relanceId, comment } = input;
       return await demandsService.updateCommentFromRelanceId(relanceId, comment, ctx.user?.id);
     }),
-    create: route.input(zCreateDemandInput).mutation(async ({ input, ctx }) => {
+    create: routeAuthenticated.input(zCreateDemandInput).mutation(async ({ input, ctx }) => {
       return await demandsService.create(input, ctx.user?.id);
     }),
-    list: route
-      .meta({
-        auth: {
-          roles: ['particulier', 'professionnel', 'gestionnaire', 'admin'],
-        },
-      })
-      .query(async ({ ctx }) => {
-        return await demandsService.listByUser(ctx.user.id);
-      }),
-    listEmails: route
-      .meta({
-        auth: {
-          roles: ['particulier', 'professionnel', 'gestionnaire', 'admin'],
-        },
-      })
+    list: routeRole(['particulier', 'professionnel', 'gestionnaire', 'admin']).query(async ({ ctx }) => {
+      return await demandsService.listByUser(ctx.user.id);
+    }),
+    listEmails: routeRole(['particulier', 'professionnel', 'gestionnaire', 'admin'])
       .input(zListEmailsInput)
       .query(async ({ input, ctx }) => {
-        // Verify the user owns this demand
-        const demand = await kdb.selectFrom('demands').select(['user_id']).where('id', '=', input.demand_id).executeTakeFirst();
-        if (!demand || demand.user_id !== ctx.user.id) {
-          throw new Error('Unauthorized');
-        }
-        return await demandsService.listEmails(input.demand_id);
+        return await demandsService.listEmails({ demandId: input.demand_id, userId: ctx.user.id });
       }),
-    update: route.input(zUserUpdateDemandInput).mutation(async ({ input, ctx }) => {
+    update: routeAuthenticated.input(zUserUpdateDemandInput).mutation(async ({ input, ctx }) => {
       const { demandId, values } = input;
       return await demandsService.update(demandId, values as any, ctx.user?.id);
     }),

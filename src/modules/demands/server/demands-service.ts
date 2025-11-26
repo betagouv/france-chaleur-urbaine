@@ -226,7 +226,11 @@ export const remove = async (demandId: string, userId?: string) => {
   }
 };
 
-export const listEmails = async (demandId: string) => {
+export const listEmails = async ({ demandId, userId }: { demandId: string; userId: string }) => {
+  const demand = await kdb.selectFrom('demands').select(['user_id']).where('id', '=', demandId).executeTakeFirst();
+  if (!demand || demand.user_id !== userId) {
+    throw new Error('Unauthorized');
+  }
   const emails = await kdb.selectFrom('demand_emails').selectAll().where('demand_id', '=', demandId).execute();
   return emails;
 };

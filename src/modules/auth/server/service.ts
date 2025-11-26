@@ -97,7 +97,7 @@ export const login = async (email: string, password: string) => {
 
   // Link demands by email on every login
   try {
-    logger.info('attempting to link demands on login', { email: user.email, user_id: user.id });
+    logger.info('attempting to link demands on login', { user_id: user.id });
     const linkedCount = await linkDemandsByEmail(user.id, user.email);
     logger.info('demands linked on login', {
       count: linkedCount,
