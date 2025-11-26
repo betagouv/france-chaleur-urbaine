@@ -223,3 +223,28 @@ export function requireAuthentication(user: User, configOrRoles: boolean | UserR
     throw invalidPermissionsError;
   }
 }
+
+/**
+ * Stream un iterable async sous forme de tableau JSON vers le client.
+ * Configure automatiquement les headers pour le chunked transfer encoding.
+ *
+ * @param stream - AsyncIterable à streamer (ex: résultat de kysely .stream())
+ * @param res - Response Next.js
+ */
+export async function streamJsonArray<T>(stream: AsyncIterable<T>, res: NextApiResponse): Promise<void> {
+  res.setHeader('Content-Type', 'application/json');
+  res.setHeader('Transfer-Encoding', 'chunked');
+  res.write('[');
+
+  let isFirst = true;
+  for await (const item of stream) {
+    if (!isFirst) {
+      res.write(',');
+    }
+    res.write(JSON.stringify(item));
+    isFirst = false;
+  }
+
+  res.write(']');
+  res.end();
+}

@@ -11,6 +11,7 @@ import {
   sql,
 } from 'kysely';
 import { Pool, types } from 'pg';
+import Cursor from 'pg-cursor';
 
 import { serverConfig } from '@/server/config';
 import { parentLogger } from '@/server/helpers/logger';
@@ -30,6 +31,7 @@ types.setTypeParser(types.builtins.FLOAT8, (value) => parseFloat(value));
 types.setTypeParser(types.builtins.NUMERIC, (value) => parseFloat(value));
 
 const dialect = new PostgresDialect({
+  cursor: Cursor,
   pool: new Pool({
     application_name: 'FCU-API',
     connectionString: process.env.DATABASE_URL,
