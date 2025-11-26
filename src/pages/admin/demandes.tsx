@@ -160,6 +160,8 @@ const defaultAssignmentChipOption: ChipOption = {
  */
 let isUpdatingDemandField = false;
 
+const demandsTableUrlSyncKey = 'demands';
+
 function DemandesAdmin(): React.ReactElement {
   const virtualizerRef = useRef<Virtualizer<HTMLDivElement, Element>>(null) as RefObject<Virtualizer<HTMLDivElement, Element>>;
   const [selectedDemandId, setSelectedDemandId] = useState<string | null>(null);
@@ -173,7 +175,7 @@ function DemandesAdmin(): React.ReactElement {
 
   // Pour le moment, si l'URL contient les filtres, on applique pas les presets.
   const [urlColumnFilters] = useQueryState(
-    'demands_filters',
+    `${demandsTableUrlSyncKey}_filters`,
     parseAsJson<ColumnFiltersState>((value) => value as ColumnFiltersState)
   );
   const initialColumnFilters = urlColumnFilters !== null ? [] : quickFilterPresets.demandesAAffecter.filters;
@@ -739,7 +741,7 @@ function DemandesAdmin(): React.ReactElement {
               loadingEmptyMessage="Aucune demande à afficher"
               height="calc(100dvh - 164px)"
               virtualizerRef={virtualizerRef}
-              urlSyncKey="demands"
+              urlSyncKey={demandsTableUrlSyncKey}
             />
           </ResizablePanel>
           <ResizableHandle />
