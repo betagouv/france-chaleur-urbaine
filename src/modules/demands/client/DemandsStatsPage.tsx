@@ -113,7 +113,7 @@ export default function DemandsStatsPage() {
                     {users.map((user) => {
                       const lastConnectionClassName = getLastConnectionClassName(user.last_connection);
                       return (
-                        <Tag key={user.id} className="bg-gray-100 text-gray-800">
+                        <Tag as="span" key={user.id} className="bg-gray-100 text-gray-800">
                           <div className="flex flex-col leading-tight break-all text-xs">
                             <span>{user.email}</span>
                             {user.last_connection ? (
