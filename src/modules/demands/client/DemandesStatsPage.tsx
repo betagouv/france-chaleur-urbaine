@@ -229,6 +229,7 @@ export default function TagsStatsPage() {
         width: '330px',
       },
       {
+        accessorFn: (row) => row.allTime.pending,
         accessorKey: 'allTime',
         cell: ({ row }) => {
           const { pending, total } = row.original.allTime;
