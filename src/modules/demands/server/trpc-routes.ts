@@ -41,8 +41,8 @@ export const demandsRouter = router({
     }),
     listEmails: routeRole(['gestionnaire', 'admin'])
       .input(zListEmailsInput)
-      .query(async ({ input }) => {
-        return await demandsService.listEmails(input.demand_id);
+      .query(async ({ input, ctx }) => {
+        return await demandsService.listEmails({ demandId: input.demand_id, userId: ctx.user.id });
       }),
     sendEmail: routeRole(['gestionnaire', 'admin'])
       .input(zSendEmailInput)
