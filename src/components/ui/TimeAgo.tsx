@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import Tooltip from '@/components/ui/Tooltip';
 import { dayjs, formatFrenchDateTime } from '@/utils/date';
 
-type TimeagoProps = {
+type TimeAgoProps = {
   date: string | Date;
   className?: string;
   prefix?: ReactNode;
@@ -15,12 +15,12 @@ type TimeagoProps = {
  *
  * @example
  * ```tsx
- * <Timeago date={new Date()} />
- * <Timeago date="2024-01-15" prefix="Dernière connexion " />
- * <Timeago date="2024-01-15" prefix="Créé " suffix=" par admin" />
+ * <TimeAgo date={new Date()} />
+ * <TimeAgo date="2024-01-15" prefix="Dernière connexion " />
+ * <TimeAgo date="2024-01-15" prefix="Créé " suffix=" par admin" />
  * ```
  */
-export default function Timeago({ date, className, prefix, suffix }: TimeagoProps) {
+export default function TimeAgo({ date, className, prefix, suffix }: TimeAgoProps) {
   const targetDate = dayjs(date);
   const diffInDays = Math.round(targetDate.diff(dayjs(), 'day', true));
 

@@ -9,7 +9,7 @@ import Button from '@/components/ui/Button';
 import CallOut from '@/components/ui/CallOut';
 import Heading from '@/components/ui/Heading';
 import Icon from '@/components/ui/Icon';
-import Timeago from '@/components/ui/Timeago';
+import TimeAgo from '@/components/ui/TimeAgo';
 import Tooltip from '@/components/ui/Tooltip';
 import TableSimple, { type ColumnDef } from '@/components/ui/table/TableSimple';
 import { notify } from '@/modules/notification';
@@ -117,7 +117,7 @@ export default function TagsStatsPage() {
                           <div className="flex flex-col leading-tight break-all">
                             <span>{user.email}</span>
                             {user.last_connection ? (
-                              <Timeago
+                              <TimeAgo
                                 date={user.last_connection}
                                 className={cx('text-xs', lastConnectionClassName)}
                                 prefix={
