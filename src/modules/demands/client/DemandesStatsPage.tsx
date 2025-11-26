@@ -159,20 +159,21 @@ export default function TagsStatsPage() {
         width: '250px',
       },
       {
-        accessorFn: (row) => {
+        accessorFn: ({ reseauxDeChaleur, reseauxEnConstruction }) => {
           return [
-            ...row.reseauxDeChaleur.map((reseau) => `${reseau.id_fcu}${reseau.nom_reseau || ''}${reseau['Identifiant reseau'] || ''}`),
-            ...row.reseauxEnConstruction.map((reseau) => `${reseau.id_fcu}${reseau.nom_reseau || ''}`),
+            ...reseauxDeChaleur.map((reseau) => `${reseau.id_fcu}${reseau.nom_reseau || ''}${reseau['Identifiant reseau'] || ''}`),
+            ...reseauxEnConstruction.map((reseau) => `${reseau.id_fcu}${reseau.nom_reseau || ''}`),
           ].join(' | ');
         },
         cell: ({ row }) => {
+          const { reseauxDeChaleur, reseauxEnConstruction } = row.original;
           const networks = [
-            ...row.original.reseauxDeChaleur.map((reseau) => ({
+            ...reseauxDeChaleur.map((reseau) => ({
               className: 'text-white bg-[#0D543F]! hover:bg-[#0D543F]/90!',
               id: `existing-${reseau.id_fcu}`,
               label: `${reseau.nom_reseau || `Réseau ${reseau.id_fcu}`}${reseau['Identifiant reseau'] ? ` (${reseau['Identifiant reseau']})` : ''}`,
             })),
-            ...row.original.reseauxEnConstruction.map((reseau) => ({
+            ...reseauxEnConstruction.map((reseau) => ({
               className: 'text-white bg-[#DA5DD5]! hover:bg-[#DA5DD5]/90!',
               id: `construction-${reseau.id_fcu}`,
               label: `${reseau.nom_reseau || `Réseau ${reseau.id_fcu}`}${reseau.is_zone ? ' (zone)' : ''}`,
