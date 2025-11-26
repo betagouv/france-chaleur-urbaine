@@ -559,7 +559,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
       return {
         communes: pdp.communes ?? [],
         distance: networkInfos?.distance ?? 0,
-        id_fcu: pdp.id_fcu,
+        id_fcu: networkInfos.id_fcu!,
         id_sncu: pdp['Identifiant reseau'] ?? '',
         nom: networkInfos?.nom_reseau ?? '',
         tags: networkInfos?.tags ?? [],
