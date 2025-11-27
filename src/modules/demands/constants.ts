@@ -36,9 +36,12 @@ export const zSendEmailInput = z.object({
 
 const zUserDemandUpdateValues = z
   .object({
+    'Commentaire relance': z.string().nullable(),
     Sondage: z.array(z.string()).nullable(),
   })
   .partial();
+
+export type UpdateUserDemandInput = z.infer<typeof zUserDemandUpdateValues>;
 
 // Zod schema for demand update values - only fields actually used in updateDemand calls
 // Analysis based on all updateDemand usage across the codebase
@@ -94,7 +97,7 @@ export const zAdminDemandUpdateValues = z
 
 export type UpdateAdminDemandInput = z.infer<typeof zAdminDemandUpdateValues>;
 
-export type UpdateDemandInput = UpdateGestionnaireDemandInput & UpdateAdminDemandInput & UpdateAdminDemandInput;
+export type UpdateDemandInput = UpdateGestionnaireDemandInput & UpdateAdminDemandInput & UpdateUserDemandInput;
 
 export const zUserUpdateDemandInput = z.object({
   demandId: z.string(),

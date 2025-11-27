@@ -351,7 +351,10 @@ function DemandesAdmin(): React.ReactElement {
             nativeInputProps={{
               defaultChecked: row.original['Recontacté par le gestionnaire'] === 'Oui',
               name: 'Recontacté par le gestionnaire',
-              onChange: (e) => updateDemand(row.original.id, { 'Recontacté par le gestionnaire': e.target.checked }),
+              onChange: (e) =>
+                updateDemand(row.original.id, {
+                  'Recontacté par le gestionnaire': e.target.checked as unknown as string, // Demand jas Oui ou Non but we need to send a boolean
+                }),
             }}
           />
         ),

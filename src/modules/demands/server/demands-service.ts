@@ -347,7 +347,7 @@ export const sendEmail = async (params: {
   );
 };
 
-export const updateFromRelanceId = async (relanceId: string, values: Partial<AirtableLegacyRecord>, userId?: string) => {
+export const updateFromRelanceId = async (relanceId: string, values: UpdateDemandInput, userId?: string) => {
   const relanceDemand = await kdb
     .selectFrom(tableName)
     .selectAll()
