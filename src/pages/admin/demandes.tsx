@@ -60,6 +60,17 @@ type MapCenterLocation = {
 
 // biome-ignore assist/source/useSortedKeys: keep field order as more coherent with most used actions
 const quickFilterPresets = {
+  demandesMoisEnCours: {
+    filters: [],
+
+    getStat: (demands) => {
+      return demands.filter((demand) => {
+        const demandDate = dayjs(demand['Date de la demande']);
+        return demandDate.isSame(dayjs(), 'month');
+      }).length;
+    },
+    label: `en ${dayjs().format('MMMM')}`,
+  },
   demandesAAffecter: {
     filters: [{ id: 'Gestionnaires validés', value: { false: true, true: false } }],
     getStat: (demands) => demands.filter((demand) => !demand['Gestionnaires validés']).length,
@@ -124,23 +135,6 @@ const quickFilterPresets = {
       </>
     ),
     valueSuffix: <FCUBadge type="pdp" />,
-  },
-  demandesMoisEnCours: {
-    filters: [],
-
-    getStat: (demands) => {
-      return demands.filter((demand) => {
-        const demandDate = dayjs(demand['Date de la demande']);
-        return demandDate.isSame(dayjs(), 'month');
-      }).length;
-    },
-    label: (
-      <>
-        pour le mois
-        <br />
-        en cours
-      </>
-    ),
   },
   all: {
     filters: [],
