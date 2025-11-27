@@ -30,7 +30,7 @@ type SimplePageProps = {
   mode?: PageMode;
   currentPage?: string;
   includeFooter?: boolean;
-  layout?: 'center' | 'fluid';
+  layout?: 'center' | 'fluid' | 'large';
   className?: string;
 } & SEOProps;
 
@@ -56,7 +56,13 @@ const SimplePage = ({
       />
       <PageHeader mode={mode ?? 'public'} currentPage={currentPage} />
 
-      <main id="main-content" className={cx(layout === 'center' ? 'fr-container fr-my-2w' : '', className)}>
+      <main
+        id="main-content"
+        className={cx(
+          layout === 'center' ? 'fr-container fr-my-2w' : layout === 'large' ? 'fr-mx-4w fr-my-2w flex flex-col items-start' : '',
+          className
+        )}
+      >
         {children}
       </main>
       {includeFooter && <PageFooter />}
@@ -360,6 +366,12 @@ const adminNavigationMenu: MainNavigationProps.Item[] = [
           href: '/admin/demandes',
         },
         text: 'Gestion des demandes',
+      },
+      {
+        linkProps: {
+          href: '/admin/demandes/stats',
+        },
+        text: 'Statistiques des demandes',
       },
       {
         linkProps: {

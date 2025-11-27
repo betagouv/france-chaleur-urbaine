@@ -53,12 +53,22 @@ export const db = new Kysely<Database>({
   dialect,
   log: serverConfig.LOG_SQL_QUERIES
     ? (event) => {
-        logger.debug(`query ${event.level === 'error' ? 'failed' : 'completed'}`, {
-          durationMs: Math.round(event.queryDurationMillis),
-          params: event.query.parameters,
-          sql: event.query.sql,
-          ...(event.level === 'error' ? { error: event.error } : {}),
-        });
+        if (serverConfig.LOG_SQL_QUERIES_PRETTY) {
+          console.info(
+            `\n${`query ${event.level === 'error' ? 'failed' : 'completed'}`}\n${event.query.sql}\nParams:`,
+            event.query.parameters
+          );
+          if (event.level === 'error') {
+            console.info('Erreur:', event.error);
+          }
+        } else {
+          logger.debug(`query ${event.level === 'error' ? 'failed' : 'completed'}`, {
+            durationMs: Math.round(event.queryDurationMillis),
+            params: event.query.parameters,
+            sql: event.query.sql,
+            ...(event.level === 'error' ? { error: event.error } : {}),
+          });
+        }
       }
     : undefined,
 });

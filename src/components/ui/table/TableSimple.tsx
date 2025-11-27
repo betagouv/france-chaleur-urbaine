@@ -28,7 +28,9 @@ import { cva } from 'class-variance-authority';
 import dynamic from 'next/dynamic';
 import React, { type RefObject, useCallback, useEffect } from 'react';
 
+import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
+import Dialog from '@/components/ui/Dialog';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover';
 import { useTableState } from '@/components/ui/table/useTableState';
 import { isDevModeEnabled } from '@/hooks/useDevMode';
@@ -36,7 +38,7 @@ import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
 import type { FlattenKeys } from '@/utils/typescript';
 import TableCell, { type TableCellProps } from './TableCell';
-import TableFilter, { defaultTableFilterFns, type TableFilterProps } from './TableFilter';
+import TableFilter, { DEFAULT_MAX_DATE, DEFAULT_MIN_DATE, defaultTableFilterFns, type TableFilterProps } from './TableFilter';
 
 const ButtonExport = dynamic(() => import('@/components/ui/ButtonExport'), { ssr: false });
 
@@ -51,6 +53,24 @@ export const customSortingFn = <T extends RowData>(): Record<string, SortingFn<T
 });
 
 export const customFilterFn = <T extends RowData>(): Record<string, FilterFn<T>> => ({
+  arrayIncludesAny: (row, columnId, filterValue: string[]) => {
+    const value = row.getValue<any>(columnId);
+
+    // Si la valeur n'est pas un tableau ou est null/undefined, on retourne false
+    if (!value || !Array.isArray(value)) return false;
+
+    // Si le filtre est vide, on affiche tout
+    if (!filterValue || filterValue.length === 0) return true;
+
+    // Vérifie si au moins un des tags du filtre est présent dans le tableau
+    return filterValue.some((filterTag) => value.includes(filterTag));
+  },
+  equalsAny: (row, columnId, filterValue: Record<string, boolean>) => {
+    const value = row.getValue<any>(columnId);
+    return Object.entries(filterValue)
+      .filter(([, isSelected]) => isSelected)
+      .some(([key]) => value === key);
+  },
   includesAny: (row, columnId, filterValue: Record<string, boolean>) => {
     let value = row.getValue<any>(columnId);
     if (value === true) value = 'true';
@@ -62,7 +82,7 @@ export const customFilterFn = <T extends RowData>(): Record<string, FilterFn<T>>
       .filter(([, isSelected]) => isSelected)
       .some(([key]) => value.includes(key));
   },
-  inDateRangeNotNull: (row, columnId, filterValue: [string, string, boolean?]) => {
+  inDateRangeNotNull: (row, columnId, filterValue: [string | null, string | null, boolean?]) => {
     const [minDate, maxDate, includeNull] = filterValue;
     const value = row.getValue<string | null>(columnId);
 
@@ -70,7 +90,11 @@ export const customFilterFn = <T extends RowData>(): Record<string, FilterFn<T>>
       return includeNull === true;
     }
 
-    return value >= minDate && value <= maxDate;
+    // Use default dates if not specified by user (treat empty strings as null)
+    const effectiveMinDate = minDate?.trim() || DEFAULT_MIN_DATE;
+    const effectiveMaxDate = maxDate?.trim() || DEFAULT_MAX_DATE;
+
+    return value >= effectiveMinDate && value <= effectiveMaxDate;
   },
   inNumberRangeNotNull: (row, columnId, filterValue: [number, number]) => {
     const [min, max] = filterValue;
@@ -97,6 +121,9 @@ export type ColumnDef<T, K = any> = ColumnDefOriginal<T, K> & {
   filter?: keyof ReturnType<typeof customFilterFn<T>>;
   filterType?: TableFilterProps['type'];
   filterProps?: TableFilterProps['filterProps'];
+  filtersDialogLabel?: React.ReactNode;
+  filtersDialogDescription?: React.ReactNode;
+  showInFiltersDialog?: boolean;
   visible?: boolean;
 } & ({ flex?: number } | { width?: 'auto' | string });
 
@@ -398,6 +425,10 @@ export type TableSimpleProps<T> = {
    * Synchronise l'état du tableau avec l'URL avec cette clé comme préfixe.
    */
   urlSyncKey?: string;
+  /**
+   * Affiche le bouton Filtres pour ouvrir la dialog. Par défaut, non affiché.
+   */
+  enableFiltersDialog?: boolean;
 };
 
 const TableSimple = <T extends RowData>({
@@ -429,7 +460,9 @@ const TableSimple = <T extends RowData>({
   topRightActions,
   export: exportConfig,
   urlSyncKey,
+  enableFiltersDialog = false,
 }: TableSimpleProps<T>) => {
+  const [isFiltersDialogOpen, setFiltersDialogOpen] = React.useState(false);
   const {
     columnFilters,
     globalFilter,
@@ -502,6 +535,10 @@ const TableSimple = <T extends RowData>({
       const actualFilterFn = isDateRange ? 'inDateRangeNotNull' : filterTypeName;
       column.filterFn = customFilterFns[actualFilterFn] || actualFilterFn;
     }
+    // Ensure columns exposing filters opt into column filtering
+    if ((column.filterType !== undefined || column.filter !== undefined) && (column as any).enableColumnFilter === undefined) {
+      (column as any).enableColumnFilter = true;
+    }
   });
 
   const columnVisibility = React.useMemo(() => {
@@ -514,9 +551,7 @@ const TableSimple = <T extends RowData>({
     );
   }, [tableColumns]);
 
-  // Détermine le filtre global effectif : priorité à externalGlobalFilter si fourni et urlSync désactivé
   const effectiveGlobalFilter = urlSyncKey ? globalFilter : (externalGlobalFilter ?? globalFilter);
-  // Active la gestion du changement de filtre global uniquement si urlSync est activé ou si externalGlobalFilter n'est pas fourni
   const shouldHandleGlobalFilterChange = urlSyncKey || !isDefined(externalGlobalFilter);
 
   const table = useReactTable({
@@ -541,6 +576,23 @@ const TableSimple = <T extends RowData>({
       sorting: sortingState,
     },
   });
+
+  const filterableColumns = React.useMemo(() => {
+    return table
+      .getAllColumns()
+      .filter((column) => {
+        const columnDef = column.columnDef as ColumnDef<T>;
+        if (columnDef.showInFiltersDialog === false) {
+          return false;
+        }
+        return columnDef.filterType !== undefined || columnDef.filter !== undefined;
+      })
+      .filter((column) => column.id !== undefined && column.id !== '');
+  }, [table]);
+
+  const filterableColumnIds = React.useMemo(() => new Set(filterableColumns.map((column) => column.id)), [filterableColumns]);
+  const activeFiltersCount = table.getState().columnFilters.filter((filter) => filterableColumnIds.has(filter.id as string)).length;
+  const hasFiltersDialog = enableFiltersDialog !== undefined ? enableFiltersDialog : filterableColumns.length > 0;
 
   React.useEffect(() => {
     if (onSelectionChange) {
@@ -637,29 +689,114 @@ const TableSimple = <T extends RowData>({
         {enableGlobalFilter && (
           <Input
             label=""
-            className="flex-1"
+            className="flex-1 mb-2"
             nativeInputProps={{
-              className: 'mb-2',
               onChange: (e) => table.setGlobalFilter(e.target.value),
               placeholder: 'Recherche...',
               value: globalFilter,
             }}
           />
         )}
-        <div className={cx('flex items-center gap-2', enableGlobalFilter && 'mb-6' /** mb-6 to be aligned with the input */)}>
-          {exportConfig && (
-            <ButtonExport
-              size="small"
-              filename={exportConfig.fileName}
-              sheets={buildExportData}
-              iconId="ri-download-line"
-              priority="secondary"
-            >
-              Télécharger les données
-            </ButtonExport>
-          )}
-          {topRightActions}
-        </div>
+        {(hasFiltersDialog || exportConfig || topRightActions) && (
+          <div className="flex items-center gap-2">
+            {hasFiltersDialog && (
+              <Dialog
+                title="Filtres"
+                size="lg"
+                open={isFiltersDialogOpen}
+                onOpenChange={setFiltersDialogOpen}
+                trigger={
+                  <Button
+                    size="small"
+                    priority={activeFiltersCount > 0 ? 'secondary' : 'tertiary'}
+                    iconId="ri-filter-2-line"
+                    className={cx(activeFiltersCount > 0 && 'animate-[puff_0.2s_ease-in-out]')}
+                  >
+                    {activeFiltersCount > 0 ? `Filtres (${activeFiltersCount})` : 'Filtres'}
+                  </Button>
+                }
+              >
+                <div className="flex flex-col gap-4">
+                  {filterableColumns.map((column) => {
+                    const columnDef = column.columnDef as ColumnDef<T>;
+                    const label =
+                      columnDef.filtersDialogLabel ??
+                      (typeof columnDef.header === 'string' ? columnDef.header : (column.id ?? columnDef.id ?? 'Filtre'));
+                    const description = columnDef.filtersDialogDescription;
+                    const filterValue = column.getFilterValue();
+                    const facetedUniqueValues = column.getFacetedUniqueValues();
+                    const facetedMinMaxValues = column.getFacetedMinMaxValues();
+
+                    return (
+                      <section key={column.id} className="rounded-lg border border-gray-200 p-4 flex flex-col gap-3">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex-1">
+                            <p className="font-semibold leading-tight">{label}</p>
+                            {description ? <div className="text-sm text-gray-600">{description}</div> : null}
+                          </div>
+                          <div className="flex items-center gap-2 shrink-0">
+                            {column.getIsFiltered() ? (
+                              <>
+                                <Badge size="sm" type="actif" noIcon />
+                                <Button
+                                  priority="tertiary no outline"
+                                  iconId="ri-close-line"
+                                  size="small"
+                                  onClick={() => column.setFilterValue(undefined)}
+                                >
+                                  Réinitialiser
+                                </Button>
+                              </>
+                            ) : null}
+                          </div>
+                        </div>
+                        <TableFilter
+                          key={column.id}
+                          type={columnDef.filterType as any}
+                          value={filterValue as any}
+                          onChange={(newValue) => {
+                            column.setFilterValue(newValue);
+                          }}
+                          filterProps={columnDef.filterProps as any}
+                          facetedMinMaxValues={facetedMinMaxValues as any}
+                          facetedUniqueValues={facetedUniqueValues}
+                          cellType={columnDef.cellType}
+                        />
+                      </section>
+                    );
+                  })}
+                  <div className="flex flex-wrap justify-between gap-2 pt-2">
+                    <Button
+                      priority="tertiary"
+                      iconId="ri-refresh-line"
+                      size="small"
+                      onClick={() => {
+                        table.resetColumnFilters();
+                      }}
+                    >
+                      Réinitialiser tout
+                    </Button>
+                    <Button priority="primary" size="small" iconId="ri-check-line" onClick={() => setFiltersDialogOpen(false)}>
+                      Fermer
+                    </Button>
+                  </div>
+                </div>
+              </Dialog>
+            )}
+            {exportConfig && (
+              <ButtonExport
+                size="small"
+                filename={exportConfig.fileName}
+                sheets={buildExportData}
+                iconId="ri-download-line"
+                priority="secondary"
+              >
+                Télécharger les données
+              </ButtonExport>
+            )}
+            {topRightActions}
+          </div>
+        )}
       </div>
       {caption && <div className="text-2xl leading-8 font-bold mb-5">{caption}</div>}
       <div

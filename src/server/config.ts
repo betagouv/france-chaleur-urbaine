@@ -27,6 +27,7 @@ const serverConfigSchema = {
   IS_REVIEW_APP: z.boolean().default(false),
   LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
   LOG_SQL_QUERIES: z.boolean().default(false),
+  LOG_SQL_QUERIES_PRETTY: z.boolean().default(false),
   MAIL_FROM: z.string().default('France Chaleur Urbaine <france-chaleur-urbaine@applications.developpement-durable.gouv.fr>'),
   MAIL_HOST: z.string(),
   MAIL_PASS: z.string(),
