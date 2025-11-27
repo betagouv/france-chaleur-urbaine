@@ -468,8 +468,10 @@ export const listAdmin = async () => {
   const { items: assignmentRules } = await assignmentRulesService.list();
   const parsedRules = await assignmentRulesService.parseAssignmentRules(assignmentRules);
 
-  const reseauxDeChaleur = await kdb.selectFrom('reseaux_de_chaleur').select(['tags', 'id_fcu', 'communes']).execute();
-  const reseauxEnConstruction = await kdb.selectFrom('zones_et_reseaux_en_construction').select(['tags', 'id_fcu', 'communes']).execute();
+  const [reseauxDeChaleur, reseauxEnConstruction] = await Promise.all([
+    kdb.selectFrom('reseaux_de_chaleur').select(['tags', 'id_fcu', 'communes']).execute(),
+    kdb.selectFrom('zones_et_reseaux_en_construction').select(['tags', 'id_fcu', 'communes']).execute(),
+  ]);
 
   startTime = Date.now();
   const demands = (
@@ -512,9 +514,9 @@ export const listAdmin = async () => {
         let communes: string[] = [];
 
         if (eligibility?.entity === 'ReseauDeChaleur') {
-          const ReseauDeChaleur = reseauxDeChaleur.find((reseau) => reseau.id_fcu === eligibility.id_fcu);
-          tags = ReseauDeChaleur?.tags ?? [];
-          communes = ReseauDeChaleur?.communes ?? [];
+          const reseauDeChaleur = reseauxDeChaleur.find((reseau) => reseau.id_fcu === eligibility.id_fcu);
+          tags = reseauDeChaleur?.tags ?? [];
+          communes = reseauDeChaleur?.communes ?? [];
         } else if (eligibility?.entity === 'ReseauEnConstruction') {
           const reseauEnConstruction = reseauxEnConstruction.find((reseau) => reseau.id_fcu === eligibility.id_fcu);
           tags = reseauEnConstruction?.tags ?? [];

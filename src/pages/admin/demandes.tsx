@@ -131,7 +131,7 @@ const quickFilterPresets = {
     getStat: (demands) => {
       return demands.filter((demand) => {
         const demandDate = dayjs(demand['Date de la demande']);
-        return demandDate.month() === dayjs().month() && demandDate.year() === dayjs().year();
+        return demandDate.isSame(dayjs(), 'month');
       }).length;
     },
     label: (
