@@ -45,7 +45,7 @@ const Comment = <T extends Demand>({
       className="w-full [&>textarea]:leading-4!"
       nativeTextAreaProps={{
         onChange: onChangeHandler,
-        value,
+        value: value ?? '',
       }}
     />
   );

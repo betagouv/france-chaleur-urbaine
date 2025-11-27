@@ -249,7 +249,12 @@ function DemandesAdmin(): React.ReactElement {
           }),
         };
       });
-      await updateDemandMutation({ demandId, values: demandUpdate });
+      // Convert null to undefined for fields that don't accept null
+      const sanitizedUpdate = Object.fromEntries(
+        Object.entries(demandUpdate).map(([key, value]) => [key, value === null ? undefined : value])
+      );
+
+      await updateDemandMutation({ demandId, values: sanitizedUpdate });
     }),
     [utils, updateDemandMutation]
   );
