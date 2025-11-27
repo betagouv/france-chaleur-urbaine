@@ -48,7 +48,7 @@ Le code récupère `networkInfos` via `findPDPAssociatedNetwork()` qui contient 
 
 ## ✅ Possibilité de Correction
 
-### Récupération via id_sncu
+### Méthode 1 : Récupération via id_sncu
 Les `id_fcu` corrects peuvent être récupérés via une jointure entre `pro_eligibility_tests_addresses.eligibility_history[].eligibility.id_sncu` et `reseaux_de_chaleur."Identifiant reseau"`.
 
 | Type | Corrigeable | Non-corrigeable | Taux de récupération |
@@ -56,12 +56,36 @@ Les `id_fcu` corrects peuvent être récupérés via une jointure entre `pro_eli
 | PDP existants | 2 208 | 2 | 99.9% |
 | PDP futurs (avec id_sncu) | 223 | 14 | 94.1% |
 | PDP futurs (sans id_sncu) | 0 | 31 | 0% |
-| **TOTAL** | **2 431** | **47** | **98.1%** |
+| **SOUS-TOTAL** | **2 431** | **47** | **98.1%** |
 
-### Cas Non-Récupérables (47 adresses)
-1. **2 PDP existants** : Pas d'id_sncu dans l'historique
-2. **14 PDP futurs** : id_sncu présent mais non trouvé dans `reseaux_de_chaleur`
-3. **31 PDP futurs** : Pas d'id_sncu dans l'historique
+### Méthode 2 : Récupération via nom + géolocalisation
+Pour les 47 cas non récupérables par id_sncu, on peut utiliser le `nom_reseau` combiné à la géolocalisation.
+
+**Stratégie :**
+1. **Matching par nom** : Jointure sur `nom_reseau` avec `zones_et_reseaux_en_construction` ou `reseaux_de_chaleur`
+2. **Désambiguïsation géographique** : Si plusieurs réseaux ont le même nom, prendre le **plus proche** géographiquement
+
+**Exemples de cas récupérés :**
+- "METROPOLE SUD" : 11 adresses (2 réseaux homonymes → choix du plus proche)
+- "Mans Nord Enr'gie" : 9 adresses (réseau unique)
+- "Bordeaux Aéroparc" : 1 adresse (réseau unique)
+
+| Méthode | Récupérable | Non-récupérable |
+|---------|-------------|-----------------|
+| Via nom + géolocalisation | 21 | 26 |
+
+### Bilan Global
+
+| Méthode | Nombre | Pourcentage |
+|---------|--------|-------------|
+| **Via id_sncu** | 2 431 | 98.1% |
+| **Via nom + géolocalisation** | 21 | 0.8% |
+| **TOTAL RÉCUPÉRABLE** | **2 452** | **99.0%** |
+| Vraiment non-récupérable | 26 | 1.0% |
+| **TOTAL GÉNÉRAL** | **2 478** | **100%** |
+
+### Cas Vraiment Non-Récupérables (26 adresses)
+Ces adresses n'ont ni `id_sncu` ni `nom_reseau` exploitable dans l'historique.
 
 ## 🔧 Plan de Correction
 
@@ -92,9 +116,9 @@ CREATE TABLE pro_eligibility_tests_addresses_backup_20251127 AS
 SELECT * FROM pro_eligibility_tests_addresses;
 ```
 
-#### 2.2 Correction des Données
+#### 2.2a Correction via id_sncu (Méthode 1)
 ```sql
--- Migration pour corriger les id_fcu dans eligibility_history
+-- Migration pour corriger les id_fcu dans eligibility_history via id_sncu
 -- Affecte 2 431 adresses sur 2 478 (98.1%)
 
 WITH corrected_history AS (
@@ -137,10 +161,66 @@ FROM corrected_history ch
 WHERE peta.id = ch.id;
 ```
 
+#### 2.2b Correction via nom + géolocalisation (Méthode 2)
+```sql
+-- Migration pour corriger les 21 adresses restantes via nom + géolocalisation
+-- Utilise le réseau le plus proche géographiquement quand plusieurs réseaux ont le même nom
+
+WITH best_network_by_name AS (
+  SELECT DISTINCT ON (peta.id, item.ordinality)
+    peta.id,
+    item.ordinality,
+    COALESCE(zec.id_fcu, rdc2.id_fcu) as id_fcu_correct
+  FROM pro_eligibility_tests_addresses peta
+  CROSS JOIN LATERAL jsonb_array_elements(peta.eligibility_history) WITH ORDINALITY as item
+  LEFT JOIN reseaux_de_chaleur rdc_check
+    ON rdc_check."Identifiant reseau" = item->'eligibility'->>'id_sncu'
+  LEFT JOIN zones_et_reseaux_en_construction zec
+    ON LOWER(TRIM(zec.nom_reseau)) = LOWER(TRIM(item->'eligibility'->>'nom'))
+    AND item->'eligibility'->>'type' = 'dans_pdp_reseau_futur'
+  LEFT JOIN reseaux_de_chaleur rdc2
+    ON LOWER(TRIM(rdc2.nom_reseau)) = LOWER(TRIM(item->'eligibility'->>'nom'))
+    AND item->'eligibility'->>'type' = 'dans_pdp_reseau_existant'
+  WHERE item->'eligibility'->>'type' IN ('dans_pdp_reseau_existant', 'dans_pdp_reseau_futur')
+    AND rdc_check.id_fcu IS NULL  -- Seulement les cas non corrigés par Méthode 1
+    AND item->'eligibility'->>'nom' IS NOT NULL
+    AND item->'eligibility'->>'nom' != ''
+    AND peta.geom IS NOT NULL
+    AND (zec.id_fcu IS NOT NULL OR rdc2.id_fcu IS NOT NULL)
+  ORDER BY peta.id, item.ordinality,
+    ST_Distance(
+      ST_Transform(peta.geom, 4326)::geography,
+      ST_Transform(COALESCE(zec.geom, rdc2.geom), 4326)::geography
+    ) NULLS LAST
+),
+corrected_history_by_name AS (
+  SELECT
+    peta.id,
+    jsonb_agg(
+      CASE
+        WHEN bnn.id_fcu_correct IS NOT NULL
+        THEN jsonb_set(item, '{eligibility,id_fcu}', to_jsonb(bnn.id_fcu_correct::text), true)
+        ELSE item
+      END
+      ORDER BY ordinality
+    ) as new_history
+  FROM pro_eligibility_tests_addresses peta
+  CROSS JOIN LATERAL jsonb_array_elements(peta.eligibility_history) WITH ORDINALITY as item
+  LEFT JOIN best_network_by_name bnn
+    ON bnn.id = peta.id AND bnn.ordinality = item.ordinality
+  WHERE peta.id IN (SELECT id FROM best_network_by_name)
+  GROUP BY peta.id
+)
+UPDATE pro_eligibility_tests_addresses peta
+SET eligibility_history = chn.new_history
+FROM corrected_history_by_name chn
+WHERE peta.id = chn.id;
+```
+
 #### 2.3 Identifier les Cas Non-Corrigés
 ```sql
--- Lister les 47 adresses qui n'ont pas pu être corrigées
--- Pour investigation manuelle
+-- Lister les 26 adresses qui n'ont vraiment pas pu être corrigées
+-- (Après application des Méthodes 1 et 2)
 
 SELECT
   peta.id,
@@ -245,8 +325,10 @@ DROP TABLE pro_eligibility_tests_addresses_backup_20251127;
 
 ## 🎯 Résultats Attendus
 
-- ✅ **2 431 adresses corrigées** (98.1% du total)
-- ⚠️ **47 adresses non corrigées** (1.9% du total) - nécessitent investigation manuelle
+- ✅ **2 452 adresses corrigées** (99.0% du total)
+  - 2 431 via id_sncu (Méthode 1)
+  - 21 via nom + géolocalisation (Méthode 2)
+- ⚠️ **26 adresses non corrigées** (1.0% du total) - sans id_sncu ni nom exploitable
 - ✅ Code source fixé pour éviter le bug à l'avenir
 - ✅ Documentation complète du bug et de la correction
 
