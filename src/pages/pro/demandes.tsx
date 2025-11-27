@@ -98,7 +98,7 @@ export const demandsExportColumns: ExportColumn<DemandsListItem>[] = [
     accessorFn: (demand) => (demand['Gestionnaire Conso'] === undefined ? demand.Conso : demand['Gestionnaire Conso']) ?? 0,
     name: 'Conso gaz (MWh)',
   },
-  { accessorKey: 'Commentaire', name: 'Commentaires' },
+  { accessorKey: 'comment_gestionnaire', name: 'Commentaires' },
   {
     accessorKey: 'Affecté à',
     name: 'Affecté à',
@@ -408,8 +408,8 @@ function DemandesNew(): React.ReactElement {
         width: '120px',
       },
       {
-        accessorKey: 'Commentaires',
-        cell: ({ row }) => <Comment demand={row.original as unknown as Demand} field="Commentaire" updateDemand={updateDemand} />,
+        accessorKey: 'comment_gestionnaire',
+        cell: ({ row }) => <Comment demand={row.original as unknown as Demand} field="comment_gestionnaire" updateDemand={updateDemand} />,
         enableSorting: false,
         header: 'Commentaires',
         width: '280px',

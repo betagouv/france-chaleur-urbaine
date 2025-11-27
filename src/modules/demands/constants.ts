@@ -56,7 +56,7 @@ const zGestionnaireDemandUpdateValues = z
     'Prise de contact': z.boolean(),
 
     // Communication
-    Commentaire: z.string().nullable(),
+    comment_gestionnaire: z.string().nullable(),
 
     // Additional info
     'Gestionnaire Conso': z.number().nullable(),
@@ -64,6 +64,8 @@ const zGestionnaireDemandUpdateValues = z
     'Surface en m2': z.number().nullable(),
   })
   .partial();
+
+export type UpdateGestionnaireDemandInput = z.infer<typeof zGestionnaireDemandUpdateValues>;
 
 export const zAdminDemandUpdateValues = z
   // biome-ignore assist/source/useSortedKeys: keep field order for clarity and maintainability
@@ -82,9 +84,13 @@ export const zAdminDemandUpdateValues = z
     'Relance à activer': z.boolean(),
 
     // Communication
-    Commentaires_internes_FCU: z.string(),
+    comment_fcu: z.string(),
   })
   .partial();
+
+export type UpdateAdminDemandInput = z.infer<typeof zAdminDemandUpdateValues>;
+
+export type UpdateDemandInput = UpdateGestionnaireDemandInput & UpdateAdminDemandInput & UpdateAdminDemandInput;
 
 export const zUserUpdateDemandInput = z.object({
   demandId: z.string(),

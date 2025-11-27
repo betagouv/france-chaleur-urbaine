@@ -3,7 +3,12 @@ import type { Insertable, Selectable } from 'kysely';
 import type { User } from 'next-auth';
 import { v4 as uuidv4 } from 'uuid';
 import { clientConfig } from '@/client-config';
-import { type CreateDemandInput, demandStatusDefault, formatDataToLegacyAirtable } from '@/modules/demands/constants';
+import {
+  type CreateDemandInput,
+  demandStatusDefault,
+  formatDataToLegacyAirtable,
+  type UpdateDemandInput,
+} from '@/modules/demands/constants';
 import type { AirtableLegacyRecord } from '@/modules/demands/types';
 import { sendEmailTemplate } from '@/modules/email';
 import { createEvent, createUserEvent } from '@/modules/events/server/service';
@@ -73,7 +78,7 @@ const augmentGestionnaireDemand = <T extends Selectable<Demands>>({
   };
 };
 
-export const update = async (recordId: string, values: Partial<AirtableLegacyRecord>, userId?: string) => {
+export const update = async (recordId: string, { comment_fcu, comment_gestionnaire, ...values }: UpdateDemandInput, userId?: string) => {
   // Get current demand before update to detect changes
   const currentDemand = await kdb.selectFrom(tableName).selectAll().where('id', '=', recordId).executeTakeFirst();
 
@@ -97,6 +102,8 @@ export const update = async (recordId: string, values: Partial<AirtableLegacyRec
   const [updatedDemand] = await kdb
     .updateTable(tableName)
     .set({
+      ...(comment_fcu && { comment_fcu }),
+      ...(comment_gestionnaire && { comment_gestionnaire }),
       legacy_values: sql`legacy_values || ${JSON.stringify(values)}::jsonb`, // The || operator merges the two JSONB objects, with the new values overwriting any matching keys.
       updated_at: new Date(),
     })

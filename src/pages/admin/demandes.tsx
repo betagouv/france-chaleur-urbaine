@@ -539,13 +539,13 @@ function DemandesAdmin(): React.ReactElement {
         width: '280px',
       },
       {
-        accessorKey: 'Commentaire',
-        header: 'Commentaire',
+        accessorKey: 'comment_gestionnaire',
+        header: 'Commentaire Gestionnaire',
         width: '280px',
       },
       {
-        accessorKey: 'Commentaires_internes_FCU',
-        cell: ({ row }) => <Comment demand={row.original} field="Commentaires_internes_FCU" updateDemand={updateDemand} />,
+        accessorKey: 'comment_fcu',
+        cell: ({ row }) => <Comment demand={row.original} field="comment_fcu" updateDemand={updateDemand} />,
         enableSorting: false,
         header: 'Commentaires internes FCU',
         width: '280px',
