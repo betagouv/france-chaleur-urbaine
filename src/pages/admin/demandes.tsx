@@ -43,6 +43,7 @@ import { withAuthentication } from '@/server/authentication';
 import type { Point } from '@/types/Point';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
+import { dayjs } from '@/utils/date';
 import { stopPropagation } from '@/utils/events';
 import { formatMWh } from '@/utils/strings';
 
@@ -65,7 +66,7 @@ const quickFilterPresets = {
     getStat: (demands) => demands.filter((demand) => !demand['Gestionnaires validés']).length,
     label: (
       <>
-        demandes à affecter&nbsp;
+        à affecter&nbsp;
         <Tooltip title="Demandes dont les tags gestionnaire et l'affectation n'ont pas encore été validés" />
       </>
     ),
@@ -91,7 +92,7 @@ const quickFilterPresets = {
       ).length,
     label: (
       <>
-        demandes en attente
+        en attente
         <br />
         de prise en charge&nbsp;
         <Tooltip
@@ -110,7 +111,7 @@ const quickFilterPresets = {
     getStat: (demands) => demands.filter((demand) => demand['en PDP'] === 'Oui').length,
     label: (
       <>
-        demandes en PDP&nbsp;
+        en PDP&nbsp;
         <Tooltip
           title={
             <>
@@ -124,6 +125,23 @@ const quickFilterPresets = {
       </>
     ),
     valueSuffix: <FCUBadge type="pdp" />,
+  },
+  demandesMoisEnCours: {
+    filters: [],
+
+    getStat: (demands) => {
+      return demands.filter((demand) => {
+        const demandDate = dayjs(demand['Date de la demande']);
+        return demandDate.month() === dayjs().month() && demandDate.year() === dayjs().year();
+      }).length;
+    },
+    label: (
+      <>
+        pour le mois
+        <br />
+        en cours
+      </>
+    ),
   },
   all: {
     filters: [],
