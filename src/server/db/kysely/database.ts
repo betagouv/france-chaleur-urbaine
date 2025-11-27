@@ -510,6 +510,21 @@ export interface ProEligibilityTestsAddressesTiles {
   z: Int8;
 }
 
+export interface QuartiersPrioritairesPolitiqueVille {
+  code_qp: string;
+  geom: string | null;
+  insee_com: string;
+  insee_dep: string;
+  insee_reg: string;
+  lib_com: string;
+  lib_dep: string;
+  lib_qp: string;
+  lib_reg: string;
+  fid: Generated<number>;
+  siren_epci: string | null;
+  source_fid: number | null;
+}
+
 export interface QuartiersPrioritairesPolitiqueVille2015AnruTiles {
   tile: Buffer;
   x: Int8;
@@ -936,6 +951,7 @@ export interface DB {
   pro_eligibility_tests_addresses_tiles: ProEligibilityTestsAddressesTiles;
   quartiers_prioritaires_politique_ville_2015_anru_tiles: QuartiersPrioritairesPolitiqueVille2015AnruTiles;
   quartiers_prioritaires_politique_ville_2024_tiles: QuartiersPrioritairesPolitiqueVille2024Tiles;
+  quartiers_prioritaires_politique_ville: QuartiersPrioritairesPolitiqueVille;
   raccordements_tiles: RaccordementsTiles;
   reseaux_de_chaleur: ReseauxDeChaleur;
   reseaux_de_chaleur_tiles: ReseauxDeChaleurTiles;

@@ -2,6 +2,7 @@ import type { ImportParams } from '@/modules/data/server/import';
 import { parentLogger } from '@/server/helpers/logger';
 import { importConsommationsGaz } from './imports/consommations-gaz';
 import { importEtudesEnCours } from './imports/etudes-en-cours';
+import { importQuartiersPrioritairesPolitiqueVille } from './imports/quartiers-prioritaires-politique-ville';
 import { importTestsAdressesLegacy } from './imports/tests-adresses-legacy';
 import { importZonesOpportuniteFortFroid } from './imports/zones-opportunite-fort-froid';
 import { importZonesOpportuniteFroid } from './imports/zones-opportunite-froid';
@@ -12,6 +13,7 @@ type DataImportConfig = (params: ImportParams) => Promise<void>;
 export const dataImportConfigs = {
   'consommations-gaz': importConsommationsGaz,
   'etudes-en-cours': importEtudesEnCours,
+  'quartiers-prioritaires-politique-ville': importQuartiersPrioritairesPolitiqueVille,
   'tests-adresses-legacy': importTestsAdressesLegacy,
   'zones-opportunite-fort-froid': importZonesOpportuniteFortFroid,
   'zones-opportunite-froid': importZonesOpportuniteFroid,

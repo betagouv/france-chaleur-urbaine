@@ -32,20 +32,20 @@ COPY (
 with
   infos_qp as (
     select
-      qp.code_qp,
+      qpv.code_qp,
 
       -- nombre de réseaux de chaleur existants dans le QPV
       (
         SELECT count(id_fcu)
         FROM reseaux_de_chaleur
-        WHERE ST_Intersects(geom, qp.geom)
+        WHERE ST_Intersects(geom, qpv.geom)
       ) as nb_reseaux_de_chaleur,
 
       -- dont nombre de réseaux classés
       (
         SELECT count(id_fcu)
         FROM reseaux_de_chaleur
-        WHERE ST_Intersects(geom, qp.geom)
+        WHERE ST_Intersects(geom, qpv.geom)
           AND "reseaux classes" is true
       ) as nb_reseaux_de_chaleur_classe,
 
@@ -53,7 +53,7 @@ with
       (
         SELECT count(id_fcu)
         FROM reseaux_de_froid
-        WHERE ST_Intersects(geom, qp.geom)
+        WHERE ST_Intersects(geom, qpv.geom)
       ) as nb_reseaux_de_froid,
 
       -- ID du réseau ou des réseaux
@@ -62,11 +62,11 @@ with
         from (
           SELECT "Identifiant reseau" as id
           FROM reseaux_de_chaleur
-          WHERE ST_Intersects(geom, qp.geom)
+          WHERE ST_Intersects(geom, qpv.geom)
           UNION all
           SELECT "Identifiant reseau" as id
           FROM reseaux_de_froid
-          WHERE ST_Intersects(geom, qp.geom)
+          WHERE ST_Intersects(geom, qpv.geom)
         ) ids
       ) as id_reseaux,
 
@@ -74,35 +74,35 @@ with
       (
         SELECT case when count(id_fcu) > 0 then 'oui' else 'non' end
         FROM zones_et_reseaux_en_construction
-        WHERE ST_Intersects(geom, qp.geom)
+        WHERE ST_Intersects(geom, qpv.geom)
       ) as contient_reseaux_de_chaleur_en_construction,
 
       -- présence d'un périmètre de développement prioritaire dans le QPV
       (
         SELECT case when count(id_fcu) > 0 then 'oui' else 'non' end
         FROM zone_de_developpement_prioritaire
-        WHERE ST_Intersects(geom, qp.geom)
+        WHERE ST_Intersects(geom, qpv.geom)
       ) as contient_perimetre_de_developpement_prioritaire,
 
       -- présence d'une zone à fort potentiel pour la création d'un réseau dans le QPV
       (
         SELECT case when count(*) > 0 then 'oui' else 'non' end
         FROM zone_a_potentiel_chaud
-        WHERE ST_Intersects(geom, qp.geom)
+        WHERE ST_Intersects(geom, qpv.geom)
       ) as contient_zone_a_potentiel_chaud,
 
       -- présence d'une zone à potentiel pour la création d'un réseau dans le QPV
       (
         SELECT case when count(*) > 0 then 'oui' else 'non' end
         FROM zone_a_potentiel_fort_chaud
-        WHERE ST_Intersects(geom, qp.geom)
+        WHERE ST_Intersects(geom, qpv.geom)
       ) as contient_zone_a_potentiel_fort_chaud
 
-    from data.quartiers_prioritaires qp
+    from quartiers_prioritaires_politique_ville qpv
   ),
   infos_batiments as (
     select
-      qp.code_qp,
+      qpv.code_qp,
 
       -- nb bâtiments et nb logements à chauffage collectif gaz à moins de 50 m d'un réseau de chaleur existant ou en construction dans le QPV
       coalesce(sum (CASE WHEN
@@ -353,16 +353,15 @@ with
       THEN nb_logements END), 0) as "dans zone à fort potentiel - nb logements collectif fioul"
 
 
-    from data.quartiers_prioritaires qp
-    left join data.computed_batiments_infos_proximite batiment on batiment."quartier_prioritaire - code_qp"  = qp.code_qp
-    group by qp.code_qp
+    from quartiers_prioritaires_politique_ville qpv
+    left join data.bdnb_batiments_infos_proximite batiment on batiment."quartier_prioritaire - code_qp"  = qpv.code_qp
+    group by qpv.code_qp
   )
 select
-  qp.*,
-  bat.*
-from infos_qp qp
-left join infos_batiments bat on bat.code_qp = qp.code_qp
-order by qp.code_qp
+  *
+from infos_qp qpv
+left join infos_batiments bat using (code_qp)
+order by qpv.code_qp
 ) TO stdout WITH CSV DELIMITER ',' HEADER
 EOF
 

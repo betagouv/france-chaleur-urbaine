@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-# Prépare des métadonnées et métriques pour chaque batiment de la BDNB (bndb_registre_2022).
+# Prépare des métadonnées et métriques pour chaque batiment de la BDNB (bdnb_batiments 2024-10.a).
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . "$SCRIPT_DIR"/../lib.sh
@@ -8,14 +8,15 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # Décommenter pour écrire dans un fichier en plus de la sortie standard
 # exec &> >(tee batiments-summary.log)
 
+psql postgres://postgres:postgres_fcu@localhost:5432 -c "create schema if not exists data"
+
 # 1. Calcul de plein d'informations coûteuses pour chaque batiment de la BDNB
-split_table_query data.computed_batiments_infos_proximite id 10000 24000000 '
+split_table_query data.bdnb_batiments_infos_proximite id 10000 32300000 '
 SELECT
   id,
-  code_departement_insee,
-  dpe_mix_arrete_type_installation_chauffage as type_installation_chauffage,
-  dpe_mix_arrete_type_energie_chauffage as type_energie_chauffage,
-  COALESCE(batiment.ffo_bat_nb_log, 0) as nb_logements,
+  dpe_representatif_logement_type_installation_chauffage as type_installation_chauffage,
+  dpe_representatif_logement_type_energie_chauffage as type_energie_chauffage,
+  COALESCE(ffo_bat_nb_log, 0) as nb_logements,
 
   nearest_reseau_de_chaleur.id_fcu as "nearest_reseau_de_chaleur - id_fcu",
   nearest_reseau_de_chaleur.id_sncu as "nearest_reseau_de_chaleur - id_sncu",
@@ -37,7 +38,7 @@ SELECT
   zone_a_potentiel_fort_chaud.ogc_fid as "zone_a_potentiel_fort_chaud - id",
   coalesce(zone_a_potentiel_fort_chaud.in_zone, false) as "zone_a_potentiel_fort_chaud - in_zone"
 
-FROM bdnb_registre_2022 as batiment
+FROM bdnb_batiments as batiment
 
 left join lateral (
   select *
@@ -141,16 +142,16 @@ left join lateral (
   from (
       select
         code_qp,
-        st_intersects(qp.geom, batiment.geom) as in_zone
-      from data.quartiers_prioritaires qp
-      order by qp.geom <-> batiment.geom
+        st_intersects(qpv.geom, batiment.geom) as in_zone
+      from quartiers_prioritaires_politique_ville qpv
+      order by qpv.geom <-> batiment.geom
       limit 1
   ) sub
   where in_zone is true
 ) as quartier_prioritaire on true
 
 -- accélère les traitements en ne prenant que les batiments intéressants
-WHERE dpe_mix_arrete_type_installation_chauffage = '"'collectif'"'
-  and (dpe_mix_arrete_type_energie_chauffage = '"'fioul'"' OR dpe_mix_arrete_type_energie_chauffage = '"'gaz'"')
+WHERE dpe_representatif_logement_type_installation_chauffage = '"'collectif'"'
+  and (dpe_representatif_logement_type_energie_chauffage = '"'fioul'"' OR dpe_representatif_logement_type_energie_chauffage = '"'gaz'"')
   and quartier_prioritaire.code_qp is not null
 '
