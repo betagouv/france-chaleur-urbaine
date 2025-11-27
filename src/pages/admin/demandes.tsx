@@ -61,7 +61,6 @@ type MapCenterLocation = {
 // biome-ignore assist/source/useSortedKeys: keep field order as more coherent with most used actions
 const quickFilterPresets = {
   demandesAAffecter: {
-    // @ts-expect-error: Typescript instantiation is too deep error
     filters: [{ id: 'Gestionnaires validés', value: { false: true, true: false } }],
     getStat: (demands) => demands.filter((demand) => !demand['Gestionnaires validés']).length,
     label: (
@@ -346,6 +345,8 @@ function DemandesAdmin(): React.ReactElement {
         accessorKey: 'Gestionnaires',
         cell: (info) => {
           const demand = info.row.original;
+          const eligibility = demand.testAddress.eligibility;
+          const communes: string[] = (eligibility as any)?.communes || [];
 
           return (
             <div className="block w-full">
@@ -360,15 +361,14 @@ function DemandesAdmin(): React.ReactElement {
                 suggestedValue={demand.recommendedTags}
               />
 
-              {/* <div className="my-1">
-                {demand.detailedEligibilityStatus.type !== 'trop_eloigne' &&
-                  !demand.detailedEligibilityStatus?.communes?.includes(demand.detailedEligibilityStatus.commune.nom!) && (
-                    <Badge
-                      type="warning_ville_differente"
-                      title={`La ville de la demande (${demand.detailedEligibilityStatus.commune.nom!}) ne correspond pas à ${demand.detailedEligibilityStatus.communes.length > 1 ? 'aux villes' : 'la ville'} du réseau (${demand.detailedEligibilityStatus.communes.join(', ')})`}
-                    />
-                  )}
-              </div> */}
+              <div className="my-1">
+                {eligibility?.type !== 'trop_eloigne' && !communes.includes(demand.Ville!) && (
+                  <FCUBadge
+                    type="warning_ville_differente"
+                    title={`La ville de la demande (${demand.Ville!}) ne correspond pas à ${communes.length > 1 ? 'aux villes' : 'la ville'} du réseau (${communes.join(', ')})`}
+                  />
+                )}
+              </div>
             </div>
           );
         },

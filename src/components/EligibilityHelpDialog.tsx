@@ -9,7 +9,7 @@ import cx from '@/utils/cx';
 
 type EligibilityHelpDialogProps = {
   children?: ReactNode;
-  detailedEligibilityStatus?: ProEligibilityTestHistoryEntry['eligibility'];
+  detailedEligibilityStatus?: ProEligibilityTestHistoryEntry['eligibility'] & { communes?: string[] };
   tags?: string[];
 };
 
@@ -53,10 +53,11 @@ const EligibilityHelpDialog = ({ children, detailedEligibilityStatus, tags }: El
                       <p className={cx('text-sm mb-2', isCurrent ? 'text-blue-800' : 'text-gray-700')}>{eligibilityCase.description}</p>
                       {isCurrent && detailedEligibilityStatus && (
                         <div className="mt-2 space-y-1">
-                          {/* <div>
-                            <span className="font-medium">Communes du réseau :</span>{' '}
-                            {detailedEligibilityStatus.communes?.join(', ') || '—'}
-                          </div> */}
+                          {detailedEligibilityStatus.communes && (
+                            <div>
+                              <span className="font-medium">Communes du réseau :</span> {detailedEligibilityStatus.communes.join(', ')}
+                            </div>
+                          )}
                           <div>
                             <span className="font-medium">Distance au réseau le plus proche :</span>{' '}
                             {detailedEligibilityStatus.distance != null ? `${detailedEligibilityStatus.distance} m` : '—'}

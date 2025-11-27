@@ -743,7 +743,7 @@ export type DetailedEligibilityStatus = Awaited<ReturnType<typeof getDetailedEli
  * @param pdp - Le PDP
  * @returns Les informations du réseau de chaleur ou en construction associé au PDP
  */
-const findPDPAssociatedNetwork = async (
+export const findPDPAssociatedNetwork = async (
   pdp: Pick<ZoneDeDeveloppementPrioritaire, 'Identifiant reseau' | 'reseau_de_chaleur_ids' | 'reseau_en_construction_ids'>,
   lat: number,
   lon: number
