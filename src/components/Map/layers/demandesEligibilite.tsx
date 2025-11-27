@@ -20,7 +20,6 @@ export const demandesEligibiliteLayersSpec = [
           'circle-stroke-width': demandesEligibiliteLayerStyle.stroke.size,
         },
         popup: Popup,
-        'source-layer': 'demands',
         type: 'circle',
       },
     ],

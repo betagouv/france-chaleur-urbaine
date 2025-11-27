@@ -161,7 +161,7 @@ export const getTile = async (
   return tile
     ? {
         compressed: false,
-        data: Buffer.from(vtpbf.fromGeojsonVt({ [tileInfo.sourceLayer!]: tile }, { version: 2 })),
+        data: Buffer.from(vtpbf.fromGeojsonVt({ layer: tile }, { version: 2 })),
       }
     : null;
 };
