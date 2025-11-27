@@ -7,6 +7,7 @@ import { type RefObject, useCallback, useEffect, useMemo, useRef, useState } fro
 import type { MapGeoJSONFeature } from 'react-map-gl/maplibre';
 import TableFieldInput from '@/components/Admin/TableFieldInput';
 import EligibilityHelpDialog from '@/components/EligibilityHelpDialog';
+import Checkbox from '@/components/form/dsfr/Checkbox';
 import Input from '@/components/form/dsfr/Input';
 import FCUTagAutocomplete from '@/components/form/FCUTagAutocomplete';
 import DemandEmailForm from '@/components/Manager/DemandEmailForm';
@@ -243,6 +244,7 @@ function DemandesAdmin(): React.ReactElement {
           }),
         };
       });
+
       // Convert null to undefined for fields that don't accept null
       const sanitizedUpdate = Object.fromEntries(
         Object.entries(demandUpdate).map(([key, value]) => [key, value === null ? undefined : value])
@@ -338,7 +340,30 @@ function DemandesAdmin(): React.ReactElement {
         enableGlobalFilter: false,
         filterType: 'Facets',
         header: 'Prospect recontacté',
-        width: '85px',
+        width: '110px',
+      },
+      {
+        accessorKey: 'Recontacté par le gestionnaire',
+        align: 'center',
+        cell: ({ row }) => (
+          <Checkbox
+            label=""
+            nativeInputProps={{
+              defaultChecked: row.original['Recontacté par le gestionnaire'] === 'Oui',
+              name: 'Recontacté par le gestionnaire',
+              onChange: (e) => updateDemand(row.original.id, { 'Recontacté par le gestionnaire': e.target.checked }),
+            }}
+          />
+        ),
+        filterType: 'Facets',
+        header: () => (
+          <>
+            Recontacté par
+            <br />
+            le gestionnaire
+          </>
+        ),
+        width: '110px',
       },
       {
         accessorKey: 'Gestionnaires',
@@ -544,12 +569,7 @@ function DemandesAdmin(): React.ReactElement {
         header: 'ID réseau le plus proche',
         width: '200px',
       },
-      {
-        accessorKey: 'Recontacté par le gestionnaire',
-        cellType: 'Boolean',
-        header: 'Recontacté par le gestionnaire',
-        width: '280px',
-      },
+
       {
         accessorKey: 'Commentaire relance',
         header: 'Commentaire relance',
