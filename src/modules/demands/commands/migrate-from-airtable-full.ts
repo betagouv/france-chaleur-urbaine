@@ -423,7 +423,7 @@ export default async (options: { batchSize?: string; dryRun?: boolean }) => {
         const contactedAt = parseAirtableDate((fields as any)['Recontacté par le gestionnaire']);
 
         const commentGestionnaire = fields.Commentaire || '';
-        const commentFcu = [fields.Commentaires_internes_FCU || '', (fields as any)['Commentaires FCU'] || ''].filter(Boolean).join('\n');
+        const commentFcu = [fields.Commentaires_internes_FCU || '', (fields as any)['Commentaire FCU'] || ''].filter(Boolean).join('\n');
 
         const history = buildHistory(fields, createdAt);
         const user = buildUser(fields);

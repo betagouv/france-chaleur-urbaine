@@ -63,6 +63,18 @@ export const withServerSession = (handler: WithServerSessionProps) => async (con
 
 /**
  * Add authentication to a page and return the session in server side props.
+ *
+ * ⚠️ IMPORTANT: This function MUST ONLY be used in getServerSideProps, NEVER as a component HOC!
+ *
+ * ✅ CORRECT usage:
+ * ```ts
+ * export const getServerSideProps = withAuthentication(['particulier', 'professionnel']);
+ * ```
+ *
+ * ❌ INCORRECT usage (will bundle server code in client):
+ * ```ts
+ * export default withAuthentication(['particulier'])(MyComponent);
+ * ```
  */
 export const withAuthentication = (requiredRoles?: UserRole[], handler?: WithServerSessionProps): GetServerSideProps<AuthSSRPageProps> => {
   return withServerSession(async ({ context, session }) => {

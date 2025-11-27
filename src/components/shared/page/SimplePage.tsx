@@ -5,6 +5,7 @@ import UnstyledMainNavigation, { type MainNavigationProps } from '@codegouvfr/re
 import { SkipLinks } from '@codegouvfr/react-dsfr/SkipLinks';
 import { useRouter } from 'next/router';
 import type React from 'react';
+import { useEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
 
 import { clientConfig } from '@/client-config';
@@ -276,6 +277,12 @@ const professionnelNavigationMenu: MainNavigationProps.Item[] = [
   },
   {
     linkProps: {
+      href: '/pro/mes-demandes',
+    },
+    text: 'Mes demandes',
+  },
+  {
+    linkProps: {
       href: '/pro/comparateur-couts-performances',
     },
     text: 'Comparateur de coûts et CO2',
@@ -442,6 +449,13 @@ const PageHeader = (props: PageHeaderProps) => {
   const isRouterReady = useRouterReady();
   const { session, hasRole, signOut, isAuthenticated } = useAuthentication();
 
+  // Use state to track authentication status after hydration to avoid hydration mismatch
+  const [isAuthenticatedClient, setIsAuthenticatedClient] = useState(false);
+
+  useEffect(() => {
+    setIsAuthenticatedClient(isAuthenticated);
+  }, [isAuthenticated]);
+
   const isFullScreenMode = props.mode === 'public-fullscreen' || props.mode === 'authenticated';
 
   const navigationMenuItems =
@@ -490,11 +504,11 @@ const PageHeader = (props: PageHeaderProps) => {
         ] satisfies HeaderProps.QuickAccessItem[])
       : [
           {
-            iconId: isAuthenticated ? 'fr-icon-account-circle-fill' : 'fr-icon-account-circle-line',
+            iconId: isAuthenticatedClient ? 'fr-icon-account-circle-fill' : 'fr-icon-account-circle-line',
             linkProps: {
               href: '/connexion',
             },
-            text: isAuthenticated ? 'Espace connecté' : 'Connectez-vous',
+            text: isAuthenticatedClient ? 'Espace connecté' : 'Connectez-vous',
           } satisfies HeaderProps.QuickAccessItem,
         ];
 

@@ -36,9 +36,12 @@ export const zSendEmailInput = z.object({
 
 const zUserDemandUpdateValues = z
   .object({
+    'Commentaire relance': z.string().nullable(),
     Sondage: z.array(z.string()).nullable(),
   })
   .partial();
+
+export type UpdateUserDemandInput = z.infer<typeof zUserDemandUpdateValues>;
 
 // Zod schema for demand update values - only fields actually used in updateDemand calls
 // Analysis based on all updateDemand usage across the codebase
@@ -56,7 +59,7 @@ const zGestionnaireDemandUpdateValues = z
     'Prise de contact': z.boolean(),
 
     // Communication
-    Commentaire: z.string().nullable(),
+    comment_gestionnaire: z.string().nullable(),
 
     // Additional info
     'Gestionnaire Conso': z.number().nullable(),
@@ -64,6 +67,8 @@ const zGestionnaireDemandUpdateValues = z
     'Surface en m2': z.number().nullable(),
   })
   .partial();
+
+export type UpdateGestionnaireDemandInput = z.infer<typeof zGestionnaireDemandUpdateValues>;
 
 export const zAdminDemandUpdateValues = z
   // biome-ignore assist/source/useSortedKeys: keep field order for clarity and maintainability
@@ -80,11 +85,19 @@ export const zAdminDemandUpdateValues = z
 
     // Status & Contact
     'Relance à activer': z.boolean(),
+    'Relance ID': z.string().nullable(),
+    'Notification envoyé': z.string().nullable(),
+    'Prise de contact': z.boolean(),
+    'Recontacté par le gestionnaire': z.boolean(),
 
     // Communication
-    Commentaires_internes_FCU: z.string(),
+    comment_fcu: z.string(),
   })
   .partial();
+
+export type UpdateAdminDemandInput = z.infer<typeof zAdminDemandUpdateValues>;
+
+export type UpdateDemandInput = UpdateGestionnaireDemandInput & UpdateAdminDemandInput & UpdateUserDemandInput;
 
 export const zUserUpdateDemandInput = z.object({
   demandId: z.string(),

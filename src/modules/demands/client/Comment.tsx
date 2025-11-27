@@ -10,7 +10,7 @@ const Comment = <T extends Demand>({
   updateDemand,
 }: {
   demand: T;
-  field: 'Commentaire' | 'Commentaires_internes_FCU';
+  field: 'comment_gestionnaire' | 'comment_fcu';
   updateDemand: (demandId: string, demand: Partial<T>) => Promise<void>;
 }) => {
   const [value, setValue] = useState(demand[field]);
@@ -45,7 +45,7 @@ const Comment = <T extends Demand>({
       className="w-full [&>textarea]:leading-4!"
       nativeTextAreaProps={{
         onChange: onChangeHandler,
-        value,
+        value: value ?? '',
       }}
     />
   );

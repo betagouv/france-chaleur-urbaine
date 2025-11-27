@@ -24,3 +24,4 @@ export const router = t.router;
 
 export const route = createProcedureWithAuth(t.procedure.use(loggingMiddleware).use(rateLimitMiddleware).use(authMiddleware));
 export const routeRole = (roles: Context['user']['role'][]) => route.meta({ auth: { roles } });
+export const routeAuthenticated = route.meta({ auth: { authenticated: true } });

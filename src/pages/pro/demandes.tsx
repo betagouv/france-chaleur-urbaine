@@ -1,11 +1,10 @@
 import type { ColumnFiltersState } from '@tanstack/react-table';
-import type { Virtualizer } from '@tanstack/react-virtual';
 import dynamic from 'next/dynamic';
-import { type RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { MapGeoJSONFeature, MapRef } from 'react-map-gl/maplibre';
+import { useCallback, useMemo, useState } from 'react';
 
 import Input from '@/components/form/dsfr/Input';
 import DemandEmailForm from '@/components/Manager/DemandEmailForm';
+import ModeDeChauffageTag, { getModeDeChauffageDisplay } from '@/components/Manager/ModeDeChauffageTag';
 import Tag from '@/components/Manager/Tag';
 import type { AdresseEligible } from '@/components/Map/layers/adressesEligibles';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
@@ -34,7 +33,6 @@ import type { Point } from '@/types/Point';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
 import type { ExportColumn } from '@/utils/export';
-import { upperCaseFirstChar } from '@/utils/strings';
 
 const Map = dynamic(() => import('@/components/Map/Map'), { ssr: false });
 const ButtonExport = dynamic(() => import('@/components/ui/ButtonExport'), { ssr: false });
@@ -100,20 +98,12 @@ export const demandsExportColumns: ExportColumn<DemandsListItem>[] = [
     accessorFn: (demand) => (demand['Gestionnaire Conso'] === undefined ? demand.Conso : demand['Gestionnaire Conso']) ?? 0,
     name: 'Conso gaz (MWh)',
   },
-  { accessorKey: 'Commentaire', name: 'Commentaires' },
+  { accessorKey: 'comment_gestionnaire', name: 'Commentaires' },
   {
     accessorKey: 'Affecté à',
     name: 'Affecté à',
   },
 ];
-
-const displayModeDeChauffage = (demand: DemandsListItem) => {
-  const modeDeChauffage = demand['Mode de chauffage']?.toLowerCase()?.trim();
-  if (modeDeChauffage && ['gaz', 'fioul', 'électricité'].includes(modeDeChauffage)) {
-    return `${upperCaseFirstChar(modeDeChauffage)} ${demand['Type de chauffage'] ? demand['Type de chauffage'].toLowerCase() : ''}`;
-  }
-  return demand['Type de chauffage'];
-};
 
 const quickFilterPresets = {
   all: {
@@ -186,8 +176,6 @@ const quickFilterPresets = {
 const initialSortingState = [{ desc: true, id: 'Date de la demande' }];
 
 function DemandesNew(): React.ReactElement {
-  const mapRef = useRef<MapRef>(null) as RefObject<MapRef>;
-  const virtualizerRef = useRef<Virtualizer<HTMLDivElement, Element>>(null) as RefObject<Virtualizer<HTMLDivElement, Element>>;
   const [selectedDemandId, setSelectedDemandId] = useState<string | null>(null);
   const [modalDemand, setModalDemand] = useState<DemandsListItem | null>(null);
   const tableRowSelection = useMemo(() => {
@@ -197,29 +185,27 @@ function DemandesNew(): React.ReactElement {
   const [mapCenterLocation, setMapCenterLocation] = useState<MapCenterLocation>();
   const [globalFilter, setGlobalFilter] = useState('');
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [filteredDemands, setFilteredDemands] = useState<DemandsListItem[]>([]);
 
   const { data: demands = [], isLoading } = trpc.demands.gestionnaire.list.useQuery();
 
-  // reset selection when filters change
-  useEffect(() => {
-    setSelectedDemandId(null);
-  }, [filteredDemands]);
-
-  const filteredDemandsMapData = useMemo(() => {
-    return filteredDemands.map(
+  const demandsMapData = useMemo(() => {
+    return demands.map(
       (demand) =>
         ({
           address: demand.Adresse,
           id: demand.id,
           latitude: demand.Latitude ?? 0,
           longitude: demand.Longitude ?? 0,
-          modeDeChauffage: displayModeDeChauffage(demand),
+          modeDeChauffage:
+            getModeDeChauffageDisplay({
+              modeDeChauffage: demand['Mode de chauffage'],
+              typeDeChauffage: demand['Type de chauffage'],
+            }) ?? undefined,
           selected: demand.id === selectedDemandId,
           typeDeLogement: demand.Structure,
         }) satisfies AdresseEligible
     );
-  }, [filteredDemands, selectedDemandId]);
+  }, [demands, selectedDemandId]);
 
   const utils = trpc.useUtils();
   const { mutateAsync: updateDemandMutation } = trpc.demands.gestionnaire.update.useMutation();
@@ -325,8 +311,14 @@ function DemandesNew(): React.ReactElement {
         width: '130px',
       },
       {
-        accessorFn: (row) => displayModeDeChauffage(row),
-        cell: ({ row }) => <Tag text={displayModeDeChauffage(row.original)} />,
+        accessorFn: (row) =>
+          getModeDeChauffageDisplay({
+            modeDeChauffage: row['Mode de chauffage'],
+            typeDeChauffage: row['Type de chauffage'],
+          }),
+        cell: ({ row }) => (
+          <ModeDeChauffageTag modeDeChauffage={row.original['Mode de chauffage']} typeDeChauffage={row.original['Type de chauffage']} />
+        ),
         enableGlobalFilter: false,
         filterType: 'Facets',
         header: 'Mode de chauffage',
@@ -416,8 +408,8 @@ function DemandesNew(): React.ReactElement {
         width: '120px',
       },
       {
-        accessorKey: 'Commentaires',
-        cell: ({ row }) => <Comment demand={row.original as unknown as Demand} field="Commentaire" updateDemand={updateDemand} />,
+        accessorKey: 'comment_gestionnaire',
+        cell: ({ row }) => <Comment demand={row.original as unknown as Demand} field="comment_gestionnaire" updateDemand={updateDemand} />,
         enableSorting: false,
         header: 'Commentaires',
         width: '280px',
@@ -470,18 +462,6 @@ function DemandesNew(): React.ReactElement {
     [updateDemand]
   );
 
-  const onFeatureClick = useCallback(
-    (feature: MapGeoJSONFeature) => {
-      if (feature.source !== 'adressesEligibles') {
-        return;
-      }
-      setSelectedDemandId(feature.id as string);
-      const rowIndex = filteredDemands.findIndex((demand) => demand.id === feature.id);
-      virtualizerRef.current?.scrollToIndex(rowIndex, { align: 'center' });
-    },
-    [filteredDemands, virtualizerRef.current]
-  );
-
   const onTableRowClick = useCallback(
     (demandId: string) => {
       setSelectedDemandId(demandId);
@@ -496,20 +476,6 @@ function DemandesNew(): React.ReactElement {
     },
     [demands]
   );
-
-  const onTableFiltersChange = useCallback((demands: DemandsListItem[]) => {
-    setFilteredDemands(demands);
-
-    // center on the first demand if any
-    const firstDemand = demands[0];
-    if (firstDemand) {
-      setMapCenterLocation({
-        center: [firstDemand.Longitude ?? 0, firstDemand.Latitude ?? 0],
-        flyTo: true,
-        zoom: 8,
-      });
-    }
-  }, []);
 
   const buildSheetData = useCallback(
     () => [
@@ -569,7 +535,6 @@ function DemandesNew(): React.ReactElement {
               initialSortingState={initialSortingState}
               globalFilter={globalFilter}
               columnFilters={columnFilters}
-              onFilterChange={onTableFiltersChange}
               fluid
               controlsLayout="block"
               padding="sm"
@@ -577,7 +542,6 @@ function DemandesNew(): React.ReactElement {
               onRowClick={onTableRowClick}
               loadingEmptyMessage="Vous n'avez pas encore reçu de demandes"
               height="calc(100dvh - 140px)"
-              virtualizerRef={virtualizerRef}
             />
           </ResizablePanel>
           <ResizableHandle />
@@ -598,11 +562,9 @@ function DemandesNew(): React.ReactElement {
                     zonesDeDeveloppementPrioritaire: true,
                   })}
                   geolocDisabled
-                  mapRef={mapRef}
                   withSoughtAddresses={false}
-                  adressesEligibles={filteredDemandsMapData}
+                  adressesEligibles={demandsMapData}
                   adressesEligiblesAutoFit={false}
-                  onFeatureClick={onFeatureClick}
                 />
               ) : isLoading ? (
                 <div className="absolute inset-0 flex justify-center items-center animate-pulse">

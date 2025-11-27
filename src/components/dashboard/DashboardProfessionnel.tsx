@@ -4,6 +4,15 @@ export default function DashboardProfessionnel() {
   return (
     <div className="grid gap-8 grid-cols-2 items-center justify-between mb-5">
       <Tile
+        title="Mes demandes"
+        desc="Consultez et suivez l'ensemble de vos demandes de renseignements concernant les réseaux de chaleur."
+        linkProps={{
+          href: '/pro/mes-demandes',
+        }}
+        orientation="horizontal"
+        enlargeLinkOrButton
+      />
+      <Tile
         title="Comparateur de prix et d'émissions de CO2"
         desc="Comparez les performances des modes de chauffage et de refroidissement (réseaux de chaleur et de froid, gaz, fioul, biomasse, PAC...) en termes de coûts et émissions de CO2."
         linkProps={{
