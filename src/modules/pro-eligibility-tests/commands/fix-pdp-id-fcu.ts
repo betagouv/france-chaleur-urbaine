@@ -12,8 +12,8 @@
  */
 
 import { sql } from 'kysely';
+import { getAddressEligibilityHistoryEntry } from '@/modules/pro-eligibility-tests/server/service';
 import { kdb } from '@/server/db/kysely';
-import { getDetailedEligibilityStatus } from '@/server/services/addresseInformation';
 
 const DRY_RUN = process.argv.includes('--dry-run');
 
@@ -289,8 +289,9 @@ async function recalculateRemainingAddresses(): Promise<number> {
     try {
       console.log(`   Recalcul de ${address.source_address} (${lat}, ${lon})...`);
 
-      // Recalculer l'éligibilité complète
-      const newEligibility = await getDetailedEligibilityStatus(lat, lon);
+      // Recalculer l'éligibilité en utilisant la même fonction que le reste du code
+      const historyEntry = await getAddressEligibilityHistoryEntry(lat, lon);
+      const newEligibility = historyEntry.eligibility;
 
       // Récupérer l'historique actuel
       const current = await kdb
@@ -310,8 +311,17 @@ async function recalculateRemainingAddresses(): Promise<number> {
             ...item,
             calculated_at: new Date().toISOString(),
             eligibility: {
-              ...item.eligibility,
-              ...newEligibility,
+              ...item.eligibility, // Conserver tous les champs originaux
+              communes: newEligibility.communes, // Mettre à jour les communes
+              contenu_co2_acv: newEligibility.contenu_co2_acv, // Mettre à jour contenu CO2
+              distance: newEligibility.distance, // Mettre à jour la distance
+              eligible: newEligibility.eligible, // Mettre à jour eligible
+              id_fcu: newEligibility.id_fcu, // Mettre à jour id_fcu (le bug principal)
+              id_sncu: newEligibility.id_sncu, // Mettre à jour id_sncu
+              nom: newEligibility.nom, // Mettre à jour le nom du réseau
+              tags: newEligibility.tags, // Mettre à jour les tags
+              taux_enrr: newEligibility.taux_enrr, // Mettre à jour taux EnR&R
+              type: item.eligibility.type, // Préserver le type original (existant vs futur)
             },
           };
         }

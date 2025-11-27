@@ -16,50 +16,117 @@
    - Le fix du code source doit être appliqué (PR #1164)
    - Le script de migration doit être présent
 
-## 🚀 Exécution du Script
+## 🎯 Choix de la Méthode
 
-### 1. Test en mode Dry-Run (recommandé)
+### Option 1 : Recalcul Complet (Recommandé) ⭐
 
-Avant d'appliquer les modifications, testez en mode dry-run pour voir combien d'adresses seraient affectées :
+**Script :** `recalculate-pdp-eligibility.ts`
+
+**Avantages :**
+- ✅ Plus simple et plus fiable
+- ✅ Garantit des données 100% correctes
+- ✅ Pas de risque d'erreur de mapping
+
+**Inconvénients :**
+- ⏱️ Plus lent (~2-3 secondes par adresse, ~2h pour 2478 adresses)
+
+**Quand utiliser :**
+- Si vous avez le temps
+- Si vous voulez la solution la plus sûre
+- Pour garantir la cohérence des données
+
+### Option 2 : Correction Ciblée (Rapide)
+
+**Script :** `fix-pdp-id-fcu.ts`
+
+**Avantages :**
+- ⚡ Très rapide (quelques secondes pour 99% des adresses)
+- ✅ Corrige 99% des cas automatiquement
+
+**Inconvénients :**
+- ⚠️ Plus complexe
+- ⚠️ 1% des adresses nécessitent un recalcul complet
+
+**Quand utiliser :**
+- Si vous devez être rapide
+- Si un taux de correction de 99% est acceptable
+- Pour une correction d'urgence
+
+## 🚀 Option 1 : Recalcul Complet (Recommandé)
+
+### 1. Test sur un échantillon (recommandé)
+
+Testez d'abord sur un petit nombre d'adresses pour vérifier que tout fonctionne :
+
+```bash
+# Tester sur 10 adresses seulement
+pnpm tsx src/modules/pro-eligibility-tests/commands/recalculate-pdp-eligibility.ts --limit=10
+```
+
+**Sortie attendue :**
+```
+🔄 Recalcul de l'éligibilité pour les adresses PDP
+Mode: ✍️  ÉCRITURE
+Limite: 10 adresses
+
+📍 Recherche des adresses PDP...
+✅ 2478 adresses trouvées
+
+🔄 Recalcul de l'éligibilité...
+
+[1/10] ✅ Rue Robespierre 33400 Talence
+[2/10] ✅ 10 Avenue du Pontet 33600 Pessac
+...
+[10/10] ✅ Rue Odilon Redon 33400 Talence
+
+📊 RÉSUMÉ:
+   - Total traité: 10
+   - Succès: 10
+   - Erreurs: 0
+   - Ignorés: 0
+
+⚠️  Seulement 10 adresses sur 2478 ont été traitées
+   Relancez sans --limit pour traiter toutes les adresses
+```
+
+### 2. Test en mode Dry-Run (optionnel)
+
+Pour voir ce qui serait fait sans modifier la base :
+
+```bash
+pnpm tsx src/modules/pro-eligibility-tests/commands/recalculate-pdp-eligibility.ts --dry-run --limit=10
+```
+
+### 3. Application sur toutes les adresses
+
+Une fois les tests validés, lancez sur toutes les adresses :
+
+```bash
+pnpm tsx src/modules/pro-eligibility-tests/commands/recalculate-pdp-eligibility.ts
+```
+
+**⚠️ Attention :**
+- Cette commande va modifier la base de données
+- Durée estimée : ~2 heures pour 2478 adresses
+- Le script fait une pause toutes les 10 adresses pour ne pas surcharger l'API
+
+**💡 Astuce :** Vous pouvez relancer le script si besoin, il traitera toutes les adresses à chaque fois (idempotent).
+
+## 🚀 Option 2 : Correction Ciblée (Rapide)
+
+### 1. Test en mode Dry-Run
 
 ```bash
 pnpm tsx src/modules/pro-eligibility-tests/commands/fix-pdp-id-fcu.ts --dry-run
 ```
 
-**Sortie attendue :**
-```
-🔧 Correction des id_fcu incorrects pour les adresses PDP
-Mode: 🔍 DRY RUN (aucune modification)
-
-📍 ÉTAPE 1: Correction via id_sncu...
-✅ 2431 adresses corrigées via id_sncu
-
-🗺️  ÉTAPE 2: Correction via nom + géolocalisation...
-✅ 21 adresses corrigées via nom + géo
-
-🔄 ÉTAPE 3: Recalcul complet pour les adresses non corrigées...
-   Trouvé 26 adresses à recalculer
-✅ 26 adresses recalculées
-
-📊 RÉSUMÉ:
-   - Corrigées via id_sncu: 2431
-   - Corrigées via nom+géo: 21
-   - Recalculées: 26
-   - TOTAL: 2478
-
-⚠️  Aucune modification effectuée (mode dry-run)
-   Relancez sans --dry-run pour appliquer les changements
-```
-
-### 2. Application des modifications
-
-Une fois le dry-run validé, appliquez les changements :
+### 2. Application
 
 ```bash
 pnpm tsx src/modules/pro-eligibility-tests/commands/fix-pdp-id-fcu.ts
 ```
 
-**⚠️ Attention :** Cette commande va modifier la base de données !
+**⚠️ Attention :** Beaucoup plus rapide (~1 minute) mais nécessite une validation SQL manuelle.
 
 ## 🔍 Validation Post-Migration
 
