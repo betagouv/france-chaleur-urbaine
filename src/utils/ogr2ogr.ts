@@ -27,20 +27,10 @@ export async function ogr2ogrImportGeoJSONToDatabaseTable(
   ogr2ogrOptions: string,
   options: RunCommandOptions = {}
 ): Promise<CommandResult | void> {
-  let inputFileName = basename(inputFilePath);
-  if (serverConfig.USE_DOCKER_GEO_COMMANDS) {
-    const randomPrefix = `input_${Math.random().toString(36).substring(2, 10)}_`;
-    inputFileName = `${randomPrefix}${inputFileName}`;
-    await rename(inputFilePath, join(dockerVolumePath, inputFileName));
-  }
   await runOgr2ogr(
-    `-f PostgreSQL ${pgUrlToGdal(serverConfig.DATABASE_URL)} ${tableName} -nln ${tableName} -lco GEOMETRY_NAME=geom -t_srs EPSG:2154 -overwrite ${ogr2ogrOptions}`,
+    `-f PostgreSQL ${pgUrlToGdal(serverConfig.DATABASE_URL)} ${inputFilePath} -nln ${tableName} -lco GEOMETRY_NAME=geom -t_srs EPSG:2154 -overwrite ${ogr2ogrOptions}`,
     options
   );
-  if (serverConfig.USE_DOCKER_GEO_COMMANDS) {
-    // input
-    await rename(join(dockerVolumePath, inputFileName), inputFilePath);
-  }
 }
 
 export async function ogr2ogrExtractGeoJSONFromDatabaseTable(
