@@ -7,6 +7,7 @@ import { type RefObject, useCallback, useEffect, useMemo, useRef, useState } fro
 import type { MapGeoJSONFeature } from 'react-map-gl/maplibre';
 import TableFieldInput from '@/components/Admin/TableFieldInput';
 import EligibilityHelpDialog from '@/components/EligibilityHelpDialog';
+import Checkbox from '@/components/form/dsfr/Checkbox';
 import Input from '@/components/form/dsfr/Input';
 import FCUTagAutocomplete from '@/components/form/FCUTagAutocomplete';
 import DemandEmailForm from '@/components/Manager/DemandEmailForm';
@@ -43,6 +44,7 @@ import { withAuthentication } from '@/server/authentication';
 import type { Point } from '@/types/Point';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
+import { dayjs } from '@/utils/date';
 import { stopPropagation } from '@/utils/events';
 import { formatMWh } from '@/utils/strings';
 
@@ -59,13 +61,23 @@ type MapCenterLocation = {
 
 // biome-ignore assist/source/useSortedKeys: keep field order as more coherent with most used actions
 const quickFilterPresets = {
+  demandesMoisEnCours: {
+    filters: [],
+
+    getStat: (demands) => {
+      return demands.filter((demand) => {
+        const demandDate = dayjs(demand['Date de la demande']);
+        return demandDate.isSame(dayjs(), 'month');
+      }).length;
+    },
+    label: `en ${dayjs().format('MMMM')}`,
+  },
   demandesAAffecter: {
-    // @ts-expect-error: Typescript instantiation is too deep error
     filters: [{ id: 'Gestionnaires validés', value: { false: true, true: false } }],
     getStat: (demands) => demands.filter((demand) => !demand['Gestionnaires validés']).length,
     label: (
       <>
-        demandes à affecter&nbsp;
+        à affecter&nbsp;
         <Tooltip title="Demandes dont les tags gestionnaire et l'affectation n'ont pas encore été validés" />
       </>
     ),
@@ -91,7 +103,7 @@ const quickFilterPresets = {
       ).length,
     label: (
       <>
-        demandes en attente
+        en attente
         <br />
         de prise en charge&nbsp;
         <Tooltip
@@ -110,7 +122,7 @@ const quickFilterPresets = {
     getStat: (demands) => demands.filter((demand) => demand['en PDP'] === 'Oui').length,
     label: (
       <>
-        demandes en PDP&nbsp;
+        en PDP&nbsp;
         <Tooltip
           title={
             <>
@@ -232,7 +244,13 @@ function DemandesAdmin(): React.ReactElement {
           }),
         };
       });
-      await updateDemandMutation({ demandId, values: demandUpdate });
+
+      // Convert null to undefined for fields that don't accept null
+      const sanitizedUpdate = Object.fromEntries(
+        Object.entries(demandUpdate).map(([key, value]) => [key, value === null ? undefined : value])
+      );
+
+      await updateDemandMutation({ demandId, values: sanitizedUpdate });
     }),
     [utils, updateDemandMutation]
   );
@@ -322,12 +340,40 @@ function DemandesAdmin(): React.ReactElement {
         enableGlobalFilter: false,
         filterType: 'Facets',
         header: 'Prospect recontacté',
-        width: '85px',
+        width: '110px',
+      },
+      {
+        accessorKey: 'Recontacté par le gestionnaire',
+        align: 'center',
+        cell: ({ row }) => (
+          <Checkbox
+            label=""
+            nativeInputProps={{
+              defaultChecked: row.original['Recontacté par le gestionnaire'] === 'Oui',
+              name: 'Recontacté par le gestionnaire',
+              onChange: (e) =>
+                updateDemand(row.original.id, {
+                  'Recontacté par le gestionnaire': e.target.checked as unknown as string, // Demand jas Oui ou Non but we need to send a boolean
+                }),
+            }}
+          />
+        ),
+        filterType: 'Facets',
+        header: () => (
+          <>
+            Recontacté par
+            <br />
+            le gestionnaire
+          </>
+        ),
+        width: '110px',
       },
       {
         accessorKey: 'Gestionnaires',
         cell: (info) => {
           const demand = info.row.original;
+          const eligibility = demand.testAddress.eligibility;
+          const communes: string[] = (eligibility as any)?.communes || [];
 
           return (
             <div className="block w-full">
@@ -342,15 +388,14 @@ function DemandesAdmin(): React.ReactElement {
                 suggestedValue={demand.recommendedTags}
               />
 
-              {/* <div className="my-1">
-                {demand.detailedEligibilityStatus.type !== 'trop_eloigne' &&
-                  !demand.detailedEligibilityStatus?.communes?.includes(demand.detailedEligibilityStatus.commune.nom!) && (
-                    <Badge
-                      type="warning_ville_differente"
-                      title={`La ville de la demande (${demand.detailedEligibilityStatus.commune.nom!}) ne correspond pas à ${demand.detailedEligibilityStatus.communes.length > 1 ? 'aux villes' : 'la ville'} du réseau (${demand.detailedEligibilityStatus.communes.join(', ')})`}
-                    />
-                  )}
-              </div> */}
+              <div className="my-1">
+                {eligibility?.type !== 'trop_eloigne' && !communes.includes(demand.Ville!) && (
+                  <FCUBadge
+                    type="warning_ville_differente"
+                    title={`La ville de la demande (${demand.Ville!}) ne correspond pas à ${communes.length > 1 ? 'aux villes' : 'la ville'} du réseau (${communes.join(', ')})`}
+                  />
+                )}
+              </div>
             </div>
           );
         },
@@ -527,25 +572,20 @@ function DemandesAdmin(): React.ReactElement {
         header: 'ID réseau le plus proche',
         width: '200px',
       },
-      {
-        accessorKey: 'Recontacté par le gestionnaire',
-        cellType: 'Boolean',
-        header: 'Recontacté par le gestionnaire',
-        width: '280px',
-      },
+
       {
         accessorKey: 'Commentaire relance',
         header: 'Commentaire relance',
         width: '280px',
       },
       {
-        accessorKey: 'Commentaire',
-        header: 'Commentaire',
+        accessorKey: 'comment_gestionnaire',
+        header: 'Commentaire Gestionnaire',
         width: '280px',
       },
       {
-        accessorKey: 'Commentaires_internes_FCU',
-        cell: ({ row }) => <Comment demand={row.original} field="Commentaires_internes_FCU" updateDemand={updateDemand} />,
+        accessorKey: 'comment_fcu',
+        cell: ({ row }) => <Comment demand={row.original} field="comment_fcu" updateDemand={updateDemand} />,
         enableSorting: false,
         header: 'Commentaires internes FCU',
         width: '280px',

@@ -18,7 +18,7 @@
 | Champ | Source Airtable | Description |
 |-------|----------------|-------------|
 | `comment_gestionnaire` | "Commentaire" \|\| "" | Commentaire du gestionnaire |
-| `comment_fcu` | Concaténation de "Commentaires_internes_FCU" et "Commentaires FCU" | Commentaires internes FCU |
+| `comment_fcu` | Concaténation de "Commentaires_internes_FCU" et "Commentaire FCU" | Commentaires internes FCU |
 
 ### Utilisateur (objet JSON `user`)
 

@@ -167,6 +167,8 @@ export interface CommunesFortPotentielPourCreationReseauxChaleurTiles {
 
 export interface Demands {
   airtable_id: string | null;
+  comment_gestionnaire: string | null;
+  comment_fcu: string | null;
   created_at: Generated<Timestamp>;
   deleted_at?: Timestamp | null;
   id: Generated<string>;

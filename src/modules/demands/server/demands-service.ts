@@ -3,7 +3,12 @@ import type { Insertable, Selectable } from 'kysely';
 import type { User } from 'next-auth';
 import { v4 as uuidv4 } from 'uuid';
 import { clientConfig } from '@/client-config';
-import { type CreateDemandInput, demandStatusDefault, formatDataToLegacyAirtable } from '@/modules/demands/constants';
+import {
+  type CreateDemandInput,
+  demandStatusDefault,
+  formatDataToLegacyAirtable,
+  type UpdateDemandInput,
+} from '@/modules/demands/constants';
 import type { AirtableLegacyRecord } from '@/modules/demands/types';
 import { sendEmailTemplate } from '@/modules/email';
 import { createEvent, createUserEvent } from '@/modules/events/server/service';
@@ -12,6 +17,7 @@ import type { ProEligibilityTestHistoryEntry } from '@/modules/pro-eligibility-t
 import { type DemandEmails, type Demands, kdb, type ProEligibilityTestsAddresses, sql } from '@/server/db/kysely';
 import { createBaseModel } from '@/server/db/kysely/base-model';
 import { parentLogger } from '@/server/helpers/logger';
+import { type EligibilityType, findPDPAssociatedNetwork } from '@/server/services/addresseInformation';
 import * as assignmentRulesService from './assignment_rules-service';
 
 const logger = parentLogger.child({
@@ -32,11 +38,29 @@ const augmentAdminDemand = <T extends Selectable<Demands>>({
   const augmentedDemand = augmentGestionnaireDemand({ demand, testAddress });
 
   augmentedDemand['Gestionnaires validés'] ??= false;
-  augmentedDemand.Commentaire ??= '';
-  augmentedDemand.Commentaires_internes_FCU ??= '';
   augmentedDemand['Relance à activer'] ??= false;
 
   return augmentedDemand;
+};
+
+const getEntityFromType = (type: EligibilityType) => {
+  switch (type) {
+    case 'dans_pdp_reseau_futur':
+    case 'dans_pdp_reseau_existant':
+      return 'PDP';
+    case 'reseau_existant_proche':
+    case 'reseau_existant_tres_proche':
+    case 'reseau_existant_loin':
+    case 'dans_ville_reseau_existant_sans_trace':
+      return 'ReseauDeChaleur';
+    case 'dans_zone_reseau_futur':
+    case 'reseau_futur_tres_proche':
+    case 'reseau_futur_loin':
+    case 'reseau_futur_proche':
+      return 'ReseauEnConstruction';
+    default:
+      return null;
+  }
 };
 
 const augmentGestionnaireDemand = <T extends Selectable<Demands>>({
@@ -47,7 +71,17 @@ const augmentGestionnaireDemand = <T extends Selectable<Demands>>({
   testAddress: Selectable<ProEligibilityTestsAddresses> | null;
 }) => {
   const history = testAddress?.eligibility_history as ProEligibilityTestHistoryEntry[] | undefined;
-  const lastEligibility = history?.[history.length - 1];
+  const augmentedHistory = (history || []).map((entry) => {
+    return {
+      ...entry,
+      eligibility: {
+        ...entry.eligibility,
+        entity: getEntityFromType(entry.eligibility?.type),
+      },
+    };
+  });
+
+  const lastEligibility = augmentedHistory?.[augmentedHistory.length - 1];
   legacy_values['en PDP'] = lastEligibility?.eligibility?.type.includes('dans_pdp') ? 'Oui' : 'Non';
   legacy_values['Prise de contact'] ??= false;
   legacy_values.Status ??= demandStatusDefault;
@@ -69,11 +103,12 @@ const augmentGestionnaireDemand = <T extends Selectable<Demands>>({
     testAddress: {
       ...testAddress,
       eligibility: lastEligibility?.eligibility,
+      eligibility_history: augmentedHistory,
     },
   };
 };
 
-export const update = async (recordId: string, values: Partial<AirtableLegacyRecord>, userId?: string) => {
+export const update = async (recordId: string, { comment_fcu, comment_gestionnaire, ...values }: UpdateDemandInput, userId?: string) => {
   // Get current demand before update to detect changes
   const currentDemand = await kdb.selectFrom(tableName).selectAll().where('id', '=', recordId).executeTakeFirst();
 
@@ -87,16 +122,24 @@ export const update = async (recordId: string, values: Partial<AirtableLegacyRec
     values['Affecté à'] !== currentDemand?.legacy_values['Gestionnaire Affecté à']
   ) {
     // Affectation a changé, on reset le gestionnaire affecté à
-    values['Gestionnaire Affecté à'] = values['Affecté à'];
+    values['Gestionnaire Affecté à'] = values['Affecté à'] as string;
   }
   if (newAssignment && oldAssignment !== newAssignment) {
     // Affectation a changé, on demande une revalidation des gestionnaires
     values['Gestionnaires validés'] = false;
   }
 
+  if (values['Recontacté par le gestionnaire'] === true) {
+    (values as any)['Recontacté par le gestionnaire'] = 'Oui'; // legacy a changer plus tard par un vrai booleen
+  } else if (values['Recontacté par le gestionnaire'] === false) {
+    (values as any)['Recontacté par le gestionnaire'] = 'Non'; // legacy a changer plus tard par un vrai booleen
+  }
+
   const [updatedDemand] = await kdb
     .updateTable(tableName)
     .set({
+      ...(comment_fcu && { comment_fcu }),
+      ...(comment_gestionnaire && { comment_gestionnaire }),
       legacy_values: sql`legacy_values || ${JSON.stringify(values)}::jsonb`, // The || operator merges the two JSONB objects, with the new values overwriting any matching keys.
       updated_at: new Date(),
     })
@@ -137,7 +180,12 @@ export const update = async (recordId: string, values: Partial<AirtableLegacyRec
       type: 'demand_updated',
     });
   }
-  return augmentAdminDemand({ demand: updatedDemand, testAddress: testAddress || null });
+  const demand = await get(updatedDemand.id);
+  if (!demand) {
+    throw new Error('Demand not found');
+  }
+
+  return augmentAdminDemand({ demand, testAddress: testAddress || null });
 };
 
 export const create = async (values: CreateDemandInput, userId?: string) => {
@@ -204,7 +252,13 @@ export const create = async (values: CreateDemandInput, userId?: string) => {
     sendEmailTemplate('demands.admin-new', { email: clientConfig.destinationEmails.contact }, { demand: legacyValues as any }),
   ]);
 
-  return augmentAdminDemand({ demand: createdDemand, testAddress });
+  const demand = await get(createdDemand.id);
+
+  if (!demand) {
+    throw new Error('Demand not found');
+  }
+
+  return augmentAdminDemand({ demand, testAddress });
 };
 
 export const remove = async (demandId: string, userId?: string) => {
@@ -293,7 +347,7 @@ export const sendEmail = async (params: {
   );
 };
 
-export const updateFromRelanceId = async (relanceId: string, values: Partial<AirtableLegacyRecord>, userId?: string) => {
+export const updateFromRelanceId = async (relanceId: string, values: UpdateDemandInput, userId?: string) => {
   const relanceDemand = await kdb
     .selectFrom(tableName)
     .selectAll()
@@ -312,7 +366,7 @@ export const updateCommentFromRelanceId = async (relanceId: string, comment: str
 };
 
 export const updateSatisfactionFromRelanceId = async (relanceId: string, satisfaction: boolean) => {
-  const demand = await updateFromRelanceId(relanceId, { 'Recontacté par le gestionnaire': satisfaction ? 'Oui' : 'Non' });
+  const demand = await updateFromRelanceId(relanceId, { 'Recontacté par le gestionnaire': satisfaction });
 
   // Automation import from  https://airtable.com/app9opX8gRAtBqkan/wfl3jPABYXeIrGeUr/wtrWn0m6O5tXFFdiP
   if (demand.Structure === 'Bailleur social' || demand.Structure === 'Tertiaire') {
@@ -392,16 +446,22 @@ export const dailyRelanceMail = async () => {
   }
 };
 
-export const listAdmin = async () => {
-  let startTime = Date.now();
-
-  const records = await kdb
+const buildDemandQuery = () => {
+  return kdb
     .selectFrom('demands')
     .innerJoin('pro_eligibility_tests_addresses', 'pro_eligibility_tests_addresses.demand_id', 'demands.id')
     .selectAll('demands')
-    .select(sql.raw(`to_jsonb(pro_eligibility_tests_addresses)`).as('testAddress'))
-    .orderBy(sql`legacy_values->>'Date de la demande'`, 'desc')
-    .execute();
+    .select(sql.raw<Selectable<ProEligibilityTestsAddresses>>(`to_jsonb(pro_eligibility_tests_addresses)`).as('testAddress'));
+};
+
+export const get = async (demandId: string) => {
+  return buildDemandQuery().where('demands.id', '=', demandId).executeTakeFirst();
+};
+
+export const listAdmin = async () => {
+  let startTime = Date.now();
+
+  const records = await buildDemandQuery().orderBy(sql`legacy_values->>'Date de la demande'`, 'desc').execute();
 
   const { count } = await kdb.selectFrom('demands').select(kdb.fn.count<number>('id').as('count')).executeTakeFirstOrThrow();
 
@@ -414,7 +474,10 @@ export const listAdmin = async () => {
   const { items: assignmentRules } = await assignmentRulesService.list();
   const parsedRules = await assignmentRulesService.parseAssignmentRules(assignmentRules);
 
-  const reseauxDeChaleur = await kdb.selectFrom('reseaux_de_chaleur').select(['tags', 'id_fcu']).execute();
+  const [reseauxDeChaleur, reseauxEnConstruction] = await Promise.all([
+    kdb.selectFrom('reseaux_de_chaleur').select(['tags', 'id_fcu', 'communes']).execute(),
+    kdb.selectFrom('zones_et_reseaux_en_construction').select(['tags', 'id_fcu', 'communes']).execute(),
+  ]);
 
   startTime = Date.now();
   const demands = (
@@ -433,16 +496,64 @@ export const listAdmin = async () => {
 
         const augmentedDemand = augmentAdminDemand({
           demand,
-          testAddress: testAddress as Selectable<ProEligibilityTestsAddresses> & { eligibility_history: ProEligibilityTestHistoryEntry[] },
+          testAddress,
         });
 
-        const tags = reseauxDeChaleur.find((reseau) => reseau.id_fcu === augmentedDemand.testAddress.eligibility?.id_fcu)?.tags ?? [];
+        if (augmentedDemand['Gestionnaires validés']) {
+          return {
+            ...augmentedDemand,
+            recommendedAssignment: '',
+            recommendedTags: [],
+            testAddress: {
+              ...augmentedDemand.testAddress,
+              eligibility: {
+                ...augmentedDemand.testAddress.eligibility,
+                communes: [],
+              },
+            },
+          };
+        }
+
+        const eligibility = augmentedDemand.testAddress?.eligibility;
+
+        let tags: string[] = [];
+        let communes: string[] = [];
+
+        if (eligibility?.entity === 'ReseauDeChaleur') {
+          const reseauDeChaleur = reseauxDeChaleur.find((reseau) => reseau.id_fcu === eligibility.id_fcu);
+          tags = reseauDeChaleur?.tags ?? [];
+          communes = reseauDeChaleur?.communes ?? [];
+        } else if (eligibility?.entity === 'ReseauEnConstruction') {
+          const reseauEnConstruction = reseauxEnConstruction.find((reseau) => reseau.id_fcu === eligibility.id_fcu);
+          tags = reseauEnConstruction?.tags ?? [];
+          communes = reseauEnConstruction?.communes ?? [];
+        } else if (eligibility?.entity === 'PDP') {
+          const pdp = await kdb
+            .selectFrom('zone_de_developpement_prioritaire')
+            .select(['id_fcu', 'Identifiant reseau', 'communes', 'reseau_de_chaleur_ids', 'reseau_en_construction_ids'])
+            .where('id_fcu', '=', eligibility.id_fcu)
+            .executeTakeFirst();
+
+          if (pdp) {
+            const networkInfos = await findPDPAssociatedNetwork(pdp, legacyValues.Latitude, legacyValues.Longitude);
+            tags = networkInfos?.tags ?? [];
+            communes = networkInfos?.communes ?? [];
+          }
+        }
+
         const rulesResult = assignmentRulesService.applyParsedRulesToEligibilityData(parsedRules, { tags });
 
         return {
           ...augmentedDemand,
           recommendedAssignment: rulesResult.assignment ?? 'Non affecté',
           recommendedTags: [...new Set([...tags, ...rulesResult.tags])],
+          testAddress: {
+            ...augmentedDemand.testAddress,
+            eligibility: {
+              ...augmentedDemand.testAddress.eligibility,
+              communes,
+            },
+          },
         };
       })
     )
@@ -464,11 +575,7 @@ export const list = async (user: User) => {
   const startTime = Date.now();
 
   // Build query based on user role and gestionnaires
-  const records = await kdb
-    .selectFrom('demands')
-    .innerJoin('pro_eligibility_tests_addresses', 'pro_eligibility_tests_addresses.demand_id', 'demands.id')
-    .selectAll('demands')
-    .select(sql.raw(`to_jsonb(pro_eligibility_tests_addresses)`).as('testAddress'))
+  const records = await buildDemandQuery()
     .$if(user.role === 'demo', (qb) =>
       qb
         .where(sql`legacy_values->>'Gestionnaires validés'`, '=', 'true')
@@ -487,12 +594,7 @@ export const list = async (user: User) => {
     recordsCount: records.length,
     tagsCounts: user.gestionnaires.length,
   });
-  const demands = records.map(({ testAddress, ...demand }) =>
-    augmentGestionnaireDemand({
-      demand,
-      testAddress: testAddress as Selectable<ProEligibilityTestsAddresses> & { eligibility_history: ProEligibilityTestHistoryEntry[] },
-    })
-  );
+  const demands = records.map(({ testAddress, ...demand }) => augmentGestionnaireDemand({ demand, testAddress }));
 
   return user.role === 'demo'
     ? demands.map((demand) => ({
@@ -508,11 +610,7 @@ export const list = async (user: User) => {
 export const listByUser = async (userId: string) => {
   const startTime = Date.now();
 
-  const records = await kdb
-    .selectFrom('demands')
-    .leftJoin('pro_eligibility_tests_addresses', 'pro_eligibility_tests_addresses.demand_id', 'demands.id')
-    .selectAll('demands')
-    .select(sql.raw(`to_jsonb(pro_eligibility_tests_addresses)`).as('testAddress'))
+  const records = await buildDemandQuery()
     .select((eb) =>
       eb
         .selectFrom('demand_emails')
@@ -534,7 +632,7 @@ export const listByUser = async (userId: string) => {
   const demands = records.map(({ testAddress, email_count, ...demand }) => ({
     ...augmentGestionnaireDemand({
       demand,
-      testAddress: testAddress as Selectable<ProEligibilityTestsAddresses> & { eligibility_history: ProEligibilityTestHistoryEntry[] },
+      testAddress,
     }),
     email_count: Number(email_count) || 0,
   }));
