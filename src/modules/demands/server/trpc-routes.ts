@@ -1,4 +1,4 @@
-import { routeAuthenticated, routeRole, router } from '@/modules/trpc/server';
+import { route, routeRole, router } from '@/modules/trpc/server';
 
 import {
   zAddRelanceCommentInput,
@@ -67,11 +67,11 @@ export const demandsRouter = router({
       }),
   },
   user: {
-    addRelanceComment: routeAuthenticated.input(zAddRelanceCommentInput).mutation(async ({ input, ctx }) => {
+    addRelanceComment: route.input(zAddRelanceCommentInput).mutation(async ({ input, ctx }) => {
       const { relanceId, comment } = input;
       return await demandsService.updateCommentFromRelanceId(relanceId, comment, ctx.user?.id);
     }),
-    create: routeAuthenticated.input(zCreateDemandInput).mutation(async ({ input, ctx }) => {
+    create: route.input(zCreateDemandInput).mutation(async ({ input, ctx }) => {
       return await demandsService.create(input, ctx.user?.id);
     }),
     list: routeRole(['particulier', 'professionnel', 'gestionnaire', 'admin']).query(async ({ ctx }) => {
@@ -82,7 +82,7 @@ export const demandsRouter = router({
       .query(async ({ input, ctx }) => {
         return await demandsService.listEmails({ demandId: input.demand_id, userId: ctx.user.id });
       }),
-    update: routeAuthenticated.input(zUserUpdateDemandInput).mutation(async ({ input, ctx }) => {
+    update: route.input(zUserUpdateDemandInput).mutation(async ({ input, ctx }) => {
       const { demandId, values } = input;
       return await demandsService.update(demandId, values as any, ctx.user?.id);
     }),
