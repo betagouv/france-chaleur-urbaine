@@ -407,7 +407,7 @@ function DemandesAdmin(): React.ReactElement {
               />
 
               <div className="my-1">
-                {eligibility?.type !== 'trop_eloigne' && !communes.includes(demand.Ville!) && (
+                {eligibility?.type !== 'trop_eloigne' && !communes.includes(demand.Ville!) && !demand['Gestionnaires validés'] && (
                   <FCUBadge
                     type="warning_ville_differente"
                     title={`La ville de la demande (${demand.Ville!}) ne correspond pas à ${communes.length > 1 ? 'aux villes' : 'la ville'} du réseau (${communes.join(', ')})`}
