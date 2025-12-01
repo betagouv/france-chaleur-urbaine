@@ -64,8 +64,12 @@ type MapCenterLocation = {
 // biome-ignore assist/source/useSortedKeys: keep field order as more coherent with most used actions
 const quickFilterPresets = {
   demandesMoisEnCours: {
-    filters: [],
-
+    filters: [
+      {
+        id: 'Date de la demande',
+        value: [dayjs().startOf('month').format('YYY-MM-DD'), dayjs().endOf('month').format('YYY-MM-DD'), false],
+      },
+    ],
     getStat: (demands) => {
       return demands.filter((demand) => {
         const demandDate = dayjs(demand['Date de la demande']);
