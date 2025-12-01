@@ -67,7 +67,7 @@ const quickFilterPresets = {
     filters: [
       {
         id: 'Date de la demande',
-        value: [dayjs().startOf('month').format('YYY-MM-DD'), dayjs().endOf('month').format('YYY-MM-DD'), false],
+        value: [dayjs().startOf('month').format('YYYY-MM-DD'), dayjs().endOf('month').format('YYYY-MM-DD'), false],
       },
     ],
     getStat: (demands) => {
