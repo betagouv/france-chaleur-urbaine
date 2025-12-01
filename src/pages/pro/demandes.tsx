@@ -175,6 +175,11 @@ const quickFilterPresets = {
 
 const initialSortingState = [{ desc: true, id: 'Date de la demande' }];
 
+/**
+ * Permet de savoir quand la table est rafraichie par un changement de valeur et donc de ne pas centrer la carte sur la première demande quand les demandes changent.
+ */
+let isUpdatingDemandField = false;
+
 function DemandesNew(): React.ReactElement {
   const [selectedDemandId, setSelectedDemandId] = useState<string | null>(null);
   const [modalDemand, setModalDemand] = useState<DemandsListItem | null>(null);
@@ -185,11 +190,12 @@ function DemandesNew(): React.ReactElement {
   const [mapCenterLocation, setMapCenterLocation] = useState<MapCenterLocation>();
   const [globalFilter, setGlobalFilter] = useState('');
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [filteredDemands, setFilteredDemands] = useState<DemandsListItem[]>([]);
 
   const { data: demands = [], isLoading } = trpc.demands.gestionnaire.list.useQuery();
 
   const demandsMapData = useMemo(() => {
-    return demands.map(
+    return filteredDemands.map(
       (demand) =>
         ({
           address: demand.Adresse,
@@ -205,13 +211,14 @@ function DemandesNew(): React.ReactElement {
           typeDeLogement: demand.Structure,
         }) satisfies AdresseEligible
     );
-  }, [demands, selectedDemandId]);
+  }, [filteredDemands, selectedDemandId]);
 
   const utils = trpc.useUtils();
   const { mutateAsync: updateDemandMutation } = trpc.demands.gestionnaire.update.useMutation();
 
   const updateDemand = useCallback(
     toastErrors(async (demandId: string, demandUpdate: Partial<Demand>) => {
+      isUpdatingDemandField = true; // prevent the map from being centered on the first demand
       await updateDemandMutation({ demandId, values: demandUpdate });
 
       utils.demands.gestionnaire.list.setData(undefined, (demands) =>
@@ -488,6 +495,21 @@ function DemandesNew(): React.ReactElement {
     [demands]
   );
 
+  const onTableFiltersChange = useCallback((filteredDemands: DemandsListItem[]) => {
+    setFilteredDemands(filteredDemands);
+
+    // center on the first demand if any
+    const firstDemand = filteredDemands[0];
+    if (firstDemand && !isUpdatingDemandField) {
+      setMapCenterLocation({
+        center: [firstDemand.Longitude ?? 0, firstDemand.Latitude ?? 0],
+        flyTo: true,
+        zoom: 8,
+      });
+    }
+    isUpdatingDemandField = false;
+  }, []);
+
   return (
     <SimplePage
       title="Suivi des demandes"
@@ -535,6 +557,7 @@ function DemandesNew(): React.ReactElement {
               initialSortingState={initialSortingState}
               globalFilter={globalFilter}
               columnFilters={columnFilters}
+              onFilterChange={onTableFiltersChange}
               fluid
               controlsLayout="block"
               padding="sm"

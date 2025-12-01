@@ -186,6 +186,7 @@ export const FullyFeaturedMap = ({
   const [markersList, setMarkersList] = useState<MapMarkerInfos[]>([]);
 
   const [legendCollapsed, setLegendCollapsed] = useState(true);
+  const [imagesLoaded, setImagesLoaded] = useState(false);
 
   useEffect(() => {
     setLegendCollapsed(defaultLegendCollapsed || window.innerWidth < 992);
@@ -193,6 +194,7 @@ export const FullyFeaturedMap = ({
       setMapRef(null);
       setMapDraw(null);
       setMapLayersLoaded(false);
+      setImagesLoaded(false);
     };
   }, []);
 
@@ -358,6 +360,7 @@ export const FullyFeaturedMap = ({
         });
       })
     );
+    setImagesLoaded(true);
 
     // register move and hover event handlers
     {
@@ -388,6 +391,7 @@ export const FullyFeaturedMap = ({
     if (
       mapLayersLoaded ||
       !map ||
+      !imagesLoaded || // Wait for images to load!
       !isMapConfigurationInitialized(mapConfiguration) ||
       (e.sourceId !== 'openmaptiles' && e.sourceId !== 'raster-tiles') ||
       !e.isSourceLoaded ||
