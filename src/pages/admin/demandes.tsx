@@ -8,8 +8,8 @@ import { type RefObject, useCallback, useEffect, useMemo, useRef, useState } fro
 import type { MapGeoJSONFeature } from 'react-map-gl/maplibre';
 import TableFieldInput from '@/components/Admin/TableFieldInput';
 import EligibilityHelpDialog from '@/components/EligibilityHelpDialog';
-import Checkbox from '@/components/form/dsfr/Checkbox';
 import Input from '@/components/form/dsfr/Input';
+import Select from '@/components/form/dsfr/Select';
 import FCUTagAutocomplete from '@/components/form/FCUTagAutocomplete';
 import DemandEmailForm from '@/components/Manager/DemandEmailForm';
 import ModeDeChauffageTag, { getModeDeChauffageDisplay } from '@/components/Manager/ModeDeChauffageTag';
@@ -359,15 +359,20 @@ function DemandesAdmin(): React.ReactElement {
         accessorKey: 'Recontacté par le gestionnaire',
         align: 'center',
         cell: ({ row }) => (
-          <Checkbox
+          <Select
             label=""
-            nativeInputProps={{
-              defaultChecked: row.original['Recontacté par le gestionnaire'] === 'Oui',
-              name: 'Recontacté par le gestionnaire',
+            options={[
+              { label: 'Non renseigné', value: '' },
+              { label: 'Oui', value: 'Oui' },
+              { label: 'Non', value: 'Non' },
+            ]}
+            size="sm"
+            nativeSelectProps={{
               onChange: (e) =>
                 updateDemand(row.original.id, {
-                  'Recontacté par le gestionnaire': e.target.checked as unknown as string, // Demand jas Oui ou Non but we need to send a boolean
+                  'Recontacté par le gestionnaire': e.target.value,
                 }),
+              value: row.original['Recontacté par le gestionnaire'] || '',
             }}
           />
         ),
@@ -379,7 +384,7 @@ function DemandesAdmin(): React.ReactElement {
             le gestionnaire
           </>
         ),
-        width: '110px',
+        width: '155px',
       },
       {
         accessorKey: 'Gestionnaires',
@@ -595,7 +600,6 @@ function DemandesAdmin(): React.ReactElement {
         header: 'ID réseau le plus proche',
         width: '200px',
       },
-
       {
         accessorKey: 'Commentaire relance',
         header: 'Commentaire relance',

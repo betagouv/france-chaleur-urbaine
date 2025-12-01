@@ -88,7 +88,7 @@ export const zAdminDemandUpdateValues = z
     'Relance ID': z.string().nullable(),
     'Notification envoyé': z.string().nullable(),
     'Prise de contact': z.boolean(),
-    'Recontacté par le gestionnaire': z.boolean(),
+    'Recontacté par le gestionnaire': z.enum(['Oui', 'Non', '']),
 
     // Communication
     comment_fcu: z.string(),
