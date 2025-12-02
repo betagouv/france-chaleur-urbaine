@@ -76,7 +76,10 @@ export const customFilterFn = <T extends RowData>(): Record<string, FilterFn<T>>
     if (value === true) value = 'true';
     if (value === false) value = 'false';
 
-    if (!value) return false;
+    // Gérer undefined/null/"" explicitement
+    if (!value) {
+      return filterValue.undefined === true;
+    }
 
     return Object.entries(filterValue)
       .filter(([, isSelected]) => isSelected)

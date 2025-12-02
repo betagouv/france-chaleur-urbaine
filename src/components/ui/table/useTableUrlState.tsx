@@ -28,7 +28,13 @@ export const useTableUrlState = (prefix: string | undefined, initialValues?: Tab
   );
 
   useEffect(() => {
-    if (!prefix || JSON.stringify(previousInitialValues) === JSON.stringify(initialValues)) {
+    const inUrlInitialValues = { columnFilters: urlColumnFilters, globalFilter: urlGlobalFilter, sorting: urlSorting };
+
+    if (
+      !prefix ||
+      JSON.stringify(previousInitialValues) === JSON.stringify(initialValues) ||
+      JSON.stringify(inUrlInitialValues) === JSON.stringify(initialValues)
+    ) {
       return;
     }
 
