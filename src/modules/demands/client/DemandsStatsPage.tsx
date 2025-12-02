@@ -25,7 +25,20 @@ const initialSortingState = [{ desc: true, id: 'lastSixMonths' }];
 const initialFilterState = [{ id: 'type', value: { '': true, gestionnaire: false, metropole: true, reseau: true, ville: true } }];
 
 export default function DemandsStatsPage() {
+  const utils = trpc.useUtils();
   const { data: tagsStats, isLoading } = trpc.demands.admin.getTagsStats.useQuery();
+  const { mutateAsync: createReminder } = trpc.tags.admin.createReminder.useMutation({
+    onSuccess: () => {
+      void utils.demands.admin.getTagsStats.invalidate();
+      notify('success', 'Date de relance enregistrée');
+    },
+  });
+  const { mutateAsync: deleteReminder } = trpc.tags.admin.deleteReminder.useMutation({
+    onSuccess: () => {
+      void utils.demands.admin.getTagsStats.invalidate();
+      notify('success', 'Date de relance supprimée');
+    },
+  });
 
   const tableColumns: ColumnDef<TagsStats>[] = useMemo(
     () => [
@@ -221,7 +234,7 @@ export default function DemandsStatsPage() {
         header: 'Réseaux',
         id: 'reseaux',
         sortingFn: (rowA, rowB) => compareFrenchStrings(rowA.getValue('reseaux'), rowB.getValue('reseaux')),
-        width: '330px',
+        width: '260px',
       },
       {
         accessorFn: (row) => row.allTime.pending,
@@ -237,7 +250,7 @@ export default function DemandsStatsPage() {
             Toutes périodes
           </DemandStatColumnHeader>
         ),
-        width: '120px',
+        width: '110px',
       },
       {
         accessorFn: (row) => row.lastSixMonths.pending,
@@ -253,7 +266,7 @@ export default function DemandsStatsPage() {
             &lt; 6 mois
           </DemandStatColumnHeader>
         ),
-        width: '120px',
+        width: '110px',
       },
       {
         accessorFn: (row) => row.lastThreeMonths.pending,
@@ -269,10 +282,27 @@ export default function DemandsStatsPage() {
             &lt; 3 mois
           </DemandStatColumnHeader>
         ),
-        width: '120px',
+        width: '110px',
+      },
+      {
+        accessorKey: 'reminder_date',
+        cell: ({ row }) => {
+          return (
+            <ReminderDateCell
+              reminderDate={row.original.reminder_date}
+              onCreateReminder={() => createReminder({ tagId: row.original.id })}
+              onDeleteReminder={() => deleteReminder({ tagId: row.original.id })}
+            />
+          );
+        },
+        cellType: 'DateTime',
+        enableSorting: true,
+        header: 'Dernière relance',
+        id: 'reminder_date',
+        width: '100px',
       },
     ],
-    []
+    [createReminder, deleteReminder]
   );
 
   return (
@@ -392,4 +422,43 @@ const copyContentToClipboard = (content: string) => {
     .writeText(content)
     .then(() => notify('success', 'Adresses copiées !'))
     .catch(() => {});
+};
+
+const ReminderDateCell = ({
+  reminderDate,
+  onCreateReminder,
+  onDeleteReminder,
+}: {
+  reminderDate: string | null | undefined;
+  onCreateReminder: () => Promise<void>;
+  onDeleteReminder: () => Promise<void>;
+}) => {
+  if (reminderDate) {
+    return (
+      <div className="flex flex-col gap-2">
+        <div className="text-sm">
+          <TimeAgo date={reminderDate} />
+        </div>
+        <Button
+          type="button"
+          priority="tertiary no outline"
+          size="small"
+          iconId="fr-icon-delete-line"
+          title="Supprimer la relance"
+          onClick={onDeleteReminder}
+        />
+      </div>
+    );
+  }
+
+  return (
+    <Button
+      type="button"
+      priority="secondary"
+      size="small"
+      iconId="fr-icon-calendar-line"
+      title="Indiquer une relance"
+      onClick={onCreateReminder}
+    />
+  );
 };

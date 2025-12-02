@@ -10,6 +10,7 @@ import { diagnosticRouter } from '@/modules/diagnostic/server/trpc-routes';
 import { jobsRouter } from '@/modules/jobs/server/trpc-routes';
 import { proEligibilityTestsRouter } from '@/modules/pro-eligibility-tests/server/trpc-routes';
 import { reseauxRouter } from '@/modules/reseaux/server/trpc-routes';
+import { tagsRouter } from '@/modules/tags/server/trpc-routes';
 import { tilesRouter } from '@/modules/tiles/server/trpc-routes';
 import { route, router } from './server/connection';
 
@@ -51,5 +52,6 @@ export const appRouter = router({
   jobs: jobsRouter,
   proEligibilityTests: proEligibilityTestsRouter,
   reseaux: reseauxRouter,
+  tags: tagsRouter,
   tiles: tilesRouter,
 });
