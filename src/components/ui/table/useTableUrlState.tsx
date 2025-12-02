@@ -1,7 +1,7 @@
 import { usePrevious } from '@react-hookz/web';
 import type { ColumnFiltersState, SortingState } from '@tanstack/react-table';
 import { parseAsJson, parseAsString, useQueryState } from 'nuqs';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo } from 'react';
 
 export type TableUrlState = {
   globalFilter?: string;
@@ -13,7 +13,6 @@ export const useTableUrlState = (prefix: string | undefined, initialValues?: Tab
   // Utilise une clé par défaut unique si prefix n'est pas fourni pour éviter les conflits
   // Le hook sera toujours appelé pour respecter les règles de React, mais ne sera pas utilisé si prefix est undefined
   const effectivePrefix = prefix ?? '__internal_unused_table_state__';
-  const isInitialMount = useRef(true);
   const previousInitialValues = usePrevious(initialValues);
 
   const [urlGlobalFilter, setUrlGlobalFilter] = useQueryState(`${effectivePrefix}_search`, parseAsString.withDefault(''));
@@ -29,22 +28,18 @@ export const useTableUrlState = (prefix: string | undefined, initialValues?: Tab
   );
 
   useEffect(() => {
-    if (!prefix) {
+    if (!prefix || JSON.stringify(previousInitialValues) === JSON.stringify(initialValues)) {
       return;
     }
 
-    if (JSON.stringify(previousInitialValues) !== JSON.stringify(initialValues)) {
-      console.log('initialValues', initialValues);
-      console.log('previousInitialValues', previousInitialValues);
-      if (initialValues?.globalFilter) {
-        void setUrlGlobalFilter(initialValues.globalFilter);
-      }
-      if (initialValues?.sorting) {
-        void setUrlSorting(initialValues.sorting);
-      }
-      if (initialValues?.columnFilters) {
-        void setUrlColumnFilters(initialValues.columnFilters);
-      }
+    if (initialValues?.globalFilter) {
+      void setUrlGlobalFilter(initialValues.globalFilter);
+    }
+    if (initialValues?.sorting) {
+      void setUrlSorting(initialValues.sorting);
+    }
+    if (initialValues?.columnFilters) {
+      void setUrlColumnFilters(initialValues.columnFilters);
     }
   }, [
     previousInitialValues,
