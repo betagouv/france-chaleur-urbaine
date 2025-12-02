@@ -191,9 +191,7 @@ export default function DemandsStatsPage() {
             <div className="flex flex-wrap gap-1 items-center">
               {displayedNetworks.map((network) => (
                 <Tag key={network.id} className={network.className}>
-                  <div className="flex flex-col leading-tight">
-                    <span>{network.label}</span>
-                  </div>
+                  {network.label}
                 </Tag>
               ))}
               {remainingNetworks.length > 0 && (
