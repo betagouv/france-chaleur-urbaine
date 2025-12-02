@@ -23,7 +23,6 @@ import FCUBadge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import ChipAutoComplete, { type ChipOption } from '@/components/ui/ChipAutoComplete';
 import Icon from '@/components/ui/Icon';
-import Link from '@/components/ui/Link';
 import Loader from '@/components/ui/Loader';
 import ModalSimple from '@/components/ui/ModalSimple';
 import QuickFilterPresets from '@/components/ui/QuickFilterPresets';
@@ -89,6 +88,19 @@ const quickFilterPresets = {
     ),
     valueSuffix: <Icon name="fr-icon-flag-fill" size="sm" color="red" />,
   },
+  demandesAReaffecter: {
+    filters: [{ id: 'Gestionnaire Affecté à', value: 'filled' }],
+    getStat: (demands) =>
+      demands.filter((demand) => {
+        return !!demand['Gestionnaire Affecté à'];
+      }).length,
+    label: (
+      <>
+        à réaffecter&nbsp;
+        <Tooltip title="Demandes dont le gestionnaire a demandé une reaffectation" />
+      </>
+    ),
+  },
   demandesATraiter: {
     filters: [
       { id: 'Status', value: { 'En attente de prise en charge': true } },
@@ -118,31 +130,7 @@ const quickFilterPresets = {
       </>
     ),
   },
-  demandesDansPDP: {
-    filters: [
-      {
-        id: 'en PDP',
-        value: { Non: false, Oui: true },
-      },
-    ],
-    getStat: (demands) => demands.filter((demand) => demand['en PDP'] === 'Oui').length,
-    label: (
-      <>
-        en PDP&nbsp;
-        <Tooltip
-          title={
-            <>
-              Périmètre de développement prioritaire (PDP) d'un réseau classé, dans lequel peut s'appliquer une obligation de raccordement.{' '}
-              <Link href="/ressources/obligations-raccordement#contenu" isExternal>
-                En savoir plus
-              </Link>
-            </>
-          }
-        />
-      </>
-    ),
-    valueSuffix: <FCUBadge type="pdp" />,
-  },
+
   all: {
     filters: [],
     getStat: (demands) => demands.length,
@@ -634,6 +622,11 @@ function DemandesAdmin(): React.ReactElement {
       {
         accessorKey: 'testAddress.eligibility.type',
         filterType: 'Facets', // obligatoire pour faire fonctionner le filtre
+        visible: false,
+      },
+      {
+        accessorKey: 'Gestionnaire Affecté à',
+        filterType: 'EmptyOrFilled',
         visible: false,
       },
     ],

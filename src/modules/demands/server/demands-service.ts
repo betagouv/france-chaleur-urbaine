@@ -135,10 +135,6 @@ export const update = async (recordId: string, { comment_fcu, comment_gestionnai
     // Affectation a changé, on reset le gestionnaire affecté à
     values['Gestionnaire Affecté à'] = values['Affecté à'] as string;
   }
-  if (newAssignment && oldAssignment !== newAssignment) {
-    // Affectation a changé, on demande une revalidation des gestionnaires
-    values['Gestionnaires validés'] = false;
-  }
 
   const [updatedDemand] = await kdb
     .updateTable(tableName)
