@@ -65,6 +65,18 @@ export const customFilterFn = <T extends RowData>(): Record<string, FilterFn<T>>
     // Vérifie si au moins un des tags du filtre est présent dans le tableau
     return filterValue.some((filterTag) => value.includes(filterTag));
   },
+  emptyOrFilled: (row, columnId, filterValue: 'filled' | 'empty') => {
+    const value = row.getValue<any>(columnId);
+    const isFilled = value != null && value !== '';
+
+    if (filterValue === 'filled') {
+      return isFilled;
+    } else if (filterValue === 'empty') {
+      return !isFilled;
+    }
+
+    return true;
+  },
   equalsAny: (row, columnId, filterValue: Record<string, boolean>) => {
     const value = row.getValue<any>(columnId);
     return Object.entries(filterValue)
@@ -76,7 +88,10 @@ export const customFilterFn = <T extends RowData>(): Record<string, FilterFn<T>>
     if (value === true) value = 'true';
     if (value === false) value = 'false';
 
-    if (!value) return false;
+    // Gérer undefined/null/"" explicitement
+    if (!value) {
+      return filterValue.undefined === true;
+    }
 
     return Object.entries(filterValue)
       .filter(([, isSelected]) => isSelected)
@@ -913,7 +928,14 @@ export type QuickFilterPreset<Data> = {
   getStat?: (data: Data[]) => number;
   filters: {
     id: DotToUnderscore<FlattenKeys<Data>>;
-    value: boolean | number | [number, number] | Record<string, boolean | undefined>;
+    value:
+      | boolean
+      | number
+      | [number, number]
+      | Record<string, boolean | undefined>
+      | [string | null, string | null, boolean?]
+      | 'filled'
+      | 'empty';
   }[];
 };
 

@@ -135,16 +135,6 @@ export const update = async (recordId: string, { comment_fcu, comment_gestionnai
     // Affectation a changé, on reset le gestionnaire affecté à
     values['Gestionnaire Affecté à'] = values['Affecté à'] as string;
   }
-  if (newAssignment && oldAssignment !== newAssignment) {
-    // Affectation a changé, on demande une revalidation des gestionnaires
-    values['Gestionnaires validés'] = false;
-  }
-
-  if (values['Recontacté par le gestionnaire'] === true) {
-    (values as any)['Recontacté par le gestionnaire'] = 'Oui'; // legacy a changer plus tard par un vrai booleen
-  } else if (values['Recontacté par le gestionnaire'] === false) {
-    (values as any)['Recontacté par le gestionnaire'] = 'Non'; // legacy a changer plus tard par un vrai booleen
-  }
 
   const [updatedDemand] = await kdb
     .updateTable(tableName)
@@ -377,7 +367,7 @@ export const updateCommentFromRelanceId = async (relanceId: string, comment: str
 };
 
 export const updateSatisfactionFromRelanceId = async (relanceId: string, satisfaction: boolean) => {
-  const demand = await updateFromRelanceId(relanceId, { 'Recontacté par le gestionnaire': satisfaction });
+  const demand = await updateFromRelanceId(relanceId, { 'Recontacté par le gestionnaire': satisfaction ? 'Oui' : 'Non' });
 
   // Automation import from  https://airtable.com/app9opX8gRAtBqkan/wfl3jPABYXeIrGeUr/wtrWn0m6O5tXFFdiP
   if (demand.Structure === 'Bailleur social' || demand.Structure === 'Tertiaire') {

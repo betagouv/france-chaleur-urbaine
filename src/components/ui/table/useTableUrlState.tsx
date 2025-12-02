@@ -1,6 +1,7 @@
+import { usePrevious } from '@react-hookz/web';
 import type { ColumnFiltersState, SortingState } from '@tanstack/react-table';
 import { parseAsJson, parseAsString, useQueryState } from 'nuqs';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo } from 'react';
 
 export type TableUrlState = {
   globalFilter?: string;
@@ -12,7 +13,7 @@ export const useTableUrlState = (prefix: string | undefined, initialValues?: Tab
   // Utilise une clé par défaut unique si prefix n'est pas fourni pour éviter les conflits
   // Le hook sera toujours appelé pour respecter les règles de React, mais ne sera pas utilisé si prefix est undefined
   const effectivePrefix = prefix ?? '__internal_unused_table_state__';
-  const isInitialMount = useRef(true);
+  const previousInitialValues = usePrevious(initialValues);
 
   const [urlGlobalFilter, setUrlGlobalFilter] = useQueryState(`${effectivePrefix}_search`, parseAsString.withDefault(''));
 
@@ -26,23 +27,57 @@ export const useTableUrlState = (prefix: string | undefined, initialValues?: Tab
     parseAsJson<ColumnFiltersState>((value) => value as ColumnFiltersState).withDefault([])
   );
 
-  // Initialise les valeurs seulement au premier montage si elles ne sont pas déjà dans l'URL
   useEffect(() => {
-    if (isInitialMount.current && prefix) {
-      isInitialMount.current = false;
+    const inUrlInitialValues = { columnFilters: urlColumnFilters, globalFilter: urlGlobalFilter, sorting: urlSorting };
+    const isFirstRun = previousInitialValues === undefined;
+    const isUrlEmpty = !urlGlobalFilter && (!urlSorting || urlSorting.length === 0) && (!urlColumnFilters || urlColumnFilters.length === 0);
 
-      // Initialise seulement si les valeurs ne sont pas déjà présentes dans l'URL
-      if (initialValues?.globalFilter && urlGlobalFilter === '') {
+    const applyInitialValuesToUrl = () => {
+      if (initialValues?.globalFilter) {
         void setUrlGlobalFilter(initialValues.globalFilter);
       }
-      if (initialValues?.sorting && initialValues.sorting.length > 0 && urlSorting.length === 0) {
+      if (initialValues?.sorting) {
         void setUrlSorting(initialValues.sorting);
       }
-      if (initialValues?.columnFilters && initialValues.columnFilters.length > 0 && urlColumnFilters.length === 0) {
+      if (initialValues?.columnFilters) {
         void setUrlColumnFilters(initialValues.columnFilters);
       }
+    };
+
+    if (
+      !prefix ||
+      !initialValues ||
+      // Si les props n'ont pas changé, ne pas écraser l'état de l'URL (utilisateur qui interagit avec le tableau)
+      JSON.stringify(previousInitialValues) === JSON.stringify(initialValues) ||
+      JSON.stringify(inUrlInitialValues) === JSON.stringify(initialValues)
+    ) {
+      return;
     }
-  }, [prefix, initialValues, urlGlobalFilter, urlSorting, urlColumnFilters, setUrlGlobalFilter, setUrlSorting, setUrlColumnFilters]);
+
+    // Au premier rendu :
+    // - si l'URL contient déjà un état, on le garde (priorité à l'URL)
+    // - sinon, on initialise l'URL avec les valeurs passées en props
+    if (isFirstRun) {
+      if (!isUrlEmpty) {
+        return;
+      }
+      applyInitialValuesToUrl();
+      return;
+    }
+
+    // Après le premier rendu, si les props changent, on les applique à l'URL
+    applyInitialValuesToUrl();
+  }, [
+    previousInitialValues,
+    prefix,
+    initialValues,
+    urlGlobalFilter,
+    urlSorting,
+    urlColumnFilters,
+    setUrlGlobalFilter,
+    setUrlSorting,
+    setUrlColumnFilters,
+  ]);
 
   const state: TableUrlState = useMemo(
     () => ({

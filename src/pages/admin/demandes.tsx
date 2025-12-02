@@ -8,8 +8,8 @@ import { type RefObject, useCallback, useEffect, useMemo, useRef, useState } fro
 import type { MapGeoJSONFeature } from 'react-map-gl/maplibre';
 import TableFieldInput from '@/components/Admin/TableFieldInput';
 import EligibilityHelpDialog from '@/components/EligibilityHelpDialog';
-import Checkbox from '@/components/form/dsfr/Checkbox';
 import Input from '@/components/form/dsfr/Input';
+import Select from '@/components/form/dsfr/Select';
 import FCUTagAutocomplete from '@/components/form/FCUTagAutocomplete';
 import DemandEmailForm from '@/components/Manager/DemandEmailForm';
 import ModeDeChauffageTag, { getModeDeChauffageDisplay } from '@/components/Manager/ModeDeChauffageTag';
@@ -23,7 +23,6 @@ import FCUBadge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import ChipAutoComplete, { type ChipOption } from '@/components/ui/ChipAutoComplete';
 import Icon from '@/components/ui/Icon';
-import Link from '@/components/ui/Link';
 import Loader from '@/components/ui/Loader';
 import ModalSimple from '@/components/ui/ModalSimple';
 import QuickFilterPresets from '@/components/ui/QuickFilterPresets';
@@ -64,8 +63,12 @@ type MapCenterLocation = {
 // biome-ignore assist/source/useSortedKeys: keep field order as more coherent with most used actions
 const quickFilterPresets = {
   demandesMoisEnCours: {
-    filters: [],
-
+    filters: [
+      {
+        id: 'Date de la demande',
+        value: [dayjs().startOf('month').format('YYYY-MM-DD'), dayjs().endOf('month').format('YYYY-MM-DD'), false],
+      },
+    ],
     getStat: (demands) => {
       return demands.filter((demand) => {
         const demandDate = dayjs(demand['Date de la demande']);
@@ -84,6 +87,19 @@ const quickFilterPresets = {
       </>
     ),
     valueSuffix: <Icon name="fr-icon-flag-fill" size="sm" color="red" />,
+  },
+  demandesAReaffecter: {
+    filters: [{ id: 'Gestionnaire Affecté à', value: 'filled' }],
+    getStat: (demands) =>
+      demands.filter((demand) => {
+        return !!demand['Gestionnaire Affecté à'];
+      }).length,
+    label: (
+      <>
+        à réaffecter&nbsp;
+        <Tooltip title="Demandes dont le gestionnaire a demandé une reaffectation" />
+      </>
+    ),
   },
   demandesATraiter: {
     filters: [
@@ -114,31 +130,7 @@ const quickFilterPresets = {
       </>
     ),
   },
-  demandesDansPDP: {
-    filters: [
-      {
-        id: 'en PDP',
-        value: { Non: false, Oui: true },
-      },
-    ],
-    getStat: (demands) => demands.filter((demand) => demand['en PDP'] === 'Oui').length,
-    label: (
-      <>
-        en PDP&nbsp;
-        <Tooltip
-          title={
-            <>
-              Périmètre de développement prioritaire (PDP) d'un réseau classé, dans lequel peut s'appliquer une obligation de raccordement.{' '}
-              <Link href="/ressources/obligations-raccordement#contenu" isExternal>
-                En savoir plus
-              </Link>
-            </>
-          }
-        />
-      </>
-    ),
-    valueSuffix: <FCUBadge type="pdp" />,
-  },
+
   all: {
     filters: [],
     getStat: (demands) => demands.length,
@@ -359,15 +351,20 @@ function DemandesAdmin(): React.ReactElement {
         accessorKey: 'Recontacté par le gestionnaire',
         align: 'center',
         cell: ({ row }) => (
-          <Checkbox
+          <Select
             label=""
-            nativeInputProps={{
-              defaultChecked: row.original['Recontacté par le gestionnaire'] === 'Oui',
-              name: 'Recontacté par le gestionnaire',
+            options={[
+              { label: 'Non renseigné', value: '' },
+              { label: 'Oui', value: 'Oui' },
+              { label: 'Non', value: 'Non' },
+            ]}
+            size="sm"
+            nativeSelectProps={{
               onChange: (e) =>
                 updateDemand(row.original.id, {
-                  'Recontacté par le gestionnaire': e.target.checked as unknown as string, // Demand jas Oui ou Non but we need to send a boolean
+                  'Recontacté par le gestionnaire': e.target.value,
                 }),
+              value: row.original['Recontacté par le gestionnaire'] || '',
             }}
           />
         ),
@@ -379,7 +376,7 @@ function DemandesAdmin(): React.ReactElement {
             le gestionnaire
           </>
         ),
-        width: '110px',
+        width: '155px',
       },
       {
         accessorKey: 'Gestionnaires',
@@ -402,7 +399,7 @@ function DemandesAdmin(): React.ReactElement {
               />
 
               <div className="my-1">
-                {eligibility?.type !== 'trop_eloigne' && !communes.includes(demand.Ville!) && (
+                {eligibility?.type !== 'trop_eloigne' && !communes.includes(demand.Ville!) && !demand['Gestionnaires validés'] && (
                   <FCUBadge
                     type="warning_ville_differente"
                     title={`La ville de la demande (${demand.Ville!}) ne correspond pas à ${communes.length > 1 ? 'aux villes' : 'la ville'} du réseau (${communes.join(', ')})`}
@@ -595,7 +592,6 @@ function DemandesAdmin(): React.ReactElement {
         header: 'ID réseau le plus proche',
         width: '200px',
       },
-
       {
         accessorKey: 'Commentaire relance',
         header: 'Commentaire relance',
@@ -626,6 +622,11 @@ function DemandesAdmin(): React.ReactElement {
       {
         accessorKey: 'testAddress.eligibility.type',
         filterType: 'Facets', // obligatoire pour faire fonctionner le filtre
+        visible: false,
+      },
+      {
+        accessorKey: 'Gestionnaire Affecté à',
+        filterType: 'EmptyOrFilled',
         visible: false,
       },
     ],

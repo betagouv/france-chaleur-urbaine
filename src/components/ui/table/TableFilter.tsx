@@ -8,7 +8,7 @@ import ComboBox, { type ComboBoxOption } from '@/components/ui/ComboBox';
 import type { Interval } from '@/utils/interval';
 import type { TableCellProps } from './TableCell';
 
-export type TableFilterType = 'Range' | 'Facets' | 'ComboBox';
+export type TableFilterType = 'Range' | 'Facets' | 'ComboBox' | 'EmptyOrFilled';
 
 export type TableFilterProps = {
   onChange: (value: any) => void;
@@ -31,10 +31,16 @@ export type TableFilterProps = {
       filterProps: { options: ComboBoxOption[]; label?: string; placeholder?: string };
       value?: string[];
     }
+  | {
+      type: 'EmptyOrFilled';
+      filterProps?: { filledLabel?: string; emptyLabel?: string };
+      value?: 'filled' | 'empty' | undefined;
+    }
 );
 
 export const defaultTableFilterFns = {
   ComboBox: 'arrayIncludesAny',
+  EmptyOrFilled: 'emptyOrFilled',
   Facets: 'includesAny',
   Range: 'inNumberRangeNotNull', // Sera remplacé par inDateRangeNotNull si cellType est DateTime/Date
 } as const;
@@ -197,6 +203,46 @@ const TableFilter = ({ value, type, onChange, filterProps, facetedUniqueValues, 
         label={label}
         placeholder={placeholder}
       />
+    );
+  } else if (type === 'EmptyOrFilled') {
+    const { filledLabel = 'Rempli', emptyLabel = 'Vide' } = filterProps || {};
+    return (
+      <div className="flex flex-col gap-2">
+        <div className="fr-checkbox-group fr-checkbox-group--sm">
+          <input
+            type="checkbox"
+            id="filter-filled"
+            checked={value === 'filled'}
+            onChange={(e) => {
+              if (e.target.checked) {
+                onChange('filled');
+              } else if (value === 'filled') {
+                onChange(undefined);
+              }
+            }}
+          />
+          <label className="fr-label" htmlFor="filter-filled">
+            {filledLabel}
+          </label>
+        </div>
+        <div className="fr-checkbox-group fr-checkbox-group--sm">
+          <input
+            type="checkbox"
+            id="filter-empty"
+            checked={value === 'empty'}
+            onChange={(e) => {
+              if (e.target.checked) {
+                onChange('empty');
+              } else if (value === 'empty') {
+                onChange(undefined);
+              }
+            }}
+          />
+          <label className="fr-label" htmlFor="filter-empty">
+            {emptyLabel}
+          </label>
+        </div>
+      </div>
     );
   }
 

@@ -163,6 +163,7 @@ export default function ManageUsers() {
       {
         accessorKey: 'created_at',
         cellType: 'Date',
+        filterType: 'Range',
         header: 'Créé le',
       },
       {
