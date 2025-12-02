@@ -29,24 +29,44 @@ export const useTableUrlState = (prefix: string | undefined, initialValues?: Tab
 
   useEffect(() => {
     const inUrlInitialValues = { columnFilters: urlColumnFilters, globalFilter: urlGlobalFilter, sorting: urlSorting };
+    const isFirstRun = previousInitialValues === undefined;
+    const isUrlEmpty = !urlGlobalFilter && (!urlSorting || urlSorting.length === 0) && (!urlColumnFilters || urlColumnFilters.length === 0);
+
+    const applyInitialValuesToUrl = () => {
+      if (initialValues?.globalFilter) {
+        void setUrlGlobalFilter(initialValues.globalFilter);
+      }
+      if (initialValues?.sorting) {
+        void setUrlSorting(initialValues.sorting);
+      }
+      if (initialValues?.columnFilters) {
+        void setUrlColumnFilters(initialValues.columnFilters);
+      }
+    };
 
     if (
       !prefix ||
+      !initialValues ||
+      // Si les props n'ont pas changé, ne pas écraser l'état de l'URL (utilisateur qui interagit avec le tableau)
       JSON.stringify(previousInitialValues) === JSON.stringify(initialValues) ||
       JSON.stringify(inUrlInitialValues) === JSON.stringify(initialValues)
     ) {
       return;
     }
 
-    if (initialValues?.globalFilter) {
-      void setUrlGlobalFilter(initialValues.globalFilter);
+    // Au premier rendu :
+    // - si l'URL contient déjà un état, on le garde (priorité à l'URL)
+    // - sinon, on initialise l'URL avec les valeurs passées en props
+    if (isFirstRun) {
+      if (!isUrlEmpty) {
+        return;
+      }
+      applyInitialValuesToUrl();
+      return;
     }
-    if (initialValues?.sorting) {
-      void setUrlSorting(initialValues.sorting);
-    }
-    if (initialValues?.columnFilters) {
-      void setUrlColumnFilters(initialValues.columnFilters);
-    }
+
+    // Après le premier rendu, si les props changent, on les applique à l'URL
+    applyInitialValuesToUrl();
   }, [
     previousInitialValues,
     prefix,
