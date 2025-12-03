@@ -3,10 +3,16 @@ name: CI
 # Controls when the action will run.
 on: [push]
 
+permissions:
+  contents: read
+
 jobs:
   CI:
     # The type of runner that the job will run on
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        node-version: [24]
     services:
       postgres:
         image: postgis/postgis:16-3.5-alpine
@@ -29,21 +35,20 @@ jobs:
       - name: Checkout 🛎️
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
-      - uses: pnpm/action-setup@v4
-        name: Install pnpm
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
         with:
-          version: 8.6.2
-          run_install: false
+          version: 10
 
       - name: Setup Node 🔧
         uses: actions/setup-node@8f152de45cc393bb48ce5d89d36b731f54556e65 # v4.0.0
         with:
-          node-version: 20
+          node-version: ${{ matrix.node-version }}
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
       - name: Install Dependencies 💾
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: Audit 🛡️
         run: pnpm audit
