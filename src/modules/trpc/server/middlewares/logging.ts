@@ -1,4 +1,4 @@
-import { captureException } from '@sentry/nextjs';
+import * as Sentry from '@sentry/nextjs';
 
 import type { TRoot } from '../context';
 
@@ -23,7 +23,7 @@ export function createLoggingMiddleware(t: TRoot) {
         duration,
       });
     } else {
-      captureException(result.error);
+      Sentry.captureException(result.error);
       logger.error('request failed', {
         code: result.error?.code,
         duration,

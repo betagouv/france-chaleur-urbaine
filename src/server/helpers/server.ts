@@ -1,4 +1,4 @@
-import { captureException } from '@sentry/nextjs';
+import * as Sentry from '@sentry/nextjs';
 import { HttpStatusCode } from 'axios';
 import { errors as formidableErrors } from 'formidable';
 import type { NextApiHandler, NextApiRequest, NextApiResponse } from 'next';
@@ -90,7 +90,7 @@ export function handleRouteErrors<HandlersConfig extends Partial<Record<RequestM
         logger.info('request completed', { duration: Date.now() - startTime });
       }
     } catch (error: any) {
-      captureException(error);
+      Sentry.captureException(error);
       if (error instanceof FormidableError) {
         logger.error('formidable error', {
           code: error.code,

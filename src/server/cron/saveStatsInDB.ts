@@ -1,4 +1,4 @@
-import { captureException } from '@sentry/nextjs';
+import * as Sentry from '@sentry/nextjs';
 
 import base from '@/server/db/airtable';
 import { kdb, sql } from '@/server/db/kysely';
@@ -574,7 +574,7 @@ export const saveStatsInDB = async (start?: string, end?: string) => {
       saveCommunesSansReseauStats(stringStartDate, stringEndAirtableDate),
     ]);
   } catch (e) {
-    captureException(e);
+    Sentry.captureException(e);
     console.error(`CRON JOB ERROR: saveStatsInDB`, e);
   }
   console.info('CRON JOB STOP: saveStatsInDB');
