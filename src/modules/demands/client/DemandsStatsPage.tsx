@@ -297,7 +297,7 @@ export default function DemandsStatsPage() {
         },
         cellType: 'DateTime',
         enableSorting: true,
-        header: 'Dernière relance',
+        header: 'Dernière relance FCU',
         id: 'reminder_date',
         width: '100px',
       },
