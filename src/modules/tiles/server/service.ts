@@ -6,7 +6,6 @@ import { type BuildTilesInput, tileSourcesMaxZoom } from '@/modules/tiles/consta
 import { type DatabaseSourceId, tilesInfo } from '@/modules/tiles/tiles.config';
 import { type DB, kdb } from '@/server/db/kysely';
 import type { ApiContext } from '@/server/db/kysely/base-model';
-import { isDefined } from '@/utils/core';
 
 const debug = !!(process.env.API_DEBUG_MODE || null);
 
@@ -79,7 +78,7 @@ export const getTileNameFromInternalName = (internalName: string) => {
   return tilesMapping.find((item) => item.internalName === internalName)?.tileName;
 };
 
-const populateTilesCache = () => {
+export const populateTilesCache = () => {
   tilesCached = new Date().getDate();
   Promise.all(
     Object.entries(tilesInfo)
@@ -118,11 +117,6 @@ const populateTilesCache = () => {
       })
   );
 };
-
-// pas de cache au build de nextjs
-if (!isDefined(process.env.NEXT_PHASE) && !isDefined(process.env.DISABLE_TILES_CACHE)) {
-  populateTilesCache();
-}
 
 export const getTile = async (
   type: DatabaseSourceId,
