@@ -1,9 +1,8 @@
 import geojsonvt from 'geojson-vt';
 import { sql, type Transaction } from 'kysely';
 import vtpbf from 'vt-pbf';
-import { tileSourcesMaxZoom } from '@/components/Map/layers/common';
 import type { ApplyGeometriesUpdatesInput } from '@/modules/reseaux/constants';
-import type { BuildTilesInput } from '@/modules/tiles/constants';
+import { type BuildTilesInput, tileSourcesMaxZoom } from '@/modules/tiles/constants';
 import { type DatabaseSourceId, tilesInfo } from '@/modules/tiles/tiles.config';
 import { type DB, kdb } from '@/server/db/kysely';
 import type { ApiContext } from '@/server/db/kysely/base-model';

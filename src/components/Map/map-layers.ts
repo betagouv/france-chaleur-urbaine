@@ -5,6 +5,7 @@ import { customGeojsonLayersSpec } from '@/components/Map/layers/customGeojson';
 import { geomUpdateLayersSpec } from '@/components/Map/layers/geomUpdate';
 import { quartiersPrioritairesPolitiqueVilleLayersSpec } from '@/components/Map/layers/quartiersPrioritairesPolitiqueVille';
 import type { MapConfiguration } from '@/components/Map/map-configuration';
+import { tileSourcesMaxZoom } from '@/modules/tiles/constants';
 import { deepMergeObjects, isDefined } from '@/utils/core';
 
 import { buildingsDataExtractionLayers } from './components/tools/BuildingsDataExtractionTool';
@@ -16,7 +17,7 @@ import { caracteristiquesBatimentsLayersSpec } from './layers/bdnb/caracteristiq
 import { typeChauffageBatimentsCollectifsLayersSpec } from './layers/bdnb/typeChauffageBatimentsCollectifs';
 import { besoinsEnChaleurLayersSpec } from './layers/besoinsEnChaleur';
 import { besoinsEnChaleurIndustrieCommunesLayersSpec } from './layers/besoinsEnChaleurIndustrieCommunes';
-import { type LayerSymbolSpecification, type MapSourceLayersSpecification, type PopupHandler, tileSourcesMaxZoom } from './layers/common';
+import type { LayerSymbolSpecification, MapSourceLayersSpecification, PopupHandler } from './layers/common';
 import { communesFortPotentielPourCreationReseauxChaleurLayersSpec } from './layers/communesFortPotentielPourCreationReseauxChaleur';
 import { consommationsGazLayersSpec } from './layers/consommationsGaz';
 import { demandesEligibiliteLayersSpec } from './layers/demandesEligibilite';

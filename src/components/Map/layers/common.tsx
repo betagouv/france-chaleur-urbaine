@@ -35,9 +35,6 @@ export type LegendInterval = {
   color: `#${string}`;
 };
 
-export const intermediateTileLayersMinZoom = 12;
-export const tileSourcesMaxZoom = 17;
-
 /**
  * Helper pour faciliter la définition des styles des couches avec le survol.
  */
