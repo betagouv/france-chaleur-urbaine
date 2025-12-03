@@ -120,7 +120,8 @@ const populateTilesCache = () => {
   );
 };
 
-if (!isDefined(process.env.DISABLE_TILES_CACHE)) {
+// pas de cache au build de nextjs
+if (!isDefined(process.env.NEXT_PHASE) && !isDefined(process.env.DISABLE_TILES_CACHE)) {
   populateTilesCache();
 }
 
