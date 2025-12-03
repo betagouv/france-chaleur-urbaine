@@ -1,4 +1,4 @@
-import rateLimit, { ipKeyGenerator, MemoryStore } from 'express-rate-limit';
+import { ipKeyGenerator, MemoryStore, rateLimit } from 'express-rate-limit';
 
 export const rateLimitError = new Error('too many requests'); // 429
 
