@@ -9,7 +9,7 @@ export const config = {
   },
 };
 
-const rateLimiter = createNextApiRateLimiter({ max: 2, path: '/api/v1/networks', windowMs: 60 * 1000 });
+const rateLimiter = createNextApiRateLimiter({ limit: 2, path: '/api/v1/networks', windowMs: 60 * 1000 });
 
 export default handleRouteErrors(async (req, res) => {
   requireGetMethod(req);

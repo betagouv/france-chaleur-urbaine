@@ -128,7 +128,7 @@ export const contactRouter = router({
     .meta({
       rateLimit: {
         windowMs: 60 * 1000, // 1 minute
-        max: 1,
+        limit: 1,
         message: "Vous ne pouvez envoyer qu'un message par minute",
       },
     })
@@ -146,7 +146,7 @@ The `rateLimit` meta property accepts:
 ```typescript
 {
   windowMs?: number;    // Time window in milliseconds (default: 15 minutes)
-  max?: number;         // Maximum requests per window (default: 20)
+  limit?: number;         // Maximum requests per window (default: 20)
   message?: string;     // Custom error message for TRPCError
 }
 ```

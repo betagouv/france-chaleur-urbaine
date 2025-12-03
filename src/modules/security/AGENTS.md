@@ -37,7 +37,7 @@ import { createNextApiRateLimiter } from '@/modules/security/server/rate-limit';
 
 const rateLimiter = createNextApiRateLimiter({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 20, // 20 requêtes max
+  limit: 20, // 20 requêtes max
 });
 
 export default handleRouteErrors(async (req, res) => {
@@ -109,7 +109,7 @@ Le rate limiting utilise l'IP client avec support de :
 ```typescript
 const rateLimiter = createNextApiRateLimiter({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 20,
+  limit: 20,
 });
 
 export default handleRouteErrors(async (req, res) => {
@@ -123,7 +123,7 @@ export default handleRouteErrors(async (req, res) => {
 ```typescript
 const rateLimiter = createNextApiRateLimiter({
   windowMs: 60 * 60 * 1000, // 1 heure
-  max: 10,
+  limit: 10,
 });
 ```
 
