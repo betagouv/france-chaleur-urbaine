@@ -7,7 +7,7 @@ export const contactRouter = router({
   create: route
     .meta({
       rateLimit: {
-        max: 1,
+        limit: 1,
         message: 'Veuillez patienter quelques minutes avant de soumettre un nouveau message.',
         windowMs: 60 * 1000, // 1 minute
       },

@@ -13,7 +13,7 @@ export type { RateLimiterOptions };
  * route.meta({
  *   rateLimit: {
  *     windowMs: 60 * 1000,
- *     max: 1,
+ *     limit: 1,
  *     message: 'Vous ne pouvez envoyer qu\'un message par minute'
  *   }
  * }).mutation(...)
@@ -27,7 +27,7 @@ export function createRateLimitMiddleware(t: TRoot) {
 
     // Créer un rate limiter avec store partagé et préfixe par route
     const rateLimiter = createRateLimiter({
-      max: config.max,
+      limit: config.limit,
       path,
       windowMs: config.windowMs,
     });
