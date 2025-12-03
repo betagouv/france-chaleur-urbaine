@@ -247,7 +247,13 @@ const TableRow = <T extends RowData>({
             )}
             scope={columnDef.id === 'selection' ? 'row' : undefined}
           >
-            <TableCell type={cellType} value={value} data={cell.row.original} cellProps={columnDef.cellProps}>
+            <TableCell
+              type={cellType}
+              value={value}
+              data={cell.row.original}
+              cellProps={columnDef.cellProps}
+              forceCellRender={!!columnDef.cell}
+            >
               {flexRender(columnDef.cell, cell.getContext())}
             </TableCell>
             {value ? suffix : ''}

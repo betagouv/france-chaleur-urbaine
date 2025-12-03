@@ -760,6 +760,7 @@ export const getTagsStats = async () => {
     .selectFrom('tags as t')
     .leftJoin('reseaux_par_tag as r', (join) => join.onRef('r.tag', '=', 't.name'))
     .leftJoin('reseaux_construction_par_tag as rc', (join) => join.onRef('rc.tag', '=', 't.name'))
+    .leftJoin('tags_reminders as tr', (join) => join.onRef('tr.tag_id', '=', 't.id'))
     .leftJoinLateral(
       (eb) =>
         eb
@@ -856,6 +857,9 @@ export const getTagsStats = async () => {
           '{"total": 0, "pending": 0}'::jsonb
         )
       `.as('lastSixMonths'),
+
+      // Dernière relance
+      sql<string | null>`${eb.ref('tr.created_at')}`.as('reminder_date'),
     ])
     .orderBy('t.name')
     .execute();

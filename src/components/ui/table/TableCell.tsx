@@ -27,9 +27,19 @@ export type TableCellProps<T> = {
   children: React.ReactNode;
   type?: keyof CellProps<T>;
   cellProps?: Partial<CellProps<T>[keyof CellProps<T>]>;
+  /**
+   * Si true, force l'utilisation du rendu personnalisé (children) même si le type est défini.
+   * Utile quand on veut un tri/filtrage par type mais un rendu personnalisé.
+   */
+  forceCellRender?: boolean;
 };
 
-const TableCell = <T,>({ value, children: defaultValue, data, type, cellProps = {} }: TableCellProps<T>) => {
+const TableCell = <T,>({ value, children: defaultValue, data, type, cellProps = {}, forceCellRender = false }: TableCellProps<T>) => {
+  // Si forceCellRender est true, on utilise toujours le rendu personnalisé
+  if (forceCellRender) {
+    return defaultValue;
+  }
+
   if (!value && type !== 'Boolean') {
     return defaultValue;
   }

@@ -108,6 +108,22 @@ const eventLabelRenderers: Record<EventType, (event: AdminEvent, updateFilters: 
       </span>
     </>
   ),
+  tag_reminder_created: (event, updateFilters) => (
+    <>
+      <span>a enregistré une relance pour le tag</span>
+      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'tag' })}>
+        {(event.data as any)?.tag_name}
+      </FilterButton>
+    </>
+  ),
+  tag_reminder_deleted: (event, updateFilters) => (
+    <>
+      <span>a supprimé la relance pour le tag</span>
+      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'tag' })}>
+        {(event.data as any)?.tag_name}
+      </FilterButton>
+    </>
+  ),
   user_activated: () => 'a activé son compte',
   user_created: () => 'a créé un compte',
   user_deleted: () => 'a supprimé un compte',

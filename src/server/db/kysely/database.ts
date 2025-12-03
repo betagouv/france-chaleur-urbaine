@@ -713,6 +713,12 @@ export interface Tags {
   updated_at: Generated<Timestamp>;
 }
 
+export interface TagsReminders {
+  author_id: string | null;
+  created_at: Generated<Timestamp>;
+  tag_id: string;
+}
+
 export interface Users {
   accepted_cgu_at: Date | null;
   activated_at: Date | null;
@@ -959,6 +965,7 @@ export interface DB {
   reseaux_de_froid_tiles: ReseauxDeFroidTiles;
   ressources_geothermales_nappes_tiles: RessourcesGeothermalesNappesTiles;
   tags: Tags;
+  tags_reminders: TagsReminders;
   users: Users;
   zone_a_potentiel_chaud: ZoneAPotentielChaud;
   zone_a_potentiel_chaud_tiles: ZoneAPotentielChaudTiles;

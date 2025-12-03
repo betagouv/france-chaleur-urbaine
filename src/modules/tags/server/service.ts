@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { createUserEvent } from '@/modules/events/server/service';
 import { kdb, sql } from '@/server/db/kysely';
 import { createBaseModel } from '@/server/db/kysely/base-model';
 import type { User } from '@/types/User';
@@ -74,4 +75,51 @@ export const validation = {
     name: z.string().optional(),
     type: z.string().optional(),
   }),
+};
+
+/**
+ * Crée une relance pour un tag.
+ */
+export const createTagReminder = async (tagId: string, authorId: string) => {
+  const tag = await kdb.selectFrom('tags').where('id', '=', tagId).select('name').executeTakeFirstOrThrow();
+
+  const [reminder] = await kdb
+    .insertInto('tags_reminders')
+    .values({
+      author_id: authorId,
+      created_at: new Date(),
+      tag_id: tagId,
+    })
+    .returningAll()
+    .execute();
+
+  await createUserEvent({
+    author_id: authorId,
+    context_id: tagId,
+    context_type: 'tag',
+    data: {
+      tag_name: tag.name,
+    },
+    type: 'tag_reminder_created',
+  });
+};
+
+/**
+ * Supprime une relance pour un tag.
+ */
+export const deleteTagReminder = async (tagId: string, authorId: string) => {
+  const tag = await kdb.selectFrom('tags').where('id', '=', tagId).select('name').executeTakeFirstOrThrow();
+  const deleted = await kdb.deleteFrom('tags_reminders').where('tag_id', '=', tagId).returningAll().executeTakeFirst();
+
+  if (deleted) {
+    await createUserEvent({
+      author_id: authorId,
+      context_id: tagId,
+      context_type: 'tag',
+      data: {
+        tag_name: tag.name,
+      },
+      type: 'tag_reminder_deleted',
+    });
+  }
 };
