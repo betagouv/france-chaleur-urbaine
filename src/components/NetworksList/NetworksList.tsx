@@ -228,13 +228,18 @@ const PercentageCell: ColumnDefTemplate<CellContext<NetworkToCompare, any>> = ({
 };
 
 const NetworksList = () => {
-  const { data: allNetworks = [], isLoading } = trpc.reseaux.listNetworks.useQuery();
+  const { data: allNetworks = [], isLoading: isNetworksLoading } = trpc.reseaux.listNetworks.useQuery();
   const [isDrawerOpened, toggleDrawer] = useState<boolean>(false);
   const [regionsList, setRegionsList] = useState<ReseauxDeChaleurFiltersProps['regionsList']>([]);
   const [searchValue, setSearchValue] = useState<string>('');
-  const { filters: objectFilters, nbFilters } = useReseauxDeChaleurFilters();
+  const { filters: objectFilters, nbFilters, loading: filtersLoading } = useReseauxDeChaleurFilters();
+
+  const isLoading = isNetworksLoading || filtersLoading;
 
   const filteredNetworks = useMemo(() => {
+    if (isLoading) {
+      return [];
+    }
     let networks = filterReseauxDeChaleur(allNetworks, objectFilters || ({} as NonNullable<typeof objectFilters>));
 
     if (searchValue) {
@@ -251,7 +256,7 @@ const NetworksList = () => {
     }
 
     return networks;
-  }, [allNetworks, objectFilters, searchValue]);
+  }, [allNetworks, objectFilters, searchValue, isLoading]);
 
   const [dataToDisplay, setDataToDisplay] = useState<DataToDisplay>('general');
 
