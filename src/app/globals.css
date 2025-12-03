@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-@config '../../tailwind.config.ts';
+@config "../../tailwind.config.ts";
 
 @source inline("flex-{2..12}");
 
