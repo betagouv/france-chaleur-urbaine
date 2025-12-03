@@ -195,6 +195,28 @@
       }
     }
   },
+  "overrides": [
+    {
+      "includes": ["src/modules/**/server/**", "src/server/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": ["@/components", "@/components/**", "@/pages", "@/pages/**", "!@/pages/api/**"],
+                    "message": "Les fichiers serveur ne doivent pas importer depuis @/components ou @/pages. Ces chemins sont réservés au code client. Utilisez les exports des fichiers constants.ts partagés à la place."
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
   "vcs": {
     "clientKind": "git",
     "enabled": true,
