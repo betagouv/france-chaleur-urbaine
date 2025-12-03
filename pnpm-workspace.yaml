@@ -1,0 +1,7 @@
+publicHoistPattern:
+- "*import-in-the-middle*"
+- "*require-in-the-middle*"
+onlyBuiltDependencies:
+  - '@sentry/cli'
+  - esbuild
+  - sharp
