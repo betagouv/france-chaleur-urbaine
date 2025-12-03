@@ -31,12 +31,12 @@ export type TableCellProps<T> = {
    * Si true, force l'utilisation du rendu personnalisé (children) même si le type est défini.
    * Utile quand on veut un tri/filtrage par type mais un rendu personnalisé.
    */
-  useCustomRender?: boolean;
+  forceCellRender?: boolean;
 };
 
-const TableCell = <T,>({ value, children: defaultValue, data, type, cellProps = {}, useCustomRender = false }: TableCellProps<T>) => {
-  // Si useCustomRender est true, on utilise toujours le rendu personnalisé
-  if (useCustomRender) {
+const TableCell = <T,>({ value, children: defaultValue, data, type, cellProps = {}, forceCellRender = false }: TableCellProps<T>) => {
+  // Si forceCellRender est true, on utilise toujours le rendu personnalisé
+  if (forceCellRender) {
     return defaultValue;
   }
 

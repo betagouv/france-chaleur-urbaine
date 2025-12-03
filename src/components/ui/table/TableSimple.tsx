@@ -252,7 +252,7 @@ const TableRow = <T extends RowData>({
               value={value}
               data={cell.row.original}
               cellProps={columnDef.cellProps}
-              useCustomRender={!!columnDef.cell}
+              forceCellRender={!!columnDef.cell}
             >
               {flexRender(columnDef.cell, cell.getContext())}
             </TableCell>
