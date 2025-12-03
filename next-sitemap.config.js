@@ -63,7 +63,7 @@ const excludedPages = [
 ];
 
 /** @type {import('next-sitemap').IConfig} */
-module.exports = {
+export default {
   exclude: excludedPages,
   generateRobotsTxt: true, // (optional)
   siteUrl: process.env.NEXTAUTH_URL || 'https://example.com',
