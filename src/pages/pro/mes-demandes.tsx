@@ -1,7 +1,8 @@
 import Badge from '@codegouvfr/react-dsfr/Badge';
 import type { ColumnFiltersState } from '@tanstack/react-table';
 import dynamic from 'next/dynamic';
-import { useCallback, useMemo, useState } from 'react';
+import { useRouter } from 'next/router';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import EligibilityHelpDialog from '@/components/EligibilityHelpDialog';
 import Input from '@/components/form/dsfr/Input';
 import ModeDeChauffageTag, { getModeDeChauffageDisplay } from '@/components/Manager/ModeDeChauffageTag';
@@ -55,6 +56,7 @@ const quickFilterPresets = {
 const initialSortingState = [{ desc: true, id: 'Date de la demande' }];
 
 function DemandesNew(): React.ReactElement {
+  const router = useRouter();
   const [selectedDemandId, setSelectedDemandId] = useState<string | null>(null);
   const tableRowSelection = useMemo(() => {
     return selectedDemandId ? { [selectedDemandId]: true } : {};
@@ -66,6 +68,22 @@ function DemandesNew(): React.ReactElement {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
   const { data: demands = [], isLoading } = trpc.demands.user.list.useQuery();
+
+  // Sélectionner automatiquement la demande si demand_id est dans l'URL
+  useEffect(() => {
+    if (router.query.demand_id && typeof router.query.demand_id === 'string' && demands.length > 0) {
+      const demandId = router.query.demand_id;
+      const demand = demands.find((d) => d.id === demandId);
+      if (demand) {
+        setSelectedDemandId(demandId);
+        setMapCenterLocation({
+          center: [demand.Longitude ?? 0, demand.Latitude ?? 0],
+          flyTo: true,
+          zoom: 16,
+        });
+      }
+    }
+  }, [router.query.demand_id, demands]);
 
   const demandsMapData = useMemo(() => {
     return demands

@@ -228,7 +228,7 @@ export const demandsRouter = router({
       .input(zCreateDemandInput)
       .mutation(async ({ input, ctx }) => {
         // ← UPDATE: Pass userId if logged in
-        return await demandsService.create(input, ctx.user?.id);
+        return await demandsService.create(input, { userId: ctx.user?.id });
       }),
 
     update: route.input(zUserUpdateDemandInput).mutation(/* ... */),
