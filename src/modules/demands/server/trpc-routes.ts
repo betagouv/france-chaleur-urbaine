@@ -29,11 +29,7 @@ export const demandsRouter = router({
       .input(zAdminUpdateDemandInput)
       .mutation(async ({ input, ctx }) => {
         const { demandId, values } = input;
-        return await demandsService.update(
-          demandId,
-          values as any /* This is a shared route and some fields can be undefined, causing typescript errors*/,
-          ctx.user.id
-        );
+        return await demandsService.update(demandId, values, ctx.user.id);
       }),
   },
   gestionnaire: {
@@ -59,11 +55,7 @@ export const demandsRouter = router({
       .input(zGestionnaireUpdateDemandInput)
       .mutation(async ({ input, ctx }) => {
         const { demandId, values } = input;
-        return await demandsService.update(
-          demandId,
-          values as any /* This is a shared route and some fields can be undefined, causing typescript errors*/,
-          ctx.user.id
-        );
+        return await demandsService.update(demandId, values, ctx.user.id);
       }),
   },
   user: {
