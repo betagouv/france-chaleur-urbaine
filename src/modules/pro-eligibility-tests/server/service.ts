@@ -175,11 +175,7 @@ export const getAddressEligibilityHistoryEntry = async (
   return historyEntry;
 };
 
-export const createEligibilityTestAddress = async ({
-  test_id,
-  demand_id,
-  ...input
-}: ({ address: string } | { latitude: number; longitude: number }) & { test_id?: string; demand_id?: string }) => {
+export const buildEligibilityTestAddress = async (input: { address: string } | { latitude: number; longitude: number }) => {
   const addressItem =
     'address' in input
       ? await getBANAddressFromAddress(input.address, logger)
@@ -196,18 +192,32 @@ export const createEligibilityTestAddress = async ({
 
   const historyEntry = await getAddressEligibilityHistoryEntry(latitude, longitude);
 
-  const addressData = {
+  return {
     ban_address: addressItem.result_label,
     ban_score: isDefined(addressItem.result_score) ? Math.round(addressItem.result_score * 100) : null,
     ban_valid: addressItem.result_status === 'ok',
-    demand_id,
     eligibility_history: JSON.stringify([historyEntry]),
-    geom: sql`st_transform(st_point(${longitude}, ${latitude}, 4326), 2154)`,
+    geom: sql`st_transform(st_point(${longitude}, ${latitude}, 4326), 2154)` as any,
     source_address: addressItem.address as string,
-    test_id,
-  } satisfies Parameters<ReturnType<typeof kdb.insertInto<'pro_eligibility_tests_addresses'>>['values']>[0];
+  };
+};
 
-  const testAddress = await kdb.insertInto('pro_eligibility_tests_addresses').values(addressData).returningAll().executeTakeFirstOrThrow();
+export const createEligibilityTestAddress = async ({
+  test_id,
+  demand_id,
+  ...input
+}: ({ address: string } | { latitude: number; longitude: number }) & { test_id?: string; demand_id?: string }) => {
+  const addressData = await buildEligibilityTestAddress(input);
+
+  const testAddress = await kdb
+    .insertInto('pro_eligibility_tests_addresses')
+    .values({
+      ...addressData,
+      demand_id,
+      test_id,
+    } satisfies Parameters<ReturnType<typeof kdb.insertInto<'pro_eligibility_tests_addresses'>>['values']>[0])
+    .returningAll()
+    .executeTakeFirstOrThrow();
 
   return testAddress;
 };
@@ -478,6 +488,56 @@ export const update = async (
   });
 
   return updatedItem;
+};
+
+export const updateAddress = async (
+  addressId: string,
+  { latitude, longitude, address }: { latitude: number; longitude: number; address: string },
+  _context: ApiContext
+) => {
+  const existingAddress = await kdb.selectFrom('pro_eligibility_tests_addresses').where('id', '=', addressId).executeTakeFirst();
+
+  if (!existingAddress) {
+    throw new Error('Address not found');
+  }
+
+  // Utilise buildEligibilityTestAddress pour construire les données de l'adresse
+  const addressData = await buildEligibilityTestAddress({ latitude, longitude });
+
+  // Extraire les informations du réseau depuis l'historique d'éligibilité
+  const eligibilityHistory = JSON.parse(addressData.eligibility_history) as ProEligibilityTestHistoryEntry[];
+  const lastEligibility = eligibilityHistory[0]?.eligibility;
+  const networkId = lastEligibility?.id_sncu || null;
+  const networkName = lastEligibility?.nom || null;
+
+  // Mettre à jour l'adresse avec les nouvelles données
+  const updatedAddress = await kdb
+    .updateTable('pro_eligibility_tests_addresses')
+    .set(addressData)
+    .where('id', '=', addressId)
+    .returningAll()
+    .executeTakeFirstOrThrow();
+
+  // Si l'adresse est liée à une demande, mettre à jour aussi les coordonnées, l'adresse et les infos réseau
+  if (updatedAddress.demand_id) {
+    const legacyValuesUpdate = {
+      Adresse: address,
+      'Identifiant réseau': networkId,
+      Latitude: latitude,
+      Longitude: longitude,
+      'Nom réseau': networkName,
+    };
+
+    await kdb
+      .updateTable('demands')
+      .set({
+        legacy_values: sql`legacy_values || ${JSON.stringify(legacyValuesUpdate)}::jsonb`,
+      })
+      .where('id', '=', updatedAddress.demand_id)
+      .execute();
+  }
+
+  return updatedAddress;
 };
 
 export const remove = async (testId: string, _config: ListConfig<typeof tableName>, context: ApiContext) => {
