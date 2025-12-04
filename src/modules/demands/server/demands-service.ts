@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker';
+import { TRPCError } from '@trpc/server';
 import type { Insertable, Selectable } from 'kysely';
 import type { User } from 'next-auth';
 import { v4 as uuidv4 } from 'uuid';
@@ -28,6 +29,7 @@ import { createBaseModel } from '@/server/db/kysely/base-model';
 import { parentLogger } from '@/server/helpers/logger';
 import { type EligibilityType, findPDPAssociatedNetwork } from '@/server/services/addresseInformation';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
+import type { UserRole } from '@/types/enum/UserRole';
 import type { FrontendType } from '@/utils/typescript';
 import * as assignmentRulesService from './assignment_rules-service';
 
@@ -281,13 +283,41 @@ export const remove = async (demandId: string, userId?: string) => {
   }
 };
 
-export const listEmails = async ({ demandId, userId }: { demandId: string; userId: string }) => {
-  const demand = await kdb.selectFrom('demands').select(['user_id']).where('id', '=', demandId).executeTakeFirst();
-  if (!demand || demand.user_id !== userId) {
-    throw new Error('Unauthorized');
+type DemandForPermissionCheck = {
+  user_id: string | null;
+  legacy_values: AirtableLegacyRecord;
+};
+
+type PermissionDefinition = boolean | ((params: { user: User; demand: DemandForPermissionCheck }) => boolean);
+
+const demandEmailAccessPermissions: Record<UserRole, PermissionDefinition> = {
+  admin: true,
+  demo: true,
+  gestionnaire: ({ user, demand }) =>
+    !!(
+      demand.legacy_values['Gestionnaires validés'] && demand.legacy_values.Gestionnaires?.some((tag) => user.gestionnaires?.includes(tag))
+    ),
+  particulier: ({ user, demand }) => demand.user_id === user.id,
+  professionnel: ({ user, demand }) => demand.user_id === user.id,
+};
+
+/**
+ * Ensure the user has permissions to access the demand emails
+ */
+const ensureEmailsPermissions = async ({ user, demandId }: { demandId: string; user: User }) => {
+  const demand = await kdb.selectFrom('demands').select(['user_id', 'legacy_values']).where('id', '=', demandId).executeTakeFirstOrThrow();
+  const permissionsCheck = demandEmailAccessPermissions[user.role];
+  if (!(typeof permissionsCheck === 'boolean' ? permissionsCheck : permissionsCheck({ demand, user }))) {
+    throw new TRPCError({
+      code: 'FORBIDDEN',
+      message: 'Unauthorized',
+    });
   }
-  const emails = await kdb.selectFrom('demand_emails').selectAll().where('demand_id', '=', demandId).execute();
-  return emails;
+};
+
+export const listEmails = async ({ demandId, user }: { demandId: string; user: User }) => {
+  await ensureEmailsPermissions({ demandId, user });
+  return await kdb.selectFrom('demand_emails').selectAll().where('demand_id', '=', demandId).execute();
 };
 
 export const createEmail = async (values: Omit<Insertable<DemandEmails>, 'created_at' | 'updated_at' | 'id'>) => {

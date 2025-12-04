@@ -39,7 +39,7 @@ export const demandsRouter = router({
     listEmails: routeRole(['gestionnaire', 'admin'])
       .input(zListEmailsInput)
       .query(async ({ input, ctx }) => {
-        return await demandsService.listEmails({ demandId: input.demand_id, userId: ctx.user.id });
+        return await demandsService.listEmails({ demandId: input.demand_id, user: ctx.user });
       }),
     sendEmail: routeRole(['gestionnaire', 'admin'])
       .input(zSendEmailInput)
@@ -72,7 +72,7 @@ export const demandsRouter = router({
     listEmails: routeRole(['particulier', 'professionnel', 'gestionnaire', 'admin'])
       .input(zListEmailsInput)
       .query(async ({ input, ctx }) => {
-        return await demandsService.listEmails({ demandId: input.demand_id, userId: ctx.user.id });
+        return await demandsService.listEmails({ demandId: input.demand_id, user: ctx.user });
       }),
     update: route.input(zUserUpdateDemandInput).mutation(async ({ input, ctx }) => {
       const { demandId, values } = input;
