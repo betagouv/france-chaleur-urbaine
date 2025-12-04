@@ -1,6 +1,7 @@
 import Tag from '@codegouvfr/react-dsfr/Tag';
 
 import Accordion from '@/components/ui/Accordion';
+import Icon from '@/components/ui/Icon';
 import Tooltip from '@/components/ui/Tooltip';
 import type { ReseauxEnConstructionTile } from '@/modules/tiles/server/generation-config';
 import { DownloadNetworkGeometryButton } from '../components/DownloadNetworkGeometryButton';
@@ -61,6 +62,11 @@ const Popup = defineLayerPopup<ReseauxEnConstructionTile>(
             />
           )}
         </TwoColumns>
+        <div className="text-sm text-gray-500">
+          <Icon name="ri-alert-line" size="sm" className="mr-1" />
+          Ce tracé est prévisionnel. Le gestionnaire est susceptible
+          <br /> de le modifier avant sa mise en service définitive.
+        </div>
         <Accordion label="Informations supplémentaires" simple small>
           <DownloadNetworkGeometryButton
             id_fcu={reseauEnConstruction.id_fcu}

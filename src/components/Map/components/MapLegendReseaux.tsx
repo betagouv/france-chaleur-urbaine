@@ -247,7 +247,12 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
           </Box>
 
           <Tooltip
-            title={<>Projets financés par l'ADEME ou signalés par les collectivités et exploitants.</>}
+            title={
+              <>
+                Projets financés par l'ADEME ou signalés par les collectivités et exploitants. <br />
+                Les tracés sont prévisionnels. Ils sont susceptibles d'être modifiés avant leur mise en service définitive.
+              </>
+            }
             iconProps={{
               color: 'var(--text-action-high-blue-france)',
             }}
