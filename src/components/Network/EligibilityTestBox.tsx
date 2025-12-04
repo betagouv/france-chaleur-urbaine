@@ -16,10 +16,11 @@ import Text from '@/components/ui/Text';
 import { trackEvent } from '@/modules/analytics/client';
 import useUserInfo from '@/modules/app/client/hooks/useUserInfo';
 import type { SuggestionItem } from '@/modules/ban/types';
+import type { ContactFormInfos } from '@/modules/demands/constants';
 import { getReadableDistance } from '@/modules/geo/client/helpers';
 import trpc from '@/modules/trpc/client';
 import type { NetworkEligibilityStatus } from '@/server/services/addresseInformation';
-import type { ContactFormInfos, FormDemandCreation } from '@/types/Summary/Demand';
+import type { FormDemandCreation } from '@/types/Summary/Demand';
 import { runWithMinimumDelay } from '@/utils/time';
 
 type FormState = 'idle' | 'loadingEligibility' | 'eligibilitySubmissionError' | 'sendingDemand' | 'demandCreated' | 'demandSubmissionError';

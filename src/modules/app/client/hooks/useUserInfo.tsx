@@ -1,5 +1,5 @@
 import useLocalStorage from '@/hooks/useLocalStorage';
-import type { ContactFormInfos } from '@/types/Summary/Demand';
+import type { ContactFormInfos } from '@/modules/demands/constants';
 import type { AvailableHeating } from '../../types';
 
 export type UserInfo = {

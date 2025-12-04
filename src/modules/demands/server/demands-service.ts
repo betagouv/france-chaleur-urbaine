@@ -27,7 +27,7 @@ import {
 } from '@/server/db/kysely';
 import { createBaseModel } from '@/server/db/kysely/base-model';
 import { parentLogger } from '@/server/helpers/logger';
-import { type EligibilityType, findPDPAssociatedNetwork } from '@/server/services/addresseInformation';
+import { type EligibilityType, findPDPAssociatedNetwork, getDetailedEligibilityStatus } from '@/server/services/addresseInformation';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import type { UserRole } from '@/types/enum/UserRole';
 import type { FrontendType } from '@/utils/typescript';
@@ -191,14 +191,18 @@ export const update = async (recordId: string, { comment_fcu, comment_gestionnai
   return augmentAdminDemand({ demand, testAddress: testAddress || null });
 };
 
-export const create = async (values: CreateDemandInput, userId?: string) => {
+export const create = async (
+  values: CreateDemandInput,
+  { userId, pro_eligibility_tests_addresse_id }: { userId?: string; pro_eligibility_tests_addresse_id?: string } = {}
+) => {
+  let testAddressFromDB: Omit<Selectable<ProEligibilityTestsAddresses>, 'eligibility_history'> | null = null;
+
+  const { lat, lon } = values.coords;
   const legacyValues = formatDataToLegacyAirtable(values);
 
   const [conso, nbLogement] = await Promise.all([
-    getConsommationGazAdresse(legacyValues.Latitude, legacyValues.Longitude),
-    legacyValues.Logement
-      ? { batiment_groupe_id: undefined, nb_logements: legacyValues.Logement }
-      : getNbLogement(legacyValues.Latitude, legacyValues.Longitude),
+    getConsommationGazAdresse(lat, lon),
+    values.nbLogements ? { batiment_groupe_id: undefined, nb_logements: values.nbLogements } : getNbLogement(lat, lon),
   ]);
 
   const [createdDemand] = await kdb
@@ -222,15 +226,31 @@ export const create = async (values: CreateDemandInput, userId?: string) => {
     .returningAll()
     .execute();
 
-  let testAddress: Awaited<ReturnType<typeof createEligibilityTestAddress>> | null = null;
-  if (legacyValues.Latitude && legacyValues.Longitude) {
-    testAddress = await createEligibilityTestAddress({
-      address: legacyValues.Adresse,
+  if (pro_eligibility_tests_addresse_id) {
+    const updatedTestAddress = await kdb
+      .updateTable('pro_eligibility_tests_addresses')
+      .set({ demand_id: createdDemand.id })
+      .returningAll()
+      .where('id', '=', pro_eligibility_tests_addresse_id)
+      .executeTakeFirst();
+    if (updatedTestAddress) {
+      testAddressFromDB = updatedTestAddress;
+    }
+  } else if (lat && lon) {
+    const createdTestAddress = await createEligibilityTestAddress({
+      address: values.address,
       demand_id: createdDemand.id,
-      latitude: legacyValues.Latitude,
-      longitude: legacyValues.Longitude,
+      latitude: lat,
+      longitude: lon,
     });
+    if (createdTestAddress) {
+      testAddressFromDB = createdTestAddress;
+    }
   }
+
+  const testAddress = testAddressFromDB as Selectable<ProEligibilityTestsAddresses> & {
+    eligibility_history: ProEligibilityTestHistoryEntry[];
+  };
 
   await Promise.all([
     createEvent({
@@ -241,11 +261,12 @@ export const create = async (values: CreateDemandInput, userId?: string) => {
     }),
     sendEmailTemplate(
       'demands.user-new',
-      { email: legacyValues.Mail },
+      { email: values.email },
       {
         demand: {
           ...legacyValues,
-          'Distance au réseau': legacyValues['Distance au réseau'] ?? 9999,
+          'Distance au réseau':
+            (testAddress?.eligibility_history || [])[(testAddress?.eligibility_history?.length || 1) - 1]?.eligibility?.distance ?? 9999,
           Structure: legacyValues.Structure as any,
           'Type de chauffage': legacyValues['Type de chauffage'] as 'Collectif' | 'Autre / Je ne sais pas' | 'Individuel',
         },
@@ -262,6 +283,60 @@ export const create = async (values: CreateDemandInput, userId?: string) => {
   }
 
   return augmentAdminDemand({ demand, testAddress });
+};
+
+/**
+ * Create multiple demands from existing test addresses in batch
+ * @param addressIds - Array of test address IDs to create demands from
+ * @param contactInfo - Shared contact information for all demands
+ * @param userId - ID of the user creating the demands
+ * @returns Array of objects with addressId and demandId for each created demand
+ */
+export const createBatch = async (
+  addressIds: string[],
+  values: Omit<CreateDemandInput, 'address' | 'city' | 'coords' | 'department' | 'eligibility' | 'postcode' | 'region'>,
+  userId?: string
+): Promise<Array<{ addressId: string; demandId: string }>> => {
+  const results = await Promise.all(
+    addressIds.map(async (addressId) => {
+      const testAddress = await kdb
+        .selectFrom('pro_eligibility_tests_addresses')
+        .selectAll()
+        .select([sql`ST_AsGeoJSON(st_transform(geom, 4326))::json`.as('geom')])
+        .where('id', '=', addressId)
+        .executeTakeFirst();
+
+      if (testAddress?.demand_id) {
+        return { addressId, demandId: testAddress.demand_id };
+      }
+
+      const coords = {
+        lat: testAddress?.geom?.coordinates[1] as number,
+        lon: testAddress?.geom?.coordinates[0] as number,
+      };
+      const eligibility = await getDetailedEligibilityStatus(coords.lat, coords.lon);
+
+      const result = await create(
+        {
+          ...values,
+          address: testAddress?.ban_address || testAddress?.source_address || '',
+          city: eligibility.commune.nom || '',
+          coords,
+          department: eligibility.departement.nom as string,
+          eligibility: {
+            distance: eligibility.distance,
+            inPDP: !!eligibility.pdp?.id_fcu,
+            isEligible: eligibility.eligible,
+          },
+          postcode: '',
+          region: eligibility.region.nom as string,
+        },
+        { pro_eligibility_tests_addresse_id: addressId, userId }
+      );
+      return { addressId, demandId: result.id };
+    })
+  );
+  return results;
 };
 
 export const remove = async (demandId: string, userId?: string) => {

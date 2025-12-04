@@ -3,6 +3,7 @@ import { route, routeRole, router } from '@/modules/trpc/server';
 import {
   zAddRelanceCommentInput,
   zAdminUpdateDemandInput,
+  zCreateBatchDemandInput,
   zCreateDemandInput,
   zDeleteDemandInput,
   zGestionnaireUpdateDemandInput,
@@ -64,7 +65,10 @@ export const demandsRouter = router({
       return await demandsService.updateCommentFromRelanceId(relanceId, comment, ctx.user?.id);
     }),
     create: route.input(zCreateDemandInput).mutation(async ({ input, ctx }) => {
-      return await demandsService.create(input, ctx.user?.id);
+      return await demandsService.create(input, { userId: ctx.user?.id });
+    }),
+    createBatch: route.input(zCreateBatchDemandInput).mutation(async ({ input, ctx }) => {
+      return await demandsService.createBatch(input.addressIds, input.contactInfo, ctx.user?.id);
     }),
     list: routeRole(['particulier', 'professionnel', 'gestionnaire', 'admin']).query(async ({ ctx }) => {
       return await demandsService.listByUser(ctx.user.id);
