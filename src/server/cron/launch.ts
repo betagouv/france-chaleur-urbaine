@@ -1,4 +1,4 @@
-import { captureException } from '@sentry/nextjs';
+import * as Sentry from '@sentry/nextjs';
 import { dailyRelanceMail as demandsDailyRelanceMail } from '@/modules/demands/server/demands-service';
 import { syncComptesProFromUsers } from '@/server/services/airtable';
 import { dailyNewManagerMail, weeklyOldManagerMail } from '@/server/services/manager';
@@ -17,7 +17,7 @@ export const launchJob = async (job: string, ...params: any) => {
   try {
     await jobs[job](...params);
   } catch (e) {
-    captureException(e);
+    Sentry.captureException(e);
     console.error(`CRON JOB ERROR: ${job}`, e);
   }
 };

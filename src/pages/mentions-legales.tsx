@@ -17,7 +17,7 @@ function MentionsLegalesPage() {
       <LegalNoticeComponent
         includeBetaGouv
         siteName="France Chaleur Urbaine"
-        siteUrl={process.env.NEXT_PUBLIC_SITE_URL!}
+        siteUrl={clientConfig.websiteUrl}
         licenceUrl="https://www.etalab.gouv.fr/licence-ouverte-open-licence/"
         date="08/09/2025"
         siteHost={{

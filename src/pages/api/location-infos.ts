@@ -1,4 +1,4 @@
-import { captureException } from '@sentry/nextjs';
+import * as Sentry from '@sentry/nextjs';
 import type { NextApiRequest } from 'next';
 import { z } from 'zod';
 
@@ -117,7 +117,7 @@ export default handleRouteErrors(async (req: NextApiRequest) => {
   if (!infosVille) {
     const errorMessage = `/api/location-infos. Impossible de trouver la ville: cityCode:"${cityCode}",  city:"${city}"`;
     console.error(errorMessage);
-    captureException(new Error(errorMessage));
+    Sentry.captureException(new Error(errorMessage));
   }
 
   return {

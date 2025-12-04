@@ -333,6 +333,9 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  // Exclude knex from server bundling to avoid TypeScript errors with optional dialect dependencies
+  // Knex loads dialects dynamically via require(), and we only use PostgreSQL
+  serverExternalPackages: ['knex'],
   transpilePackages: ['@codegouvfr/react-dsfr'],
   turbopack: {
     rules: {

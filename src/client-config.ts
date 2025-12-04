@@ -38,5 +38,5 @@ export const clientConfig = {
     matomoServerURL: process.env.NEXT_PUBLIC_MATOMO_URL,
     matomoSiteId: process.env.NEXT_PUBLIC_MATOMO_SITE_ID,
   },
-  websiteOrigin: process.env.NEXT_PUBLIC_MAP_ORIGIN,
+  websiteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://france-chaleur-urbaine.beta.gouv.fr',
 };

@@ -1,7 +1,5 @@
 import { serverConfig } from '@/server/config';
 
-const { websiteOrigin, linkedInUrl, calendarLink } = serverConfig;
-
 import { Button, Layout, type LayoutModifiableProps, Link, Note, Section, Text } from '../../components';
 
 type RelanceEmailProps = {
@@ -12,7 +10,7 @@ type RelanceEmailProps = {
 };
 
 export const RelanceEmail = ({ firstName, date, adresse, relanceId, ...props }: RelanceEmailProps & LayoutModifiableProps) => {
-  const url = `${websiteOrigin}/satisfaction?id=${relanceId}&satisfaction=`;
+  const url = `${serverConfig.websiteUrl}/satisfaction?id=${relanceId}&satisfaction=`;
 
   return (
     <Layout {...props}>
@@ -33,13 +31,13 @@ export const RelanceEmail = ({ firstName, date, adresse, relanceId, ...props }: 
         <Button href={`${url}false`}>👎 Non</Button>
       </Section>
       <Text>
-        <Link href={calendarLink}>Je prends rendez-vous</Link> avec France Chaleur Urbaine
+        <Link href={serverConfig.calendarLink}>Je prends rendez-vous</Link> avec France Chaleur Urbaine
       </Text>
       <Text>N'hésitez pas si vous avez la moindre question, nous nous tenons à votre disposition.</Text>
       <Text>Bien cordialement,</Text>
       <Text>L'équipe France Chaleur Urbaine</Text>
       <Note>
-        Suivez notre actualité sur <Link href={linkedInUrl}>Linkedin</Link>
+        Suivez notre actualité sur <Link href={serverConfig.linkedInUrl}>Linkedin</Link>
       </Note>
     </Layout>
   );

@@ -126,6 +126,12 @@ export const customFilterFn = <T extends RowData>(): Record<string, FilterFn<T>>
   },
 });
 
+declare module '@tanstack/react-table' {
+  interface ColumnMeta<TData, TValue> {
+    hasCustomCellRenderer?: boolean;
+  }
+}
+
 export type ColumnDef<T, K = any> = ColumnDefOriginal<T, K> & {
   cellType?: TableCellProps<T>['type'];
   cellProps?: TableCellProps<T>['cellProps'];
@@ -252,7 +258,7 @@ const TableRow = <T extends RowData>({
               value={value}
               data={cell.row.original}
               cellProps={columnDef.cellProps}
-              forceCellRender={!!columnDef.cell}
+              forceCellRender={cell.column.columnDef.meta?.hasCustomCellRenderer}
             >
               {flexRender(columnDef.cell, cell.getContext())}
             </TableCell>
@@ -560,6 +566,12 @@ const TableSimple = <T extends RowData>({
     if ((column.filterType !== undefined || column.filter !== undefined) && (column as any).enableColumnFilter === undefined) {
       (column as any).enableColumnFilter = true;
     }
+
+    // Si custom cell, définis meta.hasCustomCellRenderer à true pour que TableCell ait l'information.
+    if (!column.meta) {
+      column.meta = {};
+    }
+    column.meta.hasCustomCellRenderer = !!column.cell;
   });
 
   const columnVisibility = React.useMemo(() => {
@@ -893,7 +905,7 @@ const TableSimple = <T extends RowData>({
             {!loading &&
               (rowVirtualizer.getVirtualItems().length === 0 ? (
                 <tr>
-                  <td colSpan={columns.length} className="!flex justify-start items-center h-full text-black ">
+                  <td colSpan={columns.length} className="flex! justify-start items-center h-full text-black ">
                     {data.length === 0 ? loadingEmptyMessage : 'Aucun résultat trouvé, élargissez votre recherche'}
                   </td>
                 </tr>

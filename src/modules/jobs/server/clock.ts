@@ -1,3 +1,5 @@
+import '@/load-env';
+
 import { serverConfig } from '@/server/config';
 import { registerCrons } from '@/server/cron/cron';
 import { shutdownKyselyDatabase } from '@/server/db/kysely';

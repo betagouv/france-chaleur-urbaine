@@ -74,7 +74,7 @@ const DemandAdminGestionnaireContactEmail = ({ demand }: { demand: AirtableLegac
       </Table>
 
       <div style={{ marginTop: '32px', textAlign: 'center' }}>
-        <Button href={`${clientConfig.websiteOrigin}/admin/demandes`}>Accéder aux demandes</Button>
+        <Button href={`${clientConfig.websiteUrl}/admin/demandes`}>Accéder aux demandes</Button>
       </div>
     </Layout>
   );

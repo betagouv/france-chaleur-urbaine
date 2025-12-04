@@ -1,5 +1,5 @@
 'use client';
-import { captureException } from '@sentry/nextjs';
+import * as Sentry from '@sentry/nextjs';
 import { useQueryState } from 'nuqs';
 import React, { type ReactNode } from 'react';
 import originalToast, { Toaster } from 'react-hot-toast';
@@ -59,7 +59,7 @@ export const toastErrors = <Func extends (...args: any[]) => void | Promise<void
         ? customError(err)
         : getFirstZodError(err?.data?.zodError?.properties) || err?.message || String(err);
       notify('error', displayedMessage);
-      captureException(err);
+      Sentry.captureException(err);
     }
   };
 };

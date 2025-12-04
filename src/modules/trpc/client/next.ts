@@ -1,7 +1,7 @@
 import { httpBatchLink, loggerLink } from '@trpc/client';
 import { createTRPCNext } from '@trpc/next';
 import type { NextPageContext } from 'next';
-
+import { clientConfig } from '@/client-config';
 import type { AppRouter } from '../types';
 
 /**
@@ -48,7 +48,7 @@ const trpc = createTRPCNext<AppRouter>({
           'x-ssr': '1',
         };
       },
-      url: `${typeof window !== 'undefined' ? '' : process.env.SITE_URL || 'http://localhost:3000'}/api/trpc`,
+      url: `${typeof window !== 'undefined' ? '' : clientConfig.websiteUrl}/api/trpc`,
     });
 
     return {

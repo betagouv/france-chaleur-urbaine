@@ -1,4 +1,3 @@
-import '@/server/db'; // permet d'importer les variables d'env correctement
 import {
   type ComparisonOperatorExpression,
   type Expression,

@@ -1,10 +1,11 @@
 import type { DataDrivenPropertyValueSpecification, ExpressionInputType } from 'maplibre-gl';
 import { BdnbBatimentPopup, bdnbBatimentsTilesSource } from '@/components/Map/layers/bdnb/common';
+import { intermediateTileLayersMinZoom } from '@/modules/tiles/constants';
 import type { BdnbBatimentTile } from '@/modules/tiles/server/generation-config';
 import { deepMergeObjects } from '@/utils/core';
 import { ObjectEntries } from '@/utils/typescript';
 import type { MapLayerSpecification } from '../../map-layers';
-import { ifHoverElse, intermediateTileLayersMinZoom, type MapSourceLayersSpecification } from '../common';
+import { ifHoverElse, type MapSourceLayersSpecification } from '../common';
 
 export const minIconSize = 12;
 export const maxIconSize = 30;

@@ -20,3 +20,6 @@ export const zGetBdnbBatimentInput = z.strictObject({
   batiment_groupe_id: z.string().min(1, "L'ID du groupe de bâtiment est requis"),
 });
 export type GetBdnbBatimentInput = z.infer<typeof zGetBdnbBatimentInput>;
+
+export const intermediateTileLayersMinZoom = 12;
+export const tileSourcesMaxZoom = 17;

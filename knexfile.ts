@@ -1,8 +1,5 @@
-import dotenv from 'dotenv';
+import '@/load-env';
 import type { Knex } from 'knex';
-
-dotenv.config({ path: '.env.local' });
-dotenv.config();
 
 export default {
   acquireConnectionTimeout: 30000,

@@ -3,7 +3,7 @@ import { clientConfig } from '@/client-config';
 import { Button, Layout, type LayoutModifiableProps, Section, Text, Url } from '../../components';
 
 export const ResetPasswordEmail = ({ token, ...props }: { token: string } & LayoutModifiableProps) => {
-  const url = `${clientConfig.websiteOrigin}/reset-password/${token}`;
+  const url = `${clientConfig.websiteUrl}/reset-password/${token}`;
 
   return (
     <Layout {...props}>

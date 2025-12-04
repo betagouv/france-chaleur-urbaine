@@ -66,7 +66,7 @@ const excludedPages = [
 export default {
   exclude: excludedPages,
   generateRobotsTxt: true, // (optional)
-  siteUrl: process.env.NEXTAUTH_URL || 'https://example.com',
+  siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://france-chaleur-urbaine.beta.gouv.fr',
   transform: (config, path) => {
     return {
       changefreq: config.changefreq,

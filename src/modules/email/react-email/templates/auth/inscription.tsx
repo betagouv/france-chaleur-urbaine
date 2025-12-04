@@ -2,8 +2,8 @@ import { clientConfig } from '@/client-config';
 
 import { Layout, type LayoutModifiableProps } from '../../components';
 export const InscriptionEmail = (props: LayoutModifiableProps) => {
-  const urlConnexion = `${clientConfig.websiteOrigin}/connexion`;
-  const urlCollectivites = `${clientConfig.websiteOrigin}/collectivites-et-exploitants`;
+  const urlConnexion = `${clientConfig.websiteUrl}/connexion`;
+  const urlCollectivites = `${clientConfig.websiteUrl}/collectivites-et-exploitants`;
 
   return (
     <Layout variant="markdown" {...props}>
