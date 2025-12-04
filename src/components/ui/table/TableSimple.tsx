@@ -905,7 +905,7 @@ const TableSimple = <T extends RowData>({
             {!loading &&
               (rowVirtualizer.getVirtualItems().length === 0 ? (
                 <tr>
-                  <td colSpan={columns.length} className="!flex justify-start items-center h-full text-black ">
+                  <td colSpan={columns.length} className="flex! justify-start items-center h-full text-black ">
                     {data.length === 0 ? loadingEmptyMessage : 'Aucun résultat trouvé, élargissez votre recherche'}
                   </td>
                 </tr>
