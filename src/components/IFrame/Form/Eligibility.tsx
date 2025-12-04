@@ -38,7 +38,7 @@ const Eligibility = () => {
         />
         <Button
           disabled={!heatingType || !address}
-          onClick={() => window.open(`${clientConfig.websiteOrigin}?heating=${heatingType}&address=${address?.properties.label}`)}
+          onClick={() => window.open(`${clientConfig.websiteUrl}?heating=${heatingType}&address=${address?.properties.label}`)}
         >
           Tester mon adresse
         </Button>

@@ -17,7 +17,7 @@ import cx from '@/utils/cx';
 
 const Logo = ({ className }: { className: string }) => (
   <a
-    href={clientConfig.websiteOrigin}
+    href={clientConfig.websiteUrl}
     target="_blank"
     className={cx('items-center bg-none! gap-2 justify-end font text-sm text-faded italic fr-px-2w reset-external', className)}
   >

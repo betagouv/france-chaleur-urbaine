@@ -11,7 +11,7 @@ const ActivationEmail = ({ activationToken, ...props }: { activationToken: strin
         email.
       </Text>
 
-      <Button href={`${clientConfig.websiteOrigin}/connexion?activationToken=${activationToken}`}>Confirmer mon email</Button>
+      <Button href={`${clientConfig.websiteUrl}/connexion?activationToken=${activationToken}`}>Confirmer mon email</Button>
 
       <Text>Bien cordialement,</Text>
       <Text>L'équipe France Chaleur Urbaine</Text>

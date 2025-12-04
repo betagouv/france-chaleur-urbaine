@@ -19,7 +19,7 @@ const CreationDemandeEmail = ({ demand }: CreationDemandeEmailProps) => {
       {process.env.NODE_ENV === 'test' && <pre>Paramètres (affiché seulement sur mailpit) : {JSON.stringify(demand, null, 2)}</pre>}
       <Text>Bonjour,</Text>
       <Text>
-        Nous vous remercions pour votre demande de contact sur <Link href={clientConfig.websiteOrigin}>France Chaleur Urbaine</Link> pour le{' '}
+        Nous vous remercions pour votre demande de contact sur <Link href={clientConfig.websiteUrl}>France Chaleur Urbaine</Link> pour le{' '}
         <strong>{demand.Adresse}</strong>.
       </Text>
 
@@ -40,8 +40,8 @@ const CreationDemandeEmail = ({ demand }: CreationDemandeEmailProps) => {
                 </Text>
                 <Text>
                   Sans attendre, nous vous invitons à{' '}
-                  <Link href={`${clientConfig.websiteOrigin}/documentation/guide-france-chaleur-urbaine.pdf`}>télécharger notre guide</Link>
-                  , qui récapitule les grandes étapes pour se raccorder à un réseau de chaleur, ainsi que les principales aides financières
+                  <Link href={`${clientConfig.websiteUrl}/documentation/guide-france-chaleur-urbaine.pdf`}>télécharger notre guide</Link>,
+                  qui récapitule les grandes étapes pour se raccorder à un réseau de chaleur, ainsi que les principales aides financières
                   disponibles.
                 </Text>
               </>

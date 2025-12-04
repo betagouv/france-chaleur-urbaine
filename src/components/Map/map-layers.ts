@@ -194,7 +194,7 @@ export function loadMapLayers(map: FCUMap, config: MapConfiguration) {
           ? {
               maxzoom: (spec.source as VectorSourceSpecification).maxzoom ?? tileSourcesMaxZoom,
               // prepend the website origin to the tiles as we need the full url for tiles
-              tiles: spec.source.tiles.map((url) => `${clientConfig.websiteOrigin}${url}`),
+              tiles: spec.source.tiles.map((url) => `${clientConfig.websiteUrl}${url}`),
             }
           : {}),
       });

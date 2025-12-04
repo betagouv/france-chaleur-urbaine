@@ -91,7 +91,6 @@ const contentVariants = cva('', {
  * ```
  */
 const Tile: React.FC<TileProps> = ({ size = 'md', className, image, linkProps, eventKey, eventPayload, ...props }) => {
-  const imageUrl = image && !image.startsWith('http') ? `${process.env.NEXT_PUBLIC_MAP_ORIGIN}${image}` : image;
   const router = useRouter();
   const { href, onClick, ...restLinkProps } = linkProps;
 
@@ -104,7 +103,7 @@ const Tile: React.FC<TileProps> = ({ size = 'md', className, image, linkProps, e
       }}
       className={tileVariants({ className, size })}
       small={size === 'sm'}
-      imageUrl={imageUrl}
+      imageUrl={image}
       linkProps={{
         href,
         onClick: (e: React.MouseEvent<HTMLAnchorElement>) => {
