@@ -178,7 +178,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.2.4",
-    "@react-email/preview-server": "4.2.12",
+    "@react-email/preview-server": "5.0.6",
     "@svgr/webpack": "^8.1.0",
     "@tailwindcss/postcss": "^4.1.13",
     "@testing-library/dom": "^10.4.1",
@@ -217,7 +217,7 @@
     "postcss": "^8.5.4",
     "postcss-import": "^16.1.1",
     "raw-loader": "^4.0.2",
-    "react-email": "4.2.12",
+    "react-email": "5.0.6",
     "tailwindcss": "^4.1.13",
     "tailwindcss-animate": "^1.0.7",
     "trpc-ui": "^1.0.15",
