@@ -9,7 +9,7 @@ process.env.DATABASE_URL = process.env.DATABASE_URL ?? 'postgres://fcu_test:fcu_
 // This prevents the "Cannot find module '@/client-config'" error in tests
 vi.mock('@/server/config', () => ({
   clientConfig: {
-    banApiBaseUrl: 'https://api-adresse.data.gouv.fr/search/',
+    banApiBaseUrl: 'https://data.geopf.fr/geocodage/search/',
     calendarLink: 'https://cal.com/test',
     contactEmail: 'test@example.com',
     destinationEmails: {
@@ -39,7 +39,6 @@ vi.mock('@/server/config', () => ({
     websiteOrigin: undefined,
   },
   serverConfig: {
-    apiAdresseUrl: 'https://api-adresse.data.gouv.fr/',
     contactEmail: 'test@example.com',
     databaseUrl: process.env.DATABASE_URL ?? 'postgres://fcu_test:fcu_test_pass@localhost:5433/fcu_test',
   },

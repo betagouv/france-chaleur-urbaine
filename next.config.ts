@@ -52,7 +52,7 @@ const configFunctions = [
         'https://openmaptiles.github.io',
         'https://france-chaleur-urbaine.beta.gouv.fr/',
         'https://france-chaleur-urbaine-dev.osc-fr1.scalingo.io/',
-        'https://api-adresse.data.gouv.fr/',
+        'https://data.geopf.fr/',
         'https://stats.data.gouv.fr',
         'https://stats.beta.gouv.fr',
         'https://cdn.linkedin.oribi.io',
