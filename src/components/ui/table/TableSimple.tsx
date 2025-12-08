@@ -545,7 +545,7 @@ const TableSimple = <T extends RowData>({
         />
       ),
       id: 'selection',
-      width: '40px',
+      width: '50px',
     };
 
     return enableRowSelection ? [selectionColumn, ...columns] : columns;

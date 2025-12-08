@@ -1,5 +1,4 @@
 import dayjs from 'dayjs';
-import Loader from '@/components/ui/Loader';
 import Tooltip from '@/components/ui/Tooltip';
 import type { RouterOutput } from '@/modules/trpc/client';
 
@@ -59,9 +58,14 @@ const EmailHistory = ({ emails, isLoading, onEmailClick, showTitle = true }: Ema
       {showTitle && <h4>Historique</h4>}
       <ul className="fr-ml-3w">
         {isLoading ? (
-          <li>
-            <Loader size="sm" />
-          </li>
+          [1, 2, 3].map((i) => (
+            <li key={i} className="mb-2">
+              <div className="animate-pulse flex items-center gap-2">
+                <div className="h-4 bg-gray-200 rounded w-48" />
+                <div className="h-4 bg-gray-200 rounded w-32" />
+              </div>
+            </li>
+          ))
         ) : emails && emails.length > 0 ? (
           emails.map((item) => <EmailHistoryItem key={item.email_key} item={item} onEmailClick={onEmailClick} />)
         ) : (

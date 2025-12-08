@@ -1,6 +1,5 @@
 import { ContactForm } from '@/components/EligibilityForm/components/ContactForm';
 import CallOut from '@/components/ui/CallOut';
-import Heading from '@/components/ui/Heading';
 import Link from '@/components/ui/Link';
 import type { ContactFormInfos } from '@/modules/demands/constants';
 import trpc from '@/modules/trpc/client';
@@ -37,10 +36,11 @@ export const BatchDemandContactForm = ({ addressIds }: BatchDemandContactFormPro
 
   return (
     <>
-      <Heading size="h4">
-        Informations de contact partagées pour {addressIds.length === 1 ? 'cette adresse' : `ces ${addressIds.length} adresses`}
-      </Heading>
-      <p className="text-sm text-faded my-0.5">Les mêmes informations de contact seront utilisées pour toutes les demandes créées.</p>
+      {addressIds.length > 1 && (
+        <p className="text-sm text-faded my-0.5">
+          Les mêmes informations de contact seront utilisées pour les <strong>{addressIds.length}</strong> demandes créées
+        </p>
+      )}
 
       <ContactForm onSubmit={submitContactForm} isLoading={isPending} />
       {isError && (
