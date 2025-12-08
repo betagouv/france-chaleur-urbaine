@@ -203,10 +203,9 @@ export const buildEligibilityTestAddress = async (input: { address: string } | {
 };
 
 export const createEligibilityTestAddress = async ({
-  test_id,
   demand_id,
   ...input
-}: ({ address: string } | { latitude: number; longitude: number }) & { test_id?: string; demand_id?: string }) => {
+}: ({ address: string } | { latitude: number; longitude: number }) & { demand_id: string }) => {
   const addressData = await buildEligibilityTestAddress(input);
 
   const testAddress = await kdb
@@ -214,7 +213,6 @@ export const createEligibilityTestAddress = async ({
     .values({
       ...addressData,
       demand_id,
-      test_id,
     } satisfies Parameters<ReturnType<typeof kdb.insertInto<'pro_eligibility_tests_addresses'>>['values']>[0])
     .returningAll()
     .executeTakeFirstOrThrow();
