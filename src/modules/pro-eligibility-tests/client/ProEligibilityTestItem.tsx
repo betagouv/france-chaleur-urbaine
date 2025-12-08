@@ -653,7 +653,7 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false, className }:
                 },
               ]}
             />
-            {!readOnly && Object.keys(rowSelection).length > 0 && (
+            {!readOnly && (
               <div className="flex justify-end mt-4">
                 <Button
                   iconId="fr-icon-mail-line"
@@ -662,6 +662,7 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false, className }:
                   onClick={() => {
                     setIsBatchModalOpen(true);
                   }}
+                  disabled={Object.keys(rowSelection).length === 0}
                 >
                   Créer les demandes ({Object.keys(rowSelection).length})
                 </Button>
