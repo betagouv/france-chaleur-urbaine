@@ -1,6 +1,6 @@
+import type { ContactFormInfos } from '@/modules/demands/constants';
 import type { DetailedEligibilityStatus } from '@/server/services/addresseInformation';
 import type { DemandStatus } from '@/types/enum/DemandSatus';
-
 import type { Coords } from '../Coords';
 
 export type DemandSummary = {
@@ -66,22 +66,6 @@ export type AdminDemand = Demand & {
   recommendedAssignment: string;
   detailedEligibilityStatus: DetailedEligibilityStatus;
   networkTags: string[];
-};
-
-export type ContactFormInfos = {
-  structure: AvailableStructure;
-  heatingEnergy: string;
-  lastName: string;
-  firstName: string;
-  company: string;
-  companyType: string;
-  email: string;
-  phone: string;
-  termOfUse: boolean;
-  demandCompanyType: string;
-  demandCompanyName: string;
-  demandArea?: number;
-  nbLogements?: number;
 };
 
 export type FormDemandCreation = ContactFormInfos & {

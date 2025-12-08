@@ -343,9 +343,6 @@ importers:
       tsx:
         specifier: 4.20.6
         version: 4.20.6
-      typescript:
-        specifier: ^5.9.2
-        version: 5.9.3
       unified:
         specifier: ^11.0.5
         version: 11.0.5
@@ -500,6 +497,9 @@ importers:
       trpc-ui:
         specifier: ^1.0.15
         version: 1.0.15(@emotion/react@11.14.0(@types/react@19.2.2)(react@19.2.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.2)(react@19.2.1))(@types/react@19.2.2)(react@19.2.1))(@mui/material@5.18.0(@emotion/react@11.14.0(@types/react@19.2.2)(react@19.2.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.2)(react@19.2.1))(@types/react@19.2.2)(react@19.2.1))(@types/react@19.2.2)(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(@trpc/server@11.7.2(typescript@5.9.3))(@types/react@19.2.2)(monaco-editor@0.55.1)(next@16.0.7(@babel/core@7.28.5)(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(zod@4.1.13)
+      typescript:
+        specifier: ^5.9.2
+        version: 5.9.3
       vite-tsconfig-paths:
         specifier: ^5.1.4
         version: 5.1.4(typescript@5.9.3)(vite@7.2.6(@types/node@20.19.25)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(tsx@4.20.6)(yaml@2.8.2))

@@ -23,11 +23,11 @@ import {
   type Table,
   useReactTable,
 } from '@tanstack/react-table';
-import { useVirtualizer, type Virtualizer } from '@tanstack/react-virtual';
+import type { Virtualizer } from '@tanstack/react-virtual';
 import { cva } from 'class-variance-authority';
 import dynamic from 'next/dynamic';
-import React, { type RefObject, useCallback, useEffect } from 'react';
-
+import React, { type RefObject, useCallback, useDeferredValue } from 'react';
+import Checkbox from '@/components/form/dsfr/Checkbox';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import Dialog from '@/components/ui/Dialog';
@@ -39,6 +39,7 @@ import cx from '@/utils/cx';
 import type { FlattenKeys } from '@/utils/typescript';
 import TableCell, { type TableCellProps } from './TableCell';
 import TableFilter, { DEFAULT_MAX_DATE, DEFAULT_MIN_DATE, defaultTableFilterFns, type TableFilterProps } from './TableFilter';
+import { useTableVirtualization } from './useTableVirtualization';
 
 const ButtonExport = dynamic(() => import('@/components/ui/ButtonExport'), { ssr: false });
 
@@ -433,6 +434,7 @@ export type TableSimpleProps<T> = {
   padding?: 'sm' | 'md' | 'lg';
   rowSelection?: RowSelectionState;
   onSelectionChange?: (selectedRows: T[]) => void;
+  onRowSelectionChange?: (updater: RowSelectionState | ((old: RowSelectionState) => RowSelectionState)) => void;
   onRowClick?: (rowId: any) => void;
   onRowDoubleClick?: (rowId: any) => void;
   rowIdKey?: keyof T;
@@ -470,6 +472,7 @@ const TableSimple = <T extends RowData>({
   globalFilter: externalGlobalFilter,
   rowSelection,
   onSelectionChange,
+  onRowSelectionChange,
   onRowClick,
   onRowDoubleClick,
   rowIdKey = 'id' as any,
@@ -511,37 +514,40 @@ const TableSimple = <T extends RowData>({
     return classNames.join(' ');
   }, []);
 
-  const selectionColumn: ColumnDef<T> = {
-    cell: ({ row }) => (
-      <div className="fr-checkbox-group fr-checkbox-group--sm">
-        <input
-          type="checkbox"
-          id={`select-row-${row.id}`}
-          checked={row.getIsSelected()}
-          onChange={row.getToggleSelectedHandler()}
-          data-fr-row-select="true"
-          title="Sélectionner la ligne"
-        />
-        <label className="fr-label" htmlFor={`select-row-${row.id}`} />
-      </div>
-    ),
-    flex: 0,
-    header: ({ table }) => (
-      <div className="fr-checkbox-group fr-checkbox-group--sm">
-        <input
-          type="checkbox"
-          id="select-all"
-          checked={table.getIsAllRowsSelected()}
-          onChange={table.getToggleAllRowsSelectedHandler()}
-          title="Tout sélectionner"
-        />
-        <label className="fr-label" htmlFor="select-all" />
-      </div>
-    ),
-    id: 'selection',
-  };
-
   const tableColumns = React.useMemo(() => {
+    const selectionColumn: ColumnDef<T> = {
+      cell: ({ row }) => {
+        const isSelected = row.getIsSelected();
+        return (
+          <Checkbox
+            label=""
+            id={`select-row-${row.id}`}
+            nativeInputProps={{
+              checked: isSelected,
+              name: 'select-row',
+              onChange: row.getToggleSelectedHandler(),
+              title: 'Sélectionner la ligne',
+            }}
+          />
+        );
+      },
+      flex: 0,
+      header: ({ table }) => (
+        <Checkbox
+          label=""
+          id="select-all"
+          nativeInputProps={{
+            checked: table.getIsAllRowsSelected(),
+            name: 'select-all',
+            onChange: table.getToggleAllRowsSelectedHandler(),
+            title: 'Tout sélectionner',
+          }}
+        />
+      ),
+      id: 'selection',
+      width: '50px',
+    };
+
     return enableRowSelection ? [selectionColumn, ...columns] : columns;
   }, [columns, enableRowSelection]);
 
@@ -587,6 +593,10 @@ const TableSimple = <T extends RowData>({
   const effectiveGlobalFilter = urlSyncKey ? globalFilter : (externalGlobalFilter ?? globalFilter);
   const shouldHandleGlobalFilterChange = urlSyncKey || !isDefined(externalGlobalFilter);
 
+  // Use deferred values for filters to keep UI responsive during typing
+  const deferredGlobalFilter = useDeferredValue(effectiveGlobalFilter);
+  const deferredColumnFilters = useDeferredValue(columnFilters);
+
   const table = useReactTable({
     columns: tableColumns,
     data,
@@ -600,11 +610,12 @@ const TableSimple = <T extends RowData>({
     getSortedRowModel: getSortedRowModel(),
     onColumnFiltersChange: setColumnFilters,
     onGlobalFilterChange: shouldHandleGlobalFilterChange ? setGlobalFilter : undefined,
+    onRowSelectionChange,
     onSortingChange: setSorting,
     state: {
-      columnFilters,
+      columnFilters: deferredColumnFilters,
       columnVisibility,
-      globalFilter: effectiveGlobalFilter,
+      globalFilter: deferredGlobalFilter,
       rowSelection,
       sorting: sortingState,
     },
@@ -684,33 +695,24 @@ const TableSimple = <T extends RowData>({
   // the virtualizer needs to know the scrollable container element
   const tableContainerRef = React.useRef<HTMLDivElement>(null);
 
-  const rowVirtualizer = useVirtualizer({
-    count: rows.length,
-    estimateSize: () => rowHeight, // estimate row height for accurate scrollbar dragging
-    getScrollElement: () => tableContainerRef.current,
-    // measure dynamic row height, except in firefox because it measures table border height incorrectly
-    measureElement:
-      typeof window !== 'undefined' && navigator.userAgent.indexOf('Firefox') === -1
-        ? (element) => element?.getBoundingClientRect().height
-        : undefined,
-    overscan: 20, // The number of items to render above and below the visible area
+  // Use custom hook for virtualization logic
+  const rowVirtualizer = useTableVirtualization({
+    rowHeight,
+    rows,
+    tableContainerRef,
+    virtualizerRef,
   });
-
-  useEffect(() => {
-    if (virtualizerRef) {
-      virtualizerRef.current = rowVirtualizer;
-    }
-  }, [rowVirtualizer, virtualizerRef]);
 
   const gridTemplateColumns = table
     .getHeaderGroups()[0]
-    .headers.map((header, index) => {
+    .headers.map((header) => {
       const columnDef = header.column.columnDef as ColumnDef<T>;
       if (columnDef.visible === false) {
         return null;
       }
       const sizeValue = (columnDef as any)?.width ?? `${(columnDef as any)?.flex ?? 1}fr`; // TOFIX: remove any but could not find a way to do it
-      return enableRowSelection && index === 0 ? 'auto' : sizeValue;
+
+      return sizeValue;
     })
     .join(' ');
 
@@ -912,9 +914,10 @@ const TableSimple = <T extends RowData>({
               ) : (
                 rowVirtualizer.getVirtualItems().map((virtualRow) => {
                   const row = rows[virtualRow.index];
+
                   return (
                     <TableRow
-                      key={row.id}
+                      key={`${row.id}${enableRowSelection ? `-${row?.getIsSelected?.()}` : ''}`}
                       row={row}
                       virtualRow={virtualRow}
                       gridTemplateColumns={gridTemplateColumns}

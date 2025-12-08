@@ -1,4 +1,3 @@
-import Badge from '@codegouvfr/react-dsfr/Badge';
 import { usePrevious } from '@react-hookz/web';
 import type { ColumnFiltersState } from '@tanstack/react-table';
 import type { Virtualizer } from '@tanstack/react-virtual';
@@ -6,7 +5,7 @@ import dynamic from 'next/dynamic';
 import { parseAsJson, useQueryState } from 'nuqs';
 import { type RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { MapGeoJSONFeature } from 'react-map-gl/maplibre';
-import TableFieldInput from '@/components/Admin/TableFieldInput';
+import TableAddressAutocomplete from '@/components/Admin/TableAddressAutocomplete';
 import EligibilityHelpDialog from '@/components/EligibilityHelpDialog';
 import Input from '@/components/form/dsfr/Input';
 import Select from '@/components/form/dsfr/Select';
@@ -47,7 +46,6 @@ import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
 import { dayjs } from '@/utils/date';
 import { stopPropagation } from '@/utils/events';
-import { formatMWh } from '@/utils/strings';
 
 type DemandsListAdminData = RouterOutput['demands']['admin']['list'];
 type DemandsListAdminItem = DemandsListAdminData['items'][number];
@@ -531,30 +529,7 @@ function DemandesAdmin(): React.ReactElement {
       },
       {
         accessorKey: 'testAddress.ban_address',
-        cell: (info) => {
-          const demand = info.row.original;
-          const testAddress = demand.testAddress;
-          return (
-            <div>
-              <div>
-                <div className="leading-none tracking-tight">{testAddress.ban_address}</div>
-                {!testAddress.ban_valid && (
-                  <Badge severity="error" small>
-                    Adresse invalide
-                  </Badge>
-                )}
-                {demand['en PDP'] === 'Oui' && <FCUBadge type="pdp" />}
-              </div>
-              {testAddress.source_address !== testAddress.ban_address && (
-                <div className="text-xs italic text-gray-400 tracking-tighter">{testAddress.source_address}</div>
-              )}
-              {(demand.Logement || demand['Surface en m2'] || demand.Conso) && <div className="border-t border-gray-600 my-2" />}
-              {demand.Logement && <div className="text-xs font-bold">{demand.Logement} logements</div>}
-              {demand['Surface en m2'] && <div className="text-xs font-bold">{demand['Surface en m2']}m²</div>}
-              {demand.Conso && <div className="text-xs font-bold">{formatMWh(demand.Conso)} de gaz</div>}
-            </div>
-          );
-        },
+        cell: (info) => <TableAddressAutocomplete demand={info.row.original} />,
         enableSorting: false,
         header: 'Adresse',
         width: '240px',
@@ -574,12 +549,7 @@ function DemandesAdmin(): React.ReactElement {
           const testAddress = demand.testAddress;
           return (
             <div className="flex items-start gap-2 flex-col justify-start">
-              <TableFieldInput
-                title="Identifiant réseau"
-                value={demand['Identifiant réseau']}
-                onChange={(value) => updateDemand(demand.id, { 'Identifiant réseau': value })}
-                suggestedValue={testAddress.eligibility?.id_sncu ?? undefined}
-              />
+              <div className="font-bold">{demand['Identifiant réseau']}</div>
               {(testAddress.eligibility?.nom || (testAddress.eligibility?.distance && testAddress.eligibility?.distance > 0)) && (
                 <div className="text-xs text-gray-500">
                   <strong>{testAddress.eligibility?.distance}m</strong> de {testAddress.eligibility?.nom}

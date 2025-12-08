@@ -117,15 +117,15 @@ export const zAdminUpdateDemandInput = z.object({
 export const zCreateDemandInput = z.object({
   address: z.string(),
   city: z.string(),
-  company: z.string(),
-  companyType: z.string(),
+  company: z.string().optional().default(''),
+  companyType: z.string().optional().default(''),
   coords: z.object({
     lat: z.number(),
     lon: z.number(),
   }),
   demandArea: z.number().optional(),
-  demandCompanyName: z.string(),
-  demandCompanyType: z.string(),
+  demandCompanyName: z.string().optional().default(''),
+  demandCompanyType: z.string().optional().default(''),
   department: z.string(),
   eligibility: z.object({
     distance: z.number().nullable(),
@@ -135,21 +135,145 @@ export const zCreateDemandInput = z.object({
   email: z.string(),
   firstName: z.string(),
   heatingEnergy: z.string(),
-  heatingType: z.string(),
+  heatingType: z.string().optional(),
   lastName: z.string(),
   mtm_campaign: z.string().optional(),
   mtm_kwd: z.string().optional(),
   mtm_source: z.string().optional(),
   nbLogements: z.number().optional(),
   networkId: z.string().optional(),
-  phone: z.string(),
+  phone: z.string().optional().default(''),
   postcode: z.string(),
   region: z.string(),
   structure: z.string(),
   termOfUse: z.boolean(),
 });
 
+export const fieldLabelInformation = {
+  company: 'Nom de votre structure',
+  companyTitle: 'Votre structure',
+  companyType: {
+    inputs: [
+      { id: 'syndic', label: 'Syndic de copropriété', value: 'Syndic de copropriété' },
+      { id: 'bailleur', label: 'Bailleur social', value: 'Bailleur social' },
+      { id: 'gestionnaire', label: 'Gestionnaire de parc tertiaire', value: 'Gestionnaire de parc tertiaire' },
+      { id: 'bureau', label: "Bureau d'études ou AMO", value: "Bureau d'études ou AMO" },
+      { id: 'mandataire', label: 'Mandataire / délégataire CEE', value: 'Mandataire / délégataire CEE' },
+    ],
+    label: 'Type de structure',
+  },
+  contactDetailsTitle: 'Vos coordonnées',
+  demandArea: 'Surface en m2',
+  demandCompanyName: 'Nom de la structure accompagnée',
+  demandCompanyType: {
+    inputs: [
+      { id: 'copro', label: 'une copropriété', value: 'Copropriété' },
+      { id: 'maison', label: 'une maison individuelle', value: 'Maison individuelle' },
+      { id: 'batiment', label: 'un bâtiment tertiaire', value: 'Bâtiment tertiaire' },
+      { id: 'bailleur', label: 'du logement social', value: 'Bailleur social' },
+      { id: 'autre', label: 'autre', value: 'Autre' },
+    ],
+    label: 'Votre demande concerne',
+  },
+  email: 'Email',
+  firstName: 'Prénom',
+  heatingEnergy: {
+    inputs: [
+      { id: 'electricite', label: 'Électricité', value: 'électricité' },
+      { id: 'gaz', label: 'Gaz', value: 'gaz' },
+      { id: 'fioul', label: 'Fioul', value: 'fioul' },
+      { id: 'autre', label: 'Autre / Je ne sais pas', value: 'autre' },
+    ],
+    label: 'Mode de chauffage',
+  },
+  lastName: 'Nom',
+  nbLogements: 'Nombre de logements',
+  phone: 'Téléphone',
+  structure: {
+    inputs: [
+      { id: 'copropriete', label: 'Copropriétaire', value: 'Copropriété' },
+      {
+        id: 'maison',
+        label: 'Propriétaire de maison individuelle',
+        value: 'Maison individuelle',
+      },
+      { id: 'tertiaire', label: 'Professionnel', value: 'Tertiaire' },
+    ],
+    label: 'Vous êtes...',
+  },
+};
+
+export const zContactFormCreateDemandInput = z
+  .object({
+    company: z.string().optional().default(''),
+    companyType: z.string().optional().default(''),
+    demandArea: z.number().optional(),
+    demandCompanyName: z.string().optional().default(''),
+    demandCompanyType: z.string().optional().default(''),
+    email: z.email("Votre adresse email n'est pas valide").min(1, 'Veuillez renseigner votre adresse email'),
+    firstName: z.string().min(1, 'Veuillez renseigner votre prénom'),
+    heatingEnergy: z
+      .string()
+      .refine(
+        (val) => fieldLabelInformation.heatingEnergy.inputs.some((input) => input.value === val),
+        'Veuillez sélectionner une énergie de chauffage'
+      ),
+    heatingType: z.string().optional(),
+    lastName: z.string().min(1, 'Veuillez renseigner votre nom'),
+    nbLogements: z.number().optional(),
+    phone: z
+      .string()
+      .regex(/^(?:(?:\+|00)33|0)\s*[1-9]\d{8}$|^$/, 'Veuillez renseigner votre numéro de téléphone sous le format 0605040302')
+      .optional()
+      .default(''),
+    structure: z.string().min(1, 'Veuillez renseigner votre type de bâtiment'),
+    termOfUse: z.boolean().refine((val) => val, {
+      error: 'Ce champ est requis',
+    }),
+  })
+  .superRefine(({ structure, company, companyType, demandCompanyType, demandCompanyName }, ctx) => {
+    const displayIssue = (field: string, message: string) => {
+      console.error(field, message);
+      ctx.addIssue({
+        code: 'custom',
+        message,
+        path: [field],
+      });
+    };
+
+    if (structure === 'Tertiaire' && !companyType) {
+      displayIssue('companyType', 'Veuillez sélectionner le type de votre structure');
+    }
+    if (structure === 'Tertiaire' && !company) {
+      displayIssue('company', 'Veuillez renseigner le nom de votre structure');
+    }
+    if (
+      structure === 'Tertiaire' &&
+      (companyType === "Bureau d'études ou AMO" || companyType === 'Mandataire / délégataire CEE') &&
+      !demandCompanyType
+    ) {
+      displayIssue('demandCompanyType', 'Veuillez sélectionner le type de la structure accompagnée');
+    }
+    if (
+      structure === 'Tertiaire' &&
+      (companyType === "Bureau d'études ou AMO" || companyType === 'Mandataire / délégataire CEE') &&
+      (demandCompanyType === 'Bâtiment tertiaire' || demandCompanyType === 'Bailleur social' || demandCompanyType === 'Autre') &&
+      !demandCompanyName
+    ) {
+      displayIssue('demandCompanyName', 'Veuillez renseigner le nom de la structure accompagnée');
+    }
+  });
+
+export type ContactFormInfos = z.infer<typeof zContactFormCreateDemandInput>;
+
 export type CreateDemandInput = z.infer<typeof zCreateDemandInput>;
+
+export const zCreateBatchDemandInput = z.object({
+  addressIds: z.array(z.string().min(1)).min(1, 'Au moins une adresse doit être sélectionnée'),
+  contactInfo: zContactFormCreateDemandInput,
+});
+
+export type CreateBatchDemandInput = z.infer<typeof zCreateBatchDemandInput>;
 
 export const demandStatuses = [
   { label: 'En attente de prise en charge', value: 'empty' },
@@ -308,7 +432,7 @@ export const formatDataToLegacyAirtable = (values: CreateDemandInput) => {
     'Mode de chauffage': formatHeatingEnergyToAirtable(heatingEnergy),
     Nom: lastName,
     'Nom de la structure accompagnante': formatNomStructureAccompagnanteToAirtable(structure, company, companyType),
-    networkId,
+    // networkId,
     Prénom: firstName,
     Region: region,
     Structure: formatStructureToAirtable(structure, companyType, demandCompanyType),

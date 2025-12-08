@@ -8,9 +8,8 @@ import { type Jobs, kdb } from '@/server/db/kysely';
 import { type APIAdresseResult, getAddressesCoordinates, getCoordinatesAddresses } from '@/server/services/api-adresse';
 import { chunk } from '@/utils/array';
 import { processInParallel } from '@/utils/async';
-import { isDefined } from '@/utils/core';
 import type { ProEligibilityTestHistoryEntry } from '../types';
-import { getAddressEligibilityHistoryEntry } from './service';
+import { createAddressDataFromBAN, getAddressEligibilityHistoryEntry } from './service';
 
 export type ProEligibilityTestJob = Omit<Selectable<Jobs>, 'data'> & {
   type: 'pro_eligibility_test';
@@ -147,19 +146,9 @@ export async function processProEligibilityTestJob(job: ProEligibilityTestJob, l
 
       const processAddress = limitFunction(
         async (addressItem: (typeof addresses)[number]) => {
-          const historyEntry =
-            addressItem.result_status === 'ok'
-              ? await getAddressEligibilityHistoryEntry(addressItem.latitude, addressItem.longitude)
-              : null;
-          const addressData = {
-            ban_address: addressItem.result_label,
-            ban_score: isDefined(addressItem.result_score) ? Math.round(addressItem.result_score * 100) : null,
-            ban_valid: addressItem.result_status === 'ok',
-            eligibility_history: historyEntry ? JSON.stringify([historyEntry]) : null,
-            geom: historyEntry ? sql`st_transform(st_point(${addressItem.longitude}, ${addressItem.latitude}, 4326), 2154)` : null,
-            source_address: addressItem.address as string,
+          const addressData = await createAddressDataFromBAN(addressItem, {
             test_id: job.entity_id!,
-          } satisfies Parameters<ReturnType<typeof kdb.insertInto<'pro_eligibility_tests_addresses'>>['values']>[0];
+          });
 
           const existingAddressId = existingAddressesMap.get(addressItem.address as string);
           if (existingAddressId) {

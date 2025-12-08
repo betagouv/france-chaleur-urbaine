@@ -1,16 +1,14 @@
 import Badge from '@codegouvfr/react-dsfr/Badge';
 import Tabs from '@codegouvfr/react-dsfr/Tabs';
-import type { ColumnFiltersState, SortingState } from '@tanstack/react-table';
+import type { ColumnFiltersState, RowSelectionState, SortingState } from '@tanstack/react-table';
 import dynamic from 'next/dynamic';
 import { useQueryState } from 'nuqs';
 import { useEffect, useMemo, useState } from 'react';
 
-import { clientConfig } from '@/client-config';
 import type { AdresseEligible } from '@/components/Map/Map';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import { UrlStateAccordion } from '@/components/ui/Accordion';
 import Button from '@/components/ui/Button';
-import Dialog from '@/components/ui/Dialog';
 import Link from '@/components/ui/Link';
 import Loader from '@/components/ui/Loader';
 import ModalSimple from '@/components/ui/ModalSimple';
@@ -19,6 +17,7 @@ import QuickFilterPresets from '@/components/ui/QuickFilterPresets';
 import Tooltip from '@/components/ui/Tooltip';
 import TableSimple, { type ColumnDef, type QuickFilterPreset } from '@/components/ui/table/TableSimple';
 import { toastErrors } from '@/modules/notification';
+import { BatchDemandContactForm } from '@/modules/pro-eligibility-tests/client/BatchDemandContactForm';
 import EligibilityHistoryTooltip from '@/modules/pro-eligibility-tests/client/EligibilityHistoryTooltip';
 import RenameEligibilityTestForm from '@/modules/pro-eligibility-tests/client/RenameEligibilityTestForm';
 import UpsertEligibilityTestForm from '@/modules/pro-eligibility-tests/client/UpsertEligibilityTestForm';
@@ -69,6 +68,19 @@ const columns: ColumnDef<RouterOutput['proEligibilityTests']['get']['addresses']
     ),
     sortingFn: (rowA, rowB) => compareFrenchStrings(rowA.original.ban_address, rowB.original.ban_address),
     width: 'minmax(200px, 1fr)',
+  },
+  {
+    accessorKey: 'demand_id',
+    align: 'center',
+    cell: (info) =>
+      info.getValue() && (
+        <Link href={`/pro/mes-demandes?demand_id=${info.getValue()}`} title="Voir la demande">
+          Demande créée
+        </Link>
+      ),
+    enableSorting: false,
+    header: () => 'Demande de raccordement',
+    width: '130px',
   },
   {
     accessorKey: 'ban_score',
@@ -398,6 +410,8 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false, className }:
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [filteredAddresses, setFilteredAddresses] = useState<RouterOutput['proEligibilityTests']['get']['addresses']>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isBatchModalOpen, setIsBatchModalOpen] = useState(false);
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
   const { data: testDetails, isLoading, refetch } = trpc.proEligibilityTests.get.useQuery({ id: test.id }, { enabled: viewDetail });
 
@@ -475,6 +489,13 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false, className }:
   );
 
   const isDataLoading = isLoading || !!(test.has_pending_jobs && addresses.length === 0);
+
+  const selectedAddressIds = useMemo(() => {
+    return Object.keys(rowSelection)
+      .filter((key) => rowSelection[key])
+      .map((index) => adresses[Number(index)]?.id)
+      .filter((id): id is string => !!id);
+  }, [rowSelection, adresses]);
 
   return (
     <UrlStateAccordion
@@ -592,6 +613,9 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false, className }:
                       padding="sm"
                       rowHeight={56}
                       onFilterChange={setFilteredAddresses}
+                      enableRowSelection={!readOnly}
+                      rowSelection={rowSelection}
+                      onRowSelectionChange={setRowSelection}
                     />
                   ),
                   iconId: 'fr-icon-list-unordered',
@@ -631,37 +655,17 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false, className }:
             />
             {!readOnly && (
               <div className="flex justify-end mt-4">
-                <Dialog
-                  title="Accompagnement par France Chaleur Urbaine"
-                  trigger={<Button iconId="fr-icon-mail-line">Être mis en relation avec les gestionnaires des réseaux</Button>}
+                <Button
+                  iconId="fr-icon-mail-line"
+                  priority="primary"
+                  variant="warning"
+                  onClick={() => {
+                    setIsBatchModalOpen(true);
+                  }}
+                  disabled={Object.keys(rowSelection).length === 0}
                 >
-                  <div className="text-gray-700">
-                    <p className="mb-4">
-                      France Chaleur Urbaine peut assurer votre mise en relation avec les gestionnaires de réseaux de chaleur. Cette mise en
-                      relation vous permet d'obtenir plus d'informations sur la faisabilité des raccordements et les conditions tarifaires,
-                      sans aucun engagement de votre part.
-                    </p>
-                    <p className="mb-6">
-                      Utilisez le bouton ci-dessous pour nous contacter : un conseiller France Chaleur Urbaine reviendra vers vous dans les
-                      plus brefs délais.
-                    </p>
-                    <div className="flex justify-center">
-                      <Button
-                        iconId="fr-icon-mail-line"
-                        priority="secondary"
-                        linkProps={{
-                          href: `mailto:${clientConfig.contactEmail}?subject=${encodeURIComponent(
-                            `[FCU] Demande de mise en relation - Test "${test.name}"`
-                          )}&body=${encodeURIComponent(
-                            `Bonjour,\n\nJe souhaite être mis en relation avec les gestionnaires de réseaux de chaleur concernés par certaines adresses de mon test d'adresses "${test.name}".\n\nMerci de me recontacter pour étudier mon projet.\n\nCordialement`
-                          )}`,
-                        }}
-                      >
-                        Contacter France Chaleur Urbaine
-                      </Button>
-                    </div>
-                  </div>
-                </Dialog>
+                  Créer les demandes ({Object.keys(rowSelection).length})
+                </Button>
               </div>
             )}
           </>
@@ -672,6 +676,18 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false, className }:
             </Notice>
           )
         ))}
+      {!readOnly && (
+        <ModalSimple title="Créer des demandes" size="medium" open={isBatchModalOpen} onOpenChange={setIsBatchModalOpen}>
+          <BatchDemandContactForm
+            addressIds={selectedAddressIds}
+            onSubmit={() => {
+              setIsBatchModalOpen(false);
+              setRowSelection({});
+              void refetch();
+            }}
+          />
+        </ModalSimple>
+      )}
     </UrlStateAccordion>
   );
 }
