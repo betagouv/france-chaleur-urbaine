@@ -53,7 +53,6 @@ const configFunctions = [
         'https://france-chaleur-urbaine.beta.gouv.fr/',
         'https://france-chaleur-urbaine-dev.osc-fr1.scalingo.io/',
         'https://data.geopf.fr/',
-        'https://stats.data.gouv.fr',
         'https://stats.beta.gouv.fr',
         'https://cdn.linkedin.oribi.io',
         'https://google.com/',
@@ -85,7 +84,6 @@ const configFunctions = [
         "'sha256-/CSSb6w0OrYpmMov6mf2agdZaX5CEjsuUL45DW0yKI4='", // PROD - Hotjar 3874965 6
         "'sha256-cLrFOA9eDIz+hTs9m3AUrlzvroRre9vJ4cvv1ygI/Bw='", // PROD - LinkedIn 3494650
         "'sha256-cWPc/BJwUWRnFb5b17VxDNk72/ZwL1GOqTQ6dAU/P3E='", // PROD - unknown yet
-        'https://stats.data.gouv.fr',
         'https://stats.beta.gouv.fr',
         'https://static.axept.io',
         'https://connect.facebook.net',

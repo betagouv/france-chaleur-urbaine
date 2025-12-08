@@ -1,4 +1,4 @@
-// fetchFromMatomo Events.getAction https://stats.data.gouv.fr?token_auth=AAAAAAAAAAAAAAAA&idSite=192&format=JSON&module=API&method=API.getBulkRequest&period=month&urls[0]=method%3DEvents.getAction%26period%3Dmonth%26date%3D2024-01-01
+// fetchFromMatomo Events.getAction https://stats.beta.gouv.fr?token_auth=AAAAAAAAAAAAAAAA&idSite=192&format=JSON&module=API&method=API.getBulkRequest&period=month&urls[0]=method%3DEvents.getAction%26period%3Dmonth%26date%3D2024-01-01
 export interface MatomoActionMetrics {
   label: string;
   nb_visits: number;
@@ -13,7 +13,7 @@ export interface MatomoActionMetrics {
   idsubdatatable?: number;
 }
 
-// fetchFromMatomo Actions.getPageUrl https://stats.data.gouv.fr?token_auth=AAAAAAAAAAAAAAAA&idSite=192&format=JSON&module=API&method=API.getBulkRequest&pageUrl=/carte&period=month&urls[0]=method%3DActions.getPageUrl%26pageUrl%3D%2Fcarte%26period%3Dmonth%26date%3D2024-01-01
+// fetchFromMatomo Actions.getPageUrl https://stats.beta.gouv.fr?token_auth=AAAAAAAAAAAAAAAA&idSite=192&format=JSON&module=API&method=API.getBulkRequest&pageUrl=/carte&period=month&urls[0]=method%3DActions.getPageUrl%26pageUrl%3D%2Fcarte%26period%3Dmonth%26date%3D2024-01-01
 export interface MatomoPageMetrics {
   label: string;
   nb_visits: number;
@@ -33,7 +33,7 @@ export interface MatomoPageMetrics {
   url: string;
 }
 
-// fetchFromMatomo VisitsSummary.getUniqueVisitors https://stats.data.gouv.fr?token_auth=AAAAAAAAAAAAAAAA&idSite=192&format=JSON&module=API&method=API.getBulkRequest&period=month&urls[0]=method%3DVisitsSummary.getUniqueVisitors%26period%3Dmonth%26date%3D2024-01-01
+// fetchFromMatomo VisitsSummary.getUniqueVisitors https://stats.beta.gouv.fr?token_auth=AAAAAAAAAAAAAAAA&idSite=192&format=JSON&module=API&method=API.getBulkRequest&period=month&urls[0]=method%3DVisitsSummary.getUniqueVisitors%26period%3Dmonth%26date%3D2024-01-01
 export interface MatomoUniqueVisitorsMetrics {
   value: number;
 }
