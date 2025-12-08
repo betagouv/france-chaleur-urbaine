@@ -17,13 +17,21 @@ export type ProEligibilityTestJob = Omit<Selectable<Jobs>, 'data'> & {
     content: string;
     hasHeaders: boolean;
     separator: string;
-    dataType: 'address' | 'coordinates';
-    columnMapping: {
-      addressColumn?: number;
-      latitudeColumn?: number;
-      longitudeColumn?: number;
-    };
-  };
+  } & (
+    | {
+        dataType: 'address';
+        columnMapping: {
+          addressColumn: number;
+        };
+      }
+    | {
+        dataType: 'coordinates';
+        columnMapping: {
+          latitudeColumn: number;
+          longitudeColumn: number;
+        };
+      }
+  );
 };
 export type ProEligibilityTestJobDeprecated = Omit<Selectable<Jobs>, 'data'> & {
   type: 'pro_eligibility_test';
@@ -52,12 +60,13 @@ function isProEligibilityTestJobDeprecated(job: any): job is ProEligibilityTestJ
 
 export async function processProEligibilityTestJob(job: ProEligibilityTestJob, logger: Logger) {
   const startTime = Date.now();
-  let { content, separator, dataType, hasHeaders, columnMapping } = job.data;
+  let { content, separator, hasHeaders } = job.data;
+  const jobData = job.data;
 
   if (isProEligibilityTestJobDeprecated(job)) {
     content = job.data.csvContent;
-    columnMapping = { addressColumn: 0 };
-    dataType = 'address';
+    jobData.columnMapping = { addressColumn: 0 };
+    jobData.dataType = 'address';
     separator = '\x00'; /* Null character. Unlikely to appear in a CSV file */
     hasHeaders = false;
   }
@@ -80,51 +89,36 @@ export async function processProEligibilityTestJob(job: ProEligibilityTestJob, l
   if (hasHeaders) {
     rows.shift(); // remove headers
   }
-  const lines = job.data.content
-    .replace(/\r\n/g, '\n')
-    .replace(/"/g, '')
-    .split('\n')
-    .filter((line) => line.trim().length > 0) // remove empty or whitespace-only lines
-    .map((line) => `"${line}"`); // add quotes to get a single column address
-  logger.info('infos', { addressesCount: lines.length });
 
+  logger.info('infos', { dataType: jobData.dataType, rowsCount: rows.length });
+
+  const formattedRows =
+    jobData.dataType === 'address'
+      ? rows
+          .map((row) => row[jobData.columnMapping.addressColumn]?.trim())
+          .filter((address) => address)
+          .map((address) => `"${address.replace(/"/g, '')}"`)
+      : rows
+          .filter((row) => row[jobData.columnMapping.latitudeColumn] && row[jobData.columnMapping.longitudeColumn])
+          .map((row) => `${row[jobData.columnMapping.latitudeColumn]},${row[jobData.columnMapping.longitudeColumn]}`);
+  const chunkProcessorFunction = jobData.dataType === 'address' ? getAddressesCoordinates : getCoordinatesAddresses;
+
+  const chunks = chunk(formattedRows, chunkSize);
+  const totalChunks = chunks.length;
   const addresses: APIAdresseResult[] = [];
 
-  if (dataType === 'address') {
-    const chunks = chunk(lines, chunkSize);
-    const totalChunks = chunks.length;
-    for (const [index, chunk] of chunks.entries()) {
-      logger.info('processing chunk', {
-        current: index + 1,
-        progress: `${Math.round(((index + 1) / totalChunks) * 100)}%`,
-        size: chunk.length,
-        total: totalChunks,
-      });
-      const chunkResults = await getAddressesCoordinates(chunk.join('\n'), logger);
-      addresses.push(...chunkResults);
-    }
-    logger.info('API Adresse', { duration: Date.now() - startTime });
-  } else if (dataType === 'coordinates') {
-    const coordinateLines = rows.map((row) => {
-      const latitude = Number(row[columnMapping.latitudeColumn!]);
-      const longitude = Number(row[columnMapping.longitudeColumn!]);
-      return `${latitude},${longitude}`;
+  for (const [index, chunkItems] of chunks.entries()) {
+    logger.info('processing chunk', {
+      current: index + 1,
+      progress: `${Math.round(((index + 1) / totalChunks) * 100)}%`,
+      size: chunkItems.length,
+      total: totalChunks,
     });
-
-    const chunks = chunk(coordinateLines, chunkSize);
-    const totalChunks = chunks.length;
-    for (const [index, chunk] of chunks.entries()) {
-      logger.info('processing chunk', {
-        current: index + 1,
-        progress: `${Math.round(((index + 1) / totalChunks) * 100)}%`,
-        size: chunk.length,
-        total: totalChunks,
-      });
-      const chunkResults = await getCoordinatesAddresses(chunk.join('\n'), logger);
-      addresses.push(...chunkResults);
-    }
-    logger.info('API Adresse reverse geocoding', { duration: Date.now() - startTime });
+    const chunkResults = await chunkProcessorFunction(chunkItems.join('\n'));
+    addresses.push(...chunkResults);
   }
+  logger.info('API Adresse', { duration: Date.now() - startTime });
+
   const jobStats: JobStats = {
     insertedCount: 0,
     updatedCount: 0,
