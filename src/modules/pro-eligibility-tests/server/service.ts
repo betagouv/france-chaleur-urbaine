@@ -175,6 +175,36 @@ export const getAddressEligibilityHistoryEntry = async (
   return historyEntry;
 };
 
+/**
+ * Crée les données d'adresse à partir d'un résultat BAN API déjà existant
+ * Utilisé par les jobs batch pour éviter de refaire des appels BAN
+ * @param addressItem - Résultat de l'API BAN (getAddressesCoordinates ou getCoordinatesAddresses)
+ * @param options - Options pour test_id ou demand_id
+ * @returns Données d'adresse formatées pour insertion en base
+ */
+export const createAddressDataFromBAN = async (
+  addressItem: { address?: string; latitude?: number; longitude?: number } & (
+    | { result_status: 'ok'; latitude: number; longitude: number; result_label: string; result_score: number }
+    | { result_status: string; result_label: string; result_score?: number }
+  ),
+  options?: { test_id?: string; demand_id?: string }
+) => {
+  const historyEntry =
+    addressItem.result_status === 'ok' ? await getAddressEligibilityHistoryEntry(addressItem.latitude!, addressItem.longitude!) : null;
+
+  return {
+    ban_address: addressItem.result_label,
+    ban_score: isDefined(addressItem.result_score) ? Math.round(addressItem.result_score * 100) : null,
+    ban_valid: addressItem.result_status === 'ok',
+    eligibility_history: historyEntry ? JSON.stringify([historyEntry]) : null,
+    geom: historyEntry
+      ? (sql`st_transform(st_point(${addressItem.longitude!}, ${addressItem.latitude!}, 4326), 2154)` as unknown as any)
+      : null,
+    source_address: (addressItem.address as string) || '',
+    ...options,
+  };
+};
+
 export const buildEligibilityTestAddress = async (input: { address: string } | { latitude: number; longitude: number }) => {
   const addressItem =
     'address' in input
@@ -190,16 +220,14 @@ export const buildEligibilityTestAddress = async (input: { address: string } | {
     throw new Error(`Invalid coordinates for address: lat=${latitude}, lon=${longitude}`);
   }
 
-  const historyEntry = await getAddressEligibilityHistoryEntry(latitude, longitude);
-
-  return {
-    ban_address: addressItem.result_label,
-    ban_score: isDefined(addressItem.result_score) ? Math.round(addressItem.result_score * 100) : null,
-    ban_valid: addressItem.result_status === 'ok',
-    eligibility_history: JSON.stringify([historyEntry]),
-    geom: sql`st_transform(st_point(${longitude}, ${latitude}, 4326), 2154)` as any,
-    source_address: addressItem.address as string,
+  // Créer un addressItem modifié avec les coordonnées finales (input > BAN)
+  const modifiedAddressItem = {
+    ...addressItem,
+    latitude,
+    longitude,
   };
+
+  return await createAddressDataFromBAN(modifiedAddressItem);
 };
 
 export const createEligibilityTestAddress = async ({
@@ -213,7 +241,7 @@ export const createEligibilityTestAddress = async ({
     .values({
       ...addressData,
       demand_id,
-    } satisfies Parameters<ReturnType<typeof kdb.insertInto<'pro_eligibility_tests_addresses'>>['values']>[0])
+    })
     .returningAll()
     .executeTakeFirstOrThrow();
 
@@ -503,7 +531,7 @@ export const updateAddress = async (
   const addressData = await buildEligibilityTestAddress({ latitude, longitude });
 
   // Extraire les informations du réseau depuis l'historique d'éligibilité
-  const eligibilityHistory = JSON.parse(addressData.eligibility_history) as ProEligibilityTestHistoryEntry[];
+  const eligibilityHistory = JSON.parse(addressData.eligibility_history!) as ProEligibilityTestHistoryEntry[];
   const lastEligibility = eligibilityHistory[0]?.eligibility;
   const networkId = lastEligibility?.id_sncu || null;
   const networkName = lastEligibility?.nom || null;
