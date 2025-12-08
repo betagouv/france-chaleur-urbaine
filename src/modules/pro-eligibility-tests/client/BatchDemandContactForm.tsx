@@ -22,7 +22,7 @@ export const BatchDemandContactForm = ({ addressIds }: BatchDemandContactFormPro
 
   if (isSuccess) {
     return (
-      <CallOut variant="success" className="mt-4">
+      <CallOut variant="success" className="mt-4" bodyAs="div">
         <p className="fr-text--lg fr-text--bold">
           {addressIds.length === 1
             ? 'Votre demande de contact est bien prise en compte.'

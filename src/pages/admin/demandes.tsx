@@ -549,12 +549,6 @@ function DemandesAdmin(): React.ReactElement {
           const testAddress = demand.testAddress;
           return (
             <div className="flex items-start gap-2 flex-col justify-start">
-              {/* <TableFieldInput
-                title="Identifiant réseau"
-                value={demand['Identifiant réseau']}
-                onChange={(value) => updateDemand(demand.id, { 'Identifiant réseau': value })}
-                suggestedValue={testAddress.eligibility?.id_sncu ?? undefined}
-              /> */}
               <div className="font-bold">{demand['Identifiant réseau']}</div>
               {(testAddress.eligibility?.nom || (testAddress.eligibility?.distance && testAddress.eligibility?.distance > 0)) && (
                 <div className="text-xs text-gray-500">

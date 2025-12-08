@@ -214,7 +214,10 @@ export const zContactFormCreateDemandInput = z
     firstName: z.string().min(1, 'Veuillez renseigner votre prénom'),
     heatingEnergy: z
       .string()
-      .refine((val) => fieldLabelInformation.heatingEnergy.inputs.some((input) => input.value === val), 'Ce champ est requis'),
+      .refine(
+        (val) => fieldLabelInformation.heatingEnergy.inputs.some((input) => input.value === val),
+        'Veuillez sélectionner une énergie de chauffage'
+      ),
     heatingType: z.string().optional(),
     lastName: z.string().min(1, 'Veuillez renseigner votre nom'),
     nbLogements: z.number().optional(),
