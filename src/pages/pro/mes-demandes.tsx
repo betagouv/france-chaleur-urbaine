@@ -240,26 +240,27 @@ function DemandesNew(): React.ReactElement {
         width: '100px',
       },
       {
-        accessorKey: 'Réseau le plus proche',
-        cell: ({ row }) => {
-          const nom = row.original['Nom réseau'];
-          const distance = row.original['Distance au réseau'] || 0;
-
-          if (!nom) {
-            return null;
-          }
+        accessorKey: 'testAddress.eligibility.id_sncu',
+        cell: (info) => {
+          const demand = info.row.original;
+          const testAddress = demand.testAddress;
           return (
-            <div className="flex flex-col gap-1">
-              <div>
-                <Link href={`/reseaux/${row.original['Identifiant réseau']}`}>
-                  <strong>{nom}</strong>
-                </Link>
-              </div>
-              {distance > 0 && <span>{distance}m</span>}
+            <div className="flex items-start gap-2 flex-col justify-start">
+              <div className="font-bold">{testAddress.eligibility?.id_sncu || ''}</div>
+              {testAddress.eligibility?.nom || (testAddress.eligibility?.distance && testAddress.eligibility?.distance > 0) ? (
+                <div className="text-xs text-gray-500">
+                  <strong>{testAddress.eligibility?.distance}m</strong> de{' '}
+                  <Link stopPropagation href={`/reseaux/${testAddress.eligibility?.id_sncu}`}>
+                    {testAddress.eligibility?.nom || 'Réseau sans nom'}
+                  </Link>
+                </div>
+              ) : null}
             </div>
           );
         },
-        header: 'Nom du réseau le plus proche',
+        enableSorting: false,
+        filterType: 'Facets',
+        header: 'Réseau le plus proche',
         width: '200px',
       },
       {

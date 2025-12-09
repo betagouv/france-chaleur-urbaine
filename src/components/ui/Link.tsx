@@ -22,6 +22,7 @@ interface LinkProps extends SpacingProperties {
   className?: string;
   variant?: keyof typeof linkVariantToClass;
   isExternal?: boolean;
+  stopPropagation?: boolean;
   title?: string;
   style?: React.CSSProperties;
   onClick?: (e?: any) => void;
@@ -43,6 +44,7 @@ function Link({
   className = '',
   variant = 'text',
   isExternal = false,
+  stopPropagation = false,
   title,
   prefetch = false,
   onClick,
@@ -55,6 +57,9 @@ function Link({
       href={href}
       title={title}
       onClick={(e) => {
+        if (stopPropagation) {
+          e.stopPropagation();
+        }
         if (eventKey) {
           trackEvent(
             eventKey,

@@ -78,14 +78,17 @@ export const demandsExportColumns: ExportColumn<DemandsListItem>[] = [
     name: 'Type de chauffage',
   },
   {
-    accessorFn: (demand) =>
-      (demand['Gestionnaire Distance au réseau'] === undefined
-        ? demand['Distance au réseau']
-        : demand['Gestionnaire Distance au réseau']) ?? 0,
+    accessorFn: (demand) => demand.testAddress?.eligibility?.distance,
     name: 'Distance au réseau (m)',
   },
-  { accessorKey: 'Identifiant réseau', name: 'ID réseau le plus proche' },
-  { accessorKey: 'Nom réseau', name: 'Nom du réseau le plus proche' },
+  {
+    accessorFn: (demand) => demand.testAddress?.eligibility?.id_sncu,
+    name: 'ID réseau le plus proche',
+  },
+  {
+    accessorFn: (demand) => demand.testAddress?.eligibility?.nom,
+    name: 'Nom du réseau le plus proche',
+  },
   {
     accessorFn: (demand) => (demand['Gestionnaire Logement'] === undefined ? demand.Logement : demand['Gestionnaire Logement']) ?? 0,
     name: 'Nb logements',
