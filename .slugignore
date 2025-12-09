@@ -1,6 +1,7 @@
 docs/
 ARCHITECTURE.md
 
+.git/
 .github/
 .vscode/
 .cursor/
