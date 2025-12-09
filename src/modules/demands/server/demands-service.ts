@@ -5,6 +5,7 @@ import type { User } from 'next-auth';
 import { v4 as uuidv4 } from 'uuid';
 import { clientConfig } from '@/client-config';
 import {
+  type CreateBatchDemandInput,
   type CreateDemandInput,
   demandStatusDefault,
   formatDataToLegacyAirtable,
@@ -286,28 +287,27 @@ export const create = async (
 };
 
 /**
- * Create multiple demands from existing test addresses in batch
- * @param addressIds - Array of test address IDs to create demands from
- * @param contactInfo - Shared contact information for all demands
+ * Create multiple demands from test addresses with individual data per address
+ * @param input - Batch demand creation input with common info and per-address data
  * @param userId - ID of the user creating the demands
  * @returns Array of objects with addressId and demandId for each created demand
  */
 export const createBatch = async (
-  addressIds: string[],
-  values: Omit<CreateDemandInput, 'address' | 'city' | 'coords' | 'department' | 'eligibility' | 'postcode' | 'region'>,
+  input: CreateBatchDemandInput,
   userId?: string
 ): Promise<Array<{ addressId: string; demandId: string }>> => {
+  const { commonInfo, addressesData } = input;
+
   const results = await Promise.all(
-    addressIds.map(async (addressId) => {
+    addressesData.map(async (addressData) => {
       const testAddress = await kdb
         .selectFrom('pro_eligibility_tests_addresses')
-        .selectAll()
-        .select([sql`ST_AsGeoJSON(st_transform(geom, 4326))::json`.as('geom')])
-        .where('id', '=', addressId)
+        .select(['ban_address', 'demand_id', sql<GeoJSON.Point>`ST_AsGeoJSON(st_transform(geom, 4326))::json`.as('geom')])
+        .where('id', '=', addressData.addressId)
         .executeTakeFirst();
 
       if (testAddress?.demand_id) {
-        return { addressId, demandId: testAddress.demand_id };
+        return { addressId: addressData.addressId, demandId: testAddress.demand_id };
       }
 
       const coords = {
@@ -318,22 +318,31 @@ export const createBatch = async (
 
       const result = await create(
         {
-          ...values,
-          address: testAddress?.ban_address || testAddress?.source_address || '',
+          ...commonInfo,
+          address: testAddress?.ban_address || '',
           city: eligibility.commune.nom || '',
+          company: commonInfo.company || '',
+          companyType: commonInfo.companyType || '',
           coords,
+          demandArea: addressData.demandArea,
+          demandCompanyName: addressData.demandCompanyName || '',
+          demandCompanyType: addressData.demandCompanyType || '',
           department: eligibility.departement.nom as string,
           eligibility: {
             distance: eligibility.distance,
             inPDP: !!eligibility.pdp?.id_fcu,
             isEligible: eligibility.eligible,
           },
+          heatingEnergy: addressData.heatingEnergy || 'gaz',
+          heatingType: addressData.heatingType || 'collectif',
+          nbLogements: addressData.nbLogements,
+          phone: commonInfo.phone || '',
           postcode: '',
           region: eligibility.region.nom as string,
         },
-        { pro_eligibility_tests_addresse_id: addressId, userId }
+        { pro_eligibility_tests_addresse_id: addressData.addressId, userId }
       );
-      return { addressId, demandId: result.id };
+      return { addressId: addressData.addressId, demandId: result.id };
     })
   );
   return results;

@@ -17,7 +17,7 @@ import QuickFilterPresets from '@/components/ui/QuickFilterPresets';
 import Tooltip from '@/components/ui/Tooltip';
 import TableSimple, { type ColumnDef, type QuickFilterPreset } from '@/components/ui/table/TableSimple';
 import { toastErrors } from '@/modules/notification';
-import { BatchDemandContactForm } from '@/modules/pro-eligibility-tests/client/BatchDemandContactForm';
+import { BatchDemandMultiStepForm } from '@/modules/pro-eligibility-tests/client/BatchDemandMultiStepForm';
 import EligibilityHistoryTooltip from '@/modules/pro-eligibility-tests/client/EligibilityHistoryTooltip';
 import RenameEligibilityTestForm from '@/modules/pro-eligibility-tests/client/RenameEligibilityTestForm';
 import UpsertEligibilityTestForm from '@/modules/pro-eligibility-tests/client/UpsertEligibilityTestForm';
@@ -490,11 +490,15 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false, className }:
 
   const isDataLoading = isLoading || !!(test.has_pending_jobs && addresses.length === 0);
 
-  const selectedAddressIds = useMemo(() => {
+  const selectedAddresses = useMemo(() => {
     return Object.keys(rowSelection)
       .filter((key) => rowSelection[key])
-      .map((index) => adresses[Number(index)]?.id)
-      .filter((id): id is string => !!id);
+      .map((index) => adresses[Number(index)])
+      .filter((addr): addr is NonNullable<typeof addr> => !!addr)
+      .map((addr) => ({
+        ban_address: addr.ban_address,
+        id: addr.id,
+      }));
   }, [rowSelection, adresses]);
 
   return (
@@ -677,10 +681,10 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false, className }:
           )
         ))}
       {!readOnly && (
-        <ModalSimple title="Créer des demandes" size="medium" open={isBatchModalOpen} onOpenChange={setIsBatchModalOpen}>
-          <BatchDemandContactForm
-            addressIds={selectedAddressIds}
-            onSubmit={() => {
+        <ModalSimple title="Créer des demandes" size="large" open={isBatchModalOpen} onOpenChange={setIsBatchModalOpen}>
+          <BatchDemandMultiStepForm
+            addresses={selectedAddresses}
+            onSuccess={() => {
               setIsBatchModalOpen(false);
               setRowSelection({});
               void refetch();
