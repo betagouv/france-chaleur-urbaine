@@ -6,7 +6,6 @@ import type { ExcludeKeys } from '@/utils/typescript';
 const serverConfigSchema = {
   AIRTABLE_BASE: z.string(),
   AIRTABLE_KEY_API: z.string(),
-  API_ADRESSE_URL: z.string().default('https://api-adresse.data.gouv.fr/'),
   CLOCK_CRONS_ENABLE: z.boolean().default(true),
   CLOCK_JOBS_PROCESSOR_ENABLE: z.boolean().default(true),
   DATA_GOUV_FR_API_KEY: z.string().optional(),

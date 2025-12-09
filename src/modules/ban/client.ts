@@ -26,7 +26,7 @@ export type SuggestionResponse = {
 export const searchBANAddresses = async (options: FetchBanSuggestionsOptions): Promise<SuggestionItem[]> => {
   const { query, limit = 10, onlyCities, excludeCities } = options;
 
-  const response = await fetchJSON<SuggestionResponse>(clientConfig.banApiBaseUrl, {
+  const response = await fetchJSON<SuggestionResponse>(`${clientConfig.banApiBaseUrl}search`, {
     params: {
       limit: limit.toString(),
       q: query,

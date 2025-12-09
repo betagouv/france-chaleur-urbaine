@@ -110,7 +110,7 @@ export async function getAddressesCoordinates(addressesCSV: string, contextLogge
   form.append('result_columns', 'result_label');
   form.append('result_columns', 'result_status');
 
-  return makeAPIRequest(`${serverConfig.API_ADRESSE_URL}search/csv/`, form, contextLogger);
+  return makeAPIRequest(`${serverConfig.banApiBaseUrl}search/csv`, form, contextLogger);
 }
 
 export async function getCoordinatesAddresses(coordinatesCSV: string, contextLogger?: Logger) {
