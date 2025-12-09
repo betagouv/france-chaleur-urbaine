@@ -42,7 +42,7 @@ function cleanNativeBinaries(baseDir, packagePrefix) {
   }
 }
 
-const packagesToClean = ['@img+sharp-', '@rollup+rollup-', '@next+swc-', '@biomejs/cli-'];
+const packagesToClean = ['@img+sharp-', '@rollup+rollup-', '@next+swc-', '@biomejs/cli-', '@biomejs+cli-linux-'];
 
 packagesToClean.forEach((packagePrefix) => {
   cleanNativeBinaries(join('node_modules', '.pnpm'), packagePrefix);
