@@ -91,7 +91,8 @@ const UpsertEligibilityTestForm = ({ testId, onComplete }: UpsertEligibilityTest
         return;
       }
       const content = await parseUnknownCharsetText(await file.arrayBuffer());
-      if (!isUpdate) {
+      // initialize the test name with the file name if it's not already set
+      if (!isUpdate && form.getFieldValue('name') === '') {
         form.setFieldValue('name', file.name);
       }
       form.setFieldValue('content', content);

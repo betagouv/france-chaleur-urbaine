@@ -67,11 +67,11 @@ Sans attendre, :extra-link[téléchargez notre guide pratique]{href="/documentat
     <>
       <div
         className={cx(
-          'bg-[#eeeeee] p-2 pl-4 mb-2 shadow-inset shadow-[8px_0_0_0_var(--border-default-blue-france)]',
+          'bg-[#eeeeee] p-2 pl-4 mb-2 inset-shadow-[8px_0_0_0_var(--border-default-blue-france)]',
           '[&_header]:font-bold',
           cardMode
             ? 'text-[14px] leading-inherit [&_header]:text-[14px] [&_header]:leading-inherit'
-            : 'text-[18px] leading-[1.5] [&_header]:text-[23.5px] [&_header]:leading-[1.5]'
+            : 'text-[18px] leading-normal [&_header]:text-[23.5px] [&_header]:leading-normal'
         )}
       >
         <header>

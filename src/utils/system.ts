@@ -1,5 +1,5 @@
 import { spawn } from 'node:child_process';
-import { existsSync, mkdirSync } from 'node:fs';
+import { createWriteStream, existsSync, mkdirSync } from 'node:fs';
 import { copyFile, readdir, stat, unlink } from 'node:fs/promises';
 import { arch } from 'node:os';
 import { join } from 'node:path';
@@ -229,7 +229,6 @@ export async function writeLargeFile(
   const { itemsKey = 'features' } = options;
 
   await new Promise<void>((resolve, reject) => {
-    const { createWriteStream } = require('node:fs');
     const stream = createWriteStream(filePath);
 
     stream.on('error', reject);
