@@ -1,5 +1,6 @@
 import Stepper from '@codegouvfr/react-dsfr/Stepper';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { z } from 'zod';
 import useForm from '@/components/form/react-form/useForm';
 import Accordion from '@/components/ui/Accordion';
 import Button from '@/components/ui/Button';
@@ -8,6 +9,7 @@ import Link from '@/components/ui/Link';
 import useUserInfo from '@/modules/app/client/hooks/useUserInfo';
 import {
   type BatchDemandStep1Data,
+  type BatchDemandStep2AddressData,
   fieldLabelInformation,
   zBatchDemandStep1Schema,
   zBatchDemandStep2Schema,
@@ -15,9 +17,16 @@ import {
 import trpc from '@/modules/trpc/client';
 import { pick } from '@/utils/objects';
 
+const MAX_BATCH_DEMAND_ADDRESSES = 50;
+
+const zStep2FormSchema = z.object({
+  addresses: zBatchDemandStep2Schema,
+});
+
 type AddressData = {
   id: string;
   ban_address: string | null;
+  demand_id?: string | null;
 };
 
 interface BatchDemandMultiStepFormProps {
@@ -29,23 +38,34 @@ export const BatchDemandMultiStepForm = ({ addresses, onSuccess }: BatchDemandMu
   const [step, setStep] = useState<1 | 2>(1);
   const [commonData, setCommonData] = useState<BatchDemandStep1Data>();
 
+  const filteredAddresses = useMemo(() => addresses.filter((addr) => !addr.demand_id), [addresses]);
+  const activeAddresses = useMemo(() => filteredAddresses.slice(0, MAX_BATCH_DEMAND_ADDRESSES), [filteredAddresses]);
+  const limitReached = filteredAddresses.length > MAX_BATCH_DEMAND_ADDRESSES;
+
   const { mutateAsync, isPending, isError } = trpc.demands.user.createBatch.useMutation({});
 
   if (step === 1) {
     return (
-      <Step1Form
-        addresses={addresses}
-        onNext={(data) => {
-          setCommonData(data);
-          setStep(2);
-        }}
-      />
+      <div className="flex flex-col gap-4">
+        {limitReached && (
+          <CallOut variant="warning">
+            Afin de garantir le bon traitement de vos demandes, nous avons limité le nombre d'adresses à {MAX_BATCH_DEMAND_ADDRESSES}.
+          </CallOut>
+        )}
+        <Step1Form
+          addresses={activeAddresses}
+          onNext={(data) => {
+            setCommonData(data);
+            setStep(2);
+          }}
+        />
+      </div>
     );
   }
 
   return (
     <Step2Form
-      addresses={addresses}
+      addresses={activeAddresses}
       commonData={commonData!}
       onBack={() => setStep(1)}
       onSuccess={onSuccess}
@@ -185,24 +205,31 @@ const Step2Form = ({
   isPending: boolean;
   isError: boolean;
 }) => {
-  const { Form, Field, Fieldset, Submit, useValue } = useForm({
-    onSubmit: async ({ value }: { value: Record<string, any> }) => {
-      const addressesData = addresses.map((addr) => ({
+  const defaultValues = useMemo(
+    () => ({
+      addresses: addresses.map((addr) => ({
         addressId: addr.id,
-        demandArea: value[`${addr.id}_demandArea`] as number | undefined,
-        demandCompanyName: value[`${addr.id}_demandCompanyName`] as string | undefined,
-        demandCompanyType: value[`${addr.id}_demandCompanyType`] as string | undefined,
-        heatingEnergy: value[`${addr.id}_heatingEnergy`] as string,
-        heatingType: value[`${addr.id}_heatingType`] as string,
-        nbLogements: value[`${addr.id}_nbLogements`] as number | undefined,
-      }));
+        demandArea: undefined,
+        demandCompanyName: '',
+        demandCompanyType: '',
+        heatingEnergy: '',
+        heatingType: '',
+        nbLogements: undefined,
+      })),
+    }),
+    [addresses]
+  );
 
-      await mutateAsync({ addressesData, commonInfo: commonData });
-
+  const { Form, Field, Fieldset, Submit, useValue } = useForm({
+    defaultValues,
+    onSubmit: async ({ value }: { value: { addresses: BatchDemandStep2AddressData[] } }) => {
+      await mutateAsync({ addressesData: value.addresses, commonInfo: commonData });
       onSuccess();
     },
-    schema: zBatchDemandStep2Schema,
+    schema: zStep2FormSchema,
   });
+
+  const addressesValues = useValue<BatchDemandStep2AddressData[]>('addresses');
 
   return (
     <Form>
@@ -213,16 +240,24 @@ const Step2Form = ({
         </p>
 
         {addresses.map((addr, index) => (
-          <AddressSection
+          <Accordion
             key={addr.id}
-            address={addr}
-            index={index}
-            structure={commonData.structure}
-            companyType={commonData.companyType}
-            Field={Field}
-            Fieldset={Fieldset}
-            useValue={useValue}
-          />
+            label={`${index + 1}/${addresses.length}. ${addr.ban_address}`}
+            defaultExpanded={index === 0}
+            className="mb-2"
+            onExpandedChange={(_expanded, e) => {
+              e?.stopPropagation();
+            }}
+          >
+            <AddressSection
+              index={index}
+              structure={commonData.structure}
+              companyType={commonData.companyType}
+              demandCompanyType={addressesValues?.[index]?.demandCompanyType}
+              Field={Field}
+              Fieldset={Fieldset}
+            />
+          </Accordion>
         ))}
 
         {isError && (
@@ -243,24 +278,21 @@ const Step2Form = ({
 };
 
 const AddressSection = ({
-  address,
   index,
   structure,
   companyType,
+  demandCompanyType,
   Field,
   Fieldset,
-  useValue,
 }: {
-  address: AddressData;
   index: number;
   structure: string;
   companyType?: string;
+  demandCompanyType?: string;
   Field: any;
   Fieldset: any;
-  useValue: any;
 }) => {
-  const demandCompanyType = useValue(`${address.id}_demandCompanyType`);
-  const displayAddress = address.ban_address;
+  const fieldPrefix = `addresses[${index}]`;
 
   const showDemandArea =
     structure === 'Tertiaire' && (companyType === 'Gestionnaire de parc tertiaire' || demandCompanyType === 'Bâtiment tertiaire');
@@ -276,57 +308,47 @@ const AddressSection = ({
     structure === 'Tertiaire' && (companyType === "Bureau d'études ou AMO" || companyType === 'Mandataire / délégataire CEE');
 
   return (
-    <Accordion
-      key={address.id}
-      label={`${index + 1}. ${displayAddress}`}
-      defaultExpanded={index === 0}
-      className="mb-2"
-      onExpandedChange={(_expanded, e) => {
-        e?.stopPropagation();
-      }}
-    >
-      <div className="flex flex-col gap-4">
-        <Fieldset>
-          <Field.Radio
-            label="Type de chauffage"
-            name={`${address.id}_heatingType`}
-            orientation="horizontal"
-            options={[
-              { label: 'Collectif', nativeInputProps: { value: 'collectif' } },
-              { label: 'Individuel', nativeInputProps: { value: 'individuel' } },
-            ]}
-          />
-          <Field.Radio
-            label={fieldLabelInformation.heatingEnergy.label}
-            name={`${address.id}_heatingEnergy`}
-            orientation="horizontal"
-            options={fieldLabelInformation.heatingEnergy.inputs.map(({ value, label }) => ({
-              label,
-              nativeInputProps: { value },
-            }))}
-          />
-          <div className="flex flex-col gap-4">
-            {showDemandCompanyFields && (
-              <>
-                <Field.Select
-                  name={`${address.id}_demandCompanyType`}
-                  label={fieldLabelInformation.demandCompanyType.label}
-                  options={fieldLabelInformation.demandCompanyType.inputs}
-                />
+    <div className="flex flex-col gap-4">
+      <Fieldset>
+        <Field.Radio
+          label="Type de chauffage"
+          name={`${fieldPrefix}.heatingType`}
+          orientation="horizontal"
+          options={[
+            { label: 'Collectif', nativeInputProps: { value: 'collectif' } },
+            { label: 'Individuel', nativeInputProps: { value: 'individuel' } },
+          ]}
+        />
+        <Field.Radio
+          label={fieldLabelInformation.heatingEnergy.label}
+          name={`${fieldPrefix}.heatingEnergy`}
+          orientation="horizontal"
+          options={fieldLabelInformation.heatingEnergy.inputs.map(({ value, label }) => ({
+            label,
+            nativeInputProps: { value },
+          }))}
+        />
+        <div className="flex flex-col gap-4">
+          {showDemandCompanyFields && (
+            <>
+              <Field.Select
+                name={`${fieldPrefix}.demandCompanyType`}
+                label={fieldLabelInformation.demandCompanyType.label}
+                options={fieldLabelInformation.demandCompanyType.inputs}
+              />
 
-                {demandCompanyType && ['Bâtiment tertiaire', 'Bailleur social', 'Autre'].includes(demandCompanyType) && (
-                  <Field.Input name={`${address.id}_demandCompanyName`} label={fieldLabelInformation.demandCompanyName} />
-                )}
-              </>
-            )}
-            <div className="flex flex-row gap-4">
-              {showDemandArea && <Field.NumberInput name={`${address.id}_demandArea`} label={fieldLabelInformation.demandArea} />}
+              {demandCompanyType && ['Bâtiment tertiaire', 'Bailleur social', 'Autre'].includes(demandCompanyType) && (
+                <Field.Input name={`${fieldPrefix}.demandCompanyName`} label={fieldLabelInformation.demandCompanyName} />
+              )}
+            </>
+          )}
+          <div className="flex flex-row gap-4">
+            {showDemandArea && <Field.NumberInput name={`${fieldPrefix}.demandArea`} label={fieldLabelInformation.demandArea} />}
 
-              {showNbLogements && <Field.NumberInput name={`${address.id}_nbLogements`} label={fieldLabelInformation.nbLogements} />}
-            </div>
+            {showNbLogements && <Field.NumberInput name={`${fieldPrefix}.nbLogements`} label={fieldLabelInformation.nbLogements} />}
           </div>
-        </Fieldset>
-      </div>
-    </Accordion>
+        </div>
+      </Fieldset>
+    </div>
   );
 };
