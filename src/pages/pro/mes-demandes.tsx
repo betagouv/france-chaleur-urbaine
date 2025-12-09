@@ -1,8 +1,9 @@
 import Badge from '@codegouvfr/react-dsfr/Badge';
+import geoViewport from '@mapbox/geo-viewport';
 import type { ColumnFiltersState } from '@tanstack/react-table';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import EligibilityHelpDialog from '@/components/EligibilityHelpDialog';
 import Input from '@/components/form/dsfr/Input';
 import ModeDeChauffageTag, { getModeDeChauffageDisplay } from '@/components/Manager/ModeDeChauffageTag';
@@ -61,7 +62,7 @@ function DemandesNew(): React.ReactElement {
   const tableRowSelection = useMemo(() => {
     return selectedDemandId ? { [selectedDemandId]: true } : {};
   }, [selectedDemandId]);
-  const [modalDemand, setModalDemand] = useState<DemandsListItem | null>(null);
+  const mapContainerRef = useRef<HTMLDivElement>(null);
 
   const [mapCenterLocation, setMapCenterLocation] = useState<MapCenterLocation>();
   const [globalFilter, setGlobalFilter] = useState('');
@@ -300,6 +301,32 @@ function DemandesNew(): React.ReactElement {
     [demands]
   );
 
+  // Fit the map to the demands on mount
+  useEffect(() => {
+    if (mapCenterLocation || router.query.demand_id || !demandsMapData.length) {
+      return;
+    }
+
+    const bounds = demandsMapData.reduce(
+      (acc, address) => {
+        acc[0] = Math.min(acc[0], address.longitude);
+        acc[1] = Math.min(acc[1], address.latitude);
+        acc[2] = Math.max(acc[2], address.longitude);
+        acc[3] = Math.max(acc[3], address.latitude);
+        return acc;
+      },
+      [180, 90, -180, -90] as [number, number, number, number]
+    );
+
+    const mapElement = mapContainerRef.current;
+    const padding = 100; // px
+    const width = Math.max(1, (mapElement?.clientWidth ?? window.innerWidth ?? 1200) - padding * 2);
+    const height = Math.max(1, (mapElement?.clientHeight ?? window.innerHeight ?? 800) - padding * 2);
+
+    const { center, zoom } = geoViewport.viewport(bounds, [width, height], 5, 20, 512, true);
+    setMapCenterLocation({ center: [center[0], center[1]], flyTo: true, zoom });
+  }, [mapCenterLocation, router.query.demand_id, demandsMapData]);
+
   return (
     <SimplePage
       title="Mes demandes"
@@ -347,7 +374,7 @@ function DemandesNew(): React.ReactElement {
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel defaultSize={34}>
-          <div className={cx('max-md:h-[600px] md:h-[calc(100dvh-140px)] bg-[#F8F4F0]')}>
+          <div ref={mapContainerRef} className={cx('max-md:h-[600px] md:h-[calc(100dvh-140px)] bg-[#F8F4F0]')}>
             {isDefined(mapCenterLocation) ? (
               <Map
                 noPopup
