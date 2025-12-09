@@ -543,23 +543,24 @@ function DemandesAdmin(): React.ReactElement {
         width: '94px',
       },
       {
-        accessorKey: 'Identifiant réseau',
+        accessorKey: 'testAddress.eligibility.id_sncu',
         cell: (info) => {
           const demand = info.row.original;
           const testAddress = demand.testAddress;
           return (
             <div className="flex items-start gap-2 flex-col justify-start">
-              <div className="font-bold">{demand['Identifiant réseau']}</div>
-              {(testAddress.eligibility?.nom || (testAddress.eligibility?.distance && testAddress.eligibility?.distance > 0)) && (
+              <div className="font-bold">{testAddress.eligibility?.id_sncu || ''}</div>
+              {testAddress.eligibility?.nom || (testAddress.eligibility?.distance && testAddress.eligibility?.distance > 0) ? (
                 <div className="text-xs text-gray-500">
                   <strong>{testAddress.eligibility?.distance}m</strong> de {testAddress.eligibility?.nom}
                 </div>
-              )}
+              ) : null}
             </div>
           );
         },
         enableSorting: false,
-        header: 'ID réseau le plus proche',
+        filterType: 'Facets',
+        header: 'Réseau le plus proche',
         width: '200px',
       },
       {
