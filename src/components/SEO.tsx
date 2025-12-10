@@ -163,7 +163,7 @@ const SEO: React.FC<SEOProps> = ({
       <script key="jsonld" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(graph) }} />
 
       {/* Performance boost */}
-      <link key="matomo" rel="preconnect" crossOrigin="anonymous" href={process.env.NEXT_PUBLIC_MATOMO_URL} />
+      <link key="matomo" rel="preconnect" crossOrigin="anonymous" href={clientConfig.tracking.matomoServerURL} />
 
       {children}
     </Head>

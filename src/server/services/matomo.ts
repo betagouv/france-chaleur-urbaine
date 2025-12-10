@@ -1,8 +1,5 @@
+import { serverConfig } from '@/server/config';
 import type { MatomoErrorResult } from './matomo_types';
-
-const MATOMO_URL = process.env.NEXT_PUBLIC_MATOMO_URL;
-const MATOMO_TOKEN = process.env.MATOMO_TOKEN;
-const MATOMO_ID_SITE = process.env.NEXT_PUBLIC_MATOMO_SITE_ID;
 
 type ConfigType = Record<string, unknown>;
 
@@ -14,10 +11,10 @@ const configToURI = (config: ConfigType) =>
 const buildMatomoURL = (config: ConfigType = {}, bulkConfig: ConfigType[] = []) => {
   const queryParams = {
     format: 'JSON',
-    idSite: MATOMO_ID_SITE,
+    idSite: serverConfig.tracking.matomoSiteId,
     method: 'API.getBulkRequest',
     module: 'API',
-    token_auth: MATOMO_TOKEN,
+    token_auth: serverConfig.MATOMO_TOKEN,
     ...bulkConfig.reduce(
       (acc, configEntry: ConfigType, i: number) => ({
         ...acc,
@@ -26,7 +23,7 @@ const buildMatomoURL = (config: ConfigType = {}, bulkConfig: ConfigType[] = []) 
       {}
     ),
   };
-  return `${MATOMO_URL}?${configToURI(queryParams)}`;
+  return `${serverConfig.tracking.matomoServerURL}?${configToURI(queryParams)}`;
 };
 
 export const bulkFetchRangeFromMatomo = async <Result>(

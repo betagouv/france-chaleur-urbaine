@@ -1,0 +1,17 @@
+{
+  "configurations": [
+    {
+      "args": ["src/modules/jobs/server/clock.ts"],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "name": "Debug Clock",
+      "request": "launch",
+      "runtimeArgs": ["--inspect"],
+      "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/tsx",
+      "skipFiles": ["<node_internals>/**"],
+      "sourceMaps": true,
+      "type": "node"
+    }
+  ],
+  "version": "0.2.0"
+}

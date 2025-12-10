@@ -23,6 +23,7 @@ const serverConfigSchema = {
   MAIL_PORT: z.number().default(587),
   MAIL_REPLYTO: z.string().default('France Chaleur Urbaine <france-chaleur-urbaine@developpement-durable.gouv.fr>'),
   MAIL_USER: z.string(),
+  MATOMO_TOKEN: z.string(),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   PIPEDRIVE_API_KEY: z.string().optional(),
   PIPEDRIVE_BASE_URL: z.string().default('https://api.pipedrive.com/v1'),
