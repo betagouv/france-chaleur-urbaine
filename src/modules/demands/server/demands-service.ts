@@ -287,19 +287,27 @@ export const create = async (
 };
 
 /**
- * Create multiple demands from test addresses with individual data per address
- * @param input - Batch demand creation input with common info and per-address data
- * @param userId - ID of the user creating the demands
+ * Create multiple demands from test addresses
+ * User info is fetched from the users table
+ * @param input - Batch demand creation input with addresses and heatingType
+ * @param userId - ID of the user creating the demands (required)
  * @returns Array of objects with addressId and demandId for each created demand
  */
 export const createBatch = async (
   input: CreateBatchDemandInput,
-  userId?: string
+  userId: string
 ): Promise<Array<{ addressId: string; demandId: string }>> => {
-  const { commonInfo, addressesData } = input;
+  const { addresses } = input;
+
+  // Fetch user info from users table
+  const user = await kdb
+    .selectFrom('users')
+    .select(['email', 'first_name', 'last_name', 'phone', 'structure_name', 'structure_type'])
+    .where('id', '=', userId)
+    .executeTakeFirstOrThrow();
 
   const results = await Promise.all(
-    addressesData.map(async (addressData) => {
+    addresses.map(async (addressData) => {
       const testAddress = await kdb
         .selectFrom('pro_eligibility_tests_addresses')
         .select(['ban_address', 'demand_id', sql<GeoJSON.Point>`ST_AsGeoJSON(st_transform(geom, 4326))::json`.as('geom')])
@@ -318,27 +326,29 @@ export const createBatch = async (
 
       const result = await create(
         {
-          ...commonInfo,
           address: testAddress?.ban_address || '',
           city: eligibility.commune.nom || '',
-          company: commonInfo.company || '',
-          companyType: commonInfo.companyType || '',
+          company: user.structure_name || '',
+          companyType: user.structure_type || '',
           coords,
-          demandArea: addressData.demandArea,
-          demandCompanyName: addressData.demandCompanyName || '',
-          demandCompanyType: addressData.demandCompanyType || '',
+          demandCompanyName: user.structure_name || '',
+          demandCompanyType: user.structure_type || '',
           department: eligibility.departement.nom as string,
           eligibility: {
             distance: eligibility.distance,
             inPDP: !!eligibility.pdp?.id_fcu,
             isEligible: eligibility.eligible,
           },
-          heatingEnergy: addressData.heatingEnergy || 'gaz',
-          heatingType: addressData.heatingType || 'collectif',
-          nbLogements: addressData.nbLogements,
-          phone: commonInfo.phone || '',
+          email: user.email,
+          firstName: user.first_name || '',
+          heatingEnergy: addressData.heatingEnergy,
+          heatingType: addressData.heatingType,
+          lastName: user.last_name || '',
+          phone: user.phone || '',
           postcode: '',
           region: eligibility.region.nom as string,
+          structure: user.structure_type || '',
+          termOfUse: true,
         },
         { pro_eligibility_tests_addresse_id: addressData.addressId, userId }
       );

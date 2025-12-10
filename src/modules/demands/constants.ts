@@ -301,23 +301,20 @@ export const zBatchDemandStep1Schema = z
 
 export type BatchDemandStep1Data = z.infer<typeof zBatchDemandStep1Schema>;
 
-export const zBatchDemandStep2AddressSchema = z.object({
+export const zBatchDemandAddressSchema = z.object({
   addressId: z.string().min(1),
-  demandArea: z.number().optional(),
-  demandCompanyName: z.string().optional(),
-  demandCompanyType: z.string().optional(),
-  heatingEnergy: z.string().min(1, 'Champ requis'),
-  heatingType: z.string().min(1, 'Champ requis'),
-  nbLogements: z.number().optional(),
+  heatingEnergy: z.enum(['électricité', 'gaz', 'fioul', 'autre'], { message: 'Veuillez sélectionner une énergie de chauffage' }),
+  heatingType: z.enum(['collectif', 'individuel'], { message: 'Veuillez sélectionner un type de chauffage' }),
 });
 
-export type BatchDemandStep2AddressData = z.infer<typeof zBatchDemandStep2AddressSchema>;
-
-export const zBatchDemandStep2Schema = z.array(zBatchDemandStep2AddressSchema).min(1, 'Au moins une adresse doit être sélectionnée');
+export type BatchDemandAddressData = z.infer<typeof zBatchDemandAddressSchema>;
 
 export const zCreateBatchDemandInput = z.object({
-  addressesData: zBatchDemandStep2Schema,
-  commonInfo: zBatchDemandStep1Schema,
+  addresses: z
+    .array(zBatchDemandAddressSchema)
+    .min(1, 'Au moins une adresse doit être sélectionnée')
+    .max(50, 'Maximum 50 adresses par demande'),
+  termOfUse: z.boolean().refine((val) => val, 'Vous devez accepter les conditions'),
 });
 
 export type CreateBatchDemandInput = z.infer<typeof zCreateBatchDemandInput>;
