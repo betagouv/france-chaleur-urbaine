@@ -669,7 +669,7 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false, className }:
                   }}
                   disabled={Object.keys(rowSelection).length === 0}
                 >
-                  Créer les demandes ({Object.keys(rowSelection).length})
+                  Être mis en relation ({Object.keys(rowSelection).length})
                 </Button>
               </div>
             )}
@@ -682,7 +682,7 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false, className }:
           )
         ))}
       {!readOnly && (
-        <ModalSimple title="Créer des demandes" size="large" open={isBatchModalOpen} onOpenChange={setIsBatchModalOpen}>
+        <ModalSimple title="Demande de mise en relation" size="large" open={isBatchModalOpen} onOpenChange={setIsBatchModalOpen}>
           <BatchDemandMultiStepForm
             addresses={selectedAddresses}
             onSuccess={() => {

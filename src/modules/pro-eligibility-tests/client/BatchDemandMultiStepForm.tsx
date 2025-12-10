@@ -124,7 +124,7 @@ export const BatchDemandMultiStepForm = ({ addresses, onSuccess }: BatchDemandFo
 
         <div className="flex gap-4">
           <Submit className="fr-btn" disabled={isPending}>
-            {isPending ? 'Création en cours...' : `Créer les ${activeAddresses.length} demandes`}
+            {isPending ? 'Création en cours...' : `Être mis en relation pour ${activeAddresses.length} adresses`}
           </Submit>
         </div>
       </div>
