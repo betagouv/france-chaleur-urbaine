@@ -19,6 +19,7 @@ interface BatchDemandFormProps {
 }
 
 export const BatchDemandMultiStepForm = ({ addresses, onSuccess }: BatchDemandFormProps) => {
+  const addressesWithExistingDemand = useMemo(() => addresses.filter((addr) => addr.demand_id), [addresses]);
   const filteredAddresses = useMemo(() => addresses.filter((addr) => !addr.demand_id), [addresses]);
   const activeAddresses = useMemo(() => filteredAddresses.slice(0, MAX_BATCH_DEMAND_ADDRESSES), [filteredAddresses]);
   const limitReached = filteredAddresses.length > MAX_BATCH_DEMAND_ADDRESSES;
@@ -49,6 +50,12 @@ export const BatchDemandMultiStepForm = ({ addresses, onSuccess }: BatchDemandFo
   return (
     <Form>
       <div className="flex flex-col gap-4">
+        {addressesWithExistingDemand.length > 0 && (
+          <CallOut variant="info">
+            {addressesWithExistingDemand.length} adresse{addressesWithExistingDemand.length > 1 ? 's ont' : ' a'} déjà une demande de
+            raccordement et {addressesWithExistingDemand.length > 1 ? 'ont été retirées' : 'a été retirée'} de la sélection.
+          </CallOut>
+        )}
         {limitReached && (
           <CallOut variant="warning">
             Afin de garantir le bon traitement de vos demandes, nous avons limité le nombre d'adresses à {MAX_BATCH_DEMAND_ADDRESSES}.

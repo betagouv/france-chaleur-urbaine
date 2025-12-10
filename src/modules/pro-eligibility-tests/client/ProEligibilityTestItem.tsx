@@ -497,6 +497,7 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false, className }:
       .filter((addr): addr is NonNullable<typeof addr> => !!addr)
       .map((addr) => ({
         ban_address: addr.ban_address,
+        demand_id: addr.demand_id,
         id: addr.id,
       }));
   }, [rowSelection, adresses]);
