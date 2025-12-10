@@ -240,24 +240,17 @@ const Step2Form = ({
         </p>
 
         {addresses.map((addr, index) => (
-          <Accordion
+          <AddressSection
             key={addr.id}
-            label={`${index + 1}/${addresses.length}. ${addr.ban_address}`}
-            defaultExpanded={index === 0}
-            className="mb-2"
-            onExpandedChange={(_expanded, e) => {
-              e?.stopPropagation();
-            }}
-          >
-            <AddressSection
-              index={index}
-              structure={commonData.structure}
-              companyType={commonData.companyType}
-              demandCompanyType={addressesValues?.[index]?.demandCompanyType}
-              Field={Field}
-              Fieldset={Fieldset}
-            />
-          </Accordion>
+            address={addr}
+            index={index}
+            totalAddresses={addresses.length}
+            structure={commonData.structure}
+            companyType={commonData.companyType}
+            demandCompanyType={addressesValues?.[index]?.demandCompanyType}
+            Field={Field}
+            Fieldset={Fieldset}
+          />
         ))}
 
         {isError && (
@@ -278,14 +271,18 @@ const Step2Form = ({
 };
 
 const AddressSection = ({
+  address,
   index,
+  totalAddresses,
   structure,
   companyType,
   demandCompanyType,
   Field,
   Fieldset,
 }: {
+  address: AddressData;
   index: number;
+  totalAddresses: number;
   structure: string;
   companyType?: string;
   demandCompanyType?: string;
@@ -308,47 +305,56 @@ const AddressSection = ({
     structure === 'Tertiaire' && (companyType === "Bureau d'études ou AMO" || companyType === 'Mandataire / délégataire CEE');
 
   return (
-    <div className="flex flex-col gap-4">
-      <Fieldset>
-        <Field.Radio
-          label="Type de chauffage"
-          name={`${fieldPrefix}.heatingType`}
-          orientation="horizontal"
-          options={[
-            { label: 'Collectif', nativeInputProps: { value: 'collectif' } },
-            { label: 'Individuel', nativeInputProps: { value: 'individuel' } },
-          ]}
-        />
-        <Field.Radio
-          label={fieldLabelInformation.heatingEnergy.label}
-          name={`${fieldPrefix}.heatingEnergy`}
-          orientation="horizontal"
-          options={fieldLabelInformation.heatingEnergy.inputs.map(({ value, label }) => ({
-            label,
-            nativeInputProps: { value },
-          }))}
-        />
-        <div className="flex flex-col gap-4">
-          {showDemandCompanyFields && (
-            <>
-              <Field.Select
-                name={`${fieldPrefix}.demandCompanyType`}
-                label={fieldLabelInformation.demandCompanyType.label}
-                options={fieldLabelInformation.demandCompanyType.inputs}
-              />
+    <Accordion
+      label={`${index + 1}/${totalAddresses}. ${address.ban_address}`}
+      defaultExpanded={index === 0}
+      className="mb-2"
+      onExpandedChange={(_expanded, e) => {
+        e?.stopPropagation();
+      }}
+    >
+      <div className="flex flex-col gap-4">
+        <Fieldset>
+          <Field.Radio
+            label="Type de chauffage"
+            name={`${fieldPrefix}.heatingType`}
+            orientation="horizontal"
+            options={[
+              { label: 'Collectif', nativeInputProps: { value: 'collectif' } },
+              { label: 'Individuel', nativeInputProps: { value: 'individuel' } },
+            ]}
+          />
+          <Field.Radio
+            label={fieldLabelInformation.heatingEnergy.label}
+            name={`${fieldPrefix}.heatingEnergy`}
+            orientation="horizontal"
+            options={fieldLabelInformation.heatingEnergy.inputs.map(({ value, label }) => ({
+              label,
+              nativeInputProps: { value },
+            }))}
+          />
+          <div className="flex flex-col gap-4">
+            {showDemandCompanyFields && (
+              <>
+                <Field.Select
+                  name={`${fieldPrefix}.demandCompanyType`}
+                  label={fieldLabelInformation.demandCompanyType.label}
+                  options={fieldLabelInformation.demandCompanyType.inputs}
+                />
 
-              {demandCompanyType && ['Bâtiment tertiaire', 'Bailleur social', 'Autre'].includes(demandCompanyType) && (
-                <Field.Input name={`${fieldPrefix}.demandCompanyName`} label={fieldLabelInformation.demandCompanyName} />
-              )}
-            </>
-          )}
-          <div className="flex flex-row gap-4">
-            {showDemandArea && <Field.NumberInput name={`${fieldPrefix}.demandArea`} label={fieldLabelInformation.demandArea} />}
+                {demandCompanyType && ['Bâtiment tertiaire', 'Bailleur social', 'Autre'].includes(demandCompanyType) && (
+                  <Field.Input name={`${fieldPrefix}.demandCompanyName`} label={fieldLabelInformation.demandCompanyName} />
+                )}
+              </>
+            )}
+            <div className="flex flex-row gap-4">
+              {showDemandArea && <Field.NumberInput name={`${fieldPrefix}.demandArea`} label={fieldLabelInformation.demandArea} />}
 
-            {showNbLogements && <Field.NumberInput name={`${fieldPrefix}.nbLogements`} label={fieldLabelInformation.nbLogements} />}
+              {showNbLogements && <Field.NumberInput name={`${fieldPrefix}.nbLogements`} label={fieldLabelInformation.nbLogements} />}
+            </div>
           </div>
-        </div>
-      </Fieldset>
-    </div>
+        </Fieldset>
+      </div>
+    </Accordion>
   );
 };
