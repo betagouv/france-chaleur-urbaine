@@ -268,9 +268,53 @@ export type ContactFormInfos = z.infer<typeof zContactFormCreateDemandInput>;
 
 export type CreateDemandInput = z.infer<typeof zCreateDemandInput>;
 
+// Batch demand creation schemas
+export const zBatchDemandStep1Schema = z
+  .object({
+    company: z.string().optional(),
+    companyType: z.string().optional(),
+    email: z.string().email('Email invalide').min(1, 'Champ requis'),
+    firstName: z.string().min(1, 'Champ requis'),
+    lastName: z.string().min(1, 'Champ requis'),
+    phone: z.string().optional(),
+    structure: z.string().min(1, 'Champ requis'),
+    termOfUse: z.boolean().refine((val) => val, 'Vous devez accepter les conditions'),
+  })
+  .superRefine((data, ctx) => {
+    if (data.structure === 'Tertiaire') {
+      if (!data.companyType) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Champ requis pour les structures tertiaires',
+          path: ['companyType'],
+        });
+      }
+      if (!data.company) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Champ requis pour les structures tertiaires',
+          path: ['company'],
+        });
+      }
+    }
+  });
+
+export type BatchDemandStep1Data = z.infer<typeof zBatchDemandStep1Schema>;
+
+export const zBatchDemandAddressSchema = z.object({
+  addressId: z.string().min(1),
+  heatingEnergy: z.enum(['électricité', 'gaz', 'fioul', 'autre'], { message: 'Veuillez sélectionner une énergie de chauffage' }),
+  heatingType: z.enum(['collectif', 'individuel'], { message: 'Veuillez sélectionner un type de chauffage' }),
+});
+
+export type BatchDemandAddressData = z.infer<typeof zBatchDemandAddressSchema>;
+
 export const zCreateBatchDemandInput = z.object({
-  addressIds: z.array(z.string().min(1)).min(1, 'Au moins une adresse doit être sélectionnée'),
-  contactInfo: zContactFormCreateDemandInput,
+  addresses: z
+    .array(zBatchDemandAddressSchema)
+    .min(1, 'Au moins une adresse doit être sélectionnée')
+    .max(50, 'Maximum 50 adresses par demande'),
+  termOfUse: z.boolean().refine((val) => val, 'Vous devez accepter les conditions'),
 });
 
 export type CreateBatchDemandInput = z.infer<typeof zCreateBatchDemandInput>;

@@ -67,9 +67,11 @@ export const demandsRouter = router({
     create: route.input(zCreateDemandInput).mutation(async ({ input, ctx }) => {
       return await demandsService.create(input, { userId: ctx.user?.id });
     }),
-    createBatch: route.input(zCreateBatchDemandInput).mutation(async ({ input, ctx }) => {
-      return await demandsService.createBatch(input.addressIds, input.contactInfo, ctx.user?.id);
-    }),
+    createBatch: routeRole(['particulier', 'professionnel', 'gestionnaire', 'admin'])
+      .input(zCreateBatchDemandInput)
+      .mutation(async ({ input, ctx }) => {
+        return await demandsService.createBatch(input, ctx.user.id);
+      }),
     list: routeRole(['particulier', 'professionnel', 'gestionnaire', 'admin']).query(async ({ ctx }) => {
       return await demandsService.listByUser(ctx.user.id);
     }),
