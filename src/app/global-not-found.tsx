@@ -8,16 +8,13 @@ export default function GlobalNotFound() {
     <html lang="fr" data-fr-scheme="light" data-fr-theme="light">
       <head>
         <title>Page non trouvée : France Chaleur Urbaine</title>
-        <meta name="description" content="La page que vous recherchez n'existe pas ou a été déplacée." />
       </head>
-      <body>
-        <div className="fr-container fr-py-4w fr-mb-16w">
-          <h1 className="fr-h3">Page non trouvée</h1>
-          <p className="fr-mb-3w">La page que vous recherchez n'existe pas ou a été déplacée.</p>
-          <a href="/" className="fr-link fr-icon-arrow-left-line fr-link--icon-left">
-            Retour à l'accueil
-          </a>
-        </div>
+      <body className="fr-container fr-py-8w">
+        <h1 className="fr-h3">Page non trouvée</h1>
+        <p className="fr-mb-3w">La page que vous recherchez n'existe pas ou a été déplacée.</p>
+        <a href="/" className="fr-link fr-icon-arrow-left-line fr-link--icon-left">
+          Retour à l'accueil
+        </a>
       </body>
     </html>
   );
