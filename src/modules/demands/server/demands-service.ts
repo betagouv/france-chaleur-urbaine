@@ -666,6 +666,7 @@ export const listAdmin = async () => {
           }
         }
 
+        // FIXME ici il faut passer eligibilityData complet normalement car les règles peuvent s'appliquer sur toutes les données d'éligibilité
         const rulesResult = assignmentRulesService.applyParsedRulesToEligibilityData(parsedRules, { tags });
 
         return {
