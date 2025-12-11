@@ -1,5 +1,6 @@
 import { kdb } from '@/server/db/kysely';
 import { parentLogger } from '@/server/helpers/logger';
+import type { DetailedEligibilityStatus } from '@/server/services/addresseInformation';
 import { evaluateAST, parseExpressionToAST, parseResultActions } from '@/utils/expression-parser';
 
 const logger = parentLogger.child({
@@ -42,9 +43,12 @@ export const parseAssignmentRules = async (assignmentRules: Record<string, any> 
   return assignmentRules.map(parseAssignmentRule).filter((v) => v !== null);
 };
 
+/**
+ * Applique les règles d'assignation aux données d'éligibilité et retourne les tags et affectations.
+ */
 export function applyParsedRulesToEligibilityData(
   parsedRules: NonNullable<ReturnType<typeof parseAssignmentRule>>[],
-  eligibilityData: { tags: string[] }
+  eligibilityData: DetailedEligibilityStatus
 ): {
   tags: string[];
   assignment: string | null;
