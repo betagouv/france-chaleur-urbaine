@@ -115,7 +115,7 @@ export default function DemandsStatsPage() {
         visible: false,
       },
       {
-        accessorFn: (row) => row.users.map((u) => u.email).join(' '),
+        accessorFn: (row) => row.users.map((u) => u.email).join(' | '),
         cell: ({ row }) => {
           const users = row.original.users;
           return (
@@ -231,6 +231,15 @@ export default function DemandsStatsPage() {
             </div>
           );
         },
+        exportFn: ({ reseauxDeChaleur, reseauxEnConstruction }) => {
+          return [
+            ...reseauxDeChaleur.map(
+              (reseau) =>
+                `${reseau.nom_reseau || `Réseau ${reseau.id_fcu}`}${reseau['Identifiant reseau'] ? ` (${reseau['Identifiant reseau']})` : ''}`
+            ),
+            ...reseauxEnConstruction.map((reseau) => `${reseau.nom_reseau || `Réseau ${reseau.id_fcu}`}${reseau.is_zone ? ' (zone)' : ''}`),
+          ].join(' | ');
+        },
         header: 'Réseaux',
         id: 'reseaux',
         sortingFn: (rowA, rowB) => compareFrenchStrings(rowA.getValue('reseaux'), rowB.getValue('reseaux')),
@@ -238,11 +247,11 @@ export default function DemandsStatsPage() {
       },
       {
         accessorFn: (row) => row.allTime.pending,
-        accessorKey: 'allTime',
         cell: ({ row }) => {
           const { pending, total } = row.original.allTime;
           return <DemandStatsCell pending={pending} total={total} tagName={row.original.name} />;
         },
+        exportHeader: 'Demandes en attente (toutes périodes)',
         header: () => (
           <DemandStatColumnHeader>
             Demandes en attente / total
@@ -250,15 +259,16 @@ export default function DemandsStatsPage() {
             Toutes périodes
           </DemandStatColumnHeader>
         ),
+        id: 'allTime',
         width: '110px',
       },
       {
         accessorFn: (row) => row.lastSixMonths.pending,
-        accessorKey: 'lastSixMonths',
         cell: ({ row }) => {
           const { pending, total } = row.original.lastSixMonths;
           return <DemandStatsCell pending={pending} total={total} tagName={row.original.name} periodMonths={6} />;
         },
+        exportHeader: 'Demandes en attente (6 mois)',
         header: () => (
           <DemandStatColumnHeader>
             Demandes en attente / total
@@ -266,15 +276,16 @@ export default function DemandsStatsPage() {
             &lt; 6 mois
           </DemandStatColumnHeader>
         ),
+        id: 'lastSixMonths',
         width: '110px',
       },
       {
         accessorFn: (row) => row.lastThreeMonths.pending,
-        accessorKey: 'lastThreeMonths',
         cell: ({ row }) => {
           const { pending, total } = row.original.lastThreeMonths;
           return <DemandStatsCell pending={pending} total={total} tagName={row.original.name} periodMonths={3} />;
         },
+        exportHeader: 'Demandes en attente (3 mois)',
         header: () => (
           <DemandStatColumnHeader>
             Demandes en attente / total
@@ -282,6 +293,7 @@ export default function DemandsStatsPage() {
             &lt; 3 mois
           </DemandStatColumnHeader>
         ),
+        id: 'lastThreeMonths',
         width: '110px',
       },
       {
