@@ -42,6 +42,9 @@ export const parseAssignmentRules = async (assignmentRules: Record<string, any> 
   return assignmentRules.map(parseAssignmentRule).filter((v) => v !== null);
 };
 
+/**
+ * Applique les règles d'assignation aux données d'éligibilité et retourne les tags et affectations.
+ */
 export function applyParsedRulesToEligibilityData(
   parsedRules: NonNullable<ReturnType<typeof parseAssignmentRule>>[],
   eligibilityData: { tags: string[] }
