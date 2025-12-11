@@ -1,3 +1,4 @@
+'use client';
 import Head from 'next/head';
 import { usePathname } from 'next/navigation';
 import type React from 'react';

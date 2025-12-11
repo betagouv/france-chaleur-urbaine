@@ -3,6 +3,7 @@ import { type FormEvent, useEffect, useState } from 'react';
 
 import Input from '@/components/form/dsfr/Input';
 import TextArea from '@/components/form/dsfr/TextArea';
+import Alert from '@/components/ui/Alert';
 import Button from '@/components/ui/Button';
 import CrudDropdown from '@/components/ui/CrudDropdown';
 import Icon from '@/components/ui/Icon';
@@ -298,6 +299,12 @@ function DemandEmailForm(props: Props) {
                 value: emailContent.body,
               }}
             />
+            {emailContent.body && !emailContent.body.includes('{{Adresse}}') && (
+              <Alert variant="warning" size="sm" className="fr-mb-2w">
+                Votre message ne contient pas la variable <code>{'{{Adresse}}'}</code>. Sans cette information, l'usager ne pourra pas
+                identifier de quelle adresse il s'agit.
+              </Alert>
+            )}
             <Input
               label="Signature"
               hintText="La signature sera sauvegardée pour le prochain envoi"

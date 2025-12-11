@@ -2,9 +2,9 @@ import { Alert } from '@codegouvfr/react-dsfr/Alert';
 import { type FormEvent, useState } from 'react';
 
 import Button from '@/components/ui/Button';
+import { notify } from '@/modules/notification';
 import { submitToAirtable } from '@/services/airtable';
 import { Airtable } from '@/types/enum/Airtable';
-
 import { Container, Email } from './Newsletter.styles';
 
 const Newsletter = () => {
@@ -14,7 +14,12 @@ const Newsletter = () => {
   const addToNewsletter = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSending(true);
-    void submitToAirtable({ Email: email }, Airtable.NEWSLETTER).then(() => setSent(true));
+    void submitToAirtable({ Email: email }, Airtable.NEWSLETTER)
+      .then(() => setSent(true))
+      .catch((error) => {
+        notify('error', error.message);
+        setSending(false);
+      });
   };
 
   return (

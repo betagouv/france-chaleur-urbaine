@@ -128,8 +128,6 @@ const nextConfig: NextConfig = {
     styledComponents: true,
   },
   experimental: {
-    // https://nextjs.org/docs/app/api-reference/file-conventions/not-found#global-not-foundjs
-    globalNotFound: true,
     // https://nextjs.org/docs/app/api-reference/config/next-config-js/optimizePackageImports
     // disabled because it adds 480 MB to the Scalingo image size by putting lots of .map files in .next ...
     // optimizePackageImports,
