@@ -3,7 +3,6 @@ import XLSX from 'xlsx';
 import { clientConfig } from '@/client-config';
 import db from '@/server/db';
 import { kdb, sql, type ZoneDeDeveloppementPrioritaire } from '@/server/db/kysely';
-import { findMetropoleNameTagByCity } from '@/server/services/epci';
 import { getNetworkEligibilityDistances } from '@/services/eligibility';
 import { EXPORT_FORMAT } from '@/types/enum/ExportFormat';
 import type { CityNetwork, HeatNetwork } from '@/types/HeatNetworksResponse';
@@ -516,7 +515,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
       .executeTakeFirst(),
   ]);
 
-  const [departement, region, epci, ept, metropoleNameTag] = await Promise.all([
+  const [departement, region, epci, ept] = await Promise.all([
     kdb
       .selectFrom('ign_departements')
       .select(['nom', 'insee_dep'])
@@ -544,8 +543,6 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
       .where('membres', '@>', sql<any>`jsonb_build_array(jsonb_build_object('code', ${sql.lit(commune.insee_com)}))`)
       .limit(1)
       .executeTakeFirst(),
-
-    findMetropoleNameTagByCity(commune.insee_com!),
   ]);
 
   const determineEligibilityResult = async (): Promise<EligibilityResult> => {
@@ -706,7 +703,6 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
     reseauEnConstruction,
     tags: [
       commune.nom!, // ville
-      ...(metropoleNameTag ? [metropoleNameTag] : []), // métropole
       ...eligibilityResult.tags, // tags réseau + résultats des règles
     ],
     zoneEnConstruction,
