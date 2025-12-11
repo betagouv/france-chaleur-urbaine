@@ -39,6 +39,7 @@ import type { DemandStatus } from '@/modules/demands/constants';
 import { eligibilityTypes as eligibilityCases, eligibilityTitleByType } from '@/modules/demands/constants';
 import type { Demand } from '@/modules/demands/types';
 import { notify, toastErrors } from '@/modules/notification';
+import EligibilityHistoryTooltip from '@/modules/pro-eligibility-tests/client/EligibilityHistoryTooltip';
 import { useFCUTags } from '@/modules/tags/client/useFCUTags';
 import trpc, { type RouterOutput } from '@/modules/trpc/client';
 import { withAuthentication } from '@/server/authentication';
@@ -566,6 +567,24 @@ function DemandesAdmin(): React.ReactElement {
         filterType: 'Facets',
         header: 'Réseau le plus proche',
         width: '200px',
+      },
+      {
+        accessorKey: 'testAddress.eligibility_history',
+        align: 'center',
+        cell: ({ row }) => {
+          const history = row.original.testAddress?.eligibility_history as any;
+          if (!history || !Array.isArray(history) || history.length === 0) {
+            return null;
+          }
+          return (
+            <div className="flex items-center justify-center gap-1">
+              <Tooltip title={<EligibilityHistoryTooltip history={history} />} side="left" />
+            </div>
+          );
+        },
+        enableSorting: false,
+        header: () => 'Historique éligibilité',
+        width: '100px',
       },
       {
         accessorKey: 'Commentaire relance',
