@@ -13,6 +13,7 @@ export function createLoggingMiddleware(t: TRoot) {
       method: type,
       name: 'trpc',
       url: `trpc.${path}`,
+      'user-agent': ctx.headers['user-agent'],
     });
 
     const result = await next();

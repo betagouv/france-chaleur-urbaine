@@ -58,6 +58,7 @@ export function handleRouteErrors<HandlersConfig extends Partial<Record<RequestM
       ip: process.env.LOG_REQUEST_IP ? (req.headers['x-forwarded-for'] ?? req.socket.remoteAddress) : undefined,
       method: req.method,
       url: req.url,
+      'user-agent': req.headers['user-agent'],
     });
     try {
       req.session = await getServerSession({ req, res });
