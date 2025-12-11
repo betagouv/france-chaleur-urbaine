@@ -599,7 +599,9 @@ const networkTablesGeomFields: {
   reseaux_de_chaleur: (eb) => ({
     has_trace: sql<boolean>`st_geometrytype(${eb.ref('geom_update')}) = 'ST_MultiLineString'`,
   }),
-  reseaux_de_froid: () => ({}),
+  reseaux_de_froid: (eb) => ({
+    has_trace: sql<boolean>`st_geometrytype(${eb.ref('geom_update')}) = 'ST_MultiLineString'`,
+  }),
   zone_de_developpement_prioritaire: () => ({}),
   zones_et_reseaux_en_construction: (eb) => ({
     is_zone: sql<boolean>`st_geometrytype(${eb.ref('geom_update')}) = 'ST_MultiPolygon' or st_geometrytype(geom_update) = 'ST_Polygon'`,
