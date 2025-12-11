@@ -74,6 +74,12 @@ src/
 - Read from `.ai/context/ARCHITECTURE.md` and `.ai/context/OVERVIEW.md`
 
 
+## ⚠️ Git Rules
+
+**NEVER commit or push automatically.** Only commit/push when:
+- User explicitly uses `/code-commit` command
+- User explicitly asks to commit
+
 ## 💡 Development Guidelines
 
 - Follow language-specific conventions in `.ai/context/<language>/`
