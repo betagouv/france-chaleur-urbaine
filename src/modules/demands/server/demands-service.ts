@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker';
+import * as Sentry from '@sentry/nextjs';
 import { TRPCError } from '@trpc/server';
 import type { Insertable, Selectable } from 'kysely';
 import type { User } from 'next-auth';
@@ -9,6 +10,8 @@ import {
   type CreateDemandInput,
   demandStatusDefault,
   formatDataToLegacyAirtable,
+  normalizeHeatingEnergy,
+  normalizeHeatingType,
   type UpdateDemandInput,
 } from '@/modules/demands/constants';
 import type { AirtableLegacyRecord } from '@/modules/demands/types';
@@ -99,6 +102,33 @@ const augmentGestionnaireDemand = <T extends Selectable<Demands>>({
   legacy_values['en PDP'] = lastEligibility?.eligibility?.type.includes('dans_pdp') ? 'Oui' : 'Non';
   legacy_values['Prise de contact'] ??= false;
   legacy_values.Status ??= demandStatusDefault;
+
+  // Normalisation des valeurs de chauffage legacy
+  const rawHeatingEnergy = legacy_values['Mode de chauffage'];
+  if (rawHeatingEnergy) {
+    const normalizedHeatingEnergy = normalizeHeatingEnergy(rawHeatingEnergy);
+    if (normalizedHeatingEnergy) {
+      legacy_values['Mode de chauffage'] = normalizedHeatingEnergy;
+    } else {
+      Sentry.captureMessage(`Valeur "Mode de chauffage" non reconnue: "${rawHeatingEnergy}"`, {
+        extra: { demandId: demand.id, rawValue: rawHeatingEnergy },
+        level: 'error',
+      });
+    }
+  }
+
+  const rawHeatingType = legacy_values['Type de chauffage'];
+  if (rawHeatingType) {
+    const normalizedHeatingType = normalizeHeatingType(rawHeatingType);
+    if (normalizedHeatingType) {
+      legacy_values['Type de chauffage'] = normalizedHeatingType;
+    } else {
+      Sentry.captureMessage(`Valeur "Type de chauffage" non reconnue: "${rawHeatingType}"`, {
+        extra: { demandId: demand.id, rawValue: rawHeatingType },
+        level: 'error',
+      });
+    }
+  }
 
   const isParis = legacy_values.Gestionnaires?.includes('Paris');
   const distanceThreshold = isParis ? 60 : 100;

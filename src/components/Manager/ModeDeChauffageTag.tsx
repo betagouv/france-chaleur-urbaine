@@ -1,17 +1,29 @@
-import { upperCaseFirstChar } from '@/utils/strings';
+import type { ModeDeChauffage, TypeDeChauffage } from '@/modules/demands/constants';
 import Tag from './Tag';
 
 type ModeDeChauffageProps = {
-  modeDeChauffage?: string | null;
-  typeDeChauffage?: string | null;
+  modeDeChauffage?: ModeDeChauffage | null;
+  typeDeChauffage?: TypeDeChauffage | null;
 };
 
+/**
+ * Combine mode de chauffage et type de chauffage en un texte lisible.
+ * Les valeurs sont déjà normalisées côté serveur dans augmentGestionnaireDemand.
+ * Ex: "Gaz" + "Collectif" → "Gaz collectif"
+ */
 export const getModeDeChauffageDisplay = ({ modeDeChauffage, typeDeChauffage }: ModeDeChauffageProps): string | null => {
-  const mode = modeDeChauffage?.toLowerCase()?.trim();
-  if (mode && ['gaz', 'fioul', 'électricité'].includes(mode)) {
-    return `${upperCaseFirstChar(mode)} ${typeDeChauffage ? typeDeChauffage.toLowerCase() : ''}`;
+  // Si on a un mode de chauffage standard (pas "Autre / Je ne sais pas")
+  if (modeDeChauffage && ['Électricité', 'Gaz', 'Fioul'].includes(modeDeChauffage)) {
+    const typeDisplay = typeDeChauffage && typeDeChauffage !== 'Autre / Je ne sais pas' ? ` ${typeDeChauffage.toLowerCase()}` : '';
+    return `${modeDeChauffage}${typeDisplay}`;
   }
-  return typeDeChauffage || null;
+
+  // Sinon, affiche juste le type de chauffage s'il existe et n'est pas "Autre"
+  if (typeDeChauffage && typeDeChauffage !== 'Autre / Je ne sais pas') {
+    return typeDeChauffage;
+  }
+
+  return null;
 };
 
 const ModeDeChauffageTag = ({ modeDeChauffage, typeDeChauffage }: ModeDeChauffageProps) => {
