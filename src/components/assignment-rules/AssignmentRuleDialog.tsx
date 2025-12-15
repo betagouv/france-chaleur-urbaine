@@ -6,7 +6,7 @@ import ExpressionValidator from '@/components/assignment-rules/ExpressionValidat
 import useForm from '@/components/form/react-form/useForm';
 import Button from '@/components/ui/Button';
 import Dialog from '@/components/ui/Dialog';
-import type { AssignmentRule } from '@/server/services/assignment-rules';
+import type { AssignmentRule } from '@/modules/demands/server/assignment-rules-service';
 import { validateExpression, validateResult } from '@/utils/expression-parser';
 
 const assignmentRuleSchema = z.object({

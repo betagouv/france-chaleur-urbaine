@@ -9,10 +9,10 @@ import Dialog from '@/components/ui/Dialog';
 import Heading from '@/components/ui/Heading';
 import TableSimple, { type ColumnDef } from '@/components/ui/table/TableSimple';
 import useCrud from '@/hooks/useCrud';
+import type { AssignmentRule } from '@/modules/demands/server/assignment-rules-service';
 import { toastErrors } from '@/modules/notification';
 import type { AssignmentRulesResponse } from '@/pages/api/admin/assignment-rules/[[...slug]]';
 import { withAuthentication } from '@/server/authentication';
-import type { AssignmentRule } from '@/server/services/assignment-rules';
 import cx from '@/utils/cx';
 
 const initialSortingState = [{ desc: false, id: 'search_pattern' }];

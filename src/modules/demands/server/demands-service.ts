@@ -32,7 +32,7 @@ import { type EligibilityType, getDetailedEligibilityStatus } from '@/server/ser
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import type { UserRole } from '@/types/enum/UserRole';
 import type { FrontendType } from '@/utils/typescript';
-import * as assignmentRulesService from './assignment_rules-service';
+import * as assignmentRulesService from './assignment-rules-service';
 
 const logger = parentLogger.child({
   module: 'demands',
@@ -596,7 +596,7 @@ export const listAdmin = async () => {
   });
 
   // Récupére et parse les règles et leurs résultats
-  const { items: assignmentRules } = await assignmentRulesService.list();
+  const { items: assignmentRules } = await assignmentRulesService.listActive();
   const parsedRules = await assignmentRulesService.parseAssignmentRules(assignmentRules);
 
   const [reseauxDeChaleur, reseauxEnConstruction] = await Promise.all([
