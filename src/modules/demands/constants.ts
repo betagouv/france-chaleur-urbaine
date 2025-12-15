@@ -349,6 +349,60 @@ export const referrers = [
 
 export type Referrer = (typeof referrers)[number]['label'];
 
+/************* Normalisation des valeurs legacy *************/
+
+/**
+ * Normalise une valeur de mode de chauffage (heatingEnergy) vers le label standard.
+ * Gère les inconsistances : casse, accents, espaces, valeurs legacy.
+ */
+export const normalizeHeatingEnergy = (value: string | null | undefined): string | null => {
+  if (!value) return null;
+
+  const normalized = value.toLowerCase().trim();
+
+  if (['électricité', 'electricite', 'electricité'].includes(normalized)) {
+    return 'Électricité';
+  }
+  if (normalized === 'gaz') {
+    return 'Gaz';
+  }
+  if (normalized === 'fioul') {
+    return 'Fioul';
+  }
+  if (['autre', 'autre / je ne sais pas'].includes(normalized)) {
+    return 'Autre / Je ne sais pas';
+  }
+
+  return null; // Valeur non reconnue
+};
+
+/**
+ * Normalise une valeur de type de chauffage (heatingType) vers le label standard.
+ * Gère les inconsistances : casse, valeurs legacy.
+ */
+export const normalizeHeatingType = (value: string | null | undefined): string | null => {
+  if (!value) return null;
+
+  const normalized = value.toLowerCase().trim();
+
+  if (normalized === 'collectif') {
+    return 'Collectif';
+  }
+  if (normalized === 'individuel') {
+    return 'Individuel';
+  }
+  if (['autre', 'autre / je ne sais pas'].includes(normalized)) {
+    return 'Autre / Je ne sais pas';
+  }
+
+  // Valeur incorrecte dans le mauvais champ (ex: "électricité" dans Type de chauffage)
+  if (['électricité', 'electricite', 'electricité', 'gaz', 'fioul'].includes(normalized)) {
+    return null;
+  }
+
+  return null; // Valeur non reconnue
+};
+
 /************* Airtable Legacy *************/
 
 const formatHeatingEnergyToAirtable = (heatingEnergy: string) => {
