@@ -147,6 +147,8 @@ export type ColumnDef<T, K = any> = ColumnDefOriginal<T, K> & {
   filtersDialogDescription?: React.ReactNode;
   showInFiltersDialog?: boolean;
   visible?: boolean;
+  exportHeader?: string;
+  exportFn?: (row: T) => string | number | boolean;
 } & ({ flex?: number } | { width?: 'auto' | string });
 
 const cellCustomClasses = cva('', {
@@ -663,21 +665,25 @@ const TableSimple = <T extends RowData>({
     const computedExportColumns = tableColumns
       .filter((col) => col.visible !== false && col.id !== 'selection' && col.id !== 'actions')
       .map((col) => {
-        const header = (
-          typeof col.header === 'string' ? col.header : (col as AccessorKeyColumnDefBase<T, any>).accessorKey || col.id || ''
-        ) as string;
+        const header = (col.exportHeader ??
+          (typeof col.header === 'string' ? col.header : (col as AccessorKeyColumnDefBase<T, any>).accessorKey || col.id || '')) as string;
 
-        return 'accessorKey' in col
+        return isDefined(col.exportFn)
           ? {
-              accessorKey: col.accessorKey as keyof T,
+              accessorFn: col.exportFn as (item: T) => string | number | boolean,
               name: header,
             }
-          : 'accessorFn' in col
+          : 'accessorKey' in col
             ? {
-                accessorFn: col.accessorFn as (item: T) => string | number | boolean,
+                accessorKey: col.accessorKey as keyof T,
                 name: header,
               }
-            : null;
+            : 'accessorFn' in col
+              ? {
+                  accessorFn: col.accessorFn as (item: T) => string | number | boolean,
+                  name: header,
+                }
+              : null;
       })
       .filter((col) => col !== null);
 
