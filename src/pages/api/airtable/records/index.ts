@@ -1,5 +1,6 @@
 import type { NextApiRequest } from 'next';
 import { v4 as uuidv4 } from 'uuid';
+import { serverConfig } from '@/server/config';
 import { AirtableDB } from '@/server/db/airtable';
 import { logger } from '@/server/helpers/logger';
 import { BadRequestError, handleRouteErrors, requirePostMethod } from '@/server/helpers/server';
@@ -24,6 +25,10 @@ export default handleRouteErrors(async function PostRecords(req: NextApiRequest)
 
   switch (type) {
     case Airtable.NEWSLETTER: {
+      const email = values.Email?.toLowerCase();
+      if (email && serverConfig.email.notAllowed.includes(email)) {
+        throw new BadRequestError(serverConfig.email.notAllowedMessage);
+      }
       // bad airtable type
       const { id }: any = await AirtableDB(Airtable.NEWSLETTER).create(values);
       logger.info('create airtable record newsletter', {
