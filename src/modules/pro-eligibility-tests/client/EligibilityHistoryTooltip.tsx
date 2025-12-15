@@ -18,7 +18,7 @@ const EligibilityHistoryTooltip: React.FC<EligibilityHistoryTooltipProps> = ({ h
   const initialEntry = history.find((entry) => entry.transition === 'initial');
 
   return (
-    <div className="text-xs space-y-3 max-w-[600px] max-h-[500px] overflow-y-auto">
+    <div className="text-xs space-y-3 max-w-xl max-h-[500px] overflow-y-auto">
       <div className="font-semibold sticky top-0 bg-white pb-2 border-b border-gray-200">Historique des changements ({changes.length})</div>
 
       {changes.length > 0 && (

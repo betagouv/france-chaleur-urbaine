@@ -13,7 +13,7 @@ const EmailHistoryItem = ({ item, onEmailClick }: EmailHistoryItemProps) => {
   return (
     <li key={item.email_key} onClick={() => onEmailClick?.(item.email_key)} className={onEmailClick ? 'cursor-pointer' : ''}>
       <Tooltip
-        className="max-w-[600px] min-w-[300px]"
+        className="max-w-xl min-w-[300px]"
         title={
           <div className="max-h-96 overflow overflow-auto">
             <div className="text-sm mb-1">

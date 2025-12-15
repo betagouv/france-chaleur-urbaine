@@ -218,7 +218,7 @@ function DemandEmailForm(props: Props) {
                   <span>Objet</span>
                   <div className="flex items-center gap-1">
                     <Tooltip
-                      className="max-w-[600px] min-w-[300px]"
+                      className="max-w-xl min-w-[300px]"
                       title={
                         <div className="max-h-96 overflow-y-auto">
                           <p className="text-sm">
@@ -319,7 +319,7 @@ function DemandEmailForm(props: Props) {
                 Envoyer
               </Button>
               <Tooltip
-                className="max-w-[600px] min-w-[300px]"
+                className="max-w-xl min-w-[300px]"
                 title={
                   <div className="max-h-96 overflow overflow-auto">
                     <div className="text-sm italic mb-1">Prévisualisation du courriel</div>
