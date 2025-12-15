@@ -1,8 +1,9 @@
+import type { ModeDeChauffage, TypeDeChauffage } from '@/modules/demands/constants';
 import Tag from './Tag';
 
 type ModeDeChauffageProps = {
-  modeDeChauffage?: string | null;
-  typeDeChauffage?: string | null;
+  modeDeChauffage?: ModeDeChauffage | null;
+  typeDeChauffage?: TypeDeChauffage | null;
 };
 
 /**

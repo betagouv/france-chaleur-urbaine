@@ -149,6 +149,20 @@ export const zCreateDemandInput = z.object({
   termOfUse: z.boolean(),
 });
 
+export const modesDeChauffage = [
+  { id: 'electricite', label: 'Électricité', value: 'électricité' },
+  { id: 'gaz', label: 'Gaz', value: 'gaz' },
+  { id: 'fioul', label: 'Fioul', value: 'fioul' },
+  { id: 'autre', label: 'Autre / Je ne sais pas', value: 'autre' },
+];
+export type ModeDeChauffage = (typeof modesDeChauffage)[number]['value'];
+
+export const typesDeChauffage = [
+  { id: 'individuel', label: 'Individuel', value: 'individuel' },
+  { id: 'collectif', label: 'Collectif', value: 'collectif' },
+];
+export type TypeDeChauffage = (typeof typesDeChauffage)[number]['value'];
+
 export const fieldLabelInformation = {
   company: 'Nom de votre structure',
   companyTitle: 'Votre structure',
@@ -178,12 +192,7 @@ export const fieldLabelInformation = {
   email: 'Email',
   firstName: 'Prénom',
   heatingEnergy: {
-    inputs: [
-      { id: 'electricite', label: 'Électricité', value: 'électricité' },
-      { id: 'gaz', label: 'Gaz', value: 'gaz' },
-      { id: 'fioul', label: 'Fioul', value: 'fioul' },
-      { id: 'autre', label: 'Autre / Je ne sais pas', value: 'autre' },
-    ],
+    inputs: modesDeChauffage,
     label: 'Mode de chauffage',
   },
   lastName: 'Nom',
