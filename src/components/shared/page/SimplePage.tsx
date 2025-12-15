@@ -507,6 +507,13 @@ const PageHeader = (props: PageHeaderProps) => {
               ]
             : []),
           {
+            iconId: 'fr-icon-account-circle-line',
+            linkProps: {
+              href: '/pro/mon-compte',
+            },
+            text: 'Mon compte',
+          },
+          {
             buttonProps: {
               onClick: () => signOut({ callbackUrl: '/' }),
             },

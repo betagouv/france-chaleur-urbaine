@@ -1,9 +1,9 @@
 import { z } from 'zod';
 
-import { userRoles, userRolesInscription } from '@/types/enum/UserRole';
+import { type UserRole, userRoles, userRolesInscription } from '@/types/enum/UserRole';
 
+// biome-ignore assist/source/useSortedKeys: keep field order for clarity and maintainability
 export const structureTypes = {
-  autre: 'Autre (préciser)',
   bailleur_social: 'Bailleur social',
   bureau_etudes: "Bureau d'études",
   collectivite: 'Collectivité',
@@ -11,11 +11,20 @@ export const structureTypes = {
   gestionnaire_reseaux: 'Gestionnaire de réseaux de chaleur',
   mandataire_cee: 'Mandataire / délégataire CEE',
   syndic_copropriete: 'Syndic de copropriété',
+  autre: 'Autre (préciser)',
+};
+
+export const roles: Record<UserRole, string> = {
+  admin: 'Admin',
+  demo: 'Demo',
+  gestionnaire: 'Gestionnaire',
+  particulier: 'Particulier',
+  professionnel: 'Professionnel',
 };
 
 export const zCredentialsSchema = z.object({
   accept_cgu: z.boolean().refine((val) => val === true, {
-    error: "Veuillez accepter les conditions générales d'utilisation",
+    message: "Veuillez accepter les conditions générales d'utilisation",
   }),
   email: z.email("L'adresse email n'est pas valide").max(100, "L'email ne peut pas dépasser 100 caractères"),
   optin_newsletter: z.boolean(),
@@ -37,7 +46,7 @@ export const zIdentitySchema = z
       .nullable()
       .optional()
       .refine((val) => !val || /^(?:(?:\+|00)33|0)\s*[1-9](?:[\s.-]*\d{2}){4}$/.test(val), {
-        error: "Le numéro de téléphone n'est pas valide",
+        message: "Le numéro de téléphone n'est pas valide",
       }),
     role: z.enum(userRolesInscription),
     structure_name: z.string().min(0, 'La structure est obligatoire').optional(),
@@ -45,15 +54,15 @@ export const zIdentitySchema = z
     structure_type: z.string().optional(),
   })
   .refine((data) => !(data.structure_type === 'autre' && !data.structure_other), {
-    error: "Le type de structure 'Autre' doit être précisé",
+    message: "Le type de structure 'Autre' doit être précisé",
     path: ['structure_other'],
   })
   .refine((data) => data.role === 'particulier' || !!data.structure_name, {
-    error: 'La structure est obligatoire',
+    message: 'La structure est obligatoire',
     path: ['structure_name'],
   })
   .refine((data) => data.role === 'particulier' || !!data.structure_type, {
-    error: 'Le type de structure est obligatoire',
+    message: 'Le type de structure est obligatoire',
     path: ['structure_type'],
   });
 
@@ -96,3 +105,38 @@ export const updateUserAdminSchema = z
     structure_type: z.string().optional(),
   })
   .partial();
+
+export const zUpdateProfileSchema = z
+  .object({
+    first_name: z.string().min(1, 'Le prénom est obligatoire'),
+    last_name: z.string().min(1, 'Le nom de famille est obligatoire'),
+    phone: z
+      .string()
+      .nullable()
+      .optional()
+      .refine((val) => !val || /^(?:(?:\+|00)33|0)\s*[1-9](?:[\s.-]*\d{2}){4}$/.test(val), {
+        message: "Le numéro de téléphone n'est pas valide",
+      }),
+    structure_name: z.string().optional(),
+    structure_other: z.string().optional(),
+    structure_type: z.string().optional(),
+  })
+  .refine((data) => !(data.structure_type === 'autre' && !data.structure_other), {
+    message: "Le type de structure 'Autre' doit être précisé",
+    path: ['structure_other'],
+  })
+  .transform((data) => ({
+    ...data,
+    structure_other: data.structure_type === 'autre' ? data.structure_other : '',
+  }));
+
+export type UpdateProfileSchema = z.infer<typeof zUpdateProfileSchema>;
+
+export const updateProfileDefaultValues: UpdateProfileSchema = {
+  first_name: '',
+  last_name: '',
+  phone: null,
+  structure_name: '',
+  structure_other: '',
+  structure_type: '',
+};
