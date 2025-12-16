@@ -17,3 +17,15 @@ alwaysApply: false
 
 - Schema migrations use the format YYYYMMDDXXXXXXN_synthetic_name.ts. Always use the current date by default
 - if we are in a branch different that dev or main, XXXXXXN should be incremented 000000, then 000001 then 000002 etc
+
+## Zod Schemas
+
+- Zod schemas are shared between server (tRPC routes) and client (forms)
+- Place schemas in `modules/[module]/constants.ts` alongside their types and default values
+- Export pattern: `zSchemaName` for schema, `SchemaName` for type, `schemaNameDefaultValues` for defaults
+- Example:
+  ```typescript
+  export const zUpdateProfileSchema = z.object({ ... });
+  export type UpdateProfileSchema = z.infer<typeof zUpdateProfileSchema>;
+  export const updateProfileDefaultValues: UpdateProfileSchema = { ... };
+  ```
