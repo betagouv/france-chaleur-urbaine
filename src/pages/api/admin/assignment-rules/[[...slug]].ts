@@ -1,6 +1,6 @@
+import * as assignmentRulesService from '@/modules/demands/server/assignment-rules-service';
 import crud from '@/server/api/crud';
 import { handleRouteErrors } from '@/server/helpers/server';
-import * as assignmentRulesService from '@/server/services/assignment-rules';
 
 const { GET, POST, PUT, DELETE, _types } = crud<typeof assignmentRulesService.tableName, typeof assignmentRulesService.validation>(
   assignmentRulesService as any

@@ -31,11 +31,11 @@ import {
 } from '@/server/db/kysely';
 import { createBaseModel } from '@/server/db/kysely/base-model';
 import { parentLogger } from '@/server/helpers/logger';
-import { type EligibilityType, findPDPAssociatedNetwork, getDetailedEligibilityStatus } from '@/server/services/addresseInformation';
+import { type EligibilityType, getDetailedEligibilityStatus } from '@/server/services/addresseInformation';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import type { UserRole } from '@/types/enum/UserRole';
 import type { FrontendType } from '@/utils/typescript';
-import * as assignmentRulesService from './assignment_rules-service';
+import * as assignmentRulesService from './assignment-rules-service';
 
 const logger = parentLogger.child({
   module: 'demands',
@@ -626,7 +626,7 @@ export const listAdmin = async () => {
   });
 
   // Récupére et parse les règles et leurs résultats
-  const { items: assignmentRules } = await assignmentRulesService.list();
+  const { items: assignmentRules } = await assignmentRulesService.listActive();
   const parsedRules = await assignmentRulesService.parseAssignmentRules(assignmentRules);
 
   const [reseauxDeChaleur, reseauxEnConstruction] = await Promise.all([
@@ -669,44 +669,18 @@ export const listAdmin = async () => {
           };
         }
 
-        const eligibility = augmentedDemand.testAddress?.eligibility;
-
-        let tags: string[] = [];
-        let communes: string[] = [];
-
-        if (eligibility?.entity === 'ReseauDeChaleur') {
-          const reseauDeChaleur = reseauxDeChaleur.find((reseau) => reseau.id_fcu === eligibility.id_fcu);
-          tags = reseauDeChaleur?.tags ?? [];
-          communes = reseauDeChaleur?.communes ?? [];
-        } else if (eligibility?.entity === 'ReseauEnConstruction') {
-          const reseauEnConstruction = reseauxEnConstruction.find((reseau) => reseau.id_fcu === eligibility.id_fcu);
-          tags = reseauEnConstruction?.tags ?? [];
-          communes = reseauEnConstruction?.communes ?? [];
-        } else if (eligibility?.entity === 'PDP') {
-          const pdp = await kdb
-            .selectFrom('zone_de_developpement_prioritaire')
-            .select(['id_fcu', 'Identifiant reseau', 'communes', 'reseau_de_chaleur_ids', 'reseau_en_construction_ids'])
-            .where('id_fcu', '=', eligibility.id_fcu)
-            .executeTakeFirst();
-
-          if (pdp) {
-            const networkInfos = await findPDPAssociatedNetwork(pdp, legacyValues.Latitude, legacyValues.Longitude);
-            tags = networkInfos?.tags ?? [];
-            communes = networkInfos?.communes ?? [];
-          }
-        }
-
-        const rulesResult = assignmentRulesService.applyParsedRulesToEligibilityData(parsedRules, { tags });
+        const detailedEligibility = await getDetailedEligibilityStatus(augmentedDemand.Latitude!, augmentedDemand.Longitude!);
+        const rulesResult = assignmentRulesService.applyParsedRulesToEligibilityData(parsedRules, detailedEligibility);
 
         return {
           ...augmentedDemand,
           recommendedAssignment: rulesResult.assignment ?? 'Non affecté',
-          recommendedTags: [...new Set([...tags, ...rulesResult.tags])],
+          recommendedTags: [...new Set([...detailedEligibility.tags, ...rulesResult.tags])],
           testAddress: {
             ...augmentedDemand.testAddress,
             eligibility: {
               ...augmentedDemand.testAddress.eligibility,
-              communes,
+              communes: detailedEligibility.communes,
             },
           },
         };
