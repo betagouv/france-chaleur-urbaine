@@ -7,6 +7,7 @@ import { addresseToPublicodesRulesKeys } from '@/components/ComparateurPublicode
 import type { SimulatorEngine } from '@/components/ComparateurPublicodes/useSimulatorEngine';
 import labels from '@/components/form/publicodes/labels';
 import Button from '@/components/ui/Button';
+import { copyToClipboard } from '@/components/ui/ButtonCopy';
 import CrudDropdown from '@/components/ui/CrudDropdown';
 import { trackEvent } from '@/modules/analytics/client';
 import { notify } from '@/modules/notification';
@@ -137,7 +138,7 @@ const Configuration: React.FC<ConfigurationProps> = ({ engine, address, onChange
           sharedQueryParamName="configId"
           onShare={({ id }, { setSharingId }) => {
             const urlToShare = `${window.location.origin}${window.location.pathname}?configId=${id}`;
-            void navigator.clipboard.writeText(urlToShare);
+            void copyToClipboard(urlToShare);
 
             const title = 'Ma configuration du comparateur de coûts et CO₂ de France Chaleur Urbaine';
             const text =

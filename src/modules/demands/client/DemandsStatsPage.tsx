@@ -6,6 +6,7 @@ import { type ReactNode, useMemo } from 'react';
 
 import SimplePage from '@/components/shared/page/SimplePage';
 import Button from '@/components/ui/Button';
+import { useCopy } from '@/components/ui/ButtonCopy';
 import CallOut from '@/components/ui/CallOut';
 import Heading from '@/components/ui/Heading';
 import Icon from '@/components/ui/Icon';
@@ -146,20 +147,7 @@ export default function DemandsStatsPage() {
                       );
                     })}
                   </div>
-                  <div>
-                    <Tooltip title="Copier les adresses e-mail dans le presse-papiers">
-                      <Button
-                        type="button"
-                        className="inline-flex items-center gap-1 text-sm"
-                        onClick={() => copyContentToClipboard(users.map((user) => user.email).join(', '))}
-                        iconId="fr-icon-clipboard-line"
-                        priority="tertiary no outline"
-                        size="small"
-                      >
-                        Copier les adresses
-                      </Button>
-                    </Tooltip>
-                  </div>
+                  <CopyEmailsButton emails={users.map((user) => user.email)} />
                 </>
               ) : (
                 <span className="text-gray-400 text-sm">Aucun utilisateur</span>
@@ -425,15 +413,29 @@ const buildDemandFilters = (tagName: string, periodMonths: number | undefined, p
   ];
 };
 
-const copyContentToClipboard = (content: string) => {
-  if (typeof navigator === 'undefined' || !navigator.clipboard) {
-    return;
-  }
+const CopyEmailsButton = ({ emails }: { emails: string[] }) => {
+  const { copied, copy } = useCopy();
 
-  void navigator.clipboard
-    .writeText(content)
-    .then(() => notify('success', 'Adresses copiées !'))
-    .catch(() => {});
+  return (
+    <Tooltip title="Copier les adresses e-mail dans le presse-papiers">
+      <Button
+        type="button"
+        className="inline-flex items-center gap-1 text-sm"
+        onClick={() => {
+          void copy(emails.join(', ')).then((success) => {
+            if (success) {
+              notify('success', 'Adresses copiées !');
+            }
+          });
+        }}
+        iconId={copied ? 'ri-check-line' : 'fr-icon-clipboard-line'}
+        priority="tertiary no outline"
+        size="small"
+      >
+        {copied ? 'Copié !' : 'Copier les adresses'}
+      </Button>
+    </Tooltip>
+  );
 };
 
 const ReminderDateCell = ({
