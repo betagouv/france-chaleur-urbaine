@@ -470,15 +470,23 @@ const PageHeader = (props: PageHeaderProps) => {
 
   const isFullScreenMode = props.mode === 'public-fullscreen' || props.mode === 'authenticated';
 
-  const navigationMenuItems =
-    props.mode === 'authenticated'
-      ? [
-          ...authenticatedNavigationMenu,
-          ...(hasRole('admin') ? adminNavigationMenu : []),
-          ...(hasRole('gestionnaire') || hasRole('demo') ? gestionnaireNavigationMenu : []),
-          ...(hasRole('particulier') || hasRole('professionnel') ? professionnelNavigationMenu : []),
-        ]
-      : publicNavigationMenu;
+  // Use state to defer role-based navigation menu until after hydration to avoid mismatch
+  const [navigationMenuItems, setNavigationMenuItems] = useState<MainNavigationProps.Item[]>(
+    props.mode === 'authenticated' ? authenticatedNavigationMenu : publicNavigationMenu
+  );
+
+  useEffect(() => {
+    if (props.mode === 'authenticated') {
+      setNavigationMenuItems([
+        ...authenticatedNavigationMenu,
+        ...(hasRole('admin') ? adminNavigationMenu : []),
+        ...(hasRole('gestionnaire') || hasRole('demo') ? gestionnaireNavigationMenu : []),
+        ...(hasRole('particulier') || hasRole('professionnel') ? professionnelNavigationMenu : []),
+      ]);
+    } else {
+      setNavigationMenuItems(publicNavigationMenu);
+    }
+  }, [props.mode, hasRole]);
 
   // Use useRouterReady hook to ensure stable path during hydration
   // Always use empty string on server to prevent hydration mismatch
