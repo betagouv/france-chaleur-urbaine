@@ -5,14 +5,12 @@ import { withAuthentication } from '@/server/authentication';
 
 export default function MonComptePage() {
   return (
-    <SimplePage title="Mon compte" mode="authenticated">
-      <div className="fr-container fr-my-4w">
-        <Heading as="h1" color="blue-france">
-          Mon compte
-        </Heading>
-        <div className="max-w-xl">
-          <ProfileForm />
-        </div>
+    <SimplePage title="Mon compte" mode="authenticated" layout="center">
+      <Heading as="h1" color="blue-france">
+        Mon compte
+      </Heading>
+      <div className="max-w-xl">
+        <ProfileForm />
       </div>
     </SimplePage>
   );

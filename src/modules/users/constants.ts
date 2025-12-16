@@ -135,7 +135,7 @@ export type UpdateProfileSchema = z.infer<typeof zUpdateProfileSchema>;
 export const updateProfileDefaultValues: UpdateProfileSchema = {
   first_name: '',
   last_name: '',
-  phone: null,
+  phone: '',
   structure_name: '',
   structure_other: '',
   structure_type: '',

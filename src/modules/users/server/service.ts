@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 import type { UpdateObject } from 'kysely';
 import { sendEmailTemplate } from '@/modules/email';
-import { createUserAdminSchema, updateUserAdminSchema } from '@/modules/users/constants';
+import { createUserAdminSchema, type UpdateProfileSchema, updateUserAdminSchema } from '@/modules/users/constants';
 import { type DB, kdb, sql } from '@/server/db/kysely';
 import { createBaseModel } from '@/server/db/kysely/base-model';
 
@@ -69,4 +69,18 @@ export const remove = baseModel.remove;
 export const validation = {
   create: createUserAdminSchema,
   update: updateUserAdminSchema,
+};
+
+export const getProfile = async (userId: string) => {
+  return kdb
+    .selectFrom('users')
+    .select(['id', 'email', 'role', 'first_name', 'last_name', 'phone', 'structure_name', 'structure_type', 'structure_other'])
+    .where('id', '=', userId)
+    .executeTakeFirst();
+};
+
+export const updateProfile = async (userId: string, data: UpdateProfileSchema) => {
+  const result = await kdb.updateTable('users').set(data).where('id', '=', userId).executeTakeFirst();
+
+  return result.numUpdatedRows > 0;
 };

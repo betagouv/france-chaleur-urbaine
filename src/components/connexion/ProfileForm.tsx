@@ -10,7 +10,7 @@ function ProfileForm() {
   const utils = trpc.useUtils();
 
   const updateProfile = trpc.users.updateProfile.useMutation({
-    onError: (error: { message?: string }) => {
+    onError: (error) => {
       notify('error', error.message || 'Erreur lors de la mise à jour du profil');
     },
     onSuccess: () => {
@@ -24,7 +24,7 @@ function ProfileForm() {
       ...updateProfileDefaultValues,
       first_name: profile?.first_name ?? '',
       last_name: profile?.last_name ?? '',
-      phone: profile?.phone ?? null,
+      phone: profile?.phone ?? '',
       structure_name: profile?.structure_name ?? '',
       structure_other: profile?.structure_other ?? '',
       structure_type: profile?.structure_type ?? '',
