@@ -8,6 +8,7 @@ export default defineConfig({
   assetsInclude: ['**/*.md', '**/*.svgr', '**/*.mdx'],
   plugins: [tsconfigPaths(), react()],
   test: {
+    fileParallelism: false, // Disable parallel file execution to avoid database conflicts between integration tests
     alias: {
       '@': resolve(__dirname, 'src'),
       '@/client-config': resolve(__dirname, 'src/client-config.ts'),
