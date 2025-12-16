@@ -15,6 +15,22 @@ export default defineConfig({
       '@react-hookz/web/useCookieValue': resolve(__dirname, 'node_modules/@react-hookz/web/dist/useCookieValue/index.js'),
       '@root': resolve(__dirname, '.'),
     },
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'html', 'lcov'],
+      reportsDirectory: './coverage',
+      include: ['src/**/*.ts', 'src/**/*.tsx'],
+      exclude: [
+        'src/**/*.d.ts',
+        'src/**/*.test.ts',
+        'src/**/*.spec.ts',
+        'src/**/*.test.tsx',
+        'src/**/*.spec.tsx',
+        'src/tests/**',
+        'src/pages/**',
+        'src/app/**',
+      ],
+    },
     environment: 'happy-dom',
     onConsoleLog: (log) => {
       // Suppress specific React warnings
