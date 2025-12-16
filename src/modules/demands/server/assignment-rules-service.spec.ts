@@ -11,35 +11,37 @@ const createParsedRule = (pattern: string, result: string) => ({
   search_pattern: pattern,
 });
 
-const createEligibilityData = (overrides: Partial<DetailedEligibilityStatus> = {}): DetailedEligibilityStatus => ({
-  basedOnIris: false,
-  city: 'Paris',
-  closestNetwork: null,
-  closestNetworkDisplayDistance: null,
-  closestNetworkDistance: null,
-  eligibleDistance: null,
-  futurNetwork: null,
-  futurNetworkDisplayDistance: null,
-  futurNetworkDistance: null,
-  gestionnaires: [],
-  id_fcu: null,
-  inPDP: false,
-  inZDP: false,
-  isEligible: false,
-  isEligibleRdc: false,
-  nearestNetwork: null,
-  nearestNetworkDistance: null,
-  networkLocalization: null,
-  reseaux: [],
-  type: 'reseau_existant_loin',
-  ...overrides,
-});
+const createEligibilityData = (overrides: Partial<DetailedEligibilityStatus> = {}): DetailedEligibilityStatus =>
+  ({
+    commune: { insee_com: '75001', insee_dep: '75', insee_reg: '11', nom: 'Paris' },
+    communes: [],
+    departement: { insee_dep: '75', nom: 'Paris' },
+    distance: 100,
+    eligible: false,
+    epci: null,
+    ept: null,
+    id_fcu: 7501,
+    id_sncu: '',
+    nom: '',
+    pdp: null,
+    region: { insee_reg: '11', nom: 'Île-de-France' },
+    reseauDeChaleur: null,
+    reseauDeChaleurSansTrace: null,
+    reseauEnConstruction: null,
+    tags: [],
+    type: 'reseau_existant_loin',
+    zoneEnConstruction: null,
+    ...overrides,
+  }) as DetailedEligibilityStatus;
+
+const createEligibilityDataForParis = (overrides: Partial<DetailedEligibilityStatus> = {}) =>
+  createEligibilityData({ commune: { insee_com: '75001', insee_dep: '75', insee_reg: '11', nom: 'Paris' }, ...overrides });
 
 describe('applyParsedRulesToEligibilityData()', () => {
   describe('tags', () => {
     it('applique un tag quand la règle correspond', () => {
-      const rules = [createParsedRule('city:"Paris"', 'tag:"TagParis"')];
-      const data = createEligibilityData({ city: 'Paris' });
+      const rules = [createParsedRule('commune.nom:"Paris"', 'tag:"TagParis"')];
+      const data = createEligibilityDataForParis();
 
       const result = applyParsedRulesToEligibilityData(rules, data);
 
@@ -47,8 +49,8 @@ describe('applyParsedRulesToEligibilityData()', () => {
     });
 
     it("n'applique pas de tag quand la règle ne correspond pas", () => {
-      const rules = [createParsedRule('city:"Lyon"', 'tag:"TagLyon"')];
-      const data = createEligibilityData({ city: 'Paris' });
+      const rules = [createParsedRule('commune.nom:"Lyon"', 'tag:"TagLyon"')];
+      const data = createEligibilityDataForParis();
 
       const result = applyParsedRulesToEligibilityData(rules, data);
 
@@ -56,8 +58,8 @@ describe('applyParsedRulesToEligibilityData()', () => {
     });
 
     it('applique plusieurs tags de plusieurs règles', () => {
-      const rules = [createParsedRule('city:"Paris"', 'tag:"Tag1"'), createParsedRule('city:"Paris"', 'tag:"Tag2"')];
-      const data = createEligibilityData({ city: 'Paris' });
+      const rules = [createParsedRule('commune.nom:"Paris"', 'tag:"Tag1"'), createParsedRule('commune.nom:"Paris"', 'tag:"Tag2"')];
+      const data = createEligibilityDataForParis();
 
       const result = applyParsedRulesToEligibilityData(rules, data);
 
@@ -66,8 +68,8 @@ describe('applyParsedRulesToEligibilityData()', () => {
     });
 
     it('déduplique les tags', () => {
-      const rules = [createParsedRule('city:"Paris"', 'tag:"SameTag"'), createParsedRule('isEligible:"true"', 'tag:"SameTag"')];
-      const data = createEligibilityData({ city: 'Paris', isEligible: true });
+      const rules = [createParsedRule('commune.nom:"Paris"', 'tag:"SameTag"'), createParsedRule('eligible:"true"', 'tag:"SameTag"')];
+      const data = createEligibilityDataForParis({ eligible: true });
 
       const result = applyParsedRulesToEligibilityData(rules, data);
 
@@ -75,8 +77,8 @@ describe('applyParsedRulesToEligibilityData()', () => {
     });
 
     it("applique plusieurs tags d'une même règle", () => {
-      const rules = [createParsedRule('city:"Paris"', 'tag:"Tag1", tag:"Tag2"')];
-      const data = createEligibilityData({ city: 'Paris' });
+      const rules = [createParsedRule('commune.nom:"Paris"', 'tag:"Tag1", tag:"Tag2"')];
+      const data = createEligibilityDataForParis();
 
       const result = applyParsedRulesToEligibilityData(rules, data);
 
@@ -87,8 +89,8 @@ describe('applyParsedRulesToEligibilityData()', () => {
 
   describe('assignment (affectation)', () => {
     it('applique une affectation quand la règle correspond', () => {
-      const rules = [createParsedRule('city:"Paris"', 'affecte:"GestionnaireA"')];
-      const data = createEligibilityData({ city: 'Paris' });
+      const rules = [createParsedRule('commune.nom:"Paris"', 'affecte:"GestionnaireA"')];
+      const data = createEligibilityDataForParis();
 
       const result = applyParsedRulesToEligibilityData(rules, data);
 
@@ -96,8 +98,8 @@ describe('applyParsedRulesToEligibilityData()', () => {
     });
 
     it("n'applique pas d'affectation quand la règle ne correspond pas", () => {
-      const rules = [createParsedRule('city:"Lyon"', 'affecte:"GestionnaireB"')];
-      const data = createEligibilityData({ city: 'Paris' });
+      const rules = [createParsedRule('commune.nom:"Lyon"', 'affecte:"GestionnaireB"')];
+      const data = createEligibilityDataForParis();
 
       const result = applyParsedRulesToEligibilityData(rules, data);
 
@@ -105,8 +107,11 @@ describe('applyParsedRulesToEligibilityData()', () => {
     });
 
     it("prend la première affectation trouvée (pas d'écrasement)", () => {
-      const rules = [createParsedRule('city:"Paris"', 'affecte:"Premier"'), createParsedRule('city:"Paris"', 'affecte:"Second"')];
-      const data = createEligibilityData({ city: 'Paris' });
+      const rules = [
+        createParsedRule('commune.nom:"Paris"', 'affecte:"Premier"'),
+        createParsedRule('commune.nom:"Paris"', 'affecte:"Second"'),
+      ];
+      const data = createEligibilityDataForParis();
 
       const result = applyParsedRulesToEligibilityData(rules, data);
 
@@ -116,8 +121,8 @@ describe('applyParsedRulesToEligibilityData()', () => {
 
   describe('combinaison tags + affectation', () => {
     it('applique tags et affectation de la même règle', () => {
-      const rules = [createParsedRule('city:"Paris"', 'tag:"TagParis", affecte:"GestionnaireParis"')];
-      const data = createEligibilityData({ city: 'Paris' });
+      const rules = [createParsedRule('commune.nom:"Paris"', 'tag:"TagParis", affecte:"GestionnaireParis"')];
+      const data = createEligibilityDataForParis();
 
       const result = applyParsedRulesToEligibilityData(rules, data);
 
@@ -127,10 +132,10 @@ describe('applyParsedRulesToEligibilityData()', () => {
 
     it('accumule les tags mais garde la première affectation', () => {
       const rules = [
-        createParsedRule('city:"Paris"', 'tag:"Tag1", affecte:"Premier"'),
-        createParsedRule('isEligible:"true"', 'tag:"Tag2", affecte:"Second"'),
+        createParsedRule('commune.nom:"Paris"', 'tag:"Tag1", affecte:"Premier"'),
+        createParsedRule('eligible:"true"', 'tag:"Tag2", affecte:"Second"'),
       ];
-      const data = createEligibilityData({ city: 'Paris', isEligible: true });
+      const data = createEligibilityDataForParis({ eligible: true });
 
       const result = applyParsedRulesToEligibilityData(rules, data);
 
@@ -142,35 +147,35 @@ describe('applyParsedRulesToEligibilityData()', () => {
 
   describe('expressions complexes', () => {
     it('évalue correctement les expressions avec AND (&&)', () => {
-      const rules = [createParsedRule('city:"Paris" && isEligible:"true"', 'tag:"ParisEligible"')];
+      const rules = [createParsedRule('commune.nom:"Paris" && eligible:"true"', 'tag:"ParisEligible"')];
 
-      const dataMatch = createEligibilityData({ city: 'Paris', isEligible: true });
+      const dataMatch = createEligibilityDataForParis({ eligible: true });
       expect(applyParsedRulesToEligibilityData(rules, dataMatch).tags).toEqual(['ParisEligible']);
 
-      const dataNoMatch = createEligibilityData({ city: 'Paris', isEligible: false });
+      const dataNoMatch = createEligibilityDataForParis({ eligible: false });
       expect(applyParsedRulesToEligibilityData(rules, dataNoMatch).tags).toEqual([]);
     });
 
     it('évalue correctement les expressions avec OR (||)', () => {
-      const rules = [createParsedRule('city:"Paris" || city:"Lyon"', 'tag:"GrandeVille"')];
+      const rules = [createParsedRule('commune.nom:"Paris" || commune.nom:"Lyon"', 'tag:"GrandeVille"')];
 
-      const dataParis = createEligibilityData({ city: 'Paris' });
+      const dataParis = createEligibilityDataForParis();
       expect(applyParsedRulesToEligibilityData(rules, dataParis).tags).toEqual(['GrandeVille']);
 
-      const dataLyon = createEligibilityData({ city: 'Lyon' });
+      const dataLyon = createEligibilityDataForParis();
       expect(applyParsedRulesToEligibilityData(rules, dataLyon).tags).toEqual(['GrandeVille']);
 
-      const dataMarseille = createEligibilityData({ city: 'Marseille' });
+      const dataMarseille = createEligibilityData({ commune: { insee_com: '13001', insee_dep: '13', insee_reg: '93', nom: 'Marseille' } });
       expect(applyParsedRulesToEligibilityData(rules, dataMarseille).tags).toEqual([]);
     });
 
     it('évalue correctement les expressions avec NOT (!)', () => {
-      const rules = [createParsedRule('!city:"Paris"', 'tag:"HorsParis"')];
+      const rules = [createParsedRule('!commune.nom:"Paris"', 'tag:"HorsParis"')];
 
-      const dataParis = createEligibilityData({ city: 'Paris' });
+      const dataParis = createEligibilityDataForParis();
       expect(applyParsedRulesToEligibilityData(rules, dataParis).tags).toEqual([]);
 
-      const dataLyon = createEligibilityData({ city: 'Lyon' });
+      const dataLyon = createEligibilityData({ commune: { insee_com: '69001', insee_dep: '69', insee_reg: '84', nom: 'Lyon' } });
       expect(applyParsedRulesToEligibilityData(rules, dataLyon).tags).toEqual(['HorsParis']);
     });
   });
