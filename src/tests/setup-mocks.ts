@@ -1,4 +1,6 @@
 // Import React after mocks to ensure they're available
+import '@testing-library/jest-dom/vitest';
+import { cleanup } from '@testing-library/react';
 import React from 'react';
 import { afterAll, afterEach, vi } from 'vitest';
 
@@ -247,8 +249,9 @@ Object.defineProperty(window.HTMLIFrameElement.prototype, 'src', {
 // Mock window.open and other window methods
 global.open = vi.fn();
 
-// Restore console methods after tests
+// Clean up after each test
 afterEach(() => {
+  cleanup(); // Clean up React Testing Library DOM between tests
   vi.clearAllMocks();
 });
 
