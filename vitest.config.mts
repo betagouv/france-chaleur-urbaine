@@ -8,7 +8,6 @@ export default defineConfig({
   assetsInclude: ['**/*.md', '**/*.svgr', '**/*.mdx'],
   plugins: [tsconfigPaths(), react()],
   test: {
-    fileParallelism: false, // Disable parallel file execution to avoid database conflicts between integration tests
     alias: {
       '@': resolve(__dirname, 'src'),
       '@/client-config': resolve(__dirname, 'src/client-config.ts'),
@@ -17,10 +16,6 @@ export default defineConfig({
       '@root': resolve(__dirname, '.'),
     },
     coverage: {
-      provider: 'v8',
-      reporter: ['text', 'html', 'lcov'],
-      reportsDirectory: './coverage',
-      include: ['src/**/*.ts', 'src/**/*.tsx'],
       exclude: [
         'src/**/*.d.ts',
         'src/**/*.test.ts',
@@ -31,8 +26,13 @@ export default defineConfig({
         'src/pages/**',
         'src/app/**',
       ],
+      include: ['src/**/*.ts', 'src/**/*.tsx'],
+      provider: 'v8',
+      reporter: ['text', 'html', 'lcov'],
+      reportsDirectory: './coverage',
     },
     environment: 'happy-dom',
+    fileParallelism: false, // Disable parallel file execution to avoid database conflicts between integration tests
     onConsoleLog: (log) => {
       // Suppress specific React warnings
       if (log.includes('React does not recognize')) {
