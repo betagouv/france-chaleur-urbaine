@@ -39,7 +39,13 @@ export type ButtonCopyProps = {
   showOverlay?: boolean;
 };
 
-const ButtonCopy: React.FC<ButtonCopyProps> = ({ text, className, title = 'Copier', onSuccess, onClick, children, showOverlay }) => {
+/**
+ * Bouton permettant de copier du texte dans le presse-papiers.
+ * Peut être utilisé de deux manières :
+ * - Sans children : affiche une icône de copie cliquable
+ * - Avec children : affiche le contenu fourni et le rend cliquable (avec overlay optionnel)
+ */
+function ButtonCopy({ text, className, title = 'Copier', onSuccess, onClick, children, showOverlay }: ButtonCopyProps) {
   const { copied, copy } = useCopy();
 
   const handleCopy = useCallback(() => {
@@ -69,6 +75,6 @@ const ButtonCopy: React.FC<ButtonCopyProps> = ({ text, className, title = 'Copie
       <Icon name={copied ? 'ri-check-line' : 'ri-file-copy-line'} color={copied ? 'green' : undefined} />
     </button>
   );
-};
+}
 
 export default ButtonCopy;
