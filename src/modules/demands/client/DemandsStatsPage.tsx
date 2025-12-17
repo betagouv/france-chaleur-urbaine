@@ -428,13 +428,8 @@ const CopyEmailsButton = ({ emails }: { emails: string[] }) => {
         type="button"
         className="inline-flex items-center gap-1 text-sm"
         onClick={() => {
-          void copy(emails.join(', ')).then((success) => {
-            if (success) {
-              notify('success', 'Adresses copiées !');
-            } else {
-              notify('error', `Désolé, les adresses n'ont pas pu être copiées, les voici ${emails.join(', ')}`);
-            }
-          });
+          copy(emails.join(', '));
+          notify('success', 'Adresses copiées !');
         }}
         iconId={copied ? 'ri-check-line' : 'fr-icon-clipboard-line'}
         priority="tertiary no outline"

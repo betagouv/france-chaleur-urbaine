@@ -239,7 +239,7 @@ function DemandEmailForm(props: Props) {
                                   <strong
                                     onClick={() => {
                                       setEmailContentValue('body', `${emailContent.body} ${templateKey}`);
-                                      void copyToClipboard(templateKey);
+                                      copyToClipboard(templateKey);
                                     }}
                                     className="cursor-pointer hover:bg-gray-200 rounded-xs p-1"
                                   >

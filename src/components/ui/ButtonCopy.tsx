@@ -1,13 +1,11 @@
 import { type ReactNode, useCallback, useState } from 'react';
 
 import Icon from '@/components/ui/Icon';
+import { notify } from '@/modules/notification';
 import cx from '@/utils/cx';
 
-export const copyToClipboard = (text: string): Promise<boolean> => {
-  if (typeof navigator === 'undefined' || !navigator.clipboard) {
-    return Promise.resolve(false);
-  }
-  return navigator.clipboard.writeText(text).then(() => true);
+export const copyToClipboard = (text: string): void => {
+  void navigator.clipboard.writeText(text).catch(() => notify('error', 'Erreur lors de la copie'));
 };
 
 export const useCopy = (timeout = 2000) => {
@@ -15,13 +13,15 @@ export const useCopy = (timeout = 2000) => {
 
   const copy = useCallback(
     (text: string) => {
-      return copyToClipboard(text).then((success) => {
-        if (success) {
+      void navigator.clipboard
+        .writeText(text)
+        .then(() => {
           setCopied(true);
           setTimeout(() => setCopied(false), timeout);
-        }
-        return success;
-      });
+        })
+        .catch(() => {
+          notify('error', 'Erreur lors de la copie');
+        });
     },
     [timeout]
   );
@@ -50,11 +50,8 @@ function ButtonCopy({ text, className, title = 'Copier', onSuccess, onClick, chi
 
   const handleCopy = useCallback(() => {
     onClick?.();
-    void copy(text).then((success) => {
-      if (success) {
-        onSuccess?.();
-      }
-    });
+    copy(text);
+    onSuccess?.();
   }, [text, onSuccess, onClick, copy]);
 
   if (children) {
