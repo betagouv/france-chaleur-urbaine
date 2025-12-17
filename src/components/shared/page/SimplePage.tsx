@@ -662,6 +662,12 @@ const PageFooter = () => (
       },
       {
         linkProps: {
+          href: '/donnees',
+        },
+        text: 'Données et sources',
+      },
+      {
+        linkProps: {
           href: '/politique-de-confidentialite',
         },
         text: 'Données personnelles',
