@@ -29,12 +29,18 @@ export default function DemandsStatsPage() {
   const utils = trpc.useUtils();
   const { data: tagsStats, isLoading } = trpc.demands.admin.getTagsStats.useQuery();
   const { mutateAsync: createReminder } = trpc.tags.admin.createReminder.useMutation({
+    onError: (error) => {
+      notify('error', `Erreur lors de l'enregistrement de la relance : ${error.message}`);
+    },
     onSuccess: () => {
       void utils.demands.admin.getTagsStats.invalidate();
       notify('success', 'Date de relance enregistrée');
     },
   });
   const { mutateAsync: deleteReminder } = trpc.tags.admin.deleteReminder.useMutation({
+    onError: (error) => {
+      notify('error', `Erreur lors de la suppression de la relance : ${error.message}`);
+    },
     onSuccess: () => {
       void utils.demands.admin.getTagsStats.invalidate();
       notify('success', 'Date de relance supprimée');
@@ -425,6 +431,8 @@ const CopyEmailsButton = ({ emails }: { emails: string[] }) => {
           void copy(emails.join(', ')).then((success) => {
             if (success) {
               notify('success', 'Adresses copiées !');
+            } else {
+              notify('error', `Désolé, les adresses n'ont pas pu être copiées, les voici ${emails.join(', ')}`);
             }
           });
         }}
