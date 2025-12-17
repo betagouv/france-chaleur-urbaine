@@ -1,85 +1,104 @@
+import type { User } from 'next-auth';
 import { describe, expect, it } from 'vitest';
 
 import { createTestCaller, testUsers } from '@/tests/trpc-helpers';
 
+type PermissionTestCase = {
+  label: string;
+  user: Partial<User> | null;
+  expectedCode: 'FORBIDDEN' | 'success' | 'BAD_REQUEST';
+};
+
+/**
+ * Helper pour tester les permissions d'une route tRPC.
+ * Centralise la logique de test pour éviter la duplication.
+ */
+const testPermission = async (
+  caller: ReturnType<typeof createTestCaller>,
+  routeFn: () => Promise<unknown>,
+  expectedCode: PermissionTestCase['expectedCode']
+) => {
+  if (expectedCode === 'FORBIDDEN') {
+    await expect(routeFn()).rejects.toMatchObject({
+      code: 'FORBIDDEN',
+      message: 'Permissions invalides',
+    });
+  } else if (expectedCode === 'BAD_REQUEST') {
+    await expect(routeFn()).rejects.toMatchObject({ code: 'BAD_REQUEST' });
+  } else {
+    // La route passe les permissions, on vérifie juste que ça ne throw pas FORBIDDEN
+    await expect(routeFn()).resolves.not.toBeUndefined();
+  }
+};
+
 describe('demandsRouter', () => {
   describe('demands.admin', () => {
     describe('list', () => {
-      it('refuse les utilisateurs non authentifiés', async () => {
-        const caller = createTestCaller(null);
-        await expect(caller.demands.admin.list()).rejects.toMatchObject({ code: 'FORBIDDEN' });
-      });
+      const permissionTests: PermissionTestCase[] = [
+        { expectedCode: 'FORBIDDEN', label: 'refuse utilisateur non authentifié', user: null },
+        { expectedCode: 'FORBIDDEN', label: 'refuse particulier', user: testUsers.particulier },
+        { expectedCode: 'FORBIDDEN', label: 'refuse professionnel', user: testUsers.professionnel },
+        { expectedCode: 'FORBIDDEN', label: 'refuse gestionnaire', user: testUsers.gestionnaire },
+        { expectedCode: 'success', label: 'autorise admin', user: testUsers.admin },
+      ];
 
-      it('refuse les particuliers', async () => {
-        const caller = createTestCaller(testUsers.particulier);
-        await expect(caller.demands.admin.list()).rejects.toMatchObject({ code: 'FORBIDDEN' });
-      });
-
-      it('refuse les gestionnaires', async () => {
-        const caller = createTestCaller(testUsers.gestionnaire);
-        await expect(caller.demands.admin.list()).rejects.toMatchObject({ code: 'FORBIDDEN' });
-      });
-
-      it('autorise les administrateurs', async () => {
-        const caller = createTestCaller(testUsers.admin);
-        await expect(caller.demands.admin.list()).resolves.toBeDefined();
+      it.each(permissionTests)('$label', async ({ user, expectedCode }) => {
+        const caller = createTestCaller(user);
+        await testPermission(caller, () => caller.demands.admin.list(), expectedCode);
       });
     });
 
     describe('getTagsStats', () => {
-      it('refuse les non-admins', async () => {
-        const caller = createTestCaller(testUsers.gestionnaire);
-        await expect(caller.demands.admin.getTagsStats()).rejects.toMatchObject({ code: 'FORBIDDEN' });
-      });
+      const permissionTests: PermissionTestCase[] = [
+        { expectedCode: 'FORBIDDEN', label: 'refuse utilisateur non authentifié', user: null },
+        { expectedCode: 'FORBIDDEN', label: 'refuse gestionnaire', user: testUsers.gestionnaire },
+        { expectedCode: 'success', label: 'autorise admin', user: testUsers.admin },
+      ];
 
-      it('autorise les administrateurs', async () => {
-        const caller = createTestCaller(testUsers.admin);
-        await expect(caller.demands.admin.getTagsStats()).resolves.toBeDefined();
+      it.each(permissionTests)('$label', async ({ user, expectedCode }) => {
+        const caller = createTestCaller(user);
+        await testPermission(caller, () => caller.demands.admin.getTagsStats(), expectedCode);
       });
     });
   });
 
   describe('demands.gestionnaire', () => {
     describe('list', () => {
-      it('refuse les utilisateurs non authentifiés', async () => {
-        const caller = createTestCaller(null);
-        await expect(caller.demands.gestionnaire.list()).rejects.toMatchObject({ code: 'FORBIDDEN' });
-      });
+      // Permissions: ['gestionnaire', 'demo'] - admin n'a pas accès
+      const permissionTests: PermissionTestCase[] = [
+        { expectedCode: 'FORBIDDEN', label: 'refuse utilisateur non authentifié', user: null },
+        { expectedCode: 'FORBIDDEN', label: 'refuse particulier', user: testUsers.particulier },
+        { expectedCode: 'FORBIDDEN', label: 'refuse professionnel', user: testUsers.professionnel },
+        { expectedCode: 'FORBIDDEN', label: 'refuse admin', user: testUsers.admin },
+        { expectedCode: 'success', label: 'autorise gestionnaire', user: testUsers.gestionnaire },
+      ];
 
-      it('refuse les particuliers', async () => {
-        const caller = createTestCaller(testUsers.particulier);
-        await expect(caller.demands.gestionnaire.list()).rejects.toMatchObject({ code: 'FORBIDDEN' });
-      });
-
-      it('refuse les professionnels', async () => {
-        const caller = createTestCaller(testUsers.professionnel);
-        await expect(caller.demands.gestionnaire.list()).rejects.toMatchObject({ code: 'FORBIDDEN' });
-      });
-
-      it('autorise les gestionnaires', async () => {
-        const caller = createTestCaller(testUsers.gestionnaire);
-        await expect(caller.demands.gestionnaire.list()).resolves.toBeDefined();
+      it.each(permissionTests)('$label', async ({ user, expectedCode }) => {
+        const caller = createTestCaller(user);
+        await testPermission(caller, () => caller.demands.gestionnaire.list(), expectedCode);
       });
     });
 
     describe('listEmails', () => {
-      it('refuse les particuliers', async () => {
-        const caller = createTestCaller(testUsers.particulier);
-        await expect(caller.demands.gestionnaire.listEmails({ demand_id: 'test-id' })).rejects.toMatchObject({
-          code: 'FORBIDDEN',
-        });
+      // Permissions: ['gestionnaire', 'admin']
+      const permissionTests: PermissionTestCase[] = [
+        { expectedCode: 'FORBIDDEN', label: 'refuse utilisateur non authentifié', user: null },
+        { expectedCode: 'FORBIDDEN', label: 'refuse particulier', user: testUsers.particulier },
+        { expectedCode: 'FORBIDDEN', label: 'refuse professionnel', user: testUsers.professionnel },
+      ];
+
+      it.each(permissionTests)('$label', async ({ user, expectedCode }) => {
+        const caller = createTestCaller(user);
+        await testPermission(caller, () => caller.demands.gestionnaire.listEmails({ demand_id: 'test-id' }), expectedCode);
       });
 
-      it('autorise les gestionnaires', async () => {
-        const caller = createTestCaller(testUsers.gestionnaire);
-        // Will fail on business logic (demand not found) but passes permission check
-        await expect(caller.demands.gestionnaire.listEmails({ demand_id: 'test-id' })).rejects.not.toMatchObject({
-          code: 'FORBIDDEN',
-        });
-      });
-
-      it('autorise les administrateurs', async () => {
-        const caller = createTestCaller(testUsers.admin);
+      // Pour gestionnaire/admin, la permission passe mais échoue sur logique métier (demande inexistante)
+      it.each([
+        { label: 'gestionnaire', user: testUsers.gestionnaire },
+        { label: 'admin', user: testUsers.admin },
+      ])('autorise $label (passe les permissions)', async ({ user }) => {
+        const caller = createTestCaller(user);
+        // L'erreur ne doit pas être FORBIDDEN - la permission passe, l'erreur est liée à la logique métier
         await expect(caller.demands.gestionnaire.listEmails({ demand_id: 'test-id' })).rejects.not.toMatchObject({
           code: 'FORBIDDEN',
         });
@@ -89,53 +108,38 @@ describe('demandsRouter', () => {
 
   describe('demands.user', () => {
     describe('list', () => {
-      it('refuse les utilisateurs non authentifiés', async () => {
-        const caller = createTestCaller(null);
-        await expect(caller.demands.user.list()).rejects.toMatchObject({ code: 'FORBIDDEN' });
-      });
+      const permissionTests: PermissionTestCase[] = [
+        { expectedCode: 'FORBIDDEN', label: 'refuse utilisateur non authentifié', user: null },
+        { expectedCode: 'success', label: 'autorise particulier', user: testUsers.particulier },
+        { expectedCode: 'success', label: 'autorise professionnel', user: testUsers.professionnel },
+        { expectedCode: 'success', label: 'autorise gestionnaire', user: testUsers.gestionnaire },
+        { expectedCode: 'success', label: 'autorise admin', user: testUsers.admin },
+      ];
 
-      it('autorise les particuliers', async () => {
-        const caller = createTestCaller(testUsers.particulier);
-        await expect(caller.demands.user.list()).resolves.toBeDefined();
-      });
-
-      it('autorise les professionnels', async () => {
-        const caller = createTestCaller(testUsers.professionnel);
-        await expect(caller.demands.user.list()).resolves.toBeDefined();
-      });
-
-      it('autorise les gestionnaires', async () => {
-        const caller = createTestCaller(testUsers.gestionnaire);
-        await expect(caller.demands.user.list()).resolves.toBeDefined();
-      });
-
-      it('autorise les administrateurs', async () => {
-        const caller = createTestCaller(testUsers.admin);
-        await expect(caller.demands.user.list()).resolves.toBeDefined();
+      it.each(permissionTests)('$label', async ({ user, expectedCode }) => {
+        const caller = createTestCaller(user);
+        await testPermission(caller, () => caller.demands.user.list(), expectedCode);
       });
     });
 
     describe('createBatch', () => {
-      it('refuse les utilisateurs non authentifiés', async () => {
-        const caller = createTestCaller(null);
-        await expect(caller.demands.user.createBatch({ addresses: [], termOfUse: true })).rejects.toMatchObject({
-          code: 'FORBIDDEN',
-        });
-      });
+      const permissionTests: PermissionTestCase[] = [
+        { expectedCode: 'FORBIDDEN', label: 'refuse utilisateur non authentifié', user: null },
+        // BAD_REQUEST car addresses vide est invalide, mais la permission passe
+        { expectedCode: 'BAD_REQUEST', label: 'autorise particulier', user: testUsers.particulier },
+        { expectedCode: 'BAD_REQUEST', label: 'autorise professionnel', user: testUsers.professionnel },
+      ];
 
-      it('autorise les particuliers', async () => {
-        const caller = createTestCaller(testUsers.particulier);
-        // Validation error (not permission error) proves permissions passed
-        await expect(caller.demands.user.createBatch({ addresses: [], termOfUse: true })).rejects.toMatchObject({
-          code: 'BAD_REQUEST',
-        });
+      it.each(permissionTests)('$label', async ({ user, expectedCode }) => {
+        const caller = createTestCaller(user);
+        await testPermission(caller, () => caller.demands.user.createBatch({ addresses: [], termOfUse: true }), expectedCode);
       });
     });
 
     describe('create (public)', () => {
-      it('autorise les utilisateurs non authentifiés', async () => {
+      it('autorise utilisateur non authentifié', async () => {
         const caller = createTestCaller(null);
-        // Will fail on validation but not on permissions
+        // La route est publique, l'erreur ne doit pas être FORBIDDEN
         await expect(caller.demands.user.create({} as any)).rejects.not.toMatchObject({ code: 'FORBIDDEN' });
       });
     });

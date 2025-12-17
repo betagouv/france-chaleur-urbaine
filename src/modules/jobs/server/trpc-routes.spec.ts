@@ -1,54 +1,39 @@
+import type { User } from 'next-auth';
 import { describe, expect, it } from 'vitest';
 
-import { createTestCaller, TRPCError, testUsers } from '@/tests/trpc-helpers';
+import { createTestCaller, testUsers } from '@/tests/trpc-helpers';
+
+type PermissionTestCase = {
+  label: string;
+  user: Partial<User> | null;
+  expectedCode: 'FORBIDDEN' | 'success';
+};
 
 describe('jobsRouter', () => {
   describe('jobs.list', () => {
-    describe('Permissions', () => {
-      it('refuse les utilisateurs non authentifiés', async () => {
-        const caller = createTestCaller(null);
+    const permissionTests: PermissionTestCase[] = [
+      { expectedCode: 'FORBIDDEN', label: 'refuse utilisateur non authentifié', user: null },
+      { expectedCode: 'FORBIDDEN', label: 'refuse particulier', user: testUsers.particulier },
+      { expectedCode: 'FORBIDDEN', label: 'refuse professionnel', user: testUsers.professionnel },
+      { expectedCode: 'FORBIDDEN', label: 'refuse gestionnaire', user: testUsers.gestionnaire },
+      { expectedCode: 'success', label: 'autorise admin', user: testUsers.admin },
+    ];
 
-        await expect(caller.jobs.list({})).rejects.toThrow(TRPCError);
-        await expect(caller.jobs.list({})).rejects.toMatchObject({
-          code: 'FORBIDDEN',
-        });
-      });
+    it.each(permissionTests)('$label', async ({ user, expectedCode }) => {
+      const caller = createTestCaller(user);
 
-      it('refuse les utilisateurs particuliers', async () => {
-        const caller = createTestCaller(testUsers.particulier);
-
-        await expect(caller.jobs.list({})).rejects.toThrow(TRPCError);
+      if (expectedCode === 'FORBIDDEN') {
         await expect(caller.jobs.list({})).rejects.toMatchObject({
           code: 'FORBIDDEN',
           message: 'Permissions invalides',
         });
-      });
-
-      it('refuse les utilisateurs professionnels', async () => {
-        const caller = createTestCaller(testUsers.professionnel);
-
-        await expect(caller.jobs.list({})).rejects.toThrow(TRPCError);
-        await expect(caller.jobs.list({})).rejects.toMatchObject({
-          code: 'FORBIDDEN',
+      } else {
+        const result = await caller.jobs.list({});
+        expect(result).toMatchObject({
+          jobs: expect.any(Array),
+          pagination: expect.objectContaining({ limit: 50, offset: 0 }),
         });
-      });
-
-      it('refuse les gestionnaires', async () => {
-        const caller = createTestCaller(testUsers.gestionnaire);
-
-        await expect(caller.jobs.list({})).rejects.toThrow(TRPCError);
-        await expect(caller.jobs.list({})).rejects.toMatchObject({
-          code: 'FORBIDDEN',
-        });
-      });
-
-      it('autorise les administrateurs', async () => {
-        const caller = createTestCaller(testUsers.admin);
-
-        // Ne doit pas throw - l'appel passe la vérification des permissions
-        // La query peut échouer pour d'autres raisons (db) mais pas pour les permissions
-        await expect(caller.jobs.list({})).resolves.toBeDefined();
-      });
+      }
     });
   });
 });
