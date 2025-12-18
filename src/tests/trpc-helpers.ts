@@ -6,6 +6,14 @@ import type { Context } from '@/modules/trpc/server/context';
 
 export { TRPCError };
 
+/**
+ * Expected error object for forbidden access in tests
+ */
+export const forbiddenError = {
+  code: 'FORBIDDEN',
+  message: 'Permissions invalides',
+};
+
 import { appRouter } from '@/modules/trpc/trpc.config';
 import { parentLogger } from '@/server/helpers/logger';
 import type { UserRole } from '@/types/enum/UserRole';
