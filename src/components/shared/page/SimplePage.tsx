@@ -5,7 +5,7 @@ import UnstyledMainNavigation, { type MainNavigationProps } from '@codegouvfr/re
 import { SkipLinks } from '@codegouvfr/react-dsfr/SkipLinks';
 import { useRouter } from 'next/router';
 import type React from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import styled, { css } from 'styled-components';
 
 import { clientConfig } from '@/client-config';
@@ -470,15 +470,18 @@ const PageHeader = (props: PageHeaderProps) => {
 
   const isFullScreenMode = props.mode === 'public-fullscreen' || props.mode === 'authenticated';
 
-  const navigationMenuItems =
-    props.mode === 'authenticated'
-      ? [
-          ...authenticatedNavigationMenu,
-          ...(hasRole('admin') ? adminNavigationMenu : []),
-          ...(hasRole('gestionnaire') || hasRole('demo') ? gestionnaireNavigationMenu : []),
-          ...(hasRole('particulier') || hasRole('professionnel') ? professionnelNavigationMenu : []),
-        ]
-      : publicNavigationMenu;
+  // Compute navigation menu based on user role (useMemo to avoid infinite loops with hasRole function reference)
+  const navigationMenuItems = useMemo<MainNavigationProps.Item[]>(() => {
+    if (props.mode === 'authenticated') {
+      return [
+        ...authenticatedNavigationMenu,
+        ...(hasRole('admin') ? adminNavigationMenu : []),
+        ...(hasRole('gestionnaire') || hasRole('demo') ? gestionnaireNavigationMenu : []),
+        ...(hasRole('particulier') || hasRole('professionnel') ? professionnelNavigationMenu : []),
+      ];
+    }
+    return publicNavigationMenu;
+  }, [props.mode, session?.user?.role]);
 
   // Use useRouterReady hook to ensure stable path during hydration
   // Always use empty string on server to prevent hydration mismatch

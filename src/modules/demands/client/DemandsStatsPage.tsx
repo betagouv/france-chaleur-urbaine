@@ -6,6 +6,7 @@ import { type ReactNode, useMemo } from 'react';
 
 import SimplePage from '@/components/shared/page/SimplePage';
 import Button from '@/components/ui/Button';
+import { useCopy } from '@/components/ui/ButtonCopy';
 import CallOut from '@/components/ui/CallOut';
 import Heading from '@/components/ui/Heading';
 import Icon from '@/components/ui/Icon';
@@ -28,12 +29,18 @@ export default function DemandsStatsPage() {
   const utils = trpc.useUtils();
   const { data: tagsStats, isLoading } = trpc.demands.admin.getTagsStats.useQuery();
   const { mutateAsync: createReminder } = trpc.tags.admin.createReminder.useMutation({
+    onError: (error) => {
+      notify('error', `Erreur lors de l'enregistrement de la relance : ${error.message}`);
+    },
     onSuccess: () => {
       void utils.demands.admin.getTagsStats.invalidate();
       notify('success', 'Date de relance enregistrée');
     },
   });
   const { mutateAsync: deleteReminder } = trpc.tags.admin.deleteReminder.useMutation({
+    onError: (error) => {
+      notify('error', `Erreur lors de la suppression de la relance : ${error.message}`);
+    },
     onSuccess: () => {
       void utils.demands.admin.getTagsStats.invalidate();
       notify('success', 'Date de relance supprimée');
@@ -146,20 +153,7 @@ export default function DemandsStatsPage() {
                       );
                     })}
                   </div>
-                  <div>
-                    <Tooltip title="Copier les adresses e-mail dans le presse-papiers">
-                      <Button
-                        type="button"
-                        className="inline-flex items-center gap-1 text-sm"
-                        onClick={() => copyContentToClipboard(users.map((user) => user.email).join(', '))}
-                        iconId="fr-icon-clipboard-line"
-                        priority="tertiary no outline"
-                        size="small"
-                      >
-                        Copier les adresses
-                      </Button>
-                    </Tooltip>
-                  </div>
+                  <CopyEmailsButton emails={users.map((user) => user.email)} />
                 </>
               ) : (
                 <span className="text-gray-400 text-sm">Aucun utilisateur</span>
@@ -425,15 +419,26 @@ const buildDemandFilters = (tagName: string, periodMonths: number | undefined, p
   ];
 };
 
-const copyContentToClipboard = (content: string) => {
-  if (typeof navigator === 'undefined' || !navigator.clipboard) {
-    return;
-  }
+const CopyEmailsButton = ({ emails }: { emails: string[] }) => {
+  const { copied, copy } = useCopy();
 
-  void navigator.clipboard
-    .writeText(content)
-    .then(() => notify('success', 'Adresses copiées !'))
-    .catch(() => {});
+  return (
+    <Tooltip title="Copier les adresses e-mail dans le presse-papiers">
+      <Button
+        type="button"
+        className="inline-flex items-center gap-1 text-sm"
+        onClick={() => {
+          copy(emails.join(', '));
+          notify('success', 'Adresses copiées !');
+        }}
+        iconId={copied ? 'ri-check-line' : 'fr-icon-clipboard-line'}
+        priority="tertiary no outline"
+        size="small"
+      >
+        {copied ? 'Copié !' : 'Copier les adresses'}
+      </Button>
+    </Tooltip>
+  );
 };
 
 const ReminderDateCell = ({

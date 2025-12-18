@@ -5,6 +5,7 @@ import Input from '@/components/form/dsfr/Input';
 import TextArea from '@/components/form/dsfr/TextArea';
 import Alert from '@/components/ui/Alert';
 import Button from '@/components/ui/Button';
+import { copyToClipboard } from '@/components/ui/ButtonCopy';
 import CrudDropdown from '@/components/ui/CrudDropdown';
 import Icon from '@/components/ui/Icon';
 import Tooltip, { TooltipIcon } from '@/components/ui/Tooltip';
@@ -238,7 +239,7 @@ function DemandEmailForm(props: Props) {
                                   <strong
                                     onClick={() => {
                                       setEmailContentValue('body', `${emailContent.body} ${templateKey}`);
-                                      void navigator.clipboard.writeText(templateKey).catch();
+                                      copyToClipboard(templateKey);
                                     }}
                                     className="cursor-pointer hover:bg-gray-200 rounded-xs p-1"
                                   >
