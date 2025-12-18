@@ -1,7 +1,9 @@
-import { httpBatchLink, loggerLink } from '@trpc/client';
+import { httpBatchLink, loggerLink, type TRPCLink } from '@trpc/client';
 import { createTRPCNext } from '@trpc/next';
+import { observable } from '@trpc/server/observable';
 import type { NextPageContext } from 'next';
 import { clientConfig } from '@/client-config';
+import { handleClientError } from '@/modules/notification';
 import type { AppRouter } from '../types';
 
 /**
@@ -18,6 +20,29 @@ export interface SSRContext extends NextPageContext {
    */
   status?: number;
 }
+
+/**
+ * Custom trpc client link to handle errors and show toast notifications in the client.
+ */
+const errorHandlerLink: TRPCLink<AppRouter> = () => {
+  return ({ next, op }) => {
+    return observable((observer) => {
+      const unsubscribe = next(op).subscribe({
+        complete() {
+          observer.complete();
+        },
+        error(err) {
+          handleClientError(err);
+          observer.error(err);
+        },
+        next(value) {
+          observer.next(value);
+        },
+      });
+      return unsubscribe;
+    });
+  };
+};
 
 /**
  * A set of strongly-typed React hooks from your `AppRouter` type signature with `createTRPCNext`.
@@ -55,7 +80,7 @@ const trpc = createTRPCNext<AppRouter>({
       /**
        * @link https://trpc.io/docs/client/links
        */
-      links: [trpcLoggerLink, trpcHttpBatchLink],
+      links: [errorHandlerLink, trpcLoggerLink, trpcHttpBatchLink],
       /**
        * @link https://tanstack.com/query/v5/docs/react/reference/QueryClient
        */

@@ -54,12 +54,7 @@ export const toastErrors = <Func extends (...args: any[]) => void | Promise<void
     try {
       await func(...args);
     } catch (err: any) {
-      console.log('err', err?.data?.zodError);
-      const displayedMessage = customError
-        ? customError(err)
-        : getFirstZodError(err?.data?.zodError?.properties) || err?.message || String(err);
-      notify('error', displayedMessage);
-      Sentry.captureException(err);
+      handleClientError(err, customError);
     }
   };
 };
@@ -68,3 +63,13 @@ const getFirstZodError = (properties?: any): string | undefined => {
   if (!properties || typeof properties !== 'object') return undefined;
   return Object.values<any>(properties)[0]?.errors[0];
 };
+
+/**
+ * Handles client errors and shows a toast notification.
+ */
+export function handleClientError(err: any, customError?: (err: Error) => ReactNode) {
+  const displayedMessage = getFirstZodError(err?.data?.zodError?.properties) || err?.message || String(err);
+  console.error('client error', displayedMessage, err);
+  notify('error', displayedMessage);
+  Sentry.captureException(err);
+}
