@@ -14,6 +14,14 @@ export const forbiddenError = {
   message: 'Permissions invalides',
 };
 
+/**
+ * Expected error object for unauthorized access in tests
+ */
+export const unauthorizedError = {
+  code: 'UNAUTHORIZED',
+  message: 'Authentication required',
+};
+
 import { appRouter } from '@/modules/trpc/trpc.config';
 import { parentLogger } from '@/server/helpers/logger';
 import type { UserRole } from '@/types/enum/UserRole';
