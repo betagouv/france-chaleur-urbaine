@@ -2,6 +2,122 @@
 
 > Testing strategy and practices for france-chaleur-urbaine
 
+## 🔥 tRPC Permission Tests - OBLIGATOIRE
+
+**AVANT d'écrire un test tRPC, lis cette section en entier et suis le template.**
+
+### Template complet à copier
+
+```typescript
+import type { User } from 'next-auth';
+import { describe, expect, it } from 'vitest';
+
+import { uuid } from '@/tests/helpers';
+import { createTestCaller, forbiddenError, testUsers } from '@/tests/trpc-helpers';
+
+type PermissionTestCase = {
+  label: string;
+  user: Partial<User> | null;
+  allowed: boolean;
+};
+
+describe('myRouter', () => {
+  describe('myRoute.action', () => {
+    const permissionTests: PermissionTestCase[] = [
+      { allowed: false, label: 'refuse utilisateur non authentifié', user: null },
+      { allowed: false, label: 'refuse particulier', user: testUsers.particulier },
+      { allowed: false, label: 'refuse professionnel', user: testUsers.professionnel },
+      { allowed: false, label: 'refuse gestionnaire', user: testUsers.gestionnaire },
+      { allowed: true, label: 'autorise admin', user: testUsers.admin },
+    ];
+
+    it.each(permissionTests)('$label', async ({ user, allowed }) => {
+      const caller = createTestCaller(user);
+      const callRoute = () => caller.myRoute.action({ id: uuid(999) });
+
+      if (allowed) {
+        // TOUJOURS toStrictEqual avec l'objet COMPLET attendu
+        await expect(callRoute()).resolves.toStrictEqual({
+          items: [],
+          pagination: {
+            hasNext: false,
+            limit: 50,
+            offset: 0,
+            total: 0,
+          },
+        });
+      } else {
+        // TOUJOURS forbiddenError, JAMAIS l'objet en dur
+        await expect(callRoute).rejects.toMatchObject(forbiddenError);
+      }
+    });
+  });
+});
+```
+
+### Règles NON-NÉGOCIABLES
+
+| Règle | Pourquoi | Exemple correct |
+|-------|----------|-----------------|
+| **Booléen `allowed`** | Cohérence, pas de mix majuscule/minuscule | `allowed: true` pas `expectedCode: 'success'` |
+| **Un seul `callRoute`** | DRY, évite duplication | `const callRoute = () => caller.route()` |
+| **`rejects` = fonction** | Gère les exceptions synchrones | `expect(callRoute).rejects` |
+| **`resolves` = appel** | Retourne la Promise | `expect(callRoute()).resolves` |
+| **`toStrictEqual` pour succès** | Vérifie TOUT, pas juste une partie | Objet complet, pas `expect.any()` |
+| **`forbiddenError` constant** | Réutilisable, maintenable | Import de `trpc-helpers.ts` |
+| **UUID valide** | Évite erreurs DB inattendues | `uuid(999)` pas `'test-id'` |
+| **Pas de `not.toMatchObject`** | Test l'erreur EXACTE attendue | `{ code: 'INTERNAL_SERVER_ERROR' }` |
+| **Pas de params inutilisés** | Code propre | Supprimer `caller` si non utilisé |
+
+### Erreurs fréquentes à NE PAS faire
+
+```typescript
+// ❌ ERREUR 1: Mix majuscule/minuscule pour expectedCode
+expectedCode: 'FORBIDDEN' | 'success'  // NON!
+allowed: boolean                        // OUI!
+
+// ❌ ERREUR 2: Deux appels à la route
+await expect(caller.route()).rejects...
+await expect(caller.route()).resolves...  // NON! Un seul callRoute
+
+// ❌ ERREUR 3: toMatchObject partiel pour succès
+.resolves.toMatchObject({ items: expect.any(Array) })  // NON!
+.resolves.toStrictEqual({ items: [], ... })            // OUI!
+
+// ❌ ERREUR 4: Test négatif inutile
+.rejects.not.toMatchObject({ code: 'FORBIDDEN' })  // NON! Ça teste quoi exactement?
+.rejects.toMatchObject({ code: 'INTERNAL_SERVER_ERROR' })  // OUI!
+
+// ❌ ERREUR 5: String invalide comme ID
+{ demand_id: 'test-id' }   // NON! Cause INTERNAL_SERVER_ERROR
+{ demand_id: uuid(999) }   // OUI!
+
+// ❌ ERREUR 6: Erreur en dur au lieu de constante
+.rejects.toMatchObject({ code: 'FORBIDDEN', message: 'Permissions invalides' })  // NON!
+.rejects.toMatchObject(forbiddenError)  // OUI!
+```
+
+### Checklist avant commit
+
+- [ ] J'ai utilisé `allowed: boolean` (pas de string)
+- [ ] J'ai un seul `callRoute = () => ...` réutilisé
+- [ ] `rejects` utilise la fonction: `expect(callRoute).rejects`
+- [ ] `resolves` appelle la fonction: `expect(callRoute()).resolves`
+- [ ] Succès utilise `toStrictEqual` avec objet COMPLET
+- [ ] Erreurs utilisent `forbiddenError` importé
+- [ ] IDs utilisent `uuid()` helper
+- [ ] Pas de `.not.toMatchObject()` - erreur exacte testée
+- [ ] Pas de paramètres inutilisés dans les helpers
+- [ ] Commentaires à jour avec le code
+
+### Fichiers de référence
+
+- **Helpers**: `src/tests/trpc-helpers.ts` - contient `createTestCaller`, `testUsers`, `forbiddenError`
+- **UUID helper**: `src/tests/helpers.ts` - contient `uuid()`
+- **Exemple réel**: `src/modules/jobs/server/trpc-routes.spec.ts`
+
+---
+
 ## 🎯 Instructions for Auto-Fill
 
 This template should be filled by analyzing:

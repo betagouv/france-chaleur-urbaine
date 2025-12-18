@@ -61,6 +61,9 @@ fileignoreconfig:
   checksum: bd4d691e773bd0dbb2c617d18bf40112e662e6bc7e73289e4d43a88ab6d155ec
 - filename: src/services/password.ts
   checksum: c5568af3b6c4162bc2ecbc78e8efc9abff9c852b774e8e60830db8a0777766b9
+- filename: src/utils/validation.spec.ts
+  ignore_detectors:
+  - filecontent
 scopeconfig:
 - scope: node
 allowed_patterns:

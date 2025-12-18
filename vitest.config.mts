@@ -15,7 +15,24 @@ export default defineConfig({
       '@react-hookz/web/useCookieValue': resolve(__dirname, 'node_modules/@react-hookz/web/dist/useCookieValue/index.js'),
       '@root': resolve(__dirname, '.'),
     },
+    coverage: {
+      exclude: [
+        'src/**/*.d.ts',
+        'src/**/*.test.ts',
+        'src/**/*.spec.ts',
+        'src/**/*.test.tsx',
+        'src/**/*.spec.tsx',
+        'src/tests/**',
+        'src/pages/**',
+        'src/app/**',
+      ],
+      include: ['src/**/*.ts', 'src/**/*.tsx'],
+      provider: 'v8',
+      reporter: ['text', 'html', 'lcov'],
+      reportsDirectory: './coverage',
+    },
     environment: 'happy-dom',
+    fileParallelism: false, // Disable parallel file execution to avoid database conflicts between integration tests
     onConsoleLog: (log) => {
       // Suppress specific React warnings
       if (log.includes('React does not recognize')) {

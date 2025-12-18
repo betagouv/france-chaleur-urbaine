@@ -1,4 +1,6 @@
 // Import React after mocks to ensure they're available
+import '@testing-library/jest-dom/vitest';
+import { cleanup } from '@testing-library/react';
 import React from 'react';
 import { afterAll, afterEach, vi } from 'vitest';
 
@@ -39,6 +41,8 @@ vi.mock('@/server/config', () => ({
     websiteOrigin: undefined,
   },
   serverConfig: {
+    // Required for tRPC tests that import modules using Airtable
+    AIRTABLE_KEY_API: 'test_airtable_key',
     contactEmail: 'test@example.com',
     databaseUrl: process.env.DATABASE_URL ?? 'postgres://fcu_test:fcu_test_pass@localhost:5433/fcu_test',
   },
@@ -247,8 +251,9 @@ Object.defineProperty(window.HTMLIFrameElement.prototype, 'src', {
 // Mock window.open and other window methods
 global.open = vi.fn();
 
-// Restore console methods after tests
+// Clean up after each test
 afterEach(() => {
+  cleanup(); // Clean up React Testing Library DOM between tests
   vi.clearAllMocks();
 });
 
