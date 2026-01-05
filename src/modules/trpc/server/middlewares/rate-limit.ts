@@ -5,11 +5,32 @@ import { createRateLimiter, type RateLimiterOptions, rateLimitError } from '@/mo
 import type { TRoot } from '../context';
 
 export type { RateLimiterOptions };
+
+type RateLimitConfig = Omit<RateLimiterOptions, 'path'> & { message?: string };
+
+const DEFAULT_RATE_LIMIT: Required<Pick<RateLimitConfig, 'limit' | 'windowMs'>> & Pick<RateLimitConfig, 'message'> = {
+  limit: 100,
+  message: 'Trop de requêtes. Veuillez réessayer plus tard.',
+  windowMs: 10 * 60 * 1000, // 10 minutes
+};
+
 /**
  * Rate limiting middleware pour tRPC - lit la config depuis les meta
  * Utilise express-rate-limit avec un store partagé et préfixes par route
  *
+ * Comportement :
+ * - Si `meta.rateLimit === false` : pas de rate limiting
+ * - Si `meta.rateLimit` est un objet : utilise cette config (surcharge le défaut)
+ * - Si `meta.rateLimit` est `undefined` : utilise les valeurs par défaut (100 req/10min)
+ *
  * @example
+ * // Route avec rate limit par défaut (100 req/10min)
+ * route.query(...)
+ *
+ * // Route sans rate limit
+ * route.meta({ rateLimit: false }).query(...)
+ *
+ * // Route avec rate limit personnalisé
  * route.meta({
  *   rateLimit: {
  *     windowMs: 60 * 1000,
@@ -20,10 +41,10 @@ export type { RateLimiterOptions };
  */
 export function createRateLimitMiddleware(t: TRoot) {
   return t.middleware(async ({ meta, ctx, path, next }) => {
-    const config = meta?.rateLimit;
+    const config = meta?.rateLimit ?? DEFAULT_RATE_LIMIT;
 
-    // Si pas de config, pas de rate limiting
-    if (!config) return next();
+    // Si explicitement désactivé, pas de rate limiting
+    if (config === false) return next();
 
     // Créer un rate limiter avec store partagé et préfixe par route
     const rateLimiter = createRateLimiter({

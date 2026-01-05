@@ -14,7 +14,7 @@ export type AuthConfig = {
 
 export interface Meta {
   auth?: AuthConfig;
-  rateLimit?: Omit<RateLimiterOptions, 'path'> & { message?: string };
+  rateLimit?: false | (Omit<RateLimiterOptions, 'path'> & { message?: string });
 }
 // Initialize tRPC with context
 export const t = initTRPC
