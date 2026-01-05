@@ -85,6 +85,10 @@ export default function ManageUsers() {
   const columns: ColumnDef<UsersResponse['listItem']>[] = useMemo(
     () => [
       {
+        accessorKey: 'id',
+        hidden: true,
+      },
+      {
         accessorKey: 'email',
         cell: (info) => (
           <div>
