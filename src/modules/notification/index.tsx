@@ -70,6 +70,6 @@ const getFirstZodError = (properties?: any): string | undefined => {
 export function handleClientError(err: any, customError?: (err: Error) => ReactNode) {
   const displayedMessage = getFirstZodError(err?.data?.zodError?.properties) || err?.message || String(err);
   console.error('client error', displayedMessage, err);
-  notify('error', displayedMessage);
+  notify('error', customError ?? displayedMessage);
   Sentry.captureException(err);
 }
