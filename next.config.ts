@@ -47,6 +47,7 @@ const configFunctions = [
     csp: {
       'connect-src': [
         "'self'",
+        'https://api-adresse.data.gouv.fr',
         'https://openmaptiles.geo.data.gouv.fr',
         'https://openmaptiles.data.gouv.fr',
         'https://openmaptiles.github.io',

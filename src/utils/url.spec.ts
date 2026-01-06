@@ -1,90 +1,89 @@
 import { describe, expect, it } from 'vitest';
 
+import type { TestCase } from '@/tests/trpc-helpers';
+
 import { stripDomainFromURL } from './url';
 
 describe('stripDomainFromURL', () => {
   describe('retourne null pour les entrées invalides', () => {
-    it('retourne null pour null', () => {
-      expect(stripDomainFromURL(null)).toBeNull();
-    });
+    const testCases: TestCase<any, null>[] = [
+      { expectedOutput: null, input: null, label: 'retourne null pour null' },
+      { expectedOutput: null, input: '', label: 'retourne null pour une chaîne vide' },
+      { expectedOutput: null, input: undefined, label: 'retourne null pour undefined' },
+      { expectedOutput: null, input: 'relative-path', label: 'retourne null pour "relative-path" (ne commence pas par /)' },
+      { expectedOutput: null, input: 'path/to/resource', label: 'retourne null pour "path/to/resource" (chemin relatif)' },
+      { expectedOutput: null, input: 'https://example.com/path', label: 'retourne null pour "https://example.com/path" (URL absolue)' },
+      { expectedOutput: null, input: 'http://example.com/path', label: 'retourne null pour "http://example.com/path" (URL absolue)' },
+      { expectedOutput: null, input: '//example.com/path', label: 'retourne null pour "//example.com/path" (URL absolue //)' },
+      { expectedOutput: null, input: '//subdomain.example.com/resource', label: 'retourne null pour "//subdomain.example.com/resource"' },
+    ];
 
-    it('retourne null pour une chaîne vide', () => {
-      expect(stripDomainFromURL('')).toBeNull();
-    });
-
-    it('retourne null pour undefined', () => {
-      expect(stripDomainFromURL(undefined as any)).toBeNull();
-    });
-
-    it('retourne null pour un chemin ne commençant pas par /', () => {
-      expect(stripDomainFromURL('relative-path')).toBeNull();
-      expect(stripDomainFromURL('path/to/resource')).toBeNull();
-      expect(stripDomainFromURL('https://example.com/path')).toBeNull();
-      expect(stripDomainFromURL('http://example.com/path')).toBeNull();
-    });
-
-    it('retourne null pour un chemin commençant par // (URL absolue)', () => {
-      expect(stripDomainFromURL('//example.com/path')).toBeNull();
-      expect(stripDomainFromURL('//subdomain.example.com/resource')).toBeNull();
+    it.each(testCases)('$label', ({ input, expectedOutput }) => {
+      expect(stripDomainFromURL(input)).toBe(expectedOutput);
     });
   });
 
   describe('conserve les chemins relatifs valides', () => {
-    it('conserve un chemin simple', () => {
-      expect(stripDomainFromURL('/path')).toBe('/path');
-      expect(stripDomainFromURL('/resource')).toBe('/resource');
-    });
+    const testCases: TestCase<string, string>[] = [
+      { expectedOutput: '/path', input: '/path', label: 'conserve "/path"' },
+      { expectedOutput: '/resource', input: '/resource', label: 'conserve "/resource"' },
+      { expectedOutput: '/path/to/resource', input: '/path/to/resource', label: 'conserve "/path/to/resource"' },
+      { expectedOutput: '/api/v1/users/123', input: '/api/v1/users/123', label: 'conserve "/api/v1/users/123"' },
+      { expectedOutput: '/path?param=value', input: '/path?param=value', label: 'conserve "/path?param=value" (query params)' },
+      {
+        expectedOutput: '/search?q=test&page=2',
+        input: '/search?q=test&page=2',
+        label: 'conserve "/search?q=test&page=2" (multiple params)',
+      },
+      { expectedOutput: '/path#section', input: '/path#section', label: 'conserve "/path#section" (hash)' },
+      { expectedOutput: '/page#top', input: '/page#top', label: 'conserve "/page#top" (hash)' },
+      {
+        expectedOutput: '/path?param=value#section',
+        input: '/path?param=value#section',
+        label: 'conserve "/path?param=value#section" (params + hash)',
+      },
+      {
+        expectedOutput: '/search?q=test&page=2#results',
+        input: '/search?q=test&page=2#results',
+        label: 'conserve "/search?q=test&page=2#results"',
+      },
+      { expectedOutput: '/', input: '/', label: 'conserve "/" (racine)' },
+      {
+        expectedOutput: '/path%20with%20spaces',
+        input: '/path with spaces',
+        label: 'encode "/path with spaces" en "/path%20with%20spaces"',
+      },
+      {
+        expectedOutput: '/path-with-dashes_and_underscores',
+        input: '/path-with-dashes_and_underscores',
+        label: 'conserve "/path-with-dashes_and_underscores"',
+      },
+      {
+        expectedOutput: '/path%20with%20spaces',
+        input: '/path%20with%20spaces',
+        label: 'conserve "/path%20with%20spaces" (déjà encodé)',
+      },
+      { expectedOutput: '/caf%C3%A9', input: '/caf%C3%A9', label: 'conserve "/caf%C3%A9" (caractères UTF-8 encodés)' },
+    ];
 
-    it('conserve un chemin avec plusieurs segments', () => {
-      expect(stripDomainFromURL('/path/to/resource')).toBe('/path/to/resource');
-      expect(stripDomainFromURL('/api/v1/users/123')).toBe('/api/v1/users/123');
-    });
-
-    it('conserve les paramètres de requête', () => {
-      expect(stripDomainFromURL('/path?param=value')).toBe('/path?param=value');
-      expect(stripDomainFromURL('/search?q=test&page=2')).toBe('/search?q=test&page=2');
-    });
-
-    it('conserve les fragments (hash)', () => {
-      expect(stripDomainFromURL('/path#section')).toBe('/path#section');
-      expect(stripDomainFromURL('/page#top')).toBe('/page#top');
-    });
-
-    it('conserve les paramètres de requête et les fragments', () => {
-      expect(stripDomainFromURL('/path?param=value#section')).toBe('/path?param=value#section');
-      expect(stripDomainFromURL('/search?q=test&page=2#results')).toBe('/search?q=test&page=2#results');
-    });
-
-    it('conserve la racine', () => {
-      expect(stripDomainFromURL('/')).toBe('/');
-    });
-
-    it('conserve les caractères spéciaux dans le chemin', () => {
-      expect(stripDomainFromURL('/path with spaces')).toBe('/path%20with%20spaces');
-      expect(stripDomainFromURL('/path-with-dashes_and_underscores')).toBe('/path-with-dashes_and_underscores');
-    });
-
-    it('normalise les chemins avec des caractères encodés', () => {
-      expect(stripDomainFromURL('/path%20with%20spaces')).toBe('/path%20with%20spaces');
-      expect(stripDomainFromURL('/caf%C3%A9')).toBe('/caf%C3%A9');
+    it.each(testCases)('$label', ({ input, expectedOutput }) => {
+      expect(stripDomainFromURL(input)).toBe(expectedOutput);
     });
   });
 
   describe('gère les cas limites', () => {
-    it('gère les chemins avec des points', () => {
-      expect(stripDomainFromURL('/./path')).toBe('/path');
-      expect(stripDomainFromURL('/../path')).toBe('/path');
-      expect(stripDomainFromURL('/path/../other')).toBe('/other');
-    });
+    const testCases: TestCase<string, string>[] = [
+      { expectedOutput: '/path', input: '/./path', label: 'normalise "/./path" en "/path"' },
+      { expectedOutput: '/path', input: '/../path', label: 'normalise "/../path" en "/path"' },
+      { expectedOutput: '/other', input: '/path/../other', label: 'normalise "/path/../other" en "/other"' },
+      { expectedOutput: '/path/to/resource', input: '/path//to///resource', label: 'normalise "/path//to///resource"' },
+      { expectedOutput: '/path', input: '/path?', label: 'supprime "?" vide dans "/path?"' },
+      { expectedOutput: '/path', input: '/path#', label: 'supprime "#" vide dans "/path#"' },
+      { expectedOutput: '/path', input: '/path?#', label: 'supprime "?#" vides dans "/path?#"' },
+    ];
 
-    it('gère les chemins avec plusieurs slashes', () => {
-      expect(stripDomainFromURL('/path//to///resource')).toBe('/path/to/resource');
-    });
-
-    it('gère les paramètres vides', () => {
-      expect(stripDomainFromURL('/path?')).toBe('/path');
-      expect(stripDomainFromURL('/path#')).toBe('/path');
-      expect(stripDomainFromURL('/path?#')).toBe('/path');
+    it.each(testCases)('$label', ({ input, expectedOutput }) => {
+      expect(stripDomainFromURL(input)).toBe(expectedOutput);
     });
   });
 });

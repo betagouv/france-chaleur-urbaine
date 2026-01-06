@@ -29,15 +29,16 @@ export const listJobs = async (input: JobListInput, _context: ApiContext) => {
     .offset(input.offset || 0)
     .execute();
 
-  const total = await kdb.selectFrom('jobs').select(kdb.fn.count<string>('id').as('count')).executeTakeFirstOrThrow();
+  const { count } = await kdb.selectFrom('jobs').select(kdb.fn.count<string>('id').as('count')).executeTakeFirstOrThrow();
+  const total = Number(count);
 
   return {
     jobs,
     pagination: {
-      hasNext: input.offset + input.limit < Number(total),
+      hasNext: input.offset + input.limit < total,
       limit: input.limit,
       offset: input.offset,
-      total: Number(total),
+      total,
     },
   };
 };

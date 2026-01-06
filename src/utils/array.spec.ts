@@ -1,45 +1,50 @@
 import { describe, expect, it } from 'vitest';
 
+import type { TestCase } from '@/tests/trpc-helpers';
+
 import { chunk } from './array';
 
 describe('chunk()', () => {
-  it('splits array into equal-sized subarrays', () => {
-    const input = [1, 2, 3, 4, 5, 6];
-    const result = chunk(input, 2);
-    expect(result).toEqual([
-      [1, 2],
-      [3, 4],
-      [5, 6],
-    ]);
-  });
+  type ChunkTestCase = TestCase<{ array: any[]; size: number }, any[][]>;
 
-  it('handles last subarray with fewer elements', () => {
-    const input = [1, 2, 3, 4, 5];
-    const result = chunk(input, 2);
-    expect(result).toEqual([[1, 2], [3, 4], [5]]);
-  });
+  const testCases: ChunkTestCase[] = [
+    {
+      expectedOutput: [
+        [1, 2],
+        [3, 4],
+        [5, 6],
+      ],
+      input: { array: [1, 2, 3, 4, 5, 6], size: 2 },
+      label: 'splits array into equal-sized subarrays',
+    },
+    {
+      expectedOutput: [[1, 2], [3, 4], [5]],
+      input: { array: [1, 2, 3, 4, 5], size: 2 },
+      label: 'handles last subarray with fewer elements',
+    },
+    {
+      expectedOutput: [],
+      input: { array: [], size: 3 },
+      label: 'returns empty array for empty input',
+    },
+    {
+      expectedOutput: [[1, 2, 3]],
+      input: { array: [1, 2, 3], size: 5 },
+      label: 'returns whole array if chunk size exceeds array length',
+    },
+    {
+      expectedOutput: [['a', 'b'], ['c', 'd'], ['e']],
+      input: { array: ['a', 'b', 'c', 'd', 'e'], size: 2 },
+      label: 'works with string arrays',
+    },
+    {
+      expectedOutput: [[1], [2], [3]],
+      input: { array: [1, 2, 3], size: 1 },
+      label: 'handles chunk size of 1',
+    },
+  ];
 
-  it('returns empty array for empty input', () => {
-    const input: number[] = [];
-    const result = chunk(input, 3);
-    expect(result).toEqual([]);
-  });
-
-  it('returns whole array if chunk size exceeds array length', () => {
-    const input = [1, 2, 3];
-    const result = chunk(input, 5);
-    expect(result).toEqual([[1, 2, 3]]);
-  });
-
-  it('works with string arrays', () => {
-    const input = ['a', 'b', 'c', 'd', 'e'];
-    const result = chunk(input, 2);
-    expect(result).toEqual([['a', 'b'], ['c', 'd'], ['e']]);
-  });
-
-  it('handles chunk size of 1', () => {
-    const input = [1, 2, 3];
-    const result = chunk(input, 1);
-    expect(result).toEqual([[1], [2], [3]]);
+  it.each(testCases)('$label', ({ input, expectedOutput }) => {
+    expect(chunk(input.array, input.size)).toEqual(expectedOutput);
   });
 });
