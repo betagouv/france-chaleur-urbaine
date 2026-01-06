@@ -7,6 +7,24 @@ import type { Context } from '@/modules/trpc/server/context';
 export { TRPCError };
 
 /**
+ * Generic test case structure for declarative testing
+ */
+export type TestCase<TInput = any, TExpectedOutput = any> = {
+  label: string;
+  input: TInput;
+  expectedOutput: TExpectedOutput;
+};
+
+/**
+ * Simplified test case for boolean validation tests
+ * Label is auto-generated based on input and expectedOutput
+ */
+export type TestCaseBoolean<TInput = any> = {
+  input: TInput;
+  expectedOutput: boolean;
+};
+
+/**
  * Expected error object for forbidden access in tests
  */
 export const forbiddenError = {

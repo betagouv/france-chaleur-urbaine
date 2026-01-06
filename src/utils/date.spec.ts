@@ -1,77 +1,109 @@
 import { describe, expect, it } from 'vitest';
 
+import type { TestCase } from '@/tests/trpc-helpers';
+
 import { formatAsISODate, formatAsISODateMinutes, formatFrenchDate, formatFrenchDateTime } from './date';
 
 describe('date utilities', () => {
   describe('formatAsISODateMinutes()', () => {
-    it('formate une date au format ISO avec minutes', () => {
-      const date = new Date('2024-01-25T16:48:30.000Z');
-      expect(formatAsISODateMinutes(date)).toBe('2024-01-25T16:48');
-    });
+    const testCases: TestCase<Date, string>[] = [
+      {
+        expectedOutput: '2024-01-25T16:48',
+        input: new Date('2024-01-25T16:48:30.000Z'),
+        label: 'formate une date au format ISO avec minutes',
+      },
+      {
+        expectedOutput: '2024-12-31T00:00',
+        input: new Date('2024-12-31T00:00:00.000Z'),
+        label: 'gère minuit correctement',
+      },
+      {
+        expectedOutput: '2024-06-15T09:05',
+        input: new Date('2024-06-15T09:05:00.000Z'),
+        label: 'gère les minutes à un chiffre',
+      },
+    ];
 
-    it('gère minuit correctement', () => {
-      const date = new Date('2024-12-31T00:00:00.000Z');
-      expect(formatAsISODateMinutes(date)).toBe('2024-12-31T00:00');
-    });
-
-    it('gère les minutes à un chiffre', () => {
-      const date = new Date('2024-06-15T09:05:00.000Z');
-      expect(formatAsISODateMinutes(date)).toBe('2024-06-15T09:05');
+    it.each(testCases)('$label', ({ input, expectedOutput }) => {
+      expect(formatAsISODateMinutes(input)).toBe(expectedOutput);
     });
   });
 
   describe('formatAsISODate()', () => {
-    it('formate une date au format ISO date uniquement', () => {
-      const date = new Date('2024-01-25T16:48:30.000Z');
-      expect(formatAsISODate(date)).toBe('2024-01-25');
-    });
+    const testCases: TestCase<Date, string>[] = [
+      {
+        expectedOutput: '2024-01-25',
+        input: new Date('2024-01-25T16:48:30.000Z'),
+        label: 'formate une date au format ISO date uniquement',
+      },
+      {
+        expectedOutput: '2024-01-01',
+        input: new Date('2024-01-01T00:00:00.000Z'),
+        label: "gère le premier jour de l'année",
+      },
+      {
+        expectedOutput: '2024-12-31',
+        input: new Date('2024-12-31T23:59:59.000Z'),
+        label: "gère le dernier jour de l'année",
+      },
+    ];
 
-    it("gère le premier jour de l'année", () => {
-      const date = new Date('2024-01-01T00:00:00.000Z');
-      expect(formatAsISODate(date)).toBe('2024-01-01');
-    });
-
-    it("gère le dernier jour de l'année", () => {
-      const date = new Date('2024-12-31T23:59:59.000Z');
-      expect(formatAsISODate(date)).toBe('2024-12-31');
+    it.each(testCases)('$label', ({ input, expectedOutput }) => {
+      expect(formatAsISODate(input)).toBe(expectedOutput);
     });
   });
 
   describe('formatFrenchDate()', () => {
-    it('formate une date au format français DD/MM/YYYY', () => {
-      const date = new Date('2024-01-25T16:48:30.000Z');
-      expect(formatFrenchDate(date)).toBe('25/01/2024');
-    });
+    const testCases: TestCase<Date, string>[] = [
+      {
+        expectedOutput: '25/01/2024',
+        input: new Date('2024-01-25T16:48:30.000Z'),
+        label: 'formate une date au format français DD/MM/YYYY',
+      },
+      {
+        expectedOutput: '05/06/2024',
+        input: new Date('2024-06-05T00:00:00.000Z'),
+        label: 'gère les jours et mois à un chiffre avec padding',
+      },
+      {
+        expectedOutput: '01/03/2024',
+        input: new Date('2024-03-01T00:00:00.000Z'),
+        label: 'gère le premier jour du mois',
+      },
+    ];
 
-    it('gère les jours et mois à un chiffre avec padding', () => {
-      const date = new Date('2024-06-05T00:00:00.000Z');
-      expect(formatFrenchDate(date)).toBe('05/06/2024');
-    });
-
-    it('gère le premier jour du mois', () => {
-      const date = new Date('2024-03-01T00:00:00.000Z');
-      expect(formatFrenchDate(date)).toBe('01/03/2024');
+    it.each(testCases)('$label', ({ input, expectedOutput }) => {
+      expect(formatFrenchDate(input)).toBe(expectedOutput);
     });
   });
 
   describe('formatFrenchDateTime()', () => {
-    it('formate une date avec heure au format français', () => {
-      const date = new Date('2024-01-25T14:30:00.000Z');
-      const result = formatFrenchDateTime(date);
-      expect(result).toMatch(/25\/01\/2024/);
-      expect(result).toMatch(/\d{2}:\d{2}/);
-    });
+    type DateTimeTestCase = TestCase<Date, { datePattern: string; timePattern?: string }>;
 
-    it('gère minuit', () => {
-      const date = new Date('2024-01-25T00:00:00.000Z');
-      const result = formatFrenchDateTime(date);
-      expect(result).toMatch(/25\/01\/2024/);
-    });
+    const testCases: DateTimeTestCase[] = [
+      {
+        expectedOutput: { datePattern: '25/01/2024', timePattern: '\\d{2}:\\d{2}' },
+        input: new Date('2024-01-25T14:30:00.000Z'),
+        label: 'formate une date avec heure au format français',
+      },
+      {
+        expectedOutput: { datePattern: '25/01/2024' },
+        input: new Date('2024-01-25T00:00:00.000Z'),
+        label: 'gère minuit',
+      },
+      {
+        expectedOutput: { datePattern: '25/01/2024' },
+        input: new Date('2024-01-25T05:05:00.000Z'),
+        label: 'gère les heures à un chiffre avec padding',
+      },
+    ];
 
-    it('gère les heures à un chiffre avec padding', () => {
-      const date = new Date('2024-01-25T05:05:00.000Z');
-      const result = formatFrenchDateTime(date);
-      expect(result).toMatch(/25\/01\/2024/);
+    it.each(testCases)('$label', ({ input, expectedOutput }) => {
+      const result = formatFrenchDateTime(input);
+      expect(result).toMatch(new RegExp(expectedOutput.datePattern));
+      if (expectedOutput.timePattern) {
+        expect(result).toMatch(new RegExp(expectedOutput.timePattern));
+      }
     });
   });
 });

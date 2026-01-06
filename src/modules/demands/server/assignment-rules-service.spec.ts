@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import type { DetailedEligibilityStatus } from '@/server/services/addresseInformation';
+import type { TestCase } from '@/tests/trpc-helpers';
 import { parseExpressionToAST, parseResultActions } from '@/utils/expression-parser';
 
 import { applyParsedRulesToEligibilityData } from './assignment-rules-service';
@@ -39,22 +40,37 @@ const createEligibilityDataForParis = (overrides: Partial<DetailedEligibilitySta
 
 describe('applyParsedRulesToEligibilityData()', () => {
   describe('tags', () => {
-    it('applique un tag quand la règle correspond', () => {
-      const rules = [createParsedRule('commune.nom:"Paris"', 'tag:"TagParis"')];
-      const data = createEligibilityDataForParis();
+    type TagTestCase = TestCase<{ pattern: string; result: string; dataOverrides?: Partial<DetailedEligibilityStatus> }, string[]>;
+
+    const testCases: TagTestCase[] = [
+      {
+        expectedOutput: ['TagParis'],
+        input: { pattern: 'commune.nom:"Paris"', result: 'tag:"TagParis"' },
+        label: 'applique un tag quand la règle correspond',
+      },
+      {
+        expectedOutput: [],
+        input: { pattern: 'commune.nom:"Lyon"', result: 'tag:"TagLyon"' },
+        label: "n'applique pas de tag quand la règle ne correspond pas",
+      },
+      {
+        expectedOutput: ['SameTag'],
+        input: {
+          dataOverrides: { eligible: true },
+          pattern: 'commune.nom:"Paris" || eligible:"true"',
+          result: 'tag:"SameTag"',
+        },
+        label: 'déduplique les tags',
+      },
+    ];
+
+    it.each(testCases)('$label', ({ input, expectedOutput }) => {
+      const rules = [createParsedRule(input.pattern, input.result)];
+      const data = createEligibilityDataForParis(input.dataOverrides);
 
       const result = applyParsedRulesToEligibilityData(rules, data);
 
-      expect(result.tags).toEqual(['TagParis']);
-    });
-
-    it("n'applique pas de tag quand la règle ne correspond pas", () => {
-      const rules = [createParsedRule('commune.nom:"Lyon"', 'tag:"TagLyon"')];
-      const data = createEligibilityDataForParis();
-
-      const result = applyParsedRulesToEligibilityData(rules, data);
-
-      expect(result.tags).toEqual([]);
+      expect(result.tags).toEqual(expectedOutput);
     });
 
     it('applique plusieurs tags de plusieurs règles', () => {
@@ -65,15 +81,6 @@ describe('applyParsedRulesToEligibilityData()', () => {
 
       expect(result.tags).toContain('Tag1');
       expect(result.tags).toContain('Tag2');
-    });
-
-    it('déduplique les tags', () => {
-      const rules = [createParsedRule('commune.nom:"Paris"', 'tag:"SameTag"'), createParsedRule('eligible:"true"', 'tag:"SameTag"')];
-      const data = createEligibilityDataForParis({ eligible: true });
-
-      const result = applyParsedRulesToEligibilityData(rules, data);
-
-      expect(result.tags).toEqual(['SameTag']);
     });
 
     it("applique plusieurs tags d'une même règle", () => {
@@ -88,22 +95,28 @@ describe('applyParsedRulesToEligibilityData()', () => {
   });
 
   describe('assignment (affectation)', () => {
-    it('applique une affectation quand la règle correspond', () => {
-      const rules = [createParsedRule('commune.nom:"Paris"', 'affecte:"GestionnaireA"')];
+    type AssignmentTestCase = TestCase<{ pattern: string; result: string }, string | null>;
+
+    const testCases: AssignmentTestCase[] = [
+      {
+        expectedOutput: 'GestionnaireA',
+        input: { pattern: 'commune.nom:"Paris"', result: 'affecte:"GestionnaireA"' },
+        label: 'applique une affectation quand la règle correspond',
+      },
+      {
+        expectedOutput: null,
+        input: { pattern: 'commune.nom:"Lyon"', result: 'affecte:"GestionnaireB"' },
+        label: "n'applique pas d'affectation quand la règle ne correspond pas",
+      },
+    ];
+
+    it.each(testCases)('$label', ({ input, expectedOutput }) => {
+      const rules = [createParsedRule(input.pattern, input.result)];
       const data = createEligibilityDataForParis();
 
       const result = applyParsedRulesToEligibilityData(rules, data);
 
-      expect(result.assignment).toBe('GestionnaireA');
-    });
-
-    it("n'applique pas d'affectation quand la règle ne correspond pas", () => {
-      const rules = [createParsedRule('commune.nom:"Lyon"', 'affecte:"GestionnaireB"')];
-      const data = createEligibilityDataForParis();
-
-      const result = applyParsedRulesToEligibilityData(rules, data);
-
-      expect(result.assignment).toBeNull();
+      expect(result.assignment).toBe(expectedOutput);
     });
 
     it("prend la première affectation trouvée (pas d'écrasement)", () => {
@@ -146,37 +159,89 @@ describe('applyParsedRulesToEligibilityData()', () => {
   });
 
   describe('expressions complexes', () => {
-    it('évalue correctement les expressions avec AND (&&)', () => {
-      const rules = [createParsedRule('commune.nom:"Paris" && eligible:"true"', 'tag:"ParisEligible"')];
+    type ComplexExpressionTestCase = TestCase<
+      {
+        pattern: string;
+        result: string;
+        testCases: Array<{
+          dataOverrides: Partial<DetailedEligibilityStatus>;
+          expectedTags: string[];
+          label: string;
+        }>;
+      },
+      void
+    >;
 
-      const dataMatch = createEligibilityDataForParis({ eligible: true });
-      expect(applyParsedRulesToEligibilityData(rules, dataMatch).tags).toEqual(['ParisEligible']);
+    const testCases: ComplexExpressionTestCase[] = [
+      {
+        expectedOutput: undefined,
+        input: {
+          pattern: 'commune.nom:"Paris" && eligible:"true"',
+          result: 'tag:"ParisEligible"',
+          testCases: [
+            { dataOverrides: { eligible: true }, expectedTags: ['ParisEligible'], label: 'Paris éligible' },
+            { dataOverrides: { eligible: false }, expectedTags: [], label: 'Paris non éligible' },
+          ],
+        },
+        label: 'évalue correctement les expressions avec AND (&&)',
+      },
+      {
+        expectedOutput: undefined,
+        input: {
+          pattern: 'commune.nom:"Paris" || commune.nom:"Lyon"',
+          result: 'tag:"GrandeVille"',
+          testCases: [
+            {
+              dataOverrides: { commune: { insee_com: '75001', insee_dep: '75', insee_reg: '11', nom: 'Paris' } },
+              expectedTags: ['GrandeVille'],
+              label: 'Paris',
+            },
+            {
+              dataOverrides: { commune: { insee_com: '69001', insee_dep: '69', insee_reg: '84', nom: 'Lyon' } },
+              expectedTags: ['GrandeVille'],
+              label: 'Lyon',
+            },
+          ],
+        },
+        label: 'évalue correctement les expressions avec OR (||)',
+      },
+      {
+        expectedOutput: undefined,
+        input: {
+          pattern: '!commune.nom:"Paris"',
+          result: 'tag:"HorsParis"',
+          testCases: [
+            {
+              dataOverrides: { commune: { insee_com: '75001', insee_dep: '75', insee_reg: '11', nom: 'Paris' } },
+              expectedTags: [],
+              label: 'Paris',
+            },
+            {
+              dataOverrides: { commune: { insee_com: '69001', insee_dep: '69', insee_reg: '84', nom: 'Lyon' } },
+              expectedTags: ['HorsParis'],
+              label: 'Lyon',
+            },
+          ],
+        },
+        label: 'évalue correctement les expressions avec NOT (!)',
+      },
+    ];
 
-      const dataNoMatch = createEligibilityDataForParis({ eligible: false });
-      expect(applyParsedRulesToEligibilityData(rules, dataNoMatch).tags).toEqual([]);
+    it.each(testCases)('$label', ({ input }) => {
+      const rules = [createParsedRule(input.pattern, input.result)];
+
+      for (const testCase of input.testCases) {
+        const data = createEligibilityDataForParis(testCase.dataOverrides);
+        const result = applyParsedRulesToEligibilityData(rules, data);
+        expect(result.tags).toEqual(testCase.expectedTags);
+      }
     });
 
-    it('évalue correctement les expressions avec OR (||)', () => {
+    it('évalue correctement OR avec Marseille (pas dans la liste)', () => {
       const rules = [createParsedRule('commune.nom:"Paris" || commune.nom:"Lyon"', 'tag:"GrandeVille"')];
-
-      const dataParis = createEligibilityDataForParis();
-      expect(applyParsedRulesToEligibilityData(rules, dataParis).tags).toEqual(['GrandeVille']);
-
-      const dataLyon = createEligibilityDataForParis();
-      expect(applyParsedRulesToEligibilityData(rules, dataLyon).tags).toEqual(['GrandeVille']);
-
       const dataMarseille = createEligibilityData({ commune: { insee_com: '13001', insee_dep: '13', insee_reg: '93', nom: 'Marseille' } });
+
       expect(applyParsedRulesToEligibilityData(rules, dataMarseille).tags).toEqual([]);
-    });
-
-    it('évalue correctement les expressions avec NOT (!)', () => {
-      const rules = [createParsedRule('!commune.nom:"Paris"', 'tag:"HorsParis"')];
-
-      const dataParis = createEligibilityDataForParis();
-      expect(applyParsedRulesToEligibilityData(rules, dataParis).tags).toEqual([]);
-
-      const dataLyon = createEligibilityData({ commune: { insee_com: '69001', insee_dep: '69', insee_reg: '84', nom: 'Lyon' } });
-      expect(applyParsedRulesToEligibilityData(rules, dataLyon).tags).toEqual(['HorsParis']);
     });
   });
 

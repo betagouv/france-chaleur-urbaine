@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
+import type { TestCase, TestCaseBoolean } from '@/tests/trpc-helpers';
+
 import { zBatchDemandAddressSchema, zBatchDemandStep1Schema, zContactFormCreateDemandInput, zCreateBatchDemandInput } from './constants';
 
 describe('zContactFormCreateDemandInput', () => {
@@ -13,62 +15,75 @@ describe('zContactFormCreateDemandInput', () => {
   };
 
   describe('champs obligatoires', () => {
-    it('valide une entrée minimale valide', () => {
-      const result = zContactFormCreateDemandInput.safeParse(validBaseInput);
-      expect(result.success).toBe(true);
-    });
+    const testCases: TestCase<any, boolean>[] = [
+      {
+        expectedOutput: true,
+        input: validBaseInput,
+        label: 'valide une entrée minimale valide',
+      },
+      {
+        expectedOutput: false,
+        input: (() => {
+          const { email: _, ...input } = validBaseInput;
+          return input;
+        })(),
+        label: 'rejette sans email',
+      },
+      {
+        expectedOutput: false,
+        input: { ...validBaseInput, email: 'invalid' },
+        label: 'rejette avec un email invalide',
+      },
+      {
+        expectedOutput: false,
+        input: { ...validBaseInput, firstName: '' },
+        label: 'rejette sans prénom',
+      },
+      {
+        expectedOutput: false,
+        input: { ...validBaseInput, lastName: '' },
+        label: 'rejette sans nom',
+      },
+      {
+        expectedOutput: false,
+        input: { ...validBaseInput, structure: '' },
+        label: 'rejette sans structure',
+      },
+      {
+        expectedOutput: false,
+        input: { ...validBaseInput, termOfUse: false },
+        label: 'rejette sans acceptation des CGU',
+      },
+      {
+        expectedOutput: false,
+        input: { ...validBaseInput, heatingEnergy: 'Charbon' },
+        label: 'rejette avec une énergie de chauffage invalide',
+      },
+    ];
 
-    it('rejette sans email', () => {
-      const { email: _, ...input } = validBaseInput;
+    it.each(testCases)('$label', ({ input, expectedOutput }) => {
       const result = zContactFormCreateDemandInput.safeParse(input);
-      expect(result.success).toBe(false);
-    });
-
-    it('rejette avec un email invalide', () => {
-      const result = zContactFormCreateDemandInput.safeParse({ ...validBaseInput, email: 'invalid' });
-      expect(result.success).toBe(false);
-    });
-
-    it('rejette sans prénom', () => {
-      const result = zContactFormCreateDemandInput.safeParse({ ...validBaseInput, firstName: '' });
-      expect(result.success).toBe(false);
-    });
-
-    it('rejette sans nom', () => {
-      const result = zContactFormCreateDemandInput.safeParse({ ...validBaseInput, lastName: '' });
-      expect(result.success).toBe(false);
-    });
-
-    it('rejette sans structure', () => {
-      const result = zContactFormCreateDemandInput.safeParse({ ...validBaseInput, structure: '' });
-      expect(result.success).toBe(false);
-    });
-
-    it('rejette sans acceptation des CGU', () => {
-      const result = zContactFormCreateDemandInput.safeParse({ ...validBaseInput, termOfUse: false });
-      expect(result.success).toBe(false);
-    });
-
-    it('rejette avec une énergie de chauffage invalide', () => {
-      const result = zContactFormCreateDemandInput.safeParse({ ...validBaseInput, heatingEnergy: 'Charbon' });
-      expect(result.success).toBe(false);
+      expect(result.success).toBe(expectedOutput);
     });
   });
 
   describe('validation du téléphone', () => {
-    it.each([['0612345678'], ['+33612345678'], ['0033612345678'], ['']])('accepte le format "%s"', (phone) => {
-      const result = zContactFormCreateDemandInput.safeParse({ ...validBaseInput, phone });
-      expect(result.success).toBe(true);
-    });
+    const testCases: TestCaseBoolean<string>[] = [
+      { expectedOutput: true, input: '0612345678' },
+      { expectedOutput: true, input: '+33612345678' },
+      { expectedOutput: true, input: '0033612345678' },
+      { expectedOutput: true, input: '' },
+      { expectedOutput: false, input: '123' },
+      { expectedOutput: false, input: 'abc' },
+      { expectedOutput: false, input: '06 12 34 56 78' },
+      { expectedOutput: false, input: '06123456789' },
+    ];
 
-    it.each([
-      ['123'],
-      ['abc'],
-      ['06 12 34 56 78'], // spaces not supported by regex
-      ['06123456789'], // 11 digits
-    ])('rejette le format invalide "%s"', (phone) => {
-      const result = zContactFormCreateDemandInput.safeParse({ ...validBaseInput, phone });
-      expect(result.success).toBe(false);
+    testCases.forEach(({ input, expectedOutput }) => {
+      it(expectedOutput ? `accepte le format "${input || '(vide)'}"` : `rejette le format invalide "${input}"`, () => {
+        const result = zContactFormCreateDemandInput.safeParse({ ...validBaseInput, phone: input });
+        expect(result.success).toBe(expectedOutput);
+      });
     });
   });
 
@@ -78,32 +93,39 @@ describe('zContactFormCreateDemandInput', () => {
       structure: 'Tertiaire',
     };
 
-    it('rejette sans companyType pour structure Tertiaire', () => {
-      const result = zContactFormCreateDemandInput.safeParse(tertiaryInput);
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error.issues.some((i) => i.path.includes('companyType'))).toBe(true);
-      }
-    });
+    type TertiaryTestCase = TestCase<any, { success: boolean; missingField?: string }>;
 
-    it('rejette sans company pour structure Tertiaire', () => {
-      const result = zContactFormCreateDemandInput.safeParse({
-        ...tertiaryInput,
-        companyType: 'Syndic de copropriété',
-      });
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error.issues.some((i) => i.path.includes('company'))).toBe(true);
-      }
-    });
+    const testCases: TertiaryTestCase[] = [
+      {
+        expectedOutput: { missingField: 'companyType', success: false },
+        input: tertiaryInput,
+        label: 'rejette sans companyType pour structure Tertiaire',
+      },
+      {
+        expectedOutput: { missingField: 'company', success: false },
+        input: {
+          ...tertiaryInput,
+          companyType: 'Syndic de copropriété',
+        },
+        label: 'rejette sans company pour structure Tertiaire',
+      },
+      {
+        expectedOutput: { success: true },
+        input: {
+          ...tertiaryInput,
+          company: 'Ma Société',
+          companyType: 'Syndic de copropriété',
+        },
+        label: 'valide avec companyType et company pour Tertiaire',
+      },
+    ];
 
-    it('valide avec companyType et company pour Tertiaire', () => {
-      const result = zContactFormCreateDemandInput.safeParse({
-        ...tertiaryInput,
-        company: 'Ma Société',
-        companyType: 'Syndic de copropriété',
-      });
-      expect(result.success).toBe(true);
+    it.each(testCases)('$label', ({ input, expectedOutput }) => {
+      const result = zContactFormCreateDemandInput.safeParse(input);
+      expect(result.success).toBe(expectedOutput.success);
+      if (!result.success && expectedOutput.missingField) {
+        expect(result.error.issues.some((i) => i.path.includes(expectedOutput.missingField!))).toBe(true);
+      }
     });
   });
 
@@ -115,40 +137,47 @@ describe('zContactFormCreateDemandInput', () => {
       structure: 'Tertiaire',
     };
 
-    it("rejette sans demandCompanyType pour Bureau d'études", () => {
-      const result = zContactFormCreateDemandInput.safeParse(bureauEtudesInput);
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error.issues.some((i) => i.path.includes('demandCompanyType'))).toBe(true);
+    type BureauEtudesTestCase = TestCase<any, { success: boolean; missingField?: string }>;
+
+    const testCases: BureauEtudesTestCase[] = [
+      {
+        expectedOutput: { missingField: 'demandCompanyType', success: false },
+        input: bureauEtudesInput,
+        label: "rejette sans demandCompanyType pour Bureau d'études",
+      },
+      {
+        expectedOutput: { success: true },
+        input: {
+          ...bureauEtudesInput,
+          demandCompanyType: 'Copropriété',
+        },
+        label: 'valide avec demandCompanyType Copropriété (pas besoin de demandCompanyName)',
+      },
+      {
+        expectedOutput: { missingField: 'demandCompanyName', success: false },
+        input: {
+          ...bureauEtudesInput,
+          demandCompanyType: 'Bâtiment tertiaire',
+        },
+        label: 'rejette sans demandCompanyName pour Bâtiment tertiaire',
+      },
+      {
+        expectedOutput: { success: true },
+        input: {
+          ...bureauEtudesInput,
+          demandCompanyName: 'Client SA',
+          demandCompanyType: 'Bâtiment tertiaire',
+        },
+        label: 'valide avec demandCompanyType et demandCompanyName pour Bâtiment tertiaire',
+      },
+    ];
+
+    it.each(testCases)('$label', ({ input, expectedOutput }) => {
+      const result = zContactFormCreateDemandInput.safeParse(input);
+      expect(result.success).toBe(expectedOutput.success);
+      if (!result.success && expectedOutput.missingField) {
+        expect(result.error.issues.some((i) => i.path.includes(expectedOutput.missingField!))).toBe(true);
       }
-    });
-
-    it('valide avec demandCompanyType Copropriété (pas besoin de demandCompanyName)', () => {
-      const result = zContactFormCreateDemandInput.safeParse({
-        ...bureauEtudesInput,
-        demandCompanyType: 'Copropriété',
-      });
-      expect(result.success).toBe(true);
-    });
-
-    it('rejette sans demandCompanyName pour Bâtiment tertiaire', () => {
-      const result = zContactFormCreateDemandInput.safeParse({
-        ...bureauEtudesInput,
-        demandCompanyType: 'Bâtiment tertiaire',
-      });
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error.issues.some((i) => i.path.includes('demandCompanyName'))).toBe(true);
-      }
-    });
-
-    it('valide avec demandCompanyType et demandCompanyName pour Bâtiment tertiaire', () => {
-      const result = zContactFormCreateDemandInput.safeParse({
-        ...bureauEtudesInput,
-        demandCompanyName: 'Client SA',
-        demandCompanyType: 'Bâtiment tertiaire',
-      });
-      expect(result.success).toBe(true);
     });
   });
 });
@@ -162,49 +191,69 @@ describe('zBatchDemandStep1Schema', () => {
     termOfUse: true,
   };
 
-  it('valide une entrée valide', () => {
-    expect(zBatchDemandStep1Schema.safeParse(validInput).success).toBe(true);
-  });
+  type BatchStep1TestCase = TestCase<any, { success: boolean; missingField?: string }>;
 
-  it('rejette sans acceptation des CGU', () => {
-    expect(zBatchDemandStep1Schema.safeParse({ ...validInput, termOfUse: false }).success).toBe(false);
-  });
+  const testCases: BatchStep1TestCase[] = [
+    {
+      expectedOutput: { success: true },
+      input: validInput,
+      label: 'valide une entrée valide',
+    },
+    {
+      expectedOutput: { success: false },
+      input: { ...validInput, termOfUse: false },
+      label: 'rejette sans acceptation des CGU',
+    },
+    {
+      expectedOutput: { missingField: 'companyType', success: false },
+      input: { ...validInput, structure: 'Tertiaire' },
+      label: 'requiert companyType pour structure Tertiaire',
+    },
+  ];
 
-  it('requiert companyType pour structure Tertiaire', () => {
-    const result = zBatchDemandStep1Schema.safeParse({ ...validInput, structure: 'Tertiaire' });
-    expect(result.success).toBe(false);
-    if (!result.success) {
-      expect(result.error.issues.some((i) => i.path.includes('companyType'))).toBe(true);
+  it.each(testCases)('$label', ({ input, expectedOutput }) => {
+    const result = zBatchDemandStep1Schema.safeParse(input);
+    expect(result.success).toBe(expectedOutput.success);
+    if (!result.success && expectedOutput.missingField) {
+      expect(result.error.issues.some((i) => i.path.includes(expectedOutput.missingField!))).toBe(true);
     }
   });
 });
 
 describe('zBatchDemandAddressSchema', () => {
-  it('valide une adresse valide', () => {
-    const result = zBatchDemandAddressSchema.safeParse({
-      addressId: 'abc123',
-      heatingEnergy: 'gaz',
-      heatingType: 'collectif',
-    });
-    expect(result.success).toBe(true);
-  });
+  const testCases: TestCase<any, boolean>[] = [
+    {
+      expectedOutput: true,
+      input: {
+        addressId: 'abc123',
+        heatingEnergy: 'gaz',
+        heatingType: 'collectif',
+      },
+      label: 'valide une adresse valide',
+    },
+    {
+      expectedOutput: false,
+      input: {
+        addressId: 'abc123',
+        heatingEnergy: 'charbon',
+        heatingType: 'collectif',
+      },
+      label: 'rejette une énergie de chauffage invalide',
+    },
+    {
+      expectedOutput: false,
+      input: {
+        addressId: 'abc123',
+        heatingEnergy: 'gaz',
+        heatingType: 'mixte',
+      },
+      label: 'rejette un type de chauffage invalide',
+    },
+  ];
 
-  it('rejette une énergie de chauffage invalide', () => {
-    const result = zBatchDemandAddressSchema.safeParse({
-      addressId: 'abc123',
-      heatingEnergy: 'charbon',
-      heatingType: 'collectif',
-    });
-    expect(result.success).toBe(false);
-  });
-
-  it('rejette un type de chauffage invalide', () => {
-    const result = zBatchDemandAddressSchema.safeParse({
-      addressId: 'abc123',
-      heatingEnergy: 'gaz',
-      heatingType: 'mixte',
-    });
-    expect(result.success).toBe(false);
+  it.each(testCases)('$label', ({ input, expectedOutput }) => {
+    const result = zBatchDemandAddressSchema.safeParse(input);
+    expect(result.success).toBe(expectedOutput);
   });
 });
 
@@ -215,43 +264,49 @@ describe('zCreateBatchDemandInput', () => {
     heatingType: 'collectif' as const,
   };
 
-  it('valide avec une adresse', () => {
-    const result = zCreateBatchDemandInput.safeParse({
-      addresses: [validAddress],
-      termOfUse: true,
-    });
-    expect(result.success).toBe(true);
-  });
+  const testCases: TestCase<any, boolean>[] = [
+    {
+      expectedOutput: true,
+      input: {
+        addresses: [validAddress],
+        termOfUse: true,
+      },
+      label: 'valide avec une adresse',
+    },
+    {
+      expectedOutput: false,
+      input: {
+        addresses: [],
+        termOfUse: true,
+      },
+      label: 'rejette sans adresse',
+    },
+    {
+      expectedOutput: false,
+      input: {
+        addresses: Array.from({ length: 51 }, (_, i) => ({
+          ...validAddress,
+          addressId: `addr${i}`,
+        })),
+        termOfUse: true,
+      },
+      label: 'rejette avec plus de 50 adresses',
+    },
+    {
+      expectedOutput: true,
+      input: {
+        addresses: Array.from({ length: 50 }, (_, i) => ({
+          ...validAddress,
+          addressId: `addr${i}`,
+        })),
+        termOfUse: true,
+      },
+      label: 'accepte exactement 50 adresses',
+    },
+  ];
 
-  it('rejette sans adresse', () => {
-    const result = zCreateBatchDemandInput.safeParse({
-      addresses: [],
-      termOfUse: true,
-    });
-    expect(result.success).toBe(false);
-  });
-
-  it('rejette avec plus de 50 adresses', () => {
-    const addresses = Array.from({ length: 51 }, (_, i) => ({
-      ...validAddress,
-      addressId: `addr${i}`,
-    }));
-    const result = zCreateBatchDemandInput.safeParse({
-      addresses,
-      termOfUse: true,
-    });
-    expect(result.success).toBe(false);
-  });
-
-  it('accepte exactement 50 adresses', () => {
-    const addresses = Array.from({ length: 50 }, (_, i) => ({
-      ...validAddress,
-      addressId: `addr${i}`,
-    }));
-    const result = zCreateBatchDemandInput.safeParse({
-      addresses,
-      termOfUse: true,
-    });
-    expect(result.success).toBe(true);
+  it.each(testCases)('$label', ({ input, expectedOutput }) => {
+    const result = zCreateBatchDemandInput.safeParse(input);
+    expect(result.success).toBe(expectedOutput);
   });
 });

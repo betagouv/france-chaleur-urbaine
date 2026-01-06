@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
+import type { TestCase } from '@/tests/trpc-helpers';
+
 import type { ProEligibilityTestEligibility } from '../types';
 import { getTransition } from './service';
 
@@ -35,25 +37,32 @@ describe('getTransition()', () => {
   });
 
   describe('PDP transitions', () => {
-    const testCases = [
+    type TransitionTestCase = TestCase<
+      { old: Partial<ProEligibilityTestEligibility>; current: Partial<ProEligibilityTestEligibility> },
+      string
+    >;
+
+    const testCases: TransitionTestCase[] = [
       {
-        current: { type: 'dans_pdp_reseau_existant' as const },
-        expected: 'entree_pdp' as const,
+        expectedOutput: 'entree_pdp',
+        input: {
+          current: { type: 'dans_pdp_reseau_existant' as const },
+          old: { type: 'reseau_existant_proche' as const },
+        },
         label: 'returns "entree_pdp" when entering a PDP',
-        old: { type: 'reseau_existant_proche' as const },
       },
       {
-        current: { type: 'reseau_existant_proche' as const },
-        expected: 'sortie_pdp' as const,
+        expectedOutput: 'sortie_pdp',
+        input: {
+          current: { type: 'reseau_existant_proche' as const },
+          old: { type: 'dans_pdp_reseau_existant' as const },
+        },
         label: 'returns "sortie_pdp" when leaving a PDP',
-        old: { type: 'dans_pdp_reseau_existant' as const },
       },
     ];
 
-    testCases.forEach(({ label, old, current, expected }) => {
-      it(label, () => {
-        expect(getTransition(createEligibility(old), createEligibility(current))).toBe(expected);
-      });
+    it.each(testCases)('$label', ({ input, expectedOutput }) => {
+      expect(getTransition(createEligibility(input.old), createEligibility(input.current))).toBe(expectedOutput);
     });
   });
 
@@ -66,31 +75,40 @@ describe('getTransition()', () => {
   });
 
   describe('New network detection', () => {
-    const testCases = [
+    type TransitionTestCase = TestCase<
+      { old: Partial<ProEligibilityTestEligibility>; current: Partial<ProEligibilityTestEligibility> },
+      string
+    >;
+
+    const testCases: TransitionTestCase[] = [
       {
-        current: { distance: 500, type: 'reseau_existant_loin' as const },
-        expected: 'nouveau_reseau_existant' as const,
+        expectedOutput: 'nouveau_reseau_existant',
+        input: {
+          current: { distance: 500, type: 'reseau_existant_loin' as const },
+          old: { distance: 0, type: 'trop_eloigne' as const },
+        },
         label: 'returns "nouveau_reseau_existant" when going from too far to existing network',
-        old: { distance: 0, type: 'trop_eloigne' as const },
       },
       {
-        current: { distance: 150, type: 'reseau_futur_proche' as const },
-        expected: 'nouveau_reseau_futur' as const,
+        expectedOutput: 'nouveau_reseau_futur',
+        input: {
+          current: { distance: 150, type: 'reseau_futur_proche' as const },
+          old: { distance: 0, type: 'trop_eloigne' as const },
+        },
         label: 'returns "nouveau_reseau_futur" when going from too far to future network',
-        old: { distance: 0, type: 'trop_eloigne' as const },
       },
       {
-        current: { distance: 0, type: 'trop_eloigne' as const },
-        expected: 'reseau_supprime' as const,
+        expectedOutput: 'reseau_supprime',
+        input: {
+          current: { distance: 0, type: 'trop_eloigne' as const },
+          old: { distance: 800, type: 'reseau_existant_loin' as const },
+        },
         label: 'returns "reseau_supprime" when network becomes too far',
-        old: { distance: 800, type: 'reseau_existant_loin' as const },
       },
     ];
 
-    testCases.forEach(({ label, old, current, expected }) => {
-      it(label, () => {
-        expect(getTransition(createEligibility(old), createEligibility(current))).toBe(expected);
-      });
+    it.each(testCases)('$label', ({ input, expectedOutput }) => {
+      expect(getTransition(createEligibility(input.old), createEligibility(input.current))).toBe(expectedOutput);
     });
   });
 
@@ -103,158 +121,206 @@ describe('getTransition()', () => {
   });
 
   describe('Distance changes within same type', () => {
-    const testCases = [
+    type TransitionTestCase = TestCase<
+      { old: Partial<ProEligibilityTestEligibility>; current: Partial<ProEligibilityTestEligibility> },
+      string
+    >;
+
+    const testCases: TransitionTestCase[] = [
       {
-        current: { distance: 120, type: 'reseau_existant_proche' as const },
-        expected: 'rapprochement' as const,
+        expectedOutput: 'rapprochement',
+        input: {
+          current: { distance: 120, type: 'reseau_existant_proche' as const },
+          old: { distance: 200, type: 'reseau_existant_proche' as const },
+        },
         label: 'returns "rapprochement" when distance decreases significantly (>50m)',
-        old: { distance: 200, type: 'reseau_existant_proche' as const },
       },
       {
-        current: { distance: 200, type: 'reseau_existant_proche' as const },
-        expected: 'eloignement' as const,
+        expectedOutput: 'eloignement',
+        input: {
+          current: { distance: 200, type: 'reseau_existant_proche' as const },
+          old: { distance: 120, type: 'reseau_existant_proche' as const },
+        },
         label: 'returns "eloignement" when distance increases significantly (>50m)',
-        old: { distance: 120, type: 'reseau_existant_proche' as const },
       },
       {
-        current: { distance: 180, type: 'reseau_existant_proche' as const },
-        expected: 'modification_mineure' as const,
+        expectedOutput: 'modification_mineure',
+        input: {
+          current: { distance: 180, type: 'reseau_existant_proche' as const },
+          old: { distance: 150, type: 'reseau_existant_proche' as const },
+        },
         label: 'returns "modification_mineure" when distance changes by less than 50m',
-        old: { distance: 150, type: 'reseau_existant_proche' as const },
       },
     ];
 
-    testCases.forEach(({ label, old, current, expected }) => {
-      it(label, () => {
-        expect(getTransition(createEligibility(old), createEligibility(current))).toBe(expected);
-      });
+    it.each(testCases)('$label', ({ input, expectedOutput }) => {
+      expect(getTransition(createEligibility(input.old), createEligibility(input.current))).toBe(expectedOutput);
     });
   });
 
   describe('Proximity improvements (existing networks)', () => {
-    const testCases = [
+    type TransitionTestCase = TestCase<
+      { old: Partial<ProEligibilityTestEligibility>; current: Partial<ProEligibilityTestEligibility> },
+      string
+    >;
+
+    const testCases: TransitionTestCase[] = [
       {
-        current: { distance: 150, type: 'reseau_existant_proche' as const },
-        expected: 'amelioration_proximite' as const,
+        expectedOutput: 'amelioration_proximite',
+        input: {
+          current: { distance: 150, type: 'reseau_existant_proche' as const },
+          old: { distance: 500, type: 'reseau_existant_loin' as const },
+        },
         label: 'returns "amelioration_proximite" when going from loin to proche',
-        old: { distance: 500, type: 'reseau_existant_loin' as const },
       },
       {
-        current: { distance: 50, type: 'reseau_existant_tres_proche' as const },
-        expected: 'amelioration_proximite' as const,
+        expectedOutput: 'amelioration_proximite',
+        input: {
+          current: { distance: 50, type: 'reseau_existant_tres_proche' as const },
+          old: { distance: 150, type: 'reseau_existant_proche' as const },
+        },
         label: 'returns "amelioration_proximite" when going from proche to tres_proche',
-        old: { distance: 150, type: 'reseau_existant_proche' as const },
       },
     ];
 
-    testCases.forEach(({ label, old, current, expected }) => {
-      it(label, () => {
-        expect(getTransition(createEligibility(old), createEligibility(current))).toBe(expected);
-      });
+    it.each(testCases)('$label', ({ input, expectedOutput }) => {
+      expect(getTransition(createEligibility(input.old), createEligibility(input.current))).toBe(expectedOutput);
     });
   });
 
   describe('Proximity degradations (existing networks)', () => {
-    const testCases = [
+    type TransitionTestCase = TestCase<
+      { old: Partial<ProEligibilityTestEligibility>; current: Partial<ProEligibilityTestEligibility> },
+      string
+    >;
+
+    const testCases: TransitionTestCase[] = [
       {
-        current: { distance: 150, type: 'reseau_existant_proche' as const },
-        expected: 'degradation_proximite' as const,
+        expectedOutput: 'degradation_proximite',
+        input: {
+          current: { distance: 150, type: 'reseau_existant_proche' as const },
+          old: { distance: 50, type: 'reseau_existant_tres_proche' as const },
+        },
         label: 'returns "degradation_proximite" when going from tres_proche to proche',
-        old: { distance: 50, type: 'reseau_existant_tres_proche' as const },
       },
       {
-        current: { distance: 500, type: 'reseau_existant_loin' as const },
-        expected: 'degradation_proximite' as const,
+        expectedOutput: 'degradation_proximite',
+        input: {
+          current: { distance: 500, type: 'reseau_existant_loin' as const },
+          old: { distance: 150, type: 'reseau_existant_proche' as const },
+        },
         label: 'returns "degradation_proximite" when going from proche to loin',
-        old: { distance: 150, type: 'reseau_existant_proche' as const },
       },
     ];
 
-    testCases.forEach(({ label, old, current, expected }) => {
-      it(label, () => {
-        expect(getTransition(createEligibility(old), createEligibility(current))).toBe(expected);
-      });
+    it.each(testCases)('$label', ({ input, expectedOutput }) => {
+      expect(getTransition(createEligibility(input.old), createEligibility(input.current))).toBe(expectedOutput);
     });
   });
 
   describe('Proximity improvements (future networks)', () => {
-    const testCases = [
+    type TransitionTestCase = TestCase<
+      { old: Partial<ProEligibilityTestEligibility>; current: Partial<ProEligibilityTestEligibility> },
+      string
+    >;
+
+    const testCases: TransitionTestCase[] = [
       {
-        current: { distance: 150, type: 'reseau_futur_proche' as const },
-        expected: 'amelioration_proximite' as const,
+        expectedOutput: 'amelioration_proximite',
+        input: {
+          current: { distance: 150, type: 'reseau_futur_proche' as const },
+          old: { distance: 500, type: 'reseau_futur_loin' as const },
+        },
         label: 'returns "amelioration_proximite" when going from futur loin to futur proche',
-        old: { distance: 500, type: 'reseau_futur_loin' as const },
       },
       {
-        current: { distance: 50, type: 'reseau_futur_tres_proche' as const },
-        expected: 'amelioration_proximite' as const,
+        expectedOutput: 'amelioration_proximite',
+        input: {
+          current: { distance: 50, type: 'reseau_futur_tres_proche' as const },
+          old: { distance: 150, type: 'reseau_futur_proche' as const },
+        },
         label: 'returns "amelioration_proximite" when going from futur proche to futur tres_proche',
-        old: { distance: 150, type: 'reseau_futur_proche' as const },
       },
       {
-        current: { distance: 0, type: 'dans_zone_reseau_futur' as const },
-        expected: 'amelioration_proximite' as const,
+        expectedOutput: 'amelioration_proximite',
+        input: {
+          current: { distance: 0, type: 'dans_zone_reseau_futur' as const },
+          old: { distance: 150, type: 'reseau_futur_proche' as const },
+        },
         label: 'returns "amelioration_proximite" when entering dans_zone_reseau_futur',
-        old: { distance: 150, type: 'reseau_futur_proche' as const },
       },
     ];
 
-    testCases.forEach(({ label, old, current, expected }) => {
-      it(label, () => {
-        expect(getTransition(createEligibility(old), createEligibility(current))).toBe(expected);
-      });
+    it.each(testCases)('$label', ({ input, expectedOutput }) => {
+      expect(getTransition(createEligibility(input.old), createEligibility(input.current))).toBe(expectedOutput);
     });
   });
 
   describe('Proximity degradations (future networks)', () => {
-    const testCases = [
+    type TransitionTestCase = TestCase<
+      { old: Partial<ProEligibilityTestEligibility>; current: Partial<ProEligibilityTestEligibility> },
+      string
+    >;
+
+    const testCases: TransitionTestCase[] = [
       {
-        current: { distance: 150, type: 'reseau_futur_proche' as const },
-        expected: 'degradation_proximite' as const,
+        expectedOutput: 'degradation_proximite',
+        input: {
+          current: { distance: 150, type: 'reseau_futur_proche' as const },
+          old: { distance: 50, type: 'reseau_futur_tres_proche' as const },
+        },
         label: 'returns "degradation_proximite" when going from futur tres_proche to futur proche',
-        old: { distance: 50, type: 'reseau_futur_tres_proche' as const },
       },
       {
-        current: { distance: 500, type: 'reseau_futur_loin' as const },
-        expected: 'degradation_proximite' as const,
+        expectedOutput: 'degradation_proximite',
+        input: {
+          current: { distance: 500, type: 'reseau_futur_loin' as const },
+          old: { distance: 150, type: 'reseau_futur_proche' as const },
+        },
         label: 'returns "degradation_proximite" when going from futur proche to futur loin',
-        old: { distance: 150, type: 'reseau_futur_proche' as const },
       },
       {
-        current: { distance: 150, type: 'reseau_futur_proche' as const },
-        expected: 'degradation_proximite' as const,
+        expectedOutput: 'degradation_proximite',
+        input: {
+          current: { distance: 150, type: 'reseau_futur_proche' as const },
+          old: { distance: 0, type: 'dans_zone_reseau_futur' as const },
+        },
         label: 'returns "degradation_proximite" when leaving dans_zone_reseau_futur',
-        old: { distance: 0, type: 'dans_zone_reseau_futur' as const },
       },
     ];
 
-    testCases.forEach(({ label, old, current, expected }) => {
-      it(label, () => {
-        expect(getTransition(createEligibility(old), createEligibility(current))).toBe(expected);
-      });
+    it.each(testCases)('$label', ({ input, expectedOutput }) => {
+      expect(getTransition(createEligibility(input.old), createEligibility(input.current))).toBe(expectedOutput);
     });
   });
 
   describe('City with network without trace', () => {
-    const testCases = [
+    type TransitionTestCase = TestCase<
+      { old: Partial<ProEligibilityTestEligibility>; current: Partial<ProEligibilityTestEligibility> },
+      string
+    >;
+
+    const testCases: TransitionTestCase[] = [
       {
-        current: { distance: 0, type: 'dans_ville_reseau_existant_sans_trace' as const },
-        expected: 'entree_ville_reseau_sans_trace' as const,
+        expectedOutput: 'entree_ville_reseau_sans_trace',
+        input: {
+          current: { distance: 0, type: 'dans_ville_reseau_existant_sans_trace' as const },
+          old: { distance: 500, type: 'reseau_existant_loin' as const },
+        },
         label: 'returns "entree_ville_reseau_sans_trace" when entering a city with network from existing network',
-        old: { distance: 500, type: 'reseau_existant_loin' as const },
       },
       {
-        current: { distance: 150, type: 'reseau_existant_proche' as const },
-        expected: 'sortie_ville_reseau_sans_trace' as const,
+        expectedOutput: 'sortie_ville_reseau_sans_trace',
+        input: {
+          current: { distance: 150, type: 'reseau_existant_proche' as const },
+          old: { distance: 0, type: 'dans_ville_reseau_existant_sans_trace' as const },
+        },
         label: 'returns "sortie_ville_reseau_sans_trace" when leaving a city with network',
-        old: { distance: 0, type: 'dans_ville_reseau_existant_sans_trace' as const },
       },
     ];
 
-    testCases.forEach(({ label, old, current, expected }) => {
-      it(label, () => {
-        expect(getTransition(createEligibility(old), createEligibility(current))).toBe(expected);
-      });
+    it.each(testCases)('$label', ({ input, expectedOutput }) => {
+      expect(getTransition(createEligibility(input.old), createEligibility(input.current))).toBe(expectedOutput);
     });
   });
 
