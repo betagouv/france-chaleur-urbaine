@@ -208,7 +208,7 @@
     "@types/shapefile": "^0.6.4",
     "@types/vt-pbf": "^3.1.0",
     "@vitejs/plugin-react": "^5.0.3",
-    "@vitest/coverage-v8": "^3.2.4",
+    "@vitest/coverage-v8": "^4.0.16",
     "babel-plugin-react-compiler": "^1.0.0",
     "camelcase": "^8.0.0",
     "globals": "^16.4.0",
@@ -227,7 +227,7 @@
     "trpc-ui": "^1.0.15",
     "typescript": "^5.9.2",
     "vite-tsconfig-paths": "^5.1.4",
-    "vitest": "^3.2.4"
+    "vitest": "^4.0.16"
   },
   "resolutions": {
     "styled-components": "^6",

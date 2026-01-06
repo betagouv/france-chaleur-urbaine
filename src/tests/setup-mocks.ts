@@ -1,3 +1,5 @@
+// biome-ignore-all lint/complexity/useArrowFunction: Vitest 4 requires function syntax for constructors in mocks (see https://vitest.dev/guide/migration.html#spyon-and-fn-support-constructors)
+
 // Import React after mocks to ensure they're available
 import '@testing-library/jest-dom/vitest';
 import { cleanup } from '@testing-library/react';
@@ -135,17 +137,21 @@ global.fetch = vi.fn().mockImplementation((url: string) => {
   } as Response);
 });
 
-global.ResizeObserver = vi.fn().mockImplementation(() => ({
-  disconnect: vi.fn(),
-  observe: vi.fn(),
-  unobserve: vi.fn(),
-}));
+global.ResizeObserver = vi.fn().mockImplementation(function () {
+  return {
+    disconnect: vi.fn(),
+    observe: vi.fn(),
+    unobserve: vi.fn(),
+  };
+});
 
-global.IntersectionObserver = vi.fn().mockImplementation(() => ({
-  disconnect: vi.fn(),
-  observe: vi.fn(),
-  unobserve: vi.fn(),
-}));
+global.IntersectionObserver = vi.fn().mockImplementation(function () {
+  return {
+    disconnect: vi.fn(),
+    observe: vi.fn(),
+    unobserve: vi.fn(),
+  };
+});
 
 // Mock console methods to suppress warnings in tests
 const originalConsoleError = console.error;
