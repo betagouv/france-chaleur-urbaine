@@ -20,10 +20,13 @@ interface HeadingProps extends SpacingProperties {
 
 /**
  * Renders a title element with a blue-france color by default.
- * Usage:
- *   <Heading> => <h1 class="fr-h1">
- *   <Heading as="h3" > => <h3 class="fr-h1">
- *   <Heading size="h3" > => <h1 class="fr-h3">
+ *
+ * @example
+ * ```tsx
+ * <Heading>Title</Heading> // => <h1 class="fr-h1">
+ * <Heading as="h3">Title</Heading> // => <h3 class="fr-h1">
+ * <Heading size="h3">Title</Heading> // => <h1 class="fr-h3">
+ * ```
  */
 function Heading(props: PropsWithChildren<HeadingProps>) {
   const Type = props.as ?? 'h1';
