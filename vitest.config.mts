@@ -17,7 +17,6 @@ export default defineConfig({
     },
     coverage: {
       exclude: ['src/**/*.{d.ts,test.ts,spec.ts,test.tsx,spec.tsx}', 'src/{app,pages,tests}/**'],
-      // In v4, explicitly define include to get both covered and uncovered files
       include: ['src/**/*.{ts,tsx}'],
       provider: 'v8',
       reporter: ['text', 'html', 'lcov'],
@@ -25,13 +24,33 @@ export default defineConfig({
     },
     environment: 'happy-dom',
     exclude: ['**/{.git,node_modules,dist,.next}/**'],
-    fileParallelism: false, // Disable parallel file execution to avoid database conflicts between integration tests
     onConsoleLog: (log) => {
       // Suppress specific React warnings
       if (log.includes('React does not recognize')) {
         return false;
       }
     },
+    projects: [
+      // Tests unitaires - parallèle
+      {
+        extends: true,
+        test: {
+          exclude: ['src/**/*.integration.spec.{ts,tsx}'],
+          fileParallelism: true,
+          include: ['src/**/*.{test,spec}.{ts,tsx}'],
+          name: 'unit',
+        },
+      },
+      // Tests d'intégration (BDD) - séquentiel pour éviter les conflits BDD
+      {
+        extends: true,
+        test: {
+          fileParallelism: false,
+          include: ['src/**/*.integration.spec.{ts,tsx}'],
+          name: 'integration',
+        },
+      },
+    ],
     server: {
       deps: {
         inline: ['@/client-config'],
