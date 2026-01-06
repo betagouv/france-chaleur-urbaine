@@ -1,53 +1,80 @@
 # AI Agent Configuration
 
-Load this file first when working on this codebase.
+## ⚠️ CRITICAL: AI AGENT PROTOCOL
 
-## Always Load
+YOU MUST FOLLOW THIS EXACT SEQUENCE:
+1. Read this entire file
+2. Load ALL files in "Core Context"
+3. Match user query keywords to "Context Map"
+4. Load ALL matching context files
+5. Reply: "✓ Loaded: [list] (~X tokens)" BEFORE answering
+6. If uncertain which contexts apply → ASK user
 
-These files are loaded for every task:
+---
 
-1. `.ai/avatars/developer.md` - Developer persona
-2. `.ai/context/required/architecture.md` - Architecture principles
+## 📋 Core Context (Always Load)
+```
+.ai/avatars/developer.md                  # Developer persona guidelines
+.ai/context/required/architecture.md      # System design, principles
+.ai/context/required/coding-style.md      # Conventions, naming
+```
 
-## Load by Task Type
+---
 
-### Database & SQL
-`.ai/context/backend/database.md` - Database queries, Kysely code, PostGIS operations
+## 🗺️ Context Map (Match Keywords → Load File)
 
-### API & TRPC
-`.ai/context/backend/api.md` - Creating/modifying API endpoints, TRPC routes, server logic
+**Database & SQL**
+`.ai/context/backend/database.md`
+Keywords: database, sql, kysely, postgis, spatial, query, schema, table, column, geospatial
 
-### Migrations
-`.ai/context/backend/migrations.md` - Creating/modifying migrations, schema changes
+**API & Backend**
+`.ai/context/backend/api.md`
+Keywords: api, endpoint, trpc, route, server, procedure, handler, backend
 
-### React Components
-`.ai/context/frontend/react.md` - Creating/modifying React components, hooks, UI
+**Database Migrations**
+`.ai/context/backend/migrations.md`
+Keywords: migration, alter, schema change, drizzle, prisma, create table, drop
 
-### Forms
-`.ai/context/frontend/forms.md` - Creating/modifying forms, form validation
+**React Components**
+`.ai/context/frontend/react.md`
+Keywords: component, react, tsx, jsx, hook, state, props, ui, interface
 
-### Maps
-`.ai/context/frontend/maps.md` - Working with maps, layers definition, map interactions, MapLibre, geospatial data
+**Forms & Validation**
+`.ai/context/frontend/forms.md`
+Keywords: form, validation, input, submit, zod, react-hook-form, field, checkbox
 
-### Testing
-`.ai/context/quality/testing.md` - Writing/modifying tests
+**Maps & Geospatial**
+`.ai/context/frontend/maps.md`
+Keywords: map, maplibre, layer, geojson, marker, coordinates, basemap, popup
 
-### Security
-`.ai/context/quality/security.md` - Authentication, permissions, validation, secrets
+**Testing**
+`.ai/context/quality/testing.md`
+Keywords: test, jest, vitest, spec, mock, coverage, e2e, unit test
 
-### Error Handling
-`.ai/context/quality/errors.md` - Error handling, logging, error messages
+**Security**
+`.ai/context/quality/security.md`
+Keywords: auth, authentication, permission, authorization, security, secret, env, validation, sanitize
 
-## Additional Context
+**Error Handling**
+`.ai/context/quality/errors.md`
+Keywords: error, exception, logging, try-catch, error handling, error message
 
-### Module Context
-`.ai/context/required/modules.md` - Module-specific context loading rules
+---
 
-### Large Tasks
-`.ai/context/required/architecture.md` - When to load ARCHITECTURE.md for large tasks
+## 🎯 Special Rules
 
-### Design & Proposals
-`.ai/context/required/critical-thinking.md` - Self-review guidelines
+**Module-specific context**: If user mentions a module name → also load `.ai/context/required/modules.md`
 
-### Conventions
-`.ai/context/required/coding-style.md` - Code language, file types, project conventions
+**Large/complex tasks** (>5 files OR new module OR architecture decision):
+→ also load `.ai/context/required/critical-thinking.md` for design review
+
+---
+
+## ✓ Self-Check Before Responding
+
+- [ ] Read AGENTS.md?
+- [ ] Loaded all core files?
+- [ ] Scanned for matching keywords?
+- [ ] Replied with "✓ Loaded: [list]"?
+
+If ANY box unchecked → STOP and complete it first
