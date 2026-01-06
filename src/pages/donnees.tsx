@@ -492,7 +492,7 @@ const DonneesPage = () => {
                   collectivités via notre <Link href="/contribution">formulaire de contribution</Link> ou par d'autres canaux (mails, etc.).
                   <br />
                   Quand ils sont disponibles au format géographique, les tracés sont utilisés tels quels. Sinon quand ils sont au format
-                  PDF, ils ont extraits par France Chaleur Urbaine pour en faire une version géographique exploitable.
+                  PDF, ils sont extraits par France Chaleur Urbaine pour en faire une version géographique exploitable.
                 </td>
               </tr>
               <tr>
