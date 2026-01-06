@@ -2,6 +2,7 @@ import SimplePage from '@/components/shared/page/SimplePage';
 import Heading from '@/components/ui/Heading';
 import Link from '@/components/ui/Link';
 import TableBasic from '@/components/ui/TableBasic';
+import Tooltip from '@/components/ui/Tooltip';
 
 const DonneesPage = () => {
   return (
@@ -27,7 +28,7 @@ const DonneesPage = () => {
 
       <section>
         <Heading as="h2">Sources et utilisations</Heading>
-        <p className="text-sm text-gray-600">
+        <p>
           France Chaleur Urbaine utilise des données ouvertes de sources variées pour alimenter la carte et les outils d'analyse. Comme les
           données sont généralement toutes présentes sur la carte, elles sont ordonnées selon leur affichage dans la légende de la carte.
         </p>
@@ -47,23 +48,32 @@ const DonneesPage = () => {
             </tr>
             <tr>
               <td className="font-semibold">Réseaux de chaleur existants</td>
-              <td>Agrégé par FCU</td>
+              <td>
+                Bibliothèque Fedene pour 2023, gestionnaires de réseaux, collectivités.
+                <br />
+                <Link href="#detail-donnees-reseaux">Voir le détail des données</Link>
+              </td>
               <td>
                 Affichage dans la couche "Réseaux de chaleur". Utilisé pour les tests d'éligibilité des adresses et des analyses diverses.
               </td>
             </tr>
             <tr>
               <td className="font-semibold">Réseaux de froid existants</td>
-              <td>Agrégé par FCU</td>
+              <td>
+                Bibliothèque Fedene pour 2023, gestionnaires de réseaux, collectivités.
+                <br />
+                <Link href="#detail-donnees-reseaux">Voir le détail des données</Link>
+              </td>
               <td>Affichage dans la couche "Réseaux de froid".</td>
             </tr>
             <tr>
               <td className="font-semibold">Zones et réseaux en construction</td>
               <td>
-                Agrégé par FCU
+                Gestionnaires de réseaux, collectivités.
                 <p className="text-sm text-gray-600 mt-1">
-                  Contenu : projets de réseaux en développement avec dates de mise en service prévues, gestionnaires et tags associés
+                  Contenu : projets de réseaux en développement avec dates de mise en service prévues, gestionnaires
                 </p>
+                <Link href="#detail-donnees-reseaux">Voir le détail des données</Link>
               </td>
               <td>
                 Affichage dans la couche "Réseaux de chaleur en construction". Utilisé pour les tests d'éligibilité des adresses et des
@@ -73,10 +83,11 @@ const DonneesPage = () => {
             <tr>
               <td className="font-semibold">Périmètres de développement prioritaire (PDP)</td>
               <td>
-                Agrégé par FCU
+                Gestionnaires de réseaux, collectivités.
                 <p className="text-sm text-gray-600 mt-1">
-                  Contenu : géométries, metadonnées, liens avec les réseaux existants et en construction
+                  Contenu : géométries, métadonnées, liens avec les réseaux existants et en construction
                 </p>
+                <Link href="#detail-donnees-reseaux">Voir le détail des données</Link>
               </td>
               <td>
                 Affichage dans la couche "Périmètres de développement prioritaire". Utilisé pour les tests d'éligibilité des adresses et des
@@ -106,7 +117,10 @@ const DonneesPage = () => {
               </th>
             </tr>
             <tr>
-              <td className="font-semibold">Demandes de raccordement</td>
+              <td className="font-semibold">
+                Demandes de raccordement{' '}
+                <Tooltip title="Demandes déposées par les particuliers et professionnels pour une mise en relation avec les gestionnaires des réseaux de chaleur ouverts aux raccordements." />
+              </td>
               <td>
                 FCU
                 <p className="text-sm text-gray-600 mt-1">
@@ -191,7 +205,7 @@ const DonneesPage = () => {
               </td>
               <td>
                 Affichage dans la couche "Zones d'opportunité pour la création de réseaux de chaleur". Utilisé pour identifier les communes
-                à fort potentiel (communes sans réseau avec au moins une zone à fort potentiel)
+                à fort potentiel pour la création de réseaux de chaleur.
               </td>
             </tr>
             <tr>
@@ -429,12 +443,18 @@ const DonneesPage = () => {
         </TableBasic>
       </section>
 
-      <section>
+      <section id="detail-donnees-reseaux">
         <Heading as="h2">Détail des données sur les réseaux de chaleur et de froid</Heading>
         <p>
           Les données sur les réseaux de chaleur et de froid sont constituées de plusieurs champs provenant de différentes sources. France
           Chaleur Urbaine agrège ces données pour les réseaux de chaleur, de froid, en construction et les périmètres de développement
           prioritaire (PDP).
+        </p>
+        <p>
+          De manière générale, l'enquête annuelle de la FEDENE Réseaux de chaleur & froid permet à France Chaleur Urbaine de connaître les
+          réseaux de chaleur et de froid existants et de solliciter les gestionnaires de réseaux et collectivités pour obtenir des
+          informations sur les réseaux et notamment les tracés. Parfois, ce sont aussi les gestionnaires ou collectivités qui nous
+          fournissent directement des données.
         </p>
         <p>
           Ces données sont{' '}
@@ -605,15 +625,26 @@ const DonneesPage = () => {
               </tr>
             </tbody>
           </TableBasic>
+
+          <p>
+            La FEDENE Réseaux de chaleur & froid met à disposition un{' '}
+            <Link href="https://fedene.fr/wp-content/uploads/2024/05/EARCF-2024_Guide-methodologique-v2.pdf" isExternal>
+              guide méthodologique
+            </Link>{' '}
+            qui décrit les données recueillies et calculs réalisés pour la compilation des données de l'enquête annuelle.
+          </p>
         </div>
       </section>
 
       <section className="mb-10 space-y-6">
         <Heading as="h2">Outils d'analyse et traitements</Heading>
-        <p>Au-delà de l'affichage cartographique, certaines données sont mobilisées spécifiquement pour certains outils.</p>
+        <p>
+          Au-delà de l'affichage cartographique, certaines données sont mobilisées spécifiquement pour certains{' '}
+          <Link href="/carte?tabId=outils">outils de la carte</Link>.
+        </p>
 
         <div>
-          <p className="font-semibold mb-1">Résumés de zones (extraction de données)</p>
+          <p className="font-semibold mb-1">Extraire des données sur les bâtiments</p>
           <p>
             Permet d'obtenir un résumé des données dans un polygone géographique dessiné par l'utilisateur. Les données agrégées incluent :
           </p>
@@ -636,7 +667,7 @@ const DonneesPage = () => {
         </div>
 
         <div>
-          <p className="font-semibold mb-1">Densité thermique linéaire</p>
+          <p className="font-semibold mb-1">Calculer une densité thermique linéaire</p>
           <p>
             Permet d'évaluer les potentiels le long d'un tracé (par exemple une future conduite de réseau). Les calculs sont effectués à
             deux distances de référence (10 mètres et 50 mètres) et incluent :
