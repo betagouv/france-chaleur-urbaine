@@ -1,93 +1,84 @@
-# CLAUDE.md
+# AI Agent Configuration
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+## ⚠️ CRITICAL: AI AGENT PROTOCOL
 
-<!-- This section has been moved to .ai/context/OVERVIEW.md -->
+YOU MUST FOLLOW THIS EXACT SEQUENCE:
+1. Read this entire file
+2. Load ALL files in "Core Context"
+3. Match user query keywords to "Context Map"
+4. Load ALL matching context files
+5. Reply: "✓ Loaded: [list] (~X tokens)" BEFORE answering
+6. If uncertain which contexts apply → ASK user
 
-## Essential Commands
+---
 
-```bash
-# Development
-pnpm dev                   # Start dev server (port 3000)
-pnpm dev:email             # Email template development
-
-# Code Quality (ALWAYS run before committing)
-pnpm lint                  # ESLint check
-pnpm lint:fix              # Fix linting issues
-pnpm prettier-check        # Code formatting
-pnpm lint:file             # Lint specific file
-pnpm ts                    # Run typescript on all codebase
-
-# Testing
-pnpm test                  # Run all tests
-pnpm test:watch            # Watch mode
-pnpm test src/utils/file.spec.ts  # Run single test
-
-# Database
-pnpm db:migrate            # Run migrations
-pnpm db:sync               # Regenerate Kysely types (after schema changes)
-
-# Build
-pnpm build                 # Production build
-pnpm build:analyze         # Analyze bundle size
-
-# Images
-pnpm cli optimize images  # Optimize all images in public/ directory
+## 📋 Core Context (Always Load)
+```
+.ai/avatars/developer.md                  # Developer persona guidelines
+.ai/context/required/architecture.md      # System design, principles
+.ai/context/required/coding-style.md      # Conventions, naming
 ```
 
-## Architecture & Key Patterns
+---
 
-<!-- This section has been moved to .ai/context/OVERVIEW.md -->
+## 🗺️ Context Map (Match Keywords → Load File)
 
-<!-- This section has been moved to .ai/context/ARCHITECTURE.md -->
+**Database & SQL**
+`.ai/context/backend/database.md`
+Keywords: database, sql, kysely, postgis, spatial, query, schema, table, column, geospatial
 
-<!-- This section has been moved to .ai/context/ARCHITECTURE.md -->
+**API & Backend**
+`.ai/context/backend/api.md`
+Keywords: api, endpoint, trpc, route, server, procedure, handler, backend
 
-### Key Architectural Decisions
+**Database Migrations**
+`.ai/context/backend/migrations.md`
+Keywords: migration, alter, schema change, drizzle, prisma, create table, drop
 
-1. **API Routes Pattern**: All data operations go through `/api/` endpoints
+**React Components**
+`.ai/context/frontend/react.md`
+Keywords: component, react, tsx, jsx, hook, state, props, ui, interface
 
-If not in a distinct module
+**Forms & Validation**
+`.ai/context/frontend/forms.md`
+Keywords: form, validation, input, submit, zod, react-hook-form, field, checkbox
 
-```typescript
-// Client: src/services/
-// API: src/pages/api/
-// Server: src/server/services/
-```
+**Maps & Geospatial**
+`.ai/context/frontend/maps.md`
+Keywords: map, maplibre, layer, geojson, marker, coordinates, basemap, popup
 
-If in a distinct module
+**Testing**
+`.ai/context/quality/testing.md`
+Keywords: test, jest, vitest, spec, mock, coverage, e2e, unit test
 
-```typescript
-// Client: src/modules/module-name/client/
-// API: src/modules/module-name/client/api.ts
-// Server: src/modules/module-name/server/
-```
+**Security**
+`.ai/context/quality/security.md`
+Keywords: auth, authentication, permission, authorization, security, secret, env, validation, sanitize
 
-2. **Database Access**: Always use Kysely for type safety
-```typescript
-   import { kdb } from '@/server/db/kysely'
-   const networks = await db.selectFrom('reseaux_de_chaleur').selectAll().execute()
-```
+**Error Handling**
+`.ai/context/quality/errors.md`
+Keywords: error, exception, logging, try-catch, error handling, error message
 
-3. **Map Integration**: Use MapLibre components in `src/components/Map/`
-   - Custom layers defined in `src/services/Map/` 
-   - Coordinate transformations via Turf.js utilities
+**Dependency Management**
+`.ai/context/quality/dependencies.md`
+Keywords: dependency, update, upgrade, version, package, npm, pnpm
 
-4. **Form Handling**: Tanstack React Form with Zod validation
-```typescript
-  // See src/components/form/ for examples
-```
+---
 
-5. **State Management**:
-   - Server state: @tanstack/react-query
-   - Client state: jotai atoms
-   - URL state: nuqs hooks and useQueryFlag.tsx if no need for a value
+## 🎯 Special Rules
 
-6. **HTML Markup**
+**Module-specific context**: If user mentions a module name → also load `.ai/context/required/modules.md`
 
-- Use semantic HTML markup when needed
-- Reduce the number of imbricated tags to the bare minimum
+**Large/complex tasks** (>5 files OR new module OR architecture decision):
+→ also load `.ai/context/required/critical-thinking.md` for design review
 
-<!-- Workflow modification and coding guidelines have been moved to .ai/context/CODING-STYLE.md -->
+---
 
-<!-- Architecture and deployment information has been moved to .ai/context/ARCHITECTURE.md -->
+## ✓ Self-Check Before Responding
+
+- [ ] Read AGENTS.md?
+- [ ] Loaded all core files?
+- [ ] Scanned for matching keywords?
+- [ ] Replied with "✓ Loaded: [list]"?
+
+If ANY box unchecked → STOP and complete it first

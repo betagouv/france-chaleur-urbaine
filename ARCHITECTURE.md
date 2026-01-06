@@ -1,19 +1,25 @@
-# Architecture Documentation
+# Architecture Documentation - France Chaleur Urbaine
 
-> **📋 READ THIS FIRST**: This file provides a comprehensive overview of the France Chaleur Urbaine codebase architecture. Always consult this file and relevant module CLAUDE.md files before making changes.
+> **📋 READ THIS FIRST**: This file documents the **specific architecture** of the France Chaleur Urbaine project.
+>
+> For **general architecture principles** (module system, conventions), see `.ai/context/architecture.md`
 
 ## Project Overview
 
-France Chaleur Urbaine is a Next.js application helping French citizens connect to district heating networks. Built with TypeScript, PostgreSQL+PostGIS, and following French government design standards (DSFR).
+**France Chaleur Urbaine** is a Next.js application helping French citizens connect to district heating networks. 
 
-**🏗️ Current Architecture Status**: Hybrid - Modern module-based architecture coexisting with legacy code being gradually migrated.
+**Tech Stack**: TypeScript, PostgreSQL+PostGIS, DSFR (French gov design system)
+
+**🏗️ Current Status**: Hybrid architecture - Modern modules (16 active) + legacy code (being migrated).
 
 ## 📁 Directory Structure
 
 ```
+docs/                    # Legacy documentations (do not use)
 src/
-├── 🟢 modules/           # Modern module-based architecture (16 modules)
-├── 🟢 components/        # UI components (keep current structure)
+├── 🟢 app/global.css    # Only used for global CSS
+├── 🟢 modules/          # Modern module-based architecture (16 modules)
+├── 🟢 components/       # UI components (keep current structure)
 ├── 🟢 hooks/            # React hooks (keep current structure)  
 ├── 🟢 config/           # Configuration files (keep current structure)
 ├── 🟢 data/             # Static data (keep current structure)
@@ -29,37 +35,30 @@ src/
 
 ## 🏛️ Module-Based Architecture
 
+> **General module principles** in `.ai/context/architecture.md`. This section = project-specific modules.
+
 ### ✅ Existing Modules (16)
 
-| Module | Purpose | Status | CLAUDE.md |
-|--------|---------|--------|-----------|
-| **auth** | Authentication (NextAuth) | ✅ Active | ✅ Complete |
-| **jobs** | Async job processing | ✅ Active | ✅ Complete |
-| **reseaux** | Heat/cold networks | ✅ Active | ✅ Complete |
-| **tiles** | Map tile generation | ✅ Active | ✅ Complete |
-| **trpc** | Type-safe API layer | ✅ Active | ✅ Complete |
-| **pro-eligibility-tests** | Pro eligibility | ✅ Active | ✅ Complete |
-| **tags** | Tagging system | ✅ Active | ✅ Complete |
-| **users** | User management | ✅ Active | ✅ Complete |
-| **events** | Event logging | ✅ Active | ✅ Complete |
-| **analytics** | Analytics config | ✅ Active | ✅ Complete |
-| **config** | Context builders | ✅ Active | ❓ Check |
-| **diagnostic** | System diagnostics | ✅ Active | ❓ Check |
-| **notification** | Notifications | ✅ Active | ❓ Check |
-| **media-kit** | Media resources | ✅ Active | ❓ Check |
-| **data** | Data extraction & summary | ✅ Active | ✅ Complete |
-| **ban** | Base Adresse Nationale (client API & types) | ✅ Active | ❓ Check |
+| Module | Purpose | Status | AGENTS.md | Business Area |
+|--------|---------|--------|-----------|---------------|
+| **auth** | Authentication (NextAuth) | ✅ Active | ✅ Complete | User Management |
+| **users** | User CRUD, roles, profiles | ✅ Active | ✅ Complete | User Management |
+| **reseaux** | Heat/cold networks (core business) | ✅ Active | ✅ Complete | Core Business |
+| **tiles** | Map tile generation (Tippecanoe) | ✅ Active | ✅ Complete | Mapping |
+| **pro-eligibility-tests** | Bulk address eligibility testing | ✅ Active | ✅ Complete | Core Business |
+| **trpc** | Type-safe API layer (infrastructure) | ✅ Active | ✅ Complete | Infrastructure |
+| **jobs** | Async job processing (cron + queue) | ✅ Active | ✅ Complete | Infrastructure |
+| **tags** | Tagging system for resources | ✅ Active | ✅ Complete | Data Management |
+| **events** | Event logging system | ✅ Active | ✅ Complete | Monitoring |
+| **analytics** | Analytics config (Matomo, FB) | ✅ Active | ✅ Complete | Monitoring |
+| **data** | Data extraction & summary | ✅ Active | ✅ Complete | Data Management |
+| **config** | Context builders | ✅ Active | ❓ Check | Infrastructure |
+| **diagnostic** | System diagnostics | ✅ Active | ❓ Check | Monitoring |
+| **notification** | Notifications | ✅ Active | ❓ Check | Communication |
+| **media-kit** | Media resources | ✅ Active | ❓ Check | Content |
+| **ban** | Base Adresse Nationale API | ✅ Active | ❓ Check | External APIs |
 
-### 🏗️ Standard Module Structure
-
-Each module follows a consistent structure. See `src/modules/CLAUDE.md` for complete details and rules.
-
-### 🚫 Module Rules (CRITICAL)
-
-1. **Internal imports**: Use `./` or `../` within modules, NEVER `@/modules`
-2. **Client/Server separation**: Client code NEVER imports from server
-3. **Type sharing**: Use `types.ts` at module root for shared types
-4. **Backward compatibility**: Re-export in legacy locations during transition
+**Module Documentation**: Each module has `AGENTS.md` with structure, API, examples. See `.ai/context/modules.md` for module conventions.
 
 ## 🔴 Legacy Code Areas (Migration Required)
 
@@ -106,32 +105,29 @@ Each module follows a consistent structure. See `src/modules/CLAUDE.md` for comp
 
 ## 🛠️ Development Workflow
 
-### 🚨 CRITICAL RULE - Always Follow This
+> **General conventions** in `.ai/context/architecture.md`. This section = project-specific workflow.
 
-**BEFORE editing any files, you MUST:**
-1. **Read ARCHITECTURE.md** (this file) to understand the current structure
-2. **Read the relevant module's CLAUDE.md** file to understand conventions
-3. **Read at least 2-3 similar existing files** to follow patterns
+### 🚨 Before Making Changes
 
-### Making Changes
+1. **Read this ARCHITECTURE.md** - Understand project structure, modules, legacy areas
+2. **Read module's AGENTS.md** - If working in `src/modules/MODULE/`, read its AGENTS.md
+3. **Check migration status** - Is the code in legacy area? Consider migrating to module first
 
-#### Working with Existing Modules
-1. Check if module has `CLAUDE.md` - follow its specific conventions
-2. Use relative imports (`./`, `../`) within modules
-3. Never import server code in client code
-4. Add types to `types.ts` if shared between client/server
+### Working with Modules
 
-#### Creating New Modules
-1. Follow standard module structure above
-2. Create comprehensive `CLAUDE.md` documentation
-3. Add `.env.example` for environment variables
-4. Update this ARCHITECTURE.md file
+See `.ai/context/modules.md` for module conventions. Key project-specific points:
 
-#### Working with Legacy Code
-1. **Prefer migrating to modules** over editing legacy files
-2. If editing legacy code is necessary, plan migration path
-3. Add TODOs indicating module migration target
-4. Update re-exports for backward compatibility
+- **Prefer modules over legacy**: When touching legacy code, consider migrating it
+- **TRPC over REST**: New endpoints → use TRPC in modules, not `/api` routes
+- **Document in AGENTS.md**: Update module's AGENTS.md when adding features
+
+### Migration Priority
+
+When touching legacy code, prioritize migrating these areas (see Legacy Code Areas section below):
+1. **demands** (Critical)
+2. **eligibility** (Critical)  
+3. **statistics** (High)
+4. Others as encountered
 
 ## 🔧 Technical Stack
 
@@ -154,8 +150,8 @@ Each module follows a consistent structure. See `src/modules/CLAUDE.md` for comp
 
 ## 📝 Documentation Standards
 
-### CLAUDE.md Files
-Every module MUST have a `CLAUDE.md` file containing:
+### AGENTS.md Files
+Every module MUST have a `AGENTS.md` file containing:
 - **Structure** - File organization
 - **API documentation** - Hooks, components, services
 - **Database schema** - If applicable
@@ -189,7 +185,7 @@ Every module MUST have a `CLAUDE.md` file containing:
 
 ### For New Features
 1. Determine if feature belongs in existing module or needs new one
-2. Read relevant CLAUDE.md files for patterns
+2. Read relevant AGENTS.md files for patterns
 3. Follow module structure conventions
 4. Create TRPC routes instead of REST APIs
 5. Update this ARCHITECTURE.md if creating new module
@@ -201,7 +197,7 @@ Every module MUST have a `CLAUDE.md` file containing:
 4. Run `pnpm lint` and `pnpm ts` before committing
 
 ### For Code Review
-1. Verify ARCHITECTURE.md and CLAUDE.md files were consulted
+1. Verify ARCHITECTURE.md and AGENTS.md files were consulted
 2. Check module structure compliance
 3. Ensure no server imports in client code
 4. Confirm legacy code migration strategy if applicable

@@ -6,7 +6,7 @@ Comprehensive tracking and analytics integration for France Chaleur Urbaine.
 
 ```
 analytics/
-├── CLAUDE.md              # This file
+├── AGENTS.md              # This file
 ├── analytics.config.ts    # Event configuration and tracking mappings
 ├── client.ts              # Client-side analytics hooks and utilities
 └── types.ts               # Type definitions
