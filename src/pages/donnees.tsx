@@ -51,7 +51,7 @@ const DonneesPage = () => {
               <td>
                 Bibliothèque Fedene pour 2023, gestionnaires de réseaux, collectivités.
                 <br />
-                <Link href="#detail-donnees-reseaux">Voir le détail des données</Link>
+                <Link href="#detail-reseaux-chaleur-froid">Voir le détail des données</Link>
               </td>
               <td>
                 Affichage dans la couche "Réseaux de chaleur". Utilisé pour les tests d'éligibilité des adresses et des analyses diverses.
@@ -62,7 +62,7 @@ const DonneesPage = () => {
               <td>
                 Bibliothèque Fedene pour 2023, gestionnaires de réseaux, collectivités.
                 <br />
-                <Link href="#detail-donnees-reseaux">Voir le détail des données</Link>
+                <Link href="#detail-reseaux-chaleur-froid">Voir le détail des données</Link>
               </td>
               <td>Affichage dans la couche "Réseaux de froid".</td>
             </tr>
@@ -73,7 +73,7 @@ const DonneesPage = () => {
                 <p className="text-sm text-gray-600 mt-1">
                   Contenu : projets de réseaux en développement avec dates de mise en service prévues, gestionnaires
                 </p>
-                <Link href="#detail-donnees-reseaux">Voir le détail des données</Link>
+                <Link href="#detail-reseaux-en-construction">Voir le détail des données</Link>
               </td>
               <td>
                 Affichage dans la couche "Réseaux de chaleur en construction". Utilisé pour les tests d'éligibilité des adresses et des
@@ -87,7 +87,7 @@ const DonneesPage = () => {
                 <p className="text-sm text-gray-600 mt-1">
                   Contenu : géométries, métadonnées, liens avec les réseaux existants et en construction
                 </p>
-                <Link href="#detail-donnees-reseaux">Voir le détail des données</Link>
+                <Link href="#detail-pdp">Voir le détail des données</Link>
               </td>
               <td>
                 Affichage dans la couche "Périmètres de développement prioritaire". Utilisé pour les tests d'éligibilité des adresses et des
@@ -443,7 +443,7 @@ const DonneesPage = () => {
         </TableBasic>
       </section>
 
-      <section id="detail-donnees-reseaux">
+      <section>
         <Heading as="h2">Détail des données sur les réseaux de chaleur et de froid</Heading>
         <p>
           Les données sur les réseaux de chaleur et de froid sont constituées de plusieurs champs provenant de différentes sources. France
@@ -465,7 +465,9 @@ const DonneesPage = () => {
         </p>
 
         <div>
-          <Heading as="h3">Réseaux de chaleur (+ froid si applicable)</Heading>
+          <Heading as="h3" id="detail-reseaux-chaleur-froid">
+            Réseaux de chaleur (+ froid si applicable)
+          </Heading>
           <TableBasic>
             <thead>
               <tr>
@@ -633,6 +635,104 @@ const DonneesPage = () => {
             </Link>{' '}
             qui décrit les données recueillies et calculs réalisés pour la compilation des données de l'enquête annuelle.
           </p>
+        </div>
+
+        <div>
+          <Heading as="h3" id="detail-reseaux-en-construction">
+            Zones et réseaux en construction
+          </Heading>
+          <TableBasic>
+            <thead>
+              <tr>
+                <th>Champ</th>
+                <th>Note</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="font-semibold">
+                  <ul>
+                    <li>géométrie (tracé ou zone)</li>
+                  </ul>
+                </td>
+                <td>
+                  Les tracés et zones de réseaux en construction sont fournis par les gestionnaires et collectivités via notre{' '}
+                  <Link href="/contribution">formulaire de contribution</Link> ou par d'autres canaux (mails, etc.).
+                </td>
+              </tr>
+              <tr>
+                <td className="font-semibold">
+                  <ul>
+                    <li>communes</li>
+                    <li>département</li>
+                    <li>région</li>
+                  </ul>
+                </td>
+                <td>Calculé automatiquement à partir de la géométrie.</td>
+              </tr>
+              <tr>
+                <td className="font-semibold">
+                  <ul>
+                    <li>gestionnaire</li>
+                  </ul>
+                </td>
+                <td>Fourni par les gestionnaires et collectivités.</td>
+              </tr>
+              <tr>
+                <td className="font-semibold">
+                  <ul>
+                    <li>mise en service</li>
+                  </ul>
+                </td>
+                <td>Date prévue de mise en service fournie par les gestionnaires et collectivités.</td>
+              </tr>
+            </tbody>
+          </TableBasic>
+        </div>
+
+        <div>
+          <Heading as="h3" id="detail-pdp">
+            Périmètres de développement prioritaire (PDP)
+          </Heading>
+          <TableBasic>
+            <thead>
+              <tr>
+                <th>Champ</th>
+                <th>Note</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="font-semibold">
+                  <ul>
+                    <li>géométrie (zone)</li>
+                  </ul>
+                </td>
+                <td>
+                  Les zones de PDP sont fournies par les gestionnaires et collectivités via notre{' '}
+                  <Link href="/contribution">formulaire de contribution</Link> ou par d'autres canaux (mails, etc.).
+                </td>
+              </tr>
+              <tr>
+                <td className="font-semibold">
+                  <ul>
+                    <li>identifiant réseau</li>
+                  </ul>
+                </td>
+                <td>Identifiant SNCU du réseau de chaleur associé au PDP.</td>
+              </tr>
+              <tr>
+                <td className="font-semibold">
+                  <ul>
+                    <li>communes</li>
+                    <li>département</li>
+                    <li>région</li>
+                  </ul>
+                </td>
+                <td>Calculé automatiquement à partir de la géométrie.</td>
+              </tr>
+            </tbody>
+          </TableBasic>
         </div>
       </section>
 
