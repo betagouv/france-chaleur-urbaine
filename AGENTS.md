@@ -59,6 +59,10 @@ Keywords: auth, authentication, permission, authorization, security, secret, env
 `.ai/context/quality/errors.md`
 Keywords: error, exception, logging, try-catch, error handling, error message
 
+**Dependency Management**
+`.ai/context/quality/dependencies.md`
+Keywords: dependency, update, upgrade, version, package, npm, pnpm
+
 ---
 
 ## 🎯 Special Rules
