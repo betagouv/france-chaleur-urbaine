@@ -1,6 +1,6 @@
 import type { AvailableHeating } from '@/modules/app/types';
+import type { SuggestionItem } from '@/modules/ban/types';
 import type { HeatNetworksResponse } from './HeatNetworksResponse';
-import type { SuggestionItem } from './Suggestions';
 
 export type AvailableStructure = 'Tertiaire' | 'Copropriété' | 'Bailleur social' | 'Maison individuelle' | 'Autre' | undefined;
 export type AddressDataType = {

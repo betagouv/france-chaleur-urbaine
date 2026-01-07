@@ -1,4 +1,4 @@
-import { type SuggestionItem } from './Suggestions';
+import type { SuggestionItem } from '@/modules/ban/types';
 
 export type HeatNetwork = {
   isEligible: boolean;

@@ -1,7 +1,7 @@
 import type { ContactFormInfos } from '@/modules/demands/constants';
+import type { Coords } from '@/modules/geo/types';
 import type { DetailedEligibilityStatus } from '@/server/services/addresseInformation';
 import type { DemandStatus } from '@/types/enum/DemandSatus';
-import type { Coords } from '../Coords';
 
 export type DemandSummary = {
   id: string;
