@@ -13,6 +13,7 @@
 - **Functions = verbs**; variables = meaningful nouns
 - **Guard clauses** and limit nesting
 - **Catch only with meaningful handling**
+- **Parallelize independent operations** with `Promise.all()`
 - **Add tests** for non-trivial logic
 - **Named exports**, not default exports
 

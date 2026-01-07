@@ -5,9 +5,13 @@ This project uses **Vitest 4** with **Testing Library** and **happy-dom** for al
 ## Core Principles
 
 1. **Declarative over imperative** - Use data-driven tests with `it.each()` or `.forEach()`
-2. **DRY (Don't Repeat Yourself)** - Extract test data into a declarative arrays
+2. **DRY (Don't Repeat Yourself)** - Extract test data into declarative arrays
 3. **Type-safe** - Use TypeScript types for test cases
 4. **Clear labels** - Test descriptions should clearly indicate what is being tested
+5. **Use `toStrictEqual` with all fields** - Verify complete object structure for maximum non-regression detection
+6. **Avoid `toBeDefined()`** - Always verify actual values or use `expect.any(Type)` matchers
+7. **Centralize seed data** - Create reusable seed functions with reference coordinates
+8. **Inline `createTestCaller`** - Call directly in expect rather than storing in variables
 
 ## Test Helpers
 
@@ -111,8 +115,7 @@ describe('myRouter', () => {
     ];
 
     it.each(testCases)('$label', async ({ user, allowed }) => {
-      const caller = createTestCaller(user);
-      const callRoute = () => caller.myNamespace.myRoute();
+      const callRoute = () => createTestCaller(user).myNamespace.myRoute();
 
       if (allowed) {
         await expect(callRoute()).resolves.toMatchObject({ /* expected result */ });
@@ -149,21 +152,103 @@ describe('myRouter', () => {
 ### ✅ Do
 
 ```typescript
-// Extract test cases data with typed data from test logic
-const testCases: TestCase<Input, Output>[] = [
-  { input: 'test', expectedOutput: true, label: 'handles normal case' },
-];
+// Use toStrictEqual to verify ALL fields at once (best for non-regression)
+expect(result).toStrictEqual({
+  co2: 50,
+  distance: expect.any(Number),
+  futurNetwork: false,
+  gestionnaire: 'CPCU',
+  hasNoTraceNetwork: null,
+  hasPDP: false,
+  id: '7501C',
+  inPDP: true,
+  isClasse: true,
+  isEligible: true,
+  name: 'CPCU',
+  tauxENRR: 65,
+  veryEligibleDistance: expect.any(Number),
+});
+
+// Use matchers for dynamic/unpredictable values
+expect(result).toStrictEqual({
+  createdAt: expect.any(Date),
+  id: expect.any(String),
+  count: expect.any(Number),
+  status: 'active',
+});
+
+// Inline createTestCaller directly in the test
+const result = await createTestCaller(null).reseaux.eligibilityStatus(testPoint);
+expect(result).toStrictEqual({ ... });
+
+// Create reusable seed functions with parallelization
+export async function seedNetworksForEligibilityTests() {
+  // Parallelize all independent insertions
+  await Promise.all([
+    seedReseauDeChaleur({ id_fcu: 7501, ... }),
+    seedZoneEtReseauEnConstruction({ id_fcu: 9001, ... }),
+    // ... all seeds in parallel
+  ]);
+}
+
+// Use reference coordinates
+export const NETWORK_TEST_COORDS = {
+  testPoint: { city: 'Paris', lat: 48.8566, lon: 2.3522 },
+  reseauTresProche: { lat: 48.8566, lon: 2.35256 },
+};
+
+// Extract geometry helpers
+export function createLineGeometry(lon: number, lat: number, offsetMeters: number) {
+  const offsetDegrees = offsetMeters / 111000;
+  return sql`ST_Transform(ST_MakeLine(
+    ST_Point(${lon + offsetDegrees}, ${lat}, 4326),
+    ST_Point(${lon + offsetDegrees}, ${lat + offsetDegrees}, 4326)
+  ), 2154)`;
+}
+
+// Parallelize independent database operations with Promise.all
+export async function cleanDatabase() {
+  await Promise.all([
+    kdb.deleteFrom('users').execute(),
+    kdb.deleteFrom('jobs').execute(),
+    kdb.deleteFrom('reseaux_de_chaleur').execute(),
+    // ... all independent deletes
+  ]);
+}
 
 // Explicit error expectations
-await expect(fn).rejects.toMatchObject({ code: 'NOT_FOUND' });
-
-// Use helpers for common patterns
-const caller = createTestCaller(testUsers.admin);
+await expect(fn).rejects.toStrictEqual({ code: 'NOT_FOUND', message: expect.any(String) });
 ```
 
 ### ❌ Don't
 
 ```typescript
+// Don't use multiple toBe() assertions
+expect(result.id).toBe('7501C');
+expect(result.name).toBe('CPCU');
+expect(result.isEligible).toBe(true);
+// Use toStrictEqual with all fields instead ☝️
+
+// Don't use toBeDefined() without checking the actual value
+expect(result.id).toBeDefined();
+// Use expect.any(String) or actual value instead ☝️
+
+// Don't duplicate geometry creation code
+geom: sql`ST_Transform(ST_MakeLine(...), 2154)` // repeated everywhere
+// Create a helper function instead ☝️
+
+// Don't repeat seed data in every test
+beforeEach(async () => {
+  await seedReseauDeChaleur({ ... }); // same data in each test
+});
+// Create a centralized seed function instead ☝️
+
+// Don't run independent operations sequentially
+await kdb.deleteFrom('users').execute();
+await kdb.deleteFrom('jobs').execute();
+await kdb.deleteFrom('reseaux_de_chaleur').execute();
+// Use Promise.all for parallel execution ☝️
+
 // Don't repeat test logic manually
 it('test 1', () => { expect(fn('a')).toBe(true); });
 it('test 2', () => { expect(fn('b')).toBe(true); });
@@ -179,6 +264,84 @@ it('validates email', () => {
   // ... more inline assertions
 });
 ```
+
+### Geometry Helpers for PostGIS
+
+Create reusable geometry helpers to avoid SQL duplication:
+
+```typescript
+// src/tests/fixtures.ts
+/**
+ * Creates a LineString geometry (for networks) from coordinates with offset
+ * @param lon Longitude in WGS84 (SRID 4326)
+ * @param lat Latitude in WGS84 (SRID 4326)
+ * @param offsetMeters Distance offset in meters (~111km per degree)
+ * @returns SQL expression for LineString in Lambert 93 (SRID 2154)
+ */
+export function createLineGeometry(
+  lon: number, 
+  lat: number, 
+  offsetMeters: number
+): RawBuilder<string> {
+  const offsetDegrees = offsetMeters / 111000;
+  return sql`ST_Transform(ST_MakeLine(
+    ST_Point(${lon + offsetDegrees}, ${lat}, 4326),
+    ST_Point(${lon + offsetDegrees}, ${lat + offsetDegrees}, 4326)
+  ), 2154)`;
+}
+
+/**
+ * Creates a Polygon geometry (for zones) from center point with radius
+ */
+export function createPolygonGeometry(
+  lon: number,
+  lat: number,
+  radiusMeters: number
+): RawBuilder<string> {
+  const offsetDegrees = radiusMeters / 111000;
+  return sql`ST_Transform(ST_MakePolygon(ST_MakeLine(ARRAY[
+    ST_Point(${lon - offsetDegrees}, ${lat - offsetDegrees}, 4326),
+    ST_Point(${lon + offsetDegrees}, ${lat - offsetDegrees}, 4326),
+    ST_Point(${lon + offsetDegrees}, ${lat + offsetDegrees}, 4326),
+    ST_Point(${lon - offsetDegrees}, ${lat + offsetDegrees}, 4326),
+    ST_Point(${lon - offsetDegrees}, ${lat - offsetDegrees}, 4326)
+  ])), 2154)`;
+}
+```
+
+**Usage in tests:**
+
+```typescript
+beforeEach(async () => {
+  await cleanDatabase();
+  await seedNetworksForEligibilityTests();
+});
+
+it('retourne éligible pour un réseau très proche', async () => {
+  const result = await createTestCaller(null).reseaux.eligibilityStatus(
+    NETWORK_TEST_COORDS.testPoint // Use reference coordinates
+  );
+
+  expect(result).toStrictEqual({
+    co2: 50,
+    distance: expect.any(Number),
+    futurNetwork: false,
+    gestionnaire: 'CPCU',
+    hasNoTraceNetwork: null,
+    hasPDP: false,
+    id: '7501C',
+    inPDP: true,
+    isClasse: true,
+    isEligible: true,
+    name: 'CPCU',
+    tauxENRR: 65,
+    veryEligibleDistance: expect.any(Number),
+  });
+  expect(result.distance).toBeLessThan(60);
+});
+```
+
+**Reference**: `src/modules/reseaux/server/trpc-routes.eligibilityStatus.integration.spec.ts` - Complete example with seed data and geometry helpers
 
 ## Running Tests
 
