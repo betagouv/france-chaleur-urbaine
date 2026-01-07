@@ -1,6 +1,6 @@
 {
   "ignore": ["src/server/db/migrations/*.ts", "scripts/**", "next-sitemap.config.js", "src/server/db/kysely/database.ts"],
-  "ignoreBinaries": ["audit", "knip", "db:introspect"],
-  "ignoreDependencies": ["sharp", "@svgr/webpack", "kysely-codegen", "raw-loader", "geojson"],
+  "ignoreBinaries": ["knip", "db:introspect"],
+  "ignoreDependencies": ["sharp", "@svgr/webpack", "kysely-codegen", "raw-loader"],
   "project": ["src/**/*.{ts,tsx}"]
 }

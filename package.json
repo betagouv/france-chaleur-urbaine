@@ -25,7 +25,7 @@
     "dev:email": "NODE_ENV=test email dev --dir src/modules/email/react-email/templates",
     "build": "NODE_OPTIONS=\"--max-old-space-size=8192\" next build",
     "build:analyze": "TURBOPACK_STATS=1 pnpm build",
-    "deadcode": "npx knip",
+    "deadcode": "NODE_OPTIONS='--import tsx' npx knip",
     "clean": "rm -Rf node_modules && rm -Rf .next && pnpm i",
     "start": "next start -p $PORT",
     "start:clock": "tsx src/modules/jobs/server/clock.ts",
