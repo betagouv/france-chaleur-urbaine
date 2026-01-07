@@ -1,5 +1,4 @@
 import * as Sentry from '@sentry/nextjs';
-import { HttpStatusCode } from 'axios';
 import { errors as formidableErrors } from 'formidable';
 import type { NextApiHandler, NextApiRequest, NextApiResponse } from 'next';
 import type { User } from 'next-auth';
@@ -72,7 +71,7 @@ export function handleRouteErrors<HandlersConfig extends Partial<Record<RequestM
 
       // handle preflight requests
       if (req.method === 'OPTIONS') {
-        res.status(HttpStatusCode.Ok).end();
+        res.status(200).end();
       } else {
         const handler = typeof handlerOrHandlers === 'function' ? handlerOrHandlers : handlerOrHandlers[req.method as RequestMethod];
         if (!handler) {
@@ -80,7 +79,7 @@ export function handleRouteErrors<HandlersConfig extends Partial<Record<RequestM
         }
         const handlerResult = await handler(req, res);
         if (!res.headersSent) {
-          res.status(HttpStatusCode.Ok).json(
+          res.status(200).json(
             handlerResult ?? {
               message: 'success',
             }

@@ -105,8 +105,6 @@
     "@uiw/react-color-colorful": "^2.8.0",
     "airtable": "^0.12.2",
     "archiver": "^7.0.1",
-    "axios": "^1.12.2",
-    "axios-retry": "^4.5.0",
     "base64-stream": "^1.0.0",
     "bcryptjs": "^3.0.2",
     "chardet": "^2.1.0",
