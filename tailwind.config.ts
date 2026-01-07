@@ -2,7 +2,9 @@ import { spacingTokenByValue } from '@codegouvfr/react-dsfr/fr/generatedFromCss/
 import type { Config } from 'tailwindcss';
 import animate from 'tailwindcss-animate';
 
-import colors from './src/components/ui/helpers/colors';
+// Import colors through .mjs wrapper to work around Turbopack module resolution
+// See tailwind.colors.mjs for details
+import colors from './tailwind.colors.mjs';
 
 const config = {
   content: ['./src/**/*.{js,ts,jsx,tsx,mdx}'],
