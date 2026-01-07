@@ -16,6 +16,7 @@
 - **Parallelize independent operations** with `Promise.all()`
 - **Add tests** for non-trivial logic
 - **Named exports**, not default exports
+- **CRITICAL**: After ANY file modification, ALWAYS run `read_lints` on modified files and fix all lint errors before submitting code
 
 ## React
 
