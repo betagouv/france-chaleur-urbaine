@@ -222,7 +222,12 @@ const DonneesPage = () => {
             </tr>
             <tr>
               <td className="font-semibold">Communes à fort potentiel pour la création de réseaux de chaleur</td>
-              <td>Calculé par FCU à partir des communes, des zones d'opportunités, des tracés des réseaux.</td>
+              <td>
+                FCU. Calculé à partir des communes disposant d’au moins une zone à fort potentiel chaleur et ne présentant aucun réseau de
+                chaleur existant ou en construction, évalué à partir de la géométrie communale réduite de 150 m*.
+                <br />* La géométrie communale est réduite de 150 m pour éviter de comptabiliser les réseaux limitrophes qui dépassent leur
+                communes d'implantation.
+              </td>
               <td>Affichage dans la couche "Communes à fort potentiel pour la création de réseaux de chaleur"</td>
             </tr>
             <tr>
