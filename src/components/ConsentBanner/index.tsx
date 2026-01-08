@@ -13,17 +13,10 @@ type FinalityDescription = Parameters<typeof createConsentManagement>[0]['finali
 
 const googleEnabled = clientConfig.tracking.googleTagIds.length > 0;
 const linkedinEnabled = !!clientConfig.tracking.linkInPartnerId;
-const facebookEnabled = !!clientConfig.tracking.facebookPixelId;
 const hotjarEnabled = clientConfig.tracking.hotjarId && clientConfig.tracking.hotjarSv;
 
 const consentConfig: FinalityDescription = {};
 
-if (facebookEnabled) {
-  consentConfig.facebook_pixel = {
-    description: "Mesure d'audience",
-    title: 'Facebook Pixel',
-  };
-}
 if (linkedinEnabled) {
   consentConfig.linkedin_insights = {
     description: "Mesure d'audience",

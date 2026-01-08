@@ -65,7 +65,7 @@ const configFunctions = [
         'https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com',
       ],
       'font-src': ["'self'", 'https:', 'data:', 'https://*.hotjar.com'],
-      'frame-src': ['https://td.doubleclick.net', 'https://www.facebook.com/', 'https://www.youtube.com/'],
+      'frame-src': ['https://td.doubleclick.net', 'https://www.youtube.com/'],
       'img-src': ["'self'", 'https:', 'data:'],
       'script-src': [
         "'self'",
@@ -78,7 +78,6 @@ const configFunctions = [
         "'sha256-3I33qFPfa/PLrN/3rrrC4vJBjmKYiuXWQ+ZfnHiEWmo='",
         "'sha256-ksltjYbI6Uoozfn80t6ROvA1rBbTP9X8qGPGwHmWBpA='",
         "'sha256-6SC04Y6nNQLzwzyqa3SfGlAJoGLEAasou2bnNnkusvM='",
-        "'sha256-b4GFU36HxV/ajsLtGxYpBvVIlonNc0Dz5lk+ZTMKysY='", // PROD - Facebook Pixel 3064783047067401
         "'sha256-Ny4QAH1g1FWyqlgrnIVWh1mj+jM8c6SjgqJ2i6c2REU='", // PROD - google analytics common
         "'sha256-8r71P9EINuYzK2mdhvMfZG0nDrKZhY5rvxXNAgVD45g='", // PROD - Google AW-16641573937
         "'sha256-/To7QTI1yR8LpZjhrqYdP21zirnpAwwI4s7M8TwKxnI='", // PROD - Google G-B35Q28PSV8
@@ -87,12 +86,10 @@ const configFunctions = [
         "'sha256-cWPc/BJwUWRnFb5b17VxDNk72/ZwL1GOqTQ6dAU/P3E='", // PROD - unknown yet
         'https://stats.beta.gouv.fr',
         'https://static.axept.io',
-        'https://connect.facebook.net',
         'https://www.gstatic.com/',
         'https://www.googletagmanager.com https://*.googletagmanager.com',
         'https://www.googleadservices.com',
         'https://googleads.g.doubleclick.net',
-        'https://connect.facebook.net',
         'https://snap.licdn.com',
         'https://api.mapbox.com/',
         'https://*.hotjar.com',

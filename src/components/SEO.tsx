@@ -24,12 +24,7 @@ const defaultImagePath = '/img/preview/fcu-preview-20241122.webp';
 const defaultImageWidth = 1200;
 const defaultImageHeight = 627;
 
-const sameAs = [
-  'https://www.linkedin.com/company/france-chaleur-urbaine/',
-  'https://www.youtube.com/channel/UCe6-eBpMzazl_ZESXJ_N6hw',
-  // 'https://x.com/fchaleururbaine', // plus utilisé
-  // 'https://www.facebook.com/p/France-Chaleur-Urbaine-100075948205743/', // plus utilisé
-];
+const sameAs = ['https://www.linkedin.com/company/france-chaleur-urbaine/', 'https://www.youtube.com/channel/UCe6-eBpMzazl_ZESXJ_N6hw'];
 
 type OpenGraphType =
   | 'article'

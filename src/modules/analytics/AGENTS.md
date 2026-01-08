@@ -16,7 +16,6 @@ analytics/
 
 - **Matomo** - Main analytics platform (privacy-friendly)
 - **Google Analytics 4** - Conversion tracking
-- **Facebook Pixel** - Social media advertising
 - **LinkedIn Ads** - Professional network advertising
 - **Hotjar** - User behavior recording
 
@@ -32,7 +31,6 @@ export const trackingEvents = {
   'Eligibilité|Formulaire de test - Envoi': {
     matomo: ['Eligibilité', 'Formulaire de test - Envoi'],
     google: 'XNYRCJ6h6c0ZELGIqf89',
-    facebook: 'Formulaire de test - Envoi',
     linkedin: 5492674,
   },
 } as const;
@@ -128,9 +126,6 @@ NEXT_PUBLIC_MATOMO_SITE_ID=1
 # Google Analytics (optional)
 NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID=GTM-XXXXXX
 NEXT_PUBLIC_GOOGLE_TAG_ID=G-XXXXXXXXXX
-
-# Facebook Pixel (optional)
-NEXT_PUBLIC_FACEBOOK_PIXEL_ID=123456789
 
 # LinkedIn Ads (optional)
 NEXT_PUBLIC_LINKEDIN_PARTNER_ID=123456

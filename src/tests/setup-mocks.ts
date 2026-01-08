@@ -32,7 +32,6 @@ vi.mock('@/server/config', () => ({
     publicodesDocumentationURL: 'https://test.example.com',
     summaryAreaSizeLimit: 5,
     tracking: {
-      facebookPixelId: undefined,
       googleTagIds: [],
       hotjarId: undefined,
       hotjarSv: undefined,

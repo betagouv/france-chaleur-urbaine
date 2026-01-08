@@ -30,7 +30,6 @@ export const clientConfig = {
     process.env.NEXT_PUBLIC_PUBLICODES_DOCUMENTATION_URL ?? 'https://betagouv.github.io/france-chaleur-urbaine-publicodes',
   summaryAreaSizeLimit: 5, // km²
   tracking: {
-    facebookPixelId: process.env.NEXT_PUBLIC_FACEBOOK_PIXEL_ID,
     googleTagIds: (process.env.NEXT_PUBLIC_GOOGLE_TAG_ID ?? '').split(',').filter(Boolean),
     hotjarId: process.env.NEXT_PUBLIC_HOTJAR_ID,
     hotjarSv: process.env.NEXT_PUBLIC_HOTJAR_SV,

@@ -1,4 +1,3 @@
-import { fbEvent } from '@rivercode/facebook-conversion-api-nextjs';
 import { init as initMatomo } from '@socialgouv/matomo-next';
 import { atom, useAtom, useAtomValue } from 'jotai';
 import { Router } from 'next/router';
@@ -36,7 +35,7 @@ let hookInitialized = false;
 /**
  * Register analytics (Matomo only for now).
  * Matomo and Google Analytics page views both have to be triggered manually.
- * Facebook and Linkedin track page views automatically when loaded.
+ * Linkedin track page views automatically when loaded.
  */
 export const useAnalytics = () => {
   const [matomoAnalyticsLoadingState, setMatomoAnalyticsLoadedState] = useAtom(matomoAnalyticsLoadingStateAtom);
@@ -136,7 +135,6 @@ export const trackEvent = (eventKey: TrackingEvent, ...eventPayload: any[]) => {
 
 // augment window type with tracking helpers
 declare let window: Window & {
-  fbq: (param: any) => void; // facebook
   gtag: (...args: any[]) => void; // google
   lintrk: (action: string, param: any) => void; // linkedin
   _paq: [any]; // matomo
@@ -146,17 +144,6 @@ declare let window: Window & {
 };
 
 const performTracking = (trackingConfig: TrackingConfiguration, eventPayload?: any[]) => {
-  if (trackingConfig.facebook && typeof window?.fbq === 'function') {
-    // we may need to use custom events trackCustom when we want more information
-    // see https://developers.facebook.com/docs/meta-pixel/reference
-    // window.fbq(['track', ...trackingConfig.facebook]);
-    // use standard pixel and conversion api
-    // see https://github.com/RivercodeAB/facebook-conversion-api-nextjs/blob/7279e607b0f07a841d695406f47c7782b623973a/src/conversion-api.ts#L28
-    fbEvent({
-      enableStandardPixel: true,
-      eventName: trackingConfig.facebook,
-    });
-  }
   if (trackingConfig.google && typeof window?.gtag === 'function') {
     clientConfig.tracking.googleTagIds.forEach((googleTagId) => {
       window.gtag('event', 'conversion', {
