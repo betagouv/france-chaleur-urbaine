@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'motion/react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { clientConfig } from '@/client-config';
 import SimplePage from '@/components/shared/page/SimplePage';
@@ -38,6 +38,13 @@ export default function TestsAdressesPage(): JSX.Element {
   useEffect(() => {
     setHasPendingJobs(eligibilityTests?.some((test) => test.has_pending_jobs) ?? false);
   }, [eligibilityTests]);
+
+  const handleDeleteTest = useCallback(
+    (testId: string) => {
+      return () => deleteTest({ id: testId });
+    },
+    [deleteTest]
+  );
 
   const newTestButton = (
     <Dialog
@@ -87,7 +94,7 @@ export default function TestsAdressesPage(): JSX.Element {
               >
                 <ProEligibilityTestItem
                   test={test}
-                  onDelete={() => deleteTest({ id: test.id })}
+                  onDelete={handleDeleteTest(test.id)}
                   className={isDeleteTestPending && deleteTestVariables?.id === test.id ? 'opacity-50' : ''}
                 />
               </motion.div>

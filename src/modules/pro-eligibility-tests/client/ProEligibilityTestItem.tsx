@@ -3,7 +3,7 @@ import Tabs from '@codegouvfr/react-dsfr/Tabs';
 import type { ColumnFiltersState, RowSelectionState, SortingState } from '@tanstack/react-table';
 import dynamic from 'next/dynamic';
 import { useQueryState } from 'nuqs';
-import { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import type { AdresseEligible } from '@/components/Map/Map';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
@@ -405,7 +405,93 @@ type ProEligibilityTestItemProps = {
   readOnly?: boolean;
   className?: string;
 };
-function ProEligibilityTestItem({ test, onDelete, readOnly = false, className }: ProEligibilityTestItemProps) {
+
+// Extract label rendering logic to reduce re-renders
+type AccordionLabelProps = {
+  test: ProEligibilityTestItemProps['test'];
+  readOnly: boolean;
+  onRename?: (testId: string) => void;
+};
+
+const AccordionLabel = React.memo(({ test, readOnly, onRename }: AccordionLabelProps) => {
+  return (
+    <div className="flex items-center justify-between w-full">
+      <div>{test.name}</div>
+      {!readOnly && onRename && (
+        <ModalSimple
+          title="Renommer le test"
+          trigger={<Button priority="tertiary no outline" size="small" iconId="fr-icon-pencil-line" title="Renommer le test" />}
+          size="large"
+        >
+          <RenameEligibilityTestForm currentName={test.name} testId={test.id} />
+        </ModalSimple>
+      )}
+      <div className="flex-auto" />
+      {test.has_unseen_changes && (
+        <Badge severity="warning" small className="fr-mx-1w">
+          Mises à jour
+        </Badge>
+      )}
+      {test.last_job_has_error && (
+        <Badge severity="error" small className="fr-mx-1w">
+          Erreur
+        </Badge>
+      )}
+      {test.has_pending_jobs ? (
+        <Badge severity="new" noIcon small className="fr-mx-1w">
+          <Loader height={12} width={12} strokeWidth={6} color="var(--text-action-high-yellow-moutarde)" className="mr-2" /> Mise à jour en
+          attente
+        </Badge>
+      ) : (
+        test.has_unseen_results && (
+          <Badge severity="info" small className="fr-mx-1w">
+            Nouveaux résultats
+          </Badge>
+        )
+      )}
+      <div className="fr-mx-1w text-xs text-gray-800 font-normal cursor-help" title={formatFrenchDateTime(new Date(test.updated_at))}>
+        {readOnly && (
+          <>
+            <span className="font-semibold">{(test as RouterOutput['proEligibilityTests']['listAdmin']['items'][number]).user_email}</span>{' '}
+            -{' '}
+          </>
+        )}
+        Dernière mise à jour&nbsp;: {formatFrenchDate(new Date(test.updated_at))}
+      </div>
+    </div>
+  );
+});
+
+AccordionLabel.displayName = 'AccordionLabel';
+
+// Custom comparison function to prevent unnecessary re-renders
+const areProEligibilityTestItemPropsEqual = (prevProps: ProEligibilityTestItemProps, nextProps: ProEligibilityTestItemProps): boolean => {
+  // Compare primitive props
+  if (prevProps.readOnly !== nextProps.readOnly || prevProps.className !== nextProps.className) {
+    return false;
+  }
+
+  // Compare test object properties that actually affect rendering
+  const prevTest = prevProps.test;
+  const nextTest = nextProps.test;
+
+  return (
+    prevTest.id === nextTest.id &&
+    prevTest.name === nextTest.name &&
+    prevTest.updated_at === nextTest.updated_at &&
+    prevTest.has_pending_jobs === nextTest.has_pending_jobs &&
+    prevTest.has_unseen_results === nextTest.has_unseen_results &&
+    prevTest.has_unseen_changes === nextTest.has_unseen_changes &&
+    prevTest.last_job_has_error === nextTest.last_job_has_error
+  );
+};
+
+const ProEligibilityTestItem = React.memo(function ProEligibilityTestItem({
+  test,
+  onDelete,
+  readOnly = false,
+  className,
+}: ProEligibilityTestItemProps) {
   const [value] = useQueryState(queryParamName);
   const [viewDetail, setViewDetail] = useState(value === test.id);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -432,12 +518,12 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false, className }:
 
   const addresses = testDetails?.addresses ?? [];
 
-  const handleDelete = async () => {
+  const handleDelete = useCallback(async () => {
     if (!confirm('Êtes-vous sûr de vouloir supprimer ce test ?')) {
       return;
     }
     await onDelete?.();
-  };
+  }, [onDelete]);
 
   useEffect(() => {
     if (viewDetail && (test.has_unseen_results || test.has_unseen_changes) && !readOnly && !isMarkAsSeenLoading) {
@@ -509,61 +595,8 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false, className }:
       multi={false}
       id={test.id}
       className={className}
-      label={
-        <div className="flex items-center justify-between w-full">
-          <div>{test.name}</div>
-          {!readOnly && (
-            <ModalSimple
-              title="Renommer le test"
-              trigger={<Button priority="tertiary no outline" size="small" iconId="fr-icon-pencil-line" title="Renommer le test" />}
-              size="large"
-            >
-              <RenameEligibilityTestForm currentName={test.name} testId={test.id} />
-            </ModalSimple>
-          )}
-          <div className="flex-auto" />
-          {test.has_unseen_changes && (
-            <Badge severity="warning" small className="fr-mx-1w">
-              Mises à jour
-            </Badge>
-          )}
-          {test.last_job_has_error && (
-            <Badge severity="error" small className="fr-mx-1w">
-              Erreur
-            </Badge>
-          )}
-          {test.has_pending_jobs ? (
-            <Badge severity="new" noIcon small className="fr-mx-1w">
-              <Loader height={12} width={12} strokeWidth={6} color="var(--text-action-high-yellow-moutarde)" className="mr-2" /> Mise à jour
-              en attente
-            </Badge>
-          ) : (
-            test.has_unseen_results && (
-              <Badge severity="info" small className="fr-mx-1w">
-                Nouveaux résultats
-              </Badge>
-            )
-          )}
-          <div className="fr-mx-1w text-xs text-gray-800 font-normal cursor-help" title={formatFrenchDateTime(new Date(test.updated_at))}>
-            {readOnly && (
-              <>
-                <span className="font-semibold">
-                  {(test as RouterOutput['proEligibilityTests']['listAdmin']['items'][number]).user_email}
-                </span>{' '}
-                -{' '}
-              </>
-            )}
-            Dernière mise à jour&nbsp;: {formatFrenchDate(new Date(test.updated_at))}
-          </div>
-        </div>
-      }
-      onClose={
-        !readOnly
-          ? async () => {
-              await handleDelete();
-            }
-          : undefined
-      }
+      label={<AccordionLabel test={test} readOnly={readOnly} onRename={!readOnly ? () => {} : undefined} />}
+      onClose={!readOnly ? handleDelete : undefined}
       onExpandedChange={async (expanded) => {
         setViewDetail(expanded);
         if (expanded && test.has_unseen_results && !readOnly) {
@@ -696,6 +729,8 @@ function ProEligibilityTestItem({ test, onDelete, readOnly = false, className }:
       )}
     </UrlStateAccordion>
   );
-}
+}, areProEligibilityTestItemPropsEqual);
+
+ProEligibilityTestItem.displayName = 'ProEligibilityTestItem';
 
 export default ProEligibilityTestItem;
