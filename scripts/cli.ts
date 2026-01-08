@@ -17,7 +17,7 @@ import { registerJobsCommands } from '@/modules/jobs/commands';
 import { registerOptimizationCommands } from '@/modules/optimization/commands';
 import { registerProEligibilityTestsCommands } from '@/modules/pro-eligibility-tests/commands';
 import { registerNetworkCommands } from '@/modules/reseaux/commands';
-import { downloadAndUpdateNetwork, downloadNetwork } from '@/modules/reseaux/server/download-network';
+import { downloadNetwork } from '@/modules/reseaux/server/download-network';
 import { applyGeometryUpdates } from '@/modules/reseaux/server/geometry-updates';
 import { syncPostgresToAirtable } from '@/modules/reseaux/server/sync-pg-to-airtable';
 import { registerTilesCommands } from '@/modules/tiles/commands';
@@ -96,13 +96,6 @@ program
   .argument('<network-id>', 'Network id', validateNetworkId)
   .action(async (table) => {
     await downloadNetwork(table);
-  });
-
-program
-  .command('download-and-update-network')
-  .argument('<network-id>', 'Network id', validateNetworkId)
-  .action(async (table) => {
-    await downloadAndUpdateNetwork(table);
   });
 
 type EPCI = {
