@@ -1,8 +1,6 @@
-import type { Knex } from 'knex';
 import { createLogger, format, transports } from 'winston';
-
-import db from '@/server/db';
 import { AirtableDB, type AirtableTable } from '@/server/db/airtable';
+import { kdb, sql } from '@/server/db/kysely';
 import { formatAsISODate } from '@/utils/date';
 
 import { type Type, TypeBool, TypeString } from './download-network';
@@ -205,7 +203,7 @@ export const tableConfigs: TableConfig[] = [
 ];
 
 // vues postgres changements_*
-type Changement = {
+export type Changement = {
   id_fcu: number;
   changement: 'Ajouté' | 'Modifié' | 'Supprimé' | 'Identique';
   geom: object;
@@ -247,17 +245,19 @@ type Changement = {
 export const applyGeometryUpdates = async (dryRun: boolean) => {
   globalDryRun = dryRun;
   for (const tableConfig of tableConfigs) {
-    const changements = await db(tableConfig.tableChangements)
-      .select(
+    const changements = (await kdb
+      .selectFrom(tableConfig.tableChangements as any)
+      .select([
         'id_fcu',
         'changement',
         'ign_communes',
-        db.raw('geom_new as geom'),
-        db.raw("st_geometrytype(geom_new) = 'ST_MultiLineString' as is_line"), // spécifique mais un peu commun quand même
-        ...(tableConfig.tableChangementsSelectFields ? tableConfig.tableChangementsSelectFields : [])
-      )
+        sql<any>`geom_new`.as('geom'),
+        sql<boolean>`st_geometrytype(geom_new) = 'ST_MultiLineString'`.as('is_line'), // spécifique mais un peu commun quand même
+        ...(tableConfig.tableChangementsSelectFields ? tableConfig.tableChangementsSelectFields : []),
+      ])
       .where('changement_geom', '=', true)
-      .orderBy('id_fcu');
+      .orderBy('id_fcu')
+      .execute()) as Changement[];
 
     if (!changements.length) {
       logger.info(`\n\n# ${tableConfig.tableCible} : aucun changement détecté`);
@@ -272,7 +272,7 @@ export const applyGeometryUpdates = async (dryRun: boolean) => {
       switch (changement.changement) {
         case 'Ajouté': {
           await logPGQuery(
-            db(tableConfig.tableCible).insert({
+            kdb.insertInto(tableConfig.tableCible as any).values({
               geom: changement.geom,
               id_fcu: changement.id_fcu,
               ...(tableConfig.postgres?.getCreateProps ? tableConfig.postgres?.getCreateProps(changement) : {}),
@@ -287,8 +287,9 @@ export const applyGeometryUpdates = async (dryRun: boolean) => {
 
         case 'Modifié': {
           await logPGQuery(
-            db(tableConfig.tableCible)
-              .update({
+            kdb
+              .updateTable(tableConfig.tableCible as any)
+              .set({
                 geom: changement.geom,
                 ...(tableConfig.postgres?.getUpdateProps ? tableConfig.postgres?.getUpdateProps(changement) : {}),
               })
@@ -301,7 +302,7 @@ export const applyGeometryUpdates = async (dryRun: boolean) => {
           break;
         }
         case 'Supprimé': {
-          await logPGQuery(db(tableConfig.tableCible).delete().where('id_fcu', '=', changement.id_fcu));
+          await logPGQuery(kdb.deleteFrom(tableConfig.tableCible as any).where('id_fcu', '=', changement.id_fcu));
 
           if (tableConfig.airtable) {
             await deleteAirtable(tableConfig.airtable, changement);
@@ -369,9 +370,15 @@ async function deleteAirtable(airtableConfig: AirtableConfig, changement: Change
 
 // fonctions utilitaires pour logger les requêtes
 
-function logPGQuery(query: Knex.QueryBuilder<any, number>): Promise<any> {
-  queriesLogger.debug(`- PG: ${truncateGeomCoordinates(query.toQuery())}`);
-  return !globalDryRun ? query : Promise.resolve();
+async function logPGQuery<T>(queryBuilder: { compile: () => { sql: string; parameters: readonly unknown[] } }): Promise<any> {
+  const compiled = queryBuilder.compile();
+  const queryStr = `${compiled.sql} -- params: ${JSON.stringify(compiled.parameters)}`;
+  queriesLogger.debug(`- PG: ${truncateGeomCoordinates(queryStr)}`);
+  if (!globalDryRun) {
+    // Execute the query
+    return (queryBuilder as any).execute();
+  }
+  return Promise.resolve();
 }
 
 function logAirtableQuery(operation: 'create', table: AirtableTable, data: object): Promise<any>;

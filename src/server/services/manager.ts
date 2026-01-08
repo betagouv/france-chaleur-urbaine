@@ -1,7 +1,6 @@
 import { sql } from 'kysely';
 import * as demandsService from '@/modules/demands/server/demands-service';
 import { sendEmailTemplate } from '@/modules/email';
-import db from '@/server/db';
 import { kdb } from '@/server/db/kysely';
 import type { Demand } from '@/types/Summary/Demand';
 import type { User as FullUser } from '@/types/User';
@@ -158,9 +157,18 @@ const oldDemands = async (users: FullUser[]) => {
  * depuis plus de 7 jours.
  */
 export const weeklyOldManagerMail = async () => {
-  const users: FullUser[] = await db('users')
-    .where('active', true)
-    .select('gestionnaires', 'email', 'receive_new_demands', 'receive_old_demands');
+  const usersRaw = await kdb
+    .selectFrom('users')
+    .where('active', '=', true)
+    .select(['gestionnaires', 'email', 'receive_new_demands', 'receive_old_demands'])
+    .execute();
+
+  const users: FullUser[] = usersRaw.map((user) => ({
+    ...user,
+    gestionnaires: user.gestionnaires ?? [],
+    receive_new_demands: user.receive_new_demands ?? false,
+    receive_old_demands: user.receive_old_demands ?? false,
+  })) as FullUser[];
 
   await oldDemands(users);
 };
@@ -169,9 +177,18 @@ export const weeklyOldManagerMail = async () => {
  * Envoie un email pour notifier les gestionnaires de nouvelles demandes.
  */
 export const dailyNewManagerMail = async () => {
-  const users: FullUser[] = await db('users')
-    .where('active', true)
-    .select('gestionnaires', 'email', 'receive_new_demands', 'receive_old_demands');
+  const usersRaw = await kdb
+    .selectFrom('users')
+    .where('active', '=', true)
+    .select(['gestionnaires', 'email', 'receive_new_demands', 'receive_old_demands'])
+    .execute();
+
+  const users: FullUser[] = usersRaw.map((user) => ({
+    ...user,
+    gestionnaires: user.gestionnaires ?? [],
+    receive_new_demands: user.receive_new_demands ?? false,
+    receive_old_demands: user.receive_old_demands ?? false,
+  })) as FullUser[];
 
   await newDemands(users);
 };

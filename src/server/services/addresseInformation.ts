@@ -1,7 +1,6 @@
 import XLSX from 'xlsx';
 
 import { clientConfig } from '@/client-config';
-import db from '@/server/db';
 import { kdb, sql, type ZoneDeDeveloppementPrioritaire } from '@/server/db/kysely';
 import { getNetworkEligibilityDistances } from '@/services/eligibility';
 import { EXPORT_FORMAT } from '@/types/enum/ExportFormat';
@@ -10,11 +9,19 @@ import type { CityNetwork, HeatNetwork } from '@/types/HeatNetworksResponse';
 import isInPDP from './pdp';
 
 const hasNetworkInCity = async (city: string): Promise<boolean> => {
-  const result = await db('reseaux_de_chaleur').whereRaw('? = any(communes)', [city]).first();
+  const result = await kdb
+    .selectFrom('reseaux_de_chaleur')
+    .select(['id_fcu'])
+    .where(sql<boolean>`${sql.ref('communes')} @> ARRAY[${city}]`)
+    .executeTakeFirst();
   return !!result;
 };
 const hasFuturNetworkInCity = async (city: string): Promise<boolean> => {
-  const result = await db('zones_et_reseaux_en_construction').whereRaw('? = any(communes)', [city]).first();
+  const result = await kdb
+    .selectFrom('zones_et_reseaux_en_construction')
+    .select(['id_fcu'])
+    .where(sql<boolean>`${sql.ref('communes')} @> ARRAY[${city}]`)
+    .executeTakeFirst();
   return !!result;
 };
 
@@ -30,38 +37,41 @@ export type NetworkInfos = {
 };
 
 const getNoTraceNetworkInCity = async (city: string): Promise<NetworkInfos> => {
-  const result = await db('reseaux_de_chaleur')
-    .select('Identifiant reseau', 'Taux EnR&R', 'contenu CO2 ACV', 'Gestionnaire', 'nom_reseau')
-    .where('has_trace', false)
-    .andWhereRaw('? = any(communes)', [city])
-    .first();
-  return result;
+  const result = await kdb
+    .selectFrom('reseaux_de_chaleur')
+    .select(['Identifiant reseau', 'Taux EnR&R', 'contenu CO2 ACV', 'Gestionnaire', 'nom_reseau'])
+    .where('has_trace', '=', false)
+    .where(sql<boolean>`${sql.ref('communes')} @> ARRAY[${city}]`)
+    .executeTakeFirst();
+  return result as NetworkInfos;
 };
 
 export const getDistanceToNetwork = async (networkId: string, lat: number, lon: number): Promise<NetworkInfos> => {
-  const network = (await db('reseaux_de_chaleur')
-    .select(
+  const network = await kdb
+    .selectFrom('reseaux_de_chaleur')
+    .select([
       'Identifiant reseau',
       'Taux EnR&R',
       'contenu CO2 ACV',
       'Gestionnaire',
       'nom_reseau',
-      db.raw(`round(geom <-> ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154)) as distance`)
-    )
-    .where('has_trace', true)
-    .andWhere('Identifiant reseau', networkId)
-    .first()) as NetworkInfos;
+      sql<number>`round(geom <-> ST_Transform(ST_GeomFromText('POINT(${sql.lit(lon)} ${sql.lit(lat)})', 4326), 2154))`.as('distance'),
+    ])
+    .where('has_trace', '=', true)
+    .where('Identifiant reseau', '=', networkId)
+    .executeTakeFirst();
 
   if (!network) {
     throw new Error(`Le réseau ${networkId} n'existe pas ou n'a pas de tracé`);
   }
 
-  return network;
+  return network as NetworkInfos;
 };
 
 export const closestNetwork = async (lat: number, lon: number): Promise<NetworkInfos> => {
-  const network = await db('reseaux_de_chaleur')
-    .select(
+  const network = await kdb
+    .selectFrom('reseaux_de_chaleur')
+    .select([
       'Identifiant reseau',
       'Taux EnR&R',
       'contenu CO2 ACV',
@@ -69,13 +79,13 @@ export const closestNetwork = async (lat: number, lon: number): Promise<NetworkI
       'nom_reseau',
       'reseaux classes',
       'has_PDP',
-      db.raw(`round(geom <-> ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154)) as distance`)
-    )
-    .where('has_trace', true)
+      sql<number>`round(geom <-> ST_Transform(ST_GeomFromText('POINT(${sql.lit(lon)} ${sql.lit(lat)})', 4326), 2154))`.as('distance'),
+    ])
+    .where('has_trace', '=', true)
     .orderBy('distance')
-    .first();
+    .executeTakeFirst();
 
-  return network;
+  return network as NetworkInfos;
 };
 
 const closestFuturNetwork = async (
@@ -85,13 +95,17 @@ const closestFuturNetwork = async (
   distance: number;
   gestionnaire: string;
 }> => {
-  const network = await db('zones_et_reseaux_en_construction')
-    .select(db.raw(`round(geom <-> ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154)) as distance, "gestionnaire"`))
-    .where('is_zone', false)
+  const network = await kdb
+    .selectFrom('zones_et_reseaux_en_construction')
+    .select([
+      sql<number>`round(geom <-> ST_Transform(ST_GeomFromText('POINT(${sql.lit(lon)} ${sql.lit(lat)})', 4326), 2154))`.as('distance'),
+      'gestionnaire',
+    ])
+    .where('is_zone', '=', false)
     .orderBy('distance')
-    .first();
+    .executeTakeFirst();
 
-  return network;
+  return network as { distance: number; gestionnaire: string };
 };
 const closestInFuturNetwork = async (
   lat: number,
@@ -99,18 +113,19 @@ const closestInFuturNetwork = async (
 ): Promise<{
   gestionnaire: string;
 }> => {
-  const network = await db('zones_et_reseaux_en_construction')
+  const network = await kdb
+    .selectFrom('zones_et_reseaux_en_construction')
+    .selectAll()
     .where(
-      db.raw(`ST_INTERSECTS(
-          ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154),
-          ST_Transform(geom, 2154)
-        )
-      `)
+      sql<boolean>`ST_INTERSECTS(
+        ST_Transform(ST_GeomFromText('POINT(${sql.lit(lon)} ${sql.lit(lat)})', 4326), 2154),
+        ST_Transform(geom, 2154)
+      )`
     )
-    .andWhere('is_zone', true)
-    .first();
+    .where('is_zone', '=', true)
+    .executeTakeFirst();
 
-  return network;
+  return network as { gestionnaire: string };
 };
 
 export const getNbLogementById = async (id: string) => {

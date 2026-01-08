@@ -2,8 +2,8 @@ import type { Record } from 'airtable';
 import type { FieldSet } from 'airtable/lib/field_set';
 
 import { type DatabaseSourceId, type DatabaseTileInfo, tilesInfo } from '@/modules/tiles/tiles.config';
-import db from '@/server/db';
 import base from '@/server/db/airtable';
+import { kdb } from '@/server/db/kysely';
 import { parentLogger } from '@/server/helpers/logger';
 
 export const TypeArray: unique symbol = Symbol('array');
@@ -172,7 +172,11 @@ export const downloadNetwork = async (table: DatabaseSourceId) => {
   await Promise.all(
     networksAirtable.map(async (network) => {
       if (network.get('id_fcu')) {
-        await db(tileInfo.table).update(convertEntityFromAirtableToPostgres(table, network)).where('id_fcu', network.get('id_fcu'));
+        await kdb
+          .updateTable(tileInfo.table as any)
+          .set(convertEntityFromAirtableToPostgres(table, network))
+          .where('id_fcu', '=', network.get('id_fcu'))
+          .execute();
       }
     })
   );
@@ -203,7 +207,10 @@ export const downloadAndUpdateNetwork = async (table: DatabaseSourceId) => {
     const addIds: number[] = [];
     let updateCount = 0;
 
-    const networksDB = await db(tileInfo.table).select('id_fcu', 'communes', 'Identifiant reseau', 'has_trace');
+    const networksDB = await kdb
+      .selectFrom(tileInfo.table as any)
+      .select(['id_fcu', 'communes', 'Identifiant reseau', 'has_trace'])
+      .execute();
     await Promise.all(
       networksDB.map(async (network) => {
         const networkAirtable = networksAirtable.find((row) => row.get('id_fcu') === network.id_fcu);
@@ -241,7 +248,10 @@ export const downloadAndUpdateNetwork = async (table: DatabaseSourceId) => {
     });
   } else if (table === 'reseauxEnConstruction') {
     const addIds: number[] = [];
-    const networksDB = await db(tileInfo.table).select('id_fcu');
+    const networksDB = await kdb
+      .selectFrom(tileInfo.table as any)
+      .select(['id_fcu', 'communes'])
+      .execute();
     await Promise.all(
       networksDB.map(async (network) => {
         const networkAirtable = networksAirtable.find((row) => row.get('id_fcu') === network.id_fcu);
@@ -272,7 +282,11 @@ export const downloadAndUpdateNetwork = async (table: DatabaseSourceId) => {
   await Promise.all(
     networksAirtable.map(async (network) => {
       if (network.get('id_fcu')) {
-        await db(tileInfo.table).update(convertEntityFromAirtableToPostgres(table, network)).where('id_fcu', network.get('id_fcu'));
+        await kdb
+          .updateTable(tileInfo.table as any)
+          .set(convertEntityFromAirtableToPostgres(table, network))
+          .where('id_fcu', '=', network.get('id_fcu') as number)
+          .execute();
       }
     })
   );

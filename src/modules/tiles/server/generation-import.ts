@@ -3,8 +3,7 @@ import { basename, join } from 'node:path';
 
 import { defineTilesImportStrategy, type TilesTable } from '@/modules/tiles/server/generation';
 import { serverConfig } from '@/server/config';
-import db from '@/server/db';
-import { kdb } from '@/server/db/kysely';
+import { kdb, sql } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
 import { processInParallel } from '@/utils/async';
 import { type CommandResult, dockerVolumePath, listDirectoryEntries, type RunCommandOptions, runBash, runDocker } from '@/utils/system';
@@ -95,12 +94,14 @@ export const generateTilesFromGeoJSON = async (config: TippecanoeConfig) => {
  * @param destinationTable - Table de destination
  */
 const importTilesDirectoryToTable = async (tilesDirectory: string, destinationTable: TilesTable) => {
-  if (await db.schema.hasTable(destinationTable)) {
+  // Check if table exists by trying to query it
+  try {
+    await kdb.selectFrom(destinationTable).select(sql`1`.as('exists')).limit(1).execute();
     logger.info('flushing destination table', {
       table: destinationTable,
     });
     await kdb.deleteFrom(destinationTable).execute();
-  } else {
+  } catch (err) {
     logger.info('destination table does not exist, creating it', {
       table: destinationTable,
     });
@@ -154,15 +155,16 @@ const importTilesDirectory = async (basePath: string, destinationTable: string) 
   await processInParallel(tiles, QUERY_PARALLELISM, async (tile) => {
     try {
       const tileData = await readFile(tile.path);
-      await db(destinationTable)
-        .insert({
+      await kdb
+        .insertInto(destinationTable as any)
+        .values({
           tile: tileData,
           x: tile.x,
           y: tile.y,
           z: tile.z,
         })
-        .onConflict(['x', 'y', 'z'])
-        .merge();
+        .onConflict((oc) => oc.columns(['x', 'y', 'z']).doUpdateSet({ tile: tileData }))
+        .execute();
     } catch (err: any) {
       logger.error(`Error inserting tile ${tile.z}/${tile.x}/${tile.y}`, {
         error: err.message,

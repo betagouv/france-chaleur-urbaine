@@ -25,7 +25,6 @@ import { type DatabaseSourceId, tilesInfo } from '@/modules/tiles/tiles.config';
 import { getApiHandler } from '@/server/api/users';
 import { serverConfig } from '@/server/config';
 import { saveStatsInDB } from '@/server/cron/saveStatsInDB';
-import db from '@/server/db';
 import { kdb, sql } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
 import { syncComptesProFromUsers } from '@/server/services/airtable';
@@ -64,7 +63,7 @@ program
   .name('FCU CLI')
   .version('0.1.0')
   .hook('postAction', async () => {
-    await db.destroy();
+    await kdb.destroy();
   });
 
 registerAppCommands(program);
@@ -538,7 +537,7 @@ void (async () => {
     process.exit(2);
   } finally {
     // disconnect from the database
-    await Promise.all([db.destroy(), kdb.destroy()]);
+    await kdb.destroy();
   }
 })();
 

@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 
-import db from '@/server/db';
+import { kdb } from '@/server/db/kysely';
 
 import AmorceFileReader from './AmorceFileReader';
 import sousZoneClimatiques from './sous-zones-climatiques.json';
@@ -73,11 +73,15 @@ const upsertAndFixCity = async (city: any, { codesINSEE }: { codesINSEE: any }) 
     departement_id: departmentId,
     id: cityWithCorrectInseeCode.insee_com,
     source: city['Source '],
-    temperature_ref_altitude_moyenne, // recalculé à la place de "T°C réf / altitude_moyenne" qui semble être faux
+    temperature_ref_altitude_moyenne: temperature_ref_altitude_moyenne ?? 0, // recalculé à la place de "T°C réf / altitude_moyenne" qui semble être faux
   };
 
   try {
-    await db('communes').insert(correctedCityData).onConflict('id').merge(correctedCityData);
+    await kdb
+      .insertInto('communes')
+      .values(correctedCityData)
+      .onConflict((oc) => oc.column('id').doUpdateSet(correctedCityData))
+      .execute();
   } catch (error: any) {
     console.error('correctedCityData', correctedCityData);
     console.error('postalCode', postalCode);
@@ -111,7 +115,11 @@ const upsertDepartments = async (departmentData: any) => {
       zone_climatique: dept['Zone climatique'],
     };
     try {
-      await db('departements').insert(dataToInsert).onConflict('id').merge(dataToInsert);
+      await kdb
+        .insertInto('departements')
+        .values(dataToInsert)
+        .onConflict((oc) => oc.column('id').doUpdateSet(dataToInsert))
+        .execute();
     } catch (error: any) {
       console.error('Error updating department:', error.toString());
       console.error(dept);

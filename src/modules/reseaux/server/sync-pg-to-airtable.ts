@@ -1,12 +1,10 @@
 import { diff } from 'deep-object-diff';
-
-import db from '@/server/db';
 import base, { AirtableDB } from '@/server/db/airtable';
+import { kdb, sql } from '@/server/db/kysely';
 import { parentLogger } from '@/server/helpers/logger';
 import { isEmptyObject, pick } from '@/utils/core';
-
 import { convertAirtableValue } from './download-network';
-import { tableConfigs } from './geometry-updates';
+import { type Changement, tableConfigs } from './geometry-updates';
 
 /**
  * Synchronise les tables postgres FCU vers Airtable.
@@ -23,17 +21,19 @@ export const syncPostgresToAirtable = async (dryRun: boolean) => {
     console.info(`\n\n# Synchronisation ${tableConfig.tableCible} -> ${tableConfig.airtable.tableName}`);
 
     const [postgresEntities, airtableEntities] = await Promise.all([
-      db(tableConfig.tableCible)
-        .select(
+      kdb
+        .selectFrom(tableConfig.tableCible as any)
+        .select([
           'id_fcu',
           // réutilise la structure des changements pour simplifier un peu
-          db.raw('communes as ign_communes'),
-          db.raw('departement'),
-          db.raw('region'),
-          db.raw("st_geometrytype(geom) = 'ST_MultiLineString' as is_line"),
-          ...(tableConfig.pgToAirtableSyncAdditionalFields ?? [])
-        )
-        .orderBy('id_fcu'),
+          sql<string>`communes`.as('ign_communes'),
+          sql<string>`departement`.as('departement'),
+          sql<string>`region`.as('region'),
+          sql<boolean>`st_geometrytype(geom) = 'ST_MultiLineString'`.as('is_line'),
+          ...(tableConfig.pgToAirtableSyncAdditionalFields ?? []),
+        ])
+        .orderBy('id_fcu')
+        .execute(),
       base(tableConfig.airtable.tableName).select().all(),
     ]);
 
@@ -44,7 +44,7 @@ export const syncPostgresToAirtable = async (dryRun: boolean) => {
         continue;
       }
 
-      const newAirtableValues = tableConfig.airtable.getUpdateProps(postgresEntity);
+      const newAirtableValues = tableConfig.airtable.getUpdateProps(postgresEntity as unknown as Changement);
       const rawOldAirtableValues = pick(airtableEntity.fields, Object.keys(newAirtableValues));
       const oldAirtableValues = Object.entries(tableConfig.airtable.fieldsConversion).reduce((acc, [key, type]) => {
         acc[key] = convertAirtableValue(rawOldAirtableValues[key], type);

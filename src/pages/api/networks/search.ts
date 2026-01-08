@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 import { clientConfig } from '@/client-config';
-import db from '@/server/db';
+import { kdb } from '@/server/db/kysely';
 import { handleRouteErrors, requirePostMethod, validateObjectSchema } from '@/server/helpers/server';
 import type { Network } from '@/types/Summary/Network';
 
@@ -31,19 +31,21 @@ export default handleRouteErrors(async (req) => {
     search: z.string().min(clientConfig.networkSearchMinimumCharactersThreshold),
   });
   const [hotNetworks, coldNetworks] = await Promise.all([
-    db<NetworkSearchResult>('reseaux_de_chaleur')
+    kdb
+      .selectFrom('reseaux_de_chaleur')
       .select(selectedNetworkFields)
-      .where('Identifiant reseau', 'ilike', `%${search}%`)
-      .orWhere('nom_reseau', 'ilike', `%${search}%`)
-      .limit(10),
-    db<NetworkSearchResult>('reseaux_de_froid')
+      .where((eb) => eb.or([eb('Identifiant reseau', 'ilike', `%${search}%`), eb('nom_reseau', 'ilike', `%${search}%`)]))
+      .limit(10)
+      .execute(),
+    kdb
+      .selectFrom('reseaux_de_froid')
       .select(selectedNetworkFields)
-      .where('Identifiant reseau', 'ilike', `%${search}%`)
-      .orWhere('nom_reseau', 'ilike', `%${search}%`)
-      .limit(10),
+      .where((eb) => eb.or([eb('Identifiant reseau', 'ilike', `%${search}%`), eb('nom_reseau', 'ilike', `%${search}%`)]))
+      .limit(10)
+      .execute(),
   ]);
   return [...hotNetworks, ...coldNetworks]
-    .sort((a, b) => (a['Identifiant reseau'] < b['Identifiant reseau'] ? -1 : 1))
+    .sort((a, b) => ((a['Identifiant reseau'] ?? '') < (b['Identifiant reseau'] ?? '') ? -1 : 1))
     .slice(0, 10)
     .map((network) => {
       if (!network.nom_reseau) {

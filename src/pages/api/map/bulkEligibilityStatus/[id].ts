@@ -1,24 +1,24 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-import db from '@/server/db';
+import { kdb } from '@/server/db/kysely';
 import { getExport } from '@/server/services/addresseInformation';
 import { withCors } from '@/services/api/cors';
-import type { ErrorResponse } from '@/types/ErrorResponse';
 
-const bulkEligibilitygibilityStatus = async (
-  req: NextApiRequest,
-  res: NextApiResponse<{ id: string; progress: number; result?: any[]; error?: boolean } | ErrorResponse>
-) => {
+const bulkEligibilitygibilityStatus = async (req: NextApiRequest, res: NextApiResponse) => {
   const id = req.query.id as string;
 
-  const existingValue = await db('eligibility_tests').where('id', id).first();
+  const existingValue = await kdb.selectFrom('eligibility_tests').selectAll().where('id', '=', id).executeTakeFirst();
   if (req.method === 'GET') {
     if (existingValue) {
+      const progress =
+        existingValue.addresses_count && existingValue.eligibile_count !== null && existingValue.error_count !== null
+          ? (existingValue.eligibile_count + existingValue.error_count) / existingValue.addresses_count
+          : 0;
       return res.status(200).json({
-        error: existingValue.in_error,
+        error: existingValue.in_error ?? false,
         id: existingValue.id,
-        progress: existingValue.progress / existingValue.addresses_count,
-        result: JSON.parse(existingValue.result),
+        progress,
+        result: existingValue.result ? JSON.parse(existingValue.result) : undefined,
       });
     }
     return res.status(200).json({
@@ -26,13 +26,15 @@ const bulkEligibilitygibilityStatus = async (
       progress: 0,
     });
   } else if (req.method === 'POST') {
-    if (existingValue?.result) {
-      return res.send(getExport(JSON.parse(existingValue.result)));
-    } else {
-      return res.send(existingValue.file);
+    if (!existingValue) {
+      return res.status(404).json({ code: 'NOT_FOUND', message: 'Not found' });
     }
+    if (existingValue.result) {
+      return res.status(200).send(getExport(JSON.parse(existingValue.result)));
+    }
+    return res.status(200).send(existingValue.file);
   }
-  return res.status(501);
+  return res.status(501).json({ code: 'METHOD_NOT_ALLOWED', message: 'Method not allowed' });
 };
 
 export default withCors(bulkEligibilitygibilityStatus);

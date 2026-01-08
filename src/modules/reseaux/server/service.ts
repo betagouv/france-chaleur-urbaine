@@ -6,7 +6,6 @@ import { createWarnEligibilityChangesJob } from '@/modules/pro-eligibility-tests
 import type { ApplyGeometriesUpdatesInput } from '@/modules/reseaux/constants';
 import { type NetworkTable, updateNetworkHasPDP } from '@/modules/reseaux/server/geometry-operations';
 import { createBuildTilesJob, createSyncGeometriesToAirtableJob, createSyncMetadataFromAirtableJob } from '@/modules/tiles/server/service';
-import db from '@/server/db';
 import { type DB, kdb, sql, type ZoneDeDeveloppementPrioritaire } from '@/server/db/kysely';
 import type { ApiContext } from '@/server/db/kysely/base-model';
 import { parentLogger } from '@/server/helpers/logger';
@@ -17,9 +16,11 @@ const logger = parentLogger.child({
   module: 'reseaux',
 });
 
-export const getNetwork = (id: string): Promise<Network> =>
-  db('reseaux_de_chaleur')
-    .select(
+export const getNetwork = async (id: string): Promise<Network> => {
+  const result = await kdb
+    .selectFrom('reseaux_de_chaleur')
+    .select([
+      'id_fcu',
       'Taux EnR&R',
       'Identifiant reseau',
       'communes',
@@ -88,20 +89,24 @@ export const getNetwork = (id: string): Promise<Network> =>
       'puissance_MW_chaudieres_electriques',
       'puissance_MW_autres',
       'puissance_MW_autres_ENR',
-      db.raw('ST_X(ST_Transform(ST_Centroid(geom), 4326)) as lon'),
-      db.raw('ST_Y(ST_Transform(ST_Centroid(geom), 4326)) as lat'),
+      sql<number>`ST_X(ST_Transform(ST_Centroid(geom), 4326))`.as('lon'),
+      sql<number>`ST_Y(ST_Transform(ST_Centroid(geom), 4326))`.as('lat'),
       'website_gestionnaire',
       'reseaux classes',
       'informationsComplementaires',
       'fichiers',
-      'region'
-    )
-    .where('Identifiant reseau', id)
-    .first();
+      'region',
+    ])
+    .where('Identifiant reseau', '=', id)
+    .executeTakeFirst();
+  return result as unknown as Network;
+};
 
-export const getColdNetwork = (id: string): Promise<Network> =>
-  db('reseaux_de_froid')
-    .select(
+export const getColdNetwork = async (id: string): Promise<Network> => {
+  const result = await kdb
+    .selectFrom('reseaux_de_froid')
+    .select([
+      'id_fcu',
       'Taux EnR&R',
       'Identifiant reseau',
       'communes',
@@ -125,19 +130,22 @@ export const getColdNetwork = (id: string): Promise<Network> =>
       'adresse_mo',
       'CP_MO',
       'ville_mo',
-      db.raw('ST_X(ST_Transform(ST_Centroid(geom), 4326)) as lon'),
-      db.raw('ST_Y(ST_Transform(ST_Centroid(geom), 4326)) as lat'),
+      sql<number>`ST_X(ST_Transform(ST_Centroid(geom), 4326))`.as('lon'),
+      sql<number>`ST_Y(ST_Transform(ST_Centroid(geom), 4326))`.as('lat'),
       'website_gestionnaire',
       'informationsComplementaires',
       'fichiers',
-      'Rend%'
-    )
-    .where('Identifiant reseau', id)
-    .first();
+      'Rend%',
+    ])
+    .where('Identifiant reseau', '=', id)
+    .executeTakeFirst();
+  return result as unknown as Network;
+};
 
 export const listNetworks = async (): Promise<NetworkToCompare[]> => {
-  const networks = await db('reseaux_de_chaleur')
-    .select(
+  const networks = await kdb
+    .selectFrom('reseaux_de_chaleur')
+    .select([
       'id_fcu',
       'Taux EnR&R',
       'Identifiant reseau',
@@ -183,41 +191,46 @@ export const listNetworks = async (): Promise<NetworkToCompare[]> => {
       'prod_MWh_chaudieres_electriques',
       'prod_MWh_autres',
       'prod_MWh_autres_ENR',
-      db.raw('ST_X(ST_Transform(ST_Centroid(geom), 4326)) as lon'),
-      db.raw('ST_Y(ST_Transform(ST_Centroid(geom), 4326)) as lat'),
+      sql<number>`ST_X(ST_Transform(ST_Centroid(geom), 4326))`.as('lon'),
+      sql<number>`ST_Y(ST_Transform(ST_Centroid(geom), 4326))`.as('lat'),
       'website_gestionnaire',
       'reseaux classes',
       'informationsComplementaires',
       'fichiers',
       'region',
       'communes',
-      db.raw('"prod_MWh_biomasse_solide" / COALESCE(NULLIF("production_totale_MWh", 0), 1) * 100 as "energie_ratio_biomasse"'),
-      db.raw('"prod_MWh_geothermie" / COALESCE(NULLIF("production_totale_MWh", 0), 1) * 100 as "energie_ratio_geothermie"'),
-      db.raw(
-        '("prod_MWh_dechets_internes" + "prod_MWh_UIOM") / COALESCE(NULLIF("production_totale_MWh", 0), 1) * 100 as "energie_ratio_uve"'
+      sql<number>`"prod_MWh_biomasse_solide" / COALESCE(NULLIF("production_totale_MWh", 0), 1) * 100`.as('energie_ratio_biomasse'),
+      sql<number>`"prod_MWh_geothermie" / COALESCE(NULLIF("production_totale_MWh", 0), 1) * 100`.as('energie_ratio_geothermie'),
+      sql<number>`("prod_MWh_dechets_internes" + "prod_MWh_UIOM") / COALESCE(NULLIF("production_totale_MWh", 0), 1) * 100`.as(
+        'energie_ratio_uve'
       ),
-      db.raw('"prod_MWh_chaleur_industiel" / COALESCE(NULLIF("production_totale_MWh", 0), 1) * 100 as "energie_ratio_chaleurIndustrielle"'),
-      db.raw('"prod_MWh_solaire_thermique" / COALESCE(NULLIF("production_totale_MWh", 0), 1) * 100 as "energie_ratio_solaireThermique"'),
-      db.raw('"prod_MWh_PAC" / COALESCE(NULLIF("production_totale_MWh", 0), 1) * 100 as "energie_ratio_pompeAChaleur"'),
-      db.raw('"prod_MWh_gaz_naturel" / COALESCE(NULLIF("production_totale_MWh", 0), 1) * 100 as "energie_ratio_gaz"'),
-      db.raw(
-        '("prod_MWh_fioul_domestique" + "prod_MWh_fioul_lourd") / COALESCE(NULLIF("production_totale_MWh", 0), 1) * 100 as "energie_ratio_fioul"'
+      sql<number>`"prod_MWh_chaleur_industiel" / COALESCE(NULLIF("production_totale_MWh", 0), 1) * 100`.as(
+        'energie_ratio_chaleurIndustrielle'
       ),
-      db.raw('"prod_MWh_autres_ENR" / COALESCE(NULLIF("production_totale_MWh", 0), 1) * 100 as "energie_ratio_autresEnr"'),
-      db.raw(
-        '"prod_MWh_chaudieres_electriques" / COALESCE(NULLIF("production_totale_MWh", 0), 1) * 100 as "energie_ratio_chaufferiesElectriques"'
+      sql<number>`"prod_MWh_solaire_thermique" / COALESCE(NULLIF("production_totale_MWh", 0), 1) * 100`.as(
+        'energie_ratio_solaireThermique'
       ),
-      db.raw('"prod_MWh_charbon" / COALESCE(NULLIF("production_totale_MWh", 0), 1) * 100 as "energie_ratio_charbon"'),
-      db.raw('"prod_MWh_GPL" / COALESCE(NULLIF("production_totale_MWh", 0), 1) * 100 as "energie_ratio_gpl"'),
-      db.raw(
-        '"prod_MWh_autre_chaleur_recuperee" / COALESCE(NULLIF("production_totale_MWh", 0), 1) * 100 as "energie_ratio_autreChaleurRecuperee"'
+      sql<number>`"prod_MWh_PAC" / COALESCE(NULLIF("production_totale_MWh", 0), 1) * 100`.as('energie_ratio_pompeAChaleur'),
+      sql<number>`"prod_MWh_gaz_naturel" / COALESCE(NULLIF("production_totale_MWh", 0), 1) * 100`.as('energie_ratio_gaz'),
+      sql<number>`("prod_MWh_fioul_domestique" + "prod_MWh_fioul_lourd") / COALESCE(NULLIF("production_totale_MWh", 0), 1) * 100`.as(
+        'energie_ratio_fioul'
       ),
-      db.raw('"prod_MWh_biogaz" / COALESCE(NULLIF("production_totale_MWh", 0), 1) * 100 as "energie_ratio_biogaz"')
-    )
-    .whereNotNull('Identifiant reseau')
-    .and.whereNotNull('nom_reseau')
-    .andWhereRaw('LENGTH("Identifiant reseau") <= 5'); //Some networks has format 84XXC_16 and are not ready to be displayed
-  return networks.map((network: NetworkToCompare) => {
+      sql<number>`"prod_MWh_autres_ENR" / COALESCE(NULLIF("production_totale_MWh", 0), 1) * 100`.as('energie_ratio_autresEnr'),
+      sql<number>`"prod_MWh_chaudieres_electriques" / COALESCE(NULLIF("production_totale_MWh", 0), 1) * 100`.as(
+        'energie_ratio_chaufferiesElectriques'
+      ),
+      sql<number>`"prod_MWh_charbon" / COALESCE(NULLIF("production_totale_MWh", 0), 1) * 100`.as('energie_ratio_charbon'),
+      sql<number>`"prod_MWh_GPL" / COALESCE(NULLIF("production_totale_MWh", 0), 1) * 100`.as('energie_ratio_gpl'),
+      sql<number>`"prod_MWh_autre_chaleur_recuperee" / COALESCE(NULLIF("production_totale_MWh", 0), 1) * 100`.as(
+        'energie_ratio_autreChaleurRecuperee'
+      ),
+      sql<number>`"prod_MWh_biogaz" / COALESCE(NULLIF("production_totale_MWh", 0), 1) * 100`.as('energie_ratio_biogaz'),
+    ])
+    .where('Identifiant reseau', 'is not', null)
+    .where('nom_reseau', 'is not', null)
+    .where(sql<boolean>`LENGTH("Identifiant reseau") <= 5`) //Some networks has format 84XXC_16 and are not ready to be displayed
+    .execute();
+  return networks.map((network: any) => {
     return {
       id: network.id_fcu,
       ...network,

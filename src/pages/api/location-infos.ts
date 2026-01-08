@@ -2,7 +2,7 @@ import * as Sentry from '@sentry/nextjs';
 import type { NextApiRequest } from 'next';
 import { z } from 'zod';
 
-import db from '@/server/db';
+import { kdb, sql } from '@/server/db/kysely';
 import { handleRouteErrors, requirePostMethod, validateObjectSchema } from '@/server/helpers/server';
 
 const zLocationInfos = {
@@ -60,14 +60,15 @@ export default handleRouteErrors(async (req: NextApiRequest) => {
   requirePostMethod(req);
   const { lon, lat, cityCode, city } = await validateObjectSchema(req.body, zLocationInfos);
 
-  const distanceSubQuery = `round(geom <-> ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154))`;
+  const distanceExpr = sql<number>`round(geom <-> ST_Transform(ST_GeomFromText('POINT(${sql.lit(lon)} ${sql.lit(lat)})', 4326), 2154))`;
 
   const [nearestReseauDeChaleur, nearestReseauDeFroid, infosVille] = await Promise.all([
-    db('reseaux_de_chaleur')
-      .select(
+    kdb
+      .selectFrom('reseaux_de_chaleur')
+      .select([
         'Identifiant reseau',
         'nom_reseau',
-        db.raw(`${distanceSubQuery} as distance`),
+        distanceExpr.as('distance'),
         'contenu CO2',
         'contenu CO2 ACV',
         'Taux EnR&R',
@@ -75,43 +76,43 @@ export default handleRouteErrors(async (req: NextApiRequest) => {
         'production_totale_MWh',
         'PM',
         'PF%',
-        'PV%'
-      )
-      .where('has_trace', true)
-      .whereNotNull('nom_reseau')
-      .whereRaw(`${distanceSubQuery} <= ${maxDistanceThreshold}`)
-      .orderByRaw(distanceSubQuery)
-      .first(),
-    db('reseaux_de_froid')
-      .select(
+        'PV%',
+      ])
+      .where('has_trace', '=', true)
+      .where('nom_reseau', 'is not', null)
+      .where(distanceExpr, '<=', maxDistanceThreshold)
+      .orderBy(distanceExpr)
+      .executeTakeFirst(),
+    kdb
+      .selectFrom('reseaux_de_froid')
+      .select([
         'Identifiant reseau',
         'nom_reseau',
-        db.raw(`${distanceSubQuery} as distance`),
+        distanceExpr.as('distance'),
         'contenu CO2',
         'contenu CO2 ACV',
         'livraisons_totale_MWh',
-        'production_totale_MWh'
+        'production_totale_MWh',
         // les autres valeurs sont manquantes
-      )
-      .where('has_trace', true)
-      .whereNotNull('nom_reseau')
-      .whereRaw(`${distanceSubQuery} <= ${maxDistanceThreshold}`)
-      .orderByRaw(distanceSubQuery)
-      .first(),
-    db('communes')
-      .select('departement_id', 'temperature_ref_altitude_moyenne')
+      ])
+      .where('has_trace', '=', true)
+      .where('nom_reseau', 'is not', null)
+      .where(distanceExpr, '<=', maxDistanceThreshold)
+      .orderBy(distanceExpr)
+      .executeTakeFirst(),
+    kdb
+      .selectFrom('communes')
+      .select(['departement_id', 'temperature_ref_altitude_moyenne'])
       .where(
         'id',
-        db.raw(
-          `COALESCE(
-            (SELECT id FROM communes WHERE id = ?),
-            (SELECT id FROM communes WHERE commune = ?),
-            (SELECT id FROM communes WHERE commune LIKE ?)
-          )`,
-          [cityCode, city.toUpperCase(), `${city.toUpperCase()}-%-ARRONDISSEMENT`]
-        )
+        '=',
+        sql<string>`COALESCE(
+          (SELECT id FROM communes WHERE id = ${cityCode}),
+          (SELECT id FROM communes WHERE commune = ${city.toUpperCase()}),
+          (SELECT id FROM communes WHERE commune LIKE ${`${city.toUpperCase()}-%-ARRONDISSEMENT`})
+        )`
       )
-      .first(),
+      .executeTakeFirst(),
   ]);
 
   if (!infosVille) {
