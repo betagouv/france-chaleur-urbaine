@@ -605,127 +605,130 @@ const ProEligibilityTestItem = React.memo(function ProEligibilityTestItem({
         }
       }}
     >
-      <div className="flex flex-wrap mb-4">
-        <div className="flex items-center">
-          <QuickFilterPresets
-            presets={quickFilterPresets}
-            data={addresses}
-            loading={isDataLoading}
-            columnFilters={columnFilters}
-            onFiltersChange={setColumnFilters}
-            hideDividerOnMobile={false}
-          />
-        </div>
-        <div className="flex items-center gap-2 w-full mt-2">
-          <Button iconId="fr-icon-download-line" priority="primary" onClick={downloadCSV} disabled={filteredAddresses.length === 0}>
-            Télécharger les résultats détaillés
-          </Button>
-
-          {!readOnly && (
-            <>
-              <Button iconId="fr-icon-add-line" priority="secondary" onClick={() => setIsDialogOpen(true)}>
-                Ajouter des adresses
+      {viewDetail && (
+        <>
+          <div className="flex flex-wrap mb-4">
+            <div className="flex items-center">
+              <QuickFilterPresets
+                presets={quickFilterPresets}
+                data={addresses}
+                loading={isDataLoading}
+                columnFilters={columnFilters}
+                onFiltersChange={setColumnFilters}
+                hideDividerOnMobile={false}
+              />
+            </div>
+            <div className="flex items-center gap-2 w-full mt-2">
+              <Button iconId="fr-icon-download-line" priority="primary" onClick={downloadCSV} disabled={filteredAddresses.length === 0}>
+                Télécharger les résultats détaillés
               </Button>
-              <ModalSimple title="Ajout d'adresses" size="medium" open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <UpsertEligibilityTestForm testId={test.id} onComplete={() => setIsDialogOpen(false)} />
-              </ModalSimple>
+
+              {!readOnly && (
+                <>
+                  <Button iconId="fr-icon-add-line" priority="secondary" onClick={() => setIsDialogOpen(true)}>
+                    Ajouter des adresses
+                  </Button>
+                  <ModalSimple title="Ajout d'adresses" size="medium" open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                    <UpsertEligibilityTestForm testId={test.id} onComplete={() => setIsDialogOpen(false)} />
+                  </ModalSimple>
+                </>
+              )}
+            </div>
+          </div>
+          {isDataLoading && <Loader size="lg" variant="section" />}
+          {addresses.length > 0 ? (
+            <>
+              <Tabs
+                className="[&_[role='tabpanel']]:p-2w!" // decrease the default big padding of tabs panels
+                tabs={[
+                  {
+                    content: (
+                      <TableSimple
+                        controlsLayout="block"
+                        columns={columns}
+                        data={adresses}
+                        initialSortingState={initialSortingState}
+                        columnFilters={columnFilters}
+                        enableGlobalFilter
+                        padding="sm"
+                        rowHeight={56}
+                        onFilterChange={setFilteredAddresses}
+                        enableRowSelection={!readOnly}
+                        rowSelection={rowSelection}
+                        onRowSelectionChange={setRowSelection}
+                      />
+                    ),
+                    iconId: 'fr-icon-list-unordered',
+                    isDefault: true,
+                    label: `Liste (${filteredAddresses.length})`,
+                  },
+                  {
+                    content: (
+                      <div className="min-h-[50vh] aspect-4/3">
+                        <Map
+                          initialMapConfiguration={createMapConfiguration({
+                            reseauxDeChaleur: {
+                              show: true,
+                            },
+                            reseauxEnConstruction: true,
+                            zonesDeDeveloppementPrioritaire: true,
+                          })}
+                          geolocDisabled
+                          withLegend={false}
+                          withoutLogo
+                          adressesEligibles={filteredAddressesMapData}
+                        />
+                      </div>
+                    ),
+                    iconId: 'fr-icon-map-pin-2-line',
+                    label: (
+                      <>
+                        Carte ({filteredAddressesMapData.length}){' '}
+                        <Tooltip
+                          iconProps={{ className: 'ml-1', color: 'var(--text-default-grey)' }}
+                          title="Une différence de nombre de résultats peut exister si la requête à la Base d'Adresse Nationale n'as pas fonctionné ou si les coordonnées géographiques ne sont pas disponibles."
+                        />
+                      </>
+                    ),
+                  },
+                ]}
+              />
+              {!readOnly && (
+                <div className="flex justify-end mt-4">
+                  <Button
+                    iconId="fr-icon-mail-line"
+                    priority="primary"
+                    variant="warning"
+                    onClick={() => {
+                      setIsBatchModalOpen(true);
+                    }}
+                    disabled={Object.keys(rowSelection).length === 0}
+                  >
+                    Être mis en relation ({Object.keys(rowSelection).length})
+                  </Button>
+                </div>
+              )}
             </>
+          ) : (
+            !isLoading && (
+              <Notice size="sm">
+                Les résultats ne sont pas encore disponibles et devraient l'être d'ici quelques minutes selon la taille de votre fichier.
+              </Notice>
+            )
           )}
-        </div>
-      </div>
-      {isDataLoading && <Loader size="lg" variant="section" />}
-      {viewDetail &&
-        (addresses.length > 0 ? (
-          <>
-            <Tabs
-              className="[&_[role='tabpanel']]:p-2w!" // decrease the default big padding of tabs panels
-              tabs={[
-                {
-                  content: (
-                    <TableSimple
-                      controlsLayout="block"
-                      columns={columns}
-                      data={adresses}
-                      initialSortingState={initialSortingState}
-                      columnFilters={columnFilters}
-                      enableGlobalFilter
-                      padding="sm"
-                      rowHeight={56}
-                      onFilterChange={setFilteredAddresses}
-                      enableRowSelection={!readOnly}
-                      rowSelection={rowSelection}
-                      onRowSelectionChange={setRowSelection}
-                    />
-                  ),
-                  iconId: 'fr-icon-list-unordered',
-                  isDefault: true,
-                  label: `Liste (${filteredAddresses.length})`,
-                },
-                {
-                  content: (
-                    <div className="min-h-[50vh] aspect-4/3">
-                      <Map
-                        initialMapConfiguration={createMapConfiguration({
-                          reseauxDeChaleur: {
-                            show: true,
-                          },
-                          reseauxEnConstruction: true,
-                          zonesDeDeveloppementPrioritaire: true,
-                        })}
-                        geolocDisabled
-                        withLegend={false}
-                        withoutLogo
-                        adressesEligibles={filteredAddressesMapData}
-                      />
-                    </div>
-                  ),
-                  iconId: 'fr-icon-map-pin-2-line',
-                  label: (
-                    <>
-                      Carte ({filteredAddressesMapData.length}){' '}
-                      <Tooltip
-                        iconProps={{ className: 'ml-1', color: 'var(--text-default-grey)' }}
-                        title="Une différence de nombre de résultats peut exister si la requête à la Base d'Adresse Nationale n'as pas fonctionné ou si les coordonnées géographiques ne sont pas disponibles."
-                      />
-                    </>
-                  ),
-                },
-              ]}
-            />
-            {!readOnly && (
-              <div className="flex justify-end mt-4">
-                <Button
-                  iconId="fr-icon-mail-line"
-                  priority="primary"
-                  variant="warning"
-                  onClick={() => {
-                    setIsBatchModalOpen(true);
-                  }}
-                  disabled={Object.keys(rowSelection).length === 0}
-                >
-                  Être mis en relation ({Object.keys(rowSelection).length})
-                </Button>
-              </div>
-            )}
-          </>
-        ) : (
-          !isLoading && (
-            <Notice size="sm">
-              Les résultats ne sont pas encore disponibles et devraient l'être d'ici quelques minutes selon la taille de votre fichier.
-            </Notice>
-          )
-        ))}
-      {!readOnly && (
-        <ModalSimple title="Demande de mise en relation" size="large" open={isBatchModalOpen} onOpenChange={setIsBatchModalOpen}>
-          <BatchDemandMultiStepForm
-            addresses={selectedAddresses}
-            onSuccess={() => {
-              setIsBatchModalOpen(false);
-              setRowSelection({});
-              void refetch();
-            }}
-          />
-        </ModalSimple>
+          {!readOnly && (
+            <ModalSimple title="Demande de mise en relation" size="large" open={isBatchModalOpen} onOpenChange={setIsBatchModalOpen}>
+              <BatchDemandMultiStepForm
+                addresses={selectedAddresses}
+                onSuccess={() => {
+                  setIsBatchModalOpen(false);
+                  setRowSelection({});
+                  void refetch();
+                }}
+              />
+            </ModalSimple>
+          )}
+        </>
       )}
     </UrlStateAccordion>
   );
