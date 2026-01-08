@@ -16,7 +16,11 @@
 - **Parallelize independent operations** with `Promise.all()`
 - **Add tests** for non-trivial logic
 - **Named exports**, not default exports
-- **CRITICAL**: After ANY file modification, ALWAYS run `read_lints` on modified files and fix all lint errors before submitting code
+- **CRITICAL**: After ANY file modification, you MUST verify ALL of the following:
+  1. **Linting and formatting**: Run `pnpm lint` and fix ALL lint errors (use `pnpm lint:fix` if needed)
+  2. **Type checking**: Run `pnpm ts` and fix ALL type errors
+  3. **Tests**: Run `pnpm test` and ensure all tests pass
+  4. Only submit code when ALL checks pass (lint + types + tests)
 
 ## React
 
