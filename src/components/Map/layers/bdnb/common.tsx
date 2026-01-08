@@ -1,4 +1,5 @@
 import type { SourceSpecification } from 'maplibre-gl';
+
 import DPE from '@/components/DPE';
 import type { PopupStyleHelpers } from '@/components/Map/layers/common';
 import Accordion from '@/components/ui/Accordion';

@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs';
 import type { UpdateObject } from 'kysely';
+
 import { sendEmailTemplate } from '@/modules/email';
 import { createUserAdminSchema, type UpdateProfileSchema, updateUserAdminSchema } from '@/modules/users/constants';
 import { type DB, kdb, sql } from '@/server/db/kysely';

@@ -5,8 +5,8 @@ import Box from '@/components/ui/Box';
 import Loader from '@/components/ui/Loader';
 import Modal, { createModal } from '@/components/ui/Modal';
 import useContactFormFCU from '@/hooks/useContactFormFCU';
-
 import DemandSondageForm from '@/modules/demands/client/DemandSondageForm';
+
 import { Container, FormWarningMessage, SliceContactFormStyle } from './SliceForm.style';
 
 const eligibilityTestModal = createModal({

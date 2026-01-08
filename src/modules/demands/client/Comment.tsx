@@ -2,6 +2,7 @@ import { type ChangeEvent, useCallback, useEffect, useMemo, useState } from 'rea
 
 import TextAreaInput from '@/components/form/dsfr/TextArea';
 import debounce from '@/utils/debounce';
+
 import type { Demand } from '../types';
 
 const Comment = <T extends Demand>({

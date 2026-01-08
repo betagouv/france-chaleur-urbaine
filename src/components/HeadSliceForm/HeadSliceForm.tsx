@@ -20,6 +20,7 @@ import type { SuggestionItem } from '@/modules/ban/types';
 import DemandSondageForm from '@/modules/demands/client/DemandSondageForm';
 import trpc from '@/modules/trpc/client';
 import cx from '@/utils/cx';
+
 import { Container, FormLabel, HeadSliceContainer, PageBody, PageTitle, SliceContactFormStyle } from './HeadSliceForm.style';
 
 type HeadBannerType = {

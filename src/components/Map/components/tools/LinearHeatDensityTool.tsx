@@ -20,6 +20,7 @@ import { formatDistance } from '@/modules/geo/client/helpers';
 import trpc from '@/modules/trpc/client';
 import { downloadObject } from '@/utils/browser';
 import { formatAsISODateMinutes } from '@/utils/date';
+
 import type { MapSourceLayersSpecification } from '../../layers/common';
 import { Title } from '../SimpleMapLegend.style';
 import type { MeasureFeature, MeasureLabelFeature } from './measure';

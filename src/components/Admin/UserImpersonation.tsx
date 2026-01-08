@@ -1,8 +1,8 @@
 import { Button } from '@codegouvfr/react-dsfr/Button';
 import { Select } from '@codegouvfr/react-dsfr/SelectNext';
 import { useEffect, useMemo, useState } from 'react';
-import ComboBox, { type ComboBoxOption } from '@/components/ui/ComboBox';
 
+import ComboBox, { type ComboBoxOption } from '@/components/ui/ComboBox';
 import type { UserRole } from '@/types/enum/UserRole';
 import { fetchJSON, postFetchJSON } from '@/utils/network';
 import { normalize } from '@/utils/strings';

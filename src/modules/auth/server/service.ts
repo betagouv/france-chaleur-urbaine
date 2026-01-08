@@ -1,5 +1,6 @@
 import bcrypt, { genSalt, hash } from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+
 import { linkDemandsByEmail } from '@/modules/demands/server/demands-service';
 import { sendEmailTemplate } from '@/modules/email';
 import { createUserEvent } from '@/modules/events/server/service';

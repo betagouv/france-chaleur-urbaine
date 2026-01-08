@@ -1,4 +1,5 @@
 import type { ExpressionBuilder, RawBuilder } from 'kysely';
+
 import { parseBbox } from '@/modules/geo/client/helpers';
 import { createGeometryExpression, processGeometry } from '@/modules/geo/server/helpers';
 import type { BoundingBox } from '@/modules/geo/types';

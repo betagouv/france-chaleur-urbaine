@@ -4,6 +4,7 @@ import { TRPCError } from '@trpc/server';
 import type { Insertable, Selectable } from 'kysely';
 import type { User } from 'next-auth';
 import { v4 as uuidv4 } from 'uuid';
+
 import { clientConfig } from '@/client-config';
 import {
   type CreateBatchDemandInput,
@@ -35,6 +36,7 @@ import { type EligibilityType, getDetailedEligibilityStatus } from '@/server/ser
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import type { UserRole } from '@/types/enum/UserRole';
 import type { FrontendType } from '@/utils/typescript';
+
 import * as assignmentRulesService from './assignment-rules-service';
 
 const logger = parentLogger.child({

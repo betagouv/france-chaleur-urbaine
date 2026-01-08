@@ -1,8 +1,10 @@
 import { diff } from 'deep-object-diff';
+
 import base, { AirtableDB } from '@/server/db/airtable';
 import { kdb, sql } from '@/server/db/kysely';
 import { parentLogger } from '@/server/helpers/logger';
 import { isEmptyObject, pick } from '@/utils/core';
+
 import { convertAirtableValue } from './download-network';
 import { type Changement, tableConfigs } from './geometry-updates';
 

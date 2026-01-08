@@ -1,9 +1,11 @@
 import type { ExpressionInputType } from 'maplibre-gl';
+
 import { dataSourcesVersions } from '@/modules/app/constants';
 import { intermediateTileLayersMinZoom } from '@/modules/tiles/constants';
 import type { DonneesDeConsos } from '@/server/db/kysely';
 import { formatMWhAn } from '@/utils/strings';
 import { ObjectEntries } from '@/utils/typescript';
+
 import { ifHoverElse, type MapSourceLayersSpecification, type PopupStyleHelpers } from './common';
 
 export const consommationsGazLayerStyle = {

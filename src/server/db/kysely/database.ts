@@ -4,6 +4,7 @@
  */
 
 import type { ColumnType, JSONColumnType } from 'kysely';
+
 import type { AirtableLegacyRecord } from '@/modules/demands/types';
 import type { EventType } from '@/modules/events/constants';
 import type { UserRole } from '@/types/enum/UserRole';

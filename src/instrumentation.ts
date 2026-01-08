@@ -1,6 +1,7 @@
 import '@/load-env';
 
 import * as Sentry from '@sentry/nextjs';
+
 import { isDefined } from '@/utils/core';
 
 export async function register() {

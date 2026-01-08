@@ -7,6 +7,7 @@ import type { MatomoActionMetrics, MatomoPageMetrics, MatomoUniqueVisitorsMetric
 import { Airtable } from '@/types/enum/Airtable';
 import { STAT_COMMUNES_SANS_RESEAU, STAT_KEY, STAT_LABEL, STAT_METHOD, STAT_PARAMS, STAT_PERIOD } from '@/types/enum/MatomoStats';
 import '@root/sentry.server.config';
+
 import { USER_ROLE } from '@/types/enum/UserRole';
 
 const DATA_ACTION_STATS: string[] = [

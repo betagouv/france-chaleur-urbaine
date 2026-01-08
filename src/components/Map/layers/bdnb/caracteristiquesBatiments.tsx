@@ -1,8 +1,10 @@
 import type { ExpressionInputType } from 'maplibre-gl';
+
 import { BdnbBatimentPopup, bdnbBatimentsTilesSource } from '@/components/Map/layers/bdnb/common';
 import { intermediateTileLayersMinZoom } from '@/modules/tiles/constants';
 import { darken } from '@/utils/color';
 import { ObjectEntries } from '@/utils/typescript';
+
 import { ifHoverElse, type MapSourceLayersSpecification } from '../common';
 
 export const caracteristiquesBatimentsLayerStyle = {

@@ -1,5 +1,7 @@
 import type { Command } from '@commander-js/extra-typings';
+
 import { ObjectKeys } from '@/utils/typescript';
+
 import { type DataImportType, dataImportConfigs, executeDataImport } from './server/import-config';
 
 export function registerDataCommands(parentProgram: Command) {

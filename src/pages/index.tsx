@@ -1,5 +1,6 @@
 import Highlight from '@codegouvfr/react-dsfr/Highlight';
 import { AnimatePresence } from 'motion/react';
+
 import { clientConfig } from '@/client-config';
 import LastArticles from '@/components/Articles/LastArticles';
 import InterviewsVideos from '@/components/Coproprietaire/InterviewsVideos';

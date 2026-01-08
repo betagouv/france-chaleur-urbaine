@@ -3,6 +3,7 @@ import Button from '@/components/ui/Button';
 import type { ReseauxDeFroidTile } from '@/modules/tiles/server/generation-config';
 import { isDefined } from '@/utils/core';
 import { prettyFormatNumber } from '@/utils/strings';
+
 import { DownloadNetworkGeometryButton } from '../components/DownloadNetworkGeometryButton';
 import { defineLayerPopup, ifHoverElse, type MapSourceLayersSpecification } from './common';
 import { buildFiltreGestionnaire, buildFiltreIdentifiantReseau } from './filters';

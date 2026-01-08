@@ -1,9 +1,7 @@
 import geoViewport from '@mapbox/geo-viewport';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
-import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import { useDebouncedEffect, useLocalStorageValue } from '@react-hookz/web';
 import type { GeoJSONSource, LayerSpecification, MapGeoJSONFeature, MapLibreEvent } from 'maplibre-gl';
-import 'maplibre-gl/dist/maplibre-gl.css';
 import { useRouter } from 'next/router';
 import { parseAsJson, parseAsString, useQueryStates } from 'nuqs';
 import { type ReactNode, type RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -18,6 +16,9 @@ import MapReactGL, {
   ScaleControl,
 } from 'react-map-gl/maplibre';
 import { z } from 'zod';
+
+import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
+import 'maplibre-gl/dist/maplibre-gl.css';
 
 import FileDragNDrop from '@/components/Map/components/FileDragNDrop';
 import type { AdresseEligible } from '@/components/Map/layers/adressesEligibles';
@@ -41,6 +42,7 @@ import type { Point } from '@/types/Point';
 import type { StoredAddress } from '@/types/StoredAddress';
 import type { TypeLegendLogo } from '@/types/TypeLegendLogo';
 import cx from '@/utils/cx';
+
 import CardSearchDetails from './components/CardSearchDetails';
 import MapMarker from './components/MapMarker';
 import MapSearchForm from './components/MapSearchForm';

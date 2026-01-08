@@ -3,7 +3,25 @@
   "assist": {
     "actions": {
       "source": {
-        "organizeImports": "on",
+        "organizeImports": {
+          "level": "on",
+          "options": {
+            // sépare les imports par groupe pour mieux voir les dépendances d'un fichier
+            "groups": [
+              ":BUN:",
+              ":NODE:",
+              ":BLANK_LINE:",
+              ":PACKAGE:",
+              ":PACKAGE_WITH_PROTOCOL:",
+              ":BLANK_LINE:",
+              ":ALIAS:",
+              ":BLANK_LINE:",
+              ":PATH:",
+              ":BLANK_LINE:",
+              ":URL:"
+            ]
+          }
+        },
         "useSortedKeys": "on"
       }
     },

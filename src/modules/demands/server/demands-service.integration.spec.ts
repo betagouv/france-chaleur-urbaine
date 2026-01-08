@@ -57,6 +57,7 @@ vi.mock('@/server/services/api-adresse', () => ({
 }));
 
 import type { ProEligibilityTestHistoryEntry } from '@/modules/pro-eligibility-tests/types';
+
 // Import after mocks
 import * as demandsService from './demands-service';
 

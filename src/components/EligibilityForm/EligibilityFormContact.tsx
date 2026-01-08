@@ -12,6 +12,7 @@ import Link from '@/components/ui/Link';
 import type { ContactFormInfos } from '@/modules/demands/constants';
 import { getReadableDistance } from '@/modules/geo/client/helpers';
 import type { AddressDataType } from '@/types/AddressData';
+
 import { ContactForm, ContactFormContentWrapper, ContactFormResultMessage, ContactFormWrapper, ContactMapResult } from './components';
 import { bordeauxMetropoleCityCodes, getEligibilityResult } from './EligibilityResults';
 

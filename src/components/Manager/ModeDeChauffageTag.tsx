@@ -1,4 +1,5 @@
 import type { ModeDeChauffage, TypeDeChauffage } from '@/modules/demands/constants';
+
 import Tag from './Tag';
 
 type ModeDeChauffageProps = {

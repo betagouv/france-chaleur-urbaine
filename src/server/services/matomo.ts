@@ -1,4 +1,5 @@
 import { serverConfig } from '@/server/config';
+
 import type { MatomoErrorResult } from './matomo_types';
 
 type ConfigType = Record<string, unknown>;

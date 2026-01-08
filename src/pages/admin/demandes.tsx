@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic';
 import { parseAsJson, useQueryState } from 'nuqs';
 import { type RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { MapGeoJSONFeature } from 'react-map-gl/maplibre';
+
 import TableAddressAutocomplete from '@/components/Admin/TableAddressAutocomplete';
 import EligibilityHelpDialog from '@/components/EligibilityHelpDialog';
 import Input from '@/components/form/dsfr/Input';

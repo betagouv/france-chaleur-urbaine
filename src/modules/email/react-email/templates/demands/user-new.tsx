@@ -2,6 +2,7 @@ import { clientConfig } from '@/client-config';
 import type { formatHeatingTypeToAirtable } from '@/modules/demands/constants';
 import type { AvailableStructure } from '@/types/AddressData';
 import type { Demand } from '@/types/Summary/Demand';
+
 import { Layout, Link, Text } from '../../components';
 
 type CreationDemandeEmailProps = {

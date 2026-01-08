@@ -6,6 +6,7 @@ import Input from '@/components/form/dsfr/Input';
 import RangeFilter, { type RangeFilterProps } from '@/components/form/dsfr/RangeFilter';
 import ComboBox, { type ComboBoxOption } from '@/components/ui/ComboBox';
 import type { Interval } from '@/utils/interval';
+
 import type { TableCellProps } from './TableCell';
 
 export type TableFilterType = 'Range' | 'Facets' | 'ComboBox' | 'EmptyOrFilled';

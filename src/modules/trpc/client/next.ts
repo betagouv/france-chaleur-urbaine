@@ -2,8 +2,10 @@ import { httpBatchLink, loggerLink, type TRPCLink } from '@trpc/client';
 import { createTRPCNext } from '@trpc/next';
 import { observable } from '@trpc/server/observable';
 import type { NextPageContext } from 'next';
+
 import { clientConfig } from '@/client-config';
 import { handleClientError } from '@/modules/notification';
+
 import type { AppRouter } from '../types';
 
 /**

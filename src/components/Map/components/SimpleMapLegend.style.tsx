@@ -7,6 +7,7 @@ import IconReseaux from '@root/public/icons/reseaux.svgr';
 import { createParser } from 'nuqs';
 import type React from 'react';
 import styled, { css } from 'styled-components';
+
 import type { MapConfiguration, MapConfigurationProperty } from '@/components/Map/map-configuration';
 import Box from '@/components/ui/Box';
 import CheckableAccordion, { type CheckableAccordionProps } from '@/components/ui/CheckableAccordion';

@@ -14,6 +14,7 @@ import Divider from '@/components/ui/Divider';
 import Text from '@/components/ui/Text';
 import { trackEvent } from '@/modules/analytics/client';
 import { formatDistance } from '@/modules/geo/client/helpers';
+
 import type { MapSourceLayersSpecification } from '../../layers/common';
 import { Title } from '../SimpleMapLegend.style';
 import MesureFeatureListItem from './MeasureFeatureListItem';

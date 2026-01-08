@@ -1,9 +1,11 @@
 import type { DataDrivenPropertyValueSpecification, ExpressionInputType } from 'maplibre-gl';
+
 import { BdnbBatimentPopup, bdnbBatimentsTilesSource } from '@/components/Map/layers/bdnb/common';
 import { intermediateTileLayersMinZoom } from '@/modules/tiles/constants';
 import type { BdnbBatimentTile } from '@/modules/tiles/server/generation-config';
 import { deepMergeObjects } from '@/utils/core';
 import { ObjectEntries } from '@/utils/typescript';
+
 import type { MapLayerSpecification } from '../../map-layers';
 import { ifHoverElse, type MapSourceLayersSpecification } from '../common';
 

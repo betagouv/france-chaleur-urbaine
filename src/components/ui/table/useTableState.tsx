@@ -1,5 +1,6 @@
 import type { ColumnFiltersState, SortingState } from '@tanstack/react-table';
 import React from 'react';
+
 import { useTableUrlState } from '@/components/ui/table/useTableUrlState';
 
 type UseTableStateResult = {

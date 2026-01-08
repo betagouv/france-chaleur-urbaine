@@ -1,5 +1,6 @@
 import { useIsMounted } from '@react-hookz/web';
 import { useState } from 'react';
+
 import { searchBANAddresses } from '@/modules/ban/client';
 import type { SuggestionItem } from '@/modules/ban/types';
 import debounce from '@/utils/debounce';

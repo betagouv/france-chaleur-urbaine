@@ -1,4 +1,5 @@
 import type { AirtableLegacyRecord } from '@/modules/demands/types';
+
 import { Layout, Link, Table, TableColumn, TableRow, Text, Title } from '../../components';
 import { demand as demandData } from './_data';
 

@@ -15,8 +15,8 @@ import Text from '@/components/ui/Text';
 import { trackEvent } from '@/modules/analytics/client';
 import { validatePolygonGeometry } from '@/modules/geo/client/helpers';
 import trpc from '@/modules/trpc/client';
-
 import { downloadBaseEncoded64File } from '@/utils/browser';
+
 import type { MapSourceLayersSpecification } from '../../layers/common';
 import { Title } from '../SimpleMapLegend.style';
 

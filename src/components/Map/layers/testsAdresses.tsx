@@ -4,6 +4,7 @@ import Tooltip from '@/components/ui/Tooltip';
 import type { ProEligibilityTestHistoryEntry } from '@/modules/pro-eligibility-tests/types';
 import { structureTypes } from '@/modules/users/constants';
 import { upperCaseFirstChar } from '@/utils/strings';
+
 import type { MapSourceLayersSpecification, PopupStyleHelpers } from './common';
 
 export const testsAdressesLayerStyle = {

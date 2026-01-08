@@ -26,6 +26,7 @@ import cx from '@/utils/cx';
 import { postFetchJSON } from '@/utils/network';
 import { slugify } from '@/utils/strings';
 import { ObjectEntries } from '@/utils/typescript';
+
 import { FloatingButton, Results, Simulator } from './ComparateurPublicodes.style';
 import DebugDrawer from './DebugDrawer';
 import Graph from './Graph';

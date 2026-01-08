@@ -1,6 +1,8 @@
 import type React from 'react';
+
 import { searchBANAddresses } from '@/modules/ban/client';
 import type { SuggestionItem } from '@/modules/ban/types';
+
 import Autocomplete from './Autocomplete';
 
 export type AddressAutocompleteProps = Omit<

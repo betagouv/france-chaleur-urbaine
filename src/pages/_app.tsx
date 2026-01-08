@@ -1,4 +1,5 @@
 import '@/app/globals.css';
+
 import { PagesProgressProvider as ProgressProvider } from '@bprogress/next';
 import { fr } from '@codegouvfr/react-dsfr';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -10,6 +11,7 @@ import { NuqsAdapter } from 'nuqs/adapters/next/pages';
 import { useState } from 'react';
 
 import '@/components/Map/StyleSwitcher/styles.css';
+
 import SEO from '@/components/SEO';
 import ThemeProvider, { dsfrDocumentApi } from '@/components/Theme/ThemeProvider';
 import useHtmlAttributes from '@/hooks/useHtmlAttributes';

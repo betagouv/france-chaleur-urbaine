@@ -1,4 +1,5 @@
 import '@/load-env';
+
 import type { Knex } from 'knex';
 
 export default {

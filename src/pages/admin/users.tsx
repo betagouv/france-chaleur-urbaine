@@ -23,6 +23,7 @@ import { withAuthentication } from '@/server/authentication';
 import type { UserRole } from '@/types/enum/UserRole';
 import { postFetchJSON } from '@/utils/network';
 import { compareFrenchStrings } from '@/utils/strings';
+
 import type { AdminUsersStats } from '../api/admin/users-stats';
 
 const ButtonExport = dynamic(() => import('@/components/ui/ButtonExport'), { ssr: false });

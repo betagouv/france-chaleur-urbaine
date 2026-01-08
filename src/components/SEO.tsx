@@ -1,9 +1,12 @@
 'use client';
+
 import Head from 'next/head';
 import { usePathname } from 'next/navigation';
 import type React from 'react';
 import type { Graph, Thing } from 'schema-dts';
+
 import { clientConfig } from '@/client-config';
+
 import colors from './ui/helpers/colors';
 
 const maxTitleLength = 60;

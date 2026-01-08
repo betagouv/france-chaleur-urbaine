@@ -2,6 +2,7 @@
 
 // Import React after mocks to ensure they're available
 import '@testing-library/jest-dom/vitest';
+
 import { cleanup } from '@testing-library/react';
 import React from 'react';
 import { afterAll, afterEach, vi } from 'vitest';

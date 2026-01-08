@@ -2,6 +2,7 @@ import Button from '@/components/ui/Button';
 import { dataSourcesVersions } from '@/modules/app/constants';
 import { formatMWhAn } from '@/utils/strings';
 import type { ExtractKeysOfType } from '@/utils/typescript';
+
 import type { MapConfiguration } from '../map-configuration';
 import type { MapLayerSpecification } from '../map-layers';
 import { ifHoverElse, type MapSourceLayersSpecification, type PopupStyleHelpers } from './common';

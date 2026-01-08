@@ -27,6 +27,7 @@ import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
 import { formatAsISODateMinutes, formatFrenchDate, formatFrenchDateTime } from '@/utils/date';
 import { compareFrenchStrings } from '@/utils/strings';
+
 import { getProEligibilityTestAsXlsx } from '../utils/xlsx';
 import ProcheReseauBadge, { type ProcheReseauBadgeProps } from './ProcheReseauBadge';
 

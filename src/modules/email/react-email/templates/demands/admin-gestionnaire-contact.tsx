@@ -1,6 +1,7 @@
 import { clientConfig } from '@/client-config';
 import type { AirtableLegacyRecord } from '@/modules/demands/types';
 import { dayjs } from '@/utils/date';
+
 import { Button, Layout, Link, Table, TableColumn, TableRow, Text, Title } from '../../components';
 import { demand as demandData } from './_data';
 

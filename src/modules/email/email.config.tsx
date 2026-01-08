@@ -1,4 +1,5 @@
 import { render } from '@react-email/components';
+
 import AuthActivationEmail from './react-email/templates/auth/activation';
 import AuthInscriptionEmail from './react-email/templates/auth/inscription';
 import AuthResetPasswordEmail from './react-email/templates/auth/reset-password';

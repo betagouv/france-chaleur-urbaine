@@ -4,6 +4,7 @@ import React from 'react';
 
 import useInViewport from '@/hooks/useInViewport';
 import { isDefined } from '@/utils/core';
+
 import DSFRInput from '../dsfr/Input';
 import { usePublicodesFormContext } from '../publicodes/FormProvider';
 import Label from './Label';

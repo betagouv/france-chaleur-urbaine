@@ -1,4 +1,5 @@
 import type { EligibilityType } from '@/server/services/addresseInformation';
+
 import type { TransitionType } from './constants';
 
 export type ProEligibilityTestEligibility = {

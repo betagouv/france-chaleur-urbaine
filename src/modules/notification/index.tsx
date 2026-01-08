@@ -1,4 +1,5 @@
 'use client';
+
 import * as Sentry from '@sentry/nextjs';
 import { useQueryState } from 'nuqs';
 import React, { type ReactNode } from 'react';

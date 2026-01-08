@@ -3,6 +3,7 @@ import { chunk } from '@/utils/array';
 import { processInParallel } from '@/utils/async';
 import { isDefined } from '@/utils/core';
 import { fetchJSON } from '@/utils/network';
+
 import { defineImportFunc } from '../import';
 
 type DonneesConsoGazBrutes = {

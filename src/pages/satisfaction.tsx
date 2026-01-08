@@ -1,6 +1,7 @@
 import { Alert } from '@codegouvfr/react-dsfr/Alert';
 import type { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
 import { useState } from 'react';
+
 import { clientConfig } from '@/client-config';
 import useForm from '@/components/form/react-form/useForm';
 import SimplePage from '@/components/shared/page/SimplePage';

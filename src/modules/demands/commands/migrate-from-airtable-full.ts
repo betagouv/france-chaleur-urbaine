@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { sql } from 'kysely';
+
 import type { fieldLabelInformation } from '@/components/EligibilityForm/components/ContactForm';
 import { getAddressEligibilityHistoryEntry } from '@/modules/pro-eligibility-tests/server/service';
 import type { structureTypes } from '@/modules/users/constants';

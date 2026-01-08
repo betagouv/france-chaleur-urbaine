@@ -1,4 +1,5 @@
 import { TRPCError } from '@trpc/server';
+
 import { routeAuthenticated, router } from '@/modules/trpc/server/connection';
 import { zUpdateProfileSchema } from '@/modules/users/constants';
 import * as usersService from '@/modules/users/server/service';

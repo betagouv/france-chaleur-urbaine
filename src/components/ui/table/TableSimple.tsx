@@ -27,6 +27,7 @@ import type { Virtualizer } from '@tanstack/react-virtual';
 import { cva } from 'class-variance-authority';
 import dynamic from 'next/dynamic';
 import React, { type RefObject, useCallback, useDeferredValue } from 'react';
+
 import Checkbox from '@/components/form/dsfr/Checkbox';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
@@ -37,6 +38,7 @@ import { isDevModeEnabled } from '@/hooks/useDevMode';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
 import type { FlattenKeys } from '@/utils/typescript';
+
 import TableCell, { type TableCellProps } from './TableCell';
 import TableFilter, { DEFAULT_MAX_DATE, DEFAULT_MIN_DATE, defaultTableFilterFns, type TableFilterProps } from './TableFilter';
 import { useTableVirtualization } from './useTableVirtualization';

@@ -1,7 +1,9 @@
 import type { Command } from '@commander-js/extra-typings';
+
 import { kdb, sql } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
 import { processInParallel } from '@/utils/async';
+
 import { updateAddressEligibilityHistory } from './server/service';
 import type { ProEligibilityTestHistoryEntry } from './types';
 

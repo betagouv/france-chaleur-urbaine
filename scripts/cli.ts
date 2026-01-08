@@ -2,6 +2,7 @@ import '@/load-env';
 
 import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
+
 import { allDatabaseTables } from '@cli/bootstrap/tables';
 import { refreshStatistics } from '@cli/stats/refresh';
 import { createCommand, InvalidArgumentError } from '@commander-js/extra-typings';
@@ -9,6 +10,7 @@ import { genSalt, hash } from 'bcryptjs';
 import prompts from 'prompts';
 import XLSX from 'xlsx';
 import { z } from 'zod';
+
 import { registerAppCommands } from '@/modules/app/commands';
 import { registerBdnbCommands } from '@/modules/bdnb/commands';
 import { registerDataCommands } from '@/modules/data/commands';

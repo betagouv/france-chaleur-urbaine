@@ -1,4 +1,5 @@
 import { ogr2ogrImportGeoJSONToDatabaseTable } from '@/utils/ogr2ogr';
+
 import { defineFileImportFunc } from '../import';
 
 export const importZonesOpportuniteFroid = defineFileImportFunc(async ({ filepath }) => {

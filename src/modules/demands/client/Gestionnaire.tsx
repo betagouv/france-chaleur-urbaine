@@ -1,8 +1,10 @@
 import { useState } from 'react';
+
 import Icon from '@/components/ui/Icon';
 import Loader from '@/components/ui/Loader';
 import ModalSimple from '@/components/ui/ModalSimple';
 import trpc, { type RouterOutput } from '@/modules/trpc/client';
+
 import type { Demand } from '../types';
 import EmailHistory from './EmailHistory';
 

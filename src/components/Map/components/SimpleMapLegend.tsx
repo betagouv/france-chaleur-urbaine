@@ -21,6 +21,7 @@ import { trackEvent } from '@/modules/analytics/client';
 import { dataSourcesVersions } from '@/modules/app/constants';
 import { useAuthentication } from '@/modules/auth/client/hooks';
 import { ObjectEntries } from '@/utils/typescript';
+
 import { caracteristiquesBatimentsLayerStyle } from '../layers/bdnb/caracteristiquesBatiments';
 import {
   energyFilterInterval,

@@ -20,6 +20,7 @@ import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
 import { objectToURLSearchParams } from '@/utils/network';
 import { compareFrenchStrings } from '@/utils/strings';
+
 import type { TagsStats } from '../types';
 
 const initialSortingState = [{ desc: true, id: 'lastSixMonths' }];

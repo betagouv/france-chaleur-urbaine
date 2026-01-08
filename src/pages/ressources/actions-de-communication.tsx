@@ -1,4 +1,5 @@
 import type { PropsWithChildren } from 'react';
+
 import Slideshow from '@/components/Slideshow';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Box from '@/components/ui/Box';

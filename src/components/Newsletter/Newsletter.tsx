@@ -5,6 +5,7 @@ import Button from '@/components/ui/Button';
 import { notify } from '@/modules/notification';
 import { submitToAirtable } from '@/services/airtable';
 import { Airtable } from '@/types/enum/Airtable';
+
 import { Container, Email } from './Newsletter.styles';
 
 const Newsletter = () => {

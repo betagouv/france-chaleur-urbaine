@@ -13,6 +13,7 @@ import Tooltip from '@/components/ui/Tooltip';
 import type { Network } from '@/types/Summary/Network';
 import { isDefined } from '@/utils/core';
 import { formatMW, formatMWh, prettyFormatNumber } from '@/utils/strings';
+
 import ClassedNetwork from './ClassedNetwork';
 import ColdNetwork from './ColdNetwork';
 import EligibilityTestBox from './EligibilityTestBox';

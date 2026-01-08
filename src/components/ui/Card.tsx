@@ -1,6 +1,7 @@
 import DSFRCard, { type CardProps as DSFRCardProps } from '@codegouvfr/react-dsfr/Card';
 import { cva, type VariantProps } from 'class-variance-authority';
 import type { ReactNode } from 'react';
+
 import { type TrackingEvent, trackEvent } from '@/modules/analytics/client';
 import cx from '@/utils/cx';
 

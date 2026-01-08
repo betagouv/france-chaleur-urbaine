@@ -1,10 +1,12 @@
 import Tag from '@codegouvfr/react-dsfr/Tag';
+
 import Accordion from '@/components/ui/Accordion';
 import Button from '@/components/ui/Button';
 import Tooltip from '@/components/ui/Tooltip';
 import type { ReseauxDeChaleurTile } from '@/modules/tiles/server/generation-configs/reseaux-de-chaleur';
 import { isDefined } from '@/utils/core';
 import { prettyFormatNumber } from '@/utils/strings';
+
 import { DownloadNetworkGeometryButton } from '../components/DownloadNetworkGeometryButton';
 import { defineLayerPopup, ifHoverElse, type MapSourceLayersSpecification } from './common';
 import { buildFiltreGestionnaire, buildFiltreIdentifiantReseau, buildReseauxDeChaleurFilters } from './filters';

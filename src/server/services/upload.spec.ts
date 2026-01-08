@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { fetchWithRetry } from './upload';
 
 describe('upload service', () => {
