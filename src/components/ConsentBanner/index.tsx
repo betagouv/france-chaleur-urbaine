@@ -5,7 +5,6 @@ import { useRouter } from 'next/router';
 
 import { clientConfig } from '@/client-config';
 
-import FacebookScript from './FacebookScript';
 import GoogleTagsScript from './GoogleTagsScript';
 import HotjarScript from './HotjarScript';
 import LinkedInScript from './LinkedInScript';
@@ -69,9 +68,6 @@ export const ConsentBanner = () => {
           {googleEnabled && finalityConsent?.google_analytics && <GoogleTagsScript tagIds={clientConfig.tracking.googleTagIds} />}
           {linkedinEnabled && finalityConsent?.linkedin_insights && (
             <LinkedInScript partnerId={clientConfig.tracking.linkInPartnerId as string} />
-          )}
-          {facebookEnabled && finalityConsent?.facebook_pixel && (
-            <FacebookScript pixelId={clientConfig.tracking.facebookPixelId as string} />
           )}
           {hotjarEnabled && finalityConsent?.hotjar && (
             <HotjarScript hjid={clientConfig.tracking.hotjarId as string} hjsv={clientConfig.tracking.hotjarSv as string} />
