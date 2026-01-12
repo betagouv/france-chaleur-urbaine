@@ -1,10 +1,10 @@
 import type { BoundingBox } from '@/modules/geo/types';
-import { db, sql } from '@/server/db/kysely';
+import { kdb, sql } from '@/server/db/kysely';
 
 type TypeCommune = 'Réseau Existant' | 'Réseau Futur' | 'Fort Potentiel' | 'Potentiel' | 'Sans Potentiel';
 
 export const getCommunePotentiel = async (codeInsee: string) => {
-  const communePromise = db
+  const communePromise = kdb
     .selectFrom('ign_communes')
     .where('insee_com', '=', codeInsee)
     .select([
@@ -24,30 +24,30 @@ export const getCommunePotentiel = async (codeInsee: string) => {
     ])
     .executeTakeFirst();
 
-  const zonesAFortPotentielPromise = db
+  const zonesAFortPotentielPromise = kdb
     .selectFrom('zone_a_potentiel_fort_chaud')
     .where('code_com_i', '=', codeInsee)
     .select(['chauf_mwh', 'ecs_mwh'])
     .execute();
 
-  const zonesAPotentielPromise = db
+  const zonesAPotentielPromise = kdb
     .selectFrom('zone_a_potentiel_chaud')
     .where('code_com_i', '=', codeInsee)
     .select(['chauf_mwh', 'ecs_mwh'])
     .execute();
 
-  const nbReseauxExistantsPromise = db
+  const nbReseauxExistantsPromise = kdb
     .selectFrom('reseaux_de_chaleur')
     .leftJoin('ign_communes', (join) => join.on('ign_communes.insee_com', '=', codeInsee))
     .where(sql<boolean>`ST_Intersects(reseaux_de_chaleur.geom, st_buffer(ign_communes.geom, -150))`)
-    .select(db.fn.countAll<number>().as('count'))
+    .select(kdb.fn.countAll<number>().as('count'))
     .executeTakeFirstOrThrow();
 
-  const nbReseauxFutursPromise = db
+  const nbReseauxFutursPromise = kdb
     .selectFrom('zones_et_reseaux_en_construction')
     .leftJoin('ign_communes', (join) => join.on('ign_communes.insee_com', '=', codeInsee))
     .where(sql<boolean>`ST_Intersects(zones_et_reseaux_en_construction.geom, st_buffer(ign_communes.geom, -150))`)
-    .select(db.fn.countAll<number>().as('count'))
+    .select(kdb.fn.countAll<number>().as('count'))
     .executeTakeFirstOrThrow();
 
   const [commune, zonesAFortPotentiel, zonesAPotentiel, { count: nbReseauxExistants }, { count: nbReseauxFuturs }] = await Promise.all([

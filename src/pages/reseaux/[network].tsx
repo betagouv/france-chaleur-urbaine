@@ -5,7 +5,7 @@ import NetworkPanel from '@/components/Network/Network';
 import Slice from '@/components/Slice/Slice';
 import SimplePage from '@/components/shared/page/SimplePage';
 import { getColdNetwork, getNetwork } from '@/modules/reseaux/server/service';
-import { db } from '@/server/db/kysely';
+import { kdb } from '@/server/db/kysely';
 import type { Network } from '@/types/Summary/Network';
 
 const PageReseau = ({ network }: InferGetStaticPropsType<typeof getStaticProps>) => {
@@ -44,11 +44,11 @@ const PageReseau = ({ network }: InferGetStaticPropsType<typeof getStaticProps>)
 export const getStaticPaths: GetStaticPaths = async () => {
   const networks = process.env.GITHUB_CI
     ? []
-    : await db
+    : await kdb
         .selectFrom('reseaux_de_chaleur')
         .select('Identifiant reseau')
         .where('Identifiant reseau', 'is not', null)
-        .union(db.selectFrom('reseaux_de_froid').select('Identifiant reseau').where('Identifiant reseau', 'is not', null))
+        .union(kdb.selectFrom('reseaux_de_froid').select('Identifiant reseau').where('Identifiant reseau', 'is not', null))
         .execute();
 
   return {

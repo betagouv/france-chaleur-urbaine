@@ -1,7 +1,7 @@
-import { db, sql } from '@/server/db/kysely';
+import { kdb, sql } from '@/server/db/kysely';
 
 const isInPDP = async (lat: number, lon: number): Promise<boolean> => {
-  const pdp = await db
+  const pdp = await kdb
     .selectFrom('zone_de_developpement_prioritaire')
     .select('id_fcu')
     .where(

@@ -1,8 +1,18 @@
-import type { ExpressionBuilder } from 'kysely';
+import {
+  type ComparisonOperatorExpression,
+  type Expression,
+  type ExpressionBuilder,
+  type InsertObject,
+  type OperandValueExpressionOrList,
+  type ReferenceExpression,
+  sql,
+} from 'kysely';
 import { z } from 'zod';
 
 import type { Context as ApiContext, ListConfig } from '@/server/api/crud';
-import { applyFilters, type DB, type InsertObject, kdb } from '@/server/db/kysely';
+import { type DB, kdb } from '@/server/db/kysely';
+
+import type { DB as Database } from './database';
 
 const filterSchema = z.record(
   z.string(),
@@ -155,4 +165,95 @@ export function createBaseModel<T extends keyof DB>(tableName: T) {
     update,
     updateMine,
   };
+}
+
+type FilterOperator = '=' | '!=' | '>' | '>=' | '<' | '<=' | 'like' | 'ilike' | 'in' | 'is';
+
+type FilterValue<T extends keyof Database, C extends keyof Database[T]> =
+  | Database[T][C]
+  | null
+  | [FilterOperator, Database[T][C] | (Database[T][C] | null)[] | null];
+
+type Filter<T extends keyof Database> = {
+  [C in keyof Database[T]]?: FilterValue<T, C>;
+};
+// Define a type for query builders that support the `where` method
+interface WhereableQueryBuilder<DB, TB extends keyof DB, O> {
+  where<RE extends ReferenceExpression<DB, TB>>(
+    lhs: RE,
+    op: ComparisonOperatorExpression,
+    rhs: OperandValueExpressionOrList<DB, TB, RE>
+  ): WhereableQueryBuilder<DB, TB, O>;
+  where<E extends Expression<unknown>>(expression: E): WhereableQueryBuilder<DB, TB, O>;
+}
+
+// Utility type to extract table alias (ensure this is defined correctly in your codebase)
+type ExtractTableAlias<DB, T extends keyof DB> = T extends string ? T : never;
+
+/**
+ * Applies filters to a Kysely query based on a filter object.
+ *
+ * @param query - The Kysely query builder to apply filters to
+ * @param tableName - The name of the database table
+ * @param filters - An object containing filter conditions
+ * @returns The modified query with all filters applied
+ *
+ * Example usage:
+ * ```
+ * const query = kdb.selectFrom('users');
+ * const filteredQuery = applyFilters(query, 'users', {
+ *   status: 'active',
+ *   age: ['>', 18],
+ *   user_id: ['raw', `user_id IS NULL OR user_id = '${context.user.id}'`],
+ *   role: ['in', ['admin', 'moderator']]
+ * });
+ * ```
+ */
+export function applyFilters<T extends keyof Database, O>(
+  query: WhereableQueryBuilder<Database, ExtractTableAlias<Database, T>, O>,
+  tableName: T,
+  filters: Filter<T> = {}
+): WhereableQueryBuilder<Database, ExtractTableAlias<Database, T>, O> {
+  let modifiedQuery = query;
+
+  for (const [column, filterValue] of Object.entries(filters)) {
+    const columnRef = `${String(tableName)}.${column}` as ReferenceExpression<Database, ExtractTableAlias<Database, T>>;
+
+    const [operator, value] = Array.isArray(filterValue) ? filterValue : ['=', filterValue];
+
+    switch (operator) {
+      case '=':
+      case '!=':
+      case '>':
+      case '>=':
+      case '<':
+      case '<=':
+      case 'like':
+      case 'ilike':
+        modifiedQuery = modifiedQuery.where(columnRef, operator, value);
+        break;
+      case 'in':
+        if (Array.isArray(value) && value.length > 0) {
+          modifiedQuery = modifiedQuery.where(columnRef, 'in', value);
+        } else {
+          // Empty IN clause returns no results
+          modifiedQuery = modifiedQuery.where(sql`false` as any);
+        }
+        break;
+      case 'is':
+        if (value === null) {
+          modifiedQuery = modifiedQuery.where(columnRef, 'is', null);
+        } else {
+          modifiedQuery = modifiedQuery.where(columnRef, '=', value);
+        }
+        break;
+      case 'raw':
+        modifiedQuery = modifiedQuery.where(sql.raw(value));
+        break;
+      default:
+        throw new Error(`Unsupported operator: ${operator}`);
+    }
+  }
+
+  return modifiedQuery;
 }

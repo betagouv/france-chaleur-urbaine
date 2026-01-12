@@ -32,7 +32,6 @@
   "exclude": ["node_modules", "__tests__", "*.backUp", "**/*.backUp/*", ".next"],
   "include": [
     "**/*.svgr",
-    "knexfile.ts",
     "next-env.d.ts",
     "scripts/**/*.ts",
     "src/**/*.d.ts",

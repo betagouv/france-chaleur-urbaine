@@ -113,8 +113,6 @@ const packagesSet = new Set<string>([
 ]);
 
 const excludedOptimizeImports = new Set<string>([
-  // Known to pull native optional deps and break with native dependencies like "better-sqlite3"
-  'knex',
   'pg', // panic with scalingo only : Error [TurbopackInternalError]: The packages specified in the 'transpilePackages' conflict with the 'serverExternalPackages': ["pg"]
 ]);
 
@@ -330,9 +328,6 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  // Exclude knex from server bundling to avoid TypeScript errors with optional dialect dependencies
-  // Knex loads dialects dynamically via require(), and we only use PostgreSQL
-  serverExternalPackages: ['knex'],
   transpilePackages: ['@codegouvfr/react-dsfr'],
   turbopack: {
     rules: {
