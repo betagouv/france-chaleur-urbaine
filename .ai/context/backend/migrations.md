@@ -1,13 +1,14 @@
 ## Database Migrations
 
-**Tool**: Knex migrations + Kysely for types  
-**Location**: `src/server/db/migrations/`  
+**Tool**: Kysely migrations
+**Location**: `src/server/db/migrations/`
 **Format**: `YYYYMMDDHHMMSS_description.ts`
 
 ## Commands
 
 ```bash
-pnpm db:migrate                      # Run pending migrations
+pnpm db:migrate                      # Run pending Kysely migrations
+pnpm db:migrate:down                 # Roll back last migration
 pnpm db:sync --single <table_name>   # Generate types for ONE table (stdout)
 ```
 
@@ -31,24 +32,25 @@ Then **manually merge** the output into `src/server/db/kysely/database.ts`:
 ## Migration Pattern
 
 ```typescript
-import type { Knex } from 'knex';
+import type { Kysely } from 'kysely';
+import { sql } from 'kysely';
 
-export async function up(knex: Knex): Promise<void> {
-  await knex.raw(`
+export async function up(db: Kysely<any>): Promise<void> {
+  await sql`
     CREATE TABLE IF NOT EXISTS table_name (
       id uuid PRIMARY KEY DEFAULT public.uuid_generate_v4(),
       name TEXT NOT NULL,
       user_id uuid REFERENCES users(id) ON DELETE CASCADE,
       data jsonb,
       created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
-    );
+    )
+  `.execute(db);
 
-    CREATE INDEX IF NOT EXISTS idx_table_user_id ON table_name (user_id);
-  `);
+  await sql`CREATE INDEX IF NOT EXISTS idx_table_user_id ON table_name (user_id)`.execute(db);
 }
 
-export async function down(knex: Knex): Promise<void> {
-  await knex.raw(`DROP TABLE IF EXISTS table_name CASCADE;`);
+export async function down(db: Kysely<any>): Promise<void> {
+  await sql`DROP TABLE IF EXISTS table_name CASCADE`.execute(db);
 }
 ```
 
@@ -89,9 +91,10 @@ user_id uuid REFERENCES users(id) ON DELETE CASCADE
 
 ## Best Practices
 
-- **Raw SQL preferred**: Use `knex.raw()` for explicit control
+- **Use Kysely sql tag**: Use `sql` template literal for explicit control
 - **One-way migrations**: Implement `up`, leave `down` empty or minimal
 - **Always index**: Foreign keys, JSONB extracts, spatial columns
 - **JSONB**: Use targeted indexes (extract fields) over global GIN
 - **PostGIS**: Store in Lambert 93 (SRID 2154), not WGS84
 - **Run `pnpm db:sync`** after EVERY migration to update Kysely types
+- **Migration file naming**: Use timestamp format `YYYYMMDDHHMMSS_description.ts`
