@@ -423,18 +423,6 @@ export interface Jobs {
   user_id: string | null;
 }
 
-export interface KnexMigrations {
-  batch: number | null;
-  id: Generated<number>;
-  migration_time: Timestamp | null;
-  name: string | null;
-}
-
-export interface KnexMigrationsLock {
-  index: Generated<number>;
-  is_locked: number | null;
-}
-
 export interface MatomoStats {
   date: Timestamp;
   method: string;
@@ -945,8 +933,6 @@ export interface DB {
   installations_geothermie_surface_echangeurs_fermes_tiles: InstallationsGeothermieSurfaceEchangeursFermesTiles;
   installations_geothermie_surface_echangeurs_ouverts_tiles: InstallationsGeothermieSurfaceEchangeursOuvertsTiles;
   jobs: Jobs;
-  knex_migrations: KnexMigrations;
-  knex_migrations_lock: KnexMigrationsLock;
   matomo_stats: MatomoStats;
   ouvrages_geothermie_surface_echangeurs_fermes_tiles: OuvragesGeothermieSurfaceEchangeursFermesTiles;
   ouvrages_geothermie_surface_echangeurs_ouverts_tiles: OuvragesGeothermieSurfaceEchangeursOuvertsTiles;

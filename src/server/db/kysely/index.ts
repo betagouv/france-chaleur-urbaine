@@ -171,6 +171,6 @@ export function applyFilters<T extends keyof Database, O>(
   return modifiedQuery;
 }
 /**
- * Kysely database. Allows better distinction with knex `db` variable.
+ * Kysely database.
  */
 export const kdb = db;
