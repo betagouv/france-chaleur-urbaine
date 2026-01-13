@@ -4,13 +4,18 @@
 HOST_TMP_DIR="/tmp/fcu"
 
 # Detect OS and set LOCALHOST accordingly
-if [[ "$OSTYPE" == "msys"* ]]; then
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  DOCKER_HOST="host.docker.internal"
+
+elif [[ "$OSTYPE" == "msys"* ]]; then
+  DOCKER_HOST="host.docker.internal"
   # Chemin Windows réel pour Docker (ex: C:/Users/.../Temp/fcu)
   DOCKER_HOST_TMP_DIR="$(cygpath -w "$HOST_TMP_DIR" | sed 's|\\|/|g')"
   # Empêche la conversion MSYS sur les chemins /tmp/... destinés au container
   export MSYS2_ARG_CONV_EXCL="/tmp/tables.sql;/tmp/tables.dump"
 
 else
+  DOCKER_HOST="localhost"
   DOCKER_HOST_TMP_DIR="$HOST_TMP_DIR"
 fi
 
