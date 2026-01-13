@@ -41,6 +41,7 @@ const getNoTraceNetworkInCity = async (city: string): Promise<NetworkInfos> => {
     .selectFrom('reseaux_de_chaleur')
     .select(['Identifiant reseau', 'Taux EnR&R', 'contenu CO2 ACV', 'Gestionnaire', 'nom_reseau'])
     .where('has_trace', '=', false)
+    .where('ouvert_aux_raccordements', '=', true)
     .where(sql<boolean>`${sql.ref('communes')} @> ARRAY[${city}]`)
     .executeTakeFirst();
   return result as NetworkInfos;
@@ -82,6 +83,7 @@ export const closestNetwork = async (lat: number, lon: number): Promise<NetworkI
       sql<number>`round(geom <-> ST_Transform(ST_GeomFromText('POINT(${sql.lit(lon)} ${sql.lit(lat)})', 4326), 2154))`.as('distance'),
     ])
     .where('has_trace', '=', true)
+    .where('ouvert_aux_raccordements', '=', true)
     .orderBy('distance')
     .executeTakeFirst();
 
@@ -102,6 +104,7 @@ const closestFuturNetwork = async (
       'gestionnaire',
     ])
     .where('is_zone', '=', false)
+    .where('ouvert_aux_raccordements', '=', true)
     .orderBy('distance')
     .executeTakeFirst();
 
@@ -123,6 +126,7 @@ const closestInFuturNetwork = async (
       )`
     )
     .where('is_zone', '=', true)
+    .where('ouvert_aux_raccordements', '=', true)
     .executeTakeFirst();
 
   return network as { gestionnaire: string };
@@ -457,6 +461,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
         ),
       ])
       .where('has_trace', '=', true)
+      .where('ouvert_aux_raccordements', '=', true)
       .orderBy((eb) => sql`${eb.ref('geom')} <-> ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)`)
       .limit(1)
       .executeTakeFirstOrThrow(),
@@ -481,6 +486,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
       )
       .select(['id_fcu', 'Identifiant reseau', 'nom_reseau', 'commune.nom', 'tags', 'communes'])
       .where('has_trace', '=', false)
+      .where('ouvert_aux_raccordements', '=', true)
       .limit(1)
       .executeTakeFirst(),
 
@@ -496,6 +502,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
         ),
       ])
       .where('is_zone', '=', false)
+      .where('ouvert_aux_raccordements', '=', true)
       .orderBy((eb) => sql`${eb.ref('geom')} <-> ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)`)
       .limit(1)
       .executeTakeFirstOrThrow(),
@@ -512,6 +519,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
         ),
       ])
       .where('is_zone', '=', true)
+      .where('ouvert_aux_raccordements', '=', true)
       .orderBy((eb) => sql`${eb.ref('geom')} <-> ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)`)
       .limit(1)
       .executeTakeFirstOrThrow(),

@@ -188,12 +188,14 @@ export async function seedNetworksForEligibilityTests() {
       has_trace: true,
       'Identifiant reseau': 'DEFAULT-FAR',
       id_fcu: 9999,
+      ouvert_aux_raccordements: true,
       tags: [],
     }),
 
     seedZoneEtReseauEnConstruction({
       geom: createLineGeometry(testPoint.lon, testPoint.lat, 3000),
       id_fcu: 9998,
+      ouvert_aux_raccordements: true,
       tags: [],
     }),
 
@@ -206,6 +208,7 @@ export async function seedNetworksForEligibilityTests() {
       'Identifiant reseau': '7501C',
       id_fcu: 7501,
       nom_reseau: 'CPCU',
+      ouvert_aux_raccordements: true,
       'reseaux classes': true,
       'Taux EnR&R': 65,
       tags: [],
@@ -217,6 +220,7 @@ export async function seedNetworksForEligibilityTests() {
       gestionnaire: 'Gestionnaire Futur',
       id_fcu: 9001,
       nom_reseau: 'Réseau Futur Test',
+      ouvert_aux_raccordements: true,
       tags: [],
     }),
 
@@ -226,6 +230,7 @@ export async function seedNetworksForEligibilityTests() {
       gestionnaire: 'Gestionnaire Zone',
       id_fcu: 9002,
       nom_reseau: null,
+      ouvert_aux_raccordements: true,
       tags: [],
     }),
 
@@ -239,6 +244,7 @@ export async function seedNetworksForEligibilityTests() {
       'Identifiant reseau': '7502C',
       id_fcu: 7502,
       nom_reseau: 'Réseau Proche',
+      ouvert_aux_raccordements: true,
       'reseaux classes': false,
       'Taux EnR&R': 50,
       tags: [],
@@ -250,6 +256,7 @@ export async function seedNetworksForEligibilityTests() {
       gestionnaire: 'Gestionnaire Futur Proche',
       id_fcu: 9003,
       nom_reseau: 'Réseau Futur Proche',
+      ouvert_aux_raccordements: true,
       tags: [],
     }),
 
@@ -262,6 +269,7 @@ export async function seedNetworksForEligibilityTests() {
       'Identifiant reseau': '7503C',
       id_fcu: 7503,
       nom_reseau: 'Réseau Loin',
+      ouvert_aux_raccordements: true,
       'reseaux classes': false,
       'Taux EnR&R': 45,
       tags: [],
@@ -273,6 +281,7 @@ export async function seedNetworksForEligibilityTests() {
       gestionnaire: 'Gestionnaire Futur Loin',
       id_fcu: 9004,
       nom_reseau: 'Réseau Futur Loin',
+      ouvert_aux_raccordements: true,
       tags: [],
     }),
 
@@ -285,6 +294,7 @@ export async function seedNetworksForEligibilityTests() {
       'Identifiant reseau': '7504C',
       id_fcu: 7504,
       nom_reseau: 'Réseau Sans Trace',
+      ouvert_aux_raccordements: true,
       'Taux EnR&R': 70,
       tags: [],
     }),
@@ -296,6 +306,31 @@ export async function seedNetworksForEligibilityTests() {
       id_fcu: 8001,
       reseau_de_chaleur_ids: [7502],
       reseau_en_construction_ids: [],
+    }),
+
+    // 11. Existing network NOT open for connections (~30m - should be ignored)
+    seedReseauDeChaleur({
+      'contenu CO2 ACV': 40,
+      Gestionnaire: 'Gestionnaire Non Ouvert',
+      geom: createLineGeometry(testPoint.lon, testPoint.lat, 30),
+      has_trace: true,
+      'Identifiant reseau': '7505C',
+      id_fcu: 7505,
+      nom_reseau: 'Réseau Non Ouvert',
+      ouvert_aux_raccordements: false,
+      'reseaux classes': true,
+      'Taux EnR&R': 80,
+      tags: [],
+    }),
+
+    // 12. Future network NOT open for connections (~35m - should be ignored)
+    seedZoneEtReseauEnConstruction({
+      geom: createLineGeometry(testPoint.lon, testPoint.lat, 35),
+      gestionnaire: 'Gestionnaire Futur Non Ouvert',
+      id_fcu: 9005,
+      nom_reseau: 'Réseau Futur Non Ouvert',
+      ouvert_aux_raccordements: false,
+      tags: [],
     }),
   ]);
 }

@@ -2,6 +2,7 @@ import Tag from '@codegouvfr/react-dsfr/Tag';
 
 import Accordion from '@/components/ui/Accordion';
 import Button from '@/components/ui/Button';
+import Icon from '@/components/ui/Icon';
 import Tooltip from '@/components/ui/Tooltip';
 import type { ReseauxDeChaleurTile } from '@/modules/tiles/server/generation-configs/reseaux-de-chaleur';
 import { isDefined } from '@/utils/core';
@@ -71,6 +72,12 @@ const Popup = defineLayerPopup<ReseauxDeChaleurTile>(
             />
           )}
         </TwoColumns>
+        {!reseauDeChaleur.ouvert_aux_raccordements && (
+          <div className="text-sm">
+            <Icon name="ri-alert-line" size="sm" className="mr-1" />
+            Ce réseau n'est pas ouvert aux raccordements
+          </div>
+        )}
         {reseauDeChaleur['Identifiant reseau'] && (
           <Button
             priority="secondary"

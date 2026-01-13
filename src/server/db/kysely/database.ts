@@ -620,6 +620,7 @@ export interface ReseauxDeChaleur {
   vapeur: string | null;
   ville_mo: string | null;
   website_gestionnaire: string | null;
+  ouvert_aux_raccordements: boolean;
 }
 
 export interface ReseauxDeChaleurTiles {
@@ -885,6 +886,7 @@ export interface ZonesEtReseauxEnConstruction {
   is_zone: Generated<boolean>;
   mise_en_service: string | null;
   nom_reseau: string | null;
+  ouvert_aux_raccordements: boolean;
   region: string | null;
   tags: string[];
 }
