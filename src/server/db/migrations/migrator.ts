@@ -11,6 +11,7 @@ import { parentLogger } from '@/server/helpers/logger';
 
 const logger = parentLogger.child({ module: 'migrator' });
 
+// On doit surcharger cette classe car FileMigrationProvider gère mal les chemins windows
 class UrlFileMigrationProvider implements MigrationProvider {
   constructor(
     private readonly options: {
