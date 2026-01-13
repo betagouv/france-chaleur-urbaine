@@ -43,14 +43,16 @@ export async function up(db: Kysely<any>): Promise<void> {
       user_id uuid REFERENCES users(id) ON DELETE CASCADE,
       data jsonb,
       created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
-    )
-  `.execute(db);
+    );
 
-  await sql`CREATE INDEX IF NOT EXISTS idx_table_user_id ON table_name (user_id)`.execute(db);
+    CREATE INDEX IF NOT EXISTS idx_table_user_id ON table_name (user_id);
+  `.execute(db);
 }
 
 export async function down(db: Kysely<any>): Promise<void> {
-  await sql`DROP TABLE IF EXISTS table_name CASCADE`.execute(db);
+  await sql`
+    DROP TABLE IF EXISTS table_name CASCADE;
+  `.execute(db);
 }
 ```
 
@@ -91,6 +93,9 @@ user_id uuid REFERENCES users(id) ON DELETE CASCADE
 
 ## Best Practices
 
+- **Single SQL block**: Group all SQL statements in one `sql` template literal block
+- **No column comments**: Do not add `COMMENT ON COLUMN` statements in migrations
+- **Separate statements with semicolons**: Use semicolons to separate multiple SQL statements within the block
 - **Use Kysely sql tag**: Use `sql` template literal for explicit control
 - **One-way migrations**: Implement `up`, leave `down` empty or minimal
 - **Always index**: Foreign keys, JSONB extracts, spatial columns
