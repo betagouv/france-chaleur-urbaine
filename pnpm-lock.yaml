@@ -136,9 +136,6 @@ importers:
       '@turf/nearest-point-on-line':
         specifier: ^7.3.1
         version: 7.3.1
-      '@types/mdx':
-        specifier: ^2.0.13
-        version: 2.0.13
       '@uiw/react-color-colorful':
         specifier: ^2.8.0
         version: 2.9.2(@babel/runtime@7.28.4)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
@@ -398,6 +395,9 @@ importers:
       '@types/mapbox__mapbox-gl-draw':
         specifier: ^1.4.9
         version: 1.4.9
+      '@types/mdx':
+        specifier: ^2.0.13
+        version: 2.0.13
       '@types/node':
         specifier: ^20.5.0
         version: 20.19.25
