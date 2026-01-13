@@ -2,6 +2,7 @@
 
 # Choix du dossier host pour stocker les dumps
 HOST_TMP_DIR="/tmp/fcu"
+DOCKER_HOST_TMP_DIR="$HOST_TMP_DIR"
 
 # Detect OS and set LOCALHOST accordingly
 if [[ "$OSTYPE" == "darwin"* ]]; then
@@ -16,7 +17,6 @@ elif [[ "$OSTYPE" == "msys"* ]]; then
 
 else
   DOCKER_HOST="localhost"
-  DOCKER_HOST_TMP_DIR="$HOST_TMP_DIR"
 fi
 
 
