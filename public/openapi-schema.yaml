@@ -58,6 +58,10 @@ paths:
                     'contenu CO2 ACV':
                       type: number
                       example: 0.188
+                    ouvert_aux_raccordements:
+                      type: boolean
+                      description: Indique si le réseau est ouvert aux raccordements. Si false, le réseau n'est pas proposé dans les calculs d'éligibilité.
+                      example: true
                     geom:
                       type: object
                       description: Géométrie au format GeoJSON
