@@ -592,7 +592,7 @@ const DonneesPage = () => {
                     <li>puissance installée en MW</li>
                   </ul>
                 </td>
-                <td>?</td>
+                <td>Source : Bibliothèque FEDENE pour 2021 (source historique, origine exacte inconnue)</td>
               </tr>
               <tr>
                 <td className="font-semibold">
