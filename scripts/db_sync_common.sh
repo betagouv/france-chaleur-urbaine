@@ -1,13 +1,26 @@
 #!/bin/bash -e
 
-COMMON_PG_PARAMS="-e PGUSER -e PGPASSWORD --network host -v /tmp/fcu:/tmp postgis/postgis:16-3.5-alpine"
+# Choix du dossier host pour stocker les dumps
+HOST_TMP_DIR="/tmp/fcu"
+DOCKER_HOST_TMP_DIR="$HOST_TMP_DIR"
 
 # Detect OS and set LOCALHOST accordingly
 if [[ "$OSTYPE" == "darwin"* ]]; then
   DOCKER_HOST="host.docker.internal"
+
+elif [[ "$OSTYPE" == "msys"* ]]; then
+  DOCKER_HOST="host.docker.internal"
+  # Chemin Windows réel pour Docker (ex: C:/Users/.../Temp/fcu)
+  DOCKER_HOST_TMP_DIR="$(cygpath -w "$HOST_TMP_DIR" | sed 's|\\|/|g')"
+  # Empêche la conversion MSYS sur les chemins /tmp/... destinés au container
+  export MSYS2_ARG_CONV_EXCL="/tmp/tables.sql;/tmp/tables.dump"
+
 else
   DOCKER_HOST="localhost"
 fi
+
+
+COMMON_PG_PARAMS="-e PGUSER -e PGPASSWORD --network host -v ${DOCKER_HOST_TMP_DIR}:/tmp postgis/postgis:16-3.5-alpine"
 
 pg_shell="docker run --rm $COMMON_PG_PARAMS sh"
 pg_dump="docker run --rm $COMMON_PG_PARAMS pg_dump"
