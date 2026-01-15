@@ -1,118 +1,215 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it } from 'vitest';
 
-import { cleanDatabase, NETWORK_TEST_COORDS, seedNetworksForEligibilityTests } from '@/tests/fixtures';
+import type { Coords } from '@/modules/geo/types';
+import type { EligibilityType } from '@/server/services/addresseInformation';
+import { cleanDatabase, seedEligibilityTestsData } from '@/tests/fixtures';
+import { eligibilityFixtures } from '@/tests/fixtures/eligibility';
 import type { TestCase } from '@/tests/trpc-helpers';
 import { createTestCaller } from '@/tests/trpc-helpers';
 import type { HeatNetwork } from '@/types/HeatNetworksResponse';
 
 /**
- * Tests d'intégration pour l'endpoint trpc.reseaux.eligibilityStatus
- *
- * Cet endpoint vérifie l'éligibilité d'une adresse (coordonnées lat/lon) à un réseau de chaleur.
- * Il examine plusieurs critères dans l'ordre de priorité :
- * 1. Réseau existant très proche (< 100m ou 60m pour Paris)
- * 2. Réseau futur très proche (< 100m ou 60m pour Paris)
- * 3. Dans une zone de futur réseau
- * 4. Réseau existant proche (100-200m ou 60-100m pour Paris)
- * 5. Réseau futur proche (100-200m ou 60-100m pour Paris)
- * 6. Réseau existant loin (200-1000m)
- * 7. Réseau futur loin (200-1000m)
- * 8. Réseau sans tracé dans la ville
- * 9. Pas de réseau à proximité
+ * Tests d'intégration pour l'endpoint trpc.reseaux.eligibilityStatus.
+ * Pour modifier les données de test, exécutez la commande :
+ * > pnpm cli test export-eligibility-fixtures
  */
-
-type EligibilityInput = {
-  city: string;
-  lat: number;
-  lon: number;
-};
-
 describe('reseauxRouter.eligibilityStatus', () => {
-  beforeEach(async () => {
+  beforeAll(async () => {
     await cleanDatabase();
-    await seedNetworksForEligibilityTests();
-  });
-
-  describe('Permissions', () => {
-    it('autorise les utilisateurs non authentifiés (route publique)', async () => {
-      const result = await createTestCaller(null).reseaux.eligibilityStatus(NETWORK_TEST_COORDS.testPoint);
-
-      expect(result).toStrictEqual({
-        co2: 50,
-        distance: expect.any(Number),
-        futurNetwork: false,
-        gestionnaire: 'CPCU',
-        hasNoTraceNetwork: null,
-        hasPDP: false,
-        id: '7501C',
-        inPDP: true,
-        isClasse: true,
-        isEligible: true,
-        name: 'CPCU',
-        tauxENRR: 65,
-        veryEligibleDistance: 60,
-      });
-    });
+    await seedEligibilityTestsData();
   });
 
   describe("Scénarios d'éligibilité", () => {
-    const eligibilityTestCases: TestCase<EligibilityInput, Partial<HeatNetwork>>[] = [
+    const eligibilityTestCases: TestCase<Coords, HeatNetwork>[] = [
       {
         expectedOutput: {
-          co2: 50,
-          distance: expect.any(Number),
+          co2: null,
+          distance: 215,
           futurNetwork: false,
-          gestionnaire: 'CPCU',
+          gestionnaire: 'Gestionnaire',
           hasNoTraceNetwork: null,
-          hasPDP: false,
-          id: '7501C',
+          hasPDP: true,
+          id: '1301C',
           inPDP: true,
           isClasse: true,
           isEligible: true,
-          name: 'CPCU',
-          tauxENRR: 65,
-          veryEligibleDistance: 60,
-        },
-        input: NETWORK_TEST_COORDS.testPoint,
-        label: 'retourne éligible pour un réseau existant très proche (< 60m)',
-      },
-      {
-        expectedOutput: {
-          co2: 60,
-          distance: expect.any(Number),
-          futurNetwork: false,
-          gestionnaire: 'Test Gestionnaire Loin',
-          hasNoTraceNetwork: null,
-          hasPDP: false,
-          id: '7503C',
-          inPDP: false,
-          isClasse: false,
-          isEligible: expect.any(Boolean),
-          name: 'Réseau Loin',
-          tauxENRR: 45,
+          name: 'Réseau de chaleur PDP',
+          tauxENRR: null,
           veryEligibleDistance: 100,
         },
-        input: { city: 'Paris', lat: 48.861, lon: 2.357 },
-        label: 'retourne les informations même pour réseaux lointains (200-1000m)',
+        input: getTestPointCoordinates('dans_pdp_reseau_existant'),
+        label: 'dans_pdp_reseau_existant',
       },
       {
         expectedOutput: {
           co2: null,
-          distance: expect.any(Number),
+          distance: 210,
           futurNetwork: true,
-          gestionnaire: null,
+          gestionnaire: 'Gestionnaire',
           hasNoTraceNetwork: null,
-          hasPDP: null,
+          hasPDP: true,
           id: null,
-          inPDP: false,
+          inPDP: true,
           isClasse: null,
-          isEligible: expect.any(Boolean),
-          name: null,
+          isEligible: true,
+          name: 'Réseau en construction PDP',
           tauxENRR: null,
           veryEligibleDistance: 100,
         },
-        input: { city: 'Paris', lat: 48.88, lon: 2.38 },
-        label: 'gère le cas du réseau sans tracé (point éloigné - réseau futur retourné)',
+        input: getTestPointCoordinates('dans_pdp_reseau_futur'),
+        label: 'dans_pdp_reseau_futur',
+      },
+      {
+        expectedOutput: {
+          co2: null,
+          distance: 47,
+          futurNetwork: false,
+          gestionnaire: 'Gestionnaire',
+          hasNoTraceNetwork: null,
+          hasPDP: false,
+          id: '1302C',
+          inPDP: false,
+          isClasse: false,
+          isEligible: true,
+          name: 'Réseau de chaleur',
+          tauxENRR: null,
+          veryEligibleDistance: 100,
+        },
+        input: getTestPointCoordinates('reseau_existant_tres_proche'),
+        label: 'reseau_existant_tres_proche',
+      },
+      {
+        expectedOutput: {
+          co2: null,
+          distance: 51,
+          futurNetwork: true,
+          gestionnaire: 'Gestionnaire',
+          hasNoTraceNetwork: null,
+          hasPDP: false,
+          id: null,
+          inPDP: false,
+          isClasse: null,
+          isEligible: true,
+          name: 'Réseau en construction',
+          tauxENRR: null,
+          veryEligibleDistance: 100,
+        },
+        input: getTestPointCoordinates('reseau_futur_tres_proche'),
+        label: 'reseau_futur_tres_proche',
+      },
+      {
+        expectedOutput: {
+          co2: null,
+          distance: null,
+          futurNetwork: true,
+          gestionnaire: 'Gestionnaire',
+          hasNoTraceNetwork: null,
+          hasPDP: false,
+          id: null,
+          inPDP: false,
+          isClasse: null,
+          isEligible: true,
+          name: 'Réseau en construction',
+          tauxENRR: null,
+          veryEligibleDistance: null,
+        },
+        input: getTestPointCoordinates('dans_zone_reseau_futur'),
+        label: 'dans_zone_reseau_futur',
+      },
+      {
+        expectedOutput: {
+          co2: null,
+          distance: 195,
+          futurNetwork: false,
+          gestionnaire: 'Gestionnaire',
+          hasNoTraceNetwork: null,
+          hasPDP: false,
+          id: '1302C',
+          inPDP: false,
+          isClasse: false,
+          isEligible: true,
+          name: 'Réseau de chaleur',
+          tauxENRR: null,
+          veryEligibleDistance: 100,
+        },
+        input: getTestPointCoordinates('reseau_existant_proche'),
+        label: 'reseau_existant_proche',
+      },
+      {
+        expectedOutput: {
+          co2: null,
+          distance: 194,
+          futurNetwork: true,
+          gestionnaire: 'Gestionnaire',
+          hasNoTraceNetwork: null,
+          hasPDP: false,
+          id: null,
+          inPDP: false,
+          isClasse: null,
+          isEligible: true,
+          name: 'Réseau en construction',
+          tauxENRR: null,
+          veryEligibleDistance: 100,
+        },
+        input: getTestPointCoordinates('reseau_futur_proche'),
+        label: 'reseau_futur_proche',
+      },
+      {
+        expectedOutput: {
+          co2: null,
+          distance: 759,
+          futurNetwork: false,
+          gestionnaire: 'Gestionnaire',
+          hasNoTraceNetwork: null,
+          hasPDP: false,
+          id: '1302C',
+          inPDP: false,
+          isClasse: false,
+          isEligible: false,
+          name: 'Réseau de chaleur',
+          tauxENRR: null,
+          veryEligibleDistance: 100,
+        },
+        input: getTestPointCoordinates('reseau_existant_loin'),
+        label: 'reseau_existant_loin',
+      },
+      {
+        expectedOutput: {
+          co2: null,
+          distance: 956,
+          futurNetwork: true,
+          gestionnaire: 'Gestionnaire',
+          hasNoTraceNetwork: null,
+          hasPDP: false,
+          id: null,
+          inPDP: false,
+          isClasse: null,
+          isEligible: false,
+          name: 'Réseau en construction',
+          tauxENRR: null,
+          veryEligibleDistance: 100,
+        },
+        input: getTestPointCoordinates('reseau_futur_loin'),
+        label: 'reseau_futur_loin',
+      },
+      {
+        expectedOutput: {
+          co2: null,
+          distance: null,
+          futurNetwork: false,
+          gestionnaire: null,
+          hasNoTraceNetwork: true,
+          hasPDP: false,
+          id: '1303C',
+          inPDP: false,
+          isClasse: null,
+          isEligible: false,
+          name: null,
+          tauxENRR: null,
+          veryEligibleDistance: null,
+        },
+        input: getTestPointCoordinates('dans_ville_reseau_existant_sans_trace'),
+        label: 'dans_ville_reseau_existant_sans_trace',
       },
       {
         expectedOutput: {
@@ -130,46 +227,8 @@ describe('reseauxRouter.eligibilityStatus', () => {
           tauxENRR: null,
           veryEligibleDistance: null,
         },
-        input: { city: 'Unknown', lat: 48.9, lon: 2.5 },
-        label: 'retourne non éligible quand aucun réseau à proximité',
-      },
-      {
-        expectedOutput: {
-          co2: 50,
-          distance: expect.any(Number),
-          futurNetwork: false,
-          gestionnaire: 'CPCU',
-          hasNoTraceNetwork: null,
-          hasPDP: false,
-          id: '7501C',
-          inPDP: true,
-          isClasse: true,
-          isEligible: true,
-          name: 'CPCU',
-          tauxENRR: 65,
-          veryEligibleDistance: 60,
-        },
-        input: NETWORK_TEST_COORDS.testPoint,
-        label: 'priorise le réseau existant très proche sur le réseau futur',
-      },
-      {
-        expectedOutput: {
-          co2: 50,
-          distance: expect.any(Number),
-          futurNetwork: false,
-          gestionnaire: 'CPCU',
-          hasNoTraceNetwork: null,
-          hasPDP: false,
-          id: '7501C',
-          inPDP: true,
-          isClasse: true,
-          isEligible: true,
-          name: 'CPCU',
-          tauxENRR: 65,
-          veryEligibleDistance: 60,
-        },
-        input: NETWORK_TEST_COORDS.testPoint,
-        label: 'vérifie la présence du PDP (périmètre de développement prioritaire)',
+        input: getTestPointCoordinates('trop_eloigne'),
+        label: 'trop_eloigne',
       },
     ];
 
@@ -177,60 +236,20 @@ describe('reseauxRouter.eligibilityStatus', () => {
       const result = await createTestCaller(null).reseaux.eligibilityStatus(input);
 
       expect(result).toStrictEqual(expectedOutput);
-
-      // Additional assertions for specific cases
-      if (input === NETWORK_TEST_COORDS.testPoint && expectedOutput.distance !== null) {
-        expect(result.distance).toBeLessThan(60);
-      }
-    });
-  });
-
-  describe('Cas limites', () => {
-    const edgeCaseTestCases: TestCase<EligibilityInput, HeatNetwork>[] = [
-      {
-        expectedOutput: {
-          co2: null,
-          distance: null,
-          futurNetwork: false,
-          gestionnaire: null,
-          hasNoTraceNetwork: false,
-          hasPDP: null,
-          id: null,
-          inPDP: false,
-          isClasse: null,
-          isEligible: false,
-          name: null,
-          tauxENRR: null,
-          veryEligibleDistance: null,
-        },
-        input: { city: 'Unknown', lat: 0, lon: 0 },
-        label: 'gère les coordonnées invalides (hors France)',
-      },
-      {
-        expectedOutput: {
-          co2: 50,
-          distance: expect.any(Number),
-          futurNetwork: false,
-          gestionnaire: 'CPCU',
-          hasNoTraceNetwork: null,
-          hasPDP: false,
-          id: '7501C',
-          inPDP: true,
-          isClasse: true,
-          isEligible: true,
-          name: 'CPCU',
-          tauxENRR: 65,
-          veryEligibleDistance: 60,
-        },
-        input: { city: 'VilleInconnue', lat: 48.8566, lon: 2.3522 },
-        label: 'gère une ville sans réseau référencé (trouve par coordonnées)',
-      },
-    ];
-
-    it.each(edgeCaseTestCases)('$label', async ({ input, expectedOutput }) => {
-      const result = await createTestCaller(null).reseaux.eligibilityStatus(input);
-
-      expect(result).toStrictEqual(expectedOutput);
     });
   });
 });
+
+/**
+ * Helper pour extraire les coordonnées d'un point de test depuis les fixtures
+ */
+function getTestPointCoordinates(expectedEligibilityType: EligibilityType): { lat: number; lon: number } {
+  const testPoint = eligibilityFixtures.features.find(
+    (f) => f.properties.type === 'test' && f.properties.expectedEligibilityType === expectedEligibilityType
+  );
+  if (!testPoint || testPoint.geometry.type !== 'Point') {
+    throw new Error(`Point de test non trouvé pour ${expectedEligibilityType}`);
+  }
+  const [lon, lat] = testPoint.geometry.coordinates;
+  return { lat, lon };
+}

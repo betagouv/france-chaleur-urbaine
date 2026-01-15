@@ -78,7 +78,7 @@ export const demandsExportColumns: ExportColumn<DemandsListItem>[] = [
     name: 'Type de chauffage',
   },
   {
-    accessorFn: (demand) => demand.testAddress?.eligibility?.distance,
+    accessorFn: (demand) => demand.testAddress?.eligibility?.distance ?? '',
     name: 'Distance au réseau (m)',
   },
   {

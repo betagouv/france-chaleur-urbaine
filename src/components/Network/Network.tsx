@@ -73,6 +73,14 @@ const NetworkPanel = ({
               <ColdNetwork />
             </Box>
           )}
+          {!network.ouvert_aux_raccordements && (
+            <Box mt="1w" className="fr-alert fr-alert--warning">
+              <p className="fr-alert__title">
+                <Icon name="ri-alert-line" size="sm" className="fr-mr-1v" />
+                Ce réseau n'est pas ouvert aux raccordements
+              </p>
+            </Box>
+          )}
           <Text mt="1w" size="sm">
             Vous êtes le maître d’ouvrage ou l’exploitant de ce réseau et vous souhaitez ajouter ou modifier des informations ?
             <Link href={`/reseaux/modifier?reseau=${network['Identifiant reseau']}`} className="fr-ml-1w">

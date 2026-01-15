@@ -36,7 +36,6 @@ function ChoixChauffageForm() {
         isCity
           ? trpcUtils.client.reseaux.cityNetwork.query({ city: geoAddress.properties.city })
           : trpcUtils.client.reseaux.eligibilityStatus.query({
-              city: geoAddress.properties.city,
               lat,
               lon,
             }),

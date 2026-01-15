@@ -153,20 +153,20 @@ const columns: ColumnDef<RouterOutput['proEligibilityTests']['get']['addresses']
 
         if (newDistance !== previousDistance) {
           // Réseau apparu
-          if (previousDistance === 0 && newDistance > 0) {
+          if (previousDistance === 0 && (newDistance ?? 0) > 0) {
             changeIndicator = { isPositive: true, text: '★ nouveau' };
           }
           // Réseau disparu
-          else if (newDistance === 0 && previousDistance > 0) {
+          else if (newDistance === 0 && (previousDistance ?? 0) > 0) {
             changeIndicator = { isPositive: false, text: '✕ disparu' };
           }
           // Rapprochement
-          else if (newDistance < previousDistance) {
+          else if (newDistance && previousDistance && newDistance < previousDistance) {
             changeIndicator = { isPositive: true, text: `${newDistance - previousDistance}` };
           }
           // Éloignement
           else {
-            changeIndicator = { isPositive: false, text: `+${newDistance - previousDistance}` };
+            changeIndicator = { isPositive: false, text: `+${(newDistance ?? 0) - (previousDistance ?? 0)}` };
           }
         }
       }

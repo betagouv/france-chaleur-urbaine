@@ -68,6 +68,12 @@ const Popup = defineLayerPopup<ReseauxEnConstructionTile>(
           Ce tracé est prévisionnel. Le gestionnaire est susceptible
           <br /> de le modifier avant sa mise en service définitive.
         </div>
+        {!reseauEnConstruction.ouvert_aux_raccordements && (
+          <div className="text-sm">
+            <Icon name="ri-alert-line" size="sm" className="mr-1" />
+            Ce réseau n'est pas ouvert aux raccordements
+          </div>
+        )}
         <Accordion label="Informations supplémentaires" simple small>
           <DownloadNetworkGeometryButton
             id_fcu={reseauEnConstruction.id_fcu}

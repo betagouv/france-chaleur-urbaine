@@ -31,7 +31,6 @@ const MapSearchForm = ({
       const network = isCity
         ? await trpcUtils.client.reseaux.cityNetwork.query({ city: geoAddress.properties.city })
         : await trpcUtils.client.reseaux.eligibilityStatus.query({
-            city: geoAddress.properties.city,
             lat,
             lon,
           });

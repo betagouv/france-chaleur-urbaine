@@ -103,7 +103,8 @@ $psql postgres://postgres:postgres_fcu@$DOCKER_HOST:5432/postgres <<EOF
       "livraisons_autre_MWh"::integer,
       eau_chaude,
       eau_surchauffee,
-      vapeur
+      vapeur,
+      ouvert_aux_raccordements
     FROM reseaux_de_chaleur
     order by "Identifiant reseau", id_fcu
   );
@@ -179,7 +180,8 @@ $psql postgres://postgres:postgres_fcu@$DOCKER_HOST:5432/postgres <<EOF
       "livraisons_autre_MWh"::integer::text,
       eau_chaude,
       eau_surchauffee,
-      vapeur
+      vapeur,
+      ouvert_aux_raccordements::boolean::text
     FROM reseaux_de_chaleur
     order by "Identifiant reseau", id_fcu
   );
@@ -270,7 +272,8 @@ $psql postgres://postgres:postgres_fcu@$DOCKER_HOST:5432/postgres <<EOF
       departement,
       region,
       "gestionnaire",
-      "mise_en_service"
+      "mise_en_service",
+      ouvert_aux_raccordements
     FROM zones_et_reseaux_en_construction
     order by id_fcu
   );
