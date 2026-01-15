@@ -3,10 +3,10 @@ import type { EligibilityType } from '@/server/services/addresseInformation';
 import type { TransitionType } from './constants';
 
 export type ProEligibilityTestEligibility = {
-  id_fcu: number;
+  id_fcu: number | null;
   id_sncu: string;
   type: EligibilityType;
-  distance: number;
+  distance: number | null;
   nom: string;
   contenu_co2_acv?: number;
   taux_enrr?: number;

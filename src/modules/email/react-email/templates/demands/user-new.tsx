@@ -2,6 +2,7 @@ import { clientConfig } from '@/client-config';
 import type { formatHeatingTypeToAirtable } from '@/modules/demands/constants';
 import type { AvailableStructure } from '@/types/AddressData';
 import type { Demand } from '@/types/Summary/Demand';
+import { isDefined } from '@/utils/core';
 
 import { Layout, Link, Text } from '../../components';
 
@@ -27,7 +28,7 @@ const CreationDemandeEmail = ({ demand }: CreationDemandeEmailProps) => {
       {demand.Structure === 'Copropriété' && (
         <>
           {demand['Type de chauffage'] === 'Collectif' &&
-            (demand['Distance au réseau'] < distanceThreshold ? (
+            (isDefined(demand['Distance au réseau']) && demand['Distance au réseau'] < distanceThreshold ? (
               <>
                 <Text>
                   Votre copropriété est située <strong>à proximité d’un réseau de chaleur (moins de {distanceThreshold} m)</strong>. De
@@ -46,7 +47,7 @@ const CreationDemandeEmail = ({ demand }: CreationDemandeEmailProps) => {
                   disponibles.
                 </Text>
               </>
-            ) : demand['Distance au réseau'] < intermediateDistanceThreshold ? (
+            ) : isDefined(demand['Distance au réseau']) && demand['Distance au réseau'] < intermediateDistanceThreshold ? (
               <>
                 <Text>
                   Votre copropriété <strong>n'est pas à proximité immédiate d'un réseau de chaleur</strong>. Cependant, elle reste
@@ -78,7 +79,7 @@ const CreationDemandeEmail = ({ demand }: CreationDemandeEmailProps) => {
             ))}
 
           {demand['Type de chauffage'] === 'Individuel' &&
-            (demand['Distance au réseau'] < intermediateDistanceThreshold ? (
+            (isDefined(demand['Distance au réseau']) && demand['Distance au réseau'] < intermediateDistanceThreshold ? (
               <>
                 <Text>
                   Votre copropriété se situe <strong>à proximité d'un réseau de chaleur</strong>. Cependant, au vu de votre mode de
@@ -115,7 +116,7 @@ const CreationDemandeEmail = ({ demand }: CreationDemandeEmailProps) => {
       {(demand.Structure === 'Tertiaire' || demand.Structure === 'Bailleur social' || demand.Structure === 'Autre') && (
         <>
           {demand['Type de chauffage'] === 'Collectif' &&
-            (demand['Distance au réseau'] < distanceThreshold ? (
+            (isDefined(demand['Distance au réseau']) && demand['Distance au réseau'] < distanceThreshold ? (
               <>
                 <Text>
                   Votre adresse est située <strong>à proximité d’un réseau de chaleur (moins de {distanceThreshold} m)</strong>. De plus, au
@@ -128,7 +129,7 @@ const CreationDemandeEmail = ({ demand }: CreationDemandeEmailProps) => {
                   recontacter.
                 </Text>
               </>
-            ) : demand['Distance au réseau'] < intermediateDistanceThreshold ? (
+            ) : isDefined(demand['Distance au réseau']) && demand['Distance au réseau'] < intermediateDistanceThreshold ? (
               <>
                 <Text>
                   Votre bâtiment <strong>n'est pas à proximité immédiate d'un réseau de chaleur</strong>. Cependant, il reste suffisamment
@@ -158,7 +159,7 @@ const CreationDemandeEmail = ({ demand }: CreationDemandeEmailProps) => {
             ))}
 
           {demand['Type de chauffage'] === 'Individuel' &&
-            (demand['Distance au réseau'] < intermediateDistanceThreshold ? (
+            (isDefined(demand['Distance au réseau']) && demand['Distance au réseau'] < intermediateDistanceThreshold ? (
               <>
                 <Text>
                   Votre bâtiment se situe <strong>à proximité d'un réseau de chaleur</strong>. Cependant, au vu de votre mode de chauffage
@@ -197,7 +198,7 @@ const CreationDemandeEmail = ({ demand }: CreationDemandeEmailProps) => {
 
       {demand.Structure === 'Maison individuelle' && (
         <>
-          {demand['Distance au réseau'] < intermediateDistanceThreshold ? (
+          {isDefined(demand['Distance au réseau']) && demand['Distance au réseau'] < intermediateDistanceThreshold ? (
             <Text>
               Votre adresse se situe <strong>à proximité d'un réseau de chaleur</strong>. Cependant, le raccordement des maisons
               individuelles aux réseaux de chaleur reste rare à ce jour, pour des raisons techniques et économiques. Nous transmettons tout
