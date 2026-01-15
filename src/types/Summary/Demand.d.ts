@@ -26,7 +26,7 @@ export type Demand = DemandSummary &
     Mail: string;
     Téléphone: string;
     Éligibilité: boolean;
-    'Distance au réseau': number;
+    'Distance au réseau': number | null;
     'Gestionnaire Distance au réseau': number;
     'N° de dossier': number;
     'en PDP': string;

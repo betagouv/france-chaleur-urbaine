@@ -522,7 +522,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
       return {
         co2: reseauDeChaleurSansTrace['contenu CO2 ACV'] ?? null,
         communes: [reseauDeChaleurSansTrace.nom ?? ''],
-        distance: 0,
+        distance: null,
         gestionnaire: reseauDeChaleurSansTrace.Gestionnaire ?? null,
         hasPDP: false,
         id_fcu: reseauDeChaleurSansTrace.id_fcu,
