@@ -31,6 +31,7 @@ import { kdb, sql } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
 import { syncComptesProFromUsers } from '@/server/services/airtable';
 import { APIDataGouvService } from '@/services/api-data-gouv';
+import { registerTestCommands } from '@/tests/commands';
 import { userRoles } from '@/types/enum/UserRole';
 import { fetchJSON } from '@/utils/network';
 import { runBash, runCommand } from '@/utils/system';
@@ -77,6 +78,7 @@ registerOptimizationCommands(program);
 registerProEligibilityTestsCommands(program);
 registerNetworkCommands(program);
 registerTilesCommands(program);
+registerTestCommands(program);
 
 program
   .command('create-modifications-reseau')

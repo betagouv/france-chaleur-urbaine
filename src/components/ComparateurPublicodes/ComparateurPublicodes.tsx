@@ -494,7 +494,6 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
           const network = isCity
             ? await trpcUtils.client.reseaux.cityNetwork.query({ city: selectedAddress.properties.city })
             : await trpcUtils.client.reseaux.eligibilityStatus.query({
-                city: selectedAddress.properties.city,
                 lat,
                 lon,
               });
