@@ -69,9 +69,15 @@ export function deepCloneJSON<T>(obj: T): T {
   return JSON.parse(JSON.stringify(obj)) as T;
 }
 
-export const omit = (obj: Record<string, any>, keys: string[]) => {
-  return Object.fromEntries(Object.entries(obj).filter(([key]) => !keys.includes(key)));
-};
+/**
+ * omit(obj, keys) - Crée un nouvel objet en excluant les propriétés spécifiées.
+ * @param obj - L'objet source
+ * @param keys - La liste des propriétés à exclure
+ * @returns Un nouvel objet sans les propriétés exclues
+ */
+export function omit<T extends object, K extends string | number | symbol>(obj: T, keys: readonly K[]): Omit<T, Extract<K, keyof T>> {
+  return Object.fromEntries(Object.entries(obj).filter(([key]) => !keys.includes(key as K))) as Omit<T, Extract<K, keyof T>>;
+}
 
 /**
  * pick(obj, keys) - Crée un nouvel objet ne conservant que les propriétés spécifiées.

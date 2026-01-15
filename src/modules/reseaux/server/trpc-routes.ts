@@ -90,8 +90,8 @@ export const reseauxRouter = router({
   deleteNetwork: adminRoute.input(zDeleteNetworkInput).mutation(async ({ input }) => {
     return await reseauxService.deleteNetwork(input.id, input.type);
   }),
-  eligibilityStatus: route.input(z.object({ city: z.string(), lat: z.number(), lon: z.number() })).query(async ({ input }) => {
-    return (await getEligilityStatus(input.lat, input.lon, input.city)) as HeatNetworksResponse; // legacy type for compatibility
+  eligibilityStatus: route.input(z.object({ lat: z.number(), lon: z.number() })).query(async ({ input }) => {
+    return (await getEligilityStatus(input.lat, input.lon)) as HeatNetworksResponse; // legacy type for compatibility
   }),
   // Routes publiques pour l'éligibilité et la recherche de réseaux
   getNetworkEligibilityStatus: route.input(zGetNetworkEligibilityStatusInput).query(async ({ input }) => {
