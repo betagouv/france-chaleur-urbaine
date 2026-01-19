@@ -267,8 +267,8 @@ function DemandEmailForm(props: Props) {
                       addLabel="Ajouter un modèle"
                       addPlaceholderLabel="Nom de mon modèle"
                       data={{
-                        ...(emailContent.object && { subject: emailContent.object }),
-                        ...(emailContent.body && { body: emailContent.body }),
+                        body: emailContent.body,
+                        subject: emailContent.object,
                       }}
                       onSelect={(item) => onSelectedEmailChanged(item.id)}
                       preprocessItem={(item) => ({
