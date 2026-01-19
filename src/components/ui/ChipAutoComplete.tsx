@@ -155,7 +155,7 @@ const ChipAutoComplete = (rawProps: ChipAutoCompleteProps) => {
     setInputValue('');
     if (props.multiple) {
       setValueArray(props.suggestedValue ?? []);
-      (props.onChange as (value: string[] | null) => void)(props.suggestedValue ? null : []);
+      (props.onChange as (value: string[] | null) => void)(props.suggestedValue ?? []);
     } else {
       setValueArray(props.suggestedValue ? [props.suggestedValue] : []);
       (props.onChange as (value: string | null) => void)(null);
