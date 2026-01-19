@@ -8,7 +8,6 @@ import Input from '@/components/form/dsfr/Input';
 import Radio from '@/components/form/dsfr/Radio';
 import Upload from '@/components/form/dsfr/Upload';
 import { getInputErrorStates } from '@/components/form/react-form/useForm';
-import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
 import { toastErrors } from '@/modules/notification';
 import { postFormDataFetchJSON } from '@/utils/network';
@@ -69,6 +68,9 @@ type FieldConfig = {
   | {
       type: 'file';
       hint: string;
+    }
+  | {
+      type: 'boolean';
     }
 );
 
@@ -200,9 +202,15 @@ const typeDemandeFields = {
       schema: stringSchema,
     },
     {
-      label: 'Email du référent commercial à qui transmettre les demandes de raccordement',
+      label: 'Le réseau est-il ouvert aux raccordements ?',
+      name: 'ouvertAuxRaccordements',
+      schema: z.boolean({ error: 'Ce choix est obligatoire' }),
+      type: 'boolean',
+    },
+    {
+      label: 'Référent commercial à qui transmettre les demandes de raccordement',
       name: 'emailReferentCommercial',
-      optional: true,
+      optional: true, // conditionally required based on ouvertAuxRaccordements
       schema: z.string().optional(),
     },
     {
@@ -236,9 +244,15 @@ const typeDemandeFields = {
       schema: stringSchema,
     },
     {
-      label: 'Email du référent commercial à qui transmettre les demandes de raccordement',
+      label: 'Le réseau est-il ouvert aux raccordements ?',
+      name: 'ouvertAuxRaccordements',
+      schema: z.boolean({ error: 'Ce choix est obligatoire' }),
+      type: 'boolean',
+    },
+    {
+      label: 'Référent commercial à qui transmettre les demandes de raccordement',
       name: 'emailReferentCommercial',
-      optional: true,
+      optional: true, // conditionally required based on ouvertAuxRaccordements
       schema: z.string().optional(),
     },
     {
@@ -248,7 +262,7 @@ const typeDemandeFields = {
       schema: z.string().optional(),
     },
     {
-      hint: 'Formats préférentiels : GeoJSON, Shapefile (shp, shx, prj, cpg, dbf à fournir), KML, GeoPackage.',
+      hint: 'Formats préférentiels : GeoJSON, Shapefile, KML, GeoPackage.',
       label: 'Téléverser vos fichiers :',
       name: 'fichiers',
       schema: filesSchema,
@@ -294,7 +308,7 @@ const zodSchemasByTypeDemande = ObjectKeys(typeDemandeFields).reduce(
   }
 );
 
-export const zContributionFormData = z.discriminatedUnion(
+export const zContributionFormDataBase = z.discriminatedUnion(
   'typeDemande',
   // définition statique plutôt qu'avec un map sinon on perd le typage
   [
@@ -331,10 +345,22 @@ export const zContributionFormData = z.discriminatedUnion(
   ]
 );
 
+// Validation conditionnelle : emailReferentCommercial requis si ouvertAuxRaccordements
+export const zContributionFormData = zContributionFormDataBase.refine(
+  (data: Record<string, unknown>) => {
+    if (!data.ouvertAuxRaccordements) return true;
+    return typeof data.emailReferentCommercial === 'string' && data.emailReferentCommercial.length > 0;
+  },
+  {
+    message: 'Le référent commercial est obligatoire si le réseau est ouvert aux raccordements',
+    path: ['emailReferentCommercial'],
+  }
+);
+
 type AddEmptyValues<T> = T extends string ? T | '' : T extends object ? { [K in keyof T]: AddEmptyValues<T[K]> } : T;
 
 // besoin de valeurs vides juste pour le formulaire et non zod
-type FormData = AddEmptyValues<z.infer<typeof zContributionFormData>>;
+type FormData = AddEmptyValues<z.infer<typeof zContributionFormDataBase>>;
 
 const ContributionForm = () => {
   const [formSuccess, setFormSuccess] = useState<boolean>(false);
@@ -600,7 +626,7 @@ const ContributionForm = () => {
                         (
                           <>
                             Taille maximale : {formatFileSize(filesLimits.maxFileSize)}. Maximum {filesLimits.maxFiles} fichiers.{' '}
-                            {option.hint}
+                            {(option as Extract<FieldConfig, { type: 'file' }>).hint}
                             <br />
                             Pour téléverser plusieurs fichiers, merci de les sélectionner simultanément et non l'un après l'autre.
                           </>
@@ -620,14 +646,38 @@ const ContributionForm = () => {
                       {...getInputErrorStates(field)}
                     />
                     {((field.state.value as File[]) ?? []).length > 0 && (
-                      <Box mb="2w">
+                      <div className="fr-mb-2w">
                         Fichier(s) sélectionné(s) :{' '}
                         {((field.state.value as File[]) ?? []).map((file) => (
-                          <Box key={file.name}>- {file.name}</Box>
+                          <div key={file.name}>- {file.name}</div>
                         ))}
-                      </Box>
+                      </div>
                     )}
                   </>
+                ) : 'type' in option && (option as FieldConfig).type === 'boolean' ? (
+                  <Radio
+                    label={option.label}
+                    name={field.name}
+                    options={[
+                      {
+                        label: 'oui',
+                        nativeInputProps: {
+                          checked: field.state.value === true,
+                          onBlur: field.handleBlur,
+                          onChange: () => field.handleChange(true),
+                        },
+                      },
+                      {
+                        label: 'non',
+                        nativeInputProps: {
+                          checked: field.state.value === false,
+                          onBlur: field.handleBlur,
+                          onChange: () => field.handleChange(false),
+                        },
+                      },
+                    ]}
+                    {...getInputErrorStates(field)}
+                  />
                 ) : (
                   <Input
                     label={option.label}

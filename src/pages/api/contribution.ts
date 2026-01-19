@@ -1,7 +1,7 @@
 import formidable from 'formidable';
 import { z } from 'zod';
 
-import { filesLimits, riskyExtensions, zContributionFormData } from '@/components/ContributionForm/ContributionForm';
+import { filesLimits, riskyExtensions, zContributionFormDataBase } from '@/components/ContributionForm/ContributionForm';
 import { createNextApiRateLimiter } from '@/modules/security/server/rate-limit/next-pages';
 import { AirtableDB } from '@/server/db/airtable';
 import { logger } from '@/server/helpers/logger';
@@ -51,16 +51,27 @@ const serverSideFilesSchema = z
   .optional();
 
 // updated schema with new server side files validation
-const zServerContributionFormData = z.discriminatedUnion(
-  'typeDemande',
-  nonEmptyArray(
-    zContributionFormData.options.map((schema) =>
-      schema.extend({
-        fichiers: serverSideFilesSchema,
-      })
+const zServerContributionFormData = z
+  .discriminatedUnion(
+    'typeDemande',
+    nonEmptyArray(
+      zContributionFormDataBase.options.map((schema) =>
+        schema.extend({
+          fichiers: serverSideFilesSchema,
+        })
+      )
     )
   )
-);
+  .refine(
+    (data: Record<string, unknown>) => {
+      if (!data.ouvertAuxRaccordements) return true;
+      return typeof data.emailReferentCommercial === 'string' && data.emailReferentCommercial.length > 0;
+    },
+    {
+      message: 'Le référent commercial est obligatoire si le réseau est ouvert aux raccordements',
+      path: ['emailReferentCommercial'],
+    }
+  );
 
 const contributionRateLimiter = createNextApiRateLimiter({ path: '/api/contribution' });
 
@@ -88,6 +99,7 @@ export default handleRouteErrors(async (req, res) => {
     Localisation: (formValues as any).localisation,
     Nom: formValues.nom,
     'Nom gestionnaire': (formValues as any).gestionnaire,
+    ouvert_aux_raccordements: (formValues as any).ouvertAuxRaccordements,
     Précisions: (formValues as any).precisions ?? (formValues as any).commentaire,
     Prénom: formValues.prenom,
     'Référent commercial': (formValues as any).emailReferentCommercial,
