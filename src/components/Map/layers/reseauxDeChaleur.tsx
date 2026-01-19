@@ -74,8 +74,8 @@ const Popup = defineLayerPopup<ReseauxDeChaleurTile>(
         </TwoColumns>
         {!reseauDeChaleur.ouvert_aux_raccordements && (
           <div className="text-sm">
-            <Icon name="ri-alert-line" size="sm" className="mr-1" />
-            Ce réseau n'est pas ouvert aux raccordements
+            <Icon name="ri-lock-2-fill" size="sm" className="mr-1" />
+            Ce réseau n'est pas ouvert aux raccordements.
           </div>
         )}
         {reseauDeChaleur['Identifiant reseau'] && (
