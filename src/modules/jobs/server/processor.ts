@@ -68,6 +68,7 @@ export async function processJobsIndefinitely() {
     } catch (err: any) {
       // do not stop the worker
       logger.error('unknown job error', { err: err.message });
+      await sleep(500); // small delay to avoid infinite error loops
     } finally {
       currentJobId = undefined;
     }
