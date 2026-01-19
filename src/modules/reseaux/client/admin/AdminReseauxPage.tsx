@@ -4,6 +4,7 @@ import { parseAsStringLiteral, useQueryState } from 'nuqs';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import TableFieldInput from '@/components/Admin/TableFieldInput';
+import Checkbox from '@/components/form/dsfr/Checkbox';
 import Input from '@/components/form/dsfr/Input';
 import FCUTagAutocomplete from '@/components/form/FCUTagAutocomplete';
 import AdminEditLegend from '@/components/Map/components/AdminEditLegend';
@@ -427,6 +428,22 @@ const GestionDesReseaux = () => {
         width: '200px',
       },
       {
+        accessorKey: 'ouvert_aux_raccordements',
+        cell: ({ row }) => (
+          <Checkbox
+            label=""
+            small
+            nativeInputProps={{
+              checked: row.original.ouvert_aux_raccordements,
+              disabled: true,
+              name: 'ouvert_aux_raccordements',
+            }}
+          />
+        ),
+        header: 'Ouvert aux raccordements',
+        width: '120px',
+      },
+      {
         accessorFn: (row) => row.tags?.join(', '),
         cell: (info) => (
           <div className="block">
@@ -584,6 +601,22 @@ const GestionDesReseaux = () => {
         accessorFn: (row) => row.communes?.join(', '),
         header: 'Communes',
         width: '200px',
+      },
+      {
+        accessorKey: 'ouvert_aux_raccordements',
+        cell: ({ row }) => (
+          <Checkbox
+            label=""
+            small
+            nativeInputProps={{
+              checked: row.original.ouvert_aux_raccordements,
+              disabled: true,
+              name: 'ouvert_aux_raccordements',
+            }}
+          />
+        ),
+        header: 'Ouvert aux raccordements',
+        width: '120px',
       },
       {
         accessorFn: (row) => row.tags?.join(', '),
