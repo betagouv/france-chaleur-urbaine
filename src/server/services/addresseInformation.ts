@@ -251,7 +251,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
       .where('ouvert_aux_raccordements', '=', true)
       .orderBy((eb) => sql`${eb.ref('geom')} <-> ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)`)
       .limit(1)
-      .executeTakeFirstOrThrow(),
+      .executeTakeFirst(),
 
     kdb
       .with('commune', (eb) =>
@@ -303,7 +303,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
       .where('ouvert_aux_raccordements', '=', true)
       .orderBy((eb) => sql`${eb.ref('geom')} <-> ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)`)
       .limit(1)
-      .executeTakeFirstOrThrow(),
+      .executeTakeFirst(),
 
     kdb
       .selectFrom('zones_et_reseaux_en_construction')
@@ -321,7 +321,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
       .where('ouvert_aux_raccordements', '=', true)
       .orderBy((eb) => sql`${eb.ref('geom')} <-> ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)`)
       .limit(1)
-      .executeTakeFirstOrThrow(),
+      .executeTakeFirst(),
 
     kdb
       .selectFrom('zone_de_developpement_prioritaire')
