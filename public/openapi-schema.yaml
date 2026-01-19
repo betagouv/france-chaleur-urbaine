@@ -63,7 +63,7 @@ paths:
                       description: Géométrie au format GeoJSON
                       properties:
                         type:
-                          title: Chiffre d'affaires en euros
+                          title: Type de géométrie
                           type: string
                           example: MultiLineString
                         coordinates:
