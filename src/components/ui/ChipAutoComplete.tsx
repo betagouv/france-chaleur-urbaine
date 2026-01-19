@@ -180,11 +180,11 @@ const ChipAutoComplete = (rawProps: ChipAutoCompleteProps) => {
             )}
             onClick={() => inputRef.current?.focus()}
           >
-            {valueArray.map((tagName) => {
+            {valueArray.map((tagName, i) => {
               const chipOption = options.find((option) => option.key === tagName) ?? defaultOption;
               return (
                 <Tag
-                  key={tagName}
+                  key={i}
                   dismissible={chipOption.dismissible !== false}
                   small
                   className={chipOption?.className}
