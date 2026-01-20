@@ -69,9 +69,13 @@ const DonneesPage = () => {
             <tr>
               <td className="font-semibold">Zones et réseaux en construction</td>
               <td>
-                Gestionnaires de réseaux, collectivités.
+                Gestionnaires de réseaux, collectivités, ADEME.
                 <p className="text-sm text-gray-600 mt-1">
-                  Contenu : projets de réseaux en développement avec dates de mise en service prévues, gestionnaires
+                  Contenu : projets de réseaux en développement avec dates de mise en service prévues, gestionnaires.
+                </p>
+                <p className="text-sm text-gray-600 mt-1">
+                  L'ADEME contribue également en transmettant des informations relatives aux projets de réseaux financés (création de
+                  nouveaux réseaux ou extensions de réseaux).
                 </p>
                 <Link href="#detail-reseaux-en-construction">Voir le détail des données</Link>
               </td>
@@ -141,13 +145,25 @@ const DonneesPage = () => {
                 </Link>{' '}
                 <span className="text-gray-600">(année 2024)</span>
                 <p className="text-sm text-gray-600 mt-1">
+                  Données mises à disposition conformément à l'article 179 de la loi de transition énergétique pour la croissance verte
+                  (LTECV) du 17 août 2015.
+                </p>
+                <p className="text-sm text-gray-600 mt-1">
                   Contenu : consommation annuelle par adresse (MWh/an), nombre de points de livraison (PDL), sectorisation (logements,
-                  tertiaire, industrie)
+                  tertiaire, industrie).
+                </p>
+                <p className="text-sm text-gray-600 mt-1">
+                  Les données du secteur résidentiel font l'objet d'une secrétisation par le SDES : seules sont diffusées les consommations
+                  à l'adresse d'au moins 10 logements ou supérieures à 200 MWh.
+                </p>
+                <p className="text-sm text-gray-600 mt-1">
+                  Note : les bâtiments équipés d'une chaudière de puissance élevée sont parfois catégorisés par erreur dans le secteur
+                  Industrie.
                 </p>
               </td>
               <td>
                 Affichage dans la couche "Consommations de gaz". Utilisé dans le calcul de densité thermique linéaire et d'extraction des
-                données sur les bâtiments..
+                données sur les bâtiments.
               </td>
             </tr>
             <tr>
@@ -538,13 +554,33 @@ const DonneesPage = () => {
               <tr>
                 <td className="font-semibold">
                   <ul>
+                    <li>réseau classé</li>
+                  </ul>
+                </td>
+                <td>
+                  Source :{' '}
+                  <Link href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000050641498" isExternal>
+                    Arrêté du 3 décembre 2024
+                  </Link>{' '}
+                  relatif au classement des réseaux de chaleur et de froid.
+                  <br />
+                  Cet arrêté recense les réseaux qui répondent aux critères du classement automatique. Les collectivités ayant délibéré pour
+                  s'opposer au classement peuvent remonter l'information à France Chaleur Urbaine pour actualisation.
+                </td>
+              </tr>
+              <tr>
+                <td className="font-semibold">
+                  <ul>
                     <li>longueur</li>
                   </ul>
                 </td>
                 <td>
-                  Source : Bibliothèque FEDENE pour 2021
+                  Source : Enquête Annuelle sur les Réseaux de Chaleur et de Froid (EARCF) pour 2021
                   <br />
-                  Données 2021 car plus précises. Les années suivantes contiennent des fourchettes.
+                  Données 2021 car plus précises. Les années suivantes contiennent des fourchettes dans la bibliothèque FEDENE.
+                  <br />
+                  Les données 2021 ont été transmises à France Chaleur Urbaine par l'association ViaSeva, et par Engie Solutions pour les
+                  réseaux opérés par Engie Solutions.
                 </td>
               </tr>
               <tr>
@@ -603,9 +639,12 @@ const DonneesPage = () => {
                   </ul>
                 </td>
                 <td>
-                  Source : Bibliothèque FEDENE pour 2021
+                  Source : Enquête Annuelle sur les Réseaux de Chaleur et de Froid (EARCF) pour 2021
                   <br />
                   Données 2021 car plus précises. Les années suivantes ont juste un indicateur de présence oui/non.
+                  <br />
+                  Les données 2021 ont été transmises à France Chaleur Urbaine par l'association ViaSeva, et par Engie Solutions pour les
+                  réseaux opérés par Engie Solutions.
                 </td>
               </tr>
               <tr>
