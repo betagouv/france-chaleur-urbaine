@@ -5,8 +5,8 @@ import center from '@turf/center';
 import { lineString, points } from '@turf/helpers';
 import length from '@turf/length';
 import { atom, useAtom } from 'jotai';
-import type { GeoJSONSource } from 'maplibre-gl';
-import { useEffect, useRef, useState } from 'react';
+import type { GeoJSONSource, Map as MapLibreMap } from 'maplibre-gl';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
 
 import useFCUMap from '@/components/Map/MapProvider';
@@ -32,6 +32,40 @@ const defaultColor = '#000091';
 const featuresAtom = atom<MeasureFeature[]>([]);
 const densiteAtom = atom<LinearHeatDensity | null>(null);
 
+/**
+ * Sync features to the map directly (without React state updates).
+ * Used during drawing to avoid triggering React re-renders on every frame.
+ */
+function syncLayersToMap(map: MapLibreMap, features: MeasureFeature[]): void {
+  const linesSource = map.getSource(linearHeatDensityLinesSourceId) as GeoJSONSource | undefined;
+  const labelsSource = map.getSource(linearHeatDensityLabelsSourceId) as GeoJSONSource | undefined;
+  if (!linesSource || !labelsSource) return;
+
+  linesSource.setData({ features, type: 'FeatureCollection' });
+  labelsSource.setData({
+    features: features.flatMap((feature) =>
+      feature.geometry.coordinates.slice(0, -1).map(
+        (coordinates, index) =>
+          ({
+            geometry: {
+              coordinates: center(points([coordinates, feature.geometry.coordinates[index + 1]])).geometry.coordinates,
+              type: 'Point',
+            },
+            id: `${feature.id}-${index}`,
+            properties: {
+              color: feature.properties.color,
+              distanceLabel: formatDistance(
+                length(lineString([coordinates, feature.geometry.coordinates[index + 1]]), { units: 'meters' })
+              ),
+            },
+            type: 'Feature',
+          }) satisfies MeasureLabelFeature
+      )
+    ),
+    type: 'FeatureCollection',
+  });
+}
+
 const LinearHeatDensityTool: React.FC = () => {
   const { mapLayersLoaded, mapRef, mapDraw, isDrawing, setIsDrawing } = useFCUMap();
   const [features, setFeatures] = useAtom(featuresAtom);
@@ -39,6 +73,8 @@ const LinearHeatDensityTool: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [densite, setDensite] = useAtom(densiteAtom);
   const trpcUtils = trpc.useUtils();
+  // Ref to track the feature being drawn (to avoid React state updates during drawing)
+  const drawingFeatureRef = useRef<MeasureFeature | null>(null);
 
   useEffect(() => {
     featuresRef.current = features;
@@ -51,26 +87,28 @@ const LinearHeatDensityTool: React.FC = () => {
     // always only 1 feature
     const feature = drawFeatures[0] as MeasureFeature;
     mapDraw.deleteAll();
+    mapDraw.changeMode('simple_select');
     setIsDrawing(false);
 
-    const features = featuresRef.current; // get latest features as the ref keeps the up-to-date value
-    // update the last feature keeping its color
-    setFeatures([
-      ...features.slice(0, -1),
-      {
-        ...feature,
-        properties: {
-          ...features.at(-1)!.properties,
-          distance: length(feature, { units: 'meters' }),
-        },
+    const completedFeatures = featuresRef.current; // get completed features
+    const newFeature: MeasureFeature = {
+      ...feature,
+      properties: {
+        color: defaultColor,
+        distance: length(feature, { units: 'meters' }),
       },
-    ]);
+    };
+
+    // Add the completed feature to the state
+    const updatedFeatures = [...completedFeatures, newFeature];
+    setFeatures(updatedFeatures);
+    drawingFeatureRef.current = null;
 
     try {
       setIsLoading(true);
       trackEvent('Carto|Densité thermique linéaire|Tracé terminé');
       const densite = await trpcUtils.client.data.getDensiteThermiqueLineaire.query({
-        coordinates: features.map((feature) => feature.geometry.coordinates),
+        coordinates: updatedFeatures.map((f) => f.geometry.coordinates),
       });
       setDensite(densite);
     } finally {
@@ -78,7 +116,15 @@ const LinearHeatDensityTool: React.FC = () => {
     }
   };
 
-  const onDrawRender = () => {
+  // Sync the drawing feature to the map directly (without React state updates)
+  const syncDrawingToMap = useCallback(() => {
+    if (!mapRef) return;
+    const map = mapRef.getMap();
+    const allFeatures = drawingFeatureRef.current ? [...featuresRef.current, drawingFeatureRef.current] : featuresRef.current;
+    syncLayersToMap(map, allFeatures);
+  }, [mapRef]);
+
+  const onDrawRender = useCallback(() => {
     if (!mapDraw) {
       return;
     }
@@ -90,33 +136,19 @@ const LinearHeatDensityTool: React.FC = () => {
     if (!featureBeingDrawn) {
       return;
     }
-    setFeatures((features) => {
-      // check if the feature being draw has been copied into the features state
-      if (features.at(-1)?.id !== featureBeingDrawn.id) {
-        return [
-          ...features,
-          {
-            ...featureBeingDrawn,
-            properties: {
-              color: defaultColor,
-              distance: length(featureBeingDrawn, { units: 'meters' }),
-            } as any,
-          },
-        ];
-      }
-      return [
-        // update the geometry and the distance, keeping the previous color
-        ...features.slice(0, -1),
-        {
-          ...featureBeingDrawn,
-          properties: {
-            color: features.at(-1)?.properties.color,
-            distance: length(featureBeingDrawn, { units: 'meters' }),
-          },
-        },
-      ];
-    });
-  };
+
+    // Update the ref (not React state) to avoid re-renders during drawing
+    drawingFeatureRef.current = {
+      ...featureBeingDrawn,
+      properties: {
+        color: defaultColor,
+        distance: length(featureBeingDrawn, { units: 'meters' }),
+      },
+    };
+
+    // Sync directly to the map without triggering React re-renders
+    syncDrawingToMap();
+  }, [mapDraw, syncDrawingToMap]);
 
   // handle the esc key to quit drawing mode (run after the draw.modechange event)
   useKeyboardEvent(
@@ -165,13 +197,14 @@ const LinearHeatDensityTool: React.FC = () => {
   }
   function cancelMeasurement() {
     mapDraw?.deleteAll();
+    drawingFeatureRef.current = null;
     setIsDrawing((isDrawing) => {
-      const shouldDrawAgain = featuresRef.current.length === 1;
+      const shouldDrawAgain = featuresRef.current.length === 0;
       if (isDrawing) {
         mapDraw?.changeMode(shouldDrawAgain ? 'draw_line_string' : ('simple_select' as any));
-        // remove the last feature (sketch)
-        setFeatures(featuresRef.current.slice(0, -1));
       }
+      // Sync the map after clearing the drawing feature
+      syncDrawingToMap();
       return shouldDrawAgain;
     });
   }
@@ -184,6 +217,7 @@ const LinearHeatDensityTool: React.FC = () => {
     mapDraw.changeMode('draw_line_string');
     setIsDrawing(true);
     setFeatures([]);
+    drawingFeatureRef.current = null;
     trackEvent('Carto|Densité thermique linéaire|Effacer');
   };
   function exportDrawing() {
