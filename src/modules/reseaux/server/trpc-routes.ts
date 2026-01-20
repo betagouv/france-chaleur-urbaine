@@ -13,7 +13,6 @@ import {
   zUpdateReseauInput,
 } from '@/modules/reseaux/constants';
 import { route, routeRole, router } from '@/modules/trpc/server';
-import { kdb } from '@/server/db/kysely';
 import { getCityEligilityStatus, getEligilityStatus, getNetworkEligilityStatus } from '@/server/services/addresseInformation';
 import type { HeatNetworksResponse } from '@/types/HeatNetworksResponse';
 
@@ -59,25 +58,6 @@ export const reseauxRouter = router({
   applyGeometriesUpdates: adminRoute
     .input(zApplyGeometriesUpdatesInput)
     .mutation(async ({ input, ctx }) => await reseauxService.applyGeometriesUpdates(input, ctx)),
-  bulkEligibilityValues: route.input(z.object({ id: z.string() })).query(async ({ input }) => {
-    const existingValue = await kdb.selectFrom('eligibility_tests').selectAll().where('id', '=', input.id).executeTakeFirst();
-
-    if (existingValue?.result && existingValue?.addresses_count && existingValue.result !== null) {
-      const addressesCount = existingValue.addresses_count;
-      const errorCount = existingValue.error_count ?? 0;
-      const processedCount = addressesCount - errorCount;
-      return {
-        error: existingValue.in_error ?? false,
-        id: existingValue.id,
-        progress: addressesCount > 0 ? processedCount / addressesCount : 0,
-        result: JSON.parse(existingValue.result),
-      };
-    }
-    return {
-      id: input.id,
-      progress: 0,
-    };
-  }),
   cityNetwork: route.input(z.object({ city: z.string() })).query(async ({ input }) => {
     return (await getCityEligilityStatus(input.city)) as HeatNetworksResponse; // legacy type for compatibility
   }),

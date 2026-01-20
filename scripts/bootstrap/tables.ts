@@ -32,14 +32,6 @@ export const allDatabaseTables: TableInfo[] = [
     name: 'pro_eligibility_tests_addresses',
   },
   {
-    description: "Tests d'éligibilité (obsolète, date d'avant le compte professionnel)",
-    name: 'eligibility_tests',
-  },
-  {
-    description: "Demandes d'éligibilité (obsolète, date d'avant le compte professionnel)",
-    name: 'eligibility_demands',
-  },
-  {
     description: "Règles d'affectation pour l'application automatique de tags",
     name: 'assignment_rules',
   },
