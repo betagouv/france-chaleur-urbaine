@@ -63,7 +63,6 @@ export type CheckableAccordionProps<T extends React.ReactNode> =
   | CheckableAccordionProps.Controlled<T>
   | CheckableAccordionProps.Uncontrolled<T>;
 
-// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace CheckableAccordionProps {
   export type Common<AuthorizedLabel extends React.ReactNode> = {
     className?: string;

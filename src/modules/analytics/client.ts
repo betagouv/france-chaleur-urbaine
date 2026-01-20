@@ -122,7 +122,6 @@ export type LegendTrackingEvent = ExtractSuffix<TrackingEvent, '|Active'>;
  */
 export const trackEvent = (eventKey: TrackingEvent, ...eventPayload: any[]) => {
   if (isDevModeEnabled()) {
-    // eslint-disable-next-line no-console
     console.log('trackEvent', eventKey, eventPayload, trackingEvents[eventKey]);
   }
   const configuration = trackingEvents[eventKey];

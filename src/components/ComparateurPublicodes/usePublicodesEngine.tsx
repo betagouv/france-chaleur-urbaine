@@ -32,9 +32,9 @@ const usePublicodesEngine = (rules: Rules, options?: Options) => {
   const [loaded, setLoaded] = React.useState(false);
 
   const engine = React.useMemo(() => {
-    console.time('engine'); // eslint-disable-line no-console
+    console.time('engine');
     const e = new Engine<RuleName>(rules, options);
-    console.timeEnd('engine'); // eslint-disable-line no-console
+    console.timeEnd('engine');
     setLoaded(true);
     return e;
   }, []);
