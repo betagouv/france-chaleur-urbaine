@@ -1,7 +1,7 @@
 import geoViewport from '@mapbox/geo-viewport';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
-import { useDebouncedEffect, useLocalStorageValue } from '@react-hookz/web';
-import type { GeoJSONSource, LayerSpecification, MapGeoJSONFeature, MapLibreEvent } from 'maplibre-gl';
+import { useDebouncedCallback, useLocalStorageValue } from '@react-hookz/web';
+import type { GeoJSONSource, LayerSpecification, MapGeoJSONFeature, MapLibreEvent, Map as MapLibreMap } from 'maplibre-gl';
 import { useRouter } from 'next/router';
 import { parseAsJson, parseAsString, useQueryStates } from 'nuqs';
 import { type ReactNode, type RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -361,26 +361,13 @@ export const FullyFeaturedMap = ({
       })
     );
 
-    // register move and hover event handlers
-    {
-      const map = mapRef.current;
+    // register move event handler to sync view state to URL
+    if (persistViewStateInURL) {
+      const map = mapRef.current?.getMap();
       if (map) {
-        if (persistViewStateInURL) {
-          map.on('move', () => {
-            const newViewState = {
-              latitude: map.getMap().getCenter().lat,
-              longitude: map.getMap().getCenter().lng,
-              zoom: map.getMap().getZoom(),
-            };
-            if (
-              viewState?.longitude !== newViewState.longitude ||
-              viewState?.latitude !== newViewState.latitude ||
-              viewState?.zoom !== newViewState.zoom
-            ) {
-              setViewState(newViewState);
-            }
-          });
-        }
+        map.on('move', () => {
+          syncViewStateToURL(map);
+        });
       }
     }
   };
@@ -518,42 +505,30 @@ export const FullyFeaturedMap = ({
     }
   }, [pinsList]);
 
-  const [viewState, setViewState] = useState<ViewState | null>(null);
-  useEffect(() => {
-    if (persistViewStateInURL && router.query.coord) {
-      const [lng, lat] = (router.query.coord as string).split(',');
-      setViewState({
-        latitude: parseFloat(lat) || mapSettings.defaultLatitude,
-        longitude: parseFloat(lng) || mapSettings.defaultLongitude,
-        zoom: parseFloat(router.query.zoom as string) || mapSettings.defaultZoom,
-      });
-    }
-  }, []);
-
   const [{ bounds: boundsInQuery }, setQuery] = useQueryStates({
     bounds: parseAsJson(boundingBoxSchema.parse),
     coord: parseAsString,
     zoom: parseAsString,
   });
   const bounds = boundsInQuery || defaultBounds;
-  // store the view state in the URL (e.g. /carte?coord=2.3429253,48.7998120&zoom=11.36)
-  useDebouncedEffect(
-    () => {
-      if (!viewState) {
-        return;
-      }
+
+  // Debounced function to sync view state to URL (e.g. /carte?coord=2.3429253,48.7998120&zoom=11.36)
+  const syncViewStateToURL = useDebouncedCallback(
+    (map: MapLibreMap) => {
+      const center = map.getCenter();
+      const zoom = map.getZoom();
       void setQuery(
         {
           bounds: null, // reset bounds as they are just meant to be used on load of the map
-          coord: `${viewState.longitude.toFixed(7)},${viewState.latitude.toFixed(7)}`,
-          zoom: viewState.zoom.toFixed(2),
+          coord: `${center.lng.toFixed(7)},${center.lat.toFixed(7)}`,
+          zoom: zoom.toFixed(2),
         },
         {
           shallow: true,
         }
       );
     },
-    [viewState],
+    [],
     500
   );
 
