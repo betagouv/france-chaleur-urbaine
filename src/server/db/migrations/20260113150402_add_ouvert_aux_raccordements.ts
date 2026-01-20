@@ -4,10 +4,10 @@ import { sql } from 'kysely';
 export async function up(db: Kysely<any>): Promise<void> {
   await sql`
     ALTER TABLE public.reseaux_de_chaleur
-    ADD COLUMN IF NOT EXISTS ouvert_aux_raccordements boolean NOT NULL DEFAULT false;
+    ADD COLUMN IF NOT EXISTS ouvert_aux_raccordements boolean NOT NULL DEFAULT true;
 
     ALTER TABLE public.zones_et_reseaux_en_construction
-    ADD COLUMN IF NOT EXISTS ouvert_aux_raccordements boolean NOT NULL DEFAULT false;
+    ADD COLUMN IF NOT EXISTS ouvert_aux_raccordements boolean NOT NULL DEFAULT true;
   `.execute(db);
 }
 
