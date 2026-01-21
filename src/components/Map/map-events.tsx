@@ -105,7 +105,7 @@ export function useMapEvents({ mapLayersLoaded, isDrawing, mapRef, onFeatureClic
       }
 
       if (isDevModeEnabled()) {
-        console.log('map-click', hoveredFeature); // eslint-disable-line no-console
+        console.log('map-click', hoveredFeature);
       }
 
       const layerSpec = mapLayers

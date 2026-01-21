@@ -221,38 +221,6 @@ export interface DonneesDeConsosTiles {
   z: Int8;
 }
 
-export interface EligibilityDemands {
-  created_at: Generated<Timestamp | null>;
-  eligibility_test_id: string;
-  email: string;
-  id: Generated<string>;
-}
-
-export interface EligibilityDemandsAddresses {
-  ban_address: string | null;
-  ban_score: number | null;
-  ban_valid: boolean | null;
-  eligibility_status: Json | null;
-  geom: string | null;
-  id: Generated<string>;
-  source_address: string;
-  test_id: string;
-}
-
-export interface EligibilityTests {
-  addresses_count: number | null;
-  created_at: Generated<Timestamp | null>;
-  eligibile_count: number | null;
-  error_count: number | null;
-  file: Generated<string>;
-  hash: string;
-  id: Generated<string>;
-  in_error: boolean | null;
-  result: string | null;
-  status: Generated<string>;
-  version: number;
-}
-
 export interface EmailTemplates {
   body: string;
   created_at: Generated<Timestamp>;
@@ -914,9 +882,6 @@ export interface DB {
   departements: Departements;
   donnees_de_consos: DonneesDeConsos;
   donnees_de_consos_tiles: DonneesDeConsosTiles;
-  eligibility_demands: EligibilityDemands;
-  eligibility_demands_addresses: EligibilityDemandsAddresses;
-  eligibility_tests: EligibilityTests;
   email_templates: EmailTemplates;
   enrr_mobilisables_friches_tiles: EnrrMobilisablesFrichesTiles;
   enrr_mobilisables_parkings_tiles: EnrrMobilisablesParkingsTiles;

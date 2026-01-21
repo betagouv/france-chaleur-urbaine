@@ -35,7 +35,6 @@ import { trackEvent } from '@/modules/analytics/client';
 import useUserInfo from '@/modules/app/client/hooks/useUserInfo';
 import type { BoundingBox } from '@/modules/geo/types';
 import { notify } from '@/modules/notification';
-import trpc from '@/modules/trpc/client';
 import type { AddressDetail, HandleAddressSelect } from '@/types/HeatNetworksResponse';
 import type { MapMarkerInfos } from '@/types/MapComponentsInfos';
 import type { Point } from '@/types/Point';
@@ -178,7 +177,6 @@ export const FullyFeaturedMap = ({
   const router = useRouter();
   const { setMapRef, setMapDraw, isDrawing, mapConfiguration, mapLayersLoaded, setMapLayersLoaded } = useFCUMap();
   const { userInfo, setUserInfo } = useUserInfo();
-  const trpcUtils = trpc.useUtils();
   const { handleOnFetchAddress, handleOnSuccessAddress } = useContactFormFCU();
 
   const [soughtAddressesVisible, setSoughtAddressesVisible] = useState(false);
@@ -409,40 +407,6 @@ export const FullyFeaturedMap = ({
   useEffect(() => {
     switcherControlRef.current?.enable(!isDrawing);
   }, [isDrawing]);
-
-  useEffect(() => {
-    const { id } = router.query;
-    if (!id) {
-      return;
-    }
-
-    // legacy, display the result of a bulk eligibility test
-    // keep until end of 2025 to be compatible with links sent by email
-    void trpcUtils.client.reseaux.bulkEligibilityValues.query({ id: id as string }).then((response) => {
-      if ('result' in response && response.result) {
-        const newMarkersList: MapMarkerInfos[] = [];
-        response.result.forEach((address: { lon: number; lat: number; label: string; isEligible: boolean }) => {
-          const addressId = getAddressId([address.lon, address.lat]);
-          if (
-            // Remove duplicates
-            !newMarkersList.some((marker) => marker.id === addressId && marker.popupContent === address.label)
-          ) {
-            const newMarker = {
-              color: address.isEligible ? 'green' : 'red',
-              id: addressId,
-              latitude: address.lat,
-              longitude: address.lon,
-              popup: true,
-              popupContent: address.label,
-            };
-
-            newMarkersList.push(newMarker);
-          }
-        });
-        setMarkersList(newMarkersList);
-      }
-    });
-  }, [router.query, trpcUtils]);
 
   useEffect(() => {
     if (!mapRef.current || !initialCenter) {

@@ -2,9 +2,7 @@ import { atom, useAtom, useSetAtom } from 'jotai';
 import { useHydrateAtoms } from 'jotai/utils';
 import { useRouter } from 'next/navigation';
 import type { Session } from 'next-auth';
-/* eslint-disable import/order */
 import { signIn, signOut, useSession } from 'next-auth/react';
-/* eslint-enable import/order */
 import { useQueryState } from 'nuqs';
 import { useEffect } from 'react';
 

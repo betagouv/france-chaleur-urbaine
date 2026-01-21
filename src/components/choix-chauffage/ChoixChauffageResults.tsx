@@ -67,7 +67,6 @@ const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = 
         'Local pour la sous-station',
       ],
       custom: (addressDetail) => {
-        // eslint-disable-next-line react-hooks/rules-of-hooks
         const { open: displayContactForm, EligibilityFormModal } = useEligibilityForm({
           address: {
             address: addressDetail.geoAddress?.properties.label,

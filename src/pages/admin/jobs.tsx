@@ -93,11 +93,9 @@ const columns: ColumnDef<AdminJobItem>[] = [
     accessorKey: '_id',
     align: 'right',
     cell: (info) => {
-      // eslint-disable-next-line react-hooks/rules-of-hooks
       const { mutateAsync: resetJob } = usePost(`/api/admin/jobs/${info.row.original.id}/reset`, {
         invalidate: ['/api/admin/jobs'],
       });
-      // eslint-disable-next-line react-hooks/rules-of-hooks
       const { mutateAsync: deleteJob } = useDelete(`/api/admin/jobs/${info.row.original.id}`, {
         invalidate: ['/api/admin/jobs'],
       });

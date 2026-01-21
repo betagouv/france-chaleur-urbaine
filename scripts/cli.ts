@@ -14,7 +14,6 @@ import { z } from 'zod';
 import { registerAppCommands } from '@/modules/app/commands';
 import { registerBdnbCommands } from '@/modules/bdnb/commands';
 import { registerDataCommands } from '@/modules/data/commands';
-import { registerDemandsCommands } from '@/modules/demands/commands';
 import { registerJobsCommands } from '@/modules/jobs/commands';
 import { registerOptimizationCommands } from '@/modules/optimization/commands';
 import { registerProEligibilityTestsCommands } from '@/modules/pro-eligibility-tests/commands';
@@ -72,7 +71,6 @@ program
 registerAppCommands(program);
 registerBdnbCommands(program);
 registerDataCommands(program);
-registerDemandsCommands(program);
 registerJobsCommands(program);
 registerOptimizationCommands(program);
 registerProEligibilityTestsCommands(program);

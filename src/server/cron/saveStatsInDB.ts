@@ -393,33 +393,21 @@ const saveBulkContactStats = async (startDate: string, endDate: string) => {
   start.setUTCHours(0, 0, 0);
   const end = new Date(endDate);
   end.setUTCHours(23, 59, 59);
-  const [legacyEligibilityTestsStats, proEligibilityTestsStats] = await Promise.all([
-    kdb
-      .selectFrom('eligibility_tests')
-      .select([
-        sql<number>`sum(COALESCE(addresses_count, 0) - COALESCE(error_count, 0))`.as('total'),
-        sql<number>`sum(COALESCE(eligibile_count, 0))`.as('nbEligible'),
-      ])
-      .where('in_error', 'is', null)
-      .where('created_at', '>=', start)
-      .where('created_at', '<=', end)
-      .executeTakeFirst(),
-    kdb
-      .selectFrom('pro_eligibility_tests')
-      .leftJoin('pro_eligibility_tests_addresses', 'pro_eligibility_tests.id', 'pro_eligibility_tests_addresses.test_id')
-      .select([
-        sql<number>`count(pro_eligibility_tests_addresses.id)`.as('total'),
-        sql<number>`count(case when (eligibility_history->-1->'eligibility'->>'isEligible')::boolean = true then 1 end)`.as('nbEligible'),
-      ])
-      .where('ban_valid', 'is', true)
-      .where('pro_eligibility_tests.created_at', '>=', start)
-      .where('pro_eligibility_tests.created_at', '<=', end)
-      .executeTakeFirst(),
-  ]);
+  const proEligibilityTestsStats = await kdb
+    .selectFrom('pro_eligibility_tests')
+    .leftJoin('pro_eligibility_tests_addresses', 'pro_eligibility_tests.id', 'pro_eligibility_tests_addresses.test_id')
+    .select([
+      sql<number>`count(pro_eligibility_tests_addresses.id)`.as('total'),
+      sql<number>`count(case when (eligibility_history->-1->'eligibility'->>'isEligible')::boolean = true then 1 end)`.as('nbEligible'),
+    ])
+    .where('ban_valid', 'is', true)
+    .where('pro_eligibility_tests.created_at', '>=', start)
+    .where('pro_eligibility_tests.created_at', '<=', end)
+    .executeTakeFirst();
 
   const monthValue = {
-    nbEligible: (legacyEligibilityTestsStats?.nbEligible ?? 0) + (proEligibilityTestsStats?.nbEligible ?? 0),
-    nbTotal: (legacyEligibilityTestsStats?.total ?? 0) + (proEligibilityTestsStats?.total ?? 0),
+    nbEligible: proEligibilityTestsStats?.nbEligible ?? 0,
+    nbTotal: proEligibilityTestsStats?.total ?? 0,
     nbUneligible: 0,
   };
   monthValue.nbUneligible = monthValue.nbTotal - monthValue.nbEligible;
