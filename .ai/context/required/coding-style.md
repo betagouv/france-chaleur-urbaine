@@ -29,6 +29,7 @@
 - **Extract complex logic** into custom hooks
 - **No styled-components** (deprecated) - Use Tailwind
 - **No Box component** (deprecated) - Use Tailwind classes
+- **No emojis in code** - Use DSFR icons (`fr-icon-*`) or Remix icons (`ri-*`) via `@/components/ui/Icon` component
 
 ## HTML
 

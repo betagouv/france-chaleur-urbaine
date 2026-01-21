@@ -18,6 +18,7 @@ const reseauxDeChaleurFields = [
   'PM',
   'annee_creation',
   'tags',
+  'ouvert_aux_raccordements',
 ] as const satisfies (keyof ReseauxDeChaleur)[];
 export type ReseauxDeChaleurTile = AsTile<Required<Pick<ReseauxDeChaleur, (typeof reseauxDeChaleurFields)[number]>>>;
 

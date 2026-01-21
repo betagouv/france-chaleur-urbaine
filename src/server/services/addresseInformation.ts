@@ -25,7 +25,7 @@ const hasFuturNetworkInCity = async (city: string): Promise<boolean> => {
   return !!result;
 };
 
-export type NetworkInfos = {
+type NetworkInfos = {
   distance: number;
   'Identifiant reseau': string;
   'Taux EnR&R': number;
@@ -36,17 +36,7 @@ export type NetworkInfos = {
   has_PDP: boolean;
 };
 
-const getNoTraceNetworkInCity = async (city: string): Promise<NetworkInfos> => {
-  const result = await kdb
-    .selectFrom('reseaux_de_chaleur')
-    .select(['Identifiant reseau', 'Taux EnR&R', 'contenu CO2 ACV', 'Gestionnaire', 'nom_reseau'])
-    .where('has_trace', '=', false)
-    .where(sql<boolean>`${sql.ref('communes')} @> ARRAY[${city}]`)
-    .executeTakeFirst();
-  return result as NetworkInfos;
-};
-
-export const getDistanceToNetwork = async (networkId: string, lat: number, lon: number): Promise<NetworkInfos> => {
+const getDistanceToNetwork = async (networkId: string, lat: number, lon: number) => {
   const network = await kdb
     .selectFrom('reseaux_de_chaleur')
     .select([
@@ -66,75 +56,6 @@ export const getDistanceToNetwork = async (networkId: string, lat: number, lon: 
   }
 
   return network as NetworkInfos;
-};
-
-export const closestNetwork = async (lat: number, lon: number): Promise<NetworkInfos> => {
-  const network = await kdb
-    .selectFrom('reseaux_de_chaleur')
-    .select([
-      'Identifiant reseau',
-      'Taux EnR&R',
-      'contenu CO2 ACV',
-      'Gestionnaire',
-      'nom_reseau',
-      'reseaux classes',
-      'has_PDP',
-      sql<number>`round(geom <-> ST_Transform(ST_GeomFromText('POINT(${sql.lit(lon)} ${sql.lit(lat)})', 4326), 2154))`.as('distance'),
-    ])
-    .where('has_trace', '=', true)
-    .orderBy('distance')
-    .executeTakeFirst();
-
-  return network as NetworkInfos;
-};
-
-const closestFuturNetwork = async (
-  lat: number,
-  lon: number
-): Promise<{
-  distance: number;
-  gestionnaire: string;
-}> => {
-  const network = await kdb
-    .selectFrom('zones_et_reseaux_en_construction')
-    .select([
-      sql<number>`round(geom <-> ST_Transform(ST_GeomFromText('POINT(${sql.lit(lon)} ${sql.lit(lat)})', 4326), 2154))`.as('distance'),
-      'gestionnaire',
-    ])
-    .where('is_zone', '=', false)
-    .orderBy('distance')
-    .executeTakeFirst();
-
-  return network as { distance: number; gestionnaire: string };
-};
-const closestInFuturNetwork = async (
-  lat: number,
-  lon: number
-): Promise<{
-  gestionnaire: string;
-}> => {
-  const network = await kdb
-    .selectFrom('zones_et_reseaux_en_construction')
-    .selectAll()
-    .where(
-      sql<boolean>`ST_INTERSECTS(
-        ST_Transform(ST_GeomFromText('POINT(${sql.lit(lon)} ${sql.lit(lat)})', 4326), 2154),
-        ST_Transform(geom, 2154)
-      )`
-    )
-    .where('is_zone', '=', true)
-    .executeTakeFirst();
-
-  return network as { gestionnaire: string };
-};
-
-export const getNbLogementById = async (id: string) => {
-  const result = await kdb
-    .selectFrom('bdnb_batiments')
-    .select(['batiment_groupe_id', 'ffo_bat_nb_log as nb_logements'])
-    .where('batiment_groupe_id', '=', id)
-    .executeTakeFirst();
-  return result;
 };
 
 const headers = [
@@ -243,190 +164,57 @@ export const getNetworkEligilityStatus = async (networkId: string, lat: number, 
 };
 
 /**
- * Deprecated in favor of getDetailedEligibilityStatus
- * @deprecated
+ * Convertit le résultat détaillé de getDetailedEligibilityStatus vers le format legacy HeatNetwork
+ * Utilise directement les champs du résultat d'éligibilité qui contient déjà toutes les informations nécessaires
  */
-export const getEligilityStatus = async (lat: number, lon: number, city?: string): Promise<HeatNetwork> => {
-  const [inPDP, inFuturNetwork, futurNetwork, network, noTraceNetwork] = await Promise.all([
-    isInPDP(lat, lon),
-    closestInFuturNetwork(lat, lon),
-    closestFuturNetwork(lat, lon),
-    closestNetwork(lat, lon),
-    city ? await getNoTraceNetworkInCity(city) : null,
-  ]);
+const mapDetailedEligibilityToHeatNetwork = (detailed: DetailedEligibilityStatus): HeatNetwork => {
+  const { eligible, distance, type, id_sncu, nom, pdp, gestionnaire, co2, tauxENRR, isClasse, hasPDP } = detailed;
 
-  const eligibilityDistances = getNetworkEligibilityDistances(network['Identifiant reseau']);
-  const futurEligibilityDistances = getNetworkEligibilityDistances(''); // gets the default distances
-  const eligibility = {
-    isEligible: Number(network.distance) <= eligibilityDistances.eligibleDistance,
-    veryEligibleDistance: eligibilityDistances.veryEligibleDistance,
+  // Détermine si c'est un réseau futur
+  const isFuturNetwork =
+    type === 'reseau_futur_tres_proche' ||
+    type === 'reseau_futur_proche' ||
+    type === 'reseau_futur_loin' ||
+    type === 'dans_zone_reseau_futur' ||
+    type === 'dans_pdp_reseau_futur';
+
+  // Récupère les distances d'éligibilité
+  const eligibilityDistances = getNetworkEligibilityDistances(id_sncu || '');
+
+  // Construit l'objet HeatNetwork en utilisant directement les informations du résultat
+  const heatNetwork: HeatNetwork = {
+    co2: co2 ?? null,
+    distance,
+    futurNetwork: isFuturNetwork,
+    gestionnaire: gestionnaire ?? null,
+    hasNoTraceNetwork: type === 'dans_ville_reseau_existant_sans_trace' ? true : type === 'trop_eloigne' ? false : null,
+    hasPDP: hasPDP ?? null,
+    id: id_sncu || null,
+    inPDP: type === 'dans_pdp_reseau_existant' || type === 'dans_pdp_reseau_futur',
+    isClasse: isClasse ?? null,
+    isEligible: eligible,
+    name: nom || null,
+    tauxENRR: tauxENRR ?? null,
+    veryEligibleDistance:
+      type === 'dans_zone_reseau_futur' || type === 'dans_ville_reseau_existant_sans_trace' || type === 'trop_eloigne'
+        ? null
+        : eligibilityDistances.veryEligibleDistance,
   };
-  const futurEligibility = {
-    isEligible: futurNetwork.distance <= futurEligibilityDistances.eligibleDistance,
-    veryEligibleDistance: futurEligibilityDistances.veryEligibleDistance,
-  };
 
-  // Réseau existant à moins de 100m (60m sur Paris)
-  if (eligibility.isEligible && Number(network.distance) < eligibility.veryEligibleDistance) {
-    return {
-      ...eligibility,
-      co2: network['contenu CO2 ACV'],
-      distance: Math.round(network.distance),
-      futurNetwork: false,
-      gestionnaire: network.Gestionnaire,
-      hasNoTraceNetwork: null,
-      hasPDP: network.has_PDP,
-      id: network['Identifiant reseau'],
-      inPDP,
-      isClasse: network['reseaux classes'],
-      name: network.nom_reseau,
-      tauxENRR: network['Taux EnR&R'],
-    };
-  }
-  // Réseau futur à moins de 100m (60 sur Paris)
-  if (futurEligibility.isEligible && Number(futurNetwork.distance) < futurEligibility.veryEligibleDistance) {
-    return {
-      ...futurEligibility,
-      co2: null,
-      distance: Math.round(futurNetwork.distance),
-      futurNetwork: true,
-      gestionnaire: futurNetwork.gestionnaire,
-      hasNoTraceNetwork: null,
-      hasPDP: null,
-      id: null,
-      inPDP,
-      isClasse: null,
-      name: null,
-      tauxENRR: null,
-    };
-  }
+  return heatNetwork;
+};
 
-  // Dans zone futur réseau
-  if (inFuturNetwork) {
-    return {
-      co2: null,
-      distance: null,
-      futurNetwork: true,
-      gestionnaire: inFuturNetwork.gestionnaire,
-      hasNoTraceNetwork: null,
-      hasPDP: null,
-      id: null,
-      inPDP,
-      isClasse: null,
-      isEligible: true,
-      name: null,
-      tauxENRR: null,
-      veryEligibleDistance: null,
-    };
-  }
+/**
+ * Permet d'obtenir l'éligibilité d'un point géographique, avec plus d'informations sur les réseaux les plus proches.
+ * @param lat - Latitude du point
+ * @param lon - Longitude du point
+ */
+export const getEligilityStatus = async (lat: number, lon: number): Promise<HeatNetwork> => {
+  // Utilise la nouvelle fonction avec les règles de gestion à jour
+  const detailedStatus = await getDetailedEligibilityStatus(lat, lon);
 
-  // Réseau existant entre 100 et 200m (60 et 100 sur Paris)
-  if (eligibility.isEligible) {
-    return {
-      ...eligibility,
-      co2: network['contenu CO2 ACV'],
-      distance: Math.round(network.distance),
-      futurNetwork: false,
-      gestionnaire: network.Gestionnaire,
-      hasNoTraceNetwork: null,
-      hasPDP: network.has_PDP,
-      id: network['Identifiant reseau'],
-      inPDP,
-      isClasse: network['reseaux classes'],
-      name: network.nom_reseau,
-      tauxENRR: network['Taux EnR&R'],
-    };
-  }
-
-  // Réseau futur entre 100 et 200m (60 et 100 sur Paris)
-  if (futurEligibility.isEligible) {
-    return {
-      ...futurEligibility,
-      co2: null,
-      distance: Math.round(futurNetwork.distance),
-      futurNetwork: true,
-      gestionnaire: futurNetwork.gestionnaire,
-      hasNoTraceNetwork: null,
-      hasPDP: null,
-      id: null,
-      inPDP,
-      isClasse: null,
-      name: null,
-      tauxENRR: null,
-    };
-  }
-
-  // Réseau existant entre 200 et 1000m
-  if (Number(network.distance) < 1000) {
-    return {
-      ...eligibility,
-      co2: network['contenu CO2 ACV'],
-      distance: Math.round(network.distance),
-      futurNetwork: false,
-      gestionnaire: network.Gestionnaire,
-      hasNoTraceNetwork: null,
-      hasPDP: network.has_PDP,
-      id: network['Identifiant reseau'],
-      inPDP,
-      isClasse: network['reseaux classes'],
-      name: network.nom_reseau,
-      tauxENRR: network['Taux EnR&R'],
-    };
-  }
-
-  // Réseau futur entre 200 et 1000m
-  if (Number(futurNetwork.distance) < 1000) {
-    return {
-      ...futurEligibility,
-      co2: null,
-      distance: Math.round(futurNetwork.distance),
-      futurNetwork: true,
-      gestionnaire: futurNetwork.gestionnaire,
-      hasNoTraceNetwork: null,
-      hasPDP: null,
-      id: null,
-      inPDP,
-      isClasse: null,
-      name: null,
-      tauxENRR: null,
-    };
-  }
-
-  // Pas de tracé sur la ville, mais ville où l’on sait qu’existe un réseau (repère)
-  if (noTraceNetwork) {
-    return {
-      co2: noTraceNetwork['contenu CO2 ACV'],
-      distance: null,
-      futurNetwork: false,
-      gestionnaire: noTraceNetwork.Gestionnaire,
-      hasNoTraceNetwork: true,
-      hasPDP: null,
-      id: noTraceNetwork['Identifiant reseau'],
-      inPDP,
-      isClasse: null,
-      isEligible: false,
-      name: noTraceNetwork.nom_reseau,
-      tauxENRR: noTraceNetwork['Taux EnR&R'],
-      veryEligibleDistance: null,
-    };
-  }
-
-  // Pas de tracé à moins de 1000m, ni repère réseau sur ville
-  return {
-    co2: null,
-    distance: null,
-    futurNetwork: false,
-    gestionnaire: null,
-    hasNoTraceNetwork: false,
-    hasPDP: null,
-    id: null,
-    inPDP,
-    isClasse: null,
-    isEligible: false,
-    name: null,
-    tauxENRR: null,
-    veryEligibleDistance: null,
-  };
+  // Convertit vers le format legacy en utilisant directement les champs du résultat d'éligibilité
+  return mapDetailedEligibilityToHeatNetwork(detailedStatus);
 };
 
 /**
@@ -452,14 +240,18 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
         'communes',
         'Taux EnR&R',
         'contenu CO2 ACV',
+        'Gestionnaire',
+        'reseaux classes',
+        'has_PDP',
         sql<number>`round(ST_Distance(geom, ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)))`.as(
           'distance'
         ),
       ])
       .where('has_trace', '=', true)
+      .where('ouvert_aux_raccordements', '=', true)
       .orderBy((eb) => sql`${eb.ref('geom')} <-> ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)`)
       .limit(1)
-      .executeTakeFirstOrThrow(),
+      .executeTakeFirst(),
 
     kdb
       .with('commune', (eb) =>
@@ -479,8 +271,19 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
       .innerJoin('commune', (join) =>
         join.on((eb) => eb('commune.insee_com', '=', sql<string>`ANY(${eb.ref('reseaux_de_chaleur.communes_insee')})`))
       )
-      .select(['id_fcu', 'Identifiant reseau', 'nom_reseau', 'commune.nom', 'tags', 'communes'])
+      .select([
+        'id_fcu',
+        'Identifiant reseau',
+        'nom_reseau',
+        'commune.nom',
+        'tags',
+        'communes',
+        'Gestionnaire',
+        'Taux EnR&R',
+        'contenu CO2 ACV',
+      ])
       .where('has_trace', '=', false)
+      .where('ouvert_aux_raccordements', '=', true)
       .limit(1)
       .executeTakeFirst(),
 
@@ -491,14 +294,16 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
         'nom_reseau',
         'tags',
         'communes',
+        'gestionnaire',
         sql<number>`round(ST_Distance(geom, ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)))`.as(
           'distance'
         ),
       ])
       .where('is_zone', '=', false)
+      .where('ouvert_aux_raccordements', '=', true)
       .orderBy((eb) => sql`${eb.ref('geom')} <-> ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)`)
       .limit(1)
-      .executeTakeFirstOrThrow(),
+      .executeTakeFirst(),
 
     kdb
       .selectFrom('zones_et_reseaux_en_construction')
@@ -507,14 +312,16 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
         'nom_reseau',
         'tags',
         'communes',
+        'gestionnaire',
         sql<number>`round(ST_Distance(geom, ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)))`.as(
           'distance'
         ),
       ])
       .where('is_zone', '=', true)
+      .where('ouvert_aux_raccordements', '=', true)
       .orderBy((eb) => sql`${eb.ref('geom')} <-> ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)`)
       .limit(1)
-      .executeTakeFirstOrThrow(),
+      .executeTakeFirst(),
 
     kdb
       .selectFrom('zone_de_developpement_prioritaire')
@@ -569,103 +376,143 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
     if (pdp) {
       const networkInfos = await findPDPAssociatedNetwork(pdp, lat, lon);
       return {
+        co2: networkInfos.type === 'existant' ? (networkInfos?.['contenu CO2 ACV'] ?? null) : null,
         communes: pdp.communes ?? [],
         distance: networkInfos?.distance ?? 0,
+        gestionnaire: networkInfos?.gestionnaire ?? null,
+        hasPDP: true,
         id_fcu: pdp.id_fcu,
-        id_sncu: pdp['Identifiant reseau'] ?? '',
+        id_sncu: pdp['Identifiant reseau'] ?? (networkInfos?.type === 'existant' ? networkInfos?.['Identifiant reseau'] : null) ?? '',
+        isClasse: networkInfos?.type === 'existant' ? (networkInfos?.['reseaux classes'] ?? null) : null,
         nom: networkInfos?.nom_reseau ?? '',
         tags: networkInfos?.tags ?? [],
+        tauxENRR: networkInfos.type === 'existant' ? (networkInfos?.['Taux EnR&R'] ?? null) : null,
         type: networkInfos?.type === 'existant' ? 'dans_pdp_reseau_existant' : 'dans_pdp_reseau_futur',
       };
     }
 
     // Réseau existant à moins de 100m (60m sur Paris)
-    if (reseauDeChaleur.distance <= eligibilityDistances.veryEligibleDistance) {
+    if (reseauDeChaleur && reseauDeChaleur.distance <= eligibilityDistances.veryEligibleDistance) {
       return {
+        co2: reseauDeChaleur['contenu CO2 ACV'] ?? null,
         communes: reseauDeChaleur.communes ?? [],
         distance: reseauDeChaleur.distance,
+        gestionnaire: reseauDeChaleur.Gestionnaire ?? null,
+        hasPDP: reseauDeChaleur.has_PDP ?? null,
         id_fcu: reseauDeChaleur.id_fcu ?? '',
         id_sncu: reseauDeChaleur['Identifiant reseau'] ?? '',
+        isClasse: reseauDeChaleur['reseaux classes'] ?? null,
         nom: reseauDeChaleur.nom_reseau ?? '',
         tags: reseauDeChaleur.distance <= tagsDistanceThreshold ? (reseauDeChaleur.tags ?? []) : [],
+        tauxENRR: reseauDeChaleur['Taux EnR&R'] ?? null,
         type: 'reseau_existant_tres_proche',
       };
     }
 
     // Réseau futur à moins de 100m (60 sur Paris)
-    if (reseauEnConstruction.distance <= futurEligibilityDistances.veryEligibleDistance) {
+    if (reseauEnConstruction && reseauEnConstruction.distance <= futurEligibilityDistances.veryEligibleDistance) {
       return {
+        co2: null,
         communes: reseauEnConstruction.communes ?? [],
         distance: reseauEnConstruction.distance,
+        gestionnaire: reseauEnConstruction.gestionnaire ?? null,
+        hasPDP: false,
         id_fcu: reseauEnConstruction.id_fcu,
         id_sncu: '',
+        isClasse: null,
         nom: reseauEnConstruction.nom_reseau ?? '',
         tags: reseauEnConstruction.distance <= tagsDistanceThreshold ? (reseauEnConstruction.tags ?? []) : [],
+        tauxENRR: null,
         type: 'reseau_futur_tres_proche',
       };
     }
 
     // Dans zone futur réseau
-    if (zoneEnConstruction.distance === 0) {
+    if (zoneEnConstruction && zoneEnConstruction.distance === 0) {
       return {
+        co2: null,
         communes: zoneEnConstruction.communes ?? [],
-        distance: 0,
+        distance: null,
+        gestionnaire: zoneEnConstruction.gestionnaire ?? null,
+        hasPDP: false,
         id_fcu: zoneEnConstruction.id_fcu,
         id_sncu: '',
+        isClasse: null,
         nom: zoneEnConstruction.nom_reseau ?? '',
         tags: zoneEnConstruction.distance <= tagsDistanceThreshold ? (zoneEnConstruction.tags ?? []) : [],
+        tauxENRR: null,
         type: 'dans_zone_reseau_futur',
       };
     }
 
     // Réseau existant entre 100 et 200m (60 et 100 sur Paris)
-    if (reseauDeChaleur.distance <= eligibilityDistances.eligibleDistance) {
+    if (reseauDeChaleur && reseauDeChaleur.distance <= eligibilityDistances.eligibleDistance) {
       return {
+        co2: reseauDeChaleur['contenu CO2 ACV'] ?? null,
         communes: reseauDeChaleur.communes ?? [],
         distance: reseauDeChaleur.distance,
+        gestionnaire: reseauDeChaleur.Gestionnaire ?? null,
+        hasPDP: reseauDeChaleur.has_PDP ?? null,
         id_fcu: reseauDeChaleur.id_fcu,
         id_sncu: reseauDeChaleur['Identifiant reseau'] ?? '',
+        isClasse: reseauDeChaleur['reseaux classes'] ?? null,
         nom: reseauDeChaleur.nom_reseau ?? '',
         tags: reseauDeChaleur.distance <= tagsDistanceThreshold ? (reseauDeChaleur.tags ?? []) : [],
+        tauxENRR: reseauDeChaleur['Taux EnR&R'] ?? null,
         type: 'reseau_existant_proche',
       };
     }
 
     // Réseau futur entre 100 et 200m (60 et 100 sur Paris)
-    if (reseauEnConstruction.distance <= futurEligibilityDistances.eligibleDistance) {
+    if (reseauEnConstruction && reseauEnConstruction.distance <= futurEligibilityDistances.eligibleDistance) {
       return {
+        co2: null,
         communes: reseauEnConstruction.communes ?? [],
         distance: reseauEnConstruction.distance,
+        gestionnaire: reseauEnConstruction.gestionnaire ?? null,
+        hasPDP: false,
         id_fcu: reseauEnConstruction.id_fcu,
         id_sncu: '',
+        isClasse: null,
         nom: reseauEnConstruction.nom_reseau ?? '',
         tags: reseauEnConstruction.distance <= tagsDistanceThreshold ? (reseauEnConstruction.tags ?? []) : [],
+        tauxENRR: null,
         type: 'reseau_futur_proche',
       };
     }
 
     // Réseau existant entre 200 et 1000m
-    if (reseauDeChaleur.distance <= 1000) {
+    if (reseauDeChaleur && reseauDeChaleur.distance <= 1000) {
       return {
+        co2: reseauDeChaleur['contenu CO2 ACV'] ?? null,
         communes: reseauDeChaleur.communes ?? [],
         distance: reseauDeChaleur.distance,
+        gestionnaire: reseauDeChaleur.Gestionnaire ?? null,
+        hasPDP: reseauDeChaleur.has_PDP ?? null,
         id_fcu: reseauDeChaleur.id_fcu,
         id_sncu: reseauDeChaleur['Identifiant reseau'] ?? '',
+        isClasse: reseauDeChaleur['reseaux classes'] ?? null,
         nom: reseauDeChaleur.nom_reseau ?? '',
         tags: reseauDeChaleur.distance <= tagsDistanceThreshold ? (reseauDeChaleur.tags ?? []) : [],
+        tauxENRR: reseauDeChaleur['Taux EnR&R'] ?? null,
         type: 'reseau_existant_loin',
       };
     }
 
     // Réseau futur entre 200 et 1000m
-    if (reseauEnConstruction.distance <= 1000) {
+    if (reseauEnConstruction && reseauEnConstruction.distance <= 1000) {
       return {
+        co2: null,
         communes: reseauEnConstruction.communes ?? [],
         distance: reseauEnConstruction.distance,
+        gestionnaire: reseauEnConstruction.gestionnaire ?? null,
+        hasPDP: false,
         id_fcu: reseauEnConstruction.id_fcu,
         id_sncu: '',
+        isClasse: null,
         nom: reseauEnConstruction.nom_reseau ?? '',
         tags: reseauEnConstruction.distance <= tagsDistanceThreshold ? (reseauEnConstruction.tags ?? []) : [],
+        tauxENRR: null,
         type: 'reseau_futur_loin',
       };
     }
@@ -673,24 +520,34 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
     // Pas de tracé sur la ville, mais ville où l'on sait qu'existe un réseau (repère)
     if (reseauDeChaleurSansTrace) {
       return {
+        co2: reseauDeChaleurSansTrace['contenu CO2 ACV'] ?? null,
         communes: [reseauDeChaleurSansTrace.nom ?? ''],
-        distance: 0,
+        distance: null,
+        gestionnaire: reseauDeChaleurSansTrace.Gestionnaire ?? null,
+        hasPDP: false,
         id_fcu: reseauDeChaleurSansTrace.id_fcu,
         id_sncu: reseauDeChaleurSansTrace['Identifiant reseau'] ?? '',
+        isClasse: null,
         nom: reseauDeChaleurSansTrace.nom_reseau ?? '',
         tags: reseauDeChaleurSansTrace.tags ?? [],
+        tauxENRR: reseauDeChaleurSansTrace['Taux EnR&R'] ?? null,
         type: 'dans_ville_reseau_existant_sans_trace',
       };
     }
 
     // Pas de tracé à moins de 1000m, ni repère réseau sur ville
     return {
+      co2: null,
       communes: [],
-      distance: 0,
-      id_fcu: 0,
+      distance: null,
+      gestionnaire: null,
+      hasPDP: null,
+      id_fcu: null,
       id_sncu: '',
+      isClasse: null,
       nom: '',
       tags: [],
+      tauxENRR: null,
       type: 'trop_eloigne',
     };
   };
@@ -738,13 +595,18 @@ export type EligibilityType =
   | 'trop_eloigne';
 
 type EligibilityResult = {
-  id_fcu: number;
+  id_fcu: number | null;
   type: EligibilityType;
-  distance: number;
+  distance: number | null;
   id_sncu: string;
   nom: string;
   tags: string[];
   communes: string[];
+  gestionnaire: string | null;
+  co2: number | null;
+  tauxENRR: number | null;
+  isClasse: boolean | null;
+  hasPDP: boolean | null;
 };
 
 export type DetailedEligibilityStatus = Awaited<ReturnType<typeof getDetailedEligibilityStatus>>;
@@ -754,7 +616,7 @@ export type DetailedEligibilityStatus = Awaited<ReturnType<typeof getDetailedEli
  * @param pdp - Le PDP
  * @returns Les informations du réseau de chaleur ou en construction associé au PDP
  */
-export const findPDPAssociatedNetwork = async (
+const findPDPAssociatedNetwork = async (
   pdp: Pick<ZoneDeDeveloppementPrioritaire, 'Identifiant reseau' | 'reseau_de_chaleur_ids' | 'reseau_en_construction_ids'>,
   lat: number,
   lon: number
@@ -769,6 +631,10 @@ export const findPDPAssociatedNetwork = async (
             'nom_reseau',
             'tags',
             'communes',
+            'Gestionnaire as gestionnaire',
+            'Taux EnR&R',
+            'contenu CO2 ACV',
+            'reseaux classes',
             sql<number>`round(ST_Distance(geom, ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)))`.as(
               'distance'
             ),
@@ -796,6 +662,7 @@ export const findPDPAssociatedNetwork = async (
               'nom_reseau',
               'tags',
               'communes',
+              'gestionnaire',
               sql<number>`round(ST_Distance(geom, ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)))`.as(
                 'distance'
               ),
@@ -813,6 +680,7 @@ export const findPDPAssociatedNetwork = async (
               'nom_reseau',
               'tags',
               'communes',
+              'gestionnaire',
               sql<number>`round(ST_Distance(geom, ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)))`.as(
                 'distance'
               ),
@@ -827,12 +695,12 @@ export const findPDPAssociatedNetwork = async (
   ]);
 
   return zoneEnConstruction?.distance === 0
-    ? { ...zoneEnConstruction, type: 'futur' }
+    ? { ...zoneEnConstruction, type: 'futur' as const }
     : reseauDeChaleur && reseauEnConstruction
       ? reseauDeChaleur.distance <= reseauEnConstruction.distance
-        ? { ...reseauDeChaleur, type: 'existant' }
-        : { ...reseauEnConstruction, type: 'futur' }
+        ? { ...reseauDeChaleur, type: 'existant' as const }
+        : { ...reseauEnConstruction, type: 'futur' as const }
       : reseauDeChaleur
-        ? { ...reseauDeChaleur, type: 'existant' }
-        : { ...reseauEnConstruction, type: 'futur' };
+        ? { ...reseauDeChaleur, type: 'existant' as const }
+        : { ...reseauEnConstruction, type: 'futur' as const };
 };

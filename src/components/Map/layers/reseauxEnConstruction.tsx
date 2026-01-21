@@ -63,6 +63,12 @@ const Popup = defineLayerPopup<ReseauxEnConstructionTile>(
             />
           )}
         </TwoColumns>
+        {!reseauEnConstruction.ouvert_aux_raccordements && (
+          <div className="text-sm">
+            <Icon name="ri-lock-2-fill" size="sm" className="mr-1" />
+            Ce réseau n'est pas ouvert aux raccordements.
+          </div>
+        )}
         <div className="text-sm text-gray-500">
           <Icon name="ri-alert-line" size="sm" className="mr-1" />
           Ce tracé est prévisionnel. Le gestionnaire est susceptible

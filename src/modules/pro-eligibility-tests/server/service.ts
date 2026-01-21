@@ -37,11 +37,25 @@ export const getTransition = (
   }
 
   // Aucun changement
+  // Helper pour comparer les distances en gérant les cas null
+  const distancesEqual = (oldDist: number | null, newDist: number | null): boolean => {
+    // Si les deux sont null, elles sont égales
+    if (oldDist === null && newDist === null) {
+      return true;
+    }
+    // Si une seule est null, elles ne sont pas égales
+    if (oldDist === null || newDist === null) {
+      return false;
+    }
+    // Comparaison avec tolérance de 5m pour éviter les variations GPS
+    return Math.abs(oldDist - newDist) < 5;
+  };
+
   if (
     oldEligibility.type === newEligibility.type &&
     oldEligibility.id_fcu === newEligibility.id_fcu &&
     oldEligibility.id_sncu === newEligibility.id_sncu &&
-    Math.abs(oldEligibility.distance - newEligibility.distance) < 5 // Tolérance de 5m pour éviter les variations GPS
+    distancesEqual(oldEligibility.distance, newEligibility.distance)
   ) {
     return 'none';
   }
@@ -92,12 +106,15 @@ export const getTransition = (
   }
 
   // Changement de distance significatif (>50m) avec même type
-  const distanceChange = newEligibility.distance - oldEligibility.distance;
-  if (oldType === newType && Math.abs(distanceChange) >= 50) {
-    if (distanceChange > 0) {
-      return 'eloignement';
+  // Ne s'applique que si les deux distances sont définies (non null)
+  if (oldType === newType && oldEligibility.distance !== null && newEligibility.distance !== null) {
+    const distanceChange = newEligibility.distance - oldEligibility.distance;
+    if (Math.abs(distanceChange) >= 50) {
+      if (distanceChange > 0) {
+        return 'eloignement';
+      }
+      return 'rapprochement';
     }
-    return 'rapprochement';
   }
 
   // Changement de type (proche -> tres_proche, loin -> proche, etc.)

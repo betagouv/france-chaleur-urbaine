@@ -4,6 +4,7 @@ import type { ReactElement } from 'react';
 
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import Accordion from '@/components/ui/Accordion';
+import Alert from '@/components/ui/Alert';
 import Box, { type BoxProps } from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
 import Icon from '@/components/ui/Icon';
@@ -72,6 +73,11 @@ const NetworkPanel = ({
             <Box mt="1w">
               <ColdNetwork />
             </Box>
+          )}
+          {!network.ouvert_aux_raccordements && (
+            <Alert variant="warning" className="my-2w">
+              Ce réseau n'est pas ouvert aux raccordements.
+            </Alert>
           )}
           <Text mt="1w" size="sm">
             Vous êtes le maître d’ouvrage ou l’exploitant de ce réseau et vous souhaitez ajouter ou modifier des informations ?

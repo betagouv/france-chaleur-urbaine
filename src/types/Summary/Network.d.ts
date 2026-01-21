@@ -75,6 +75,7 @@ export interface Network {
   informationsComplementaires: string;
   fichiers: NetworkAttachment[];
   region: string;
+  ouvert_aux_raccordements?: boolean;
 }
 
 export interface NetworkAttachment {

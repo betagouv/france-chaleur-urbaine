@@ -28,6 +28,10 @@ export const allDatabaseTables: TableInfo[] = [
     name: 'pro_eligibility_tests',
   },
   {
+    description: "Demandes d'éligibilité",
+    name: 'demands',
+  },
+  {
     description: "Adresses des tests d'éligibilité professionnels",
     name: 'pro_eligibility_tests_addresses',
   },
