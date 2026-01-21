@@ -1,11 +1,11 @@
 import Alert from '@codegouvfr/react-dsfr/Alert';
 import Button from '@codegouvfr/react-dsfr/Button';
 import type { DrawCreateEvent } from '@mapbox/mapbox-gl-draw';
-import { useKeyboardEvent } from '@react-hookz/web';
+import { useKeyboardEvent, useThrottledCallback } from '@react-hookz/web';
 import turfArea from '@turf/area';
 import { atom, useAtom } from 'jotai';
-import type { GeoJSONSource } from 'maplibre-gl';
-import { useEffect, useState } from 'react';
+import type { GeoJSONSource, Map as MapLibreMap } from 'maplibre-gl';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
 
 import { clientConfig } from '@/client-config';
@@ -51,11 +51,23 @@ type BuildingsDataExtractSummary = {
 const featuresAtom = atom<AreaSummaryFeature[]>([]);
 const summaryAtom = atom<BuildingsDataExtractSummary | null>(null);
 
+/**
+ * Sync features to the map directly (without React state updates).
+ * Used during drawing to avoid triggering React re-renders on every frame.
+ */
+function syncLayersToMap(map: MapLibreMap, features: AreaSummaryFeature[]): void {
+  const source = map.getSource(buildingsDataExtractionPolygonsSourceId) as GeoJSONSource | undefined;
+  if (!source) return;
+  source.setData({ features, type: 'FeatureCollection' });
+}
+
 const BuildingsDataExtractionTool: React.FC = () => {
   const { mapLoaded, mapRef, mapDraw, isDrawing, setIsDrawing } = useFCUMap();
   const [features, setFeatures] = useAtom(featuresAtom);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [summary, setSummary] = useAtom(summaryAtom);
+  // Ref to track the feature being drawn (to avoid React state updates on every frame)
+  const drawingFeatureRef = useRef<AreaSummaryFeature | null>(null);
 
   const trpcUtils = trpc.useUtils();
 
@@ -70,6 +82,7 @@ const BuildingsDataExtractionTool: React.FC = () => {
     const feature = drawFeatures[0] as GeoJSON.Feature<GeoJSON.Polygon>;
     mapDraw.deleteAll();
     setIsDrawing(false);
+    drawingFeatureRef.current = null;
 
     const area = feature.geometry.coordinates[0];
     if (turfArea(feature) / 1_000_000 > clientConfig.summaryAreaSizeLimit || !validatePolygonGeometry(area)) {
@@ -106,7 +119,24 @@ const BuildingsDataExtractionTool: React.FC = () => {
     }
   };
 
-  const onDrawRender = () => {
+  // Sync the drawing feature to the map directly (without React state updates)
+  const syncDrawingToMap = useCallback(() => {
+    if (!mapRef) return;
+    const map = mapRef.getMap();
+    const allFeatures = drawingFeatureRef.current ? [drawingFeatureRef.current] : [];
+    syncLayersToMap(map, allFeatures);
+  }, [mapRef]);
+
+  // Throttled update of React state for UI alerts (area size, self-intersections)
+  const updateFeaturesThrottled = useThrottledCallback(
+    (feature: AreaSummaryFeature) => {
+      setFeatures([feature]);
+    },
+    [setFeatures],
+    200
+  );
+
+  const onDrawRender = useCallback(() => {
     if (!mapDraw) {
       return;
     }
@@ -124,17 +154,24 @@ const BuildingsDataExtractionTool: React.FC = () => {
     // Validate the polygon for self-intersections
     const isGeometryValid = validatePolygonGeometry(featureBeingDrawn.geometry.coordinates[0]);
 
-    setFeatures([
-      {
-        ...featureBeingDrawn,
-        properties: {
-          areaHasSelfIntersections: !isGeometryValid,
-          areaSize,
-          isValid: areaSize <= clientConfig.summaryAreaSizeLimit && isGeometryValid,
-        },
+    const updatedFeature: AreaSummaryFeature = {
+      ...featureBeingDrawn,
+      properties: {
+        areaHasSelfIntersections: !isGeometryValid,
+        areaSize,
+        isValid: areaSize <= clientConfig.summaryAreaSizeLimit && isGeometryValid,
       },
-    ]);
-  };
+    };
+
+    // Update the ref for immediate map sync
+    drawingFeatureRef.current = updatedFeature;
+
+    // Sync directly to the map without triggering React re-renders
+    syncDrawingToMap();
+
+    // Throttled update of React state for UI alerts
+    updateFeaturesThrottled(updatedFeature);
+  }, [mapDraw, syncDrawingToMap, updateFeaturesThrottled]);
 
   useEffect(() => {
     if (!mapLoaded) {
@@ -205,6 +242,8 @@ const BuildingsDataExtractionTool: React.FC = () => {
     mapDraw.changeMode('draw_polygon');
     setIsDrawing(true);
     setFeatures([]);
+    drawingFeatureRef.current = null;
+    syncDrawingToMap();
   };
 
   const exportSummary = async () => {
