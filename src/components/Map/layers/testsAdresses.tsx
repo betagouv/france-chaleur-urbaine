@@ -68,12 +68,8 @@ export const testsAdressesLayersSpec = [
         type: 'circle',
       },
     ],
-    source: {
-      maxzoom: 12,
-      tiles: [`/api/map/testsAdresses/{z}/{x}/{y}`],
-      type: 'vector',
-    },
-    sourceId: 'testsAdresses',
+    source: { maxzoom: 12 },
+    sourceId: 'tests-adresses',
   },
 ] as const satisfies readonly MapSourceLayersSpecification[];
 

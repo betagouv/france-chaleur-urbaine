@@ -2,7 +2,7 @@ import type { DataDrivenPropertyValueSpecification, ExpressionInputType } from '
 
 import { BdnbBatimentPopup, bdnbBatimentsTilesSource } from '@/components/Map/layers/bdnb/common';
 import { intermediateTileLayersMinZoom } from '@/modules/tiles/constants';
-import type { BdnbBatimentTile } from '@/modules/tiles/server/generation-config';
+import type { BdnbBatimentTile } from '@/modules/tiles/server/tiles.config';
 import { deepMergeObjects } from '@/utils/core';
 import { ObjectEntries } from '@/utils/typescript';
 
@@ -130,7 +130,7 @@ export const typeChauffageBatimentsCollectifsLayersSpec = [
       }),
     ],
     source: bdnbBatimentsTilesSource,
-    sourceId: 'bdnbBatiments',
+    sourceId: 'bdnb-batiments',
   },
 ] as const satisfies readonly MapSourceLayersSpecification[];
 

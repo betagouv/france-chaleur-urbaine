@@ -9,7 +9,7 @@ export const enrrMobilisablesFrichesLayersSpec = [
   {
     layers: [
       {
-        id: 'enrrMobilisables-friches',
+        id: 'enrr-mobilisables-friches',
         isVisible: (config) => config.enrrMobilisablesSolaireThermique.show && config.enrrMobilisablesSolaireThermique.showFriches,
         paint: {
           'fill-color': ifHoverElse(darken(enrrMobilisablesFrichesLayerColor, 30), enrrMobilisablesFrichesLayerColor),
@@ -29,12 +29,8 @@ export const enrrMobilisablesFrichesLayersSpec = [
         unselectable: true,
       },
     ],
-    source: {
-      promoteId: 'GmlID',
-      tiles: ['/api/map/enrrMobilisables-friches/{z}/{x}/{y}'],
-      type: 'vector',
-    },
-    sourceId: 'enrrMobilisables-friches',
+    source: { promoteId: 'GmlID' },
+    sourceId: 'enrr-mobilisables-friches',
   },
 ] as const satisfies readonly MapSourceLayersSpecification[];
 

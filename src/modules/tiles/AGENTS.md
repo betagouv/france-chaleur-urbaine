@@ -44,6 +44,7 @@ type TilesGenerationConfig = {
 ### Stratégies de génération
 
 - **`extractGeoJSONFromDatabaseTable`** : Depuis une table PostgreSQL
+- **`extractNDJSONFromDatabaseTable`** : Extraction optimisée pour grosses tables
 - **`downloadGeoJSONFromURL`** : Depuis une API/URL
 - **`extractZippedShapefileToGeoJSON`** : Depuis un shapefile zippé
 - **`generateGeoJSONFromSQLQuery`** : Requête SQL personnalisée

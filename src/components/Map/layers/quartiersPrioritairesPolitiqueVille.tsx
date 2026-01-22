@@ -12,7 +12,7 @@ export const quartiersPrioritairesPolitiqueVilleLayersSpec = [
   {
     layers: [
       {
-        id: 'quartiersPrioritairesPolitiqueVille2015anru',
+        id: 'quartiers-prioritaires-politique-ville-2015-anru',
         isVisible: (config) => config.quartiersPrioritairesPolitiqueVille.show && config.quartiersPrioritairesPolitiqueVille.qpv2015anru,
         paint: {
           'fill-color': ifHoverElse(
@@ -35,17 +35,13 @@ export const quartiersPrioritairesPolitiqueVilleLayersSpec = [
         unselectable: true,
       },
     ],
-    source: {
-      maxzoom: 14,
-      tiles: ['/api/map/quartiersPrioritairesPolitiqueVille2015anru/{z}/{x}/{y}'],
-      type: 'vector',
-    },
-    sourceId: 'quartiersPrioritairesPolitiqueVille2015anru',
+    source: { maxzoom: 14 },
+    sourceId: 'quartiers-prioritaires-politique-ville-2015-anru',
   },
   {
     layers: [
       {
-        id: 'quartiersPrioritairesPolitiqueVille2024',
+        id: 'quartiers-prioritaires-politique-ville-2024',
         isVisible: (config) => config.quartiersPrioritairesPolitiqueVille.show && config.quartiersPrioritairesPolitiqueVille.qpv2024,
         paint: {
           'fill-color': ifHoverElse(darken(quartiersPrioritairesPolitiqueVille2024Color, 40), quartiersPrioritairesPolitiqueVille2024Color),
@@ -65,12 +61,8 @@ export const quartiersPrioritairesPolitiqueVilleLayersSpec = [
         unselectable: true,
       },
     ],
-    source: {
-      maxzoom: 14,
-      tiles: ['/api/map/quartiersPrioritairesPolitiqueVille2024/{z}/{x}/{y}'],
-      type: 'vector',
-    },
-    sourceId: 'quartiersPrioritairesPolitiqueVille2024',
+    source: { maxzoom: 14 },
+    sourceId: 'quartiers-prioritaires-politique-ville-2024',
   },
 ] as const satisfies readonly MapSourceLayersSpecification[];
 

@@ -1,6 +1,6 @@
 import Accordion from '@/components/ui/Accordion';
 import Button from '@/components/ui/Button';
-import type { ReseauxDeFroidTile } from '@/modules/tiles/server/generation-config';
+import type { ReseauxDeFroidTile } from '@/modules/tiles/server/tiles.config';
 import { isDefined } from '@/utils/core';
 import { prettyFormatNumber } from '@/utils/strings';
 
@@ -87,11 +87,7 @@ export const reseauxDeFroidLayersSpec = [
         type: 'circle',
       },
     ],
-    source: {
-      maxzoom: 14,
-      tiles: ['/api/map/reseauxDeFroid/{z}/{x}/{y}'],
-      type: 'vector',
-    },
-    sourceId: 'reseauxDeFroid',
+    source: { maxzoom: 14 },
+    sourceId: 'reseaux-de-froid',
   },
 ] as const satisfies readonly MapSourceLayersSpecification[];

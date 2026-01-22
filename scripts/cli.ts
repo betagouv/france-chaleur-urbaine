@@ -23,7 +23,6 @@ import { downloadNetwork } from '@/modules/reseaux/server/download-network';
 import { applyGeometryUpdates } from '@/modules/reseaux/server/geometry-updates';
 import { syncPostgresToAirtable } from '@/modules/reseaux/server/sync-pg-to-airtable';
 import { registerTilesCommands } from '@/modules/tiles/commands';
-import { type DatabaseSourceId, tilesInfo } from '@/modules/tiles/tiles.config';
 import { getApiHandler } from '@/server/api/users';
 import { serverConfig } from '@/server/config';
 import { saveStatsInDB } from '@/server/cron/saveStatsInDB';
@@ -542,16 +541,4 @@ function validateKnownAirtableBase(value: string): KnownAirtableBase {
     throw new InvalidArgumentError(`invalid base "${value}", expected any of ${Object.keys(knownAirtableBases)}.`);
   }
   return value as KnownAirtableBase;
-}
-
-function validateNetworkId(value: string): DatabaseSourceId {
-  const tileInfo = tilesInfo[value as DatabaseSourceId];
-  if (!tileInfo || !(tileInfo as any).airtable) {
-    throw new InvalidArgumentError(
-      `invalid network id "${value}", expected any of ${Object.keys(
-        tilesInfo // minus .airtable property
-      )}.`
-    );
-  }
-  return value as DatabaseSourceId;
 }

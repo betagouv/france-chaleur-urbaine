@@ -55,6 +55,8 @@ fileignoreconfig:
   checksum: ce24c239f7ded12411bc26d68dee01a10be5878b092415b3ee30a9094591ee5d
 - filename: src/modules/tiles/server/generation-config.ts
   checksum: 1e868451ec93db7743e0604aa9be6390275f1850f411d4145b46e86e6d0ff224
+- filename: src/modules/tiles/server/tiles.config.ts
+  checksum: 865dc82cfcca69d7bbe59f1db165297e424ca50b98d524152222d1fce334c75b
 - filename: src/modules/tiles/tiles.config.ts
   checksum: 89f40d731f653c30750c61467b1d4727965805280e2d2888dd0cc29e8accf6cf
 - filename: src/pages/api/stats.ts

@@ -17,7 +17,7 @@ export const communesFortPotentielPourCreationReseauxChaleurLayersSpec = [
           ['>=', ['get', 'population'], config.communesFortPotentielPourCreationReseauxChaleur.population[0]],
           ['<=', ['get', 'population'], config.communesFortPotentielPourCreationReseauxChaleur.population[1]],
         ],
-        id: 'communesFortPotentielPourCreationReseauxChaleur',
+        id: 'communes-fort-potentiel-pour-creation-reseaux-chaleur',
         isVisible: (config) => config.communesFortPotentielPourCreationReseauxChaleur.show,
         layout: {
           'circle-sort-key': ['-', ['get', 'population']],
@@ -42,10 +42,8 @@ export const communesFortPotentielPourCreationReseauxChaleurLayersSpec = [
     source: {
       maxzoom: 6,
       minzoom: 5,
-      tiles: ['/api/map/communesFortPotentielPourCreationReseauxChaleur/{z}/{x}/{y}'],
-      type: 'vector',
     },
-    sourceId: 'communesFortPotentielPourCreationReseauxChaleur',
+    sourceId: 'communes-fort-potentiel-pour-creation-reseaux-chaleur',
   },
 ] as const satisfies readonly MapSourceLayersSpecification[];
 

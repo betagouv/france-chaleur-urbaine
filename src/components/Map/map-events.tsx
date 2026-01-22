@@ -12,9 +12,9 @@ import { type MapMouseEvent, type MapRef, Popup } from 'react-map-gl/maplibre';
 
 import { isDevModeEnabled } from '@/hooks/useDevMode';
 import { useAuthentication } from '@/modules/auth/client/hooks';
-import type { SourceId } from '@/modules/tiles/tiles.config';
 import { isDefined } from '@/utils/core';
 
+import type { SourceId } from './layers/common';
 import { buildPopupStyleHelpers, mapEventBus, type PopupContext } from './layers/common';
 import { type MapLayerSpecification, mapLayers } from './map-layers';
 

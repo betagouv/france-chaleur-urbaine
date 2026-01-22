@@ -3,22 +3,20 @@ import { sql, type Transaction } from 'kysely';
 import vtpbf from 'vt-pbf';
 
 import type { ApplyGeometriesUpdatesInput } from '@/modules/reseaux/constants';
-import { type BuildTilesInput, tileSourcesMaxZoom } from '@/modules/tiles/constants';
-import { type DatabaseSourceId, tilesInfo } from '@/modules/tiles/tiles.config';
+import type { BuildTilesInput } from '@/modules/tiles/constants';
+import { type CacheTileSourceId, type TileSourceId, tileSourcesConfig } from '@/modules/tiles/server/tiles.config';
 import { type DB, kdb } from '@/server/db/kysely';
 import type { ApiContext } from '@/server/db/kysely/base-model';
+import { parentLogger } from '@/server/helpers/logger';
+import { ObjectEntries } from '@/utils/typescript';
 
-const debug = !!(process.env.API_DEBUG_MODE || null);
-
-let tilesCached = 0;
-const cachedTiles: Partial<Record<DatabaseSourceId, any>> = Object.entries(tilesInfo)
-  .filter(([_, tileInfo]) => tileInfo.source === 'database' && !!tileInfo.cache)
-  .reduce((acc, [type]) => ({ ...acc, [type as DatabaseSourceId]: null }), {} as Partial<Record<DatabaseSourceId, any>>);
+let tilesCacheDay = 0;
+const cachedTilesIndex: Partial<Record<CacheTileSourceId, any>> = {};
 
 export const createBuildTilesJob = async (
   { name }: BuildTilesInput,
   context?: ApiContext,
-  options?: { trx?: Transaction<DB>; replace?: boolean }
+  options?: { replace?: boolean; trx?: Transaction<DB> }
 ) => {
   if (options?.replace) {
     await (options?.trx || kdb)
@@ -69,94 +67,102 @@ export const createSyncMetadataFromAirtableJob = async ({ name }: ApplyGeometrie
     .executeTakeFirstOrThrow();
 };
 
-const tilesMapping = [
-  { internalName: 'reseaux-de-chaleur', tileName: 'reseauxDeChaleur' },
-  { internalName: 'reseaux-de-froid', tileName: 'reseauxDeFroid' },
-  { internalName: 'reseaux-en-construction', tileName: 'reseauxEnConstruction' },
-] as const;
-
-export const getTileNameFromInternalName = (internalName: string) => {
-  return tilesMapping.find((item) => item.internalName === internalName)?.tileName;
-};
-
+/**
+ * Peuple le cache des tuiles pour les sources avec cache dynamique.
+ * Le cache est rafraîchi chaque jour.
+ */
 export const populateTilesCache = () => {
-  tilesCached = new Date().getDate();
+  tilesCacheDay = new Date().getDate();
   Promise.all(
-    Object.entries(tilesInfo)
-      .filter(([_, tileInfo]) => !!tileInfo.cache)
-      .map(async ([type, tileInfo]) => {
-        const timerLabel = `⏱️  Indexing tiles for ${type} sourceLayer ${tileInfo.sourceLayer}`;
-        if (debug) {
-          console.info(`${timerLabel}...`);
-          console.time(timerLabel);
-        }
-        try {
-          const features = await tileInfo.cache?.(tileInfo.properties ?? []);
+    ObjectEntries(tileSourcesConfig).map(async ([sourceId, config]) => {
+      if (!('cache' in config)) return;
 
-          if (!features) {
-            throw new Error(`No features found for ${type} sourceLayer ${tileInfo.sourceLayer}`);
-          }
+      const logger = parentLogger.child({ sourceId });
+      const startTime = Date.now();
 
-          cachedTiles[type as DatabaseSourceId] = geojsonvt(
-            {
-              features: (features as any) ?? [],
-              type: 'FeatureCollection',
-            },
-            {
-              maxZoom: tileSourcesMaxZoom,
-            }
-          );
-          if (debug) {
-            console.timeEnd(timerLabel);
-          }
-        } catch (e) {
-          if (debug) {
-            console.timeEnd(timerLabel);
-            console.error(`${timerLabel} failed`, e);
-          }
+      logger.info('indexing tiles for source');
+
+      try {
+        const features = await config.cache(config.properties);
+
+        if (!features) {
+          throw new Error(`No features found for ${sourceId}`);
         }
-      })
+
+        cachedTilesIndex[sourceId as CacheTileSourceId] = geojsonvt(
+          {
+            features: features as GeoJSON.Feature<GeoJSON.Point>[],
+            type: 'FeatureCollection',
+          },
+          {
+            maxZoom: 15,
+          }
+        );
+
+        const duration = Date.now() - startTime;
+        logger.info('tiles indexed successfully', { duration });
+      } catch (error) {
+        const duration = Date.now() - startTime;
+        logger.error('failed to index tiles', { duration, error });
+      }
+    })
   );
 };
 
+/**
+ * Récupère une tuile vectorielle pour une source donnée.
+ *
+ * @param sourceId - Identifiant de la source de tuiles
+ * @param x - Coordonnée X de la tuile
+ * @param y - Coordonnée Y de la tuile
+ * @param z - Niveau de zoom
+ * @returns Les données de la tuile et si elles sont compressées, ou null si non trouvée
+ */
 export const getTile = async (
-  type: DatabaseSourceId,
+  sourceId: TileSourceId,
   x: number,
   y: number,
   z: number
-): Promise<{ data: any; compressed: boolean } | null> => {
-  const tileInfo = tilesInfo[type];
-  if (tileInfo.source === 'database') {
+): Promise<{ compressed: boolean; data: Buffer } | null> => {
+  const config = tileSourcesConfig[sourceId];
+
+  // Source servie depuis la base de données
+  if ('tilesTableName' in config) {
     const result = await kdb
-      .selectFrom(tileInfo.tiles as any)
+      .selectFrom(config.tilesTableName)
       .select('tile')
-      .where((eb) =>
-        eb.and({
-          x,
-          y,
-          z,
-        })
-      )
+      .where((eb: any) => eb.and({ x, y, z }))
       .executeTakeFirst();
 
-    return result?.tile ? { compressed: !!tileInfo.compressedTiles, data: result?.tile } : null;
+    return result?.tile
+      ? {
+          compressed: !('compressedTiles' in config && config.compressedTiles === false),
+          data: result.tile,
+        }
+      : null;
   }
 
-  if (tilesCached !== new Date().getDate()) {
-    populateTilesCache();
+  // Source avec cache dynamique
+  if ('cache' in config) {
+    // Rafraîchir le cache si on a changé de jour
+    if (tilesCacheDay !== new Date().getDate()) {
+      populateTilesCache();
+    }
+
+    const tileIndex = cachedTilesIndex[sourceId as CacheTileSourceId];
+    if (!tileIndex) {
+      return null;
+    }
+
+    const tile = tileIndex.getTile(z, x, y);
+
+    return tile
+      ? {
+          compressed: false,
+          data: Buffer.from(vtpbf.fromGeojsonVt({ layer: tile }, { version: 2 })),
+        }
+      : null;
   }
 
-  const tiles = cachedTiles[type];
-  if (!tiles) {
-    return null;
-  }
-
-  const tile = tiles.getTile(z, x, y);
-
-  return tile
-    ? {
-        compressed: false,
-        data: Buffer.from(vtpbf.fromGeojsonVt({ layer: tile }, { version: 2 })),
-      }
-    : null;
+  return null;
 };

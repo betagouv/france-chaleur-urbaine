@@ -87,12 +87,8 @@ export const enrrMobilisablesChaleurFataleLayersSpec = [
     // we know the kind of one feature using the GmlID (e.g. datacenter.1)
     // we have 5 layers, one for each kind of features to simplify show/hide code
     layers: layersConf.flatMap((conf) => buildLayerAndHoverLayer(conf)),
-    source: {
-      promoteId: 'GmlID',
-      tiles: ['/api/map/enrrMobilisables/{z}/{x}/{y}'],
-      type: 'vector',
-    },
-    sourceId: 'enrrMobilisables',
+    source: { promoteId: 'GmlID' },
+    sourceId: 'enrr-mobilisables',
   },
 ] as const satisfies readonly MapSourceLayersSpecification[];
 

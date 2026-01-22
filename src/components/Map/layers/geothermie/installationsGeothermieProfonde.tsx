@@ -46,7 +46,7 @@ export const installationsGeothermieProfondeLayersSpec = [
   {
     layers: [
       {
-        id: 'installationsGeothermieProfonde',
+        id: 'installations-geothermie-profonde',
         isVisible: (config) => config.geothermieProfonde.show && config.geothermieProfonde.showInstallations,
         paint: {
           'circle-color': installationsGeothermieProfondeLayerColor,
@@ -61,10 +61,8 @@ export const installationsGeothermieProfondeLayersSpec = [
       maxzoom: 6,
       minzoom: 5,
       promoteId: 'gid',
-      tiles: ['/api/map/installationsGeothermieProfonde/{z}/{x}/{y}'],
-      type: 'vector',
     },
-    sourceId: 'installationsGeothermieProfonde',
+    sourceId: 'installations-geothermie-profonde',
   },
 ] as const satisfies readonly MapSourceLayersSpecification[];
 

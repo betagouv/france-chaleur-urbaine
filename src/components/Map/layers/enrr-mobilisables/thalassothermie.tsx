@@ -9,7 +9,7 @@ export const enrrMobilisablesThalassothermieLayersSpec = [
   {
     layers: [
       {
-        id: 'enrrMobilisables-thalassothermie',
+        id: 'enrr-mobilisables-thalassothermie',
         isVisible: (config) => config.enrrMobilisablesThalassothermie,
         paint: {
           'fill-color': ifHoverElse(darken(enrrMobilisablesThalassothermieLayerColor, 30), enrrMobilisablesThalassothermieLayerColor),
@@ -22,10 +22,8 @@ export const enrrMobilisablesThalassothermieLayersSpec = [
     source: {
       maxzoom: 12,
       minzoom: 5,
-      tiles: ['/api/map/enrrMobilisables-thalassothermie/{z}/{x}/{y}'],
-      type: 'vector',
     },
-    sourceId: 'enrrMobilisables-thalassothermie',
+    sourceId: 'enrr-mobilisables-thalassothermie',
   },
 ] as const satisfies readonly MapSourceLayersSpecification[];
 

@@ -1,4 +1,4 @@
-import type { DataDrivenPropertyValueSpecification, SourceSpecification } from 'maplibre-gl';
+import type { DataDrivenPropertyValueSpecification, GeoJSONSourceSpecification, VectorSourceSpecification } from 'maplibre-gl';
 import { type ComponentProps, isValidElement, type PropsWithChildren } from 'react';
 
 import type { MapLayerSpecification } from '@/components/Map/map-layers';
@@ -7,10 +7,22 @@ import Button from '@/components/ui/Button';
 import Heading from '@/components/ui/Heading';
 import Tooltip from '@/components/ui/Tooltip';
 import type { useAuthentication } from '@/modules/auth/client/hooks';
-import type { SourceId } from '@/modules/tiles/tiles.config';
+import type { TileSourceId } from '@/modules/tiles/server/tiles.config';
 import { isDefined } from '@/utils/core';
 import { createEventBus, createEventBusHook } from '@/utils/event-bus';
 import { prettyFormatNumber } from '@/utils/strings';
+
+export type InternalSourceId =
+  | 'distance-measurements-lines'
+  | 'distance-measurements-labels'
+  | 'linear-heat-density-lines'
+  | 'linear-heat-density-labels'
+  | 'buildings-data-extraction-polygons'
+  | 'adressesEligibles'
+  | 'customGeojson'
+  | 'geomUpdate';
+
+export type SourceId = TileSourceId | InternalSourceId;
 
 export type LayerSymbolSpecification = {
   key: string;
@@ -18,11 +30,20 @@ export type LayerSymbolSpecification = {
   sdf?: boolean; // Whether the image should be interpreted as an SDF image (= image we want to color)
 };
 
+/**
+ * Options for vector tile sources (tiles URL is auto-computed from sourceId).
+ */
+export type VectorSourceOptions = Omit<VectorSourceSpecification, 'tiles' | 'type'>;
+
+/**
+ * Layer specification with discriminated union for source type.
+ * - Vector sources (default): tiles URL is auto-computed from sourceId
+ * - GeoJSON sources: must specify type: 'geojson' explicitly
+ */
 export type MapSourceLayersSpecification = {
   sourceId: SourceId;
-  source: SourceSpecification;
   layers: MapLayerSpecification[];
-};
+} & ({ source?: VectorSourceOptions } | { source: GeoJSONSourceSpecification });
 
 export type ColorThreshold = {
   value: number;

@@ -4,7 +4,7 @@ import { join } from 'node:path';
 
 import { knownAirtableBases } from '@cli/airtable/bases';
 
-import { generateTilesFromGeoJSONDockerLegacy, runTippecanoe } from '@/modules/tiles/server/generation-import';
+import { generateTilesFromGeoJSON, runTippecanoe } from '@/modules/tiles/server/generation-import';
 import { serverConfig } from '@/server/config';
 import { createLogger } from '@/server/helpers/logger';
 import { stringifySorted } from '@/utils/objects';
@@ -38,7 +38,6 @@ async function checkGeoCommands() {
       functional: tippecanoeFunctional,
       version: tippecanoeVersion,
     },
-    USE_DOCKER_GEO_COMMANDS: serverConfig.USE_DOCKER_GEO_COMMANDS,
   };
 }
 
@@ -118,7 +117,7 @@ async function testTippecanoeFunctional(): Promise<CommandTestResult> {
 
     await writeFile(inputFile, JSON.stringify(testGeoJSON));
 
-    await generateTilesFromGeoJSONDockerLegacy({
+    await generateTilesFromGeoJSON({
       geojsonConfig: inputFile,
       outputDirectory: outputDir,
       zoomMax: 6, // Limité pour le test

@@ -2,7 +2,6 @@ import type { Record } from 'airtable';
 import type { FieldSet } from 'airtable/lib/field_set';
 
 import { type AirtableSynchronizableNetworkTable, airtableSynchronizableNetworkTableConfig } from '@/modules/reseaux/constants';
-import type { DatabaseSourceId } from '@/modules/tiles/tiles.config';
 import { AirtableDB } from '@/server/db/airtable';
 import { kdb } from '@/server/db/kysely';
 import { parentLogger } from '@/server/helpers/logger';
@@ -189,11 +188,11 @@ export const downloadNetwork = async (table: AirtableSynchronizableNetworkTable)
  * Convertit un réseau Airtable au format Postgres.
  * Les noms de colonne sont identiques, seuls les types sont corrigés et nettoyés.
  */
-function convertEntityFromAirtableToPostgres(type: DatabaseSourceId, airtableNetwork: Record<FieldSet>) {
+function convertEntityFromAirtableToPostgres(type: AirtableSynchronizableNetworkTable, airtableNetwork: Record<FieldSet>) {
   const conversionConfig =
-    type === 'reseauxDeChaleur'
+    type === 'reseaux-de-chaleur'
       ? conversionConfigReseauxDeChaleur
-      : type === 'reseauxDeFroid'
+      : type === 'reseaux-de-froid'
         ? conversionConfigReseauxDeFroid
         : conversionConfigReseauxEnConstruction;
 

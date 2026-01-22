@@ -23,11 +23,7 @@ export const demandesEligibiliteLayersSpec = [
         type: 'circle',
       },
     ],
-    source: {
-      promoteId: 'id',
-      tiles: [`/api/map/demands/{z}/{x}/{y}`],
-      type: 'vector',
-    },
+    source: { promoteId: 'id' },
     sourceId: 'demands',
   },
 ] as const satisfies readonly MapSourceLayersSpecification[];

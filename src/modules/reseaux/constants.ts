@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import type { DatabaseSourceId } from '@/modules/tiles/tiles.config';
+import type { DatabaseTileSourceId } from '@/modules/tiles/server/tiles.config';
 import type { DBTableName } from '@/server/db/kysely';
 import { Airtable } from '@/types/enum/Airtable';
 import { defineSubsetConfig, ObjectKeys } from '@/utils/typescript';
@@ -101,16 +101,19 @@ export const gestionnairesFilters = [
   { label: 'Autre', value: 'autre' },
 ];
 
-export const airtableSynchronizableNetworkTableConfig = defineSubsetConfig<DatabaseSourceId, { airtable: Airtable; table: DBTableName }>()({
-  reseauxDeChaleur: {
+export const airtableSynchronizableNetworkTableConfig = defineSubsetConfig<
+  DatabaseTileSourceId,
+  { airtable: Airtable; table: DBTableName }
+>()({
+  'reseaux-de-chaleur': {
     airtable: Airtable.NETWORKS,
     table: 'reseaux_de_chaleur',
   },
-  reseauxDeFroid: {
+  'reseaux-de-froid': {
     airtable: Airtable.COLD_NETWORKS,
     table: 'reseaux_de_froid',
   },
-  reseauxEnConstruction: {
+  'reseaux-en-construction': {
     airtable: Airtable.FUTUR_NETWORKS,
     table: 'zones_et_reseaux_en_construction',
   },
