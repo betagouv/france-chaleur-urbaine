@@ -172,7 +172,7 @@ export const tilesConfigs = {
   'ressources-geothermales-nappes': defineTilesConfig({
     // Source : https://drive.google.com/file/d/1w4lLWQCW1nMoRuIyZvVO5dMLMELo-YD3/view?usp=drive_link
     generateGeoJSON: extractZippedShapefileToGeoJSON,
-    tilesTableName: 'zone_a_urbaniser_tiles',
+    tilesTableName: 'ressources_geothermales_nappes_tiles',
     zoomMax: 12,
   }),
   'tests-adresses': defineTilesConfig({
