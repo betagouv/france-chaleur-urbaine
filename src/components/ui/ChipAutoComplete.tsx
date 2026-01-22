@@ -259,7 +259,7 @@ const ChipAutoComplete = (rawProps: ChipAutoCompleteProps) => {
     <div className="block relative w-full" onClick={stopPropagation} onDoubleClick={stopPropagation}>
       <div className="absolute top-0.5 right-0.5 z-10 flex gap-1">
         {/* visual indicator that the value is suggested */}
-        {valueExternal === null ? (
+        {valueExternal === null || arrayEquals(valueExternalArray, props.suggestedValue as string[]) ? (
           <Tooltip title="Valeur suggérée automatiquement">
             <Icon name="fr-icon-sparkling-2-line" size="xs" color="info" className="p-0.5 cursor-help" />
           </Tooltip>
