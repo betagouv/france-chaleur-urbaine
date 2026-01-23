@@ -97,6 +97,7 @@ export const getNetwork = async (id: string): Promise<Network> => {
       'informationsComplementaires',
       'fichiers',
       'region',
+      'ouvert_aux_raccordements',
     ])
     .where('Identifiant reseau', '=', id)
     .executeTakeFirst();
