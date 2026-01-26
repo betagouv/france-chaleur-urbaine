@@ -2,8 +2,9 @@ import Tag from '@codegouvfr/react-dsfr/Tag';
 import type { ColumnFiltersState } from '@tanstack/react-table';
 import dayjs from 'dayjs';
 import NextLink from 'next/link';
-import { type ReactNode, useMemo } from 'react';
+import { type ChangeEvent, type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 
+import TextAreaInput from '@/components/form/dsfr/TextArea';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Button from '@/components/ui/Button';
 import { useCopy } from '@/components/ui/ButtonCopy';
@@ -18,6 +19,7 @@ import { tagsGestionnairesStyleByType } from '@/modules/tags/constants';
 import trpc from '@/modules/trpc/client';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
+import debounce from '@/utils/debounce';
 import { objectToURLSearchParams } from '@/utils/network';
 import { compareFrenchStrings } from '@/utils/strings';
 
@@ -45,6 +47,12 @@ export default function DemandsStatsPage() {
     onSuccess: () => {
       void utils.demands.admin.getTagsStats.invalidate();
       notify('success', 'Date de relance supprimée');
+    },
+  });
+
+  const { mutateAsync: updateComment } = trpc.tags.admin.updateComment.useMutation({
+    onError: (error) => {
+      notify('error', `Erreur lors de la mise à jour du commentaire : ${error.message}`);
     },
   });
 
@@ -308,8 +316,25 @@ export default function DemandsStatsPage() {
         id: 'reminder_date',
         width: '100px',
       },
+      {
+        accessorKey: 'comment',
+        cell: ({ row }) => (
+          <TagCommentCell
+            initialComment={row.original.comment ?? ''}
+            onSave={async (comment) => {
+              await updateComment({
+                comment: comment.trim() ? comment : null,
+                tagId: row.original.id,
+              });
+            }}
+          />
+        ),
+        enableSorting: false,
+        header: 'Commentaires',
+        width: '280px',
+      },
     ],
-    [createReminder, deleteReminder]
+    [createReminder, deleteReminder, updateComment]
   );
 
   return (
@@ -375,6 +400,33 @@ const DemandStatColumnHeader = ({ children }: { children: ReactNode }) => {
     </span>
   );
 };
+
+function TagCommentCell({ initialComment, onSave }: { initialComment: string; onSave: (comment: string) => Promise<void> }) {
+  const [value, setValue] = useState<string>(initialComment);
+  const debouncedUpdateDemand = useMemo(() => debounce((value: string) => onSave(value), 500), [onSave]);
+
+  useEffect(() => () => debouncedUpdateDemand.cancel(), [debouncedUpdateDemand]);
+
+  const onChangeHandler = useCallback(
+    (e: ChangeEvent<HTMLTextAreaElement>) => {
+      const value = e.target.value;
+      setValue(value);
+      debouncedUpdateDemand(value);
+    },
+    [debouncedUpdateDemand]
+  );
+  return (
+    <TextAreaInput
+      label=""
+      size="sm"
+      className="w-full [&>textarea]:leading-4!"
+      nativeTextAreaProps={{
+        onChange: onChangeHandler,
+        value,
+      }}
+    />
+  );
+}
 
 const DemandStatsCell = ({
   pending,

@@ -17,6 +17,7 @@ export const eventTypes = [
   'sync_geometries_to_airtable',
   'tag_reminder_created',
   'tag_reminder_deleted',
+  'tag_comment_updated',
 ] as const;
 
 export type EventType = (typeof eventTypes)[number];

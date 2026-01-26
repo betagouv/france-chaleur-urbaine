@@ -938,6 +938,7 @@ export const getTagsStats = async () => {
       'id',
       'name',
       'type',
+      'comment',
 
       // Users
       sql<FrontendType<Selectable<Pick<Users, 'id' | 'email' | 'last_connection'>>>[]>`
