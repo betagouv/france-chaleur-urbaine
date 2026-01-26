@@ -9,6 +9,7 @@ import SimplePage from '@/components/shared/page/SimplePage';
 import Button from '@/components/ui/Button';
 import { useCopy } from '@/components/ui/ButtonCopy';
 import CallOut from '@/components/ui/CallOut';
+import Dialog from '@/components/ui/Dialog';
 import Heading from '@/components/ui/Heading';
 import Icon from '@/components/ui/Icon';
 import TimeAgo from '@/components/ui/TimeAgo';
@@ -329,6 +330,7 @@ export default function DemandsStatsPage() {
             }}
           />
         ),
+        className: 'justify-between',
         enableSorting: false,
         header: 'Commentaires',
         width: '280px',
@@ -404,6 +406,7 @@ const DemandStatColumnHeader = ({ children }: { children: ReactNode }) => {
 function TagCommentCell({ initialComment, onSave }: { initialComment: string; onSave: (comment: string) => Promise<void> }) {
   const [value, setValue] = useState<string>(initialComment);
   const debouncedUpdateDemand = useMemo(() => debounce((value: string) => onSave(value), 500), [onSave]);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   useEffect(() => () => debouncedUpdateDemand.cancel(), [debouncedUpdateDemand]);
 
@@ -416,15 +419,21 @@ function TagCommentCell({ initialComment, onSave }: { initialComment: string; on
     [debouncedUpdateDemand]
   );
   return (
-    <TextAreaInput
-      label=""
-      size="sm"
-      className="w-full [&>textarea]:leading-4!"
-      nativeTextAreaProps={{
-        onChange: onChangeHandler,
-        value,
-      }}
-    />
+    <>
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen} title="Commentaire" size="lg">
+        <TextAreaInput
+          label=""
+          className="w-full [&>textarea]:leading-4!"
+          nativeTextAreaProps={{
+            onChange: onChangeHandler,
+            rows: 20,
+            value,
+          }}
+        />
+      </Dialog>
+      <div className="whitespace-pre-wrap">{value.length > 150 ? `${value.slice(0, 150)}...` : value}</div>
+      <Button priority="tertiary" iconId="fr-icon-pencil-line" onClick={() => setIsDialogOpen(true)} />
+    </>
   );
 }
 
