@@ -165,8 +165,10 @@ export const update = async (recordId: string, { comment_fcu, comment_gestionnai
   if (
     values['Affecté à'] &&
     currentDemand?.legacy_values['Gestionnaire Affecté à'] &&
-    values['Affecté à'] !== currentDemand?.legacy_values['Affecté à'] &&
-    values['Affecté à'] === oldAssignment
+    typeof currentDemand?.legacy_values['Affecté à'] === 'string' &&
+    typeof values['Affecté à'] === 'string' &&
+    values['Affecté à'].toLowerCase() !== currentDemand?.legacy_values['Affecté à'].toLowerCase() &&
+    values['Affecté à'].toLowerCase() === oldAssignment?.toLowerCase()
   ) {
     // Affectation a changé, on reset le gestionnaire affecté à
     values['Gestionnaire Affecté à'] = null as any;
