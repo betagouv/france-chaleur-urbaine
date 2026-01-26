@@ -439,7 +439,7 @@ function DemandesAdmin(): React.ReactElement {
                     'Gestionnaire Affecté à':
                       demand['Gestionnaire Affecté à'] &&
                       demand['Gestionnaire Affecté à'].toLowerCase() !== demand['Affecté à'].toLowerCase() &&
-                      demand['Gestionnaire Affecté à'].toLowerCase() === value.toLowerCase()
+                      demand['Gestionnaire Affecté à'].toLowerCase() === value?.toLowerCase()
                         ? ''
                         : demand['Gestionnaire Affecté à'],
                   })
