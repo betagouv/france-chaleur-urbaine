@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import type { ReactNode } from 'react';
 import styled, { css } from 'styled-components';
 
 import { legacyColors } from '@/components/ui/helpers/colors';
@@ -292,46 +293,29 @@ export const CountItem = ({ number, children }: { number: number; children: stri
   </div>
 );
 
-export const ArrowPuce = styled.div`
-  ${CheckItemFCU}
-  align-items: flex-start;
-  strong {
-    font-weight: 900;
-    font-size: 16px;
-    line-height: 24px;
-  }
-
-  &::before {
-    margin-bottom: 0;
-    font-size: 24px;
-    margin-top: -10px;
-    background-image: url('/icons/picto-arrow.svg');
-  }
+export const ArrowPuce = styled.span.attrs(() => ({
+  'aria-hidden': 'true',
+  className: 'fr-icon-arrow-right-circle-fill',
+}))`
+  color: var(--text-label-blue-france);
 `;
 
 export const WhiteArrowPuce = styled(ArrowPuce)`
   color: white;
-  em {
-    font-size: 16px;
-    line-height: 24px;
-    color: black !important;
-    background-color: #f8d86e;
-  }
-  &::before {
-    background-image: url('/icons/picto-white-arrow.svg');
-  }
 `;
 
-export const ArrowItem = ({ children }: { children: string }) => (
-  <ArrowPuce>
+export const ArrowItem = ({ children }: { children: ReactNode }) => (
+  <div className="flex gap-2 fr-mb-2w">
+    <ArrowPuce />
     <div>{children}</div>
-  </ArrowPuce>
+  </div>
 );
 
-export const WhiteArrowItem = ({ children }: { children: string }) => (
-  <WhiteArrowPuce>
+export const WhiteArrowItem = ({ children }: { children: ReactNode }) => (
+  <div className="flex gap-2 fr-mb-2w text-white">
+    <WhiteArrowPuce />
     <div>{children}</div>
-  </WhiteArrowPuce>
+  </div>
 );
 
 type PuceIconType = {

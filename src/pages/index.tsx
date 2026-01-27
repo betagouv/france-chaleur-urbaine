@@ -147,9 +147,7 @@ function Home() {
       <Section>
         <SectionTwoColumns>
           <div className="flex flex-col justify-between h-full flex-[2]!">
-            <Markdown color="#333" className="">
-              {benefits.join('\n')}
-            </Markdown>
+            <Markdown color="#333">{benefits.join('\n')}</Markdown>
             <div className="mt-8">
               <Link
                 variant="primary"
