@@ -42,12 +42,13 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
   const [contactFormLoading, setContactFormLoading] = useState(false);
   const [contactFormError, setContactFormError] = useState(false);
 
-  const { body, computedEligibility, text } = useMemo(() => {
+  const { title, body, computedEligibility, text } = useMemo(() => {
     if (!addressData.eligibility) {
       return {};
     }
 
     const {
+      title,
       body,
       eligibility: computedEligibility,
       text,
@@ -55,10 +56,13 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
 
     const addBordeauxLink =
       addressData.geoAddress?.properties.citycode && bordeauxMetropoleCityCodes.includes(addressData.geoAddress?.properties.citycode);
+
+    const distance = getReadableDistance(addressData.eligibility.distance);
+    const computedTitle = title ? title({ distance }) : '';
     const computedBody = body
       ? body({
           city: addressData.geoAddress?.properties.city,
-          distance: getReadableDistance(addressData.eligibility.distance),
+          distance,
           gestionnaire: addressData.eligibility.gestionnaire?.trim() || null,
           hasPDP: addressData.eligibility.hasPDP,
           inPDP: addressData.eligibility.inPDP,
@@ -76,6 +80,7 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
         : computedBody,
       computedEligibility,
       text,
+      title: computedTitle,
     };
   }, [addressData]);
 
@@ -142,7 +147,8 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
             {!cardMode ? (
               <>
                 <ContactFormResultMessage eligible={computedEligibility}>
-                  <MarkdownWrapper value={body} />
+                  <h2 className="fr-h6">{title}</h2>
+                  {body}
                 </ContactFormResultMessage>
                 <ContactMapResult>
                   <Map
