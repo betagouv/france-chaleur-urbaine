@@ -90,7 +90,7 @@ export const updateTagComment = async (tagId: string, comment: string | null, au
       updated_at: new Date(),
     })
     .where('id', '=', tagId)
-    .returning(['id', 'name', 'type', 'comment', 'updated_at'])
+    .returning(['name', 'comment'])
     .executeTakeFirstOrThrow();
 
   await createUserEvent({
@@ -103,8 +103,6 @@ export const updateTagComment = async (tagId: string, comment: string | null, au
     },
     type: 'tag_comment_updated',
   });
-
-  return updated;
 };
 
 /**
