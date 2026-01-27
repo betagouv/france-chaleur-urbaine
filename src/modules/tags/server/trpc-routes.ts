@@ -9,7 +9,7 @@ const zUpdateTagReminderInput = z.object({
 });
 
 const zUpdateTagCommentInput = z.object({
-  comment: z.string().nullable(),
+  comment: z.string().trim().nullable(),
   tagId: z.string(),
 });
 

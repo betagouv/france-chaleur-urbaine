@@ -86,7 +86,7 @@ export const updateTagComment = async (tagId: string, comment: string | null, au
   const updated = await kdb
     .updateTable('tags')
     .set({
-      comment: comment?.trim(),
+      comment,
       updated_at: new Date(),
     })
     .where('id', '=', tagId)
