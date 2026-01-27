@@ -640,7 +640,7 @@ export const FullyFeaturedMap = ({
   }
 
   const sourcesLink = ReactDOMServer.renderToString(
-    <Link href="/documentation/carto_sources.pdf" isExternal eventKey="Téléchargement|Carto sources">
+    <Link href="/donnees" isExternal eventKey="Téléchargement|Carto sources">
       Sources
     </Link>
   );
