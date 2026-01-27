@@ -110,7 +110,7 @@ const eventLabelRenderers: Record<EventType, (event: AdminEvent, updateFilters: 
   ),
   tag_comment_updated: (event, updateFilters) => (
     <>
-      <span>a ajouté un commentaire pour le tag</span>
+      <span>a mis à jour un commentaire pour le tag</span>
       <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'tag' })}>
         {(event.data as any)?.tag_name}
       </FilterButton>
