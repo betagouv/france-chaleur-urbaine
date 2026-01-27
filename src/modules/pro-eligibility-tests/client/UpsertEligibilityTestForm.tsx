@@ -35,7 +35,7 @@ const UpsertEligibilityTestForm = ({ testId, onComplete }: UpsertEligibilityTest
   const { form, Form, Field, Radio, Submit, FieldWrapper, Checkbox, useValue, Select } = useForm({
     defaultValues: {
       ...(isUpdate ? { id: testId } : { name: '' }),
-      columnMapping: {} as ColumnMapping,
+      columnMapping: undefined as ColumnMapping | undefined,
       content: '',
       dataType: 'address',
       hasHeaders: true,
@@ -102,10 +102,10 @@ const UpsertEligibilityTestForm = ({ testId, onComplete }: UpsertEligibilityTest
     [form, isUpdate]
   );
 
-  const hasHeaders = useValue('hasHeaders') as boolean;
-  const columnMapping = useValue('columnMapping') as ColumnMapping;
-  const dataType = useValue('dataType') as 'address' | 'coordinates';
-  const content = useValue('content') as string;
+  const hasHeaders = useValue<boolean>('hasHeaders');
+  const columnMapping = useValue<ColumnMapping>('columnMapping') ?? {};
+  const dataType = useValue<'address' | 'coordinates'>('dataType');
+  const content = useValue<string>('content');
 
   const getColumnLabel = (index: number): string =>
     hasHeaders && analysis?.headers[index] ? analysis?.headers[index] : String.fromCharCode(65 + index);
@@ -153,12 +153,6 @@ const UpsertEligibilityTestForm = ({ testId, onComplete }: UpsertEligibilityTest
       <div className="flex flex-col gap-4">
         {isUpdate && <Field.Input name="id" nativeInputProps={{ type: 'hidden' }} label="" />}
         <FieldWrapper>
-          {/* <Field.Custom
-            name="file"
-            Component={({ value, onChange, ...props }: any) => (
-
-            // TODO: uncomment this when we have a way to handle files
-            */}
           <Upload
             label="Choisissez un fichier .txt ou .csv (une adresse par ligne) :"
             hint="Si le fichier est un .csv, les colonnes seront découpées pour déduire l'adresse ou les coordonnées géographiques."
@@ -166,14 +160,11 @@ const UpsertEligibilityTestForm = ({ testId, onComplete }: UpsertEligibilityTest
               accept: allowedExtensions.join(','),
               onChange: async (e) => {
                 const file = e.target.files?.[0];
-                // onChange(file);
                 await handleFileChange(file);
               },
               required: true,
             }}
           />
-          {/* )}
-          /> */}
         </FieldWrapper>
         {analysis && (
           <FieldWrapper>
