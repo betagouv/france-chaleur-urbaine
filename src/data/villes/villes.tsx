@@ -1,4 +1,4 @@
-import { WhiteArrowItem } from '@/components/MarkdownWrapper/MarkdownWrapper.style';
+import { ArrowItem } from '@/components/MarkdownWrapper/MarkdownWrapper.style';
 import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
 
@@ -116,13 +116,13 @@ const citiesData: Record<City, CityData> = {
     dispositifs: [
       {
         description: (
-          <WhiteArrowItem>
+          <ArrowItem color="white">
             <Text>
               <strong>Bordeaux Métropole vous accompagne dans la rénovation énergétique de votre logement.</strong> Obtenez jusqu'à 50 %
               d'aides pour la réalisation du Diagnostic Technique Général de votre copropriété et d'une assistance à la maîtrise d'ouvrage
               jusqu'à la réception des travaux.
             </Text>
-          </WhiteArrowItem>
+          </ArrowItem>
         ),
         link: {
           href: 'https://marenov.bordeaux-metropole.fr/',
@@ -256,12 +256,12 @@ const citiesData: Record<City, CityData> = {
     dispositifs: [
       {
         description: (
-          <WhiteArrowItem>
+          <ArrowItem color="white">
             <Text>
               <strong>ECORENO’V est un service de la Métropole de Lyon</strong> pour conseiller et accompagner les projets d’éco-rénovation
               de l’habitat. Tous les porteurs de projets peuvent prendre contact avec l’ALEC Lyon, porte d’entrée du dispositif.
             </Text>
-          </WhiteArrowItem>
+          </ArrowItem>
         ),
         link: {
           href: 'https://www.alec-lyon.org/services/aides-et-accompagnements/ecorenov-service-aide-eco-renovation-des-logements/',
@@ -271,11 +271,11 @@ const citiesData: Record<City, CityData> = {
       },
       {
         description: (
-          <WhiteArrowItem>
+          <ArrowItem color="white">
             <Text>
               <strong>Certaines villes de la Métropole proposent des aides supplémentaires</strong>
             </Text>
-          </WhiteArrowItem>
+          </ArrowItem>
         ),
         link: {
           href: 'https://seafile.alte69.org/f/8cb90e13900c4d3fb299/',
@@ -405,18 +405,18 @@ const citiesData: Record<City, CityData> = {
       {
         description: (
           <>
-            <WhiteArrowItem>
+            <ArrowItem color="white">
               <Text>
                 Le Conseil de Paris a adopté le 1er barème de raccordement au réseau réduisant fortement les coûts de raccordement.
               </Text>
-            </WhiteArrowItem>
-            <WhiteArrowItem>
+            </ArrowItem>
+            <ArrowItem color="white">
               <Text>
                 Ce barème améliore fortement les conditions d’accès au réseau de chaleur parisien via une réduction très importante des
                 coûts de raccordements pour les bâtiment situés à proximité du réseau, mais aussi via un cadre clair, transparent et
                 prévisible pour le demandeur d’un raccordement.
               </Text>
-            </WhiteArrowItem>
+            </ArrowItem>
           </>
         ),
         link: {
@@ -429,18 +429,18 @@ const citiesData: Record<City, CityData> = {
       {
         description: (
           <>
-            <WhiteArrowItem>
+            <ArrowItem color="white">
               <Text>
                 L’application du barême est cumulable avec le coup de pouce chauffage des bâtiments résidentiels collectifs et tertiaires,
                 qui permet de réduire encore les coûts de raccordement.
               </Text>
-            </WhiteArrowItem>
-            <WhiteArrowItem>
+            </ArrowItem>
+            <ArrowItem color="white">
               <Text>
                 Sur Paris, un coût supplémentaire est à prévoir pour l’installation de la sous-station qui assure le transfert entre le
                 réseau de chaleur et les canalisations internes à l’immeuble.
               </Text>
-            </WhiteArrowItem>
+            </ArrowItem>
           </>
         ),
         img: {
@@ -511,12 +511,12 @@ const citiesData: Record<City, CityData> = {
     dispositifs: [
       {
         description: (
-          <WhiteArrowItem>
+          <ArrowItem color="white">
             <Text>
               Service public gratuit proposé par <strong>Rennes Métropole, écoTravo</strong> a pour objectif d’encourager la rénovation
               énergétique des maisons individuelles et des copropriétés du territoire.
             </Text>
-          </WhiteArrowItem>
+          </ArrowItem>
         ),
         link: {
           href: 'https://ecotravo.rennesmetropole.fr/',

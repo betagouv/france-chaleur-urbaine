@@ -293,27 +293,24 @@ export const CountItem = ({ number, children }: { number: number; children: stri
   </div>
 );
 
-export const ArrowPuce = styled.span.attrs(() => ({
+const ArrowPuce = styled.span.attrs(() => ({
   'aria-hidden': 'true',
   className: 'fr-icon-arrow-right-circle-fill',
-}))`
-  color: var(--text-label-blue-france);
+}))<{ $color?: 'default' | 'white' }>`
+  color: ${({ $color }) => ($color === 'white' ? 'white' : 'var(--text-label-blue-france)')};
 `;
 
-export const WhiteArrowPuce = styled(ArrowPuce)`
-  color: white;
-`;
-
-export const ArrowItem = ({ children }: { children: ReactNode }) => (
-  <div className="flex gap-2 fr-mb-2w">
-    <ArrowPuce />
-    <div>{children}</div>
-  </div>
-);
-
-export const WhiteArrowItem = ({ children }: { children: ReactNode }) => (
-  <div className="flex gap-2 fr-mb-2w text-white">
-    <WhiteArrowPuce />
+export const ArrowItem = ({
+  children,
+  color = 'default',
+  className,
+}: {
+  children: ReactNode;
+  color?: 'default' | 'white';
+  className?: string;
+}) => (
+  <div className={`flex gap-2 fr-my-3w ${color === 'white' ? 'text-white' : ''} ${className ?? ''}`}>
+    <ArrowPuce $color={color} />
     <div>{children}</div>
   </div>
 );
