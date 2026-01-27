@@ -169,7 +169,7 @@ export const update = async (recordId: string, { comment_fcu, comment_gestionnai
     values['Affecté à'] === oldAssignment
   ) {
     // Affectation a changé, on reset le gestionnaire affecté à
-    values['Gestionnaire Affecté à'] = null as any;
+    values['Gestionnaire Affecté à'] = null;
   }
 
   const [updatedDemand] = await kdb
