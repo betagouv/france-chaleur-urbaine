@@ -55,6 +55,9 @@ export default function DemandsStatsPage() {
     onError: (error) => {
       notify('error', `Erreur lors de la mise à jour du commentaire : ${error.message}`);
     },
+    onSuccess: () => {
+      void utils.demands.admin.getTagsStats.invalidate();
+    },
   });
 
   const tableColumns: ColumnDef<TagsStats>[] = useMemo(
