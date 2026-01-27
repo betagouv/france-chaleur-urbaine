@@ -1,4 +1,11 @@
-import type { FilterSpecification, LayerSpecification, Map, StyleSetterOptions, VectorSourceSpecification } from 'maplibre-gl';
+import type {
+  FilterSpecification,
+  GeoJSONSourceSpecification,
+  LayerSpecification,
+  Map,
+  StyleSetterOptions,
+  VectorSourceSpecification,
+} from 'maplibre-gl';
 
 import { clientConfig } from '@/client-config';
 import { customGeojsonLayersSpec } from '@/components/Map/layers/customGeojson';
@@ -184,29 +191,37 @@ interface FCUMap extends Map {
   setFilter(layerId: LayerId, filter?: FilterSpecification | null, options?: StyleSetterOptions): this;
 }
 
+function isGeoJSONSource(source: MapSourceLayersSpecification['source']): source is GeoJSONSourceSpecification {
+  return !!source && 'type' in source && source.type === 'geojson';
+}
+
 export function loadMapLayers(map: FCUMap, config: MapConfiguration) {
   mapLayers.forEach((spec) => {
     // sometimes the same source is used by multiple layers, so we need to add it only once
     if (!map.getSource(spec.sourceId)) {
-      map.addSource(spec.sourceId, {
-        ...spec.source,
-        ...(spec.source.type === 'vector'
-          ? {
-              maxzoom: (spec.source as VectorSourceSpecification).maxzoom ?? tileSourcesMaxZoom,
-              // prepend the website origin to the tiles as we need the full url for tiles
-              tiles: spec.source.tiles.map((url) => `${clientConfig.websiteUrl}${url}`),
-            }
-          : {}),
-      });
+      const isGeojson = isGeoJSONSource(spec.source);
+      if (isGeojson) {
+        map.addSource(spec.sourceId, spec.source);
+      } else {
+        // Vector source: auto-compute tiles URL from sourceId
+        const vectorSource = spec.source as VectorSourceSpecification | undefined;
+        map.addSource(spec.sourceId, {
+          ...vectorSource,
+          maxzoom: vectorSource?.maxzoom ?? tileSourcesMaxZoom,
+          tiles: [`${clientConfig.websiteUrl}/api/map/${spec.sourceId}/{z}/{x}/{y}`],
+          type: 'vector',
+        });
+      }
     }
 
+    const isGeojson = isGeoJSONSource(spec.source);
     spec.layers.forEach((layer) => {
       const filterFunc = (layer as MapLayerSpecification).filter;
       map.addLayer({
         source: spec.sourceId,
-        ...(spec.source.type === 'vector'
+        ...(!isGeojson
           ? {
-              'source-layer': 'layer', // default source layer name
+              'source-layer': 'layer', // default source layer name for vector tiles
             }
           : {}),
         ...layer,

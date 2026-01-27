@@ -32,7 +32,7 @@ export const besoinsEnChaleurIndustrieCommunesLayersSpec = [
   {
     layers: [
       {
-        id: 'besoinsEnChaleurIndustrieCommunes',
+        id: 'besoins-en-chaleur-industrie-communes',
         isVisible: (config) => config.besoinsEnChaleurIndustrieCommunes,
         paint: {
           'fill-color': [
@@ -60,10 +60,8 @@ export const besoinsEnChaleurIndustrieCommunesLayersSpec = [
     source: {
       maxzoom: 11,
       minzoom: 5,
-      tiles: ['/api/map/besoinsEnChaleurIndustrieCommunes/{z}/{x}/{y}'],
-      type: 'vector',
     },
-    sourceId: 'besoinsEnChaleurIndustrieCommunes',
+    sourceId: 'besoins-en-chaleur-industrie-communes',
   },
 ] as const satisfies readonly MapSourceLayersSpecification[];
 

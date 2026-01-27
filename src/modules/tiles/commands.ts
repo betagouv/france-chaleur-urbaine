@@ -8,8 +8,8 @@ import { z } from 'zod';
 import { logger } from '@/server/helpers/logger';
 import { nonEmptyArray } from '@/utils/typescript';
 
-import { type TilesType, tilesTypes } from './server/generation-config';
 import { runTilesGeneration } from './server/generation-run';
+import { type TilesType, tilesTypes } from './server/tiles.config';
 
 /**
  * Enregistre les commandes CLI pour la gestion des tuiles vectorielles
@@ -55,25 +55,32 @@ async function generateAddToMapInstructions(type: TilesType): Promise<void> {
   const mapConfigurationFilePath = `src/components/Map/map-configuration.ts`;
   const mapLayersFilePath = `src/components/Map/map-layers.ts`;
   const mapFilePath = `src/pages/carte.tsx`;
-  const tilesConfigFilePath = `src/modules/tiles/tiles.config.ts`;
+  const tilesConfigFilePath = `src/modules/tiles/server/tiles.config.ts`;
   const analyticsFilePath = `src/modules/analytics/analytics.config.ts`;
   const simpleMapLegendFilePath = `src/components/Map/components/SimpleMapLegend.tsx`;
 
   // Instructions pour chaque fichier
+  logger.info(`Dans ${tilesConfigFilePath}`);
+  logger.warn(`  🚧 Ajouter la config à tileSourcesConfig -> "'${type}': { ... }"`);
+  logger.warn(`  🚧 Choisir la stratégie de génération (generateGeoJSON) parmi :`);
+  logger.warn(`     - extractGeoJSONFromDatabaseTable(tableName) : extraction simple d'une table`);
+  logger.warn(`     - extractNDJSONFromDatabaseTable(tableName, { fields, idField }) : extraction optimisée pour grosses tables`);
+  logger.warn(`     - downloadGeoJSONFromURL(url, mapFilterFeature?) : téléchargement + transformation optionnelle`);
+  logger.warn(`     - extractZippedShapefileToGeoJSON : extraction d'un shapefile depuis un ZIP (--input requis)`);
+  logger.warn(`     - getInputFilePath : utilise le fichier fourni en --input`);
+  logger.warn(`     - generateGeoJSONFromSQLQuery(query, mapFunction) : requête SQL personnalisée`);
+  logger.warn(`  🚧 Configurer les options : tilesTableName, compressedTiles, tippeCanoeArgs, zoomMin, zoomMax`);
+
   logger.info(`Dans ${mapConfigurationFilePath}`);
   logger.warn(`  🚧 Ajouter la config au type MapConfiguration -> "${typeCamelCase}: boolean"`);
   logger.warn(`  🚧 Ajouter la config à emptyMapConfiguration -> "${typeCamelCase}: false"`);
-
-  logger.info(`Dans ${tilesConfigFilePath}`);
-  logger.warn(`  🚧 Ajouter la config à databaseSourceIds -> "${typeCamelCase}"`);
-  logger.warn(`  🚧 Ajouter la config à tilesInfo`);
 
   logger.info(`Dans ${layerFilePath}`);
   if (!existsSync(layerFilePath)) {
     await writeFile(
       layerFilePath,
       `// Check in other layers for the structure
-export const ${typeCamelCase}VilleLayersSpec = [];`
+export const ${typeCamelCase}LayersSpec = [];`
     );
     logger.info(`✅ Fichier layer créé dans ${layerFilePath}`);
   }
@@ -83,7 +90,7 @@ export const ${typeCamelCase}VilleLayersSpec = [];`
   logger.warn(`  🚧 Importer dans mapLayers -> "...${typeCamelCase}LayersSpec,"`);
 
   logger.info(`Dans ${mapFilePath}`);
-  logger.warn(`  🚧 Ajouter la config à layerURLKeysToMapConfigPath -> "${typeCamelCase}: '${typeCamelCase}.show'"`);
+  logger.warn(`  🚧 Ajouter la config à layerURLKeysToMapConfigPath -> "${typeCamelCase}: '${typeCamelCase}'"`);
 
   logger.info(`Dans ${analyticsFilePath}`);
   logger.warn(`  🚧 Ajouter les events analytics`);
@@ -93,6 +100,6 @@ export const ${typeCamelCase}VilleLayersSpec = [];`
   logger.info('');
   logger.info('Pour ouvrir tous les fichiers, vous pouvez faire :');
   logger.info(
-    `code ${[layerFilePath, mapConfigurationFilePath, mapLayersFilePath, mapFilePath, tilesConfigFilePath, analyticsFilePath].join(' ')}`
+    `code ${[tilesConfigFilePath, mapConfigurationFilePath, layerFilePath, mapLayersFilePath, mapFilePath, analyticsFilePath, simpleMapLegendFilePath].join(' ')}`
   );
 }

@@ -11,7 +11,7 @@ export const zonesPotentielChaudLayersSpec = [
   {
     layers: [
       {
-        id: 'zonesPotentielChaud',
+        id: 'zones-potentiel-chaud',
         isVisible: (config) => config.zonesOpportunite.show && config.zonesOpportunite.zonesPotentielChaud,
         paint: {
           'fill-color': ifHoverElse(darken(zonePotentielChaudColor, 40), zonePotentielChaudColor),
@@ -34,16 +34,14 @@ export const zonesPotentielChaudLayersSpec = [
     source: {
       maxzoom: 12,
       promoteId: 'id_zone',
-      tiles: ['/api/map/zonesPotentielChaud/{z}/{x}/{y}'],
-      type: 'vector',
     },
-    sourceId: 'zonesPotentielChaud',
+    sourceId: 'zones-potentiel-chaud',
   },
 
   {
     layers: [
       {
-        id: 'zonesPotentielFortChaud',
+        id: 'zones-potentiel-fort-chaud',
         isVisible: (config) => config.zonesOpportunite.show && config.zonesOpportunite.zonesPotentielFortChaud,
         paint: {
           'fill-color': ifHoverElse(darken(zonePotentielFortChaudColor, 40), zonePotentielFortChaudColor),
@@ -66,10 +64,8 @@ export const zonesPotentielChaudLayersSpec = [
     source: {
       maxzoom: 12,
       promoteId: 'id_zone',
-      tiles: ['/api/map/zonesPotentielFortChaud/{z}/{x}/{y}'],
-      type: 'vector',
     },
-    sourceId: 'zonesPotentielFortChaud',
+    sourceId: 'zones-potentiel-fort-chaud',
   },
 ] as const satisfies readonly MapSourceLayersSpecification[];
 

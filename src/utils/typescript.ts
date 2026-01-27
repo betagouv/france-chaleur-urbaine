@@ -100,3 +100,23 @@ export type SerializeField<T> = T extends null | undefined
       : T extends string | number | boolean
         ? T
         : string;
+
+/**
+ * Define a subset config object from allowed keys with full type inference and autocomplete.
+ * - Keys are autocompleted from AllowedKeys
+ * - Only a subset of keys can be defined (not all required)
+ * - Values preserve their literal types
+ * - Defined values are guaranteed non-undefined in the result
+ *
+ * @example
+ * type MyKeys = 'a' | 'b' | 'c';
+ * type MyValue = { name: string };
+ * const config = defineSubsetConfig<MyKeys, MyValue>()({
+ *   a: { name: 'Alice' },
+ *   b: { name: 'Bob' },
+ * });
+ */
+export const defineSubsetConfig =
+  <AllowedKeys extends string, Value>() =>
+  <const T extends { [K in AllowedKeys]?: Value }>(config: T): { [K in keyof T]-?: T[K] } =>
+    config as { [K in keyof T]-?: T[K] };

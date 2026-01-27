@@ -1,5 +1,5 @@
-import type { AsTile } from '@/modules/tiles/server/generation-config';
 import { generateGeoJSONFromSQLQuery } from '@/modules/tiles/server/generation-strategies';
+import type { AsTile } from '@/modules/tiles/server/tiles.config';
 import type { ReseauxDeChaleur } from '@/server/db/kysely/database';
 
 const reseauxDeChaleurFields = [

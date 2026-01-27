@@ -13,7 +13,7 @@ export const etudesEnCoursLayersSpec = [
   {
     layers: [
       {
-        id: 'etudesEnCours',
+        id: 'etudes-en-cours',
         isVisible: (config) => config.etudesEnCours,
         paint: {
           'fill-color': ifHoverElse(darken(etudesEnCoursColor, 40), etudesEnCoursColor),
@@ -33,12 +33,8 @@ export const etudesEnCoursLayersSpec = [
         unselectable: true,
       },
     ],
-    source: {
-      maxzoom: 14,
-      tiles: ['/api/map/etudesEnCours/{z}/{x}/{y}'],
-      type: 'vector',
-    },
-    sourceId: 'etudesEnCours',
+    source: { maxzoom: 14 },
+    sourceId: 'etudes-en-cours',
   },
 ] as const satisfies readonly MapSourceLayersSpecification[];
 

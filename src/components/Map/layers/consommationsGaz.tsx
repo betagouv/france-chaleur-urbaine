@@ -61,7 +61,7 @@ export const consommationsGazLayersSpec = [
             ],
           ];
         },
-        id: 'consommationsGaz',
+        id: 'consommations-gaz',
         isVisible: (config) => config.consommationsGaz.show,
         layout: {
           'circle-sort-key': ['-', ['coalesce', ['get', GAS_PROPERTY_CONSO], 0]],
@@ -107,10 +107,8 @@ export const consommationsGazLayersSpec = [
     source: {
       maxzoom: 14,
       minzoom: 12,
-      tiles: ['/api/map/consommationsGaz/{z}/{x}/{y}'],
-      type: 'vector',
     },
-    sourceId: 'consommationsGaz',
+    sourceId: 'consommations-gaz',
   },
 ] as const satisfies readonly MapSourceLayersSpecification[];
 

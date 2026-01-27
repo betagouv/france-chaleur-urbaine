@@ -74,6 +74,6 @@ export const caracteristiquesBatimentsLayersSpec = [
       },
     ],
     source: bdnbBatimentsTilesSource,
-    sourceId: 'bdnbBatiments',
+    sourceId: 'bdnb-batiments',
   },
 ] as const satisfies readonly MapSourceLayersSpecification[];

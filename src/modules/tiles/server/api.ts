@@ -3,8 +3,8 @@ import zod from 'zod';
 
 import { handleRouteErrors, validateObjectSchema } from '@/server/helpers/server';
 
-import { zDatabaseSourceId } from '../tiles.config';
 import { getTile } from './service';
+import { zTileSourceId } from './tiles.config';
 
 const GET = async (req: NextApiRequest, res: NextApiResponse) => {
   const {
@@ -12,7 +12,7 @@ const GET = async (req: NextApiRequest, res: NextApiResponse) => {
     tileCoordinates: [z, x, y],
   } = await validateObjectSchema(req.query, {
     tileCoordinates: zod.array(zod.coerce.number()).length(3),
-    type: zDatabaseSourceId,
+    type: zTileSourceId,
   });
 
   const tile = await getTile(type, x, y, z);

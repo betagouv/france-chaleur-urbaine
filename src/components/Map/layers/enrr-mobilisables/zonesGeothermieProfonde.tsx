@@ -7,7 +7,7 @@ export const enrrMobilisablesZonesGeothermieProfondeLayersSpec = [
   {
     layers: [
       {
-        id: 'enrrMobilisables-zonesGeothermieProfonde',
+        id: 'enrr-mobilisables-zones-geothermie-profonde',
         isVisible: (config) => config.enrrMobilisablesGeothermieProfonde,
         paint: {
           'fill-color': enrrMobilisablesZonesGeothermieProfondeLayerColor,
@@ -20,9 +20,7 @@ export const enrrMobilisablesZonesGeothermieProfondeLayersSpec = [
     source: {
       maxzoom: 11,
       minzoom: 5,
-      tiles: ['/api/map/enrrMobilisables-zonesGeothermieProfonde/{z}/{x}/{y}'],
-      type: 'vector',
     },
-    sourceId: 'enrrMobilisables-zonesGeothermieProfonde',
+    sourceId: 'enrr-mobilisables-zones-geothermie-profonde',
   },
 ] as const satisfies readonly MapSourceLayersSpecification[];

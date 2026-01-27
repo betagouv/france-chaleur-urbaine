@@ -2,8 +2,8 @@ import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { type TilesType, tilesConfigs } from '@/modules/tiles/server/generation-config';
 import { importGeoJSONWithTipeeCanoe } from '@/modules/tiles/server/generation-import';
+import { getGenerationConfig, type TilesType } from '@/modules/tiles/server/tiles.config';
 import { parentLogger } from '@/server/helpers/logger';
 
 /**
@@ -20,10 +20,7 @@ function logMemory(logger: any, stage: string) {
 }
 
 export async function runTilesGeneration(name: TilesType, inputFilePath?: string) {
-  const config = tilesConfigs[name];
-  if (!config) {
-    throw new Error(`Config for ${name} not found`);
-  }
+  const config = getGenerationConfig(name);
   const logger = parentLogger.child({ name });
 
   logMemory(logger, 'start');

@@ -9,7 +9,7 @@ export const enrrMobilisablesParkingsLayersSpec = [
   {
     layers: [
       {
-        id: 'enrrMobilisables-parkings',
+        id: 'enrr-mobilisables-parkings',
         isVisible: (config) => config.enrrMobilisablesSolaireThermique.show && config.enrrMobilisablesSolaireThermique.showParkings,
         paint: {
           'fill-color': ifHoverElse(darken(enrrMobilisablesParkingsLayerColor, 30), enrrMobilisablesParkingsLayerColor),
@@ -29,12 +29,8 @@ export const enrrMobilisablesParkingsLayersSpec = [
         unselectable: true,
       },
     ],
-    source: {
-      promoteId: 'GmlID',
-      tiles: ['/api/map/enrrMobilisables-parkings/{z}/{x}/{y}'],
-      type: 'vector',
-    },
-    sourceId: 'enrrMobilisables-parkings',
+    source: { promoteId: 'GmlID' },
+    sourceId: 'enrr-mobilisables-parkings',
   },
 ] as const satisfies readonly MapSourceLayersSpecification[];
 

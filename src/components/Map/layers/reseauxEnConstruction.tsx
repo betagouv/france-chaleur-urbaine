@@ -3,7 +3,7 @@ import Tag from '@codegouvfr/react-dsfr/Tag';
 import Accordion from '@/components/ui/Accordion';
 import Icon from '@/components/ui/Icon';
 import Tooltip from '@/components/ui/Tooltip';
-import type { ReseauxEnConstructionTile } from '@/modules/tiles/server/generation-config';
+import type { ReseauxEnConstructionTile } from '@/modules/tiles/server/tiles.config';
 
 import { DownloadNetworkGeometryButton } from '../components/DownloadNetworkGeometryButton';
 import { defineLayerPopup, ifHoverElse, type MapSourceLayersSpecification } from './common';
@@ -120,11 +120,7 @@ export const reseauxEnConstructionLayersSpec = [
         type: 'line',
       },
     ],
-    source: {
-      maxzoom: 14,
-      tiles: ['/api/map/reseauxEnConstruction/{z}/{x}/{y}'],
-      type: 'vector',
-    },
-    sourceId: 'reseauxEnConstruction',
+    source: { maxzoom: 14 },
+    sourceId: 'reseaux-en-construction',
   },
 ] as const satisfies readonly MapSourceLayersSpecification[];

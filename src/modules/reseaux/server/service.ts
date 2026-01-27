@@ -539,7 +539,6 @@ export const createNetwork = async (
 type TableConfig = {
   tableName: NetworkTable;
   internalName: ApplyGeometriesUpdatesInput['name'];
-  tileName: string;
 };
 
 /**
@@ -573,22 +572,18 @@ const tables: TableConfig[] = [
   {
     internalName: 'reseaux-de-chaleur',
     tableName: 'reseaux_de_chaleur',
-    tileName: 'network',
   },
   {
     internalName: 'reseaux-de-froid',
     tableName: 'reseaux_de_froid',
-    tileName: 'coldNetwork',
   },
   {
     internalName: 'reseaux-en-construction',
     tableName: 'zones_et_reseaux_en_construction',
-    tileName: 'futurNetwork',
   },
   {
     internalName: 'perimetres-de-developpement-prioritaire',
     tableName: 'zone_de_developpement_prioritaire',
-    tileName: 'zoneDP',
   },
 ];
 

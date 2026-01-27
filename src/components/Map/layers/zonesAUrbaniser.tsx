@@ -30,7 +30,7 @@ export const zonesAUrbaniserLayersSpec = [
   {
     layers: [
       {
-        id: 'zonesAUrbaniser',
+        id: 'zones-a-urbaniser',
         isVisible: (config) => config.zonesAUrbaniser,
         paint: {
           'fill-color': ifHoverElse(darken(zonesAUrbaniserColor, 40), zonesAUrbaniserColor),
@@ -50,11 +50,7 @@ export const zonesAUrbaniserLayersSpec = [
         unselectable: true,
       },
     ],
-    source: {
-      maxzoom: 12,
-      tiles: ['/api/map/zonesAUrbaniser/{z}/{x}/{y}'],
-      type: 'vector',
-    },
-    sourceId: 'zonesAUrbaniser',
+    source: { maxzoom: 12 },
+    sourceId: 'zones-a-urbaniser',
   },
 ] as const satisfies readonly MapSourceLayersSpecification[];

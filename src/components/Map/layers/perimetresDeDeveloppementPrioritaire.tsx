@@ -1,5 +1,5 @@
 import Accordion from '@/components/ui/Accordion';
-import type { PerimetreDeveloppementPrioritaireTile } from '@/modules/tiles/server/generation-config';
+import type { PerimetreDeveloppementPrioritaireTile } from '@/modules/tiles/server/tiles.config';
 
 import { DownloadNetworkGeometryButton } from '../components/DownloadNetworkGeometryButton';
 import { defineLayerPopup, type MapSourceLayersSpecification } from './common';
@@ -39,11 +39,7 @@ export const perimetresDeDeveloppementPrioritaireLayersSpec = [
         type: 'fill',
       },
     ],
-    source: {
-      maxzoom: 14,
-      tiles: ['/api/map/perimetresDeDeveloppementPrioritaire/{z}/{x}/{y}'],
-      type: 'vector',
-    },
-    sourceId: 'perimetresDeDeveloppementPrioritaire',
+    source: { maxzoom: 14 },
+    sourceId: 'perimetres-de-developpement-prioritaire',
   },
 ] as const satisfies readonly MapSourceLayersSpecification[];

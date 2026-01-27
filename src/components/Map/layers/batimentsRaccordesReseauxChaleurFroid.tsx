@@ -40,10 +40,8 @@ export const batimentsRaccordesReseauxChaleurFroidLayersSpec = [
     source: {
       maxzoom: 13, // 13 permet de cliquer jusqu'au zoom 20 inclus, sinon maplibre ne considère pas la feature comme cliquable
       minzoom: 9,
-      tiles: [`/api/map/batimentsRaccordesReseauxChaleurFroid/{z}/{x}/{y}`],
-      type: 'vector',
     },
-    sourceId: 'batimentsRaccordesReseauxChaleurFroid',
+    sourceId: 'batiments-raccordes-reseaux-chaleur-froid',
   },
 ] as const satisfies readonly MapSourceLayersSpecification[];
 

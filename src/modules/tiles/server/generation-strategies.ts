@@ -48,41 +48,6 @@ export const downloadGeoJSONFromURL = (url: string) =>
   });
 
 /**
- * Download JSON data from a URL, transform it to GeoJSON features with mapping
- * @param url - The URL to fetch the JSON data from
- * @param mapFilterFeature - Function to transform each JSON item to a GeoJSON Feature
- * @returns a function that will download, transform and save the GeoJSON file
- */
-export const downloadJSONAndTransformToGeoJSON = <T>({
-  url,
-  mapFilterFeature,
-}: {
-  url: string;
-  mapFilterFeature: (
-    item: T,
-    helpers: { convertLambert93ToWGS84: Awaited<ReturnType<typeof createLambert93ToWGS84Converter>> }
-  ) => GeoJSON.Feature | null;
-}) =>
-  defineTilesGenerationStrategy(async ({ logger, tempDirectory }) => {
-    const items = await fetchJSON<T[]>(url);
-    logger.info(`Items downloaded`, { count: items.length });
-
-    const convertLambert93ToWGS84 = await createLambert93ToWGS84Converter();
-
-    const features = items.map((feature) => mapFilterFeature(feature, { convertLambert93ToWGS84 })).filter((feature) => feature !== null);
-    logger.info(`Items mapped to features`, { count: features.length });
-
-    const geojson: GeoJSON.FeatureCollection = {
-      features,
-      type: 'FeatureCollection',
-    };
-
-    const targetTilesFilePath = join(tempDirectory, 'tiles-features.geojson');
-    await writeFile(targetTilesFilePath, JSON.stringify(geojson));
-    return targetTilesFilePath;
-  });
-
-/**
  * Extract a shapefile from a ZIP file and convert it to a GeoJSON file
  * @returns The path to the generated GeoJSON file
  */

@@ -69,7 +69,7 @@ export const ouvragesGeothermieSurfaceLayersSpec = [
             ].filter(Boolean),
           ],
         ],
-        id: 'ouvragesGeothermieSurfaceEchangeursFermes',
+        id: 'ouvrages-geothermie-surface-echangeurs-fermes',
         isVisible: (config) =>
           config.geothermieSurfaceEchangeursFermes.show &&
           (config.geothermieSurfaceEchangeursFermes.showOuvragesDeclares || config.geothermieSurfaceEchangeursFermes.showOuvragesRealises),
@@ -127,10 +127,8 @@ export const ouvragesGeothermieSurfaceLayersSpec = [
     source: {
       maxzoom: 10,
       minzoom: 5,
-      tiles: ['/api/map/ouvragesGeothermieSurfaceEchangeursFermes/{z}/{x}/{y}'],
-      type: 'vector',
     },
-    sourceId: 'ouvragesGeothermieSurfaceEchangeursFermes',
+    sourceId: 'ouvrages-geothermie-surface-echangeurs-fermes',
   },
   {
     layers: [
@@ -146,7 +144,7 @@ export const ouvragesGeothermieSurfaceLayersSpec = [
             ].filter(Boolean),
           ],
         ],
-        id: 'ouvragesGeothermieSurfaceEchangeursOuverts',
+        id: 'ouvrages-geothermie-surface-echangeurs-ouverts',
         isVisible: (config) =>
           config.geothermieSurfaceEchangeursOuverts.show &&
           (config.geothermieSurfaceEchangeursOuverts.showOuvragesDeclares ||
@@ -206,10 +204,8 @@ export const ouvragesGeothermieSurfaceLayersSpec = [
     source: {
       maxzoom: 10,
       minzoom: 5,
-      tiles: ['/api/map/ouvragesGeothermieSurfaceEchangeursOuverts/{z}/{x}/{y}'],
-      type: 'vector',
     },
-    sourceId: 'ouvragesGeothermieSurfaceEchangeursOuverts',
+    sourceId: 'ouvrages-geothermie-surface-echangeurs-ouverts',
   },
 ] as const satisfies readonly MapSourceLayersSpecification[];
 

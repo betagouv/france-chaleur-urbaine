@@ -1,8 +1,8 @@
 import type { Record } from 'airtable';
 import type { FieldSet } from 'airtable/lib/field_set';
 
-import { type DatabaseSourceId, type DatabaseTileInfo, tilesInfo } from '@/modules/tiles/tiles.config';
-import base from '@/server/db/airtable';
+import { type AirtableSynchronizableNetworkTable, airtableSynchronizableNetworkTableConfig } from '@/modules/reseaux/constants';
+import { AirtableDB } from '@/server/db/airtable';
 import { kdb } from '@/server/db/kysely';
 import { parentLogger } from '@/server/helpers/logger';
 
@@ -158,12 +158,8 @@ const conversionConfigReseauxEnConstruction = {
 /**
  * Synchronise les données d'une table réseau dans Airtable vers la table correspondante dans Postgres.
  */
-export const downloadNetwork = async (table: DatabaseSourceId) => {
-  const tileInfo = tilesInfo[table] as DatabaseTileInfo;
-  if (!tileInfo || !tileInfo.airtable) {
-    throw new Error(`Can't download network: ${table} not managed`);
-  }
-  const networksAirtable = await base(tileInfo.airtable).select().all();
+export const downloadNetwork = async (table: AirtableSynchronizableNetworkTable) => {
+  const networksAirtable = await AirtableDB(airtableSynchronizableNetworkTableConfig[table].airtable).select().all();
 
   const logger = parentLogger.child({
     count: networksAirtable.length,
@@ -173,11 +169,12 @@ export const downloadNetwork = async (table: DatabaseSourceId) => {
   logger.info('start network update');
   await Promise.all(
     networksAirtable.map(async (network) => {
-      if (network.get('id_fcu')) {
+      const idFcu = network.get('id_fcu') as number | undefined;
+      if (idFcu) {
         await kdb
-          .updateTable(tileInfo.table as any)
+          .updateTable(airtableSynchronizableNetworkTableConfig[table].table)
           .set(convertEntityFromAirtableToPostgres(table, network))
-          .where('id_fcu', '=', network.get('id_fcu'))
+          .where('id_fcu', '=', idFcu)
           .execute();
       }
     })
@@ -191,11 +188,11 @@ export const downloadNetwork = async (table: DatabaseSourceId) => {
  * Convertit un réseau Airtable au format Postgres.
  * Les noms de colonne sont identiques, seuls les types sont corrigés et nettoyés.
  */
-function convertEntityFromAirtableToPostgres(type: DatabaseSourceId, airtableNetwork: Record<FieldSet>) {
+function convertEntityFromAirtableToPostgres(type: AirtableSynchronizableNetworkTable, airtableNetwork: Record<FieldSet>) {
   const conversionConfig =
-    type === 'reseauxDeChaleur'
+    type === 'reseaux-de-chaleur'
       ? conversionConfigReseauxDeChaleur
-      : type === 'reseauxDeFroid'
+      : type === 'reseaux-de-froid'
         ? conversionConfigReseauxDeFroid
         : conversionConfigReseauxEnConstruction;
 

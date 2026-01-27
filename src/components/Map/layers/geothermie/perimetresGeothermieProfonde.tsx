@@ -41,7 +41,7 @@ export const perimetresGeothermieProfondeLayersSpec = [
   {
     layers: [
       {
-        id: 'perimetresGeothermieProfonde',
+        id: 'perimetres-geothermie-profonde',
         isVisible: (config) => config.geothermieProfonde.show && config.geothermieProfonde.showPerimetres,
         paint: {
           'fill-color': [
@@ -80,9 +80,7 @@ export const perimetresGeothermieProfondeLayersSpec = [
     source: {
       maxzoom: 11,
       minzoom: 5,
-      tiles: ['/api/map/perimetresGeothermieProfonde/{z}/{x}/{y}'],
-      type: 'vector',
     },
-    sourceId: 'perimetresGeothermieProfonde',
+    sourceId: 'perimetres-geothermie-profonde',
   },
 ] as const satisfies readonly MapSourceLayersSpecification[];

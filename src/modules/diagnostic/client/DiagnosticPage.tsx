@@ -54,17 +54,6 @@ const DiagnosticPage = () => {
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{getAirtableBaseStatus(diagnosticData.airtable)}</td>
               </tr>
               <tr>
-                <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">USE_DOCKER_GEO_COMMANDS</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                  <div>{diagnosticData.geo.USE_DOCKER_GEO_COMMANDS ? 'Activé' : 'Désactivé'}</div>
-                  <div className="text-xs text-gray-500 mt-1">
-                    {diagnosticData.geo.USE_DOCKER_GEO_COMMANDS
-                      ? 'Les commandes géographiques utilisent Docker'
-                      : 'Les commandes géographiques utilisent les binaires système'}
-                  </div>
-                </td>
-              </tr>
-              <tr>
                 <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">ogr2ogr</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                   <div className="space-y-1 text-wrap">

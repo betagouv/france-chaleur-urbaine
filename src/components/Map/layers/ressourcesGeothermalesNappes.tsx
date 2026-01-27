@@ -38,7 +38,7 @@ export const ressourcesGeothermalesNappesLayersSpec = [
   {
     layers: [
       {
-        id: 'ressourcesGeothermalesNappes',
+        id: 'ressources-geothermales-nappes',
         isVisible: (config) => config.ressourcesGeothermalesNappes,
         paint: {
           'fill-color': [
@@ -55,9 +55,7 @@ export const ressourcesGeothermalesNappesLayersSpec = [
     source: {
       maxzoom: 12,
       minzoom: 5,
-      tiles: ['/api/map/ressourcesGeothermalesNappes/{z}/{x}/{y}'],
-      type: 'vector',
     },
-    sourceId: 'ressourcesGeothermalesNappes',
+    sourceId: 'ressources-geothermales-nappes',
   },
 ] as const satisfies readonly MapSourceLayersSpecification[];

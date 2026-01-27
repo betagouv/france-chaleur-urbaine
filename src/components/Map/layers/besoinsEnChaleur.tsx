@@ -111,7 +111,7 @@ export const besoinsEnChaleurLayersSpec = [
         type: 'fill',
       },
       {
-        id: 'besoinsEnChaleur',
+        id: 'besoins-en-chaleur',
         isVisible: (config) => config.besoinsEnChaleur,
         paint: {
           'fill-color': [
@@ -141,10 +141,8 @@ export const besoinsEnChaleurLayersSpec = [
       maxzoom: 14,
       minzoom: 10,
       promoteId: 'IDBATIMENT',
-      tiles: ['/api/map/besoinsEnChaleur/{z}/{x}/{y}'],
-      type: 'vector',
     },
-    sourceId: 'besoinsEnChaleur',
+    sourceId: 'besoins-en-chaleur',
   },
 ] as const satisfies readonly MapSourceLayersSpecification[];
 

@@ -1,12 +1,10 @@
-import type { SourceSpecification } from 'maplibre-gl';
-
 import DPE from '@/components/DPE';
-import type { PopupStyleHelpers } from '@/components/Map/layers/common';
+import type { PopupStyleHelpers, VectorSourceOptions } from '@/components/Map/layers/common';
 import Accordion from '@/components/ui/Accordion';
 import Link from '@/components/ui/Link';
 import Loader from '@/components/ui/Loader';
 import Tooltip from '@/components/ui/Tooltip';
-import type { BdnbBatimentTile } from '@/modules/tiles/server/generation-config';
+import type { BdnbBatimentTile } from '@/modules/tiles/server/tiles.config';
 import trpc from '@/modules/trpc/client';
 import { isDefined } from '@/utils/core';
 import { formatTypeEnergieChauffage } from '@/utils/format';
@@ -15,9 +13,7 @@ export const bdnbBatimentsTilesSource = {
   maxzoom: 15,
   minzoom: 12, // inutile en dessous et beaucoup trop gros
   promoteId: 'batiment_groupe_id',
-  tiles: ['/api/map/bdnbBatiments/{z}/{x}/{y}'],
-  type: 'vector',
-} as const satisfies SourceSpecification;
+} as const satisfies VectorSourceOptions;
 
 // Fonction wrapper qui ne peut pas utiliser de hook, le composant interne est normal et peut utiliser des hooks
 export function BdnbBatimentPopup(caracteristiqueBatiment: BdnbBatimentTile, helpers: PopupStyleHelpers) {

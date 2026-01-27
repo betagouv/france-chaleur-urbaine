@@ -1,5 +1,9 @@
 import { z } from 'zod';
 
+import type { DatabaseTileSourceId } from '@/modules/tiles/server/tiles.config';
+import type { DBTableName } from '@/server/db/kysely';
+import { Airtable } from '@/types/enum/Airtable';
+import { defineSubsetConfig, ObjectKeys } from '@/utils/typescript';
 import { zGeometry } from '@/utils/validation';
 
 export const zUpdateReseauInput = z.object({
@@ -96,3 +100,24 @@ export const gestionnairesFilters = [
   { label: 'IDEX', value: 'idex' },
   { label: 'Autre', value: 'autre' },
 ];
+
+export const airtableSynchronizableNetworkTableConfig = defineSubsetConfig<
+  DatabaseTileSourceId,
+  { airtable: Airtable; table: DBTableName }
+>()({
+  'reseaux-de-chaleur': {
+    airtable: Airtable.NETWORKS,
+    table: 'reseaux_de_chaleur',
+  },
+  'reseaux-de-froid': {
+    airtable: Airtable.COLD_NETWORKS,
+    table: 'reseaux_de_froid',
+  },
+  'reseaux-en-construction': {
+    airtable: Airtable.FUTUR_NETWORKS,
+    table: 'zones_et_reseaux_en_construction',
+  },
+});
+
+export const zAirtableSynchronizableNetworkTable = z.enum(ObjectKeys(airtableSynchronizableNetworkTableConfig));
+export type AirtableSynchronizableNetworkTable = z.infer<typeof zAirtableSynchronizableNetworkTable>;

@@ -8,7 +8,7 @@ export type TilesTable = keyof {
   [K in keyof DB as K extends `${string}_tiles` ? K : never]: true;
 };
 
-type TilesGenerationConfig = {
+export type TilesGenerationConfig = {
   /**
    * Nom de la table dans la base de données où seront importées les tuiles.
    */
@@ -21,10 +21,6 @@ type TilesGenerationConfig = {
    * 14 par défaut, on peut le changer pour diminuer la quantité de tuiles.
    */
   zoomMax?: number;
-  /**
-   * Avec legacy, utilise le module node geojsonvt pour générer les tuiles. Avec compressed, utilise tippecanoe.
-   */
-  tilesGenerationMethod?: 'legacy' | 'compressed';
   /**
    * Arguments supplémentaires pour tippecanoe.
    */
@@ -43,21 +39,6 @@ export type GenerateGeoJSONConfig = {
   logger: Logger;
   tempDirectory: string;
 };
-
-/**
- * Define a tiles generation strategy
- * @param config - The configuration for the tiles generation strategy
- * @returns The tiles generation strategy
- */
-export function defineTilesConfig(config: TilesGenerationConfig): TilesGenerationConfigWithDefaults {
-  return {
-    tilesGenerationMethod: 'legacy',
-    tippeCanoeArgs: '',
-    zoomMax: 14,
-    zoomMin: 5,
-    ...config,
-  };
-}
 
 export const defineTilesGenerationStrategy = (fn: (config: GenerateGeoJSONConfig) => Promise<string | ImportLayerConfig[]>) => {
   return fn;
