@@ -11,7 +11,6 @@ import ReseauxDeChaleurFilters, { type ReseauxDeChaleurFiltersProps } from '@/co
 import Box from '@/components/ui/Box';
 import Drawer from '@/components/ui/Drawer';
 import Icon from '@/components/ui/Icon';
-import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
 import TableSimple, { type ColumnDef } from '@/components/ui/table/TableSimple';
 import useReseauxDeChaleurFilters, { type FilterWithLimits } from '@/hooks/useReseauxDeChaleurFilters';
@@ -549,15 +548,9 @@ const NetworksList = () => {
           />
         </Box>
         <Text size="xs" className="fr-hint-text" mt="2w">
-          Sources : L’ensemble des données sont extraites des enquêtes réalisées par la Fedene Réseaux de chaleur et de froid avec le
-          concours de l’association AMORCE, sous tutelle du service des données et études statistiques (SDES) du ministère de la transition
-          écologique. L'année considérée varie en fonction de la disponibilité actuelle des données. Livraisons et mix énergétique : 2023.
-          Données tarifaires : 2022. Taux ENRR et contenu CO2 (direct et ACV) : 2023 ou moyenne des années 2021, 2022 et 2023, sur la base
-          de l'
-          <Link href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000051520810" isExternal>
-            arrêté DPE du 11 avril 2025
-          </Link>
-          .
+          Sources : Données locales de l'énergie (SDES, 2024) pour les livraisons, mix énergétique et contenu CO2. Bibliothèque FEDENE
+          (données 2023) pour les informations administratives et tarifaires. Taux ENRR : calculé par France Chaleur Urbaine (ratio
+          production EnR&R / production totale), en attendant la parution de l'arrêté DPE 2024.
         </Text>
       </Box>
     </NetworksListContainer>

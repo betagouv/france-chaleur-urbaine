@@ -2,7 +2,7 @@ import type { Command } from '@commander-js/extra-typings';
 
 import { ObjectKeys } from '@/utils/typescript';
 
-import { type DataImportType, dataImportConfigs, executeDataImport } from './server/import-config';
+import { dataImportConfigs, executeDataImport, zDataImportType } from './server/import-config';
 
 export function registerDataCommands(parentProgram: Command) {
   const program = parentProgram.command('data').description('Commandes de gestion des données');
@@ -10,10 +10,17 @@ export function registerDataCommands(parentProgram: Command) {
   program
     .command('import')
     .description('Import de données basé sur le type')
-    .argument('<type>', `Type de données à importer - ${Object.keys(dataImportConfigs).join(', ')}`)
+    .argument('<type>', `Type de données à importer - ${Object.keys(dataImportConfigs).join(', ')}`, (value) =>
+      zDataImportType.parse(value)
+    )
     .option('--file <FILE>', 'Chemin vers le fichier à importer', '')
+    .option('--dry-run', 'Mode simulation, aucune modification Airtable', true)
+    .option('--create-missing', 'Créer les réseaux manquants dans Airtable', false)
     .action(async (type, options) => {
-      await executeDataImport(type as DataImportType, options.file);
+      await executeDataImport(type, options.file, {
+        createMissing: options.createMissing,
+        dryRun: options.dryRun,
+      });
     });
 
   program

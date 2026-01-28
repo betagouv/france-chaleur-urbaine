@@ -16,8 +16,9 @@ export type TabId = 'batiment' | 'modes';
 
 export const DataYearDisclaimer: React.FC = () => (
   <span>
-    Les données des réseaux locaux portent sur l'année 2023. Les données du prix moyen des réseaux de chaleur et de froid, ainsi que les
-    coûts des solutions alternatives, portent sur l'année 2024.
+    Sauf mention contraire, les données utilisées par le comparateur portent sur l'année 2024. Les valeurs de l'ensemble des paramètres
+    utilisés pour les calculs sont modifiables
+    {!advancedMode && ' dans le mode avancé'}.
   </span>
 );
 
@@ -140,16 +141,10 @@ export const DescriptionModal = () => {
         cadre du classement (coût manifestement disproportionné). Une méthodologie dédiée est en cours d'élaboration.
       </p>
       <p>
-        Les données économiques et locales des réseaux de chaleur et de froid sont les données de la dernière version de la bibliothèque de
-        données FEDENE/AMORCE publiée en 2025 sur la base de l'année 2023. En raison de la publication du volet économique de l'enquête
-        annuelle sur l'année 2024, l'outil a été mis à jour en février 2026 avec le prix moyen des réseaux de chaleur et de froid, ainsi que
-        la mise à jour des données économiques des modes de chauffage alternatifs sur l'année 2024. Les données environnementales sont
-        basées sur le dernier{' '}
-        <Link href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000051520810" isExternal>
-          arrêté DPE (11 avril 2025)
-        </Link>
-        . AMORCE regrette ces décalages temporels, en partie dus à l'absence de publication de l'arrêté listant les réseaux classés en fin
-        d'année 2025 (sur les chiffres de l'année 2024), et sur l'absence de mise à jour de l'arrêté DPE des réseaux de chaleur.
+        Les données techniques utilisées par le comparateur portent sur l'année 2024 (données locales de l'énergie, SDES). Le taux ENRR est
+        calculé par France Chaleur Urbaine (ratio entre la production d'énergies renouvelables et de récupération et la production totale),
+        en attendant la parution de l'arrêté DPE 2024. Le contenu CO2 des réseaux provient également de les données locales de l'énergie
+        (SDES, 2024).
       </p>
       <p>
         Cet outil prend la suite d'RCE33, outil développé par l'association{' '}
