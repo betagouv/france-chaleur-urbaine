@@ -74,7 +74,7 @@ const NetworkPanel = ({
               <ColdNetwork />
             </Box>
           )}
-          {!network.ouvert_aux_raccordements && (
+          {!isCold && !network.ouvert_aux_raccordements && (
             <Alert variant="warning" className="my-2w">
               Ce réseau n'est pas ouvert aux raccordements.
             </Alert>
