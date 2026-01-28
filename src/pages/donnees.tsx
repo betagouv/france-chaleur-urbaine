@@ -613,6 +613,13 @@ const DonneesPage = () => {
                   <ul>
                     <li>contenu CO2</li>
                     <li>contenu CO2 ACV</li>
+                  </ul>
+                </td>
+                <td>Source : Données locales de l'énergie (SDES, 2024).</td>
+              </tr>
+              <tr>
+                <td className="font-semibold">
+                  <ul>
                     <li>taux EnR&R</li>
                     <li>année de référence</li>
                   </ul>
@@ -635,7 +642,6 @@ const DonneesPage = () => {
                   <ul>
                     <li>productions en MWh par source (gaz, charbon, fioul, etc)</li>
                     <li>livraisons de chaleur en MWh par secteur (résidentiel, tertiaire, industrie, agriculture, autre)</li>
-                    <li>rendement de distribution</li>
                   </ul>
                 </td>
                 <td>
