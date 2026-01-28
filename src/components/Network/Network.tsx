@@ -101,13 +101,16 @@ const NetworkPanel = ({
                   Performances environnementales
                 </Heading>
                 <Text size="sm" fontStyle="italic" mb="2w">
-                  Données réglementaires,{' '}
-                  <a href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000051520810" target="_blank" rel="noreferrer noopener">
-                    arrêté du 11 avril 2025
-                  </a>{' '}
-                  portant sur l’année 2023, ou la moyenne des années 2021, 2022 et 2023.
+                  Données issues des données locales de l'énergie (SDES, 2024).
                 </Text>
-                {!isCold && <Property label="Taux d’EnR&R" value={network['Taux EnR&R']} unit="%" />}
+                {!isCold && (
+                  <Property
+                    label="Taux d'EnR&R"
+                    value={network['Taux EnR&R']}
+                    unit="%"
+                    tooltip="Calculé par FCU (ratio production EnR&R / production totale) en attendant la parution de l'arrêté DPE 2024."
+                  />
+                )}
                 <Property
                   label="Contenu CO2 ACV"
                   value={network['contenu CO2 ACV']}
@@ -115,10 +118,7 @@ const NetworkPanel = ({
                   tooltip="ACV : en analyse du cycle de vie (émissions directes et indirectes)."
                 />
                 <Property label="Contenu CO2" value={network['contenu CO2']} formatter={formatCO2} tooltip="Émissions directes" />
-                <Property
-                  label="Année de référence"
-                  value={network['Moyenne-annee-DPE'] === 'Moyenne' ? 'Moyenne 2021-2022-2023' : network['Moyenne-annee-DPE']}
-                />
+                <Property label="Année de référence" value={network['Moyenne-annee-DPE']} />
               </Box>
             )}
 
@@ -134,7 +134,7 @@ const NetworkPanel = ({
                 />
 
                 <Text size="sm" fontStyle="italic" underline my="2w">
-                  Données pour l'année 2023
+                  Données pour l'année 2024
                 </Text>
                 <Box borderLeft="2px solid grey" pl="2w">
                   <Property label="Points de livraison" value={network.nb_pdl} />
@@ -503,7 +503,7 @@ const NetworkPanel = ({
                   Mix énergétique
                 </Heading>
                 <Text size="sm" fontStyle="italic" underline>
-                  Données pour l'année 2023
+                  Données pour l'année 2024
                 </Text>
                 {isDefined(network.production_totale_MWh) ? <EnergiesChart network={network} /> : <Text>Non connu</Text>}
               </BoxSection>
@@ -543,14 +543,16 @@ const NetworkPanel = ({
           </Box>
           <ul>
             <li>
-              Données 2023 :{' '}
+              Données techniques 2024 :{' '}
               <Link
-                href="https://www.statistiques.developpement-durable.gouv.fr/catalogue?page=datafile&datafileRid=5f93b3f9-8d0f-414c-ad35-51db742c421c"
+                href="https://www.statistiques.developpement-durable.gouv.fr/catalogue?page=datafile&datafileRid=b0c273bb-1578-42f3-b22b-074d78de3ca3"
                 isExternal
               >
-                données locales de l’énergie diffusées par le SDES
-              </Link>{' '}
-              et{' '}
+                données locales de l’énergie diffusées par le SDES pour 2024
+              </Link>
+            </li>
+            <li>
+              Données administratives et tarifaires 2023 :{' '}
               <Link href="https://fedene.fr/ressource/bibliotheque-de-donnees-des-reseaux-de-chaleur-et-de-froid-2024/" isExternal>
                 bibliothèque de données de la Fedene Réseaux de chaleur et de froid
               </Link>
