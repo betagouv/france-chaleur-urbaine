@@ -1,5 +1,5 @@
 export const knownAirtableBases = {
-  dev: 'app9Hn33eMoY4TP1t',
+  dev: 'appkX1cuvtl7sZ8Il',
   prod: 'app9opX8gRAtBqkan',
 } as const;
 
