@@ -94,6 +94,7 @@ scripts/simulateur/codes-insee.json
 .claude/output-styles
 .claude/settings.json
 .claude/context
+CLAUDE.md
 
 # =============================================================================
 # cursor - Auto-generated symlinks
