@@ -166,17 +166,15 @@ export const ContactForm = ({ onSubmit, isLoading, cardMode, city, heatingTypeIn
         </Fieldset>
       )}
       <FieldWrapper>{heatingTypeInput}</FieldWrapper>
-      <FieldWrapper>
-        <Field.Select
-          label={heatingTypeInput ? 'Énergie de chauffage :' : fieldLabelInformation.heatingEnergy.label}
-          name="heatingEnergy"
-          className="heatingEnergyContactInformations"
-          options={fieldLabelInformation.heatingEnergy.inputs.map(({ value, label }) => ({
-            label,
-            value,
-          }))}
-        />
-      </FieldWrapper>
+      <Field.Select
+        label={heatingTypeInput ? 'Énergie de chauffage :' : fieldLabelInformation.heatingEnergy.label}
+        name="heatingEnergy"
+        className="heatingEnergyContactInformations"
+        options={fieldLabelInformation.heatingEnergy.inputs.map(({ value, label }) => ({
+          label,
+          value,
+        }))}
+      />
       <FieldWrapper>
         <Field.Checkbox name="termOfUse" label="J’accepte les conditions générales d’utilisation du service." />
       </FieldWrapper>
