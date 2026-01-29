@@ -4,7 +4,6 @@ import { useCallback, useMemo, useState } from 'react';
 
 import { clientConfig } from '@/client-config';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
-import MarkdownWrapper from '@/components/MarkdownWrapper';
 import Box from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
 import Image from '@/components/ui/Image';
@@ -147,7 +146,7 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
             {!cardMode ? (
               <>
                 <ContactFormResultMessage eligible={computedEligibility}>
-                  <h2 className="fr-h6">{title}</h2>
+                  {title && <h2 className="fr-h6">{title}</h2>}
                   {body}
                 </ContactFormResultMessage>
                 <ContactMapResult>
@@ -190,7 +189,7 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
             {!cardMode && (
               <>
                 <Image src="/img/logo_rf.png" alt="logo france chaleur urbaine" width={50} height={45} />
-                <MarkdownWrapper value={text} className="h4-dark-blue" />
+                <div className="h4-dark-blue">{text}</div>
               </>
             )}
             <ContactForm

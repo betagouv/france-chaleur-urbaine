@@ -309,7 +309,7 @@ export const ArrowItem = ({
   color?: 'default' | 'white';
   className?: string;
 }) => (
-  <div className={`flex gap-2 fr-my-3w ${color === 'white' ? 'text-white' : ''} ${className ?? ''}`}>
+  <div className={`flex gap-2 fr-mb-3w ${color === 'white' ? 'text-white' : ''} ${className ?? ''}`}>
     <ArrowPuce $color={color} />
     <div>{children}</div>
   </div>

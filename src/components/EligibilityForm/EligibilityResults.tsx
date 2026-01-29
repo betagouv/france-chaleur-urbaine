@@ -95,7 +95,7 @@ export const getEligibilityResult = (
       Sans attendre, pour réduire votre facture énergétique et limiter votre impact écologique, pensez à améliorer l’isolation thermique de
       votre immeuble. Pour être accompagné dans vos projets de rénovation énergétique, rendez-vous sur{' '}
       <a href="https://france-renov.gouv.fr/" target="_blank" rel="noreferrer">
-        <strong>France Rénov’</strong>
+        France Rénov’
       </a>
     </ArrowItem>
   );
@@ -150,7 +150,7 @@ export const getEligibilityResult = (
       </>
     ),
     eligibility: true,
-    text: <h4>Recevez plus d’informations adaptées à votre bâtiment de la part du gestionnaire du réseau</h4>,
+    text: <h4 className="dark-blue">Recevez plus d’informations adaptées à votre bâtiment de la part du gestionnaire du réseau</h4>,
   };
 
   // 3 rue du petit bois 78370 Plaisir
@@ -160,12 +160,12 @@ export const getEligibilityResult = (
         <ArrowItem>
           <strong>Votre immeuble est situé à proximité</strong> immédiate d’un réseau de chaleur {distance ? `(${distance})` : ''}.
         </ArrowItem>
-        <AutreSolutionsChauffageItem />
         <ArrowItem>
           Toutefois au vu de votre chauffage actuel,{' '}
           <strong>le raccordement de votre immeuble nécessiterait des travaux conséquents</strong> et coûteux, avec notamment la création
           d’un réseau interne de distribution au sein de l’immeuble.
         </ArrowItem>
+        <AutreSolutionsChauffageItem />
         {FranceRenovItem}
       </>
     ),
