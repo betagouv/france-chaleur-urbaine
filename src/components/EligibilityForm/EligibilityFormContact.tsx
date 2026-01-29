@@ -188,7 +188,7 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
           <ContactFormContentWrapper>
             {!cardMode && (
               <>
-                <Image src="/img/logo_rf.png" alt="logo france chaleur urbaine" width={50} height={45} />
+                <Image src="/logo-rf.svg" alt="logo République française" width={66} height={58} className="fr-mb-3v" />
                 <div className="h4-dark-blue">{text}</div>
               </>
             )}

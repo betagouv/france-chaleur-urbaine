@@ -5,7 +5,7 @@ import { Container, Image, Information } from './Informations.styles';
 const Informations = () => {
   return (
     <>
-      <Image src="/img/logo_rf.png" alt="logo france chaleur urbaine" />
+      <Image src="/logo-rf.svg" alt="logo République française" className="bg-white fr-p-1v" />
       <Container>
         <Information className="fr-col-md-12 fr-col-lg-3">
           <div>
