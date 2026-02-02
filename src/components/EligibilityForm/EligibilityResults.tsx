@@ -130,7 +130,7 @@ export const getEligibilityResult = (
           <strong>Un réseau de chaleur passe à proximité</strong> immédiate de votre adresse {distance ? `(${distance})` : ''}.
         </ArrowItem>
         {isClasse && !hasPDP && !inPDP && ReseauClasseItem}
-        {inPDP && { ObligationsRaccordementLink }}
+        {inPDP && <ObligationsRaccordementLink />}
         <ArrowItem>
           Avec un chauffage collectif, <strong>votre immeuble dispose déjà des équipements nécessaires&nbsp;:</strong> il s’agit du cas le
           plus favorable pour un raccordement&nbsp;!
@@ -186,7 +186,6 @@ export const getEligibilityResult = (
   };
 
   // 1 rue du berry 78370 Plaisir
-  // Rue du Tivoli 67000 Strasbourg
   const intermediateCollectif: EligibilityResult = {
     body: ({ distance, inPDP, gestionnaire, tauxENRR, isClasse, hasPDP, city }) => (
       <>
@@ -233,7 +232,6 @@ export const getEligibilityResult = (
   };
 
   // 1 rue du berry 78370 Plaisir
-  // Rue du Tivoli 67000 Strasbourg
   const farIndividual: EligibilityResult = {
     body: () => (
       <>
@@ -287,7 +285,7 @@ export const getEligibilityResult = (
     title: () => 'Il n’existe pas de réseau de chaleur ouvert au raccordement à proximité de votre adresse pour le moment.',
   };
 
-  // Rue pablo neruda 76610 Le havre
+  // Rue Georges Braque 76600 Le Havre
   const closeFuturCollectif: EligibilityResult = {
     body: ({ distance, inPDP, gestionnaire, tauxENRR, city }) => (
       <>
@@ -296,7 +294,7 @@ export const getEligibilityResult = (
           <strong>Un réseau de chaleur passera bientôt à proximité</strong> immédiate de votre adresse {distance ? `(${distance})` : ''}{' '}
           (réseau prévu ou en construction).
         </ArrowItem>
-        {inPDP && { ObligationsRaccordementLink }}
+        {inPDP && <ObligationsRaccordementLink />}
         <ArrowItem>
           Avec un chauffage collectif, <strong>votre immeuble dispose déjà des équipements nécessaires&nbsp;:</strong> il s’agit du cas le
           plus favorable pour un raccordement&nbsp;!
