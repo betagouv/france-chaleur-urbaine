@@ -1,6 +1,7 @@
 import type React from 'react';
 
 import { ArrowItem } from '@/components/MarkdownWrapper/MarkdownWrapper.style';
+import Link from '@/components/ui/Link';
 import type { AvailableHeating } from '@/modules/app/types';
 import type { HeatNetworksResponse } from '@/types/HeatNetworksResponse';
 
@@ -75,18 +76,20 @@ export const getEligibilityResult = (
   eligibility?: HeatNetworksResponse
 ): EligibilityResult => {
   const state = getEligibilityResultState(heatingType, eligibility);
-
   const AutreSolutionsChauffageItem = ({ collectif = false }) => (
     <ArrowItem>
-      Il existe d’autres solutions de chauffage écologiques et économiques adaptées à votre bâtiment :{' '}
-      <a
-        className="fr-btn fr-icon-checkbox-line fr-btn--icon-right fr-btn--secondary fr-mt-2v"
-        href={`/chaleur-renouvelable?address=${encodeURIComponent(address)}${collectif && `&type=immeuble_chauffage_collectif`}#quel-chauffage`}
-        target="_blank"
-        rel="noopener"
-      >
-        Découvrir les autres solutions
-      </a>
+      <div className="flex flex-col">
+        Il existe d’autres solutions de chauffage écologiques et économiques adaptées à votre bâtiment :{' '}
+        <Link
+          href={`/chaleur-renouvelable?address=${encodeURIComponent(address)}${collectif && `&type=immeuble_chauffage_collectif`}#quel-chauffage`}
+          variant="secondary"
+          className="fr-mt-3v"
+          eventKey="Eligibilité|Formulaire de test - Adresse Inéligible - CTA comparateur"
+        >
+          Découvrir les autres solutions
+          <span className="fr-icon-arrow-right-line fr-icon--right fr-ml-1v" />
+        </Link>
+      </div>
     </ArrowItem>
   );
 
