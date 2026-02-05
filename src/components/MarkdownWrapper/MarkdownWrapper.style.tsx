@@ -4,6 +4,7 @@ import styled, { css } from 'styled-components';
 
 import { legacyColors } from '@/components/ui/helpers/colors';
 import { type TrackingEvent, trackEvent } from '@/modules/analytics/client';
+import cx from '@/utils/cx';
 
 export const isExternalLink = (href: string) => href && href.search(/(^http)|(^mailto)|(^\/documentation)/) >= 0;
 
@@ -309,7 +310,7 @@ export const ArrowItem = ({
   color?: 'default' | 'white';
   className?: string;
 }) => (
-  <div className={`flex gap-2 fr-mb-3w ${color === 'white' ? 'text-white' : ''} ${className ?? ''}`}>
+  <div className={cx('flex gap-2 fr-mb-3w', color === 'white' && 'text-white', className ?? '')}>
     <ArrowPuce $color={color} />
     <div>{children}</div>
   </div>
