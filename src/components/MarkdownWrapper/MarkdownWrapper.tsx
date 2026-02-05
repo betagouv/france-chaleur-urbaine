@@ -28,11 +28,10 @@ import { unified } from 'unified';
  * - ::check-item, ::thumb-item - Custom list items
  * - ::highlight - DSFR highlight component
  * - ::cartridge - Custom cartridge component
- * - ::button-link, ::extra-link - Custom link components
+ * - ::extra-link - Custom link components
  */
 
 import {
-  ButtonLink,
   Cartridge,
   CheckItem,
   CounterItem,
@@ -118,7 +117,6 @@ const MarkdownWrapper: React.FC<{
     <MarkdownWrapperStyled className={className} id={id && String(id)} {...props}>
       {
         processor({
-          'button-link': ButtonLink,
           cartridge: Cartridge,
           'check-item': CheckItem,
           'consent-link': ConsentLink,
