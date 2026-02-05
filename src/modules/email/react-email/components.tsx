@@ -123,7 +123,7 @@ export const LogoRF = ({ style }: React.ComponentProps<typeof ReactEmailImg>) =>
       ...style,
     }}
     alt="République Française"
-    src="http://localhost:3000/logo-rf.svg"
+    src="https://france-chaleur-urbaine.beta.gouv.fr/logo-rf.svg"
   />
 );
 
