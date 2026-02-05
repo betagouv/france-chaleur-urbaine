@@ -162,13 +162,13 @@ export const update = async (recordId: string, { comment_fcu, comment_gestionnai
   const oldAssignment = currentDemand?.legacy_values['Gestionnaire Affecté à'];
   const newAssignment = values['Gestionnaire Affecté à'];
 
+  // If 'Affecté à' has changed, we consider 'Gestionnaire Affecté à' is outdated and reset it
   if (
     values['Affecté à'] &&
     currentDemand?.legacy_values['Gestionnaire Affecté à'] &&
-    values['Affecté à'] !== currentDemand?.legacy_values['Gestionnaire Affecté à']
+    values['Affecté à'] !== currentDemand?.legacy_values['Affecté à']
   ) {
-    // Affectation a changé, on reset le gestionnaire affecté à
-    values['Gestionnaire Affecté à'] = values['Affecté à'] as string;
+    values['Gestionnaire Affecté à'] = null;
   }
 
   const [updatedDemand] = await kdb

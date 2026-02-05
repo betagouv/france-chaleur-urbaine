@@ -45,7 +45,7 @@ export type Demand = DemandSummary &
     'Gestionnaire Logement': number;
     'Relance envoyée': string;
     'Affecté à': string;
-    'Gestionnaire Affecté à': string;
+    'Gestionnaire Affecté à': string | null;
     'Identifiant réseau'?: string;
     'Nom réseau'?: string;
     'Emails envoyés'?: string;
