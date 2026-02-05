@@ -82,16 +82,13 @@ export const ContactForm = ({ onSubmit, isLoading, cardMode, city, heatingTypeIn
 
   return (
     <Form id={AnalyticsFormId.form_contact}>
-      <Field.Radio
+      <Field.Select
         label={fieldLabelInformation.structure.label}
         name="structure"
         className={fr.cx(`fr-mt-${cardMode ? '1' : '3'}w`)}
-        orientation={cardMode ? 'vertical' : 'horizontal'}
         options={fieldLabelInformation.structure.inputs.map(({ value, label }) => ({
           label,
-          nativeInputProps: {
-            value,
-          },
+          value,
         }))}
       />
       {structure === 'Maison individuelle' && city !== 'Charleville-Mézières' && (
@@ -169,20 +166,15 @@ export const ContactForm = ({ onSubmit, isLoading, cardMode, city, heatingTypeIn
         </Fieldset>
       )}
       <FieldWrapper>{heatingTypeInput}</FieldWrapper>
-      <FieldWrapper>
-        <Field.Radio
-          label={heatingTypeInput ? 'Énergie de chauffage :' : fieldLabelInformation.heatingEnergy.label}
-          name="heatingEnergy"
-          className="heatingEnergyContactInformations"
-          orientation={cardMode ? 'vertical' : 'horizontal'}
-          options={fieldLabelInformation.heatingEnergy.inputs.map(({ value, label }) => ({
-            label,
-            nativeInputProps: {
-              value,
-            },
-          }))}
-        />
-      </FieldWrapper>
+      <Field.Select
+        label={heatingTypeInput ? 'Énergie de chauffage :' : fieldLabelInformation.heatingEnergy.label}
+        name="heatingEnergy"
+        className="heatingEnergyContactInformations"
+        options={fieldLabelInformation.heatingEnergy.inputs.map(({ value, label }) => ({
+          label,
+          value,
+        }))}
+      />
       <FieldWrapper>
         <Field.Checkbox name="termOfUse" label="J’accepte les conditions générales d’utilisation du service." />
       </FieldWrapper>

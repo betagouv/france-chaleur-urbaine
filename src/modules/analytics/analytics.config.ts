@@ -447,6 +447,11 @@ export const trackingEvents = {
     linkedin: 5492666,
     matomo: ['Eligibilité', 'Formulaire de test - Adresse Inéligible'],
   },
+  'Eligibilité|Formulaire de test - Adresse Inéligible - CTA comparateur': {
+    google: 'izv4CKGh6c0ZELGIqf89', // Formulaire - non éligible - clic CTA comparateur
+    linkedin: 5492666,
+    matomo: ['Eligibilité', 'Formulaire de test - Adresse Inéligible - CTA comparateur'],
+  },
   'Eligibilité|Formulaire de test - Adresse Éligible': {
     google: 'CFo-CKSh6c0ZELGIqf89', // Formulaire - éligible
     linkedin: 5392842,

@@ -193,7 +193,7 @@ export const fieldLabelInformation = {
   firstName: 'Prénom',
   heatingEnergy: {
     inputs: modesDeChauffage,
-    label: 'Mode de chauffage',
+    label: 'Votre énergie de chauffage',
   },
   lastName: 'Nom',
   nbLogements: 'Nombre de logements',

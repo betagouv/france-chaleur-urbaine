@@ -45,7 +45,6 @@ import {
   PuceIcon,
   SmallText,
   ThumbItem,
-  WhiteArrowItem,
   WhiteCheckItem,
 } from './MarkdownWrapper.style';
 
@@ -134,7 +133,6 @@ const MarkdownWrapper: React.FC<{
           small: SmallText,
           'strong-inherit': (props: any) => <strong style={{ fontSize: 'inherit' }} {...props} />,
           'thumb-item': ThumbItem,
-          'white-arrow-item': WhiteArrowItem,
           'white-check-item': WhiteCheckItem,
         }).processSync(md).result as React.ReactNode
       }

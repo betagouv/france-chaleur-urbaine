@@ -1,5 +1,7 @@
 import styled, { css } from 'styled-components';
 
+import { legacyColors } from '@/components/ui/helpers/colors';
+
 export const CheckEligibilityFormLabel = styled.div<{ colored?: boolean }>`
   ${({ colored }) =>
     colored &&
@@ -40,8 +42,15 @@ export const ContactFormContentWrapper = styled.div`
     line-height: 32px;
     margin-bottom: 48px;
   }
+  h4.dark-blue {
+    color: var(--text-title-blue-france);
+  }
   .h4-dark-blue h4 {
     color: var(--text-title-blue-france);
+  }
+
+  strong {
+      color: ${legacyColors.lightblue};
   }
 
   ul {
@@ -79,15 +88,11 @@ export const ContactMapResult = styled.div`
 
 export const ContactFormResultMessage = styled.div<{
   eligible?: boolean;
-  cardMode?: boolean;
 }>`
-  box-shadow: inset ${(cardMode) => (cardMode ? '8px' : '16px')} 0 0 0 ${({ eligible }) => (eligible ? '#78EB7B' : '#ea7c3f')};
+  ${({ eligible }) => eligible && `box-shadow: inset 8px 0 0 0 #78EB7B`};
   background-color: var(--g200);
   margin-bottom: 8px;
-  font-size: ${({ cardMode }) => (cardMode ? '14px' : '16px')};
-  line-height: ${({ cardMode }) => (cardMode ? '18px' : '20px')};
-  padding: ${({ cardMode }) => (cardMode ? '8px 16px' : '32px')};
-  p {
-    ${(cardMode) => cardMode && 'margin-bottom: 0;'}
-  }
+  font-size: 16px;
+  line-height: 20px;
+  padding: ${({ eligible }) => eligible && '32px'};
 `;

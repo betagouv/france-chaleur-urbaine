@@ -1,4 +1,4 @@
-import { WhiteArrowPuce } from '@/components/MarkdownWrapper/MarkdownWrapper.style';
+import { ArrowItem } from '@/components/MarkdownWrapper/MarkdownWrapper.style';
 import Simulator from '@/components/Ressources/Contents/Simulator';
 import Box, { ResponsiveRow } from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
@@ -29,21 +29,21 @@ const Simulators = ({
             {textTitle}
           </Heading>
           <Box>
-            <WhiteArrowPuce>
+            <ArrowItem color="white">
               <Text>
-                Le coup de pouce <strong>«&nbsp;Chauffage des bâtiments résidentiels collectifs ettertiaires&nbsp;»</strong> permet
+                Le coup de pouce <strong>«&nbsp;Chauffage des bâtiments résidentiels collectifs et tertiaires&nbsp;»</strong> permet
                 d’obtenir des aides financières conséquentes pour se raccorder.
               </Text>
-            </WhiteArrowPuce>
-            <WhiteArrowPuce>
+            </ArrowItem>
+            <ArrowItem color="white">
               <Text>
                 <strong style={{ backgroundColor: '#F8D86E', color: '#000091' }}>
                   Le coût du raccordement peut ainsi être réduit à quelques centaines d’euros par logement
                 </strong>{' '}
                 (en fonction de la situation du bâtiment et de ses besoins en chaleur).
               </Text>
-            </WhiteArrowPuce>
-            <WhiteArrowPuce>
+            </ArrowItem>
+            <ArrowItem color="white">
               <Text>
                 Différentes entreprises signataires de la charte « Chauffage des bâtiments résidentiels collectifs et tertiaires » offrent
                 cette prime. <br />
@@ -52,7 +52,7 @@ const Simulators = ({
                   offres proposées.
                 </strong>
               </Text>
-            </WhiteArrowPuce>
+            </ArrowItem>
           </Box>
           <Box ml="4w" mt="1w">
             <Link href="/ressources/aides#contenu" variant="primary">
