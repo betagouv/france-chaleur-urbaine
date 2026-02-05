@@ -222,36 +222,6 @@ const CheckItemFCU = css`
   }
 `;
 
-const CheckItemDefault = styled.div.attrs({
-  className: 'fr-fi-checkbox-circle-fill list-item',
-})`
-  margin-bottom: 1.5rem;
-  display: flex;
-  justify-content: flex-start;
-  align-items: flex-start;
-
-  color: ${legacyColors.lightblue};
-
-  &::before {
-    display: block;
-    padding-top: 0.15rem;
-    margin-right: 0.5rem;
-    color: #2fab73;
-    padding: 0;
-    line-height: 1;
-  }
-`;
-
-type CheckItemType = {
-  checked?: boolean;
-  className?: string;
-};
-export const CheckItem = styled.div.attrs<CheckItemType>(({ checked, className }) => ({
-  className: checked ? `fr-fi-checkbox-circle-fill list-item ${className}` : className,
-}))<CheckItemType>`
-  ${({ checked }) => (checked ? CheckItemDefault : CheckItemFCU)}
-`;
-
 export const ThumbItem = styled.div`
   ${CheckItemFCU}
   color: white;

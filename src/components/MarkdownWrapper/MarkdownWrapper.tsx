@@ -25,7 +25,7 @@ import { unified } from 'unified';
  * - unified: Connects both ecosystems through plugins
  *
  * Custom directives supported:
- * - ::check-item, ::thumb-item - Custom list items
+ * - ::thumb-item - Custom list items
  * - ::highlight - DSFR highlight component
  * - ::cartridge - Custom cartridge component
  * - ::extra-link - Custom link components
@@ -33,7 +33,6 @@ import { unified } from 'unified';
 
 import {
   Cartridge,
-  CheckItem,
   CounterItem,
   CountItem,
   ExtraLink,
@@ -118,7 +117,6 @@ const MarkdownWrapper: React.FC<{
       {
         processor({
           cartridge: Cartridge,
-          'check-item': CheckItem,
           'consent-link': ConsentLink,
           'count-item': CountItem,
           'counter-item': CounterItem,
