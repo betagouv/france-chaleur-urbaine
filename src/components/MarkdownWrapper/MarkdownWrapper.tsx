@@ -1,6 +1,6 @@
-import { Highlight } from '@codegouvfr/react-dsfr/Highlight';
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
+import type React from 'react';
+import { useEffect, useState } from 'react';
 import * as jsxRuntime from 'react/jsx-runtime';
 import rehypeRaw from 'rehype-raw';
 import rehypeReact from 'rehype-react';
@@ -26,7 +26,6 @@ import { unified } from 'unified';
  *
  * Custom directives supported:
  * - ::thumb-item - Custom list items
- * - ::highlight - DSFR highlight component
  * - ::cartridge - Custom cartridge component
  * - ::extra-link - Custom link components
  */
@@ -34,14 +33,10 @@ import { unified } from 'unified';
 import {
   Cartridge,
   CounterItem,
-  CountItem,
   ExtraLink,
   isExternalLink,
-  KnowMoreLink,
   MarkdownWrapperStyled,
   PuceIcon,
-  SmallText,
-  ThumbItem,
   WhiteCheckItem,
 } from './MarkdownWrapper.style';
 
@@ -53,17 +48,6 @@ export const RoutedLink = (props: any) => {
   };
   return <Link {...props} {...extProps} />;
 };
-
-const ConsentLink: React.FC<{
-  children?: React.ReactNode;
-  ForceBlock: React.ElementType;
-}> = ({ children, ForceBlock = React.Fragment }) => (
-  <>
-    <ForceBlock>
-      <a href="#consentement">{children}</a>
-    </ForceBlock>
-  </>
-);
 
 const processor = (extender: Record<string, unknown> = {}) =>
   unified()
@@ -117,16 +101,9 @@ const MarkdownWrapper: React.FC<{
       {
         processor({
           cartridge: Cartridge,
-          'consent-link': ConsentLink,
-          'count-item': CountItem,
           'counter-item': CounterItem,
           'extra-link': ExtraLink,
-          highlight: Highlight,
-          'know-more-link': KnowMoreLink,
           'puce-icon': PuceIcon,
-          small: SmallText,
-          'strong-inherit': (props: any) => <strong style={{ fontSize: 'inherit' }} {...props} />,
-          'thumb-item': ThumbItem,
           'white-check-item': WhiteCheckItem,
         }).processSync(md).result as React.ReactNode
       }
