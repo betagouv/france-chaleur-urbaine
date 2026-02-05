@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import MarkdownWrapper from '@/components/MarkdownWrapper';
+import { ArrowItem } from '@/components/MarkdownWrapper/MarkdownWrapper.style';
 
 import { ClassedNetworksColumn } from './ClassedNetworks.styles';
 
@@ -61,15 +62,10 @@ Cette obligation s’applique dans une certaine zone autour du réseau, qualifi�
       <ClassedNetworksColumn className="fr-col-md-6 fr-col-12">
         <MarkdownWrapper withPadding value={networkText} />
       </ClassedNetworksColumn>
-      <ClassedNetworksColumn className="fr-col-md-6 fr-col-12">
-        <MarkdownWrapper
-          withPadding
-          value={`
-  **Sont concernés :**
-  ::arrow-item[${concernedText1}]
-  ::arrow-item[${concernedText2}]
-          `}
-        />
+      <ClassedNetworksColumn className="fr-col-md-6 fr-col-12 fr-px-6w">
+        <strong>Sont concernés :</strong>
+        <ArrowItem>{concernedText1}</ArrowItem>
+        <ArrowItem>{concernedText2}</ArrowItem>
       </ClassedNetworksColumn>
     </>
   );

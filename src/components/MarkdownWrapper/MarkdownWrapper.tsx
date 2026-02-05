@@ -25,14 +25,13 @@ import { unified } from 'unified';
  * - unified: Connects both ecosystems through plugins
  *
  * Custom directives supported:
- * - ::check-item, ::arrow-item, ::thumb-item - Custom list items
+ * - ::check-item, ::thumb-item - Custom list items
  * - ::highlight - DSFR highlight component
  * - ::cartridge - Custom cartridge component
  * - ::button-link, ::extra-link - Custom link components
  */
 
 import {
-  ArrowItem,
   ButtonLink,
   Cartridge,
   CheckItem,
@@ -119,7 +118,6 @@ const MarkdownWrapper: React.FC<{
     <MarkdownWrapperStyled className={className} id={id && String(id)} {...props}>
       {
         processor({
-          'arrow-item': ArrowItem,
           'button-link': ButtonLink,
           cartridge: Cartridge,
           'check-item': CheckItem,
