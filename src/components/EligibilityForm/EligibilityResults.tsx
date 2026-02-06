@@ -124,6 +124,11 @@ export const getEligibilityResult = (
     </ArrowItem>
   );
 
+  const ParisPuissanceNote = ({ city }: { city?: string }) =>
+    city === 'Paris' ? (
+      <p className="fr-text--sm fr-mb-0">A noter: sur Paris, la puissance souscrite doit être d’au moins 100&nbsp;kW.</p>
+    ) : null;
+
   // 3 rue du petit bois 78370 Plaisir
   const closeCollectif: EligibilityResult = {
     body: ({ distance, inPDP, gestionnaire, tauxENRR, isClasse, hasPDP, city }) => (
@@ -149,7 +154,7 @@ export const getEligibilityResult = (
             ) : null}
           </ArrowItem>
         )}
-        {city === 'Paris' && <p className="fr-text--sm">A noter: sur Paris, la puissance souscrite doit être d’au moins 100&nbsp;kW.</p>}
+        <ParisPuissanceNote city={city} />
       </>
     ),
     eligibility: true,
@@ -213,7 +218,7 @@ export const getEligibilityResult = (
             ) : null}
           </ArrowItem>
         )}
-        {city === 'Paris' && <p className="fr-text--sm">A noter: sur Paris, la puissance souscrite doit être d’au moins 100&nbsp;kW.</p>}
+        <ParisPuissanceNote city={city} />
       </>
     ),
     eligibility: true,
@@ -313,7 +318,7 @@ export const getEligibilityResult = (
             ) : null}
           </ArrowItem>
         )}
-        {city === 'Paris' && <p className="fr-text--sm">A noter: sur Paris, la puissance souscrite doit être d’au moins 100&nbsp;kW.</p>}
+        <ParisPuissanceNote city={city} />
       </>
     ),
     eligibility: true,
@@ -390,7 +395,7 @@ export const getEligibilityResult = (
           </ArrowItem>
         )}
 
-        {city === 'Paris' && <p className="fr-text--sm">A noter: sur Paris, la puissance souscrite doit être d’au moins 100&nbsp;kW.</p>}
+        <ParisPuissanceNote city={city} />
       </>
     ),
     eligibility: true,
@@ -466,7 +471,7 @@ export const getEligibilityResult = (
             ) : null}
           </ArrowItem>
         )}
-        {city === 'Paris' && <p className="fr-text--sm">A noter: sur Paris, la puissance souscrite doit être d’au moins 100&nbsp;kW.</p>}
+        <ParisPuissanceNote city={city} />
       </>
     ),
     text: (
