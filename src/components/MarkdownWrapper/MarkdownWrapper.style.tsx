@@ -1,9 +1,7 @@
-import Link from 'next/link';
 import type { ReactNode } from 'react';
 import styled, { css } from 'styled-components';
 
 import { legacyColors } from '@/components/ui/helpers/colors';
-import { type TrackingEvent, trackEvent } from '@/modules/analytics/client';
 import cx from '@/utils/cx';
 
 export const isExternalLink = (href: string) => href && href.search(/(^http)|(^mailto)|(^\/documentation)/) >= 0;
@@ -68,32 +66,6 @@ export const MarkdownWrapperStyled = styled.div.attrs<MarkdownWrapperStyledProps
     }
   `}
 `;
-
-type ExtraEventType = {
-  children: React.ReactNode;
-  className?: string;
-  eventKey?: TrackingEvent;
-  eventPayload?: string;
-};
-
-export const ExtraLink = styled(Link).attrs<ExtraEventType>((props) => {
-  const { className, eventKey, eventPayload, ...rest } = props;
-  const trackEventProps = eventKey
-    ? {
-        onClick: () => {
-          trackEvent(
-            eventKey,
-            eventPayload?.split(',').map((v) => v.trim())
-          );
-        },
-      }
-    : {};
-  return {
-    ...rest,
-    ...trackEventProps,
-    className,
-  };
-})<ExtraEventType>``;
 
 export const CounterItem = styled.div`
   display: flex;

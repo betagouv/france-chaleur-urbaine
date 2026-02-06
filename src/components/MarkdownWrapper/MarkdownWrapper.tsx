@@ -30,15 +30,7 @@ import { unified } from 'unified';
  * - ::extra-link - Custom link components
  */
 
-import {
-  Cartridge,
-  CounterItem,
-  ExtraLink,
-  isExternalLink,
-  MarkdownWrapperStyled,
-  PuceIcon,
-  WhiteCheckItem,
-} from './MarkdownWrapper.style';
+import { Cartridge, CounterItem, isExternalLink, MarkdownWrapperStyled, PuceIcon, WhiteCheckItem } from './MarkdownWrapper.style';
 
 export const RoutedLink = (props: any) => {
   const { href, target } = props;
@@ -102,7 +94,6 @@ const MarkdownWrapper: React.FC<{
         processor({
           cartridge: Cartridge,
           'counter-item': CounterItem,
-          'extra-link': ExtraLink,
           'puce-icon': PuceIcon,
           'white-check-item': WhiteCheckItem,
         }).processSync(md).result as React.ReactNode
