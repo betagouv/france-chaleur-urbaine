@@ -59,10 +59,11 @@ Cette obligation s’applique dans une certaine zone autour du réseau, qualifi�
   return (
     <>
       <ClassedNetworksColumn className="fr-col-md-6 fr-col-12">
-        <MarkdownWrapper withPadding value={networkText} />
+        <MarkdownWrapper color="blue-france" withPadding value={networkText} />
       </ClassedNetworksColumn>
       <ClassedNetworksColumn className="fr-col-md-6 fr-col-12">
         <MarkdownWrapper
+          color="blue-france"
           withPadding
           value={`
   **Sont concernés :**
