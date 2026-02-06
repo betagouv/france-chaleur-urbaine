@@ -143,7 +143,13 @@ const City = ({ citySlug, network }: { citySlug: keyof typeof citiesData; networ
                   justifyContent="space-between"
                   position="relative"
                 >
-                  <WrappedText textClassName="user-experience-description" key={`user-experience-${props.imgSrc}`} center {...props} />
+                  <WrappedText
+                    markdown={false}
+                    textClassName="user-experience-description"
+                    key={`user-experience-${props.imgSrc}`}
+                    center
+                    {...props}
+                  />
                 </Box>
               ))}
             </Box>

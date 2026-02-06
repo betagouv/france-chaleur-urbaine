@@ -27,10 +27,9 @@ import { unified } from 'unified';
  * Custom directives supported:
  * - ::thumb-item - Custom list items
  * - ::cartridge - Custom cartridge component
- * - ::extra-link - Custom link components
  */
 
-import { Cartridge, CounterItem, isExternalLink, MarkdownWrapperStyled, PuceIcon, WhiteCheckItem } from './MarkdownWrapper.style';
+import { Cartridge, isExternalLink, MarkdownWrapperStyled, PuceIcon, WhiteCheckItem } from './MarkdownWrapper.style';
 
 export const RoutedLink = (props: any) => {
   const { href, target } = props;
@@ -93,7 +92,6 @@ const MarkdownWrapper: React.FC<{
       {
         processor({
           cartridge: Cartridge,
-          'counter-item': CounterItem,
           'puce-icon': PuceIcon,
           'white-check-item': WhiteCheckItem,
         }).processSync(md).result as React.ReactNode

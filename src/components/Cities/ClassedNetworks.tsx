@@ -64,9 +64,9 @@ const ClassedNetworks = ({
 
   return (
     <>
-      <ClassedNetworksColumn className="fr-col-md-6 fr-col-12 fr-px-6w">{networkText}</ClassedNetworksColumn>
-      <ClassedNetworksColumn className="fr-col-md-6 fr-col-12 fr-px-6w">
-        <strong>Sont concernés :</strong>
+      <ClassedNetworksColumn className="fr-col-md-6 fr-col-12 fr-px-md-6w">{networkText}</ClassedNetworksColumn>
+      <ClassedNetworksColumn className="fr-col-md-6 fr-col-12 fr-px-md-6w">
+        <strong className="d-block fr-mb-3w">Sont concernés :</strong>
         <ArrowItem>{concernedText1}</ArrowItem>
         <ArrowItem>{concernedText2}</ArrowItem>
       </ClassedNetworksColumn>
