@@ -26,10 +26,9 @@ import { unified } from 'unified';
  *
  * Custom directives supported:
  * - ::thumb-item - Custom list items
- * - ::cartridge - Custom cartridge component
  */
 
-import { Cartridge, isExternalLink, MarkdownWrapperStyled, PuceIcon, WhiteCheckItem } from './MarkdownWrapper.style';
+import { isExternalLink, MarkdownWrapperStyled, WhiteCheckItem } from './MarkdownWrapper.style';
 
 export const RoutedLink = (props: any) => {
   const { href, target } = props;
@@ -47,7 +46,7 @@ const processor = (extender: Record<string, unknown> = {}) =>
     // 2-4. All markdown AST transformations MUST happen before remarkRehype (step 5)
     // 2. Converts line breaks to <br> tags (modifies markdown AST)
     .use(remarkBreaks)
-    // 3. Enables custom directives (::highlight, ::cartridge, etc.)
+    // 3. Enables custom directives (::highlight, etc.)
     .use(remarkDirective)
     // 4. Converts directive nodes to HTML elements for remark-rehype
     .use(remarkDirectiveRehype)
@@ -91,8 +90,6 @@ const MarkdownWrapper: React.FC<{
     <MarkdownWrapperStyled className={className} id={id && String(id)} {...props}>
       {
         processor({
-          cartridge: Cartridge,
-          'puce-icon': PuceIcon,
           'white-check-item': WhiteCheckItem,
         }).processSync(md).result as React.ReactNode
       }

@@ -1,5 +1,6 @@
 import HeadSliceForm from '@/components/HeadSliceForm';
 import MarkdownWrapper from '@/components/MarkdownWrapper';
+import { PuceIcon } from '@/components/MarkdownWrapper/MarkdownWrapper.style';
 import { growths, issues, understandings } from '@/components/Ressources/config';
 import Understanding from '@/components/Ressources/Understanding';
 import Simulator from '@/components/SimulatorCO2';
@@ -8,9 +9,10 @@ import Slice from '@/components/Slice';
 import SliceForm from '@/components/SliceForm';
 import { GlobalStyle } from '@/components/shared/layout/Global.style';
 import { legacyColors } from '@/components/ui/helpers/colors';
+import Link from '@/components/ui/Link';
 import WrappedBlock from '@/components/WrappedBlock';
 import WrappedText from '@/components/WrappedText';
-import { comparatifRcu, fcuSolutionForFutur } from '@/data/tertiaire';
+import { comparatifRcu } from '@/data/tertiaire';
 
 import { TertiaireStyle } from './index.styles';
 import Owner from './Owner';
@@ -25,8 +27,32 @@ const tertiaireCards = {
 function Tertiaire({ alt }: { alt?: boolean }) {
   const futur = (
     <Slice theme="color" padding={4}>
-      <MarkdownWrapper value={fcuSolutionForFutur.body} className="fcuSolutionForFuturBody" />
-      <MarkdownWrapper value={fcuSolutionForFutur.listing} className="fcuSolutionForFuturListing" />
+      <div className="fcuSolutionForFuturBody">
+        <h2>Une énergie d’avenir, propre et économique</h2>
+        <p>
+          Le chauffage urbain permet de{' '}
+          <strong>
+            relier les bâtiments d’un quartier par des canalisations (<Link href="/ressources/reseau#contenu">réseaux de chaleur</Link>) qui
+            distribuent de la chaleur
+          </strong>{' '}
+          produite avec{' '}
+          <strong>
+            des <Link href="/ressources/energies-vertes#contenu">sources d’énergies</Link>) renouvelables, locales et durables
+          </strong>{' '}
+          (géothermie, biomasse, chaleur issue de l'incinération des déchets...).
+        </p>
+      </div>
+      <div className="fcuSolutionForFuturListing">
+        <PuceIcon icon="./icons/picto-planet.svg">
+          <strong>Agissez pour la planète</strong> en réduisant vos émissions de gaz à effet de serre.
+        </PuceIcon>{' '}
+        <PuceIcon icon="./icons/picto-invoice.svg">
+          <strong>Maîtrisez votre facture</strong> de chauffage grâce à des tarifs compétitifs et stables.
+        </PuceIcon>{' '}
+        <PuceIcon icon="./icons/picto-serenity.svg">
+          <strong>Choisissez la sérénité</strong> avec des énergies locales et bénéficiez de la garantie d’un service public.
+        </PuceIcon>
+      </div>
     </Slice>
   );
 
@@ -68,14 +94,14 @@ Vos locaux sont chauffés au fioul ou au gaz&nbsp;?
 
       <Slice theme="color" padding={8} header={`## Un moyen efficace de lutter contre le changement climatique`}>
         <Simulator typeSurf={TypeSurf.tertiaire}>
-          <MarkdownWrapper
-            value={`
-:::puce-icon{icon="./icons/picto-warning.svg"}
-**À partir du 1er juillet 2022,** de nouvelles normes environnementales, qui visent à limiter les émissions de gaz à effet de serre, entreront en vigueur et **excluent l'installation de nouvelles chaudières au fioul.**
-**[Des aides](/ressources/aides#contenu) accompagnent cette transition.**
-:::
-              `}
-          />
+          <PuceIcon icon="./icons/picto-warning.svg">
+            <strong>À partir du 1er juillet 2022,</strong> de nouvelles normes environnementales, qui visent à limiter les émissions de gaz
+            à effet de serre, entreront en vigueur et <strong>excluent l'installation de nouvelles chaudières au fioul.</strong>
+            <br />
+            <strong>
+              <Link href="/ressources/aides#contenu">Des aides</Link> accompagnent cette transition.
+            </strong>
+          </PuceIcon>
         </Simulator>
       </Slice>
 
