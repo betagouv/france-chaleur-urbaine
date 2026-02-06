@@ -667,6 +667,7 @@ export interface Tags {
   id: Generated<string>;
   name: string;
   type: string;
+  comment: string | null;
   updated_at: Generated<Timestamp>;
 }
 
