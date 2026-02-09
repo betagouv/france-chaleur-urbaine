@@ -68,13 +68,41 @@ export const remove = baseModel.remove;
 
 export const validation = {
   create: z.object({
+    comment: z.string().optional(),
     name: z.string(),
     type: z.string().optional(),
   }),
   update: z.object({
+    comment: z.string().optional(),
     name: z.string().optional(),
     type: z.string().optional(),
   }),
+};
+
+/**
+ * Met à jour le commentaire d'un tag.
+ */
+export const updateTagComment = async (tagId: string, comment: string | null, authorId: string) => {
+  const updated = await kdb
+    .updateTable('tags')
+    .set({
+      comment,
+      updated_at: new Date(),
+    })
+    .where('id', '=', tagId)
+    .returning(['name', 'comment'])
+    .executeTakeFirstOrThrow();
+
+  await createUserEvent({
+    author_id: authorId,
+    context_id: tagId,
+    context_type: 'tag',
+    data: {
+      comment: updated.comment,
+      tag_name: updated.name,
+    },
+    type: 'tag_comment_updated',
+  });
 };
 
 /**

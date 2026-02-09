@@ -157,6 +157,7 @@
     "tsafe": "^1.8.10",
     "tslib": "^2.8.1",
     "tsx": "4.20.6",
+    "typescript": "^5.9.2",
     "unified": "^11.0.5",
     "uuid": "^13.0.0",
     "vaul": "^1.1.2",
@@ -213,7 +214,6 @@
     "react-email": "5.1.1",
     "tailwindcss": "^4.1.13",
     "tailwindcss-animate": "^1.0.7",
-    "typescript": "^5.9.2",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^4.0.16"
   },

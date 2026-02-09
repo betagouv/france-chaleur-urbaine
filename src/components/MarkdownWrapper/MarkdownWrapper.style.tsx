@@ -45,7 +45,7 @@ export const MarkdownWrapperStyled = styled.div.attrs<MarkdownWrapperStyledProps
     }
 
     div {
-      color: ${color};
+      color: ${color || legacyColors.lightblue};
     }
 
     em {
