@@ -4,7 +4,6 @@ import { useCallback, useMemo, useState } from 'react';
 
 import { clientConfig } from '@/client-config';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
-import MarkdownWrapper from '@/components/MarkdownWrapper';
 import Box from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
 import Image from '@/components/ui/Image';
@@ -42,12 +41,13 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
   const [contactFormLoading, setContactFormLoading] = useState(false);
   const [contactFormError, setContactFormError] = useState(false);
 
-  const { body, computedEligibility, text } = useMemo(() => {
+  const { title, body, computedEligibility, text } = useMemo(() => {
     if (!addressData.eligibility) {
       return {};
     }
 
     const {
+      title,
       body,
       eligibility: computedEligibility,
       text,
@@ -55,10 +55,13 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
 
     const addBordeauxLink =
       addressData.geoAddress?.properties.citycode && bordeauxMetropoleCityCodes.includes(addressData.geoAddress?.properties.citycode);
+
+    const distance = getReadableDistance(addressData.eligibility.distance);
+    const computedTitle = title ? title({ distance }) : '';
     const computedBody = body
       ? body({
           city: addressData.geoAddress?.properties.city,
-          distance: getReadableDistance(addressData.eligibility.distance),
+          distance,
           gestionnaire: addressData.eligibility.gestionnaire?.trim() || null,
           hasPDP: addressData.eligibility.hasPDP,
           inPDP: addressData.eligibility.inPDP,
@@ -76,6 +79,7 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
         : computedBody,
       computedEligibility,
       text,
+      title: computedTitle,
     };
   }, [addressData]);
 
@@ -142,7 +146,8 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
             {!cardMode ? (
               <>
                 <ContactFormResultMessage eligible={computedEligibility}>
-                  <MarkdownWrapper value={body} />
+                  {title && <h2 className="fr-h6">{title}</h2>}
+                  {body}
                 </ContactFormResultMessage>
                 <ContactMapResult>
                   <Map
@@ -183,8 +188,8 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
           <ContactFormContentWrapper>
             {!cardMode && (
               <>
-                <Image src="/img/logo_rf.png" alt="logo france chaleur urbaine" width={50} height={45} />
-                <MarkdownWrapper value={text} className="h4-dark-blue" />
+                <Image src="/logo-rf.svg" alt="logo République française" width={66} height={58} className="fr-mb-3v" />
+                <div className="h4-dark-blue">{text}</div>
               </>
             )}
             <ContactForm

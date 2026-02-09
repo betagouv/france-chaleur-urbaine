@@ -8,10 +8,10 @@ import Configuration from '@/components/ComparateurPublicodes/Configuration';
 import AddressAutocomplete from '@/components/form/dsfr/AddressAutocompleteInput';
 import { FormProvider } from '@/components/form/publicodes/FormProvider';
 import Label from '@/components/form/publicodes/Label';
+import { ArrowItem } from '@/components/MarkdownWrapper/MarkdownWrapper.style';
 import Accordion from '@/components/ui/Accordion';
 import Button from '@/components/ui/Button';
 import Drawer from '@/components/ui/Drawer';
-import { FCUArrowIcon } from '@/components/ui/Icon';
 import Link from '@/components/ui/Link';
 import Notice from '@/components/ui/Notice';
 import Section, { SectionContent, SectionHeading } from '@/components/ui/Section';
@@ -657,8 +657,9 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
         <Section variant="light">
           <SectionHeading size="h3">Une suggestion ou une remarque&nbsp;?</SectionHeading>
           <SectionContent className="flex items-center gap-2">
-            <FCUArrowIcon />
-            <div className="fr-text--lg mb-0!">Faites nous part de vos retours et suggestions sur ce comparateur</div>
+            <ArrowItem>
+              <div className="fr-text--lg mb-0!">Faites nous part de vos retours et suggestions sur ce comparateur</div>
+            </ArrowItem>
           </SectionContent>
           <Link variant="secondary" href="/contact?reason=comparateur" className="fr-mt-2w">
             Nous contacter

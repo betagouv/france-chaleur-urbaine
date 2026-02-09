@@ -1,8 +1,8 @@
+import { ArrowItem } from '@/components/MarkdownWrapper/MarkdownWrapper.style';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Box from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
 import Hero, { HeroSubtitle, HeroTitle } from '@/components/ui/Hero';
-import { FCUArrowIcon } from '@/components/ui/Icon';
 import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
 
@@ -23,10 +23,12 @@ const OutilsPage = () => {
           Test d’adresses en masse
         </Heading>
         <Box display="flex" my="2w">
-          <FCUArrowIcon />
-          <Text size="lg" ml="1w">
-            Repérer sur un parc de bâtiments ceux potentiellement raccordables, et accéder aux caractéristiques des réseaux les plus proches
-          </Text>
+          <ArrowItem>
+            <Text size="lg" ml="1w">
+              Repérer sur un parc de bâtiments ceux potentiellement raccordables, et accéder aux caractéristiques des réseaux les plus
+              proches
+            </Text>
+          </ArrowItem>
         </Box>
         <Link variant="secondary" href="/pro/tests-adresses">
           Accéder
@@ -38,10 +40,11 @@ const OutilsPage = () => {
             Iframes
           </Heading>
           <Box display="flex" my="2w">
-            <FCUArrowIcon />
-            <Text size="lg" ml="1w">
-              Intégrer dans un site internet notre test d’adresse et notre carte, en un copier-coller
-            </Text>
+            <ArrowItem>
+              <Text size="lg" ml="1w">
+                Intégrer dans un site internet notre test d’adresse et notre carte, en un copier-coller
+              </Text>
+            </ArrowItem>
           </Box>
           <Link variant="secondary" href="/collectivites-et-exploitants#iframe-carte">
             Accéder
@@ -53,10 +56,11 @@ const OutilsPage = () => {
           API
         </Heading>
         <Box display="flex" my="2w">
-          <FCUArrowIcon />
-          <Text size="lg" ml="1w">
-            Intégrer l’API du test d’adresse ou des réseaux
-          </Text>
+          <ArrowItem>
+            <Text size="lg" ml="1w">
+              Intégrer l’API du test d’adresse ou des réseaux
+            </Text>
+          </ArrowItem>
         </Box>
         <Link variant="secondary" href="https://www.data.gouv.fr/fr/dataservices/api-france-chaleur-urbaine/" isExternal>
           Accéder
@@ -68,10 +72,11 @@ const OutilsPage = () => {
             Téléchargement de données
           </Heading>
           <Box display="flex" my="2w">
-            <FCUArrowIcon />
-            <Text size="lg" ml="1w">
-              Télécharger les données et tracés des réseaux
-            </Text>
+            <ArrowItem>
+              <Text size="lg" ml="1w">
+                Télécharger les données et tracés des réseaux
+              </Text>
+            </ArrowItem>
           </Box>
           <Link variant="secondary" href="https://www.data.gouv.fr/fr/datasets/traces-des-reseaux-de-chaleur-et-de-froid/" isExternal>
             Accéder
@@ -83,11 +88,12 @@ const OutilsPage = () => {
           Simulateur d’aides
         </Heading>
         <Box display="flex" my="2w">
-          <FCUArrowIcon />
-          <Text size="lg" ml="1w">
-            Evaluer le montant des aides pour le raccordement de votre bâtiment (coup de pouce chauffage des bâtiments résidentiels
-            collectifs et tertiaires)
-          </Text>
+          <ArrowItem>
+            <Text size="lg" ml="1w">
+              Evaluer le montant des aides pour le raccordement de votre bâtiment (coup de pouce chauffage des bâtiments résidentiels
+              collectifs et tertiaires)
+            </Text>
+          </ArrowItem>
         </Box>
         <Link variant="secondary" href="/professionnels#simulateur-aide">
           Accéder
@@ -99,10 +105,11 @@ const OutilsPage = () => {
             Comparateur de coûts et d'émissions de CO2
           </Heading>
           <Box display="flex" my="2w">
-            <FCUArrowIcon />
-            <Text size="lg" ml="1w">
-              Comparer les coûts et les émissions de CO2 des modes de chauffage et de refroidissement
-            </Text>
+            <ArrowItem>
+              <Text size="lg" ml="1w">
+                Comparer les coûts et les émissions de CO2 des modes de chauffage et de refroidissement
+              </Text>
+            </ArrowItem>
           </Box>
           <Link variant="secondary" href="/comparateur-couts-performances">
             Accéder
@@ -114,10 +121,11 @@ const OutilsPage = () => {
           Compatibilité des modes de chauffage
         </Heading>
         <Box display="flex" my="2w">
-          <FCUArrowIcon />
-          <Text size="lg" ml="1w">
-            Découvrir les modes de chauffage décarbonés adaptés à mon bâtiment, leurs atouts et inconvénients.
-          </Text>
+          <ArrowItem>
+            <Text size="lg" ml="1w">
+              Découvrir les modes de chauffage décarbonés adaptés à mon bâtiment, leurs atouts et inconvénients.
+            </Text>
+          </ArrowItem>
         </Box>
         <Link variant="secondary" href="/chaleur-renouvelable">
           Accéder
@@ -129,10 +137,11 @@ const OutilsPage = () => {
             Fiches par réseau
           </Heading>
           <Box display="flex" my="2w">
-            <FCUArrowIcon />
-            <Text size="lg" ml="1w">
-              Modifier ou compléter la fiche d’un réseau
-            </Text>
+            <ArrowItem>
+              <Text size="lg" ml="1w">
+                Modifier ou compléter la fiche d’un réseau
+              </Text>
+            </ArrowItem>
           </Box>
           <Link variant="secondary" href="/reseaux/modifier">
             Accéder
@@ -145,10 +154,11 @@ const OutilsPage = () => {
             Liste des réseaux de chaleur
           </Heading>
           <Box display="flex" my="2w">
-            <FCUArrowIcon />
-            <Text size="lg" ml="1w">
-              Retrouver l'ensemble des réseaux et les filtrer selon leurs caractéristiques
-            </Text>
+            <ArrowItem>
+              <Text size="lg" ml="1w">
+                Retrouver l'ensemble des réseaux et les filtrer selon leurs caractéristiques
+              </Text>
+            </ArrowItem>
           </Box>
           <Link variant="secondary" href="/reseaux">
             Accéder

@@ -1,8 +1,10 @@
 import Link from 'next/link';
+import type { ReactNode } from 'react';
 import styled, { css } from 'styled-components';
 
 import { legacyColors } from '@/components/ui/helpers/colors';
 import { type TrackingEvent, trackEvent } from '@/modules/analytics/client';
+import cx from '@/utils/cx';
 
 export const isExternalLink = (href: string) => href && href.search(/(^http)|(^mailto)|(^\/documentation)/) >= 0;
 
@@ -292,46 +294,26 @@ export const CountItem = ({ number, children }: { number: number; children: stri
   </div>
 );
 
-export const ArrowPuce = styled.div`
-  ${CheckItemFCU}
-  align-items: flex-start;
-  strong {
-    font-weight: 900;
-    font-size: 16px;
-    line-height: 24px;
-  }
-
-  &::before {
-    margin-bottom: 0;
-    font-size: 24px;
-    margin-top: -10px;
-    background-image: url('/icons/picto-arrow.svg');
-  }
+const ArrowPuce = styled.span.attrs(() => ({
+  'aria-hidden': 'true',
+  className: 'fr-icon-arrow-right-circle-fill',
+}))<{ $color?: 'default' | 'white' }>`
+  color: ${({ $color }) => ($color === 'white' ? 'white' : 'var(--text-label-blue-france)')};
 `;
 
-export const WhiteArrowPuce = styled(ArrowPuce)`
-  color: white;
-  em {
-    font-size: 16px;
-    line-height: 24px;
-    color: black !important;
-    background-color: #f8d86e;
-  }
-  &::before {
-    background-image: url('/icons/picto-white-arrow.svg');
-  }
-`;
-
-export const ArrowItem = ({ children }: { children: string }) => (
-  <ArrowPuce>
+export const ArrowItem = ({
+  children,
+  color = 'default',
+  className,
+}: {
+  children: ReactNode;
+  color?: 'default' | 'white';
+  className?: string;
+}) => (
+  <div className={cx('flex gap-2 fr-mb-3w', color === 'white' && 'text-white', className ?? '')}>
+    <ArrowPuce $color={color} />
     <div>{children}</div>
-  </ArrowPuce>
-);
-
-export const WhiteArrowItem = ({ children }: { children: string }) => (
-  <WhiteArrowPuce>
-    <div>{children}</div>
-  </WhiteArrowPuce>
+  </div>
 );
 
 type PuceIconType = {
