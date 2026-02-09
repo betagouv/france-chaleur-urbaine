@@ -28,7 +28,7 @@ import { unified } from 'unified';
  * - ::thumb-item - Custom list items
  */
 
-import { isExternalLink, MarkdownWrapperStyled, WhiteCheckItem } from './MarkdownWrapper.style';
+import { isExternalLink, MarkdownWrapperStyled } from './MarkdownWrapper.style';
 
 export const RoutedLink = (props: any) => {
   const { href, target } = props;
@@ -88,11 +88,7 @@ const MarkdownWrapper: React.FC<{
     value
   ) : (
     <MarkdownWrapperStyled className={className} id={id && String(id)} {...props}>
-      {
-        processor({
-          'white-check-item': WhiteCheckItem,
-        }).processSync(md).result as React.ReactNode
-      }
+      {processor({}).processSync(md).result as React.ReactNode}
     </MarkdownWrapperStyled>
   );
 };

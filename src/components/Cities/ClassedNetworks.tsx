@@ -4,8 +4,6 @@ import { useEffect, useState } from 'react';
 import { ArrowItem, PuceIcon } from '@/components/MarkdownWrapper/MarkdownWrapper.style';
 import Link from '@/components/ui/Link';
 
-import { ClassedNetworksColumn } from './ClassedNetworks.styles';
-
 const ClassedNetworks = ({
   city,
   nameNetwork,
@@ -64,12 +62,12 @@ const ClassedNetworks = ({
 
   return (
     <>
-      <ClassedNetworksColumn className="fr-col-md-6 fr-col-12 fr-px-md-6w">{networkText}</ClassedNetworksColumn>
-      <ClassedNetworksColumn className="fr-col-md-6 fr-col-12 fr-px-md-6w">
+      <div className="fr-col-md-6 fr-col-12 fr-px-md-6w">{networkText}</div>
+      <div className="fr-col-md-6 fr-col-12 fr-px-md-6w">
         <strong className="d-block fr-mb-3w">Sont concernés :</strong>
         <ArrowItem>{concernedText1}</ArrowItem>
         <ArrowItem>{concernedText2}</ArrowItem>
-      </ClassedNetworksColumn>
+      </div>
     </>
   );
 };

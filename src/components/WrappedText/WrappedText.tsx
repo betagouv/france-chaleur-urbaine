@@ -8,7 +8,7 @@ import { Container, ImageContainer, TextContainer } from './WrappedText.style';
 const WrappedText: React.FC<{
   children?: ReactNode;
   title?: ReactNode;
-  body?: string;
+  body?: string | ReactNode;
   imgSrc?: string;
   imgAlt?: string;
   textClassName?: string;

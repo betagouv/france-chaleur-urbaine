@@ -16,7 +16,7 @@ type NetworksData = {
   isClassed: boolean;
   identifiant?: string;
   heatedPlaces?: string;
-  gestionnaires?: string;
+  gestionnaires?: React.ReactNode;
 };
 
 const Networks = ({ networksData, network, cityCoord }: { networksData: NetworksData; network?: Network; cityCoord: [number, number] }) => {
