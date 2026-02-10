@@ -49,7 +49,7 @@
     "db:push:prod": "./scripts/copyLocalTableToRemote.sh prod",
     "db:sync": "pnpm cli db:sync",
     "db:verify": "pnpm db:introspect --verify",
-    "postinstall": "node scripts/postinstall.mjs",
+    "postinstall": "node scripts/postinstall.mjs && scripts/fetch-publicodes-dev.sh",
     "scalingo-postbuild": "pnpm build && next-sitemap",
     "predev": "only-include-used-icons --silent",
     "prebuild": "only-include-used-icons",
