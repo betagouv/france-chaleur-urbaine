@@ -57,7 +57,7 @@
     "ts": "NODE_OPTIONS=\"--max-old-space-size=8192\" pnpm tsc --build --clean && pnpm tsc"
   },
   "dependencies": {
-    "@betagouv/france-chaleur-urbaine-publicodes": "^1.1.0",
+    "@betagouv/france-chaleur-urbaine-publicodes": "^1.5.0",
     "@bprogress/next": "^3.2.12",
     "@codegouvfr/react-dsfr": "^1.28.0",
     "@commander-js/extra-typings": "^14.0.0",

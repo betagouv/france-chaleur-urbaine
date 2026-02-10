@@ -105,7 +105,7 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
         {hasGranules && (
           <Accordion label="Granulés">
             <Select name="Paramètres économiques . Granulés . Type de conditionnement" />
-            <Input name="Paramètres économiques . Granulés . Prix pour les granulés" />
+            <Input name="Paramètres économiques . Granulés . Prix pour les granulés" placeholderPrecision={1} />
             <Input name="Paramètres économiques . Granulés . TVA" />
           </Accordion>
         )}
@@ -137,9 +137,12 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
         <Input name="Paramètres économiques . Petit entretien P2 . Gaz coll sans cond" />
         <Input name="Paramètres économiques . Petit entretien P2 . Fioul indiv" placeholderPrecision={3} />
         <Input name="Paramètres économiques . Petit entretien P2 . Fioul coll" placeholderPrecision={3} />
-        <Input name="Paramètres économiques . Petit entretien P2 . PAC air-air" />
-        <Input name="Paramètres économiques . Petit entretien P2 . PAC eau-eau" />
-        <Input name="Paramètres économiques . Petit entretien P2 . PAC air-eau" placeholderPrecision={0} />
+        <Input name="Paramètres économiques . Petit entretien P2 . PAC air-air coll" placeholderPrecision={0} />
+        <Input name="Paramètres économiques . Petit entretien P2 . PAC air-air indiv" placeholderPrecision={0} />
+        <Input name="Paramètres économiques . Petit entretien P2 . PAC eau-eau coll" placeholderPrecision={0} />
+        <Input name="Paramètres économiques . Petit entretien P2 . PAC eau-eau indiv" placeholderPrecision={0} />
+        <Input name="Paramètres économiques . Petit entretien P2 . PAC air-eau coll" placeholderPrecision={0} />
+        <Input name="Paramètres économiques . Petit entretien P2 . PAC air-eau indiv" placeholderPrecision={0} />
         <Input name="Paramètres économiques . Petit entretien P2 . Radiateur électrique" />
         <Input name="Paramètres économiques . Petit entretien P2 . Chauffe-eau électrique à accumulation" placeholderPrecision={3} />
         <Input name="Paramètres économiques . Petit entretien P2 . Chauffe-eau solaire" placeholderPrecision={3} />
@@ -157,9 +160,12 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
         <Input name="Paramètres économiques . Gros entretien P3 . Gaz coll sans cond" placeholderPrecision={3} />
         <Input name="Paramètres économiques . Gros entretien P3 . Fioul indiv" placeholderPrecision={3} />
         <Input name="Paramètres économiques . Gros entretien P3 . Fioul coll" placeholderPrecision={3} />
-        <Input name="Paramètres économiques . Gros entretien P3 . PAC air-air" placeholderPrecision={0} />
-        <Input name="Paramètres économiques . Gros entretien P3 . PAC eau-eau" placeholderPrecision={0} />
-        <Input name="Paramètres économiques . Gros entretien P3 . PAC air-eau" placeholderPrecision={0} />
+        <Input name="Paramètres économiques . Gros entretien P3 . PAC air-air coll" placeholderPrecision={0} />
+        <Input name="Paramètres économiques . Gros entretien P3 . PAC air-air indiv" placeholderPrecision={0} />
+        <Input name="Paramètres économiques . Gros entretien P3 . PAC eau-eau coll" placeholderPrecision={0} />
+        <Input name="Paramètres économiques . Gros entretien P3 . PAC eau-eau indiv" placeholderPrecision={0} />
+        <Input name="Paramètres économiques . Gros entretien P3 . PAC air-eau coll" placeholderPrecision={0} />
+        <Input name="Paramètres économiques . Gros entretien P3 . PAC air-eau indiv" placeholderPrecision={0} />
         <Input name="Paramètres économiques . Gros entretien P3 . Radiateur électrique" placeholderPrecision={3} />
         <Input name="Paramètres économiques . Gros entretien P3 . Chauffe-eau électrique à accumulation" placeholderPrecision={3} />
         <Input name="Paramètres économiques . Gros entretien P3 . Chauffe-eau solaire" placeholderPrecision={3} />
