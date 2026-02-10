@@ -17,8 +17,8 @@ importers:
   .:
     dependencies:
       '@betagouv/france-chaleur-urbaine-publicodes':
-        specifier: 1.4.0
-        version: 1.4.0(publicodes@1.9.1)
+        specifier: ^1.5.0
+        version: 1.5.0(publicodes@1.9.1)
       '@bprogress/next':
         specifier: ^3.2.12
         version: 3.2.12(next@16.1.1(@babel/core@7.28.5)(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
