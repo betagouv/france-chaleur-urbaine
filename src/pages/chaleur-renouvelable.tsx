@@ -1,106 +1,97 @@
-import ChoixChauffageForm from '@/components/choix-chauffage/ChoixChauffageForm';
+import ChoixChauffageForm2 from '@/components/choix-chauffage/ChoixChauffageForm2';
 import SimplePage from '@/components/shared/page/SimplePage';
 import { ResponsiveRow } from '@/components/ui/Box';
-import Hero, { HeroSubtitle, HeroTitle } from '@/components/ui/Hero';
-import Link from '@/components/ui/Link';
-import Section, { SectionContent, SectionHeading, SectionTwoColumns } from '@/components/ui/Section';
+
+const BENEFITS = [
+  { icon: 'fr-icon-temp-cold-fill', lines: ['Gagnez en confort', "toute l'année"] },
+  { icon: 'fr-icon-sparkling-2-fill', lines: ['Diminuez les émission de gaz à', 'effet de serre de votre chauffage'] },
+  { icon: 'fr-icon-award-fill', lines: ['Améliorez votre', 'classe DPE'] },
+  { icon: 'fr-icon-avalanches-fill', lines: ['Protégez-vous des hausses', 'imprévisibles du gaz et du fioul'] },
+  { icon: 'fr-icon-chat-check-fill', lines: ['Un service public gratuit,', 'fiable et neutre'] },
+  { icon: 'fr-icon-money-euro-circle-fill', lines: ["Jusqu'à 70% de prise en charge", 'pour les copropriétés'] },
+];
+
+const STEPS = [
+  { text: 'Je découvre les solutions de chauffage adaptées à mon bâtiment', title: 'Je simule' },
+  { text: "Un conseiller m'aide gratuitement à affiner mon projet", title: 'Je suis accompagné' },
+  { text: 'Un DPE ou audit énergétique précise les travaux à envisager', title: 'Je réalise un audit' },
+  { text: "Je monte mon dossier MaPrimeRénov', CEE et autres financements", title: 'Je mobilise les aides' },
+  { text: 'Le projet est voté en assemblée générale', title: 'Ma copropriété décide' },
+  { text: 'Les travaux sont réalisés et mon nouveau chauffage est en service', title: 'Je fais installer' },
+  { text: 'd’un chauffage confortable et écologique !', title: 'Je profite' },
+];
+
+function BenefitCard({ icon, lines }: { icon: string; lines: readonly string[] }) {
+  return (
+    <div className="w-full max-w-[300px] text-center fr-mb-5w">
+      <div className="fr-h5 fr-mb-1w">
+        <span className={`${icon} text-(--text-title-blue-france)`} aria-hidden="true" />
+      </div>
+      <div>
+        {lines.map((l, i) => (
+          <span key={i}>
+            {l}
+            {i < lines.length - 1 && <br />}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 function ChaleurRenouvelablePage() {
   return (
     <SimplePage
       title="Découvrez le chauffage qui vous convient !"
-      currentPage="/ressources/outils"
+      currentPage="/chaleur-renouvelable"
       description="Découvrez les modes de chauffage renouvelables adaptés à votre logement"
     >
-      <Hero image="/img/landing_chaleur_renouvelable.webp" variant="light" imagePosition="right" imageType="inline-cover" imageRatio="2/5">
-        <HeroTitle>Découvrez le chauffage qui vous convient&nbsp;!</HeroTitle>
-        <HeroSubtitle>
-          Pas toujours simple de s’y retrouver entre <strong>les différents chauffages écologiques</strong>, leurs coûts et leur
-          fonctionnement&nbsp;?
-          <br />
-          <strong>France Chaleur Urbaine</strong> vous aide à comparer les solutions décarbonées et à faire un choix adapté, en quelques
-          clics.
-        </HeroSubtitle>
-      </Hero>
+      <div
+        className="fr-p-5w w-full"
+        style={{
+          background: 'url("/img/banner_chauffage_gaz.png") no-repeat left center #C3E4E2',
+        }}
+      >
+        <div className="mx-auto md:w-4/5 max-w-5xl rounded border-2 border-blue-600 bg-white p-6 shadow-sm">
+          <h2 className="text-lg font-semibold text-slate-900 mb-4">
+            Trouvez la meilleure solution de chauffage écologique et économique en 3 clics !
+          </h2>
+          <ChoixChauffageForm2 />
+        </div>
+      </div>
 
-      <ChoixChauffageForm />
-
-      <Section variant="lightaccent">
-        <SectionContent className="mt-0!">
-          <ResponsiveRow>
-            <div className="flex-1">
-              <div className="fr-h5 fr-mb-1w">Je me renseigne sur les performances thermiques de mon bâtiment.</div>
-              <div className="text-sm">
-                Mon bâtiment est mal isolé ? Le changement de chauffage doit s'inscrire dans une démarche de rénovation globale !
-              </div>
-            </div>
-
-            <div className="flex-1">
-              <div className="fr-h5 fr-mb-1w">J'identifie les modes de chauffage adaptés à mon bâtiment.</div>
-              <div className="text-sm">
-                Les modes de chauffage ne sont pas tous interchangeables : chacun a ses spécificités et ses contraintes techniques.
-              </div>
-            </div>
-
-            <div className="flex-1">
-              <div className="fr-h5 fr-mb-1w">Je compare attentivement les avantages et inconvénients de chacun.</div>
-              <div className="text-sm">
-                Différents critères sont à prendre en compte : coût, émissions de CO2, impact sonore et visuel, maintenance…
-              </div>
-            </div>
-          </ResponsiveRow>
-        </SectionContent>
-      </Section>
-
-      <Section variant="light">
-        <SectionContent className="mt-0!">
-          <SectionHeading as="h2">Bien choisir son chauffage c’est important&nbsp;!</SectionHeading>
-          <p className="text-lg">
-            75% des Français restreignent leur chauffage pour limiter le montant de leurs factures. Le chauffage est aussi responsable de
-            15% des émissions de gaz à effet de serre nationales.
-          </p>
-          <p className="text-lg font-bold fr-mb-4w">Opter pour un mode de chauffage décarboné, c’est :</p>
-          <ResponsiveRow>
-            <div className="flex-1">
-              <img src="/img/picto_facture.svg" alt="" className="d-block img-object-contain" />
-              <div className="text-lg fr-mt-2w">Une facture en moyenne moins élevée et plus stable</div>
-            </div>
-
-            <div className="flex-1">
-              <img src="/img/picto_emissions.svg" alt="" className="d-block img-object-contain" />
-              <div className="text-lg fr-mt-2w">Des émissions de gaz à effet de serre et particules fines réduites</div>
-            </div>
-
-            <div className="flex-1">
-              <img src="/img/picto_independance.svg" alt="" className="d-block img-object-contain" />
-              <div className="text-lg fr-mt-2w">Une indépendance énergétique renforcée</div>
-            </div>
-          </ResponsiveRow>
-        </SectionContent>
-      </Section>
-
-      <Section>
-        <SectionContent className="mt-0!">
-          <SectionTwoColumns className="mt-0!">
-            <div className="flex-[2]!">
-              <SectionHeading as="h2">Affinez votre projet avec notre comparateur</SectionHeading>
-              <p className="text-lg">Comparez les coûts et les émissions de CO2 pour chaque mode de chauffage.</p>
-              <ul className="text-lg font-bold">
-                <li>un comparateur unique évaluant les performances des équipements sur toute leur durée de vie</li>
-                <li>prise en compte de l'ensemble des coûts (installation, exploitation, entretien)</li>
-                <li>un mode avancé pour retrouver l'ensemble des modes de chauffage écologiques (pompes à chaleur...)</li>
-              </ul>
-
-              <Link variant="primary" href="/comparateur-couts-performances" mt="2w">
-                Accéder au comparateur
-              </Link>
-            </div>
-            <div className="flex-1!">
-              <img src="/img/preview_comparateur.webp" alt="Comparateur de coûts et performances des équipements de chauffage" />
-            </div>
-          </SectionTwoColumns>
-        </SectionContent>
-      </Section>
+      <div className="fr-container fr-pt-6w">
+        <h3>Pourquoi choisir un chauffage écologique ?</h3>
+        <ResponsiveRow className="justify-center gap-6">
+          {BENEFITS.slice(0, 3).map((b) => (
+            <BenefitCard key={b.icon} icon={b.icon} lines={b.lines} />
+          ))}
+        </ResponsiveRow>
+        <ResponsiveRow className="justify-center gap-6">
+          {BENEFITS.slice(3).map((b) => (
+            <BenefitCard key={b.icon} icon={b.icon} lines={b.lines} />
+          ))}
+        </ResponsiveRow>
+      </div>
+      <div className="bg-light">
+        <div className="fr-container fr-py-6w">
+          <h3>
+            Réseau de chaleur, pompes à chaleur, solaire thermique, biomasse...
+            <br /> Les solutions écologiques sont nombreuses !{' '}
+          </h3>
+          <p>Faites la simulation pour explorer les solutions adaptées à votre bâtiment.</p>
+        </div>
+      </div>
+      <div className="fr-container fr-my-6w">
+        <h3>Quelles étapes pour changer mon chauffage ? </h3>
+        <ol>
+          {STEPS.map((s) => (
+            <li key={s.title} className="text-(--text-title-blue-france)">
+              <strong>{s.title}</strong> <span className="text-black">— {s.text}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
     </SimplePage>
   );
 }
