@@ -12,7 +12,7 @@ import type { MapConfiguration, MapConfigurationProperty } from '@/components/Ma
 import Box from '@/components/ui/Box';
 import CheckableAccordion, { type CheckableAccordionProps } from '@/components/ui/CheckableAccordion';
 import Heading from '@/components/ui/Heading';
-import { type LegendTrackingEvent, trackEvent } from '@/modules/analytics/client';
+import { type LegendTrackingEvent, trackEvent, trackPostHogEvent } from '@/modules/analytics/client';
 import cx from '@/utils/cx';
 
 import useFCUMap from '../MapProvider';
@@ -290,14 +290,19 @@ export const Title = styled(Heading).attrs({ as: 'h2' })`
   margin-bottom: 1rem;
 `;
 
-export const TrackableCheckableAccordion = ({ children, layerName, name, trackingEvent, ...props }: TrackableCheckableAccordionProps) => {
+export const TrackableCheckableAccordion = ({ children, name, trackingEvent, layerName, ...props }: TrackableCheckableAccordionProps) => {
   const { toggleLayer } = useFCUMap();
+  // Remove "Carto|" prefix for PostHog layer name
+  const posthogLayerName = trackingEvent.replace(/^Carto\|/, '');
   return (
     <StyledCheckableAccordion
       small
       classes={{ title: cx('d-flex', 'items-start', 'fr-gap--sm', fr.cx('fr-text--sm')) }}
       onCheck={(isChecked) => {
+        // Legacy Matomo
         trackEvent(`${trackingEvent}|${isChecked ? 'Active' : 'Désactive'}`);
+        // PostHog
+        trackPostHogEvent('map:layer_toggle', { is_enabled: isChecked, layer_name: posthogLayerName });
         toggleLayer(layerName);
       }}
       expandOnCheck
@@ -313,6 +318,7 @@ interface SingleCheckboxProps {
   name: string;
   checked: boolean;
   onChange: (checked: boolean) => void;
+  /** Événement de tracking. Si absent, pas de tracking. */
   trackingEvent?: LegendTrackingEvent;
 }
 
@@ -328,9 +334,14 @@ export function SingleCheckbox({ name, checked, onChange, trackingEvent }: Singl
         id={name}
         checked={checked}
         onChange={(event) => {
-          onChange(event.target.checked);
+          const newChecked = event.target.checked;
+          onChange(newChecked);
           if (trackingEvent) {
-            trackEvent(`${trackingEvent}|${checked ? 'Active' : 'Désactive'}`);
+            // Legacy Matomo
+            trackEvent(`${trackingEvent}|${newChecked ? 'Active' : 'Désactive'}`);
+            // PostHog
+            const posthogLayerName = trackingEvent.replace(/^Carto\|/, '');
+            trackPostHogEvent('map:layer_toggle', { is_enabled: newChecked, layer_name: posthogLayerName });
           }
         }}
         className="opacity-0"

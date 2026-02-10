@@ -36,6 +36,8 @@ export const clientConfig = {
     linkInPartnerId: process.env.NEXT_PUBLIC_LINKEDIN_PARTNER_ID,
     matomoServerURL: process.env.NEXT_PUBLIC_MATOMO_URL,
     matomoSiteId: process.env.NEXT_PUBLIC_MATOMO_SITE_ID,
+    postHogApiHost: process.env.NEXT_PUBLIC_POSTHOG_HOST,
+    postHogKey: process.env.NEXT_PUBLIC_POSTHOG_KEY,
   },
   websiteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://france-chaleur-urbaine.beta.gouv.fr',
 };

@@ -4,6 +4,7 @@ import { createConsentManagement } from '@codegouvfr/react-dsfr/consentManagemen
 import { useRouter } from 'next/router';
 
 import { clientConfig } from '@/client-config';
+import { usePostHog } from '@/components/ConsentBanner/usePostHog';
 
 import GoogleTagsScript from './GoogleTagsScript';
 import HotjarScript from './HotjarScript';
@@ -14,6 +15,7 @@ type FinalityDescription = Parameters<typeof createConsentManagement>[0]['finali
 const googleEnabled = clientConfig.tracking.googleTagIds.length > 0;
 const linkedinEnabled = !!clientConfig.tracking.linkInPartnerId;
 const hotjarEnabled = clientConfig.tracking.hotjarId && clientConfig.tracking.hotjarSv;
+const posthogEnabled = !!(clientConfig.tracking.postHogApiHost && clientConfig.tracking.postHogKey);
 
 const consentConfig: FinalityDescription = {};
 
@@ -35,6 +37,12 @@ if (hotjarEnabled) {
     title: 'Hotjar',
   };
 }
+if (posthogEnabled) {
+  consentConfig.posthog = {
+    description: "Mesure d'audience",
+    title: 'PostHog',
+  };
+}
 
 export const { ConsentBannerAndConsentManagement, FooterConsentManagementItem, FooterPersonalDataPolicyItem, useConsent } =
   createConsentManagement({
@@ -52,6 +60,8 @@ export const { ConsentBannerAndConsentManagement, FooterConsentManagementItem, F
 export const ConsentBanner = () => {
   const { finalityConsent } = useConsent();
   const router = useRouter();
+  usePostHog(!router.pathname.startsWith('/iframe/') && posthogEnabled && !!finalityConsent?.posthog);
+
   return (
     <>
       {!router.pathname.startsWith('/iframe/') && (

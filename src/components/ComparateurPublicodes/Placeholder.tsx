@@ -158,6 +158,8 @@ export const DescriptionModal = () => {
       <Link
         href="/documentation/Note_methodologique_comparateur.pdf"
         eventKey="Téléchargement|Méthodologie comparateur"
+        postHogEventKey="link:click"
+        postHogEventProps={{ link_name: 'methodologie', source: 'comparateur' }}
         isExternal
         className="inline-block fr-mb-2w"
       >

@@ -16,6 +16,8 @@ fileignoreconfig:
   checksum: fe0a92751cdbd301dfb26b6c4a2a7d4cd23d9c9b096c6db68a3dd38658ad72b5
 - filename: next.config.js
   checksum: d419b5985798e502ec36c7e2d9a7137ed253a39a282f79b668c402d19260878f
+- filename: next.config.ts
+  checksum: a01d97790f005033a30a743e86d13ec8946d9c22c2e9d7e96378030c321eca4a
 - filename: scripts/airtable/dump-schema.ts
   checksum: a3ea18c599994f5715090b33dc8e576e260181c3263e08e3f7f04133d1b57d03
 - filename: scripts/copyRemoteTableToLocal.sh

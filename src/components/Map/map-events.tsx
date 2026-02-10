@@ -11,6 +11,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { type MapMouseEvent, type MapRef, Popup } from 'react-map-gl/maplibre';
 
 import { isDevModeEnabled } from '@/hooks/useDevMode';
+import { trackPostHogEvent } from '@/modules/analytics/client';
 import { useAuthentication } from '@/modules/auth/client/hooks';
 import { isDefined } from '@/utils/core';
 
@@ -119,6 +120,11 @@ export function useMapEvents({ mapLayersLoaded, isDrawing, mapRef, onFeatureClic
         throw new Error(`Layer.popup ${hoveredFeature.layer.id} not found. Strange oO`);
       }
       const popupFunc = layerSpec.popup;
+
+      trackPostHogEvent('map:feature_click', {
+        feature_id: hoveredFeature.properties?.id_fcu ?? hoveredFeature.id?.toString(),
+        feature_type: hoveredFeature.source,
+      });
 
       onFeatureClick?.(hoveredFeature);
 

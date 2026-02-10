@@ -1,11 +1,13 @@
 import { init as initMatomo } from '@socialgouv/matomo-next';
 import { atom, useAtom, useAtomValue } from 'jotai';
 import { Router } from 'next/router';
+import posthog from 'posthog-js';
 import { useEffect, useState } from 'react';
 
 import { clientConfig } from '@/client-config';
 import { isDevModeEnabled } from '@/hooks/useDevMode';
 import { AnalyticsFormId, type TrackingConfiguration, trackingEvents } from '@/modules/analytics/analytics.config';
+import type { PostHogEvent, PostHogEventMap } from '@/modules/analytics/posthog.config';
 
 export { AnalyticsFormId, type TrackingConfiguration };
 type ExtractSuffix<T extends string, S extends string> = T extends `${infer Prefix}${S}` ? Prefix : never;
@@ -131,6 +133,26 @@ export const trackEvent = (eventKey: TrackingEvent, ...eventPayload: any[]) => {
   }
   performTracking(configuration, eventPayload);
 };
+
+/**
+ * Track un événement vers PostHog.
+ *
+ * Cette API est séparée de trackEvent() (Matomo) car pas compatible.
+ *
+ * @param event - Nom de l'événement (format category:object_action)
+ * @param properties - Propriétés de l'événement
+ */
+export function trackPostHogEvent<E extends PostHogEvent>(
+  event: E,
+  ...args: [PostHogEventMap[E]] extends [never] ? [] : [PostHogEventMap[E]]
+): void {
+  const properties = args[0] ?? {};
+  if (isDevModeEnabled()) {
+    console.log('[PostHog] track', event, properties);
+  }
+
+  posthog.capture(event, properties);
+}
 
 // augment window type with tracking helpers
 declare let window: Window & {

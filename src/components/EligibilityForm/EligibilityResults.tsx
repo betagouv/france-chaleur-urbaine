@@ -85,6 +85,8 @@ export const getEligibilityResult = (
           variant="secondary"
           className="fr-mt-3v"
           eventKey="Eligibilité|Formulaire de test - Adresse Inéligible - CTA comparateur"
+          postHogEventKey="link:click"
+          postHogEventProps={{ link_name: 'cta_autres_solutions', source: 'eligibility' }}
         >
           Découvrir les autres solutions
           <span className="fr-icon-arrow-right-line fr-icon--right fr-ml-1v" />

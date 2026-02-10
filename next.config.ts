@@ -328,6 +328,19 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  rewrites: () => {
+    return [
+      {
+        destination: 'https://eu-assets.i.posthog.com/static/:path*',
+        source: '/ph/static/:path*',
+      },
+      {
+        destination: 'https://eu.i.posthog.com/:path*',
+        source: '/ph/:path*',
+      },
+    ];
+  },
+  skipTrailingSlashRedirect: true,
   transpilePackages: ['@codegouvfr/react-dsfr'],
   turbopack: {
     rules: {

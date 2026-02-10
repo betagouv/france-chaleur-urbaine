@@ -7,6 +7,7 @@ Comprehensive tracking and analytics integration for France Chaleur Urbaine.
 ```
 analytics/
 ├── AGENTS.md              # This file
+├── TRACKING_PLAN.md       # Plan de tracking PostHog (référence)
 ├── analytics.config.ts    # Event configuration and tracking mappings
 ├── client.ts              # Client-side analytics hooks and utilities
 └── types.ts               # Type definitions
@@ -14,14 +15,31 @@ analytics/
 
 ## Supported Platforms
 
-- **Matomo** - Main analytics platform (privacy-friendly)
+- **PostHog** - Product analytics (nouvelle plateforme principale). Voir [TRACKING_PLAN.md](./TRACKING_PLAN.md) pour le plan de tracking complet, les conventions de nommage, le consentement et l'identification.
+- **Matomo** - Analytics historique (en cours de remplacement par PostHog, migration progressive). Ne pas ajouter de nouveaux events Matomo : utiliser PostHog.
 - **Google Analytics 4** - Conversion tracking
 - **LinkedIn Ads** - Professional network advertising
 - **Hotjar** - User behavior recording
 
+## Migration Matomo → PostHog
+
+La migration est progressive :
+1. **Nouveaux events** : toujours utiliser PostHog (voir TRACKING_PLAN.md)
+2. **Events existants** : migrer au fur et à mesure vers PostHog, puis supprimer le tracking Matomo correspondant
+3. **Objectif** : supprimer l'intégration Matomo une fois tous les events migrés
+
 ## Configuration
 
-All tracking events are centrally configured in `analytics.config.ts`:
+### PostHog (nouvelle plateforme)
+
+Les events PostHog suivent la taxonomie définie dans [TRACKING_PLAN.md](./TRACKING_PLAN.md) :
+- Nommage : `categorie:objet_action` en snake_case
+- Peu d'events, beaucoup de propriétés filtrables
+- Consentement cookie requis (opt-in DSFR)
+
+### Matomo (legacy)
+
+Les events Matomo historiques sont configurés dans `analytics.config.ts` :
 
 ```typescript
 export const trackingEvents = {
@@ -53,7 +71,7 @@ function App() {
 
 ### `trackEvent(eventKey, ...payload)`
 
-Track custom events across all configured platforms.
+Track custom events across all configured platforms (Matomo, Google, LinkedIn).
 
 ```typescript
 import { trackEvent } from '@/modules/analytics/client';
@@ -65,18 +83,22 @@ trackEvent('Carto|Réseaux chaleur|Active');
 trackEvent('Eligibilité|Formulaire de test - Envoi', { userId: 123 });
 ```
 
+### PostHog tracking
+
+PostHog events are sent directly via `posthog.capture()`. See [TRACKING_PLAN.md](./TRACKING_PLAN.md) for the full event taxonomy and implementation details.
+
 ### `useMatomoAbTestingExperiment(experimentName)`
 
-A/B testing integration with Matomo.
+A/B testing integration with Matomo (legacy).
 
 ```typescript
 import { useMatomoAbTestingExperiment } from '@/modules/analytics/client';
 
 function MyComponent() {
   const { ready, variation } = useMatomoAbTestingExperiment('ExperimentName');
-  
+
   if (!ready) return null;
-  
+
   return (
     <Button>
       {variation === 'NewLabel' ? 'New Label' : 'Original Label'}
@@ -109,17 +131,22 @@ function MyComponent() {
 
 ## Privacy & GDPR
 
+- **PostHog** : tracking conditionné au consentement cookie (opt-in). Voir [TRACKING_PLAN.md](./TRACKING_PLAN.md#consentement-persistance-et-identification) pour les détails
 - **Matomo**: Configured without cookies (`disableCookies: true`)
-- **Consent**: No explicit consent required for anonymized analytics
+- **Consent**: No explicit consent required for anonymized analytics (Matomo), opt-in required for PostHog
 - **Data retention**: Follows CNIL recommendations
-- **User rights**: Anonymized data, no personal identification
+- **User rights**: Anonymized data for Matomo, pseudonymized for PostHog (with consent)
 
 ## Environment Variables
 
 Required environment variables for tracking:
 
 ```bash
-# Matomo (required)
+# PostHog (required)
+NEXT_PUBLIC_POSTHOG_API_KEY=phc_xxx
+NEXT_PUBLIC_POSTHOG_HOST=https://eu.i.posthog.com
+
+# Matomo (legacy, required during migration)
 NEXT_PUBLIC_MATOMO_URL=https://matomo.exemple.fr
 NEXT_PUBLIC_MATOMO_SITE_ID=1
 
@@ -146,7 +173,20 @@ if (isDevModeEnabled()) {
 
 ## Event Naming Convention
 
-Events follow a hierarchical naming pattern:
+### PostHog (new)
+
+```
+categorie:objet_action
+```
+
+Examples:
+- `eligibility:address_submit`
+- `map:layer_toggle`
+- `content:click`
+
+See [TRACKING_PLAN.md](./TRACKING_PLAN.md#conventions-de-nommage) for the full convention.
+
+### Matomo (legacy)
 
 ```
 Category|Subcategory|Action
@@ -156,35 +196,6 @@ Examples:
 - `Carto|Réseaux chaleur|Active`
 - `Eligibilité|Formulaire de test - Envoi`
 - `Téléchargement|Guide FCU|Supports`
-
-## Integration Examples
-
-### Map Layer Tracking
-
-```typescript
-const handleLayerToggle = (layerName: string, active: boolean) => {
-  const action = active ? 'Active' : 'Désactive';
-  trackEvent(`Carto|${layerName}|${action}` as TrackingEvent);
-};
-```
-
-### Form Submission Tracking
-
-```typescript
-const handleFormSubmit = async (formData: FormData) => {
-  const isEligible = await checkEligibility(formData.address);
-  const status = isEligible ? 'éligible' : 'inéligible';
-  trackEvent(`Eligibilité|Formulaire de contact ${status} - Envoi`);
-};
-```
-
-### Download Tracking
-
-```typescript
-const handleDownload = (filename: string, category: string) => {
-  trackEvent(`Téléchargement|${filename}|${category}`);
-};
-```
 
 ## Error Handling
 
@@ -197,6 +208,6 @@ Analytics failures are handled gracefully:
 ## Performance
 
 - Scripts load asynchronously and deferred
-- No impact on critical rendering path  
+- No impact on critical rendering path
 - Timeout protection (2s) for unresponsive services
 - Event debouncing for rapid interactions

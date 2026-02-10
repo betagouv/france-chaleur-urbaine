@@ -1,8 +1,8 @@
 import { useCallback, useState } from 'react';
 
 import useURLParamOrLocalStorage, { parseAsString } from '@/hooks/useURLParamOrLocalStorage';
-import { trackEvent } from '@/modules/analytics/client';
-import type { CreateDemandInput } from '@/modules/demands/constants';
+import { trackEvent, trackPostHogEvent } from '@/modules/analytics/client';
+import type { CreateDemandInput, ModeDeChauffage, TypeDeChauffage } from '@/modules/demands/constants';
 import trpc from '@/modules/trpc/client';
 import type { AddressDataType } from '@/types/AddressData';
 
@@ -16,7 +16,7 @@ const contextToAnalyticsPrefix = {
   comparateur: 'Comparateur',
 } as const;
 
-function getContextPrefix(context?: ContactFormContext) {
+function getMatomoContextPrefix(context?: ContactFormContext) {
   return context && contextToAnalyticsPrefix[context] ? (` - ${contextToAnalyticsPrefix[context]}` as const) : '';
 }
 
@@ -43,7 +43,7 @@ const useContactFormFCU = () => {
     setLoadingStatus('loading');
     setMessageSent(false);
     setMessageReceived(false);
-    const prefix = getContextPrefix(context);
+    const prefix = getMatomoContextPrefix(context);
     // on ne track pas les événements pour le choix chauffage car ce n'est pas de l'éligibilité
     if (prefix !== ' - Choix chauffage') {
       trackEvent(`Eligibilité|Formulaire de test${prefix} - Envoi`, address);
@@ -54,13 +54,18 @@ const useContactFormFCU = () => {
     (data: AddressDataType, context?: ContactFormContext, options: { doTrackEvent?: boolean } = { doTrackEvent: true }) => {
       const { address, heatingType, eligibility } = data;
       if (options.doTrackEvent) {
-        const prefix = getContextPrefix(context);
+        const prefix = getMatomoContextPrefix(context);
         // on ne track pas les événements pour le choix chauffage car ce n'est pas de l'éligibilité
         if (prefix !== ' - Choix chauffage') {
           trackEvent(
             `Eligibilité|Formulaire de test${prefix} - Adresse ${eligibility?.isEligible ? 'É' : 'Iné'}ligible`,
             address || 'Adresse indefini'
           );
+          trackPostHogEvent('eligibility:address_form_submit', {
+            address: address || '',
+            is_eligible: !!eligibility?.isEligible,
+            source: context || 'homepage',
+          });
         }
       }
       setAddressData(data);
@@ -132,9 +137,20 @@ const useContactFormFCU = () => {
       setMessageSent(true);
       const { eligibility, address = '' } = (data as AddressDataType) || {};
       trackEvent(
-        `Eligibilité|Formulaire de contact ${eligibility?.isEligible ? 'é' : 'iné'}ligible${getContextPrefix(context)} - Envoi`,
+        `Eligibilité|Formulaire de contact ${eligibility?.isEligible ? 'é' : 'iné'}ligible${getMatomoContextPrefix(context)} - Envoi`,
         address
       );
+      trackPostHogEvent('eligibility:contact_form_submit', {
+        address,
+        company_type: data?.companyType || undefined,
+        demand_area_m2: data?.demandArea,
+        heating_energy: (data as unknown as { heatingEnergy?: string })?.heatingEnergy as ModeDeChauffage,
+        heating_type: data?.heatingType as TypeDeChauffage | undefined,
+        is_eligible: !!eligibility?.isEligible,
+        nb_logements: data?.nbLogements,
+        source: context || 'homepage',
+        structure_type: data?.structure || '',
+      });
       setAddressData({
         ...addressData,
         ...data,
