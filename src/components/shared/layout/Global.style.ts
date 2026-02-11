@@ -28,25 +28,13 @@ export const GlobalStyle: any = createGlobalStyle` /* TODO: Wait Fix from @types
     max-width: 122px;
   }
 
-  .fcuSolutionForFuturBody,
-  .fcuSolutionForFuturFooter {
+  .fcuSolutionForFuturBody {
     text-align: center;
 
     ${({ theme }) => theme.media.lg`
       padding: 0 7rem;
     `}
 
-    p {
-      margin: 0;
-      font-size: 1.5rem;
-      line-height: 1.5;
-    }
-  }
-  .fcuSolutionForFuturFooter {
-    margin-top: 1rem;
-    ${({ theme }) => theme.media.lg`
-      margin-top: 3rem;
-    `}
   }
   .fcuSolutionForFuturListing {
     display: flex;

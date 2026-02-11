@@ -1,5 +1,3 @@
-import { WhiteCheckItem } from '@/components/MarkdownWrapper/MarkdownWrapper.style';
-
 import { Container, Image, Information } from './Informations.styles';
 
 const Informations = () => {
@@ -13,25 +11,25 @@ const Informations = () => {
           </div>
         </Information>
         <Information className="fr-col-md-12 fr-col-lg-3">
-          <WhiteCheckItem>
+          <div className="flex items-center gap-3 fr-icon--lg fr-icon--left fr-icon-checkbox-fill">
             <div>
               Découvrir <b>instantanément</b> si un réseau de chaleur passe près de chez vous
             </div>
-          </WhiteCheckItem>
+          </div>
         </Information>
         <Information className="fr-col-md-12 fr-col-lg-3">
-          <WhiteCheckItem>
+          <div className="flex items-center gap-3 fr-icon--lg fr-icon--left fr-icon-checkbox-fill">
             <div>
               <b>Vous informer</b> de façon complète sur ce mode de chauffage
             </div>
-          </WhiteCheckItem>
+          </div>
         </Information>
         <Information className="fr-col-md-12 fr-col-lg-3">
-          <WhiteCheckItem>
+          <div className="flex items-center gap-3 fr-icon--lg fr-icon--left fr-icon-checkbox-fill">
             <div>
               Être <b>mis en relation avec l’exploitant</b> du réseau le plus proche de chez vous.
             </div>
-          </WhiteCheckItem>
+          </div>
         </Information>
       </Container>
     </>

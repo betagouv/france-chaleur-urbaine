@@ -43,9 +43,7 @@ const City = ({ citySlug, network }: { citySlug: keyof typeof citiesData; networ
                 </Text>
               </Heading>
               <Box mb="4w">
-                <Text as="div" legacyColor="darkblue">
-                  {cityData.description}
-                </Text>
+                <Text as="div">{cityData.description}</Text>
               </Box>
             </Box>
             {cityData.networksData && (
@@ -143,7 +141,13 @@ const City = ({ citySlug, network }: { citySlug: keyof typeof citiesData; networ
                   justifyContent="space-between"
                   position="relative"
                 >
-                  <WrappedText textClassName="user-experience-description" key={`user-experience-${props.imgSrc}`} center {...props} />
+                  <WrappedText
+                    markdown={false}
+                    textClassName="user-experience-description"
+                    key={`user-experience-${props.imgSrc}`}
+                    center
+                    {...props}
+                  />
                 </Box>
               ))}
             </Box>
