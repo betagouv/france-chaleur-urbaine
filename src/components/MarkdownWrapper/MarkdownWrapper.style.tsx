@@ -1,9 +1,7 @@
-import Link from 'next/link';
 import type { ReactNode } from 'react';
 import styled, { css } from 'styled-components';
 
 import { legacyColors } from '@/components/ui/helpers/colors';
-import { type TrackingEvent, trackEvent } from '@/modules/analytics/client';
 import cx from '@/utils/cx';
 
 export const isExternalLink = (href: string) => href && href.search(/(^http)|(^mailto)|(^\/documentation)/) >= 0;
@@ -68,51 +66,6 @@ export const MarkdownWrapperStyled = styled.div.attrs<MarkdownWrapperStyledProps
     }
   `}
 `;
-
-type ExtraEventType = {
-  children: React.ReactNode;
-  className?: string;
-  eventKey?: TrackingEvent;
-  eventPayload?: string;
-};
-
-export const ButtonLink = styled(Link).attrs<ExtraEventType>((props) => {
-  const { className, eventKey, eventPayload, ...rest } = props;
-  const trackEventProps = eventKey
-    ? {
-        onClick: () => {
-          trackEvent(
-            eventKey,
-            eventPayload?.split(',').map((v) => v.trim())
-          );
-        },
-      }
-    : {};
-  return {
-    ...rest,
-    ...trackEventProps,
-    className: `fr-btn ${className ?? ''}`,
-  };
-})<ExtraEventType>``;
-
-export const ExtraLink = styled(Link).attrs<ExtraEventType>((props) => {
-  const { className, eventKey, eventPayload, ...rest } = props;
-  const trackEventProps = eventKey
-    ? {
-        onClick: () => {
-          trackEvent(
-            eventKey,
-            eventPayload?.split(',').map((v) => v.trim())
-          );
-        },
-      }
-    : {};
-  return {
-    ...rest,
-    ...trackEventProps,
-    className,
-  };
-})<ExtraEventType>``;
 
 export const CounterItem = styled.div`
   display: flex;
@@ -222,48 +175,6 @@ const CheckItemFCU = css`
   }
 `;
 
-const CheckItemDefault = styled.div.attrs({
-  className: 'fr-fi-checkbox-circle-fill list-item',
-})`
-  margin-bottom: 1.5rem;
-  display: flex;
-  justify-content: flex-start;
-  align-items: flex-start;
-
-  color: ${legacyColors.lightblue};
-
-  &::before {
-    display: block;
-    padding-top: 0.15rem;
-    margin-right: 0.5rem;
-    color: #2fab73;
-    padding: 0;
-    line-height: 1;
-  }
-`;
-
-type CheckItemType = {
-  checked?: boolean;
-  className?: string;
-};
-export const CheckItem = styled.div.attrs<CheckItemType>(({ checked, className }) => ({
-  className: checked ? `fr-fi-checkbox-circle-fill list-item ${className}` : className,
-}))<CheckItemType>`
-  ${({ checked }) => (checked ? CheckItemDefault : CheckItemFCU)}
-`;
-
-export const ThumbItem = styled.div`
-  ${CheckItemFCU}
-  color: white;
-  margin-bottom: 0;
-  &::before {
-    margin-bottom: 0;
-    font-size: 40px;
-    margin-top: -16px;
-    background-image: url('/icons/picto-thumb.svg');
-  }
-`;
-
 export const WhiteCheckItem = styled.div`
   ${CheckItemFCU}
   color: white;
@@ -274,25 +185,6 @@ export const WhiteCheckItem = styled.div`
     background-image: url('/icons/picto-check.svg');
   }
 `;
-
-const CountPuce = styled.div`
-  display: inline-block;
-  margin-right: 8px;
-  background-color: ${legacyColors.lightblue};
-  color: white;
-  width: 23px;
-  height: 23px;
-  font-size: 14px;
-  border-radius: 50%;
-  text-align: center;
-`;
-
-export const CountItem = ({ number, children }: { number: number; children: string }) => (
-  <div>
-    <CountPuce>{number}</CountPuce>
-    {children}
-  </div>
-);
 
 const ArrowPuce = styled.span.attrs(() => ({
   'aria-hidden': 'true',
@@ -327,31 +219,4 @@ export const PuceIcon = styled.div<PuceIconType>`
   background-size: 70px;
   padding-left: calc(70px + 0.75em);
   min-height: calc(70px + 1.5em);
-`;
-
-export const KnowMoreLink = styled.a.attrs(({ href }) => ({
-  children: 'En savoir plus',
-  className: 'fr-fi-arrow-right-s-line list-item',
-  target: href && isExternalLink(href) ? '_blank' : undefined,
-}))`
-  --link-underline: none;
-  text-decoration: none;
-  color: ${legacyColors.lightblue};
-  display: inline-block;
-  margin-left: -0.4em;
-  font-size: 0.8em;
-
-  &::before {
-    font-size: 1em;
-  }
-
-  &::after {
-    content: unset;
-  }
-`;
-
-export const SmallText = styled.p`
-  font-size: 14px !important;
-  line-height: 20px !important;
-  margin-bottom: 8px;
 `;

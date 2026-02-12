@@ -1,6 +1,6 @@
-import { Highlight } from '@codegouvfr/react-dsfr/Highlight';
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
+import type React from 'react';
+import { useEffect, useState } from 'react';
 import * as jsxRuntime from 'react/jsx-runtime';
 import rehypeRaw from 'rehype-raw';
 import rehypeReact from 'rehype-react';
@@ -25,28 +25,10 @@ import { unified } from 'unified';
  * - unified: Connects both ecosystems through plugins
  *
  * Custom directives supported:
- * - ::check-item, ::arrow-item, ::thumb-item - Custom list items
- * - ::highlight - DSFR highlight component
- * - ::cartridge - Custom cartridge component
- * - ::button-link, ::extra-link - Custom link components
+ * - ::thumb-item - Custom list items
  */
 
-import {
-  ArrowItem,
-  ButtonLink,
-  Cartridge,
-  CheckItem,
-  CounterItem,
-  CountItem,
-  ExtraLink,
-  isExternalLink,
-  KnowMoreLink,
-  MarkdownWrapperStyled,
-  PuceIcon,
-  SmallText,
-  ThumbItem,
-  WhiteCheckItem,
-} from './MarkdownWrapper.style';
+import { isExternalLink, MarkdownWrapperStyled } from './MarkdownWrapper.style';
 
 export const RoutedLink = (props: any) => {
   const { href, target } = props;
@@ -57,17 +39,6 @@ export const RoutedLink = (props: any) => {
   return <Link {...props} {...extProps} />;
 };
 
-const ConsentLink: React.FC<{
-  children?: React.ReactNode;
-  ForceBlock: React.ElementType;
-}> = ({ children, ForceBlock = React.Fragment }) => (
-  <>
-    <ForceBlock>
-      <a href="#consentement">{children}</a>
-    </ForceBlock>
-  </>
-);
-
 const processor = (extender: Record<string, unknown> = {}) =>
   unified()
     // 1. Parses markdown text to AST
@@ -75,7 +46,7 @@ const processor = (extender: Record<string, unknown> = {}) =>
     // 2-4. All markdown AST transformations MUST happen before remarkRehype (step 5)
     // 2. Converts line breaks to <br> tags (modifies markdown AST)
     .use(remarkBreaks)
-    // 3. Enables custom directives (::highlight, ::cartridge, etc.)
+    // 3. Enables custom directives (::highlight, etc.)
     .use(remarkDirective)
     // 4. Converts directive nodes to HTML elements for remark-rehype
     .use(remarkDirectiveRehype)
@@ -117,25 +88,7 @@ const MarkdownWrapper: React.FC<{
     value
   ) : (
     <MarkdownWrapperStyled className={className} id={id && String(id)} {...props}>
-      {
-        processor({
-          'arrow-item': ArrowItem,
-          'button-link': ButtonLink,
-          cartridge: Cartridge,
-          'check-item': CheckItem,
-          'consent-link': ConsentLink,
-          'count-item': CountItem,
-          'counter-item': CounterItem,
-          'extra-link': ExtraLink,
-          highlight: Highlight,
-          'know-more-link': KnowMoreLink,
-          'puce-icon': PuceIcon,
-          small: SmallText,
-          'strong-inherit': (props: any) => <strong style={{ fontSize: 'inherit' }} {...props} />,
-          'thumb-item': ThumbItem,
-          'white-check-item': WhiteCheckItem,
-        }).processSync(md).result as React.ReactNode
-      }
+      {processor({}).processSync(md).result as React.ReactNode}
     </MarkdownWrapperStyled>
   );
 };

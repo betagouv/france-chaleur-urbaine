@@ -1,8 +1,8 @@
+import type React from 'react';
 import { useEffect, useState } from 'react';
 
-import MarkdownWrapper from '@/components/MarkdownWrapper';
-
-import { ClassedNetworksColumn } from './ClassedNetworks.styles';
+import { ArrowItem, PuceIcon } from '@/components/MarkdownWrapper/MarkdownWrapper.style';
+import Link from '@/components/ui/Link';
 
 const ClassedNetworks = ({
   city,
@@ -17,31 +17,35 @@ const ClassedNetworks = ({
   isUniqueNetwork?: boolean;
   hasDevelopmentPerimeter?: boolean;
 }) => {
-  const [networkText, setNetworkText] = useState<string>();
+  const [networkText, setNetworkText] = useState<React.ReactNode>();
   const [concernedText1, setConcernedText1] = useState<string>();
   const [concernedText2, setConcernedText2] = useState<string>();
 
   useEffect(() => {
-    let text = `
-:::puce-icon{icon="/icons/picto-warning.svg"}
+    setNetworkText(
+      <PuceIcon icon="/icons/picto-warning.svg">
+        <p>
+          {isUniqueNetwork ? (
+            <>Le réseau de {nameNetwork} est « classé », </>
+          ) : allClassed ? (
+            <>Les réseaux de {nameNetwork} sont « classés », </>
+          ) : (
+            <>Certains réseaux de {nameNetwork} sont « classés », </>
+          )}
+          ce qui signifie que <strong>certains bâtiments ont l'obligation de se raccorder</strong>.
+        </p>
+        <p>
+          Cette obligation s’applique dans une certaine zone autour du réseau, qualifiée de{' '}
+          <strong>périmètre de développement prioritaire.</strong>
+        </p>
+        {hasDevelopmentPerimeter && (
+          <Link variant="primary" href="/carte" className="fr-mt-2w fr-btn--sm">
+            Voir le périmètre de développement prioritaire
+          </Link>
+        )}
+      </PuceIcon>
+    );
 
-`;
-    if (isUniqueNetwork) {
-      text += `Le réseau de ${nameNetwork} est « classé », `;
-    } else if (allClassed) {
-      text += `Les réseaux de ${nameNetwork} sont « classés », `;
-    } else {
-      text += `Certains réseaux de ${nameNetwork} sont « classés », `;
-    }
-    text += ` ce qui signifie que **certains bâtiments ont l'obligation de se raccorder**.
-
-Cette obligation s’applique dans une certaine zone autour du réseau, qualifiée de **périmètre de développement prioritaire.**
-
-`;
-    if (hasDevelopmentPerimeter)
-      text += `:button-link[Voir le périmètre de développement prioritaire]{href="/carte" className="fr-btn--sm fr-mt-2w"}`;
-
-    setNetworkText(text);
     if (city === 'paris' || city === 'grenoble' || city === 'lyon' || city === 'bordeaux' || city === 'metz') {
       const kw = city === 'metz' ? '30' : '100';
       setConcernedText1(`Tout bâtiment neuf dont les besoins de chauffage sont supérieurs à ${kw}kW`);
@@ -51,27 +55,19 @@ Cette obligation s’applique dans une certaine zone autour du réseau, qualifi�
         `Tout bâtiment neuf dont les besoins de chauffage sont supérieurs à une certaine puissance, définie par la collectivité`
       );
       setConcernedText2(
-        `Tout bâtiment renouvelant son installation de chauffage au-dessus d’une certaine puissance,  définie par la collectivité`
+        `Tout bâtiment renouvelant son installation de chauffage au-dessus d’une certaine puissance, définie par la collectivité`
       );
     }
   }, [allClassed, city, nameNetwork, isUniqueNetwork, hasDevelopmentPerimeter]);
 
   return (
     <>
-      <ClassedNetworksColumn className="fr-col-md-6 fr-col-12">
-        <MarkdownWrapper color="blue-france" withPadding value={networkText} />
-      </ClassedNetworksColumn>
-      <ClassedNetworksColumn className="fr-col-md-6 fr-col-12">
-        <MarkdownWrapper
-          color="blue-france"
-          withPadding
-          value={`
-  **Sont concernés :**
-  ::arrow-item[${concernedText1}]
-  ::arrow-item[${concernedText2}]
-          `}
-        />
-      </ClassedNetworksColumn>
+      <div className="fr-col-md-6 fr-col-12 fr-px-md-6w">{networkText}</div>
+      <div className="fr-col-md-6 fr-col-12 fr-px-md-6w">
+        <strong className="d-block fr-mb-3w">Sont concernés :</strong>
+        <ArrowItem>{concernedText1}</ArrowItem>
+        <ArrowItem>{concernedText2}</ArrowItem>
+      </div>
     </>
   );
 };

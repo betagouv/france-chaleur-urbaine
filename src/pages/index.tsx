@@ -5,6 +5,7 @@ import { clientConfig } from '@/client-config';
 import LastArticles from '@/components/Articles/LastArticles';
 import InterviewsVideos from '@/components/Coproprietaire/InterviewsVideos';
 import HeadSliceForm from '@/components/HeadSliceForm';
+import { ArrowItem } from '@/components/MarkdownWrapper/MarkdownWrapper.style';
 import Partners from '@/components/Partners/Partners';
 import { issues, understandings } from '@/components/Ressources/config';
 import Understanding from '@/components/Ressources/Understanding';
@@ -16,7 +17,6 @@ import colors from '@/components/ui/helpers/colors';
 import Icon from '@/components/ui/Icon';
 import Image from '@/components/ui/Image';
 import Link from '@/components/ui/Link';
-import Markdown from '@/components/ui/Markdown';
 import Section, { SectionContent, SectionHeading, SectionTitle, SectionTwoColumns } from '@/components/ui/Section';
 import Text from '@/components/ui/Text';
 import type { TrackingEvent } from '@/modules/analytics/client';
@@ -97,13 +97,6 @@ const tools: { eventKey: TrackingEvent; excerpt: string; href: string; image: st
   // },
 ];
 
-const benefits = [
-  '::arrow-item[**Bénéficiez de tarifs plus stables** grâce à des énergies locales]',
-  "::arrow-item[**Profitez de subventions** pour le raccordement et d'une TVA à 5,5%]",
-  "::arrow-item[**Améliorez l'étiquette DPE** de votre copropriété]",
-  "::arrow-item[**Valorisez les émissions de gaz à effet de serre** d'en moyenne 50%]",
-];
-
 const mainTools = [
   {
     description: 'Comparez les coûts de la chaleur et les émissions de tous les modes de chauffage.',
@@ -147,7 +140,18 @@ function Home() {
       <Section>
         <SectionTwoColumns>
           <div className="flex flex-col justify-between h-full flex-[2]!">
-            <Markdown color="#333">{benefits.join('\n')}</Markdown>
+            <ArrowItem>
+              <strong>Bénéficiez de tarifs plus stables</strong> grâce à des énergies locales
+            </ArrowItem>
+            <ArrowItem>
+              <strong>Profitez de subventions</strong> pour le raccordement et d'une TVA à 5,5%
+            </ArrowItem>
+            <ArrowItem>
+              <strong>Améliorez l'étiquette DPE</strong> de votre copropriété
+            </ArrowItem>
+            <ArrowItem>
+              <strong>Valorisez les émissions de gaz à effet de serre</strong> d'en moyenne 50%
+            </ArrowItem>
             <div className="mt-8">
               <Link
                 variant="primary"

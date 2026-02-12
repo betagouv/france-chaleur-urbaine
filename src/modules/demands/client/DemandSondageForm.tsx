@@ -4,7 +4,6 @@ import { type FormEvent, useState } from 'react';
 
 import Checkboxes from '@/components/form/dsfr/Checkboxes';
 import Input from '@/components/form/dsfr/Input';
-import MarkdownWrapper from '@/components/MarkdownWrapper';
 import Link from '@/components/ui/Link';
 import { useAuthentication } from '@/modules/auth/client/hooks';
 import { referrers } from '@/modules/demands/constants';
@@ -48,19 +47,42 @@ const DemandSondageForm = ({ addressData = {}, cardMode }: { addressData: Addres
 
   const message = {
     eligible: {
-      body: `
-Seul le gestionnaire du réseau pourra vous confirmer la faisabilité technique et les délais du raccordement.
-Sans attendre, :extra-link[téléchargez notre guide pratique]{href="/documentation/guide-france-chaleur-urbaine.pdf" eventKey="'Téléchargement|Guide FCU|Confirmation éligibilité'" target="_blank"} afin d'en savoir plus sur les étapes d'un raccordement et les aides financières mobilisables.<br />
-Visualisez également notre carte des réseaux de chaleur [ici](${linkToMap}).`,
-      bodyCardMode: `
-Seul le gestionnaire du réseau pourra vous confirmer la faisabilité technique et les délais du raccordement.
-Sans attendre, :extra-link[téléchargez notre guide pratique]{href="/documentation/guide-france-chaleur-urbaine.pdf" eventKey="'Téléchargement|Guide FCU|Confirmation éligibilité'" target="_blank"} afin d'en savoir plus sur les étapes d'un raccordement et les aides financières mobilisables.`,
-      title: 'Votre demande de contact est bien prise en compte.',
+      body: (
+        <>
+          Seul le gestionnaire du réseau pourra vous confirmer la faisabilité technique et les délais du raccordement. Sans attendre,{' '}
+          <Link
+            href="/documentation/guide-france-chaleur-urbaine.pdf"
+            eventKey="Téléchargement|Guide FCU|Confirmation éligibilité"
+            isExternal
+          >
+            téléchargez notre guide pratique
+          </Link>{' '}
+          afin d'en savoir plus sur les étapes d'un raccordement et les aides financières mobilisables.
+          <br />
+          Visualisez également notre carte des réseaux de chaleur <Link href={linkToMap || ''}>ici</Link>.
+        </>
+      ),
+      bodyCardMode: (
+        <>
+          Seul le gestionnaire du réseau pourra vous confirmer la faisabilité technique et les délais du raccordement. Sans attendre,{' '}
+          <Link
+            href="/documentation/guide-france-chaleur-urbaine.pdf"
+            eventKey="Téléchargement|Guide FCU|Confirmation éligibilité"
+            isExternal
+          >
+            téléchargez notre guide pratique
+          </Link>{' '}
+          afin d'en savoir plus sur les étapes d'un raccordement et les aides financières mobilisables.
+        </>
+      ),
     },
     ineligible: {
-      body: `Visualisez notre carte des réseaux de chaleur [ici](${linkToMap}).`,
+      body: (
+        <>
+          Visualisez notre carte des réseaux de chaleur <Link href={linkToMap || ''}>ici</Link>.
+        </>
+      ),
       bodyCardMode: '',
-      title: 'Votre demande de contact est bien prise en compte.',
     },
   };
 
@@ -75,12 +97,8 @@ Sans attendre, :extra-link[téléchargez notre guide pratique]{href="/documentat
             : 'text-[18px] leading-normal [&_header]:text-[23.5px] [&_header]:leading-normal'
         )}
       >
-        <header>
-          <MarkdownWrapper value={structure ? message?.[computedEligibility ? 'eligible' : 'ineligible']?.title : ''} />
-        </header>
-        <MarkdownWrapper
-          value={structure ? message?.[computedEligibility ? 'eligible' : 'ineligible']?.[cardMode ? 'bodyCardMode' : 'body'] : ''}
-        />
+        <header>{structure ? 'Votre demande de contact est bien prise en compte.' : ''}</header>
+        {structure ? message?.[computedEligibility ? 'eligible' : 'ineligible']?.[cardMode ? 'bodyCardMode' : 'body'] : ''}
       </div>
       <Alert
         severity="info"

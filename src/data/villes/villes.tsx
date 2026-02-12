@@ -1,3 +1,5 @@
+import type React from 'react';
+
 import { ArrowItem } from '@/components/MarkdownWrapper/MarkdownWrapper.style';
 import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
@@ -31,7 +33,7 @@ export type CityData = {
     hasDevelopmentPerimeter?: boolean;
     identifiant?: string;
     heatedPlaces?: string;
-    gestionnaires?: string;
+    gestionnaires?: React.ReactNode;
   };
   dispositifsTitle?: string;
   dispositifs?: Dispositif[];
@@ -136,7 +138,13 @@ const citiesData: Record<City, CityData> = {
     nameNetwork: 'Bordeaux Métropole',
     networksData: {
       allClassed: true,
-      gestionnaires: `Les réseaux sont gérés **soit directement en régie** par la Métropole, **soit par des opérateurs privés** dans le cadre de délégations de service public (**Mixéner, ENGIE, Dalkia...**)`,
+      gestionnaires: (
+        <>
+          Les réseaux sont gérés <strong>soit directement en régie</strong> par la Métropole,{' '}
+          <strong>soit par des opérateurs privés</strong> dans le cadre de délégations de service public (
+          <strong>Mixéner, ENGIE, Dalkia...</strong>)
+        </>
+      ),
       hasDevelopmentPerimeter: true,
       isClassed: true,
     },
@@ -170,7 +178,11 @@ const citiesData: Record<City, CityData> = {
     nameNetwork: 'Dijon',
     networksData: {
       allClassed: false,
-      gestionnaires: `Les réseaux sont gérés par **Dijon Energies (Dalkia)** et **Sodien (Coriance)**`,
+      gestionnaires: (
+        <>
+          Les réseaux sont gérés par <strong>Dijon Energies (Dalkia)</strong> et <strong>Sodien (Coriance)</strong>
+        </>
+      ),
       isClassed: false,
     },
     preposition: 'de ',
@@ -361,7 +373,11 @@ const citiesData: Record<City, CityData> = {
     nameNetwork: 'Nantes Métropole',
     networksData: {
       allClassed: true,
-      gestionnaires: `Les réseaux sont gérés par **Idex** et **Engie**`,
+      gestionnaires: (
+        <>
+          Les réseaux sont gérés par <strong>Idex</strong> et <strong>Engie</strong>
+        </>
+      ),
       isClassed: true,
     },
     preposition: 'de ',
@@ -530,7 +546,13 @@ const citiesData: Record<City, CityData> = {
     nameNetwork: 'Rennes Métropole',
     networksData: {
       allClassed: true,
-      gestionnaires: `Les réseaux sont gérés **soit directement en régie** par la Métropole, **soit par des opérateurs privés** dans le cadre de délégations de service public (**Dalkia, ENGIE, SOGEX**)`,
+      gestionnaires: (
+        <>
+          Les réseaux sont gérés <strong>soit directement en régie</strong> par la Métropole,{' '}
+          <strong>soit par des opérateurs privés</strong> dans le cadre de délégations de service public (
+          <strong>Dalkia, ENGIE, SOGEX</strong>)
+        </>
+      ),
       hasDevelopmentPerimeter: true,
       isClassed: true,
     },
@@ -568,7 +590,12 @@ const citiesData: Record<City, CityData> = {
     nameNetwork: "l'Eurométropole de Strasbourg",
     networksData: {
       allClassed: true,
-      gestionnaires: `Les réseaux présents sur la métropole sont gérés par différents opérateurs : **ENGIE, Strasbourg Centre Energies, R-CUA...**`,
+      gestionnaires: (
+        <>
+          Les réseaux présents sur la métropole sont gérés par différents opérateurs :{' '}
+          <strong>ENGIE, Strasbourg Centre Energies, R-CUA...</strong>
+        </>
+      ),
       isClassed: true,
     },
     preposition: 'de ',
