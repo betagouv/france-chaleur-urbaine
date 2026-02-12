@@ -17,7 +17,7 @@ export default function AdemeHelp({ className, onSubmitSuccess }: AdemeHelpProps
   const { userInfo, setUserInfo } = useUserInfo();
   const [isLoading, setIsLoading] = useState(false);
 
-  const { Form, Field, Fieldset, FieldWrapper, Submit } = useForm({
+  const { Form, Field, Submit } = useForm({
     defaultValues: {
       email: userInfo.email ?? '',
       phone: userInfo.phone ?? '',
@@ -25,14 +25,10 @@ export default function AdemeHelp({ className, onSubmitSuccess }: AdemeHelpProps
     },
     onSubmit: async ({ value }) => {
       setIsLoading(true);
-
       setUserInfo(pick(value, ['email', 'phone']));
-
       // TODO: appel API / TRPC
       console.log('submit value', value);
-
       onSubmitSuccess?.(value);
-
       setIsLoading(false);
     },
     schema: zContactFormAdemeHelp,
@@ -45,15 +41,12 @@ export default function AdemeHelp({ className, onSubmitSuccess }: AdemeHelpProps
           Une experte de l'ADEME vous accompagnera personnellement dans votre projet de remplacement de chauffage par une solution
           écologique : faisabilité de votre projet, coûts à prévoir, différentes étapes à suivre...
         </p>
-
         <Form>
-          <div className="flex gap-5">
-            <Field.EmailInput name="email" label={fieldLabelInformation.email} className="w-[50%]" />
-            <Field.PhoneInput name="phone" label={fieldLabelInformation.phone} className="w-[50%]" />
+          <div className="full flex flex-col md:flex-row md:gap-5 fr-mb-3w md:mb-0">
+            <Field.EmailInput name="email" label={fieldLabelInformation.email} className="flex-1" />
+            <Field.PhoneInput name="phone" label={fieldLabelInformation.phone} className="flex-1" />
           </div>
-
           <Field.Checkbox name="termOfUse" label="J’accepte les conditions générales d’utilisation du service." />
-
           <Submit disabled={false} loading={isLoading}>
             Envoyer
           </Submit>
