@@ -40,7 +40,7 @@ export default function RichSelect<T extends string>({
         }}
       >
         <Select.Trigger className={cx('fr-select w-full', className)}>
-          <span className="block truncate whitespace-nowrap overflow-hidden">
+          <span className="block truncate whitespace-nowrap overflow-hidden text-left">
             <Select.Value placeholder={<span className="block truncate whitespace-nowrap overflow-hidden">{placeholder}</span>} />
           </span>
         </Select.Trigger>
@@ -51,10 +51,10 @@ export default function RichSelect<T extends string>({
                 <Select.Item
                   key={option.value}
                   value={option.value}
-                  className={cx('relative cursor-pointer select-none px-4 py-3 text-sm outline-none', 'data-[highlighted]:bg-blue-50')}
+                  className={cx('cursor-pointer select-none px-4 py-3 outline-none', 'data-[highlighted]:bg-blue-50')}
                 >
                   <Select.ItemText>
-                    <span className="font-medium">{option.label}</span>
+                    <span>{option.label}</span>
                   </Select.ItemText>
                   {option.description && <div className="text-xs text-slate-500">{option.description}</div>}
                 </Select.Item>

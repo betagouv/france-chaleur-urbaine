@@ -1,123 +1,104 @@
+import { useRouter } from 'next/navigation';
 import { parseAsStringLiteral, useQueryState } from 'nuqs';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import type { TypeLogement } from '@/components/choix-chauffage/type-logement';
 import AddressAutocompleteInput from '@/components/form/dsfr/AddressAutocompleteInput';
-import Radio from '@/components/form/dsfr/Radio';
-import Section, { SectionContent, SectionHeading, SectionTwoColumns } from '@/components/ui/Section';
+import Select from '@/components/form/dsfr/Select';
+import Button from '@/components/ui/Button';
+import RichSelect from '@/components/ui/RichSelect';
+import type { EspaceExterieur } from '@/modules/app/types';
 import type { SuggestionItem } from '@/modules/ban/types';
-import { toastErrors } from '@/modules/notification';
-import trpc from '@/modules/trpc/client';
-import type { AddressDetail } from '@/types/HeatNetworksResponse';
-import { isDefined } from '@/utils/core';
-import { runWithMinimumDelay } from '@/utils/time';
 
-import ChoixChauffageResults from './ChoixChauffageResults';
+const espaceExterieurValues = ['shared', 'private', 'both', 'none'] as const satisfies readonly EspaceExterieur[];
 
-function ChoixChauffageForm() {
-  const trpcUtils = trpc.useUtils();
+export default function ChoixChauffageForm() {
+  const router = useRouter();
+  const [adresse, setAdresse] = useQueryState('adresse');
   const [typeLogement, setTypeLogement] = useQueryState(
-    'type',
+    'typeLogement',
     parseAsStringLiteral([
       'immeuble_chauffage_collectif',
       'immeuble_chauffage_individuel',
       'maison_individuelle',
-    ] as const satisfies TypeLogement[])
+    ] as const satisfies readonly TypeLogement[])
   );
-  const [address, setAddress] = useQueryState('address');
-  const [addressDetail, setAddressDetail] = useState<AddressDetail | null>(null);
+  const [espaceExterieur, setEspaceExterieur] = useQueryState('espaceExterieur', parseAsStringLiteral(espaceExterieurValues));
 
-  const testAddressEligibility = toastErrors(async (geoAddress: SuggestionItem) => {
-    void setAddress(geoAddress?.properties?.label ?? '');
-    const [lon, lat] = geoAddress.geometry.coordinates;
-    const isCity = geoAddress.properties.label === geoAddress.properties.city;
-    const eligibilityStatus = await runWithMinimumDelay(
-      () =>
-        isCity
-          ? trpcUtils.client.reseaux.cityNetwork.query({ city: geoAddress.properties.city })
-          : trpcUtils.client.reseaux.eligibilityStatus.query({
-              lat,
-              lon,
-            }),
-      500
-    );
-    setAddressDetail({
-      geoAddress,
-      network: eligibilityStatus,
-    });
-  });
+  const [loadingStatus, setLoadingStatus] = useState<'idle' | 'loading'>('idle');
+  const [geoAddress, setGeoAddress] = useState<SuggestionItem | undefined>();
+
+  const outdoorOptions = useMemo(
+    (): { value: EspaceExterieur; label: string; description?: string }[] => [
+      { description: 'Cour, jardin, toit terrasse…', label: 'Espaces partagés uniquement', value: 'shared' },
+      { description: 'Balcons, terrasses…', label: 'Espaces individuels uniquement', value: 'private' },
+      { description: 'Cour, jardin, toit terrasse, balcons…', label: 'Espaces partagés et individuels', value: 'both' },
+      { label: 'Aucun espace extérieur', value: 'none' },
+    ],
+    []
+  );
+
+  const isDisabled = !adresse || !geoAddress || !typeLogement || !espaceExterieur || loadingStatus === 'loading';
 
   return (
-    <Section>
-      <SectionContent className="mt-0!">
-        <SectionTwoColumns className="mt-0!">
-          <div className="flex-[3]!">
-            <SectionHeading as="h2" id="quel-chauffage">
-              Quel chauffage écologique pour mon logement&nbsp;?
-            </SectionHeading>
+    <form>
+      <div className="fr-p-3w grid grid-cols-1 gap-4 md:grid-cols-3 bg-[#fbf6ed]">
+        <AddressAutocompleteInput
+          className="fr-mb-0"
+          defaultValue={adresse ?? undefined}
+          nativeInputProps={{ placeholder: 'Tapez votre adresse ici' }}
+          onClear={() => {
+            void setAdresse(null);
+            setGeoAddress(undefined);
+          }}
+          onSelect={(geoAddress?: SuggestionItem) => {
+            void setAdresse(geoAddress?.properties?.label ?? '');
+            setGeoAddress(geoAddress);
+          }}
+          onError={() => setLoadingStatus('idle')}
+        />
+        <Select
+          label="Mode de chauffage"
+          className="fr-mb-0"
+          options={[
+            { label: 'Immeuble en chauffage collectif', value: 'immeuble_chauffage_collectif' satisfies TypeLogement },
+            { label: 'Immeuble en chauffage individuel', value: 'immeuble_chauffage_individuel' satisfies TypeLogement },
+            { label: 'Maison individuelle', value: 'maison_individuelle' satisfies TypeLogement },
+          ]}
+          nativeSelectProps={{
+            onChange: (e) => void setTypeLogement(e.target.value as TypeLogement),
+            value: typeLogement ?? undefined,
+          }}
+        />
+        <RichSelect<EspaceExterieur>
+          value={espaceExterieur ?? undefined}
+          onChange={(val) => void setEspaceExterieur(val)}
+          options={outdoorOptions}
+          placeholder="Sélectionner vos espaces disponibles"
+          label="Espaces extérieurs"
+        />
+      </div>
+      <div className="mt-5 flex justify-end">
+        <Button
+          size="medium"
+          iconId="fr-icon-arrow-right-line"
+          iconPosition="right"
+          // eventKey=""
+          loading={loadingStatus === 'loading'}
+          disabled={isDisabled}
+          onClick={(e) => {
+            e.preventDefault();
+            setLoadingStatus('loading');
 
-            <AddressAutocompleteInput
-              className="mb-2!"
-              defaultValue={address ?? ''}
-              label={<strong>Entrez votre adresse :</strong>}
-              onSelect={(geoAddress: SuggestionItem) => {
-                void testAddressEligibility(geoAddress);
-              }}
-              onClear={() => {
-                void setAddress(null);
-                setAddressDetail(null);
-              }}
-            />
-            <Radio
-              name="radio"
-              options={[
-                {
-                  illustration: <img alt="illustration" src="/img/picto_logement_immeuble_chauffage_collectif.svg" />,
-                  label: 'Immeuble à chauffage collectif',
-                  nativeInputProps: {
-                    checked: typeLogement === 'immeuble_chauffage_collectif',
-                    onChange: (e) => setTypeLogement(e.target.value as TypeLogement),
-                    value: 'immeuble_chauffage_collectif' satisfies TypeLogement,
-                  },
-                },
-                {
-                  illustration: <img alt="illustration" src="/img/picto_logement_immeuble_chauffage_individuel.svg" />,
-                  label: 'Immeuble à chauffage individuel',
-                  nativeInputProps: {
-                    checked: typeLogement === 'immeuble_chauffage_individuel',
-                    onChange: (e) => setTypeLogement(e.target.value as TypeLogement),
-                    value: 'immeuble_chauffage_individuel' satisfies TypeLogement,
-                  },
-                },
-                {
-                  illustration: <img alt="illustration" src="/img/picto_logement_maison_individuelle.svg" />,
-                  label: 'Maison individuelle',
-                  nativeInputProps: {
-                    checked: typeLogement === 'maison_individuelle',
-                    onChange: (e) => setTypeLogement(e.target.value as TypeLogement),
-                    value: 'maison_individuelle' satisfies TypeLogement,
-                  },
-                },
-              ]}
-            />
-          </div>
-          <div className="flex-[5]! py-6 lg:mt-28">
-            {isDefined(typeLogement) && isDefined(addressDetail) ? (
-              <ChoixChauffageResults typeLogement={typeLogement} addressDetail={addressDetail} />
-            ) : (
-              <div className="flex flex-col items-center gap-4">
-                <div className="italic text-center fr-px-6w">
-                  Renseignez votre adresse et sélectionnez un type de bâtiment pour découvrir les modes de chauffage décarbonés les plus
-                  pertinents
-                </div>
-                <img src="/img/picto_chauffage_ecologique.svg" alt="" />
-              </div>
-            )}
-          </div>
-        </SectionTwoColumns>
-      </SectionContent>
-    </Section>
+            const search = window.location.search;
+            router.push(`/chaleur-renouvelable/resultat${search}`);
+
+            setLoadingStatus('idle');
+          }}
+        >
+          Comparer les solutions
+        </Button>
+      </div>
+    </form>
   );
 }
-
-export default ChoixChauffageForm;
