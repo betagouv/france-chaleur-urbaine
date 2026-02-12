@@ -1,4 +1,4 @@
-import ChoixChauffageForm2 from '@/components/choix-chauffage/ChoixChauffageForm2';
+import ChoixChauffageForm from '@/components/choix-chauffage/ChoixChauffageForm';
 import SimplePage from '@/components/shared/page/SimplePage';
 import { ResponsiveRow } from '@/components/ui/Box';
 
@@ -52,22 +52,20 @@ function ChaleurRenouvelablePage() {
           background: 'url("/img/banner_chauffage_gaz.png") no-repeat left center #C3E4E2',
         }}
       >
-        <div className="mx-auto md:w-4/5 max-w-5xl rounded border-2 border-blue-600 bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-slate-900 mb-4">
-            Trouvez la meilleure solution de chauffage écologique et économique en 3 clics !
-          </h2>
-          <ChoixChauffageForm2 />
+        <div className="fr-container rounded border-2 border-blue-600 bg-white p-6 shadow-sm">
+          <h2 className="text-2xl">Trouvez la meilleure solution de chauffage écologique et économique en 3 clics !</h2>
+          <ChoixChauffageForm />
         </div>
       </div>
 
       <div className="fr-container fr-pt-6w">
         <h3>Pourquoi choisir un chauffage écologique ?</h3>
-        <ResponsiveRow className="justify-center gap-6">
+        <ResponsiveRow className="justify-center items-center gap-6">
           {BENEFITS.slice(0, 3).map((b) => (
             <BenefitCard key={b.icon} icon={b.icon} lines={b.lines} />
           ))}
         </ResponsiveRow>
-        <ResponsiveRow className="justify-center gap-6">
+        <ResponsiveRow className="justify-center items-center gap-6">
           {BENEFITS.slice(3).map((b) => (
             <BenefitCard key={b.icon} icon={b.icon} lines={b.lines} />
           ))}
