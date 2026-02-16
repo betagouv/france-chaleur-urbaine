@@ -157,8 +157,8 @@ export const ResultRowAccordion = React.memo(function ResultRowAccordion({
             iconPosition="right"
             onClick={(e) => {
               e.stopPropagation();
-              // TODO
-              console.log('accompagnement');
+              const elt = document.getElementById('help-ademe');
+              if (elt) elt.scrollIntoView({ behavior: 'smooth' });
             }}
           >
             Je souhaite être accompagné
