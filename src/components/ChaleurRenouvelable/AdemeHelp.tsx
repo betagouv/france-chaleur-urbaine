@@ -35,7 +35,7 @@ export default function AdemeHelp({ className, onSubmitSuccess }: AdemeHelpProps
   });
 
   return (
-    <div className={className}>
+    <div className={className} id="help-ademe">
       <CallOut title="Bénéficiez d’un accompagnement personnalisé par l’Ademe" size="lg" colorVariant="yellow-moutarde">
         <p className="fr-callout__text fr-mb-3w">
           Une experte de l'ADEME vous accompagnera personnellement dans votre projet de remplacement de chauffage par une solution

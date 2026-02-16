@@ -256,7 +256,8 @@ export default function ChoixChauffageResults() {
             iconPosition="right"
             onClick={(e) => {
               e.stopPropagation();
-              console.log('accompagnement');
+              const elt = document.getElementById('help-ademe');
+              if (elt) elt.scrollIntoView({ behavior: 'smooth' });
             }}
           >
             Je souhaite être accompagné
