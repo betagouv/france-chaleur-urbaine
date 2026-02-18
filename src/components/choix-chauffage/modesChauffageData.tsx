@@ -23,15 +23,23 @@ export type DPE = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G';
 
 export const DPE_ORDER = ['A', 'B', 'C', 'D', 'E', 'F', 'G'] as const satisfies readonly DPE[];
 export const DPE_BG: Record<DPE, string> = {
-  A: 'bg-green-600',
-  B: 'bg-green-500',
-  C: 'bg-lime-500',
-  D: 'bg-yellow-400',
-  E: 'bg-yellow-500',
-  F: 'bg-orange-500',
-  G: 'bg-red-600',
+  A: 'bg-[#00A06C]',
+  B: 'bg-[#52B053]',
+  C: 'bg-[#A6CB71]',
+  D: 'bg-[#F5E70F]',
+  E: 'bg-[#F0B50E]',
+  F: 'bg-[#EC8136]',
+  G: 'bg-[#D7211F]',
 };
 
+export const espaceExterieurValues = ['shared', 'private', 'both', 'none'] as const satisfies readonly EspaceExterieur[];
+
+export const espaceExterieurOptions = [
+  { description: 'Cour, jardin, toit terrasse…', label: 'Espaces partagés uniquement', value: 'shared' },
+  { description: 'Balcons, terrasses…', label: 'Espaces individuels uniquement', value: 'private' },
+  { description: 'Cour, jardin, toit terrasse, balcons…', label: 'Espaces partagés et individuels', value: 'both' },
+  { label: 'Aucun espace extérieur', value: 'none' },
+] as const;
 export function improveDpe(dpe: DPE, gainClasse: number): DPE {
   const currentIndex = DPE_ORDER.indexOf(dpe);
   const nextIndex = Math.max(0, currentIndex - Math.max(0, gainClasse));
