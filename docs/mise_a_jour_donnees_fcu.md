@@ -235,7 +235,7 @@ pnpm db:push:prod --data-only zones_et_reseaux_en_construction_tiles
 # https://dashboard.scalingo.com/apps/osc-fr1/france-chaleur-urbaine/deploy/manual
 
 # Générer l'archive opendata et l'envoyer à Florence pour maj sur data.gouv.fr
-pnpm cli opendata:create-archive
+pnpm cli opendata create-archive
 ```
 
 ## Misc

@@ -1,9 +1,11 @@
 #!/bin/bash -e
 
 # Ce script permet de générer l'archive opendata avec toutes les données de France Chaleur Urbaine.
-# Cette archive est à envoyer à Florence pour compléter et sera déposée sur data.gouv.fr
+# Cette archive est à publier sur data.gouv.fr avec la commande `pnpm cli opendata publish <archive-fcu.zip>`
 #
 # https://www.data.gouv.fr/fr/datasets/traces-des-reseaux-de-chaleur-et-de-froid/
+
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 opendata_dir=$(mktemp -d)
 
@@ -319,7 +321,7 @@ ogr2ogr -f "ESRI Shapefile" -lco ENCODING=UTF-8 /output/reseaux_en_construction_
 ogr2ogr -f "ESRI Shapefile" -lco ENCODING=UTF-8 /output/reseaux_en_construction_zones.shp "$pgQuery" opendata.zones_et_reseaux_en_construction -sql "SELECT * FROM opendata.zones_et_reseaux_en_construction WHERE st_geometrytype(geom) = 'ST_MultiPolygon'"
 
 # Copie de doc
-cp scripts/opendata/nomenclature_shapefile_des_reseaux_de_chaleur_et_froid.xlsx "$opendata_dir/"
+cp "$script_dir/nomenclature_shapefile_des_reseaux_de_chaleur_et_froid.xlsx" "$opendata_dir/"
 
 # Création de l'archive
 archiveName=$(date +%d%m%y)-opendata-fcu.zip
@@ -330,13 +332,8 @@ echo -e "\nArchive opendata prête pour envoi => $archiveName
 Option 1 - Publication automatique (recommandée) :
   Utilisez la commande CLI pour publier automatiquement sur data.gouv.fr en ajustant la description :
   
-  pnpm cli opendata:publish $archiveName --description 'ajout et actualisation de tracés (existants et en construction)'
+  pnpm cli opendata publish $archiveName
   
   Prérequis : définir DATA_GOUV_FR_API_KEY dans .env.local
-
-Option 2 - Publication manuelle :
-  Prérequis : avoir un compte sur data.gouv.fr et avoir accès au compte France Chaleur Urbaine
-  1. Aller sur le jeu de données Tracés des réseaux de chaleur et de froid : https://www.data.gouv.fr/admin/datasets/64f05d3568e4d575eb454ffe
-  2. Ajouter une mise à jour avec l'archive avec le nom du fichier. Préciser le contenu de la mise à jour dans le champ 'Description'.
-  3. Enfin, modifier le fichier principal (opendata-fcu.zip) avec l'archive."
+"
 rm -rf "$opendata_dir"
