@@ -1,6 +1,5 @@
 import '@/load-env';
 
-import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 
 import { allDatabaseTables } from '@cli/bootstrap/tables';
@@ -24,18 +23,17 @@ import { applyGeometryUpdates } from '@/modules/reseaux/server/geometry-updates'
 import { syncPostgresToAirtable } from '@/modules/reseaux/server/sync-pg-to-airtable';
 import { registerTilesCommands } from '@/modules/tiles/commands';
 import { getApiHandler } from '@/server/api/users';
-import { serverConfig } from '@/server/config';
 import { saveStatsInDB } from '@/server/cron/saveStatsInDB';
 import { kdb, sql } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
 import { syncComptesProFromUsers } from '@/server/services/airtable';
-import { APIDataGouvService } from '@/services/api-data-gouv';
 import { registerTestCommands } from '@/tests/commands';
 import { userRoles } from '@/types/enum/UserRole';
 import { fetchJSON } from '@/utils/network';
-import { runBash, runCommand } from '@/utils/system';
+import { runBash } from '@/utils/system';
 import { sleep } from '@/utils/time';
 
+import { registerOpendataCommands } from '../src/modules/opendata/commands';
 import { type KnownAirtableBase, knownAirtableBases } from './airtable/bases';
 import { createModificationsReseau } from './airtable/create-modifications-reseau';
 import { fetchBaseSchema } from './airtable/dump-schema';
@@ -75,6 +73,7 @@ registerJobsCommands(program);
 registerOptimizationCommands(program);
 registerProEligibilityTestsCommands(program);
 registerNetworkCommands(program);
+registerOpendataCommands(program);
 registerTilesCommands(program);
 registerTestCommands(program);
 
@@ -171,39 +170,6 @@ program
       await tx.insertInto('ept').values(ept).execute();
     });
     console.info(`${ept.length} EPT importés`);
-  });
-
-program
-  .command('opendata:create-archive')
-  .description(
-    "Cette commande permet de générer l'archive OpenData contenant les données de France Chaleur Urbaine au format Shapefile et GeoJSON. L'archive générée devra être envoyée à Florence en vue d'un dépôt sur la plateforme data.gouv.fr"
-  )
-  .action(async () => {
-    await runCommand('scripts/opendata/create-opendata-archive.sh');
-  });
-
-program
-  .command('opendata:publish')
-  .description('Publie une archive OpenData sur data.gouv.fr dans le dataset des tracés des réseaux de chaleur et de froid')
-  .argument('<archive-path>', 'Chemin vers le fichier archive (.zip) à publier')
-  .option('--description <desc>', 'Description personnalisée pour la mise à jour')
-  .action(async (archivePath, options) => {
-    if (!existsSync(archivePath)) {
-      logger.error(`Le fichier archive '${archivePath}' n'existe pas.`);
-      process.exit(1);
-    }
-
-    logger.info(`Publication de l'archive '${archivePath}' sur data.gouv.fr...`);
-    logger.info(`Dataset ID: ${serverConfig.DATA_GOUV_FR_DATASET_ID}`);
-
-    const apiDataGouvService = new APIDataGouvService();
-    await apiDataGouvService.publishOpendataArchive(
-      archivePath,
-      `Mise à jour du ${new Date().toLocaleDateString('fr-FR')} : ${options.description ?? 'ajout et actualisation de tracés'}`
-    );
-
-    logger.info('✅ Publication réussie !');
-    logger.info(`URL du dataset: https://www.data.gouv.fr/datasets/${serverConfig.DATA_GOUV_FR_DATASET_ID}/`);
   });
 
 program
