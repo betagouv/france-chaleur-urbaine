@@ -23,3 +23,8 @@ export type GetBdnbBatimentInput = z.infer<typeof zGetBdnbBatimentInput>;
 
 export const intermediateTileLayersMinZoom = 12;
 export const tileSourcesMaxZoom = 17;
+
+export const zGetBatenrBatimentInput = z.strictObject({
+  lat: z.number(),
+  lon: z.number(),
+});
