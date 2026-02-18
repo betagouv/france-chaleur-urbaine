@@ -174,6 +174,15 @@ program
   });
 
 program
+  .command('import:batenr')
+  .description(
+    "Cette commande permet d'importer les données de BatEnr depuis la plateforme data.gouv.fr afin de connaitre les zone GMI et les PPA"
+  )
+  .action(async () => {
+    await runCommand('scripts/batenr/import-batenr-data.sh');
+  });
+
+program
   .command('opendata:create-archive')
   .description(
     "Cette commande permet de générer l'archive OpenData contenant les données de France Chaleur Urbaine au format Shapefile et GeoJSON. L'archive générée devra être envoyée à Florence en vue d'un dépôt sur la plateforme data.gouv.fr"

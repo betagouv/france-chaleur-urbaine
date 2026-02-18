@@ -66,6 +66,8 @@ fileignoreconfig:
 - filename: src/utils/validation.spec.ts
   ignore_detectors:
   - filecontent
+- filename: scripts/batenr/import-batenr-data.sh
+  checksum: a5ca157984a05e458d8a8e83a74a06d45870e610c6b16cfb568e158b38c0b46f
 scopeconfig:
 - scope: node
 allowed_patterns:
