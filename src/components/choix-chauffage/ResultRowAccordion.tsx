@@ -145,7 +145,7 @@ export const ResultRowAccordion = React.memo(function ResultRowAccordion({
         <p className="fr-m-0">
           <span className="flex items-center gap-1">
             <Image src="/icons/icon-money.png" alt="icone d'engrenage" aria-hidden="true" width="24" height="24" />
-            Coût d’installation : <strong>{item.cout} par logement.</strong>
+            Coût d’installation : <strong>{item.coutInstallation} par logement.</strong>
           </span>
           {item.aidesInstallation?.length ? <span> Des aides existent (Coup de Pouce, Ma Prime Rénov’...) </span> : ''}
         </p>

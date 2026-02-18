@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import type { TypeLogement } from '@/components/choix-chauffage/type-logement';
 import Link from '@/components/ui/Link';
 import Tooltip from '@/components/ui/Tooltip';
+import type { EspaceExterieur } from '@/modules/app/types';
 import type { AddressDetail } from '@/types/HeatNetworksResponse';
 
 export type ModeDeChauffage = {
@@ -12,11 +13,25 @@ export type ModeDeChauffage = {
   contraintesTechniques: ReactNode[];
   avantages: string[];
   inconvenients: string[];
-  cout: string;
+  coutParAn: (situation: Situation) => string;
+  coutInstallation: string;
   gainClasse: number;
   gainVsGaz: number;
   gainsPotentielsCout: NonNullable<ReactNode>[];
   aidesInstallation: NonNullable<ReactNode>[];
+  estPossible: (situation: Situation) => boolean;
+};
+
+export type Situation = {
+  espacesExterieurs(espacesExterieurs: any): unknown;
+  espaceExterieur: EspaceExterieur;
+  ppa: boolean;
+  gmi: boolean;
+  dpe: DPE;
+  adresse: string | null;
+  nbLogements: number;
+  surfaceMoyenne: number;
+  habitantsMoyen: number;
 };
 
 export type DPE = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G';
@@ -45,6 +60,8 @@ export function improveDpe(dpe: DPE, gainClasse: number): DPE {
   const nextIndex = Math.max(0, currentIndex - Math.max(0, gainClasse));
   return DPE_ORDER[nextIndex];
 }
+
+const hasEspaceShared = (situation: Situation) => ['shared', 'both'].includes(situation.espaceExterieur);
 
 export const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = {
   immeuble_chauffage_collectif: [
@@ -120,9 +137,13 @@ export const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffag
         'Surface extérieure pour le forage',
         'Local technique',
       ],
-      cout: '8000 à 11 000 €',
+      coutInstallation: '8000 à 11 000 €',
+      coutParAn(situation: Situation): string {
+        throw new Error('Function not implemented.');
+      },
       description:
         "La pompe à chaleur géothermique (eau-eau) capte les calories du sous-sol (sol ou nappe phréatique) et les transfère à un circuit d'eau chaude pour assurer le chauffage et l'eau chaude sanitaire. Elle est très efficace et écologique, idéale si l'espace extérieur permet un forage. Cette solution nécessite un bâtiment bien isolé ou équipé de planchers chauffants pour être performante.",
+      estPossible: (situation) => hasEspaceShared(situation) && situation.gmi === true,
       gainClasse: 2,
       gainsPotentielsCout: [
         <>
@@ -162,9 +183,13 @@ export const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffag
         'Approvisionnement local disponible',
         'Déconseillé en zone sensible pour la qualité de l’air (commune avec PPA)',
       ],
-      cout: '6 000 à 8 000 €',
+      coutInstallation: '6 000 à 8 000 €',
+      coutParAn(situation: Situation): string {
+        throw new Error('Function not implemented.');
+      },
       description:
         "La chaudière biomasse fonctionne comme une chaudière gaz ou fioul, mais utilise du bois comme combustible (granulés, plaquettes, bûches). C'est une énergie renouvelable et locale. Cette solution nécessite un espace conséquent pour la chaudière et le stockage du combustible, ainsi qu'un approvisionnement régulier.",
+      estPossible: (situation) => hasEspaceShared(situation) && situation.ppa !== false,
       gainClasse: 2,
       gainsPotentielsCout: [
         <>
@@ -209,9 +234,13 @@ export const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffag
         'Espace extérieur accessible pour la maintenance',
         'Local technique',
       ],
-      cout: '4 000 à 6 000 €',
+      coutInstallation: '4 000 à 6 000 €',
+      coutParAn(situation: Situation): string {
+        throw new Error('Function not implemented.');
+      },
       description:
         "La pompe à chaleur air/eau capte les calories de l'air extérieur et les transfère à un circuit d’eau chaude pour assurer le chauffage et l’eau chaude sanitaire de votre logement.",
+      estPossible: (situation) => hasEspaceShared(situation),
       gainClasse: 2,
       gainsPotentielsCout: [
         <>
@@ -234,9 +263,13 @@ export const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffag
         'N’assure pas la production d’eau chaude sanitaire',
         'Peu conseillé en climat rigoureux (performances réduites)',
       ],
-      cout: '3 000 à 5 000 €',
+      coutInstallation: '3 000 à 5 000 €',
+      coutParAn(situation: Situation): string {
+        throw new Error('Function not implemented.');
+      },
       description:
         "La pompe à chaleur air/eau combinée à une chaudière gaz est une solution facile à mettre en place : elle permet d’installer une pompe à chaleur moins puissante tout en réduisant les émissions de CO₂.  La pompe à chaleur capte les calories de l'air extérieur et les transfère à un circuit d’eau chaude pour assurer le chauffage et l’eau chaude sanitaire de votre logement.",
+      estPossible: (situation) => hasEspaceShared(situation),
       gainClasse: 1,
       gainsPotentielsCout: [
         <>
@@ -262,9 +295,13 @@ export const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffag
         'Espace requis — environ 2 m² de capteurs par logement + local technique pour le ballon de stockage',
         "Autorisation d'urbanisme possible — consultation des ABF requise en zone protégée",
       ],
-      cout: '2 000 à 3 000 €',
+      coutInstallation: '2 000 à 3 000 €',
+      coutParAn(situation: Situation): string {
+        throw new Error('Function not implemented.');
+      },
       description:
         "Les capteurs solaires captent le rayonnement solaire et réchauffent un fluide caloporteur, qui transmet ensuite la chaleur à un ballon d’eau chaude via un échangeur. Le solaire thermique est une solution fiable et mature pour produire une part importante de l'eau chaude sanitaire. Idéal pour les toitures terrasses. Le solaire thermique est une solution à combiner avec un système de chauffage complémentaire qui prend le relai en période de faible ensoleillement.",
+      estPossible: (situation) => hasEspaceShared(situation),
       gainClasse: 1,
       gainsPotentielsCout: [
         <>
@@ -303,9 +340,11 @@ export const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffag
         'Espace extérieur pour l’unité extérieure',
         'Local technique',
       ],
-      cout: '7 000 à 10 000 €',
+      coutInstallation: '7 000 à 10 000 €',
+      coutParAn: (situation) => '',
       description:
         "La pompe à chaleur air/eau capte les calories de l'air extérieur et les transfère à un circuit d’eau chaude pour assurer le chauffage et l’eau chaude sanitaire de votre logement.",
+      estPossible: (situation) => situation.espacesExterieurs === 'private' || situation.espacesExterieurs === 'both',
       gainClasse: 1,
       gainsPotentielsCout: [
         <>
@@ -326,9 +365,13 @@ export const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffag
         'Isolation globale recommandée au préalable pour éviter des performances dégradées',
         'N’assure pas la production d’eau chaude sanitaire',
       ],
-      cout: '3 000 à 5 000 €',
+      coutInstallation: '3 000 à 5 000 €',
+      coutParAn(situation: Situation): string {
+        throw new Error('Function not implemented.');
+      },
       description:
         "La pompe à chaleur air/air capte les calories de l'air extérieur et les restitue à l’intérieur en diffusant de l’air chaud.",
+      estPossible: (situation) => situation.espacesExterieurs === 'private' || situation.espacesExterieurs === 'both',
       gainClasse: 2,
       gainsPotentielsCout: [
         <>
@@ -358,9 +401,13 @@ export const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffag
         'Local technique',
       ],
       contraintesTechniques: ['Nuisances sonores', 'Impact esthétique des modules extérieurs'],
-      cout: '12 000 à 15 000 €',
+      coutInstallation: '12 000 à 15 000 €',
+      coutParAn(situation: Situation): string {
+        throw new Error('Function not implemented.');
+      },
       description:
         "La pompe à chaleur air/eau capte les calories de l'air extérieur et les transfère à un circuit d’eau chaude pour assurer le chauffage et l’eau chaude sanitaire de votre logement.",
+      estPossible: (situation) => situation.espacesExterieurs !== 'none',
       gainClasse: 2,
       gainsPotentielsCout: [
         <>
@@ -390,9 +437,13 @@ export const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffag
       ],
       avantages: ['Faibles émissions de CO₂', 'Coût de la chaleur compétitif', 'Longévité des équipements'],
       contraintesTechniques: ['Conduit de fumée requis', 'Espace de stockage pour le combustible', 'Déconseillé en zone PPA'],
-      cout: '4 000 à 6 000 €',
+      coutInstallation: '4 000 à 6 000 €',
+      coutParAn(situation: Situation): string {
+        throw new Error('Function not implemented.');
+      },
       description:
         "Le poêle est un appareil indépendant qui utilise du bois comme combustible, généralement sous forme de bûches ou de granulés (pellets). Il chauffe principalement la pièce où il est installé. C'est une solution économique à l'usage et écologique, particulièrement adaptée aux maisons individuelles disposant d'un conduit de fumée.",
+      estPossible: (situation) => situation.ppa !== false,
       gainClasse: 1,
       gainsPotentielsCout: [
         <>
@@ -414,9 +465,13 @@ export const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffag
         'Isolation globale recommandée au préalable',
         'Autorisation de la copropriété généralement requise',
       ],
-      cout: '6 000 à 8 000 €',
+      coutInstallation: '6 000 à 8 000 €',
+      coutParAn(situation: Situation): string {
+        throw new Error('Function not implemented.');
+      },
       description:
         "La pompe à chaleur air/air capte les calories de l'air extérieur et les restitue à l'intérieur en diffusant de l'air chaud. Elle peut remplacer des radiateurs électriques. Cette solution permet également de rafraîchir le logement en été. Elle ne produit pas d'eau chaude sanitaire : un autre système est nécessaire pour l'ECS.",
+      estPossible: (situation) => situation.espacesExterieurs !== 'none',
       gainClasse: 1,
       gainsPotentielsCout: [
         <>
@@ -438,9 +493,13 @@ export const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffag
       aidesInstallation: [],
       avantages: ['Faibles émissions de CO₂', 'Coût de la chaleur compétitif', 'Longévité des équipements'],
       contraintesTechniques: ['Toiture sans masque et bien orientée', 'Local technique requis', "Système d'appoint obligatoire"],
-      cout: '20 000 à 25 000 €',
+      coutInstallation: '20 000 à 25 000 €',
+      coutParAn(situation: Situation): string {
+        throw new Error('Function not implemented.');
+      },
       description:
         "Le système solaire combiné (SSC) produit à la fois le chauffage et l'eau chaude sanitaire à partir de panneaux solaires thermiques, généralement installés sur le toit. Ce système doit être associé à un appoint (gaz, bois ou électricité) qui prend le relais en période de faible ensoleillement.",
+      estPossible: () => true,
       gainClasse: 2,
       gainsPotentielsCout: [<>-50% par rapport au gaz</>],
       gainVsGaz: 80,

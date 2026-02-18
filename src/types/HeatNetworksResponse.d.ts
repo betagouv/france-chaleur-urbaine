@@ -24,9 +24,15 @@ export type CityNetwork = {
 
 export type HeatNetworksResponse = HeatNetwork & CityNetwork;
 
+export type BatEnr = {
+  ppa: boolean;
+  gmi: boolean;
+};
+
 export type AddressDetail = {
   geoAddress?: SuggestionItem;
   network: HeatNetworksResponse;
+  batEnr?: BatEnr;
 };
 
 export type HandleAddressSelect = (address: string, coordinates: Point, geoAddress: AddressDetail) => void;
