@@ -3,6 +3,7 @@ import React from 'react';
 import { type DPE, DPE_BG, improveDpe, type ModeDeChauffage } from '@/components/choix-chauffage/modesChauffageData';
 import Accordion from '@/components/ui/Accordion';
 import Button from '@/components/ui/Button';
+import Image from '@/components/ui/Image';
 import Link from '@/components/ui/Link';
 import cx from '@/utils/cx';
 
@@ -23,7 +24,7 @@ function Stars({ value }: { value: number }) {
   return (
     <div className="flex items-center gap-1" aria-label={`${value} étoiles`}>
       {Array.from({ length: value }).map((_, i) => (
-        <span key={i} className="fr-icon-star-fill text-(--background-alt-green-tilleul-verveine-hover)" aria-hidden="true" />
+        <Image key={i} src="/icons/icon-star.png" alt="icone étoile" aria-hidden="true" width="24" height="24" />
       ))}
     </div>
   );
@@ -110,8 +111,8 @@ export const ResultRowAccordion = React.memo(function ResultRowAccordion({
       <div>{item.description}</div>
       <div className="flex flex-col md:flex-row fr-mt-3w gap-5">
         <div className="flex-1">
-          <div className="bg-green-100 rounded fr-p-1w">
-            <span aria-hidden="true" className="fr-icon-thumb-up-line text-(--text-default-warning)" /> Avantages
+          <div className="bg-green-100 rounded fr-p-1w flex items-center">
+            <Image src="/icons/icon-thumbs-up.png" alt="icone pouce levé" aria-hidden="true" width="24" height="24" /> Avantages
           </div>
           <ul>
             {item.avantages.map((avantage, key) => (
@@ -120,8 +121,8 @@ export const ResultRowAccordion = React.memo(function ResultRowAccordion({
           </ul>
         </div>
         <div className="flex-1">
-          <div className="bg-yellow-50 rounded fr-p-1w">
-            <span aria-hidden="true" className="fr-icon-thumb-down-line text-(--text-default-warning)" /> Inconvénients
+          <div className="bg-yellow-50 rounded fr-p-1w flex items-center">
+            <Image src="/icons/icon-thumbs-up.png" alt="icone pouce baissé" aria-hidden="true" width="24" height="24" /> Inconvénients
           </div>
           <ul>
             {item.inconvenients.map((inconvenient, key) => (
@@ -130,8 +131,8 @@ export const ResultRowAccordion = React.memo(function ResultRowAccordion({
           </ul>
         </div>
         <div className="flex-1">
-          <div className="bg-yellow-50 rounded fr-p-1w">
-            <span className="fr-icon-warning-fill text-(--text-default-warning)" aria-hidden="true" /> Contraintes techniques
+          <div className="bg-yellow-50 rounded fr-p-1w flex items-center">
+            <Image src="/icons/icon-wheel.png" alt="icone d'engrenage" aria-hidden="true" width="24" height="24" /> Contraintes techniques
           </div>
           <ul>
             {item.contraintesTechniques.map((contrainteTechnique, key) => (
@@ -142,8 +143,10 @@ export const ResultRowAccordion = React.memo(function ResultRowAccordion({
       </div>
       <div className="bg-yellow-50 fr-p-1w flex flex-col md:flex-row justify-between items-start">
         <p className="fr-m-0">
-          <span className="fr-icon-money-euro-box-line" aria-hidden="true" /> Coût d’installation :{' '}
-          <strong>{item.cout} par logement.</strong>
+          <span className="flex items-center gap-1">
+            <Image src="/icons/icon-money.png" alt="icone d'engrenage" aria-hidden="true" width="24" height="24" />
+            Coût d’installation : <strong>{item.cout} par logement.</strong>
+          </span>
           {item.aidesInstallation?.length ? <span> Des aides existent (Coup de Pouce, Ma Prime Rénov’...) </span> : ''}
         </p>
         <Link href="https://france-renov.gouv.fr/" isExternal className="w-auto">
