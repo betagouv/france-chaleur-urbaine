@@ -173,6 +173,15 @@ program
   });
 
 program
+  .command('import:batenr')
+  .description(
+    "Cette commande permet d'importer les données de BatEnr depuis la plateforme data.gouv.fr afin de connaitre les zone GMI et les PPA"
+  )
+  .action(async () => {
+    await runCommand('scripts/batenr/import-batenr-data.sh');
+  });
+
+program
   .command('communes:search')
   .description('Recherche une commune dans la table ign_communes')
   .argument('<commune>', 'nom de la commune')
