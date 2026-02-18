@@ -6,6 +6,7 @@ import type { TypeLogement } from '@/components/choix-chauffage/type-logement';
 import Input from '@/components/form/dsfr/Input';
 import Select from '@/components/form/dsfr/Select';
 import Button from '@/components/ui/Button';
+import Image from '@/components/ui/Image';
 import RichSelect from '@/components/ui/RichSelect';
 import type { EspaceExterieur } from '@/modules/app/types';
 import { searchBANAddresses } from '@/modules/ban/client';
@@ -183,7 +184,7 @@ export default function ChoixChauffageResults() {
         className={cx('border border-gray-200 rounded shadow-lg p-4 fr-mb-3w', 'md:block', isParamsOpen ? 'block' : 'hidden')}
       >
         <div className="flex items-center gap-2 font-semibold">
-          <span className="fr-icon-warning-fill text-(--text-default-warning)" aria-hidden="true" />
+          <Image src="/icons/icon-warning.png" alt="icone d'engrenage" aria-hidden="true" width="24" height="24" />
           Renseignez ces informations pour afficher des coûts affinés
         </div>
         <div className="mt-3 grid grid-cols-1 md:grid-cols-4 md:gap-4">
