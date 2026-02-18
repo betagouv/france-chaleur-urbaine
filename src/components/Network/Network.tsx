@@ -134,7 +134,7 @@ const NetworkPanel = ({
                 />
 
                 <Text size="sm" fontStyle="italic" underline my="2w">
-                  Données pour l'année 2024
+                  Données pour l'année 2024 - données locales de l'énergie - SDES
                 </Text>
                 <Box borderLeft="2px solid grey" pl="2w">
                   <Property label="Points de livraison" value={network.nb_pdl} />
@@ -503,7 +503,7 @@ const NetworkPanel = ({
                   Mix énergétique
                 </Heading>
                 <Text size="sm" fontStyle="italic" underline>
-                  Données pour l'année 2024
+                  Données pour l'année 2024 - données locales de l'énergie - SDES
                 </Text>
                 {isDefined(network.production_totale_MWh) ? <EnergiesChart network={network} /> : <Text>Non connu</Text>}
               </BoxSection>

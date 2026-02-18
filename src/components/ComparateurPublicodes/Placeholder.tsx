@@ -15,7 +15,7 @@ type ComparateurPublicodesPlaceholderProps = React.HTMLAttributes<HTMLDivElement
 
 export type TabId = 'batiment' | 'modes';
 
-export const DataYearDisclaimer: React.FC<{ advancedMode?: boolean }> = ({ advancedMode }) => (
+export const DataYearDisclaimer: React.FC = () => (
   <span>
     Sauf mention contraire, les données utilisées par le comparateur portent sur l'année 2024. Les valeurs de l'ensemble des paramètres
     utilisés pour les calculs sont modifiables
