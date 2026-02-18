@@ -1,4 +1,4 @@
-import { parseAsStringLiteral, useQueryState } from 'nuqs';
+import { parseAsInteger, parseAsString, parseAsStringLiteral, useQueryState } from 'nuqs';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { type DPE, DPE_ORDER, type ModeDeChauffage, modeDeChauffageParTypeLogement } from '@/components/choix-chauffage/modesChauffageData';
@@ -20,7 +20,7 @@ import { runWithMinimumDelay } from '@/utils/time';
 import { ResultRowAccordion } from './ResultRowAccordion';
 
 const espaceExterieurValues = ['shared', 'private', 'both', 'none'] as const satisfies readonly EspaceExterieur[];
-
+const isNumericLike = (v: string) => v === '' || /^[0-9]+([.,][0-9]*)?$/.test(v);
 type SettingsTopFieldsProps = {
   withLabel: boolean;
   typeLogement: TypeLogement | null;
@@ -78,6 +78,9 @@ export default function ChoixChauffageResults() {
     ] as const satisfies readonly TypeLogement[])
   );
   const [espaceExterieur, setEspaceExterieur] = useQueryState('espaceExterieur', parseAsStringLiteral(espaceExterieurValues));
+  const [nbLogements, setNbLogements] = useQueryState('nbLogements', parseAsInteger.withDefault(1));
+  const [surfaceMoyenne, setSurfaceMoyenne] = useQueryState('surfaceMoyenne', parseAsInteger.withDefault(0));
+  const [habitantsMoyen, setHabitantsMoyen] = useQueryState('habitantsMoyen', parseAsString.withDefault(''));
 
   const [isParamsOpen, setIsParamsOpen] = useState(false);
   const [openAccordionId, setOpenAccordionId] = useState<string | null>(null);
@@ -198,6 +201,7 @@ export default function ChoixChauffageResults() {
               outdoorOptions={outdoorOptions}
             />
           </div>
+
           <Select
             label="DPE (étiquette énergétique)"
             options={DPE_ORDER.map((i) => ({ label: i, value: i }))}
@@ -206,35 +210,75 @@ export default function ChoixChauffageResults() {
               value: (dpe ?? 'E') as DPE,
             }}
           />
+
           <Input
             label="Nombre de logements"
             nativeInputProps={{
               inputMode: 'numeric',
               min: 1,
+              onBlur: () => {
+                // sécurité: au blur on force min 1 si requis
+                if ((nbLogements ?? 0) < 1) void setNbLogements(1);
+              },
+              onChange: (e) => {
+                // on laisse l'input gérer l'UI, mais on sync l'URL
+                const raw = e.target.value;
+                const next = raw === '' ? 0 : Number(raw);
+                void setNbLogements(next);
+              },
               placeholder: '-',
               required: true,
               type: 'number',
+              value: nbLogements,
             }}
           />
+
           <Input
             label="Surface moyenne / logement"
             nativeInputProps={{
               inputMode: 'numeric',
-              min: 1,
+              min: 0,
+              onChange: (e) => {
+                const raw = e.target.value;
+                const next = raw === '' ? 0 : Number(raw);
+                void setSurfaceMoyenne(next);
+              },
               placeholder: '- m²',
               required: true,
               type: 'number',
+              value: surfaceMoyenne,
             }}
           />
+
           <Input
             label="Habitants moyen / logement"
             nativeInputProps={{
-              inputMode: 'numeric',
-              min: 1,
+              inputMode: 'decimal',
+              min: 0,
+              onBlur: () => {
+                const normalized = (habitantsMoyen ?? '').replace(',', '.').replace(/\.$/, '');
+                if (normalized === '') {
+                  void setHabitantsMoyen('');
+                  return;
+                }
+                const n = Number(normalized);
+                if (!Number.isFinite(n) || n < 0) {
+                  void setHabitantsMoyen('');
+                  return;
+                }
+                const pretty = String(n);
+                void setHabitantsMoyen(pretty);
+              },
+              onChange: (e) => {
+                const raw = e.target.value;
+                if (!isNumericLike(raw)) return;
+                void setHabitantsMoyen(raw);
+              },
               placeholder: '-',
               required: true,
               step: 0.1,
               type: 'number',
+              value: habitantsMoyen,
             }}
           />
         </div>
