@@ -49,7 +49,7 @@ export const Explanations = ({ className, advancedMode, ...props }: React.HTMLAt
       <a href="#" onClick={() => modalDescription.open()} className="fr-link fr-text--sm">
         voir l’explication détaillée
       </a>
-      ), et ne se substitue en aucun cas à une étude de faisabilité technico-économique. <DataYearDisclaimer advancedMode={advancedMode} />
+      ), et ne se substitue en aucun cas à une étude de faisabilité technico-économique. <DataYearDisclaimer />
       <p className="fr-text--sm font-bold mt-2!">
         Pour une étude plus poussée (prix actualisés, prise en compte des spécificités de votre bâtiment), nous vous invitons à vous
         rapprocher du gestionnaire du réseau de chaleur le plus proche de chez vous ou d'un bureau d'études.
