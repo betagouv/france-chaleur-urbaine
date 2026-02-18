@@ -67,7 +67,7 @@ const commonGraphOptions: React.ComponentProps<typeof Chart>['options'] = {
   },
 };
 
-const dataYear = 2023;
+const dataYear = 2024;
 
 // graph coûts
 const colorP1Abo = '#FCC63A';

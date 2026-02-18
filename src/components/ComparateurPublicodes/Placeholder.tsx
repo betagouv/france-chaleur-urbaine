@@ -14,11 +14,10 @@ type ComparateurPublicodesPlaceholderProps = React.HTMLAttributes<HTMLDivElement
 
 export type TabId = 'batiment' | 'modes';
 
-export const DataYearDisclaimer: React.FC<{ advancedMode?: boolean }> = ({ advancedMode }) => (
+export const DataYearDisclaimer: React.FC = () => (
   <span>
-    Sauf mention contraire, les données utilisées par le comparateur portent sur l'année 2023. Les valeurs de l'ensemble des paramètres
-    utilisés pour les calculs sont modifiables
-    {!advancedMode && ' dans le mode avancé'}.
+    Les données des réseaux locaux portent sur l'année 2023. Les données du prix moyen des réseaux de chaleur et de froid, ainsi que les
+    coûts des solutions alternatives, portent sur l'année 2024.
   </span>
 );
 
@@ -141,19 +140,26 @@ export const DescriptionModal = () => {
         cadre du classement (coût manifestement disproportionné). Une méthodologie dédiée est en cours d'élaboration.
       </p>
       <p>
-        Les données utilisées par le comparateur portent sur l'année 2023, sauf pour le contenu CO2 des réseaux et leur taux ENRR, pour
-        lesquels les données sont issues de l'
-        <Link href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000049925781" isExternal>
-          arrêté du 5 juillet 2024
+        Les données économiques et locales des réseaux de chaleur et de froid sont les données de la dernière version de la bibliothèque de
+        données FEDENE/AMORCE publiée en 2025 sur la base de l'année 2023. En raison de la publication du volet économique de l'enquête
+        annuelle sur l'année 2024, l'outil a été mis à jour en février 2026 avec le prix moyen des réseaux de chaleur et de froid, ainsi que
+        la mise à jour des données économiques des modes de chauffage alternatifs sur l'année 2024. Les données environnementales sont
+        basées sur le dernier{' '}
+        <Link href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000051520810" isExternal>
+          arrêté DPE (11 avril 2025)
         </Link>
-        , portant sur l'année 2022 ou la moyenne des années 2020, 2021 et 2022 (en attente de la parution du nouvel arrêté)
+        . AMORCE regrette ces décalages temporels, en partie dus à l'absence de publication de l'arrêté listant les réseaux classés en fin
+        d'année 2025 (sur les chiffres de l'année 2024), et sur l'absence de mise à jour de l'arrêté DPE des réseaux de chaleur.
       </p>
       <p>
-        Cet outil prend la suite d'RCE33, outil développé par l'association AMORCE. L'association AMORCE pilote le projet, le bureau
-        d’études Elcimaï y a apporté son expertise technique et France Chaleur Urbaine a mis en place la version disponible en ligne. Cet
-        outil bénéficie d'un financement du programme européen Heat&Cool LIFE, piloté par la Région Sud, qui vise à développer des outils
-        dans l'objectif de développer les réseaux de chaleur et de froid vertueux. La mise en place de l'interface en ligne est financée sur
-        le budget de France Chaleur Urbaine.
+        Cet outil prend la suite d'RCE33, outil développé par l'association{' '}
+        <Link href="https://amorce.asso.fr/" isExternal>
+          AMORCE
+        </Link>
+        . L'association AMORCE pilote le projet, le bureau d’études Elcimaï y a apporté son expertise technique et France Chaleur Urbaine a
+        mis en place la version disponible en ligne. Cet outil bénéficie d'un financement du programme européen Heat&Cool LIFE, piloté par
+        la Région Sud, qui vise à développer des outils dans l'objectif de développer les réseaux de chaleur et de froid vertueux. La mise
+        en place de l'interface en ligne est financée sur le budget de France Chaleur Urbaine.
       </p>
       <Link
         href="/documentation/Note_methodologique_comparateur.pdf"
