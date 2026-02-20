@@ -20,7 +20,6 @@ import { useAuthentication } from '@/modules/auth/client/hooks';
 import cx from '@/utils/cx';
 import { deleteFetchJSON } from '@/utils/network';
 
-import Banner from './Banner';
 import { StyledHeader } from './SimplePage.styles';
 
 type PageMode = 'public' | 'public-fullscreen' | 'authenticated';
@@ -535,61 +534,58 @@ const PageHeader = (props: PageHeaderProps) => {
         ];
 
   return (
-    <>
-      <Banner />
-      <StyledHeader
-        id="main-header"
-        disableDisplay
-        $isFullScreenMode={isFullScreenMode}
-        brandTop={
-          <>
-            République
-            <br />
-            Française
-          </>
-        }
-        homeLinkProps={{
-          href: '/',
-          title: "Revenir à l'accueil",
-        }}
-        operatorLogo={{
-          alt: 'Logo France Chaleur Urbaine',
-          imgUrl: '/FCU_logo_Monogramme.svg',
-          orientation: 'horizontal',
-        }}
-        serviceTagline="Faciliter les raccordements aux réseaux de chaleur"
-        serviceTitle="France Chaleur Urbaine"
-        quickAccessItems={quickAccessItems}
-        navigation={
-          isFullScreenMode ? (
-            <Box display="flex">
-              <Link
-                href="/"
-                className="fcu-navigation-logo min-w-12 max-w-20"
-                variant="tertiaryNoOutline"
-                title="Revenir à la page d'accueil"
-                p="0"
-                mr="3w"
-              >
-                <Image height={50} width={70} src="/logo-fcu.png" alt="Logo France Chaleur Urbaine" priority />
-              </Link>
-              <MainNavigation items={markCurrentPageActive(navigationMenuItems, currentPath)} className="fr-col" $compact />
-              <Box className={fr.cx('fr-header__tools-links')}>
-                <ul className={fr.cx('fr-btns-group', 'fr-col--middle')}>
-                  {quickAccessItems.map((quickAccessItem, index) => (
-                    <li key={index}>
-                      <HeaderQuickAccessItem quickAccessItem={quickAccessItem} />
-                    </li>
-                  ))}
-                </ul>
-              </Box>
+    <StyledHeader
+      id="main-header"
+      disableDisplay
+      $isFullScreenMode={isFullScreenMode}
+      brandTop={
+        <>
+          République
+          <br />
+          Française
+        </>
+      }
+      homeLinkProps={{
+        href: '/',
+        title: "Revenir à l'accueil",
+      }}
+      operatorLogo={{
+        alt: 'Logo France Chaleur Urbaine',
+        imgUrl: '/FCU_logo_Monogramme.svg',
+        orientation: 'horizontal',
+      }}
+      serviceTagline="Faciliter les raccordements aux réseaux de chaleur"
+      serviceTitle="France Chaleur Urbaine"
+      quickAccessItems={quickAccessItems}
+      navigation={
+        isFullScreenMode ? (
+          <Box display="flex">
+            <Link
+              href="/"
+              className="fcu-navigation-logo min-w-12 max-w-20"
+              variant="tertiaryNoOutline"
+              title="Revenir à la page d'accueil"
+              p="0"
+              mr="3w"
+            >
+              <Image height={50} width={70} src="/logo-fcu.png" alt="Logo France Chaleur Urbaine" priority />
+            </Link>
+            <MainNavigation items={markCurrentPageActive(navigationMenuItems, currentPath)} className="fr-col" $compact />
+            <Box className={fr.cx('fr-header__tools-links')}>
+              <ul className={fr.cx('fr-btns-group', 'fr-col--middle')}>
+                {quickAccessItems.map((quickAccessItem, index) => (
+                  <li key={index}>
+                    <HeaderQuickAccessItem quickAccessItem={quickAccessItem} />
+                  </li>
+                ))}
+              </ul>
             </Box>
-          ) : (
-            markCurrentPageActive(navigationMenuItems, currentPath)
-          )
-        }
-      />
-    </>
+          </Box>
+        ) : (
+          markCurrentPageActive(navigationMenuItems, currentPath)
+        )
+      }
+    />
   );
 };
 
