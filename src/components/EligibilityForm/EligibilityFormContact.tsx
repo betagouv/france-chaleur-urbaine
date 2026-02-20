@@ -13,7 +13,7 @@ import { getReadableDistance } from '@/modules/geo/client/helpers';
 import type { AddressDataType } from '@/types/AddressData';
 
 import { ContactForm, ContactFormContentWrapper, ContactFormResultMessage, ContactFormWrapper, ContactMapResult } from './components';
-import { bordeauxMetropoleCityCodes, getEligibilityResult } from './EligibilityResults';
+import { getEligibilityResult } from './EligibilityResults';
 
 const Map = dynamic(() => import('@/components/Map/Map'), { ssr: false });
 const ComparateurPublicodesWidget = dynamic(() => import('@/components/ComparateurPublicodes/ComparateurPublicodesWidget'), {
@@ -53,9 +53,6 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
       text,
     } = getEligibilityResult(addressData.address || '', addressData.heatingType, addressData.eligibility);
 
-    const addBordeauxLink =
-      addressData.geoAddress?.properties.citycode && bordeauxMetropoleCityCodes.includes(addressData.geoAddress?.properties.citycode);
-
     const distance = getReadableDistance(addressData.eligibility.distance);
     const computedTitle = title ? title({ distance }) : '';
     const computedBody = body
@@ -71,12 +68,7 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
       : '';
 
     return {
-      body: addBordeauxLink
-        ? (computedBody as string).replace(
-            '[France Rénov’](https://france-renov.gouv.fr/)',
-            '[France Rénov’](https://france-renov.gouv.fr/) et [Bordeaux Métropole](https://www.bordeaux-metropole.fr/)'
-          )
-        : computedBody,
+      body: computedBody,
       computedEligibility,
       text,
       title: computedTitle,
