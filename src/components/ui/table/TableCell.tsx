@@ -100,7 +100,7 @@ const TableCell = <T,>({ value, children: defaultValue, data, type, cellProps = 
         onClick={(e: any) => {
           e.stopPropagation();
         }}
-        {...linkCellProps}
+        {...(linkCellProps as any)}
       >
         {value}
       </Link>

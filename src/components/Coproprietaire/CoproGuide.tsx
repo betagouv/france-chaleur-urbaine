@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-import { trackEvent } from '@/modules/analytics/client';
+import { trackEvent, trackPostHogEvent } from '@/modules/analytics/client';
 
 import { Guide } from './CoproGuide.styles';
 
@@ -16,6 +16,7 @@ const CoproGuide = ({ guideClassName }: { guideClassName?: string }) => {
             rel="noreferrer noopener"
             onClick={() => {
               trackEvent('Téléchargement|Guide FCU|coproprietaire');
+              trackPostHogEvent('content:click', { content_name: 'Guide Copropriétés', content_type: 'guide', source: 'page-ville' });
             }}
           >
             Télécharger notre guide

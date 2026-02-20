@@ -16,7 +16,7 @@ import Link from '@/components/ui/Link';
 import Notice from '@/components/ui/Notice';
 import Section, { SectionContent, SectionHeading } from '@/components/ui/Section';
 import useEligibilityForm from '@/hooks/useEligibilityForm';
-import { trackEvent } from '@/modules/analytics/client';
+import { trackEvent, trackPostHogEvent } from '@/modules/analytics/client';
 import useUserInfo from '@/modules/app/client/hooks/useUserInfo';
 import trpc from '@/modules/trpc/client';
 import type { LocationInfoResponse } from '@/pages/api/location-infos';
@@ -517,6 +517,11 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
             `Eligibilité|Formulaire de test - Comparateur - Adresse ${isEligible ? 'É' : 'Iné'}ligible`,
             selectedAddress.properties.label
           );
+          trackPostHogEvent('eligibility:address_form_submit', {
+            address: selectedAddress.properties.label,
+            is_eligible: isEligible,
+            source: 'comparateur',
+          });
 
           setNearestReseauDeChaleur(infos.nearestReseauDeChaleur);
           setNearestReseauDeFroid(infos.nearestReseauDeFroid);

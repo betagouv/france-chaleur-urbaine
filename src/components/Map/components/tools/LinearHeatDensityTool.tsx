@@ -14,7 +14,7 @@ import Box from '@/components/ui/Box';
 import Divider from '@/components/ui/Divider';
 import Text from '@/components/ui/Text';
 import Tooltip from '@/components/ui/Tooltip';
-import { trackEvent } from '@/modules/analytics/client';
+import { trackEvent, trackPostHogEvent } from '@/modules/analytics/client';
 import type { LinearHeatDensity } from '@/modules/data/constants';
 import { formatDistance } from '@/modules/geo/client/helpers';
 import trpc from '@/modules/trpc/client';
@@ -107,6 +107,7 @@ const LinearHeatDensityTool: React.FC = () => {
     try {
       setIsLoading(true);
       trackEvent('Carto|Densité thermique linéaire|Tracé terminé');
+      trackPostHogEvent('map:tool_use', { action: 'complete', tool_name: 'density' });
       const densite = await trpcUtils.client.data.getDensiteThermiqueLineaire.query({
         coordinates: updatedFeatures.map((f) => f.geometry.coordinates),
       });
@@ -219,6 +220,7 @@ const LinearHeatDensityTool: React.FC = () => {
     setFeatures([]);
     drawingFeatureRef.current = null;
     trackEvent('Carto|Densité thermique linéaire|Effacer');
+    trackPostHogEvent('map:tool_use', { action: 'reset', tool_name: 'density' });
   };
   function exportDrawing() {
     if (!mapDraw) {
@@ -233,6 +235,7 @@ const LinearHeatDensityTool: React.FC = () => {
       'application/geo+json'
     );
     trackEvent('Carto|Densité thermique linéaire|Exporter le tracé');
+    trackPostHogEvent('map:tool_use', { action: 'export', tool_name: 'density' });
   }
 
   const drawingFeaturePointCounts = (mapDraw?.getAll().features[0] as MeasureFeature)?.geometry.coordinates.length ?? 0;
@@ -335,6 +338,7 @@ const LinearHeatDensityTool: React.FC = () => {
           iconId="fr-icon-add-line"
           onClick={() => {
             trackEvent('Carto|Densité thermique linéaire|Ajouter un segment');
+            trackPostHogEvent('map:tool_use', { action: 'start', tool_name: 'density' });
             startMeasurement();
           }}
           disabled={!mapLayersLoaded || isLoading}

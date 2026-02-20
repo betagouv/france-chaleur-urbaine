@@ -13,10 +13,10 @@ import Heading from '@/components/ui/Heading';
 import Link from '@/components/ui/Link';
 import Modal, { createModal } from '@/components/ui/Modal';
 import Text from '@/components/ui/Text';
-import { trackEvent } from '@/modules/analytics/client';
+import { trackEvent, trackPostHogEvent } from '@/modules/analytics/client';
 import useUserInfo from '@/modules/app/client/hooks/useUserInfo';
 import type { SuggestionItem } from '@/modules/ban/types';
-import type { ContactFormInfos } from '@/modules/demands/constants';
+import type { ContactFormInfos, ModeDeChauffage, TypeDeChauffage } from '@/modules/demands/constants';
 import { getReadableDistance } from '@/modules/geo/client/helpers';
 import trpc from '@/modules/trpc/client';
 import type { NetworkEligibilityStatus } from '@/server/services/addresseInformation';
@@ -63,6 +63,11 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
         `Eligibilité|Formulaire de test - Fiche réseau - Adresse ${eligibilityStatus?.isEligible ? 'É' : 'Iné'}ligible`,
         geoAddress.properties.label
       );
+      trackPostHogEvent('eligibility:address_form_submit', {
+        address: geoAddress.properties.label,
+        is_eligible: !!eligibilityStatus?.isEligible,
+        source: 'fiche-reseau',
+      });
     } catch (_err) {
       setFormState('eligibilitySubmissionError');
     }
@@ -117,6 +122,17 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
         `Eligibilité|Formulaire de contact ${eligibilityStatus?.isEligible ? 'é' : 'iné'}ligible - Fiche réseau - Envoi`,
         selectedGeoAddress?.properties.label
       );
+      trackPostHogEvent('eligibility:contact_form_submit', {
+        address: selectedGeoAddress.properties.label,
+        company_type: contactFormInfos.companyType || undefined,
+        demand_area_m2: contactFormInfos.demandArea,
+        heating_energy: contactFormInfos.heatingEnergy as ModeDeChauffage,
+        heating_type: userInfo.heatingType as TypeDeChauffage | undefined,
+        is_eligible: !!eligibilityStatus?.isEligible,
+        nb_logements: contactFormInfos.nbLogements,
+        source: 'fiche-reseau',
+        structure_type: contactFormInfos.structure || '',
+      });
     } catch (_err) {
       setFormState('demandSubmissionError');
     }
@@ -219,6 +235,8 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
                     <Link
                       href="/documentation/guide-france-chaleur-urbaine.pdf"
                       eventKey="Téléchargement|Guide FCU|Confirmation éligibilité"
+                      postHogEventKey="link:click"
+                      postHogEventProps={{ link_name: 'guide_fcu', source: 'fiche-reseau' }}
                       isExternal
                     >
                       téléchargez notre guide pratique

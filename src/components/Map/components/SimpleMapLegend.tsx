@@ -17,7 +17,7 @@ import Image from '@/components/ui/Image';
 import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
 import Tooltip from '@/components/ui/Tooltip';
-import { trackEvent } from '@/modules/analytics/client';
+import { trackEvent, trackPostHogEvent } from '@/modules/analytics/client';
 import { dataSourcesVersions } from '@/modules/app/constants';
 import { useAuthentication } from '@/modules/auth/client/hooks';
 import { ObjectEntries } from '@/utils/typescript';
@@ -144,6 +144,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
       tabs={tabs}
       onTabChange={(newTabId: string) => {
         void trackEvent(`Carto|Tabs|${newTabId as TabId}`);
+        trackPostHogEvent('map:tab_select', { tab_name: newTabId as 'reseaux' | 'potentiel' | 'enrr' | 'outils' });
         void setSelectedTabId({ subTabId: null, tabId: newTabId as TabId });
       }}
     >
