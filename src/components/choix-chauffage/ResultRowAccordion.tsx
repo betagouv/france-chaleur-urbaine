@@ -46,7 +46,7 @@ function MobileStats({
   return (
     <div className="md:hidden">
       <div className="flex justify-between fr-mb-3w">
-        <div>Coût par an par logement</div>
+        <div>Coût annuel/logement</div>
         <div className="text-(--text-title-blue-france)">
           {lowerBoundString} à {upperBoundString}
         </div>

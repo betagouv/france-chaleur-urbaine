@@ -53,7 +53,8 @@ function ChaleurRenouvelablePage() {
         }}
       >
         <div className="fr-container rounded border-2 border-blue-600 bg-white p-6 shadow-sm">
-          <h2 className="text-2xl">Trouvez la meilleure solution de chauffage écologique et économique en 3 clics !</h2>
+          <h2 className="text-2xl hidden md:block">Trouvez la meilleure solution de chauffage écologique et économique en 3 clics !</h2>
+          <h2 className="text-2xl md:hidden">Votre chauffage écologique et économique en 3 clics</h2>
           <ChoixChauffageForm />
         </div>
       </div>
