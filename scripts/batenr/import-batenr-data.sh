@@ -58,7 +58,9 @@ REFRESH_MODE="${REFRESH_MODE:-0}"
 
 OGR_SQL="
 SELECT
+  batiment_construction_id,
   batiment_groupe_id,
+  adresse,
   geom,
   gmi_nappe_200, pot_nappe, place_nappe,
   gmi_sonde_200, gis_geo_profonde,
