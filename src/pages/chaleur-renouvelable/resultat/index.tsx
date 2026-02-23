@@ -1,8 +1,8 @@
 import { createModal } from '@codegouvfr/react-dsfr/Modal';
+import dynamic from 'next/dynamic';
 import { useState } from 'react';
 
 import AdemeHelp from '@/components/ChaleurRenouvelable/AdemeHelp';
-import ChoixChauffageResults from '@/components/choix-chauffage/ChoixChauffageResults';
 import Share from '@/components/Share';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Button from '@/components/ui/Button';
@@ -10,6 +10,12 @@ import CallOut from '@/components/ui/CallOut';
 import Image from '@/components/ui/Image';
 import Link from '@/components/ui/Link';
 import Modal from '@/components/ui/Modal';
+
+const ChoixChauffageResults = dynamic(() => import('@/components/choix-chauffage/ChoixChauffageResults'), {
+  //loading: () => <Placeholder advancedMode={false} />,
+  // Publicode engine takes 2s to load and is unnecessary on the server side
+  ssr: false,
+});
 
 export default function ChaleurRenouvelableResultatPage() {
   const [openShareModal, setOpenShareModal] = useState(false);
@@ -43,7 +49,16 @@ export default function ChaleurRenouvelableResultatPage() {
         <h2>Résultats : Vos solutions de chauffage écologique</h2>
 
         <ChoixChauffageResults />
-        <CallOut iconId="fr-icon-lightbulb-line" title="Comment sont calculés ces résultats ?" size="lg" colorVariant="blue-ecume">
+        <CallOut
+          title={
+            <>
+              <span className="fr-icon-lightbulb-line fr-mr-1w" />
+              Comment sont calculés ces résultats ?
+            </>
+          }
+          size="lg"
+          colorVariant="blue-ecume"
+        >
           <p className="fr-callout__text">
             Nos recommandations sont calculées à partir des informations que vous avez fournies : mode de chauffage, surface moyenne, classe
             DPE, disponibilité d’espaces extérieurs… Ces critères permettent de classer les solutions par pertinence et d’estimer les coûts

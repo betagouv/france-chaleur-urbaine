@@ -1,10 +1,13 @@
+import type { RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
 import { parseAsInteger, parseAsString, parseAsStringLiteral, useQueryState } from 'nuqs';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
+import useSimulatorEngine from '@/components/ComparateurPublicodes/useSimulatorEngine';
 import {
   type DPE,
   DPE_ORDER,
   type ModeDeChauffage,
+  type ModeDeChauffageEnriched,
   modeDeChauffageParTypeLogement,
   type Situation,
 } from '@/components/choix-chauffage/modesChauffageData';
@@ -24,13 +27,27 @@ import { runWithMinimumDelay } from '@/utils/time';
 import { ParamsForm } from './ParamsForm';
 import { ResultRowAccordion } from './ResultRowAccordion';
 
+type ResultsSectionProps = {
+  title: string;
+  items: ModeDeChauffageEnriched[];
+  variant: 'recommended' | 'other';
+  dpeFrom: DPE;
+  openAccordionId: string | null;
+  coutParAnGaz: number;
+  onOpenChange: (id: string, expanded: boolean) => void;
+};
+
 const espaceExterieurValues = ['shared', 'private', 'both', 'none'] as const satisfies readonly EspaceExterieur[];
+
+const DEFAULT_TYPE_LOGEMENT: TypeLogement = 'immeuble_chauffage_collectif';
 
 export default function ChoixChauffageResults() {
   const trpcUtils = trpc.useUtils();
+  const engine = useSimulatorEngine();
 
   const [dpe, setDpe] = useQueryState('dpe', parseAsStringLiteral(DPE_ORDER).withDefault('E' as DPE));
   const [adresse] = useQueryState('adresse');
+
   const [typeLogement, setTypeLogement] = useQueryState(
     'typeLogement',
     parseAsStringLiteral([
@@ -39,7 +56,9 @@ export default function ChoixChauffageResults() {
       'maison_individuelle',
     ] as const satisfies readonly TypeLogement[])
   );
+
   const [espaceExterieur, setEspaceExterieur] = useQueryState('espaceExterieur', parseAsStringLiteral(espaceExterieurValues));
+
   const [nbLogements, setNbLogements] = useQueryState('nbLogements', parseAsInteger.withDefault(25));
   const [surfaceMoyenne, setSurfaceMoyenne] = useQueryState('surfaceMoyenne', parseAsInteger.withDefault(70));
   const [habitantsMoyen, setHabitantsMoyen] = useQueryState('habitantsMoyen', parseAsString.withDefault('2'));
@@ -52,19 +71,37 @@ export default function ChoixChauffageResults() {
   const [addressDetail, setAddressDetail] = useState<AddressDetail | null>(null);
 
   const batEnr = addressDetail?.batEnr ?? { gmi: false, ppa: false };
+
   const situation: Situation = useMemo(
     () => ({
       adresse: adresse ?? null,
       dpe,
-      espaceExterieur: espaceExterieur as EspaceExterieur,
+      espaceExterieur: (espaceExterieur ?? 'none') as EspaceExterieur,
       gmi: batEnr.gmi,
-      habitantsMoyen: parseFloat(habitantsMoyen),
+      habitantsMoyen: Number.parseFloat(habitantsMoyen) || 0,
       nbLogements,
       ppa: batEnr.ppa,
       surfaceMoyenne,
     }),
-    [espaceExterieur, batEnr.gmi, batEnr.ppa, dpe, adresse, nbLogements, surfaceMoyenne, habitantsMoyen]
+    [adresse, dpe, espaceExterieur, batEnr.gmi, batEnr.ppa, habitantsMoyen, nbLogements, surfaceMoyenne]
   );
+
+  // Pousse la situation dans Publicodes dès qu’elle change (y compris code département / température)
+  useEffect(() => {
+    if (!codeDepartement) return;
+    engine.setSituation({
+      'code département': `'${codeDepartement}'`,
+      DPE: `'${situation.dpe}'`,
+      'Inclure la climatisation': 'non',
+      "Nombre d'habitants moyen par appartement": `${situation.habitantsMoyen}`,
+      "nombre de logements dans l'immeuble concerné": situation.nbLogements,
+      'Production eau chaude sanitaire': 'oui',
+      'surface logement type tertiaire': `${situation.surfaceMoyenne}`,
+      'température de référence chaud commune': temperatureRef,
+      //'type de bâtiment': "'résidentiel'",
+      'type de production ECS': "'Avec équipement chauffage'",
+    });
+  }, [situation, codeDepartement, temperatureRef]);
 
   const testAddressEligibility = useCallback(
     toastErrors(async (adresseToTest: string) => {
@@ -109,8 +146,8 @@ export default function ChoixChauffageResults() {
 
       setAddressDetail({
         batEnr: {
-          gmi: batEnr?.gmi_nappe_200 === 1 || batEnr?.gmi_sonde_200 === 1,
-          ppa: batEnr?.etat_ppa === 'PPA Validés',
+          gmi: Number(batEnrDetails?.gmi_nappe_200) === 1 || Number(batEnrDetails?.gmi_sonde_200) === 1,
+          ppa: batEnrDetails?.etat_ppa === 'PPA Validés',
         },
         geoAddress,
         network: eligibilityStatus,
@@ -123,12 +160,23 @@ export default function ChoixChauffageResults() {
     if (!adresse) return;
     void testAddressEligibility(adresse);
   }, [adresse, testAddressEligibility]);
-  console.log('typeLogement', situation);
-  const modesDeChauffage: ModeDeChauffage[] = useMemo(
-    () => modeDeChauffageParTypeLogement[typeLogement ?? 'immeuble_chauffage_collectif'].filter((m) => m.estPossible(situation)),
-    [typeLogement, situation]
-  );
-  const firstMode = modesDeChauffage[0];
+
+  const effectiveTypeLogement = (typeLogement ?? DEFAULT_TYPE_LOGEMENT) as TypeLogement;
+
+  const modesDeChauffage: ModeDeChauffage[] = useMemo(() => {
+    return modeDeChauffageParTypeLogement[effectiveTypeLogement].filter((m) => m.estPossible(situation));
+  }, [effectiveTypeLogement, situation]);
+  const modesWithCout: ModeDeChauffageEnriched[] = useMemo(() => {
+    return modesDeChauffage.map((it) => {
+      const coutParAn = it.coutParAnPublicodeKey
+        ? Number(engine.getField(`Bilan x ${it.coutParAnPublicodeKey} . total avec aides` as RuleName) ?? 0)
+        : 0;
+      return { ...it, coutParAn };
+    });
+  }, [modesDeChauffage, engine]);
+  const coutParAnGaz = Number(engine.getField(`Bilan x Gaz coll sans cond . total avec aides` as RuleName) ?? 0);
+  const recommended = modesWithCout.slice(0, 1);
+  const others = modesWithCout.slice(1);
 
   const handleAccordionOpenChange = useCallback((id: string, expanded: boolean) => {
     setOpenAccordionId(expanded ? id : null);
@@ -167,50 +215,64 @@ export default function ChoixChauffageResults() {
         habitantsMoyen={habitantsMoyen}
         setHabitantsMoyen={(v) => void setHabitantsMoyen(v)}
       />
-
-      <h3 className="fr-mt-6w">Solution recommandée</h3>
+      <ResultsSection
+        title="Solution recommandée"
+        items={recommended}
+        variant="recommended"
+        coutParAnGaz={coutParAnGaz}
+        dpeFrom={dpe}
+        openAccordionId={openAccordionId}
+        onOpenChange={handleAccordionOpenChange}
+      />
+      <ResultsSection
+        title="Autres solutions possibles"
+        items={others}
+        coutParAnGaz={coutParAnGaz}
+        variant="other"
+        dpeFrom={dpe}
+        openAccordionId={openAccordionId}
+        onOpenChange={handleAccordionOpenChange}
+      />
+    </>
+  );
+}
+function ResultsSection({ title, items, coutParAnGaz, variant, dpeFrom, openAccordionId, onOpenChange }: ResultsSectionProps) {
+  return (
+    <>
+      <h3 className="fr-mt-6w">{title}</h3>
       <div className="border border-gray-200 rounded shadow-lg fr-my-3w fr-px-3w fr-pb-3w">
-        {firstMode && (
-          <ResultRowAccordion
-            item={firstMode}
-            index={0}
-            variant="recommended"
-            dpeFrom={dpe}
-            isOpen={openAccordionId === firstMode.label}
-            onOpenChange={(expanded) => handleAccordionOpenChange(firstMode.label, expanded)}
-          />
-        )}
-        <div className="fr-my-3w flex justify-end">
-          <Button
-            iconId="fr-icon-arrow-right-line"
-            iconPosition="right"
-            onClick={(e) => {
-              e.stopPropagation();
-              const elt = document.getElementById('help-ademe');
-              if (elt) elt.scrollIntoView({ behavior: 'smooth' });
-            }}
-          >
-            Je souhaite être accompagné
-          </Button>
-        </div>
-      </div>
-
-      <h3 className="fr-mt-6w">Autres solutions possibles</h3>
-      <div className="border border-gray-200 rounded shadow-lg fr-my-3w fr-px-3w fr-pb-3w">
-        {modesDeChauffage.slice(1).map((it, i) => {
+        {items.map((it, i) => {
           const id = it.label;
           return (
             <ResultRowAccordion
               key={id}
               item={it}
               index={i}
-              variant="other"
-              dpeFrom={dpe}
+              variant={variant}
+              coutParAnGaz={coutParAnGaz}
+              dpeFrom={dpeFrom}
               isOpen={openAccordionId === id}
-              onOpenChange={(expanded) => handleAccordionOpenChange(id, expanded)}
+              onOpenChange={(expanded) => onOpenChange(id, expanded)}
             />
           );
         })}
+
+        {variant === 'recommended' ? (
+          <div className="fr-my-3w flex justify-end">
+            <Button
+              iconId="fr-icon-arrow-right-line"
+              iconPosition="right"
+              onClick={(e) => {
+                e.stopPropagation();
+                document.getElementById('help-ademe')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+            >
+              Je souhaite être accompagné
+            </Button>
+          </div>
+        ) : (
+          ''
+        )}
       </div>
     </>
   );

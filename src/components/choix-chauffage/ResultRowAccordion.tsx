@@ -1,6 +1,7 @@
 import React from 'react';
 
-import { type DPE, DPE_BG, improveDpe, type ModeDeChauffage } from '@/components/choix-chauffage/modesChauffageData';
+import { getCostPrecisionRange } from '@/components/ComparateurPublicodes/Graph';
+import { type DPE, DPE_BG, improveDpe, type ModeDeChauffageEnriched } from '@/components/choix-chauffage/modesChauffageData';
 import Accordion from '@/components/ui/Accordion';
 import Button from '@/components/ui/Button';
 import Image from '@/components/ui/Image';
@@ -30,18 +31,31 @@ function Stars({ value }: { value: number }) {
   );
 }
 
-function MobileStats({ item, dpeFrom, dpeTo }: { item: ModeDeChauffage; dpeFrom: DPE; dpeTo: DPE }) {
+function MobileStats({
+  item,
+  dpeFrom,
+  dpeTo,
+  coutParAnGaz,
+}: {
+  item: ModeDeChauffageEnriched;
+  dpeFrom: DPE;
+  dpeTo: DPE;
+  coutParAnGaz: number;
+}) {
+  const { lowerBoundString, upperBoundString } = getCostPrecisionRange(item.coutParAn ?? 0);
   return (
     <div className="md:hidden">
       <div className="flex justify-between fr-mb-3w">
         <div>Coût par an par logement</div>
-        <div className="text-(--text-title-blue-france)">{item.cout}</div>
+        <div className="text-(--text-title-blue-france)">
+          {lowerBoundString} à {upperBoundString}
+        </div>
       </div>
       <div className="flex justify-between fr-mb-3w">
         <div>Coût par rapport au gaz</div>
         <div className="text-(--text-default-success)">
           <span className="fr-icon-arrow-down-circle-fill fr-mr-1w" aria-hidden="true" />
-          <span>Moins {item.gainVsGaz}%</span>
+          <span>Moins {Math.round(coutParAnGaz)}%</span>
         </div>
       </div>
       <div className="flex justify-between fr-mb-3w">
@@ -58,10 +72,11 @@ function MobileStats({ item, dpeFrom, dpeTo }: { item: ModeDeChauffage; dpeFrom:
 }
 
 export type ResultRowAccordionProps = {
-  item: ModeDeChauffage;
+  item: ModeDeChauffageEnriched;
   variant: 'recommended' | 'other';
   index: number;
   dpeFrom: DPE;
+  coutParAnGaz: number;
   isOpen: boolean;
   onOpenChange: (expanded: boolean) => void;
 };
@@ -71,12 +86,15 @@ export const ResultRowAccordion = React.memo(function ResultRowAccordion({
   variant,
   index,
   dpeFrom,
+  coutParAnGaz,
   isOpen,
   onOpenChange,
 }: ResultRowAccordionProps) {
   const dpeTo = improveDpe(dpeFrom, item.gainClasse);
   const stars = typeof item.pertinence === 'number' ? item.pertinence : 0;
-
+  const { lowerBoundString, upperBoundString } = getCostPrecisionRange(item.coutParAn ?? 0);
+  const percentVsGaz = Math.round(((item.coutParAn - coutParAnGaz) / coutParAnGaz) * 100);
+  const isLess = percentVsGaz < 0;
   return (
     <Accordion
       expanded={isOpen}
@@ -88,13 +106,18 @@ export const ResultRowAccordion = React.memo(function ResultRowAccordion({
             <Stars value={stars} />
           </div>
           <div className="flex-2 md:text-center hidden md:block">
-            <div className="text-(--text-title-blue-france)">{item.cout}</div>
+            <div className="text-(--text-title-blue-france)">
+              {lowerBoundString} à {upperBoundString}
+            </div>
             <div className="text-sm font-normal text-(--text-default-grey)">coût par an par logement</div>
           </div>
           <div className="flex-2 md:text-center hidden md:block">
-            <div className="text-(--text-default-success)">
-              <span className="fr-icon-arrow-down-circle-fill fr-mr-1w" aria-hidden="true" />
-              <span>Moins {item.gainVsGaz}%</span>
+            <div className={cx(isLess && 'text-(--text-default-success)', !isLess && 'text-(--text-default-error)')}>
+              <span
+                className={cx('fr-mr-1w', isLess && 'fr-icon-arrow-down-circle-fill', !isLess && 'fr-icon-arrow-up-circle-fill')}
+                aria-hidden="true"
+              />
+              <span>{isLess ? `Moins ${Math.abs(percentVsGaz)}%` : `Plus ${percentVsGaz}%`}</span>
             </div>
             <div className="text-sm font-normal text-(--text-default-grey)">par rapport au gaz</div>
           </div>
@@ -107,7 +130,7 @@ export const ResultRowAccordion = React.memo(function ResultRowAccordion({
       }
       className={cx(index === 0 && 'fr-pt-3w')}
     >
-      <MobileStats item={item} dpeFrom={dpeFrom} dpeTo={dpeTo} />
+      <MobileStats item={item} dpeFrom={dpeFrom} dpeTo={dpeTo} coutParAnGaz={coutParAnGaz} />
       <div>{item.description}</div>
       <div className="flex flex-col md:flex-row fr-mt-3w gap-5">
         <div className="flex-1">
@@ -147,7 +170,7 @@ export const ResultRowAccordion = React.memo(function ResultRowAccordion({
             <Image src="/icons/icon-money.png" alt="icone d'engrenage" aria-hidden="true" width="24" height="24" />
             Coût d’installation : <strong>{item.coutInstallation} par logement.</strong>
           </span>
-          {item.aidesInstallation?.length ? <span> Des aides existent (Coup de Pouce, Ma Prime Rénov’...) </span> : ''}
+          <span> Des aides existent (Coup de Pouce, Ma Prime Rénov’...)</span>
         </p>
         <Link href="https://france-renov.gouv.fr/" isExternal className="w-auto">
           Plus d'infos
