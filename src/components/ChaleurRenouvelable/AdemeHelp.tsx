@@ -1,7 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import styled from 'styled-components';
 
+import DSFRInput from '@/components/form/dsfr/Input';
 import useForm from '@/components/form/react-form/useForm';
 import CallOut from '@/components/ui/CallOut';
 import useUserInfo from '@/modules/app/client/hooks/useUserInfo';
@@ -12,6 +14,12 @@ type AdemeHelpProps = {
   className?: string;
   onSubmitSuccess?: (value: { email: string; phone?: string; termOfUse: boolean }) => void;
 };
+
+export const Input = styled(DSFRInput)`
+  input {
+    background: white;
+  }
+`;
 
 export default function AdemeHelp({ className, onSubmitSuccess }: AdemeHelpProps) {
   const { userInfo, setUserInfo } = useUserInfo();
@@ -43,8 +51,22 @@ export default function AdemeHelp({ className, onSubmitSuccess }: AdemeHelpProps
         </p>
         <Form>
           <div className="full flex flex-col md:flex-row md:gap-5 fr-mb-3w md:mb-0">
-            <Field.EmailInput name="email" label={fieldLabelInformation.email} className="flex-1" />
-            <Field.PhoneInput name="phone" label={fieldLabelInformation.phone} className="flex-1" />
+            <Input
+              label={fieldLabelInformation.email}
+              nativeInputProps={{
+                required: true,
+                type: 'email',
+              }}
+              className="flex-1"
+            />
+            <Input
+              label={fieldLabelInformation.phone}
+              nativeInputProps={{
+                required: false,
+                type: 'phone',
+              }}
+              className="flex-1"
+            />
           </div>
           <Field.Checkbox name="termOfUse" label="J’accepte les conditions générales d’utilisation du service." />
           <Submit disabled={false} loading={isLoading}>

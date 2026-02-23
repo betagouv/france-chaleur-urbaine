@@ -73,7 +73,7 @@ export function ParamsForm({
 
       <div
         id={ariaControlsId}
-        className={cx('border border-gray-200 rounded shadow-lg p-4 fr-mb-3w', 'md:block', isOpen ? 'block' : 'hidden')}
+        className={cx('border border-gray-200 rounded shadow-lg p-4 fr-mb-3w bg-white', 'md:block', isOpen ? 'block' : 'hidden')}
       >
         <div className="flex items-center gap-2 font-semibold">
           <Image src="/icons/icon-warning.png" alt="icone d'engrenage" aria-hidden="true" width="24" height="24" />

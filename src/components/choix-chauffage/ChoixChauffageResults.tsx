@@ -239,7 +239,7 @@ function ResultsSection({ title, items, coutParAnGaz, variant, dpeFrom, openAcco
   return (
     <>
       <h3 className="fr-mt-6w">{title}</h3>
-      <div className="border border-gray-200 rounded shadow-lg fr-my-3w fr-px-3w fr-pb-3w">
+      <div className="border border-gray-200 bg-white rounded shadow-lg fr-my-3w fr-px-3w fr-pb-3w">
         {items.map((it, i) => {
           const id = it.label;
           return (
