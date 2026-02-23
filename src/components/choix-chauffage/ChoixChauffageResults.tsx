@@ -16,7 +16,9 @@ import { searchBANAddresses } from '@/modules/ban/client';
 import type { SuggestionItem } from '@/modules/ban/types';
 import { toastErrors } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
+import type { LocationInfoResponse } from '@/pages/api/location-infos';
 import type { AddressDetail } from '@/types/HeatNetworksResponse';
+import { postFetchJSON } from '@/utils/network';
 import { runWithMinimumDelay } from '@/utils/time';
 
 import { ParamsForm } from './ParamsForm';
@@ -41,6 +43,9 @@ export default function ChoixChauffageResults() {
   const [nbLogements, setNbLogements] = useQueryState('nbLogements', parseAsInteger.withDefault(25));
   const [surfaceMoyenne, setSurfaceMoyenne] = useQueryState('surfaceMoyenne', parseAsInteger.withDefault(70));
   const [habitantsMoyen, setHabitantsMoyen] = useQueryState('habitantsMoyen', parseAsString.withDefault('2'));
+
+  const [codeDepartement, setCodeDepartement] = useState<string>('');
+  const [temperatureRef, setTemperatureRef] = useState<number | null>(null);
 
   const [isParamsOpen, setIsParamsOpen] = useState(false);
   const [openAccordionId, setOpenAccordionId] = useState<string | null>(null);
@@ -73,6 +78,8 @@ export default function ChoixChauffageResults() {
       const geoAddress = results?.[0] as SuggestionItem | undefined;
       if (!geoAddress) {
         setAddressDetail(null);
+        setCodeDepartement('');
+        setTemperatureRef(null);
         return;
       }
 
@@ -80,16 +87,25 @@ export default function ChoixChauffageResults() {
       const point = { lat, lon };
       const isCity = geoAddress.properties.label === geoAddress.properties.city;
 
-      const [eligibilityStatus, batEnr] = await runWithMinimumDelay(
+      const [eligibilityStatus, batEnrDetails, infos] = await runWithMinimumDelay(
         () =>
           Promise.all([
             isCity
               ? trpcUtils.client.reseaux.cityNetwork.query({ city: geoAddress.properties.city })
               : trpcUtils.client.reseaux.eligibilityStatus.query(point),
             trpcUtils.client.batEnr.getBatEnrBatimentDetails.query(point),
+            postFetchJSON<LocationInfoResponse>('/api/location-infos', {
+              city: geoAddress.properties.city,
+              cityCode: geoAddress.properties.citycode,
+              lat,
+              lon,
+              onlyCity: true,
+            }),
           ]),
         500
       );
+      setCodeDepartement(infos?.infosVille?.departement_id ?? '');
+      setTemperatureRef(Number(infos?.infosVille?.temperature_ref_altitude_moyenne));
 
       setAddressDetail({
         batEnr: {
