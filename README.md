@@ -82,26 +82,16 @@ Celui-ci doit être généré à partir de la base de données à chaque fois qu
 
 ## Développement avec Publicodes
 
-Les commandes ci-dessous sont à réaliser une fois pour lier la dépendance [@betagouv/france-chaleur-urbaine-publicodes](https://github.com/betagouv/france-chaleur-urbaine-publicodes) directement au répertoire local `france-chaleur-urbaine-publicodes` pour faciliter le développement sans avoir besoin de publier une version sur le registre NPM.
+La commande ci-dessous est à réaliser une fois pour lier la dépendance [@betagouv/france-chaleur-urbaine-publicodes](https://github.com/betagouv/france-chaleur-urbaine-publicodes) directement au répertoire local `france-chaleur-urbaine-publicodes` pour faciliter le développement sans avoir besoin de publier une version sur le registre NPM.
 
 ```sh
-# rend disponible le paquet @betagouv/france-chaleur-urbaine-publicodes globalement en local
-(cd france-chaleur-urbaine-publicodes && pnpm link)
+cd france-chaleur-urbaine
+pnpm add @betagouv/france-chaleur-urbaine-publicodes@link:../france-chaleur-urbaine-publicodes
+# attention, il faut garder cette modification en local, ne pas commit les changements du package.json et pnpm-lock.yaml
 
-# utilise le paquet local @betagouv/france-chaleur-urbaine-publicodes plutôt que celui du registre
-(cd france-chaleur-urbaine && pnpm link @betagouv/france-chaleur-urbaine-publicodes)
-```
-
-Note : Le lien créé est un lien symbolique, il ne fonctionne pas quand le serveur est lancé dans un conteneur Docker.
-Il faut donc lancer le serveur en dehors du conteneur Docker.
-
-```sh
-# arrêter le conteneur du serveur
-docker compose stop web
-# corriger les permissions (root dans le conteneur != de l'utilisateur local)
-sudo chown -R $USER: .next node_modules
-# lancer le serveur
-pnpm dev
+# pour revenir à la version d'origine
+git checkout package.json pnpm-lock.yaml
+pnpm install
 ```
 
 
