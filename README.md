@@ -50,6 +50,16 @@ tar -xzvf 20240XXXXXXXXXX_france_chal_3098.tar.gz
 pg_restore --clean --if-exists --no-owner --no-privileges --verbose --no-comments --dbname postgres://postgres:postgres_fcu@localhost:5432/postgres 20240XXXXXXXXXX_france_chal_3098.pgsql
 ```
 
+- Démarrer le serveur web
+```sh
+pnpm dev
+```
+
+- Si besoin, démarrer le service clock (crons et traitement des jobs)
+```sh
+pnpm clock:start
+```
+
 - Désormais, sont accessibles :
   - Le site internet : http://localhost:3000/
   - L'interface mailpit pour les emails : http://localhost:8025/
