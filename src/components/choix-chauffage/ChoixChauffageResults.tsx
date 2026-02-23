@@ -13,7 +13,6 @@ import {
 } from '@/components/choix-chauffage/modesChauffageData';
 import { SettingsTopFields } from '@/components/choix-chauffage/SettingsTopFields';
 import type { TypeLogement } from '@/components/choix-chauffage/type-logement';
-import Button from '@/components/ui/Button';
 import type { EspaceExterieur } from '@/modules/app/types';
 import { searchBANAddresses } from '@/modules/ban/client';
 import type { SuggestionItem } from '@/modules/ban/types';
@@ -25,7 +24,7 @@ import { postFetchJSON } from '@/utils/network';
 import { runWithMinimumDelay } from '@/utils/time';
 
 import { ParamsForm } from './ParamsForm';
-import { ResultRowAccordion } from './ResultRowAccordion';
+import { ResultRowAccordion, ScrollToHelpButton } from './ResultRowAccordion';
 
 type ResultsSectionProps = {
   title: string;
@@ -256,23 +255,7 @@ function ResultsSection({ title, items, coutParAnGaz, variant, dpeFrom, openAcco
             />
           );
         })}
-
-        {variant === 'recommended' ? (
-          <div className="fr-my-3w flex justify-end">
-            <Button
-              iconId="fr-icon-arrow-right-line"
-              iconPosition="right"
-              onClick={(e) => {
-                e.stopPropagation();
-                document.getElementById('help-ademe')?.scrollIntoView({ behavior: 'smooth' });
-              }}
-            >
-              Je souhaite être accompagné
-            </Button>
-          </div>
-        ) : (
-          ''
-        )}
+        {variant === 'recommended' && <ScrollToHelpButton />}
       </div>
     </>
   );
