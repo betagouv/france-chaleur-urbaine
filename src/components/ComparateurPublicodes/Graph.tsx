@@ -185,7 +185,7 @@ const getGridRepeatPercentage = (value: number) => {
   return gridPercentage;
 };
 
-const getCostPrecisionRange = (value: number) => {
+export const getCostPrecisionRange = (value: number) => {
   const lowerBound = Math.round((value * (1 - costPrecisionPercentage)) / 10) * 10;
   const upperBound = Math.round((value * (1 + costPrecisionPercentage)) / 10) * 10;
 

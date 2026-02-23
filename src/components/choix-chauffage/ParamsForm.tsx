@@ -15,17 +15,14 @@ import { SettingsTopFields } from './SettingsTopFields';
 const isNumericLike = (v: string) => v === '' || /^[0-9]+([.,][0-9]*)?$/.test(v);
 
 type ParamsFormProps = {
-  // UI state (accordéon mobile)
   isOpen: boolean;
   setIsOpen: (next: boolean | ((prev: boolean) => boolean)) => void;
 
-  // SettingsTopFields
   typeLogement: TypeLogement | null;
   setTypeLogement: (val: TypeLogement | null) => void;
   espaceExterieur: EspaceExterieur | null;
   setEspaceExterieur: (val: EspaceExterieur | null) => void;
 
-  // Form fields
   dpe: DPE;
   setDpe: (val: DPE) => void;
 
@@ -55,7 +52,6 @@ export function ParamsForm({
   habitantsMoyen,
   setHabitantsMoyen,
 }: ParamsFormProps) {
-  // évite de recréer les ids / strings
   const ariaControlsId = useMemo(() => 'params-form', []);
 
   return (
@@ -85,7 +81,6 @@ export function ParamsForm({
         </div>
 
         <div className="mt-3 grid grid-cols-1 md:grid-cols-4 md:gap-4">
-          {/* SettingsTopFields (mobile only inside form) */}
           <div className="md:hidden mb-6 md:mb-0">
             <SettingsTopFields
               withLabel
