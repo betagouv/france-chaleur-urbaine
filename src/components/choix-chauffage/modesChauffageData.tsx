@@ -157,7 +157,7 @@ export const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffag
       estPossible: (situation) => hasEspaceShared(situation),
       gainClasse: 1,
       inconvenients: ['Nuisances sonores', 'Impact esthétique des modules extérieurs'],
-      label: 'Hybride : Pompe à chaleur air/eau collective et chaudière gaz',
+      label: 'Hybride : PAC air/eau collective et chaudière gaz',
       pertinence: 1,
     },
     {

@@ -60,12 +60,14 @@ export default function Share() {
           variant="secondary"
           className="w-full justify-center"
           title="Envoyez le lien par email"
-          href={`mailto:?subject=${encodeURIComponent('[FCU] Lien de ma simulation')}&body=${encodeURIComponent(
+          href={`mailto:?subject=${encodeURIComponent('[France Chaleur Urbaine] Lien de ma simulation')}&body=${encodeURIComponent(
             `Bonjour,
 
-Voici le lien vers votre simulation pour votre projet de rénovation énergétique :
+Voici les résultats de ma simulation faite sur France Chaleur Urbaine pour mon projet de rénovation énergétique :
 
 ${window.location.href}
+
+Simulation réalisée sur france-chaleur-urbaine.beta.gouv.fr
 
 Cordialement,
 L'équipe France Chaleur Urbaine`
