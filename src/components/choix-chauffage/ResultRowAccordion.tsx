@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 
 import { getCostPrecisionRange } from '@/components/ComparateurPublicodes/Graph';
 import { type DPE, DPE_BG, improveDpe, type ModeDeChauffageEnriched } from '@/components/choix-chauffage/modesChauffageData';
@@ -67,6 +67,29 @@ function MobileStats({
         </div>
       </div>
       <hr />
+    </div>
+  );
+}
+
+export function ScrollToHelpButton() {
+  const handleClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    const elt = document.getElementById('help-ademe');
+    if (elt) {
+      elt.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, []);
+
+  return (
+    <div className="fr-my-3w flex justify-center md:justify-end">
+      <Button
+        className="flex-1 md:flex-none md:flex justify-center"
+        iconId="fr-icon-arrow-right-line"
+        iconPosition="right"
+        onClick={handleClick}
+      >
+        Je souhaite être accompagné
+      </Button>
     </div>
   );
 }
@@ -176,21 +199,7 @@ export const ResultRowAccordion = React.memo(function ResultRowAccordion({
           Plus d'infos
         </Link>
       </div>
-      {variant !== 'recommended' ? (
-        <div className="fr-mt-3w flex justify-end">
-          <Button
-            iconId="fr-icon-arrow-right-line"
-            iconPosition="right"
-            onClick={(e) => {
-              e.stopPropagation();
-              const elt = document.getElementById('help-ademe');
-              if (elt) elt.scrollIntoView({ behavior: 'smooth' });
-            }}
-          >
-            Je souhaite être accompagné
-          </Button>
-        </div>
-      ) : null}
+      {variant !== 'recommended' && <ScrollToHelpButton />}
     </Accordion>
   );
 });
