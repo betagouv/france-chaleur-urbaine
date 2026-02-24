@@ -1,6 +1,5 @@
 import '@/load-env';
 
-import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 
 import { allDatabaseTables } from '@cli/bootstrap/tables';
@@ -24,18 +23,17 @@ import { applyGeometryUpdates } from '@/modules/reseaux/server/geometry-updates'
 import { syncPostgresToAirtable } from '@/modules/reseaux/server/sync-pg-to-airtable';
 import { registerTilesCommands } from '@/modules/tiles/commands';
 import { getApiHandler } from '@/server/api/users';
-import { serverConfig } from '@/server/config';
 import { saveStatsInDB } from '@/server/cron/saveStatsInDB';
 import { kdb, sql } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
 import { syncComptesProFromUsers } from '@/server/services/airtable';
-import { APIDataGouvService } from '@/services/api-data-gouv';
 import { registerTestCommands } from '@/tests/commands';
 import { userRoles } from '@/types/enum/UserRole';
 import { fetchJSON } from '@/utils/network';
-import { runBash, runCommand } from '@/utils/system';
+import { runBash } from '@/utils/system';
 import { sleep } from '@/utils/time';
 
+import { registerOpendataCommands } from '../src/modules/opendata/commands';
 import { type KnownAirtableBase, knownAirtableBases } from './airtable/bases';
 import { createModificationsReseau } from './airtable/create-modifications-reseau';
 import { fetchBaseSchema } from './airtable/dump-schema';
@@ -75,6 +73,7 @@ registerJobsCommands(program);
 registerOptimizationCommands(program);
 registerProEligibilityTestsCommands(program);
 registerNetworkCommands(program);
+registerOpendataCommands(program);
 registerTilesCommands(program);
 registerTestCommands(program);
 

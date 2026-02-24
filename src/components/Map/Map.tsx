@@ -31,7 +31,7 @@ import Tooltip from '@/components/ui/Tooltip';
 import useContactFormFCU from '@/hooks/useContactFormFCU';
 import useDevMode from '@/hooks/useDevMode';
 import useRouterReady from '@/hooks/useRouterReady';
-import { trackEvent } from '@/modules/analytics/client';
+import { trackEvent, trackPostHogEvent } from '@/modules/analytics/client';
 import useUserInfo from '@/modules/app/client/hooks/useUserInfo';
 import type { BoundingBox } from '@/modules/geo/types';
 import { notify } from '@/modules/notification';
@@ -640,7 +640,13 @@ export const FullyFeaturedMap = ({
   }
 
   const sourcesLink = ReactDOMServer.renderToString(
-    <Link href="/donnees" isExternal eventKey="Téléchargement|Carto sources">
+    <Link
+      href="/donnees"
+      isExternal
+      eventKey="Téléchargement|Carto sources"
+      postHogEventKey="link:click"
+      postHogEventProps={{ link_name: 'sources_donnees', source: 'carte' }}
+    >
       Sources
     </Link>
   );
@@ -655,6 +661,7 @@ export const FullyFeaturedMap = ({
               $legendCollapsed={legendCollapsed}
               onClick={() => {
                 trackEvent(`Carto|Légende|${legendCollapsed ? 'Ouvre' : 'Ferme'}`);
+                trackPostHogEvent('map:legend_toggle', { is_open: legendCollapsed });
                 setLegendCollapsed(!legendCollapsed);
               }}
             >

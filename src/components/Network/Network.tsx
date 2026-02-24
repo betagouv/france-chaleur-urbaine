@@ -483,6 +483,8 @@ const NetworkPanel = ({
                         isExternal
                         eventKey="Téléchargement|Schéma directeur"
                         eventPayload={`${network['Identifiant reseau']},${fichier.filename}`}
+                        postHogEventKey="link:click"
+                        postHogEventProps={{ link_name: 'schema_directeur', source: 'fiche-reseau' }}
                       >
                         {fichier.filename}
                       </Link>

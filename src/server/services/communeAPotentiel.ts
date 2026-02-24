@@ -1,7 +1,7 @@
 import type { BoundingBox } from '@/modules/geo/types';
 import { kdb, sql } from '@/server/db/kysely';
 
-type TypeCommune = 'Réseau Existant' | 'Réseau Futur' | 'Fort Potentiel' | 'Potentiel' | 'Sans Potentiel';
+export type TypeCommune = 'Réseau Existant' | 'Réseau Futur' | 'Fort Potentiel' | 'Potentiel' | 'Sans Potentiel';
 
 export const getCommunePotentiel = async (codeInsee: string) => {
   const communePromise = kdb

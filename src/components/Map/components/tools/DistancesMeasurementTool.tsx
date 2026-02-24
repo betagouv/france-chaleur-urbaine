@@ -12,7 +12,7 @@ import useFCUMap from '@/components/Map/MapProvider';
 import Box from '@/components/ui/Box';
 import Divider from '@/components/ui/Divider';
 import Text from '@/components/ui/Text';
-import { trackEvent } from '@/modules/analytics/client';
+import { trackEvent, trackPostHogEvent } from '@/modules/analytics/client';
 import { formatDistance } from '@/modules/geo/client/helpers';
 
 import type { MapSourceLayersSpecification } from '../../layers/common';
@@ -58,6 +58,7 @@ const DistancesMeasurementTool: React.FC = () => {
       ];
     });
     trackEvent('Carto|Mesure de distance|Tracé terminé');
+    trackPostHogEvent('map:tool_use', { action: 'complete', tool_name: 'distance' });
   };
 
   const onDrawRender = () => {
@@ -183,6 +184,7 @@ const DistancesMeasurementTool: React.FC = () => {
       return updatedFeatures;
     });
     trackEvent('Carto|Mesure de distance|Supprimer un tracé');
+    trackPostHogEvent('map:tool_use', { action: 'reset', tool_name: 'distance' });
   }
 
   const drawingFeaturePointCounts = (mapDraw?.getAll().features[0] as MeasureFeature)?.geometry.coordinates.length ?? 0;
@@ -226,6 +228,7 @@ const DistancesMeasurementTool: React.FC = () => {
           iconId="fr-icon-add-line"
           onClick={() => {
             trackEvent('Carto|Mesure de distance|Ajouter un tracé');
+            trackPostHogEvent('map:tool_use', { action: 'start', tool_name: 'distance' });
             startMeasurement();
           }}
           disabled={!mapLayersLoaded}

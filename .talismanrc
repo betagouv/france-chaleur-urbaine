@@ -16,6 +16,8 @@ fileignoreconfig:
   checksum: fe0a92751cdbd301dfb26b6c4a2a7d4cd23d9c9b096c6db68a3dd38658ad72b5
 - filename: next.config.js
   checksum: d419b5985798e502ec36c7e2d9a7137ed253a39a282f79b668c402d19260878f
+- filename: next.config.ts
+  checksum: a01d97790f005033a30a743e86d13ec8946d9c22c2e9d7e96378030c321eca4a
 - filename: scripts/airtable/dump-schema.ts
   checksum: a3ea18c599994f5715090b33dc8e576e260181c3263e08e3f7f04133d1b57d03
 - filename: scripts/copyRemoteTableToLocal.sh
@@ -53,6 +55,8 @@ fileignoreconfig:
   checksum: 709d0cbd7d8fa33bd9b7db0d90000c1eb6adb9fbf878e40dc956d1cb5ba6cc50
 - filename: src/modules/email/react-email/templates/reset-password.tsx
   checksum: ce24c239f7ded12411bc26d68dee01a10be5878b092415b3ee30a9094591ee5d
+- filename: src/modules/opendata/OPENDATA.md
+  checksum: 478651bb1b40e3adfd6100d9dd91c8fd80e30b6b9d03cefd4657b80709216447
 - filename: src/modules/tiles/server/generation-config.ts
   checksum: 1e868451ec93db7743e0604aa9be6390275f1850f411d4145b46e86e6d0ff224
 - filename: src/modules/tiles/server/tiles.config.ts

@@ -85,6 +85,8 @@ export const getEligibilityResult = (
           variant="secondary"
           className="fr-mt-3v"
           eventKey="Eligibilité|Formulaire de test - Adresse Inéligible - CTA comparateur"
+          postHogEventKey="link:click"
+          postHogEventProps={{ link_name: 'cta_autres_solutions', source: 'eligibility' }}
         >
           Découvrir les autres solutions
           <span className="fr-icon-arrow-right-line fr-icon--right fr-ml-1v" />
@@ -560,34 +562,3 @@ export const getEligibilityResult = (
     }
   }
 };
-
-export const bordeauxMetropoleCityCodes = [
-  '33003',
-  '33004',
-  '33013',
-  '33032',
-  '33039',
-  '33056',
-  '33063',
-  '33065',
-  '33069',
-  '33075',
-  '33096',
-  '33119',
-  '33162',
-  '33167',
-  '33192',
-  '33200',
-  '33249',
-  '33273',
-  '33281',
-  '33312',
-  '33318',
-  '33376',
-  '33434',
-  '33449',
-  '33487',
-  '33519',
-  '33522',
-  '33550',
-];

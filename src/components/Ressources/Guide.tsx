@@ -1,6 +1,6 @@
 import { Button } from '@codegouvfr/react-dsfr/Button';
 
-import { trackEvent } from '@/modules/analytics/client';
+import { trackEvent, trackPostHogEvent } from '@/modules/analytics/client';
 
 import { Container, Content, GuideImage, TopLeft } from './Guide.styles';
 
@@ -16,6 +16,7 @@ const Guide = () => {
         <Button
           onClick={() => {
             trackEvent('Téléchargement|Guide FCU|Ressources');
+            trackPostHogEvent('content:click', { content_name: 'Guide Copropriétés', content_type: 'guide', source: 'ressources' });
             window.open('/documentation/guide-france-chaleur-urbaine.pdf', '_blank');
           }}
         >

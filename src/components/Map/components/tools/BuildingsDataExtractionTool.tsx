@@ -12,7 +12,7 @@ import { clientConfig } from '@/client-config';
 import useFCUMap from '@/components/Map/MapProvider';
 import Box from '@/components/ui/Box';
 import Text from '@/components/ui/Text';
-import { trackEvent } from '@/modules/analytics/client';
+import { trackEvent, trackPostHogEvent } from '@/modules/analytics/client';
 import { validatePolygonGeometry } from '@/modules/geo/client/helpers';
 import trpc from '@/modules/trpc/client';
 import { downloadBaseEncoded64File } from '@/utils/browser';
@@ -92,6 +92,7 @@ const BuildingsDataExtractionTool: React.FC = () => {
     try {
       setIsLoading(true);
       trackEvent('Carto|Extraction données batiments|Zone terminée');
+      trackPostHogEvent('map:tool_use', { action: 'complete', tool_name: 'extraction' });
       const rawSummary = await trpcUtils.client.data.getPolygonSummary.query({ coordinates: area });
 
       const summary: BuildingsDataExtractSummary = {
@@ -248,6 +249,7 @@ const BuildingsDataExtractionTool: React.FC = () => {
 
   const exportSummary = async () => {
     trackEvent('Carto|Extraction données batiments|Exporter les données');
+    trackPostHogEvent('map:tool_use', { action: 'export', tool_name: 'extraction' });
     const file = await trpcUtils.client.data.exportPolygonSummary.query({
       coordinates: features[0].geometry.coordinates[0],
       format: 'csv',
@@ -363,6 +365,7 @@ const BuildingsDataExtractionTool: React.FC = () => {
           className="btn-full-width"
           onClick={() => {
             trackEvent('Carto|Extraction données batiments|Effacer');
+            trackPostHogEvent('map:tool_use', { action: 'reset', tool_name: 'extraction' });
             clearSummary();
           }}
         >

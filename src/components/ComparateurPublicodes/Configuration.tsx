@@ -9,7 +9,7 @@ import labels from '@/components/form/publicodes/labels';
 import Button from '@/components/ui/Button';
 import { copyToClipboard } from '@/components/ui/ButtonCopy';
 import CrudDropdown from '@/components/ui/CrudDropdown';
-import { trackEvent } from '@/modules/analytics/client';
+import { trackEvent, trackPostHogEvent } from '@/modules/analytics/client';
 import { notify } from '@/modules/notification';
 import type { ProComparateurConfigurationResponse } from '@/pages/api/pro/comparateur/configurations/[[...slug]]';
 import { pick } from '@/utils/core';
@@ -128,12 +128,14 @@ const Configuration: React.FC<ConfigurationProps> = ({ engine, address, onChange
             trackEvent('Comparateur Coûts CO2|Création d’une configuration', {
               configId: id,
             });
+            trackPostHogEvent('comparator:config_create');
             engine.setSituation(situationToLoad);
           }}
           onAdd={({ id }) => {
             trackEvent('Comparateur Coûts CO2|Création d’une configuration', {
               configId: id,
             });
+            trackPostHogEvent('comparator:config_create');
           }}
           sharedQueryParamName="configId"
           onShare={({ id }, { setSharingId }) => {
@@ -146,6 +148,7 @@ const Configuration: React.FC<ConfigurationProps> = ({ engine, address, onChange
 
             setTimeout(() => {
               trackEvent('Comparateur Coûts CO2|Partage d’une configuration', { configId: id });
+              trackPostHogEvent('comparator:config_share');
               setSharingId(null);
               notify('success', 'Lien copié dans le presse-papiers. Vos contacts devront disposer d’un compte pour l’ouvrir.', {
                 duration: 10000,

@@ -2,7 +2,7 @@ import { useRouter } from 'next/router';
 import { useState } from 'react';
 
 import Box from '@/components/ui/Box';
-import { trackEvent } from '@/modules/analytics/client';
+import { trackEvent, trackPostHogEvent } from '@/modules/analytics/client';
 
 const TrackedVideo = ({
   height,
@@ -23,6 +23,7 @@ const TrackedVideo = ({
     if (!notified) {
       setNotified(true);
       trackEvent('Vidéo', [src, router.asPath]);
+      trackPostHogEvent('content:click', { content_name: src, content_type: 'video', source: router.asPath });
     }
   };
 
