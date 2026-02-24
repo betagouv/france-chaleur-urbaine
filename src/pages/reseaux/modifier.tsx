@@ -138,17 +138,7 @@ function ModifierReseauxPage() {
 
     void setFormValue('idReseau', `${network['Identifiant reseau']} - ${network.nom_reseau}`);
     void setFormValue('reseauClasse', network['reseaux classes'] ?? false);
-    void setFormValue(
-      'maitreOuvrage',
-      [
-        network.MO,
-        stripBadAirtableValues(network.adresse_mo),
-        stripBadAirtableValues(network.CP_MO),
-        stripBadAirtableValues(network.ville_mo),
-      ]
-        .filter((v) => !!v)
-        .join(' - ')
-    );
+    void setFormValue('maitreOuvrage', network.MO ?? '');
     void setFormValue('gestionnaire', network.Gestionnaire ?? '');
     void setFormValue('siteInternet', network.website_gestionnaire ?? '');
     void setFormValue('informationsComplementaires', network.informationsComplementaires ?? '');
@@ -425,10 +415,6 @@ function ModifierReseauxPage() {
 }
 
 export default ModifierReseauxPage;
-
-function stripBadAirtableValues(value: string): string {
-  return value && value !== '0' && value !== '00000' ? value : '';
-}
 
 /**
  * Helper used to create a File object (as used by the input[type=file] component)

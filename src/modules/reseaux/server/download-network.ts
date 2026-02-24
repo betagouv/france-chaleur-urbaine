@@ -26,9 +26,7 @@ export type Type =
 const conversionConfigReseauxDeChaleur = {
   // departement: TypeString,
   // region: TypeString,
-  adresse_mo: TypeString,
   annee_creation: TypeNumber,
-  CP_MO: TypeString,
   'contenu CO2': TypeNumber,
   'contenu CO2 ACV': TypeNumber,
   'Dev_reseau%': TypeNumber,
@@ -104,14 +102,11 @@ const conversionConfigReseauxDeChaleur = {
   reseaux_techniques: TypeBool,
   'Taux EnR&R': TypeNumber,
   vapeur: TypeString,
-  ville_mo: TypeString,
   website_gestionnaire: TypeString,
 } as const;
 
 const conversionConfigReseauxDeFroid = {
-  adresse_mo: TypeString,
   annee_creation: TypeNumber,
-  CP_MO: TypeString,
   // communes: TypeStringToArray,
   'contenu CO2': TypeNumber,
   'contenu CO2 ACV': TypeNumber,
@@ -141,7 +136,6 @@ const conversionConfigReseauxDeFroid = {
   //has_trace: TypeBool,
   // date_actualisation_trace: TypeString,
   'Taux EnR&R': TypeNumber,
-  ville_mo: TypeString,
   website_gestionnaire: TypeString,
 } as const;
 
