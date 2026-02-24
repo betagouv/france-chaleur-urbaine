@@ -5,7 +5,7 @@ import { DPE_ORDER } from '@/components/choix-chauffage/modesChauffageData';
 import type { TypeLogement } from '@/components/choix-chauffage/type-logement';
 import type { EspaceExterieur } from '@/modules/app/types';
 
-const espaceExterieurValues = ['shared', 'private', 'both', 'none'] as const satisfies readonly EspaceExterieur[];
+export const espaceExterieurValues = ['shared', 'private', 'both', 'none'] as const satisfies readonly EspaceExterieur[];
 
 const typeLogementValues = [
   'immeuble_chauffage_collectif',

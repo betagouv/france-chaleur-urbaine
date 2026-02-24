@@ -9,17 +9,17 @@ import type { SuggestionItem } from '@/modules/ban/types';
 
 export default function ChoixChauffageForm() {
   const router = useRouter();
-  const qp = useChoixChauffageQueryParams();
-  const { geoAddress, setGeoAddress, onSelectGeoAddress, resetEligibility } = useAddressEligibility(qp.adresse ?? null);
-  const isDisabled = !qp.adresse || !geoAddress || !qp.typeLogement || !qp.espaceExterieur;
+  const urlParams = useChoixChauffageQueryParams();
+  const { geoAddress, setGeoAddress, onSelectGeoAddress, resetEligibility } = useAddressEligibility(urlParams.adresse ?? null);
+  const isDisabled = !urlParams.adresse || !geoAddress || !urlParams.typeLogement || !urlParams.espaceExterieur;
 
   return (
     <form>
       <SettingsTopFields
         withLabel
         className="fr-p-3w grid grid-cols-1 gap-4 md:grid-cols-3 bg-[#fbf6ed]"
-        adresse={qp.adresse ?? null}
-        setAdresse={(v) => void qp.setAdresse(v)}
+        adresse={urlParams.adresse ?? null}
+        setAdresse={(v) => void urlParams.setAdresse(v)}
         geoAddress={geoAddress}
         setGeoAddress={setGeoAddress}
         onSelectGeoAddress={(ga?: SuggestionItem) => {
@@ -29,10 +29,10 @@ export default function ChoixChauffageForm() {
           }
           onSelectGeoAddress(ga);
         }}
-        typeLogement={qp.typeLogement ?? null}
-        setTypeLogement={(v) => void qp.setTypeLogement(v)}
-        espaceExterieur={(qp.espaceExterieur ?? null) as EspaceExterieur | null}
-        setEspaceExterieur={(v) => void qp.setEspaceExterieur(v)}
+        typeLogement={urlParams.typeLogement ?? null}
+        setTypeLogement={(v) => void urlParams.setTypeLogement(v)}
+        espaceExterieur={(urlParams.espaceExterieur ?? null) as EspaceExterieur | null}
+        setEspaceExterieur={(v) => void urlParams.setEspaceExterieur(v)}
       />
 
       <div className="mt-5 flex justify-end">
