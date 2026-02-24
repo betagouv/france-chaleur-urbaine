@@ -34,7 +34,7 @@ export default function ChaleurRenouvelableResultatPage() {
     >
       <div className="fr-container fr-pt-6w">
         <div className="flex justify-between fr-mb-3w">
-          <Link variant="secondary" href={`/chaleur-renouvelable?${searchParams.toString()}`}>
+          <Link variant="secondary" href={`/chaleur-renouvelable${searchParams ? `?${searchParams.toString()}` : ''}`}>
             <span className="fr-icon-arrow-left-line fr-mr-1w" /> Retour
           </Link>
           <Button priority="secondary" iconId="fr-icon-share-forward-line" iconPosition="right" onClick={() => setOpenShareModal(true)}>
