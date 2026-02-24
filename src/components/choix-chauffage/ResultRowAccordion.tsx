@@ -31,18 +31,50 @@ function Stars({ value }: { value: number }) {
   );
 }
 
+function getGainVsGaz(item: ModeDeChauffageEnriched, coutParAnGaz: number): React.ReactNode {
+  const coutParAn = item.coutParAn ?? 0;
+
+  const percentVsGaz = item.gainVsGaz !== undefined ? item.gainVsGaz : Math.round(((coutParAn - coutParAnGaz) / coutParAnGaz) * 100);
+
+  let className = '';
+  let iconClass = '';
+  let label = '';
+
+  if (percentVsGaz === 0) {
+    className = 'text-(--text-title-blue-france)';
+    iconClass = 'fr-icon-arrow-right-circle-fill';
+    label = '0%';
+  } else if (percentVsGaz < 0) {
+    className = 'text-(--text-default-success)';
+    iconClass = 'fr-icon-arrow-down-circle-fill';
+    label = `Moins ${Math.abs(percentVsGaz)}%`;
+  } else {
+    className = 'text-(--text-default-error)';
+    iconClass = 'fr-icon-arrow-up-circle-fill';
+    label = `Plus ${percentVsGaz}%`;
+  }
+
+  return (
+    <div className={cx(className)}>
+      <span className={cx('fr-mr-1w', iconClass)} aria-hidden="true" />
+      <span>{label}</span>
+    </div>
+  );
+}
+
 function MobileStats({
   item,
   dpeFrom,
   dpeTo,
-  coutParAnGaz,
+  gainVsGaz,
 }: {
   item: ModeDeChauffageEnriched;
   dpeFrom: DPE;
   dpeTo: DPE;
-  coutParAnGaz: number;
-}) {
+  gainVsGaz: React.ReactNode;
+}): React.ReactNode {
   const { lowerBoundString, upperBoundString } = getCostPrecisionRange(item.coutParAn ?? 0);
+
   return (
     <div className="md:hidden">
       <div className="flex justify-between fr-mb-3w">
@@ -53,10 +85,7 @@ function MobileStats({
       </div>
       <div className="flex justify-between fr-mb-3w">
         <div>Coût par rapport au gaz</div>
-        <div className="text-(--text-default-success)">
-          <span className="fr-icon-arrow-down-circle-fill fr-mr-1w" aria-hidden="true" />
-          <span>Moins {Math.round(coutParAnGaz)}%</span>
-        </div>
+        {gainVsGaz}
       </div>
       <div className="flex justify-between fr-mb-3w">
         <div>Gain DPE</div>
@@ -116,8 +145,7 @@ export const ResultRowAccordion = React.memo(function ResultRowAccordion({
   const dpeTo = improveDpe(dpeFrom, item.gainClasse);
   const stars = typeof item.pertinence === 'number' ? item.pertinence : 0;
   const { lowerBoundString, upperBoundString } = getCostPrecisionRange(item.coutParAn ?? 0);
-  const percentVsGaz = Math.round(((item.coutParAn - coutParAnGaz) / coutParAnGaz) * 100);
-  const isLess = percentVsGaz < 0;
+  const gainVsGaz = getGainVsGaz(item, coutParAnGaz);
   return (
     <Accordion
       expanded={isOpen}
@@ -135,13 +163,7 @@ export const ResultRowAccordion = React.memo(function ResultRowAccordion({
             <div className="text-sm font-normal text-(--text-default-grey)">coût par an par logement</div>
           </div>
           <div className="flex-2 md:text-center hidden md:block">
-            <div className={cx(isLess && 'text-(--text-default-success)', !isLess && 'text-(--text-default-error)')}>
-              <span
-                className={cx('fr-mr-1w', isLess && 'fr-icon-arrow-down-circle-fill', !isLess && 'fr-icon-arrow-up-circle-fill')}
-                aria-hidden="true"
-              />
-              <span>{isLess ? `Moins ${Math.abs(percentVsGaz)}%` : `Plus ${percentVsGaz}%`}</span>
-            </div>
+            {gainVsGaz}
             <div className="text-sm font-normal text-(--text-default-grey)">par rapport au gaz</div>
           </div>
           <div className="flex-1 justify-center items-center gap-3 hidden md:flex">
@@ -153,7 +175,7 @@ export const ResultRowAccordion = React.memo(function ResultRowAccordion({
       }
       className={cx(index === 0 && 'fr-pt-3w')}
     >
-      <MobileStats item={item} dpeFrom={dpeFrom} dpeTo={dpeTo} coutParAnGaz={coutParAnGaz} />
+      <MobileStats item={item} dpeFrom={dpeFrom} dpeTo={dpeTo} gainVsGaz={gainVsGaz} />
       <div>{item.description}</div>
       <div className="flex flex-col md:flex-row fr-mt-3w gap-5">
         <div className="flex-1">

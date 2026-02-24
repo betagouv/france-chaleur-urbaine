@@ -2,11 +2,10 @@ import type { ReactNode } from 'react';
 
 import type { TypeLogement } from '@/components/choix-chauffage/type-logement';
 import type { EspaceExterieur } from '@/modules/app/types';
-import type { AddressDetail } from '@/types/HeatNetworksResponse';
 
 export type ModeDeChauffage = {
   label: string;
-  pertinence: number | ((addressDetail: AddressDetail) => ReactNode);
+  pertinence: number;
   description: string;
   contraintesTechniques: ReactNode[];
   avantages: string[];
@@ -14,6 +13,7 @@ export type ModeDeChauffage = {
   coutParAnPublicodeKey: string;
   coutInstallation: string;
   gainClasse: number;
+  gainVsGaz?: number;
   estPossible: (situation: Situation) => boolean;
 };
 
@@ -44,8 +44,6 @@ export const DPE_BG: Record<DPE, string> = {
   F: 'bg-[#EC8136]',
   G: 'bg-[#D7211F]',
 };
-
-export const espaceExterieurValues = ['shared', 'private', 'both', 'none'] as const satisfies readonly EspaceExterieur[];
 
 export const espaceExterieurOptions = [
   { description: 'Cour, jardin, toit terrasse…', label: 'Espaces partagés uniquement', value: 'shared' satisfies EspaceExterieur },
@@ -114,7 +112,7 @@ export const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffag
       coutParAnPublicodeKey: 'Chaudière à granulés coll',
       description:
         "La chaudière biomasse fonctionne comme une chaudière gaz ou fioul, mais utilise du bois comme combustible (granulés, plaquettes, bûches). C'est une énergie renouvelable et locale. Cette solution nécessite un espace conséquent pour la chaudière et le stockage du combustible, ainsi qu'un approvisionnement régulier.",
-      estPossible: (situation) => hasEspaceShared(situation) && situation.ppa !== false,
+      estPossible: (situation) => hasEspaceShared(situation) && situation.ppa === false,
       gainClasse: 2,
       inconvenients: ['Investissement initial important', 'Approvisionnement à prévoir', 'Maintenance à assurer'],
       label: 'Chaudière biomasse',
@@ -177,11 +175,12 @@ export const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffag
         "Les capteurs solaires captent le rayonnement solaire et réchauffent un fluide caloporteur, qui transmet ensuite la chaleur à un ballon d’eau chaude via un échangeur. Le solaire thermique est une solution fiable et mature pour produire une part importante de l'eau chaude sanitaire. Idéal pour les toitures terrasses. Le solaire thermique est une solution à combiner avec un système de chauffage complémentaire qui prend le relai en période de faible ensoleillement.",
       estPossible: (situation) => hasEspaceShared(situation),
       gainClasse: 1,
+      gainVsGaz: -50,
       inconvenients: [
         'Investissement initial important',
         "Ne couvre que l'eau chaude sanitaire — nécessite un système d'appoint pour le chauffage",
       ],
-      label: 'Solaire thermique',
+      label: 'Solaire thermique (eau chaude seulement)',
       pertinence: 3,
     },
   ],
@@ -292,6 +291,7 @@ export const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffag
         "Le système solaire combiné (SSC) produit à la fois le chauffage et l'eau chaude sanitaire à partir de panneaux solaires thermiques, généralement installés sur le toit. Ce système doit être associé à un appoint (gaz, bois ou électricité) qui prend le relais en période de faible ensoleillement.",
       estPossible: () => true,
       gainClasse: 2,
+      gainVsGaz: -50,
       inconvenients: ['Investissement initial important', "Production dépendante de l'ensoleillement"],
       label: 'Système solaire combiné ',
       pertinence: 3,

@@ -1,37 +1,37 @@
-import { useMemo } from 'react';
-
 import type { DPE } from '@/components/choix-chauffage/modesChauffageData';
 import { DPE_ORDER } from '@/components/choix-chauffage/modesChauffageData';
+import { SettingsTopFields } from '@/components/choix-chauffage/SettingsTopFields';
 import type { TypeLogement } from '@/components/choix-chauffage/type-logement';
 import Input from '@/components/form/dsfr/Input';
 import Select from '@/components/form/dsfr/Select';
 import Button from '@/components/ui/Button';
 import Image from '@/components/ui/Image';
 import type { EspaceExterieur } from '@/modules/app/types';
+import type { SuggestionItem } from '@/modules/ban/types';
 import cx from '@/utils/cx';
-
-import { SettingsTopFields } from './SettingsTopFields';
 
 const isNumericLike = (v: string) => v === '' || /^[0-9]+([.,][0-9]*)?$/.test(v);
 
 type ParamsFormProps = {
   isOpen: boolean;
   setIsOpen: (next: boolean | ((prev: boolean) => boolean)) => void;
-
+  showTopFields?: boolean;
+  adresse: string | null;
+  setAdresse: (val: string | null) => void;
+  geoAddress?: SuggestionItem;
+  setGeoAddress: (val: SuggestionItem | undefined) => void;
+  onSelectGeoAddress?: (val?: SuggestionItem) => void;
+  onAddressError?: () => void;
   typeLogement: TypeLogement | null;
   setTypeLogement: (val: TypeLogement | null) => void;
   espaceExterieur: EspaceExterieur | null;
   setEspaceExterieur: (val: EspaceExterieur | null) => void;
-
   dpe: DPE;
   setDpe: (val: DPE) => void;
-
   nbLogements: number;
   setNbLogements: (val: number) => void;
-
   surfaceMoyenne: number;
   setSurfaceMoyenne: (val: number) => void;
-
   habitantsMoyen: string;
   setHabitantsMoyen: (val: string) => void;
 };
@@ -39,6 +39,13 @@ type ParamsFormProps = {
 export function ParamsForm({
   isOpen,
   setIsOpen,
+  showTopFields,
+  adresse,
+  setAdresse,
+  geoAddress,
+  setGeoAddress,
+  onSelectGeoAddress,
+  onAddressError,
   typeLogement,
   setTypeLogement,
   espaceExterieur,
@@ -52,11 +59,8 @@ export function ParamsForm({
   habitantsMoyen,
   setHabitantsMoyen,
 }: ParamsFormProps) {
-  const ariaControlsId = useMemo(() => 'params-form', []);
-
   return (
     <>
-      {/* Toggle mobile */}
       <div className="md:hidden fr-my-2w">
         <Button
           full
@@ -64,33 +68,39 @@ export function ParamsForm({
           iconId={isOpen ? 'fr-icon-close-line' : 'fr-icon-add-line'}
           iconPosition="right"
           aria-expanded={isOpen}
-          aria-controls={ariaControlsId}
+          aria-controls="params-form"
           onClick={() => setIsOpen((v) => !v)}
         >
           {isOpen ? 'Fermer' : 'Ouvrir'} les paramètres
         </Button>
       </div>
-
       <div
-        id={ariaControlsId}
+        id="params-form"
         className={cx('border border-gray-200 rounded shadow-lg p-4 fr-mb-3w bg-white', 'md:block', isOpen ? 'block' : 'hidden')}
       >
         <div className="flex items-center gap-2 font-semibold">
           <Image src="/icons/icon-warning.png" alt="icone d'engrenage" aria-hidden="true" width="24" height="24" />
           Renseignez ces informations pour afficher des coûts affinés
         </div>
-
         <div className="mt-3 grid grid-cols-1 md:grid-cols-4 md:gap-4">
-          <div className="md:hidden mb-6 md:mb-0">
-            <SettingsTopFields
-              withLabel
-              typeLogement={typeLogement}
-              setTypeLogement={setTypeLogement}
-              espaceExterieur={espaceExterieur}
-              setEspaceExterieur={setEspaceExterieur}
-            />
-          </div>
-
+          {showTopFields && (
+            <div className="mb-6 md:mb-0">
+              <SettingsTopFields
+                withLabel
+                className="grid grid-cols-1 gap-4"
+                adresse={adresse}
+                setAdresse={(v) => void setAdresse(v)}
+                geoAddress={geoAddress}
+                setGeoAddress={setGeoAddress}
+                onSelectGeoAddress={onSelectGeoAddress}
+                onAddressError={onAddressError}
+                typeLogement={typeLogement}
+                setTypeLogement={setTypeLogement}
+                espaceExterieur={espaceExterieur}
+                setEspaceExterieur={setEspaceExterieur}
+              />
+            </div>
+          )}
           <Select
             label="DPE (étiquette énergétique)"
             options={DPE_ORDER.map((i) => ({ label: i, value: i }))}
@@ -99,7 +109,6 @@ export function ParamsForm({
               value: dpe,
             }}
           />
-
           <Input
             label="Nombre de logements"
             nativeInputProps={{
@@ -119,7 +128,6 @@ export function ParamsForm({
               value: nbLogements,
             }}
           />
-
           <Input
             label="Surface moyenne / logement"
             nativeInputProps={{
@@ -136,7 +144,6 @@ export function ParamsForm({
               value: surfaceMoyenne,
             }}
           />
-
           <Input
             label="Habitants moyen / logement"
             nativeInputProps={{

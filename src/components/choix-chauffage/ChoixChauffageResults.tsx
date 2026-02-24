@@ -1,11 +1,9 @@
 import type { RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
-import { parseAsInteger, parseAsString, parseAsStringLiteral, useQueryState } from 'nuqs';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import useSimulatorEngine from '@/components/ComparateurPublicodes/useSimulatorEngine';
 import {
   type DPE,
-  DPE_ORDER,
   type ModeDeChauffage,
   type ModeDeChauffageEnriched,
   modeDeChauffageParTypeLogement,
@@ -13,15 +11,11 @@ import {
 } from '@/components/choix-chauffage/modesChauffageData';
 import { SettingsTopFields } from '@/components/choix-chauffage/SettingsTopFields';
 import type { TypeLogement } from '@/components/choix-chauffage/type-logement';
+import { useAddressEligibility } from '@/components/choix-chauffage/useAddressEligibility';
+import { useChoixChauffageQueryParams } from '@/components/choix-chauffage/useChoixChauffageQueryParams';
+import useIsMobile from '@/hooks/useIsMobile';
 import type { EspaceExterieur } from '@/modules/app/types';
-import { searchBANAddresses } from '@/modules/ban/client';
 import type { SuggestionItem } from '@/modules/ban/types';
-import { toastErrors } from '@/modules/notification';
-import trpc from '@/modules/trpc/client';
-import type { LocationInfoResponse } from '@/pages/api/location-infos';
-import type { AddressDetail } from '@/types/HeatNetworksResponse';
-import { postFetchJSON } from '@/utils/network';
-import { runWithMinimumDelay } from '@/utils/time';
 
 import { ParamsForm } from './ParamsForm';
 import { ResultRowAccordion, ScrollToHelpButton } from './ResultRowAccordion';
@@ -36,58 +30,39 @@ type ResultsSectionProps = {
   onOpenChange: (id: string, expanded: boolean) => void;
 };
 
-const espaceExterieurValues = ['shared', 'private', 'both', 'none'] as const satisfies readonly EspaceExterieur[];
-
 const DEFAULT_TYPE_LOGEMENT: TypeLogement = 'immeuble_chauffage_collectif';
 
 export default function ChoixChauffageResults() {
-  const trpcUtils = trpc.useUtils();
   const engine = useSimulatorEngine();
+  const isMobile = useIsMobile();
+  const qp = useChoixChauffageQueryParams();
 
-  const [dpe, setDpe] = useQueryState('dpe', parseAsStringLiteral(DPE_ORDER).withDefault('E' as DPE));
-  const [adresse] = useQueryState('adresse');
-
-  const [typeLogement, setTypeLogement] = useQueryState(
-    'typeLogement',
-    parseAsStringLiteral([
-      'immeuble_chauffage_collectif',
-      'immeuble_chauffage_individuel',
-      'maison_individuelle',
-    ] as const satisfies readonly TypeLogement[])
-  );
-
-  const [espaceExterieur, setEspaceExterieur] = useQueryState('espaceExterieur', parseAsStringLiteral(espaceExterieurValues));
-
-  const [nbLogements, setNbLogements] = useQueryState('nbLogements', parseAsInteger.withDefault(25));
-  const [surfaceMoyenne, setSurfaceMoyenne] = useQueryState('surfaceMoyenne', parseAsInteger.withDefault(70));
-  const [habitantsMoyen, setHabitantsMoyen] = useQueryState('habitantsMoyen', parseAsString.withDefault('2'));
-
-  const [codeDepartement, setCodeDepartement] = useState<string>('');
-  const [temperatureRef, setTemperatureRef] = useState<number | null>(null);
+  const { geoAddress, setGeoAddress, addressDetail, codeDepartement, temperatureRef, onSelectGeoAddress, resetEligibility } =
+    useAddressEligibility(qp.adresse ?? null);
 
   const [isParamsOpen, setIsParamsOpen] = useState(false);
   const [openAccordionId, setOpenAccordionId] = useState<string | null>(null);
-  const [addressDetail, setAddressDetail] = useState<AddressDetail | null>(null);
 
   const batEnr = addressDetail?.batEnr ?? { gmi: false, ppa: false };
 
   const situation: Situation = useMemo(
     () => ({
-      adresse: adresse ?? null,
-      dpe,
-      espaceExterieur: (espaceExterieur ?? 'none') as EspaceExterieur,
+      adresse: qp.adresse ?? null,
+      dpe: qp.dpe,
+      espaceExterieur: (qp.espaceExterieur ?? 'none') as EspaceExterieur,
       gmi: batEnr.gmi,
-      habitantsMoyen: Number.parseFloat(habitantsMoyen) || 0,
-      nbLogements,
+      habitantsMoyen: Number.parseFloat(qp.habitantsMoyen) || 0,
+      nbLogements: qp.nbLogements,
       ppa: batEnr.ppa,
-      surfaceMoyenne,
+      surfaceMoyenne: qp.surfaceMoyenne,
     }),
-    [adresse, dpe, espaceExterieur, batEnr.gmi, batEnr.ppa, habitantsMoyen, nbLogements, surfaceMoyenne]
+    [qp.adresse, qp.dpe, qp.espaceExterieur, qp.habitantsMoyen, qp.nbLogements, qp.surfaceMoyenne, batEnr.gmi, batEnr.ppa]
   );
 
-  // Pousse la situation dans Publicodes dès qu’elle change (y compris code département / température)
+  // Pousse la situation dans Publicodes dès qu’elle change
   useEffect(() => {
     if (!codeDepartement) return;
+
     engine.setSituation({
       'code département': `'${codeDepartement}'`,
       DPE: `'${situation.dpe}'`,
@@ -97,74 +72,16 @@ export default function ChoixChauffageResults() {
       'Production eau chaude sanitaire': 'oui',
       'surface logement type tertiaire': `${situation.surfaceMoyenne}`,
       'température de référence chaud commune': temperatureRef,
-      //'type de bâtiment': "'résidentiel'",
       'type de production ECS': "'Avec équipement chauffage'",
     });
   }, [situation, codeDepartement, temperatureRef]);
 
-  const testAddressEligibility = useCallback(
-    toastErrors(async (adresseToTest: string) => {
-      const results = await searchBANAddresses({
-        excludeCities: true,
-        limit: 1,
-        onlyCities: false,
-        query: adresseToTest,
-      });
-
-      const geoAddress = results?.[0] as SuggestionItem | undefined;
-      if (!geoAddress) {
-        setAddressDetail(null);
-        setCodeDepartement('');
-        setTemperatureRef(null);
-        return;
-      }
-
-      const [lon, lat] = geoAddress.geometry.coordinates;
-      const point = { lat, lon };
-      const isCity = geoAddress.properties.label === geoAddress.properties.city;
-
-      const [eligibilityStatus, batEnrDetails, infos] = await runWithMinimumDelay(
-        () =>
-          Promise.all([
-            isCity
-              ? trpcUtils.client.reseaux.cityNetwork.query({ city: geoAddress.properties.city })
-              : trpcUtils.client.reseaux.eligibilityStatus.query(point),
-            trpcUtils.client.batEnr.getBatEnrBatimentDetails.query(point),
-            postFetchJSON<LocationInfoResponse>('/api/location-infos', {
-              city: geoAddress.properties.city,
-              cityCode: geoAddress.properties.citycode,
-              lat,
-              lon,
-              onlyCity: true,
-            }),
-          ]),
-        500
-      );
-      setCodeDepartement(infos?.infosVille?.departement_id ?? '');
-      setTemperatureRef(Number(infos?.infosVille?.temperature_ref_altitude_moyenne));
-
-      setAddressDetail({
-        batEnr: {
-          gmi: Number(batEnrDetails?.gmi_nappe_200) === 1 || Number(batEnrDetails?.gmi_sonde_200) === 1,
-          ppa: batEnrDetails?.etat_ppa === 'PPA Validés',
-        },
-        geoAddress,
-        network: eligibilityStatus,
-      });
-    }),
-    [trpcUtils]
-  );
-
-  useEffect(() => {
-    if (!adresse) return;
-    void testAddressEligibility(adresse);
-  }, [adresse, testAddressEligibility]);
-
-  const effectiveTypeLogement = (typeLogement ?? DEFAULT_TYPE_LOGEMENT) as TypeLogement;
+  const effectiveTypeLogement = (qp.typeLogement ?? DEFAULT_TYPE_LOGEMENT) as TypeLogement;
 
   const modesDeChauffage: ModeDeChauffage[] = useMemo(() => {
     return modeDeChauffageParTypeLogement[effectiveTypeLogement].filter((m) => m.estPossible(situation));
   }, [effectiveTypeLogement, situation]);
+
   const modesWithCout: ModeDeChauffageEnriched[] = useMemo(() => {
     return modesDeChauffage.map((it) => {
       const coutParAn = it.coutParAnPublicodeKey
@@ -173,6 +90,7 @@ export default function ChoixChauffageResults() {
       return { ...it, coutParAn };
     });
   }, [modesDeChauffage, engine]);
+
   const coutParAnGaz = Number(engine.getField(`Bilan x Gaz coll sans cond . total avec aides` as RuleName) ?? 0);
   const recommended = modesWithCout.slice(0, 1);
   const others = modesWithCout.slice(1);
@@ -180,61 +98,88 @@ export default function ChoixChauffageResults() {
   const handleAccordionOpenChange = useCallback((id: string, expanded: boolean) => {
     setOpenAccordionId(expanded ? id : null);
   }, []);
+  const handleSelectGeoAddress = useCallback(
+    (ga?: SuggestionItem) => {
+      if (!ga) {
+        resetEligibility();
+        return;
+      }
+      onSelectGeoAddress(ga);
+    },
+    [onSelectGeoAddress, resetEligibility]
+  );
 
+  // pendant l’hydration, on évite de rendre conditionnellement (isMobile null)
+  if (isMobile === null) return null;
+
+  const showTopFieldsInsideParams = isMobile;
   return (
     <>
-      <div className="flex flex-col gap-3 md:flex-row md:gap-4">
-        <div className="flex-1 fr-pt-1w">
-          <span className="fr-icon-map-pin-2-line text-(--text-default-grey) fr-mr-1w" aria-hidden="true" />
-          {adresse}
-        </div>
-        <div className="hidden md:contents">
+      {!showTopFieldsInsideParams && (
+        <div className="fr-mb-2w">
           <SettingsTopFields
             withLabel={false}
-            typeLogement={typeLogement ?? null}
-            setTypeLogement={(v) => void setTypeLogement(v)}
-            espaceExterieur={(espaceExterieur ?? null) as EspaceExterieur | null}
-            setEspaceExterieur={(v) => void setEspaceExterieur(v)}
+            className="grid grid-cols-1 gap-4 md:grid-cols-3"
+            adresse={qp.adresse ?? null}
+            setAdresse={(v) => void qp.setAdresse(v)}
+            geoAddress={geoAddress}
+            setGeoAddress={setGeoAddress}
+            onSelectGeoAddress={handleSelectGeoAddress}
+            onAddressError={() => {}}
+            typeLogement={qp.typeLogement ?? null}
+            setTypeLogement={(v) => void qp.setTypeLogement(v)}
+            espaceExterieur={(qp.espaceExterieur ?? null) as EspaceExterieur | null}
+            setEspaceExterieur={(v) => void qp.setEspaceExterieur(v)}
           />
         </div>
-      </div>
+      )}
       <ParamsForm
+        showTopFields={showTopFieldsInsideParams}
         isOpen={isParamsOpen}
         setIsOpen={setIsParamsOpen}
-        typeLogement={typeLogement ?? null}
-        setTypeLogement={(v) => void setTypeLogement(v)}
-        espaceExterieur={(espaceExterieur ?? null) as EspaceExterieur | null}
-        setEspaceExterieur={(v) => void setEspaceExterieur(v)}
-        dpe={(dpe ?? 'E') as DPE}
-        setDpe={(v) => void setDpe(v)}
-        nbLogements={nbLogements}
-        setNbLogements={(v) => void setNbLogements(v)}
-        surfaceMoyenne={surfaceMoyenne}
-        setSurfaceMoyenne={(v) => void setSurfaceMoyenne(v)}
-        habitantsMoyen={habitantsMoyen}
-        setHabitantsMoyen={(v) => void setHabitantsMoyen(v)}
+        adresse={qp.adresse ?? null}
+        setAdresse={(v) => void qp.setAdresse(v)}
+        geoAddress={geoAddress}
+        setGeoAddress={setGeoAddress}
+        onSelectGeoAddress={handleSelectGeoAddress}
+        onAddressError={() => {}}
+        typeLogement={qp.typeLogement ?? null}
+        setTypeLogement={(v) => void qp.setTypeLogement(v)}
+        espaceExterieur={(qp.espaceExterieur ?? null) as EspaceExterieur | null}
+        setEspaceExterieur={(v) => void qp.setEspaceExterieur(v)}
+        dpe={(qp.dpe ?? 'E') as DPE}
+        setDpe={(v) => void qp.setDpe(v)}
+        nbLogements={qp.nbLogements}
+        setNbLogements={(v) => void qp.setNbLogements(v)}
+        surfaceMoyenne={qp.surfaceMoyenne}
+        setSurfaceMoyenne={(v) => void qp.setSurfaceMoyenne(v)}
+        habitantsMoyen={qp.habitantsMoyen}
+        setHabitantsMoyen={(v) => void qp.setHabitantsMoyen(v)}
       />
+
       <ResultsSection
         title="Solution recommandée"
         items={recommended}
         variant="recommended"
         coutParAnGaz={coutParAnGaz}
-        dpeFrom={dpe}
+        dpeFrom={qp.dpe}
         openAccordionId={openAccordionId}
         onOpenChange={handleAccordionOpenChange}
       />
+
       <ResultsSection
         title="Autres solutions possibles"
         items={others}
         coutParAnGaz={coutParAnGaz}
         variant="other"
-        dpeFrom={dpe}
+        dpeFrom={qp.dpe}
         openAccordionId={openAccordionId}
         onOpenChange={handleAccordionOpenChange}
       />
     </>
   );
 }
+
 function ResultsSection({ title, items, coutParAnGaz, variant, dpeFrom, openAccordionId, onOpenChange }: ResultsSectionProps) {
   return (
     <>
