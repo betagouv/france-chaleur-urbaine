@@ -333,7 +333,7 @@ async function processFiliere(
   reseaux: DonneesReseauBrutes[],
   airtableRecords: readonly AirtableRecord<FieldSet>[],
   sncuSdes: Set<string>,
-  { createMissing, dryRun }: { createMissing: boolean; dryRun: boolean }
+  { dryRun }: { dryRun: boolean }
 ): Promise<FiliereResult> {
   const airtableBySncu = new Map<string, AirtableRecord<FieldSet>>(
     airtableRecords.map((record) => [record.get('Identifiant reseau') as string, record])
@@ -363,12 +363,10 @@ async function processFiliere(
   }
 
   // Création des réseaux manquants
-  const creates = createMissing
-    ? notFound.map((reseau) => ({
-        createData: prepareUpdateData({ 'Identifiant reseau': reseau.ID, ...config.mapToAirtableFields(reseau) }),
-        id: reseau.ID,
-      }))
-    : [];
+  const creates = notFound.map((reseau) => ({
+    createData: prepareUpdateData({ 'Identifiant reseau': reseau.ID, ...config.mapToAirtableFields(reseau) }),
+    id: reseau.ID,
+  }));
 
   const createChanges: ChangeEntry[] = creates.map(({ createData, id }) => ({
     diffs: buildCreateDiffs(createData),
@@ -436,14 +434,14 @@ function writeLogSection(log: (text: string) => void, label: string, { absents, 
   }
 }
 
-function logFiliereConsoleOutput(logger: Logger, label: string, result: FiliereResult, createMissing: boolean): void {
+function logFiliereConsoleOutput(logger: Logger, label: string, result: FiliereResult): void {
   logger.info(
     `Réseaux de ${label}: ${result.updatedCount} mis à jour, ${result.createdCount} créés, ${result.absents.length} marqués absents`
   );
   if (result.invalidIdsCount > 0) {
     logger.warn(`${result.invalidIdsCount} réseaux de ${label} dans Airtable ont un identifiant SNCU invalide ou vide`);
   }
-  if (result.notFoundIds.length > 0 && !createMissing) {
+  if (result.notFoundIds.length > 0) {
     console.log(`\nRéseaux de ${label} dans SDES mais absents d'Airtable (${result.notFoundIds.length}):`);
     console.log(result.notFoundIds.sort().join('\n'));
   }
@@ -473,10 +471,9 @@ const FILIERE_FROID: FiliereConfig = {
 
 export const importDonneesReseauxSdes = defineImportFunc(async ({ logger, options }) => {
   const dryRun = options?.dryRun ?? false;
-  const createMissing = options?.createMissing ?? false;
 
   logger.info("Début de l'import des données techniques des réseaux (millésime 2024)");
-  logger.info(`Mode: ${dryRun ? 'dry-run' : 'live'}${createMissing ? ', create-missing activé' : ''}`);
+  logger.info(`Mode: ${dryRun ? 'dry-run' : 'live'}`);
 
   const donneesReseaux = await fetchJSON<DonneesReseauBrutes[]>(SDES_API_URL);
   logger.info(`${donneesReseaux.length} enregistrements téléchargés depuis l'API SDES`);
@@ -500,21 +497,20 @@ export const importDonneesReseauxSdes = defineImportFunc(async ({ logger, option
 
   log(`# Import SDES 2024 - ${new Date().toISOString().slice(0, 19).replace('T', ' ')}`);
   log(`Mode: ${dryRun ? 'dry-run' : 'live'}`);
-  log(`Options: create-missing=${createMissing}`);
   log('');
 
-  const opts = { createMissing, dryRun };
+  const opts = { dryRun };
   const sncuChaleurSdes = new Set(reseauxChaleur.map((r) => r.ID));
   const sncuFroidSdes = new Set(reseauxFroid.map((r) => r.ID));
 
   // Traitement des deux filières
   const resultChaleur = await processFiliere(FILIERE_CHALEUR, reseauxChaleur, airtableChaleur, sncuChaleurSdes, opts);
   writeLogSection(log, FILIERE_CHALEUR.label, resultChaleur);
-  logFiliereConsoleOutput(logger, FILIERE_CHALEUR.label, resultChaleur, createMissing);
+  logFiliereConsoleOutput(logger, FILIERE_CHALEUR.label, resultChaleur);
 
   const resultFroid = await processFiliere(FILIERE_FROID, reseauxFroid, airtableFroid, sncuFroidSdes, opts);
   writeLogSection(log, FILIERE_FROID.label, resultFroid);
-  logFiliereConsoleOutput(logger, FILIERE_FROID.label, resultFroid, createMissing);
+  logFiliereConsoleOutput(logger, FILIERE_FROID.label, resultFroid);
 
   // Résumé en fin de fichier
   log('## Résumé');

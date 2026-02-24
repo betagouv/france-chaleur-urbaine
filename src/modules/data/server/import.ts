@@ -3,7 +3,6 @@ import type { RequiredFields } from '@/utils/typescript';
 
 export type ImportOptions = {
   dryRun?: boolean;
-  createMissing?: boolean;
 };
 
 export type ImportParams = {
