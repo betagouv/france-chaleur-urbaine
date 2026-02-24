@@ -1,5 +1,6 @@
 import '@/load-env';
 
+import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 
 import { allDatabaseTables } from '@cli/bootstrap/tables';
@@ -14,6 +15,7 @@ import { registerAppCommands } from '@/modules/app/commands';
 import { registerBdnbCommands } from '@/modules/bdnb/commands';
 import { registerDataCommands } from '@/modules/data/commands';
 import { registerJobsCommands } from '@/modules/jobs/commands';
+import { APIDataGouvService } from '@/modules/opendata/server/api-data-gouv';
 import { registerOptimizationCommands } from '@/modules/optimization/commands';
 import { registerProEligibilityTestsCommands } from '@/modules/pro-eligibility-tests/commands';
 import { registerNetworkCommands } from '@/modules/reseaux/commands';
@@ -23,6 +25,7 @@ import { applyGeometryUpdates } from '@/modules/reseaux/server/geometry-updates'
 import { syncPostgresToAirtable } from '@/modules/reseaux/server/sync-pg-to-airtable';
 import { registerTilesCommands } from '@/modules/tiles/commands';
 import { getApiHandler } from '@/server/api/users';
+import { serverConfig } from '@/server/config';
 import { saveStatsInDB } from '@/server/cron/saveStatsInDB';
 import { kdb, sql } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
@@ -30,7 +33,7 @@ import { syncComptesProFromUsers } from '@/server/services/airtable';
 import { registerTestCommands } from '@/tests/commands';
 import { userRoles } from '@/types/enum/UserRole';
 import { fetchJSON } from '@/utils/network';
-import { runBash } from '@/utils/system';
+import { runBash, runCommand } from '@/utils/system';
 import { sleep } from '@/utils/time';
 
 import { registerOpendataCommands } from '../src/modules/opendata/commands';
