@@ -1,30 +1,24 @@
 'use client';
 
 import { useState } from 'react';
-import styled from 'styled-components';
 
-import DSFRInput from '@/components/form/dsfr/Input';
+import { espaceExterieurValues, useChoixChauffageQueryParams } from '@/components/choix-chauffage/useChoixChauffageQueryParams';
 import useForm from '@/components/form/react-form/useForm';
 import CallOut from '@/components/ui/CallOut';
+import Link from '@/components/ui/Link';
+import termOfUse from '@/data/fcu-term-of-use';
 import useUserInfo from '@/modules/app/client/hooks/useUserInfo';
+import type { EspaceExterieur } from '@/modules/app/types';
 import { fieldLabelInformation, zContactFormAdemeHelp } from '@/modules/demands/constants';
+import { notify } from '@/modules/notification';
+import { submitToAirtable } from '@/services/airtable';
+import { Airtable } from '@/types/enum/Airtable';
 import { pick } from '@/utils/objects';
 
-type AdemeHelpProps = {
-  className?: string;
-  onSubmitSuccess?: (value: { email: string; phone?: string; termOfUse: boolean }) => void;
-};
-
-export const Input = styled(DSFRInput)`
-  input {
-    background: white;
-  }
-`;
-
-export default function AdemeHelp({ className, onSubmitSuccess }: AdemeHelpProps) {
+export default function AdemeHelp({ className }: { className?: string }) {
   const { userInfo, setUserInfo } = useUserInfo();
   const [isLoading, setIsLoading] = useState(false);
-
+  const urlParams = useChoixChauffageQueryParams();
   const { Form, Field, Submit } = useForm({
     defaultValues: {
       email: userInfo.email ?? '',
@@ -33,11 +27,28 @@ export default function AdemeHelp({ className, onSubmitSuccess }: AdemeHelpProps
     },
     onSubmit: async ({ value }) => {
       setIsLoading(true);
-      setUserInfo(pick(value, ['email', 'phone']));
-      // TODO: appel API / TRPC
-      console.log('submit value', value);
-      onSubmitSuccess?.(value);
-      setIsLoading(false);
+      setUserInfo(pick(value, ['email', 'phone', 'termOfUse']));
+      const espaceExterieur: EspaceExterieur = espaceExterieurValues.includes(urlParams.espaceExterieur as EspaceExterieur)
+        ? (urlParams.espaceExterieur as EspaceExterieur)
+        : 'none';
+      submitToAirtable(
+        {
+          Adresse: urlParams.adresse,
+          Consentement: termOfUse,
+          Date: new Date().toISOString(),
+          Email: value.email,
+          'Espace extérieur': espaceExterieur,
+          'Mode de chauffage': urlParams.typeLogement,
+          'Nombre de logement': urlParams.nbLogements,
+          Telephone: value.phone,
+        },
+        Airtable.CONTACT_CHALEUR_RENOUVELABLE
+      )
+        .then(() => setIsLoading(false))
+        .catch((error) => {
+          notify('error', error.message);
+          setIsLoading(false);
+        });
     },
     schema: zContactFormAdemeHelp,
   });
@@ -51,24 +62,17 @@ export default function AdemeHelp({ className, onSubmitSuccess }: AdemeHelpProps
         </p>
         <Form>
           <div className="full flex flex-col md:flex-row md:gap-5 fr-mb-3w md:mb-0">
-            <Input
-              label={fieldLabelInformation.email}
-              nativeInputProps={{
-                required: true,
-                type: 'email',
-              }}
-              className="flex-1"
-            />
-            <Input
-              label={fieldLabelInformation.phone}
-              nativeInputProps={{
-                required: false,
-                type: 'phone',
-              }}
-              className="flex-1"
-            />
+            <Field.EmailInput name="email" label={fieldLabelInformation.email} className="flex-1 [&_input]:bg-white" />
+            <Field.PhoneInput name="phone" label={fieldLabelInformation.phone} className="flex-1 [&_input]:bg-white" />
           </div>
-          <Field.Checkbox name="termOfUse" label="J’accepte les conditions générales d’utilisation du service." />
+          <Field.Checkbox
+            name="termOfUse"
+            label={
+              <>
+                J’accepte les&nbsp;<Link href="/cgu">conditions générales d’utilisation du service</Link>.
+              </>
+            }
+          />
           <Submit disabled={false} loading={isLoading}>
             Envoyer
           </Submit>
