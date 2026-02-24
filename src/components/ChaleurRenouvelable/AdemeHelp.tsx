@@ -6,7 +6,6 @@ import { espaceExterieurValues, useChoixChauffageQueryParams } from '@/component
 import useForm from '@/components/form/react-form/useForm';
 import CallOut from '@/components/ui/CallOut';
 import Link from '@/components/ui/Link';
-import termOfUse from '@/data/fcu-term-of-use';
 import useUserInfo from '@/modules/app/client/hooks/useUserInfo';
 import type { EspaceExterieur } from '@/modules/app/types';
 import { fieldLabelInformation, zContactFormAdemeHelp } from '@/modules/demands/constants';
@@ -34,7 +33,6 @@ export default function AdemeHelp({ className }: { className?: string }) {
       submitToAirtable(
         {
           Adresse: urlParams.adresse,
-          Consentement: termOfUse,
           Date: new Date().toISOString(),
           Email: value.email,
           'Espace extérieur': espaceExterieur,
