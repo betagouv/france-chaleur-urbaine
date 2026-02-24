@@ -1,22 +1,65 @@
 import { espaceExterieurOptions } from '@/components/choix-chauffage/modesChauffageData';
 import type { TypeLogement } from '@/components/choix-chauffage/type-logement';
+import AddressAutocompleteInput from '@/components/form/dsfr/AddressAutocompleteInput';
 import Select from '@/components/form/dsfr/Select';
 import RichSelect from '@/components/ui/RichSelect';
 import type { EspaceExterieur } from '@/modules/app/types';
+import type { SuggestionItem } from '@/modules/ban/types';
 
 type Props = {
   withLabel: boolean;
+  adresse: string | null;
+  setAdresse: (val: string | null) => void;
+  geoAddress?: SuggestionItem;
+  setGeoAddress: (val: SuggestionItem | undefined) => void;
+  onAddressError?: () => void;
+  onSelectGeoAddress?: (val?: SuggestionItem) => void;
   typeLogement: TypeLogement | null;
   setTypeLogement: (val: TypeLogement | null) => void;
   espaceExterieur: EspaceExterieur | null;
   setEspaceExterieur: (val: EspaceExterieur | null) => void;
+  className?: string;
 };
 
-export function SettingsTopFields({ withLabel, typeLogement, setTypeLogement, espaceExterieur, setEspaceExterieur }: Props) {
+export function SettingsTopFields({
+  withLabel,
+  adresse,
+  setAdresse,
+  geoAddress,
+  setGeoAddress,
+  onAddressError,
+  onSelectGeoAddress,
+  typeLogement,
+  setTypeLogement,
+  espaceExterieur,
+  setEspaceExterieur,
+  className,
+}: Props) {
   return (
-    <>
+    <div className={className}>
+      <AddressAutocompleteInput
+        label={withLabel ? 'Adresse' : ''}
+        className="fr-mb-0"
+        defaultValue={adresse ?? undefined}
+        nativeInputProps={{ placeholder: 'Tapez votre adresse ici' }}
+        excludeCities
+        onClear={() => {
+          if (adresse !== null) void setAdresse(null);
+          if (geoAddress !== undefined) setGeoAddress(undefined);
+          onSelectGeoAddress?.(undefined);
+        }}
+        onSelect={(next?: SuggestionItem) => {
+          const nextLabel = next?.properties?.label ?? '';
+          if ((adresse ?? '') === nextLabel) return;
+          setAdresse(nextLabel);
+          setGeoAddress(next);
+          onSelectGeoAddress?.(next);
+        }}
+        onError={onAddressError}
+      />
       <Select
         label={withLabel ? 'Mode de chauffage' : ''}
+        className="fr-mb-0"
         options={[
           { label: 'Immeuble en chauffage collectif', value: 'immeuble_chauffage_collectif' satisfies TypeLogement },
           { label: 'Immeuble en chauffage individuel', value: 'immeuble_chauffage_individuel' satisfies TypeLogement },
@@ -27,7 +70,6 @@ export function SettingsTopFields({ withLabel, typeLogement, setTypeLogement, es
           value: typeLogement ?? '',
         }}
       />
-
       <RichSelect<EspaceExterieur>
         value={espaceExterieur ?? undefined}
         onChange={(val) => void setEspaceExterieur(val)}
@@ -35,6 +77,6 @@ export function SettingsTopFields({ withLabel, typeLogement, setTypeLogement, es
         placeholder="Sélectionner vos espaces disponibles"
         label={withLabel ? 'Espaces extérieurs disponibles' : ''}
       />
-    </>
+    </div>
   );
 }
