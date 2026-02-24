@@ -3,6 +3,7 @@
     "bradlc.vscode-tailwindcss", // Tailwind Auto completion
     "johnpapa.vscode-peacock", // Peacock for color coding your workspace
     "usernamehw.errorlens", // make diagnostics stand out more prominently
-    "biomejs.biome" // Biome comme formatter et linter
+    "biomejs.biome", // Biome comme formatter et linter
+    "editorconfig.editorconfig" // indentation consistente et supprime les espaces en fin de ligne
   ]
 }
