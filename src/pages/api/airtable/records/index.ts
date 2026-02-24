@@ -59,7 +59,7 @@ export default handleRouteErrors(async function PostRecords(req: NextApiRequest)
     }
 
     case Airtable.CONTACT_CHALEUR_RENOUVELABLE: {
-      const { id }: any = await AirtableDB(Airtable.CONTACT_CHALEUR_RENOUVELABLE, logger).create(values);
+      const { id }: any = await AirtableDB(Airtable.CONTACT_CHALEUR_RENOUVELABLE).create(values);
       logger.info('create airtable record contact chaleur renouvelable', {
         id,
       });
