@@ -58,6 +58,14 @@ export default handleRouteErrors(async function PostRecords(req: NextApiRequest)
       return;
     }
 
+    case Airtable.CONTACT_CHALEUR_RENOUVELABLE: {
+      const { id }: any = await AirtableDB(Airtable.CONTACT_CHALEUR_RENOUVELABLE, logger).create(values);
+      logger.info('create airtable record contact chaleur renouvelable', {
+        id,
+      });
+      return;
+    }
+
     default:
       throw new BadRequestError('Type not recognized');
   }
