@@ -29,9 +29,6 @@ export interface Network {
   eau_surchauffee: string;
   vapeur: string;
   MO: string;
-  adresse_mo: string;
-  CP_MO: string;
-  ville_mo: string;
   prod_MWh_gaz_naturel: number;
   prod_MWh_charbon: number;
   prod_MWh_fioul_domestique: number;
