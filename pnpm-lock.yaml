@@ -1552,20 +1552,12 @@ packages:
     resolution: {integrity: sha512-6zABk/ECA/QYSCQ1NGiVwwbQerUCZ+TQbp64Q3AgmfNvurHH0j8TtXa1qbShXA6qqkpAj4V5W8pP6mLe1mcMqA==}
     engines: {node: '>=18'}
 
-<<<<<<< HEAD
   /@babel/types@7.28.4:
     resolution: {integrity: sha512-bkFqkLhh3pMBUQQkpVgWDWq/lqzc2678eUyDlTBhRqhCHFguYYGM0Efga7tYk4TogG/3x0EEl66/OQ+WGbWB/Q==}
     engines: {node: '>=6.9.0'}
     dependencies:
       '@babel/helper-string-parser': 7.27.1
       '@babel/helper-validator-identifier': 7.27.1
-=======
-  '@betagouv/france-chaleur-urbaine-publicodes@1.4.0':
-    resolution: {integrity: sha512-derPO+NH2D9iKggVkzCnZGEopKQe7ybbY+wLV4VY1QqgAvOJ6y+FXishvZYd0kLeUjnFx5BYpH2TrsImJ5kSEA==}
-    engines: {node: '24', pnpm: '10'}
-    peerDependencies:
-      publicodes: ^1.9.0
->>>>>>> eb886ad6 (Maj version publicodes)
 
   /@biomejs/biome@2.2.4:
     resolution: {integrity: sha512-TBHU5bUy/Ok6m8c0y3pZiuO/BZoY/OcGxoLlrfQof5s8ISVwbVBdFINPQZyFfKwil8XibYWb7JMwnT8wT4WVPg==}

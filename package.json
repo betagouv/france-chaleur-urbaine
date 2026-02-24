@@ -52,16 +52,12 @@
     "postinstall": "node scripts/postinstall.mjs",
     "scalingo-postbuild": "pnpm build && next-sitemap",
     "predev": "only-include-used-icons --silent",
-    "prebuild": "only-include-used-icons && scripts/fetch-publicodes-dev.sh",
+    "prebuild": "only-include-used-icons",
     "talisman:add-exception": "node-talisman -i -g pre-commit",
     "ts": "NODE_OPTIONS=\"--max-old-space-size=8192\" pnpm tsc --build --clean && pnpm tsc"
   },
   "dependencies": {
-<<<<<<< HEAD
     "@betagouv/france-chaleur-urbaine-publicodes": "github:betagouv/france-chaleur-urbaine-publicodes#dev",
-=======
-    "@betagouv/france-chaleur-urbaine-publicodes": "^1.4.0",
->>>>>>> eb886ad6 (Maj version publicodes)
     "@bprogress/next": "^3.2.12",
     "@codegouvfr/react-dsfr": "^1.28.0",
     "@commander-js/extra-typings": "^14.0.0",
