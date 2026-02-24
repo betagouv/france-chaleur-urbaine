@@ -1,4 +1,3 @@
-import { execSync } from 'node:child_process';
 import { existsSync, readdirSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -48,9 +47,3 @@ const packagesToClean = ['@img+sharp-', '@rollup+rollup-', '@next+swc-', '@biome
 packagesToClean.forEach((packagePrefix) => {
   cleanNativeBinaries(join('node_modules', '.pnpm'), packagePrefix);
 });
-
-// Branche dev-publicodes uniquement pour builder la dernière version des règles du comparateur
-console.info('\n# Building latest dev publicodes...');
-execSync("pnpm add '@betagouv/france-chaleur-urbaine-publicodes@github:betagouv/france-chaleur-urbaine-publicodes#dev'", {});
-execSync('cd node_modules/@betagouv/france-chaleur-urbaine-publicodes && pnpm install && pnpm build && rm -rf node_modules');
-console.info('Latest dev publicodes built successfully');
