@@ -1,5 +1,6 @@
 import { createModal } from '@codegouvfr/react-dsfr/Modal';
 import dynamic from 'next/dynamic';
+import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 
 import AdemeHelp from '@/components/ChaleurRenouvelable/AdemeHelp';
@@ -18,6 +19,7 @@ const ChoixChauffageResults = dynamic(() => import('@/components/choix-chauffage
 });
 
 export default function ChaleurRenouvelableResultatPage() {
+  const searchParams = useSearchParams();
   const [openShareModal, setOpenShareModal] = useState(false);
   const eligibilityTestModal = createModal({
     id: 'share-modal',
@@ -32,9 +34,9 @@ export default function ChaleurRenouvelableResultatPage() {
     >
       <div className="fr-container fr-pt-6w">
         <div className="flex justify-between fr-mb-3w">
-          <Button priority="secondary" iconId="fr-icon-arrow-left-line" onClick={() => console.log('retour')}>
-            Retour
-          </Button>
+          <Link variant="secondary" href={`/chaleur-renouvelable?${searchParams.toString()}`}>
+            <span className="fr-icon-arrow-left-line fr-mr-1w" /> Retour
+          </Link>
           <Button priority="secondary" iconId="fr-icon-share-forward-line" iconPosition="right" onClick={() => setOpenShareModal(true)}>
             Partager
           </Button>
