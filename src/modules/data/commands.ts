@@ -14,11 +14,9 @@ export function registerDataCommands(parentProgram: Command) {
       zDataImportType.parse(value)
     )
     .option('--file <FILE>', 'Chemin vers le fichier à importer', '')
-    .option('--dry-run', 'Mode simulation, aucune modification Airtable', true)
-    .option('--create-missing', 'Créer les réseaux manquants dans Airtable', false)
+    .option('--dry-run', 'Mode simulation, aucune modification Airtable', false)
     .action(async (type, options) => {
       await executeDataImport(type, options.file, {
-        createMissing: options.createMissing,
         dryRun: options.dryRun,
       });
     });

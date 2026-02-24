@@ -16,7 +16,13 @@ export const AirtableDB = (table: AirtableTable): Table<FieldSet> => {
   return base(table);
 };
 
-export const listTables = async (baseId: string): Promise<any[]> => {
+type AirtableTableDefinition = {
+  fields: { id: string; name: string; type: string }[];
+  id: string;
+  name: string;
+};
+
+export const listTables = async (baseId: string) => {
   const res = await fetch(`https://api.airtable.com/v0/meta/bases/${baseId}/tables`, {
     headers: {
       Authorization: `Bearer ${serverConfig.AIRTABLE_KEY_API}`,
@@ -25,11 +31,11 @@ export const listTables = async (baseId: string): Promise<any[]> => {
   if (res.status !== 200) {
     throw new Error(`invalid response status ${res.status}`);
   }
-  const { tables } = await res.json();
+  const { tables } = (await res.json()) as { tables: AirtableTableDefinition[] };
   return tables
-    .filter((table: any) => table.name.startsWith('FCU - '))
-    .map((table: any) => ({
-      fields: table.fields.map((field: any) => ({
+    .filter((table) => table.name.startsWith('FCU - '))
+    .map((table) => ({
+      fields: table.fields.map((field) => ({
         id: field.id,
         name: field.name,
         type: field.type,
@@ -77,6 +83,25 @@ type AirtableField = {
     | 'externalSyncSource'
     | 'aiText';
   options?: any;
+};
+
+export const createField = async (baseId: string, tableId: string, field: AirtableField) => {
+  const res = await fetch(`https://api.airtable.com/v0/meta/bases/${baseId}/tables/${tableId}/fields`, {
+    body: JSON.stringify(field),
+    headers: {
+      Authorization: `Bearer ${serverConfig.AIRTABLE_KEY_API}`,
+      'Content-Type': 'application/json',
+    },
+    method: 'POST',
+  });
+  if (res.status !== 200) {
+    if (res.headers.get('content-type')?.includes('application/json')) {
+      console.error(await res.json());
+    } else {
+      console.error(await res.text());
+    }
+    throw new Error(`Failed to create field "${field.name}": status ${res.status}`);
+  }
 };
 
 export const createTable = async (baseId: string, name: string, fields: AirtableField[]) => {

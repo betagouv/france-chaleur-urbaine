@@ -4,6 +4,7 @@ import type { ImportOptions, ImportParams } from '@/modules/data/server/import';
 import { parentLogger } from '@/server/helpers/logger';
 
 import { importConsommationsGaz } from './imports/consommations-gaz';
+import { importDonneesReseauxBibliothequeFedene } from './imports/donnees-reseaux-bibliotheque-fedene';
 import { importDonneesReseauxSdes } from './imports/donnees-reseaux-sdes';
 import { importEtudesEnCours } from './imports/etudes-en-cours';
 import { importQuartiersPrioritairesPolitiqueVille } from './imports/quartiers-prioritaires-politique-ville';
@@ -15,6 +16,7 @@ type DataImportConfig = (params: ImportParams) => Promise<void>;
 // Configuration des imports de données
 export const dataImportConfigs = {
   'consommations-gaz': importConsommationsGaz,
+  'donnees-reseaux-bibliotheque-fedene': importDonneesReseauxBibliothequeFedene,
   'donnees-reseaux-sdes': importDonneesReseauxSdes,
   'etudes-en-cours': importEtudesEnCours,
   'quartiers-prioritaires-politique-ville': importQuartiersPrioritairesPolitiqueVille,
