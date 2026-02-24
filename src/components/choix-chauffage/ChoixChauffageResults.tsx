@@ -35,10 +35,10 @@ const DEFAULT_TYPE_LOGEMENT: TypeLogement = 'immeuble_chauffage_collectif';
 export default function ChoixChauffageResults() {
   const engine = useSimulatorEngine();
   const isMobile = useIsMobile();
-  const qp = useChoixChauffageQueryParams();
+  const urlParams = useChoixChauffageQueryParams();
 
   const { geoAddress, setGeoAddress, addressDetail, codeDepartement, temperatureRef, onSelectGeoAddress, resetEligibility } =
-    useAddressEligibility(qp.adresse ?? null);
+    useAddressEligibility(urlParams.adresse ?? null);
 
   const [isParamsOpen, setIsParamsOpen] = useState(false);
   const [openAccordionId, setOpenAccordionId] = useState<string | null>(null);
@@ -47,16 +47,25 @@ export default function ChoixChauffageResults() {
 
   const situation: Situation = useMemo(
     () => ({
-      adresse: qp.adresse ?? null,
-      dpe: qp.dpe,
-      espaceExterieur: (qp.espaceExterieur ?? 'none') as EspaceExterieur,
+      adresse: urlParams.adresse ?? null,
+      dpe: urlParams.dpe,
+      espaceExterieur: (urlParams.espaceExterieur ?? 'none') as EspaceExterieur,
       gmi: batEnr.gmi,
-      habitantsMoyen: Number.parseFloat(qp.habitantsMoyen) || 0,
-      nbLogements: qp.nbLogements,
+      habitantsMoyen: Number.parseFloat(urlParams.habitantsMoyen) || 0,
+      nbLogements: urlParams.nbLogements,
       ppa: batEnr.ppa,
-      surfaceMoyenne: qp.surfaceMoyenne,
+      surfaceMoyenne: urlParams.surfaceMoyenne,
     }),
-    [qp.adresse, qp.dpe, qp.espaceExterieur, qp.habitantsMoyen, qp.nbLogements, qp.surfaceMoyenne, batEnr.gmi, batEnr.ppa]
+    [
+      urlParams.adresse,
+      urlParams.dpe,
+      urlParams.espaceExterieur,
+      urlParams.habitantsMoyen,
+      urlParams.nbLogements,
+      urlParams.surfaceMoyenne,
+      batEnr.gmi,
+      batEnr.ppa,
+    ]
   );
 
   // Pousse la situation dans Publicodes dès qu’elle change
@@ -76,7 +85,7 @@ export default function ChoixChauffageResults() {
     });
   }, [situation, codeDepartement, temperatureRef]);
 
-  const effectiveTypeLogement = (qp.typeLogement ?? DEFAULT_TYPE_LOGEMENT) as TypeLogement;
+  const effectiveTypeLogement = (urlParams.typeLogement ?? DEFAULT_TYPE_LOGEMENT) as TypeLogement;
 
   const modesDeChauffage: ModeDeChauffage[] = useMemo(() => {
     return modeDeChauffageParTypeLogement[effectiveTypeLogement].filter((m) => m.estPossible(situation));
@@ -120,16 +129,16 @@ export default function ChoixChauffageResults() {
           <SettingsTopFields
             withLabel={false}
             className="grid grid-cols-1 gap-4 md:grid-cols-3"
-            adresse={qp.adresse ?? null}
-            setAdresse={(v) => void qp.setAdresse(v)}
+            adresse={urlParams.adresse ?? null}
+            setAdresse={(v) => void urlParams.setAdresse(v)}
             geoAddress={geoAddress}
             setGeoAddress={setGeoAddress}
             onSelectGeoAddress={handleSelectGeoAddress}
             onAddressError={() => {}}
-            typeLogement={qp.typeLogement ?? null}
-            setTypeLogement={(v) => void qp.setTypeLogement(v)}
-            espaceExterieur={(qp.espaceExterieur ?? null) as EspaceExterieur | null}
-            setEspaceExterieur={(v) => void qp.setEspaceExterieur(v)}
+            typeLogement={urlParams.typeLogement ?? null}
+            setTypeLogement={(v) => void urlParams.setTypeLogement(v)}
+            espaceExterieur={(urlParams.espaceExterieur ?? null) as EspaceExterieur | null}
+            setEspaceExterieur={(v) => void urlParams.setEspaceExterieur(v)}
           />
         </div>
       )}
@@ -137,24 +146,24 @@ export default function ChoixChauffageResults() {
         showTopFields={showTopFieldsInsideParams}
         isOpen={isParamsOpen}
         setIsOpen={setIsParamsOpen}
-        adresse={qp.adresse ?? null}
-        setAdresse={(v) => void qp.setAdresse(v)}
+        adresse={urlParams.adresse ?? null}
+        setAdresse={(v) => void urlParams.setAdresse(v)}
         geoAddress={geoAddress}
         setGeoAddress={setGeoAddress}
         onSelectGeoAddress={handleSelectGeoAddress}
         onAddressError={() => {}}
-        typeLogement={qp.typeLogement ?? null}
-        setTypeLogement={(v) => void qp.setTypeLogement(v)}
-        espaceExterieur={(qp.espaceExterieur ?? null) as EspaceExterieur | null}
-        setEspaceExterieur={(v) => void qp.setEspaceExterieur(v)}
-        dpe={(qp.dpe ?? 'E') as DPE}
-        setDpe={(v) => void qp.setDpe(v)}
-        nbLogements={qp.nbLogements}
-        setNbLogements={(v) => void qp.setNbLogements(v)}
-        surfaceMoyenne={qp.surfaceMoyenne}
-        setSurfaceMoyenne={(v) => void qp.setSurfaceMoyenne(v)}
-        habitantsMoyen={qp.habitantsMoyen}
-        setHabitantsMoyen={(v) => void qp.setHabitantsMoyen(v)}
+        typeLogement={urlParams.typeLogement ?? null}
+        setTypeLogement={(v) => void urlParams.setTypeLogement(v)}
+        espaceExterieur={(urlParams.espaceExterieur ?? null) as EspaceExterieur | null}
+        setEspaceExterieur={(v) => void urlParams.setEspaceExterieur(v)}
+        dpe={(urlParams.dpe ?? 'E') as DPE}
+        setDpe={(v) => void urlParams.setDpe(v)}
+        nbLogements={urlParams.nbLogements}
+        setNbLogements={(v) => void urlParams.setNbLogements(v)}
+        surfaceMoyenne={urlParams.surfaceMoyenne}
+        setSurfaceMoyenne={(v) => void urlParams.setSurfaceMoyenne(v)}
+        habitantsMoyen={urlParams.habitantsMoyen}
+        setHabitantsMoyen={(v) => void urlParams.setHabitantsMoyen(v)}
       />
 
       <ResultsSection
@@ -162,7 +171,7 @@ export default function ChoixChauffageResults() {
         items={recommended}
         variant="recommended"
         coutParAnGaz={coutParAnGaz}
-        dpeFrom={qp.dpe}
+        dpeFrom={urlParams.dpe}
         openAccordionId={openAccordionId}
         onOpenChange={handleAccordionOpenChange}
       />
@@ -172,7 +181,7 @@ export default function ChoixChauffageResults() {
         items={others}
         coutParAnGaz={coutParAnGaz}
         variant="other"
-        dpeFrom={qp.dpe}
+        dpeFrom={urlParams.dpe}
         openAccordionId={openAccordionId}
         onOpenChange={handleAccordionOpenChange}
       />
