@@ -128,22 +128,25 @@ export function ParamsForm({
               value: nbLogements,
             }}
           />
-          <Input
-            label="Surface moyenne / logement"
-            nativeInputProps={{
-              inputMode: 'numeric',
-              min: 0,
-              onChange: (e) => {
-                const raw = e.target.value;
-                const next = raw === '' ? 0 : Number(raw);
-                void setSurfaceMoyenne(next);
-              },
-              placeholder: '- m²',
-              required: true,
-              type: 'number',
-              value: surfaceMoyenne,
-            }}
-          />
+          <div className="relative inline-block w-full">
+            <Input
+              label="Surface moyenne / logement"
+              nativeInputProps={{
+                inputMode: 'numeric',
+                min: 0,
+                onChange: (e) => {
+                  const raw = e.target.value;
+                  const next = raw === '' ? 0 : Number(raw);
+                  void setSurfaceMoyenne(next);
+                },
+                required: true,
+                type: 'number',
+                value: surfaceMoyenne, // espace pour le m²
+              }}
+              className="[&_input]:pr-12"
+            />
+            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/3 text-gray-500">m²</span>
+          </div>
           <Input
             label="Habitants moyen / logement"
             nativeInputProps={{
