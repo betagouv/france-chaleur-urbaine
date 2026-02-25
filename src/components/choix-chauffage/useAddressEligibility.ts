@@ -52,7 +52,7 @@ export function useAddressEligibility(adresse: string | null) {
       const banId = geoAddress.properties.id;
       const rnb = await fetchJSON(`/api/rnb?banId=${encodeURIComponent(banId)}`);
 
-      const bdnbId = rnb?.results?.[0]?.ext_ids?.find((e) => e.source === 'bdnb')?.id ?? '';
+      const bdnbId = rnb?.results?.[0]?.ext_ids?.find((e: RnbExtId) => e.source === 'bdnb')?.id ?? '';
 
       const [batEnrDetails, infos] = await Promise.all([
         trpcUtils.client.batEnr.getBatEnrBatimentDetails.query({
