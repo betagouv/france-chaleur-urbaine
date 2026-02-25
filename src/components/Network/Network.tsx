@@ -1,4 +1,3 @@
-import { fr } from '@codegouvfr/react-dsfr';
 import dynamic from 'next/dynamic';
 import type { ReactElement } from 'react';
 
@@ -11,6 +10,7 @@ import Icon from '@/components/ui/Icon';
 import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
 import Tooltip from '@/components/ui/Tooltip';
+import { dataSourcesVersions } from '@/modules/app/constants';
 import type { Network } from '@/types/Summary/Network';
 import { isDefined } from '@/utils/core';
 import { formatMW, formatMWh, prettyFormatNumber } from '@/utils/strings';
@@ -101,16 +101,13 @@ const NetworkPanel = ({
                   Performances environnementales
                 </Heading>
                 <Text size="sm" fontStyle="italic" mb="2w">
-                  Données issues des données locales de l'énergie (SDES, 2024).
+                  Données réglementaires,{' '}
+                  <a href={dataSourcesVersions.arreteDpe.link} target="_blank" rel="noreferrer noopener">
+                    arrêté du {dataSourcesVersions.arreteDpe.releaseDate}
+                  </a>{' '}
+                  portant sur l’année 2023, ou la moyenne des années 2021, 2022 et 2023. (en attente de l'arrêté 2026)
                 </Text>
-                {!isCold && (
-                  <Property
-                    label="Taux d'EnR&R"
-                    value={network['Taux EnR&R']}
-                    unit="%"
-                    tooltip="Calculé par FCU (ratio production EnR&R / production totale) en attendant la parution de l'arrêté DPE 2024."
-                  />
-                )}
+                {!isCold && <Property label="Taux d’EnR&R" value={network['Taux EnR&R']} unit="%" />}
                 <Property
                   label="Contenu CO2 ACV"
                   value={network['contenu CO2 ACV']}
@@ -118,7 +115,10 @@ const NetworkPanel = ({
                   tooltip="ACV : en analyse du cycle de vie (émissions directes et indirectes)."
                 />
                 <Property label="Contenu CO2" value={network['contenu CO2']} formatter={formatCO2} tooltip="Émissions directes" />
-                <Property label="Année de référence" value={network['Moyenne-annee-DPE']} />
+                <Property
+                  label="Année de référence"
+                  value={network['Moyenne-annee-DPE'] === 'Moyenne' ? 'Moyenne 2021-2022-2023' : network['Moyenne-annee-DPE']}
+                />
               </Box>
             )}
 
@@ -331,7 +331,7 @@ const NetworkPanel = ({
                       value={network['Dev_reseau%']}
                       round
                       unit="%"
-                      tooltip="Ratio entre le nombre de nouveaux abonnés en 2022 et le nombre total d'abonnés en 2021."
+                      tooltip="Ratio entre le nombre de nouveaux abonnés en 2024 et le nombre total d'abonnés en 2023."
                     />
                   )}
                 </Box>
@@ -372,7 +372,7 @@ const NetworkPanel = ({
 
                 <Text size="sm" fontStyle="italic" mb="2w">
                   <Text as="span" underline>
-                    Données pour l'année 2023
+                    Données pour l'année 2024
                   </Text>
                   , disponibles pour les réseaux classés - sauf opposition du maître d'ouvrage ou gestionnaire du réseau
                 </Text>
@@ -535,34 +535,20 @@ const NetworkPanel = ({
       </div>
 
       {(!displayBlocks || displayBlocks.includes('sources')) && (
-        <Box mt="4w" className={fr.cx('fr-hint-text')}>
-          <Box>
+        <div className="fr-mt-4w">
+          <p className="fr-hint-text">
             Sources : L’ensemble des données sont extraites des enquêtes réalisées par la Fedene Réseaux de chaleur et de froid avec le
             concours de l’association AMORCE, sous tutelle du service des données et études statistiques (SDES) du ministère de la
             transition écologique.
-          </Box>
-          <ul>
-            <li>
-              Données techniques 2024 :{' '}
-              <Link
-                href="https://www.statistiques.developpement-durable.gouv.fr/catalogue?page=datafile&datafileRid=b0c273bb-1578-42f3-b22b-074d78de3ca3"
-                isExternal
-              >
-                données locales de l’énergie diffusées par le SDES pour 2024
-              </Link>
-            </li>
-            <li>
-              Données administratives et tarifaires 2023 :{' '}
-              <Link href="https://fedene.fr/ressource/bibliotheque-de-donnees-des-reseaux-de-chaleur-et-de-froid-2024/" isExternal>
-                bibliothèque de données de la Fedene Réseaux de chaleur et de froid
-              </Link>
-            </li>
-            <li>Données 2021 : ViaSeva.</li>
-          </ul>
+          </p>
+          <p className="fr-hint-text">
+            Pour plus de détails sur les sources des données, consultez notre page{' '}
+            <Link href="/donnees#detail-donnees-reseaux">Données et sources</Link>.
+          </p>
 
           <img src="/logo-fedene.svg" alt="logo fedene" className="h-[50px] inline-block fr-mr-2w" />
           <img src="/logo-amorce.svg" alt="logo amorce" className="h-[50px] inline-block" />
-        </Box>
+        </div>
       )}
     </>
   );

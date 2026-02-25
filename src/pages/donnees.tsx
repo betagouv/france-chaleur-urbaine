@@ -3,6 +3,7 @@ import Heading from '@/components/ui/Heading';
 import Link from '@/components/ui/Link';
 import TableBasic from '@/components/ui/TableBasic';
 import Tooltip from '@/components/ui/Tooltip';
+import { dataSourcesVersions } from '@/modules/app/constants';
 
 const DonneesPage = () => {
   return (
@@ -49,7 +50,8 @@ const DonneesPage = () => {
             <tr>
               <td className="font-semibold">Réseaux de chaleur existants</td>
               <td>
-                Données locales de l'énergie (SDES, 2024), Bibliothèque FEDENE (données 2023), gestionnaires de réseaux, collectivités.
+                Bibliothèque FEDENE (données 2024), Données locales de l'énergie (SDES, données 2024), Arrêté DPE (2025, données 2023),
+                gestionnaires de réseaux, collectivités.
                 <br />
                 <Link href="#detail-reseaux-chaleur-froid">Voir le détail des données</Link>
               </td>
@@ -60,7 +62,8 @@ const DonneesPage = () => {
             <tr>
               <td className="font-semibold">Réseaux de froid existants</td>
               <td>
-                Données locales de l'énergie (SDES, 2024), Bibliothèque FEDENE (données 2023), gestionnaires de réseaux, collectivités.
+                Bibliothèque FEDENE (données 2024), Données locales de l'énergie (SDES, données 2024), Arrêté DPE (2025, données 2023),
+                gestionnaires de réseaux, collectivités.
                 <br />
                 <Link href="#detail-reseaux-chaleur-froid">Voir le détail des données</Link>
               </td>
@@ -548,10 +551,9 @@ const DonneesPage = () => {
                 </td>
                 <td>
                   Source :{' '}
-                  <Link href="https://fedene.fr/ressource/bibliotheque-de-donnees-des-reseaux-de-chaleur-et-de-froid-2024/" isExternal>
-                    Bibliothèque FEDENE
-                  </Link>{' '}
-                  (données 2023)
+                  <Link href={dataSourcesVersions.bibliothequeFedene.link} isExternal>
+                    {dataSourcesVersions.bibliothequeFedene.title}
+                  </Link>
                   <br />
                   Complété par France Chaleur Urbaine
                 </td>
@@ -562,7 +564,12 @@ const DonneesPage = () => {
                     <li>nombre de PDL</li>
                   </ul>
                 </td>
-                <td>Source : Données locales de l'énergie (SDES, 2024)</td>
+                <td>
+                  Source :{' '}
+                  <Link href={dataSourcesVersions.bibliothequeFedene.link} isExternal>
+                    {dataSourcesVersions.bibliothequeFedene.title}
+                  </Link>
+                </td>
               </tr>
               <tr>
                 <td className="font-semibold">
@@ -572,8 +579,8 @@ const DonneesPage = () => {
                 </td>
                 <td>
                   Source :{' '}
-                  <Link href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000050641498" isExternal>
-                    Arrêté du 3 décembre 2024
+                  <Link href={dataSourcesVersions.arreteDpe.link} isExternal>
+                    Arrêté du {dataSourcesVersions.arreteDpe.releaseDate}
                   </Link>{' '}
                   relatif au classement des réseaux de chaleur et de froid.
                   <br />
@@ -606,25 +613,16 @@ const DonneesPage = () => {
                   <ul>
                     <li>contenu CO2</li>
                     <li>contenu CO2 ACV</li>
-                  </ul>
-                </td>
-                <td>Source : Données locales de l'énergie (SDES, 2024).</td>
-              </tr>
-              <tr>
-                <td className="font-semibold">
-                  <ul>
                     <li>taux EnR&R</li>
                     <li>année de référence</li>
                   </ul>
                 </td>
                 <td>
-                  Calculé par France Chaleur Urbaine : ratio entre la production d'énergies renouvelables et de récupération (biomasse,
-                  biogaz, géothermie, PAC, solaire thermique, UIOM, chaleur industrielle et autre chaleur récupérée) et la production
-                  totale.
-                  <br />
-                  Source des données de production : données locales de l'énergie (SDES, 2024).
-                  <br />
-                  En attendant la parution de l'arrêté DPE et de la bibliothèque FEDENE pour l'année 2024.
+                  Source :{' '}
+                  <Link href={dataSourcesVersions.arreteDpe.link} isExternal>
+                    Arrêté du {dataSourcesVersions.arreteDpe.releaseDate}
+                  </Link>{' '}
+                  relatif au classement des réseaux de chaleur et de froid.
                 </td>
               </tr>
               <tr>
@@ -637,9 +635,15 @@ const DonneesPage = () => {
                   <ul>
                     <li>productions en MWh par source (gaz, charbon, fioul, etc)</li>
                     <li>livraisons de chaleur en MWh par secteur (résidentiel, tertiaire, industrie, agriculture, autre)</li>
+                    <li>rendement de distribution</li>
                   </ul>
                 </td>
-                <td>Source : Données locales de l'énergie (SDES, 2024)</td>
+                <td>
+                  Source :{' '}
+                  <Link href={dataSourcesVersions.bibliothequeFedene.link} isExternal>
+                    {dataSourcesVersions.bibliothequeFedene.title}
+                  </Link>
+                </td>
               </tr>
               <tr>
                 <td className="font-semibold">
@@ -647,18 +651,11 @@ const DonneesPage = () => {
                     <li>puissance installée en MW</li>
                   </ul>
                 </td>
-                <td>Source : Données locales de l'énergie (SDES, 2024)</td>
-              </tr>
-              <tr>
-                <td className="font-semibold">
-                  <ul>
-                    <li>rendement de distribution</li>
-                  </ul>
-                </td>
                 <td>
-                  Calculé par France Chaleur Urbaine : ratio entre les livraisons totales et la production totale.
-                  <br />
-                  Source des données : données locales de l'énergie (SDES, 2024).
+                  Source :{'  '}
+                  <Link href={dataSourcesVersions.donneesLocalesEnergieReseaux.link} isExternal>
+                    {dataSourcesVersions.donneesLocalesEnergieReseaux.title}
+                  </Link>
                 </td>
               </tr>
               <tr>
@@ -696,10 +693,10 @@ const DonneesPage = () => {
                 </td>
                 <td>
                   Source :{' '}
-                  <Link href="https://fedene.fr/ressource/bibliotheque-de-donnees-des-reseaux-de-chaleur-et-de-froid-2024/" isExternal>
-                    Bibliothèque FEDENE
+                  <Link href="https://fedene.fr/ressource/bibliotheque-de-donnees-des-reseaux-de-chaleur-et-de-froid-2/" isExternal>
+                    Bibliothèque FEDENE 2025
                   </Link>{' '}
-                  (données 2023)
+                  (données 2024)
                   <br />
                   Disponible pour les réseaux classés, sauf opposition du maître d'ouvrage ou gestionnaire du réseau
                 </td>
