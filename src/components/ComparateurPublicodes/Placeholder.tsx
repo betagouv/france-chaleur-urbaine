@@ -6,6 +6,7 @@ import Box from '@/components/ui/Box';
 import Icon from '@/components/ui/Icon';
 import Link from '@/components/ui/Link';
 import Modal, { createModal } from '@/components/ui/Modal';
+import { dataSourcesVersions } from '@/modules/app/constants';
 import cx from '@/utils/cx';
 
 import { Results, ResultsPlaceholder, Simulator } from './ComparateurPublicodes.style';
@@ -141,17 +142,25 @@ export const DescriptionModal = () => {
         cadre du classement (coût manifestement disproportionné). Une méthodologie dédiée est en cours d'élaboration.
       </p>
       <p>
-        Les données techniques utilisées par le comparateur portent sur l'année 2024 (données locales de l'énergie, SDES). Le taux ENRR est
-        calculé par France Chaleur Urbaine (ratio entre la production d'énergies renouvelables et de récupération et la production totale),
-        en attendant la parution de l'arrêté DPE 2024. Le contenu CO2 des réseaux provient également de les données locales de l'énergie
-        (SDES, 2024).
+        Les données économiques et locales des réseaux de chaleur et de froid sont les données de la dernière version de la bibliothèque de
+        données FEDENE/AMORCE publiée en 2026 sur la base de l'année 2024. L'outil a été mis à jour en février 2026 avec le prix moyen des
+        réseaux de chaleur et de froid, ainsi que la mise à jour des données économiques des modes de chauffage alternatifs sur l'année
+        2024. Les données environnementales sont basées sur le dernier{' '}
+        <Link href={dataSourcesVersions.arreteDpe.link} isExternal>
+          arrêté du {dataSourcesVersions.arreteDpe.releaseDate}
+        </Link>
+        . AMORCE regrette ces décalages temporels, en partie dus à l'absence de publication de l'arrêté listant les réseaux classés en fin
+        d'année 2025 (sur les chiffres de l'année 2024), et sur l'absence de mise à jour de l'arrêté DPE des réseaux de chaleur.
       </p>
       <p>
-        Cet outil prend la suite d'RCE33, outil développé par l'association AMORCE. L'association AMORCE pilote le projet, le bureau
-        d’études Elcimaï y a apporté son expertise technique et France Chaleur Urbaine a mis en place la version disponible en ligne. Cet
-        outil bénéficie d'un financement du programme européen Heat&Cool LIFE, piloté par la Région Sud, qui vise à développer des outils
-        dans l'objectif de développer les réseaux de chaleur et de froid vertueux. La mise en place de l'interface en ligne est financée sur
-        le budget de France Chaleur Urbaine.
+        Cet outil prend la suite d'RCE33, outil développé par l'association{' '}
+        <Link href="https://amorce.asso.fr/" isExternal>
+          AMORCE
+        </Link>
+        . L'association AMORCE pilote le projet, le bureau d’études Elcimaï y a apporté son expertise technique et France Chaleur Urbaine a
+        mis en place la version disponible en ligne. Cet outil bénéficie d'un financement du programme européen Heat&Cool LIFE, piloté par
+        la Région Sud, qui vise à développer des outils dans l'objectif de développer les réseaux de chaleur et de froid vertueux. La mise
+        en place de l'interface en ligne est financée sur le budget de France Chaleur Urbaine.
       </p>
       <Link
         href="/documentation/Note_methodologique_comparateur.pdf"
