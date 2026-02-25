@@ -119,6 +119,7 @@ export interface BdnbBatimentsTiles {
 
 export interface BatEnr {
   batiment_groupe_id: string;
+  batiment_construction_id: string;
   geom: string | null;
   gmi_nappe_200: Int8;
   pot_nappe: Int8;

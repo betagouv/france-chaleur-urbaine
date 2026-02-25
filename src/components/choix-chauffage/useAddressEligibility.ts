@@ -5,18 +5,34 @@ import type { SuggestionItem } from '@/modules/ban/types';
 import { toastErrors } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
 import type { LocationInfoResponse } from '@/pages/api/location-infos';
-import type { AddressDetail } from '@/types/HeatNetworksResponse';
-import { postFetchJSON } from '@/utils/network';
+import { fetchJSON, postFetchJSON } from '@/utils/network';
 
+type BatEnrInfo = {
+  gmi: boolean;
+  ppa: boolean;
+};
 type EligibilityState = {
   geoAddress?: SuggestionItem;
-  addressDetail: AddressDetail | null;
+  batEnr: BatEnrInfo;
   codeDepartement: string;
   temperatureRef: number | null;
 };
 
+type RnbExtId = {
+  id: string;
+  source: string;
+  created_at?: string;
+  source_version?: string;
+};
+
+type RnbBuildingsByAddressResponse = {
+  results?: Array<{
+    ext_ids?: RnbExtId[];
+  }>;
+};
+
 const EMPTY: EligibilityState = {
-  addressDetail: null,
+  batEnr: { gmi: false, ppa: false },
   codeDepartement: '',
   geoAddress: undefined,
   temperatureRef: null,
@@ -32,37 +48,33 @@ export function useAddressEligibility(adresse: string | null) {
   }, []);
 
   const computeEligibilityFromSuggestion = useCallback(
-    toastErrors(async (found: SuggestionItem) => {
-      const [lon, lat] = found.geometry.coordinates;
-      const point = { lat, lon };
+    toastErrors(async (geoAddress: SuggestionItem) => {
+      const banId = geoAddress.properties.id;
+      const rnb = await fetchJSON(`/api/rnb?banId=${encodeURIComponent(banId)}`);
 
-      const [eligibilityStatus, batEnrDetails, infos] = await Promise.all([
-        trpcUtils.client.reseaux.eligibilityStatus.query(point),
-        trpcUtils.client.batEnr.getBatEnrBatimentDetails.query(point),
+      const bdnbId = rnb?.results?.[0]?.ext_ids?.find((e) => e.source === 'bdnb')?.id ?? '';
+
+      const [batEnrDetails, infos] = await Promise.all([
+        trpcUtils.client.batEnr.getBatEnrBatimentDetails.query({
+          batiment_construction_id: bdnbId,
+        }),
         postFetchJSON<LocationInfoResponse>('/api/location-infos', {
-          city: found.properties.city,
-          cityCode: found.properties.citycode,
-          lat,
-          lon,
+          city: geoAddress.properties.city,
+          cityCode: geoAddress.properties.citycode,
           onlyCity: true,
         }),
       ]);
 
       const codeDepartement = infos?.infosVille?.departement_id ?? '';
       const temperatureRef = Number(infos?.infosVille?.temperature_ref_altitude_moyenne);
-      const addressDetail: AddressDetail = {
+
+      setState({
         batEnr: {
           gmi: Number(batEnrDetails?.gmi_nappe_200) === 1 || Number(batEnrDetails?.gmi_sonde_200) === 1,
           ppa: batEnrDetails?.etat_ppa === 'PPA Validés',
         },
-        geoAddress: found,
-        network: eligibilityStatus,
-      };
-
-      setState({
-        addressDetail,
         codeDepartement,
-        geoAddress: found,
+        geoAddress,
         temperatureRef,
       });
     }),
@@ -80,13 +92,13 @@ export function useAddressEligibility(adresse: string | null) {
         query: adresseToTest,
       });
 
-      const found = results?.[0] as SuggestionItem | undefined;
-      if (!found) {
+      const geoAddress = results?.[0] as SuggestionItem | undefined;
+      if (!geoAddress) {
         resetEligibility();
         return;
       }
 
-      await computeEligibilityFromSuggestion(found);
+      await computeEligibilityFromSuggestion(geoAddress);
     }),
     [computeEligibilityFromSuggestion, resetEligibility]
   );
@@ -97,10 +109,10 @@ export function useAddressEligibility(adresse: string | null) {
   }, [adresse, triggerEligibilityFromString]);
 
   const onSelectGeoAddress = useCallback(
-    (found?: SuggestionItem) => {
-      if (!found) return;
+    (geoAddress?: SuggestionItem) => {
+      if (!geoAddress) return;
 
-      void computeEligibilityFromSuggestion(found);
+      void computeEligibilityFromSuggestion(geoAddress);
     },
     [computeEligibilityFromSuggestion]
   );
