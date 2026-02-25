@@ -37,13 +37,11 @@ export default function ChoixChauffageResults() {
   const isMobile = useIsMobile();
   const urlParams = useChoixChauffageQueryParams();
 
-  const { geoAddress, setGeoAddress, addressDetail, codeDepartement, temperatureRef, onSelectGeoAddress, resetEligibility } =
+  const { geoAddress, setGeoAddress, batEnr, codeDepartement, temperatureRef, onSelectGeoAddress, resetEligibility } =
     useAddressEligibility(urlParams.adresse ?? null);
 
   const [isParamsOpen, setIsParamsOpen] = useState(false);
   const [openAccordionId, setOpenAccordionId] = useState<string | null>(null);
-
-  const batEnr = addressDetail?.batEnr ?? { gmi: false, ppa: false };
 
   const situation: Situation = useMemo(
     () => ({

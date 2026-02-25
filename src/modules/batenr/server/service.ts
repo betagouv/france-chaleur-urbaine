@@ -1,7 +1,7 @@
-import { kdb, sql } from '@/server/db/kysely';
+import type { GetBdnbConstructionInput } from '@/modules/tiles/constants';
+import { kdb } from '@/server/db/kysely';
 
-export const getBatEnrBatimentDetails = async ({ lat, lon }: { lat: number; lon: number }) => {
-  const point = sql`ST_Transform(ST_SetSRID(ST_MakePoint(${lon}, ${lat}), 4326), 2154)`;
+export const getBatEnrBatimentDetails = async ({ batiment_construction_id }: GetBdnbConstructionInput) => {
   const batiment = await kdb
     .selectFrom('bdnb_batenr')
     .select([
@@ -19,10 +19,8 @@ export const getBatEnrBatimentDetails = async ({ lat, lon }: { lat: number; lon:
       'liste_ppa',
       'etat_ppa',
     ])
-    .where(sql<boolean>`ST_DWithin(geom, ${point}, 30)`)
-    .orderBy(sql`geom <-> ${point}`)
-    .limit(1)
-    .executeTakeFirst();
+    .where('batiment_construction_id', '=', batiment_construction_id)
+    .executeTakeFirstOrThrow();
 
   return batiment;
 };

@@ -24,7 +24,8 @@ export type GetBdnbBatimentInput = z.infer<typeof zGetBdnbBatimentInput>;
 export const intermediateTileLayersMinZoom = 12;
 export const tileSourcesMaxZoom = 17;
 
-export const zGetBatenrBatimentInput = z.strictObject({
-  lat: z.number(),
-  lon: z.number(),
+export const zGetBdnbConstructionInput = z.strictObject({
+  batiment_construction_id: z.string().min(1, "L'ID de la construction est requis"),
 });
+
+export type GetBdnbConstructionInput = z.infer<typeof zGetBdnbConstructionInput>;
