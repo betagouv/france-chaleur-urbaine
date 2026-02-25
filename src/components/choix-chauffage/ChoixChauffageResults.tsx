@@ -2,6 +2,8 @@ import type { RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import useSimulatorEngine from '@/components/ComparateurPublicodes/useSimulatorEngine';
+import AdemeHelp from '@/components/choix-chauffage/AdemeHelp';
+import FranceRenovHelp from '@/components/choix-chauffage/FranceRenovHelp';
 import {
   type DPE,
   type ModeDeChauffage,
@@ -13,6 +15,7 @@ import { SettingsTopFields } from '@/components/choix-chauffage/SettingsTopField
 import type { TypeLogement } from '@/components/choix-chauffage/type-logement';
 import { useAddressEligibility } from '@/components/choix-chauffage/useAddressEligibility';
 import { useChoixChauffageQueryParams } from '@/components/choix-chauffage/useChoixChauffageQueryParams';
+import CallOut from '@/components/ui/CallOut';
 import useIsMobile from '@/hooks/useIsMobile';
 import type { EspaceExterieur } from '@/modules/app/types';
 import type { SuggestionItem } from '@/modules/ban/types';
@@ -29,8 +32,6 @@ type ResultsSectionProps = {
   coutParAnGaz: number;
   onOpenChange: (id: string, expanded: boolean) => void;
 };
-
-const DEFAULT_TYPE_LOGEMENT: TypeLogement = 'immeuble_chauffage_collectif';
 
 export default function ChoixChauffageResults() {
   const engine = useSimulatorEngine();
@@ -83,7 +84,7 @@ export default function ChoixChauffageResults() {
     });
   }, [situation, codeDepartement, temperatureRef]);
 
-  const effectiveTypeLogement = (urlParams.typeLogement ?? DEFAULT_TYPE_LOGEMENT) as TypeLogement;
+  const effectiveTypeLogement = (urlParams.typeLogement ?? 'immeuble_chauffage_collectif') as TypeLogement;
 
   const modesDeChauffage: ModeDeChauffage[] = useMemo(() => {
     return modeDeChauffageParTypeLogement[effectiveTypeLogement].filter((m) => m.estPossible(situation));
@@ -163,26 +164,53 @@ export default function ChoixChauffageResults() {
         habitantsMoyen={urlParams.habitantsMoyen}
         setHabitantsMoyen={(v) => void urlParams.setHabitantsMoyen(v)}
       />
+      {modesWithCout.length > 0 ? (
+        <>
+          <ResultsSection
+            title="Solution recommandée"
+            items={recommended}
+            variant="recommended"
+            coutParAnGaz={coutParAnGaz}
+            dpeFrom={urlParams.dpe}
+            openAccordionId={openAccordionId}
+            onOpenChange={handleAccordionOpenChange}
+          />
+          <ResultsSection
+            title="Autres solutions possibles"
+            items={others}
+            coutParAnGaz={coutParAnGaz}
+            variant="other"
+            dpeFrom={urlParams.dpe}
+            openAccordionId={openAccordionId}
+            onOpenChange={handleAccordionOpenChange}
+          />
 
-      <ResultsSection
-        title="Solution recommandée"
-        items={recommended}
-        variant="recommended"
-        coutParAnGaz={coutParAnGaz}
-        dpeFrom={urlParams.dpe}
-        openAccordionId={openAccordionId}
-        onOpenChange={handleAccordionOpenChange}
-      />
-
-      <ResultsSection
-        title="Autres solutions possibles"
-        items={others}
-        coutParAnGaz={coutParAnGaz}
-        variant="other"
-        dpeFrom={urlParams.dpe}
-        openAccordionId={openAccordionId}
-        onOpenChange={handleAccordionOpenChange}
-      />
+          <CallOut
+            title={
+              <>
+                <span className="fr-icon-lightbulb-line fr-mr-1w" />
+                Comment sont calculés ces résultats ?
+              </>
+            }
+            size="lg"
+            colorVariant="blue-ecume"
+          >
+            <p className="fr-callout__text">
+              Nos recommandations sont calculées à partir des informations que vous avez fournies : mode de chauffage, surface moyenne,
+              classe DPE, disponibilité d’espaces extérieurs… Ces critères permettent de classer les solutions par pertinence et d’estimer
+              les coûts et contraintes techniques propres à votre situation.
+            </p>
+            <div className="mt-2">
+              <a className="fr-link" href="#">
+                En savoir plus
+              </a>
+            </div>
+          </CallOut>
+          <AdemeHelp />
+        </>
+      ) : (
+        <NoResultSection codeInsee={geoAddress?.properties.citycode} />
+      )}
     </>
   );
 }
@@ -209,6 +237,35 @@ function ResultsSection({ title, items, coutParAnGaz, variant, dpeFrom, openAcco
         })}
         {variant === 'recommended' && <ScrollToHelpButton />}
       </div>
+    </>
+  );
+}
+
+function NoResultSection({ codeInsee }: { codeInsee?: string }) {
+  return (
+    <>
+      <h3>Aucune solution de chauffage alternative n'est adaptée à votre situation actuelle</h3>
+      <p>
+        Pas d'inquiétude, d'autres actions permettent de réduire vos consommations d'énergie, vos factures et votre impact environnemental :
+      </p>
+      <ul>
+        <li>
+          <strong>Isoler votre logement</strong> : toiture, murs, fenêtres, planchers — c'est souvent le geste le plus efficace
+        </li>
+        <li>
+          <strong>Améliorer votre système de ventilation</strong> : une VMC performante améliore la qualité de l'air et limite les pertes de
+          chaleur
+        </li>
+        <li>
+          <strong>Optimiser votre chauffage actuel</strong> : entretien de la chaudière, désembouage des radiateurs, installation de
+          robinets thermostatiques
+        </li>
+        <li>
+          <strong>Réduire vos consommations d'eau chaude</strong> : mousseurs, pommeaux économes, calorifugeage des tuyaux
+        </li>
+      </ul>
+      <p>Ces travaux peuvent être éligibles à des aides financières (MaPrimeRénov', CEE, éco-prêt à taux zéro).</p>
+      <FranceRenovHelp codeInsee={codeInsee} />
     </>
   );
 }

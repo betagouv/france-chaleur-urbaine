@@ -3,11 +3,9 @@ import dynamic from 'next/dynamic';
 import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 
-import AdemeHelp from '@/components/ChaleurRenouvelable/AdemeHelp';
 import Share from '@/components/Share';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Button from '@/components/ui/Button';
-import CallOut from '@/components/ui/CallOut';
 import Image from '@/components/ui/Image';
 import Link from '@/components/ui/Link';
 import Modal from '@/components/ui/Modal';
@@ -52,29 +50,6 @@ export default function ChaleurRenouvelableResultatPage() {
         <h2>Résultats : Vos solutions de chauffage écologique</h2>
 
         <ChoixChauffageResults />
-        <CallOut
-          title={
-            <>
-              <span className="fr-icon-lightbulb-line fr-mr-1w" />
-              Comment sont calculés ces résultats ?
-            </>
-          }
-          size="lg"
-          colorVariant="blue-ecume"
-        >
-          <p className="fr-callout__text">
-            Nos recommandations sont calculées à partir des informations que vous avez fournies : mode de chauffage, surface moyenne, classe
-            DPE, disponibilité d’espaces extérieurs… Ces critères permettent de classer les solutions par pertinence et d’estimer les coûts
-            et contraintes techniques propres à votre situation.
-          </p>
-          <div className="mt-2">
-            <a className="fr-link" href="#">
-              En savoir plus
-            </a>
-          </div>
-        </CallOut>
-        <h3>Et maintenant ?</h3>
-        <AdemeHelp />
         <div className="fr-py-6w flex justify-center">
           <Link
             title="Je donne mon avis - nouvelle fenêtre"
