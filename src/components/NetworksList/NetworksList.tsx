@@ -11,6 +11,7 @@ import ReseauxDeChaleurFilters, { type ReseauxDeChaleurFiltersProps } from '@/co
 import Box from '@/components/ui/Box';
 import Drawer from '@/components/ui/Drawer';
 import Icon from '@/components/ui/Icon';
+import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
 import TableSimple, { type ColumnDef } from '@/components/ui/table/TableSimple';
 import useReseauxDeChaleurFilters, { type FilterWithLimits } from '@/hooks/useReseauxDeChaleurFilters';
