@@ -465,7 +465,9 @@ const DonneesPage = () => {
       </section>
 
       <section>
-        <Heading as="h2">Détail des données sur les réseaux de chaleur et de froid</Heading>
+        <Heading as="h2" id="detail-donnees-reseaux" anchorLink>
+          Détail des données sur les réseaux de chaleur et de froid
+        </Heading>
         <p>
           Les données sur les réseaux de chaleur et de froid sont constituées de plusieurs champs provenant de différentes sources. France
           Chaleur Urbaine agrège ces données pour les réseaux de chaleur, de froid, en construction et les périmètres de développement
@@ -486,7 +488,7 @@ const DonneesPage = () => {
         </p>
 
         <div>
-          <Heading as="h3" id="detail-reseaux-chaleur-froid">
+          <Heading as="h3" id="detail-reseaux-chaleur-froid" anchorLink>
             Réseaux de chaleur (+ froid si applicable)
           </Heading>
           <TableBasic>
@@ -682,7 +684,7 @@ const DonneesPage = () => {
         </div>
 
         <div>
-          <Heading as="h3" id="detail-reseaux-en-construction">
+          <Heading as="h3" id="detail-reseaux-en-construction" anchorLink>
             Zones et réseaux en construction
           </Heading>
           <TableBasic>
@@ -735,7 +737,7 @@ const DonneesPage = () => {
         </div>
 
         <div>
-          <Heading as="h3" id="detail-pdp">
+          <Heading as="h3" id="detail-pdp" anchorLink>
             Périmètres de développement prioritaire (PDP)
           </Heading>
           <TableBasic>
