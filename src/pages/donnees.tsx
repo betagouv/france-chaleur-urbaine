@@ -3,6 +3,7 @@ import Heading from '@/components/ui/Heading';
 import Link from '@/components/ui/Link';
 import TableBasic from '@/components/ui/TableBasic';
 import Tooltip from '@/components/ui/Tooltip';
+import { dataSourcesVersions } from '@/modules/app/constants';
 
 const DonneesPage = () => {
   return (
@@ -49,7 +50,8 @@ const DonneesPage = () => {
             <tr>
               <td className="font-semibold">Réseaux de chaleur existants</td>
               <td>
-                Bibliothèque Fedene pour 2023, gestionnaires de réseaux, collectivités.
+                Bibliothèque FEDENE (données 2024), Données locales de l'énergie (SDES, données 2024), Arrêté DPE (2025, données 2023),
+                gestionnaires de réseaux, collectivités.
                 <br />
                 <Link href="#detail-reseaux-chaleur-froid">Voir le détail des données</Link>
               </td>
@@ -60,7 +62,8 @@ const DonneesPage = () => {
             <tr>
               <td className="font-semibold">Réseaux de froid existants</td>
               <td>
-                Bibliothèque Fedene pour 2023, gestionnaires de réseaux, collectivités.
+                Bibliothèque FEDENE (données 2024), Données locales de l'énergie (SDES, données 2024), Arrêté DPE (2025, données 2023),
+                gestionnaires de réseaux, collectivités.
                 <br />
                 <Link href="#detail-reseaux-chaleur-froid">Voir le détail des données</Link>
               </td>
@@ -465,7 +468,9 @@ const DonneesPage = () => {
       </section>
 
       <section>
-        <Heading as="h2">Détail des données sur les réseaux de chaleur et de froid</Heading>
+        <Heading as="h2" id="detail-donnees-reseaux" anchorLink>
+          Détail des données sur les réseaux de chaleur et de froid
+        </Heading>
         <p>
           Les données sur les réseaux de chaleur et de froid sont constituées de plusieurs champs provenant de différentes sources. France
           Chaleur Urbaine agrège ces données pour les réseaux de chaleur, de froid, en construction et les périmètres de développement
@@ -486,7 +491,7 @@ const DonneesPage = () => {
         </p>
 
         <div>
-          <Heading as="h3" id="detail-reseaux-chaleur-froid">
+          <Heading as="h3" id="detail-reseaux-chaleur-froid" anchorLink>
             Réseaux de chaleur (+ froid si applicable)
           </Heading>
           <TableBasic>
@@ -539,16 +544,31 @@ const DonneesPage = () => {
                     <li>nom du réseau</li>
                     <li>identifiant SNCU</li>
                     <li>année de création</li>
-                    <li>nombre de PDL</li>
                     <li>gestionnaire</li>
                     <li>maître d'ouvrage</li>
                     <li>site internet</li>
                   </ul>
                 </td>
                 <td>
-                  Source : Bibliothèque FEDENE pour 2023
+                  Source :{' '}
+                  <Link href={dataSourcesVersions.bibliothequeFedene.link} isExternal>
+                    {dataSourcesVersions.bibliothequeFedene.title}
+                  </Link>
                   <br />
                   Complété par France Chaleur Urbaine
+                </td>
+              </tr>
+              <tr>
+                <td className="font-semibold">
+                  <ul>
+                    <li>nombre de PDL</li>
+                  </ul>
+                </td>
+                <td>
+                  Source :{' '}
+                  <Link href={dataSourcesVersions.bibliothequeFedene.link} isExternal>
+                    {dataSourcesVersions.bibliothequeFedene.title}
+                  </Link>
                 </td>
               </tr>
               <tr>
@@ -559,8 +579,8 @@ const DonneesPage = () => {
                 </td>
                 <td>
                   Source :{' '}
-                  <Link href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000050641498" isExternal>
-                    Arrêté du 3 décembre 2024
+                  <Link href={dataSourcesVersions.arreteDpe.link} isExternal>
+                    Arrêté du {dataSourcesVersions.arreteDpe.releaseDate}
                   </Link>{' '}
                   relatif au classement des réseaux de chaleur et de froid.
                   <br />
@@ -594,17 +614,15 @@ const DonneesPage = () => {
                     <li>contenu CO2</li>
                     <li>contenu CO2 ACV</li>
                     <li>taux EnR&R</li>
-                    <li>année de référence du taux</li>
+                    <li>année de référence</li>
                   </ul>
                 </td>
                 <td>
-                  Source : Bibliothèque FEDENE pour 2023
-                  <br />
-                  Données réglementaires,{' '}
-                  <a href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000051520810" target="_blank" rel="noreferrer noopener">
-                    arrêté du 11 avril 2025
-                  </a>{' '}
-                  portant sur l'année 2023, ou la moyenne des années 2021, 2022 et 2023..
+                  Source :{' '}
+                  <Link href={dataSourcesVersions.arreteDpe.link} isExternal>
+                    Arrêté du {dataSourcesVersions.arreteDpe.releaseDate}
+                  </Link>{' '}
+                  relatif au classement des réseaux de chaleur et de froid.
                 </td>
               </tr>
               <tr>
@@ -615,12 +633,17 @@ const DonneesPage = () => {
               <tr>
                 <td className="font-semibold">
                   <ul>
-                    <li>productions en MWh par source (gas, charbon, fioul, etc)</li>
+                    <li>productions en MWh par source (gaz, charbon, fioul, etc)</li>
                     <li>livraisons de chaleur en MWh par secteur (résidentiel, tertiaire, industrie, agriculture, autre)</li>
                     <li>rendement de distribution</li>
                   </ul>
                 </td>
-                <td>Source : Bibliothèque FEDENE pour 2023</td>
+                <td>
+                  Source :{' '}
+                  <Link href={dataSourcesVersions.bibliothequeFedene.link} isExternal>
+                    {dataSourcesVersions.bibliothequeFedene.title}
+                  </Link>
+                </td>
               </tr>
               <tr>
                 <td className="font-semibold">
@@ -628,7 +651,12 @@ const DonneesPage = () => {
                     <li>puissance installée en MW</li>
                   </ul>
                 </td>
-                <td>Source : Bibliothèque FEDENE pour 2021 (source historique, origine exacte inconnue)</td>
+                <td>
+                  Source :{'  '}
+                  <Link href={dataSourcesVersions.donneesLocalesEnergieReseaux.link} isExternal>
+                    {dataSourcesVersions.donneesLocalesEnergieReseaux.title}
+                  </Link>
+                </td>
               </tr>
               <tr>
                 <td className="font-semibold">
@@ -664,7 +692,11 @@ const DonneesPage = () => {
                   </ul>
                 </td>
                 <td>
-                  Source : Bibliothèque FEDENE pour 2023
+                  Source :{' '}
+                  <Link href="https://fedene.fr/ressource/bibliotheque-de-donnees-des-reseaux-de-chaleur-et-de-froid-2/" isExternal>
+                    Bibliothèque FEDENE 2025
+                  </Link>{' '}
+                  (données 2024)
                   <br />
                   Disponible pour les réseaux classés, sauf opposition du maître d'ouvrage ou gestionnaire du réseau
                 </td>
@@ -682,7 +714,7 @@ const DonneesPage = () => {
         </div>
 
         <div>
-          <Heading as="h3" id="detail-reseaux-en-construction">
+          <Heading as="h3" id="detail-reseaux-en-construction" anchorLink>
             Zones et réseaux en construction
           </Heading>
           <TableBasic>
@@ -735,7 +767,7 @@ const DonneesPage = () => {
         </div>
 
         <div>
-          <Heading as="h3" id="detail-pdp">
+          <Heading as="h3" id="detail-pdp" anchorLink>
             Périmètres de développement prioritaire (PDP)
           </Heading>
           <TableBasic>

@@ -1,6 +1,7 @@
 import XLSX from 'xlsx';
 
 import { clientConfig } from '@/client-config';
+import { dataSourcesVersions } from '@/modules/app/constants';
 import { kdb, sql, type ZoneDeDeveloppementPrioritaire } from '@/server/db/kysely';
 import { getNetworkEligibilityDistances } from '@/services/eligibility';
 import { EXPORT_FORMAT } from '@/types/enum/ExportFormat';
@@ -95,11 +96,11 @@ const legend = [
   ['Identifiant du réseau le plus proche', 'Identifiant réseau national'],
   [
     'Taux EnR&R du réseau le plus proche',
-    'Taux d’énergies renouvelables et de récupération issu de l’arrêté DPE du 11 avril 2025 (https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000051520810)',
+    `Taux d’énergies renouvelables et de récupération issu de l’arrêté DPE du ${dataSourcesVersions.arreteDpe.releaseDate} (${dataSourcesVersions.arreteDpe.link})`,
   ],
   [
     'Contenu CO2 ACV (g/kWh)',
-    'Contenu CO2 en analyse du cycle de vie issu de l’arrêté DPE du 11 avril 2025 (https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000051520810)',
+    `Contenu CO2 en analyse du cycle de vie issu de l’arrêté DPE du ${dataSourcesVersions.arreteDpe.releaseDate} (${dataSourcesVersions.arreteDpe.link})`,
   ],
   ['Présence d’un réseau non localisé sur la commune', 'Un réseau existe dans cette commune, mais nous ne disposons pas de son tracé.'],
   [], // empty line

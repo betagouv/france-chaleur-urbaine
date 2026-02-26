@@ -586,7 +586,6 @@ export interface ReseauxDeChaleur {
   tags: string[];
   'Taux EnR&R': number | null;
   vapeur: string | null;
-  ville_mo: string | null;
   website_gestionnaire: string | null;
   ouvert_aux_raccordements: boolean;
 }
@@ -635,7 +634,6 @@ export interface ReseauxDeFroid {
   'Rend%': number | null;
   'reseaux classes': boolean | null;
   'Taux EnR&R': number | null;
-  ville_mo: string | null;
   website_gestionnaire: string | null;
 }
 
