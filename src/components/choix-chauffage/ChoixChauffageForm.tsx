@@ -12,7 +12,7 @@ export default function ChoixChauffageForm() {
   const router = useRouter();
   const urlParams = useChoixChauffageQueryParams();
   const { geoAddress, setGeoAddress, onSelectGeoAddress, resetEligibility } = useAddressEligibility(urlParams.adresse ?? null);
-  const isDisabled = !urlParams.adresse || !geoAddress || !urlParams.typeLogement || !urlParams.espaceExterieur;
+  const isFormDisabled = !urlParams.adresse || !geoAddress || !urlParams.typeLogement || !urlParams.espaceExterieur;
 
   return (
     <form>
@@ -23,12 +23,12 @@ export default function ChoixChauffageForm() {
         setAdresse={(v) => void urlParams.setAdresse(v)}
         geoAddress={geoAddress}
         setGeoAddress={setGeoAddress}
-        onSelectGeoAddress={(ga?: SuggestionItem) => {
-          if (!ga) {
+        onSelectGeoAddress={(geoAddress?: SuggestionItem) => {
+          if (!geoAddress) {
             resetEligibility();
             return;
           }
-          onSelectGeoAddress(ga);
+          onSelectGeoAddress(geoAddress);
         }}
         typeLogement={urlParams.typeLogement ?? null}
         setTypeLogement={(v) => void urlParams.setTypeLogement(v)}
@@ -41,9 +41,9 @@ export default function ChoixChauffageForm() {
           size="medium"
           iconId="fr-icon-arrow-right-line"
           iconPosition="right"
-          disabled={isDisabled}
+          disabled={isFormDisabled}
           onClick={(e) => {
-            e.preventDefault();
+            e.stopPropagation();
             trackPostHogEvent('chaleur-renouvelable:form_submit', {
               address: String(urlParams.adresse),
               espaceExterieur: String(urlParams.espaceExterieur),

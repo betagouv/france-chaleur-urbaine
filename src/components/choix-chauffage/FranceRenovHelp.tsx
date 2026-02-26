@@ -17,9 +17,11 @@ type FranceRenovLine = {
   Horaires_Structure?: string;
 };
 
+// Affiche les coordonnées de l'Espace Conseil FranceRénov' le plus proche
+// Ne s'affiche que quand aucun mode de chauffage n'est possible
 export default function FranceRenovHelp({ codeInsee }: { codeInsee?: string }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [data, setData] = useState<FranceRenovLine | null>(null);
+  const [coordonneesECFR, setCoordonneesECFR] = useState<FranceRenovLine | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -42,9 +44,9 @@ export default function FranceRenovHelp({ codeInsee }: { codeInsee?: string }) {
         const json = await res.json();
         const line = (json?.result ?? null) as FranceRenovLine | null;
 
-        setData(line);
+        setCoordonneesECFR(line);
       } catch (e: any) {
-        setData(null);
+        setCoordonneesECFR(null);
         setErrorMsg('Impossible de charger les infos France Rénov’ pour cette commune.');
       } finally {
         setIsLoading(false);
@@ -54,19 +56,19 @@ export default function FranceRenovHelp({ codeInsee }: { codeInsee?: string }) {
     // doFetch();
   }, [codeInsee]);
 
-  const { nom, rue, ville } = useMemo(() => getAdresse(data), [data]);
+  const { nom, rue, ville } = useMemo(() => getAdresse(coordonneesECFR), [coordonneesECFR]);
 
-  const telephone = data?.Telephone_Structure?.trim() || '';
-  const email = data?.Email_Structure?.trim() || '';
+  const telephone = coordonneesECFR?.Telephone_Structure?.trim() || '';
+  const email = coordonneesECFR?.Email_Structure?.trim() || '';
 
   const site = useMemo(() => {
-    const raw = data?.Site_Internet_Structure?.trim();
+    const raw = coordonneesECFR?.Site_Internet_Structure?.trim();
     if (!raw) return '';
     return raw.startsWith('http') ? raw : `https://${raw}`;
-  }, [data]);
+  }, [coordonneesECFR]);
 
   const horaires = useMemo(() => {
-    const raw = data?.Horaires_Structure;
+    const raw = coordonneesECFR?.Horaires_Structure;
     if (!raw) return [] as string[];
     try {
       const parsed = JSON.parse(raw);
@@ -74,7 +76,7 @@ export default function FranceRenovHelp({ codeInsee }: { codeInsee?: string }) {
     } catch {
       return [];
     }
-  }, [data]);
+  }, [coordonneesECFR]);
 
   return (
     <>
@@ -141,7 +143,7 @@ export default function FranceRenovHelp({ codeInsee }: { codeInsee?: string }) {
                   </div>
                 )}
 
-                {!data && <p className="text-sm text-gray-600">Aucune structure trouvée pour cette commune.</p>}
+                {!coordonneesECFR && <p className="text-sm text-gray-600">Aucune structure trouvée pour cette commune.</p>}
               </>
             )}
           </>
