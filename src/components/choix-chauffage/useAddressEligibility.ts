@@ -17,21 +17,13 @@ type EligibilityState = {
   codeDepartement: string;
   temperatureRef: number | null;
 };
-
 type RnbExtId = {
   id: string;
   source: string;
   created_at?: string;
   source_version?: string;
 };
-
-type RnbBuildingsByAddressResponse = {
-  results?: Array<{
-    ext_ids?: RnbExtId[];
-  }>;
-};
-
-const EMPTY: EligibilityState = {
+const emptyState: EligibilityState = {
   batEnr: { gmi: false, ppa: false },
   codeDepartement: '',
   geoAddress: undefined,
@@ -41,10 +33,10 @@ const EMPTY: EligibilityState = {
 export function useAddressEligibility(adresse: string | null) {
   const trpcUtils = trpc.useUtils();
 
-  const [state, setState] = useState<EligibilityState>(EMPTY);
+  const [state, setState] = useState<EligibilityState>(emptyState);
 
   const resetEligibility = useCallback(() => {
-    setState(EMPTY);
+    setState(emptyState);
   }, []);
 
   const computeEligibilityFromSuggestion = useCallback(
@@ -122,6 +114,5 @@ export function useAddressEligibility(adresse: string | null) {
     onSelectGeoAddress,
     resetEligibility,
     setGeoAddress: (geoAddress?: SuggestionItem) => setState((s) => ({ ...s, geoAddress })),
-    triggerEligibilityFromString,
   };
 }
