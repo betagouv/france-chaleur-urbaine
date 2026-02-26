@@ -1,5 +1,3 @@
-'use client';
-
 import { Alert } from '@codegouvfr/react-dsfr/Alert';
 import { useState } from 'react';
 
@@ -12,6 +10,7 @@ import { fieldLabelInformation, zContactFormAdemeHelp } from '@/modules/demands/
 import { notify } from '@/modules/notification';
 import { submitToAirtable } from '@/services/airtable';
 import { Airtable } from '@/types/enum/Airtable';
+import { isDefined } from '@/utils/core';
 
 export default function AdemeHelp({ className }: { className?: string }) {
   const [isLoading, setIsLoading] = useState(false);
@@ -31,9 +30,10 @@ export default function AdemeHelp({ className }: { className?: string }) {
     },
     onSubmit: async ({ value }) => {
       setIsLoading(true);
-      const espaceExterieur: EspaceExterieur = espaceExterieurValues.includes(urlParams.espaceExterieur as EspaceExterieur)
-        ? (urlParams.espaceExterieur as EspaceExterieur)
-        : 'none';
+      const espaceExterieur =
+        isDefined(urlParams.espaceExterieur) && espaceExterieurValues.includes(urlParams.espaceExterieur)
+          ? urlParams.espaceExterieur
+          : 'none';
       submitToAirtable(
         {
           Adresse: urlParams.adresse,
@@ -54,8 +54,8 @@ export default function AdemeHelp({ className }: { className?: string }) {
         })
         .catch((error: Error) => {
           notify('error', error.message);
-          setIsLoading(false);
-        });
+        })
+        .finally(() => setIsLoading(false));
     },
     schema: zContactFormAdemeHelp,
   });
@@ -66,7 +66,7 @@ export default function AdemeHelp({ className }: { className?: string }) {
       <div className={className} id="help-ademe">
         <CallOut title="Bénéficiez d’un accompagnement personnalisé par l’Ademe" size="lg" colorVariant="yellow-moutarde">
           <p className="fr-callout__text fr-mb-3w">
-            Une experte de l'ADEME vous accompagnera personnellement dans votre projet de remplacement de chauffage par une solution
+            Un expert de l'ADEME vous accompagnera personnellement dans votre projet de remplacement de chauffage par une solution
             écologique : faisabilité de votre projet, coûts à prévoir, différentes étapes à suivre...
           </p>
           <Form>
