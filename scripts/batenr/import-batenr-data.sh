@@ -1,24 +1,5 @@
 #!/bin/bash -e
 
-# Création de la table
-# CREATE UNLOGGED TABLE bdnb_batenr (
-#   batiment_groupe_id character varying(22),
-# 	geom geometry(MultiPolygon,2154),
-# 	gmi_nappe_200 int,
-# 	pot_nappe int,
-# 	place_nappe boolean,
-# 	gmi_sonde_200 int,
-# 	gis_geo_profonde boolean,
-# 	ac1 boolean,
-# 	ac2 boolean,
-# 	ac3 boolean,
-# 	ac4 boolean,
-# 	ac4bis boolean,
-# 	liste_ppa character varying(40),
-# 	etat_ppa character varying(15)
-# );
-
-
 source "$(dirname "$0")/../db_sync_common.sh"
 
 echo "Lancement du script d'import BatEnr (auto data.gouv.fr) - reprise robuste + validation ZIP"
@@ -213,7 +194,3 @@ done
 
 echo
 echo "Import BatEnR terminé."
-
-echo "Ajout de l'index sur batiment_groupe_id et le geom"
-psql -v -c "CREATE INDEX IF NOT EXISTS ${TARGET_TABLE}_batiment_groupe_id_idx ON ${TARGET_TABLE} (batiment_groupe_id);"
-psql -v -c "CREATE INDEX IF NOT EXISTS ${TARGET_TABLE}_geom ON ${TARGET_TABLE} USING gist (geom);"
