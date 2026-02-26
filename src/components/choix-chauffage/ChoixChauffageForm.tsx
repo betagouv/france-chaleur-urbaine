@@ -4,6 +4,7 @@ import { SettingsTopFields } from '@/components/choix-chauffage/SettingsTopField
 import { useAddressEligibility } from '@/components/choix-chauffage/useAddressEligibility';
 import { useChoixChauffageQueryParams } from '@/components/choix-chauffage/useChoixChauffageQueryParams';
 import Button from '@/components/ui/Button';
+import { trackPostHogEvent } from '@/modules/analytics/client';
 import type { EspaceExterieur } from '@/modules/app/types';
 import type { SuggestionItem } from '@/modules/ban/types';
 
@@ -43,6 +44,11 @@ export default function ChoixChauffageForm() {
           disabled={isDisabled}
           onClick={(e) => {
             e.preventDefault();
+            trackPostHogEvent('chaleur-renouvelable:form_submit', {
+              address: String(urlParams.adresse),
+              espaceExterieur: String(urlParams.espaceExterieur),
+              typeLogement: String(urlParams.typeLogement),
+            });
             const search = window.location.search;
             router.push(`/chaleur-renouvelable/resultat${search}`);
           }}
