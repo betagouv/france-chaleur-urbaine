@@ -52,9 +52,9 @@ export function SettingsTopFields({
         onSelect={(next?: SuggestionItem) => {
           const nextLabel = next?.properties?.label ?? '';
           if ((adresse ?? '') === nextLabel) return;
-          trackPostHogEvent('chaleur-renouvelable:address_form_submit', {
+          trackPostHogEvent('chaleur-renouvelable:address_select', {
             address: nextLabel,
-            source: withLabel ? 'landing' : 'resultPage',
+            source: withLabel ? 'landing' : 'result',
           });
           setAdresse(nextLabel);
           setGeoAddress(next);
