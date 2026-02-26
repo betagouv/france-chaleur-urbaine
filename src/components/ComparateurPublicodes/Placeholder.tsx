@@ -15,7 +15,7 @@ type ComparateurPublicodesPlaceholderProps = React.HTMLAttributes<HTMLDivElement
 
 export type TabId = 'batiment' | 'modes';
 
-export const DataYearDisclaimer: React.FC = () => (
+export const DataYearDisclaimer: React.FC<{ advancedMode?: boolean }> = ({ advancedMode }) => (
   <span>
     Sauf mention contraire, les données utilisées par le comparateur portent sur l'année 2024. Les valeurs de l'ensemble des paramètres
     utilisés pour les calculs sont modifiables
@@ -51,7 +51,7 @@ export const Explanations = ({ className, advancedMode, ...props }: React.HTMLAt
       <a href="#" onClick={() => modalDescription.open()} className="fr-link fr-text--sm">
         voir l’explication détaillée
       </a>
-      ), et ne se substitue en aucun cas à une étude de faisabilité technico-économique. <DataYearDisclaimer />
+      ), et ne se substitue en aucun cas à une étude de faisabilité technico-économique. <DataYearDisclaimer advancedMode={advancedMode} />
       <p className="fr-text--sm font-bold mt-2!">
         Pour une étude plus poussée (prix actualisés, prise en compte des spécificités de votre bâtiment), nous vous invitons à vous
         rapprocher du gestionnaire du réseau de chaleur le plus proche de chez vous ou d'un bureau d'études.
