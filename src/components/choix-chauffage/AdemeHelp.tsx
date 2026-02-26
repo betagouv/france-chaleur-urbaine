@@ -37,6 +37,7 @@ export default function AdemeHelp({ className }: { className?: string }) {
       submitToAirtable(
         {
           Adresse: urlParams.adresse,
+          Date: new Date().toISOString(),
           DPE: urlParams.dpe,
           Email: value.email,
           'Espace extérieur': espaceExterieurLabel[espaceExterieur],
