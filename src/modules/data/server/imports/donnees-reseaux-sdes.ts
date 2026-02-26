@@ -399,9 +399,7 @@ function writeLogSection(log: (text: string) => void, label: string, { changes }
 }
 
 function logFiliereConsoleOutput(logger: Logger, label: string, result: FiliereResult): void {
-  logger.info(
-    `Réseaux de ${label}: ${result.updatedCount} mis à jour, ${result.createdCount} créés, ${result.absents.length} marqués absents`
-  );
+  logger.info(`Réseaux de ${label}: ${result.updatedCount} mis à jour, ${result.createdCount} créés`);
   if (result.invalidIdsCount > 0) {
     logger.warn(`${result.invalidIdsCount} réseaux de ${label} dans Airtable ont un identifiant SNCU invalide ou vide`);
   }
