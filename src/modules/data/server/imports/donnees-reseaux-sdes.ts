@@ -176,7 +176,6 @@ function mapToAirtableFieldsChaleur(data: DonneesReseauBrutes) {
     // Points de livraison
     // nb_pdl: data.PDL,
     // nom_reseau: data.OPERATEUR,
-    // present_dans_enquete_annuelle: true,
 
     // Productions (MWh)
     // prod_MWh_autre_chaleur_recuperee: data.PRODUCTION_AUTRE_CHALEUR_RECUPEREE,
@@ -240,7 +239,6 @@ function mapToAirtableFieldsFroid(data: DonneesReseauBrutes) {
     // 'Moyenne-annee-DPE': data.ANNEE,
     // nb_pdl: data.PDL,
     // nom_reseau: data.OPERATEUR,
-    // present_dans_enquete_annuelle: true,
     // production_totale_MWh: data.PRODUCTION_TOTALE,
     puissance_totale_MW: data.PUISSANCE,
     // 'Rend%': calculateRendement(data),
@@ -285,12 +283,6 @@ type ChangeEntry = {
   type: 'UPDATE' | 'CREATE';
 };
 
-type AbsentEntry = {
-  id: string;
-  oldValue: unknown;
-  recordId: string;
-};
-
 function formatValue(value: unknown): string {
   if (value === null || value === undefined) {
     return 'null';
@@ -305,10 +297,6 @@ function formatChangeEntry({ diffs, id, type }: ChangeEntry): string {
   return [`### ${id} - ${type}`, ...diffs.map((d) => `  ${d.field}: ${formatValue(d.oldValue)} → ${formatValue(d.newValue)}`)].join('\n');
 }
 
-function formatAbsentEntry({ id, oldValue }: AbsentEntry): string {
-  return [`### ${id}`, `  present_dans_enquete_annuelle: ${formatValue(oldValue)} → false`].join('\n');
-}
-
 // --- Traitement générique d'une filière ---
 
 type FiliereConfig = {
@@ -319,7 +307,6 @@ type FiliereConfig = {
 };
 
 type FiliereResult = {
-  absents: AbsentEntry[];
   changes: ChangeEntry[];
   createdCount: number;
   invalidIdsCount: number;
@@ -388,21 +375,7 @@ async function processFiliere(
     return !id || !config.sncuPattern.test(id);
   }).length;
 
-  const absents: AbsentEntry[] = missingFromSdes
-    .map((id) => {
-      const record = airtableBySncu.get(id)!;
-      return { id, oldValue: record.get('present_dans_enquete_annuelle') ?? null, recordId: record.id };
-    })
-    .filter(({ oldValue }) => oldValue !== false);
-
-  if (!dryRun && absents.length > 0) {
-    await processInParallel(absents, 5, async ({ recordId }) => {
-      await AirtableDB(config.table).update(recordId, { present_dans_enquete_annuelle: false });
-    });
-  }
-
   return {
-    absents,
     changes: [...updateChanges, ...createChanges],
     createdCount: creates.length,
     invalidIdsCount,
@@ -414,7 +387,7 @@ async function processFiliere(
 
 // --- Écriture du log par filière ---
 
-function writeLogSection(log: (text: string) => void, label: string, { absents, changes }: FiliereResult): void {
+function writeLogSection(log: (text: string) => void, label: string, { changes }: FiliereResult): void {
   if (changes.length > 0) {
     log(`## Détail des changements - Réseaux de ${label}`);
     log('');
@@ -423,21 +396,10 @@ function writeLogSection(log: (text: string) => void, label: string, { absents, 
       log('');
     });
   }
-
-  if (absents.length > 0) {
-    log(`## Réseaux de ${label} marqués absents de l'enquête`);
-    log('');
-    absents.forEach((a) => {
-      log(formatAbsentEntry(a));
-      log('');
-    });
-  }
 }
 
 function logFiliereConsoleOutput(logger: Logger, label: string, result: FiliereResult): void {
-  logger.info(
-    `Réseaux de ${label}: ${result.updatedCount} mis à jour, ${result.createdCount} créés, ${result.absents.length} marqués absents`
-  );
+  logger.info(`Réseaux de ${label}: ${result.updatedCount} mis à jour, ${result.createdCount} créés`);
   if (result.invalidIdsCount > 0) {
     logger.warn(`${result.invalidIdsCount} réseaux de ${label} dans Airtable ont un identifiant SNCU invalide ou vide`);
   }
@@ -522,7 +484,6 @@ export const importDonneesReseauxSdes = defineImportFunc(async ({ logger, option
     const created = result.changes.filter((c) => c.type === 'CREATE').length;
     log(`- Réseaux de ${label} mis à jour: ${updated}`);
     log(`- Réseaux de ${label} créés: ${created}`);
-    log(`- Réseaux de ${label} marqués absents de l'enquête: ${result.absents.length}`);
   }
 
   logStream.end();
@@ -531,8 +492,5 @@ export const importDonneesReseauxSdes = defineImportFunc(async ({ logger, option
 
   const totalUpdated = resultChaleur.updatedCount + resultFroid.updatedCount;
   const totalCreated = resultChaleur.createdCount + resultFroid.createdCount;
-  const totalAbsents = resultChaleur.absents.length + resultFroid.absents.length;
-  logger.info(
-    `Import terminé: ${totalUpdated} réseaux mis à jour, ${totalCreated} créés, ${totalAbsents} marqués absents (données millésime 2024)`
-  );
+  logger.info(`Import terminé: ${totalUpdated} réseaux mis à jour, ${totalCreated} créés (données millésime 2024)`);
 });
