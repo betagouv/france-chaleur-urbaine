@@ -3,6 +3,7 @@ import type { TypeLogement } from '@/components/choix-chauffage/type-logement';
 import AddressAutocompleteInput from '@/components/form/dsfr/AddressAutocompleteInput';
 import Select from '@/components/form/dsfr/Select';
 import RichSelect from '@/components/ui/RichSelect';
+import { trackPostHogEvent } from '@/modules/analytics/client';
 import type { EspaceExterieur } from '@/modules/app/types';
 import type { SuggestionItem } from '@/modules/ban/types';
 
@@ -51,6 +52,10 @@ export function SettingsTopFields({
         onSelect={(next?: SuggestionItem) => {
           const nextLabel = next?.properties?.label ?? '';
           if ((adresse ?? '') === nextLabel) return;
+          trackPostHogEvent('chaleur-renouvelable:address_form_submit', {
+            address: nextLabel,
+            source: withLabel ? 'landing' : 'resultPage',
+          });
           setAdresse(nextLabel);
           setGeoAddress(next);
           onSelectGeoAddress?.(next);

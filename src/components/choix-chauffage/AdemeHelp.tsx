@@ -85,7 +85,7 @@ export default function AdemeHelp({ className }: { className?: string }) {
             <Submit disabled={false} loading={isLoading}>
               Envoyer
             </Submit>
-            {true && (
+            {isSent && (
               <div className="fr-mt-3w">
                 <Alert severity="success" title="Merci pour votre attention" description="Nous reviendrons rapidement vers vous." />
               </div>

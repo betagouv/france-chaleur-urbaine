@@ -16,7 +16,9 @@ import type { TypeLogement } from '@/components/choix-chauffage/type-logement';
 import { useAddressEligibility } from '@/components/choix-chauffage/useAddressEligibility';
 import { useChoixChauffageQueryParams } from '@/components/choix-chauffage/useChoixChauffageQueryParams';
 import CallOut from '@/components/ui/CallOut';
+import Link from '@/components/ui/Link';
 import useIsMobile from '@/hooks/useIsMobile';
+import { trackPostHogEvent } from '@/modules/analytics/client';
 import type { EspaceExterieur } from '@/modules/app/types';
 import type { SuggestionItem } from '@/modules/ban/types';
 
@@ -105,6 +107,7 @@ export default function ChoixChauffageResults() {
 
   const handleAccordionOpenChange = useCallback((id: string, expanded: boolean) => {
     setOpenAccordionId(expanded ? id : null);
+    trackPostHogEvent('chaleur-renouvelable:accordeon', { name: id });
   }, []);
   const handleSelectGeoAddress = useCallback(
     (ga?: SuggestionItem) => {
@@ -195,16 +198,18 @@ export default function ChoixChauffageResults() {
             size="lg"
             colorVariant="blue-ecume"
           >
-            <p className="fr-callout__text">
+            <p className="fr-callout__text fr-mb-3w">
               Nos recommandations sont calculées à partir des informations que vous avez fournies : mode de chauffage, surface moyenne,
               classe DPE, disponibilité d’espaces extérieurs… Ces critères permettent de classer les solutions par pertinence et d’estimer
               les coûts et contraintes techniques propres à votre situation.
             </p>
-            <div className="mt-2">
-              <a className="fr-link" href="#">
-                En savoir plus
-              </a>
-            </div>
+            <Link
+              postHogEventKey="link:click"
+              postHogEventProps={{ link_name: 'cta_comment_calculer_resultat', source: 'chaleur_renouvelable' }}
+              href="#"
+            >
+              En savoir plus
+            </Link>
           </CallOut>
           <AdemeHelp />
         </>

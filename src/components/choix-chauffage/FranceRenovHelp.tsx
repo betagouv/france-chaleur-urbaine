@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 
 import Button from '@/components/ui/Button';
 import CallOut from '@/components/ui/CallOut';
+import { trackPostHogEvent } from '@/modules/analytics/client';
 
 type FranceRenovLine = {
   Nom_Structure?: string;
@@ -83,7 +84,15 @@ export default function FranceRenovHelp({ codeInsee }: { codeInsee?: string }) {
           Les conseillers France Rénov vous aident gratuitement à élaborer votre projet de rénovation, trouver des aides financières et
           choisir les professionnels compétents.
         </p>
-        <Button iconId="fr-icon-arrow-right-line" iconPosition="right" onClick={() => setIsOpen((prev) => !prev)} aria-expanded={isOpen}>
+        <Button
+          iconId="fr-icon-arrow-right-line"
+          iconPosition="right"
+          onClick={() => {
+            trackPostHogEvent('link:click', { link_name: 'cta_rdv_france_renov', source: 'chaleur_renouvelable' });
+            setIsOpen((prev) => !prev);
+          }}
+          aria-expanded={isOpen}
+        >
           {isOpen ? 'Masquer les coordonnées' : 'Prendre rdv avec un conseiller'}
         </Button>
         {isOpen && (
