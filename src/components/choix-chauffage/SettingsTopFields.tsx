@@ -7,7 +7,7 @@ import { trackPostHogEvent } from '@/modules/analytics/client';
 import type { EspaceExterieur } from '@/modules/app/types';
 import type { SuggestionItem } from '@/modules/ban/types';
 
-type Props = {
+type SettingsTopFieldsProps = {
   withLabel: boolean;
   adresse: string | null;
   setAdresse: (val: string | null) => void;
@@ -35,7 +35,7 @@ export function SettingsTopFields({
   espaceExterieur,
   setEspaceExterieur,
   className,
-}: Props) {
+}: SettingsTopFieldsProps) {
   return (
     <div className={className}>
       <AddressAutocompleteInput

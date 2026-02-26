@@ -143,7 +143,7 @@ export const ResultRowAccordion = React.memo(function ResultRowAccordion({
   onOpenChange,
 }: ResultRowAccordionProps) {
   const dpeTo = improveDpe(dpeFrom, item.gainClasse);
-  const stars = typeof item.pertinence === 'number' ? item.pertinence : 0;
+  const stars = item.pertinence;
   const { lowerBoundString, upperBoundString } = getCostPrecisionRange(item.coutParAn ?? 0);
   const gainVsGaz = getGainVsGaz(item, coutParAnGaz);
   return (
@@ -157,7 +157,7 @@ export const ResultRowAccordion = React.memo(function ResultRowAccordion({
             <Stars value={stars} />
           </div>
           <div className="flex-2 md:text-center hidden md:block">
-            <div className="text-(--text-title-blue-france)">
+            <div>
               {lowerBoundString} à {upperBoundString}
             </div>
             <div className="text-sm font-normal text-(--text-default-grey)">coût par an par logement</div>
