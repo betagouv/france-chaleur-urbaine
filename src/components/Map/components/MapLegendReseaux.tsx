@@ -25,9 +25,13 @@ import {
   perimetresDeDeveloppementPrioritaireColor,
   perimetresDeDeveloppementPrioritaireOpacity,
 } from '../layers/perimetresDeDeveloppementPrioritaire';
-import { reseauDeChaleurClasseColor, reseauDeChaleurNonClasseColor } from '../layers/reseauxDeChaleur';
+import { reseauDeChaleurClasseColor, reseauDeChaleurNonClasseColor, reseauDeChaleurNonOuvertColor } from '../layers/reseauxDeChaleur';
 import { reseauxDeFroidColor } from '../layers/reseauxDeFroid';
-import { reseauxEnConstructionColor, reseauxEnConstructionOpacity } from '../layers/reseauxEnConstruction';
+import {
+  reseauxEnConstructionColor,
+  reseauxEnConstructionNonOuvertColor,
+  reseauxEnConstructionOpacity,
+} from '../layers/reseauxEnConstruction';
 import { LegendFilters, SingleCheckbox, TabScrollablePart, Title } from './SimpleMapLegend.style';
 
 // TODO thos should be fine tuned to decouple more the map configuration from the legend
@@ -126,6 +130,14 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
                     (tracé ou cercle au centre de la commune si tracé non disponible)
                   </Text>
                 </Box>
+              </Box>
+
+              <Box display="flex" alignItems="center" mt="1v">
+                <Box backgroundColor={reseauDeChaleurNonOuvertColor} height="8px" minWidth="25px" borderRadius="4px" />
+
+                <Text fontSize="12px" lineHeight="14px" color="grey" px="1v">
+                  Non ouverts aux raccordements
+                </Text>
               </Box>
             </Box>
 
@@ -241,9 +253,17 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
                 </Text>
 
                 <Text fontSize="12px" lineHeight="14px" color="grey">
-                  (tracé ou zone si tracé non disponible)
+                  (tracé ou zone si tracé non disponible, gris si non ouvert aux raccordements)
                 </Text>
               </Box>
+            </Box>
+
+            <Box display="flex" alignItems="center" mt="1v">
+              <Box backgroundColor={reseauxEnConstructionNonOuvertColor} height="8px" minWidth="25px" borderRadius="4px" />
+
+              <Text fontSize="12px" lineHeight="14px" color="grey" px="1v">
+                Non ouverts aux raccordements
+              </Text>
             </Box>
           </Box>
 

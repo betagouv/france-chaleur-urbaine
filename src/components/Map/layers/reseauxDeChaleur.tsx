@@ -102,6 +102,7 @@ const Popup = defineLayerPopup<ReseauxDeChaleurTile>(
 
 export const reseauDeChaleurClasseColor = '#0D543F';
 export const reseauDeChaleurNonClasseColor = '#48A21A';
+export const reseauDeChaleurNonOuvertColor = '#aaaaaa';
 
 export const reseauxDeChaleurLayersSpec = [
   {
@@ -121,7 +122,14 @@ export const reseauxDeChaleurLayersSpec = [
           'line-join': 'round',
         },
         paint: {
-          'line-color': ['case', ['boolean', ['get', 'reseaux classes']], reseauDeChaleurClasseColor, reseauDeChaleurNonClasseColor],
+          'line-color': [
+            'case',
+            ['==', ['get', 'ouvert_aux_raccordements'], false],
+            reseauDeChaleurNonOuvertColor,
+            ['boolean', ['get', 'reseaux classes']],
+            reseauDeChaleurClasseColor,
+            reseauDeChaleurNonClasseColor,
+          ],
           'line-opacity': ['interpolate', ['linear'], ['zoom'], 11, 0.75, 15, 1],
           'line-width': ifHoverElse(3, 2),
         },
@@ -143,6 +151,8 @@ export const reseauxDeChaleurLayersSpec = [
           'circle-radius': ['interpolate', ['linear'], ['zoom'], 8, 0, 9, ifHoverElse(6, 4), 15, ifHoverElse(12, 10)],
           'circle-stroke-color': [
             'case',
+            ['==', ['get', 'ouvert_aux_raccordements'], false],
+            reseauDeChaleurNonOuvertColor,
             ['boolean', ['get', 'reseaux classes']],
             reseauDeChaleurClasseColor,
             reseauDeChaleurNonClasseColor,
