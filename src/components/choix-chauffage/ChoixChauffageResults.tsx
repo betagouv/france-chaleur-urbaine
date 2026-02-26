@@ -110,12 +110,12 @@ export default function ChoixChauffageResults() {
     trackPostHogEvent('chaleur-renouvelable:accordeon', { name: id });
   }, []);
   const handleSelectGeoAddress = useCallback(
-    (ga?: SuggestionItem) => {
-      if (!ga) {
+    (geoAddress?: SuggestionItem) => {
+      if (!geoAddress) {
         resetEligibility();
         return;
       }
-      onSelectGeoAddress(ga);
+      onSelectGeoAddress(geoAddress);
     },
     [onSelectGeoAddress, resetEligibility]
   );
