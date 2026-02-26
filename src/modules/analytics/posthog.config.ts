@@ -69,9 +69,9 @@ export type PostHogEventMap = {
   'comparator:config_share': never;
 
   // Simulateur simplifié: Chaleur renouvelable
-  'chaleur-renouvelable:address_form_submit': {
+  'chaleur-renouvelable:address_select': {
     address: string;
-    source: 'landing' | 'resultPage';
+    source: 'landing' | 'result';
   };
   'chaleur-renouvelable:form_submit': {
     address: string;
