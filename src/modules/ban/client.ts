@@ -7,6 +7,7 @@ type FetchBanSuggestionsOptions = {
   query: string;
   limit?: number | string;
   onlyCities?: boolean;
+  onlyAddress?: boolean;
   excludeCities?: boolean;
 };
 
@@ -24,13 +25,13 @@ export type SuggestionResponse = {
 };
 
 export const searchBANAddresses = async (options: FetchBanSuggestionsOptions): Promise<SuggestionItem[]> => {
-  const { query, limit = 10, onlyCities, excludeCities } = options;
+  const { query, limit = 10, onlyCities, onlyAddress, excludeCities } = options;
 
   const response = await fetchJSON<SuggestionResponse>(`${clientConfig.banApiBaseUrl}search`, {
     params: {
       limit: limit.toString(),
       q: query,
-      ...(onlyCities ? { type: 'municipality' } : {}),
+      ...(onlyCities ? { type: 'municipality' } : onlyAddress ? { type: 'housenumber' } : {}),
     },
   });
 

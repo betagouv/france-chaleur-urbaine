@@ -80,6 +80,7 @@ export function useAddressEligibility(adresse: string | null) {
       const results = await searchBANAddresses({
         excludeCities: true,
         limit: 1,
+        onlyAddress: true,
         onlyCities: false,
         query: adresseToTest,
       });

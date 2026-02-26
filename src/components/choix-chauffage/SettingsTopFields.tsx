@@ -43,7 +43,7 @@ export function SettingsTopFields({
         className="fr-mb-0"
         defaultValue={adresse ?? undefined}
         nativeInputProps={{ placeholder: 'Tapez votre adresse ici' }}
-        excludeCities
+        onlyAddress
         onClear={() => {
           if (adresse !== null) void setAdresse(null);
           if (geoAddress !== undefined) setGeoAddress(undefined);

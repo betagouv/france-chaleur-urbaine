@@ -12,6 +12,7 @@ export type AddressAutocompleteProps = Omit<
   onSelect: (option: SuggestionItem) => void;
   onlyCities?: boolean;
   excludeCities?: boolean;
+  onlyAddress?: boolean;
   limit?: number | string;
 };
 
@@ -21,10 +22,11 @@ const AddressAutocomplete = ({
   onClear,
   onlyCities,
   excludeCities,
+  onlyAddress,
   limit = 10,
   ...props
 }: AddressAutocompleteProps) => {
-  const fetchOptions = async (query: string) => searchBANAddresses({ excludeCities, limit, onlyCities, query });
+  const fetchOptions = async (query: string) => searchBANAddresses({ excludeCities, limit, onlyAddress, onlyCities, query });
 
   return (
     <Autocomplete
