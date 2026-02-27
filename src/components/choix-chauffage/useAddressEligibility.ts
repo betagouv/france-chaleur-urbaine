@@ -8,8 +8,8 @@ import type { LocationInfoResponse } from '@/pages/api/location-infos';
 import { fetchJSON, postFetchJSON } from '@/utils/network';
 
 type BatEnrInfo = {
-  gmi: boolean;
-  ppa: boolean;
+  geothermiePossible: boolean;
+  planProtectionAtmosphere: boolean;
 };
 type EligibilityState = {
   geoAddress?: SuggestionItem;
@@ -24,7 +24,7 @@ type RnbExtId = {
   source_version?: string;
 };
 const emptyState: EligibilityState = {
-  batEnr: { gmi: false, ppa: false },
+  batEnr: { geothermiePossible: false, planProtectionAtmosphere: false },
   codeDepartement: '',
   geoAddress: undefined,
   temperatureRef: null,
@@ -62,8 +62,8 @@ export function useAddressEligibility(adresse: string | null) {
 
       setState({
         batEnr: {
-          gmi: Number(batEnrDetails?.gmi_nappe_200) === 1 || Number(batEnrDetails?.gmi_sonde_200) === 1,
-          ppa: batEnrDetails?.etat_ppa === 'PPA Validés',
+          geothermiePossible: Number(batEnrDetails?.gmi_nappe_200) === 1 || Number(batEnrDetails?.gmi_sonde_200) === 1,
+          planProtectionAtmosphere: batEnrDetails?.etat_ppa === 'PPA Validés',
         },
         codeDepartement,
         geoAddress,
