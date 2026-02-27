@@ -23,8 +23,8 @@ export type ModeDeChauffageEnriched = ModeDeChauffage & {
 
 export type Situation = {
   espaceExterieur: EspaceExterieur;
-  ppa: boolean;
-  gmi: boolean;
+  planProtectionAtmosphere: boolean;
+  geothermiePossible: boolean;
   dpe: DPE;
   adresse: string | null;
   nbLogements: number;
@@ -95,7 +95,7 @@ export const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffag
       coutParAnPublicodeKey: 'PAC eau-eau coll',
       description:
         "La pompe à chaleur géothermique (eau-eau) capte les calories du sous-sol (sol ou nappe phréatique) et les transfère à un circuit d'eau chaude pour assurer le chauffage et l'eau chaude sanitaire. Elle est très efficace et écologique, idéale si l'espace extérieur permet un forage. Cette solution nécessite un bâtiment bien isolé ou équipé de planchers chauffants pour être performante.",
-      estPossible: (situation) => hasEspaceShared(situation) && situation.gmi === true,
+      estPossible: (situation) => hasEspaceShared(situation) && situation.geothermiePossible === true,
       gainClasse: 2,
       inconvenients: ['Investissement initial important', 'Travaux d’installation conséquents'],
       label: 'Pompe à chaleur géothermique',
@@ -112,7 +112,7 @@ export const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffag
       coutParAnPublicodeKey: 'Chaudière à granulés coll',
       description:
         "La chaudière biomasse fonctionne comme une chaudière gaz ou fioul, mais utilise du bois comme combustible (granulés, plaquettes, bûches). C'est une énergie renouvelable et locale. Cette solution nécessite un espace conséquent pour la chaudière et le stockage du combustible, ainsi qu'un approvisionnement régulier.",
-      estPossible: (situation) => hasEspaceShared(situation) && situation.ppa === false,
+      estPossible: (situation) => hasEspaceShared(situation) && situation.planProtectionAtmosphere === false,
       gainClasse: 2,
       inconvenients: ['Investissement initial important', 'Approvisionnement à prévoir', 'Maintenance à assurer'],
       label: 'Chaudière biomasse',
@@ -255,7 +255,7 @@ export const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffag
       coutParAnPublicodeKey: 'Poêle à granulés indiv',
       description:
         "Le poêle est un appareil indépendant qui utilise du bois comme combustible, généralement sous forme de bûches ou de granulés (pellets). Il chauffe principalement la pièce où il est installé. C'est une solution économique à l'usage et écologique, particulièrement adaptée aux maisons individuelles disposant d'un conduit de fumée.",
-      estPossible: (situation) => situation.ppa !== false,
+      estPossible: (situation) => situation.planProtectionAtmosphere !== false,
       gainClasse: 1,
       inconvenients: ["Ne chauffe qu'une seule pièce", 'Approvisionnement à prévoir'],
       label: 'Poêle à buche ou à granulés ',

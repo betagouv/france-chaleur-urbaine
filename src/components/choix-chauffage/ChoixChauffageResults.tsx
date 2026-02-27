@@ -6,7 +6,6 @@ import AdemeHelp from '@/components/choix-chauffage/AdemeHelp';
 import FranceRenovHelp from '@/components/choix-chauffage/FranceRenovHelp';
 import {
   type DPE,
-  type ModeDeChauffage,
   type ModeDeChauffageEnriched,
   modeDeChauffageParTypeLogement,
   type Situation,
@@ -51,10 +50,10 @@ export default function ChoixChauffageResults() {
       adresse: urlParams.adresse ?? null,
       dpe: urlParams.dpe,
       espaceExterieur: (urlParams.espaceExterieur ?? 'none') as EspaceExterieur,
-      gmi: batEnr.gmi,
+      geothermiePossible: batEnr.geothermiePossible,
       habitantsMoyen: Number.parseFloat(urlParams.habitantsMoyen) || 0,
       nbLogements: urlParams.nbLogements,
-      ppa: batEnr.ppa,
+      planProtectionAtmosphere: batEnr.planProtectionAtmosphere,
       surfaceMoyenne: urlParams.surfaceMoyenne,
     }),
     [
@@ -64,8 +63,8 @@ export default function ChoixChauffageResults() {
       urlParams.habitantsMoyen,
       urlParams.nbLogements,
       urlParams.surfaceMoyenne,
-      batEnr.gmi,
-      batEnr.ppa,
+      batEnr.geothermiePossible,
+      batEnr.planProtectionAtmosphere,
     ]
   );
 
@@ -88,11 +87,11 @@ export default function ChoixChauffageResults() {
 
   const effectiveTypeLogement = (urlParams.typeLogement ?? 'immeuble_chauffage_collectif') as TypeLogement;
 
-  const modesDeChauffage: ModeDeChauffage[] = useMemo(() => {
+  const modesDeChauffage = useMemo(() => {
     return modeDeChauffageParTypeLogement[effectiveTypeLogement].filter((m) => m.estPossible(situation));
   }, [effectiveTypeLogement, situation]);
 
-  const modesWithCout: ModeDeChauffageEnriched[] = useMemo(() => {
+  const modesWithCout = useMemo(() => {
     return modesDeChauffage.map((it) => {
       const coutParAn = it.coutParAnPublicodeKey
         ? Number(engine.getField(`Bilan x ${it.coutParAnPublicodeKey} . total avec aides` as RuleName) ?? 0)
@@ -102,8 +101,7 @@ export default function ChoixChauffageResults() {
   }, [modesDeChauffage, engine]);
 
   const coutParAnGaz = Number(engine.getField(`Bilan x Gaz coll sans cond . total avec aides` as RuleName) ?? 0);
-  const recommended = modesWithCout.slice(0, 1);
-  const others = modesWithCout.slice(1);
+  const [recommended, ...others] = modesWithCout;
 
   const handleAccordionOpenChange = useCallback((id: string, expanded: boolean) => {
     setOpenAccordionId(expanded ? id : null);
@@ -171,7 +169,7 @@ export default function ChoixChauffageResults() {
         <>
           <ResultsSection
             title="Solution recommandée"
-            items={recommended}
+            items={[recommended]}
             variant="recommended"
             coutParAnGaz={coutParAnGaz}
             dpeFrom={urlParams.dpe}
@@ -198,18 +196,18 @@ export default function ChoixChauffageResults() {
             size="lg"
             colorVariant="blue-ecume"
           >
-            <p className="fr-callout__text fr-mb-3w">
-              Nos recommandations sont calculées à partir des informations que vous avez fournies : mode de chauffage, surface moyenne,
-              classe DPE, disponibilité d’espaces extérieurs… Ces critères permettent de classer les solutions par pertinence et d’estimer
-              les coûts et contraintes techniques propres à votre situation.
-            </p>
-            <Link
-              postHogEventKey="link:click"
-              postHogEventProps={{ link_name: 'cta_comment_calculer_resultat', source: 'chaleur_renouvelable' }}
-              href="#"
-            >
-              En savoir plus
-            </Link>
+            Nos recommandations sont calculées à partir des informations que vous avez fournies : mode de chauffage, surface moyenne, classe
+            DPE, disponibilité d’espaces extérieurs… Ces critères permettent de classer les solutions par pertinence et d’estimer les coûts
+            et contraintes techniques propres à votre situation.
+            <div className="fr-mt-3w">
+              <Link
+                postHogEventKey="link:click"
+                postHogEventProps={{ link_name: 'cta_comment_calculer_resultat', source: 'chaleur_renouvelable' }}
+                href="#"
+              >
+                En savoir plus
+              </Link>
+            </div>
           </CallOut>
           <AdemeHelp />
         </>
