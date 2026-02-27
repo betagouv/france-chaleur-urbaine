@@ -30,7 +30,7 @@ import { syncComptesProFromUsers } from '@/server/services/airtable';
 import { registerTestCommands } from '@/tests/commands';
 import { userRoles } from '@/types/enum/UserRole';
 import { fetchJSON } from '@/utils/network';
-import { runBash } from '@/utils/system';
+import { runBash, runCommand } from '@/utils/system';
 import { sleep } from '@/utils/time';
 
 import { registerOpendataCommands } from '../src/modules/opendata/commands';
@@ -76,6 +76,15 @@ registerNetworkCommands(program);
 registerOpendataCommands(program);
 registerTilesCommands(program);
 registerTestCommands(program);
+
+program
+  .command('import:batenr')
+  .description(
+    "Cette commande permet d'importer les données de BatEnr depuis la plateforme data.gouv.fr afin de connaitre les zone GMI et les PPA"
+  )
+  .action(async () => {
+    await runCommand('scripts/batenr/import-batenr-data.sh');
+  });
 
 program
   .command('create-modifications-reseau')

@@ -117,6 +117,24 @@ export interface BdnbBatimentsTiles {
   z: Int8;
 }
 
+export interface BatEnr {
+  batiment_groupe_id: string;
+  batiment_construction_id: string;
+  geom: string | null;
+  gmi_nappe_200: Int8;
+  pot_nappe: Int8;
+  place_nappe: boolean;
+  gmi_sonde_200: Int8;
+  gis_geo_profonde: boolean;
+  ac1: boolean;
+  ac2: boolean;
+  ac3: boolean;
+  ac4: boolean;
+  ac4bis: boolean;
+  liste_ppa: string;
+  etat_ppa: string;
+}
+
 export interface BesoinsEnChaleurBatiments {
   chauf_mwh: Numeric | null;
   com_insee: string | null;
@@ -871,6 +889,7 @@ export interface DB {
   batiments_raccordes_reseaux_chaleur_froid_tiles: BatimentsRaccordesReseauxChaleurFroidTiles;
   bdnb_batiments: BdnbBatiments;
   bdnb_batiments_tiles: BdnbBatimentsTiles;
+  bdnb_batenr: BatEnr;
   besoins_en_chaleur_batiments: BesoinsEnChaleurBatiments;
   besoins_en_chaleur_industrie_communes_tiles: BesoinsEnChaleurIndustrieCommunesTiles;
   besoins_en_chaleur_tiles: BesoinsEnChaleurTiles;

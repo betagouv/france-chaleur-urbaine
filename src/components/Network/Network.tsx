@@ -596,7 +596,7 @@ const Property = <T,>({
         isDefined(value)
           ? isDefined(formatter)
             ? formatter(value)
-            : `${typeof value === 'number' ? prettyFormatNumber(value, round ? 0 : undefined) : value} ${unit ?? ''}`
+            : `${typeof value === 'number' ? prettyFormatNumber(value, round ? 0 : undefined) : value} ${unit ?? ''}`
           : 'Non connu'
       )}
     </Box>
@@ -604,12 +604,12 @@ const Property = <T,>({
 
 function numberBooleanFormatter(value: string): string | ReactElement {
   return !Number.isNaN(Number.parseFloat(value))
-    ? `${Math.round(Number.parseFloat(value))} %`
+    ? `${Math.round(Number.parseFloat(value))} %`
     : value.toLowerCase() === 'oui'
       ? 'Oui'
       : 'Non';
 }
 
 function formatCO2(co2kg: number): string {
-  return `${Math.round(co2kg * 1000)} gCO2/kWh`;
+  return `${Math.round(co2kg * 1000)} gCO2/kWh`;
 }

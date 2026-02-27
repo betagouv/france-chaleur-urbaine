@@ -254,4 +254,8 @@ export const allDatabaseTables: TableInfo[] = [
     description: 'Tuiles des bâtiments issus de la BDNB',
     name: 'bdnb_batiments_tiles',
   },
+  {
+    description: 'Bâtiments issus de BatEnr',
+    name: 'bdnb_batenr',
+  },
 ];

@@ -68,6 +68,20 @@ export type PostHogEventMap = {
   };
   'comparator:config_share': never;
 
+  // Simulateur simplifié: Chaleur renouvelable
+  'chaleur-renouvelable:address_select': {
+    address: string;
+    source: 'landing' | 'result';
+  };
+  'chaleur-renouvelable:form_submit': {
+    address: string;
+    typeLogement: string;
+    espaceExterieur: string;
+  };
+  'chaleur-renouvelable:accordeon': {
+    name: string;
+  };
+
   // Navigation (liens, CTA, boutons)
   'link:click': {
     link_name: string;
