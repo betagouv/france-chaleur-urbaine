@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 
-import type { TypeLogement } from '@/components/choix-chauffage/type-logement';
 import type { EspaceExterieur } from '@/modules/app/types';
+import type { TypeLogement } from '@/modules/chaleur-renouvelable/client/type-logement';
 
 export type ModeDeChauffage = {
   label: string;

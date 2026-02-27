@@ -10,7 +10,7 @@ import Image from '@/components/ui/Image';
 import Link from '@/components/ui/Link';
 import Modal from '@/components/ui/Modal';
 
-const ChoixChauffageResults = dynamic(() => import('@/components/choix-chauffage/ChoixChauffageResults'), {
+const ChoixChauffageResults = dynamic(() => import('@/modules/chaleur-renouvelable/client/ChoixChauffageResults'), {
   //loading: () => <Placeholder advancedMode={false} />,
   // Publicode engine takes 2s to load and is unnecessary on the server side
   ssr: false,

@@ -1,9 +1,9 @@
 import { parseAsInteger, parseAsString, parseAsStringLiteral, useQueryState } from 'nuqs';
 
-import type { DPE } from '@/components/choix-chauffage/modesChauffageData';
-import { DPE_ORDER } from '@/components/choix-chauffage/modesChauffageData';
-import type { TypeLogement } from '@/components/choix-chauffage/type-logement';
 import type { EspaceExterieur } from '@/modules/app/types';
+import type { DPE } from '@/modules/chaleur-renouvelable/client/modesChauffageData';
+import { DPE_ORDER } from '@/modules/chaleur-renouvelable/client/modesChauffageData';
+import type { TypeLogement } from '@/modules/chaleur-renouvelable/client/type-logement';
 
 export const espaceExterieurValues = ['shared', 'private', 'both', 'none'] as const satisfies readonly EspaceExterieur[];
 
