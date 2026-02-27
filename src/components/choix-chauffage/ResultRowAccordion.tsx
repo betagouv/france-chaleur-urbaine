@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 
 import { getCostPrecisionRange } from '@/components/ComparateurPublicodes/Graph';
 import { type DPE, DPE_BG, improveDpe, type ModeDeChauffageEnriched } from '@/components/choix-chauffage/modesChauffageData';
@@ -30,34 +30,43 @@ function Stars({ value }: { value: number }) {
     </div>
   );
 }
+type GainType = 'gainNegatif' | 'gainNul' | 'gainPositif';
+const gainsConfig: Record<
+  GainType,
+  {
+    className: string;
+    iconClass: string;
+    getLabel: (percentVsGaz: number) => string;
+  }
+> = {
+  gainNegatif: {
+    className: 'text-(--text-default-success)',
+    getLabel: (percentVsGaz) => `Moins ${Math.abs(percentVsGaz)}%`,
+    iconClass: 'fr-icon-arrow-down-circle-fill',
+  },
+  gainNul: {
+    className: 'text-(--text-title-blue-france)',
+    getLabel: () => '0%',
+    iconClass: 'fr-icon-arrow-right-circle-fill',
+  },
+  gainPositif: {
+    className: 'text-(--text-default-error)',
+    getLabel: (percentVsGaz) => `Plus ${percentVsGaz}%`,
+    iconClass: 'fr-icon-arrow-up-circle-fill',
+  },
+};
 
 function getGainVsGaz(item: ModeDeChauffageEnriched, coutParAnGaz: number): React.ReactNode {
   const coutParAn = item.coutParAn ?? 0;
-
-  const percentVsGaz = item.gainVsGaz !== undefined ? item.gainVsGaz : Math.round(((coutParAn - coutParAnGaz) / coutParAnGaz) * 100);
-
-  let className = '';
-  let iconClass = '';
-  let label = '';
-
-  if (percentVsGaz === 0) {
-    className = 'text-(--text-title-blue-france)';
-    iconClass = 'fr-icon-arrow-right-circle-fill';
-    label = '0%';
-  } else if (percentVsGaz < 0) {
-    className = 'text-(--text-default-success)';
-    iconClass = 'fr-icon-arrow-down-circle-fill';
-    label = `Moins ${Math.abs(percentVsGaz)}%`;
-  } else {
-    className = 'text-(--text-default-error)';
-    iconClass = 'fr-icon-arrow-up-circle-fill';
-    label = `Plus ${percentVsGaz}%`;
-  }
+  const percentVsGaz =
+    item.gainVsGaz !== undefined ? item.gainVsGaz : coutParAnGaz > 0 ? Math.round(((coutParAn - coutParAnGaz) / coutParAnGaz) * 100) : 0;
+  const typeGain = percentVsGaz === 0 ? 'gainNul' : percentVsGaz < 0 ? 'gainNegatif' : 'gainPositif';
+  const config = gainsConfig[typeGain];
 
   return (
-    <div className={cx(className)}>
-      <span className={cx('fr-mr-1w', iconClass)} aria-hidden="true" />
-      <span>{label}</span>
+    <div className={cx(config.className)}>
+      <span className={cx('fr-mr-1w', config.iconClass)} aria-hidden="true" />
+      <span>{config.getLabel(percentVsGaz)}</span>
     </div>
   );
 }
@@ -101,21 +110,13 @@ function MobileStats({
 }
 
 export function ScrollToHelpButton() {
-  const handleClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    const elt = document.getElementById('help-ademe');
-    if (elt) {
-      elt.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, []);
-
   return (
     <div className="fr-my-3w flex justify-center md:justify-end">
       <Button
         className="flex-1 md:flex-none md:flex justify-center"
         iconId="fr-icon-arrow-right-line"
         iconPosition="right"
-        onClick={handleClick}
+        href="#help-ademe"
       >
         Je souhaite être accompagné
       </Button>
