@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Button from '@/components/ui/Button';
 import CallOut from '@/components/ui/CallOut';
 import { trackPostHogEvent } from '@/modules/analytics/client';
+import { fetchJSON } from '@/utils/network';
 
 type FranceRenovLine = {
   Nom_Structure?: string;
@@ -34,17 +35,13 @@ export default function FranceRenovHelp({ codeInsee }: { codeInsee?: string }) {
       try {
         setIsLoading(true);
         setErrorMsg(null);
-        const res = await fetch(
+        const line = await fetchJSON(
           `https://data.ademe.fr/data-fair/api/v1/datasets/perimetre-espaces-conseil-france-renov/lines?q=${encodeURIComponent(
             codeInsee
           )}&q_fields=Code_Insee_Commune`
         );
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-        const json = await res.json();
-        const line = (json?.result ?? null) as FranceRenovLine | null;
-
-        setCoordonneesECFR(line);
+        setCoordonneesECFR(line.result as FranceRenovLine | null);
       } catch (e: any) {
         setCoordonneesECFR(null);
         setErrorMsg('Impossible de charger les infos France Rénov’ pour cette commune.');
@@ -156,12 +153,8 @@ export default function FranceRenovHelp({ codeInsee }: { codeInsee?: string }) {
 function getAdresse(obj: FranceRenovLine | null): { nom: string; rue: string; ville: string } {
   if (!obj) return { nom: 'Adresse inconnue', rue: '', ville: '' };
 
-  try {
-    const nom = obj.Nom_Structure?.trim() || 'Adresse inconnue';
-    const rue = obj.Adresse_Structure?.trim() || '';
-    const ville = `${obj.Code_Postal_Structure?.trim() || ''} ${obj.Commune_Structure?.trim() || ''}`.trim();
-    return { nom, rue, ville };
-  } catch {
-    return { nom: 'Adresse inconnue', rue: '', ville: '' };
-  }
+  const nom = obj.Nom_Structure?.trim() || 'Adresse inconnue';
+  const rue = obj.Adresse_Structure?.trim() || '';
+  const ville = `${obj.Code_Postal_Structure?.trim() || ''} ${obj.Commune_Structure?.trim() || ''}`.trim();
+  return { nom, rue, ville };
 }
