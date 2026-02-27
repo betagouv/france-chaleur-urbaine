@@ -29,12 +29,12 @@ export const zContactFormAdemeHelp = z.object({
   }),
 });
 
-export const zAirtableAdemeHelp = {
+export const zAirtableAdemeHelp = z.object({
   Adresse: z.string(),
   Date: z.iso.datetime(),
   DPE: z.enum(DPE_ORDER),
   Email: z.email("Votre adresse email n'est pas valide").min(1, 'Veuillez renseigner votre adresse email'),
-  'Espace extérieur': z.enum(['Partagés uniquement', 'Individuels uniquement', 'Partagés et individuels', 'Aucun'] as const),
+  'Espace extérieur': z.enum(['Partagés uniquement', 'Individuels uniquement', 'Partagés et individuels', 'Aucun']),
   'Mode de chauffage': z.enum(typeLogementValues),
   'Nb habitant moyen': z.number(),
   'Nombre de logement': z.number(),
@@ -44,7 +44,8 @@ export const zAirtableAdemeHelp = {
     .regex(/^(?:(?:\+|00)33|0)\s*[1-9]\d{8}$|^$/, 'Veuillez renseigner votre numéro de téléphone sous le format 0605040302')
     .optional()
     .default(''),
-};
+});
+export type GetAirtableAdeme = z.infer<typeof zAirtableAdemeHelp>;
 
 export const zLocationInfos = z.strictObject({
   city: z.string(),

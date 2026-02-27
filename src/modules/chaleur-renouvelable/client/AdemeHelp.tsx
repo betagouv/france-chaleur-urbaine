@@ -5,27 +5,21 @@ import useForm from '@/components/form/react-form/useForm';
 import CallOut from '@/components/ui/CallOut';
 import Link from '@/components/ui/Link';
 import { useChoixChauffageQueryParams } from '@/modules/chaleur-renouvelable/client/useChoixChauffageQueryParams';
-import {
-  type EspaceExterieur,
-  espaceExterieurValues,
-  fieldLabelInformation,
-  zContactFormAdemeHelp,
-} from '@/modules/chaleur-renouvelable/constants';
-import { notify } from '@/modules/notification';
-import { submitToAirtable } from '@/services/airtable';
-import { Airtable } from '@/types/enum/Airtable';
+import { type EspaceExterieur, espaceExterieurValues, fieldLabelInformation } from '@/modules/chaleur-renouvelable/constants';
+import trpc from '@/modules/trpc/client';
 import { isDefined } from '@/utils/core';
 
 export default function AdemeHelp({ className }: { className?: string }) {
   const [isLoading, setIsLoading] = useState(false);
   const [isSent, setIsSent] = useState(false);
+  const trpcUtils = trpc.useUtils();
   const urlParams = useChoixChauffageQueryParams();
   const espaceExterieurLabel = {
     both: 'Partagés et individuels',
     none: 'Aucun',
     private: 'Individuels uniquement',
     shared: 'Partagés uniquement',
-  } satisfies Record<EspaceExterieur, string>;
+  } as const satisfies Record<EspaceExterieur, string>;
   const { Form, Field, Submit } = useForm({
     defaultValues: {
       email: '',
@@ -38,31 +32,21 @@ export default function AdemeHelp({ className }: { className?: string }) {
         isDefined(urlParams.espaceExterieur) && espaceExterieurValues.includes(urlParams.espaceExterieur)
           ? urlParams.espaceExterieur
           : 'none';
-      submitToAirtable(
-        {
-          Adresse: urlParams.adresse,
-          Date: new Date().toISOString(),
-          DPE: urlParams.dpe,
-          Email: value.email,
-          'Espace extérieur': espaceExterieurLabel[espaceExterieur],
-          'Mode de chauffage': urlParams.typeLogement,
-          'Nb habitant moyen': urlParams.habitantsMoyen,
-          'Nombre de logement': urlParams.nbLogements,
-          'Surface moyenne': urlParams.surfaceMoyenne,
-          Telephone: value.phone,
-        },
-        Airtable.CONTACT_CHALEUR_RENOUVELABLE
-      )
-        .then(() => {
-          setIsLoading(false);
-          setIsSent(true);
-        })
-        .catch((error: Error) => {
-          notify('error', error.message);
-        })
-        .finally(() => setIsLoading(false));
+
+      await trpcUtils.client.batEnr.addContactToAirtable.query({
+        Adresse: urlParams.adresse ?? '',
+        Date: new Date().toISOString(),
+        DPE: urlParams.dpe,
+        Email: value.email,
+        'Espace extérieur': espaceExterieurLabel[espaceExterieur],
+        'Mode de chauffage': urlParams.typeLogement ?? 'immeuble_chauffage_collectif',
+        'Nb habitant moyen': Number(urlParams.habitantsMoyen),
+        'Nombre de logement': urlParams.nbLogements,
+        'Surface moyenne': urlParams.surfaceMoyenne,
+        Telephone: value.phone,
+      });
+      setIsLoading(false);
     },
-    schema: zContactFormAdemeHelp,
   });
 
   return (

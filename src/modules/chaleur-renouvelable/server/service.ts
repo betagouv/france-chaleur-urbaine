@@ -1,6 +1,8 @@
-import type { GetLocationInput } from '@/modules/chaleur-renouvelable/constants';
+import type { GetAirtableAdeme, GetLocationInput } from '@/modules/chaleur-renouvelable/constants';
 import type { GetBdnbConstructionInput } from '@/modules/tiles/constants';
+import { AirtableDB } from '@/server/db/airtable';
 import { kdb, sql } from '@/server/db/kysely';
+import { Airtable } from '@/types/enum/Airtable';
 import { fetchJSON } from '@/utils/network';
 
 export const getBatEnrBatimentDetails = async ({ batiment_construction_id }: GetBdnbConstructionInput) => {
@@ -51,4 +53,8 @@ export const getRnbByBanId = async ({ banId }: { banId: string }) => {
   const data = await fetchJSON(url);
 
   return data.results?.[0];
+};
+
+export const addContactToAirtable = async ({ input }: { input: GetAirtableAdeme }) => {
+  AirtableDB(Airtable.CONTACT_CHALEUR_RENOUVELABLE).create(input);
 };
