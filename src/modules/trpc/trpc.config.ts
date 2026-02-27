@@ -2,8 +2,8 @@ import type { CreateNextContextOptions } from '@trpc/server/adapters/next';
 
 import { appRouter as appModuleRouter } from '@/modules/app/server/trpc-routes';
 import { authRouter } from '@/modules/auth/server/trpc-routes';
-import { batEnrRouter } from '@/modules/batenr/server/trpc-routes';
 import { bdnbRouter } from '@/modules/bdnb/server/trpc-routes';
+import { batEnrRouter } from '@/modules/chaleur-renouvelable/server/batenr/trpc-routes';
 import buildContext from '@/modules/config/server/context-builder';
 import { dataRouter } from '@/modules/data/server/trpc-routes';
 import { demandsRouter } from '@/modules/demands/server/trpc-routes';

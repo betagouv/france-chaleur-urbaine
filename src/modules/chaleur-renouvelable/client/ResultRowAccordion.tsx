@@ -1,11 +1,11 @@
 import React from 'react';
 
 import { getCostPrecisionRange } from '@/components/ComparateurPublicodes/Graph';
-import { type DPE, DPE_BG, improveDpe, type ModeDeChauffageEnriched } from '@/components/choix-chauffage/modesChauffageData';
 import Accordion from '@/components/ui/Accordion';
 import Button from '@/components/ui/Button';
 import Image from '@/components/ui/Image';
 import Link from '@/components/ui/Link';
+import { type DPE, DPE_BG, improveDpe, type ModeDeChauffageEnriched } from '@/modules/chaleur-renouvelable/client/modesChauffageData';
 import cx from '@/utils/cx';
 
 function DpeTag({ letter }: { letter: DPE }) {

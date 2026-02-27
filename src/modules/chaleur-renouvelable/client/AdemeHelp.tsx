@@ -1,11 +1,11 @@
 import { Alert } from '@codegouvfr/react-dsfr/Alert';
 import { useState } from 'react';
 
-import { espaceExterieurValues, useChoixChauffageQueryParams } from '@/components/choix-chauffage/useChoixChauffageQueryParams';
 import useForm from '@/components/form/react-form/useForm';
 import CallOut from '@/components/ui/CallOut';
 import Link from '@/components/ui/Link';
 import type { EspaceExterieur } from '@/modules/app/types';
+import { espaceExterieurValues, useChoixChauffageQueryParams } from '@/modules/chaleur-renouvelable/client/useChoixChauffageQueryParams';
 import { fieldLabelInformation, zContactFormAdemeHelp } from '@/modules/demands/constants';
 import { notify } from '@/modules/notification';
 import { submitToAirtable } from '@/services/airtable';

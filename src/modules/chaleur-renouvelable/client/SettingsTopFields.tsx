@@ -1,11 +1,11 @@
-import { espaceExterieurOptions } from '@/components/choix-chauffage/modesChauffageData';
-import type { TypeLogement } from '@/components/choix-chauffage/type-logement';
 import AddressAutocompleteInput from '@/components/form/dsfr/AddressAutocompleteInput';
 import Select from '@/components/form/dsfr/Select';
 import RichSelect from '@/components/ui/RichSelect';
 import { trackPostHogEvent } from '@/modules/analytics/client';
 import type { EspaceExterieur } from '@/modules/app/types';
 import type { SuggestionItem } from '@/modules/ban/types';
+import { espaceExterieurOptions } from '@/modules/chaleur-renouvelable/client/modesChauffageData';
+import type { TypeLogement } from '@/modules/chaleur-renouvelable/client/type-logement';
 
 type SettingsTopFieldsProps = {
   withLabel: boolean;

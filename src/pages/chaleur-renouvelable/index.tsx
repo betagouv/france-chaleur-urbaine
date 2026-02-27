@@ -1,6 +1,6 @@
-import ChoixChauffageForm from '@/components/choix-chauffage/ChoixChauffageForm';
 import SimplePage from '@/components/shared/page/SimplePage';
 import { ResponsiveRow } from '@/components/ui/Box';
+import ChoixChauffageForm from '@/modules/chaleur-renouvelable/client/ChoixChauffageForm';
 
 const BENEFITS = [
   { icon: 'fr-icon-temp-cold-fill', lines: ['Gagnez en confort', "toute l'année"] },

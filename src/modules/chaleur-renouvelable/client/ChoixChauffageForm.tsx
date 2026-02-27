@@ -1,12 +1,12 @@
 import { useRouter } from 'next/navigation';
 
-import { SettingsTopFields } from '@/components/choix-chauffage/SettingsTopFields';
-import { useAddressEligibility } from '@/components/choix-chauffage/useAddressEligibility';
-import { useChoixChauffageQueryParams } from '@/components/choix-chauffage/useChoixChauffageQueryParams';
 import Button from '@/components/ui/Button';
 import { trackPostHogEvent } from '@/modules/analytics/client';
 import type { EspaceExterieur } from '@/modules/app/types';
 import type { SuggestionItem } from '@/modules/ban/types';
+import { SettingsTopFields } from '@/modules/chaleur-renouvelable/client/SettingsTopFields';
+import { useAddressEligibility } from '@/modules/chaleur-renouvelable/client/useAddressEligibility';
+import { useChoixChauffageQueryParams } from '@/modules/chaleur-renouvelable/client/useChoixChauffageQueryParams';
 
 export default function ChoixChauffageForm() {
   const router = useRouter();
