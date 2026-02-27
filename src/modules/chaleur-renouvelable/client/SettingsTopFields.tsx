@@ -2,10 +2,9 @@ import AddressAutocompleteInput from '@/components/form/dsfr/AddressAutocomplete
 import Select from '@/components/form/dsfr/Select';
 import RichSelect from '@/components/ui/RichSelect';
 import { trackPostHogEvent } from '@/modules/analytics/client';
-import type { EspaceExterieur } from '@/modules/app/types';
 import type { SuggestionItem } from '@/modules/ban/types';
 import { espaceExterieurOptions } from '@/modules/chaleur-renouvelable/client/modesChauffageData';
-import type { TypeLogement } from '@/modules/chaleur-renouvelable/client/type-logement';
+import type { EspaceExterieur, TypeLogement } from '@/modules/chaleur-renouvelable/constants';
 
 type SettingsTopFieldsProps = {
   withLabel: boolean;

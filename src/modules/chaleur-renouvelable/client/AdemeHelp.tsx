@@ -4,9 +4,13 @@ import { useState } from 'react';
 import useForm from '@/components/form/react-form/useForm';
 import CallOut from '@/components/ui/CallOut';
 import Link from '@/components/ui/Link';
-import type { EspaceExterieur } from '@/modules/app/types';
-import { espaceExterieurValues, useChoixChauffageQueryParams } from '@/modules/chaleur-renouvelable/client/useChoixChauffageQueryParams';
-import { fieldLabelInformation, zContactFormAdemeHelp } from '@/modules/demands/constants';
+import { useChoixChauffageQueryParams } from '@/modules/chaleur-renouvelable/client/useChoixChauffageQueryParams';
+import {
+  type EspaceExterieur,
+  espaceExterieurValues,
+  fieldLabelInformation,
+  zContactFormAdemeHelp,
+} from '@/modules/chaleur-renouvelable/constants';
 import { notify } from '@/modules/notification';
 import { submitToAirtable } from '@/services/airtable';
 import { Airtable } from '@/types/enum/Airtable';

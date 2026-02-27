@@ -1,17 +1,6 @@
 import { parseAsInteger, parseAsString, parseAsStringLiteral, useQueryState } from 'nuqs';
 
-import type { EspaceExterieur } from '@/modules/app/types';
-import type { DPE } from '@/modules/chaleur-renouvelable/client/modesChauffageData';
-import { DPE_ORDER } from '@/modules/chaleur-renouvelable/client/modesChauffageData';
-import type { TypeLogement } from '@/modules/chaleur-renouvelable/client/type-logement';
-
-export const espaceExterieurValues = ['shared', 'private', 'both', 'none'] as const satisfies readonly EspaceExterieur[];
-
-const typeLogementValues = [
-  'immeuble_chauffage_collectif',
-  'immeuble_chauffage_individuel',
-  'maison_individuelle',
-] as const satisfies readonly TypeLogement[];
+import { type DPE, DPE_ORDER, espaceExterieurValues, typeLogementValues } from '@/modules/chaleur-renouvelable/constants';
 
 export function useChoixChauffageQueryParams() {
   const [adresse, setAdresse] = useQueryState('adresse');

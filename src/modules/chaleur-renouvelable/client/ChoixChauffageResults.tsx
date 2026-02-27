@@ -6,20 +6,18 @@ import CallOut from '@/components/ui/CallOut';
 import Link from '@/components/ui/Link';
 import useIsMobile from '@/hooks/useIsMobile';
 import { trackPostHogEvent } from '@/modules/analytics/client';
-import type { EspaceExterieur } from '@/modules/app/types';
 import type { SuggestionItem } from '@/modules/ban/types';
 import AdemeHelp from '@/modules/chaleur-renouvelable/client/AdemeHelp';
 import FranceRenovHelp from '@/modules/chaleur-renouvelable/client/FranceRenovHelp';
 import {
-  type DPE,
   type ModeDeChauffageEnriched,
   modeDeChauffageParTypeLogement,
   type Situation,
 } from '@/modules/chaleur-renouvelable/client/modesChauffageData';
 import { SettingsTopFields } from '@/modules/chaleur-renouvelable/client/SettingsTopFields';
-import type { TypeLogement } from '@/modules/chaleur-renouvelable/client/type-logement';
 import { useAddressEligibility } from '@/modules/chaleur-renouvelable/client/useAddressEligibility';
 import { useChoixChauffageQueryParams } from '@/modules/chaleur-renouvelable/client/useChoixChauffageQueryParams';
+import type { DPE, EspaceExterieur, TypeLogement } from '@/modules/chaleur-renouvelable/constants';
 
 import { ParamsForm } from './ParamsForm';
 import { ResultRowAccordion, ScrollToHelpButton } from './ResultRowAccordion';
@@ -172,7 +170,7 @@ export default function ChoixChauffageResults() {
             items={[recommended]}
             variant="recommended"
             coutParAnGaz={coutParAnGaz}
-            dpeFrom={urlParams.dpe}
+            dpeFrom={urlParams.dpe as DPE}
             openAccordionId={openAccordionId}
             onOpenChange={handleAccordionOpenChange}
           />
@@ -181,7 +179,7 @@ export default function ChoixChauffageResults() {
             items={others}
             coutParAnGaz={coutParAnGaz}
             variant="other"
-            dpeFrom={urlParams.dpe}
+            dpeFrom={urlParams.dpe as DPE}
             openAccordionId={openAccordionId}
             onOpenChange={handleAccordionOpenChange}
           />
