@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react';
 
-import type { EspaceExterieur } from '@/modules/app/types';
-import type { TypeLogement } from '@/modules/chaleur-renouvelable/client/type-logement';
+import { type DPE, DPE_ORDER, type EspaceExterieur, type TypeLogement } from '@/modules/chaleur-renouvelable/constants';
 
 export type ModeDeChauffage = {
   label: string;
@@ -32,9 +31,6 @@ export type Situation = {
   habitantsMoyen: number;
 };
 
-export type DPE = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G';
-
-export const DPE_ORDER = ['A', 'B', 'C', 'D', 'E', 'F', 'G'] as const satisfies readonly DPE[];
 export const DPE_BG: Record<DPE, string> = {
   A: 'bg-[#00A06C]',
   B: 'bg-[#52B053]',
@@ -46,11 +42,16 @@ export const DPE_BG: Record<DPE, string> = {
 };
 
 export const espaceExterieurOptions = [
-  { description: 'Cour, jardin, toit terrasse…', label: 'Espaces partagés uniquement', value: 'shared' satisfies EspaceExterieur },
+  { description: 'Cour, jardin, toit terrasse…', label: 'Espaces partagés uniquement', value: 'shared' },
   { description: 'Balcons, terrasses…', label: 'Espaces individuels uniquement', value: 'private' },
   { description: 'Cour, jardin, toit terrasse, balcons…', label: 'Espaces partagés et individuels', value: 'both' },
   { label: 'Aucun espace extérieur', value: 'none' },
-] as const;
+] as const satisfies readonly {
+  label: string;
+  description?: string;
+  value: EspaceExterieur;
+}[];
+
 export function improveDpe(dpe: DPE, gainClasse: number): DPE {
   const currentIndex = DPE_ORDER.indexOf(dpe);
   const nextIndex = Math.max(0, currentIndex - Math.max(0, gainClasse));

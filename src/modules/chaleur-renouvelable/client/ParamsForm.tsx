@@ -2,12 +2,9 @@ import Input from '@/components/form/dsfr/Input';
 import Select from '@/components/form/dsfr/Select';
 import Button from '@/components/ui/Button';
 import Image from '@/components/ui/Image';
-import type { EspaceExterieur } from '@/modules/app/types';
 import type { SuggestionItem } from '@/modules/ban/types';
-import type { DPE } from '@/modules/chaleur-renouvelable/client/modesChauffageData';
-import { DPE_ORDER } from '@/modules/chaleur-renouvelable/client/modesChauffageData';
 import { SettingsTopFields } from '@/modules/chaleur-renouvelable/client/SettingsTopFields';
-import type { TypeLogement } from '@/modules/chaleur-renouvelable/client/type-logement';
+import { type DPE, DPE_ORDER, type EspaceExterieur, type TypeLogement } from '@/modules/chaleur-renouvelable/constants';
 import cx from '@/utils/cx';
 
 const isNumericLike = (v: string) => v === '' || /^[0-9]+([.,][0-9]*)?$/.test(v);

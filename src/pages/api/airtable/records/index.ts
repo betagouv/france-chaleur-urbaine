@@ -1,10 +1,11 @@
 import type { NextApiRequest } from 'next';
 import { v4 as uuidv4 } from 'uuid';
 
+import { zAirtableAdemeHelp } from '@/modules/chaleur-renouvelable/constants';
 import { serverConfig } from '@/server/config';
 import { AirtableDB } from '@/server/db/airtable';
 import { logger } from '@/server/helpers/logger';
-import { BadRequestError, handleRouteErrors, requirePostMethod } from '@/server/helpers/server';
+import { BadRequestError, handleRouteErrors, requirePostMethod, validateObjectSchema } from '@/server/helpers/server';
 import { Airtable } from '@/types/enum/Airtable';
 
 export default handleRouteErrors(async function PostRecords(req: NextApiRequest) {
@@ -59,7 +60,9 @@ export default handleRouteErrors(async function PostRecords(req: NextApiRequest)
     }
 
     case Airtable.CONTACT_CHALEUR_RENOUVELABLE: {
-      const { id }: any = await AirtableDB(Airtable.CONTACT_CHALEUR_RENOUVELABLE).create(values);
+      const { ...parsedValues } = await validateObjectSchema({ ...values }, zAirtableAdemeHelp);
+
+      const { id }: any = await AirtableDB(Airtable.CONTACT_CHALEUR_RENOUVELABLE).create(parsedValues);
       logger.info('create airtable record contact chaleur renouvelable', {
         id,
       });

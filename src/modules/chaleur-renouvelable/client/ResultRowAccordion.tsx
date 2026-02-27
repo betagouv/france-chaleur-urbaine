@@ -5,7 +5,8 @@ import Accordion from '@/components/ui/Accordion';
 import Button from '@/components/ui/Button';
 import Image from '@/components/ui/Image';
 import Link from '@/components/ui/Link';
-import { type DPE, DPE_BG, improveDpe, type ModeDeChauffageEnriched } from '@/modules/chaleur-renouvelable/client/modesChauffageData';
+import { DPE_BG, improveDpe, type ModeDeChauffageEnriched } from '@/modules/chaleur-renouvelable/client/modesChauffageData';
+import type { DPE } from '@/modules/chaleur-renouvelable/constants';
 import cx from '@/utils/cx';
 
 function DpeTag({ letter }: { letter: DPE }) {
