@@ -10,7 +10,6 @@ const zLocationInfos = {
   cityCode: z.string(),
   lat: z.number().optional(),
   lon: z.number().optional(),
-  onlyCity: z.boolean().optional(),
 };
 
 const maxDistanceThreshold = 1000;
@@ -59,26 +58,7 @@ export interface InfosVille {
 
 export default handleRouteErrors(async (req: NextApiRequest) => {
   requirePostMethod(req);
-  const { lon, lat, cityCode, city, onlyCity } = await validateObjectSchema(req.body, zLocationInfos);
-
-  const infosVillePromise = kdb
-    .selectFrom('communes')
-    .select(['departement_id', 'temperature_ref_altitude_moyenne'])
-    .where(
-      'id',
-      '=',
-      sql<string>`COALESCE(
-          (SELECT id FROM communes WHERE id = ${cityCode}),
-          (SELECT id FROM communes WHERE commune = ${city.toUpperCase()}),
-          (SELECT id FROM communes WHERE commune LIKE ${`${city.toUpperCase()}-%-ARRONDISSEMENT`})
-        )`
-    )
-    .executeTakeFirst();
-
-  if (onlyCity) {
-    const infosVille = await infosVillePromise;
-    return { infosVille };
-  }
+  const { lon, lat, cityCode, city } = await validateObjectSchema(req.body, zLocationInfos);
 
   const distanceExpr = sql<number>`round(geom <-> ST_Transform(ST_GeomFromText('POINT(${sql.lit(lon)} ${sql.lit(lat)})', 4326), 2154))`;
 
@@ -120,7 +100,19 @@ export default handleRouteErrors(async (req: NextApiRequest) => {
       .where(distanceExpr, '<=', maxDistanceThreshold)
       .orderBy(distanceExpr)
       .executeTakeFirst(),
-    infosVillePromise,
+    kdb
+      .selectFrom('communes')
+      .select(['departement_id', 'temperature_ref_altitude_moyenne'])
+      .where(
+        'id',
+        '=',
+        sql<string>`COALESCE(
+          (SELECT id FROM communes WHERE id = ${cityCode}),
+          (SELECT id FROM communes WHERE commune = ${city.toUpperCase()}),
+          (SELECT id FROM communes WHERE commune LIKE ${`${city.toUpperCase()}-%-ARRONDISSEMENT`})
+        )`
+      )
+      .executeTakeFirst(),
   ]);
 
   if (!infosVille) {

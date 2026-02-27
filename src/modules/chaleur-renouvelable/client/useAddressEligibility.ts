@@ -4,8 +4,7 @@ import { searchBANAddresses } from '@/modules/ban/client';
 import type { SuggestionItem } from '@/modules/ban/types';
 import { toastErrors } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
-import type { LocationInfoResponse } from '@/pages/api/location-infos';
-import { fetchJSON, postFetchJSON } from '@/utils/network';
+import { fetchJSON } from '@/utils/network';
 
 type BatEnrInfo = {
   geothermiePossible: boolean;
@@ -50,15 +49,14 @@ export function useAddressEligibility(adresse: string | null) {
         trpcUtils.client.batEnr.getBatEnrBatimentDetails.query({
           batiment_construction_id: bdnbId,
         }),
-        postFetchJSON<LocationInfoResponse>('/api/location-infos', {
+        trpcUtils.client.batEnr.getLocationInfos.query({
           city: geoAddress.properties.city,
           cityCode: geoAddress.properties.citycode,
-          onlyCity: true,
         }),
       ]);
 
-      const codeDepartement = infos?.infosVille?.departement_id ?? '';
-      const temperatureRef = Number(infos?.infosVille?.temperature_ref_altitude_moyenne);
+      const codeDepartement = infos?.departement_id ?? '';
+      const temperatureRef = Number(infos?.temperature_ref_altitude_moyenne);
 
       setState({
         batEnr: {
