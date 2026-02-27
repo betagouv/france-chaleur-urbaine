@@ -51,3 +51,8 @@ export const zLocationInfos = z.strictObject({
   cityCode: z.string(),
 });
 export type GetLocationInput = z.infer<typeof zLocationInfos>;
+
+export const zRnbByBanIdInput = z.object({
+  banId: z.string().min(1, 'banId manquant'),
+});
+export type RnbByBanIdInput = z.infer<typeof zRnbByBanIdInput>;

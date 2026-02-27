@@ -1,6 +1,7 @@
 import type { GetLocationInput } from '@/modules/chaleur-renouvelable/constants';
 import type { GetBdnbConstructionInput } from '@/modules/tiles/constants';
 import { kdb, sql } from '@/server/db/kysely';
+import { fetchJSON } from '@/utils/network';
 
 export const getBatEnrBatimentDetails = async ({ batiment_construction_id }: GetBdnbConstructionInput) => {
   const batiment = await kdb
@@ -42,4 +43,12 @@ export const getLocationInfos = async ({ cityCode, city }: GetLocationInput) => 
     .executeTakeFirst();
 
   return communeInfo;
+};
+
+export const getRnbByBanId = async ({ banId }: { banId: string }) => {
+  const url = `https://rnb-api.beta.gouv.fr/api/alpha/buildings/address/?cle_interop_ban=${encodeURIComponent(banId)}`;
+
+  const data = await fetchJSON(url);
+
+  return data.results?.[0];
 };
