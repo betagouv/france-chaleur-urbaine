@@ -45,3 +45,9 @@ export const zAirtableAdemeHelp = {
     .optional()
     .default(''),
 };
+
+export const zLocationInfos = z.strictObject({
+  city: z.string(),
+  cityCode: z.string(),
+});
+export type GetLocationInput = z.infer<typeof zLocationInfos>;
