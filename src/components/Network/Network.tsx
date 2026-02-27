@@ -107,14 +107,7 @@ const NetworkPanel = ({
                   </a>{' '}
                   portant sur l’année 2023, ou la moyenne des années 2021, 2022 et 2023. (en attente de l'arrêté 2026)
                 </Text>
-                {!isCold && (
-                  <Property
-                    label="Taux d'EnR&R"
-                    value={network['Taux EnR&R']}
-                    unit="%"
-                    tooltip="Calculé par FCU (ratio production EnR&R / production totale) en attendant la parution de l'arrêté DPE 2024."
-                  />
-                )}
+                {!isCold && <Property label="Taux d’EnR&R" value={network['Taux EnR&R']} unit="%" />}
                 <Property
                   label="Contenu CO2 ACV"
                   value={network['contenu CO2 ACV']}
@@ -122,7 +115,10 @@ const NetworkPanel = ({
                   tooltip="ACV : en analyse du cycle de vie (émissions directes et indirectes)."
                 />
                 <Property label="Contenu CO2" value={network['contenu CO2']} formatter={formatCO2} tooltip="Émissions directes" />
-                <Property label="Année de référence" value={network['Moyenne-annee-DPE']} />
+                <Property
+                  label="Année de référence"
+                  value={network['Moyenne-annee-DPE'] === 'Moyenne' ? 'Moyenne 2021-2022-2023' : network['Moyenne-annee-DPE']}
+                />
               </Box>
             )}
 
@@ -600,7 +596,7 @@ const Property = <T,>({
         isDefined(value)
           ? isDefined(formatter)
             ? formatter(value)
-            : `${typeof value === 'number' ? prettyFormatNumber(value, round ? 0 : undefined) : value} ${unit ?? ''}`
+            : `${typeof value === 'number' ? prettyFormatNumber(value, round ? 0 : undefined) : value} ${unit ?? ''}`
           : 'Non connu'
       )}
     </Box>
@@ -608,12 +604,12 @@ const Property = <T,>({
 
 function numberBooleanFormatter(value: string): string | ReactElement {
   return !Number.isNaN(Number.parseFloat(value))
-    ? `${Math.round(Number.parseFloat(value))} %`
+    ? `${Math.round(Number.parseFloat(value))} %`
     : value.toLowerCase() === 'oui'
       ? 'Oui'
       : 'Non';
 }
 
 function formatCO2(co2kg: number): string {
-  return `${Math.round(co2kg * 1000)} gCO2/kWh`;
+  return `${Math.round(co2kg * 1000)} gCO2/kWh`;
 }
