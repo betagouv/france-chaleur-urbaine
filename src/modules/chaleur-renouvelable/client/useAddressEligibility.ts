@@ -4,7 +4,6 @@ import { searchBANAddresses } from '@/modules/ban/client';
 import type { SuggestionItem } from '@/modules/ban/types';
 import { toastErrors } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
-import { fetchJSON } from '@/utils/network';
 
 type BatEnrInfo = {
   geothermiePossible: boolean;
@@ -41,9 +40,8 @@ export function useAddressEligibility(adresse: string | null) {
   const computeEligibilityFromSuggestion = useCallback(
     toastErrors(async (geoAddress: SuggestionItem) => {
       const banId = geoAddress.properties.id;
-      const rnb = await fetchJSON(`/api/rnb?banId=${encodeURIComponent(banId)}`);
-
-      const bdnbId = rnb?.results?.[0]?.ext_ids?.find((e: RnbExtId) => e.source === 'bdnb')?.id ?? '';
+      const rnb = await trpcUtils.client.batEnr.getRnbByBanId.query({ banId });
+      const bdnbId = rnb.ext_ids?.find((e: RnbExtId) => e.source === 'bdnb')?.id ?? '';
 
       const [batEnrDetails, infos] = await Promise.all([
         trpcUtils.client.batEnr.getBatEnrBatimentDetails.query({
