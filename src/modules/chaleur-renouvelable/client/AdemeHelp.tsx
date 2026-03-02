@@ -5,7 +5,12 @@ import useForm from '@/components/form/react-form/useForm';
 import CallOut from '@/components/ui/CallOut';
 import Link from '@/components/ui/Link';
 import { useChoixChauffageQueryParams } from '@/modules/chaleur-renouvelable/client/useChoixChauffageQueryParams';
-import { type EspaceExterieur, espaceExterieurValues, fieldLabelInformation } from '@/modules/chaleur-renouvelable/constants';
+import {
+  type EspaceExterieur,
+  espaceExterieurValues,
+  fieldLabelInformation,
+  zContactFormAdemeHelp,
+} from '@/modules/chaleur-renouvelable/constants';
 import trpc from '@/modules/trpc/client';
 import { isDefined } from '@/utils/core';
 
@@ -47,6 +52,7 @@ export default function AdemeHelp({ className }: { className?: string }) {
       });
       setIsLoading(false);
     },
+    schema: zContactFormAdemeHelp,
   });
 
   return (
