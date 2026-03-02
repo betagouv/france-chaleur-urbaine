@@ -4,7 +4,7 @@ import { useState } from 'react';
 import useForm from '@/components/form/react-form/useForm';
 import CallOut from '@/components/ui/CallOut';
 import Link from '@/components/ui/Link';
-import { useChoixChauffageQueryParams } from '@/modules/chaleur-renouvelable/client/useChoixChauffageQueryParams';
+import { useChoixChauffageQueryParams } from '@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageQueryParams';
 import {
   type EspaceExterieur,
   espaceExterieurValues,

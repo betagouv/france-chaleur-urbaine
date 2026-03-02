@@ -9,14 +9,15 @@ import { trackPostHogEvent } from '@/modules/analytics/client';
 import type { SuggestionItem } from '@/modules/ban/types';
 import AdemeHelp from '@/modules/chaleur-renouvelable/client/AdemeHelp';
 import FranceRenovHelp from '@/modules/chaleur-renouvelable/client/FranceRenovHelp';
+import { useAddressEligibility } from '@/modules/chaleur-renouvelable/client/hooks/useAddressEligibility';
+import { useChoixChauffageQueryParams } from '@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageQueryParams';
+import { useRemoveHashOnScroll } from '@/modules/chaleur-renouvelable/client/hooks/useRemoveHashOnScroll';
 import {
   type ModeDeChauffageEnriched,
   modeDeChauffageParTypeLogement,
   type Situation,
 } from '@/modules/chaleur-renouvelable/client/modesChauffageData';
 import { SettingsTopFields } from '@/modules/chaleur-renouvelable/client/SettingsTopFields';
-import { useAddressEligibility } from '@/modules/chaleur-renouvelable/client/useAddressEligibility';
-import { useChoixChauffageQueryParams } from '@/modules/chaleur-renouvelable/client/useChoixChauffageQueryParams';
 import type { DPE, EspaceExterieur, TypeLogement } from '@/modules/chaleur-renouvelable/constants';
 
 import { ParamsForm } from './ParamsForm';
@@ -36,9 +37,17 @@ export default function ChoixChauffageResults() {
   const engine = useSimulatorEngine();
   const isMobile = useIsMobile();
   const urlParams = useChoixChauffageQueryParams();
-
-  const { geoAddress, setGeoAddress, batEnr, codeDepartement, temperatureRef, onSelectGeoAddress, resetEligibility } =
-    useAddressEligibility(urlParams.adresse ?? null);
+  useRemoveHashOnScroll('#help-ademe');
+  const {
+    geoAddress,
+    setGeoAddress,
+    batEnr,
+    codeDepartement,
+    eligibleReseauChaleur,
+    temperatureRef,
+    onSelectGeoAddress,
+    resetEligibility,
+  } = useAddressEligibility(urlParams.adresse ?? null);
 
   const [isParamsOpen, setIsParamsOpen] = useState(false);
   const [openAccordionId, setOpenAccordionId] = useState<string | null>(null);
@@ -47,6 +56,7 @@ export default function ChoixChauffageResults() {
     () => ({
       adresse: urlParams.adresse ?? null,
       dpe: urlParams.dpe,
+      eligibleReseauChaleur,
       espaceExterieur: (urlParams.espaceExterieur ?? 'none') as EspaceExterieur,
       geothermiePossible: batEnr.geothermiePossible,
       habitantsMoyen: Number.parseFloat(urlParams.habitantsMoyen || '2'),

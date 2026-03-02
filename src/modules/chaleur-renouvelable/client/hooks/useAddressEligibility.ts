@@ -14,6 +14,7 @@ type EligibilityState = {
   batEnr: BatEnrInfo;
   codeDepartement: string;
   temperatureRef: number | null;
+  eligibleReseauChaleur: boolean;
 };
 type RnbExtId = {
   id: string;
@@ -24,6 +25,7 @@ type RnbExtId = {
 const emptyState: EligibilityState = {
   batEnr: { geothermiePossible: false, planProtectionAtmosphere: false },
   codeDepartement: '',
+  eligibleReseauChaleur: false,
   geoAddress: undefined,
   temperatureRef: null,
 };
@@ -43,13 +45,17 @@ export function useAddressEligibility(adresse: string | null) {
       const rnb = await trpcUtils.client.batEnr.getRnbByBanId.query({ banId });
       const bdnbId = rnb.ext_ids?.find((e: RnbExtId) => e.source === 'bdnb')?.id ?? '';
 
-      const [batEnrDetails, infos] = await Promise.all([
+      const [batEnrDetails, infos, eligibility] = await Promise.all([
         trpcUtils.client.batEnr.getBatEnrBatimentDetails.query({
           batiment_construction_id: bdnbId,
         }),
         trpcUtils.client.batEnr.getLocationInfos.query({
           city: geoAddress.properties.city,
           cityCode: geoAddress.properties.citycode,
+        }),
+        trpcUtils.client.reseaux.eligibilityStatus.query({
+          lat: geoAddress.geometry.coordinates[1],
+          lon: geoAddress.geometry.coordinates[0],
         }),
       ]);
 
@@ -62,6 +68,7 @@ export function useAddressEligibility(adresse: string | null) {
           planProtectionAtmosphere: batEnrDetails?.etat_ppa === 'PPA Validés',
         },
         codeDepartement,
+        eligibleReseauChaleur: eligibility.isEligible,
         geoAddress,
         temperatureRef,
       });

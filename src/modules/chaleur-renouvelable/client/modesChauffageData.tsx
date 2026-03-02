@@ -29,6 +29,7 @@ export type Situation = {
   nbLogements: number;
   surfaceMoyenne: number;
   habitantsMoyen: number;
+  eligibleReseauChaleur: boolean;
 };
 
 export const DPE_BG: Record<DPE, string> = {
@@ -62,25 +63,23 @@ const hasEspaceShared = (situation: Situation) => ['shared', 'both'].includes(si
 
 export const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffage[]> = {
   immeuble_chauffage_collectif: [
-    // {
-    //   avantages: [
-    //     'Faibles émissions de CO₂',
-    //     'Prix stables',
-    //     'TVA réduite à 5,5 %',
-    //     "Garantie d'un service public",
-    //   ],
-    //   contraintesTechniques: [
-    //      "Proximité à un réseau : Disponible X m à vol d’oiseau / Zone prioritaire" // (si PDP = True)
-    //      'Seuil de puissance requis : à vérifier',
-    //      'Local pour la sous-station : à vérifier',
-    //   ],
-    //   description:
-    //     "Le réseau de chaleur (ou chauffage urbain) distribue de la chaleur produite de façon centralisée à un ensemble de bâtiments, via des canalisations souterraines. Ces réseaux sont alimentés en majorité par des énergies renouvelables et de récupération locales. C'est la solution à privilégier pour un chauffage collectif lorsqu'elle est disponible.",
-    //   gainClasse: 1,
-    //   inconvenients: ['Long contrat (15-20 ans)'],
-    //   label: 'Chauffage urbain (réseaux de chaleur)',
-    //   pertinence: 4
-    // },
+    {
+      avantages: ['Faibles émissions de CO₂', 'Prix stables', 'TVA réduite à 5,5 %', "Garantie d'un service public"],
+      contraintesTechniques: [
+        'Proximité à un réseau : Disponible X m à vol d’oiseau / Zone prioritaire', // (si PDP = True)
+        'Seuil de puissance requis : à vérifier',
+        'Local pour la sous-station : à vérifier',
+      ],
+      coutInstallation: '6 000 à 8 000 €',
+      coutParAnPublicodeKey: 'Réseaux de chaleur',
+      description:
+        "Le réseau de chaleur (ou chauffage urbain) distribue de la chaleur produite de façon centralisée à un ensemble de bâtiments, via des canalisations souterraines. Ces réseaux sont alimentés en majorité par des énergies renouvelables et de récupération locales. C'est la solution à privilégier pour un chauffage collectif lorsqu'elle est disponible.",
+      estPossible: (situation) => situation.eligibleReseauChaleur,
+      gainClasse: 1,
+      inconvenients: ['Long contrat (15-20 ans)'],
+      label: 'Réseau de chaleur',
+      pertinence: 4,
+    },
     {
       avantages: [
         'Faibles émissions de CO₂',
