@@ -400,11 +400,7 @@ function ModifierReseauxPage() {
 
             {apiError && (
               <Text color="error" mt="2w">
-                Une erreur est survenue. Veuillez{' '}
-                <a href={`mailto:${clientConfig.contactEmail}`} target="_blank" rel="noopener noreferrer">
-                  nous contacter
-                </a>
-                .
+                Une erreur est survenue. Veuillez <Link href="/contact">nous contacter</Link>.
               </Text>
             )}
           </form>

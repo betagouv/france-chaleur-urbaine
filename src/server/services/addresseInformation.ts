@@ -106,7 +106,7 @@ const legend = [
   [], // empty line
   [
     'Mise en relation avec le gestionnaire',
-    `Pour être mis en relation avec le gestionnaire d'un réseau pour obtenir plus d'informations, vous pouvez utiliser le formulaire en ligne sur notre site ou nous contacter par mail si le besoin concerne plusieurs adresses : ${clientConfig.contactEmail} `,
+    `Pour être mis en relation avec le gestionnaire d'un réseau pour obtenir plus d'informations, vous pouvez utiliser le formulaire en ligne sur notre site ou nous contacter si le besoin concerne plusieurs adresses : ${clientConfig.websiteUrl}/contact `,
   ],
 ];
 

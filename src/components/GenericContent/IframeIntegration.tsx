@@ -1,4 +1,5 @@
-import { clientConfig } from '@/client-config';
+import Link from 'next/link';
+
 import { CartoImage } from '@/components/CollectivitesExploitantsPage.style';
 import IFrameMapIntegrationForm from '@/components/IFrame/Map/IFrameMapIntegrationForm';
 import { StyledIFrameLink } from '@/components/IFrame/Map/IFrameMapIntegrationForm.styles';
@@ -39,9 +40,7 @@ const IframeIntegration = ({ pageFrom }: { pageFrom?: PageFromType }) => {
           </Text>
           <Text size="sm" mt="2w" legacyColor={pageFrom === 'pro' ? 'darkerblue' : undefined}>
             Si vous souhaitez une carte personnalisée avec seulement vos réseaux, votre logo ou d'autres informations, n'hésitez pas à{' '}
-            <a href={`mailto:${clientConfig.contactEmail}`} target="_blank" rel="noopener noreferrer">
-              nous contacter
-            </a>
+            <Link href="/contact">nous contacter</Link>
           </Text>
         </Box>
 

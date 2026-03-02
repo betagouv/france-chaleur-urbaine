@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from 'motion/react';
+import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 
-import { clientConfig } from '@/client-config';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
@@ -71,8 +71,7 @@ export default function TestsAdressesPage(): JSX.Element {
         </p>
         <p>
           Pour être mis en relation avec le gestionnaire d'un réseau pour obtenir plus d'informations, vous pouvez utiliser le formulaire en
-          ligne sur notre site ou nous contacter par mail si le besoin concerne plusieurs adresses&nbsp;:{' '}
-          <a href={`mailto:${clientConfig.contactEmail}`}>{clientConfig.contactEmail}</a>
+          ligne sur notre site ou <Link href="/contact">nous contacter</Link> si le besoin concerne plusieurs adresses.
         </p>
         <div className="flex items-center justify-between fr-mb-2w">
           <Heading as="h3" color="blue-france" mb="0">

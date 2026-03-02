@@ -1,9 +1,9 @@
 import Alert from '@codegouvfr/react-dsfr/Alert';
 import { useForm } from '@tanstack/react-form';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { type ZodSchema, z } from 'zod';
 
-import { clientConfig } from '@/client-config';
 import Input from '@/components/form/dsfr/Input';
 import Radio from '@/components/form/dsfr/Radio';
 import Upload from '@/components/form/dsfr/Upload';
@@ -382,8 +382,8 @@ const ContributionForm = () => {
       },
       () => (
         <span>
-          Une erreur est survenue. Veuillez réessayer plus tard, si le problème persiste contactez-nous directement à l'adresse:{' '}
-          <a href={`mailto:${clientConfig.contactEmail}`}>{clientConfig.contactEmail}</a>
+          Une erreur est survenue. Veuillez réessayer plus tard, si le problème persiste contactez-nous via le{' '}
+          <Link href="/contact">formulaire de contact</Link>
         </span>
       )
     ),

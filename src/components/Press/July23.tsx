@@ -1,4 +1,3 @@
-import { clientConfig } from '@/client-config';
 import MarkdownWrapper from '@/components/MarkdownWrapper';
 import Slice from '@/components/Slice';
 
@@ -39,7 +38,7 @@ Voir notre [page dédiée aux réseaux de froid](/ressources/reseau-de-froid#con
 
 **À propos de France Chaleur Urbaine, retrouvez notre [dossier de presse](/documentation/dossier-presse.pdf)**
 
-Pour nous contacter : [${clientConfig.contactEmail}](mailto:${clientConfig.contactEmail})
+Pour nous contacter : [formulaire de contact](/contact)
 `}
         />
         <Image src="/img/FCU_Infographie_Froid.jpg" alt="Les réseaux de froid" />

@@ -26,7 +26,7 @@ function MentionsLegalesPage() {
           email: 'support@scalingo.com',
           name: 'Scalingo',
         }}
-        contactEmail={clientConfig.contactEmail}
+        contactEmail="france.chaleur.urbaine@ademe.fr"
       />
     </SimplePage>
   );
