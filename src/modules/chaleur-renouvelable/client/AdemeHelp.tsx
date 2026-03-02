@@ -51,6 +51,7 @@ export default function AdemeHelp({ className }: { className?: string }) {
         Telephone: value.phone,
       });
       setIsLoading(false);
+      setIsSent(true);
     },
     schema: zContactFormAdemeHelp,
   });
