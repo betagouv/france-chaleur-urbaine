@@ -25,11 +25,11 @@ type ParamsFormProps = {
   setEspaceExterieur: (val: EspaceExterieur | null) => void;
   dpe: DPE;
   setDpe: (val: DPE) => void;
-  nbLogements: number;
-  setNbLogements: (val: number) => void;
-  surfaceMoyenne: number;
-  setSurfaceMoyenne: (val: number) => void;
-  habitantsMoyen: string;
+  nbLogements: number | null;
+  setNbLogements: (val: number | null) => void;
+  surfaceMoyenne: number | null;
+  setSurfaceMoyenne: (val: number | null) => void;
+  habitantsMoyen: string | null;
   setHabitantsMoyen: (val: string) => void;
 };
 
@@ -111,18 +111,14 @@ export function ParamsForm({
             nativeInputProps={{
               inputMode: 'numeric',
               min: 1,
-              onBlur: () => {
-                if ((nbLogements ?? 0) < 1) void setNbLogements(1);
-              },
               onChange: (e) => {
-                const raw = e.target.value;
-                const next = raw === '' ? 0 : Number(raw);
-                void setNbLogements(next);
+                const nbLogements = Number(e.target.value);
+                void setNbLogements(nbLogements === 0 ? null : nbLogements);
               },
-              placeholder: '-',
+              placeholder: '25',
               required: true,
               type: 'number',
-              value: nbLogements,
+              value: nbLogements ?? '',
             }}
           />
           <div className="relative inline-block w-full">
@@ -132,13 +128,13 @@ export function ParamsForm({
                 inputMode: 'numeric',
                 min: 0,
                 onChange: (e) => {
-                  const raw = e.target.value;
-                  const next = raw === '' ? 0 : Number(raw);
-                  void setSurfaceMoyenne(next);
+                  const surface = Number(e.target.value);
+                  void setSurfaceMoyenne(surface === 0 ? null : surface);
                 },
+                placeholder: '70',
                 required: true,
                 type: 'number',
-                value: surfaceMoyenne, // espace pour le m²
+                value: surfaceMoyenne ?? '', // espace pour le m²
               }}
               className="[&_input]:pr-12"
             />
@@ -167,11 +163,11 @@ export function ParamsForm({
                 if (!isNumericLike(raw)) return;
                 void setHabitantsMoyen(raw);
               },
-              placeholder: '-',
+              placeholder: '2',
               required: true,
               step: 0.1,
               type: 'number',
-              value: habitantsMoyen,
+              value: habitantsMoyen ?? '',
             }}
           />
         </div>

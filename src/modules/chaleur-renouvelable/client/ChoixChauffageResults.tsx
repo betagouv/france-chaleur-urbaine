@@ -49,10 +49,10 @@ export default function ChoixChauffageResults() {
       dpe: urlParams.dpe,
       espaceExterieur: (urlParams.espaceExterieur ?? 'none') as EspaceExterieur,
       geothermiePossible: batEnr.geothermiePossible,
-      habitantsMoyen: Number.parseFloat(urlParams.habitantsMoyen) || 0,
-      nbLogements: urlParams.nbLogements,
+      habitantsMoyen: Number.parseFloat(urlParams.habitantsMoyen || '2'),
+      nbLogements: urlParams.nbLogements ?? 25,
       planProtectionAtmosphere: batEnr.planProtectionAtmosphere,
-      surfaceMoyenne: urlParams.surfaceMoyenne,
+      surfaceMoyenne: urlParams.surfaceMoyenne ?? 70,
     }),
     [
       urlParams.adresse,

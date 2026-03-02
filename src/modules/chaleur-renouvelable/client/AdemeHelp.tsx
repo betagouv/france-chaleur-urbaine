@@ -46,8 +46,8 @@ export default function AdemeHelp({ className }: { className?: string }) {
         'Espace extérieur': espaceExterieurLabel[espaceExterieur],
         'Mode de chauffage': urlParams.typeLogement ?? 'immeuble_chauffage_collectif',
         'Nb habitant moyen': Number(urlParams.habitantsMoyen),
-        'Nombre de logement': urlParams.nbLogements,
-        'Surface moyenne': urlParams.surfaceMoyenne,
+        'Nombre de logement': Number(urlParams.nbLogements),
+        'Surface moyenne': Number(urlParams.surfaceMoyenne),
         Telephone: value.phone,
       });
       setIsLoading(false);
