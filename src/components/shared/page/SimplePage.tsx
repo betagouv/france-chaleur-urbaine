@@ -8,13 +8,11 @@ import type React from 'react';
 import { useEffect, useMemo, useState } from 'react';
 import styled, { css } from 'styled-components';
 
-import { clientConfig } from '@/client-config';
 import { FooterConsentManagementItem } from '@/components/ConsentBanner';
 import SEO, { type SEOProps } from '@/components/SEO';
 import Box from '@/components/ui/Box';
 import Image from '@/components/ui/Image';
 import Link from '@/components/ui/Link';
-import Text from '@/components/ui/Text';
 import useRouterReady from '@/hooks/useRouterReady';
 import { useAuthentication } from '@/modules/auth/client/hooks';
 import cx from '@/utils/cx';
@@ -598,13 +596,9 @@ const PageFooter = () => (
         l'atteinte des objectifs de développement de la chaleur d'origine renouvelable.
         <br />
         <br />
-        <Text as="span" fontWeight="bold">
-          Faites nous part de vos propositions pour améliorer ce service&nbsp;:
-        </Text>
-        <br />
-        <Text as="span" fontWeight="bold">
-          <a href={`mailto:${clientConfig.contactEmail}`}>{clientConfig.contactEmail}</a>
-        </Text>
+        <span className="font-bold">
+          Faites nous part de vos propositions pour améliorer ce service via notre&nbsp;<Link href="/contact">formulaire de contact</Link>.
+        </span>
       </>
     }
     domains={[]}

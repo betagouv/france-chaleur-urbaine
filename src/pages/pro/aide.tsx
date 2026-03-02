@@ -1,6 +1,6 @@
 import { fr } from '@codegouvfr/react-dsfr';
+import Link from 'next/link';
 
-import { clientConfig } from '@/client-config';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Accordion from '@/components/ui/Accordion';
 import { withAuthentication } from '@/server/authentication';
@@ -39,8 +39,8 @@ const faqItems: FaqItem[] = [
   {
     content: (
       <p>
-        Cette information n’est à ce jour pas directement visible depuis l’espace gestionnaire, mais peut être obtenue par un simple mail
-        adressé à <a href={`mailto:${clientConfig.contactEmail}`}>{clientConfig.contactEmail}</a>.
+        Cette information n’est à ce jour pas directement visible depuis l’espace gestionnaire, mais peut être obtenue en nous contactant
+        via le <Link href="/contact">formulaire de contact</Link>.
       </p>
     ),
     title: 'Comment savoir qui a accès aux demandes déposées sur mes réseaux ?',
@@ -48,7 +48,7 @@ const faqItems: FaqItem[] = [
   {
     content: (
       <p>
-        Il suffit pour cela d’envoyer un mail à l’adresse <a href={`mailto:${clientConfig.contactEmail}`}>{clientConfig.contactEmail}</a>.
+        Il suffit pour cela de nous contacter via le <Link href="/contact">formulaire de contact</Link>.
       </p>
     ),
     title: 'Comment ouvrir un accès à l’espace gestionnaire à un membre de mon équipe ?',
@@ -227,7 +227,7 @@ const AidePage = () => {
           gestionnaire ? Nous sommes à votre écoute !
         </p>
         <p>
-          Contactez-nous&nbsp;: <a href={`mailto:${clientConfig.contactEmail}`}>{clientConfig.contactEmail}</a>
+          <Link href="/contact">Contactez-nous</Link>
         </p>
 
         <div className={fr.cx('fr-accordions-group')}>

@@ -5,6 +5,7 @@ import { useKeyboardEvent, useThrottledCallback } from '@react-hookz/web';
 import turfArea from '@turf/area';
 import { atom, useAtom } from 'jotai';
 import type { GeoJSONSource, Map as MapLibreMap } from 'maplibre-gl';
+import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
 
@@ -290,10 +291,7 @@ const BuildingsDataExtractionTool: React.FC = () => {
             <>
               La zone définie est trop grande ({areaSize.toFixed(2)} km²), veuillez réduire la taille de recherche (maximum{' '}
               {clientConfig.summaryAreaSizeLimit} km²). Si vous avez besoin de statistiques sur une zone élargie ou plus précise, n'hésitez
-              pas à{' '}
-              <a href={`mailto:${clientConfig.contactEmail}`} target="_blank" rel="noopener noreferrer">
-                nous contacter
-              </a>
+              pas à <Link href="/contact">nous contacter</Link>
             </>
           }
         />

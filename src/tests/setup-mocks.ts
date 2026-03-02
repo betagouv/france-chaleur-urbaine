@@ -16,7 +16,6 @@ vi.mock('@/server/config', () => ({
   clientConfig: {
     banApiBaseUrl: 'https://data.geopf.fr/geocodage/search/',
     calendarLink: 'https://cal.com/test',
-    contactEmail: 'test@example.com',
     destinationEmails: {
       carto: 'test@example.com',
       comparateur: 'test@example.com',
@@ -45,7 +44,6 @@ vi.mock('@/server/config', () => ({
   serverConfig: {
     // Required for tRPC tests that import modules using Airtable
     AIRTABLE_KEY_API: 'test_airtable_key',
-    contactEmail: 'test@example.com',
     databaseUrl: process.env.DATABASE_URL ?? 'postgres://fcu_test:fcu_test_pass@localhost:5433/fcu_test',
   },
 }));

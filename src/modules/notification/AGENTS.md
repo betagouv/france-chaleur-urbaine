@@ -202,8 +202,8 @@ const ContactForm = () => {
       },
       (err) => (
         <span>
-          Une erreur est survenue. Veuillez réessayer plus tard, si le problème persiste contactez-nous directement à l'adresse:{' '}
-          <a href={`mailto:${clientConfig.contactEmail}`}>{clientConfig.contactEmail}</a>
+          Une erreur est survenue. Veuillez réessayer plus tard, si le problème persiste contactez-nous via le{' '}
+          <a href="/contact">formulaire de contact</a>
         </span>
       )
     ),
