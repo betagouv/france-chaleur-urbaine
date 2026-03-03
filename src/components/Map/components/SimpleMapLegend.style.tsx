@@ -307,6 +307,7 @@ export const TrackableCheckableAccordion = ({ children, name, trackingEvent, lay
       }}
       expandOnCheck
       showToggle
+      postHogToggleEventName={posthogLayerName}
       {...props}
     >
       {children}

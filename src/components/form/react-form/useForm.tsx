@@ -224,6 +224,7 @@ function useFormInternal<
         <DsfrInput
           label={label}
           nativeInputProps={{
+            ['aria-label' as keyof typeof nativeInputProps]: label,
             id: nativeInputProps?.id || `${name}`,
             name: nativeInputProps?.name || `${name}`,
             onBlur: field.handleBlur,
@@ -264,6 +265,7 @@ function useFormInternal<
           nativeTextAreaProps={{
             id: nativeTextAreaProps?.id || `${name}`,
             name: nativeTextAreaProps?.name || `${name}`,
+            ['aria-label' as keyof typeof nativeTextAreaProps]: label,
             onBlur: field.handleBlur,
             onChange: (e: any) => field.handleChange(e.target.value as any),
             required: isRequiredField(name as keyof TFormData),
@@ -294,6 +296,7 @@ function useFormInternal<
             autoComplete: 'password',
             id: nativeInputProps?.id || `${name}`,
             name: nativeInputProps?.name || `${name}`,
+            ['aria-label' as keyof typeof nativeInputProps]: label,
             onBlur: field.handleBlur,
             onChange: (e: any) => field.handleChange(e.target.value as any),
             required: isRequiredField(name as keyof TFormData),
@@ -358,6 +361,7 @@ function useFormInternal<
           small
           label={label}
           nativeInputProps={{
+            ['aria-label' as keyof typeof nativeInputProps]: label,
             checked: field.state.value as any,
             name: nativeInputProps?.name || `${name}`,
             onChange: (e) => field.handleChange(e.target.checked as any),
@@ -392,6 +396,7 @@ function useFormInternal<
           options={options.map((option) => ({
             ...option,
             nativeInputProps: {
+              'aria-label': `${option.label}`,
               checked: Array.isArray(field.state.value) && field.state.value.includes(option.nativeInputProps?.value || option.label),
               name: `${name}`,
               onChange: (e) => {
@@ -436,6 +441,7 @@ function useFormInternal<
           options={options.map((option) => ({
             ...option,
             nativeInputProps: {
+              'aria-label': `${option.label}`,
               checked: Array.isArray(field.state.value) && field.state.value.includes(option.nativeInputProps?.value || option.label),
               name: `${name}`,
               onChange: (e) => {
@@ -477,6 +483,7 @@ function useFormInternal<
           label={label}
           options={options}
           nativeSelectProps={{
+            ['aria-label' as keyof typeof nativeSelectProps]: label,
             id: `${name}`,
             name: `${name}`,
             onBlur: field.handleBlur,
@@ -511,6 +518,7 @@ function useFormInternal<
             ...option,
             nativeInputProps: {
               ...option.nativeInputProps,
+              'aria-label': `${option.label}`,
               checked: field.state.value && field.state.value === option.nativeInputProps.value,
               onBlur: field.handleBlur,
               onChange: (e) => field.handleChange(e.target.value as any),

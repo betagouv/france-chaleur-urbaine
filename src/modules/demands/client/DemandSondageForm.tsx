@@ -138,6 +138,7 @@ const DemandSondageForm = ({ addressData = {}, cardMode }: { addressData: Addres
                 <Input
                   label=""
                   nativeInputProps={{
+                    'aria-label': 'Autre : veuillez préciser',
                     onChange: (e) => setOther(e.target.value),
                     placeholder: 'Veuillez préciser',
                     required: true,

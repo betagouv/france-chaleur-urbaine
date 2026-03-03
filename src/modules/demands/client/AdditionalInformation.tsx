@@ -57,6 +57,7 @@ const AdditionalInformation = ({
         label=""
         size="sm"
         nativeInputProps={{
+          'aria-label': field,
           onChange: (e) => {
             // @ts-expect-error: force type
             demand[simpleField ? field : getFieldName(field)] = type === 'number' ? parseFloat(e.target.value) : e.target.value;
