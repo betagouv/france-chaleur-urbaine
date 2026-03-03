@@ -228,6 +228,44 @@ export const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffag
   maison_individuelle: [
     {
       avantages: [
+        'Faibles émissions de CO2',
+        'Suppression des chaudières (gain de place, sécurité)',
+        'Possibilité de couvrir les besoins en froid si associé à des ventilo-convecteurs',
+      ],
+      contraintesTechniques: [
+        'Isolation globale recommandée au préalable pour éviter des performances dégradées',
+        'Surface extérieure pour le forage',
+        'Local technique',
+      ],
+      coutInstallation: '20 000 à 25 000 €',
+      coutParAnPublicodeKey: 'PAC eau-eau indiv',
+      description:
+        "La pompe à chaleur géothermique (eau-eau) capte les calories du sous-sol (sol ou nappe phréatique) et les transfère à un circuit d'eau chaude pour assurer le chauffage et l'eau chaude sanitaire. Elle est très efficace et écologique, idéale si l'espace extérieur permet un forage. Cette solution nécessite une maison bien isolé ou équipé de planchers chauffants pour être performante.",
+      estPossible: (situation) => situation.geothermiePossible,
+      gainClasse: 2,
+      inconvenients: ['Investissement initial important', 'Travaux d’installation conséquents'],
+      label: 'Pompe à chaleur géothermique (maison)',
+      pertinence: 3,
+    },
+    {
+      avantages: ['Faibles émissions de CO2', 'Longévité des équipements'],
+      contraintesTechniques: [
+        'Espace conséquent (chaudière et stockage)',
+        'Approvisionnement local disponible',
+        'Déconseillé en zone sensible pour la qualité de l’air (commune avec PPA)',
+      ],
+      coutInstallation: '10 000 à 17 000 €',
+      coutParAnPublicodeKey: 'PAC eau-eau indiv',
+      description:
+        "La chaudière biomasse fonctionne comme une chaudière gaz ou fioul, mais utilise du bois comme combustible (granulés, plaquettes, bûches). C'est une énergie renouvelable et locale. Cette solution nécessite un espace pour la chaudière et le stockage du combustible, ainsi qu'un approvisionnement régulier.",
+      estPossible: (situation) => situation.planProtectionAtmosphere !== false,
+      gainClasse: 2,
+      inconvenients: ['Investissement initial important', 'Approvisionnement à prévoir', 'Maintenance à assurer'],
+      label: 'Chaudière biomasse (maison)',
+      pertinence: 2,
+    },
+    {
+      avantages: [
         'Isolation globale recommandée au préalable pour éviter des performances dégradées (chauffage peu efficace et onéreux)',
         'Espace extérieur accessible pour la maintenance',
         'Local technique',
