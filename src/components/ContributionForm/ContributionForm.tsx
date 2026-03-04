@@ -81,7 +81,7 @@ export const filesLimits = {
   maxTotalFileSize: 250 * 1024 * 1024,
 };
 
-export const geoAllowedExtensions = ['.geojson', '.json', '.shp', '.shx', '.dbf', '.prj', '.cpg', '.kml', '.kmz', '.gpkg', '.zip'];
+export const geoAllowedExtensions = ['.geojson', '.json', '.shp', '.shx', '.dbf', '.prj', '.cpg', '.kml', '.kmz', '.gpkg', '.zip', '.pdf'];
 
 export const docAllowedExtensions = ['.pdf', '.doc', '.docx', '.odt', '.zip'];
 
