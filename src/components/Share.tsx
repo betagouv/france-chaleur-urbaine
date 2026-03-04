@@ -4,11 +4,8 @@ import { useEffect, useState } from 'react';
 
 import { copyToClipboard } from '@/components/ui/ButtonCopy';
 import Link from '@/components/ui/Link';
-import useIsMobile from '@/hooks/useIsMobile';
 
 export default function Share() {
-  const isMobile = useIsMobile();
-
   const searchParams = useSearchParams();
 
   const [copied, setCopied] = useState(false);
@@ -17,19 +14,6 @@ export default function Share() {
   useEffect(() => {
     setCopied(false);
   }, [searchParams]);
-
-  const share = async () => {
-    try {
-      await navigator.share({
-        text: 'Ma simulation France Chaleur Urbaine',
-        title: 'Simulation France Chaleur Urbaine',
-        url,
-      });
-      setCopied(true);
-    } catch (error) {
-      console.error('Failed to copy:', error);
-    }
-  };
 
   return (
     <>
@@ -42,7 +26,7 @@ export default function Share() {
           className="w-full justify-center fr-mb-3w"
           onClick={async (e) => {
             e.preventDefault();
-            isMobile && (await navigator.share()) ? share() : copyToClipboard(url);
+            copyToClipboard(url);
             setCopied(true);
           }}
         >
