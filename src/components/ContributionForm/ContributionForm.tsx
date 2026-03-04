@@ -81,9 +81,51 @@ export const filesLimits = {
   maxTotalFileSize: 250 * 1024 * 1024,
 };
 
-export const geoAllowedExtensions = ['.geojson', '.json', '.shp', '.shx', '.dbf', '.prj', '.cpg', '.kml', '.kmz', '.gpkg', '.zip', '.pdf'];
+export const geoAllowedExtensions = [
+  '.geojson',
+  '.json',
+  '.shp',
+  '.shx',
+  '.dbf',
+  '.prj',
+  '.cpg',
+  '.qmd',
+  '.kml',
+  '.kmz',
+  '.gpkg',
+  '.zip',
+  '.pdf',
+];
 
 export const docAllowedExtensions = ['.pdf', '.doc', '.docx', '.odt', '.zip'];
+
+const requiredShapefileExtensions = ['.shp', '.prj'];
+
+/**
+ * Validate file names against allowed extensions and shapefile completeness (.shp + .prj required).
+ * Returns an error message if invalid, or null if valid.
+ */
+const validateFileNames = (fileNames: string[], allowedExtensions: string[]): string | null => {
+  // Ensure all files are allowed
+  for (const name of fileNames) {
+    const ext = `.${name.split('.').pop()?.toLowerCase()}`;
+    if (!allowedExtensions.includes(ext)) {
+      return `L'extension "${ext}" du fichier "${name}" n'est pas autorisée. Extensions acceptées : ${allowedExtensions.join(', ')}.`;
+    }
+  }
+
+  // Ensure all shapefiles are complete (shp + prj). The name is not checked.
+  const extensions = fileNames.map((name) => `.${name.split('.').pop()?.toLowerCase()}`);
+  const shapefileExtensions = ['.shp', '.shx', '.dbf', '.prj', '.cpg'];
+  if (extensions.some((ext) => shapefileExtensions.includes(ext))) {
+    const missing = requiredShapefileExtensions.filter((ext) => !extensions.includes(ext));
+    if (missing.length > 0) {
+      return `Pour un Shapefile, les fichiers ${requiredShapefileExtensions.join(' et ')} sont requis. Fichier(s) manquant(s) : ${missing.join(', ')}.`;
+    }
+  }
+
+  return null;
+};
 
 const createFilesSchema = (allowedExtensions: string[]) =>
   z
@@ -97,35 +139,34 @@ const createFilesSchema = (allowedExtensions: string[]) =>
     .refine((files) => files.reduce((acc, file) => acc + file.size, 0) <= filesLimits.maxTotalFileSize, {
       error: `Le total des fichier doit être inférieur à ${formatFileSize(filesLimits.maxTotalFileSize)}.`,
     })
-    .superRefine((files, ctx) => {
-      for (const file of files) {
-        const ext = `.${file.name.split('.').pop()?.toLowerCase()}`;
-        if (!allowedExtensions.includes(ext)) {
-          ctx.addIssue({
-            code: 'custom',
-            fatal: true,
-            message: `L'extension "${ext}" du fichier "${file.name}" n'est pas autorisée. Extensions acceptées : ${allowedExtensions.join(', ')}.`,
-          });
-          return z.NEVER;
-        }
-      }
-    })
     .superRefine(async (files, ctx) => {
+      // Validate direct uploads
+      const directError = validateFileNames(
+        files.map((f) => f.name),
+        allowedExtensions
+      );
+      if (directError) {
+        ctx.addIssue({ code: 'custom', fatal: true, message: directError });
+        return z.NEVER;
+      }
+
+      // Validate ZIP contents
       for (const file of files) {
-        if (file.name.toLowerCase().endsWith('.zip')) {
-          const JSZip = (await import('jszip')).default;
-          const zip = await JSZip.loadAsync(await file.arrayBuffer());
-          const zipFileNames = Object.keys(zip.files);
-          const allowedInZip = allowedExtensions.filter((e) => e !== '.zip');
-          const hasRelevantFile = zipFileNames.some((name) => allowedInZip.some((ext) => name.toLowerCase().endsWith(ext)));
-          if (!hasRelevantFile) {
-            ctx.addIssue({
-              code: 'custom',
-              fatal: true,
-              message: `Le fichier ZIP "${file.name}" ne contient aucun fichier avec une extension autorisée (${allowedInZip.join(', ')}).`,
-            });
-            return z.NEVER;
-          }
+        if (!file.name.toLowerCase().endsWith('.zip')) {
+          continue;
+        }
+        const JSZip = (await import('jszip')).default;
+        const zip = await JSZip.loadAsync(await file.arrayBuffer());
+        const zipFileNames = Object.values(zip.files)
+          .filter((entry) => !entry.dir)
+          .map((entry) => entry.name.split('/').pop()!);
+        const zipError = validateFileNames(
+          zipFileNames,
+          allowedExtensions.filter((e) => e !== '.zip')
+        );
+        if (zipError) {
+          ctx.addIssue({ code: 'custom', fatal: true, message: `Dans "${file.name}" : ${zipError}` });
+          return z.NEVER;
         }
       }
     });
