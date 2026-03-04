@@ -210,7 +210,7 @@ export default function ChoixChauffageResults() {
               <Link
                 postHogEventKey="link:click"
                 postHogEventProps={{ link_name: 'cta_comment_calculer_resultat', source: 'chaleur_renouvelable' }}
-                href="#"
+                href="/chaleur-renouvelable/methodologie"
               >
                 En savoir plus
               </Link>
