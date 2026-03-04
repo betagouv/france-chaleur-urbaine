@@ -1,4 +1,5 @@
 import SimplePage from '@/components/shared/page/SimplePage';
+import Button from '@/components/ui/Button';
 import Image from '@/components/ui/Image';
 
 function ChaleurRenouvelableMethodologiePage() {
@@ -10,6 +11,9 @@ function ChaleurRenouvelableMethodologiePage() {
       layout="center"
       className="fr-my-5w"
     >
+      <Button className="fr-mb-3w" priority="secondary" onClick={() => history.back()}>
+        <span className="fr-icon-arrow-left-line fr-mr-1w" /> Retour
+      </Button>
       <h1>Simulateur de chauffage écologique et économique : comment ça marche ?</h1>
       <h2>1. Pourquoi un simulateur pour le chauffage écologique ?</h2>
       <p>
@@ -222,6 +226,9 @@ function ChaleurRenouvelableMethodologiePage() {
           </li>
         </ul>
       </p>
+      <Button priority="secondary" onClick={() => history.back()}>
+        <span className="fr-icon-arrow-left-line fr-mr-1w" /> Retour
+      </Button>
     </SimplePage>
   );
 }
