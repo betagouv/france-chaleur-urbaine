@@ -102,13 +102,15 @@ export default function ChoixChauffageResults() {
   const modesWithCout = useMemo(() => {
     return modesDeChauffage.map((it) => {
       const coutParAn = it.coutParAnPublicodeKey
-        ? Number(engine.getField(`Bilan x ${it.coutParAnPublicodeKey} . total avec aides` as RuleName) ?? 0)
+        ? engine.getFieldAsNumber(`Bilan x ${it.coutParAnPublicodeKey} . total sans installation` as RuleName)
         : 0;
-      return { ...it, coutParAn };
+      const coutInstallation =
+        typeof it.coutInstallation === 'function' ? it.coutInstallation(situation) : String(it.coutInstallation ?? '0');
+
+      return { ...it, coutInstallation, coutParAn };
     });
   }, [modesDeChauffage, engine]);
-
-  const coutParAnGaz = Number(engine.getField(`Bilan x Gaz coll sans cond . total avec aides` as RuleName) ?? 0);
+  const coutParAnGaz = engine.getFieldAsNumber(`Bilan x Gaz coll sans cond . total avec aides` as RuleName);
   const [recommended, ...others] = modesWithCout;
 
   const handleAccordionOpenChange = useCallback((id: string, expanded: boolean) => {

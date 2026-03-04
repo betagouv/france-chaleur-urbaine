@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 
+import { getCoutRaccordementResidentiel, prettyPrintCout } from '@/components/Ressources/Contents/SimulateurCoutRaccordement';
 import { type DPE, DPE_ORDER, type EspaceExterieur, type TypeLogement } from '@/modules/chaleur-renouvelable/constants';
 
 export type ModeDeChauffage = {
@@ -10,7 +11,7 @@ export type ModeDeChauffage = {
   avantages: string[];
   inconvenients: string[];
   coutParAnPublicodeKey: string;
-  coutInstallation: string;
+  coutInstallation?: string | ((situation: Situation) => string);
   gainClasse: number;
   gainVsGaz?: number;
   estPossible: (situation: Situation) => boolean;
@@ -18,6 +19,7 @@ export type ModeDeChauffage = {
 
 export type ModeDeChauffageEnriched = ModeDeChauffage & {
   coutParAn: number;
+  coutInstallation: string;
 };
 
 export type Situation = {
@@ -70,7 +72,14 @@ export const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffag
         'Seuil de puissance requis : à vérifier',
         'Local pour la sous-station : à vérifier',
       ],
-      coutInstallation: '6 000 à 8 000 €',
+      coutInstallation: (situation: Situation) => {
+        const result = getCoutRaccordementResidentiel(situation.nbLogements);
+        if (Array.isArray(result)) {
+          const [lowerBoundString, upperBoundString] = result;
+          return `${prettyPrintCout(lowerBoundString / situation.nbLogements)} à ${prettyPrintCout(upperBoundString / situation.nbLogements)}`;
+        }
+        return 'Inconnu';
+      },
       coutParAnPublicodeKey: 'Réseaux de chaleur',
       description:
         "Le réseau de chaleur (ou chauffage urbain) distribue de la chaleur produite de façon centralisée à un ensemble de bâtiments, via des canalisations souterraines. Ces réseaux sont alimentés en majorité par des énergies renouvelables et de récupération locales. C'est la solution à privilégier pour un chauffage collectif lorsqu'elle est disponible.",
@@ -283,7 +292,7 @@ export const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffag
         'Suppression des chaudières (gain de place, sécurité)',
         'Possibilité de couvrir les besoins en froid si associée à des ventilo-convecteurs',
       ],
-      label: 'Pompe à chaleur air-eau individuelle (Maison)',
+      label: 'Pompe à chaleur air-eau individuelle (maison)',
       pertinence: 2,
     },
     {

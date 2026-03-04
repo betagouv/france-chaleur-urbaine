@@ -204,7 +204,7 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
 
 export default SimulateurCoutRaccordement;
 
-function prettyPrintCout(v: number | undefined | null) {
+export function prettyPrintCout(v: number | undefined | null) {
   if (isDefined(v)) {
     return v.toLocaleString('fr-FR', {
       currency: 'EUR',
@@ -366,7 +366,7 @@ const intervallesCoutsRaccordementTertiaire: IntervalleCoutRaccordement[] = [
   },
 ];
 
-function getCoutRaccordementResidentiel(nbLogements: number): [number, number] | typeof outOfRangeValue {
+export function getCoutRaccordementResidentiel(nbLogements: number): [number, number] | typeof outOfRangeValue {
   const intervalle = intervallesCoutsRaccordementResidentiel.find(
     (intervalle) => intervalle.min <= nbLogements && nbLogements <= intervalle.max
   );
