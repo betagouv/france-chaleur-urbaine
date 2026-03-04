@@ -16,13 +16,14 @@ const ChoixChauffageResults = dynamic(() => import('@/modules/chaleur-renouvelab
   ssr: false,
 });
 
+const shareModal = createModal({
+  id: 'share-modal',
+  isOpenedByDefault: false,
+});
+
 export default function ChaleurRenouvelableResultatPage() {
   const searchParams = useSearchParams();
   const [openShareModal, setOpenShareModal] = useState(false);
-  const eligibilityTestModal = createModal({
-    id: 'share-modal',
-    isOpenedByDefault: false,
-  });
   return (
     <SimplePage
       title="Découvrez le chauffage qui vous convient !"
@@ -39,13 +40,7 @@ export default function ChaleurRenouvelableResultatPage() {
             Partager
           </Button>
 
-          <Modal
-            modal={eligibilityTestModal}
-            title=""
-            open={openShareModal}
-            onClose={() => setOpenShareModal(false)}
-            children={<Share />}
-          />
+          <Modal modal={shareModal} title="" open={openShareModal} onClose={() => setOpenShareModal(false)} children={<Share />} />
         </div>
         <h2>Résultats : Vos solutions de chauffage écologique</h2>
 
