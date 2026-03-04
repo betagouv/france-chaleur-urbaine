@@ -68,6 +68,7 @@ type FieldConfig = {
   | {
       type: 'file';
       hint: string;
+      allowedExtensions: string[];
     }
   | {
       type: 'boolean';
@@ -80,69 +81,95 @@ export const filesLimits = {
   maxTotalFileSize: 250 * 1024 * 1024,
 };
 
-// we don't have an approved list of extensions so we remove risky ones
-export const riskyExtensions = [
-  // Executables
-  '.exe',
-  '.bat',
-  '.cmd',
-  '.sh',
-  '.msi',
-  '.bin',
-  '.com',
-  // Scripts
-  '.js',
-  '.mjs',
-  '.vbs',
-  '.wsf',
-  '.ps1',
-  '.py',
-  '.rb',
-  '.php',
-  '.pl',
-  // Documents with macros
-  '.docm',
-  '.xlsm',
-  '.pptm',
-  // HTML/Flash
-  '.html',
-  '.htm',
-  '.mht',
-  '.xhtml',
-  '.swf',
-  // Other
-  '.jar',
-  '.dll',
-  '.sys',
-  '.scr',
-  '.reg',
-  '.hta',
-  '.cpl',
+export const geoAllowedExtensions = [
+  '.geojson',
+  '.json',
+  '.shp',
+  '.shx',
+  '.dbf',
+  '.prj',
+  '.cpg',
+  '.qmd',
+  '.kml',
+  '.kmz',
+  '.gpkg',
+  '.zip',
+  '.pdf',
 ];
 
-const filesSchema = z
-  .array(z.instanceof(File), { error: 'Veuillez choisir un ou plusieurs fichiers' })
-  .refine((files) => files.length <= filesLimits.maxFiles, {
-    error: `Vous devez choisir au maximum ${filesLimits.maxFiles} fichiers.`,
-  })
-  .refine((files) => files.every((file) => file.size <= filesLimits.maxFileSize), {
-    error: `Chaque fichier doit être inférieur à ${formatFileSize(filesLimits.maxFileSize)}.`,
-  })
-  .refine((files) => files.reduce((acc, file) => acc + file.size, 0) <= filesLimits.maxTotalFileSize, {
-    error: `Le total des fichier doit être inférieur à ${formatFileSize(filesLimits.maxTotalFileSize)}.`,
-  })
-  .superRefine((files, ctx) => {
-    for (const file of files) {
-      if (riskyExtensions.some((extension) => file.name.endsWith(extension))) {
-        ctx.addIssue({
-          code: 'custom',
-          fatal: true,
-          message: `L'extension du fichier "${file.name}" n'est pas autorisée.`,
-        });
+export const docAllowedExtensions = ['.pdf', '.doc', '.docx', '.odt', '.zip'];
+
+const requiredShapefileExtensions = ['.shp', '.prj'];
+
+/**
+ * Validate file names against allowed extensions and shapefile completeness (.shp + .prj required).
+ * Returns an error message if invalid, or null if valid.
+ */
+const validateFileNames = (fileNames: string[], allowedExtensions: string[]): string | null => {
+  // Ensure all files are allowed
+  for (const name of fileNames) {
+    const ext = `.${name.split('.').pop()?.toLowerCase()}`;
+    if (!allowedExtensions.includes(ext)) {
+      return `L'extension "${ext}" du fichier "${name}" n'est pas autorisée. Extensions acceptées : ${allowedExtensions.join(', ')}.`;
+    }
+  }
+
+  // Ensure all shapefiles are complete (shp + prj). The name is not checked.
+  const extensions = fileNames.map((name) => `.${name.split('.').pop()?.toLowerCase()}`);
+  const shapefileExtensions = ['.shp', '.shx', '.dbf', '.prj', '.cpg'];
+  if (extensions.some((ext) => shapefileExtensions.includes(ext))) {
+    const missing = requiredShapefileExtensions.filter((ext) => !extensions.includes(ext));
+    if (missing.length > 0) {
+      return `Pour un Shapefile, les fichiers ${requiredShapefileExtensions.join(' et ')} sont requis. Fichier(s) manquant(s) : ${missing.join(', ')}.`;
+    }
+  }
+
+  return null;
+};
+
+const createFilesSchema = (allowedExtensions: string[]) =>
+  z
+    .array(z.instanceof(File), { error: 'Veuillez choisir un ou plusieurs fichiers' })
+    .refine((files) => files.length <= filesLimits.maxFiles, {
+      error: `Vous devez choisir au maximum ${filesLimits.maxFiles} fichiers.`,
+    })
+    .refine((files) => files.every((file) => file.size <= filesLimits.maxFileSize), {
+      error: `Chaque fichier doit être inférieur à ${formatFileSize(filesLimits.maxFileSize)}.`,
+    })
+    .refine((files) => files.reduce((acc, file) => acc + file.size, 0) <= filesLimits.maxTotalFileSize, {
+      error: `Le total des fichier doit être inférieur à ${formatFileSize(filesLimits.maxTotalFileSize)}.`,
+    })
+    .superRefine(async (files, ctx) => {
+      // Validate direct uploads
+      const directError = validateFileNames(
+        files.map((f) => f.name),
+        allowedExtensions
+      );
+      if (directError) {
+        ctx.addIssue({ code: 'custom', fatal: true, message: directError });
         return z.NEVER;
       }
-    }
-  });
+
+      // Validate ZIP contents
+      for (const file of files) {
+        if (!file.name.toLowerCase().endsWith('.zip')) {
+          continue;
+        }
+        const JSZip = (await import('jszip')).default;
+        const zip = await JSZip.loadAsync(await file.arrayBuffer());
+        const zipFileNames = Object.values(zip.files)
+          .filter((entry) => !entry.dir)
+          .map((entry) => entry.name.split('/').pop()!);
+        const zipError = validateFileNames(
+          zipFileNames,
+          allowedExtensions.filter((e) => e !== '.zip')
+        );
+        if (zipError) {
+          ctx.addIssue({ code: 'custom', fatal: true, message: `Dans "${file.name}" : ${zipError}` });
+          return z.NEVER;
+        }
+      }
+    });
 
 const stringSchema = z.string({ error: 'Ce champ est obligatoire' });
 
@@ -159,10 +186,11 @@ const typeDemandeFields = {
       schema: stringSchema,
     },
     {
-      hint: 'Formats préférentiels : GeoJSON, Shapefile, KML, GeoPackage.',
+      allowedExtensions: geoAllowedExtensions,
+      hint: 'Formats préférentiels : GeoJSON, Shapefile (au moins shp + prj), KML, GeoPackage.',
       label: 'Téléverser vos fichiers :',
       name: 'fichiers',
-      schema: filesSchema,
+      schema: createFilesSchema(geoAllowedExtensions),
       type: 'file',
     },
   ],
@@ -173,10 +201,11 @@ const typeDemandeFields = {
       schema: stringSchema,
     },
     {
+      allowedExtensions: docAllowedExtensions,
       hint: 'Formats préférentiels : PDF, Word.',
       label: 'Téléverser vos fichiers :',
       name: 'fichiers',
-      schema: filesSchema,
+      schema: createFilesSchema(docAllowedExtensions),
       type: 'file',
     },
   ],
@@ -220,10 +249,11 @@ const typeDemandeFields = {
       schema: z.string().optional(),
     },
     {
-      hint: 'Formats préférentiels : GeoJSON, Shapefile, KML, GeoPackage.',
+      allowedExtensions: geoAllowedExtensions,
+      hint: 'Formats préférentiels : GeoJSON, Shapefile (au moins shp + prj), KML, GeoPackage.',
       label: 'Téléverser vos fichiers :',
       name: 'fichiers',
-      schema: filesSchema,
+      schema: createFilesSchema(geoAllowedExtensions),
       type: 'file',
     },
   ],
@@ -262,10 +292,11 @@ const typeDemandeFields = {
       schema: z.string().optional(),
     },
     {
-      hint: 'Formats préférentiels : GeoJSON, Shapefile, KML, GeoPackage.',
+      allowedExtensions: geoAllowedExtensions,
+      hint: 'Formats préférentiels : GeoJSON, Shapefile (au moins shp + prj), KML, GeoPackage.',
       label: 'Téléverser vos fichiers :',
       name: 'fichiers',
-      schema: filesSchema,
+      schema: createFilesSchema(geoAllowedExtensions),
       type: 'file',
     },
   ],
@@ -291,7 +322,7 @@ const zodSchemasByTypeDemande = ObjectKeys(typeDemandeFields).reduce(
   (acc, key) => {
     (acc[key] as any) = typeDemandeFields[key].reduce(
       (acc2, field) => {
-        acc2[field.name] = (field as FieldConfig).schema;
+        acc2[field.name] = field.schema;
         return acc2;
       },
       {} as Record<string, any>
@@ -377,7 +408,7 @@ const ContributionForm = () => {
     } satisfies Record<keyof FormData, ''> as unknown as FormData,
     onSubmit: toastErrors(
       async ({ value }: { value: FormData }) => {
-        await postFormDataFetchJSON('/api/contribution', zContributionFormData.parse(value));
+        await postFormDataFetchJSON('/api/contribution', await zContributionFormData.parseAsync(value));
         setFormSuccess(true);
       },
       () => (
@@ -388,13 +419,13 @@ const ContributionForm = () => {
       )
     ),
     validators: {
-      onChange: zContributionFormData,
+      onChangeAsync: zContributionFormData,
     },
   });
 
   // ensure the state is invalid when loaded
   useEffect(() => {
-    void (form.validate as any)('submit');
+    void form.validate('submit');
   }, []);
 
   return formSuccess ? (
@@ -420,15 +451,13 @@ const ContributionForm = () => {
     >
       <form.Field
         name="typeUtilisateur"
-        listeners={
-          {
-            onChange: ({ value }: { value: TypeUtilisateur }) => {
-              if (value !== 'Autre') {
-                form.setFieldValue('typeUtilisateurAutre', '');
-              }
-            },
-          } as any
-        }
+        listeners={{
+          onChange: ({ value }: { value: TypeUtilisateur }) => {
+            if (value !== 'Autre') {
+              form.setFieldValue('typeUtilisateurAutre', '');
+            }
+          },
+        }}
         children={(field) => (
           <Radio
             label="Vous êtes :"
@@ -573,22 +602,20 @@ const ContributionForm = () => {
 
       <form.Field
         name="typeDemande"
-        listeners={
-          {
-            onChange: ({ value }: { value: TypeDemande | '' }) => {
-              if (value === '') {
-                return;
-              }
-              // when changing typeDemande, the form remembers its old fields so we must remove them manually
-              const fieldsToDelete = new Set(ObjectKeys(form.state.fieldMeta))
-                .difference(new Set([...ObjectKeys(zCommonFormData.shape), 'typeDemande']))
-                .difference(new Set(typeDemandeFields[value].map((f) => f.name)));
-              fieldsToDelete.forEach((field) => {
-                form.deleteField(field);
-              });
-            },
-          } as any
-        }
+        listeners={{
+          onChange: ({ value }: { value: TypeDemande | '' }) => {
+            if (value === '') {
+              return;
+            }
+            // when changing typeDemande, the form remembers its old fields so we must remove them manually
+            const fieldsToDelete = new Set(ObjectKeys(form.state.fieldMeta))
+              .difference(new Set([...ObjectKeys(zCommonFormData.shape), 'typeDemande']))
+              .difference(new Set(typeDemandeFields[value].map((f) => f.name)));
+            fieldsToDelete.forEach((field) => {
+              form.deleteField(field);
+            });
+          },
+        }}
         children={(field) => (
           <Radio
             label="Vous souhaitez :"
@@ -616,24 +643,23 @@ const ContributionForm = () => {
             <form.Field
               name={option.name}
               key={option.name}
-              children={(field: any) =>
-                'type' in option && (option as FieldConfig).type === 'file' ? (
+              children={(field) =>
+                'type' in option && option.type === 'file' ? (
                   <>
                     <Upload
                       className="fr-mb-2w"
                       label={option.label}
                       hint={
-                        (
-                          <>
-                            Taille maximale : {formatFileSize(filesLimits.maxFileSize)}. Maximum {filesLimits.maxFiles} fichiers.{' '}
-                            {(option as Extract<FieldConfig, { type: 'file' }>).hint}
-                            <br />
-                            Pour téléverser plusieurs fichiers, merci de les sélectionner simultanément et non l'un après l'autre.
-                          </>
-                        ) as any // dsfr only allow strings
+                        <>
+                          Taille maximale : {formatFileSize(filesLimits.maxFileSize)}. Maximum {filesLimits.maxFiles} fichiers.{' '}
+                          {option.hint}
+                          <br />
+                          Pour téléverser plusieurs fichiers, merci de les sélectionner simultanément et non l'un après l'autre.
+                        </>
                       }
                       multiple
                       nativeInputProps={{
+                        accept: option.allowedExtensions.join(','),
                         onBlur: field.handleBlur,
                         onChange: (e) => {
                           const files = e.target.files;
@@ -654,7 +680,7 @@ const ContributionForm = () => {
                       </div>
                     )}
                   </>
-                ) : 'type' in option && (option as FieldConfig).type === 'boolean' ? (
+                ) : 'type' in option && option.type === 'boolean' ? (
                   <Radio
                     label={option.label}
                     name={field.name}

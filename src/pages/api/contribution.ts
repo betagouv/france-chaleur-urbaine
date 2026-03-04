@@ -1,7 +1,15 @@
+import { readFile } from 'node:fs/promises';
+
 import formidable from 'formidable';
+import JSZip from 'jszip';
 import { z } from 'zod';
 
-import { filesLimits, riskyExtensions, zContributionFormDataBase } from '@/components/ContributionForm/ContributionForm';
+import {
+  docAllowedExtensions,
+  filesLimits,
+  geoAllowedExtensions,
+  zContributionFormDataBase,
+} from '@/components/ContributionForm/ContributionForm';
 import { createNextApiRateLimiter } from '@/modules/security/server/rate-limit/next-pages';
 import { AirtableDB } from '@/server/db/airtable';
 import { logger } from '@/server/helpers/logger';
@@ -17,49 +25,81 @@ export const config = {
   },
 };
 
-const serverSideFilesSchema = z
-  .array(
-    // formidable.File
-    z.object({
-      filepath: z.string(),
-      mimetype: z.string(),
-      originalFilename: z.string(),
-      size: z.number(),
+const createServerFilesSchema = (allowedExtensions: string[]) =>
+  z
+    .array(
+      // formidable.File
+      z.object({
+        filepath: z.string(),
+        mimetype: z.string(),
+        originalFilename: z.string(),
+        size: z.number(),
+      })
+    )
+    .refine((files) => files.length <= filesLimits.maxFiles, {
+      error: `Vous devez choisir au maximum ${filesLimits.maxFiles} fichiers.`,
     })
-  )
-  .refine((files) => files.length <= filesLimits.maxFiles, {
-    error: `Vous devez choisir au maximum ${filesLimits.maxFiles} fichiers.`,
-  })
-  .refine((files) => files.every((file) => file.size <= filesLimits.maxFileSize), {
-    error: `Chaque fichier doit être inférieur à ${formatFileSize(filesLimits.maxFileSize)}.`,
-  })
-  .refine((files) => files.reduce((acc, file) => acc + file.size, 0) <= filesLimits.maxTotalFileSize, {
-    error: `Le total des fichier doit être inférieur à ${formatFileSize(filesLimits.maxTotalFileSize)}.`,
-  })
-  .superRefine((files, ctx) => {
-    files.forEach((file) => {
-      if (riskyExtensions.some((extension) => file.originalFilename.endsWith(extension))) {
-        ctx.addIssue({
-          code: 'custom',
-          fatal: true,
-          message: `L'extension du fichier "${file.originalFilename}" n'est pas autorisée.`,
-        });
-        return z.NEVER;
+    .refine((files) => files.every((file) => file.size <= filesLimits.maxFileSize), {
+      error: `Chaque fichier doit être inférieur à ${formatFileSize(filesLimits.maxFileSize)}.`,
+    })
+    .refine((files) => files.reduce((acc, file) => acc + file.size, 0) <= filesLimits.maxTotalFileSize, {
+      error: `Le total des fichier doit être inférieur à ${formatFileSize(filesLimits.maxTotalFileSize)}.`,
+    })
+    .superRefine((files, ctx) => {
+      for (const file of files) {
+        const ext = `.${file.originalFilename.split('.').pop()?.toLowerCase()}`;
+        if (!allowedExtensions.includes(ext)) {
+          ctx.addIssue({
+            code: 'custom',
+            fatal: true,
+            message: `L'extension "${ext}" du fichier "${file.originalFilename}" n'est pas autorisée. Extensions acceptées : ${allowedExtensions.join(', ')}.`,
+          });
+          return z.NEVER;
+        }
       }
-    });
-  })
-  .optional();
+    })
+    .superRefine(async (files, ctx) => {
+      for (const file of files) {
+        if (file.originalFilename.toLowerCase().endsWith('.zip')) {
+          const buffer = await readFile(file.filepath);
+          const zip = await JSZip.loadAsync(buffer);
+          const zipFileNames = Object.keys(zip.files);
+          const allowedInZip = allowedExtensions.filter((e) => e !== '.zip');
+          const hasRelevantFile = zipFileNames.some((name) => allowedInZip.some((ext) => name.toLowerCase().endsWith(ext)));
+          if (!hasRelevantFile) {
+            ctx.addIssue({
+              code: 'custom',
+              fatal: true,
+              message: `Le fichier ZIP "${file.originalFilename}" ne contient aucun fichier avec une extension autorisée (${allowedInZip.join(', ')}).`,
+            });
+            return z.NEVER;
+          }
+        }
+      }
+    })
+    .optional();
 
-// updated schema with new server side files validation
+// mapping from typeDemande discriminator values to their allowed extensions
+const allowedExtensionsByTypeDemande: Record<string, string[]> = {
+  'ajout périmètre développement prioritaire': geoAllowedExtensions,
+  'ajout schéma directeur': docAllowedExtensions,
+  'ajout tracé réseau en construction': geoAllowedExtensions,
+  'ajout tracé réseau existant': geoAllowedExtensions,
+  autre: geoAllowedExtensions, // fallback, "autre" has no file field but schema expects optional
+};
+
+// build the discriminated union with per-typeDemande file schemas
 const zServerContributionFormData = z
   .discriminatedUnion(
     'typeDemande',
     nonEmptyArray(
-      zContributionFormDataBase.options.map((schema) =>
-        schema.extend({
-          fichiers: serverSideFilesSchema,
-        })
-      )
+      zContributionFormDataBase.options.map((schema) => {
+        const typeDemande = schema.shape.typeDemande._def.values[0] as string;
+        const extensions = allowedExtensionsByTypeDemande[typeDemande] ?? geoAllowedExtensions;
+        return schema.extend({
+          fichiers: createServerFilesSchema(extensions),
+        });
+      })
     )
   )
   .refine(
