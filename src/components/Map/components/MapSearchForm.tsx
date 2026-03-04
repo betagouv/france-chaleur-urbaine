@@ -1,9 +1,9 @@
 import { useQueryState } from 'nuqs';
 import { useState } from 'react';
 
-import AddressAutocomplete, { type AddressAutocompleteInputProps } from '@/components/form/dsfr/AddressAutocompleteInput';
 import Link from '@/components/ui/Link';
 import useUserInfo from '@/modules/app/client/hooks/useUserInfo';
+import { AddressField, type AddressFieldProps } from '@/modules/form/AddressField';
 import trpc from '@/modules/trpc/client';
 import type { HandleAddressSelect } from '@/types/HeatNetworksResponse';
 
@@ -19,7 +19,7 @@ const MapSearchForm = ({
   const [defaultAddress, setDefaultAddress] = useQueryState('address');
   const { userInfo, setUserInfo } = useUserInfo();
 
-  const handleAddressSelected: AddressAutocompleteInputProps['onSelect'] = async (geoAddress) => {
+  const handleAddressSelected: AddressFieldProps['onSelect'] = async (geoAddress) => {
     if (!geoAddress) {
       return;
     }
@@ -48,7 +48,7 @@ const MapSearchForm = ({
   };
 
   return (
-    <AddressAutocomplete
+    <AddressField
       label={''}
       state={eligibilityError ? 'error' : undefined}
       stateRelatedMessage={

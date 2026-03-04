@@ -18,7 +18,7 @@
 docs/                    # Legacy documentations (do not use)
 src/
 ├── 🟢 app/global.css    # Only used for global CSS
-├── 🟢 modules/          # Modern module-based architecture (16 modules)
+├── 🟢 modules/          # Modern module-based architecture (24 modules)
 ├── 🟢 components/       # UI components (keep current structure)
 ├── 🟢 hooks/            # React hooks (keep current structure)  
 ├── 🟢 config/           # Configuration files (keep current structure)
@@ -37,7 +37,7 @@ src/
 
 > **General module principles** in `.ai/context/architecture.md`. This section = project-specific modules.
 
-### ✅ Existing Modules (16)
+### ✅ Existing Modules
 
 | Module | Purpose | Status | AGENTS.md | Business Area |
 |--------|---------|--------|-----------|---------------|
@@ -57,6 +57,7 @@ src/
 | **notification** | Notifications | ✅ Active | ❓ Check | Communication |
 | **media-kit** | Media resources | ✅ Active | ❓ Check | Content |
 | **ban** | Base Adresse Nationale API | ✅ Active | ❓ Check | External APIs |
+| **form** | Reusable form components (Autocomplete) | ✅ Active | ✅ Complete | UI Components |
 
 **Module Documentation**: Each module has `AGENTS.md` with structure, API, examples. See `.ai/context/modules.md` for module conventions.
 

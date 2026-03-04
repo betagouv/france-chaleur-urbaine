@@ -1,9 +1,9 @@
 import Badge from '@codegouvfr/react-dsfr/Badge';
 import { useState } from 'react';
 
-import AddressAutocomplete from '@/components/form/AddressAutocomplete';
 import FCUBadge from '@/components/ui/Badge';
 import Loader from '@/components/ui/Loader';
+import { AddressSearch } from '@/modules/form/AddressSearch';
 import { notify } from '@/modules/notification';
 import trpc, { type RouterOutput } from '@/modules/trpc/client';
 import { stopPropagation } from '@/utils/events';
@@ -25,10 +25,10 @@ export default function TableAddressAutocomplete({ demand }: TableAddressAutocom
   if (isEditing) {
     return (
       <div className="p-2 bg-white relative" onClick={stopPropagation} onDoubleClick={stopPropagation}>
-        <AddressAutocomplete
+        <AddressSearch
+          defaultValue={testAddress.ban_address ?? ''}
           nativeInputProps={{
             autoFocus: true,
-            defaultValue: testAddress.ban_address ?? '',
             disabled: isLoading,
           }}
           onSelect={async (address) => {

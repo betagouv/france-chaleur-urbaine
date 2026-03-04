@@ -2,10 +2,10 @@ import { parseAsStringLiteral, useQueryState } from 'nuqs';
 import { useState } from 'react';
 
 import type { TypeLogement } from '@/components/choix-chauffage/type-logement';
-import AddressAutocompleteInput from '@/components/form/dsfr/AddressAutocompleteInput';
 import Radio from '@/components/form/dsfr/Radio';
 import Section, { SectionContent, SectionHeading, SectionTwoColumns } from '@/components/ui/Section';
 import type { SuggestionItem } from '@/modules/ban/types';
+import { AddressField } from '@/modules/form/AddressField';
 import { toastErrors } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
 import type { AddressDetail } from '@/types/HeatNetworksResponse';
@@ -56,7 +56,7 @@ function ChoixChauffageForm() {
               Quel chauffage écologique pour mon logement&nbsp;?
             </SectionHeading>
 
-            <AddressAutocompleteInput
+            <AddressField
               className="mb-2!"
               defaultValue={address ?? ''}
               label={<strong>Entrez votre adresse :</strong>}

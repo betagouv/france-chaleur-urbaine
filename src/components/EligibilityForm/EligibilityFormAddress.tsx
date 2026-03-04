@@ -2,10 +2,10 @@ import { useRouter } from 'next/router';
 import type React from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import AddressAutocomplete, { type AddressAutocompleteInputProps } from '@/components/form/dsfr/AddressAutocompleteInput';
 import Box from '@/components/ui/Box';
 import Link from '@/components/ui/Link';
 import type { SuggestionItem } from '@/modules/ban/types';
+import { AddressField, type AddressFieldProps } from '@/modules/form/AddressField';
 import trpc from '@/modules/trpc/client';
 import type { AddressDataType } from '@/types/AddressData';
 
@@ -70,7 +70,7 @@ const EligibilityFormAddress: React.FC<CheckEligibilityFormProps> = ({
     }
   }, [router.query]);
 
-  const handleAddressSelected: AddressAutocompleteInputProps['onSelect'] = useCallback(
+  const handleAddressSelected: AddressFieldProps['onSelect'] = useCallback(
     async (geoAddress?: SuggestionItem): Promise<void> => {
       const address = geoAddress?.properties?.label;
 
@@ -142,7 +142,7 @@ const EligibilityFormAddress: React.FC<CheckEligibilityFormProps> = ({
           {formLabel}
         </SelectEnergy>
       </CheckEligibilityFormLabel>
-      {!coords && <AddressAutocomplete nativeInputProps={{ placeholder: 'Tapez ici votre adresse' }} onSelect={handleAddressSelected} />}
+      {!coords && <AddressField nativeInputProps={{ placeholder: 'Tapez ici votre adresse' }} onSelect={handleAddressSelected} />}
       {status === 'eligibilitySubmissionError' && (
         <Box textColor="#c00" ml="auto">
           Une erreur est survenue. Veuillez réessayer ou bien <Link href="/contact">contacter le support</Link>.

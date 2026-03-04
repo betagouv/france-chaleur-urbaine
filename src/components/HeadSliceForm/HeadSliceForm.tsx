@@ -5,7 +5,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { EligibilityFormContact } from '@/components/EligibilityForm';
 import { CheckEligibilityFormLabel, SelectEnergy } from '@/components/EligibilityForm/components';
 import { type EnergyInputsLabelsType, energyInputsDefaultLabels } from '@/components/EligibilityForm/EligibilityFormAddress';
-import AddressAutocomplete from '@/components/form/dsfr/AddressAutocompleteInput';
 import MarkdownWrapper from '@/components/MarkdownWrapper';
 import Slice from '@/components/Slice';
 import Button from '@/components/ui/Button';
@@ -18,6 +17,7 @@ import useUserInfo from '@/modules/app/client/hooks/useUserInfo';
 import type { AvailableHeating } from '@/modules/app/types';
 import type { SuggestionItem } from '@/modules/ban/types';
 import DemandSondageForm from '@/modules/demands/client/DemandSondageForm';
+import { AddressField } from '@/modules/form/AddressField';
 import trpc from '@/modules/trpc/client';
 import cx from '@/utils/cx';
 
@@ -165,7 +165,7 @@ const HeadSliceForm = ({
                 value={userInfo.heatingType || ''}
               />
             </CheckEligibilityFormLabel>
-            <AddressAutocomplete
+            <AddressField
               className="mb-2!"
               defaultValue={userInfo.address}
               nativeInputProps={{ placeholder: 'Tapez ici votre adresse' }}
@@ -177,9 +177,6 @@ const HeadSliceForm = ({
                 const address = geoAddress?.properties?.label;
                 setUserInfo({ address: address ?? '' });
                 setGeoAddress(geoAddress);
-              }}
-              onError={() => {
-                setLoadingStatus('idle');
               }}
             />
             <div

@@ -2,12 +2,12 @@ import { Button } from '@codegouvfr/react-dsfr/Button';
 import { useState } from 'react';
 
 import { clientConfig } from '@/client-config';
-import AddressAutocomplete from '@/components/addressAutocomplete';
 import { CheckEligibilityFormLabel, SelectEnergy } from '@/components/EligibilityForm/components';
 import { energyInputsDefaultLabels } from '@/components/EligibilityForm/EligibilityFormAddress';
 import Image from '@/components/ui/Image';
 import { AnalyticsFormId } from '@/modules/analytics/client';
 import type { SuggestionItem } from '@/modules/ban/types';
+import { AddressSearch } from '@/modules/form/AddressSearch';
 
 import { Container, Form, Header } from './Eligibility.styles';
 
@@ -30,12 +30,7 @@ const Eligibility = () => {
             value={heatingType}
           />
         </CheckEligibilityFormLabel>
-        <AddressAutocomplete
-          placeholder="Tapez ici votre adresse"
-          onAddressSelected={(_address, suggestionItem) => {
-            setAddress(suggestionItem);
-          }}
-        />
+        <AddressSearch nativeInputProps={{ placeholder: 'Tapez ici votre adresse' }} onSelect={(item) => setAddress(item)} />
         <Button
           disabled={!heatingType || !address}
           onClick={() => window.open(`${clientConfig.websiteUrl}?heating=${heatingType}&address=${address?.properties.label}`)}
