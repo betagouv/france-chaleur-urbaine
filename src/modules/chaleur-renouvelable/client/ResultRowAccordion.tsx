@@ -184,7 +184,7 @@ export const ResultRowAccordion = React.memo(function ResultRowAccordion({
           <div className="bg-green-100 rounded fr-p-1w flex items-center">
             <Image src="/icons/icon-thumbs-up.png" alt="icone pouce levé" aria-hidden="true" width="24" height="24" /> Avantages
           </div>
-          <ul>
+          <ul className="fr-ml-1w">
             {item.avantages.map((avantage, key) => (
               <li key={key}>{avantage}</li>
             ))}
@@ -194,7 +194,7 @@ export const ResultRowAccordion = React.memo(function ResultRowAccordion({
           <div className="bg-yellow-50 rounded fr-p-1w flex items-center">
             <Image src="/icons/icon-thumbs-up.png" alt="icone pouce baissé" aria-hidden="true" width="24" height="24" /> Inconvénients
           </div>
-          <ul>
+          <ul className="fr-ml-1w">
             {item.inconvenients.map((inconvenient, key) => (
               <li key={key}>{inconvenient}</li>
             ))}
@@ -204,7 +204,7 @@ export const ResultRowAccordion = React.memo(function ResultRowAccordion({
           <div className="bg-yellow-50 rounded fr-p-1w flex items-center">
             <Image src="/icons/icon-wheel.png" alt="icone d'engrenage" aria-hidden="true" width="24" height="24" /> Contraintes techniques
           </div>
-          <ul>
+          <ul className="fr-ml-1w">
             {item.contraintesTechniques.map((contrainteTechnique, key) => (
               <li key={key}>{contrainteTechnique}</li>
             ))}
@@ -212,12 +212,10 @@ export const ResultRowAccordion = React.memo(function ResultRowAccordion({
         </div>
       </div>
       <div className="bg-yellow-50 fr-p-1w flex flex-col md:flex-row justify-between items-start">
-        <p className="fr-m-0">
-          <span className="flex items-center gap-1">
-            <Image src="/icons/icon-money.png" alt="icone d'engrenage" aria-hidden="true" width="24" height="24" />
-            Coût d’installation : <strong>{item.coutInstallation} par logement.</strong>
-          </span>
-          <span> Des aides existent (Coup de Pouce, Ma Prime Rénov’...)</span>
+        <p className="fr-m-0 inline-flex items-center gap-1 flex-wrap">
+          <Image src="/icons/icon-money.png" alt="icone d'engrenage" aria-hidden="true" width="24" height="24" />
+          Coût d’installation : <strong>{item.coutInstallation} par logement.</strong>
+          <span>Des aides existent (Coup de Pouce, Ma Prime Rénov’...)</span>
         </p>
         <Link href="https://france-renov.gouv.fr/" isExternal className="w-auto">
           Plus d'infos
