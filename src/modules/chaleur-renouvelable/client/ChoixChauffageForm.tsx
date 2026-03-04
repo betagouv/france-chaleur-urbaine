@@ -36,8 +36,9 @@ export default function ChoixChauffageForm() {
         setEspaceExterieur={(v) => void urlParams.setEspaceExterieur(v)}
       />
 
-      <div className="mt-5 flex justify-end">
+      <div className="mt-5 flex justify-center md:justify-end">
         <Button
+          className="flex-1 md:flex-none md:flex justify-center"
           size="medium"
           iconId="fr-icon-arrow-right-line"
           iconPosition="right"
