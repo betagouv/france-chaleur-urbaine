@@ -97,7 +97,7 @@ function MobileStats({
         <div>Coût par rapport au gaz</div>
         {gainVsGaz}
       </div>
-      <div className="flex justify-between fr-mb-3w">
+      <div className="flex justify-between items-center fr-mb-3w">
         <div>Gain DPE</div>
         <div className="flex items-center gap-3">
           <DpeTag letter={dpeFrom} />
