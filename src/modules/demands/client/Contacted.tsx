@@ -18,6 +18,7 @@ const Contacted = ({
     <Checkbox
       label=""
       nativeInputProps={{
+        'aria-label': 'Prise de contact',
         defaultChecked: demand['Prise de contact'],
         name: 'prise_de_contact',
         onChange: handleCheckboxChange,

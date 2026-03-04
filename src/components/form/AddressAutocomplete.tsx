@@ -38,6 +38,7 @@ const AddressAutocomplete = ({
         onClear?.();
       }}
       nativeInputProps={{
+        'aria-label': 'Rechercher une adresse',
         ...nativeInputProps,
         placeholder: nativeInputProps?.placeholder || 'Tapez ici votre adresse',
       }}

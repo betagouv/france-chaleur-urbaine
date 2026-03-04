@@ -37,6 +37,7 @@ export const NewsletterInput = ({ className }: { className?: string }) => {
       className={cx('fr-input', { 'fr-input--error': !!error }, className)}
       type="email"
       autoComplete="email"
+      aria-label="Adresse email pour la newsletter"
       placeholder="Votre adresse mail"
       value={email}
       onChange={(e) => {

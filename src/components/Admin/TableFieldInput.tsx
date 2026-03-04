@@ -68,6 +68,7 @@ const TableFieldInput = forwardRef<HTMLInputElement, TableFieldInputProps>((rawP
       label=""
       {...restProps}
       nativeInputProps={{
+        'aria-label': title,
         onChange,
         title,
         type,

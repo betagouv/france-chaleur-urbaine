@@ -31,6 +31,7 @@ const Status = ({
       placeholder="Sélectionner un statut"
       size="sm"
       nativeSelectProps={{
+        'aria-label': 'Statut de la demande',
         disabled,
         onChange: (e) => {
           const newStatus = e.target.value;

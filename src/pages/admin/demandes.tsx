@@ -361,6 +361,7 @@ function DemandesAdmin(): React.ReactElement {
             ]}
             size="sm"
             nativeSelectProps={{
+              'aria-label': 'Recontacté par le gestionnaire',
               onChange: (e) =>
                 updateDemand(row.original.id, {
                   'Recontacté par le gestionnaire': e.target.value,

@@ -77,6 +77,7 @@ export namespace CheckableAccordionProps {
     expandOnCheck?: boolean;
     onCheck: (checked: boolean) => any;
     small?: CheckboxProps['small'];
+    postHogToggleEventName?: string;
   };
 
   export type Uncontrolled<AuthorizedLabel extends React.ReactNode> = Common<AuthorizedLabel> & {
@@ -112,6 +113,7 @@ export const CheckableAccordion = memo(
       onCheck,
       showToggle,
       small,
+      postHogToggleEventName,
       ...rest
     } = props;
 
@@ -174,6 +176,7 @@ export const CheckableAccordion = memo(
               className={cx(fr.cx('fr-accordion__btn'), 'self-stretch')}
               aria-expanded={isExpanded}
               aria-controls={collapseElementId}
+              aria-label={`${isExpanded ? 'Replier' : 'Déplier'} la section ${postHogToggleEventName || ''}`}
               onClick={onExtendButtonClick}
               title="Déplier/replier la section"
               type="button"

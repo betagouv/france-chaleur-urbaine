@@ -26,6 +26,7 @@ const SelectEnergy = ({ children, label, name, cardMode, selectOptions = {}, val
           label,
           nativeInputProps: {
             checked: value === optionValue,
+            'data-attr': `${name}-${optionValue}`,
             onChange: () => {
               onChange(optionValue);
             },

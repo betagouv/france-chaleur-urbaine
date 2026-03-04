@@ -45,6 +45,7 @@ const Comment = <T extends Demand>({
       size="sm"
       className="w-full [&>textarea]:leading-4!"
       nativeTextAreaProps={{
+        'aria-label': 'Commentaire',
         onChange: onChangeHandler,
         value: value ?? '',
       }}
