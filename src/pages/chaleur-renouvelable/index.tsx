@@ -1,5 +1,4 @@
 import SimplePage from '@/components/shared/page/SimplePage';
-import { ResponsiveRow } from '@/components/ui/Box';
 import ChoixChauffageForm from '@/modules/chaleur-renouvelable/client/ChoixChauffageForm';
 
 const BENEFITS = [
@@ -61,16 +60,16 @@ function ChaleurRenouvelablePage() {
 
       <div className="fr-container fr-pt-6w">
         <h3>Pourquoi choisir un chauffage écologique ?</h3>
-        <ResponsiveRow className="justify-center items-center gap-6">
+        <div className="flex justify-center items-center gap-6">
           {BENEFITS.slice(0, 3).map((b) => (
             <BenefitCard key={b.icon} icon={b.icon} lines={b.lines} />
           ))}
-        </ResponsiveRow>
-        <ResponsiveRow className="justify-center items-center gap-6">
+        </div>
+        <div className="flex justify-center items-center gap-6">
           {BENEFITS.slice(3).map((b) => (
             <BenefitCard key={b.icon} icon={b.icon} lines={b.lines} />
           ))}
-        </ResponsiveRow>
+        </div>
       </div>
       <div className="bg-light">
         <div className="fr-container fr-py-6w">

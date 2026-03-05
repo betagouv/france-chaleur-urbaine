@@ -40,7 +40,9 @@ export default function ChaleurRenouvelableResultatPage() {
             Partager
           </Button>
 
-          <Modal modal={shareModal} title="" open={openShareModal} onClose={() => setOpenShareModal(false)} children={<Share />} />
+          <Modal modal={shareModal} title="" open={openShareModal} onClose={() => setOpenShareModal(false)}>
+            <Share />
+          </Modal>
         </div>
         <h2>Résultats : Vos solutions de chauffage écologique</h2>
 
