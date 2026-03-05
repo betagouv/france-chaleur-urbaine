@@ -1,17 +1,14 @@
 import { z } from 'zod';
 
-export type DPE = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G';
-export const DPE_ORDER = ['A', 'B', 'C', 'D', 'E', 'F', 'G'] as const satisfies readonly DPE[];
+export const DPE_VALUES = ['A', 'B', 'C', 'D', 'E', 'F', 'G'] as const;
 
-export type TypeLogement = 'immeuble_chauffage_collectif' | 'immeuble_chauffage_individuel' | 'maison_individuelle';
-export const typeLogementValues = [
-  'immeuble_chauffage_collectif',
-  'immeuble_chauffage_individuel',
-  'maison_individuelle',
-] as const satisfies readonly TypeLogement[];
+export type DPE = (typeof DPE_VALUES)[number];
 
-export type EspaceExterieur = 'shared' | 'private' | 'both' | 'none';
-export const espaceExterieurValues = ['shared', 'private', 'both', 'none'] as const satisfies readonly EspaceExterieur[];
+export const TYPE_LOGEMENT_VALUES = ['immeuble_chauffage_collectif', 'immeuble_chauffage_individuel', 'maison_individuelle'] as const;
+export type TypeLogement = (typeof TYPE_LOGEMENT_VALUES)[number];
+
+export const ESPACE_EXTERIEUR_VALUES = ['shared', 'private', 'both', 'none'] as const;
+export type EspaceExterieur = (typeof ESPACE_EXTERIEUR_VALUES)[number];
 
 export const fieldLabelInformation = {
   email: 'Email',
@@ -32,10 +29,10 @@ export const zContactFormAdemeHelp = z.object({
 export const zAirtableAdemeHelp = z.object({
   Adresse: z.string(),
   Date: z.iso.datetime(),
-  DPE: z.enum(DPE_ORDER),
+  DPE: z.enum(DPE_VALUES),
   Email: z.email("Votre adresse email n'est pas valide").min(1, 'Veuillez renseigner votre adresse email'),
   'Espace extérieur': z.enum(['Partagés uniquement', 'Individuels uniquement', 'Partagés et individuels', 'Aucun']),
-  'Mode de chauffage': z.enum(typeLogementValues),
+  'Mode de chauffage': z.enum(TYPE_LOGEMENT_VALUES),
   'Nb habitant moyen': z.number(),
   'Nombre de logement': z.number(),
   'Surface moyenne': z.number(),

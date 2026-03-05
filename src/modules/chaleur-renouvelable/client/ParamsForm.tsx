@@ -4,7 +4,7 @@ import Button from '@/components/ui/Button';
 import Image from '@/components/ui/Image';
 import type { SuggestionItem } from '@/modules/ban/types';
 import { SettingsTopFields } from '@/modules/chaleur-renouvelable/client/SettingsTopFields';
-import { type DPE, DPE_ORDER, type EspaceExterieur, type TypeLogement } from '@/modules/chaleur-renouvelable/constants';
+import { type DPE, DPE_VALUES, type EspaceExterieur, type TypeLogement } from '@/modules/chaleur-renouvelable/constants';
 import cx from '@/utils/cx';
 
 const isNumericLike = (v: string) => v === '' || /^[0-9]+([.,][0-9]*)?$/.test(v);
@@ -100,7 +100,7 @@ export function ParamsForm({
           )}
           <Select
             label="DPE (étiquette énergétique)"
-            options={DPE_ORDER.map((i) => ({ label: i, value: i }))}
+            options={DPE_VALUES.map((i) => ({ label: i, value: i }))}
             nativeSelectProps={{
               onChange: (e) => void setDpe(e.target.value as DPE),
               value: dpe,

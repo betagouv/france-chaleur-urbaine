@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 
 import { getCoutRaccordementResidentiel, prettyPrintCout } from '@/components/Ressources/Contents/SimulateurCoutRaccordement';
-import { type DPE, DPE_ORDER, type EspaceExterieur, type TypeLogement } from '@/modules/chaleur-renouvelable/constants';
+import { type DPE, DPE_VALUES, type EspaceExterieur, type TypeLogement } from '@/modules/chaleur-renouvelable/constants';
 
 export type ModeDeChauffage = {
   label: string;
@@ -56,9 +56,9 @@ export const espaceExterieurOptions = [
 }[];
 
 export function improveDpe(dpe: DPE, gainClasse: number): DPE {
-  const currentIndex = DPE_ORDER.indexOf(dpe);
+  const currentIndex = DPE_VALUES.indexOf(dpe);
   const nextIndex = Math.max(0, currentIndex - Math.max(0, gainClasse));
-  return DPE_ORDER[nextIndex];
+  return DPE_VALUES[nextIndex];
 }
 
 const hasEspaceShared = (situation: Situation) => ['shared', 'both'].includes(situation.espaceExterieur);

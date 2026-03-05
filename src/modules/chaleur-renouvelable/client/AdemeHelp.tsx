@@ -6,8 +6,8 @@ import CallOut from '@/components/ui/CallOut';
 import Link from '@/components/ui/Link';
 import { useChoixChauffageQueryParams } from '@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageQueryParams';
 import {
+  ESPACE_EXTERIEUR_VALUES,
   type EspaceExterieur,
-  espaceExterieurValues,
   fieldLabelInformation,
   zContactFormAdemeHelp,
 } from '@/modules/chaleur-renouvelable/constants';
@@ -34,7 +34,7 @@ export default function AdemeHelp({ className }: { className?: string }) {
     onSubmit: async ({ value }) => {
       setIsLoading(true);
       const espaceExterieur =
-        isDefined(urlParams.espaceExterieur) && espaceExterieurValues.includes(urlParams.espaceExterieur)
+        isDefined(urlParams.espaceExterieur) && ESPACE_EXTERIEUR_VALUES.includes(urlParams.espaceExterieur)
           ? urlParams.espaceExterieur
           : 'none';
 
