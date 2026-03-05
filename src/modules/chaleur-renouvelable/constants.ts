@@ -9,6 +9,16 @@ export type TypeLogement = (typeof TYPE_LOGEMENT_VALUES)[number];
 
 export const ESPACE_EXTERIEUR_VALUES = ['shared', 'private', 'both', 'none'] as const;
 export type EspaceExterieur = (typeof ESPACE_EXTERIEUR_VALUES)[number];
+export const espaceExterieurOptions = [
+  { description: 'Cour, jardin, toit terrasse…', label: 'Espaces partagés uniquement', value: 'shared' },
+  { description: 'Balcons, terrasses…', label: 'Espaces individuels uniquement', value: 'private' },
+  { description: 'Cour, jardin, toit terrasse, balcons…', label: 'Espaces partagés et individuels', value: 'both' },
+  { label: 'Aucun espace extérieur', value: 'none' },
+] as const satisfies readonly {
+  label: string;
+  description?: string;
+  value: EspaceExterieur;
+}[];
 
 export const fieldLabelInformation = {
   email: 'Email',

@@ -4,6 +4,7 @@ import { searchBANAddresses } from '@/modules/ban/client';
 import type { SuggestionItem } from '@/modules/ban/types';
 import { toastErrors } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
+import type { HeatNetwork } from '@/types/HeatNetworksResponse';
 
 type BatEnrInfo = {
   geothermiePossible: boolean;
@@ -14,7 +15,7 @@ type EligibilityState = {
   batEnr: BatEnrInfo;
   codeDepartement: string;
   temperatureRef: number | null;
-  eligibleReseauChaleur: boolean;
+  eligibiliteReseauChaleur: HeatNetwork | null;
 };
 type RnbExtId = {
   id: string;
@@ -25,7 +26,7 @@ type RnbExtId = {
 const emptyState: EligibilityState = {
   batEnr: { geothermiePossible: false, planProtectionAtmosphere: false },
   codeDepartement: '',
-  eligibleReseauChaleur: false,
+  eligibiliteReseauChaleur: null,
   geoAddress: undefined,
   temperatureRef: null,
 };
@@ -64,14 +65,13 @@ export function useAddressEligibility(adresse: string | null) {
 
       const codeDepartement = infos?.departement_id ?? '';
       const temperatureRef = Number(infos?.temperature_ref_altitude_moyenne);
-
       setState({
         batEnr: {
           geothermiePossible: Number(batEnrDetails?.gmi_nappe_200) === 1 || Number(batEnrDetails?.gmi_sonde_200) === 1,
           planProtectionAtmosphere: batEnrDetails?.etat_ppa === 'PPA Validés',
         },
         codeDepartement,
-        eligibleReseauChaleur: eligibility.isEligible,
+        eligibiliteReseauChaleur: eligibility,
         geoAddress,
         temperatureRef,
       });

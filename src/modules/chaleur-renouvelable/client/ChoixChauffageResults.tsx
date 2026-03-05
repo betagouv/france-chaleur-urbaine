@@ -43,7 +43,7 @@ export default function ChoixChauffageResults() {
     setGeoAddress,
     batEnr,
     codeDepartement,
-    eligibleReseauChaleur,
+    eligibiliteReseauChaleur,
     temperatureRef,
     onSelectGeoAddress,
     resetEligibility,
@@ -56,7 +56,7 @@ export default function ChoixChauffageResults() {
     () => ({
       adresse: urlParams.adresse ?? null,
       dpe: urlParams.dpe,
-      eligibleReseauChaleur,
+      eligibiliteReseauChaleur,
       espaceExterieur: (urlParams.espaceExterieur ?? 'none') as EspaceExterieur,
       geothermiePossible: batEnr.geothermiePossible,
       habitantsMoyen: Number.parseFloat(urlParams.habitantsMoyen || '2'),
@@ -106,8 +106,10 @@ export default function ChoixChauffageResults() {
         : 0;
       const coutInstallation =
         typeof it.coutInstallation === 'function' ? it.coutInstallation(situation) : String(it.coutInstallation ?? '0');
+      const contraintesTechniques =
+        typeof it.contraintesTechniques === 'function' ? it.contraintesTechniques(situation) : it.contraintesTechniques;
 
-      return { ...it, coutInstallation, coutParAn };
+      return { ...it, contraintesTechniques, coutInstallation, coutParAn };
     });
   }, [modesDeChauffage, engine]);
   const coutParAnGaz = engine.getFieldAsNumber(`Bilan x Gaz coll sans cond . total avec aides` as RuleName);

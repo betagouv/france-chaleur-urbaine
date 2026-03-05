@@ -2,12 +2,13 @@ import type { ReactNode } from 'react';
 
 import { getCoutRaccordementResidentiel, prettyPrintCout } from '@/components/Ressources/Contents/SimulateurCoutRaccordement';
 import { type DPE, DPE_VALUES, type EspaceExterieur, type TypeLogement } from '@/modules/chaleur-renouvelable/constants';
+import type { HeatNetwork } from '@/types/HeatNetworksResponse';
 
 export type ModeDeChauffage = {
   label: string;
   pertinence: number;
   description: string;
-  contraintesTechniques: ReactNode[];
+  contraintesTechniques: ReactNode[] | ((situation: Situation) => ReactNode[]);
   avantages: string[];
   inconvenients: string[];
   coutParAnPublicodeKey: string;
@@ -20,6 +21,7 @@ export type ModeDeChauffage = {
 export type ModeDeChauffageEnriched = ModeDeChauffage & {
   coutParAn: number;
   coutInstallation: string;
+  contraintesTechniques: ReactNode[];
 };
 
 export type Situation = {
@@ -31,7 +33,7 @@ export type Situation = {
   nbLogements: number;
   surfaceMoyenne: number;
   habitantsMoyen: number;
-  eligibleReseauChaleur: boolean;
+  eligibiliteReseauChaleur: HeatNetwork | null;
 };
 
 export const DPE_BG: Record<DPE, string> = {
@@ -43,17 +45,6 @@ export const DPE_BG: Record<DPE, string> = {
   F: 'bg-[#EC8136]',
   G: 'bg-[#D7211F]',
 };
-
-export const espaceExterieurOptions = [
-  { description: 'Cour, jardin, toit terrasse…', label: 'Espaces partagés uniquement', value: 'shared' },
-  { description: 'Balcons, terrasses…', label: 'Espaces individuels uniquement', value: 'private' },
-  { description: 'Cour, jardin, toit terrasse, balcons…', label: 'Espaces partagés et individuels', value: 'both' },
-  { label: 'Aucun espace extérieur', value: 'none' },
-] as const satisfies readonly {
-  label: string;
-  description?: string;
-  value: EspaceExterieur;
-}[];
 
 export function improveDpe(dpe: DPE, gainClasse: number): DPE {
   const currentIndex = DPE_VALUES.indexOf(dpe);
@@ -67,11 +58,15 @@ export const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffag
   immeuble_chauffage_collectif: [
     {
       avantages: ['Faibles émissions de CO₂', 'Prix stables', 'TVA réduite à 5,5 %', "Garantie d'un service public"],
-      contraintesTechniques: [
-        'Proximité à un réseau : Disponible X m à vol d’oiseau / Zone prioritaire', // (si PDP = True)
-        'Seuil de puissance requis : à vérifier',
-        'Local pour la sous-station : à vérifier',
-      ],
+      contraintesTechniques: (situation: Situation) =>
+        [
+          <>
+            Proximité à un réseau : <strong>{situation.eligibiliteReseauChaleur?.distance}</strong> m à vol d’oiseau
+          </>,
+          situation.eligibiliteReseauChaleur?.inPDP && <>Votre bâtiment est situé dans une zone de développement prioritaire</>,
+          'Seuil de puissance requis : à vérifier',
+          'Local pour la sous-station : à vérifier',
+        ].filter(Boolean),
       coutInstallation: (situation: Situation) => {
         const result = getCoutRaccordementResidentiel(situation.nbLogements);
         if (Array.isArray(result)) {
@@ -83,7 +78,7 @@ export const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffag
       coutParAnPublicodeKey: 'Réseaux de chaleur',
       description:
         "Le réseau de chaleur (ou chauffage urbain) distribue de la chaleur produite de façon centralisée à un ensemble de bâtiments, via des canalisations souterraines. Ces réseaux sont alimentés en majorité par des énergies renouvelables et de récupération locales. C'est la solution à privilégier pour un chauffage collectif lorsqu'elle est disponible.",
-      estPossible: (situation) => situation.eligibleReseauChaleur,
+      estPossible: (situation) => situation.eligibiliteReseauChaleur?.isEligible ?? false,
       gainClasse: 1,
       inconvenients: ['Long contrat (15-20 ans)'],
       label: 'Réseau de chaleur',
