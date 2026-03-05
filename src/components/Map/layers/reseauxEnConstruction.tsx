@@ -87,6 +87,7 @@ const Popup = defineLayerPopup<ReseauxEnConstructionTile>(
 );
 
 export const reseauxEnConstructionColor = '#DA5DD5';
+export const reseauxEnConstructionNonOuvertColor = '#aaaaaa';
 export const reseauxEnConstructionOpacity = 0.47;
 
 export const reseauxEnConstructionLayersSpec = [
@@ -97,7 +98,12 @@ export const reseauxEnConstructionLayersSpec = [
         id: 'reseauxEnConstruction-zone',
         isVisible: (config) => config.reseauxEnConstruction,
         paint: {
-          'fill-color': reseauxEnConstructionColor,
+          'fill-color': [
+            'case',
+            ['==', ['get', 'ouvert_aux_raccordements'], false],
+            reseauxEnConstructionNonOuvertColor,
+            reseauxEnConstructionColor,
+          ],
           'fill-opacity': ifHoverElse(reseauxEnConstructionOpacity + 0.1, reseauxEnConstructionOpacity),
         },
         popup: Popup,
@@ -112,7 +118,12 @@ export const reseauxEnConstructionLayersSpec = [
           'line-join': 'round',
         },
         paint: {
-          'line-color': reseauxEnConstructionColor,
+          'line-color': [
+            'case',
+            ['==', ['get', 'ouvert_aux_raccordements'], false],
+            reseauxEnConstructionNonOuvertColor,
+            reseauxEnConstructionColor,
+          ],
           'line-opacity': ['interpolate', ['linear'], ['zoom'], 11, 0.75, 15, 1],
           'line-width': ifHoverElse(3, 2),
         },
