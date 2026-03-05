@@ -43,6 +43,9 @@ export function useAddressEligibility(adresse: string | null) {
     toastErrors(async (geoAddress: SuggestionItem) => {
       const banId = geoAddress.properties.id;
       const rnb = await trpcUtils.client.batEnr.getRnbByBanId.query({ banId });
+      if (!rnb) {
+        throw new Error('Impossible de trouver les caractéristiques du bâtiment à cette adresse.');
+      }
       const bdnbId = rnb.ext_ids?.find((e: RnbExtId) => e.source === 'bdnb')?.id ?? '';
 
       const [batEnrDetails, infos, eligibility] = await Promise.all([
