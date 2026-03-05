@@ -20,7 +20,7 @@ export default function ChoixChauffageForm() {
         withLabel
         className="fr-p-3w grid grid-cols-1 gap-4 md:grid-cols-3 bg-[#fbf6ed]"
         adresse={urlParams.adresse ?? null}
-        setAdresse={(v) => void urlParams.setAdresse(v)}
+        setAdresse={urlParams.setAdresse}
         geoAddress={geoAddress}
         setGeoAddress={setGeoAddress}
         onSelectGeoAddress={(geoAddress?: SuggestionItem) => {
@@ -31,9 +31,9 @@ export default function ChoixChauffageForm() {
           onSelectGeoAddress(geoAddress);
         }}
         typeLogement={urlParams.typeLogement ?? null}
-        setTypeLogement={(v) => void urlParams.setTypeLogement(v)}
+        setTypeLogement={urlParams.setTypeLogement}
         espaceExterieur={(urlParams.espaceExterieur ?? null) as EspaceExterieur | null}
-        setEspaceExterieur={(v) => void urlParams.setEspaceExterieur(v)}
+        setEspaceExterieur={urlParams.setEspaceExterieur}
       />
 
       <div className="mt-5 flex justify-center md:justify-end">

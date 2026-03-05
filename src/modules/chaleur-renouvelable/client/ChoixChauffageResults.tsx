@@ -140,15 +140,15 @@ export default function ChoixChauffageResults() {
             withLabel={false}
             className="grid grid-cols-1 gap-4 md:grid-cols-3"
             adresse={urlParams.adresse ?? null}
-            setAdresse={(v) => void urlParams.setAdresse(v)}
+            setAdresse={urlParams.setAdresse}
             geoAddress={geoAddress}
             setGeoAddress={setGeoAddress}
             onSelectGeoAddress={handleSelectGeoAddress}
             onAddressError={() => {}}
             typeLogement={urlParams.typeLogement ?? null}
-            setTypeLogement={(v) => void urlParams.setTypeLogement(v)}
+            setTypeLogement={urlParams.setTypeLogement}
             espaceExterieur={(urlParams.espaceExterieur ?? null) as EspaceExterieur | null}
-            setEspaceExterieur={(v) => void urlParams.setEspaceExterieur(v)}
+            setEspaceExterieur={urlParams.setEspaceExterieur}
           />
         </div>
       )}
@@ -157,23 +157,23 @@ export default function ChoixChauffageResults() {
         isOpen={isParamsOpen}
         setIsOpen={setIsParamsOpen}
         adresse={urlParams.adresse ?? null}
-        setAdresse={(v) => void urlParams.setAdresse(v)}
+        setAdresse={urlParams.setAdresse}
         geoAddress={geoAddress}
         setGeoAddress={setGeoAddress}
         onSelectGeoAddress={handleSelectGeoAddress}
         onAddressError={() => {}}
         typeLogement={urlParams.typeLogement ?? null}
-        setTypeLogement={(v) => void urlParams.setTypeLogement(v)}
+        setTypeLogement={urlParams.setTypeLogement}
         espaceExterieur={(urlParams.espaceExterieur ?? null) as EspaceExterieur | null}
-        setEspaceExterieur={(v) => void urlParams.setEspaceExterieur(v)}
+        setEspaceExterieur={urlParams.setEspaceExterieur}
         dpe={(urlParams.dpe ?? 'E') as DPE}
-        setDpe={(v) => void urlParams.setDpe(v)}
+        setDpe={urlParams.setDpe}
         nbLogements={urlParams.nbLogements}
-        setNbLogements={(v) => void urlParams.setNbLogements(v)}
+        setNbLogements={urlParams.setNbLogements}
         surfaceMoyenne={urlParams.surfaceMoyenne}
-        setSurfaceMoyenne={(v) => void urlParams.setSurfaceMoyenne(v)}
+        setSurfaceMoyenne={urlParams.setSurfaceMoyenne}
         habitantsMoyen={urlParams.habitantsMoyen}
-        setHabitantsMoyen={(v) => void urlParams.setHabitantsMoyen(v)}
+        setHabitantsMoyen={urlParams.setHabitantsMoyen}
       />
       {modesWithCout.length > 0 ? (
         <>
