@@ -8,8 +8,8 @@ import { handleRouteErrors, requirePostMethod, validateObjectSchema } from '@/se
 const zLocationInfos = {
   city: z.string(),
   cityCode: z.string(),
-  lat: z.number(),
-  lon: z.number(),
+  lat: z.number().optional(),
+  lon: z.number().optional(),
 };
 
 const maxDistanceThreshold = 1000;

@@ -57,7 +57,7 @@
     "ts": "NODE_OPTIONS=\"--max-old-space-size=8192\" pnpm tsc --build --clean && pnpm tsc"
   },
   "dependencies": {
-    "@betagouv/france-chaleur-urbaine-publicodes": "^1.5.0",
+    "@betagouv/france-chaleur-urbaine-publicodes": "1.6.0",
     "@bprogress/next": "^3.2.12",
     "@codegouvfr/react-dsfr": "^1.28.0",
     "@commander-js/extra-typings": "^14.0.0",
@@ -71,6 +71,7 @@
     "@next/mdx": "16.1.1",
     "@radix-ui/react-dialog": "^1.1.15",
     "@radix-ui/react-popover": "^1.1.15",
+    "@radix-ui/react-select": "^2.2.6",
     "@radix-ui/react-tooltip": "^1.2.8",
     "@reach/combobox": "^0.18.0",
     "@react-email/components": "1.0.3",

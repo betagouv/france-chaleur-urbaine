@@ -81,7 +81,7 @@ export const getEligibilityResult = (
       <div className="flex flex-col">
         Il existe d’autres solutions de chauffage écologiques et économiques adaptées à votre bâtiment :{' '}
         <Link
-          href={`/chaleur-renouvelable?address=${encodeURIComponent(address)}${collectif && `&type=immeuble_chauffage_collectif`}#quel-chauffage`}
+          href={`/chaleur-renouvelable?adresse=${encodeURIComponent(address)}${collectif ? `&typeLogement=immeuble_chauffage_collectif` : ''}`}
           variant="secondary"
           className="fr-mt-3v"
           eventKey="Eligibilité|Formulaire de test - Adresse Inéligible - CTA comparateur"
