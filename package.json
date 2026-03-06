@@ -36,6 +36,8 @@
     "lint:fix:file": "biome check --write",
     "lint:ci": "biome ci --diagnostic-level error .",
     "test": "vitest run",
+    "test:a11y": "playwright test",
+    "test:a11y:report": "playwright show-report test-results/a11y-report",
     "test:watch": "vitest dev",
     "test:coverage": "vitest run --coverage",
     "test:db:migrate": "DATABASE_URL=postgres://fcu_test:fcu_test_pass@localhost:5433/fcu_test pnpm db:migrate",
@@ -169,7 +171,9 @@
     "zod": "^4.1.11"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.11.1",
     "@biomejs/biome": "^2.3.11",
+    "@playwright/test": "^1.58.2",
     "@react-email/preview-server": "5.1.1",
     "@svgr/webpack": "^8.1.0",
     "@tailwindcss/postcss": "^4.1.13",

@@ -183,6 +183,7 @@ function Home() {
                 imageAlt={mainTool.imageAlt}
                 key={mainTool.href}
                 title={mainTool.title}
+                titleAs="h2"
                 desc={mainTool.description}
                 linkProps={{
                   href: mainTool.href,
@@ -208,7 +209,7 @@ function Home() {
                 >
                   <Image src={tile.image} alt="" width={64} height={64} className="mx-auto" />
                   <h2 className="text-base font-semibold text-gray-900 mb-0">{tile.title}</h2>
-                  <p className="text-sm text-gray-500 mb-0">{tile.excerpt}</p>
+                  <p className="text-sm text-gray-600 mb-0">{tile.excerpt}</p>
                 </Link>
                 {index < tools.length - 1 && (
                   <div className="flex items-center justify-center">
@@ -409,7 +410,7 @@ Ce système contribue à la transition énergétique des villes en mutualisant l
 
       <Partners />
 
-      <Section id="obligation-raccordement" variant="accent">
+      <Section id="reduire-impact" variant="accent">
         <SectionContent className="mt-0! flex flex-col gap-2">
           <SectionHeading as="h2" size="h5">
             Réduire l'impact écologique et économique de son chauffage
