@@ -60,6 +60,12 @@ export const zLocationInfos = z.strictObject({
 });
 export type GetLocationInput = z.infer<typeof zLocationInfos>;
 
+export const zLonLat = z.strictObject({
+  lat: z.number(),
+  lon: z.number(),
+});
+export type GetLonLatInput = z.infer<typeof zLonLat>;
+
 export const zRnbByBanIdInput = z.object({
   banId: z.string().min(1, 'banId manquant'),
 });

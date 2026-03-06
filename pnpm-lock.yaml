@@ -43,6 +43,9 @@ importers:
       '@mapbox/mapbox-gl-draw':
         specifier: ^1.5.1
         version: 1.5.1
+      '@mapbox/vector-tile':
+        specifier: ^2.0.4
+        version: 2.0.4
       '@mdx-js/loader':
         specifier: ^3.1.1
         version: 3.1.1(webpack@5.103.0)
@@ -241,6 +244,9 @@ importers:
       papaparse:
         specifier: ^5.5.3
         version: 5.5.3
+      pbf:
+        specifier: ^4.0.1
+        version: 4.0.1
       pg:
         specifier: ^8.16.3
         version: 8.16.3
