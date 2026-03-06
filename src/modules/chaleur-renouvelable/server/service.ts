@@ -11,7 +11,7 @@ export const getBatEnrBatimentDetails = async ({ batiment_construction_id }: Get
     .selectFrom('bdnb_batenr')
     .select(['batiment_groupe_id', 'gmi_nappe_200', 'gmi_sonde_200', 'etat_ppa'])
     .where('batiment_construction_id', '=', batiment_construction_id)
-    .executeTakeFirstOrThrow();
+    .executeTakeFirst();
 
   return batiment;
 };
