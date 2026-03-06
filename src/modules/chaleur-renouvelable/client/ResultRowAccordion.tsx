@@ -192,7 +192,7 @@ export const ResultRowAccordion = React.memo(function ResultRowAccordion({
         </div>
         <div className="flex-1">
           <div className="bg-yellow-50 rounded fr-p-1w flex items-center">
-            <Image src="/icons/icon-thumbs-up.png" alt="icone pouce baissé" aria-hidden="true" width="24" height="24" /> Inconvénients
+            <Image src="/icons/icon-thumbs-down.png" alt="icone pouce baissé" aria-hidden="true" width="24" height="24" /> Inconvénients
           </div>
           <ul className="fr-ml-1w">
             {item.inconvenients.map((inconvenient, key) => (

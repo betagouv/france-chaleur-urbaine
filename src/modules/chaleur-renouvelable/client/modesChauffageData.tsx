@@ -145,7 +145,7 @@ export const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffag
       pertinence: 2,
     },
     {
-      avantages: ['Facilité d’implémentation', 'space extérieur accessible pour la maintenance', 'Local technique'],
+      avantages: ['Facilité d’implémentation', 'Espace extérieur accessible pour la maintenance'],
       contraintesTechniques: [
         'Emplacement pour l’unité extérieure (autorisation requise)',
         'Isolation globale nécessaire au préalable pour éviter des performances dégradées (chauffage peu efficace et onéreux)',
