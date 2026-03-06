@@ -107,3 +107,6 @@ CLAUDE.md
 
 # Version check cache
 .ai/.version-check
+
+# CI publicodes dev
+/france-chaleur-urbaine-publicodes
