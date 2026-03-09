@@ -158,17 +158,19 @@ export const ResultRowAccordion = React.memo(function ResultRowAccordion({
             <div className="flex items-center gap-2">{item.label}</div>
             <Stars value={stars} />
           </div>
-          <div className="flex-2 md:text-center hidden md:block">
+          <div className="flex-3 md:text-center hidden md:flex gap-8">
             <div>
-              {lowerBoundString} à {upperBoundString}
+              <div>
+                {lowerBoundString} à {upperBoundString}
+              </div>
+              <div className="text-sm font-normal text-(--text-default-grey)">coût par an par logement</div>
             </div>
-            <div className="text-sm font-normal text-(--text-default-grey)">coût par an par logement</div>
+            <div>
+              {gainVsGaz}
+              <div className="text-sm font-normal text-(--text-default-grey)">par rapport au gaz</div>
+            </div>
           </div>
-          <div className="flex-2 md:text-center hidden md:block">
-            {gainVsGaz}
-            <div className="text-sm font-normal text-(--text-default-grey)">par rapport au gaz</div>
-          </div>
-          <div className="flex-1 justify-center items-center gap-3 hidden md:flex">
+          <div className="flex-1 justify-center items-center gap-3 hidden md:flex fr-mr-5w">
             <DpeTag letter={dpeFrom} />
             <span className="text-(--text-default-grey)">→</span>
             <DpeTag letter={dpeTo} />
