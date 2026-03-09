@@ -1,6 +1,7 @@
 {
-  "ignore": ["src/server/db/migrations/*.ts", "scripts/**", "next-sitemap.config.js", "src/server/db/kysely/database.ts"],
-  "ignoreBinaries": ["knip", "db:introspect"],
-  "ignoreDependencies": ["sharp", "@svgr/webpack", "kysely-codegen", "raw-loader"],
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "entry": ["src/modules/email/react-email/templates/**/*.tsx"],
+  "ignore": ["src/server/db/migrations/*.ts", "src/server/db/kysely/database.ts"],
+  "ignoreDependencies": ["@svgr/webpack", "@react-email/preview-server", "@types/mdx", "kysely-codegen", "raw-loader"],
   "project": ["src/**/*.{ts,tsx}"]
 }
