@@ -1,9 +1,9 @@
-import AddressAutocompleteInput from '@/components/form/dsfr/AddressAutocompleteInput';
 import Select from '@/components/form/dsfr/Select';
 import RichSelect from '@/components/ui/RichSelect';
 import { trackPostHogEvent } from '@/modules/analytics/client';
 import type { SuggestionItem } from '@/modules/ban/types';
 import { type EspaceExterieur, espaceExterieurOptions, type TypeLogement } from '@/modules/chaleur-renouvelable/constants';
+import { AddressField } from '@/modules/form/AddressField';
 
 type SettingsTopFieldsProps = {
   withLabel: boolean;
@@ -26,7 +26,6 @@ export function SettingsTopFields({
   setAdresse,
   geoAddress,
   setGeoAddress,
-  onAddressError,
   onSelectGeoAddress,
   typeLogement,
   setTypeLogement,
@@ -36,7 +35,7 @@ export function SettingsTopFields({
 }: SettingsTopFieldsProps) {
   return (
     <div className={className}>
-      <AddressAutocompleteInput
+      <AddressField
         label={withLabel ? 'Adresse' : ''}
         className="fr-mb-0"
         defaultValue={adresse ?? undefined}
@@ -58,7 +57,6 @@ export function SettingsTopFields({
           setGeoAddress(next);
           onSelectGeoAddress?.(next);
         }}
-        onError={onAddressError}
       />
       <Select
         label={withLabel ? 'Mode de chauffage' : ''}

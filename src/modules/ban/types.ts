@@ -1,6 +1,6 @@
 import type { Point } from '@/types/Point';
 
-export type SuggestionItem = {
+export type BANAddressFeature = {
   type: 'Feature';
   geometry: {
     type: 'Point';
@@ -24,3 +24,6 @@ export type SuggestionItem = {
     street: string;
   };
 };
+
+// compatibility
+export type SuggestionItem = BANAddressFeature;

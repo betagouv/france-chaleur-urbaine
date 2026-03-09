@@ -73,7 +73,6 @@
     "@radix-ui/react-popover": "^1.1.15",
     "@radix-ui/react-select": "^2.2.6",
     "@radix-ui/react-tooltip": "^1.2.8",
-    "@reach/combobox": "^0.18.0",
     "@react-email/components": "1.0.3",
     "@react-hookz/web": "^25.1.1",
     "@sentry/nextjs": "^10.21.0",

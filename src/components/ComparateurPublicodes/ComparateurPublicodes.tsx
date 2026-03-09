@@ -5,7 +5,6 @@ import { parseAsStringLiteral, useQueryState } from 'nuqs';
 import React, { useState } from 'react';
 
 import Configuration from '@/components/ComparateurPublicodes/Configuration';
-import AddressAutocomplete from '@/components/form/dsfr/AddressAutocompleteInput';
 import { FormProvider } from '@/components/form/publicodes/FormProvider';
 import Label from '@/components/form/publicodes/Label';
 import { ArrowItem } from '@/components/MarkdownWrapper/MarkdownWrapper.style';
@@ -18,6 +17,7 @@ import Section, { SectionContent, SectionHeading } from '@/components/ui/Section
 import useEligibilityForm from '@/hooks/useEligibilityForm';
 import { trackEvent, trackPostHogEvent } from '@/modules/analytics/client';
 import useUserInfo from '@/modules/app/client/hooks/useUserInfo';
+import { AddressField } from '@/modules/form/AddressField';
 import trpc from '@/modules/trpc/client';
 import type { LocationInfoResponse } from '@/pages/api/location-infos';
 import { getNetworkEligibilityDistances } from '@/services/eligibility';
@@ -74,11 +74,9 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
     parseAsStringLiteral(simulatorTabs.map((tab) => tab.tabId)).withDefault(defaultTabId ?? 'batiment')
   );
 
-  const [forceReload, setForceReload] = useState(false);
-
-  React.useEffect(() => {
-    if (forceReload) setForceReload(false);
-  }, [forceReload]);
+  // Increment to force-remount AddressField (uncontrolled component)
+  // when loading a saved configuration with a different address
+  const [addressResetKey, setAddressResetKey] = useState(0);
 
   React.useEffect(() => {
     if (engine.loaded) {
@@ -445,7 +443,8 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
   );
 
   const addressAutocomplete = (
-    <AddressAutocomplete
+    <AddressField
+      key={addressResetKey}
       excludeCities
       label={
         <Label
@@ -457,7 +456,6 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
       stateRelatedMessage={
         addressError ? 'Désolé, nous n’avons pas trouvé la ville associée à cette adresse, essayez avec une autre' : undefined
       }
-      forceReload={forceReload}
       defaultValue={addressInUrl || userInfo.address || ''}
       onLoadingChange={(loading) => {
         if (loading) {
@@ -564,7 +562,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
           address={userInfo.address ?? undefined}
           onChangeAddress={(newAddress) => {
             if (newAddress !== userInfo.address) {
-              setForceReload(true);
+              setAddressResetKey((k) => k + 1);
               setUserInfo({ address: newAddress });
               void setAddressInUrl(newAddress);
             }
