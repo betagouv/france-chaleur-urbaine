@@ -133,6 +133,7 @@ export interface BatEnr {
   ac4bis: boolean;
   liste_ppa: string;
   etat_ppa: string;
+  com_insee: string;
 }
 
 export interface BesoinsEnChaleurBatiments {
@@ -174,6 +175,10 @@ export interface Communes {
   id: string;
   source: string;
   temperature_ref_altitude_moyenne: Numeric;
+}
+
+export interface CommunesAvecPpa {
+  code_insee: string;
 }
 
 export interface CommunesFortPotentielPourCreationReseauxChaleurTiles {
@@ -895,6 +900,7 @@ export interface DB {
   besoins_en_chaleur_tiles: BesoinsEnChaleurTiles;
   communes: Communes;
   communes_fort_potentiel_pour_creation_reseaux_chaleur_tiles: CommunesFortPotentielPourCreationReseauxChaleurTiles;
+  communes_avec_ppa: { code_insee: string };
   demands: Demands;
   demand_emails: DemandEmails;
   departements: Departements;

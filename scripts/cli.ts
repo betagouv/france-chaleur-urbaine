@@ -182,6 +182,20 @@ program
   });
 
 program
+  .command('import:communes_avec_ppa')
+  .description("Cette commande permet d'importer la liste des communes ayant un ppa validé à partir de la table bdnb_batenr")
+  .action(async () => {
+    const res = await kdb
+      .insertInto('communes_avec_ppa')
+      .columns(['code_insee'])
+      .expression((eb) => eb.selectFrom('bdnb_batenr').select('com_insee').where('etat_ppa', '=', 'PPA Validés').distinct())
+      .onConflict((oc) => oc.column('code_insee').doNothing())
+      .executeTakeFirst();
+
+    logger.info(`${res?.numInsertedOrUpdatedRows ?? 0} communes insérées`);
+  });
+
+program
   .command('communes:search')
   .description('Recherche une commune dans la table ign_communes')
   .argument('<commune>', 'nom de la commune')
