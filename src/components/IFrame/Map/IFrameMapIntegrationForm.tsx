@@ -1,10 +1,9 @@
 import { Checkbox } from '@codegouvfr/react-dsfr/Checkbox';
 import { type ReactNode, useState } from 'react';
 
-import AddressAutocomplete from '@/components/addressAutocomplete/AddressAutocomplete';
 import { type LegendURLKey, selectableLayers } from '@/components/Map/map-layers';
 import Notice from '@/components/ui/Notice';
-import type { SuggestionItem } from '@/modules/ban/types';
+import { AddressSearch } from '@/modules/form/AddressSearch';
 import type { Coords } from '@/modules/geo/types';
 
 import { StyledIFrameLink } from './IFrameMapIntegrationForm.styles';
@@ -14,18 +13,6 @@ const IFrameMapIntegrationForm = ({ label }: { label?: ReactNode }) => {
   const [selectedLayers, setSelectedLayers] = useState<LegendURLKey[]>(selectableLayers.map((l) => l.key));
 
   const url = `legend=true${coords ? `&coord=${coords.lon},${coords.lat}&zoom=12` : ''}&displayLegend=${selectedLayers.join(',')}`;
-
-  const onAddressSelected = async (_address: string, geoAddress?: SuggestionItem) => {
-    if (!geoAddress) {
-      setCoords(null);
-      return;
-    }
-
-    setCoords({
-      lat: geoAddress.geometry.coordinates[1],
-      lon: geoAddress.geometry.coordinates[0],
-    });
-  };
 
   const toggleLayerSelection = (layerName: LegendURLKey, enable: boolean) => {
     if (enable) {
@@ -55,7 +42,11 @@ const IFrameMapIntegrationForm = ({ label }: { label?: ReactNode }) => {
         </Notice>
       )}
       <div className="mt-4 max-w-[500px]">
-        <AddressAutocomplete onAddressSelected={onAddressSelected} placeholder="Tapez ici votre adresse" />
+        <AddressSearch
+          nativeInputProps={{ placeholder: 'Tapez ici votre adresse' }}
+          onSelect={(item) => setCoords({ lat: item.geometry.coordinates[1], lon: item.geometry.coordinates[0] })}
+          onClear={() => setCoords(null)}
+        />
       </div>
       <StyledIFrameLink
         className="fr-mt-3w"

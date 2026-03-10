@@ -5,7 +5,6 @@ import { Oval } from 'react-loader-spinner';
 
 import { ContactForm, SelectEnergy } from '@/components/EligibilityForm/components';
 import { energyInputsDefaultLabels } from '@/components/EligibilityForm/EligibilityFormAddress';
-import AddressAutocomplete from '@/components/form/dsfr/AddressAutocompleteInput';
 import Alert from '@/components/ui/Alert';
 import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
@@ -17,6 +16,7 @@ import { trackEvent, trackPostHogEvent } from '@/modules/analytics/client';
 import useUserInfo from '@/modules/app/client/hooks/useUserInfo';
 import type { SuggestionItem } from '@/modules/ban/types';
 import type { ContactFormInfos, ModeDeChauffage, TypeDeChauffage } from '@/modules/demands/constants';
+import { AddressField } from '@/modules/form/AddressField';
 import { getReadableDistance } from '@/modules/geo/client/helpers';
 import trpc from '@/modules/trpc/client';
 import type { NetworkEligibilityStatus } from '@/server/services/addresseInformation';
@@ -150,7 +150,7 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
           </Text>
           {formState === 'loadingEligibility' && <Oval height={20} width={20} />}
         </Box>
-        <AddressAutocomplete
+        <AddressField
           label=""
           nativeInputProps={{ placeholder: 'Tapez ici votre adresse' }}
           defaultValue={addressDefaultValue}
