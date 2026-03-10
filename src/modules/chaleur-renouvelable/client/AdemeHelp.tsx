@@ -49,6 +49,7 @@ export default function AdemeHelp({ className }: { className?: string }) {
         'Nombre de logement': Number(urlParams.nbLogements || 25),
         'Surface moyenne': Number(urlParams.surfaceMoyenne || 70),
         Telephone: value.phone,
+        'Url simulation': window.location.href,
       });
       setIsLoading(false);
       setIsSent(true);

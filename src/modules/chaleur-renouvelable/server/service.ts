@@ -5,16 +5,29 @@ import { kdb, sql } from '@/server/db/kysely';
 import { Airtable } from '@/types/enum/Airtable';
 import { fetchJSON } from '@/utils/network';
 
-export const getBatEnrBatimentDetails = async ({ batiment_construction_id }: GetBdnbConstructionInput) => {
+export const getBatEnrBatimentDetails = async (input: GetBdnbConstructionInput) => {
+  if ('batiment_construction_id' in input) {
+    const batiment = await kdb
+      .selectFrom('bdnb_batenr')
+      .select(['batiment_construction_id', 'gmi_nappe_200', 'gmi_sonde_200', 'etat_ppa'])
+      .where('batiment_construction_id', '=', input.batiment_construction_id)
+      .executeTakeFirst();
+
+    return batiment;
+  }
+
+  const { lat, lon } = input;
+
   const batiment = await kdb
     .selectFrom('bdnb_batenr')
-    .select(['batiment_groupe_id', 'gmi_nappe_200', 'gmi_sonde_200', 'etat_ppa'])
-    .where('batiment_construction_id', '=', batiment_construction_id)
-    .executeTakeFirstOrThrow();
+    .select(['batiment_construction_id', 'gmi_nappe_200', 'gmi_sonde_200', 'etat_ppa'])
+    .where('geom', 'is not', null)
+    .orderBy(sql`geom <-> ST_Transform(ST_GeomFromText('POINT(${sql.lit(lon)} ${sql.lit(lat)})', 4326), 2154)`)
+    .limit(1)
+    .executeTakeFirst();
 
   return batiment;
 };
-
 export const getLocationInfos = async ({ cityCode, city }: GetLocationInput) => {
   const communeInfo = await kdb
     .selectFrom('communes')

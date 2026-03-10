@@ -77,7 +77,7 @@ export function ParamsForm({
       >
         <div className="flex items-center gap-2 font-semibold">
           <Image src="/icons/icon-warning.png" alt="icone d'engrenage" aria-hidden="true" width="24" height="24" />
-          Renseignez ces informations pour afficher des coûts affinés
+          Affinez les coûts en renseignant ces informations
         </div>
         <div className="mt-3 grid grid-cols-1 md:grid-cols-4 md:gap-4">
           {showTopFields && (

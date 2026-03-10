@@ -51,6 +51,7 @@ export const zAirtableAdemeHelp = z.object({
     .regex(/^(?:(?:\+|00)33|0)\s*[1-9]\d{8}$|^$/, 'Veuillez renseigner votre numéro de téléphone sous le format 0605040302')
     .optional()
     .default(''),
+  'Url simulation': z.string(),
 });
 export type GetAirtableAdeme = z.infer<typeof zAirtableAdemeHelp>;
 
