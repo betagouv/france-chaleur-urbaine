@@ -900,7 +900,6 @@ export interface DB {
   besoins_en_chaleur_tiles: BesoinsEnChaleurTiles;
   communes: Communes;
   communes_fort_potentiel_pour_creation_reseaux_chaleur_tiles: CommunesFortPotentielPourCreationReseauxChaleurTiles;
-  communes_avec_ppa: { code_insee: string };
   demands: Demands;
   demand_emails: DemandEmails;
   departements: Departements;
