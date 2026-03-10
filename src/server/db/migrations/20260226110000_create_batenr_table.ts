@@ -23,7 +23,6 @@ export async function up(db: Kysely<any>): Promise<void> {
       geom geometry(MultiPolygon,2154)
     );
     CREATE INDEX IF NOT EXISTS bdnb_batenr_batiment_construction_id_idx ON bdnb_batenr (batiment_construction_id);
-    CREATE INDEX CONCURRENTLY bdnb_batenr_geom_idx ON bdnb_batenr USING gist (geom);
   `.execute(db);
 }
 
