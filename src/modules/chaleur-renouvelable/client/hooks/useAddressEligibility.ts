@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { searchBANAddresses } from '@/modules/ban/client';
 import type { SuggestionItem } from '@/modules/ban/types';
-import { communesPpa } from '@/modules/chaleur-renouvelable/data/communesPpa';
 import { toastErrors } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
 import type { HeatNetwork } from '@/types/HeatNetworksResponse';
@@ -43,25 +42,21 @@ const emptyState: EligibilityState = {
 const getBatEnrInfo = async ({ geoAddress, trpcUtils }: { geoAddress: SuggestionItem; trpcUtils: TrpcUtils }): Promise<BatEnrInfo> => {
   const [lon, lat] = geoAddress.geometry.coordinates;
   const banId = geoAddress.properties.id;
-  const cityCode = geoAddress.properties.citycode;
-
   const rnb = await trpcUtils.client.batEnr.getRnbByBanId.query({ banId });
   const bdnbId = rnb?.ext_ids?.find((e: RnbExtId) => e.source === 'bdnb')?.id;
 
-  const batEnrDetails = bdnbId
+  let batEnrDetails = bdnbId
     ? await trpcUtils.client.batEnr.getBatEnrBatimentDetails.query({ batiment_construction_id: bdnbId }).catch(() => null)
     : null;
 
-  if (batEnrDetails) {
-    return {
-      geothermiePossible: Number(batEnrDetails.gmi_nappe_200) === 1 || Number(batEnrDetails.gmi_sonde_200) === 1,
-      planProtectionAtmosphere: batEnrDetails.etat_ppa === 'PPA Validés',
-    };
+  if (!batEnrDetails) {
+    // Si l'appel au rnb ou à batenr est infructueux, on prend le bâtiment le plus proche
+    batEnrDetails = await trpcUtils.client.batEnr.getBatEnrBatimentDetails.query({ lat, lon }).catch(() => null);
   }
 
   return {
-    geothermiePossible: await trpcUtils.client.batEnr.isGeothermiePossible.query({ lat, lon }),
-    planProtectionAtmosphere: !!cityCode && communesPpa.has(cityCode),
+    geothermiePossible: Number(batEnrDetails?.gmi_nappe_200) === 1 || Number(batEnrDetails?.gmi_sonde_200) === 1,
+    planProtectionAtmosphere: batEnrDetails?.etat_ppa === 'PPA Validés',
   };
 };
 
