@@ -24,7 +24,7 @@ export default defineConfig({
       reportsDirectory: './coverage',
     },
     environment: 'happy-dom',
-    exclude: ['**/{.git,node_modules,dist,.next}/**'],
+    exclude: ['**/{.git,node_modules,dist,.next}/**', 'src/tests/a11y/**'],
     onConsoleLog: (log) => {
       // Suppress specific React warnings
       if (log.includes('React does not recognize')) {

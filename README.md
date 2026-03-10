@@ -112,6 +112,13 @@ pnpm lint
 pnpm test
 ```
 
+[Playwright](https://playwright.dev/) + [axe-core](https://github.com/dequelabs/axe-core) sont utilisés pour les tests d'accessibilité automatisés (WCAG 2.1 AA).
+
+```sh
+pnpm test:a11y          # lancer les tests (serveur dev requis sur localhost:3000)
+pnpm test:a11y:report   # ouvrir le rapport HTML
+```
+
 
 ## Build
 
