@@ -1,84 +1,73 @@
-# AI Agent Configuration
+# AGENTS.md - AI documentation index
 
-## ⚠️ CRITICAL: AI AGENT PROTOCOL
+> Root index for AI agents. Detailed docs live in `.ai/context/`. Read them when working on related areas.
 
-YOU MUST FOLLOW THIS EXACT SEQUENCE:
-1. Read this entire file
-2. Load ALL files in "Core Context"
-3. Match user query keywords to "Context Map"
-4. Load ALL matching context files
-5. Reply: "✓ Loaded: [list] (~X tokens)" BEFORE answering
-6. If uncertain which contexts apply → ASK user
+## AI Agent workflow
 
----
+For every user message:
+- start every response with "Agent FCU au rapport !"
+- read AGENTS.md (this file) to decide which context files in `.ai/context/` are worth loading for this specific request — some requests need none, others need several
+- if the request is ambiguous, ask clarifying questions before proceeding (prefer asking over guessing, unless the user asks for speed — in that case, pick the simplest/fastest interpretation)
+- **for tasks involving code modifications** (writing, editing, deleting, moving files):
+  - **minor changes** (typo, rename, single-line fix): implement directly, no plan needed
+  - **significant changes** (new feature, refactor, multi-file edit): create a plan → ask user to confirm → implement
+  - **after implementation**: run `pnpm lint`, `pnpm ts`, and `pnpm test` if relevant — fix any errors before delivering
+  - print a summary: start with a high-level overview (4-5 sentences max: what was done and why), then list main files modified/created with a one-liner per file
 
-## 📋 Core Context (Always Load)
-```
-.ai/avatars/developer.md                  # Developer persona guidelines
-.ai/context/required/architecture.md      # System design, principles
-.ai/context/required/coding-style.md      # Conventions, naming
-```
+## Developer profile
 
----
+- **Role**: Senior developer in a small team maintaining this project.
+- **Expects**: A critical pair programmer, not a compliant assistant.
+- **Style**: Direct, factual, no filler — communicate like a seasoned teammate.
+- **Language**: Respond in French, code and docs in English.
+- Ship-ready code on first delivery: zero TS errors, zero lint warnings.
+- No over-engineering — minimum viable solution only.
+- Proactively flag doubts, race conditions, or limitations before implementing.
+- No unsolicited changes to surrounding code.
 
-## 🗺️ Context Map (Match Keywords → Load File)
+## Context files index
 
-**Database & SQL**
-`.ai/context/backend/database.md`
-Keywords: database, sql, kysely, postgis, spatial, query, schema, table, column, geospatial
+Load these files **before** working on the related area. When in doubt, load the file.
 
-**API & Backend**
-`.ai/context/backend/api.md`
-Keywords: api, endpoint, trpc, route, server, procedure, handler, backend
+| File | Load when… |
+|------|------------|
+| [api-patterns.md](.ai/context/api-patterns.md) | Any client↔server data exchange: new endpoints, new queries/mutations, modifying existing ones |
+| [architecture.md](.ai/context/architecture.md) | Adding/moving files, creating modules, understanding project structure |
+| [commands.md](.ai/context/commands.md) | Running lint, typecheck, build, tests, DB migrations, CLI scripts |
+| [conventions.md](.ai/context/conventions.md) | Writing or reviewing any code — naming, imports, types, error handling, language rules |
+| [database.md](.ai/context/database.md) | Touching anything DB: queries, tables, migrations, Kysely, PostGIS |
+| [deployment.md](.ai/context/deployment.md) | Scalingo, CI/CD, environments, env vars, monitoring |
+| [domain.md](.ai/context/domain.md) | Understanding the project, business rules, glossary, user roles, workflows |
+| [git-workflow.md](.ai/context/git-workflow.md) | Commits, branches, PRs, protected files |
+| [maps.md](.ai/context/maps.md) | Carte interactive: layers, tuiles, MapConfiguration, MapLibre, données géographiques |
+| [nextjs-patterns.md](.ai/context/nextjs-patterns.md) | Pages, routing, `_app.tsx`, `getServerSideProps`, data fetching, client↔server communication patterns |
+| [security.md](.ai/context/security.md) | Auth, roles, permissions, input validation, env vars, headers |
+| [stack.md](.ai/context/stack.md) | Choosing a library, checking versions, upgrading dependencies |
+| [state-management.md](.ai/context/state-management.md) | React state, forms, URL params (`nuqs`), Jotai, React Query |
+| [styling.md](.ai/context/styling.md) | Any `.tsx` with UI: Tailwind, DSFR, responsive, icons, className |
+| [testing.md](.ai/context/testing.md) | Writing or running tests, adding endpoints, fixing bugs |
 
-**Database Migrations**
-`.ai/context/backend/migrations.md`
-Keywords: migration, alter, schema change, drizzle, prisma, create table, drop
+## Code navigation
 
-**React Components**
-`.ai/context/frontend/react.md`
-Keywords: component, react, tsx, jsx, hook, state, props, ui, interface
+Prefer LSP over Grep/Glob:
+- `goToDefinition` / `findReferences` before renaming or changing a signature.
+- `hover` for type info without reading the file.
+- `workspaceSymbol` to locate a symbol across the workspace.
+- `getDiagnostics` after every code write.
+- Use Grep/Glob only for: comments, string literals, config values.
 
-**Forms & Validation**
-`.ai/context/frontend/forms.md`
-Keywords: form, validation, input, submit, zod, react-hook-form, field, checkbox
+## Critical thinking before proposing
 
-**Maps & Geospatial**
-`.ai/context/frontend/maps.md`
-Keywords: map, maplibre, layer, geojson, marker, coordinates, basemap, popup
+Before proposing any solution:
+1. Is this the minimal solution? If not, simplify.
+2. Does it reintroduce a previously identified problem?
+3. Is there redundancy with what already exists?
+4. Would a senior peer reviewer find flaws?
 
-**Testing**
-`.ai/context/quality/testing.md`
-Keywords: test, jest, vitest, spec, mock, coverage, e2e, unit test
+Think critically first, code second. One good question beats three iterations.
 
-**Security**
-`.ai/context/quality/security.md`
-Keywords: auth, authentication, permission, authorization, security, secret, env, validation, sanitize
+## Module-level docs
 
-**Error Handling**
-`.ai/context/quality/errors.md`
-Keywords: error, exception, logging, try-catch, error handling, error message
+Each module in `src/modules/` may have its own `AGENTS.md`. Read it when editing files in or importing from that module.
 
-**Dependency Management**
-`.ai/context/quality/dependencies.md`
-Keywords: dependency, update, upgrade, version, package, npm, pnpm
-
----
-
-## 🎯 Special Rules
-
-**Module-specific context**: If user mentions a module name → also load `.ai/context/required/modules.md`
-
-**Large/complex tasks** (>5 files OR new module OR architecture decision):
-→ also load `.ai/context/required/critical-thinking.md` for design review
-
----
-
-## ✓ Self-Check Before Responding
-
-- [ ] Read AGENTS.md?
-- [ ] Loaded all core files?
-- [ ] Scanned for matching keywords?
-- [ ] Replied with "✓ Loaded: [list]"?
-
-If ANY box unchecked → STOP and complete it first
+25 modules: `analytics`, `app`, `auth`, `ban`, `bdnb`, `chaleur-renouvelable`, `config`, `data`, `demands`, `diagnostic`, `email`, `events`, `form`, `geo`, `jobs`, `notification`, `opendata`, `optimization`, `pro-eligibility-tests`, `reseaux`, `security`, `tags`, `tiles`, `trpc`, `users`.
