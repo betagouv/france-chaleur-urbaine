@@ -19,7 +19,6 @@ export async function up(db: Kysely<any>): Promise<void> {
       ac4bis boolean,
       liste_ppa character varying(40),
       etat_ppa character varying(15),
-      com_insee character varying(15),
       geom geometry(MultiPolygon,2154)
     );
     CREATE INDEX IF NOT EXISTS bdnb_batenr_batiment_construction_id_idx ON bdnb_batenr (batiment_construction_id);
