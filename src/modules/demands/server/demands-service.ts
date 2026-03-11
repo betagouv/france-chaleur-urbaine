@@ -18,7 +18,7 @@ import {
 import type { AirtableLegacyRecord } from '@/modules/demands/types';
 import { sendEmailTemplate } from '@/modules/email';
 import { createEvent, createUserEvent } from '@/modules/events/server/service';
-import { createEligibilityTestAddress } from '@/modules/pro-eligibility-tests/server/service';
+import { createEligibilityTestAddress, updateEligibilityTestAddress } from '@/modules/pro-eligibility-tests/server/service';
 import type { ProEligibilityTestHistoryEntry } from '@/modules/pro-eligibility-tests/types';
 import {
   type DemandEmails,
@@ -999,3 +999,17 @@ export const getTagsStats = async () => {
 };
 
 export type TagsStats = Awaited<ReturnType<typeof getTagsStats>>[number];
+
+/**
+ * Recalcule l'éligibilité d'une demande en re-géocodant l'adresse via la BAN.
+ * Délègue à updateEligibilityTestAddress qui met à jour l'adresse et les legacy_values de la demande.
+ */
+export const recalculateEligibility = async (demandId: string) => {
+  const testAddress = await kdb
+    .selectFrom('pro_eligibility_tests_addresses')
+    .select(['id', 'source_address'])
+    .where('demand_id', '=', demandId)
+    .executeTakeFirstOrThrow();
+
+  return updateEligibilityTestAddress(testAddress.id, testAddress.source_address);
+};

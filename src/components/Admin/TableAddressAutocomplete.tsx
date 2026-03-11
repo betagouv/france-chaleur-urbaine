@@ -20,7 +20,7 @@ export default function TableAddressAutocomplete({ demand }: TableAddressAutocom
   const [isLoading, setIsLoading] = useState(false);
   const testAddress = demand.testAddress;
   const utils = trpc.useUtils();
-  const { mutateAsync: updateAddressMutation } = trpc.proEligibilityTests.updateAddress.useMutation();
+  const { mutateAsync: updateEligibilityTestAddress } = trpc.proEligibilityTests.updateEligibilityTestAddress.useMutation();
 
   if (isEditing) {
     return (
@@ -39,11 +39,9 @@ export default function TableAddressAutocomplete({ demand }: TableAddressAutocom
 
             setIsLoading(true);
             try {
-              await updateAddressMutation({
+              await updateEligibilityTestAddress({
                 address: address.properties.label,
                 addressId: testAddress.id,
-                latitude: address.geometry.coordinates[1],
-                longitude: address.geometry.coordinates[0],
               });
               notify('success', 'Adresse mise à jour avec succès');
               await utils.demands.admin.list.invalidate();

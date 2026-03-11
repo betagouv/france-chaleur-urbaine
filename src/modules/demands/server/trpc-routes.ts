@@ -1,3 +1,5 @@
+import { z } from 'zod';
+
 import { route, routeRole, router } from '@/modules/trpc/server';
 
 import {
@@ -26,6 +28,11 @@ export const demandsRouter = router({
       const result = await demandsService.listAdmin();
       return result;
     }),
+    recalculateEligibility: routeRole(['admin'])
+      .input(z.object({ demandId: z.string() }))
+      .mutation(async ({ input }) => {
+        return await demandsService.recalculateEligibility(input.demandId);
+      }),
     update: routeRole(['admin'])
       .input(zAdminUpdateDemandInput)
       .mutation(async ({ input, ctx }) => {

@@ -22,6 +22,7 @@ import AsyncButton from '@/components/ui/AsyncButton';
 import FCUBadge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import ChipAutoComplete, { type ChipOption } from '@/components/ui/ChipAutoComplete';
+import HamburgerMenu, { type HamburgerMenuItem } from '@/components/ui/HamburgerMenu';
 import Icon from '@/components/ui/Icon';
 import Link from '@/components/ui/Link';
 import Loader from '@/components/ui/Loader';
@@ -638,6 +639,14 @@ function DemandesAdmin(): React.ReactElement {
         filterType: 'EmptyOrFilled',
         visible: false,
       },
+      {
+        align: 'right' as const,
+        cell: ({ row }) => <DemandActions demand={row.original} />,
+        enableSorting: false,
+        header: '',
+        id: 'actions',
+        width: '50px',
+      },
     ],
     [updateDemand, assignmentRulesResultsOptions]
   );
@@ -791,5 +800,26 @@ function DemandesAdmin(): React.ReactElement {
 }
 
 export default DemandesAdmin;
+
+function DemandActions({ demand }: { demand: DemandsListAdminItem }) {
+  const utils = trpc.useUtils();
+  const { mutateAsync: recalculateEligibility } = trpc.demands.admin.recalculateEligibility.useMutation();
+
+  const menuItems: HamburgerMenuItem[] = [
+    {
+      icon: 'fr-icon-refresh-line',
+      id: 'recalculate-eligibility',
+      label: "Recalculer l'éligibilité",
+      onClick: toastErrors(async () => {
+        const result = await recalculateEligibility({ demandId: demand.id });
+        await utils.demands.admin.list.invalidate();
+
+        notify('success', `${result.banAddress} — ${result.type}`);
+      }),
+    },
+  ];
+
+  return <HamburgerMenu items={menuItems} />;
+}
 
 export const getServerSideProps = withAuthentication(['admin']);
