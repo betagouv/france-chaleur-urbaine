@@ -8,6 +8,7 @@ import { sleep } from '@/utils/time';
 
 import type { APIAdresseResult } from '../types';
 
+const UTF8_BOM = '\uFEFF'; // U+FEFF = BOM UTF-8
 const MINIMUM_RETRY_DELAY = 2_000;
 const MAXIMUM_RETRY_DELAY = 30_000;
 const MAX_TOTAL_TIME = 180_000; // 3 minutes
@@ -81,7 +82,7 @@ export async function getBANAddressFromAddress(address: string, contextLogger?: 
 
 export async function getAddressesCoordinates(addressesCSV: string, contextLogger?: Logger) {
   const form = new FormData();
-  form.append('data', new Blob([`address\n${addressesCSV}`]), 'file.csv');
+  form.append('data', new Blob([`${UTF8_BOM}address\n${addressesCSV}`]), 'file.csv');
   form.append('result_columns', 'latitude');
   form.append('result_columns', 'longitude');
   form.append('result_columns', 'result_score');
@@ -94,7 +95,7 @@ export async function getAddressesCoordinates(addressesCSV: string, contextLogge
 
 export async function getCoordinatesAddresses(coordinatesCSV: string, contextLogger?: Logger) {
   const form = new FormData();
-  form.append('data', new Blob([`latitude,longitude\n${coordinatesCSV}`]), 'file.csv');
+  form.append('data', new Blob([`${UTF8_BOM}latitude,longitude\n${coordinatesCSV}`]), 'file.csv');
   form.append('result_columns', 'result_score');
   form.append('result_columns', 'result_city');
   form.append('result_columns', 'result_label');
