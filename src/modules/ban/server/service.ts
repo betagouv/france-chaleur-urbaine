@@ -101,7 +101,7 @@ export async function getCoordinatesAddresses(coordinatesCSV: string, contextLog
   form.append('result_columns', 'result_label');
   form.append('result_columns', 'result_status');
 
-  const results = await makeAPIRequest('https://data.geopf.fr/geocodage/reverse/csv', form, contextLogger);
+  const results = await makeAPIRequest(`${serverConfig.banApiBaseUrl}reverse/csv`, form, contextLogger);
 
   // Transform results to include the original coordinates as "address" field and ensure same structure
   return results.map((result, index) => {
