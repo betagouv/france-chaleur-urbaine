@@ -1,9 +1,10 @@
 #!/bin/bash -e
 
 usage() {
-  echo "Usage: copyLocalTableToRemote.sh <dev|prod> [--data-only] <table_name1> [table_name2 ...]"
+  echo "Usage: copyLocalTableToRemote.sh <dev|prod> [--data-only] [--no-constraints] <table_name1> [table_name2 ...]"
   echo "Used to synchronize local tables with remote tables (dropped and recreated each sync)"
   echo "Use --data-only to perform a zero downtime update (in a transaction)"
+  echo "Use --no-constraints to disable foreign key checks during import"
   echo "Use the env variable SCALINGO_TUNNEL_ARGS=\"-i $HOME/.ssh/keys/path_to_keys_ed\" if your SSH key is not ~/.ssh/id_rsa"
 }
 
