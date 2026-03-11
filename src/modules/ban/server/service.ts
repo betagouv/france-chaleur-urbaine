@@ -6,28 +6,7 @@ import { parentLogger } from '@/server/helpers/logger';
 import { handleError } from '@/utils/network';
 import { sleep } from '@/utils/time';
 
-export type APIAdresseResult = {
-  address?: string;
-  latitude?: number;
-  longitude?: number;
-} & (
-  | {
-      result_status: 'ok';
-      latitude: number;
-      longitude: number;
-      result_label: string;
-      result_score: number;
-      result_city: string;
-    }
-  | {
-      result_status: 'error' | 'not-found' | 'skipped';
-      latitude: null;
-      longitude: null;
-      result_label: null;
-      result_score: null;
-      result_city: null;
-    }
-);
+import type { APIAdresseResult } from '../types';
 
 const MINIMUM_RETRY_DELAY = 2_000;
 const MAXIMUM_RETRY_DELAY = 30_000;
@@ -37,7 +16,7 @@ async function makeAPIRequest(url: string, form: FormData, contextLogger?: Logge
   const startTime = Date.now();
   let attempt = 0;
   const logger = (contextLogger ?? parentLogger).child({
-    module: 'api-adresse',
+    module: 'ban',
   });
 
   for (;;) {

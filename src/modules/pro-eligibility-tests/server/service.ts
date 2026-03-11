@@ -1,3 +1,4 @@
+import { getBANAddressFromAddress, getBANAddressFromCoordinates } from '@/modules/ban/server/service';
 import { createUserEvent } from '@/modules/events/server/service';
 import type { BoundingBox } from '@/modules/geo/types';
 import {
@@ -12,7 +13,6 @@ import { kdb, sql } from '@/server/db/kysely';
 import type { ApiContext, ListConfig } from '@/server/db/kysely/base-model';
 import { parentLogger } from '@/server/helpers/logger';
 import { type EligibilityType, getDetailedEligibilityStatus } from '@/server/services/addresseInformation';
-import { getBANAddressFromAddress, getBANAddressFromCoordinates } from '@/server/services/api-adresse';
 import { isDefined } from '@/utils/core';
 
 const logger = parentLogger.child({ module: 'pro-eligibility-tests' });

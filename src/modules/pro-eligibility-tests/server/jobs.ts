@@ -3,10 +3,11 @@ import { limitFunction } from 'p-limit';
 import Papa from 'papaparse';
 import type { Logger } from 'winston';
 
+import { getAddressesCoordinates, getCoordinatesAddresses } from '@/modules/ban/server/service';
+import type { APIAdresseResult } from '@/modules/ban/types';
 import type { BoundingBox } from '@/modules/geo/types';
 import { createBuildTilesJob } from '@/modules/tiles/server/service';
 import { type Jobs, kdb } from '@/server/db/kysely';
-import { type APIAdresseResult, getAddressesCoordinates, getCoordinatesAddresses } from '@/server/services/api-adresse';
 import { chunk } from '@/utils/array';
 import { processInParallel } from '@/utils/async';
 
