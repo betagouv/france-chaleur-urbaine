@@ -6,7 +6,7 @@ import CallOut from '@/components/ui/CallOut';
 import Link from '@/components/ui/Link';
 import useIsMobile from '@/hooks/useIsMobile';
 import { trackPostHogEvent } from '@/modules/analytics/client';
-import type { SuggestionItem } from '@/modules/ban/types';
+import type { BANAddressFeature } from '@/modules/ban/types';
 import AdemeHelp from '@/modules/chaleur-renouvelable/client/AdemeHelp';
 import FranceRenovHelp from '@/modules/chaleur-renouvelable/client/FranceRenovHelp';
 import { useAddressEligibility } from '@/modules/chaleur-renouvelable/client/hooks/useAddressEligibility';
@@ -120,7 +120,7 @@ export default function ChoixChauffageResults() {
     trackPostHogEvent('chaleur-renouvelable:accordeon', { name: id });
   }, []);
   const handleSelectGeoAddress = useCallback(
-    (geoAddress?: SuggestionItem) => {
+    (geoAddress?: BANAddressFeature) => {
       if (!geoAddress) {
         resetEligibility();
         return;

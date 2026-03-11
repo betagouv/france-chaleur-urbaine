@@ -6,7 +6,7 @@ import { parentLogger } from '@/server/helpers/logger';
 import { handleError } from '@/utils/network';
 import { sleep } from '@/utils/time';
 
-import type { APIAdresseResult } from '../types';
+import type { BANAddressResult } from '../types';
 
 const UTF8_BOM = '\uFEFF'; // U+FEFF = BOM UTF-8
 const MINIMUM_RETRY_DELAY = 2_000;
@@ -42,7 +42,7 @@ async function makeAPIRequest(url: string, form: FormData, contextLogger?: Logge
         throw new Error(`CSV parsing errors: ${JSON.stringify(results.errors)}`);
       }
 
-      const data = results.data as APIAdresseResult[];
+      const data = results.data as BANAddressResult[];
 
       const stats = data.reduce(
         (acc, result) => {

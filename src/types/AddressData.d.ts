@@ -1,5 +1,5 @@
 import type { AvailableHeating } from '@/modules/app/types';
-import type { SuggestionItem } from '@/modules/ban/types';
+import type { BANAddressFeature } from '@/modules/ban/types';
 
 import type { HeatNetworksResponse } from './HeatNetworksResponse';
 
@@ -9,7 +9,7 @@ export type AddressDataType = {
   coords?: { lat: number; lon: number };
   company?: string;
   companyType?: string;
-  geoAddress?: SuggestionItem;
+  geoAddress?: BANAddressFeature;
   computedEligibility?: boolean;
   heatingType?: AvailableHeating;
   structure?: AvailableStructure;

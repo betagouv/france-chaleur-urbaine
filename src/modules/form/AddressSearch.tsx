@@ -2,12 +2,12 @@ import type React from 'react';
 import { useCallback } from 'react';
 
 import { BAN_MIN_QUERY_LENGTH, searchBANAddresses } from '@/modules/ban/client';
-import type { SuggestionItem } from '@/modules/ban/types';
+import type { BANAddressFeature } from '@/modules/ban/types';
 import { normalize } from '@/utils/strings';
 
 import { Autocomplete, type AutocompleteProps } from './Autocomplete';
 
-export type AddressSearchProps = Omit<AutocompleteProps<SuggestionItem>, 'fetchFn' | 'getOptionValue'> & {
+export type AddressSearchProps = Omit<AutocompleteProps<BANAddressFeature>, 'fetchFn' | 'getOptionValue'> & {
   onlyAddress?: boolean;
   onlyCities?: boolean;
   excludeCities?: boolean;
@@ -27,11 +27,14 @@ export function AddressSearch({ onlyAddress, onlyCities, excludeCities, ...props
   );
 
   const getOptionValue = useCallback(
-    (opt: SuggestionItem) => (onlyCities ? `${opt.properties.city}, ${opt.properties.postcode}` : opt.properties.label),
+    (opt: BANAddressFeature) => (onlyCities ? `${opt.properties.city}, ${opt.properties.postcode}` : opt.properties.label),
     [onlyCities]
   );
 
-  const getOptionLabel = useCallback((opt: SuggestionItem, query: string) => highlightMatch(getOptionValue(opt), query), [getOptionValue]);
+  const getOptionLabel = useCallback(
+    (opt: BANAddressFeature, query: string) => highlightMatch(getOptionValue(opt), query),
+    [getOptionValue]
+  );
 
   return (
     <Autocomplete

@@ -4,7 +4,7 @@ import Papa from 'papaparse';
 import type { Logger } from 'winston';
 
 import { getAddressesCoordinates, getCoordinatesAddresses } from '@/modules/ban/server/service';
-import type { APIAdresseResult } from '@/modules/ban/types';
+import type { BANAddressResult } from '@/modules/ban/types';
 import type { BoundingBox } from '@/modules/geo/types';
 import { createBuildTilesJob } from '@/modules/tiles/server/service';
 import { type Jobs, kdb } from '@/server/db/kysely';
@@ -108,7 +108,7 @@ export async function processProEligibilityTestJob(job: ProEligibilityTestJob, l
 
   const chunks = chunk(formattedRows, chunkSize);
   const totalChunks = chunks.length;
-  const addresses: APIAdresseResult[] = [];
+  const addresses: BANAddressResult[] = [];
 
   for (const [index, chunkItems] of chunks.entries()) {
     logger.info('processing chunk', {

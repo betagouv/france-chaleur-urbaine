@@ -25,10 +25,7 @@ export type BANAddressFeature = {
   };
 };
 
-// compatibility
-export type SuggestionItem = BANAddressFeature;
-
-export type APIAdresseResult = {
+export type BANAddressResult = {
   address?: string;
   latitude?: number;
   longitude?: number;

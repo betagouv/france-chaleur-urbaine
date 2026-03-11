@@ -1,7 +1,7 @@
 import Select from '@/components/form/dsfr/Select';
 import RichSelect from '@/components/ui/RichSelect';
 import { trackPostHogEvent } from '@/modules/analytics/client';
-import type { SuggestionItem } from '@/modules/ban/types';
+import type { BANAddressFeature } from '@/modules/ban/types';
 import { type EspaceExterieur, espaceExterieurOptions, type TypeLogement } from '@/modules/chaleur-renouvelable/constants';
 import { AddressField } from '@/modules/form/AddressField';
 
@@ -9,10 +9,10 @@ type SettingsTopFieldsProps = {
   withLabel: boolean;
   adresse: string | null;
   setAdresse: (val: string | null) => void;
-  geoAddress?: SuggestionItem;
-  setGeoAddress: (val: SuggestionItem | undefined) => void;
+  geoAddress?: BANAddressFeature;
+  setGeoAddress: (val: BANAddressFeature | undefined) => void;
   onAddressError?: () => void;
-  onSelectGeoAddress?: (val?: SuggestionItem) => void;
+  onSelectGeoAddress?: (val?: BANAddressFeature) => void;
   typeLogement: TypeLogement | null;
   setTypeLogement: (val: TypeLogement | null) => void;
   espaceExterieur: EspaceExterieur | null;
@@ -46,7 +46,7 @@ export function SettingsTopFields({
           if (geoAddress !== undefined) setGeoAddress(undefined);
           onSelectGeoAddress?.(undefined);
         }}
-        onSelect={(next?: SuggestionItem) => {
+        onSelect={(next?: BANAddressFeature) => {
           const nextLabel = next?.properties?.label ?? '';
           if ((adresse ?? '') === nextLabel) return;
           trackPostHogEvent('chaleur-renouvelable:address_select', {

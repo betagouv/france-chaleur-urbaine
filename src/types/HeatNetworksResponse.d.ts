@@ -1,4 +1,4 @@
-import type { SuggestionItem } from '@/modules/ban/types';
+import type { BANAddressFeature } from '@/modules/ban/types';
 
 export type HeatNetwork = {
   isEligible: boolean;
@@ -25,7 +25,7 @@ export type CityNetwork = {
 export type HeatNetworksResponse = HeatNetwork & CityNetwork;
 
 export type AddressDetail = {
-  geoAddress?: SuggestionItem;
+  geoAddress?: BANAddressFeature;
   network: HeatNetworksResponse;
 };
 
