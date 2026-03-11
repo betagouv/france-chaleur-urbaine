@@ -251,10 +251,18 @@ function DemandesNew(): React.ReactElement {
               <div className="font-bold">{testAddress.eligibility?.id_sncu || ''}</div>
               {testAddress.eligibility?.nom || (testAddress.eligibility?.distance && testAddress.eligibility?.distance > 0) ? (
                 <div className="text-xs text-gray-500">
-                  <strong>{testAddress.eligibility?.distance}m</strong> de{' '}
-                  <Link stopPropagation href={`/reseaux/${testAddress.eligibility?.id_sncu}`}>
-                    {testAddress.eligibility?.nom || 'Réseau sans nom'}
-                  </Link>
+                  {testAddress.eligibility?.distance && testAddress.eligibility?.distance > 0 && (
+                    <>
+                      <strong>{testAddress.eligibility?.distance}m</strong> de{' '}
+                    </>
+                  )}
+                  {testAddress.eligibility?.id_sncu ? (
+                    <Link stopPropagation href={`/reseaux/${testAddress.eligibility?.id_sncu}`}>
+                      {testAddress.eligibility?.nom || 'Réseau sans nom'}
+                    </Link>
+                  ) : (
+                    testAddress.eligibility?.nom || 'Réseau sans nom'
+                  )}
                 </div>
               ) : null}
             </div>
