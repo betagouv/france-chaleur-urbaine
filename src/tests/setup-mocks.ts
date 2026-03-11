@@ -14,7 +14,7 @@ process.env.DATABASE_URL = process.env.DATABASE_URL ?? 'postgres://fcu_test:fcu_
 // This prevents the "Cannot find module '@/client-config'" error in tests
 vi.mock('@/server/config', () => ({
   clientConfig: {
-    banApiBaseUrl: 'https://data.geopf.fr/geocodage/search/',
+    banApiBaseUrl: 'https://data.geopf.fr/geocodage/',
     calendarLink: 'https://cal.com/test',
     destinationEmails: {
       carto: 'test@example.com',
