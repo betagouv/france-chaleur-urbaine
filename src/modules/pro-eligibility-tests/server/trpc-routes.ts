@@ -37,24 +37,14 @@ export const proEligibilityTestsRouter = router({
   update: authRoute.input(zUpdateEligibilityTestInput).mutation(async ({ input, ctx }) => {
     return await proEligibilityTestsService.update(input.id, input, {}, ctx);
   }),
-  updateAddress: adminRoute
+  updateEligibilityTestAddress: adminRoute
     .input(
       z.object({
         address: z.string().min(1),
         addressId: z.string(),
-        latitude: z.number(),
-        longitude: z.number(),
       })
     )
-    .mutation(async ({ input, ctx }) => {
-      return await proEligibilityTestsService.updateAddress(
-        input.addressId,
-        {
-          address: input.address,
-          latitude: input.latitude,
-          longitude: input.longitude,
-        },
-        ctx
-      );
+    .mutation(async ({ input }) => {
+      return await proEligibilityTestsService.updateEligibilityTestAddress(input.addressId, input.address);
     }),
 });

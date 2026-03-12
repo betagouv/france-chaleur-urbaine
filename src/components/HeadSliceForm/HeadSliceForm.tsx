@@ -15,7 +15,7 @@ import useContactFormFCU from '@/hooks/useContactFormFCU';
 import { AnalyticsFormId } from '@/modules/analytics/client';
 import useUserInfo from '@/modules/app/client/hooks/useUserInfo';
 import type { AvailableHeating } from '@/modules/app/types';
-import type { SuggestionItem } from '@/modules/ban/types';
+import type { BANAddressFeature } from '@/modules/ban/types';
 import DemandSondageForm from '@/modules/demands/client/DemandSondageForm';
 import { AddressField } from '@/modules/form/AddressField';
 import trpc from '@/modules/trpc/client';
@@ -74,7 +74,7 @@ const HeadSliceForm = ({
   const trpcUtils = trpc.useUtils();
   const router = useRouter();
 
-  const [geoAddress, setGeoAddress] = useState<SuggestionItem>();
+  const [geoAddress, setGeoAddress] = useState<BANAddressFeature>();
   const { userInfo, setUserInfo } = useUserInfo();
   const [autoValidate, setAutoValidate] = useState(false);
   const [eligibilityError, setEligibilityError] = useState(false);
@@ -173,7 +173,7 @@ const HeadSliceForm = ({
                 setUserInfo({ address: '' });
                 setGeoAddress(undefined);
               }}
-              onSelect={(geoAddress?: SuggestionItem) => {
+              onSelect={(geoAddress?: BANAddressFeature) => {
                 const address = geoAddress?.properties?.label;
                 setUserInfo({ address: address ?? '' });
                 setGeoAddress(geoAddress);

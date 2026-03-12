@@ -14,7 +14,7 @@ import Modal, { createModal } from '@/components/ui/Modal';
 import Text from '@/components/ui/Text';
 import { trackEvent, trackPostHogEvent } from '@/modules/analytics/client';
 import useUserInfo from '@/modules/app/client/hooks/useUserInfo';
-import type { SuggestionItem } from '@/modules/ban/types';
+import type { BANAddressFeature } from '@/modules/ban/types';
 import type { ContactFormInfos, ModeDeChauffage, TypeDeChauffage } from '@/modules/demands/constants';
 import { AddressField } from '@/modules/form/AddressField';
 import { getReadableDistance } from '@/modules/geo/client/helpers';
@@ -40,13 +40,13 @@ const eligibilityTestModal = createModal({
 const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
   const trpcUtils = trpc.useUtils();
   const [addressInUrl, setAddressInUrl] = useQueryState('address');
-  const [selectedGeoAddress, setSelectedGeoAddress] = useState<SuggestionItem>();
+  const [selectedGeoAddress, setSelectedGeoAddress] = useState<BANAddressFeature>();
   const [eligibilityStatus, setEligibilityStatus] = useState<NetworkEligibilityStatus>();
   const { userInfo, setUserInfo } = useUserInfo();
   const [formState, setFormState] = useState<FormState>('idle');
 
   // appelé au clic sur Tester l'adresse, pour récupérer l'éligibilité et les informations du réseau
-  const testAddressEligibility = async (geoAddress: SuggestionItem) => {
+  const testAddressEligibility = async (geoAddress: BANAddressFeature) => {
     try {
       trackEvent(`Eligibilité|Formulaire de test - Fiche réseau - Envoi`, geoAddress.properties.label);
 
@@ -73,7 +73,7 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
     }
   };
 
-  const onAddressSelected = (geoAddress?: SuggestionItem) => {
+  const onAddressSelected = (geoAddress?: BANAddressFeature) => {
     void setAddressInUrl(null);
     // beware, this function gets called every time the address changes
     // and we only need the result when the address is complete

@@ -35,7 +35,7 @@ vi.mock('@/server/services/addresseInformation', () => ({
   }),
 }));
 
-vi.mock('@/server/services/api-adresse', () => ({
+vi.mock('@/modules/ban/server/service', () => ({
   getBANAddressFromAddress: vi.fn().mockResolvedValue({
     address: '10 Rue de Rivoli 75001 Paris',
     latitude: 48.8566,

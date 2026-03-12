@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import { searchBANAddresses } from '@/modules/ban/client';
-import type { SuggestionItem } from '@/modules/ban/types';
+import type { BANAddressFeature } from '@/modules/ban/types';
 import { toastErrors } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
 import type { HeatNetwork } from '@/types/HeatNetworksResponse';
@@ -12,7 +12,7 @@ type BatEnrInfo = {
 };
 
 type EligibilityState = {
-  geoAddress?: SuggestionItem;
+  geoAddress?: BANAddressFeature;
   batEnr: BatEnrInfo;
   codeDepartement: string;
   temperatureRef: number | null;
@@ -39,7 +39,7 @@ const emptyState: EligibilityState = {
   temperatureRef: null,
 };
 
-const getBatEnrInfo = async ({ geoAddress, trpcUtils }: { geoAddress: SuggestionItem; trpcUtils: TrpcUtils }): Promise<BatEnrInfo> => {
+const getBatEnrInfo = async ({ geoAddress, trpcUtils }: { geoAddress: BANAddressFeature; trpcUtils: TrpcUtils }): Promise<BatEnrInfo> => {
   const [lon, lat] = geoAddress.geometry.coordinates;
   const banId = geoAddress.properties.id;
   const rnb = await trpcUtils.client.batEnr.getRnbByBanId.query({ banId });
@@ -69,7 +69,7 @@ export function useAddressEligibility(adresse: string | null) {
   }, []);
 
   const computeEligibilityFromSuggestion = useCallback(
-    toastErrors(async (geoAddress: SuggestionItem) => {
+    toastErrors(async (geoAddress: BANAddressFeature) => {
       const [lon, lat] = geoAddress.geometry.coordinates;
       const { city, citycode } = geoAddress.properties;
 
@@ -108,7 +108,7 @@ export function useAddressEligibility(adresse: string | null) {
           onlyCities: false,
           query: adresseToTest,
         })
-      )?.[0] as SuggestionItem | undefined;
+      )?.[0] as BANAddressFeature | undefined;
 
       if (!geoAddress) {
         resetEligibility();
@@ -126,14 +126,14 @@ export function useAddressEligibility(adresse: string | null) {
   }, [adresse, triggerEligibilityFromString]);
 
   const onSelectGeoAddress = useCallback(
-    (geoAddress?: SuggestionItem) => {
+    (geoAddress?: BANAddressFeature) => {
       if (!geoAddress) return;
       void computeEligibilityFromSuggestion(geoAddress);
     },
     [computeEligibilityFromSuggestion]
   );
 
-  const setGeoAddress = useCallback((geoAddress?: SuggestionItem) => {
+  const setGeoAddress = useCallback((geoAddress?: BANAddressFeature) => {
     setState((current) => ({ ...current, geoAddress }));
   }, []);
 

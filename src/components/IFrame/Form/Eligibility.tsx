@@ -6,14 +6,14 @@ import { CheckEligibilityFormLabel, SelectEnergy } from '@/components/Eligibilit
 import { energyInputsDefaultLabels } from '@/components/EligibilityForm/EligibilityFormAddress';
 import Image from '@/components/ui/Image';
 import { AnalyticsFormId } from '@/modules/analytics/client';
-import type { SuggestionItem } from '@/modules/ban/types';
+import type { BANAddressFeature } from '@/modules/ban/types';
 import { AddressField } from '@/modules/form/AddressField';
 
 import { Container, Form, Header } from './Eligibility.styles';
 
 const Eligibility = () => {
   const [heatingType, setHeatingType] = useState('');
-  const [address, setAddress] = useState<SuggestionItem>();
+  const [address, setAddress] = useState<BANAddressFeature>();
   return (
     <Container>
       <Header>

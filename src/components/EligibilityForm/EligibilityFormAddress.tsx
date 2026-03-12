@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import Box from '@/components/ui/Box';
 import Link from '@/components/ui/Link';
-import type { SuggestionItem } from '@/modules/ban/types';
+import type { BANAddressFeature } from '@/modules/ban/types';
 import { AddressField, type AddressFieldProps } from '@/modules/form/AddressField';
 import trpc from '@/modules/trpc/client';
 import type { AddressDataType } from '@/types/AddressData';
@@ -71,7 +71,7 @@ const EligibilityFormAddress: React.FC<CheckEligibilityFormProps> = ({
   }, [router.query]);
 
   const handleAddressSelected: AddressFieldProps['onSelect'] = useCallback(
-    async (geoAddress?: SuggestionItem): Promise<void> => {
+    async (geoAddress?: BANAddressFeature): Promise<void> => {
       const address = geoAddress?.properties?.label;
 
       if (!geoAddress) {

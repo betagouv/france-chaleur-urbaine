@@ -37,10 +37,24 @@ init_env() {
   fi
 
   DATAONLY=false
-  if [[ "$1" == "--data-only" ]]; then
-    DATAONLY=true
-    shift
-  fi
+  NO_CONSTRAINTS=false
+  while [[ "$1" == --* ]]; do
+    case "$1" in
+      --data-only)
+        DATAONLY=true
+        shift
+        ;;
+      --no-constraints)
+        NO_CONSTRAINTS=true
+        shift
+        ;;
+      *)
+        echo "Option inconnue: $1"
+        usage
+        exit 1
+        ;;
+    esac
+  done
 
   TABLES=("$@")
   if [ ${#TABLES[@]} -eq 0 ]; then
@@ -123,7 +137,12 @@ dump_tables() {
 
 restore_tables() {
   local database_url=$1
-  $pg_restore -j 10 -Fd -O --clean -d $database_url /tmp/tables.dump
+  if [ $NO_CONSTRAINTS = true ]; then
+    echo "  (contraintes FK désactivées pour l'import)"
+    $pg_restore -j 10 -Fd -O --clean --disable-triggers -d $database_url /tmp/tables.dump
+  else
+    $pg_restore -j 10 -Fd -O --clean -d $database_url /tmp/tables.dump
+  fi
 }
 
 dump_tables_sql() {
@@ -146,5 +165,10 @@ load_tables_in_transaction() {
   for table in "${tables[@]}"; do
     sql_args="$sql_args DELETE FROM \"$table\";"
   done
-  $psql -v ON_ERROR_STOP=1 $database_url --single-transaction -c "$sql_args" -f /tmp/tables.sql
+  if [ $NO_CONSTRAINTS = true ]; then
+    echo "  (contraintes FK désactivées pour l'import)"
+    $psql -v ON_ERROR_STOP=1 $database_url --single-transaction -c "SET session_replication_role = replica; $sql_args" -f /tmp/tables.sql -c "SET session_replication_role = DEFAULT;"
+  else
+    $psql -v ON_ERROR_STOP=1 $database_url --single-transaction -c "$sql_args" -f /tmp/tables.sql
+  fi
 }

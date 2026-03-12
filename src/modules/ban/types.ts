@@ -25,5 +25,25 @@ export type BANAddressFeature = {
   };
 };
 
-// compatibility
-export type SuggestionItem = BANAddressFeature;
+export type BANAddressResult = {
+  address?: string;
+  latitude?: number;
+  longitude?: number;
+} & (
+  | {
+      result_status: 'ok';
+      latitude: number;
+      longitude: number;
+      result_label: string;
+      result_score: number;
+      result_city: string;
+    }
+  | {
+      result_status: 'error' | 'not-found' | 'skipped';
+      latitude: null;
+      longitude: null;
+      result_label: null;
+      result_score: null;
+      result_city: null;
+    }
+);

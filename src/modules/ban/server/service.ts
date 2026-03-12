@@ -6,29 +6,9 @@ import { parentLogger } from '@/server/helpers/logger';
 import { handleError } from '@/utils/network';
 import { sleep } from '@/utils/time';
 
-export type APIAdresseResult = {
-  address?: string;
-  latitude?: number;
-  longitude?: number;
-} & (
-  | {
-      result_status: 'ok';
-      latitude: number;
-      longitude: number;
-      result_label: string;
-      result_score: number;
-      result_city: string;
-    }
-  | {
-      result_status: 'error' | 'not-found' | 'skipped';
-      latitude: null;
-      longitude: null;
-      result_label: null;
-      result_score: null;
-      result_city: null;
-    }
-);
+import type { BANAddressResult } from '../types';
 
+const UTF8_BOM = '\uFEFF'; // U+FEFF = BOM UTF-8
 const MINIMUM_RETRY_DELAY = 2_000;
 const MAXIMUM_RETRY_DELAY = 30_000;
 const MAX_TOTAL_TIME = 180_000; // 3 minutes
@@ -37,7 +17,7 @@ async function makeAPIRequest(url: string, form: FormData, contextLogger?: Logge
   const startTime = Date.now();
   let attempt = 0;
   const logger = (contextLogger ?? parentLogger).child({
-    module: 'api-adresse',
+    module: 'ban',
   });
 
   for (;;) {
@@ -62,7 +42,7 @@ async function makeAPIRequest(url: string, form: FormData, contextLogger?: Logge
         throw new Error(`CSV parsing errors: ${JSON.stringify(results.errors)}`);
       }
 
-      const data = results.data as APIAdresseResult[];
+      const data = results.data as BANAddressResult[];
 
       const stats = data.reduce(
         (acc, result) => {
@@ -102,7 +82,7 @@ export async function getBANAddressFromAddress(address: string, contextLogger?: 
 
 export async function getAddressesCoordinates(addressesCSV: string, contextLogger?: Logger) {
   const form = new FormData();
-  form.append('data', new Blob([`address\n${addressesCSV}`]), 'file.csv');
+  form.append('data', new Blob([`${UTF8_BOM}address\n${addressesCSV}`]), 'file.csv');
   form.append('result_columns', 'latitude');
   form.append('result_columns', 'longitude');
   form.append('result_columns', 'result_score');
@@ -115,13 +95,13 @@ export async function getAddressesCoordinates(addressesCSV: string, contextLogge
 
 export async function getCoordinatesAddresses(coordinatesCSV: string, contextLogger?: Logger) {
   const form = new FormData();
-  form.append('data', new Blob([`latitude,longitude\n${coordinatesCSV}`]), 'file.csv');
+  form.append('data', new Blob([`${UTF8_BOM}latitude,longitude\n${coordinatesCSV}`]), 'file.csv');
   form.append('result_columns', 'result_score');
   form.append('result_columns', 'result_city');
   form.append('result_columns', 'result_label');
   form.append('result_columns', 'result_status');
 
-  const results = await makeAPIRequest('https://data.geopf.fr/geocodage/reverse/csv', form, contextLogger);
+  const results = await makeAPIRequest(`${serverConfig.banApiBaseUrl}reverse/csv`, form, contextLogger);
 
   // Transform results to include the original coordinates as "address" field and ensure same structure
   return results.map((result, index) => {

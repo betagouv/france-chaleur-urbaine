@@ -2,7 +2,7 @@ import { useRouter } from 'next/navigation';
 
 import Button from '@/components/ui/Button';
 import { trackPostHogEvent } from '@/modules/analytics/client';
-import type { SuggestionItem } from '@/modules/ban/types';
+import type { BANAddressFeature } from '@/modules/ban/types';
 import { useAddressEligibility } from '@/modules/chaleur-renouvelable/client/hooks/useAddressEligibility';
 import { useChoixChauffageQueryParams } from '@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageQueryParams';
 import { SettingsTopFields } from '@/modules/chaleur-renouvelable/client/SettingsTopFields';
@@ -23,7 +23,7 @@ export default function ChoixChauffageForm() {
         setAdresse={urlParams.setAdresse}
         geoAddress={geoAddress}
         setGeoAddress={setGeoAddress}
-        onSelectGeoAddress={(geoAddress?: SuggestionItem) => {
+        onSelectGeoAddress={(geoAddress?: BANAddressFeature) => {
           if (!geoAddress) {
             resetEligibility();
             return;

@@ -1,3 +1,4 @@
+import { getBANAddressFromAddress, getBANAddressFromCoordinates } from '@/modules/ban/server/service';
 import { createUserEvent } from '@/modules/events/server/service';
 import type { BoundingBox } from '@/modules/geo/types';
 import {
@@ -12,7 +13,6 @@ import { kdb, sql } from '@/server/db/kysely';
 import type { ApiContext, ListConfig } from '@/server/db/kysely/base-model';
 import { parentLogger } from '@/server/helpers/logger';
 import { type EligibilityType, getDetailedEligibilityStatus } from '@/server/services/addresseInformation';
-import { getBANAddressFromAddress, getBANAddressFromCoordinates } from '@/server/services/api-adresse';
 import { isDefined } from '@/utils/core';
 
 const logger = parentLogger.child({ module: 'pro-eligibility-tests' });
@@ -244,14 +244,18 @@ export const buildEligibilityTestAddress = async (input: { address: string } | {
     longitude,
   };
 
-  return await createAddressDataFromBAN(modifiedAddressItem);
+  return {
+    latitude,
+    longitude,
+    ...(await createAddressDataFromBAN(modifiedAddressItem)),
+  };
 };
 
 export const createEligibilityTestAddress = async ({
   demand_id,
   ...input
 }: ({ address: string } | { latitude: number; longitude: number }) & { demand_id: string }) => {
-  const addressData = await buildEligibilityTestAddress(input);
+  const { latitude: _lat, longitude: _lon, ...addressData } = await buildEligibilityTestAddress(input);
 
   const testAddress = await kdb
     .insertInto('pro_eligibility_tests_addresses')
@@ -533,54 +537,50 @@ export const update = async (
   return updatedItem;
 };
 
-export const updateAddress = async (
-  addressId: string,
-  { latitude, longitude, address }: { latitude: number; longitude: number; address: string },
-  _context: ApiContext
-) => {
-  const existingAddress = await kdb.selectFrom('pro_eligibility_tests_addresses').where('id', '=', addressId).executeTakeFirst();
+/**
+ * Met à jour l'adresse d'un test d'éligibilité et recalcule l'éligibilité.
+ * Si l'adresse est liée à une demande, met à jour aussi les coordonnées, l'adresse et les infos réseau de la demande.
+ */
+export const updateEligibilityTestAddress = async (addressId: string, address: string) => {
+  // ensure the address exists
+  await kdb.selectFrom('pro_eligibility_tests_addresses').where('id', '=', addressId).executeTakeFirstOrThrow();
 
-  if (!existingAddress) {
-    throw new Error('Address not found');
-  }
+  const { latitude, longitude, ...addressData } = await buildEligibilityTestAddress({ address });
 
-  // Utilise buildEligibilityTestAddress pour construire les données de l'adresse
-  const addressData = await buildEligibilityTestAddress({ latitude, longitude });
+  const eligibilityHistory = addressData.eligibility_history
+    ? (JSON.parse(addressData.eligibility_history) as ProEligibilityTestHistoryEntry[])
+    : [];
+  const lastEligibility = eligibilityHistory[eligibilityHistory.length - 1]?.eligibility;
 
-  // Extraire les informations du réseau depuis l'historique d'éligibilité
-  const eligibilityHistory = JSON.parse(addressData.eligibility_history!) as ProEligibilityTestHistoryEntry[];
-  const lastEligibility = eligibilityHistory[0]?.eligibility;
-  const networkId = lastEligibility?.id_sncu || null;
-  const networkName = lastEligibility?.nom || null;
-
-  // Mettre à jour l'adresse avec les nouvelles données
   const updatedAddress = await kdb
     .updateTable('pro_eligibility_tests_addresses')
     .set(addressData)
     .where('id', '=', addressId)
-    .returningAll()
+    .returning('demand_id')
     .executeTakeFirstOrThrow();
 
   // Si l'adresse est liée à une demande, mettre à jour aussi les coordonnées, l'adresse et les infos réseau
   if (updatedAddress.demand_id) {
-    const legacyValuesUpdate = {
-      Adresse: address,
-      'Identifiant réseau': networkId,
-      Latitude: latitude,
-      Longitude: longitude,
-      'Nom réseau': networkName,
-    };
-
     await kdb
       .updateTable('demands')
       .set({
-        legacy_values: sql`legacy_values || ${JSON.stringify(legacyValuesUpdate)}::jsonb`,
+        legacy_values: sql`legacy_values || ${JSON.stringify({
+          Adresse: address,
+          'Distance au réseau': lastEligibility?.distance ?? null,
+          'Identifiant réseau': lastEligibility?.id_sncu ?? null,
+          Latitude: latitude,
+          Longitude: longitude,
+          'Nom réseau': lastEligibility?.nom ?? null,
+        })}::jsonb`,
       })
       .where('id', '=', updatedAddress.demand_id)
       .execute();
   }
 
-  return updatedAddress;
+  return {
+    banAddress: addressData.ban_address,
+    type: lastEligibility?.type,
+  };
 };
 
 export const remove = async (testId: string, _config: ListConfig<typeof tableName>, context: ApiContext) => {
