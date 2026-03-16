@@ -80,21 +80,6 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
   // when loading a saved configuration with a different address
   const [addressResetKey, setAddressResetKey] = useState(0);
 
-  React.useEffect(() => {
-    if (engine.loaded) {
-      if (userInfo.address) {
-        // if address is set, engine will need to compute the result
-        // so we wait a bit to make sure the result is ready
-        // TODO this is a hack, we should use a proper state from the engine
-        setTimeout(() => {
-          setLoading(false);
-        }, 2000);
-      } else {
-        setLoading(false);
-      }
-    }
-  }, [engine.loaded, userInfo.address]);
-
   const isAddressSelected = engine.getField('code département') !== undefined;
 
   const handleAddressSelect = async (selectedAddress: BANAddressFeature, trackAnalytics = true) => {
@@ -179,17 +164,28 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
   const isAddressSelectedRef = React.useRef(isAddressSelected);
   isAddressSelectedRef.current = isAddressSelected;
 
+  // Masque le spinner dès que l'engine est chargé, sauf si une auto-résolution d'adresse est en cours
+  // (dans ce cas, c'est l'effet ci-dessous qui appellera setLoading(false) quand elle sera terminée).
+  React.useEffect(() => {
+    if (!engine.loaded) return;
+    const savedAddress = addressInUrl || userInfo.address;
+    if (!savedAddress || isAddressSelectedRef.current) {
+      setLoading(false);
+    }
+  }, [engine.loaded, userInfo.address, addressInUrl]);
+
   // Restaure la situation publicodes au rechargement quand une adresse est connue mais l'engine pas encore alimenté.
   React.useEffect(() => {
     const savedAddress = addressInUrl || userInfo.address;
     if (!savedAddress || isAddressSelectedRef.current) return;
     const controller = new AbortController();
     searchBANAddresses({ excludeCities: true, query: savedAddress, signal: controller.signal })
-      .then((features) => {
+      .then(async (features) => {
         const match = features.find((f) => f.properties.label === savedAddress) ?? features[0];
-        if (match) void handleAddressSelectRef.current(match, false);
+        if (match) await handleAddressSelectRef.current(match, false);
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setLoading(false));
     return () => controller.abort();
   }, [addressInUrl, userInfo.address]);
 
