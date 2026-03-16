@@ -1,7 +1,5 @@
 // Attention, il faut référencer explicitement chaque variable process.env.NEXT_PUBLIC_*
 
-import { envBooleanSchema } from '@/utils/validation';
-
 // exemple: ENABLE_INSCRIPTIONS: envBooleanSchema.default(false).parse(process.env.NEXT_PUBLIC_FLAG_ENABLE_INSCRIPTIONS),
 export const clientConfig = {
   banApiBaseUrl: process.env.NEXT_PUBLIC_BAN_API_BASE_URL ?? 'https://data.geopf.fr/geocodage/',
@@ -19,9 +17,6 @@ export const clientConfig = {
     }),
     {} as Record<string, string>
   ),
-  flags: {
-    enableComparateurWidget: envBooleanSchema.default(false).parse(process.env.NEXT_PUBLIC_FLAG_ENABLE_COMPARATEUR_WIDGET),
-  },
   linkedInUrl: 'https://www.linkedin.com/company/france-chaleur-urbaine?originalSubdomain=fr',
   networkInfoFieldMaxCharacters: 700,
   networkSearchMinimumCharactersThreshold: 3,

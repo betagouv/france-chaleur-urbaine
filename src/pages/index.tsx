@@ -1,7 +1,6 @@
 import Highlight from '@codegouvfr/react-dsfr/Highlight';
 import { AnimatePresence } from 'motion/react';
 
-import { clientConfig } from '@/client-config';
 import LastArticles from '@/components/Articles/LastArticles';
 import InterviewsVideos from '@/components/Coproprietaire/InterviewsVideos';
 import HeadSliceForm from '@/components/HeadSliceForm';
@@ -130,15 +129,7 @@ function Home() {
     >
       <Hero image="/img/banner_chauffage_gaz.png">
         <HeroTitle>Le chauffage urbain&nbsp;: une solution écologique à prix maîtrisé&nbsp;!</HeroTitle>
-        <HeroSubtitle>
-          Testez votre éligibilité
-          {clientConfig.flags.enableComparateurWidget && (
-            <>
-              {' '}
-              et comparez les coûts <strong>en 2 clics</strong>
-            </>
-          )}
-        </HeroSubtitle>
+        <HeroSubtitle>Testez votre éligibilité</HeroSubtitle>
         <HeroContent>
           <HeadSliceForm checkEligibility withWrapper={(form) => <>{form}</>} withBulkEligibility />
         </HeroContent>

@@ -2,10 +2,8 @@ import { Alert } from '@codegouvfr/react-dsfr/Alert';
 import dynamic from 'next/dynamic';
 import { useCallback, useMemo, useState } from 'react';
 
-import { clientConfig } from '@/client-config';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import Box from '@/components/ui/Box';
-import Heading from '@/components/ui/Heading';
 import Image from '@/components/ui/Image';
 import Link from '@/components/ui/Link';
 import type { ContactFormInfos } from '@/modules/demands/constants';
@@ -16,19 +14,6 @@ import { ContactForm, ContactFormContentWrapper, ContactFormResultMessage, Conta
 import { getEligibilityResult } from './EligibilityResults';
 
 const Map = dynamic(() => import('@/components/Map/Map'), { ssr: false });
-const ComparateurPublicodesWidget = dynamic(() => import('@/components/ComparateurPublicodes/ComparateurPublicodesWidget'), {
-  loading: () => (
-    <div className="fr-mt-5w">
-      <Heading as="h2" size="h4">
-        Comparaison des modes de chauffage
-      </Heading>
-      <Box textAlign="center" p="5w" fontSize={'24px'} fontWeight="bold">
-        Chargement en cours...
-      </Box>
-    </div>
-  ),
-  ssr: false,
-});
 
 type EligibilityFormContactType = {
   addressData: AddressDataType;
@@ -166,15 +151,6 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
                   description="Au vu de votre mode de chauffage actuel, le raccordement de votre immeuble nécessiterait des travaux conséquents et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble"
                 />
               )
-            )}
-            {clientConfig.flags.enableComparateurWidget && addressData.heatingType === 'collectif' && (
-              <ComparateurPublicodesWidget
-                className="fr-mt-5w"
-                coords={[addressData?.coords?.lon, addressData?.coords?.lat]}
-                city={addressData.geoAddress?.properties.city}
-                cityCode={addressData.geoAddress?.properties.citycode}
-                address={addressData.geoAddress?.properties.label}
-              />
             )}
           </ContactFormContentWrapper>
           <ContactFormContentWrapper>
