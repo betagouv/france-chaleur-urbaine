@@ -1,27 +1,17 @@
-import IframeWrapper from '@/components/IframeWrapper';
-import Map from '@/components/Map/Map';
-import { createMapConfiguration } from '@/components/Map/map-configuration';
+import IframeMapPage from '@/components/Map/IframeMapPage';
+import { iframePresets } from '@/components/Map/iframe-presets';
 
 const DalkiaMap = () => {
+  const preset = iframePresets.dalkia;
+
   return (
-    <IframeWrapper>
-      <Map
-        initialMapConfiguration={createMapConfiguration({
-          filtreGestionnaire: ['dalkia'],
-          reseauxDeChaleur: {
-            show: true,
-          },
-        })}
-        enabledLegendFeatures={['reseauxDeChaleur', 'reseauxDeFroid', 'reseauxEnConstruction', 'zonesDeDeveloppementPrioritaire']}
-        withLegend
-        withBorder
-        legendLogoOpt={{
-          alt: 'logo Dalkia',
-          src: '/logo-DALKIA.png',
-        }}
-        withFCUAttribution
-      />
-    </IframeWrapper>
+    <IframeMapPage
+      defaultMapConfiguration={preset.defaultMapConfiguration}
+      defaultEnabledLegendFeatures={preset.defaultEnabledLegendFeatures}
+      withBorder
+      legendLogoOpt={preset.legendLogoOpt}
+      withFCUAttribution
+    />
   );
 };
 

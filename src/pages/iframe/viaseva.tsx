@@ -1,22 +1,17 @@
-import IframeWrapper from '@/components/IframeWrapper';
-import Map from '@/components/Map/Map';
-import { iframeSimpleMapConfiguration } from '@/components/Map/map-configuration';
+import IframeMapPage from '@/components/Map/IframeMapPage';
+import { iframePresets } from '@/components/Map/iframe-presets';
 
 const ViasevaMap = () => {
+  const preset = iframePresets.viaseva;
+
   return (
-    <IframeWrapper>
-      <Map
-        initialMapConfiguration={iframeSimpleMapConfiguration}
-        enabledLegendFeatures={['reseauxDeChaleur', 'reseauxDeFroid', 'reseauxEnConstruction', 'zonesDeDeveloppementPrioritaire']}
-        withLegend
-        withBorder
-        legendLogoOpt={{
-          alt: 'logo viaseva',
-          src: '/logo-viaseva.svg',
-        }}
-        withFCUAttribution
-      />
-    </IframeWrapper>
+    <IframeMapPage
+      defaultMapConfiguration={preset.defaultMapConfiguration}
+      defaultEnabledLegendFeatures={preset.defaultEnabledLegendFeatures}
+      withBorder
+      legendLogoOpt={preset.legendLogoOpt}
+      withFCUAttribution
+    />
   );
 };
 
