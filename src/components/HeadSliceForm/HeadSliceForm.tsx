@@ -15,6 +15,7 @@ import useContactFormFCU from '@/hooks/useContactFormFCU';
 import { AnalyticsFormId } from '@/modules/analytics/client';
 import useUserInfo from '@/modules/app/client/hooks/useUserInfo';
 import type { AvailableHeating } from '@/modules/app/types';
+import { searchBANAddresses } from '@/modules/ban/client';
 import type { BANAddressFeature } from '@/modules/ban/types';
 import DemandSondageForm from '@/modules/demands/client/DemandSondageForm';
 import { AddressField } from '@/modules/form/AddressField';
@@ -141,6 +142,19 @@ const HeadSliceForm = ({
       setUserInfo({ address: address as string });
     }
   }, [router.query, setUserInfo]);
+
+  // Restaure la geoAddress depuis la BAN si l'adresse est connue mais l'objet feature absent (rechargement).
+  useEffect(() => {
+    if (!userInfo.address || geoAddress) return;
+    const controller = new AbortController();
+    searchBANAddresses({ query: userInfo.address, signal: controller.signal })
+      .then((features) => {
+        const match = features.find((f) => f.properties.label === userInfo.address);
+        if (match) setGeoAddress(match);
+      })
+      .catch(() => {});
+    return () => controller.abort();
+  }, [userInfo.address, geoAddress]);
 
   useEffect(() => {
     if (autoValidate && userInfo.heatingType && userInfo.address && geoAddress) {
