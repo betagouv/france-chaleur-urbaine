@@ -1,5 +1,6 @@
+import Image from 'next/image';
+
 import SimplePage from '@/components/shared/page/SimplePage';
-import Badge from '@/components/ui/Badge';
 import ChoixChauffageForm from '@/modules/chaleur-renouvelable/client/ChoixChauffageForm';
 
 const BENEFITS = [
@@ -7,7 +8,7 @@ const BENEFITS = [
     badge: 'Prix stables, budget maîtrisé',
     description:
       'Les prix du gaz et du fioul fluctuent au gré des crises mondiales. Les énergies renouvelables locales offrent une stabilité tarifaire sur le long terme.',
-    icon: 'fr-icon-money-euro-circle-fill',
+    icon: 'icon-money.png',
     title: 'Protégez-vous des hausses du gaz ou du fioul',
   },
   {
@@ -21,27 +22,27 @@ const BENEFITS = [
     badge: 'DPE amélioré = bien valorisé',
     description:
       'Un meilleur diagnostic de performance énergétique valorise votre bien et permet de respecter la réglementation en vigueur.',
-    icon: 'fr-icon-award-fill',
+    icon: 'icon-graph.png',
     title: 'Améliorez votre étiquette DPE',
   },
   {
-    badge: 'Prix stables, budget maîtrisé',
+    badge: 'Empreinte carbone réduite',
     description:
       'Le passage à une énergie renouvelable peut diviser par deux les émissions liées au chauffage, une contribution concrète à la transition écologique.',
-    icon: 'fr-icon-avalanches-fill',
+    icon: 'icon-feuille.png',
     title: 'Réduisez vos émissions de CO2',
   },
   {
-    badge: 'Chauffage et ventilation',
+    badge: 'Chauffage et fraîcheur',
     description: 'Chaleur homogène en hiver, fraîcheur possible en été avec certaines solutions réversibles.',
-    icon: 'fr-icon-chat-check-fill',
+    icon: 'icon-thermometre.png',
     title: 'Gagnez en confort toute l’année',
   },
   {
     badge: 'Factures allégées',
     description:
       'Les énergies renouvelables sont souvent moins chères que les combustibles fossiles, et les systèmes de chauffage ENR sont souvent plus efficaces que ceux au gaz ou fioul.',
-    icon: 'fr-icon-temp-cold-fill',
+    icon: 'icon-money.png',
     title: 'Réduisez vos factures d’énergie',
   },
 ];
@@ -58,15 +59,11 @@ const STEPS = [
 
 function BenefitCard({ icon, title, description, badge }: { icon: string; title: string; description: string; badge: string }) {
   return (
-    <div className="w-full max-w-[300px] text-center fr-mb-5w">
-      <div className="fr-h5 fr-mb-1w">
-        <span className={`${icon} text-(--text-title-blue-france)`} aria-hidden="true" />
-      </div>
-      <div>
-        <h5>{title}</h5>
-        <p>{description}</p>
-        <Badge severity="error">{badge}</Badge>
-      </div>
+    <div className="w-full fr-mb-5w rounded-lg border-2 border-[#DDDDDD] bg-[#FEFCFA] fr-p-3w">
+      <Image src={`/icons/${icon}`} width="32" height="32" alt="icone" className="inline-block fr-mb-3w" />
+      <h5>{title}</h5>
+      <p>{description}</p>
+      <span className="rounded-[50] fr-px-2w fr-py-1w bg-[#FCBFB7] text-[#755348]">{badge}</span>
     </div>
   );
 }
@@ -93,26 +90,23 @@ function ChaleurRenouvelablePage() {
       </div>
 
       <div className="fr-container fr-pt-6w">
-        <h3>Pourquoi choisir un chauffage écologique ?</h3>
-        <p className="text-xl">Des arguments concrets, bien au-delà de l’environnement</p>
-        <div className="flex justify-center items-center gap-6">
+        <h3 className="text-xl uppercase font-normal">Pourquoi choisir un chauffage écologique ?</h3>
+        <p className="fr-h3 font-bold">Des arguments concrets, bien au-delà de l’environnement</p>
+        <div className="flex justify-center items-stretch gap-6">
           {BENEFITS.slice(0, 3).map((benefit, i) => (
             <BenefitCard key={i} {...benefit} />
           ))}
         </div>
-        <div className="flex justify-center items-center gap-6">
+        <div className="flex justify-center items-stretch gap-6">
           {BENEFITS.slice(3).map((benefit, i) => (
             <BenefitCard key={i} {...benefit} />
           ))}
         </div>
       </div>
-      <div className="bg-light">
+      <div className="bg-[#F3F6FE]">
         <div className="fr-container fr-py-6w">
-          <h3>
-            Réseau de chaleur, pompes à chaleur, solaire thermique, biomasse...
-            <br /> Les solutions écologiques sont nombreuses !{' '}
-          </h3>
-          <p>Faites la simulation pour explorer les solutions adaptées à votre bâtiment.</p>
+          <h3 className="text-xl uppercase font-normal">Ressources Pédagogiques</h3>
+          <p className="fr-h3 font-bold">Tout comprendre avant de se lancer</p>
         </div>
       </div>
       <div className="fr-container fr-my-6w">
