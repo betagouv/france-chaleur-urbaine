@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { clientConfig } from '@/client-config';
 import {
+  type BatchDemandContactInfo,
   type CreateBatchDemandInput,
   type CreateDemandInput,
   demandStatusDefault,
@@ -318,25 +319,50 @@ export const create = async (
   return augmentAdminDemand({ demand, testAddress });
 };
 
-/**
- * Create multiple demands from test addresses
- * User info is fetched from the users table
- * @param input - Batch demand creation input with addresses and heatingType
- * @param userId - ID of the user creating the demands (required)
- * @returns Array of objects with addressId and demandId for each created demand
- */
-export const createBatch = async (
-  input: CreateBatchDemandInput,
-  userId: string
-): Promise<Array<{ addressId: string; demandId: string }>> => {
-  const { addresses } = input;
+type BatchDemandResolvedContact = BatchDemandContactInfo & {
+  email: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  structure: string;
+};
 
-  // Fetch user info from users table
-  const user = await kdb
+const getBatchDemandContactFromUser = async (userId: string): Promise<BatchDemandResolvedContact> => {
+  const userContact = await kdb
     .selectFrom('users')
     .select(['email', 'first_name', 'last_name', 'phone', 'structure_name', 'structure_type'])
     .where('id', '=', userId)
     .executeTakeFirstOrThrow();
+
+  return {
+    company: userContact.structure_name || '',
+    companyType: userContact.structure_type || '',
+    demandArea: undefined,
+    demandCompanyName: '',
+    demandCompanyType: '',
+    email: userContact.email,
+    firstName: userContact.first_name || '',
+    lastName: userContact.last_name || '',
+    nbLogements: undefined,
+    phone: userContact.phone || '',
+    structure: userContact.structure_type || '',
+  };
+};
+
+/**
+ * Create multiple demands from test addresses
+ * User info is fetched from the users table, unless an admin provides explicit contact data.
+ * @param input - Batch demand creation input with addresses, optional contact data and heating type
+ * @param currentUser - Current authenticated user creating the demands
+ * @returns Array of objects with addressId and demandId for each created demand
+ */
+export const createBatch = async (
+  input: CreateBatchDemandInput,
+  currentUser: Pick<User, 'id' | 'role'>
+): Promise<Array<{ addressId: string; demandId: string }>> => {
+  const { addresses } = input;
+  const demandOwnerUserId = currentUser.role === 'admin' && input.contact ? undefined : currentUser.id;
+  const contact = currentUser.role === 'admin' && input.contact ? input.contact : await getBatchDemandContactFromUser(currentUser.id);
 
   const results = await Promise.all(
     addresses.map(async (addressData) => {
@@ -360,29 +386,31 @@ export const createBatch = async (
         {
           address: testAddress?.ban_address || '',
           city: eligibility.commune.nom || '',
-          company: user.structure_name || '',
-          companyType: user.structure_type || '',
+          company: contact.company,
+          companyType: contact.companyType,
           coords,
-          demandCompanyName: user.structure_name || '',
-          demandCompanyType: user.structure_type || '',
+          demandArea: contact.demandArea,
+          demandCompanyName: contact.demandCompanyName,
+          demandCompanyType: contact.demandCompanyType,
           department: eligibility.departement.nom as string,
           eligibility: {
             distance: eligibility.distance,
             inPDP: !!eligibility.pdp?.id_fcu,
             isEligible: eligibility.eligible,
           },
-          email: user.email,
-          firstName: user.first_name || '',
+          email: contact.email,
+          firstName: contact.firstName,
           heatingEnergy: addressData.heatingEnergy,
           heatingType: addressData.heatingType,
-          lastName: user.last_name || '',
-          phone: user.phone || '',
+          lastName: contact.lastName,
+          nbLogements: contact.nbLogements,
+          phone: contact.phone,
           postcode: '',
           region: eligibility.region.nom as string,
-          structure: user.structure_type || '',
+          structure: contact.structure,
           termOfUse: true,
         },
-        { pro_eligibility_tests_addresse_id: addressData.addressId, userId }
+        { pro_eligibility_tests_addresse_id: addressData.addressId, userId: demandOwnerUserId }
       );
       return { addressId: addressData.addressId, demandId: result.id };
     })
