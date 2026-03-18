@@ -212,7 +212,7 @@ export const fieldLabelInformation = {
   },
 };
 
-const batchDemandContactShape = {
+const demandContactShape = {
   company: z.string().optional().default(''),
   companyType: z.string().optional().default(''),
   demandArea: z.number().optional(),
@@ -278,11 +278,11 @@ const validateDemandContactInfo = (
   }
 };
 
-export const zBatchDemandContactSchema = z.object(batchDemandContactShape).superRefine(validateDemandContactInfo);
+export const zBatchDemandContactSchema = z.object(demandContactShape).superRefine(validateDemandContactInfo);
 
 export const zContactFormCreateDemandInput = z
   .object({
-    ...batchDemandContactShape,
+    ...demandContactShape,
     heatingEnergy: z
       .string()
       .refine(
@@ -304,7 +304,7 @@ export type CreateDemandInput = z.infer<typeof zCreateDemandInput>;
 // Batch demand creation schemas
 export const zBatchDemandStep1Schema = z
   .object({
-    ...batchDemandContactShape,
+    ...demandContactShape,
     termOfUse: z.boolean().refine((val) => val, 'Vous devez accepter les conditions'),
   })
   .superRefine(validateDemandContactInfo);
