@@ -14,6 +14,7 @@ import Modal, { createModal } from '@/components/ui/Modal';
 import Text from '@/components/ui/Text';
 import { trackEvent, trackPostHogEvent } from '@/modules/analytics/client';
 import useUserInfo from '@/modules/app/client/hooks/useUserInfo';
+import { searchBANAddresses } from '@/modules/ban/client';
 import type { BANAddressFeature } from '@/modules/ban/types';
 import type { ContactFormInfos, ModeDeChauffage, TypeDeChauffage } from '@/modules/demands/constants';
 import { AddressField } from '@/modules/form/AddressField';
@@ -139,6 +140,7 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
   };
   const defaultAddress = addressInUrl || userInfo.address || '';
   const [addressDefaultValue, setAddressDefaultValue] = useState<string>();
+  const [addressResetKey, setAddressResetKey] = useState(0);
   const [defaultAddressButtonVisible, setDefaultAddressButtonVisible] = useState<boolean>(true);
 
   return (
@@ -151,13 +153,13 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
           {formState === 'loadingEligibility' && <Oval height={20} width={20} />}
         </Box>
         <AddressField
+          key={addressResetKey}
           label=""
           nativeInputProps={{ placeholder: 'Tapez ici votre adresse' }}
           defaultValue={addressDefaultValue}
           onClear={() => {
             setUserInfo({ address: '' });
             setSelectedGeoAddress(undefined);
-            setDefaultAddressButtonVisible(true);
           }}
           onSelect={(geoAddress) => {
             onAddressSelected(geoAddress);
@@ -171,7 +173,18 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
           </div>
         )}
         {defaultAddress && defaultAddressButtonVisible ? (
-          <Button onClick={() => setAddressDefaultValue(defaultAddress)}>Tester {defaultAddress}</Button>
+          <Button
+            onClick={async () => {
+              setDefaultAddressButtonVisible(false);
+              setAddressDefaultValue(defaultAddress);
+              setAddressResetKey((k) => k + 1);
+              const features = await searchBANAddresses({ excludeCities: true, query: defaultAddress }).catch(() => []);
+              const feature = features.find((f) => f.properties.label === defaultAddress) ?? features[0];
+              if (feature) onAddressSelected(feature);
+            }}
+          >
+            Tester {defaultAddress}
+          </Button>
         ) : null}
       </Box>
 

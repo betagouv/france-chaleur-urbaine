@@ -3,7 +3,7 @@ import { type ReactNode, useState } from 'react';
 
 import { type LegendURLKey, selectableLayers } from '@/components/Map/map-layers';
 import Notice from '@/components/ui/Notice';
-import { AddressSearch } from '@/modules/form/AddressSearch';
+import { AddressField } from '@/modules/form/AddressField';
 import type { Coords } from '@/modules/geo/types';
 
 import { StyledIFrameLink } from './IFrameMapIntegrationForm.styles';
@@ -42,7 +42,7 @@ const IFrameMapIntegrationForm = ({ label }: { label?: ReactNode }) => {
         </Notice>
       )}
       <div className="mt-4 max-w-[500px]">
-        <AddressSearch
+        <AddressField
           nativeInputProps={{ placeholder: 'Tapez ici votre adresse' }}
           onSelect={(item) => setCoords({ lat: item.geometry.coordinates[1], lon: item.geometry.coordinates[0] })}
           onClear={() => setCoords(null)}

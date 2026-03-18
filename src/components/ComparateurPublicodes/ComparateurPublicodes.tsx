@@ -17,6 +17,8 @@ import Section, { SectionContent, SectionHeading } from '@/components/ui/Section
 import useEligibilityForm from '@/hooks/useEligibilityForm';
 import { trackEvent, trackPostHogEvent } from '@/modules/analytics/client';
 import useUserInfo from '@/modules/app/client/hooks/useUserInfo';
+import { searchBANAddresses } from '@/modules/ban/client';
+import type { BANAddressFeature } from '@/modules/ban/types';
 import { AddressField } from '@/modules/form/AddressField';
 import trpc from '@/modules/trpc/client';
 import type { LocationInfoResponse } from '@/pages/api/location-infos';
@@ -78,22 +80,114 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
   // when loading a saved configuration with a different address
   const [addressResetKey, setAddressResetKey] = useState(0);
 
-  React.useEffect(() => {
-    if (engine.loaded) {
-      if (userInfo.address) {
-        // if address is set, engine will need to compute the result
-        // so we wait a bit to make sure the result is ready
-        // TODO this is a hack, we should use a proper state from the engine
-        setTimeout(() => {
-          setLoading(false);
-        }, 2000);
-      } else {
-        setLoading(false);
-      }
-    }
-  }, [engine.loaded, userInfo.address]);
-
   const isAddressSelected = engine.getField('code département') !== undefined;
+
+  const handleAddressSelect = async (selectedAddress: BANAddressFeature, trackAnalytics = true) => {
+    try {
+      setAddressError(false);
+      setLngLat(undefined);
+
+      const [lon, lat] = selectedAddress.geometry.coordinates;
+      const addressLabel = selectedAddress.properties.label;
+      if (addressLabel !== userInfo.address) {
+        setUserInfo({ address: '' });
+      }
+      const isCity = selectedAddress.properties.label === selectedAddress.properties.city;
+      const network = isCity
+        ? await trpcUtils.client.reseaux.cityNetwork.query({ city: selectedAddress.properties.city })
+        : await trpcUtils.client.reseaux.eligibilityStatus.query({
+            lat,
+            lon,
+          });
+      setAddressDetail({
+        geoAddress: selectedAddress,
+        network,
+      });
+      if (trackAnalytics) {
+        trackEvent('Eligibilité|Formulaire de test - Comparateur - Envoi', selectedAddress.properties.label);
+      }
+      const infos: LocationInfoResponse = await postFetchJSON('/api/location-infos', {
+        city: selectedAddress.properties.city,
+        cityCode: selectedAddress.properties.citycode,
+        lat,
+        lon,
+      });
+      console.info('locations-infos', infos);
+      if (trackAnalytics) {
+        const isEligible =
+          infos.nearestReseauDeChaleur &&
+          infos.nearestReseauDeChaleur.distance <
+            getNetworkEligibilityDistances(infos.nearestReseauDeChaleur['Identifiant reseau']).eligibleDistance;
+        trackEvent(
+          `Eligibilité|Formulaire de test - Comparateur - Adresse ${isEligible ? 'É' : 'Iné'}ligible`,
+          selectedAddress.properties.label
+        );
+        trackPostHogEvent('eligibility:address_form_submit', {
+          address: selectedAddress.properties.label,
+          is_eligible: isEligible,
+          source: 'comparateur',
+        });
+      }
+
+      setNearestReseauDeChaleur(infos.nearestReseauDeChaleur);
+      setNearestReseauDeFroid(infos.nearestReseauDeFroid);
+
+      if (!infos.infosVille) {
+        setAddressError(true);
+        return;
+      }
+
+      setUserInfo({ address: addressLabel });
+      void setAddressInUrl(addressLabel);
+
+      if (infos.nearestReseauDeChaleur || infos.nearestReseauDeFroid) {
+        setLngLat(selectedAddress.geometry.coordinates);
+      }
+
+      engine.setSituation(
+        ObjectEntries(addresseToPublicodesRules).reduce((acc, [key, infoGetter]) => {
+          acc[key] = infoGetter(infos) ?? null;
+          return acc;
+        }, engine.getSituation())
+      );
+    } catch (e) {
+      setAddressError(true);
+      console.error('Error setting address', e);
+    } finally {
+      setAddressLoading(false);
+    }
+  };
+
+  // Refs pour accéder aux valeurs courantes sans les déclarer en dépendances de l'effet ci-dessous.
+  const handleAddressSelectRef = React.useRef(handleAddressSelect);
+  handleAddressSelectRef.current = handleAddressSelect;
+  const isAddressSelectedRef = React.useRef(isAddressSelected);
+  isAddressSelectedRef.current = isAddressSelected;
+
+  // Masque le spinner dès que l'engine est chargé, sauf si une auto-résolution d'adresse est en cours
+  // (dans ce cas, c'est l'effet ci-dessous qui appellera setLoading(false) quand elle sera terminée).
+  React.useEffect(() => {
+    if (!engine.loaded) return;
+    const savedAddress = addressInUrl || userInfo.address;
+    if (!savedAddress || isAddressSelectedRef.current) {
+      setLoading(false);
+    }
+  }, [engine.loaded, userInfo.address, addressInUrl]);
+
+  // Restaure la situation publicodes au rechargement quand une adresse est connue mais l'engine pas encore alimenté.
+  React.useEffect(() => {
+    const savedAddress = addressInUrl || userInfo.address;
+    if (!savedAddress || isAddressSelectedRef.current) return;
+    const controller = new AbortController();
+    searchBANAddresses({ excludeCities: true, query: savedAddress, signal: controller.signal })
+      .then(async (features) => {
+        const match = features.find((f) => f.properties.label === savedAddress) ?? features[0];
+        if (match) await handleAddressSelectRef.current(match, false);
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+    return () => controller.abort();
+  }, [addressInUrl, userInfo.address]);
 
   const displayGraph = isAddressSelected && (!advancedMode || (advancedMode && !!modesDeChauffageQueryParam));
 
@@ -478,77 +572,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
           }, engine.getSituation())
         );
       }}
-      onSelect={async (selectedAddress) => {
-        try {
-          setAddressError(false);
-          setLngLat(undefined);
-
-          const [lon, lat] = selectedAddress.geometry.coordinates;
-          const addressLabel = selectedAddress.properties.label;
-          if (addressLabel !== userInfo.address) {
-            setUserInfo({ address: '' });
-          }
-          const isCity = selectedAddress.properties.label === selectedAddress.properties.city;
-          const network = isCity
-            ? await trpcUtils.client.reseaux.cityNetwork.query({ city: selectedAddress.properties.city })
-            : await trpcUtils.client.reseaux.eligibilityStatus.query({
-                lat,
-                lon,
-              });
-          setAddressDetail({
-            geoAddress: selectedAddress,
-            network,
-          });
-          trackEvent('Eligibilité|Formulaire de test - Comparateur - Envoi', selectedAddress.properties.label);
-          const infos: LocationInfoResponse = await postFetchJSON('/api/location-infos', {
-            city: selectedAddress.properties.city,
-            cityCode: selectedAddress.properties.citycode,
-            lat,
-            lon,
-          });
-          console.info('locations-infos', infos);
-          const isEligible =
-            infos.nearestReseauDeChaleur &&
-            infos.nearestReseauDeChaleur.distance <
-              getNetworkEligibilityDistances(infos.nearestReseauDeChaleur['Identifiant reseau']).eligibleDistance;
-          trackEvent(
-            `Eligibilité|Formulaire de test - Comparateur - Adresse ${isEligible ? 'É' : 'Iné'}ligible`,
-            selectedAddress.properties.label
-          );
-          trackPostHogEvent('eligibility:address_form_submit', {
-            address: selectedAddress.properties.label,
-            is_eligible: isEligible,
-            source: 'comparateur',
-          });
-
-          setNearestReseauDeChaleur(infos.nearestReseauDeChaleur);
-          setNearestReseauDeFroid(infos.nearestReseauDeFroid);
-
-          if (!infos.infosVille) {
-            setAddressError(true);
-            return;
-          }
-
-          setUserInfo({ address: addressLabel });
-          void setAddressInUrl(addressLabel);
-
-          if (infos.nearestReseauDeChaleur || infos.nearestReseauDeFroid) {
-            setLngLat(selectedAddress.geometry.coordinates);
-          }
-
-          engine.setSituation(
-            ObjectEntries(addresseToPublicodesRules).reduce((acc, [key, infoGetter]) => {
-              acc[key] = infoGetter(infos) ?? null;
-              return acc;
-            }, engine.getSituation())
-          );
-        } catch (e) {
-          setAddressError(true);
-          console.error('Error setting address', e);
-        } finally {
-          setAddressLoading(false);
-        }
-      }}
+      onSelect={handleAddressSelect}
     />
   );
 

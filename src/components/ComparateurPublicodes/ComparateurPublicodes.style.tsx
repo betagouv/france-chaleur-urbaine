@@ -1,28 +1,7 @@
 import Button from '@codegouvfr/react-dsfr/Button';
 import styled, { css } from 'styled-components';
 
-import Box from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
-
-export const Section = styled(Box).attrs({ as: 'section' })`
-  margin: 32px 0;
-  header {
-    h2 {
-      margin-bottom: 8px;
-    }
-    > div + div {
-      display: inline-flex;
-      margin-top: 16px;
-    }
-
-    ${({ theme }) => theme.media.lg`
-      display: flex;
-      align-items: flex-start;
-      gap: 16px;
-      justify-content: space-between;
-    `}
-  }
-`;
 
 export const Results = styled.div`
   display: none;
@@ -144,5 +123,3 @@ export const Title = styled(Heading).attrs({ as: 'h2', size: 'h6' })`
   margin-top: 32px;
   margin-bottom: 16px;
 `;
-
-export const Separator = styled.hr``;
