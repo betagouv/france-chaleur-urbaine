@@ -68,9 +68,9 @@ export const ContactForm = ({ onSubmit, isLoading, cardMode, city, heatingTypeIn
     },
     schema: zContactFormCreateDemandInput,
   });
-  const structure = useValue('structure') as string | undefined;
-  const companyType = useValue('companyType') as string | undefined;
-  const demandCompanyType = useValue('demandCompanyType') as string | undefined;
+  const structure = useValue<string>('structure');
+  const companyType = useValue<string>('companyType');
+  const demandCompanyType = useValue<string>('demandCompanyType');
   const contactState = { companyType, demandCompanyType, structure };
   const formUi = { Field, Fieldset, FieldsetLegend, FieldWrapper, form };
 

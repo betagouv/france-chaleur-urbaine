@@ -1,5 +1,5 @@
 import { fr } from '@codegouvfr/react-dsfr';
-import { type ReactNode, useEffect } from 'react';
+import { type ComponentType, type HTMLAttributes, type ReactNode, useEffect } from 'react';
 
 import Alert from '@/components/ui/Alert';
 import { fieldLabelInformation } from '@/modules/demands/constants';
@@ -10,12 +10,40 @@ type ContactState = {
   structure?: string;
 };
 
+type BaseFieldProps = {
+  label?: ReactNode;
+  name: string;
+};
+
+type SelectFieldProps = BaseFieldProps & {
+  className?: string;
+  nativeSelectProps?: {
+    required?: boolean;
+  };
+  options: ReadonlyArray<{
+    label: string;
+    value: string;
+  }>;
+};
+
+type InputFieldProps = BaseFieldProps & {
+  hideOptionalLabel?: boolean;
+};
+
 type FormUi = {
-  Field: any;
-  FieldWrapper: any;
-  Fieldset: any;
-  FieldsetLegend: any;
-  form: any;
+  Field: {
+    EmailInput: ComponentType<InputFieldProps>;
+    Input: ComponentType<InputFieldProps>;
+    NumberInput: ComponentType<InputFieldProps>;
+    PhoneInput: ComponentType<InputFieldProps>;
+    Select: ComponentType<SelectFieldProps>;
+  };
+  FieldWrapper: ComponentType<HTMLAttributes<HTMLDivElement>>;
+  Fieldset: ComponentType<HTMLAttributes<HTMLFieldSetElement>>;
+  FieldsetLegend: ComponentType<HTMLAttributes<HTMLLegendElement>>;
+  form: {
+    setFieldValue: (field: string, value: unknown) => void;
+  };
 };
 
 type DemandContactFieldsProps = {
