@@ -1,8 +1,11 @@
 import { useMemo } from 'react';
 
+import DemandContactFields from '@/components/EligibilityForm/components/DemandContactFields';
 import useForm from '@/components/form/react-form/useForm';
+import Alert from '@/components/ui/Alert';
 import CallOut from '@/components/ui/CallOut';
 import Link from '@/components/ui/Link';
+import { useAuthentication } from '@/modules/auth/client/hooks';
 import { type BatchDemandAddressData, zCreateBatchDemandInput } from '@/modules/demands/constants';
 import trpc from '@/modules/trpc/client';
 
@@ -20,6 +23,8 @@ interface BatchDemandFormProps {
 }
 
 export const BatchDemandMultiStepForm = ({ addresses, onSuccess }: BatchDemandFormProps) => {
+  const { hasRole } = useAuthentication();
+  const isAdmin = hasRole('admin');
   const addressesWithExistingDemand = useMemo(() => addresses.filter((addr) => addr.demand_id), [addresses]);
   const filteredAddresses = useMemo(() => addresses.filter((addr) => !addr.demand_id), [addresses]);
   const activeAddresses = useMemo(() => filteredAddresses.slice(0, MAX_BATCH_DEMAND_ADDRESSES), [filteredAddresses]);
@@ -34,19 +39,51 @@ export const BatchDemandMultiStepForm = ({ addresses, onSuccess }: BatchDemandFo
         heatingEnergy: undefined as unknown as 'électricité' | 'gaz' | 'fioul' | 'autre',
         heatingType: undefined as unknown as 'collectif' | 'individuel',
       })),
+      contact: isAdmin
+        ? {
+            company: '',
+            companyType: '',
+            demandArea: undefined as number | undefined,
+            demandCompanyName: '',
+            demandCompanyType: '',
+            email: '',
+            firstName: '',
+            lastName: '',
+            nbLogements: undefined as number | undefined,
+            phone: '',
+            structure: '',
+          }
+        : undefined,
       termOfUse: false,
     }),
-    [activeAddresses]
+    [activeAddresses, isAdmin]
   );
 
-  const { Form, Field, Submit } = useForm({
+  const { form, Form, Field, Fieldset, FieldsetLegend, FieldWrapper, Submit, useValue } = useForm({
     defaultValues,
-    onSubmit: async ({ value }: { value: { addresses: BatchDemandAddressData[]; termOfUse: boolean } }) => {
-      await mutateAsync({ addresses: value.addresses, termOfUse: value.termOfUse });
+    onSubmit: async ({
+      value,
+    }: {
+      value: { addresses: BatchDemandAddressData[]; contact?: (typeof defaultValues)['contact']; termOfUse: boolean };
+    }) => {
+      await mutateAsync({ addresses: value.addresses, contact: value.contact, termOfUse: value.termOfUse });
       onSuccess();
     },
     schema: zCreateBatchDemandInput,
   });
+  const contact = useValue('contact') as
+    | {
+        companyType?: string;
+        demandCompanyType?: string;
+        structure?: string;
+      }
+    | undefined;
+  const contactState = {
+    companyType: contact?.companyType,
+    demandCompanyType: contact?.demandCompanyType,
+    structure: contact?.structure,
+  };
+  const formUi = { Field, Fieldset, FieldsetLegend, FieldWrapper, form };
 
   return (
     <Form>
@@ -102,6 +139,18 @@ export const BatchDemandMultiStepForm = ({ addresses, onSuccess }: BatchDemandFo
             </div>
           ))}
         </div>
+
+        {isAdmin && (
+          <Alert className="fr-mb-0" title="Création du contact" variant="info">
+            <div className="flex flex-col gap-3">
+              <span className="text-sm">
+                Renseignez le contact qui sera créé avec ces demandes. Ces informations seront utilisées à la place de celles de votre
+                compte admin.
+              </span>
+              <DemandContactFields contactState={contactState} formUi={formUi} namePrefix="contact." structureClassName="fr-mt-0" />
+            </div>
+          </Alert>
+        )}
 
         <Field.Checkbox
           name="termOfUse"
