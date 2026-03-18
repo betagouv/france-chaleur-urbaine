@@ -71,17 +71,13 @@ export const BatchDemandMultiStepForm = ({ addresses, onSuccess }: BatchDemandFo
     },
     schema: zCreateBatchDemandInput,
   });
-  const contact = useValue('contact') as
-    | {
-        companyType?: string;
-        demandCompanyType?: string;
-        structure?: string;
-      }
-    | undefined;
+  const companyType = useValue('contact.companyType');
+  const demandCompanyType = useValue('contact.demandCompanyType');
+  const structure = useValue('contact.structure');
   const contactState = {
-    companyType: contact?.companyType,
-    demandCompanyType: contact?.demandCompanyType,
-    structure: contact?.structure,
+    companyType,
+    demandCompanyType,
+    structure,
   };
   const formUi = { Field, Fieldset, FieldsetLegend, FieldWrapper, form };
 

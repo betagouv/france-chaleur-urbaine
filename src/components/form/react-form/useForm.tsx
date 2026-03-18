@@ -20,6 +20,7 @@ import DsfrSelectCheckboxes, { type SelectCheckboxesProps as DsfrSelectCheckboxe
 import DsfrTextArea from '@/components/form/dsfr/TextArea';
 import Button, { type ButtonProps } from '@/components/ui/Button';
 import cx from '@/utils/cx';
+import type { FlattenKeys } from '@/utils/typescript';
 import { getSchemaField } from '@/utils/validation';
 
 type CustomFieldProps<T extends ComponentType<any>> = {
@@ -185,6 +186,14 @@ function useFormInternal<
     schema?: FormValidateOrFn<TFormData>; // pass directly the schema to validate against
   }
 ) {
+  const getValueByPath = (value: unknown, fieldPath: string) =>
+    fieldPath.split('.').reduce<unknown>((current, key) => {
+      if (current === null || current === undefined) {
+        return undefined;
+      }
+      return (current as Record<string, unknown>)[key];
+    }, value);
+
   const { schema, onSubmit, validators = {}, ...tanStackConfig } = options;
 
   // Create a copy of validators with proper typing
@@ -629,7 +638,8 @@ function useFormInternal<
     </form>
   );
 
-  const useValue = <T,>(fieldName: keyof TFormData) => useStore(form.store, (state) => state.values[fieldName] as T);
+  const useValue = <T,>(fieldName: FlattenKeys<TFormData> | keyof TFormData) =>
+    useStore(form.store, (state) => getValueByPath(state.values, String(fieldName)) as T);
 
   return {
     // deprecated
