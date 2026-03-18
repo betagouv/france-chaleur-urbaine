@@ -71,9 +71,9 @@ export const BatchDemandMultiStepForm = ({ addresses, onSuccess }: BatchDemandFo
     },
     schema: zCreateBatchDemandInput,
   });
-  const companyType = useValue('contact.companyType');
-  const demandCompanyType = useValue('contact.demandCompanyType');
-  const structure = useValue('contact.structure');
+  const companyType = useValue<string>('contact.companyType');
+  const demandCompanyType = useValue<string>('contact.demandCompanyType');
+  const structure = useValue<string>('contact.structure');
   const contactState = {
     companyType,
     demandCompanyType,
