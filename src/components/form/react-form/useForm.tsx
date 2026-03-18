@@ -20,7 +20,7 @@ import DsfrSelectCheckboxes, { type SelectCheckboxesProps as DsfrSelectCheckboxe
 import DsfrTextArea from '@/components/form/dsfr/TextArea';
 import Button, { type ButtonProps } from '@/components/ui/Button';
 import cx from '@/utils/cx';
-import { getSchemaShape } from '@/utils/validation';
+import { getSchemaField } from '@/utils/validation';
 
 type CustomFieldProps<T extends ComponentType<any>> = {
   name: string;
@@ -204,10 +204,8 @@ function useFormInternal<
 
   type FieldProps = { name: OriginalFieldProps['name'] } & { fieldInputProps?: Omit<OriginalFieldProps, 'children' | 'name'> };
 
-  const schemaShape = getSchemaShape(schema as any);
-
-  const isRequiredField = (fieldname: keyof TFormData) => {
-    const field = (schemaShape as any)?.[fieldname];
+  const isRequiredField = (fieldname: keyof TFormData | string) => {
+    const field = getSchemaField(schema as any, String(fieldname));
     return !field?.isOptional?.();
   };
   const Input = ({
