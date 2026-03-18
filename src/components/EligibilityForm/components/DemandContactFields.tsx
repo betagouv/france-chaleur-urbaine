@@ -4,53 +4,33 @@ import { type ComponentType, type HTMLAttributes, type ReactNode, useEffect } fr
 import Alert from '@/components/ui/Alert';
 import { fieldLabelInformation } from '@/modules/demands/constants';
 
-type ContactState = {
+export type ContactState = {
   companyType?: string;
   demandCompanyType?: string;
   structure?: string;
 };
 
-type BaseFieldProps = {
-  label?: ReactNode;
-  name: string;
-};
-
-type SelectFieldProps = BaseFieldProps & {
-  className?: string;
-  nativeSelectProps?: {
-    required?: boolean;
-  };
-  options: ReadonlyArray<{
-    label: string;
-    value: string;
-  }>;
-};
-
-type InputFieldProps = BaseFieldProps & {
-  hideOptionalLabel?: boolean;
-};
-
-type FormUi = {
+export type FormUi = {
   Field: {
-    EmailInput: ComponentType<InputFieldProps>;
-    Input: ComponentType<InputFieldProps>;
-    NumberInput: ComponentType<InputFieldProps>;
-    PhoneInput: ComponentType<InputFieldProps>;
-    Select: ComponentType<SelectFieldProps>;
+    EmailInput: ComponentType<any>;
+    Input: ComponentType<any>;
+    NumberInput: ComponentType<any>;
+    PhoneInput: ComponentType<any>;
+    Select: ComponentType<any>;
   };
   FieldWrapper: ComponentType<HTMLAttributes<HTMLDivElement>>;
   Fieldset: ComponentType<HTMLAttributes<HTMLFieldSetElement>>;
   FieldsetLegend: ComponentType<HTMLAttributes<HTMLLegendElement>>;
   form: {
-    setFieldValue: (field: string, value: unknown) => void;
+    setFieldValue: (...args: any[]) => void;
   };
 };
 
-type DemandContactFieldsProps = {
+type DemandContactFieldsProps<TFormUi extends FormUi = FormUi> = {
   cardMode?: boolean;
   city?: string;
   contactState: ContactState;
-  formUi: FormUi;
+  formUi: TFormUi;
   heatingTypeInput?: ReactNode;
   namePrefix?: '' | 'contact.';
   showHeatingEnergy?: boolean;
@@ -58,7 +38,7 @@ type DemandContactFieldsProps = {
   structureClassName?: string;
 };
 
-export const DemandContactFields = ({
+export const DemandContactFields = <TFormUi extends FormUi>({
   cardMode,
   city,
   contactState,
@@ -68,7 +48,7 @@ export const DemandContactFields = ({
   showHeatingEnergy = false,
   showHouseWarning = false,
   structureClassName,
-}: DemandContactFieldsProps) => {
+}: DemandContactFieldsProps<TFormUi>) => {
   const { companyType, demandCompanyType, structure } = contactState;
   const { Field, Fieldset, FieldsetLegend, FieldWrapper, form } = formUi;
   const fieldName = (name: string) => `${namePrefix}${name}`;
@@ -184,4 +164,3 @@ export const DemandContactFields = ({
 };
 
 export default DemandContactFields;
-export type { ContactState, FormUi };
