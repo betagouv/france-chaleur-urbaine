@@ -60,7 +60,7 @@ export const BatchDemandMultiStepForm = ({ addresses, onSuccess }: BatchDemandFo
       termOfUse: false,
       useDedicatedContact: false,
     }),
-    [activeAddresses]
+    [activeAddresses, isAdmin]
   );
 
   const { form, Form, Field, Fieldset, FieldsetLegend, FieldWrapper, Submit, useValue } = useForm({
