@@ -109,4 +109,4 @@ export type PostHogEventEntry<E extends PostHogEvent = PostHogEvent> = E extends
     : [E, PostHogEventMap[E]]
   : never;
 
-export type EligibilityContext = 'carte' | 'comparateur' | 'fiche-reseau' | 'homepage' | 'choix-chauffage';
+export type EligibilityContext = 'carte' | 'comparateur' | 'fiche-reseau' | 'homepage' | 'choix-chauffage' | 'chaleur-renouvelable';

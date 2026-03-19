@@ -2,8 +2,11 @@ import type { RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import useSimulatorEngine from '@/components/ComparateurPublicodes/useSimulatorEngine';
+import { EligibilityFormContact } from '@/components/EligibilityForm';
 import CallOut from '@/components/ui/CallOut';
 import Link from '@/components/ui/Link';
+import Modal, { createModal } from '@/components/ui/Modal';
+import useContactFormFCU from '@/hooks/useContactFormFCU';
 import useIsMobile from '@/hooks/useIsMobile';
 import { trackPostHogEvent } from '@/modules/analytics/client';
 import type { BANAddressFeature } from '@/modules/ban/types';
@@ -19,6 +22,7 @@ import {
 } from '@/modules/chaleur-renouvelable/client/modesChauffageData';
 import { SettingsTopFields } from '@/modules/chaleur-renouvelable/client/SettingsTopFields';
 import type { DPE, EspaceExterieur, TypeLogement } from '@/modules/chaleur-renouvelable/constants';
+import DemandSondageForm from '@/modules/demands/client/DemandSondageForm';
 
 import { ParamsForm } from './ParamsForm';
 import { ResultRowAccordion, ScrollToHelpButton } from './ResultRowAccordion';
@@ -30,8 +34,14 @@ type ResultsSectionProps = {
   dpeFrom: DPE;
   openAccordionId: string | null;
   coutParAnGaz: number;
+  onHelpButtonClick?: () => void;
   onOpenChange: (id: string, expanded: boolean) => void;
 };
+
+const heatNetworkContactModal = createModal({
+  id: 'heat-network-contact-modal',
+  isOpenedByDefault: false,
+});
 
 export default function ChoixChauffageResults() {
   const engine = useSimulatorEngine();
@@ -51,6 +61,15 @@ export default function ChoixChauffageResults() {
 
   const [isParamsOpen, setIsParamsOpen] = useState(false);
   const [openAccordionId, setOpenAccordionId] = useState<string | null>(null);
+  const {
+    addressData,
+    contactReady,
+    messageReceived,
+    loadingStatus,
+    handleOnSubmitContact,
+    handleOnSuccessAddress,
+    handleResetFormContact,
+  } = useContactFormFCU();
 
   const situation: Situation = useMemo(
     () => ({
@@ -73,6 +92,7 @@ export default function ChoixChauffageResults() {
       urlParams.surfaceMoyenne,
       batEnr.geothermiePossible,
       batEnr.planProtectionAtmosphere,
+      eligibiliteReseauChaleur,
     ]
   );
 
@@ -114,11 +134,29 @@ export default function ChoixChauffageResults() {
   }, [modesDeChauffage, engine]);
   const coutParAnGaz = engine.getFieldAsNumber(`Bilan x Gaz coll sans cond . total avec aides` as RuleName);
   const [recommended, ...others] = modesWithCout;
+  const shouldOpenHeatNetworkModal = recommended?.label === 'Réseau de chaleur';
 
   const handleAccordionOpenChange = useCallback((id: string, expanded: boolean) => {
     setOpenAccordionId(expanded ? id : null);
     trackPostHogEvent('chaleur-renouvelable:accordeon', { name: id });
   }, []);
+  const openHeatNetworkContactModal = useCallback(() => {
+    if (!geoAddress || !urlParams.adresse || !eligibiliteReseauChaleur) {
+      return;
+    }
+
+    const [lon, lat] = geoAddress.geometry.coordinates;
+    handleOnSuccessAddress(
+      {
+        address: urlParams.adresse,
+        coords: { lat, lon },
+        eligibility: eligibiliteReseauChaleur as never,
+        geoAddress,
+        heatingType: 'collectif',
+      },
+      'chaleur-renouvelable'
+    );
+  }, [eligibiliteReseauChaleur, geoAddress, handleOnSuccessAddress, urlParams.adresse]);
   const handleSelectGeoAddress = useCallback(
     (geoAddress?: BANAddressFeature) => {
       if (!geoAddress) {
@@ -185,6 +223,7 @@ export default function ChoixChauffageResults() {
             variant="recommended"
             coutParAnGaz={coutParAnGaz}
             dpeFrom={urlParams.dpe as DPE}
+            onHelpButtonClick={shouldOpenHeatNetworkModal ? openHeatNetworkContactModal : undefined}
             openAccordionId={openAccordionId}
             onOpenChange={handleAccordionOpenChange}
           />
@@ -221,6 +260,27 @@ export default function ChoixChauffageResults() {
             </div>
           </CallOut>
           <AdemeHelp />
+          <Modal
+            modal={heatNetworkContactModal}
+            title=""
+            open={contactReady}
+            size="custom"
+            loading={loadingStatus === 'loading'}
+            onClose={() => {
+              handleResetFormContact();
+            }}
+          >
+            <div>
+              {contactReady && !messageReceived && (
+                <EligibilityFormContact
+                  addressData={addressData}
+                  className="p-0"
+                  onSubmit={(data) => handleOnSubmitContact(data, 'choix-chauffage')}
+                />
+              )}
+              {messageReceived && <DemandSondageForm addressData={addressData} cardMode />}
+            </div>
+          </Modal>
         </>
       ) : (
         <NoResultSection codeInsee={geoAddress?.properties.citycode} />
@@ -229,7 +289,16 @@ export default function ChoixChauffageResults() {
   );
 }
 
-function ResultsSection({ title, items, coutParAnGaz, variant, dpeFrom, openAccordionId, onOpenChange }: ResultsSectionProps) {
+function ResultsSection({
+  title,
+  items,
+  coutParAnGaz,
+  variant,
+  dpeFrom,
+  openAccordionId,
+  onHelpButtonClick,
+  onOpenChange,
+}: ResultsSectionProps) {
   return (
     <>
       <h3 className="fr-mt-6w">{title}</h3>
@@ -249,7 +318,7 @@ function ResultsSection({ title, items, coutParAnGaz, variant, dpeFrom, openAcco
             />
           );
         })}
-        {variant === 'recommended' && <ScrollToHelpButton />}
+        {variant === 'recommended' && <ScrollToHelpButton onClick={onHelpButtonClick} />}
       </div>
     </>
   );
