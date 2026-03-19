@@ -472,6 +472,21 @@ export const trackingEvents = {
     linkedin: 5492674,
     matomo: ['Eligibilité', 'Formulaire de test - Carte - Envoi'],
   },
+  'Eligibilité|Formulaire de test - Chaleur renouvelable - Adresse Inéligible': {
+    google: 'izv4CKGh6c0ZELGIqf89', // Formulaire - non éligible
+    linkedin: 5492666,
+    matomo: ['Eligibilité', 'Formulaire de test - Chaleur renouvelable - Adresse Inéligible'],
+  },
+  'Eligibilité|Formulaire de test - Chaleur renouvelable - Adresse Éligible': {
+    google: 'CFo-CKSh6c0ZELGIqf89', // Formulaire - éligible
+    linkedin: 5392842,
+    matomo: ['Eligibilité', 'Formulaire de test - Chaleur renouvelable - Adresse Éligible'],
+  },
+  'Eligibilité|Formulaire de test - Chaleur renouvelable - Envoi': {
+    google: 'XNYRCJ6h6c0ZELGIqf89', // Test éligibilité
+    linkedin: 5492674,
+    matomo: ['Eligibilité', 'Formulaire de test - Chaleur renouvelable - Envoi'],
+  },
   // comparateur
   'Eligibilité|Formulaire de test - Comparateur - Adresse Inéligible': {
     google: 'izv4CKGh6c0ZELGIqf89', // Formulaire - non éligible

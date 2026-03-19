@@ -8,10 +8,11 @@ import type { AddressDataType } from '@/types/AddressData';
 
 const warningMessage = "N'oubliez pas d'indiquer votre type de chauffage.";
 
-export type ContactFormContext = 'comparateur' | 'carte' | 'choix-chauffage';
+export type ContactFormContext = 'comparateur' | 'carte' | 'choix-chauffage' | 'chaleur-renouvelable';
 
 const contextToAnalyticsPrefix = {
   carte: 'Carte',
+  'chaleur-renouvelable': 'Chaleur renouvelable',
   'choix-chauffage': 'Choix chauffage',
   comparateur: 'Comparateur',
 } as const;
