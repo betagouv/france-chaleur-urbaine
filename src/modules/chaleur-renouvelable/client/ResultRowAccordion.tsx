@@ -110,14 +110,20 @@ function MobileStats({
   );
 }
 
-export function ScrollToHelpButton() {
+type ScrollToHelpButtonProps = {
+  href?: string;
+  onClick?: () => void;
+};
+
+export function ScrollToHelpButton({ href = '#help-ademe', onClick }: ScrollToHelpButtonProps) {
   return (
     <div className="fr-my-3w flex justify-center md:justify-end">
       <Button
         className="flex-1 md:flex-none md:flex justify-center"
         iconId="fr-icon-arrow-right-line"
         iconPosition="right"
-        href="#help-ademe"
+        href={onClick ? undefined : href}
+        onClick={onClick}
       >
         Je souhaite être accompagné
       </Button>
