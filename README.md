@@ -138,7 +138,7 @@ Si talisman détecte une erreur au moment d'un commit, 2 options sont possibles 
 - soit ajouter une exception via la commande `pnpm talisman:add-exception`.
 
 
-<!-- Architecture and deployment information has been moved to .ai/context/ARCHITECTURE.md -->
+<!-- Architecture and deployment information lives in .ai/context/ (architecture.md, deployment.md, etc.) -->
 
 
 # Licence
