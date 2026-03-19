@@ -140,11 +140,9 @@ const useContactFormFCU = () => {
       setMessageSent(true);
       const { eligibility, address = '' } = (data as AddressDataType) || {};
       // On ne track pas Matomo pour chaleur-renouvelable car ce parcours est tracké via PostHog.
-      if (context !== 'chaleur-renouvelable') {
-        trackEvent(
-          `Eligibilité|Formulaire de contact ${eligibility?.isEligible ? 'é' : 'iné'}ligible${getMatomoContextPrefix(context)} - Envoi` as TrackingEvent,
-          address
-        );
+      const prefix = getMatomoContextPrefix(context);
+      if (prefix !== ' - Chaleur renouvelable') {
+        trackEvent(`Eligibilité|Formulaire de contact ${eligibility?.isEligible ? 'é' : 'iné'}ligible${prefix} - Envoi`, address);
       }
       trackPostHogEvent('eligibility:contact_form_submit', {
         address,
