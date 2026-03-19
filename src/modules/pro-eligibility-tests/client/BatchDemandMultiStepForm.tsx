@@ -1,4 +1,5 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
+import { z } from 'zod';
 
 import DemandContactFields from '@/components/EligibilityForm/components/DemandContactFields';
 import useForm from '@/components/form/react-form/useForm';
@@ -6,10 +7,26 @@ import Alert from '@/components/ui/Alert';
 import CallOut from '@/components/ui/CallOut';
 import Link from '@/components/ui/Link';
 import { useAuthentication } from '@/modules/auth/client/hooks';
-import { type BatchDemandAddressData, zCreateBatchDemandInput } from '@/modules/demands/constants';
+import { type BatchDemandAddressData, type BatchDemandContactInfo, zCreateBatchDemandInput } from '@/modules/demands/constants';
 import trpc from '@/modules/trpc/client';
 
 const MAX_BATCH_DEMAND_ADDRESSES = 50;
+const emptyDedicatedContact: BatchDemandContactInfo = {
+  company: '',
+  companyType: '',
+  demandArea: undefined,
+  demandCompanyName: '',
+  demandCompanyType: '',
+  email: '',
+  firstName: '',
+  lastName: '',
+  nbLogements: undefined,
+  phone: '',
+  structure: '',
+};
+const batchDemandFormSchema = zCreateBatchDemandInput.extend({
+  useDedicatedContact: z.boolean().optional(),
+});
 
 type AddressData = {
   id: string;
@@ -39,24 +56,11 @@ export const BatchDemandMultiStepForm = ({ addresses, onSuccess }: BatchDemandFo
         heatingEnergy: undefined as unknown as 'électricité' | 'gaz' | 'fioul' | 'autre',
         heatingType: undefined as unknown as 'collectif' | 'individuel',
       })),
-      contact: isAdmin
-        ? {
-            company: '',
-            companyType: '',
-            demandArea: undefined as number | undefined,
-            demandCompanyName: '',
-            demandCompanyType: '',
-            email: '',
-            firstName: '',
-            lastName: '',
-            nbLogements: undefined as number | undefined,
-            phone: '',
-            structure: '',
-          }
-        : undefined,
+      contact: undefined as BatchDemandContactInfo | undefined,
       termOfUse: false,
+      useDedicatedContact: false,
     }),
-    [activeAddresses, isAdmin]
+    [activeAddresses]
   );
 
   const { form, Form, Field, Fieldset, FieldsetLegend, FieldWrapper, Submit, useValue } = useForm({
@@ -64,22 +68,48 @@ export const BatchDemandMultiStepForm = ({ addresses, onSuccess }: BatchDemandFo
     onSubmit: async ({
       value,
     }: {
-      value: { addresses: BatchDemandAddressData[]; contact?: (typeof defaultValues)['contact']; termOfUse: boolean };
+      value: {
+        addresses: BatchDemandAddressData[];
+        contact?: BatchDemandContactInfo;
+        termOfUse: boolean;
+        useDedicatedContact: boolean;
+      };
     }) => {
-      await mutateAsync({ addresses: value.addresses, contact: value.contact, termOfUse: value.termOfUse });
+      await mutateAsync({
+        addresses: value.addresses,
+        contact: isAdmin && value.useDedicatedContact ? value.contact : undefined,
+        termOfUse: value.termOfUse,
+      });
       onSuccess();
     },
-    schema: zCreateBatchDemandInput,
+    schema: batchDemandFormSchema,
   });
-  const companyType = useValue<string>('contact.companyType');
-  const demandCompanyType = useValue<string>('contact.demandCompanyType');
-  const structure = useValue<string>('contact.structure');
+  const companyType = useValue<string | undefined>('contact.companyType');
+  const demandCompanyType = useValue<string | undefined>('contact.demandCompanyType');
+  const structure = useValue<string | undefined>('contact.structure');
+  const useDedicatedContact = useValue<boolean>('useDedicatedContact');
   const contactState = {
     companyType,
     demandCompanyType,
     structure,
   };
   const formUi = { Field, Fieldset, FieldsetLegend, FieldWrapper, form };
+
+  useEffect(() => {
+    if (!isAdmin) {
+      return;
+    }
+
+    if (!useDedicatedContact) {
+      form.setFieldValue('contact', undefined);
+      return;
+    }
+
+    const currentContact = form.getFieldValue('contact');
+    if (!currentContact) {
+      form.setFieldValue('contact', emptyDedicatedContact);
+    }
+  }, [form, isAdmin, useDedicatedContact]);
 
   return (
     <Form>
@@ -135,19 +165,16 @@ export const BatchDemandMultiStepForm = ({ addresses, onSuccess }: BatchDemandFo
             </div>
           ))}
         </div>
-
         {isAdmin && (
-          <Alert className="fr-mb-0" title="Création du contact" variant="info">
+          <Alert className="fr-mb-0" variant="info">
             <div className="flex flex-col gap-3">
-              <span className="text-sm">
-                Renseignez le contact qui sera créé avec ces demandes. Ces informations seront utilisées à la place de celles de votre
-                compte admin.
-              </span>
-              <DemandContactFields contactState={contactState} formUi={formUi} namePrefix="contact." structureClassName="fr-mt-0" />
+              <Field.Checkbox name="useDedicatedContact" label="Créer les demandes pour un contact dédié" />
+              {useDedicatedContact && (
+                <DemandContactFields contactState={contactState} formUi={formUi} namePrefix="contact." structureClassName="fr-mt-0" />
+              )}
             </div>
           </Alert>
         )}
-
         <Field.Checkbox
           name="termOfUse"
           label={
