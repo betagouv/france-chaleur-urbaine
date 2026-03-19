@@ -8,6 +8,7 @@ import buildContext from '@/modules/config/server/context-builder';
 import { dataRouter } from '@/modules/data/server/trpc-routes';
 import { demandsRouter } from '@/modules/demands/server/trpc-routes';
 import { diagnosticRouter } from '@/modules/diagnostic/server/trpc-routes';
+import { eventsRouter } from '@/modules/events/server/trpc-routes';
 import { jobsRouter } from '@/modules/jobs/server/trpc-routes';
 import { proEligibilityTestsRouter } from '@/modules/pro-eligibility-tests/server/trpc-routes';
 import { reseauxRouter } from '@/modules/reseaux/server/trpc-routes';
@@ -45,6 +46,7 @@ export const appRouter = router({
   data: dataRouter,
   demands: demandsRouter,
   diagnostic: diagnosticRouter,
+  events: eventsRouter,
   // Health check endpoint - no auth required
   healthCheck: route.query(() => {
     return {

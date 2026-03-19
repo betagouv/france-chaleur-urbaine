@@ -1,260 +1,183 @@
-import { Select } from '@codegouvfr/react-dsfr/SelectNext';
-import { ToggleSwitch } from '@codegouvfr/react-dsfr/ToggleSwitch';
-import { parseAsString, useQueryStates } from 'nuqs';
-import { type ReactNode, useCallback, useMemo } from 'react';
+import { keepPreviousData } from '@tanstack/react-query';
+import dayjs from 'dayjs';
+import { useCallback } from 'react';
 
-import UserRoleBadge from '@/components/Admin/UserRoleBadge';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Box from '@/components/ui/Box';
-import Button from '@/components/ui/Button';
 import Heading from '@/components/ui/Heading';
-import Tag from '@/components/ui/Tag';
-import VirtualList, { type VirtualListRowProps } from '@/components/ui/VirtualList';
-import { useFetch } from '@/hooks/useApi';
-import useQueryFlag from '@/hooks/useQueryFlag';
-import { type EventType, eventTypes } from '@/modules/events/constants';
-import type { AdminEvent } from '@/modules/events/server/service';
-import type { UserRole } from '@/types/enum/UserRole';
+import Loader from '@/components/ui/Loader';
+import { EventsDashboardHeader } from '@/modules/events/client/EventsDashboardHeader';
+import { EventsFiltersBar } from '@/modules/events/client/EventsFiltersBar';
+import { EventsList } from '@/modules/events/client/EventsList';
+import { EventsStatsSection } from '@/modules/events/client/EventsStatsSection';
+import type { EventFilters } from '@/modules/events/client/types';
+import { useEventsFilters } from '@/modules/events/client/useEventsFilters';
+import { type EventPeriodPreset, eventGranularities } from '@/modules/events/constants';
+import trpc from '@/modules/trpc/client';
+import { exportAsXLSX } from '@/utils/export';
 
-type Filters = {
-  type?: string | null;
-  authorId?: string | null;
-  contextType?: string | null;
-  contextId?: string | null;
-};
-
-const FilterButton = ({ onClick, children }: { onClick: () => void; children: ReactNode }) => (
-  <Button size="small" priority="tertiary no outline" className="px-1!" onClick={onClick}>
-    {children}
-  </Button>
-);
-
-const eventLabelRenderers: Record<EventType, (event: AdminEvent, updateFilters: (filters: Partial<Filters>) => void) => ReactNode> = {
-  build_tiles: (event) => (
-    <>
-      <span>
-        a reconstruit les tuiles <strong>{(event.data as any)?.name}</strong>
-      </span>
-    </>
-  ),
-  demand_assigned: (event, updateFilters) => (
-    <>
-      <span>a assigné une </span>
-      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'demand' })}>demande</FilterButton>
-    </>
-  ),
-  demand_created: (event, updateFilters) => (
-    <>
-      <span>Une </span>
-      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'demand' })}>demande</FilterButton>
-      <span> a été créée</span>
-    </>
-  ),
-  demand_deleted: (event, updateFilters) => (
-    <>
-      <span>a supprimé une </span>
-      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'demand' })}>demande</FilterButton>
-    </>
-  ),
-  demand_updated: (event, updateFilters) => (
-    <>
-      <span>a mis à jour une </span>
-      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'demand' })}>demande</FilterButton>
-    </>
-  ),
-  pro_eligibility_test_created: (event, updateFilters) => (
-    <>
-      <span>a créé un </span>
-      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'pro_eligibility_test' })}>
-        test d'éligibilité
-      </FilterButton>
-    </>
-  ),
-  pro_eligibility_test_deleted: (event, updateFilters) => (
-    <>
-      <span>a supprimé un </span>
-      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'pro_eligibility_test' })}>
-        test d'éligibilité
-      </FilterButton>
-    </>
-  ),
-  pro_eligibility_test_renamed: (event, updateFilters) => (
-    <>
-      <span>a renommé un </span>
-      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'pro_eligibility_test' })}>
-        test d'éligibilité
-      </FilterButton>
-    </>
-  ),
-  pro_eligibility_test_updated: (event, updateFilters) => (
-    <>
-      <span>a mis à jour un </span>
-      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'pro_eligibility_test' })}>
-        test d'éligibilité
-      </FilterButton>
-    </>
-  ),
-  sync_geometries_to_airtable: (event) => (
-    <>
-      <span>
-        a synchronisé les géométries vers Airtable pour la table <strong>{(event.data as any)?.name}</strong>
-      </span>
-    </>
-  ),
-  sync_metadata_from_airtable: (event) => (
-    <>
-      <span>
-        a synchronisé les métadonnées depuis Airtable pour la table <strong>{(event.data as any)?.name}</strong>
-      </span>
-    </>
-  ),
-  tag_comment_updated: (event, updateFilters) => (
-    <>
-      <span>a mis à jour un commentaire pour le tag</span>
-      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'tag' })}>
-        {(event.data as any)?.tag_name}
-      </FilterButton>
-    </>
-  ),
-  tag_reminder_created: (event, updateFilters) => (
-    <>
-      <span>a enregistré une relance pour le tag</span>
-      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'tag' })}>
-        {(event.data as any)?.tag_name}
-      </FilterButton>
-    </>
-  ),
-  tag_reminder_deleted: (event, updateFilters) => (
-    <>
-      <span>a supprimé la relance pour le tag</span>
-      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'tag' })}>
-        {(event.data as any)?.tag_name}
-      </FilterButton>
-    </>
-  ),
-  user_activated: () => 'a activé son compte',
-  user_created: () => 'a créé un compte',
-  user_deleted: () => 'a supprimé un compte',
-  user_login: () => "s'est connecté",
-  user_updated: () => 'a mis à jour un compte',
-};
-
+/**
+ * Orchestrateur du dashboard événements admin : assemble header, stats, filtres et liste.
+ */
 export default function AdminEventsPage() {
-  const [filters, setFilters] = useQueryStates({
-    authorId: parseAsString,
-    contextId: parseAsString,
-    contextType: parseAsString,
-    type: parseAsString,
-  } satisfies Record<keyof Filters, any>);
+  const { filters, setFilters, statsInput, baseInput, computedDateRange } = useEventsFilters();
 
-  const [showDetails, toggleShowDetails] = useQueryFlag('details');
+  const utils = trpc.useUtils();
 
-  const updateFilters = useCallback(
-    (partial: Partial<Filters>) => {
-      void setFilters((filters) => ({ ...filters, ...partial }));
+  const handleAuthorsChange = useCallback(
+    (newAuthorIds: string[]) => {
+      void setFilters({ authorIds: newAuthorIds });
     },
     [setFilters]
   );
 
-  const apiUrl = useMemo(() => {
-    const params = new URLSearchParams();
-    if (filters.type) params.set('type', filters.type);
-    if (filters.authorId) params.set('authorId', filters.authorId);
-    if (filters.contextType) params.set('contextType', filters.contextType);
-    if (filters.contextId) params.set('contextId', filters.contextId);
-    return `/api/admin/events${params.toString() ? `?${params.toString()}` : ''}`;
-  }, [filters]);
+  const { data: stats, isFetching: isFetchingStats } = trpc.events.admin.getStats.useQuery(statsInput, {
+    placeholderData: keepPreviousData,
+  });
 
-  const { data: events } = useFetch<AdminEvent[]>(apiUrl);
+  // Called when clicking on an event's author/context in the list — appends, never replaces
+  const updateFilters = useCallback(
+    (partial: Partial<EventFilters>) => {
+      void setFilters((prev) => ({
+        ...(partial.authorId &&
+          !prev.authorIds.includes(partial.authorId) && {
+            authorIds: [...prev.authorIds, partial.authorId],
+          }),
+        ...(partial.contextId !== undefined && { contextId: partial.contextId }),
+        ...(partial.contextType !== undefined && { contextType: partial.contextType }),
+      }));
+    },
+    [setFilters]
+  );
 
-  const BoundEventRow = useCallback(
-    ({ item }: VirtualListRowProps<AdminEvent>) => <EventRow item={item} updateFilters={updateFilters} showDetails={showDetails} />,
-    [updateFilters, showDetails]
+  // Called when the user drags a range on the activity chart.
+  // Auto-downgrades granularity if the selected period would produce fewer than 2 buckets.
+  const handleDateRangeChange = useCallback(
+    (from: string, to: string) => {
+      const diffMinutes = dayjs(to).diff(dayjs(from), 'minute');
+      const diffHours = dayjs(to).diff(dayjs(from), 'hour');
+      const diffDays = dayjs(to).diff(dayjs(from), 'day');
+      const currentGranularity = filters.granularity;
+
+      const currentBuckets = (() => {
+        switch (currentGranularity) {
+          case 'minute':
+            return diffMinutes;
+          case 'hour':
+            return diffHours;
+          case 'day':
+            return diffDays;
+          case 'week':
+            return diffDays / 7;
+          case 'month':
+            return diffDays / 30;
+          case 'year':
+            return diffDays / 365;
+        }
+      })();
+
+      let granularity = currentGranularity;
+      if (currentBuckets < 2) {
+        if (diffHours < 2) granularity = 'minute';
+        else if (diffHours < 48) granularity = 'hour';
+        else if (diffDays < 14) granularity = 'day';
+        else if (diffDays < 90) granularity = 'week';
+        else granularity = 'month';
+        // Ensure we don't suggest a granularity finer than what's in the allowed list
+        if (!eventGranularities.includes(granularity)) granularity = currentGranularity;
+      }
+
+      void setFilters({
+        dateFrom: from,
+        dateTo: to,
+        preset: 'custom',
+        ...(granularity !== currentGranularity && { granularity }),
+      });
+    },
+    [filters.granularity, setFilters]
+  );
+
+  const handleExport = useCallback(() => {
+    if (!stats) return;
+    exportAsXLSX('événements_export.xlsx', [
+      {
+        columns: [
+          { accessorKey: 'type' as const, name: 'Type' },
+          { accessorKey: 'count' as const, name: 'Nombre' },
+        ],
+        data: stats.typeDistribution,
+        name: 'Répartition',
+      },
+    ]);
+  }, [stats]);
+
+  const handleRefresh = useCallback(() => utils.events.admin.invalidate(), [utils]);
+
+  const handlePresetChange = useCallback(
+    (preset: EventPeriodPreset) => {
+      if (preset === 'custom') {
+        void setFilters({
+          dateFrom: dayjs(computedDateRange.from).format('YYYY-MM-DDTHH:mm'),
+          dateTo: dayjs(computedDateRange.to).format('YYYY-MM-DDTHH:mm'),
+          preset,
+        });
+      } else {
+        void setFilters({ dateFrom: null, dateTo: null, preset });
+      }
+    },
+    [computedDateRange, setFilters]
   );
 
   return (
     <SimplePage title="Activité du site" mode="authenticated">
-      <Box py="4w" className="fr-container">
-        <Heading as="h1" color="blue-france">
-          Activité du site
-        </Heading>
-
-        <div className="fr-grid-row fr-grid-row--gutters fr-mb-4w items-end">
-          <div className="fr-col-12 fr-col-md-3">
-            <Select
-              label="Filtrer par type (beta)"
-              nativeSelectProps={{
-                onChange: (e) => updateFilters({ type: e.target.value || null }),
-                value: filters.type ?? '',
-              }}
-              options={[{ label: 'Tous', value: '' }, ...eventTypes.map((type) => ({ label: type, value: type }))]}
-            />
-          </div>
-          <div className="fr-col-12 fr-col-md-3 ml-auto">
-            <ToggleSwitch label="Afficher les détails" checked={showDetails} onChange={() => toggleShowDetails()} />
-          </div>
-
-          {filters.authorId || (filters.contextType && filters.contextId) ? (
-            <div className="fr-col-12 fr-col-md-9">
-              <div className="flex items-center gap-2 flex-wrap">
-                {filters.authorId && (
-                  <Tag
-                    dismissible
-                    size="sm"
-                    variant="info"
-                    nativeButtonProps={{
-                      onClick: () => updateFilters({ authorId: null }),
-                      title: "Supprimer le filtre d'auteur",
-                    }}
-                  >
-                    Auteur:{filters.authorId}
-                  </Tag>
-                )}
-                {filters.contextType && filters.contextId && (
-                  <Tag
-                    dismissible
-                    size="sm"
-                    variant="info"
-                    nativeButtonProps={{
-                      onClick: () => updateFilters({ contextId: null, contextType: null }),
-                      title: 'Supprimer le filtre de contexte',
-                    }}
-                  >
-                    {`${filters.contextType}:${filters.contextId}`}
-                  </Tag>
-                )}
-              </div>
-            </div>
-          ) : null}
+      <Box className="fr-container" py="4w">
+        <div className="flex items-center gap-3">
+          <Heading as="h1" color="blue-france">
+            Activité du site
+          </Heading>
+          {isFetchingStats && <Loader size="sm" />}
         </div>
 
-        <VirtualList items={events ?? []} estimateSize={48} renderRow={BoundEventRow} getItemKey={(item) => item.id} />
+        <div className="flex flex-col gap-6">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="flex-1 min-w-64">
+              <EventsFiltersBar
+                authorIds={filters.authorIds}
+                contextId={filters.contextId}
+                contextType={filters.contextType}
+                types={filters.types}
+                onAuthorsChange={handleAuthorsChange}
+                onClearContext={() => void setFilters({ contextId: null, contextType: null })}
+                onTypesChange={(types) => void setFilters({ types })}
+              />
+            </div>
+
+            <div className="shrink-0">
+              <EventsDashboardHeader
+                dateFrom={filters.dateFrom}
+                dateTo={filters.dateTo}
+                granularity={filters.granularity}
+                preset={filters.preset}
+                onDateFromChange={(date) => void setFilters({ dateFrom: date, preset: 'custom' })}
+                onDateToChange={(date) => void setFilters({ dateTo: date, preset: 'custom' })}
+                onExport={handleExport}
+                onGranularityChange={(granularity) => void setFilters({ granularity })}
+                onPresetChange={handlePresetChange}
+                onRefresh={handleRefresh}
+              />
+            </div>
+          </div>
+
+          <EventsStatsSection
+            granularity={filters.granularity}
+            isLoading={isFetchingStats}
+            stats={stats}
+            onDateRangeChange={handleDateRangeChange}
+          />
+
+          <EventsList baseInput={baseInput} onFilterChange={updateFilters} />
+        </div>
       </Box>
     </SimplePage>
   );
 }
-
-type EventRowProps = VirtualListRowProps<AdminEvent> & {
-  updateFilters: (filters: Partial<Filters>) => void;
-  showDetails: boolean;
-};
-
-const EventRow = ({ item: event, updateFilters, showDetails }: EventRowProps) => {
-  return (
-    <div className="flex items-center border-b border-b-gray-200 px-2 py-1">
-      <div className="shrink-0 w-30 text-xs text-gray-500 mr-4">{new Date(event.created_at).toLocaleString('fr-FR')}</div>
-      {event.author ? (
-        <>
-          <UserRoleBadge role={event.author.role as UserRole} />
-          <FilterButton onClick={() => updateFilters({ authorId: event.author_id })}>{event.author.email}</FilterButton>
-        </>
-      ) : null}
-      <div className="text-sm">
-        {eventLabelRenderers[event.type] ? eventLabelRenderers[event.type](event, updateFilters) : `${event.type} - Event type not found`}
-      </div>
-      {showDetails && event.data && typeof event.data === 'object' && Object.keys(event.data).length > 0 && (
-        <pre className="text-xs whitespace-pre-wrap">{JSON.stringify(event.data, null, 2).slice(2, -2)}</pre>
-      )}
-    </div>
-  );
-};

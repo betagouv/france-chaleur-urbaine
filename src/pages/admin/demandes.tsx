@@ -808,6 +808,12 @@ function DemandActions({ demand }: { demand: DemandsListAdminItem }) {
 
   const menuItems: HamburgerMenuItem[] = [
     {
+      href: `/admin/events?contextType=demand&contextId=${demand.id}`,
+      icon: 'fr-icon-time-line',
+      id: 'view-history',
+      label: "Voir l'historique",
+    },
+    {
       icon: 'fr-icon-refresh-line',
       id: 'recalculate-eligibility',
       label: "Recalculer l'éligibilité",
