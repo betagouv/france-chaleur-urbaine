@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 
 import { copyToClipboard } from '@/components/ui/ButtonCopy';
 import Link from '@/components/ui/Link';
-import { trackPostHogEvent } from '@/modules/analytics/client';
 
 export default function Share() {
   const searchParams = useSearchParams();
@@ -27,10 +26,6 @@ export default function Share() {
           className="w-full justify-center fr-mb-3w"
           onClick={async (e) => {
             e.preventDefault();
-            trackPostHogEvent('link:click', {
-              link_name: 'cta_partage_simulation',
-              source: url,
-            });
             copyToClipboard(url);
             setCopied(true);
           }}
@@ -49,11 +44,6 @@ export default function Share() {
           variant="secondary"
           className="w-full justify-center"
           title="Envoyez le lien par email"
-          postHogEventKey="link:click"
-          postHogEventProps={{
-            link_name: 'cta_email_simulation',
-            source: url,
-          }}
           href={`mailto:?subject=${encodeURIComponent('[France Chaleur Urbaine] Lien de ma simulation')}&body=${encodeURIComponent(
             `Bonjour,
 

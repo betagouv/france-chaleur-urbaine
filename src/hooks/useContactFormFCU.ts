@@ -8,11 +8,10 @@ import type { AddressDataType } from '@/types/AddressData';
 
 const warningMessage = "N'oubliez pas d'indiquer votre type de chauffage.";
 
-export type ContactFormContext = 'comparateur' | 'carte' | 'choix-chauffage' | 'chaleur-renouvelable';
+export type ContactFormContext = 'comparateur' | 'carte' | 'choix-chauffage';
 
 const contextToAnalyticsPrefix = {
   carte: 'Carte',
-  'chaleur-renouvelable': 'Chaleur renouvelable',
   'choix-chauffage': 'Choix chauffage',
   comparateur: 'Comparateur',
 } as const;
@@ -46,8 +45,7 @@ const useContactFormFCU = () => {
     setMessageReceived(false);
     const prefix = getMatomoContextPrefix(context);
     // on ne track pas les événements pour le choix chauffage car ce n'est pas de l'éligibilité
-    // ni Chaleur renouvelable (que l'on gère uniquement via postHog)
-    if (prefix !== ' - Choix chauffage' && prefix !== ' - Chaleur renouvelable') {
+    if (prefix !== ' - Choix chauffage') {
       trackEvent(`Eligibilité|Formulaire de test${prefix} - Envoi`, address);
     }
   };
@@ -58,8 +56,7 @@ const useContactFormFCU = () => {
       if (options.doTrackEvent) {
         const prefix = getMatomoContextPrefix(context);
         // on ne track pas les événements pour le choix chauffage car ce n'est pas de l'éligibilité
-        // ni Chaleur renouvelable (que l'on gère uniquement via postHog)
-        if (prefix !== ' - Choix chauffage' && prefix !== ' - Chaleur renouvelable') {
+        if (prefix !== ' - Choix chauffage') {
           trackEvent(
             `Eligibilité|Formulaire de test${prefix} - Adresse ${eligibility?.isEligible ? 'É' : 'Iné'}ligible`,
             address || 'Adresse indefini'
@@ -139,11 +136,10 @@ const useContactFormFCU = () => {
 
       setMessageSent(true);
       const { eligibility, address = '' } = (data as AddressDataType) || {};
-      // On ne track pas Matomo pour chaleur-renouvelable car ce parcours est tracké via PostHog.
-      const prefix = getMatomoContextPrefix(context);
-      if (prefix !== ' - Chaleur renouvelable') {
-        trackEvent(`Eligibilité|Formulaire de contact ${eligibility?.isEligible ? 'é' : 'iné'}ligible${prefix} - Envoi`, address);
-      }
+      trackEvent(
+        `Eligibilité|Formulaire de contact ${eligibility?.isEligible ? 'é' : 'iné'}ligible${getMatomoContextPrefix(context)} - Envoi`,
+        address
+      );
       trackPostHogEvent('eligibility:contact_form_submit', {
         address,
         company_type: data?.companyType || undefined,
