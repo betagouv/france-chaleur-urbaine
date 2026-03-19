@@ -154,7 +154,8 @@ export default function ChoixChauffageResults() {
         geoAddress,
         heatingType: 'collectif',
       },
-      'chaleur-renouvelable'
+      'choix-chauffage',
+      { doTrackEvent: false }
     );
   }, [eligibiliteReseauChaleur, geoAddress, handleOnSuccessAddress, urlParams.adresse]);
   const handleSelectGeoAddress = useCallback(
