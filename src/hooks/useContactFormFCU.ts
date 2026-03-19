@@ -46,7 +46,8 @@ const useContactFormFCU = () => {
     setMessageReceived(false);
     const prefix = getMatomoContextPrefix(context);
     // on ne track pas les événements pour le choix chauffage car ce n'est pas de l'éligibilité
-    if (prefix !== ' - Choix chauffage') {
+    // ni Chaleur renouvelable (que l'on gère uniquement via postHog)
+    if (prefix !== ' - Choix chauffage' && prefix !== ' - Chaleur renouvelable') {
       trackEvent(`Eligibilité|Formulaire de test${prefix} - Envoi`, address);
     }
   };
@@ -57,7 +58,8 @@ const useContactFormFCU = () => {
       if (options.doTrackEvent) {
         const prefix = getMatomoContextPrefix(context);
         // on ne track pas les événements pour le choix chauffage car ce n'est pas de l'éligibilité
-        if (prefix !== ' - Choix chauffage') {
+        // ni Chaleur renouvelable (que l'on gère uniquement via postHog)
+        if (prefix !== ' - Choix chauffage' && prefix !== ' - Chaleur renouvelable') {
           trackEvent(
             `Eligibilité|Formulaire de test${prefix} - Adresse ${eligibility?.isEligible ? 'É' : 'Iné'}ligible`,
             address || 'Adresse indefini'
@@ -137,10 +139,13 @@ const useContactFormFCU = () => {
 
       setMessageSent(true);
       const { eligibility, address = '' } = (data as AddressDataType) || {};
-      trackEvent(
-        `Eligibilité|Formulaire de contact ${eligibility?.isEligible ? 'é' : 'iné'}ligible${getMatomoContextPrefix(context)} - Envoi`,
-        address
-      );
+      // On ne track pas Matomo pour chaleur-renouvelable car ce parcours est tracké via PostHog.
+      if (context !== 'chaleur-renouvelable') {
+        trackEvent(
+          `Eligibilité|Formulaire de contact ${eligibility?.isEligible ? 'é' : 'iné'}ligible${getMatomoContextPrefix(context)} - Envoi` as TrackingEvent,
+          address
+        );
+      }
       trackPostHogEvent('eligibility:contact_form_submit', {
         address,
         company_type: data?.companyType || undefined,
