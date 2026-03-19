@@ -38,7 +38,7 @@ export function SettingsTopFields({
       <AddressField
         label={withLabel ? 'Adresse' : ''}
         className="fr-mb-0"
-        defaultValue={adresse ?? undefined}
+        value={adresse ?? ''}
         nativeInputProps={{ placeholder: 'Tapez votre adresse ici' }}
         onlyAddress
         onClear={() => {
