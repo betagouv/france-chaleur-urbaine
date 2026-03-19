@@ -1,4 +1,4 @@
-import { ZodObject, type ZodRawShape, type ZodTypeAny, z } from 'zod';
+import { ZodArray, ZodObject, type ZodRawShape, type ZodTypeAny, z } from 'zod';
 
 /**
  * Recursively unwraps ZodEffects to get the base schema.
@@ -25,6 +25,54 @@ export const getSchemaShape = (schema: ZodTypeAny): ZodRawShape => {
   }
 
   return {} as ZodRawShape;
+};
+
+const unwrapContainerSchema = (schema: ZodTypeAny): ZodTypeAny => {
+  let currentSchema = unwrapSchema(schema);
+
+  while (true) {
+    const unwrap = (currentSchema as unknown as { unwrap?: () => unknown }).unwrap;
+
+    if (typeof unwrap !== 'function') {
+      return currentSchema;
+    }
+
+    if (currentSchema instanceof ZodArray || currentSchema instanceof ZodObject) {
+      return currentSchema;
+    }
+
+    currentSchema = unwrapSchema(unwrap() as ZodTypeAny);
+  }
+};
+
+export const getSchemaField = (schema: ZodTypeAny, fieldPath: string): ZodTypeAny | undefined => {
+  if (!schema || !fieldPath) return undefined;
+
+  const normalizedPath = fieldPath
+    .replace(/\[\d+\]/g, '')
+    .split('.')
+    .filter(Boolean);
+  let currentSchema = unwrapContainerSchema(schema);
+
+  for (const pathSegment of normalizedPath) {
+    currentSchema = unwrapContainerSchema(currentSchema);
+
+    if (currentSchema instanceof ZodArray) {
+      currentSchema = unwrapContainerSchema(currentSchema.element as ZodTypeAny);
+    }
+
+    if (!(currentSchema instanceof ZodObject)) {
+      return undefined;
+    }
+
+    currentSchema = currentSchema.shape[pathSegment];
+
+    if (!currentSchema) {
+      return undefined;
+    }
+  }
+
+  return currentSchema;
 };
 
 export const zAirtableRecordId = z.string().regex(/^[a-zA-Z0-9]{17}$/); // e.g. rec6nCFUO7Nzj6M9n

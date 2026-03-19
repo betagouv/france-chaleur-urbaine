@@ -303,6 +303,27 @@ describe('zCreateBatchDemandInput', () => {
       },
       label: 'accepte exactement 50 adresses',
     },
+    {
+      expectedOutput: false,
+      input: {
+        addresses: [validAddress],
+        contact: {
+          company: '',
+          companyType: '',
+          demandArea: undefined,
+          demandCompanyName: '',
+          demandCompanyType: '',
+          email: 'contact@example.com',
+          firstName: '',
+          lastName: '',
+          nbLogements: undefined,
+          phone: '',
+          structure: '',
+        },
+        termOfUse: true,
+      },
+      label: 'rejette un contact partiellement renseigné',
+    },
   ];
 
   it.each(testCases)('$label', ({ input, expectedOutput }) => {

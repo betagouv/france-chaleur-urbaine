@@ -212,15 +212,77 @@ export const fieldLabelInformation = {
   },
 };
 
+const demandContactShape = {
+  company: z.string().optional().default(''),
+  companyType: z.string().optional().default(''),
+  demandArea: z.number().optional(),
+  demandCompanyName: z.string().optional().default(''),
+  demandCompanyType: z.string().optional().default(''),
+  email: z.email("Votre adresse email n'est pas valide").min(1, 'Veuillez renseigner votre adresse email'),
+  firstName: z.string().min(1, 'Veuillez renseigner votre prénom'),
+  lastName: z.string().min(1, 'Veuillez renseigner votre nom'),
+  nbLogements: z.number().optional(),
+  phone: z
+    .string()
+    .regex(/^(?:(?:\+|00)33|0)\s*[1-9]\d{8}$|^$/, 'Veuillez renseigner votre numéro de téléphone sous le format 0605040302')
+    .optional()
+    .default(''),
+  structure: z.string().min(1, 'Veuillez renseigner votre type de bâtiment'),
+} satisfies z.ZodRawShape;
+
+const validateDemandContactInfo = (
+  {
+    company,
+    companyType,
+    demandCompanyName,
+    demandCompanyType,
+    structure,
+  }: {
+    company?: string;
+    companyType?: string;
+    demandCompanyName?: string;
+    demandCompanyType?: string;
+    structure: string;
+  },
+  ctx: z.RefinementCtx
+) => {
+  const displayIssue = (field: string, message: string) => {
+    console.error(field, message);
+    ctx.addIssue({
+      code: 'custom',
+      message,
+      path: [field],
+    });
+  };
+
+  if (structure === 'Tertiaire' && !companyType) {
+    displayIssue('companyType', 'Veuillez sélectionner le type de votre structure');
+  }
+  if (structure === 'Tertiaire' && !company) {
+    displayIssue('company', 'Veuillez renseigner le nom de votre structure');
+  }
+  if (
+    structure === 'Tertiaire' &&
+    (companyType === "Bureau d'études ou AMO" || companyType === 'Mandataire / délégataire CEE') &&
+    !demandCompanyType
+  ) {
+    displayIssue('demandCompanyType', 'Veuillez sélectionner le type de la structure accompagnée');
+  }
+  if (
+    structure === 'Tertiaire' &&
+    (companyType === "Bureau d'études ou AMO" || companyType === 'Mandataire / délégataire CEE') &&
+    (demandCompanyType === 'Bâtiment tertiaire' || demandCompanyType === 'Bailleur social' || demandCompanyType === 'Autre') &&
+    !demandCompanyName
+  ) {
+    displayIssue('demandCompanyName', 'Veuillez renseigner le nom de la structure accompagnée');
+  }
+};
+
+export const zBatchDemandContactSchema = z.object(demandContactShape).superRefine(validateDemandContactInfo);
+
 export const zContactFormCreateDemandInput = z
   .object({
-    company: z.string().optional().default(''),
-    companyType: z.string().optional().default(''),
-    demandArea: z.number().optional(),
-    demandCompanyName: z.string().optional().default(''),
-    demandCompanyType: z.string().optional().default(''),
-    email: z.email("Votre adresse email n'est pas valide").min(1, 'Veuillez renseigner votre adresse email'),
-    firstName: z.string().min(1, 'Veuillez renseigner votre prénom'),
+    ...demandContactShape,
     heatingEnergy: z
       .string()
       .refine(
@@ -228,85 +290,24 @@ export const zContactFormCreateDemandInput = z
         'Veuillez sélectionner une énergie de chauffage'
       ),
     heatingType: z.string().optional(),
-    lastName: z.string().min(1, 'Veuillez renseigner votre nom'),
-    nbLogements: z.number().optional(),
-    phone: z
-      .string()
-      .regex(/^(?:(?:\+|00)33|0)\s*[1-9]\d{8}$|^$/, 'Veuillez renseigner votre numéro de téléphone sous le format 0605040302')
-      .optional()
-      .default(''),
-    structure: z.string().min(1, 'Veuillez renseigner votre type de bâtiment'),
     termOfUse: z.boolean().refine((val) => val, {
       error: 'Ce champ est requis',
     }),
   })
-  .superRefine(({ structure, company, companyType, demandCompanyType, demandCompanyName }, ctx) => {
-    const displayIssue = (field: string, message: string) => {
-      console.error(field, message);
-      ctx.addIssue({
-        code: 'custom',
-        message,
-        path: [field],
-      });
-    };
-
-    if (structure === 'Tertiaire' && !companyType) {
-      displayIssue('companyType', 'Veuillez sélectionner le type de votre structure');
-    }
-    if (structure === 'Tertiaire' && !company) {
-      displayIssue('company', 'Veuillez renseigner le nom de votre structure');
-    }
-    if (
-      structure === 'Tertiaire' &&
-      (companyType === "Bureau d'études ou AMO" || companyType === 'Mandataire / délégataire CEE') &&
-      !demandCompanyType
-    ) {
-      displayIssue('demandCompanyType', 'Veuillez sélectionner le type de la structure accompagnée');
-    }
-    if (
-      structure === 'Tertiaire' &&
-      (companyType === "Bureau d'études ou AMO" || companyType === 'Mandataire / délégataire CEE') &&
-      (demandCompanyType === 'Bâtiment tertiaire' || demandCompanyType === 'Bailleur social' || demandCompanyType === 'Autre') &&
-      !demandCompanyName
-    ) {
-      displayIssue('demandCompanyName', 'Veuillez renseigner le nom de la structure accompagnée');
-    }
-  });
+  .superRefine(validateDemandContactInfo);
 
 export type ContactFormInfos = z.infer<typeof zContactFormCreateDemandInput>;
+export type BatchDemandContactInfo = z.infer<typeof zBatchDemandContactSchema>;
 
 export type CreateDemandInput = z.infer<typeof zCreateDemandInput>;
 
 // Batch demand creation schemas
 export const zBatchDemandStep1Schema = z
   .object({
-    company: z.string().optional(),
-    companyType: z.string().optional(),
-    email: z.string().email('Email invalide').min(1, 'Champ requis'),
-    firstName: z.string().min(1, 'Champ requis'),
-    lastName: z.string().min(1, 'Champ requis'),
-    phone: z.string().optional(),
-    structure: z.string().min(1, 'Champ requis'),
+    ...demandContactShape,
     termOfUse: z.boolean().refine((val) => val, 'Vous devez accepter les conditions'),
   })
-  .superRefine((data, ctx) => {
-    if (data.structure === 'Tertiaire') {
-      if (!data.companyType) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: 'Champ requis pour les structures tertiaires',
-          path: ['companyType'],
-        });
-      }
-      if (!data.company) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: 'Champ requis pour les structures tertiaires',
-          path: ['company'],
-        });
-      }
-    }
-  });
+  .superRefine(validateDemandContactInfo);
 
 export type BatchDemandStep1Data = z.infer<typeof zBatchDemandStep1Schema>;
 
@@ -323,6 +324,7 @@ export const zCreateBatchDemandInput = z.object({
     .array(zBatchDemandAddressSchema)
     .min(1, 'Au moins une adresse doit être sélectionnée')
     .max(50, 'Maximum 50 adresses par demande'),
+  contact: zBatchDemandContactSchema.optional(),
   termOfUse: z.boolean().refine((val) => val, 'Vous devez accepter les conditions'),
 });
 
