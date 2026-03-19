@@ -49,6 +49,11 @@ export default function Share() {
           variant="secondary"
           className="w-full justify-center"
           title="Envoyez le lien par email"
+          postHogEventKey="link:click"
+          postHogEventProps={{
+            link_name: 'cta_email_simulation',
+            source: url,
+          }}
           href={`mailto:?subject=${encodeURIComponent('[France Chaleur Urbaine] Lien de ma simulation')}&body=${encodeURIComponent(
             `Bonjour,
 
