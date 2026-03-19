@@ -125,7 +125,7 @@ export function ScrollToHelpButton({ href = '#help-ademe', onClick }: ScrollToHe
         href={onClick ? undefined : href}
         onClick={onClick}
       >
-        Je souhaite être accompagné
+        Plus d'informations
       </Button>
     </div>
   );
