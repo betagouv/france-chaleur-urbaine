@@ -93,12 +93,12 @@ export const customFilterFn = <T extends RowData>(): Record<string, FilterFn<T>>
 
     // Gérer undefined/null/"" explicitement
     if (!value) {
-      return filterValue.undefined === true;
+      return filterValue.undefined === true || filterValue[''] === true;
     }
 
     return Object.entries(filterValue)
       .filter(([, isSelected]) => isSelected)
-      .some(([key]) => value.includes(key));
+      .some(([key]) => key !== '' && key !== 'undefined' && value.includes(key));
   },
   inDateRangeNotNull: (row, columnId, filterValue: [string | null, string | null, boolean?]) => {
     const [minDate, maxDate, includeNull] = filterValue;
