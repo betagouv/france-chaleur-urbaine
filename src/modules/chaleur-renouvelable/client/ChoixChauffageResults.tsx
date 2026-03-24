@@ -134,7 +134,6 @@ export default function ChoixChauffageResults() {
   }, [modesDeChauffage, engine]);
   const coutParAnGaz = engine.getFieldAsNumber(`Bilan x Gaz coll sans cond . total avec aides` as RuleName);
   const [recommended, ...others] = modesWithCout;
-  const shouldOpenHeatNetworkModal = recommended?.label === 'Réseau de chaleur';
 
   const handleAccordionOpenChange = useCallback((id: string, expanded: boolean) => {
     setOpenAccordionId(expanded ? id : null);
@@ -167,6 +166,7 @@ export default function ChoixChauffageResults() {
     },
     [onSelectGeoAddress, resetEligibility]
   );
+  const helpButtonClick = recommended?.helpAction === 'open-heat-network-contact' ? openHeatNetworkContactModal : undefined;
 
   // pendant l’hydration, on évite de rendre conditionnellement (isMobile null)
   if (isMobile === null) return null;
@@ -223,7 +223,7 @@ export default function ChoixChauffageResults() {
             variant="recommended"
             coutParAnGaz={coutParAnGaz}
             dpeFrom={urlParams.dpe as DPE}
-            onHelpButtonClick={shouldOpenHeatNetworkModal ? openHeatNetworkContactModal : undefined}
+            onHelpButtonClick={helpButtonClick}
             openAccordionId={openAccordionId}
             onOpenChange={handleAccordionOpenChange}
           />
