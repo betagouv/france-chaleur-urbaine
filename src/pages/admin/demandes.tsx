@@ -382,7 +382,7 @@ function DemandesAdmin(): React.ReactElement {
         width: '155px',
       },
       {
-        accessorKey: 'Gestionnaires',
+        accessorFn: (row) => row.Gestionnaires ?? row.recommendedTags ?? [],
         cell: (info) => {
           const demand = info.row.original;
           const eligibility = demand.testAddress.eligibility;
@@ -422,6 +422,7 @@ function DemandesAdmin(): React.ReactElement {
         filtersDialogLabel: 'Tags gestionnaires',
         filterType: 'ComboBox',
         header: 'Gestionnaires',
+        id: 'Gestionnaires',
         showInFiltersDialog: true,
         width: '400px',
       },
@@ -648,7 +649,7 @@ function DemandesAdmin(): React.ReactElement {
         width: '50px',
       },
     ],
-    [updateDemand, assignmentRulesResultsOptions]
+    [updateDemand, assignmentRulesResultsOptions, tagsOptions]
   );
 
   const onFeatureClick = useCallback(

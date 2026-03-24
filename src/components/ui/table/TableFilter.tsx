@@ -165,7 +165,7 @@ const TableFilter = ({ value, type, onChange, filterProps, facetedUniqueValues, 
                 </Badge>
               ) : Component ? (
                 <Component value={facetKey} />
-              ) : facetKey === 'undefined' ? (
+              ) : facetKey === 'undefined' || facetKey === '' ? (
                 'Aucun'
               ) : (
                 facetKey
