@@ -72,6 +72,9 @@ public/sitemap.xml
 # direnv
 .envrc
 
+# mise-en-place
+.mise.toml
+
 # typescript
 tsconfig.tsbuildinfo
 
