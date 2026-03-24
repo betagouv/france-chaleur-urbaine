@@ -150,7 +150,7 @@ export default function ChoixChauffageResults() {
       {
         address: urlParams.adresse,
         coords: { lat, lon },
-        eligibility: eligibiliteReseauChaleur as never,
+        eligibility: eligibiliteReseauChaleur,
         geoAddress,
         heatingType: 'collectif',
       },
