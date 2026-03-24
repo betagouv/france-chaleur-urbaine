@@ -171,10 +171,9 @@ export default function ChoixChauffageResults() {
   // pendant l’hydration, on évite de rendre conditionnellement (isMobile null)
   if (isMobile === null) return null;
 
-  const showTopFieldsInsideParams = isMobile;
   return (
     <>
-      {!showTopFieldsInsideParams && (
+      {!isMobile && (
         <div className="fr-mb-2w">
           <SettingsTopFields
             withLabel={false}
@@ -193,7 +192,7 @@ export default function ChoixChauffageResults() {
         </div>
       )}
       <ParamsForm
-        showTopFields={showTopFieldsInsideParams}
+        showTopFields={isMobile}
         isOpen={isParamsOpen}
         setIsOpen={setIsParamsOpen}
         adresse={urlParams.adresse ?? null}
