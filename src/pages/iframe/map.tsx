@@ -53,9 +53,11 @@ const MapPage = () => {
     reseauxDeChaleur: {
       show: legendFeatures.includes('reseauxDeChaleur'),
     },
-    reseauxDeFroid: legendFeatures.includes('reseauxDeFroid'),
     reseauxEnConstruction: legendFeatures.includes('reseauxEnConstruction'),
-    zonesDeDeveloppementPrioritaire: legendFeatures.includes('zonesDeDeveloppementPrioritaire'),
+    // Pas d'affichage par défaut pour les couches ci-dessous. Il faudra sans doute passer par une iframe v2 pour changer les paramètres
+    // et mieux indiquer ce qu'on souhaite afficher dans la légende et/ou sur la carte...
+    // reseauxDeFroid: legendFeatures.includes('reseauxDeFroid'),
+    // zonesDeDeveloppementPrioritaire: legendFeatures.includes('zonesDeDeveloppementPrioritaire'),
   });
 
   return (
