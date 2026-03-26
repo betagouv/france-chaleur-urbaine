@@ -1,5 +1,8 @@
 import type { ReactNode } from 'react';
 
+import AvantagePac from '@/components/Ressources/Contents/AvantagePac';
+import ObligationCopro from '@/components/Ressources/Contents/ObligationCopro';
+
 import Actors from './Contents/Actors';
 import Advantages from './Contents/Advantages';
 import Bill from './Contents/Bill';
@@ -26,6 +29,7 @@ export type Document = {
   seoDescription: string;
   seoTitle?: string;
   content?: ReactNode;
+  image?: string;
 };
 
 // Don't forget to update next-sitemap.config on updating key here
@@ -236,16 +240,60 @@ export const coldNetworks: Record<string, Document> = {
   },
 };
 
+export const otherHeatingSystem: Record<string, Document> = {
+  obligationCopro: {
+    content: <ObligationCopro />,
+    description: (
+      <>
+        Voici un tour d’horizon des bilans énergétiques les plus courants, leurs obligations, intérêts, conséquences et les coûts associés,
+        avec les informations actualisées.
+      </>
+    ),
+    image: 'illustration_plan.png',
+    seoDescription:
+      'Voici un tour d’horizon des bilans énergétiques les plus courants, leurs obligations, intérêts, conséquences et les coûts associés, avec les informations actualisées.',
+    title: 'Quelles obligations pour ma copropriété ?',
+  },
+  pac: {
+    content: <AvantagePac />,
+    description: (
+      <>
+        Installer une pompe à chaleur (PAC) dans une copropriété offre de nombreux avantages qui vont bien au-delà de la simple amélioration
+        du confort thermique. Voici les principaux atouts de cette solution pour la rénovation énergétique d'une copropriété.
+      </>
+    ),
+    image: 'illustration_immeuble.png',
+    seoDescription: `Installer une pompe à chaleur (PAC) dans une copropriété offre de nombreux avantages qui vont bien au-delà de la simple amélioration
+        du confort thermique. Voici les principaux atouts de cette solution pour la rénovation énergétique d'une copropriété.`,
+    title: '9 avantages à l’installation d’une PAC',
+  },
+  reseau: {
+    content: <Network />,
+    description: (
+      <>
+        Un réseau de chaleur est un système de canalisations qui permettent d’acheminer vers un ensemble de bâtiments de la chaleur produite
+        localement, à partir d’énergies renouvelables et de récupération.
+      </>
+    ),
+    image: 'illustration_travaux_reseau.png',
+    seoDescription:
+      'Un réseau de chaleur est un système de chauffage à l’échelle d’une ville ou d’un quartier, qui permet de mobiliser des énergies renouvelables locales.',
+    title: 'Qu’est-ce qu’un réseau de chaleur ?',
+  },
+};
+
 export const ressourceKeys = [
   ...Object.keys(coldNetworks),
   ...Object.keys(growths),
   ...Object.keys(issues),
   ...Object.keys(understandings),
+  ...Object.keys(otherHeatingSystem),
 ];
 
 export const getRessource = (ressourceKey: keyof typeof ressourceKeys) => {
   return (
     issues[ressourceKey as keyof typeof issues] ||
+    otherHeatingSystem[ressourceKey as keyof typeof otherHeatingSystem] ||
     understandings[ressourceKey as keyof typeof understandings] ||
     growths[ressourceKey as keyof typeof growths] ||
     coldNetworks[ressourceKey as keyof typeof coldNetworks]

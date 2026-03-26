@@ -5,13 +5,19 @@ import StickyForm from '@/components/StickyForm/StickyForm';
 import Box from '@/components/ui/Box';
 import Hero, { HeroSubtitle, HeroTitle } from '@/components/ui/Hero';
 
-import { coldNetworks, growths, issues, understandings } from './config';
+import { coldNetworks, growths, issues, otherHeatingSystem, understandings } from './config';
 import Guide from './Guide';
 import { SideMenu, StickyWrapper } from './Ressource.styles';
 import RessourceContent from './RessourceContent';
 
 const getContent = (ressourceKey: string) => {
-  return issues[ressourceKey] || understandings[ressourceKey] || growths[ressourceKey] || coldNetworks[ressourceKey];
+  return (
+    issues[ressourceKey] ||
+    understandings[ressourceKey] ||
+    growths[ressourceKey] ||
+    coldNetworks[ressourceKey] ||
+    otherHeatingSystem[ressourceKey]
+  );
 };
 
 const Ressource = ({ ressourceKey }: { ressourceKey: string }) => {
@@ -40,6 +46,7 @@ const Ressource = ({ ressourceKey }: { ressourceKey: string }) => {
     coldNetworks: Object.keys(coldNetworks).includes(ressourceKey),
     growths: Object.keys(growths).includes(ressourceKey),
     issues: Object.keys(issues).includes(ressourceKey),
+    otherHeatingSystem: Object.keys(otherHeatingSystem).includes(ressourceKey),
     understandings: Object.keys(understandings).includes(ressourceKey),
   };
 
@@ -96,6 +103,19 @@ const Ressource = ({ ressourceKey }: { ressourceKey: string }) => {
                     text: issue.title,
                   })),
                   text: 'Une filière en pleine croissance',
+                },
+                {
+                  expandedByDefault: selected.otherHeatingSystem,
+                  isActive: selected.otherHeatingSystem,
+                  items: Object.entries(otherHeatingSystem).map(([key, issue]) => ({
+                    isActive: ressourceKey === key,
+                    linkProps: {
+                      href: `/ressources/${key}#contenu`,
+                      scroll: false,
+                    },
+                    text: issue.title,
+                  })),
+                  text: 'Les autres systèmes de chauffage',
                 },
                 {
                   expandedByDefault: selected.coldNetworks,
