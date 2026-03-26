@@ -29,6 +29,7 @@ import IframeWrapper from '@/components/IframeWrapper';
 import Map from '@/components/Map/Map';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import { legendURLKeyToLegendFeature } from '@/components/Map/map-layers';
+import useRouterReady from '@/hooks/useRouterReady';
 import { createParserForRecordValues, parseAsLngLat } from '@/utils/nuqs-parsers';
 
 const mapIframeParams = {
@@ -42,6 +43,10 @@ const mapIframeParams = {
 
 const MapPage = () => {
   const [{ gestionnaire, legendTitle, legend, displayLegend: legendFeatures, center, zoom }] = useQueryStates(mapIframeParams);
+  const isRouterReady = useRouterReady();
+  if (!isRouterReady) {
+    return null;
+  }
 
   const initialMapConfiguration = createMapConfiguration({
     ...(gestionnaire.length > 0 ? { filtreGestionnaire: gestionnaire } : {}),
