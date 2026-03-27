@@ -264,32 +264,12 @@ function StepTimeline() {
       </div>
 
       <div className="relative mt-10 hidden min-h-[360px] md:block">
-        <svg
-          className="pointer-events-none absolute inset-x-0 top-[132px] h-[130px] w-full"
-          viewBox="0 0 1200 130"
-          preserveAspectRatio="none"
+        <img
+          src="/img/chaleur-renouvelable-timeline.svg"
+          alt=""
           aria-hidden="true"
-        >
-          <defs>
-            <marker id="timeline-arrow" markerWidth="6.5" markerHeight="6.5" refX="5" refY="3.25" orient="auto" markerUnits="strokeWidth">
-              <path
-                d="M0.9,1.1 L5,3.25 L0.9,5.4"
-                fill="none"
-                stroke="#0063CB"
-                strokeWidth="0.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </marker>
-          </defs>
-          <path
-            d="M82 54 C132 54, 178 112, 228 112 S330 54, 384 54 S486 112, 540 112 S642 54, 696 54 S798 112, 852 112 S952 54, 997 36"
-            fill="none"
-            stroke="#0063CB"
-            strokeWidth="4"
-            markerEnd="url(#timeline-arrow)"
-          />
-        </svg>
+          className="pointer-events-none absolute inset-x-0 top-[132px] h-[130px] w-full"
+        />
 
         {STEPS.map((step, index) => {
           const isTop = index % 2 === 0;
