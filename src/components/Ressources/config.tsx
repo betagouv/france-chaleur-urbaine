@@ -1,7 +1,9 @@
 import type { ReactNode } from 'react';
 
 import AvantagePac from '@/components/Ressources/Contents/AvantagePac';
+import ChoosePac from '@/components/Ressources/Contents/ChoosePac';
 import ObligationCopro from '@/components/Ressources/Contents/ObligationCopro';
+import PacImmeubleUsage from '@/components/Ressources/Contents/PacImmeubleUsage';
 
 import Actors from './Contents/Actors';
 import Advantages from './Contents/Advantages';
@@ -241,20 +243,7 @@ export const coldNetworks: Record<string, Document> = {
 };
 
 export const otherHeatingSystem: Record<string, Document> = {
-  obligationCopro: {
-    content: <ObligationCopro />,
-    description: (
-      <>
-        Voici un tour d’horizon des bilans énergétiques les plus courants, leurs obligations, intérêts, conséquences et les coûts associés,
-        avec les informations actualisées.
-      </>
-    ),
-    image: 'illustration_plan.png',
-    seoDescription:
-      'Voici un tour d’horizon des bilans énergétiques les plus courants, leurs obligations, intérêts, conséquences et les coûts associés, avec les informations actualisées.',
-    title: 'Quelles obligations pour ma copropriété ?',
-  },
-  pac: {
+  'avantages-pac': {
     content: <AvantagePac />,
     description: (
       <>
@@ -267,18 +256,45 @@ export const otherHeatingSystem: Record<string, Document> = {
         du confort thermique. Voici les principaux atouts de cette solution pour la rénovation énergétique d'une copropriété.`,
     title: '9 avantages à l’installation d’une PAC',
   },
-  reseau: {
-    content: <Network />,
+  'choix-pac': {
+    content: <ChoosePac />,
     description: (
       <>
-        Un réseau de chaleur est un système de canalisations qui permettent d’acheminer vers un ensemble de bâtiments de la chaleur produite
-        localement, à partir d’énergies renouvelables et de récupération.
+        Vous êtes copropriétaire et vous vous interrogez sur le choix de la bonne pompe à chaleur (PAC) pour votre copropriété ? Voici un
+        guide qui explique les étapes à suivre, les critères de choix et les points de vigilance pour garantir une installation adaptée aux
+        besoins de votre bâtiment.
       </>
     ),
-    image: 'illustration_travaux_reseau.png',
+    image: 'illustration_plan.png',
     seoDescription:
-      'Un réseau de chaleur est un système de chauffage à l’échelle d’une ville ou d’un quartier, qui permet de mobiliser des énergies renouvelables locales.',
-    title: 'Qu’est-ce qu’un réseau de chaleur ?',
+      'Guide ADEME pour choisir une pompe à chaleur en copropriété : étapes, critères de choix et points de vigilance pour une installation adaptée.',
+    title: 'Comment choisir la bonne pompe à chaleur (PAC) pour son logement ?',
+  },
+  'obligations-copropriété': {
+    content: <ObligationCopro />,
+    description: (
+      <>
+        Pour vous, copropriétaires, il est essentiel d’effectuer divers bilans énergétiques afin de connaître l’état des bâtiments,
+        d'anticiper les travaux à venir, et de respecter les obligations légales.
+      </>
+    ),
+    image: 'illustration_plan.png',
+    seoDescription:
+      'Voici un tour d’horizon des bilans énergétiques les plus courants, leurs obligations, intérêts, conséquences et les coûts associés, avec les informations actualisées.',
+    title: 'Quelles obligations pour ma copropriété ?',
+  },
+  pacImmeubleUsage: {
+    content: <PacImmeubleUsage />,
+    description: (
+      <>
+        L'installation de pompes à chaleur (PAC) en immeuble est non seulement possible, mais de plus en plus courante pour améliorer
+        l'efficacité énergétique des bâtiments collectifs et réduire les émissions de gaz à effet de serre et les factures.
+      </>
+    ),
+    image: 'illustration_immeuble.png',
+    seoDescription:
+      'Article ADEME sur les PAC en immeuble : faisabilité, types de PAC, usages possibles et contraintes selon la configuration du bâtiment.',
+    title: 'Quelle PAC en immeuble et pour quel usage ?',
   },
 };
 
