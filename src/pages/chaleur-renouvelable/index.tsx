@@ -1,4 +1,3 @@
-import { Button } from '@codegouvfr/react-dsfr/Button';
 import Image from 'next/image';
 import type { ReactNode } from 'react';
 import { isValidElement } from 'react';
@@ -6,6 +5,8 @@ import { isValidElement } from 'react';
 import { otherHeatingSystem } from '@/components/Ressources/config';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Accordion from '@/components/ui/Accordion';
+import Button from '@/components/ui/Button';
+import Link from '@/components/ui/Link';
 import ChoixChauffageForm from '@/modules/chaleur-renouvelable/client/ChoixChauffageForm';
 
 const BENEFITS = [
@@ -46,7 +47,7 @@ const TEMOIGNAGES = [
     image: 'coachcopro-biomasse.png',
     link: 'https://www.coachcopro.com/projets-realises/87-boulevard-suchet-75016-paris',
     nbLogement: 34,
-    title: 'Une expérience de chaufferie biomasse réussie !',
+    title: 'Une expérience de chaufferie biomasse réussie',
     year: 1930,
   },
   {
@@ -203,18 +204,10 @@ function ResourceCard({ title, description, image, slug }: ResourceCardProps) {
       <CardFrame className="h-full">
         <CardImage src={`/img/${image}`} alt="" />
         <h5 className="fr-h4">{title}</h5>
-        <p>{description}</p>
-        <Button
-          priority="secondary"
-          className="fr-mt-3w"
-          linkProps={{
-            href: `/ressources/${slug}`,
-            rel: 'noreferrer',
-            target: '_blank',
-          }}
-        >
+        <p className="overflow-hidden [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:3]">{description}</p>
+        <Link variant="secondary" className="fr-mt-3w" href={`/ressources/${slug}`} isExternal>
           Lire l’article
-        </Button>
+        </Link>
       </CardFrame>
     </div>
   );
@@ -237,7 +230,7 @@ function StepCard({ stepNumber, title, text, textBelowNumber = false }: StepCard
       {textBelowNumber && (
         <>
           <h4 className="mb-2 text-lg font-bold">{title}</h4>
-          <p className="mb-0 max-w-[240px] text-sm leading-6 text-[#3A3A3A]">{renderStepText(text)}</p>
+          <p className="mb-0 max-w-60 text-sm leading-6 text-[#3A3A3A]">{renderStepText(text)}</p>
         </>
       )}
     </div>
@@ -297,18 +290,20 @@ function TemoignageCard({ title, year, image, link, nbLogement }: TemoignageCard
         <p className="fr-mb-1w">Type de chauffage: collectif</p>
         <p className="fr-mb-1w">Année de construction: {year}</p>
         <p className="fr-mb-1w">Nombre de logement: {nbLogement}</p>
-        <Button
-          priority="secondary"
-          className="fr-mt-3w"
-          linkProps={{
-            href: link,
-            rel: 'noreferrer',
-            target: '_blank',
-          }}
-        >
+        <Link variant="secondary" className="fr-mt-3w" href={link} isExternal>
           Lire le témoignage
-        </Button>
+        </Link>
       </CardFrame>
+    </div>
+  );
+}
+
+function CompareSolutionsButton() {
+  return (
+    <div className="fr-mt-4w flex justify-center">
+      <Button priority="primary" iconId="fr-icon-arrow-up-line" onClick={() => window.scrollTo({ top: 0 })}>
+        Comparer les solutions
+      </Button>
     </div>
   );
 }
@@ -364,6 +359,7 @@ function ChaleurRenouvelablePage() {
           width="400"
           height="400"
         />
+        <CompareSolutionsButton />
       </div>
       <div className="fr-container fr-py-6w">
         <h3 className="fr-h6 fr-mb-3v font-medium uppercase">Le parcours</h3>
@@ -378,6 +374,7 @@ function ChaleurRenouvelablePage() {
             <TemoignageCard key={`temoignage${i}`} {...temoignage} />
           ))}
         </div>
+        <CompareSolutionsButton />
       </div>
       <div className="bg-[#F3F6FE]">
         <div className="fr-container fr-py-6w">
@@ -390,6 +387,7 @@ function ChaleurRenouvelablePage() {
               </Accordion>
             ))}
           </div>
+          <CompareSolutionsButton />
         </div>
       </div>
     </SimplePage>
