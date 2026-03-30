@@ -1,7 +1,7 @@
 import Card from '@codegouvfr/react-dsfr/Card';
 import type { ReactNode } from 'react';
 
-import { coldNetworks, growths, issues, understandings } from '@/components/Ressources/config';
+import { coldNetworks, growths, issues, otherHeatingSystem, understandings } from '@/components/Ressources/config';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Hero, { HeroSubtitle, HeroTitle } from '@/components/ui/Hero';
 import Section, { SectionContent, SectionTitle } from '@/components/ui/Section';
@@ -22,6 +22,10 @@ const articlesCroissance: ArticleItemProps[] = Object.entries(growths).map(([key
 }));
 
 const articlesReseauxDeFroid: ArticleItemProps[] = Object.entries(coldNetworks).map(([key, article]) => ({
+  ...article,
+  slug: key,
+}));
+const articlesAutresModeChauffage: ArticleItemProps[] = Object.entries(otherHeatingSystem).map(([key, article]) => ({
   ...article,
   slug: key,
 }));
@@ -71,6 +75,17 @@ const ArticlesPage = () => {
       </Section>
 
       <Section variant="light">
+        <SectionTitle>Autre modes de chauffage écologiques</SectionTitle>
+        <SectionContent>
+          <div className="fr-grid-row fr-grid-row--gutters">
+            {articlesAutresModeChauffage.map((article, index) => (
+              <ArticleItem {...article} key={index} />
+            ))}
+          </div>
+        </SectionContent>
+      </Section>
+
+      <Section>
         <SectionTitle>Les réseaux de froid&nbsp;: un enjeu pour l'avenir</SectionTitle>
         <SectionContent>
           <div className="fr-grid-row fr-grid-row--gutters">
