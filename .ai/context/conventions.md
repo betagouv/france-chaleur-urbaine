@@ -34,6 +34,7 @@
 ## Language
 
 - **Code**: always English (variables, functions, types, comments, docs).
+- **AI docs** (markdown files: `AGENTS.md`, `.ai/context/*.md`): always English.
 - **UI text**: always French (labels, messages, placeholders, errors shown to users).
 - **Zod error messages**: French when user-facing, English when developer-facing.
 - **UTF-8**: always use real characters (`é`, `è`, `ê`, `à`, `ç`, `ù`), never unicode escapes (`\u00e9`).

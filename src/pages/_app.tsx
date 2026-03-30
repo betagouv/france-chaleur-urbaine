@@ -58,6 +58,7 @@ const AppProvider = (props: AppProps<AuthSSRPageProps>) => {
             refetchOnWindowFocus: false, // see https://react-query.tanstack.com/guides/important-defaults
             retry: 1, // retry failing requests just once, see https://react-query.tanstack.com/guides/query-retries
             retryDelay: 3000, // retry failing requests after 3 seconds
+            staleTime: Infinity, // data never goes stale automatically — refresh via explicit invalidation only
           },
         },
       })

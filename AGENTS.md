@@ -11,7 +11,7 @@ For every user message:
 - **for tasks involving code modifications** (writing, editing, deleting, moving files):
   - **minor changes** (typo, rename, single-line fix): implement directly, no plan needed
   - **significant changes** (new feature, refactor, multi-file edit): create a plan → ask user to confirm → implement
-  - **after implementation**: run `pnpm lint`, `pnpm ts`, and `pnpm test` if relevant — fix any errors before delivering
+  - **after implementation**: run `pnpm lint`, check IDE Tailwind CSS extension diagnostics on modified files (canonical classes, unknown utilities — not caught by Biome), run `pnpm ts`, and `pnpm test` if relevant — fix any errors before delivering
   - print a summary: start with a high-level overview (4-5 sentences max: what was done and why), then list main files modified/created with a one-liner per file
 
 ## Developer profile

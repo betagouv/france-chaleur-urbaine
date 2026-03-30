@@ -58,6 +58,7 @@ PostCSS config excludes DSFR from `postcss-import` to prevent build breakage.
 3. **Use `cx()`** to merge Tailwind classes conditionally.
 4. **Accept `className` prop** on reusable components.
 5. **Avoid `@apply`** in CSS files.
+6. **Use canonical Tailwind classes** — e.g. `shrink-0` not `flex-shrink-0`, `grow` not `flex-grow`.
 
 ```tsx
 // Good: DSFR component + Tailwind layout

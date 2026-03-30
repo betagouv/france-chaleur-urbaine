@@ -175,6 +175,13 @@ export const requestPassword = async (email: string) => {
   const token = jwt.sign(payload, process.env.NEXTAUTH_SECRET as string);
   await kdb.updateTable('users').set({ reset_token: resetToken }).where('id', '=', user.id).execute();
   await sendEmailTemplate('auth.reset-password', user, { token });
+
+  await createUserEvent({
+    author_id: user.id,
+    context_id: user.id,
+    context_type: 'user',
+    type: 'user_password_reset_requested',
+  });
 };
 
 export const changePasswordWithResetToken = async (params: { password: string; token: { email: string; resetToken: string } }) => {

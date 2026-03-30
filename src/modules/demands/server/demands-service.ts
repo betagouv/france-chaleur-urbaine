@@ -201,20 +201,22 @@ export const update = async (recordId: string, { comment_fcu, comment_gestionnai
     .where('demand_id', '=', updatedDemand.id)
     .executeTakeFirst();
 
+  const eventType = values['Gestionnaires validés'] ? 'demand_assigned' : 'demand_updated';
+
   if (userId) {
     await createUserEvent({
       author_id: userId,
       context_id: recordId,
       context_type: 'demand',
       data: values,
-      type: 'demand_updated',
+      type: eventType,
     });
   } else {
     await createEvent({
       context_id: recordId,
       context_type: 'demand',
       data: values,
-      type: 'demand_updated',
+      type: eventType,
     });
   }
   const demand = await get(updatedDemand.id);
@@ -530,6 +532,14 @@ export const sendEmail = async (params: {
       subject: emailContent.object,
     }
   );
+
+  await createUserEvent({
+    author_id: user.id,
+    context_id: demand_id,
+    context_type: 'demand',
+    data: { key, object: emailContent.object, to: emailContent.to },
+    type: 'demand_email_sent',
+  });
 };
 
 export const updateFromRelanceId = async (relanceId: string, values: UpdateDemandInput, userId?: string) => {
@@ -628,6 +638,12 @@ export const dailyRelanceMail = async () => {
         relanceId: uuid,
       }
     );
+    await createEvent({
+      context_id: demand.id,
+      context_type: 'demand',
+      data: { isSecondRelance: !!relanced },
+      type: 'demand_relance_sent',
+    });
   }
 };
 
@@ -808,7 +824,19 @@ export const linkDemandsByEmail = async (userId: string, email: string): Promise
     .where('deleted_at', 'is', null)
     .executeTakeFirst();
 
-  return Number(result.numUpdatedRows ?? 0);
+  const count = Number(result.numUpdatedRows ?? 0);
+
+  if (count > 0) {
+    await createUserEvent({
+      author_id: userId,
+      context_id: userId,
+      context_type: 'user',
+      data: { count, email },
+      type: 'demand_linked_to_user',
+    });
+  }
+
+  return count;
 };
 
 export const buildFeatures = async (properties: string[]) => {

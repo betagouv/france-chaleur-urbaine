@@ -1,5 +1,5 @@
 import { useVirtualizer } from '@tanstack/react-virtual';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 export type VirtualListRowProps<T> = { item: T };
 
@@ -9,9 +9,10 @@ type VirtualListProps<T> = {
   estimateSize?: number;
   height?: number | string;
   getItemKey?: (item: T) => React.Key;
+  onNearEnd?: () => void;
 };
 
-function VirtualList<T>({ items, renderRow: RenderRow, estimateSize = 35, height = 800, getItemKey }: VirtualListProps<T>) {
+function VirtualList<T>({ items, renderRow: RenderRow, estimateSize = 35, height = 800, getItemKey, onNearEnd }: VirtualListProps<T>) {
   const parentRef = React.useRef<HTMLDivElement | null>(null);
 
   const virtualizer = useVirtualizer({
@@ -21,6 +22,13 @@ function VirtualList<T>({ items, renderRow: RenderRow, estimateSize = 35, height
   });
 
   const virtualItems = virtualizer.getVirtualItems();
+
+  const lastVisibleIndex = virtualItems[virtualItems.length - 1]?.index ?? -1;
+  const nearEnd = items.length > 0 && lastVisibleIndex >= items.length - 10;
+
+  useEffect(() => {
+    if (nearEnd) onNearEnd?.();
+  }, [nearEnd, onNearEnd]);
 
   return (
     <div

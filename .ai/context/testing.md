@@ -71,27 +71,34 @@ it.each(cases)('%s', (_, input, expected) => {
 });
 ```
 
-- Use declarative structures to test permissions
+- Use `TestCaseBoolean` + `forEach` for permission tests (labels auto-generated from input):
 ```ts
-describe('list', () => {
-  const permissionTests: PermissionTestCase[] = [
-    { allowed: false, label: 'refuse utilisateur non authentifié', user: null },
-    { allowed: false, label: 'refuse particulier', user: testUsers.particulier },
-    { allowed: false, label: 'refuse professionnel', user: testUsers.professionnel },
-    { allowed: false, label: 'refuse gestionnaire', user: testUsers.gestionnaire },
-    { allowed: true, label: 'autorise admin', user: testUsers.admin },
-  ];
+const adminOnlyPermissions: TestCaseBoolean<Partial<User> | null>[] = [
+  { input: null, expectedOutput: false },
+  { input: testUsers.particulier, expectedOutput: false },
+  { input: testUsers.gestionnaire, expectedOutput: false },
+  { input: testUsers.admin, expectedOutput: true },
+];
 
-  it.each(permissionTests)('$label', async ({ user, allowed }) => {
-    const caller = createTestCaller(user);
-    const callRoute = () => caller.demands.admin.list();
-
-    if (allowed) {
-      await expect(callRoute()).resolves.toStrictEqual({ count: 0, items: [] });
-    } else {
-      await expect(callRoute).rejects.toMatchObject(forbiddenError);
-    }
+function testPermissions(
+  permissions: TestCaseBoolean<Partial<User> | null>[],
+  callRoute: (user: Partial<User> | null) => () => Promise<unknown>
+) {
+  permissions.forEach(({ input: user, expectedOutput: allowed }) => {
+    const role = user?.role ?? 'non authentifié';
+    const label = allowed ? `autorise ${role}` : `refuse ${role}`;
+    it(label, async () => {
+      if (allowed) {
+        await expect(callRoute(user)()).resolves.toBeDefined();
+      } else {
+        await expect(callRoute(user)).rejects.toMatchObject(forbiddenError);
+      }
+    });
   });
+}
+
+describe('permissions', () => {
+  testPermissions(adminOnlyPermissions, (user) => () => createTestCaller(user).demands.admin.list());
 });
 ```
 
@@ -117,6 +124,17 @@ describe('demands tRPC routes', () => {
 ```
 
 Test users available: `testUsers.admin`, `testUsers.gestionnaire`, `testUsers.professionnel`, `testUsers.particulier`.
+
+## Test UUIDs
+
+Use `uuid(n)` from `@/tests/helpers` to generate deterministic v4 UUIDs in tests. Never hardcode UUID strings.
+
+```ts
+import { uuid } from '@/tests/helpers';
+
+uuid(100) // '00000000-0000-4000-8000-000000000100'
+uuid(200) // '00000000-0000-4000-8000-000000000200'
+```
 
 ## Test database
 

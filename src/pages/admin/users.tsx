@@ -182,7 +182,7 @@ export default function ManageUsers() {
               onClick: () => setUserId(row.original.id),
             },
             {
-              href: `/admin/events?authorId=${row.original.id}`,
+              href: `/admin/events?authorIds=${row.original.id}`,
               icon: 'ri-history-line',
               id: 'history',
               label: "Voir l'historique des événements",
