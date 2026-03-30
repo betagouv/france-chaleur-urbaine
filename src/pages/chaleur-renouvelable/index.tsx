@@ -1,8 +1,8 @@
 import Image from 'next/image';
 import type { ReactNode } from 'react';
-import { isValidElement } from 'react';
+import { isValidElement, useRef } from 'react';
 
-import { otherHeatingSystem } from '@/components/Ressources/config';
+import { issues, otherHeatingSystem, understandings } from '@/components/Ressources/config';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Accordion from '@/components/ui/Accordion';
 import Button from '@/components/ui/Button';
@@ -153,14 +153,19 @@ function getTextFromNode(node: ReactNode): string {
   return '';
 }
 
-const pedagogicalResources: ResourceCardProps[] = Object.entries(otherHeatingSystem)
-  .slice(0, 3)
-  .map(([slug, article]) => ({
-    description: getTextFromNode(article.description),
-    image: article.image,
+const heatingSystemResources: ResourceCardProps[] = [
+  { slug: 'avantages', ...understandings.avantages },
+  { slug: 'reseau', ...issues.reseau },
+  ...Object.entries(otherHeatingSystem).map(([slug, article]) => ({
+    ...article,
     slug,
-    title: article.title,
-  }));
+  })),
+].map(({ slug, title, description, image }) => ({
+  description: getTextFromNode(description),
+  image,
+  slug,
+  title,
+}));
 
 function CardFrame({ children, className = '' }: CardFrameProps) {
   return <div className={`w-full rounded-lg border-2 border-[#DDDDDD] bg-[#FEFCFA] fr-p-3w ${className}`}>{children}</div>;
@@ -210,6 +215,62 @@ function ResourceCard({ title, description, image, slug }: ResourceCardProps) {
           Lire l’article
         </Link>
       </CardFrame>
+    </div>
+  );
+}
+
+function OtherHeatingSystemsCarousel() {
+  const trackRef = useRef<HTMLDivElement | null>(null);
+  const scrollCarousel = (direction: 'left' | 'right') => {
+    const container = trackRef.current;
+    if (!container) {
+      return;
+    }
+
+    container.scrollBy({
+      left: direction === 'left' ? -container.clientWidth : container.clientWidth,
+    });
+  };
+
+  return (
+    <div className="fr-mt-4w flex items-center gap-2 md:gap-4">
+      <Button
+        priority="secondary"
+        iconId="fr-icon-arrow-left-s-line"
+        title="Voir le système précédent"
+        aria-label="Voir le système précédent"
+        className="shrink-0"
+        onClick={() => scrollCarousel('left')}
+      />
+      <div className="min-w-0 flex-1 overflow-hidden">
+        <div
+          ref={trackRef}
+          className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
+          {heatingSystemResources.map((resource) => (
+            <div key={resource.slug} className="min-w-full snap-start sm:min-w-[calc((100%-1rem)/2)] lg:min-w-[calc((100%-2rem)/3)]">
+              <CardFrame className="flex h-full flex-col">
+                {resource.image && <CardImage src={`/img/${resource.image}`} alt="" />}
+                <h5 className="fr-h4">{resource.title}</h5>
+                <p className="flex-1 overflow-hidden [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:4]">
+                  {resource.description}
+                </p>
+                <Link variant="secondary" className="fr-mt-3w" href={`/ressources/${resource.slug}`} isExternal>
+                  Lire l’article
+                </Link>
+              </CardFrame>
+            </div>
+          ))}
+        </div>
+      </div>
+      <Button
+        priority="secondary"
+        iconId="fr-icon-arrow-right-s-line"
+        title="Voir le système suivant"
+        aria-label="Voir le système suivant"
+        className="shrink-0"
+        onClick={() => scrollCarousel('right')}
+      />
     </div>
   );
 }
@@ -343,11 +404,7 @@ function ChaleurRenouvelablePage() {
         <div className="fr-container fr-py-6w">
           <h3 className="fr-h6 fr-mb-3v font-medium uppercase">Ressources Pédagogiques</h3>
           <p className="fr-h2 font-bold">Tout comprendre avant de se lancer</p>
-          <div className="fr-grid-row fr-grid-row--gutters fr-mt-4w">
-            {pedagogicalResources.map((article) => (
-              <ResourceCard key={article.slug} {...article} />
-            ))}
-          </div>
+          <OtherHeatingSystemsCarousel />
         </div>
       </div>
       <div className="fr-container fr-py-6w">
