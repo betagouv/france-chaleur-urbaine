@@ -26,7 +26,8 @@ const BENEFITS = [
     title: 'Améliorez votre étiquette DPE',
   },
   {
-    description: 'Passer aux ENR peut diviser par deux les émissions de chauffage : un geste concret pour la transition écologique.',
+    description:
+      'Passer à un système de chauffage écologique peut diviser par deux les émissions de chauffage : un geste concret pour la transition écologique.',
     icon: 'icon-feuille.png',
     title: 'Réduisez vos émissions de CO2',
   },
@@ -36,7 +37,7 @@ const BENEFITS = [
     title: 'Gagnez en confort toute l’année',
   },
   {
-    description: 'Les ENR sont souvent moins chères et plus efficaces que le gaz ou le fioul.',
+    description: 'Les systèmes de chauffages écologiques sont souvent moins chères et plus efficaces que le gaz ou le fioul.',
     icon: 'icon-money.png',
     title: 'Réduisez vos factures d’énergie',
   },
@@ -94,12 +95,12 @@ const FAQS = [
   },
   {
     answer: `Oui, c'est l'un des avantages des pompes à chaleur collectives réversibles : elles peuvent inverser leur cycle pour fonctionner comme une climatisation. Certains systèmes géothermiques permettent également un "free cooling" passif, en faisant simplement circuler l'eau fraîche du sous-sol sans compresseur.`,
-    question: 'Les ENR peuvent-elles aussi assurer le rafraîchissement en été ?',
+    question: 'Les systèmes de chauffages écologiques peuvent-ils aussi assurer le rafraîchissement en été ?',
   },
   {
     answer:
       "Absolument, et c'est même souvent conseillé. Un système hybride associant par exemple une PAC et des panneaux solaires thermiques, ou une chaudière biomasse couplée à du solaire, permet d'optimiser les performances selon les saisons et de réduire la dépendance à une seule source d'énergie.",
-    question: 'Peut-on combiner plusieurs ENR pour son chauffage ?',
+    question: 'Peut-on combiner plusieurs systèmes de chauffages ?',
   },
 ] satisfies Array<{ answer: string; question: string }>;
 
@@ -350,7 +351,7 @@ function ChaleurRenouvelablePage() {
         </div>
       </div>
       <div className="fr-container fr-py-6w">
-        <h3 className="fr-h6 fr-mb-3v font-medium uppercase">Les différentes énergies renouvelables (ENR)</h3>
+        <h3 className="fr-h6 fr-mb-3v font-medium uppercase">Les différents systèmes de chauffages écologiques (ENR)</h3>
         <p className="fr-h2 font-bold">Quelles solutions concrètes pour votre copropriété ?</p>
         <Image
           src="/different-mode-chauffage.png"
