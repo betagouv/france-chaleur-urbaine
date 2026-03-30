@@ -201,20 +201,22 @@ export const update = async (recordId: string, { comment_fcu, comment_gestionnai
     .where('demand_id', '=', updatedDemand.id)
     .executeTakeFirst();
 
+  const eventType = values['Gestionnaires validés'] ? 'demand_assigned' : 'demand_updated';
+
   if (userId) {
     await createUserEvent({
       author_id: userId,
       context_id: recordId,
       context_type: 'demand',
       data: values,
-      type: 'demand_updated',
+      type: eventType,
     });
   } else {
     await createEvent({
       context_id: recordId,
       context_type: 'demand',
       data: values,
-      type: 'demand_updated',
+      type: eventType,
     });
   }
   const demand = await get(updatedDemand.id);
