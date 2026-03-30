@@ -42,8 +42,8 @@ export const dataSourcesVersions = {
   },
   bibliothequeFedene: {
     directLink:
-      'https://fedene.fr/wp-content/uploads/2026/02/Bibliotheque-de-donnees-des-reseaux-de-chaleur-et-de-froid-Edition-2025-V1-1.xlsx',
-    link: 'https://fedene.fr/ressource/bibliotheque-de-donnees-des-reseaux-de-chaleur-et-de-froid-2/',
+      'https://fedene.fr/wp-content/uploads/2026/03/Bibliotheque-de-donnees-des-reseaux-de-chaleur-et-de-froid-Edition-2025-V2-1.xlsx',
+    link: 'https://fedene.fr/ressource/bibliotheque-de-donnees-des-reseaux-de-chaleur-et-de-froid-2025/',
     longTitle: 'bibliothèque nationale des données des réseaux de chaleur et de froid ',
     releaseDate: '02/2026',
     title: 'Bibliothèque FEDENE 2025 pour 2024',
