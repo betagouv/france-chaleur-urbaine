@@ -394,6 +394,10 @@ const GestionDesReseaux = () => {
       },
       {
         accessorKey: 'Identifiant reseau',
+        filterProps: {
+          placeholder: 'Filtrer par ID SNCU',
+        },
+        filterType: 'Text',
         header: 'ID SNCU',
         width: '140px',
       },
@@ -409,27 +413,44 @@ const GestionDesReseaux = () => {
           ) : (
             row.original.nom_reseau
           ),
+        filterProps: {
+          placeholder: 'Filtrer par nom',
+        },
+        filterType: 'Text',
         header: 'Nom',
         width: '300px',
       },
       {
         accessorKey: 'Gestionnaire',
+        filterProps: {
+          placeholder: 'Filtrer par gestionnaire',
+        },
+        filterType: 'Text',
         header: 'Gestionnaire',
         width: '150px',
       },
       {
         accessorKey: 'MO',
+        filterProps: {
+          placeholder: "Filtrer par maître d'ouvrage",
+        },
+        filterType: 'Text',
         header: "Maître d'ouvrage",
         width: '150px',
       },
       {
         accessorFn: (row) => row.communes?.join(', '),
+        filterProps: {
+          placeholder: 'Filtrer par commune',
+        },
+        filterType: 'Text',
         header: 'Communes',
         width: '200px',
       },
       {
         accessorKey: `date_actualisation_trace`,
         cellType: 'Date',
+        filterType: 'Range',
         header: `Date d'actualisation`,
         width: '150px',
       },
@@ -446,6 +467,7 @@ const GestionDesReseaux = () => {
             }}
           />
         ),
+        filterType: 'Facets',
         header: 'Tracé',
         width: '120px',
       },
@@ -462,11 +484,13 @@ const GestionDesReseaux = () => {
             }}
           />
         ),
+        filterType: 'Facets',
         header: 'Classés',
         width: '120px',
       },
       {
         accessorKey: `puissance_totale_MW`,
+        filterType: 'Range',
         header: `Puissance totale (MW)`,
         width: '150px',
       },
@@ -483,6 +507,7 @@ const GestionDesReseaux = () => {
             }}
           />
         ),
+        filterType: 'Facets',
         header: 'Ouvert aux raccordements',
         width: '120px',
       },
@@ -549,6 +574,10 @@ const GestionDesReseaux = () => {
       },
       {
         accessorKey: 'Identifiant reseau',
+        filterProps: {
+          placeholder: 'Filtrer par ID SNCU',
+        },
+        filterType: 'Text',
         header: 'ID SNCU',
         width: '140px',
       },
@@ -564,21 +593,37 @@ const GestionDesReseaux = () => {
           ) : (
             row.original.nom_reseau
           ),
+        filterProps: {
+          placeholder: 'Filtrer par nom',
+        },
+        filterType: 'Text',
         header: 'Nom',
         width: '300px',
       },
       {
         accessorKey: 'Gestionnaire',
+        filterProps: {
+          placeholder: 'Filtrer par gestionnaire',
+        },
+        filterType: 'Text',
         header: 'Gestionnaire',
         width: '150px',
       },
       {
         accessorKey: 'MO',
+        filterProps: {
+          placeholder: "Filtrer par maître d'ouvrage",
+        },
+        filterType: 'Text',
         header: "Maître d'ouvrage",
         width: '150px',
       },
       {
         accessorFn: (row) => row.communes?.join(', '),
+        filterProps: {
+          placeholder: 'Filtrer par commune',
+        },
+        filterType: 'Text',
         header: 'Communes',
         width: '200px',
       },
@@ -595,17 +640,20 @@ const GestionDesReseaux = () => {
             }}
           />
         ),
+        filterType: 'Facets',
         header: 'Tracé',
         width: '120px',
       },
       {
         accessorKey: `date_actualisation_trace`,
         cellType: 'Date',
+        filterType: 'Range',
         header: `Date d'actualisation`,
         width: '150px',
       },
       {
         accessorKey: `puissance_totale_MW`,
+        filterType: 'Range',
         header: `Puissance totale (MW)`,
         width: '150px',
       },
@@ -659,16 +707,28 @@ const GestionDesReseaux = () => {
       },
       {
         accessorKey: 'nom_reseau',
+        filterProps: {
+          placeholder: 'Filtrer par nom',
+        },
+        filterType: 'Text',
         header: 'Nom',
         width: '300px',
       },
       {
         accessorKey: 'gestionnaire',
+        filterProps: {
+          placeholder: 'Filtrer par gestionnaire',
+        },
+        filterType: 'Text',
         header: 'Gestionnaire',
         width: '150px',
       },
       {
         accessorFn: (row) => row.communes?.join(', '),
+        filterProps: {
+          placeholder: 'Filtrer par commune',
+        },
+        filterType: 'Text',
         header: 'Communes',
         width: '200px',
       },
@@ -685,12 +745,14 @@ const GestionDesReseaux = () => {
             }}
           />
         ),
+        filterType: 'Facets',
         header: 'Ouvert aux raccordements',
         width: '120px',
       },
       {
         accessorKey: `date_actualisation_trace`,
         cellType: 'Date',
+        filterType: 'Range',
         header: `Date d'actualisation`,
         width: '150px',
       },
@@ -757,6 +819,10 @@ const GestionDesReseaux = () => {
       },
       {
         accessorFn: (row) => row.communes?.join(', '),
+        filterProps: {
+          placeholder: 'Filtrer par commune',
+        },
+        filterType: 'Text',
         header: 'Communes',
         width: '300px',
       },
