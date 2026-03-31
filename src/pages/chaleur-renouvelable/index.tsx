@@ -1,11 +1,12 @@
 import Image from 'next/image';
 import type { ReactNode } from 'react';
-import { isValidElement, useRef } from 'react';
+import { isValidElement } from 'react';
 
 import { issues, otherHeatingSystem, understandings } from '@/components/Ressources/config';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Accordion from '@/components/ui/Accordion';
 import Button from '@/components/ui/Button';
+import Carousel from '@/components/ui/Carousel';
 import Link from '@/components/ui/Link';
 import ChoixChauffageForm from '@/modules/chaleur-renouvelable/client/ChoixChauffageForm';
 
@@ -69,7 +70,7 @@ const TEMOIGNAGES = [
     image: 'temoignage_geothermie.jpg',
     link: 'https://www.calameo.com/read/007297783665ca6300ea6?authid=UPbbt4BqJjfT',
     nbLogement: 39,
-    title: 'PAC eau / eau sur sonde géothermique',
+    title: "Installation d'une PAC eau / eau sur sonde géothermique",
     year: 2018,
   },
 ];
@@ -213,78 +214,32 @@ function BenefitCard({ icon, title, description }: { icon: string; title: string
   );
 }
 
-function ResourceCard({ title, description, image, slug }: ResourceCardProps) {
-  return (
-    <div className="fr-col-12 fr-col-md-4">
-      <CardFrame className="h-full">
-        <CardImage src={`/img/${image}`} alt="" />
-        <h5 className="fr-h4">{title}</h5>
-        <p className="overflow-hidden [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:3]">{description}</p>
-        <Link variant="secondary" className="fr-mt-3w" href={`/ressources/${slug}`} isExternal>
-          Lire l’article
-        </Link>
-      </CardFrame>
-    </div>
-  );
-}
-
 function OtherHeatingSystemsCarousel() {
-  const trackRef = useRef<HTMLDivElement | null>(null);
-  const scrollCarousel = (direction: 'left' | 'right') => {
-    const container = trackRef.current;
-    if (!container) {
-      return;
-    }
-
-    container.scrollBy({
-      left: direction === 'left' ? -container.clientWidth : container.clientWidth,
-    });
-  };
-
   return (
-    <div className="fr-mt-4w flex items-center gap-2 md:gap-4">
-      <Button
-        priority="secondary"
-        iconId="fr-icon-arrow-left-s-line"
-        title="Voir le système précédent"
-        aria-label="Voir le système précédent"
-        className="shrink-0"
-        onClick={() => scrollCarousel('left')}
-      />
-      <div className="min-w-0 flex-1 overflow-hidden">
-        <div
-          ref={trackRef}
-          className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-        >
-          {heatingSystemResources.map((resource) => (
-            <div key={resource.slug} className="min-w-full snap-start sm:min-w-[calc((100%-1rem)/2)] lg:min-w-[calc((100%-2rem)/3)]">
-              <CardFrame className="flex h-full flex-col">
-                {resource.image && <CardImage src={`/img/${resource.image}`} alt="" />}
-                <h5 className="fr-h4">{resource.title}</h5>
-                <p className="flex-1 overflow-hidden [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:4]">
-                  {resource.description}
-                </p>
-                <Link variant="secondary" className="fr-mt-3w" href={`/ressources/${resource.slug}`} isExternal>
-                  Lire l’article
-                </Link>
-              </CardFrame>
-            </div>
-          ))}
-        </div>
-      </div>
-      <Button
-        priority="secondary"
-        iconId="fr-icon-arrow-right-s-line"
-        title="Voir le système suivant"
-        aria-label="Voir le système suivant"
-        className="shrink-0"
-        onClick={() => scrollCarousel('right')}
-      />
-    </div>
+    <Carousel
+      items={heatingSystemResources}
+      getItemKey={(resource, index) => `${resource.slug}-${index}`}
+      previousLabel="Voir le système précédent"
+      nextLabel="Voir le système suivant"
+      renderItem={(resource) => (
+        <CardFrame className="flex h-full flex-col">
+          {resource.image && <CardImage src={`/img/${resource.image}`} alt="" />}
+          <h5 className="fr-h4">{resource.title}</h5>
+          <p className="flex-1 overflow-hidden [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:4]">
+            {resource.description}
+          </p>
+          <Link variant="secondary" className="fr-mt-3w" href={`/ressources/${resource.slug}`} isExternal>
+            Lire l’article
+          </Link>
+        </CardFrame>
+      )}
+    />
   );
 }
 
 function StepCard({ stepNumber, title, text, textBelowNumber = false }: StepCardProps) {
+  const circleBackgroundClassName = stepNumber === 1 ? 'bg-[#000091]' : 'bg-[#6EA8FE]';
+
   return (
     <div className="flex flex-col items-center text-center">
       {!textBelowNumber && (
@@ -294,7 +249,7 @@ function StepCard({ stepNumber, title, text, textBelowNumber = false }: StepCard
         </>
       )}
       <div
-        className={`flex h-14 w-14 items-center justify-center rounded-full bg-[#6EA8FE] text-3xl font-bold text-white shadow-[0_0_0_4px_white] ${textBelowNumber ? 'mb-4' : ''}`}
+        className={`flex h-14 w-14 items-center justify-center rounded-full text-3xl font-bold text-white shadow-[0_0_0_4px_white] ${circleBackgroundClassName} ${textBelowNumber ? 'mb-4' : ''}`}
       >
         {stepNumber}
       </div>
@@ -316,7 +271,11 @@ function StepTimeline() {
       <div className="mt-8 space-y-6 md:hidden">
         {STEPS.map((step, index) => (
           <div key={step.title} className="flex items-start gap-4 rounded-lg border border-[#DDDDDD] bg-white p-4">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#6EA8FE] text-2xl font-bold text-white">
+            <div
+              className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-2xl font-bold text-white ${
+                index === 0 ? 'bg-[#000091]' : 'bg-[#6EA8FE]'
+              }`}
+            >
               {index + 1}
             </div>
             <div>
@@ -327,7 +286,7 @@ function StepTimeline() {
         ))}
       </div>
 
-      <div className="relative mt-10 hidden min-h-[360px] md:block">
+      <div className="relative my-10 hidden min-h-[360px] md:block">
         <img
           src="/img/chaleur-renouvelable-timeline.svg"
           alt=""
@@ -354,18 +313,28 @@ function StepTimeline() {
 
 function TemoignageCard({ title, year, image, link, nbLogement }: TemoignageCardProps) {
   return (
-    <div className="fr-col-12 fr-col-md-4">
-      <CardFrame className="h-full">
-        <CardImage src={`/img/${image}`} alt="" />
-        <h4>{title}</h4>
-        <p className="fr-mb-1w">Type de chauffage: collectif</p>
-        <p className="fr-mb-1w">Année de construction: {year}</p>
-        <p className="fr-mb-1w">Nombre de logement: {nbLogement}</p>
-        <Link variant="secondary" className="fr-mt-3w" href={link} isExternal>
-          Lire le témoignage
-        </Link>
-      </CardFrame>
-    </div>
+    <CardFrame className="flex h-full flex-col">
+      <CardImage src={`/img/${image}`} alt="" />
+      <h4>{title}</h4>
+      <p className="fr-mb-1w">Type de chauffage: collectif</p>
+      <p className="fr-mb-1w">Année de construction: {year}</p>
+      <p className="fr-mb-1w">Nombre de logement: {nbLogement}</p>
+      <Link variant="secondary" className="fr-mt-3w" href={link} isExternal>
+        Lire le témoignage
+      </Link>
+    </CardFrame>
+  );
+}
+
+function TemoignagesCarousel() {
+  return (
+    <Carousel
+      items={TEMOIGNAGES}
+      getItemKey={(temoignage, index) => `${temoignage.title}-${index}`}
+      previousLabel="Voir le témoignage précédent"
+      nextLabel="Voir le témoignage suivant"
+      renderItem={(temoignage) => <TemoignageCard {...temoignage} />}
+    />
   );
 }
 
@@ -386,9 +355,9 @@ function ChaleurRenouvelablePage() {
       currentPage="/chaleur-renouvelable"
       description="Découvrez les modes de chauffage renouvelables adaptés à votre logement"
     >
-      <div className="fr-p-5w w-full bg-[#C3E4E2] bg-[url('/img/banner_simulateur.webp')] bg-no-repeat bg-cover bg-left-center">
+      <div className="fr-p-1w md:fr-p-5w w-full bg-[#C3E4E2] bg-[url('/img/banner_simulateur.webp')] bg-no-repeat bg-cover bg-left-center">
         <div className="fr-container">
-          <h1 className="fr-mt-5w">
+          <h1 className="fr-mt-2w md:fr-mt-5w">
             Rejoignez les <span className="text-[#009081] underline">13 millions</span> de français
             <br /> qui se chauffent autrement
           </h1>
@@ -399,7 +368,7 @@ function ChaleurRenouvelablePage() {
           </div>
         </div>
       </div>
-      <div className="fr-container fr-pt-6w">
+      <div className="fr-container fr-py-6w">
         <h3 className="fr-h6 fr-mb-3v font-medium uppercase">Pourquoi choisir un chauffage écologique ?</h3>
         <p className="fr-h2 font-bold">Des arguments concrets, bien au-delà de l’environnement</p>
         <div className="fr-grid-row fr-grid-row--gutters fr-mt-4w">
@@ -422,24 +391,22 @@ function ChaleurRenouvelablePage() {
           src="/different-mode-chauffage.png"
           alt="illustration des différentes modes de chauffage"
           className="w-full"
-          width="400"
-          height="400"
+          width="791"
+          height="330"
         />
         <CompareSolutionsButton />
       </div>
-      <div className="fr-container fr-py-6w">
-        <h3 className="fr-h6 fr-mb-3v font-medium uppercase">Le parcours</h3>
-        <p className="fr-h2 font-bold">De la simulation à l’installation : 7 étapes claires</p>
-        <StepTimeline />
+      <div className="bg-[#F3F6FE]">
+        <div className="fr-container fr-py-6w">
+          <h3 className="fr-h6 fr-mb-3v font-medium uppercase">Le parcours</h3>
+          <p className="fr-h2 font-bold">De la simulation à l’installation : 7 étapes claires</p>
+          <StepTimeline />
+        </div>
       </div>
       <div className="fr-container fr-py-6w">
         <h3 className="fr-h6 fr-mb-3v font-medium uppercase">Témoignages</h3>
         <p className="fr-h2 font-bold">Ces copropriétés ont fait l’expérience de l’ENR</p>
-        <div className="fr-grid-row fr-grid-row--gutters fr-mt-4w">
-          {TEMOIGNAGES.map((temoignage, i) => (
-            <TemoignageCard key={`temoignage${i}`} {...temoignage} />
-          ))}
-        </div>
+        <TemoignagesCarousel />
         <CompareSolutionsButton />
       </div>
       <div className="bg-[#F3F6FE]">
