@@ -249,6 +249,10 @@ export const listReseauxDeChaleur = async () => {
       ),
       sql<any>`CASE WHEN geom_update IS NOT NULL THEN ST_AsGeoJSON(ST_Transform(geom_update, 4326))::json ELSE NULL END`.as('geom_update'),
       'tags',
+      'has_trace',
+      'reseaux classes',
+      'date_actualisation_trace',
+      'puissance_totale_MW',
       'ouvert_aux_raccordements',
       sql<boolean>`geom_update IS NOT NULL AND ST_IsEmpty(geom_update)`.as('geom_delete'),
       sql<boolean>`geom IS NULL`.as('geom_create'),
@@ -281,6 +285,7 @@ export const listReseauxEnConstruction = async () => {
       ),
       sql<any>`CASE WHEN geom_update IS NOT NULL THEN ST_AsGeoJSON(ST_Transform(geom_update, 4326))::json ELSE NULL END`.as('geom_update'),
       'tags',
+      'date_actualisation_trace',
       'ouvert_aux_raccordements',
       sql<boolean>`geom_update IS NOT NULL AND ST_IsEmpty(geom_update)`.as('geom_delete'),
       sql<boolean>`geom IS NULL`.as('geom_create'),
@@ -310,6 +315,9 @@ export const listReseauxDeFroid = async () => {
       'communes',
       'Gestionnaire',
       'MO',
+      'has_trace',
+      'date_actualisation_trace',
+      'puissance_totale_MW',
       sql<BoundingBox>`st_transform(ST_Envelope(COALESCE(CASE WHEN ST_IsEmpty(geom_update) THEN NULL ELSE geom_update END, geom)), 4326)::box2d`.as(
         'bbox'
       ),

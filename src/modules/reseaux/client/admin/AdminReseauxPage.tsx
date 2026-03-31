@@ -32,7 +32,7 @@ type ReseauDeFroid = RouterOutput['reseaux']['reseauDeFroid']['list'][number];
 type ReseauEnConstruction = RouterOutput['reseaux']['reseauEnConstruction']['list'][number];
 type PerimetreDeDeveloppementPrioritaire = RouterOutput['reseaux']['perimetreDeDeveloppementPrioritaire']['list'][number];
 
-const ModifiedIcon = <T extends Record<string, any>>(record: T & { geom_delete: boolean; geom_update: any; geom_create: boolean }) => {
+const ModifiedIcon = <T extends Record<string, any>>(record: T & { geom_delete: boolean; geom_update?: any; geom_create: boolean }) => {
   if (!record.geom_update && !record.geom_delete && !record.geom_create) {
     return null;
   }
@@ -428,6 +428,49 @@ const GestionDesReseaux = () => {
         width: '200px',
       },
       {
+        accessorKey: `date_actualisation_trace`,
+        cellType: 'Date',
+        header: `Date d'actualisation`,
+        width: '150px',
+      },
+      {
+        accessorKey: 'has_trace',
+        cell: ({ row }) => (
+          <Checkbox
+            label=""
+            small
+            nativeInputProps={{
+              checked: row.original.has_trace,
+              disabled: true,
+              name: 'has_trace',
+            }}
+          />
+        ),
+        header: 'Tracé',
+        width: '120px',
+      },
+      {
+        accessorKey: 'reseaux classes',
+        cell: ({ row }) => (
+          <Checkbox
+            label=""
+            small
+            nativeInputProps={{
+              checked: row.original['reseaux classes'] ?? false,
+              disabled: true,
+              name: 'reseaux_classes',
+            }}
+          />
+        ),
+        header: 'Classés',
+        width: '120px',
+      },
+      {
+        accessorKey: `puissance_totale_MW`,
+        header: `Puissance totale (MW)`,
+        width: '150px',
+      },
+      {
         accessorKey: 'ouvert_aux_raccordements',
         cell: ({ row }) => (
           <Checkbox
@@ -539,6 +582,33 @@ const GestionDesReseaux = () => {
         header: 'Communes',
         width: '200px',
       },
+      {
+        accessorKey: 'has_trace',
+        cell: ({ row }) => (
+          <Checkbox
+            label=""
+            small
+            nativeInputProps={{
+              checked: row.original.has_trace,
+              disabled: true,
+              name: 'has_trace',
+            }}
+          />
+        ),
+        header: 'Tracé',
+        width: '120px',
+      },
+      {
+        accessorKey: `date_actualisation_trace`,
+        cellType: 'Date',
+        header: `Date d'actualisation`,
+        width: '150px',
+      },
+      {
+        accessorKey: `puissance_totale_MW`,
+        header: `Puissance totale (MW)`,
+        width: '150px',
+      },
     ],
     []
   );
@@ -617,6 +687,12 @@ const GestionDesReseaux = () => {
         ),
         header: 'Ouvert aux raccordements',
         width: '120px',
+      },
+      {
+        accessorKey: `date_actualisation_trace`,
+        cellType: 'Date',
+        header: `Date d'actualisation`,
+        width: '150px',
       },
       {
         accessorFn: (row) => row.tags?.join(', '),
