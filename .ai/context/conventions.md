@@ -98,6 +98,14 @@
 - No commented-out code — delete it.
 - No JSDoc except on complex public utility functions.
 
+## HTTP calls to external APIs
+
+Never use raw `fetch`. Use helpers from `@/utils/network`:
+- `postFetchJSON / putFetchJSON / patchFetchJSON / deleteFetchJSON(url, body?, headers?)` for mutation methods
+- `fetchJSON(url, init?)` for GET — pass `headers` inside `init`
+
+They handle `Content-Type: application/json`, JSON parsing, and throw `FetchError` on non-OK responses.
+
 ## Environment variables
 
 Never access `process.env` directly. Always use the typed config objects:
