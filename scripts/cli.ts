@@ -10,6 +10,7 @@ import prompts from 'prompts';
 import XLSX from 'xlsx';
 import { z } from 'zod';
 
+import { registerAdemeConnectCommands } from '@/modules/ademe-connect/commands';
 import { registerAppCommands } from '@/modules/app/commands';
 import { registerBdnbCommands } from '@/modules/bdnb/commands';
 import { registerDataCommands } from '@/modules/data/commands';
@@ -66,6 +67,7 @@ program
     await kdb.destroy();
   });
 
+registerAdemeConnectCommands(program);
 registerAppCommands(program);
 registerBdnbCommands(program);
 registerDataCommands(program);

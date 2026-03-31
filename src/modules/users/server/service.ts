@@ -1,10 +1,20 @@
 import bcrypt from 'bcryptjs';
 import type { UpdateObject } from 'kysely';
 
+import { buildRubriques, ROLE_TYPE_ORGANISME } from '@/modules/ademe-connect/constants';
+import { createContact, updateContact } from '@/modules/ademe-connect/server/client';
 import { sendEmailTemplate } from '@/modules/email';
-import { createUserAdminSchema, type UpdateProfileSchema, updateUserAdminSchema } from '@/modules/users/constants';
-import { type DB, kdb, sql } from '@/server/db/kysely';
+import {
+  createUserAdminSchema,
+  type StructureType,
+  structureTypesLabels,
+  type UpdateProfileSchema,
+  updateUserAdminSchema,
+} from '@/modules/users/constants';
+import { type DB, kdb, sql, type Users } from '@/server/db/kysely';
 import { createBaseModel } from '@/server/db/kysely/base-model';
+import { logger } from '@/server/helpers/logger';
+import { isOneOf } from '@/utils/array';
 
 export const tableName = 'users';
 
@@ -54,6 +64,19 @@ export const create: typeof baseModel.create = async ({ optin_at, ...data }, _co
     await sendEmailTemplate('auth.inscription', { email: data.email as string, id: (record as any).id });
   }
 
+  if (isOneOf(data.role, ['gestionnaire', 'particulier', 'professionnel'] as const)) {
+    createContact({
+      abonnementNewsletter: false,
+      acceptationRGPD: false,
+      email: data.email as string,
+      nom: (data.last_name as string) || '',
+      prenom: (data.first_name as string) || '',
+      rubriques: buildRubriques(data.role, data.structure_type && structureTypesLabels[data.structure_type as StructureType]),
+      telephone: (data.phone as string) || undefined,
+      typeOrganisme: ROLE_TYPE_ORGANISME[data.role],
+    }).catch((error) => logger.error('ademe-connect createContact failed on user.invite', { error, user_id: record.id }));
+  }
+
   return record;
 };
 export const update: typeof baseModel.update = async (id, data, config, _context) => {
@@ -64,8 +87,15 @@ export const update: typeof baseModel.update = async (id, data, config, _context
 
 /**
  * Supprime un utilisateur et toutes ses données associées en cascade.
+ * Marque le contact comme inactif dans ADEME Connect.
  */
-export const remove = baseModel.remove;
+export const remove: typeof baseModel.remove = async (id, config, context) => {
+  const record = await baseModel.remove(id, config, context);
+  updateContact((record as Users).email, { actif: false }).catch((error) =>
+    logger.error('ademe-connect updateContact failed on user delete', { error, user_id: id })
+  );
+  return record;
+};
 
 export const validation = {
   create: createUserAdminSchema,

@@ -1,6 +1,9 @@
 import bcrypt, { genSalt, hash } from 'bcryptjs';
+import dayjs from 'dayjs';
 import jwt from 'jsonwebtoken';
 
+import { ROLE_TYPE_ORGANISME } from '@/modules/ademe-connect/constants';
+import { createContact, updateContact } from '@/modules/ademe-connect/server/client';
 import { linkDemandsByEmail } from '@/modules/demands/server/demands-service';
 import { sendEmailTemplate } from '@/modules/email';
 import { createUserEvent } from '@/modules/events/server/service';
@@ -64,6 +67,16 @@ export const register = async ({
     context_type: 'user',
     type: 'user_created',
   });
+
+  createContact({
+    abonnementNewsletter: optin_newsletter,
+    email: insertedUser.email,
+    nom: userData.last_name,
+    prenom: userData.first_name,
+    telephone: userData.phone ?? undefined,
+    typeOrganisme: ROLE_TYPE_ORGANISME[role],
+  }).catch((error) => logger.error('ademe-connect createContact failed on register', { error, user_id: insertedUser.id }));
+
   return insertedUser.id;
 };
 
@@ -95,6 +108,10 @@ export const login = async (email: string, password: string) => {
     context_type: 'user',
     type: 'user_login',
   });
+
+  updateContact(user.email, { dateConnexion: dayjs().format('YYYY-MM-DDTHH:mm:ss') }).catch((error) =>
+    logger.error('ademe-connect updateContact failed on login', { error, user_id: user.id })
+  );
 
   // Link demands by email on every login
   try {

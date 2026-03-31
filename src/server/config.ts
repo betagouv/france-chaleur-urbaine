@@ -5,6 +5,10 @@ import { parseEnv } from '@/utils/env';
 import type { ExcludeKeys } from '@/utils/typescript';
 
 const serverConfigSchema = {
+  ADEME_CONNECT_BASE_URL: z.string().default('https://ppd-x-ademe-interne-api.de-c1.eu1.cloudhub.io/api/v1'),
+  ADEME_CONNECT_CLIENT_ID: z.string().optional(),
+  ADEME_CONNECT_CLIENT_SECRET: z.string().optional(),
+  ADEME_CONNECT_SOURCE: z.string().default('France Chaleur Urbaine'),
   AIRTABLE_BASE: z.string(),
   AIRTABLE_KEY_API: z.string(),
   CLOCK_CRONS_ENABLE: z.boolean().default(true),
