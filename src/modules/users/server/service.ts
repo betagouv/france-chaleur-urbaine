@@ -105,7 +105,7 @@ export const validation = {
 export const getProfile = async (userId: string) => {
   return kdb
     .selectFrom('users')
-    .select(['id', 'email', 'role', 'first_name', 'last_name', 'phone', 'structure_name', 'structure_type', 'structure_other'])
+    .select(['id', 'email', 'role', 'first_name', 'last_name', 'phone', 'structure_name', 'structure_type', 'structure_other', 'optin_at'])
     .where('id', '=', userId)
     .executeTakeFirst();
 };
@@ -114,4 +114,12 @@ export const updateProfile = async (userId: string, data: UpdateProfileSchema) =
   const result = await kdb.updateTable('users').set(data).where('id', '=', userId).executeTakeFirst();
 
   return result.numUpdatedRows > 0;
+};
+
+export const updateNewsletterSubscription = async (userId: string, optin: boolean) => {
+  await kdb
+    .updateTable('users')
+    .set({ optin_at: optin ? new Date() : null })
+    .where('id', '=', userId)
+    .executeTakeFirstOrThrow();
 };

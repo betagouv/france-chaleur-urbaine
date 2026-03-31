@@ -3,6 +3,8 @@ export const eventTypes = [
   'user_activated',
   'user_created',
   'user_updated',
+  'user_newsletter_subscribed',
+  'user_newsletter_unsubscribed',
   'user_deleted',
   'user_password_reset_requested',
   'demand_created',
@@ -48,8 +50,10 @@ export const eventTypeLabels: Record<EventType, string> = {
   user_created: 'Création utilisateur',
   user_deleted: 'Suppression utilisateur',
   user_login: 'Connexion utilisateur',
+  user_newsletter_subscribed: 'Abonnement newsletter',
+  user_newsletter_unsubscribed: 'Désabonnement newsletter',
   user_password_reset_requested: 'Demande réinitialisation mot de passe',
-  user_updated: 'Mise à jour utilisateur',
+  user_updated: 'Mise à jour profil utilisateur',
 };
 
 export type EventDataMap = {
@@ -75,6 +79,8 @@ export type EventDataMap = {
   user_deleted: null;
   user_login: null;
   user_password_reset_requested: null;
+  user_newsletter_subscribed: null;
+  user_newsletter_unsubscribed: null;
   user_updated: null;
 };
 

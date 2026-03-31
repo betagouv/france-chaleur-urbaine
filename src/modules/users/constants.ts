@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { type UserRole, userRoles, userRolesInscription } from '@/types/enum/UserRole';
+import { ObjectKeys } from '@/utils/typescript';
 
 /** Label des types de structure  */
 // biome-ignore assist/source/useSortedKeys: keep field order for clarity and maintainability
@@ -14,6 +15,8 @@ export const structureTypesLabels = {
   syndic_copropriete: 'Syndic de copropriété',
   autre: 'Autre',
 };
+
+export type StructureType = keyof typeof structureTypesLabels;
 
 /** Labels utilisés sur le formulaire */
 export const structureTypesFormLabels = {
@@ -58,7 +61,7 @@ export const zIdentitySchema = z
     role: z.enum(userRolesInscription),
     structure_name: z.string().min(0, 'La structure est obligatoire').optional(),
     structure_other: z.string().optional(),
-    structure_type: z.string().optional(),
+    structure_type: z.enum(ObjectKeys(structureTypesLabels)).optional(),
   })
   .refine((data) => !(data.structure_type === 'autre' && !data.structure_other), {
     message: "Le type de structure 'Autre' doit être précisé",
@@ -91,7 +94,7 @@ export const createUserAdminSchema = z.object({
   role: z.enum(userRoles),
   structure_name: z.string().optional().nullable(),
   structure_other: z.string().optional().nullable(),
-  structure_type: z.string().optional().nullable(),
+  structure_type: z.enum(ObjectKeys(structureTypesLabels)).optional().nullable(),
 });
 
 export const updateUserAdminSchema = z
@@ -109,7 +112,7 @@ export const updateUserAdminSchema = z
     status: z.enum(['pending_email_confirmation', 'valid']),
     structure_name: z.string().optional(),
     structure_other: z.string().optional(),
-    structure_type: z.string().optional(),
+    structure_type: z.enum(ObjectKeys(structureTypesLabels)).optional(),
   })
   .partial();
 
@@ -126,7 +129,7 @@ export const zUpdateProfileSchema = z
       }),
     structure_name: z.string().optional(),
     structure_other: z.string().optional(),
-    structure_type: z.string().optional(),
+    structure_type: z.enum(ObjectKeys(structureTypesLabels)).optional(),
   })
   .refine((data) => !(data.structure_type === 'autre' && !data.structure_other), {
     message: "Le type de structure 'Autre' doit être précisé",
@@ -139,11 +142,17 @@ export const zUpdateProfileSchema = z
 
 export type UpdateProfileSchema = z.infer<typeof zUpdateProfileSchema>;
 
+export const zUpdateNewsletterSchema = z.object({
+  optin_newsletter: z.boolean(),
+});
+
+export type UpdateNewsletterSchema = z.infer<typeof zUpdateNewsletterSchema>;
+
 export const updateProfileDefaultValues: UpdateProfileSchema = {
   first_name: '',
   last_name: '',
   phone: '',
   structure_name: '',
   structure_other: '',
-  structure_type: '',
+  structure_type: undefined,
 };

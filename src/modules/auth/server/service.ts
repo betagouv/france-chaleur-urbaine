@@ -2,11 +2,12 @@ import bcrypt, { genSalt, hash } from 'bcryptjs';
 import dayjs from 'dayjs';
 import jwt from 'jsonwebtoken';
 
-import { ROLE_TYPE_ORGANISME } from '@/modules/ademe-connect/constants';
+import { buildRubriques, ROLE_TYPE_ORGANISME } from '@/modules/ademe-connect/constants';
 import { createContact, updateContact } from '@/modules/ademe-connect/server/client';
 import { linkDemandsByEmail } from '@/modules/demands/server/demands-service';
 import { sendEmailTemplate } from '@/modules/email';
 import { createUserEvent } from '@/modules/events/server/service';
+import { type StructureType, structureTypesLabels } from '@/modules/users/constants';
 import { AirtableDB } from '@/server/db/airtable';
 import { kdb } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
@@ -29,7 +30,7 @@ export const register = async ({
   first_name: string;
   last_name: string;
   structure?: string;
-  structure_type?: string;
+  structure_type?: StructureType;
   structure_other?: string;
   phone?: string | null;
   accept_cgu?: boolean;
@@ -70,9 +71,11 @@ export const register = async ({
 
   createContact({
     abonnementNewsletter: optin_newsletter,
+    acceptationRGPD: true,
     email: insertedUser.email,
     nom: userData.last_name,
     prenom: userData.first_name,
+    rubriques: buildRubriques(role, userData.structure_type && structureTypesLabels[userData.structure_type]),
     telephone: userData.phone ?? undefined,
     typeOrganisme: ROLE_TYPE_ORGANISME[role],
   }).catch((error) => logger.error('ademe-connect createContact failed on register', { error, user_id: insertedUser.id }));

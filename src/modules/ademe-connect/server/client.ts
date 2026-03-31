@@ -20,6 +20,7 @@ type ContactData = {
   region?: string;
   telephone?: string;
   telephonePortable?: string;
+  rubriques?: string[];
   fonction?: string;
   typeOrganisme?: string;
   acceptationRGPD?: boolean;

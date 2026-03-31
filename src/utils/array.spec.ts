@@ -2,7 +2,21 @@ import { describe, expect, it } from 'vitest';
 
 import type { TestCase } from '@/tests/trpc-helpers';
 
-import { chunk } from './array';
+import { chunk, isOneOf } from './array';
+
+describe('isOneOf()', () => {
+  it('returns true when value is in the array', () => {
+    expect(isOneOf('b', ['a', 'b', 'c'] as const)).toBe(true);
+  });
+
+  it('returns false when value is not in the array', () => {
+    expect(isOneOf('d', ['a', 'b', 'c'] as const)).toBe(false);
+  });
+
+  it('returns false for empty array', () => {
+    expect(isOneOf('a', [] as const)).toBe(false);
+  });
+});
 
 describe('chunk()', () => {
   type ChunkTestCase = TestCase<{ array: any[]; size: number }, any[][]>;

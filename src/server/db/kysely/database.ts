@@ -7,6 +7,7 @@ import type { ColumnType, JSONColumnType } from 'kysely';
 
 import type { AirtableLegacyRecord } from '@/modules/demands/types';
 import type { EventType } from '@/modules/events/constants';
+import type { StructureType } from '@/modules/users/constants';
 import type { UserRole } from '@/types/enum/UserRole';
 
 export type Generated<T> =
@@ -718,7 +719,7 @@ export interface Users {
   status: 'pending_email_confirmation' | 'valid';
   structure_name: string | null;
   structure_other: string | null;
-  structure_type: string | null;
+  structure_type: StructureType | null;
 }
 
 export interface ZoneAPotentielChaud {
