@@ -118,6 +118,14 @@
 - If there are genuine tradeoffs the user needs to weigh, present them as a clean comparison — not a narrative that contradicts itself paragraph by paragraph.
 - No "actually wait", no "let me reconsider", no live stream of internal deliberation.
 
+## HTTP calls to external APIs
+
+Never use raw `fetch`. Use helpers from `@/utils/network`:
+- `postFetchJSON / putFetchJSON / patchFetchJSON / deleteFetchJSON(url, body?, headers?)` for mutation methods
+- `fetchJSON(url, init?)` for GET — pass `headers` inside `init`
+
+They handle `Content-Type: application/json`, JSON parsing, and throw `FetchError` on non-OK responses.
+
 ## Environment variables
 
 Never access `process.env` directly. Always use the typed config objects:
