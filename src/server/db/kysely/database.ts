@@ -9,7 +9,7 @@ import type { AirtableLegacyRecord, PendingAssignmentChange } from '@/modules/de
 import type { EventType } from '@/modules/events/constants';
 import type { Permission } from '@/modules/permissions/types';
 import type { NetworkEntityType, NetworkType, ReminderType } from '@/modules/reseaux/constants';
-import type { Entreprise } from '@/modules/users/constants';
+import type { Entreprise, StructureType } from '@/modules/users/constants';
 import type { UserRole } from '@/types/enum/UserRole';
 
 export type Generated<T> =
@@ -782,7 +782,7 @@ export interface Users {
   status: 'pending_email_confirmation' | 'valid';
   structure_name: string | null;
   structure_other: string | null;
-  structure_type: string | null;
+  structure_type: StructureType | null;
 }
 
 export interface ZoneAPotentielChaud {

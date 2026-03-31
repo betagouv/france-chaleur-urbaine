@@ -1,10 +1,13 @@
 import bcrypt, { genSalt, hash } from 'bcryptjs';
+import dayjs from 'dayjs';
 import jwt from 'jsonwebtoken';
 
+import { buildRubriques, ROLE_TYPE_ORGANISME } from '@/modules/ademe-connect/constants';
+import { createContact, updateContact } from '@/modules/ademe-connect/server/client';
 import { linkDemandsByEmail } from '@/modules/demands/server/account-linking';
 import { sendEmailTemplate } from '@/modules/email';
 import { createUserEvent } from '@/modules/events/server/service';
-import type { Entreprise } from '@/modules/users/constants';
+import type { Entreprise, StructureType } from '@/modules/users/constants';
 import { findEtablissementBySiret } from '@/modules/users/server/service';
 import { kdb, sql } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
@@ -27,7 +30,7 @@ export const register = async ({
   first_name: string;
   last_name: string;
   structure?: string;
-  structure_type?: string;
+  structure_type?: StructureType;
   structure_other?: string;
   phone?: string | null;
   accept_cgu?: boolean;
@@ -68,8 +71,20 @@ export const register = async ({
     author_id: insertedUser.id,
     context_id: insertedUser.id,
     context_type: 'user',
-    type: 'user_created',
+    type: 'user_registered',
   });
+
+  createContact({
+    abonnementNewsletter: optin_newsletter,
+    acceptationRGPD: true,
+    email: insertedUser.email,
+    nom: userData.last_name,
+    prenom: userData.first_name,
+    rubriques: buildRubriques(role, userData.structure_type),
+    telephone: userData.phone ?? undefined,
+    typeOrganisme: ROLE_TYPE_ORGANISME[role],
+  }).catch((error) => logger.error('ademe-connect createContact failed on register', { error, user_id: insertedUser.id }));
+
   return insertedUser.id;
 };
 
@@ -97,6 +112,10 @@ export const login = async (email: string, password: string) => {
     context_type: 'user',
     type: 'user_login',
   });
+
+  updateContact(user.email, { dateConnexion: dayjs().format('YYYY-MM-DDTHH:mm:ss') }).catch((error) =>
+    logger.error('ademe-connect updateContact failed on login', { error, user_id: user.id })
+  );
 
   // Link demands by email on every login
   try {

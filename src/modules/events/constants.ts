@@ -4,11 +4,14 @@ import type { UserRole } from '@/types/enum/UserRole';
 export const eventTypes = [
   'user_login',
   'user_activated',
-  'user_created',
+  'user_registered',
+  'user_newsletter_subscribed',
+  'user_newsletter_unsubscribed',
   'user_password_reset_requested',
   'user_profile_updated',
   'user_created_by_admin',
   'user_created_by_api',
+  'user_deactivated_by_api',
   'user_updated_by_admin',
   'user_deleted_by_admin',
   'demand_created',
@@ -81,15 +84,18 @@ export const eventTypeLabels: Record<EventType, string> = {
   tag_reminder_created: 'Création rappel tag',
   tag_reminder_deleted: 'Suppression rappel tag',
   user_activated: 'Activation utilisateur',
-  user_created: 'Création utilisateur',
   user_created_by_admin: 'Création utilisateur (admin)',
   user_created_by_api: 'Création utilisateur (API)',
+  user_deactivated_by_api: 'Désactivation utilisateur (API)',
   user_deleted_by_admin: 'Suppression utilisateur (admin)',
   user_login: 'Connexion utilisateur',
+  user_newsletter_subscribed: 'Abonnement newsletter',
+  user_newsletter_unsubscribed: 'Désabonnement newsletter',
   user_password_reset_requested: 'Demande réinitialisation mot de passe',
   user_permissions_synced_from_api: 'Synchronisation permissions (API)',
   user_permissions_updated: 'Modification permissions',
   user_profile_updated: 'Mise à jour profil',
+  user_registered: 'Inscription utilisateur',
   user_updated_by_admin: 'Mise à jour utilisateur (admin)',
 };
 
@@ -173,10 +179,11 @@ export type EventDataMap = {
     created_at: string;
   };
   user_activated: null;
-  user_created: null;
   user_created_by_admin: { user_email: string; role: UserRole };
   user_created_by_api: { user_email: string; role: UserRole; api_name: string };
+  user_deactivated_by_api: { api_name: string; user_email: string };
   user_deleted_by_admin: { user_email: string };
+  user_registered: null;
   user_login: null;
   user_password_reset_requested: null;
   user_permissions_synced_from_api: {
@@ -191,6 +198,8 @@ export type EventDataMap = {
   };
   user_profile_updated: { changes: Record<string, unknown> };
   user_updated_by_admin: { user_email: string; changes: Record<string, unknown> };
+  user_newsletter_subscribed: null;
+  user_newsletter_unsubscribed: null;
 };
 
 export const eventGranularities = ['minute', 'hour', 'day', 'week', 'month', 'year'] as const;

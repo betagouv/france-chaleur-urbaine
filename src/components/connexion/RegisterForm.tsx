@@ -48,7 +48,7 @@ const steps: FormStep[] = [
       role: 'professionnel',
       structure_name: '',
       structure_other: '',
-      structure_type: '',
+      structure_type: undefined,
     } satisfies IdentitySchema,
     label: 'Votre profil',
     schema: zIdentitySchema,

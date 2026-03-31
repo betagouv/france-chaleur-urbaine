@@ -30,7 +30,7 @@ function ProfileForm() {
       phone: profile?.phone ?? '',
       structure_name: profile?.structure_name ?? '',
       structure_other: profile?.structure_other ?? '',
-      structure_type: profile?.structure_type ?? '',
+      structure_type: profile?.structure_type ?? undefined,
     },
     onSubmit: async ({ value }) => {
       await updateProfile.mutateAsync(value);
@@ -42,7 +42,7 @@ function ProfileForm() {
   const showStructureFields = profile?.role !== 'particulier';
   const showEntrepriseField = profile?.role !== 'particulier' && profile?.role !== 'admin';
 
-  if (isLoading) {
+  if (!profile) {
     return <Loader variant="section" />;
   }
 
@@ -50,9 +50,9 @@ function ProfileForm() {
     <Form>
       <div className="flex flex-col gap-4">
         <Notice variant="info" className="mb-4">
-          <strong>Email :</strong> {profile?.email}
+          <strong>Email :</strong> {profile.email}
           <br />
-          <strong>Rôle :</strong> {roles[profile?.role as keyof typeof roles]}
+          <strong>Rôle :</strong> {roles[profile.role]}
         </Notice>
 
         <Input name="first_name" label="Prénom" />

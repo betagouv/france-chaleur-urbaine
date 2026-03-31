@@ -1,3 +1,15 @@
+/**
+ * Type-safe array inclusion check that narrows the value type.
+ *
+ * @example
+ * if (isOneOf(user.role, ['particulier', 'professionnel'] as const)) {
+ *   // user.role is narrowed to 'particulier' | 'professionnel'
+ * }
+ */
+export function isOneOf<T extends U, U>(value: U, array: readonly T[]): value is T {
+  return array.includes(value as T);
+}
+
 export const shuffleArray = <T extends object>(array: T[]): T[] => {
   return array
     .map((item) => ({ ...item, sort: Math.random() }))

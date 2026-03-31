@@ -68,7 +68,7 @@ export const handleData = async (account: ApiAccounts, data: unknown) => {
 
   await Promise.all(
     [...emailToSncuIds].map(async ([email, sncuIds]) => {
-      const user = await kdb.selectFrom('users').select(['id']).where('email', '=', email).executeTakeFirst();
+      const user = await kdb.selectFrom('users').select(['id', 'active']).where('email', '=', email).executeTakeFirst();
 
       let userId: string;
       if (!user) {
@@ -116,6 +116,12 @@ export const handleData = async (account: ApiAccounts, data: unknown) => {
       logger.info(`Deactivate user ${email}`);
       if (!cliConfig.dryRun) {
         await kdb.updateTable('users').set({ active: false }).where('id', '=', id).execute();
+        await createEvent({
+          context_id: id,
+          context_type: 'user',
+          data: { api_name: account.name ?? '', user_email: email },
+          type: 'user_deactivated_by_api',
+        });
       }
     })
   );

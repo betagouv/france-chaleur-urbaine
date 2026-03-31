@@ -10,7 +10,13 @@ import PermissionsEditor from '@/modules/permissions/client/PermissionsEditor';
 import PermissionsInput from '@/modules/permissions/client/PermissionsInput';
 import type { Permission } from '@/modules/permissions/types';
 import { permissionTypes } from '@/modules/permissions/types';
-import { createUserAdminSchema, roles as roleLabels, structureTypesFormLabels, updateUserAdminSchema } from '@/modules/users/constants';
+import {
+  createUserAdminSchema,
+  roles as roleLabels,
+  type StructureType,
+  structureTypesFormLabels,
+  updateUserAdminSchema,
+} from '@/modules/users/constants';
 import type { User } from '@/modules/users/server/service';
 import type { UsersResponse } from '@/pages/api/admin/users/[[...slug]]';
 import { type UserRole, userRoles, userRolesWithPermissions } from '@/types/enum/UserRole';
@@ -133,7 +139,7 @@ const UserForm = ({ user, onSubmit, loading }: UserFormProps) => {
               options={ObjectEntries(structureTypesFormLabels).map(([key, label]) => ({ label, value: key }))}
               nativeSelectProps={{
                 onChange: (e: React.ChangeEvent<HTMLSelectElement>) => {
-                  const value = e.target.value;
+                  const value = e.target.value as StructureType;
                   form.setFieldValue('structure_type', value);
                   const mappedRole = STRUCTURE_TYPE_TO_ROLE[value as keyof typeof STRUCTURE_TYPE_TO_ROLE];
                   if (mappedRole) form.setFieldValue('role', mappedRole);

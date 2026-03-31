@@ -2,14 +2,24 @@ import { TRPCError } from '@trpc/server';
 import bcrypt from 'bcryptjs';
 import type { z } from 'zod';
 
+import { buildRubriques, ROLE_TYPE_ORGANISME } from '@/modules/ademe-connect/constants';
+import { createContact } from '@/modules/ademe-connect/server/client';
 import { sendEmailTemplate } from '@/modules/email';
 import { createUserEvent } from '@/modules/events/server/service';
 import { getAllPermissionsWithLabels } from '@/modules/permissions/server/search';
-import { createUserAdminSchema, type Entreprise, type UpdateProfileSchema, updateUserAdminSchema } from '@/modules/users/constants';
+import {
+  createUserAdminSchema,
+  type Entreprise,
+  type StructureType,
+  type UpdateProfileSchema,
+  updateUserAdminSchema,
+} from '@/modules/users/constants';
 import type { Context } from '@/server/api/crud';
 import { serverConfig } from '@/server/config';
 import { type DB, kdb, sql } from '@/server/db/kysely';
 import { createBaseModel, type ListConfig } from '@/server/db/kysely/base-model';
+import { logger } from '@/server/helpers/logger';
+import { isOneOf } from '@/utils/array';
 import { fetchJSON } from '@/utils/network';
 
 /** Champs validés par le formulaire admin + champs internes acceptés (ex. `from_api` posé par les sync API). */
@@ -96,6 +106,19 @@ export const create = async (data: CreateUserInput, context: Context): Promise<D
     });
   }
 
+  if (isOneOf(data.role, ['gestionnaire', 'particulier', 'professionnel'] as const)) {
+    createContact({
+      abonnementNewsletter: false,
+      acceptationRGPD: false,
+      email: data.email,
+      nom: data.last_name || undefined,
+      prenom: data.first_name || undefined,
+      rubriques: buildRubriques(data.role, data.structure_type as StructureType | null | undefined),
+      telephone: data.phone || undefined,
+      typeOrganisme: ROLE_TYPE_ORGANISME[data.role],
+    }).catch((error) => logger.error('ademe-connect createContact failed on user.invite', { error, user_id: record.id }));
+  }
+
   return record;
 };
 
@@ -134,6 +157,7 @@ export const update = async (
 
 /**
  * Supprime un utilisateur et toutes ses données associées en cascade.
+ * Marque le contact comme inactif dans ADEME Connect.
  */
 export const remove = async (id: string, config: ListConfig<typeof tableName>, context: Context) => {
   const user = await kdb.selectFrom('users').select('email').where('id', '=', id).executeTakeFirstOrThrow();
@@ -169,6 +193,7 @@ export const getProfile = async (userId: string) => {
       'structure_type',
       'structure_other',
       'entreprise',
+      'optin_at',
     ])
     .where('id', '=', userId)
     .executeTakeFirst();
@@ -226,3 +251,11 @@ export const findEtablissementBySiret = async (siret: string): Promise<Entrepris
 
 /** Sérialise une `Entreprise` en expression JSONB pour insert/update. */
 const toEntrepriseJsonb = (e: Entreprise | null) => (e ? sql<string | null>`${JSON.stringify(e)}::jsonb` : null);
+
+export const updateNewsletterSubscription = async (userId: string, optin: boolean) => {
+  await kdb
+    .updateTable('users')
+    .set({ optin_at: optin ? new Date() : null })
+    .where('id', '=', userId)
+    .executeTakeFirstOrThrow();
+};

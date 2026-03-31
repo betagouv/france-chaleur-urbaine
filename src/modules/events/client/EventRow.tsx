@@ -254,7 +254,6 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
     </>
   ),
   user_activated: () => 'a activé son compte',
-  user_created: () => 'a créé un compte',
   user_created_by_admin: (event, updateFilters) => (
     <>
       <span>
@@ -275,6 +274,16 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
       </FilterButton>
     </>
   ),
+  user_deactivated_by_api: (event, updateFilters) => (
+    <>
+      <span>
+        API <strong>{event.data.api_name}</strong> a désactivé le compte{' '}
+      </span>
+      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'user' })}>
+        {event.data.user_email}
+      </FilterButton>
+    </>
+  ),
   user_deleted_by_admin: (event, updateFilters) => (
     <>
       <span>a supprimé le compte </span>
@@ -284,6 +293,8 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
     </>
   ),
   user_login: () => "s'est connecté",
+  user_newsletter_subscribed: () => "s'est abonné à la newsletter",
+  user_newsletter_unsubscribed: () => "s'est désabonné de la newsletter",
   user_password_reset_requested: () => 'a demandé une réinitialisation de mot de passe',
   user_permissions_synced_from_api: (event, updateFilters) => (
     <>
@@ -306,6 +317,7 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
     </>
   ),
   user_profile_updated: () => <span>a mis à jour son profil</span>,
+  user_registered: () => 'a créé un compte',
   user_updated_by_admin: (event, updateFilters) => (
     <>
       <span>a mis à jour le compte </span>
