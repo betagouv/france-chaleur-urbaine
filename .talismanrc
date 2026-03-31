@@ -65,6 +65,8 @@ fileignoreconfig:
   checksum: 89f40d731f653c30750c61467b1d4727965805280e2d2888dd0cc29e8accf6cf
 - filename: src/pages/api/stats.ts
   checksum: bd4d691e773bd0dbb2c617d18bf40112e662e6bc7e73289e4d43a88ab6d155ec
+- filename: src/pages/chaleur-renouvelable/index.tsx
+  checksum: 53b0e0313999143388b2773ffefb3947e799bae60d0cf6da73f2e8a7a4fc238f
 - filename: src/services/password.ts
   checksum: c5568af3b6c4162bc2ecbc78e8efc9abff9c852b774e8e60830db8a0777766b9
 - filename: src/utils/validation.spec.ts

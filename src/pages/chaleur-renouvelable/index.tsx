@@ -65,6 +65,13 @@ const TEMOIGNAGES = [
     title: 'Raccordement au réseau de chaleur urbain à Toulouse',
     year: 1975,
   },
+  {
+    image: 'temoignage_geothermie.jpg',
+    link: 'https://www.calameo.com/read/007297783665ca6300ea6?authid=UPbbt4BqJjfT',
+    nbLogement: 39,
+    title: 'PAC eau / eau sur sonde géothermique',
+    year: 2018,
+  },
 ];
 
 const STEPS = [
@@ -86,21 +93,22 @@ const FAQS = [
   {
     answer:
       "De nombreux dispositifs existent : MaPrimeRénov', les Certificats d'Économies d'Énergie (CEE), l'éco-prêt à taux zéro (éco-PTZ), ou encore des aides locales des collectivités. Les montants varient selon les revenus, le type de système installé et le gain énergétique obtenu.",
-    question: 'Quelles aides financières puis-je obtenir pour financer mon projet ?',
+    question: 'Quelles aides financières puis-je obtenir pour financer mon projet',
   },
   {
-    answer:
-      'La biomasse englobe le bois, les résidus agricoles, les déchets organiques… Si la combustion émet du CO2, celui-ci a été préalablement absorbé par la plante durant sa croissance : le bilan est donc quasi neutre, à condition que la ressource soit gérée durablement et que les équipements soient performants (émissions de particules fines).',
-    question: 'La biomasse, est-ce vraiment écologique ?',
-  },
-  {
-    answer: `Oui, c'est l'un des avantages des pompes à chaleur collectives réversibles : elles peuvent inverser leur cycle pour fonctionner comme une climatisation. Certains systèmes géothermiques permettent également un "free cooling" passif, en faisant simplement circuler l'eau fraîche du sous-sol sans compresseur.`,
+    answer: `Tous les systèmes écologiques ne peuvent pas assurer le rafraichissement, c'est l'un des avantages des pompes à chaleur collectives réversibles : elles peuvent inverser leur cycle pour fonctionner comme une climatisation. Certains systèmes géothermiques permettent également un "free cooling" passif, en faisant simplement circuler l'eau fraîche du sous-sol sans compresseur.`,
     question: 'Les systèmes de chauffages écologiques peuvent-ils aussi assurer le rafraîchissement en été ?',
   },
   {
     answer:
       "Absolument, et c'est même souvent conseillé. Un système hybride associant par exemple une PAC et des panneaux solaires thermiques, ou une chaudière biomasse couplée à du solaire, permet d'optimiser les performances selon les saisons et de réduire la dépendance à une seule source d'énergie.",
     question: 'Peut-on combiner plusieurs systèmes de chauffages ?',
+  },
+
+  {
+    answer:
+      'Le système collectif de chauffage a de nombreux avantages : gain de place, coûts partagés, puissance réduite …\nC’est surtout celui qui permet d’installer plus facilement un chauffage écologique : réseau de chaleur, géothermie, biomasse, solaire thermique, pompe à chaleur… tout est possible !',
+    question: 'Quels sont les avantages d’un système de chauffage collectif par rapport à un chauffage individuel',
   },
 ] satisfies Array<{ answer: string; question: string }>;
 
@@ -155,6 +163,7 @@ function getTextFromNode(node: ReactNode): string {
 
 const heatingSystemResources: ResourceCardProps[] = [
   { slug: 'avantages', ...understandings.avantages },
+  { slug: 'facture', ...understandings.facture },
   { slug: 'reseau', ...issues.reseau },
   ...Object.entries(otherHeatingSystem).map(([slug, article]) => ({
     ...article,
@@ -390,7 +399,6 @@ function ChaleurRenouvelablePage() {
           </div>
         </div>
       </div>
-
       <div className="fr-container fr-pt-6w">
         <h3 className="fr-h6 fr-mb-3v font-medium uppercase">Pourquoi choisir un chauffage écologique ?</h3>
         <p className="fr-h2 font-bold">Des arguments concrets, bien au-delà de l’environnement</p>
@@ -441,7 +449,7 @@ function ChaleurRenouvelablePage() {
           <div className="fr-mt-4w">
             {FAQS.map((faq) => (
               <Accordion key={faq.question} label={faq.question}>
-                <p className="fr-mb-0">{faq.answer}</p>
+                <p className="fr-mb-0 whitespace-pre-line">{faq.answer}</p>
               </Accordion>
             ))}
           </div>

@@ -18,13 +18,13 @@ function ChoosePac() {
       </p>
       <Image src="/img/choix_chauffage.png" alt="tableau comparatif des modes de chauffage" width="1000" height="300" className="w-full" />
       <p>
-        Si vous êtes en système collectif : félicitations beaucoup de solutions s’offrent à vous ! En plus vous pourrez choisir parmi les
+        👥 Si vous êtes en système collectif : félicitations beaucoup de solutions s’offrent à vous ! En plus vous pourrez choisir parmi les
         plus vertueuses : le réseau de chaleur urbain, les PAC géothermiques, les PAC air/eau collectives, le solaire thermique pour l’eau
         chaude et la biomasse.
       </p>
       <p>
-        Si vous êtes en système individuel : l’installation d’une PAC est moins évidente et plus compliqué. Vous pouvez cependant opter pour
-        une PAC air/air ou une PAC air/eau avec unité extérieure sur le balcon.
+        👤 Si vous êtes en système individuel : l’installation d’une PAC est moins évidente et plus compliqué. Vous pouvez cependant opter
+        pour une PAC air/air ou une PAC air/eau avec unité extérieure sur le balcon.
       </p>
       <h2>Étape 1 : Envisager une rénovation globale</h2>
       <p>
