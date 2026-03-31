@@ -118,6 +118,16 @@
 - If there are genuine tradeoffs the user needs to weigh, present them as a clean comparison — not a narrative that contradicts itself paragraph by paragraph.
 - No "actually wait", no "let me reconsider", no live stream of internal deliberation.
 
+## Environment variables
+
+Never access `process.env` directly. Always use the typed config objects:
+- **Server-side**: `serverConfig` from `@/server/config` — Zod-validated, typed.
+- **Client-side**: `clientConfig` from `@/client-config` — Zod-validated, typed.
+
+When adding a new env var:
+1. Add it to `serverConfigSchema` (or client schema) in `src/server/config.ts`.
+2. Add it with a placeholder value to `.env.example`.
+
 ## Pre-commit checklist
 
 Always run before committing:
