@@ -98,6 +98,16 @@
 - No commented-out code — delete it.
 - No JSDoc except on complex public utility functions.
 
+## Environment variables
+
+Never access `process.env` directly. Always use the typed config objects:
+- **Server-side**: `serverConfig` from `@/server/config` — Zod-validated, typed.
+- **Client-side**: `clientConfig` from `@/client-config` — Zod-validated, typed.
+
+When adding a new env var:
+1. Add it to `serverConfigSchema` (or client schema) in `src/server/config.ts`.
+2. Add it with a placeholder value to `.env.example`.
+
 ## Pre-commit checklist
 
 Always run before committing:
