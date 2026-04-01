@@ -91,14 +91,9 @@ scripts/simulateur/codes-insee.json
 .env.sentry-build-plugin
 
 # =============================================================================
-# claude - Auto-generated symlinks
-# ⚠️  Auto-generated - Do not edit manually
+# claude
 # =============================================================================
-.claude/commands
-.claude/agents
-.claude/output-styles
-.claude/settings.json
-.claude/context
+.claude/
 # CLAUDE.md
 
 # =============================================================================
