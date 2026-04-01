@@ -82,6 +82,7 @@ Only use components exported from `components.tsx`:
 - `Button` - CTA button
 - `Link` - Hyperlink
 - `Note` - Small footnote text
+- `Callout` - Highlighted info box (blue left border, for critical instructions)
 - `Table`, `TableRow`, `TableColumn` - Table components
 - `Section`, `Row`, `Column` - Layout components
 - `Hr` - Horizontal rule

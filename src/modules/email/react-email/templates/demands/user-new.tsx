@@ -1,10 +1,9 @@
-import { clientConfig } from '@/client-config';
 import type { formatHeatingTypeToAirtable } from '@/modules/demands/constants';
 import type { AvailableStructure } from '@/types/AddressData';
 import type { Demand } from '@/types/Summary/Demand';
 import { isDefined } from '@/utils/core';
 
-import { Layout, Link, Text } from '../../components';
+import { Layout, Link, Section, Table, TableColumn, TableRow, Text, Title } from '../../components';
 
 type CreationDemandeEmailProps = {
   demand: Pick<Demand, 'Adresse' | 'Distance au réseau' | 'Structure' | 'Departement'> & {
@@ -21,9 +20,36 @@ const CreationDemandeEmail = ({ demand }: CreationDemandeEmailProps) => {
       {process.env.NODE_ENV === 'test' && <pre>Paramètres (affiché seulement sur mailpit) : {JSON.stringify(demand, null, 2)}</pre>}
       <Text>Bonjour,</Text>
       <Text>
-        Nous vous remercions pour votre demande de contact sur <Link href={clientConfig.websiteUrl}>France Chaleur Urbaine</Link> pour le{' '}
-        <strong>{demand.Adresse}</strong>.
+        Nous vous remercions pour votre demande de contact sur{' '}
+        <Link href="/" campaign="demands.user-new" content="fcu-website">
+          France Chaleur Urbaine
+        </Link>{' '}
+        pour le <strong>{demand.Adresse}</strong>.
       </Text>
+
+      <Section style={{ backgroundColor: '#f8f8ff', marginBottom: '8px', padding: '12px 16px' }}>
+        <Title style={{ fontSize: '16px', marginBottom: '8px' }}>Récapitulatif de votre demande</Title>
+        <Table style={{ padding: 0 }}>
+          <TableRow>
+            <TableColumn style={{ fontWeight: 'bold', width: '180px' }}>Adresse</TableColumn>
+            <TableColumn>{demand.Adresse}</TableColumn>
+          </TableRow>
+          <TableRow>
+            <TableColumn style={{ fontWeight: 'bold', width: '180px' }}>Type de bâtiment</TableColumn>
+            <TableColumn>{demand.Structure}</TableColumn>
+          </TableRow>
+          <TableRow>
+            <TableColumn style={{ fontWeight: 'bold', width: '180px' }}>Mode de chauffage</TableColumn>
+            <TableColumn>{demand['Type de chauffage']}</TableColumn>
+          </TableRow>
+          {isDefined(demand['Distance au réseau']) && (
+            <TableRow>
+              <TableColumn style={{ fontWeight: 'bold', width: '180px' }}>Distance au réseau</TableColumn>
+              <TableColumn>{Math.round(demand['Distance au réseau'])} m</TableColumn>
+            </TableRow>
+          )}
+        </Table>
+      </Section>
 
       {demand.Structure === 'Copropriété' && (
         <>
@@ -42,8 +68,10 @@ const CreationDemandeEmail = ({ demand }: CreationDemandeEmailProps) => {
                 </Text>
                 <Text>
                   Sans attendre, nous vous invitons à{' '}
-                  <Link href={`${clientConfig.websiteUrl}/documentation/guide-france-chaleur-urbaine.pdf`}>télécharger notre guide</Link>,
-                  qui récapitule les grandes étapes pour se raccorder à un réseau de chaleur, ainsi que les principales aides financières
+                  <Link href="/documentation/guide-france-chaleur-urbaine.pdf" campaign="demands.user-new" content="guide-pdf">
+                    télécharger notre guide
+                  </Link>
+                  , qui récapitule les grandes étapes pour se raccorder à un réseau de chaleur, ainsi que les principales aides financières
                   disponibles.
                 </Text>
               </>
@@ -219,12 +247,19 @@ const CreationDemandeEmail = ({ demand }: CreationDemandeEmailProps) => {
           )}
           <Text>
             L’amélioration de l’isolation thermique de votre maison constitue un autre levier pour réduire votre facture énergétique et
-            limiter votre impact écologique. Pour être accompagné dans vos projets de rénovation énergétique,, rendez-vous sur{' '}
+            limiter votre impact écologique. Pour être accompagné dans vos projets de rénovation énergétique, rendez-vous sur{' '}
             <Link href="https://france-renov.gouv.fr/">France Rénov</Link>.
           </Text>
         </>
       )}
 
+      <Text>
+        Pour toute question sur votre demande, vous pouvez utiliser le{' '}
+        <Link href="/contact" campaign="demands.user-new" content="contact">
+          formulaire de contact
+        </Link>
+        .
+      </Text>
       <Text>Bien cordialement,</Text>
       <Text>L'équipe France Chaleur Urbaine</Text>
     </Layout>
