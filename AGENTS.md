@@ -12,6 +12,7 @@ For every user message:
   - **minor changes** (typo, rename, single-line fix): implement directly, no plan needed
   - **significant changes** (new feature, refactor, multi-file edit): create a plan → ask user to confirm → implement
   - **after implementation**: run `pnpm lint`, check IDE Tailwind CSS extension diagnostics on modified files (canonical classes, unknown utilities — not caught by Biome), run `pnpm ts`, and `pnpm test` if relevant — fix any errors before delivering
+  - **update module docs**: if the change affects a module's high-level behavior or integration points, update the relevant `AGENTS.md` (or `.ai/context/*.md`). Skip implementation details — only what matters for high-level understanding
   - print a summary: start with a high-level overview (4-5 sentences max: what was done and why), then list main files modified/created with a one-liner per file
 
 ## Developer profile
