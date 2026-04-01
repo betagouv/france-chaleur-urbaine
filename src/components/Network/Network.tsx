@@ -17,6 +17,7 @@ import { formatMW, formatMWh, prettyFormatNumber } from '@/utils/strings';
 
 import ClassedNetwork from './ClassedNetwork';
 import ColdNetwork from './ColdNetwork';
+import EcoreseauLabel, { EcoreseauInfo } from './EcoreseauLabel';
 import EligibilityTestBox from './EligibilityTestBox';
 import EnergiesChart from './EnergiesChart';
 import { BoxSection, InformationsComplementairesBox } from './Network.styles';
@@ -64,10 +65,19 @@ const NetworkPanel = ({
           <Heading as="h1" color="blue-france">
             {network.nom_reseau ?? 'Nom inconnu'} ({network['Identifiant reseau']})
           </Heading>
-          {network['reseaux classes'] && (
-            <Box mt="1w">
-              <ClassedNetwork externalLinks={externalLinks} />
-            </Box>
+          {(network['reseaux classes'] || (!isCold && network.ecoreseau)) && (
+            <div className="mt-4 flex flex-col gap-6 lg:flex-row lg:items-center">
+              {network['reseaux classes'] && (
+                <div className="flex">
+                  <ClassedNetwork externalLinks={externalLinks} />
+                </div>
+              )}
+              {network.ecoreseau && (
+                <div className="flex-1">
+                  <EcoreseauLabel ecoreseau={network.ecoreseau.toString()} />
+                </div>
+              )}
+            </div>
           )}
           {isCold && (
             <Box mt="1w">
@@ -526,9 +536,12 @@ const NetworkPanel = ({
               </Box>
             )}
             {(!displayBlocks || displayBlocks.includes('communes')) && (
-              <Box fontStyle="italic" fontSize="12px">
-                Commune{network.communes.length > 1 ? 's' : ''} d'implantation : {network.communes.join(', ')}
-              </Box>
+              <>
+                <Box fontStyle="italic" fontSize="12px">
+                  Commune{network.communes.length > 1 ? 's' : ''} d'implantation : {network.communes.join(', ')}
+                </Box>
+                {network.ecoreseau && <EcoreseauInfo ecoreseau={network.ecoreseau} />}
+              </>
             )}
           </Box>
         )}

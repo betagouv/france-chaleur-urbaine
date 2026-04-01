@@ -19,13 +19,28 @@ const Name = styled(Text)`
   margin-top: 8px;
 `;
 
-const NetworkName = ({ name, isClassed, identifiant }: { name: string; isClassed: boolean; identifiant: string }) => {
+const NetworkName = ({
+  ecoreseau,
+  name,
+  isClassed,
+  identifiant,
+}: {
+  ecoreseau?: string | null;
+  name: string;
+  isClassed: boolean;
+  identifiant: string;
+}) => {
   return (
     <Box className="fr-m-1w">
       {isClassed && (
         <IsClassedTag size="xs" mt="1w">
           RÉSEAU CLASSÉ
         </IsClassedTag>
+      )}
+      {ecoreseau && (
+        <div className="mt-1 w-fit rounded bg-green-100 p-1 text-xs font-bold text-green-800">
+          {ecoreseau === 'ecoreseau + 2025' ? 'LABEL ÉCORÉSEAU +' : 'LABEL ÉCORÉSEAU'}
+        </div>
       )}
       <Name>
         <Link href={`/reseaux/${identifiant}`} isExternal>

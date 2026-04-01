@@ -7,6 +7,7 @@ export interface Network {
   has_trace: boolean;
   'contenu CO2': number;
   'contenu CO2 ACV': number;
+  ecoreseau?: string | null;
   'Moyenne-annee-DPE': string;
   nom_reseau: string;
   'Rend%': number;

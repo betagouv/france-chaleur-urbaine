@@ -21,6 +21,7 @@ const Popup = defineLayerPopup<ReseauxDeChaleurTile>(
     } catch {
       tags = ["Tags non affichables, veuillez contacter l'équipe"];
     }
+
     return (
       <>
         <Title title={`ID FCU: ${reseauDeChaleur.id_fcu}`}>{reseauDeChaleur.nom_reseau ?? 'Réseau de chaleur'}</Title>
@@ -33,6 +34,17 @@ const Popup = defineLayerPopup<ReseauxDeChaleurTile>(
             value={reseauDeChaleur['contenu CO2 ACV']}
             formatter={(value) => (isDefined(value) ? `${prettyFormatNumber(value * 1000)} g/kWh` : 'Non connu')}
           />
+          {reseauDeChaleur.ecoreseau && (
+            <Property
+              label="Label"
+              value={
+                <div className="flex gap-3 items-center">
+                  <span>Écoréseau</span>
+                  <img src={`/img/${reseauDeChaleur.ecoreseau}.png`} alt={reseauDeChaleur.ecoreseau} className="h-10 w-auto" />
+                </div>
+              }
+            />
+          )}
           {hasRole('admin') && ['/admin/demandes', '/admin/reseaux'].includes(pathname) && (
             <Property
               label={

@@ -290,6 +290,7 @@ const NetworksList = () => {
         accessorKey: 'nom_reseau',
         cell: (params) => (
           <NetworkName
+            ecoreseau={params.row.original.ecoreseau}
             name={params.row.original.nom_reseau}
             isClassed={params.row.original['reseaux classes']}
             identifiant={params.row.original['Identifiant reseau']}
