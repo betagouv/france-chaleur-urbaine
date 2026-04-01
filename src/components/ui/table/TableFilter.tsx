@@ -9,7 +9,7 @@ import type { Interval } from '@/utils/interval';
 
 import type { TableCellProps } from './TableCell';
 
-export type TableFilterType = 'Range' | 'Facets' | 'ComboBox' | 'EmptyOrFilled';
+export type TableFilterType = 'Range' | 'Facets' | 'ComboBox' | 'EmptyOrFilled' | 'Text';
 
 export type TableFilterProps = {
   onChange: (value: any) => void;
@@ -24,7 +24,9 @@ export type TableFilterProps = {
     }
   | {
       type: 'Facets';
-      filterProps?: Omit<CheckboxesProps, 'options'> & { Component: React.FC<{ value: string }> };
+      filterProps?: Omit<CheckboxesProps, 'options'> & {
+        Component: React.FC<{ value: string }>;
+      };
       value?: Record<string, boolean>;
     }
   | {
@@ -37,6 +39,11 @@ export type TableFilterProps = {
       filterProps?: { filledLabel?: string; emptyLabel?: string };
       value?: 'filled' | 'empty' | undefined;
     }
+  | {
+      type: 'Text';
+      filterProps?: { label?: string; placeholder?: string };
+      value?: string;
+    }
 );
 
 export const defaultTableFilterFns = {
@@ -44,6 +51,7 @@ export const defaultTableFilterFns = {
   EmptyOrFilled: 'emptyOrFilled',
   Facets: 'includesAny',
   Range: 'inNumberRangeNotNull', // Sera remplacé par inDateRangeNotNull si cellType est DateTime/Date
+  Text: 'includesString',
 } as const;
 
 // Default date range values for date filters
@@ -177,7 +185,7 @@ const TableFilter = ({ value, type, onChange, filterProps, facetedUniqueValues, 
             checked: !value ? true : value[facetKey] === true,
             onChange: () => {
               const newValue = {
-                ...(value || entries.reduce((acc, [facetKey]) => ({ ...acc, [facetKey]: true }), {} as Record<string, boolean>)),
+                ...(value || entries.reduce((acc, [entryFacetKey]) => ({ ...acc, [entryFacetKey]: true }), {} as Record<string, boolean>)),
               };
               newValue[facetKey] = !newValue[facetKey];
               onChange(newValue);
@@ -244,6 +252,18 @@ const TableFilter = ({ value, type, onChange, filterProps, facetedUniqueValues, 
           </label>
         </div>
       </div>
+    );
+  } else if (type === 'Text') {
+    const { label = '', placeholder = 'Filtrer...' } = filterProps || {};
+    return (
+      <Input
+        label={label}
+        nativeInputProps={{
+          onChange: (e) => onChange(e.target.value || undefined),
+          placeholder,
+          value: value || '',
+        }}
+      />
     );
   }
 
