@@ -72,6 +72,4 @@ Think critically first, code second. One good question beats three iterations.
 
 ## Module-level docs
 
-Each module in `src/modules/` may have its own `AGENTS.md`. Read it when editing files in or importing from that module.
-
-26 modules: `analytics`, `app`, `auth`, `ban`, `bdnb`, `chaleur-renouvelable`, `config`, `data`, `demands`, `diagnostic`, `email`, `events`, `form`, `geo`, `jobs`, `notification`, `opendata`, `optimization`, `permissions`, `pro-eligibility-tests`, `reseaux`, `security`, `tags`, `tiles`, `trpc`, `users`.
+Each module in `src/modules/` may have its own `AGENTS.md`. Read it when editing files in or importing from that module. Use `glob src/modules/*/AGENTS.md` to discover which modules have one.
