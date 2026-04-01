@@ -19,6 +19,7 @@ import { registerProEligibilityTestsCommands } from '@/modules/pro-eligibility-t
 import { registerNetworkCommands } from '@/modules/reseaux/commands';
 import { zAirtableSynchronizableNetworkTable } from '@/modules/reseaux/constants';
 import { downloadNetwork } from '@/modules/reseaux/server/download-network';
+import { importEcoreseauLabels } from '@/modules/reseaux/server/ecoreseaux';
 import { applyGeometryUpdates } from '@/modules/reseaux/server/geometry-updates';
 import { syncPostgresToAirtable } from '@/modules/reseaux/server/sync-pg-to-airtable';
 import { registerTilesCommands } from '@/modules/tiles/commands';
@@ -302,6 +303,13 @@ program
       await kdb.updateTable('zones_et_reseaux_en_construction').set({ tags }).where('id_fcu', '=', parseInt(id_fcu_futur, 10)).execute();
     }
     console.info('Tags importés avec succès');
+  });
+
+program
+  .command('import:ecoreseau')
+  .description('Importe les labels Ecoréseau depuis les CSV et met à jour reseaux_de_chaleur.ecoreseau via l’ID SNCU')
+  .action(async () => {
+    await importEcoreseauLabels();
   });
 
 program
