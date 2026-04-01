@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "allowJs": true,
-    "baseUrl": ".",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "importHelpers": true,
@@ -13,9 +12,9 @@
     "moduleResolution": "bundler",
     "noEmit": true,
     "paths": {
-      "@/*": ["src/*"],
-      "@cli/*": ["scripts/*"],
-      "@root/*": ["*"]
+      "@/*": ["./src/*"],
+      "@cli/*": ["./scripts/*"],
+      "@root/*": ["./*"]
     },
     "plugins": [
       {

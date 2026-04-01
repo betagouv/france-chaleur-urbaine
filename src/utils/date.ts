@@ -11,6 +11,7 @@ dayjs().localeData();
 import 'dayjs/locale/fr';
 
 dayjs.locale('fr');
+
 export { dayjs };
 
 /**

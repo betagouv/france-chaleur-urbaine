@@ -363,7 +363,7 @@ function DemandesNew(): React.ReactElement {
           onFiltersChange={setColumnFilters}
         />
       </div>
-      <ResizablePanelGroup direction="horizontal" className="gap-4">
+      <ResizablePanelGroup orientation="horizontal" className="gap-4">
         <ResizablePanel defaultSize={66}>
           <TableSimple
             columns={tableColumns}

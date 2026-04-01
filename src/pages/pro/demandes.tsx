@@ -566,7 +566,7 @@ function DemandesNew(): React.ReactElement {
             Exporter
           </ButtonExport>
         </div>
-        <ResizablePanelGroup direction="horizontal" className="gap-4">
+        <ResizablePanelGroup orientation="horizontal" className="gap-4">
           <ResizablePanel defaultSize={66}>
             <TableSimple
               columns={tableColumns}

@@ -72,6 +72,7 @@ import { type MapboxStyleDefinition, MapboxStyleSwitcherControl } from './StyleS
 import rawSatelliteConfig from './satellite.config.json';
 
 export type { AdresseEligible };
+
 const mapSettings = {
   defaultLatitude: 47,
   defaultLongitude: 2.3,

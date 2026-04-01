@@ -1,5 +1,3 @@
-import { createRequire } from 'node:module';
-
 import createMDX from '@next/mdx';
 import type { NextConfig } from 'next';
 
@@ -102,21 +100,6 @@ const configFunctions = [
     },
   }),
 ];
-
-// Build optimizePackageImports dynamically from package.json deps
-const requireFromHere = createRequire(import.meta.url);
-const pkgJson = requireFromHere('./package.json');
-const packagesSet = new Set<string>([
-  ...Object.keys(pkgJson.dependencies || {}),
-  ...Object.keys(pkgJson.optionalDependencies || {}),
-  ...Object.keys(pkgJson.peerDependencies || {}),
-]);
-
-const excludedOptimizeImports = new Set<string>([
-  'pg', // panic with scalingo only : Error [TurbopackInternalError]: The packages specified in the 'transpilePackages' conflict with the 'serverExternalPackages': ["pg"]
-]);
-
-const optimizePackageImports = Array.from(packagesSet).filter((name) => !excludedOptimizeImports.has(name));
 
 const nextConfig: NextConfig = {
   assetPrefix: isGithubCI ? '/france-chaleur-urbaine/' : undefined,

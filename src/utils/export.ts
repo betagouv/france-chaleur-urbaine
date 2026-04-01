@@ -84,4 +84,4 @@ const exportAsXLSX = <T extends any[]>(
   downloadFile(url, fileName);
 };
 
-export { exportAsXLSX, type ExportColumn, processData, type SheetData };
+export { type ExportColumn, exportAsXLSX, processData, type SheetData };

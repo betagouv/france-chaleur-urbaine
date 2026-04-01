@@ -111,7 +111,7 @@ export class MapboxStyleSwitcherControl implements IControl {
   }
 
   public onRemove(): void {
-    if (!this.controlContainer || !this.controlContainer.parentNode || !this.map || !this.styleButton) {
+    if (!this.controlContainer?.parentNode || !this.map || !this.styleButton) {
       return;
     }
     this.styleButton.removeEventListener('click', this.onDocumentClick);

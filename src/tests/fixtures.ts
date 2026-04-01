@@ -44,23 +44,17 @@ export async function cleanDatabase() {
   // Parallelize all table cleanups (ordered by FK constraints between groups)
   await Promise.all([
     // Network tables
-    kdb
-      .deleteFrom('zone_de_developpement_prioritaire')
-      .execute(),
+    kdb.deleteFrom('zone_de_developpement_prioritaire').execute(),
     kdb.deleteFrom('zones_et_reseaux_en_construction').execute(),
     kdb.deleteFrom('reseaux_de_chaleur').execute(),
 
     // Geographic tables
-    kdb
-      .deleteFrom('ign_communes')
-      .execute(),
+    kdb.deleteFrom('ign_communes').execute(),
     kdb.deleteFrom('ign_departements').execute(),
     kdb.deleteFrom('ign_regions').execute(),
 
     // User-related tables
-    kdb
-      .deleteFrom('demand_emails')
-      .execute(),
+    kdb.deleteFrom('demand_emails').execute(),
     kdb.deleteFrom('tags_reminders').execute(),
     kdb.deleteFrom('events').execute(),
     kdb.deleteFrom('pro_eligibility_tests_addresses').execute(),

@@ -1216,7 +1216,7 @@ const GestionDesReseaux = () => {
         </Notice>
       )}
       <div className="my-8">
-        <ResizablePanelGroup direction="horizontal" className="gap-4">
+        <ResizablePanelGroup orientation="horizontal" className="gap-4">
           <ResizablePanel defaultSize={66}>
             <Tabs
               classes={{ panel: 'p-4' }}

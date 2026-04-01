@@ -2,6 +2,7 @@ import { Alert } from '@codegouvfr/react-dsfr/Alert';
 import { Button } from '@codegouvfr/react-dsfr/Button';
 import { type FormEvent, useState } from 'react';
 
+import { clientConfig } from '@/client-config';
 import Checkboxes from '@/components/form/dsfr/Checkboxes';
 import Input from '@/components/form/dsfr/Input';
 import Link from '@/components/ui/Link';
@@ -151,14 +152,14 @@ const DemandSondageForm = ({ addressData = {}, cardMode }: { addressData: Addres
           </div>
         ))}
       <div className="fr-grid-row fr-grid-row--center fr-mt-5w">
-        <a className="underline text-white fr-md-auto" href={process.env.NEXT_PUBLIC_FEEDBACK_URL} target="_blank">
+        <Link className="underline text-white fr-md-auto" href={clientConfig.feedbackUrl} isExternal>
           <img
             src="https://voxusagers.numerique.gouv.fr/static/bouton-bleu.svg"
             alt="Je donne mon avis"
             title="Je donne mon avis sur cette démarche"
             loading="lazy"
           />
-        </a>
+        </Link>
       </div>
     </>
   );

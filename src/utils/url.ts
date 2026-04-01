@@ -5,7 +5,7 @@
  * @returns the relative path
  */
 export const stripDomainFromURL = (path: string | null): string | null => {
-  if (!path || !path.startsWith('/') || path.startsWith('//')) {
+  if (!path?.startsWith('/') || path.startsWith('//')) {
     return null;
   }
   try {
