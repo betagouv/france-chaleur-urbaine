@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 
 import Tooltip from '@/components/ui/Tooltip';
 import type { ProEligibilityTestHistoryEntry } from '@/modules/pro-eligibility-tests/types';
-import { structureTypes } from '@/modules/users/constants';
+import { structureTypesLabels } from '@/modules/users/constants';
 import { upperCaseFirstChar } from '@/utils/strings';
 
 import type { MapSourceLayersSpecification, PopupStyleHelpers } from './common';
@@ -138,7 +138,7 @@ function Popup(
                   >
                     <span>
                       {structure_name || structure_type
-                        ? `${structure_name || ''} ${structure_type ? `(${structureTypes[structure_type as keyof typeof structureTypes]})` : ''}`
+                        ? `${structure_name || ''} ${structure_type ? `(${structureTypesLabels[structure_type as keyof typeof structureTypesLabels]})` : ''}`
                         : 'Structure non connue'}
                       {(gestionnaires || []).join(', ')}
                     </span>

@@ -3,7 +3,8 @@ import Loader from '@/components/ui/Loader';
 import Notice from '@/components/ui/Notice';
 import { notify } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
-import { roles, structureTypes, updateProfileDefaultValues, zUpdateProfileSchema } from '@/modules/users/constants';
+import { roles, structureTypesFormLabels, updateProfileDefaultValues, zUpdateProfileSchema } from '@/modules/users/constants';
+import { ObjectEntries } from '@/utils/typescript';
 
 function ProfileForm() {
   const { data: profile, isLoading } = trpc.users.getProfile.useQuery();
@@ -60,7 +61,7 @@ function ProfileForm() {
             <Select
               name="structure_type"
               label="Type de structure"
-              options={Object.entries(structureTypes).map(([key, label]) => ({ label, value: key }))}
+              options={ObjectEntries(structureTypesFormLabels).map(([key, label]) => ({ label, value: key }))}
             />
             <Input name="structure_name" label="Nom de la structure" />
             {structureType === 'autre' && <Input name="structure_other" label="Renseignez le type de structure" />}

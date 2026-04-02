@@ -14,7 +14,7 @@ Ce module est actuellement en cours de migration depuis l'architecture legacy ve
   - `registrationSchema` - Schéma complet d'inscription
   - `createUserAdminSchema` - Création admin
   - `updateUserAdminSchema` - Mise à jour admin
-  - `structureTypes` - Types de structures professionnelles
+  - `structureTypesLabels` - Types de structures professionnelles
 - **`server/service.ts`** : Services CRUD utilisateurs (migré depuis `/src/server/services/user.ts`)
 
 ### 🚧 Ce qui reste à migrer
@@ -69,10 +69,10 @@ users/
 
 ```typescript
 // Schémas Zod (déjà dans le module)
-import { 
+import {
   registrationSchema,
   createUserAdminSchema,
-  updateUserAdminSchema 
+  updateUserAdminSchema
 } from '@/modules/users/constants';
 
 // Services (migré dans les modules)
@@ -89,16 +89,16 @@ import * as authService from '@/modules/auth/server/service';
 
 ```typescript
 // Schémas Zod
-import { 
+import {
   registrationSchema,
-  createUserAdminSchema 
+  createUserAdminSchema
 } from '@/modules/users/constants';
 
 // Services backend
-import { 
+import {
   createUser,
   updateUser,
-  deleteUser 
+  deleteUser
 } from '@/modules/users/server/service';
 
 // TRPC (client)
