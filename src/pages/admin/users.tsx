@@ -115,7 +115,7 @@ export default function ManageUsers() {
         header: 'Role',
       },
       {
-        accessorKey: 'structure_type',
+        accessorFn: (row) => row.structure_type || null,
         cell: (info) => info.getValue() && structureTypesLabels[info.getValue<keyof typeof structureTypesLabels>()],
         filterProps: {
           Component: ({ value }) => <>{structureTypesLabels[value as keyof typeof structureTypesLabels] ?? value}</>,
@@ -123,6 +123,7 @@ export default function ManageUsers() {
         filterType: 'Facets',
         flex: 1.4,
         header: 'Type de structure',
+        id: 'structure_type',
       },
       {
         accessorFn: (row) => row.gestionnaires?.map((u) => u.toLowerCase()).join(' ') ?? '',

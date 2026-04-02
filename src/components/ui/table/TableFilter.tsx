@@ -171,10 +171,10 @@ const TableFilter = ({ value, type, onChange, filterProps, facetedUniqueValues, 
                 <Badge noIcon severity={facetKey === 'true' ? 'success' : 'error'} small>
                   {facetKey === 'true' ? 'Oui' : 'Non'}
                 </Badge>
+              ) : facetKey === 'undefined' || facetKey === 'null' || facetKey === '' ? (
+                'Aucun'
               ) : Component ? (
                 <Component value={facetKey} />
-              ) : facetKey === 'undefined' || facetKey === '' ? (
-                'Aucun'
               ) : (
                 facetKey
               )}{' '}
