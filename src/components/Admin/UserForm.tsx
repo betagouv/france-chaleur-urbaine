@@ -3,10 +3,11 @@ import useForm from '@/components/form/react-form/useForm';
 import Badge from '@/components/ui/Badge';
 import Tag from '@/components/ui/Tag';
 import Tooltip from '@/components/ui/Tooltip';
-import { createUserAdminSchema, structureTypes, updateUserAdminSchema } from '@/modules/users/constants';
+import { createUserAdminSchema, structureTypesFormLabels, updateUserAdminSchema } from '@/modules/users/constants';
 import type { UsersResponse } from '@/pages/api/admin/users/[[...slug]]';
 import { userRoles } from '@/types/enum/UserRole';
 import cx from '@/utils/cx';
+import { ObjectEntries } from '@/utils/typescript';
 
 export type OnCreate = (data: UsersResponse['createInput']) => Promise<void> | void;
 export type OnUpdate = (data: UsersResponse['updateInput']) => Promise<void> | void;
@@ -138,7 +139,7 @@ const UserForm = ({ user, onSubmit, loading }: UserFormProps) => {
             <Field.Select
               name="structure_type"
               label="Type de structure"
-              options={Object.entries(structureTypes).map(([key, label]) => ({ label, value: key }))}
+              options={ObjectEntries(structureTypesFormLabels).map(([key, label]) => ({ label, value: key }))}
             />
             {structureType === 'autre' && (
               <Field.Input

@@ -11,13 +11,14 @@ import { toastErrors } from '@/modules/notification';
 import {
   type CredentialsSchema,
   type IdentitySchema,
-  structureTypes,
+  structureTypesFormLabels,
   zCredentialsSchema,
   zIdentitySchema,
 } from '@/modules/users/constants';
 import { userRolesInscription } from '@/types/enum/UserRole';
 import { postFetchJSON } from '@/utils/network';
 import { upperCaseFirstChar } from '@/utils/strings';
+import { ObjectEntries } from '@/utils/typescript';
 
 type FormStep = {
   label: string;
@@ -156,7 +157,7 @@ function RegisterForm() {
                   <Select
                     name="structure_type"
                     label="Type de structure"
-                    options={Object.entries(structureTypes).map(([key, label]) => ({ label, value: key }))}
+                    options={ObjectEntries(structureTypesFormLabels).map(([key, label]) => ({ label, value: key }))}
                   />
                   <Input
                     name="structure_name"

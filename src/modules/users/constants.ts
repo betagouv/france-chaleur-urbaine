@@ -2,8 +2,9 @@ import { z } from 'zod';
 
 import { type UserRole, userRoles, userRolesInscription } from '@/types/enum/UserRole';
 
+/** Label des types de structure  */
 // biome-ignore assist/source/useSortedKeys: keep field order for clarity and maintainability
-export const structureTypes = {
+export const structureTypesLabels = {
   bailleur_social: 'Bailleur social',
   bureau_etudes: "Bureau d'études",
   collectivite: 'Collectivité',
@@ -11,6 +12,12 @@ export const structureTypes = {
   gestionnaire_reseaux: 'Gestionnaire de réseaux de chaleur',
   mandataire_cee: 'Mandataire / délégataire CEE',
   syndic_copropriete: 'Syndic de copropriété',
+  autre: 'Autre',
+};
+
+/** Labels utilisés sur le formulaire */
+export const structureTypesFormLabels = {
+  ...structureTypesLabels,
   autre: 'Autre (préciser)',
 };
 

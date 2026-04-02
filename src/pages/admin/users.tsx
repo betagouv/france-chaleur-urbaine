@@ -18,6 +18,7 @@ import TableSimple, { type ColumnDef } from '@/components/ui/table/TableSimple';
 import { useFetch } from '@/hooks/useApi';
 import useCrud from '@/hooks/useCrud';
 import { notify, toastErrors } from '@/modules/notification';
+import { structureTypesLabels } from '@/modules/users/constants';
 import type { UsersResponse } from '@/pages/api/admin/users/[[...slug]]';
 import { withAuthentication } from '@/server/authentication';
 import type { UserRole } from '@/types/enum/UserRole';
@@ -86,10 +87,6 @@ export default function ManageUsers() {
   const columns: ColumnDef<UsersResponse['listItem']>[] = useMemo(
     () => [
       {
-        accessorKey: 'id',
-        hidden: true,
-      },
-      {
         accessorKey: 'email',
         cell: (info) => (
           <div>
@@ -116,6 +113,17 @@ export default function ManageUsers() {
         filterType: 'Facets',
         flex: 1.5,
         header: 'Role',
+      },
+      {
+        accessorFn: (row) => row.structure_type || null,
+        cell: (info) => info.getValue() && structureTypesLabels[info.getValue<keyof typeof structureTypesLabels>()],
+        filterProps: {
+          Component: ({ value }) => <>{structureTypesLabels[value as keyof typeof structureTypesLabels] ?? value}</>,
+        },
+        filterType: 'Facets',
+        flex: 1.4,
+        header: 'Type de structure',
+        id: 'structure_type',
       },
       {
         accessorFn: (row) => row.gestionnaires?.map((u) => u.toLowerCase()).join(' ') ?? '',

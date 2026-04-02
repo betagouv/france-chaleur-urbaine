@@ -1,4 +1,4 @@
-import { structureTypes } from '@/modules/users/constants';
+import { structureTypesLabels } from '@/modules/users/constants';
 import base from '@/server/db/airtable';
 import { kdb, sql } from '@/server/db/kysely';
 import { parentLogger } from '@/server/helpers/logger';
@@ -68,7 +68,7 @@ export const syncComptesProFromUsers = async (interval?: string) => {
         Prénom: user.first_name,
         Role: user.role,
         Statut: user.status,
-        'Type de structure': user.structure_other || structureTypes[user.structure_type as keyof typeof structureTypes],
+        'Type de structure': user.structure_other || structureTypesLabels[user.structure_type as keyof typeof structureTypesLabels],
         Téléphone: user.phone
           ? user.phone
               .replace(/\s/g, '')
