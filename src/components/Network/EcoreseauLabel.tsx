@@ -2,16 +2,12 @@ import Image from 'next/image';
 
 import Link from '@/components/ui/Link';
 
-type EcoreseauLabelProps = {
-  ecoreseau: string;
-};
-
 const ECORESEAU_LINK = 'https://amorce.asso.fr/boite-a-outils-energie-label-ecoreseau-de-chaleur';
 
-function EcoreseauLabel({ ecoreseau }: EcoreseauLabelProps) {
+function EcoreseauLabel({ ecoreseau }: { ecoreseau: string }) {
   return (
     <div className="flex w-full items-center">
-      <Image src={`/img/${ecoreseau}.png`} alt="Logo Ecoréseau par amorce" width={60} height={60} className="shrink-0" />
+      <Image src={`/img/${ecoreseau}.png`} alt="Logo Ecoréseau par amorce" width={56} height={56} className="shrink-0" />
       <b className="fr-ml-1w">
         LABEL
         <br />
@@ -34,7 +30,7 @@ function EcoreseauLabel({ ecoreseau }: EcoreseauLabelProps) {
   );
 }
 
-export function EcoreseauInfo({ ecoreseau }: EcoreseauLabelProps) {
+export function EcoreseauInfo({ ecoreseau }: { ecoreseau: string }) {
   return (
     <div className="mt-4 flex items-start gap-4 text-sm">
       <Image src={`/img/${ecoreseau}.png`} alt="Logo Ecoréseau par amorce" width={56} height={56} className="shrink-0" />
