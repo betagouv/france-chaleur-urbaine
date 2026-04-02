@@ -22,7 +22,7 @@
     "scan": "pnpm dev & npx react-scan@latest localhost:3000",
     "dev:webpack": "next dev",
     "dev:debug": "API_DEBUG_MODE=true pnpm dev",
-    "dev:email": "NODE_ENV=test email dev --dir src/modules/email/react-email/templates",
+    "dev:email": "NEXT_PUBLIC_SITE_URL=http://localhost:3000 NODE_ENV=test email dev --dir src/modules/email/react-email/templates --port 3001",
     "build": "NODE_OPTIONS=\"--max-old-space-size=8192\" next build",
     "build:analyze": "TURBOPACK_STATS=1 pnpm build",
     "deadcode": "pnpx knip",
