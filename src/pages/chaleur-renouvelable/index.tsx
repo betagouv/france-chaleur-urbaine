@@ -19,7 +19,7 @@ const BENEFITS = [
   {
     description: "MaPrimeRénov', CEE, aides locales : des financements publics couvrant une grande partie des travaux.",
     icon: 'icon-immeuble.png',
-    title: 'Jusqu’à 100% de prise en charge pour votre projet',
+    title: 'Bénéficiez d’aides pour financer vitre projet',
   },
   {
     description: 'Bon DPE : bien valorisé et conforme à la réglementation.',
@@ -28,7 +28,7 @@ const BENEFITS = [
   },
   {
     description:
-      'Passer à un système de chauffage écologique peut diviser par deux les émissions de chauffage : un geste concret pour la transition écologique.',
+      'Passer à un système de chauffage écologique peut diviser par deux les émissions de votre chauffage : un geste concret pour la transition écologique.',
     icon: 'icon-feuille.png',
     title: 'Réduisez vos émissions de CO2',
   },
@@ -38,7 +38,7 @@ const BENEFITS = [
     title: 'Gagnez en confort toute l’année',
   },
   {
-    description: 'Les systèmes de chauffages écologiques sont souvent moins chères et plus efficaces que le gaz ou le fioul.',
+    description: 'Les systèmes de chauffage écologiques sont souvent moins chers et plus efficaces que le gaz ou le fioul.',
     icon: 'icon-money.png',
     title: 'Réduisez vos factures d’énergie',
   },
@@ -98,12 +98,12 @@ const FAQS = [
   },
   {
     answer: `Tous les systèmes écologiques ne peuvent pas assurer le rafraichissement, c'est l'un des avantages des pompes à chaleur collectives réversibles : elles peuvent inverser leur cycle pour fonctionner comme une climatisation. Certains systèmes géothermiques permettent également un "free cooling" passif, en faisant simplement circuler l'eau fraîche du sous-sol sans compresseur.`,
-    question: 'Les systèmes de chauffages écologiques peuvent-ils aussi assurer le rafraîchissement en été ?',
+    question: 'Les systèmes de chauffage écologiques peuvent-ils aussi assurer le rafraîchissement en été ?',
   },
   {
     answer:
       "Absolument, et c'est même souvent conseillé. Un système hybride associant par exemple une PAC et des panneaux solaires thermiques, ou une chaudière biomasse couplée à du solaire, permet d'optimiser les performances selon les saisons et de réduire la dépendance à une seule source d'énergie.",
-    question: 'Peut-on combiner plusieurs systèmes de chauffages ?',
+    question: 'Peut-on combiner plusieurs systèmes de chauffage ?',
   },
 
   {
@@ -385,7 +385,7 @@ function ChaleurRenouvelablePage() {
         </div>
       </div>
       <div className="fr-container fr-py-6w">
-        <h3 className="fr-h6 fr-mb-3v font-medium uppercase">Les différents systèmes de chauffages écologiques (ENR)</h3>
+        <h3 className="fr-h6 fr-mb-3v font-medium uppercase">Les différents systèmes de chauffage écologiques (ENR)</h3>
         <p className="fr-h2 font-bold">Quelles solutions concrètes pour votre copropriété ?</p>
         <Image
           src="/different-mode-chauffage.webp"
