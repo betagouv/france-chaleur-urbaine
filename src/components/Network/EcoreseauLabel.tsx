@@ -2,12 +2,23 @@ import Image from 'next/image';
 
 import Link from '@/components/ui/Link';
 
+export const getEcoreseauImageSrc = (ecoreseau: string) => {
+  switch (ecoreseau) {
+    case 'ecoreseau 2025':
+      return '/img/ecoreseau2025.png';
+    case 'ecoreseau + 2025':
+      return '/img/ecoreseauplus2025.png';
+    default:
+      return `/img/${ecoreseau}.png`;
+  }
+};
+
 const ECORESEAU_LINK = 'https://amorce.asso.fr/boite-a-outils-energie-label-ecoreseau-de-chaleur';
 
 function EcoreseauLabel({ ecoreseau }: { ecoreseau: string }) {
   return (
     <div className="flex w-full items-center">
-      <Image src={`/img/${ecoreseau}.png`} alt="Logo Ecoréseau par amorce" width={56} height={56} className="shrink-0" />
+      <Image src={getEcoreseauImageSrc(ecoreseau)} alt="Logo Ecoréseau par amorce" width={56} height={56} className="shrink-0" />
       <b className="fr-ml-1w">
         LABEL
         <br />
@@ -33,7 +44,7 @@ function EcoreseauLabel({ ecoreseau }: { ecoreseau: string }) {
 export function EcoreseauInfo({ ecoreseau }: { ecoreseau: string }) {
   return (
     <div className="mt-4 flex items-start gap-4 text-sm">
-      <Image src={`/img/${ecoreseau}.png`} alt="Logo Ecoréseau par amorce" width={56} height={56} className="shrink-0" />
+      <Image src={getEcoreseauImageSrc(ecoreseau)} alt="Logo Ecoréseau par amorce" width={56} height={56} className="shrink-0" />
       <div>
         <strong>Label Écoréseau :</strong> ce réseau a reçu le label Écoréseau de chaleur pour valoriser ses performances environnementales,
         économiques et sociales. Ce label est attribué par AMORCE, en partenariat avec l’ADEME.{' '}
