@@ -6,7 +6,7 @@ import type { EcoreseauLabel } from '@/modules/reseaux/types';
 export const getEcoreseauImageSrc = (ecoreseau: EcoreseauLabel) =>
   ecoreseau === 'ecoreseau + 2025' ? '/img/ecoreseauplus2025.png' : '/img/ecoreseau2025.png';
 
-const ECORESEAU_LINK = 'https://amorce.asso.fr/boite-a-outils-energie-label-ecoreseau-de-chaleur';
+export const ECORESEAU_LINK = 'https://amorce.asso.fr/boite-a-outils-energie-label-ecoreseau-de-chaleur';
 
 function EcoreseauLabelBlock({ ecoreseau }: { ecoreseau: EcoreseauLabel }) {
   return (
