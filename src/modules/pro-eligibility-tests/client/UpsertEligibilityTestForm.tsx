@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import DSFRSelect from '@/components/form/dsfr/Select';
 import Upload from '@/components/form/dsfr/Upload';
@@ -106,6 +106,14 @@ const UpsertEligibilityTestForm = ({ testId, onComplete }: UpsertEligibilityTest
   const columnMapping = useValue<ColumnMapping>('columnMapping') ?? {};
   const dataType = useValue<'address' | 'coordinates'>('dataType');
   const content = useValue<string>('content');
+  const canHaveHeaders = (analysis?.nbRows ?? 0) > 1;
+
+  // évite que l'utilisateur choisisse un fichier d'une ligne + entête de colonne
+  useEffect(() => {
+    if (!canHaveHeaders && hasHeaders) {
+      form.setFieldValue('hasHeaders', false);
+    }
+  }, [canHaveHeaders, hasHeaders, form]);
 
   const getColumnLabel = (index: number): string =>
     hasHeaders && analysis?.headers[index] ? analysis?.headers[index] : String.fromCharCode(65 + index);
@@ -202,7 +210,7 @@ const UpsertEligibilityTestForm = ({ testId, onComplete }: UpsertEligibilityTest
                 </div>
               </div>
               <CSVImportTable analysis={analysis} hasHeaders={hasHeaders} mapping={columnMapping} dataType={dataType} />
-              <Checkbox small name="hasHeaders" label="Le fichier a des entêtes de colonnes" />
+              {canHaveHeaders && <Checkbox small name="hasHeaders" label="Le fichier a des entêtes de colonnes" />}
               <hr />
               <Radio
                 name="dataType"
