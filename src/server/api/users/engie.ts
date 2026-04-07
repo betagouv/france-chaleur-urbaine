@@ -1,6 +1,8 @@
 import { z } from 'zod';
 
 import cliConfig from '@/cli-config';
+import { updateContact } from '@/modules/ademe-connect/server/client';
+import { createEvent } from '@/modules/events/server/service';
 import { create } from '@/modules/users/server/service';
 import { type ApiAccounts, kdb } from '@/server/db/kysely';
 import { parentLogger } from '@/server/helpers/logger';
@@ -46,9 +48,8 @@ export const handleData = async (account: ApiAccounts, networks: EngieApiNetwork
   const existingUsersFromApi = await kdb
     .selectFrom('users')
     .innerJoin('api_accounts', 'users.from_api', 'api_accounts.key')
-    .select(['users.email', 'users.gestionnaires'])
+    .select(['users.id', 'users.email', 'users.active', 'users.gestionnaires'])
     .where('api_accounts.name', '=', account.name)
-    .where('users.active', '=', true)
     .execute();
 
   logger.info(`🔍 Found ${existingUsersFromApi.length} users in DB`);
@@ -71,7 +72,7 @@ export const handleData = async (account: ApiAccounts, networks: EngieApiNetwork
       if (!user) {
         logger.info(`🆕 Create user ${email}`);
         if (!cliConfig.dryRun) {
-          await create(
+          const record = await create(
             {
               active: true,
               email: sanitizedEmail,
@@ -85,6 +86,12 @@ export const handleData = async (account: ApiAccounts, networks: EngieApiNetwork
             },
             {} as any
           );
+          await createEvent({
+            context_id: (record as any).id,
+            context_type: 'user',
+            data: { api_name: account.name, email: sanitizedEmail, role: 'gestionnaire' },
+            type: 'user_created_api',
+          });
         } else {
           logger.info(' ⏭️ Skipped');
         }
@@ -110,19 +117,47 @@ export const handleData = async (account: ApiAccounts, networks: EngieApiNetwork
           })
           .where('id', '=', user.id)
           .execute();
+
+        await createEvent({
+          context_id: user.id,
+          context_type: 'user',
+          data: {
+            api_name: account.name,
+            email: sanitizedEmail,
+            gestionnaires_after: allTags,
+            gestionnaires_before: user.gestionnaires || [],
+          },
+          type: 'user_updated_api',
+        });
+
+        if (!user.active) {
+          updateContact(sanitizedEmail, { actif: true }).catch((error) =>
+            logger.error('ademe-connect updateContact failed on engie reactivation', { email: sanitizedEmail, error })
+          );
+        }
       } else {
         logger.info(' ⏭️ Skipped');
       }
     })
   );
 
-  logger.info(`🔍 Deactivate ${existingUsersFromApi.length} users not in the API`);
+  const usersToDeactivate = existingUsersFromApi.filter((u) => u.active);
+  logger.info(`🔍 Deactivate ${usersToDeactivate.length} users not in the API`);
 
   await Promise.all(
-    existingUsersFromApi.map(async ({ email }) => {
+    usersToDeactivate.map(async ({ id, email }) => {
       logger.info(`🚫 Deactivate user ${email}`);
       if (!cliConfig.dryRun) {
         await kdb.updateTable('users').set({ active: false }).where('email', '=', email).execute();
+        await createEvent({
+          context_id: id,
+          context_type: 'user',
+          data: { api_name: account.name, email },
+          type: 'user_deactivated_api',
+        });
+        updateContact(email, { actif: false }).catch((error) =>
+          logger.error('ademe-connect updateContact failed on engie deactivation', { email, error })
+        );
       } else {
         logger.info(' ⏭️ Skipped');
       }

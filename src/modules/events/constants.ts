@@ -5,7 +5,10 @@ export const eventTypes = [
   'user_activated',
   'user_registered',
   'user_created',
+  'user_created_api',
+  'user_deactivated_api',
   'user_updated',
+  'user_updated_api',
   'user_newsletter_subscribed',
   'user_newsletter_unsubscribed',
   'user_deleted',
@@ -51,6 +54,8 @@ export const eventTypeLabels: Record<EventType, string> = {
   tag_reminder_deleted: 'Suppression rappel tag',
   user_activated: 'Activation utilisateur',
   user_created: 'Création utilisateur (admin)',
+  user_created_api: 'Création utilisateur (API)',
+  user_deactivated_api: 'Désactivation utilisateur (API)',
   user_deleted: 'Suppression utilisateur',
   user_login: 'Connexion utilisateur',
   user_newsletter_subscribed: 'Abonnement newsletter',
@@ -58,6 +63,7 @@ export const eventTypeLabels: Record<EventType, string> = {
   user_password_reset_requested: 'Demande réinitialisation mot de passe',
   user_registered: 'Inscription utilisateur',
   user_updated: 'Mise à jour profil utilisateur',
+  user_updated_api: 'Mise à jour utilisateur (API)',
 };
 
 export type EventDataMap = {
@@ -80,6 +86,8 @@ export type EventDataMap = {
   tag_reminder_deleted: { tag_name: string };
   user_activated: null;
   user_created: { email: string; role: UserRole };
+  user_created_api: { api_name: string; email: string; role: UserRole };
+  user_deactivated_api: { api_name: string; email: string };
   user_registered: null;
   user_deleted: null;
   user_login: null;
@@ -87,6 +95,7 @@ export type EventDataMap = {
   user_newsletter_subscribed: null;
   user_newsletter_unsubscribed: null;
   user_updated: null;
+  user_updated_api: { api_name: string; email: string; gestionnaires_before: string[]; gestionnaires_after: string[] };
 };
 
 export const eventGranularities = ['minute', 'hour', 'day', 'week', 'month', 'year'] as const;

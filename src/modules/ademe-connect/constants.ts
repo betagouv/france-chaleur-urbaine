@@ -14,7 +14,7 @@ export const ROLE_TYPE_ORGANISME: Partial<Record<UserRole, string>> = {
  */
 export const buildRubriques = (roleLabel?: string | null, structureLabel?: string | null): string[] | undefined => {
   const items = [roleLabel ? `FCU - compte ${roleLabel}` : null, structureLabel ? `FCU - type ${structureLabel}` : null].filter(
-    (v) => !!v
-  ) as string[];
+    (v): v is string => !!v
+  );
   return items.length > 0 ? items : undefined;
 };

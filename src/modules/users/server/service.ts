@@ -62,13 +62,15 @@ export const create: typeof baseModel.create = async ({ optin_at, ...data }, _co
 
   const record = await baseModel.create({ ...data, optin_at: optin_at ? new Date() : null, password, status: 'valid' }, _context);
 
-  await createUserEvent({
-    author_id: _context.userId!,
-    context_id: (record as any).id,
-    context_type: 'user',
-    data: { email: data.email as string, role: data.role as UserRole },
-    type: 'user_created',
-  });
+  if (_context.userId) {
+    await createUserEvent({
+      author_id: _context.userId,
+      context_id: (record as any).id,
+      context_type: 'user',
+      data: { email: data.email as string, role: data.role as UserRole },
+      type: 'user_created',
+    });
+  }
 
   if (data.active && data.role === 'gestionnaire') {
     await sendEmailTemplate('auth.inscription', { email: data.email as string, id: (record as any).id });
@@ -79,8 +81,8 @@ export const create: typeof baseModel.create = async ({ optin_at, ...data }, _co
       abonnementNewsletter: false,
       acceptationRGPD: false,
       email: data.email as string,
-      nom: (data.last_name as string) || '',
-      prenom: (data.first_name as string) || '',
+      nom: (data.last_name as string) || undefined,
+      prenom: (data.first_name as string) || undefined,
       rubriques: buildRubriques(data.role, data.structure_type && structureTypesLabels[data.structure_type as StructureType]),
       telephone: (data.phone as string) || undefined,
       typeOrganisme: ROLE_TYPE_ORGANISME[data.role],
