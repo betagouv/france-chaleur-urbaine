@@ -65,7 +65,7 @@ const NetworkPanel = ({
           <Heading as="h1" color="blue-france">
             {network.nom_reseau ?? 'Nom inconnu'} ({network['Identifiant reseau']})
           </Heading>
-          {(network['reseaux classes'] || (!isCold && network.ecoreseau)) && (
+          {(network['reseaux classes'] || network.ecoreseau) && (
             <div className="mt-4 flex flex-col gap-6 lg:flex-row lg:items-center">
               {network['reseaux classes'] && (
                 <div className="flex">
