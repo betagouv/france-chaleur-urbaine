@@ -4,6 +4,7 @@ import type { UpdateObject } from 'kysely';
 import { buildRubriques, ROLE_TYPE_ORGANISME } from '@/modules/ademe-connect/constants';
 import { createContact, updateContact } from '@/modules/ademe-connect/server/client';
 import { sendEmailTemplate } from '@/modules/email';
+import { createUserEvent } from '@/modules/events/server/service';
 import {
   createUserAdminSchema,
   type StructureType,
@@ -14,6 +15,7 @@ import {
 import { type DB, kdb, sql, type Users } from '@/server/db/kysely';
 import { createBaseModel } from '@/server/db/kysely/base-model';
 import { logger } from '@/server/helpers/logger';
+import type { UserRole } from '@/types/enum/UserRole';
 import { isOneOf } from '@/utils/array';
 
 export const tableName = 'users';
@@ -59,6 +61,14 @@ export const create: typeof baseModel.create = async ({ optin_at, ...data }, _co
   const password = await bcrypt.hash(Math.random().toString(36).slice(2, 10), salt);
 
   const record = await baseModel.create({ ...data, optin_at: optin_at ? new Date() : null, password, status: 'valid' }, _context);
+
+  await createUserEvent({
+    author_id: _context.userId!,
+    context_id: (record as any).id,
+    context_type: 'user',
+    data: { email: data.email as string, role: data.role as UserRole },
+    type: 'user_created',
+  });
 
   if (data.active && data.role === 'gestionnaire') {
     await sendEmailTemplate('auth.inscription', { email: data.email as string, id: (record as any).id });

@@ -128,12 +128,20 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
     </>
   ),
   user_activated: () => 'a activé son compte',
-  user_created: () => 'a créé un compte',
+  user_created: (event, updateFilters) => (
+    <>
+      <span>a créé le compte </span>
+      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'user' })}>
+        {event.data.role && <UserRoleBadge role={event.data.role} />}&nbsp;{event.data.email}
+      </FilterButton>
+    </>
+  ),
   user_deleted: () => 'a supprimé un compte',
   user_login: () => "s'est connecté",
   user_newsletter_subscribed: () => "s'est abonné à la newsletter",
   user_newsletter_unsubscribed: () => "s'est désabonné de la newsletter",
   user_password_reset_requested: () => 'a demandé une réinitialisation de mot de passe',
+  user_registered: () => 'a créé un compte',
   user_updated: () => 'a mis à jour son profil',
 };
 

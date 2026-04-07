@@ -66,7 +66,7 @@ export const register = async ({
     author_id: insertedUser.id,
     context_id: insertedUser.id,
     context_type: 'user',
-    type: 'user_created',
+    type: 'user_registered',
   });
 
   createContact({

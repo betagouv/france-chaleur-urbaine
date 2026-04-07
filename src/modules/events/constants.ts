@@ -1,6 +1,9 @@
+import type { UserRole } from '@/types/enum/UserRole';
+
 export const eventTypes = [
   'user_login',
   'user_activated',
+  'user_registered',
   'user_created',
   'user_updated',
   'user_newsletter_subscribed',
@@ -47,12 +50,13 @@ export const eventTypeLabels: Record<EventType, string> = {
   tag_reminder_created: 'Création rappel tag',
   tag_reminder_deleted: 'Suppression rappel tag',
   user_activated: 'Activation utilisateur',
-  user_created: 'Création utilisateur',
+  user_created: 'Création utilisateur (admin)',
   user_deleted: 'Suppression utilisateur',
   user_login: 'Connexion utilisateur',
   user_newsletter_subscribed: 'Abonnement newsletter',
   user_newsletter_unsubscribed: 'Désabonnement newsletter',
   user_password_reset_requested: 'Demande réinitialisation mot de passe',
+  user_registered: 'Inscription utilisateur',
   user_updated: 'Mise à jour profil utilisateur',
 };
 
@@ -75,7 +79,8 @@ export type EventDataMap = {
   tag_reminder_created: { tag_name: string };
   tag_reminder_deleted: { tag_name: string };
   user_activated: null;
-  user_created: null;
+  user_created: { email: string; role: UserRole };
+  user_registered: null;
   user_deleted: null;
   user_login: null;
   user_password_reset_requested: null;

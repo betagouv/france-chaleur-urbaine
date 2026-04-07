@@ -34,7 +34,9 @@ export async function listEvents(options: ListEventsOptions) {
   let baseQuery = kdb.selectFrom('events');
 
   if (authorIds && authorIds.length > 0) {
-    baseQuery = baseQuery.where('author_id', 'in', authorIds);
+    baseQuery = baseQuery.where((eb) =>
+      eb.or([eb('author_id', 'in', authorIds), eb.and([eb('context_type', '=', 'user'), eb('context_id', 'in', authorIds)])])
+    );
   }
   if (context) {
     baseQuery = baseQuery.where('context_type', '=', context.type).where('context_id', '=', context.id);
@@ -102,7 +104,9 @@ export async function getEventStats(options: EventStatsOptions): Promise<EventSt
       q = q.where('type', 'in', types);
     }
     if (authorIds && authorIds.length > 0) {
-      q = q.where('author_id', 'in', authorIds);
+      q = q.where((eb) =>
+        eb.or([eb('author_id', 'in', authorIds), eb.and([eb('context_type', '=', 'user'), eb('context_id', 'in', authorIds)])])
+      );
     }
     if (context) {
       q = q.where('context_type', '=', context.type).where('context_id', '=', context.id);
