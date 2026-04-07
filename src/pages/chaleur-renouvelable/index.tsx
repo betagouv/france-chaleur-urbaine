@@ -178,13 +178,13 @@ const heatingSystemResources: ResourceCardProps[] = [
 }));
 
 function CardFrame({ children, className = '' }: CardFrameProps) {
-  return <div className={`w-full rounded-lg border-2 border-[#DDDDDD] bg-[#FEFCFA] fr-p-3w ${className}`}>{children}</div>;
+  return <div className={`w-full overflow-hidden rounded-lg border-2 border-[#DDDDDD] bg-[#FEFCFA] p-6 ${className}`}>{children}</div>;
 }
 
 function CardImage({ src, alt, className = '' }: CardImageProps) {
   return (
-    <div className={`relative fr-mb-3w h-[180px] w-full overflow-hidden rounded-t-lg ${className}`}>
-      <Image src={src} alt={alt} fill className="object-contain" />
+    <div className={`relative fr-mb-3w h-[180px] w-full rounded-t-lg shrink-0 overflow-hidden ${className}`}>
+      <Image src={src} alt={alt} fill className="object-cover" />
     </div>
   );
 }
@@ -223,9 +223,9 @@ function OtherHeatingSystemsCarousel() {
       nextLabel="Voir le système suivant"
       renderItem={(resource) => (
         <CardFrame className="flex h-full flex-col">
-          {resource.image && <CardImage src={`/img/${resource.image}`} alt="" />}
+          <CardImage src={`/img/${resource.image}`} alt="" />
           <h5 className="fr-h4">{resource.title}</h5>
-          <p className="flex-1 overflow-hidden [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:4]">
+          <p className="mb-0 max-h-12 flex-1 overflow-hidden text-ellipsis leading-6 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]">
             {resource.description}
           </p>
           <Link variant="secondary" className="fr-mt-3w" href={`/ressources/${resource.slug}`} isExternal>
@@ -393,7 +393,6 @@ function ChaleurRenouvelablePage() {
           className="w-full"
           width={1600}
           height={750}
-          sizes="(max-width: 768px) 100vw, 1200px"
         />
         <CompareSolutionsButton />
       </div>
