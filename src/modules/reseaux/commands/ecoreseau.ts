@@ -4,6 +4,7 @@ import { resolve } from 'node:path';
 import type { Command } from '@commander-js/extra-typings';
 import Papa from 'papaparse';
 
+import { type EcoreseauLabel, ecoreseauLabels } from '@/modules/reseaux/types';
 import { runTilesGeneration } from '@/modules/tiles/server/generation-run';
 import { kdb } from '@/server/db/kysely';
 
@@ -27,6 +28,9 @@ async function loadEcoreseauIds(filepath: string): Promise<string[]> {
   return parsed.data.map((row) => row.identifiant?.trim()).filter((identifiant): identifiant is string => !!identifiant);
 }
 
+const ecoreseau2025Label: EcoreseauLabel = ecoreseauLabels[0];
+const ecoreseauPlus2025Label: EcoreseauLabel = ecoreseauLabels[1];
+
 export function registerEcoreseauCommand(parentProgram: Command) {
   parentProgram
     .command('import:ecoreseau')
@@ -39,7 +43,7 @@ export function registerEcoreseauCommand(parentProgram: Command) {
         if (ecoreseauIds.length > 0) {
           await tx
             .updateTable('reseaux_de_chaleur')
-            .set({ ecoreseau: 'ecoreseau 2025' })
+            .set({ ecoreseau: ecoreseau2025Label })
             .where('Identifiant reseau', 'in', ecoreseauIds)
             .execute();
         }
@@ -47,7 +51,7 @@ export function registerEcoreseauCommand(parentProgram: Command) {
         if (ecoreseauPlusIds.length > 0) {
           await tx
             .updateTable('reseaux_de_chaleur')
-            .set({ ecoreseau: 'ecoreseau + 2025' })
+            .set({ ecoreseau: ecoreseauPlus2025Label })
             .where('Identifiant reseau', 'in', ecoreseauPlusIds)
             .execute();
         }

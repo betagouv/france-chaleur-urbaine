@@ -1,3 +1,5 @@
+import type { EcoreseauLabel } from '@/modules/reseaux/types';
+
 export interface Network {
   id_fcu: string;
   'Taux EnR&R': number;
@@ -7,7 +9,7 @@ export interface Network {
   has_trace: boolean;
   'contenu CO2': number;
   'contenu CO2 ACV': number;
-  ecoreseau?: string | null;
+  ecoreseau?: EcoreseauLabel | null;
   'Moyenne-annee-DPE': string;
   nom_reseau: string;
   'Rend%': number;

@@ -1,10 +1,12 @@
 import Tag from '@codegouvfr/react-dsfr/Tag';
+import Image from 'next/image';
 
 import { getEcoreseauImageSrc } from '@/components/Network/EcoreseauLabel';
 import Accordion from '@/components/ui/Accordion';
 import Button from '@/components/ui/Button';
 import Icon from '@/components/ui/Icon';
 import Tooltip from '@/components/ui/Tooltip';
+import type { EcoreseauLabel } from '@/modules/reseaux/types';
 import type { ReseauxDeChaleurTile } from '@/modules/tiles/server/generation-configs/reseaux-de-chaleur';
 import { isDefined } from '@/utils/core';
 import { prettyFormatNumber } from '@/utils/strings';
@@ -41,7 +43,13 @@ const Popup = defineLayerPopup<ReseauxDeChaleurTile>(
               value={
                 <div className="flex gap-3 items-center">
                   <span>Écoréseau</span>
-                  <img src={getEcoreseauImageSrc(reseauDeChaleur.ecoreseau)} alt={reseauDeChaleur.ecoreseau} className="h-10 w-auto" />
+                  <Image
+                    src={getEcoreseauImageSrc(reseauDeChaleur.ecoreseau as EcoreseauLabel)}
+                    alt={reseauDeChaleur.ecoreseau}
+                    width={56}
+                    height={40}
+                    className="h-10 w-auto"
+                  />
                 </div>
               }
             />

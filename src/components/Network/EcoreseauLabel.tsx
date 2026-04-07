@@ -1,21 +1,14 @@
 import Image from 'next/image';
 
 import Link from '@/components/ui/Link';
+import type { EcoreseauLabel } from '@/modules/reseaux/types';
 
-export const getEcoreseauImageSrc = (ecoreseau: string) => {
-  switch (ecoreseau) {
-    case 'ecoreseau 2025':
-      return '/img/ecoreseau2025.png';
-    case 'ecoreseau + 2025':
-      return '/img/ecoreseauplus2025.png';
-    default:
-      return `/img/${ecoreseau}.png`;
-  }
-};
+export const getEcoreseauImageSrc = (ecoreseau: EcoreseauLabel) =>
+  ecoreseau === 'ecoreseau + 2025' ? '/img/ecoreseauplus2025.png' : '/img/ecoreseau2025.png';
 
 const ECORESEAU_LINK = 'https://amorce.asso.fr/boite-a-outils-energie-label-ecoreseau-de-chaleur';
 
-function EcoreseauLabel({ ecoreseau }: { ecoreseau: string }) {
+function EcoreseauLabelBlock({ ecoreseau }: { ecoreseau: EcoreseauLabel }) {
   return (
     <div className="flex w-full items-center">
       <Image src={getEcoreseauImageSrc(ecoreseau)} alt="Logo Ecoréseau par amorce" width={56} height={56} className="shrink-0" />
@@ -41,7 +34,7 @@ function EcoreseauLabel({ ecoreseau }: { ecoreseau: string }) {
   );
 }
 
-export function EcoreseauInfo({ ecoreseau }: { ecoreseau: string }) {
+export function EcoreseauInfo({ ecoreseau }: { ecoreseau: EcoreseauLabel }) {
   return (
     <div className="mt-4 flex items-start gap-4 text-sm">
       <Image src={getEcoreseauImageSrc(ecoreseau)} alt="Logo Ecoréseau par amorce" width={56} height={56} className="shrink-0" />
@@ -61,4 +54,4 @@ export function EcoreseauInfo({ ecoreseau }: { ecoreseau: string }) {
   );
 }
 
-export default EcoreseauLabel;
+export default EcoreseauLabelBlock;

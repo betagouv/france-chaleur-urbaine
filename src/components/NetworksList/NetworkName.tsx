@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import Box from '@/components/ui/Box';
 import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
+import type { EcoreseauLabel } from '@/modules/reseaux/types';
 
 const IsClassedTag = styled(Text)`
   color: var(--text-default-info);
@@ -25,7 +26,7 @@ const NetworkName = ({
   isClassed,
   identifiant,
 }: {
-  ecoreseau?: string | null;
+  ecoreseau?: EcoreseauLabel | null;
   name: string;
   isClassed: boolean;
   identifiant: string;

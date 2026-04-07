@@ -17,7 +17,7 @@ import { formatMW, formatMWh, prettyFormatNumber } from '@/utils/strings';
 
 import ClassedNetwork from './ClassedNetwork';
 import ColdNetwork from './ColdNetwork';
-import EcoreseauLabel, { EcoreseauInfo } from './EcoreseauLabel';
+import EcoreseauLabelBlock, { EcoreseauInfo } from './EcoreseauLabel';
 import EligibilityTestBox from './EligibilityTestBox';
 import EnergiesChart from './EnergiesChart';
 import { BoxSection, InformationsComplementairesBox } from './Network.styles';
@@ -74,7 +74,7 @@ const NetworkPanel = ({
               )}
               {network.ecoreseau && (
                 <div className="flex-1">
-                  <EcoreseauLabel ecoreseau={network.ecoreseau.toString()} />
+                  <EcoreseauLabelBlock ecoreseau={network.ecoreseau} />
                 </div>
               )}
             </div>
