@@ -87,8 +87,8 @@ const STEPS = [
 
 const FAQS = [
   {
-    answer:
-      'Un réseau de chaleur est un système de canalisations qui achemine de la chaleur produite localement avec des énergies renouvelables et de récupération. La chaleur est issue de récupération de la chaleur produite par la combustion de déchets, combustion de biomasse, géothermie, etc...',
+    answer: `Un <strong>réseau de chaleur</strong> est un système qui produit la chaleur de manière centralisée puis la distribue à plusieurs bâtiments grâce à des canalisations enterrées. C’est comparable à un chauffage central… mais à l’échelle d’un quartier entier.<br />
+La chaleur est majoritairement produite à partir d’<strong>énergies renouvelables ou de récupération</strong> comme la biomasse, la géothermie ou la chaleur issue d’installations industrielles, ce qui en fait une solution particulièrement écologique.`,
     question: 'Comment fonctionne un réseau de chaleur ?',
   },
   {
@@ -416,7 +416,7 @@ function ChaleurRenouvelablePage() {
           <div className="fr-mt-4w">
             {FAQS.map((faq) => (
               <Accordion key={faq.question} label={faq.question}>
-                <p className="fr-mb-0 whitespace-pre-line">{faq.answer}</p>
+                <div className="fr-mb-0 whitespace-pre-line" dangerouslySetInnerHTML={{ __html: faq.answer }} />
               </Accordion>
             ))}
           </div>
