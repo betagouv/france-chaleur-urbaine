@@ -40,7 +40,7 @@ const UserForm = ({ user, onSubmit, loading }: UserFormProps) => {
       status: user?.status || 'pending_email_confirmation',
       structure_name: user?.structure_name ?? '',
       structure_other: user?.structure_other ?? '',
-      structure_type: user?.structure_type ?? '',
+      structure_type: user?.structure_type ?? null,
     },
     onSubmit: async ({ value }) => onSubmit(value as any),
     schema: isNew ? createUserAdminSchema : updateUserAdminSchema,
