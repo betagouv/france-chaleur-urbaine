@@ -10,39 +10,19 @@ export type ContactState = {
   structure?: string;
 };
 
-type BaseFieldProps = {
-  label?: ReactNode;
-  name: string;
-};
-
-type SelectFieldProps = BaseFieldProps & {
-  className?: string;
-  nativeSelectProps?: {
-    required?: boolean;
-  };
-  options: ReadonlyArray<{
-    label: string;
-    value: string;
-  }>;
-};
-
-type InputFieldProps = BaseFieldProps & {
-  hideOptionalLabel?: boolean;
-};
-
 export type FormUi = {
   Field: {
-    EmailInput: ComponentType<InputFieldProps>;
-    Input: ComponentType<InputFieldProps>;
-    NumberInput: ComponentType<InputFieldProps>;
-    PhoneInput: ComponentType<InputFieldProps>;
-    Select: ComponentType<SelectFieldProps>;
+    EmailInput: ComponentType<any>;
+    Input: ComponentType<any>;
+    NumberInput: ComponentType<any>;
+    PhoneInput: ComponentType<any>;
+    Select: ComponentType<any>;
   };
   FieldWrapper: ComponentType<HTMLAttributes<HTMLDivElement>>;
   Fieldset: ComponentType<HTMLAttributes<HTMLFieldSetElement>>;
   FieldsetLegend: ComponentType<HTMLAttributes<HTMLLegendElement>>;
   form: {
-    setFieldValue: (field: string, value: unknown) => void;
+    setFieldValue: (...args: any[]) => void;
   };
 };
 
