@@ -1,7 +1,7 @@
 import Tag from '@codegouvfr/react-dsfr/Tag';
 import Image from 'next/image';
 
-import { getEcoreseauImageSrc } from '@/components/Network/EcoreseauLabel';
+import { getEcoreseauImageSrc, isEcoreseauPlus } from '@/components/Network/EcoreseauLabel';
 import Accordion from '@/components/ui/Accordion';
 import Button from '@/components/ui/Button';
 import Icon from '@/components/ui/Icon';
@@ -42,7 +42,7 @@ const Popup = defineLayerPopup<ReseauxDeChaleurTile>(
               label="Label"
               value={
                 <div className="flex gap-3 items-center">
-                  <span>Écoréseau</span>
+                  <span>Écoréseau {isEcoreseauPlus(reseauDeChaleur.ecoreseau as EcoreseauLabel) ? '+' : ''}</span>
                   <Image
                     src={getEcoreseauImageSrc(reseauDeChaleur.ecoreseau as EcoreseauLabel)}
                     alt={reseauDeChaleur.ecoreseau}
