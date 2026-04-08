@@ -161,6 +161,17 @@ export const LogoRF = ({ style }: React.ComponentProps<typeof ReactEmailImg>) =>
   />
 );
 
+export const LogoADEME = ({ style }: { style?: React.CSSProperties }) => (
+  <Img
+    style={{
+      height: '80px',
+      ...style,
+    }}
+    alt="ADEME"
+    src={`${clientConfig.websiteUrl}/logo-ADEME.svg`}
+  />
+);
+
 export const Body = ({ children, style }: React.ComponentProps<typeof ReactEmailBody>) => (
   <ReactEmailBody
     style={{
@@ -272,6 +283,7 @@ export const Layout = ({ children, variant = 'default', preview }: LayoutProps) 
           <>
             <ReactEmailSection style={{ padding: '20px 0 12px' }}>
               <LogoRF style={{ display: 'inline-block', marginRight: '24px', verticalAlign: 'middle' }} />
+              <LogoADEME style={{ display: 'inline-block', marginRight: '24px', verticalAlign: 'middle' }} />
               <LogoFCU style={{ display: 'inline-block', verticalAlign: 'middle' }} />
             </ReactEmailSection>
             <ReactEmailHr style={{ borderColor: colors.border, margin: '0 0 24px' }} />
