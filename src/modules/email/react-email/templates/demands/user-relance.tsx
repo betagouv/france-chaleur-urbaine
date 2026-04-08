@@ -1,6 +1,6 @@
 import { clientConfig } from '@/client-config';
 
-import { Button, Layout, type LayoutModifiableProps, Link, Note, Section, Text } from '../../components';
+import { Button, Layout, Link, Note, Section, Text } from '../../components';
 
 type RelanceEmailProps = {
   firstName: string;
@@ -9,11 +9,9 @@ type RelanceEmailProps = {
   relanceId: string;
 };
 
-export const RelanceEmail = ({ firstName, date, adresse, relanceId, ...props }: RelanceEmailProps & LayoutModifiableProps) => {
-  const url = `${clientConfig.websiteUrl}/satisfaction?id=${relanceId}&satisfaction=`;
-
+export const RelanceEmail = ({ firstName, date, adresse, relanceId }: RelanceEmailProps) => {
   return (
-    <Layout {...props}>
+    <Layout>
       <Text>Bonjour {firstName},</Text>
       <Text>
         Le {date}, vous avez utilisé France Chaleur Urbaine pour être mis en relation avec le gestionnaire du réseau de chaleur le plus
@@ -25,15 +23,22 @@ export const RelanceEmail = ({ firstName, date, adresse, relanceId, ...props }: 
       </Text>
       <Text>Avez-vous été contacté(e) par le gestionnaire du réseau de chaleur ?</Text>
       <Section style={{ alignItems: 'center', display: 'flex', justifyContent: 'center', padding: '8px 0' }}>
-        <Button href={`${url}true`} style={{ marginRight: '8px' }}>
-          👍 Oui
+        <Button
+          href={`/satisfaction?id=${relanceId}&satisfaction=true`}
+          campaign="demands.user-relance"
+          content="satisfaction-oui"
+          style={{ marginRight: '8px' }}
+        >
+          👍 Oui, j'ai été contacté(e)
         </Button>
-        <Button href={`${url}false`}>👎 Non</Button>
+        <Button href={`/satisfaction?id=${relanceId}&satisfaction=false`} campaign="demands.user-relance" content="satisfaction-non">
+          👎 Non, pas encore
+        </Button>
       </Section>
       <Text>
         <Link href={clientConfig.calendarLink}>Je prends rendez-vous</Link> avec France Chaleur Urbaine
       </Text>
-      <Text>N'hésitez pas si vous avez la moindre question, nous nous tenons à votre disposition.</Text>
+      <Text>Nous restons à votre disposition pour toute information complémentaire.</Text>
       <Text>Bien cordialement,</Text>
       <Text>L'équipe France Chaleur Urbaine</Text>
       <Note>

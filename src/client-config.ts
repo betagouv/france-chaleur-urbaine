@@ -17,7 +17,7 @@ export const clientConfig = {
     }),
     {} as Record<string, string>
   ),
-  linkedInUrl: 'https://www.linkedin.com/company/france-chaleur-urbaine?originalSubdomain=fr',
+  linkedInUrl: 'https://fr.linkedin.com/company/france-chaleur-urbaine',
   networkInfoFieldMaxCharacters: 700,
   networkSearchMinimumCharactersThreshold: 3,
   publicodesDocumentationURL:

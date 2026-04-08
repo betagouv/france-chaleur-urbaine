@@ -603,39 +603,16 @@ const PageFooter = () => (
     }
     domains={[]}
     operatorLogo={{
-      alt: 'Logo France Chaleur Urbaine',
-      imgUrl: '/logo-fcu-with-typo.jpg',
+      alt: 'ADEME',
+      imgUrl: '/logo-ADEME.svg',
       orientation: 'horizontal',
     }}
-    license=""
-    partnersLogos={{
-      main: {
-        alt: 'DRIEAT',
-        imgUrl: '/logo-DRIEAT-white.png',
-        linkProps: {
-          href: 'https://www.drieat.ile-de-france.developpement-durable.gouv.fr',
-          title: 'Lien vers le site du partenaire',
-        },
-      },
-      sub: [
-        {
-          alt: 'Gouvernement',
-          imgUrl: '/logo-government.svg',
-          linkProps: {
-            href: 'https://www.gouvernement.fr/',
-            title: 'Lien vers le site du partenaire',
-          },
-        },
-        {
-          alt: 'ADEME',
-          imgUrl: '/logo-ADEME.svg',
-          linkProps: {
-            href: 'https://www.ademe.fr/',
-            title: 'Lien vers le site du partenaire',
-          },
-        },
-      ],
+    homeLinkProps={{
+      className: '[&_img]:!h-[120px] [&_img]:!max-h-[120px]', // agrandit et surcharge le style DSFR qui limite la hauteur
+      href: 'https://ademe.fr',
+      title: 'ADEME',
     }}
+    license=""
     accessibility="non compliant"
     accessibilityLinkProps={{
       href: '/accessibilite',

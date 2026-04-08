@@ -1,8 +1,7 @@
-import { clientConfig } from '@/client-config';
 import type { AirtableLegacyRecord } from '@/modules/demands/types';
 import { dayjs } from '@/utils/date';
 
-import { Button, Layout, Link, Table, TableColumn, TableRow, Text, Title } from '../../components';
+import { Button, Layout, Link, Section, Table, TableColumn, TableRow, Text, Title } from '../../components';
 import { demand as demandData } from './_data';
 
 const DemandAdminGestionnaireContactEmail = ({ demand }: { demand: AirtableLegacyRecord }) => {
@@ -74,9 +73,11 @@ const DemandAdminGestionnaireContactEmail = ({ demand }: { demand: AirtableLegac
         </TableRow>
       </Table>
 
-      <div style={{ marginTop: '32px', textAlign: 'center' }}>
-        <Button href={`${clientConfig.websiteUrl}/admin/demandes`}>Accéder aux demandes</Button>
-      </div>
+      <Section style={{ paddingTop: '24px', textAlign: 'center' }}>
+        <Button href="/admin/demandes" campaign="demands.admin-gestionnaire-contact">
+          Accéder aux demandes
+        </Button>
+      </Section>
     </Layout>
   );
 };
