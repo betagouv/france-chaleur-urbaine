@@ -431,6 +431,17 @@ const DonneesPage = () => {
               </th>
             </tr>
             <tr>
+              <td className="font-semibold">Label Écoréseau de chaleur</td>
+              <td>
+                AMORCE –{' '}
+                <Link href="https://amorce.asso.fr/boite-a-outils-energie-label-ecoreseau-de-chaleur" isExternal>
+                  Liste des Écoréseau de chaleur
+                </Link>{' '}
+                <span className="text-gray-600">(édition 2025)</span>
+              </td>
+              <td>Utilisé pour afficher les logos "Écoréseau" sur la carte et sur les pages des réseaux.</td>
+            </tr>
+            <tr>
               <td className="font-semibold">Communes</td>
               <td>
                 IGN –{' '}

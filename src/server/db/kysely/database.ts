@@ -535,6 +535,7 @@ export interface ReseauxDeChaleur {
   departement: string | null;
   'Dev_reseau%': number | null;
   eau_chaude: string | null;
+  ecoreseau: string | null;
   eau_surchauffee: string | null;
   fichiers: Json | null;
   geom: string | null;

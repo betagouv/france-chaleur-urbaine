@@ -11,6 +11,7 @@ const reseauxDeChaleurFields = [
   'reseaux classes',
   'contenu CO2',
   'contenu CO2 ACV',
+  'ecoreseau',
   'nom_reseau',
   'livraisons_totale_MWh',
   'nb_pdl',

@@ -7,6 +7,7 @@ import styled from 'styled-components';
 
 import { reseauxDeChaleurFilters } from '@/components/Map/layers/filters';
 import { filtresEnergies, percentageMaxInterval } from '@/components/Map/map-configuration';
+import { ECORESEAU_LINK } from '@/components/Network/EcoreseauLabel';
 import ReseauxDeChaleurFilters, { type ReseauxDeChaleurFiltersProps } from '@/components/ReseauxDeChaleurFilters';
 import Box from '@/components/ui/Box';
 import Drawer from '@/components/ui/Drawer';
@@ -290,6 +291,7 @@ const NetworksList = () => {
         accessorKey: 'nom_reseau',
         cell: (params) => (
           <NetworkName
+            ecoreseau={params.row.original.ecoreseau}
             name={params.row.original.nom_reseau}
             isClassed={params.row.original['reseaux classes']}
             identifiant={params.row.original['Identifiant reseau']}
@@ -558,7 +560,17 @@ const NetworksList = () => {
           <Link href={dataSourcesVersions.arreteDpe.link} isExternal>
             arrêté DPE du {dataSourcesVersions.arreteDpe.releaseDate}
           </Link>
-          .
+          . <br />
+          <strong>Label Écoréseau</strong> : ce label attribué par AMORCE, en partenariat avec l’ADEME, a pour objectif de valoriser les
+          performances environnementales, économiques et sociales des réseaux de chaleur.{` `}
+          <Link
+            href={ECORESEAU_LINK}
+            isExternal
+            postHogEventKey="link:click"
+            postHogEventProps={{ link_name: 'label_ecoreseau', source: 'fiche-reseau' }}
+          >
+            En savoir plus
+          </Link>
         </Text>
       </Box>
     </NetworksListContainer>

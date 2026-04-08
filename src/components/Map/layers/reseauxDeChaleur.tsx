@@ -1,9 +1,12 @@
 import Tag from '@codegouvfr/react-dsfr/Tag';
+import Image from 'next/image';
 
+import { getEcoreseauImageSrc, isEcoreseauPlus } from '@/components/Network/EcoreseauLabel';
 import Accordion from '@/components/ui/Accordion';
 import Button from '@/components/ui/Button';
 import Icon from '@/components/ui/Icon';
 import Tooltip from '@/components/ui/Tooltip';
+import type { EcoreseauLabel } from '@/modules/reseaux/types';
 import type { ReseauxDeChaleurTile } from '@/modules/tiles/server/generation-configs/reseaux-de-chaleur';
 import { isDefined } from '@/utils/core';
 import { prettyFormatNumber } from '@/utils/strings';
@@ -21,6 +24,7 @@ const Popup = defineLayerPopup<ReseauxDeChaleurTile>(
     } catch {
       tags = ["Tags non affichables, veuillez contacter l'équipe"];
     }
+
     return (
       <>
         <Title title={`ID FCU: ${reseauDeChaleur.id_fcu}`}>{reseauDeChaleur.nom_reseau ?? 'Réseau de chaleur'}</Title>
@@ -33,6 +37,23 @@ const Popup = defineLayerPopup<ReseauxDeChaleurTile>(
             value={reseauDeChaleur['contenu CO2 ACV']}
             formatter={(value) => (isDefined(value) ? `${prettyFormatNumber(value * 1000)} g/kWh` : 'Non connu')}
           />
+          {reseauDeChaleur.ecoreseau && (
+            <Property
+              label="Label"
+              value={
+                <div className="flex gap-3 items-center">
+                  <span>Écoréseau {isEcoreseauPlus(reseauDeChaleur.ecoreseau as EcoreseauLabel) ? '+' : ''}</span>
+                  <Image
+                    src={getEcoreseauImageSrc(reseauDeChaleur.ecoreseau as EcoreseauLabel)}
+                    alt={reseauDeChaleur.ecoreseau}
+                    width={56}
+                    height={40}
+                    className="h-10 w-auto"
+                  />
+                </div>
+              }
+            />
+          )}
           {hasRole('admin') && ['/admin/demandes', '/admin/reseaux'].includes(pathname) && (
             <Property
               label={
