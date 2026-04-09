@@ -58,25 +58,38 @@ export const Inputs = styled.div<{
   backgroundColor?: string;
 }>`
   padding-top: 11px;
-  height: 125px;
+  height: auto;
+
+  > div {
+    margin-bottom: 16px;
+  }
+
+  > div:last-child {
+    margin-bottom: 0;
+  }
+
   ${({ cartridge }) =>
     cartridge &&
     `
       width: 100%;
-      .fr-select-group {
+      .fr-select-group,
+      .fr-input-group {
         margin-bottom: 16px !important;
       }
   `}
 
-  .fr-select, .fr-input {
+  .fr-select,
+  .fr-input {
+    width: 100%;
     ${({ backgroundColor }) =>
       backgroundColor &&
       `background-color:  ${backgroundColor};
     `}
   }
 
-  input {
-    min-width: 225px;
+  input,
+  select {
+    min-width: 320px;
   }
 `;
 
