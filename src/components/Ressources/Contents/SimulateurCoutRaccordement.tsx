@@ -11,8 +11,6 @@ import Text from '@/components/ui/Text';
 import { trackEvent } from '@/modules/analytics/client';
 import { isDefined } from '@/utils/core';
 
-import { prixSpotCEE } from './Simulator';
-
 type TypeBatiment = 'residentiel' | 'tertiaire';
 
 type FormState = {
@@ -48,6 +46,7 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
   }
 
   const montantAide = useMemo(() => {
+    const prixSpotCEE = 8.42;
     const value = formState.typeBatiment === 'residentiel' ? formState.nbLogements : formState.surface;
     if (!value) {
       return null;
