@@ -1,36 +1,29 @@
 'use client';
 
-import * as ResizablePrimitive from 'react-resizable-panels';
+import { Group, Separator } from 'react-resizable-panels';
 
 import Icon from '@/components/ui/Icon';
 import cx from '@/utils/cx';
 
-const ResizablePanelGroup = ({ className, ...props }: React.ComponentProps<typeof ResizablePrimitive.Group>) => (
-  <ResizablePrimitive.Group className={cx('flex h-full w-full', className)} {...props} />
+export { Panel as ResizablePanel } from 'react-resizable-panels';
+
+// import { Group, Separator } from 'react-resizable-panels';
+
+export const ResizablePanelGroup = ({ className, ...props }: React.ComponentProps<typeof Group>) => (
+  <Group className={cx('flex h-full w-full', className)} {...props} />
 );
 
-const ResizablePanel = ResizablePrimitive.Panel;
-
-const ResizableHandle = ({
-  withHandle = true,
-  className,
-  ...props
-}: React.ComponentProps<typeof ResizablePrimitive.Separator> & {
-  withHandle?: boolean;
-}) => (
-  <ResizablePrimitive.Separator
+export const ResizableSeparator = ({ className, ...props }: React.ComponentProps<typeof Separator>) => (
+  <Separator
+    {...props}
     className={cx(
-      'relative flex w-px items-center justify-center bg-border after:absolute after:inset-y-0 after:left-1/2 after:w-1 after:-translate-x-1/2 focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1 aria-[orientation=vertical]:h-px aria-[orientation=vertical]:w-full aria-[orientation=vertical]:after:left-0 aria-[orientation=vertical]:after:h-1 aria-[orientation=vertical]:after:w-full aria-[orientation=vertical]:after:-translate-y-1/2 aria-[orientation=vertical]:after:translate-x-0 [&[aria-orientation=vertical]>div]:rotate-90',
+      "group relative flex items-center justify-center bg-transparent outline-none data-[separator='disabled']:opacity-50 text-neutral-400 data-[separator='hover']:text-neutral-500 data-[separator='active']:text-neutral-500 w-4 sm:w-3 before:absolute before:inset-y-0 before:w-0.5 before:bg-neutral-300 data-[separator='hover']:before:bg-neutral-400 data-[separator='active']:before:bg-neutral-400 focus-visible:before:bg-neutral-400",
       className
     )}
-    {...props}
   >
-    {withHandle && (
-      <div className="z-10 flex h-4 w-3 items-center justify-center rounded-xs border bg-border">
-        <Icon name="ri-expand-left-right-line" size="xs" />
-      </div>
-    )}
-  </ResizablePrimitive.Separator>
+    <Icon
+      name="ri-expand-left-right-line"
+      className="relative z-10 text-sm bg-white rounded-md ring-2 ring-neutral-300 text-neutral-400 group-data-[separator='hover']:ring-neutral-400 group-data-[separator='hover']:text-neutral-500 group-data-[separator='active']:ring-neutral-400 group-data-[separator='active']:text-neutral-500"
+    />
+  </Separator>
 );
-
-export { ResizableHandle, ResizablePanel, ResizablePanelGroup };

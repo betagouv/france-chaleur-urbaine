@@ -17,7 +17,7 @@ import Button from '@/components/ui/Button';
 import Link from '@/components/ui/Link';
 import Loader from '@/components/ui/Loader';
 import QuickFilterPresets from '@/components/ui/QuickFilterPresets';
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/Resizable';
+import { ResizablePanel, ResizablePanelGroup, ResizableSeparator } from '@/components/ui/Resizable';
 import Tooltip from '@/components/ui/Tooltip';
 import TableSimple, { type ColumnDef, type QuickFilterPreset } from '@/components/ui/table/TableSimple';
 import DemandStatusBadge from '@/modules/demands/client/DemandStatusBadge';
@@ -364,7 +364,7 @@ function DemandesNew(): React.ReactElement {
         />
       </div>
       <ResizablePanelGroup orientation="horizontal" className="gap-4">
-        <ResizablePanel defaultSize={66}>
+        <ResizablePanel defaultSize="66%">
           <TableSimple
             columns={tableColumns}
             data={demands}
@@ -381,8 +381,8 @@ function DemandesNew(): React.ReactElement {
             height="calc(100dvh - 140px)"
           />
         </ResizablePanel>
-        <ResizableHandle />
-        <ResizablePanel defaultSize={34}>
+        <ResizableSeparator />
+        <ResizablePanel defaultSize="34%">
           <div ref={mapContainerRef} className={cx('max-md:h-[600px] md:h-[calc(100dvh-140px)] bg-[#F8F4F0]')}>
             {isDefined(mapCenterLocation) ? (
               <Map

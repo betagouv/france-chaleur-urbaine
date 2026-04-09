@@ -15,7 +15,7 @@ import Icon from '@/components/ui/Icon';
 import Link from '@/components/ui/Link';
 import Loader from '@/components/ui/Loader';
 import Notice from '@/components/ui/Notice';
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/Resizable';
+import { ResizablePanel, ResizablePanelGroup, ResizableSeparator } from '@/components/ui/Resizable';
 import Tag from '@/components/ui/Tag';
 import TableSimple, { type ColumnDef } from '@/components/ui/table/TableSimple';
 import { notify, toastErrors } from '@/modules/notification';
@@ -1217,7 +1217,7 @@ const GestionDesReseaux = () => {
       )}
       <div className="my-8">
         <ResizablePanelGroup orientation="horizontal" className="gap-4">
-          <ResizablePanel defaultSize={66}>
+          <ResizablePanel defaultSize="66%">
             <Tabs
               classes={{ panel: 'p-4' }}
               tabs={tabs}
@@ -1228,8 +1228,8 @@ const GestionDesReseaux = () => {
               }}
             />
           </ResizablePanel>
-          <ResizableHandle />
-          <ResizablePanel defaultSize={34}>
+          <ResizableSeparator />
+          <ResizablePanel defaultSize="34%">
             <div
               className={cx('max-md:h-[700px] md:h-[calc(100dvh-var(--height))] bg-[#F8F4F0]')}
               style={{ '--height': mapContainerHeight } as any}

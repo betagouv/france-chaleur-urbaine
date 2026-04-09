@@ -28,7 +28,7 @@ import Link from '@/components/ui/Link';
 import Loader from '@/components/ui/Loader';
 import ModalSimple from '@/components/ui/ModalSimple';
 import QuickFilterPresets from '@/components/ui/QuickFilterPresets';
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/Resizable';
+import { ResizablePanel, ResizablePanelGroup, ResizableSeparator } from '@/components/ui/Resizable';
 import Tooltip from '@/components/ui/Tooltip';
 import TableSimple, { type ColumnDef, type QuickFilterPreset } from '@/components/ui/table/TableSimple';
 import { useFetch } from '@/hooks/useApi';
@@ -743,7 +743,7 @@ function DemandesAdmin(): React.ReactElement {
           <EligibilityHelpDialog />
         </div>
         <ResizablePanelGroup orientation="horizontal" className="gap-4">
-          <ResizablePanel defaultSize={66}>
+          <ResizablePanel defaultSize="66%">
             <TableSimple
               columns={tableColumns}
               data={demands}
@@ -764,8 +764,8 @@ function DemandesAdmin(): React.ReactElement {
               urlSyncKey={demandsTableUrlSyncKey}
             />
           </ResizablePanel>
-          <ResizableHandle />
-          <ResizablePanel defaultSize={34}>
+          <ResizableSeparator />
+          <ResizablePanel defaultSize="34%">
             <div className={cx('max-md:h-[600px] md:h-[calc(100dvh-164px)] bg-[#F8F4F0]')}>
               {isDefined(mapCenterLocation) ? (
                 <Map
