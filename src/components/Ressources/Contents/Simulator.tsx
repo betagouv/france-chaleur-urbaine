@@ -287,11 +287,10 @@ const Simulator = ({
             <Input
               label="Prix du CEE actuel (€/kWh cumac)"
               nativeInputProps={{
-                disabled: !selectedAddress,
                 min: 0,
                 onChange: (e) => setCeeValue(e.target.value),
-                placeholder: currentCeeValue ? currentCeeValue.toFixed(4) : '0.0000',
-                step: '0.0001',
+                placeholder: currentCeeValue.toString(),
+                step: '0.00001',
                 type: 'number',
                 value: ceeValue,
               }}
@@ -301,20 +300,20 @@ const Simulator = ({
         <div>
           <Result cartridge={cartridge} className="simulator-result" color={resultColor} backgroundColor={resultBackgroundColor}>
             <ResultValue>
-              {helpCumac.toLocaleString('fr-FR', {
+              {helpAmount.toLocaleString('fr-FR', {
+                currency: 'EUR',
                 maximumFractionDigits: 0,
-                style: 'decimal',
-              })}{' '}
-              kWh cumac*
+                style: 'currency',
+              })}
             </ResultValue>
             {structure === 'Résidentiel' && (
               <span>
                 soit{' '}
-                {(intValue ? helpCumac / intValue : 0).toLocaleString('fr-FR', {
+                {(intValue ? helpAmount / intValue : 0).toLocaleString('fr-FR', {
                   maximumFractionDigits: 0,
                   style: 'decimal',
                 })}{' '}
-                kWh cumac/logement
+                €/logement
               </span>
             )}
           </Result>
@@ -322,11 +321,11 @@ const Simulator = ({
             <Text size="sm" legacyColor={disclaimerLegacyColor || 'black'}>
               Montant correspondant au prix du CEE actuel :{' '}
               <strong>
-                {helpAmount.toLocaleString('fr-FR', {
-                  currency: 'EUR',
+                {helpCumac.toLocaleString('fr-FR', {
                   maximumFractionDigits: 0,
-                  style: 'currency',
-                })}
+                  style: 'decimal',
+                })}{' '}
+                kWh cumac*
               </strong>
             </Text>
           </Disclaimer>

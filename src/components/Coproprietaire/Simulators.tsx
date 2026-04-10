@@ -1,10 +1,15 @@
+import dynamic from 'next/dynamic';
+
 import { ArrowItem } from '@/components/MarkdownWrapper/MarkdownWrapper.style';
-import Simulator from '@/components/Ressources/Contents/Simulator';
 import Box, { ResponsiveRow } from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
 import type { LegacyColor } from '@/components/ui/helpers/colors';
 import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
+
+const Simulator = dynamic(() => import('@/components/Ressources/Contents/Simulator'), {
+  ssr: false,
+});
 
 const Simulators = ({
   textTitle,

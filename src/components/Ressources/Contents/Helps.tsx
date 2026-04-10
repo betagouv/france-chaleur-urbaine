@@ -1,7 +1,11 @@
 import { Highlight } from '@codegouvfr/react-dsfr/Highlight';
+import dynamic from 'next/dynamic';
 
 import { BlueText, List, Source, Subtitle } from './Contents.styles';
-import Simulator from './Simulator';
+
+const Simulator = dynamic(() => import('./Simulator'), {
+  ssr: false,
+});
 
 const Helps = () => {
   return (
