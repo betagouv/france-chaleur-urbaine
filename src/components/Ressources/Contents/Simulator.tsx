@@ -5,7 +5,7 @@ import { type ReactNode, useEffect, useState } from 'react';
 
 import { addresseToPublicodesRules } from '@/components/ComparateurPublicodes/mappings';
 import useSimulatorEngine from '@/components/ComparateurPublicodes/useSimulatorEngine';
-import Link from '@/components/ui/Link';
+import Tooltip from '@/components/ui/Tooltip';
 import type { BANAddressFeature } from '@/modules/ban/types';
 import { AddressField } from '@/modules/form/AddressField';
 import type { LocationInfoResponse } from '@/pages/api/location-infos';
@@ -38,53 +38,130 @@ type ConcernedHelp = {
   label: string;
   noteUrl?: string;
 };
-
-const CONTAINER_BACKGROUND_CLASSNAMES = {
-  '#4550e5': 'bg-[#4550e5]',
-  'var(--blue-france-975-75)': 'bg-[var(--blue-france-975-75)]',
-  'var(--blue-france-main-525)': 'bg-[var(--blue-france-main-525)]',
-};
-
-const FORM_FIELD_BACKGROUND_CLASSNAMES = {
-  '#4550e5': 'bg-[#4550e5]',
-  'var(--blue-france-975-75)': 'bg-[var(--blue-france-975-75)]',
-  'var(--blue-france-main-525)': 'bg-[var(--blue-france-main-525)]',
-};
-
-const RESULT_BACKGROUND_CLASSNAMES = {
-  '#27a658': 'bg-[#27a658]',
-  '#F8D86E': 'bg-[#F8D86E]',
-};
-
-const RESULT_TEXT_CLASSNAMES = {
-  '#fff': 'text-white',
-  '#ffffff': 'text-white',
-  'var(--blue-france-sun-113-625)': 'text-[var(--blue-france-sun-113-625)]',
-};
-
-const DISCLAIMER_TEXT_CLASSNAMES = {
-  black: 'text-[var(--grey-50-1000)]',
-  darkblue: 'text-[var(--blue-france-sun-113-625)]',
-  darkerblue: 'text-[var(--legacy-darker-blue)]',
-  lightblue: 'text-[#6060ff]',
-  lightgrey: 'text-[#78818D]',
-  purple: 'text-[var(--blue-france-main-525)]',
-  white: 'text-white',
-};
-
-const Simulator = ({
-  withRedirection,
-  children,
-  defaultStructure,
-  withTitle,
-}: {
-  withRedirection?: boolean;
+type SimulatorProps = {
   children?: ReactNode;
-  defaultStructure?: string;
   withTitle?: boolean;
-}) => {
+};
+type SimulatorSituation = Partial<Record<RuleName, number | string | null>>;
+type SimulatorResultProps = {
+  ceeValue: string;
+  concernedHelp: ConcernedHelp | null;
+  currentCeeValuePlaceholder: string;
+  helpAmount: number;
+  helpCumac: number;
+  housingCountOrArea: number;
+  networkInformation: string | null;
+  onCeeValueChange: (value: string) => void;
+  structure: Structure;
+};
+
+const buildAddressSituation = (infos: LocationInfoResponse): SimulatorSituation =>
+  ObjectEntries(addresseToPublicodesRules).reduce<SimulatorSituation>((acc, [key, infoGetter]) => {
+    acc[key] = infoGetter(infos) ?? null;
+    return acc;
+  }, {});
+
+const buildClearedAddressSituation = (): SimulatorSituation =>
+  ObjectEntries(addresseToPublicodesRules).reduce<SimulatorSituation>((acc, [key]) => {
+    acc[key] = null;
+    return acc;
+  }, {});
+
+function SimulatorResult({
+  ceeValue,
+  concernedHelp,
+  currentCeeValuePlaceholder,
+  helpAmount,
+  helpCumac,
+  housingCountOrArea,
+  networkInformation,
+  onCeeValueChange,
+  structure,
+}: SimulatorResultProps) {
+  return (
+    <div className="flex-1">
+      <div
+        className={cx(
+          'simulator-result mx-auto flex h-[125px] w-full flex-col justify-around rounded-xl bg-[#27a658] p-4 text-[20px] text-white',
+          'min-[450px]:min-w-[300px]'
+        )}
+      >
+        <div className="text-[44px] font-bold">
+          {helpAmount.toLocaleString('fr-FR', {
+            currency: 'EUR',
+            maximumFractionDigits: 0,
+            style: 'currency',
+          })}
+          *
+        </div>
+        {structure === 'Résidentiel' && (
+          <span>
+            soit{' '}
+            {(housingCountOrArea ? helpAmount / housingCountOrArea : 0).toLocaleString('fr-FR', {
+              maximumFractionDigits: 0,
+              style: 'decimal',
+            })}{' '}
+            €/logement
+          </span>
+        )}
+      </div>
+      <div className="[&_p]:my-1 [&_p]:text-sm">
+        <p>
+          Montant du certificat :{' '}
+          <strong>
+            {helpCumac.toLocaleString('fr-FR', {
+              maximumFractionDigits: 0,
+              style: 'decimal',
+            })}{' '}
+            kWh cumac
+          </strong>
+        </p>
+        {networkInformation &&
+          (concernedHelp ? (
+            <>
+              <p>
+                Le calcul se base sur la fiche{' '}
+                <a href={concernedHelp.noteUrl} target="_blank" rel="noreferrer">
+                  <strong>{concernedHelp.label}</strong>
+                </a>
+                .{' '}
+                <sup>
+                  <Tooltip title={networkInformation} />
+                </sup>
+              </p>
+              <div className="my-1 text-sm">
+                * Montant donné à titre indicatif avec un CEE estimé à{' '}
+                <Input
+                  addon={<span className="flex min-h-8 items-center whitespace-nowrap text-black">€/MWh cumac</span>}
+                  hideLabel
+                  label="Le prix actuel d'un CEE"
+                  classes={{
+                    nativeInputOrTextArea: '!w-[3rem] mx-1 rounded px-1 py-0.5',
+                    root: '!inline-block !w-auto align-middle',
+                    wrap: 'fr-mt-0',
+                  }}
+                  nativeInputProps={{
+                    'aria-label': "Le prix actuel d'un CEE en euros par MWh cumac",
+                    inputMode: 'decimal',
+                    onChange: (e) => onCeeValueChange(e.target.value),
+                    placeholder: currentCeeValuePlaceholder,
+                    type: 'text',
+                    value: ceeValue,
+                  }}
+                />
+              </div>
+            </>
+          ) : (
+            <p>{networkInformation}</p>
+          ))}
+      </div>
+    </div>
+  );
+}
+
+function Simulator({ children, withTitle }: SimulatorProps) {
   const engine = useSimulatorEngine();
-  const [structure, setStructure] = useState<Structure>((defaultStructure as Structure) || 'Résidentiel');
+  const [structure, setStructure] = useState<Structure>('Résidentiel');
   const [value, setValue] = useState('');
   const [address, setAddress] = useState('');
   const [networkName, setNetworkName] = useState<string | null>(null);
@@ -99,22 +176,45 @@ const Simulator = ({
     setValue('');
   }, [structure]);
 
-  const intValue = parseInt(value, 10);
+  const isAddressSelected = selectedAddress !== null;
+  const housingCountOrArea = Number.parseInt(value, 10);
+  const hasAmountInputs = isAddressSelected && housingCountOrArea > 0;
+  const mainFieldClassName = 'w-full! min-w-80';
+
+  const updateSituation = (partialSituation: SimulatorSituation) => {
+    engine.setSituation({
+      ...engine.getSituation(),
+      ...partialSituation,
+    });
+  };
+
+  const clearAddressSituation = () => {
+    updateSituation(buildClearedAddressSituation());
+  };
+
+  const resetAddressSelection = () => {
+    setAddress('');
+    setValue('');
+    setNetworkName(null);
+    setIsEfficientNetwork(false);
+    setSelectedAddress(null);
+    setEligibilityError(false);
+    clearAddressSituation();
+  };
 
   useEffect(() => {
     if (!engine.loaded) {
       return;
     }
 
-    engine.setSituation({
-      ...engine.getSituation(),
+    updateSituation({
       'méthode tertiaire': structure === 'Tertiaire' ? `'${tertiarySector}'` : null,
-      "nombre de logements dans l'immeuble concerné": structure === 'Résidentiel' && intValue > 0 ? intValue : null,
+      "nombre de logements dans l'immeuble concerné": structure === 'Résidentiel' && housingCountOrArea > 0 ? housingCountOrArea : null,
       'Production eau chaude sanitaire': structure === 'Tertiaire' ? producesHotWater : 'oui',
-      'surface logement type tertiaire': structure === 'Tertiaire' && intValue > 0 ? intValue : null,
+      'surface logement type tertiaire': structure === 'Tertiaire' && housingCountOrArea > 0 ? housingCountOrArea : null,
       'type de bâtiment': `'${structure.toLowerCase()}'`,
     });
-  }, [engine.loaded, intValue, producesHotWater, structure, tertiarySector]);
+  }, [engine.loaded, housingCountOrArea, producesHotWater, structure, tertiarySector]);
 
   useEffect(() => {
     if (!engine.loaded) {
@@ -124,35 +224,31 @@ const Simulator = ({
     const normalizedCeeValue = ceeValue.replace(',', '.').trim();
     const parsedCeeValue = normalizedCeeValue === '' ? null : Number(normalizedCeeValue) / 1000;
 
-    engine.setSituation({
-      ...engine.getSituation(),
+    updateSituation({
       [CEE_VALUE_RULE]: parsedCeeValue !== null && Number.isFinite(parsedCeeValue) ? parsedCeeValue : null,
     });
   }, [ceeValue, engine.loaded]);
 
-  const helpCumac = selectedAddress && intValue > 0 ? engine.getFieldAsNumber(TOTAL_HEAT_NETWORK_AID_RULE) : 0;
-  const helpAmount = selectedAddress && intValue > 0 ? engine.getFieldAsNumber(TOTAL_HEAT_NETWORK_AID_AMOUNT_RULE) : 0;
-  const boostedHelp = selectedAddress && intValue > 0 ? engine.getFieldAsNumber(BOOSTED_HEAT_NETWORK_AID_RULE) : 0;
-  const standardHelp = selectedAddress && intValue > 0 ? engine.getFieldAsNumber(STANDARD_HEAT_NETWORK_AID_RULE) : 0;
+  const helpCumac = hasAmountInputs ? engine.getFieldAsNumber(TOTAL_HEAT_NETWORK_AID_RULE) : 0;
+  const helpAmount = hasAmountInputs ? engine.getFieldAsNumber(TOTAL_HEAT_NETWORK_AID_AMOUNT_RULE) : 0;
+  const standardHelp = hasAmountInputs ? engine.getFieldAsNumber(STANDARD_HEAT_NETWORK_AID_RULE) : 0;
   const currentCeeValue = engine.loaded ? engine.getFieldAsNumber(CEE_VALUE_RULE) : 0;
   const currentCeeValuePlaceholder = (currentCeeValue * 1000).toLocaleString('fr-FR', {
     maximumFractionDigits: 2,
     minimumFractionDigits: 2,
   });
-  const containerBackgroundClassName = CONTAINER_BACKGROUND_CLASSNAMES['#4550e5'];
-  const resultBackgroundClassName = RESULT_BACKGROUND_CLASSNAMES['#27a658'];
-  const resultTextClassName = 'text-white';
-  const disclaimerClassName = 'mt-2 max-w-[400px]';
-  const disclaimerTextClassName = 'text-[var(--grey-50-1000)]';
-  const mainFieldClassName = 'w-full! min-w-80';
-
+  const networkInformation = networkName
+    ? `Le réseau de chaleur "${networkName}" est situé à proximité de votre adresse.${
+        isEfficientNetwork ? " Il est considéré comme efficace car il utilise au moins 50 % d'énergie renouvelable." : ''
+      }`
+    : null;
   const getRuleNoteUrl = (ruleName: RuleName) => {
     const note = engine.getRule(ruleName)?.rawNode.note;
-    return typeof note === 'string' && note.startsWith('http') ? note : undefined;
+    return typeof note === 'string' ? note : undefined;
   };
 
   const concernedHelp: ConcernedHelp | null =
-    helpCumac > 0 && boostedHelp === helpCumac
+    helpCumac > 0 && isEfficientNetwork
       ? {
           label: 'Coup de pouce "Chauffage des bâtiments résidentiels collectifs et tertiaires"',
           noteUrl: getRuleNoteUrl(BOOSTED_HEAT_NETWORK_AID_RULE),
@@ -163,16 +259,6 @@ const Simulator = ({
             noteUrl: getRuleNoteUrl(structure === 'Résidentiel' ? RESIDENTIAL_HEAT_NETWORK_AID_RULE : TERTIARY_HEAT_NETWORK_AID_RULE),
           }
         : null;
-
-  const clearAddressSituation = () => {
-    const clearedSituation: Partial<Record<RuleName, any>> = { ...engine.getSituation() };
-    engine.setSituation(
-      ObjectEntries(addresseToPublicodesRules).reduce((acc, [key]) => {
-        acc[key] = null;
-        return acc;
-      }, clearedSituation)
-    );
-  };
 
   const handleAddressSelected = async (geoAddress?: BANAddressFeature) => {
     if (!geoAddress) {
@@ -202,13 +288,7 @@ const Simulator = ({
       setNetworkName(infos.nearestReseauDeChaleur?.nom_reseau ?? null);
       setIsEfficientNetwork((infos.nearestReseauDeChaleur?.['Taux EnR&R'] ?? 0) > 50);
 
-      const addressSituation: Partial<Record<RuleName, any>> = { ...engine.getSituation() };
-      engine.setSituation(
-        ObjectEntries(addresseToPublicodesRules).reduce((acc, [key, infoGetter]) => {
-          acc[key] = infoGetter(infos) ?? null;
-          return acc;
-        }, addressSituation)
-      );
+      updateSituation(buildAddressSituation(infos));
     } catch (error) {
       setNetworkName(null);
       setIsEfficientNetwork(false);
@@ -218,14 +298,14 @@ const Simulator = ({
   };
 
   return (
-    <div className={cx('p-4 my-3 text-black', containerBackgroundClassName)}>
+    <div className={cx('bg-[#4550e5] text-black', withTitle && 'p-4 my-3')}>
       {withTitle && (
         <div className="mx-auto mb-4 max-w-[950px] text-[20px] font-bold leading-[25px] text-white">
           Estimer le montant du Coup de pouce « Chauffage des bâtiments résidentiels collectifs et tertiaires » pour le raccordement de mon
           bâtiment
         </div>
       )}
-      <div className="m-8 flex flex-wrap items-start justify-center gap-8">
+      <div className={cx('flex flex-wrap items-start justify-center gap-8', withTitle && 'm-8 ')}>
         <div className="flex-1">
           <AddressField
             label=""
@@ -237,15 +317,7 @@ const Simulator = ({
             }}
             value={address}
             onSelect={handleAddressSelected}
-            onClear={() => {
-              setAddress('');
-              setValue('');
-              setNetworkName(null);
-              setIsEfficientNetwork(false);
-              setSelectedAddress(null);
-              setEligibilityError(false);
-              clearAddressSituation();
-            }}
+            onClear={resetAddressSelection}
             excludeCities
           />
           <Select
@@ -256,7 +328,7 @@ const Simulator = ({
             ]}
             nativeSelectProps={{
               className: mainFieldClassName,
-              disabled: !selectedAddress,
+              disabled: !isAddressSelected,
               onChange: (e) => setStructure(e.target.value as Structure),
               required: true,
               value: structure,
@@ -272,7 +344,7 @@ const Simulator = ({
                 }))}
                 nativeSelectProps={{
                   className: mainFieldClassName,
-                  disabled: !selectedAddress,
+                  disabled: !isAddressSelected,
                   onChange: (e) => setTertiarySector(e.target.value as TertiarySector),
                   required: true,
                   value: tertiarySector,
@@ -286,7 +358,7 @@ const Simulator = ({
                 ]}
                 nativeSelectProps={{
                   className: mainFieldClassName,
-                  disabled: !selectedAddress,
+                  disabled: !isAddressSelected,
                   onChange: (e) => setProducesHotWater(e.target.value as HotWaterProduction),
                   required: true,
                   value: producesHotWater,
@@ -297,7 +369,7 @@ const Simulator = ({
           <Input
             label=""
             nativeInputProps={{
-              disabled: !selectedAddress,
+              disabled: !isAddressSelected,
               min: 1,
               onChange: (e) => setValue(e.target.value),
               pattern: '[0-9]*',
@@ -307,98 +379,21 @@ const Simulator = ({
             }}
           />
         </div>
-        <div className="flex-1">
-          <div
-            className={cx(
-              'simulator-result mx-auto flex h-[125px] w-full flex-col justify-around rounded-xl p-4 text-[20px]',
-              'min-[450px]:min-w-[300px]',
-              resultBackgroundClassName,
-              resultTextClassName
-            )}
-          >
-            <div className="text-[44px] font-bold">
-              {helpAmount.toLocaleString('fr-FR', {
-                currency: 'EUR',
-                maximumFractionDigits: 0,
-                style: 'currency',
-              })}
-              *
-            </div>
-            {structure === 'Résidentiel' && (
-              <span>
-                soit{' '}
-                {(intValue ? helpAmount / intValue : 0).toLocaleString('fr-FR', {
-                  maximumFractionDigits: 0,
-                  style: 'decimal',
-                })}{' '}
-                €/logement
-              </span>
-            )}
-          </div>
-          <div className=" [&_p]:text-sm  [&_p]:my-1">
-            <p>
-              Montant du certificat :{' '}
-              <strong>
-                {helpCumac.toLocaleString('fr-FR', {
-                  maximumFractionDigits: 0,
-                  style: 'decimal',
-                })}{' '}
-                kWh cumac
-              </strong>
-            </p>
-            {networkName && isEfficientNetwork && (
-              <p>
-                Le réseau de chaleur <strong>{networkName}</strong> situé à proximité de votre adresse est considéré comme efficace car il
-                utilise au moins 50 % d'énergie renouvelable.
-              </p>
-            )}
-            {networkName && concernedHelp && (
-              <>
-                <p>
-                  Le calcul se base sur la fiche{' '}
-                  {concernedHelp.noteUrl ? (
-                    <a href={concernedHelp.noteUrl} target="_blank" rel="noreferrer">
-                      <strong>{concernedHelp.label}</strong>
-                    </a>
-                  ) : (
-                    <strong>{concernedHelp.label}</strong>
-                  )}
-                  .
-                </p>
-                <p className="flex flex-wrap items-center gap-2">
-                  * Montant donné à titre indicatif avec un CEE estimé à
-                  <Input
-                    hideLabel
-                    label="Le prix actuel d'un CEE"
-                    classes={{
-                      nativeInputOrTextArea: '!w-[5.5rem] fr-input--sm inline',
-                    }}
-                    nativeInputProps={{
-                      'aria-label': "Le prix actuel d'un CEE en euros par MWh cumac",
-                      inputMode: 'decimal',
-                      onChange: (e) => setCeeValue(e.target.value),
-                      placeholder: currentCeeValuePlaceholder,
-                      type: 'text',
-                      value: ceeValue,
-                    }}
-                  />
-                  <span className="flex min-h-8 shrink-0 items-center whitespace-nowrap rounded-r-sm px-2.5 text-black">€/MWh cumac</span>
-                </p>
-              </>
-            )}
-          </div>
-        </div>
+        <SimulatorResult
+          ceeValue={ceeValue}
+          concernedHelp={concernedHelp}
+          currentCeeValuePlaceholder={currentCeeValuePlaceholder}
+          helpAmount={helpAmount}
+          helpCumac={helpCumac}
+          housingCountOrArea={housingCountOrArea}
+          networkInformation={networkInformation}
+          onCeeValueChange={setCeeValue}
+          structure={structure}
+        />
       </div>
-      {withRedirection && (
-        <div className="mt-8 text-center">
-          <Link href="/ressources/aides#contenu" variant="primary">
-            Tout savoir sur cette aide
-          </Link>
-        </div>
-      )}
       {children}
     </div>
   );
-};
+}
 
 export default Simulator;
