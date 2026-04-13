@@ -79,7 +79,7 @@ const Us = () => {
             employées. Les dépenses réalisées dans le cadre de France Chaleur Urbaine sont présentées ci-dessous par source de financement.{' '}
             <strong>Elles servent à plus de 95 % à financer l’équipe de freelances impliquée sur le projet</strong>. La répartition par
             poste est également précisée ci-dessous. En complément de ces dépenses, un ETP est mis à disposition par la Direction
-            interministérielle du numérique (EIG)
+            interministérielle du numérique (EIG).
           </p>
           <div className="flex flex-wrap justify-center gap-8 mb-8">
             <Image
