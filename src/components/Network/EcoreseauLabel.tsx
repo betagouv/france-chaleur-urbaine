@@ -35,25 +35,4 @@ function EcoreseauLabelBlock({ ecoreseau }: { ecoreseau: EcoreseauLabel }) {
   );
 }
 
-export function EcoreseauInfo({ ecoreseau }: { ecoreseau: EcoreseauLabel }) {
-  return (
-    <div className="flex items-start gap-3 text-sm">
-      <Image src={getEcoreseauImageSrc(ecoreseau)} alt="Logo Ecoréseau par amorce" width={56} height={56} className="shrink-0" />
-      <div>
-        <strong>Label Écoréseau {isEcoreseauPlus(ecoreseau) ? '+' : ''} </strong>: ce réseau a reçu le label Écoréseau de chaleur pour
-        valoriser ses performances environnementales, économiques et sociales.
-        <br /> Ce label est attribué par AMORCE, en partenariat avec l’ADEME.{' '}
-        <Link
-          href={ECORESEAU_LINK}
-          isExternal
-          postHogEventKey="link:click"
-          postHogEventProps={{ link_name: 'label_ecoreseau', source: 'fiche-reseau' }}
-        >
-          En savoir plus
-        </Link>
-      </div>
-    </div>
-  );
-}
-
 export default EcoreseauLabelBlock;

@@ -17,7 +17,7 @@ import { formatMW, formatMWh, prettyFormatNumber } from '@/utils/strings';
 
 import ClassedNetwork from './ClassedNetwork';
 import ColdNetwork from './ColdNetwork';
-import EcoreseauLabelBlock, { EcoreseauInfo } from './EcoreseauLabel';
+import EcoreseauLabelBlock from './EcoreseauLabel';
 import EligibilityTestBox from './EligibilityTestBox';
 import EnergiesChart from './EnergiesChart';
 import { BoxSection, InformationsComplementairesBox } from './Network.styles';
@@ -536,12 +536,9 @@ const NetworkPanel = ({
               </Box>
             )}
             {(!displayBlocks || displayBlocks.includes('communes')) && (
-              <>
-                <Box fontStyle="italic" fontSize="12px">
-                  Commune{network.communes.length > 1 ? 's' : ''} d'implantation : {network.communes.join(', ')}
-                </Box>
-                {network.ecoreseau && <EcoreseauInfo ecoreseau={network.ecoreseau} />}
-              </>
+              <Box fontStyle="italic" fontSize="12px">
+                Commune{network.communes.length > 1 ? 's' : ''} d'implantation : {network.communes.join(', ')}
+              </Box>
             )}
           </Box>
         )}
