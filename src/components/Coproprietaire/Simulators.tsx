@@ -3,7 +3,6 @@ import dynamic from 'next/dynamic';
 import { ArrowItem } from '@/components/MarkdownWrapper/MarkdownWrapper.style';
 import Box, { ResponsiveRow } from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
-import type { LegacyColor } from '@/components/ui/helpers/colors';
 import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
 
@@ -11,21 +10,7 @@ const Simulator = dynamic(() => import('@/components/Ressources/Contents/Simulat
   ssr: false,
 });
 
-const Simulators = ({
-  textTitle,
-  simulatorTitle,
-  simulatorResultColor,
-  simulatorResultBackgroundColor,
-  simulatorBackgroundColor,
-  simulatorDisclaimerLegacyColor,
-}: {
-  textTitle?: string;
-  simulatorTitle?: string;
-  simulatorResultColor?: string;
-  simulatorResultBackgroundColor?: string;
-  simulatorBackgroundColor?: string;
-  simulatorDisclaimerLegacyColor?: LegacyColor;
-}) => {
+const Simulators = ({ textTitle, simulatorTitle }: { textTitle?: string; simulatorTitle?: string }) => {
   return (
     <Box className="fr-container">
       <ResponsiveRow>
@@ -71,13 +56,7 @@ const Simulators = ({
               {simulatorTitle}
             </Heading>
           )}
-          <Simulator
-            resultColor={simulatorResultColor}
-            resultBackgroundColor={simulatorResultBackgroundColor}
-            backgroundColor={simulatorBackgroundColor}
-            disclaimerLegacyColor={simulatorDisclaimerLegacyColor}
-            cartridge
-          />
+          <Simulator />
         </Box>
       </ResponsiveRow>
     </Box>

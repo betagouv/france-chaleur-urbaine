@@ -107,14 +107,7 @@ const City = ({ citySlug, network }: { citySlug: keyof typeof citiesData; networ
               </Box>
             )}
             <Box p="4w">
-              <Simulators
-                textTitle="Le coup de pouce « Chauffage des bâtiments résidentiels collectifs et tertiaires »"
-                simulatorTitle="Estimez le coup de pouce pour votre résidence"
-                simulatorResultColor="var(--blue-france-sun-113-625)"
-                simulatorResultBackgroundColor="#F8D86E"
-                simulatorBackgroundColor="var(--blue-france-main-525)"
-                simulatorDisclaimerLegacyColor="white"
-              />
+              <Simulators />
             </Box>
             {citySlug !== 'paris' && cityData.dispositifs && (
               <Box p="4w">
