@@ -15,11 +15,12 @@ const Us = () => {
         <HeroSubtitle className="flex items-center gap-8">
           <span className="fr-logo inline-block w-[135px]">République Française</span>
           <span>
-            France Chaleur Urbaine est un <b>service gratuit proposé par ADEME</b> qui oriente les bâtiments vers les solutions de chauffage
-            écologique les plus adaptées. France Chaleur Urbaine répond à trois enjeux majeurs : la lutte contre le changement climatique,
-            la maîtrise du tarif des énergies et la sécurité d'approvisionnement. Afin d'accompagner les bâtiments dans la mise en oeuvre
-            concrète de solutions telles que les réseaux de chaleur, France Chaleur Urbaine agit en <strong>tiers de confiance</strong> en
-            mettant en relation les copropriétaires et gestionnaires de bâtiments tertiaires avec les opérateurs des réseaux de chaleur.
+            France Chaleur Urbaine est un <b>service gratuit proposé par l'ADEME</b> qui oriente les bâtiments vers les solutions de
+            chauffage écologique les plus adaptées. France Chaleur Urbaine répond à trois enjeux majeurs : la lutte contre le changement
+            climatique, la maîtrise du tarif des énergies et la sécurité d'approvisionnement. Afin d'accompagner les bâtiments dans la mise
+            en oeuvre concrète de solutions telles que les réseaux de chaleur, France Chaleur Urbaine agit en{' '}
+            <strong>tiers de confiance</strong> en mettant en relation les copropriétaires et gestionnaires de bâtiments tertiaires avec les
+            opérateurs des réseaux de chaleur.
           </span>
         </HeroSubtitle>
       </Hero>
@@ -46,8 +47,8 @@ const Us = () => {
         <SectionContent>
           <List>
             <li>
-              <b>ADEME</b> : l'Agence de la transition écologique porte le projet. Céline LARUELLE, en tant qu'intrapreneuse et Adrien
-              ZEMOUR, en tant qu'entrepreneur d'intérêt général pilotent le projet.
+              <b>L'ADEME</b> : Agence de la transition écologique, porte le service France Chaleur Urbaine. Céline LARUELLE, en tant
+              qu’intrapreneuse et Adrien ZEMOUR, en tant qu’entrepreneur d’intérêt général pilotent le projet.
               <br />
               En savoir plus :{' '}
               <Link href="https://www.ademe.fr" isExternal>
@@ -55,9 +56,9 @@ const Us = () => {
               </Link>
             </li>
             <li>
-              <b>BETA.GOUV.FR</b> : France Chaleur Urbaine est un service numérique public issu du programme{` `}
+              France Chaleur Urbaine est un service numérique public issu du programme{' '}
               <Link href="https://beta.gouv.fr" isExternal>
-                beta.gouv.fr
+                Beta.gouv.fr
               </Link>
               , animé par la Direction interministérielle du numérique (DINUM), qui aide les administrations publiques à construire des
               services numériques utiles, simples et faciles à utiliser.
