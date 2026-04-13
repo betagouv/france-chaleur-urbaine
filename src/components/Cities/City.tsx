@@ -1,12 +1,15 @@
+import dynamic from 'next/dynamic';
+
 import Advantages from '@/components/Coproprietaire/Advantages';
 import CoproGuide from '@/components/Coproprietaire/CoproGuide';
 import Informations from '@/components/Coproprietaire/Informations';
 import InterviewsVideos from '@/components/Coproprietaire/InterviewsVideos';
-import Simulators from '@/components/Coproprietaire/Simulators';
+import { ArrowItem } from '@/components/MarkdownWrapper/MarkdownWrapper.style';
 import StickyForm from '@/components/StickyForm/StickyForm';
 import Box, { ResponsiveRow } from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
 import Hero, { HeroMeta, HeroTitle } from '@/components/ui/Hero';
+import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
 import WrappedText from '@/components/WrappedText';
 import userExperience from '@/data/villes/user-experience';
@@ -17,6 +20,10 @@ import { CityContainer, VideoGuideColumn } from './City.styles';
 import ClassedNetworks from './ClassedNetworks';
 import Dispositifs, { type DispositifsData } from './Dispositifs';
 import Networks from './Networks';
+
+const Simulator = dynamic(() => import('@/components/Ressources/Contents/Simulator'), {
+  ssr: false,
+});
 
 const City = ({ citySlug, network }: { citySlug: keyof typeof citiesData; network?: Network }) => {
   const cityData = citiesData[citySlug];
@@ -107,7 +114,46 @@ const City = ({ citySlug, network }: { citySlug: keyof typeof citiesData; networ
               </Box>
             )}
             <Box p="4w">
-              <Simulators />
+              <Box className="fr-container">
+                <ResponsiveRow>
+                  <Box flex>
+                    <Box>
+                      <ArrowItem color="white">
+                        <Text>
+                          Le coup de pouce <strong>«&nbsp;Chauffage des bâtiments résidentiels collectifs et tertiaires&nbsp;»</strong>{' '}
+                          permet d’obtenir des aides financières conséquentes pour se raccorder.
+                        </Text>
+                      </ArrowItem>
+                      <ArrowItem color="white">
+                        <Text>
+                          <strong style={{ backgroundColor: '#F8D86E', color: '#000091' }}>
+                            Le coût du raccordement peut ainsi être réduit à quelques centaines d’euros par logement
+                          </strong>{' '}
+                          (en fonction de la situation du bâtiment et de ses besoins en chaleur).
+                        </Text>
+                      </ArrowItem>
+                      <ArrowItem color="white">
+                        <Text>
+                          Différentes entreprises signataires de la charte « Chauffage des bâtiments résidentiels collectifs et tertiaires »
+                          offrent cette prime. <br />
+                          <strong>
+                            Le montant de la prime peut significativement varier d’une entreprise à l’autre, il est donc important de
+                            comparer les offres proposées.
+                          </strong>
+                        </Text>
+                      </ArrowItem>
+                    </Box>
+                    <Box ml="4w" mt="1w">
+                      <Link href="/ressources/aides#contenu" variant="primary">
+                        Tout savoir sur cette aide
+                      </Link>
+                    </Box>
+                  </Box>
+                  <Box flex maxWidth="40%">
+                    <Simulator />
+                  </Box>
+                </ResponsiveRow>
+              </Box>
             </Box>
             {citySlug !== 'paris' && cityData.dispositifs && (
               <Box p="4w">
