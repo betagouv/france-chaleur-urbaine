@@ -22,9 +22,9 @@ const BENEFITS = [
     title: 'Bénéficiez d’aides pour financer vitre projet',
   },
   {
-    description: 'Bon DPE : bien valorisé et conforme à la réglementation.',
+    description: 'Une meilleure classe DPE protège votre bien immobilier des décotes et le maintient compétitif sur le marché.',
     icon: 'icon-graph.png',
-    title: 'Améliorez votre étiquette DPE',
+    title: "Améliorez l'étiquette DPE de votre bien",
   },
   {
     description:
@@ -206,8 +206,10 @@ function BenefitCard({ icon, title, description }: { icon: string; title: string
   return (
     <div className="fr-col-12 fr-col-md-4">
       <CardFrame className="h-full">
-        <Image src={`/icons/${icon}`} width="32" height="32" alt="" className="inline-block fr-mb-3w" />
-        <h5 className="fr-h4">{title}</h5>
+        <h5 className="fr-h4">
+          <Image src={`/icons/${icon}`} width="24" height="24" alt="" className="inline-block mr-3 mb-1" />
+          {title}
+        </h5>
         <p>{description}</p>
       </CardFrame>
     </div>
