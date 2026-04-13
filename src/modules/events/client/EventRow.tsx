@@ -105,6 +105,14 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
       </FilterButton>
     </>
   ),
+  pdp_updated: (event, updateFilters) => (
+    <>
+      <span>a mis à jour le </span>
+      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'pdp' })}>
+        périmètre de développement
+      </FilterButton>
+    </>
+  ),
   pro_eligibility_test_created: (event, updateFilters) => (
     <>
       <span>a créé un </span>

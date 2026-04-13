@@ -32,6 +32,7 @@ export const eventTypes = [
   'network_reminder_created',
   'user_permissions_updated',
   'user_permissions_synced_from_api',
+  'pdp_updated',
 ] as const;
 
 export type EventType = (typeof eventTypes)[number];
@@ -51,6 +52,7 @@ export const eventTypeLabels: Record<EventType, string> = {
   demand_updated: 'Mise à jour demande',
   demand_validated: 'Validation demande',
   network_reminder_created: 'Création relance réseau',
+  pdp_updated: 'Mise à jour périmètre de développement',
   pro_eligibility_test_created: 'Création test éligibilité',
   pro_eligibility_test_deleted: 'Suppression test éligibilité',
   pro_eligibility_test_renamed: 'Renommage test éligibilité',
@@ -102,6 +104,11 @@ export type EventDataMap = {
   pro_eligibility_test_updated: Record<string, unknown> | null;
   sync_geometries_to_airtable: { name: string };
   sync_metadata_from_airtable: { name: string };
+  pdp_updated: {
+    'Identifiant reseau'?: string;
+    reseau_de_chaleur_ids?: number[];
+    reseau_en_construction_ids?: number[];
+  };
   tag_comment_updated: { comment: string; tag_name: string };
   tag_reminder_created: { tag_name: string };
   tag_reminder_deleted: { tag_name: string };

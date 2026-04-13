@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { createUserEvent } from '@/modules/events/server/service';
 import {
   networkTypes,
   zApplyGeometriesUpdatesInput,
@@ -47,9 +48,16 @@ const perimetreDeDeveloppementPrioritaireRouter = router({
   list: adminRoute.query(async () => {
     return await reseauxService.listPerimetresDeDeveloppementPrioritaire();
   }),
-  update: adminRoute.input(zUpdatePerimetreDeDeveloppementPrioritaireInput).mutation(async ({ input }) => {
+  update: adminRoute.input(zUpdatePerimetreDeDeveloppementPrioritaireInput).mutation(async ({ input, ctx }) => {
     const { id, ...data } = input;
-    return await reseauxService.updatePerimetreDeDeveloppementPrioritaire(id, data);
+    await reseauxService.updatePerimetreDeDeveloppementPrioritaire(id, data);
+    await createUserEvent({
+      author_id: ctx.user.id,
+      context_id: String(id),
+      context_type: 'pdp',
+      data,
+      type: 'pdp_updated',
+    });
   }),
 });
 
