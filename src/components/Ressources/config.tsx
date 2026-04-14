@@ -271,7 +271,7 @@ export const otherHeatingSystem: Record<string, Document> = {
     image: 'comment-choisir-sa-pac.webp',
     seoDescription:
       'Guide ADEME pour choisir une pompe à chaleur en copropriété : étapes, critères de choix et points de vigilance pour une installation adaptée.',
-    title: 'Comment choisir la bonne pompe à chaleur (PAC) pour son logement ?',
+    title: 'Comment choisir la bonne pompe à chaleur pour son logement ?',
   },
   'obligations-copropriété': {
     content: <ObligationCopro />,
