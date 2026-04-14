@@ -3,46 +3,36 @@ import Input from '@codegouvfr/react-dsfr/Input';
 import { Select } from '@codegouvfr/react-dsfr/SelectNext';
 import { type ReactNode, useEffect, useState } from 'react';
 
-import { addresseToPublicodesRules } from '@/components/ComparateurPublicodes/mappings';
 import useSimulatorEngine from '@/components/ComparateurPublicodes/useSimulatorEngine';
 import Tooltip from '@/components/ui/Tooltip';
 import type { BANAddressFeature } from '@/modules/ban/types';
 import { AddressField } from '@/modules/form/AddressField';
+import {
+  BOOSTED_HEAT_NETWORK_AID_RULE,
+  buildAddressSituation,
+  buildBuildingSituation,
+  buildClearedAddressSituation,
+  CEE_VALUE_RULE,
+  type ConcernedHelp,
+  type HotWaterProduction,
+  RESIDENTIAL_HEAT_NETWORK_AID_RULE,
+  type SimulatorSituation,
+  STANDARD_HEAT_NETWORK_AID_RULE,
+  type Structure,
+  TERTIARY_HEAT_NETWORK_AID_RULE,
+  type TertiarySector,
+  TOTAL_HEAT_NETWORK_AID_AMOUNT_RULE,
+  TOTAL_HEAT_NETWORK_AID_RULE,
+  tertiarySectorOptions,
+} from '@/modules/simulator/constants';
 import type { LocationInfoResponse } from '@/pages/api/location-infos';
 import cx from '@/utils/cx';
 import { postFetchJSON } from '@/utils/network';
-import { ObjectEntries } from '@/utils/typescript';
 
-const TOTAL_HEAT_NETWORK_AID_RULE = 'Calcul Eco . Montant des aides . Réseaux de chaleur . Total' as RuleName;
-const TOTAL_HEAT_NETWORK_AID_AMOUNT_RULE = 'Calcul Eco . Montant des aides . Réseaux de chaleur . Total montant' as RuleName;
-const BOOSTED_HEAT_NETWORK_AID_RULE = 'Calcul Eco . Montant des aides . Réseaux de chaleur . Coup de pouce' as RuleName;
-const STANDARD_HEAT_NETWORK_AID_RULE = 'Calcul Eco . Montant des aides . Réseaux de chaleur . CEE' as RuleName;
-const RESIDENTIAL_HEAT_NETWORK_AID_RULE = 'Calcul Eco . Montant des aides . Réseaux de chaleur . BAR-TH-137' as RuleName;
-const TERTIARY_HEAT_NETWORK_AID_RULE = 'Calcul Eco . Montant des aides . Réseaux de chaleur . BAT-TH-127' as RuleName;
-const CEE_VALUE_RULE = 'Paramètres économiques . Aides . Valeur CEE' as RuleName;
-
-const tertiarySectorOptions = [
-  { label: 'Bureaux', value: 'Bureaux' },
-  { label: 'Enseignement', value: 'Enseignement' },
-  { label: 'Commerces', value: 'Commerces' },
-  { label: 'Café, restaurant', value: 'Café, restaurant' },
-  { label: 'Hôtel', value: 'Hôtel' },
-  { label: 'Santé', value: 'Santé' },
-  { label: 'Autres', value: 'Autres' },
-];
-
-type Structure = 'Résidentiel' | 'Tertiaire';
-type TertiarySector = (typeof tertiarySectorOptions)[number]['value'];
-type HotWaterProduction = 'oui' | 'non';
-type ConcernedHelp = {
-  label: string;
-  noteUrl?: string;
-};
 type SimulatorProps = {
   children?: ReactNode;
   withTitle?: boolean;
 };
-type SimulatorSituation = Partial<Record<RuleName, number | string | null>>;
 type SimulatorResultProps = {
   ceeValue: string;
   concernedHelp: ConcernedHelp | null;
@@ -54,18 +44,6 @@ type SimulatorResultProps = {
   onCeeValueChange: (value: string) => void;
   structure: Structure;
 };
-
-const buildAddressSituation = (infos: LocationInfoResponse): SimulatorSituation =>
-  ObjectEntries(addresseToPublicodesRules).reduce<SimulatorSituation>((acc, [key, infoGetter]) => {
-    acc[key] = infoGetter(infos) ?? null;
-    return acc;
-  }, {});
-
-const buildClearedAddressSituation = (): SimulatorSituation =>
-  ObjectEntries(addresseToPublicodesRules).reduce<SimulatorSituation>((acc, [key]) => {
-    acc[key] = null;
-    return acc;
-  }, {});
 
 function SimulatorResult({
   ceeValue,
@@ -204,13 +182,15 @@ function Simulator({ children, withTitle }: SimulatorProps) {
       return;
     }
 
-    updateSituation({
-      'méthode tertiaire': structure === 'Tertiaire' ? `'${tertiarySector}'` : null,
-      "nombre de logements dans l'immeuble concerné": structure === 'Résidentiel' && housingCountOrArea > 0 ? housingCountOrArea : null,
-      'Production eau chaude sanitaire': structure === 'Tertiaire' ? producesHotWater : 'oui',
-      'surface logement type tertiaire': structure === 'Tertiaire' && housingCountOrArea > 0 ? housingCountOrArea : null,
-      'type de bâtiment': `'${structure.toLowerCase()}'`,
-    });
+    updateSituation(
+      buildBuildingSituation({
+        housingCount: housingCountOrArea,
+        producesHotWater,
+        surface: housingCountOrArea,
+        tertiarySector,
+        typeBatiment: structure === 'Résidentiel' ? 'residentiel' : 'tertiaire',
+      })
+    );
   }, [engine.loaded, housingCountOrArea, producesHotWater, structure, tertiarySector]);
 
   useEffect(() => {

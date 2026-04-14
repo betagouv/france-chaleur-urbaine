@@ -1,17 +1,26 @@
+import type { RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
 import Badge from '@codegouvfr/react-dsfr/Badge';
 import Input from '@codegouvfr/react-dsfr/Input';
-import Select from '@codegouvfr/react-dsfr/SelectNext';
-import { useMemo, useState } from 'react';
+import { Select } from '@codegouvfr/react-dsfr/SelectNext';
+import { useEffect, useMemo, useState } from 'react';
 
+import { addresseToPublicodesRules } from '@/components/ComparateurPublicodes/mappings';
+import useSimulatorEngine from '@/components/ComparateurPublicodes/useSimulatorEngine';
 import Box, { ResponsiveRow } from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
 import Icon from '@/components/ui/Icon';
 import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
 import { trackEvent } from '@/modules/analytics/client';
+import type { BANAddressFeature } from '@/modules/ban/types';
+import { AddressField } from '@/modules/form/AddressField';
+import type { LocationInfoResponse } from '@/pages/api/location-infos';
 import { isDefined } from '@/utils/core';
+import { postFetchJSON } from '@/utils/network';
+import { ObjectEntries } from '@/utils/typescript';
 
 type TypeBatiment = 'residentiel' | 'tertiaire';
+type Structure = 'Résidentiel' | 'Tertiaire';
 
 type FormState = {
   typeBatiment: TypeBatiment;
@@ -24,15 +33,41 @@ interface SimulateurCoutRaccordementProps {
   embedded?: boolean;
 }
 
+type SimulatorSituation = Partial<Record<RuleName, number | string | null>>;
+
+const CEE_VALUE_RULE = 'Paramètres économiques . Aides . Valeur CEE' as RuleName;
+const TOTAL_HEAT_NETWORK_AID_AMOUNT_RULE = 'Calcul Eco . Montant des aides . Réseaux de chaleur . Total montant' as RuleName;
+
+const buildAddressSituation = (infos: LocationInfoResponse): SimulatorSituation =>
+  ObjectEntries(addresseToPublicodesRules).reduce<SimulatorSituation>((acc, [key, infoGetter]) => {
+    acc[key] = infoGetter(infos) ?? null;
+    return acc;
+  }, {});
+
+const buildClearedAddressSituation = (): SimulatorSituation =>
+  ObjectEntries(addresseToPublicodesRules).reduce<SimulatorSituation>((acc, [key]) => {
+    acc[key] = null;
+    return acc;
+  }, {});
+
 /**
- * Simulateur du coût de raccordement selon le nombre de logements si batiment résidentiel ou
- * la surface si batiment tertiaire.
+ * Simulateur du coût de raccordement selon le nombre de logements si bâtiment résidentiel ou
+ * la surface si bâtiment tertiaire.
  */
 const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
+  const engine = useSimulatorEngine();
+
   const [formState, setFormState] = useState<FormState>({
     typeBatiment: props.typeBatiment ?? 'residentiel',
   });
   const [hasUsedFeature, setHasUsedFeature] = useState(false);
+
+  const [address, setAddress] = useState('');
+  const [selectedAddress, setSelectedAddress] = useState<BANAddressFeature | null>(null);
+  const [eligibilityError, setEligibilityError] = useState(false);
+
+  const structure: Structure = formState.typeBatiment === 'residentiel' ? 'Résidentiel' : 'Tertiaire';
+  const isAddressSelected = selectedAddress !== null;
 
   function updateState<Key extends keyof FormState>(key: Key, value: FormState[Key]) {
     if (!hasUsedFeature) {
@@ -45,24 +80,93 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
     }));
   }
 
-  const montantAide = useMemo(() => {
-    const prixSpotCEE = 8.42;
-    const value = formState.typeBatiment === 'residentiel' ? formState.nbLogements : formState.surface;
-    if (!value) {
+  const updateSituation = (partialSituation: SimulatorSituation) => {
+    engine.setSituation({
+      ...engine.getSituation(),
+      ...partialSituation,
+    });
+  };
+
+  const clearAddressSituation = () => {
+    updateSituation(buildClearedAddressSituation());
+  };
+
+  const resetAddressSelection = () => {
+    setAddress('');
+    setSelectedAddress(null);
+    setEligibilityError(false);
+    clearAddressSituation();
+  };
+
+  useEffect(() => {
+    if (!engine.loaded) {
+      return;
+    }
+
+    updateSituation({
+      'méthode tertiaire': null,
+      "nombre de logements dans l'immeuble concerné":
+        formState.typeBatiment === 'residentiel' && isDefined(formState.nbLogements) && formState.nbLogements > 0
+          ? formState.nbLogements
+          : null,
+      'Production eau chaude sanitaire': 'oui',
+      'surface logement type tertiaire':
+        formState.typeBatiment === 'tertiaire' && isDefined(formState.surface) && formState.surface > 0 ? formState.surface : null,
+      'type de bâtiment': `'${structure.toLowerCase()}'`,
+    });
+  }, [engine.loaded, formState.nbLogements, formState.surface, formState.typeBatiment, structure]);
+
+  const handleAddressSelected = async (geoAddress?: BANAddressFeature) => {
+    if (!geoAddress) {
+      return;
+    }
+
+    setAddress(geoAddress.properties.label);
+    setSelectedAddress(geoAddress);
+
+    try {
+      setEligibilityError(false);
+
+      const [lon, lat] = geoAddress.geometry.coordinates;
+      const infos: LocationInfoResponse = await postFetchJSON('/api/location-infos', {
+        city: geoAddress.properties.city,
+        cityCode: geoAddress.properties.citycode,
+        lat,
+        lon,
+      });
+
+      if (!infos.infosVille) {
+        setEligibilityError(true);
+        clearAddressSituation();
+        return;
+      }
+
+      updateSituation(buildAddressSituation(infos));
+    } catch (error) {
+      setEligibilityError(true);
+      clearAddressSituation();
+      console.error('Simulator eligibility error', error);
+    }
+  };
+
+  const currentCeeValue = engine.loaded ? engine.getFieldAsNumber(CEE_VALUE_RULE) : 0;
+  const currentCeeValueDisplay = (currentCeeValue * 1000).toLocaleString('fr-FR', {
+    maximumFractionDigits: 2,
+    minimumFractionDigits: 2,
+  });
+
+  const montantAidePublicodes = useMemo(() => {
+    if (!isAddressSelected) {
       return null;
     }
-    return (
-      (formState.typeBatiment === 'residentiel'
-        ? value <= 125
-          ? 12000
-          : 77 * value + 2300
-        : value <= 7500
-          ? 11000
-          : 1.07 * value + 3000) *
-      0.75 *
-      prixSpotCEE
-    );
-  }, [formState]);
+    const value = formState.typeBatiment === 'residentiel' ? formState.nbLogements : formState.surface;
+    if (!value || !engine.loaded) {
+      return null;
+    }
+    return engine.getFieldAsNumber(TOTAL_HEAT_NETWORK_AID_AMOUNT_RULE);
+  }, [engine, formState, isAddressSelected]);
+
+  const montantAide = montantAidePublicodes;
 
   const montantCouts = useMemo(() => {
     return formState.typeBatiment === 'residentiel'
@@ -86,21 +190,37 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
       return [montantCoutsApresAide[0] / formState.nbLogements, montantCoutsApresAide[1] / formState.nbLogements];
     }
     return null;
-  }, [formState, montantAide]);
+  }, [formState.nbLogements, montantCoutsApresAide]);
 
   return (
     <Box border="1px solid #e7e7e7">
       <ResponsiveRow breakpoint="sm">
         <Box flex p="3w">
           <Badge severity="new" noIcon>
-            {/* the dsfr does not handle custom icons */}
             <Icon name="fr-icon-money-euro-circle-line" size="sm" mr="1v" />
             Simulateur
           </Badge>
+
           <Heading as="h6" mt="1w" mb="1w">
             Estimer le coût d’un raccordement*
           </Heading>
+
           <Box mb="3w">pour une longueur de branchement de 50 m</Box>
+
+          <AddressField
+            label="Adresse"
+            state={eligibilityError ? 'error' : undefined}
+            stateRelatedMessage={eligibilityError ? "Une erreur est survenue pendant le test d'éligibilité." : undefined}
+            nativeInputProps={{
+              placeholder: 'Tapez ici votre adresse',
+              required: true,
+            }}
+            value={address}
+            onSelect={handleAddressSelected}
+            onClear={resetAddressSelection}
+            excludeCities
+          />
+
           <Select
             label="Type de bâtiment"
             options={[
@@ -114,21 +234,26 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
               },
             ]}
             nativeSelectProps={{
+              disabled: !isAddressSelected,
               onChange: (e) => {
-                updateState('typeBatiment', e.target.value as TypeBatiment);
-                updateState(e.target.value === 'residentiel' ? 'nbLogements' : 'surface', undefined);
+                const nextType = e.target.value as TypeBatiment;
+                updateState('typeBatiment', nextType);
+                updateState(nextType === 'residentiel' ? 'nbLogements' : 'surface', undefined);
               },
               value: formState.typeBatiment,
             }}
           />
+
           {formState.typeBatiment === 'residentiel' ? (
             <Input
               key="nbLogements"
               label="Nombre de logements"
               nativeInputProps={{
+                disabled: !isAddressSelected,
                 min: 0,
                 onChange: (e) => updateState('nbLogements', parseInt(e.target.value, 10)),
                 type: 'number',
+                value: formState.nbLogements ?? '',
               }}
             />
           ) : (
@@ -136,12 +261,15 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
               key="surface"
               label="Surface (m²)"
               nativeInputProps={{
+                disabled: !isAddressSelected,
                 min: 0,
                 onChange: (e) => updateState('surface', parseInt(e.target.value, 10)),
                 type: 'number',
+                value: formState.surface ?? '',
               }}
             />
           )}
+
           <Text size="sm">
             *montants donnés à titre indicatif.
             {props.embedded && (
@@ -152,10 +280,12 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
             )}
           </Text>
         </Box>
+
         <Box flex backgroundColor="grey-975-75" p="3w">
           <Text fontWeight="bold" textTransform="uppercase">
             Coût du raccordement
           </Text>
+
           {montantCouts === outOfRangeValue ? (
             <Box mt="2w">
               <Badge severity="warning">
@@ -168,15 +298,25 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
               <Heading as="h6" mt="2w">
                 Entre {prettyPrintCout(montantCouts?.[0])} et {prettyPrintCout(montantCouts?.[1])}
               </Heading>
+
               <Box border="1px solid #e7e7e7" my="3w" />
+
               <Text fontWeight="bold" textTransform="uppercase">
                 Montant du coup de pouce
               </Text>
+
               <Heading as="h6" mt="2w">
                 {prettyPrintCout(montantAide)}
               </Heading>
+
+              <Text size="sm" mt="1w">
+                Montant indicatif calculé avec une valeur CEE actuelle de <strong>{currentCeeValueDisplay} €/MWh cumac</strong>.
+              </Text>
+
               <Box border="1px solid #e7e7e7" my="3w" />
+
               <Badge severity="info">Après déduction du coup de pouce</Badge>
+
               <Heading as="h6" mb="0" mt="1w">
                 {montantCoutsApresAide?.[0] === 0 && montantCoutsApresAide?.[1] === 0 ? (
                   <>Raccordement gratuit&nbsp;!</>
